@@ -3,4 +3,4 @@ config:
   rust_version: "1.58.0"
 linked_packages:
   - name: polywrap-wasm-rs
-    path: ../../../../../wasm/rs
+    path: ../../../../../../wasm/rs

@@ -10,16 +10,22 @@ pub fn method1(input: InputMethod1) -> Vec<Output> {
             },
         },
         Output {
-            prop: input.arg2.clone().unwrap().prop,
+            prop: match input.arg2 {
+                Some(ref v) => v.prop.clone(),
+                None => "".to_string(),
+            },
             nested: Nested {
-                prop: input.arg2.unwrap().circular.prop,
+                prop: match input.arg2 {
+                    Some(ref v) => v.circular.prop.clone(),
+                    None => "".to_string(),
+                }
             },
         },
     ]
 }
 
 pub fn method2(input: InputMethod2) -> Option<Output> {
-    if input.arg.prop.is_empty() {
+    if input.arg.prop == "null".to_string() {
         return None;
     }
     Some(Output {
@@ -44,7 +50,11 @@ pub fn method3(input: InputMethod3) -> Vec<Option<Output>> {
 
 pub fn method5(input: InputMethod5) -> Output {
     Output {
-        prop: String::from_utf8(input.arg.prop).unwrap(),
+        // prop: String::from_utf8(input.arg.prop).unwrap(),
+        prop: match String::from_utf8(input.arg.prop) {
+            Ok(v) => v,
+            Err(e) => panic!("{}", e),
+        },
         nested: Nested {
             prop: "nested prop".to_string(),
         },
