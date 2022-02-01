@@ -109,10 +109,6 @@ export class Web3ApiClient implements Client {
     }
   }
 
-  public getApiCache(): ApiCache {
-    return this._apiCache;
-  }
-
   public setTracingEnabled(enable: boolean): void {
     if (enable) {
       Tracer.enableTracing("Web3ApiClient");
@@ -120,6 +116,11 @@ export class Web3ApiClient implements Client {
       Tracer.disableTracing();
     }
     this._config.tracingEnabled = enable;
+  }
+
+  @Tracer.traceMethod("Web3ApiClient: getApiCache")
+  public getApiCache(): ApiCache {
+    return this._apiCache;
   }
 
   @Tracer.traceMethod("Web3ApiClient: getRedirects")
@@ -438,7 +439,7 @@ export class Web3ApiClient implements Client {
   @Tracer.traceMethod("Web3ApiClient: resolveUri")
   public async resolveUri<TUri extends Uri | string>(
     uri: TUri,
-    options?: ResolveUriOptions<Web3ApiClientConfig>
+    options?: ResolveUriOptions<ClientConfig>
   ): Promise<{
     api?: Api;
     uri?: Uri;
@@ -677,6 +678,9 @@ const contextualizeClient = (
         getEnvs: (options: GetEnvsOptions = {}) => {
           return client.getEnvs({ ...options, contextId });
         },
+        getResolvers: (options: GetResolversOptions = {}) => {
+          return client.getResolvers({ ...options, contextId });
+        },
         getEnvByUri: <TUri extends Uri | string>(
           uri: TUri,
           options: GetEnvsOptions = {}
@@ -712,6 +716,17 @@ const contextualizeClient = (
         },
         getApiCache: (): ApiCache => {
           return client.getApiCache();
+        },
+        resolveUri: <TUri extends Uri | string>(
+          uri: TUri,
+          options?: ResolveUriOptions<ClientConfig>
+        ): Promise<{
+          api?: Api;
+          uri?: Uri;
+          uriHistory: UriResolutionHistory;
+          error?: ResolveUriError;
+        }> => {
+          return client.resolveUri(uri, { ...options, contextId });
         },
       }
     : client;

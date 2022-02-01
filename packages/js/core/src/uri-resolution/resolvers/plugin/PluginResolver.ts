@@ -40,8 +40,8 @@ export class PluginResolver implements IUriToApiResolver {
       };
     }
 
-    return Promise.resolve({
+    return {
       uri,
-    });
+    };
   }
 }

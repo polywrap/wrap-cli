@@ -8,9 +8,15 @@ import {
   InterfaceImplementations,
   Env,
   ApiCache,
+  ResolveUriOptions,
+  Api,
 } from "./";
 import { ManifestType, AnyManifest } from "../manifest";
-import { IUriToApiResolver } from "../uri-resolution/core";
+import {
+  IUriToApiResolver,
+  ResolveUriError,
+  UriResolutionHistory,
+} from "../uri-resolution/core";
 
 export interface ClientConfig<TUri extends Uri | string = string> {
   redirects: UriRedirect<TUri>[];
@@ -66,6 +72,8 @@ export interface Client
 
   getEnvs(options: GetEnvsOptions): readonly Env<Uri>[];
 
+  getResolvers(options: GetResolversOptions): readonly IUriToApiResolver[];
+
   getEnvByUri<TUri extends Uri | string>(
     uri: TUri,
     options: GetEnvsOptions
@@ -90,4 +98,14 @@ export interface Client
     uri: TUri,
     options: GetImplementationsOptions
   ): TUri[];
+
+  resolveUri<TUri extends Uri | string>(
+    uri: TUri,
+    options?: ResolveUriOptions<ClientConfig>
+  ): Promise<{
+    api?: Api;
+    uri?: Uri;
+    uriHistory: UriResolutionHistory;
+    error?: ResolveUriError;
+  }>;
 }
