@@ -1,11 +1,10 @@
 import { IpfsClient } from "../types/IpfsClient";
-import { cancelableExecIpfs } from "./cancelableExecIpfs";
-import { CancelablePromise } from "./types/CancelablePromise";
+import { execAbortable, AbortablePromise } from "./abortable";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention
 const createIpfsClient = require("@dorgjelli-test/ipfs-http-client-lite");
 
-export const execIpfsWithProviders = async <TReturn>(
+export const execFallbacks = async <TReturn>(
   operation: string,
   defaultIpfs: IpfsClient,
   defaultProvider: string,
@@ -21,7 +20,7 @@ export const execIpfsWithProviders = async <TReturn>(
   const parallel = !!options?.parallel;
 
   return parallel
-    ? await execParallelIpfs<TReturn>(
+    ? await execParallel<TReturn>(
         operation,
         defaultIpfs,
         defaultProvider,
@@ -29,7 +28,7 @@ export const execIpfsWithProviders = async <TReturn>(
         timeout,
         func
       )
-    : await execSerialIpfs<TReturn>(
+    : await execSerial<TReturn>(
         operation,
         defaultIpfs,
         defaultProvider,
@@ -39,7 +38,7 @@ export const execIpfsWithProviders = async <TReturn>(
       );
 };
 
-const execSerialIpfs = async <TReturn>(
+const execSerial = async <TReturn>(
   operation: string,
   defaultIpfs: IpfsClient,
   defaultProvider: string,
@@ -65,7 +64,7 @@ const execSerialIpfs = async <TReturn>(
       ipfs = createIpfsClient(provider);
     }
 
-    const { promise } = cancelableExecIpfs(
+    const { promise } = execAbortable(
       operation,
       ipfs,
       provider,
@@ -86,7 +85,7 @@ const execSerialIpfs = async <TReturn>(
   throw new Error(errors.map((x) => x.message).join("\n"));
 };
 
-const execParallelIpfs = async <TReturn>(
+const execParallel = async <TReturn>(
   operation: string,
   defaultIpfs: IpfsClient,
   defaultProvider: string,
@@ -99,7 +98,7 @@ const execParallelIpfs = async <TReturn>(
   ) => Promise<TReturn>
 ): Promise<TReturn> => {
   const errors: Error[] = [];
-  const requests: CancelablePromise<TReturn>[] = [];
+  const requests: AbortablePromise<TReturn>[] = [];
 
   //Gather all requests from all providers
   for (const provider of providers) {
@@ -113,7 +112,7 @@ const execParallelIpfs = async <TReturn>(
       ipfs = createIpfsClient(provider);
     }
 
-    const request = cancelableExecIpfs(
+    const request = execAbortable(
       operation,
       ipfs,
       provider,
@@ -132,7 +131,7 @@ const execParallelIpfs = async <TReturn>(
   const response = await Promise.race([successPromise, allPromises]);
 
   if (response.success) {
-    cancelAllRequests(requests);
+    abortAllRequests(requests);
   } else {
     //Throw all aggregated errors
     throw new Error(errors.map((x) => x.message).join("\n"));
@@ -142,7 +141,7 @@ const execParallelIpfs = async <TReturn>(
 };
 
 const gatherSuccessPromises = async <TReturn>(
-  requests: CancelablePromise<TReturn>[]
+  requests: AbortablePromise<TReturn>[]
 ): Promise<{
   success: boolean;
   result: TReturn | undefined;
@@ -180,7 +179,7 @@ const gatherSuccessPromises = async <TReturn>(
 };
 
 const gatherAllPromisesAndTrackErrors = <TReturn>(
-  requests: CancelablePromise<TReturn>[],
+  requests: AbortablePromise<TReturn>[],
   errors: Error[]
 ): Promise<{
   success: boolean;
@@ -210,11 +209,10 @@ const gatherAllPromisesAndTrackErrors = <TReturn>(
   });
 };
 
-const cancelAllRequests = <TReturn>(
-  requests: CancelablePromise<TReturn>[]
+const abortAllRequests = <TReturn>(
+  requests: AbortablePromise<TReturn>[]
 ): void => {
   for (const request of requests) {
-    const { cancel } = request;
-    cancel();
+    request.abort();
   }
 };

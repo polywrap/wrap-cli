@@ -1,10 +1,10 @@
 import { IpfsClient } from "../types/IpfsClient";
-import { safeExecIpfs } from "./safeExecIpfs";
+import { execAbortable } from "./abortable";
 
 //Executes function in a try catch and returns error (if any) and result
 //If timeout is reached, it will return an error
 //If timeout is 0 then it will wait until the operation is complete
-export const execIpfs = async <TReturn>(
+export const execSafe = async <TReturn>(
   operation: string,
   ipfs: IpfsClient,
   provider: string,
@@ -14,8 +14,8 @@ export const execIpfs = async <TReturn>(
     provider: string,
     options: unknown
   ) => Promise<TReturn>
-): Promise<TReturn> => {
-  const [error, result] = await safeExecIpfs(
+): Promise<[error: Error | undefined, result: TReturn | undefined]> => {
+  const { promise } = await execAbortable(
     operation,
     ipfs,
     provider,
@@ -23,9 +23,5 @@ export const execIpfs = async <TReturn>(
     func
   );
 
-  if (error) {
-    throw error;
-  }
-
-  return result as TReturn;
+  return promise;
 };

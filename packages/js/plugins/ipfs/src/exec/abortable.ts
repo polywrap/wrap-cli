@@ -1,12 +1,17 @@
 import { IpfsClient } from "../types/IpfsClient";
-import { CancelablePromise } from "./types/CancelablePromise";
 
 import AbortController from "abort-controller";
 
 const abortErrorMessage = "The user aborted a request.";
 
+export interface AbortablePromise<TReturn> {
+  promise: Promise<[error: Error | undefined, result: TReturn | undefined]>;
+  abort: () => void;
+  provider: string;
+}
+
 //Returns a promise, provider and callback that can be used to cancel the request
-export const cancelableExecIpfs = <TReturn>(
+export const execAbortable = <TReturn>(
   operation: string,
   ipfs: IpfsClient,
   provider: string,
@@ -16,9 +21,9 @@ export const cancelableExecIpfs = <TReturn>(
     provider: string,
     options: unknown
   ) => Promise<TReturn>
-): CancelablePromise<TReturn> => {
-  const controller = new AbortController();
+): AbortablePromise<TReturn> => {
 
+  const controller = new AbortController();
   let error: Error | undefined = undefined;
 
   //If timer is not 0 then set a timeout to abort the execution
@@ -76,7 +81,7 @@ export const cancelableExecIpfs = <TReturn>(
   return {
     promise,
     provider,
-    cancel: () => {
+    abort: () => {
       controller.abort();
       timer && clearTimeout();
     },

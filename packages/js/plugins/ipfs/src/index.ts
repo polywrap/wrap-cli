@@ -1,7 +1,7 @@
 import { query, mutation } from "./resolvers";
 import { manifest, Query, Mutation, Options, ResolveResult } from "./w3";
 import { IpfsClient } from "./types/IpfsClient";
-import { execIpfs, execIpfsWithProviders } from "./exec-ipfs";
+import { execSimple, execFallbacks } from "./exec";
 
 import {
   Client,
@@ -113,7 +113,7 @@ export class IpfsPlugin extends Plugin {
   ): Promise<TReturn> {
     if (!options) {
       // Default behavior if no options are provided
-      return await execIpfs(
+      return await execSimple(
         operation,
         this._ipfs,
         this._config.provider,
@@ -128,7 +128,7 @@ export class IpfsPlugin extends Plugin {
       //Use the provider override if specified
       const ipfs = createIpfsClient(options.provider);
 
-      return await execIpfs(operation, ipfs, options.provider, timeout, func);
+      return await execSimple(operation, ipfs, options.provider, timeout, func);
     }
 
     const providers = [
@@ -136,7 +136,7 @@ export class IpfsPlugin extends Plugin {
       ...(this._config.fallbackProviders || []),
     ];
 
-    return await execIpfsWithProviders(
+    return await execFallbacks(
       operation,
       this._ipfs,
       this._config.provider,
