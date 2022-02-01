@@ -1,15 +1,21 @@
 import { IpfsPlugin } from "./";
 import { ResolveResult, Options, Query, Mutation, QueryEnv } from "./w3";
 
-const getOptions = (input: Options | undefined | null, env: QueryEnv): Options => {
-  const options = input || { };
+const getOptions = (
+  input: Options | undefined | null,
+  env: QueryEnv
+): Options => {
+  const options = input || {};
 
-  if (options.disableParallelRequests === undefined || options.disableParallelRequests === null) {
+  if (
+    options.disableParallelRequests === undefined ||
+    options.disableParallelRequests === null
+  ) {
     options.disableParallelRequests = env.disableParallelRequests;
   }
 
   return options;
-}
+};
 
 export const query = (ipfs: IpfsPlugin): Query.Module => ({
   catFile: async (input: Query.Input_catFile) => {

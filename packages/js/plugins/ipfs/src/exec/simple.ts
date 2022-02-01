@@ -1,9 +1,9 @@
 import { IpfsClient } from "../types/IpfsClient";
 import { execAbortable } from "./abortable";
 
-//Executes function in a try catch and returns error (if any) and result
-//If timeout is reached, it will return an error
-//If timeout is 0 then it will wait until the operation is complete
+// Executes function in a try catch and returns error (if any) and result
+// If timeout is reached, it will return an error
+// If timeout is 0 then it will wait until the operation is complete
 export const execSimple = async <TReturn>(
   operation: string,
   ipfs: IpfsClient,

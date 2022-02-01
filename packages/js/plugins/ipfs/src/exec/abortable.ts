@@ -10,7 +10,7 @@ export interface AbortablePromise<TReturn> {
   provider: string;
 }
 
-//Returns a promise, provider and callback that can be used to cancel the request
+// Returns a promise, provider and callback that can be used to cancel the request
 export const execAbortable = <TReturn>(
   operation: string,
   ipfs: IpfsClient,
@@ -22,11 +22,10 @@ export const execAbortable = <TReturn>(
     options: unknown
   ) => Promise<TReturn>
 ): AbortablePromise<TReturn> => {
-
   const controller = new AbortController();
   let error: Error | undefined = undefined;
 
-  //If timer is not 0 then set a timeout to abort the execution
+  // If timer is not 0 then set a timeout to abort the execution
   const timer = timeout
     ? setTimeout(() => {
         error = buildExecError(
@@ -46,7 +45,7 @@ export const execAbortable = <TReturn>(
       signal: controller.signal,
     }).then(
       (result) => {
-        //Clear timeout if exists
+        // Clear timeout if exists
         timer && clearTimeout(timer);
 
         if (result === undefined && !error) {
@@ -64,7 +63,7 @@ export const execAbortable = <TReturn>(
         return;
       },
       (e) => {
-        //Clear timeout if exists
+        // Clear timeout if exists
         timer && clearTimeout(timer);
 
         if (!e.message || e.message !== abortErrorMessage) {

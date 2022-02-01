@@ -125,7 +125,7 @@ export class IpfsPlugin extends Plugin {
     const timeout = options.timeout || 0;
 
     if (options.provider) {
-      //Use the provider override if specified
+      // Use the provider override if specified
       const ipfs = createIpfsClient(options.provider);
 
       return await execSimple(operation, ipfs, options.provider, timeout, func);
