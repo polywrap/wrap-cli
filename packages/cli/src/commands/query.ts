@@ -9,7 +9,7 @@ import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
 import gql from "graphql-tag";
 import path from "path";
-import { parse as YamlParser } from "yaml";
+import yaml from "js-yaml";
 
 const optionsString = intlMsg.commands_build_options_options();
 const scriptStr = intlMsg.commands_create_options_recipeScript();
@@ -129,7 +129,7 @@ export default {
 
     function getParser(path: string) {
       return path.endsWith(".yaml") || path.endsWith(".yml")
-        ? YamlParser
+        ? yaml.load
         : JSON.parse;
     }
 
