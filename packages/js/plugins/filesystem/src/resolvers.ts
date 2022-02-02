@@ -10,10 +10,13 @@ export const query = (): Query.Module => ({
       return null;
     }
 
+    console.log("here")
+
     // Try reading uri/web3api.yaml
     try {
       const manifestPath = path.resolve(input.path, "web3api.yaml");
-      const manifest = await fs.promises.readFile(manifestPath, "utf8");
+      const manifest = fs.readFileSync(manifestPath, "utf8");
+      console.log("got it")
       return { uri: null, manifest: manifest };
     } catch (e) {
       // TODO: logging
@@ -31,9 +34,12 @@ export const query = (): Query.Module => ({
     // Nothing found
     return { manifest: null, uri: null };
   },
-  getFile: async (_input: Query.Input_getFile) => {
+  getFile: async (input: Query.Input_getFile) => {
     try {
-      return await fs.promises.readFile(_input.path);
+      console.log("get file", input.path)
+      const res = fs.readFileSync(input.path);
+      console.log("finished")
+      return res;
     } catch (e) {
       return null;
     }

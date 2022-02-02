@@ -308,6 +308,8 @@ export class Web3ApiClient implements Client {
 
       const api = await this._loadWeb3Api(typedOptions.uri, contextId);
 
+      console.log("client invoking", JSON.stringify(options))
+
       result = (await api.invoke(
         typedOptions,
         contextualizeClient(this, contextId)

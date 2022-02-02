@@ -19,6 +19,7 @@ describe("wasm-rs test cases", () => {
 
   beforeAll(async () => {
     const { ipfs, ethereum, ensAddress: ens } = await initTestEnvironment();
+    console.log(ipfs);
     ipfsProvider = ipfs;
     ethProvider = ethereum;
     ensAddress = ens;
@@ -46,7 +47,7 @@ describe("wasm-rs test cases", () => {
     }, config);
   }
 
-  it.only("asyncify", async () => {
+  it("asyncify", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/wasm-rs/asyncify`,
       ipfsProvider,
@@ -147,15 +148,25 @@ describe("wasm-rs test cases", () => {
     );
   });
 
-  it("invalid type errors", async () => {
-    const api = await buildAndDeployApi(
+  it.only("invalid type errors", async () => {
+    /*const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/wasm-rs/invalid-types`,
       ipfsProvider,
       ensAddress
-    );
+    );*/
+
+    const fs = await import("fs");
+
+    console.log(await fs.promises.readFile(
+      `${GetPathToTestApis()}/wasm-rs/invalid-types/build/web3api.yaml`, "utf-8"
+    ));
+
+    console.log(await fs.promises.readFile(
+      `${GetPathToTestApis()}/wasm-rs/invalid-types/build/query.wasm`
+    ));
 
     await TestCases.runInvalidTypesTest(
-      await getClient(), `ens/testnet/${api.ensDomain}`
+      await getClient(), `fs/${GetPathToTestApis()}/wasm-rs/invalid-types/build` //`ens/testnet/${api.ensDomain}`
     );
   });
 
