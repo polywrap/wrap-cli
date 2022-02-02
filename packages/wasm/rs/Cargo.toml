@@ -29,4 +29,3 @@ serde_json = { version = "1.0.74", default-features = false, features = ["alloc"
 opt-level = 's'
 lto = true
 panic = 'abort'
-debug = true

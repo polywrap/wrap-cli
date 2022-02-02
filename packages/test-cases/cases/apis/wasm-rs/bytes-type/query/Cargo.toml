@@ -21,4 +21,3 @@ crate-type = ["cdylib"]
 opt-level = 's'
 lto = true
 panic = 'abort'
-debug = true
