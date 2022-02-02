@@ -73,7 +73,7 @@ pub fn set_data_with_many_structured_args(
         connection: input.connection,
         tx_overrides: None,
     }) {
-        Ok(_v) => true,
+        Ok(_v) => return_true(),
         Err(_e) => false,
     }
 }
@@ -145,4 +145,8 @@ pub fn subsequent_invokes(input: mutation::InputSubsequentInvokes) -> Vec<String
         }
     }
     result
+}
+
+pub fn return_true() -> bool {
+    query::return_true()
 }

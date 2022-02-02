@@ -10,6 +10,8 @@ export const runAsyncifyTest = async (
     const ensUri = `ens/testnet/${api.ensDomain}`;
     const ipfsUri = `ipfs/${api.ipfsCid}`;
 
+    console.log("HERE")
+
     const deploy = await client.query<{
       deployContract: string;
     }>({
@@ -24,6 +26,8 @@ export const runAsyncifyTest = async (
         }
       `,
     });
+
+    console.log("deployed", deploy);
 
     expect(deploy.errors).toBeFalsy();
     expect(deploy.data).toBeTruthy();

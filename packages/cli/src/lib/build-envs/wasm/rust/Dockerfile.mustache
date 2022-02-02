@@ -70,9 +70,19 @@ RUN rm -rf {{dir}}/Cargo.lock
 # Ensure the Wasm module is configured to use imported memory
 ENV RUSTFLAGS="-C link-arg=-z -C link-arg=stack-size=65536 -C link-arg=--import-memory"
 {{#web3api_modules}}
+
+# Enable the w3-invoke feature for the {{dir}} module
+RUN toml set ./{{dir}}/Cargo.toml features.w3-invoke [] > ./{{dir}}/Cargo-local.toml && \
+    rm -rf ./{{dir}}/Cargo.toml && \
+    mv ./{{dir}}/Cargo-local.toml ./{{dir}}/Cargo.toml && \
+    true
+
+# Cleanup an artifact left by the toml CLI program ("[]" -> [])
+RUN sed -i 's/"\[\]"/\[\]/g' ./{{dir}}/Cargo.toml
+
 # Build the module at {{dir}}
 RUN cargo +nightly build --manifest-path ./{{dir}}/Cargo.toml \
-    --target wasm32-unknown-unknown --release
+    --target wasm32-unknown-unknown --release --features "w3-invoke"
 {{/web3api_modules}}
 {{/web3api_modules.length}}
 
