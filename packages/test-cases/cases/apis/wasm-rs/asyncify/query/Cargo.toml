@@ -15,7 +15,7 @@ polywrap-wasm-rs = { path = "../../../../../../wasm/rs" }
 serde = { version = "1.0", features = ["derive"] }
 
 [lib]
-crate-type = ["cdylib", "rlib"]
+crate-type = ["cdylib"]
 
 [profile.release]
 opt-level = 's'

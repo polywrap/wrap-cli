@@ -79,10 +79,28 @@ RUN toml set ./{{dir}}/Cargo.toml features.w3-invoke [] > ./{{dir}}/Cargo-local.
 
 # Cleanup an artifact left by the toml CLI program ("[]" -> [])
 RUN sed -i 's/"\[\]"/\[\]/g' ./{{dir}}/Cargo.toml
+{{#module_dependencies}}
+
+# Set the crate-type of the dependency {{name}} to rlib
+RUN mv ./{{dir}}/Cargo.toml ./{{dir}}/Cargo-bak.toml && \
+    toml set ./{{dir}}/Cargo-bak.toml lib.crate-type ["rlib"] > ./{{dir}}/Cargo.toml && \
+    true
+
+# Clean up artifacts left by the toml CLI program ("["rlib"]" -> ["rlib"])
+RUN sed -i 's/"\[rlib\]"/\["rlib"\]/g' ./{{dir}}/Cargo.toml
+{{/module_dependencies}}
 
 # Build the module at {{dir}}
 RUN cargo +nightly build --manifest-path ./{{dir}}/Cargo.toml \
     --target wasm32-unknown-unknown --release --features "w3-invoke"
+
+{{#module_dependencies}}
+
+# Delete the modified "rlib" Cargo.toml and restore the original for module {{name}}
+RUN rm -rf ./{{dir}}/Cargo.toml && \
+    mv ./{{dir}}/Cargo-bak.toml ./{{dir}}/Cargo.toml && \
+    true
+{{/module_dependencies}}
 {{/web3api_modules}}
 {{/web3api_modules.length}}
 

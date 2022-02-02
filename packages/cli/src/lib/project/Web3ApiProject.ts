@@ -237,6 +237,29 @@ export class Web3ApiProject extends Project {
         ),
       };
 
+      // If there exists a query & mutation module, add the query
+      // module as one of the mutation module's "module_dependencies".
+      // NOTE: this is a hard-coded hack, and should be generalized
+      // in the future to support user-defined modules (not just query & mutation)
+      if (defaultConfig.web3api_modules.length > 1) {
+        const queryIdx = defaultConfig.web3api_modules.findIndex(
+          (x) => x.name === "query"
+        );
+        const mutationIdx = defaultConfig.web3api_modules.findIndex(
+          (x) => x.name === "mutation"
+        );
+
+        const queryModule = defaultConfig.web3api_modules[queryIdx];
+        const mutationModule = defaultConfig.web3api_modules[mutationIdx];
+
+        defaultConfig.web3api_modules[mutationIdx] = {
+          ...mutationModule,
+          module_dependencies: [
+            queryModule
+          ]
+        } as unknown as { name: string, dir: string };
+      }
+
       if (!this._buildManifest.config) {
         this._buildManifest.config = defaultConfig;
       } else {
