@@ -90,6 +90,15 @@ RUN mv ./{{dir}}/Cargo.toml ./{{dir}}/Cargo-bak.toml && \
 RUN sed -i 's/"\[rlib\]"/\["rlib"\]/g' ./{{dir}}/Cargo.toml
 {{/module_dependencies}}
 
+# Ensure the module at {{dir}} has the crate-type = ["cdylib"]
+RUN toml set ./{{dir}}/Cargo.toml lib.crate-type ["cdylib"] > ./{{dir}}/Cargo-local.toml && \
+    rm -rf ./{{dir}}/Cargo.toml && \
+    mv ./{{dir}}/Cargo-local.toml ./{{dir}}/Cargo.toml && \
+    true
+
+# Clean up artifacts left by the toml CLI program ("["cdylib"]" -> ["cdylib"])
+RUN sed -i 's/"\[cdylib\]"/\["cdylib"\]/g' ./{{dir}}/Cargo.toml
+
 # Build the module at {{dir}}
 RUN cargo +nightly build --manifest-path ./{{dir}}/Cargo.toml \
     --target wasm32-unknown-unknown --release --features "w3-invoke"
