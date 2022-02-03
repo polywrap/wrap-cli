@@ -40,6 +40,7 @@
 pub mod abort;
 pub mod big_int;
 pub mod debug;
+pub mod env;
 pub mod get_implementations;
 pub mod invoke;
 pub mod json;
@@ -48,6 +49,7 @@ pub mod msgpack;
 pub mod subinvoke;
 
 pub use abort::*;
+pub use env::*;
 pub use get_implementations::*;
 pub use invoke::*;
 pub use subinvoke::*;
