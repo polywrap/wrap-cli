@@ -28,11 +28,11 @@ export class Input_importedMethod {
 }
 
 export function serializeimportedMethodArgs(input: Input_importedMethod): ArrayBuffer {
-  const sizerContext: Context = new Context("Serializing (sizing) imported query-type: importedMethod");
+  const sizerContext: Context = new Context("Serializing (sizing) imported module-type: importedMethod");
   const sizer = new WriteSizer(sizerContext);
   writeimportedMethodArgs(sizer, input);
   const buffer = new ArrayBuffer(sizer.length);
-  const encoderContext: Context = new Context("Serializing (encoding) imported query-type: importedMethod");
+  const encoderContext: Context = new Context("Serializing (encoding) imported module-type: importedMethod");
   const encoder = new WriteEncoder(buffer, encoderContext);
   writeimportedMethodArgs(encoder, input);
   return buffer;
@@ -118,7 +118,7 @@ export function writeimportedMethodArgs(
 }
 
 export function deserializeimportedMethodResult(buffer: ArrayBuffer): Types.TestImport_Object | null {
-  const context: Context =  new Context("Deserializing imported query-type: importedMethod");
+  const context: Context =  new Context("Deserializing imported module-type: importedMethod");
   const reader = new ReadDecoder(buffer, context);
 
   reader.context().push("importedMethod", "Types.TestImport_Object | null", "reading function output");
@@ -137,11 +137,11 @@ export class Input_anotherMethod {
 }
 
 export function serializeanotherMethodArgs(input: Input_anotherMethod): ArrayBuffer {
-  const sizerContext: Context = new Context("Serializing (sizing) imported query-type: anotherMethod");
+  const sizerContext: Context = new Context("Serializing (sizing) imported module-type: anotherMethod");
   const sizer = new WriteSizer(sizerContext);
   writeanotherMethodArgs(sizer, input);
   const buffer = new ArrayBuffer(sizer.length);
-  const encoderContext: Context = new Context("Serializing (encoding) imported query-type: anotherMethod");
+  const encoderContext: Context = new Context("Serializing (encoding) imported module-type: anotherMethod");
   const encoder = new WriteEncoder(buffer, encoderContext);
   writeanotherMethodArgs(encoder, input);
   return buffer;
@@ -161,7 +161,7 @@ export function writeanotherMethodArgs(
 }
 
 export function deserializeanotherMethodResult(buffer: ArrayBuffer): i32 {
-  const context: Context =  new Context("Deserializing imported query-type: anotherMethod");
+  const context: Context =  new Context("Deserializing imported module-type: anotherMethod");
   const reader = new ReadDecoder(buffer, context);
 
   reader.context().push("anotherMethod", "i32", "reading function output");

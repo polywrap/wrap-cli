@@ -4,7 +4,7 @@ import { DirectiveNode, TypeDefinitionNode } from "graphql";
 
 export function extractImportedDefinition(
   node: TypeDefinitionNode,
-  queryTypes = false
+  moduleTypes = false
 ): ImportedDefinition | undefined {
   if (!node.directives) {
     return undefined;
@@ -26,7 +26,7 @@ export function extractImportedDefinition(
   const mutationIdentifier = "_Mutation";
   const mutationTest = typeName.substr(-mutationIdentifier.length);
 
-  if (queryTypes) {
+  if (moduleTypes) {
     // Ignore everything that isn't a query type
     if (queryTest !== queryIdentifier && mutationTest !== mutationIdentifier) {
       return undefined;
