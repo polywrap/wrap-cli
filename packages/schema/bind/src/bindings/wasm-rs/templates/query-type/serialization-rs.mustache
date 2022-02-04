@@ -10,7 +10,6 @@ use polywrap_wasm_rs::{
     WriteEncoder,
     WriteSizer,
     JSON,
-    debug,
 };
 {{#propertyDeps.length}}
 
@@ -37,14 +36,11 @@ pub struct Input{{#toUpper}}{{name}}{{/toUpper}} {
 }
 
 pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result<Input{{#toUpper}}{{name}}{{/toUpper}}, DecodingError> {
-    debug::w3_debug_log("deserialize_{{#toLower}}{{name}}{{/toLower}}_args in it");
     let mut context = Context::new();
     context.description = "Deserializing query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
     {{#arguments.length}}
     let mut reader = ReadDecoder::new(input, context);
     let mut num_of_fields = reader.read_map_length()?;
-
-    debug::w3_debug_log(&num_of_fields.to_string());
 
     {{#arguments}}
     {{^object}}
@@ -65,19 +61,14 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
 
     while num_of_fields > 0 {
         num_of_fields -= 1;
-        debug::w3_debug_log(&num_of_fields.to_string());
         let field = reader.read_string()?;
 
         match field.as_str() {
             {{#arguments}}
             "{{name}}" => {
-                debug::w3_debug_log("{{name}} here");
                 reader.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading argument");
-                debug::w3_debug_log("{{name}} context push");
                 {{#scalar}}
-                debug::w3_debug_log("{{name}} before scalar");
                 _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}()?;
-                debug::w3_debug_log("{{name}} after scalar");
                 {{/scalar}}
                 {{#array}}
                 _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {
@@ -98,15 +89,12 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
                 reader.context().pop();
             }
             {{/arguments}}
-            _ => {
-                debug::w3_debug_log("{{name}} _ handler");
-            }
+            _ => {}
         }
     }
     {{#arguments}}
     {{#required}}
     if !_{{#toLower}}{{name}}{{/toLower}}_set {
-        debug::w3_debug_log("_{{#toLower}}{{name}}{{/toLower}}_set false");
         return Err(DecodingError::MissingField(reader.context().print_with_context("{{name}}: {{type}}")));
     }
     {{/required}}

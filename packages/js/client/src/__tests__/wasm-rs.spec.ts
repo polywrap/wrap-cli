@@ -83,7 +83,7 @@ describe("wasm-rs test cases", () => {
     );
   });
 
-  it("enum-types", async () => {
+  it.only("enum-types", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/wasm-rs/enum-types`,
       ipfsProvider,
@@ -148,25 +148,15 @@ describe("wasm-rs test cases", () => {
     );
   });
 
-  it.only("invalid type errors", async () => {
-    /*const api = await buildAndDeployApi(
+  it("invalid type errors", async () => {
+    const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/wasm-rs/invalid-types`,
       ipfsProvider,
       ensAddress
-    );*/
-
-    const fs = await import("fs");
-
-    console.log(await fs.promises.readFile(
-      `${GetPathToTestApis()}/wasm-rs/invalid-types/build/web3api.yaml`, "utf-8"
-    ));
-
-    console.log(await fs.promises.readFile(
-      `${GetPathToTestApis()}/wasm-rs/invalid-types/build/query.wasm`
-    ));
+    );
 
     await TestCases.runInvalidTypesTest(
-      await getClient(), `fs/${GetPathToTestApis()}/wasm-rs/invalid-types/build` //`ens/testnet/${api.ensDomain}`
+      await getClient(), `ens/testnet/${api.ensDomain}`
     );
   });
 

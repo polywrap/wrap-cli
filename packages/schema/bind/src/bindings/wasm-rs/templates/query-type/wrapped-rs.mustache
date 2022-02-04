@@ -8,18 +8,13 @@ use crate::{
     {{/methods}}
 };
 {{/methods.length}}
-use polywrap_wasm_rs::{
-    debug
-};
 
 {{#methods}}
 pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped(input: &[u8]) -> Vec<u8> {
-    debug::w3_debug_log("{{#toLower}}{{name}}{{/toLower}}_wrapped in it");
     {{#arguments.length}}
     match deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input) {
         Ok(args) => {
     {{/arguments.length}}
-            debug::w3_debug_log("{{#toLower}}{{name}}{{/toLower}} calling");
             let result = {{#toLower}}{{name}}{{/toLower}}(Input{{#toUpper}}{{name}}{{/toUpper}} {{#arguments.length}}{
                 {{#arguments}}
                 {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: args.{{#toLower}}{{name}}{{/toLower}},
@@ -28,7 +23,6 @@ pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped(input: &[u8]) -> Vec<u8> {
             serialize_{{#toLower}}{{name}}{{/toLower}}_result({{#return}}&{{/return}}result).unwrap()
         }
         Err(e) => {
-            debug::w3_debug_log("{{#toLower}}{{name}}{{/toLower}}_wrapped panic!!!");
             panic!("{}", e)
         }
     }
