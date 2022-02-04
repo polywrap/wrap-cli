@@ -1,7 +1,11 @@
 pub mod w3;
 pub use w3::*;
+use polywrap_wasm_rs::{
+    debug
+};
 
 pub fn bool_method(input: InputBoolMethod) -> bool {
+    debug::w3_debug("in it");
     input.arg
 }
 

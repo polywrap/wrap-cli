@@ -10,16 +10,20 @@ use crate::{
 use polywrap_wasm_rs::{
     abort,
     invoke,
-    InvokeArgs
+    InvokeArgs,
+    debug
 };
 
 #[no_mangle]
 #[cfg(feature = "w3-invoke")]
 pub extern "C" fn _w3_invoke(method_size: u32, args_size: u32) -> bool {
+    debug::w3_debug_log("here");
     // Ensure the abort handler is properly setup
     abort::w3_abort_setup();
+    debug::w3_debug_log("here");
 
     let args: InvokeArgs = invoke::w3_invoke_args(method_size, args_size);
+    debug::w3_debug_log("here");
 
     match args.method.as_str() {
         {{#queryTypes}}
