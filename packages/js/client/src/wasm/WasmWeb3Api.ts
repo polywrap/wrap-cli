@@ -174,10 +174,8 @@ export class WasmWeb3Api extends Api {
     try {
       const { module: invokableModule, method, noDecode } = options;
       const input = options.input || {};
-      console.log("get wasm")
       const wasm = await this._getWasmModule(invokableModule, client);
 
-      console.log("got wasm")
       const state: State = {
         invoke: {},
         subinvoke: {
@@ -200,10 +198,7 @@ export class WasmWeb3Api extends Api {
         );
       };
 
-      console.log("invoking", wasm.byteLength)
-
       const memory = AsyncWasmInstance.createMemory({ module: wasm });
-      console.log("created memory")
       const instance = await AsyncWasmInstance.createInstance({
         module: wasm,
         imports: createImports({
@@ -214,14 +209,10 @@ export class WasmWeb3Api extends Api {
         }),
         requiredExports: WasmWeb3Api.requiredExports,
       });
-
-      console.log("created instance")
   
       const exports = instance.exports as W3Exports;
 
       await this._sanitizeAndLoadEnv(invokableModule, state, exports);
-
-      console.log("calling _w3_invoke")
 
       const result = await exports._w3_invoke(
         state.method.length,

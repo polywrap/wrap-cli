@@ -106,21 +106,10 @@ export class AsyncWasmInstance {
     // Wrap imports
     instance._wrappedImports = instance._wrapImports(config.imports);
 
-    console.log("instantiating...", config.module.byteLength)
-
-    try {
     // Create Wasm module instance
-    console.log("validate", WebAssembly.validate(config.module))
-    console.log("compiling")
     const module = await WebAssembly.compile(config.module);
-    console.log("instantiating")
     const resp = await WebAssembly.instantiate(module, instance._wrappedImports)
     instance._instance = resp;
-    } catch (e) {
-      console.log("EERRRRR", e);
-    }
-
-    console.log("instantiate")
 
     // Ensure all required exports exist on Wasm module
     const exportKeys = Object.keys(instance._instance.exports);
@@ -135,15 +124,10 @@ export class AsyncWasmInstance {
       );
     }
 
-    console.log("async here")
-
     const exports = instance._instance.exports as AsyncifyExports;
 
-    console.log("wrap exports")
     // Wrap exports
     instance._wrappedExports = instance._wrapExports(exports);
-
-    console.log("wrapped")
 
     // Initialize Asyncify stack pointers
     const memory = (exports.memory ||
