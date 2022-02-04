@@ -4,7 +4,7 @@ use polywrap_wasm_rs::{
     Read,
     Write,
     JSON,
-    subinvoke
+    subinvoke,
 };
 pub mod serialization;
 pub use serialization::{

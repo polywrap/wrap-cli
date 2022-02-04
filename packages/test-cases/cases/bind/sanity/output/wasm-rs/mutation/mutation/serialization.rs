@@ -10,7 +10,7 @@ use polywrap_wasm_rs::{
     Write,
     WriteEncoder,
     WriteSizer,
-    JSON
+    JSON,
 };
 
 use crate::{

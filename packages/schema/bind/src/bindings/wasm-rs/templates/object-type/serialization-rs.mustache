@@ -3,6 +3,8 @@ use std::convert::TryFrom;
 use polywrap_wasm_rs::{
     BigInt,
     Context,
+    DecodeError,
+    EncodeError,
     Read,
     ReadDecoder,
     Write,
@@ -26,7 +28,7 @@ use crate::{
 {{/isEnum}}
 {{/propertyDeps}}
 
-pub fn serialize_{{#toLower}}{{type}}{{/toLower}}(input: &{{#toUpper}}{{type}}{{/toUpper}}) -> Result<Vec<u8>, String> {
+pub fn serialize_{{#toLower}}{{type}}{{/toLower}}(input: &{{#toUpper}}{{type}}{{/toUpper}}) -> Result<Vec<u8>, EncodeError> {
     let mut sizer_context = Context::new();
     sizer_context.description = "Serializing (sizing) object-type: {{#toUpper}}{{type}}{{/toUpper}}".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
@@ -38,7 +40,7 @@ pub fn serialize_{{#toLower}}{{type}}{{/toLower}}(input: &{{#toUpper}}{{type}}{{
     Ok(encoder.get_buffer())
 }
 
-pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(input: &{{#toUpper}}{{type}}{{/toUpper}}, writer: &mut W) -> Result<(), String> {
+pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(input: &{{#toUpper}}{{type}}{{/toUpper}}, writer: &mut W) -> Result<(), EncodeError> {
     writer.write_map_length(&{{properties.length}})?;
     {{#properties}}
     writer.context().push("{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
@@ -76,14 +78,14 @@ pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(input: &{{#toUpper}}{{ty
     Ok(())
 }
 
-pub fn deserialize_{{#toLower}}{{type}}{{/toLower}}(input: &[u8]) -> Result<{{#toUpper}}{{type}}{{/toUpper}}, String> {
+pub fn deserialize_{{#toLower}}{{type}}{{/toLower}}(input: &[u8]) -> Result<{{#toUpper}}{{type}}{{/toUpper}}, DecodeError> {
     let mut context = Context::new();
     context.description = "Deserializing object-type: {{#toUpper}}{{type}}{{/toUpper}}".to_string();
     let mut reader = ReadDecoder::new(input, context);
     read_{{#toLower}}{{type}}{{/toLower}}(&mut reader)
 }
 
-pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<{{#toUpper}}{{type}}{{/toUpper}}, String> {
+pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<{{#toUpper}}{{type}}{{/toUpper}}, DecodeError> {
     let mut num_of_fields = reader.read_map_length()?;
 
     {{#properties}}
@@ -139,7 +141,7 @@ pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<
     {{#properties}}
     {{#required}}
     if !_{{#toLower}}{{name}}{{/toLower}}_set {
-        return Err(reader.context().print_with_context("Missing required property: '{{name}}: {{type}}'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'{{name}}: {{type}}'")));
     }
     {{/required}}
     {{/properties}}

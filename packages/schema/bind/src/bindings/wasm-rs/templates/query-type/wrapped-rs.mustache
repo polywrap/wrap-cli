@@ -23,7 +23,7 @@ pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped(input: &[u8]) -> Vec<u8> {
             serialize_{{#toLower}}{{name}}{{/toLower}}_result({{#return}}&{{/return}}result).unwrap()
         }
         Err(e) => {
-            panic!("{}", e)
+            panic!("{}", e.to_string())
         }
     }
 }

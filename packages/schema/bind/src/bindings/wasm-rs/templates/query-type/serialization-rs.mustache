@@ -4,8 +4,8 @@ use polywrap_wasm_rs::{
     BigInt,
     Context,
     Read,
-    ReadDecoder,
-    DecodingError,
+    DecodeError,
+    EncodeError,
     Write,
     WriteEncoder,
     WriteSizer,
@@ -35,7 +35,7 @@ pub struct Input{{#toUpper}}{{name}}{{/toUpper}} {
     {{/arguments}}
 }
 
-pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result<Input{{#toUpper}}{{name}}{{/toUpper}}, DecodingError> {
+pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result<Input{{#toUpper}}{{name}}{{/toUpper}}, DecodeError> {
     let mut context = Context::new();
     context.description = "Deserializing query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
     {{#arguments.length}}
@@ -65,8 +65,8 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
 
         match field.as_str() {
             {{#arguments}}
-            "{{name}}" => {
-                reader.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading argument");
+            "{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}" => {
+                reader.context().push(&field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading argument");
                 {{#scalar}}
                 _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}()?;
                 {{/scalar}}
@@ -95,7 +95,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
     {{#arguments}}
     {{#required}}
     if !_{{#toLower}}{{name}}{{/toLower}}_set {
-        return Err(DecodingError::MissingField(reader.context().print_with_context("{{name}}: {{type}}")));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'{{name}}: {{type}}'")));
     }
     {{/required}}
     {{/arguments}}
@@ -108,7 +108,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
     })
 }
 
-pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_result(result: {{#return}}&{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}) -> Result<Vec<u8>, String> {
+pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_result(result: {{#return}}&{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}) -> Result<Vec<u8>, EncodeError> {
     let mut sizer_context = Context::new();
     sizer_context.description = "Serializing (sizing) query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
@@ -120,7 +120,7 @@ pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_result(result: {{#return}}&{{#
     Ok(encoder.get_buffer())
 }
 
-pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#return}}&{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, writer: &mut W) -> Result<(), String> {
+pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#return}}&{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, writer: &mut W) -> Result<(), EncodeError> {
     {{#return}}
     writer.context().push("{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing result");
     {{#scalar}}

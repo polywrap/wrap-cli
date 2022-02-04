@@ -5,7 +5,7 @@ use crate::{
 use polywrap_wasm_rs::{
     abort,
     invoke,
-    InvokeArgs
+    InvokeArgs,
 };
 
 #[cfg(feature = "w3-invoke")]

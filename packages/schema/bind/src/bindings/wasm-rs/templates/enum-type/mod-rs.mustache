@@ -7,6 +7,7 @@ pub use super::common::{
 };
 {{/__commonImport}}
 {{^__commonImport}}
+use polywrap_wasm_rs::EnumTypeError;
 use serde::{Serialize, Deserialize};
 use std::convert::TryFrom;
 
@@ -22,7 +23,7 @@ pub fn sanitize_{{#toLower}}{{type}}{{/toLower}}_value(value: i32) -> Result<(),
     let max_as_i32 = {{#toUpper}}{{type}}{{/toUpper}}::_MAX_ as i32;
     let valid = value >= 0 && value < max_as_i32;
     if !valid {
-        return Err(format!("Invalid value for enum '{{#toUpper}}{{type}}{{/toUpper}}': {}", value.to_string()));
+        return Err(String::from(EnumTypeError::EnumProcessingError(format!("Invalid value for enum '{{#toUpper}}{{type}}{{/toUpper}}': {}", value.to_string()))));
     }
     Ok(())
 }
@@ -33,7 +34,7 @@ pub fn get_{{#toLower}}{{type}}{{/toLower}}_value(key: &str) -> Result<{{#toUppe
         "{{.}}" => Ok({{#toUpper}}{{type}}{{/toUpper}}::{{.}}),
         {{/constants}}
         "_MAX_" => Ok({{#toUpper}}{{type}}{{/toUpper}}::_MAX_),
-        _ => Err(format!("Invalid key for enum '{{#toUpper}}{{type}}{{/toUpper}}': {}", key))
+        _ => Err(String::from(EnumTypeError::EnumProcessingError(format!("Invalid key for enum '{{#toUpper}}{{type}}{{/toUpper}}': {}", key))))
     }
 }
 
@@ -46,7 +47,7 @@ pub fn get_{{#toLower}}{{type}}{{/toLower}}_key(value: {{#toUpper}}{{type}}{{/to
             {{#toUpper}}{{type}}{{/toUpper}}::_MAX_ => Ok("_MAX_".to_string()),
         }
     } else {
-        Err(format!("Invalid value for enum '{{#toUpper}}{{type}}{{/toUpper}}': {}", (value  as i32).to_string()))
+        Err(String::from(EnumTypeError::EnumProcessingError(format!("Invalid value for enum '{{#toUpper}}{{type}}{{/toUpper}}': {}", (value  as i32).to_string()))))
     }
 }
 
@@ -59,7 +60,7 @@ impl TryFrom<i32> for {{#toUpper}}{{type}}{{/toUpper}} {
             x if x == {{#toUpper}}{{type}}{{/toUpper}}::{{.}} as i32 => Ok({{#toUpper}}{{type}}{{/toUpper}}::{{.}}),
             {{/constants}}
             x if x == {{#toUpper}}{{type}}{{/toUpper}}::_MAX_ as i32 => Ok({{#toUpper}}{{type}}{{/toUpper}}::_MAX_),
-            _ => Err(format!("Error converting '{{#toUpper}}{{type}}{{/toUpper}}' to i32")),
+            _ => Err(String::from(EnumTypeError::ParseEnumError(format!("Error converting '{{#toUpper}}{{type}}{{/toUpper}}' to i32")))),
         }
     }
 }
