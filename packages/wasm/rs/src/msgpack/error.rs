@@ -101,7 +101,7 @@ impl From<EncodingError> for serde_json::Error {
 }
 
 /// Errors from decoding data
-#[derive(Clone, Debug, Eq, Error, FromPrimitive, PartialEq)]
+#[derive(Error, Debug)]
 pub enum DecodingError {
     #[error("BytesReadError")]
     BytesReadError,
@@ -165,6 +165,9 @@ pub enum DecodingError {
 
     #[error("CustomEnumDecodingError")]
     CustomEnumDecodingError,
+
+    #[error("Missing required field: '{0}'")]
+    MissingField(String),
 }
 
 impl From<String> for DecodingError {

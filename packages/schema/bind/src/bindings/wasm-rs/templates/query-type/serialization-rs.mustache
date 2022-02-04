@@ -5,6 +5,7 @@ use polywrap_wasm_rs::{
     Context,
     Read,
     ReadDecoder,
+    DecodingError,
     Write,
     WriteEncoder,
     WriteSizer,
@@ -35,7 +36,7 @@ pub struct Input{{#toUpper}}{{name}}{{/toUpper}} {
     {{/arguments}}
 }
 
-pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result<Input{{#toUpper}}{{name}}{{/toUpper}}, String> {
+pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result<Input{{#toUpper}}{{name}}{{/toUpper}}, DecodingError> {
     debug::w3_debug_log("deserialize_{{#toLower}}{{name}}{{/toLower}}_args in it");
     let mut context = Context::new();
     context.description = "Deserializing query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
@@ -75,10 +76,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
                 debug::w3_debug_log("{{name}} context push");
                 {{#scalar}}
                 debug::w3_debug_log("{{name}} before scalar");
-                _{{#toLower}}{{name}}{{/toLower}} = match reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}() {
-                    Ok(v) => v,
-                    Err(e) => panic!("{}", e.to_string()),
-                };
+                _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}()?;
                 debug::w3_debug_log("{{name}} after scalar");
                 {{/scalar}}
                 {{#array}}
@@ -109,7 +107,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
     {{#required}}
     if !_{{#toLower}}{{name}}{{/toLower}}_set {
         debug::w3_debug_log("_{{#toLower}}{{name}}{{/toLower}}_set false");
-        return Err(reader.context().print_with_context("Missing required argument: '{{name}}: {{type}}'"));
+        return Err(DecodingError::MissingField(reader.context().print_with_context("{{name}}: {{type}}")));
     }
     {{/required}}
     {{/arguments}}

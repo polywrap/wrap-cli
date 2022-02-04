@@ -15,7 +15,12 @@ extern "C" {
 /// Helper for aborting
 pub fn w3_abort_setup() {
     std::panic::set_hook(Box::new(|panic_info| {
-        let message = match panic_info.payload().downcast_ref::<&str>() {
+        let payload = panic_info.payload();
+        let message = match payload
+            .downcast_ref::<String>()
+            .map(String::as_str)
+            .or(payload.downcast_ref::<&'static str>().copied())
+        {
             Some(msg) => format!("{}", &msg),
             None => format!("unknown error"),
         };
