@@ -1,6 +1,8 @@
 use polywrap_wasm_rs::{
     BigInt,
     Context,
+    DecodeError,
+    EncodeError,
     Read,
     ReadDecoder,
     Write,
@@ -10,7 +12,7 @@ use polywrap_wasm_rs::{
 };
 use crate::QueryEnv;
 
-pub fn serialize_query_env(input: &QueryEnv) -> Result<Vec<u8>, String> {
+pub fn serialize_query_env(input: &QueryEnv) -> Result<Vec<u8>, EncodeError> {
     let mut sizer_context = Context::new();
     sizer_context.description = "Serializing (sizing) object-type: QueryEnv".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
@@ -22,7 +24,7 @@ pub fn serialize_query_env(input: &QueryEnv) -> Result<Vec<u8>, String> {
     Ok(encoder.get_buffer())
 }
 
-pub fn write_query_env<W: Write>(input: &QueryEnv, writer: &mut W) -> Result<(), String> {
+pub fn write_query_env<W: Write>(input: &QueryEnv, writer: &mut W) -> Result<(), EncodeError> {
     writer.write_map_length(&3)?;
     writer.context().push("query_prop", "String", "writing property");
     writer.write_str("query_prop")?;
@@ -39,14 +41,14 @@ pub fn write_query_env<W: Write>(input: &QueryEnv, writer: &mut W) -> Result<(),
     Ok(())
 }
 
-pub fn deserialize_query_env(input: &[u8]) -> Result<QueryEnv, String> {
+pub fn deserialize_query_env(input: &[u8]) -> Result<QueryEnv, DecodeError> {
     let mut context = Context::new();
     context.description = "Deserializing object-type: QueryEnv".to_string();
     let mut reader = ReadDecoder::new(input, context);
     read_query_env(&mut reader)
 }
 
-pub fn read_query_env<R: Read>(reader: &mut R) -> Result<QueryEnv, String> {
+pub fn read_query_env<R: Read>(reader: &mut R) -> Result<QueryEnv, DecodeError> {
     let mut num_of_fields = reader.read_map_length()?;
 
     let mut _query_prop: String = String::new();
@@ -81,10 +83,10 @@ pub fn read_query_env<R: Read>(reader: &mut R) -> Result<QueryEnv, String> {
         }
     }
     if !_query_prop_set {
-        return Err(reader.context().print_with_context("Missing required property: 'query_prop: String'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'query_prop: String'")));
     }
     if !_prop_set {
-        return Err(reader.context().print_with_context("Missing required property: 'prop: String'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'prop: String'")));
     }
 
     Ok(QueryEnv {

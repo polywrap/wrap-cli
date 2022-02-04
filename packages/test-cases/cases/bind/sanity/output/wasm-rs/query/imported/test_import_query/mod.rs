@@ -4,7 +4,7 @@ use polywrap_wasm_rs::{
     Read,
     Write,
     JSON,
-    subinvoke,
+    subinvoke
 };
 pub mod serialization;
 pub use serialization::{
@@ -38,7 +38,7 @@ impl TestImportQuery {
             "imported_method",
             args,
         )?;
-        deserialize_imported_method_result(result.as_slice())
+        deserialize_imported_method_result(result.as_slice()).map_err(|e| e.to_string())
     }
 
     pub fn another_method(input: &InputAnotherMethod) -> Result<i32, String> {
@@ -50,6 +50,6 @@ impl TestImportQuery {
             "another_method",
             args,
         )?;
-        deserialize_another_method_result(result.as_slice())
+        deserialize_another_method_result(result.as_slice()).map_err(|e| e.to_string())
     }
 }

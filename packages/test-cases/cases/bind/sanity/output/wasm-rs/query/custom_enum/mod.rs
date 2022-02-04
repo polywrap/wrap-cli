@@ -1,3 +1,4 @@
+use polywrap_wasm_rs::EnumTypeError;
 use serde::{Serialize, Deserialize};
 use std::convert::TryFrom;
 
@@ -12,7 +13,7 @@ pub fn sanitize_custom_enum_value(value: i32) -> Result<(), String> {
     let max_as_i32 = CustomEnum::_MAX_ as i32;
     let valid = value >= 0 && value < max_as_i32;
     if !valid {
-        return Err(format!("Invalid value for enum 'CustomEnum': {}", value.to_string()));
+        return Err(String::from(EnumTypeError::EnumProcessingError(format!("Invalid value for enum 'CustomEnum': {}", value.to_string()))));
     }
     Ok(())
 }
@@ -22,7 +23,7 @@ pub fn get_custom_enum_value(key: &str) -> Result<CustomEnum, String> {
         "STRING" => Ok(CustomEnum::STRING),
         "BYTES" => Ok(CustomEnum::BYTES),
         "_MAX_" => Ok(CustomEnum::_MAX_),
-        _ => Err(format!("Invalid key for enum 'CustomEnum': {}", key))
+        _ => Err(String::from(EnumTypeError::EnumProcessingError(format!("Invalid key for enum 'CustomEnum': {}", key))))
     }
 }
 
@@ -34,7 +35,7 @@ pub fn get_custom_enum_key(value: CustomEnum) -> Result<String, String> {
             CustomEnum::_MAX_ => Ok("_MAX_".to_string()),
         }
     } else {
-        Err(format!("Invalid value for enum 'CustomEnum': {}", (value  as i32).to_string()))
+        Err(String::from(EnumTypeError::EnumProcessingError(format!("Invalid value for enum 'CustomEnum': {}", (value  as i32).to_string()))))
     }
 }
 
@@ -46,7 +47,7 @@ impl TryFrom<i32> for CustomEnum {
             x if x == CustomEnum::STRING as i32 => Ok(CustomEnum::STRING),
             x if x == CustomEnum::BYTES as i32 => Ok(CustomEnum::BYTES),
             x if x == CustomEnum::_MAX_ as i32 => Ok(CustomEnum::_MAX_),
-            _ => Err(format!("Error converting 'CustomEnum' to i32")),
+            _ => Err(String::from(EnumTypeError::ParseEnumError(format!("Error converting 'CustomEnum' to i32")))),
         }
     }
 }

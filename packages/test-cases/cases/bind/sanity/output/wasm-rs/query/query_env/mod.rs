@@ -2,8 +2,8 @@ use serde::{Serialize, Deserialize};
 pub mod serialization;
 use polywrap_wasm_rs::{
     BigInt,
-    DecodingError,
-    EncodingError,
+    DecodeError,
+    EncodeError,
     Read,
     Write,
     JSON,
@@ -31,19 +31,19 @@ impl QueryEnv {
         }
     }
 
-    pub fn to_buffer(input: &QueryEnv) -> Result<Vec<u8>, EncodingError> {
-        serialize_query_env(input).map_err(|e| EncodingError::from(e))
+    pub fn to_buffer(input: &QueryEnv) -> Result<Vec<u8>, EncodeError> {
+        serialize_query_env(input)
     }
 
-    pub fn from_buffer(input: &[u8]) -> Result<QueryEnv, DecodingError> {
-        deserialize_query_env(input).map_err(|e| DecodingError::from(e))
+    pub fn from_buffer(input: &[u8]) -> Result<QueryEnv, DecodeError> {
+        deserialize_query_env(input)
     }
 
-    pub fn write<W: Write>(input: &QueryEnv, writer: &mut W) -> Result<(), EncodingError> {
-        write_query_env(input, writer).map_err(|e| EncodingError::from(e))
+    pub fn write<W: Write>(input: &QueryEnv, writer: &mut W) -> Result<(), EncodeError> {
+        write_query_env(input, writer)
     }
 
-    pub fn read<R: Read>(reader: &mut R) -> Result<QueryEnv, DecodingError> {
-        read_query_env(reader).map_err(|e| DecodingError::from(e))
+    pub fn read<R: Read>(reader: &mut R) -> Result<QueryEnv, DecodeError> {
+        read_query_env(reader)
     }
 }

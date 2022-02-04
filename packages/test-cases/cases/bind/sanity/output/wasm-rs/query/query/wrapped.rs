@@ -23,7 +23,7 @@ pub fn query_method_wrapped(input: &[u8]) -> Vec<u8> {
             serialize_query_method_result(&result).unwrap()
         }
         Err(e) => {
-            panic!("{}", e)
+            panic!("{}", e.to_string())
         }
     }
 }
@@ -40,7 +40,7 @@ pub fn object_method_wrapped(input: &[u8]) -> Vec<u8> {
             serialize_object_method_result(&result).unwrap()
         }
         Err(e) => {
-            panic!("{}", e)
+            panic!("{}", e.to_string())
         }
     }
 }

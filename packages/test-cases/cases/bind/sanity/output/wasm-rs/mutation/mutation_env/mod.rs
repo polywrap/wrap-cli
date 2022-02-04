@@ -2,8 +2,8 @@ use serde::{Serialize, Deserialize};
 pub mod serialization;
 use polywrap_wasm_rs::{
     BigInt,
-    DecodingError,
-    EncodingError,
+    DecodeError,
+    EncodeError,
     Read,
     Write,
     JSON,
@@ -31,19 +31,19 @@ impl MutationEnv {
         }
     }
 
-    pub fn to_buffer(input: &MutationEnv) -> Result<Vec<u8>, EncodingError> {
-        serialize_mutation_env(input).map_err(|e| EncodingError::from(e))
+    pub fn to_buffer(input: &MutationEnv) -> Result<Vec<u8>, EncodeError> {
+        serialize_mutation_env(input)
     }
 
-    pub fn from_buffer(input: &[u8]) -> Result<MutationEnv, DecodingError> {
-        deserialize_mutation_env(input).map_err(|e| DecodingError::from(e))
+    pub fn from_buffer(input: &[u8]) -> Result<MutationEnv, DecodeError> {
+        deserialize_mutation_env(input)
     }
 
-    pub fn write<W: Write>(input: &MutationEnv, writer: &mut W) -> Result<(), EncodingError> {
-        write_mutation_env(input, writer).map_err(|e| EncodingError::from(e))
+    pub fn write<W: Write>(input: &MutationEnv, writer: &mut W) -> Result<(), EncodeError> {
+        write_mutation_env(input, writer)
     }
 
-    pub fn read<R: Read>(reader: &mut R) -> Result<MutationEnv, DecodingError> {
-        read_mutation_env(reader).map_err(|e| DecodingError::from(e))
+    pub fn read<R: Read>(reader: &mut R) -> Result<MutationEnv, DecodeError> {
+        read_mutation_env(reader)
     }
 }

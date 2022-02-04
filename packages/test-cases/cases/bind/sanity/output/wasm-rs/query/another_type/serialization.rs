@@ -2,18 +2,20 @@ use std::convert::TryFrom;
 use polywrap_wasm_rs::{
     BigInt,
     Context,
+    DecodeError,
+    EncodeError,
     Read,
     ReadDecoder,
     Write,
     WriteEncoder,
     WriteSizer,
-    JSON,
+    JSON
 };
 use crate::AnotherType;
 
 use crate::CustomType;
 
-pub fn serialize_another_type(input: &AnotherType) -> Result<Vec<u8>, String> {
+pub fn serialize_another_type(input: &AnotherType) -> Result<Vec<u8>, EncodeError> {
     let mut sizer_context = Context::new();
     sizer_context.description = "Serializing (sizing) object-type: AnotherType".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
@@ -25,7 +27,7 @@ pub fn serialize_another_type(input: &AnotherType) -> Result<Vec<u8>, String> {
     Ok(encoder.get_buffer())
 }
 
-pub fn write_another_type<W: Write>(input: &AnotherType, writer: &mut W) -> Result<(), String> {
+pub fn write_another_type<W: Write>(input: &AnotherType, writer: &mut W) -> Result<(), EncodeError> {
     writer.write_map_length(&2)?;
     writer.context().push("prop", "Option<String>", "writing property");
     writer.write_str("prop")?;
@@ -42,14 +44,14 @@ pub fn write_another_type<W: Write>(input: &AnotherType, writer: &mut W) -> Resu
     Ok(())
 }
 
-pub fn deserialize_another_type(input: &[u8]) -> Result<AnotherType, String> {
+pub fn deserialize_another_type(input: &[u8]) -> Result<AnotherType, DecodeError> {
     let mut context = Context::new();
     context.description = "Deserializing object-type: AnotherType".to_string();
     let mut reader = ReadDecoder::new(input, context);
     read_another_type(&mut reader)
 }
 
-pub fn read_another_type<R: Read>(reader: &mut R) -> Result<AnotherType, String> {
+pub fn read_another_type<R: Read>(reader: &mut R) -> Result<AnotherType, DecodeError> {
     let mut num_of_fields = reader.read_map_length()?;
 
     let mut _prop: Option<String> = None;

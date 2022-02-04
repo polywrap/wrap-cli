@@ -2,12 +2,14 @@ use std::convert::TryFrom;
 use polywrap_wasm_rs::{
     BigInt,
     Context,
+    DecodeError,
+    EncodeError,
     Read,
     ReadDecoder,
     Write,
     WriteEncoder,
     WriteSizer,
-    JSON,
+    JSON
 };
 use crate::TestImportObject;
 
@@ -18,7 +20,7 @@ use crate::{
     sanitize_test_import_enum_value
 };
 
-pub fn serialize_test_import_object(input: &TestImportObject) -> Result<Vec<u8>, String> {
+pub fn serialize_test_import_object(input: &TestImportObject) -> Result<Vec<u8>, EncodeError> {
     let mut sizer_context = Context::new();
     sizer_context.description = "Serializing (sizing) imported object-type: TestImportObject".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
@@ -30,7 +32,7 @@ pub fn serialize_test_import_object(input: &TestImportObject) -> Result<Vec<u8>,
     Ok(encoder.get_buffer())
 }
 
-pub fn write_test_import_object<W: Write>(input: &TestImportObject, writer: &mut W) -> Result<(), String> {
+pub fn write_test_import_object<W: Write>(input: &TestImportObject, writer: &mut W) -> Result<(), EncodeError> {
     writer.write_map_length(&8)?;
     writer.context().push("object", "TestImportAnotherObject", "writing property");
     writer.write_str("object")?;
@@ -83,14 +85,14 @@ pub fn write_test_import_object<W: Write>(input: &TestImportObject, writer: &mut
     Ok(())
 }
 
-pub fn deserialize_test_import_object(input: &[u8]) -> Result<TestImportObject, String> {
+pub fn deserialize_test_import_object(input: &[u8]) -> Result<TestImportObject, DecodeError> {
     let mut context = Context::new();
     context.description = "Deserializing imported object-type: TestImportObject".to_string();
     let mut reader = ReadDecoder::new(input, context);
     read_test_import_object(&mut reader)
 }
 
-pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObject, String> {
+pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObject, DecodeError> {
     let mut num_of_fields = reader.read_map_length()?;
 
     let mut _object: TestImportAnotherObject = TestImportAnotherObject::new();
@@ -213,16 +215,16 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
         }
     }
     if !_object_set {
-        return Err(reader.context().print_with_context("Missing required property: 'object: TestImport_AnotherObject'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'object: TestImport_AnotherObject'")));
     }
     if !_object_array_set {
-        return Err(reader.context().print_with_context("Missing required property: 'objectArray: [TestImport_AnotherObject]'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'objectArray: [TestImport_AnotherObject]'")));
     }
     if !_en_set {
-        return Err(reader.context().print_with_context("Missing required property: 'en: TestImport_Enum'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'en: TestImport_Enum'")));
     }
     if !_enum_array_set {
-        return Err(reader.context().print_with_context("Missing required property: 'enumArray: [TestImport_Enum]'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'enumArray: [TestImport_Enum]'")));
     }
 
     Ok(TestImportObject {

@@ -2,12 +2,14 @@ use std::convert::TryFrom;
 use polywrap_wasm_rs::{
     BigInt,
     Context,
+    DecodeError,
+    EncodeError,
     Read,
     ReadDecoder,
     Write,
     WriteEncoder,
     WriteSizer,
-    JSON,
+    JSON
 };
 use crate::CustomType;
 
@@ -18,7 +20,7 @@ use crate::{
     sanitize_custom_enum_value
 };
 
-pub fn serialize_custom_type(input: &CustomType) -> Result<Vec<u8>, String> {
+pub fn serialize_custom_type(input: &CustomType) -> Result<Vec<u8>, EncodeError> {
     let mut sizer_context = Context::new();
     sizer_context.description = "Serializing (sizing) object-type: CustomType".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
@@ -30,7 +32,7 @@ pub fn serialize_custom_type(input: &CustomType) -> Result<Vec<u8>, String> {
     Ok(encoder.get_buffer())
 }
 
-pub fn write_custom_type<W: Write>(input: &CustomType, writer: &mut W) -> Result<(), String> {
+pub fn write_custom_type<W: Write>(input: &CustomType, writer: &mut W) -> Result<(), EncodeError> {
     writer.write_map_length(&35)?;
     writer.context().push("str", "String", "writing property");
     writer.write_str("str")?;
@@ -221,14 +223,14 @@ pub fn write_custom_type<W: Write>(input: &CustomType, writer: &mut W) -> Result
     Ok(())
 }
 
-pub fn deserialize_custom_type(input: &[u8]) -> Result<CustomType, String> {
+pub fn deserialize_custom_type(input: &[u8]) -> Result<CustomType, DecodeError> {
     let mut context = Context::new();
     context.description = "Deserializing object-type: CustomType".to_string();
     let mut reader = ReadDecoder::new(input, context);
     read_custom_type(&mut reader)
 }
 
-pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
+pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeError> {
     let mut num_of_fields = reader.read_map_length()?;
 
     let mut _str: String = String::new();
@@ -577,67 +579,67 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, String> {
         }
     }
     if !_str_set {
-        return Err(reader.context().print_with_context("Missing required property: 'str: String'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'str: String'")));
     }
     if !_u_set {
-        return Err(reader.context().print_with_context("Missing required property: 'u: UInt'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'u: UInt'")));
     }
     if !_u8_set {
-        return Err(reader.context().print_with_context("Missing required property: 'u8: UInt8'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'u8: UInt8'")));
     }
     if !_u16_set {
-        return Err(reader.context().print_with_context("Missing required property: 'u16: UInt16'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'u16: UInt16'")));
     }
     if !_u32_set {
-        return Err(reader.context().print_with_context("Missing required property: 'u32: UInt32'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'u32: UInt32'")));
     }
     if !_i_set {
-        return Err(reader.context().print_with_context("Missing required property: 'i: Int'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'i: Int'")));
     }
     if !_i8_set {
-        return Err(reader.context().print_with_context("Missing required property: 'i8: Int8'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'i8: Int8'")));
     }
     if !_i16_set {
-        return Err(reader.context().print_with_context("Missing required property: 'i16: Int16'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'i16: Int16'")));
     }
     if !_i32_set {
-        return Err(reader.context().print_with_context("Missing required property: 'i32: Int32'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'i32: Int32'")));
     }
     if !_bigint_set {
-        return Err(reader.context().print_with_context("Missing required property: 'bigint: BigInt'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'bigint: BigInt'")));
     }
     if !_json_set {
-        return Err(reader.context().print_with_context("Missing required property: 'json: JSON'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'json: JSON'")));
     }
     if !_bytes_set {
-        return Err(reader.context().print_with_context("Missing required property: 'bytes: Bytes'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'bytes: Bytes'")));
     }
     if !_boolean_set {
-        return Err(reader.context().print_with_context("Missing required property: 'boolean: Boolean'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'boolean: Boolean'")));
     }
     if !_u_array_set {
-        return Err(reader.context().print_with_context("Missing required property: 'uArray: [UInt]'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'uArray: [UInt]'")));
     }
     if !_u_array_array_set {
-        return Err(reader.context().print_with_context("Missing required property: 'uArrayArray: [[UInt]]'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'uArrayArray: [[UInt]]'")));
     }
     if !_u_opt_array_opt_array_set {
-        return Err(reader.context().print_with_context("Missing required property: 'uOptArrayOptArray: [[UInt32]]'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'uOptArrayOptArray: [[UInt32]]'")));
     }
     if !_u_array_opt_array_array_set {
-        return Err(reader.context().print_with_context("Missing required property: 'uArrayOptArrayArray: [[[UInt32]]]'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'uArrayOptArrayArray: [[[UInt32]]]'")));
     }
     if !_object_set {
-        return Err(reader.context().print_with_context("Missing required property: 'object: AnotherType'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'object: AnotherType'")));
     }
     if !_object_array_set {
-        return Err(reader.context().print_with_context("Missing required property: 'objectArray: [AnotherType]'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'objectArray: [AnotherType]'")));
     }
     if !_en_set {
-        return Err(reader.context().print_with_context("Missing required property: 'en: CustomEnum'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'en: CustomEnum'")));
     }
     if !_enum_array_set {
-        return Err(reader.context().print_with_context("Missing required property: 'enumArray: [CustomEnum]'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'enumArray: [CustomEnum]'")));
     }
 
     Ok(CustomType {

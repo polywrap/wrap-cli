@@ -3,12 +3,14 @@ use std::convert::TryFrom;
 use polywrap_wasm_rs::{
     BigInt,
     Context,
+    DecodeError,
+    EncodeError,
     Read,
     ReadDecoder,
     Write,
     WriteEncoder,
     WriteSizer,
-    JSON,
+    JSON
 };
 
 use crate::{
@@ -28,7 +30,7 @@ pub struct InputQueryMethod {
     pub opt_enum_array: Option<Vec<Option<CustomEnum>>>,
 }
 
-pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, String> {
+pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, DecodeError> {
     let mut context = Context::new();
     context.description = "Deserializing query-type: query_method".to_string();
     let mut reader = ReadDecoder::new(input, context);
@@ -126,13 +128,13 @@ pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, S
         }
     }
     if !_str_set {
-        return Err(reader.context().print_with_context("Missing required argument: 'str: String'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'str: String'")));
     }
     if !_en_set {
-        return Err(reader.context().print_with_context("Missing required argument: 'en: CustomEnum'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'en: CustomEnum'")));
     }
     if !_enum_array_set {
-        return Err(reader.context().print_with_context("Missing required argument: 'enumArray: [CustomEnum]'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'enumArray: [CustomEnum]'")));
     }
 
     Ok(InputQueryMethod {
@@ -145,7 +147,7 @@ pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, S
     })
 }
 
-pub fn serialize_query_method_result(result: &i32) -> Result<Vec<u8>, String> {
+pub fn serialize_query_method_result(result: &i32) -> Result<Vec<u8>, EncodeError> {
     let mut sizer_context = Context::new();
     sizer_context.description = "Serializing (sizing) query-type: query_method".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
@@ -157,7 +159,7 @@ pub fn serialize_query_method_result(result: &i32) -> Result<Vec<u8>, String> {
     Ok(encoder.get_buffer())
 }
 
-pub fn write_query_method_result<W: Write>(result: &i32, writer: &mut W) -> Result<(), String> {
+pub fn write_query_method_result<W: Write>(result: &i32, writer: &mut W) -> Result<(), EncodeError> {
     writer.context().push("query_method", "i32", "writing result");
     writer.write_i32(result)?;
     writer.context().pop();
@@ -172,7 +174,7 @@ pub struct InputObjectMethod {
     pub opt_object_array: Option<Vec<Option<AnotherType>>>,
 }
 
-pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod, String> {
+pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod, DecodeError> {
     let mut context = Context::new();
     context.description = "Deserializing query-type: object_method".to_string();
     let mut reader = ReadDecoder::new(input, context);
@@ -230,10 +232,10 @@ pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod,
         }
     }
     if !_object_set {
-        return Err(reader.context().print_with_context("Missing required argument: 'object: AnotherType'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'object: AnotherType'")));
     }
     if !_object_array_set {
-        return Err(reader.context().print_with_context("Missing required argument: 'objectArray: [AnotherType]'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'objectArray: [AnotherType]'")));
     }
 
     Ok(InputObjectMethod {
@@ -244,7 +246,7 @@ pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod,
     })
 }
 
-pub fn serialize_object_method_result(result: &Option<AnotherType>) -> Result<Vec<u8>, String> {
+pub fn serialize_object_method_result(result: &Option<AnotherType>) -> Result<Vec<u8>, EncodeError> {
     let mut sizer_context = Context::new();
     sizer_context.description = "Serializing (sizing) query-type: object_method".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
@@ -256,7 +258,7 @@ pub fn serialize_object_method_result(result: &Option<AnotherType>) -> Result<Ve
     Ok(encoder.get_buffer())
 }
 
-pub fn write_object_method_result<W: Write>(result: &Option<AnotherType>, writer: &mut W) -> Result<(), String> {
+pub fn write_object_method_result<W: Write>(result: &Option<AnotherType>, writer: &mut W) -> Result<(), EncodeError> {
     writer.context().push("object_method", "Option<AnotherType>", "writing result");
     if result.is_some() {
         AnotherType::write(result.as_ref().unwrap(), writer)?;

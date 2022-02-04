@@ -2,11 +2,11 @@ use serde::{Serialize, Deserialize};
 pub mod serialization;
 use polywrap_wasm_rs::{
     BigInt,
-    DecodingError,
-    EncodingError,
+    DecodeError,
+    EncodeError,
     Read,
     Write,
-    JSON,
+    JSON
 };
 pub use serialization::{
     deserialize_custom_type,
@@ -98,19 +98,19 @@ impl CustomType {
         }
     }
 
-    pub fn to_buffer(input: &CustomType) -> Result<Vec<u8>, EncodingError> {
-        serialize_custom_type(input).map_err(|e| EncodingError::from(e))
+    pub fn to_buffer(input: &CustomType) -> Result<Vec<u8>, EncodeError> {
+        serialize_custom_type(input)
     }
 
-    pub fn from_buffer(input: &[u8]) -> Result<CustomType, DecodingError> {
-        deserialize_custom_type(input).map_err(|e| DecodingError::from(e))
+    pub fn from_buffer(input: &[u8]) -> Result<CustomType, DecodeError> {
+        deserialize_custom_type(input)
     }
 
-    pub fn write<W: Write>(input: &CustomType, writer: &mut W) -> Result<(), EncodingError> {
-        write_custom_type(input, writer).map_err(|e| EncodingError::from(e))
+    pub fn write<W: Write>(input: &CustomType, writer: &mut W) -> Result<(), EncodeError> {
+        write_custom_type(input, writer)
     }
 
-    pub fn read<R: Read>(reader: &mut R) -> Result<CustomType, DecodingError> {
-        read_custom_type(reader).map_err(|e| DecodingError::from(e))
+    pub fn read<R: Read>(reader: &mut R) -> Result<CustomType, DecodeError> {
+        read_custom_type(reader)
     }
 }

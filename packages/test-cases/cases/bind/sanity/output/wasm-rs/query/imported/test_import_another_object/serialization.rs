@@ -2,16 +2,18 @@ use std::convert::TryFrom;
 use polywrap_wasm_rs::{
     BigInt,
     Context,
+    DecodeError,
+    EncodeError,
     Read,
     ReadDecoder,
     Write,
     WriteEncoder,
     WriteSizer,
-    JSON,
+    JSON
 };
 use crate::TestImportAnotherObject;
 
-pub fn serialize_test_import_another_object(input: &TestImportAnotherObject) -> Result<Vec<u8>, String> {
+pub fn serialize_test_import_another_object(input: &TestImportAnotherObject) -> Result<Vec<u8>, EncodeError> {
     let mut sizer_context = Context::new();
     sizer_context.description = "Serializing (sizing) imported object-type: TestImportAnotherObject".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
@@ -23,7 +25,7 @@ pub fn serialize_test_import_another_object(input: &TestImportAnotherObject) -> 
     Ok(encoder.get_buffer())
 }
 
-pub fn write_test_import_another_object<W: Write>(input: &TestImportAnotherObject, writer: &mut W) -> Result<(), String> {
+pub fn write_test_import_another_object<W: Write>(input: &TestImportAnotherObject, writer: &mut W) -> Result<(), EncodeError> {
     writer.write_map_length(&1)?;
     writer.context().push("prop", "String", "writing property");
     writer.write_str("prop")?;
@@ -32,14 +34,14 @@ pub fn write_test_import_another_object<W: Write>(input: &TestImportAnotherObjec
     Ok(())
 }
 
-pub fn deserialize_test_import_another_object(input: &[u8]) -> Result<TestImportAnotherObject, String> {
+pub fn deserialize_test_import_another_object(input: &[u8]) -> Result<TestImportAnotherObject, DecodeError> {
     let mut context = Context::new();
     context.description = "Deserializing imported object-type: TestImportAnotherObject".to_string();
     let mut reader = ReadDecoder::new(input, context);
     read_test_import_another_object(&mut reader)
 }
 
-pub fn read_test_import_another_object<R: Read>(reader: &mut R) -> Result<TestImportAnotherObject, String> {
+pub fn read_test_import_another_object<R: Read>(reader: &mut R) -> Result<TestImportAnotherObject, DecodeError> {
     let mut num_of_fields = reader.read_map_length()?;
 
     let mut _prop: String = String::new();
@@ -60,7 +62,7 @@ pub fn read_test_import_another_object<R: Read>(reader: &mut R) -> Result<TestIm
         }
     }
     if !_prop_set {
-        return Err(reader.context().print_with_context("Missing required property: 'prop: String'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'prop: String'")));
     }
 
     Ok(TestImportAnotherObject {
