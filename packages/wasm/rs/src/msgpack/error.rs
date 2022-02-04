@@ -149,6 +149,9 @@ pub enum DecodeError {
 
     #[error("WrongMsgPackFormat: '{0}'")]
     WrongMsgPackFormat(String),
+
+    #[error("Missing required field: '{0}'")]
+    MissingField(String),
 }
 
 impl From<DecodeError> for std::io::Error {
