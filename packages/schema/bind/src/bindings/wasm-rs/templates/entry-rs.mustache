@@ -24,6 +24,7 @@ pub extern "C" fn _w3_invoke(method_size: u32, args_size: u32) -> bool {
 
     let args: InvokeArgs = invoke::w3_invoke_args(method_size, args_size);
     debug::w3_debug_log("here");
+    debug::w3_debug_log(args.method.as_str());
 
     match args.method.as_str() {
         {{#queryTypes}}
