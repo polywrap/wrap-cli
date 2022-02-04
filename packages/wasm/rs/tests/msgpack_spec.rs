@@ -1,5 +1,5 @@
 use polywrap_wasm_rs::{
-    Context, DecodingError, EncodingError, Read, ReadDecoder, Write, WriteEncoder, WriteSizer,
+    Context, DecodeError, EncodeError, Read, ReadDecoder, Write, WriteEncoder, WriteSizer,
 };
 // use std::collections::BTreeMap;
 
@@ -74,7 +74,7 @@ impl Sanity {
     }
 }
 
-fn serialize_sanity<W: Write>(writer: &mut W, sanity: &mut Sanity) -> Result<(), EncodingError> {
+fn serialize_sanity<W: Write>(writer: &mut W, sanity: &mut Sanity) -> Result<(), EncodeError> {
     writer.write_map_length(&8)?;
     writer.write_str("nil")?;
     writer.write_nil()?;
@@ -137,10 +137,7 @@ fn serialize_sanity<W: Write>(writer: &mut W, sanity: &mut Sanity) -> Result<(),
     Ok(())
 }
 
-fn deserialize_sanity<R: Read>(
-    reader: &mut R,
-    sanity: &mut Sanity,
-) -> Result<Sanity, DecodingError> {
+fn deserialize_sanity<R: Read>(reader: &mut R, sanity: &mut Sanity) -> Result<Sanity, DecodeError> {
     let mut num_of_fields = reader.read_map_length()?;
     while num_of_fields > 0 {
         num_of_fields -= 1;
@@ -216,7 +213,7 @@ fn deserialize_sanity<R: Read>(
             // 					|val_fn| val_fn.read_array(|reader| reader.read_i32().unwrap()).unwrap(),
             // 				)
             // 				.unwrap(),
-            _ => return Err(DecodingError::UnknownFieldName),
+            _ => return Err(DecodeError::UnknownFieldName),
         }
     }
     Ok(sanity.to_owned())
@@ -225,7 +222,7 @@ fn deserialize_sanity<R: Read>(
 fn deserialize_with_overflow<R: Read>(
     reader: &mut R,
     sanity: &mut Sanity,
-) -> Result<Sanity, DecodingError> {
+) -> Result<Sanity, DecodeError> {
     let mut num_of_fields = reader.read_map_length()?;
     while num_of_fields > 0 {
         num_of_fields -= 1;
@@ -287,7 +284,7 @@ fn deserialize_with_overflow<R: Read>(
             // 					|val_fn| val_fn.read_array(|reader| reader.read_i32().unwrap()).unwrap(),
             // 				)
             // 				.unwrap(),
-            _ => return Err(DecodingError::UnknownFieldName),
+            _ => return Err(DecodeError::UnknownFieldName),
         }
     }
     Ok(sanity.to_owned())
@@ -296,7 +293,7 @@ fn deserialize_with_overflow<R: Read>(
 fn deserialize_with_invalid_types<R: Read>(
     reader: &mut R,
     sanity: &mut Sanity,
-) -> Result<Sanity, DecodingError> {
+) -> Result<Sanity, DecodeError> {
     let mut num_of_fields = reader.read_map_length()?;
     while num_of_fields > 0 {
         num_of_fields -= 1;
@@ -372,7 +369,7 @@ fn deserialize_with_invalid_types<R: Read>(
             // 					|val_fn| val_fn.read_array(|reader| reader.read_i32().unwrap()).unwrap(),
             // 				)
             // 				.unwrap(),
-            _ => return Err(DecodingError::UnknownFieldName),
+            _ => return Err(DecodeError::UnknownFieldName),
         }
     }
     Ok(sanity.to_owned())
@@ -386,7 +383,7 @@ impl PartialEq for Sanity {
 
 impl Eq for Sanity {}
 
-fn convert_to_buffer(sanity: &mut Sanity) -> Result<Vec<u8>, EncodingError> {
+fn convert_to_buffer(sanity: &mut Sanity) -> Result<Vec<u8>, EncodeError> {
     let mut context = Context::new();
     context.description = "Serialize sanity (to buffer)...".to_string();
     let mut sizer = WriteSizer::new(context.clone());
@@ -396,7 +393,7 @@ fn convert_to_buffer(sanity: &mut Sanity) -> Result<Vec<u8>, EncodingError> {
     Ok(encoder.get_buffer())
 }
 
-fn convert_from_buffer(sanity: &mut Sanity, buffer: &[u8]) -> Result<Sanity, DecodingError> {
+fn convert_from_buffer(sanity: &mut Sanity, buffer: &[u8]) -> Result<Sanity, DecodeError> {
     let mut context = Context::new();
     context.description = "Deserialize sanity (from buffer)...".to_string();
     let mut decoder = ReadDecoder::new(buffer, context);
@@ -406,14 +403,14 @@ fn convert_from_buffer(sanity: &mut Sanity, buffer: &[u8]) -> Result<Sanity, Dec
 fn from_buffer_with_invalid_types(
     sanity: &mut Sanity,
     buffer: &[u8],
-) -> Result<Sanity, DecodingError> {
+) -> Result<Sanity, DecodeError> {
     let mut context = Context::new();
     context.description = "Deserialize sanity (from buffer with invalid types)...".to_string();
     let mut decoder = ReadDecoder::new(buffer, context);
     Ok(deserialize_with_invalid_types(&mut decoder, sanity)?)
 }
 
-fn from_buffer_with_overflows(sanity: &mut Sanity, buffer: &[u8]) -> Result<Sanity, DecodingError> {
+fn from_buffer_with_overflows(sanity: &mut Sanity, buffer: &[u8]) -> Result<Sanity, DecodeError> {
     let mut context = Context::new();
     context.description = "Deserialize sanity (from buffer with overflows)...".to_string();
     let mut decoder = ReadDecoder::new(buffer, context);

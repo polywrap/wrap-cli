@@ -57,5 +57,5 @@ pub use subinvoke::*;
 pub use big_int::BigInt;
 pub use json::JSON;
 pub use msgpack::{
-    Context, DecodingError, EncodingError, Read, ReadDecoder, Write, WriteEncoder, WriteSizer,
+    Context, DecodeError, EncodeError, Read, ReadDecoder, Write, WriteEncoder, WriteSizer,
 };

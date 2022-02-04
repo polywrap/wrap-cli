@@ -1,4 +1,4 @@
-use super::{error::EncodingError, Context, DataView, Format, Write};
+use super::{error::EncodeError, Context, DataView, Format, Write};
 use crate::{BigInt, JSON};
 use byteorder::{BigEndian, WriteBytesExt};
 use core::hash::Hash;
@@ -34,92 +34,92 @@ impl StdioWrite for WriteEncoder {
 }
 
 impl Write for WriteEncoder {
-    fn write_nil(&mut self) -> Result<(), EncodingError> {
+    fn write_nil(&mut self) -> Result<(), EncodeError> {
         match Format::set_format(self, Format::Nil) {
             Ok(_v) => Ok(()),
-            Err(_e) => Err(EncodingError::NilWriteError),
+            Err(_e) => Err(EncodeError::NilWriteError),
         }
     }
 
-    fn write_bool(&mut self, value: &bool) -> Result<(), EncodingError> {
+    fn write_bool(&mut self, value: &bool) -> Result<(), EncodeError> {
         let format = if *value { Format::True } else { Format::False };
         match Format::set_format(self, format) {
             Ok(_v) => Ok(()),
-            Err(_e) => Err(EncodingError::BooleanWriteError),
+            Err(_e) => Err(EncodeError::BooleanWriteError),
         }
     }
 
-    fn write_i8(&mut self, value: &i8) -> Result<(), EncodingError> {
+    fn write_i8(&mut self, value: &i8) -> Result<(), EncodeError> {
         match Format::set_format(self, Format::Int8) {
             Ok(_v) => Ok(WriteBytesExt::write_i8(self, *value)?),
-            Err(_e) => Err(EncodingError::Int8WriteError),
+            Err(_e) => Err(EncodeError::Int8WriteError),
         }
     }
 
-    fn write_i16(&mut self, value: &i16) -> Result<(), EncodingError> {
+    fn write_i16(&mut self, value: &i16) -> Result<(), EncodeError> {
         match Format::set_format(self, Format::Int16) {
             Ok(_v) => Ok(WriteBytesExt::write_i16::<BigEndian>(self, *value)?),
-            Err(_e) => Err(EncodingError::Int16WriteError),
+            Err(_e) => Err(EncodeError::Int16WriteError),
         }
     }
 
-    fn write_i32(&mut self, value: &i32) -> Result<(), EncodingError> {
+    fn write_i32(&mut self, value: &i32) -> Result<(), EncodeError> {
         match Format::set_format(self, Format::Int32) {
             Ok(_v) => Ok(WriteBytesExt::write_i32::<BigEndian>(self, *value)?),
-            Err(_e) => Err(EncodingError::Int32WriteError),
+            Err(_e) => Err(EncodeError::Int32WriteError),
         }
     }
 
-    fn write_i64(&mut self, value: &i64) -> Result<(), EncodingError> {
+    fn write_i64(&mut self, value: &i64) -> Result<(), EncodeError> {
         match Format::set_format(self, Format::Int64) {
             Ok(_v) => Ok(WriteBytesExt::write_i64::<BigEndian>(self, *value)?),
-            Err(_e) => Err(EncodingError::Int64WriteError),
+            Err(_e) => Err(EncodeError::Int64WriteError),
         }
     }
 
-    fn write_u8(&mut self, value: &u8) -> Result<(), EncodingError> {
+    fn write_u8(&mut self, value: &u8) -> Result<(), EncodeError> {
         match Format::set_format(self, Format::Uint8) {
             Ok(_v) => Ok(WriteBytesExt::write_u8(self, *value)?),
-            Err(_e) => Err(EncodingError::Uint8WriteError),
+            Err(_e) => Err(EncodeError::Uint8WriteError),
         }
     }
 
-    fn write_u16(&mut self, value: &u16) -> Result<(), EncodingError> {
+    fn write_u16(&mut self, value: &u16) -> Result<(), EncodeError> {
         match Format::set_format(self, Format::Uint16) {
             Ok(_v) => Ok(WriteBytesExt::write_u16::<BigEndian>(self, *value)?),
-            Err(_e) => Err(EncodingError::Uint16WriteError),
+            Err(_e) => Err(EncodeError::Uint16WriteError),
         }
     }
 
-    fn write_u32(&mut self, value: &u32) -> Result<(), EncodingError> {
+    fn write_u32(&mut self, value: &u32) -> Result<(), EncodeError> {
         match Format::set_format(self, Format::Uint32) {
             Ok(_v) => Ok(WriteBytesExt::write_u32::<BigEndian>(self, *value)?),
-            Err(_e) => Err(EncodingError::Uint32WriteError),
+            Err(_e) => Err(EncodeError::Uint32WriteError),
         }
     }
 
-    fn write_u64(&mut self, value: &u64) -> Result<(), EncodingError> {
+    fn write_u64(&mut self, value: &u64) -> Result<(), EncodeError> {
         match Format::set_format(self, Format::Uint64) {
             Ok(_v) => Ok(WriteBytesExt::write_u64::<BigEndian>(self, *value)?),
-            Err(_e) => Err(EncodingError::Uint64WriteError),
+            Err(_e) => Err(EncodeError::Uint64WriteError),
         }
     }
 
-    fn write_f32(&mut self, value: &f32) -> Result<(), EncodingError> {
+    fn write_f32(&mut self, value: &f32) -> Result<(), EncodeError> {
         match Format::set_format(self, Format::Float32) {
             Ok(_v) => Ok(WriteBytesExt::write_f32::<BigEndian>(self, *value)?),
-            Err(_e) => Err(EncodingError::Float32WriteError),
+            Err(_e) => Err(EncodeError::Float32WriteError),
         }
     }
 
-    fn write_f64(&mut self, value: &f64) -> Result<(), EncodingError> {
+    fn write_f64(&mut self, value: &f64) -> Result<(), EncodeError> {
         match Format::set_format(self, Format::Float64) {
             Ok(_v) => Ok(WriteBytesExt::write_f64::<BigEndian>(self, *value)?),
-            Err(_e) => Err(EncodingError::Float64WriteError),
+            Err(_e) => Err(EncodeError::Float64WriteError),
         }
     }
 
-    fn write_string_length(&mut self, length: &u32) -> Result<(), EncodingError> {
+    fn write_string_length(&mut self, length: &u32) -> Result<(), EncodeError> {
         if *length < 32 {
             Format::set_format(self, Format::FixStr(*length as u8))?;
         } else if *length <= u8::MAX as u32 {
@@ -135,21 +135,21 @@ impl Write for WriteEncoder {
         Ok(())
     }
 
-    fn write_string(&mut self, value: &String) -> Result<(), EncodingError> {
+    fn write_string(&mut self, value: &String) -> Result<(), EncodeError> {
         match self.write_string_length(&(value.len() as u32)) {
             Ok(_v) => Ok(self.write_all(value.as_bytes())?),
-            Err(_e) => Err(EncodingError::StrWriteError),
+            Err(_e) => Err(EncodeError::StrWriteError),
         }
     }
 
-    fn write_str(&mut self, value: &str) -> Result<(), EncodingError> {
+    fn write_str(&mut self, value: &str) -> Result<(), EncodeError> {
         match self.write_string_length(&(value.len() as u32)) {
             Ok(_v) => Ok(self.write_all(value.as_bytes())?),
-            Err(_e) => Err(EncodingError::StrWriteError),
+            Err(_e) => Err(EncodeError::StrWriteError),
         }
     }
 
-    fn write_bytes_length(&mut self, length: &u32) -> Result<(), EncodingError> {
+    fn write_bytes_length(&mut self, length: &u32) -> Result<(), EncodeError> {
         if *length <= u8::MAX as u32 {
             Format::set_format(self, Format::Bin8)?;
             WriteBytesExt::write_u8(self, *length as u8)?;
@@ -163,28 +163,28 @@ impl Write for WriteEncoder {
         Ok(())
     }
 
-    fn write_bytes(&mut self, buf: &[u8]) -> Result<(), EncodingError> {
+    fn write_bytes(&mut self, buf: &[u8]) -> Result<(), EncodeError> {
         match self.write_bytes_length(&(buf.len() as u32)) {
             Ok(_v) => Ok(self.write_all(buf)?),
-            Err(_e) => Err(EncodingError::BinWriteError),
+            Err(_e) => Err(EncodeError::BinWriteError),
         }
     }
 
-    fn write_bigint(&mut self, value: &BigInt) -> Result<(), EncodingError> {
+    fn write_bigint(&mut self, value: &BigInt) -> Result<(), EncodeError> {
         match self.write_string(&value.to_string()) {
             Ok(_v) => Ok(()),
-            Err(_e) => Err(EncodingError::BigIntWriteError),
+            Err(_e) => Err(EncodeError::BigIntWriteError),
         }
     }
 
-    fn write_json(&mut self, value: &JSON::Value) -> Result<(), EncodingError> {
+    fn write_json(&mut self, value: &JSON::Value) -> Result<(), EncodeError> {
         match JSON::to_string(value) {
             Ok(s) => Ok(self.write_string(&s)?),
-            Err(e) => Err(EncodingError::from(e)),
+            Err(e) => Err(EncodeError::from(e)),
         }
     }
 
-    fn write_array_length(&mut self, length: &u32) -> Result<(), EncodingError> {
+    fn write_array_length(&mut self, length: &u32) -> Result<(), EncodeError> {
         if *length < 16 {
             Format::set_format(self, Format::FixArray(*length as u8))?;
         } else if *length <= u16::MAX as u32 {
@@ -200,8 +200,8 @@ impl Write for WriteEncoder {
     fn write_array<T: Clone>(
         &mut self,
         a: &[T],
-        mut arr_fn: impl FnMut(&mut Self, &T) -> Result<(), EncodingError>,
-    ) -> Result<(), EncodingError> {
+        mut arr_fn: impl FnMut(&mut Self, &T) -> Result<(), EncodeError>,
+    ) -> Result<(), EncodeError> {
         match self.write_array_length(&(a.len() as u32)) {
             Ok(_v) => {
                 for element in a {
@@ -209,11 +209,11 @@ impl Write for WriteEncoder {
                 }
                 Ok(())
             }
-            Err(_e) => Err(EncodingError::ArrayWriteError),
+            Err(_e) => Err(EncodeError::ArrayWriteError),
         }
     }
 
-    fn write_map_length(&mut self, length: &u32) -> Result<(), EncodingError> {
+    fn write_map_length(&mut self, length: &u32) -> Result<(), EncodeError> {
         if *length < 16 {
             Format::set_format(self, Format::FixMap(*length as u8))?;
         } else if *length <= u16::MAX as u32 {
@@ -229,9 +229,9 @@ impl Write for WriteEncoder {
     fn write_map<K, V: Clone>(
         &mut self,
         map: &BTreeMap<K, V>,
-        mut key_fn: impl FnMut(&mut Self, &K) -> Result<(), EncodingError>,
-        mut val_fn: impl FnMut(&mut Self, &V) -> Result<(), EncodingError>,
-    ) -> Result<(), EncodingError>
+        mut key_fn: impl FnMut(&mut Self, &K) -> Result<(), EncodeError>,
+        mut val_fn: impl FnMut(&mut Self, &V) -> Result<(), EncodeError>,
+    ) -> Result<(), EncodeError>
     where
         K: Clone + Eq + Hash + Ord,
     {
@@ -245,109 +245,109 @@ impl Write for WriteEncoder {
                 }
                 Ok(())
             }
-            Err(_e) => Err(EncodingError::MapWriteError),
+            Err(_e) => Err(EncodeError::MapWriteError),
         }
     }
 
-    fn write_nullable_bool(&mut self, value: &Option<bool>) -> Result<(), EncodingError> {
+    fn write_nullable_bool(&mut self, value: &Option<bool>) -> Result<(), EncodeError> {
         match value {
             None => Ok(Write::write_nil(self)?),
             Some(v) => Ok(Write::write_bool(self, v)?),
         }
     }
 
-    fn write_nullable_i8(&mut self, value: &Option<i8>) -> Result<(), EncodingError> {
+    fn write_nullable_i8(&mut self, value: &Option<i8>) -> Result<(), EncodeError> {
         match value {
             None => Ok(Write::write_nil(self)?),
             Some(v) => Ok(Write::write_i8(self, v)?),
         }
     }
 
-    fn write_nullable_i16(&mut self, value: &Option<i16>) -> Result<(), EncodingError> {
+    fn write_nullable_i16(&mut self, value: &Option<i16>) -> Result<(), EncodeError> {
         match value {
             None => Ok(Write::write_nil(self)?),
             Some(v) => Ok(Write::write_i16(self, v)?),
         }
     }
 
-    fn write_nullable_i32(&mut self, value: &Option<i32>) -> Result<(), EncodingError> {
+    fn write_nullable_i32(&mut self, value: &Option<i32>) -> Result<(), EncodeError> {
         match value {
             None => Ok(Write::write_nil(self)?),
             Some(v) => Ok(Write::write_i32(self, v)?),
         }
     }
 
-    fn write_nullable_i64(&mut self, value: &Option<i64>) -> Result<(), EncodingError> {
+    fn write_nullable_i64(&mut self, value: &Option<i64>) -> Result<(), EncodeError> {
         match value {
             None => Ok(Write::write_nil(self)?),
             Some(v) => Ok(Write::write_i64(self, v)?),
         }
     }
 
-    fn write_nullable_u8(&mut self, value: &Option<u8>) -> Result<(), EncodingError> {
+    fn write_nullable_u8(&mut self, value: &Option<u8>) -> Result<(), EncodeError> {
         match value {
             None => Ok(Write::write_nil(self)?),
             Some(v) => Ok(Write::write_u8(self, v)?),
         }
     }
 
-    fn write_nullable_u16(&mut self, value: &Option<u16>) -> Result<(), EncodingError> {
+    fn write_nullable_u16(&mut self, value: &Option<u16>) -> Result<(), EncodeError> {
         match value {
             None => Ok(Write::write_nil(self)?),
             Some(v) => Ok(Write::write_u16(self, v)?),
         }
     }
 
-    fn write_nullable_u32(&mut self, value: &Option<u32>) -> Result<(), EncodingError> {
+    fn write_nullable_u32(&mut self, value: &Option<u32>) -> Result<(), EncodeError> {
         match value {
             None => Ok(Write::write_nil(self)?),
             Some(v) => Ok(Write::write_u32(self, v)?),
         }
     }
 
-    fn write_nullable_u64(&mut self, value: &Option<u64>) -> Result<(), EncodingError> {
+    fn write_nullable_u64(&mut self, value: &Option<u64>) -> Result<(), EncodeError> {
         match value {
             None => Ok(Write::write_nil(self)?),
             Some(v) => Ok(Write::write_u64(self, v)?),
         }
     }
 
-    fn write_nullable_f32(&mut self, value: &Option<f32>) -> Result<(), EncodingError> {
+    fn write_nullable_f32(&mut self, value: &Option<f32>) -> Result<(), EncodeError> {
         match value {
             None => Ok(Write::write_nil(self)?),
             Some(v) => Ok(Write::write_f32(self, v)?),
         }
     }
 
-    fn write_nullable_f64(&mut self, value: &Option<f64>) -> Result<(), EncodingError> {
+    fn write_nullable_f64(&mut self, value: &Option<f64>) -> Result<(), EncodeError> {
         match value {
             None => Ok(Write::write_nil(self)?),
             Some(v) => Ok(Write::write_f64(self, v)?),
         }
     }
 
-    fn write_nullable_string(&mut self, value: &Option<String>) -> Result<(), EncodingError> {
+    fn write_nullable_string(&mut self, value: &Option<String>) -> Result<(), EncodeError> {
         match value {
             None => Ok(Write::write_nil(self)?),
             Some(s) => Ok(Write::write_string(self, s)?),
         }
     }
 
-    fn write_nullable_bytes(&mut self, value: &Option<Vec<u8>>) -> Result<(), EncodingError> {
+    fn write_nullable_bytes(&mut self, value: &Option<Vec<u8>>) -> Result<(), EncodeError> {
         match value {
             None => Ok(Write::write_nil(self)?),
             Some(b) => Ok(Write::write_bytes(self, b)?),
         }
     }
 
-    fn write_nullable_bigint(&mut self, value: &Option<BigInt>) -> Result<(), EncodingError> {
+    fn write_nullable_bigint(&mut self, value: &Option<BigInt>) -> Result<(), EncodeError> {
         match value {
             None => Ok(Write::write_nil(self)?),
             Some(val) => Ok(Write::write_bigint(self, val)?),
         }
     }
 
-    fn write_nullable_json(&mut self, value: &Option<JSON::Value>) -> Result<(), EncodingError> {
+    fn write_nullable_json(&mut self, value: &Option<JSON::Value>) -> Result<(), EncodeError> {
         match value {
             None => Ok(Write::write_nil(self)?),
             Some(json) => Ok(Write::write_json(self, json)?),
@@ -357,8 +357,8 @@ impl Write for WriteEncoder {
     fn write_nullable_array<T: Clone>(
         &mut self,
         a: &Option<Vec<T>>,
-        arr_fn: impl FnMut(&mut Self, &T) -> Result<(), EncodingError>,
-    ) -> Result<(), EncodingError> {
+        arr_fn: impl FnMut(&mut Self, &T) -> Result<(), EncodeError>,
+    ) -> Result<(), EncodeError> {
         match a {
             None => Ok(Write::write_nil(self)?),
             Some(arr) => Ok(Write::write_array(self, arr, arr_fn)?),
@@ -368,9 +368,9 @@ impl Write for WriteEncoder {
     fn write_nullable_map<K, V: Clone>(
         &mut self,
         map: &Option<BTreeMap<K, V>>,
-        key_fn: impl FnMut(&mut Self, &K) -> Result<(), EncodingError>,
-        val_fn: impl FnMut(&mut Self, &V) -> Result<(), EncodingError>,
-    ) -> Result<(), EncodingError>
+        key_fn: impl FnMut(&mut Self, &K) -> Result<(), EncodeError>,
+        val_fn: impl FnMut(&mut Self, &V) -> Result<(), EncodeError>,
+    ) -> Result<(), EncodeError>
     where
         K: Clone + Eq + Hash + Ord,
     {

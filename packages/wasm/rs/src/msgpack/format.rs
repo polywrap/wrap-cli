@@ -1,4 +1,4 @@
-use super::error::{DecodingError, EncodingError};
+use super::error::{DecodeError, EncodeError};
 use byteorder::{self, ReadBytesExt, WriteBytesExt};
 
 const FIX_ARRAY_SIZE: u8 = 0x0f;
@@ -52,17 +52,17 @@ impl Format {
     pub fn set_format<W: std::io::Write>(
         writer: &mut W,
         format: Format,
-    ) -> Result<(), EncodingError> {
+    ) -> Result<(), EncodeError> {
         match writer.write_u8(format.to_u8()) {
             Ok(_v) => Ok(()),
-            Err(_e) => Err(EncodingError::FormatWriteError),
+            Err(_e) => Err(EncodeError::FormatWriteError),
         }
     }
 
-    pub fn get_format<R: std::io::Read>(reader: &mut R) -> Result<Format, DecodingError> {
+    pub fn get_format<R: std::io::Read>(reader: &mut R) -> Result<Format, DecodeError> {
         match reader.read_u8() {
             Ok(v) => Ok(Format::from_u8(v)),
-            Err(_e) => Err(DecodingError::FormatReadError),
+            Err(_e) => Err(DecodeError::FormatReadError),
         }
     }
 
