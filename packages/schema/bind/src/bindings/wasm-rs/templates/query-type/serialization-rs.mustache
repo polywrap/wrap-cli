@@ -5,6 +5,7 @@ use polywrap_wasm_rs::{
     Context,
     Read,
     ReadDecoder,
+    DecodingError,
     Write,
     WriteEncoder,
     WriteSizer,
@@ -34,7 +35,7 @@ pub struct Input{{#toUpper}}{{name}}{{/toUpper}} {
     {{/arguments}}
 }
 
-pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result<Input{{#toUpper}}{{name}}{{/toUpper}}, String> {
+pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result<Input{{#toUpper}}{{name}}{{/toUpper}}, DecodingError> {
     let mut context = Context::new();
     context.description = "Deserializing query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
     {{#arguments.length}}
@@ -64,8 +65,8 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
 
         match field.as_str() {
             {{#arguments}}
-            "{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}" => {
-                reader.context().push(&field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading argument");
+            "{{name}}" => {
+                reader.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading argument");
                 {{#scalar}}
                 _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}()?;
                 {{/scalar}}
@@ -94,7 +95,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
     {{#arguments}}
     {{#required}}
     if !_{{#toLower}}{{name}}{{/toLower}}_set {
-        return Err(reader.context().print_with_context("Missing required argument: '{{name}}: {{type}}'"));
+        return Err(DecodingError::MissingField(reader.context().print_with_context("{{name}}: {{type}}")));
     }
     {{/required}}
     {{/arguments}}

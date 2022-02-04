@@ -5,8 +5,13 @@
   {
     "query": "./boolMethod.graphql",
     "variables": {
+      "arg": true
+    }
+  },
+  {
+    "query": "./boolMethod.graphql",
+    "variables": {
       "arg": 10
     }
   }
 ]
-

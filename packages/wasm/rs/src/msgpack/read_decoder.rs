@@ -46,7 +46,9 @@ impl Read for ReadDecoder {
         match Format::get_format(self)? {
             Format::True => Ok(true),
             Format::False => Ok(false),
-            _ => Err(DecodingError::BooleanReadError),
+            _ => {
+                Err(DecodingError::BooleanReadError)
+            },
         }
     }
 
