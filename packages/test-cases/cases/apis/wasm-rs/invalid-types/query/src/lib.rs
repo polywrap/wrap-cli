@@ -5,7 +5,7 @@ use polywrap_wasm_rs::{
 };
 
 pub fn bool_method(input: InputBoolMethod) -> bool {
-    debug::w3_debug("in it");
+    debug::w3_debug_log("in it");
     input.arg
 }
 
