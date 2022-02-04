@@ -1,5 +1,5 @@
 use super::{error::DecodingError, Context, DataView, Format, Read};
-use crate::{BigInt, JSON, debug};
+use crate::{BigInt, JSON};
 use byteorder::{BigEndian, ReadBytesExt};
 use core::hash::Hash;
 use std::{collections::BTreeMap, io::Read as StdioRead, str::FromStr};
@@ -47,7 +47,6 @@ impl Read for ReadDecoder {
             Format::True => Ok(true),
             Format::False => Ok(false),
             _ => {
-                debug::w3_debug_log("BooleanReadError");
                 Err(DecodingError::BooleanReadError)
             },
         }
