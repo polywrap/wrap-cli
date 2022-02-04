@@ -55,14 +55,14 @@ impl Format {
     ) -> Result<(), EncodeError> {
         match writer.write_u8(format.to_u8()) {
             Ok(_v) => Ok(()),
-            Err(_e) => Err(EncodeError::FormatWriteError),
+            Err(e) => Err(EncodeError::FormatWriteError(e.to_string())),
         }
     }
 
     pub fn get_format<R: std::io::Read>(reader: &mut R) -> Result<Format, DecodeError> {
         match reader.read_u8() {
             Ok(v) => Ok(Format::from_u8(v)),
-            Err(_e) => Err(DecodeError::FormatReadError),
+            Err(e) => Err(DecodeError::FormatReadError(e.to_string())),
         }
     }
 
@@ -153,9 +153,22 @@ impl Format {
     }
 }
 
+impl std::fmt::Display for Format {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        write!(f, "{:?}", self)
+    }
+}
+
 impl From<u8> for Format {
     #[inline]
     fn from(val: u8) -> Format {
         Format::from_u8(val)
+    }
+}
+
+impl Into<u8> for Format {
+    #[inline]
+    fn into(self) -> u8 {
+        self.to_u8()
     }
 }

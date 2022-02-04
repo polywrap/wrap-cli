@@ -37,7 +37,7 @@ impl Write for WriteEncoder {
     fn write_nil(&mut self) -> Result<(), EncodeError> {
         match Format::set_format(self, Format::Nil) {
             Ok(_v) => Ok(()),
-            Err(_e) => Err(EncodeError::NilWriteError),
+            Err(e) => Err(EncodeError::NilWriteError(e.to_string())),
         }
     }
 
@@ -45,77 +45,77 @@ impl Write for WriteEncoder {
         let format = if *value { Format::True } else { Format::False };
         match Format::set_format(self, format) {
             Ok(_v) => Ok(()),
-            Err(_e) => Err(EncodeError::BooleanWriteError),
+            Err(e) => Err(EncodeError::BooleanWriteError(e.to_string())),
         }
     }
 
     fn write_i8(&mut self, value: &i8) -> Result<(), EncodeError> {
         match Format::set_format(self, Format::Int8) {
             Ok(_v) => Ok(WriteBytesExt::write_i8(self, *value)?),
-            Err(_e) => Err(EncodeError::Int8WriteError),
+            Err(e) => Err(EncodeError::Int8WriteError(e.to_string())),
         }
     }
 
     fn write_i16(&mut self, value: &i16) -> Result<(), EncodeError> {
         match Format::set_format(self, Format::Int16) {
             Ok(_v) => Ok(WriteBytesExt::write_i16::<BigEndian>(self, *value)?),
-            Err(_e) => Err(EncodeError::Int16WriteError),
+            Err(e) => Err(EncodeError::Int16WriteError(e.to_string())),
         }
     }
 
     fn write_i32(&mut self, value: &i32) -> Result<(), EncodeError> {
         match Format::set_format(self, Format::Int32) {
             Ok(_v) => Ok(WriteBytesExt::write_i32::<BigEndian>(self, *value)?),
-            Err(_e) => Err(EncodeError::Int32WriteError),
+            Err(e) => Err(EncodeError::Int32WriteError(e.to_string())),
         }
     }
 
     fn write_i64(&mut self, value: &i64) -> Result<(), EncodeError> {
         match Format::set_format(self, Format::Int64) {
             Ok(_v) => Ok(WriteBytesExt::write_i64::<BigEndian>(self, *value)?),
-            Err(_e) => Err(EncodeError::Int64WriteError),
+            Err(e) => Err(EncodeError::Int64WriteError(e.to_string())),
         }
     }
 
     fn write_u8(&mut self, value: &u8) -> Result<(), EncodeError> {
         match Format::set_format(self, Format::Uint8) {
             Ok(_v) => Ok(WriteBytesExt::write_u8(self, *value)?),
-            Err(_e) => Err(EncodeError::Uint8WriteError),
+            Err(e) => Err(EncodeError::Uint8WriteError(e.to_string())),
         }
     }
 
     fn write_u16(&mut self, value: &u16) -> Result<(), EncodeError> {
         match Format::set_format(self, Format::Uint16) {
             Ok(_v) => Ok(WriteBytesExt::write_u16::<BigEndian>(self, *value)?),
-            Err(_e) => Err(EncodeError::Uint16WriteError),
+            Err(e) => Err(EncodeError::Uint16WriteError(e.to_string())),
         }
     }
 
     fn write_u32(&mut self, value: &u32) -> Result<(), EncodeError> {
         match Format::set_format(self, Format::Uint32) {
             Ok(_v) => Ok(WriteBytesExt::write_u32::<BigEndian>(self, *value)?),
-            Err(_e) => Err(EncodeError::Uint32WriteError),
+            Err(e) => Err(EncodeError::Uint32WriteError(e.to_string())),
         }
     }
 
     fn write_u64(&mut self, value: &u64) -> Result<(), EncodeError> {
         match Format::set_format(self, Format::Uint64) {
             Ok(_v) => Ok(WriteBytesExt::write_u64::<BigEndian>(self, *value)?),
-            Err(_e) => Err(EncodeError::Uint64WriteError),
+            Err(e) => Err(EncodeError::Uint64WriteError(e.to_string())),
         }
     }
 
     fn write_f32(&mut self, value: &f32) -> Result<(), EncodeError> {
         match Format::set_format(self, Format::Float32) {
             Ok(_v) => Ok(WriteBytesExt::write_f32::<BigEndian>(self, *value)?),
-            Err(_e) => Err(EncodeError::Float32WriteError),
+            Err(e) => Err(EncodeError::Float32WriteError(e.to_string())),
         }
     }
 
     fn write_f64(&mut self, value: &f64) -> Result<(), EncodeError> {
         match Format::set_format(self, Format::Float64) {
             Ok(_v) => Ok(WriteBytesExt::write_f64::<BigEndian>(self, *value)?),
-            Err(_e) => Err(EncodeError::Float64WriteError),
+            Err(e) => Err(EncodeError::Float64WriteError(e.to_string())),
         }
     }
 
@@ -138,14 +138,14 @@ impl Write for WriteEncoder {
     fn write_string(&mut self, value: &String) -> Result<(), EncodeError> {
         match self.write_string_length(&(value.len() as u32)) {
             Ok(_v) => Ok(self.write_all(value.as_bytes())?),
-            Err(_e) => Err(EncodeError::StrWriteError),
+            Err(e) => Err(EncodeError::StrWriteError(e.to_string())),
         }
     }
 
     fn write_str(&mut self, value: &str) -> Result<(), EncodeError> {
         match self.write_string_length(&(value.len() as u32)) {
             Ok(_v) => Ok(self.write_all(value.as_bytes())?),
-            Err(_e) => Err(EncodeError::StrWriteError),
+            Err(e) => Err(EncodeError::StrWriteError(e.to_string())),
         }
     }
 
@@ -166,14 +166,14 @@ impl Write for WriteEncoder {
     fn write_bytes(&mut self, buf: &[u8]) -> Result<(), EncodeError> {
         match self.write_bytes_length(&(buf.len() as u32)) {
             Ok(_v) => Ok(self.write_all(buf)?),
-            Err(_e) => Err(EncodeError::BinWriteError),
+            Err(e) => Err(EncodeError::BinWriteError(e.to_string())),
         }
     }
 
     fn write_bigint(&mut self, value: &BigInt) -> Result<(), EncodeError> {
         match self.write_string(&value.to_string()) {
             Ok(_v) => Ok(()),
-            Err(_e) => Err(EncodeError::BigIntWriteError),
+            Err(e) => Err(EncodeError::BigIntWriteError(e.to_string())),
         }
     }
 
@@ -209,7 +209,7 @@ impl Write for WriteEncoder {
                 }
                 Ok(())
             }
-            Err(_e) => Err(EncodeError::ArrayWriteError),
+            Err(e) => Err(EncodeError::ArrayWriteError(e.to_string())),
         }
     }
 
@@ -245,7 +245,7 @@ impl Write for WriteEncoder {
                 }
                 Ok(())
             }
-            Err(_e) => Err(EncodeError::MapWriteError),
+            Err(e) => Err(EncodeError::MapWriteError(e.to_string())),
         }
     }
 

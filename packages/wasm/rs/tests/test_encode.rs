@@ -111,7 +111,7 @@ fn test_write_map() {
 fn test_write_nil_with_empty_buffer() {
     let mut writer = WriteEncoder::new(&[], Context::new());
     assert!(writer.get_buffer().is_empty());
-    assert_eq!(writer.write_nil().err(), None);
+    assert!(writer.write_nil().err().is_none());
     assert_eq!(writer.get_buffer().as_slice(), [0xc0]);
 }
 

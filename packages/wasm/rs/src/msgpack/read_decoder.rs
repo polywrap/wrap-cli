@@ -23,7 +23,7 @@ impl ReadDecoder {
         let mut chunk = self.take(n_bytes_to_read);
         match chunk.read_to_end(&mut buf) {
             Ok(_n) => Ok(buf),
-            Err(_e) => Err(DecodeError::BytesReadError),
+            Err(e) => Err(DecodeError::BytesReadError(e.to_string())),
         }
     }
 }
@@ -36,97 +36,136 @@ impl StdioRead for ReadDecoder {
 
 impl Read for ReadDecoder {
     fn read_nil(&mut self) -> Result<(), DecodeError> {
-        match Format::get_format(self)? {
-            Format::Nil => Ok(()),
-            _ => Err(DecodeError::NilReadError),
+        match Format::get_format(self) {
+            Ok(f) => match f {
+                Format::Nil => Ok(()),
+                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+            },
+            Err(e) => Err(DecodeError::NilReadError(e.to_string())),
         }
     }
 
     fn read_bool(&mut self) -> Result<bool, DecodeError> {
-        match Format::get_format(self)? {
-            Format::True => Ok(true),
-            Format::False => Ok(false),
-            _ => Err(DecodeError::BooleanReadError),
+        match Format::get_format(self) {
+            Ok(f) => match f {
+                Format::True => Ok(true),
+                Format::False => Ok(false),
+                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+            },
+            Err(e) => Err(DecodeError::BooleanReadError(e.to_string())),
         }
     }
 
     fn read_i8(&mut self) -> Result<i8, DecodeError> {
-        match Format::get_format(self)? {
-            Format::Int8 => Ok(ReadBytesExt::read_i8(self)?),
-            _ => Err(DecodeError::Int8ReadError),
+        match Format::get_format(self) {
+            Ok(f) => match f {
+                Format::Int8 => Ok(ReadBytesExt::read_i8(self)?),
+                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+            },
+            Err(e) => Err(DecodeError::Int8ReadError(e.to_string())),
         }
     }
 
     fn read_i16(&mut self) -> Result<i16, DecodeError> {
-        match Format::get_format(self)? {
-            Format::Int16 => Ok(ReadBytesExt::read_i16::<BigEndian>(self)?),
-            _ => Err(DecodeError::Int16ReadError),
+        match Format::get_format(self) {
+            Ok(f) => match f {
+                Format::Int16 => Ok(ReadBytesExt::read_i16::<BigEndian>(self)?),
+                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+            },
+            Err(e) => Err(DecodeError::Int16ReadError(e.to_string())),
         }
     }
 
     fn read_i32(&mut self) -> Result<i32, DecodeError> {
-        match Format::get_format(self)? {
-            Format::Int32 => Ok(ReadBytesExt::read_i32::<BigEndian>(self)?),
-            _ => Err(DecodeError::Int32ReadError),
+        match Format::get_format(self) {
+            Ok(f) => match f {
+                Format::Int32 => Ok(ReadBytesExt::read_i32::<BigEndian>(self)?),
+                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+            },
+            Err(e) => Err(DecodeError::Int32ReadError(e.to_string())),
         }
     }
 
     fn read_i64(&mut self) -> Result<i64, DecodeError> {
-        match Format::get_format(self)? {
-            Format::Int64 => Ok(ReadBytesExt::read_i64::<BigEndian>(self)?),
-            _ => Err(DecodeError::Int64ReadError),
+        match Format::get_format(self) {
+            Ok(f) => match f {
+                Format::Int64 => Ok(ReadBytesExt::read_i64::<BigEndian>(self)?),
+                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+            },
+            Err(e) => Err(DecodeError::Int64ReadError(e.to_string())),
         }
     }
 
     fn read_u8(&mut self) -> Result<u8, DecodeError> {
-        match Format::get_format(self)? {
-            Format::Uint8 => Ok(ReadBytesExt::read_u8(self)?),
-            _ => Err(DecodeError::Uint8ReadError),
+        match Format::get_format(self) {
+            Ok(f) => match f {
+                Format::Uint8 => Ok(ReadBytesExt::read_u8(self)?),
+                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+            },
+            Err(e) => Err(DecodeError::Uint8ReadError(e.to_string())),
         }
     }
 
     fn read_u16(&mut self) -> Result<u16, DecodeError> {
-        match Format::get_format(self)? {
-            Format::Uint16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)?),
-            _ => Err(DecodeError::Uint16ReadError),
+        match Format::get_format(self) {
+            Ok(f) => match f {
+                Format::Uint16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)?),
+                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+            },
+            Err(e) => Err(DecodeError::Uint16ReadError(e.to_string())),
         }
     }
 
     fn read_u32(&mut self) -> Result<u32, DecodeError> {
-        match Format::get_format(self)? {
-            Format::Uint32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
-            _ => Err(DecodeError::Uint32ReadError),
+        match Format::get_format(self) {
+            Ok(f) => match f {
+                Format::Uint32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
+                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+            },
+            Err(e) => Err(DecodeError::Uint32ReadError(e.to_string())),
         }
     }
 
     fn read_u64(&mut self) -> Result<u64, DecodeError> {
-        match Format::get_format(self)? {
-            Format::Uint64 => Ok(ReadBytesExt::read_u64::<BigEndian>(self)?),
-            _ => Err(DecodeError::Uint64ReadError),
+        match Format::get_format(self) {
+            Ok(f) => match f {
+                Format::Uint64 => Ok(ReadBytesExt::read_u64::<BigEndian>(self)?),
+                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+            },
+            Err(e) => Err(DecodeError::Uint64ReadError(e.to_string())),
         }
     }
 
     fn read_f32(&mut self) -> Result<f32, DecodeError> {
-        match Format::get_format(self)? {
-            Format::Float32 => Ok(ReadBytesExt::read_f32::<BigEndian>(self)?),
-            _ => Err(DecodeError::Float32ReadError),
+        match Format::get_format(self) {
+            Ok(f) => match f {
+                Format::Float32 => Ok(ReadBytesExt::read_f32::<BigEndian>(self)?),
+                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+            },
+            Err(e) => Err(DecodeError::Float32ReadError(e.to_string())),
         }
     }
 
     fn read_f64(&mut self) -> Result<f64, DecodeError> {
-        match Format::get_format(self)? {
-            Format::Float64 => Ok(ReadBytesExt::read_f64::<BigEndian>(self)?),
-            _ => Err(DecodeError::Float64ReadError),
+        match Format::get_format(self) {
+            Ok(f) => match f {
+                Format::Float64 => Ok(ReadBytesExt::read_f64::<BigEndian>(self)?),
+                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+            },
+            Err(e) => Err(DecodeError::Float64ReadError(e.to_string())),
         }
     }
 
     fn read_string_length(&mut self) -> Result<u32, DecodeError> {
-        match Format::get_format(self)? {
-            Format::FixStr(len) => Ok(len as u32),
-            Format::Str8 => Ok(ReadBytesExt::read_u8(self)? as u32),
-            Format::Str16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as u32),
-            Format::Str32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
-            _ => Err(DecodeError::StrReadError),
+        match Format::get_format(self) {
+            Ok(f) => match f {
+                Format::FixStr(len) => Ok(len as u32),
+                Format::Str8 => Ok(ReadBytesExt::read_u8(self)? as u32),
+                Format::Str16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as u32),
+                Format::Str32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
+                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+            },
+            Err(e) => Err(DecodeError::StrReadError(e.to_string())),
         }
     }
 
@@ -135,16 +174,19 @@ impl Read for ReadDecoder {
         let bytes = self.get_bytes(str_len as u64)?;
         match String::from_utf8(bytes) {
             Ok(s) => Ok(s),
-            Err(_e) => Err(DecodeError::StrReadError),
+            Err(e) => Err(DecodeError::StrReadError(e.to_string())),
         }
     }
 
     fn read_bytes_length(&mut self) -> Result<u32, DecodeError> {
-        match Format::get_format(self)? {
-            Format::Bin8 => Ok(ReadBytesExt::read_u8(self)? as u32),
-            Format::Bin16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as u32),
-            Format::Bin32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
-            _ => Err(DecodeError::BinReadError),
+        match Format::get_format(self) {
+            Ok(f) => match f {
+                Format::Bin8 => Ok(ReadBytesExt::read_u8(self)? as u32),
+                Format::Bin16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as u32),
+                Format::Bin32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
+                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+            },
+            Err(e) => Err(DecodeError::BinReadError(e.to_string())),
         }
     }
 
@@ -160,7 +202,7 @@ impl Read for ReadDecoder {
         let bigint = self.read_string()?;
         match BigInt::from_str(&bigint) {
             Ok(b) => Ok(b),
-            Err(_e) => Err(DecodeError::ParseBigIntError),
+            Err(e) => Err(DecodeError::from(e)),
         }
     }
 
@@ -173,11 +215,14 @@ impl Read for ReadDecoder {
     }
 
     fn read_array_length(&mut self) -> Result<u32, DecodeError> {
-        match Format::get_format(self)? {
-            Format::FixArray(len) => Ok(len as u32),
-            Format::Array16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as u32),
-            Format::Array32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
-            _ => Err(DecodeError::ArrayReadError),
+        match Format::get_format(self) {
+            Ok(f) => match f {
+                Format::FixArray(len) => Ok(len as u32),
+                Format::Array16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as u32),
+                Format::Array32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
+                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+            },
+            Err(e) => Err(DecodeError::ArrayReadError(e.to_string())),
         }
     }
 
@@ -201,11 +246,14 @@ impl Read for ReadDecoder {
     }
 
     fn read_map_length(&mut self) -> Result<u32, DecodeError> {
-        match Format::get_format(self)? {
-            Format::FixMap(len) => Ok(len as u32),
-            Format::Map16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as u32),
-            Format::Map32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
-            _ => Err(DecodeError::MapReadError),
+        match Format::get_format(self) {
+            Ok(f) => match f {
+                Format::FixMap(len) => Ok(len as u32),
+                Format::Map16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as u32),
+                Format::Map32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
+                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+            },
+            Err(e) => Err(DecodeError::MapReadError(e.to_string())),
         }
     }
 
@@ -363,21 +411,19 @@ impl Read for ReadDecoder {
     }
 
     fn is_next_nil(&mut self) -> Result<bool, DecodeError> {
-        if let Ok(f) = Format::get_format(self) {
-            Ok(f == Format::Nil)
-        } else {
-            Err(DecodeError::NilReadError)
+        match Format::get_format(self) {
+            Ok(f) => Ok(f == Format::Nil),
+            Err(e) => Err(DecodeError::NilReadError(e.to_string())),
         }
     }
 
     fn is_next_string(&mut self) -> Result<bool, DecodeError> {
-        if let Ok(f) = Format::get_format(self) {
-            Ok(f == Format::FixStr(f.to_u8())
+        match Format::get_format(self) {
+            Ok(f) => Ok(f == Format::FixStr(f.to_u8())
                 || f == Format::Str8
                 || f == Format::Str16
-                || f == Format::Str32)
-        } else {
-            Err(DecodeError::StrReadError)
+                || f == Format::Str32),
+            Err(e) => Err(DecodeError::StrReadError(e.to_string())),
         }
     }
 

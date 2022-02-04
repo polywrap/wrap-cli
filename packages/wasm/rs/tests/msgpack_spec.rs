@@ -213,7 +213,7 @@ fn deserialize_sanity<R: Read>(reader: &mut R, sanity: &mut Sanity) -> Result<Sa
             // 					|val_fn| val_fn.read_array(|reader| reader.read_i32().unwrap()).unwrap(),
             // 				)
             // 				.unwrap(),
-            _ => return Err(DecodeError::UnknownFieldName),
+            err_f => return Err(DecodeError::UnknownFieldName(err_f.to_string())),
         }
     }
     Ok(sanity.to_owned())
@@ -284,7 +284,7 @@ fn deserialize_with_overflow<R: Read>(
             // 					|val_fn| val_fn.read_array(|reader| reader.read_i32().unwrap()).unwrap(),
             // 				)
             // 				.unwrap(),
-            _ => return Err(DecodeError::UnknownFieldName),
+            err_f => return Err(DecodeError::UnknownFieldName(err_f.to_string())),
         }
     }
     Ok(sanity.to_owned())
@@ -369,7 +369,7 @@ fn deserialize_with_invalid_types<R: Read>(
             // 					|val_fn| val_fn.read_array(|reader| reader.read_i32().unwrap()).unwrap(),
             // 				)
             // 				.unwrap(),
-            _ => return Err(DecodeError::UnknownFieldName),
+            err_f => return Err(DecodeError::UnknownFieldName(err_f.to_string())),
         }
     }
     Ok(sanity.to_owned())
