@@ -83,7 +83,7 @@ describe("wasm-rs test cases", () => {
     );
   });
 
-  it.only("enum-types", async () => {
+  it("enum-types", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/wasm-rs/enum-types`,
       ipfsProvider,
@@ -148,7 +148,7 @@ describe("wasm-rs test cases", () => {
     );
   });
 
-  it("invalid type errors", async () => {
+  it.only("invalid type errors", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/wasm-rs/invalid-types`,
       ipfsProvider,

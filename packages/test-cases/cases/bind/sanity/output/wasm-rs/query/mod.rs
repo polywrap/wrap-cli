@@ -32,7 +32,3 @@ pub use query::{
     object_method_wrapped,
     InputObjectMethod
 };
-pub mod env;
-pub use env::Env;
-pub mod query_env;
-pub use query_env::QueryEnv;

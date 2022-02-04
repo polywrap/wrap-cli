@@ -46,7 +46,7 @@ impl TestImportObject {
         }
     }
 
-    pub fn to_buffer(input: &TestImportObject) -> Result<Vec<u8>, EncodeError>  {
+    pub fn to_buffer(input: &TestImportObject) -> Result<Vec<u8>, EncodeError> {
         serialize_test_import_object(input)
     }
 
