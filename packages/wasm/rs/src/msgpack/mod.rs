@@ -10,7 +10,7 @@ pub mod write_sizer;
 
 pub use context::Context;
 pub use data_view::DataView;
-pub use error::{DecodeError, EncodeError};
+pub use error::{DecodeError, EncodeError, EnumTypeError};
 pub use format::Format;
 pub use read::Read;
 pub use read_decoder::ReadDecoder;
