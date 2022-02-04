@@ -60,6 +60,18 @@ pub enum EncodeError {
     MapWriteError(String),
 }
 
+impl From<String> for EncodeError {
+    fn from(e: String) -> Self {
+        e.into()
+    }
+}
+
+impl From<EncodeError> for String {
+    fn from(e: EncodeError) -> Self {
+        e.into()
+    }
+}
+
 impl From<EncodeError> for std::io::Error {
     fn from(e: EncodeError) -> Self {
         e.into()
@@ -154,6 +166,18 @@ pub enum DecodeError {
     MissingField(String),
 }
 
+impl From<String> for DecodeError {
+    fn from(e: String) -> Self {
+        e.into()
+    }
+}
+
+impl From<DecodeError> for String {
+    fn from(e: DecodeError) -> Self {
+        e.into()
+    }
+}
+
 impl From<DecodeError> for std::io::Error {
     fn from(e: DecodeError) -> Self {
         e.into()
@@ -186,6 +210,40 @@ impl From<num_bigint::ParseBigIntError> for DecodeError {
 
 impl From<DecodeError> for num_bigint::ParseBigIntError {
     fn from(e: DecodeError) -> Self {
+        e.into()
+    }
+}
+
+/// Errors from decoding data
+#[derive(Debug, Error)]
+pub enum EnumTypeError {
+    #[error("EnumProcessingError: '{0}'")]
+    EnumProcessingError(String),
+
+    #[error("ParseEnumError: '{0}'")]
+    ParseEnumError(String),
+}
+
+impl From<String> for EnumTypeError {
+    fn from(e: String) -> Self {
+        e.into()
+    }
+}
+
+impl From<EnumTypeError> for String {
+    fn from(e: EnumTypeError) -> Self {
+        e.into()
+    }
+}
+
+impl From<EnumTypeError> for std::io::Error {
+    fn from(e: EnumTypeError) -> Self {
+        e.into()
+    }
+}
+
+impl From<std::io::Error> for EnumTypeError {
+    fn from(e: std::io::Error) -> Self {
         e.into()
     }
 }
