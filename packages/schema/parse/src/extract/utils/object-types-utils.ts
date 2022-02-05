@@ -19,49 +19,7 @@ export interface State {
   currentType?: ObjectDefinition;
   currentProperty?: PropertyDefinition | undefined;
   nonNullType?: boolean;
-  // currentMapDirective?: {
-  //   keyType: string;
-  //   valueType: string;
-  // };
 }
-
-// export function extractMapDirective(node: DirectiveNode, state: State): void {
-//   if (!node.arguments || node.arguments.length !== 2) {
-//     throw new Error(`Invalid map directive: ${node.name.value}`);
-//   }
-
-//   let keyType: string | undefined;
-//   let valueType: string | undefined;
-
-//   for (const arg of node.arguments) {
-//     const dirName = arg.name.value;
-//     const dirValue = (arg.value as StringValueNode).value;
-
-//     switch (dirName) {
-//       case "key": {
-//         if (!isMapKeyType(dirValue)) {
-//           throw new Error(
-//             `Map directive: ${node.name.value} has invalid key type: ${dirValue}`
-//           );
-//         }
-//         keyType = dirValue;
-//         break;
-//       }
-//       case "value": {
-//         valueType = dirValue;
-//         break;
-//       }
-//     }
-//     if(!keyType || !valueType) {
-//       throw new Error(`Map directive: ${node.name.value} has invalid arguments`);
-//     }
-
-//     state.currentMapDirective = {
-//       keyType: keyType as string,
-//       valueType: valueType as string,
-//     }
-//   }
-// }
 
 export function extractFieldDefinition(
   node: FieldDefinitionNode,
@@ -74,11 +32,11 @@ export function extractFieldDefinition(
   if (node.directives) {
     for (const dir of node.directives) {
       switch (dir.name.value) {
-        case "map": {
+        case "annotate": {
           mapType = (dir.arguments?.find((arg) => arg.name.value === "type")?.value as StringValueNode).value ;
           if (!mapType) {
             throw new Error(
-              `Map directive: ${node.name.value} has invalid arguments`
+              `Annotate directive: ${node.name.value} has invalid arguments`
             );
           }
           mapDef = parseMapType(mapType);
