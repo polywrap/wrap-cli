@@ -29,7 +29,7 @@ directive @capability(
 
 directive @enabled_interface on OBJECT
 
-directive @map(type: String!) on FIELD
+directive @annotate(type: String!) on FIELD
 """
 CustomEnum comment
 """
@@ -81,7 +81,7 @@ optStr comment
   enum: CustomEnum!
   enumArray: [CustomEnum!]!,
   optEnumArray: [CustomEnum],
-  map1: Map! @map(type: "Map[String, Int]")
+  map1: Map! @annotate(type: "Map<String, Int>")
 }
 
 """

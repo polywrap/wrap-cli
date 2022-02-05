@@ -353,7 +353,7 @@ export const output: TypeInfo = {
         }),
         createMapPropertyDefinition({
           name: "map1",
-          type: "Map",
+          type: "Map<String, Int>",
           key: createMapKeyDefinition({ type: "String" }),
           value: createScalarDefinition({ type: "Int" }),
           required: true,

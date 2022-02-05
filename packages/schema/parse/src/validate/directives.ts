@@ -9,7 +9,7 @@ export const getSupportedDirectivesValidator = (): SchemaValidator => {
     "imports",
     "capability",
     "enabled_interface",
-    "map",
+    "annotate",
   ];
   const unsupportedUsages: string[] = [];
 
