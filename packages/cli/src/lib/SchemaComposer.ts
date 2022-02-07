@@ -4,10 +4,7 @@
 import { Project } from "./project";
 import { getSimpleClient } from "./helpers/client";
 
-import {
-  Uri,
-  Web3ApiClient,
-} from "@web3api/client-js";
+import { Uri, Web3ApiClient } from "@web3api/client-js";
 import {
   composeSchema,
   ComposerOutput,
