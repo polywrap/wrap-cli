@@ -1,14 +1,14 @@
 import {
   createArrayPropertyDefinition,
   createMethodDefinition,
-  createQueryDefinition,
+  createModuleDefinition,
   createScalarDefinition,
   createScalarPropertyDefinition,
   createArrayDefinition,
   createObjectPropertyDefinition,
   createObjectDefinition,
   createEnumPropertyDefinition,
-  createImportedQueryDefinition,
+  createImportedModuleDefinition,
   createImportedObjectDefinition,
   createImportedEnumDefinition,
   createInterfaceImplementedDefinition,
@@ -42,9 +42,9 @@ export const typeInfo: TypeInfo = {
     }),
   },
   enumTypes: [],
-  queryTypes: [
+  moduleTypes: [
     {
-      ...createQueryDefinition({ type: "Mutation", comment: "Mutation comment" }),
+      ...createModuleDefinition({ type: "Mutation", comment: "Mutation comment" }),
       imports: [
         { type: "Namespace_Query" },
         { type: "Namespace_Mutation" },
@@ -325,9 +325,9 @@ export const typeInfo: TypeInfo = {
       ],
     },
   ],
-  importedQueryTypes: [
+  importedModuleTypes: [
     {
-      ...createImportedQueryDefinition({
+      ...createImportedModuleDefinition({
         uri: "test.eth",
         namespace: "Namespace",
         nativeType: "Query",
@@ -417,7 +417,7 @@ export const typeInfo: TypeInfo = {
       ]
     },
     {
-      ...createImportedQueryDefinition({
+      ...createImportedModuleDefinition({
         uri: "test.eth",
         namespace: "Namespace",
         nativeType: "Mutation",
@@ -561,7 +561,7 @@ export const typeInfo: TypeInfo = {
       ]
     },
     {
-      ...createImportedQueryDefinition({
+      ...createImportedModuleDefinition({
         uri: "just.mutation.eth",
         namespace: "JustMutation",
         isInterface: false,
@@ -600,7 +600,7 @@ export const typeInfo: TypeInfo = {
       ]
     },
     {
-      ...createImportedQueryDefinition({
+      ...createImportedModuleDefinition({
         uri: "test-interface.eth",
         namespace: "Interface",
         nativeType: "Mutation",

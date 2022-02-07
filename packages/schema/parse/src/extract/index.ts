@@ -1,9 +1,9 @@
 import { TypeInfo } from "../typeInfo";
 import { getEnumTypesVisitor } from "./enum-types";
 import { getObjectTypesVisitor } from "./object-types";
-import { getQueryTypesVisitor } from "./query-types";
+import { getmoduleTypesVisitor } from "./module-types";
 import { getImportedObjectTypesVisitor } from "./imported-object-types";
-import { getImportedQueryTypesVisitor } from "./imported-query-types";
+import { getimportedModuleTypesVisitor } from "./imported-module-types";
 import { getImportedEnumTypesVisitor } from "./imported-enum-types";
 import { getEnvVisitor } from "./env-types";
 
@@ -16,7 +16,7 @@ export const extractors: SchemaExtractorBuilder[] = [
   getImportedEnumTypesVisitor,
   getObjectTypesVisitor,
   getImportedObjectTypesVisitor,
-  getQueryTypesVisitor,
-  getImportedQueryTypesVisitor,
+  getmoduleTypesVisitor,
+  getimportedModuleTypesVisitor,
   getEnvVisitor,
 ];

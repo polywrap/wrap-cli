@@ -29,6 +29,7 @@ module.exports = {
       ],
       rules: {
         "prettier/prettier": ["error"],
+        "spaced-comment": ["error", "always", { "markers": ["/"] }],
         "@typescript-eslint/naming-convention": [
           "error",
           {selector: "default", format: ["camelCase"]},
