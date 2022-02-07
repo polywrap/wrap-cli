@@ -1,5 +1,6 @@
 //! Errors returned from I/O `Write` and `Read` operations
 
+use super::Format;
 use thiserror::Error;
 
 /// Errors from encoding data
@@ -159,7 +160,7 @@ pub enum DecodeError {
     #[error("UnknownFieldName: '{0}'")]
     UnknownFieldName(String),
 
-    #[error("WrongMsgPackFormat: '{0}'")]
+    #[error("{0}")]
     WrongMsgPackFormat(String),
 
     #[error("Missing required field: '{0}'")]
@@ -245,5 +246,53 @@ impl From<EnumTypeError> for std::io::Error {
 impl From<std::io::Error> for EnumTypeError {
     fn from(e: std::io::Error) -> Self {
         e.into()
+    }
+}
+
+pub fn get_error_message(format: Format) -> String {
+    if Format::is_negative_fixed_int(format.to_u8()) {
+        return String::from("Found 'int'.");
+    } else if Format::is_positive_fixed_int(format.to_u8()) {
+        return String::from("Found 'int'.");
+    } else if Format::is_fixed_string(format.to_u8()) {
+        return String::from("Found 'string'.");
+    } else if Format::is_fixed_array(format.to_u8()) {
+        return String::from("Found 'array'.");
+    } else if Format::is_fixed_map(format.to_u8()) {
+        return String::from("Found 'map'.");
+    } else {
+        match format {
+            Format::Nil => "Found 'nil'.".to_string(),
+            Format::Reserved => "Found 'reserved'.".to_string(),
+            Format::False | Format::True => "Found 'bool'.".to_string(),
+            Format::Bin8 => "Found 'BIN8'.".to_string(),
+            Format::Bin16 => "Found 'BIN16'.".to_string(),
+            Format::Bin32 => "Found 'BIN32'.".to_string(),
+            Format::Ext8 => "Found 'EXT8'.".to_string(),
+            Format::Ext16 => "Found 'EXT16'.".to_string(),
+            Format::Ext32 => "Found 'EXT32'.".to_string(),
+            Format::Float32 => "Found 'float32'.".to_string(),
+            Format::Float64 => "Found 'float64'.".to_string(),
+            Format::Uint8 => "Found 'uint8'.".to_string(),
+            Format::Uint16 => "Found 'uint16'.".to_string(),
+            Format::Uint32 => "Found 'uint32'.".to_string(),
+            Format::Uint64 => "Found 'uint64'.".to_string(),
+            Format::Int8 => "Found 'int8'.".to_string(),
+            Format::Int16 => "Found 'int16'.".to_string(),
+            Format::Int32 => "Found 'int32'.".to_string(),
+            Format::Int64 => "Found 'int64'.".to_string(),
+            Format::FixExt1 => "Found 'FIXEXT1'.".to_string(),
+            Format::FixExt2 => "Found 'FIXEXT2'.".to_string(),
+            Format::FixExt4 => "Found 'FIXEXT4'.".to_string(),
+            Format::FixExt8 => "Found 'FIXEXT8'.".to_string(),
+            Format::FixExt16 => "Found 'FIXEXT16'.".to_string(),
+            Format::Str8 | Format::Str16 | Format::Str32 => "Found 'string'.".to_string(),
+            Format::Array16 | Format::Array32 => "Found 'array'.".to_string(),
+            Format::Map16 | Format::Map32 => "Found 'map'.".to_string(),
+            _ => format!(
+                "invalid prefix, bad encoding for val: {}",
+                &format.to_u8().to_string()
+            ),
+        }
     }
 }

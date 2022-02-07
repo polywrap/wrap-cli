@@ -49,6 +49,26 @@ pub enum Format {
 }
 
 impl Format {
+    pub fn is_positive_fixed_int(u: u8) -> bool {
+        u >> 7 == 0
+    }
+
+    pub fn is_negative_fixed_int(u: u8) -> bool {
+        (u & 0xe0) == Format::to_u8(&Format::NegativeFixInt(u as i8))
+    }
+
+    pub fn is_fixed_map(u: u8) -> bool {
+        (u & 0xf0) == Format::to_u8(&Format::FixMap(u))
+    }
+
+    pub fn is_fixed_array(u: u8) -> bool {
+        (u & 0xf0) == Format::to_u8(&Format::FixArray(u))
+    }
+
+    pub fn is_fixed_string(u: u8) -> bool {
+        (u & 0xe0) == Format::to_u8(&Format::FixStr(u))
+    }
+
     pub fn set_format<W: std::io::Write>(
         writer: &mut W,
         format: Format,

@@ -1,4 +1,7 @@
-use super::{error::DecodeError, Context, DataView, Format, Read};
+use super::{
+    error::{get_error_message, DecodeError},
+    Context, DataView, Format, Read,
+};
 use crate::{BigInt, JSON};
 use byteorder::{BigEndian, ReadBytesExt};
 use core::hash::Hash;
@@ -39,7 +42,13 @@ impl Read for ReadDecoder {
         match Format::get_format(self) {
             Ok(f) => match f {
                 Format::Nil => Ok(()),
-                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+                err_f => {
+                    let err_msg = format!(
+                        "Property must be of type 'nil'. {}",
+                        get_error_message(err_f)
+                    );
+                    Err(DecodeError::WrongMsgPackFormat(err_msg))
+                }
             },
             Err(e) => Err(DecodeError::NilReadError(e.to_string())),
         }
@@ -50,7 +59,13 @@ impl Read for ReadDecoder {
             Ok(f) => match f {
                 Format::True => Ok(true),
                 Format::False => Ok(false),
-                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+                err_f => {
+                    let err_msg = format!(
+                        "Property must be of type 'bool'. {}",
+                        get_error_message(err_f)
+                    );
+                    Err(DecodeError::WrongMsgPackFormat(err_msg))
+                }
             },
             Err(e) => Err(DecodeError::BooleanReadError(e.to_string())),
         }
@@ -60,7 +75,13 @@ impl Read for ReadDecoder {
         match Format::get_format(self) {
             Ok(f) => match f {
                 Format::Int8 => Ok(ReadBytesExt::read_i8(self)?),
-                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+                err_f => {
+                    let err_msg = format!(
+                        "Property must be of type 'int8'. {}",
+                        get_error_message(err_f)
+                    );
+                    Err(DecodeError::WrongMsgPackFormat(err_msg))
+                }
             },
             Err(e) => Err(DecodeError::Int8ReadError(e.to_string())),
         }
@@ -70,7 +91,13 @@ impl Read for ReadDecoder {
         match Format::get_format(self) {
             Ok(f) => match f {
                 Format::Int16 => Ok(ReadBytesExt::read_i16::<BigEndian>(self)?),
-                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+                err_f => {
+                    let err_msg = format!(
+                        "Property must be of type 'int16'. {}",
+                        get_error_message(err_f)
+                    );
+                    Err(DecodeError::WrongMsgPackFormat(err_msg))
+                }
             },
             Err(e) => Err(DecodeError::Int16ReadError(e.to_string())),
         }
@@ -80,7 +107,13 @@ impl Read for ReadDecoder {
         match Format::get_format(self) {
             Ok(f) => match f {
                 Format::Int32 => Ok(ReadBytesExt::read_i32::<BigEndian>(self)?),
-                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+                err_f => {
+                    let err_msg = format!(
+                        "Property must be of type 'int32'. {}",
+                        get_error_message(err_f)
+                    );
+                    Err(DecodeError::WrongMsgPackFormat(err_msg))
+                }
             },
             Err(e) => Err(DecodeError::Int32ReadError(e.to_string())),
         }
@@ -90,7 +123,13 @@ impl Read for ReadDecoder {
         match Format::get_format(self) {
             Ok(f) => match f {
                 Format::Int64 => Ok(ReadBytesExt::read_i64::<BigEndian>(self)?),
-                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+                err_f => {
+                    let err_msg = format!(
+                        "Property must be of type 'int64'. {}",
+                        get_error_message(err_f)
+                    );
+                    Err(DecodeError::WrongMsgPackFormat(err_msg))
+                }
             },
             Err(e) => Err(DecodeError::Int64ReadError(e.to_string())),
         }
@@ -100,7 +139,13 @@ impl Read for ReadDecoder {
         match Format::get_format(self) {
             Ok(f) => match f {
                 Format::Uint8 => Ok(ReadBytesExt::read_u8(self)?),
-                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+                err_f => {
+                    let err_msg = format!(
+                        "Property must be of type 'uint8'. {}",
+                        get_error_message(err_f)
+                    );
+                    Err(DecodeError::WrongMsgPackFormat(err_msg))
+                }
             },
             Err(e) => Err(DecodeError::Uint8ReadError(e.to_string())),
         }
@@ -110,7 +155,13 @@ impl Read for ReadDecoder {
         match Format::get_format(self) {
             Ok(f) => match f {
                 Format::Uint16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)?),
-                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+                err_f => {
+                    let err_msg = format!(
+                        "Property must be of type 'uint16'. {}",
+                        get_error_message(err_f)
+                    );
+                    Err(DecodeError::WrongMsgPackFormat(err_msg))
+                }
             },
             Err(e) => Err(DecodeError::Uint16ReadError(e.to_string())),
         }
@@ -120,7 +171,13 @@ impl Read for ReadDecoder {
         match Format::get_format(self) {
             Ok(f) => match f {
                 Format::Uint32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
-                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+                err_f => {
+                    let err_msg = format!(
+                        "Property must be of type 'uint32'. {}",
+                        get_error_message(err_f)
+                    );
+                    Err(DecodeError::WrongMsgPackFormat(err_msg))
+                }
             },
             Err(e) => Err(DecodeError::Uint32ReadError(e.to_string())),
         }
@@ -130,7 +187,13 @@ impl Read for ReadDecoder {
         match Format::get_format(self) {
             Ok(f) => match f {
                 Format::Uint64 => Ok(ReadBytesExt::read_u64::<BigEndian>(self)?),
-                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+                err_f => {
+                    let err_msg = format!(
+                        "Property must be of type 'uint64'. {}",
+                        get_error_message(err_f)
+                    );
+                    Err(DecodeError::WrongMsgPackFormat(err_msg))
+                }
             },
             Err(e) => Err(DecodeError::Uint64ReadError(e.to_string())),
         }
@@ -140,7 +203,13 @@ impl Read for ReadDecoder {
         match Format::get_format(self) {
             Ok(f) => match f {
                 Format::Float32 => Ok(ReadBytesExt::read_f32::<BigEndian>(self)?),
-                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+                err_f => {
+                    let err_msg = format!(
+                        "Property must be of type 'float32'. {}",
+                        get_error_message(err_f)
+                    );
+                    Err(DecodeError::WrongMsgPackFormat(err_msg))
+                }
             },
             Err(e) => Err(DecodeError::Float32ReadError(e.to_string())),
         }
@@ -150,7 +219,13 @@ impl Read for ReadDecoder {
         match Format::get_format(self) {
             Ok(f) => match f {
                 Format::Float64 => Ok(ReadBytesExt::read_f64::<BigEndian>(self)?),
-                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+                err_f => {
+                    let err_msg = format!(
+                        "Property must be of type 'float64'. {}",
+                        get_error_message(err_f)
+                    );
+                    Err(DecodeError::WrongMsgPackFormat(err_msg))
+                }
             },
             Err(e) => Err(DecodeError::Float64ReadError(e.to_string())),
         }
@@ -163,7 +238,13 @@ impl Read for ReadDecoder {
                 Format::Str8 => Ok(ReadBytesExt::read_u8(self)? as u32),
                 Format::Str16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as u32),
                 Format::Str32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
-                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+                err_f => {
+                    let err_msg = format!(
+                        "Property must be of type 'string'. {}",
+                        get_error_message(err_f)
+                    );
+                    Err(DecodeError::WrongMsgPackFormat(err_msg))
+                }
             },
             Err(e) => Err(DecodeError::StrReadError(e.to_string())),
         }
@@ -184,7 +265,13 @@ impl Read for ReadDecoder {
                 Format::Bin8 => Ok(ReadBytesExt::read_u8(self)? as u32),
                 Format::Bin16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as u32),
                 Format::Bin32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
-                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+                err_f => {
+                    let err_msg = format!(
+                        "Property must be of type 'bytes'. {}",
+                        get_error_message(err_f)
+                    );
+                    Err(DecodeError::WrongMsgPackFormat(err_msg))
+                }
             },
             Err(e) => Err(DecodeError::BinReadError(e.to_string())),
         }
@@ -220,7 +307,13 @@ impl Read for ReadDecoder {
                 Format::FixArray(len) => Ok(len as u32),
                 Format::Array16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as u32),
                 Format::Array32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
-                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+                err_f => {
+                    let err_msg = format!(
+                        "Property must be of type 'array'. {}",
+                        get_error_message(err_f)
+                    );
+                    Err(DecodeError::WrongMsgPackFormat(err_msg))
+                }
             },
             Err(e) => Err(DecodeError::ArrayReadError(e.to_string())),
         }
@@ -251,7 +344,13 @@ impl Read for ReadDecoder {
                 Format::FixMap(len) => Ok(len as u32),
                 Format::Map16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as u32),
                 Format::Map32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
-                err_f => Err(DecodeError::WrongMsgPackFormat(err_f.to_string())),
+                err_f => {
+                    let err_msg = format!(
+                        "Property must be of type 'map'. {}",
+                        get_error_message(err_f)
+                    );
+                    Err(DecodeError::WrongMsgPackFormat(err_msg))
+                }
             },
             Err(e) => Err(DecodeError::MapReadError(e.to_string())),
         }
