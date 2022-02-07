@@ -1,0 +1,13 @@
+#import { Mutation, Connection, TxOperation} into Tezos from "w3://ens/tezos.web3api.eth"
+
+type Mutation {
+
+    callContractMethod(
+        address: String!
+        method: String!
+        args: String
+        connection: Tezos_Connection
+    ): Tezos_TxOperation! 
+
+}
+
