@@ -42,7 +42,7 @@ export const toWasmInit: MustacheFunction = () => {
       const nullable = "Nullable";
       const nullOptional = "| null";
 
-      if (nullType.substring(-nullOptional.length) === nullOptional) {
+      if (nullType.endsWith(nullOptional)) {
         return "null";
       } else if (nullType.substring(0, nullable.length) === nullable) {
         return `new ${nullType}()`;
