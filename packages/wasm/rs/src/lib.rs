@@ -38,25 +38,18 @@
 #![deny(rustdoc::broken_intra_doc_links)]
 
 pub mod abort;
-pub mod big_int;
 pub mod debug;
 pub mod env;
 pub mod get_implementations;
 pub mod invoke;
-pub mod json;
 pub mod malloc;
 pub mod msgpack;
 pub mod subinvoke;
 
-pub use abort::*;
-pub use env::*;
-pub use get_implementations::*;
-pub use invoke::*;
-pub use subinvoke::*;
-
-pub use big_int::BigInt;
-pub use json::JSON;
 pub use msgpack::{
     Context, DecodeError, EncodeError, EnumTypeError, Read, ReadDecoder, Write, WriteEncoder,
     WriteSizer,
 };
+
+pub use num_bigint::BigInt;
+pub use serde_json as JSON;

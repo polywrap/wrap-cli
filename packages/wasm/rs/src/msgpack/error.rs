@@ -214,7 +214,7 @@ impl From<DecodeError> for num_bigint::ParseBigIntError {
     }
 }
 
-/// Errors from decoding data
+/// Error types for CustomEnum
 #[derive(Debug, Error)]
 pub enum EnumTypeError {
     #[error("EnumProcessingError: '{0}'")]
