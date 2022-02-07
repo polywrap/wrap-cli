@@ -26,8 +26,6 @@ import {
   TestImport_EnumEnum,
   TestImport_EnumString,
   TestImport_Enum,
-  TestImport_Query,
-  TestImport_Mutation,
 } from "./types";
 
 import {
