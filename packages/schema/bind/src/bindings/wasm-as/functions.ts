@@ -7,13 +7,16 @@ export const toMsgPack: MustacheFunction = () => {
 
     let modifier = "";
     if (type[type.length - 1] === "!") {
-      type = type.substr(0, type.length - 1);
+      type = type.substring(0, type.length - 1);
     } else {
       modifier = "Nullable";
     }
 
     if (type[0] === "[") {
       return modifier + "Array";
+    }
+    if (type.startsWith("Map")) {
+      return modifier + "Map";
     }
     switch (type) {
       case "Int":
@@ -33,15 +36,15 @@ export const toWasmInit: MustacheFunction = () => {
     let type = render(value);
 
     if (type[type.length - 1] === "!") {
-      type = type.substr(0, type.length - 1);
+      type = type.substring(0, type.length - 1);
     } else {
       const nullType = toWasm()(value, render);
       const nullable = "Nullable";
       const nullOptional = "| null";
 
-      if (nullType.substr(-nullOptional.length) === nullOptional) {
+      if (nullType.substring(-nullOptional.length) === nullOptional) {
         return "null";
-      } else if (nullType.substr(0, nullable.length) === nullable) {
+      } else if (nullType.substring(0, nullable.length) === nullable) {
         return `new ${nullType}()`;
       }
     }
@@ -87,13 +90,17 @@ export const toWasm: MustacheFunction = () => {
 
     let nullable = false;
     if (type[type.length - 1] === "!") {
-      type = type.substr(0, type.length - 1);
+      type = type.substring(0, type.length - 1);
     } else {
       nullable = true;
     }
 
     if (type[0] === "[") {
       return toWasmArray(type, nullable);
+    }
+
+    if (type.startsWith("Map")) {
+      return toWasmMap(type, nullable);
     }
 
     switch (type) {
@@ -157,6 +164,29 @@ const toWasmArray = (type: string, nullable: boolean): string => {
   const wasmType = toWasm()(result[2], (str) => str);
   return applyNullable("Array<" + wasmType + ">", nullable, false);
 };
+
+const toWasmMap = (type: string, nullable: boolean): string => {
+  const firstOpenBracketIdx = type.indexOf("<");
+  const lastCloseBracketIdx = type.lastIndexOf(">");
+
+  if (!(firstOpenBracketIdx !== -1 && lastCloseBracketIdx !== -1)) {
+    throw new Error(`Invalid Map: ${type}`);
+  }
+
+  const keyValTypes = type
+    .substring(firstOpenBracketIdx + 1, lastCloseBracketIdx)
+    .split(",")
+    .map((x) => x.trim());
+  
+  if (keyValTypes.length !== 2 || !keyValTypes[0] || !keyValTypes[1]) {
+    throw new Error(`Invalid Map: ${type}`);
+  }
+
+  const keyType = toWasm()(keyValTypes[0], (str) => str);
+  const valType = toWasm()(keyValTypes[1], (str) => str);
+
+  return applyNullable(`Map<${keyType}, ${valType}>`, nullable, false);
+}
 
 const applyNullable = (
   type: string,
