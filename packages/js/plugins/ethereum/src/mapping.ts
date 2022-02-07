@@ -90,10 +90,14 @@ export const fromTxRequest = (
   to: request.to || undefined,
   from: request.from || undefined,
   nonce: request.nonce || undefined,
-  gasLimit: request.gasLimit || undefined,
-  gasPrice: request.gasPrice || undefined,
+  gasLimit: request.gasLimit
+    ? ethers.BigNumber.from(request.gasLimit)
+    : undefined,
+  gasPrice: request.gasPrice
+    ? ethers.BigNumber.from(request.gasPrice)
+    : undefined,
   data: request.data || undefined,
-  value: request.value || undefined,
+  value: request.value ? ethers.BigNumber.from(request.value) : undefined,
   chainId: request.chainId || undefined,
   type: request.type || undefined,
 });
