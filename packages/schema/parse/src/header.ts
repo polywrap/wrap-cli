@@ -28,5 +28,7 @@ directive @capability(
 ) repeatable on OBJECT
 
 directive @enabled_interface on OBJECT
+
+directive @annotate(type: String!) on FIELD
 ### Web3API Header END ###
 `;
