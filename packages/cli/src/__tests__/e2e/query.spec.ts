@@ -6,6 +6,11 @@ import { clearStyle, w3Cli } from "./utils";
 
 import { runCLI } from "@web3api/test-env-js";
 import { normalizeLineEndings } from "@web3api/os-js";
+import {
+  checkSampleQueryOutput,
+  getSampleOutputWithClientConfig,
+  ISampleOutputOptions,
+} from "./query.spec.helper";
 
 const HELP = `
 w3 query [options] <recipe-script>
@@ -48,7 +53,7 @@ ${HELP}`);
   });
 });
 
-describe.only("e2e tests for query command", () => {
+describe("e2e tests for query command", () => {
   beforeAll(async () => {
     const { exitCode: testenvCode, stderr: testEnvUpErr } = await runCLI({
       args: ["test-env", "up"],
@@ -57,6 +62,29 @@ describe.only("e2e tests for query command", () => {
     });
     expect(testEnvUpErr).toBe("");
     expect(testenvCode).toEqual(0);
+
+    const { stderr: deployErr } = await runCLI({
+      args: ["./deploy-contracts.js"],
+      cwd: projectRoot,
+      cli: " ",
+    });
+
+    expect(deployErr).toBe("");
+
+    const { exitCode: buildCode, stderr: buildErr } = await runCLI({
+      args: [
+        "build",
+        "--ipfs",
+        "http://localhost:5001",
+        "--test-ens",
+        "simplestorage.eth",
+      ],
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
+
+    expect(buildErr).toBe("");
+    expect(buildCode).toEqual(0);
   });
 
   afterAll(async () => {
@@ -90,64 +118,15 @@ describe.only("e2e tests for query command", () => {
       expect(stderr).toBe("");
 
       const constants = require(`${projectRoot}/recipes/constants.json`);
-      expect(clearStyle(normalizeLineEndings(stdout, "\n")))
-        .toContain(`-----------------------------------
-mutation {
-  setData(
-    options: {
-      address: $address
-      value: $value
-    }
-    connection: {
-      networkNameOrChainId: $network
-    }
-  ) {
-    value
-    txReceipt
-  }
-}
-
-{
-  "address": "${constants.SimpleStorageAddr}",
-  "value": 569,
-  "network": "testnet"
-}
------------------------------------
------------------------------------
-{
-  "setData": {
-    "value": 569,
-    "txReceipt": "0xdone"
-  }
-}
------------------------------------`);
+      expect(clearStyle(normalizeLineEndings(stdout, "\n"))).toContain(
+        getSampleOutputWithClientConfig({
+          SimpleStorageAddr: constants.SimpleStorageAddr,
+        })
+      );
     }
   }, 48000);
 
   test("Should successfully return response: using json recipes", async () => {
-    const { stderr: deployErr } = await runCLI({
-      args: ["./deploy-contracts.js"],
-      cwd: projectRoot,
-      cli: " ",
-    });
-
-    expect(deployErr).toBe("");
-
-    const { exitCode: buildCode, stderr: buildErr } = await runCLI({
-      args: [
-        "build",
-        "--ipfs",
-        "http://localhost:5001",
-        "--test-ens",
-        "simplestorage.eth",
-      ],
-      cwd: projectRoot,
-      cli: w3Cli,
-    });
-
-    expect(buildErr).toBe("");
-    expect(buildCode).toEqual(0);
-
     const { exitCode: code, stdout: output, stderr: queryErr } = await runCLI({
       args: ["query", "./recipes/e2e.json", "--test-ens"],
       cwd: projectRoot,
@@ -158,65 +137,12 @@ mutation {
     expect(queryErr).toBe("");
 
     const constants = require(`${projectRoot}/recipes/constants.json`);
-    expect(clearStyle(normalizeLineEndings(output, "\n")))
-      .toContain(`-----------------------------------
-mutation {
-  setData(
-    options: {
-      address: $address
-      value: $value
-    }
-    connection: {
-      networkNameOrChainId: $network
-    }
-  ) {
-    value
-    txReceipt
-  }
-}
-
-{
-  "address": "${constants.SimpleStorageAddr}",
-  "value": 569,
-  "network": "testnet"
-}
------------------------------------
------------------------------------
-{
-  "setData": {
-    "txReceipt": "0x`);
-    expect(clearStyle(output)).toContain(`",
-    "value": 569
-  }
-}
------------------------------------
-`);
+    checkSampleQueryOutput(output, {
+      SimpleStorageAddr: constants.SimpleStorageAddr,
+    });
   }, 480000);
 
   test("Should successfully return response: using yaml recipes", async () => {
-    const { stderr: deployErr } = await runCLI({
-      args: ["./deploy-contracts.js"],
-      cwd: projectRoot,
-      cli: " ",
-    });
-
-    expect(deployErr).toBe("");
-
-    const { exitCode: buildCode, stderr: buildErr } = await runCLI({
-      args: [
-        "build",
-        "--ipfs",
-        "http://localhost:5001",
-        "--test-ens",
-        "simplestorage.eth",
-      ],
-      cwd: projectRoot,
-      cli: w3Cli,
-    });
-
-    expect(buildErr).toBe("");
-    expect(buildCode).toEqual(0);
-
     const { exitCode: code, stdout: output, stderr: queryErr } = await runCLI({
       args: ["query", "./recipes/e2e.yaml", "--test-ens"],
       cwd: projectRoot,
@@ -231,67 +157,14 @@ mutation {
         `${projectRoot}/recipes/constants.yaml`,
         "utf8"
       )
-    ) as { SimpleStorageAddr: string };
+    ) as ISampleOutputOptions;
 
-    expect(clearStyle(normalizeLineEndings(output, "\n")))
-      .toContain(`-----------------------------------
-mutation {
-  setData(
-    options: {
-      address: $address
-      value: $value
-    }
-    connection: {
-      networkNameOrChainId: $network
-    }
-  ) {
-    value
-    txReceipt
-  }
-}
-
-{
-  "address": "${constants.SimpleStorageAddr}",
-  "value": 569,
-  "network": "testnet"
-}
------------------------------------
------------------------------------
-{
-  "setData": {
-    "txReceipt": "0x`);
-    expect(clearStyle(output)).toContain(`",
-    "value": 569
-  }
-}
------------------------------------
-`);
+    checkSampleQueryOutput(output, {
+      SimpleStorageAddr: constants.SimpleStorageAddr,
+    });
   }, 480000);
 
   test("Should successfully return response: using mix of yaml & json recipes", async () => {
-    const { stderr: deployErr } = await runCLI({
-      args: ["./deploy-contracts.js"],
-      cwd: projectRoot,
-      cli: " ",
-    });
-
-    expect(deployErr).toBe("");
-
-    const { exitCode: buildCode, stderr: buildErr } = await runCLI({
-      args: [
-        "build",
-        "--ipfs",
-        "http://localhost:5001",
-        "--test-ens",
-        "simplestorage.eth",
-      ],
-      cwd: projectRoot,
-      cli: w3Cli,
-    });
-
-    expect(buildErr).toBe("");
-    expect(buildCode).toEqual(0);
-
     const { exitCode: code, stdout: output, stderr: queryErr } = await runCLI({
       args: ["query", "./recipes/e2e.json", "--test-ens"],
       cwd: projectRoot,
@@ -306,40 +179,10 @@ mutation {
         `${projectRoot}/recipes/constants.yaml`,
         "utf8"
       )
-    ) as { SimpleStorageAddr: string };
+    ) as ISampleOutputOptions;
 
-    expect(clearStyle(normalizeLineEndings(output, "\n")))
-      .toContain(`-----------------------------------
-mutation {
-  setData(
-    options: {
-      address: $address
-      value: $value
-    }
-    connection: {
-      networkNameOrChainId: $network
-    }
-  ) {
-    value
-    txReceipt
-  }
-}
-
-{
-  "address": "${constants.SimpleStorageAddr}",
-  "value": 569,
-  "network": "testnet"
-}
------------------------------------
------------------------------------
-{
-  "setData": {
-    "txReceipt": "0x`);
-    expect(clearStyle(output)).toContain(`",
-    "value": 569
-  }
-}
------------------------------------
-`);
+    checkSampleQueryOutput(output, {
+      SimpleStorageAddr: constants.SimpleStorageAddr,
+    });
   }, 480000);
 });
