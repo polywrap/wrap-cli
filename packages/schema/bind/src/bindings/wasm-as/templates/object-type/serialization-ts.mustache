@@ -27,6 +27,13 @@ export function write{{type}}(writer: Write, type: {{type}}): void {
     {{> serialize_array}}
   });
   {{/array}}
+  {{#map}}
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{#handleKeywords}}{{name}}{{/handleKeywords}}, (writer: Write, key: {{#key}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/key}}) => {
+    writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(item);
+  }, (writer: Write, value: {{#value}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/value}}): void => {
+    {{> serialize_map_value}}
+  });
+  {{/map}}
   {{#object}}
   {{#required}}
   Types.{{type}}.write(writer, type.{{#handleKeywords}}{{name}}{{/handleKeywords}});
@@ -93,6 +100,13 @@ export function read{{type}}(reader: Read): {{type}} {
         {{> deserialize_array}}
       });
       {{/array}}
+      {{#map}}
+      _{{name}} = reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}((reader: Read): {{#key}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/key}} => {
+        return reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}();
+      }, (reader: Read): {{#value}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/value}} => {
+        {{> deserialize_map_value}}
+      });
+      {{/map}}
       {{#enum}}
       {{> deserialize_enum}}
       _{{name}} = value;

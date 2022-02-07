@@ -75,6 +75,13 @@ export function deserialize{{name}}Result(buffer: ArrayBuffer): {{#return}}{{#to
     {{> deserialize_array}}
   });
   {{/array}}
+  {{#map}}
+  const res: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}((reader: Read): {{#key}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/key}} => {
+    return reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}();
+  }, (reader: Read): {{#value}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/value}} => {
+    {{> deserialize_map_value}}
+  });
+  {{/map}}
   {{#enum}}
   {{> deserialize_enum}}
   const res: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} =  value;

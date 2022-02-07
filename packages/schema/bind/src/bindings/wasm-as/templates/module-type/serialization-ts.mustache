@@ -47,6 +47,13 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
         {{> deserialize_array}}
       });
       {{/array}}
+      {{#map}}
+      _{{name}} = reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}((reader: Read): {{#key}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/key}} => {
+        return reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}();
+      }, (reader: Read): {{#value}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/value}} => {
+        {{> deserialize_map_value}}
+      });
+      {{/map}}
       {{#enum}}
       {{> deserialize_enum}}
       _{{name}} = value;
