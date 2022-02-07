@@ -10,25 +10,11 @@ import {
 } from "../..";
 
 export function findFirstOpenBracket(type: string): number {
-  let openSquareBracket = -1;
-  for (let i = 0; i < type.length; i++) {
-    if (type[i] === "<") {
-      openSquareBracket = i;
-      break;
-    }
-  }
-  return openSquareBracket;
+  return type.indexOf("<");
 }
 
 export function findLastCloseBracket(type: string): number {
-  let closeSquareBracket = -1;
-  for (let i = type.length - 1; i >= 0; i--) {
-    if (type[i] === ">") {
-      closeSquareBracket = i;
-      break;
-    }
-  }
-  return closeSquareBracket;
+  return type.lastIndexOf(">");
 }
 
 export function toGraphQLType(type: string): string {
