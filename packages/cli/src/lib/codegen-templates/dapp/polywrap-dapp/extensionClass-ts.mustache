@@ -1,6 +1,6 @@
-{{#queryTypes}}
+{{#moduleTypes}}
 import { {{#title}}{{namespace}}{{/title}}{{type}}Extension,  {{#title}}{{namespace}}{{/title}}{{type}}Module } from "./{{#lowerFirst}}{{type}}{{/lowerFirst}}";
-{{/queryTypes}}
+{{/moduleTypes}}
 import { Client, Uri, Extension, ExtensionConfig, SanitizedExtensionConfig } from "@web3api/core-js";
 
 export class {{#title}}{{namespace}}{{/title}} implements Extension {
@@ -8,16 +8,16 @@ export class {{#title}}{{namespace}}{{/title}} implements Extension {
   private client: Client;
   readonly buildUri: Uri = new Uri("{{uri}}");
   readonly config: SanitizedExtensionConfig;
-{{#queryTypes}}
+{{#moduleTypes}}
   readonly {{#lowerFirst}}{{type}}{{/lowerFirst}}: {{#title}}{{namespace}}{{/title}}{{type}}Module;
-{{/queryTypes}}
+{{/moduleTypes}}
 
   constructor(client: Client, config?: ExtensionConfig) {
     this.client = client;
     this.config = this.sanitizeConfig(config);
-  {{#queryTypes}}
+  {{#moduleTypes}}
     this.{{#lowerFirst}}{{type}}{{/lowerFirst}} = new {{#title}}{{namespace}}{{/title}}{{type}}Extension(this.client, this.config.uri);
-  {{/queryTypes}}
+  {{/moduleTypes}}
     this.validate();
   }
 

@@ -7,7 +7,6 @@ import { getSimpleClient } from "./helpers/client";
 import {
   Uri,
   Web3ApiClient,
-  defaultIpfsProviders,
 } from "@web3api/client-js";
 import {
   composeSchema,

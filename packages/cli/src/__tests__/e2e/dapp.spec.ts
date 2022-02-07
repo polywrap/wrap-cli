@@ -33,7 +33,7 @@ describe("e2e tests for dapp command", () => {
 
   beforeAll(async () => {
     await testEnvUp(simpleStorageProject);
-    await buildAndDeployApi(simpleStorageProject, "simplestorage.eth");
+    await buildApi(simpleStorageProject);
   });
 
   afterAll(async () => {
@@ -325,15 +325,10 @@ async function testEnvDown(cwd: string): Promise<void> {
   });
 }
 
-// @ts-ignore
-async function buildAndDeployApi(cwd: string, ensUri: string): Promise<void> {
+async function buildApi(cwd: string): Promise<void> {
   const { exitCode: buildCode, stderr: buildErr } = await runCLI({
     args: [
       "build",
-      "--ipfs",
-      "http://localhost:5001",
-      "--test-ens",
-      ensUri,
     ],
     cwd: cwd,
     cli: w3Cli,

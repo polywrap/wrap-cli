@@ -27,8 +27,6 @@ import {
   Ethereum_Network,
   Ethereum_TxResponse,
   Ethereum_Access,
-  Ethereum_Query,
-  Ethereum_Mutation,
 } from "./types";
 
 import {

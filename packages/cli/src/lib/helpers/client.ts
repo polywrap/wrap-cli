@@ -2,7 +2,7 @@ import { PluginRegistration } from "@web3api/core-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
-import { Web3ApiClient } from "@web3api/client-js";
+import { Web3ApiClient, defaultIpfsProviders } from "@web3api/client-js";
 import axios from "axios";
 
 interface SimpleClientConfig {
@@ -45,7 +45,7 @@ export function getSimpleClient(config: SimpleClientConfig): Web3ApiClient {
       uri: "w3://ens/ipfs.web3api.eth",
       plugin: ipfsPlugin({
         provider: ipfsProvider,
-        fallbackProviders: ["https://ipfs.io"],
+        fallbackProviders: defaultIpfsProviders,
       }),
     });
   }

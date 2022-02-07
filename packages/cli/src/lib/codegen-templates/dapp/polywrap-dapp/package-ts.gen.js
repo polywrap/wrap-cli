@@ -26,10 +26,10 @@ exports.run = (output, config) => {
   }
 
   // Check for query and mutation modules
-  const queryContext = config.typeInfo.queryTypes.find(def => {
+  const queryContext = config.typeInfo.moduleTypes.find(def => {
     return def.type === "Query";
   });
-  const mutationContext = config.typeInfo.queryTypes.find(def => {
+  const mutationContext = config.typeInfo.moduleTypes.find(def => {
     return def.type === "Mutation";
   });
 
