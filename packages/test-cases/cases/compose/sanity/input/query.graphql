@@ -50,6 +50,7 @@ type CustomModuleType {
   optStrOptArray: [String]
   crazyArray: [[[[UInt32!]]!]]
   commonType: CommonType!
+  optMap: Map @annotate(type: "Map<String, Int>")
 """
 customType comment
 """

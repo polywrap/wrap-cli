@@ -30,7 +30,7 @@ function anyToGraphQL(any: AnyDefinition, prefixed: boolean): string {
   }
 }
 
-function toGraphQL(def: GenericDefinition, prefixed = false): string {
+export function toGraphQL(def: GenericDefinition, prefixed = false): string {
   switch (def.kind) {
     case DefinitionKind.Object:
     case DefinitionKind.ObjectRef:
