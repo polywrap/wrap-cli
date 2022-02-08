@@ -14,8 +14,22 @@ writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{#handleKeywords
 });
 {{/map}}
 {{#enum}}
-{{> serialize_enum}}
+{{#required}}
+writer.writeInt32(value);
+{{/required}}
+{{^required}}
+writer.writeNullableInt32(value);
+{{/required}}
 {{/enum}}
 {{#object}}
-{{> serialize_object}}
+{{#required}}
+Types.{{type}}.write(writer, value);
+{{/required}}
+{{^required}}
+if (value) {
+  Types.{{type}}.write(writer, value as Types.{{type}});
+} else {
+  writer.writeNil();
+}
+{{/required}}
 {{/object}}
