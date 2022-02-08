@@ -90,6 +90,7 @@ type Mutation @imports(
 
 type QueryEnv {
   queryProp: String!
+  optMap: Map @annotate(type: "Map<String!, Int>")
   prop: String!
   optProp: String
 }

@@ -7,7 +7,7 @@ return reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}((reader: Read): 
 });
 {{/array}}
 {{#map}}
-return reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}((reader: Read): {{#key}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/key}} => {
+_{{name}} = reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}((reader: Read): {{#key}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/key}} => {
   return reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}();
 }, (reader: Read): {{#value}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/value}} => {
   {{> deserialize_map_value}}

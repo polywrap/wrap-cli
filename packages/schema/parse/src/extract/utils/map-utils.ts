@@ -132,11 +132,12 @@ function _parseMapType(rootType: string, type: string): GenericDefinition {
       }
 
       let [keyType, valueType] = keyValTypes;
-      let keyRequired = false;
+      // TODO: Is there a better way to enforce this -> Map key should always be required
+      // TODO: Should we throw an error if it's not?
+      let keyRequired = true;
 
       if (keyType.endsWith("!")) {
         keyType = keyType.slice(0, -1);
-        keyRequired = true;
       }
 
       if (!isMapKeyType(keyType)) {

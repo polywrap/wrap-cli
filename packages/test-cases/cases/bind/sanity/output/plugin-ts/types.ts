@@ -22,6 +22,7 @@ export type Boolean = boolean;
 
 export interface QueryEnv {
   queryProp: String;
+  optMap?: Map<String, Int | undefined> | null;
   prop: String;
   optProp?: String | null;
 }
