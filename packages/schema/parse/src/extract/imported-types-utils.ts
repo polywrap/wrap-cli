@@ -22,9 +22,9 @@ export function extractImportedDefinition(
   const typeName = node.name.value;
 
   const queryIdentifier = "_Query";
-  const queryTest = typeName.substr(-queryIdentifier.length);
+  const queryTest = typeName.substring(-queryIdentifier.length);
   const mutationIdentifier = "_Mutation";
-  const mutationTest = typeName.substr(-mutationIdentifier.length);
+  const mutationTest = typeName.substring(-mutationIdentifier.length);
 
   if (moduleTypes) {
     // Ignore everything that isn't a query type
