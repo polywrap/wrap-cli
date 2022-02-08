@@ -1,5 +1,5 @@
 {
-  "id": "DappManifest",
+  "id": "AppManifest",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -15,7 +15,7 @@
     },
     "language": {
       "type": "string",
-      "format": "dappLanguage"
+      "format": "appLanguage"
     },
     "types": {
       "type": "object",
@@ -25,7 +25,7 @@
           "type": "string",
           "format": "file"
         },
-        "typesOnly": {
+        "withExtensions": {
           "type": "boolean"
         }
       },

@@ -2,7 +2,7 @@ export * from "./web3api";
 export * from "./web3api.build";
 export * from "./web3api.meta";
 export * from "./web3api.plugin";
-export * from "./web3api.dapp";
+export * from "./web3api.app";
 
 import { Web3ApiManifest } from "./web3api";
 import { BuildManifest } from "./web3api.build";

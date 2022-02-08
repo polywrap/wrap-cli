@@ -1,4 +1,6 @@
 // @ts-noCheck
+import * as Types from "./";
+
 import {
   Client,
   InvokeApiResult
@@ -58,19 +60,19 @@ export interface CustomType {
   uOptArrayOptArray: Array<Array<UInt32 | null> | null>;
   uArrayOptArrayArray: Array<Array<Array<UInt32>> | null>;
   crazyArray?: Array<Array<Array<Array<UInt32> | null>> | null> | null;
-  object: AnotherType;
-  optObject?: AnotherType | null;
-  objectArray: Array<AnotherType>;
-  optObjectArray?: Array<AnotherType | null> | null;
-  en: CustomEnum;
-  optEnum?: CustomEnum | null;
-  enumArray: Array<CustomEnum>;
-  optEnumArray?: Array<CustomEnum | null> | null;
+  object: Types.AnotherType;
+  optObject?: Types.AnotherType | null;
+  objectArray: Array<Types.AnotherType>;
+  optObjectArray?: Array<Types.AnotherType | null> | null;
+  en: Types.CustomEnum;
+  optEnum?: Types.CustomEnum | null;
+  enumArray: Array<Types.CustomEnum>;
+  optEnumArray?: Array<Types.CustomEnum | null> | null;
 }
 
 export interface AnotherType {
   prop?: String | null;
-  circular?: CustomType | null;
+  circular?: Types.CustomType | null;
   const?: String | null;
 }
 
@@ -89,14 +91,14 @@ export type CustomEnum = CustomEnumEnum | CustomEnumString;
 
 /* URI: "testimport.uri.eth" */
 export interface TestImport_Object {
-  object: TestImport_AnotherObject;
-  optObject?: TestImport_AnotherObject | null;
-  objectArray: Array<TestImport_AnotherObject>;
-  optObjectArray?: Array<TestImport_AnotherObject | null> | null;
-  en: TestImport_Enum;
-  optEnum?: TestImport_Enum | null;
-  enumArray: Array<TestImport_Enum>;
-  optEnumArray?: Array<TestImport_Enum | null> | null;
+  object: Types.TestImport_AnotherObject;
+  optObject?: Types.TestImport_AnotherObject | null;
+  objectArray: Array<Types.TestImport_AnotherObject>;
+  optObjectArray?: Array<Types.TestImport_AnotherObject | null> | null;
+  en: Types.TestImport_Enum;
+  optEnum?: Types.TestImport_Enum | null;
+  enumArray: Array<Types.TestImport_Enum>;
+  optEnumArray?: Array<Types.TestImport_Enum | null> | null;
 }
 
 /* URI: "testimport.uri.eth" */
@@ -127,14 +129,14 @@ interface TestImport_Query_Input_importedMethod extends Record<string, unknown> 
   u: UInt;
   optU?: UInt | null;
   uArrayArray: Array<Array<UInt | null> | null>;
-  object: TestImport_Object;
-  optObject?: TestImport_Object | null;
-  objectArray: Array<TestImport_Object>;
-  optObjectArray?: Array<TestImport_Object | null> | null;
-  en: TestImport_Enum;
-  optEnum?: TestImport_Enum | null;
-  enumArray: Array<TestImport_Enum>;
-  optEnumArray?: Array<TestImport_Enum | null> | null;
+  object: Types.TestImport_Object;
+  optObject?: Types.TestImport_Object | null;
+  objectArray: Array<Types.TestImport_Object>;
+  optObjectArray?: Array<Types.TestImport_Object | null> | null;
+  en: Types.TestImport_Enum;
+  optEnum?: Types.TestImport_Enum | null;
+  enumArray: Array<Types.TestImport_Enum>;
+  optEnumArray?: Array<Types.TestImport_Enum | null> | null;
 }
 
 /* URI: "testimport.uri.eth" */
@@ -147,8 +149,8 @@ export const TestImport_Query = {
   importedMethod: async (
     input: TestImport_Query_Input_importedMethod,
     client: Client
-  ): Promise<InvokeApiResult<TestImport_Object | null>> => {
-    return client.invoke<TestImport_Object | null>({
+  ): Promise<InvokeApiResult<Types.TestImport_Object | null>> => {
+    return client.invoke<Types.TestImport_Object | null>({
       uri: "testimport.uri.eth",
       module: "query",
       method: "importedMethod",
@@ -172,8 +174,8 @@ export const TestImport_Query = {
 /* URI: "testimport.uri.eth" */
 interface TestImport_Mutation_Input_importedMethod extends Record<string, unknown> {
   str: String;
-  object: TestImport_Object;
-  objectArray: Array<TestImport_Object>;
+  object: Types.TestImport_Object;
+  objectArray: Array<Types.TestImport_Object>;
 }
 
 /* URI: "testimport.uri.eth" */
@@ -186,8 +188,8 @@ export const TestImport_Mutation = {
   importedMethod: async (
     input: TestImport_Mutation_Input_importedMethod,
     client: Client
-  ): Promise<InvokeApiResult<TestImport_Object | null>> => {
-    return client.invoke<TestImport_Object | null>({
+  ): Promise<InvokeApiResult<Types.TestImport_Object | null>> => {
+    return client.invoke<Types.TestImport_Object | null>({
       uri: "testimport.uri.eth",
       module: "mutation",
       method: "importedMethod",

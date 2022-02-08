@@ -1,11 +1,11 @@
 const { toPrefixedGraphQLType, transformTypeInfo } = require("@web3api/schema-parse");
-const { PluginTs } = require("@web3api/schema-bind");
+const { AppTs } = require("@web3api/schema-bind");
 
 exports.run = (output, config) => {
 
   // Transform the TypeInfo to our liking
   config.typeInfo = transformTypeInfo(config.typeInfo, toPrefixedGraphQLType);
-  config.typeInfo.toTypescript = PluginTs.Functions.toTypescript;
+  config.typeInfo.toTypescript = AppTs.Functions.toTypescript;
   config.typeInfo.title = () => {
     return (value, render) => {
       let rendered = render(value);
@@ -33,11 +33,11 @@ exports.run = (output, config) => {
   output.entries.push({
     type: "File",
     name: "./../index.ts",
-    data: config.generate("dappIndex-ts.mustache", config.typeInfo),
+    data: config.generate("appIndex-ts.mustache", config.typeInfo),
   });
   output.entries.push({
     type: "File",
-    name: "./../PolywrapDapp.ts",
-    data: config.generate("polywrapDappClass-ts.mustache", config.typeInfo),
+    name: "./../PolywrapApp.ts",
+    data: config.generate("polywrapAppClass-ts.mustache", config.typeInfo),
   });
 };

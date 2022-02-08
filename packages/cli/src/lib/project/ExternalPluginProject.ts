@@ -90,7 +90,7 @@ export class ExternalPluginProject extends Project {
   }
 
   private async createAndCachePluginManifest(): Promise<void> {
-    const lang: string = this._config.language.replace("dapp/", "plugin/");
+    const lang: string = this._config.language.replace("app/", "plugin/");
     const manifestDir: string = this.getPluginManifestDir();
     const pluginDir: string = this._config.uri.path;
     const manifestToSchema: string = path.relative(manifestDir, pluginDir);

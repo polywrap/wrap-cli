@@ -14,21 +14,7 @@ import {
   String,
   Boolean
 } from "./types";
-
-import {
-  CustomType,
-  AnotherType,
-  CustomEnumEnum,
-  CustomEnumString,
-  CustomEnum,
-  TestImport_Object,
-  TestImport_AnotherObject,
-  TestImport_EnumEnum,
-  TestImport_EnumString,
-  TestImport_Enum,
-  TestImport_Query,
-  TestImport_Mutation,
-} from "./types";
+import * as Types from "./types";
 
 import {
   Client,
@@ -39,17 +25,17 @@ import {
 export interface Input_queryMethod extends Record<string, unknown> {
   str: String;
   optStr?: String | null;
-  en: CustomEnum;
-  optEnum?: CustomEnum | null;
-  enumArray: Array<CustomEnum>;
-  optEnumArray?: Array<CustomEnum | null> | null;
+  en: Types.CustomEnum;
+  optEnum?: Types.CustomEnum | null;
+  enumArray: Array<Types.CustomEnum>;
+  optEnumArray?: Array<Types.CustomEnum | null> | null;
 }
 
 export interface Input_objectMethod extends Record<string, unknown> {
-  object: AnotherType;
-  optObject?: AnotherType | null;
-  objectArray: Array<AnotherType>;
-  optObjectArray?: Array<AnotherType | null> | null;
+  object: Types.AnotherType;
+  optObject?: Types.AnotherType | null;
+  objectArray: Array<Types.AnotherType>;
+  optObjectArray?: Array<Types.AnotherType | null> | null;
 }
 
 export interface Module extends PluginModule {
@@ -61,5 +47,5 @@ export interface Module extends PluginModule {
   objectMethod(
     input: Input_objectMethod,
     client: Client
-  ): MaybeAsync<AnotherType | null>;
+  ): MaybeAsync<Types.AnotherType | null>;
 }

@@ -39,8 +39,8 @@ export function pluginLanguage(language: unknown): boolean {
   return typeof language === "string" && language.indexOf("plugin/") > -1;
 }
 
-export function dappLanguage(language: unknown): boolean {
-  return typeof language === "string" && language.indexOf("dapp/") > -1;
+export function appLanguage(language: unknown): boolean {
+  return typeof language === "string" && language.indexOf("app/") > -1;
 }
 
 export function imageFile(filePath: unknown): boolean {

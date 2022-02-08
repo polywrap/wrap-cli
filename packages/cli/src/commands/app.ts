@@ -4,7 +4,7 @@ import { intlMsg } from "../lib/intl";
 import { validateCodegenParams } from "./codegen";
 import {
   fixParameters,
-  loadDappManifest,
+  loadAppManifest,
   resolveManifestPath,
 } from "../lib/helpers";
 import { getSimpleClient, getDefaultProviders } from "../lib/helpers/client";
@@ -14,7 +14,7 @@ import { ExternalPluginProject } from "../lib/project/ExternalPluginProject";
 import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
 import { Uri, Web3ApiClient } from "@web3api/client-js";
-import { DappManifest } from "@web3api/core-js";
+import { AppManifest } from "@web3api/core-js";
 import * as path from "path";
 import fs from "fs";
 import rimraf from "rimraf";
@@ -25,46 +25,46 @@ interface PolywrapPackage {
   isPlugin?: boolean;
 }
 
-interface DappGenFiles {
+interface AppGenFiles {
   package: string;
-  dapp: string;
+  app: string;
 }
 
 interface LangGenFiles {
-  types: DappGenFiles;
-  extension: DappGenFiles;
+  types: AppGenFiles;
+  extension: AppGenFiles;
 }
 
-interface DappLangSupport {
+interface AppLangSupport {
   [lang: string]: LangGenFiles;
 }
 
-const langSupport: DappLangSupport = {
-  "dapp/typescript": {
+const langSupport: AppLangSupport = {
+  "app/typescript": {
     types: {
       package:
-        __dirname + "/../lib/codegen-templates/dapp/types/package-ts.gen.js",
-      dapp: __dirname + "/../lib/codegen-templates/dapp/types/dapp-ts.gen.js",
+        __dirname + "/../lib/codegen-templates/app/types/package-ts.gen.js",
+      app: __dirname + "/../lib/codegen-templates/app/types/app-ts.gen.js",
     },
     extension: {
       package:
         __dirname +
-        "/../lib/codegen-templates/dapp/polywrap-dapp/package-ts.gen.js",
-      dapp:
+        "/../lib/codegen-templates/app/polywrap-app/package-ts.gen.js",
+      app:
         __dirname +
-        "/../lib/codegen-templates/dapp/polywrap-dapp/dapp-ts.gen.js",
+        "/../lib/codegen-templates/app/polywrap-app/app-ts.gen.js",
     },
   },
 };
 
-const defaultManifest = ["web3api.dapp.yaml", "web3api.dapp.yml"];
+const defaultManifest = ["web3api.app.yaml", "web3api.app.yml"];
 const defaultOutputDir = "polywrap";
 
 const cmdStr = intlMsg.commands_plugin_options_command();
 const optionsStr = intlMsg.commands_options_options();
-const codegenStr = intlMsg.commands_dapp_codegen();
+const codegenStr = intlMsg.commands_app_codegen();
 const defaultManifestStr = defaultManifest.join(" | ");
-const outputDirStr = `${intlMsg.commands_dapp_options_o({
+const outputDirStr = `${intlMsg.commands_app_options_o({
   default: `${defaultOutputDir}/`,
 })}`;
 const nodeStr = intlMsg.commands_codegen_options_i_node();
@@ -72,7 +72,7 @@ const pathStr = intlMsg.commands_codegen_options_o_path();
 const addrStr = intlMsg.commands_codegen_options_e_address();
 
 const HELP = `
-${chalk.bold("w3 dapp")} ${cmdStr} [${optionsStr}]
+${chalk.bold("w3 app")} ${cmdStr} [${optionsStr}]
 
 Commands:
   ${chalk.bold("codegen")}   ${codegenStr}
@@ -86,8 +86,8 @@ Options:
 `;
 
 export default {
-  alias: ["d"],
-  description: intlMsg.commands_dapp_description(),
+  alias: ["a"],
+  description: intlMsg.commands_app_description(),
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print } = toolbox;
 
@@ -129,7 +129,7 @@ export default {
       print.info(HELP);
       return;
     } else if (command !== "codegen") {
-      print.error(intlMsg.commands_dapp_error_unknownCommand({ command }));
+      print.error(intlMsg.commands_app_error_unknownCommand({ command }));
       print.info(HELP);
       return;
     }
@@ -146,21 +146,21 @@ export default {
       defaultManifest
     );
 
-    // Dapp project
+    // App project
     const manifestDir: string = path.dirname(manifestPath);
-    const dappManifest: DappManifest = await loadDappManifest(
+    const appManifest: AppManifest = await loadAppManifest(
       manifestPath,
       true
     );
-    const language: string = dappManifest.language;
-    Project.validateManifestLanguage(language, ["dapp/"]);
-    const packages: PolywrapPackage[] = dappManifest.packages.map((pack) => ({
+    const language: string = appManifest.language;
+    Project.validateManifestLanguage(language, ["app/"]);
+    const packages: PolywrapPackage[] = appManifest.packages.map((pack) => ({
       ...pack,
       uri: sanitizeUri(pack.uri, pack.isPlugin),
     }));
     const outputDirFromManifest: string | undefined =
-      dappManifest.types.directory;
-    const typesOnly: boolean | undefined = dappManifest.types.typesOnly;
+      appManifest.types.directory;
+    const withExtensions: boolean | undefined = appManifest.types.withExtensions;
 
     // Resolve output directory
     outputDir =
@@ -173,17 +173,17 @@ export default {
       .map((pack) => pack.namespace)
       .filter((ns, i, arr) => arr.indexOf(ns) === i);
     if (packages.length !== nsNoDupes.length) {
-      print.error(intlMsg.commands_dapp_error_duplicateNs());
+      print.error(intlMsg.commands_app_error_duplicateNs());
       return;
     }
 
     // Resolve generation file
     const langGenFiles: LangGenFiles = langSupport[language];
-    const genFiles: DappGenFiles = typesOnly
-      ? langGenFiles.types
-      : langGenFiles.extension;
+    const genFiles: AppGenFiles = withExtensions
+      ? langGenFiles.extension
+      : langGenFiles.types;
     const packageScript = filesystem.resolve(genFiles.package);
-    const dappScript = filesystem.resolve(genFiles.dapp);
+    const appScript = filesystem.resolve(genFiles.app);
 
     // Get providers and client
     const { ipfsProvider, ethProvider } = await getDefaultProviders(ipfs);
@@ -228,8 +228,8 @@ export default {
 
       if (await namespaceCodeGenerator.generate()) {
         print.success(
-          `🔥 ${intlMsg.commands_dapp_namespace_success({
-            content: typesOnly ? "types" : "extension",
+          `🔥 ${intlMsg.commands_app_namespace_success({
+            content: withExtensions ? "extension" : "types",
             namespace,
           })} 🔥`
         );
@@ -239,16 +239,16 @@ export default {
 
       // generate shared files on final package
       if (i === packages.length - 1) {
-        const dappCodeGenerator = new CodeGenerator({
+        const appCodeGenerator = new CodeGenerator({
           project,
           schemaComposer,
-          customScript: dappScript,
+          customScript: appScript,
           outputDir: path.join(outputDir, namespace),
           mustacheView: { packages },
         });
 
-        if (await dappCodeGenerator.generate()) {
-          print.success(`🔥 ${intlMsg.commands_dapp_topLevel_success()} 🔥`);
+        if (await appCodeGenerator.generate()) {
+          print.success(`🔥 ${intlMsg.commands_app_topLevel_success()} 🔥`);
         } else {
           result = false;
         }
@@ -268,7 +268,7 @@ export default {
     }
 
     if (result) {
-      print.success(`🔥 ${intlMsg.commands_dapp_success()} 🔥`);
+      print.success(`🔥 ${intlMsg.commands_app_success()} 🔥`);
       process.exitCode = 0;
     } else {
       process.exitCode = 1;

@@ -5,12 +5,12 @@
  * and run node ./scripts/manifest/generateFormatTypes.js to regenerate this file.
  */
 import {
-  AnyDappManifest,
-  DappManifestFormats
+  AnyAppManifest,
+  AppManifestFormats
 } from ".";
 import * as Validators from "../../validators";
 
-import schema_0_0_1_prealpha_1 from "@web3api/manifest-schemas/formats/web3api.dapp/0.0.1-prealpha.1.json";
+import schema_0_0_1_prealpha_1 from "@web3api/manifest-schemas/formats/web3api.app/0.0.1-prealpha.1.json";
 import { Tracer } from "@web3api/tracing-js"
 
 import {
@@ -20,36 +20,36 @@ import {
   ValidatorResult
 } from "jsonschema";
 
-type DappManifestSchemas = {
-  [key in DappManifestFormats]: Schema | undefined
+type AppManifestSchemas = {
+  [key in AppManifestFormats]: Schema | undefined
 };
 
-const schemas: DappManifestSchemas = {
+const schemas: AppManifestSchemas = {
   "0.0.1-prealpha.1": schema_0_0_1_prealpha_1,
 };
 
 const validator = new Validator();
 
-Validator.prototype.customFormats.dappLanguage = Validators.dappLanguage;
+Validator.prototype.customFormats.appLanguage = Validators.appLanguage;
 Validator.prototype.customFormats.file = Validators.file;
 Validator.prototype.customFormats.namespace = Validators.namespace;
 
-export const validateDappManifest = Tracer.traceFunc(
-  "core: validateDappManifest",
+export const validateAppManifest = Tracer.traceFunc(
+  "core: validateAppManifest",
   (
-    manifest: AnyDappManifest,
+    manifest: AnyAppManifest,
     extSchema: Schema | undefined = undefined
   ): void => {
-    const schema = schemas[manifest.format as DappManifestFormats];
+    const schema = schemas[manifest.format as AppManifestFormats];
 
     if (!schema) {
-      throw Error(`Unrecognized DappManifest schema format "${manifest.format}"\nmanifest: ${JSON.stringify(manifest, null, 2)}`);
+      throw Error(`Unrecognized AppManifest schema format "${manifest.format}"\nmanifest: ${JSON.stringify(manifest, null, 2)}`);
     }
 
     const throwIfErrors = (result: ValidatorResult) => {
       if (result.errors.length) {
         throw new Error([
-          `Validation errors encountered while sanitizing DappManifest format ${manifest.format}`,
+          `Validation errors encountered while sanitizing AppManifest format ${manifest.format}`,
           ...result.errors.map((error: ValidationError) => error.toString())
         ].join("\n"));
       }

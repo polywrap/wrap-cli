@@ -1,9 +1,7 @@
 format: 0.0.1-prealpha.1
-language: dapp/typescript
+language: app/typescript
 types:
   directory: "./polywrap"
 packages:
   - uri: "w3://fs/./../project/build"
-    namespace: "project"
-  - uri: "w3://ipfs/QmeiPWHe2ixfitcgjRwP5AaJD5R7DbsGhQNQwT4rFNyxx8"
     namespace: "project"

@@ -1,22 +1,22 @@
 {{#packages}}
 import { {{#title}}{{namespace}}{{/title}} } from "./{{#lowerFirst}}{{namespace}}{{/lowerFirst}}";
 {{/packages}}
-import { Client, ExtensionConfig, BasePolywrapDappConfig, BasePolywrapDapp } from "@web3api/core-js";
+import { Client, ExtensionConfig, BasePolywrapAppConfig, BasePolywrapApp } from "@web3api/core-js";
 
-export interface PolywrapDappConfig extends BasePolywrapDappConfig {
+export interface PolywrapAppConfig extends BasePolywrapAppConfig {
 {{#packages}}
   {{#lowerFirst}}{{namespace}}{{/lowerFirst}}?: ExtensionConfig
 {{/packages}}
 }
 
-export class PolywrapDapp implements BasePolywrapDapp {
+export class PolywrapApp implements BasePolywrapApp {
 
   readonly client: Client;
   {{#packages}}
   readonly {{#lowerFirst}}{{namespace}}{{/lowerFirst}}: {{#title}}{{namespace}}{{/title}};
   {{/packages}}
 
-  constructor(client: Client, config?: PolywrapDappConfig) {
+  constructor(client: Client, config?: PolywrapAppConfig) {
     this.client = client;
   {{#packages}}
     this.{{#lowerFirst}}{{namespace}}{{/lowerFirst}} = new {{#title}}{{namespace}}{{/title}}(this.client, config?.{{#lowerFirst}}{{namespace}}{{/lowerFirst}});

@@ -7,12 +7,12 @@ import {
   Web3ApiManifest,
   MetaManifest,
   PluginManifest,
-  DappManifest,
+  AppManifest,
   deserializeWeb3ApiManifest,
   deserializeBuildManifest,
   deserializeMetaManifest,
   deserializePluginManifest,
-  deserializeDappManifest,
+  deserializeAppManifest,
 } from "@web3api/core-js";
 import { writeFileSync, normalizePath } from "@web3api/os-js";
 import { Schema as JsonSchema } from "jsonschema";
@@ -188,11 +188,11 @@ export async function loadPluginManifest(
   }
 }
 
-export async function loadDappManifest(
+export async function loadAppManifest(
   manifestPath: string,
   quiet = false
-): Promise<DappManifest> {
-  const run = (): Promise<DappManifest> => {
+): Promise<AppManifest> {
+  const run = (): Promise<AppManifest> => {
     const manifest = fs.readFileSync(manifestPath, "utf-8");
 
     if (!manifest) {
@@ -203,7 +203,7 @@ export async function loadDappManifest(
     }
 
     try {
-      const result = deserializeDappManifest(manifest);
+      const result = deserializeAppManifest(manifest);
       return Promise.resolve(result);
     } catch (e) {
       return Promise.reject(e);
@@ -221,7 +221,7 @@ export async function loadDappManifest(
       async (_spinner) => {
         return await run();
       }
-    )) as DappManifest;
+    )) as AppManifest;
   }
 }
 

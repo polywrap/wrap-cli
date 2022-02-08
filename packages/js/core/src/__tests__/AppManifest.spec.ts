@@ -1,12 +1,12 @@
-import { dappLanguage, namespace } from "../manifest/validators";
+import { appLanguage, namespace } from "../manifest/validators";
 
-describe("Dapp manifest validator", () => {
+describe("App manifest validator", () => {
 
-  it("dappLanguage validator", () => {
-    expect(dappLanguage("dapp/typescript")).toBeTruthy();
-    expect(dappLanguage("dapp/notALanguage")).toBeTruthy();
-    expect(dappLanguage("typescript")).toBeFalsy();
-    expect(dappLanguage("plugin/typescript")).toBeFalsy();
+  it("appLanguage validator", () => {
+    expect(appLanguage("app/typescript")).toBeTruthy();
+    expect(appLanguage("app/notALanguage")).toBeTruthy();
+    expect(appLanguage("typescript")).toBeFalsy();
+    expect(appLanguage("plugin/typescript")).toBeFalsy();
   });
 
   it("namespace validator", () => {

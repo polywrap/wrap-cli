@@ -157,7 +157,7 @@ export default {
         if (type === "api") {
           readyMessage = intlMsg.commands_create_readyProtocol();
         } else if (type === "app") {
-          readyMessage = intlMsg.commands_create_readyDapp();
+          readyMessage = intlMsg.commands_create_readyApp();
         } else if (type === "plugin") {
           readyMessage = intlMsg.commands_create_readyPlugin();
         }

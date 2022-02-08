@@ -38,6 +38,7 @@ export type {{type}}String =
 export type {{type}} = {{type}}Enum | {{type}}String;
 
 {{/enumTypes}}
+{{#importedObjectTypes.length}}
 /// Imported Objects START ///
 
 {{#importedObjectTypes}}
@@ -66,3 +67,4 @@ export type {{type}} = {{type}}Enum | {{type}}String;
 
 {{/importedEnumTypes}}
 /// Imported Objects END ///
+{{/importedObjectTypes.length}}

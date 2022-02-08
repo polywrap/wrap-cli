@@ -6,17 +6,17 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export interface DappManifest {
+export interface AppManifest {
   format: "0.0.1-prealpha.1";
   language: string;
   types: {
     directory: string;
-    typesOnly?: boolean;
+    withExtensions?: boolean;
   };
   packages: {
     uri: string;
     namespace: string;
     isPlugin?: boolean;
   }[];
-  __type: "DappManifest";
+  __type: "AppManifest";
 }

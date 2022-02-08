@@ -26,20 +26,20 @@ export interface Extension {
 }
 
 /**
- * Base config for PolywrapDapp
+ * Base config for PolywrapApp
  *
  * @param uri The uri used for queries within the Extension
  */
-export interface BasePolywrapDappConfig {
+export interface BasePolywrapAppConfig {
   [p: string]: ExtensionConfig | undefined;
 }
 
 /**
- * PolywrapDapp interface
+ * PolywrapApp interface
  *
  * @param uri The uri used for queries within the Extension
  * @param config Configuration values for the extension
  */
-export interface BasePolywrapDapp {
+export interface BasePolywrapApp {
   readonly client: Client;
 }

@@ -13,22 +13,22 @@ import { ensPlugin } from "@web3api/ens-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 
 const HELP = `
-w3 dapp command [options]
+w3 app command [options]
 
 Commands:
-  codegen   Generate code for the dApp
+  codegen   Generate code for the app
 
 Options:
   -h, --help                              Show usage information
-  -m, --manifest-path <path>              Path to the Web3API manifest file (default: web3api.dapp.yaml | web3api.dapp.yml)
+  -m, --manifest-path <path>              Path to the Web3API manifest file (default: web3api.app.yaml | web3api.app.yml)
   -o, --output-dir <path>                 Output directory for the generated code (default: polywrap/)
   -i, --ipfs [<node>]                     IPFS node to load external schemas (default: ipfs.io & localhost)
   -e, --ens [<address>]                   ENS address to lookup external schemas (default: 0x0000...2e1e)
 
 `;
 
-describe("e2e tests for dapp command", () => {
-  const projectRoot = path.resolve(__dirname, "../dapp/");
+describe("e2e tests for app command", () => {
+  const projectRoot = path.resolve(__dirname, "../app/");
   const simpleStorageProject = path.resolve(__dirname, "../project/");
 
   beforeAll(async () => {
@@ -43,7 +43,7 @@ describe("e2e tests for dapp command", () => {
   test("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["dapp", "--help"],
+        args: ["app", "--help"],
         cwd: projectRoot,
         cli: w3Cli,
       },
@@ -57,7 +57,7 @@ describe("e2e tests for dapp command", () => {
   test("Should throw error for invalid params - no command", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["dapp", "--output-dir"],
+        args: ["app", "--output-dir"],
         cwd: projectRoot,
         cli: w3Cli,
       },
@@ -72,7 +72,7 @@ ${HELP}`);
   test("Should throw error for invalid params - output-dir", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["dapp", "codegen", "--output-dir"],
+        args: ["app", "codegen", "--output-dir"],
         cwd: projectRoot,
         cli: w3Cli,
       },
@@ -88,7 +88,7 @@ ${HELP}`);
   test("Should throw error for invalid params - ens", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["dapp", "codegen", "--ens"],
+        args: ["app", "codegen", "--ens"],
         cwd: projectRoot,
         cli: w3Cli,
       },
@@ -104,7 +104,7 @@ ${HELP}`);
   test("Should throw error for duplicate namespace", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["dapp", "codegen", `-m ${projectRoot}/web3api.dapp.duplicateNamespace.yaml`],
+        args: ["app", "codegen", `-m ${projectRoot}/web3api.app.duplicateNamespace.yaml`],
         cwd: projectRoot,
         cli: w3Cli,
       },
@@ -113,13 +113,13 @@ ${HELP}`);
     expect(code).toEqual(0);
     expect(error).toBe("");
     expect(clearStyle(output))
-      .toEqual("Duplicate namespace in dapp manifest\n");
+      .toEqual("Duplicate namespace in app manifest\n");
   });
 
   test("Should successfully generate types for wrappers", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["dapp", "codegen", `-m ${projectRoot}/web3api.dapp.typesOnly.yaml`],
+        args: ["app", "codegen", `-m ${projectRoot}/web3api.app.noExtensions.yaml`],
         cwd: projectRoot,
         cli: w3Cli,
       },
@@ -135,10 +135,10 @@ ${HELP}`);
 - Generate types
   Generating types from baseTypes-ts.mustache
 - Generate types
-  Generating types from dappIndex-ts.mustache
+  Generating types from appIndex-ts.mustache
 - Generate types
 ✔ Generate types
-🔥 Generated top-level code for dApp 🔥
+🔥 Generated top-level code for app 🔥
 🔥 Code was generated successfully 🔥
 `);
 
@@ -154,7 +154,7 @@ ${HELP}`);
   test("Should successfully generate types for plugins", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["dapp", "codegen", `-m ${projectRoot}/web3api.dapp.withPlugin.yaml`],
+        args: ["app", "codegen", `-m ${projectRoot}/web3api.app.withPlugin.yaml`],
         cwd: projectRoot,
         cli: w3Cli,
       },
@@ -172,10 +172,10 @@ ${HELP}`);
 - Generate types
   Generating types from baseTypes-ts.mustache
 - Generate types
-  Generating types from dappIndex-ts.mustache
+  Generating types from appIndex-ts.mustache
 - Generate types
 ✔ Generate types
-🔥 Generated top-level code for dApp 🔥
+🔥 Generated top-level code for app 🔥
 🔥 Code was generated successfully 🔥
 `);
 
@@ -191,7 +191,7 @@ ${HELP}`);
   test("Should successfully generate types for multiple packages", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["dapp", "codegen", `-m ${projectRoot}/web3api.dapp.multiPackage.yaml`],
+        args: ["app", "codegen", `-m ${projectRoot}/web3api.app.multiPackage.yaml`],
         cwd: projectRoot,
         cli: w3Cli,
       },
@@ -219,10 +219,10 @@ ${HELP}`);
 - Generate types
   Generating types from baseTypes-ts.mustache
 - Generate types
-  Generating types from dappIndex-ts.mustache
+  Generating types from appIndex-ts.mustache
 - Generate types
 ✔ Generate types
-🔥 Generated top-level code for dApp 🔥
+🔥 Generated top-level code for app 🔥
 🔥 Code was generated successfully 🔥
 `);
 
@@ -234,7 +234,7 @@ ${HELP}`);
   test("Should clear file cache before completion", async () => {
     const { exitCode: code, stderr: error } = await runCLI(
       {
-        args: ["dapp", "codegen", `-m ${projectRoot}/web3api.dapp.multiPackage.yaml`],
+        args: ["app", "codegen", `-m ${projectRoot}/web3api.app.multiPackage.yaml`],
         cwd: projectRoot,
         cli: w3Cli,
       },
@@ -252,7 +252,7 @@ ${HELP}`);
   test("Should be able to read/call extension props from client", async () => {
     const { exitCode: code, stderr: error } = await runCLI(
       {
-        args: ["dapp", "codegen", `-m ${projectRoot}/web3api.dapp.yaml`],
+        args: ["app", "codegen", `-m ${projectRoot}/web3api.app.yaml`],
         cwd: projectRoot,
         cli: w3Cli,
       },
@@ -260,7 +260,7 @@ ${HELP}`);
     expect(code).toEqual(0);
     expect(error).toBe("");
 
-    // instantiate Client and PolywrapDapp
+    // instantiate Client and PolywrapApp
     const { ipfs, ethereum, ensAddress } = await getProviders();
     const client: Web3ApiClient = await createClient(
       ipfs,
@@ -270,18 +270,18 @@ ${HELP}`);
 
     // import newly generated project extension code
     // @ts-ignore
-    const pw = await import ("../dapp/polywrap");
+    const pw = await import ("../app/polywrap");
     // @ts-ignore
-    const dapp: pw.PolywrapDapp = new pw.PolywrapDapp(client);
+    const app: pw.PolywrapApp = new pw.PolywrapApp(client);
 
     // expect to access uri property
     const expectedUriPath: string = path.resolve(path.join(__dirname, "../project/build"));
     // @ts-ignore
-    expect(dapp.project.config?.uri.path).toEqual(expectedUriPath);
+    expect(app.project.config?.uri.path).toEqual(expectedUriPath);
 
     // test ExtensionInvocation
     // @ts-ignore
-    const result: string = await dapp.project.mutation.deployContract({
+    const result: string = await app.project.mutation.deployContract({
       connection: {
         networkNameOrChainId: "testnet",
       },
@@ -289,7 +289,7 @@ ${HELP}`);
     expect(result).toBeTruthy()
 
     // @ts-ignore
-    const config: InvokeApiOptions = dapp.project.mutation.config.deployContract({
+    const config: InvokeApiOptions = app.project.mutation.config.deployContract({
       connection: {
         networkNameOrChainId: "testnet",
       },
