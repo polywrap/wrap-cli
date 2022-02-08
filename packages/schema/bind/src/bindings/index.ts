@@ -4,7 +4,10 @@ import * as PluginTs from "./plugin-ts";
 
 import { TypeInfo } from "@web3api/schema-parse";
 
-export { toTypescript } from "./plugin-ts";
+export {
+  WasmAs,
+  PluginTs,
+};
 
 export function generateBinding(
   bindLanguage: BindLanguage,

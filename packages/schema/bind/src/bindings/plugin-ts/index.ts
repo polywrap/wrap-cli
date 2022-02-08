@@ -16,7 +16,7 @@ import Mustache from "mustache";
 import { readFileSync } from "fs";
 import path from "path";
 
-export { toTypescript } from "./functions";
+export { Functions };
 
 export function generateBinding(
   typeInfo: TypeInfo,
@@ -37,10 +37,10 @@ export function generateBinding(
     typeInfo = transformTypeInfo(typeInfo, transform);
   }
 
-  const renderTemplate = (subPath: string, context: unknown) => {
+  const renderTemplate = (subPath: string, context: unknown, fileName?: string) => {
     const absPath = path.join(__dirname, subPath);
     const template = readFileSync(absPath, { encoding: "utf-8" });
-    const fileName = absPath
+    fileName = fileName || absPath
       .replace(path.dirname(absPath), "")
       .replace(".mustache", "")
       .replace("/", "")
@@ -71,16 +71,18 @@ export function generateBinding(
   renderTemplate("./templates/index-ts.mustache", rootContext);
   renderTemplate("./templates/manifest-ts.mustache", rootContext);
   if (mutationContext) {
-    renderTemplate("./templates/mutation-ts.mustache", {
-      ...mutationContext,
-      ...typeInfo,
-    });
+    renderTemplate(
+      "./templates/module_ts.mustache",
+      mutationContext,
+      "mutation.ts"
+    );
   }
   if (queryContext) {
-    renderTemplate("./templates/query-ts.mustache", {
-      ...queryContext,
-      ...typeInfo,
-    });
+    renderTemplate(
+      "./templates/module_ts.mustache",
+      queryContext,
+      "query.ts"
+    );
   }
   renderTemplate("./templates/schema-ts.mustache", rootContext);
   renderTemplate("./templates/types-ts.mustache", rootContext);

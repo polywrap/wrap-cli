@@ -34,9 +34,9 @@ export const toTypescript: MustacheFunction = () => {
         break;
       default:
         if (type.includes("Enum_")) {
-          type = `${type.replace("Enum_", "")}`;
+          type = `Types.${type.replace("Enum_", "")}`;
         } else {
-          type = `${type}`;
+          type = `Types.${type}`;
         }
     }
 
