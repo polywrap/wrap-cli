@@ -1,5 +1,5 @@
 import path from "path";
-import { defaultManifest } from "../../commands/plugin";
+import { defaultPluginManifest } from "../../lib/helpers";
 import { clearStyle } from "./utils";
 
 import { runCLI } from "@web3api/test-env-js";
@@ -13,7 +13,7 @@ Commands:
 
 Options:
   -h, --help                       Show usage information
-  -m, --manifest-path <path>       Path to the Web3API manifest file (default: ${defaultManifest.join(
+  -m, --manifest-path <path>       Path to the Web3API manifest file (default: ${defaultPluginManifest.join(
     " | "
   )})
   -s, --output-schema-path <path>  Output path for the built schema (default: ./build/schema.graphql)

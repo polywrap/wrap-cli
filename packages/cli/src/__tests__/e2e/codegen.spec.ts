@@ -1,5 +1,5 @@
 import path from "path";
-import { defaultManifest } from "../../commands/codegen";
+import { defaultWeb3ApiManifest } from "../../lib/helpers";
 import { clearStyle, w3Cli } from "./utils";
 
 import { runCLI } from "@web3api/test-env-js";
@@ -10,7 +10,7 @@ w3 codegen [options]
 
 Options:
   -h, --help                              Show usage information
-  -m, --manifest-path <path>              Path to the Web3API manifest file (default: ${defaultManifest.join(
+  -m, --manifest-path <path>              Path to the Web3API manifest file (default: ${defaultWeb3ApiManifest.join(
     " | "
   )})
   -c, --custom <path>                     Path to a custom generation script (JavaScript | TypeScript)

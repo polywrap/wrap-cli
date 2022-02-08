@@ -22,6 +22,8 @@ import fs from "fs";
 
 // TODO: refactor loadManifest functions to reduce redundancy
 
+export const defaultWeb3ApiManifest = ["web3api.yaml", "web3api.yml"];
+
 export async function loadWeb3ApiManifest(
   manifestPath: string,
   quiet = false
@@ -58,6 +60,8 @@ export async function loadWeb3ApiManifest(
     )) as Web3ApiManifest;
   }
 }
+
+export const defaultBuildManifest = ["web3api.build.yaml", "web3api.build.yml"];
 
 export async function loadBuildManifest(
   manifestPath: string,
@@ -114,6 +118,8 @@ export async function loadBuildManifest(
   }
 }
 
+export const defaultMetaManifest = ["web3api.meta.yaml", "web3api.meta.yml"];
+
 export async function loadMetaManifest(
   manifestPath: string,
   quiet = false
@@ -151,6 +157,8 @@ export async function loadMetaManifest(
   }
 }
 
+export const defaultPluginManifest = ["web3api.plugin.yaml", "web3api.plugin.yml"];
+
 export async function loadPluginManifest(
   manifestPath: string,
   quiet = false
@@ -187,6 +195,8 @@ export async function loadPluginManifest(
     )) as PluginManifest;
   }
 }
+
+export const defaultAppManifest = ["web3api.app.yaml", "web3api.app.yml"];
 
 export async function loadAppManifest(
   manifestPath: string,

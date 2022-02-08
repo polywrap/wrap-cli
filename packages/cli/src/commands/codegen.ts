@@ -6,19 +6,17 @@ import {
   SchemaComposer,
 } from "../lib";
 import { intlMsg } from "../lib/intl";
-import { resolveManifestPath } from "../lib/helpers";
+import { resolvePathIfExists, defaultWeb3ApiManifest } from "../lib/helpers";
 import { getDefaultProviders } from "../lib/helpers/client";
 
 import chalk from "chalk";
 import { GluegunToolbox, GluegunPrint } from "gluegun";
 
-export const defaultManifest = ["web3api.yaml", "web3api.yml"];
-
 const optionsStr = intlMsg.commands_options_options();
 const nodeStr = intlMsg.commands_codegen_options_i_node();
 const pathStr = intlMsg.commands_codegen_options_o_path();
 const addrStr = intlMsg.commands_codegen_options_e_address();
-const defaultManifestStr = defaultManifest.join(" | ");
+const defaultManifestStr = defaultWeb3ApiManifest.join(" | ");
 
 const HELP = `
 ${chalk.bold("w3 codegen")} [${optionsStr}]
@@ -70,10 +68,9 @@ export default {
 
     // Resolve generation file & output directories
     const customScript = custom && filesystem.resolve(custom);
-    manifestPath = await resolveManifestPath(
+    manifestPath = resolvePathIfExists(
       filesystem,
-      manifestPath,
-      defaultManifest
+      manifestPath ? [manifestPath] : defaultWeb3ApiManifest
     );
     outputDir = outputDir && filesystem.resolve(outputDir);
 
@@ -118,14 +115,14 @@ export default {
   },
 };
 
-export function validateCodegenParams(
+function validateCodegenParams(
   print: GluegunPrint,
   outputDir: unknown,
   ens: unknown,
   custom: unknown
 ): boolean {
   if (outputDir === true) {
-    const outputDirMissingPathMessage = intlMsg.commands_build_error_outputDirMissingPath(
+    const outputDirMissingPathMessage = intlMsg.commands_codegen_error_outputDirMissingPath(
       {
         option: "--output-dir",
         argument: `<${pathStr}>`,
@@ -137,7 +134,7 @@ export function validateCodegenParams(
 
   if (ens === true) {
     const domStr = intlMsg.commands_codegen_error_domain();
-    const ensAddressMissingMessage = intlMsg.commands_build_error_testEnsAddressMissing(
+    const ensAddressMissingMessage = intlMsg.commands_codegen_error_testEnsAddressMissing(
       {
         option: "--ens",
         argument: `<[${addrStr},]${domStr}>`,

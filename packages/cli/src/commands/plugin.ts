@@ -1,23 +1,21 @@
 /* eslint-disable prefer-const */
 import { CodeGenerator, PluginProject, SchemaComposer } from "../lib";
-import { fixParameters, resolveManifestPath } from "../lib/helpers";
+import { fixParameters, resolvePathIfExists, defaultPluginManifest } from "../lib/helpers";
 import { intlMsg } from "../lib/intl";
 import { getDefaultProviders } from "../lib/helpers/client";
 
 import { ComposerFilter } from "@web3api/schema-compose";
 import { writeFileSync } from "@web3api/os-js";
-import { GluegunToolbox, print } from "gluegun";
+import { GluegunPrint, GluegunToolbox, print } from "gluegun";
 import chalk from "chalk";
 import path from "path";
 import fs from "fs";
-
-export const defaultManifest = ["web3api.plugin.yaml", "web3api.plugin.yml"];
 
 const cmdStr = intlMsg.commands_plugin_options_command();
 const optionsStr = intlMsg.commands_options_options();
 const codegenStr = intlMsg.commands_plugin_options_codegen();
 const pathStr = intlMsg.commands_plugin_options_path();
-const defaultManifestStr = defaultManifest.join(" | ");
+const defaultManifestStr = defaultPluginManifest.join(" | ");
 const defaultOutputSchemaStr = "./build/schema.graphql";
 const defaultOutputTypesStr = "./src/w3";
 const nodeStr = intlMsg.commands_plugin_options_i_node();
@@ -87,54 +85,10 @@ export default {
       return;
     }
 
-    if (help) {
-      print.info(HELP);
-      return;
-    }
-
-    if (!command) {
-      print.error(intlMsg.commands_plugin_error_noCommand());
-      print.info(HELP);
-      return;
-    }
-
-    if (outputSchemaPath === true) {
-      const outputSchemaMissingPathMessage = intlMsg.commands_plugin_error_outputDirMissingPath(
-        {
-          option: "--output-schema-path",
-          argument: `<${pathStr}>`,
-        }
-      );
-      print.error(outputSchemaMissingPathMessage);
-      print.info(HELP);
-      return;
-    } else if (!outputSchemaPath) {
-      outputSchemaPath = defaultOutputSchemaStr;
-    }
-
-    if (outputTypesDir === true) {
-      const outputTypesMissingPathMessage = intlMsg.commands_plugin_error_outputDirMissingPath(
-        {
-          option: "--output-types-dir",
-          argument: `<${pathStr}>`,
-        }
-      );
-      print.error(outputTypesMissingPathMessage);
-      print.info(HELP);
-      return;
-    } else if (!outputTypesDir) {
-      outputTypesDir = defaultOutputTypesStr;
-    }
-
-    if (ens === true) {
-      const domStr = intlMsg.commands_plugin_error_domain();
-      const ensAddressMissingMessage = intlMsg.commands_build_error_testEnsAddressMissing(
-        {
-          option: "--ens",
-          argument: `<[${addrStr},]${domStr}>`,
-        }
-      );
-      print.error(ensAddressMissingMessage);
+    if (help || !validatePluginParams(
+      print, command, outputSchemaPath, (path) => outputSchemaPath = path,
+      outputTypesDir, (dir) => outputTypesDir = dir, ens
+    )) {
       print.info(HELP);
       return;
     }
@@ -142,10 +96,9 @@ export default {
     const { ipfsProvider, ethProvider } = await getDefaultProviders(ipfs);
     const ensAddress: string | undefined = ens;
 
-    manifestPath = await resolveManifestPath(
+    manifestPath = resolvePathIfExists(
       filesystem,
-      manifestPath,
-      defaultManifest
+      manifestPath ? [manifestPath] : defaultPluginManifest
     );
     outputSchemaPath = outputSchemaPath && filesystem.resolve(outputSchemaPath);
     outputTypesDir = outputTypesDir && filesystem.resolve(outputTypesDir);
@@ -190,3 +143,59 @@ export default {
     writeFileSync(outputSchemaPath, schemas.combined.schema);
   },
 };
+
+function validatePluginParams(
+  print: GluegunPrint,
+  command: unknown,
+  outputSchemaPath: unknown,
+  setOutputSchemaPath: (path: string) => void,
+  outputTypesDir: unknown,
+  setOutputTypesDir: (dir: string) => void,
+  ens: unknown
+): boolean {
+  if (!command) {
+    print.error(intlMsg.commands_plugin_error_noCommand());
+    return false;
+  }
+
+  if (outputSchemaPath === true) {
+    const outputSchemaMissingPathMessage = intlMsg.commands_plugin_error_outputDirMissingPath(
+      {
+        option: "--output-schema-path",
+        argument: `<${pathStr}>`,
+      }
+    );
+    print.error(outputSchemaMissingPathMessage);
+    print.info(HELP);
+    return false;
+  } else if (!outputSchemaPath) {
+    setOutputSchemaPath(defaultOutputSchemaStr);
+  }
+
+  if (outputTypesDir === true) {
+    const outputTypesMissingPathMessage = intlMsg.commands_plugin_error_outputDirMissingPath(
+      {
+        option: "--output-types-dir",
+        argument: `<${pathStr}>`,
+      }
+    );
+    print.error(outputTypesMissingPathMessage);
+    return false;
+  } else if (!outputTypesDir) {
+    setOutputTypesDir(defaultOutputTypesStr);
+  }
+
+  if (ens === true) {
+    const domStr = intlMsg.commands_plugin_error_domain();
+    const ensAddressMissingMessage = intlMsg.commands_build_error_testEnsAddressMissing(
+      {
+        option: "--ens",
+        argument: `<[${addrStr},]${domStr}>`,
+      }
+    );
+    print.error(ensAddressMissingMessage);
+    return false;
+  }
+
+  return true;
+}

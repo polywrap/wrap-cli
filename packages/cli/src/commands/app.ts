@@ -5,7 +5,8 @@ import { validateCodegenParams } from "./codegen";
 import {
   fixParameters,
   loadAppManifest,
-  resolveManifestPath,
+  resolvePathIfExists,
+  defaultAppManifest
 } from "../lib/helpers";
 import { getSimpleClient, getDefaultProviders } from "../lib/helpers/client";
 import { ExternalWeb3ApiProject } from "../lib/project/ExternalWeb3ApiProject";
@@ -57,13 +58,12 @@ const langSupport: AppLangSupport = {
   },
 };
 
-const defaultManifest = ["web3api.app.yaml", "web3api.app.yml"];
 const defaultOutputDir = "polywrap";
 
 const cmdStr = intlMsg.commands_plugin_options_command();
 const optionsStr = intlMsg.commands_options_options();
 const codegenStr = intlMsg.commands_app_codegen();
-const defaultManifestStr = defaultManifest.join(" | ");
+const defaultManifestStr = defaultAppManifest.join(" | ");
 const outputDirStr = `${intlMsg.commands_app_options_o({
   default: `${defaultOutputDir}/`,
 })}`;
@@ -140,10 +140,9 @@ export default {
     }
 
     // Resolve manifest
-    manifestPath = await resolveManifestPath(
+    manifestPath = resolvePathIfExists(
       filesystem,
-      manifestPath,
-      defaultManifest
+      manifestPath ? [manifestPath] : defaultAppManifest
     );
 
     // App project

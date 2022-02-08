@@ -7,16 +7,15 @@ import {
   WatchEvent,
   watchEventName,
 } from "../lib";
-import { fixParameters } from "../lib/helpers/parameters";
 import { publishToIPFS } from "../lib/publishers/ipfs-publisher";
 import { intlMsg } from "../lib/intl";
 import { SharedMiddlewareState } from "../lib/middleware";
-import { resolveManifestPath } from "../lib/helpers";
+import { defaultWeb3ApiManifest, resolvePathIfExists } from "../lib/helpers";
 
 import chalk from "chalk";
 import axios from "axios";
 import readline from "readline";
-import { GluegunToolbox } from "gluegun";
+import { GluegunToolbox, GluegunPrint } from "gluegun";
 
 const optionsStr = intlMsg.commands_build_options_options();
 const manStr = intlMsg.commands_build_options_manifest();
@@ -24,12 +23,14 @@ const nodeStr = intlMsg.commands_build_options_i_node();
 const pathStr = intlMsg.commands_build_options_o_path();
 const addrStr = intlMsg.commands_build_options_e_address();
 const domStr = intlMsg.commands_build_options_e_domain();
+const defaultManifestStr = defaultWeb3ApiManifest.join(" | ");
 
 const HELP = `
 ${chalk.bold("w3 build")} [${optionsStr}] ${chalk.bold(`[<web3api-${manStr}>]`)}
 
 ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
   -h, --help                         ${intlMsg.commands_build_options_h()}
+  -m, --manifest-path <${pathStr}>         ${intlMsg.commands_build_options_m()}: ${defaultManifestStr})
   -i, --ipfs [<${nodeStr}>]                ${intlMsg.commands_build_options_i()}
   -o, --output-dir <${pathStr}>            ${intlMsg.commands_build_options_o()}
   -e, --test-ens <[${addrStr},]${domStr}>  ${intlMsg.commands_build_options_e()}
@@ -43,76 +44,26 @@ export default {
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print, middleware } = toolbox;
 
-    const { h, i, o, w, e, v } = parameters.options;
-    let { help, ipfs, outputDir, watch, testEns, verbose } = parameters.options;
+    const { h, m, i, o, w, e, v } = parameters.options;
+    let {
+      help,
+      manifestPath,
+      ipfs,
+      outputDir,
+      watch,
+      testEns,
+      verbose
+    } = parameters.options;
 
     help = help || h;
+    manifestPath = manifestPath || m;
     ipfs = ipfs || i;
     outputDir = outputDir || o;
     watch = watch || w;
     testEns = testEns || e;
     verbose = verbose || v;
 
-    let manifestPath;
-    try {
-      const params = toolbox.parameters;
-      [manifestPath] = fixParameters(
-        {
-          options: params.options,
-          array: params.array,
-        },
-        {
-          h,
-          help,
-          w,
-          watch,
-          v,
-          verbose,
-        }
-      );
-    } catch (e) {
-      print.error(e.message);
-      process.exitCode = 1;
-      return;
-    }
-
-    if (help) {
-      print.info(HELP);
-      return;
-    }
-
-    if (outputDir === true) {
-      const outputDirMissingPathMessage = intlMsg.commands_build_error_outputDirMissingPath(
-        {
-          option: "--output-dir",
-          argument: `<${pathStr}>`,
-        }
-      );
-      print.error(outputDirMissingPathMessage);
-      print.info(HELP);
-      return;
-    }
-
-    if (testEns === true) {
-      const testEnsAddressMissingMessage = intlMsg.commands_build_error_testEnsAddressMissing(
-        {
-          option: "--test-ens",
-          argument: `<[${addrStr},]${domStr}>`,
-        }
-      );
-      print.error(testEnsAddressMissingMessage);
-      print.info(HELP);
-      return;
-    }
-
-    if (testEns && !ipfs) {
-      const testEnsNodeMissingMessage = intlMsg.commands_build_error_testEnsNodeMissing(
-        {
-          option: "--test-ens",
-          required: `--ipfs [<${nodeStr}>]`,
-        }
-      );
-      print.error(testEnsNodeMissingMessage);
+    if (help || !validateBuildParams(print, manifestPath, outputDir, testEns, ipfs)) {
       print.info(HELP);
       return;
     }
@@ -128,9 +79,21 @@ export default {
     }
 
     // Resolve manifest & output directories
-    manifestPath = await resolveManifestPath(filesystem, manifestPath, [
-      "web3api.yaml",
-    ]);
+    const manifestPaths = manifestPath ? [manifestPath as string] : defaultWeb3ApiManifest;
+    manifestPath = resolvePathIfExists(
+      filesystem,
+      manifestPaths
+    );
+
+    if (!manifestPath) {
+      print.error(
+        intlMsg.commands_build_error_manifestNotFound({
+          paths: manifestPaths.join(", ")
+        })
+      );
+      return;
+    }
+
     outputDir =
       (outputDir && filesystem.resolve(outputDir)) || filesystem.path("build");
 
@@ -322,3 +285,57 @@ export default {
     process.exitCode = 0;
   },
 };
+
+function validateBuildParams(
+  print: GluegunPrint,
+  manifestPath: unknown,
+  outputDir: unknown,
+  testEns: unknown,
+  ipfs: unknown
+): boolean {
+  if (manifestPath === true) {
+    const manifestPathMissingMessage = intlMsg.commands_build_error_manifestPathMissing(
+      {
+        option: "--manifest-path",
+        argument: `<${pathStr}>`,
+      }
+    );
+    print.error(manifestPathMissingMessage);
+    return false;
+  }
+
+  if (outputDir === true) {
+    const outputDirMissingPathMessage = intlMsg.commands_build_error_outputDirMissingPath(
+      {
+        option: "--output-dir",
+        argument: `<${pathStr}>`,
+      }
+    );
+    print.error(outputDirMissingPathMessage);
+    return false;
+  }
+
+  if (testEns === true) {
+    const testEnsAddressMissingMessage = intlMsg.commands_build_error_testEnsAddressMissing(
+      {
+        option: "--test-ens",
+        argument: `<[${addrStr},]${domStr}>`,
+      }
+    );
+    print.error(testEnsAddressMissingMessage);
+    return false;
+  }
+
+  if (testEns && !ipfs) {
+    const testEnsNodeMissingMessage = intlMsg.commands_build_error_testEnsNodeMissing(
+      {
+        option: "--test-ens",
+        required: `--ipfs [<${nodeStr}>]`,
+      }
+    );
+    print.error(testEnsNodeMissingMessage);
+    return false;
+  }
+
+  return true;
+}
