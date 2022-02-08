@@ -2370,6 +2370,7 @@ describe("Web3ApiClient", () => {
       "w3://ens/js-logger.web3api.eth"
     );
 
+    // TODO: add scalar Map and annotate directive in next release
     expect(schema).toStrictEqual(
       `### Web3API Header START ###
 scalar UInt
@@ -2383,7 +2384,6 @@ scalar Int32
 scalar Bytes
 scalar BigInt
 scalar JSON
-scalar Map
 
 directive @imported(
   uri: String!
@@ -2402,8 +2402,6 @@ directive @capability(
 ) repeatable on OBJECT
 
 directive @enabled_interface on OBJECT
-
-directive @annotate(type: String!) on FIELD
 ### Web3API Header END ###
 
 type Query implements Logger_Query @imports(
