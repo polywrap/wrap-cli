@@ -19,48 +19,48 @@ export type BigInt = string;
 export type Json = string;
 export type String = string;
 export type Boolean = boolean;
-
 {{#envTypes.query.client}}
+
 export interface {{type}} {
   {{#properties}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/properties}}
 }
-
 {{/envTypes.query.client}}
 {{#envTypes.query.sanitized}}
+
 export interface {{type}} {
   {{#properties}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/properties}}
 }
-
 {{/envTypes.query.sanitized}}
 {{#envTypes.mutation.client}}
+
 export interface {{type}} {
   {{#properties}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/properties}}
 }
-
 {{/envTypes.mutation.client}}
 {{#envTypes.mutation.sanitized}}
+
 export interface {{type}} {
   {{#properties}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/properties}}
 }
-
 {{/envTypes.mutation.sanitized}}
 {{#objectTypes}}
+
 export interface {{type}} {
   {{#properties}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/properties}}
 }
-
 {{/objectTypes}}
 {{#enumTypes}}
+
 export enum {{type}}Enum {
   {{#constants}}
   {{.}},
@@ -73,20 +73,21 @@ export type {{type}}String =
   {{/constants}}
 
 export type {{type}} = {{type}}Enum | {{type}}String;
-
 {{/enumTypes}}
-/// Imported Objects START ///
+{{#importedObjectTypes.length}}
 
+/// Imported Objects START ///
 {{#importedObjectTypes}}
+
 /* URI: "{{uri}}" */
 export interface {{type}} {
   {{#properties}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/properties}}
 }
-
 {{/importedObjectTypes}}
 {{#importedEnumTypes}}
+
 /* URI: "{{uri}}" */
 export enum {{type}}Enum {
   {{#constants}}
@@ -100,22 +101,24 @@ export type {{type}}String =
   {{/constants}}
 
 export type {{type}} = {{type}}Enum | {{type}}String;
-
 {{/importedEnumTypes}}
+
 /// Imported Objects END ///
+{{/importedObjectTypes.length}}
+{{#importedModuleTypes.length}}
 
 /// Imported Queries START ///
-
 {{#importedModuleTypes}}
 {{#methods}}
+
 /* URI: "{{parent.uri}}" */
 interface {{parent.type}}_Input_{{name}} extends Record<string, unknown> {
   {{#arguments}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/arguments}}
 }
-
 {{/methods}}
+
 /* URI: "{{uri}}" */
 export const {{type}} = {
   {{#methods}}
@@ -135,6 +138,7 @@ export const {{type}} = {
   {{/last}}
   {{/methods}}
 }
-
 {{/importedModuleTypes}}
+
 /// Imported Queries END ///
+{{/importedModuleTypes.length}}

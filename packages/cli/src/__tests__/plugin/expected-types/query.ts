@@ -14,20 +14,7 @@ import {
   String,
   Boolean
 } from "./types";
-
-import {
-  Object,
-  Ethereum_Connection,
-  Ethereum_TxOverrides,
-  Ethereum_StaticTxResult,
-  Ethereum_TxRequest,
-  Ethereum_TxReceipt,
-  Ethereum_Log,
-  Ethereum_EventNotification,
-  Ethereum_Network,
-  Ethereum_TxResponse,
-  Ethereum_Access,
-} from "./types";
+import * as Types from "./types";
 
 import {
   Client,
@@ -44,5 +31,5 @@ export interface Module extends PluginModule {
   method(
     input: Input_method,
     client: Client
-  ): MaybeAsync<Object>;
+  ): MaybeAsync<Types.Object>;
 }

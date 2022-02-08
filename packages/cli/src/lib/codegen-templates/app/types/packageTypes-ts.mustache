@@ -14,16 +14,17 @@ import {
   String,
   Boolean
 } from "../baseTypes";
-
+import * as Types from "./";
 {{#objectTypes}}
+
 export interface {{type}} {
   {{#properties}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/properties}}
 }
-
 {{/objectTypes}}
 {{#enumTypes}}
+
 export enum {{type}}Enum {
   {{#constants}}
   {{.}},
@@ -36,21 +37,20 @@ export type {{type}}String =
   {{/constants}}
 
 export type {{type}} = {{type}}Enum | {{type}}String;
+{{/enumTypes}}{{#importedObjectTypes.length}}
 
-{{/enumTypes}}
-{{#importedObjectTypes.length}}
 /// Imported Objects START ///
-
 {{#importedObjectTypes}}
+
 /* URI: "{{uri}}" */
 export interface {{type}} {
   {{#properties}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/properties}}
 }
-
 {{/importedObjectTypes}}
 {{#importedEnumTypes}}
+
 /* URI: "{{uri}}" */
 export enum {{type}}Enum {
   {{#constants}}
@@ -64,7 +64,7 @@ export type {{type}}String =
   {{/constants}}
 
 export type {{type}} = {{type}}Enum | {{type}}String;
-
 {{/importedEnumTypes}}
+
 /// Imported Objects END ///
 {{/importedObjectTypes.length}}

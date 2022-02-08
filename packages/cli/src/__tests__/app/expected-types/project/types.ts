@@ -16,6 +16,7 @@ import {
   String,
   Boolean
 } from "../baseTypes";
+import * as Types from "./";
 
 export interface SetDataOptions {
   address: String;
@@ -71,7 +72,7 @@ export interface Ethereum_TxReceipt {
   gasUsed: BigInt;
   logsBloom: String;
   transactionHash: String;
-  logs: Array<Ethereum_Log>;
+  logs: Array<Types.Ethereum_Log>;
   blockNumber: BigInt;
   blockHash: String;
   confirmations: UInt32;
@@ -99,7 +100,7 @@ export interface Ethereum_Log {
 export interface Ethereum_EventNotification {
   data: String;
   address: String;
-  log: Ethereum_Log;
+  log: Types.Ethereum_Log;
 }
 
 /* URI: "w3://ens/ethereum.web3api.eth" */
@@ -129,7 +130,7 @@ export interface Ethereum_TxResponse {
   s?: String | null;
   v?: UInt32 | null;
   type?: UInt32 | null;
-  accessList?: Array<Ethereum_Access> | null;
+  accessList?: Array<Types.Ethereum_Access> | null;
 }
 
 /* URI: "w3://ens/ethereum.web3api.eth" */
@@ -139,3 +140,4 @@ export interface Ethereum_Access {
 }
 
 /// Imported Objects END ///
+

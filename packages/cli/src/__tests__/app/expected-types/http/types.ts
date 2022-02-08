@@ -16,6 +16,7 @@ import {
   String,
   Boolean
 } from "../baseTypes";
+import * as Types from "./";
 
 export interface Header {
   key: String;
@@ -30,14 +31,14 @@ export interface UrlParam {
 export interface Response {
   status: Int;
   statusText: String;
-  headers?: Array<Header> | null;
+  headers?: Array<Types.Header> | null;
   body?: String | null;
 }
 
 export interface Request {
-  headers?: Array<Header> | null;
-  urlParams?: Array<UrlParam> | null;
-  responseType: ResponseType;
+  headers?: Array<Types.Header> | null;
+  urlParams?: Array<Types.UrlParam> | null;
+  responseType: Types.ResponseType;
   body?: String | null;
 }
 
@@ -52,6 +53,3 @@ export type ResponseTypeString =
 
 export type ResponseType = ResponseTypeEnum | ResponseTypeString;
 
-/// Imported Objects START ///
-
-/// Imported Objects END ///

@@ -14,27 +14,7 @@ import {
   String,
   Boolean
 } from "../baseTypes";
-import {
-{{#objectTypes}}
-  {{type}},
-{{/objectTypes}}
-{{#enumTypes}}
-  {{type}}Enum,
-  {{type}}String,
-  {{type}},
-{{/enumTypes}}
-{{#importedObjectTypes}}
-  {{type}},
-{{/importedObjectTypes}}
-{{#importedEnumTypes}}
-  {{type}}Enum,
-  {{type}}String,
-  {{type}},
-{{/importedEnumTypes}}
-{{#importedQueryTypes}}
-  {{type}},
-{{/importedQueryTypes}}
-} from "./types";
+import * as Types from "./";
 
 {{#methods}}
 export interface Input_{{name}} extends Record<string, unknown> {
