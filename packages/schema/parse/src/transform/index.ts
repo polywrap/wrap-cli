@@ -194,7 +194,7 @@ export function visitAnyDefinition(
     result.array = visitArrayDefinition(result.array, transforms);
   }
 
-  if(result.map) {
+  if (result.map) {
     result.map = visitMapDefinition(result.map, transforms);
   }
 
@@ -359,7 +359,10 @@ export function visitEnvDefinition(
   return transformType(result, transforms.leave);
 }
 
-export function visitMapDefinition(def: MapDefinition, transforms: TypeInfoTransforms): MapDefinition {
+export function visitMapDefinition(
+  def: MapDefinition,
+  transforms: TypeInfoTransforms
+): MapDefinition {
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
 

@@ -177,7 +177,7 @@ const toWasmMap = (type: string, nullable: boolean): string => {
     .substring(firstOpenBracketIdx + 1, lastCloseBracketIdx)
     .split(",")
     .map((x) => x.trim());
-  
+
   if (keyValTypes.length !== 2 || !keyValTypes[0] || !keyValTypes[1]) {
     throw new Error(`Invalid Map: ${type}`);
   }
@@ -186,7 +186,7 @@ const toWasmMap = (type: string, nullable: boolean): string => {
   const valType = toWasm()(keyValTypes[1], (str) => str);
 
   return applyNullable(`Map<${keyType}, ${valType}>`, nullable, false);
-}
+};
 
 const applyNullable = (
   type: string,

@@ -8,7 +8,7 @@ import {
 
 export const addAnnotations: TypeInfoTransforms = {
   enter: {
-    GenericDefinition: (def: GenericDefinition) => {
+    GenericDefinition: (def: GenericDefinition): GenericDefinition => {
       if (def.kind !== DefinitionKind.Property) return def;
 
       const anyDef = def as AnyDefinition;
@@ -16,11 +16,11 @@ export const addAnnotations: TypeInfoTransforms = {
 
       return {
         ...def,
-        toGraphQLType: () =>
+        toGraphQLType: (): string =>
           `Map${def.required ? "!" : ""} @annotate(type: "${toGraphQL(
             anyDef
           )}")`,
-      };
+      } as GenericDefinition;
     },
   },
 };

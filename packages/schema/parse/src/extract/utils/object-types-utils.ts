@@ -1,19 +1,15 @@
 import {
-  FieldDefinitionNode,
-  NamedTypeNode,
-  StringValueNode
-} from "graphql";
-import {
   createArrayDefinition,
   createPropertyDefinition,
   GenericDefinition,
   MapDefinition,
   ObjectDefinition,
-  PropertyDefinition
+  PropertyDefinition,
 } from "../../typeInfo";
 import { parseMapType } from "./map-utils";
 import { setPropertyType } from "./property-utils";
 
+import { FieldDefinitionNode, NamedTypeNode, StringValueNode } from "graphql";
 
 export interface State {
   currentType?: ObjectDefinition;
@@ -33,7 +29,8 @@ export function extractFieldDefinition(
     for (const dir of node.directives) {
       switch (dir.name.value) {
         case "annotate": {
-          mapType = (dir.arguments?.find((arg) => arg.name.value === "type")?.value as StringValueNode).value ;
+          mapType = (dir.arguments?.find((arg) => arg.name.value === "type")
+            ?.value as StringValueNode).value;
           if (!mapType) {
             throw new Error(
               `Annotate directive: ${node.name.value} has invalid arguments`
@@ -61,7 +58,9 @@ export function extractFieldDefinition(
   const property = createPropertyDefinition({
     type: mapType ? mapType : "N/A",
     name: node.name.value,
-    map: mapDef ? {...mapDef, name: node.name.value } as MapDefinition : undefined,
+    map: mapDef
+      ? ({ ...mapDef, name: node.name.value } as MapDefinition)
+      : undefined,
     comment: node.description?.value,
   });
 

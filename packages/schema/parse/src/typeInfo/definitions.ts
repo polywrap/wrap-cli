@@ -110,7 +110,7 @@ export function createAnyDefinition(args: {
   return {
     ...createGenericDefinition(args),
     array: args.array ? args.array : null,
-    map:  args.map ? args.map : null,
+    map: args.map ? args.map : null,
     scalar: args.scalar ? args.scalar : null,
     object: args.object ? args.object : null,
     enum: args.enum ? args.enum : null,
@@ -221,7 +221,7 @@ export function createMapDefinition(args: {
         args.value && isKind(args.value, DefinitionKind.Array)
           ? (args.value as ArrayDefinition)
           : undefined,
-      map: 
+      map:
         args.value && isKind(args.value, DefinitionKind.Map)
           ? (args.value as MapDefinition)
           : undefined,

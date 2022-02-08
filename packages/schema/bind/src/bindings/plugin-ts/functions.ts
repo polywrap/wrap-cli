@@ -4,7 +4,11 @@ export const toTypescript: MustacheFunction = () => {
   return _toTypescript;
 };
 
-const _toTypescript = (value: string, render: (template: string) => string, undefinable = false) => {
+const _toTypescript = (
+  value: string,
+  render: (template: string) => string,
+  undefinable = false
+) => {
   let type = render(value);
 
   let nullable = false;
@@ -47,7 +51,9 @@ const _toTypescript = (value: string, render: (template: string) => string, unde
       }
   }
 
-  return undefinable ? applyUndefinable(type, nullable) : applyNullable(type, nullable);
+  return undefinable
+    ? applyUndefinable(type, nullable)
+    : applyNullable(type, nullable);
 };
 
 const toTypescriptArray = (type: string, nullable: boolean): string => {
@@ -69,7 +75,7 @@ const toTypescriptMap = (type: string, nullable: boolean): string => {
     .substring(openAngleBracketIdx + 1, closeAngleBracketIdx)
     .split(",")
     .map((x) => x.trim());
-  
+
   const tsKeyType = _toTypescript(keyType, (str) => str);
   const tsValType = _toTypescript(valtype, (str) => str, true);
 
@@ -90,4 +96,4 @@ const applyUndefinable = (type: string, undefinable: boolean): string => {
   } else {
     return type;
   }
-}
+};

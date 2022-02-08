@@ -15,7 +15,7 @@ type CurrentTypeInfo = {
   required: boolean;
 };
 
-function _parseCurrentType(rootType: string, type: string): CurrentTypeInfo {
+const _parseCurrentType = (rootType: string, type: string): CurrentTypeInfo => {
   let required = false;
   if (type.startsWith("[")) {
     const closeSquareBracketIdx = type.lastIndexOf("]");
@@ -29,7 +29,7 @@ function _parseCurrentType(rootType: string, type: string): CurrentTypeInfo {
     };
   }
 
-  let hasSubType: boolean = true;
+  let hasSubType = true;
   const openAngleBracketIdx = type.indexOf("<");
   const closeAngleBracketIdx = type.lastIndexOf(">");
 
@@ -65,10 +65,12 @@ function _parseCurrentType(rootType: string, type: string): CurrentTypeInfo {
       : null,
     required: required,
   };
-}
+};
 
-function _toGraphQLType(rootType: string, type: string): string {
-  let { currentType, subType } = _parseCurrentType(rootType, type);
+const _toGraphQLType = (rootType: string, type: string): string => {
+  const parsedCurrentType = _parseCurrentType(rootType, type);
+  let { subType } = parsedCurrentType;
+  const { currentType } = parsedCurrentType;
 
   if (!subType) {
     return currentType;
@@ -93,10 +95,10 @@ function _toGraphQLType(rootType: string, type: string): string {
         `Found unknown type ${currentType} while parsing ${rootType}`
       );
   }
-}
+};
 
-function _parseMapType(rootType: string, type: string): GenericDefinition {
-  let { currentType, subType, required } = _parseCurrentType(rootType, type);
+const _parseMapType = (rootType: string, type: string): GenericDefinition => {
+  const { currentType, subType, required } = _parseCurrentType(rootType, type);
 
   if (!subType) {
     if (isScalarType(currentType)) {
@@ -131,14 +133,11 @@ function _parseMapType(rootType: string, type: string): GenericDefinition {
         throw new Error(`Invalid map value type: ${rootType}`);
       }
 
-      let [keyType, valueType] = keyValTypes;
+      const [_keyType, _valueType] = keyValTypes;
       // TODO: Is there a better way to enforce this -> Map key should always be required
       // TODO: Should we throw an error if it's not?
-      let keyRequired = true;
-
-      if (keyType.endsWith("!")) {
-        keyType = keyType.slice(0, -1);
-      }
+      const keyRequired = true;
+      const keyType = _keyType.endsWith("!") ? _keyType.slice(0, -1) : _keyType;
 
       if (!isMapKeyType(keyType)) {
         throw new Error(
@@ -152,14 +151,14 @@ function _parseMapType(rootType: string, type: string): GenericDefinition {
           type: keyType,
           required: keyRequired,
         }),
-        value: _parseMapType(rootType, valueType),
+        value: _parseMapType(rootType, _valueType),
         required: required,
       });
     }
     default:
       throw new Error(`Invalid map value type: ${type}`);
   }
-}
+};
 
 export function parseCurrentType(type: string): CurrentTypeInfo {
   return _parseCurrentType(type, type);
