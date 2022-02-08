@@ -77,7 +77,7 @@ impl Read for ReadDecoder {
                 Format::Int8 => Ok(ReadBytesExt::read_i8(self)?),
                 err_f => {
                     let err_msg = format!(
-                        "Property must be of type 'int8'. {}",
+                        "Property must be of type 'int'. {}",
                         get_error_message(err_f)
                     );
                     Err(DecodeError::WrongMsgPackFormat(err_msg))
@@ -93,7 +93,7 @@ impl Read for ReadDecoder {
                 Format::Int16 => Ok(ReadBytesExt::read_i16::<BigEndian>(self)?),
                 err_f => {
                     let err_msg = format!(
-                        "Property must be of type 'int16'. {}",
+                        "Property must be of type 'int'. {}",
                         get_error_message(err_f)
                     );
                     Err(DecodeError::WrongMsgPackFormat(err_msg))
@@ -109,7 +109,7 @@ impl Read for ReadDecoder {
                 Format::Int32 => Ok(ReadBytesExt::read_i32::<BigEndian>(self)?),
                 err_f => {
                     let err_msg = format!(
-                        "Property must be of type 'int32'. {}",
+                        "Property must be of type 'int'. {}",
                         get_error_message(err_f)
                     );
                     Err(DecodeError::WrongMsgPackFormat(err_msg))
@@ -125,7 +125,7 @@ impl Read for ReadDecoder {
                 Format::Int64 => Ok(ReadBytesExt::read_i64::<BigEndian>(self)?),
                 err_f => {
                     let err_msg = format!(
-                        "Property must be of type 'int64'. {}",
+                        "Property must be of type 'int'. {}",
                         get_error_message(err_f)
                     );
                     Err(DecodeError::WrongMsgPackFormat(err_msg))
@@ -141,7 +141,7 @@ impl Read for ReadDecoder {
                 Format::Uint8 => Ok(ReadBytesExt::read_u8(self)?),
                 err_f => {
                     let err_msg = format!(
-                        "Property must be of type 'uint8'. {}",
+                        "Property must be of type 'uint'. {}",
                         get_error_message(err_f)
                     );
                     Err(DecodeError::WrongMsgPackFormat(err_msg))
@@ -157,7 +157,7 @@ impl Read for ReadDecoder {
                 Format::Uint16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)?),
                 err_f => {
                     let err_msg = format!(
-                        "Property must be of type 'uint16'. {}",
+                        "Property must be of type 'uint'. {}",
                         get_error_message(err_f)
                     );
                     Err(DecodeError::WrongMsgPackFormat(err_msg))
@@ -173,7 +173,7 @@ impl Read for ReadDecoder {
                 Format::Uint32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
                 err_f => {
                     let err_msg = format!(
-                        "Property must be of type 'uint32'. {}",
+                        "Property must be of type 'uint'. {}",
                         get_error_message(err_f)
                     );
                     Err(DecodeError::WrongMsgPackFormat(err_msg))
@@ -189,7 +189,7 @@ impl Read for ReadDecoder {
                 Format::Uint64 => Ok(ReadBytesExt::read_u64::<BigEndian>(self)?),
                 err_f => {
                     let err_msg = format!(
-                        "Property must be of type 'uint64'. {}",
+                        "Property must be of type 'uint'. {}",
                         get_error_message(err_f)
                     );
                     Err(DecodeError::WrongMsgPackFormat(err_msg))
