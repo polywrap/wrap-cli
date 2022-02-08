@@ -2383,6 +2383,7 @@ scalar Int32
 scalar Bytes
 scalar BigInt
 scalar JSON
+scalar Map
 
 directive @imported(
   uri: String!
