@@ -46,6 +46,13 @@ pub mod malloc;
 pub mod msgpack;
 pub mod subinvoke;
 
+pub use abort::*;
+pub use debug::*;
+pub use env::*;
+pub use get_implementations::*;
+pub use invoke::*;
+pub use subinvoke::*;
+
 pub use msgpack::{
     Context, DecodeError, EncodeError, EnumTypeError, Read, ReadDecoder, Write, WriteEncoder,
     WriteSizer,
