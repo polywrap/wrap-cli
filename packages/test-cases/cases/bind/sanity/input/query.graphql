@@ -22,4 +22,5 @@ type Query {
 
 type QueryEnv {
   queryProp: String!
+  optMap: Map @annotate(type: "Map<String, Int>")
 }
