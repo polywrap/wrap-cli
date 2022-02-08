@@ -212,7 +212,7 @@ export default {
           variables,
         });
 
-        if (data && data !== {}) {
+        if (data && Object.keys(data).length !== 0) {
           print.success("-----------------------------------");
           print.fancy(JSON.stringify(data, null, 2));
           print.success("-----------------------------------");
@@ -225,6 +225,10 @@ export default {
             print.fancy(error.stack || "");
             print.error("-----------------------------------");
           }
+        }
+
+        if (errors || Object.keys(data).length === 0) {
+          process.exitCode = 1;
         }
       }
     }
