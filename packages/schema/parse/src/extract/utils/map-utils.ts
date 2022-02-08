@@ -9,111 +9,126 @@ import {
   isMapKeyType,
 } from "../..";
 
-export function findFirstOpenBracket(type: string): number {
-  return type.indexOf("<");
-}
+type CurrentTypeInfo = {
+  currentType: string;
+  subType: string | null;
+  required: boolean;
+};
 
-export function findLastCloseBracket(type: string): number {
-  return type.lastIndexOf(">");
-}
-
-export function toGraphQLType(type: string): string {
-  const firstOpenBracketIdx = findFirstOpenBracket(type);
-  const lastCloseBracketIdx = findLastCloseBracket(type);
-
-  if (firstOpenBracketIdx === -1 && lastCloseBracketIdx === -1)  {
-    return type.endsWith("!") ? type.slice(0, -1) : type;
+function _parseCurrentType(rootType: string, type: string): CurrentTypeInfo {
+  let required = false;
+  if (type.startsWith("[")) {
+    const closeSquareBracketIdx = type.lastIndexOf("]");
+    if (type[closeSquareBracketIdx + 1] === "!") {
+      required = true;
+    }
+    return {
+      currentType: "Array",
+      subType: type.substring(1, closeSquareBracketIdx),
+      required: required,
+    };
   }
 
-  const currentType = type.substring(0, firstOpenBracketIdx);
+  let hasSubType: boolean = true;
+  const openAngleBracketIdx = type.indexOf("<");
+  const closeAngleBracketIdx = type.lastIndexOf(">");
+
+  if (
+    (openAngleBracketIdx === -1 && closeAngleBracketIdx !== -1) ||
+    (openAngleBracketIdx !== -1 && closeAngleBracketIdx === -1)
+  ) {
+    throw new Error(`Invalid map value type: ${rootType}`);
+  }
+
+  if (openAngleBracketIdx === -1 && closeAngleBracketIdx === -1) {
+    if (type === "Array" || type === "Map") {
+      throw new Error(`Invalid map value type: ${rootType}`);
+    }
+    if (type.endsWith("!")) {
+      required = true;
+    }
+    hasSubType = false;
+  }
+
+  if (type[closeAngleBracketIdx + 1] === "!") {
+    required = true;
+  }
+
+  return {
+    currentType: hasSubType
+      ? type.substring(0, openAngleBracketIdx)
+      : required
+      ? type.substring(0, type.length - 1)
+      : type,
+    subType: hasSubType
+      ? type.substring(openAngleBracketIdx + 1, closeAngleBracketIdx)
+      : null,
+    required: required,
+  };
+}
+
+function _toGraphQLType(rootType: string, type: string): string {
+  let { currentType, subType } = _parseCurrentType(rootType, type);
+
+  if (!subType) {
+    return currentType;
+  }
 
   switch (currentType) {
     case "Array": {
-      let subType = type.substring(
-        firstOpenBracketIdx + 1,
-        lastCloseBracketIdx
-      );
       if (subType.endsWith("!")) {
         subType = subType.slice(0, -1);
       }
-      return `[${toGraphQLType(subType)}]`;
+      return `[${_toGraphQLType(rootType, subType)}]`;
     }
     case "Map": {
-      const [keyType, valueType] = type
-        .substring(firstOpenBracketIdx + 1, lastCloseBracketIdx)
-        .split(",")
-        .map((x) => x.trim());
-      return `Map<${toGraphQLType(keyType)}, ${toGraphQLType(valueType)}>`;
+      const [keyType, valueType] = subType.split(",").map((x) => x.trim());
+      return `Map<${_toGraphQLType(rootType, keyType)}, ${_toGraphQLType(
+        rootType,
+        valueType
+      )}>`;
     }
     default:
-      throw new Error(`Unknown type ${currentType}`);
+      throw new Error(
+        `Found unknown type ${currentType} while parsing ${rootType}`
+      );
   }
 }
 
-export function parseMapType(type: string): GenericDefinition {
-  const firstOpenBracketIdx = findFirstOpenBracket(type);
-  const lastCloseBracketIdx = findLastCloseBracket(type);
+function _parseMapType(rootType: string, type: string): GenericDefinition {
+  let { currentType, subType, required } = _parseCurrentType(rootType, type);
 
-  if (
-    (firstOpenBracketIdx === -1 && lastCloseBracketIdx !== -1) ||
-    (firstOpenBracketIdx !== -1 && lastCloseBracketIdx === -1)
-  ) {
-    throw new Error(`Invalid map value type: ${type}`);
-  }
-
-  if (firstOpenBracketIdx === -1 && lastCloseBracketIdx === -1) {
-    if (type === "Array" || type === "Map") {
-      throw new Error(`Invalid map value type: ${type}`);
-    }
-
-    let required = false;
-    if (type.endsWith("!")) {
-      type = type.slice(0, -1);
-      required = true;
-    }
-
-    if (isScalarType(type)) {
+  if (!subType) {
+    if (isScalarType(currentType)) {
       return createScalarDefinition({
-        type: type,
+        type: currentType,
         required: required,
       });
     }
 
     return createUnresolvedObjectOrEnumRef({
-      type: type,
+      type: currentType,
       required: required,
     });
   }
 
-  const currentType = type.substring(0, firstOpenBracketIdx);
-
   switch (currentType) {
     case "Array": {
-      const subType = type.substring(
-        firstOpenBracketIdx + 1,
-        lastCloseBracketIdx
-      );
-      const required = type[lastCloseBracketIdx + 1] === "!";
       return createArrayDefinition({
-        type: toGraphQLType(type),
-        item: parseMapType(subType),
+        type: _toGraphQLType(rootType, type),
+        item: _parseMapType(rootType, subType),
         required: required,
       });
     }
     case "Map": {
-      const keyValTypes = type
-        .substring(firstOpenBracketIdx + 1, lastCloseBracketIdx)
-        .split(",")
-        .map((x) => x.trim());
-
-      const required = type[lastCloseBracketIdx + 1] === "!";
+      const keyValTypes = subType.split(",").map((x) => x.trim());
 
       if (
         keyValTypes.length !== 2 ||
         keyValTypes[0] === "" ||
         keyValTypes[1] === ""
       ) {
-        throw new Error(`Invalid map value type: ${type}`);
+        throw new Error(`Invalid map value type: ${rootType}`);
       }
 
       let [keyType, valueType] = keyValTypes;
@@ -125,20 +140,34 @@ export function parseMapType(type: string): GenericDefinition {
       }
 
       if (!isMapKeyType(keyType)) {
-        throw new Error(`Invalid map key type: ${keyType}`);
+        throw new Error(
+          `Found invalid map key type: ${keyType} while parsing ${rootType}`
+        );
       }
 
       return createMapDefinition({
-        type: toGraphQLType(type),
+        type: _toGraphQLType(rootType, type),
         key: createMapKeyDefinition({
           type: keyType,
           required: keyRequired,
         }),
-        value: parseMapType(valueType),
+        value: _parseMapType(rootType, valueType),
         required: required,
       });
     }
     default:
       throw new Error(`Invalid map value type: ${type}`);
   }
+}
+
+export function parseCurrentType(type: string): CurrentTypeInfo {
+  return _parseCurrentType(type, type);
+}
+
+export function parseMapType(type: string): GenericDefinition {
+  return _parseMapType(type, type);
+}
+
+export function toGraphQLType(type: string): string {
+  return _toGraphQLType(type, type);
 }
