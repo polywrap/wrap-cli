@@ -60,13 +60,13 @@ export default {
     }
 
     if (custom === true) {
-      const customScriptMissingPathMessage = intlMsg.commands_codegen_error_customScriptMissingPath(
+      const customTemplateMissingPathMessage = intlMsg.commands_codegen_error_customTemplateMissingPath(
         {
           option: "--custom",
           argument: `<${pathStr}>`,
         }
       );
-      print.error(customScriptMissingPathMessage);
+      print.error(customTemplateMissingPathMessage);
       print.info(HELP);
       return;
     }
@@ -122,7 +122,7 @@ export default {
     }
 
     // Resolve generation file & output directories
-    const customScript = custom && filesystem.resolve(custom);
+    const customTemplate = custom && filesystem.resolve(custom);
     manifestPath =
       (manifestPath && filesystem.resolve(manifestPath)) ||
       ((await filesystem.existsAsync(defaultManifest[0]))
@@ -143,11 +143,11 @@ export default {
 
     let result = false;
 
-    if (customScript) {
+    if (customTemplate) {
       const codeGenerator = new CodeGenerator({
         project,
         schemaComposer,
-        customScript,
+        customTemplate,
         outputDir: outputDir || filesystem.path("types"),
       });
 

@@ -7,7 +7,7 @@ import rimraf from "rimraf";
 
 describe("CodeGenerator validation", () => {
   const manifestPath = path.join(__dirname, "../project", "web3api.yaml");
-  const customScript = path.join(__dirname, "../project", "web3api.gen.js");
+  const customTemplate = path.join(__dirname, "../project", "web3api.gen.js");
   const outputDir = path.join(__dirname, "../project", "types");
 
   it("Should fail with invalid manifest path", async () => {
@@ -21,7 +21,7 @@ describe("CodeGenerator validation", () => {
     const generator = new CodeGenerator({
       project,
       schemaComposer,
-      customScript,
+      customTemplate,
       outputDir,
     });
 
@@ -40,7 +40,7 @@ describe("CodeGenerator validation", () => {
     const generator = new CodeGenerator({
       project,
       schemaComposer,
-      customScript: path.join(
+      customTemplate: path.join(
         __dirname,
         "../project",
         "web3api-norun.gen.js"
@@ -67,7 +67,7 @@ describe("CodeGenerator validation", () => {
     const generator = new CodeGenerator({
       project,
       schemaComposer,
-      customScript,
+      customTemplate,
       outputDir,
     });
 

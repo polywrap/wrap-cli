@@ -24,7 +24,7 @@
   "commands_build_uriViewers": "URI Viewers",
   "commands_codegen_description": "Auto-generate API Types",
   "commands_codegen_error_domain": "domain",
-  "commands_codegen_error_customScriptMissingPath": "{option} option missing {argument} argument",
+  "commands_codegen_error_customTemplateMissingPath": "{option} option missing {argument} argument",
   "commands_codegen_options_e": "ENS address to lookup external schemas (default: 0x0000...2e1e)",
   "commands_codegen_options_e_address": "address",
   "commands_codegen_options_h": "Show usage information",

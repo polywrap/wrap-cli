@@ -21,23 +21,23 @@ import * as gluegun from "gluegun";
 import { Ora } from "ora";
 import Mustache from "mustache";
 
-export interface CustomScriptConfig {
+export interface customTemplateConfig {
   typeInfo: TypeInfo;
   generate: (templatePath: string, config: unknown) => string;
 }
 
 export { OutputDirectory };
 
-export type CustomScriptRunFn = (
+export type customTemplateRunFn = (
   output: OutputDirectory,
-  config: CustomScriptConfig
+  config: customTemplateConfig
 ) => void;
 
 export interface CodeGeneratorConfig {
   outputDir: string;
   project: Project;
   schemaComposer: SchemaComposer;
-  customScript?: string;
+  customTemplate?: string;
 }
 
 export class CodeGenerator {
@@ -84,23 +84,23 @@ export class CodeGenerator {
         throw Error(intlMsg.lib_codeGenerator_typeInfoMissing());
       }
 
-      if (this._config.customScript) {
+      if (this._config.customTemplate) {
         const output: OutputDirectory = {
           entries: [],
         };
 
-        if (isTypescriptFile(this._config.customScript)) {
+        if (isTypescriptFile(this._config.customTemplate)) {
           loadTsNode();
         }
 
         // Check the generation file if it has the proper run() method
         // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention
-        const generator = await require(this._config.customScript);
+        const generator = await require(this._config.customTemplate);
         if (!generator) {
           throw Error(intlMsg.lib_codeGenerator_wrongGenFile());
         }
 
-        const { run } = generator as { run: CustomScriptRunFn };
+        const { run } = generator as { run: customTemplateRunFn };
         if (!run) {
           throw Error(intlMsg.lib_codeGenerator_noRunMethod());
         }
@@ -159,10 +159,10 @@ export class CodeGenerator {
       step(spinner, stepMessage);
     }
 
-    if (this._config.customScript) {
+    if (this._config.customTemplate) {
       // Update template path when the generation file is given
       templatePath = path.join(
-        path.dirname(this._config.customScript),
+        path.dirname(this._config.customTemplate),
         templatePath
       );
     }
