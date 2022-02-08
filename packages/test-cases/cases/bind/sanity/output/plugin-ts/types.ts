@@ -20,6 +20,18 @@ export type Json = string;
 export type String = string;
 export type Boolean = boolean;
 
+export interface QueryEnv {
+  queryProp: String;
+  prop: String;
+  optProp?: String | null;
+}
+
+export interface MutationEnv {
+  mutProp: String;
+  prop: String;
+  optProp?: String | null;
+}
+
 export interface CustomType {
   str: String;
   optStr?: String | null;
@@ -65,6 +77,7 @@ export interface CustomType {
 export interface AnotherType {
   prop?: String | null;
   circular?: Types.CustomType | null;
+  const?: String | null;
 }
 
 export interface AnotherObject {

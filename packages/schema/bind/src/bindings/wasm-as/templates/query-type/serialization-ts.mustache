@@ -1,20 +1,10 @@
-import {
-  Read,
-  ReadDecoder,
-  WriteSizer,
-  WriteEncoder,
-  Write,
-  Nullable,
-  BigInt,
-  JSON,
-  Context
-} from "@web3api/wasm-as";
+{{> serialization_imports}}
 import * as Types from "..";
 {{#methods}}
 
 export class Input_{{name}} {
   {{#arguments}}
-  {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
+  {{#handleKeywords}}{{name}}{{/handleKeywords}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
   {{/arguments}}
 }
 
@@ -109,7 +99,7 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
 
   return {
     {{#arguments}}
-    {{name}}: _{{name}}{{^last}},{{/last}}
+    {{#handleKeywords}}{{name}}{{/handleKeywords}}: _{{name}}{{^last}},{{/last}}
     {{/arguments}}
   };
 }

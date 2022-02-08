@@ -1,3 +1,127 @@
+# Web3API 0.0.1-prealpha.61
+## Features
+* `@web3api/cli`: Added the `--client-config` / `-c` option to the `w3 query` CLI command, allowing the user the define their own client configurations within a JavaScript or TypeScript module.
+* `@web3api/client-js`: Plugins can now be initialized with the client's environment registered at the plugin's URI.
+
+## Bugs
+* `@web3api/schema-bind`: Properly handle reserve words for the bind target's language. Reserved words will be prepended with `m_` in order to avoid compiler errors.
+
+# Web3API 0.0.1-prealpha.60
+## Breaking Changes
+* `@web3api/schema-compose`: `ComposerOptions` property `schemas` is now of type `Record<SchemaKind, SchemaFile>` and not `Record<string, SchemaFile>`.
+* `@web3api/schema-bind`: `TargetLanguage` type has been renamed to `BindLanguage`.
+* `@web3api/schema-bind`: `BindOptions` property `language` has been renamed to `bindLanguage`.
+
+## Bugs
+* `@web3api/cli`: Properly resolve NPM dependency `colors` due to it being [corrupted](https://www.bleepingcomputer.com/news/security/dev-corrupts-npm-libs-colors-and-faker-breaking-thousands-of-apps/).
+* `@web3api/cli`: Plugin schema codegen now properly represents imports types from both Query and Mutation modules.
+* `@web3api/cli`: Properly defined the separation of the `ManifestLanguage` and `BindLanguage` (ex: wasm/assemblyscript -> wasm-as).
+* `@web3api/schema-compose`: Introduce the concept of a `SchemaKind` to help determine how schemas should be combined.
+* `@web3api/schema-compose`: Allow plugins to import mutations within their schemas.
+* `@web3api/schema-bind`: Introduced the concept of `BindTarget` to represent a list of known-good bind targets (`wasm-as`, `plugin-ts`, etc).
+
+# Web3API 0.0.1-prealpha.59
+## Features
+* Web3APIs can now be configured via environment variables. Documentation will be created soon. Initial details on this features specification can be found [here](https://github.com/polywrap/monorepo/issues/140).
+
+# Web3API 0.0.1-prealpha.58
+## Features
+* `@web3api/client-js`: Added `noDecode` invocation option.
+* `@web3api/client-js`: Added `noDefaults` constructor option.
+
+## Bugs
+* `@web3api/ethereum-plugin-js`: The `encodeParams` now properly parses arguments of type Array & Tuple.
+
+# Web3API 0.0.1-prealpha.57
+## Features
+* `@web3api/cli`: CLI command middleware support has been added. The first use-cases implemented are to help ensure Docker is available to the CLI instance, and not in-use by another CLI instance.
+* `@web3api/client-js`: Query-time configuration overrides have been added, allowing developers to define new configurations without having to re-create the client instance.
+
+## Bugs
+* `@web3api/asyncify-js`: Fixed issue [#570](https://github.com/polywrap/monorepo/issues/570) by using a node-version-agnostic way of indexing into the Uint8Array buffer.
+
+# Web3API 0.0.1-prealpha.56
+## Bugs
+* `@web3api/ethereum-plugin-js`: The encodeFunction now support array & object arg types.
+
+# Web3API 0.0.1-prealpha.55
+## Bugs
+* `@web3api/schema-compose`: Properly support empty schema types.
+* `@web3api/asyncify-js`: Fixed a low-level inconsistency between Wasm modules when using imported memory. More details [here](https://github.com/polywrap/monorepo/issues/561).
+* `@web3api/schema-bind`: Fixed issue where imports were inconsistent between `serialization.ts` assemblyscript files, and some necessary imports were missing.
+
+# Web3API 0.0.1-prealpha.54
+## Features
+* `@web3api/ethereum-plugin-js`: Added `getNetwork` to the Ethereum plugin's `Query` module.
+
+# Web3API 0.0.1-prealpha.53
+## Features
+* `as-bigint` upgraded to version `0.4.0`. Improvements made found [here](https://github.com/polywrap/monorepo/pull/552).
+
+# Web3API 0.0.1-prealpha.52
+## Features
+* Querying an interface implementation's modules given its URI is now supported within Wasm.
+
+# Web3API 0.0.1-prealpha.51
+## Features
+* `as-bigint` upgraded to version `0.3.2`. Improvements made found [here](https://github.com/polywrap/monorepo/pull/535).
+
+# Web3API 0.0.1-prealpha.50
+## Features
+* Getting the implementations of an interface is now supported from within Wasm.
+* `@web3api/tracing-js`: Added a class method decorator for tracing.
+
+# Web3API 0.0.1-prealpha.49
+## Features
+* `@web3api/fs-plugin-js`: Added a "File System" plugin, which implements the `uri-resolver` interface, enabling users to load Web3API packages from their local filesystem. For example, a user could specify the URI `/fs/path/to/package/directory`.
+* Upgraded the toolchain's Node.JS version to 16.13.0, which solves compatibility issues with Mac computers using the new M1 processor.
+
+## Bugs
+* `@web3api/cli`: Fixed the `w3 query ...` command's recipe variable parsing logic, better supporting arrays and objects.
+* `@web3api/schema-compose`: Improved import parsing, and added support for recursive schema imports.
+
+# Web3API 0.0.1-prealpha.48
+## Bugs
+* `@web3api/test-env-js`: Allow the usage of this package as an npm package outside of the monorepo folder structure.
+
+# Web3API 0.0.1-prealpha.47
+## Features
+* `@web3api/client-js`: Add the Graph Node plugin to the client's default configuration.
+* `@web3api/ethereum-plugin-js`: Add the `encodeFunction` query method, allowing callers to encode smart contract methods w/ argument values.
+
+# Web3API 0.0.1-prealpha.46
+## Bugs
+* `@web3api/core-js`: Properly check for "undefined" values in query arguments.
+* `@web3api/wasm-as`: Improved MsgPack deserialization of integers (signed & unsigned).
+
+# Web3API 0.0.1-prealpha.45
+## Features
+* `@web3api/tracing-js`: Support service name configuration.
+
+# Web3API 0.0.1-prealpha.44
+## Features
+* `@web3api/client-js`: Use Fleek's IPFS gateway.
+
+# Web3API 0.0.1-prealpha.43
+## Features
+* `@web3api/client-js`: Added the `client.subscribe(...)` method, enabling users to easily send queries at a specified frequency.
+
+## Bugs
+* `@web3api/tracing-js`: Replaced the `util-inspect` dependency with a browser compatible one.
+
+# Web3API 0.0.1-prealpha.42
+## Bugs
+* `@web3api/schema-parse`: Removed unnecessary sanitization for imported methods without any arguments.
+
+# Web3API 0.0.1-prealpha.41
+## Features
+* `@web3api/schema-parse`: Added support for `JSON` as a base type.
+* `@web3api/ens-api`: Merged in an initial version of the ENS Wasm based Web3Api.
+* `web3api.build.yaml`: Added support for the `linked_packages` property, allowing you to link local packages into the dockerized build-env.
+
+## Bugs
+* `@web3api/schema-compose`: Fixed an invalid GraphQL bug that occured when an imported query method did not have any arguments.
+
 # Web3API 0.0.1-prealpha.40
 ## Features
 * `@web3api/client-js`: Added `getManifest(...)`, `getFile(...)`, and `getSchema(...)` methods to the client, simply provide a URI.

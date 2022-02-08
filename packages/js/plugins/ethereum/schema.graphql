@@ -91,6 +91,12 @@ type Connection {
   networkNameOrChainId: String
 }
 
+type Network {
+  name: String!
+  chainId: Int!
+  ensAddress: String
+}
+
 type Query {
   callContractView(
     address: String!
@@ -110,6 +116,11 @@ type Query {
   encodeParams(
     types: [String!]!
     values: [String!]!
+  ): String!
+
+  encodeFunction(
+    method: String!
+    args: [String!]
   ): String!
 
   getSignerAddress(
@@ -147,13 +158,9 @@ type Query {
     address: String!
   ): Boolean!
 
-  toWei(
-    eth: String!
-  ): BigInt!
+  toWei(eth: String!): BigInt!
 
-  toEth(
-    wei: BigInt!
-  ): String!
+  toEth(wei: BigInt!): String!
 
   awaitTransaction(
     txHash: String!
@@ -169,6 +176,8 @@ type Query {
     timeout: UInt32
     connection: Connection
   ): EventNotification!
+
+  getNetwork(connection: Connection): Network!
 }
 
 type Mutation {

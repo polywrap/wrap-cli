@@ -59,6 +59,12 @@ export const query = (plugin: Plugin): Query.Module => ({
     return plugin.encodeParams(input);
   },
 
+  encodeFunction: async (
+    input: Query.Input_encodeFunction
+  ): Promise<string> => {
+    return plugin.encodeFunction(input);
+  },
+
   getSignerAddress: async (
     input: Query.Input_getSignerAddress
   ): Promise<string> => {
@@ -115,5 +121,9 @@ export const query = (plugin: Plugin): Query.Module => ({
     input: Query.Input_awaitTransaction
   ): Promise<Types.TxReceipt> => {
     return plugin.awaitTransaction(input);
+  },
+
+  getNetwork: async (input: Query.Input_getNetwork): Promise<Types.Network> => {
+    return plugin.getNetwork(input);
   },
 });

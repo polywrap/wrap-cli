@@ -2,12 +2,10 @@ import {
   Input_mutationMethod,
   Input_objectMethod
 } from "./Mutation";
-
 export {
   Input_mutationMethod,
   Input_objectMethod
 };
-
 export { AnotherType } from "./AnotherType";
 export { CustomType } from "./CustomType";
 export { AnotherObject } from "./AnotherObject";
@@ -36,3 +34,5 @@ export {
 export {
   TestImport_Union,
 } from "./imported/TestImport_Union";
+export { env } from "./env";
+export { MutationEnv } from "./MutationEnv";

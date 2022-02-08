@@ -1,21 +1,12 @@
 {{^__commonImport}}
 {{#methods.length}}
-import {
-  Nullable,
-  Write,
-  WriteSizer,
-  WriteEncoder,
-  ReadDecoder,
-  BigInt,
-  JSON,
-  Context
-} from "@web3api/wasm-as";
+{{> serialization_imports}}
 import * as Types from "../..";
 
 {{#methods}}
 export class Input_{{name}} {
   {{#arguments}}
-  {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
+  {{#handleKeywords}}{{name}}{{/handleKeywords}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
   {{/arguments}}
 }
 
@@ -39,19 +30,19 @@ export function write{{name}}Args(
   writer.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
   writer.writeString("{{name}}");
   {{#scalar}}
-  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(input.{{name}});
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(input.{{#handleKeywords}}{{name}}{{/handleKeywords}});
   {{/scalar}}
   {{#array}}
-  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(input.{{name}}, (writer: Write, item: {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}}): void => {
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(input.{{#handleKeywords}}{{name}}{{/handleKeywords}}, (writer: Write, item: {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}}): void => {
     {{> serialize_array}}
   });
   {{/array}}
   {{#enum}}
   {{#required}}
-  writer.writeInt32(input.{{name}});
+  writer.writeInt32(input.{{#handleKeywords}}{{name}}{{/handleKeywords}});
   {{/required}}
   {{^required}}
-  writer.writeNullableInt32(input.{{name}});
+  writer.writeNullableInt32(input.{{#handleKeywords}}{{name}}{{/handleKeywords}});
   {{/required}}
   {{/enum}}
   {{#union}}
@@ -68,11 +59,11 @@ export function write{{name}}Args(
   {{/union}}
   {{#object}}
   {{#required}}
-  Types.{{type}}.write(writer, input.{{name}});
+  Types.{{type}}.write(writer, input.{{#handleKeywords}}{{name}}{{/handleKeywords}});
   {{/required}}
   {{^required}}
-  if (input.{{name}}) {
-    Types.{{type}}.write(writer, input.{{name}} as Types.{{type}});
+  if (input.{{#handleKeywords}}{{name}}{{/handleKeywords}}) {
+    Types.{{type}}.write(writer, input.{{#handleKeywords}}{{name}}{{/handleKeywords}} as Types.{{type}});
   } else {
     writer.writeNil();
   }

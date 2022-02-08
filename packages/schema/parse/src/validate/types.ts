@@ -10,7 +10,6 @@ import {
   DirectiveNode,
   DocumentNode,
   EnumTypeDefinitionNode,
-  FieldDefinitionNode,
   InputObjectTypeDefinitionNode,
   InputValueDefinitionNode,
   InterfaceTypeDefinitionNode,
@@ -131,7 +130,14 @@ export const getPropertyTypesValidator = (): SchemaValidator => {
             }
           }
         },
-        FieldDefinition: (node: FieldDefinitionNode) => {
+        FieldDefinition: (node) => {
+          if (
+            node.name.value === "sanitizeMutationEnv" ||
+            node.name.value === "sanitizeQueryEnv"
+          ) {
+            return;
+          }
+
           currentField = node.name.value;
         },
         NamedType: (node: NamedTypeNode) => {

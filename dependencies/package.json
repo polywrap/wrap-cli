@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "@web3api/cli": "latest"
+  },
+  "resolutions": {
+    "colors": "1.4.0"
+  }
+}

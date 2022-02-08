@@ -1,7 +1,7 @@
 {
   "name": "@web3api/cli",
   "description": "Web3API CLI",
-  "version": "0.0.1-prealpha.40",
+  "version": "0.0.1-prealpha.61",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -19,26 +19,29 @@
     "build": "rimraf ./build && tsc --project tsconfig.build.json && yarn build:envs",
     "build:envs": "copyfiles ./src/lib/build-envs/**/**/* ./build/lib/build-envs/ -u 3",
     "prebuild": "ts-node ./scripts/generateIntlTypes.ts",
-    "lint": "eslint --color --ext .ts src/",
+    "lint": "eslint --color -c ../../.eslintrc.js .",
     "test": "cross-env TEST=true jest --passWithNoTests --runInBand --verbose",
     "test:ci": "cross-env TEST=true jest --passWithNoTests --runInBand --verbose",
     "test:watch": "cross-env TEST=true jest --watch --passWithNoTests --verbose"
   },
+  "resolutions": {
+    "colors": "1.4.0"
+  },
   "dependencies": {
     "@formatjs/intl": "1.8.2",
-    "@web3api/asyncify-js": "0.0.1-prealpha.40",
-    "@web3api/client-js": "0.0.1-prealpha.40",
-    "@web3api/client-test-env": "0.0.1-prealpha.40",
-    "@web3api/core-js": "0.0.1-prealpha.40",
-    "@web3api/ens-plugin-js": "0.0.1-prealpha.40",
-    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.40",
-    "@web3api/ipfs-plugin-js": "0.0.1-prealpha.40",
-    "@web3api/os-js": "0.0.1-prealpha.40",
-    "@web3api/schema-bind": "0.0.1-prealpha.40",
-    "@web3api/schema-compose": "0.0.1-prealpha.40",
-    "@web3api/schema-parse": "0.0.1-prealpha.40",
+    "@web3api/asyncify-js": "0.0.1-prealpha.61",
+    "@web3api/client-js": "0.0.1-prealpha.61",
+    "@web3api/client-test-env": "0.0.1-prealpha.61",
+    "@web3api/core-js": "0.0.1-prealpha.61",
+    "@web3api/ens-plugin-js": "0.0.1-prealpha.61",
+    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.61",
+    "@web3api/ipfs-plugin-js": "0.0.1-prealpha.61",
+    "@web3api/os-js": "0.0.1-prealpha.61",
+    "@web3api/schema-bind": "0.0.1-prealpha.61",
+    "@web3api/schema-compose": "0.0.1-prealpha.61",
+    "@web3api/schema-parse": "0.0.1-prealpha.61",
     "assemblyscript": "0.19.1",
-    "axios": "0.19.2",
+    "axios": "0.21.2",
     "chalk": "4.1.0",
     "chokidar": "3.5.1",
     "copyfiles": "2.4.1",
@@ -53,6 +56,7 @@
     "os-locale": "5.0.0",
     "regex-parser": "2.2.11",
     "rimraf": "3.0.2",
+    "typescript": "4.0.7",
     "ws": "7.3.1"
   },
   "devDependencies": {
@@ -61,15 +65,14 @@
     "@types/jest": "26.0.8",
     "@types/node": "12.12.26",
     "@types/rimraf": "3.0.0",
-    "@web3api/test-env-js": "0.0.1-prealpha.40",
+    "@web3api/test-env-js": "0.0.1-prealpha.61",
     "cross-env": "7.0.3",
     "dir-compare": "3.3.0",
     "eslint-plugin-formatjs": "2.12.7",
     "jest": "26.6.3",
     "ts-jest": "26.5.4",
     "ts-morph": "10.0.1",
-    "ts-node": "8.10.2",
-    "typescript": "4.0.7"
+    "ts-node": "8.10.2"
   },
   "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
   "publishConfig": {

@@ -10,7 +10,7 @@ import {
   generateDockerfile,
   createBuildImage,
   copyArtifactsFromBuildImage,
-  manifestLanguageToTargetLanguage,
+  manifestLanguageToBindLanguage,
 } from "./helpers";
 import { intlMsg } from "./intl";
 
@@ -21,6 +21,7 @@ import {
   MetaManifest,
 } from "@web3api/core-js";
 import { WasmWeb3Api } from "@web3api/client-js";
+import { W3Imports } from "@web3api/client-js/build/wasm/types";
 import { AsyncWasmInstance } from "@web3api/asyncify-js";
 import { bindSchema, writeDirectory } from "@web3api/schema-bind";
 import { TypeInfo } from "@web3api/schema-parse";
@@ -191,6 +192,7 @@ export class Compiler {
 
   private async _generateCode(state: CompilerState): Promise<string[]> {
     const { web3ApiManifest, composerOutput, modulesToBuild } = state;
+    const { project } = this._config;
 
     const queryModule = web3ApiManifest.modules.query?.module as string;
     const queryDirectory = web3ApiManifest.modules.query
@@ -220,11 +222,13 @@ export class Compiler {
       this._resetDir(mutationDirectory);
     }
 
+    const bindLanguage = manifestLanguageToBindLanguage(
+      await project.getManifestLanguage()
+    );
+
     // Generate the bindings
     const output = bindSchema({
-      language: web3ApiManifest.language
-        ? manifestLanguageToTargetLanguage(web3ApiManifest.language)
-        : "wasm-as",
+      bindLanguage,
       query: modulesToBuild.query
         ? {
             typeInfo: composerOutput.query?.typeInfo as TypeInfo,
@@ -266,12 +270,12 @@ export class Compiler {
     // Build the sources
     const dockerImageId = await this._buildSourcesInDocker();
 
-    // Validate the WASM exports
+    // Validate the Wasm modules
     await Promise.all(
       Object.keys(modulesToBuild)
         .filter((module: InvokableModules) => modulesToBuild[module])
         .map((module: InvokableModules) =>
-          this._validateExports(module, outputDir)
+          this._validateWasmModule(module, outputDir)
         )
     );
 
@@ -527,61 +531,48 @@ export class Compiler {
     }
   }
 
-  private async _validateExports(
+  private async _validateWasmModule(
     moduleName: InvokableModules,
     buildDir: string
   ): Promise<void> {
-    const wasmSource = fs.readFileSync(
-      path.join(buildDir, `${moduleName}.wasm`)
-    );
+    const modulePath = path.join(buildDir, `${moduleName}.wasm`);
+    const wasmSource = fs.readFileSync(modulePath);
+    const w3Imports: Record<keyof W3Imports, () => void> = {
+      __w3_subinvoke: () => {},
+      __w3_subinvoke_result_len: () => {},
+      __w3_subinvoke_result: () => {},
+      __w3_subinvoke_error_len: () => {},
+      __w3_subinvoke_error: () => {},
+      __w3_invoke_args: () => {},
+      __w3_invoke_result: () => {},
+      __w3_invoke_error: () => {},
+      __w3_getImplementations: () => {},
+      __w3_getImplementations_result_len: () => {},
+      __w3_getImplementations_result: () => {},
+      __w3_abort: () => {},
+      __w3_load_env: () => {},
+      __w3_sanitize_env_args: () => {},
+      __w3_sanitize_env_result: () => {},
+    };
 
-    const mod = await WebAssembly.compile(wasmSource);
-    const memory = new WebAssembly.Memory({ initial: 1 });
-
-    const instance = await WebAssembly.instantiate(mod, {
-      env: {
-        memory,
-      },
-      w3: {
-        __w3_subinvoke: () => {},
-        __w3_subinvoke_result_len: () => {},
-        __w3_subinvoke_result: () => {},
-        __w3_subinvoke_error_len: () => {},
-        __w3_subinvoke_error: () => {},
-        __w3_invoke_args: () => {},
-        __w3_invoke_result: () => {},
-        __w3_invoke_error: () => {},
-        __w3_abort: () => {},
-      },
-    });
-
-    const requiredExports = [
-      ...WasmWeb3Api.requiredExports,
-      ...AsyncWasmInstance.requiredExports,
-    ];
-    const missingExports: string[] = [];
-
-    for (const requiredExport of requiredExports) {
-      if (!instance.exports[requiredExport]) {
-        missingExports.push(requiredExport);
-      }
-    }
-
-    if (missingExports.length) {
+    try {
+      const memory = AsyncWasmInstance.createMemory({ module: wasmSource });
+      await AsyncWasmInstance.createInstance({
+        module: wasmSource,
+        imports: {
+          env: {
+            memory,
+          },
+          w3: w3Imports,
+        },
+        requiredExports: WasmWeb3Api.requiredExports,
+      });
+    } catch (error) {
       throw Error(
-        intlMsg.lib_compiler_missing_export({
-          missingExport: missingExports
-            .map((missingExport, index) => {
-              if (missingExports.length === 1) {
-                return missingExport;
-              } else if (index === missingExports.length - 1) {
-                return "& " + missingExport;
-              } else {
-                return missingExport + ", ";
-              }
-            })
-            .join(),
+        intlMsg.lib_compiler_invalid_module({
+          modulePath,
           moduleName,
+          error,
         })
       );
     }

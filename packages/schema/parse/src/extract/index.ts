@@ -7,6 +7,7 @@ import { getImportedQueryTypesVisitor } from "./imported-query-types";
 import { getImportedEnumTypesVisitor } from "./imported-enum-types";
 import { getUnionTypesVisitor } from "./union-types";
 import { getImportedUnionTypesVisitor } from "./imported-union-types";
+import { getEnvVisitor } from "./env-types";
 
 import { ASTVisitor } from "graphql";
 
@@ -21,4 +22,5 @@ export const extractors: SchemaExtractorBuilder[] = [
   getQueryTypesVisitor,
   getImportedQueryTypesVisitor,
   getImportedUnionTypesVisitor,
+  getEnvVisitor,
 ];

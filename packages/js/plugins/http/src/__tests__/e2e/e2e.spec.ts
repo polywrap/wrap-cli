@@ -1,7 +1,10 @@
-import { Web3ApiClient } from "@web3api/client-js"
 import { httpPlugin } from "../..";
 import { Response } from "../../w3";
-import nock from "nock"
+
+import { Web3ApiClient } from "@web3api/client-js"
+import nock from "nock";
+
+jest.setTimeout(360000)
 
 const defaultReplyHeaders = {
   'access-control-allow-origin': '*',
@@ -261,6 +264,5 @@ describe("e2e tests for HttpPlugin", () => {
       expect(response.errors).toBeDefined()
     });
 
-  })
-
+  });
 });

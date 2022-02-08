@@ -2,12 +2,10 @@ import {
   Input_queryMethod,
   Input_objectMethod
 } from "./Query";
-
 export {
   Input_queryMethod,
   Input_objectMethod
 };
-
 export { CustomType } from "./CustomType";
 export { AnotherType } from "./AnotherType";
 export { AnotherObject } from "./AnotherObject";
@@ -35,3 +33,6 @@ export {
 export {
   TestImport_Union,
 } from "./imported/TestImport_Union";
+export { TestImport } from "./TestImport";
+export { env } from "./env";
+export { QueryEnv } from "./QueryEnv";

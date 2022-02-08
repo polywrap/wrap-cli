@@ -1,15 +1,5 @@
 {{^__commonImport}}
-import {
-  Read,
-  ReadDecoder,
-  Write,
-  WriteSizer,
-  WriteEncoder,
-  Nullable,
-  BigInt,
-  JSON,
-  Context
-} from "@web3api/wasm-as";
+{{> serialization_imports}}
 import { {{type}} } from "./";
 import * as Types from "../..";
 
@@ -30,20 +20,20 @@ export function write{{type}}(writer: Write, type: {{type}}): void {
   writer.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
   writer.writeString("{{name}}");
   {{#scalar}}
-  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{name}});
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{#handleKeywords}}{{name}}{{/handleKeywords}});
   {{/scalar}}
   {{#array}}
-  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{name}}, (writer: Write, item: {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}}): void => {
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{#handleKeywords}}{{name}}{{/handleKeywords}}, (writer: Write, item: {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}}): void => {
     {{> serialize_array}}
   });
   {{/array}}
   {{#object}}
   {{#required}}
-  Types.{{type}}.write(writer, type.{{name}});
+  Types.{{type}}.write(writer, type.{{#handleKeywords}}{{name}}{{/handleKeywords}});
   {{/required}}
   {{^required}}
-  if (type.{{name}}) {
-    Types.{{type}}.write(writer, type.{{name}} as Types.{{type}});
+  if (type.{{#handleKeywords}}{{name}}{{/handleKeywords}}) {
+    Types.{{type}}.write(writer, type.{{#handleKeywords}}{{name}}{{/handleKeywords}} as Types.{{type}});
   } else {
     writer.writeNil();
   }
@@ -51,10 +41,10 @@ export function write{{type}}(writer: Write, type: {{type}}): void {
   {{/object}}
   {{#enum}}
   {{#required}}
-  writer.writeInt32(type.{{name}});
+  writer.writeInt32(type.{{#handleKeywords}}{{name}}{{/handleKeywords}});
   {{/required}}
   {{^required}}
-  writer.writeNullableInt32(type.{{name}});
+  writer.writeNullableInt32(type.{{#handleKeywords}}{{name}}{{/handleKeywords}});
   {{/required}}
   {{/enum}}
   {{#union}}
@@ -166,7 +156,7 @@ export function read{{type}}(reader: Read): {{type}} {
 
   return {
     {{#properties}}
-    {{name}}: _{{name}}{{^last}},{{/last}}
+    {{#handleKeywords}}{{name}}{{/handleKeywords}}: _{{name}}{{^last}},{{/last}}
     {{/properties}}
   };
 }

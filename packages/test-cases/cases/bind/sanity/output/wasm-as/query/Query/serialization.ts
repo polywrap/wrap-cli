@@ -1,9 +1,9 @@
 import {
   Read,
   ReadDecoder,
+  Write,
   WriteSizer,
   WriteEncoder,
-  Write,
   Nullable,
   BigInt,
   JSON,

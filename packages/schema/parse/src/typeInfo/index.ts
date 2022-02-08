@@ -8,12 +8,18 @@ import {
   ImportedEnumDefinition,
   UnionDefinition,
   ImportedUnionDefinition,
+  InterfaceDefinition,
+  CapabilityType,
+  CapabilityDefinition,
+  EnvDefinition,
+  createEnvDefinition,
 } from "./definitions";
 
 export * from "./definitions";
 export * from "./scalar";
 export * from "./operation";
 export * from "./query";
+export * from "./env";
 
 export interface TypeInfo {
   objectTypes: ObjectDefinition[];
@@ -24,17 +30,28 @@ export interface TypeInfo {
   importedQueryTypes: ImportedQueryDefinition[];
   importedEnumTypes: ImportedEnumDefinition[];
   importedUnionTypes: ImportedUnionDefinition[];
+  interfaceTypes: InterfaceDefinition[];
+  envTypes: {
+    query: EnvDefinition;
+    mutation: EnvDefinition;
+  };
 }
+
 export function createTypeInfo(): TypeInfo {
   return {
     objectTypes: [],
     unionTypes: [],
     enumTypes: [],
     queryTypes: [],
+    interfaceTypes: [],
     importedObjectTypes: [],
     importedQueryTypes: [],
     importedEnumTypes: [],
     importedUnionTypes: [],
+    envTypes: {
+      query: createEnvDefinition({}),
+      mutation: createEnvDefinition({}),
+    },
   };
 }
 
@@ -50,6 +67,11 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
     importedQueryTypes: [],
     importedEnumTypes: [],
     importedUnionTypes: [],
+    interfaceTypes: [],
+    envTypes: {
+      query: createEnvDefinition({}),
+      mutation: createEnvDefinition({}),
+    },
   };
 
   const compareImportedType = (
@@ -76,6 +98,45 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
       tryInsert(combined.queryTypes, queryType);
     }
 
+    for (const interfaceType of typeInfo.interfaceTypes) {
+      tryInsert(
+        combined.interfaceTypes,
+        interfaceType,
+        compareImportedType,
+        (
+          a: InterfaceDefinition,
+          b: InterfaceDefinition
+        ): InterfaceDefinition => {
+          const combinedCapabilities: CapabilityDefinition = {
+            ...a.capabilities,
+            ...b.capabilities,
+          };
+          const combinedCapabilityTypes = Object.keys(
+            combinedCapabilities
+          ) as CapabilityType[];
+          for (const capability of combinedCapabilityTypes) {
+            if (b.capabilities[capability] && a.capabilities[capability]) {
+              const combinedModules = Array.from(
+                new Set([
+                  ...a.capabilities[capability].modules,
+                  ...b.capabilities[capability].modules,
+                ])
+              );
+              combinedCapabilities[capability] = {
+                enabled: true,
+                modules: combinedModules,
+              };
+            } else if (a.capabilities[capability]) {
+              combinedCapabilities[capability] = a.capabilities[capability];
+            } else if (b.capabilities[capability]) {
+              combinedCapabilities[capability] = b.capabilities[capability];
+            }
+          }
+          return { ...a, capabilities: combinedCapabilities };
+        }
+      );
+    }
+
     for (const importedObjectType of typeInfo.importedObjectTypes) {
       tryInsert(
         combined.importedObjectTypes,
@@ -88,7 +149,10 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
       tryInsert(
         combined.importedQueryTypes,
         importedQueryType,
-        compareImportedType
+        compareImportedType,
+        (a: ImportedQueryDefinition, b: ImportedQueryDefinition) => {
+          return { ...a, isInterface: a.isInterface || b.isInterface };
+        }
       );
     }
 
@@ -99,6 +163,23 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
     for (const importedUnionType of typeInfo.importedUnionTypes) {
       tryInsert(combined.importedUnionTypes, importedUnionType);
     }
+    
+    if (typeInfo.envTypes.query.client) {
+      combined.envTypes.query.client = typeInfo.envTypes.query.client;
+    }
+
+    if (typeInfo.envTypes.query.sanitized) {
+      combined.envTypes.query.sanitized = typeInfo.envTypes.query.sanitized;
+    }
+
+    if (typeInfo.envTypes.mutation.client) {
+      combined.envTypes.mutation.client = typeInfo.envTypes.mutation.client;
+    }
+
+    if (typeInfo.envTypes.mutation.sanitized) {
+      combined.envTypes.mutation.sanitized =
+        typeInfo.envTypes.mutation.sanitized;
+    }
   }
 
   return combined;
@@ -108,14 +189,22 @@ const tryInsert = (
   dest: GenericDefinition[],
   value: GenericDefinition,
   compare: (a: GenericDefinition, b: GenericDefinition) => boolean = (a, b) =>
-    a.type === b.type
+    a.type === b.type,
+  join?: (
+    dest: GenericDefinition,
+    source: GenericDefinition
+  ) => GenericDefinition
 ) => {
   const index = dest.findIndex((item: GenericDefinition) =>
     compare(item, value)
   );
 
   if (index > -1) {
-    // See if they're the same, error if they aren't
+    if (join) {
+      dest[index] = join(dest[index], value);
+      return;
+    }
+
     const destType = JSON.stringify(dest[index]);
     const valueType = JSON.stringify(value);
     if (destType !== valueType) {

@@ -43,6 +43,7 @@ type CustomType {
 type AnotherType {
   prop: String
   circular: CustomType
+  const: String
 }
 
 enum CustomEnum {
@@ -59,3 +60,8 @@ type YetAnotherObject {
 }
 
 union CustomUnion = AnotherObject | YetAnotherObject
+
+type Env {
+  prop: String!
+  optProp: String
+}

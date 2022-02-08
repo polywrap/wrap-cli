@@ -43,15 +43,15 @@ export function writeCustomType(writer: Write, type: CustomType): void {
   writer.context().pop();
   writer.context().push("u8", "u8", "writing property");
   writer.writeString("u8");
-  writer.writeUInt8(type.u8);
+  writer.writeUInt8(type.m_u8);
   writer.context().pop();
   writer.context().push("u16", "u16", "writing property");
   writer.writeString("u16");
-  writer.writeUInt16(type.u16);
+  writer.writeUInt16(type.m_u16);
   writer.context().pop();
   writer.context().push("u32", "u32", "writing property");
   writer.writeString("u32");
-  writer.writeUInt32(type.u32);
+  writer.writeUInt32(type.m_u32);
   writer.context().pop();
   writer.context().push("i", "i32", "writing property");
   writer.writeString("i");
@@ -59,15 +59,15 @@ export function writeCustomType(writer: Write, type: CustomType): void {
   writer.context().pop();
   writer.context().push("i8", "i8", "writing property");
   writer.writeString("i8");
-  writer.writeInt8(type.i8);
+  writer.writeInt8(type.m_i8);
   writer.context().pop();
   writer.context().push("i16", "i16", "writing property");
   writer.writeString("i16");
-  writer.writeInt16(type.i16);
+  writer.writeInt16(type.m_i16);
   writer.context().pop();
   writer.context().push("i32", "i32", "writing property");
   writer.writeString("i32");
-  writer.writeInt32(type.i32);
+  writer.writeInt32(type.m_i32);
   writer.context().pop();
   writer.context().push("bigint", "BigInt", "writing property");
   writer.writeString("bigint");
@@ -95,7 +95,7 @@ export function writeCustomType(writer: Write, type: CustomType): void {
   writer.context().pop();
   writer.context().push("boolean", "bool", "writing property");
   writer.writeString("boolean");
-  writer.writeBool(type.boolean);
+  writer.writeBool(type.m_boolean);
   writer.context().pop();
   writer.context().push("optBoolean", "Nullable<bool>", "writing property");
   writer.writeString("optBoolean");
@@ -720,20 +720,20 @@ export function readCustomType(reader: Read): CustomType {
     optStr: _optStr,
     u: _u,
     optU: _optU,
-    u8: _u8,
-    u16: _u16,
-    u32: _u32,
+    m_u8: _u8,
+    m_u16: _u16,
+    m_u32: _u32,
     i: _i,
-    i8: _i8,
-    i16: _i16,
-    i32: _i32,
+    m_i8: _i8,
+    m_i16: _i16,
+    m_i32: _i32,
     bigint: _bigint,
     optBigint: _optBigint,
     json: _json,
     optJson: _optJson,
     bytes: _bytes,
     optBytes: _optBytes,
-    boolean: _boolean,
+    m_boolean: _boolean,
     optBoolean: _optBoolean,
     uArray: _uArray,
     uOptArray: _uOptArray,

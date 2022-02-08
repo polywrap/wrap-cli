@@ -1,0 +1,29 @@
+type CommonType {
+  prop: UInt8!
+  nestedObject: NestedType!
+  objectArray: [[ArrayObject]]!
+  enum: CommonEnum!
+  union: CommonUnion!
+}
+
+type NestedType {
+  prop: String!
+}
+
+type ArrayObject {
+  prop: String!
+}
+
+enum CommonEnum {
+  STRING
+  BYTES
+}
+
+union CommonUnion = NestedType | ArrayObject
+type IgnoredType1 {
+  prop: IgnoredType2
+}
+
+type IgnoredType2 {
+  prop: String
+}

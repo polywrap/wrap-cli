@@ -7,7 +7,6 @@ import {
 } from "./{{type}}";
 {{/methods.length}}
 {{/queryTypes}}
-
 {{#queryTypes}}
 {{#methods.length}}
 export {
@@ -17,7 +16,6 @@ export {
 };
 {{/methods.length}}
 {{/queryTypes}}
-
 {{#objectTypes}}
 export { {{type}} } from "./{{type}}";
 {{/objectTypes}}
@@ -54,3 +52,20 @@ export {
   {{type}},
 } from "./imported/{{type}}";
 {{/importedUnionTypes}}
+{{#interfaceTypes}}
+export { {{namespace}} } from "./{{namespace}}";
+{{/interfaceTypes}}
+{{#envTypes.query.sanitized}}
+export { env } from "./env";
+export { QueryEnv } from "./QueryEnv";
+{{#envTypes.query.client}}
+export { QueryClientEnv } from "./QueryClientEnv";
+{{/envTypes.query.client}}
+{{/envTypes.query.sanitized}}
+{{#envTypes.mutation.sanitized}}
+export { env } from "./env";
+export { MutationEnv } from "./MutationEnv";
+{{#envTypes.mutation.client}}
+export { MutationClientEnv } from "./MutationClientEnv";
+{{/envTypes.mutation.client}}
+{{/envTypes.mutation.sanitized}}

@@ -13,7 +13,7 @@ export enum DefinitionKind {
   Method = 1 << 6,
   Query = 1 << 7,
   ImportedQuery = 1 << 8,
-  ImportedEnum = 1 << 9,
+  ImportedEnum = (1 << 9) | DefinitionKind.Enum,
   ImportedObject = (1 << 10) | DefinitionKind.Object,
   ImportedUnion = 1 << 11,
   InterfaceImplemented = 1 << 12,
@@ -22,28 +22,26 @@ export enum DefinitionKind {
   EnumRef = 1 << 15,
   Union = 1 << 16,
   UnionRef = 1 << 17,
+  Interface = 1 << 18,
+  Env = 1 << 19,
 }
 
-export function isKind(
-  type: GenericDefinition,
-  kind: DefinitionKind,
-  name?: string
-): boolean {
-  if (name) {
-    console.log(type.kind, kind, type.kind & kind, name);
-  }
-
+export function isKind(type: WithKind, kind: DefinitionKind): boolean {
   return (type.kind & kind) === kind;
 }
 
-export type WithComment = {
+export interface WithComment {
   comment?: string;
-};
-export interface GenericDefinition {
+}
+
+export interface WithKind {
+  kind: DefinitionKind;
+}
+
+export interface GenericDefinition extends WithKind {
   type: string;
   name: string | null;
   required: boolean | null;
-  kind: DefinitionKind;
 }
 export function createGenericDefinition(args: {
   type: string;
@@ -448,11 +446,56 @@ export function createImportedEnumDefinition(args: {
   };
 }
 
+export const capabilityTypes = ["getImplementations"] as const;
+export type CapabilityType = typeof capabilityTypes[number];
+export type InvokableModules = "query" | "mutation";
+export interface Capability {
+  enabled: boolean;
+  modules: InvokableModules[];
+}
+export function createCapability(args: {
+  type: CapabilityType;
+  enabled: boolean;
+  modules: InvokableModules[];
+}): CapabilityDefinition {
+  return {
+    [args.type]: {
+      enabled: args.enabled,
+      modules: args.modules,
+    },
+  };
+}
+
+export type CapabilityDefinition = Record<CapabilityType, Capability>;
+
+export interface InterfaceDefinition
+  extends GenericDefinition,
+    ImportedDefinition {
+  capabilities: CapabilityDefinition;
+}
+export function createInterfaceDefinition(args: {
+  type: string;
+  required?: boolean;
+  namespace: string;
+  uri: string;
+  capabilities: CapabilityDefinition;
+}): InterfaceDefinition {
+  return {
+    ...createGenericDefinition(args),
+    namespace: args.namespace,
+    uri: args.uri,
+    nativeType: "Interface",
+    capabilities: args.capabilities,
+    kind: DefinitionKind.Interface,
+  };
+}
+
 export interface ImportedQueryDefinition
   extends GenericDefinition,
     ImportedDefinition,
     WithComment {
   methods: MethodDefinition[];
+  isInterface?: boolean;
 }
 export function createImportedQueryDefinition(args: {
   type: string;
@@ -460,6 +503,7 @@ export function createImportedQueryDefinition(args: {
   uri: string;
   namespace: string;
   nativeType: string;
+  isInterface?: boolean;
   interfaces?: InterfaceImplementedDefinition[];
   comment?: string;
 }): ImportedQueryDefinition {
@@ -476,6 +520,7 @@ export function createImportedQueryDefinition(args: {
     namespace: args.namespace,
     nativeType: args.nativeType,
     comment: args.comment,
+    isInterface: args.isInterface,
     kind: DefinitionKind.ImportedQuery,
   };
 }
@@ -525,5 +570,20 @@ export function createImportedUnionDefinition(args: {
     nativeType: args.nativeType,
     comment: args.comment,
     kind: DefinitionKind.ImportedUnion,
+  }
+}
+
+export interface EnvDefinition extends WithKind {
+  sanitized?: ObjectDefinition;
+  client?: ObjectDefinition;
+}
+export function createEnvDefinition(args: {
+  sanitized?: ObjectDefinition;
+  client?: ObjectDefinition;
+}): EnvDefinition {
+  return {
+    kind: DefinitionKind.Env,
+    sanitized: args.sanitized,
+    client: args.client,
   };
 }

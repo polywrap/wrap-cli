@@ -134,9 +134,7 @@ export class EthereumPlugin extends Plugin {
 
   public async signMessage(input: Mutation.Input_signMessage): Promise<string> {
     const connection = await this.getConnection(input.connection);
-    const messageHash = ethers.utils.id(input.message);
-    const messageHashBytes = ethers.utils.arrayify(messageHash);
-    return await connection.getSigner().signMessage(messageHashBytes);
+    return await connection.getSigner().signMessage(input.message);
   }
 
   public async sendRPC(input: Mutation.Input_sendRPC): Promise<string> {
@@ -147,6 +145,19 @@ export class EthereumPlugin extends Plugin {
   }
 
   /// Query
+
+  public async getNetwork(
+    input: Query.Input_getNetwork
+  ): Promise<Types.Network> {
+    const connection = await this.getConnection(input.connection);
+    const provider = connection.getProvider();
+    const network = await provider.getNetwork();
+    return {
+      name: network.name,
+      chainId: network.chainId,
+      ensAddress: network.ensAddress,
+    };
+  }
 
   public async callContractView(
     input: Query.Input_callContractView
@@ -195,7 +206,15 @@ export class EthereumPlugin extends Plugin {
   }
 
   public encodeParams(input: Query.Input_encodeParams): string {
-    return defaultAbiCoder.encode(input.types, input.values);
+    return defaultAbiCoder.encode(input.types, this.parseArgs(input.values));
+  }
+
+  public encodeFunction(input: Query.Input_encodeFunction): string {
+    const functionInterface = ethers.Contract.getInterface([input.method]);
+    return functionInterface.encodeFunctionData(
+      functionInterface.functions[Object.keys(functionInterface.functions)[0]],
+      this.parseArgs(input.args)
+    );
   }
 
   public async getSignerAddress(

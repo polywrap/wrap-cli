@@ -22,6 +22,9 @@ import {
   UnionDefinition,
   UnionRef,
   ImportedUnionDefinition,
+  InterfaceDefinition,
+  EnvDefinition,
+  WithKind,
 } from "../typeInfo";
 
 export * from "./finalizePropertyDef";
@@ -31,6 +34,7 @@ export * from "./interfaceUris";
 export * from "./methodParentPointers";
 export * from "./toGraphQLType";
 export * from "./addUnionNameToMemberTypes";
+export * from "./queryModuleCapabilities";
 
 export interface TypeInfoTransforms {
   enter?: TypeInfoTransformer;
@@ -52,6 +56,7 @@ export interface TypeInfoTransformer {
   ArrayDefinition?: (def: ArrayDefinition) => ArrayDefinition;
   MethodDefinition?: (def: MethodDefinition) => MethodDefinition;
   QueryDefinition?: (def: QueryDefinition) => QueryDefinition;
+  InterfaceDefinition?: (def: InterfaceDefinition) => InterfaceDefinition;
   ImportedEnumDefinition?: (
     def: ImportedEnumDefinition
   ) => ImportedEnumDefinition;
@@ -67,6 +72,7 @@ export interface TypeInfoTransformer {
   InterfaceImplementedDefinition?: (
     def: InterfaceImplementedDefinition
   ) => InterfaceImplementedDefinition;
+  EnvDefinition?: (def: EnvDefinition) => EnvDefinition;
 }
 
 export function transformTypeInfo(
@@ -77,6 +83,13 @@ export function transformTypeInfo(
 
   if (transforms.enter && transforms.enter.TypeInfo) {
     result = transforms.enter.TypeInfo(result);
+  }
+
+  for (let i = 0; i < result.interfaceTypes.length; ++i) {
+    result.interfaceTypes[i] = visitInterfaceDefinition(
+      result.interfaceTypes[i],
+      transforms
+    );
   }
 
   for (let i = 0; i < result.enumTypes.length; ++i) {
@@ -131,6 +144,12 @@ export function transformTypeInfo(
       transforms
     );
   }
+  result.envTypes.query = visitEnvDefinition(result.envTypes.query, transforms);
+
+  result.envTypes.mutation = visitEnvDefinition(
+    result.envTypes.mutation,
+    transforms
+  );
 
   if (transforms.leave && transforms.leave.TypeInfo) {
     result = transforms.leave.TypeInfo(result);
@@ -145,6 +164,7 @@ export function visitObjectDefinition(
 ): ObjectDefinition {
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
+  console.log(def)
 
   for (let i = 0; i < result.properties.length; ++i) {
     result.properties[i] = visitPropertyDefinition(
@@ -253,6 +273,7 @@ export function visitUnionRef(
   def: UnionRef,
   transforms: TypeInfoTransforms
 ): UnionRef {
+  console.log(def)
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
   return transformType(result, transforms.leave);
@@ -322,6 +343,15 @@ export function visitQueryDefinition(
   return transformType(result, transforms.leave);
 }
 
+export function visitInterfaceDefinition(
+  def: InterfaceDefinition,
+  transforms: TypeInfoTransforms
+): InterfaceDefinition {
+  let result = Object.assign({}, def);
+  result = transformType(result, transforms.enter);
+  return transformType(result, transforms.leave);
+}
+
 export function visitImportedQueryDefinition(
   def: ImportedQueryDefinition,
   transforms: TypeInfoTransforms
@@ -357,7 +387,25 @@ export function visitImportedUnionDefinition(
   return visitUnionDefinition(def, transforms) as ImportedUnionDefinition;
 }
 
-export function transformType<TDefinition extends GenericDefinition>(
+export function visitEnvDefinition(
+  def: EnvDefinition,
+  transforms: TypeInfoTransforms
+): EnvDefinition {
+  let result = Object.assign({}, def);
+  result = transformType(result, transforms.enter);
+
+  if (result.sanitized) {
+    result.sanitized = visitObjectDefinition(result.sanitized, transforms);
+  }
+
+  if (result.client) {
+    result.client = visitObjectDefinition(result.client, transforms);
+  }
+
+  return transformType(result, transforms.leave);
+}
+
+export function transformType<TDefinition extends WithKind>(
   type: TDefinition,
   transform?: TypeInfoTransformer
 ): TDefinition {
@@ -380,15 +428,17 @@ export function transformType<TDefinition extends GenericDefinition>(
     PropertyDefinition,
     MethodDefinition,
     QueryDefinition,
+    InterfaceDefinition,
     ImportedEnumDefinition,
     ImportedUnionDefinition,
     ImportedQueryDefinition,
     ImportedObjectDefinition,
     InterfaceImplementedDefinition,
+    EnvDefinition,
   } = transform;
 
   if (GenericDefinition && isKind(result, DefinitionKind.Generic)) {
-    result = Object.assign(result, GenericDefinition(result));
+    result = Object.assign(result, GenericDefinition(result as any));
   }
   if (ObjectDefinition && isKind(result, DefinitionKind.Object)) {
     result = Object.assign(result, ObjectDefinition(result as any));
@@ -426,6 +476,9 @@ export function transformType<TDefinition extends GenericDefinition>(
   if (QueryDefinition && isKind(result, DefinitionKind.Query)) {
     result = Object.assign(result, QueryDefinition(result as any));
   }
+  if (InterfaceDefinition && isKind(result, DefinitionKind.Interface)) {
+    result = Object.assign(result, InterfaceDefinition(result as any));
+  }
   if (ImportedQueryDefinition && isKind(result, DefinitionKind.ImportedQuery)) {
     result = Object.assign(result, ImportedQueryDefinition(result as any));
   }
@@ -449,6 +502,9 @@ export function transformType<TDefinition extends GenericDefinition>(
       result,
       InterfaceImplementedDefinition(result as any)
     );
+  }
+  if (EnvDefinition && isKind(result, DefinitionKind.Env)) {
+    result = Object.assign(result, EnvDefinition(result as any));
   }
 
   return result;
