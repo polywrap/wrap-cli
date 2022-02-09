@@ -74,13 +74,13 @@ impl Read for ReadDecoder {
     fn read_i8(&mut self) -> Result<i8, DecodeError> {
         match Read::read_i64(self) {
             Ok(v) => {
-                // check for range error
-                let err_msg = format!("integer overflow: value = {}; bits = 8", v.to_string());
-                if v > i8::MAX as i64 || v < i8::MIN as i64 {
+                // check for integer overflow
+                if v <= i8::MAX as i64 && v >= i8::MIN as i64 {
+                    return Ok(v as i8);
+                } else {
+                    let err_msg = format!("integer overflow: value = {}; bits = 8", v.to_string());
                     return Err(DecodeError::IntRangeError(err_msg));
                 }
-
-                Ok(v as i8)
             }
             Err(e) => Err(DecodeError::Int8ReadError(e.to_string())),
         }
@@ -89,13 +89,13 @@ impl Read for ReadDecoder {
     fn read_i16(&mut self) -> Result<i16, DecodeError> {
         match Read::read_i64(self) {
             Ok(v) => {
-                // check for range error
-                let err_msg = format!("integer overflow: value = {}; bits = 16", v.to_string());
-                if v > i16::MAX as i64 || v < i16::MIN as i64 {
+                // check for integer overflow
+                if v <= i16::MAX as i64 && v >= i16::MIN as i64 {
+                    return Ok(v as i16);
+                } else {
+                    let err_msg = format!("integer overflow: value = {}; bits = 16", v.to_string());
                     return Err(DecodeError::IntRangeError(err_msg));
                 }
-
-                Ok(v as i16)
             }
             Err(e) => Err(DecodeError::Int16ReadError(e.to_string())),
         }
@@ -104,13 +104,13 @@ impl Read for ReadDecoder {
     fn read_i32(&mut self) -> Result<i32, DecodeError> {
         match Read::read_i64(self) {
             Ok(v) => {
-                // check for range error
-                let err_msg = format!("integer overflow: value = {}; bits = 32", v.to_string());
-                if v > i32::MAX as i64 || v < i32::MIN as i64 {
+                // check for integer overflow
+                if v <= i32::MAX as i64 && v >= i32::MIN as i64 {
+                    return Ok(v as i32);
+                } else {
+                    let err_msg = format!("integer overflow: value = {}; bits = 32", v.to_string());
                     return Err(DecodeError::IntRangeError(err_msg));
                 }
-
-                Ok(v as i32)
             }
             Err(e) => Err(DecodeError::Int32ReadError(e.to_string())),
         }
@@ -150,13 +150,13 @@ impl Read for ReadDecoder {
     fn read_u8(&mut self) -> Result<u8, DecodeError> {
         match Read::read_u64(self) {
             Ok(v) => {
-                // check for range error
-                let err_msg = format!("integer overflow: value = {}; bits = 8", v.to_string());
-                if v > u8::MAX as u64 || v < u8::MIN as u64 {
+                // check for integer overflow
+                if v <= u8::MAX as u64 && v >= u8::MIN as u64 {
+                    return Ok(v as u8);
+                } else {
+                    let err_msg = format!("integer overflow: value = {}; bits = 8", v.to_string());
                     return Err(DecodeError::IntRangeError(err_msg));
                 }
-
-                Ok(v as u8)
             }
             Err(e) => Err(DecodeError::Uint8ReadError(e.to_string())),
         }
@@ -165,13 +165,13 @@ impl Read for ReadDecoder {
     fn read_u16(&mut self) -> Result<u16, DecodeError> {
         match Read::read_u64(self) {
             Ok(v) => {
-                // check for range error
-                let err_msg = format!("integer overflow: value = {}; bits = 16", v.to_string());
-                if v > u16::MAX as u64 || v < u16::MIN as u64 {
+                // check for integer overflow
+                if v <= u16::MAX as u64 && v >= u16::MIN as u64 {
+                    return Ok(v as u16);
+                } else {
+                    let err_msg = format!("integer overflow: value = {}; bits = 16", v.to_string());
                     return Err(DecodeError::IntRangeError(err_msg));
                 }
-
-                Ok(v as u16)
             }
             Err(e) => Err(DecodeError::Uint16ReadError(e.to_string())),
         }
@@ -180,13 +180,13 @@ impl Read for ReadDecoder {
     fn read_u32(&mut self) -> Result<u32, DecodeError> {
         match Read::read_u64(self) {
             Ok(v) => {
-                // check for range error
-                let err_msg = format!("integer overflow: value = {}; bits = 32", v.to_string());
-                if v > u32::MAX as u64 || v < u32::MIN as u64 {
+                // check for integer overflow
+                if v <= u32::MAX as u64 && v >= u32::MIN as u64 {
+                    return Ok(v as u32);
+                } else {
+                    let err_msg = format!("integer overflow: value = {}; bits = 32", v.to_string());
                     return Err(DecodeError::IntRangeError(err_msg));
                 }
-
-                Ok(v as u32)
             }
             Err(e) => Err(DecodeError::Uint8ReadError(e.to_string())),
         }
@@ -319,7 +319,7 @@ impl Read for ReadDecoder {
 
     fn read_json(&mut self) -> Result<JSON::Value, DecodeError> {
         let json = self.read_string()?;
-        match JSON::to_value(json) {
+        match JSON::from_str(&json) {
             Ok(v) => Ok(v),
             Err(e) => Err(DecodeError::from(e)),
         }

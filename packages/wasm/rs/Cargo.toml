@@ -24,6 +24,9 @@ num-bigint = { version = "0.4", default-features = false, features = ["serde"] }
 num-traits = "0.2.14"
 serde_json = { version = "1.0.74", default-features = false, features = ["alloc"] }
 
+[dev-dependencies]
+serde = { version = "1.0.136", default-features = false, features = ["derive"] }
+
 [profile.release]
 opt-level = 's'
 lto = true
