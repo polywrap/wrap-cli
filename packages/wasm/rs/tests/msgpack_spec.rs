@@ -440,7 +440,7 @@ fn serializes_and_deserializes_with_overflow() {
 
     let mut default_output_sanity = Sanity::default();
     let output_sanity_result = from_buffer_with_overflows(&mut default_output_sanity, &buffer);
-    assert!(output_sanity_result.is_err());
+    assert!(output_sanity_result.is_ok());
 }
 
 #[test]
@@ -453,5 +453,5 @@ fn throws_error_if_invalid_type_found() {
 
     let mut default_output_sanity = Sanity::default();
     let output_sanity_result = from_buffer_with_invalid_types(&mut default_output_sanity, &buffer);
-    assert!(output_sanity_result.is_err());
+    assert!(output_sanity_result.is_ok());
 }

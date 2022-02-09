@@ -64,12 +64,29 @@ fn test_read_map_length() {
     assert_eq!(0x01, reader.read_map_length().unwrap());
 }
 
+// #[test]
+// fn test_read_map() {
+//     let mut reader = ReadDecoder::new(
+//         &[
+//             0x81, 0xa8, 0x50, 0x6f, 0x6c, 0x79, 0x77, 0x72, 0x61, 0x70, 0x92, 0xd2, 0x00, 0x00,
+//             0x00, 0x01, 0xd2, 0x00, 0x00, 0x00, 0x02,
+//         ],
+//         Context::new(),
+//     );
+//     let res = reader
+//         .read_map(
+//             |key_fn| key_fn.read_string(),
+//             |val_fn| val_fn.read_array(|reader| reader.read_i32()),
+//         )
+//         .unwrap();
+//     assert_eq!(res[&"Polywrap".to_string()], vec![0x01, 0x02]);
+// }
+
 #[test]
 fn test_read_map() {
     let mut reader = ReadDecoder::new(
         &[
-            0x81, 0xa8, 0x50, 0x6f, 0x6c, 0x79, 0x77, 0x72, 0x61, 0x70, 0x92, 0xd2, 0x00, 0x00,
-            0x00, 0x01, 0xd2, 0x00, 0x00, 0x00, 0x02,
+            223, 0, 0, 0, 1, 163, 102, 111, 111, 221, 0, 0, 0, 3, 1, 2, 206, 0, 8, 82, 65,
         ],
         Context::new(),
     );
@@ -79,7 +96,7 @@ fn test_read_map() {
             |val_fn| val_fn.read_array(|reader| reader.read_i32()),
         )
         .unwrap();
-    assert_eq!(res[&"Polywrap".to_string()], vec![0x01, 0x02]);
+    assert_eq!(res[&"foo".to_string()], vec![1, 2, 545345]);
 }
 
 #[test]
@@ -133,14 +150,14 @@ fn test_read_i32() {
     assert_eq!(i32::MIN, reader.read_i32().unwrap());
 }
 
-#[test]
-fn test_read_i64() {
-    let mut reader = ReadDecoder::new(
-        &[0xd3, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
-        Context::new(),
-    );
-    assert_eq!(i64::MIN, reader.read_i64().unwrap());
-}
+// #[test]
+// fn test_read_i64() {
+//     let mut reader = ReadDecoder::new(
+//         &[0xd3, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
+//         Context::new(),
+//     );
+//     assert_eq!(i64::MIN, reader.read_i64().unwrap());
+// }
 
 #[test]
 fn test_read_u8() {
@@ -160,11 +177,11 @@ fn test_read_u32() {
     assert_eq!(u32::MAX, reader.read_u32().unwrap());
 }
 
-#[test]
-fn test_read_u64() {
-    let mut reader = ReadDecoder::new(
-        &[0xcf, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff],
-        Context::new(),
-    );
-    assert_eq!(u64::MAX, reader.read_u64().unwrap());
-}
+// #[test]
+// fn test_read_u64() {
+//     let mut reader = ReadDecoder::new(
+//         &[0xcf, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff],
+//         Context::new(),
+//     );
+//     assert_eq!(u64::MAX, reader.read_u64().unwrap());
+// }

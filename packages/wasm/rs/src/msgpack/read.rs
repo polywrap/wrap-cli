@@ -9,11 +9,11 @@ pub trait Read: Clone + Sized + std::io::Read {
     fn read_i8(&mut self) -> Result<i8, DecodeError>;
     fn read_i16(&mut self) -> Result<i16, DecodeError>;
     fn read_i32(&mut self) -> Result<i32, DecodeError>;
-    fn read_i64(&mut self) -> Result<i64, DecodeError>;
+    // fn read_i64(&mut self) -> Result<i64, DecodeError>;
     fn read_u8(&mut self) -> Result<u8, DecodeError>;
     fn read_u16(&mut self) -> Result<u16, DecodeError>;
     fn read_u32(&mut self) -> Result<u32, DecodeError>;
-    fn read_u64(&mut self) -> Result<u64, DecodeError>;
+    // fn read_u64(&mut self) -> Result<u64, DecodeError>;
     fn read_f32(&mut self) -> Result<f32, DecodeError>;
     fn read_f64(&mut self) -> Result<f64, DecodeError>;
     fn read_string_length(&mut self) -> Result<u32, DecodeError>;
@@ -39,11 +39,11 @@ pub trait Read: Clone + Sized + std::io::Read {
     fn read_nullable_i8(&mut self) -> Result<Option<i8>, DecodeError>;
     fn read_nullable_i16(&mut self) -> Result<Option<i16>, DecodeError>;
     fn read_nullable_i32(&mut self) -> Result<Option<i32>, DecodeError>;
-    fn read_nullable_i64(&mut self) -> Result<Option<i64>, DecodeError>;
+    // fn read_nullable_i64(&mut self) -> Result<Option<i64>, DecodeError>;
     fn read_nullable_u8(&mut self) -> Result<Option<u8>, DecodeError>;
     fn read_nullable_u16(&mut self) -> Result<Option<u16>, DecodeError>;
     fn read_nullable_u32(&mut self) -> Result<Option<u32>, DecodeError>;
-    fn read_nullable_u64(&mut self) -> Result<Option<u64>, DecodeError>;
+    // fn read_nullable_u64(&mut self) -> Result<Option<u64>, DecodeError>;
     fn read_nullable_f32(&mut self) -> Result<Option<f32>, DecodeError>;
     fn read_nullable_f64(&mut self) -> Result<Option<f64>, DecodeError>;
     fn read_nullable_string(&mut self) -> Result<Option<String>, DecodeError>;

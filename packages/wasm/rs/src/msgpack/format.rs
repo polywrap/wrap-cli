@@ -73,14 +73,14 @@ impl Format {
         writer: &mut W,
         format: Format,
     ) -> Result<(), EncodeError> {
-        match writer.write_u8(format.to_u8()) {
+        match WriteBytesExt::write_u8(writer, format.to_u8()) {
             Ok(_v) => Ok(()),
             Err(e) => Err(EncodeError::FormatWriteError(e.to_string())),
         }
     }
 
     pub fn get_format<R: std::io::Read>(reader: &mut R) -> Result<Format, DecodeError> {
-        match reader.read_u8() {
+        match ReadBytesExt::read_u8(reader) {
             Ok(v) => Ok(Format::from_u8(v)),
             Err(e) => Err(DecodeError::FormatReadError(e.to_string())),
         }

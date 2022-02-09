@@ -29,6 +29,68 @@ impl ReadDecoder {
             Err(e) => Err(DecodeError::BytesReadError(e.to_string())),
         }
     }
+
+    fn _read_i64(&mut self) -> Result<i64, DecodeError> {
+        match Format::get_format(self) {
+            Ok(f) => {
+                let prefix = f.to_u8();
+
+                if Format::is_positive_fixed_int(prefix) || Format::is_negative_fixed_int(prefix) {
+                    return Ok(prefix as i64);
+                } else {
+                    match f {
+                        Format::Int8 => Ok(ReadBytesExt::read_i8(self)? as i64),
+                        Format::Int16 => Ok(ReadBytesExt::read_i16::<BigEndian>(self)? as i64),
+                        Format::Int32 => Ok(ReadBytesExt::read_i32::<BigEndian>(self)? as i64),
+                        Format::Int64 => Ok(ReadBytesExt::read_i64::<BigEndian>(self)?),
+                        Format::Uint8 => Ok(ReadBytesExt::read_u8(self)? as i64),
+                        Format::Uint16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as i64),
+                        Format::Uint32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)? as i64),
+                        Format::Uint64 => Ok(ReadBytesExt::read_u64::<BigEndian>(self)? as i64),
+                        err_f => {
+                            let err_msg = format!(
+                                "Property must be of type 'int'. {}",
+                                get_error_message(err_f)
+                            );
+                            Err(DecodeError::WrongMsgPackFormat(err_msg))
+                        }
+                    }
+                }
+            }
+            Err(e) => Err(DecodeError::Int64ReadError(e.to_string())),
+        }
+    }
+
+    fn _read_u64(&mut self) -> Result<u64, DecodeError> {
+        match Format::get_format(self) {
+            Ok(f) => {
+                let prefix = f.to_u8();
+
+                if Format::is_positive_fixed_int(prefix) || Format::is_negative_fixed_int(prefix) {
+                    return Ok(prefix as u64);
+                } else {
+                    match f {
+                        Format::Int8 => Ok(ReadBytesExt::read_i8(self)? as u64),
+                        Format::Int16 => Ok(ReadBytesExt::read_i16::<BigEndian>(self)? as u64),
+                        Format::Int32 => Ok(ReadBytesExt::read_i32::<BigEndian>(self)? as u64),
+                        Format::Int64 => Ok(ReadBytesExt::read_i64::<BigEndian>(self)? as u64),
+                        Format::Uint8 => Ok(ReadBytesExt::read_u8(self)? as u64),
+                        Format::Uint16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as u64),
+                        Format::Uint32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)? as u64),
+                        Format::Uint64 => Ok(ReadBytesExt::read_u64::<BigEndian>(self)?),
+                        err_f => {
+                            let err_msg = format!(
+                                "Property must be of type 'uint'. {}",
+                                get_error_message(err_f)
+                            );
+                            Err(DecodeError::WrongMsgPackFormat(err_msg))
+                        }
+                    }
+                }
+            }
+            Err(e) => Err(DecodeError::Uint64ReadError(e.to_string())),
+        }
+    }
 }
 
 impl StdioRead for ReadDecoder {
@@ -72,132 +134,78 @@ impl Read for ReadDecoder {
     }
 
     fn read_i8(&mut self) -> Result<i8, DecodeError> {
-        match Format::get_format(self) {
-            Ok(f) => match f {
-                Format::Int8 => Ok(ReadBytesExt::read_i8(self)?),
-                err_f => {
-                    let err_msg = format!(
-                        "Property must be of type 'int'. {}",
-                        get_error_message(err_f)
-                    );
-                    Err(DecodeError::WrongMsgPackFormat(err_msg))
-                }
-            },
+        match self._read_i64() {
+            Ok(v) => Ok(v as i8),
             Err(e) => Err(DecodeError::Int8ReadError(e.to_string())),
         }
     }
 
     fn read_i16(&mut self) -> Result<i16, DecodeError> {
-        match Format::get_format(self) {
-            Ok(f) => match f {
-                Format::Int16 => Ok(ReadBytesExt::read_i16::<BigEndian>(self)?),
-                err_f => {
-                    let err_msg = format!(
-                        "Property must be of type 'int'. {}",
-                        get_error_message(err_f)
-                    );
-                    Err(DecodeError::WrongMsgPackFormat(err_msg))
-                }
-            },
+        match self._read_i64() {
+            Ok(v) => Ok(v as i16),
             Err(e) => Err(DecodeError::Int16ReadError(e.to_string())),
         }
     }
 
     fn read_i32(&mut self) -> Result<i32, DecodeError> {
-        match Format::get_format(self) {
-            Ok(f) => match f {
-                Format::Int32 => Ok(ReadBytesExt::read_i32::<BigEndian>(self)?),
-                err_f => {
-                    let err_msg = format!(
-                        "Property must be of type 'int'. {}",
-                        get_error_message(err_f)
-                    );
-                    Err(DecodeError::WrongMsgPackFormat(err_msg))
-                }
-            },
+        match self._read_i64() {
+            Ok(v) => Ok(v as i32),
             Err(e) => Err(DecodeError::Int32ReadError(e.to_string())),
         }
     }
 
-    fn read_i64(&mut self) -> Result<i64, DecodeError> {
-        match Format::get_format(self) {
-            Ok(f) => match f {
-                Format::Int64 => Ok(ReadBytesExt::read_i64::<BigEndian>(self)?),
-                err_f => {
-                    let err_msg = format!(
-                        "Property must be of type 'int'. {}",
-                        get_error_message(err_f)
-                    );
-                    Err(DecodeError::WrongMsgPackFormat(err_msg))
-                }
-            },
-            Err(e) => Err(DecodeError::Int64ReadError(e.to_string())),
-        }
-    }
+    // fn read_i64(&mut self) -> Result<i64, DecodeError> {
+    //     match Format::get_format(self) {
+    //         Ok(f) => match f {
+    //             Format::Int64 => Ok(ReadBytesExt::read_i64::<BigEndian>(self)?),
+    //             err_f => {
+    //                 let err_msg = format!(
+    //                     "Property must be of type 'int'. {}",
+    //                     get_error_message(err_f)
+    //                 );
+    //                 Err(DecodeError::WrongMsgPackFormat(err_msg))
+    //             }
+    //         },
+    //         Err(e) => Err(DecodeError::Int64ReadError(e.to_string())),
+    //     }
+    // }
 
     fn read_u8(&mut self) -> Result<u8, DecodeError> {
-        match Format::get_format(self) {
-            Ok(f) => match f {
-                Format::Uint8 => Ok(ReadBytesExt::read_u8(self)?),
-                err_f => {
-                    let err_msg = format!(
-                        "Property must be of type 'uint'. {}",
-                        get_error_message(err_f)
-                    );
-                    Err(DecodeError::WrongMsgPackFormat(err_msg))
-                }
-            },
+        match self._read_u64() {
+            Ok(v) => Ok(v as u8),
             Err(e) => Err(DecodeError::Uint8ReadError(e.to_string())),
         }
     }
 
     fn read_u16(&mut self) -> Result<u16, DecodeError> {
-        match Format::get_format(self) {
-            Ok(f) => match f {
-                Format::Uint16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)?),
-                err_f => {
-                    let err_msg = format!(
-                        "Property must be of type 'uint'. {}",
-                        get_error_message(err_f)
-                    );
-                    Err(DecodeError::WrongMsgPackFormat(err_msg))
-                }
-            },
+        match self._read_u64() {
+            Ok(v) => Ok(v as u16),
             Err(e) => Err(DecodeError::Uint16ReadError(e.to_string())),
         }
     }
 
     fn read_u32(&mut self) -> Result<u32, DecodeError> {
-        match Format::get_format(self) {
-            Ok(f) => match f {
-                Format::Uint32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
-                err_f => {
-                    let err_msg = format!(
-                        "Property must be of type 'uint'. {}",
-                        get_error_message(err_f)
-                    );
-                    Err(DecodeError::WrongMsgPackFormat(err_msg))
-                }
-            },
-            Err(e) => Err(DecodeError::Uint32ReadError(e.to_string())),
+        match self._read_u64() {
+            Ok(v) => Ok(v as u32),
+            Err(e) => Err(DecodeError::Uint8ReadError(e.to_string())),
         }
     }
 
-    fn read_u64(&mut self) -> Result<u64, DecodeError> {
-        match Format::get_format(self) {
-            Ok(f) => match f {
-                Format::Uint64 => Ok(ReadBytesExt::read_u64::<BigEndian>(self)?),
-                err_f => {
-                    let err_msg = format!(
-                        "Property must be of type 'uint'. {}",
-                        get_error_message(err_f)
-                    );
-                    Err(DecodeError::WrongMsgPackFormat(err_msg))
-                }
-            },
-            Err(e) => Err(DecodeError::Uint64ReadError(e.to_string())),
-        }
-    }
+    // fn read_u64(&mut self) -> Result<u64, DecodeError> {
+    //     match Format::get_format(self) {
+    //         Ok(f) => match f {
+    //             Format::Uint64 => Ok(ReadBytesExt::read_u64::<BigEndian>(self)?),
+    //             err_f => {
+    //                 let err_msg = format!(
+    //                     "Property must be of type 'uint'. {}",
+    //                     get_error_message(err_f)
+    //                 );
+    //                 Err(DecodeError::WrongMsgPackFormat(err_msg))
+    //             }
+    //         },
+    //         Err(e) => Err(DecodeError::Uint64ReadError(e.to_string())),
+    //     }
+    // }
 
     fn read_f32(&mut self) -> Result<f32, DecodeError> {
         match Format::get_format(self) {
@@ -408,12 +416,12 @@ impl Read for ReadDecoder {
         Ok(Some(Read::read_i32(self)?))
     }
 
-    fn read_nullable_i64(&mut self) -> Result<Option<i64>, DecodeError> {
-        if self.is_next_nil()? {
-            return Ok(None);
-        }
-        Ok(Some(Read::read_i64(self)?))
-    }
+    // fn read_nullable_i64(&mut self) -> Result<Option<i64>, DecodeError> {
+    //     if self.is_next_nil()? {
+    //         return Ok(None);
+    //     }
+    //     Ok(Some(Read::read_i64(self)?))
+    // }
 
     fn read_nullable_u8(&mut self) -> Result<Option<u8>, DecodeError> {
         if self.is_next_nil()? {
@@ -436,12 +444,12 @@ impl Read for ReadDecoder {
         Ok(Some(Read::read_u32(self)?))
     }
 
-    fn read_nullable_u64(&mut self) -> Result<Option<u64>, DecodeError> {
-        if self.is_next_nil()? {
-            return Ok(None);
-        }
-        Ok(Some(Read::read_u64(self)?))
-    }
+    // fn read_nullable_u64(&mut self) -> Result<Option<u64>, DecodeError> {
+    //     if self.is_next_nil()? {
+    //         return Ok(None);
+    //     }
+    //     Ok(Some(Read::read_u64(self)?))
+    // }
 
     fn read_nullable_f32(&mut self) -> Result<Option<f32>, DecodeError> {
         if self.is_next_nil()? {
