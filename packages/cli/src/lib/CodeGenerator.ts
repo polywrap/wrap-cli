@@ -21,16 +21,16 @@ import * as gluegun from "gluegun";
 import { Ora } from "ora";
 import Mustache from "mustache";
 
-export interface customTemplateConfig {
+export interface CustomTemplateConfig {
   typeInfo: TypeInfo;
   generate: (templatePath: string, config: unknown) => string;
 }
 
 export { OutputDirectory };
 
-export type customTemplateRunFn = (
+export type CustomTemplateRunFn = (
   output: OutputDirectory,
-  config: customTemplateConfig
+  config: CustomTemplateConfig
 ) => void;
 
 export interface CodeGeneratorConfig {
@@ -100,7 +100,7 @@ export class CodeGenerator {
           throw Error(intlMsg.lib_codeGenerator_wrongGenFile());
         }
 
-        const { run } = generator as { run: customTemplateRunFn };
+        const { run } = generator as { run: CustomTemplateRunFn };
         if (!run) {
           throw Error(intlMsg.lib_codeGenerator_noRunMethod());
         }
