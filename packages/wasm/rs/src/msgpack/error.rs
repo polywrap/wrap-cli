@@ -124,6 +124,9 @@ pub enum DecodeError {
     #[error("Float64ReadError: '{0}'")]
     Float64ReadError(String),
 
+    #[error("{0}")]
+    IntRangeError(String),
+
     #[error("Uint8ReadError: '{0}'")]
     Uint8ReadError(String),
 

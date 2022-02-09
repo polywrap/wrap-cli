@@ -150,14 +150,14 @@ fn test_read_i32() {
     assert_eq!(i32::MIN, reader.read_i32().unwrap());
 }
 
-// #[test]
-// fn test_read_i64() {
-//     let mut reader = ReadDecoder::new(
-//         &[0xd3, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
-//         Context::new(),
-//     );
-//     assert_eq!(i64::MIN, reader.read_i64().unwrap());
-// }
+#[test]
+fn test_read_i64() {
+    let mut reader = ReadDecoder::new(
+        &[0xd3, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
+        Context::new(),
+    );
+    assert_eq!(i64::MIN, reader.read_i64().unwrap());
+}
 
 #[test]
 fn test_read_u8() {
@@ -177,11 +177,11 @@ fn test_read_u32() {
     assert_eq!(u32::MAX, reader.read_u32().unwrap());
 }
 
-// #[test]
-// fn test_read_u64() {
-//     let mut reader = ReadDecoder::new(
-//         &[0xcf, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff],
-//         Context::new(),
-//     );
-//     assert_eq!(u64::MAX, reader.read_u64().unwrap());
-// }
+#[test]
+fn test_read_u64() {
+    let mut reader = ReadDecoder::new(
+        &[0xcf, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff],
+        Context::new(),
+    );
+    assert_eq!(u64::MAX, reader.read_u64().unwrap());
+}
