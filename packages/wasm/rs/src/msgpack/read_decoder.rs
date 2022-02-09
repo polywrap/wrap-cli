@@ -72,7 +72,6 @@ impl Read for ReadDecoder {
     }
 
     fn read_i8(&mut self) -> Result<i8, DecodeError> {
-        // Outputs: "integer overflow: value = {v.to_string()}; bits = 8"
         match Read::read_i64(self) {
             Ok(v) => {
                 // check for range error
