@@ -21,6 +21,9 @@ pub enum EncodeError {
     #[error("BigIntWriteError: '{0}'")]
     BigIntWriteError(String),
 
+    #[error("JSONWriteError: '{0}'")]
+    JSONWriteError(String),
+
     #[error("Float32WriteError: '{0}'")]
     Float32WriteError(String),
 
@@ -105,6 +108,9 @@ pub enum DecodeError {
 
     #[error("ParseBigIntError: '{0}'")]
     ParseBigIntError(String),
+
+    #[error("JSONReadError: '{0}'")]
+    JSONReadError(String),
 
     #[error("NilReadError: '{0}'")]
     NilReadError(String),
@@ -253,9 +259,9 @@ impl From<std::io::Error> for EnumTypeError {
 }
 
 pub fn get_error_message(format: Format) -> String {
-    if Format::is_negative_fixed_int(format.to_u8()) {
-        return String::from("Found 'int'.");
-    } else if Format::is_positive_fixed_int(format.to_u8()) {
+    if Format::is_negative_fixed_int(format.to_u8())
+        || Format::is_positive_fixed_int(format.to_u8())
+    {
         return String::from("Found 'int'.");
     } else if Format::is_fixed_string(format.to_u8()) {
         return String::from("Found 'string'.");

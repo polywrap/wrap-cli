@@ -21,7 +21,7 @@ impl ReadDecoder {
         }
     }
 
-    fn get_bytes(&mut self, n_bytes_to_read: u64) -> Result<Vec<u8>, DecodeError> {
+    pub fn get_bytes(&mut self, n_bytes_to_read: u64) -> Result<Vec<u8>, DecodeError> {
         let mut buf = vec![];
         let mut chunk = self.take(n_bytes_to_read);
         match chunk.read_to_end(&mut buf) {
@@ -29,94 +29,8 @@ impl ReadDecoder {
             Err(e) => Err(DecodeError::BytesReadError(e.to_string())),
         }
     }
-}
 
-impl StdioRead for ReadDecoder {
-    fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
-        self.view.buffer.read(buf)
-    }
-}
-
-impl Read for ReadDecoder {
-    fn read_nil(&mut self) -> Result<(), DecodeError> {
-        match Format::get_format(self) {
-            Ok(f) => match f {
-                Format::Nil => Ok(()),
-                err_f => {
-                    let err_msg = format!(
-                        "Property must be of type 'nil'. {}",
-                        get_error_message(err_f)
-                    );
-                    Err(DecodeError::WrongMsgPackFormat(err_msg))
-                }
-            },
-            Err(e) => Err(DecodeError::NilReadError(e.to_string())),
-        }
-    }
-
-    fn read_bool(&mut self) -> Result<bool, DecodeError> {
-        match Format::get_format(self) {
-            Ok(f) => match f {
-                Format::True => Ok(true),
-                Format::False => Ok(false),
-                err_f => {
-                    let err_msg = format!(
-                        "Property must be of type 'bool'. {}",
-                        get_error_message(err_f)
-                    );
-                    Err(DecodeError::WrongMsgPackFormat(err_msg))
-                }
-            },
-            Err(e) => Err(DecodeError::BooleanReadError(e.to_string())),
-        }
-    }
-
-    fn read_i8(&mut self) -> Result<i8, DecodeError> {
-        match Read::read_i64(self) {
-            Ok(v) => {
-                // check for integer overflow
-                if v <= i8::MAX as i64 && v >= i8::MIN as i64 {
-                    return Ok(v as i8);
-                } else {
-                    let err_msg = format!("integer overflow: value = {}; bits = 8", v.to_string());
-                    return Err(DecodeError::IntRangeError(err_msg));
-                }
-            }
-            Err(e) => Err(DecodeError::Int8ReadError(e.to_string())),
-        }
-    }
-
-    fn read_i16(&mut self) -> Result<i16, DecodeError> {
-        match Read::read_i64(self) {
-            Ok(v) => {
-                // check for integer overflow
-                if v <= i16::MAX as i64 && v >= i16::MIN as i64 {
-                    return Ok(v as i16);
-                } else {
-                    let err_msg = format!("integer overflow: value = {}; bits = 16", v.to_string());
-                    return Err(DecodeError::IntRangeError(err_msg));
-                }
-            }
-            Err(e) => Err(DecodeError::Int16ReadError(e.to_string())),
-        }
-    }
-
-    fn read_i32(&mut self) -> Result<i32, DecodeError> {
-        match Read::read_i64(self) {
-            Ok(v) => {
-                // check for integer overflow
-                if v <= i32::MAX as i64 && v >= i32::MIN as i64 {
-                    return Ok(v as i32);
-                } else {
-                    let err_msg = format!("integer overflow: value = {}; bits = 32", v.to_string());
-                    return Err(DecodeError::IntRangeError(err_msg));
-                }
-            }
-            Err(e) => Err(DecodeError::Int32ReadError(e.to_string())),
-        }
-    }
-
-    fn read_i64(&mut self) -> Result<i64, DecodeError> {
+    pub fn _read_i64(&mut self) -> Result<i64, DecodeError> {
         match Format::get_format(self) {
             Ok(f) => {
                 let prefix = f.to_u8();
@@ -147,52 +61,7 @@ impl Read for ReadDecoder {
         }
     }
 
-    fn read_u8(&mut self) -> Result<u8, DecodeError> {
-        match Read::read_u64(self) {
-            Ok(v) => {
-                // check for integer overflow
-                if v <= u8::MAX as u64 && v >= u8::MIN as u64 {
-                    return Ok(v as u8);
-                } else {
-                    let err_msg = format!("integer overflow: value = {}; bits = 8", v.to_string());
-                    return Err(DecodeError::IntRangeError(err_msg));
-                }
-            }
-            Err(e) => Err(DecodeError::Uint8ReadError(e.to_string())),
-        }
-    }
-
-    fn read_u16(&mut self) -> Result<u16, DecodeError> {
-        match Read::read_u64(self) {
-            Ok(v) => {
-                // check for integer overflow
-                if v <= u16::MAX as u64 && v >= u16::MIN as u64 {
-                    return Ok(v as u16);
-                } else {
-                    let err_msg = format!("integer overflow: value = {}; bits = 16", v.to_string());
-                    return Err(DecodeError::IntRangeError(err_msg));
-                }
-            }
-            Err(e) => Err(DecodeError::Uint16ReadError(e.to_string())),
-        }
-    }
-
-    fn read_u32(&mut self) -> Result<u32, DecodeError> {
-        match Read::read_u64(self) {
-            Ok(v) => {
-                // check for integer overflow
-                if v <= u32::MAX as u64 && v >= u32::MIN as u64 {
-                    return Ok(v as u32);
-                } else {
-                    let err_msg = format!("integer overflow: value = {}; bits = 32", v.to_string());
-                    return Err(DecodeError::IntRangeError(err_msg));
-                }
-            }
-            Err(e) => Err(DecodeError::Uint8ReadError(e.to_string())),
-        }
-    }
-
-    fn read_u64(&mut self) -> Result<u64, DecodeError> {
+    pub fn _read_u64(&mut self) -> Result<u64, DecodeError> {
         match Format::get_format(self) {
             Ok(f) => {
                 let prefix = f.to_u8();
@@ -222,55 +91,147 @@ impl Read for ReadDecoder {
             Err(e) => Err(DecodeError::Uint64ReadError(e.to_string())),
         }
     }
+}
+
+impl StdioRead for ReadDecoder {
+    fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+        self.view.buffer.read(buf)
+    }
+}
+
+impl Read for ReadDecoder {
+    fn read_nil(&mut self) -> Result<(), DecodeError> {
+        match Format::get_format(self)? {
+            Format::Nil => Ok(()),
+            err_f => {
+                let err_msg = format!(
+                    "Property must be of type 'nil'. {}",
+                    get_error_message(err_f)
+                );
+                Err(DecodeError::WrongMsgPackFormat(err_msg))
+            }
+        }
+    }
+
+    fn read_bool(&mut self) -> Result<bool, DecodeError> {
+        match Format::get_format(self)? {
+            Format::True => Ok(true),
+            Format::False => Ok(false),
+            err_f => {
+                let err_msg = format!(
+                    "Property must be of type 'bool'. {}",
+                    get_error_message(err_f)
+                );
+                Err(DecodeError::WrongMsgPackFormat(err_msg))
+            }
+        }
+    }
+
+    fn read_i8(&mut self) -> Result<i8, DecodeError> {
+        let v = self._read_i64()?;
+        // check for integer overflow
+        if v <= i8::MAX as i64 && v >= i8::MIN as i64 {
+            Ok(v as i8)
+        } else {
+            let err_msg = format!("integer overflow: value = {}; bits = 8", v.to_string());
+            Err(DecodeError::IntRangeError(err_msg))
+        }
+    }
+
+    fn read_i16(&mut self) -> Result<i16, DecodeError> {
+        let v = self._read_i64()?;
+        // check for integer overflow
+        if v <= i16::MAX as i64 && v >= i16::MIN as i64 {
+            Ok(v as i16)
+        } else {
+            let err_msg = format!("integer overflow: value = {}; bits = 16", v.to_string());
+            Err(DecodeError::IntRangeError(err_msg))
+        }
+    }
+
+    fn read_i32(&mut self) -> Result<i32, DecodeError> {
+        let v = self._read_i64()?;
+        // check for integer overflow
+        if v <= i32::MAX as i64 && v >= i32::MIN as i64 {
+            Ok(v as i32)
+        } else {
+            let err_msg = format!("integer overflow: value = {}; bits = 32", v.to_string());
+            Err(DecodeError::IntRangeError(err_msg))
+        }
+    }
+
+    fn read_u8(&mut self) -> Result<u8, DecodeError> {
+        let v = self._read_u64()?;
+        // check for integer overflow
+        if v <= u8::MAX as u64 && v >= u8::MIN as u64 {
+            Ok(v as u8)
+        } else {
+            let err_msg = format!("integer overflow: value = {}; bits = 8", v.to_string());
+            Err(DecodeError::IntRangeError(err_msg))
+        }
+    }
+
+    fn read_u16(&mut self) -> Result<u16, DecodeError> {
+        let v = self._read_u64()?;
+        // check for integer overflow
+        if v <= u16::MAX as u64 && v >= u16::MIN as u64 {
+            Ok(v as u16)
+        } else {
+            let err_msg = format!("integer overflow: value = {}; bits = 16", v.to_string());
+            Err(DecodeError::IntRangeError(err_msg))
+        }
+    }
+
+    fn read_u32(&mut self) -> Result<u32, DecodeError> {
+        let v = self._read_u64()?;
+        // check for integer overflow
+        if v <= u32::MAX as u64 && v >= u32::MIN as u64 {
+            Ok(v as u32)
+        } else {
+            let err_msg = format!("integer overflow: value = {}; bits = 32", v.to_string());
+            Err(DecodeError::IntRangeError(err_msg))
+        }
+    }
 
     fn read_f32(&mut self) -> Result<f32, DecodeError> {
-        match Format::get_format(self) {
-            Ok(f) => match f {
-                Format::Float32 => Ok(ReadBytesExt::read_f32::<BigEndian>(self)?),
-                err_f => {
-                    let err_msg = format!(
-                        "Property must be of type 'float32'. {}",
-                        get_error_message(err_f)
-                    );
-                    Err(DecodeError::WrongMsgPackFormat(err_msg))
-                }
-            },
-            Err(e) => Err(DecodeError::Float32ReadError(e.to_string())),
+        match Format::get_format(self)? {
+            Format::Float32 => Ok(ReadBytesExt::read_f32::<BigEndian>(self)?),
+            err_f => {
+                let err_msg = format!(
+                    "Property must be of type 'float32'. {}",
+                    get_error_message(err_f)
+                );
+                Err(DecodeError::WrongMsgPackFormat(err_msg))
+            }
         }
     }
 
     fn read_f64(&mut self) -> Result<f64, DecodeError> {
-        match Format::get_format(self) {
-            Ok(f) => match f {
-                Format::Float64 => Ok(ReadBytesExt::read_f64::<BigEndian>(self)?),
-                err_f => {
-                    let err_msg = format!(
-                        "Property must be of type 'float64'. {}",
-                        get_error_message(err_f)
-                    );
-                    Err(DecodeError::WrongMsgPackFormat(err_msg))
-                }
-            },
-            Err(e) => Err(DecodeError::Float64ReadError(e.to_string())),
+        match Format::get_format(self)? {
+            Format::Float64 => Ok(ReadBytesExt::read_f64::<BigEndian>(self)?),
+            err_f => {
+                let err_msg = format!(
+                    "Property must be of type 'float64'. {}",
+                    get_error_message(err_f)
+                );
+                Err(DecodeError::WrongMsgPackFormat(err_msg))
+            }
         }
     }
 
     fn read_string_length(&mut self) -> Result<u32, DecodeError> {
-        match Format::get_format(self) {
-            Ok(f) => match f {
-                Format::FixStr(len) => Ok(len as u32),
-                Format::Str8 => Ok(ReadBytesExt::read_u8(self)? as u32),
-                Format::Str16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as u32),
-                Format::Str32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
-                err_f => {
-                    let err_msg = format!(
-                        "Property must be of type 'string'. {}",
-                        get_error_message(err_f)
-                    );
-                    Err(DecodeError::WrongMsgPackFormat(err_msg))
-                }
-            },
-            Err(e) => Err(DecodeError::StrReadError(e.to_string())),
+        match Format::get_format(self)? {
+            Format::FixStr(len) => Ok(len as u32),
+            Format::Str8 => Ok(ReadBytesExt::read_u8(self)? as u32),
+            Format::Str16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as u32),
+            Format::Str32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
+            err_f => {
+                let err_msg = format!(
+                    "Property must be of type 'string'. {}",
+                    get_error_message(err_f)
+                );
+                Err(DecodeError::WrongMsgPackFormat(err_msg))
+            }
         }
     }
 
@@ -284,62 +245,48 @@ impl Read for ReadDecoder {
     }
 
     fn read_bytes_length(&mut self) -> Result<u32, DecodeError> {
-        match Format::get_format(self) {
-            Ok(f) => match f {
-                Format::Bin8 => Ok(ReadBytesExt::read_u8(self)? as u32),
-                Format::Bin16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as u32),
-                Format::Bin32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
-                err_f => {
-                    let err_msg = format!(
-                        "Property must be of type 'bytes'. {}",
-                        get_error_message(err_f)
-                    );
-                    Err(DecodeError::WrongMsgPackFormat(err_msg))
-                }
-            },
-            Err(e) => Err(DecodeError::BinReadError(e.to_string())),
+        match Format::get_format(self)? {
+            Format::Bin8 => Ok(ReadBytesExt::read_u8(self)? as u32),
+            Format::Bin16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as u32),
+            Format::Bin32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
+            err_f => {
+                let err_msg = format!(
+                    "Property must be of type 'bytes'. {}",
+                    get_error_message(err_f)
+                );
+                Err(DecodeError::WrongMsgPackFormat(err_msg))
+            }
         }
     }
 
     fn read_bytes(&mut self) -> Result<Vec<u8>, DecodeError> {
         let bytes_len = self.read_bytes_length()?;
-        match self.get_bytes(bytes_len as u64) {
-            Ok(b) => Ok(b),
-            Err(e) => Err(e),
-        }
+        self.get_bytes(bytes_len as u64)
+            .map_err(|e| DecodeError::BytesReadError(e.to_string()))
     }
 
     fn read_bigint(&mut self) -> Result<BigInt, DecodeError> {
-        let bigint = self.read_string()?;
-        match BigInt::from_str(&bigint) {
-            Ok(b) => Ok(b),
-            Err(e) => Err(DecodeError::from(e)),
-        }
+        let bigint_str = self.read_string()?;
+        BigInt::from_str(&bigint_str).map_err(|e| DecodeError::ParseBigIntError(e.to_string()))
     }
 
     fn read_json(&mut self) -> Result<JSON::Value, DecodeError> {
-        let json = self.read_string()?;
-        match JSON::from_str(&json) {
-            Ok(v) => Ok(v),
-            Err(e) => Err(DecodeError::from(e)),
-        }
+        let json_str = self.read_string()?;
+        JSON::from_str(&json_str).map_err(|e| DecodeError::JSONReadError(e.to_string()))
     }
 
     fn read_array_length(&mut self) -> Result<u32, DecodeError> {
-        match Format::get_format(self) {
-            Ok(f) => match f {
-                Format::FixArray(len) => Ok(len as u32),
-                Format::Array16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as u32),
-                Format::Array32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
-                err_f => {
-                    let err_msg = format!(
-                        "Property must be of type 'array'. {}",
-                        get_error_message(err_f)
-                    );
-                    Err(DecodeError::WrongMsgPackFormat(err_msg))
-                }
-            },
-            Err(e) => Err(DecodeError::ArrayReadError(e.to_string())),
+        match Format::get_format(self)? {
+            Format::FixArray(len) => Ok(len as u32),
+            Format::Array16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as u32),
+            Format::Array32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
+            err_f => {
+                let err_msg = format!(
+                    "Property must be of type 'array'. {}",
+                    get_error_message(err_f)
+                );
+                Err(DecodeError::WrongMsgPackFormat(err_msg))
+            }
         }
     }
 
@@ -347,36 +294,29 @@ impl Read for ReadDecoder {
         &mut self,
         mut reader: impl FnMut(&mut Self) -> Result<T, DecodeError>,
     ) -> Result<Vec<T>, DecodeError> {
-        match self.read_array_length() {
-            Ok(len) => {
-                let mut array: Vec<T> = vec![];
-                for i in 0..len {
-                    self.context.push("array[", &i.to_string(), "]");
-                    let item = reader(self)?;
-                    array.push(item);
-                    self.context.pop();
-                }
-                Ok(array)
-            }
-            Err(e) => Err(e),
+        let arr_len = self.read_array_length()?;
+        let mut array: Vec<T> = vec![];
+        for i in 0..arr_len {
+            self.context.push("array[", &i.to_string(), "]");
+            let item = reader(self)?;
+            array.push(item);
+            self.context.pop();
         }
+        Ok(array)
     }
 
     fn read_map_length(&mut self) -> Result<u32, DecodeError> {
-        match Format::get_format(self) {
-            Ok(f) => match f {
-                Format::FixMap(len) => Ok(len as u32),
-                Format::Map16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as u32),
-                Format::Map32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
-                err_f => {
-                    let err_msg = format!(
-                        "Property must be of type 'map'. {}",
-                        get_error_message(err_f)
-                    );
-                    Err(DecodeError::WrongMsgPackFormat(err_msg))
-                }
-            },
-            Err(e) => Err(DecodeError::MapReadError(e.to_string())),
+        match Format::get_format(self)? {
+            Format::FixMap(len) => Ok(len as u32),
+            Format::Map16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as u32),
+            Format::Map32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
+            err_f => {
+                let err_msg = format!(
+                    "Property must be of type 'map'. {}",
+                    get_error_message(err_f)
+                );
+                Err(DecodeError::WrongMsgPackFormat(err_msg))
+            }
         }
     }
 
@@ -388,20 +328,16 @@ impl Read for ReadDecoder {
     where
         K: Eq + Hash + Ord,
     {
-        match self.read_map_length() {
-            Ok(len) => {
-                let mut map: BTreeMap<K, V> = BTreeMap::new();
-                for i in 0..len {
-                    self.context.push("map[", &i.to_string(), "]");
-                    let key = key_fn(self)?;
-                    let value = val_fn(self)?;
-                    map.insert(key, value);
-                    self.context.pop();
-                }
-                Ok(map)
-            }
-            Err(e) => Err(e),
+        let map_len = self.read_map_length()?;
+        let mut map: BTreeMap<K, V> = BTreeMap::new();
+        for i in 0..map_len {
+            self.context.push("map[", &i.to_string(), "]");
+            let key = key_fn(self)?;
+            let value = val_fn(self)?;
+            map.insert(key, value);
+            self.context.pop();
         }
+        Ok(map)
     }
 
     fn read_nullable_bool(&mut self) -> Result<Option<bool>, DecodeError> {
@@ -432,13 +368,6 @@ impl Read for ReadDecoder {
         Ok(Some(Read::read_i32(self)?))
     }
 
-    fn read_nullable_i64(&mut self) -> Result<Option<i64>, DecodeError> {
-        if self.is_next_nil()? {
-            return Ok(None);
-        }
-        Ok(Some(Read::read_i64(self)?))
-    }
-
     fn read_nullable_u8(&mut self) -> Result<Option<u8>, DecodeError> {
         if self.is_next_nil()? {
             return Ok(None);
@@ -458,13 +387,6 @@ impl Read for ReadDecoder {
             return Ok(None);
         }
         Ok(Some(Read::read_u32(self)?))
-    }
-
-    fn read_nullable_u64(&mut self) -> Result<Option<u64>, DecodeError> {
-        if self.is_next_nil()? {
-            return Ok(None);
-        }
-        Ok(Some(Read::read_u64(self)?))
     }
 
     fn read_nullable_f32(&mut self) -> Result<Option<f32>, DecodeError> {
@@ -534,20 +456,16 @@ impl Read for ReadDecoder {
     }
 
     fn is_next_nil(&mut self) -> Result<bool, DecodeError> {
-        match Format::get_format(self) {
-            Ok(f) => Ok(f == Format::Nil),
-            Err(e) => Err(DecodeError::NilReadError(e.to_string())),
-        }
+        let format = Format::get_format(self)?;
+        Ok(format == Format::Nil)
     }
 
     fn is_next_string(&mut self) -> Result<bool, DecodeError> {
-        match Format::get_format(self) {
-            Ok(f) => Ok(f == Format::FixStr(f.to_u8())
-                || f == Format::Str8
-                || f == Format::Str16
-                || f == Format::Str32),
-            Err(e) => Err(DecodeError::StrReadError(e.to_string())),
-        }
+        let format = Format::get_format(self)?;
+        Ok(format == Format::FixStr(format.to_u8())
+            || format == Format::Str8
+            || format == Format::Str16
+            || format == Format::Str32)
     }
 
     fn context(&mut self) -> &mut Context {

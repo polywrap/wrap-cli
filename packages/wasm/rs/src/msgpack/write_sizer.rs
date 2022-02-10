@@ -62,10 +62,6 @@ impl Write for WriteSizer {
         Ok(())
     }
 
-    fn write_i64(&mut self, _value: &i64) -> Result<(), EncodeError> {
-        unimplemented!()
-    }
-
     fn write_u8(&mut self, value: &u8) -> Result<(), EncodeError> {
         self.write_u32(&(*value as u32))
     }
@@ -85,10 +81,6 @@ impl Write for WriteSizer {
             self.length += 5;
         }
         Ok(())
-    }
-
-    fn write_u64(&mut self, _value: &u64) -> Result<(), EncodeError> {
-        unimplemented!()
     }
 
     fn write_f32(&mut self, _valuee: &f32) -> Result<(), EncodeError> {
@@ -245,13 +237,6 @@ impl Write for WriteSizer {
         }
     }
 
-    fn write_nullable_i64(&mut self, value: &Option<i64>) -> Result<(), EncodeError> {
-        match value {
-            None => Ok(self.write_nil()?),
-            Some(v) => Ok(self.write_i64(v)?),
-        }
-    }
-
     fn write_nullable_u8(&mut self, value: &Option<u8>) -> Result<(), EncodeError> {
         match value {
             None => Ok(self.write_nil()?),
@@ -270,13 +255,6 @@ impl Write for WriteSizer {
         match value {
             None => Ok(self.write_nil()?),
             Some(v) => Ok(self.write_u32(v)?),
-        }
-    }
-
-    fn write_nullable_u64(&mut self, value: &Option<u64>) -> Result<(), EncodeError> {
-        match value {
-            None => Ok(self.write_nil()?),
-            Some(v) => Ok(self.write_u64(v)?),
         }
     }
 

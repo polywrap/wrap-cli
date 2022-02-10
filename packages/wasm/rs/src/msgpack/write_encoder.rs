@@ -21,6 +21,55 @@ impl WriteEncoder {
     pub fn get_buffer(&self) -> Vec<u8> {
         self.view.get_buffer()
     }
+
+    /// Encodes a `u64` value into the buffer using the most efficient representation.
+    ///
+    /// The MessagePack spec requires that the serializer should use
+    /// the format which represents the data in the smallest number of bytes.
+    pub fn _write_u64(&mut self, value: &u64) -> Result<(), EncodeError> {
+        let val = *value;
+        if val < 1 << 7 {
+            Ok(Format::set_format(self, Format::PositiveFixInt(val as u8))?)
+        } else if val <= u8::MAX as u64 {
+            Format::set_format(self, Format::Uint8)?;
+            Ok(WriteBytesExt::write_u8(self, val as u8)?)
+        } else if val <= u16::MAX as u64 {
+            Format::set_format(self, Format::Uint16)?;
+            Ok(WriteBytesExt::write_u16::<BigEndian>(self, val as u16)?)
+        } else if val <= u32::MAX as u64 {
+            Format::set_format(self, Format::Uint32)?;
+            Ok(WriteBytesExt::write_u32::<BigEndian>(self, val as u32)?)
+        } else {
+            Format::set_format(self, Format::Uint64)?;
+            Ok(WriteBytesExt::write_u64::<BigEndian>(self, val as u64)?)
+        }
+    }
+
+    /// Encodes an `i64` value into the buffer using the most efficient representation.
+    ///
+    /// The MessagePack spec requires that the serializer should use
+    /// the format which represents the data in the smallest number of bytes, with the exception of
+    /// sized/unsized types.
+    pub fn _write_i64(&mut self, value: &i64) -> Result<(), EncodeError> {
+        let val = *value;
+        if val < 0 && val >= -(1 << 5) {
+            Ok(Format::set_format(self, Format::NegativeFixInt(val as i8))?)
+        } else if val >= 0 && val < 1 << 7 {
+            Ok(Format::set_format(self, Format::PositiveFixInt(val as u8))?)
+        } else if (val <= i8::MAX as i64) && (val >= i8::MIN as i64) {
+            Format::set_format(self, Format::Int8)?;
+            Ok(WriteBytesExt::write_i8(self, val as i8)?)
+        } else if (val <= i16::MAX as i64) && (val >= i16::MIN as i64) {
+            Format::set_format(self, Format::Int16)?;
+            Ok(WriteBytesExt::write_i16::<BigEndian>(self, val as i16)?)
+        } else if (val <= i32::MAX as i64) && (val >= i32::MIN as i64) {
+            Format::set_format(self, Format::Int32)?;
+            Ok(WriteBytesExt::write_i32::<BigEndian>(self, val as i32)?)
+        } else {
+            Format::set_format(self, Format::Int64)?;
+            Ok(WriteBytesExt::write_i64::<BigEndian>(self, val as i64)?)
+        }
+    }
 }
 
 impl StdioWrite for WriteEncoder {
@@ -35,166 +84,136 @@ impl StdioWrite for WriteEncoder {
 
 impl Write for WriteEncoder {
     fn write_nil(&mut self) -> Result<(), EncodeError> {
-        match Format::set_format(self, Format::Nil) {
-            Ok(_v) => Ok(()),
-            Err(e) => Err(EncodeError::NilWriteError(e.to_string())),
-        }
+        Format::set_format(self, Format::Nil).map_err(|e| EncodeError::NilWriteError(e.to_string()))
     }
 
     fn write_bool(&mut self, value: &bool) -> Result<(), EncodeError> {
         let format = if *value { Format::True } else { Format::False };
-        match Format::set_format(self, format) {
-            Ok(_v) => Ok(()),
-            Err(e) => Err(EncodeError::BooleanWriteError(e.to_string())),
-        }
+        Format::set_format(self, format).map_err(|e| EncodeError::BooleanWriteError(e.to_string()))
     }
 
     fn write_i8(&mut self, value: &i8) -> Result<(), EncodeError> {
-        match Format::set_format(self, Format::Int8) {
-            Ok(_v) => Ok(WriteBytesExt::write_i8(self, *value)?),
-            Err(e) => Err(EncodeError::Int8WriteError(e.to_string())),
-        }
+        self._write_i64(&(*value as i64))
+            .map_err(|e| EncodeError::Int8WriteError(e.to_string()))
     }
 
     fn write_i16(&mut self, value: &i16) -> Result<(), EncodeError> {
-        match Format::set_format(self, Format::Int16) {
-            Ok(_v) => Ok(WriteBytesExt::write_i16::<BigEndian>(self, *value)?),
-            Err(e) => Err(EncodeError::Int16WriteError(e.to_string())),
-        }
+        self._write_i64(&(*value as i64))
+            .map_err(|e| EncodeError::Int16WriteError(e.to_string()))
     }
 
     fn write_i32(&mut self, value: &i32) -> Result<(), EncodeError> {
-        match Format::set_format(self, Format::Int32) {
-            Ok(_v) => Ok(WriteBytesExt::write_i32::<BigEndian>(self, *value)?),
-            Err(e) => Err(EncodeError::Int32WriteError(e.to_string())),
-        }
-    }
-
-    fn write_i64(&mut self, value: &i64) -> Result<(), EncodeError> {
-        match Format::set_format(self, Format::Int64) {
-            Ok(_v) => Ok(WriteBytesExt::write_i64::<BigEndian>(self, *value)?),
-            Err(e) => Err(EncodeError::Int64WriteError(e.to_string())),
-        }
+        self._write_i64(&(*value as i64))
+            .map_err(|e| EncodeError::Int32WriteError(e.to_string()))
     }
 
     fn write_u8(&mut self, value: &u8) -> Result<(), EncodeError> {
-        match Format::set_format(self, Format::Uint8) {
-            Ok(_v) => Ok(WriteBytesExt::write_u8(self, *value)?),
-            Err(e) => Err(EncodeError::Uint8WriteError(e.to_string())),
-        }
+        self._write_u64(&(*value as u64))
+            .map_err(|e| EncodeError::Uint8WriteError(e.to_string()))
     }
 
     fn write_u16(&mut self, value: &u16) -> Result<(), EncodeError> {
-        match Format::set_format(self, Format::Uint16) {
-            Ok(_v) => Ok(WriteBytesExt::write_u16::<BigEndian>(self, *value)?),
-            Err(e) => Err(EncodeError::Uint16WriteError(e.to_string())),
-        }
+        self._write_u64(&(*value as u64))
+            .map_err(|e| EncodeError::Uint16WriteError(e.to_string()))
     }
 
     fn write_u32(&mut self, value: &u32) -> Result<(), EncodeError> {
-        match Format::set_format(self, Format::Uint32) {
-            Ok(_v) => Ok(WriteBytesExt::write_u32::<BigEndian>(self, *value)?),
-            Err(e) => Err(EncodeError::Uint32WriteError(e.to_string())),
-        }
-    }
-
-    fn write_u64(&mut self, value: &u64) -> Result<(), EncodeError> {
-        match Format::set_format(self, Format::Uint64) {
-            Ok(_v) => Ok(WriteBytesExt::write_u64::<BigEndian>(self, *value)?),
-            Err(e) => Err(EncodeError::Uint64WriteError(e.to_string())),
-        }
+        self._write_u64(&(*value as u64))
+            .map_err(|e| EncodeError::Uint32WriteError(e.to_string()))
     }
 
     fn write_f32(&mut self, value: &f32) -> Result<(), EncodeError> {
-        match Format::set_format(self, Format::Float32) {
-            Ok(_v) => Ok(WriteBytesExt::write_f32::<BigEndian>(self, *value)?),
-            Err(e) => Err(EncodeError::Float32WriteError(e.to_string())),
-        }
+        Format::set_format(self, Format::Float32)?;
+        WriteBytesExt::write_f32::<BigEndian>(self, *value)
+            .map_err(|e| EncodeError::Float32WriteError(e.to_string()))
     }
 
     fn write_f64(&mut self, value: &f64) -> Result<(), EncodeError> {
-        match Format::set_format(self, Format::Float64) {
-            Ok(_v) => Ok(WriteBytesExt::write_f64::<BigEndian>(self, *value)?),
-            Err(e) => Err(EncodeError::Float64WriteError(e.to_string())),
-        }
+        Format::set_format(self, Format::Float64)?;
+        WriteBytesExt::write_f64::<BigEndian>(self, *value)
+            .map_err(|e| EncodeError::Float64WriteError(e.to_string()))
     }
 
     fn write_string_length(&mut self, length: &u32) -> Result<(), EncodeError> {
-        if *length < 32 {
-            Format::set_format(self, Format::FixStr(*length as u8))?;
-        } else if *length <= u8::MAX as u32 {
+        let length = *length;
+        if length < 32 {
+            Format::set_format(self, Format::FixStr(length as u8))?;
+            Ok(())
+        } else if length <= u8::MAX as u32 {
             Format::set_format(self, Format::Str8)?;
-            WriteBytesExt::write_u8(self, *length as u8)?;
-        } else if *length <= u16::MAX as u32 {
+            WriteBytesExt::write_u8(self, length as u8)?;
+            Ok(())
+        } else if length <= u16::MAX as u32 {
             Format::set_format(self, Format::Str16)?;
-            WriteBytesExt::write_u16::<BigEndian>(self, *length as u16)?;
+            WriteBytesExt::write_u16::<BigEndian>(self, length as u16)?;
+            Ok(())
         } else {
             Format::set_format(self, Format::Str32)?;
-            WriteBytesExt::write_u32::<BigEndian>(self, *length)?;
+            WriteBytesExt::write_u32::<BigEndian>(self, length)?;
+            Ok(())
         }
-        Ok(())
     }
 
     fn write_string(&mut self, value: &String) -> Result<(), EncodeError> {
-        match self.write_string_length(&(value.len() as u32)) {
-            Ok(_v) => Ok(self.write_all(value.as_bytes())?),
-            Err(e) => Err(EncodeError::StrWriteError(e.to_string())),
-        }
+        self.write_string_length(&(value.len() as u32))?;
+        self.write_all(value.as_bytes())
+            .map_err(|e| EncodeError::StrWriteError(e.to_string()))
     }
 
     fn write_str(&mut self, value: &str) -> Result<(), EncodeError> {
-        match self.write_string_length(&(value.len() as u32)) {
-            Ok(_v) => Ok(self.write_all(value.as_bytes())?),
-            Err(e) => Err(EncodeError::StrWriteError(e.to_string())),
-        }
+        self.write_string_length(&(value.len() as u32))?;
+        self.write_all(value.as_bytes())
+            .map_err(|e| EncodeError::StrWriteError(e.to_string()))
     }
 
     fn write_bytes_length(&mut self, length: &u32) -> Result<(), EncodeError> {
-        if *length <= u8::MAX as u32 {
+        let length = *length;
+        if length <= u8::MAX as u32 {
             Format::set_format(self, Format::Bin8)?;
-            WriteBytesExt::write_u8(self, *length as u8)?;
-        } else if *length <= u16::MAX as u32 {
+            WriteBytesExt::write_u8(self, length as u8)?;
+            Ok(())
+        } else if length <= u16::MAX as u32 {
             Format::set_format(self, Format::Bin16)?;
-            WriteBytesExt::write_u16::<BigEndian>(self, *length as u16)?;
+            WriteBytesExt::write_u16::<BigEndian>(self, length as u16)?;
+            Ok(())
         } else {
             Format::set_format(self, Format::Bin32)?;
-            WriteBytesExt::write_u32::<BigEndian>(self, *length)?;
+            WriteBytesExt::write_u32::<BigEndian>(self, length)?;
+            Ok(())
         }
-        Ok(())
     }
 
     fn write_bytes(&mut self, buf: &[u8]) -> Result<(), EncodeError> {
-        match self.write_bytes_length(&(buf.len() as u32)) {
-            Ok(_v) => Ok(self.write_all(buf)?),
-            Err(e) => Err(EncodeError::BinWriteError(e.to_string())),
-        }
+        self.write_bytes_length(&(buf.len() as u32))?;
+        self.write_all(buf)
+            .map_err(|e| EncodeError::BinWriteError(e.to_string()))
     }
 
     fn write_bigint(&mut self, value: &BigInt) -> Result<(), EncodeError> {
-        match self.write_string(&value.to_string()) {
-            Ok(_v) => Ok(()),
-            Err(e) => Err(EncodeError::BigIntWriteError(e.to_string())),
-        }
+        self.write_string(&value.to_string())
+            .map_err(|e| EncodeError::BigIntWriteError(e.to_string()))
     }
 
     fn write_json(&mut self, value: &JSON::Value) -> Result<(), EncodeError> {
-        match JSON::to_string(value) {
-            Ok(s) => Ok(self.write_string(&s)?),
-            Err(e) => Err(EncodeError::from(e)),
-        }
+        let json_str = JSON::to_string(value)?;
+        self.write_string(&json_str)
+            .map_err(|e| EncodeError::JSONWriteError(e.to_string()))
     }
 
     fn write_array_length(&mut self, length: &u32) -> Result<(), EncodeError> {
-        if *length < 16 {
-            Format::set_format(self, Format::FixArray(*length as u8))?;
-        } else if *length <= u16::MAX as u32 {
+        let length = *length;
+        if length < 16 {
+            Format::set_format(self, Format::FixArray(length as u8))?;
+            Ok(())
+        } else if length <= u16::MAX as u32 {
             Format::set_format(self, Format::Array16)?;
-            WriteBytesExt::write_u16::<BigEndian>(self, *length as u16)?;
+            WriteBytesExt::write_u16::<BigEndian>(self, length as u16)?;
+            Ok(())
         } else {
             Format::set_format(self, Format::Array32)?;
-            WriteBytesExt::write_u32::<BigEndian>(self, *length)?;
+            WriteBytesExt::write_u32::<BigEndian>(self, length)?;
+            Ok(())
         }
-        Ok(())
     }
 
     fn write_array<T: Clone>(
@@ -202,28 +221,27 @@ impl Write for WriteEncoder {
         a: &[T],
         mut arr_fn: impl FnMut(&mut Self, &T) -> Result<(), EncodeError>,
     ) -> Result<(), EncodeError> {
-        match self.write_array_length(&(a.len() as u32)) {
-            Ok(_v) => {
-                for element in a {
-                    arr_fn(self, element)?;
-                }
-                Ok(())
-            }
-            Err(e) => Err(EncodeError::ArrayWriteError(e.to_string())),
+        self.write_array_length(&(a.len() as u32))?;
+        for element in a {
+            arr_fn(self, element)?;
         }
+        Ok(())
     }
 
     fn write_map_length(&mut self, length: &u32) -> Result<(), EncodeError> {
-        if *length < 16 {
-            Format::set_format(self, Format::FixMap(*length as u8))?;
-        } else if *length <= u16::MAX as u32 {
+        let length = *length;
+        if length < 16 {
+            Format::set_format(self, Format::FixMap(length as u8))?;
+            Ok(())
+        } else if length <= u16::MAX as u32 {
             Format::set_format(self, Format::Map16)?;
-            WriteBytesExt::write_u16::<BigEndian>(self, *length as u16)?;
+            WriteBytesExt::write_u16::<BigEndian>(self, length as u16)?;
+            Ok(())
         } else {
             Format::set_format(self, Format::Map32)?;
-            WriteBytesExt::write_u32::<BigEndian>(self, *length)?;
+            WriteBytesExt::write_u32::<BigEndian>(self, length)?;
+            Ok(())
         }
-        Ok(())
     }
 
     fn write_map<K, V: Clone>(
@@ -235,18 +253,14 @@ impl Write for WriteEncoder {
     where
         K: Clone + Eq + Hash + Ord,
     {
-        match self.write_map_length(&(map.len() as u32)) {
-            Ok(_v) => {
-                let keys: Vec<_> = map.keys().into_iter().collect();
-                for key in keys {
-                    let value = &map[key];
-                    key_fn(self, key)?;
-                    val_fn(self, &value)?;
-                }
-                Ok(())
-            }
-            Err(e) => Err(EncodeError::MapWriteError(e.to_string())),
+        self.write_map_length(&(map.len() as u32))?;
+        let keys: Vec<_> = map.keys().into_iter().collect();
+        for key in keys {
+            let value = &map[key];
+            key_fn(self, key)?;
+            val_fn(self, &value)?;
         }
+        Ok(())
     }
 
     fn write_nullable_bool(&mut self, value: &Option<bool>) -> Result<(), EncodeError> {
@@ -277,13 +291,6 @@ impl Write for WriteEncoder {
         }
     }
 
-    fn write_nullable_i64(&mut self, value: &Option<i64>) -> Result<(), EncodeError> {
-        match value {
-            None => Ok(Write::write_nil(self)?),
-            Some(v) => Ok(Write::write_i64(self, v)?),
-        }
-    }
-
     fn write_nullable_u8(&mut self, value: &Option<u8>) -> Result<(), EncodeError> {
         match value {
             None => Ok(Write::write_nil(self)?),
@@ -302,13 +309,6 @@ impl Write for WriteEncoder {
         match value {
             None => Ok(Write::write_nil(self)?),
             Some(v) => Ok(Write::write_u32(self, v)?),
-        }
-    }
-
-    fn write_nullable_u64(&mut self, value: &Option<u64>) -> Result<(), EncodeError> {
-        match value {
-            None => Ok(Write::write_nil(self)?),
-            Some(v) => Ok(Write::write_u64(self, v)?),
         }
     }
 
