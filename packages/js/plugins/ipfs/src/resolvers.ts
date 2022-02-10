@@ -21,49 +21,37 @@ export const query = (ipfs: IpfsPlugin): Query.Module => ({
       return null;
     }
 
-    if (IpfsPlugin.isCID(input.path)) {
-      // Try fetching uri/web3api.json
-      try {
-        return {
-          manifest: await ipfs.catToString(`${input.path}/web3api.json`, {
-            timeout: 5000,
-          }),
-          uri: null,
-        };
-      } catch (e) {
-        // TODO: logging
-        // https://github.com/web3-api/monorepo/issues/33
-      }
+    if (!IpfsPlugin.isCID(input.path)) {
+      // Not a valid CID
+      return { manifest: null, uri: null };
+    }
 
-      // Try fetching uri/web3api.yaml
-      try {
-        return {
-          manifest: await ipfs.catToString(`${input.path}/web3api.yaml`, {
-            timeout: 5000,
-          }),
-          uri: null,
-        };
-      } catch (e) {
-        // TODO: logging
-        // https://github.com/web3-api/monorepo/issues/33
-      }
+    const manifestSearchPatterns = [
+      "web3api.json",
+      "web3api.yaml",
+      "web3api.yml"
+    ];
 
-      // Try fetching uri/web3api.yml
+    let manifest: string | undefined;
+
+    for (const manifestSearchPattern of manifestSearchPatterns) {
       try {
-        return {
-          manifest: await ipfs.catToString(`${input.path}/web3api.yml`, {
-            timeout: 5000,
-          }),
-          uri: null,
-        };
+        manifest = await ipfs.catToString(
+          `${input.path}/${manifestSearchPattern}`,
+          { timeout: 5000 }
+        );
       } catch (e) {
         // TODO: logging
         // https://github.com/web3-api/monorepo/issues/33
       }
     }
 
-    // Nothing found
-    return { manifest: null, uri: null };
+    if (manifest) {
+      return { uri: null, manifest };
+    } else {
+      // Noting found
+      return { uri: null, manifest: null };
+    }
   },
   getFile: async (input: Query.Input_getFile) => {
     try {
