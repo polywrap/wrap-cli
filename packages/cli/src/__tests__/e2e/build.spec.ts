@@ -128,16 +128,12 @@ ${HELP}`);
       },
     );
 
-    const manifestPath = "build/web3api.yaml";
+    const manifestPath = "build/web3api.json";
     const sanitizedOutput = clearStyle(output);
 
     expect(code).toEqual(0);
-    expect(sanitizedOutput).toContain(
-      "Artifacts written to ./build from the image `build-env`"
-    );
-    expect(sanitizedOutput).toContain(
-      "Manifest written to ./build/web3api.yaml"
-    );
+    expect(sanitizedOutput).toContain("Artifacts written to ./build from the image `build-env`");
+    expect(sanitizedOutput).toContain("Manifest written to ./build/web3api.json");
     expect(sanitizedOutput).toContain(manifestPath);
   });
 
@@ -150,16 +146,12 @@ ${HELP}`);
       },
     );
 
-    const manifestPath = "build/web3api.yaml";
+    const manifestPath = "build/web3api.json";
     const sanitizedOutput = clearStyle(output);
 
     expect(code).toEqual(0);
-    expect(sanitizedOutput).toContain(
-      "Artifacts written to ./build from the image `build-env`"
-    );
-    expect(sanitizedOutput).toContain(
-      "Manifest written to ./build/web3api.yaml"
-    );
+    expect(sanitizedOutput).toContain("Artifacts written to ./build from the image `build-env`");
+    expect(sanitizedOutput).toContain("Manifest written to ./build/web3api.json");
     expect(sanitizedOutput).toContain(manifestPath);
   });
 
@@ -172,7 +164,7 @@ ${HELP}`);
       },
     );
 
-    const manifestPath = "build/web3api.yaml";
+    const manifestPath = "build/web3api.json";
     const sanitizedOutput = clearStyle(output);
 
     expect(code).toEqual(0);
@@ -180,7 +172,7 @@ ${HELP}`);
       "Artifacts written to ./build from the image `build-env`"
     );
     expect(sanitizedOutput).toContain(
-      "Manifest written to ./build/web3api.yaml"
+      "Manifest written to ./build/web3api.json"
     );
     expect(sanitizedOutput).toContain(manifestPath);
   });
@@ -194,16 +186,12 @@ ${HELP}`);
       },
     );
 
-    const manifestPath = "build/web3api.yaml";
+    const manifestPath = "build/web3api.json";
     const sanitizedOutput = clearStyle(output);
 
     expect(code).toEqual(0);
-    expect(sanitizedOutput).toContain(
-      "Artifacts written to ./build from the image `build-env`"
-    );
-    expect(sanitizedOutput).toContain(
-      "Manifest written to ./build/web3api.yaml"
-    );
+    expect(sanitizedOutput).toContain("Artifacts written to ./build from the image `build-env`");
+    expect(sanitizedOutput).toContain("Manifest written to ./build/web3api.json");
     expect(sanitizedOutput).toContain(manifestPath);
   });
 
@@ -214,7 +202,7 @@ ${HELP}`);
       cli: w3Cli,
     });
 
-    const manifestPath = "build/web3api.meta.yaml";
+    const manifestPath = "build/web3api.meta.json";
     const queryPath = "build/meta/queries/test.graphql";
     const queryVarPath = "build/meta/queries/test.json";
     const linkIconPath = "build/meta/links/link.svg";
@@ -223,7 +211,7 @@ ${HELP}`);
 
     expect(code).toEqual(0);
     expect(sanitizedOutput).toContain("Artifacts written to ./build from the image `build-env`");
-    expect(sanitizedOutput).toContain("Manifest written to ./build/web3api.yaml");
+    expect(sanitizedOutput).toContain("Manifest written to ./build/web3api.json");
     expect(sanitizedOutput).toContain(manifestPath);
     expect(sanitizedOutput).toContain(queryPath);
     expect(sanitizedOutput).toContain(queryVarPath);

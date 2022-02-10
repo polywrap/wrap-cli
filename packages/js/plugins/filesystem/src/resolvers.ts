@@ -10,26 +10,32 @@ export const query = (): Query.Module => ({
       return null;
     }
 
-    // Try reading uri/web3api.yaml
-    try {
-      const manifestPath = path.resolve(input.path, "web3api.yaml");
-      const manifest = await fs.promises.readFile(manifestPath, "utf8");
-      return { uri: null, manifest: manifest };
-    } catch (e) {
-      // TODO: logging
+    const manifestSearchPatterns = [
+      "web3api.json",
+      "web3api.yaml",
+      "web3api.yml",
+    ];
+
+    let manifest: string | undefined;
+
+    for (const manifestSearchPattern of manifestSearchPatterns) {
+      const manifestPath = path.resolve(input.path, manifestSearchPattern);
+
+      if (fs.existsSync(manifestPath)) {
+        try {
+          manifest = fs.readFileSync(manifestPath, "utf-8");
+        } catch (e) {
+          // TODO: logging
+        }
+      }
     }
 
-    // Try reading uri/web3api.yml
-    try {
-      const manifestPath = path.resolve(input.path, "web3api.yml");
-      const manifest = await fs.promises.readFile(manifestPath, "utf8");
-      return { uri: null, manifest: manifest };
-    } catch (e) {
-      // TODO: logging
+    if (manifest) {
+      return { uri: null, manifest };
+    } else {
+      // Noting found
+      return { uri: null, manifest: null };
     }
-
-    // Nothing found
-    return { manifest: null, uri: null };
   },
   getFile: async (_input: Query.Input_getFile) => {
     try {
