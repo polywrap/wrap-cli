@@ -44,7 +44,7 @@ export const query = (ipfs: IpfsPlugin): Query.Module => ({
     const manifestSearchPatterns = [
       "web3api.json",
       "web3api.yaml",
-      "web3api.yml"
+      "web3api.yml",
     ];
 
     let manifest: string | undefined;
@@ -52,7 +52,8 @@ export const query = (ipfs: IpfsPlugin): Query.Module => ({
     for (const manifestSearchPattern of manifestSearchPatterns) {
       try {
         manifest = await ipfs.catToString(
-          `${input.path}/${manifestSearchPattern}`, {
+          `${input.path}/${manifestSearchPattern}`,
+          {
             timeout: 5000,
             disableParallelRequests: queryEnv.disableParallelRequests,
           }

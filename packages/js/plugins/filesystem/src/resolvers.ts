@@ -13,7 +13,7 @@ export const query = (): Query.Module => ({
     const manifestSearchPatterns = [
       "web3api.json",
       "web3api.yaml",
-      "web3api.yml"
+      "web3api.yml",
     ];
 
     let manifest: string | undefined;
