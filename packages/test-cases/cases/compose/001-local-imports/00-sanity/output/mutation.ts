@@ -1,7 +1,7 @@
 import {
   createArrayPropertyDefinition,
   createMethodDefinition,
-  createQueryDefinition,
+  createModuleDefinition,
   createScalarDefinition,
   createScalarPropertyDefinition,
   createArrayDefinition,
@@ -16,9 +16,9 @@ import {
 
 export const typeInfo: TypeInfo = {
   ...createTypeInfo(),
-  queryTypes: [
+  moduleTypes: [
     {
-      ...createQueryDefinition({ type: "Mutation" }),
+      ...createModuleDefinition({ type: "Mutation" }),
       methods: [
         {
           ...createMethodDefinition({

@@ -9,6 +9,7 @@ import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
 import gql from "graphql-tag";
 import path from "path";
+import yaml from "js-yaml";
 
 const optionsString = intlMsg.commands_build_options_options();
 const scriptStr = intlMsg.commands_create_options_recipeScript();
@@ -126,7 +127,13 @@ export default {
 
     const client = new Web3ApiClient(finalClientConfig);
 
-    const recipe = JSON.parse(filesystem.read(recipePath) as string);
+    function getParser(path: string) {
+      return path.endsWith(".yaml") || path.endsWith(".yml")
+        ? yaml.load
+        : JSON.parse;
+    }
+
+    const recipe = getParser(recipePath)(filesystem.read(recipePath) as string);
     const dir = path.dirname(recipePath);
     let uri = "";
 
@@ -137,7 +144,7 @@ export default {
       }
 
       if (task.constants) {
-        constants = JSON.parse(
+        constants = getParser(task.constants)(
           filesystem.read(path.join(dir, task.constants)) as string
         );
       }

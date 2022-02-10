@@ -1,9 +1,9 @@
 import {
   PropertyDefinition,
-  ImportedQueryDefinition,
+  ImportedModuleDefinition,
   MethodDefinition,
   createPropertyDefinition,
-  QueryDefinition,
+  ModuleDefinition,
   createArrayDefinition,
   InterfaceDefinition,
 } from "../typeInfo";
@@ -12,13 +12,13 @@ import { setPropertyType } from "./property-utils";
 import { InputValueDefinitionNode, NamedTypeNode } from "graphql";
 
 export interface State {
-  currentQuery?: QueryDefinition;
+  currentModule?: ModuleDefinition;
   currentMethod?: MethodDefinition;
   currentArgument?: PropertyDefinition;
   currentReturn?: PropertyDefinition;
   nonNullType?: boolean;
   currentInterfaces?: InterfaceDefinition[];
-  currentImport?: ImportedQueryDefinition;
+  currentImport?: ImportedModuleDefinition;
 }
 
 export function extractNamedType(node: NamedTypeNode, state: State): void {

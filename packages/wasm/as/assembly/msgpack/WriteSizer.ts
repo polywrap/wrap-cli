@@ -103,7 +103,7 @@ export class WriteSizer extends Write {
 
   writeBytes(value: ArrayBuffer): void {
     if (value.byteLength == 0) {
-      this.length++; //nil byte
+      this.length++; // nil byte
       return;
     }
     this.writeBytesLength(value.byteLength);

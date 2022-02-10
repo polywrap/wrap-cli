@@ -1,3 +1,9 @@
+# Web3API 0.0.1-prealpha.62
+## Features
+* Use the https://ipfs.wrappers.io IPFS gateway throughout the codebase.
+* Rename TypeInfo `queryTypes` & `importedQueryTypes` to `moduleTypes` & `importedModuleTypes`.
+* `@web3api/ipfs-plugin-js`: Improve the IPFS plugin's URI resolver implementation, and add the ability to query from multiple gateways in parallel.
+
 # Web3API 0.0.1-prealpha.61
 ## Features
 * `@web3api/cli`: Added the `--client-config` / `-c` option to the `w3 query` CLI command, allowing the user the define their own client configurations within a JavaScript or TypeScript module.
