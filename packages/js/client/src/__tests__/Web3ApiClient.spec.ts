@@ -1048,6 +1048,26 @@ describe("Web3ApiClient", () => {
     expect(getWithUriType.data?.getData).toBe(55);
     expect(getWithUriType.data?.secondGetData).toBe(55);
     expect(getWithUriType.data?.thirdGetData).toBe(55);
+
+    const tryGet = await client.query<{
+      tryGetData: string;
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          tryGetData(
+            address: "${address}"
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
+          )
+        }
+      `,
+    });
+
+    expect(tryGet.errors).toBeFalsy();
+    expect(tryGet.data).toBeTruthy();
+    expect(tryGet.data?.tryGetData).toContain("VM Exception while processing transaction");
   });
 
   it("object-types", async () => {

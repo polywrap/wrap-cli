@@ -6,7 +6,8 @@ import {
   w3_subinvoke,
   Nullable,
   BigInt,
-  JSON
+  JSON,
+  Result
 } from "@web3api/wasm-as";
 {{#methods.length}}
 import {
@@ -20,53 +21,102 @@ import {
 import * as Types from "../..";
 
 {{^isInterface}}
-export class {{type}} {
+export namespace {{type}} {
 
-  public static uri: string = "{{uri}}";
+  export const uri: string = "{{uri}}";
 
   {{#methods}}
-  public static {{name}}(input: Input_{{name}}): {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {
-    const args = serialize{{name}}Args(input);
-    const result = w3_subinvoke(
-      "{{uri}}",
-      "{{type}}",
-      "{{name}}",
-      args
-    );
-    return deserialize{{name}}Result(result);
+  export function {{name}}(
+    input: Input_{{name}}
+  ): {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {
+    return Try.{{name}}(input).unwrap();
   }
   {{^last}}
 
   {{/last}}
   {{/methods}}
+
+  export namespace Try {
+
+    {{#methods}}
+    export function {{name}}(
+      input: Input_{{name}}
+    ): Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string> {
+      const args = serialize{{name}}Args(input);
+      const result = w3_subinvoke(
+        "{{uri}}",
+        "{{type}}",
+        "{{name}}",
+        args
+      );
+
+      if (result.isErr) {
+        return Result.Err<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string>(
+          result.unwrapErr()
+        );
+      }
+
+      return Result.Ok<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string>(
+        deserialize{{name}}Result(result.unwrap())
+      );
+    }
+    {{^last}}
+
+    {{/last}}
+    {{/methods}}
+  }
 }
 {{/isInterface}}
 {{#isInterface}}
-export class {{type}} {
+export namespace {{type}} {
 
-  public static interfaceUri: string = "{{uri}}";
+  export namespace Interface {
 
-  public uri: string;
+    export const uri: string = "{{uri}}";
 
-  constructor(uri: string) {
-    this.uri = uri;
+    {{#methods}}
+    export function {{name}}(
+      input: Input_{{name}},
+      implementationUri: string
+    ): {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {
+      return Try.{{name}}(input, implementationUri).unwrap();
+    }
+    {{^last}}
+
+    {{/last}}
+    {{/methods}}
+
+    export namespace Try {
+
+      {{#methods}}
+      export function {{name}}(
+        input: Input_{{name}},
+        implementationUri: string
+      ): Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string> {
+        const args = serialize{{name}}Args(input);
+        const result = w3_subinvoke(
+          implementationUri,
+          "{{type}}",
+          "{{name}}",
+          args
+        );
+
+        if (result.isErr) {
+          return Result.Err<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string>(
+            result.unwrapErr()
+          );
+        }
+
+        return Result.Ok<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string>(
+          deserialize{{name}}Result(result.unwrap())
+        );
+      }
+      {{^last}}
+
+      {{/last}}
+      {{/methods}}
+    }
   }
-
-  {{#methods}}
-  public {{name}}(input: Input_{{name}}): {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {
-    const args = serialize{{name}}Args(input);
-    const result = w3_subinvoke(
-      this.uri,
-      "{{type}}",
-      "{{name}}",
-      args
-    );
-    return deserialize{{name}}Result(result);
-  }
-  {{^last}}
-
-  {{/last}}
-  {{/methods}}
 }
 {{/isInterface}}
 {{/__commonImport}}

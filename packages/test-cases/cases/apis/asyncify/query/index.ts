@@ -15,4 +15,3 @@ export function getData(input: Input_getData): u32 {
 export function returnTrue(): boolean {
   return true;
 }
-
