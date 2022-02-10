@@ -22,13 +22,9 @@ export const deserializeWeb3ApiManifest = Tracer.traceFunc(
   "core: deserializeWeb3ApiManifest",
   (manifest: string, options?: DeserializeManifestOptions): Web3ApiManifest => {
     let anyWeb3ApiManifest: AnyWeb3ApiManifest | undefined;
-    if (options?.json) {
-      try {
-        anyWeb3ApiManifest = JSON.parse(manifest) as AnyWeb3ApiManifest;
-      } catch (e) {
-        anyWeb3ApiManifest = undefined;
-      }
-    } else {
+    try {
+      anyWeb3ApiManifest = JSON.parse(manifest) as AnyWeb3ApiManifest;
+    } catch (e) {
       anyWeb3ApiManifest = YAML.safeLoad(manifest) as
       | AnyWeb3ApiManifest
       | undefined;

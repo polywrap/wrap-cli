@@ -22,13 +22,9 @@ export const deserializeMetaManifest = Tracer.traceFunc(
   "core: deserializeMetaManifest",
   (manifest: string, options?: DeserializeManifestOptions): MetaManifest => {
     let anyMetaManifest: AnyMetaManifest | undefined;
-    if (options?.json) {
-      try {
-        anyMetaManifest = JSON.parse(manifest) as AnyMetaManifest;
-      } catch (e) {
-        anyMetaManifest = undefined;
-      }
-    } else {
+    try {
+      anyMetaManifest = JSON.parse(manifest) as AnyMetaManifest;
+    } catch (e) {
       anyMetaManifest = YAML.safeLoad(manifest) as
       | AnyMetaManifest
       | undefined;

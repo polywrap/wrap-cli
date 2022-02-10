@@ -22,13 +22,9 @@ export const deserialize{{type}} = Tracer.traceFunc(
   "core: deserialize{{type}}",
   (manifest: string, options?: DeserializeManifestOptions): {{type}} => {
     let any{{type}}: Any{{type}} | undefined;
-    if (options?.json) {
-      try {
-        any{{type}} = JSON.parse(manifest) as Any{{type}};
-      } catch (e) {
-        any{{type}} = undefined;
-      }
-    } else {
+    try {
+      any{{type}} = JSON.parse(manifest) as Any{{type}};
+    } catch (e) {
       any{{type}} = YAML.safeLoad(manifest) as
       | Any{{type}}
       | undefined;

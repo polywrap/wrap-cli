@@ -22,13 +22,9 @@ export const deserializePluginManifest = Tracer.traceFunc(
   "core: deserializePluginManifest",
   (manifest: string, options?: DeserializeManifestOptions): PluginManifest => {
     let anyPluginManifest: AnyPluginManifest | undefined;
-    if (options?.json) {
-      try {
-        anyPluginManifest = JSON.parse(manifest) as AnyPluginManifest;
-      } catch (e) {
-        anyPluginManifest = undefined;
-      }
-    } else {
+    try {
+      anyPluginManifest = JSON.parse(manifest) as AnyPluginManifest;
+    } catch (e) {
       anyPluginManifest = YAML.safeLoad(manifest) as
       | AnyPluginManifest
       | undefined;

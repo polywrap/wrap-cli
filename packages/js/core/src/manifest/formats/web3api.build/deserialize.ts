@@ -22,13 +22,9 @@ export const deserializeBuildManifest = Tracer.traceFunc(
   "core: deserializeBuildManifest",
   (manifest: string, options?: DeserializeManifestOptions): BuildManifest => {
     let anyBuildManifest: AnyBuildManifest | undefined;
-    if (options?.json) {
-      try {
-        anyBuildManifest = JSON.parse(manifest) as AnyBuildManifest;
-      } catch (e) {
-        anyBuildManifest = undefined;
-      }
-    } else {
+    try {
+      anyBuildManifest = JSON.parse(manifest) as AnyBuildManifest;
+    } catch (e) {
       anyBuildManifest = YAML.safeLoad(manifest) as
       | AnyBuildManifest
       | undefined;
