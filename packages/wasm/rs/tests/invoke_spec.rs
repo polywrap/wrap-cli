@@ -1,4 +1,4 @@
-use polywrap_wasm_rs::memory::internal_alloc;
+use polywrap_wasm_rs::malloc::alloc;
 
 type InvokeFunction = fn(args_buf: &[u8]) -> Vec<u8>;
 
@@ -8,13 +8,14 @@ pub struct InvokeArgs {
 }
 
 fn w3_invoke_args(method_size: u32, args_size: u32) -> InvokeArgs {
-    let method_buf_ptr = internal_alloc(method_size as usize);
-    let args_buf_ptr = internal_alloc(args_size as usize);
+    let method_size_ptr = alloc(method_size as usize);
+    let args_size_ptr = alloc(args_size as usize);
 
     let method = unsafe {
-        String::from_raw_parts(method_buf_ptr, method_size as usize, method_size as usize)
+        String::from_raw_parts(method_size_ptr, method_size as usize, method_size as usize)
     };
-    let args = unsafe { Vec::from_raw_parts(args_buf_ptr, args_size as usize, args_size as usize) };
+    let args =
+        unsafe { Vec::from_raw_parts(args_size_ptr, args_size as usize, args_size as usize) };
 
     InvokeArgs { method, args }
 }

@@ -2,9 +2,11 @@ use serde::{Serialize, Deserialize};
 pub mod serialization;
 use polywrap_wasm_rs::{
     BigInt,
+    DecodeError,
+    EncodeError,
     Read,
     Write,
-    JSON
+    JSON,
 };
 pub use serialization::{
     deserialize_custom_type,
@@ -96,19 +98,19 @@ impl CustomType {
         }
     }
 
-    pub fn to_buffer(input: &CustomType) -> Vec<u8> {
+    pub fn to_buffer(input: &CustomType) -> Result<Vec<u8>, EncodeError> {
         serialize_custom_type(input)
     }
 
-    pub fn from_buffer(input: &[u8]) -> CustomType {
+    pub fn from_buffer(input: &[u8]) -> Result<CustomType, DecodeError> {
         deserialize_custom_type(input)
     }
 
-    pub fn write<W: Write>(input: &CustomType, writer: &mut W) {
-        write_custom_type(input, writer);
+    pub fn write<W: Write>(input: &CustomType, writer: &mut W) -> Result<(), EncodeError> {
+        write_custom_type(input, writer)
     }
 
-    pub fn read<R: Read>(reader: &mut R) -> CustomType {
-        read_custom_type(reader).expect("Failed to read CustomType")
+    pub fn read<R: Read>(reader: &mut R) -> Result<CustomType, DecodeError> {
+        read_custom_type(reader)
     }
 }

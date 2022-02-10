@@ -2,9 +2,11 @@ use serde::{Serialize, Deserialize};
 pub mod serialization;
 use polywrap_wasm_rs::{
     BigInt,
+    DecodeError,
+    EncodeError,
     Read,
     Write,
-    JSON
+    JSON,
 };
 pub use serialization::{
     deserialize_test_import_object,
@@ -44,19 +46,19 @@ impl TestImportObject {
         }
     }
 
-    pub fn to_buffer(input: &TestImportObject) -> Vec<u8> {
+    pub fn to_buffer(input: &TestImportObject) -> Result<Vec<u8>, EncodeError> {
         serialize_test_import_object(input)
     }
 
-    pub fn from_buffer(input: &[u8]) -> TestImportObject {
+    pub fn from_buffer(input: &[u8]) -> Result<TestImportObject, DecodeError> {
         deserialize_test_import_object(input)
     }
 
-    pub fn write<W: Write>(input: &TestImportObject, writer: &mut W) {
-        write_test_import_object(input, writer);
+    pub fn write<W: Write>(input: &TestImportObject, writer: &mut W) -> Result<(), EncodeError> {
+        write_test_import_object(input, writer)
     }
 
-    pub fn read<R: Read>(reader: &mut R) -> TestImportObject {
-        read_test_import_object(reader).expect("Failed to read TestImportObject")
+    pub fn read<R: Read>(reader: &mut R) -> Result<TestImportObject, DecodeError> {
+        read_test_import_object(reader)
     }
 }

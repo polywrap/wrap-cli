@@ -579,7 +579,6 @@ export class Compiler {
   ): Promise<void> {
     const modulePath = path.join(buildDir, `${moduleName}.wasm`);
     const wasmSource = fs.readFileSync(modulePath);
-
     const w3Imports: Record<keyof W3Imports, () => void> = {
       __w3_subinvoke: () => {},
       __w3_subinvoke_result_len: () => {},
@@ -593,6 +592,10 @@ export class Compiler {
       __w3_getImplementations_result_len: () => {},
       __w3_getImplementations_result: () => {},
       __w3_abort: () => {},
+      __w3_debug_log:() => {},
+      __w3_load_env: () => {},
+      __w3_sanitize_env_args: () => {},
+      __w3_sanitize_env_result: () => {},
     };
 
     try {

@@ -2,9 +2,11 @@ use serde::{Serialize, Deserialize};
 pub mod serialization;
 use polywrap_wasm_rs::{
     BigInt,
+    DecodeError,
+    EncodeError,
     Read,
     Write,
-    JSON
+    JSON,
 };
 pub use serialization::{
     deserialize_another_type,
@@ -29,19 +31,19 @@ impl AnotherType {
         }
     }
 
-    pub fn to_buffer(input: &AnotherType) -> Vec<u8> {
+    pub fn to_buffer(input: &AnotherType) -> Result<Vec<u8>, EncodeError> {
         serialize_another_type(input)
     }
 
-    pub fn from_buffer(input: &[u8]) -> AnotherType {
+    pub fn from_buffer(input: &[u8]) -> Result<AnotherType, DecodeError> {
         deserialize_another_type(input)
     }
 
-    pub fn write<W: Write>(input: &AnotherType, writer: &mut W) {
-        write_another_type(input, writer);
+    pub fn write<W: Write>(input: &AnotherType, writer: &mut W) -> Result<(), EncodeError> {
+        write_another_type(input, writer)
     }
 
-    pub fn read<R: Read>(reader: &mut R) -> AnotherType {
-        read_another_type(reader).expect("Failed to read AnotherType")
+    pub fn read<R: Read>(reader: &mut R) -> Result<AnotherType, DecodeError> {
+        read_another_type(reader)
     }
 }

@@ -3,12 +3,14 @@ use std::convert::TryFrom;
 use polywrap_wasm_rs::{
     BigInt,
     Context,
+    DecodeError,
+    EncodeError,
     Read,
     ReadDecoder,
     Write,
     WriteEncoder,
     WriteSizer,
-    JSON
+    JSON,
 };
 use crate::{{#toUpper}}{{type}}{{/toUpper}};
 {{#propertyDeps.length}}
@@ -26,65 +28,65 @@ use crate::{
 {{/isEnum}}
 {{/propertyDeps}}
 
-pub fn serialize_{{#toLower}}{{type}}{{/toLower}}(input: &{{#toUpper}}{{type}}{{/toUpper}}) -> Vec<u8> {
+pub fn serialize_{{#toLower}}{{type}}{{/toLower}}(input: &{{#toUpper}}{{type}}{{/toUpper}}) -> Result<Vec<u8>, EncodeError> {
     let mut sizer_context = Context::new();
     sizer_context.description = "Serializing (sizing) imported object-type: {{#toUpper}}{{type}}{{/toUpper}}".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
-    write_{{#toLower}}{{type}}{{/toLower}}(input, &mut sizer);
-    let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
+    write_{{#toLower}}{{type}}{{/toLower}}(input, &mut sizer)?;
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) imported object-type: {{#toUpper}}{{type}}{{/toUpper}}".to_string();
-    let mut encoder = WriteEncoder::new(&buffer, encoder_context);
-    write_{{#toLower}}{{type}}{{/toLower}}(input, &mut encoder);
-    buffer
+    let mut encoder = WriteEncoder::new(&[], encoder_context);
+    write_{{#toLower}}{{type}}{{/toLower}}(input, &mut encoder)?;
+    Ok(encoder.get_buffer())
 }
 
-pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(input: &{{#toUpper}}{{type}}{{/toUpper}}, writer: &mut W) {
-    writer.write_map_length({{properties.length}});
+pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(input: &{{#toUpper}}{{type}}{{/toUpper}}, writer: &mut W) -> Result<(), EncodeError> {
+    writer.write_map_length(&{{properties.length}})?;
     {{#properties}}
     writer.context().push("{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
-    writer.write_str("{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}");
+    writer.write_str("{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}")?;
     {{#scalar}}
-    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}});
+    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}})?;
     {{/scalar}}
     {{#array}}
     writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}, |writer: &mut W, item| {
         {{> serialize_array}}
-    });
+    })?;
     {{/array}}
     {{#object}}
     {{#required}}
-    {{#toUpper}}{{type}}{{/toUpper}}::write(&input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}, writer);
+    {{#toUpper}}{{type}}{{/toUpper}}::write(&input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}, writer)?;
     {{/required}}
     {{^required}}
     if input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.is_some() {
-        {{#toUpper}}{{type}}{{/toUpper}}::write(input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.as_ref().as_ref().unwrap(), writer);
+        {{#toUpper}}{{type}}{{/toUpper}}::write(input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.as_ref().as_ref().unwrap(), writer)?;
     } else {
-        writer.write_nil();
+        writer.write_nil()?;
     }
     {{/required}}
     {{/object}}
     {{#enum}}
     {{#required}}
-    writer.write_i32(&(input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}} as i32));
+    writer.write_i32(&(input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}} as i32))?;
     {{/required}}
     {{^required}}
-    writer.write_nullable_i32(&Some(input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.unwrap() as i32));
+    writer.write_nullable_i32(&input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.map(|f| f as i32))?;
     {{/required}}
     {{/enum}}
     writer.context().pop();
     {{/properties}}
+    Ok(())
 }
 
-pub fn deserialize_{{#toLower}}{{type}}{{/toLower}}(input: &[u8]) -> {{#toUpper}}{{type}}{{/toUpper}} {
+pub fn deserialize_{{#toLower}}{{type}}{{/toLower}}(input: &[u8]) -> Result<{{#toUpper}}{{type}}{{/toUpper}}, DecodeError> {
     let mut context = Context::new();
     context.description = "Deserializing imported object-type: {{#toUpper}}{{type}}{{/toUpper}}".to_string();
     let mut reader = ReadDecoder::new(input, context);
-    read_{{#toLower}}{{type}}{{/toLower}}(&mut reader).expect("Failed to deserialize {{#toUpper}}{{type}}{{/toUpper}}")
+    read_{{#toLower}}{{type}}{{/toLower}}(&mut reader)
 }
 
-pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<{{#toUpper}}{{type}}{{/toUpper}}, String> {
-    let mut num_of_fields = reader.read_map_length().unwrap();
+pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<{{#toUpper}}{{type}}{{/toUpper}}, DecodeError> {
+    let mut num_of_fields = reader.read_map_length()?;
 
     {{#properties}}
     {{^object}}
@@ -105,19 +107,19 @@ pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<
 
     while num_of_fields > 0 {
         num_of_fields -= 1;
-        let field = reader.read_string().unwrap();
+        let field = reader.read_string()?;
 
         match field.as_str() {
             {{#properties}}
             "{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}" => {
                 reader.context().push(&field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading property");
                 {{#scalar}}
-                _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(){{#required}}.unwrap(){{/required}};
+                _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}()?;
                 {{/scalar}}
                 {{#array}}
                 _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {
                     {{> deserialize_array_nobox}}
-                }){{#required}}.expect("Failed to read array"){{/required}};
+                })?;
                 {{/array}}
                 {{#enum}}
                 {{> deserialize_enum}}
@@ -139,7 +141,7 @@ pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<
     {{#properties}}
     {{#required}}
     if !_{{#toLower}}{{name}}{{/toLower}}_set {
-        return Err(reader.context().print_with_context("Missing required property: '{{name}}: {{type}}'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'{{name}}: {{type}}'")));
     }
     {{/required}}
     {{/properties}}

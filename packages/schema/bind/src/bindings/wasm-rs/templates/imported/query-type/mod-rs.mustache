@@ -8,7 +8,7 @@ use polywrap_wasm_rs::{
     Read,
     Write,
     JSON,
-    subinvoke
+    subinvoke,
 };
 pub mod serialization;
 {{#methods.length}}
@@ -38,16 +38,16 @@ impl {{#toUpper}}{{type}}{{/toUpper}} {
     }
 
     {{#methods}}
-    pub fn {{#toLower}}{{name}}{{/toLower}}(input: &Input{{#toUpper}}{{name}}{{/toUpper}}) -> {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {
+    pub fn {{#toLower}}{{name}}{{/toLower}}(input: &Input{{#toUpper}}{{name}}{{/toUpper}}) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, String> {
         let uri = {{#query}}{{#toUpper}}{{type}}{{/toUpper}}{{/query}}::URI;
-        let args = serialize_{{#toLower}}{{name}}{{/toLower}}_args(input);
+        let args = serialize_{{#toLower}}{{name}}{{/toLower}}_args(input)?;
         let result = subinvoke::w3_subinvoke(
-            uri.to_string(),
-            "{{#toLower}}{{type}}{{/toLower}}".to_string(),
-            "{{#toLower}}{{name}}{{/toLower}}".to_string(),
+            uri,
+            "{{#toLower}}{{type}}{{/toLower}}",
+            "{{#toLower}}{{name}}{{/toLower}}",
             args,
-        ).unwrap();
-        deserialize_{{#toLower}}{{name}}{{/toLower}}_result(result.as_slice())
+        )?;
+        deserialize_{{#toLower}}{{name}}{{/toLower}}_result(result.as_slice()).map_err(|e| e.to_string())
     }
     {{^last}}
 

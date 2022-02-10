@@ -4,7 +4,7 @@ use polywrap_wasm_rs::{
     Read,
     Write,
     JSON,
-    subinvoke
+    subinvoke,
 };
 pub mod serialization;
 pub use serialization::{
@@ -28,27 +28,27 @@ impl TestImportMutation {
         TestImportMutation {}
     }
 
-    pub fn imported_method(input: &InputImportedMethod) -> Option<TestImportObject> {
+    pub fn imported_method(input: &InputImportedMethod) -> Result<Option<TestImportObject>, String> {
         let uri = TestImportMutation::URI;
-        let args = serialize_imported_method_args(input);
+        let args = serialize_imported_method_args(input)?;
         let result = subinvoke::w3_subinvoke(
-            uri.to_string(),
-            "mutation".to_string(),
-            "imported_method".to_string(),
+            uri,
+            "mutation",
+            "imported_method",
             args,
-        ).unwrap();
-        deserialize_imported_method_result(result.as_slice())
+        )?;
+        deserialize_imported_method_result(result.as_slice()).map_err(|e| e.to_string())
     }
 
-    pub fn another_method(input: &InputAnotherMethod) -> i32 {
+    pub fn another_method(input: &InputAnotherMethod) -> Result<i32, String> {
         let uri = TestImportMutation::URI;
-        let args = serialize_another_method_args(input);
+        let args = serialize_another_method_args(input)?;
         let result = subinvoke::w3_subinvoke(
-            uri.to_string(),
-            "mutation".to_string(),
-            "another_method".to_string(),
+            uri,
+            "mutation",
+            "another_method",
             args,
-        ).unwrap();
-        deserialize_another_method_result(result.as_slice())
+        )?;
+        deserialize_another_method_result(result.as_slice()).map_err(|e| e.to_string())
     }
 }

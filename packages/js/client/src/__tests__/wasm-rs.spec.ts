@@ -1,5 +1,5 @@
 import {
-  ClientConfig,
+  Web3ApiClientConfig,
   createWeb3ApiClient,
 } from "../";
 import * as TestCases from "./test-cases";
@@ -10,7 +10,7 @@ import {
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 
-jest.setTimeout(200000);
+jest.setTimeout(360000);
 
 describe("wasm-rs test cases", () => {
   let ipfsProvider: string;
@@ -19,6 +19,7 @@ describe("wasm-rs test cases", () => {
 
   beforeAll(async () => {
     const { ipfs, ethereum, ensAddress: ens } = await initTestEnvironment();
+    console.log(ipfs);
     ipfsProvider = ipfs;
     ethProvider = ethereum;
     ensAddress = ens;
@@ -28,7 +29,7 @@ describe("wasm-rs test cases", () => {
     await stopTestEnvironment();
   });
 
-  const getClient = async (config?: ClientConfig) => {
+  const getClient = async (config?: Partial<Web3ApiClientConfig>) => {
     return createWeb3ApiClient({
       ethereum: {
         networks: {
@@ -46,7 +47,7 @@ describe("wasm-rs test cases", () => {
     }, config);
   }
 
-  it("asyncify", async () => {
+  it.only("asyncify", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/wasm-rs/asyncify`,
       ipfsProvider,
@@ -94,7 +95,7 @@ describe("wasm-rs test cases", () => {
     );
   });
 
-  /*it("implementations - e2e", async () => {
+  it("implementations - e2e", async () => {
     let interfaceApi = await buildAndDeployApi(
       `${GetPathToTestApis()}/wasm-rs/implementations/test-interface`,
       ipfsProvider,
@@ -145,7 +146,7 @@ describe("wasm-rs test cases", () => {
     await TestCases.runGetImplementationsTest(
       client, interfaceUri, implementationUri
     );
-  });*/
+  });
 
   it("invalid type errors", async () => {
     const api = await buildAndDeployApi(

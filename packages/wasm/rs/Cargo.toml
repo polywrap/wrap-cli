@@ -1,6 +1,6 @@
 [package]
 name = "polywrap-wasm-rs"
-version = "0.0.1-prealpha-dev.37.4"
+version = "0.0.1-prealpha.57"
 license = "MIT"
 description = "Polywrap's Rust-Wasm Runtime"
 homepage = "https://polywrap.io"
@@ -14,11 +14,20 @@ keywords = ["polywrap", "wasm", "webassembly"]
 categories = ["wasm"]
 edition = "2021"
 
+[lib]
+crate-type = ["cdylib", "rlib"]
+
 [dependencies]
+byteorder = "1.4.3"
+thiserror = "1.0.30"
 num-bigint = { version = "0.4", default-features = false, features = ["serde"] }
-serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
+num-traits = "0.2.14"
+serde_json = { version = "1.0.74", default-features = false, features = ["alloc"] }
+
+[dev-dependencies]
+serde = { version = "1.0.136", default-features = false, features = ["derive"] }
 
 [profile.release]
-opt-level = 'z'
+opt-level = 's'
 lto = true
 panic = 'abort'

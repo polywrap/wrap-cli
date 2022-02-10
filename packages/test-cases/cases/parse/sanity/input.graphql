@@ -98,6 +98,26 @@ type UserObject {
   fieldB: Int!
 }
 
+type QueryEnv {
+  prop: String!
+}
+
+type QueryClientEnv {
+  prop: String!
+}
+
+type MutationEnv {
+  prop: Int!
+}
+
+type MutationClientEnv {
+  prop: String
+}
+
+type Mutation {
+  sanitizeMutationEnv(env: MutationClientEnv!): MutationEnv!
+}
+
 """
 ImplementationObject comment
 """
@@ -121,6 +141,7 @@ type Query implements Interface_Query @imports(
   uri: "testimport.uri.eth",
   namespace: "TestImport",
 ) {
+  sanitizeQueryEnv(env: QueryClientEnv!): QueryEnv!
 """
 queryMethod comment
 """

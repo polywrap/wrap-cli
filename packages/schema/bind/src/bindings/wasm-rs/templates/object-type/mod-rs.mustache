@@ -6,9 +6,11 @@ use serde::{Serialize, Deserialize};
 pub mod serialization;
 use polywrap_wasm_rs::{
     BigInt,
+    DecodeError,
+    EncodeError,
     Read,
     Write,
-    JSON
+    JSON,
 };
 pub use serialization::{
     deserialize_{{#toLower}}{{type}}{{/toLower}},
@@ -37,20 +39,20 @@ impl {{#toUpper}}{{type}}{{/toUpper}} {
         }
     }
 
-    pub fn to_buffer(input: &{{#toUpper}}{{type}}{{/toUpper}}) -> Vec<u8> {
+    pub fn to_buffer(input: &{{#toUpper}}{{type}}{{/toUpper}}) -> Result<Vec<u8>, EncodeError> {
         serialize_{{#toLower}}{{type}}{{/toLower}}(input)
     }
 
-    pub fn from_buffer(input: &[u8]) -> {{#toUpper}}{{type}}{{/toUpper}} {
+    pub fn from_buffer(input: &[u8]) -> Result<{{#toUpper}}{{type}}{{/toUpper}}, DecodeError> {
         deserialize_{{#toLower}}{{type}}{{/toLower}}(input)
     }
 
-    pub fn write<W: Write>(input: &{{#toUpper}}{{type}}{{/toUpper}}, writer: &mut W) {
-        write_{{#toLower}}{{type}}{{/toLower}}(input, writer);
+    pub fn write<W: Write>(input: &{{#toUpper}}{{type}}{{/toUpper}}, writer: &mut W) -> Result<(), EncodeError> {
+        write_{{#toLower}}{{type}}{{/toLower}}(input, writer)
     }
 
-    pub fn read<R: Read>(reader: &mut R) -> {{#toUpper}}{{type}}{{/toUpper}} {
-        read_{{#toLower}}{{type}}{{/toLower}}(reader).expect("Failed to read {{#toUpper}}{{type}}{{/toUpper}}")
+    pub fn read<R: Read>(reader: &mut R) -> Result<{{#toUpper}}{{type}}{{/toUpper}}, DecodeError> {
+        read_{{#toLower}}{{type}}{{/toLower}}(reader)
     }
 }
 {{/__commonImport}}

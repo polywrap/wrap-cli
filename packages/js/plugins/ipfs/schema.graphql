@@ -10,15 +10,6 @@ type Query implements UriResolver_Query {
     cid: String!
     options: Options
   ): ResolveResult
-
-  tryResolveUri(
-    authority: String!
-    path: String!
-  ): UriResolver_MaybeUriOrManifest
-
-  getFile(
-    path: String!
-  ): Bytes
 }
 
 type Mutation {

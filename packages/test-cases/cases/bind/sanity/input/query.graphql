@@ -1,4 +1,4 @@
-#import { CustomType, CustomEnum, AnotherType } from "../imports-local/common.graphql"
+#import { CustomType, CustomEnum, AnotherType, Env } from "../imports-local/common.graphql"
 #import { Query, Object, AnotherObject, Enum } into TestImport from "testimport.uri.eth"
 #use { getImplementations } for TestImport
 
@@ -18,4 +18,8 @@ type Query {
     objectArray: [AnotherType!]!
     optObjectArray: [AnotherType]
   ): AnotherType
+}
+
+type QueryEnv {
+  queryProp: String!
 }

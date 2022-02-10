@@ -3,12 +3,14 @@ use std::convert::TryFrom;
 use polywrap_wasm_rs::{
     BigInt,
     Context,
+    DecodeError,
+    EncodeError,
     Read,
     ReadDecoder,
     Write,
     WriteEncoder,
     WriteSizer,
-    JSON
+    JSON,
 };
 {{#propertyDeps.length}}
 
@@ -34,12 +36,12 @@ pub struct Input{{#toUpper}}{{name}}{{/toUpper}} {
     {{/arguments}}
 }
 
-pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result<Input{{#toUpper}}{{name}}{{/toUpper}}, String> {
+pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result<Input{{#toUpper}}{{name}}{{/toUpper}}, DecodeError> {
     let mut context = Context::new();
     context.description = "Deserializing query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
     {{#arguments.length}}
     let mut reader = ReadDecoder::new(input, context);
-    let mut num_of_fields = reader.read_map_length().unwrap();
+    let mut num_of_fields = reader.read_map_length()?;
 
     {{#arguments}}
     {{^object}}
@@ -60,19 +62,19 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
 
     while num_of_fields > 0 {
         num_of_fields -= 1;
-        let field = reader.read_string().unwrap();
+        let field = reader.read_string()?;
 
         match field.as_str() {
             {{#arguments}}
             "{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}" => {
                 reader.context().push(&field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading argument");
                 {{#scalar}}
-                _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(){{#required}}.unwrap(){{/required}};
+                _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}()?;
                 {{/scalar}}
                 {{#array}}
                 _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {
                     {{> deserialize_array_nobox}}
-                }){{#required}}.expect("Failed to read array"){{/required}};
+                })?;
                 {{/array}}
                 {{#enum}}
                 {{> deserialize_enum}}
@@ -94,7 +96,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
     {{#arguments}}
     {{#required}}
     if !_{{#toLower}}{{name}}{{/toLower}}_set {
-        return Err(reader.context().print_with_context("Missing required argument: '{{name}}: {{type}}'"));
+        return Err(DecodeError::MissingField(reader.context().print_with_context("'{{name}}: {{type}}'")));
     }
     {{/required}}
     {{/arguments}}
@@ -107,51 +109,51 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
     })
 }
 
-pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_result(result: {{#return}}&{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}) -> Vec<u8> {
+pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_result(result: {{#return}}&{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}) -> Result<Vec<u8>, EncodeError> {
     let mut sizer_context = Context::new();
     sizer_context.description = "Serializing (sizing) query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
     let mut sizer = WriteSizer::new(sizer_context);
-    write_{{#toLower}}{{name}}{{/toLower}}_result(result, &mut sizer);
-    let buffer: Vec<u8> = Vec::with_capacity(sizer.get_length() as usize);
+    write_{{#toLower}}{{name}}{{/toLower}}_result(result, &mut sizer)?;
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
-    let mut encoder = WriteEncoder::new(&buffer, encoder_context);
-    write_{{#toLower}}{{name}}{{/toLower}}_result(result, &mut encoder);
-    buffer
+    let mut encoder = WriteEncoder::new(&[], encoder_context);
+    write_{{#toLower}}{{name}}{{/toLower}}_result(result, &mut encoder)?;
+    Ok(encoder.get_buffer())
 }
 
-pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#return}}&{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, writer: &mut W) {
+pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#return}}&{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, writer: &mut W) -> Result<(), EncodeError> {
     {{#return}}
     writer.context().push("{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing result");
     {{#scalar}}
-    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&result);
+    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(result)?;
     {{/scalar}}
     {{#array}}
     writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&result, |writer: &mut W, item| {
         {{> serialize_array}}
-    });
+    })?;
     {{/array}}
     {{#enum}}
     {{#required}}
-    writer.write_i32(&(*result as i32));
+    writer.write_i32(&(*result as i32))?;
     {{/required}}
     {{^required}}
-    writer.write_nullable_i32(&Some(result.unwrap() as i32));
+    writer.write_nullable_i32(&result.map(|f| f as i32))?;
     {{/required}}
     {{/enum}}
     {{#object}}
     {{#required}}
-    {{#toUpper}}{{type}}{{/toUpper}}::write(&result, writer);
+    {{#toUpper}}{{type}}{{/toUpper}}::write(&result, writer)?;
     {{/required}}
     {{^required}}
     if result.is_some() {
-        {{#toUpper}}{{type}}{{/toUpper}}::write(result.as_ref().unwrap(), writer);
+        {{#toUpper}}{{type}}{{/toUpper}}::write(result.as_ref().unwrap(), writer)?;
     } else {
-        writer.write_nil();
+        writer.write_nil()?;
     }
     {{/required}}
     {{/object}}
     writer.context().pop();
     {{/return}}
+    Ok(())
 }
 {{/methods}}

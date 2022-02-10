@@ -51,8 +51,6 @@ export class AsyncWasmInstance {
     // throw an error if the imported page size differs:
     // https://chromium.googlesource.com/v8/v8/+/644556e6ed0e6e4fac2dfabb441439820ec59813/src/wasm/module-instantiate.cc#924
     const envMemoryImportSignature = Uint8Array.from([
-      // string length
-      0x03,
       // env ; import module name
       0x65,
       0x6e,
@@ -109,9 +107,9 @@ export class AsyncWasmInstance {
     instance._wrappedImports = instance._wrapImports(config.imports);
 
     // Create Wasm module instance
-    instance._instance = (
-      await WebAssembly.instantiate(config.module, instance._wrappedImports)
-    ).instance;
+    const module = await WebAssembly.compile(config.module);
+    const resp = await WebAssembly.instantiate(module, instance._wrappedImports)
+    instance._instance = resp;
 
     // Ensure all required exports exist on Wasm module
     const exportKeys = Object.keys(instance._instance.exports);

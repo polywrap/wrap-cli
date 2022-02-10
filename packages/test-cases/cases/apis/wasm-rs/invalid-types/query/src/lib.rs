@@ -9,7 +9,7 @@ pub fn int_method(input: InputIntMethod) -> i32 {
     input.arg
 }
 
-pub fn uint_method(input: InputUintMethod) -> u32 {
+pub fn u_int_method(input: InputUIntMethod) -> u32 {
     input.arg
 }
 

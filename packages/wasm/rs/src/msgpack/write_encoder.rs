@@ -1,341 +1,382 @@
-use super::{Context, DataView, Format, Write};
+use super::{error::EncodeError, Context, DataView, Format, Write};
 use crate::{BigInt, JSON};
+use byteorder::{BigEndian, WriteBytesExt};
 use core::hash::Hash;
-use std::collections::BTreeMap;
+use std::{collections::BTreeMap, io::Write as StdioWrite};
 
 #[derive(Clone, Debug, Default)]
 pub struct WriteEncoder {
-    context: Context,
-    view: DataView,
+    pub(crate) context: Context,
+    pub(crate) view: DataView,
 }
 
 impl WriteEncoder {
     pub fn new(buf: &[u8], context: Context) -> Self {
         Self {
             context: context.clone(),
-            view: DataView::new(buf, Some(context), None, None)
-                .expect("Error creating new data view"),
+            view: DataView::new(buf, context).expect("Error creating new data view"),
         }
+    }
+
+    pub fn get_buffer(&self) -> Vec<u8> {
+        self.view.get_buffer()
+    }
+}
+
+impl StdioWrite for WriteEncoder {
+    fn write(&mut self, buf: &[u8]) -> std::io::Result<usize> {
+        self.view.buffer.write(buf)
+    }
+
+    fn flush(&mut self) -> std::io::Result<()> {
+        self.view.buffer.flush()
     }
 }
 
 impl Write for WriteEncoder {
-    fn write_nil(&mut self) {
-        self.view.set_u8(Format::NIL);
-    }
-
-    fn write_bool(&mut self, value: &bool) {
-        if *value {
-            self.view.set_u8(Format::TRUE);
-        } else {
-            self.view.set_u8(Format::FALSE);
+    fn write_nil(&mut self) -> Result<(), EncodeError> {
+        match Format::set_format(self, Format::Nil) {
+            Ok(_v) => Ok(()),
+            Err(e) => Err(EncodeError::NilWriteError(e.to_string())),
         }
     }
 
-    fn write_i8(&mut self, value: &i8) {
-        self.write_i32(&(*value as i32));
+    fn write_bool(&mut self, value: &bool) -> Result<(), EncodeError> {
+        let format = if *value { Format::True } else { Format::False };
+        match Format::set_format(self, format) {
+            Ok(_v) => Ok(()),
+            Err(e) => Err(EncodeError::BooleanWriteError(e.to_string())),
+        }
     }
 
-    fn write_i16(&mut self, value: &i16) {
-        self.write_i32(&(*value as i32));
+    fn write_i8(&mut self, value: &i8) -> Result<(), EncodeError> {
+        match Format::set_format(self, Format::Int8) {
+            Ok(_v) => Ok(WriteBytesExt::write_i8(self, *value)?),
+            Err(e) => Err(EncodeError::Int8WriteError(e.to_string())),
+        }
     }
 
-    fn write_i32(&mut self, value: &i32) {
-        if *value >= 0 && *value < 1 << 7 {
-            self.view.set_u8(*value as u8);
-        } else if *value < 0 && *value >= -(1 << 5) {
-            if Format::is_negative_fixed_int(*value as u8) {
-                self.view.set_u8(Format::NEGATIVE_FIXINT);
-            } else {
-                self.view.set_u8(*value as u8);
+    fn write_i16(&mut self, value: &i16) -> Result<(), EncodeError> {
+        match Format::set_format(self, Format::Int16) {
+            Ok(_v) => Ok(WriteBytesExt::write_i16::<BigEndian>(self, *value)?),
+            Err(e) => Err(EncodeError::Int16WriteError(e.to_string())),
+        }
+    }
+
+    fn write_i32(&mut self, value: &i32) -> Result<(), EncodeError> {
+        match Format::set_format(self, Format::Int32) {
+            Ok(_v) => Ok(WriteBytesExt::write_i32::<BigEndian>(self, *value)?),
+            Err(e) => Err(EncodeError::Int32WriteError(e.to_string())),
+        }
+    }
+
+    fn write_i64(&mut self, value: &i64) -> Result<(), EncodeError> {
+        match Format::set_format(self, Format::Int64) {
+            Ok(_v) => Ok(WriteBytesExt::write_i64::<BigEndian>(self, *value)?),
+            Err(e) => Err(EncodeError::Int64WriteError(e.to_string())),
+        }
+    }
+
+    fn write_u8(&mut self, value: &u8) -> Result<(), EncodeError> {
+        match Format::set_format(self, Format::Uint8) {
+            Ok(_v) => Ok(WriteBytesExt::write_u8(self, *value)?),
+            Err(e) => Err(EncodeError::Uint8WriteError(e.to_string())),
+        }
+    }
+
+    fn write_u16(&mut self, value: &u16) -> Result<(), EncodeError> {
+        match Format::set_format(self, Format::Uint16) {
+            Ok(_v) => Ok(WriteBytesExt::write_u16::<BigEndian>(self, *value)?),
+            Err(e) => Err(EncodeError::Uint16WriteError(e.to_string())),
+        }
+    }
+
+    fn write_u32(&mut self, value: &u32) -> Result<(), EncodeError> {
+        match Format::set_format(self, Format::Uint32) {
+            Ok(_v) => Ok(WriteBytesExt::write_u32::<BigEndian>(self, *value)?),
+            Err(e) => Err(EncodeError::Uint32WriteError(e.to_string())),
+        }
+    }
+
+    fn write_u64(&mut self, value: &u64) -> Result<(), EncodeError> {
+        match Format::set_format(self, Format::Uint64) {
+            Ok(_v) => Ok(WriteBytesExt::write_u64::<BigEndian>(self, *value)?),
+            Err(e) => Err(EncodeError::Uint64WriteError(e.to_string())),
+        }
+    }
+
+    fn write_f32(&mut self, value: &f32) -> Result<(), EncodeError> {
+        match Format::set_format(self, Format::Float32) {
+            Ok(_v) => Ok(WriteBytesExt::write_f32::<BigEndian>(self, *value)?),
+            Err(e) => Err(EncodeError::Float32WriteError(e.to_string())),
+        }
+    }
+
+    fn write_f64(&mut self, value: &f64) -> Result<(), EncodeError> {
+        match Format::set_format(self, Format::Float64) {
+            Ok(_v) => Ok(WriteBytesExt::write_f64::<BigEndian>(self, *value)?),
+            Err(e) => Err(EncodeError::Float64WriteError(e.to_string())),
+        }
+    }
+
+    fn write_string_length(&mut self, length: &u32) -> Result<(), EncodeError> {
+        if *length < 32 {
+            Format::set_format(self, Format::FixStr(*length as u8))?;
+        } else if *length <= u8::MAX as u32 {
+            Format::set_format(self, Format::Str8)?;
+            WriteBytesExt::write_u8(self, *length as u8)?;
+        } else if *length <= u16::MAX as u32 {
+            Format::set_format(self, Format::Str16)?;
+            WriteBytesExt::write_u16::<BigEndian>(self, *length as u16)?;
+        } else {
+            Format::set_format(self, Format::Str32)?;
+            WriteBytesExt::write_u32::<BigEndian>(self, *length)?;
+        }
+        Ok(())
+    }
+
+    fn write_string(&mut self, value: &String) -> Result<(), EncodeError> {
+        match self.write_string_length(&(value.len() as u32)) {
+            Ok(_v) => Ok(self.write_all(value.as_bytes())?),
+            Err(e) => Err(EncodeError::StrWriteError(e.to_string())),
+        }
+    }
+
+    fn write_str(&mut self, value: &str) -> Result<(), EncodeError> {
+        match self.write_string_length(&(value.len() as u32)) {
+            Ok(_v) => Ok(self.write_all(value.as_bytes())?),
+            Err(e) => Err(EncodeError::StrWriteError(e.to_string())),
+        }
+    }
+
+    fn write_bytes_length(&mut self, length: &u32) -> Result<(), EncodeError> {
+        if *length <= u8::MAX as u32 {
+            Format::set_format(self, Format::Bin8)?;
+            WriteBytesExt::write_u8(self, *length as u8)?;
+        } else if *length <= u16::MAX as u32 {
+            Format::set_format(self, Format::Bin16)?;
+            WriteBytesExt::write_u16::<BigEndian>(self, *length as u16)?;
+        } else {
+            Format::set_format(self, Format::Bin32)?;
+            WriteBytesExt::write_u32::<BigEndian>(self, *length)?;
+        }
+        Ok(())
+    }
+
+    fn write_bytes(&mut self, buf: &[u8]) -> Result<(), EncodeError> {
+        match self.write_bytes_length(&(buf.len() as u32)) {
+            Ok(_v) => Ok(self.write_all(buf)?),
+            Err(e) => Err(EncodeError::BinWriteError(e.to_string())),
+        }
+    }
+
+    fn write_bigint(&mut self, value: &BigInt) -> Result<(), EncodeError> {
+        match self.write_string(&value.to_string()) {
+            Ok(_v) => Ok(()),
+            Err(e) => Err(EncodeError::BigIntWriteError(e.to_string())),
+        }
+    }
+
+    fn write_json(&mut self, value: &JSON::Value) -> Result<(), EncodeError> {
+        match JSON::to_string(value) {
+            Ok(s) => Ok(self.write_string(&s)?),
+            Err(e) => Err(EncodeError::from(e)),
+        }
+    }
+
+    fn write_array_length(&mut self, length: &u32) -> Result<(), EncodeError> {
+        if *length < 16 {
+            Format::set_format(self, Format::FixArray(*length as u8))?;
+        } else if *length <= u16::MAX as u32 {
+            Format::set_format(self, Format::Array16)?;
+            WriteBytesExt::write_u16::<BigEndian>(self, *length as u16)?;
+        } else {
+            Format::set_format(self, Format::Array32)?;
+            WriteBytesExt::write_u32::<BigEndian>(self, *length)?;
+        }
+        Ok(())
+    }
+
+    fn write_array<T: Clone>(
+        &mut self,
+        a: &[T],
+        mut arr_fn: impl FnMut(&mut Self, &T) -> Result<(), EncodeError>,
+    ) -> Result<(), EncodeError> {
+        match self.write_array_length(&(a.len() as u32)) {
+            Ok(_v) => {
+                for element in a {
+                    arr_fn(self, element)?;
+                }
+                Ok(())
             }
-        } else if (*value <= i8::MAX as i32) && (*value >= i8::MIN as i32) {
-            self.view.set_u8(Format::INT8);
-            self.view.set_i8(*value as i8);
-        } else if (*value <= i16::MAX as i32) && (*value >= i16::MIN as i32) {
-            self.view.set_u8(Format::INT16);
-            self.view.set_i16(*value as i16);
+            Err(e) => Err(EncodeError::ArrayWriteError(e.to_string())),
+        }
+    }
+
+    fn write_map_length(&mut self, length: &u32) -> Result<(), EncodeError> {
+        if *length < 16 {
+            Format::set_format(self, Format::FixMap(*length as u8))?;
+        } else if *length <= u16::MAX as u32 {
+            Format::set_format(self, Format::Map16)?;
+            WriteBytesExt::write_u16::<BigEndian>(self, *length as u16)?;
         } else {
-            self.view.set_u8(Format::INT32);
-            self.view.set_i32(*value);
+            Format::set_format(self, Format::Map32)?;
+            WriteBytesExt::write_u32::<BigEndian>(self, *length)?;
         }
-    }
-
-    fn write_u8(&mut self, value: &u8) {
-        self.write_u32(&(*value as u32));
-    }
-
-    fn write_u16(&mut self, value: &u16) {
-        self.write_u32(&(*value as u32));
-    }
-
-    fn write_u32(&mut self, value: &u32) {
-        if *value < (1 << 7) {
-            self.view.set_u8(*value as u8);
-        } else if *value <= (u8::MAX as u32) {
-            self.view.set_u8(Format::UINT8);
-            self.view.set_u8(*value as u8);
-        } else if *value <= (u16::MAX as u32) {
-            self.view.set_u8(Format::UINT16);
-            self.view.set_u16(*value as u16);
-        } else {
-            self.view.set_u8(Format::UINT32);
-            self.view.set_u32(*value);
-        }
-    }
-
-    fn write_f32(&mut self, value: &f32) {
-        self.view.set_u8(Format::FLOAT32);
-        self.view.set_f32(*value);
-    }
-
-    fn write_f64(&mut self, value: &f64) {
-        self.view.set_u8(Format::FLOAT64);
-        self.view.set_f64(*value);
-    }
-
-    fn write_string_length(&mut self, length: u32) {
-        if length < 32 {
-            if Format::is_fixed_string(length as u8) {
-                self.view.set_u8(Format::FIXSTR);
-            }
-            self.view.set_u8(length as u8);
-        } else if length <= u8::MAX as u32 {
-            self.view.set_u8(Format::STR8);
-            self.view.set_u8(length as u8);
-        } else if length <= u16::MAX as u32 {
-            self.view.set_u8(Format::STR16);
-            self.view.set_u16(length as u16);
-        } else {
-            self.view.set_u8(Format::STR32);
-            self.view.set_u32(length);
-        }
-    }
-
-    fn write_string(&mut self, value: &String) {
-        let buf = value.as_bytes();
-        self.write_string_length(buf.len() as u32);
-        self.view.set_bytes(buf);
-    }
-
-    fn write_str(&mut self, value: &str) {
-        let buf = value.as_bytes();
-        self.write_string_length(buf.len() as u32);
-        self.view.set_bytes(buf);
-    }
-
-    fn write_bytes_length(&mut self, length: u32) {
-        if length <= u8::MAX as u32 {
-            self.view.set_u8(Format::BIN8);
-            self.view.set_u8(length as u8);
-        } else if length <= u16::MAX as u32 {
-            self.view.set_u8(Format::BIN16);
-            self.view.set_u16(length as u16);
-        } else {
-            self.view.set_u8(Format::BIN32);
-            self.view.set_u32(length);
-        }
-    }
-
-    fn write_bytes(&mut self, buf: &[u8]) {
-        if buf.is_empty() {
-            self.write_nil();
-        } else {
-            self.write_bytes_length(buf.len() as u32);
-            self.view.set_bytes(buf);
-        }
-    }
-
-    fn write_bigint(&mut self, value: &BigInt) {
-        self.write_string(&value.to_string());
-    }
-
-    fn write_json(&mut self, value: &JSON::Value) {
-        self.write_str(value.as_str().unwrap());
-    }
-
-    fn write_array_length(&mut self, length: u32) {
-        if length < 16 {
-            if Format::is_fixed_array(length as u8) {
-                self.view.set_u8(Format::FIXARRAY);
-            }
-            self.view.set_u8(length as u8);
-        } else if length <= u16::MAX as u32 {
-            self.view.set_u8(Format::ARRAY16);
-            self.view.set_u16(length as u16);
-        } else {
-            self.view.set_u8(Format::ARRAY32);
-            self.view.set_u32(length);
-        }
-    }
-
-    fn write_array<T: Clone>(&mut self, a: &[T], mut arr_fn: impl FnMut(&mut Self, &T)) {
-        self.write_array_length(a.len() as u32);
-        for element in a {
-            arr_fn(self, element);
-        }
-    }
-
-    fn write_map_length(&mut self, length: u32) {
-        if length < 16 {
-            if Format::is_fixed_map(length as u8) {
-                self.view.set_u8(Format::FIXMAP);
-            }
-            self.view.set_u8(length as u8);
-        } else if length <= u16::MAX as u32 {
-            self.view.set_u8(Format::MAP16);
-            self.view.set_u16(length as u16);
-        } else {
-            self.view.set_u8(Format::MAP32);
-            self.view.set_u32(length);
-        }
+        Ok(())
     }
 
     fn write_map<K, V: Clone>(
         &mut self,
         map: &BTreeMap<K, V>,
-        mut key_fn: impl FnMut(&mut Self, &K),
-        mut val_fn: impl FnMut(&mut Self, &V),
-    ) where
+        mut key_fn: impl FnMut(&mut Self, &K) -> Result<(), EncodeError>,
+        mut val_fn: impl FnMut(&mut Self, &V) -> Result<(), EncodeError>,
+    ) -> Result<(), EncodeError>
+    where
         K: Clone + Eq + Hash + Ord,
     {
-        self.write_map_length(map.len() as u32);
-        let keys: Vec<_> = map.keys().into_iter().collect();
-        for key in keys {
-            let value = map.get(key).unwrap();
-            key_fn(self, key);
-            val_fn(self, value);
+        match self.write_map_length(&(map.len() as u32)) {
+            Ok(_v) => {
+                let keys: Vec<_> = map.keys().into_iter().collect();
+                for key in keys {
+                    let value = &map[key];
+                    key_fn(self, key)?;
+                    val_fn(self, &value)?;
+                }
+                Ok(())
+            }
+            Err(e) => Err(EncodeError::MapWriteError(e.to_string())),
         }
     }
 
-    fn write_nullable_bool(&mut self, value: &Option<bool>) {
-        if value.is_none() {
-            self.write_nil();
-        } else {
-            self.write_bool(&value.unwrap());
+    fn write_nullable_bool(&mut self, value: &Option<bool>) -> Result<(), EncodeError> {
+        match value {
+            None => Ok(Write::write_nil(self)?),
+            Some(v) => Ok(Write::write_bool(self, v)?),
         }
     }
 
-    fn write_nullable_i8(&mut self, value: &Option<i8>) {
-        if value.is_none() {
-            self.write_nil();
-        } else {
-            self.write_i8(&value.unwrap());
+    fn write_nullable_i8(&mut self, value: &Option<i8>) -> Result<(), EncodeError> {
+        match value {
+            None => Ok(Write::write_nil(self)?),
+            Some(v) => Ok(Write::write_i8(self, v)?),
         }
     }
 
-    fn write_nullable_i16(&mut self, value: &Option<i16>) {
-        if value.is_none() {
-            self.write_nil();
-        } else {
-            self.write_i16(&value.unwrap());
+    fn write_nullable_i16(&mut self, value: &Option<i16>) -> Result<(), EncodeError> {
+        match value {
+            None => Ok(Write::write_nil(self)?),
+            Some(v) => Ok(Write::write_i16(self, v)?),
         }
     }
 
-    fn write_nullable_i32(&mut self, value: &Option<i32>) {
-        if value.is_none() {
-            self.write_nil();
-        } else {
-            self.write_i32(&value.unwrap());
+    fn write_nullable_i32(&mut self, value: &Option<i32>) -> Result<(), EncodeError> {
+        match value {
+            None => Ok(Write::write_nil(self)?),
+            Some(v) => Ok(Write::write_i32(self, v)?),
         }
     }
 
-    fn write_nullable_u8(&mut self, value: &Option<u8>) {
-        if value.is_none() {
-            self.write_nil();
-        } else {
-            self.write_u8(&value.unwrap());
+    fn write_nullable_i64(&mut self, value: &Option<i64>) -> Result<(), EncodeError> {
+        match value {
+            None => Ok(Write::write_nil(self)?),
+            Some(v) => Ok(Write::write_i64(self, v)?),
         }
     }
 
-    fn write_nullable_u16(&mut self, value: &Option<u16>) {
-        if value.is_none() {
-            self.write_nil();
-        } else {
-            self.write_u16(&value.unwrap());
+    fn write_nullable_u8(&mut self, value: &Option<u8>) -> Result<(), EncodeError> {
+        match value {
+            None => Ok(Write::write_nil(self)?),
+            Some(v) => Ok(Write::write_u8(self, v)?),
         }
     }
 
-    fn write_nullable_u32(&mut self, value: &Option<u32>) {
-        if value.is_none() {
-            self.write_nil();
-        } else {
-            self.write_u32(&value.unwrap());
+    fn write_nullable_u16(&mut self, value: &Option<u16>) -> Result<(), EncodeError> {
+        match value {
+            None => Ok(Write::write_nil(self)?),
+            Some(v) => Ok(Write::write_u16(self, v)?),
         }
     }
 
-    fn write_nullable_f32(&mut self, value: &Option<f32>) {
-        if value.is_none() {
-            self.write_nil();
-        } else {
-            self.write_f32(&value.unwrap());
+    fn write_nullable_u32(&mut self, value: &Option<u32>) -> Result<(), EncodeError> {
+        match value {
+            None => Ok(Write::write_nil(self)?),
+            Some(v) => Ok(Write::write_u32(self, v)?),
         }
     }
 
-    fn write_nullable_f64(&mut self, value: &Option<f64>) {
-        if value.is_none() {
-            self.write_nil();
-        } else {
-            self.write_f64(&value.unwrap());
+    fn write_nullable_u64(&mut self, value: &Option<u64>) -> Result<(), EncodeError> {
+        match value {
+            None => Ok(Write::write_nil(self)?),
+            Some(v) => Ok(Write::write_u64(self, v)?),
         }
     }
 
-    fn write_nullable_string(&mut self, value: &Option<String>) {
-        if value.is_none() {
-            self.write_nil();
-        } else {
-            self.write_string(value.as_ref().unwrap());
+    fn write_nullable_f32(&mut self, value: &Option<f32>) -> Result<(), EncodeError> {
+        match value {
+            None => Ok(Write::write_nil(self)?),
+            Some(v) => Ok(Write::write_f32(self, v)?),
         }
     }
 
-    fn write_nullable_bytes(&mut self, value: &Option<Vec<u8>>) {
-        if value.is_none() {
-            self.write_nil();
-        } else {
-            self.write_bytes(value.as_ref().unwrap());
+    fn write_nullable_f64(&mut self, value: &Option<f64>) -> Result<(), EncodeError> {
+        match value {
+            None => Ok(Write::write_nil(self)?),
+            Some(v) => Ok(Write::write_f64(self, v)?),
         }
     }
 
-    fn write_nullable_bigint(&mut self, value: &Option<BigInt>) {
-        if value.is_none() {
-            self.write_nil();
-        } else {
-            self.write_bigint(value.as_ref().unwrap());
+    fn write_nullable_string(&mut self, value: &Option<String>) -> Result<(), EncodeError> {
+        match value {
+            None => Ok(Write::write_nil(self)?),
+            Some(s) => Ok(Write::write_string(self, s)?),
         }
     }
 
-    fn write_nullable_json(&mut self, value: &Option<JSON::Value>) {
-        if value.is_none() {
-            self.write_nil();
-        } else {
-            self.write_json(value.as_ref().unwrap());
+    fn write_nullable_bytes(&mut self, value: &Option<Vec<u8>>) -> Result<(), EncodeError> {
+        match value {
+            None => Ok(Write::write_nil(self)?),
+            Some(b) => Ok(Write::write_bytes(self, b)?),
+        }
+    }
+
+    fn write_nullable_bigint(&mut self, value: &Option<BigInt>) -> Result<(), EncodeError> {
+        match value {
+            None => Ok(Write::write_nil(self)?),
+            Some(val) => Ok(Write::write_bigint(self, val)?),
+        }
+    }
+
+    fn write_nullable_json(&mut self, value: &Option<JSON::Value>) -> Result<(), EncodeError> {
+        match value {
+            None => Ok(Write::write_nil(self)?),
+            Some(json) => Ok(Write::write_json(self, json)?),
         }
     }
 
     fn write_nullable_array<T: Clone>(
         &mut self,
         a: &Option<Vec<T>>,
-        arr_fn: impl FnMut(&mut Self, &T),
-    ) {
-        if a.is_none() {
-            self.write_nil();
-        } else {
-            self.write_array(a.as_ref().unwrap(), arr_fn);
+        arr_fn: impl FnMut(&mut Self, &T) -> Result<(), EncodeError>,
+    ) -> Result<(), EncodeError> {
+        match a {
+            None => Ok(Write::write_nil(self)?),
+            Some(arr) => Ok(Write::write_array(self, arr, arr_fn)?),
         }
     }
 
     fn write_nullable_map<K, V: Clone>(
         &mut self,
         map: &Option<BTreeMap<K, V>>,
-        key_fn: impl FnMut(&mut Self, &K),
-        val_fn: impl FnMut(&mut Self, &V),
-    ) where
+        key_fn: impl FnMut(&mut Self, &K) -> Result<(), EncodeError>,
+        val_fn: impl FnMut(&mut Self, &V) -> Result<(), EncodeError>,
+    ) -> Result<(), EncodeError>
+    where
         K: Clone + Eq + Hash + Ord,
     {
-        if map.is_none() {
-            self.write_nil();
-        } else {
-            self.write_map(map.as_ref().unwrap(), key_fn, val_fn);
+        match map {
+            None => Ok(Write::write_nil(self)?),
+            Some(m) => Ok(Write::write_map(self, m, key_fn, val_fn)?),
         }
     }
 

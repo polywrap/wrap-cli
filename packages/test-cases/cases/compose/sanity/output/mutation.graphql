@@ -84,6 +84,11 @@ type Mutation implements Interface_Mutation @imports(
   ): String!
 }
 
+type MutationEnv {
+  bar: Int
+  foo: String!
+}
+
 """
 CustomMutationType multi-line comment
 line 2

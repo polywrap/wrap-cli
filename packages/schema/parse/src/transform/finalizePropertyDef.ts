@@ -97,38 +97,51 @@ function resolveObjectOrEnumKind(
     throw Error("Type reference is undefined, this should never happen.");
   }
 
-  // Check to see if the type is a part of the custom types defined inside the schema (objects, enums)
+  const unresolved = property.unresolvedObjectOrEnum;
+
+  // Check to see if the type is a part of the custom types defined inside the schema (objects, enums, envs)
   let customType: GenericDefinition | undefined = typeInfo.objectTypes.find(
-    (type) => type.type === property.unresolvedObjectOrEnum!.type
+    (type) => type.type === unresolved.type
   );
 
   customType = customType
     ? customType
     : typeInfo.importedObjectTypes.find(
-        (type) => type.type === property.unresolvedObjectOrEnum!.type
+        (type) => type.type === unresolved.type
       );
+
+  const envTypes = typeInfo.envTypes;
+  customType = customType
+    ? customType
+    : envTypes.mutation.client?.type === unresolved.type
+    ? envTypes.mutation.client
+    : envTypes.query.client?.type === unresolved.type
+    ? envTypes.query.client
+    : envTypes.mutation.sanitized?.type === unresolved.type
+    ? envTypes.mutation.sanitized
+    : envTypes.query.sanitized?.type === unresolved.type
+    ? envTypes.query.sanitized
+    : undefined;
 
   if (!customType) {
     customType = typeInfo.enumTypes.find(
-      (type) => type.type === property.unresolvedObjectOrEnum!.type
+      (type) => type.type === unresolved.type
     );
 
     customType = customType
       ? customType
       : typeInfo.importedEnumTypes.find(
-          (type) => type.type === property.unresolvedObjectOrEnum!.type
+          (type) => type.type === unresolved.type
         );
 
     if (!customType) {
-      throw new Error(
-        `Unsupported type ${property.unresolvedObjectOrEnum.type}`
-      );
+      throw new Error(`Unsupported type ${unresolved.type}`);
     }
 
     property.enum = createEnumRef({
-      name: property.unresolvedObjectOrEnum.name,
-      required: property.unresolvedObjectOrEnum.required ?? undefined,
-      type: property.unresolvedObjectOrEnum.type,
+      name: unresolved.name,
+      required: unresolved.required ?? undefined,
+      type: unresolved.type,
     });
 
     property.unresolvedObjectOrEnum = null;

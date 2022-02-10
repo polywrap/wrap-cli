@@ -1,5 +1,7 @@
 type Query {
-  largeCollectionMethod(largeCollection: LargeCollection!): LargeCollection!
+  method(
+    largeCollection: LargeCollection!
+  ): LargeCollection!
 }
 
 type LargeCollection {

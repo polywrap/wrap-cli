@@ -10,6 +10,8 @@ export const runAsyncifyTest = async (
     const ensUri = `ens/testnet/${api.ensDomain}`;
     const ipfsUri = `ipfs/${api.ipfsCid}`;
 
+    console.log("HERE")
+
     const deploy = await client.query<{
       deployContract: string;
     }>({
@@ -24,6 +26,8 @@ export const runAsyncifyTest = async (
         }
       `,
     });
+
+    console.log("deployed", deploy);
 
     expect(deploy.errors).toBeFalsy();
     expect(deploy.data).toBeTruthy();
@@ -346,7 +350,7 @@ export const runEnumTypesTest = async (
 
   expect(method1a.errors).toBeTruthy();
   expect((method1a.errors as Error[])[0].message).toMatch(
-    /__w3_abort: Invalid value for enum 'Enum': 5/gm
+    /__w3_abort: Invalid value for enum 'SanityEnum': 5/gm
   );
 
   const method1b = await client.query<any>({
@@ -382,7 +386,7 @@ export const runEnumTypesTest = async (
   expect(method1c.errors).toBeTruthy();
   // @ts-ignore
   expect(method1c.errors[0].message).toMatch(
-    /__w3_abort: Invalid key for enum 'Enum': INVALID/gm
+    /__w3_abort: Invalid key for enum 'SanityEnum': INVALID/gm
   );
 
   const method2a = await client.query<any>({

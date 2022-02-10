@@ -1,11 +1,20 @@
 type Query {
-  method1(arg1: Arg1!, arg2: Arg2): [Output!]!
+  method1(
+    arg1: Arg1!
+    arg2: Arg2
+  ): [Output!]!
 
-  method2(arg: Arg1!): Output
+  method2(
+    arg: Arg1!
+  ): Output
 
-  method3(arg: Arg1!): [Output]!
+  method3(
+    arg: Arg1!
+  ): [Output]!
 
-  method5(arg: Arg3!): Output!
+  method5(
+    arg: Arg3!
+  ): Output!
 }
 
 type Arg1 {
