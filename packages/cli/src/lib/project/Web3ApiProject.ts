@@ -6,8 +6,10 @@ import {
   loadBuildManifest,
   loadMetaManifest,
   ManifestLanguage,
+  outputManifest,
 } from "../helpers";
 import { intlMsg } from "../intl";
+import { createUUID } from "../helpers/uuid";
 
 import { Web3ApiManifest, BuildManifest, MetaManifest } from "@web3api/core-js";
 import { normalizePath } from "@web3api/os-js";
@@ -254,9 +256,14 @@ export class Web3ApiProject extends Project {
       return;
     }
 
+    const web3apiManifest =  await this.getWeb3ApiManifest()
     const language = await this.getManifestLanguage();
 
-    const defaultPath = `${__dirname}/../build-envs/${language}/web3api.build.yaml`;
+    const defaultBuildManifestFilename = "web3api.build.yaml"
+    const defaultPath = `${__dirname}/../build-envs/${language}/${defaultBuildManifestFilename}`;
+    const destinationDir = "build/env/";
+    const buildEnvCachePath = this.getCachePath(destinationDir)
+    const web3ApiManifestCachePath = path.join(buildEnvCachePath, "web3api.yaml")
 
     if (!fs.existsSync(defaultPath)) {
       throw Error(
@@ -267,13 +274,33 @@ export class Web3ApiProject extends Project {
       );
     }
 
-    // Update the cache
+    //Check if pre-existing cache build env dir
+    if (fs.existsSync(buildEnvCachePath) && fs.existsSync(web3ApiManifestCachePath)) {
+      const cachedWeb3ApiManifest = await loadWeb3ApiManifest(web3ApiManifestCachePath)
+
+      //If manifest language did not change, don't recreate cache build env dir
+      if (cachedWeb3ApiManifest.language === language) {
+        this._defaultBuildManifestCached = true;
+        return;
+      }
+    }
+
     this.removeCacheDir("build/env");
-    await this.copyFilesIntoCache(
-      "build/env/",
+    await this.copyDefaultBuildEnvFilesIntoCache(
+      destinationDir,
       `${__dirname}/../build-envs/${language}/*`,
       { up: true }
     );
+    await outputManifest(web3apiManifest, path.join(buildEnvCachePath, "web3api.yaml"))
+
+    const defaultManifest = await loadBuildManifest(defaultPath)
+    defaultManifest.docker = {
+      ...defaultManifest.docker,
+      name: `build-env-${createUUID()}`
+    }
+    
+    await outputManifest(defaultManifest, path.join(buildEnvCachePath, defaultBuildManifestFilename))
+
     this._defaultBuildManifestCached = true;
   }
 

@@ -64,7 +64,7 @@ export abstract class Project {
     return path.join(this.getCacheDir(), subpath);
   }
 
-  public async copyFilesIntoCache(
+  public async copyDefaultBuildEnvFilesIntoCache(
     destSubfolder: string,
     sourceFolder: string,
     options: copyfiles.Options = {}
