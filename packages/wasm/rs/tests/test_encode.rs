@@ -27,18 +27,11 @@ fn test_write_json() {
 }
 
 #[test]
-fn test_write_string_length() {
-    let mut writer = WriteEncoder::new(&[], Context::new());
-    writer.write_string_length(&0x01).unwrap();
-    assert_eq!([0xa1], writer.get_buffer().as_slice());
-}
-
-#[test]
 fn test_write_string() {
     let mut writer = WriteEncoder::new(&[], Context::new());
     writer.write_string(&String::from("Hello")).unwrap();
     assert_eq!(
-        [0xa5, 0x48, 0x65, 0x6c, 0x6c, 0x6f],
+        [165, 72, 101, 108, 108, 111],
         writer.get_buffer().as_slice()
     );
 }
@@ -48,47 +41,88 @@ fn test_write_str() {
     let mut writer = WriteEncoder::new(&[], Context::new());
     writer.write_str("Hello").unwrap();
     assert_eq!(
-        [0xa5, 0x48, 0x65, 0x6c, 0x6c, 0x6f],
+        [165, 72, 101, 108, 108, 111],
         writer.get_buffer().as_slice()
     );
 }
 
 #[test]
-fn test_write_bytes_length() {
+fn test_write_nil() {
     let mut writer = WriteEncoder::new(&[], Context::new());
-    writer.write_bytes_length(&0x01).unwrap();
-    assert_eq!([0xc4, 0x01], writer.get_buffer().as_slice());
+    writer.write_nil().unwrap();
+    assert_eq!([192], writer.get_buffer().as_slice());
+}
+
+#[test]
+fn test_write_bool_true() {
+    let mut writer = WriteEncoder::new(&[0x00], Context::new());
+    writer.write_bool(&true).unwrap();
+    assert_eq!([195], writer.get_buffer().as_slice());
+}
+
+#[test]
+fn test_write_bool_false() {
+    let mut writer = WriteEncoder::new(&[], Context::new());
+    writer.write_bool(&false).unwrap();
+    assert_eq!([194], writer.get_buffer().as_slice());
+}
+
+#[test]
+fn test_write_u8() {
+    let mut writer = WriteEncoder::new(&[0x00, 0x00], Context::new());
+    writer.write_u8(&255).unwrap();
+    assert_eq!([204, 255], writer.get_buffer().as_slice());
+}
+
+#[test]
+fn test_write_u16() {
+    let mut writer = WriteEncoder::new(&[], Context::new());
+    writer.write_u16(&65535).unwrap();
+    assert_eq!([205, 255, 255], writer.get_buffer().as_slice());
+}
+
+#[test]
+fn test_write_u32() {
+    let mut writer = WriteEncoder::new(&[], Context::new());
+    writer.write_u32(&4294967295).unwrap();
+    assert_eq!([206, 255, 255, 255, 255], writer.get_buffer().as_slice());
+}
+
+#[test]
+fn test_write_i8() {
+    let mut writer = WriteEncoder::new(&[0x00, 0x00], Context::new());
+    writer.write_i8(&(-1)).unwrap();
+    assert_eq!([255, 0], writer.get_buffer().as_slice());
+}
+
+#[test]
+fn test_write_i16() {
+    let mut writer = WriteEncoder::new(&[], Context::new());
+    writer.write_i16(&(-123)).unwrap();
+    assert_eq!([208, 133], writer.get_buffer().as_slice());
+}
+
+#[test]
+fn test_write_i32() {
+    let mut writer = WriteEncoder::new(&[], Context::new());
+    writer.write_i32(&(123456)).unwrap();
+    assert_eq!([206, 0, 1, 226, 64], writer.get_buffer().as_slice());
 }
 
 // #[test]
 // fn test_write_bytes() {
 //     let mut writer = WriteEncoder::new(&[], Context::new());
-//     writer.write_bytes(&[1, 2, 3, 4, 5]).unwrap();
-//     assert_eq!([221, 0, 0, 0, 5, 1, 2, 3, 4, 5], writer.get_buffer().as_slice());
+//     writer.write_bytes(&[1]).unwrap();
+//     assert_eq!([196, 1, 1], writer.get_buffer().as_slice());
 // }
-
-#[test]
-fn test_write_array_length() {
-    let mut writer = WriteEncoder::new(&[], Context::new());
-    writer.write_array_length(&0x01).unwrap();
-    assert_eq!([0x91], writer.get_buffer().as_slice());
-}
 
 // #[test]
 // fn test_write_array() {
 //     let mut writer = WriteEncoder::new(&[], Context::new());
-//     writer
-//         .write_array(&[1, 2, 3, 4, 5], |writer, item| writer.write_u8(item))
-//         .unwrap();
-//     assert_eq!([221, 0, 0, 0, 5, 1, 2, 3, 4, 5], writer.get_buffer().as_slice());
+//     let input_arr: Vec<i32> = vec![1, 2, 545345];
+//     writer.write_array(&input_arr, |writer, item| writer.write_i32(item)).unwrap();
+//     assert_eq!(writer.get_buffer().as_slice(), [221, 0, 0, 0, 3, 1, 2, 206, 0, 8, 82, 65]);
 // }
-
-#[test]
-fn test_write_map_length() {
-    let mut writer = WriteEncoder::new(&[], Context::new());
-    writer.write_map_length(&0x01).unwrap();
-    assert_eq!([0x81], writer.get_buffer().as_slice());
-}
 
 // #[test]
 // fn test_write_map() {
@@ -111,103 +145,3 @@ fn test_write_map_length() {
 //         writer.get_buffer().as_slice()
 //     );
 // }
-
-#[test]
-fn test_write_nil_with_empty_buffer() {
-    let mut writer = WriteEncoder::new(&[], Context::new());
-    assert!(writer.get_buffer().is_empty());
-    assert!(writer.write_nil().err().is_none());
-    assert_eq!(writer.get_buffer().as_slice(), [0xc0]);
-}
-
-#[test]
-fn test_write_nil_with_buffer() {
-    let mut writer = WriteEncoder::new(&[0x00], Context::new());
-    writer.write_nil().unwrap();
-    assert_eq!([0xc0], writer.get_buffer().as_slice());
-}
-
-#[test]
-fn test_write_bool_true() {
-    let mut writer = WriteEncoder::new(&[0x00], Context::new());
-    writer.write_bool(&true).unwrap();
-    assert_eq!([0xc3], writer.get_buffer().as_slice());
-}
-
-#[test]
-fn test_write_bool_false() {
-    let mut writer = WriteEncoder::new(&[], Context::new());
-    writer.write_bool(&false).unwrap();
-    assert_eq!([194], writer.get_buffer().as_slice());
-}
-
-#[test]
-fn test_write_f32() {
-    let mut writer = WriteEncoder::new(&[0x00, 0x00, 0x00, 0x00, 0x00], Context::new());
-    writer.write_f32(&f32::MIN).unwrap();
-    assert_eq!(
-        [0xca, 0xff, 0x7f, 0xff, 0xff],
-        writer.get_buffer().as_slice()
-    );
-}
-
-#[test]
-fn test_write_f64() {
-    let mut writer = WriteEncoder::new(
-        &[0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
-        Context::new(),
-    );
-    writer.write_f64(&f64::INFINITY).unwrap();
-    assert_eq!(
-        [0xcb, 0x7f, 0xf0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
-        writer.get_buffer().as_slice()
-    );
-}
-
-#[test]
-fn test_write_i8() {
-    let mut writer = WriteEncoder::new(&[0x00, 0x00], Context::new());
-    writer.write_i8(&i8::MIN).unwrap();
-    assert_eq!([0xd0, 0x80], writer.get_buffer().as_slice());
-}
-
-#[test]
-fn test_write_i16() {
-    let mut writer = WriteEncoder::new(&[0x00, 0x00, 0x00], Context::new());
-    writer.write_i16(&i16::MIN).unwrap();
-    assert_eq!([0xd1, 0x80, 0x00], writer.get_buffer().as_slice());
-}
-
-#[test]
-fn test_write_i32() {
-    let mut writer = WriteEncoder::new(&[0x00, 0x00, 0x00, 0x00, 0x00], Context::new());
-    writer.write_i32(&i32::MIN).unwrap();
-    assert_eq!(
-        [0xd2, 0x80, 0x00, 0x00, 0x00],
-        writer.get_buffer().as_slice()
-    );
-}
-
-#[test]
-fn test_write_u8() {
-    let mut writer = WriteEncoder::new(&[0x00, 0x00], Context::new());
-    writer.write_u8(&u8::MAX).unwrap();
-    assert_eq!([0xcc, 0xff], writer.get_buffer().as_slice());
-}
-
-#[test]
-fn test_write_u16() {
-    let mut writer = WriteEncoder::new(&[0x00, 0x00, 0x00], Context::new());
-    writer.write_u16(&u16::MAX).unwrap();
-    assert_eq!([0xcd, 0xff, 0xff], writer.get_buffer().as_slice());
-}
-
-#[test]
-fn test_write_u32() {
-    let mut writer = WriteEncoder::new(&[0x00, 0x00, 0x00, 0x00, 0x00], Context::new());
-    writer.write_u32(&u32::MAX).unwrap();
-    assert_eq!(
-        [0xce, 0xff, 0xff, 0xff, 0xff],
-        writer.get_buffer().as_slice()
-    );
-}

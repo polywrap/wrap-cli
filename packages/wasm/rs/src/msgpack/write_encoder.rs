@@ -22,14 +22,27 @@ impl WriteEncoder {
         self.view.get_buffer()
     }
 
+    fn write_negative_fixed_int(&mut self, value: i8) -> Result<(), EncodeError> {
+        assert!(-32 <= value && value < 0);
+        Format::set_format(self, Format::NegativeFixInt(value))
+            .map_err(|e| EncodeError::FormatWriteError(e.to_string()))
+    }
+
+    fn write_positive_fixed_int(&mut self, value: u8) -> Result<(), EncodeError> {
+        assert!(value < 128);
+        Format::set_format(self, Format::PositiveFixInt(value))
+            .map_err(|e| EncodeError::FormatWriteError(e.to_string()))
+    }
+
     /// Encodes a `u64` value into the buffer using the most efficient representation.
     ///
     /// The MessagePack spec requires that the serializer should use
     /// the format which represents the data in the smallest number of bytes.
-    pub fn _write_u64(&mut self, value: &u64) -> Result<(), EncodeError> {
+    #[doc(hidden)]
+    fn write_unsigned_int(&mut self, value: &u64) -> Result<(), EncodeError> {
         let val = *value;
         if val < 1 << 7 {
-            Ok(Format::set_format(self, Format::PositiveFixInt(val as u8))?)
+            Ok(self.write_positive_fixed_int(val as u8)?)
         } else if val <= u8::MAX as u64 {
             Format::set_format(self, Format::Uint8)?;
             Ok(WriteBytesExt::write_u8(self, val as u8)?)
@@ -50,24 +63,44 @@ impl WriteEncoder {
     /// The MessagePack spec requires that the serializer should use
     /// the format which represents the data in the smallest number of bytes, with the exception of
     /// sized/unsized types.
-    pub fn _write_i64(&mut self, value: &i64) -> Result<(), EncodeError> {
+    #[doc(hidden)]
+    fn write_signed_int(&mut self, value: &i64) -> Result<(), EncodeError> {
         let val = *value;
-        if val < 0 && val >= -(1 << 5) {
-            Ok(Format::set_format(self, Format::NegativeFixInt(val as i8))?)
-        } else if val >= 0 && val < 1 << 7 {
-            Ok(Format::set_format(self, Format::PositiveFixInt(val as u8))?)
-        } else if (val <= i8::MAX as i64) && (val >= i8::MIN as i64) {
-            Format::set_format(self, Format::Int8)?;
-            Ok(WriteBytesExt::write_i8(self, val as i8)?)
-        } else if (val <= i16::MAX as i64) && (val >= i16::MIN as i64) {
-            Format::set_format(self, Format::Int16)?;
-            Ok(WriteBytesExt::write_i16::<BigEndian>(self, val as i16)?)
-        } else if (val <= i32::MAX as i64) && (val >= i32::MIN as i64) {
-            Format::set_format(self, Format::Int32)?;
-            Ok(WriteBytesExt::write_i32::<BigEndian>(self, val as i32)?)
-        } else {
-            Format::set_format(self, Format::Int64)?;
-            Ok(WriteBytesExt::write_i64::<BigEndian>(self, val as i64)?)
+        match val {
+            val if -32 <= val && val < 0 => Ok(self.write_negative_fixed_int(val as i8)?),
+            val if -128 <= val && val < -32 => {
+                Format::set_format(self, Format::Int8)?;
+                Ok(WriteBytesExt::write_i8(self, val as i8)?)
+            }
+            val if -32768 <= val && val < -128 => {
+                Format::set_format(self, Format::Int16)?;
+                Ok(WriteBytesExt::write_i16::<BigEndian>(self, val as i16)?)
+            }
+            val if -2147483648 <= val && val < -32768 => {
+                Format::set_format(self, Format::Int32)?;
+                Ok(WriteBytesExt::write_i32::<BigEndian>(self, val as i32)?)
+            }
+            val if val < -2147483648 => {
+                Format::set_format(self, Format::Int64)?;
+                Ok(WriteBytesExt::write_i64::<BigEndian>(self, val as i64)?)
+            }
+            val if 0 <= val && val < 128 => Ok(self.write_positive_fixed_int(val as u8)?),
+            val if val <= u8::MAX as i64 => {
+                Format::set_format(self, Format::Uint8)?;
+                Ok(WriteBytesExt::write_u8(self, val as u8)?)
+            }
+            val if val <= u16::MAX as i64 => {
+                Format::set_format(self, Format::Uint16)?;
+                Ok(WriteBytesExt::write_u16::<BigEndian>(self, val as u16)?)
+            }
+            val if val <= u32::MAX as i64 => {
+                Format::set_format(self, Format::Uint32)?;
+                Ok(WriteBytesExt::write_u32::<BigEndian>(self, val as u32)?)
+            }
+            val => {
+                Format::set_format(self, Format::Uint64)?;
+                Ok(WriteBytesExt::write_u64::<BigEndian>(self, val as u64)?)
+            }
         }
     }
 }
@@ -93,32 +126,32 @@ impl Write for WriteEncoder {
     }
 
     fn write_i8(&mut self, value: &i8) -> Result<(), EncodeError> {
-        self._write_i64(&(*value as i64))
+        self.write_signed_int(&(*value as i64))
             .map_err(|e| EncodeError::Int8WriteError(e.to_string()))
     }
 
     fn write_i16(&mut self, value: &i16) -> Result<(), EncodeError> {
-        self._write_i64(&(*value as i64))
+        self.write_signed_int(&(*value as i64))
             .map_err(|e| EncodeError::Int16WriteError(e.to_string()))
     }
 
     fn write_i32(&mut self, value: &i32) -> Result<(), EncodeError> {
-        self._write_i64(&(*value as i64))
+        self.write_signed_int(&(*value as i64))
             .map_err(|e| EncodeError::Int32WriteError(e.to_string()))
     }
 
     fn write_u8(&mut self, value: &u8) -> Result<(), EncodeError> {
-        self._write_u64(&(*value as u64))
+        self.write_unsigned_int(&(*value as u64))
             .map_err(|e| EncodeError::Uint8WriteError(e.to_string()))
     }
 
     fn write_u16(&mut self, value: &u16) -> Result<(), EncodeError> {
-        self._write_u64(&(*value as u64))
+        self.write_unsigned_int(&(*value as u64))
             .map_err(|e| EncodeError::Uint16WriteError(e.to_string()))
     }
 
     fn write_u32(&mut self, value: &u32) -> Result<(), EncodeError> {
-        self._write_u64(&(*value as u64))
+        self.write_unsigned_int(&(*value as u64))
             .map_err(|e| EncodeError::Uint32WriteError(e.to_string()))
     }
 
@@ -184,6 +217,9 @@ impl Write for WriteEncoder {
     }
 
     fn write_bytes(&mut self, buf: &[u8]) -> Result<(), EncodeError> {
+        if buf.len() == 0 {
+            return self.write_nil();
+        }
         self.write_bytes_length(&(buf.len() as u32))?;
         self.write_all(buf)
             .map_err(|e| EncodeError::BinWriteError(e.to_string()))

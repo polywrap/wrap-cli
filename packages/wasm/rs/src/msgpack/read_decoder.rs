@@ -95,7 +95,7 @@ impl ReadDecoder {
 
 impl StdioRead for ReadDecoder {
     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
-        self.view.buffer.read(buf)
+        self.view.buffer.read(&mut buf[..])
     }
 }
 
