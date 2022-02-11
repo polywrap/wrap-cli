@@ -1,6 +1,7 @@
+import { getParserForFile } from "../lib/helpers";
 import { getTestEnvClientConfig } from "../lib/helpers/test-env-client-config";
 import { importTs } from "../lib/helpers/import-ts";
-import { fixParameters } from "../lib/helpers/parameters";
+import { fixParameters } from "../lib/helpers";
 import { validateClientConfig } from "../lib/helpers/validate-client-config";
 import { intlMsg } from "../lib/intl";
 
@@ -9,38 +10,53 @@ import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
 import gql from "graphql-tag";
 import path from "path";
-import yaml from "js-yaml";
 
-const optionsString = intlMsg.commands_build_options_options();
-const scriptStr = intlMsg.commands_create_options_recipeScript();
-const configPathStr = intlMsg.commands_query_options_configPath();
+const i18n = {
+  apiMissing: intlMsg.commands_query_error_noApi(),
+  args: intlMsg.commands_query_arguments_recipes(),
+  clientConfigBadFileExt:
+    intlMsg.commands_query_error_clientConfigInvalidFileExt,
+  clientConfigMissingExport:
+    intlMsg.commands_query_error_clientConfigModuleMissingExport,
+  clientConfigMissingPath: intlMsg.commands_query_error_clientConfigMissingPath,
+  config: intlMsg.commands_query_options_config(),
+  configPath: intlMsg.commands_query_options_configPath(),
+  description: intlMsg.commands_query_description(),
+  file: intlMsg.commands_create_options_recipeScript(),
+  fileDescription: intlMsg.commands_query_options_fileDescription(),
+  missingCookbookFile: intlMsg.commands_query_error_missingScript,
+  noTestEnvFound: intlMsg.commands_query_error_noTestEnvFound(),
+  options: intlMsg.commands_build_options_options(),
+  testEns: intlMsg.commands_build_options_t(),
+};
 
 const HELP = `
-${chalk.bold("w3 query")} [${optionsString}] ${chalk.bold(`<${scriptStr}>`)}
+${chalk.bold("w3 query")} [${i18n.options}] ${chalk.bold(i18n.args)}
 
-${optionsString[0].toUpperCase() + optionsString.slice(1)}:
-  -t, --test-ens  ${intlMsg.commands_build_options_t()}
-  -c, --client-config <${configPathStr}> ${intlMsg.commands_query_options_config()}
+${i18n.options[0].toUpperCase() + i18n.options.slice(1)}:
+  -f, --cookbook-file <${i18n.file}>   ${i18n.fileDescription}
+  -t, --test-ens ${i18n.testEns}
+  -c, --client-config <${i18n.configPath}>   ${i18n.config}
 `;
 
 export default {
   alias: ["q"],
-  description: intlMsg.commands_query_description(),
+  description: i18n.description,
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print, middleware } = toolbox;
     // eslint-disable-next-line prefer-const
-    let { t, testEns, c, clientConfig } = parameters.options;
+    let { t, testEns, c, clientConfig, f, cookbookFile } = parameters.options;
 
     testEns = testEns || t;
     clientConfig = clientConfig || c;
+    cookbookFile = cookbookFile || f;
 
-    let recipePath;
+    let queries: string[];
     try {
-      const params = toolbox.parameters;
-      [recipePath] = fixParameters(
+      queries = fixParameters(
         {
-          options: params.options,
-          array: params.array,
+          options: toolbox.parameters.options,
+          array: toolbox.parameters.array,
         },
         {
           t,
@@ -48,43 +64,36 @@ export default {
         }
       );
     } catch (e) {
-      recipePath = null;
       print.error(e.message);
       process.exitCode = 1;
       return;
     }
 
-    if (!recipePath) {
-      const scriptMissingMessage = intlMsg.commands_query_error_missingScript({
-        script: `<${scriptStr}>`,
-      });
-      print.error(scriptMissingMessage);
+    if (!cookbookFile) {
+      print.error(i18n.missingCookbookFile({ script: `-f ${i18n.file}` }));
       print.info(HELP);
       return;
     }
 
     if (clientConfig === true) {
-      const confgisMissingPathMessage = intlMsg.commands_query_error_clientConfigMissingPath(
-        {
+      print.error(
+        i18n.clientConfigMissingPath({
           option: "--client-config",
-          argument: `<${configPathStr}>`,
-        }
+          argument: `<${i18n.configPath}>`,
+        })
       );
-      print.error(confgisMissingPathMessage);
       print.info(HELP);
       return;
     }
 
     let finalClientConfig: Partial<Web3ApiClientConfig>;
-
     try {
       finalClientConfig = await getTestEnvClientConfig();
     } catch (e) {
-      print.error(intlMsg.commands_query_error_noTestEnvFound());
+      print.error(i18n.noTestEnvFound);
       process.exitCode = 1;
       return;
     }
-
     if (clientConfig) {
       let configModule;
       if (clientConfig.endsWith(".js")) {
@@ -92,25 +101,17 @@ export default {
       } else if (clientConfig.endsWith(".ts")) {
         configModule = await importTs(filesystem.resolve(clientConfig));
       } else {
-        const configsModuleMissingExportMessage = intlMsg.commands_query_error_clientConfigInvalidFileExt(
-          { module: clientConfig }
-        );
-        print.error(configsModuleMissingExportMessage);
+        print.error(i18n.clientConfigBadFileExt({ module: clientConfig }));
         process.exitCode = 1;
         return;
       }
-
       if (!configModule || !configModule.getClientConfig) {
-        const configsModuleMissingExportMessage = intlMsg.commands_query_error_clientConfigModuleMissingExport(
-          { module: configModule }
-        );
-        print.error(configsModuleMissingExportMessage);
+        print.error(i18n.clientConfigMissingExport({ module: configModule }));
         process.exitCode = 1;
         return;
       }
 
       finalClientConfig = configModule.getClientConfig(finalClientConfig);
-
       try {
         validateClientConfig(finalClientConfig);
       } catch (e) {
@@ -122,33 +123,23 @@ export default {
 
     await middleware.run({
       name: toolbox.command?.name,
-      options: { testEns, recipePath },
+      options: { testEns, recipePath: cookbookFile },
     });
 
     const client = new Web3ApiClient(finalClientConfig);
-
-    function getParser(path: string) {
-      return path.endsWith(".yaml") || path.endsWith(".yml")
-        ? yaml.load
-        : JSON.parse;
-    }
-
-    const recipe = getParser(recipePath)(filesystem.read(recipePath) as string);
-    const dir = path.dirname(recipePath);
-    let uri = "";
-
+    const cookbook = getParserForFile(cookbookFile)(
+      filesystem.read(cookbookFile) as string
+    );
+    const dir = path.dirname(cookbookFile);
+    const api = cookbook.api;
     let constants: Record<string, string> = {};
-    for (const task of recipe) {
-      if (task.api) {
-        uri = task.api;
-      }
 
-      if (task.constants) {
-        constants = getParser(task.constants)(
-          filesystem.read(path.join(dir, task.constants)) as string
-        );
-      }
+    if (!!cookbook.constants)
+      constants = getParserForFile(cookbook.constants)(
+        filesystem.read(path.join(dir, cookbook.constants)) as string
+      );
 
+    /*for (const task of recipe) {
       if (task.query) {
         const query = filesystem.read(path.join(dir, task.query));
 
@@ -198,7 +189,7 @@ export default {
         }
 
         if (!uri) {
-          throw Error(intlMsg.commands_query_error_noApi());
+          throw Error(i18n.apiMissing);
         }
 
         print.warning("-----------------------------------");
@@ -227,6 +218,6 @@ export default {
           }
         }
       }
-    }
+    }*/
   },
 };

@@ -6,3 +6,4 @@ export * from "./spinner";
 export * from "./docker";
 export * from "./languages";
 export * from "./typescript-support";
+export * from "./recipes";
