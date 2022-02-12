@@ -225,9 +225,6 @@ export default {
             print.fancy(error.stack || "");
             print.error("-----------------------------------");
           }
-        }
-
-        if (errors) {
           process.exitCode = 1;
         }
       }
