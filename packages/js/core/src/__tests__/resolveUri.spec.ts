@@ -26,7 +26,7 @@ import {
   SubscribeOptions,
   Subscription,
 } from "../types";
-import { IUriToApiResolver, resolveUri } from "../uri-resolution/core";
+import { UriToApiResolver, resolveUri } from "../uri-resolution/core";
 import { RedirectsResolver, ApiAggregatorResolver, PluginResolver } from "../uri-resolution/resolvers";
 
 describe("resolveUri", () => {
@@ -230,7 +230,7 @@ describe("resolveUri", () => {
     "w3://ens/my-plugin": pluginApi,
   };
 
-  const resolvers: IUriToApiResolver[] = [
+  const resolvers: UriToApiResolver[] = [
     new RedirectsResolver(),
     new PluginResolver(
       (uri: Uri, plugin: PluginPackage) => createPluginApi(uri, plugin)

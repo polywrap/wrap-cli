@@ -1,10 +1,13 @@
 import { Uri, Client, ApiCache } from "../../../types";
-import { IUriToApiResolver, UriResolutionResult } from "../../core";
+import { UriToApiResolver, UriResolutionResult } from "../../core";
 
-export class CacheResolver implements IUriToApiResolver {
-  name = "Cache";
+export class CacheResolver implements UriToApiResolver {
 
-  async resolveUri(
+  public get name() {
+    return CacheResolver.name;
+  }
+
+  public async resolveUri(
     uri: Uri,
     client: Client,
     cache: ApiCache

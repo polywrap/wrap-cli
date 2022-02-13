@@ -37,9 +37,9 @@ import {
   ResolveUriError,
   UriResolutionHistory,
   resolveUri,
-  IUriToApiResolver,
+  UriToApiResolver,
   GetResolversOptions,
-  coreUriResolvers,
+  CacheResolver,
   Contextualized,
   ResolveUriOptions,
 } from "@web3api/core-js";
@@ -147,7 +147,7 @@ export class Web3ApiClient implements Client {
   @Tracer.traceMethod("Web3ApiClient: getResolvers")
   public getResolvers(
     options: GetResolversOptions = {}
-  ): readonly IUriToApiResolver[] {
+  ): readonly UriToApiResolver[] {
     return this._getConfig(options.contextId).resolvers;
   }
 
@@ -457,7 +457,7 @@ export class Web3ApiClient implements Client {
     let resolvers = this.getResolvers({ contextId: contextId });
 
     if (!cacheRead) {
-      resolvers = resolvers.filter((x) => x.name !== coreUriResolvers.cache);
+      resolvers = resolvers.filter((x) => x.name !== CacheResolver.name);
     }
 
     const { api, uri: resolvedUri, uriHistory, error } = await resolveUri(

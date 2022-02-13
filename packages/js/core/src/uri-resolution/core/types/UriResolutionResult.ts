@@ -1,6 +1,6 @@
 import { Api, Uri } from "../../..";
 
-export type UriResolutionResult = {
+export interface UriResolutionResult {
   uri: Uri;
   api?: Api;
-};
+}

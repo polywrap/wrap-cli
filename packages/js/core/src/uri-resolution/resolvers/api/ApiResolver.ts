@@ -5,7 +5,7 @@ import {
 } from "../../../manifest";
 import { Uri, ApiCache, Client, InvokeHandler } from "../../../types";
 import {
-  IUriToApiResolver,
+  UriToApiResolver,
   UriResolutionStack,
   UriResolutionResult,
 } from "../../core";
@@ -14,14 +14,16 @@ import { getEnvFromUriOrResolutionStack } from "../getEnvFromUriOrResolutionStac
 
 import { Tracer } from "@web3api/tracing-js";
 
-export class ApiResolver implements IUriToApiResolver {
+export class ApiResolver implements UriToApiResolver {
   constructor(
     public readonly resolverUri: Uri,
     private readonly createApi: CreateApiFunc,
     private readonly deserializeOptions?: DeserializeManifestOptions
   ) {}
 
-  name = "Api";
+  public get name() {
+    return ApiResolver.name;
+  }
 
   async resolveUri(
     uri: Uri,

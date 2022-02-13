@@ -12,7 +12,7 @@ import {
 } from "./";
 import { ManifestType, AnyManifest } from "../manifest";
 import {
-  IUriToApiResolver,
+  UriToApiResolver,
   ResolveUriError,
   UriResolutionHistory,
 } from "../uri-resolution/core";
@@ -22,7 +22,7 @@ export interface ClientConfig<TUri extends Uri | string = string> {
   plugins: PluginRegistration<TUri>[];
   interfaces: InterfaceImplementations<TUri>[];
   envs: Env<TUri>[];
-  resolvers: IUriToApiResolver[];
+  resolvers: UriToApiResolver[];
 }
 
 export interface Contextualized {
@@ -69,7 +69,7 @@ export interface Client
 
   getEnvs(options: GetEnvsOptions): readonly Env<Uri>[];
 
-  getResolvers(options: GetResolversOptions): readonly IUriToApiResolver[];
+  getResolvers(options: GetResolversOptions): readonly UriToApiResolver[];
 
   getEnvByUri<TUri extends Uri | string>(
     uri: TUri,

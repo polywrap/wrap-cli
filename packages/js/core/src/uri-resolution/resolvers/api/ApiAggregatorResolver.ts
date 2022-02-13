@@ -8,20 +8,22 @@ import {
 } from "../../..";
 import { CreateApiFunc } from "./types/CreateApiFunc";
 import { UriResolutionResult } from "../../core/types/UriResolutionResult";
-import { IUriToApiResolver, UriResolutionStack } from "../../core";
+import { UriToApiResolver, UriResolutionStack } from "../../core";
 import { ApiResolver } from "./ApiResolver";
 
 export type ApiAggregatorResolverResult = UriResolutionResult & {
   resolverUri?: Uri;
 };
 
-export class ApiAggregatorResolver implements IUriToApiResolver {
-  name = "ApiAggregator";
-
+export class ApiAggregatorResolver implements UriToApiResolver {
   constructor(
     private readonly createApi: CreateApiFunc,
     private deserializeOptions?: DeserializeManifestOptions
   ) {}
+
+  public get name() {
+    return ApiAggregatorResolver.name;
+  }
 
   async resolveUri(
     uri: Uri,
