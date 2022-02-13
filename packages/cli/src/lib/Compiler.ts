@@ -295,7 +295,7 @@ export class Compiler {
       };
     }
 
-    web3ApiManifest.build = "./web3api.build.yaml";
+    web3ApiManifest.build = "./web3api.build.json";
 
     // Create the BuildManifest
     const buildManifest: BuildManifest = {
@@ -428,14 +428,14 @@ export class Compiler {
 
     await outputManifest(
       web3ApiManifest,
-      path.join(outputDir, "web3api.yaml"),
+      path.join(outputDir, "web3api.json"),
       project.quiet
     );
 
     if (buildManifest) {
       await outputManifest(
         buildManifest,
-        path.join(outputDir, "web3api.build.yaml"),
+        path.join(outputDir, "web3api.build.json"),
         project.quiet
       );
     }
@@ -443,7 +443,7 @@ export class Compiler {
     if (metaManifest) {
       await outputManifest(
         metaManifest,
-        path.join(outputDir, "web3api.meta.yaml"),
+        path.join(outputDir, "web3api.meta.json"),
         project.quiet
       );
     }

@@ -1,5 +1,5 @@
 import { E_INVALIDLENGTH, BLOCK_MAXSIZE, throwIndexOutOfRange } from "./utils";
-import { Context } from "./Context";
+import { Context } from "../debug";
 
 export class DataView {
   @unsafe
