@@ -31,7 +31,6 @@ import { RedirectsResolver, ApiAggregatorResolver, PluginResolver } from "../uri
 
 describe("resolveUri", () => {
   const client = (apis: Record<string, PluginModules>, plugins: PluginRegistration<Uri>[] = [], interfaces: InterfaceImplementations<Uri>[] = [], redirects: UriRedirect<Uri>[] = []): Client => ({
-    getApiCache: () => (new Map<string, Api>()),
     getEnvByUri: () => (undefined),
     getRedirects: () => redirects,
     getPlugins: () => plugins,
@@ -103,7 +102,7 @@ describe("resolveUri", () => {
     ) => {
       return [uri];
     },
-  });
+  } as unknown as Client);
 
   const createPluginApi = (uri: Uri, plugin: PluginPackage): Api => {
     return {
@@ -259,7 +258,8 @@ describe("resolveUri", () => {
     const result = await resolveUri(
       new Uri("ens/test.eth"),
       resolvers,
-      client(apis, plugins, interfaces)
+      client(apis, plugins, interfaces),
+      new Map<string, Api>(),
     );
 
     expect(result.api).toBeTruthy();
@@ -282,7 +282,8 @@ describe("resolveUri", () => {
     const result = await resolveUri(
       new Uri("my/something-different"),
       resolvers,
-      client(apis, plugins, interfaces)
+      client(apis, plugins, interfaces),
+      new Map<string, Api>(),
     );
 
     expect(result.api).toBeTruthy();
@@ -305,7 +306,8 @@ describe("resolveUri", () => {
     const result = await resolveUri(
       new Uri("ens/ens"),
       resolvers,
-      client(apis, plugins, interfaces)
+      client(apis, plugins, interfaces),
+      new Map<string, Api>(),
     );
 
     expect(result.api).toBeTruthy();
@@ -329,7 +331,8 @@ describe("resolveUri", () => {
     const result = await resolveUri(
       new Uri("my/something-different"),
       resolvers,
-      client(apis, plugins, interfaces)
+      client(apis, plugins, interfaces),
+      new Map<string, Api>(),
     );
 
     expect(result.api).toBeTruthy();
@@ -365,7 +368,8 @@ describe("resolveUri", () => {
     return resolveUri(
       new Uri("some/api"),
       resolvers,
-      client(apis, plugins, interfaces, circular)
+      client(apis, plugins, interfaces, circular),
+      new Map<string, Api>(),
     ).catch((e: Error) =>
       expect(e.message).toMatch(/Infinite loop while resolving URI/)
     );
@@ -388,7 +392,8 @@ describe("resolveUri", () => {
     return resolveUri(
       new Uri("some/api"),
       resolvers,
-      client(apis, plugins, interfaces, missingFromProperty)
+      client(apis, plugins, interfaces, missingFromProperty),
+      new Map<string, Api>(),
     ).catch((e: Error) =>
       expect(e.message).toMatch(
         "Redirect missing the from property.\nEncountered while resolving w3://some/api"
@@ -414,7 +419,8 @@ describe("resolveUri", () => {
     const result = await resolveUri(
       new Uri("some/api"),
       resolvers,
-      client(apis, pluginRegistrations, interfaces)
+      client(apis, pluginRegistrations, interfaces),
+      new Map<string, Api>(),
     );
 
     expect(result.api).toBeTruthy();
@@ -453,7 +459,8 @@ describe("resolveUri", () => {
         }, 
         plugins, 
         interfaces
-      )
+      ),
+      new Map<string, Api>(),
     );
 
     expect(resolvedUri).toEqual(uri);

@@ -118,11 +118,6 @@ export class Web3ApiClient implements Client {
     this._config.tracingEnabled = enable;
   }
 
-  @Tracer.traceMethod("Web3ApiClient: getApiCache")
-  public getApiCache(): ApiCache {
-    return this._apiCache;
-  }
-
   @Tracer.traceMethod("Web3ApiClient: getRedirects")
   public getRedirects(
     options: GetRedirectsOptions = {}
@@ -468,7 +463,8 @@ export class Web3ApiClient implements Client {
     const { api, uri: resolvedUri, uriHistory, error } = await resolveUri(
       this._toUri(uri),
       resolvers,
-      client
+      client,
+      this._apiCache,
     );
 
     // Update cache for all URIs in the chain
@@ -713,9 +709,6 @@ const contextualizeClient = (
           options: GetImplementationsOptions = {}
         ) => {
           return client.getImplementations(uri, { ...options, contextId });
-        },
-        getApiCache: (): ApiCache => {
-          return client.getApiCache();
         },
         resolveUri: <TUri extends Uri | string>(
           uri: TUri,

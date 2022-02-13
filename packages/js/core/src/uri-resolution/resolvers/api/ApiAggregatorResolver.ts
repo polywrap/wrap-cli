@@ -1,6 +1,7 @@
 import {
   Uri,
   Client,
+  ApiCache,
   getImplementations,
   coreInterfaceUris,
   DeserializeManifestOptions,
@@ -25,12 +26,13 @@ export class ApiAggregatorResolver implements IUriToApiResolver {
   async resolveUri(
     uri: Uri,
     client: Client,
+    cache: ApiCache,
     resolutionPath: UriResolutionStack
   ): Promise<ApiAggregatorResolverResult> {
     const resolvers: ApiResolver[] = this.buildApiResolvers(client);
 
     for (const resolver of resolvers) {
-      const result = await resolver.resolveUri(uri, client, resolutionPath);
+      const result = await resolver.resolveUri(uri, client, cache, resolutionPath);
 
       if (result.api || (result.uri && uri.uri !== result.uri.uri)) {
         return {

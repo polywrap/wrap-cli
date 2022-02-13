@@ -7,7 +7,6 @@ import {
   PluginRegistration,
   InterfaceImplementations,
   Env,
-  ApiCache,
   ResolveUriOptions,
   Api,
 } from "./";
@@ -60,7 +59,6 @@ export interface Client
   extends QueryHandler,
     SubscriptionHandler,
     InvokeHandler {
-  getApiCache(): ApiCache;
 
   getRedirects(options: GetRedirectsOptions): readonly UriRedirect<Uri>[];
 

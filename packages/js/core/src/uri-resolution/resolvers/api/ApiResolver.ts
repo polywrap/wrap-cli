@@ -3,7 +3,7 @@ import {
   DeserializeManifestOptions,
   deserializeWeb3ApiManifest,
 } from "../../../manifest";
-import { Uri, Client, InvokeHandler } from "../../../types";
+import { Uri, ApiCache, Client, InvokeHandler } from "../../../types";
 import {
   IUriToApiResolver,
   UriResolutionStack,
@@ -26,6 +26,7 @@ export class ApiResolver implements IUriToApiResolver {
   async resolveUri(
     uri: Uri,
     client: Client,
+    cache: ApiCache,
     resolutionPath: UriResolutionStack
   ): Promise<UriResolutionResult> {
     const result = await tryResolveUriWithUriResolver(

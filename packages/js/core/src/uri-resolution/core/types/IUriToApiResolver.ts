@@ -1,4 +1,4 @@
-import { Client, Uri } from "../../../types";
+import { ApiCache, Client, Uri } from "../../../types";
 import { UriResolutionResult, UriResolutionStack } from ".";
 
 export interface IUriToApiResolver {
@@ -6,6 +6,7 @@ export interface IUriToApiResolver {
   resolveUri(
     uri: Uri,
     client: Client,
+    cache: ApiCache,
     resolutionPath: UriResolutionStack
   ): Promise<UriResolutionResult>;
 }

@@ -4,7 +4,7 @@ import {
   UriResolutionResult,
   UriResolutionStack,
 } from "../../core";
-import { Api, Client, Env, PluginPackage, Uri } from "../../../types";
+import { Api, ApiCache, Client, Env, PluginPackage, Uri } from "../../../types";
 import { findPluginPackage } from "../../../algorithms";
 
 export class PluginResolver implements IUriToApiResolver {
@@ -21,6 +21,7 @@ export class PluginResolver implements IUriToApiResolver {
   async resolveUri(
     uri: Uri,
     client: Client,
+    cache: ApiCache,
     resolutionPath: UriResolutionStack
   ): Promise<UriResolutionResult> {
     const plugin = findPluginPackage(uri, client.getPlugins({}));
