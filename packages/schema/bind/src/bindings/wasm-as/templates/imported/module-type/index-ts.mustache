@@ -21,102 +21,75 @@ import {
 import * as Types from "../..";
 
 {{^isInterface}}
-export namespace {{type}} {
+export class {{type}} {
 
-  export const uri: string = "{{uri}}";
+  public static uri: string = "{{uri}}";
 
   {{#methods}}
-  export function {{name}}(
+  public static {{name}}(
     input: Input_{{name}}
-  ): {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {
-    return Try.{{name}}(input).unwrap();
+  ): Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string> {
+    const args = serialize{{name}}Args(input);
+    const result = w3_subinvoke(
+      "{{uri}}",
+      "{{type}}",
+      "{{name}}",
+      args
+    );
+
+    if (result.isErr) {
+      return Result.Err<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string>(
+        result.unwrapErr()
+      );
+    }
+
+    return Result.Ok<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string>(
+      deserialize{{name}}Result(result.unwrap())
+    );
   }
   {{^last}}
 
   {{/last}}
   {{/methods}}
-
-  export namespace Try {
-
-    {{#methods}}
-    export function {{name}}(
-      input: Input_{{name}}
-    ): Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string> {
-      const args = serialize{{name}}Args(input);
-      const result = w3_subinvoke(
-        "{{uri}}",
-        "{{type}}",
-        "{{name}}",
-        args
-      );
-
-      if (result.isErr) {
-        return Result.Err<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string>(
-          result.unwrapErr()
-        );
-      }
-
-      return Result.Ok<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string>(
-        deserialize{{name}}Result(result.unwrap())
-      );
-    }
-    {{^last}}
-
-    {{/last}}
-    {{/methods}}
-  }
 }
 {{/isInterface}}
 {{#isInterface}}
-export namespace {{type}} {
+export class {{type}} {
 
-  export namespace Interface {
+  public static interfaceUri: string = "{{uri}}";
 
-    export const uri: string = "{{uri}}";
+  public uri: string;
 
-    {{#methods}}
-    export function {{name}}(
-      input: Input_{{name}},
-      implementationUri: string
-    ): {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {
-      return Try.{{name}}(input, implementationUri).unwrap();
-    }
-    {{^last}}
-
-    {{/last}}
-    {{/methods}}
-
-    export namespace Try {
-
-      {{#methods}}
-      export function {{name}}(
-        input: Input_{{name}},
-        implementationUri: string
-      ): Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string> {
-        const args = serialize{{name}}Args(input);
-        const result = w3_subinvoke(
-          implementationUri,
-          "{{type}}",
-          "{{name}}",
-          args
-        );
-
-        if (result.isErr) {
-          return Result.Err<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string>(
-            result.unwrapErr()
-          );
-        }
-
-        return Result.Ok<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string>(
-          deserialize{{name}}Result(result.unwrap())
-        );
-      }
-      {{^last}}
-
-      {{/last}}
-      {{/methods}}
-    }
+  constructor(uri: string) {
+    this.uri = uri;
   }
+
+  {{#methods}}
+  public {{name}}(
+    input: Input_{{name}}
+  ): Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string> {
+    const args = serialize{{name}}Args(input);
+    const result = w3_subinvoke(
+      this.uri,
+      "{{type}}",
+      "{{name}}",
+      args
+    );
+
+    if (result.isErr) {
+      return Result.Err<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string>(
+        result.unwrapErr()
+      );
+    }
+
+    return Result.Ok<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string>(
+      deserialize{{name}}Result(result.unwrap())
+    );
+  }
+  {{^last}}
+
+  {{/last}}
+  {{/methods}}
 }
 {{/isInterface}}
 {{/__commonImport}}
