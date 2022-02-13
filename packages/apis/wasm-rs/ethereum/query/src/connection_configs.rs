@@ -8,10 +8,11 @@ use std::{collections::HashMap, str::FromStr};
 
 use ethers::{
     contract::Contract,
-    core::{abi::Abi, types::Address},
+    core::{abi::Abi, types::Address, types::Chain},
     providers::{Http, JsonRpcClient, Middleware, Provider},
     signers::Signer,
 };
+use ethers::prelude::ParseChainError;
 
 use crate::{Connection, Network};
 
@@ -119,7 +120,7 @@ impl EthereumWrapper {
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
 pub struct ConnectionConfig {
     pub provider: String,
-    pub signer: Option<String>,
+    pub signer: Option<dyn Signer>,
 }
 
 #[derive(Clone, Debug, Default, Deserialize, Serialize)]
@@ -159,11 +160,15 @@ impl ConnectionInfo {
                 .insert(network_str.clone(), connection_info);
 
             // handle the case where `network` is a number
-            let network_number = network_str.parse::<u32>();
+            let network_number = network_str.parse::<u64>();
 
             if network_number.is_ok() {
-                // TODO: let named_network = get_network(network_number);
-                // TODO: let _ = connections.insert(named_network.name, connection.client);
+                match Chain::try_from(network_number.unwrap()) {
+                    Ok(chain) => {
+                        let _ = connections.insert(chain.to_string(), connection.client);
+                    }
+                    Err(_) => panic!(format!("Invalid network number: {:?}", network_number))
+                };
             }
         }
         connections
@@ -227,12 +232,12 @@ impl ConnectionInfo {
     }
 }
 
-// #[derive(Clone, Debug)]
-// pub enum Networkish {
-//     Network(Network),
-//     String(String),
-//     Number(i32),
-// }
+#[derive(Clone, Debug)]
+pub enum Networkish {
+    Network(Network),
+    String(String),
+    Number(u64),
+}
 
 // #[derive(Clone, Debug, Default)]
 // pub struct EthereumSigner<S: Signer + Default + Clone>(S);

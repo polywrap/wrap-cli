@@ -83,6 +83,12 @@ type Query {
   ): EventNotification!
 
   getNetwork(connection: Connection): Network!
+
+  #Utils
+
+  utils_hashMessage(message: String!): String!
+  utils_toChecksum(address: String!, chainId: UInt8): String!
+  utils_keccak(bytes: string): [UInt8]!
 }
 
 type TxReceipt {

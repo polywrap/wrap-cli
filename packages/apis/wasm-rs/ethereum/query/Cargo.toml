@@ -15,12 +15,12 @@ w3invoke = []
 
 [dependencies]
 async-trait = "0.1.51"
-ethers = "0.6.1"
+ethers = { git = "https://github.com/gakonst/ethers-rs" }
 thiserror = "1.0.30"
 tokio = { version = "1.4.0", features = ["rt"] }
 getrandom = { version = "*", features = ["js"] }
 num-traits = { version = "0.2", default-features = false }
-polywrap-wasm-rs = { version = "0.0.1-prealpha-dev.37.4", path = "../../../../wasm/rs" }
+#polywrap-wasm-rs = { version = "0.0.1-prealpha-dev.37.4", path = "../../../../wasm/rs" }
 serde = { version = "1.0", features = ["derive"] }
 
 [lib]

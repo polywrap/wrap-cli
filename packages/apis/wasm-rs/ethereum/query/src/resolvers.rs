@@ -115,4 +115,10 @@ where
     pub async fn resolve_get_network(&self, input: InputGetNetwork) -> Network {
         todo!()
     }
+
+    // Utils
+
+    pub async fn utils_hashMessage(&self, input: InputUtilsHashMessage) -> String {
+        hash_message(input.message).to_string()
+    }
 }
