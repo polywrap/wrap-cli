@@ -1,4 +1,5 @@
 export * from "./path";
+export * from "./uuid";
 export * from "./manifest";
 export * from "./metadata";
 export * from "./parameters";

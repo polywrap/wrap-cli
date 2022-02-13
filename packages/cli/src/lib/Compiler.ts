@@ -8,6 +8,7 @@ import {
   outputManifest,
   outputMetadata,
   generateDockerfile,
+  generateDockerImageName,
   createBuildImage,
   copyArtifactsFromBuildImage,
   manifestLanguageToBindLanguage,
@@ -340,7 +341,7 @@ export class Compiler {
     const { project, outputDir } = this._config;
     const buildManifestDir = await project.getBuildManifestDir();
     const buildManifest = await project.getBuildManifest();
-    const imageName = buildManifest?.docker?.name || "web3api-build";
+    const imageName = buildManifest?.docker?.name || generateDockerImageName(await project.getBuildUuid());
     let dockerfile = buildManifest?.docker?.dockerfile
       ? path.join(buildManifestDir, buildManifest?.docker?.dockerfile)
       : path.join(buildManifestDir, "Dockerfile");

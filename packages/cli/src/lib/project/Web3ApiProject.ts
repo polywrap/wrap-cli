@@ -5,11 +5,12 @@ import {
   loadWeb3ApiManifest,
   loadBuildManifest,
   loadMetaManifest,
+  generateDockerImageName,
+  createUUID,
   ManifestLanguage,
   outputManifest,
 } from "../helpers";
 import { intlMsg } from "../intl";
-import { createUUID } from "../helpers/uuid";
 
 import { Web3ApiManifest, BuildManifest, MetaManifest } from "@web3api/core-js";
 import { normalizePath } from "@web3api/os-js";
@@ -251,6 +252,23 @@ export class Web3ApiProject extends Project {
     return this._buildManifest;
   }
 
+  public async getBuildUuid(): Promise<string> {
+    // Load the cached build UUID
+    let uuid = this.readCacheFile("build/uuid");
+
+    // If none was present, generate one
+    if (!uuid) {
+      uuid = createUUID();
+      this.writeCacheFile(
+        "build/uuid",
+        uuid,
+        "utf-8"
+      );
+    }
+
+    return uuid;
+  }
+
   public async cacheDefaultBuildManifestFiles(): Promise<void> {
     if (this._defaultBuildManifestCached) {
       return;
@@ -263,10 +281,6 @@ export class Web3ApiProject extends Project {
     const defaultPath = `${__dirname}/../build-envs/${language}/${defaultBuildManifestFilename}`;
     const destinationDir = "build/env/";
     const buildEnvCachePath = this.getCachePath(destinationDir);
-    const web3ApiManifestCachePath = path.join(
-      buildEnvCachePath,
-      "web3api.yaml"
-    );
 
     if (!fs.existsSync(defaultPath)) {
       throw Error(
@@ -277,24 +291,10 @@ export class Web3ApiProject extends Project {
       );
     }
 
-    // Check if pre-existing cache build env dir
-    if (
-      fs.existsSync(buildEnvCachePath) &&
-      fs.existsSync(web3ApiManifestCachePath)
-    ) {
-      const cachedWeb3ApiManifest = await loadWeb3ApiManifest(
-        web3ApiManifestCachePath
-      );
-
-      // If manifest language did not change, don't recreate cache build env dir
-      if (cachedWeb3ApiManifest.language === language) {
-        this._defaultBuildManifestCached = true;
-        return;
-      }
-    }
-
+    // Clean the directory
     this.removeCacheDir("build/env");
-    await this.copyDefaultBuildEnvFilesIntoCache(
+
+    await this.copyIntoCache(
       destinationDir,
       `${__dirname}/../build-envs/${language}/*`,
       { up: true }
@@ -307,7 +307,9 @@ export class Web3ApiProject extends Project {
     const defaultManifest = await loadBuildManifest(defaultPath);
     defaultManifest.docker = {
       ...defaultManifest.docker,
-      name: `build-env-${createUUID()}`,
+      name: generateDockerImageName(
+        await this.getBuildUuid()
+      ),
     };
 
     await outputManifest(
