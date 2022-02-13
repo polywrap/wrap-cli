@@ -9,7 +9,7 @@ import {
 import { parseMapType } from "./map-utils";
 import { setPropertyType } from "./property-utils";
 
-import { FieldDefinitionNode, NamedTypeNode, StringValueNode } from "graphql";
+import { FieldDefinitionNode, InputValueDefinitionNode, NamedTypeNode, StringValueNode } from "graphql";
 
 export interface State {
   currentType?: ObjectDefinition;
@@ -17,26 +17,27 @@ export interface State {
   nonNullType?: boolean;
 }
 
-export function extractFieldDefinition(
-  node: FieldDefinitionNode,
-  state: State
-): void {
-  const importDef = state.currentType;
-  let mapType: string | undefined;
-  let mapDef: GenericDefinition | undefined;
+export interface AnnotatedDefinition {
+  type?: string;
+  def?: GenericDefinition;
+}
+
+export function extractAnnotateDirective(node: FieldDefinitionNode | InputValueDefinitionNode): AnnotatedDefinition {
+  let type: string | undefined;
+  let def: GenericDefinition | undefined;
 
   if (node.directives) {
     for (const dir of node.directives) {
       switch (dir.name.value) {
         case "annotate": {
-          mapType = (dir.arguments?.find((arg) => arg.name.value === "type")
+          type = (dir.arguments?.find((arg) => arg.name.value === "type")
             ?.value as StringValueNode).value;
-          if (!mapType) {
+          if (!type) {
             throw new Error(
               `Annotate directive: ${node.name.value} has invalid arguments`
             );
           }
-          mapDef = parseMapType(mapType);
+          def = parseMapType(type);
           break;
         }
         default:
@@ -44,6 +45,15 @@ export function extractFieldDefinition(
       }
     }
   }
+
+  return { type, def };
+}
+
+export function extractFieldDefinition(
+  node: FieldDefinitionNode,
+  state: State
+): void {
+  const importDef = state.currentType;
 
   if (!importDef) {
     return;
@@ -55,11 +65,13 @@ export function extractFieldDefinition(
     );
   }
 
+  const { type, def } = extractAnnotateDirective(node); 
+
   const property = createPropertyDefinition({
-    type: mapType ? mapType : "N/A",
+    type: type ? type : "N/A",
     name: node.name.value,
-    map: mapDef
-      ? ({ ...mapDef, name: node.name.value } as MapDefinition)
+    map: def
+      ? ({ ...def, name: node.name.value } as MapDefinition)
       : undefined,
     comment: node.description?.value,
   });

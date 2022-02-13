@@ -11,6 +11,7 @@ import {
   createInterfaceDefinition,
   InterfaceDefinition,
   capabilityTypes,
+  MapDefinition,
 } from "../typeInfo";
 import {
   extractInputValueDefinition,
@@ -31,6 +32,7 @@ import {
   ValueNode,
   ASTVisitor,
 } from "graphql";
+import { extractAnnotateDirective } from "./utils/object-types-utils";
 
 const visitorEnter = (moduleTypes: ModuleDefinition[], state: State) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
@@ -63,9 +65,14 @@ const visitorEnter = (moduleTypes: ModuleDefinition[], state: State) => ({
       return;
     }
 
+    const { type, def } = extractAnnotateDirective(node);
+
     const returnType = createPropertyDefinition({
-      type: "N/A",
+      type: type ? type : "N/A",
       name: node.name.value,
+      map: def
+        ? ({ ...def, name: node.name.value } as MapDefinition)
+        : undefined,
     });
 
     const method = createMethodDefinition({

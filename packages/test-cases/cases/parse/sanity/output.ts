@@ -598,6 +598,38 @@ export const output: TypeInfo = {
             }),
           ],
         },
+        {
+          ...createMethodDefinition({
+            type: "query",
+            name: "transformMap",
+            return: createMapPropertyDefinition({
+              name: "transformMap",
+              type: "Map<String, Int>",
+              key: createMapKeyDefinition({
+                type: "String",
+                required: true,
+              }),
+              value: createScalarDefinition({
+                type: "Int",
+                required: true,
+              }),
+            }),
+          }),
+          arguments: [
+            createMapPropertyDefinition({
+              name: "map",
+              type: "Map<String, Int>",
+              key: createMapKeyDefinition({
+                type: "String",
+                required: true,
+              }),
+              value: createScalarDefinition({
+                type: "Int",
+                required: true,
+              }),
+            }),
+          ],
+        },
       ],
     },
   ],

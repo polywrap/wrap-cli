@@ -187,6 +187,10 @@ abstractMethod comment
   abstractMethod(
     arg: UInt8!
   ): String!
+
+  transformMap(
+    map: Map @annotate(type: "Map<String!, Int!>")
+  ): Map @annotate(type: "Map<String!, Int!>")
 }
 
 """
