@@ -270,7 +270,6 @@ export class Web3ApiProject extends Project {
       return;
     }
 
-    const web3apiManifest = await this.getWeb3ApiManifest();
     const language = await this.getManifestLanguage();
 
     const defaultBuildManifestFilename = "web3api.build.yaml";
@@ -290,22 +289,23 @@ export class Web3ApiProject extends Project {
     // Clean the directory
     this.removeCacheDir("build/env");
 
+    // Copy default build environment files into cache
     await this.copyIntoCache(
       destinationDir,
       `${__dirname}/../build-envs/${language}/*`,
       { up: true }
     );
-    await outputManifest(
-      web3apiManifest,
-      path.join(buildEnvCachePath, "web3api.yaml")
-    );
 
+    // Load the default build manifest
     const defaultManifest = await loadBuildManifest(defaultPath);
+
+    // Set a unique docker image name
     defaultManifest.docker = {
       ...defaultManifest.docker,
       name: generateDockerImageName(await this.getBuildUuid()),
     };
 
+    // Output the modified build manifest
     await outputManifest(
       defaultManifest,
       path.join(buildEnvCachePath, defaultBuildManifestFilename)

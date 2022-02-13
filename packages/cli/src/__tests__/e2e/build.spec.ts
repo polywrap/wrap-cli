@@ -134,7 +134,7 @@ ${HELP}`);
 
     expect(code).toEqual(0);
     expect(sanitizedOutput).toContain(
-      "Artifacts written to ./build from the image `build-env`"
+      "Artifacts written to ./build from the image `polywrap-build-env-"
     );
     expect(sanitizedOutput).toContain(
       "Manifest written to ./build/web3api.yaml"
@@ -182,7 +182,7 @@ ${HELP}`);
 
     expect(code).toEqual(0);
     expect(sanitizedOutput).toContain(
-      "Artifacts written to ./build from the image `build-env`"
+      "Artifacts written to ./build from the image `polywrap-build-env-"
     );
     expect(sanitizedOutput).toContain(
       "Manifest written to ./build/web3api.yaml"
@@ -204,7 +204,7 @@ ${HELP}`);
 
     expect(code).toEqual(0);
     expect(sanitizedOutput).toContain(
-      "Artifacts written to ./build from the image `build-env`"
+      "Artifacts written to ./build from the image `polywrap-build-env-"
     );
     expect(sanitizedOutput).toContain(
       "Manifest written to ./build/web3api.yaml"
@@ -226,7 +226,7 @@ ${HELP}`);
 
     expect(code).toEqual(0);
     expect(sanitizedOutput).toContain(
-      "Artifacts written to ./build from the image `build-env`"
+      "Artifacts written to ./build from the image `polywrap-build-env-"
     );
     expect(sanitizedOutput).toContain(
       "Manifest written to ./build/web3api.yaml"
@@ -249,7 +249,7 @@ ${HELP}`);
     const sanitizedOutput = clearStyle(output);
 
     expect(code).toEqual(0);
-    expect(sanitizedOutput).toContain("Artifacts written to ./build from the image `build-env`");
+    expect(sanitizedOutput).toContain("Artifacts written to ./build from the image `polywrap-build-env-");
     expect(sanitizedOutput).toContain("Manifest written to ./build/web3api.yaml");
     expect(sanitizedOutput).toContain(manifestPath);
     expect(sanitizedOutput).toContain(queryPath);
