@@ -32,7 +32,12 @@ export class ApiAggregatorResolver implements IUriToApiResolver {
     const resolvers: ApiResolver[] = this.buildApiResolvers(client);
 
     for (const resolver of resolvers) {
-      const result = await resolver.resolveUri(uri, client, cache, resolutionPath);
+      const result = await resolver.resolveUri(
+        uri,
+        client,
+        cache,
+        resolutionPath
+      );
 
       if (result.api || (result.uri && uri.uri !== result.uri.uri)) {
         return {

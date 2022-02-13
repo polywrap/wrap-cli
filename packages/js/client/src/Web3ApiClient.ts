@@ -464,7 +464,7 @@ export class Web3ApiClient implements Client {
       this._toUri(uri),
       resolvers,
       client,
-      this._apiCache,
+      this._apiCache
     );
 
     // Update cache for all URIs in the chain
