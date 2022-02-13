@@ -3,8 +3,7 @@ import { Uri, Client } from "../../../types";
 import { UriToApiResolver, UriResolutionResult } from "../../core";
 
 export class RedirectsResolver implements UriToApiResolver {
-
-  public get name() {
+  public get name(): string {
     return RedirectsResolver.name;
   }
 

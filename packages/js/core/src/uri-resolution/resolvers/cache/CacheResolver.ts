@@ -2,8 +2,7 @@ import { Uri, Client, ApiCache } from "../../../types";
 import { UriToApiResolver, UriResolutionResult } from "../../core";
 
 export class CacheResolver implements UriToApiResolver {
-
-  public get name() {
+  public get name(): string {
     return CacheResolver.name;
   }
 

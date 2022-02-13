@@ -21,7 +21,7 @@ export class ApiAggregatorResolver implements UriToApiResolver {
     private deserializeOptions?: DeserializeManifestOptions
   ) {}
 
-  public get name() {
+  public get name(): string {
     return ApiAggregatorResolver.name;
   }
 

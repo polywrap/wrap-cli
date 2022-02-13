@@ -16,7 +16,7 @@ export class PluginResolver implements UriToApiResolver {
     ) => Api
   ) {}
 
-  public get name() {
+  public get name(): string {
     return PluginResolver.name;
   }
 

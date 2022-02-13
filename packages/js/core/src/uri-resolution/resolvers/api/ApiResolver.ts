@@ -21,7 +21,7 @@ export class ApiResolver implements UriToApiResolver {
     private readonly deserializeOptions?: DeserializeManifestOptions
   ) {}
 
-  public get name() {
+  public get name(): string {
     return ApiResolver.name;
   }
 
