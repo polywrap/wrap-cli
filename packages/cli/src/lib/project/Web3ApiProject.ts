@@ -259,11 +259,7 @@ export class Web3ApiProject extends Project {
     // If none was present, generate one
     if (!uuid) {
       uuid = createUUID();
-      this.writeCacheFile(
-        "build/uuid",
-        uuid,
-        "utf-8"
-      );
+      this.writeCacheFile("build/uuid", uuid, "utf-8");
     }
 
     return uuid;
@@ -307,9 +303,7 @@ export class Web3ApiProject extends Project {
     const defaultManifest = await loadBuildManifest(defaultPath);
     defaultManifest.docker = {
       ...defaultManifest.docker,
-      name: generateDockerImageName(
-        await this.getBuildUuid()
-      ),
+      name: generateDockerImageName(await this.getBuildUuid()),
     };
 
     await outputManifest(

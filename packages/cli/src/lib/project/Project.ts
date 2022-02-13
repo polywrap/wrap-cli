@@ -78,11 +78,7 @@ export abstract class Project {
       fs.mkdirSync(folderPath, { recursive: true });
     }
 
-    writeFileSync(
-      filePath,
-      data,
-      options
-    );
+    writeFileSync(filePath, data, options);
   }
 
   public async copyIntoCache(

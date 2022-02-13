@@ -152,5 +152,5 @@ export function generateDockerfile(
 }
 
 export function generateDockerImageName(uuid: string): string {
-  return `polywrap-build-env-${uuid}`
+  return `polywrap-build-env-${uuid}`;
 }
