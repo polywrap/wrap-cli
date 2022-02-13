@@ -137,7 +137,7 @@ ${HELP}`);
       "Artifacts written to ./build from the image `polywrap-build-env-"
     );
     expect(sanitizedOutput).toContain(
-      "Manifest written to ./build/web3api.yaml"
+      "Manifest written to ./build/web3api.json"
     );
     expect(sanitizedOutput).toContain(manifestPath);
   });
@@ -161,11 +161,11 @@ ${HELP}`);
     const buildImageName = cachedBuildManifest.docker?.name
 
     expect(buildImageName?.length).toBeGreaterThan(36)
-    expect((buildImageName?.match(/-/g) || []).length).toBeGreaterThanOrEqual(4)
-    expect(code).toEqual(0);
+    expect((buildImageName?.match(/-/g) || []).length).toBeGreaterThanOrEqual(4);
     expect(sanitizedOutput).toContain(
       `Artifacts written to ./build from the image \`${buildImageName}\``
     );
+    expect(code).toEqual(0);
   });
 
   test("Successfully builds project w/ web3api.build.yaml but no dockerfile", async () => {
@@ -185,7 +185,7 @@ ${HELP}`);
       "Artifacts written to ./build from the image `polywrap-build-env-"
     );
     expect(sanitizedOutput).toContain(
-      "Manifest written to ./build/web3api.yaml"
+      "Manifest written to ./build/web3api.json"
     );
     expect(sanitizedOutput).toContain(manifestPath);
   });
@@ -229,7 +229,7 @@ ${HELP}`);
       "Artifacts written to ./build from the image `polywrap-build-env-"
     );
     expect(sanitizedOutput).toContain(
-      "Manifest written to ./build/web3api.yaml"
+      "Manifest written to ./build/web3api.json"
     );
     expect(sanitizedOutput).toContain(manifestPath);
   });
@@ -250,7 +250,7 @@ ${HELP}`);
 
     expect(code).toEqual(0);
     expect(sanitizedOutput).toContain("Artifacts written to ./build from the image `polywrap-build-env-");
-    expect(sanitizedOutput).toContain("Manifest written to ./build/web3api.yaml");
+    expect(sanitizedOutput).toContain("Manifest written to ./build/web3api.json");
     expect(sanitizedOutput).toContain(manifestPath);
     expect(sanitizedOutput).toContain(queryPath);
     expect(sanitizedOutput).toContain(queryVarPath);
