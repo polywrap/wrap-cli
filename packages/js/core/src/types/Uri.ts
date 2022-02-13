@@ -75,7 +75,7 @@ export class Uri {
 
     // Trim preceding '/' characters
     while (processed[0] === "/") {
-      processed = processed.substr(1);
+      processed = processed.substring(1);
     }
 
     // Check for the w3:// scheme, add if it isn't there
