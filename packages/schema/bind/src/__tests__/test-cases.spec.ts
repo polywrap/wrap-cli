@@ -8,7 +8,7 @@ import { writeFileSync } from "@web3api/os-js";
 import fs from "fs";
 import path from "path";
 
-describe("Web3API Binding Test Suite", () => {
+describe("Web3API Binding | Sanity cases", () => {
   const cases = fetchTestCases();
 
   for (const test of cases) {
@@ -40,8 +40,12 @@ describe("Web3API Binding Test Suite", () => {
         const output = bindSchema({
           bindLanguage: language as BindLanguage,
           query: expectedOutput.query ? testCase.input.query : undefined,
-          mutation: expectedOutput.mutation ? testCase.input.mutation : undefined,
-          combined: expectedOutput.combined ? testCase.input.combined : undefined,
+          mutation: expectedOutput.mutation
+            ? testCase.input.mutation
+            : undefined,
+          combined: expectedOutput.combined
+            ? testCase.input.combined
+            : undefined,
         });
 
         const sort = (array: OutputEntry[]): OutputEntry[] => {
@@ -72,11 +76,11 @@ describe("Web3API Binding Test Suite", () => {
 
         writeFileSync(
           path.join(testResultDir, `${language}-output.json`),
-          JSON.stringify(output, null, 2),
+          JSON.stringify(output, null, 2)
         );
         writeFileSync(
           path.join(testResultDir, `${language}-expected.json`),
-          JSON.stringify(expectedOutput, null, 2),
+          JSON.stringify(expectedOutput, null, 2)
         );
 
         expect(output).toMatchObject(expectedOutput);

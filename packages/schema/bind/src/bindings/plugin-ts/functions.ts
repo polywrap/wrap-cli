@@ -44,7 +44,7 @@ export const toTypescript: MustacheFunction = () => {
   };
 };
 
-const toTypescriptArray = (type: string, nullable: boolean): string => {
+export const toTypescriptArray = (type: string, nullable: boolean): string => {
   const result = type.match(/(\[)([[\]A-Za-z1-9_.!]+)(\])/);
 
   if (!result || result.length !== 4) {
