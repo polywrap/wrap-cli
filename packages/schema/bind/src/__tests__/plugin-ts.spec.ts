@@ -4,73 +4,96 @@ import { alphabeticalNamedSort } from "../utils/sort";
 import { bindSchema, OutputEntry } from "../";
 
 import {
+  applyNullable,
   toTypescript,
   toTypescriptArray,
 } from "../bindings/plugin-ts/functions";
 
 describe("Web3API Binding | Plugin TS", () => {
-  it("toTypescript | not nullable type | Int", () => {
-    const gqlFormat = "Int!";
-    const tsType = "Int";
+  describe("toTypescript function", () => {
+    it("not nullable type | Int", () => {
+      const gqlFormat = "Int!";
+      const tsType = "Int";
 
-    const result = toTypescript()(gqlFormat, (str) => str);
-    expect(tsType).toBe(result);
+      const result = toTypescript()(gqlFormat, (str) => str);
+      expect(tsType).toBe(result);
+    });
+
+    it("nullable type | Int", () => {
+      const gqlFormat = "Int";
+      const tsType = "Int | null";
+
+      const result = toTypescript()(gqlFormat, (str) => str);
+      expect(tsType).toBe(result);
+    });
+
+    it("nullable type | JSON", () => {
+      const gqlFormat = "JSON";
+      const tsType = "Json | null";
+
+      const result = toTypescript()(gqlFormat, (str) => str);
+      expect(tsType).toBe(result);
+    });
+
+    it("nullable type | Enum", () => {
+      const gqlFormat = "Enum_ETestEnum";
+      const tsType = "Types.ETestEnum | null";
+
+      const result = toTypescript()(gqlFormat, (str) => str);
+      expect(tsType).toBe(result);
+    });
+
+    it("nullable type | Custom type", () => {
+      const gqlFormat = "CustomType";
+      const tsType = "Types.CustomType | null";
+
+      const result = toTypescript()(gqlFormat, (str) => str);
+      expect(tsType).toBe(result);
+    });
   });
 
-  it("toTypescript | nullable type | Int", () => {
-    const gqlFormat = "Int";
-    const tsType = "Int | null";
+  describe("toTypescriptArray function", () => {
+    it("not nullable element", () => {
+      const gqlFormat = "[Type!]";
+      const tsFormat = "Array<Types.Type>";
+      const result = toTypescriptArray(gqlFormat, false);
 
-    const result = toTypescript()(gqlFormat, (str) => str);
-    expect(tsType).toBe(result);
+      expect(result).toBe(tsFormat);
+    });
+
+    it("nullable element", () => {
+      const gqlFormat = "[Type]";
+      const tsFormat = "Array<Types.Type | null>";
+      const result = toTypescriptArray(gqlFormat, false);
+
+      expect(result).toBe(tsFormat);
+    });
+
+    it("nullable array", () => {
+      const gqlFormat = "[Type!]";
+      const tsFormat = "Array<Types.Type> | null";
+      const result = toTypescriptArray(gqlFormat, true);
+
+      expect(result).toBe(tsFormat);
+    });
   });
 
-  it("toTypescript | nullable type | JSON", () => {
-    const gqlFormat = "JSON";
-    const tsType = "Json | null";
+  describe("applyNullable function", () => {
+    it("not nullable type", () => {
+      const type = "Type";
+      const formattedType = "Type";
+      const result = applyNullable(type, false);
 
-    const result = toTypescript()(gqlFormat, (str) => str);
-    expect(tsType).toBe(result);
-  });
+      expect(result).toBe(formattedType);
+    });
 
-  it("toTypescript | nullable type | Enum", () => {
-    const gqlFormat = "Enum_ETestEnum";
-    const tsType = "Types.ETestEnum | null";
+    it("nullable type", () => {
+      const type = "Type";
+      const formattedType = "Type | null";
+      const result = applyNullable(type, true);
 
-    const result = toTypescript()(gqlFormat, (str) => str);
-    expect(tsType).toBe(result);
-  });
-
-  it("toTypescript | nullable type | Custom type", () => {
-    const gqlFormat = "CustomType";
-    const tsType = "Types.CustomType | null";
-
-    const result = toTypescript()(gqlFormat, (str) => str);
-    expect(tsType).toBe(result);
-  });
-
-  it("toTypescriptArray | not nullable element", () => {
-    const gqlFormat = "[Type!]";
-    const tsFormat = "Array<Types.Type>";
-    const result = toTypescriptArray(gqlFormat, false);
-
-    expect(result).toBe(tsFormat);
-  });
-
-  it("toTypescriptArray | nullable element", () => {
-    const gqlFormat = "[Type]";
-    const tsFormat = "Array<Types.Type | null>";
-    const result = toTypescriptArray(gqlFormat, false);
-
-    expect(result).toBe(tsFormat);
-  });
-
-  it("toTypescriptArray | nullable array", () => {
-    const gqlFormat = "[Type!]";
-    const tsFormat = "Array<Types.Type> | null";
-    const result = toTypescriptArray(gqlFormat, true);
-
-    expect(result).toBe(tsFormat);
+      expect(result).toBe(formattedType);
+    });
   });
 
   it("generateBinding", async () => {

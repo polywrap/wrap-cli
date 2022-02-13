@@ -55,7 +55,7 @@ export const toTypescriptArray = (type: string, nullable: boolean): string => {
   return applyNullable("Array<" + tsType + ">", nullable);
 };
 
-const applyNullable = (type: string, nullable: boolean): string => {
+export const applyNullable = (type: string, nullable: boolean): string => {
   if (nullable) {
     return `${type} | null`;
   } else {
