@@ -22,13 +22,13 @@ impl WriteEncoder {
         self.view.get_buffer()
     }
 
-    fn write_negative_fixed_int(&mut self, value: i8) -> Result<(), EncodeError> {
+    pub fn write_negative_fixed_int(&mut self, value: i8) -> Result<(), EncodeError> {
         assert!(-32 <= value && value < 0);
         Format::set_format(self, Format::NegativeFixInt(value))
             .map_err(|e| EncodeError::FormatWriteError(e.to_string()))
     }
 
-    fn write_positive_fixed_int(&mut self, value: u8) -> Result<(), EncodeError> {
+    pub fn write_positive_fixed_int(&mut self, value: u8) -> Result<(), EncodeError> {
         assert!(value < 128);
         Format::set_format(self, Format::PositiveFixInt(value))
             .map_err(|e| EncodeError::FormatWriteError(e.to_string()))
@@ -39,7 +39,7 @@ impl WriteEncoder {
     /// The MessagePack spec requires that the serializer should use
     /// the format which represents the data in the smallest number of bytes.
     #[doc(hidden)]
-    fn write_unsigned_int(&mut self, value: &u64) -> Result<(), EncodeError> {
+    pub fn write_unsigned_int(&mut self, value: &u64) -> Result<(), EncodeError> {
         let val = *value;
         if val < 1 << 7 {
             Ok(self.write_positive_fixed_int(val as u8)?)
@@ -64,7 +64,7 @@ impl WriteEncoder {
     /// the format which represents the data in the smallest number of bytes, with the exception of
     /// sized/unsized types.
     #[doc(hidden)]
-    fn write_signed_int(&mut self, value: &i64) -> Result<(), EncodeError> {
+    pub fn write_signed_int(&mut self, value: &i64) -> Result<(), EncodeError> {
         let val = *value;
         match val {
             val if -32 <= val && val < 0 => Ok(self.write_negative_fixed_int(val as i8)?),

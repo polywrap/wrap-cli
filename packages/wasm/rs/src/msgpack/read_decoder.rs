@@ -30,65 +30,55 @@ impl ReadDecoder {
         }
     }
 
-    pub fn _read_i64(&mut self) -> Result<i64, DecodeError> {
-        match Format::get_format(self) {
-            Ok(f) => {
-                let prefix = f.to_u8();
-
-                if Format::is_positive_fixed_int(prefix) || Format::is_negative_fixed_int(prefix) {
-                    return Ok(prefix as i64);
-                } else {
-                    match f {
-                        Format::Int8 => Ok(ReadBytesExt::read_i8(self)? as i64),
-                        Format::Int16 => Ok(ReadBytesExt::read_i16::<BigEndian>(self)? as i64),
-                        Format::Int32 => Ok(ReadBytesExt::read_i32::<BigEndian>(self)? as i64),
-                        Format::Int64 => Ok(ReadBytesExt::read_i64::<BigEndian>(self)?),
-                        Format::Uint8 => Ok(ReadBytesExt::read_u8(self)? as i64),
-                        Format::Uint16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as i64),
-                        Format::Uint32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)? as i64),
-                        Format::Uint64 => Ok(ReadBytesExt::read_u64::<BigEndian>(self)? as i64),
-                        err_f => {
-                            let err_msg = format!(
-                                "Property must be of type 'int'. {}",
-                                get_error_message(err_f)
-                            );
-                            Err(DecodeError::WrongMsgPackFormat(err_msg))
-                        }
-                    }
+    pub fn read_signed_int(&mut self) -> Result<i64, DecodeError> {
+        let f = Format::get_format(self)?;
+        let prefix = f.to_u8();
+        if Format::is_positive_fixed_int(prefix) || Format::is_negative_fixed_int(prefix) {
+            return Ok(prefix as i64);
+        } else {
+            match f {
+                Format::Int8 => Ok(ReadBytesExt::read_i8(self)? as i64),
+                Format::Int16 => Ok(ReadBytesExt::read_i16::<BigEndian>(self)? as i64),
+                Format::Int32 => Ok(ReadBytesExt::read_i32::<BigEndian>(self)? as i64),
+                Format::Int64 => Ok(ReadBytesExt::read_i64::<BigEndian>(self)?),
+                Format::Uint8 => Ok(ReadBytesExt::read_u8(self)? as i64),
+                Format::Uint16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as i64),
+                Format::Uint32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)? as i64),
+                Format::Uint64 => Ok(ReadBytesExt::read_u64::<BigEndian>(self)? as i64),
+                err_f => {
+                    let err_msg = format!(
+                        "Property must be of type 'int'. {}",
+                        get_error_message(err_f)
+                    );
+                    Err(DecodeError::WrongMsgPackFormat(err_msg))
                 }
             }
-            Err(e) => Err(DecodeError::Int64ReadError(e.to_string())),
         }
     }
 
-    pub fn _read_u64(&mut self) -> Result<u64, DecodeError> {
-        match Format::get_format(self) {
-            Ok(f) => {
-                let prefix = f.to_u8();
-
-                if Format::is_positive_fixed_int(prefix) || Format::is_negative_fixed_int(prefix) {
-                    return Ok(prefix as u64);
-                } else {
-                    match f {
-                        Format::Int8 => Ok(ReadBytesExt::read_i8(self)? as u64),
-                        Format::Int16 => Ok(ReadBytesExt::read_i16::<BigEndian>(self)? as u64),
-                        Format::Int32 => Ok(ReadBytesExt::read_i32::<BigEndian>(self)? as u64),
-                        Format::Int64 => Ok(ReadBytesExt::read_i64::<BigEndian>(self)? as u64),
-                        Format::Uint8 => Ok(ReadBytesExt::read_u8(self)? as u64),
-                        Format::Uint16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as u64),
-                        Format::Uint32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)? as u64),
-                        Format::Uint64 => Ok(ReadBytesExt::read_u64::<BigEndian>(self)?),
-                        err_f => {
-                            let err_msg = format!(
-                                "Property must be of type 'uint'. {}",
-                                get_error_message(err_f)
-                            );
-                            Err(DecodeError::WrongMsgPackFormat(err_msg))
-                        }
-                    }
+    pub fn read_unsigned_int(&mut self) -> Result<u64, DecodeError> {
+        let f = Format::get_format(self)?;
+        let prefix = f.to_u8();
+        if Format::is_positive_fixed_int(prefix) || Format::is_negative_fixed_int(prefix) {
+            return Ok(prefix as u64);
+        } else {
+            match f {
+                Format::Int8 => Ok(ReadBytesExt::read_i8(self)? as u64),
+                Format::Int16 => Ok(ReadBytesExt::read_i16::<BigEndian>(self)? as u64),
+                Format::Int32 => Ok(ReadBytesExt::read_i32::<BigEndian>(self)? as u64),
+                Format::Int64 => Ok(ReadBytesExt::read_i64::<BigEndian>(self)? as u64),
+                Format::Uint8 => Ok(ReadBytesExt::read_u8(self)? as u64),
+                Format::Uint16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as u64),
+                Format::Uint32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)? as u64),
+                Format::Uint64 => Ok(ReadBytesExt::read_u64::<BigEndian>(self)?),
+                err_f => {
+                    let err_msg = format!(
+                        "Property must be of type 'uint'. {}",
+                        get_error_message(err_f)
+                    );
+                    Err(DecodeError::WrongMsgPackFormat(err_msg))
                 }
             }
-            Err(e) => Err(DecodeError::Uint64ReadError(e.to_string())),
         }
     }
 }
@@ -128,7 +118,7 @@ impl Read for ReadDecoder {
     }
 
     fn read_i8(&mut self) -> Result<i8, DecodeError> {
-        let v = self._read_i64()?;
+        let v = self.read_signed_int()?;
         // check for integer overflow
         if v <= i8::MAX as i64 && v >= i8::MIN as i64 {
             Ok(v as i8)
@@ -139,7 +129,7 @@ impl Read for ReadDecoder {
     }
 
     fn read_i16(&mut self) -> Result<i16, DecodeError> {
-        let v = self._read_i64()?;
+        let v = self.read_signed_int()?;
         // check for integer overflow
         if v <= i16::MAX as i64 && v >= i16::MIN as i64 {
             Ok(v as i16)
@@ -150,7 +140,7 @@ impl Read for ReadDecoder {
     }
 
     fn read_i32(&mut self) -> Result<i32, DecodeError> {
-        let v = self._read_i64()?;
+        let v = self.read_signed_int()?;
         // check for integer overflow
         if v <= i32::MAX as i64 && v >= i32::MIN as i64 {
             Ok(v as i32)
@@ -161,7 +151,7 @@ impl Read for ReadDecoder {
     }
 
     fn read_u8(&mut self) -> Result<u8, DecodeError> {
-        let v = self._read_u64()?;
+        let v = self.read_unsigned_int()?;
         // check for integer overflow
         if v <= u8::MAX as u64 && v >= u8::MIN as u64 {
             Ok(v as u8)
@@ -172,7 +162,7 @@ impl Read for ReadDecoder {
     }
 
     fn read_u16(&mut self) -> Result<u16, DecodeError> {
-        let v = self._read_u64()?;
+        let v = self.read_unsigned_int()?;
         // check for integer overflow
         if v <= u16::MAX as u64 && v >= u16::MIN as u64 {
             Ok(v as u16)
@@ -183,7 +173,7 @@ impl Read for ReadDecoder {
     }
 
     fn read_u32(&mut self) -> Result<u32, DecodeError> {
-        let v = self._read_u64()?;
+        let v = self.read_unsigned_int()?;
         // check for integer overflow
         if v <= u32::MAX as u64 && v >= u32::MIN as u64 {
             Ok(v as u32)
