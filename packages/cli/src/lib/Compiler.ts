@@ -8,6 +8,7 @@ import {
   outputManifest,
   outputMetadata,
   generateDockerfile,
+  generateDockerImageName,
   createBuildImage,
   copyArtifactsFromBuildImage,
   manifestLanguageToBindLanguage,
@@ -294,7 +295,7 @@ export class Compiler {
       };
     }
 
-    web3ApiManifest.build = "./web3api.build.yaml";
+    web3ApiManifest.build = "./web3api.build.json";
 
     // Create the BuildManifest
     const buildManifest: BuildManifest = {
@@ -340,7 +341,9 @@ export class Compiler {
     const { project, outputDir } = this._config;
     const buildManifestDir = await project.getBuildManifestDir();
     const buildManifest = await project.getBuildManifest();
-    const imageName = buildManifest?.docker?.name || "web3api-build";
+    const imageName =
+      buildManifest?.docker?.name ||
+      generateDockerImageName(await project.getBuildUuid());
     let dockerfile = buildManifest?.docker?.dockerfile
       ? path.join(buildManifestDir, buildManifest?.docker?.dockerfile)
       : path.join(buildManifestDir, "Dockerfile");
@@ -425,14 +428,14 @@ export class Compiler {
 
     await outputManifest(
       web3ApiManifest,
-      path.join(outputDir, "web3api.yaml"),
+      path.join(outputDir, "web3api.json"),
       project.quiet
     );
 
     if (buildManifest) {
       await outputManifest(
         buildManifest,
-        path.join(outputDir, "web3api.build.yaml"),
+        path.join(outputDir, "web3api.build.json"),
         project.quiet
       );
     }
@@ -440,7 +443,7 @@ export class Compiler {
     if (metaManifest) {
       await outputManifest(
         metaManifest,
-        path.join(outputDir, "web3api.meta.yaml"),
+        path.join(outputDir, "web3api.meta.json"),
         project.quiet
       );
     }
