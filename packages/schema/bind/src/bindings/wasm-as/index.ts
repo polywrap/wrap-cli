@@ -151,7 +151,7 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
   };
 }
 
-function generateFiles(
+export function generateFiles(
   subpath: string,
   config: unknown,
   subTemplates: Record<string, string>,
@@ -208,7 +208,7 @@ function generateFiles(
   return output;
 }
 
-function loadSubTemplates(
+export function loadSubTemplates(
   entries: OutputEntry[],
   existingSubTemplates?: Record<string, string>
 ): Record<string, string> {

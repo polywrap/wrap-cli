@@ -147,7 +147,7 @@ export const toWasm: MustacheFunction = () => {
   };
 };
 
-const toWasmArray = (type: string, nullable: boolean): string => {
+export const toWasmArray = (type: string, nullable: boolean): string => {
   const result = type.match(/(\[)([[\]A-Za-z1-9_.!]+)(\])/);
 
   if (!result || result.length !== 4) {
@@ -158,7 +158,7 @@ const toWasmArray = (type: string, nullable: boolean): string => {
   return applyNullable("Array<" + wasmType + ">", nullable, false);
 };
 
-const applyNullable = (
+export const applyNullable = (
   type: string,
   nullable: boolean,
   isEnum: boolean
