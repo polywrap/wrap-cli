@@ -45,7 +45,7 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
     writer.context().pop();
     writer.context().push("object_array", "Vec<TestImportObject>", "writing property");
     writer.write_str("object_array")?;
-    writer.write_array(&input.object_array, |writer: &mut W, item| {
+    writer.write_array(&input.object_array, |writer, item| {
         TestImportObject::write(item, writer)
     })?;
     writer.context().pop();
@@ -87,7 +87,7 @@ pub fn write_another_method_args<W: Write>(input: &InputAnotherMethod, writer: &
     writer.write_map_length(&1)?;
     writer.context().push("arg", "Vec<String>", "writing property");
     writer.write_str("arg")?;
-    writer.write_array(&input.arg, |writer: &mut W, item| {
+    writer.write_array(&input.arg, |writer, item| {
         writer.write_string(item)
     })?;
     writer.context().pop();

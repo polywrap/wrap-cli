@@ -68,8 +68,8 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
     writer.context().pop();
     writer.context().push("u_array_array", "Vec<Option<Vec<Option<u32>>>>", "writing property");
     writer.write_str("u_array_array")?;
-    writer.write_array(&input.u_array_array, |writer: &mut W, item| {
-        writer.write_nullable_array(item, |writer: &mut W, item| {
+    writer.write_array(&input.u_array_array, |writer, item| {
+        writer.write_nullable_array(item, |writer, item| {
             writer.write_nullable_u32(item)
         })
     })?;
@@ -88,13 +88,13 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
     writer.context().pop();
     writer.context().push("object_array", "Vec<TestImportObject>", "writing property");
     writer.write_str("object_array")?;
-    writer.write_array(&input.object_array, |writer: &mut W, item| {
+    writer.write_array(&input.object_array, |writer, item| {
         TestImportObject::write(item, writer)
     })?;
     writer.context().pop();
     writer.context().push("opt_object_array", "Option<Vec<Option<TestImportObject>>>", "writing property");
     writer.write_str("opt_object_array")?;
-    writer.write_nullable_array(&input.opt_object_array, |writer: &mut W, item| {
+    writer.write_nullable_array(&input.opt_object_array, |writer, item| {
         if item.is_some() {
             TestImportObject::write(item.as_ref().as_ref().unwrap(), writer)
         } else {
@@ -112,13 +112,13 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
     writer.context().pop();
     writer.context().push("enum_array", "Vec<TestImportEnum>", "writing property");
     writer.write_str("enum_array")?;
-    writer.write_array(&input.enum_array, |writer: &mut W, item| {
+    writer.write_array(&input.enum_array, |writer, item| {
         writer.write_i32(&(*item as i32))
     })?;
     writer.context().pop();
     writer.context().push("opt_enum_array", "Option<Vec<Option<TestImportEnum>>>", "writing property");
     writer.write_str("opt_enum_array")?;
-    writer.write_nullable_array(&input.opt_enum_array, |writer: &mut W, item| {
+    writer.write_nullable_array(&input.opt_enum_array, |writer, item| {
         writer.write_nullable_i32(&item.map(|f| f as i32))
     })?;
     writer.context().pop();
@@ -160,7 +160,7 @@ pub fn write_another_method_args<W: Write>(input: &InputAnotherMethod, writer: &
     writer.write_map_length(&1)?;
     writer.context().push("arg", "Vec<String>", "writing property");
     writer.write_str("arg")?;
-    writer.write_array(&input.arg, |writer: &mut W, item| {
+    writer.write_array(&input.arg, |writer, item| {
         writer.write_string(item)
     })?;
     writer.context().pop();
