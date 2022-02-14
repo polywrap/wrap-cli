@@ -1,5 +1,5 @@
 use polywrap_wasm_rs::{BigInt, Context, Write, WriteEncoder, JSON};
-// use std::collections::BTreeMap;
+use std::collections::BTreeMap;
 
 #[test]
 fn test_write_bigint() {
@@ -166,39 +166,44 @@ fn test_write_f64() {
     )
 }
 
-// #[test]
-// fn test_write_bytes() {
-//     let mut writer = WriteEncoder::new(&[], Context::new());
-//     writer.write_bytes(&[1]).unwrap();
-//     assert_eq!([196, 1, 1], writer.get_buffer().as_slice());
-// }
+#[test]
+fn test_write_bytes() {
+    let mut writer = WriteEncoder::new(&[], Context::new());
+    writer.write_bytes(&[1]).unwrap();
+    assert_eq!([196, 1, 1], writer.get_buffer().as_slice());
+}
 
-// #[test]
-// fn test_write_array() {
-//     let mut writer = WriteEncoder::new(&[], Context::new());
-//     let input_arr: Vec<i32> = vec![1, 2, 545345];
-//     writer.write_array(&input_arr, |writer, item| writer.write_i32(item)).unwrap();
-//     assert_eq!(writer.get_buffer().as_slice(), [221, 0, 0, 0, 3, 1, 2, 206, 0, 8, 82, 65]);
-// }
+#[test]
+fn test_write_fixed_array() {
+    let mut writer = WriteEncoder::new(&[], Context::new());
+    let input_arr: Vec<i32> = vec![1, 2, 545345];
+    writer.write_array(&input_arr, |writer, item| writer.write_i32(item)).unwrap();
+    assert_eq!(writer.get_buffer().as_slice(), [147, 1, 2, 206, 0, 8, 82, 65]);
+}
 
-// #[test]
-// fn test_write_map() {
-//     let mut writer = WriteEncoder::new(&[], Context::new());
-//     let mut map: BTreeMap<String, Vec<i32>> = BTreeMap::new();
-//     let _ = map.insert("Polywrap".to_string(), vec![3, 5, 9]);
-//     let _ = map.insert("Rust".to_string(), vec![1, 4, 7]);
-//     writer
-//         .write_map(
-//             &map,
-//             |writer, key| writer.write_string(key),
-//             |writer, value| writer.write_array(value, |writer, item| writer.write_i32(item)),
-//         )
-//         .unwrap();
-//     assert_eq!(
-//         [
-//             223, 0, 0, 0, 2, 168, 80, 111, 108, 121, 119, 114, 97, 112, 221, 0, 0, 0, 3, 3, 5, 9,
-//             164, 82, 117, 115, 116, 221, 0, 0, 0, 3, 1, 4, 7
-//         ],
-//         writer.get_buffer().as_slice()
-//     );
-// }
+// TODO: add tests for test_write_16_array test_write_32_array
+// https://i5ting.github.io/msgpack-specification/#10309
+
+#[test]
+fn test_write_fixed_map() {
+    let mut writer = WriteEncoder::new(&[], Context::new());
+    let mut map: BTreeMap<String, Vec<i32>> = BTreeMap::new();
+    let _ = map.insert("Polywrap".to_string(), vec![3, 5, 9]);
+    let _ = map.insert("Rust".to_string(), vec![1, 4, 7]);
+    writer
+        .write_map(
+            &map,
+            |writer, key| writer.write_string(key),
+            |writer, value| writer.write_array(value, |writer, item| writer.write_i32(item)),
+        )
+        .unwrap();
+    assert_eq!(
+        [
+            130, 168, 80, 111, 108, 121, 119, 114, 97, 112, 147, 3, 5, 9,
+            164, 82, 117, 115, 116, 147, 1, 4, 7
+        ],
+        writer.get_buffer().as_slice()
+    );
+}
+
+// TODO: test test_write_16_map test_write_32_map
