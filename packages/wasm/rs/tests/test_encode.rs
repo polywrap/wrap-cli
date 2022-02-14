@@ -125,6 +125,47 @@ fn test_write_i32() {
     assert_eq!([206, 0, 1, 226, 64], writer.get_buffer().as_slice());
 }
 
+#[test]
+fn write_unsigned_int() {
+    let mut writer = WriteEncoder::new(&[], Context::new());
+    // u64::MAX == 18446744073709551615
+    writer.write_unsigned_int(&u64::MAX).unwrap();
+    assert_eq!(
+        [207, 255, 255, 255, 255, 255, 255, 255, 255],
+        writer.get_buffer().as_slice()
+    );
+}
+
+#[test]
+fn write_signed_int() {
+    let mut writer = WriteEncoder::new(&[], Context::new());
+    // i64::MAX == 9_223_372_036_854_775_807i64
+    writer
+        .write_signed_int(&9_223_372_036_854_775_807i64)
+        .unwrap();
+    assert_eq!(
+        [207, 127, 255, 255, 255, 255, 255, 255, 255],
+        writer.get_buffer().as_slice()
+    );
+}
+
+#[test]
+fn test_write_f32() {
+    let mut writer = WriteEncoder::new(&[], Context::new());
+    writer.write_f32(&0.5_f32).unwrap();
+    assert_eq!([202, 63, 0, 0, 0], writer.get_buffer().as_slice())
+}
+
+#[test]
+fn test_write_f64() {
+    let mut writer = WriteEncoder::new(&[], Context::new());
+    writer.write_f64(&3.141592653589793_f64).unwrap();
+    assert_eq!(
+        [203, 64, 9, 33, 251, 84, 68, 45, 24],
+        writer.get_buffer().as_slice()
+    )
+}
+
 // #[test]
 // fn test_write_bytes() {
 //     let mut writer = WriteEncoder::new(&[], Context::new());

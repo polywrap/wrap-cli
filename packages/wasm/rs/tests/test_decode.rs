@@ -107,12 +107,6 @@ fn test_read_i32() {
 }
 
 #[test]
-fn test_read_i64() {
-    let mut reader = ReadDecoder::new(&[207, 128, 0, 0, 0, 0, 0, 0, 0], Context::new());
-    assert_eq!(i64::MIN, reader.read_signed_int().unwrap());
-}
-
-#[test]
 fn test_read_u8() {
     let mut reader = ReadDecoder::new(&[204, 255], Context::new());
     assert_eq!(u8::MAX, reader.read_u8().unwrap());
@@ -131,10 +125,16 @@ fn test_read_u32() {
 }
 
 #[test]
-fn test_read_u64() {
+fn test_read_unsigned_int() {
     let mut reader = ReadDecoder::new(
         &[207, 255, 255, 255, 255, 255, 255, 255, 255],
         Context::new(),
     );
     assert_eq!(u64::MAX, reader.read_unsigned_int().unwrap());
+}
+
+#[test]
+fn test_read_signed_int() {
+    let mut reader = ReadDecoder::new(&[207, 128, 0, 0, 0, 0, 0, 0, 0], Context::new());
+    assert_eq!(i64::MIN, reader.read_signed_int().unwrap());
 }
