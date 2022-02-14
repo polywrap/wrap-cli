@@ -1,13 +1,13 @@
 import { getEnvFromUriOrResolutionStack } from "../getEnvFromUriOrResolutionStack";
 import {
-  IUriToApiResolver,
+  UriToApiResolver,
   UriResolutionResult,
   UriResolutionStack,
 } from "../../core";
-import { Api, Client, Env, PluginPackage, Uri } from "../../../types";
+import { Api, ApiCache, Client, Env, PluginPackage, Uri } from "../../../types";
 import { findPluginPackage } from "../../../algorithms";
 
-export class PluginResolver implements IUriToApiResolver {
+export class PluginResolver implements UriToApiResolver {
   constructor(
     private readonly createPluginApi: (
       uri: Uri,
@@ -16,11 +16,14 @@ export class PluginResolver implements IUriToApiResolver {
     ) => Api
   ) {}
 
-  name = "Plugin";
+  public get name(): string {
+    return PluginResolver.name;
+  }
 
   async resolveUri(
     uri: Uri,
     client: Client,
+    cache: ApiCache,
     resolutionPath: UriResolutionStack
   ): Promise<UriResolutionResult> {
     const plugin = findPluginPackage(uri, client.getPlugins({}));

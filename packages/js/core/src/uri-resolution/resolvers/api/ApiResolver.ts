@@ -3,9 +3,9 @@ import {
   DeserializeManifestOptions,
   deserializeWeb3ApiManifest,
 } from "../../../manifest";
-import { Uri, Client, InvokeHandler } from "../../../types";
+import { Uri, ApiCache, Client, InvokeHandler } from "../../../types";
 import {
-  IUriToApiResolver,
+  UriToApiResolver,
   UriResolutionStack,
   UriResolutionResult,
 } from "../../core";
@@ -14,18 +14,21 @@ import { getEnvFromUriOrResolutionStack } from "../getEnvFromUriOrResolutionStac
 
 import { Tracer } from "@web3api/tracing-js";
 
-export class ApiResolver implements IUriToApiResolver {
+export class ApiResolver implements UriToApiResolver {
   constructor(
     public readonly resolverUri: Uri,
     private readonly createApi: CreateApiFunc,
     private readonly deserializeOptions?: DeserializeManifestOptions
   ) {}
 
-  name = "Api";
+  public get name(): string {
+    return ApiResolver.name;
+  }
 
   async resolveUri(
     uri: Uri,
     client: Client,
+    cache: ApiCache,
     resolutionPath: UriResolutionStack
   ): Promise<UriResolutionResult> {
     const result = await tryResolveUriWithUriResolver(

@@ -9,7 +9,14 @@ export class UriResolutionHistory {
   }
 
   getUris(): Uri[] {
-    return this.stack.map(({ result: { uri } }) => uri);
+    return (
+      this.stack
+        .map(({ result: { uri } }) => uri)
+        // unique URI's only
+        .filter((value, index, self) => {
+          return self.indexOf(value) === index;
+        })
+    );
   }
 
   // Resolution path includes the list of resolvers that redirected to another URI or returned the API

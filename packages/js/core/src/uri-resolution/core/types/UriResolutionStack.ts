@@ -1,10 +1,3 @@
-import { Uri } from "../../../types";
+import { UriResolutionInfo } from "./UriResolutionInfo";
 
-export type UriResolutionStack = {
-  resolver: string;
-  sourceUri: Uri;
-  result: {
-    uri: Uri;
-    api: boolean;
-  };
-}[];
+export type UriResolutionStack = UriResolutionInfo[];
