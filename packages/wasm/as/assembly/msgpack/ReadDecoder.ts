@@ -11,9 +11,9 @@ import {
 } from "./Format";
 import { Nullable } from "./Nullable";
 import { Read } from "./Read";
-import { BigInt } from "../BigInt";
-import { Context } from "./Context";
-import { JSON } from "../JSON";
+import { BigInt } from "../math";
+import { Context } from "../debug";
+import { JSON } from "../json";
 
 export class ReadDecoder extends Read {
   private readonly _context: Context;

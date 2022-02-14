@@ -87,6 +87,10 @@ export function yamlFile(filePath: unknown): boolean {
   );
 }
 
+export function manifestFile(filePath: unknown): boolean {
+  return jsonFile(filePath) || yamlFile(filePath);
+}
+
 export function regexString(regex: unknown): boolean {
   if (typeof regex !== "string") {
     return false;
