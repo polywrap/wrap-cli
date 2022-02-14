@@ -3,6 +3,7 @@ import { clearStyle, w3Cli } from "./utils";
 import { runCLI } from "@web3api/test-env-js";
 import fs from "fs";
 import path from "path";
+import { Web3ApiProject } from "../../lib";
 import { loadBuildManifest } from "../../lib/helpers";
 
 const HELP = `
@@ -143,29 +144,21 @@ ${HELP}`);
   });
 
   test("Adds uuid-v4 suffix to build-env image if no build manifest specified", async () => {
-    const { exitCode: code, stdout: output } = await runCLI(
-      {
-        args: ["build", "web3api.nobuild.yaml", "-v"],
-        cwd: projectRoot,
-       cli: w3Cli,
-      },
-    );
+    const project = new Web3ApiProject({
+      web3apiManifestPath: path.join(projectRoot, "web3api.nobuild.yaml")
+    });
+
+    await project.cacheDefaultBuildManifestFiles();
 
     const cacheBuildEnvPath = path.join(projectRoot, ".w3/build/env")
-    const sanitizedOutput = clearStyle(output);
-
     const cachedBuildManifest = await loadBuildManifest(
       path.join(cacheBuildEnvPath, "web3api.build.yaml")
-    )
+    );
 
     const buildImageName = cachedBuildManifest.docker?.name
 
     expect(buildImageName?.length).toBeGreaterThan(36)
     expect((buildImageName?.match(/-/g) || []).length).toBeGreaterThanOrEqual(4);
-    expect(sanitizedOutput).toContain(
-      `Artifacts written to ./build from the image \`${buildImageName}\``
-    );
-    expect(code).toEqual(0);
   });
 
   test("Successfully builds project w/ web3api.build.yaml but no dockerfile", async () => {
