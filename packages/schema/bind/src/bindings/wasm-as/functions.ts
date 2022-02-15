@@ -7,7 +7,7 @@ export const toMsgPack: MustacheFunction = () => {
 
     let modifier = "";
     if (type[type.length - 1] === "!") {
-      type = type.substr(0, type.length - 1);
+      type = type.substring(0, type.length - 1);
     } else {
       modifier = "Nullable";
     }
@@ -33,15 +33,15 @@ export const toWasmInit: MustacheFunction = () => {
     let type = render(value);
 
     if (type[type.length - 1] === "!") {
-      type = type.substr(0, type.length - 1);
+      type = type.substring(0, type.length - 1);
     } else {
       const nullType = toWasm()(value, render);
       const nullable = "Nullable";
       const nullOptional = "| null";
 
-      if (nullType.substr(-nullOptional.length) === nullOptional) {
+      if (nullType.endsWith(nullOptional)) {
         return "null";
-      } else if (nullType.substr(0, nullable.length) === nullable) {
+      } else if (nullType.startsWith(nullable)) {
         return `new ${nullType}()`;
       }
     }
@@ -87,7 +87,7 @@ export const toWasm: MustacheFunction = () => {
 
     let nullable = false;
     if (type[type.length - 1] === "!") {
-      type = type.substr(0, type.length - 1);
+      type = type.substring(0, type.length - 1);
     } else {
       nullable = true;
     }
