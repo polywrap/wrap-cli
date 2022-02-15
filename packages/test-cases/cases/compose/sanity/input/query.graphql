@@ -23,6 +23,10 @@ method1 comment
 uArrayArray comment
 """
     uArrayArray: [[UInt]]!
+"""
+Map<String!, Int!> comment
+"""
+    map: Map! @annotate(type: "Map<String!, Int!>!")
   ): String!
 
 """

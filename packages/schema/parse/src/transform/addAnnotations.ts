@@ -1,26 +1,21 @@
 import { toGraphQL } from ".";
 import {
-  AnyDefinition,
-  DefinitionKind,
-  GenericDefinition,
+  PropertyDefinition,
   TypeInfoTransforms,
 } from "..";
 
 export const addAnnotations: TypeInfoTransforms = {
   enter: {
-    GenericDefinition: (def: GenericDefinition): GenericDefinition => {
-      if (def.kind !== DefinitionKind.Property) return def;
-
-      const anyDef = def as AnyDefinition;
-      if (!anyDef.map) return def;
+    PropertyDefinition: (def: PropertyDefinition): PropertyDefinition => {
+      if (!def.map) return def;
 
       return {
         ...def,
         toGraphQLType: (): string =>
           `Map${def.required ? "!" : ""} @annotate(type: "${toGraphQL(
-            anyDef
+            def
           )}")`,
-      } as GenericDefinition;
+      } as PropertyDefinition;
     },
   },
 };

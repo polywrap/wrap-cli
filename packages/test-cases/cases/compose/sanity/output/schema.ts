@@ -138,6 +138,20 @@ export const typeInfo: TypeInfo = {
                   type: "UInt"
                 })
               })
+            }),
+            createMapPropertyDefinition({
+              name: "map",
+              required: true,
+              type: "Map<String, Int>",
+              comment: "Map<String!, Int!> comment",
+              key: createMapKeyDefinition({
+                type: "String",
+                required: true
+              }),
+              value: createScalarDefinition({
+                type: "Int",
+                required: true
+              })
             })
           ]
         },
