@@ -177,8 +177,13 @@ fn test_write_bytes() {
 fn test_write_fixed_array() {
     let mut writer = WriteEncoder::new(&[], Context::new());
     let input_arr: Vec<i32> = vec![1, 2, 545345];
-    writer.write_array(&input_arr, |writer, item| writer.write_i32(item)).unwrap();
-    assert_eq!(writer.get_buffer().as_slice(), [147, 1, 2, 206, 0, 8, 82, 65]);
+    writer
+        .write_array(&input_arr, |writer, item| writer.write_i32(item))
+        .unwrap();
+    assert_eq!(
+        writer.get_buffer().as_slice(),
+        [147, 1, 2, 206, 0, 8, 82, 65]
+    );
 }
 
 // TODO: add tests for test_write_16_array test_write_32_array
@@ -199,8 +204,8 @@ fn test_write_fixed_map() {
         .unwrap();
     assert_eq!(
         [
-            130, 168, 80, 111, 108, 121, 119, 114, 97, 112, 147, 3, 5, 9,
-            164, 82, 117, 115, 116, 147, 1, 4, 7
+            130, 168, 80, 111, 108, 121, 119, 114, 97, 112, 147, 3, 5, 9, 164, 82, 117, 115, 116,
+            147, 1, 4, 7
         ],
         writer.get_buffer().as_slice()
     );

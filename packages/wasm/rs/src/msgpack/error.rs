@@ -39,9 +39,6 @@ pub enum EncodeError {
     #[error("Uint32WriteError: '{0}'")]
     Uint32WriteError(String),
 
-    #[error("Uint64WriteError: '{0}'")]
-    Uint64WriteError(String),
-
     #[error("Int8WriteError: '{0}'")]
     Int8WriteError(String),
 
@@ -51,17 +48,11 @@ pub enum EncodeError {
     #[error("Int32WriteError: '{0}'")]
     Int32WriteError(String),
 
-    #[error("Int64WriteError: '{0}'")]
-    Int64WriteError(String),
-
     #[error("StrWriteError: '{0}'")]
     StrWriteError(String),
 
-    #[error("ArrayWriteError: '{0}'")]
-    ArrayWriteError(String),
-
-    #[error("MapWriteError: '{0}'")]
-    MapWriteError(String),
+    #[error("Error in serializing '{0}'")]
+    TypeWriteError(String),
 }
 
 impl From<String> for EncodeError {
@@ -112,59 +103,11 @@ pub enum DecodeError {
     #[error("JSONReadError: '{0}'")]
     JSONReadError(String),
 
-    #[error("NilReadError: '{0}'")]
-    NilReadError(String),
-
-    #[error("FormatReadError: '{0}'")]
-    FormatReadError(String),
-
-    #[error("BooleanReadError: '{0}'")]
-    BooleanReadError(String),
-
-    #[error("BinReadError: '{0}'")]
-    BinReadError(String),
-
-    #[error("Float32ReadError: '{0}'")]
-    Float32ReadError(String),
-
-    #[error("Float64ReadError: '{0}'")]
-    Float64ReadError(String),
-
     #[error("{0}")]
     IntRangeError(String),
 
-    #[error("Uint8ReadError: '{0}'")]
-    Uint8ReadError(String),
-
-    #[error("Uint16ReadError: '{0}'")]
-    Uint16ReadError(String),
-
-    #[error("Uint32ReadError: '{0}'")]
-    Uint32ReadError(String),
-
-    #[error("Uint64ReadError: '{0}'")]
-    Uint64ReadError(String),
-
-    #[error("Int8ReadError: '{0}'")]
-    Int8ReadError(String),
-
-    #[error("Int16ReadError: '{0}'")]
-    Int16ReadError(String),
-
-    #[error("Int32ReadError: '{0}'")]
-    Int32ReadError(String),
-
-    #[error("Int64ReadError: '{0}'")]
-    Int64ReadError(String),
-
     #[error("StrReadError: '{0}'")]
     StrReadError(String),
-
-    #[error("ArrayReadError: '{0}'")]
-    ArrayReadError(String),
-
-    #[error("MapReadError: '{0}'")]
-    MapReadError(String),
 
     #[error("UnknownFieldName: '{0}'")]
     UnknownFieldName(String),
@@ -174,6 +117,9 @@ pub enum DecodeError {
 
     #[error("Missing required field: '{0}'")]
     MissingField(String),
+
+    #[error("Error in deserializing '{0}'")]
+    TypeReadError(String),
 }
 
 impl From<String> for DecodeError {
