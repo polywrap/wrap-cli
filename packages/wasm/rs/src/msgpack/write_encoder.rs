@@ -254,12 +254,12 @@ impl Write for WriteEncoder {
 
     fn write_array<T: Clone>(
         &mut self,
-        a: &[T],
-        mut arr_fn: impl FnMut(&mut Self, &T) -> Result<(), EncodeError>,
+        array: &[T],
+        mut arr_writer: impl FnMut(&mut Self, &T) -> Result<(), EncodeError>,
     ) -> Result<(), EncodeError> {
-        self.write_array_length(&(a.len() as u32))?;
-        for element in a {
-            arr_fn(self, element)?;
+        self.write_array_length(&(array.len() as u32))?;
+        for element in array {
+            arr_writer(self, element)?;
         }
         Ok(())
     }
@@ -283,8 +283,8 @@ impl Write for WriteEncoder {
     fn write_map<K, V: Clone>(
         &mut self,
         map: &BTreeMap<K, V>,
-        mut key_fn: impl FnMut(&mut Self, &K) -> Result<(), EncodeError>,
-        mut val_fn: impl FnMut(&mut Self, &V) -> Result<(), EncodeError>,
+        mut key_writer: impl FnMut(&mut Self, &K) -> Result<(), EncodeError>,
+        mut val_writer: impl FnMut(&mut Self, &V) -> Result<(), EncodeError>,
     ) -> Result<(), EncodeError>
     where
         K: Clone + Eq + Hash + Ord,
@@ -293,8 +293,8 @@ impl Write for WriteEncoder {
         let keys: Vec<_> = map.keys().into_iter().collect();
         for key in keys {
             let value = &map[key];
-            key_fn(self, key)?;
-            val_fn(self, &value)?;
+            key_writer(self, key)?;
+            val_writer(self, &value)?;
         }
         Ok(())
     }
@@ -372,14 +372,14 @@ impl Write for WriteEncoder {
     fn write_nullable_bytes(&mut self, value: &Option<Vec<u8>>) -> Result<(), EncodeError> {
         match value {
             None => Ok(Write::write_nil(self)?),
-            Some(b) => Ok(Write::write_bytes(self, b)?),
+            Some(bytes) => Ok(Write::write_bytes(self, bytes)?),
         }
     }
 
     fn write_nullable_bigint(&mut self, value: &Option<BigInt>) -> Result<(), EncodeError> {
         match value {
             None => Ok(Write::write_nil(self)?),
-            Some(val) => Ok(Write::write_bigint(self, val)?),
+            Some(bigint) => Ok(Write::write_bigint(self, bigint)?),
         }
     }
 
@@ -392,27 +392,27 @@ impl Write for WriteEncoder {
 
     fn write_nullable_array<T: Clone>(
         &mut self,
-        a: &Option<Vec<T>>,
-        arr_fn: impl FnMut(&mut Self, &T) -> Result<(), EncodeError>,
+        opt_array: &Option<Vec<T>>,
+        arr_writer: impl FnMut(&mut Self, &T) -> Result<(), EncodeError>,
     ) -> Result<(), EncodeError> {
-        match a {
+        match opt_array {
             None => Ok(Write::write_nil(self)?),
-            Some(arr) => Ok(Write::write_array(self, arr, arr_fn)?),
+            Some(array) => Ok(Write::write_array(self, array, arr_writer)?),
         }
     }
 
     fn write_nullable_map<K, V: Clone>(
         &mut self,
-        map: &Option<BTreeMap<K, V>>,
-        key_fn: impl FnMut(&mut Self, &K) -> Result<(), EncodeError>,
-        val_fn: impl FnMut(&mut Self, &V) -> Result<(), EncodeError>,
+        opt_map: &Option<BTreeMap<K, V>>,
+        key_writer: impl FnMut(&mut Self, &K) -> Result<(), EncodeError>,
+        val_writer: impl FnMut(&mut Self, &V) -> Result<(), EncodeError>,
     ) -> Result<(), EncodeError>
     where
         K: Clone + Eq + Hash + Ord,
     {
-        match map {
+        match opt_map {
             None => Ok(Write::write_nil(self)?),
-            Some(m) => Ok(Write::write_map(self, m, key_fn, val_fn)?),
+            Some(map) => Ok(Write::write_map(self, map, key_writer, val_writer)?),
         }
     }
 

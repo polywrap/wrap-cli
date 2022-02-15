@@ -27,10 +27,8 @@ pub fn serialize_test_import_another_object(input: &TestImportAnotherObject) -> 
 
 pub fn write_test_import_another_object<W: Write>(input: &TestImportAnotherObject, writer: &mut W) -> Result<(), EncodeError> {
     writer.write_map_length(&1)?;
-    writer.context().push("prop", "String", "writing property");
     writer.write_str("prop")?;
     writer.write_string(&input.prop)?;
-    writer.context().pop();
     Ok(())
 }
 
@@ -53,10 +51,12 @@ pub fn read_test_import_another_object<R: Read>(reader: &mut R) -> Result<TestIm
 
         match field.as_str() {
             "prop" => {
-                reader.context().push(&field, "String", "type found, reading property");
-                _prop = reader.read_string()?;
-                _prop_set = true;
-                reader.context().pop();
+                if let Ok(v) = reader.read_string() {
+                    _prop = v;
+                    _prop_set = true;
+                } else {
+                    return Err(DecodeError::TypeReadError(reader.context().print_with_context("'prop: String'")));
+                }
             }
             _ => {}
         }

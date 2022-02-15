@@ -10,9 +10,7 @@ pub enum CustomEnum {
 }
 
 pub fn sanitize_custom_enum_value(value: i32) -> Result<(), String> {
-    let max_as_i32 = CustomEnum::_MAX_ as i32;
-    let valid = value >= 0 && value < max_as_i32;
-    if !valid {
+    if value < 0 && value >= CustomEnum::_MAX_ as i32 {
         return Err(String::from(EnumTypeError::EnumProcessingError(format!("Invalid value for enum 'CustomEnum': {}", value.to_string()))));
     }
     Ok(())

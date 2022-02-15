@@ -24,15 +24,15 @@ pub trait Write {
     fn write_array_length(&mut self, length: &u32) -> Result<(), EncodeError>;
     fn write_array<T: Clone>(
         &mut self,
-        a: &[T],
-        arr_fn: impl FnMut(&mut Self, &T) -> Result<(), EncodeError>,
+        array: &[T],
+        arr_writer: impl FnMut(&mut Self, &T) -> Result<(), EncodeError>,
     ) -> Result<(), EncodeError>;
     fn write_map_length(&mut self, length: &u32) -> Result<(), EncodeError>;
     fn write_map<K, V: Clone>(
         &mut self,
         map: &BTreeMap<K, V>,
-        key_fn: impl FnMut(&mut Self, &K) -> Result<(), EncodeError>,
-        val_fn: impl FnMut(&mut Self, &V) -> Result<(), EncodeError>,
+        key_writer: impl FnMut(&mut Self, &K) -> Result<(), EncodeError>,
+        val_writer: impl FnMut(&mut Self, &V) -> Result<(), EncodeError>,
     ) -> Result<(), EncodeError>
     where
         K: Clone + Eq + Hash + Ord;
@@ -51,14 +51,14 @@ pub trait Write {
     fn write_nullable_json(&mut self, value: &Option<JSON::Value>) -> Result<(), EncodeError>;
     fn write_nullable_array<T: Clone>(
         &mut self,
-        a: &Option<Vec<T>>,
-        arr_fn: impl FnMut(&mut Self, &T) -> Result<(), EncodeError>,
+        opt_array: &Option<Vec<T>>,
+        arr_writer: impl FnMut(&mut Self, &T) -> Result<(), EncodeError>,
     ) -> Result<(), EncodeError>;
     fn write_nullable_map<K, V: Clone>(
         &mut self,
-        map: &Option<BTreeMap<K, V>>,
-        key_fn: impl FnMut(&mut Self, &K) -> Result<(), EncodeError>,
-        val_fn: impl FnMut(&mut Self, &V) -> Result<(), EncodeError>,
+        opt_map: &Option<BTreeMap<K, V>>,
+        key_writer: impl FnMut(&mut Self, &K) -> Result<(), EncodeError>,
+        val_writer: impl FnMut(&mut Self, &V) -> Result<(), EncodeError>,
     ) -> Result<(), EncodeError>
     where
         K: Clone + Eq + Hash + Ord;
