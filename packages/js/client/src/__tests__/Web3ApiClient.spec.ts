@@ -2833,4 +2833,32 @@ enum Logger_LogLevel @imported(
     expect(mutation.data?.mutationMethod).toBe(1);
   });
 
+  it("Map-type", async () => {
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/map-type`,
+      ipfsProvider,
+      ensAddress
+    );
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+    const client = await getClient();
+
+    const map = new Map<string, number>().set("Hello", 1);
+
+    console.log(map);
+    const methodResponse = await client.query<{
+      method: number;
+    }>({
+      uri: ensUri,
+      query: `query {
+        method(map: $map, key: $key)
+      }`,
+      variables: {
+        map: map,
+        key: "Hello"
+      },
+    });
+
+    expect(methodResponse.data?.method).toEqual(map);
+  });
+
 });

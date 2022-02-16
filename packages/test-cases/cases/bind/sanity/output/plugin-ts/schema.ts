@@ -52,6 +52,7 @@ type Query @imports(
     optEnum: CustomEnum
     enumArray: [CustomEnum!]!
     optEnumArray: [CustomEnum]
+    map: Map! @annotate(type: "Map<String!, Int!>!")
   ): Int!
 
   objectMethod(

@@ -1,0 +1,6 @@
+type Query {
+  method(
+    key: String!
+    map: Map! @annotate(type: "Map<String!, Int!>!")
+  ): Map! @annotate(type: "Map<String!, Int!>!")
+}
