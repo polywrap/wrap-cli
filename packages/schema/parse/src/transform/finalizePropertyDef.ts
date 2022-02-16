@@ -80,6 +80,8 @@ function populateArrayType(array: ArrayDefinition, typeInfo: TypeInfo) {
     array.item = array.scalar;
   } else if (array.enum) {
     array.item = array.enum;
+  } else if (array.map) {
+    array.item = array.map;
   } else {
     array.item = array.object;
   }

@@ -15,6 +15,8 @@ type CurrentTypeInfo = {
   required: boolean;
 };
 
+// TODO: Make sure map also works for imported types and modules
+
 const _parseCurrentType = (rootType: string, type: string): CurrentTypeInfo => {
   let required = false;
   if (type.startsWith("[")) {

@@ -22,7 +22,7 @@ const _toTypescript = (
     return toTypescriptArray(type, nullable);
   }
 
-  if (type.startsWith("Map")) {
+  if (type.startsWith("Map<")) {
     return toTypescriptMap(type, nullable);
   }
 

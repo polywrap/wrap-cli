@@ -15,7 +15,7 @@ export const toMsgPack: MustacheFunction = () => {
     if (type[0] === "[") {
       return modifier + "Array";
     }
-    if (type.startsWith("Map")) {
+    if (type.startsWith("Map<")) {
       return modifier + "Map";
     }
     switch (type) {
@@ -51,6 +51,16 @@ export const toWasmInit: MustacheFunction = () => {
 
     if (type[0] === "[") {
       return "[]";
+    }
+
+    if (type.startsWith("Map<")) {
+      const openBracketIdx = type.indexOf("<");
+      const closeBracketIdx = type.lastIndexOf(">");
+      const [key, value] = type
+        .substring(openBracketIdx + 1, closeBracketIdx)
+        .split(",")
+        .map((x) => toWasm()(x.trim(), render));
+      return `new Map<${key}, ${value}>()`;
     }
 
     switch (type) {
@@ -99,7 +109,7 @@ export const toWasm: MustacheFunction = () => {
       return toWasmArray(type, nullable);
     }
 
-    if (type.startsWith("Map")) {
+    if (type.startsWith("Map<")) {
       return toWasmMap(type, nullable);
     }
 

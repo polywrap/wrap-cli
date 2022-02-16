@@ -20,7 +20,7 @@ export function setPropertyType(
     return;
   }
 
-  if (type.type.startsWith("Map")) {
+  if (type.type === "Map") {
     property.map = {
       ...createMapDefinition({
         type: type.type,
