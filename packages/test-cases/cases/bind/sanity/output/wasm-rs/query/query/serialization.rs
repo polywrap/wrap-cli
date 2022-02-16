@@ -52,21 +52,26 @@ pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, D
 
         match field.as_str() {
             "str" => {
+                reader.context().push(&field, "String", "type found, reading argument");
                 if let Ok(v) = reader.read_string() {
                     _str = v;
                     _str_set = true;
                 } else {
                     return Err(DecodeError::TypeReadError(reader.context().print_with_context("'str: String'")));
                 }
+                reader.context().pop();
             }
             "opt_str" => {
+                reader.context().push(&field, "Option<String>", "type found, reading argument");
                 if let Ok(v) = reader.read_nullable_string() {
                     _opt_str = v;
                 } else {
                     return Err(DecodeError::TypeReadError(reader.context().print_with_context("'opt_str: Option<String>'")));
                 }
+                reader.context().pop();
             }
             "en" => {
+                reader.context().push(&field, "CustomEnum", "type found, reading argument");
                 if reader.is_next_string()? {
                     match get_custom_enum_value(&reader.read_string()?) {
                         Ok(v) => _en = v,
@@ -77,8 +82,10 @@ pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, D
                     sanitize_custom_enum_value(_en as i32)?;
                 }
                 _en_set = true;
+                reader.context().pop();
             }
             "opt_enum" => {
+                reader.context().push(&field, "Option<CustomEnum>", "type found, reading argument");
                 if !reader.is_next_nil()? {
                     if reader.is_next_string()? {
                         match get_custom_enum_value(&reader.read_string()?) {
@@ -92,8 +99,10 @@ pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, D
                 } else {
                     _opt_enum = None;
                 }
+                reader.context().pop();
             }
             "enum_array" => {
+                reader.context().push(&field, "Vec<CustomEnum>", "type found, reading argument");
                 if let Ok(v) = reader.read_array(|reader| {
                     if reader.is_next_string()? {
                         Ok(get_custom_enum_value(&reader.read_string()?)?)
@@ -108,8 +117,10 @@ pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, D
                 } else {
                     return Err(DecodeError::TypeReadError(reader.context().print_with_context("'enum_array: Vec<CustomEnum>'")));
                 }
+                reader.context().pop();
             }
             "opt_enum_array" => {
+                reader.context().push(&field, "Option<Vec<Option<CustomEnum>>>", "type found, reading argument");
                 if let Ok(v) = reader.read_nullable_array(|reader| {
                     if !reader.is_next_nil()? {
                         if reader.is_next_string()? {
@@ -127,6 +138,7 @@ pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, D
                 } else {
                     return Err(DecodeError::TypeReadError(reader.context().print_with_context("'opt_enum_array: Option<Vec<Option<CustomEnum>>>'")));
                 }
+                reader.context().pop();
             }
             _ => {}
         }
@@ -164,7 +176,9 @@ pub fn serialize_query_method_result(result: &i32) -> Result<Vec<u8>, EncodeErro
 }
 
 pub fn write_query_method_result<W: Write>(result: &i32, writer: &mut W) -> Result<(), EncodeError> {
+    writer.context().push("query_method", "i32", "writing result");
     writer.write_i32(result)?;
+    writer.context().pop();
     Ok(())
 }
 
@@ -195,14 +209,17 @@ pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod,
 
         match field.as_str() {
             "object" => {
+                reader.context().push(&field, "AnotherType", "type found, reading argument");
                 if let Ok(v) = AnotherType::read(&mut reader) {
                     _object = v;
                     _object_set = true;
                 } else {
                     return Err(DecodeError::TypeReadError(reader.context().print_with_context("'object: AnotherType'")));
                 }
+                reader.context().pop();
             }
             "opt_object" => {
+                reader.context().push(&field, "Option<AnotherType>", "type found, reading argument");
                 if !reader.is_next_nil()? {
                     if let Ok(v) = AnotherType::read(&mut reader) {
                         _opt_object = Some(v);
@@ -212,8 +229,10 @@ pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod,
                 } else {
                     _opt_object = None;
                 }
+                reader.context().pop();
             }
             "object_array" => {
+                reader.context().push(&field, "Vec<AnotherType>", "type found, reading argument");
                 if let Ok(v) = reader.read_array(|reader| {
                     AnotherType::read(reader)
                 }) {
@@ -222,8 +241,10 @@ pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod,
                 } else {
                     return Err(DecodeError::TypeReadError(reader.context().print_with_context("'object_array: Vec<AnotherType>'")));
                 }
+                reader.context().pop();
             }
             "opt_object_array" => {
+                reader.context().push(&field, "Option<Vec<Option<AnotherType>>>", "type found, reading argument");
                 if let Ok(v) = reader.read_nullable_array(|reader| {
                     if !reader.is_next_nil()? {
                         Ok(Some(AnotherType::read(reader)?))
@@ -235,6 +256,7 @@ pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod,
                 } else {
                     return Err(DecodeError::TypeReadError(reader.context().print_with_context("'opt_object_array: Option<Vec<Option<AnotherType>>>'")));
                 }
+                reader.context().pop();
             }
             _ => {}
         }
@@ -267,10 +289,12 @@ pub fn serialize_object_method_result(result: &Option<AnotherType>) -> Result<Ve
 }
 
 pub fn write_object_method_result<W: Write>(result: &Option<AnotherType>, writer: &mut W) -> Result<(), EncodeError> {
+    writer.context().push("object_method", "Option<AnotherType>", "writing result");
     if result.is_some() {
         AnotherType::write(result.as_ref().unwrap(), writer)?;
     } else {
         writer.write_nil()?;
     }
+    writer.context().pop();
     Ok(())
 }

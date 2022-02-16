@@ -29,14 +29,18 @@ pub fn serialize_another_type(input: &AnotherType) -> Result<Vec<u8>, EncodeErro
 
 pub fn write_another_type<W: Write>(input: &AnotherType, writer: &mut W) -> Result<(), EncodeError> {
     writer.write_map_length(&2)?;
+    writer.context().push("prop", "Option<String>", "writing property");
     writer.write_str("prop")?;
     writer.write_nullable_string(&input.prop)?;
+    writer.context().pop();
+    writer.context().push("circular", "Option<Box<CustomType>>", "writing property");
     writer.write_str("circular")?;
     if input.circular.is_some() {
         CustomType::write(input.circular.as_ref().as_ref().unwrap(), writer)?;
     } else {
         writer.write_nil()?;
     }
+    writer.context().pop();
     Ok(())
 }
 
@@ -59,13 +63,16 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> Result<AnotherType, DecodeE
 
         match field.as_str() {
             "prop" => {
+                reader.context().push(&field, "Option<String>", "type found, reading property");
                 if let Ok(v) = reader.read_nullable_string() {
                     _prop = v;
                 } else {
                     return Err(DecodeError::TypeReadError(reader.context().print_with_context("'prop: Option<String>'")));
                 }
+                reader.context().pop();
             }
             "circular" => {
+                reader.context().push(&field, "Option<CustomType>", "type found, reading property");
                 if !reader.is_next_nil()? {
                     if let Ok(v) = CustomType::read(reader) {
                         _circular = Some(v);
@@ -75,6 +82,7 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> Result<AnotherType, DecodeE
                 } else {
                     _circular = None;
                 }
+                reader.context().pop();
             }
             _ => {}
         }
