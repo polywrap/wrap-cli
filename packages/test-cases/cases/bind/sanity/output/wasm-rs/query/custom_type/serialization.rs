@@ -8,7 +8,6 @@ use polywrap_wasm_rs::{
     ReadDecoder,
     Write,
     WriteEncoder,
-    WriteSizer,
     JSON,
 };
 use crate::CustomType;
@@ -21,10 +20,6 @@ use crate::{
 };
 
 pub fn serialize_custom_type(input: &CustomType) -> Result<Vec<u8>, EncodeError> {
-    let mut sizer_context = Context::new();
-    sizer_context.description = "Serializing (sizing) object-type: CustomType".to_string();
-    let mut sizer = WriteSizer::new(sizer_context);
-    write_custom_type(input, &mut sizer)?;
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) object-type: CustomType".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);

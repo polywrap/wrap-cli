@@ -9,7 +9,6 @@ use polywrap_wasm_rs::{
     ReadDecoder,
     Write,
     WriteEncoder,
-    WriteSizer,
     JSON,
 };
 
@@ -164,10 +163,6 @@ pub fn deserialize_mutation_method_args(input: &[u8]) -> Result<InputMutationMet
 }
 
 pub fn serialize_mutation_method_result(result: &i32) -> Result<Vec<u8>, EncodeError> {
-    let mut sizer_context = Context::new();
-    sizer_context.description = "Serializing (sizing) query-type: mutation_method".to_string();
-    let mut sizer = WriteSizer::new(sizer_context);
-    write_mutation_method_result(result, &mut sizer)?;
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) query-type: mutation_method".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
@@ -277,10 +272,6 @@ pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod,
 }
 
 pub fn serialize_object_method_result(result: &Option<AnotherType>) -> Result<Vec<u8>, EncodeError> {
-    let mut sizer_context = Context::new();
-    sizer_context.description = "Serializing (sizing) query-type: object_method".to_string();
-    let mut sizer = WriteSizer::new(sizer_context);
-    write_object_method_result(result, &mut sizer)?;
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) query-type: object_method".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
