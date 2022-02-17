@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "graphql": "15.5.0",
-    "graphql-schema-cycles": "1.1.3"
+    "@dorgjelli/graphql-schema-cycles": "1.1.4"
   },
   "devDependencies": {
     "@types/deep-equal": "1.0.1",
