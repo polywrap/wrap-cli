@@ -6,6 +6,7 @@ use web3::api::{Accounts};
 use web3::contract::Contract;
 use web3::transports::{Either, Http, ws::WebSocket, eip_1193::{Eip1193, Provider} };
 use web3::types::{Address, H160};
+use core::result::Result;
 
 // pub type EitherTransport = Either<Eip1193, Http>;
 #[derive(Clone, Debug)]
@@ -114,14 +115,14 @@ impl Connection {
         connections
     }
 
-    // pub fn get_contract(&self, address: &str, abi: &str) -> Contract<EitherTransport> {
-    //     let parsed_address = match Address::from_str(address) {
-    //         Ok(a) => a,
-    //         Err(_) => { panic!("Invalid contract address: {}", address)}
-    //     };
-    //
-    //     //TODO: Convert ABI here
-    //
-    //     Contract::new(self.client.eth(), parsed_address, abi)
-    // }
+    pub fn get_contract(&self, address: &str, abi_str: &str) -> Result<Contract<Eip1193>, &'static str> {
+        let parsed_address = match Address::from_str(address) {
+            Ok(a) => a,
+            Err(_) => { panic!("Invalid contract address: {}", address)}
+        };
+
+        let abi: ethabi::Contract = serde_json::from_str(abi_str).unwrap();
+
+        Ok(Contract::new(self.client.eth(), parsed_address, abi))
+    }
 }
