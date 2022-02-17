@@ -71,7 +71,7 @@ pub fn deserialize_mutation_method_args(input: &[u8]) -> Result<InputMutationMet
             }
             "en" => {
                 reader.context().push(&field, "CustomEnum", "type found, reading argument");
-                let value: CustomEnum;
+                let mut value: CustomEnum = CustomEnum::_MAX_;
                 if reader.is_next_string()? {
                     value = get_custom_enum_value(&reader.read_string()?)?;
                 } else {
@@ -84,7 +84,7 @@ pub fn deserialize_mutation_method_args(input: &[u8]) -> Result<InputMutationMet
             }
             "opt_enum" => {
                 reader.context().push(&field, "Option<CustomEnum>", "type found, reading argument");
-                let value: Option<CustomEnum>;
+                let mut value: Option<CustomEnum> = None;
                 if !reader.is_next_nil()? {
                     if reader.is_next_string()? {
                         value = Some(get_custom_enum_value(&reader.read_string()?)?);
@@ -101,7 +101,7 @@ pub fn deserialize_mutation_method_args(input: &[u8]) -> Result<InputMutationMet
             "enum_array" => {
                 reader.context().push(&field, "Vec<CustomEnum>", "type found, reading argument");
                 if let Ok(v) = reader.read_array(|reader| {
-                    let value: CustomEnum;
+                    let mut value: CustomEnum = CustomEnum::_MAX_;
                     if reader.is_next_string()? {
                         value = get_custom_enum_value(&reader.read_string()?)?;
                     } else {
@@ -120,7 +120,7 @@ pub fn deserialize_mutation_method_args(input: &[u8]) -> Result<InputMutationMet
             "opt_enum_array" => {
                 reader.context().push(&field, "Option<Vec<Option<CustomEnum>>>", "type found, reading argument");
                 if let Ok(v) = reader.read_nullable_array(|reader| {
-                    let value: Option<CustomEnum>;
+                    let mut value: Option<CustomEnum> = None;
                     if !reader.is_next_nil()? {
                         if reader.is_next_string()? {
                             value = Some(get_custom_enum_value(&reader.read_string()?)?);

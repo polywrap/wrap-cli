@@ -158,7 +158,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
             }
             "en" => {
                 reader.context().push(&field, "TestImportEnum", "type found, reading property");
-                let value: TestImportEnum;
+                let mut value: TestImportEnum = TestImportEnum::_MAX_;
                 if reader.is_next_string()? {
                     value = get_test_import_enum_value(&reader.read_string()?)?;
                 } else {
@@ -171,7 +171,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
             }
             "opt_enum" => {
                 reader.context().push(&field, "Option<TestImportEnum>", "type found, reading property");
-                let value: Option<TestImportEnum>;
+                let mut value: Option<TestImportEnum> = None;
                 if !reader.is_next_nil()? {
                     if reader.is_next_string()? {
                         value = Some(get_test_import_enum_value(&reader.read_string()?)?);
@@ -188,7 +188,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
             "enum_array" => {
                 reader.context().push(&field, "Vec<TestImportEnum>", "type found, reading property");
                 if let Ok(v) = reader.read_array(|reader| {
-                    let value: TestImportEnum;
+                    let mut value: TestImportEnum = TestImportEnum::_MAX_;
                     if reader.is_next_string()? {
                         value = get_test_import_enum_value(&reader.read_string()?)?;
                     } else {
@@ -207,7 +207,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
             "opt_enum_array" => {
                 reader.context().push(&field, "Option<Vec<Option<TestImportEnum>>>", "type found, reading property");
                 if let Ok(v) = reader.read_nullable_array(|reader| {
-                    let value: Option<TestImportEnum>;
+                    let mut value: Option<TestImportEnum> = None;
                     if !reader.is_next_nil()? {
                         if reader.is_next_string()? {
                             value = Some(get_test_import_enum_value(&reader.read_string()?)?);

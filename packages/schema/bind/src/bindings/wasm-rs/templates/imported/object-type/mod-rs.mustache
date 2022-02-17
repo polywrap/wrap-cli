@@ -56,7 +56,7 @@ impl {{#toUpper}}{{type}}{{/toUpper}} {
     }
 
     pub fn read<R: Read>(reader: &mut R) -> Result<{{#toUpper}}{{type}}{{/toUpper}}, DecodeError> {
-        read_{{#toLower}}{{type}}{{/toLower}}(reader)
+        read_{{#toLower}}{{type}}{{/toLower}}(reader).map_err(|e| DecodeError::TypeReadError(e.to_string()))
     }
 }
 {{/__commonImport}}

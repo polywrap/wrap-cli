@@ -124,11 +124,16 @@ pub fn deserialize_imported_method_result(result: &[u8]) -> Result<Option<TestIm
     let mut context = Context::new();
     context.description = "Deserializing imported query-type: imported_method".to_string();
     let mut reader = ReadDecoder::new(result, context);
+    reader.context().push("imported_method", "Option<TestImportObject>", "reading function output");
+    let mut object: Option<TestImportObject> = None;
     if !reader.is_next_nil()? {
-        Ok(Some(TestImportObject::read(&mut reader)?))
+        object = Some(TestImportObject::read(&mut reader)?);
     } else {
-        Ok(None)
+        object = None;
     }
+    let res = object;
+    reader.context().pop();
+    Ok(res)
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -159,5 +164,8 @@ pub fn deserialize_another_method_result(result: &[u8]) -> Result<i32, DecodeErr
     let mut context = Context::new();
     context.description = "Deserializing imported query-type: another_method".to_string();
     let mut reader = ReadDecoder::new(result, context);
-    reader.read_i32()
+    reader.context().push("another_method", "i32", "reading function output");
+    let res = reader.read_i32()?;
+    reader.context().pop();
+    Ok(res)
 }
