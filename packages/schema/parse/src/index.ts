@@ -57,9 +57,7 @@ const validate = (
 ) => {
   const allValidators = validators.map((getValidator) => getValidator());
   const allVisitors = allValidators.map((x) => x.visitor);
-  const allCleanup = allValidators.map(
-    (x) => x.cleanup
-  );
+  const allCleanup = allValidators.map((x) => x.cleanup);
 
   visit(astNode, visitInParallel(allVisitors));
 
