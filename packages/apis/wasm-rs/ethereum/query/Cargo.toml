@@ -15,7 +15,11 @@ w3invoke = []
 
 [dependencies]
 async-trait = "0.1.51"
-web3 = "0.18.0"
+web3 = { version = "0.18.0", features = [
+  "wasm",
+  "eip-1193",
+  "signing",
+] }
 thiserror = "1.0.30"
 tokio = { version = "1.4.0", features = ["rt"] }
 getrandom = { version = "*", features = ["js"] }

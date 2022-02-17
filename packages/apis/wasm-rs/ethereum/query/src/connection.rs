@@ -1,64 +1,69 @@
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
 use std::{collections::HashMap, str::FromStr};
-use web3::{Web3, Transport, api::{Accounts}, ethabi};
+use web3::{Web3, ethabi};
+use web3::api::{Accounts};
 use web3::contract::Contract;
+use web3::transports::{Either, Http, ws::WebSocket, eip_1193::{Eip1193, Provider} };
 use web3::types::{Address, H160};
 
-pub enum EthereumProvider<T: Transport> {
-    Url(String),
-    Transport(T)
+// pub type EitherTransport = Either<Eip1193, Http>;
+#[derive(Clone, Debug)]
+pub enum EthereumProvider {
+    // HttpUrl(String),
+    Eip1193(Provider)
 }
 
+#[derive(Clone, Debug)]
 pub enum EthereumSigner {
     AccountIndex(usize),
     AddressString(String),
     Address(Address)
 }
 
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct ConnectionConfig<T: Transport> {
-    pub provider: EthereumProvider<T>,
+#[derive(Clone, Debug)]
+pub struct ConnectionConfig {
+    pub provider: EthereumProvider,
     pub signer: Option<EthereumSigner>,
 }
 
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct Config<T: Transport> {
-    pub provider: T,
+#[derive(Clone, Debug, Default)]
+pub struct Config {
     pub signer: Address,
 }
 
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct ConnectionConfigs<T: Transport> {
-    pub networks: HashMap<String, ConnectionConfig<T>>,
+#[derive(Clone, Debug, Default)]
+pub struct ConnectionConfigs {
+    pub networks: HashMap<String, ConnectionConfig>,
 }
 
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct Connections<T: Transport> {
-    pub networks: HashMap<String, Connection<T>>,
+#[derive(Clone, Debug, Default)]
+pub struct Connections {
+    pub networks: HashMap<String, Connection>,
 }
 
-#[derive(Clone, Debug, Default, Deserialize, Serialize)]
-pub struct Connection<T: Transport> {
-    client: Web3<T>,
-    config: Config<T>,
+#[derive(Clone, Debug)]
+pub struct Connection {
+    client: Web3<Eip1193>,
+    config: Config,
     accounts: Vec<Address>
 }
 
-impl<T: Transport> Connection<T> {
-    pub async fn new(config: ConnectionConfig<T>) -> Self {
-        let provider = match config.provider {
-            EthereumProvider::Url(url) => match web3::transports::Http::new(&url) {
-                Ok(p) => p,
-                Err(error) => panic!("Could not instantiate HTTP provider: {:?}", error)
-            },
-            EthereumProvider::Transport(transport) => match web3::transports::ws::WebSocket::new(&url) {
-                Ok(p) => p,
-                Err(error) => panic!("Could not instantiate HTTP provider: {:?}", error)
-            }
+impl Connection {
+    pub async fn new(config: ConnectionConfig) -> Self {
+        let transport = match config.provider {
+            // EthereumProvider::HttpUrl(url) => match Http::new(&url) {
+            //     Ok(http) => web3::transports::Either::Right(http),
+            //     Err(_) => panic!("Error creating HTTP transport with: {}", &url)
+            // },
+            EthereumProvider::Eip1193(ethereum) =>
+                // web3::transports::Either::Left(
+                Eip1193::new(ethereum)
+            // )
         };
 
-        let client = Web3::new(provider.clone());
+        let client = Web3::new(transport);
+
         let accounts = match client.eth().accounts().await {
             Ok(a) => a,
             Err(error) => panic!("Could not retrieve accounts: {:?}", error)
@@ -85,20 +90,20 @@ impl<T: Transport> Connection<T> {
 
 
         Self {
+            // client,
             client,
             config: Config {
-                provider,
                 signer
             },
             accounts
         }
     }
 
-    pub fn from_configs(configs: ConnectionConfigs<T>) -> Connections<T> {
+    pub async fn from_configs(configs: ConnectionConfigs) -> Connections {
         let mut connections = Connections::default();
 
         for network in configs.networks.keys() {
-            let connection = Self::new(configs.networks[network].clone());
+            let connection = Self::new(configs.networks[network].clone()).await;
             let network_str = network.to_ascii_lowercase();
 
             connections
@@ -109,14 +114,14 @@ impl<T: Transport> Connection<T> {
         connections
     }
 
-    pub fn get_contract(&self, address: &str, abi: &str) -> Contract<T> {
-        let parsed_address = match Address::from_str(address) {
-            Ok(a) => a,
-            Err(_) => { panic!("Invalid contract address: {}", address)}
-        };
-
-        //TODO: Convert ABI here
-
-        Contract::new(self.client.eth(), parsed_address, abi)
-    }
+    // pub fn get_contract(&self, address: &str, abi: &str) -> Contract<EitherTransport> {
+    //     let parsed_address = match Address::from_str(address) {
+    //         Ok(a) => a,
+    //         Err(_) => { panic!("Invalid contract address: {}", address)}
+    //     };
+    //
+    //     //TODO: Convert ABI here
+    //
+    //     Contract::new(self.client.eth(), parsed_address, abi)
+    // }
 }
