@@ -1,3 +1,7 @@
+# Web3API 0.0.1-prealpha.64
+## Bugs
+* [PR-685](https://github.com/polywrap/monorepo/pull/685) `@web3api/schema-parse`: Properly support recursive object definition properties.
+
 # Web3API 0.0.1-prealpha.63
 ## Features
 * [PR-650](https://github.com/polywrap/monorepo/pull/650) `@web3api/cli`: Add YAML support for query recipes.
