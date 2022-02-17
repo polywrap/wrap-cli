@@ -1,0 +1,7 @@
+type Object {
+  recursive: Object
+  recursiveArray: [Object!]!
+  recursiveOptArray: [Object!]
+  recursiveArrayOpt: [Object]!
+  recursiveOptArrayOpt: [Object]
+}
