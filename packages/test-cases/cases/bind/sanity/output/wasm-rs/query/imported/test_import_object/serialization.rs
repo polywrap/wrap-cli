@@ -110,47 +110,45 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
         match field.as_str() {
             "object" => {
                 reader.context().push(&field, "TestImportAnotherObject", "type found, reading property");
-                if let Ok(v) = TestImportAnotherObject::read(reader) {
-                    _object = v;
-                    _object_set = true;
-                } else {
-                    return Err(DecodeError::TypeReadError(reader.context().print_with_context("'object: TestImportAnotherObject'")));
-                }
+                let object = TestImportAnotherObject::read(reader)?;
+                _object = object;
+                _object_set = true;
                 reader.context().pop();
             }
             "opt_object" => {
                 reader.context().push(&field, "Option<TestImportAnotherObject>", "type found, reading property");
+                let mut object: Option<TestImportAnotherObject> = None;
                 if !reader.is_next_nil()? {
-                    if let Ok(v) = TestImportAnotherObject::read(reader) {
-                        _opt_object = Some(v);
-                    } else {
-                        return Err(DecodeError::TypeReadError(reader.context().print_with_context("'opt_object: Option<TestImportAnotherObject>'")));
-                    }
+                    object = Some(TestImportAnotherObject::read(reader)?);
                 } else {
-                    _opt_object = None;
+                    object = None;
                 }
+                _opt_object = object;
                 reader.context().pop();
             }
             "object_array" => {
                 reader.context().push(&field, "Vec<TestImportAnotherObject>", "type found, reading property");
                 if let Ok(v) = reader.read_array(|reader| {
-                    TestImportAnotherObject::read(reader)
+                    let object = TestImportAnotherObject::read(reader)?;
+                    Ok(object)
                 }) {
                     _object_array = v;
-                    _object_array_set = true;
                 } else {
                     return Err(DecodeError::TypeReadError(reader.context().print_with_context("'object_array: Vec<TestImportAnotherObject>'")));
                 }
+                _object_array_set = true;
                 reader.context().pop();
             }
             "opt_object_array" => {
                 reader.context().push(&field, "Option<Vec<Option<TestImportAnotherObject>>>", "type found, reading property");
                 if let Ok(v) = reader.read_nullable_array(|reader| {
+                    let mut object: Option<TestImportAnotherObject> = None;
                     if !reader.is_next_nil()? {
-                        Ok(Some(TestImportAnotherObject::read(reader)?))
+                        object = Some(TestImportAnotherObject::read(reader)?);
                     } else {
-                        Ok(None)
+                        object = None;
                     }
+                    Ok(object)
                 }) {
                     _opt_object_array = v;
                 } else {
@@ -160,67 +158,67 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
             }
             "en" => {
                 reader.context().push(&field, "TestImportEnum", "type found, reading property");
+                let value: TestImportEnum;
                 if reader.is_next_string()? {
-                    match get_test_import_enum_value(&reader.read_string()?) {
-                        Ok(v) => _en = v,
-                        Err(e) => return Err(DecodeError::from(e))
-                    }
+                    value = get_test_import_enum_value(&reader.read_string()?)?;
                 } else {
-                    _en = TestImportEnum::try_from(reader.read_i32()?)?;
-                    sanitize_test_import_enum_value(_en as i32)?;
+                    value = TestImportEnum::try_from(reader.read_i32()?)?;
+                    sanitize_test_import_enum_value(value as i32)?;
                 }
+                _en = value;
                 _en_set = true;
                 reader.context().pop();
             }
             "opt_enum" => {
                 reader.context().push(&field, "Option<TestImportEnum>", "type found, reading property");
+                let value: Option<TestImportEnum>;
                 if !reader.is_next_nil()? {
                     if reader.is_next_string()? {
-                        match get_test_import_enum_value(&reader.read_string()?) {
-                            Ok(v) => _opt_enum = Some(v),
-                            Err(e) => return Err(DecodeError::from(e))
-                        }
+                        value = Some(get_test_import_enum_value(&reader.read_string()?)?);
                     } else {
-                        _opt_enum = Some(TestImportEnum::try_from(reader.read_i32()?)?);
-                        sanitize_test_import_enum_value(_opt_enum.unwrap() as i32)?;
+                        value = Some(TestImportEnum::try_from(reader.read_i32()?)?);
+                        sanitize_test_import_enum_value(value.unwrap() as i32)?;
                     }
                 } else {
-                    _opt_enum = None;
+                    value = None;
                 }
+                _opt_enum = value;
                 reader.context().pop();
             }
             "enum_array" => {
                 reader.context().push(&field, "Vec<TestImportEnum>", "type found, reading property");
                 if let Ok(v) = reader.read_array(|reader| {
+                    let value: TestImportEnum;
                     if reader.is_next_string()? {
-                        Ok(get_test_import_enum_value(&reader.read_string()?)?)
+                        value = get_test_import_enum_value(&reader.read_string()?)?;
                     } else {
-                        let c = TestImportEnum::try_from(reader.read_i32()?)?;
-                        sanitize_test_import_enum_value(c as i32)?;
-                        Ok(c)
+                        value = TestImportEnum::try_from(reader.read_i32()?)?;
+                        sanitize_test_import_enum_value(value as i32)?;
                     }
+                    Ok(value)
                 }) {
                     _enum_array = v;
-                    _enum_array_set = true;
                 } else {
                     return Err(DecodeError::TypeReadError(reader.context().print_with_context("'enum_array: Vec<TestImportEnum>'")));
                 }
+                _enum_array_set = true;
                 reader.context().pop();
             }
             "opt_enum_array" => {
                 reader.context().push(&field, "Option<Vec<Option<TestImportEnum>>>", "type found, reading property");
                 if let Ok(v) = reader.read_nullable_array(|reader| {
+                    let value: Option<TestImportEnum>;
                     if !reader.is_next_nil()? {
                         if reader.is_next_string()? {
-                            Ok(Some(get_test_import_enum_value(&reader.read_string()?)?))
+                            value = Some(get_test_import_enum_value(&reader.read_string()?)?);
                         } else {
-                            let c = Some(TestImportEnum::try_from(reader.read_i32()?)?);
-                            sanitize_test_import_enum_value(c.unwrap() as i32)?;
-                            Ok(c)
+                            value = Some(TestImportEnum::try_from(reader.read_i32()?)?);
+                            sanitize_test_import_enum_value(value.unwrap() as i32)?;
                         }
                     } else {
-                        Ok(None)
+                        value = None;
                     }
+                    Ok(value)
                 }) {
                     _opt_enum_array = v;
                 } else {

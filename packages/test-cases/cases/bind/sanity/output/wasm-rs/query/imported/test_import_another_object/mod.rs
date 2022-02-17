@@ -42,6 +42,6 @@ impl TestImportAnotherObject {
     }
 
     pub fn read<R: Read>(reader: &mut R) -> Result<TestImportAnotherObject, DecodeError> {
-        read_test_import_another_object(reader)
+        read_test_import_another_object(reader).map_err(|e| DecodeError::TypeReadError(e.to_string()))
     }
 }

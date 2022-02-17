@@ -44,6 +44,6 @@ impl AnotherType {
     }
 
     pub fn read<R: Read>(reader: &mut R) -> Result<AnotherType, DecodeError> {
-        read_another_type(reader)
+        read_another_type(reader).map_err(|e| DecodeError::TypeReadError(e.to_string()))
     }
 }

@@ -51,10 +51,10 @@ pub fn read_test_import_another_object<R: Read>(reader: &mut R) -> Result<TestIm
                 reader.context().push(&field, "String", "type found, reading property");
                 if let Ok(v) = reader.read_string() {
                     _prop = v;
-                    _prop_set = true;
                 } else {
                     return Err(DecodeError::TypeReadError(reader.context().print_with_context("'prop: String'")));
                 }
+                _prop_set = true;
                 reader.context().pop();
             }
             _ => {}

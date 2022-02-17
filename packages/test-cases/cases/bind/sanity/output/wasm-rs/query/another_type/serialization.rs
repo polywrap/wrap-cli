@@ -68,15 +68,13 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> Result<AnotherType, DecodeE
             }
             "circular" => {
                 reader.context().push(&field, "Option<CustomType>", "type found, reading property");
+                let mut object: Option<CustomType> = None;
                 if !reader.is_next_nil()? {
-                    if let Ok(v) = CustomType::read(reader) {
-                        _circular = Some(v);
-                    } else {
-                        return Err(DecodeError::TypeReadError(reader.context().print_with_context("'circular: Option<CustomType>'")));
-                    }
+                    object = Some(CustomType::read(reader)?);
                 } else {
-                    _circular = None;
+                    object = None;
                 }
+                _circular = object;
                 reader.context().pop();
             }
             _ => {}

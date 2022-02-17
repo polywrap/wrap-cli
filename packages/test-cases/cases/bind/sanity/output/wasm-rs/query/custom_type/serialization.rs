@@ -294,10 +294,10 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
                 reader.context().push(&field, "String", "type found, reading property");
                 if let Ok(v) = reader.read_string() {
                     _str = v;
-                    _str_set = true;
                 } else {
                     return Err(DecodeError::TypeReadError(reader.context().print_with_context("'str: String'")));
                 }
+                _str_set = true;
                 reader.context().pop();
             }
             "opt_str" => {
@@ -313,10 +313,10 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
                 reader.context().push(&field, "u32", "type found, reading property");
                 if let Ok(v) = reader.read_u32() {
                     _u = v;
-                    _u_set = true;
                 } else {
                     return Err(DecodeError::TypeReadError(reader.context().print_with_context("'u: u32'")));
                 }
+                _u_set = true;
                 reader.context().pop();
             }
             "opt_u" => {
@@ -332,80 +332,80 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
                 reader.context().push(&field, "u8", "type found, reading property");
                 if let Ok(v) = reader.read_u8() {
                     _u8 = v;
-                    _u8_set = true;
                 } else {
                     return Err(DecodeError::TypeReadError(reader.context().print_with_context("'u8: u8'")));
                 }
+                _u8_set = true;
                 reader.context().pop();
             }
             "u16" => {
                 reader.context().push(&field, "u16", "type found, reading property");
                 if let Ok(v) = reader.read_u16() {
                     _u16 = v;
-                    _u16_set = true;
                 } else {
                     return Err(DecodeError::TypeReadError(reader.context().print_with_context("'u16: u16'")));
                 }
+                _u16_set = true;
                 reader.context().pop();
             }
             "u32" => {
                 reader.context().push(&field, "u32", "type found, reading property");
                 if let Ok(v) = reader.read_u32() {
                     _u32 = v;
-                    _u32_set = true;
                 } else {
                     return Err(DecodeError::TypeReadError(reader.context().print_with_context("'u32: u32'")));
                 }
+                _u32_set = true;
                 reader.context().pop();
             }
             "i" => {
                 reader.context().push(&field, "i32", "type found, reading property");
                 if let Ok(v) = reader.read_i32() {
                     _i = v;
-                    _i_set = true;
                 } else {
                     return Err(DecodeError::TypeReadError(reader.context().print_with_context("'i: i32'")));
                 }
+                _i_set = true;
                 reader.context().pop();
             }
             "i8" => {
                 reader.context().push(&field, "i8", "type found, reading property");
                 if let Ok(v) = reader.read_i8() {
                     _i8 = v;
-                    _i8_set = true;
                 } else {
                     return Err(DecodeError::TypeReadError(reader.context().print_with_context("'i8: i8'")));
                 }
+                _i8_set = true;
                 reader.context().pop();
             }
             "i16" => {
                 reader.context().push(&field, "i16", "type found, reading property");
                 if let Ok(v) = reader.read_i16() {
                     _i16 = v;
-                    _i16_set = true;
                 } else {
                     return Err(DecodeError::TypeReadError(reader.context().print_with_context("'i16: i16'")));
                 }
+                _i16_set = true;
                 reader.context().pop();
             }
             "i32" => {
                 reader.context().push(&field, "i32", "type found, reading property");
                 if let Ok(v) = reader.read_i32() {
                     _i32 = v;
-                    _i32_set = true;
                 } else {
                     return Err(DecodeError::TypeReadError(reader.context().print_with_context("'i32: i32'")));
                 }
+                _i32_set = true;
                 reader.context().pop();
             }
             "bigint" => {
                 reader.context().push(&field, "BigInt", "type found, reading property");
                 if let Ok(v) = reader.read_bigint() {
                     _bigint = v;
-                    _bigint_set = true;
                 } else {
                     return Err(DecodeError::TypeReadError(reader.context().print_with_context("'bigint: BigInt'")));
                 }
+                _bigint_set = true;
                 reader.context().pop();
             }
             "opt_bigint" => {
@@ -421,10 +421,10 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
                 reader.context().push(&field, "JSON::Value", "type found, reading property");
                 if let Ok(v) = reader.read_json() {
                     _json = v;
-                    _json_set = true;
                 } else {
                     return Err(DecodeError::TypeReadError(reader.context().print_with_context("'json: JSON::Value'")));
                 }
+                _json_set = true;
                 reader.context().pop();
             }
             "opt_json" => {
@@ -440,10 +440,10 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
                 reader.context().push(&field, "Vec<u8>", "type found, reading property");
                 if let Ok(v) = reader.read_bytes() {
                     _bytes = v;
-                    _bytes_set = true;
                 } else {
                     return Err(DecodeError::TypeReadError(reader.context().print_with_context("'bytes: Vec<u8>'")));
                 }
+                _bytes_set = true;
                 reader.context().pop();
             }
             "opt_bytes" => {
@@ -459,10 +459,10 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
                 reader.context().push(&field, "bool", "type found, reading property");
                 if let Ok(v) = reader.read_bool() {
                     _boolean = v;
-                    _boolean_set = true;
                 } else {
                     return Err(DecodeError::TypeReadError(reader.context().print_with_context("'boolean: bool'")));
                 }
+                _boolean_set = true;
                 reader.context().pop();
             }
             "opt_boolean" => {
@@ -480,10 +480,10 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
                     reader.read_u32()
                 }) {
                     _u_array = v;
-                    _u_array_set = true;
                 } else {
                     return Err(DecodeError::TypeReadError(reader.context().print_with_context("'u_array: Vec<u32>'")));
                 }
+                _u_array_set = true;
                 reader.context().pop();
             }
             "u_opt_array" => {
@@ -527,10 +527,10 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
                     })
                 }) {
                     _u_array_array = v;
-                    _u_array_array_set = true;
                 } else {
                     return Err(DecodeError::TypeReadError(reader.context().print_with_context("'u_array_array: Vec<Vec<u32>>'")));
                 }
+                _u_array_array_set = true;
                 reader.context().pop();
             }
             "u_opt_array_opt_array" => {
@@ -541,10 +541,10 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
                     })
                 }) {
                     _u_opt_array_opt_array = v;
-                    _u_opt_array_opt_array_set = true;
                 } else {
                     return Err(DecodeError::TypeReadError(reader.context().print_with_context("'u_opt_array_opt_array: Vec<Option<Vec<Option<u32>>>>'")));
                 }
+                _u_opt_array_opt_array_set = true;
                 reader.context().pop();
             }
             "u_array_opt_array_array" => {
@@ -557,10 +557,10 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
                     })
                 }) {
                     _u_array_opt_array_array = v;
-                    _u_array_opt_array_array_set = true;
                 } else {
                     return Err(DecodeError::TypeReadError(reader.context().print_with_context("'u_array_opt_array_array: Vec<Option<Vec<Vec<u32>>>>'")));
                 }
+                _u_array_opt_array_array_set = true;
                 reader.context().pop();
             }
             "crazy_array" => {
@@ -582,47 +582,45 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
             }
             "object" => {
                 reader.context().push(&field, "AnotherType", "type found, reading property");
-                if let Ok(v) = AnotherType::read(reader) {
-                    _object = v;
-                    _object_set = true;
-                } else {
-                    return Err(DecodeError::TypeReadError(reader.context().print_with_context("'object: AnotherType'")));
-                }
+                let object = AnotherType::read(reader)?;
+                _object = object;
+                _object_set = true;
                 reader.context().pop();
             }
             "opt_object" => {
                 reader.context().push(&field, "Option<AnotherType>", "type found, reading property");
+                let mut object: Option<AnotherType> = None;
                 if !reader.is_next_nil()? {
-                    if let Ok(v) = AnotherType::read(reader) {
-                        _opt_object = Some(v);
-                    } else {
-                        return Err(DecodeError::TypeReadError(reader.context().print_with_context("'opt_object: Option<AnotherType>'")));
-                    }
+                    object = Some(AnotherType::read(reader)?);
                 } else {
-                    _opt_object = None;
+                    object = None;
                 }
+                _opt_object = object;
                 reader.context().pop();
             }
             "object_array" => {
                 reader.context().push(&field, "Vec<AnotherType>", "type found, reading property");
                 if let Ok(v) = reader.read_array(|reader| {
-                    AnotherType::read(reader)
+                    let object = AnotherType::read(reader)?;
+                    Ok(object)
                 }) {
                     _object_array = v;
-                    _object_array_set = true;
                 } else {
                     return Err(DecodeError::TypeReadError(reader.context().print_with_context("'object_array: Vec<AnotherType>'")));
                 }
+                _object_array_set = true;
                 reader.context().pop();
             }
             "opt_object_array" => {
                 reader.context().push(&field, "Option<Vec<Option<AnotherType>>>", "type found, reading property");
                 if let Ok(v) = reader.read_nullable_array(|reader| {
+                    let mut object: Option<AnotherType> = None;
                     if !reader.is_next_nil()? {
-                        Ok(Some(AnotherType::read(reader)?))
+                        object = Some(AnotherType::read(reader)?);
                     } else {
-                        Ok(None)
+                        object = None;
                     }
+                    Ok(object)
                 }) {
                     _opt_object_array = v;
                 } else {
@@ -632,67 +630,67 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
             }
             "en" => {
                 reader.context().push(&field, "CustomEnum", "type found, reading property");
+                let mut value: CustomEnum = CustomEnum::_MAX_;
                 if reader.is_next_string()? {
-                    match get_custom_enum_value(&reader.read_string()?) {
-                        Ok(v) => _en = v,
-                        Err(e) => return Err(DecodeError::from(e))
-                    }
+                    value = get_custom_enum_value(&reader.read_string()?)?;
                 } else {
-                    _en = CustomEnum::try_from(reader.read_i32()?)?;
-                    sanitize_custom_enum_value(_en as i32)?;
+                    value = CustomEnum::try_from(reader.read_i32()?)?;
+                    sanitize_custom_enum_value(value as i32)?;
                 }
+                _en = value;
                 _en_set = true;
                 reader.context().pop();
             }
             "opt_enum" => {
                 reader.context().push(&field, "Option<CustomEnum>", "type found, reading property");
+                let mut value: Option<CustomEnum> = None;
                 if !reader.is_next_nil()? {
                     if reader.is_next_string()? {
-                        match get_custom_enum_value(&reader.read_string()?) {
-                            Ok(v) => _opt_enum = Some(v),
-                            Err(e) => return Err(DecodeError::from(e))
-                        }
+                        value = Some(get_custom_enum_value(&reader.read_string()?)?);
                     } else {
-                        _opt_enum = Some(CustomEnum::try_from(reader.read_i32()?)?);
-                        sanitize_custom_enum_value(_opt_enum.unwrap() as i32)?;
+                        value = Some(CustomEnum::try_from(reader.read_i32()?)?);
+                        sanitize_custom_enum_value(value.unwrap() as i32)?;
                     }
                 } else {
-                    _opt_enum = None;
+                    value = None;
                 }
+                _opt_enum = value;
                 reader.context().pop();
             }
             "enum_array" => {
                 reader.context().push(&field, "Vec<CustomEnum>", "type found, reading property");
                 if let Ok(v) = reader.read_array(|reader| {
+                    let mut value: CustomEnum = CustomEnum::_MAX_;
                     if reader.is_next_string()? {
-                        Ok(get_custom_enum_value(&reader.read_string()?)?)
+                        value = get_custom_enum_value(&reader.read_string()?)?;
                     } else {
-                        let c = CustomEnum::try_from(reader.read_i32()?)?;
-                        sanitize_custom_enum_value(c as i32)?;
-                        Ok(c)
+                        value = CustomEnum::try_from(reader.read_i32()?)?;
+                        sanitize_custom_enum_value(value as i32)?;
                     }
+                    Ok(value)
                 }) {
                     _enum_array = v;
-                    _enum_array_set = true;
                 } else {
                     return Err(DecodeError::TypeReadError(reader.context().print_with_context("'enum_array: Vec<CustomEnum>'")));
                 }
+                _enum_array_set = true;
                 reader.context().pop();
             }
             "opt_enum_array" => {
                 reader.context().push(&field, "Option<Vec<Option<CustomEnum>>>", "type found, reading property");
                 if let Ok(v) = reader.read_nullable_array(|reader| {
+                    let mut value: Option<CustomEnum> = None;
                     if !reader.is_next_nil()? {
                         if reader.is_next_string()? {
-                            Ok(Some(get_custom_enum_value(&reader.read_string()?)?))
+                            value = Some(get_custom_enum_value(&reader.read_string()?)?);
                         } else {
-                            let c = Some(CustomEnum::try_from(reader.read_i32()?)?);
-                            sanitize_custom_enum_value(c.unwrap() as i32)?;
-                            Ok(c)
+                            value = Some(CustomEnum::try_from(reader.read_i32()?)?);
+                            sanitize_custom_enum_value(value.unwrap() as i32)?;
                         }
                     } else {
-                        Ok(None)
+                        value = None;
                     }
+                    Ok(value)
                 }) {
                     _opt_enum_array = v;
                 } else {

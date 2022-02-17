@@ -111,6 +111,6 @@ impl CustomType {
     }
 
     pub fn read<R: Read>(reader: &mut R) -> Result<CustomType, DecodeError> {
-        read_custom_type(reader)
+        read_custom_type(reader).map_err(|e| DecodeError::TypeReadError(e.to_string()))
     }
 }
