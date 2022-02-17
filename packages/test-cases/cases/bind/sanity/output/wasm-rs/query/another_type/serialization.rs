@@ -28,7 +28,7 @@ pub fn write_another_type<W: Write>(input: &AnotherType, writer: &mut W) -> Resu
     writer.write_str("prop")?;
     writer.write_nullable_string(&input.prop)?;
     writer.context().pop();
-    writer.context().push("circular", "Option<Box<CustomType>>", "writing property");
+    writer.context().push("circular", "Option<CustomType>", "writing property");
     writer.write_str("circular")?;
     if input.circular.is_some() {
         CustomType::write(input.circular.as_ref().as_ref().unwrap(), writer)?;
