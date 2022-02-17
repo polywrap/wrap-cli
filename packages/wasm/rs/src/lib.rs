@@ -55,7 +55,6 @@ pub use subinvoke::*;
 
 pub use msgpack::{
     Context, DecodeError, EncodeError, EnumTypeError, Read, ReadDecoder, Write, WriteEncoder,
-    WriteSizer,
 };
 
 pub use num_bigint::BigInt;
