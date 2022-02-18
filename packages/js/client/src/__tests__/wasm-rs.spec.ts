@@ -47,7 +47,7 @@ describe("wasm-rs test cases", () => {
     }, config);
   }
 
-  it("asyncify", async () => {
+  it.only("asyncify", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/wasm-rs/asyncify`,
       ipfsProvider,
@@ -59,7 +59,7 @@ describe("wasm-rs test cases", () => {
     );
   });
 
-  it.only("bigint-type", async () => {
+  it("bigint-type", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/wasm-rs/bigint-type`,
       ipfsProvider,

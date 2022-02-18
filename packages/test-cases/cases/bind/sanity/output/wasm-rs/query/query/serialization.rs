@@ -55,7 +55,7 @@ pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, D
                 if let Ok(v) = reader.read_string() {
                     _str = v;
                 } else {
-                    return Err(DecodeError::TypeReadError(reader.context().print_with_context("'str: String'")));
+                    return Err(DecodeError::TypeReadError("'str: String'.".to_string()));
                 }
                 _str_set = true;
                 reader.context().pop();
@@ -65,7 +65,7 @@ pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, D
                 if let Ok(v) = reader.read_nullable_string() {
                     _opt_str = v;
                 } else {
-                    return Err(DecodeError::TypeReadError(reader.context().print_with_context("'opt_str: Option<String>'")));
+                    return Err(DecodeError::TypeReadError("'opt_str: Option<String>'.".to_string()));
                 }
                 reader.context().pop();
             }
@@ -112,7 +112,7 @@ pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, D
                 }) {
                     _enum_array = v;
                 } else {
-                    return Err(DecodeError::TypeReadError(reader.context().print_with_context("'enum_array: Vec<CustomEnum>'")));
+                    return Err(DecodeError::TypeReadError("'enum_array: Vec<CustomEnum>'.".to_string()));
                 }
                 _enum_array_set = true;
                 reader.context().pop();
@@ -135,7 +135,7 @@ pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, D
                 }) {
                     _opt_enum_array = v;
                 } else {
-                    return Err(DecodeError::TypeReadError(reader.context().print_with_context("'opt_enum_array: Option<Vec<Option<CustomEnum>>>'")));
+                    return Err(DecodeError::TypeReadError("'opt_enum_array: Option<Vec<Option<CustomEnum>>>'.".to_string()));
                 }
                 reader.context().pop();
             }
@@ -143,13 +143,13 @@ pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, D
         }
     }
     if !_str_set {
-        return Err(DecodeError::MissingField(reader.context().print_with_context("'str: String'")));
+        return Err(DecodeError::MissingField("'str: String'.".to_string()));
     }
     if !_en_set {
-        return Err(DecodeError::MissingField(reader.context().print_with_context("'en: CustomEnum'")));
+        return Err(DecodeError::MissingField("'en: CustomEnum'.".to_string()));
     }
     if !_enum_array_set {
-        return Err(DecodeError::MissingField(reader.context().print_with_context("'enumArray: [CustomEnum]'")));
+        return Err(DecodeError::MissingField("'enumArray: [CustomEnum]'.".to_string()));
     }
 
     Ok(InputQueryMethod {
@@ -229,7 +229,7 @@ pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod,
                 }) {
                     _object_array = v;
                 } else {
-                    return Err(DecodeError::TypeReadError(reader.context().print_with_context("'object_array: Vec<AnotherType>'")));
+                    return Err(DecodeError::TypeReadError("'object_array: Vec<AnotherType>'.".to_string()));
                 }
                 _object_array_set = true;
                 reader.context().pop();
@@ -247,7 +247,7 @@ pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod,
                 }) {
                     _opt_object_array = v;
                 } else {
-                    return Err(DecodeError::TypeReadError(reader.context().print_with_context("'opt_object_array: Option<Vec<Option<AnotherType>>>'")));
+                    return Err(DecodeError::TypeReadError("'opt_object_array: Option<Vec<Option<AnotherType>>>'.".to_string()));
                 }
                 reader.context().pop();
             }
@@ -255,10 +255,10 @@ pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod,
         }
     }
     if !_object_set {
-        return Err(DecodeError::MissingField(reader.context().print_with_context("'object: AnotherType'")));
+        return Err(DecodeError::MissingField("'object: AnotherType'.".to_string()));
     }
     if !_object_array_set {
-        return Err(DecodeError::MissingField(reader.context().print_with_context("'objectArray: [AnotherType]'")));
+        return Err(DecodeError::MissingField("'objectArray: [AnotherType]'.".to_string()));
     }
 
     Ok(InputObjectMethod {
