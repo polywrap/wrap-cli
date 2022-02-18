@@ -698,7 +698,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
                 }
                 reader.context().pop();
             }
-            _ => {}
+            err => return Err(DecodeError::UnknownFieldName(err.to_string())),
         }
     }
     if !_str_set {

@@ -21,7 +21,7 @@ pub fn get_custom_enum_value(key: &str) -> Result<CustomEnum, String> {
         "STRING" => Ok(CustomEnum::STRING),
         "BYTES" => Ok(CustomEnum::BYTES),
         "_MAX_" => Ok(CustomEnum::_MAX_),
-        _ => Err(String::from(EnumTypeError::EnumProcessingError(format!("Invalid key for enum 'CustomEnum': {}", key))))
+        err => Err(String::from(EnumTypeError::EnumProcessingError(format!("Invalid key for enum 'CustomEnum': {}", err))))
     }
 }
 

@@ -77,7 +77,7 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> Result<AnotherType, DecodeE
                 _circular = object;
                 reader.context().pop();
             }
-            _ => {}
+            err => return Err(DecodeError::UnknownFieldName(err.to_string())),
         }
     }
 

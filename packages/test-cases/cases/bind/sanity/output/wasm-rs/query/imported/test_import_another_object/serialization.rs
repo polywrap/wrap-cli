@@ -57,7 +57,7 @@ pub fn read_test_import_another_object<R: Read>(reader: &mut R) -> Result<TestIm
                 _prop_set = true;
                 reader.context().pop();
             }
-            _ => {}
+            err => return Err(DecodeError::UnknownFieldName(err.to_string())),
         }
     }
     if !_prop_set {

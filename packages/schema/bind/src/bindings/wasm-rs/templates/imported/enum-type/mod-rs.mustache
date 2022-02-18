@@ -32,7 +32,7 @@ pub fn get_{{#toLower}}{{type}}{{/toLower}}_value(key: &str) -> Result<{{#toUppe
         "{{.}}" => Ok({{#toUpper}}{{type}}{{/toUpper}}::{{.}}),
         {{/constants}}
         "_MAX_" => Ok({{#toUpper}}{{type}}{{/toUpper}}::_MAX_),
-        _ => Err(String::from(EnumTypeError::EnumProcessingError(format!("Invalid key for enum '{{#toUpper}}{{type}}{{/toUpper}}': {}", key))))
+        err => Err(String::from(EnumTypeError::EnumProcessingError(format!("Invalid key for enum '{{#toUpper}}{{type}}{{/toUpper}}': {}", err))))
     }
 }
 

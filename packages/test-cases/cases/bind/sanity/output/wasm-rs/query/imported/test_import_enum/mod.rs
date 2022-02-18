@@ -21,7 +21,7 @@ pub fn get_test_import_enum_value(key: &str) -> Result<TestImportEnum, String> {
         "STRING" => Ok(TestImportEnum::STRING),
         "BYTES" => Ok(TestImportEnum::BYTES),
         "_MAX_" => Ok(TestImportEnum::_MAX_),
-        _ => Err(String::from(EnumTypeError::EnumProcessingError(format!("Invalid key for enum 'TestImportEnum': {}", key))))
+        err => Err(String::from(EnumTypeError::EnumProcessingError(format!("Invalid key for enum 'TestImportEnum': {}", err))))
     }
 }
 

@@ -97,7 +97,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
                 reader.context().pop();
             }
             {{/arguments}}
-            _ => {}
+            err => return Err(DecodeError::UnknownFieldName(err.to_string())),
         }
     }
     {{#arguments}}

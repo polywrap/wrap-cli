@@ -139,7 +139,7 @@ pub fn deserialize_mutation_method_args(input: &[u8]) -> Result<InputMutationMet
                 }
                 reader.context().pop();
             }
-            _ => {}
+            err => return Err(DecodeError::UnknownFieldName(err.to_string())),
         }
     }
     if !_str_set {
@@ -251,7 +251,7 @@ pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod,
                 }
                 reader.context().pop();
             }
-            _ => {}
+            err => return Err(DecodeError::UnknownFieldName(err.to_string())),
         }
     }
     if !_object_set {

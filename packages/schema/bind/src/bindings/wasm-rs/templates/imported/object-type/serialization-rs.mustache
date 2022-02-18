@@ -138,7 +138,7 @@ pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<
                 reader.context().pop();
             }
             {{/properties}}
-            _ => {}
+            err => return Err(DecodeError::UnknownFieldName(err.to_string())),
         }
     }
     {{#properties}}
