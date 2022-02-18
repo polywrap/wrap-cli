@@ -44,15 +44,15 @@ impl {{#toUpper}}{{type}}{{/toUpper}} {
     }
 
     pub fn to_buffer(input: &{{#toUpper}}{{type}}{{/toUpper}}) -> Result<Vec<u8>, EncodeError> {
-        serialize_{{#toLower}}{{type}}{{/toLower}}(input)
+        serialize_{{#toLower}}{{type}}{{/toLower}}(input).map_err(|e| EncodeError::TypeWriteError(e.to_string()))
     }
 
     pub fn from_buffer(input: &[u8]) -> Result<{{#toUpper}}{{type}}{{/toUpper}}, DecodeError> {
-        deserialize_{{#toLower}}{{type}}{{/toLower}}(input)
+        deserialize_{{#toLower}}{{type}}{{/toLower}}(input).map_err(|e| DecodeError::TypeReadError(e.to_string()))
     }
 
     pub fn write<W: Write>(input: &{{#toUpper}}{{type}}{{/toUpper}}, writer: &mut W) -> Result<(), EncodeError> {
-        write_{{#toLower}}{{type}}{{/toLower}}(input, writer)
+        write_{{#toLower}}{{type}}{{/toLower}}(input, writer).map_err(|e| EncodeError::TypeWriteError(e.to_string()))
     }
 
     pub fn read<R: Read>(reader: &mut R) -> Result<{{#toUpper}}{{type}}{{/toUpper}}, DecodeError> {

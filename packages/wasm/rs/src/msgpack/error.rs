@@ -51,7 +51,7 @@ pub enum EncodeError {
     #[error("StrWriteError: '{0}'")]
     StrWriteError(String),
 
-    #[error("Error in serializing {0}")]
+    #[error("Error in serializing: '{0}'")]
     TypeWriteError(String),
 }
 
@@ -118,7 +118,7 @@ pub enum DecodeError {
     #[error("Missing required field: '{0}'")]
     MissingField(String),
 
-    #[error("Error in deserializing {0}")]
+    #[error("Error in deserializing: '{0}'")]
     TypeReadError(String),
 }
 
