@@ -171,20 +171,17 @@ impl Write for WriteEncoder {
         let length = *length;
         if length < 32 {
             Format::set_format(self, Format::FixStr(length as u8))?;
-            Ok(())
         } else if length <= u8::MAX as u32 {
             Format::set_format(self, Format::Str8)?;
             WriteBytesExt::write_u8(self, length as u8)?;
-            Ok(())
         } else if length <= u16::MAX as u32 {
             Format::set_format(self, Format::Str16)?;
             WriteBytesExt::write_u16::<BigEndian>(self, length as u16)?;
-            Ok(())
         } else {
             Format::set_format(self, Format::Str32)?;
             WriteBytesExt::write_u32::<BigEndian>(self, length)?;
-            Ok(())
         }
+        Ok(())
     }
 
     fn write_string(&mut self, value: &String) -> Result<(), EncodeError> {
@@ -204,16 +201,14 @@ impl Write for WriteEncoder {
         if length <= u8::MAX as u32 {
             Format::set_format(self, Format::Bin8)?;
             WriteBytesExt::write_u8(self, length as u8)?;
-            Ok(())
         } else if length <= u16::MAX as u32 {
             Format::set_format(self, Format::Bin16)?;
             WriteBytesExt::write_u16::<BigEndian>(self, length as u16)?;
-            Ok(())
         } else {
             Format::set_format(self, Format::Bin32)?;
             WriteBytesExt::write_u32::<BigEndian>(self, length)?;
-            Ok(())
         }
+        Ok(())
     }
 
     fn write_bytes(&mut self, buf: &[u8]) -> Result<(), EncodeError> {
@@ -240,16 +235,14 @@ impl Write for WriteEncoder {
         let length = *length;
         if length < 16 {
             Format::set_format(self, Format::FixArray(length as u8))?;
-            Ok(())
         } else if length <= u16::MAX as u32 {
             Format::set_format(self, Format::Array16)?;
             WriteBytesExt::write_u16::<BigEndian>(self, length as u16)?;
-            Ok(())
         } else {
             Format::set_format(self, Format::Array32)?;
             WriteBytesExt::write_u32::<BigEndian>(self, length)?;
-            Ok(())
         }
+        Ok(())
     }
 
     fn write_array<T: Clone>(
@@ -268,16 +261,14 @@ impl Write for WriteEncoder {
         let length = *length;
         if length < 16 {
             Format::set_format(self, Format::FixMap(length as u8))?;
-            Ok(())
         } else if length <= u16::MAX as u32 {
             Format::set_format(self, Format::Map16)?;
             WriteBytesExt::write_u16::<BigEndian>(self, length as u16)?;
-            Ok(())
         } else {
             Format::set_format(self, Format::Map32)?;
             WriteBytesExt::write_u32::<BigEndian>(self, length)?;
-            Ok(())
         }
+        Ok(())
     }
 
     fn write_map<K, V: Clone>(
@@ -301,92 +292,92 @@ impl Write for WriteEncoder {
 
     fn write_nullable_bool(&mut self, value: &Option<bool>) -> Result<(), EncodeError> {
         match value {
-            None => Ok(Write::write_nil(self)?),
-            Some(v) => Ok(Write::write_bool(self, v)?),
+            None => Write::write_nil(self),
+            Some(v) => Write::write_bool(self, v),
         }
     }
 
     fn write_nullable_i8(&mut self, value: &Option<i8>) -> Result<(), EncodeError> {
         match value {
-            None => Ok(Write::write_nil(self)?),
-            Some(v) => Ok(Write::write_i8(self, v)?),
+            None => Write::write_nil(self),
+            Some(v) => Write::write_i8(self, v),
         }
     }
 
     fn write_nullable_i16(&mut self, value: &Option<i16>) -> Result<(), EncodeError> {
         match value {
-            None => Ok(Write::write_nil(self)?),
-            Some(v) => Ok(Write::write_i16(self, v)?),
+            None => Write::write_nil(self),
+            Some(v) => Write::write_i16(self, v),
         }
     }
 
     fn write_nullable_i32(&mut self, value: &Option<i32>) -> Result<(), EncodeError> {
         match value {
-            None => Ok(Write::write_nil(self)?),
-            Some(v) => Ok(Write::write_i32(self, v)?),
+            None => Write::write_nil(self),
+            Some(v) => Write::write_i32(self, v),
         }
     }
 
     fn write_nullable_u8(&mut self, value: &Option<u8>) -> Result<(), EncodeError> {
         match value {
-            None => Ok(Write::write_nil(self)?),
-            Some(v) => Ok(Write::write_u8(self, v)?),
+            None => Write::write_nil(self),
+            Some(v) => Write::write_u8(self, v),
         }
     }
 
     fn write_nullable_u16(&mut self, value: &Option<u16>) -> Result<(), EncodeError> {
         match value {
-            None => Ok(Write::write_nil(self)?),
-            Some(v) => Ok(Write::write_u16(self, v)?),
+            None => Write::write_nil(self),
+            Some(v) => Write::write_u16(self, v),
         }
     }
 
     fn write_nullable_u32(&mut self, value: &Option<u32>) -> Result<(), EncodeError> {
         match value {
-            None => Ok(Write::write_nil(self)?),
-            Some(v) => Ok(Write::write_u32(self, v)?),
+            None => Write::write_nil(self),
+            Some(v) => Write::write_u32(self, v),
         }
     }
 
     fn write_nullable_f32(&mut self, value: &Option<f32>) -> Result<(), EncodeError> {
         match value {
-            None => Ok(Write::write_nil(self)?),
-            Some(v) => Ok(Write::write_f32(self, v)?),
+            None => Write::write_nil(self),
+            Some(v) => Write::write_f32(self, v),
         }
     }
 
     fn write_nullable_f64(&mut self, value: &Option<f64>) -> Result<(), EncodeError> {
         match value {
-            None => Ok(Write::write_nil(self)?),
-            Some(v) => Ok(Write::write_f64(self, v)?),
+            None => Write::write_nil(self),
+            Some(v) => Write::write_f64(self, v),
         }
     }
 
     fn write_nullable_string(&mut self, value: &Option<String>) -> Result<(), EncodeError> {
         match value {
-            None => Ok(Write::write_nil(self)?),
-            Some(s) => Ok(Write::write_string(self, s)?),
+            None => Write::write_nil(self),
+            Some(s) => Write::write_string(self, s),
         }
     }
 
     fn write_nullable_bytes(&mut self, value: &Option<Vec<u8>>) -> Result<(), EncodeError> {
         match value {
-            None => Ok(Write::write_nil(self)?),
-            Some(bytes) => Ok(Write::write_bytes(self, bytes)?),
+            None => Write::write_nil(self),
+            Some(bytes) => Write::write_bytes(self, bytes),
         }
     }
 
     fn write_nullable_bigint(&mut self, value: &Option<BigInt>) -> Result<(), EncodeError> {
         match value {
-            None => Ok(Write::write_nil(self)?),
-            Some(bigint) => Ok(Write::write_bigint(self, bigint)?),
+            None => Write::write_nil(self),
+            Some(bigint) => Write::write_bigint(self, bigint),
         }
     }
 
     fn write_nullable_json(&mut self, value: &Option<JSON::Value>) -> Result<(), EncodeError> {
         match value {
-            None => Ok(Write::write_nil(self)?),
-            Some(json) => Ok(Write::write_json(self, json)?),
+            None => Write::write_nil(self),
+            Some(json) => Write::write_json(self, json),
         }
     }
 
@@ -396,8 +387,8 @@ impl Write for WriteEncoder {
         arr_writer: impl FnMut(&mut Self, &T) -> Result<(), EncodeError>,
     ) -> Result<(), EncodeError> {
         match opt_array {
-            None => Ok(Write::write_nil(self)?),
-            Some(array) => Ok(Write::write_array(self, array, arr_writer)?),
+            None => Write::write_nil(self),
+            Some(array) => Write::write_array(self, array, arr_writer),
         }
     }
 
@@ -411,8 +402,8 @@ impl Write for WriteEncoder {
         K: Clone + Eq + Hash + Ord,
     {
         match opt_map {
-            None => Ok(Write::write_nil(self)?),
-            Some(map) => Ok(Write::write_map(self, map, key_writer, val_writer)?),
+            None => Write::write_nil(self),
+            Some(map) => Write::write_map(self, map, key_writer, val_writer),
         }
     }
 

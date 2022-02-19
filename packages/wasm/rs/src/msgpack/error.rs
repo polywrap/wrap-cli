@@ -94,17 +94,41 @@ impl From<EncodeError> for serde_json::Error {
 /// Errors from decoding data
 #[derive(Debug, Error)]
 pub enum DecodeError {
+    #[error("Found NIL, but expected: '{0}'")]
+    FoundNilButExpected(String),
+
+    #[error("BooleanReadError: '{0}'")]
+    BooleanReadError(String),
+
     #[error("BytesReadError: '{0}'")]
     BytesReadError(String),
 
     #[error("ParseBigIntError: '{0}'")]
     ParseBigIntError(String),
 
+    #[error("IntReadError: '{0}'")]
+    IntReadError(String),
+
+    #[error("UintReadError: '{0}'")]
+    UintReadError(String),
+
+    #[error("FloatReadError: '{0}'")]
+    FloatReadError(String),
+
+    #[error("BigIntReadError: '{0}'")]
+    BigIntReadError(String),
+
     #[error("JSONReadError: '{0}'")]
     JSONReadError(String),
 
     #[error("{0}")]
     IntRangeError(String),
+
+    #[error("ArrayReadError: '{0}'")]
+    ArrayReadError(String),
+
+    #[error("MapReadError: '{0}'")]
+    MapReadError(String),
 
     #[error("StrReadError: '{0}'")]
     StrReadError(String),
