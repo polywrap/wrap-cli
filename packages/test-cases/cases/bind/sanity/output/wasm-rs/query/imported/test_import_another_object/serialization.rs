@@ -52,7 +52,7 @@ pub fn read_test_import_another_object<R: Read>(reader: &mut R) -> Result<TestIm
                 if let Ok(v) = reader.read_string() {
                     _prop = v;
                 } else {
-                    return Err(DecodeError::TypeReadError("'prop: String'.".to_string()));
+                    return Err(DecodeError::TypeReadError("prop: String.".to_string()));
                 }
                 _prop_set = true;
                 reader.context().pop();
@@ -61,7 +61,7 @@ pub fn read_test_import_another_object<R: Read>(reader: &mut R) -> Result<TestIm
         }
     }
     if !_prop_set {
-        return Err(DecodeError::MissingField("'prop: String'.".to_string()));
+        return Err(DecodeError::MissingField("prop: String.".to_string()));
     }
 
     Ok(TestImportAnotherObject {

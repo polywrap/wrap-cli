@@ -71,7 +71,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
                 if let Ok(v) = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}() {
                     _{{#toLower}}{{name}}{{/toLower}} = v;
                 } else {
-                    return Err(DecodeError::TypeReadError("'{{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}}'.".to_string()));
+                    return Err(DecodeError::TypeReadError("{{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}}.".to_string()));
                 }
                 {{/scalar}}
                 {{#array}}
@@ -80,7 +80,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
                 }) {
                     _{{#toLower}}{{name}}{{/toLower}} = v;
                 } else {
-                    return Err(DecodeError::TypeReadError("'{{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}}'.".to_string()));
+                    return Err(DecodeError::TypeReadError("{{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}}.".to_string()));
                 }
                 {{/array}}
                 {{#enum}}
@@ -103,7 +103,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
     {{#arguments}}
     {{#required}}
     if !_{{#toLower}}{{name}}{{/toLower}}_set {
-        return Err(DecodeError::MissingField("'{{name}}: {{type}}'.".to_string()));
+        return Err(DecodeError::MissingField("{{name}}: {{type}}.".to_string()));
     }
     {{/required}}
     {{/arguments}}

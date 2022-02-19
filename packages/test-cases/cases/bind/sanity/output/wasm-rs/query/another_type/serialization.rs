@@ -62,7 +62,7 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> Result<AnotherType, DecodeE
                 if let Ok(v) = reader.read_nullable_string() {
                     _prop = v;
                 } else {
-                    return Err(DecodeError::TypeReadError("'prop: Option<String>'.".to_string()));
+                    return Err(DecodeError::TypeReadError("prop: Option<String>.".to_string()));
                 }
                 reader.context().pop();
             }

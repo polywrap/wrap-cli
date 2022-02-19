@@ -134,7 +134,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
                 }) {
                     _object_array = v;
                 } else {
-                    return Err(DecodeError::TypeReadError("'object_array: Vec<TestImportAnotherObject>'.".to_string()));
+                    return Err(DecodeError::TypeReadError("object_array: Vec<TestImportAnotherObject>.".to_string()));
                 }
                 _object_array_set = true;
                 reader.context().pop();
@@ -152,7 +152,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
                 }) {
                     _opt_object_array = v;
                 } else {
-                    return Err(DecodeError::TypeReadError("'opt_object_array: Option<Vec<Option<TestImportAnotherObject>>>'.".to_string()));
+                    return Err(DecodeError::TypeReadError("opt_object_array: Option<Vec<Option<TestImportAnotherObject>>>.".to_string()));
                 }
                 reader.context().pop();
             }
@@ -199,7 +199,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
                 }) {
                     _enum_array = v;
                 } else {
-                    return Err(DecodeError::TypeReadError("'enum_array: Vec<TestImportEnum>'.".to_string()));
+                    return Err(DecodeError::TypeReadError("enum_array: Vec<TestImportEnum>.".to_string()));
                 }
                 _enum_array_set = true;
                 reader.context().pop();
@@ -222,7 +222,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
                 }) {
                     _opt_enum_array = v;
                 } else {
-                    return Err(DecodeError::TypeReadError("'opt_enum_array: Option<Vec<Option<TestImportEnum>>>'.".to_string()));
+                    return Err(DecodeError::TypeReadError("opt_enum_array: Option<Vec<Option<TestImportEnum>>>.".to_string()));
                 }
                 reader.context().pop();
             }
@@ -230,16 +230,16 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
         }
     }
     if !_object_set {
-        return Err(DecodeError::MissingField("'object: TestImport_AnotherObject'.".to_string()));
+        return Err(DecodeError::MissingField("object: TestImport_AnotherObject.".to_string()));
     }
     if !_object_array_set {
-        return Err(DecodeError::MissingField("'objectArray: [TestImport_AnotherObject]'.".to_string()));
+        return Err(DecodeError::MissingField("objectArray: [TestImport_AnotherObject].".to_string()));
     }
     if !_en_set {
-        return Err(DecodeError::MissingField("'en: TestImport_Enum'.".to_string()));
+        return Err(DecodeError::MissingField("en: TestImport_Enum.".to_string()));
     }
     if !_enum_array_set {
-        return Err(DecodeError::MissingField("'enumArray: [TestImport_Enum]'.".to_string()));
+        return Err(DecodeError::MissingField("enumArray: [TestImport_Enum].".to_string()));
     }
 
     Ok(TestImportObject {
