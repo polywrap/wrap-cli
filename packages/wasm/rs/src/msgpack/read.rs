@@ -28,8 +28,8 @@ pub trait Read {
     fn read_map_length(&mut self) -> Result<u32, DecodeError>;
     fn read_map<K, V>(
         &mut self,
-        key_fn: impl FnMut(&mut Self) -> Result<K, DecodeError>,
-        val_fn: impl FnMut(&mut Self) -> Result<V, DecodeError>,
+        key_reader: impl FnMut(&mut Self) -> Result<K, DecodeError>,
+        val_reader: impl FnMut(&mut Self) -> Result<V, DecodeError>,
     ) -> Result<BTreeMap<K, V>, DecodeError>
     where
         K: Eq + Hash + Ord;
@@ -52,8 +52,8 @@ pub trait Read {
     ) -> Result<Option<Vec<T>>, DecodeError>;
     fn read_nullable_map<K, V>(
         &mut self,
-        key_fn: impl FnMut(&mut Self) -> Result<K, DecodeError>,
-        val_fn: impl FnMut(&mut Self) -> Result<V, DecodeError>,
+        key_reader: impl FnMut(&mut Self) -> Result<K, DecodeError>,
+        val_reader: impl FnMut(&mut Self) -> Result<V, DecodeError>,
     ) -> Result<Option<BTreeMap<K, V>>, DecodeError>
     where
         K: Eq + Hash + Ord;

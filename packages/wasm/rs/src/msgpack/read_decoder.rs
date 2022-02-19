@@ -312,8 +312,8 @@ impl Read for ReadDecoder {
 
     fn read_map<K, V>(
         &mut self,
-        mut key_fn: impl FnMut(&mut Self) -> Result<K, DecodeError>,
-        mut val_fn: impl FnMut(&mut Self) -> Result<V, DecodeError>,
+        mut key_reader: impl FnMut(&mut Self) -> Result<K, DecodeError>,
+        mut val_reader: impl FnMut(&mut Self) -> Result<V, DecodeError>,
     ) -> Result<BTreeMap<K, V>, DecodeError>
     where
         K: Eq + Hash + Ord,
@@ -322,8 +322,8 @@ impl Read for ReadDecoder {
         let mut map: BTreeMap<K, V> = BTreeMap::new();
         for i in 0..map_len {
             self.context.push("map[", &i.to_string(), "]");
-            let key = key_fn(self)?;
-            let value = val_fn(self)?;
+            let key = key_reader(self)?;
+            let value = val_reader(self)?;
             map.insert(key, value);
             self.context.pop();
         }
@@ -433,8 +433,8 @@ impl Read for ReadDecoder {
 
     fn read_nullable_map<K, V>(
         &mut self,
-        key_fn: impl FnMut(&mut Self) -> Result<K, DecodeError>,
-        val_fn: impl FnMut(&mut Self) -> Result<V, DecodeError>,
+        key_reader: impl FnMut(&mut Self) -> Result<K, DecodeError>,
+        val_reader: impl FnMut(&mut Self) -> Result<V, DecodeError>,
     ) -> Result<Option<BTreeMap<K, V>>, DecodeError>
     where
         K: Eq + Hash + Ord,
@@ -442,20 +442,29 @@ impl Read for ReadDecoder {
         if self.is_next_nil()? {
             return Ok(None);
         }
-        Ok(Some(self.read_map(key_fn, val_fn)?))
+        Ok(Some(self.read_map(key_reader, val_reader)?))
     }
 
     fn is_next_nil(&mut self) -> Result<bool, DecodeError> {
         let format = Format::get_format(self)?;
-        Ok(format == Format::Nil)
+        if format == Format::Nil {
+            Ok(true)
+        } else {
+            Ok(false)
+        }
     }
 
     fn is_next_string(&mut self) -> Result<bool, DecodeError> {
         let format = Format::get_format(self)?;
-        Ok(format == Format::FixStr(format.to_u8())
+        if format == Format::FixStr(format.to_u8())
             || format == Format::Str8
             || format == Format::Str16
-            || format == Format::Str32)
+            || format == Format::Str32
+        {
+            Ok(true)
+        } else {
+            Ok(false)
+        }
     }
 
     fn context(&mut self) -> &mut Context {
