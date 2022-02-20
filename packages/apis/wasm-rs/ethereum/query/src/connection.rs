@@ -11,8 +11,8 @@ use core::result::Result;
 // pub type EitherTransport = Either<Eip1193, Http>;
 #[derive(Clone, Debug)]
 pub enum EthereumProvider {
-    // HttpUrl(String),
-    Eip1193(Provider)
+    HttpUrl(String),
+    // Eip1193(Provider)
 }
 
 #[derive(Clone, Debug)]
@@ -45,22 +45,22 @@ pub struct Connections {
 
 #[derive(Clone, Debug)]
 pub struct Connection {
-    client: Web3<Eip1193>,
-    config: Config,
-    accounts: Vec<Address>
+    pub client: Web3<Http>,
+    pub config: Config,
+    pub accounts: Vec<Address>
 }
 
 impl Connection {
     pub async fn new(config: ConnectionConfig) -> Self {
         let transport = match config.provider {
-            // EthereumProvider::HttpUrl(url) => match Http::new(&url) {
-            //     Ok(http) => web3::transports::Either::Right(http),
-            //     Err(_) => panic!("Error creating HTTP transport with: {}", &url)
-            // },
-            EthereumProvider::Eip1193(ethereum) =>
-                // web3::transports::Either::Left(
-                Eip1193::new(ethereum)
-            // )
+            EthereumProvider::HttpUrl(url) => match Http::new(&url) {
+                Ok(http) => http,
+                Err(_) => panic!("Error creating HTTP transport with: {}", &url)
+            },
+            // EthereumProvider::Eip1193(ethereum) =>
+            //     // web3::transports::Either::Left(
+            //     Eip1193::new(ethereum)
+            // // )
         };
 
         let client = Web3::new(transport);
@@ -115,7 +115,7 @@ impl Connection {
         connections
     }
 
-    pub fn get_contract(&self, address: &str, abi_str: &str) -> Result<Contract<Eip1193>, &'static str> {
+    pub fn get_contract(&self, address: &str, abi_str: &str) -> Result<Contract<Http>, &'static str> {
         let parsed_address = match Address::from_str(address) {
             Ok(a) => a,
             Err(_) => { panic!("Invalid contract address: {}", address)}
@@ -124,5 +124,69 @@ impl Connection {
         let abi: ethabi::Contract = serde_json::from_str(abi_str).unwrap();
 
         Ok(Contract::new(self.client.eth(), parsed_address, abi))
+    }
+}
+
+#[cfg(test)]
+pub mod test {
+    use crate::connection::{Connection, ConnectionConfig, EthereumProvider};
+
+    async fn get_test_connection() -> Connection {
+        Connection::new(ConnectionConfig {
+            provider: EthereumProvider::HttpUrl("http://127.0.0.1:7545".parse().unwrap()),
+            signer: None
+        }).await
+    }
+
+    fn get_storage_abi() -> &'static str {
+        r#"
+        [
+            {
+                "inputs": [],
+                "name": "retrieve",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "num",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "store",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ]
+        "#
+    }
+
+    #[actix_rt::test]
+    async fn creates_connection_with_no_signer() {
+        let connection = get_test_connection().await;
+        let accounts = connection.accounts;
+
+        assert_eq!(accounts.len(), 10);
+        assert_eq!(connection.config.signer, accounts[0])
+    }
+
+    #[actix_rt::test]
+    async fn gets_contract_from_str() {
+        let connection = get_test_connection().await;
+
+        let contract = connection.get_contract(
+            r#"0xC36A0eF5874b401906BEf534cad48690D7eEE888"#,
+            get_storage_abi()
+        ).unwrap();
     }
 }

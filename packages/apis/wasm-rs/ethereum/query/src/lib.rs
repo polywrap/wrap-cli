@@ -5,6 +5,8 @@
 // pub mod resolvers;
 // pub mod w3;
 pub mod connection;
+pub mod resolvers;
+pub mod abi;
 //
 // pub use mapping::*;
 // // use polywrap_wasm_rs::BigInt;
