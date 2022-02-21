@@ -332,7 +332,7 @@ impl Read for ReadDecoder {
 
     fn read_nullable_bool(&mut self) -> Result<Option<bool>, DecodeError> {
         if self.is_next_nil()? {
-            return Err(DecodeError::FoundNilButExpected("BOOLEAN".to_string()));
+            return Ok(None);
         } else {
             match self.read_bool() {
                 Ok(v) => Ok(Some(v)),
@@ -343,7 +343,7 @@ impl Read for ReadDecoder {
 
     fn read_nullable_i8(&mut self) -> Result<Option<i8>, DecodeError> {
         if self.is_next_nil()? {
-            return Err(DecodeError::FoundNilButExpected("INT8".to_string()));
+            return Ok(None);
         } else {
             match Read::read_i8(self) {
                 Ok(v) => Ok(Some(v)),
@@ -354,7 +354,7 @@ impl Read for ReadDecoder {
 
     fn read_nullable_i16(&mut self) -> Result<Option<i16>, DecodeError> {
         if self.is_next_nil()? {
-            return Err(DecodeError::FoundNilButExpected("INT16".to_string()));
+            return Ok(None);
         } else {
             match Read::read_i16(self) {
                 Ok(v) => Ok(Some(v)),
@@ -365,7 +365,7 @@ impl Read for ReadDecoder {
 
     fn read_nullable_i32(&mut self) -> Result<Option<i32>, DecodeError> {
         if self.is_next_nil()? {
-            return Err(DecodeError::FoundNilButExpected("INT32".to_string()));
+            return Ok(None);
         } else {
             match Read::read_i32(self) {
                 Ok(v) => Ok(Some(v)),
@@ -376,7 +376,7 @@ impl Read for ReadDecoder {
 
     fn read_nullable_u8(&mut self) -> Result<Option<u8>, DecodeError> {
         if self.is_next_nil()? {
-            return Err(DecodeError::FoundNilButExpected("UINT8".to_string()));
+            return Ok(None);
         } else {
             match Read::read_u8(self) {
                 Ok(v) => Ok(Some(v)),
@@ -387,7 +387,7 @@ impl Read for ReadDecoder {
 
     fn read_nullable_u16(&mut self) -> Result<Option<u16>, DecodeError> {
         if self.is_next_nil()? {
-            return Err(DecodeError::FoundNilButExpected("UINT16".to_string()));
+            return Ok(None);
         } else {
             match Read::read_u16(self) {
                 Ok(v) => Ok(Some(v)),
@@ -398,7 +398,7 @@ impl Read for ReadDecoder {
 
     fn read_nullable_u32(&mut self) -> Result<Option<u32>, DecodeError> {
         if self.is_next_nil()? {
-            return Err(DecodeError::FoundNilButExpected("UINT32".to_string()));
+            return Ok(None);
         } else {
             match Read::read_u32(self) {
                 Ok(v) => Ok(Some(v)),
@@ -409,7 +409,7 @@ impl Read for ReadDecoder {
 
     fn read_nullable_f32(&mut self) -> Result<Option<f32>, DecodeError> {
         if self.is_next_nil()? {
-            return Err(DecodeError::FoundNilButExpected("FLOAT32".to_string()));
+            return Ok(None);
         } else {
             match Read::read_f32(self) {
                 Ok(v) => Ok(Some(v)),
@@ -420,7 +420,7 @@ impl Read for ReadDecoder {
 
     fn read_nullable_f64(&mut self) -> Result<Option<f64>, DecodeError> {
         if self.is_next_nil()? {
-            return Err(DecodeError::FoundNilButExpected("FLOAT64".to_string()));
+            return Ok(None);
         } else {
             match Read::read_f64(self) {
                 Ok(v) => Ok(Some(v)),
@@ -431,7 +431,7 @@ impl Read for ReadDecoder {
 
     fn read_nullable_string(&mut self) -> Result<Option<String>, DecodeError> {
         if self.is_next_nil()? {
-            return Err(DecodeError::FoundNilButExpected("STRING".to_string()));
+            return Ok(None);
         } else {
             match self.read_string() {
                 Ok(s) => Ok(Some(s)),
@@ -442,7 +442,7 @@ impl Read for ReadDecoder {
 
     fn read_nullable_bytes(&mut self) -> Result<Option<Vec<u8>>, DecodeError> {
         if self.is_next_nil()? {
-            return Err(DecodeError::FoundNilButExpected("BYTES".to_string()));
+            return Ok(None);
         } else {
             match self.read_bytes() {
                 Ok(bytes) => Ok(Some(bytes)),
@@ -453,7 +453,7 @@ impl Read for ReadDecoder {
 
     fn read_nullable_bigint(&mut self) -> Result<Option<BigInt>, DecodeError> {
         if self.is_next_nil()? {
-            return Err(DecodeError::FoundNilButExpected("BIGINT".to_string()));
+            return Ok(None);
         } else {
             match self.read_bigint() {
                 Ok(bigint) => Ok(Some(bigint)),
@@ -464,7 +464,7 @@ impl Read for ReadDecoder {
 
     fn read_nullable_json(&mut self) -> Result<Option<JSON::Value>, DecodeError> {
         if self.is_next_nil()? {
-            return Err(DecodeError::FoundNilButExpected("JSON".to_string()));
+            return Ok(None);
         } else {
             match self.read_json() {
                 Ok(value) => Ok(Some(value)),
@@ -478,7 +478,7 @@ impl Read for ReadDecoder {
         reader: impl FnMut(&mut Self) -> Result<T, DecodeError>,
     ) -> Result<Option<Vec<T>>, DecodeError> {
         if self.is_next_nil()? {
-            return Err(DecodeError::FoundNilButExpected("ARRAY".to_string()));
+            return Ok(None);
         } else {
             match self.read_array(reader) {
                 Ok(array) => Ok(Some(array)),
@@ -496,7 +496,7 @@ impl Read for ReadDecoder {
         K: Eq + Hash + Ord,
     {
         if self.is_next_nil()? {
-            return Err(DecodeError::FoundNilButExpected("MAP".to_string()));
+            return Ok(None);
         } else {
             match self.read_map(key_reader, val_reader) {
                 Ok(map) => Ok(Some(map)),
