@@ -1,5 +1,5 @@
 {{#required}}
-let mut value = {{#toUpper}}{{type}}{{/toUpper}}::_MAX_;
+let mut value: {{#toUpper}}{{type}}{{/toUpper}} = {{#toUpper}}{{type}}{{/toUpper}}::_MAX_;
 if reader.is_next_string()? {
     value = get_{{#toLower}}{{type}}{{/toLower}}_value(&reader.read_string()?)?;
 } else {

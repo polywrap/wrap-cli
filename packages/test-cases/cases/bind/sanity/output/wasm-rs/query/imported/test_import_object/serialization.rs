@@ -8,7 +8,6 @@ use polywrap_wasm_rs::{
     ReadDecoder,
     Write,
     WriteEncoder,
-    WriteSizer,
     JSON,
 };
 use crate::TestImportObject;
@@ -21,10 +20,6 @@ use crate::{
 };
 
 pub fn serialize_test_import_object(input: &TestImportObject) -> Result<Vec<u8>, EncodeError> {
-    let mut sizer_context = Context::new();
-    sizer_context.description = "Serializing (sizing) imported object-type: TestImportObject".to_string();
-    let mut sizer = WriteSizer::new(sizer_context);
-    write_test_import_object(input, &mut sizer)?;
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) imported object-type: TestImportObject".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
@@ -48,13 +43,13 @@ pub fn write_test_import_object<W: Write>(input: &TestImportObject, writer: &mut
     writer.context().pop();
     writer.context().push("object_array", "Vec<TestImportAnotherObject>", "writing property");
     writer.write_str("object_array")?;
-    writer.write_array(&input.object_array, |writer: &mut W, item| {
+    writer.write_array(&input.object_array, |writer, item| {
         TestImportAnotherObject::write(item, writer)
     })?;
     writer.context().pop();
     writer.context().push("opt_object_array", "Option<Vec<Option<TestImportAnotherObject>>>", "writing property");
     writer.write_str("opt_object_array")?;
-    writer.write_nullable_array(&input.opt_object_array, |writer: &mut W, item| {
+    writer.write_nullable_array(&input.opt_object_array, |writer, item| {
         if item.is_some() {
             TestImportAnotherObject::write(item.as_ref().as_ref().unwrap(), writer)
         } else {
@@ -72,13 +67,13 @@ pub fn write_test_import_object<W: Write>(input: &TestImportObject, writer: &mut
     writer.context().pop();
     writer.context().push("enum_array", "Vec<TestImportEnum>", "writing property");
     writer.write_str("enum_array")?;
-    writer.write_array(&input.enum_array, |writer: &mut W, item| {
+    writer.write_array(&input.enum_array, |writer, item| {
         writer.write_i32(&(*item as i32))
     })?;
     writer.context().pop();
     writer.context().push("opt_enum_array", "Option<Vec<Option<TestImportEnum>>>", "writing property");
     writer.write_str("opt_enum_array")?;
-    writer.write_nullable_array(&input.opt_enum_array, |writer: &mut W, item| {
+    writer.write_nullable_array(&input.opt_enum_array, |writer, item| {
         writer.write_nullable_i32(&item.map(|f| f as i32))
     })?;
     writer.context().pop();
@@ -125,33 +120,45 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
                 let mut object: Option<TestImportAnotherObject> = None;
                 if !reader.is_next_nil()? {
                     object = Some(TestImportAnotherObject::read(reader)?);
+                } else {
+                    object = None;
                 }
                 _opt_object = object;
                 reader.context().pop();
             }
             "object_array" => {
                 reader.context().push(&field, "Vec<TestImportAnotherObject>", "type found, reading property");
-                _object_array = reader.read_array(|reader| {
+                if let Ok(v) = reader.read_array(|reader| {
                     let object = TestImportAnotherObject::read(reader)?;
-                    return Ok(object);
-                })?;
+                    Ok(object)
+                }) {
+                    _object_array = v;
+                } else {
+                    return Err(DecodeError::TypeReadError("object_array: Vec<TestImportAnotherObject>.".to_string()));
+                }
                 _object_array_set = true;
                 reader.context().pop();
             }
             "opt_object_array" => {
                 reader.context().push(&field, "Option<Vec<Option<TestImportAnotherObject>>>", "type found, reading property");
-                _opt_object_array = reader.read_nullable_array(|reader| {
+                if let Ok(v) = reader.read_nullable_array(|reader| {
                     let mut object: Option<TestImportAnotherObject> = None;
                     if !reader.is_next_nil()? {
                         object = Some(TestImportAnotherObject::read(reader)?);
+                    } else {
+                        object = None;
                     }
-                    return Ok(object);
-                })?;
+                    Ok(object)
+                }) {
+                    _opt_object_array = v;
+                } else {
+                    return Err(DecodeError::TypeReadError("opt_object_array: Option<Vec<Option<TestImportAnotherObject>>>.".to_string()));
+                }
                 reader.context().pop();
             }
             "en" => {
                 reader.context().push(&field, "TestImportEnum", "type found, reading property");
-                let mut value = TestImportEnum::_MAX_;
+                let mut value: TestImportEnum = TestImportEnum::_MAX_;
                 if reader.is_next_string()? {
                     value = get_test_import_enum_value(&reader.read_string()?)?;
                 } else {
@@ -180,22 +187,26 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
             }
             "enum_array" => {
                 reader.context().push(&field, "Vec<TestImportEnum>", "type found, reading property");
-                _enum_array = reader.read_array(|reader| {
-                    let mut value = TestImportEnum::_MAX_;
+                if let Ok(v) = reader.read_array(|reader| {
+                    let mut value: TestImportEnum = TestImportEnum::_MAX_;
                     if reader.is_next_string()? {
                         value = get_test_import_enum_value(&reader.read_string()?)?;
                     } else {
                         value = TestImportEnum::try_from(reader.read_i32()?)?;
                         sanitize_test_import_enum_value(value as i32)?;
                     }
-                    return Ok(value);
-                })?;
+                    Ok(value)
+                }) {
+                    _enum_array = v;
+                } else {
+                    return Err(DecodeError::TypeReadError("enum_array: Vec<TestImportEnum>.".to_string()));
+                }
                 _enum_array_set = true;
                 reader.context().pop();
             }
             "opt_enum_array" => {
                 reader.context().push(&field, "Option<Vec<Option<TestImportEnum>>>", "type found, reading property");
-                _opt_enum_array = reader.read_nullable_array(|reader| {
+                if let Ok(v) = reader.read_nullable_array(|reader| {
                     let mut value: Option<TestImportEnum> = None;
                     if !reader.is_next_nil()? {
                         if reader.is_next_string()? {
@@ -207,24 +218,28 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
                     } else {
                         value = None;
                     }
-                    return Ok(value);
-                })?;
+                    Ok(value)
+                }) {
+                    _opt_enum_array = v;
+                } else {
+                    return Err(DecodeError::TypeReadError("opt_enum_array: Option<Vec<Option<TestImportEnum>>>.".to_string()));
+                }
                 reader.context().pop();
             }
-            _ => {}
+            err => return Err(DecodeError::UnknownFieldName(err.to_string())),
         }
     }
     if !_object_set {
-        return Err(DecodeError::MissingField(reader.context().print_with_context("'object: TestImport_AnotherObject'")));
+        return Err(DecodeError::MissingField("object: TestImport_AnotherObject.".to_string()));
     }
     if !_object_array_set {
-        return Err(DecodeError::MissingField(reader.context().print_with_context("'objectArray: [TestImport_AnotherObject]'")));
+        return Err(DecodeError::MissingField("objectArray: [TestImport_AnotherObject].".to_string()));
     }
     if !_en_set {
-        return Err(DecodeError::MissingField(reader.context().print_with_context("'en: TestImport_Enum'")));
+        return Err(DecodeError::MissingField("en: TestImport_Enum.".to_string()));
     }
     if !_enum_array_set {
-        return Err(DecodeError::MissingField(reader.context().print_with_context("'enumArray: [TestImport_Enum]'")));
+        return Err(DecodeError::MissingField("enumArray: [TestImport_Enum].".to_string()));
     }
 
     Ok(TestImportObject {

@@ -10,7 +10,6 @@ use polywrap_wasm_rs::{
     ReadDecoder,
     Write,
     WriteEncoder,
-    WriteSizer,
     JSON,
 };
 {{#propertyDeps.length}}
@@ -38,10 +37,6 @@ pub struct Input{{#toUpper}}{{name}}{{/toUpper}} {
 }
 
 pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &Input{{#toUpper}}{{name}}{{/toUpper}}) -> Result<Vec<u8>, EncodeError> {
-    let mut sizer_context = Context::new();
-    sizer_context.description = "Serializing (sizing) imported query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
-    let mut sizer = WriteSizer::new(sizer_context);
-    write_{{#toLower}}{{name}}{{/toLower}}_args(input, &mut sizer)?;
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) imported query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
@@ -58,7 +53,7 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_args<W: Write>(input: &Input{{#toU
     writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}})?;
     {{/scalar}}
     {{#array}}
-    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}, |writer: &mut W, item| {
+    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}, |writer, item| {
         {{> serialize_array}}
     })?;
     {{/array}}

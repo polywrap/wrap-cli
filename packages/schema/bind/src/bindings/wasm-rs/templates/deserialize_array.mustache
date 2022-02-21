@@ -8,9 +8,9 @@ reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}
 {{/array}}
 {{#enum}}
 {{> deserialize_enum}}
-return Ok(value);
+Ok(value)
 {{/enum}}
 {{#object}}
 {{> deserialize_object}}
-return Ok(object);
+Ok(object)
 {{/object}}

@@ -8,7 +8,6 @@ use polywrap_wasm_rs::{
     ReadDecoder,
     Write,
     WriteEncoder,
-    WriteSizer,
     JSON,
 };
 use crate::AnotherType;
@@ -16,10 +15,6 @@ use crate::AnotherType;
 use crate::CustomType;
 
 pub fn serialize_another_type(input: &AnotherType) -> Result<Vec<u8>, EncodeError> {
-    let mut sizer_context = Context::new();
-    sizer_context.description = "Serializing (sizing) object-type: AnotherType".to_string();
-    let mut sizer = WriteSizer::new(sizer_context);
-    write_another_type(input, &mut sizer)?;
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) object-type: AnotherType".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
@@ -64,7 +59,11 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> Result<AnotherType, DecodeE
         match field.as_str() {
             "prop" => {
                 reader.context().push(&field, "Option<String>", "type found, reading property");
-                _prop = reader.read_nullable_string()?;
+                if let Ok(v) = reader.read_nullable_string() {
+                    _prop = v;
+                } else {
+                    return Err(DecodeError::TypeReadError("prop: Option<String>.".to_string()));
+                }
                 reader.context().pop();
             }
             "circular" => {
@@ -72,11 +71,13 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> Result<AnotherType, DecodeE
                 let mut object: Option<CustomType> = None;
                 if !reader.is_next_nil()? {
                     object = Some(CustomType::read(reader)?);
+                } else {
+                    object = None;
                 }
                 _circular = object;
                 reader.context().pop();
             }
-            _ => {}
+            err => return Err(DecodeError::UnknownFieldName(err.to_string())),
         }
     }
 

@@ -8,16 +8,11 @@ use polywrap_wasm_rs::{
     ReadDecoder,
     Write,
     WriteEncoder,
-    WriteSizer,
     JSON,
 };
 use crate::TestImportAnotherObject;
 
 pub fn serialize_test_import_another_object(input: &TestImportAnotherObject) -> Result<Vec<u8>, EncodeError> {
-    let mut sizer_context = Context::new();
-    sizer_context.description = "Serializing (sizing) imported object-type: TestImportAnotherObject".to_string();
-    let mut sizer = WriteSizer::new(sizer_context);
-    write_test_import_another_object(input, &mut sizer)?;
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) imported object-type: TestImportAnotherObject".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
@@ -54,15 +49,19 @@ pub fn read_test_import_another_object<R: Read>(reader: &mut R) -> Result<TestIm
         match field.as_str() {
             "prop" => {
                 reader.context().push(&field, "String", "type found, reading property");
-                _prop = reader.read_string()?;
+                if let Ok(v) = reader.read_string() {
+                    _prop = v;
+                } else {
+                    return Err(DecodeError::TypeReadError("prop: String.".to_string()));
+                }
                 _prop_set = true;
                 reader.context().pop();
             }
-            _ => {}
+            err => return Err(DecodeError::UnknownFieldName(err.to_string())),
         }
     }
     if !_prop_set {
-        return Err(DecodeError::MissingField(reader.context().print_with_context("'prop: String'")));
+        return Err(DecodeError::MissingField("prop: String.".to_string()));
     }
 
     Ok(TestImportAnotherObject {

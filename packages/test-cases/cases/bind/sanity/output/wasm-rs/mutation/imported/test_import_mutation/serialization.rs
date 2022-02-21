@@ -8,7 +8,6 @@ use polywrap_wasm_rs::{
     ReadDecoder,
     Write,
     WriteEncoder,
-    WriteSizer,
     JSON,
 };
 
@@ -22,10 +21,6 @@ pub struct InputImportedMethod {
 }
 
 pub fn serialize_imported_method_args(input: &InputImportedMethod) -> Result<Vec<u8>, EncodeError> {
-    let mut sizer_context = Context::new();
-    sizer_context.description = "Serializing (sizing) imported query-type: imported_method".to_string();
-    let mut sizer = WriteSizer::new(sizer_context);
-    write_imported_method_args(input, &mut sizer)?;
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) imported query-type: imported_method".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
@@ -45,7 +40,7 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
     writer.context().pop();
     writer.context().push("object_array", "Vec<TestImportObject>", "writing property");
     writer.write_str("object_array")?;
-    writer.write_array(&input.object_array, |writer: &mut W, item| {
+    writer.write_array(&input.object_array, |writer, item| {
         TestImportObject::write(item, writer)
     })?;
     writer.context().pop();
@@ -60,6 +55,8 @@ pub fn deserialize_imported_method_result(result: &[u8]) -> Result<Option<TestIm
     let mut object: Option<TestImportObject> = None;
     if !reader.is_next_nil()? {
         object = Some(TestImportObject::read(&mut reader)?);
+    } else {
+        object = None;
     }
     let res = object;
     reader.context().pop();
@@ -72,10 +69,6 @@ pub struct InputAnotherMethod {
 }
 
 pub fn serialize_another_method_args(input: &InputAnotherMethod) -> Result<Vec<u8>, EncodeError> {
-    let mut sizer_context = Context::new();
-    sizer_context.description = "Serializing (sizing) imported query-type: another_method".to_string();
-    let mut sizer = WriteSizer::new(sizer_context);
-    write_another_method_args(input, &mut sizer)?;
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) imported query-type: another_method".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
@@ -87,7 +80,7 @@ pub fn write_another_method_args<W: Write>(input: &InputAnotherMethod, writer: &
     writer.write_map_length(&1)?;
     writer.context().push("arg", "Vec<String>", "writing property");
     writer.write_str("arg")?;
-    writer.write_array(&input.arg, |writer: &mut W, item| {
+    writer.write_array(&input.arg, |writer, item| {
         writer.write_string(item)
     })?;
     writer.context().pop();

@@ -2,7 +2,7 @@
 writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(item)
 {{/scalar}}
 {{#array}}
-writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(item, |writer: &mut W, item| {
+writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(item, |writer, item| {
     {{> serialize_array}}
 })
 {{/array}}

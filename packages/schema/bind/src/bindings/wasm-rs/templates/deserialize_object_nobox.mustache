@@ -5,5 +5,7 @@ let object = {{#toUpper}}{{type}}{{/toUpper}}::read(reader)?;
 let mut object: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = None;
 if !reader.is_next_nil()? {
     object = Some({{#toUpper}}{{type}}{{/toUpper}}::read(reader)?);
+} else {
+    object = None;
 }
 {{/required}}

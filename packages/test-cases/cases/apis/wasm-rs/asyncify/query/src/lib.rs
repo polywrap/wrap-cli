@@ -3,7 +3,7 @@ use w3::imported::ethereum_query;
 use w3::query;
 pub use w3::*;
 
-pub fn get_data(input: query::InputGetData) -> i32 {
+pub fn get_data(input: query::InputGetData) -> u32 {
     match ethereum_query::EthereumQuery::call_contract_view(
         &ethereum_query::InputCallContractView {
             address: input.address,
@@ -12,7 +12,7 @@ pub fn get_data(input: query::InputGetData) -> i32 {
             connection: input.connection,
         },
     ) {
-        Ok(v) => v.parse::<i32>().unwrap(),
+        Ok(v) => v.parse::<u32>().unwrap(),
         Err(e) => panic!("{}", e),
     }
 }

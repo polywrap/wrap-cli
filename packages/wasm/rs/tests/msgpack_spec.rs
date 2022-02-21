@@ -1,6 +1,4 @@
-use polywrap_wasm_rs::{
-    Context, DecodeError, EncodeError, Read, ReadDecoder, Write, WriteEncoder, WriteSizer,
-};
+use polywrap_wasm_rs::{Context, DecodeError, EncodeError, Read, ReadDecoder, Write, WriteEncoder};
 // use std::collections::BTreeMap;
 
 #[derive(Debug, Clone, Default)]
@@ -386,8 +384,6 @@ impl Eq for Sanity {}
 fn convert_to_buffer(sanity: &mut Sanity) -> Result<Vec<u8>, EncodeError> {
     let mut context = Context::new();
     context.description = "Serialize sanity (to buffer)...".to_string();
-    let mut sizer = WriteSizer::new(context.clone());
-    serialize_sanity(&mut sizer, sanity)?;
     let mut encoder = WriteEncoder::new(&[], context);
     serialize_sanity(&mut encoder, sanity)?;
     Ok(encoder.get_buffer())

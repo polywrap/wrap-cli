@@ -10,9 +10,7 @@ pub enum CustomEnum {
 }
 
 pub fn sanitize_custom_enum_value(value: i32) -> Result<(), String> {
-    let max_as_i32 = CustomEnum::_MAX_ as i32;
-    let valid = value >= 0 && value < max_as_i32;
-    if !valid {
+    if value < 0 && value >= CustomEnum::_MAX_ as i32 {
         return Err(String::from(EnumTypeError::EnumProcessingError(format!("Invalid value for enum 'CustomEnum': {}", value.to_string()))));
     }
     Ok(())
@@ -23,7 +21,7 @@ pub fn get_custom_enum_value(key: &str) -> Result<CustomEnum, String> {
         "STRING" => Ok(CustomEnum::STRING),
         "BYTES" => Ok(CustomEnum::BYTES),
         "_MAX_" => Ok(CustomEnum::_MAX_),
-        _ => Err(String::from(EnumTypeError::EnumProcessingError(format!("Invalid key for enum 'CustomEnum': {}", key))))
+        err => Err(String::from(EnumTypeError::EnumProcessingError(format!("Invalid key for enum 'CustomEnum': {}", err))))
     }
 }
 
