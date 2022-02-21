@@ -190,6 +190,11 @@ export class WasmWeb3Api extends Api {
             : MsgPack.encode(input, { ignoreUndefined: true }),
       };
 
+      if (!(input instanceof ArrayBuffer)) {
+        console.log(state.args);
+        console.log(new Uint8Array(state.args).join(", "));
+      }
+
       const abort = (message: string) => {
         throw new Error(
           `WasmWeb3Api: Wasm module aborted execution.\nURI: ${this._uri.uri}\n` +

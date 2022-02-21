@@ -2833,7 +2833,7 @@ enum Logger_LogLevel @imported(
     expect(mutation.data?.mutationMethod).toBe(1);
   });
 
-  it("Map-type", async () => {
+  it.only("Map-type", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/map-type`,
       ipfsProvider,
@@ -2842,23 +2842,32 @@ enum Logger_LogLevel @imported(
     const ensUri = `ens/testnet/${api.ensDomain}`;
     const client = await getClient();
 
-    const map = new Map<string, number>().set("Hello", 1);
-
+    // const map = new Map<string, number>().set("Hello", 1);
+    const map = {
+      "Hello": 1
+    };
     console.log(map);
-    const methodResponse = await client.query<{
-      method: number;
-    }>({
+
+    const returnMapResponse = await client.invoke<Map<string, number>>({
       uri: ensUri,
-      query: `query {
-        method(map: $map, key: $key)
-      }`,
-      variables: {
+      module: "query",
+      method: "returnMap",
+      input: {
+        map: map
+      },
+    });
+    expect(returnMapResponse.data).toEqual(map);
+
+    const getKeyResponse = await client.invoke<number>({
+      uri: ensUri,
+      module: "query",
+      method: "getKey",
+      input: {
         map: map,
         key: "Hello"
       },
     });
-
-    expect(methodResponse.data?.method).toEqual(map);
+    expect(getKeyResponse.data).toEqual(map.Hello);
   });
 
 });
