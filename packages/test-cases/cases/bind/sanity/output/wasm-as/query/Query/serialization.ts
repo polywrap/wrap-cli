@@ -126,7 +126,7 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
     }
     else if (field == "map") {
       reader.context().push(field, "Map<string, i32>", "type found, reading property");
-      _map = reader.readMap((reader: Read): string => {
+      _map = reader.readExtGenericMap((reader: Read): string => {
         return reader.readString();
       }, (reader: Read): i32 => {
         return reader.readInt32();

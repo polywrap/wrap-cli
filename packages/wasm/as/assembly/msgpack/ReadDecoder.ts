@@ -332,7 +332,8 @@ export class ReadDecoder extends Read {
       default:
         throw new TypeError(
           this._context.printWithContext(
-            "Property must be of type 'ext generic map'. " + this._getErrorMessage(leadByte)
+            "Property must be of type 'ext generic map'. " +
+              this._getErrorMessage(leadByte)
           )
         );
     }
@@ -346,7 +347,8 @@ export class ReadDecoder extends Read {
     if (extType !== ExtensionType.GENERIC_MAP) {
       throw new TypeError(
         this._context.printWithContext(
-          "Extension must be of type 'ext generic map'. Found " + extType.toString()
+          "Extension must be of type 'ext generic map'. Found " +
+            extType.toString()
         )
       );
     }

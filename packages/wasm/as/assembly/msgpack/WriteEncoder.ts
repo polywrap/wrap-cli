@@ -15,7 +15,11 @@ export class WriteEncoder extends Write {
   private _sizer: WriteSizer;
   private _extCtr: u32;
 
-  constructor(ua: ArrayBuffer, sizer: WriteSizer, context: Context = new Context()) {
+  constructor(
+    ua: ArrayBuffer,
+    sizer: WriteSizer,
+    context: Context = new Context()
+  ) {
     super();
     this._context = context;
     this._view = new DataView(ua, 0, ua.byteLength, context);

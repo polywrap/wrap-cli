@@ -9,9 +9,9 @@ import {
   MapDefinition,
 } from "../../typeInfo";
 import { setPropertyType } from "./property-utils";
+import { extractAnnotateDirective } from "./object-types-utils";
 
 import { InputValueDefinitionNode, NamedTypeNode } from "graphql";
-import { extractAnnotateDirective } from "./object-types-utils";
 
 export interface State {
   currentModule?: ModuleDefinition;
@@ -122,9 +122,7 @@ export function extractInputValueDefinition(
   const argument = createPropertyDefinition({
     type: type ? type : "N/A",
     name: node.name.value,
-    map: def
-      ? ({ ...def, name: node.name.value } as MapDefinition)
-      : undefined,
+    map: def ? ({ ...def, name: node.name.value } as MapDefinition) : undefined,
     comment: node.description?.value,
   });
 

@@ -191,9 +191,7 @@ export class WasmWeb3Api extends Api {
         method,
         sanitizeEnv: {},
         args:
-          input instanceof ArrayBuffer
-            ? input
-            : this._encoder.encode(input),
+          input instanceof ArrayBuffer ? input : this._encoder.encode(input),
       };
 
       const abort = (message: string) => {
@@ -246,7 +244,9 @@ export class WasmWeb3Api extends Api {
 
           try {
             return {
-              data: this._decoder.decode(invokeResult.invokeResult as ArrayBuffer),
+              data: this._decoder.decode(
+                invokeResult.invokeResult as ArrayBuffer
+              ),
             } as InvokeApiResult<unknown>;
           } catch (err) {
             throw Error(
@@ -331,9 +331,7 @@ export class WasmWeb3Api extends Api {
         const clientEnv = this._getModuleClientEnv(module);
 
         if (hasExport("_w3_sanitize_env", exports)) {
-          state.sanitizeEnv.args = this._encoder.encode(
-            { env: clientEnv }
-          );
+          state.sanitizeEnv.args = this._encoder.encode({ env: clientEnv });
 
           await exports._w3_sanitize_env(state.sanitizeEnv.args.byteLength);
           state.env = state.sanitizeEnv.result as ArrayBuffer;

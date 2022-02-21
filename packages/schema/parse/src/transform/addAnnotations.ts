@@ -1,8 +1,5 @@
 import { toGraphQL } from ".";
-import {
-  PropertyDefinition,
-  TypeInfoTransforms,
-} from "..";
+import { PropertyDefinition, TypeInfoTransforms } from "..";
 
 export const addAnnotations: TypeInfoTransforms = {
   enter: {
@@ -12,9 +9,7 @@ export const addAnnotations: TypeInfoTransforms = {
       return {
         ...def,
         toGraphQLType: (): string =>
-          `Map${def.required ? "!" : ""} @annotate(type: "${toGraphQL(
-            def
-          )}")`,
+          `Map${def.required ? "!" : ""} @annotate(type: "${toGraphQL(def)}")`,
       } as PropertyDefinition;
     },
   },

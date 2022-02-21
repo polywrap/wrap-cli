@@ -1,4 +1,8 @@
-import { E_INVALIDLENGTH, BLOCK_MAXSIZE, throwByteIndexOutOfRange } from "./utils";
+import {
+  E_INVALIDLENGTH,
+  BLOCK_MAXSIZE,
+  throwByteIndexOutOfRange,
+} from "./utils";
 import { Context } from "./Context";
 
 export class DataView {

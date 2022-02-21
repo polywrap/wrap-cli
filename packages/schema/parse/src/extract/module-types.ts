@@ -19,6 +19,7 @@ import {
   extractNamedType,
   State,
 } from "./utils/module-types-utils";
+import { extractAnnotateDirective } from "./utils/object-types-utils";
 
 import {
   ObjectTypeDefinitionNode,
@@ -32,7 +33,6 @@ import {
   ValueNode,
   ASTVisitor,
 } from "graphql";
-import { extractAnnotateDirective } from "./utils/object-types-utils";
 
 const visitorEnter = (moduleTypes: ModuleDefinition[], state: State) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
