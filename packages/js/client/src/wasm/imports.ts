@@ -5,7 +5,7 @@ import { readBytes, readString, writeBytes, writeString } from "./buffer";
 import { Client, InvokableModules } from "..";
 import { State } from "./WasmWeb3Api";
 
-import * as MsgPack from "@msgpack/msgpack";
+import { createMsgPackEncoder } from "@web3api/core-js";
 
 export const createImports = (config: {
   client: Client;
@@ -14,6 +14,7 @@ export const createImports = (config: {
   abort: (message: string) => never;
 }): W3Imports => {
   const { memory, state, client, abort } = config;
+  const encoder = createMsgPackEncoder();
 
   return {
     w3: {
@@ -56,7 +57,7 @@ export const createImports = (config: {
           if (data instanceof ArrayBuffer) {
             msgpack = data;
           } else {
-            msgpack = MsgPack.encode(data);
+            msgpack = encoder.encode(data);
           }
 
           state.subinvoke.result = msgpack;
@@ -122,7 +123,7 @@ export const createImports = (config: {
       __w3_getImplementations: (uriPtr: u32, uriLen: u32): boolean => {
         const uri = readString(memory.buffer, uriPtr, uriLen);
         const result = client.getImplementations(uri, {});
-        state.getImplementationsResult = MsgPack.encode(result);
+        state.getImplementationsResult = encoder.encode(result);
         return result.length > 0;
       },
       __w3_getImplementations_result_len: (): u32 => {

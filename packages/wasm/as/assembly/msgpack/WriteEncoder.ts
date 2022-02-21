@@ -1,7 +1,10 @@
 import { DataView } from "./DataView";
+import { WriteSizer } from "./WriteSizer";
 import { Format } from "./Format";
+import { ExtensionType } from "./ExtensionType";
 import { Nullable } from "./Nullable";
 import { Write } from "./Write";
+import { throwArrayIndexOutOfRange } from "./utils";
 import { BigInt } from "../BigInt";
 import { Context } from "./Context";
 import { JSON } from "../JSON";
@@ -9,11 +12,15 @@ import { JSON } from "../JSON";
 export class WriteEncoder extends Write {
   private readonly _context: Context;
   private _view: DataView;
+  private _sizer: WriteSizer;
+  private _extCtr: u32;
 
-  constructor(ua: ArrayBuffer, context: Context = new Context()) {
+  constructor(ua: ArrayBuffer, sizer: WriteSizer, context: Context = new Context()) {
     super();
     this._context = context;
     this._view = new DataView(ua, 0, ua.byteLength, context);
+    this._sizer = sizer;
+    this._extCtr = 0;
   }
 
   context(): Context {
@@ -185,6 +192,39 @@ export class WriteEncoder extends Write {
     }
   }
 
+  writeExtGenericMap<K, V>(
+    m: Map<K, V>,
+    key_fn: (encoder: Write, key: K) => void,
+    value_fn: (encoder: Write, value: V) => void
+  ): void {
+    if (this._extCtr >= <u32>this._sizer.extByteLengths.length) {
+      throwArrayIndexOutOfRange(
+        this._context,
+        "writeExtGenericMap",
+        this._sizer.extByteLengths.length,
+        this._extCtr
+      );
+    }
+    const byteLength = this._sizer.extByteLengths[this._extCtr];
+    this._extCtr += 1;
+
+    // Encode the extension format + bytelength
+    if (byteLength <= <u32>u8.MAX_VALUE) {
+      this._view.setUint8(<u8>Format.EXT8);
+      this._view.setUint8(<u8>byteLength);
+    } else if (byteLength <= <u32>u16.MAX_VALUE) {
+      this._view.setUint8(<u8>Format.EXT16);
+      this._view.setUint16(<u16>byteLength);
+    } else {
+      this._view.setUint8(<u8>Format.EXT32);
+      this._view.setUint32(byteLength);
+    }
+    // Set the extension type
+    this._view.setUint8(<u8>ExtensionType.GENERIC_MAP);
+
+    this.writeMap(m, key_fn, value_fn);
+  }
+
   writeNullableBool(value: Nullable<bool>): void {
     if (value.isNull) {
       this.writeNil();
@@ -323,5 +363,17 @@ export class WriteEncoder extends Write {
       return;
     }
     this.writeMap(m, key_fn, value_fn);
+  }
+
+  writeNullableExtGenericMap<K, V>(
+    m: Map<K, V> | null,
+    key_fn: (encoder: Write, key: K) => void,
+    value_fn: (encoder: Write, value: V) => void
+  ): void {
+    if (m === null) {
+      this.writeNil();
+      return;
+    }
+    this.writeExtGenericMap(m, key_fn, value_fn);
   }
 }

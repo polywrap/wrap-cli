@@ -9,7 +9,7 @@ export const BLOCK_MAXSIZE: usize = (1 << 30) - BLOCK_OVERHEAD;
 export const E_INDEXOUTOFRANGE = "Index out of range";
 export const E_INVALIDLENGTH = "Invalid length";
 
-export function throwIndexOutOfRange(
+export function throwByteIndexOutOfRange(
   context: Context,
   method: string,
   length: u32,
@@ -27,6 +27,26 @@ export function throwIndexOutOfRange(
         byte_offset.toString() +
         " byteLength: " +
         byte_length.toString() +
+        "]"
+    )
+  );
+}
+
+export function throwArrayIndexOutOfRange(
+  context: Context,
+  method: string,
+  length: u32,
+  index: u32
+): void {
+  throw new RangeError(
+    context.printWithContext(
+      method +
+        ": " +
+        E_INDEXOUTOFRANGE +
+        "[length: " +
+        length.toString() +
+        " index: " +
+        index.toString() +
         "]"
     )
   );

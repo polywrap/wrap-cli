@@ -18,7 +18,7 @@ export function serializeQueryEnv(type: QueryEnv): ArrayBuffer {
   writeQueryEnv(sizer, type);
   const buffer = new ArrayBuffer(sizer.length);
   const encoderContext: Context = new Context("Serializing (encoding) object-type: QueryEnv");
-  const encoder = new WriteEncoder(buffer, encoderContext);
+  const encoder = new WriteEncoder(buffer, sizer, encoderContext);
   writeQueryEnv(encoder, type);
   return buffer;
 }

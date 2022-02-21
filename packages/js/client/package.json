@@ -20,7 +20,6 @@
     "test:watch": "jest --watch --passWithNoTests --verbose --detectOpenHandles"
   },
   "dependencies": {
-    "@msgpack/msgpack": "2.3.0",
     "@web3api/asyncify-js": "0.0.1-prealpha.62",
     "@web3api/core-js": "0.0.1-prealpha.62",
     "@web3api/ens-plugin-js": "0.0.1-prealpha.62",

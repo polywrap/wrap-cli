@@ -71,7 +71,7 @@ class Sanity {
     const sizer = new WriteSizer();
     serializeSanity(sizer, this);
     const buffer = new ArrayBuffer(sizer.length);
-    const encoder = new WriteEncoder(buffer);
+    const encoder = new WriteEncoder(buffer, sizer.extByteLengths);
     serializeSanity(encoder, this);
     return buffer;
   }

@@ -26,6 +26,10 @@ export abstract class Read {
     key_fn: (reader: Read) => K,
     value_fn: (reader: Read) => V
   ): Map<K, V>;
+  abstract readExtGenericMap<K, V>(
+    key_fn: (reader: Read) => K,
+    value_fn: (reader: Read) => V
+  ): Map<K, V>;
 
   abstract readNullableBool(): Nullable<bool>;
   abstract readNullableInt8(): Nullable<i8>;
@@ -42,6 +46,10 @@ export abstract class Read {
   abstract readNullableJSON(): JSON.Value | null;
   abstract readNullableArray<T>(fn: (decoder: Read) => T): Array<T> | null;
   abstract readNullableMap<K, V>(
+    key_fn: (reader: Read) => K,
+    value_fn: (reader: Read) => V
+  ): Map<K, V> | null;
+  abstract readNullableExtGenericMap<K, V>(
     key_fn: (reader: Read) => K,
     value_fn: (reader: Read) => V
   ): Map<K, V> | null;

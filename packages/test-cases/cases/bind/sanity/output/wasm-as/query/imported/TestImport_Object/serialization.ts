@@ -18,7 +18,7 @@ export function serializeTestImport_Object(type: TestImport_Object): ArrayBuffer
   writeTestImport_Object(sizer, type);
   const buffer = new ArrayBuffer(sizer.length);
   const encoderContext: Context = new Context("Serializing (encoding) import object-type: TestImport_Object");
-  const encoder = new WriteEncoder(buffer, encoderContext);
+  const encoder = new WriteEncoder(buffer, sizer, encoderContext);
   writeTestImport_Object(encoder, type);
   return buffer;
 }

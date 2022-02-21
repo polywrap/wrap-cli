@@ -18,7 +18,7 @@ export function serializeCustomType(type: CustomType): ArrayBuffer {
   writeCustomType(sizer, type);
   const buffer = new ArrayBuffer(sizer.length);
   const encoderContext: Context = new Context("Serializing (encoding) object-type: CustomType");
-  const encoder = new WriteEncoder(buffer, encoderContext);
+  const encoder = new WriteEncoder(buffer, sizer, encoderContext);
   writeCustomType(encoder, type);
   return buffer;
 }
