@@ -9,9 +9,12 @@ use crate::{
 };
 {{/methods.length}}
 
+use polywrap_wasm_rs::w3_debug_log;
+
 {{#methods}}
 pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped(input: &[u8]) -> Vec<u8> {
     {{#arguments.length}}
+    w3_debug_log("DESERIALIZE query args");
     match deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input) {
         Ok(args) => {
     {{/arguments.length}}
@@ -20,6 +23,7 @@ pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped(input: &[u8]) -> Vec<u8> {
                 {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: args.{{#toLower}}{{name}}{{/toLower}},
                 {{/arguments}}
             }{{/arguments.length}});
+            w3_debug_log("SERIALIZE query result");
             serialize_{{#toLower}}{{name}}{{/toLower}}_result({{#return}}&{{/return}}result).unwrap()
         }
         Err(e) => {
