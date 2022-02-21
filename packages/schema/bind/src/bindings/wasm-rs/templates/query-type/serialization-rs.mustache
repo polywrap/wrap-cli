@@ -68,20 +68,12 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
             "{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}" => {
                 reader.context().push(&field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading argument");
                 {{#scalar}}
-                if let Ok(v) = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}() {
-                    _{{#toLower}}{{name}}{{/toLower}} = v;
-                } else {
-                    return Err(DecodeError::TypeReadError("{{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}}.".to_string()));
-                }
+                _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}()?;
                 {{/scalar}}
                 {{#array}}
-                if let Ok(v) = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {
+                _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {
                     {{> deserialize_array_nobox}}
-                }) {
-                    _{{#toLower}}{{name}}{{/toLower}} = v;
-                } else {
-                    return Err(DecodeError::TypeReadError("{{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}}.".to_string()));
-                }
+                })?;
                 {{/array}}
                 {{#enum}}
                 {{> deserialize_enum}}

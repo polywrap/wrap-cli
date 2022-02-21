@@ -59,11 +59,7 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> Result<AnotherType, DecodeE
         match field.as_str() {
             "prop" => {
                 reader.context().push(&field, "Option<String>", "type found, reading property");
-                if let Ok(v) = reader.read_nullable_string() {
-                    _prop = v;
-                } else {
-                    return Err(DecodeError::TypeReadError("prop: Option<String>.".to_string()));
-                }
+                _prop = reader.read_nullable_string()?;
                 reader.context().pop();
             }
             "circular" => {

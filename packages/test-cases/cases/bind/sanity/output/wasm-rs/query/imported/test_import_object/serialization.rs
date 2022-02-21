@@ -128,20 +128,16 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
             }
             "object_array" => {
                 reader.context().push(&field, "Vec<TestImportAnotherObject>", "type found, reading property");
-                if let Ok(v) = reader.read_array(|reader| {
+                _object_array = reader.read_array(|reader| {
                     let object = TestImportAnotherObject::read(reader)?;
                     Ok(object)
-                }) {
-                    _object_array = v;
-                } else {
-                    return Err(DecodeError::TypeReadError("object_array: Vec<TestImportAnotherObject>.".to_string()));
-                }
+                })?;
                 _object_array_set = true;
                 reader.context().pop();
             }
             "opt_object_array" => {
                 reader.context().push(&field, "Option<Vec<Option<TestImportAnotherObject>>>", "type found, reading property");
-                if let Ok(v) = reader.read_nullable_array(|reader| {
+                _opt_object_array = reader.read_nullable_array(|reader| {
                     let mut object: Option<TestImportAnotherObject> = None;
                     if !reader.is_next_nil()? {
                         object = Some(TestImportAnotherObject::read(reader)?);
@@ -149,11 +145,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
                         object = None;
                     }
                     Ok(object)
-                }) {
-                    _opt_object_array = v;
-                } else {
-                    return Err(DecodeError::TypeReadError("opt_object_array: Option<Vec<Option<TestImportAnotherObject>>>.".to_string()));
-                }
+                })?;
                 reader.context().pop();
             }
             "en" => {
@@ -187,7 +179,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
             }
             "enum_array" => {
                 reader.context().push(&field, "Vec<TestImportEnum>", "type found, reading property");
-                if let Ok(v) = reader.read_array(|reader| {
+                _enum_array = reader.read_array(|reader| {
                     let mut value: TestImportEnum = TestImportEnum::_MAX_;
                     if reader.is_next_string()? {
                         value = get_test_import_enum_value(&reader.read_string()?)?;
@@ -196,17 +188,13 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
                         sanitize_test_import_enum_value(value as i32)?;
                     }
                     Ok(value)
-                }) {
-                    _enum_array = v;
-                } else {
-                    return Err(DecodeError::TypeReadError("enum_array: Vec<TestImportEnum>.".to_string()));
-                }
+                })?;
                 _enum_array_set = true;
                 reader.context().pop();
             }
             "opt_enum_array" => {
                 reader.context().push(&field, "Option<Vec<Option<TestImportEnum>>>", "type found, reading property");
-                if let Ok(v) = reader.read_nullable_array(|reader| {
+                _opt_enum_array = reader.read_nullable_array(|reader| {
                     let mut value: Option<TestImportEnum> = None;
                     if !reader.is_next_nil()? {
                         if reader.is_next_string()? {
@@ -219,11 +207,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
                         value = None;
                     }
                     Ok(value)
-                }) {
-                    _opt_enum_array = v;
-                } else {
-                    return Err(DecodeError::TypeReadError("opt_enum_array: Option<Vec<Option<TestImportEnum>>>.".to_string()));
-                }
+                })?;
                 reader.context().pop();
             }
             err => return Err(DecodeError::UnknownFieldName(err.to_string())),

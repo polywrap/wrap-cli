@@ -51,7 +51,7 @@ pub enum EncodeError {
     #[error("StrWriteError: '{0}'")]
     StrWriteError(String),
 
-    #[error("Error in serializing: '{0}'")]
+    #[error("{0}")]
     TypeWriteError(String),
 }
 
@@ -142,7 +142,7 @@ pub enum DecodeError {
     #[error("Missing required field: '{0}'")]
     MissingField(String),
 
-    #[error("Error in deserializing: '{0}'")]
+    #[error("{0}")]
     TypeReadError(String),
 }
 
@@ -197,10 +197,10 @@ impl From<DecodeError> for num_bigint::ParseBigIntError {
 /// Error types for CustomEnum
 #[derive(Debug, Error)]
 pub enum EnumTypeError {
-    #[error("EnumProcessingError: '{0}'")]
+    #[error("{0}")]
     EnumProcessingError(String),
 
-    #[error("ParseEnumError: '{0}'")]
+    #[error("{0}")]
     ParseEnumError(String),
 }
 

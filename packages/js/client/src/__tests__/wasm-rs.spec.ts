@@ -47,7 +47,7 @@ describe("wasm-rs test cases", () => {
     }, config);
   }
 
-  it.only("asyncify", async () => {
+  it("asyncify", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/wasm-rs/asyncify`,
       ipfsProvider,
@@ -148,7 +148,7 @@ describe("wasm-rs test cases", () => {
     );
   });
 
-  it("invalid type errors", async () => {
+  it.only("invalid type errors", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/wasm-rs/invalid-types`,
       ipfsProvider,

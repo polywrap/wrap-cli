@@ -52,21 +52,13 @@ pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, D
         match field.as_str() {
             "str" => {
                 reader.context().push(&field, "String", "type found, reading argument");
-                if let Ok(v) = reader.read_string() {
-                    _str = v;
-                } else {
-                    return Err(DecodeError::TypeReadError("str: String.".to_string()));
-                }
+                _str = reader.read_string()?;
                 _str_set = true;
                 reader.context().pop();
             }
             "opt_str" => {
                 reader.context().push(&field, "Option<String>", "type found, reading argument");
-                if let Ok(v) = reader.read_nullable_string() {
-                    _opt_str = v;
-                } else {
-                    return Err(DecodeError::TypeReadError("opt_str: Option<String>.".to_string()));
-                }
+                _opt_str = reader.read_nullable_string()?;
                 reader.context().pop();
             }
             "en" => {
@@ -100,7 +92,7 @@ pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, D
             }
             "enum_array" => {
                 reader.context().push(&field, "Vec<CustomEnum>", "type found, reading argument");
-                if let Ok(v) = reader.read_array(|reader| {
+                _enum_array = reader.read_array(|reader| {
                     let mut value: CustomEnum = CustomEnum::_MAX_;
                     if reader.is_next_string()? {
                         value = get_custom_enum_value(&reader.read_string()?)?;
@@ -109,17 +101,13 @@ pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, D
                         sanitize_custom_enum_value(value as i32)?;
                     }
                     Ok(value)
-                }) {
-                    _enum_array = v;
-                } else {
-                    return Err(DecodeError::TypeReadError("enum_array: Vec<CustomEnum>.".to_string()));
-                }
+                })?;
                 _enum_array_set = true;
                 reader.context().pop();
             }
             "opt_enum_array" => {
                 reader.context().push(&field, "Option<Vec<Option<CustomEnum>>>", "type found, reading argument");
-                if let Ok(v) = reader.read_nullable_array(|reader| {
+                _opt_enum_array = reader.read_nullable_array(|reader| {
                     let mut value: Option<CustomEnum> = None;
                     if !reader.is_next_nil()? {
                         if reader.is_next_string()? {
@@ -132,11 +120,7 @@ pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, D
                         value = None;
                     }
                     Ok(value)
-                }) {
-                    _opt_enum_array = v;
-                } else {
-                    return Err(DecodeError::TypeReadError("opt_enum_array: Option<Vec<Option<CustomEnum>>>.".to_string()));
-                }
+                })?;
                 reader.context().pop();
             }
             err => return Err(DecodeError::UnknownFieldName(err.to_string())),
@@ -223,20 +207,16 @@ pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod,
             }
             "object_array" => {
                 reader.context().push(&field, "Vec<AnotherType>", "type found, reading argument");
-                if let Ok(v) = reader.read_array(|reader| {
+                _object_array = reader.read_array(|reader| {
                     let object = AnotherType::read(reader)?;
                     Ok(object)
-                }) {
-                    _object_array = v;
-                } else {
-                    return Err(DecodeError::TypeReadError("object_array: Vec<AnotherType>.".to_string()));
-                }
+                })?;
                 _object_array_set = true;
                 reader.context().pop();
             }
             "opt_object_array" => {
                 reader.context().push(&field, "Option<Vec<Option<AnotherType>>>", "type found, reading argument");
-                if let Ok(v) = reader.read_nullable_array(|reader| {
+                _opt_object_array = reader.read_nullable_array(|reader| {
                     let mut object: Option<AnotherType> = None;
                     if !reader.is_next_nil()? {
                         object = Some(AnotherType::read(reader)?);
@@ -244,11 +224,7 @@ pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod,
                         object = None;
                     }
                     Ok(object)
-                }) {
-                    _opt_object_array = v;
-                } else {
-                    return Err(DecodeError::TypeReadError("opt_object_array: Option<Vec<Option<AnotherType>>>.".to_string()));
-                }
+                })?;
                 reader.context().pop();
             }
             err => return Err(DecodeError::UnknownFieldName(err.to_string())),
