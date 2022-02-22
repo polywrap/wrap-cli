@@ -156,7 +156,7 @@ impl Read for ReadDecoder {
         if v <= u8::MAX as u64 && v >= u8::MIN as u64 {
             Ok(v as u8)
         } else {
-            let err_msg = format!("integer overflow: value = {}; bits = 8", v.to_string());
+            let err_msg = format!("unsigned integer overflow: value = {}; bits = 8", v.to_string());
             Err(DecodeError::IntRangeError(err_msg))
         }
     }
@@ -167,7 +167,7 @@ impl Read for ReadDecoder {
         if v <= u16::MAX as u64 && v >= u16::MIN as u64 {
             Ok(v as u16)
         } else {
-            let err_msg = format!("integer overflow: value = {}; bits = 16", v.to_string());
+            let err_msg = format!("unsigned integer overflow: value = {}; bits = 16", v.to_string());
             Err(DecodeError::IntRangeError(err_msg))
         }
     }
@@ -178,7 +178,7 @@ impl Read for ReadDecoder {
         if v <= u32::MAX as u64 && v >= u32::MIN as u64 {
             Ok(v as u32)
         } else {
-            let err_msg = format!("integer overflow: value = {}; bits = 32", v.to_string());
+            let err_msg = format!("unsigned integer overflow: value = {}; bits = 32", v.to_string());
             Err(DecodeError::IntRangeError(err_msg))
         }
     }
@@ -199,6 +199,7 @@ impl Read for ReadDecoder {
     fn read_f64(&mut self) -> Result<f64, DecodeError> {
         match Format::get_format(self)? {
             Format::Float64 => Ok(ReadBytesExt::read_f64::<BigEndian>(self)?),
+            Format::Float32 => Ok(ReadBytesExt::read_f32::<BigEndian>(self)? as f64),
             err_f => {
                 let err_msg = format!(
                     "Property must be of type 'float64'. {}",
@@ -212,9 +213,11 @@ impl Read for ReadDecoder {
     fn read_string_length(&mut self) -> Result<u32, DecodeError> {
         match Format::get_format(self)? {
             Format::FixStr(len) => Ok(len as u32),
+            Format::FixArray(len) => Ok(len as u32),
             Format::Str8 => Ok(ReadBytesExt::read_u8(self)? as u32),
             Format::Str16 => Ok(ReadBytesExt::read_u16::<BigEndian>(self)? as u32),
             Format::Str32 => Ok(ReadBytesExt::read_u32::<BigEndian>(self)?),
+            Format::Nil => Ok(0),
             err_f => {
                 let err_msg = format!(
                     "Property must be of type 'string'. {}",

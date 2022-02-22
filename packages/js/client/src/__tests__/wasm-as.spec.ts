@@ -46,7 +46,7 @@ describe("wasm-as test cases", () => {
     }, config);
   }
 
-  it("asyncify", async () => {
+  it.only("asyncify", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/wasm-as/asyncify`,
       ipfsProvider,
