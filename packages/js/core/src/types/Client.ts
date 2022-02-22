@@ -7,6 +7,9 @@ import {
   PluginRegistration,
   InterfaceImplementations,
   Env,
+  QueryApiOptions,
+  QueryApiResult,
+  Cookbook,
 } from "./";
 import { ManifestType, AnyManifest } from "../manifest";
 
@@ -21,20 +24,21 @@ export interface Contextualized {
   contextId?: string;
 }
 
-export type GetRedirectsOptions = Contextualized;
-
-export type GetPluginsOptions = Contextualized;
-
-export type GetInterfacesOptions = Contextualized;
-
-export type GetSchemaOptions = Contextualized;
+export interface CookRecipesOptions<
+  TData extends Record<string, unknown> = Record<string, unknown>,
+  TUri extends Uri | string = string
+> extends Contextualized {
+  cookbook?: Cookbook<TUri>;
+  onExecution?(
+    recipe: QueryApiOptions,
+    data?: QueryApiResult<TData>["data"],
+    errors?: QueryApiResult<TData>["errors"]
+  ): void;
+  query?: string[];
+  wrapperUri?: TUri;
+}
 
 export type GetEnvsOptions = Contextualized;
-
-export interface GetManifestOptions<TManifestType extends ManifestType>
-  extends Contextualized {
-  type: TManifestType;
-}
 
 export interface GetFileOptions extends Contextualized {
   path: string;
@@ -45,34 +49,39 @@ export interface GetImplementationsOptions extends Contextualized {
   applyRedirects?: boolean;
 }
 
+export type GetInterfacesOptions = Contextualized;
+
+export interface GetManifestOptions<TManifestType extends ManifestType>
+  extends Contextualized {
+  type: TManifestType;
+}
+
+export type GetPluginsOptions = Contextualized;
+
+export type GetRedirectsOptions = Contextualized;
+
+export type GetSchemaOptions = Contextualized;
+
 export interface Client
   extends QueryHandler,
     SubscriptionHandler,
     InvokeHandler {
-  getRedirects(options: GetRedirectsOptions): readonly UriRedirect<Uri>[];
+  cookRecipes<TData extends Record<string, unknown> = Record<string, unknown>>(
+    options: CookRecipesOptions<TData>
+  ): Promise<QueryApiResult<TData>>[];
 
-  getPlugins(options: GetPluginsOptions): readonly PluginRegistration<Uri>[];
-
-  getInterfaces(
-    options: GetInterfacesOptions
-  ): readonly InterfaceImplementations<Uri>[];
-
-  getEnvs(options: GetEnvsOptions): readonly Env<Uri>[];
+  cookRecipesSync<
+    TData extends Record<string, unknown> = Record<string, unknown>
+  >(
+    options: CookRecipesOptions<TData>
+  ): Promise<void>;
 
   getEnvByUri<TUri extends Uri | string>(
     uri: TUri,
     options: GetEnvsOptions
   ): Env<Uri> | undefined;
 
-  getSchema<TUri extends Uri | string>(
-    uri: TUri,
-    options: GetSchemaOptions
-  ): Promise<string>;
-
-  getManifest<TUri extends Uri | string, TManifestType extends ManifestType>(
-    uri: TUri,
-    options: GetManifestOptions<TManifestType>
-  ): Promise<AnyManifest<TManifestType>>;
+  getEnvs(options: GetEnvsOptions): readonly Env<Uri>[];
 
   getFile<TUri extends Uri | string>(
     uri: TUri,
@@ -83,4 +92,22 @@ export interface Client
     uri: TUri,
     options: GetImplementationsOptions
   ): TUri[];
+
+  getInterfaces(
+    options: GetInterfacesOptions
+  ): readonly InterfaceImplementations<Uri>[];
+
+  getManifest<TUri extends Uri | string, TManifestType extends ManifestType>(
+    uri: TUri,
+    options: GetManifestOptions<TManifestType>
+  ): Promise<AnyManifest<TManifestType>>;
+
+  getPlugins(options: GetPluginsOptions): readonly PluginRegistration<Uri>[];
+
+  getRedirects(options: GetRedirectsOptions): readonly UriRedirect<Uri>[];
+
+  getSchema<TUri extends Uri | string>(
+    uri: TUri,
+    options: GetSchemaOptions
+  ): Promise<string>;
 }

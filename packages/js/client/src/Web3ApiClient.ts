@@ -4,41 +4,47 @@ import { WasmWeb3Api } from "./wasm";
 
 import { v4 as uuid } from "uuid";
 import {
+  AnyManifest,
   Api,
   ApiCache,
   Client,
-  InvokeApiOptions,
-  InvokeApiResult,
-  PluginPackage,
-  QueryApiOptions,
-  QueryApiResult,
-  Uri,
-  UriRedirect,
-  InterfaceImplementations,
-  PluginRegistration,
-  Web3ApiManifest,
+  ClientConfig,
+  CookRecipesOptions,
+  Cookbook,
   Env,
-  Subscription,
-  SubscribeOptions,
-  parseQuery,
-  resolveUri,
-  AnyManifest,
-  ManifestType,
-  GetRedirectsOptions,
-  GetPluginsOptions,
-  GetInterfacesOptions,
   GetEnvsOptions,
-  GetSchemaOptions,
-  GetManifestOptions,
   GetFileOptions,
   GetImplementationsOptions,
+  GetInterfacesOptions,
+  GetManifestOptions,
+  GetPluginsOptions,
+  GetRedirectsOptions,
+  GetSchemaOptions,
+  InterfaceImplementations,
+  InvokeApiOptions,
+  InvokeApiResult,
+  ManifestType,
+  PluginPackage,
+  PluginRegistration,
+  QueryApiOptions,
+  QueryApiResult,
+  Recipe,
+  SubscribeOptions,
+  Subscription,
+  Uri,
+  UriRedirect,
+  Web3ApiManifest,
   createQueryDocument,
   getImplementations,
+  parseQuery,
+  parseRecipeQuery,
+  resolveConstants,
+  resolveRecipeQuery,
+  resolveUri,
+  sanitizeEnvs,
   sanitizeInterfaceImplementations,
   sanitizePluginRegistrations,
   sanitizeUriRedirects,
-  sanitizeEnvs,
-  ClientConfig,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
@@ -111,6 +117,44 @@ export class Web3ApiClient implements Client {
       Tracer.disableTracing();
     }
     this._config.tracingEnabled = enable;
+  }
+
+  @Tracer.traceMethod("Web3ApiClient: cookRecipes")
+  public async cookRecipes<
+    TData extends Record<string, unknown> = Record<string, unknown>
+  >(options: CookRecipesOptions<TData>): Promise<QueryApiResult<TData>[]> {
+    const { api, recipes } = await this._prepareRecipeQueries<TData>(options);
+    return Promise.all(
+      recipes.map((r) => {
+        const opts = {
+          uri: api,
+          query: r.query,
+          variables: r.variables,
+          contextId: options.contextId,
+        };
+        return this.query<TData>(opts).then((res) => {
+          options.onExecution(opts, res.data, res.errors);
+          return res;
+        });
+      })
+    );
+  }
+
+  @Tracer.traceMethod("Web3ApiClient: cookRecipesSync")
+  public async cookRecipesSync<
+    TData extends Record<string, unknown> = Record<string, unknown>
+  >(options: CookRecipesOptions<TData>): Promise<void> {
+    const { api, recipes } = await this._prepareRecipeQueries<TData>(options);
+    for (let r of recipes) {
+      const opts = {
+        uri: api,
+        query: r.query,
+        variables: r.variables,
+        contextId: options.contextId,
+      };
+      const { data, errors } = await this.query<TData>(opts);
+      options.onExecution(opts, data, errors);
+    }
   }
 
   @Tracer.traceMethod("Web3ApiClient: getRedirects")
@@ -350,9 +394,7 @@ export class Web3ApiClient implements Client {
     if (freq && (freq.ms || freq.sec || freq.min || freq.hours)) {
       frequency =
         (freq.ms ?? 0) +
-        ((freq.hours ?? 0) * 3600 +
-          (freq.min ?? 0) * 60 +
-          (freq.sec ?? 0)) *
+        ((freq.hours ?? 0) * 3600 + (freq.min ?? 0) * 60 + (freq.sec ?? 0)) *
           1000;
     } else {
       frequency = 60000;
@@ -452,6 +494,55 @@ export class Web3ApiClient implements Client {
     } else {
       return this._config;
     }
+  }
+
+  private async _prepareRecipeQueries<
+    TData extends Record<string, unknown> = Record<string, unknown>
+  >(
+    options: CookRecipesOptions<TData>
+  ): Promise<{ api: Cookbook["api"]; recipes: Recipe[] }> {
+    if (!options.cookbook && !options.wrapperUri)
+      throw new Error("Must supply either a cookbook or a wrapper URI");
+
+    if (!!options.wrapperUri) {
+      const manifestCookbook = (
+        await this.getManifest(options.wrapperUri, {
+          type: "meta",
+          contextId: options.contextId,
+        })
+      ).cookbook;
+      if (!manifestCookbook || !manifestCookbook.recipes)
+        throw new Error(`Failed to read the cookbook in ${options.wrapperUri}`);
+
+      options.cookbook = {
+        api: options.wrapperUri,
+        ...manifestCookbook,
+      };
+    }
+
+    const { api, recipes, menus } = options.cookbook;
+    if (api == null) throw new Error("Cookbook is missing an API");
+    if (Object.keys(menus).some((k) => k in recipes))
+      throw new Error(
+        `Namespace collision: menus cannot have the same name as recipes (${Object.keys(
+          menus
+        ).filter((k) => k in recipes)})`
+      );
+    if (
+      !options.query ||
+      (Array.isArray(options.query) && options.query.length === 0)
+    )
+      options.query = Object.keys(recipes);
+
+    const cookbook = Object.freeze(
+      Object.assign(resolveConstants(recipes), menus)
+    );
+    return {
+      api,
+      recipes: parseRecipeQuery(options.query).flatMap((q) =>
+        resolveRecipeQuery(cookbook, q)
+      ),
+    };
   }
 
   @Tracer.traceMethod("Web3ApiClient: validateConfig")

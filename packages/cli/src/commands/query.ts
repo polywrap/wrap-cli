@@ -1,4 +1,4 @@
-import { getParserForFile } from "../lib/helpers";
+import { getParserForFile, resolveQueryFiles } from "../lib/helpers";
 import { getTestEnvClientConfig } from "../lib/helpers/test-env-client-config";
 import { importTs } from "../lib/helpers/import-ts";
 import { fixParameters } from "../lib/helpers";
@@ -8,12 +8,13 @@ import { intlMsg } from "../lib/intl";
 import { Web3ApiClient, Web3ApiClientConfig } from "@web3api/client-js";
 import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
-import gql from "graphql-tag";
 import path from "path";
 
 const i18n = {
   apiMissing: intlMsg.commands_query_error_noApi(),
   args: intlMsg.commands_query_arguments_recipes(),
+  badConstantsRead: intlMsg.commands_query_error_badConstantsRead,
+  badQueryRead: intlMsg.commands_query_error_badQueryRead,
   clientConfigBadFileExt:
     intlMsg.commands_query_error_clientConfigInvalidFileExt,
   clientConfigMissingExport:
@@ -22,19 +23,20 @@ const i18n = {
   config: intlMsg.commands_query_options_config(),
   configPath: intlMsg.commands_query_options_configPath(),
   description: intlMsg.commands_query_description(),
-  file: intlMsg.commands_create_options_recipeScript(),
-  fileDescription: intlMsg.commands_query_options_fileDescription(),
-  missingCookbookFile: intlMsg.commands_query_error_missingScript,
+  menuNameCollision: intlMsg.commands_query_error_menuNameCollision,
+  missingCookbookFile: intlMsg.commands_query_error_missingScript(),
+  queryArg: intlMsg.commands_query_options_query(),
+  queryArgDesc: intlMsg.commands_query_options_description_query(),
   noTestEnvFound: intlMsg.commands_query_error_noTestEnvFound(),
   options: intlMsg.commands_build_options_options(),
   testEns: intlMsg.commands_build_options_t(),
 };
 
 const HELP = `
-${chalk.bold("w3 query")} [${i18n.options}] ${chalk.bold(i18n.args)}
+${chalk.bold("w3 query")} [${i18n.options}] ${chalk.bold(`<${i18n.args}>`)}
 
 ${i18n.options[0].toUpperCase() + i18n.options.slice(1)}:
-  -f, --cookbook-file <${i18n.file}>   ${i18n.fileDescription}
+  -q, --query <${i18n.queryArg}>   ${i18n.queryArgDesc}
   -t, --test-ens ${i18n.testEns}
   -c, --client-config <${i18n.configPath}>   ${i18n.config}
 `;
@@ -43,17 +45,17 @@ export default {
   alias: ["q"],
   description: i18n.description,
   run: async (toolbox: GluegunToolbox): Promise<void> => {
-    const { filesystem, parameters, print, middleware } = toolbox;
+    const { filesystem: fs, parameters, print, middleware } = toolbox;
     // eslint-disable-next-line prefer-const
-    let { t, testEns, c, clientConfig, f, cookbookFile } = parameters.options;
+    let { t, testEns, c, clientConfig, q, query } = parameters.options;
 
-    testEns = testEns || t;
-    clientConfig = clientConfig || c;
-    cookbookFile = cookbookFile || f;
+    testEns ||= t;
+    clientConfig ||= c;
+    query = (query || q || "").split(",");
 
-    let queries: string[];
+    let inputFile: string;
     try {
-      queries = fixParameters(
+      [inputFile] = fixParameters(
         {
           options: toolbox.parameters.options,
           array: toolbox.parameters.array,
@@ -69,8 +71,8 @@ export default {
       return;
     }
 
-    if (!cookbookFile) {
-      print.error(i18n.missingCookbookFile({ script: `-f ${i18n.file}` }));
+    if (!inputFile) {
+      print.error(i18n.missingCookbookFile);
       print.info(HELP);
       return;
     }
@@ -97,9 +99,9 @@ export default {
     if (clientConfig) {
       let configModule;
       if (clientConfig.endsWith(".js")) {
-        configModule = await import(filesystem.resolve(clientConfig));
+        configModule = await import(fs.resolve(clientConfig));
       } else if (clientConfig.endsWith(".ts")) {
-        configModule = await importTs(filesystem.resolve(clientConfig));
+        configModule = await importTs(fs.resolve(clientConfig));
       } else {
         print.error(i18n.clientConfigBadFileExt({ module: clientConfig }));
         process.exitCode = 1;
@@ -123,101 +125,64 @@ export default {
 
     await middleware.run({
       name: toolbox.command?.name,
-      options: { testEns, recipePath: cookbookFile },
+      options: { testEns, cookbook: inputFile },
     });
 
     const client = new Web3ApiClient(finalClientConfig);
-    const cookbook = getParserForFile(cookbookFile)(
-      filesystem.read(cookbookFile) as string
-    );
-    const dir = path.dirname(cookbookFile);
-    const api = cookbook.api;
-    let constants: Record<string, string> = {};
 
-    if (!!cookbook.constants)
-      constants = getParserForFile(cookbook.constants)(
-        filesystem.read(path.join(dir, cookbook.constants)) as string
-      );
+    function onExecution<E extends Error>(
+      recipe: { query: any; variables: any },
+      data?: unknown,
+      errors?: E[]
+    ): void {
+      print.warning("-----------------------------------");
+      print.fancy(recipe.query);
+      print.fancy(JSON.stringify(recipe.variables, null, 2));
+      print.warning("-----------------------------------");
 
-    /*for (const task of recipe) {
-      if (task.query) {
-        const query = filesystem.read(path.join(dir, task.query));
+      if (!!data && data !== {}) {
+        print.success("-----------------------------------");
+        print.fancy(JSON.stringify(data, null, 2));
+        print.success("-----------------------------------");
+      }
+      for (const error of errors || []) {
+        print.error("-----------------------------------");
+        print.fancy(error.message);
+        print.fancy(error.stack || "");
+        print.error("-----------------------------------");
+      }
+    }
 
-        if (!query) {
-          const readFailMessage = intlMsg.commands_query_error_readFail({
-            query: query ?? "undefined",
-          });
-          throw Error(readFailMessage);
-        }
+    let cookbookParser;
+    try {
+      cookbookParser = getParserForFile(inputFile);
+    } catch {}
 
-        let variables: Record<string, unknown> = {};
+    if (!!cookbookParser) {
+      const cookbook = cookbookParser(fs.read(inputFile) as string);
+      const dir = path.dirname(cookbook);
 
-        if (task.variables) {
-          const resolveObjectConstants = (
-            constants: Record<string, unknown>
-          ): Record<string, unknown> => {
-            const output: Record<string, unknown> = {};
-
-            Object.keys(constants).forEach((key: string) => {
-              output[key] = resolveConstant(constants[key]);
-            });
-
-            return output;
-          };
-
-          const resolveArrayConstants = (arr: unknown[]): unknown[] => {
-            return arr.map((item) => {
-              return resolveConstant(item);
-            });
-          };
-
-          const resolveConstant = (constant: unknown): unknown => {
-            if (typeof constant === "string" && constant[0] === "$") {
-              return constants[constant.replace("$", "")];
-            } else if (Array.isArray(constant)) {
-              return resolveArrayConstants(constant);
-            } else if (typeof constant === "object") {
-              return resolveObjectConstants(
-                constant as Record<string, unknown>
-              );
-            } else {
-              return constant;
-            }
-          };
-
-          variables = resolveObjectConstants(task.variables);
-        }
-
-        if (!uri) {
-          throw Error(i18n.apiMissing);
-        }
-
-        print.warning("-----------------------------------");
-        print.fancy(query);
-        print.fancy(JSON.stringify(variables, null, 2));
-        print.warning("-----------------------------------");
-
-        const { data, errors } = await client.query({
-          uri,
-          query: gql(query),
-          variables,
-        });
-
-        if (data && data !== {}) {
-          print.success("-----------------------------------");
-          print.fancy(JSON.stringify(data, null, 2));
-          print.success("-----------------------------------");
-        }
-
-        if (errors) {
-          for (const error of errors) {
-            print.error("-----------------------------------");
-            print.fancy(error.message);
-            print.fancy(error.stack || "");
-            print.error("-----------------------------------");
-          }
+      if (!!cookbook.constants && typeof cookbook.constants === "string") {
+        try {
+          cookbook.constants = getParserForFile(cookbook.constants)(
+            fs.read(path.join(dir, cookbook.constants)) as string
+          );
+        } catch (e) {
+          if (e instanceof URIError)
+            throw new URIError(i18n.badConstantsRead({ file: e.message }));
+          else throw e;
         }
       }
-    }*/
+
+      try {
+        resolveQueryFiles(cookbook.recipes, dir, fs);
+      } catch (e) {
+        if (e instanceof URIError)
+          throw new URIError(i18n.badQueryRead({ query: e.message }));
+        else throw e;
+      }
+
+      client.cookRecipesSync({ cookbook, onExecution, query });
+    } else client.cookRecipesSync({ onExecution, query, wrapperUri: inputFile });
   },
 };
