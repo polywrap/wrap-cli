@@ -1,7 +1,10 @@
+/* eslint-disable */
 // NOTE: This is a fork of the https://github.com/yjhmelody/as-container project
 //
 //       Once this PR is merged, we can go back to using "as-container" directly:
 //       https://github.com/yjhmelody/as-container/pull/41
+
+import { instantiateZero } from "./utils";
 
 import {
   Option,
@@ -9,7 +12,6 @@ import {
   RecoveryWithErrorFn,
   Resultable,
 } from "as-container";
-import { instantiateZero } from "./utils";
 
 export type FlatMapOkFn<O, U, E> = MapFn<O, Result<U, E>>;
 export type FlatMapErrFn<O, E, F> = MapFn<E, Result<O, F>>;
