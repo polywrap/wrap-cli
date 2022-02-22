@@ -1,0 +1,43 @@
+[
+  {
+    "inputs": [
+      {
+        "components": [
+          {
+            "internalType": "string",
+            "name": "str",
+            "type": "string"
+          },
+          {
+            "internalType": "uint256",
+            "name": "unsigned256",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256[]",
+            "name": "unsigned256Array",
+            "type": "uint256[]"
+          }
+        ],
+        "internalType": "struct StructArg.Struct",
+        "name": "_arg",
+        "type": "tuple"
+      }
+    ],
+    "name": "method",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "pure",
+    "type": "function"
+  }
+]
