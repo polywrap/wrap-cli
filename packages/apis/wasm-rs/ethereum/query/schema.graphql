@@ -6,89 +6,83 @@ type Query {
     connection: Connection
   ): String!
 
-  callContractStatic(
-    address: String!
-    method: String!
-    args: [String!]
-    connection: Connection
-    txOverrides: TxOverrides
-  ): StaticTxResult!
-
-  encodeParams(
-    types: [String!]!
-    values: [String!]!
-  ): String!
-
-  encodeFunction(
-    method: String!
-    args: [String!]
-  ): String!
-
-  getSignerAddress(
-    connection: Connection
-  ): String!
-
-  getSignerBalance(
-    blockTag: BigInt
-    connection: Connection
-  ): BigInt!
-
-  getSignerTransactionCount(
-    blockTag: BigInt
-    connection: Connection
-  ): BigInt!
-
-  getGasPrice(
-    connection: Connection
-  ): BigInt!
-
-  estimateTransactionGas(
-    tx: TxRequest!
-    connection: Connection
-  ): BigInt!
-
-  estimateContractCallGas(
-    address: String!
-    method: String!
-    args: [String!]
-    connection: Connection
-    txOverrides: TxOverrides
-  ): BigInt!
-
-  checkAddress(
-    address: String!
-  ): Boolean!
-
-  toWei(
-    eth: String!
-  ): BigInt!
-
-  toEth(
-    wei: BigInt!
-  ): String!
-
-  awaitTransaction(
-    txHash: String!
-    confirmations: UInt32!
-    timeout: UInt32!
-    connection: Connection
-  ): TxReceipt!
-
-  waitForEvent(
-    address: String!
-    event: String!
-    args: [String!]
-    timeout: UInt32
-    connection: Connection
-  ): EventNotification!
-
-  getNetwork(connection: Connection): Network!
-
-  #Utils
-
-  utils_hashMessage(message: String!): String!
-  utils_toChecksum(address: String!, chainId: UInt8): String!
-  utils_keccak(bytes: string): [UInt8]!
+#  callContractStatic(
+#    address: String!
+#    method: String!
+#    args: [String!]
+#    connection: Connection
+#    txOverrides: TxOverrides
+#  ): StaticTxResult!
+#
+#  encodeParams(
+#    types: [String!]!
+#    values: [String!]!
+#  ): String!
+#
+#  encodeFunction(
+#    method: String!
+#    args: [String!]
+#  ): String!
+#
+#  getSignerAddress(
+#    connection: Connection
+#  ): String!
+#
+#  getSignerBalance(
+#    blockTag: BigInt
+#    connection: Connection
+#  ): BigInt!
+#
+#  getSignerTransactionCount(
+#    blockTag: BigInt
+#    connection: Connection
+#  ): BigInt!
+#
+#  getGasPrice(
+#    connection: Connection
+#  ): BigInt!
+#
+#  estimateTransactionGas(
+#    tx: TxRequest!
+#    connection: Connection
+#  ): BigInt!
+#
+#  estimateContractCallGas(
+#    address: String!
+#    method: String!
+#    args: [String!]
+#    connection: Connection
+#    txOverrides: TxOverrides
+#  ): BigInt!
+#
+#  checkAddress(
+#    address: String!
+#  ): Boolean!
+#
+#  toWei(
+#    eth: String!
+#  ): BigInt!
+#
+#  toEth(
+#    wei: BigInt!
+#  ): String!
+#
+#  awaitTransaction(
+#    txHash: String!
+#    confirmations: UInt32!
+#    timeout: UInt32!
+#    connection: Connection
+#  ): TxReceipt!
+#
+#  waitForEvent(
+#    address: String!
+#    event: String!
+#    args: [String!]
+#    timeout: UInt32
+#    connection: Connection
+#  ): EventNotification!
+#
+#  getNetwork(connection: Connection): Network!
 }
 
 type TxReceipt {

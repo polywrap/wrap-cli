@@ -1,45 +1,53 @@
+use ethers::abi::AbiParser;
+use ethers::abi::Token;
+use ethers::contract::*;
+use ethers::prelude::Address;
+use ethers::types::{TransactionRequest, Bytes, BlockNumber};
+use crate::w3::Connection;
+use super::mapping::*;
 use std::str::FromStr;
-use web3::contract::Options;
-use web3::ethabi::{Function, Param};
-use web3::types::{Address, CallRequest};
-use crate::connection::Connection;
+use crate::w3::*;
 
-pub async fn call_contract_view(
-    address: &str, method: &str, args: &str, connection: Connection
-) -> Result<&'static str, &'static str> {
-    let function: Function = serde_json::from_str(format!("[{}]", method).as_str()).unwrap();
-    let contract = connection.get_contract(address, format!("[{}]", method).as_str()).unwrap();
+fn from_method_and_args(method: &str, args: Vec<Token>) -> TransactionRequest {
+  let function = AbiParser::default().parse_function(method).unwrap();
+  let data = encode_function_data(&function, args).unwrap();
 
-    let result: String = contract.query(
-        "retrieve", (), None, Options::default(), None
-    ).await.unwrap();
-
-    Ok("")
+  TransactionRequest { data: Some(data), ..Default::default() }
 }
 
-#[cfg(test)]
-pub mod test {
-    use crate::connection::{Connection, ConnectionConfig, EthereumProvider};
-    use crate::resolvers::call_contract_view;
+pub fn call_contract_view(input: InputCallContractView) -> String {
+  // let to = Address::from_str(address).unwrap();
+  // let tx = from_method_and_args(method, args).to(to);
+  // let tx_request = to_tx_request(tx);
 
-    async fn get_test_connection() -> Connection {
-        Connection::new(ConnectionConfig {
-            provider: EthereumProvider::HttpUrl("http://127.0.0.1:7545".parse().unwrap()),
-            signer: None
-        }).await
-    }
-
-    #[actix_rt::test]
-    async fn contract_call() {
-        let connection = get_test_connection().await;
-
-        let bytes = call_contract_view(
-            "0xC36A0eF5874b401906BEf534cad48690D7eEE888",
-            "function retrieve() public view returns (uint256)",
-            "[]",
-            connection
-        ).await.unwrap();
-
-        print!("{:?}",bytes)
-    }
+  //await EthereumSigner_Query.callContractView(tx_request, connection)
+  "".to_string()
 }
+
+// pub async fn call_contract_method(input: InputCallContractMethod) {
+  // let to = Address::from_str(address).unwrap();
+  // let tx = from_method_and_args(method, args).to(to);
+  // let tx_request = to_tx_request(tx);
+
+  //await EthereumSigner_Mutation.sendTransaction(tx_request, connection)
+// }
+
+// pub async fn deploy_contract(input: InputDeployContract) {
+  // let abi = AbiParser::default().parse_str(abi_str).unwrap();
+  //
+  // let data: Bytes = match (abi.constructor(), args.is_empty()) {
+  //   (None, false) => return panic!("Constructor error"),
+  //   (None, true) => bytecode.clone(),
+  //   (Some(constructor), _) => {
+  //       constructor.encode_input(bytecode.to_vec(), &args).unwrap().into()
+  //   }
+  // };
+  //
+  // let tx = TransactionRequest { to: None, data: Some(data), ..Default::default() };
+
+  //await EthereumSigner_Mutation.sendTransactionAndWait(tx_request, 1, connection)
+// }
+
+// pub async fn sign_message(input: InputSignMessage) {
+  //await EthereumSigner_Mutation.signMessage(tx_request, 1, connection)
+// }

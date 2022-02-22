@@ -1,5 +1,5 @@
 {
-  "name": "@web3api/ethereum-plugin-js",
+  "name": "@web3api/ethereum-signer-plugin-js",
   "description": "Web3API Ethereum Javascript Plugin",
   "version": "0.0.1-prealpha.59",
   "license": "MIT",
@@ -13,7 +13,7 @@
     "schema.graphql"
   ],
   "scripts": {
-    "build": "rimraf ./build && yarn codegen && tsc --project tsconfig.build.json",
+    "build": "echo hey",
     "codegen": "node ../../../../dependencies/node_modules/@web3api/cli/bin/w3 plugin codegen",
     "lint": "eslint --color -c ../../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",

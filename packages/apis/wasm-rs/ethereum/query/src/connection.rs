@@ -1,192 +1,94 @@
-use serde::{Deserialize, Serialize};
-use std::convert::TryFrom;
-use std::{collections::HashMap, str::FromStr};
-use web3::{Web3, ethabi};
-use web3::api::{Accounts};
-use web3::contract::Contract;
-use web3::transports::{Either, Http, ws::WebSocket, eip_1193::{Eip1193, Provider} };
-use web3::types::{Address, H160};
-use core::result::Result;
+use std::collections::HashMap;
+use ethers::providers::{Http, Provider};
+use ethers::core::types::Chain;
+use crate::network::{Network, Networkish};
 
-// pub type EitherTransport = Either<Eip1193, Http>;
 #[derive(Clone, Debug)]
-pub enum EthereumProvider {
-    HttpUrl(String),
-    // Eip1193(Provider)
+enum ProviderConfig {
+  Url(String),
 }
 
 #[derive(Clone, Debug)]
-pub enum EthereumSigner {
-    AccountIndex(usize),
-    AddressString(String),
-    Address(Address)
+struct ConnectionConfig {
+  provider: ProviderConfig,
+  network: String
 }
 
 #[derive(Clone, Debug)]
-pub struct ConnectionConfig {
-    pub provider: EthereumProvider,
-    pub signer: Option<EthereumSigner>,
-}
-
-#[derive(Clone, Debug, Default)]
-pub struct Config {
-    pub signer: Address,
-}
-
-#[derive(Clone, Debug, Default)]
-pub struct ConnectionConfigs {
-    pub networks: HashMap<String, ConnectionConfig>,
-}
-
-#[derive(Clone, Debug, Default)]
-pub struct Connections {
-    pub networks: HashMap<String, Connection>,
+struct ConnectionConfigs {
+  configs: HashMap<String, ConnectionConfig>
 }
 
 #[derive(Clone, Debug)]
-pub struct Connection {
-    pub client: Web3<Http>,
-    pub config: Config,
-    pub accounts: Vec<Address>
+struct Connection {
+  _provider: Provider<Http>,
+  _network: String
+}
+
+#[derive(Clone, Debug)]
+struct Connections {
+  connections: Vec<Connection>
+}
+
+fn parse_provider(provider: ProviderConfig) -> Provider<Http> {
+  match provider {
+    ProviderConfig::Url(url) => Provider::<Http>::try_from(url).unwrap(),
+  }
 }
 
 impl Connection {
-    pub async fn new(config: ConnectionConfig) -> Self {
-        let transport = match config.provider {
-            EthereumProvider::HttpUrl(url) => match Http::new(&url) {
-                Ok(http) => http,
-                Err(_) => panic!("Error creating HTTP transport with: {}", &url)
-            },
-            // EthereumProvider::Eip1193(ethereum) =>
-            //     // web3::transports::Either::Left(
-            //     Eip1193::new(ethereum)
-            // // )
-        };
+  pub fn new(config: ConnectionConfig) -> Self {
+    let parsed_provider = parse_provider(config.provider);
 
-        let client = Web3::new(transport);
-
-        let accounts = match client.eth().accounts().await {
-            Ok(a) => a,
-            Err(error) => panic!("Could not retrieve accounts: {:?}", error)
-        };
-
-        let signer = match config.signer {
-            Some(ethereum_signer) => {
-                match ethereum_signer {
-                    EthereumSigner::AddressString(address_str) => {
-                        let parsed_address = Address::from_str(&address_str);
-
-                        if parsed_address.is_err() {
-                            panic!("Invalid signer address: {}", &address_str)
-                        }
-
-                        parsed_address.unwrap()
-                    }
-                    EthereumSigner::AccountIndex(index) => accounts[index],
-                    EthereumSigner::Address(address) => address
-                }
-            },
-            _ => accounts[0]
-        };
-
-
-        Self {
-            // client,
-            client,
-            config: Config {
-                signer
-            },
-            accounts
-        }
+    Self {
+      _provider: parsed_provider,
+      _network: config.network
     }
+  }
 
-    pub async fn from_configs(configs: ConnectionConfigs) -> Connections {
-        let mut connections = Connections::default();
+  pub fn provider(self) -> Provider<Http> {
+    self._provider
+  }
 
-        for network in configs.networks.keys() {
-            let connection = Self::new(configs.networks[network].clone()).await;
-            let network_str = network.to_ascii_lowercase();
+  pub fn set_provider(&mut self, provider: ProviderConfig) {
+    self._provider = parse_provider(provider)
+  }
+}
 
-            connections
-                .networks
-                .insert(network_str.clone(), connection);
-        }
+impl TryFrom<ConnectionConfigs> for Connections {
+  type Error = ();
 
+  fn try_from(configs: ConnectionConfigs) -> Result<Connections, Self::Error> {
+      let mut connections = Vec::new();
+
+      for network_name in configs.configs.keys() {
+        let network= Network::try_from( network_name.as_str()).unwrap();
+
+        connections.push(Connection::new(
+          ConnectionConfig {
+            provider: configs.configs.get(network_name).unwrap().clone().provider,
+            network: network_name.clone()
+          }
+        ));
+      }
+
+      Ok(Connections {
         connections
-    }
-
-    pub fn get_contract(&self, address: &str, abi_str: &str) -> Result<Contract<Http>, &'static str> {
-        let parsed_address = match Address::from_str(address) {
-            Ok(a) => a,
-            Err(_) => { panic!("Invalid contract address: {}", address)}
-        };
-
-        let abi: ethabi::Contract = serde_json::from_str(abi_str).unwrap();
-
-        Ok(Contract::new(self.client.eth(), parsed_address, abi))
+      })
     }
 }
 
 #[cfg(test)]
-pub mod test {
-    use crate::connection::{Connection, ConnectionConfig, EthereumProvider};
+mod tests {
+  use super::*;
 
-    async fn get_test_connection() -> Connection {
-        Connection::new(ConnectionConfig {
-            provider: EthereumProvider::HttpUrl("http://127.0.0.1:7545".parse().unwrap()),
-            signer: None
-        }).await
-    }
+  #[test]
+  fn creates_connection() {
+    let connection = Connection::new(ConnectionConfig {
+      provider: ProviderConfig::Url("http://127.0.0.1:7545".to_string()),
+      network: String::from("mainnet")
+    });
 
-    fn get_storage_abi() -> &'static str {
-        r#"
-        [
-            {
-                "inputs": [],
-                "name": "retrieve",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "num",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "store",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            }
-        ]
-        "#
-    }
-
-    #[actix_rt::test]
-    async fn creates_connection_with_no_signer() {
-        let connection = get_test_connection().await;
-        let accounts = connection.accounts;
-
-        assert_eq!(accounts.len(), 10);
-        assert_eq!(connection.config.signer, accounts[0])
-    }
-
-    #[actix_rt::test]
-    async fn gets_contract_from_str() {
-        let connection = get_test_connection().await;
-
-        let contract = connection.get_contract(
-            r#"0xC36A0eF5874b401906BEf534cad48690D7eEE888"#,
-            get_storage_abi()
-        ).unwrap();
-    }
+    print!("{:?}", connection)
+  }
 }

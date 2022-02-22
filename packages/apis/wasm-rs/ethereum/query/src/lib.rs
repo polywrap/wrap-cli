@@ -2,11 +2,16 @@
 
 // pub mod connection_configs;
 // pub mod mapping;
-// pub mod resolvers;
-// pub mod w3;
-pub mod connection;
 pub mod resolvers;
-pub mod abi;
+pub mod mapping;
+pub mod connection;
+pub mod network;
+pub mod w3;
+pub use w3::*;
+pub use resolvers::*;
+// pub mod connection;
+// pub mod resolvers;
+// pub mod abi;
 //
 // pub use mapping::*;
 // // use polywrap_wasm_rs::BigInt;
