@@ -7,17 +7,25 @@ import {
   PluginRegistration,
   InterfaceImplementations,
   Env,
+  ResolveUriOptions,
+  Api,
   QueryApiOptions,
   QueryApiResult,
   Cookbook,
 } from "./";
 import { ManifestType, AnyManifest } from "../manifest";
+import {
+  UriToApiResolver,
+  ResolveUriError,
+  UriResolutionHistory,
+} from "../uri-resolution/core";
 
 export interface ClientConfig<TUri extends Uri | string = string> {
   redirects: UriRedirect<TUri>[];
   plugins: PluginRegistration<TUri>[];
   interfaces: InterfaceImplementations<TUri>[];
   envs: Env<TUri>[];
+  resolvers: UriToApiResolver[];
 }
 
 export interface Contextualized {
@@ -39,6 +47,13 @@ export interface CookRecipesOptions<
 }
 
 export type GetEnvsOptions = Contextualized;
+
+export type GetResolversOptions = Contextualized;
+
+export interface GetManifestOptions<TManifestType extends ManifestType>
+  extends Contextualized {
+  type: TManifestType;
+}
 
 export interface GetFileOptions extends Contextualized {
   path: string;
@@ -76,6 +91,12 @@ export interface Client
     options: CookRecipesOptions<TData>
   ): Promise<void>;
 
+  getInterfaces(
+    options: GetInterfacesOptions
+  ): readonly InterfaceImplementations<Uri>[];
+
+  getResolvers(options: GetResolversOptions): readonly UriToApiResolver[];
+
   getEnvByUri<TUri extends Uri | string>(
     uri: TUri,
     options: GetEnvsOptions
@@ -110,4 +131,14 @@ export interface Client
     uri: TUri,
     options: GetSchemaOptions
   ): Promise<string>;
+
+  resolveUri<TUri extends Uri | string>(
+    uri: TUri,
+    options?: ResolveUriOptions<ClientConfig>
+  ): Promise<{
+    api?: Api;
+    uri?: Uri;
+    uriHistory: UriResolutionHistory;
+    error?: ResolveUriError;
+  }>;
 }

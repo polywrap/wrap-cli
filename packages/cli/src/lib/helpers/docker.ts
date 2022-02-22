@@ -150,3 +150,7 @@ export function generateDockerfile(
   writeFileSync(outputFilePath, dockerfile, "utf-8");
   return outputFilePath;
 }
+
+export function generateDockerImageName(uuid: string): string {
+  return `polywrap-build-env-${uuid}`;
+}

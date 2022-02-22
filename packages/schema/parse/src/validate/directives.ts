@@ -24,7 +24,7 @@ export const getSupportedDirectivesValidator = (): SchemaValidator => {
         },
       },
     },
-    displayValidationMessagesIfExist: () => {
+    cleanup: () => {
       if (unsupportedUsages.length) {
         throw new Error(
           `Found the following usages of unsupported directives:${unsupportedUsages.map(

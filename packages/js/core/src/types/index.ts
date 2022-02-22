@@ -11,3 +11,4 @@ export * from "./Env";
 export * from "./InterfaceImplementations";
 export * from "./PluginRegistration";
 export * from "./Recipe";
+export * from "./ResolveUriOptions";
