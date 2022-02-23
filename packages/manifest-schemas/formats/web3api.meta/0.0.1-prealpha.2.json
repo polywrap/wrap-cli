@@ -68,6 +68,14 @@
                         {
                             "type": "string",
                             "format": "yamlFile"
+                        },
+                        {
+                            "type": "object",
+                            "patternProperties": {
+                                ".*": {
+                                    "type": "string"
+                                }
+                            }
                         }
                     ]
                 },
@@ -85,38 +93,39 @@
     },
     "$defs": {
         "recipes": {
-            "oneOf": [
-                {
-                    "type": "array",
-                    "items": {
-                        "type": "object",
-                        "additionalProperties": false,
-                        "properties": {
-                            "name": {
-                                "type": "string"
-                            },
-                            "description": {
-                                "type": "string"
-                            },
-                            "query": {
-                                "type": "string",
-                                "format": "graphqlFile"
-                            },
-                            "variables": {
-                                "type": "string",
-                                "format": "jsonFile"
+            "type": "object",
+            "patternProperties": {
+                ".*": {
+                    "oneOf": [
+                        {
+                            "type": "array",
+                            "items": {
+                                "type": "object",
+                                "additionalProperties": false,
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "query": {
+                                        "type": "string",
+                                        "$comment": "can be a query or a graphql file"
+                                    },
+                                    "variables": {
+                                        "type": "object"
+                                    }
+                                },
+                                "required": ["query"]
                             }
                         },
-                        "required": [
-                            "name",
-                            "query"
-                        ]
-                    }
-                },
-                {
-                    "$ref": "#/$defs/recipes"
+                        {
+                            "$ref": "#/$defs/recipes"
+                        }
+                    ]
                 }
-            ]
+            }
         }
     }
 }
