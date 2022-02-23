@@ -120,6 +120,7 @@ export default {
       return;
     }
 
+    // Run Middleware
     await middleware.run({
       name: toolbox.command?.name,
       options: { help, outputDir, type, lang, name },

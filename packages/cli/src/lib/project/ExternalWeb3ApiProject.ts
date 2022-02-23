@@ -29,7 +29,7 @@ export class ExternalWeb3ApiProject extends Project {
 
   constructor(protected _config: ExternalWeb3ApiProjectConfig) {
     super(_config);
-    this._cacheSubpath = `ExternalProjects/${this._config.namespace}`;
+    this._cacheSubpath = `codegen/ExternalProjects/${this._config.namespace}`;
     this._cachePath = this.getCachePath(this._cacheSubpath);
   }
 

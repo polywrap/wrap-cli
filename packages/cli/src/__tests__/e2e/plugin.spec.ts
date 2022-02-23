@@ -13,11 +13,11 @@ Commands:
 
 Options:
   -h, --help                       Show usage information
-  -m, --manifest-path <path>       Path to the Web3API manifest file (default: ${defaultPluginManifest.join(
+  -m, --manifest-file <path>       Path to the Web3API manifest file (default: ${defaultPluginManifest.join(
     " | "
   )})
-  -s, --output-schema-path <path>  Output path for the built schema (default: ./build/schema.graphql)
-  -t, --output-types-dir <path>    Output directory for the generated types (default: ./src/w3)
+  -s, --output-schema-file <path>  Output path for the built schema (default: ./build/schema.graphql)
+  -t, --output-types-dir <path>    Output directory for the generated types (default: ./polywrap)
   -i, --ipfs [<node>]              IPFS node to load external schemas (default: dev-server's node)
   -e, --ens [<address>]            ENS address to lookup external schemas (default: 0x0000...2e1e)
 
@@ -53,10 +53,10 @@ describe("e2e tests for plugin command", () => {
 ${HELP}`);
   });
 
-  test("Should throw error for invalid params - output-schema-path", async () => {
+  test("Should throw error for invalid params - output-schema-file", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["plugin", "codegen", "--output-schema-path"],
+        args: ["plugin", "codegen", "--output-schema-file"],
         cwd: projectRoot,
       }
     );
@@ -64,7 +64,7 @@ ${HELP}`);
     expect(code).toEqual(0);
     expect(error).toBe("");
     expect(clearStyle(output))
-      .toEqual(`--output-schema-path option missing <path> argument
+      .toEqual(`--output-schema-file option missing <path> argument
 ${HELP}`);
   });
 
@@ -115,7 +115,7 @@ ${HELP}`);
 `);
 
     const expectedTypesResult = compareSync(
-      `${projectRoot}/src/w3`,
+      `${projectRoot}/polywrap`,
       `${projectRoot}/expected-types`,
       { compareContent: true }
     );

@@ -19,6 +19,8 @@ export default {
   description: intlMsg.commands_testEnv_description(),
   run: async (toolbox: GluegunToolbox): Promise<unknown> => {
     const { parameters, middleware } = toolbox;
+
+    // Command
     const command = parameters.first;
 
     if (!command) {
@@ -38,6 +40,7 @@ export default {
       return;
     }
 
+    // Run Middleware
     const middlewareState: SharedMiddlewareState = await middleware.run({
       name: toolbox.command?.name,
       options: { command },

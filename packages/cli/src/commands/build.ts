@@ -30,7 +30,7 @@ ${chalk.bold("w3 build")} [${optionsStr}] ${chalk.bold(`[<web3api-${manStr}>]`)}
 
 ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
   -h, --help                         ${intlMsg.commands_build_options_h()}
-  -m, --manifest-path <${pathStr}>         ${intlMsg.commands_build_options_m()}: ${defaultManifestStr})
+  -m, --manifest-file <${pathStr}>         ${intlMsg.commands_build_options_m()}: ${defaultManifestStr})
   -i, --ipfs [<${nodeStr}>]                ${intlMsg.commands_build_options_i()}
   -o, --output-dir <${pathStr}>            ${intlMsg.commands_build_options_o()}
   -e, --test-ens <[${addrStr},]${domStr}>  ${intlMsg.commands_build_options_e()}
@@ -44,10 +44,11 @@ export default {
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print, middleware } = toolbox;
 
+    // Options
     const { h, m, i, o, w, e, v } = parameters.options;
     let {
       help,
-      manifestPath,
+      manifestFile,
       ipfs,
       outputDir,
       watch,
@@ -56,21 +57,22 @@ export default {
     } = parameters.options;
 
     help = help || h;
-    manifestPath = manifestPath || m;
+    manifestFile = manifestFile || m;
     ipfs = ipfs || i;
     outputDir = outputDir || o;
     watch = watch || w;
     testEns = testEns || e;
     verbose = verbose || v;
 
-    if (help || !validateBuildParams(print, manifestPath, outputDir, testEns, ipfs)) {
+    if (help || !validateBuildParams(print, manifestFile, outputDir, testEns, ipfs)) {
       print.info(HELP);
       return;
     }
 
+    // Run Middleware
     const middlewareState: SharedMiddlewareState = await middleware.run({
       name: toolbox.command?.name,
-      options: { help, ipfs, outputDir, watch, testEns, verbose, manifestPath },
+      options: { help, manifestFile, ipfs, outputDir, watch, testEns, verbose },
     });
 
     if (!middlewareState.dockerPath) {
@@ -79,13 +81,13 @@ export default {
     }
 
     // Resolve manifest & output directories
-    const manifestPaths = manifestPath ? [manifestPath as string] : defaultWeb3ApiManifest;
-    manifestPath = resolvePathIfExists(
+    const manifestPaths = manifestFile ? [manifestFile as string] : defaultWeb3ApiManifest;
+    manifestFile = resolvePathIfExists(
       filesystem,
       manifestPaths
     );
 
-    if (!manifestPath) {
+    if (!manifestFile) {
       print.error(
         intlMsg.commands_build_error_manifestNotFound({
           paths: manifestPaths.join(", ")
@@ -140,7 +142,7 @@ export default {
     }
 
     const project = new Web3ApiProject({
-      web3apiManifestPath: manifestPath,
+      web3apiManifestPath: manifestFile,
       quiet: verbose ? false : true,
     });
 
@@ -288,15 +290,15 @@ export default {
 
 function validateBuildParams(
   print: GluegunPrint,
-  manifestPath: unknown,
+  manifestFile: unknown,
   outputDir: unknown,
   testEns: unknown,
   ipfs: unknown
 ): boolean {
-  if (manifestPath === true) {
+  if (manifestFile === true) {
     const manifestPathMissingMessage = intlMsg.commands_build_error_manifestPathMissing(
       {
-        option: "--manifest-path",
+        option: "--manifest-file",
         argument: `<${pathStr}>`,
       }
     );

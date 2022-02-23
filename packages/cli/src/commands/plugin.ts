@@ -11,13 +11,14 @@ import chalk from "chalk";
 import path from "path";
 import fs from "fs";
 
+const commands = ["codegen"];
+const defaultOutputSchemaFile = "./build/schema.graphql";
+const defaultOutputTypesDir = "./polywrap";
 const cmdStr = intlMsg.commands_plugin_options_command();
 const optionsStr = intlMsg.commands_options_options();
 const codegenStr = intlMsg.commands_plugin_options_codegen();
 const pathStr = intlMsg.commands_plugin_options_path();
 const defaultManifestStr = defaultPluginManifest.join(" | ");
-const defaultOutputSchemaStr = "./build/schema.graphql";
-const defaultOutputTypesStr = "./src/w3";
 const nodeStr = intlMsg.commands_plugin_options_i_node();
 const addrStr = intlMsg.commands_plugin_options_e_address();
 
@@ -29,14 +30,14 @@ Commands:
 
 Options:
   -h, --help                       ${intlMsg.commands_plugin_options_h()}
-  -m, --manifest-path <${pathStr}>       ${intlMsg.commands_plugin_options_m({
+  -m, --manifest-file <${pathStr}>       ${intlMsg.commands_plugin_options_m({
   default: defaultManifestStr,
 })}
-  -s, --output-schema-path <${pathStr}>  ${intlMsg.commands_plugin_options_s({
-  default: defaultOutputSchemaStr,
+  -s, --output-schema-file <${pathStr}>  ${intlMsg.commands_plugin_options_s({
+  default: defaultOutputSchemaFile,
 })}
   -t, --output-types-dir <${pathStr}>    ${intlMsg.commands_plugin_options_t({
-  default: defaultOutputTypesStr,
+  default: defaultOutputTypesDir,
 })}
   -i, --ipfs [<${nodeStr}>]              ${intlMsg.commands_plugin_options_i()}
   -e, --ens [<${addrStr}>]            ${intlMsg.commands_plugin_options_e()}
@@ -46,13 +47,13 @@ export default {
   alias: ["p"],
   description: intlMsg.commands_plugin_description(),
   run: async (toolbox: GluegunToolbox): Promise<void> => {
-    const { filesystem, parameters } = toolbox;
+    const { filesystem, parameters, middleware } = toolbox;
 
     // Options
     let {
       help,
-      manifestPath,
-      outputSchemaPath,
+      manifestFile,
+      outputSchemaFile,
       outputTypesDir,
       ipfs,
       ens,
@@ -60,12 +61,13 @@ export default {
     const { h, m, s, t, i, e } = parameters.options;
 
     help = help || h;
-    manifestPath = manifestPath || m;
-    outputSchemaPath = outputSchemaPath || s;
+    manifestFile = manifestFile || m;
+    outputSchemaFile = outputSchemaFile || s;
     outputTypesDir = outputTypesDir || t;
     ipfs = ipfs || i;
     ens = ens || e;
 
+    // Command
     let command = "";
     try {
       const params = parameters;
@@ -85,26 +87,44 @@ export default {
       return;
     }
 
-    if (help || !validatePluginParams(
-      print, command, outputSchemaPath, (path) => outputSchemaPath = path,
-      outputTypesDir, (dir) => outputTypesDir = dir, ens
-    )) {
+    // Validate Params
+    const paramsValid = validatePluginParams(
+      print,
+      command,
+      outputSchemaFile,
+      (path) => outputSchemaFile = path,
+      outputTypesDir,
+      (dir) => outputTypesDir = dir,
+      ens,
+    );
+
+    if (help || !paramsValid) {
       print.info(HELP);
+      if (!paramsValid) {
+        process.exitCode = 1;
+      }
       return;
     }
+
+    // Run Middleware
+    await middleware.run({
+      name: toolbox.command?.name,
+      options: { help, manifestFile, outputSchemaFile, outputTypesDir, ipfs, ens, command },
+    });
 
     const { ipfsProvider, ethProvider } = await getDefaultProviders(ipfs);
     const ensAddress: string | undefined = ens;
 
-    manifestPath = resolvePathIfExists(
+    manifestFile = resolvePathIfExists(
       filesystem,
-      manifestPath ? [manifestPath] : defaultPluginManifest
+      manifestFile ? [manifestFile] : defaultPluginManifest
     );
-    outputSchemaPath = outputSchemaPath && filesystem.resolve(outputSchemaPath);
+    outputSchemaFile = outputSchemaFile && filesystem.resolve(outputSchemaFile);
     outputTypesDir = outputTypesDir && filesystem.resolve(outputTypesDir);
 
+    // Plugin project
     const project = new PluginProject({
-      pluginManifestPath: manifestPath,
+      pluginManifestPath: manifestFile,
     });
 
     const schemaComposer = new SchemaComposer({
@@ -134,13 +154,13 @@ export default {
     const schemas = await schemaComposer.getComposedSchemas(
       ComposerFilter.Schema
     );
-    const outputSchemaDir = path.dirname(outputSchemaPath);
+    const outputSchemaDir = path.dirname(outputSchemaFile);
 
     if (!fs.existsSync(outputSchemaDir)) {
       fs.mkdirSync(outputSchemaDir);
     }
 
-    writeFileSync(outputSchemaPath, schemas.combined.schema);
+    writeFileSync(outputSchemaFile, schemas.combined.schema);
   },
 };
 
@@ -158,10 +178,18 @@ function validatePluginParams(
     return false;
   }
 
+  if (!command || typeof command !== "string") {
+    print.error(intlMsg.commands_plugin_error_noCommand());
+    return false;
+  } else if (commands.indexOf(command) === -1) {
+    print.error(intlMsg.commands_plugin_error_unknownCommand({ command }));
+    return false;
+  }
+
   if (outputSchemaPath === true) {
     const outputSchemaMissingPathMessage = intlMsg.commands_plugin_error_outputDirMissingPath(
       {
-        option: "--output-schema-path",
+        option: "--output-schema-file",
         argument: `<${pathStr}>`,
       }
     );
@@ -169,7 +197,7 @@ function validatePluginParams(
     print.info(HELP);
     return false;
   } else if (!outputSchemaPath) {
-    setOutputSchemaPath(defaultOutputSchemaStr);
+    setOutputSchemaPath(defaultOutputSchemaFile);
   }
 
   if (outputTypesDir === true) {
@@ -182,7 +210,7 @@ function validatePluginParams(
     print.error(outputTypesMissingPathMessage);
     return false;
   } else if (!outputTypesDir) {
-    setOutputTypesDir(defaultOutputTypesStr);
+    setOutputTypesDir(defaultOutputTypesDir);
   }
 
   if (ens === true) {

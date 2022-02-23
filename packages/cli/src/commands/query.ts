@@ -27,8 +27,10 @@ export default {
   description: intlMsg.commands_query_description(),
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print, middleware } = toolbox;
-    // eslint-disable-next-line prefer-const
-    let { t, testEns, c, clientConfig } = parameters.options;
+
+    // Options
+    let { testEns, clientConfig } = parameters.options;
+    const { t, c } = parameters.options;
 
     testEns = testEns || t;
     clientConfig = clientConfig || c;
@@ -119,9 +121,10 @@ export default {
       }
     }
 
+    // Run Middleware
     await middleware.run({
       name: toolbox.command?.name,
-      options: { testEns, recipePath },
+      options: { testEns, clientConfig, recipePath },
     });
 
     const client = new Web3ApiClient(finalClientConfig);

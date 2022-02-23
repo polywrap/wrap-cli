@@ -1,7 +1,6 @@
 /* eslint-disable prefer-const */
 import { CodeGenerator, Project, SchemaComposer } from "../lib";
 import { intlMsg } from "../lib/intl";
-import { validateCodegenParams } from "./codegen";
 import {
   fixParameters,
   loadAppManifest,
@@ -13,18 +12,12 @@ import { ExternalWeb3ApiProject } from "../lib/project/ExternalWeb3ApiProject";
 import { ExternalPluginProject } from "../lib/project/ExternalPluginProject";
 
 import chalk from "chalk";
-import { GluegunToolbox } from "gluegun";
+import { GluegunToolbox, GluegunPrint } from "gluegun";
 import { Uri, Web3ApiClient } from "@web3api/client-js";
 import { AppManifest } from "@web3api/core-js";
 import * as path from "path";
 import fs from "fs";
 import rimraf from "rimraf";
-
-interface PolywrapPackage {
-  uri: Uri;
-  namespace: string;
-  isPlugin?: boolean;
-}
 
 interface AppGenFiles {
   package: string;
@@ -58,14 +51,14 @@ const langSupport: AppLangSupport = {
   },
 };
 
-const defaultOutputDir = "polywrap";
-
-const cmdStr = intlMsg.commands_plugin_options_command();
+const commands = ["codegen"];
+const defaultOutputTypesDir = "./polywrap";
+const cmdStr = intlMsg.commands_app_options_command();
 const optionsStr = intlMsg.commands_options_options();
 const codegenStr = intlMsg.commands_app_codegen();
 const defaultManifestStr = defaultAppManifest.join(" | ");
-const outputDirStr = `${intlMsg.commands_app_options_o({
-  default: `${defaultOutputDir}/`,
+const outputTypesDirStr = `${intlMsg.commands_app_options_o({
+  default: `${defaultOutputTypesDir}/`,
 })}`;
 const nodeStr = intlMsg.commands_codegen_options_i_node();
 const pathStr = intlMsg.commands_codegen_options_o_path();
@@ -79,8 +72,8 @@ Commands:
 
 Options:
   -h, --help                              ${intlMsg.commands_codegen_options_h()}
-  -m, --manifest-path <${pathStr}>              ${intlMsg.commands_codegen_options_m()}: ${defaultManifestStr})
-  -o, --output-dir <${pathStr}>                 ${outputDirStr}
+  -m, --manifest-file <${pathStr}>              ${intlMsg.commands_codegen_options_m()}: ${defaultManifestStr})
+  -o, --output-types-dir <${pathStr}>                 ${outputTypesDirStr}
   -i, --ipfs [<${nodeStr}>]                     ${intlMsg.commands_codegen_options_i()}
   -e, --ens [<${addrStr}>]                   ${intlMsg.commands_codegen_options_e()}
 `;
@@ -89,13 +82,20 @@ export default {
   alias: ["a"],
   description: intlMsg.commands_app_description(),
   run: async (toolbox: GluegunToolbox): Promise<void> => {
-    const { filesystem, parameters, print } = toolbox;
+    const { filesystem, parameters, print, middleware } = toolbox;
 
+    // Options
+    let {
+      help,
+      manifestFile,
+      outputDir,
+      ipfs,
+      ens,
+    } = parameters.options;
     const { h, m, o, i, e } = parameters.options;
-    let { help, manifestPath, outputDir, ipfs, ens } = parameters.options;
 
     help = help || h;
-    manifestPath = manifestPath || m;
+    manifestFile = manifestFile || m;
     outputDir = outputDir || o;
     ipfs = ipfs || i;
     ens = ens || e;
@@ -119,53 +119,67 @@ export default {
       return;
     }
 
-    if (help) {
+    const paramsValid = validateAppParams(
+      print,
+      command,
+      outputDir,
+      ens
+    );
+
+    if (help || !paramsValid) {
       print.info(HELP);
+      if (!paramsValid) {
+        process.exitCode = 1;
+      }
       return;
     }
 
-    if (!command) {
-      print.error(intlMsg.commands_plugin_error_noCommand());
-      print.info(HELP);
-      return;
-    } else if (command !== "codegen") {
-      print.error(intlMsg.commands_app_error_unknownCommand({ command }));
-      print.info(HELP);
-      return;
-    }
-
-    if (!validateCodegenParams(print, outputDir, ens, false)) {
-      print.info(HELP);
-      return;
-    }
+    // Run Middleware
+    await middleware.run({
+      name: toolbox.command?.name,
+      options: { help, manifestFile, outputDir, ipfs, ens },
+    });
 
     // Resolve manifest
-    manifestPath = resolvePathIfExists(
+    manifestFile = resolvePathIfExists(
       filesystem,
-      manifestPath ? [manifestPath] : defaultAppManifest
+      manifestFile ? [manifestFile] : defaultAppManifest
     );
 
     // App project
-    const manifestDir: string = path.dirname(manifestPath);
+    const manifestDir: string = path.dirname(manifestFile);
     const appManifest: AppManifest = await loadAppManifest(
-      manifestPath,
+      manifestFile,
       true
     );
+
+    // Validate app manifest's language
     const language: string = appManifest.language;
     Project.validateManifestLanguage(language, ["app/"]);
-    const packages: PolywrapPackage[] = appManifest.packages.map((pack) => ({
-      ...pack,
+
+    // Transform packages
+    const packages = appManifest.packages.map((pack) => ({
       uri: sanitizeUri(pack.uri, pack.isPlugin),
+      namespace: pack.namespace,
+      isPlugin: pack.isPlugin,
     }));
+
+    // types:
+    //   directory:
     const outputDirFromManifest: string | undefined =
       appManifest.types.directory;
+
+    //   withExtensions:
     const withExtensions: boolean | undefined = appManifest.types.withExtensions;
 
     // Resolve output directory
-    outputDir =
-      (outputDir && filesystem.resolve(outputDir)) ||
-      outputDirFromManifest ||
-      filesystem.path(defaultOutputDir);
+    if (outputDir) {
+      outputDir = filesystem.resolve(outputDir);
+    } else if (outputDirFromManifest) {
+      outputDir = filesystem.resolve(outputDirFromManifest);
+    } else {
+      outputDir = filesystem.resolve(defaultOutputTypesDir);
+    }
 
     // Check for duplicate namespaces
     const nsNoDupes: string[] = packages
@@ -181,6 +195,7 @@ export default {
     const genFiles: AppGenFiles = withExtensions
       ? langGenFiles.extension
       : langGenFiles.types;
+    // TODO: does "genFiles.package/app" make sense?
     const packageScript = filesystem.resolve(genFiles.package);
     const appScript = filesystem.resolve(genFiles.app);
 
@@ -275,6 +290,9 @@ export default {
   },
 };
 
+// TODO: move these helpers
+// could go in the app manifest validators
+// Rename: createPluginUri? should this be the "plugin URI"?
 function sanitizeUri(uri: string, isPlugin?: boolean): Uri {
   let result: Uri;
   try {
@@ -286,6 +304,7 @@ function sanitizeUri(uri: string, isPlugin?: boolean): Uri {
     }
     result = new Uri(`w3://fs/${uri}`);
   }
+
   // convert to absolute path
   if (result.authority === "fs") {
     result = new Uri(`w3://fs/${path.resolve(result.path)}`);
@@ -310,4 +329,46 @@ async function isEmptyDir(path: string): Promise<boolean> {
   const file = await dir.read();
   await dir.close();
   return file === null;
+}
+// TODO: move these helpers
+
+function validateAppParams(
+  print: GluegunPrint,
+  command: unknown,
+  outputDir: unknown,
+  ens: unknown
+): boolean {
+
+  if (!command || typeof command !== "string") {
+    print.error(intlMsg.commands_app_error_noCommand());
+    return false;
+  } else if (commands.indexOf(command) === -1) {
+    print.error(intlMsg.commands_app_error_unknownCommand({ command }));
+    return false;
+  }
+
+  if (outputDir === true) {
+    const outputDirMissingPathMessage = intlMsg.commands_codegen_error_outputDirMissingPath(
+      {
+        option: "--output-dir",
+        argument: `<${pathStr}>`,
+      }
+    );
+    print.error(outputDirMissingPathMessage);
+    return false;
+  }
+
+  if (ens === true) {
+    const domStr = intlMsg.commands_codegen_error_domain();
+    const ensAddressMissingMessage = intlMsg.commands_codegen_error_testEnsAddressMissing(
+      {
+        option: "--ens",
+        argument: `<[${addrStr},]${domStr}>`,
+      }
+    );
+    print.error(ensAddressMissingMessage);
+    return false;
+  }
+
+  return true;
 }

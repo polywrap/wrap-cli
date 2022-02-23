@@ -23,7 +23,7 @@ ${chalk.bold("w3 codegen")} [${optionsStr}]
 
 ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
   -h, --help                              ${intlMsg.commands_codegen_options_h()}
-  -m, --manifest-path <${pathStr}>              ${intlMsg.commands_codegen_options_m()}: ${defaultManifestStr})
+  -m, --manifest-file <${pathStr}>              ${intlMsg.commands_codegen_options_m()}: ${defaultManifestStr})
   -c, --custom <${pathStr}>                     ${intlMsg.commands_codegen_options_c()}
   -o, --output-dir <${pathStr}>                 ${intlMsg.commands_codegen_options_o()}
   -i, --ipfs [<${nodeStr}>]                     ${intlMsg.commands_codegen_options_i()}
@@ -36,11 +36,12 @@ export default {
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print, middleware } = toolbox;
 
+    // Options
     const { h, c, m, i, o, e } = parameters.options;
     let {
       help,
       custom,
-      manifestPath,
+      manifestFile,
       ipfs,
       outputDir,
       ens,
@@ -48,7 +49,7 @@ export default {
 
     help = help || h;
     custom = custom || c;
-    manifestPath = manifestPath || m;
+    manifestFile = manifestFile || m;
     ipfs = ipfs || i;
     outputDir = outputDir || o;
     ens = ens || e;
@@ -58,9 +59,10 @@ export default {
       return;
     }
 
+    // Run Middleware
     await middleware.run({
       name: toolbox.command?.name,
-      options: { help, manifestPath, ipfs, outputDir, ens, custom },
+      options: { help, custom, manifestFile, ipfs, outputDir, ens },
     });
 
     const { ipfsProvider, ethProvider } = await getDefaultProviders(ipfs);
@@ -68,14 +70,14 @@ export default {
 
     // Resolve generation file & output directories
     const customScript = custom && filesystem.resolve(custom);
-    manifestPath = resolvePathIfExists(
+    manifestFile = resolvePathIfExists(
       filesystem,
-      manifestPath ? [manifestPath] : defaultWeb3ApiManifest
+      manifestFile ? [manifestFile] : defaultWeb3ApiManifest
     );
     outputDir = outputDir && filesystem.resolve(outputDir);
 
     const project = new Web3ApiProject({
-      web3apiManifestPath: manifestPath,
+      web3apiManifestPath: manifestFile,
     });
 
     const schemaComposer = new SchemaComposer({

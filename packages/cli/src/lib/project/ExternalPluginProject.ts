@@ -27,7 +27,7 @@ export class ExternalPluginProject extends Project {
 
   public reset(): void {
     this._pluginManifest = undefined;
-    this.removeCacheDir(this._cacheSubpath);
+    //this.removeCacheDir(this._cacheSubpath);
   }
 
   public getRootDir(): string {
@@ -90,11 +90,17 @@ export class ExternalPluginProject extends Project {
   }
 
   private async createAndCachePluginManifest(): Promise<void> {
+    // TODO: this does not seem right. app -> plugin? why are we checking for app here?
+    //       language should instead be a sub-set of the plugin & app namespaces.
+    //       We should have a "PluginLanguage", "AppLanguage", "WasmLanguage"
     const lang: string = this._config.language.replace("app/", "plugin/");
     const manifestDir: string = this.getPluginManifestDir();
     const pluginDir: string = this._config.uri.path;
     const manifestToSchema: string = path.relative(manifestDir, pluginDir);
     const schemaPath: string = path.join(manifestToSchema, "./schema.graphql");
+    // TODO: Outputting things like this is not future proof.
+    //       Instead it should be done through instantiating the interface (type checking)
+    //       and outputting the structure using the serialize manifest helper function.
     const manifest: string = `
 format: 0.0.1-prealpha.1
 language: ${lang}

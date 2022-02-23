@@ -20,7 +20,7 @@ Commands:
 
 Options:
   -h, --help                              Show usage information
-  -m, --manifest-path <path>              Path to the Web3API manifest file (default: web3api.app.yaml | web3api.app.yml)
+  -m, --manifest-file <path>              Path to the Web3API manifest file (default: web3api.app.yaml | web3api.app.yml)
   -o, --output-dir <path>                 Output directory for the generated code (default: polywrap/)
   -i, --ipfs [<node>]                     IPFS node to load external schemas (default: ipfs.io & localhost)
   -e, --ens [<address>]                   ENS address to lookup external schemas (default: 0x0000...2e1e)

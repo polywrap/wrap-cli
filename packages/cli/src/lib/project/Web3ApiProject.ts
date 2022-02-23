@@ -319,7 +319,7 @@ export class Web3ApiProject extends Project {
   }
 
   public getLinkedPackagesCacheSubPath(): string {
-    return "build/linked-packages";
+    return "wrapper/build/linked-packages";
   }
 
   /// Web3API Meta Manifest (web3api.build.yaml)

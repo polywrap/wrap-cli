@@ -9,7 +9,7 @@ w3 build [options] [<web3api-manifest>]
 
 Options:
   -h, --help                         Show usage information
-  -m, --manifest-path <path>         Path to the Web3API manifest file (default: web3api.yaml | web3api.yml)
+  -m, --manifest-file <path>         Path to the Web3API manifest file (default: web3api.yaml | web3api.yml)
   -i, --ipfs [<node>]                Upload build results to an IPFS node (default: dev-server's node)
   -o, --output-dir <path>            Output directory for build results (default: build/)
   -e, --test-ens <[address,]domain>  Publish the package to a test ENS domain locally (requires --ipfs)
@@ -86,7 +86,7 @@ ${HELP}`);
   test("Should throw error for invalid web3api - invalid route", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["build", "--manifest-path", "invalid-web3api-1.yaml"],
+        args: ["build", "--manifest-file", "invalid-web3api-1.yaml"],
         cwd: projectRoot,
         cli: w3Cli,
       },

@@ -10,7 +10,7 @@ w3 codegen [options]
 
 Options:
   -h, --help                              Show usage information
-  -m, --manifest-path <path>              Path to the Web3API manifest file (default: ${defaultWeb3ApiManifest.join(
+  -m, --manifest-file <path>              Path to the Web3API manifest file (default: ${defaultWeb3ApiManifest.join(
     " | "
   )})
   -c, --custom <path>                     Path to a custom generation script (JavaScript | TypeScript)
