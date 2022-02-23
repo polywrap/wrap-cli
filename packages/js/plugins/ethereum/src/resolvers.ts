@@ -65,6 +65,10 @@ export const query = (plugin: Plugin): Query.Module => ({
     return plugin.encodeFunction(input);
   },
 
+  pack: async (input: Query.Input_pack): Promise<string> => {
+    return plugin.pack(input);
+  },
+
   getSignerAddress: async (
     input: Query.Input_getSignerAddress
   ): Promise<string> => {

@@ -123,6 +123,11 @@ type Query {
     args: [String!]
   ): String!
 
+  pack(
+    types: [String!]!
+    values: [String!]!
+  ): String!
+
   getSignerAddress(
     connection: Connection
   ): String!

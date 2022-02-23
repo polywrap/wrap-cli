@@ -217,6 +217,10 @@ export class EthereumPlugin extends Plugin {
     );
   }
 
+  public pack(input: Query.Input_pack): string {
+    return ethers.utils.solidityPack(input.types, this.parseArgs(input.values));
+  }
+
   public async getSignerAddress(
     input: Query.Input_getSignerAddress
   ): Promise<string> {
