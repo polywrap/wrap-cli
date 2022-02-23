@@ -1067,6 +1067,26 @@ describe("Web3ApiClient", () => {
     expect(tryGet.errors).toBeFalsy();
     expect(tryGet.data).toBeTruthy();
     expect(tryGet.data?.tryGetData).toContain("VM Exception while processing transaction");
+
+    const throwGet = await client.query<{
+      throwGetData: string;
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          throwGetData(
+            address: "${address}"
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
+          )
+        }
+      `,
+    });
+
+    expect(throwGet.data?.throwGetData).toBeFalsy();
+    expect(throwGet.errors).toBeTruthy();
+    expect((throwGet.errors as Error[])[0].message).toContain("VM Exception while processing transaction")
   });
 
   it("object-types", async () => {
