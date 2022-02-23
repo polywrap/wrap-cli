@@ -21,9 +21,14 @@ import { Tracer } from "@web3api/tracing-js";
 export const deserializeAppManifest = Tracer.traceFunc(
   "core: deserializeAppManifest",
   (manifest: string, options?: DeserializeManifestOptions): AppManifest => {
-    const anyAppManifest = YAML.safeLoad(manifest) as
+    let anyAppManifest: AnyAppManifest | undefined;
+    try {
+      anyAppManifest = JSON.parse(manifest) as AnyAppManifest;
+    } catch (e) {
+      anyAppManifest = YAML.safeLoad(manifest) as
       | AnyAppManifest
       | undefined;
+    }
 
     if (!anyAppManifest) {
       throw Error(`Unable to parse AppManifest: ${manifest}`);

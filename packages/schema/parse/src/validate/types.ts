@@ -19,7 +19,7 @@ import {
   StringValueNode,
   UnionTypeDefinitionNode,
 } from "graphql";
-import { getSchemaCycles } from "graphql-schema-cycles";
+import { getSchemaCycles } from "@dorgjelli/graphql-schema-cycles";
 
 export const getTypeDefinitionsValidator = (): SchemaValidator => {
   const objectTypes: Record<string, boolean> = {};
@@ -177,7 +177,7 @@ export const getPropertyTypesValidator = (): SchemaValidator => {
         },
       },
     },
-    displayValidationMessagesIfExist: () => {
+    cleanup: () => {
       // Ensure all property types are either a
       // supported scalar, enum or an object type definition
       for (const field of fieldTypes) {
@@ -226,7 +226,7 @@ export function getCircularDefinitionsValidator(): SchemaValidator {
         },
       },
     },
-    displayValidationMessagesIfExist: (documentNode: DocumentNode) => {
+    cleanup: (documentNode: DocumentNode) => {
       const { cycleStrings, foundCycle } = getSchemaCycles(documentNode, {
         ignoreTypeNames: operationTypes,
         allowOnNullableFields: true,

@@ -21,9 +21,14 @@ import { Tracer } from "@web3api/tracing-js";
 export const deserializeBuildManifest = Tracer.traceFunc(
   "core: deserializeBuildManifest",
   (manifest: string, options?: DeserializeManifestOptions): BuildManifest => {
-    const anyBuildManifest = YAML.safeLoad(manifest) as
+    let anyBuildManifest: AnyBuildManifest | undefined;
+    try {
+      anyBuildManifest = JSON.parse(manifest) as AnyBuildManifest;
+    } catch (e) {
+      anyBuildManifest = YAML.safeLoad(manifest) as
       | AnyBuildManifest
       | undefined;
+    }
 
     if (!anyBuildManifest) {
       throw Error(`Unable to parse BuildManifest: ${manifest}`);

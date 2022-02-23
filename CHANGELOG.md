@@ -1,3 +1,23 @@
+# Web3API 0.0.1-prealpha.64
+## Bugs
+* [PR-685](https://github.com/polywrap/monorepo/pull/685) `@web3api/schema-parse`: Properly support recursive object definition properties.
+
+# Web3API 0.0.1-prealpha.63
+## Features
+* [PR-650](https://github.com/polywrap/monorepo/pull/650) `@web3api/cli`: Add YAML support for query recipes.
+* [PR-385](https://github.com/polywrap/monorepo/pull/385) `@web3api/cli`, `@web3api/client-js`: Use JSON for manifest build artifacts.
+* [PR-678](https://github.com/polywrap/monorepo/pull/678) `@web3api/cli`: Build command no longer uses same docker image name by default. The concept of a "build UUID" has been added, and will be appended to the docker image name (if the develoer has not specified their own inside `web3api.build.yaml`).
+* [PR-610](https://github.com/polywrap/monorepo/pull/610) `@web3api/client-js`: Support the `resolveUri(...)` method on `Web3ApiClient` instances.
+
+## Bugs
+* [PR-665](https://github.com/polywrap/monorepo/pull/665) `@web3api/ethereum-plugin-js`: Fix `TxRequest` property mapping to ethers.js types.
+* [PR-672](https://github.com/polywrap/monorepo/pull/672) `@web3api/core-js`, `@web3api/schema-bind`, `@web3api/schema-parse`: Remove use of the JS string `.substr` method.
+* [PR-673](https://github.com/polywrap/monorepo/pull/673) `@web3api/cli`: The `w3 query ...` command now property sets `exitCode` to 1 if a query fails.
+* [PR-651](https://github.com/polywrap/monorepo/pull/651) `@web3api/http-plugin-js`: JSON payloads are now property supported.
+
+## Breaking Changes
+* [PR-674](https://github.com/polywrap/monorepo/pull/674) `@web3api/cli`, `@web3api/schema-bind`: Return `Result<T, E>` objects from all AssemblyScript subinvoke methods.
+
 # Web3API 0.0.1-prealpha.62
 ## Features
 * Use the https://ipfs.wrappers.io IPFS gateway throughout the codebase.

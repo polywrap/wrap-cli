@@ -3,6 +3,8 @@ import { clearStyle, w3Cli } from "./utils";
 import { runCLI } from "@web3api/test-env-js";
 import fs from "fs";
 import path from "path";
+import { Web3ApiProject } from "../../lib";
+import { loadBuildManifest } from "../../lib/helpers";
 
 const HELP = `
 w3 build [options] [<web3api-manifest>]
@@ -129,17 +131,35 @@ ${HELP}`);
       },
     );
 
-    const manifestPath = "build/web3api.yaml";
+    const manifestPath = "build/web3api.json";
     const sanitizedOutput = clearStyle(output);
 
     expect(code).toEqual(0);
     expect(sanitizedOutput).toContain(
-      "Artifacts written to ./build from the image `build-env`"
+      "Artifacts written to ./build from the image `polywrap-build-env-"
     );
     expect(sanitizedOutput).toContain(
-      "Manifest written to ./build/web3api.yaml"
+      "Manifest written to ./build/web3api.json"
     );
     expect(sanitizedOutput).toContain(manifestPath);
+  });
+
+  test("Adds uuid-v4 suffix to build-env image if no build manifest specified", async () => {
+    const project = new Web3ApiProject({
+      web3apiManifestPath: path.join(projectRoot, "web3api.nobuild.yaml")
+    });
+
+    await project.cacheDefaultBuildManifestFiles();
+
+    const cacheBuildEnvPath = path.join(projectRoot, ".w3/build/env")
+    const cachedBuildManifest = await loadBuildManifest(
+      path.join(cacheBuildEnvPath, "web3api.build.yaml")
+    );
+
+    const buildImageName = cachedBuildManifest.docker?.name
+
+    expect(buildImageName?.length).toBeGreaterThan(36)
+    expect((buildImageName?.match(/-/g) || []).length).toBeGreaterThanOrEqual(4);
   });
 
   test("Successfully builds project w/ web3api.build.yaml but no dockerfile", async () => {
@@ -151,15 +171,15 @@ ${HELP}`);
       },
     );
 
-    const manifestPath = "build/web3api.yaml";
+    const manifestPath = "build/web3api.json";
     const sanitizedOutput = clearStyle(output);
 
     expect(code).toEqual(0);
     expect(sanitizedOutput).toContain(
-      "Artifacts written to ./build from the image `build-env`"
+      "Artifacts written to ./build from the image `polywrap-build-env-"
     );
     expect(sanitizedOutput).toContain(
-      "Manifest written to ./build/web3api.yaml"
+      "Manifest written to ./build/web3api.json"
     );
     expect(sanitizedOutput).toContain(manifestPath);
   });
@@ -173,15 +193,15 @@ ${HELP}`);
       },
     );
 
-    const manifestPath = "build/web3api.yaml";
+    const manifestPath = "build/web3api.json";
     const sanitizedOutput = clearStyle(output);
 
     expect(code).toEqual(0);
     expect(sanitizedOutput).toContain(
-      "Artifacts written to ./build from the image `build-env`"
+      "Artifacts written to ./build from the image `polywrap-build-env-"
     );
     expect(sanitizedOutput).toContain(
-      "Manifest written to ./build/web3api.yaml"
+      "Manifest written to ./build/web3api.json"
     );
     expect(sanitizedOutput).toContain(manifestPath);
   });
@@ -195,15 +215,15 @@ ${HELP}`);
       },
     );
 
-    const manifestPath = "build/web3api.yaml";
+    const manifestPath = "build/web3api.json";
     const sanitizedOutput = clearStyle(output);
 
     expect(code).toEqual(0);
     expect(sanitizedOutput).toContain(
-      "Artifacts written to ./build from the image `build-env`"
+      "Artifacts written to ./build from the image `polywrap-build-env-"
     );
     expect(sanitizedOutput).toContain(
-      "Manifest written to ./build/web3api.yaml"
+      "Manifest written to ./build/web3api.json"
     );
     expect(sanitizedOutput).toContain(manifestPath);
   });
@@ -215,7 +235,7 @@ ${HELP}`);
       cli: w3Cli,
     });
 
-    const manifestPath = "build/web3api.meta.yaml";
+    const manifestPath = "build/web3api.meta.json";
     const queryPath = "build/meta/queries/test.graphql";
     const queryVarPath = "build/meta/queries/test.json";
     const linkIconPath = "build/meta/links/link.svg";
@@ -223,8 +243,8 @@ ${HELP}`);
     const sanitizedOutput = clearStyle(output);
 
     expect(code).toEqual(0);
-    expect(sanitizedOutput).toContain("Artifacts written to ./build from the image `build-env`");
-    expect(sanitizedOutput).toContain("Manifest written to ./build/web3api.yaml");
+    expect(sanitizedOutput).toContain("Artifacts written to ./build from the image `polywrap-build-env-");
+    expect(sanitizedOutput).toContain("Manifest written to ./build/web3api.json");
     expect(sanitizedOutput).toContain(manifestPath);
     expect(sanitizedOutput).toContain(queryPath);
     expect(sanitizedOutput).toContain(queryVarPath);
