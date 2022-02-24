@@ -290,6 +290,30 @@ impl Write for WriteEncoder {
         Ok(())
     }
 
+    fn write_extension(&mut self, length: &u32, type_id: i8) -> Result<(), EncodeError> {
+        let len = *length;
+        match len {
+            1 => Format::set_format(self, Format::FixExt1)?,
+            2 => Format::set_format(self, Format::FixExt2)?,
+            4 => Format::set_format(self, Format::FixExt4)?,
+            8 => Format::set_format(self, Format::FixExt8)?,
+            16 => Format::set_format(self, Format::FixExt16)?,
+            len if len < 256 => {
+                Format::set_format(self, Format::Ext8)?;
+                Write::write_u8(self, &(len as u8))?;
+            }
+            len if len < 65536 => {
+                Format::set_format(self, Format::Ext16)?;
+                Write::write_u16(self, &(len as u16))?;
+            }
+            len => {
+                Format::set_format(self, Format::Ext32)?;
+                Write::write_u32(self, &len)?;
+            }
+        }
+        Write::write_i8(self, &type_id)
+    }
+
     fn write_nullable_bool(&mut self, value: &Option<bool>) -> Result<(), EncodeError> {
         match value {
             None => Write::write_nil(self),

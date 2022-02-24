@@ -33,6 +33,7 @@ pub trait Read {
     ) -> Result<BTreeMap<K, V>, DecodeError>
     where
         K: Eq + Hash + Ord;
+    fn read_extension(&mut self) -> Result<(i8, u32), DecodeError>;
     fn read_nullable_bool(&mut self) -> Result<Option<bool>, DecodeError>;
     fn read_nullable_i8(&mut self) -> Result<Option<i8>, DecodeError>;
     fn read_nullable_i16(&mut self) -> Result<Option<i16>, DecodeError>;

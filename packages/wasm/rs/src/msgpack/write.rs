@@ -36,6 +36,7 @@ pub trait Write {
     ) -> Result<(), EncodeError>
     where
         K: Clone + Eq + Hash + Ord;
+    fn write_extension(&mut self, length: &u32, ty: i8) -> Result<(), EncodeError>;
     fn write_nullable_bool(&mut self, value: &Option<bool>) -> Result<(), EncodeError>;
     fn write_nullable_i8(&mut self, value: &Option<i8>) -> Result<(), EncodeError>;
     fn write_nullable_i16(&mut self, value: &Option<i16>) -> Result<(), EncodeError>;

@@ -330,6 +330,28 @@ impl Read for ReadDecoder {
         Ok(map)
     }
 
+    fn read_extension(&mut self) -> Result<(i8, u32), DecodeError> {
+        let size = match Format::get_format(self)? {
+            Format::FixExt1 => 1,
+            Format::FixExt2 => 2,
+            Format::FixExt4 => 4,
+            Format::FixExt8 => 8,
+            Format::FixExt16 => 16,
+            Format::Ext8 => Read::read_u8(self)? as u32,
+            Format::Ext16 => Read::read_u16(self)? as u32,
+            Format::Ext32 => Read::read_u32(self)?,
+            err_f => {
+                let err_msg = format!(
+                    "Property must be of type 'ext'. {}",
+                    get_error_message(err_f)
+                );
+                return Err(DecodeError::WrongMsgPackFormat(err_msg));
+            }
+        };
+        let type_id = Read::read_i8(self)?;
+        Ok((type_id, size))
+    }
+
     fn read_nullable_bool(&mut self) -> Result<Option<bool>, DecodeError> {
         if self.is_next_nil()? {
             return Ok(None);
