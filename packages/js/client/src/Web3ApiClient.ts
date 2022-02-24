@@ -5,8 +5,10 @@ import {
   AnyManifest,
   Api,
   ApiCache,
+  CacheResolver,
   Client,
   ClientConfig,
+  Contextualized,
   CookRecipesOptions,
   Cookbook,
   Env,
@@ -17,21 +19,24 @@ import {
   GetManifestOptions,
   GetPluginsOptions,
   GetRedirectsOptions,
+  GetResolversOptions,
   GetSchemaOptions,
   InterfaceImplementations,
   InvokeApiOptions,
   InvokeApiResult,
   ManifestType,
-  PluginPackage,
   PluginRegistration,
   QueryApiOptions,
   QueryApiResult,
   Recipe,
+  ResolveUriError,
+  ResolveUriOptions,
   SubscribeOptions,
   Subscription,
   Uri,
   UriRedirect,
-  Web3ApiManifest,
+  UriResolutionHistory,
+  UriToApiResolver,
   createQueryDocument,
   getImplementations,
   parseQuery,
@@ -43,6 +48,7 @@ import {
   sanitizeInterfaceImplementations,
   sanitizePluginRegistrations,
   sanitizeUriRedirects,
+  getParserForFile,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
@@ -133,7 +139,7 @@ export class Web3ApiClient implements Client {
           contextId: options.contextId,
         };
         return this.query<TData>(opts).then((res) => {
-          options.onExecution(opts, res.data, res.errors);
+          options.onExecution?.(opts, res.data, res.errors);
           return res;
         });
       })
@@ -153,7 +159,7 @@ export class Web3ApiClient implements Client {
         contextId: options.contextId,
       };
       const { data, errors } = await this.query<TData>(opts);
-      options.onExecution(opts, data, errors);
+      options.onExecution?.(opts, data, errors);
     }
   }
 
@@ -566,8 +572,8 @@ export class Web3ApiClient implements Client {
     TData extends Record<string, unknown> = Record<string, unknown>
   >(
     options: CookRecipesOptions<TData>
-  ): Promise<{ api: Cookbook["api"]; recipes: Recipe[] }> {
-    if (!options.cookbook && !options.wrapperUri)
+  ): Promise<{ api: NonNullable<Cookbook["api"]>; recipes: Recipe[] }> {
+    if ((!options.cookbook || !options.cookbook.api) && !options.wrapperUri)
       throw new Error("Must supply either a cookbook or a wrapper URI");
 
     if (!!options.wrapperUri) {
@@ -586,9 +592,43 @@ export class Web3ApiClient implements Client {
       };
     }
 
-    const { api, recipes, menus } = options.cookbook;
+    if (
+      !!options.cookbook?.constants &&
+      typeof options.cookbook.constants === "string"
+    ) {
+      const constantsFile = await this.getFile(
+        (options.cookbook.api || options.wrapperUri) as NonNullable<string>,
+        {
+          path: options.cookbook.constants,
+        }
+      );
+      try {
+        options.cookbook.constants = getParserForFile(
+          options.cookbook.constants
+        )(
+          constantsFile instanceof ArrayBuffer
+            ? new TextDecoder().decode(constantsFile)
+            : constantsFile
+        );
+      } catch (e) {
+        if (e instanceof URIError) {
+          throw new URIError(
+            `Failed to retrieve constants file at ${
+              options.cookbook.api || options.wrapperUri
+            }/${options.cookbook.constants}`
+          );
+        } else throw e;
+      }
+    }
+
+    const {
+      api,
+      constants,
+      menus,
+      recipes,
+    } = options.cookbook as NonNullable<Cookbook>;
     if (api == null) throw new Error("Cookbook is missing an API");
-    if (Object.keys(menus).some((k) => k in recipes))
+    if (!!menus && Object.keys(menus).some((k) => k in recipes))
       throw new Error(
         `Namespace collision: menus cannot have the same name as recipes (${Object.keys(
           menus
@@ -601,8 +641,14 @@ export class Web3ApiClient implements Client {
       options.query = Object.keys(recipes);
 
     const cookbook = Object.freeze(
-      Object.assign(resolveConstants(recipes), menus)
-    );
+      Object.assign(
+        resolveConstants(
+          recipes,
+          constants as NonNullable<Record<string, string>>
+        ),
+        menus || {}
+      )
+    ) as Readonly<Cookbook["recipes"] & Record<string, string[]>>;
     return {
       api,
       recipes: parseRecipeQuery(options.query).flatMap((q) =>
@@ -798,7 +844,7 @@ const contextualizeClient = (
         },
         resolveUri: <TUri extends Uri | string>(
           uri: TUri,
-          options?: ResolveUriOptions<ClientConfig>
+          options?: ResolveUriOptions
         ): Promise<{
           api?: Api;
           uri?: Uri;
@@ -806,6 +852,20 @@ const contextualizeClient = (
           error?: ResolveUriError;
         }> => {
           return client.resolveUri(uri, { ...options, contextId });
+        },
+        cookRecipes: <
+          TData extends Record<string, unknown> = Record<string, unknown>
+        >(
+          options: CookRecipesOptions<TData>
+        ): Promise<QueryApiResult<TData>[]> => {
+          return client.cookRecipes({ ...options, contextId });
+        },
+        cookRecipesSync: <
+          TData extends Record<string, unknown> = Record<string, unknown>
+        >(
+          options: CookRecipesOptions<TData>
+        ): Promise<void> => {
+          return client.cookRecipesSync({ ...options, contextId });
         },
       }
     : client;

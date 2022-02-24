@@ -5,4 +5,3 @@ export * from "./find-plugin-package";
 export * from "./get-implementations";
 export * from "./parse-query";
 export * from "./recipes";
-export * from "./resolve-uri";

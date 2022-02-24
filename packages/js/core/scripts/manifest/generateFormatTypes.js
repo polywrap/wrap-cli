@@ -12,24 +12,22 @@ async function generateFormatTypes() {
   );
 
   // Get all format types (web3api, web3api.build, etc)
-  const formatTypes = fs.readdirSync(
-    formatsDir, { withFileTypes: true }
-  ).filter((dirent) => dirent.isDirectory);
+  const formatTypes = fs
+    .readdirSync(formatsDir, { withFileTypes: true })
+    .filter((dirent) => dirent.isDirectory);
 
   // For each format type
-  for (let i = 0; i < formatTypes.length; ++i) {
-    const formatTypeName = formatTypes[i].name;
-    const formatTypeDir = path.join(formatsDir, formatTypeName);
+  for (const formatType of formatTypes) {
+    const formatTypeDir = path.join(formatsDir, formatType.name);
     const formatModules = [];
 
     // Get all JSON schemas for this format type (v1, v2, etc)
     const formatSchemaFiles = fs.readdirSync(formatTypeDir);
     const formatSchemas = [];
 
-    for (let k = 0; k < formatSchemaFiles.length; ++k) {
-      const formatSchemaName = formatSchemaFiles[k];
-      const formatVersion = formatSchemaName.replace(".json", "");
-      const formatSchemaPath = path.join(formatTypeDir, formatSchemaName);
+    for (const formatSchemaFile of formatSchemaFiles) {
+      const formatVersion = formatSchemaFile.replace(".json", "");
+      const formatSchemaPath = path.join(formatTypeDir, formatSchemaFile);
 
       try {
         // Parse the JSON schema
@@ -40,12 +38,9 @@ async function generateFormatTypes() {
         // Insert the __type property for introspection
         formatSchema.properties["__type"] = {
           type: "string",
-          const: formatSchema.id
+          const: formatSchema.id,
         };
-        formatSchema.required = [
-          ...formatSchema.required,
-          "__type"
-        ];
+        formatSchema.required = [...formatSchema.required, "__type"];
 
         formatSchemas.push(formatSchema);
 
@@ -56,7 +51,10 @@ async function generateFormatTypes() {
         );
 
         // Emit the result
-        const tsOutputPath = path.join(__dirname, `/../../src/manifest/formats/${formatTypeName}/${formatVersion}.ts`);
+        const tsOutputPath = path.join(
+          __dirname,
+          `/../../src/manifest/formats/${formatType.name}/${formatVersion}.ts`
+        );
         fs.mkdirSync(path.dirname(tsOutputPath), { recursive: true });
         os.writeFileSync(
           tsOutputPath,
@@ -66,115 +64,104 @@ async function generateFormatTypes() {
         // Add metadata for the root index.ts file to use
         formatModules.push({
           interface: formatSchema.id,
-          version: formatVersion
+          version: formatVersion,
         });
       } catch (error) {
-        console.error(`Error generating the Manifest file ${formatSchemaPath}: `, error);
+        console.error(
+          `Error generating the Manifest file ${formatSchemaPath}: `,
+          error
+        );
         throw error;
       }
     }
 
     const renderTemplate = (name, context) => {
-      const tsTemplate = fs.readFileSync(
-        __dirname + `/${name}-ts.mustache`, { encoding: "utf-8" }
-      );
+      const tsTemplate = fs.readFileSync(__dirname + `/${name}-ts.mustache`, {
+        encoding: "utf-8",
+      });
 
       // Render the template
       const tsSrc = Mustache.render(tsTemplate, context);
 
       // Emit the source
-      const tsOutputPath = path.join(__dirname, `/../../src/manifest/formats/${formatTypeName}/${name}.ts`);
+      const tsOutputPath = path.join(
+        __dirname,
+        `/../../src/manifest/formats/${formatType.name}/${name}.ts`
+      );
       fs.mkdirSync(path.dirname(tsOutputPath), { recursive: true });
       os.writeFileSync(tsOutputPath, tsSrc);
-    }
+    };
 
     const lastItem = (arr) => arr[arr.length - 1];
     const versionToTs = (version) =>
       version.replace(/\./g, "_").replace(/\-/g, "_");
 
     // Generate an index.ts file that exports root types that aggregate all versions
-    const indexContext = { };
-    indexContext.formats = formatModules.map((module) => {
-      return {
-        type: module.interface,
-        version: module.version,
-        tsVersion: versionToTs(module.version)
-      }
-    });
+    const indexContext = {};
+    indexContext.formats = formatModules.map((module) => ({
+      type: module.interface,
+      version: module.version,
+      tsVersion: versionToTs(module.version),
+    }));
     indexContext.latest = lastItem(indexContext.formats);
 
     renderTemplate("index", indexContext);
 
     // Generate a migrate.ts file that exports a migration function from all version to the latest version
-    const migrateContext = { };
-    migrateContext.prevFormats = formatModules.map((module) => {
-      return {
-        type: module.interface,
-        version: module.version,
-        tsVersion: versionToTs(module.version)
-      }
-    });
+    const migrateContext = {};
+    migrateContext.prevFormats = formatModules.map((module) => ({
+      type: module.interface,
+      version: module.version,
+      tsVersion: versionToTs(module.version),
+    }));
     migrateContext.latest = lastItem(migrateContext.prevFormats);
     migrateContext.prevFormats.pop();
 
     renderTemplate("migrate", migrateContext);
 
     // Generate a deserialize.ts file that exports a deserialization function for the latest format version
-    const deserializeContext = {
-      type: migrateContext.latest.type
-    };
+    const deserializeContext = { type: migrateContext.latest.type };
 
     renderTemplate("deserialize", deserializeContext);
 
     // Generate a validate.ts file that validates the manifest against the JSON schema
-    const validateContext = { };
-    validateContext.formats = formatModules.map((module) => {
-      return {
-        type: module.interface,
-        version: module.version,
-        tsVersion: versionToTs(module.version),
-        dir: formatTypeName
-      };
-    });
+    const validateContext = {};
+    validateContext.formats = formatModules.map((module) => ({
+      type: module.interface,
+      version: module.version,
+      tsVersion: versionToTs(module.version),
+      dir: formatType.name,
+    }));
     validateContext.latest = lastItem(validateContext.formats);
 
     // Extract all validators
-    validateContext.validators = [];
+    validateContext.validators = new Set();
 
-    for (let k = 0; k < formatSchemas.length; ++k) {
-      const formatSchema = formatSchemas[k];
+    function searchForValidators(obj, cycleDetector) {
+      if (typeof obj !== "object" || cycleDetector.has(obj)) return;
+      cycleDetector.add(obj);
 
-      const getValidator = (obj) => {
-        if (typeof obj !== "object") {
-          return;
-        }
+      if (obj.format && typeof obj.format === "string")
+        validateContext.validators.add(obj.format);
 
-        if (obj.format && typeof obj.format === "string") {
-          if (validateContext.validators.indexOf(obj.format) === -1) {
-            validateContext.validators.push(obj.format);
-          }
-        }
-
-        const keys = Object.keys(obj);
-        for (let j = 0; j < keys.length; ++j) {
-          getValidator(obj[keys[j]]);
-        }
-      }
-
-      getValidator(formatSchema);
+      Object.values(obj).forEach((child) => searchForValidators(child, cycleDetector));
     }
 
+    for (const formatSchema of formatSchemas)
+      searchForValidators(formatSchema, new WeakSet());
+
+    validateContext.validators = Array.from(validateContext.validators);
     renderTemplate("validate", validateContext);
   }
 
   return Promise.resolve();
-};
+}
 
 generateFormatTypes()
-  .then(text => {
+  .then(() => {
     process.exit();
   })
-  .catch(err => {
+  .catch((err) => {
     console.error(err);
     process.abort();
   });

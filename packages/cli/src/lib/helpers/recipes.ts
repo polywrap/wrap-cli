@@ -1,23 +1,5 @@
 import path from "path";
-import yaml from "js-yaml";
 import { GluegunFilesystem } from "gluegun";
-
-/**
- * Returns the appropriate parser for the given file.
- *
- * Currently, `JSON` and `YAML` are supported.
- *
- * @param {string} path filepath to consider
- * @returns {(str: string) => any} a parser function which will take the contents of `path`
- *
- * @throws {@link URIError}
- * Thrown if the given path does not match one of the known parsers.
- */
-export function getParserForFile(path: string): (str: string) => any {
-  if (!!path.match(/\.ya?ml$/i)) return yaml.load;
-  else if (!!path.match(/\.json$/i)) return JSON.parse;
-  else throw URIError(path);
-}
 
 /**
  * Reads a nested cookbook and replaces query file URIs with the contents of the

@@ -83,7 +83,7 @@ export interface Client
     InvokeHandler {
   cookRecipes<TData extends Record<string, unknown> = Record<string, unknown>>(
     options: CookRecipesOptions<TData>
-  ): Promise<QueryApiResult<TData>>[];
+  ): Promise<QueryApiResult<TData>[]>;
 
   cookRecipesSync<
     TData extends Record<string, unknown> = Record<string, unknown>
@@ -134,7 +134,7 @@ export interface Client
 
   resolveUri<TUri extends Uri | string>(
     uri: TUri,
-    options?: ResolveUriOptions<ClientConfig>
+    options?: ResolveUriOptions
   ): Promise<{
     api?: Api;
     uri?: Uri;

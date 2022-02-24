@@ -9,7 +9,7 @@
     "properties": {
         "format": {
             "type": "string",
-            "const": "0.0.1-prealpha.1"
+            "const": "0.0.1-prealpha.2"
         },
         "name": {
             "type": "string"
@@ -80,9 +80,14 @@
                     ]
                 },
                 "menus": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
+                    "type": "object",
+                    "patternProperties": {
+                        ".*": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
                     }
                 },
                 "recipes": {
@@ -103,12 +108,6 @@
                                 "type": "object",
                                 "additionalProperties": false,
                                 "properties": {
-                                    "name": {
-                                        "type": "string"
-                                    },
-                                    "description": {
-                                        "type": "string"
-                                    },
                                     "query": {
                                         "type": "string",
                                         "$comment": "can be a query or a graphql file"

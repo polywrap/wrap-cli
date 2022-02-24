@@ -1,4 +1,4 @@
-import { getParserForFile, resolveQueryFiles } from "../lib/helpers";
+import { resolveQueryFiles } from "../lib/helpers";
 import { getTestEnvClientConfig } from "../lib/helpers/test-env-client-config";
 import { importTs } from "../lib/helpers/import-ts";
 import { fixParameters } from "../lib/helpers";
@@ -6,6 +6,11 @@ import { validateClientConfig } from "../lib/helpers/validate-client-config";
 import { intlMsg } from "../lib/intl";
 
 import { Web3ApiClient, Web3ApiClientConfig } from "@web3api/client-js";
+import {
+  QueryApiOptions,
+  QueryApiResult,
+  getParserForFile,
+} from "@web3api/core-js";
 import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
 import path from "path";
@@ -130,13 +135,16 @@ export default {
 
     const client = new Web3ApiClient(finalClientConfig);
 
-    function onExecution<E extends Error>(
-      recipe: { query: any; variables: any },
-      data?: unknown,
+    function onExecution<
+      E extends Error,
+      TData extends Record<string, unknown> = Record<string, unknown>
+    >(
+      recipe: QueryApiOptions,
+      data?: QueryApiResult<TData>["data"],
       errors?: E[]
     ): void {
       print.warning("-----------------------------------");
-      print.fancy(recipe.query);
+      print.fancy(recipe.query.toString());
       print.fancy(JSON.stringify(recipe.variables, null, 2));
       print.warning("-----------------------------------");
 
@@ -182,7 +190,12 @@ export default {
         else throw e;
       }
 
-      client.cookRecipesSync({ cookbook, onExecution, query });
-    } else client.cookRecipesSync({ onExecution, query, wrapperUri: inputFile });
+      await client.cookRecipesSync({ cookbook, onExecution, query });
+    } else
+      await client.cookRecipesSync({
+        onExecution,
+        query,
+        wrapperUri: inputFile,
+      });
   },
 };
