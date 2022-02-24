@@ -1,1 +1,1 @@
-export { Result } from "as-container";
+export * from "./Result";

@@ -10,4 +10,9 @@ type Query {
     address: String!
     connection: Ethereum_Connection
   ): String!
+
+  throwGetData(
+    address: String!
+    connection: Ethereum_Connection
+  ): String!
 }
