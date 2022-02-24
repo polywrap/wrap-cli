@@ -621,10 +621,12 @@ impl Read for ReadDecoder {
     }
 
     fn is_next_nil(&mut self) -> Result<bool, DecodeError> {
+        let position = self.view.buffer.position();
         let format = Format::get_format(self)?;
         if format == Format::Nil {
             Ok(true)
         } else {
+            self.view.buffer.set_position(position);
             Ok(false)
         }
     }
