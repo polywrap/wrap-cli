@@ -3,7 +3,7 @@ use polywrap_wasm_rs::{Context, DecodeError, EncodeError, Read, ReadDecoder, Wri
 
 #[derive(Debug, Clone, Default)]
 struct Sanity {
-    nil: (),
+    nil: Option<String>,
     int8: i8,
     int16: i16,
     int32: i32,
@@ -47,7 +47,7 @@ impl Sanity {
         // let large_string = v2.join(" ");
 
         Self {
-            nil: (),
+            nil: Option::None,
             int8: -128,
             int16: -32768,
             int32: -2147483648,
@@ -143,7 +143,7 @@ fn deserialize_sanity<R: Read>(reader: &mut R, sanity: &mut Sanity) -> Result<Sa
 
         match field.as_str() {
             "nil" => {
-                sanity.nil = reader.read_nil()?;
+                sanity.nil = reader.read_nullable_string()?;
             }
             "int8" => {
                 sanity.int8 = reader.read_i8()?;
@@ -228,7 +228,7 @@ fn deserialize_with_overflow<R: Read>(
 
         match field.as_str() {
             "nil" => {
-                sanity.nil = reader.read_nil()?;
+                sanity.nil = reader.read_nullable_string()?;
             }
             "int8" => {
                 sanity.int8 = reader.read_i16()? as i8;
@@ -299,7 +299,7 @@ fn deserialize_with_invalid_types<R: Read>(
 
         match field.as_str() {
             "nil" => {
-                sanity.nil = reader.read_nil()?;
+                sanity.nil = reader.read_nullable_string()?;
             }
             "int8" => {
                 sanity.int8 = reader.read_i8()?;

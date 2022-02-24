@@ -7,7 +7,7 @@ use byteorder::{BigEndian, ReadBytesExt};
 use core::hash::Hash;
 use std::{collections::BTreeMap, io::Read as StdioRead, str::FromStr};
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug)]
 pub struct ReadDecoder {
     pub(crate) context: Context,
     pub(crate) view: DataView,
@@ -33,8 +33,10 @@ impl ReadDecoder {
     pub fn read_i64(&mut self) -> Result<i64, DecodeError> {
         let f = Format::get_format(self)?;
         let prefix = f.to_u8();
-        if Format::is_positive_fixed_int(prefix) || Format::is_negative_fixed_int(prefix) {
+        if Format::is_positive_fixed_int(prefix) {
             return Ok(prefix as i64);
+        } else if Format::is_negative_fixed_int(prefix) {
+          return Ok((prefix as i8) as i64);
         } else {
             match f {
                 Format::Int8 => Ok(ReadBytesExt::read_i8(self)? as i64),
@@ -168,20 +170,6 @@ impl StdioRead for ReadDecoder {
 }
 
 impl Read for ReadDecoder {
-    fn read_nil(&mut self) -> Result<(), DecodeError> {
-        match Format::get_format(self)? {
-            Format::Nil => Ok(()),
-            err_f => {
-                let formatted_err = format!(
-                  "Property must be of type 'nil'. {}",
-                  get_error_message(err_f)
-                );
-                let err_msg = self.context().print_with_context(&formatted_err);
-                Err(DecodeError::WrongMsgPackFormat(err_msg))
-            }
-        }
-    }
-
     fn read_bool(&mut self) -> Result<bool, DecodeError> {
         match Format::get_format(self)? {
             Format::True => Ok(true),

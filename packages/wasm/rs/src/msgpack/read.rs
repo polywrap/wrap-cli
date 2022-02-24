@@ -4,7 +4,6 @@ use core::hash::Hash;
 use std::collections::BTreeMap;
 
 pub trait Read {
-    fn read_nil(&mut self) -> Result<(), DecodeError>;
     fn read_bool(&mut self) -> Result<bool, DecodeError>;
     fn read_i8(&mut self) -> Result<i8, DecodeError>;
     fn read_i16(&mut self) -> Result<i16, DecodeError>;
