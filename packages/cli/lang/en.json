@@ -81,7 +81,7 @@
     "commands_plugin_options_path": "path",
     "commands_plugins_options_schema": "Output path for the built schema (default: {default})",
     "commands_plugins_options_types": "Output directory for the generated types (default: {default})",
-    "commands_query_arguments_recipes": "recipe file or wrapper manifest containing queries",
+    "commands_query_arguments_recipes": "recipe or wrapper",
     "commands_query_options_configPath": "config-path",
     "commands_query_options_config": "Add custom configuration to the Web3ApiClient",
     "commands_query_options_query": "q1[,q2[...[,qN]]",

@@ -13,18 +13,18 @@ import {
 } from "./query.spec.helper";
 
 const HELP = `
-w3 query [options] <recipe-script>
+w3 query [options] <recipe or wrapper>
 
 Options:
+  -q, --query <q1[,q2[...[,qN]]>   one or more comma-separated query names to run
   -t, --test-ens  Use the development server's ENS instance
-  -c, --client-config <config-path> Add custom configuration to the Web3ApiClient
-
+  -c, --client-config <config-path>   Add custom configuration to the Web3ApiClient
 `;
 
 const projectRoot = path.resolve(__dirname, "../project/");
 
 describe("sanity tests for query command", () => {
-  test("Should throw error for missing recipe-string", async () => {
+  test("Should throw error for missing input file", async () => {
     const { exitCode, stdout, stderr } = await runCLI({
       args: ["query"],
       cwd: projectRoot,
@@ -33,12 +33,11 @@ describe("sanity tests for query command", () => {
 
     expect(exitCode).toEqual(0);
     expect(stderr).toBe("");
-    expect(clearStyle(stdout))
-      .toEqual(`Required argument <recipe-script> is missing
-${HELP}`);
+    expect(clearStyle(stdout)).toEqual(
+      `Required argument (cookbook file) is missing\n${HELP}`
+    );
   });
-
-  test("Should throw error is --client-config doesn't contain arguments", async () => {
+  test("Should throw error if --client-config doesn't contain arguments", async () => {
     const { exitCode, stdout, stderr } = await runCLI({
       args: ["query", "./recipes/e2e.json", "--client-config"],
       cwd: projectRoot,
@@ -47,9 +46,7 @@ ${HELP}`);
 
     expect(exitCode).toEqual(0);
     expect(stderr).toBe("");
-    expect(clearStyle(stdout))
-      .toEqual(`--client-config option missing <config-path> argument
-${HELP}`);
+    expect(clearStyle(stdout)).toEqual(`--client-config option missing <config-path> argument\n${HELP}`);
   });
 });
 
@@ -86,7 +83,6 @@ describe("e2e tests for query command", () => {
     expect(buildErr).toBe("");
     expect(buildCode).toEqual(0);
   });
-
   afterAll(async () => {
     await runCLI({
       args: ["test-env", "down"],
@@ -141,7 +137,6 @@ describe("e2e tests for query command", () => {
       SimpleStorageAddr: constants.SimpleStorageAddr,
     });
   }, 480000);
-
   test("Should successfully return response: using yaml recipes", async () => {
     const { exitCode: code, stdout: output, stderr: queryErr } = await runCLI({
       args: ["query", "./recipes/e2e.yaml", "--test-ens"],
@@ -163,7 +158,6 @@ describe("e2e tests for query command", () => {
       SimpleStorageAddr: constants.SimpleStorageAddr,
     });
   }, 480000);
-
   test("Should successfully return response: using mix of yaml & json recipes", async () => {
     const { exitCode: code, stdout: output, stderr: queryErr } = await runCLI({
       args: ["query", "./recipes/e2e.json", "--test-ens"],

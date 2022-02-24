@@ -42,7 +42,7 @@ ${chalk.bold("w3 query")} [${i18n.options}] ${chalk.bold(`<${i18n.args}>`)}
 
 ${i18n.options[0].toUpperCase() + i18n.options.slice(1)}:
   -q, --query <${i18n.queryArg}>   ${i18n.queryArgDesc}
-  -t, --test-ens ${i18n.testEns}
+  -t, --test-ens  ${i18n.testEns}
   -c, --client-config <${i18n.configPath}>   ${i18n.config}
 `;
 
