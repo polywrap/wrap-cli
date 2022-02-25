@@ -137,7 +137,7 @@ fn test_write_i16() {
 fn test_write_i32() {
     let mut writer = WriteEncoder::new(&[], Context::new());
     writer.write_i32(&(123456)).unwrap();
-    assert_eq!([206, 0, 1, 226, 64], writer.get_buffer().as_slice());
+    assert_eq!([210, 0, 1, 226, 64], writer.get_buffer().as_slice());
 }
 
 #[test]
@@ -159,7 +159,7 @@ fn write_i64() {
         .write_i64(&9_223_372_036_854_775_807i64)
         .unwrap();
     assert_eq!(
-        [207, 127, 255, 255, 255, 255, 255, 255, 255],
+        [211, 127, 255, 255, 255, 255, 255, 255, 255],
         writer.get_buffer().as_slice()
     );
 }
@@ -197,7 +197,7 @@ fn test_write_fixed_array() {
         .unwrap();
     assert_eq!(
         writer.get_buffer().as_slice(),
-        [147, 1, 2, 206, 0, 8, 82, 65]
+        [147, 1, 2, 210, 0, 8, 82, 65]
     );
 }
 

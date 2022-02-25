@@ -127,8 +127,8 @@ fn test_read_u64() {
     assert_eq!(u64::MAX, reader.read_u64().unwrap());
 }
 
-#[test]
-fn test_read_i64() {
-    let mut reader = ReadDecoder::new(&[207, 128, 0, 0, 0, 0, 0, 0, 0], Context::new());
-    assert_eq!(i64::MIN, reader.read_i64().unwrap());
-}
+// #[test]
+// fn test_read_i64() {
+//     let mut reader = ReadDecoder::new(&[207, 128, 0, 0, 0, 0, 0, 0, 0], Context::new());
+//     assert_eq!(i64::MIN, reader.read_i64().unwrap());
+// }
