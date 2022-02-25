@@ -217,8 +217,16 @@ export class EthereumPlugin extends Plugin {
     );
   }
 
-  public pack(input: Query.Input_pack): string {
+  public solidityPack(input: Query.Input_solidityPack): string {
     return ethers.utils.solidityPack(input.types, this.parseArgs(input.values));
+  }
+
+  public solidityKeccak256(input: Query.Input_solidityKeccak256): string {
+    return ethers.utils.solidityKeccak256(input.types, this.parseArgs(input.values));
+  }
+
+  public soliditySha256(input: Query.Input_soliditySha256): string {
+    return ethers.utils.soliditySha256(input.types, this.parseArgs(input.values));
   }
 
   public async getSignerAddress(
