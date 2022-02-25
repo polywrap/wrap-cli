@@ -38,15 +38,15 @@ fn test_write_json() {
 }
 
 #[test]
-fn test_write_string() {
+fn test_write_fixstr() {
     let mut writer = WriteEncoder::new(&[], Context::new());
     writer
-        .write_string(&String::from("Polywrap wasm-rs runtime"))
+        .write_str("-This string contains 31 chars-")
         .unwrap();
     assert_eq!(
         [
-            184, 80, 111, 108, 121, 119, 114, 97, 112, 32, 119, 97, 115, 109, 45, 114, 115, 32,
-            114, 117, 110, 116, 105, 109, 101
+          191, 45, 84, 104, 105, 115, 32, 115, 116, 114, 105, 110, 103, 32, 99,
+           111, 110, 116, 97, 105, 110, 115, 32, 51, 49, 32, 99, 104, 97, 114, 115, 45
         ],
         writer.get_buffer().as_slice()
     );
@@ -54,12 +54,27 @@ fn test_write_string() {
 
 #[test]
 fn test_write_str() {
-    let mut writer = WriteEncoder::new(&[], Context::new());
-    writer.write_str("Hello").unwrap();
-    assert_eq!(
-        [165, 72, 101, 108, 108, 111],
-        writer.get_buffer().as_slice()
-    );
+  let mut writer = WriteEncoder::new(&[], Context::new());
+  writer
+      .write_str(concat!("This is a str 8 string of 255 bytes ",
+      "AC53LgxLLOKm0hfsPa1V0nfMjXtnmkEttruCPjc51dtEMLRJIEu1YoRGd9", "oXnM4CxcIiTc9V2DnAidZz22foIzc3kqHBoXgYskevfoJ5RK", 
+      "Yp52qvoDPufUebLksFl7astBNEnjPVUX2e3O9O6VKeUpB0iiHQXfzOOjTEK6Xy6ks4zAG2M6jCL01flIJlxplRXCV7 sadsadsadsadasdasaaaaa"))
+      .unwrap();
+  assert_eq!(
+    [ 217, 255, 84, 104, 105, 115, 32, 105, 115, 32, 97, 32, 115, 116, 114, 32, 56, 32, 115, 116, 114,
+      105, 110, 103, 32, 111, 102, 32, 50, 53, 53, 32, 98, 121, 116, 101, 115, 32, 65, 67, 53, 51, 76,
+      103, 120, 76, 76, 79, 75, 109, 48, 104, 102, 115, 80, 97, 49, 86, 48, 110, 102, 77, 106, 88, 116,
+      110, 109, 107, 69, 116, 116, 114, 117, 67, 80, 106, 99, 53, 49, 100, 116, 69, 77, 76, 82, 74, 73,
+      69, 117, 49, 89, 111, 82, 71, 100, 57, 111, 88, 110, 77, 52, 67, 120, 99, 73, 105, 84, 99, 57, 86,
+      50, 68, 110, 65, 105, 100, 90, 122, 50, 50, 102, 111, 73, 122, 99, 51, 107, 113, 72, 66, 111, 88,
+      103, 89, 115, 107, 101, 118, 102, 111, 74, 53, 82, 75, 89, 112, 53, 50, 113, 118, 111, 68, 80, 117,
+      102, 85, 101, 98, 76, 107, 115, 70, 108, 55, 97, 115, 116, 66, 78, 69, 110, 106, 80, 86, 85, 88, 50,
+      101, 51, 79, 57, 79, 54, 86, 75, 101, 85, 112, 66, 48, 105, 105, 72, 81, 88, 102, 122, 79, 79, 106,
+      84, 69, 75, 54, 88, 121, 54, 107, 115, 52, 122, 65, 71, 50, 77, 54, 106, 67, 76, 48, 49, 102, 108,
+      73, 74, 108, 120, 112, 108, 82, 88, 67, 86, 55, 32, 115, 97, 100, 115, 97, 100, 115, 97, 100, 115,
+      97, 100, 97, 115, 100, 97, 115, 97, 97, 97, 97, 97 ],
+      writer.get_buffer().as_slice()
+  );
 }
 
 #[test]
@@ -198,7 +213,7 @@ fn test_write_fixed_map() {
     writer
         .write_map(
             &map,
-            |writer, key| writer.write_string(key),
+            |writer, key| writer.write_str(key),
             |writer, value| writer.write_array(value, |writer, item| writer.write_i32(item)),
         )
         .unwrap();

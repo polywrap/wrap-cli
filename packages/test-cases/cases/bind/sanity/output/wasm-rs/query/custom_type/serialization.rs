@@ -31,7 +31,7 @@ pub fn write_custom_type<W: Write>(input: &CustomType, writer: &mut W) -> Result
     writer.write_map_length(&35)?;
     writer.context().push("str", "String", "writing property");
     writer.write_str("str")?;
-    writer.write_string(&input.str)?;
+    writer.write_str(&input.str)?;
     writer.context().pop();
     writer.context().push("opt_str", "Option<String>", "writing property");
     writer.write_str("opt_str")?;

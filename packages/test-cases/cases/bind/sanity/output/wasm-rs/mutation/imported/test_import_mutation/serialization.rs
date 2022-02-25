@@ -32,7 +32,7 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
     writer.write_map_length(&3)?;
     writer.context().push("str", "String", "writing property");
     writer.write_str("str")?;
-    writer.write_string(&input.str)?;
+    writer.write_str(&input.str)?;
     writer.context().pop();
     writer.context().push("object", "TestImportObject", "writing property");
     writer.write_str("object")?;
@@ -81,7 +81,7 @@ pub fn write_another_method_args<W: Write>(input: &InputAnotherMethod, writer: &
     writer.context().push("arg", "Vec<String>", "writing property");
     writer.write_str("arg")?;
     writer.write_array(&input.arg, |writer, item| {
-        writer.write_string(item)
+        writer.write_str(item)
     })?;
     writer.context().pop();
     Ok(())

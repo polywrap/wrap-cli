@@ -24,7 +24,7 @@ pub fn write_test_import_another_object<W: Write>(input: &TestImportAnotherObjec
     writer.write_map_length(&1)?;
     writer.context().push("prop", "String", "writing property");
     writer.write_str("prop")?;
-    writer.write_string(&input.prop)?;
+    writer.write_str(&input.prop)?;
     writer.context().pop();
     Ok(())
 }
