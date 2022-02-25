@@ -39,7 +39,7 @@ impl WriteEncoder {
     /// The MessagePack spec requires that the serializer should use
     /// the format which represents the data in the smallest number of bytes.
     #[doc(hidden)]
-    pub fn write_unsigned_int(&mut self, value: &u64) -> Result<(), EncodeError> {
+    pub fn write_u64(&mut self, value: &u64) -> Result<(), EncodeError> {
         let val = *value;
         if val < 1 << 7 {
             Ok(self.write_positive_fixed_int(val as u8)?)
@@ -64,7 +64,7 @@ impl WriteEncoder {
     /// the format which represents the data in the smallest number of bytes, with the exception of
     /// sized/unsized types.
     #[doc(hidden)]
-    pub fn write_signed_int(&mut self, value: &i64) -> Result<(), EncodeError> {
+    pub fn write_i64(&mut self, value: &i64) -> Result<(), EncodeError> {
         let val = *value;
         match val {
             val if -32 <= val && val < 0 => Ok(self.write_negative_fixed_int(val as i8)?),
@@ -126,32 +126,32 @@ impl Write for WriteEncoder {
     }
 
     fn write_i8(&mut self, value: &i8) -> Result<(), EncodeError> {
-        self.write_signed_int(&(*value as i64))
+        self.write_i64(&(*value as i64))
             .map_err(|e| EncodeError::Int8WriteError(e.to_string()))
     }
 
     fn write_i16(&mut self, value: &i16) -> Result<(), EncodeError> {
-        self.write_signed_int(&(*value as i64))
+        self.write_i64(&(*value as i64))
             .map_err(|e| EncodeError::Int16WriteError(e.to_string()))
     }
 
     fn write_i32(&mut self, value: &i32) -> Result<(), EncodeError> {
-        self.write_signed_int(&(*value as i64))
+        self.write_i64(&(*value as i64))
             .map_err(|e| EncodeError::Int32WriteError(e.to_string()))
     }
 
     fn write_u8(&mut self, value: &u8) -> Result<(), EncodeError> {
-        self.write_unsigned_int(&(*value as u64))
+        self.write_u64(&(*value as u64))
             .map_err(|e| EncodeError::Uint8WriteError(e.to_string()))
     }
 
     fn write_u16(&mut self, value: &u16) -> Result<(), EncodeError> {
-        self.write_unsigned_int(&(*value as u64))
+        self.write_u64(&(*value as u64))
             .map_err(|e| EncodeError::Uint16WriteError(e.to_string()))
     }
 
     fn write_u32(&mut self, value: &u32) -> Result<(), EncodeError> {
-        self.write_unsigned_int(&(*value as u64))
+        self.write_u64(&(*value as u64))
             .map_err(|e| EncodeError::Uint32WriteError(e.to_string()))
     }
 
