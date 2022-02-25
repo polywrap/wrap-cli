@@ -66,41 +66,23 @@ impl WriteEncoder {
     #[doc(hidden)]
     pub fn write_i64(&mut self, value: &i64) -> Result<(), EncodeError> {
         let val = *value;
-        match val {
-            val if -32 <= val && val < 0 => Ok(self.write_negative_fixed_int(val as i8)?),
-            val if -128 <= val && val < -32 => {
-                Format::set_format(self, Format::Int8)?;
-                Ok(WriteBytesExt::write_i8(self, val as i8)?)
-            }
-            val if -32768 <= val && val < -128 => {
-                Format::set_format(self, Format::Int16)?;
-                Ok(WriteBytesExt::write_i16::<BigEndian>(self, val as i16)?)
-            }
-            val if -2147483648 <= val && val < -32768 => {
-                Format::set_format(self, Format::Int32)?;
-                Ok(WriteBytesExt::write_i32::<BigEndian>(self, val as i32)?)
-            }
-            val if val < -2147483648 => {
-                Format::set_format(self, Format::Int64)?;
-                Ok(WriteBytesExt::write_i64::<BigEndian>(self, val as i64)?)
-            }
-            val if 0 <= val && val < 128 => Ok(self.write_positive_fixed_int(val as u8)?),
-            val if val <= u8::MAX as i64 => {
-                Format::set_format(self, Format::Uint8)?;
-                Ok(WriteBytesExt::write_u8(self, val as u8)?)
-            }
-            val if val <= u16::MAX as i64 => {
-                Format::set_format(self, Format::Uint16)?;
-                Ok(WriteBytesExt::write_u16::<BigEndian>(self, val as u16)?)
-            }
-            val if val <= u32::MAX as i64 => {
-                Format::set_format(self, Format::Uint32)?;
-                Ok(WriteBytesExt::write_u32::<BigEndian>(self, val as u32)?)
-            }
-            val => {
-                Format::set_format(self, Format::Uint64)?;
-                Ok(WriteBytesExt::write_u64::<BigEndian>(self, val as u64)?)
-            }
+
+        if val >= 0 && val < 1 << 7 {
+          Ok(self.write_positive_fixed_int(val as u8)?)
+        } else if val < 0 && val >= -(1 << 5) {
+          Ok(self.write_negative_fixed_int(val as i8)?)
+        } else if val <= i8::MAX as i64 && val >= i8::MIN as i64 {
+          Format::set_format(self, Format::Int8)?;
+          Ok(WriteBytesExt::write_i8(self, val as i8)?)
+        } else if val <= i16::MAX as i64 && val >= i16::MIN as i64 {
+          Format::set_format(self, Format::Int16)?;
+          Ok(WriteBytesExt::write_i16::<BigEndian>(self, val as i16)?)
+        } else if val <= i32::MAX as i64 && val >= i32::MIN as i64 {
+          Format::set_format(self, Format::Int32)?;
+          Ok(WriteBytesExt::write_i32::<BigEndian>(self, val as i32)?)
+        } else {
+          Format::set_format(self, Format::Int64)?;
+          Ok(WriteBytesExt::write_i64::<BigEndian>(self, val as i64)?)
         }
     }
 }
