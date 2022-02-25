@@ -32,10 +32,10 @@ impl Context {
     }
 
     pub fn pop(&mut self) {
-        if self.is_empty() {
-            panic!("Error: tried to pop an item from an empty Context stack");
+        match self.nodes.pop() {
+            Some(_v) => {}
+            None => panic!("Error: tried to pop an item from an empty Context stack")
         }
-        let _ = self.nodes.pop();
     }
 
     pub fn context_to_string(&self) -> String {

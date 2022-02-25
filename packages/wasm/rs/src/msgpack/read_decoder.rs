@@ -50,7 +50,7 @@ impl ReadDecoder {
                         "Property must be of type 'int'. {}",
                         get_error_message(err_f)
                     );
-                    Err(DecodeError::WrongMsgPackFormat(err_msg))
+                    Err(DecodeError::WrongMsgPackFormat(self.context.print_with_context(&err_msg)))
                 }
             }
         }
@@ -76,7 +76,7 @@ impl ReadDecoder {
                         "Property must be of type 'uint'. {}",
                         get_error_message(err_f)
                     );
-                    Err(DecodeError::WrongMsgPackFormat(err_msg))
+                    Err(DecodeError::WrongMsgPackFormat(self.context.print_with_context(&err_msg)))
                 }
             }
         }
@@ -98,7 +98,7 @@ impl Read for ReadDecoder {
                     "Property must be of type 'nil'. {}",
                     get_error_message(err_f)
                 );
-                Err(DecodeError::WrongMsgPackFormat(err_msg))
+                Err(DecodeError::WrongMsgPackFormat(self.context.print_with_context(&err_msg)))
             }
         }
     }
@@ -112,7 +112,7 @@ impl Read for ReadDecoder {
                     "Property must be of type 'bool'. {}",
                     get_error_message(err_f)
                 );
-                Err(DecodeError::WrongMsgPackFormat(err_msg))
+                Err(DecodeError::WrongMsgPackFormat(self.context.print_with_context(&err_msg)))
             }
         }
     }
@@ -191,7 +191,7 @@ impl Read for ReadDecoder {
                     "Property must be of type 'float32'. {}",
                     get_error_message(err_f)
                 );
-                Err(DecodeError::WrongMsgPackFormat(err_msg))
+                Err(DecodeError::WrongMsgPackFormat(self.context.print_with_context(&err_msg)))
             }
         }
     }
@@ -204,7 +204,7 @@ impl Read for ReadDecoder {
                     "Property must be of type 'float64'. {}",
                     get_error_message(err_f)
                 );
-                Err(DecodeError::WrongMsgPackFormat(err_msg))
+                Err(DecodeError::WrongMsgPackFormat(self.context.print_with_context(&err_msg)))
             }
         }
     }
@@ -220,7 +220,7 @@ impl Read for ReadDecoder {
                     "Property must be of type 'string'. {}",
                     get_error_message(err_f)
                 );
-                Err(DecodeError::WrongMsgPackFormat(err_msg))
+                Err(DecodeError::WrongMsgPackFormat(self.context.print_with_context(&err_msg)))
             }
         }
     }
@@ -244,7 +244,7 @@ impl Read for ReadDecoder {
                     "Property must be of type 'bytes'. {}",
                     get_error_message(err_f)
                 );
-                Err(DecodeError::WrongMsgPackFormat(err_msg))
+                Err(DecodeError::WrongMsgPackFormat(self.context.print_with_context(&err_msg)))
             }
         }
     }
@@ -275,7 +275,7 @@ impl Read for ReadDecoder {
                     "Property must be of type 'array'. {}",
                     get_error_message(err_f)
                 );
-                Err(DecodeError::WrongMsgPackFormat(err_msg))
+                Err(DecodeError::WrongMsgPackFormat(self.context.print_with_context(&err_msg)))
             }
         }
     }
@@ -305,7 +305,7 @@ impl Read for ReadDecoder {
                     "Property must be of type 'map'. {}",
                     get_error_message(err_f)
                 );
-                Err(DecodeError::WrongMsgPackFormat(err_msg))
+                Err(DecodeError::WrongMsgPackFormat(self.context.print_with_context(&err_msg)))
             }
         }
     }
@@ -345,7 +345,7 @@ impl Read for ReadDecoder {
                     "Property must be of type 'ext'. {}",
                     get_error_message(err_f)
                 );
-                return Err(DecodeError::WrongMsgPackFormat(err_msg));
+                return Err(DecodeError::WrongMsgPackFormat(self.context.print_with_context(&err_msg)));
             }
         };
         let type_id = Read::read_i8(self)?;
