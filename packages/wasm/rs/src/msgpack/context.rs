@@ -1,7 +1,7 @@
 //! Context stores debug information in a stack, and
 //! prints it in a clear format
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug)]
 pub struct Context {
     pub description: String,
     nodes: Vec<Node>,
@@ -91,7 +91,7 @@ impl Context {
 }
 
 #[allow(dead_code)]
-#[derive(Clone, Debug, Default)]
+#[derive(Debug, Clone)]
 struct Node {
     node_item: String,
     node_type: String,

@@ -1,7 +1,7 @@
 use super::Context;
 use std::io::Cursor;
 
-#[derive(Clone, Debug, Default)]
+#[derive(Debug)]
 pub struct DataView {
     pub(crate) buffer: Cursor<Vec<u8>>,
     pub(crate) context: Context,

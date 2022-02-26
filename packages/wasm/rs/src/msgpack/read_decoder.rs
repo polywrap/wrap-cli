@@ -7,7 +7,7 @@ use byteorder::{BigEndian, ReadBytesExt};
 use core::hash::Hash;
 use std::{collections::BTreeMap, io::Read as StdioRead, str::FromStr};
 
-#[derive(Clone, Debug)]
+#[derive(Debug)]
 pub struct ReadDecoder {
     pub(crate) context: Context,
     pub(crate) view: DataView,

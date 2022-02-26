@@ -4,7 +4,7 @@ use byteorder::{BigEndian, WriteBytesExt};
 use core::hash::Hash;
 use std::{collections::BTreeMap, io::Write as StdioWrite};
 
-#[derive(Clone, Debug, Default)]
+#[derive(Debug)]
 pub struct WriteEncoder {
     pub(crate) context: Context,
     pub(crate) view: DataView,
