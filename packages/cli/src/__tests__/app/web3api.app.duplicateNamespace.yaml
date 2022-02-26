@@ -3,7 +3,7 @@ language: app/typescript
 types:
   directory: "./polywrap"
   withExtensions: true
-packages:
+imports:
   - uri: "w3://fs/./../project/build"
     namespace: "project"
   - uri: "w3://ipfs/QmeiPWHe2ixfitcgjRwP5AaJD5R7DbsGhQNQwT4rFNyxx8"

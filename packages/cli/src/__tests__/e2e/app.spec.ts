@@ -163,8 +163,8 @@ ${HELP}`);
     expect(code).toEqual(0);
     expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`- Generate types
-- Manifest loaded from ./.w3/ExternalProjects/http/web3api.plugin.yaml
-✔ Manifest loaded from ./.w3/ExternalProjects/http/web3api.plugin.yaml
+- Manifest loaded from ./.w3/imports/plugins/http/web3api.plugin.yaml
+✔ Manifest loaded from ./.w3/imports/plugins/http/web3api.plugin.yaml
   Generating types from packageTypes-ts.mustache
 - Generate types
 ✔ Generate types
@@ -210,8 +210,8 @@ ${HELP}`);
 ✔ Generate types
 🔥 Generated types for namespace console 🔥
 - Generate types
-- Manifest loaded from ./.w3/ExternalProjects/ethereum/web3api.plugin.yaml
-✔ Manifest loaded from ./.w3/ExternalProjects/ethereum/web3api.plugin.yaml
+- Manifest loaded from ./.w3/imports/plugins/ethereum/web3api.plugin.yaml
+✔ Manifest loaded from ./.w3/imports/plugins/ethereum/web3api.plugin.yaml
   Generating types from packageTypes-ts.mustache
 - Generate types
 ✔ Generate types
@@ -242,10 +242,12 @@ ${HELP}`);
 
     expect(code).toEqual(0);
     expect(error).toBe("");
-    expect(fs.existsSync(`${projectRoot}/.w3/ExternalProjects/erc20/`)).toBeFalsy();
-    expect(fs.existsSync(`${projectRoot}/.w3/ExternalProjects/console/`)).toBeFalsy();
-    expect(fs.existsSync(`${projectRoot}/.w3/ExternalProjects/ethereum/`)).toBeFalsy();
-    expect(fs.existsSync(`${projectRoot}/.w3/ExternalProjects`)).toBeFalsy();
+    expect(fs.existsSync(`${projectRoot}/.w3/imports/web3apis/erc20/`)).toBeFalsy();
+    expect(fs.existsSync(`${projectRoot}/.w3/imports/web3apis/console/`)).toBeFalsy();
+    expect(fs.existsSync(`${projectRoot}/.w3/imports/plugins/ethereum/`)).toBeFalsy();
+    expect(fs.existsSync(`${projectRoot}/.w3/imports/web3apis`)).toBeFalsy();
+    expect(fs.existsSync(`${projectRoot}/.w3/imports/plugins`)).toBeFalsy();
+    expect(fs.existsSync(`${projectRoot}/.w3/imports`)).toBeFalsy();
     expect(fs.existsSync(`${projectRoot}/.w3`)).toBeFalsy();
   });
 

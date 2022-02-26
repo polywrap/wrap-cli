@@ -12,11 +12,15 @@ import copyfiles from "copyfiles";
 import { writeFileSync } from "@web3api/os-js";
 
 export interface ProjectConfig {
+  rootCacheDir: string;
   quiet?: boolean;
 }
 
-export abstract class Project {
-  constructor(protected _config: ProjectConfig) {}
+export abstract class Project<TManifest> {
+  constructor(
+    protected _config: ProjectConfig,
+    protected _projectCacheSubDir: string
+  ) {}
 
   /// Validation
 
@@ -47,20 +51,15 @@ export abstract class Project {
 
   public abstract reset(): void;
 
-  public abstract getRootDir(): string;
+  public abstract validate(): Promise<void>;
+
+  public abstract getManifest(): Promise<TManifest>;
+
+  public abstract getManifestDir(): string;
+
+  public abstract getManifestPath(): string;
 
   public abstract getManifestLanguage(): Promise<ManifestLanguage>;
-
-  public abstract getSchemaNamedPaths(): Promise<{
-    [name: string]: string;
-  }>;
-
-  public abstract getImportRedirects(): Promise<
-    {
-      uri: string;
-      schema: string;
-    }[]
-  >;
 
   public get quiet(): boolean {
     return !!this._config.quiet;
@@ -69,7 +68,15 @@ export abstract class Project {
   /// Cache (.w3 folder)
 
   public getCacheDir(): string {
-    return path.join(this.getRootDir(), ".w3");
+    return path.join(
+      this._config.rootCacheDir,
+      ".w3",
+      this._projectCacheSubDir
+    );
+  }
+
+  public resetCache(): void {
+    rimraf.sync(this.getCacheDir());
   }
 
   public removeCacheDir(subfolder: string): void {

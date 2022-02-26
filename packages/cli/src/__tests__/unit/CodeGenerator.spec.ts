@@ -12,6 +12,7 @@ describe("CodeGenerator validation", () => {
 
   it("Should fail with invalid manifest path", async () => {
     const project = new Web3ApiProject({
+      rootCacheDir: __dirname,
       web3apiManifestPath: "invalidManifest",
       quiet: true,
     });
@@ -31,6 +32,7 @@ describe("CodeGenerator validation", () => {
 
   it("Should fail with invalid generation file", async () => {
     const project = new Web3ApiProject({
+      rootCacheDir: path.dirname(manifestPath),
       web3apiManifestPath: manifestPath,
       quiet: true,
     });
@@ -58,6 +60,7 @@ describe("CodeGenerator validation", () => {
     }
 
     const project = new Web3ApiProject({
+      rootCacheDir: path.dirname(manifestPath),
       web3apiManifestPath: manifestPath,
       quiet: true,
     });

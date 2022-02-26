@@ -5,8 +5,7 @@
   "required": [
     "format",
     "language",
-    "types",
-    "packages"
+    "codegen"
   ],
   "properties": {
     "format": {
@@ -17,7 +16,7 @@
       "type": "string",
       "format": "appLanguage"
     },
-    "types": {
+    "codegen": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -33,8 +32,55 @@
         "directory"
       ]
     },
-    "packages": {
-      "type": "array",
+    "imports": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "web3apis": {
+          "type": "array",
+          "format": "uniqueNamespaceArray",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "namespace": {
+                "type": "string",
+                "format": "importNamespace"
+              },
+              "uri": {
+                "type": "string",
+                "format": "importUri"
+              }
+            },
+            "required": [
+              "namespace",
+              "uri"
+            ]
+          }
+        },
+        "plugins": {
+          "type": "array",
+          "format": "uniqueNamespaceArray",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "namespace": {
+                "type": "string",
+                "format": "importNamespace"
+              },
+              "manifest": {
+                "type": "string",
+                "format": "manifestFile"
+              }
+            },
+            "required": [
+              "namespace",
+              "manifest"
+            ]
+          }
+        }
+      },
       "items": {
         "type": "object",
         "additionalProperties": false,
@@ -44,7 +90,7 @@
           },
           "namespace": {
             "type": "string",
-            "format": "namespace"
+            "format": "importNamespace"
           },
           "isPlugin": {
             "type": "boolean"

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-empty-function */
 
-import { Project } from "./project";
+import { ProjectWithSchema } from "./project";
 import { getSimpleClient } from "./helpers/client";
 
 import { Uri, Web3ApiClient } from "@web3api/client-js";
@@ -18,7 +18,7 @@ import * as gluegun from "gluegun";
 import { SchemaFile } from "@web3api/schema-compose";
 
 export interface SchemaComposerConfig {
-  project: Project;
+  project: ProjectWithSchema<unknown>;
 
   // TODO: add this to the project configuration
   //       and make it configurable
@@ -126,7 +126,7 @@ export class SchemaComposer {
     return fs.readFileSync(
       path.isAbsolute(schemaPath)
         ? schemaPath
-        : path.join(this._config.project.getRootDir(), schemaPath),
+        : path.join(this._config.project.getManifestDir(), schemaPath),
       "utf-8"
     );
   }

@@ -1,5 +1,5 @@
 import { SchemaComposer } from "./SchemaComposer";
-import { Project } from "./project";
+import { ProjectWithSchema } from "./project";
 import {
   step,
   withSpinner,
@@ -15,6 +15,7 @@ import {
   writeDirectory,
   bindSchema,
 } from "@web3api/schema-bind";
+
 import path from "path";
 import fs, { readFileSync } from "fs";
 import * as gluegun from "gluegun";
@@ -35,7 +36,7 @@ export type CustomScriptRunFn = (
 
 export interface CodeGeneratorConfig {
   outputDir: string;
-  project: Project;
+  project: ProjectWithSchema<unknown>;
   schemaComposer: SchemaComposer;
   customScript?: string;
   mustacheView?: Record<string, unknown>;

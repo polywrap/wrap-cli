@@ -1,0 +1,73 @@
+# TODO
+x have easy to track location for all cache folder strings
+- finish implementing the new app.ts flow
+- !plugin command should output web3api.plugin.yaml to build folder (publish circular dep, should patch this in...)
+- does it break if you use a plugin that's added to the client (and has a schema on the package manifest)?
+- make sure external cache folder is optimized
+- all command flows are the same (parse arsg, validate args, run middleware, create/validate/run lib classes, cleanup)
+- ensure middleware is being run selectively
+- remove "quiet" from project configuration
+- - have a global logger that's configured by the command
+- create separate types for manifest languages "plugin/...", "app/...", "wasm/..."
+
+- resolveManifestPath
+- - the function's second parameter should be optionally undefined... or just use an array for everything
+- - also there isn't proper argument sanitization happening in plugin.ts, codegen.ts, build.ts, or app.ts for the "manifestPath"... it could be true and not a string...
+
+- schema compose
+- - Why the if "composed"? Is this needed with the latest changes I made?
+
+- CLI codegen-templates mustache file names (should be the name of the file)
+
+- .gen.js files
+- - Convert .gen.js files to TypeScript?
+- - Using the plugin functions? confusing...
+
+- should remove files from output directory when performing codegen (like plugin & codegen commands do)
+
+- what's the difference between the mustache files in the CLI vs the mustache templates in the schema-bind project?
+
+- no dynamic imports required, do a static import at compile-time?
+
+- output standarziation
+- - web3api.plugin.yaml -> needs options for output types & schema
+- - web3api.dapp.yaml -> add options for output types
+- - w3 dapp command needs output options similar to dapp command
+
+- web3api.dapp.yaml -> packages
+- - rename to "wrappers" or "schemas"?
+- - "isPlugin" necessary?
+
+- move CLI test projects into test-cases/cases/[dapps, plugins, etc]
+
+- need a dapp test-case to make sure the generated types actually compile and work
+
+- move all binding projects to the codegen script model so they can easily be ejected?
+
+- codegen output/project directory? What is this?
+
+# Done
+
+x move app.ts sanitizeUri function to manifest validator
+
+x external project -> imported project (imports)
+x packages -> imports
+
+x Put all projects into their own sub-folder in the cache (./w3/[wrapper, plugin, extern/[plugins, wrappers]])
+
+x TODO: JSON-Schema collection based validator
+
+x schema bind templates
+- x should revert most all changes except the export
+- x imports have been made less future-proof
+- x types-ts.mustache
+- - x removed necessary import
+- x remove duplicate code (query-ts.mustache & mutation-ts.mustache) and replace with single reusable template
+- x export bindings from root file as namespaced (WasmAs, PluginTs, etc)
+
+x typesOnly -> withExtensions
+- - make it default to not have extensions, since they require users to know how to configure them. This should be an "additional feature" that users learn about and decide to use / setup within their apps.
+
+x rename "plugin-ts" to "app-ts"?
+
+x rename "dapp" to "app"

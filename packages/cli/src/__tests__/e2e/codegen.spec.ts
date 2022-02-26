@@ -14,7 +14,7 @@ Options:
     " | "
   )})
   -c, --custom <path>                     Path to a custom generation script (JavaScript | TypeScript)
-  -o, --output-dir <path>                 Output directory for custom generated types (default: 'types/')
+  -o, --custom-output-dir <path>          Output directory for custom generated types (default: 'types/')
   -i, --ipfs [<node>]                     IPFS node to load external schemas (default: ipfs.io & localhost)
   -e, --ens [<address>]                   ENS address to lookup external schemas (default: 0x0000...2e1e)
 
@@ -35,9 +35,9 @@ describe("e2e tests for codegen command", () => {
     expect(clearStyle(output)).toEqual(HELP);
   });
 
-  test("Should throw error for invalid params - outputDir", async () => {
+  test("Should throw error for invalid params - customOutputDir", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: ["codegen", "--output-dir"],
+      args: ["codegen", "--custom-output-dir"],
       cwd: projectRoot,
       cli: w3Cli,
     });
@@ -45,7 +45,7 @@ describe("e2e tests for codegen command", () => {
     expect(code).toEqual(0);
     expect(error).toBe("");
     expect(clearStyle(output))
-      .toEqual(`--output-dir option missing <path> argument
+      .toEqual(`--custom-output-dir option missing <path> argument
 ${HELP}`);
   });
 

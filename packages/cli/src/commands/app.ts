@@ -1,5 +1,10 @@
 /* eslint-disable prefer-const */
-import { CodeGenerator, Project, SchemaComposer } from "../lib";
+import {
+  Project,
+  AppProject,
+  CodeGenerator,
+  SchemaComposer
+} from "../lib";
 import { intlMsg } from "../lib/intl";
 import {
   fixParameters,
@@ -8,16 +13,14 @@ import {
   defaultAppManifest
 } from "../lib/helpers";
 import { getSimpleClient, getDefaultProviders } from "../lib/helpers/client";
-import { ExternalWeb3ApiProject } from "../lib/project/ExternalWeb3ApiProject";
-import { ExternalPluginProject } from "../lib/project/ExternalPluginProject";
+import { ImportedWeb3ApiProject } from "../lib/project/ImportedWeb3ApiProject";
+import { ImportedPluginProject } from "../lib/project/ImportedPluginProject";
 
 import chalk from "chalk";
 import { GluegunToolbox, GluegunPrint } from "gluegun";
-import { Uri, Web3ApiClient } from "@web3api/client-js";
+import { Web3ApiClient } from "@web3api/client-js";
 import { AppManifest } from "@web3api/core-js";
 import * as path from "path";
-import fs from "fs";
-import rimraf from "rimraf";
 
 interface AppGenFiles {
   package: string;
@@ -73,7 +76,7 @@ Commands:
 Options:
   -h, --help                              ${intlMsg.commands_codegen_options_h()}
   -m, --manifest-file <${pathStr}>              ${intlMsg.commands_codegen_options_m()}: ${defaultManifestStr})
-  -o, --output-types-dir <${pathStr}>                 ${outputTypesDirStr}
+  -t, --output-types-dir <${pathStr}>                 ${outputTypesDirStr}
   -i, --ipfs [<${nodeStr}>]                     ${intlMsg.commands_codegen_options_i()}
   -e, --ens [<${addrStr}>]                   ${intlMsg.commands_codegen_options_e()}
 `;
@@ -88,15 +91,15 @@ export default {
     let {
       help,
       manifestFile,
-      outputDir,
+      outputTypesDir,
       ipfs,
       ens,
     } = parameters.options;
-    const { h, m, o, i, e } = parameters.options;
+    const { h, m, t, i, e } = parameters.options;
 
     help = help || h;
     manifestFile = manifestFile || m;
-    outputDir = outputDir || o;
+    outputTypesDir = outputTypesDir || t;
     ipfs = ipfs || i;
     ens = ens || e;
 
@@ -122,7 +125,7 @@ export default {
     const paramsValid = validateAppParams(
       print,
       command,
-      outputDir,
+      outputTypesDir,
       ens
     );
 
@@ -137,32 +140,44 @@ export default {
     // Run Middleware
     await middleware.run({
       name: toolbox.command?.name,
-      options: { help, manifestFile, outputDir, ipfs, ens },
+      options: { help, manifestFile, outputTypesDir, ipfs, ens },
     });
 
     // Resolve manifest
+    const manifestPaths = manifestFile ? [manifestFile] : defaultAppManifest;
     manifestFile = resolvePathIfExists(
       filesystem,
-      manifestFile ? [manifestFile] : defaultAppManifest
+      manifestPaths
     );
+
+    if (!manifestFile) {
+      print.error(
+        intlMsg.commands_app_error_manifestNotFound({
+          paths: manifestPaths.join(", ")
+        })
+      );
+      return;
+    }
 
     // App project
-    const manifestDir: string = path.dirname(manifestFile);
-    const appManifest: AppManifest = await loadAppManifest(
-      manifestFile,
-      true
-    );
+    const project = new AppProject({
+      rootCacheDir: path.dirname(manifestFile),
+      appManifestPath: manifestFile
+    });
+    await project.validate();
 
-    // Validate app manifest's language
-    const language: string = appManifest.language;
-    Project.validateManifestLanguage(language, ["app/"]);
+    // Get imported web3api & plugin projects
+    const importedProjects = project.getImportedProjects();
+
+    // Generate code for each imported project
+    // TODODODODO:
 
     // Transform packages
-    const packages = appManifest.packages.map((pack) => ({
+    const imports = appManifest.imports?.map((pack) => ({
       uri: sanitizeUri(pack.uri, pack.isPlugin),
       namespace: pack.namespace,
       isPlugin: pack.isPlugin,
-    }));
+    })) || [];
 
     // types:
     //   directory:
@@ -173,21 +188,12 @@ export default {
     const withExtensions: boolean | undefined = appManifest.types.withExtensions;
 
     // Resolve output directory
-    if (outputDir) {
-      outputDir = filesystem.resolve(outputDir);
+    if (outputTypesDir) {
+      outputTypesDir = filesystem.resolve(outputTypesDir);
     } else if (outputDirFromManifest) {
-      outputDir = filesystem.resolve(outputDirFromManifest);
+      outputTypesDir = filesystem.resolve(outputDirFromManifest);
     } else {
-      outputDir = filesystem.resolve(defaultOutputTypesDir);
-    }
-
-    // Check for duplicate namespaces
-    const nsNoDupes: string[] = packages
-      .map((pack) => pack.namespace)
-      .filter((ns, i, arr) => arr.indexOf(ns) === i);
-    if (packages.length !== nsNoDupes.length) {
-      print.error(intlMsg.commands_app_error_duplicateNs());
-      return;
+      outputTypesDir = filesystem.resolve(defaultOutputTypesDir);
     }
 
     // Resolve generation file
@@ -210,18 +216,17 @@ export default {
 
     // Generate code for each Polywrap package
     let result = true;
-    for (let i = 0; i < packages.length; i++) {
-      const { uri, namespace, isPlugin } = packages[i];
+    for (let i = 0; i < imports.length; i++) {
+      const { uri, namespace, isPlugin } = imports[i];
 
-      const project: Project = isPlugin
-        ? new ExternalPluginProject({
-            rootPath: manifestDir,
-            uri,
+      const project = isPlugin
+        ? new ImportedPluginProject({
+            rootCacheDir: manifestDir,
+            pluginManifestPath: ,
             namespace,
-            language,
           })
-        : new ExternalWeb3ApiProject({
-            rootPath: manifestDir,
+        : new ImportedWeb3ApiProject({
+            rootCacheDir: manifestDir,
             uri,
             namespace,
             client,
@@ -236,9 +241,12 @@ export default {
         project,
         schemaComposer,
         customScript: packageScript,
-        outputDir: path.join(outputDir, namespace),
+        outputDir: path.join(outputTypesDir, namespace),
         mustacheView: { uri, namespace },
       });
+
+      // Ensure the target directory is reset
+      project.reset();
 
       if (await namespaceCodeGenerator.generate()) {
         print.success(
@@ -252,13 +260,13 @@ export default {
       }
 
       // generate shared files on final package
-      if (i === packages.length - 1) {
+      if (i === imports.length - 1) {
         const appCodeGenerator = new CodeGenerator({
           project,
           schemaComposer,
           customScript: appScript,
-          outputDir: path.join(outputDir, namespace),
-          mustacheView: { packages },
+          outputDir: path.join(outputTypesDir, namespace),
+          mustacheView: { imports },
         });
 
         if (await appCodeGenerator.generate()) {
@@ -267,18 +275,6 @@ export default {
           result = false;
         }
       }
-
-      project.reset();
-    }
-
-    // clear empty cache folders
-    const cacheDirRoot: string = path.join(manifestDir, ".w3");
-    const cacheDir: string = path.join(cacheDirRoot, "ExternalProjects");
-    if (await isEmptyDir(cacheDir)) {
-      rimraf.sync(cacheDir);
-    }
-    if (await isEmptyDir(cacheDirRoot)) {
-      rimraf.sync(cacheDirRoot);
     }
 
     if (result) {
@@ -290,52 +286,10 @@ export default {
   },
 };
 
-// TODO: move these helpers
-// could go in the app manifest validators
-// Rename: createPluginUri? should this be the "plugin URI"?
-function sanitizeUri(uri: string, isPlugin?: boolean): Uri {
-  let result: Uri;
-  try {
-    result = new Uri(uri);
-  } catch (e) {
-    // check if the uri is a filepath without a fs/ prefix
-    if (!fs.existsSync(uri)) {
-      throw e;
-    }
-    result = new Uri(`w3://fs/${uri}`);
-  }
-
-  // convert to absolute path
-  if (result.authority === "fs") {
-    result = new Uri(`w3://fs/${path.resolve(result.path)}`);
-    // plugins must use a filepath uri
-  } else if (isPlugin) {
-    throw Error(
-      `${intlMsg.lib_project_plugin_uri_support()}\n` +
-        `w3://fs/./node_modules/myPlugin/\n` +
-        `fs/./node_modules/myPlugin/\n` +
-        `./node_modules/myPlugin/\n\n` +
-        `${intlMsg.lib_project_invalid_uri()}: ${uri}`
-    );
-  }
-  return result;
-}
-
-async function isEmptyDir(path: string): Promise<boolean> {
-  if (!fs.existsSync(path)) {
-    return false;
-  }
-  const dir = await fs.promises.opendir(path);
-  const file = await dir.read();
-  await dir.close();
-  return file === null;
-}
-// TODO: move these helpers
-
 function validateAppParams(
   print: GluegunPrint,
   command: unknown,
-  outputDir: unknown,
+  outputTypesDir: unknown,
   ens: unknown
 ): boolean {
 
@@ -347,10 +301,10 @@ function validateAppParams(
     return false;
   }
 
-  if (outputDir === true) {
+  if (outputTypesDir === true) {
     const outputDirMissingPathMessage = intlMsg.commands_codegen_error_outputDirMissingPath(
       {
-        option: "--output-dir",
+        option: "--output-types-dir",
         argument: `<${pathStr}>`,
       }
     );

@@ -124,8 +124,10 @@ export default {
 
     // Plugin project
     const project = new PluginProject({
+      rootCacheDir: path.dirname(manifestFile),
       pluginManifestPath: manifestFile,
     });
+    await project.validate();
 
     const schemaComposer = new SchemaComposer({
       project,

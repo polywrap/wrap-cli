@@ -9,14 +9,19 @@
 export interface AppManifest {
   format: "0.0.1-prealpha.1";
   language: string;
-  types: {
+  codegen: {
     directory: string;
     withExtensions?: boolean;
   };
-  packages: {
-    uri: string;
-    namespace: string;
-    isPlugin?: boolean;
-  }[];
+  imports?: {
+    web3apis?: {
+      namespace: string;
+      uri: string;
+    }[];
+    plugins?: {
+      namespace: string;
+      manifest: string;
+    }[];
+  };
   __type: "AppManifest";
 }

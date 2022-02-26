@@ -2,6 +2,7 @@ format: 0.0.1-prealpha.1
 language: app/typescript
 types:
   directory: "./polywrap"
-packages:
-  - uri: "w3://fs/./../project/build"
-    namespace: "project"
+imports:
+  web3apis:
+    - uri: "w3://fs/./../project/build"
+      namespace: "project"

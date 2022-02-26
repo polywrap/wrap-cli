@@ -2,11 +2,12 @@ format: 0.0.1-prealpha.1
 language: app/typescript
 types:
   directory: "./polywrap"
-packages:
-  - uri: "w3://ipfs/QmeiPWHe2ixfitcgjRwP5AaJD5R7DbsGhQNQwT4rFNyxx8"
-    namespace: "erc20"
-  - uri: "w3://ipfs/QmVGwj3FtvhiErJ1wWbmRuHpvEQ3t1BPNESvEiMJM57p2y"
-    namespace: "console"
-  - uri: "./../../../../js/plugins/ethereum/build"
-    namespace: "ethereum"
-    isPlugin: true
+imports:
+  web3apis:
+    - uri: "w3://ipfs/QmeiPWHe2ixfitcgjRwP5AaJD5R7DbsGhQNQwT4rFNyxx8"
+      namespace: "erc20"
+    - uri: "w3://ipfs/QmVGwj3FtvhiErJ1wWbmRuHpvEQ3t1BPNESvEiMJM57p2y"
+      namespace: "console"
+  plugins:
+    - manifest: "./../../../../js/plugins/ethereum/build/web3api.plugin.yaml"
+      namespace: "ethereum"

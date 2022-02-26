@@ -2,7 +2,7 @@ format: 0.0.1-prealpha.1
 language: app/typescript
 types:
   directory: "./polywrap"
-packages:
-  - uri: "./../../../../js/plugins/http/build"
-    namespace: "http"
-    isPlugin: true
+imports:
+  plugins:
+    - manifest: "./../../../../js/plugins/http/build/web3api.plugin.yaml"
+      namespace: "http"

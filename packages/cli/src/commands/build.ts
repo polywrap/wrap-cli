@@ -14,6 +14,7 @@ import { defaultWeb3ApiManifest, resolvePathIfExists } from "../lib/helpers";
 
 import chalk from "chalk";
 import axios from "axios";
+import path from "path";
 import readline from "readline";
 import { GluegunToolbox, GluegunPrint } from "gluegun";
 
@@ -80,7 +81,7 @@ export default {
       return;
     }
 
-    // Resolve manifest & output directories
+    // Resolve manifest & output directory
     const manifestPaths = manifestFile ? [manifestFile as string] : defaultWeb3ApiManifest;
     manifestFile = resolvePathIfExists(
       filesystem,
@@ -99,6 +100,7 @@ export default {
     outputDir =
       (outputDir && filesystem.resolve(outputDir)) || filesystem.path("build");
 
+    // Gather providers
     let ipfsProvider: string | undefined;
     let ethProvider: string | undefined;
     let ensAddress: string | undefined;
@@ -142,9 +144,11 @@ export default {
     }
 
     const project = new Web3ApiProject({
+      rootCacheDir: path.dirname(manifestFile),
       web3apiManifestPath: manifestFile,
       quiet: verbose ? false : true,
     });
+    await project.validate()
 
     const schemaComposer = new SchemaComposer({
       project,
@@ -236,7 +240,7 @@ export default {
       const keyPressListener = () => {
         // Watch for escape key presses
         print.info(
-          `${intlMsg.commands_build_keypressListener_watching()}: ${project.getWeb3ApiManifestDir()}`
+          `${intlMsg.commands_build_keypressListener_watching()}: ${project.getManifestDir()}`
         );
         print.info(intlMsg.commands_build_keypressListener_exit());
         readline.emitKeypressEvents(process.stdin);
@@ -263,10 +267,10 @@ export default {
       // Watch the directory
       const watcher = new Watcher();
 
-      watcher.start(project.getWeb3ApiManifestDir(), {
+      watcher.start(project.getManifestDir(), {
         ignored: [
           outputDir + "/**",
-          project.getWeb3ApiManifestDir() + "/**/w3/**",
+          project.getManifestDir() + "/**/w3/**",
         ],
         ignoreInitial: true,
         execute: async (events: WatchEvent[]) => {

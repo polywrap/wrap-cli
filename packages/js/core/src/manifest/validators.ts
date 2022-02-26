@@ -1,3 +1,5 @@
+import { Uri } from "../types";
+
 export function file(path: unknown): boolean {
   if (typeof path !== "string") {
     return false;
@@ -110,7 +112,28 @@ export function regexString(regex: unknown): boolean {
   return isValid;
 }
 
+export function uniqueNamespaceArray(arr: unknown): boolean {
+  if (!Array.isArray(arr)) {
+    return false;
+  }
+
+  // Check for duplicate namespaces
+  const nsNoDupes: string[] = arr
+    .map((imp) => imp.namespace)
+    .filter((ns, i, arr) => arr.indexOf(ns) === i);
+
+  if (arr.length !== nsNoDupes.length) {
+    return false;
+  }
+
+  return true;
+}
+
 // Accepts valid name for JavaScript class and property
-export function namespace(ns: unknown): boolean {
+export function importNamespace(ns: unknown): boolean {
   return typeof ns === "string" && !!ns.match(/^[_A-Za-z]+[\w]*$/);
+}
+
+export function importUri(uri: unknown): boolean {
+  return typeof uri === "string" && Uri.isValidUri(uri)
 }

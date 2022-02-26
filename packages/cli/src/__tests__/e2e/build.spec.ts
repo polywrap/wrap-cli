@@ -146,6 +146,7 @@ ${HELP}`);
 
   test("Adds uuid-v4 suffix to build-env image if no build manifest specified", async () => {
     const project = new Web3ApiProject({
+      rootCacheDir: projectRoot,
       web3apiManifestPath: path.join(projectRoot, "web3api.nobuild.yaml")
     });
 

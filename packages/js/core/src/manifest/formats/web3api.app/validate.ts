@@ -32,7 +32,10 @@ const validator = new Validator();
 
 Validator.prototype.customFormats.appLanguage = Validators.appLanguage;
 Validator.prototype.customFormats.file = Validators.file;
-Validator.prototype.customFormats.namespace = Validators.namespace;
+Validator.prototype.customFormats.uniqueNamespaceArray = Validators.uniqueNamespaceArray;
+Validator.prototype.customFormats.importNamespace = Validators.importNamespace;
+Validator.prototype.customFormats.importUri = Validators.importUri;
+Validator.prototype.customFormats.manifestFile = Validators.manifestFile;
 
 export const validateAppManifest = Tracer.traceFunc(
   "core: validateAppManifest",

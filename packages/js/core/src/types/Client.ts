@@ -10,7 +10,10 @@ import {
   ResolveUriOptions,
   Api,
 } from "./";
-import { ManifestType, AnyManifest } from "../manifest";
+import {
+  AnyManifestArtifact,
+  ManifestArtifactType
+} from "../manifest";
 import {
   UriToApiResolver,
   ResolveUriError,
@@ -41,9 +44,11 @@ export type GetEnvsOptions = Contextualized;
 
 export type GetResolversOptions = Contextualized;
 
-export interface GetManifestOptions<TManifestType extends ManifestType>
+export interface GetManifestOptions<
+  TManifestArtifactType extends ManifestArtifactType
+>
   extends Contextualized {
-  type: TManifestType;
+  type: TManifestArtifactType;
 }
 
 export interface GetFileOptions extends Contextualized {
@@ -81,10 +86,13 @@ export interface Client
     options: GetSchemaOptions
   ): Promise<string>;
 
-  getManifest<TUri extends Uri | string, TManifestType extends ManifestType>(
+  getManifest<
+    TUri extends Uri | string,
+    TManifestArtifactType extends ManifestArtifactType
+  >(
     uri: TUri,
-    options: GetManifestOptions<TManifestType>
-  ): Promise<AnyManifest<TManifestType>>;
+    options: GetManifestOptions<TManifestArtifactType>
+  ): Promise<AnyManifestArtifact<TManifestArtifactType>>;
 
   getFile<TUri extends Uri | string>(
     uri: TUri,

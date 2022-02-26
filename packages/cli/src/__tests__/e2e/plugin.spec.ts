@@ -42,7 +42,7 @@ describe("e2e tests for plugin command", () => {
   test("Should throw error for invalid params - no command", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["plugin", "--output-dir"],
+        args: ["plugin", "--output-types-dir"],
         cwd: projectRoot,
       }
     );

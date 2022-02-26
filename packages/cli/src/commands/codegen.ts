@@ -10,6 +10,7 @@ import { resolvePathIfExists, defaultWeb3ApiManifest } from "../lib/helpers";
 import { getDefaultProviders } from "../lib/helpers/client";
 
 import chalk from "chalk";
+import path from "path";
 import { GluegunToolbox, GluegunPrint } from "gluegun";
 
 const optionsStr = intlMsg.commands_options_options();
@@ -25,7 +26,7 @@ ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
   -h, --help                              ${intlMsg.commands_codegen_options_h()}
   -m, --manifest-file <${pathStr}>              ${intlMsg.commands_codegen_options_m()}: ${defaultManifestStr})
   -c, --custom <${pathStr}>                     ${intlMsg.commands_codegen_options_c()}
-  -o, --output-dir <${pathStr}>                 ${intlMsg.commands_codegen_options_o()}
+  -o, --custom-output-dir <${pathStr}>          ${intlMsg.commands_codegen_options_o()}
   -i, --ipfs [<${nodeStr}>]                     ${intlMsg.commands_codegen_options_i()}
   -e, --ens [<${addrStr}>]                   ${intlMsg.commands_codegen_options_e()}
 `;
@@ -41,9 +42,9 @@ export default {
     let {
       help,
       custom,
+      customOutputDir,
       manifestFile,
       ipfs,
-      outputDir,
       ens,
     } = parameters.options;
 
@@ -51,10 +52,10 @@ export default {
     custom = custom || c;
     manifestFile = manifestFile || m;
     ipfs = ipfs || i;
-    outputDir = outputDir || o;
+    customOutputDir = customOutputDir || o;
     ens = ens || e;
 
-    if (help || !validateCodegenParams(print, outputDir, ens, custom)) {
+    if (help || !validateCodegenParams(print, customOutputDir, ens, custom)) {
       print.info(HELP);
       return;
     }
@@ -62,7 +63,7 @@ export default {
     // Run Middleware
     await middleware.run({
       name: toolbox.command?.name,
-      options: { help, custom, manifestFile, ipfs, outputDir, ens },
+      options: { help, custom, manifestFile, ipfs, customOutputDir, ens },
     });
 
     const { ipfsProvider, ethProvider } = await getDefaultProviders(ipfs);
@@ -74,11 +75,13 @@ export default {
       filesystem,
       manifestFile ? [manifestFile] : defaultWeb3ApiManifest
     );
-    outputDir = outputDir && filesystem.resolve(outputDir);
+    customOutputDir = customOutputDir && filesystem.resolve(customOutputDir);
 
     const project = new Web3ApiProject({
+      rootCacheDir: path.dirname(manifestFile),
       web3apiManifestPath: manifestFile,
     });
+    await project.validate();
 
     const schemaComposer = new SchemaComposer({
       project,
@@ -94,7 +97,7 @@ export default {
         project,
         schemaComposer,
         customScript,
-        outputDir: outputDir || filesystem.path("types"),
+        outputDir: customOutputDir || filesystem.path("types"),
       });
 
       result = await codeGenerator.generate();
@@ -119,14 +122,14 @@ export default {
 
 function validateCodegenParams(
   print: GluegunPrint,
-  outputDir: unknown,
+  customOutputDir: unknown,
   ens: unknown,
   custom: unknown
 ): boolean {
-  if (outputDir === true) {
+  if (customOutputDir === true) {
     const outputDirMissingPathMessage = intlMsg.commands_codegen_error_outputDirMissingPath(
       {
-        option: "--output-dir",
+        option: "--custom-output-dir",
         argument: `<${pathStr}>`,
       }
     );
