@@ -1,0 +1,12 @@
+type Query {
+  method(
+    arg1: Fraction!
+    arg2: Fraction
+    obj: FractionInput!
+  ): BigInt!
+}
+
+type FractionInput {
+  prop1: Fraction!
+  prop2: Fraction
+}

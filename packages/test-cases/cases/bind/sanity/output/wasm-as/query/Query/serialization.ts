@@ -6,6 +6,8 @@ import {
   WriteEncoder,
   Nullable,
   BigInt,
+  BigNumber,
+  Fraction,
   JSON,
   Context
 } from "@web3api/wasm-as";

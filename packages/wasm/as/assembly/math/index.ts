@@ -1,1 +1,3 @@
-export * from "./BigInt";
+export { BigInt } from "as-bigint";
+export { BigNumber, Rounding } from "as-bignumber";
+export { Fraction } from "as-fraction";

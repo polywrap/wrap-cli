@@ -9,6 +9,8 @@ scalar Int16
 scalar Int32
 scalar Bytes
 scalar BigInt
+scalar BigNumber
+scalar Fraction
 scalar JSON
 
 directive @imported(

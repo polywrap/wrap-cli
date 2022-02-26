@@ -16,6 +16,8 @@ export type Int16 = number;
 export type Int32 = number;
 export type Bytes = Uint8Array;
 export type BigInt = string;
+export type BigNumber = string;
+export type Fraction = Array<BigInt>;
 export type Json = string;
 export type String = string;
 export type Boolean = boolean;
@@ -171,6 +173,24 @@ interface Ethereum_Query_Input_encodeFunction extends Record<string, unknown> {
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
+interface Ethereum_Query_Input_solidityPack extends Record<string, unknown> {
+  types: Array<String>;
+  values: Array<String>;
+}
+
+/* URI: "ens/ethereum.web3api.eth" */
+interface Ethereum_Query_Input_solidityKeccak256 extends Record<string, unknown> {
+  types: Array<String>;
+  values: Array<String>;
+}
+
+/* URI: "ens/ethereum.web3api.eth" */
+interface Ethereum_Query_Input_soliditySha256 extends Record<string, unknown> {
+  types: Array<String>;
+  values: Array<String>;
+}
+
+/* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_getSignerAddress extends Record<string, unknown> {
   connection?: Types.Ethereum_Connection | null;
 }
@@ -290,6 +310,42 @@ export const Ethereum_Query = {
       uri: "ens/ethereum.web3api.eth",
       module: "query",
       method: "encodeFunction",
+      input
+    });
+  },
+
+  solidityPack: async (
+    input: Ethereum_Query_Input_solidityPack,
+    client: Client
+  ): Promise<InvokeApiResult<String>> => {
+    return client.invoke<String>({
+      uri: "ens/ethereum.web3api.eth",
+      module: "query",
+      method: "solidityPack",
+      input
+    });
+  },
+
+  solidityKeccak256: async (
+    input: Ethereum_Query_Input_solidityKeccak256,
+    client: Client
+  ): Promise<InvokeApiResult<String>> => {
+    return client.invoke<String>({
+      uri: "ens/ethereum.web3api.eth",
+      module: "query",
+      method: "solidityKeccak256",
+      input
+    });
+  },
+
+  soliditySha256: async (
+    input: Ethereum_Query_Input_soliditySha256,
+    client: Client
+  ): Promise<InvokeApiResult<String>> => {
+    return client.invoke<String>({
+      uri: "ens/ethereum.web3api.eth",
+      module: "query",
+      method: "soliditySha256",
       input
     });
   },

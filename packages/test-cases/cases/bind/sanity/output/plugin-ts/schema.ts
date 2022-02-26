@@ -9,6 +9,8 @@ scalar Int16
 scalar Int32
 scalar Bytes
 scalar BigInt
+scalar BigNumber
+scalar Fraction
 scalar JSON
 
 directive @imported(
@@ -111,6 +113,10 @@ type CustomType {
   i32: Int32!
   bigint: BigInt!
   optBigint: BigInt
+  bignumber: BigNumber!
+  optBignumber: BigNumber
+  fraction: Fraction!
+  optFraction: Fraction
   json: JSON!
   optJson: JSON
   bytes: Bytes!

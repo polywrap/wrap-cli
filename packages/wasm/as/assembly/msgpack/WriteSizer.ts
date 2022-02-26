@@ -1,6 +1,6 @@
 import { Write } from "./Write";
 import { Nullable } from "./Nullable";
-import { BigInt } from "../math";
+import { BigInt, BigNumber, Fraction } from "../math";
 import { Context } from "../debug";
 import { JSON } from "../json";
 
@@ -113,6 +113,17 @@ export class WriteSizer extends Write {
   writeBigInt(value: BigInt): void {
     const str = value.toString();
     this.writeString(str);
+  }
+
+  writeBigNumber(value: BigNumber): void {
+    const str = value.toString();
+    this.writeString(str);
+  }
+
+  writeFraction(value: Fraction): void {
+    this.writeArray(value.toArray(), (writer: Write, item: BigInt) => {
+      writer.writeBigInt(item);
+    });
   }
 
   writeJSON(value: JSON.Value): void {
@@ -270,6 +281,23 @@ export class WriteSizer extends Write {
     this.writeBigInt(value);
   }
 
+  writeNullableBigNumber(value: BigNumber): void {
+    if (value === null) {
+      this.writeNil();
+      return;
+    }
+
+    this.writeBigNumber(value);
+  }
+
+  writeNullableFraction(value: Fraction | null): void {
+    if (value === null) {
+      this.writeNil();
+      return;
+    }
+    this.writeFraction(value);
+  }
+
   writeNullableJSON(value: JSON.Value | null): void {
     if (value === null) {
       this.writeNil();
@@ -287,6 +315,7 @@ export class WriteSizer extends Write {
       this.writeNil();
       return;
     }
+
     this.writeArray(a, fn);
   }
 
@@ -299,6 +328,7 @@ export class WriteSizer extends Write {
       this.writeNil();
       return;
     }
+
     this.writeMap(m, key_fn, value_fn);
   }
 }

@@ -9,6 +9,8 @@ scalar Int16
 scalar Int32
 scalar Bytes
 scalar BigInt
+scalar BigNumber
+scalar Fraction
 scalar JSON
 
 directive @imported(
@@ -109,6 +111,21 @@ type Ethereum_Query @imported(
   encodeFunction(
     method: String!
     args: [String!]
+  ): String!
+
+  solidityPack(
+    types: [String!]!
+    values: [String!]!
+  ): String!
+
+  solidityKeccak256(
+    types: [String!]!
+    values: [String!]!
+  ): String!
+
+  soliditySha256(
+    types: [String!]!
+    values: [String!]!
   ): String!
 
   getSignerAddress(
