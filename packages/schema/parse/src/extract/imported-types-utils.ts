@@ -4,7 +4,7 @@ import { DirectiveNode, TypeDefinitionNode } from "graphql";
 
 export function extractImportedDefinition(
   node: TypeDefinitionNode,
-  queryTypes = false
+  moduleTypes = false
 ): ImportedDefinition | undefined {
   if (!node.directives) {
     return undefined;
@@ -22,18 +22,22 @@ export function extractImportedDefinition(
   const typeName = node.name.value;
 
   const queryIdentifier = "_Query";
-  const queryTest = typeName.substr(-queryIdentifier.length);
   const mutationIdentifier = "_Mutation";
-  const mutationTest = typeName.substr(-mutationIdentifier.length);
 
-  if (queryTypes) {
+  if (moduleTypes) {
     // Ignore everything that isn't a query type
-    if (queryTest !== queryIdentifier && mutationTest !== mutationIdentifier) {
+    if (
+      !typeName.endsWith(queryIdentifier) &&
+      !typeName.endsWith(mutationIdentifier)
+    ) {
       return undefined;
     }
   } else {
     // Ignore query types
-    if (queryTest === queryIdentifier || mutationTest === mutationIdentifier) {
+    if (
+      typeName.endsWith(queryIdentifier) ||
+      typeName.endsWith(mutationIdentifier)
+    ) {
       return undefined;
     }
   }

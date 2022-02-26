@@ -1,21 +1,21 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import {
   TypeInfoTransforms,
-  QueryDefinition,
-  ImportedQueryDefinition,
+  ModuleDefinition,
+  ImportedModuleDefinition,
   MethodDefinition,
 } from "@web3api/schema-parse";
 
 export function queryPointer(): TypeInfoTransforms {
-  let queryPointer: QueryDefinition | ImportedQueryDefinition | undefined;
+  let queryPointer: ModuleDefinition | ImportedModuleDefinition | undefined;
 
   return {
     enter: {
-      QueryDefinition: (def: QueryDefinition) => {
+      ModuleDefinition: (def: ModuleDefinition) => {
         queryPointer = def;
         return def;
       },
-      ImportedQueryDefinition: (def: ImportedQueryDefinition) => {
+      ImportedModuleDefinition: (def: ImportedModuleDefinition) => {
         queryPointer = def;
         return def;
       },

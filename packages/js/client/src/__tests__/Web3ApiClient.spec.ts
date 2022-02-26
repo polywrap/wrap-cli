@@ -87,6 +87,38 @@ describe("Web3ApiClient", () => {
     };
   };
 
+  const mockEnvPlugin = () => {
+    class MockEnvPlugin extends Plugin {
+      getModules(_client: Client): PluginModules {
+        return {
+          query: {
+            sanitizeEnv: async (env: {arg1: string}) => {
+              return { arg1: parseInt(env.arg1) }
+            },
+            queryEnv: () => {
+              return this.getEnv("query");
+            }
+          },
+          mutation: {
+            sanitizeEnv: async (env: {arg1: number}) => {
+              return { arg1: env.arg1.toString() }
+            },
+            mutationEnv: () => {
+              return this.getEnv("mutation");
+            }
+          },
+        };
+      }
+    }
+    return {
+      factory: () => new MockEnvPlugin(),
+      manifest: {
+        schema: ``,
+        implements: [],
+      },
+    };
+  }
+
   it("default client config", () => {
     const client = new Web3ApiClient();
 
@@ -911,7 +943,6 @@ describe("Web3ApiClient", () => {
         }
       `,
     });
-
     expect(deploy.errors).toBeFalsy();
     expect(deploy.data).toBeTruthy();
     expect(deploy.data?.deployContract.indexOf("0x")).toBeGreaterThan(-1);
@@ -1016,6 +1047,46 @@ describe("Web3ApiClient", () => {
     expect(getWithUriType.data?.getData).toBe(55);
     expect(getWithUriType.data?.secondGetData).toBe(55);
     expect(getWithUriType.data?.thirdGetData).toBe(55);
+
+    const tryGet = await client.query<{
+      tryGetData: string;
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          tryGetData(
+            address: "${address}"
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
+          )
+        }
+      `,
+    });
+
+    expect(tryGet.errors).toBeFalsy();
+    expect(tryGet.data).toBeTruthy();
+    expect(tryGet.data?.tryGetData).toContain("VM Exception while processing transaction");
+
+    const throwGet = await client.query<{
+      throwGetData: string;
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          throwGetData(
+            address: "${address}"
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
+          )
+        }
+      `,
+    });
+
+    expect(throwGet.data?.throwGetData).toBeFalsy();
+    expect(throwGet.errors).toBeTruthy();
+    expect((throwGet.errors as Error[])[0].message).toContain("VM Exception while processing transaction")
   });
 
   it("object-types", async () => {
@@ -1818,6 +1889,47 @@ describe("Web3ApiClient", () => {
     );
   });
 
+  it("plugin env types", async () => {
+    const implementationUri = "w3://ens/some-implementation.eth";
+    const envPlugin = mockEnvPlugin();
+    const client = await getClient({
+      plugins: [
+        {
+          uri: implementationUri,
+          plugin: envPlugin
+        }
+      ],
+      envs: [
+        {
+          uri: implementationUri,
+          query: {
+            arg1: "10"
+          },
+          mutation: {
+            arg1: 11
+          }
+        }
+      ]
+    });
+
+    const queryEnv = await client.query({
+      uri: implementationUri,
+      query: `
+        query {
+          queryEnv
+        }
+        mutation {
+          mutationEnv
+        }
+      `,
+    });
+
+    expect(queryEnv.errors).toBeFalsy();
+    expect(queryEnv.data).toBeTruthy();
+    expect(queryEnv.data?.queryEnv).toMatchObject({arg1: 10});
+    expect(queryEnv.data?.mutationEnv).toMatchObject({arg1: "11"});
+  })
+
   it("env types", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/env-types`,
@@ -1909,6 +2021,123 @@ describe("Web3ApiClient", () => {
       array: [32, 23]
     });
   });
+
+  it("query time env types", async () => {
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/env-types`,
+      ipfsProvider,
+      ensAddress
+    );
+
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+    const client = await getClient({
+      envs: [
+        {
+          uri: ensUri,
+          common: {
+            object: {
+              prop: "object string"
+            },
+            str: "string",
+            optFilledStr: "optional string",
+            number: 10,
+            bool: true,
+            en: "FIRST",
+            array: [32, 23]
+          },
+          mutation: {
+            mutStr: "mutation string",
+          },
+          query: {
+            queryStr: "query string",
+          }
+        }
+      ]
+    });
+
+    const queryEnv = await client.query({
+      uri: ensUri,
+      query: `
+        query {
+          queryEnv(
+            arg: "string"
+          )
+        }
+      `,
+    });
+    expect(queryEnv.errors).toBeFalsy();
+    expect(queryEnv.data?.queryEnv).toEqual({
+      str: "string",
+      optFilledStr: "optional string",
+      optStr: null,
+      number: 10,
+      optNumber: null,
+      bool: true,
+      optBool: null,
+      object: {
+        prop: "object string"
+      },
+      optObject: null,
+      en: 0,
+      optEnum: null,
+      queryStr: "query string",
+      array: [32, 23]
+    });
+
+    const queryUpdatedEnv = await client.query({
+      uri: ensUri,
+      query: `
+        query {
+          queryEnv(
+            arg: "string"
+          )
+        }
+      `,
+      config: {
+        envs: [
+          {
+            uri: ensUri,
+            common: {
+              object: {
+                prop: "object another string"
+              },
+              str: "another string",
+              optFilledStr: "optional string",
+              number: 10,
+              bool: true,
+              en: "FIRST",
+              array: [32, 23]
+            },
+            mutation: {
+              mutStr: "mutation string",
+            },
+            query: {
+              queryStr: "query string",
+            }
+          }
+        ]
+      }
+    });
+    expect(queryUpdatedEnv.errors).toBeFalsy();
+    expect(queryUpdatedEnv.data?.queryEnv).toEqual({
+      str: "another string",
+      optFilledStr: "optional string",
+      optStr: null,
+      number: 10,
+      optNumber: null,
+      bool: true,
+      optBool: null,
+      object: {
+        prop: "object another string"
+      },
+      optObject: null,
+      en: 0,
+      optEnum: null,
+      queryStr: "query string",
+      array: [32, 23]
+    });
+  });
+
 
   it("env client types", async () => {
     const api = await buildAndDeployApi(
@@ -2139,7 +2368,7 @@ describe("Web3ApiClient", () => {
     const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const actualManifestStr: string = readFileSync(
-      `${GetPathToTestApis()}/simple-storage/build/web3api.yaml`,
+      `${GetPathToTestApis()}/simple-storage/build/web3api.json`,
       "utf8"
     );
     const actualManifest: Web3ApiManifest = deserializeWeb3ApiManifest(
@@ -2151,7 +2380,7 @@ describe("Web3ApiClient", () => {
     expect(manifest).toStrictEqual(actualManifest);
 
     const actualBuildManifestStr: string = readFileSync(
-      `${GetPathToTestApis()}/simple-storage/build/web3api.build.yaml`,
+      `${GetPathToTestApis()}/simple-storage/build/web3api.build.json`,
       "utf8"
     );
     const actualBuildManifest: BuildManifest = deserializeBuildManifest(
@@ -2163,7 +2392,7 @@ describe("Web3ApiClient", () => {
     expect(buildManifest).toStrictEqual(actualBuildManifest);
 
     const actualMetaManifestStr: string = readFileSync(
-      `${GetPathToTestApis()}/simple-storage/build/web3api.meta.yaml`,
+      `${GetPathToTestApis()}/simple-storage/build/web3api.meta.json`,
       "utf8"
     );
     const actualMetaManifest: MetaManifest = deserializeMetaManifest(
@@ -2204,6 +2433,14 @@ directive @imported(
 directive @imports(
   types: [String!]!
 ) on OBJECT
+
+directive @capability(
+  type: String!
+  uri: String!
+  namespace: String!
+) repeatable on OBJECT
+
+directive @enabled_interface on OBJECT
 ### Web3API Header END ###
 
 type Query implements Logger_Query @imports(
@@ -2492,6 +2729,42 @@ enum Logger_LogLevel @imported(
 
     expect(results).toContain(0);
     expect(results).not.toContain(2);
+  });
+
+  it("queries API schemas that use reserved keywords", async () => {
+    const api = await buildAndDeployApi(
+      `${GetPathToTestApis()}/reserved-words`,
+      ipfsProvider,
+      ensAddress
+    );
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+
+    const client = await getClient();
+
+    const query = await client.query<{
+      method1: {
+        const: string;
+      }
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          method1(
+            const: {
+              const: "successfully used reserved keyword"
+            }
+          )
+        }
+      `,
+    });
+
+    expect(query.errors).toBeFalsy();
+    expect(query.data).toBeTruthy();
+    expect(query.data).toMatchObject({
+      method1: {
+        const: "result: successfully used reserved keyword",
+      },
+    });
   });
 
   it("e2e getImplementations capability", async () => {

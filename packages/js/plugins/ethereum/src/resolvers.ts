@@ -65,6 +65,22 @@ export const query = (plugin: Plugin): Query.Module => ({
     return plugin.encodeFunction(input);
   },
 
+  solidityPack: async (input: Query.Input_solidityPack): Promise<string> => {
+    return plugin.solidityPack(input);
+  },
+
+  solidityKeccak256: async (
+    input: Query.Input_solidityKeccak256
+  ): Promise<string> => {
+    return plugin.solidityKeccak256(input);
+  },
+
+  soliditySha256: async (
+    input: Query.Input_soliditySha256
+  ): Promise<string> => {
+    return plugin.soliditySha256(input);
+  },
+
   getSignerAddress: async (
     input: Query.Input_getSignerAddress
   ): Promise<string> => {

@@ -37,7 +37,7 @@ export interface InvokeApiOptions<
   noDecode?: boolean;
 
   /**
-   * Override the client's config for all invokes within this query.
+   * Override the client's config for all invokes within this invoke.
    */
   config?: Partial<TClientConfig>;
 

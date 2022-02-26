@@ -1,8 +1,8 @@
 import {
   isScalarType,
   scalarTypeNames,
-  isQueryType,
-  queryTypeNames,
+  isModuleType,
+  ModuleTypeNames,
 } from "../typeInfo";
 import { SchemaValidator } from "./";
 
@@ -19,7 +19,7 @@ import {
   StringValueNode,
   UnionTypeDefinitionNode,
 } from "graphql";
-import { getSchemaCycles } from "graphql-schema-cycles";
+import { getSchemaCycles } from "@dorgjelli/graphql-schema-cycles";
 
 export const getTypeDefinitionsValidator = (): SchemaValidator => {
   const objectTypes: Record<string, boolean> = {};
@@ -156,10 +156,10 @@ export const getPropertyTypesValidator = (): SchemaValidator => {
           const typeName = currentImportType
             ? currentImportType
             : currentObject;
-          if (typeName && !isQueryType(typeName)) {
-            // Arguments not supported on non-query types
+          if (typeName && !isModuleType(typeName)) {
+            // Arguments not supported on non-module types
             throw Error(
-              `Methods can only be defined on query types (${queryTypeNames.join(
+              `Methods can only be defined on module types (${ModuleTypeNames.join(
                 ", "
               )}).\n` +
                 `Found: type ${typeName} { ${currentField}(${node.name.value}) }`
@@ -177,7 +177,7 @@ export const getPropertyTypesValidator = (): SchemaValidator => {
         },
       },
     },
-    displayValidationMessagesIfExist: () => {
+    cleanup: () => {
       // Ensure all property types are either a
       // supported scalar, enum or an object type definition
       for (const field of fieldTypes) {
@@ -226,7 +226,7 @@ export function getCircularDefinitionsValidator(): SchemaValidator {
         },
       },
     },
-    displayValidationMessagesIfExist: (documentNode: DocumentNode) => {
+    cleanup: (documentNode: DocumentNode) => {
       const { cycleStrings, foundCycle } = getSchemaCycles(documentNode, {
         ignoreTypeNames: operationTypes,
         allowOnNullableFields: true,

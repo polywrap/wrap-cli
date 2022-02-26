@@ -1,4 +1,4 @@
-import { OutputDirectory, TargetLanguage } from "../";
+import { OutputDirectory, BindLanguage } from "../";
 import * as WasmAs from "./wasm-as";
 import * as WasmRs from "./wasm-rs";
 import * as PluginTs from "./plugin-ts";
@@ -6,11 +6,11 @@ import * as PluginTs from "./plugin-ts";
 import { TypeInfo } from "@web3api/schema-parse";
 
 export function generateBinding(
-  language: TargetLanguage,
+  bindLanguage: BindLanguage,
   typeInfo: TypeInfo,
   schema: string
 ): OutputDirectory {
-  switch (language) {
+  switch (bindLanguage) {
     case "wasm-as":
       return WasmAs.generateBinding(typeInfo);
     case "wasm-rs":
@@ -18,6 +18,6 @@ export function generateBinding(
     case "plugin-ts":
       return PluginTs.generateBinding(typeInfo, schema);
     default:
-      throw Error(`Error: Language binding unsupported - ${language}`);
+      throw Error(`Error: Language binding unsupported - ${bindLanguage}`);
   }
 }

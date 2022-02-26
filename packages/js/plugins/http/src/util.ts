@@ -12,7 +12,12 @@ export function fromAxiosResponse(
 ): Response {
   const responseHeaders: Header[] = [];
   for (const key of Object.keys(axiosResponse.headers)) {
-    responseHeaders.push({ key: key, value: axiosResponse.headers[key] });
+    responseHeaders.push({
+      key: key,
+      value: Array.isArray(axiosResponse.headers[key])
+        ? axiosResponse.headers[key].join(" ")
+        : axiosResponse.headers[key],
+    });
   }
 
   const response = {

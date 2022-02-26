@@ -5,12 +5,14 @@ import {
   loadWeb3ApiManifest,
   loadBuildManifest,
   loadMetaManifest,
-  manifestLanguageToTargetLanguage,
+  generateDockerImageName,
+  createUUID,
+  ManifestLanguage,
+  outputManifest,
 } from "../helpers";
 import { intlMsg } from "../intl";
 
 import { Web3ApiManifest, BuildManifest, MetaManifest } from "@web3api/core-js";
-import { TargetLanguage } from "@web3api/schema-bind";
 import { normalizePath } from "@web3api/os-js";
 import regexParser from "regex-parser";
 import path from "path";
@@ -67,12 +69,12 @@ export class Web3ApiProject extends Project {
     return this.getWeb3ApiManifestDir();
   }
 
-  public async getLanguage(): Promise<TargetLanguage> {
+  public async getManifestLanguage(): Promise<ManifestLanguage> {
     const language = (await this.getWeb3ApiManifest()).language;
-    if (!language) {
-      throw Error(intlMsg.lib_project_language_not_found());
-    }
-    return manifestLanguageToTargetLanguage(language);
+
+    this.validateManifestLanguage(language, ["wasm/", "interface"]);
+
+    return language as ManifestLanguage;
   }
 
   public async getSchemaNamedPaths(): Promise<{
@@ -273,32 +275,65 @@ export class Web3ApiProject extends Project {
     return this._buildManifest;
   }
 
+  public async getBuildUuid(): Promise<string> {
+    // Load the cached build UUID
+    let uuid = this.readCacheFile("build/uuid");
+
+    // If none was present, generate one
+    if (!uuid) {
+      uuid = createUUID();
+      this.writeCacheFile("build/uuid", uuid, "utf-8");
+    }
+
+    return uuid;
+  }
+
   public async cacheDefaultBuildManifestFiles(): Promise<void> {
     if (this._defaultBuildManifestCached) {
       return;
     }
 
-    const language = (await this.getWeb3ApiManifest()).language;
+    const language = await this.getManifestLanguage();
 
-    if (!language) {
-      throw Error(intlMsg.lib_project_language_not_found());
-    }
-
-    const defaultPath = `${__dirname}/../build-envs/${language}/web3api.build.yaml`;
+    const defaultBuildManifestFilename = "web3api.build.yaml";
+    const defaultPath = `${__dirname}/../build-envs/${language}/${defaultBuildManifestFilename}`;
+    const destinationDir = "build/env/";
+    const buildEnvCachePath = this.getCachePath(destinationDir);
 
     if (!fs.existsSync(defaultPath)) {
       throw Error(
-        intlMsg.lib_project_invalid_build_language({ language, defaultPath })
+        intlMsg.lib_project_invalid_manifest_language_pathed({
+          language,
+          defaultPath,
+        })
       );
     }
 
-    // Update the cache
+    // Clean the directory
     this.removeCacheDir("build/env");
-    await this.copyFilesIntoCache(
-      "build/env/",
+
+    // Copy default build environment files into cache
+    await this.copyIntoCache(
+      destinationDir,
       `${__dirname}/../build-envs/${language}/*`,
       { up: true }
     );
+
+    // Load the default build manifest
+    const defaultManifest = await loadBuildManifest(defaultPath);
+
+    // Set a unique docker image name
+    defaultManifest.docker = {
+      ...defaultManifest.docker,
+      name: generateDockerImageName(await this.getBuildUuid()),
+    };
+
+    // Output the modified build manifest
+    await outputManifest(
+      defaultManifest,
+      path.join(buildEnvCachePath, defaultBuildManifestFilename)
+    );
+
     this._defaultBuildManifestCached = true;
   }
 

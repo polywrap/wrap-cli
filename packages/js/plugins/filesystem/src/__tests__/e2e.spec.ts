@@ -7,6 +7,7 @@ import {
 import {
   Web3ApiClient,
   Web3ApiClientConfig,
+  defaultIpfsProviders,
 } from "@web3api/client-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
@@ -38,11 +39,7 @@ describe("Filesystem plugin", () => {
           uri: "w3://ens/ipfs.web3api.eth",
           plugin: ipfsPlugin({
             provider: ipfs,
-            fallbackProviders: [
-              "https://ipfs.fleek.co",
-              "https://ipfs.io",
-              "https://ipfs.infura.io",
-            ],
+            fallbackProviders: defaultIpfsProviders,
           }),
         },
         // ENS is required for resolving domain to IPFS hashes
@@ -115,8 +112,8 @@ describe("Filesystem plugin", () => {
     expect(manifest.language).toBe("wasm/assemblyscript");
 
     // get a file
-    const file = await client.getFile(fsUri, { path: "web3api.yaml", encoding: "utf-8" });
-    const expectedFile = await fs.promises.readFile(`${fsPath}/web3api.yaml`, "utf-8");
+    const file = await client.getFile(fsUri, { path: "web3api.json", encoding: "utf-8" });
+    const expectedFile = await fs.promises.readFile(`${fsPath}/web3api.json`, "utf-8");
 
     expect(file).toBe(expectedFile);
   });

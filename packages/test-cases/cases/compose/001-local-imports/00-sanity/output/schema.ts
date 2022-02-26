@@ -2,7 +2,7 @@
 import {
   createArrayPropertyDefinition,
   createMethodDefinition,
-  createQueryDefinition,
+  createModuleDefinition,
   createScalarDefinition,
   createScalarPropertyDefinition,
   createArrayDefinition,
@@ -17,9 +17,9 @@ import {
 
 export const typeInfo: TypeInfo = {
   ...createTypeInfo(),
-  queryTypes: [
+  moduleTypes: [
     {
-      ...createQueryDefinition({ type: "Query" }),
+      ...createModuleDefinition({ type: "Query" }),
       methods: [
         {
           ...createMethodDefinition({
@@ -95,7 +95,7 @@ export const typeInfo: TypeInfo = {
       ]
     },
     {
-      ...createQueryDefinition({ type: "Mutation" }),
+      ...createModuleDefinition({ type: "Mutation" }),
       methods: [
         {
           ...createMethodDefinition({
@@ -173,7 +173,7 @@ export const typeInfo: TypeInfo = {
   ],
   objectTypes: [
     {
-      ...createObjectDefinition({ type: "CustomQueryType" }),
+      ...createObjectDefinition({ type: "CustomModuleType" }),
       properties: [
         createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
         createScalarPropertyDefinition({ name: "optStr", type: "String", required: false }),
@@ -230,7 +230,7 @@ export const typeInfo: TypeInfo = {
       ],
     },
     {
-      ...createObjectDefinition({ type: "AnotherQueryType" }),
+      ...createObjectDefinition({ type: "AnotherModuleType" }),
       properties: [createScalarPropertyDefinition({ name: "prop", type: "String" })],
     },
     {

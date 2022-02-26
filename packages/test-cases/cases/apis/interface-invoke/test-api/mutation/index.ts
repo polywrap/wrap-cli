@@ -6,6 +6,7 @@ import {
 
 export function mutationMethod(input: Input_mutationMethod): u8 {
   const uris = Interface.getImplementations();
-  const impl = new Interface_Mutation(uris[0])
-  return impl.abstractMutationMethod({arg: input.arg});
+  return new Interface_Mutation(uris[0]).abstractMutationMethod({
+    arg: input.arg
+  }).unwrap();
 }

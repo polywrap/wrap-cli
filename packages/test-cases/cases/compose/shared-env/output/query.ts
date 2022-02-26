@@ -1,6 +1,6 @@
 import {
   createMethodDefinition,
-  createQueryDefinition,
+  createModuleDefinition,
   createScalarPropertyDefinition,
   createObjectDefinition,
   createTypeInfo,
@@ -28,9 +28,9 @@ export const typeInfo: TypeInfo = {
     }),
     mutation: createEnvDefinition({}),
   },
-  queryTypes: [
+  moduleTypes: [
     {
-      ...createQueryDefinition({ type: "Query" }),
+      ...createModuleDefinition({ type: "Query" }),
       methods: [
         {
           ...createMethodDefinition({

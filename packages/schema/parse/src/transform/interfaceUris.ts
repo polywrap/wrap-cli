@@ -1,16 +1,16 @@
 import { TypeInfoTransforms } from ".";
-import { TypeInfo, QueryDefinition, ObjectDefinition } from "../typeInfo";
+import { TypeInfo, ModuleDefinition, ObjectDefinition } from "../typeInfo";
 
 export function interfaceUris(): TypeInfoTransforms {
   const uniqueInterfaceUris: Record<string, boolean> = {};
-  const uniqueQueryInterfaceTypes: Record<string, boolean> = {};
+  const uniqueModuleInterfaceTypes: Record<string, boolean> = {};
   const uniqueObjectInterfaceTypes: Record<string, boolean> = {};
 
   return {
     enter: {
-      QueryDefinition: (def: QueryDefinition) => {
+      ModuleDefinition: (def: ModuleDefinition) => {
         for (const interfaceDef of def.interfaces) {
-          uniqueQueryInterfaceTypes[interfaceDef.type] = true;
+          uniqueModuleInterfaceTypes[interfaceDef.type] = true;
         }
         return def;
       },
@@ -23,9 +23,9 @@ export function interfaceUris(): TypeInfoTransforms {
     },
     leave: {
       TypeInfo: (typeInfo: TypeInfo) => {
-        for (const interfaceType of Object.keys(uniqueQueryInterfaceTypes)) {
-          const importedInterface = typeInfo.importedQueryTypes.find(
-            (importedQuery) => importedQuery.type === interfaceType
+        for (const interfaceType of Object.keys(uniqueModuleInterfaceTypes)) {
+          const importedInterface = typeInfo.importedModuleTypes.find(
+            (importedModule) => importedModule.type === interfaceType
           );
 
           if (importedInterface) {

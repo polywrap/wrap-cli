@@ -1,6 +1,17 @@
-import { ClientConfig } from ".";
+import { ClientConfig, WasmWeb3Api } from ".";
+import { PluginWeb3Api } from "./plugin/PluginWeb3Api";
 
-import { Uri, coreInterfaceUris } from "@web3api/core-js";
+import {
+  Uri,
+  coreInterfaceUris,
+  PluginPackage,
+  Web3ApiManifest,
+  Env,
+  ApiAggregatorResolver,
+  CacheResolver,
+  PluginResolver,
+  RedirectsResolver,
+} from "@web3api/core-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
@@ -23,8 +34,8 @@ export const getDefaultClientConfig = Tracer.traceFunc(
         {
           uri: new Uri("w3://ens/ipfs.web3api.eth"),
           plugin: ipfsPlugin({
-            provider: "https://ipfs.fleek.co",
-            fallbackProviders: ["https://ipfs.io", "https://ipfs.infura.io"],
+            provider: defaultIpfsProviders[0],
+            fallbackProviders: defaultIpfsProviders.slice(1),
           }),
         },
         // ENS is required for resolving domain to IPFS hashes
@@ -84,6 +95,33 @@ export const getDefaultClientConfig = Tracer.traceFunc(
           implementations: [new Uri("w3://ens/js-logger.web3api.eth")],
         },
       ],
+      resolvers: [
+        new RedirectsResolver(),
+        new PluginResolver(
+          (
+            uri: Uri,
+            plugin: PluginPackage,
+            environment: Env<Uri> | undefined
+          ) => new PluginWeb3Api(uri, plugin, environment)
+        ),
+        new CacheResolver(),
+        new ApiAggregatorResolver(
+          (
+            uri: Uri,
+            manifest: Web3ApiManifest,
+            uriResolver: Uri,
+            environment: Env<Uri> | undefined
+          ) => {
+            return new WasmWeb3Api(uri, manifest, uriResolver, environment);
+          }
+        ),
+      ],
     };
   }
 );
+
+export const defaultIpfsProviders = [
+  "https://ipfs.wrappers.io",
+  "https://ipfs.io",
+  "https://ipfs.fleek.co",
+];

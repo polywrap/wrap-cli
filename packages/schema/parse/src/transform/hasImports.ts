@@ -9,7 +9,7 @@ export const hasImports: TypeInfoTransforms = {
         return (
           typeInfo.importedEnumTypes.length ||
           typeInfo.importedObjectTypes.length ||
-          typeInfo.importedQueryTypes.length
+          typeInfo.importedModuleTypes.length
         );
       },
     }),

@@ -7,7 +7,7 @@ import {
   InvokeArgs
 } from "@web3api/wasm-as";
 
-{{#queryTypes}}
+{{#moduleTypes}}
 {{#methods.length}}
 import {
   {{#methods}}
@@ -15,7 +15,7 @@ import {
   {{/methods}}
 } from "./{{type}}/wrapped";
 {{/methods.length}}
-{{/queryTypes}}
+{{/moduleTypes}}
 {{#envTypes.query.sanitized}}
 import {
   env
@@ -39,13 +39,13 @@ export function _w3_invoke(method_size: u32, args_size: u32): bool {
     args_size
   );
 
-  {{#queryTypes}}
+  {{#moduleTypes}}
   {{#methods}}
   {{^first}}else {{/first}}if (args.method == "{{name}}") {
     return w3_invoke(args, {{name}}Wrapped);
   }
   {{/methods}}
-  {{/queryTypes}}
+  {{/moduleTypes}}
   else {
     return w3_invoke(args, null);
   }
