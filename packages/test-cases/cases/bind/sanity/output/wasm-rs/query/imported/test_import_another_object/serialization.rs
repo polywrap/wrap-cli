@@ -23,8 +23,8 @@ pub fn serialize_test_import_another_object(input: &TestImportAnotherObject) -> 
 pub fn write_test_import_another_object<W: Write>(input: &TestImportAnotherObject, writer: &mut W) -> Result<(), EncodeError> {
     writer.write_map_length(&1)?;
     writer.context().push("prop", "String", "writing property");
-    writer.write_str("prop")?;
-    writer.write_str(&input.prop)?;
+    writer.write_string("prop")?;
+    writer.write_string(&input.prop)?;
     writer.context().pop();
     Ok(())
 }

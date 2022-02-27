@@ -15,7 +15,7 @@ pub trait Write {
     fn write_f32(&mut self, value: &f32) -> Result<(), EncodeError>;
     fn write_f64(&mut self, value: &f64) -> Result<(), EncodeError>;
     fn write_string_length(&mut self, length: &u32) -> Result<(), EncodeError>;
-    fn write_str(&mut self, value: &str) -> Result<(), EncodeError>;
+    fn write_string(&mut self, value: &str) -> Result<(), EncodeError>;
     fn write_bytes_length(&mut self, length: &u32) -> Result<(), EncodeError>;
     fn write_bytes(&mut self, buf: &[u8]) -> Result<(), EncodeError>;
     fn write_bigint(&mut self, value: &BigInt) -> Result<(), EncodeError>;

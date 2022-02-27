@@ -1,4 +1,4 @@
-{{#queryTypes}}
+{{#moduleTypes}}
 {{#methods.length}}
 use crate::{
     {{#methods}}
@@ -6,7 +6,7 @@ use crate::{
     {{/methods}}
 };
 {{/methods.length}}
-{{/queryTypes}}
+{{/moduleTypes}}
 use polywrap_wasm_rs::{
     w3_debug_log,
     abort,
@@ -24,14 +24,14 @@ pub extern "C" fn _w3_invoke(method_size: u32, args_size: u32) -> bool {
     let args: InvokeArgs = invoke::w3_invoke_args(method_size, args_size);
 
     match args.method.as_str() {
-        {{#queryTypes}}
+        {{#moduleTypes}}
         {{#methods}}
         "{{name}}" => {
             w3_debug_log("INVOKING... {{name}}");
             invoke::w3_invoke(args, Some({{#toLower}}{{name}}{{/toLower}}_wrapped))
         },
         {{/methods}}
-        {{/queryTypes}}
+        {{/moduleTypes}}
         _ => invoke::w3_invoke(args, None),
     }
 }

@@ -74,53 +74,53 @@ impl Sanity {
 
 fn serialize_sanity<W: Write>(writer: &mut W, sanity: &mut Sanity) -> Result<(), EncodeError> {
     writer.write_map_length(&8)?;
-    writer.write_str("nil")?;
+    writer.write_string("nil")?;
     writer.write_nil()?;
-    writer.write_str("int8")?;
+    writer.write_string("int8")?;
     writer.write_i8(&sanity.int8)?;
-    writer.write_str("int16")?;
+    writer.write_string("int16")?;
     writer.write_i16(&sanity.int16)?;
-    writer.write_str("int32")?;
+    writer.write_string("int32")?;
     writer.write_i32(&sanity.int32)?;
-    writer.write_str("uint8")?;
+    writer.write_string("uint8")?;
     writer.write_u8(&sanity.uint8)?;
-    writer.write_str("uint16")?;
+    writer.write_string("uint16")?;
     writer.write_u16(&sanity.uint16)?;
-    writer.write_str("uint32")?;
+    writer.write_string("uint32")?;
     writer.write_u32(&sanity.uint32)?;
-    writer.write_str("boolean")?;
+    writer.write_string("boolean")?;
     writer.write_bool(&sanity.boolean)?;
-    // writer.write_str("opt_uint32")?;
+    // writer.write_string("opt_uint32")?;
     // writer.write_nullable_u32(&sanity.opt_uint32)?;
-    // writer.write_str("opt_bool")?;
+    // writer.write_string("opt_bool")?;
     // writer.write_nullable_bool(&sanity.opt_bool)?;
-    // writer.write_str("float32")?;
+    // writer.write_string("float32")?;
     // writer.write_f32(sanity.float32)?;
-    // writer.write_str("float64")?;
+    // writer.write_string("float64")?;
     // writer.write_f64(sanity.float64)?;
-    // writer.write_str("string")?;
+    // writer.write_string("string")?;
     // writer.write_string(&sanity.string)?;
-    // writer.write_str("large_string")?;
+    // writer.write_string("large_string")?;
     // writer.write_string(&sanity.large_string)?;
-    // writer.write_str("json")?;
+    // writer.write_string("json")?;
     // writer.write_json(&sanity.json)?;
-    // writer.write_str("bytes")?;
+    // writer.write_string("bytes")?;
     // writer.write_bytes(&sanity.bytes)?;
-    // writer.write_str("large_bytes")?;
+    // writer.write_string("large_bytes")?;
     // writer.write_bytes(&sanity.large_bytes)?;
-    // writer.write_str("array")?;
+    // writer.write_string("array")?;
     // writer.write_array(&sanity.array, |writer: &mut W, item| {
     // 	writer.write_u8(*item).unwrap();
     // })?;
-    // writer.write_str("large_string_array")?;
+    // writer.write_string("large_string_array")?;
     // writer.write_array(&sanity.large_string_array, |writer: &mut W, item| {
     // 	writer.write_string(item).unwrap();
     // })?;
-    // writer.write_str("large_bytes_array")?;
+    // writer.write_string("large_bytes_array")?;
     // writer.write_array(&sanity.large_bytes_array, |writer: &mut W, item| {
     // 	writer.write_bytes(item).unwrap();
     // })?;
-    // writer.write_str("map")?;
+    // writer.write_string("map")?;
     // writer.write_map(
     // 	&sanity.map,
     // 	|writer: &mut W, key| writer.write_string(key).unwrap(),

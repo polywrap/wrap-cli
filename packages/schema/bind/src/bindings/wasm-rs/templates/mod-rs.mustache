@@ -29,10 +29,10 @@ pub use imported::{{#toLower}}{{type}}{{/toLower}}::{
     {{#toUpper}}{{type}}{{/toUpper}}
 };
 {{/importedEnumTypes}}
-{{#importedQueryTypes}}
+{{#importedModuleTypes}}
 pub use imported::{{#toLower}}{{type}}{{/toLower}}::{{#toUpper}}{{type}}{{/toUpper}};
-{{/importedQueryTypes}}
-{{#queryTypes}}
+{{/importedModuleTypes}}
+{{#moduleTypes}}
 pub mod {{#toLower}}{{type}}{{/toLower}};
 pub use {{#toLower}}{{type}}{{/toLower}}::{
     {{#methods}}
@@ -42,4 +42,4 @@ pub use {{#toLower}}{{type}}{{/toLower}}::{
     Input{{#toUpper}}{{name}}{{/toUpper}}{{^last}},{{/last}}
     {{/methods}}
 };
-{{/queryTypes}}
+{{/moduleTypes}}

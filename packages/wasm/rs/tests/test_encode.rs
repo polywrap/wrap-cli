@@ -41,7 +41,7 @@ fn test_write_json() {
 fn test_write_fixstr() {
     let mut writer = WriteEncoder::new(&[], Context::new());
     writer
-        .write_str("-This string contains 31 chars-")
+        .write_string("-This string contains 31 chars-")
         .unwrap();
     assert_eq!(
         [
@@ -53,10 +53,10 @@ fn test_write_fixstr() {
 }
 
 #[test]
-fn test_write_str() {
+fn test_write_string() {
   let mut writer = WriteEncoder::new(&[], Context::new());
   writer
-      .write_str(concat!("This is a str 8 string of 255 bytes ",
+      .write_string(concat!("This is a str 8 string of 255 bytes ",
       "AC53LgxLLOKm0hfsPa1V0nfMjXtnmkEttruCPjc51dtEMLRJIEu1YoRGd9", "oXnM4CxcIiTc9V2DnAidZz22foIzc3kqHBoXgYskevfoJ5RK", 
       "Yp52qvoDPufUebLksFl7astBNEnjPVUX2e3O9O6VKeUpB0iiHQXfzOOjTEK6Xy6ks4zAG2M6jCL01flIJlxplRXCV7 sadsadsadsadasdasaaaaa"))
       .unwrap();
@@ -228,7 +228,7 @@ fn test_write_fixed_map() {
     writer
         .write_map(
             &map,
-            |writer, key| writer.write_str(key),
+            |writer, key| writer.write_string(key),
             |writer, value| writer.write_array(value, |writer, item| writer.write_i32(item)),
         )
         .unwrap();

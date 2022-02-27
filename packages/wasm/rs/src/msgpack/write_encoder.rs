@@ -167,7 +167,7 @@ impl Write for WriteEncoder {
         Ok(())
     }
 
-    fn write_str(&mut self, value: &str) -> Result<(), EncodeError> {
+    fn write_string(&mut self, value: &str) -> Result<(), EncodeError> {
         self.write_string_length(&(value.len() as u32))?;
         self.write_all(value.as_bytes())
             .map_err(|e| EncodeError::StrWriteError(e.to_string()))
@@ -198,13 +198,13 @@ impl Write for WriteEncoder {
     }
 
     fn write_bigint(&mut self, value: &BigInt) -> Result<(), EncodeError> {
-        self.write_str(&value.to_string())
+        self.write_string(&value.to_string())
             .map_err(|e| EncodeError::BigIntWriteError(e.to_string()))
     }
 
     fn write_json(&mut self, value: &JSON::Value) -> Result<(), EncodeError> {
         let json_str = JSON::to_string(value)?;
-        self.write_str(&json_str)
+        self.write_string(&json_str)
             .map_err(|e| EncodeError::JSONWriteError(e.to_string()))
     }
 
@@ -333,7 +333,7 @@ impl Write for WriteEncoder {
     fn write_nullable_string(&mut self, value: &Option<String>) -> Result<(), EncodeError> {
         match value {
             None => Write::write_nil(self),
-            Some(s) => Write::write_str(self, s),
+            Some(s) => Write::write_string(self, s),
         }
     }
 
