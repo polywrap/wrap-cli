@@ -146,6 +146,48 @@ describe("e2e tests for HttpPlugin", () => {
 
   describe("post method", () => {
 
+    test("succesfull request with request type as application/json", async () => {
+      const reqPayload = {
+        data: "test-request",
+      };
+      const reqPayloadStringified = JSON.stringify(reqPayload);
+      
+      const resPayload = {
+        data: "test-response"
+      };
+      const resPayloadStringfified = JSON.stringify(resPayload);
+
+      nock("http://www.example.com")
+          .defaultReplyHeaders(defaultReplyHeaders)
+          .post("/api", reqPayloadStringified)
+          .reply(200, resPayloadStringfified)
+
+      const response = await web3ApiClient.query<{ post: Response }>({
+        uri: "w3://ens/http.web3api.eth",
+        query: `
+          query {
+            post(
+              url: "http://www.example.com/api"
+              request: {
+                headers: [
+                  { key: "Content-Type", value: "application/json" },
+                ],
+                responseType: TEXT
+                body: "{\\"data\\":\\"test-request\\"}"
+              }
+            )
+          }
+        `
+      })
+
+      expect(response.data).toBeDefined()
+      expect(response.errors).toBeUndefined()
+      expect(response.data?.post.status).toBe(200)
+      // expect(response.data?.get.statusText).toBe("OK")
+      expect(response.data?.post.body).toBe(resPayloadStringfified)
+      expect(response.data?.post.headers?.length).toEqual(2) // default reply headers
+    });
+
     test("succesfull request with response type as TEXT", async () => {
       nock("http://www.example.com")
         .defaultReplyHeaders(defaultReplyHeaders)

@@ -23,7 +23,7 @@ import {
   TypeInfo,
 } from "../../../../schema/parse/src/typeInfo";
 
-export const output: TypeInfo = {
+export const typeInfo: TypeInfo = {
   interfaceTypes: [
     createInterfaceDefinition({
       type: "TestImport",
