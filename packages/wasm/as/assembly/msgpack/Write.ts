@@ -26,7 +26,6 @@ export abstract class Write {
     fn: (writer: Write, item: T) => void
   ): void;
   abstract writeMapLength(length: u32): void;
-  // TODO: potentially remove "writeMap"? Maybe change "writeMapLength" to "writeObjectMapLength"?
   abstract writeMap<K, V>(
     m: Map<K, V>,
     key_fn: (writer: Write, key: K) => void,
