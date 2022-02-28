@@ -48,7 +48,9 @@ export function msgpackEncode(object: unknown): ArrayBuffer {
   return encoder.encode(object).buffer;
 }
 
-export function msgpackDecode(buffer: ArrayLike<number> | BufferSource): unknown {
+export function msgpackDecode(
+  buffer: ArrayLike<number> | BufferSource
+): unknown {
   const decoder = new Decoder(extensionCodec);
   return decoder.decode(buffer);
 }

@@ -183,8 +183,7 @@ export class WasmWeb3Api extends Api {
         subinvoke: {},
         method,
         sanitizeEnv: {},
-        args:
-          input instanceof ArrayBuffer ? input : msgpackEncode(input),
+        args: input instanceof ArrayBuffer ? input : msgpackEncode(input),
       };
 
       const abort = (message: string) => {
@@ -237,9 +236,7 @@ export class WasmWeb3Api extends Api {
 
           try {
             return {
-              data: msgpackDecode(
-                invokeResult.invokeResult as ArrayBuffer
-              ),
+              data: msgpackDecode(invokeResult.invokeResult as ArrayBuffer),
             } as InvokeApiResult<unknown>;
           } catch (err) {
             throw Error(
