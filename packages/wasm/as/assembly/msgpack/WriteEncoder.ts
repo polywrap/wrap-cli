@@ -5,9 +5,9 @@ import { ExtensionType } from "./ExtensionType";
 import { Nullable } from "./Nullable";
 import { Write } from "./Write";
 import { throwArrayIndexOutOfRange } from "./utils";
-import { BigInt } from "../BigInt";
-import { Context } from "./Context";
-import { JSON } from "../JSON";
+import { BigInt } from "../math";
+import { Context } from "../debug";
+import { JSON } from "../json";
 
 export class WriteEncoder extends Write {
   private readonly _context: Context;

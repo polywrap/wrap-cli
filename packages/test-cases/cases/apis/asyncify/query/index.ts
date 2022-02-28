@@ -7,7 +7,7 @@ export function getData(input: Input_getData): u32 {
     method: "function get() view returns (uint256)",
     args: null,
     connection: input.connection
-  });
+  }).unwrap();
 
   return U32.parseInt(res);
 }
@@ -15,4 +15,3 @@ export function getData(input: Input_getData): u32 {
 export function returnTrue(): boolean {
   return true;
 }
-

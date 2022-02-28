@@ -5,7 +5,7 @@ import { ASTVisitor, DocumentNode } from "graphql";
 
 export type SchemaValidator = {
   visitor: ASTVisitor;
-  displayValidationMessagesIfExist?: (documentNode: DocumentNode) => void;
+  cleanup?: (documentNode: DocumentNode) => void;
 };
 
 export type SchemaValidatorBuilder = () => SchemaValidator;

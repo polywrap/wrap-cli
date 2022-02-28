@@ -1,7 +1,7 @@
 import { Nullable } from "./Nullable";
-import { BigInt } from "../BigInt";
-import { Context } from "./Context";
-import { JSON } from "../JSON";
+import { BigInt } from "../math";
+import { Context } from "../debug";
+import { JSON } from "../json";
 
 export abstract class Read {
   abstract readBool(): bool;

@@ -1,4 +1,4 @@
-import { Context } from "./Context";
+import { Context } from "../debug";
 
 export class BLOCK {
   /** Memory manager info. */
