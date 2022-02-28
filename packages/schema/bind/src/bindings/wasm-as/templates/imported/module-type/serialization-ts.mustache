@@ -16,7 +16,7 @@ export function serialize{{name}}Args(input: Input_{{name}}): ArrayBuffer {
   write{{name}}Args(sizer, input);
   const buffer = new ArrayBuffer(sizer.length);
   const encoderContext: Context = new Context("Serializing (encoding) imported module-type: {{name}}");
-  const encoder = new WriteEncoder(buffer, encoderContext);
+  const encoder = new WriteEncoder(buffer, sizer, encoderContext);
   write{{name}}Args(encoder, input);
   return buffer;
 }

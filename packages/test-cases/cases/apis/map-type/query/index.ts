@@ -1,8 +1,13 @@
 import {
-  Input_method
+  Input_getKey,
+  Input_returnMap
 } from "./w3";
 
-export function method(input: Input_method): Map<string, i32> {
-  // let result = input.map.get(input.key);
+export function getKey(input: Input_getKey): i32 {
+  let result = input.map.get(input.key);
+  return result;
+}
+
+export function returnMap(input: Input_returnMap): Map<string, i32> {
   return input.map;
 }

@@ -11,6 +11,7 @@ export * from "./math";
 export * from "./containers";
 export * from "./debug";
 
+export * from "./debug-log";
 export * from "./abort";
 export * from "./invoke";
 export * from "./subinvoke";

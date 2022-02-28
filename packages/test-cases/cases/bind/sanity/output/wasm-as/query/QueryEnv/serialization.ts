@@ -18,7 +18,7 @@ export function serializeQueryEnv(type: QueryEnv): ArrayBuffer {
   writeQueryEnv(sizer, type);
   const buffer = new ArrayBuffer(sizer.length);
   const encoderContext: Context = new Context("Serializing (encoding) object-type: QueryEnv");
-  const encoder = new WriteEncoder(buffer, encoderContext);
+  const encoder = new WriteEncoder(buffer, sizer, encoderContext);
   writeQueryEnv(encoder, type);
   return buffer;
 }
@@ -31,7 +31,7 @@ export function writeQueryEnv(writer: Write, type: QueryEnv): void {
   writer.context().pop();
   writer.context().push("optMap", "Map<string, Nullable<i32>> | null", "writing property");
   writer.writeString("optMap");
-  writer.writeNullableMap(type.optMap, (writer: Write, key: string) => {
+  writer.writeNullableExtGenericMap(type.optMap, (writer: Write, key: string) => {
     writer.writeString(key);
   }, (writer: Write, value: Nullable<i32>): void => {
     writer.writeNullableInt32(value);
@@ -76,7 +76,7 @@ export function readQueryEnv(reader: Read): QueryEnv {
     }
     else if (field == "optMap") {
       reader.context().push(field, "Map<string, Nullable<i32>> | null", "type found, reading property");
-      _optMap = reader.readNullableMap((reader: Read): string => {
+      _optMap = reader.readNullableExtGenericMap((reader: Read): string => {
         return reader.readString();
       }, (reader: Read): Nullable<i32> => {
         return reader.readNullableInt32();

@@ -9,7 +9,12 @@ import {
 import { parseMapType } from "./map-utils";
 import { setPropertyType } from "./property-utils";
 
-import { FieldDefinitionNode, InputValueDefinitionNode, NamedTypeNode, StringValueNode } from "graphql";
+import {
+  FieldDefinitionNode,
+  InputValueDefinitionNode,
+  NamedTypeNode,
+  StringValueNode,
+} from "graphql";
 
 export interface State {
   currentType?: ObjectDefinition;
@@ -22,7 +27,9 @@ export interface AnnotatedDefinition {
   def?: GenericDefinition;
 }
 
-export function extractAnnotateDirective(node: FieldDefinitionNode | InputValueDefinitionNode): AnnotatedDefinition {
+export function extractAnnotateDirective(
+  node: FieldDefinitionNode | InputValueDefinitionNode
+): AnnotatedDefinition {
   let type: string | undefined;
   let def: GenericDefinition | undefined;
 
@@ -65,14 +72,12 @@ export function extractFieldDefinition(
     );
   }
 
-  const { type, def } = extractAnnotateDirective(node); 
+  const { type, def } = extractAnnotateDirective(node);
 
   const property = createPropertyDefinition({
     type: type ? type : "N/A",
     name: node.name.value,
-    map: def
-      ? ({ ...def, name: node.name.value } as MapDefinition)
-      : undefined,
+    map: def ? ({ ...def, name: node.name.value } as MapDefinition) : undefined,
     comment: node.description?.value,
   });
 

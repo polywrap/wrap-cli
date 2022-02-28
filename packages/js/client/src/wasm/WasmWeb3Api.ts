@@ -20,8 +20,9 @@ import {
   Env,
   UriResolver,
   GetFileOptions,
+  msgpackEncode,
+  msgpackDecode,
 } from "@web3api/core-js";
-import * as MsgPack from "@msgpack/msgpack";
 import { Tracer } from "@web3api/tracing-js";
 import { AsyncWasmInstance } from "@web3api/asyncify-js";
 
@@ -47,9 +48,8 @@ export interface State {
   subinvoke: {
     result?: ArrayBuffer;
     error?: string;
-    args: unknown[];
   };
-  invokeResult: InvokeResult;
+  invokeResult?: InvokeResult;
   getImplementationsResult?: ArrayBuffer;
   sanitizeEnv: {
     args?: ArrayBuffer;
@@ -180,16 +180,10 @@ export class WasmWeb3Api extends Api {
 
       const state: State = {
         invoke: {},
-        subinvoke: {
-          args: [],
-        },
-        invokeResult: {} as InvokeResult,
+        subinvoke: {},
         method,
         sanitizeEnv: {},
-        args:
-          input instanceof ArrayBuffer
-            ? input
-            : MsgPack.encode(input, { ignoreUndefined: true }),
+        args: input instanceof ArrayBuffer ? input : msgpackEncode(input),
       };
 
       const abort = (message: string) => {
@@ -242,7 +236,7 @@ export class WasmWeb3Api extends Api {
 
           try {
             return {
-              data: MsgPack.decode(invokeResult.invokeResult as ArrayBuffer),
+              data: msgpackDecode(invokeResult.invokeResult as ArrayBuffer),
             } as InvokeApiResult<unknown>;
           } catch (err) {
             throw Error(
@@ -327,18 +321,13 @@ export class WasmWeb3Api extends Api {
         const clientEnv = this._getModuleClientEnv(module);
 
         if (hasExport("_w3_sanitize_env", exports)) {
-          state.sanitizeEnv.args = MsgPack.encode(
-            { env: clientEnv },
-            { ignoreUndefined: true }
-          );
+          state.sanitizeEnv.args = msgpackEncode({ env: clientEnv });
 
           await exports._w3_sanitize_env(state.sanitizeEnv.args.byteLength);
           state.env = state.sanitizeEnv.result as ArrayBuffer;
           this._sanitizedEnv[module] = state.env;
         } else {
-          state.env = MsgPack.encode(clientEnv, {
-            ignoreUndefined: true,
-          });
+          state.env = msgpackEncode(clientEnv);
           this._sanitizedEnv[module] = state.env;
         }
       }

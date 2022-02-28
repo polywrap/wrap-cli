@@ -18,7 +18,7 @@ export function serializeAnotherType(type: AnotherType): ArrayBuffer {
   writeAnotherType(sizer, type);
   const buffer = new ArrayBuffer(sizer.length);
   const encoderContext: Context = new Context("Serializing (encoding) object-type: AnotherType");
-  const encoder = new WriteEncoder(buffer, encoderContext);
+  const encoder = new WriteEncoder(buffer, sizer, encoderContext);
   writeAnotherType(encoder, type);
   return buffer;
 }

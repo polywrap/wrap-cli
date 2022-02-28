@@ -16,7 +16,7 @@ export const toMsgPack: MustacheFunction = () => {
       return modifier + "Array";
     }
     if (type.startsWith("Map<")) {
-      return modifier + "Map";
+      return modifier + "ExtGenericMap";
     }
     switch (type) {
       case "Int":

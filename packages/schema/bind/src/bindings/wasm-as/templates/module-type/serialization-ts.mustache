@@ -98,7 +98,7 @@ export function serialize{{name}}Result(result: {{#return}}{{#toWasm}}{{toGraphQ
   write{{name}}Result(sizer, result);
   const buffer = new ArrayBuffer(sizer.length);
   const encoderContext: Context = new Context("Serializing (encoding) module-type: {{name}}");
-  const encoder = new WriteEncoder(buffer, encoderContext);
+  const encoder = new WriteEncoder(buffer, sizer, encoderContext);
   write{{name}}Result(encoder, result);
   return buffer;
 }

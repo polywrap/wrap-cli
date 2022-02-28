@@ -21,8 +21,8 @@ import {
   coreInterfaceUris,
   Client,
   PluginModules,
+  msgpackDecode
 } from "@web3api/core-js";
-import * as MsgPack from "@msgpack/msgpack";
 import { readFileSync } from "fs";
 
 jest.setTimeout(200000);
@@ -200,7 +200,7 @@ describe("Web3ApiClient", () => {
       expect(result.error).toBeFalsy();
       expect(result.data).toBeTruthy();
       expect(result.data instanceof ArrayBuffer).toBeTruthy();
-      expect(MsgPack.decode(result.data as ArrayBuffer)).toContain("0x");
+      expect(msgpackDecode(result.data as ArrayBuffer)).toContain("0x");
     }
   });
 
@@ -2882,23 +2882,59 @@ enum Logger_LogLevel @imported(
     const ensUri = `ens/testnet/${api.ensDomain}`;
     const client = await getClient();
 
-    const map = new Map<string, number>().set("Hello", 1);
+    const mapClass = new Map<string, number>()
+      .set("Hello", 1)
+      .set("Heyo", 50);
+    const mapRecord: Record<string, number> = {
+      Hello: 1,
+      Heyo: 50
+    };
 
-    console.log(map);
-    const methodResponse = await client.query<{
-      method: number;
-    }>({
+    const returnMapResponse1 = await client.invoke<Map<string, number>>({
       uri: ensUri,
-      query: `query {
-        method(map: $map, key: $key)
-      }`,
-      variables: {
-        map: map,
+      module: "query",
+      method: "returnMap",
+      input: {
+        map: mapClass
+      },
+    });
+    expect(returnMapResponse1.error).toBeUndefined();
+    expect(returnMapResponse1.data).toEqual(mapClass);
+
+    const returnMapResponse2 = await client.invoke<Map<string, number>>({
+      uri: ensUri,
+      module: "query",
+      method: "returnMap",
+      input: {
+        map: mapRecord
+      },
+    });
+    expect(returnMapResponse2.error).toBeUndefined();
+    expect(returnMapResponse2.data).toEqual(mapClass);
+
+    const getKeyResponse1 = await client.invoke<number>({
+      uri: ensUri,
+      module: "query",
+      method: "getKey",
+      input: {
+        map: mapClass,
         key: "Hello"
       },
     });
+    expect(getKeyResponse1.error).toBeUndefined();
+    expect(getKeyResponse1.data).toEqual(mapClass.get("Hello"));
 
-    expect(methodResponse.data?.method).toEqual(map);
+    const getKeyResponse2 = await client.invoke<number>({
+      uri: ensUri,
+      module: "query",
+      method: "getKey",
+      input: {
+        map: mapRecord,
+        key: "Heyo"
+      },
+    });
+    expect(getKeyResponse2.error).toBeUndefined();
+    expect(getKeyResponse2.data).toEqual(mapRecord.Heyo);
   });
 
 });
