@@ -20,10 +20,8 @@ import {
   Env,
   UriResolver,
   GetFileOptions,
-  MsgPackEncoder,
-  MsgPackDecoder,
-  createMsgPackEncoder,
-  createMsgPackDecoder,
+  msgpackEncode,
+  msgpackDecode,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 import { AsyncWasmInstance } from "@web3api/asyncify-js";
@@ -50,9 +48,8 @@ export interface State {
   subinvoke: {
     result?: ArrayBuffer;
     error?: string;
-    args: unknown[];
   };
-  invokeResult: InvokeResult;
+  invokeResult?: InvokeResult;
   getImplementationsResult?: ArrayBuffer;
   sanitizeEnv: {
     args?: ArrayBuffer;
@@ -75,9 +72,6 @@ export class WasmWeb3Api extends Api {
     query: undefined,
     mutation: undefined,
   };
-
-  private _encoder: MsgPackEncoder = createMsgPackEncoder();
-  private _decoder: MsgPackDecoder = createMsgPackDecoder();
 
   constructor(
     private _uri: Uri,
@@ -186,14 +180,11 @@ export class WasmWeb3Api extends Api {
 
       const state: State = {
         invoke: {},
-        subinvoke: {
-          args: [],
-        },
-        invokeResult: {} as InvokeResult,
+        subinvoke: {},
         method,
         sanitizeEnv: {},
         args:
-          input instanceof ArrayBuffer ? input : this._encoder.encode(input),
+          input instanceof ArrayBuffer ? input : msgpackEncode(input),
       };
 
       const abort = (message: string) => {
@@ -246,7 +237,7 @@ export class WasmWeb3Api extends Api {
 
           try {
             return {
-              data: this._decoder.decode(
+              data: msgpackDecode(
                 invokeResult.invokeResult as ArrayBuffer
               ),
             } as InvokeApiResult<unknown>;
@@ -333,13 +324,13 @@ export class WasmWeb3Api extends Api {
         const clientEnv = this._getModuleClientEnv(module);
 
         if (hasExport("_w3_sanitize_env", exports)) {
-          state.sanitizeEnv.args = this._encoder.encode({ env: clientEnv });
+          state.sanitizeEnv.args = msgpackEncode({ env: clientEnv });
 
           await exports._w3_sanitize_env(state.sanitizeEnv.args.byteLength);
           state.env = state.sanitizeEnv.result as ArrayBuffer;
           this._sanitizedEnv[module] = state.env;
         } else {
-          state.env = this._encoder.encode(clientEnv);
+          state.env = msgpackEncode(clientEnv);
           this._sanitizedEnv[module] = state.env;
         }
       }

@@ -6,9 +6,6 @@ import {
   decode,
 } from "@msgpack/msgpack";
 
-export type MsgPackEncoder = Encoder;
-export type MsgPackDecoder = Decoder;
-
 enum ExtensionTypes {
   // must be in range 0-127
   GENERIC_MAP = 1,
@@ -36,8 +33,8 @@ extensionCodec.register({
   },
 });
 
-export function createMsgPackEncoder(): MsgPackEncoder {
-  return new Encoder(
+export function msgpackEncode(object: unknown): ArrayBuffer {
+  const encoder = new Encoder(
     extensionCodec,
     undefined, // context
     undefined, // maxDepth
@@ -47,8 +44,11 @@ export function createMsgPackEncoder(): MsgPackEncoder {
     true, // ignoreUndefined
     undefined // forceIntegerToFloat
   );
+
+  return encoder.encode(object).buffer;
 }
 
-export function createMsgPackDecoder(): MsgPackDecoder {
-  return new Decoder(extensionCodec);
+export function msgpackDecode(buffer: ArrayLike<number> | BufferSource): unknown {
+  const decoder = new Decoder(extensionCodec);
+  return decoder.decode(buffer);
 }

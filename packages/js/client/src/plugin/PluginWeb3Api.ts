@@ -14,10 +14,8 @@ import {
   GetFileOptions,
   Env,
   InvokableModules,
-  MsgPackEncoder,
-  MsgPackDecoder,
-  createMsgPackEncoder,
-  createMsgPackDecoder,
+  msgpackEncode,
+  msgpackDecode,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
@@ -27,9 +25,6 @@ function isValidEnv(env: Record<string, unknown>): boolean {
 
 export class PluginWeb3Api extends Api {
   private _instance: Plugin | undefined;
-
-  private _encoder: MsgPackEncoder = createMsgPackEncoder();
-  private _decoder: MsgPackDecoder = createMsgPackDecoder();
 
   constructor(
     private _uri: Uri,
@@ -101,7 +96,7 @@ export class PluginWeb3Api extends Api {
 
       // If the input is a msgpack buffer, deserialize it
       if (input instanceof ArrayBuffer) {
-        const result = this._decoder.decode(input);
+        const result = msgpackDecode(input);
 
         Tracer.addEvent("msgpack-decoded", result);
 
@@ -132,7 +127,7 @@ export class PluginWeb3Api extends Api {
             // try to encode the returned result,
             // ensuring it's msgpack compliant
             try {
-              this._encoder.encode(data);
+              msgpackEncode(data);
             } catch (e) {
               throw Error(
                 `TEST_PLUGIN msgpack encode failure.` +

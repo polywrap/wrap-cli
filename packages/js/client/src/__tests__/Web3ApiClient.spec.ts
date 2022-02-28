@@ -21,7 +21,7 @@ import {
   coreInterfaceUris,
   Client,
   PluginModules,
-  createMsgPackDecoder
+  msgpackDecode
 } from "@web3api/core-js";
 import { readFileSync } from "fs";
 
@@ -200,7 +200,7 @@ describe("Web3ApiClient", () => {
       expect(result.error).toBeFalsy();
       expect(result.data).toBeTruthy();
       expect(result.data instanceof ArrayBuffer).toBeTruthy();
-      expect(createMsgPackDecoder().decode(result.data as ArrayBuffer)).toContain("0x");
+      expect(msgpackDecode(result.data as ArrayBuffer)).toContain("0x");
     }
   });
 

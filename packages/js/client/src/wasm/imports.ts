@@ -5,7 +5,7 @@ import { readBytes, readString, writeBytes, writeString } from "./buffer";
 import { Client, InvokableModules } from "..";
 import { State } from "./WasmWeb3Api";
 
-import { createMsgPackEncoder } from "@web3api/core-js";
+import { msgpackEncode } from "@web3api/core-js";
 
 export const createImports = (config: {
   client: Client;
@@ -14,7 +14,6 @@ export const createImports = (config: {
   abort: (message: string) => never;
 }): W3Imports => {
   const { memory, state, client, abort } = config;
-  const encoder = createMsgPackEncoder();
 
   return {
     w3: {
@@ -37,13 +36,6 @@ export const createImports = (config: {
         const method = readString(memory.buffer, methodPtr, methodLen);
         const input = readBytes(memory.buffer, inputPtr, inputLen);
 
-        state.subinvoke.args = [
-          uri,
-          moduleToInvoke as InvokableModules,
-          method,
-          input,
-        ];
-
         const { data, error } = await client.invoke<unknown | ArrayBuffer>({
           uri: uri,
           module: moduleToInvoke as InvokableModules,
@@ -57,7 +49,7 @@ export const createImports = (config: {
           if (data instanceof ArrayBuffer) {
             msgpack = data;
           } else {
-            msgpack = encoder.encode(data);
+            msgpack = msgpackEncode(data);
           }
 
           state.subinvoke.result = msgpack;
@@ -123,7 +115,7 @@ export const createImports = (config: {
       __w3_getImplementations: (uriPtr: u32, uriLen: u32): boolean => {
         const uri = readString(memory.buffer, uriPtr, uriLen);
         const result = client.getImplementations(uri, {});
-        state.getImplementationsResult = encoder.encode(result);
+        state.getImplementationsResult = msgpackEncode(result);
         return result.length > 0;
       },
       __w3_getImplementations_result_len: (): u32 => {
@@ -171,6 +163,13 @@ export const createImports = (config: {
           `__w3_abort: ${msg}\nFile: ${file}\nLocation: [${line},${column}]`
         );
       },
+      __w3_debug_log: (
+        ptr: u32,
+        len: u32
+      ): void => {
+        const msg = readString(memory.buffer, ptr, len);
+        console.debug(`__w3_debug_log: ${msg}`);
+      }
     },
     env: {
       memory,
