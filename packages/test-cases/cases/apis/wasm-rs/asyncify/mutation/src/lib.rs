@@ -137,7 +137,7 @@ pub fn subsequent_invokes(input: mutation::InputSubsequentInvokes) -> Vec<String
                     args: None,
                     connection: input.connection.clone(),
                 }) {
-                    Ok(v) => result[i] = v,
+                    Ok(v) => result.push(v),
                     Err(e) => panic!("{}", e),
                 }
             }
