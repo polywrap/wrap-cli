@@ -1,0 +1,11 @@
+[
+  {
+    "api": "ens/testnet/enum-types.eth"
+  },
+  {
+    "query": "./method1.graphql",
+    "variables": {
+      "en": 5
+    }
+  }
+]
