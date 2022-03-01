@@ -81,7 +81,7 @@ optStr comment
   enum: CustomEnum!
   enumArray: [CustomEnum!]!,
   optEnumArray: [CustomEnum],
-  map1: Map! @annotate(type: "Map<String, Int>")
+  map1: Map @annotate(type: "Map<String, Int>")
 }
 
 """

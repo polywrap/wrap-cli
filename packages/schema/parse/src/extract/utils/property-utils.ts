@@ -6,6 +6,8 @@ import {
   PropertyDefinition,
 } from "../../typeInfo";
 
+const toBoolean = (val: unknown) => (val ? true : false);
+
 export function setPropertyType(
   property: PropertyDefinition,
   name: string,
@@ -21,6 +23,16 @@ export function setPropertyType(
   }
 
   if (type.type === "Map") {
+    if (toBoolean(type.required) !== toBoolean(property.required)) {
+      throw new Error(
+        `Map defined as ${
+          type.required ? "required" : "optional"
+        } while declaring type but defined as ${
+          property.required ? "required" : "optional"
+        } while annotating: ${property.type}`
+      );
+    }
+
     property.map = {
       ...createMapDefinition({
         type: type.type,

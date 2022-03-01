@@ -356,7 +356,6 @@ export const typeInfo: TypeInfo = {
           type: "Map<String, Int>",
           key: createMapKeyDefinition({ type: "String", required: true }),
           value: createScalarDefinition({ type: "Int" }),
-          required: true,
         }),
       ],
     },
