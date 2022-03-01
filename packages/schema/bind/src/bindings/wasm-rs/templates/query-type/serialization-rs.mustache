@@ -69,7 +69,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
 
         match field.as_str() {
             {{#arguments}}
-            "{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}" => {
+            "{{name}}" => {
                 reader.context().push(&field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading argument");
                 {{#scalar}}
                 w3_debug_log("READING scalar field: {{#toLower}}{{name}}{{/toLower}}");
@@ -130,7 +130,7 @@ pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_result(result: {{#return}}&{{#
 pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#return}}&{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, writer: &mut W) -> Result<(), EncodeError> {
     {{#return}}
     w3_debug_log("BEGIN writing query method result...");
-    writer.context().push("{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing result");
+    writer.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing result");
     {{#scalar}}
     w3_debug_log("WRITING scalar: {{#toLower}}{{name}}{{/toLower}}");
     writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(result)?;

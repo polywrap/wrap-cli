@@ -49,8 +49,8 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_args<W: Write>(input: &Input{{#toU
     writer.write_map_length(&{{arguments.length}})?;
     {{#arguments}}
     w3_debug_log("BEGIN writing properties...");
-    writer.context().push("{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
-    writer.write_string("{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}")?;
+    writer.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
+    writer.write_string("{{name}}")?;
     {{#scalar}}
     w3_debug_log("WRITING scalar: {{#toLower}}{{name}}{{/toLower}}");
     writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}})?;
@@ -99,7 +99,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_result(result: &[u8]) -> Res
     w3_debug_log("BEGIN deserializing imported query-type: {{#toLower}}{{name}}{{/toLower}}");
 
     {{#return}}
-    reader.context().push("{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "reading function output");
+    reader.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "reading function output");
     {{#scalar}}
     w3_debug_log("READING scalar field: {{#toLower}}{{name}}{{/toLower}}");
     let res = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}()?;

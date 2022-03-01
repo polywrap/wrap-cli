@@ -44,7 +44,7 @@ impl {{#toUpper}}{{type}}{{/toUpper}} {
         let result = subinvoke::w3_subinvoke(
             uri,
             "{{#toLower}}{{type}}{{/toLower}}",
-            "{{#toLower}}{{name}}{{/toLower}}",
+            "{{name}}",
             args,
         )?;
         deserialize_{{#toLower}}{{name}}{{/toLower}}_result(result.as_slice()).map_err(|e| e.to_string())

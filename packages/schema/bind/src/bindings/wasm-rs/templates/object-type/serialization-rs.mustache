@@ -38,8 +38,8 @@ pub fn serialize_{{#toLower}}{{type}}{{/toLower}}(input: &{{#toUpper}}{{type}}{{
 pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(input: &{{#toUpper}}{{type}}{{/toUpper}}, writer: &mut W) -> Result<(), EncodeError> {
     writer.write_map_length(&{{properties.length}})?;
     {{#properties}}
-    writer.context().push("{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
-    writer.write_string("{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}")?;
+    writer.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
+    writer.write_string("{{name}}")?;
     {{#scalar}}
     writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}})?;
     {{/scalar}}
@@ -106,7 +106,7 @@ pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<
 
         match field.as_str() {
             {{#properties}}
-            "{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}" => {
+            "{{name}}" => {
                 reader.context().push(&field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading property");
                 {{#scalar}}
                 _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}()?;
