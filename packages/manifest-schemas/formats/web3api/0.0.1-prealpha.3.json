@@ -8,7 +8,7 @@
   ],
   "properties": {
     "format": {
-      "description": "Polywrap YAML format version",
+      "description": "Polywrap YAML format version.",
       "type": "string",
       "const": "0.0.1-prealpha.3"
     },
@@ -22,7 +22,7 @@
       "format": "file"
     },
     "language": {
-      "description" : "Language that will be compiled to wasm",
+      "description" : "Language that will be compiled to wasm.",
       "type": "string",
       "format": "wasmLanguage"
     },
@@ -30,22 +30,22 @@
       "type": "boolean"
     },
     "modules": {
-      "description" : "Modules of Polywrap schema and implementation",
+      "description" : "Modules of Polywrap schema and implementation.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
         "mutation": {
-          "description": "Module for mutation operations",
+          "description": "Module for mutation operations.",
           "type": "object",
           "additionalProperties": false,
           "properties": {
             "schema": {
-              "description": "Path to graphql schema",
+              "description": "Path to graphql schema.",
               "type": "string",
               "format": "file"
             },
             "module": {
-              "description": "Path to Polywrap implementation",
+              "description": "Path to Polywrap implementation.",
               "type": "string",
               "format": "file"
             }
@@ -55,17 +55,17 @@
           ]
         },
         "query": {
-          "description": "Module for query operations",
+          "description": "Module for query operations.",
           "type": "object",
           "additionalProperties": false,
           "properties": {
             "schema": {
-              "description": "Path to graphql schema",
+              "description": "Path to graphql schema.",
               "type": "string",
               "format": "file"
             },
             "module": {
-              "description": "Path to Polywrap implementation",
+              "description": "Path to Polywrap implementation.",
               "type": "string",
               "format": "file"
             }
@@ -77,18 +77,18 @@
       }
     },
     "import_redirects": {
-      "description": "Redirects enabling the import of plugins",
+      "description": "Redirects enabling the import of plugins.",
       "type": "array",
       "items": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
           "uri": {
-            "description": "URI resolving to the plugin schema",
+            "description": "URI resolving to the plugin schema.",
             "type": "string"
           },
           "schema": {
-            "description": "Graphql schema for imported plugin",
+            "description": "Graphql schema for imported plugin.",
             "type": "string"
           }
         },

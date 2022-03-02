@@ -71,7 +71,7 @@
       "additionalProperties": false,
       "properties": {
         "schema": {
-          "description": "Path to graphql schema",
+          "description": "Path to graphql schema.",
           "type": "object",
           "additionalProperties": false,
           "properties": {
@@ -112,18 +112,18 @@
       ]
     },
     "import_redirects": {
-      "description": "Redirects enabling the import of plugins",
+      "description": "Redirects enabling the import of plugins.",
       "type": "array",
       "items": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
           "uri": {
-            "description": "URI resolving to the plugin schema",
+            "description": "URI resolving to the plugin schema.",
             "type": "string"
           },
           "schema": {
-            "description": "Graphql schema for imported plugin",
+            "description": "Graphql schema for imported plugin.",
             "type": "string"
           }
         },
