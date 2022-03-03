@@ -1,8 +1,10 @@
-import { Project, ProjectConfig } from "./Project";
-import { ManifestLanguage, loadAppManifest } from "../helpers";
-import { intlMsg } from "../intl";
+import { ImportedWeb3ApiProject } from "./ImportedWeb3ApiProject";
+import { ImportedPluginProject } from "./ImportedPluginProject";
+import { Project, ProjectConfig } from "../Project";
+import { ManifestLanguage, loadAppManifest } from "../../helpers";
+import { intlMsg } from "../../intl";
 
-import { AppManifest, Uri } from "@web3api/core-js";
+import { AppManifest, Client, Uri } from "@web3api/core-js";
 import path from "path";
 import fs from "fs";
 
@@ -12,6 +14,7 @@ const cacheLayout = {
 
 export interface AppProjectConfig extends ProjectConfig {
   appManifestPath: string;
+  client: Client;
 }
 
 export class AppProject extends Project<AppManifest> {
@@ -101,5 +104,42 @@ export class AppProject extends Project<AppManifest> {
 
     // TODO: Web3ApiManifestLanguage, PluginManifestLanguage, AppManifestLanguage
     return language as ManifestLanguage;
+  }
+
+  public async getImportedDependencies(): Promise<
+    (ImportedPluginProject | ImportedWeb3ApiProject)[]
+  > {
+    const manifest = await this.getManifest();
+
+    if (!manifest.dependencies) {
+      return [];
+    }
+
+    const plugins = manifest.dependencies.plugins || [];
+    const web3apis = manifest.dependencies.web3apis || [];
+    const imports: (ImportedPluginProject | ImportedWeb3ApiProject)[] = [];
+
+    for (const plugin of plugins) {
+      const importedPlugin = new ImportedPluginProject({
+        rootCacheDir: this._config.rootCacheDir,
+        pluginManifestPath: plugin.manifest,
+        namespace: plugin.namespace
+      });
+      await importedPlugin.validate();
+      imports.push(importedPlugin);
+    }
+
+    for (const web3api of web3apis) {
+      const importedWeb3Api = new ImportedWeb3ApiProject({
+        rootCacheDir: this._config.rootCacheDir,
+        uri: new Uri(web3api.uri),
+        namespace: web3api.namespace,
+        client: this._config.client
+      });
+      await importedWeb3Api.validate();
+      imports.push(importedWeb3Api);
+    }
+
+    return imports;
   }
 }

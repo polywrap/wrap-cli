@@ -9,11 +9,11 @@
 export interface AppManifest {
   format: "0.0.1-prealpha.1";
   language: string;
-  codegen: {
-    directory: string;
+  codegen?: {
+    directory?: string;
     withExtensions?: boolean;
   };
-  imports?: {
+  dependencies?: {
     web3apis?: {
       namespace: string;
       uri: string;

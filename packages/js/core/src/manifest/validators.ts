@@ -130,10 +130,16 @@ export function uniqueNamespaceArray(arr: unknown): boolean {
 }
 
 // Accepts valid name for JavaScript class and property
-export function importNamespace(ns: unknown): boolean {
+export function dependencyNamespace(ns: unknown): boolean {
   return typeof ns === "string" && !!ns.match(/^[_A-Za-z]+[\w]*$/);
 }
 
-export function importUri(uri: unknown): boolean {
-  return typeof uri === "string" && Uri.isValidUri(uri)
+export function web3apiUri(uri: unknown): boolean {
+  return typeof uri === "string" && Uri.isValidUri(uri);
+}
+
+export function pluginManifestFile(filePath: unknown): boolean {
+  return (
+    typeof filePath === "string" && file(filePath)
+  );
 }

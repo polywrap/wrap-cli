@@ -1,11 +1,11 @@
-import { ProjectConfig } from "./Project";
-import { ProjectWithSchema } from "./ProjectWithSchema";
+import { ProjectConfig } from "../Project";
+import { ImportedProject } from "./ImportedProject";
 import {
   loadPluginManifest,
   outputManifest,
   ManifestLanguage
-} from "../helpers";
-import { intlMsg } from "../intl";
+} from "../../helpers";
+import { intlMsg } from "../../intl";
 
 import {
   PluginManifest,
@@ -24,7 +24,7 @@ export interface ImportedPluginProjectConfig extends ProjectConfig {
   namespace: string;
 }
 
-export class ImportedPluginProject extends ProjectWithSchema<PluginManifest> {
+export class ImportedPluginProject extends ImportedProject<PluginManifest> {
   private _pluginManifest: PluginManifest | undefined;
   private _pluginSchema: string | undefined;
 
@@ -82,7 +82,7 @@ export class ImportedPluginProject extends ProjectWithSchema<PluginManifest> {
   public async getManifestLanguage(): Promise<ManifestLanguage> {
     const language = (await this.getManifest()).language;
 
-    ProjectWithSchema.validateManifestLanguage(
+    ImportedPluginProject.validateManifestLanguage(
       language,
       ["plugin/"]
     );
@@ -124,5 +124,11 @@ export class ImportedPluginProject extends ProjectWithSchema<PluginManifest> {
   > {
     const manifest = await this.getManifest();
     return manifest.import_redirects || [];
+  }
+
+  /// ImportedProject Base Methods
+
+  public getNamespace(): string {
+    return this._config.namespace;
   }
 }

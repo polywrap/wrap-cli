@@ -1,8 +1,8 @@
 format: 0.0.1-prealpha.1
 language: app/typescript
-types:
+codegen:
   directory: "./polywrap"
-imports:
+dependencies:
   web3apis:
     - uri: "w3://ipfs/QmeiPWHe2ixfitcgjRwP5AaJD5R7DbsGhQNQwT4rFNyxx8"
       namespace: "erc20"

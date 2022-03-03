@@ -1,52 +1,69 @@
 # TODO
-x have easy to track location for all cache folder strings
+## App command
 - finish implementing the new app.ts flow
-- !plugin command should output web3api.plugin.yaml to build folder (publish circular dep, should patch this in...)
-- does it break if you use a plugin that's added to the client (and has a schema on the package manifest)?
-- make sure external cache folder is optimized
-- all command flows are the same (parse arsg, validate args, run middleware, create/validate/run lib classes, cleanup)
-- ensure middleware is being run selectively
-- remove "quiet" from project configuration
-- - have a global logger that's configured by the command
-- create separate types for manifest languages "plugin/...", "app/...", "wasm/..."
 
+## Refactor
+- plugins should have props { uri, manifest, namespace }
+- add web3api.plugin.yaml to the build folder, alongside the package.json file
+- !plugin command should output web3api.plugin.yaml to build folder (publish circular dep, should patch this in...)
+- should remove files from output directory when performing codegen (like plugin & codegen commands do)
+
+## Refactor
+- create separate types for manifest languages "plugin/...", "app/...", "wasm/..."
 - resolveManifestPath
 - - the function's second parameter should be optionally undefined... or just use an array for everything
 - - also there isn't proper argument sanitization happening in plugin.ts, codegen.ts, build.ts, or app.ts for the "manifestPath"... it could be true and not a string...
 
+## Gradual
+- remove "extension" for now, add back after types are working
+
+## Test
+- create test cases to ensure that each use-case codegens correctly & compiles
+- move CLI test projects into test-cases/cases/[dapps, plugins, etc]
+- need a dapp test-case to make sure the generated types actually compile and work
+
+## Manifest Dependencies
+- use "dependencies" within wrapper & plugin manifests?
+  - allows us to download deps for the user
+  - can throw errors if they aren't found, warnings if they aren't used in schemas, etc
+
+## Architecture Question
 - schema compose
 - - Why the if "composed"? Is this needed with the latest changes I made?
+- resolve plugin URI => PluginApi => getManifest + getSchema + getFile
+- does it break if you use a plugin that's added to the client (and has a schema on the package manifest)?
 
-- CLI codegen-templates mustache file names (should be the name of the file)
+## CLI Cache
+- make sure dependency cache folder is optimized
 
-- .gen.js files
-- - Convert .gen.js files to TypeScript?
-- - Using the plugin functions? confusing...
-
-- should remove files from output directory when performing codegen (like plugin & codegen commands do)
-
-- what's the difference between the mustache files in the CLI vs the mustache templates in the schema-bind project?
-
-- no dynamic imports required, do a static import at compile-time?
-
+## Command Cleanliness
+- all command flows are the same (parse arsg, validate args, run middleware, create/validate/run lib classes, cleanup)
+- ensure middleware is being run selectively
 - output standarziation
 - - web3api.plugin.yaml -> needs options for output types & schema
 - - web3api.dapp.yaml -> add options for output types
 - - w3 dapp command needs output options similar to dapp command
 
-- web3api.dapp.yaml -> packages
-- - rename to "wrappers" or "schemas"?
-- - "isPlugin" necessary?
+## Logging
+- remove "quiet" from project configuration
+- - have a global logger that's configured by the command
 
-- move CLI test projects into test-cases/cases/[dapps, plugins, etc]
-
-- need a dapp test-case to make sure the generated types actually compile and work
-
+## Codegen
+- CLI codegen-templates mustache file names (should be the name of the file)
+- .gen.js files
+- - Convert .gen.js files to TypeScript?
+- - Using the plugin functions? confusing...
+- what's the difference between the mustache files in the CLI vs the mustache templates in the schema-bind project?
+- no dynamic imports required, do a static import at compile-time?
 - move all binding projects to the codegen script model so they can easily be ejected?
-
 - codegen output/project directory? What is this?
 
 # Done
+
+x have easy to track location for all cache folder strings
+
+x ImportedProject = namespace + URI
+x web3api.app.yaml "imports" -> "dependencies"
 
 x move app.ts sanitizeUri function to manifest validator
 

@@ -1,8 +1,8 @@
 format: 0.0.1-prealpha.1
 language: app/typescript
-types:
+codegen:
   directory: "./polywrap"
-imports:
+dependencies:
   plugins:
     - manifest: "./../../../../js/plugins/http/build/web3api.plugin.yaml"
       namespace: "http"

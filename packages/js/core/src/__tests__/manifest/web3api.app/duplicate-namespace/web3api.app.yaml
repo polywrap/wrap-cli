@@ -3,7 +3,7 @@ language: app/typescript
 codegen:
   directory: "./polywrap"
   withExtensions: true
-imports:
+dependencies:
   web3apis:
     - uri: "w3://fs/./../project/build"
       namespace: "project"

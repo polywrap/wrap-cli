@@ -1,6 +1,5 @@
 /* eslint-disable prefer-const */
 import {
-  Project,
   AppProject,
   CodeGenerator,
   SchemaComposer
@@ -8,18 +7,16 @@ import {
 import { intlMsg } from "../lib/intl";
 import {
   fixParameters,
-  loadAppManifest,
   resolvePathIfExists,
   defaultAppManifest
 } from "../lib/helpers";
 import { getSimpleClient, getDefaultProviders } from "../lib/helpers/client";
-import { ImportedWeb3ApiProject } from "../lib/project/ImportedWeb3ApiProject";
-import { ImportedPluginProject } from "../lib/project/ImportedPluginProject";
+import { ImportedWeb3ApiProject } from "../lib/project/app/ImportedWeb3ApiProject";
+import { ImportedPluginProject } from "../lib/project/app/ImportedPluginProject";
 
 import chalk from "chalk";
 import { GluegunToolbox, GluegunPrint } from "gluegun";
 import { Web3ApiClient } from "@web3api/client-js";
-import { AppManifest } from "@web3api/core-js";
 import * as path from "path";
 
 interface AppGenFiles {
@@ -159,52 +156,6 @@ export default {
       return;
     }
 
-    // App project
-    const project = new AppProject({
-      rootCacheDir: path.dirname(manifestFile),
-      appManifestPath: manifestFile
-    });
-    await project.validate();
-
-    // Get imported web3api & plugin projects
-    const importedProjects = project.getImportedProjects();
-
-    // Generate code for each imported project
-    // TODODODODO:
-
-    // Transform packages
-    const imports = appManifest.imports?.map((pack) => ({
-      uri: sanitizeUri(pack.uri, pack.isPlugin),
-      namespace: pack.namespace,
-      isPlugin: pack.isPlugin,
-    })) || [];
-
-    // types:
-    //   directory:
-    const outputDirFromManifest: string | undefined =
-      appManifest.types.directory;
-
-    //   withExtensions:
-    const withExtensions: boolean | undefined = appManifest.types.withExtensions;
-
-    // Resolve output directory
-    if (outputTypesDir) {
-      outputTypesDir = filesystem.resolve(outputTypesDir);
-    } else if (outputDirFromManifest) {
-      outputTypesDir = filesystem.resolve(outputDirFromManifest);
-    } else {
-      outputTypesDir = filesystem.resolve(defaultOutputTypesDir);
-    }
-
-    // Resolve generation file
-    const langGenFiles: LangGenFiles = langSupport[language];
-    const genFiles: AppGenFiles = withExtensions
-      ? langGenFiles.extension
-      : langGenFiles.types;
-    // TODO: does "genFiles.package/app" make sense?
-    const packageScript = filesystem.resolve(genFiles.package);
-    const appScript = filesystem.resolve(genFiles.app);
-
     // Get providers and client
     const { ipfsProvider, ethProvider } = await getDefaultProviders(ipfs);
     const ensAddress: string | undefined = ens;
@@ -214,31 +165,52 @@ export default {
       ipfsProvider,
     });
 
-    // Generate code for each Polywrap package
+    // App project
+    const project = new AppProject({
+      rootCacheDir: path.dirname(manifestFile),
+      appManifestPath: manifestFile,
+      client
+    });
+    await project.validate();
+
+    // App manifest
+    const manifest = await project.getManifest();
+
+    // Resolve output "codegen.directory"
+    const outputDirFromManifest = manifest.codegen?.directory;
+    if (outputTypesDir) {
+      outputTypesDir = filesystem.resolve(outputTypesDir);
+    } else if (outputDirFromManifest) {
+      outputTypesDir = filesystem.resolve(outputDirFromManifest);
+    } else {
+      outputTypesDir = filesystem.resolve(defaultOutputTypesDir);
+    }
+
+    // Resolve "codegen.withExtensions" flag
+    const withExtensions = manifest.codegen?.withExtensions;
+
+    // Resolve generation file
+    const langGenFiles: LangGenFiles = langSupport[manifest.language];
+    const genFiles: AppGenFiles = withExtensions
+      ? langGenFiles.extension
+      : langGenFiles.types;
+    // TODO: does "genFiles.package/app" make sense?
+    const packageScript = filesystem.resolve(genFiles.package);
+    const appScript = filesystem.resolve(genFiles.app);
+
+    // Get imported web3api & plugin dependencies
+    const dependencies = await project.getImportedDependencies();
+
+    // Generate code for each imported dependency
     let result = true;
-    for (let i = 0; i < imports.length; i++) {
-      const { uri, namespace, isPlugin } = imports[i];
-
-      const project = isPlugin
-        ? new ImportedPluginProject({
-            rootCacheDir: manifestDir,
-            pluginManifestPath: ,
-            namespace,
-          })
-        : new ImportedWeb3ApiProject({
-            rootCacheDir: manifestDir,
-            uri,
-            namespace,
-            client,
-          });
-
+    for (const dependency of dependencies) {
+      const namespace = dependency.getNamespace();
       const schemaComposer = new SchemaComposer({
-        project,
+        project: dependency,
         client,
       });
-
-      const namespaceCodeGenerator = new CodeGenerator({
-        project,
+      const codeGenerator = new CodeGenerator({
+        project: dependency,
         schemaComposer,
         customScript: packageScript,
         outputDir: path.join(outputTypesDir, namespace),
@@ -248,7 +220,7 @@ export default {
       // Ensure the target directory is reset
       project.reset();
 
-      if (await namespaceCodeGenerator.generate()) {
+      if (await codeGenerator.generate()) {
         print.success(
           `🔥 ${intlMsg.commands_app_namespace_success({
             content: withExtensions ? "extension" : "types",

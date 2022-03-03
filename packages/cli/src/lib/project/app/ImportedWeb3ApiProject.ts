@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { ProjectConfig } from "./Project";
-import { ProjectWithSchema } from "./ProjectWithSchema";
-import { ManifestLanguage, outputManifest } from "../helpers";
+import { ProjectConfig } from "../Project";
+import { ImportedProject } from "./ImportedProject";
+import { ManifestLanguage, outputManifest } from "../../helpers";
 
 import {
   Web3ApiManifest,
@@ -23,7 +23,7 @@ export interface ImportedWeb3ApiProjectConfig extends ProjectConfig {
   client: Client;
 }
 
-export class ImportedWeb3ApiProject extends ProjectWithSchema<Web3ApiManifest> {
+export class ImportedWeb3ApiProject extends ImportedProject<Web3ApiManifest> {
   private _web3apiManifest: Web3ApiManifest | undefined;
   private _web3apiSchema: string | undefined;
 
@@ -72,7 +72,7 @@ export class ImportedWeb3ApiProject extends ProjectWithSchema<Web3ApiManifest> {
   public async getManifestLanguage(): Promise<ManifestLanguage> {
     const language = (await this.getManifest()).language;
 
-    ProjectWithSchema.validateManifestLanguage(
+    ImportedWeb3ApiProject.validateManifestLanguage(
       language,
       ["wasm/", "interface/"]
     );
@@ -105,5 +105,11 @@ export class ImportedWeb3ApiProject extends ProjectWithSchema<Web3ApiManifest> {
   > {
     const manifest = await this.getManifest();
     return manifest.import_redirects || [];
+  }
+
+  /// ImportedProject Base Methods
+
+  public getNamespace(): string {
+    return this._config.namespace;
   }
 }

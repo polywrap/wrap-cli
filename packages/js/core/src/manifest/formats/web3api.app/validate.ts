@@ -33,9 +33,9 @@ const validator = new Validator();
 Validator.prototype.customFormats.appLanguage = Validators.appLanguage;
 Validator.prototype.customFormats.file = Validators.file;
 Validator.prototype.customFormats.uniqueNamespaceArray = Validators.uniqueNamespaceArray;
-Validator.prototype.customFormats.importNamespace = Validators.importNamespace;
-Validator.prototype.customFormats.importUri = Validators.importUri;
-Validator.prototype.customFormats.manifestFile = Validators.manifestFile;
+Validator.prototype.customFormats.dependencyNamespace = Validators.dependencyNamespace;
+Validator.prototype.customFormats.web3apiUri = Validators.web3apiUri;
+Validator.prototype.customFormats.pluginManifestFile = Validators.pluginManifestFile;
 
 export const validateAppManifest = Tracer.traceFunc(
   "core: validateAppManifest",
