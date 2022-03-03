@@ -7,7 +7,7 @@
   ],
   "properties": {
     "format": {
-      "description": "Polywrap YAML format version",
+      "description": "Polywrap YAML format version.",
       "type": "string",
       "const": "0.0.1-prealpha.1"
     },
