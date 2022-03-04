@@ -184,7 +184,7 @@ export async function loadPluginManifest(
 }
 
 export async function outputManifest(
-  manifest: Web3ApiManifest | BuildManifest | MetaManifest,
+  manifest: Web3ApiManifest | BuildManifest | MetaManifest | PluginManifest,
   manifestPath: string,
   quiet = false
 ): Promise<unknown> {
