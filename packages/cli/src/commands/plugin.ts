@@ -33,12 +33,12 @@ Options:
   -m, --manifest-path <${pathStr}>       ${intlMsg.commands_plugin_options_m({
   default: defaultManifestStr,
 })}
-  -p, --publish-dir <${pathStr}>  ${intlMsg.commands_plugin_options_publish(
-  { default: defaultPublishDir }
-)}
-  -c, --codegen-dir <${pathStr}>    ${intlMsg.commands_plugin_options_codegen(
-  { default: defaultCodegenDir }
-)}
+  -p, --publish-dir <${pathStr}>  ${intlMsg.commands_plugin_options_publish({
+  default: defaultPublishDir,
+})}
+  -c, --codegen-dir <${pathStr}>    ${intlMsg.commands_plugin_options_codegen({
+  default: defaultCodegenDir,
+})}
   -i, --ipfs [<${nodeStr}>]              ${intlMsg.commands_plugin_options_i()}
   -e, --ens [<${addrStr}>]            ${intlMsg.commands_plugin_options_e()}
 `;
@@ -206,6 +206,6 @@ export default {
     }
 
     writeFileSync(publishSchemaPath, schemas.combined.schema);
-    outputManifest(manifest, publishManifestPath);
+    await outputManifest(manifest, publishManifestPath);
   },
 };
