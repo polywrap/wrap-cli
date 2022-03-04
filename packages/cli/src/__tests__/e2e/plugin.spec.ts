@@ -16,8 +16,8 @@ Options:
   -m, --manifest-path <path>       Path to the Web3API manifest file (default: ${defaultManifest.join(
     " | "
   )})
-  -s, --output-schema-path <path>  Output path for the built schema (default: ./build/schema.graphql)
-  -t, --output-types-dir <path>    Output directory for the generated types (default: ./src/w3)
+  -p, --publish-dir <path>  Output path for the built schema and manifest (default: ./build)
+  -c, --codegen-dir <path>    Output directory for the generated types (default: ./src/w3)
   -i, --ipfs [<node>]              IPFS node to load external schemas (default: dev-server's node)
   -e, --ens [<address>]            ENS address to lookup external schemas (default: 0x0000...2e1e)
 
@@ -42,7 +42,7 @@ describe("e2e tests for plugin command", () => {
   test("Should throw error for invalid params - no command", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["plugin", "--output-dir"],
+        args: ["plugin", "--publish-dir"],
         cwd: projectRoot,
       }
     );
@@ -53,10 +53,10 @@ describe("e2e tests for plugin command", () => {
 ${HELP}`);
   });
 
-  test("Should throw error for invalid params - output-schema-path", async () => {
+  test("Should throw error for invalid params - publish-dir", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["plugin", "codegen", "--output-schema-path"],
+        args: ["plugin", "codegen", "--publish-dir"],
         cwd: projectRoot,
       }
     );
@@ -64,14 +64,14 @@ ${HELP}`);
     expect(code).toEqual(0);
     expect(error).toBe("");
     expect(clearStyle(output))
-      .toEqual(`--output-schema-path option missing <path> argument
+      .toEqual(`--publish-dir option missing <path> argument
 ${HELP}`);
   });
 
-  test("Should throw error for invalid params - output-types-dir", async () => {
+  test("Should throw error for invalid params - codegen-dir", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["plugin", "codegen", "--output-types-dir"],
+        args: ["plugin", "codegen", "--codegen-dir"],
         cwd: projectRoot,
       }
     );
@@ -79,7 +79,7 @@ ${HELP}`);
     expect(code).toEqual(0);
     expect(error).toBe("");
     expect(clearStyle(output))
-      .toEqual(`--output-types-dir option missing <path> argument
+      .toEqual(`--codegen-dir option missing <path> argument
 ${HELP}`);
   });
 
@@ -106,12 +106,14 @@ ${HELP}`);
       }
     );
 
-    expect(code).toEqual(0);
     expect(error).toBe("");
-    expect(clearStyle(output)).toEqual(`- Generate types
-- Manifest loaded from ./web3api.plugin.yaml
+    expect(code).toEqual(0);
+    expect(clearStyle(output)).toEqual(`- Manifest loaded from ./web3api.plugin.yaml
 ✔ Manifest loaded from ./web3api.plugin.yaml
+- Generate types
 ✔ Generate types
+- Manifest written to ./build/web3api.plugin.json
+✔ Manifest written to ./build/web3api.plugin.json
 `);
 
     const expectedTypesResult = compareSync(
@@ -122,12 +124,12 @@ ${HELP}`);
 
     expect(expectedTypesResult.differences).toBe(0);
 
-    const expectedSchemaResult = compareSync(
+    const expectedBuildResult = compareSync(
       `${projectRoot}/build`,
-      `${projectRoot}/expected-schema`,
+      `${projectRoot}/expected-build`,
       { compareContent: true }
     );
 
-    expect(expectedSchemaResult.differences).toBe(0);
+    expect(expectedBuildResult.differences).toBe(0);
   });
 });
