@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { ProjectConfig } from "../Project";
-import { ProjectWithSchema } from "../ProjectWithSchema";
+import {
+  ProjectConfig,
+  ProjectWithSchema,
+} from "../";
 import {
   loadWeb3ApiManifest,
   loadBuildManifest,
@@ -10,8 +12,8 @@ import {
   createUUID,
   ManifestLanguage,
   outputManifest,
-} from "../../helpers";
-import { intlMsg } from "../../intl";
+  intlMsg
+} from "../../";
 
 import { Web3ApiManifest, BuildManifest, MetaManifest } from "@web3api/core-js";
 import { normalizePath } from "@web3api/os-js";

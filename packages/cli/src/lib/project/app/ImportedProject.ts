@@ -1,4 +1,4 @@
-import { ProjectWithSchema } from "../ProjectWithSchema";
+import { ProjectWithSchema } from "../";
 
 export abstract class ImportedProject<TManifest> extends ProjectWithSchema<TManifest> {
 

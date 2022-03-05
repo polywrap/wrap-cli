@@ -1,9 +1,9 @@
-import { intlMsg } from "../intl";
 import {
+  intlMsg,
   ManifestLanguage,
   isManifestLanguage,
   manifestLanguages,
-} from "../helpers";
+} from "../";
 
 import fs from "fs";
 import path from "path";

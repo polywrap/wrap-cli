@@ -1,11 +1,11 @@
-import { ProjectConfig } from "../Project";
-import { ImportedProject } from "./ImportedProject";
+import { ImportedProject } from "./";
+import { ProjectConfig } from "../";
 import {
   loadPluginManifest,
   outputManifest,
-  ManifestLanguage
-} from "../../helpers";
-import { intlMsg } from "../../intl";
+  ManifestLanguage,
+  intlMsg
+} from "../../";
 
 import {
   PluginManifest,

@@ -1,13 +1,13 @@
-import { SchemaComposer } from "./SchemaComposer";
-import { ProjectWithSchema } from "./project";
 import {
   step,
   withSpinner,
   isTypescriptFile,
-  loadTsNode,
+  importTypescriptModule,
   manifestLanguageToBindLanguage,
-} from "./helpers";
-import { intlMsg } from "./intl";
+  ProjectWithSchema,
+  SchemaComposer,
+  intlMsg
+} from "./";
 
 import { TypeInfo } from "@web3api/schema-parse";
 import {
@@ -90,14 +90,14 @@ export class CodeGenerator {
         const output: OutputDirectory = {
           entries: [],
         };
-
-        if (isTypescriptFile(this._config.customScript)) {
-          loadTsNode();
-        }
+        const customScript = this._config.customScript;
 
         // Check the generation file if it has the proper run() method
-        // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention
-        const generator = await require(this._config.customScript);
+        // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+        const generator = isTypescriptFile(customScript)
+          ? importTypescriptModule(customScript)
+          : await require(customScript);
+
         if (!generator) {
           throw Error(intlMsg.lib_codeGenerator_wrongGenFile());
         }

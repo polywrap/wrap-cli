@@ -1,37 +1,18 @@
-import { CommandInput, Middleware, SharedMiddlewareState } from "./types";
-
 import * as fs from "fs";
-import { print } from "gluegun";
-
-export class DockerLockMiddleware implements Middleware {
-  check(command: CommandInput, sharedState: SharedMiddlewareState): boolean {
-    return ["build"].includes(command.name) && !sharedState.dockerLock;
-  }
-
-  async run(
-    command: CommandInput, // eslint-disable-line @typescript-eslint/no-unused-vars
-    sharedState: SharedMiddlewareState // eslint-disable-line @typescript-eslint/no-unused-vars
-  ): Promise<Partial<SharedMiddlewareState>> {
-    return {
-      dockerLock: new FileLock(__dirname + "/DOCKER_LOCK"),
-    };
-  }
-}
 
 export class FileLock {
-  private readonly lockFilePath;
-
-  constructor(lockFilePath: string) {
-    this.lockFilePath = lockFilePath;
-  }
+  constructor(
+    private _lockFilePath: string,
+    private _onError: (message: string) => void
+  ) { }
 
   // request lock and wait until it is obtained
   async request(): Promise<void> {
     // wait for lock availability
-    while (fs.existsSync(this.lockFilePath)) {
+    while (fs.existsSync(this._lockFilePath)) {
       // check if process holding the lock is still running
       const lockPid: string = await fs.promises.readFile(
-        this.lockFilePath,
+        this._lockFilePath,
         "utf8"
       );
       const isRunning: boolean = this.isRunning(parseInt(lockPid));
@@ -42,7 +23,7 @@ export class FileLock {
           break;
         } catch (e) {
           // can ignore exception if cause is race condition
-          if (!fs.existsSync(this.lockFilePath)) {
+          if (!fs.existsSync(this._lockFilePath)) {
             throw e;
           }
         }
@@ -52,7 +33,7 @@ export class FileLock {
     }
     // try to get the lock, and recurse if another process gets the lock first.
     try {
-      await fs.promises.writeFile(this.lockFilePath, `${process.pid}`, {
+      await fs.promises.writeFile(this._lockFilePath, `${process.pid}`, {
         flag: "wx",
       });
     } catch {
@@ -63,9 +44,9 @@ export class FileLock {
   // release lock by deleting lock file
   async release(): Promise<void> {
     try {
-      await fs.promises.unlink(this.lockFilePath);
+      await fs.promises.unlink(this._lockFilePath);
     } catch {
-      print.error("Tried to release a file lock that doesn't exist");
+      this._onError("Tried to release a file lock that doesn't exist");
     }
   }
 

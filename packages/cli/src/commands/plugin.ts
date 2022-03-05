@@ -1,8 +1,15 @@
 /* eslint-disable prefer-const */
-import { CodeGenerator, PluginProject, SchemaComposer } from "../lib";
-import { fixParameters, resolvePathIfExists, defaultPluginManifest } from "../lib/helpers";
-import { intlMsg } from "../lib/intl";
-import { getDefaultProviders } from "../lib/helpers/client";
+import {
+  CodeGenerator,
+  PluginProject,
+  SchemaComposer,
+  fixParameters,
+  resolvePathIfExists,
+  defaultPluginManifest,
+  outputManifest,
+  intlMsg,
+  getTestEnvProviders
+} from "../lib";
 
 import { ComposerFilter } from "@web3api/schema-compose";
 import { writeFileSync } from "@web3api/os-js";
@@ -12,11 +19,11 @@ import path from "path";
 import fs from "fs";
 
 const commands = ["codegen"];
-const defaultOutputSchemaFile = "./build/schema.graphql";
-const defaultOutputTypesDir = "./polywrap";
+const defaultPublishDir = "./build";
+const defaultCodegenDir = "./src/w3";
 const cmdStr = intlMsg.commands_plugin_options_command();
 const optionsStr = intlMsg.commands_options_options();
-const codegenStr = intlMsg.commands_plugin_options_codegen();
+const codegenStr = intlMsg.commands_plugin_commands_codegen();
 const pathStr = intlMsg.commands_plugin_options_path();
 const defaultManifestStr = defaultPluginManifest.join(" | ");
 const nodeStr = intlMsg.commands_plugin_options_i_node();
@@ -33,11 +40,11 @@ Options:
   -m, --manifest-file <${pathStr}>       ${intlMsg.commands_plugin_options_m({
   default: defaultManifestStr,
 })}
-  -s, --output-schema-file <${pathStr}>  ${intlMsg.commands_plugin_options_s({
-  default: defaultOutputSchemaFile,
+  -p, --publish-dir <${pathStr}>  ${intlMsg.commands_plugin_options_publish({
+  default: defaultPublishDir,
 })}
-  -t, --output-types-dir <${pathStr}>    ${intlMsg.commands_plugin_options_t({
-  default: defaultOutputTypesDir,
+  -c, --codegen-dir <${pathStr}>    ${intlMsg.commands_plugin_options_codegen({
+  default: defaultCodegenDir,
 })}
   -i, --ipfs [<${nodeStr}>]              ${intlMsg.commands_plugin_options_i()}
   -e, --ens [<${addrStr}>]            ${intlMsg.commands_plugin_options_e()}
@@ -47,23 +54,23 @@ export default {
   alias: ["p"],
   description: intlMsg.commands_plugin_description(),
   run: async (toolbox: GluegunToolbox): Promise<void> => {
-    const { filesystem, parameters, middleware } = toolbox;
+    const { filesystem, parameters } = toolbox;
 
     // Options
     let {
       help,
       manifestFile,
-      outputSchemaFile,
-      outputTypesDir,
+      publishDir,
+      codegenDir,
       ipfs,
       ens,
     } = parameters.options;
-    const { h, m, s, t, i, e } = parameters.options;
+    const { h, m, p, c, i, e } = parameters.options;
 
     help = help || h;
     manifestFile = manifestFile || m;
-    outputSchemaFile = outputSchemaFile || s;
-    outputTypesDir = outputTypesDir || t;
+    publishDir = publishDir || p;
+    codegenDir = codegenDir || c;
     ipfs = ipfs || i;
     ens = ens || e;
 
@@ -91,10 +98,10 @@ export default {
     const paramsValid = validatePluginParams(
       print,
       command,
-      outputSchemaFile,
-      (path) => outputSchemaFile = path,
-      outputTypesDir,
-      (dir) => outputTypesDir = dir,
+      publishDir,
+      (dir) => publishDir = dir,
+      codegenDir,
+      (dir) => codegenDir = dir,
       ens,
     );
 
@@ -106,21 +113,15 @@ export default {
       return;
     }
 
-    // Run Middleware
-    await middleware.run({
-      name: toolbox.command?.name,
-      options: { help, manifestFile, outputSchemaFile, outputTypesDir, ipfs, ens, command },
-    });
-
-    const { ipfsProvider, ethProvider } = await getDefaultProviders(ipfs);
+    const { ipfsProvider, ethProvider } = await getTestEnvProviders(ipfs);
     const ensAddress: string | undefined = ens;
 
     manifestFile = resolvePathIfExists(
       filesystem,
       manifestFile ? [manifestFile] : defaultPluginManifest
     );
-    outputSchemaFile = outputSchemaFile && filesystem.resolve(outputSchemaFile);
-    outputTypesDir = outputTypesDir && filesystem.resolve(outputTypesDir);
+    publishDir = publishDir && filesystem.resolve(publishDir);
+    codegenDir = codegenDir && filesystem.resolve(codegenDir);
 
     // Plugin project
     const project = new PluginProject({
@@ -128,6 +129,7 @@ export default {
       pluginManifestPath: manifestFile,
     });
     await project.validate();
+    const manifest = await project.getManifest();
 
     const schemaComposer = new SchemaComposer({
       project,
@@ -141,7 +143,7 @@ export default {
     const codeGenerator = new CodeGenerator({
       project,
       schemaComposer,
-      outputDir: outputTypesDir,
+      outputDir: codegenDir,
     });
 
     result = await codeGenerator.generate();
@@ -152,27 +154,29 @@ export default {
       process.exitCode = 1;
     }
 
-    // Output the built schema file
+    // Output the built schema & manifest
     const schemas = await schemaComposer.getComposedSchemas(
       ComposerFilter.Schema
     );
-    const outputSchemaDir = path.dirname(outputSchemaFile);
+    const publishSchemaPath = path.join(publishDir, "schema.graphql");
+    const publishManifestPath = path.join(publishDir, "web3api.plugin.json");
 
-    if (!fs.existsSync(outputSchemaDir)) {
-      fs.mkdirSync(outputSchemaDir);
+    if (!fs.existsSync(publishDir)) {
+      fs.mkdirSync(publishDir);
     }
 
-    writeFileSync(outputSchemaFile, schemas.combined.schema);
+    writeFileSync(publishSchemaPath, schemas.combined.schema);
+    await outputManifest(manifest, publishManifestPath);
   },
 };
 
 function validatePluginParams(
   print: GluegunPrint,
   command: unknown,
-  outputSchemaPath: unknown,
-  setOutputSchemaPath: (path: string) => void,
-  outputTypesDir: unknown,
-  setOutputTypesDir: (dir: string) => void,
+  publishDir: unknown,
+  setPublishDir: (dir: string) => void,
+  codegenDir: unknown,
+  setCodegenDir: (dir: string) => void,
   ens: unknown
 ): boolean {
   if (!command) {
@@ -188,31 +192,30 @@ function validatePluginParams(
     return false;
   }
 
-  if (outputSchemaPath === true) {
-    const outputSchemaMissingPathMessage = intlMsg.commands_plugin_error_outputDirMissingPath(
+  if (publishDir === true) {
+    const publishDirMessage = intlMsg.commands_plugin_error_optionMissingArgument(
       {
-        option: "--output-schema-file",
+        option: "--publish-dir",
         argument: `<${pathStr}>`,
       }
     );
-    print.error(outputSchemaMissingPathMessage);
-    print.info(HELP);
+    print.error(publishDirMessage);
     return false;
-  } else if (!outputSchemaPath) {
-    setOutputSchemaPath(defaultOutputSchemaFile);
+  } else if (!publishDir) {
+    setPublishDir(defaultPublishDir);
   }
 
-  if (outputTypesDir === true) {
-    const outputTypesMissingPathMessage = intlMsg.commands_plugin_error_outputDirMissingPath(
+  if (codegenDir === true) {
+    const codegenDirMessage = intlMsg.commands_plugin_error_optionMissingArgument(
       {
-        option: "--output-types-dir",
+        option: "--codegen-dir",
         argument: `<${pathStr}>`,
       }
     );
-    print.error(outputTypesMissingPathMessage);
+    print.error(codegenDirMessage);
     return false;
-  } else if (!outputTypesDir) {
-    setOutputTypesDir(defaultOutputTypesDir);
+  } else if (!codegenDir) {
+    setCodegenDir(defaultCodegenDir);
   }
 
   if (ens === true) {

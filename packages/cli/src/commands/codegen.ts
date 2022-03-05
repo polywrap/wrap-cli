@@ -4,10 +4,11 @@ import {
   Compiler,
   Web3ApiProject,
   SchemaComposer,
+  intlMsg,
+  defaultWeb3ApiManifest,
+  getTestEnvProviders,
+  resolvePathIfExists
 } from "../lib";
-import { intlMsg } from "../lib/intl";
-import { resolvePathIfExists, defaultWeb3ApiManifest } from "../lib/helpers";
-import { getDefaultProviders } from "../lib/helpers/client";
 
 import chalk from "chalk";
 import path from "path";
@@ -35,7 +36,7 @@ export default {
   alias: ["g"],
   description: intlMsg.commands_codegen_description(),
   run: async (toolbox: GluegunToolbox): Promise<void> => {
-    const { filesystem, parameters, print, middleware } = toolbox;
+    const { filesystem, parameters, print } = toolbox;
 
     // Options
     const { h, c, m, i, o, e } = parameters.options;
@@ -60,13 +61,7 @@ export default {
       return;
     }
 
-    // Run Middleware
-    await middleware.run({
-      name: toolbox.command?.name,
-      options: { help, custom, manifestFile, ipfs, customOutputDir, ens },
-    });
-
-    const { ipfsProvider, ethProvider } = await getDefaultProviders(ipfs);
+    const { ipfsProvider, ethProvider } = await getTestEnvProviders(ipfs);
     const ensAddress: string | undefined = ens;
 
     // Resolve generation file & output directories

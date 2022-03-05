@@ -1,4 +1,4 @@
-import { intlMsg } from "./intl";
+import { intlMsg } from "../";
 
 import chokidar from "chokidar";
 

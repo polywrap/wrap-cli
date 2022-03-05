@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { ProjectConfig } from "../Project";
-import { ImportedProject } from "./ImportedProject";
-import { ManifestLanguage, outputManifest } from "../../helpers";
+import { ImportedProject } from "./";
+import { ProjectConfig } from "../";
+import { ManifestLanguage, outputManifest } from "../../";
 
 import {
   Web3ApiManifest,

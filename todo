@@ -1,21 +1,23 @@
 # TODO
 ## App command
-- finish implementing the new app.ts flow
+x refactor "localhost:4040/providers"
+x refactor middleware, move into system/docker
+x create issue: support callback arguments
+x finish implementing the new app.ts flow
+x remove "extension" for now, add back after types are working
 
 ## Refactor
+- AppProject validateImportUri function
 - plugins should have props { uri, manifest, namespace }
-- add web3api.plugin.yaml to the build folder, alongside the package.json file
-- !plugin command should output web3api.plugin.yaml to build folder (publish circular dep, should patch this in...)
+- Merge prealpha-dev
 - should remove files from output directory when performing codegen (like plugin & codegen commands do)
-
-## Refactor
 - create separate types for manifest languages "plugin/...", "app/...", "wasm/..."
 - resolveManifestPath
 - - the function's second parameter should be optionally undefined... or just use an array for everything
 - - also there isn't proper argument sanitization happening in plugin.ts, codegen.ts, build.ts, or app.ts for the "manifestPath"... it could be true and not a string...
 
-## Gradual
-- remove "extension" for now, add back after types are working
+## Extension
+- Add back extension feature
 
 ## Test
 - create test cases to ensure that each use-case codegens correctly & compiles
@@ -37,8 +39,7 @@
 - make sure dependency cache folder is optimized
 
 ## Command Cleanliness
-- all command flows are the same (parse arsg, validate args, run middleware, create/validate/run lib classes, cleanup)
-- ensure middleware is being run selectively
+- all command flows are the same (parse arsg, validate args, create/validate/run lib classes, cleanup)
 - output standarziation
 - - web3api.plugin.yaml -> needs options for output types & schema
 - - web3api.dapp.yaml -> add options for output types
@@ -59,6 +60,8 @@
 - codegen output/project directory? What is this?
 
 # Done
+x add web3api.plugin.yaml to the build folder, alongside the package.json file
+x !plugin command should output web3api.plugin.yaml to build folder (publish circular dep, should patch this in...)
 
 x have easy to track location for all cache folder strings
 

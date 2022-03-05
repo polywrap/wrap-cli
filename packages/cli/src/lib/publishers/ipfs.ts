@@ -1,4 +1,4 @@
-import { intlMsg } from "../intl";
+import { intlMsg } from "../";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires,@typescript-eslint/naming-convention
 const IPFSClient = require("ipfs-http-client");

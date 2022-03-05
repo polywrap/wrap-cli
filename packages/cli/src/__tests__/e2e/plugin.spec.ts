@@ -1,5 +1,5 @@
 import path from "path";
-import { defaultPluginManifest } from "../../lib/helpers";
+import { defaultPluginManifest } from "../../lib";
 import { clearStyle } from "./utils";
 
 import { runCLI } from "@web3api/test-env-js";

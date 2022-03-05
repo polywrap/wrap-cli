@@ -1,4 +1,4 @@
-import { displayPath } from "./path";
+import { displayPath } from "../system/path";
 import { withSpinner } from "./spinner";
 import { intlMsg } from "../intl";
 

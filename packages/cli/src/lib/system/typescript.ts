@@ -2,8 +2,11 @@ import { transpile } from "typescript";
 import fs from "fs";
 import path from "path";
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function importTs(tsPath: string): Promise<any> {
+export function isTypescriptFile(path: string): boolean {
+  return path.endsWith(".ts");
+}
+
+export async function importTypescriptModule(tsPath: string): Promise<unknown> {
   const tsFileContent = fs.readFileSync(tsPath);
   const jsFileContent = transpile(tsFileContent.toString());
   const jsFilePath = path.join(

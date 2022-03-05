@@ -1,19 +1,19 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-empty-function */
 
-import { Web3ApiProject } from "./project";
-import { SchemaComposer } from "./SchemaComposer";
 import {
+  Web3ApiProject,
+  SchemaComposer,
   withSpinner,
   outputManifest,
   outputMetadata,
+  manifestLanguageToBindLanguage,
   generateDockerfile,
   generateDockerImageName,
   createBuildImage,
   copyArtifactsFromBuildImage,
-  manifestLanguageToBindLanguage,
-} from "./helpers";
-import { intlMsg } from "./intl";
+  intlMsg
+} from "./";
 
 import {
   InvokableModules,

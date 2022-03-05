@@ -1,6 +1,8 @@
-import { generateProjectTemplate } from "../lib/templates";
-import { fixParameters } from "../lib/helpers/parameters";
-import { intlMsg } from "../lib/intl";
+import {
+  generateProjectTemplate,
+  fixParameters,
+  intlMsg
+} from "../lib";
 
 import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
@@ -41,7 +43,7 @@ export default {
   alias: ["c"],
   description: intlMsg.commands_create_description(),
   run: async (toolbox: GluegunToolbox): Promise<void> => {
-    const { parameters, print, prompt, filesystem, middleware } = toolbox;
+    const { parameters, print, prompt, filesystem } = toolbox;
 
     // Options
     let { help, outputDir } = parameters.options;
@@ -119,12 +121,6 @@ export default {
       print.info(HELP);
       return;
     }
-
-    // Run Middleware
-    await middleware.run({
-      name: toolbox.command?.name,
-      options: { help, outputDir, type, lang, name },
-    });
 
     const projectDir = outputDir ? `${outputDir}/${name}` : name;
 

@@ -1,14 +1,31 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { displayPath } from "./path";
-import { runCommand } from "./command";
-import { withSpinner } from "./spinner";
-import { intlMsg } from "../intl";
+import {
+  displayPath,
+  runCommand,
+  FileLock,
+} from "./";
+import {
+  withSpinner,
+  intlMsg
+} from "../";
 
 import { isWin, writeFileSync } from "@web3api/os-js";
+import { system, print } from "gluegun";
 import Mustache from "mustache";
 import path from "path";
 import fs from "fs";
+
+export function isDockerInstalled(): boolean {
+  return !!system.which("docker");
+}
+
+export function getDockerFileLock(): FileLock {
+  return new FileLock(
+    __dirname + "/DOCKER_LOCK",
+    print.error
+  );
+}
 
 export async function copyArtifactsFromBuildImage(
   outputDir: string,

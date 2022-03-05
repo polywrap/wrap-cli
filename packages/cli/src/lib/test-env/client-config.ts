@@ -1,3 +1,5 @@
+import { getTestEnvProviders } from "./providers";
+
 import {
   PluginRegistration,
   Web3ApiClientConfig,
@@ -11,18 +13,15 @@ import axios from "axios";
 export async function getTestEnvClientConfig(): Promise<
   Partial<Web3ApiClientConfig>
 > {
-  let ipfsProvider = "";
-  let ethereumProvider = "";
-  let ensAddress = "";
+  const providers = await getTestEnvProviders();
+  let ipfsProvider = providers.ipfsProvider;
+  let ethProvider = providers.ethProvider;
 
-  // May throw if the test environment is not running.
-  const {
-    data: { ipfs, ethereum },
-  } = await axios.get("http://localhost:4040/providers");
-  ipfsProvider = ipfs;
-  ethereumProvider = ethereum;
-  const { data } = await axios.get("http://localhost:4040/ens");
-  ensAddress = data.ensAddress;
+  if (!ipfsProvider || !ethProvider) {
+    throw Error("Test environment not found.");
+  }
+
+  const { data: { ensAddress } } = await axios.get("http://localhost:4040/ens");
 
   // TODO: move this into its own package, since it's being used everywhere?
   // maybe have it exported from test-env.
@@ -32,7 +31,7 @@ export async function getTestEnvClientConfig(): Promise<
       plugin: ethereumPlugin({
         networks: {
           testnet: {
-            provider: ethereumProvider,
+            provider: ethProvider,
           },
           mainnet: {
             provider:

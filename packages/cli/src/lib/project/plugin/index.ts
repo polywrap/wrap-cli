@@ -1,6 +1,11 @@
-import { ProjectConfig } from "../Project";
-import { ProjectWithSchema } from "../ProjectWithSchema";
-import { loadPluginManifest, ManifestLanguage } from "../../helpers";
+import {
+  ProjectConfig,
+  ProjectWithSchema
+} from "../";
+import {
+  loadPluginManifest,
+  ManifestLanguage
+} from "../../";
 
 import { PluginManifest } from "@web3api/core-js";
 import path from "path";

@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-empty-function */
 
-import { ProjectWithSchema } from "./project";
-import { getSimpleClient } from "./helpers/client";
+import {
+  ProjectWithSchema,
+  getSimpleClient
+} from "./";
 
 import { Uri, Web3ApiClient } from "@web3api/client-js";
 import {
@@ -11,11 +13,11 @@ import {
   ComposerFilter,
   ComposerOptions,
   SchemaKind,
+  SchemaFile
 } from "@web3api/schema-compose";
 import fs from "fs";
 import path from "path";
 import * as gluegun from "gluegun";
-import { SchemaFile } from "@web3api/schema-compose";
 
 export interface SchemaComposerConfig {
   project: ProjectWithSchema<unknown>;

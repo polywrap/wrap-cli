@@ -1,8 +1,9 @@
-import { ImportedWeb3ApiProject } from "./ImportedWeb3ApiProject";
-import { ImportedPluginProject } from "./ImportedPluginProject";
-import { Project, ProjectConfig } from "../Project";
-import { ManifestLanguage, loadAppManifest } from "../../helpers";
-import { intlMsg } from "../../intl";
+import {
+  ImportedWeb3ApiProject,
+  ImportedPluginProject
+} from "./";
+import { Project, ProjectConfig,  } from "../";
+import { ManifestLanguage, loadAppManifest, intlMsg } from "../../";
 
 import { AppManifest, Client, Uri } from "@web3api/core-js";
 import path from "path";
@@ -66,10 +67,16 @@ export class AppProject extends Project<AppManifest> {
       }
     };
 
-    const imports = manifest.imports || [];
+    const web3apis = manifest.dependencies?.web3apis || [];
+    const plugins = manifest.dependencies?.plugins || [];
 
-    for (const imp of imports) {
-      validateImportUri(imp.uri, imp.isPlugin);
+    for (const web3api of web3apis) {
+      validateImportUri(web3api.uri, false);
+    }
+
+    // TODO: change this
+    for (const plugin of plugins) {
+      validateImportUri(plugin.manifest, true);
     }
   }
 

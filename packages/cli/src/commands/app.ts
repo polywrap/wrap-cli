@@ -2,17 +2,14 @@
 import {
   AppProject,
   CodeGenerator,
-  SchemaComposer
-} from "../lib";
-import { intlMsg } from "../lib/intl";
-import {
+  SchemaComposer,
+  intlMsg,
   fixParameters,
   resolvePathIfExists,
-  defaultAppManifest
-} from "../lib/helpers";
-import { getSimpleClient, getDefaultProviders } from "../lib/helpers/client";
-import { ImportedWeb3ApiProject } from "../lib/project/app/ImportedWeb3ApiProject";
-import { ImportedPluginProject } from "../lib/project/app/ImportedPluginProject";
+  defaultAppManifest,
+  getSimpleClient,
+  getTestEnvProviders,
+} from "../lib";
 
 import chalk from "chalk";
 import { GluegunToolbox, GluegunPrint } from "gluegun";
@@ -82,7 +79,7 @@ export default {
   alias: ["a"],
   description: intlMsg.commands_app_description(),
   run: async (toolbox: GluegunToolbox): Promise<void> => {
-    const { filesystem, parameters, print, middleware } = toolbox;
+    const { filesystem, parameters, print } = toolbox;
 
     // Options
     let {
@@ -134,12 +131,6 @@ export default {
       return;
     }
 
-    // Run Middleware
-    await middleware.run({
-      name: toolbox.command?.name,
-      options: { help, manifestFile, outputTypesDir, ipfs, ens },
-    });
-
     // Resolve manifest
     const manifestPaths = manifestFile ? [manifestFile] : defaultAppManifest;
     manifestFile = resolvePathIfExists(
@@ -157,7 +148,7 @@ export default {
     }
 
     // Get providers and client
-    const { ipfsProvider, ethProvider } = await getDefaultProviders(ipfs);
+    const { ipfsProvider, ethProvider } = await getTestEnvProviders(ipfs);
     const ensAddress: string | undefined = ens;
     const client: Web3ApiClient = getSimpleClient({
       ensAddress,
@@ -187,13 +178,13 @@ export default {
     }
 
     // Resolve "codegen.withExtensions" flag
-    const withExtensions = manifest.codegen?.withExtensions;
+    //// const withExtensions = manifest.codegen?.withExtensions;
 
     // Resolve generation file
     const langGenFiles: LangGenFiles = langSupport[manifest.language];
-    const genFiles: AppGenFiles = withExtensions
-      ? langGenFiles.extension
-      : langGenFiles.types;
+    const genFiles: AppGenFiles = //// withExtensions
+      //// ? langGenFiles.extension
+      langGenFiles.types;
     // TODO: does "genFiles.package/app" make sense?
     const packageScript = filesystem.resolve(genFiles.package);
     const appScript = filesystem.resolve(genFiles.app);
@@ -201,8 +192,14 @@ export default {
     // Get imported web3api & plugin dependencies
     const dependencies = await project.getImportedDependencies();
 
-    // Generate code for each imported dependency
     let result = true;
+
+    // Fail if there are no dependencies
+    if (dependencies.length === 0) {
+      result = false;
+    }
+
+    // Generate code for each imported dependency
     for (const dependency of dependencies) {
       const namespace = dependency.getNamespace();
       const schemaComposer = new SchemaComposer({
@@ -214,38 +211,41 @@ export default {
         schemaComposer,
         customScript: packageScript,
         outputDir: path.join(outputTypesDir, namespace),
-        mustacheView: { uri, namespace },
+        mustacheView: { namespace }, //// { uri, namespace },
       });
-
-      // Ensure the target directory is reset
-      project.reset();
 
       if (await codeGenerator.generate()) {
         print.success(
           `🔥 ${intlMsg.commands_app_namespace_success({
-            content: withExtensions ? "extension" : "types",
+            content: "types", //// withExtensions ? "extension" : "types",
             namespace,
           })} 🔥`
         );
       } else {
         result = false;
       }
+    }
 
-      // generate shared files on final package
-      if (i === imports.length - 1) {
-        const appCodeGenerator = new CodeGenerator({
-          project,
-          schemaComposer,
-          customScript: appScript,
-          outputDir: path.join(outputTypesDir, namespace),
-          mustacheView: { imports },
-        });
+    // generate shared files using the final package
+    if (dependencies.length > 0) {
+      const dependency = dependencies[dependencies.length - 1];
+      const namespace = dependency.getNamespace();
+      const schemaComposer = new SchemaComposer({
+        project: dependency,
+        client,
+      });
+      const codeGenerator = new CodeGenerator({
+        project: dependency,
+        schemaComposer,
+        customScript: appScript,
+        outputDir: path.join(outputTypesDir, namespace),
+        mustacheView: { dependencies },
+      });
 
-        if (await appCodeGenerator.generate()) {
-          print.success(`🔥 ${intlMsg.commands_app_topLevel_success()} 🔥`);
-        } else {
-          result = false;
-        }
+      if (await codeGenerator.generate()) {
+        print.success(`🔥 ${intlMsg.commands_app_topLevel_success()} 🔥`);
+      } else {
+        result = false;
       }
     }
 

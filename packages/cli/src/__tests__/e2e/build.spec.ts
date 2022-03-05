@@ -3,8 +3,7 @@ import { clearStyle, w3Cli } from "./utils";
 import { runCLI } from "@web3api/test-env-js";
 import fs from "fs";
 import path from "path";
-import { Web3ApiProject } from "../../lib";
-import { loadBuildManifest } from "../../lib/helpers";
+import { Web3ApiProject, loadBuildManifest } from "../../lib";
 
 const HELP = `
 w3 build [options] [<web3api-manifest>]

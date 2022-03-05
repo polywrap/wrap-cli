@@ -1,5 +1,5 @@
 import path from "path";
-import { defaultWeb3ApiManifest } from "../../lib/helpers";
+import { defaultWeb3ApiManifest } from "../../lib";
 import { clearStyle, w3Cli } from "./utils";
 
 import { runCLI } from "@web3api/test-env-js";

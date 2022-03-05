@@ -6,11 +6,14 @@ import {
   Watcher,
   WatchEvent,
   watchEventName,
+  publishToIPFS,
+  intlMsg,
+  getDockerFileLock,
+  defaultWeb3ApiManifest,
+  resolvePathIfExists,
+  getTestEnvProviders,
+  isDockerInstalled
 } from "../lib";
-import { publishToIPFS } from "../lib/publishers/ipfs-publisher";
-import { intlMsg } from "../lib/intl";
-import { SharedMiddlewareState } from "../lib/middleware";
-import { defaultWeb3ApiManifest, resolvePathIfExists } from "../lib/helpers";
 
 import chalk from "chalk";
 import axios from "axios";
@@ -18,13 +21,14 @@ import path from "path";
 import readline from "readline";
 import { GluegunToolbox, GluegunPrint } from "gluegun";
 
+const defaultManifestStr = defaultWeb3ApiManifest.join(" | ");
+const defaultOutputDirectory = "./build";
 const optionsStr = intlMsg.commands_build_options_options();
 const manStr = intlMsg.commands_build_options_manifest();
 const nodeStr = intlMsg.commands_build_options_i_node();
 const pathStr = intlMsg.commands_build_options_o_path();
 const addrStr = intlMsg.commands_build_options_e_address();
 const domStr = intlMsg.commands_build_options_e_domain();
-const defaultManifestStr = defaultWeb3ApiManifest.join(" | ");
 
 const HELP = `
 ${chalk.bold("w3 build")} [${optionsStr}] ${chalk.bold(`[<web3api-${manStr}>]`)}
@@ -43,7 +47,7 @@ export default {
   alias: ["b"],
   description: intlMsg.commands_build_description(),
   run: async (toolbox: GluegunToolbox): Promise<void> => {
-    const { filesystem, parameters, print, middleware } = toolbox;
+    const { filesystem, parameters, print } = toolbox;
 
     // Options
     const { h, m, i, o, w, e, v } = parameters.options;
@@ -70,14 +74,9 @@ export default {
       return;
     }
 
-    // Run Middleware
-    const middlewareState: SharedMiddlewareState = await middleware.run({
-      name: toolbox.command?.name,
-      options: { help, manifestFile, ipfs, outputDir, watch, testEns, verbose },
-    });
-
-    if (!middlewareState.dockerPath) {
-      print.error(intlMsg.middleware_dockerVerifyMiddleware_noDocker());
+    // Ensure docker is installed
+    if (!isDockerInstalled()) {
+      print.error(intlMsg.lib_docker_noInstall());
       return;
     }
 
@@ -97,8 +96,8 @@ export default {
       return;
     }
 
-    outputDir =
-      (outputDir && filesystem.resolve(outputDir)) || filesystem.path("build");
+    outputDir = (outputDir && filesystem.resolve(outputDir)) ||
+      filesystem.path(defaultOutputDirectory);
 
     // Gather providers
     let ipfsProvider: string | undefined;
@@ -110,13 +109,10 @@ export default {
       // Custom IPFS provider
       ipfsProvider = ipfs;
     } else if (ipfs) {
-      // Dev-server IPFS provider
-      // TODO: handle the case where the dev server isn't found
-      const {
-        data: { ipfs, ethereum },
-      } = await axios.get("http://localhost:4040/providers");
-      ipfsProvider = ipfs;
-      ethProvider = ethereum;
+      // Try to get the dev server's IPFS & ETH providers
+      const testEnvProviders = await getTestEnvProviders();
+      ipfsProvider = testEnvProviders.ipfsProvider;
+      ethProvider = testEnvProviders.ethProvider;
     }
 
     if (typeof testEns == "string") {
@@ -165,9 +161,10 @@ export default {
 
     const execute = async (): Promise<boolean> => {
       compiler.reset();
-      await middlewareState.dockerLock?.request();
+      const dockerLock = getDockerFileLock();
+      await dockerLock.request();
       const result = await compiler.compile();
-      void middlewareState.dockerLock?.release();
+      void dockerLock.release();
 
       if (!result) {
         return result;
