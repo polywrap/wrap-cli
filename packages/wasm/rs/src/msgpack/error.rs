@@ -53,41 +53,20 @@ pub enum EncodeError {
 
     #[error("{0}")]
     TypeWriteError(String),
-}
 
-impl From<String> for EncodeError {
-    fn from(e: String) -> Self {
-        e.into()
-    }
-}
-
-impl From<EncodeError> for String {
-    fn from(e: EncodeError) -> Self {
-        e.into()
-    }
-}
-
-impl From<EncodeError> for std::io::Error {
-    fn from(e: EncodeError) -> Self {
-        e.into()
-    }
+    #[error("{0}")]
+    IOError(String),
 }
 
 impl From<std::io::Error> for EncodeError {
     fn from(e: std::io::Error) -> Self {
-        e.into()
+        EncodeError::IOError(e.to_string())
     }
 }
 
 impl From<serde_json::Error> for EncodeError {
     fn from(e: serde_json::Error) -> EncodeError {
-        e.into()
-    }
-}
-
-impl From<EncodeError> for serde_json::Error {
-    fn from(e: EncodeError) -> Self {
-        e.into()
+        EncodeError::JSONWriteError(e.to_string())
     }
 }
 
@@ -144,53 +123,26 @@ pub enum DecodeError {
 
     #[error("{0}")]
     TypeReadError(String),
-}
 
-impl From<String> for DecodeError {
-    fn from(e: String) -> Self {
-        e.into()
-    }
-}
-
-impl From<DecodeError> for String {
-    fn from(e: DecodeError) -> Self {
-        e.into()
-    }
-}
-
-impl From<DecodeError> for std::io::Error {
-    fn from(e: DecodeError) -> Self {
-        e.into()
-    }
+    #[error("{0}")]
+    IOError(String),
 }
 
 impl From<std::io::Error> for DecodeError {
     fn from(e: std::io::Error) -> Self {
-        e.into()
+        DecodeError::IOError(e.to_string())
     }
 }
 
 impl From<serde_json::Error> for DecodeError {
     fn from(e: serde_json::Error) -> DecodeError {
-        e.into()
-    }
-}
-
-impl From<DecodeError> for serde_json::Error {
-    fn from(e: DecodeError) -> Self {
-        e.into()
+        DecodeError::JSONReadError(e.to_string())
     }
 }
 
 impl From<num_bigint::ParseBigIntError> for DecodeError {
     fn from(e: num_bigint::ParseBigIntError) -> Self {
-        e.into()
-    }
-}
-
-impl From<DecodeError> for num_bigint::ParseBigIntError {
-    fn from(e: DecodeError) -> Self {
-        e.into()
+        DecodeError::BigIntReadError(e.to_string())
     }
 }
 
@@ -202,30 +154,6 @@ pub enum EnumTypeError {
 
     #[error("{0}")]
     ParseEnumError(String),
-}
-
-impl From<String> for EnumTypeError {
-    fn from(e: String) -> Self {
-        e.into()
-    }
-}
-
-impl From<EnumTypeError> for String {
-    fn from(e: EnumTypeError) -> Self {
-        e.into()
-    }
-}
-
-impl From<EnumTypeError> for std::io::Error {
-    fn from(e: EnumTypeError) -> Self {
-        e.into()
-    }
-}
-
-impl From<std::io::Error> for EnumTypeError {
-    fn from(e: std::io::Error) -> Self {
-        e.into()
-    }
 }
 
 pub fn get_error_message(format: Format) -> String {
