@@ -209,7 +209,7 @@ ${HELP}`);
   test("Successfully builds project w/ dockerfile", async () => {
     const { exitCode: code, stdout: output } = await runCLI(
       {
-        args: ["build", "web3api.docker.yaml", "-v"],
+        args: ["build", "-m", "web3api.docker.yaml", "-v"],
         cwd: projectRoot,
         cli: w3Cli,
       },

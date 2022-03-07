@@ -7,7 +7,8 @@ x finish implementing the new app.ts flow
 x remove "extension" for now, add back after types are working
 
 ## Refactor
-- Merge prealpha-dev
+x Merge prealpha-dev
+x build command require "--manifest-file" argument, or should we allow for first argument to be manifest file path?
 - plugins should have props { uri, manifest, namespace }
 - AppProject validateImportUri function
 - should remove files from output directory when performing codegen (like plugin & codegen commands do)

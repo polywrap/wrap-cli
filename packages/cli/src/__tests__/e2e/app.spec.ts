@@ -104,7 +104,7 @@ ${HELP}`);
   test("Should throw error for duplicate namespace", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["app", "codegen", `-m ${projectRoot}/web3api.app.duplicateNamespace.yaml`],
+        args: ["app", "codegen", "-m", `${projectRoot}/web3api.app.duplicateNamespace.yaml`],
         cwd: projectRoot,
         cli: w3Cli,
       },
@@ -121,7 +121,7 @@ instance.dependencies.web3apis does not conform to the \"uniqueNamespaceArray\" 
   test("Should successfully generate types for wrappers", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["app", "codegen", `-m ${projectRoot}/web3api.app.noExtensions.yaml`],
+        args: ["app", "codegen", "-m", `${projectRoot}/web3api.app.noExtensions.yaml`],
         cwd: projectRoot,
         cli: w3Cli,
       },
@@ -160,7 +160,7 @@ instance.dependencies.web3apis does not conform to the \"uniqueNamespaceArray\" 
   test("Should successfully generate types for plugins", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["app", "codegen", `-m ${projectRoot}/web3api.app.withPlugin.yaml`],
+        args: ["app", "codegen", "-m", `${projectRoot}/web3api.app.withPlugin.yaml`],
         cwd: projectRoot,
         cli: w3Cli,
       },
@@ -197,7 +197,7 @@ instance.dependencies.web3apis does not conform to the \"uniqueNamespaceArray\" 
   test("Should successfully generate types for multiple packages", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["app", "codegen", `-m ${projectRoot}/web3api.app.multiPackage.yaml`],
+        args: ["app", "codegen", "-m", `${projectRoot}/web3api.app.multiPackage.yaml`],
         cwd: projectRoot,
         cli: w3Cli,
       },
@@ -240,7 +240,7 @@ instance.dependencies.web3apis does not conform to the \"uniqueNamespaceArray\" 
   test("Should clear file cache before completion", async () => {
     const { exitCode: code, stderr: error } = await runCLI(
       {
-        args: ["app", "codegen", `-m ${projectRoot}/web3api.app.multiPackage.yaml`],
+        args: ["app", "codegen", "-m", `${projectRoot}/web3api.app.multiPackage.yaml`],
         cwd: projectRoot,
         cli: w3Cli,
       },
@@ -260,7 +260,7 @@ instance.dependencies.web3apis does not conform to the \"uniqueNamespaceArray\" 
   test("Should be able to read/call extension props from client", async () => {
     const { exitCode: code, stderr: error } = await runCLI(
       {
-        args: ["app", "codegen", `-m ${projectRoot}/web3api.app.yaml`],
+        args: ["app", "codegen", "-m", `${projectRoot}/web3api.app.yaml`],
         cwd: projectRoot,
         cli: w3Cli,
       },

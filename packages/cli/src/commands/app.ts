@@ -66,7 +66,9 @@ Commands:
 
 Options:
   -h, --help                              ${intlMsg.commands_codegen_options_h()}
-  -m, --manifest-file <${pathStr}>              ${intlMsg.commands_codegen_options_m()}: ${defaultManifestStr})
+  -m, --manifest-file <${pathStr}>              ${intlMsg.commands_app_options_m({
+  default: defaultManifestStr
+})}
   -c, --codegen-dir <${pathStr}>                 ${intlMsg.commands_app_options_codegen({
   default: defaultOutputTypesDir,
 })}

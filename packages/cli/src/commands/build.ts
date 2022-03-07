@@ -24,18 +24,19 @@ import { GluegunToolbox, GluegunPrint } from "gluegun";
 const defaultManifestStr = defaultWeb3ApiManifest.join(" | ");
 const defaultOutputDirectory = "./build";
 const optionsStr = intlMsg.commands_build_options_options();
-const manStr = intlMsg.commands_build_options_manifest();
 const nodeStr = intlMsg.commands_build_options_i_node();
 const pathStr = intlMsg.commands_build_options_o_path();
 const addrStr = intlMsg.commands_build_options_e_address();
 const domStr = intlMsg.commands_build_options_e_domain();
 
 const HELP = `
-${chalk.bold("w3 build")} [${optionsStr}] ${chalk.bold(`[<web3api-${manStr}>]`)}
+${chalk.bold("w3 build")} [${optionsStr}]
 
 ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
   -h, --help                         ${intlMsg.commands_build_options_h()}
-  -m, --manifest-file <${pathStr}>         ${intlMsg.commands_build_options_m()}: ${defaultManifestStr})
+  -m, --manifest-file <${pathStr}>         ${intlMsg.commands_build_options_m({
+  default: defaultManifestStr
+})}
   -i, --ipfs [<${nodeStr}>]                ${intlMsg.commands_build_options_i()}
   -o, --output-dir <${pathStr}>            ${intlMsg.commands_build_options_o()}
   -e, --test-ens <[${addrStr},]${domStr}>  ${intlMsg.commands_build_options_e()}

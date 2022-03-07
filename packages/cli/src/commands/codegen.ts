@@ -25,7 +25,9 @@ ${chalk.bold("w3 codegen")} [${optionsStr}]
 
 ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
   -h, --help                              ${intlMsg.commands_codegen_options_h()}
-  -m, --manifest-file <${pathStr}>              ${intlMsg.commands_codegen_options_m()}: ${defaultManifestStr})
+  -m, --manifest-file <${pathStr}>              ${intlMsg.commands_codegen_options_m({
+  default: defaultManifestStr
+})}
   -c, --custom <${pathStr}>                     ${intlMsg.commands_codegen_options_c()}
   -o, --custom-output-dir <${pathStr}>          ${intlMsg.commands_codegen_options_o()}
   -i, --ipfs [<${nodeStr}>]                     ${intlMsg.commands_codegen_options_i()}
