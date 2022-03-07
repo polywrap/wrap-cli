@@ -112,6 +112,9 @@ pub enum DecodeError {
     #[error("StrReadError: '{0}'")]
     StrReadError(String),
 
+    #[error("EnumReadError: '{0}'")]
+    EnumReadError(String),
+
     #[error("UnknownFieldName: '{0}'")]
     UnknownFieldName(String),
 
@@ -154,6 +157,12 @@ pub enum EnumTypeError {
 
     #[error("{0}")]
     ParseEnumError(String),
+}
+
+impl From<EnumTypeError> for DecodeError {
+  fn from(e: EnumTypeError) -> Self {
+      DecodeError::EnumReadError(e.to_string())
+  }
 }
 
 pub fn get_error_message(format: Format) -> String {
