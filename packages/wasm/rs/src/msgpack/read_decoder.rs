@@ -620,6 +620,7 @@ impl Read for ReadDecoder {
     }
 
     fn is_next_string(&mut self) -> Result<bool, DecodeError> {
+        let position = self.view.buffer.position();
         let format = Format::get_format(self)?;
         if format == Format::FixStr(format.to_u8())
             || format == Format::Str8
@@ -628,6 +629,7 @@ impl Read for ReadDecoder {
         {
             Ok(true)
         } else {
+            self.view.buffer.set_position(position);
             Ok(false)
         }
     }
