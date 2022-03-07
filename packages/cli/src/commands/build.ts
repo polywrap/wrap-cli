@@ -69,8 +69,20 @@ export default {
     testEns = testEns || e;
     verbose = verbose || v;
 
-    if (help || !validateBuildParams(print, manifestFile, outputDir, testEns, ipfs)) {
+    // Validate Params
+    const paramsValid = validateBuildParams(
+      print,
+      manifestFile,
+      outputDir,
+      testEns,
+      ipfs
+    );
+
+    if (help || !paramsValid) {
       print.info(HELP);
+      if (!paramsValid) {
+        process.exitCode = 1;
+      }
       return;
     }
 

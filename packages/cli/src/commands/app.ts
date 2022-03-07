@@ -115,6 +115,7 @@ export default {
       return;
     }
 
+    // Validate Params
     const paramsValid = validateAppParams(
       print,
       command,

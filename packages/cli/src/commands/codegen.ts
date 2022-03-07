@@ -56,8 +56,19 @@ export default {
     customOutputDir = customOutputDir || o;
     ens = ens || e;
 
-    if (help || !validateCodegenParams(print, customOutputDir, ens, custom)) {
+    // Validate Params
+    const paramsValid = validateCodegenParams(
+      print,
+      customOutputDir,
+      ens,
+      custom
+    );
+
+    if (help || !paramsValid) {
       print.info(HELP);
+      if (!paramsValid) {
+        process.exitCode = 1;
+      }
       return;
     }
 

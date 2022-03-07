@@ -5,7 +5,7 @@ import {
 } from "../lib";
 
 import chalk from "chalk";
-import { GluegunToolbox } from "gluegun";
+import { GluegunToolbox, GluegunPrint } from "gluegun";
 
 const cmdStr = intlMsg.commands_create_options_command();
 const nameStr = intlMsg.commands_create_options_projectName();
@@ -67,58 +67,22 @@ export default {
           help,
         }
       );
-    } catch (e) {
-      print.error(e.message);
-      process.exitCode = 1;
-      return;
-    }
+    } catch (e) { }
 
-    if (help) {
-      print.info(HELP);
-      return;
-    }
+    // Validate Params
+    const paramsValid = validateCreateParams(
+      print,
+      type,
+      lang,
+      name,
+      outputDir
+    );
 
-    if (!type) {
-      print.error(intlMsg.commands_create_error_noCommand());
+    if (help || !paramsValid) {
       print.info(HELP);
-      return;
-    }
-
-    if (!lang) {
-      print.error(intlMsg.commands_create_error_noLang());
-      print.info(HELP);
-      return;
-    }
-
-    if (!name) {
-      print.error(intlMsg.commands_create_error_noName());
-      print.info(HELP);
-      return;
-    }
-
-    if (!supportedLangs[type]) {
-      const unrecognizedCommand = intlMsg.commands_create_error_unrecognizedCommand();
-      print.error(`${unrecognizedCommand} "${type}"`);
-      print.info(HELP);
-      return;
-    }
-
-    if (supportedLangs[type].indexOf(lang) === -1) {
-      const unrecognizedLanguage = intlMsg.commands_create_error_unrecognizedLanguage();
-      print.error(`${unrecognizedLanguage} "${lang}"`);
-      print.info(HELP);
-      return;
-    }
-
-    if (outputDir === true) {
-      const outputDirMissingPathMessage = intlMsg.commands_create_error_outputDirMissingPath(
-        {
-          option: "--output-dir",
-          argument: `<${pathStr}>`,
-        }
-      );
-      print.error(outputDirMissingPathMessage);
-      print.info(HELP);
+      if (!paramsValid) {
+        process.exitCode = 1;
+      }
       return;
     }
 
@@ -168,3 +132,51 @@ export default {
       });
   },
 };
+
+function validateCreateParams(
+  print: GluegunPrint,
+  type: unknown,
+  lang: unknown,
+  name: unknown,
+  outputDir: unknown
+): boolean {
+  if (!type || typeof type !== "string") {
+    print.error(intlMsg.commands_create_error_noCommand());
+    return false;
+  }
+
+  if (!lang || typeof lang !== "string") {
+    print.error(intlMsg.commands_create_error_noLang());
+    return false;
+  }
+
+  if (!name || typeof name !== "string") {
+    print.error(intlMsg.commands_create_error_noName());
+    return false;
+  }
+
+  if (!supportedLangs[type]) {
+    const unrecognizedCommand = intlMsg.commands_create_error_unrecognizedCommand();
+    print.error(`${unrecognizedCommand} "${type}"`);
+    return false;
+  }
+
+  if (supportedLangs[type].indexOf(lang) === -1) {
+    const unrecognizedLanguage = intlMsg.commands_create_error_unrecognizedLanguage();
+    print.error(`${unrecognizedLanguage} "${lang}"`);
+    return false;
+  }
+
+  if (outputDir === true) {
+    const outputDirMissingPathMessage = intlMsg.commands_create_error_outputDirMissingPath(
+      {
+        option: "--output-dir",
+        argument: `<${pathStr}>`,
+      }
+    );
+    print.error(outputDirMissingPathMessage);
+    return false;
+  }
+
+  return true;
+}
