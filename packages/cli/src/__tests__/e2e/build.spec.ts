@@ -151,7 +151,7 @@ ${HELP}`);
 
     await project.cacheDefaultBuildManifestFiles();
 
-    const cacheBuildEnvPath = path.join(projectRoot, ".w3/build/env")
+    const cacheBuildEnvPath = path.join(projectRoot, ".w3/web3api/build/env")
     const cachedBuildManifest = await loadBuildManifest(
       path.join(cacheBuildEnvPath, "web3api.build.yaml")
     );

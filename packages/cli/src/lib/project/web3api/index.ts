@@ -255,7 +255,7 @@ export class Web3ApiProject extends ProjectWithSchema<Web3ApiManifest> {
     const language = await this.getManifestLanguage();
 
     const defaultBuildManifestFilename = "web3api.build.yaml";
-    const defaultPath = `${__dirname}/../build-envs/${language}/${defaultBuildManifestFilename}`;
+    const defaultPath = `${__dirname}/../../build-envs/${language}/${defaultBuildManifestFilename}`;
     const buildEnvCachePath = this.getCachePath(cacheLayout.buildEnvDir);
 
     if (!fs.existsSync(defaultPath)) {
@@ -273,7 +273,7 @@ export class Web3ApiProject extends ProjectWithSchema<Web3ApiManifest> {
     // Copy default build environment files into cache
     await this.copyIntoCache(
       cacheLayout.buildEnvDir,
-      `${__dirname}/../build-envs/${language}/*`,
+      `${__dirname}/../../build-envs/${language}/*`,
       { up: true }
     );
 

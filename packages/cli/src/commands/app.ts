@@ -54,9 +54,6 @@ const cmdStr = intlMsg.commands_app_options_command();
 const optionsStr = intlMsg.commands_options_options();
 const codegenStr = intlMsg.commands_app_codegen();
 const defaultManifestStr = defaultAppManifest.join(" | ");
-const outputTypesDirStr = `${intlMsg.commands_app_options_o({
-  default: `${defaultOutputTypesDir}/`,
-})}`;
 const nodeStr = intlMsg.commands_codegen_options_i_node();
 const pathStr = intlMsg.commands_codegen_options_o_path();
 const addrStr = intlMsg.commands_codegen_options_e_address();
@@ -70,7 +67,9 @@ Commands:
 Options:
   -h, --help                              ${intlMsg.commands_codegen_options_h()}
   -m, --manifest-file <${pathStr}>              ${intlMsg.commands_codegen_options_m()}: ${defaultManifestStr})
-  -t, --output-types-dir <${pathStr}>                 ${outputTypesDirStr}
+  -c, --codegen-dir <${pathStr}>                 ${intlMsg.commands_app_options_codegen({
+  default: defaultOutputTypesDir,
+})}
   -i, --ipfs [<${nodeStr}>]                     ${intlMsg.commands_codegen_options_i()}
   -e, --ens [<${addrStr}>]                   ${intlMsg.commands_codegen_options_e()}
 `;
@@ -85,15 +84,15 @@ export default {
     let {
       help,
       manifestFile,
-      outputTypesDir,
+      codegenDir,
       ipfs,
       ens,
     } = parameters.options;
-    const { h, m, t, i, e } = parameters.options;
+    const { h, m, c, i, e } = parameters.options;
 
     help = help || h;
     manifestFile = manifestFile || m;
-    outputTypesDir = outputTypesDir || t;
+    codegenDir = codegenDir || c;
     ipfs = ipfs || i;
     ens = ens || e;
 
@@ -119,7 +118,7 @@ export default {
     const paramsValid = validateAppParams(
       print,
       command,
-      outputTypesDir,
+      codegenDir,
       ens
     );
 
@@ -169,12 +168,12 @@ export default {
 
     // Resolve output "codegen.directory"
     const outputDirFromManifest = manifest.codegen?.directory;
-    if (outputTypesDir) {
-      outputTypesDir = filesystem.resolve(outputTypesDir);
+    if (codegenDir) {
+      codegenDir = filesystem.resolve(codegenDir);
     } else if (outputDirFromManifest) {
-      outputTypesDir = filesystem.resolve(outputDirFromManifest);
+      codegenDir = filesystem.resolve(outputDirFromManifest);
     } else {
-      outputTypesDir = filesystem.resolve(defaultOutputTypesDir);
+      codegenDir = filesystem.resolve(defaultOutputTypesDir);
     }
 
     // Resolve "codegen.withExtensions" flag
@@ -210,7 +209,7 @@ export default {
         project: dependency,
         schemaComposer,
         customScript: packageScript,
-        outputDir: path.join(outputTypesDir, namespace),
+        outputDir: path.join(codegenDir, namespace),
         mustacheView: { namespace }, //// { uri, namespace },
       });
 
@@ -238,7 +237,7 @@ export default {
         project: dependency,
         schemaComposer,
         customScript: appScript,
-        outputDir: path.join(outputTypesDir, namespace),
+        outputDir: path.join(codegenDir, namespace),
         mustacheView: { dependencies },
       });
 
@@ -261,7 +260,7 @@ export default {
 function validateAppParams(
   print: GluegunPrint,
   command: unknown,
-  outputTypesDir: unknown,
+  codegenDir: unknown,
   ens: unknown
 ): boolean {
 
@@ -273,20 +272,20 @@ function validateAppParams(
     return false;
   }
 
-  if (outputTypesDir === true) {
-    const outputDirMissingPathMessage = intlMsg.commands_codegen_error_outputDirMissingPath(
+  if (codegenDir === true) {
+    const codegenDirMissingPathMessage = intlMsg.commands_codegen_error_outputDirMissingPath(
       {
-        option: "--output-types-dir",
+        option: "--codegen-dir",
         argument: `<${pathStr}>`,
       }
     );
-    print.error(outputDirMissingPathMessage);
+    print.error(codegenDirMissingPathMessage);
     return false;
   }
 
   if (ens === true) {
     const domStr = intlMsg.commands_codegen_error_domain();
-    const ensAddressMissingMessage = intlMsg.commands_codegen_error_testEnsAddressMissing(
+    const ensAddressMissingMessage = intlMsg.commands_app_error_optionMissingArgument(
       {
         option: "--ens",
         argument: `<[${addrStr},]${domStr}>`,

@@ -164,7 +164,7 @@ export default {
       const dockerLock = getDockerFileLock();
       await dockerLock.request();
       const result = await compiler.compile();
-      void dockerLock.release();
+      dockerLock.release();
 
       if (!result) {
         return result;

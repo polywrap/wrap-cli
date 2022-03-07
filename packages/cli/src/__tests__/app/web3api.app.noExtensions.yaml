@@ -1,6 +1,6 @@
 format: 0.0.1-prealpha.1
 language: app/typescript
-codgen:
+codegen:
   directory: "./polywrap"
 dependencies:
   web3apis:

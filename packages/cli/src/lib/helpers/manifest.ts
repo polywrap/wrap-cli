@@ -285,6 +285,12 @@ export async function outputManifest(
       throw Error(noDumpMessage);
     }
 
+    // Create folders if they don't exist
+    const manifestDir = path.dirname(manifestPath);
+    if (!fs.existsSync(manifestDir)) {
+      fs.mkdirSync(manifestDir, { recursive: true });
+    }
+
     writeFileSync(manifestPath, str, "utf-8");
   };
 

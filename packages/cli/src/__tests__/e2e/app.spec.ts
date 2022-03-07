@@ -21,7 +21,7 @@ Commands:
 Options:
   -h, --help                              Show usage information
   -m, --manifest-file <path>              Path to the Web3API manifest file (default: web3api.app.yaml | web3api.app.yml)
-  -o, --output-dir <path>                 Output directory for the generated code (default: polywrap/)
+  -c, --codegen-dir <path>                 Output directory for the generated code (default: ./polywrap)
   -i, --ipfs [<node>]                     IPFS node to load external schemas (default: ipfs.io & localhost)
   -e, --ens [<address>]                   ENS address to lookup external schemas (default: 0x0000...2e1e)
 
@@ -43,7 +43,7 @@ describe("e2e tests for app command", () => {
   test("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["app", "--help"],
+        args: ["app", "codegen", "--help"],
         cwd: projectRoot,
         cli: w3Cli,
       },
@@ -63,25 +63,25 @@ describe("e2e tests for app command", () => {
       },
     );
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`Please provide a command
 ${HELP}`);
   });
 
-  test("Should throw error for invalid params - output-dir", async () => {
+  test("Should throw error for invalid params - codegen-dir", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["app", "codegen", "--output-dir"],
+        args: ["app", "codegen", "--codegen-dir"],
         cwd: projectRoot,
         cli: w3Cli,
       },
     );
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output))
-      .toEqual(`--output-dir option missing <path> argument
+      .toEqual(`--codegen-dir option missing <path> argument
 ${HELP}`);
   });
 
@@ -94,7 +94,7 @@ ${HELP}`);
       },
     );
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output))
       .toEqual(`--ens option missing <[address,]domain> argument
@@ -110,10 +110,12 @@ ${HELP}`);
       },
     );
 
-    expect(code).toEqual(0);
-    expect(error).toBe("");
+    expect(code).toEqual(1);
+    expect(error).toContain(`Validation errors encountered while sanitizing AppManifest format 0.0.1-prealpha.1
+instance.dependencies.web3apis does not conform to the \"uniqueNamespaceArray\" format`);
     expect(clearStyle(output))
-      .toEqual("Duplicate namespace in app manifest\n");
+      .toContain(`Validation errors encountered while sanitizing AppManifest format 0.0.1-prealpha.1
+instance.dependencies.web3apis does not conform to the \"uniqueNamespaceArray\" format`);
   });
 
   test("Should successfully generate types for wrappers", async () => {
@@ -125,9 +127,11 @@ ${HELP}`);
       },
     );
 
-    expect(code).toEqual(0);
-    expect(error).toBe("");
-    expect(clearStyle(output)).toEqual(`- Generate types
+    expect(clearStyle(output)).toEqual(`- Manifest loaded from ./web3api.app.noExtensions.yaml
+✔ Manifest loaded from ./web3api.app.noExtensions.yaml
+- Generate types
+- Manifest written to ./.w3/imports/web3apis/project/web3api.json
+✔ Manifest written to ./.w3/imports/web3apis/project/web3api.json
   Generating types from packageTypes-ts.mustache
 - Generate types
 ✔ Generate types
@@ -141,6 +145,8 @@ ${HELP}`);
 🔥 Generated top-level code for app 🔥
 🔥 Code was generated successfully 🔥
 `);
+    expect(error).toBe("");
+    expect(code).toEqual(0);
 
     const expectedTypesResult = compareSync(
       `${projectRoot}/polywrap/project/types.ts`,

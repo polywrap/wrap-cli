@@ -16,8 +16,8 @@ Options:
   -m, --manifest-file <path>       Path to the Web3API manifest file (default: ${defaultPluginManifest.join(
     " | "
   )})
-  -s, --output-schema-file <path>  Output path for the built schema (default: ./build/schema.graphql)
-  -t, --output-types-dir <path>    Output directory for the generated types (default: ./polywrap)
+  -p, --publish-dir <path>  Output path for the built schema and manifest (default: ./build)
+  -c, --codegen-dir <path>    Output directory for the generated types (default: ./src/w3)
   -i, --ipfs [<node>]              IPFS node to load external schemas (default: dev-server's node)
   -e, --ens [<address>]            ENS address to lookup external schemas (default: 0x0000...2e1e)
 
@@ -27,59 +27,55 @@ describe("e2e tests for plugin command", () => {
   const projectRoot = path.resolve(__dirname, "../plugin/");
 
   test("Should show help text", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
+    const { exitCode: code, stdout: output } = await runCLI(
       {
-        args: ["plugin", "--help"],
+        args: ["plugin", "codegen", "--help"],
         cwd: projectRoot,
       }
     );
 
     expect(code).toEqual(0);
-    expect(error).toBe("");
     expect(clearStyle(output)).toEqual(HELP);
   });
 
   test("Should throw error for invalid params - no command", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
+    const { exitCode: code, stdout: output } = await runCLI(
       {
-        args: ["plugin", "--output-types-dir"],
+        args: ["plugin", "--codegen-dir"],
         cwd: projectRoot,
       }
     );
 
-    expect(code).toEqual(0);
-    expect(error).toBe("");
-    expect(clearStyle(output)).toEqual(`Please provide a command
-${HELP}`);
+    expect(code).toEqual(1);
+    expect(clearStyle(output)).toEqual("Please provide a command\n" + HELP);
   });
 
-  test("Should throw error for invalid params - output-schema-file", async () => {
+  test("Should throw error for invalid params - publish-dir", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["plugin", "codegen", "--output-schema-file"],
+        args: ["plugin", "codegen", "--publish-dir"],
         cwd: projectRoot,
       }
     );
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output))
-      .toEqual(`--output-schema-file option missing <path> argument
-${HELP}`);
+      .toEqual("--publish-dir option missing <path> argument\n" + HELP);
   });
 
-  test("Should throw error for invalid params - output-types-dir", async () => {
+  test("Should throw error for invalid params - codegen-dir", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["plugin", "codegen", "--output-types-dir"],
+        args: ["plugin", "codegen", "--codegen-dir"],
         cwd: projectRoot,
       }
     );
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output))
-      .toEqual(`--output-types-dir option missing <path> argument
+      .toEqual(`--codegen-dir option missing <path> argument
 ${HELP}`);
   });
 
@@ -91,7 +87,7 @@ ${HELP}`);
       }
     );
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output))
       .toEqual(`--ens option missing <[address,]domain> argument
@@ -108,14 +104,16 @@ ${HELP}`);
 
     expect(code).toEqual(0);
     expect(error).toBe("");
-    expect(clearStyle(output)).toEqual(`- Generate types
-- Manifest loaded from ./web3api.plugin.yaml
+    expect(clearStyle(output)).toEqual(`- Manifest loaded from ./web3api.plugin.yaml
 ✔ Manifest loaded from ./web3api.plugin.yaml
+- Generate types
 ✔ Generate types
+- Manifest written to ./build/web3api.plugin.json
+✔ Manifest written to ./build/web3api.plugin.json
 `);
 
     const expectedTypesResult = compareSync(
-      `${projectRoot}/polywrap`,
+      `${projectRoot}/src/w3`,
       `${projectRoot}/expected-types`,
       { compareContent: true }
     );

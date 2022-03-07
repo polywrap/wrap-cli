@@ -75,7 +75,7 @@ export default {
     ens = ens || e;
 
     // Command
-    let command = "";
+    let command: string | undefined;
     try {
       const params = parameters;
       [command] = fixParameters(
@@ -88,11 +88,7 @@ export default {
           help,
         }
       );
-    } catch (e) {
-      print.error(e.message);
-      process.exitCode = 1;
-      return;
-    }
+    } catch (e) { }
 
     // Validate Params
     const paramsValid = validatePluginParams(
