@@ -4,7 +4,9 @@ import {
 } from "../";
 import {
   loadPluginManifest,
-  ManifestLanguage
+  PluginManifestLanguage,
+  pluginManifestLanguages,
+  isPluginManifestLanguage,
 } from "../../";
 
 import { PluginManifest } from "@web3api/core-js";
@@ -57,15 +59,16 @@ export class PluginProject extends ProjectWithSchema<PluginManifest> {
     return this._config.pluginManifestPath;
   }
 
-  public async getManifestLanguage(): Promise<ManifestLanguage> {
+  public async getManifestLanguage(): Promise<PluginManifestLanguage> {
     const language = (await this.getManifest()).language;
 
     ProjectWithSchema.validateManifestLanguage(
       language,
-      ["plugin/"]
+      pluginManifestLanguages,
+      isPluginManifestLanguage
     );
 
-    return language as ManifestLanguage;
+    return language as PluginManifestLanguage;
   }
 
   /// ProjectWithSchema Base Methods

@@ -2,7 +2,12 @@
 
 import { ImportedProject } from "./";
 import { ProjectConfig } from "../";
-import { ManifestLanguage, outputManifest } from "../../";
+import {
+  Web3ApiManifestLanguage,
+  web3apiManifestLanguages,
+  isWeb3ApiManifestLanguage,
+  outputManifest
+} from "../../";
 
 import {
   Web3ApiManifest,
@@ -69,15 +74,16 @@ export class ImportedWeb3ApiProject extends ImportedProject<Web3ApiManifest> {
     return this.getCachePath(cacheLayout.manifestFile);
   }
 
-  public async getManifestLanguage(): Promise<ManifestLanguage> {
+  public async getManifestLanguage(): Promise<Web3ApiManifestLanguage> {
     const language = (await this.getManifest()).language;
 
     ImportedWeb3ApiProject.validateManifestLanguage(
       language,
-      ["wasm/", "interface/"]
+      web3apiManifestLanguages,
+      isWeb3ApiManifestLanguage
     );
 
-    return language as ManifestLanguage;
+    return language as Web3ApiManifestLanguage;
   }
 
   /// ProjectWithSchema Base Methods

@@ -10,7 +10,9 @@ import {
   loadMetaManifest,
   generateDockerImageName,
   createUUID,
-  ManifestLanguage,
+  Web3ApiManifestLanguage,
+  web3apiManifestLanguages,
+  isWeb3ApiManifestLanguage,
   outputManifest,
   intlMsg
 } from "../../";
@@ -81,15 +83,16 @@ export class Web3ApiProject extends ProjectWithSchema<Web3ApiManifest> {
     return this._config.web3apiManifestPath;
   }
 
-  public async getManifestLanguage(): Promise<ManifestLanguage> {
+  public async getManifestLanguage(): Promise<Web3ApiManifestLanguage> {
     const language = (await this.getManifest()).language;
 
     ProjectWithSchema.validateManifestLanguage(
       language,
-      ["wasm/", "interface/"]
+      web3apiManifestLanguages,
+      isWeb3ApiManifestLanguage
     );
 
-    return language as ManifestLanguage;
+    return language as Web3ApiManifestLanguage;
   }
 
   /// ProjectWithSchema Base Methods

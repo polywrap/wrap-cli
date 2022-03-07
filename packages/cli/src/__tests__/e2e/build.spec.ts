@@ -6,11 +6,11 @@ import path from "path";
 import { Web3ApiProject, loadBuildManifest } from "../../lib";
 
 const HELP = `
-w3 build [options] [<web3api-manifest>]
+w3 build [options]
 
 Options:
   -h, --help                         Show usage information
-  -m, --manifest-file <path>         Path to the Web3API manifest file (default: web3api.yaml | web3api.yml)
+  -m, --manifest-file <path>         Path to the Web3API Build manifest file (default: web3api.yaml | web3api.yml)
   -i, --ipfs [<node>]                Upload build results to an IPFS node (default: dev-server's node)
   -o, --output-dir <path>            Output directory for build results (default: build/)
   -e, --test-ens <[address,]domain>  Publish the package to a test ENS domain locally (requires --ipfs)
@@ -45,7 +45,7 @@ describe("e2e tests for build command", () => {
       },
     );
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output))
       .toEqual(`--output-dir option missing <path> argument
@@ -61,7 +61,7 @@ ${HELP}`);
       },
     );
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output))
       .toEqual(`--test-ens option missing <[address,]domain> argument
@@ -77,7 +77,7 @@ ${HELP}`);
       },
     );
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output))
       .toEqual(`--test-ens option requires the --ipfs [<node>] option

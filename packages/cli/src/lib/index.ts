@@ -1,5 +1,6 @@
 export * from "./helpers";
 export * from "./intl";
+export * from "./manifest";
 export * from "./project";
 export * from "./project-templates";
 export * from "./publishers";

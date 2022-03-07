@@ -1,18 +1,8 @@
 # TODO
-## App command
-x refactor "localhost:4040/providers"
-x refactor middleware, move into system/docker
-x create issue: support callback arguments
-x finish implementing the new app.ts flow
-x remove "extension" for now, add back after types are working
-
 ## Refactor
-x Merge prealpha-dev
-x build command require "--manifest-file" argument, or should we allow for first argument to be manifest file path?
 - plugins should have props { uri, manifest, namespace }
 - AppProject validateImportUri function
 - should remove files from output directory when performing codegen (like plugin & codegen commands do)
-- create separate types for manifest languages "plugin/...", "app/...", "wasm/..."
 - resolveManifestPath
 - - the function's second parameter should be optionally undefined... or just use an array for everything
 - - also there isn't proper argument sanitization happening in plugin.ts, codegen.ts, build.ts, or app.ts for the "manifestPath"... it could be true and not a string...
@@ -61,6 +51,17 @@ x build command require "--manifest-file" argument, or should we allow for first
 - codegen output/project directory? What is this?
 
 # Done
+x create separate types for manifest languages "plugin/...", "app/...", "wasm/..."
+
+x "--manifest-file" option
+x Merge prealpha-dev
+
+x refactor "localhost:4040/providers"
+x refactor middleware, move into system/docker
+x create issue: support callback arguments
+x finish implementing the new app.ts flow
+x remove "extension" for now, add back after types are working
+
 x add web3api.plugin.yaml to the build folder, alongside the package.json file
 x !plugin command should output web3api.plugin.yaml to build folder (publish circular dep, should patch this in...)
 

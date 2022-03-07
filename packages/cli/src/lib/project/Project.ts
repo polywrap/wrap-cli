@@ -1,8 +1,6 @@
 import {
   intlMsg,
-  ManifestLanguage,
-  isManifestLanguage,
-  manifestLanguages,
+  AnyManifestLanguage
 } from "../";
 
 import fs from "fs";
@@ -26,22 +24,19 @@ export abstract class Project<TManifest> {
 
   public static validateManifestLanguage(
     language: string | undefined,
-    validPatterns: string[]
+    manifestLanguages: Record<string, string>,
+    isManifestLanguage: (language: string) => boolean
   ): void {
     if (!language) {
       throw Error(intlMsg.lib_project_language_not_found());
     }
 
-    const languagePatternValid = (test: string) =>
-      validPatterns.some((x) => test.indexOf(x) > -1);
-
-    if (!isManifestLanguage(language) || !languagePatternValid(language)) {
+    if (!isManifestLanguage(language)) {
       throw Error(
         intlMsg.lib_project_invalid_manifest_language({
           language,
           validTypes: Object.keys(manifestLanguages)
-            .filter((x) => languagePatternValid(x))
-            .join(" | "),
+            .join(", "),
         })
       );
     }
@@ -59,7 +54,7 @@ export abstract class Project<TManifest> {
 
   public abstract getManifestPath(): string;
 
-  public abstract getManifestLanguage(): Promise<ManifestLanguage>;
+  public abstract getManifestLanguage(): Promise<AnyManifestLanguage>;
 
   public get quiet(): boolean {
     return !!this._config.quiet;

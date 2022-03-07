@@ -42,7 +42,7 @@ describe("e2e tests for codegen command", () => {
       cli: w3Cli,
     });
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output))
       .toEqual(`--custom-output-dir option missing <path> argument
@@ -56,7 +56,7 @@ ${HELP}`);
       cli: w3Cli,
     });
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output))
       .toEqual(`--ens option missing <[address,]domain> argument

@@ -13,7 +13,7 @@ Commands:
 
 Options:
   -h, --help                       Show usage information
-  -m, --manifest-file <path>       Path to the Web3API manifest file (default: ${defaultPluginManifest.join(
+  -m, --manifest-file <path>       Path to the Web3API Plugin manifest file (default: ${defaultPluginManifest.join(
     " | "
   )})
   -p, --publish-dir <path>  Output path for the built schema and manifest (default: ./build)

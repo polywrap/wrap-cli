@@ -3,7 +3,9 @@ import { ProjectConfig } from "../";
 import {
   loadPluginManifest,
   outputManifest,
-  ManifestLanguage,
+  PluginManifestLanguage,
+  pluginManifestLanguages,
+  isPluginManifestLanguage,
   intlMsg
 } from "../../";
 
@@ -79,15 +81,16 @@ export class ImportedPluginProject extends ImportedProject<PluginManifest> {
     return this.getCachePath(cacheLayout.manifestFile);
   }
 
-  public async getManifestLanguage(): Promise<ManifestLanguage> {
+  public async getManifestLanguage(): Promise<PluginManifestLanguage> {
     const language = (await this.getManifest()).language;
 
     ImportedPluginProject.validateManifestLanguage(
       language,
-      ["plugin/"]
+      pluginManifestLanguages,
+      isPluginManifestLanguage,
     );
 
-    return language as ManifestLanguage;
+    return language as PluginManifestLanguage;
   }
 
   /// ProjectWithSchema Base Methods

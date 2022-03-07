@@ -3,7 +3,13 @@ import {
   ImportedPluginProject
 } from "./";
 import { Project, ProjectConfig,  } from "../";
-import { ManifestLanguage, loadAppManifest, intlMsg } from "../../";
+import {
+  AppManifestLanguage,
+  appManifestLanguages,
+  isAppManifestLanguage,
+  loadAppManifest,
+  intlMsg
+} from "../../";
 
 import { AppManifest, Client, Uri } from "@web3api/core-js";
 import path from "path";
@@ -38,7 +44,8 @@ export class AppProject extends Project<AppManifest> {
     // Validate language
     Project.validateManifestLanguage(
       manifest.language,
-      ["app/"]
+      appManifestLanguages,
+      isAppManifestLanguage
     );
 
     // Validate import URIs
@@ -101,16 +108,16 @@ export class AppProject extends Project<AppManifest> {
     return this._config.appManifestPath;
   }
 
-  public async getManifestLanguage(): Promise<ManifestLanguage> {
+  public async getManifestLanguage(): Promise<AppManifestLanguage> {
     const language = (await this.getManifest()).language;
 
     Project.validateManifestLanguage(
       language,
-      ["app/"]
+      appManifestLanguages,
+      isAppManifestLanguage
     );
 
-    // TODO: Web3ApiManifestLanguage, PluginManifestLanguage, AppManifestLanguage
-    return language as ManifestLanguage;
+    return language as AppManifestLanguage;
   }
 
   public async getImportedDependencies(): Promise<

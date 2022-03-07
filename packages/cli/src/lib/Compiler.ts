@@ -7,7 +7,7 @@ import {
   withSpinner,
   outputManifest,
   outputMetadata,
-  manifestLanguageToBindLanguage,
+  web3apiManifestLanguageToBindLanguage,
   generateDockerfile,
   generateDockerImageName,
   createBuildImage,
@@ -223,7 +223,7 @@ export class Compiler {
       this._resetDir(mutationDirectory);
     }
 
-    const bindLanguage = manifestLanguageToBindLanguage(
+    const bindLanguage = web3apiManifestLanguageToBindLanguage(
       await project.getManifestLanguage()
     );
 
@@ -352,7 +352,7 @@ export class Compiler {
 
     // If the dockerfile path isn't provided, generate it
     if (!buildManifest?.docker?.dockerfile) {
-      // Make sure the default template is in the cached .w3/build/env folder
+      // Make sure the default template is in the cached .w3/web3api/build/env folder
       await project.cacheDefaultBuildManifestFiles();
 
       dockerfile = generateDockerfile(

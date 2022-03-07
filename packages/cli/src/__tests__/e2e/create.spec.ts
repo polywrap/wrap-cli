@@ -32,9 +32,9 @@ describe("e2e tests for create command", () => {
       cli: w3Cli,
     });
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
-    expect(clearStyle(output)).toEqual(HELP);
+    expect(clearStyle(output)).toEqual("Please provide a command\n" + HELP);
   });
 
   test("Should throw error for missing parameter - type", async () => {
@@ -44,7 +44,7 @@ describe("e2e tests for create command", () => {
       cli: w3Cli,
     });
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`Please provide a command
 ${HELP}`);
@@ -57,7 +57,7 @@ ${HELP}`);
       cli: w3Cli,
     });
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`Please provide a language
 ${HELP}`);
@@ -70,7 +70,7 @@ ${HELP}`);
       cli: w3Cli,
     });
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`Please provide a project name
 ${HELP}`);
@@ -83,7 +83,7 @@ ${HELP}`);
       cli: w3Cli,
     });
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`Unrecognized command "unknown"
 ${HELP}`);
@@ -96,7 +96,7 @@ ${HELP}`);
       cli: w3Cli,
     });
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`Unrecognized language "unknown"
 ${HELP}`);
@@ -109,7 +109,7 @@ ${HELP}`);
       cli: w3Cli,
     });
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output))
       .toEqual(`--output-dir option missing <path> argument

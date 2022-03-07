@@ -3,7 +3,15 @@ import {
   withSpinner,
   isTypescriptFile,
   importTypescriptModule,
-  manifestLanguageToBindLanguage,
+  web3apiManifestLanguages,
+  isWeb3ApiManifestLanguage,
+  web3apiManifestLanguageToBindLanguage,
+  pluginManifestLanguages,
+  isPluginManifestLanguage,
+  pluginManifestLanguageToBindLanguage,
+  appManifestLanguages,
+  isAppManifestLanguage,
+  appManifestLanguageToBindLanguage,
   ProjectWithSchema,
   SchemaComposer,
   intlMsg
@@ -14,6 +22,7 @@ import {
   OutputDirectory,
   writeDirectory,
   bindSchema,
+  BindLanguage,
 } from "@web3api/schema-bind";
 
 import path from "path";
@@ -63,9 +72,29 @@ export class CodeGenerator {
     const { schemaComposer, project } = this._config;
 
     const run = async (spinner?: Ora) => {
-      const bindLanguage = manifestLanguageToBindLanguage(
-        await project.getManifestLanguage()
-      );
+      const language = await project.getManifestLanguage();
+      let bindLanguage: BindLanguage | undefined;
+
+      if (isWeb3ApiManifestLanguage(language)) {
+        bindLanguage = web3apiManifestLanguageToBindLanguage(language);
+      } else if (isPluginManifestLanguage(language)) {
+        bindLanguage = pluginManifestLanguageToBindLanguage(language);
+      } else if (isAppManifestLanguage(language)) {
+        bindLanguage = appManifestLanguageToBindLanguage(language);
+      }
+
+      if (!bindLanguage) {
+        throw Error(
+          intlMsg.lib_language_unsupportedManifestLanguage({
+            language: language,
+            supported: [
+              ...Object.keys(web3apiManifestLanguages),
+              ...Object.keys(pluginManifestLanguages),
+              ...Object.keys(appManifestLanguages),
+            ].join(", ")
+          })
+        );
+      }
 
       // Make sure that the output dir exists, if not create a new one
       if (!fs.existsSync(this._config.outputDir)) {
