@@ -623,14 +623,10 @@ impl Read for ReadDecoder {
         let position = self.view.buffer.position();
         let format = Format::get_format(self)?;
         if format == Format::FixStr(format.to_u8())
-            || format == Format::Str8
-            || format == Format::Str16
-            || format == Format::Str32
-        {
-            Ok(true)
-        } else {
-            self.view.buffer.set_position(position);
-            Ok(false)
+        self.view.buffer.set_position(position);
+        match format {
+          Format::FixStr(_) | Format::Str8 | Format::Str16 | Format::Str32 => Ok(true),
+          _ => Ok(false)
         }
     }
 

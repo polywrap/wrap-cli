@@ -6,49 +6,49 @@ use thiserror::Error;
 /// Errors from encoding data
 #[derive(Debug, Error)]
 pub enum EncodeError {
-    #[error("NilWriteError: '{0}'")]
+    #[error("{0}")]
     NilWriteError(String),
 
-    #[error("FormatWriteError: '{0}'")]
+    #[error("{0}")]
     FormatWriteError(String),
 
-    #[error("BooleanWriteError: '{0}'")]
+    #[error("{0}")]
     BooleanWriteError(String),
 
-    #[error("BinWriteError: '{0}'")]
+    #[error("{0}")]
     BinWriteError(String),
 
-    #[error("BigIntWriteError: '{0}'")]
+    #[error("{0}")]
     BigIntWriteError(String),
 
-    #[error("JSONWriteError: '{0}'")]
+    #[error("{0}")]
     JSONWriteError(String),
 
-    #[error("Float32WriteError: '{0}'")]
+    #[error("{0}")]
     Float32WriteError(String),
 
-    #[error("Float64WriteError: '{0}'")]
+    #[error("{0}")]
     Float64WriteError(String),
 
-    #[error("Uint8WriteError: '{0}'")]
+    #[error("{0}")]
     Uint8WriteError(String),
 
-    #[error("Uint16WriteError: '{0}'")]
+    #[error("{0}")]
     Uint16WriteError(String),
 
-    #[error("Uint32WriteError: '{0}'")]
+    #[error("{0}")]
     Uint32WriteError(String),
 
-    #[error("Int8WriteError: '{0}'")]
+    #[error("{0}")]
     Int8WriteError(String),
 
-    #[error("Int16WriteError: '{0}'")]
+    #[error("{0}")]
     Int16WriteError(String),
 
-    #[error("Int32WriteError: '{0}'")]
+    #[error("{0}")]
     Int32WriteError(String),
 
-    #[error("StrWriteError: '{0}'")]
+    #[error("{0}")]
     StrWriteError(String),
 
     #[error("{0}")]
@@ -76,43 +76,43 @@ pub enum DecodeError {
     #[error("Found NIL, but expected: '{0}'")]
     FoundNilButExpected(String),
 
-    #[error("BooleanReadError: '{0}'")]
+    #[error("{0}")]
     BooleanReadError(String),
 
-    #[error("BytesReadError: '{0}'")]
+    #[error("{0}")]
     BytesReadError(String),
 
-    #[error("ParseBigIntError: '{0}'")]
+    #[error("{0}")]
     ParseBigIntError(String),
 
-    #[error("IntReadError: '{0}'")]
+    #[error("{0}")]
     IntReadError(String),
 
-    #[error("UintReadError: '{0}'")]
+    #[error("{0}")]
     UintReadError(String),
 
-    #[error("FloatReadError: '{0}'")]
+    #[error("{0}")]
     FloatReadError(String),
 
-    #[error("BigIntReadError: '{0}'")]
+    #[error("{0}")]
     BigIntReadError(String),
 
-    #[error("JSONReadError: '{0}'")]
+    #[error("{0}")]
     JSONReadError(String),
 
     #[error("{0}")]
     IntRangeError(String),
 
-    #[error("ArrayReadError: '{0}'")]
+    #[error("{0}")]
     ArrayReadError(String),
 
-    #[error("MapReadError: '{0}'")]
+    #[error("{0}")]
     MapReadError(String),
 
-    #[error("StrReadError: '{0}'")]
+    #[error("{0}")]
     StrReadError(String),
 
-    #[error("EnumReadError: '{0}'")]
+    #[error("{0}")]
     EnumReadError(String),
 
     #[error("UnknownFieldName: '{0}'")]
