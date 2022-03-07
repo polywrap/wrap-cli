@@ -102,8 +102,8 @@ ${HELP}`);
       }
     );
 
-    expect(code).toEqual(0);
     expect(error).toBe("");
+    expect(code).toEqual(0);
     expect(clearStyle(output)).toEqual(`- Manifest loaded from ./web3api.plugin.yaml
 ✔ Manifest loaded from ./web3api.plugin.yaml
 - Generate types
@@ -120,12 +120,12 @@ ${HELP}`);
 
     expect(expectedTypesResult.differences).toBe(0);
 
-    const expectedSchemaResult = compareSync(
+    const expectedBuildResult = compareSync(
       `${projectRoot}/build`,
-      `${projectRoot}/expected-schema`,
+      `${projectRoot}/expected-build`,
       { compareContent: true }
     );
 
-    expect(expectedSchemaResult.differences).toBe(0);
+    expect(expectedBuildResult.differences).toBe(0);
   });
 });

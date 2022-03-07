@@ -1,3 +1,17 @@
+# Web3API 0.0.1-prealpha.66
+## Features
+* [PR-718](https://github.com/polywrap/monorepo/pull/718) `@web3api/cli`: `w3 plugin codegen` now outputs the plugin manifest to the build directory.
+* [PR-695](https://github.com/polywrap/monorepo/pull/695) `@web3api/ethereum-plugin-js`: Added Query methods: `solidityPack`, `solidityKeccak256`, `soliditySha256`.
+
+## Breaking Changes
+* [PR-718](https://github.com/polywrap/monorepo/pull/718) `@web3api/cli`: `w3 plugin codegen` option `-s, --output-schema-path` changed to `-p, --publish-dir`.
+* [PR-718](https://github.com/polywrap/monorepo/pull/718) `@web3api/cli`: `w3 plugin codegen` option `-t, --output-types-dir` changed to `-c, --codegen-dir`.
+
+# Web3API 0.0.1-prealpha.65
+## Bugs
+* [PR-690](https://github.com/polywrap/monorepo/pull/690) `@web3api/http-plugin-js`: Better axios response header handling for lists.
+* [PR-692](https://github.com/polywrap/monorepo/pull/692) `@web3api/wasm-as`: Properly propogate `Result<T, E>` error upon unwrap exception.
+
 # Web3API 0.0.1-prealpha.64
 ## Bugs
 * [PR-685](https://github.com/polywrap/monorepo/pull/685) `@web3api/schema-parse`: Properly support recursive object definition properties.
