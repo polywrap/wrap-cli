@@ -195,9 +195,5 @@ pub fn get_error_message(format: Format) -> String {
         Format::FixStr(_) | Format::Str8 | Format::Str16 | Format::Str32 => "Found 'string'.".to_string(),
         Format::FixArray(_) | Format::Array16 | Format::Array32 => "Found 'array'.".to_string(),
         Format::FixMap(_) | Format::Map16 | Format::Map32 => "Found 'map'.".to_string(),
-        _ => format!(
-            "invalid prefix, bad encoding for val: {}",
-            &format.to_u8().to_string()
-        ),
     }
 }

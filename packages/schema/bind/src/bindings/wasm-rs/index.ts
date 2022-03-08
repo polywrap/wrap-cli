@@ -101,6 +101,19 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
     });
   }
 
+  // Generate interface type folders
+  for (const interfaceType of typeInfo.interfaceTypes) {
+    entries.push({
+      type: "Directory",
+      name: Functions.toLower()(interfaceType.type, (str) => str),
+      data: generateFiles(
+        "./templates/interface-type",
+        interfaceType,
+        subTemplates
+      ),
+    });
+  }
+
   // Generate query type folders
   for (const queryType of typeInfo.moduleTypes) {
     entries.push({

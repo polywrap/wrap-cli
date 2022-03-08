@@ -1,4 +1,3 @@
-use super::error::{DecodeError, EncodeError};
 use byteorder::{self, ReadBytesExt, WriteBytesExt};
 
 const FIX_ARRAY_SIZE: u8 = 0x0f;
