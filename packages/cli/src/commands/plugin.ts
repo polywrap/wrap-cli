@@ -98,6 +98,7 @@ export default {
       (dir) => publishDir = dir,
       codegenDir,
       (dir) => codegenDir = dir,
+      ipfs,
       ens,
     );
 
@@ -173,6 +174,7 @@ function validatePluginParams(
   setPublishDir: (dir: string) => void,
   codegenDir: unknown,
   setCodegenDir: (dir: string) => void,
+  ipfs: unknown,
   ens: unknown
 ): boolean {
   if (!command) {
@@ -214,14 +216,20 @@ function validatePluginParams(
     setCodegenDir(defaultCodegenDir);
   }
 
+  if (ipfs === true) {
+    const ipfsMissingMessage = intlMsg.commands_plugin_error_optionMissingArgument({
+      option: "--ipfs",
+      argument: `[<${nodeStr}>]`
+    });
+    print.error(ipfsMissingMessage);
+    return false;
+  }
+
   if (ens === true) {
-    const domStr = intlMsg.commands_plugin_error_domain();
-    const ensAddressMissingMessage = intlMsg.commands_build_error_testEnsAddressMissing(
-      {
-        option: "--ens",
-        argument: `<[${addrStr},]${domStr}>`,
-      }
-    );
+    const ensAddressMissingMessage = intlMsg.commands_plugin_error_optionMissingArgument({
+      option: "--ens",
+      argument: `[<${addrStr}>]`,
+    });
     print.error(ensAddressMissingMessage);
     return false;
   }

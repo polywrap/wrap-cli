@@ -8,12 +8,10 @@ import {
   appManifestLanguages,
   isAppManifestLanguage,
   loadAppManifest,
-  intlMsg
 } from "../../";
 
 import { AppManifest, Client, Uri } from "@web3api/core-js";
 import path from "path";
-import fs from "fs";
 
 const cacheLayout = {
   root: "app"
@@ -47,44 +45,6 @@ export class AppProject extends Project<AppManifest> {
       appManifestLanguages,
       isAppManifestLanguage
     );
-
-    // Validate import URIs
-    const validateImportUri = (uri: string, isPlugin?: boolean): void => {
-      let result: Uri;
-      try {
-        result = new Uri(uri);
-      } catch (e) {
-        // check if the uri is a filepath without a fs/ prefix
-        const uriPath = path.join(this.getManifestDir(), uri);
-        if (!fs.existsSync(uriPath)) {
-          throw e;
-        }
-        result = new Uri(`w3://fs/${uriPath}`);
-      }
-
-      // plugins must use a filepath uri
-      if (result.authority !== "fs" && isPlugin) {
-        throw Error(
-          `${intlMsg.lib_project_app_uri_support()}\n` +
-          `w3://fs/./node_modules/myPlugin/\n` +
-          `fs/./node_modules/myPlugin/\n` +
-          `./node_modules/myPlugin/\n\n` +
-          `${intlMsg.lib_project_invalid_uri()}: ${uri}`
-        );
-      }
-    };
-
-    const web3apis = manifest.dependencies?.web3apis || [];
-    const plugins = manifest.dependencies?.plugins || [];
-
-    for (const web3api of web3apis) {
-      validateImportUri(web3api.uri, false);
-    }
-
-    // TODO: change this
-    for (const plugin of plugins) {
-      validateImportUri(plugin.manifest, true);
-    }
   }
 
   /// Manifest (web3api.app.yaml)

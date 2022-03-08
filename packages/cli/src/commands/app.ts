@@ -122,6 +122,7 @@ export default {
       print,
       command,
       codegenDir,
+      ipfs,
       ens
     );
 
@@ -264,6 +265,7 @@ function validateAppParams(
   print: GluegunPrint,
   command: unknown,
   codegenDir: unknown,
+  ipfs: unknown,
   ens: unknown
 ): boolean {
 
@@ -276,7 +278,7 @@ function validateAppParams(
   }
 
   if (codegenDir === true) {
-    const codegenDirMissingPathMessage = intlMsg.commands_codegen_error_outputDirMissingPath(
+    const codegenDirMissingPathMessage = intlMsg.commands_app_error_optionMissingArgument(
       {
         option: "--codegen-dir",
         argument: `<${pathStr}>`,
@@ -286,12 +288,20 @@ function validateAppParams(
     return false;
   }
 
+  if (ipfs === true) {
+    const ipfsMissingMessage = intlMsg.commands_app_error_optionMissingArgument({
+      option: "--ipfs",
+      argument: `[<${nodeStr}>]`
+    });
+    print.error(ipfsMissingMessage);
+    return false;
+  }
+
   if (ens === true) {
-    const domStr = intlMsg.commands_codegen_error_domain();
     const ensAddressMissingMessage = intlMsg.commands_app_error_optionMissingArgument(
       {
         option: "--ens",
-        argument: `<[${addrStr},]${domStr}>`,
+        argument: `[<${addrStr}>]`,
       }
     );
     print.error(ensAddressMissingMessage);

@@ -14,6 +14,7 @@ import chalk from "chalk";
 import path from "path";
 import { GluegunToolbox, GluegunPrint } from "gluegun";
 
+const defaultCodegenDir = "./w3";
 const optionsStr = intlMsg.commands_options_options();
 const nodeStr = intlMsg.commands_codegen_options_i_node();
 const pathStr = intlMsg.commands_codegen_options_o_path();
@@ -28,8 +29,10 @@ ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
   -m, --manifest-file <${pathStr}>              ${intlMsg.commands_codegen_options_m({
   default: defaultManifestStr
 })}
-  -c, --custom <${pathStr}>                     ${intlMsg.commands_codegen_options_c()}
-  -o, --custom-output-dir <${pathStr}>          ${intlMsg.commands_codegen_options_o()}
+  -c, --codegen-dir <${pathStr}>                ${intlMsg.commands_codegen_options_codegen({
+  default: defaultCodegenDir,
+})}
+  -s, --script <${pathStr}>                     ${intlMsg.commands_codegen_options_s()}
   -i, --ipfs [<${nodeStr}>]                     ${intlMsg.commands_codegen_options_i()}
   -e, --ens [<${addrStr}>]                   ${intlMsg.commands_codegen_options_e()}
 `;
@@ -41,29 +44,31 @@ export default {
     const { filesystem, parameters, print } = toolbox;
 
     // Options
-    const { h, c, m, i, o, e } = parameters.options;
+    const { h, m, c, s, i, e } = parameters.options;
     let {
       help,
-      custom,
-      customOutputDir,
       manifestFile,
+      codegenDir,
+      script,
       ipfs,
       ens,
     } = parameters.options;
 
     help = help || h;
-    custom = custom || c;
     manifestFile = manifestFile || m;
+    codegenDir = codegenDir || c;
+    script = script || s;
     ipfs = ipfs || i;
-    customOutputDir = customOutputDir || o;
     ens = ens || e;
 
     // Validate Params
     const paramsValid = validateCodegenParams(
       print,
-      customOutputDir,
+      codegenDir,
+      (dir: string) => codegenDir = dir,
+      script,
+      ipfs,
       ens,
-      custom
     );
 
     if (help || !paramsValid) {
@@ -77,14 +82,15 @@ export default {
     const { ipfsProvider, ethProvider } = await getTestEnvProviders(ipfs);
     const ensAddress: string | undefined = ens;
 
-    // Resolve generation file & output directories
-    const customScript = custom && filesystem.resolve(custom);
+    // Resolve manifest file
     manifestFile = resolvePathIfExists(
       filesystem,
       manifestFile ? [manifestFile] : defaultWeb3ApiManifest
     );
-    customOutputDir = customOutputDir && filesystem.resolve(customOutputDir);
+    codegenDir = codegenDir && filesystem.resolve(codegenDir);
+    script = script && filesystem.resolve(script);
 
+    // Web3Api Project
     const project = new Web3ApiProject({
       rootCacheDir: path.dirname(manifestFile),
       web3apiManifestPath: manifestFile,
@@ -100,12 +106,12 @@ export default {
 
     let result = false;
 
-    if (customScript) {
+    if (script) {
       const codeGenerator = new CodeGenerator({
         project,
         schemaComposer,
-        customScript,
-        outputDir: customOutputDir || filesystem.path("types"),
+        customScript: script,
+        outputDir: codegenDir,
       });
 
       result = await codeGenerator.generate();
@@ -130,41 +136,53 @@ export default {
 
 function validateCodegenParams(
   print: GluegunPrint,
-  customOutputDir: unknown,
+  codegenDir: unknown,
+  setCodegenDir: (dir: string) => void,
+  script: unknown,
+  ipfs: unknown,
   ens: unknown,
-  custom: unknown
 ): boolean {
-  if (customOutputDir === true) {
-    const outputDirMissingPathMessage = intlMsg.commands_codegen_error_outputDirMissingPath(
+  if (codegenDir === true) {
+    const codegenDirMessage = intlMsg.commands_codegen_error_optionMissingArgument(
       {
-        option: "--custom-output-dir",
+        option: "--codegen-dir",
         argument: `<${pathStr}>`,
       }
     );
-    print.error(outputDirMissingPathMessage);
+    print.error(codegenDirMessage);
     return false;
+  } else if (!codegenDir) {
+    setCodegenDir(defaultCodegenDir);
   }
 
-  if (ens === true) {
-    const domStr = intlMsg.commands_codegen_error_domain();
-    const ensAddressMissingMessage = intlMsg.commands_codegen_error_testEnsAddressMissing(
+  if (script === true) {
+    const customScriptMissingPathMessage = intlMsg.commands_codegen_error_optionMissingArgument(
       {
-        option: "--ens",
-        argument: `<[${addrStr},]${domStr}>`,
-      }
-    );
-    print.error(ensAddressMissingMessage);
-    return false;
-  }
-
-  if (custom === true) {
-    const customScriptMissingPathMessage = intlMsg.commands_codegen_error_customScriptMissingPath(
-      {
-        option: "--custom",
+        option: "--script",
         argument: `<${pathStr}>`,
       }
     );
     print.error(customScriptMissingPathMessage);
+    return false;
+  }
+
+  if (ipfs === true) {
+    const ipfsMissingMessage = intlMsg.commands_codegen_error_optionMissingArgument({
+      option: "--ipfs",
+      argument: `[<${nodeStr}>]`
+    });
+    print.error(ipfsMissingMessage);
+    return false;
+  }
+
+  if (ens === true) {
+    const ensAddressMissingMessage = intlMsg.commands_codegen_error_optionMissingArgument(
+      {
+        option: "--ens",
+        argument: `[<${addrStr}>]`,
+      }
+    );
+    print.error(ensAddressMissingMessage);
     return false;
   }
 

@@ -1,19 +1,32 @@
 # TODO
 ## Refactor
 - plugins should have props { uri, manifest, namespace }
-- AppProject validateImportUri function
-- should remove files from output directory when performing codegen (like plugin & codegen commands do)
+- uniform codegen (custom script + remove directory)
+- - should remove files from output directory when performing codegen (like plugin & codegen commands do)
+- x OPTIONS: (1) --manifest-file (2) --codegen-dir (3) --codegen-script (4) --publish-dir
+- - what are the rules between manifest props & options? options = overrides? manifest = project config?
+
 - resolveManifestPath
 - - the function's second parameter should be optionally undefined... or just use an array for everything
 - - also there isn't proper argument sanitization happening in plugin.ts, codegen.ts, build.ts, or app.ts for the "manifestPath"... it could be true and not a string...
-
-## Extension
-- Add back extension feature
 
 ## Test
 - create test cases to ensure that each use-case codegens correctly & compiles
 - move CLI test projects into test-cases/cases/[dapps, plugins, etc]
 - need a dapp test-case to make sure the generated types actually compile and work
+
+## Codegen
+- CLI codegen-templates mustache file names (should be the name of the file)
+- .gen.js files
+- - Convert .gen.js files to TypeScript?
+- - Using the plugin functions? confusing...
+- what's the difference between the mustache files in the CLI vs the mustache templates in the schema-bind project?
+- no dynamic imports required, do a static import at compile-time?
+- move all binding projects to the codegen script model so they can easily be ejected?
+- codegen output/project directory? What is this?
+
+## Extension
+- Add back extension feature
 
 ## Manifest Dependencies
 - use "dependencies" within wrapper & plugin manifests?
@@ -30,7 +43,6 @@
 - make sure dependency cache folder is optimized
 
 ## Command Cleanliness
-- all command flows are the same (parse arsg, validate args, create/validate/run lib classes, cleanup)
 - output standarziation
 - - web3api.plugin.yaml -> needs options for output types & schema
 - - web3api.dapp.yaml -> add options for output types
@@ -40,17 +52,11 @@
 - remove "quiet" from project configuration
 - - have a global logger that's configured by the command
 
-## Codegen
-- CLI codegen-templates mustache file names (should be the name of the file)
-- .gen.js files
-- - Convert .gen.js files to TypeScript?
-- - Using the plugin functions? confusing...
-- what's the difference between the mustache files in the CLI vs the mustache templates in the schema-bind project?
-- no dynamic imports required, do a static import at compile-time?
-- move all binding projects to the codegen script model so they can easily be ejected?
-- codegen output/project directory? What is this?
-
 # Done
+x AppProject validateImportUri function
+
+x all command flows are the same (parse arsg, validate args, create/validate/run lib classes, cleanup)
+
 x create separate types for manifest languages "plugin/...", "app/...", "wasm/..."
 
 x "--manifest-file" option

@@ -90,7 +90,7 @@ ${HELP}`);
     expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output))
-      .toEqual(`--ens option missing <[address,]domain> argument
+      .toEqual(`--ens option missing [<address>] argument
 ${HELP}`);
   });
 
