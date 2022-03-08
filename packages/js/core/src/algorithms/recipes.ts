@@ -19,10 +19,13 @@ export function getParserForFile(path: string): (str: string) => any {
 }
 
 /**
+ * Given a query (either a string or an array of strings), return the array of
+ * arrays of strings which represents the original input, split across the
+ * `delimiter`.
  *
- * @param {string | string[]} query
- * @param {string} delimiter
- * @returns {string[][]}
+ * @param {string | string[]} query delimited string or list of strings
+ * @param {string} delimiter what to split on, defaults to one space
+ * @returns {string[][]} the list of lists of delimited strings.
  */
 export function parseRecipeQuery(
   query: string | string[],
@@ -34,10 +37,12 @@ export function parseRecipeQuery(
 }
 
 /**
+ * Recursively resolves the constants in a given recipe structure.
  *
- * @param {Record<string, unknown>} variables
- * @param {Record<string, string>} constants
- * @returns {Record<string, unknown>}
+ * @param {Record<string, unknown>} variables recipes with constants
+ * @param {Record<string, string>} constants a mapping of constants to values
+ * @returns {Record<string, unknown>} the original `variables` with constants
+ *    replaced.
  */
 export function resolveConstants(
   variables: Record<string, unknown>,
@@ -63,10 +68,13 @@ export function resolveConstants(
 }
 
 /**
+ * Resolves a namespace (passed as a list of strings) within a nested recipe
+ * structure. A general query (one that refers to any namespace that has
+ * children) will return the results of all of the subqueries, recursively.
  *
- * @param {NamespacedRecipes | (NamespacedRecipes & {[p: string]: string[]})} cookbook
- * @param {string[]} query
- * @returns {Recipe[]}
+ * @param {NamespacedRecipes | (NamespacedRecipes & {[p: string]: string[]})} cookbook nested recipes
+ * @param {string[]} query which recipe to retrieve
+ * @returns {Recipe[]} the recipes defined by the passed query.
  */
 export function resolveRecipeQuery(
   cookbook:
