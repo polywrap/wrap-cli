@@ -112,23 +112,6 @@ export function regexString(regex: unknown): boolean {
   return isValid;
 }
 
-export function uniqueNamespaceArray(arr: unknown): boolean {
-  if (!Array.isArray(arr)) {
-    return false;
-  }
-
-  // Check for duplicate namespaces
-  const nsNoDupes: string[] = arr
-    .map((imp) => imp.namespace)
-    .filter((ns, i, arr) => arr.indexOf(ns) === i);
-
-  if (arr.length !== nsNoDupes.length) {
-    return false;
-  }
-
-  return true;
-}
-
 export function web3apiUri(uri: unknown): boolean {
   return typeof uri === "string" && Uri.isValidUri(uri);
 }
