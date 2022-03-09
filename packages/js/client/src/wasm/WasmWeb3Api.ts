@@ -211,7 +211,7 @@ export class WasmWeb3Api extends Api {
         }),
         requiredExports: WasmWeb3Api.requiredExports,
       });
-  
+
       const exports = instance.exports as W3Exports;
 
       await this._sanitizeAndLoadEnv(invokableModule, state, exports);

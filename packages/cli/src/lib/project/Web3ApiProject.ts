@@ -254,12 +254,10 @@ export class Web3ApiProject extends Project {
         const queryModule = defaultConfig.web3api_modules[queryIdx];
         const mutationModule = defaultConfig.web3api_modules[mutationIdx];
 
-        defaultConfig.web3api_modules[mutationIdx] = {
+        defaultConfig.web3api_modules[mutationIdx] = ({
           ...mutationModule,
-          module_dependencies: [
-            queryModule
-          ]
-        } as unknown as { name: string, dir: string };
+          module_dependencies: [queryModule],
+        } as unknown) as { name: string; dir: string };
       }
 
       if (!this._buildManifest.config) {

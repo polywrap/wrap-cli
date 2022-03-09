@@ -39,15 +39,12 @@ export interface W3Imports extends WebAssembly.Imports {
       line: u32,
       column: u32
     ) => void;
-    __w3_debug_log: (
-      ptr: u32,
-      len: u32
-    ) => void;
+    __w3_debug_log: (ptr: u32, len: u32) => void;
     __w3_load_env: (ptr: u32) => void;
     __w3_sanitize_env_args: (ptr: u32) => void;
     __w3_sanitize_env_result: (ptr: u32, len: u32) => void;
   };
   env: {
     memory: WebAssembly.Memory;
-  }
+  };
 }
