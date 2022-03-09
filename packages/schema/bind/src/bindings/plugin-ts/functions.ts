@@ -6,7 +6,7 @@ export const toTypescript: MustacheFunction = () => {
 
     let nullable = false;
     if (type[type.length - 1] === "!") {
-      type = type.substr(0, type.length - 1);
+      type = type.substring(0, type.length - 1);
     } else {
       nullable = true;
     }

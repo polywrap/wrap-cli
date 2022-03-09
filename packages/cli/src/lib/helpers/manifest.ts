@@ -16,7 +16,6 @@ import {
 } from "@web3api/core-js";
 import { writeFileSync, normalizePath } from "@web3api/os-js";
 import { Schema as JsonSchema } from "jsonschema";
-import YAML from "js-yaml";
 import path from "path";
 import fs from "fs";
 
@@ -226,7 +225,7 @@ export async function loadDappManifest(
 }
 
 export async function outputManifest(
-  manifest: Web3ApiManifest | BuildManifest | MetaManifest,
+  manifest: Web3ApiManifest | BuildManifest | MetaManifest | PluginManifest,
   manifestPath: string,
   quiet = false
 ): Promise<unknown> {
@@ -263,7 +262,7 @@ export async function outputManifest(
     };
 
     const sanitizedManifest = removeUndefinedProps(manifest);
-    const str = YAML.safeDump(sanitizedManifest);
+    const str = JSON.stringify(sanitizedManifest);
 
     if (!str) {
       const noDumpMessage = intlMsg.lib_helpers_manifest_unableToDump({

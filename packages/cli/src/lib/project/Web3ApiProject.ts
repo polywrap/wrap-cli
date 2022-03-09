@@ -5,7 +5,10 @@ import {
   loadWeb3ApiManifest,
   loadBuildManifest,
   loadMetaManifest,
+  generateDockerImageName,
+  createUUID,
   ManifestLanguage,
+  outputManifest,
 } from "../helpers";
 import { intlMsg } from "../intl";
 
@@ -249,6 +252,19 @@ export class Web3ApiProject extends Project {
     return this._buildManifest;
   }
 
+  public async getBuildUuid(): Promise<string> {
+    // Load the cached build UUID
+    let uuid = this.readCacheFile("build/uuid");
+
+    // If none was present, generate one
+    if (!uuid) {
+      uuid = createUUID();
+      this.writeCacheFile("build/uuid", uuid, "utf-8");
+    }
+
+    return uuid;
+  }
+
   public async cacheDefaultBuildManifestFiles(): Promise<void> {
     if (this._defaultBuildManifestCached) {
       return;
@@ -256,7 +272,10 @@ export class Web3ApiProject extends Project {
 
     const language = await this.getManifestLanguage();
 
-    const defaultPath = `${__dirname}/../build-envs/${language}/web3api.build.yaml`;
+    const defaultBuildManifestFilename = "web3api.build.yaml";
+    const defaultPath = `${__dirname}/../build-envs/${language}/${defaultBuildManifestFilename}`;
+    const destinationDir = "build/env/";
+    const buildEnvCachePath = this.getCachePath(destinationDir);
 
     if (!fs.existsSync(defaultPath)) {
       throw Error(
@@ -267,13 +286,31 @@ export class Web3ApiProject extends Project {
       );
     }
 
-    // Update the cache
+    // Clean the directory
     this.removeCacheDir("build/env");
-    await this.copyFilesIntoCache(
-      "build/env/",
+
+    // Copy default build environment files into cache
+    await this.copyIntoCache(
+      destinationDir,
       `${__dirname}/../build-envs/${language}/*`,
       { up: true }
     );
+
+    // Load the default build manifest
+    const defaultManifest = await loadBuildManifest(defaultPath);
+
+    // Set a unique docker image name
+    defaultManifest.docker = {
+      ...defaultManifest.docker,
+      name: generateDockerImageName(await this.getBuildUuid()),
+    };
+
+    // Output the modified build manifest
+    await outputManifest(
+      defaultManifest,
+      path.join(buildEnvCachePath, defaultBuildManifestFilename)
+    );
+
     this._defaultBuildManifestCached = true;
   }
 
