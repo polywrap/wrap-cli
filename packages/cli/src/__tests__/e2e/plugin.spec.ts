@@ -1,5 +1,5 @@
 import path from "path";
-import { defaultManifest } from "../../commands/plugin";
+import { defaultPluginManifest } from "../../lib";
 import { clearStyle } from "./utils";
 
 import { runCLI } from "@web3api/test-env-js";
@@ -13,7 +13,7 @@ Commands:
 
 Options:
   -h, --help                       Show usage information
-  -m, --manifest-path <path>       Path to the Web3API manifest file (default: ${defaultManifest.join(
+  -m, --manifest-file <path>       Path to the Web3API Plugin manifest file (default: ${defaultPluginManifest.join(
     " | "
   )})
   -p, --publish-dir <path>  Output path for the built schema and manifest (default: ./build)
@@ -27,30 +27,27 @@ describe("e2e tests for plugin command", () => {
   const projectRoot = path.resolve(__dirname, "../plugin/");
 
   test("Should show help text", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
+    const { exitCode: code, stdout: output } = await runCLI(
       {
-        args: ["plugin", "--help"],
+        args: ["plugin", "codegen", "--help"],
         cwd: projectRoot,
       }
     );
 
     expect(code).toEqual(0);
-    expect(error).toBe("");
     expect(clearStyle(output)).toEqual(HELP);
   });
 
   test("Should throw error for invalid params - no command", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
+    const { exitCode: code, stdout: output } = await runCLI(
       {
-        args: ["plugin", "--publish-dir"],
+        args: ["plugin", "--codegen-dir"],
         cwd: projectRoot,
       }
     );
 
-    expect(code).toEqual(0);
-    expect(error).toBe("");
-    expect(clearStyle(output)).toEqual(`Please provide a command
-${HELP}`);
+    expect(code).toEqual(1);
+    expect(clearStyle(output)).toEqual("Please provide a command\n" + HELP);
   });
 
   test("Should throw error for invalid params - publish-dir", async () => {
@@ -61,11 +58,10 @@ ${HELP}`);
       }
     );
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output))
-      .toEqual(`--publish-dir option missing <path> argument
-${HELP}`);
+      .toEqual("--publish-dir option missing <path> argument\n" + HELP);
   });
 
   test("Should throw error for invalid params - codegen-dir", async () => {
@@ -76,7 +72,7 @@ ${HELP}`);
       }
     );
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output))
       .toEqual(`--codegen-dir option missing <path> argument
@@ -91,10 +87,10 @@ ${HELP}`);
       }
     );
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output))
-      .toEqual(`--ens option missing <[address,]domain> argument
+      .toEqual(`--ens option missing [<address>] argument
 ${HELP}`);
   });
 

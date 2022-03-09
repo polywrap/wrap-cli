@@ -1,5 +1,5 @@
 import { createWeb3ApiProvider } from "..";
-import { SimpleStorageContainer } from "./dapp/SimpleStorage";
+import { SimpleStorageContainer } from "./app/SimpleStorage";
 import { createPlugins } from "./plugins";
 
 import {

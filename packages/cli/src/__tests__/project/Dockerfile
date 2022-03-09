@@ -9,7 +9,7 @@ RUN apk --no-cache --virtual build-dependencies add \
 
 WORKDIR /linked-packages
 
-COPY .w3/build/linked-packages/@web3api/wasm-as ./@web3api/wasm-as
+COPY .w3/web3api/build/linked-packages/@web3api/wasm-as ./@web3api/wasm-as
 
 WORKDIR /project
 

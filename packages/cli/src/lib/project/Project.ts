@@ -1,9 +1,4 @@
-import { intlMsg } from "../intl";
-import {
-  ManifestLanguage,
-  isManifestLanguage,
-  manifestLanguages,
-} from "../helpers";
+import { intlMsg, AnyManifest, AnyManifestLanguage } from "../";
 
 import fs from "fs";
 import path from "path";
@@ -12,18 +7,50 @@ import copyfiles from "copyfiles";
 import { writeFileSync } from "@web3api/os-js";
 
 export interface ProjectConfig {
+  rootCacheDir: string;
   quiet?: boolean;
 }
 
-export abstract class Project {
-  constructor(protected _config: ProjectConfig) {}
+export abstract class Project<TManifest extends AnyManifest> {
+  constructor(
+    protected _config: ProjectConfig,
+    protected _projectCacheSubDir: string
+  ) {}
+
+  /// Validation
+
+  public static validateManifestLanguage(
+    language: string | undefined,
+    manifestLanguages: Record<string, string>,
+    isManifestLanguage: (language: string) => boolean
+  ): void {
+    if (!language) {
+      throw Error(intlMsg.lib_project_language_not_found());
+    }
+
+    if (!isManifestLanguage(language)) {
+      throw Error(
+        intlMsg.lib_project_invalid_manifest_language({
+          language,
+          validTypes: Object.keys(manifestLanguages).join(", "),
+        })
+      );
+    }
+  }
 
   /// Abstract Interface
+
   public abstract reset(): void;
 
-  public abstract getRootDir(): string;
+  public abstract validate(): Promise<void>;
 
-  public abstract getManifestLanguage(): Promise<ManifestLanguage>;
+  public abstract getManifest(): Promise<TManifest>;
+
+  public abstract getManifestDir(): string;
+
+  public abstract getManifestPath(): string;
+
+  public abstract getManifestLanguage(): Promise<AnyManifestLanguage>;
 
   public abstract getSchemaNamedPaths(): Promise<{
     [name: string]: string;
@@ -43,7 +70,15 @@ export abstract class Project {
   /// Cache (.w3 folder)
 
   public getCacheDir(): string {
-    return path.join(this.getRootDir(), ".w3");
+    return path.join(
+      this._config.rootCacheDir,
+      ".w3",
+      this._projectCacheSubDir
+    );
+  }
+
+  public resetCache(): void {
+    rimraf.sync(this.getCacheDir());
   }
 
   public removeCacheDir(subfolder: string): void {
@@ -101,30 +136,5 @@ export abstract class Project {
         }
       });
     });
-  }
-
-  /// Validation
-
-  protected validateManifestLanguage(
-    language: string | undefined,
-    validPatterns: string[]
-  ): void {
-    if (!language) {
-      throw Error(intlMsg.lib_project_language_not_found());
-    }
-
-    const languagePatternValid = (test: string) =>
-      validPatterns.some((x) => test.indexOf(x) > -1);
-
-    if (!isManifestLanguage(language) || !languagePatternValid(language)) {
-      throw Error(
-        intlMsg.lib_project_invalid_manifest_language({
-          language,
-          validTypes: Object.keys(manifestLanguages)
-            .filter((x) => languagePatternValid(x))
-            .join(" | "),
-        })
-      );
-    }
   }
 }

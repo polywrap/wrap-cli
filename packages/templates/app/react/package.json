@@ -1,6 +1,6 @@
 {
   "name": "templates-app-react",
-  "description": "Web3API dApp React Template",
+  "description": "Web3API App React Template",
   "private": true,
   "version": "0.0.1-prealpha.66",
   "workspaces": {

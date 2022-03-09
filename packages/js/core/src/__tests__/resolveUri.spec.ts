@@ -11,10 +11,10 @@ import {
   QueryApiResult,
   Uri,
   UriRedirect,
-  AnyManifest,
+  AnyManifestArtifact,
 } from "..";
 import { coreInterfaceUris } from "../interfaces";
-import { ManifestType } from "../manifest";
+import { ManifestArtifactType } from "../manifest";
 import {
   Api,
   Env,
@@ -80,7 +80,7 @@ describe("resolveUri", () => {
     },
     getManifest: <
       TUri extends Uri | string,
-      TManifestType extends ManifestType
+      TManifestType extends ManifestArtifactType
     >(
       uri: TUri,
       options: GetManifestOptions<TManifestType>
@@ -91,7 +91,7 @@ describe("resolveUri", () => {
         modules: {},
         __type: "Web3ApiManifest",
       };
-      return Promise.resolve(manifest as AnyManifest<TManifestType>);
+      return Promise.resolve(manifest as AnyManifestArtifact<TManifestType>);
     },
     getFile: () => {
       return Promise.resolve("");
@@ -113,7 +113,7 @@ describe("resolveUri", () => {
         } as InvokeApiResult),
       getSchema: (_client: Client): Promise<string> => Promise.resolve(""),
       getFile: (options: GetFileOptions, client: Client) => Promise.resolve(""),
-      getManifest: <TManifestType extends ManifestType>(
+      getManifest: <TManifestType extends ManifestArtifactType>(
         options: GetManifestOptions<TManifestType>,
         client: Client
       ) => {
@@ -123,7 +123,7 @@ describe("resolveUri", () => {
           modules: {},
           __type: "Web3ApiManifest",
         };
-        return Promise.resolve(manifest as AnyManifest<TManifestType>);
+        return Promise.resolve(manifest as AnyManifestArtifact<TManifestType>);
       },
     };
   };
@@ -142,7 +142,7 @@ describe("resolveUri", () => {
         } as InvokeApiResult),
       getSchema: (_client: Client): Promise<string> => Promise.resolve(""),
       getFile: (options: GetFileOptions, client: Client) => Promise.resolve(""),
-      getManifest: <TManifestType extends ManifestType>(
+      getManifest: <TManifestType extends ManifestArtifactType>(
         options: GetManifestOptions<TManifestType>,
         client: Client
       ) => {
@@ -152,7 +152,7 @@ describe("resolveUri", () => {
           modules: {},
           __type: "Web3ApiManifest",
         };
-        return Promise.resolve(manifest as AnyManifest<TManifestType>);
+        return Promise.resolve(manifest as AnyManifestArtifact<TManifestType>);
       },
     };
   };
