@@ -11,12 +11,8 @@ export type SchemaValidator = {
 export type SchemaValidatorBuilder = () => SchemaValidator;
 
 export const validators: SchemaValidatorBuilder[] = [
-  directiveValidators.getSupportedDirectivesValidator,
-  directiveValidators.getImportedDirectiveValidator,
-  directiveValidators.getImportsDirectiveValidator,
-  typeValidators.getTypeDefinitionsValidator,
-  typeValidators.getPropertyTypesValidator,
-  typeValidators.getCircularDefinitionsValidator,
+  ...Object.values(directiveValidators).filter((x) => typeof x === "function"),
+  ...Object.values(typeValidators).filter((x) => typeof x === "function"),
 ];
 
 export { directiveValidators, typeValidators };

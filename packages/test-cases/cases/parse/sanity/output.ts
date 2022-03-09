@@ -238,6 +238,17 @@ export const typeInfo: TypeInfo = {
       ],
     },
     {
+      ...createObjectDefinition({ type: "UserObjectFromInterface" }),
+      interfaces: [
+        createInterfaceImplementedDefinition({ type: "UserObject" }),
+      ],
+      properties: [
+        createScalarPropertyDefinition({ name: "fieldA", type: "String", required: false }),
+        createScalarPropertyDefinition({ name: "fieldB", type: "Int", required: true }),
+        createScalarPropertyDefinition({ name: "fieldC", type: "UInt32", required: true }),
+      ],
+    },
+    {
       ...createObjectDefinition({
         type: "ImplementationObject",
         interfaces: [
