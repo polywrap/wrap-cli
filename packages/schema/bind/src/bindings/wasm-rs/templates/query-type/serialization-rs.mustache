@@ -1,7 +1,6 @@
 use serde::{Serialize, Deserialize};
 use std::convert::TryFrom;
 use polywrap_wasm_rs::{
-    w3_debug_log,
     BigInt,
     Context,
     DecodeError,
@@ -40,8 +39,6 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
     let mut context = Context::new();
     context.description = "Deserializing query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
 
-    w3_debug_log("BEGIN deserializing query-type: {{#toLower}}{{name}}{{/toLower}}");
-
     {{#arguments.length}}
     let mut reader = ReadDecoder::new(input, context);
     let mut num_of_fields = reader.read_map_length()?;
@@ -72,22 +69,18 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
             "{{name}}" => {
                 reader.context().push(&field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading argument");
                 {{#scalar}}
-                w3_debug_log("READING scalar field: {{#toLower}}{{name}}{{/toLower}}");
                 _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}()?;
                 {{/scalar}}
                 {{#array}}
-                w3_debug_log("READING array field: {{#toLower}}{{name}}{{/toLower}}");
                 _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {
                     {{> deserialize_array_nobox}}
                 })?;
                 {{/array}}
                 {{#enum}}
-                w3_debug_log("READING enum field: {{#toLower}}{{name}}{{/toLower}}");
                 {{> deserialize_enum}}
                 _{{#toLower}}{{name}}{{/toLower}} = value;
                 {{/enum}}
                 {{#object}}
-                w3_debug_log("READING object field: {{#toLower}}{{name}}{{/toLower}}");
                 {{> deserialize_object_refmut}}
                 _{{#toLower}}{{name}}{{/toLower}} = object;
                 {{/object}}
@@ -103,14 +96,11 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
     {{#arguments}}
     {{#required}}
     if !_{{#toLower}}{{name}}{{/toLower}}_set {
-        w3_debug_log("CHECK for missing field: {{name}}: {{type}}");
         return Err(DecodeError::MissingField("{{name}}: {{type}}.".to_string()));
     }
     {{/required}}
     {{/arguments}}
     {{/arguments.length}}
-
-    w3_debug_log("END deserializing query-type: {{#toLower}}{{name}}{{/toLower}}");
 
     Ok(Input{{#toUpper}}{{name}}{{/toUpper}} {
         {{#arguments}}
@@ -129,35 +119,28 @@ pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_result(result: {{#return}}&{{#
 
 pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#return}}&{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, writer: &mut W) -> Result<(), EncodeError> {
     {{#return}}
-    w3_debug_log("BEGIN writing query method result...");
     writer.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing result");
     {{#scalar}}
-    w3_debug_log("WRITING scalar: {{#toLower}}{{name}}{{/toLower}}");
     writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(result)?;
     {{/scalar}}
     {{#array}}
-    w3_debug_log("WRITING array: {{#toLower}}{{name}}{{/toLower}}");
     writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&result, |writer, item| {
         {{> serialize_array}}
     })?;
     {{/array}}
     {{#enum}}
     {{#required}}
-    w3_debug_log("WRITING required enum: {{#toLower}}{{name}}{{/toLower}}");
     writer.write_i32(&(*result as i32))?;
     {{/required}}
     {{^required}}
-    w3_debug_log("WRITING optional enum: {{#toLower}}{{name}}{{/toLower}}");
     writer.write_nullable_i32(&result.map(|f| f as i32))?;
     {{/required}}
     {{/enum}}
     {{#object}}
     {{#required}}
-    w3_debug_log("WRITING required object: {{#toLower}}{{name}}{{/toLower}}");
     {{#toUpper}}{{type}}{{/toUpper}}::write(&result, writer)?;
     {{/required}}
     {{^required}}
-    w3_debug_log("WRITING optional object: {{#toLower}}{{name}}{{/toLower}}");
     if result.is_some() {
         {{#toUpper}}{{type}}{{/toUpper}}::write(result.as_ref().unwrap(), writer)?;
     } else {
@@ -165,7 +148,6 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#return
     }
     {{/required}}
     {{/object}}
-    w3_debug_log("END writing query method result...");
     writer.context().pop();
     {{/return}}
     Ok(())

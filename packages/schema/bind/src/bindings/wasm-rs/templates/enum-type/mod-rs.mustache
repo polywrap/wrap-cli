@@ -7,7 +7,7 @@ pub use super::common::{
 };
 {{/__commonImport}}
 {{^__commonImport}}
-use polywrap_wasm_rs::{w3_debug_log, EnumTypeError};
+use polywrap_wasm_rs::{EnumTypeError};
 use serde::{Serialize, Deserialize};
 use std::convert::TryFrom;
 
@@ -27,7 +27,6 @@ pub fn sanitize_{{#toLower}}{{type}}{{/toLower}}_value(value: i32) -> Result<(),
 }
 
 pub fn get_{{#toLower}}{{type}}{{/toLower}}_value(key: &str) -> Result<{{#toUpper}}{{type}}{{/toUpper}}, EnumTypeError> {
-    w3_debug_log(&(format!("KEY: {}", key)));
     match key {
         {{#constants}}
         "{{.}}" => Ok({{#toUpper}}{{type}}{{/toUpper}}::{{.}}),
@@ -59,9 +58,7 @@ impl TryFrom<i32> for {{#toUpper}}{{type}}{{/toUpper}} {
             x if x == {{#toUpper}}{{type}}{{/toUpper}}::{{.}} as i32 => Ok({{#toUpper}}{{type}}{{/toUpper}}::{{.}}),
             {{/constants}}
             x if x == {{#toUpper}}{{type}}{{/toUpper}}::_MAX_ as i32 => Ok({{#toUpper}}{{type}}{{/toUpper}}::_MAX_),
-            _ => {
-              Err(EnumTypeError::ParseEnumError(format!("Invalid value for enum '{{#toUpper}}{{type}}{{/toUpper}}': {}", (v  as i32).to_string())))
-            },
+            _ => Err(EnumTypeError::ParseEnumError(format!("Invalid value for enum '{{#toUpper}}{{type}}{{/toUpper}}': {}", (v  as i32).to_string()))),
         }
     }
 }

@@ -8,7 +8,6 @@ use crate::{
 {{/methods.length}}
 {{/moduleTypes}}
 use polywrap_wasm_rs::{
-    w3_debug_log,
     abort,
     invoke,
     InvokeArgs,
@@ -17,7 +16,6 @@ use polywrap_wasm_rs::{
 #[cfg(feature = "w3-invoke")]
 #[no_mangle]
 pub extern "C" fn _w3_invoke(method_size: u32, args_size: u32) -> bool {
-    w3_debug_log("BEGIN _w3_invoke");
     // Ensure the abort handler is properly setup
     abort::w3_abort_setup();
 
@@ -26,10 +24,7 @@ pub extern "C" fn _w3_invoke(method_size: u32, args_size: u32) -> bool {
     match args.method.as_str() {
         {{#moduleTypes}}
         {{#methods}}
-        "{{name}}" => {
-            w3_debug_log("INVOKING... {{name}}");
-            invoke::w3_invoke(args, Some({{#toLower}}{{name}}{{/toLower}}_wrapped))
-        },
+        "{{name}}" => invoke::w3_invoke(args, Some({{#toLower}}{{name}}{{/toLower}}_wrapped)),
         {{/methods}}
         {{/moduleTypes}}
         _ => invoke::w3_invoke(args, None),

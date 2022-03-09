@@ -9,23 +9,23 @@ pub enum TestImportEnum {
     _MAX_
 }
 
-pub fn sanitize_test_import_enum_value(value: i32) -> Result<(), String> {
+pub fn sanitize_test_import_enum_value(value: i32) -> Result<(), EnumTypeError> {
     if value < 0 && value >= TestImportEnum::_MAX_ as i32 {
-        return Err(String::from(EnumTypeError::EnumProcessingError(format!("Invalid value for enum 'TestImportEnum': {}", value.to_string()))));
+        return Err(EnumTypeError::EnumProcessingError(format!("Invalid value for enum 'TestImportEnum': {}", value.to_string())));
     }
     Ok(())
 }
 
-pub fn get_test_import_enum_value(key: &str) -> Result<TestImportEnum, String> {
+pub fn get_test_import_enum_value(key: &str) -> Result<TestImportEnum, EnumTypeError> {
     match key {
         "STRING" => Ok(TestImportEnum::STRING),
         "BYTES" => Ok(TestImportEnum::BYTES),
         "_MAX_" => Ok(TestImportEnum::_MAX_),
-        err => Err(String::from(EnumTypeError::EnumProcessingError(format!("Invalid key for enum 'TestImportEnum': {}", err))))
+        err => Err(EnumTypeError::EnumProcessingError(format!("Invalid key for enum 'TestImportEnum': {}", err)))
     }
 }
 
-pub fn get_test_import_enum_key(value: TestImportEnum) -> Result<String, String> {
+pub fn get_test_import_enum_key(value: TestImportEnum) -> Result<String, EnumTypeError> {
     if sanitize_test_import_enum_value(value as i32).is_ok() {
         match value {
             TestImportEnum::STRING => Ok("STRING".to_string()),
@@ -33,19 +33,19 @@ pub fn get_test_import_enum_key(value: TestImportEnum) -> Result<String, String>
             TestImportEnum::_MAX_ => Ok("_MAX_".to_string()),
         }
     } else {
-        Err(String::from(EnumTypeError::EnumProcessingError(format!("Invalid value for enum 'TestImportEnum': {}", (value  as i32).to_string()))))
+        Err(EnumTypeError::EnumProcessingError(format!("Invalid value for enum 'TestImportEnum': {}", (value  as i32).to_string())))
     }
 }
 
 impl TryFrom<i32> for TestImportEnum {
-    type Error = String;
+    type Error = EnumTypeError;
 
     fn try_from(v: i32) -> Result<TestImportEnum, Self::Error> {
         match v {
             x if x == TestImportEnum::STRING as i32 => Ok(TestImportEnum::STRING),
             x if x == TestImportEnum::BYTES as i32 => Ok(TestImportEnum::BYTES),
             x if x == TestImportEnum::_MAX_ as i32 => Ok(TestImportEnum::_MAX_),
-            _ => Err(String::from(EnumTypeError::ParseEnumError(format!("Error converting 'TestImportEnum' to i32")))),
+            _ => Err(EnumTypeError::ParseEnumError(format!("Invalid value for enum 'TestImportEnum': {}", (v  as i32).to_string()))),
         }
     }
 }

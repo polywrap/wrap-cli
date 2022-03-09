@@ -2,7 +2,6 @@
 {{#methods.length}}
 use serde::{Serialize, Deserialize};
 use polywrap_wasm_rs::{
-    w3_debug_log,
     BigInt,
     Context,
     DecodeError,
@@ -48,36 +47,29 @@ pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &Input{{#toUpper}}
 pub fn write_{{#toLower}}{{name}}{{/toLower}}_args<W: Write>(input: &Input{{#toUpper}}{{name}}{{/toUpper}}, writer: &mut W) -> Result<(), EncodeError> {
     writer.write_map_length(&{{arguments.length}})?;
     {{#arguments}}
-    w3_debug_log("BEGIN writing properties...");
     writer.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
     writer.write_string("{{name}}")?;
     {{#scalar}}
-    w3_debug_log("WRITING scalar: {{#toLower}}{{name}}{{/toLower}}");
     writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}})?;
     {{/scalar}}
     {{#array}}
-    w3_debug_log("WRITING array: {{#toLower}}{{name}}{{/toLower}}");
     writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}, |writer, item| {
         {{> serialize_array}}
     })?;
     {{/array}}
     {{#enum}}
     {{#required}}
-    w3_debug_log("WRITING required enum: {{#toLower}}{{name}}{{/toLower}}");
     writer.write_i32(&(input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}} as i32))?;
     {{/required}}
     {{^required}}
-    w3_debug_log("WRITING optional enum: {{#toLower}}{{name}}{{/toLower}}");
     writer.write_nullable_i32(&input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.map(|f| f as i32))?;
     {{/required}}
     {{/enum}}
     {{#object}}
     {{#required}}
-    w3_debug_log("WRITING required object: {{#toLower}}{{name}}{{/toLower}}");
     {{#toUpper}}{{type}}{{/toUpper}}::write(&input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}, writer)?;
     {{/required}}
     {{^required}}
-    w3_debug_log("WRITING optional object: {{#toLower}}{{name}}{{/toLower}}");
     if input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.is_some() {
         {{#toUpper}}{{type}}{{/toUpper}}::write(input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.as_ref().as_ref().unwrap(), writer)?;
     } else {
@@ -85,7 +77,6 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_args<W: Write>(input: &Input{{#toU
     }
     {{/required}}
     {{/object}}
-    w3_debug_log("END writing properties...");
     writer.context().pop();
     {{/arguments}}
     Ok(())
@@ -96,32 +87,25 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_result(result: &[u8]) -> Res
     context.description = "Deserializing imported query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
     let mut reader = ReadDecoder::new(result, context);
 
-    w3_debug_log("BEGIN deserializing imported query-type: {{#toLower}}{{name}}{{/toLower}}");
-
     {{#return}}
     reader.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "reading function output");
     {{#scalar}}
-    w3_debug_log("READING scalar field: {{#toLower}}{{name}}{{/toLower}}");
     let res = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}()?;
     {{/scalar}}
     {{#array}}
-    w3_debug_log("READING array field: {{#toLower}}{{name}}{{/toLower}}");
     let res = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {
         {{> deserialize_array_nobox}}
     })?;
     {{/array}}
     {{#enum}}
-    w3_debug_log("READING enum field: {{#toLower}}{{name}}{{/toLower}}");
     {{> deserialize_enum}}
     let res = value;
     {{/enum}}
     {{#object}}
-    w3_debug_log("READING object field: {{#toLower}}{{name}}{{/toLower}}");
     {{> deserialize_object_refmut}}
     let res = object;
     {{/object}}
     {{/return}}
-    w3_debug_log("END deserializing imported query-type: {{#toLower}}{{name}}{{/toLower}}");
     reader.context().pop();
     Ok(res)
 }

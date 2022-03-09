@@ -49,20 +49,20 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
     writer.write_string("str")?;
     writer.write_string(&input.str)?;
     writer.context().pop();
-    writer.context().push("opt_str", "Option<String>", "writing property");
-    writer.write_string("opt_str")?;
+    writer.context().push("optStr", "Option<String>", "writing property");
+    writer.write_string("optStr")?;
     writer.write_nullable_string(&input.opt_str)?;
     writer.context().pop();
     writer.context().push("u", "u32", "writing property");
     writer.write_string("u")?;
     writer.write_u32(&input.u)?;
     writer.context().pop();
-    writer.context().push("opt_u", "Option<u32>", "writing property");
-    writer.write_string("opt_u")?;
+    writer.context().push("optU", "Option<u32>", "writing property");
+    writer.write_string("optU")?;
     writer.write_nullable_u32(&input.opt_u)?;
     writer.context().pop();
-    writer.context().push("u_array_array", "Vec<Option<Vec<Option<u32>>>>", "writing property");
-    writer.write_string("u_array_array")?;
+    writer.context().push("uArrayArray", "Vec<Option<Vec<Option<u32>>>>", "writing property");
+    writer.write_string("uArrayArray")?;
     writer.write_array(&input.u_array_array, |writer, item| {
         writer.write_nullable_array(item, |writer, item| {
             writer.write_nullable_u32(item)
@@ -73,22 +73,22 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
     writer.write_string("object")?;
     TestImportObject::write(&input.object, writer)?;
     writer.context().pop();
-    writer.context().push("opt_object", "Option<TestImportObject>", "writing property");
-    writer.write_string("opt_object")?;
+    writer.context().push("optObject", "Option<TestImportObject>", "writing property");
+    writer.write_string("optObject")?;
     if input.opt_object.is_some() {
         TestImportObject::write(input.opt_object.as_ref().as_ref().unwrap(), writer)?;
     } else {
         writer.write_nil()?;
     }
     writer.context().pop();
-    writer.context().push("object_array", "Vec<TestImportObject>", "writing property");
-    writer.write_string("object_array")?;
+    writer.context().push("objectArray", "Vec<TestImportObject>", "writing property");
+    writer.write_string("objectArray")?;
     writer.write_array(&input.object_array, |writer, item| {
         TestImportObject::write(item, writer)
     })?;
     writer.context().pop();
-    writer.context().push("opt_object_array", "Option<Vec<Option<TestImportObject>>>", "writing property");
-    writer.write_string("opt_object_array")?;
+    writer.context().push("optObjectArray", "Option<Vec<Option<TestImportObject>>>", "writing property");
+    writer.write_string("optObjectArray")?;
     writer.write_nullable_array(&input.opt_object_array, |writer, item| {
         if item.is_some() {
             TestImportObject::write(item.as_ref().as_ref().unwrap(), writer)
@@ -101,18 +101,18 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
     writer.write_string("en")?;
     writer.write_i32(&(input.en as i32))?;
     writer.context().pop();
-    writer.context().push("opt_enum", "Option<TestImportEnum>", "writing property");
-    writer.write_string("opt_enum")?;
+    writer.context().push("optEnum", "Option<TestImportEnum>", "writing property");
+    writer.write_string("optEnum")?;
     writer.write_nullable_i32(&input.opt_enum.map(|f| f as i32))?;
     writer.context().pop();
-    writer.context().push("enum_array", "Vec<TestImportEnum>", "writing property");
-    writer.write_string("enum_array")?;
+    writer.context().push("enumArray", "Vec<TestImportEnum>", "writing property");
+    writer.write_string("enumArray")?;
     writer.write_array(&input.enum_array, |writer, item| {
         writer.write_i32(&(*item as i32))
     })?;
     writer.context().pop();
-    writer.context().push("opt_enum_array", "Option<Vec<Option<TestImportEnum>>>", "writing property");
-    writer.write_string("opt_enum_array")?;
+    writer.context().push("optEnumArray", "Option<Vec<Option<TestImportEnum>>>", "writing property");
+    writer.write_string("optEnumArray")?;
     writer.write_nullable_array(&input.opt_enum_array, |writer, item| {
         writer.write_nullable_i32(&item.map(|f| f as i32))
     })?;
@@ -124,7 +124,8 @@ pub fn deserialize_imported_method_result(result: &[u8]) -> Result<Option<TestIm
     let mut context = Context::new();
     context.description = "Deserializing imported query-type: imported_method".to_string();
     let mut reader = ReadDecoder::new(result, context);
-    reader.context().push("imported_method", "Option<TestImportObject>", "reading function output");
+
+    reader.context().push("importedMethod", "Option<TestImportObject>", "reading function output");
     let mut object: Option<TestImportObject> = None;
     if !reader.is_next_nil()? {
         object = Some(TestImportObject::read(&mut reader)?);
@@ -164,7 +165,8 @@ pub fn deserialize_another_method_result(result: &[u8]) -> Result<i32, DecodeErr
     let mut context = Context::new();
     context.description = "Deserializing imported query-type: another_method".to_string();
     let mut reader = ReadDecoder::new(result, context);
-    reader.context().push("another_method", "i32", "reading function output");
+
+    reader.context().push("anotherMethod", "i32", "reading function output");
     let res = reader.read_i32()?;
     reader.context().pop();
     Ok(res)

@@ -23,7 +23,7 @@ pub fn serialize_another_type(input: &AnotherType) -> Result<Vec<u8>, EncodeErro
 }
 
 pub fn write_another_type<W: Write>(input: &AnotherType, writer: &mut W) -> Result<(), EncodeError> {
-    writer.write_map_length(&2)?;
+    writer.write_map_length(&3)?;
     writer.context().push("prop", "Option<String>", "writing property");
     writer.write_string("prop")?;
     writer.write_nullable_string(&input.prop)?;
@@ -35,6 +35,10 @@ pub fn write_another_type<W: Write>(input: &AnotherType, writer: &mut W) -> Resu
     } else {
         writer.write_nil()?;
     }
+    writer.context().pop();
+    writer.context().push("const", "Option<String>", "writing property");
+    writer.write_string("const")?;
+    writer.write_nullable_string(&input.m_const)?;
     writer.context().pop();
     Ok(())
 }
@@ -51,6 +55,7 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> Result<AnotherType, DecodeE
 
     let mut _prop: Option<String> = None;
     let mut _circular: Option<CustomType> = None;
+    let mut _const: Option<String> = None;
 
     while num_of_fields > 0 {
         num_of_fields -= 1;
@@ -73,6 +78,11 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> Result<AnotherType, DecodeE
                 _circular = object;
                 reader.context().pop();
             }
+            "const" => {
+                reader.context().push(&field, "Option<String>", "type found, reading property");
+                _const = reader.read_nullable_string()?;
+                reader.context().pop();
+            }
             err => return Err(DecodeError::UnknownFieldName(err.to_string())),
         }
     }
@@ -80,5 +90,6 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> Result<AnotherType, DecodeE
     Ok(AnotherType {
         prop: _prop,
         circular: _circular,
+        m_const: _const,
     })
 }

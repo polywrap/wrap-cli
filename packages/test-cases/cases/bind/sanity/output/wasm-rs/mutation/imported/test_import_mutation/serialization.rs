@@ -38,8 +38,8 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
     writer.write_string("object")?;
     TestImportObject::write(&input.object, writer)?;
     writer.context().pop();
-    writer.context().push("object_array", "Vec<TestImportObject>", "writing property");
-    writer.write_string("object_array")?;
+    writer.context().push("objectArray", "Vec<TestImportObject>", "writing property");
+    writer.write_string("objectArray")?;
     writer.write_array(&input.object_array, |writer, item| {
         TestImportObject::write(item, writer)
     })?;
@@ -51,7 +51,8 @@ pub fn deserialize_imported_method_result(result: &[u8]) -> Result<Option<TestIm
     let mut context = Context::new();
     context.description = "Deserializing imported query-type: imported_method".to_string();
     let mut reader = ReadDecoder::new(result, context);
-    reader.context().push("imported_method", "Option<TestImportObject>", "reading function output");
+
+    reader.context().push("importedMethod", "Option<TestImportObject>", "reading function output");
     let mut object: Option<TestImportObject> = None;
     if !reader.is_next_nil()? {
         object = Some(TestImportObject::read(&mut reader)?);
@@ -91,7 +92,8 @@ pub fn deserialize_another_method_result(result: &[u8]) -> Result<i32, DecodeErr
     let mut context = Context::new();
     context.description = "Deserializing imported query-type: another_method".to_string();
     let mut reader = ReadDecoder::new(result, context);
-    reader.context().push("another_method", "i32", "reading function output");
+
+    reader.context().push("anotherMethod", "i32", "reading function output");
     let res = reader.read_i32()?;
     reader.context().pop();
     Ok(res)

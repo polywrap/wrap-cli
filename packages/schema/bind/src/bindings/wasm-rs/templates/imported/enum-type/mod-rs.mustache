@@ -52,7 +52,7 @@ pub fn get_{{#toLower}}{{type}}{{/toLower}}_key(value: {{#toUpper}}{{type}}{{/to
 impl TryFrom<i32> for {{#toUpper}}{{type}}{{/toUpper}} {
     type Error = EnumTypeError;
 
-    fn try_from(v: i32) -> Result<{{#toUpper}}{{type}}{{/toUpper}}, Self:Error> {
+    fn try_from(v: i32) -> Result<{{#toUpper}}{{type}}{{/toUpper}}, Self::Error> {
         match v {
             {{#constants}}
             x if x == {{#toUpper}}{{type}}{{/toUpper}}::{{.}} as i32 => Ok({{#toUpper}}{{type}}{{/toUpper}}::{{.}}),

@@ -12,7 +12,7 @@ use crate::{
 pub fn query_method_wrapped(input: &[u8]) -> Vec<u8> {
     match deserialize_query_method_args(input) {
         Ok(args) => {
-            let result = query_method(InputQueryMethod {
+            let result = query_method( InputQueryMethod {
                 str: args.str,
                 opt_str: args.opt_str,
                 en: args.en,
@@ -31,7 +31,7 @@ pub fn query_method_wrapped(input: &[u8]) -> Vec<u8> {
 pub fn object_method_wrapped(input: &[u8]) -> Vec<u8> {
     match deserialize_object_method_args(input) {
         Ok(args) => {
-            let result = object_method(InputObjectMethod {
+            let result = object_method( InputObjectMethod {
                 object: args.object,
                 opt_object: args.opt_object,
                 object_array: args.object_array,

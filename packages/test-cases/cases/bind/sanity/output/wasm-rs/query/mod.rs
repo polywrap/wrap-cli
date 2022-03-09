@@ -21,6 +21,8 @@ pub use imported::test_import_enum::{
     TestImportEnum
 };
 pub use imported::test_import_query::TestImportQuery;
+pub mod test_import;
+pub use test_import::TestImport;
 pub mod query;
 pub use query::{
     deserialize_query_method_args,

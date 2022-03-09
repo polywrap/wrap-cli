@@ -684,12 +684,12 @@ export const runLargeTypesTest = async (
   client: Web3ApiClient,
   uri: string
 ) => {
-  const largeStr = new Array(10000).join("web3api ");
+  const largeStr = new Array(5000).join("web3api ");
   const largeBytes = new Uint8Array(Buffer.from(largeStr));
   const largeStrArray = [];
   const largeBytesArray = [];
 
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 50; i++) {
     largeStrArray.push(largeStr);
     largeBytesArray.push(largeBytes);
   }
