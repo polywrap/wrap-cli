@@ -1,8 +1,4 @@
-import {
-  displayPath,
-  withSpinner,
-  intlMsg,
-} from "../../";
+import { displayPath, withSpinner, intlMsg } from "../../";
 
 import {
   Web3ApiManifest,
@@ -54,7 +50,6 @@ export async function loadWeb3ApiManifest(
     )) as Web3ApiManifest;
   }
 }
-
 
 export const defaultBuildManifest = ["web3api.build.yaml", "web3api.build.yml"];
 

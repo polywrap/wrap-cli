@@ -148,7 +148,7 @@ export const toWasm: MustacheFunction = () => {
 };
 
 const toWasmArray = (type: string, nullable: boolean): string => {
-  const result = type.match(/(\[)([[\]A-Za-z1-9_.!]+)(\])/);
+  const result = type.match(/(\[)([[\]A-Za-z0-9_.!]+)(\])/);
 
   if (!result || result.length !== 4) {
     throw Error(`Invalid Array: ${type}`);

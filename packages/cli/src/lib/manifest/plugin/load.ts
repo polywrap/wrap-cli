@@ -1,16 +1,12 @@
-import {
-  displayPath,
-  withSpinner,
-  intlMsg,
-} from "../../";
+import { displayPath, withSpinner, intlMsg } from "../../";
 
-import {
-  PluginManifest,
-  deserializePluginManifest,
-} from "@web3api/core-js";
+import { PluginManifest, deserializePluginManifest } from "@web3api/core-js";
 import fs from "fs";
 
-export const defaultPluginManifest = ["web3api.plugin.yaml", "web3api.plugin.yml"];
+export const defaultPluginManifest = [
+  "web3api.plugin.yaml",
+  "web3api.plugin.yml",
+];
 
 export async function loadPluginManifest(
   manifestPath: string,

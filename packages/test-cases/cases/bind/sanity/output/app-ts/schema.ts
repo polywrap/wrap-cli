@@ -30,6 +30,73 @@ directive @capability(
 directive @enabled_interface on OBJECT
 ### Web3API Header END ###
 
+type Query @imports(
+  types: [
+    "TestImport_Query",
+    "TestImport_Object",
+    "TestImport_AnotherObject",
+    "TestImport_Enum"
+  ]
+) @capability(
+  type: "getImplementations",
+  uri: "testimport.uri.eth",
+  namespace: "TestImport"
+) {
+  queryMethod(
+    str: String!
+    optStr: String
+    en: CustomEnum!
+    optEnum: CustomEnum
+    enumArray: [CustomEnum!]!
+    optEnumArray: [CustomEnum]
+  ): Int!
+
+  objectMethod(
+    object: AnotherType!
+    optObject: AnotherType
+    objectArray: [AnotherType!]!
+    optObjectArray: [AnotherType]
+  ): AnotherType
+}
+
+type Mutation @imports(
+  types: [
+    "TestImport_Query",
+    "TestImport_Object",
+    "TestImport_AnotherObject",
+    "TestImport_Enum",
+    "TestImport_Mutation"
+  ]
+) {
+  mutationMethod(
+    str: String!
+    optStr: String
+    en: CustomEnum!
+    optEnum: CustomEnum
+    enumArray: [CustomEnum!]!
+    optEnumArray: [CustomEnum]
+  ): Int!
+
+  objectMethod(
+    object: AnotherType!
+    optObject: AnotherType
+    objectArray: [AnotherType!]!
+    optObjectArray: [AnotherType]
+  ): AnotherType
+}
+
+type QueryEnv {
+  queryProp: String!
+  prop: String!
+  optProp: String
+}
+
+type MutationEnv {
+  mutProp: String!
+  prop: String!
+  optProp: String
+}
+
 type CustomType {
   str: String!
   optStr: String

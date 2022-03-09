@@ -26,7 +26,7 @@ export function appManifestLanguageToBindLanguage(
       throw Error(
         intlMsg.lib_language_unsupportedManifestLanguage({
           language: manifestLanguage,
-          supported: Object.keys(appManifestLanguages).join(", ")
+          supported: Object.keys(appManifestLanguages).join(", "),
         })
       );
   }

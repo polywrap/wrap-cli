@@ -12,7 +12,7 @@ import {
   defaultWeb3ApiManifest,
   resolvePathIfExists,
   getTestEnvProviders,
-  isDockerInstalled
+  isDockerInstalled,
 } from "../lib";
 
 import chalk from "chalk";
@@ -35,7 +35,7 @@ ${chalk.bold("w3 build")} [${optionsStr}]
 ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
   -h, --help                         ${intlMsg.commands_build_options_h()}
   -m, --manifest-file <${pathStr}>         ${intlMsg.commands_build_options_m({
-  default: defaultManifestStr
+  default: defaultManifestStr,
 })}
   -i, --ipfs [<${nodeStr}>]                ${intlMsg.commands_build_options_i()}
   -o, --output-dir <${pathStr}>            ${intlMsg.commands_build_options_o()}
@@ -59,7 +59,7 @@ export default {
       outputDir,
       watch,
       testEns,
-      verbose
+      verbose,
     } = parameters.options;
 
     help = help || h;
@@ -94,22 +94,22 @@ export default {
     }
 
     // Resolve manifest & output directory
-    const manifestPaths = manifestFile ? [manifestFile as string] : defaultWeb3ApiManifest;
-    manifestFile = resolvePathIfExists(
-      filesystem,
-      manifestPaths
-    );
+    const manifestPaths = manifestFile
+      ? [manifestFile as string]
+      : defaultWeb3ApiManifest;
+    manifestFile = resolvePathIfExists(filesystem, manifestPaths);
 
     if (!manifestFile) {
       print.error(
         intlMsg.commands_build_error_manifestNotFound({
-          paths: manifestPaths.join(", ")
+          paths: manifestPaths.join(", "),
         })
       );
       return;
     }
 
-    outputDir = (outputDir && filesystem.resolve(outputDir)) ||
+    outputDir =
+      (outputDir && filesystem.resolve(outputDir)) ||
       filesystem.path(defaultOutputDirectory);
 
     // Gather providers
@@ -157,7 +157,7 @@ export default {
       web3apiManifestPath: manifestFile,
       quiet: verbose ? false : true,
     });
-    await project.validate()
+    await project.validate();
 
     const schemaComposer = new SchemaComposer({
       project,
@@ -177,7 +177,7 @@ export default {
       const dockerLock = getDockerFileLock();
       await dockerLock.request();
       const result = await compiler.compile();
-      dockerLock.release();
+      await dockerLock.release();
 
       if (!result) {
         return result;
@@ -278,10 +278,7 @@ export default {
       const watcher = new Watcher();
 
       watcher.start(project.getManifestDir(), {
-        ignored: [
-          outputDir + "/**",
-          project.getManifestDir() + "/**/w3/**",
-        ],
+        ignored: [outputDir + "/**", project.getManifestDir() + "/**/w3/**"],
         ignoreInitial: true,
         execute: async (events: WatchEvent[]) => {
           // Log all of the events encountered

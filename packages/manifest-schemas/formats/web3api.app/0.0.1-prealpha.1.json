@@ -20,19 +20,6 @@
       "type": "string",
       "format": "file"
     },
-    "codegen": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "directory": {
-          "type": "string",
-          "format": "file"
-        },
-        "withExtensions": {
-          "type": "boolean"
-        }
-      }
-    },
     "import_redirects": {
       "type": "array",
       "items": {

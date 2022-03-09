@@ -2,7 +2,7 @@ import axios from "axios";
 
 export async function getTestEnvProviders(
   ipfsProvider?: string,
-  ethProvider?: string,
+  ethProvider?: string
 ): Promise<{ ipfsProvider?: string; ethProvider?: string }> {
   const result = {
     ipfsProvider: ipfsProvider,

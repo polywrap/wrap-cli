@@ -1,11 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-empty-function */
 
-import {
-  Project,
-  AnyManifest,
-  getSimpleClient
-} from "./";
+import { Project, AnyManifest, getSimpleClient } from "./";
 
 import { Uri, Web3ApiClient } from "@web3api/client-js";
 import {
@@ -14,7 +10,7 @@ import {
   ComposerFilter,
   ComposerOptions,
   SchemaKind,
-  SchemaFile
+  SchemaFile,
 } from "@web3api/schema-compose";
 import fs from "fs";
 import path from "path";

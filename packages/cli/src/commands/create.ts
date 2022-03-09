@@ -1,8 +1,4 @@
-import {
-  generateProjectTemplate,
-  fixParameters,
-  intlMsg
-} from "../lib";
+import { generateProjectTemplate, fixParameters, intlMsg } from "../lib";
 
 import chalk from "chalk";
 import { GluegunToolbox, GluegunPrint } from "gluegun";
@@ -67,7 +63,8 @@ export default {
           help,
         }
       );
-    } catch (e) { }
+      // eslint-disable-next-line no-empty
+    } catch (e) {}
 
     // Validate Params
     const paramsValid = validateCreateParams(

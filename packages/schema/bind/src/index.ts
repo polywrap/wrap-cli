@@ -41,13 +41,28 @@ export function bindSchema(options: BindOptions): BindOutput {
 
   return {
     combined: combined
-      ? generateBinding(bindLanguage, combined.typeInfo, combined.schema, combined.config || {})
+      ? generateBinding(
+          bindLanguage,
+          combined.typeInfo,
+          combined.schema,
+          combined.config || {}
+        )
       : undefined,
     query: query
-      ? generateBinding(bindLanguage, query.typeInfo, query.schema, query.config || {})
+      ? generateBinding(
+          bindLanguage,
+          query.typeInfo,
+          query.schema,
+          query.config || {}
+        )
       : undefined,
     mutation: mutation
-      ? generateBinding(bindLanguage, mutation.typeInfo, mutation.schema, mutation.config || {})
+      ? generateBinding(
+          bindLanguage,
+          mutation.typeInfo,
+          mutation.schema,
+          mutation.config || {}
+        )
       : undefined,
   };
 }

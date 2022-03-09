@@ -10,7 +10,7 @@ import { AppManifest, Client } from "@web3api/core-js";
 import path from "path";
 
 const cacheLayout = {
-  root: "app"
+  root: "app",
 };
 
 export interface AppProjectConfig extends ProjectConfig {

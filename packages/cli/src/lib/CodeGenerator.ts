@@ -15,7 +15,7 @@ import {
   Project,
   AnyManifest,
   SchemaComposer,
-  intlMsg
+  intlMsg,
 } from "./";
 
 import { TypeInfo } from "@web3api/schema-parse";
@@ -26,7 +26,6 @@ import {
   BindLanguage,
   GenerateBindingFn,
 } from "@web3api/schema-bind";
-
 import path from "path";
 import fs, { readFileSync } from "fs";
 import * as gluegun from "gluegun";
@@ -84,7 +83,7 @@ export class CodeGenerator {
               ...Object.keys(web3apiManifestLanguages),
               ...Object.keys(pluginManifestLanguages),
               ...Object.keys(appManifestLanguages),
-            ].join(", ")
+            ].join(", "),
           })
         );
       }
@@ -115,14 +114,17 @@ export class CodeGenerator {
         // Check the generation file if it has the proper run() method
         // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
         const generator = isTypescriptFile(customScript)
-          ? importTypescriptModule(customScript)
-          : await require(customScript);
+          ? await importTypescriptModule(customScript)
+          : // eslint-disable-next-line @typescript-eslint/no-require-imports
+            await require(customScript);
 
         if (!generator) {
           throw Error(intlMsg.lib_codeGenerator_wrongGenFile());
         }
 
-        const { generateBinding } = generator as { generateBinding: GenerateBindingFn };
+        const { generateBinding } = generator as {
+          generateBinding: GenerateBindingFn;
+        };
         if (!generateBinding) {
           throw Error(intlMsg.lib_codeGenerator_nogenerateBindingMethod());
         }

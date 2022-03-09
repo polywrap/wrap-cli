@@ -3,7 +3,7 @@ import {
   importTypescriptModule,
   validateClientConfig,
   fixParameters,
-  intlMsg
+  intlMsg,
 } from "../lib";
 
 import { Web3ApiClient, Web3ApiClientConfig } from "@web3api/client-js";

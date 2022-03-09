@@ -4,7 +4,7 @@ import { BindLanguage } from "@web3api/schema-bind";
 
 export const web3apiManifestLanguages = {
   "wasm/assemblyscript": "wasm/assemblyscript",
-  "interface": "interface",
+  interface: "interface",
 };
 
 export type Web3ApiManifestLanguages = typeof web3apiManifestLanguages;
@@ -29,7 +29,7 @@ export function web3apiManifestLanguageToBindLanguage(
       throw Error(
         intlMsg.lib_language_unsupportedManifestLanguage({
           language: manifestLanguage,
-          supported: Object.keys(web3apiManifestLanguages).join(", ")
+          supported: Object.keys(web3apiManifestLanguages).join(", "),
         })
       );
   }

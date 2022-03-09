@@ -5,12 +5,7 @@ export interface SchemaFile {
   absolutePath: string;
 }
 
-export const schemaKinds = [
-  "query",
-  "mutation",
-  "plugin",
-  "combined",
-] as const;
+export const schemaKinds = ["query", "mutation", "plugin", "combined"] as const;
 
 export type SchemaKind = typeof schemaKinds[number];
 

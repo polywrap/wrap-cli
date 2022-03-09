@@ -5,11 +5,7 @@ import * as AppTs from "./typescript/app-ts";
 
 import { TypeInfo } from "@web3api/schema-parse";
 
-export {
-  WasmAs,
-  PluginTs,
-  AppTs,
-};
+export { WasmAs, PluginTs, AppTs };
 
 export type GenerateBindingFn = (
   output: OutputDirectory,
@@ -40,15 +36,10 @@ export function generateBinding(
   config: Record<string, unknown>
 ): OutputDirectory {
   const output: OutputDirectory = {
-    entries: []
+    entries: [],
   };
-  
-  getGenerateBindingFn(bindLanguage)(
-    output,
-    typeInfo,
-    schema,
-    config
-  );
+
+  getGenerateBindingFn(bindLanguage)(output, typeInfo, schema, config);
 
   return output;
 }

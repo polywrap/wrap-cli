@@ -1,8 +1,4 @@
-import {
-  displayPath,
-  withSpinner,
-  intlMsg,
-} from "../";
+import { displayPath, withSpinner, intlMsg } from "../";
 
 import {
   BuildManifest,
@@ -53,7 +49,8 @@ export async function outputManifest(
     };
 
     const sanitizedManifest = removeUndefinedProps(manifest);
-    const isYaml = manifestPath.endsWith(".yaml") || manifestPath.endsWith(".yml");
+    const isYaml =
+      manifestPath.endsWith(".yaml") || manifestPath.endsWith(".yml");
     const str = isYaml
       ? YAML.safeDump(sanitizedManifest, { indent: 2 })
       : JSON.stringify(sanitizedManifest, null, 2);

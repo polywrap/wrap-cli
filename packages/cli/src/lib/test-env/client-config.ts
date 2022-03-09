@@ -14,14 +14,16 @@ export async function getTestEnvClientConfig(): Promise<
   Partial<Web3ApiClientConfig>
 > {
   const providers = await getTestEnvProviders();
-  let ipfsProvider = providers.ipfsProvider;
-  let ethProvider = providers.ethProvider;
+  const ipfsProvider = providers.ipfsProvider;
+  const ethProvider = providers.ethProvider;
 
   if (!ipfsProvider || !ethProvider) {
     throw Error("Test environment not found.");
   }
 
-  const { data: { ensAddress } } = await axios.get("http://localhost:4040/ens");
+  const {
+    data: { ensAddress },
+  } = await axios.get("http://localhost:4040/ens");
 
   // TODO: move this into its own package, since it's being used everywhere?
   // maybe have it exported from test-env.

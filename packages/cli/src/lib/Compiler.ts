@@ -12,7 +12,7 @@ import {
   generateDockerImageName,
   createBuildImage,
   copyArtifactsFromBuildImage,
-  intlMsg
+  intlMsg,
 } from "./";
 
 import {

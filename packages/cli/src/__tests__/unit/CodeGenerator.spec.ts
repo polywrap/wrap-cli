@@ -7,7 +7,7 @@ import rimraf from "rimraf";
 
 describe("CodeGenerator validation", () => {
   const manifestPath = path.join(__dirname, "../project", "web3api.yaml");
-  const customScript = path.join(__dirname, "../project", "web3api.gen.js");
+  const customScript = path.join(__dirname, "../project", "web3api.gen.ts");
   const outputDir = path.join(__dirname, "../project", "types");
 
   it("Should fail with invalid manifest path", async () => {

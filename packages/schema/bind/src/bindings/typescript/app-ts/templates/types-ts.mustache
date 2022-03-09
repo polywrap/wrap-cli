@@ -92,10 +92,11 @@ export const {{type}} = {
   {{#methods}}
   {{name}}: async (
     input: {{parent.type}}_Input_{{name}},
-    client: Client
+    client: Client,
+    uri: string = "{{parent.uri}}"
   ): Promise<InvokeApiResult<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>> => {
     return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>({
-      uri: "{{parent.uri}}",
+      uri,
       module: "{{type}}",
       method: "{{name}}",
       input

@@ -23,7 +23,7 @@ export const generateBinding: GenerateBindingFn = (
   output: OutputDirectory,
   typeInfo: TypeInfo,
   schema: string,
-  config: Record<string, unknown>
+  _config: Record<string, unknown>
 ): void => {
   // Transform the TypeInfo to our liking
   const transforms = [
@@ -38,15 +38,21 @@ export const generateBinding: GenerateBindingFn = (
     typeInfo = transformTypeInfo(typeInfo, transform);
   }
 
-  const renderTemplate = (subPath: string, context: unknown, fileName?: string) => {
+  const renderTemplate = (
+    subPath: string,
+    context: unknown,
+    fileName?: string
+  ) => {
     const absPath = path.join(__dirname, subPath);
     const template = readFileSync(absPath, { encoding: "utf-8" });
-    fileName = fileName || absPath
-      .replace(path.dirname(absPath), "")
-      .replace(".mustache", "")
-      .replace("/", "")
-      .replace("\\", "")
-      .replace("-", ".");
+    fileName =
+      fileName ||
+      absPath
+        .replace(path.dirname(absPath), "")
+        .replace(".mustache", "")
+        .replace("/", "")
+        .replace("\\", "")
+        .replace("-", ".");
 
     output.entries.push({
       type: "File",
@@ -79,12 +85,8 @@ export const generateBinding: GenerateBindingFn = (
     );
   }
   if (queryContext) {
-    renderTemplate(
-      "./templates/module_ts.mustache",
-      queryContext,
-      "query.ts"
-    );
+    renderTemplate("./templates/module_ts.mustache", queryContext, "query.ts");
   }
   renderTemplate("./templates/schema-ts.mustache", rootContext);
   renderTemplate("./templates/types-ts.mustache", rootContext);
-}
+};

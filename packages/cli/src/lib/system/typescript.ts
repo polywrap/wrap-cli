@@ -1,4 +1,4 @@
-import { transpile } from "typescript";
+import { ModuleKind, ModuleResolutionKind, transpile } from "typescript";
 import fs from "fs";
 import path from "path";
 
@@ -8,7 +8,11 @@ export function isTypescriptFile(path: string): boolean {
 
 export async function importTypescriptModule(tsPath: string): Promise<unknown> {
   const tsFileContent = fs.readFileSync(tsPath);
-  const jsFileContent = transpile(tsFileContent.toString());
+  const jsFileContent = transpile(tsFileContent.toString(), {
+    esModuleInterop: true,
+    moduleResolution: ModuleResolutionKind.NodeJs,
+    module: ModuleKind.CommonJS,
+  });
   const jsFilePath = path.join(
     path.dirname(tsPath),
     `.${path.basename(tsPath, ".ts")}.js`

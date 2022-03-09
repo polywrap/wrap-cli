@@ -148,7 +148,7 @@ export const generateBinding: GenerateBindingFn = (
 
   // Generate root entry file
   output.entries.push(...generateFiles("./templates", typeInfo, subTemplates));
-}
+};
 
 function generateFiles(
   subpath: string,

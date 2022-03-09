@@ -5,8 +5,7 @@ module.exports = {
     "**/build/**/*.*",
     "**/__tests__/**/*.*",
     "**/node_modules/**/*.*",
-    "**/coverage/**/*.*",
-    "**/cli/src/lib/codegen-templates/**/*.*"
+    "**/coverage/**/*.*"
   ],
   overrides: [
     {

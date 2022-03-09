@@ -4,7 +4,7 @@ export class FileLock {
   constructor(
     private _lockFilePath: string,
     private _onError: (message: string) => void
-  ) { }
+  ) {}
 
   // request lock and wait until it is obtained
   async request(): Promise<void> {

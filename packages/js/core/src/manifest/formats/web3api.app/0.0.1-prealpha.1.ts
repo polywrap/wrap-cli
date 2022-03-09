@@ -10,10 +10,6 @@ export interface AppManifest {
   format: "0.0.1-prealpha.1";
   language: string;
   schema: string;
-  codegen?: {
-    directory?: string;
-    withExtensions?: boolean;
-  };
   import_redirects?: {
     uri: string;
     schema: string;

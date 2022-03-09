@@ -1,17 +1,3 @@
-# TODO
-## Test
-- move CLI test projects into test-cases/cases/[dapps, plugins, etc]
-- create test cases to ensure that each use-case codegens correctly & compiles
-- need a dapp test-case to make sure the generated types actually compile and work
-- does it break if you use a plugin that's added to the client (and has a schema on the package manifest)?
-
-## Extension
-- Add back extension feature
-
-## Logging
-- remove "quiet" from project configuration
-- - have a global logger that's configured by the command
-
 # Done
 x CLI codegen-templates mustache file names (should be the name of the file)
 x .gen.js files

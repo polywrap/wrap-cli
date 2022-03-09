@@ -7,7 +7,7 @@ import {
   intlMsg,
   defaultWeb3ApiManifest,
   getTestEnvProviders,
-  resolvePathIfExists
+  resolvePathIfExists,
 } from "../lib";
 
 import chalk from "chalk";
@@ -26,12 +26,16 @@ ${chalk.bold("w3 codegen")} [${optionsStr}]
 
 ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
   -h, --help                              ${intlMsg.commands_codegen_options_h()}
-  -m, --manifest-file <${pathStr}>              ${intlMsg.commands_codegen_options_m({
-  default: defaultManifestStr
-})}
-  -c, --codegen-dir <${pathStr}>                ${intlMsg.commands_codegen_options_codegen({
-  default: defaultCodegenDir,
-})}
+  -m, --manifest-file <${pathStr}>              ${intlMsg.commands_codegen_options_m(
+  {
+    default: defaultManifestStr,
+  }
+)}
+  -c, --codegen-dir <${pathStr}>                ${intlMsg.commands_codegen_options_codegen(
+  {
+    default: defaultCodegenDir,
+  }
+)}
   -s, --script <${pathStr}>                     ${intlMsg.commands_codegen_options_s()}
   -i, --ipfs [<${nodeStr}>]                     ${intlMsg.commands_codegen_options_i()}
   -e, --ens [<${addrStr}>]                   ${intlMsg.commands_codegen_options_e()}
@@ -65,10 +69,10 @@ export default {
     const paramsValid = validateCodegenParams(
       print,
       codegenDir,
-      (dir: string) => codegenDir = dir,
+      (dir: string) => (codegenDir = dir),
       script,
       ipfs,
-      ens,
+      ens
     );
 
     if (help || !paramsValid) {
@@ -140,7 +144,7 @@ function validateCodegenParams(
   setCodegenDir: (dir: string) => void,
   script: unknown,
   ipfs: unknown,
-  ens: unknown,
+  ens: unknown
 ): boolean {
   if (codegenDir === true) {
     const codegenDirMessage = intlMsg.commands_codegen_error_optionMissingArgument(
@@ -167,10 +171,12 @@ function validateCodegenParams(
   }
 
   if (ipfs === true) {
-    const ipfsMissingMessage = intlMsg.commands_codegen_error_optionMissingArgument({
-      option: "--ipfs",
-      argument: `[<${nodeStr}>]`
-    });
+    const ipfsMissingMessage = intlMsg.commands_codegen_error_optionMissingArgument(
+      {
+        option: "--ipfs",
+        argument: `[<${nodeStr}>]`,
+      }
+    );
     print.error(ipfsMissingMessage);
     return false;
   }

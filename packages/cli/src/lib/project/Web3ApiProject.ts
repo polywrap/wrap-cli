@@ -1,9 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import {
-  ProjectConfig,
-  Project,
-} from ".";
+import { ProjectConfig, Project } from ".";
 import {
   loadWeb3ApiManifest,
   loadBuildManifest,
@@ -14,7 +11,7 @@ import {
   web3apiManifestLanguages,
   isWeb3ApiManifestLanguage,
   outputManifest,
-  intlMsg
+  intlMsg,
 } from "..";
 
 import { Web3ApiManifest, BuildManifest, MetaManifest } from "@web3api/core-js";
@@ -258,7 +255,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     const language = await this.getManifestLanguage();
 
     const defaultBuildManifestFilename = "web3api.build.yaml";
-    const defaultPath = `${__dirname}/../../build-envs/${language}/${defaultBuildManifestFilename}`;
+    const defaultPath = `${__dirname}/../build-envs/${language}/${defaultBuildManifestFilename}`;
     const buildEnvCachePath = this.getCachePath(cacheLayout.buildEnvDir);
 
     if (!fs.existsSync(defaultPath)) {
@@ -276,7 +273,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     // Copy default build environment files into cache
     await this.copyIntoCache(
       cacheLayout.buildEnvDir,
-      `${__dirname}/../../build-envs/${language}/*`,
+      `${__dirname}/../build-envs/${language}/*`,
       { up: true }
     );
 

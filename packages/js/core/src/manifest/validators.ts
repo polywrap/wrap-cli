@@ -134,7 +134,5 @@ export function web3apiUri(uri: unknown): boolean {
 }
 
 export function schemaFile(filePath: unknown): boolean {
-  return (
-    typeof filePath === "string" && file(filePath)
-  );
+  return typeof filePath === "string" && file(filePath);
 }

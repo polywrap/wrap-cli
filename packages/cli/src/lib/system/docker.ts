@@ -1,14 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import {
-  displayPath,
-  runCommand,
-  FileLock,
-} from "./";
-import {
-  withSpinner,
-  intlMsg
-} from "../";
+import { displayPath, runCommand, FileLock } from "./";
+import { withSpinner, intlMsg } from "../";
 
 import { isWin, writeFileSync } from "@web3api/os-js";
 import { system, print } from "gluegun";
@@ -21,10 +14,7 @@ export function isDockerInstalled(): boolean {
 }
 
 export function getDockerFileLock(): FileLock {
-  return new FileLock(
-    __dirname + "/DOCKER_LOCK",
-    print.error
-  );
+  return new FileLock(__dirname + "/DOCKER_LOCK", print.error);
 }
 
 export async function copyArtifactsFromBuildImage(

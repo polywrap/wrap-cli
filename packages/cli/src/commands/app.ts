@@ -34,12 +34,16 @@ Commands:
 
 Options:
   -h, --help                              ${intlMsg.commands_codegen_options_h()}
-  -m, --manifest-file <${pathStr}>              ${intlMsg.commands_app_options_m({
-  default: defaultManifestStr
-})}
-  -c, --codegen-dir <${pathStr}>                 ${intlMsg.commands_app_options_codegen({
-  default: defaultOutputTypesDir,
-})}
+  -m, --manifest-file <${pathStr}>              ${intlMsg.commands_app_options_m(
+  {
+    default: defaultManifestStr,
+  }
+)}
+  -c, --codegen-dir <${pathStr}>                 ${intlMsg.commands_app_options_codegen(
+  {
+    default: defaultOutputTypesDir,
+  }
+)}
   -i, --ipfs [<${nodeStr}>]                     ${intlMsg.commands_codegen_options_i()}
   -e, --ens [<${addrStr}>]                   ${intlMsg.commands_codegen_options_e()}
 `;
@@ -51,13 +55,7 @@ export default {
     const { filesystem, parameters, print } = toolbox;
 
     // Options
-    let {
-      help,
-      manifestFile,
-      codegenDir,
-      ipfs,
-      ens,
-    } = parameters.options;
+    let { help, manifestFile, codegenDir, ipfs, ens } = parameters.options;
     const { h, m, c, i, e } = parameters.options;
 
     help = help || h;
@@ -104,15 +102,12 @@ export default {
 
     // Resolve manifest
     const manifestPaths = manifestFile ? [manifestFile] : defaultAppManifest;
-    manifestFile = resolvePathIfExists(
-      filesystem,
-      manifestPaths
-    );
+    manifestFile = resolvePathIfExists(filesystem, manifestPaths);
 
     if (!manifestFile) {
       print.error(
         intlMsg.commands_app_error_manifestNotFound({
-          paths: manifestPaths.join(", ")
+          paths: manifestPaths.join(", "),
         })
       );
       return;
@@ -131,25 +126,15 @@ export default {
     const project = new AppProject({
       rootCacheDir: path.dirname(manifestFile),
       appManifestPath: manifestFile,
-      client
+      client,
     });
     await project.validate();
 
-    // App manifest
-    const manifest = await project.getManifest();
-
-    // Resolve output "codegen.directory"
-    const outputDirFromManifest = manifest.codegen?.directory;
     if (codegenDir) {
       codegenDir = filesystem.resolve(codegenDir);
-    } else if (outputDirFromManifest) {
-      codegenDir = filesystem.resolve(outputDirFromManifest);
     } else {
       codegenDir = filesystem.resolve(defaultOutputTypesDir);
     }
- 
-    // Resolve withExtensions option
-    const withExtensions = manifest.codegen?.withExtensions || false;
 
     const schemaComposer = new SchemaComposer({
       project,
@@ -161,7 +146,7 @@ export default {
       outputDir: codegenDir,
     });
 
-    if (await codeGenerator.generate({ withExtensions })) {
+    if (await codeGenerator.generate()) {
       print.success(`🔥 ${intlMsg.commands_app_success()} 🔥`);
       process.exitCode = 0;
     } else {
@@ -177,7 +162,6 @@ function validateAppParams(
   ipfs: unknown,
   ens: unknown
 ): boolean {
-
   if (!command || typeof command !== "string") {
     print.error(intlMsg.commands_app_error_noCommand());
     return false;
@@ -198,10 +182,12 @@ function validateAppParams(
   }
 
   if (ipfs === true) {
-    const ipfsMissingMessage = intlMsg.commands_app_error_optionMissingArgument({
-      option: "--ipfs",
-      argument: `[<${nodeStr}>]`
-    });
+    const ipfsMissingMessage = intlMsg.commands_app_error_optionMissingArgument(
+      {
+        option: "--ipfs",
+        argument: `[<${nodeStr}>]`,
+      }
+    );
     print.error(ipfsMissingMessage);
     return false;
   }

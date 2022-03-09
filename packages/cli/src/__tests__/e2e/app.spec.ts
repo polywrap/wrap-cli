@@ -1,16 +1,6 @@
 import path from "path";
 import { clearStyle, w3Cli } from "./utils";
 import { runCLI } from "@web3api/test-env-js";
-import { compareSync } from "dir-compare";
-import * as fs from "fs";
-import axios from "axios";
-import {
-  InvokeApiOptions,
-  Web3ApiClient,
-} from "@web3api/client-js";
-import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
-import { ensPlugin } from "@web3api/ens-plugin-js";
-import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 
 const HELP = `
 w3 app command [options]
@@ -101,62 +91,6 @@ ${HELP}`);
 ${HELP}`);
   });
 
-  test("Should throw error for duplicate namespace", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
-      {
-        args: ["app", "codegen", "-m", `${projectRoot}/web3api.app.duplicateNamespace.yaml`],
-        cwd: projectRoot,
-        cli: w3Cli,
-      },
-    );
-
-    expect(code).toEqual(1);
-    expect(error).toContain(`Validation errors encountered while sanitizing AppManifest format 0.0.1-prealpha.1
-instance.dependencies.web3apis does not conform to the \"uniqueNamespaceArray\" format`);
-    expect(clearStyle(output))
-      .toContain(`Validation errors encountered while sanitizing AppManifest format 0.0.1-prealpha.1
-instance.dependencies.web3apis does not conform to the \"uniqueNamespaceArray\" format`);
-  });
-
-  test("Should successfully generate types for wrappers", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
-      {
-        args: ["app", "codegen", "-m", `${projectRoot}/web3api.app.noExtensions.yaml`],
-        cwd: projectRoot,
-        cli: w3Cli,
-      },
-    );
-
-    expect(clearStyle(output)).toEqual(`- Manifest loaded from ./web3api.app.noExtensions.yaml
-✔ Manifest loaded from ./web3api.app.noExtensions.yaml
-- Generate types
-- Manifest written to ./.w3/imports/web3apis/project/web3api.json
-✔ Manifest written to ./.w3/imports/web3apis/project/web3api.json
-  Generating types from packageTypes-ts.mustache
-- Generate types
-✔ Generate types
-🔥 Generated types for namespace project 🔥
-- Generate types
-  Generating types from baseTypes-ts.mustache
-- Generate types
-  Generating types from appIndex-ts.mustache
-- Generate types
-✔ Generate types
-🔥 Generated top-level code for app 🔥
-🔥 Code was generated successfully 🔥
-`);
-    expect(error).toBe("");
-    expect(code).toEqual(0);
-
-    const expectedTypesResult = compareSync(
-      `${projectRoot}/polywrap/project/types.ts`,
-      `${projectRoot}/expected-types/project/types.ts`,
-      { compareContent: true }
-    );
-
-    expect(expectedTypesResult.differences).toBe(0);
-  });
-
   test("Should successfully generate types for plugins", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
@@ -166,32 +100,14 @@ instance.dependencies.web3apis does not conform to the \"uniqueNamespaceArray\" 
       },
     );
 
-    expect(code).toEqual(0);
     expect(error).toBe("");
-    expect(clearStyle(output)).toEqual(`- Generate types
-- Manifest loaded from ./.w3/imports/plugins/http/web3api.plugin.yaml
-✔ Manifest loaded from ./.w3/imports/plugins/http/web3api.plugin.yaml
-  Generating types from packageTypes-ts.mustache
+    expect(code).toEqual(0);
+    expect(clearStyle(output)).toEqual(`- Manifest loaded from ./web3api.app.withPlugin.yaml
+✔ Manifest loaded from ./web3api.app.withPlugin.yaml
 - Generate types
 ✔ Generate types
-🔥 Generated types for namespace http 🔥
-- Generate types
-  Generating types from baseTypes-ts.mustache
-- Generate types
-  Generating types from appIndex-ts.mustache
-- Generate types
-✔ Generate types
-🔥 Generated top-level code for app 🔥
 🔥 Code was generated successfully 🔥
 `);
-
-    const expectedTypesResult = compareSync(
-      `${projectRoot}/polywrap/http`,
-      `${projectRoot}/expected-types/http`,
-      { compareContent: true }
-    );
-
-    expect(expectedTypesResult.differences).toBe(0);
   });
 
   test("Should successfully generate types for multiple packages", async () => {
@@ -203,115 +119,14 @@ instance.dependencies.web3apis does not conform to the \"uniqueNamespaceArray\" 
       },
     );
 
-    expect(code).toEqual(0);
     expect(error).toBe("");
-    expect(clearStyle(output)).toEqual(`- Generate types
-  Generating types from packageTypes-ts.mustache
+    expect(code).toEqual(0);
+    expect(clearStyle(output)).toEqual(`- Manifest loaded from ./web3api.app.multiPackage.yaml
+✔ Manifest loaded from ./web3api.app.multiPackage.yaml
 - Generate types
 ✔ Generate types
-🔥 Generated types for namespace erc20 🔥
-- Generate types
-  Generating types from packageTypes-ts.mustache
-- Generate types
-✔ Generate types
-🔥 Generated types for namespace console 🔥
-- Generate types
-- Manifest loaded from ./.w3/imports/plugins/ethereum/web3api.plugin.yaml
-✔ Manifest loaded from ./.w3/imports/plugins/ethereum/web3api.plugin.yaml
-  Generating types from packageTypes-ts.mustache
-- Generate types
-✔ Generate types
-🔥 Generated types for namespace ethereum 🔥
-- Generate types
-  Generating types from baseTypes-ts.mustache
-- Generate types
-  Generating types from appIndex-ts.mustache
-- Generate types
-✔ Generate types
-🔥 Generated top-level code for app 🔥
 🔥 Code was generated successfully 🔥
 `);
-
-    expect(fs.existsSync(`${projectRoot}/polywrap/erc20/types.ts`)).toBeTruthy();
-    expect(fs.existsSync(`${projectRoot}/polywrap/console/types.ts`)).toBeTruthy();
-    expect(fs.existsSync(`${projectRoot}/polywrap/ethereum/types.ts`)).toBeTruthy();
-  });
-
-  test("Should clear file cache before completion", async () => {
-    const { exitCode: code, stderr: error } = await runCLI(
-      {
-        args: ["app", "codegen", "-m", `${projectRoot}/web3api.app.multiPackage.yaml`],
-        cwd: projectRoot,
-        cli: w3Cli,
-      },
-    );
-
-    expect(code).toEqual(0);
-    expect(error).toBe("");
-    expect(fs.existsSync(`${projectRoot}/.w3/imports/web3apis/erc20/`)).toBeFalsy();
-    expect(fs.existsSync(`${projectRoot}/.w3/imports/web3apis/console/`)).toBeFalsy();
-    expect(fs.existsSync(`${projectRoot}/.w3/imports/plugins/ethereum/`)).toBeFalsy();
-    expect(fs.existsSync(`${projectRoot}/.w3/imports/web3apis`)).toBeFalsy();
-    expect(fs.existsSync(`${projectRoot}/.w3/imports/plugins`)).toBeFalsy();
-    expect(fs.existsSync(`${projectRoot}/.w3/imports`)).toBeFalsy();
-    expect(fs.existsSync(`${projectRoot}/.w3`)).toBeFalsy();
-  });
-
-  test("Should be able to read/call extension props from client", async () => {
-    const { exitCode: code, stderr: error } = await runCLI(
-      {
-        args: ["app", "codegen", "-m", `${projectRoot}/web3api.app.yaml`],
-        cwd: projectRoot,
-        cli: w3Cli,
-      },
-    );
-    expect(code).toEqual(0);
-    expect(error).toBe("");
-
-    // instantiate Client and PolywrapApp
-    const { ipfs, ethereum, ensAddress } = await getProviders();
-    const client: Web3ApiClient = await createClient(
-      ipfs,
-      ethereum,
-      ensAddress
-    );
-
-    // import newly generated project extension code
-    // @ts-ignore
-    const pw = await import ("../app/polywrap");
-    // @ts-ignore
-    const app: pw.PolywrapApp = new pw.PolywrapApp(client);
-
-    // expect to access uri property
-    const expectedUriPath: string = path.resolve(path.join(__dirname, "../project/build"));
-    // @ts-ignore
-    expect(app.project.config?.uri.path).toEqual(expectedUriPath);
-
-    // test ExtensionInvocation
-    // @ts-ignore
-    const result: string = await app.project.mutation.deployContract({
-      connection: {
-        networkNameOrChainId: "testnet",
-      },
-    });
-    expect(result).toBeTruthy()
-
-    // @ts-ignore
-    const config: InvokeApiOptions = app.project.mutation.config.deployContract({
-      connection: {
-        networkNameOrChainId: "testnet",
-      },
-    });
-    expect(config).toStrictEqual({
-      uri: `w3://fs/${expectedUriPath}`,
-      module: "mutation",
-      method: "deployContract",
-      input: {
-        connection: {
-          networkNameOrChainId: "testnet",
-        },
-      },
-    });
   });
 });
 
@@ -343,40 +158,4 @@ async function buildApi(cwd: string): Promise<void> {
   });
   expect(buildErr).toBe("");
   expect(buildCode).toEqual(0);
-}
-
-async function getProviders(): Promise<{
-  ipfs: string;
-  ethereum: string;
-  ensAddress: string;
-}> {
-  const { data: { ipfs, ethereum }, } = await axios.get("http://localhost:4040/providers");
-  const { data } = await axios.get("http://localhost:4040/deploy-ens");
-  return { ipfs, ethereum, ensAddress: data.ensAddress };
-}
-
-async function createClient(ipfs: string, ethereum: string, ensAddress: string): Promise<Web3ApiClient> {
-  return new Web3ApiClient({
-    plugins: [
-      {
-        uri: "w3://ens/ipfs.web3api.eth",
-        plugin: ipfsPlugin({ provider: ipfs }),
-      },
-      {
-        uri: "w3://ens/ens.web3api.eth",
-        plugin: ensPlugin({ addresses: { testnet: ensAddress } }),
-      },
-      {
-        uri: "w3://ens/ethereum.web3api.eth",
-        plugin: ethereumPlugin({
-          networks: {
-            testnet: {
-              provider: ethereum
-            },
-          },
-          defaultNetwork: "testnet"
-        }),
-      },
-    ],
-  });
 }

@@ -10,10 +10,7 @@ import {
   ResolveUriOptions,
   Api,
 } from "./";
-import {
-  AnyManifestArtifact,
-  ManifestArtifactType
-} from "../manifest";
+import { AnyManifestArtifact, ManifestArtifactType } from "../manifest";
 import {
   UriToApiResolver,
   ResolveUriError,
@@ -46,8 +43,7 @@ export type GetResolversOptions = Contextualized;
 
 export interface GetManifestOptions<
   TManifestArtifactType extends ManifestArtifactType
->
-  extends Contextualized {
+> extends Contextualized {
   type: TManifestArtifactType;
 }
 

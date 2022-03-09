@@ -1,7 +1,4 @@
-import {
-  ProjectConfig,
-  Project
-} from ".";
+import { ProjectConfig, Project } from ".";
 import {
   loadPluginManifest,
   PluginManifestLanguage,
@@ -13,7 +10,7 @@ import { PluginManifest } from "@web3api/core-js";
 import path from "path";
 
 const cacheLayout = {
-  root: "plugin"
+  root: "plugin",
 };
 
 export interface PluginProjectConfig extends ProjectConfig {

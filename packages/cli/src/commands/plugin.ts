@@ -8,7 +8,7 @@ import {
   defaultPluginManifest,
   outputManifest,
   intlMsg,
-  getTestEnvProviders
+  getTestEnvProviders,
 } from "../lib";
 
 import { ComposerFilter } from "@web3api/schema-compose";
@@ -88,18 +88,19 @@ export default {
           help,
         }
       );
-    } catch (e) { }
+      // eslint-disable-next-line no-empty
+    } catch (e) {}
 
     // Validate Params
     const paramsValid = validatePluginParams(
       print,
       command,
       publishDir,
-      (dir) => publishDir = dir,
+      (dir) => (publishDir = dir),
       codegenDir,
-      (dir) => codegenDir = dir,
+      (dir) => (codegenDir = dir),
       ipfs,
-      ens,
+      ens
     );
 
     if (help || !paramsValid) {
@@ -217,19 +218,23 @@ function validatePluginParams(
   }
 
   if (ipfs === true) {
-    const ipfsMissingMessage = intlMsg.commands_plugin_error_optionMissingArgument({
-      option: "--ipfs",
-      argument: `[<${nodeStr}>]`
-    });
+    const ipfsMissingMessage = intlMsg.commands_plugin_error_optionMissingArgument(
+      {
+        option: "--ipfs",
+        argument: `[<${nodeStr}>]`,
+      }
+    );
     print.error(ipfsMissingMessage);
     return false;
   }
 
   if (ens === true) {
-    const ensAddressMissingMessage = intlMsg.commands_plugin_error_optionMissingArgument({
-      option: "--ens",
-      argument: `[<${addrStr}>]`,
-    });
+    const ensAddressMissingMessage = intlMsg.commands_plugin_error_optionMissingArgument(
+      {
+        option: "--ens",
+        argument: `[<${addrStr}>]`,
+      }
+    );
     print.error(ensAddressMissingMessage);
     return false;
   }

@@ -1,8 +1,4 @@
-import {
-  intlMsg,
-  AnyManifest,
-  AnyManifestLanguage
-} from "../";
+import { intlMsg, AnyManifest, AnyManifestLanguage } from "../";
 
 import fs from "fs";
 import path from "path";
@@ -36,8 +32,7 @@ export abstract class Project<TManifest extends AnyManifest> {
       throw Error(
         intlMsg.lib_project_invalid_manifest_language({
           language,
-          validTypes: Object.keys(manifestLanguages)
-            .join(", "),
+          validTypes: Object.keys(manifestLanguages).join(", "),
         })
       );
     }

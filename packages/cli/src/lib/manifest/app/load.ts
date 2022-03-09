@@ -1,13 +1,6 @@
-import {
-  displayPath,
-  withSpinner,
-  intlMsg,
-} from "../../";
+import { displayPath, withSpinner, intlMsg } from "../../";
 
-import {
-  AppManifest,
-  deserializeAppManifest,
-} from "@web3api/core-js";
+import { AppManifest, deserializeAppManifest } from "@web3api/core-js";
 import fs from "fs";
 
 export const defaultAppManifest = ["web3api.app.yaml", "web3api.app.yml"];
@@ -48,4 +41,3 @@ export async function loadAppManifest(
     )) as AppManifest;
   }
 }
-

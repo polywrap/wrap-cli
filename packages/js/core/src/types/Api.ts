@@ -6,10 +6,7 @@ import {
   InvokeApiOptions,
   InvokeApiResult,
 } from ".";
-import {
-  AnyManifestArtifact,
-  ManifestArtifactType
-} from "../manifest";
+import { AnyManifestArtifact, ManifestArtifactType } from "../manifest";
 
 /**
  * The API definition, which can be used to spawn

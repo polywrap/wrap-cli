@@ -4,7 +4,7 @@ import {
   withSpinner,
   intlMsg,
   isDockerInstalled,
-  getDockerFileLock
+  getDockerFileLock,
 } from "../lib";
 
 import { GluegunToolbox, print } from "gluegun";

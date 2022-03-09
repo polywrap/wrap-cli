@@ -86,7 +86,7 @@ ${HELP}`);
 
     expect(code).toEqual(1);
     expect(error).toBe("");
-    expect(clearStyle(output)).toContain(`Failed to generate types: The generation file provided doesn't have the 'run' method.`);
+    expect(clearStyle(output)).toContain(`Failed to generate types: The generation file provided doesn't have the 'generateBinding' method.`);
   });
 
   test("Should successfully generate types", async () => {

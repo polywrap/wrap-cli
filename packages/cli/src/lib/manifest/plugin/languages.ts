@@ -26,7 +26,7 @@ export function pluginManifestLanguageToBindLanguage(
       throw Error(
         intlMsg.lib_language_unsupportedManifestLanguage({
           language: manifestLanguage,
-          supported: Object.keys(pluginManifestLanguages).join(", ")
+          supported: Object.keys(pluginManifestLanguages).join(", "),
         })
       );
   }
