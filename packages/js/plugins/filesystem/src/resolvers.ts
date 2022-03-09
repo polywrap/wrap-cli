@@ -39,9 +39,7 @@ export const query = (): Query.Module => ({
   },
   getFile: async (input: Query.Input_getFile) => {
     try {
-      console.log("get file", input.path);
       const res = fs.readFileSync(input.path);
-      console.log("finished");
       return res;
     } catch (e) {
       return null;

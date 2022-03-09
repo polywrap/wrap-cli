@@ -19,7 +19,6 @@ describe("wasm-rs test cases", () => {
 
   beforeAll(async () => {
     const { ipfs, ethereum, ensAddress: ens } = await initTestEnvironment();
-    console.log(ipfs);
     ipfsProvider = ipfs;
     ethProvider = ethereum;
     ensAddress = ens;
