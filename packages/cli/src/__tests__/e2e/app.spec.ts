@@ -11,7 +11,7 @@ Commands:
 Options:
   -h, --help                              Show usage information
   -m, --manifest-file <path>              Path to the Web3API App manifest file (default: web3api.app.yaml | web3api.app.yml)
-  -c, --codegen-dir <path>                 Output directory for the generated code (default: ./polywrap)
+  -c, --codegen-dir <path>                 Output directory for the generated code (default: ./src/w3)
   -i, --ipfs [<node>]                     IPFS node to load external schemas (default: ipfs.io & localhost)
   -e, --ens [<address>]                   ENS address to lookup external schemas (default: 0x0000...2e1e)
 

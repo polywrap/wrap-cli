@@ -17,7 +17,7 @@ import { Web3ApiClient } from "@web3api/client-js";
 import * as path from "path";
 
 const commands = ["codegen"];
-const defaultOutputTypesDir = "./polywrap";
+const defaultOutputTypesDir = "./src/w3";
 const cmdStr = intlMsg.commands_app_options_command();
 const optionsStr = intlMsg.commands_options_options();
 const codegenStr = intlMsg.commands_app_codegen();

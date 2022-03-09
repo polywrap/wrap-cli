@@ -1,3 +1,2 @@
 compiled-lang/*.json
 src/lib/intl/types.ts
-src/__tests__/app/polywrap
