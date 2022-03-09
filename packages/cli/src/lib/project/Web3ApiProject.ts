@@ -2,8 +2,8 @@
 
 import {
   ProjectConfig,
-  ProjectWithSchema,
-} from "../";
+  Project,
+} from ".";
 import {
   loadWeb3ApiManifest,
   loadBuildManifest,
@@ -15,7 +15,7 @@ import {
   isWeb3ApiManifestLanguage,
   outputManifest,
   intlMsg
-} from "../../";
+} from "..";
 
 import { Web3ApiManifest, BuildManifest, MetaManifest } from "@web3api/core-js";
 import { normalizePath } from "@web3api/os-js";
@@ -38,7 +38,7 @@ export interface Web3ApiProjectConfig extends ProjectConfig {
   metaManifestPath?: string;
 }
 
-export class Web3ApiProject extends ProjectWithSchema<Web3ApiManifest> {
+export class Web3ApiProject extends Project<Web3ApiManifest> {
   private _web3apiManifest: Web3ApiManifest | undefined;
   private _buildManifest: BuildManifest | undefined;
   private _metaManifest: MetaManifest | undefined;
@@ -86,7 +86,7 @@ export class Web3ApiProject extends ProjectWithSchema<Web3ApiManifest> {
   public async getManifestLanguage(): Promise<Web3ApiManifestLanguage> {
     const language = (await this.getManifest()).language;
 
-    ProjectWithSchema.validateManifestLanguage(
+    Project.validateManifestLanguage(
       language,
       web3apiManifestLanguages,
       isWeb3ApiManifestLanguage

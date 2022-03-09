@@ -1,8 +1,8 @@
-import { OutputDirectory, OutputEntry } from "../../";
-import { readDirectory } from "../../utils/fs";
+import { OutputDirectory, OutputEntry } from "../../../";
+import { readDirectory } from "../../../utils/fs";
 import * as Functions from "./functions";
 import { reservedWordsAS } from "./reservedWords";
-import { fromReservedWord } from "../../utils/templateFunctions";
+import { fromReservedWord } from "../../../utils/templateFunctions";
 
 import {
   transformTypeInfo,

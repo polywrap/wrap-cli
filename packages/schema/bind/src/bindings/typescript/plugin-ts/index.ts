@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { OutputDirectory, OutputEntry } from "../..";
-import * as Functions from "./functions";
+import { OutputDirectory, OutputEntry } from "../../..";
+import * as Functions from "../functions";
 
 import {
   transformTypeInfo,
@@ -20,7 +20,7 @@ export { Functions };
 
 export function generateBinding(
   typeInfo: TypeInfo,
-  schema?: string
+  schema: string
 ): OutputDirectory {
   const entries: OutputEntry[] = [];
 

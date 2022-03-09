@@ -2,7 +2,8 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import {
-  ProjectWithSchema,
+  Project,
+  AnyManifest,
   getSimpleClient
 } from "./";
 
@@ -20,7 +21,7 @@ import path from "path";
 import * as gluegun from "gluegun";
 
 export interface SchemaComposerConfig {
-  project: ProjectWithSchema<unknown>;
+  project: Project<AnyManifest>;
 
   // TODO: add this to the project configuration
   //       and make it configurable

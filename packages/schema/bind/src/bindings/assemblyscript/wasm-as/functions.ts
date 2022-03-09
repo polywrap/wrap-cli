@@ -1,5 +1,5 @@
 import { isBaseType } from "./types";
-import { MustacheFunction } from "../types";
+import { MustacheFunction } from "../../types";
 
 export const toMsgPack: MustacheFunction = () => {
   return (value: string, render: (template: string) => string) => {

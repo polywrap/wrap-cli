@@ -1,8 +1,5 @@
 format: 0.0.1-prealpha.1
 language: app/typescript
+schema: ./web3api.app.graphql
 codegen:
   directory: "./polywrap"
-dependencies:
-  web3apis:
-    - uri: "w3://fs/./../project/build"
-      namespace: "project"

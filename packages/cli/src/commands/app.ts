@@ -16,38 +16,6 @@ import { GluegunToolbox, GluegunPrint } from "gluegun";
 import { Web3ApiClient } from "@web3api/client-js";
 import * as path from "path";
 
-interface AppGenFiles {
-  package: string;
-  app: string;
-}
-
-interface LangGenFiles {
-  types: AppGenFiles;
-  extension: AppGenFiles;
-}
-
-interface AppLangSupport {
-  [lang: string]: LangGenFiles;
-}
-
-const langSupport: AppLangSupport = {
-  "app/typescript": {
-    types: {
-      package:
-        __dirname + "/../lib/codegen-templates/app/types/package-ts.gen.js",
-      app: __dirname + "/../lib/codegen-templates/app/types/app-ts.gen.js",
-    },
-    extension: {
-      package:
-        __dirname +
-        "/../lib/codegen-templates/app/polywrap-app/package-ts.gen.js",
-      app:
-        __dirname +
-        "/../lib/codegen-templates/app/polywrap-app/app-ts.gen.js",
-    },
-  },
-};
-
 const commands = ["codegen"];
 const defaultOutputTypesDir = "./polywrap";
 const cmdStr = intlMsg.commands_app_options_command();
@@ -180,79 +148,17 @@ export default {
       codegenDir = filesystem.resolve(defaultOutputTypesDir);
     }
 
-    // Resolve "codegen.withExtensions" flag
-    //// const withExtensions = manifest.codegen?.withExtensions;
+    const schemaComposer = new SchemaComposer({
+      project,
+      client,
+    });
+    const codeGenerator = new CodeGenerator({
+      project,
+      schemaComposer,
+      outputDir: codegenDir,
+    });
 
-    // Resolve generation file
-    const langGenFiles: LangGenFiles = langSupport[manifest.language];
-    const genFiles: AppGenFiles = //// withExtensions
-      //// ? langGenFiles.extension
-      langGenFiles.types;
-    // TODO: does "genFiles.package/app" make sense?
-    const packageScript = filesystem.resolve(genFiles.package);
-    const appScript = filesystem.resolve(genFiles.app);
-
-    // Get imported web3api & plugin dependencies
-    const dependencies = await project.getImportedDependencies();
-
-    let result = true;
-
-    // Fail if there are no dependencies
-    if (dependencies.length === 0) {
-      result = false;
-    }
-
-    // Generate code for each imported dependency
-    for (const dependency of dependencies) {
-      const namespace = dependency.getNamespace();
-      const schemaComposer = new SchemaComposer({
-        project: dependency,
-        client,
-      });
-      const codeGenerator = new CodeGenerator({
-        project: dependency,
-        schemaComposer,
-        customScript: packageScript,
-        outputDir: path.join(codegenDir, namespace),
-        mustacheView: { namespace }, //// { uri, namespace },
-      });
-
-      if (await codeGenerator.generate()) {
-        print.success(
-          `🔥 ${intlMsg.commands_app_namespace_success({
-            content: "types", //// withExtensions ? "extension" : "types",
-            namespace,
-          })} 🔥`
-        );
-      } else {
-        result = false;
-      }
-    }
-
-    // generate shared files using the final package
-    if (dependencies.length > 0) {
-      const dependency = dependencies[dependencies.length - 1];
-      const namespace = dependency.getNamespace();
-      const schemaComposer = new SchemaComposer({
-        project: dependency,
-        client,
-      });
-      const codeGenerator = new CodeGenerator({
-        project: dependency,
-        schemaComposer,
-        customScript: appScript,
-        outputDir: path.join(codegenDir, namespace),
-        mustacheView: { dependencies },
-      });
-
-      if (await codeGenerator.generate()) {
-        print.success(`🔥 ${intlMsg.commands_app_topLevel_success()} 🔥`);
-      } else {
-        result = false;
-      }
-    }
-
-    if (result) {
+    if (await codeGenerator.generate()) {
       print.success(`🔥 ${intlMsg.commands_app_success()} 🔥`);
       process.exitCode = 0;
     } else {

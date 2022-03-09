@@ -1,14 +1,8 @@
 format: 0.0.1-prealpha.1
 language: app/typescript
+schema: ./web3api.app.multiPackage.graphql
 codegen:
   directory: "./polywrap"
-dependencies:
-  web3apis:
-    - uri: "w3://ipfs/QmeiPWHe2ixfitcgjRwP5AaJD5R7DbsGhQNQwT4rFNyxx8"
-      namespace: "erc20"
-    - uri: "w3://ipfs/QmVGwj3FtvhiErJ1wWbmRuHpvEQ3t1BPNESvEiMJM57p2y"
-      namespace: "console"
-  plugins:
-    - schema: "./../../../../js/plugins/ethereum/build/schema.graphql"
-      uri: "w3://ens/ethereum.web3api.eth"
-      namespace: "ethereum"
+import_redirects:
+    - uri: "w3://ens/ethereum.web3api.eth"
+      schema: "./../../../../js/plugins/ethereum/build/schema.graphql"

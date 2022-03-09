@@ -12,7 +12,8 @@ import {
   appManifestLanguages,
   isAppManifestLanguage,
   appManifestLanguageToBindLanguage,
-  ProjectWithSchema,
+  Project,
+  AnyManifest,
   SchemaComposer,
   intlMsg
 } from "./";
@@ -46,7 +47,7 @@ export type CustomScriptRunFn = (
 
 export interface CodeGeneratorConfig {
   outputDir: string;
-  project: ProjectWithSchema<unknown>;
+  project: Project<AnyManifest>;
   schemaComposer: SchemaComposer;
   customScript?: string;
   mustacheView?: Record<string, unknown>;

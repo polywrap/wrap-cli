@@ -1,5 +1,6 @@
 import {
   intlMsg,
+  AnyManifest,
   AnyManifestLanguage
 } from "../";
 
@@ -14,7 +15,7 @@ export interface ProjectConfig {
   quiet?: boolean;
 }
 
-export abstract class Project<TManifest> {
+export abstract class Project<TManifest extends AnyManifest> {
   constructor(
     protected _config: ProjectConfig,
     protected _projectCacheSubDir: string
@@ -55,6 +56,17 @@ export abstract class Project<TManifest> {
   public abstract getManifestPath(): string;
 
   public abstract getManifestLanguage(): Promise<AnyManifestLanguage>;
+
+  public abstract getSchemaNamedPaths(): Promise<{
+    [name: string]: string;
+  }>;
+
+  public abstract getImportRedirects(): Promise<
+    {
+      uri: string;
+      schema: string;
+    }[]
+  >;
 
   public get quiet(): boolean {
     return !!this._config.quiet;

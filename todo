@@ -1,27 +1,19 @@
 # TODO
-- use the web3api.plugin.yaml setup for web3api.app.yaml? define an "app schema" using imports?
-- SchemaCompose
-- - getSchemaPaths + getImportRedirects
-- AppProject
-- - getSchemaPaths = combine all dependencies into a schema
-- - getImportRedirects = paths to CLI cache folder
+x use the web3api.plugin.yaml setup for web3api.app.yaml? define an "app schema" using imports?
+x SchemaCompose
+x - getSchemaPaths + getImportRedirects
+x AppProject
+x - getSchemaPaths = combine all dependencies into a schema
+x - getImportRedirects = paths to CLI cache folder
 x Schema compose add `import * into ... from ...` syntax
 
 ## codegen thoughts
 - migrate schema-bind sub-packages to codegen script format (easy eject)
 - start w/o extension, adding optional "binding extensions" is something new that can be added
-- Move "app-ts" codegen into schema-bind?
+x Move "app-ts" codegen into schema-bind?
 - - question: does having app-ts codegen in schema-bind make sense, since apps don't have schemas?
 - - - could make it "import-plugin-ts" and "import-web3api-ts"?
 - - - makes me think that this is an oversight in the arch... should apps have schemas? Makes me think they should... aggregate of dependencies...
-- - Not sure how to deal with the web3apis & plugins dependencies...
-- - could: aggregate into one schema
-- - could: codegen for each dependency into its own folder, generate root after.
-- - could: create new structure that contains them all?
-^^^ this doesn't matter considering the new wrapper-based codegen architecture! Just make it "work" right now for the app scenario, treat it differently from plugin/web3api.
-current architecture doesn't make sense to treat them as the same, but the new one will allow for this type of "extendability" through different wrappers.
-
-- see if we can "codegen" the AppProject, which internally combines the schemas...? Could use the "getNamedSchemaPaths" like with the plugin and web3api project?
 
 ## Codegen
 - CLI codegen-templates mustache file names (should be the name of the file)
