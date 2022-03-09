@@ -1,5 +1,0 @@
-query {
-  method1(
-    en: $en
-  )
-}
