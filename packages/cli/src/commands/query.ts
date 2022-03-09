@@ -168,7 +168,7 @@ export default {
 
     if (!!cookbookParser) {
       const cookbook = cookbookParser(fs.read(inputFile) as string);
-      const dir = path.dirname(cookbook);
+      const dir = path.dirname(inputFile);
 
       if (!!cookbook.constants && typeof cookbook.constants === "string") {
         try {

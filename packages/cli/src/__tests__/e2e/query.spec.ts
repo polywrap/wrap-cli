@@ -17,7 +17,7 @@ w3 query [options] <recipe or wrapper>
 
 Options:
   -q, --query <q1[,q2[...[,qN]]>   one or more comma-separated query names to run
-  -t, --test-ens  Use the development server's ENS instance
+  -t, --test-ens Use the development server's ENS instance
   -c, --client-config <config-path>   Add custom configuration to the Web3ApiClient
 `;
 
@@ -34,7 +34,8 @@ describe("sanity tests for query command", () => {
     expect(exitCode).toEqual(0);
     expect(stderr).toBe("");
     expect(clearStyle(stdout)).toEqual(
-      `Required argument (cookbook file) is missing\n${HELP}`
+      `Required argument (cookbook file) is missing
+${HELP}`
     );
   });
   test("Should throw error if --client-config doesn't contain arguments", async () => {
@@ -46,7 +47,8 @@ describe("sanity tests for query command", () => {
 
     expect(exitCode).toEqual(0);
     expect(stderr).toBe("");
-    expect(clearStyle(stdout)).toEqual(`--client-config option missing <config-path> argument\n${HELP}`);
+    expect(clearStyle(stdout)).toEqual(`--client-config option missing <config-path> argument
+${HELP}`);
   });
 });
 
