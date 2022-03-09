@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { OutputDirectory, OutputEntry } from "../../..";
 import * as Functions from "../functions";
+import { GenerateBindingFn } from "../..";
+import { OutputDirectory } from "../../..";
 
 import {
   transformTypeInfo,
@@ -16,12 +17,12 @@ import path from "path";
 
 export { Functions };
 
-export function generateBinding(
+export const generateBinding: GenerateBindingFn = (
+  output: OutputDirectory,
   typeInfo: TypeInfo,
-  schema: string
-): OutputDirectory {
-  const entries: OutputEntry[] = [];
-
+  schema: string,
+  config: Record<string, unknown>
+): void => {
   // Transform the TypeInfo to our liking
   const transforms = [
     extendType(Functions),
@@ -44,7 +45,7 @@ export function generateBinding(
       .replace("\\", "")
       .replace("-", ".");
 
-    entries.push({
+    output.entries.push({
       type: "File",
       name: fileName,
       data: Mustache.render(template, context),
@@ -59,6 +60,4 @@ export function generateBinding(
   renderTemplate("./templates/index-ts.mustache", rootContext);
   renderTemplate("./templates/schema-ts.mustache", rootContext);
   renderTemplate("./templates/types-ts.mustache", rootContext);
-
-  return { entries };
 }

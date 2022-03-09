@@ -147,6 +147,9 @@ export default {
     } else {
       codegenDir = filesystem.resolve(defaultOutputTypesDir);
     }
+ 
+    // Resolve withExtensions option
+    const withExtensions = manifest.codegen?.withExtensions || false;
 
     const schemaComposer = new SchemaComposer({
       project,
@@ -158,7 +161,7 @@ export default {
       outputDir: codegenDir,
     });
 
-    if (await codeGenerator.generate()) {
+    if (await codeGenerator.generate({ withExtensions })) {
       print.success(`🔥 ${intlMsg.commands_app_success()} 🔥`);
       process.exitCode = 0;
     } else {

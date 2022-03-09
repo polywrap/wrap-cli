@@ -148,11 +148,10 @@ interface TestImport_Query_Input_anotherMethod extends Record<string, unknown> {
 export const TestImport_Query = {
   importedMethod: async (
     input: TestImport_Query_Input_importedMethod,
-    client: Client,
-    uri: string = "testimport.uri.eth"
+    client: Client
   ): Promise<InvokeApiResult<Types.TestImport_Object | null>> => {
     return client.invoke<Types.TestImport_Object | null>({
-      uri,
+      uri: "testimport.uri.eth",
       module: "query",
       method: "importedMethod",
       input
@@ -161,11 +160,10 @@ export const TestImport_Query = {
 
   anotherMethod: async (
     input: TestImport_Query_Input_anotherMethod,
-    client: Client,
-    uri: string = "testimport.uri.eth"
+    client: Client
   ): Promise<InvokeApiResult<Int32>> => {
     return client.invoke<Int32>({
-      uri,
+      uri: "testimport.uri.eth",
       module: "query",
       method: "anotherMethod",
       input
@@ -189,11 +187,10 @@ interface TestImport_Mutation_Input_anotherMethod extends Record<string, unknown
 export const TestImport_Mutation = {
   importedMethod: async (
     input: TestImport_Mutation_Input_importedMethod,
-    client: Client,
-    uri: string = "testimport.uri.eth"
+    client: Client
   ): Promise<InvokeApiResult<Types.TestImport_Object | null>> => {
     return client.invoke<Types.TestImport_Object | null>({
-      uri,
+      uri: "testimport.uri.eth",
       module: "mutation",
       method: "importedMethod",
       input
@@ -202,11 +199,10 @@ export const TestImport_Mutation = {
 
   anotherMethod: async (
     input: TestImport_Mutation_Input_anotherMethod,
-    client: Client,
-    uri: string = "testimport.uri.eth"
+    client: Client
   ): Promise<InvokeApiResult<Int32>> => {
     return client.invoke<Int32>({
-      uri,
+      uri: "testimport.uri.eth",
       module: "mutation",
       method: "anotherMethod",
       input

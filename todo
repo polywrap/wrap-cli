@@ -1,4 +1,32 @@
 # TODO
+## Test
+- move CLI test projects into test-cases/cases/[dapps, plugins, etc]
+- create test cases to ensure that each use-case codegens correctly & compiles
+- need a dapp test-case to make sure the generated types actually compile and work
+- does it break if you use a plugin that's added to the client (and has a schema on the package manifest)?
+
+## Extension
+- Add back extension feature
+
+## Logging
+- remove "quiet" from project configuration
+- - have a global logger that's configured by the command
+
+# Done
+x CLI codegen-templates mustache file names (should be the name of the file)
+x .gen.js files
+- x Convert .gen.js files to TypeScript?
+- x Using the plugin functions? confusing...
+x what's the difference between the mustache files in the CLI vs the mustache templates in the schema-bind project?
+x no dynamic imports required, do a static import at compile-time?
+x move all binding projects to the codegen script model so they can easily be ejected?
+x codegen output/project directory? What is this?
+
+x migrate schema-bind sub-packages to codegen script format (easy eject)
+- x add support for custom configuration object (will supprot "withExtensions" well)
+x Move "app-ts" codegen into schema-bind?
+x - makes me think that this is an oversight in the arch... should apps have schemas? Makes me think they should... aggregate of dependencies...
+
 x use the web3api.plugin.yaml setup for web3api.app.yaml? define an "app schema" using imports?
 x SchemaCompose
 x - getSchemaPaths + getImportRedirects
@@ -7,50 +35,6 @@ x - getSchemaPaths = combine all dependencies into a schema
 x - getImportRedirects = paths to CLI cache folder
 x Schema compose add `import * into ... from ...` syntax
 
-## codegen thoughts
-- migrate schema-bind sub-packages to codegen script format (easy eject)
-- start w/o extension, adding optional "binding extensions" is something new that can be added
-x Move "app-ts" codegen into schema-bind?
-- - question: does having app-ts codegen in schema-bind make sense, since apps don't have schemas?
-- - - could make it "import-plugin-ts" and "import-web3api-ts"?
-- - - makes me think that this is an oversight in the arch... should apps have schemas? Makes me think they should... aggregate of dependencies...
-
-## Codegen
-- CLI codegen-templates mustache file names (should be the name of the file)
-- .gen.js files
-- - Convert .gen.js files to TypeScript?
-- - Using the plugin functions? confusing...
-- what's the difference between the mustache files in the CLI vs the mustache templates in the schema-bind project?
-- no dynamic imports required, do a static import at compile-time?
-- move all binding projects to the codegen script model so they can easily be ejected?
-- codegen output/project directory? What is this?
-
-## Test
-- move CLI test projects into test-cases/cases/[dapps, plugins, etc]
-- create test cases to ensure that each use-case codegens correctly & compiles
-- need a dapp test-case to make sure the generated types actually compile and work
-- does it break if you use a plugin that's added to the client (and has a schema on the package manifest)?
-
-## Architecture Question
-- schema compose
-- - Why the if "composed"? Is this needed with the latest changes I made?
-
-## Extension
-- Add back extension feature
-
-## CLI Cache
-- make sure dependency cache folder is optimized
-
-## Manifest Dependencies
-- use "dependencies" within wrapper & plugin manifests?
-  - allows us to download deps for the user
-  - can throw errors if they aren't found, warnings if they aren't used in schemas, etc
-
-## Logging
-- remove "quiet" from project configuration
-- - have a global logger that's configured by the command
-
-# Done
 x plugins should have props { uri, manifest, namespace }
 
 x uniform codegen (custom script + remove directory)

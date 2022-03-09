@@ -1,7 +1,7 @@
-import { OutputDirectory, OutputEntry } from "../../../";
-import { readDirectory } from "../../../utils/fs";
 import * as Functions from "./functions";
 import { reservedWordsAS } from "./reservedWords";
+import { GenerateBindingFn } from "../..";
+import { OutputDirectory, OutputEntry, readDirectory } from "../../../";
 import { fromReservedWord } from "../../../utils/templateFunctions";
 
 import {
@@ -15,9 +15,12 @@ import {
 import path from "path";
 import Mustache from "mustache";
 
-export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
-  const entries: OutputEntry[] = [];
-
+export const generateBinding: GenerateBindingFn = (
+  output: OutputDirectory,
+  typeInfo: TypeInfo,
+  _schema: string,
+  _config: Record<string, unknown>
+): void => {
   // Transform the TypeInfo to our liking
   const transforms = [
     extendType(Functions),
@@ -35,7 +38,7 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
 
   // Generate object type folders
   for (const objectType of typeInfo.objectTypes) {
-    entries.push({
+    output.entries.push({
       type: "Directory",
       name: objectType.type,
       data: generateFiles("./templates/object-type", objectType, subTemplates),
@@ -88,7 +91,7 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
       });
     }
 
-    entries.push({
+    output.entries.push({
       type: "Directory",
       name: "imported",
       data: [
@@ -100,7 +103,7 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
 
   // Generate interface type folders
   for (const interfaceType of typeInfo.interfaceTypes) {
-    entries.push({
+    output.entries.push({
       type: "Directory",
       name: interfaceType.type,
       data: generateFiles(
@@ -113,7 +116,7 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
 
   // Generate module type folders
   for (const moduleType of typeInfo.moduleTypes) {
-    entries.push({
+    output.entries.push({
       type: "Directory",
       name: moduleType.type,
       data: generateFiles("./templates/module-type", moduleType, subTemplates),
@@ -122,7 +125,7 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
 
   // Generate enum type folders
   for (const enumType of typeInfo.enumTypes) {
-    entries.push({
+    output.entries.push({
       type: "Directory",
       name: enumType.type,
       data: generateFiles("./templates/enum-type", enumType, subTemplates),
@@ -132,7 +135,7 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
   // Generate env type folders
   const generateEnvTypeFolder = (def: ObjectDefinition | undefined) => {
     def &&
-      entries.push({
+      output.entries.push({
         type: "Directory",
         name: def.type,
         data: generateFiles("./templates/object-type", def, subTemplates),
@@ -144,11 +147,7 @@ export function generateBinding(typeInfo: TypeInfo): OutputDirectory {
   generateEnvTypeFolder(typeInfo.envTypes.mutation.sanitized);
 
   // Generate root entry file
-  entries.push(...generateFiles("./templates", typeInfo, subTemplates));
-
-  return {
-    entries,
-  };
+  output.entries.push(...generateFiles("./templates", typeInfo, subTemplates));
 }
 
 function generateFiles(

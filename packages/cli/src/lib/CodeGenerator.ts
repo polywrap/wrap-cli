@@ -24,6 +24,7 @@ import {
   writeDirectory,
   bindSchema,
   BindLanguage,
+  GenerateBindingFn,
 } from "@web3api/schema-bind";
 
 import path from "path";
@@ -33,17 +34,7 @@ import { Ora } from "ora";
 import Mustache from "mustache";
 import rimraf from "rimraf";
 
-export interface CustomScriptConfig {
-  typeInfo: TypeInfo;
-  generate: (templatePath: string, config: unknown) => string;
-}
-
 export { OutputDirectory };
-
-export type CustomScriptRunFn = (
-  output: OutputDirectory,
-  config: CustomScriptConfig
-) => void;
 
 export interface CodeGeneratorConfig {
   outputDir: string;
@@ -58,10 +49,10 @@ export class CodeGenerator {
 
   constructor(private _config: CodeGeneratorConfig) {}
 
-  public async generate(): Promise<boolean> {
+  public async generate(config?: Record<string, unknown>): Promise<boolean> {
     try {
       // Compile the API
-      await this._generateCode();
+      await this._generateCode(config);
 
       return true;
     } catch (e) {
@@ -70,7 +61,7 @@ export class CodeGenerator {
     }
   }
 
-  private async _generateCode() {
+  private async _generateCode(config?: Record<string, unknown>) {
     const { schemaComposer, project } = this._config;
 
     const run = async (spinner?: Ora) => {
@@ -131,16 +122,17 @@ export class CodeGenerator {
           throw Error(intlMsg.lib_codeGenerator_wrongGenFile());
         }
 
-        const { run } = generator as { run: CustomScriptRunFn };
-        if (!run) {
-          throw Error(intlMsg.lib_codeGenerator_noRunMethod());
+        const { generateBinding } = generator as { generateBinding: GenerateBindingFn };
+        if (!generateBinding) {
+          throw Error(intlMsg.lib_codeGenerator_nogenerateBindingMethod());
         }
 
-        await run(output, {
+        await generateBinding(
+          output,
           typeInfo,
-          generate: (templatePath: string, config: unknown) =>
-            this._generateTemplate(templatePath, config, spinner),
-        });
+          this._schema || "",
+          config || {}
+        );
 
         writeDirectory(this._config.outputDir, output, (templatePath: string) =>
           this._generateTemplate(templatePath, typeInfo, spinner)
@@ -150,6 +142,7 @@ export class CodeGenerator {
           combined: {
             typeInfo: composed.combined?.typeInfo as TypeInfo,
             schema: composed.combined?.schema as string,
+            config,
             outputDirAbs: "",
           },
           bindLanguage,
