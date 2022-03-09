@@ -98,6 +98,12 @@ type UserObject {
   fieldB: Int!
 }
 
+type UserObjectFromInterface implements UserObject {
+  fieldA: String
+  fieldB: Int!
+  fieldC: UInt32!
+}
+
 type QueryEnv {
   prop: String!
 }
