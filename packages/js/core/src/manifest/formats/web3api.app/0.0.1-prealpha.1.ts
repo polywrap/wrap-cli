@@ -21,6 +21,7 @@ export interface AppManifest {
     plugins?: {
       namespace: string;
       manifest: string;
+      uri: string;
     }[];
   };
   __type: "AppManifest";

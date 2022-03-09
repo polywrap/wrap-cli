@@ -30,6 +30,7 @@ import fs, { readFileSync } from "fs";
 import * as gluegun from "gluegun";
 import { Ora } from "ora";
 import Mustache from "mustache";
+import rimraf from "rimraf";
 
 export interface CustomScriptConfig {
   typeInfo: TypeInfo;
@@ -96,10 +97,8 @@ export class CodeGenerator {
         );
       }
 
-      // Make sure that the output dir exists, if not create a new one
-      if (!fs.existsSync(this._config.outputDir)) {
-        fs.mkdirSync(this._config.outputDir, { recursive: true });
-      }
+      // Make sure the output dir is reset
+      this._resetDir(this._config.outputDir);
 
       // Get the fully composed schema
       const composed = await schemaComposer.getComposedSchemas();
@@ -174,6 +173,14 @@ export class CodeGenerator {
         }
       );
     }
+  }
+
+  private _resetDir(dir: string) {
+    if (fs.existsSync(dir)) {
+      rimraf.sync(dir);
+    }
+
+    fs.mkdirSync(dir, { recursive: true });
   }
 
   private _generateTemplate(

@@ -21,7 +21,7 @@ export function pluginManifestLanguageToBindLanguage(
 ): BindLanguage {
   switch (manifestLanguage) {
     case "plugin/typescript":
-      return "app-ts";
+      return "plugin-ts";
     default:
       throw Error(
         intlMsg.lib_language_unsupportedManifestLanguage({

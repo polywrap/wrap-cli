@@ -1,19 +1,29 @@
 # TODO
-## Refactor
-- plugins should have props { uri, manifest, namespace }
-- uniform codegen (custom script + remove directory)
-- - should remove files from output directory when performing codegen (like plugin & codegen commands do)
-- x OPTIONS: (1) --manifest-file (2) --codegen-dir (3) --codegen-script (4) --publish-dir
-- - what are the rules between manifest props & options? options = overrides? manifest = project config?
+- SchemaCompose
+- - getSchemaPaths + getImportRedirects
+- AppProject
+- - getSchemaPaths = combine all dependencies into a schema
+- - getImportRedirects = paths to CLI cache folder
+x Schema compose add `import * into ... from ...` syntax
+- TypeInfo
+- - should we add a "dependencies" array?
+- - - could generate code for each package independently...
 
-- resolveManifestPath
-- - the function's second parameter should be optionally undefined... or just use an array for everything
-- - also there isn't proper argument sanitization happening in plugin.ts, codegen.ts, build.ts, or app.ts for the "manifestPath"... it could be true and not a string...
+## codegen thoughts
+- migrate schema-bind sub-packages to codegen script format (easy eject)
+- start w/o extension, adding optional "binding extensions" is something new that can be added
+- Move "app-ts" codegen into schema-bind?
+- - question: does having app-ts codegen in schema-bind make sense, since apps don't have schemas?
+- - - could make it "import-plugin-ts" and "import-web3api-ts"?
+- - - makes me think that this is an oversight in the arch... should apps have schemas? Makes me think they should... aggregate of dependencies...
+- - Not sure how to deal with the web3apis & plugins dependencies...
+- - could: aggregate into one schema
+- - could: codegen for each dependency into its own folder, generate root after.
+- - could: create new structure that contains them all?
+^^^ this doesn't matter considering the new wrapper-based codegen architecture! Just make it "work" right now for the app scenario, treat it differently from plugin/web3api.
+current architecture doesn't make sense to treat them as the same, but the new one will allow for this type of "extendability" through different wrappers.
 
-## Test
-- create test cases to ensure that each use-case codegens correctly & compiles
-- move CLI test projects into test-cases/cases/[dapps, plugins, etc]
-- need a dapp test-case to make sure the generated types actually compile and work
+- see if we can "codegen" the AppProject, which internally combines the schemas...? Could use the "getNamedSchemaPaths" like with the plugin and web3api project?
 
 ## Codegen
 - CLI codegen-templates mustache file names (should be the name of the file)
@@ -25,34 +35,39 @@
 - move all binding projects to the codegen script model so they can easily be ejected?
 - codegen output/project directory? What is this?
 
+## Test
+- move CLI test projects into test-cases/cases/[dapps, plugins, etc]
+- create test cases to ensure that each use-case codegens correctly & compiles
+- need a dapp test-case to make sure the generated types actually compile and work
+- does it break if you use a plugin that's added to the client (and has a schema on the package manifest)?
+
+## Architecture Question
+- schema compose
+- - Why the if "composed"? Is this needed with the latest changes I made?
+
 ## Extension
 - Add back extension feature
+
+## CLI Cache
+- make sure dependency cache folder is optimized
 
 ## Manifest Dependencies
 - use "dependencies" within wrapper & plugin manifests?
   - allows us to download deps for the user
   - can throw errors if they aren't found, warnings if they aren't used in schemas, etc
 
-## Architecture Question
-- schema compose
-- - Why the if "composed"? Is this needed with the latest changes I made?
-- resolve plugin URI => PluginApi => getManifest + getSchema + getFile
-- does it break if you use a plugin that's added to the client (and has a schema on the package manifest)?
-
-## CLI Cache
-- make sure dependency cache folder is optimized
-
-## Command Cleanliness
-- output standarziation
-- - web3api.plugin.yaml -> needs options for output types & schema
-- - web3api.dapp.yaml -> add options for output types
-- - w3 dapp command needs output options similar to dapp command
-
 ## Logging
 - remove "quiet" from project configuration
 - - have a global logger that's configured by the command
 
 # Done
+x plugins should have props { uri, manifest, namespace }
+
+x uniform codegen (custom script + remove directory)
+- x should remove files from output directory when performing codegen (like plugin & codegen commands do)
+- x OPTIONS: (1) --manifest-file (2) --codegen-dir (3) --codegen-script (4) --publish-dir
+- x what are the rules between manifest props & options? options = overrides? manifest = project config?
+
 x AppProject validateImportUri function
 
 x all command flows are the same (parse arsg, validate args, create/validate/run lib classes, cleanup)

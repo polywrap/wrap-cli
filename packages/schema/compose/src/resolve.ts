@@ -130,8 +130,8 @@ export async function resolveImportsAndParseSchemas(
     return parseSchema(schema);
   }
   const importKeywordCapture = /^#+["{3}]*import\s/gm;
-  const externalImportCapture = /#+["{3}]*import\s*{([^}]+)}\s*into\s*(\w+?)\s*from\s*[\"'`]([^\"'`\s]+)[\"'`]/g;
-  const localImportCapture = /#+["{3}]*import\s*{([^}]+)}\s*from\s*[\"'`]([^\"'`\s]+)[\"'`]/g;
+  const externalImportCapture = /#+["{3}]*import\s*(?:({[^}]+}|\*))\s*into\s*(\w+?)\s*from\s*[\"'`]([^\"'`\s]+)[\"'`]/g;
+  const localImportCapture = /#+["{3}]*import\s*(?:({[^}]+}|\*))\s*from\s*[\"'`]([^\"'`\s]+)[\"'`]/g;
 
   const keywords = [...schema.matchAll(importKeywordCapture)];
   const externalImportStatements = [...schema.matchAll(externalImportCapture)];
@@ -182,7 +182,8 @@ export async function resolveImportsAndParseSchemas(
   const externalImports = await resolveExternalImports(
     externalImportsToResolve,
     resolvers.external,
-    subTypeInfo
+    subTypeInfo,
+    schemaKind
   );
 
   await resolveLocalImports(
@@ -625,7 +626,8 @@ function resolveInterfaces(
 async function resolveExternalImports(
   importsToResolve: ExternalImport[],
   resolveSchema: SchemaResolver,
-  typeInfo: TypeInfo
+  typeInfo: TypeInfo,
+  schemaKind: SchemaKind
 ): Promise<string[]> {
   // Keep track of all imported object type names
   const typesToImport: ImportMap = {};
@@ -643,8 +645,22 @@ async function resolveExternalImports(
     // Parse the schema into TypeInfo
     const extTypeInfo = parseSchema(schema);
 
+    let extTypesToImport = importedTypes;
+
+    // If the importedTypes array contains the catch-all "*"
+    // go ahead and add all extTypeInfo types to the importedTypes array
+    if (extTypesToImport.indexOf("*") > -1) {
+      extTypesToImport = [
+        ...extTypeInfo.objectTypes.map((x) => x.type),
+        ...extTypeInfo.enumTypes.map((x) => x.type),
+        ...extTypeInfo.moduleTypes
+          .map((x) => x.type)
+          .filter((x) => schemaKind !== "query" || x === "Query"),
+      ];
+    }
+
     // For each imported type to resolve
-    for (const importedType of importedTypes) {
+    for (const importedType of extTypesToImport) {
       let extTypes: (
         | ModuleDefinition
         | ObjectDefinition
@@ -895,10 +911,24 @@ async function resolveLocalImports(
       resolvers
     );
 
+    let extTypesToImport = importedTypes;
+
+    // If the importedTypes array contains the catch-all "*"
+    // go ahead and add all extTypeInfo types to the importedTypes array
+    if (extTypesToImport.indexOf("*") > -1) {
+      extTypesToImport = [
+        ...localTypeInfo.objectTypes.map((x) => x.type),
+        ...localTypeInfo.enumTypes.map((x) => x.type),
+        ...localTypeInfo.moduleTypes
+          .map((x) => x.type)
+          .filter((x) => schemaKind !== "query" || x === "Query"),
+      ];
+    }
+
     // Keep track of all imported type names
     const typesToImport: Record<string, GenericDefinition> = {};
 
-    for (const importedType of importedTypes) {
+    for (const importedType of extTypesToImport) {
       if (importedType === "Query" || importedType === "Mutation") {
         throw Error(
           `Importing module types from local schemas is prohibited. Tried to import from ${path}.`

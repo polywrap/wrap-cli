@@ -68,11 +68,16 @@
               "manifest": {
                 "type": "string",
                 "format": "pluginManifestFile"
+              },
+              "uri": {
+                "type": "string",
+                "format": "web3apiUri"
               }
             },
             "required": [
               "namespace",
-              "manifest"
+              "manifest",
+              "uri"
             ]
           }
         }

@@ -7,7 +7,7 @@ import { transformTypeInfo, TypeInfo } from "@web3api/schema-parse";
 export * from "./utils";
 export * from "./bindings";
 
-export type BindLanguage = "wasm-as" | "app-ts";
+export type BindLanguage = "wasm-as" | "plugin-ts" | "app-ts";
 
 export type OutputEntry = FileEntry | DirectoryEntry | TemplateEntry;
 
