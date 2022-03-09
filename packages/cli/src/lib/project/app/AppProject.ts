@@ -2,7 +2,7 @@ import {
   ImportedWeb3ApiProject,
   ImportedPluginProject
 } from "./";
-import { Project, ProjectConfig,  } from "../";
+import { ProjectWithSchema, ProjectConfig } from "../";
 import {
   AppManifestLanguage,
   appManifestLanguages,
@@ -22,7 +22,7 @@ export interface AppProjectConfig extends ProjectConfig {
   client: Client;
 }
 
-export class AppProject extends Project<AppManifest> {
+export class AppProject extends ProjectWithSchema<AppManifest> {
   private _appManifest: AppManifest | undefined;
 
   constructor(protected _config: AppProjectConfig) {
@@ -40,7 +40,7 @@ export class AppProject extends Project<AppManifest> {
     const manifest = await this.getManifest();
 
     // Validate language
-    Project.validateManifestLanguage(
+    ProjectWithSchema.validateManifestLanguage(
       manifest.language,
       appManifestLanguages,
       isAppManifestLanguage
@@ -71,13 +71,63 @@ export class AppProject extends Project<AppManifest> {
   public async getManifestLanguage(): Promise<AppManifestLanguage> {
     const language = (await this.getManifest()).language;
 
-    Project.validateManifestLanguage(
+    ProjectWithSchema.validateManifestLanguage(
       language,
       appManifestLanguages,
       isAppManifestLanguage
     );
 
     return language as AppManifestLanguage;
+  }
+
+  /// ProjectWithSchema Base Methods
+
+  public async getSchemaNamedPaths(): Promise<{
+    [name: string]: string;
+  }> {
+    const manifest = await this.getManifest();
+    const namedPaths: { [name: string]: string } = {};
+
+    // Aggregate all dependencies into a schema
+    const web3apis = manifest.dependencies?.web3apis || [];
+    const plugins = manifest.dependencies?.plugins || [];
+    const importStatements: string[] = [];
+
+    for (const web3api of web3apis) {
+      importStatements.push(
+        `#import * into ${web3api.namespace} from "${web3api.uri}"`
+      );
+    }
+
+    for (const plugin of plugins) {
+      importStatements.push(
+        `#import * into ${plugin.namespace} from "${plugin.uri}"`
+      );
+    }
+
+    this.writeCacheFile(
+      "schema.graphql",
+      importStatements.join("\n"),
+      "utf-8"
+    );
+
+    namedPaths["combined"] = this.getCachePath("schema.graphql");
+    return namedPaths;
+  }
+
+  public async getImportRedirects(): Promise<
+    {
+      uri: string;
+      schema: string;
+    }[]
+  > {
+    const manifest = await this.getManifest();
+    const plugins = manifest.dependencies?.plugins || [];
+    const import_redirects = plugins.map((plugin) => ({
+      uri: plugin.uri,
+      schema: plugin.schema,
+    }));
+    return import_redirects;
   }
 
   public async getImportedDependencies(): Promise<
@@ -96,7 +146,7 @@ export class AppProject extends Project<AppManifest> {
     for (const plugin of plugins) {
       const importedPlugin = new ImportedPluginProject({
         rootCacheDir: this._config.rootCacheDir,
-        pluginManifestPath: plugin.manifest,
+        pluginManifestPath: plugin.schema,
         namespace: plugin.namespace
       });
       await importedPlugin.validate();

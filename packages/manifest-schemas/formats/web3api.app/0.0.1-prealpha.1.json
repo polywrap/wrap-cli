@@ -65,9 +65,9 @@
                 "type": "string",
                 "format": "dependencyNamespace"
               },
-              "manifest": {
+              "schema": {
                 "type": "string",
-                "format": "pluginManifestFile"
+                "format": "pluginSchemaFile"
               },
               "uri": {
                 "type": "string",
@@ -76,7 +76,7 @@
             },
             "required": [
               "namespace",
-              "manifest",
+              "schema",
               "uri"
             ]
           }

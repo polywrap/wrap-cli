@@ -9,5 +9,6 @@ dependencies:
     - uri: "w3://ipfs/QmVGwj3FtvhiErJ1wWbmRuHpvEQ3t1BPNESvEiMJM57p2y"
       namespace: "console"
   plugins:
-    - manifest: "./../../../../js/plugins/ethereum/build/web3api.plugin.yaml"
+    - schema: "./../../../../js/plugins/ethereum/build/schema.graphql"
+      uri: "w3://ens/ethereum.web3api.eth"
       namespace: "ethereum"

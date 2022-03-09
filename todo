@@ -1,13 +1,11 @@
 # TODO
+- use the web3api.plugin.yaml setup for web3api.app.yaml? define an "app schema" using imports?
 - SchemaCompose
 - - getSchemaPaths + getImportRedirects
 - AppProject
 - - getSchemaPaths = combine all dependencies into a schema
 - - getImportRedirects = paths to CLI cache folder
 x Schema compose add `import * into ... from ...` syntax
-- TypeInfo
-- - should we add a "dependencies" array?
-- - - could generate code for each package independently...
 
 ## codegen thoughts
 - migrate schema-bind sub-packages to codegen script format (easy eject)

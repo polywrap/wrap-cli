@@ -10,7 +10,6 @@ export const schemaKinds = [
   "mutation",
   "plugin",
   "combined",
-  "composed",
 ] as const;
 
 export type SchemaKind = typeof schemaKinds[number];

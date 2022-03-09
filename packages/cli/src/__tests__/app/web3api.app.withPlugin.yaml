@@ -4,5 +4,6 @@ codegen:
   directory: "./polywrap"
 dependencies:
   plugins:
-    - manifest: "./../../../../js/plugins/http/build/web3api.plugin.yaml"
+    - schema: "./../../../../js/plugins/http/build/schema.graphql"
+      uri: "w3://ens/http.web3api.eth"
       namespace: "http"

@@ -138,7 +138,7 @@ export function web3apiUri(uri: unknown): boolean {
   return typeof uri === "string" && Uri.isValidUri(uri);
 }
 
-export function pluginManifestFile(filePath: unknown): boolean {
+export function pluginSchemaFile(filePath: unknown): boolean {
   return (
     typeof filePath === "string" && file(filePath)
   );

@@ -35,7 +35,14 @@ export class PluginProject extends ProjectWithSchema<PluginManifest> {
   }
 
   public async validate(): Promise<void> {
-    return Promise.resolve();
+    const manifest = await this.getManifest();
+
+    // Validate language
+    ProjectWithSchema.validateManifestLanguage(
+      manifest.language,
+      pluginManifestLanguages,
+      isPluginManifestLanguage
+    );
   }
 
   /// Manifest (web3api.plugin.yaml)

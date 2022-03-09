@@ -20,7 +20,7 @@ export interface AppManifest {
     }[];
     plugins?: {
       namespace: string;
-      manifest: string;
+      schema: string;
       uri: string;
     }[];
   };
