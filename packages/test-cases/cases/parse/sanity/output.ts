@@ -3,13 +3,13 @@ import {
   createScalarDefinition,
   createArrayDefinition,
   createObjectDefinition,
-  createQueryDefinition,
+  createModuleDefinition,
   createMethodDefinition,
   createScalarPropertyDefinition,
   createArrayPropertyDefinition,
   createObjectPropertyDefinition,
   createImportedObjectDefinition,
-  createImportedQueryDefinition,
+  createImportedModuleDefinition,
   createEnumDefinition,
   createEnumPropertyDefinition,
   createImportedEnumDefinition,
@@ -25,7 +25,7 @@ import {
   createEnvDefinition
 } from "../../../../schema/parse/src/typeInfo";
 
-export const output: TypeInfo = {
+export const typeInfo: TypeInfo = {
   interfaceTypes: [
     createInterfaceDefinition({
       type: "TestImport",
@@ -283,6 +283,17 @@ export const output: TypeInfo = {
       ],
     },
     {
+      ...createObjectDefinition({ type: "UserObjectFromInterface" }),
+      interfaces: [
+        createInterfaceImplementedDefinition({ type: "UserObject" }),
+      ],
+      properties: [
+        createScalarPropertyDefinition({ name: "fieldA", type: "String", required: false }),
+        createScalarPropertyDefinition({ name: "fieldB", type: "Int", required: true }),
+        createScalarPropertyDefinition({ name: "fieldC", type: "UInt32", required: true }),
+      ],
+    },
+    {
       ...createObjectDefinition({
         type: "ImplementationObject",
         interfaces: [
@@ -316,8 +327,6 @@ export const output: TypeInfo = {
       comment: "TestImport_Enum comment"
     })
   ],
-
-  //TODO
   unionTypes: [
     createUnionDefinition({
       type: "CustomUnion",
@@ -343,9 +352,9 @@ export const output: TypeInfo = {
       comment: "TestImport_Union comment"
     })
   ],
-  queryTypes: [
+  moduleTypes: [
     {
-      ...createQueryDefinition({ type: "Mutation" }),
+      ...createModuleDefinition({ type: "Mutation" }),
       methods: [
         {
           ...createMethodDefinition({
@@ -358,7 +367,7 @@ export const output: TypeInfo = {
       ],
     },
     {
-      ...createQueryDefinition({
+      ...createModuleDefinition({
         type: "Query",
         imports: [{ type: "TestImport_Query" }, { type: "Interface_Query" }],
         interfaces: [
@@ -559,9 +568,9 @@ export const output: TypeInfo = {
       ],
     },
   ],
-  importedQueryTypes: [
+  importedModuleTypes: [
     {
-      ...createImportedQueryDefinition({
+      ...createImportedModuleDefinition({
         uri: "testimport.uri.eth",
         namespace: "TestImport",
         type: "TestImport_Query",
@@ -717,7 +726,7 @@ export const output: TypeInfo = {
       ],
     },
     {
-      ...createImportedQueryDefinition({
+      ...createImportedModuleDefinition({
         uri: "testimport.uri.eth",
         namespace: "TestImport",
         type: "TestImport_Mutation",
@@ -742,7 +751,7 @@ export const output: TypeInfo = {
       ],
     },
     {
-      ...createImportedQueryDefinition({
+      ...createImportedModuleDefinition({
         uri: "interface.uri.eth",
         namespace: "Interface",
         type: "Interface_Query",

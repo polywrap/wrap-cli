@@ -35,7 +35,7 @@ export function validateClientEnvironment(
     );
   }
 
-  const moduleObject = info.queryTypes.find((type) => type.type === module);
+  const moduleObject = info.moduleTypes.find((type) => type.type === module);
   if (!moduleObject) {
     throw new Error(
       `Must have '${sanitizeMethod}' method inside module methods when using '${client.type}'`

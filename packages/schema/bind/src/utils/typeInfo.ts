@@ -18,7 +18,7 @@ export function findCommonTypes(a: TypeInfo, b: TypeInfo): string[] {
   a.importedEnumTypes.forEach(addType);
   a.importedUnionTypes.forEach(addType);
   a.importedObjectTypes.forEach(addType);
-  a.importedQueryTypes.forEach(addType);
+  a.importedModuleTypes.forEach(addType);
 
   const commonTypes: string[] = [];
 
@@ -34,7 +34,7 @@ export function findCommonTypes(a: TypeInfo, b: TypeInfo): string[] {
   b.importedEnumTypes.forEach(tryAddCommonType);
   b.importedUnionTypes.forEach(tryAddCommonType);
   b.importedObjectTypes.forEach(tryAddCommonType);
-  b.importedQueryTypes.forEach(tryAddCommonType);
+  b.importedModuleTypes.forEach(tryAddCommonType);
 
   return commonTypes;
 }

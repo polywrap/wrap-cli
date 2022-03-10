@@ -112,8 +112,8 @@ describe("Filesystem plugin", () => {
     expect(manifest.language).toBe("wasm/assemblyscript");
 
     // get a file
-    const file = await client.getFile(fsUri, { path: "web3api.yaml", encoding: "utf-8" });
-    const expectedFile = await fs.promises.readFile(`${fsPath}/web3api.yaml`, "utf-8");
+    const file = await client.getFile(fsUri, { path: "web3api.json", encoding: "utf-8" });
+    const expectedFile = await fs.promises.readFile(`${fsPath}/web3api.json`, "utf-8");
 
     expect(file).toBe(expectedFile);
   });

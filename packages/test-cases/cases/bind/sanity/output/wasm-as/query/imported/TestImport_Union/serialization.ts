@@ -44,22 +44,32 @@ export function readTestImport_Union(reader: Read): TestImport_Union {
 
   let TestImport_AnotherObject: Types.TestImport_AnotherObject | null = null;
   let TestImport_YetAnotherObject: Types.TestImport_YetAnotherObject | null = null;
+ 
+  let unionMemberTypes = [
+    "TestImport_AnotherObject",
+    "TestImport_YetAnotherObject",
+  ]
 
-  let actualUnionType: string;
+  let unionMemberType: string;
 
   while (numFields > 0) {
     numFields--;
     const field = reader.readString();
 
     if(field == "type") {
-      reader.context().push(field, "String", "type found, reading property");
-      actualUnionType = reader.readString();
+      reader.context().push(field, "String", "union member type declaration found, reading property");
+      unionMemberType = reader.readString();
+
+      if(!unionMemberTypes.includes(unionMemberType)) {
+        throw new Error(`Found invalid union member type '${unionMemberType}' for union 'TestImport_Union'. Valid member types: ${unionMemberTypes.join(", ")}`)
+      }
+
       reader.context().pop();
     }
 
     if(field == "value") {
-      if (actualUnionType == "TestImport_AnotherObject") {
-        reader.context().push(field, "Types.TestImport_AnotherObject | null", "type found, reading property");
+      if (unionMemberType == "TestImport_AnotherObject") {
+        reader.context().push(field, "Types.TestImport_AnotherObject | null", "value found for union member type 'TestImport_AnotherObject', reading property");
 
         if (!reader.isNextNil()) {
           TestImport_AnotherObject = Types.TestImport_AnotherObject.read(reader);
@@ -67,8 +77,8 @@ export function readTestImport_Union(reader: Read): TestImport_Union {
 
         reader.context().pop();
       }
-      else if (actualUnionType == "TestImport_YetAnotherObject") {
-        reader.context().push(field, "Types.TestImport_YetAnotherObject | null", "type found, reading property");
+      else if (unionMemberType == "TestImport_YetAnotherObject") {
+        reader.context().push(field, "Types.TestImport_YetAnotherObject | null", "value found for union member type 'TestImport_YetAnotherObject', reading property");
 
         if (!reader.isNextNil()) {
           TestImport_YetAnotherObject = Types.TestImport_YetAnotherObject.read(reader);
@@ -84,6 +94,6 @@ export function readTestImport_Union(reader: Read): TestImport_Union {
   } else if(TestImport_YetAnotherObject) {
     return TestImport_Union.create(TestImport_YetAnotherObject)
   } else {
-    throw new Error(`All serialized member types for TestImport_Union are null`)
+    throw new Error(`All serialized union member types for TestImport_Union are null`)
   }
 }

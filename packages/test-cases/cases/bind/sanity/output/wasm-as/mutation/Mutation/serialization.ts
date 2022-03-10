@@ -25,7 +25,7 @@ export class Input_mutationMethod {
 }
 
 export function deserializemutationMethodArgs(argsBuf: ArrayBuffer): Input_mutationMethod {
-  const context: Context =  new Context("Deserializing query-type: mutationMethod");
+  const context: Context =  new Context("Deserializing module-type: mutationMethod");
   const reader = new ReadDecoder(argsBuf, context);
   let numFields = reader.readMapLength();
 
@@ -201,11 +201,11 @@ export function deserializemutationMethodArgs(argsBuf: ArrayBuffer): Input_mutat
 }
 
 export function serializemutationMethodResult(result: i32): ArrayBuffer {
-  const sizerContext: Context = new Context("Serializing (sizing) query-type: mutationMethod");
+  const sizerContext: Context = new Context("Serializing (sizing) module-type: mutationMethod");
   const sizer = new WriteSizer(sizerContext);
   writemutationMethodResult(sizer, result);
   const buffer = new ArrayBuffer(sizer.length);
-  const encoderContext: Context = new Context("Serializing (encoding) query-type: mutationMethod");
+  const encoderContext: Context = new Context("Serializing (encoding) module-type: mutationMethod");
   const encoder = new WriteEncoder(buffer, encoderContext);
   writemutationMethodResult(encoder, result);
   return buffer;
@@ -225,7 +225,7 @@ export class Input_objectMethod {
 }
 
 export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectMethod {
-  const context: Context =  new Context("Deserializing query-type: objectMethod");
+  const context: Context =  new Context("Deserializing module-type: objectMethod");
   const reader = new ReadDecoder(argsBuf, context);
   let numFields = reader.readMapLength();
 
@@ -296,11 +296,11 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectM
 }
 
 export function serializeobjectMethodResult(result: Types.AnotherType | null): ArrayBuffer {
-  const sizerContext: Context = new Context("Serializing (sizing) query-type: objectMethod");
+  const sizerContext: Context = new Context("Serializing (sizing) module-type: objectMethod");
   const sizer = new WriteSizer(sizerContext);
   writeobjectMethodResult(sizer, result);
   const buffer = new ArrayBuffer(sizer.length);
-  const encoderContext: Context = new Context("Serializing (encoding) query-type: objectMethod");
+  const encoderContext: Context = new Context("Serializing (encoding) module-type: objectMethod");
   const encoder = new WriteEncoder(buffer, encoderContext);
   writeobjectMethodResult(encoder, result);
   return buffer;

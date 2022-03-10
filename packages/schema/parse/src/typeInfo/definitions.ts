@@ -1,6 +1,6 @@
 import { ScalarType, isScalarType } from "./scalar";
 import { OperationType, isOperationType } from "./operation";
-import { QueryType, isQueryType } from "./query";
+import { ModuleType, isModuleType } from "./module";
 
 export enum DefinitionKind {
   Generic = 0,
@@ -11,8 +11,8 @@ export enum DefinitionKind {
   Array = (1 << 4) | DefinitionKind.Any,
   Property = (1 << 5) | DefinitionKind.Any,
   Method = 1 << 6,
-  Query = 1 << 7,
-  ImportedQuery = 1 << 8,
+  Module = 1 << 7,
+  ImportedModule = 1 << 8,
   ImportedEnum = (1 << 9) | DefinitionKind.Enum,
   ImportedObject = (1 << 10) | DefinitionKind.Object,
   ImportedUnion = 1 << 11,
@@ -107,7 +107,6 @@ export function createAnyDefinition(args: {
   enum?: EnumRef;
   union?: UnionRef;
 }): AnyDefinition {
-  // console.log(args);
   return {
     ...createGenericDefinition(args),
     array: args.array ? args.array : null,
@@ -386,22 +385,22 @@ export function createMethodDefinition(args: {
   };
 }
 
-export interface QueryDefinition extends GenericDefinition, WithComment {
-  type: QueryType;
+export interface ModuleDefinition extends GenericDefinition, WithComment {
+  type: ModuleType;
   methods: MethodDefinition[];
   imports: { type: string }[];
   interfaces: InterfaceImplementedDefinition[];
 }
-export function createQueryDefinition(args: {
+export function createModuleDefinition(args: {
   type: string;
   imports?: { type: string }[];
   interfaces?: InterfaceImplementedDefinition[];
   required?: boolean;
   comment?: string;
-}): QueryDefinition {
-  if (!isQueryType(args.type)) {
+}): ModuleDefinition {
+  if (!isModuleType(args.type)) {
     throw Error(
-      `createQueryDefinition: Unrecognized query type provided "${args.type}"`
+      `createModuleDefinition: Unrecognized module type provided "${args.type}"`
     );
   }
 
@@ -412,7 +411,7 @@ export function createQueryDefinition(args: {
     imports: args.imports ? args.imports : [],
     interfaces: args.interfaces ? args.interfaces : [],
     comment: args.comment,
-    kind: DefinitionKind.Query,
+    kind: DefinitionKind.Module,
   };
 }
 
@@ -490,14 +489,14 @@ export function createInterfaceDefinition(args: {
   };
 }
 
-export interface ImportedQueryDefinition
+export interface ImportedModuleDefinition
   extends GenericDefinition,
     ImportedDefinition,
     WithComment {
   methods: MethodDefinition[];
   isInterface?: boolean;
 }
-export function createImportedQueryDefinition(args: {
+export function createImportedModuleDefinition(args: {
   type: string;
   required?: boolean;
   uri: string;
@@ -506,10 +505,10 @@ export function createImportedQueryDefinition(args: {
   isInterface?: boolean;
   interfaces?: InterfaceImplementedDefinition[];
   comment?: string;
-}): ImportedQueryDefinition {
-  if (!isQueryType(args.nativeType)) {
+}): ImportedModuleDefinition {
+  if (!isModuleType(args.nativeType)) {
     throw Error(
-      `createImportedQueryDefinition: Unrecognized query type provided "${args.nativeType}"`
+      `createImportedModuleDefinition: Unrecognized module type provided "${args.nativeType}"`
     );
   }
 
@@ -521,7 +520,7 @@ export function createImportedQueryDefinition(args: {
     nativeType: args.nativeType,
     comment: args.comment,
     isInterface: args.isInterface,
-    kind: DefinitionKind.ImportedQuery,
+    kind: DefinitionKind.ImportedModule,
   };
 }
 

@@ -1,0 +1,3 @@
+#import * into Ethereum from "w3://ens/ethereum.web3api.eth"
+#import * into Console from "w3://ipfs/QmVGwj3FtvhiErJ1wWbmRuHpvEQ3t1BPNESvEiMJM57p2y"
+#import * into ERC20 from "w3://ipfs/QmeiPWHe2ixfitcgjRwP5AaJD5R7DbsGhQNQwT4rFNyxx8"

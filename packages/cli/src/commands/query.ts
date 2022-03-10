@@ -1,14 +1,17 @@
-import { getTestEnvClientConfig } from "../lib/helpers/test-env-client-config";
-import { importTs } from "../lib/helpers/import-ts";
-import { fixParameters } from "../lib/helpers/parameters";
-import { validateClientConfig } from "../lib/helpers/validate-client-config";
-import { intlMsg } from "../lib/intl";
+import {
+  getTestEnvClientConfig,
+  importTypescriptModule,
+  validateClientConfig,
+  fixParameters,
+  intlMsg,
+} from "../lib";
 
 import { Web3ApiClient, Web3ApiClientConfig } from "@web3api/client-js";
 import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
 import gql from "graphql-tag";
 import path from "path";
+import yaml from "js-yaml";
 
 const optionsString = intlMsg.commands_build_options_options();
 const scriptStr = intlMsg.commands_create_options_recipeScript();
@@ -26,9 +29,11 @@ export default {
   alias: ["q"],
   description: intlMsg.commands_query_description(),
   run: async (toolbox: GluegunToolbox): Promise<void> => {
-    const { filesystem, parameters, print, middleware } = toolbox;
-    // eslint-disable-next-line prefer-const
-    let { t, testEns, c, clientConfig } = parameters.options;
+    const { filesystem, parameters, print } = toolbox;
+
+    // Options
+    let { testEns, clientConfig } = parameters.options;
+    const { t, c } = parameters.options;
 
     testEns = testEns || t;
     clientConfig = clientConfig || c;
@@ -89,7 +94,9 @@ export default {
       if (clientConfig.endsWith(".js")) {
         configModule = await import(filesystem.resolve(clientConfig));
       } else if (clientConfig.endsWith(".ts")) {
-        configModule = await importTs(filesystem.resolve(clientConfig));
+        configModule = await importTypescriptModule(
+          filesystem.resolve(clientConfig)
+        );
       } else {
         const configsModuleMissingExportMessage = intlMsg.commands_query_error_clientConfigInvalidFileExt(
           { module: clientConfig }
@@ -119,14 +126,15 @@ export default {
       }
     }
 
-    await middleware.run({
-      name: toolbox.command?.name,
-      options: { testEns, recipePath },
-    });
-
     const client = new Web3ApiClient(finalClientConfig);
 
-    const recipe = JSON.parse(filesystem.read(recipePath) as string);
+    function getParser(path: string) {
+      return path.endsWith(".yaml") || path.endsWith(".yml")
+        ? yaml.load
+        : JSON.parse;
+    }
+
+    const recipe = getParser(recipePath)(filesystem.read(recipePath) as string);
     const dir = path.dirname(recipePath);
     let uri = "";
 
@@ -137,7 +145,7 @@ export default {
       }
 
       if (task.constants) {
-        constants = JSON.parse(
+        constants = getParser(task.constants)(
           filesystem.read(path.join(dir, task.constants)) as string
         );
       }
@@ -218,6 +226,7 @@ export default {
             print.fancy(error.stack || "");
             print.error("-----------------------------------");
           }
+          process.exitCode = 1;
         }
       }
     }

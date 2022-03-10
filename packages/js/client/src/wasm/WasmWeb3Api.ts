@@ -14,8 +14,8 @@ import {
   deserializeWeb3ApiManifest,
   deserializeBuildManifest,
   deserializeMetaManifest,
-  AnyManifest,
-  ManifestType,
+  AnyManifestArtifact,
+  ManifestArtifactType,
   combinePaths,
   Env,
   UriResolver,
@@ -92,38 +92,46 @@ export class WasmWeb3Api extends Api {
   }
 
   @Tracer.traceMethod("WasmWeb3Api: getManifest")
-  public async getManifest<TManifest extends ManifestType>(
-    options: GetManifestOptions<TManifest>,
+  public async getManifest<TManifestArtifact extends ManifestArtifactType>(
+    options: GetManifestOptions<TManifestArtifact>,
     client: Client
-  ): Promise<AnyManifest<TManifest>> {
+  ): Promise<AnyManifestArtifact<TManifestArtifact>> {
     if (!options?.type) {
-      return this._manifest as AnyManifest<TManifest>;
+      return this._manifest as AnyManifestArtifact<TManifestArtifact>;
     }
-    let manifest: string;
+    let manifest: string | undefined;
     const fileTitle: string =
       options.type === "web3api" ? "web3api" : "web3api." + options.type;
-    try {
-      // try common yaml suffix
-      const path: string = fileTitle + ".yaml";
-      manifest = (await this.getFile(
-        { path, encoding: "utf8" },
-        client
-      )) as string;
-    } catch {
-      // try alternate yaml suffix
-      const path: string = fileTitle + ".yml";
-      manifest = (await this.getFile(
-        { path, encoding: "utf8" },
-        client
-      )) as string;
+
+    const manifestExts = ["json", "yaml", "yml"];
+    for (const ext of manifestExts) {
+      const path = `${fileTitle}.${ext}`;
+      try {
+        manifest = (await this.getFile(
+          { path, encoding: "utf8" },
+          client
+        )) as string;
+        break;
+      } catch (error) {
+        continue;
+      }
+    }
+    if (!manifest) {
+      throw new Error("WasmWeb3Api: Manifest was not found.");
     }
     switch (options.type) {
       case "build":
-        return deserializeBuildManifest(manifest) as AnyManifest<TManifest>;
+        return deserializeBuildManifest(
+          manifest
+        ) as AnyManifestArtifact<TManifestArtifact>;
       case "meta":
-        return deserializeMetaManifest(manifest) as AnyManifest<TManifest>;
+        return deserializeMetaManifest(
+          manifest
+        ) as AnyManifestArtifact<TManifestArtifact>;
       default:
-        return deserializeWeb3ApiManifest(manifest) as AnyManifest<TManifest>;
+        return deserializeWeb3ApiManifest(
+          manifest
+        ) as AnyManifestArtifact<TManifestArtifact>;
     }
   }
 

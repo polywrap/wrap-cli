@@ -943,7 +943,6 @@ describe("Web3ApiClient", () => {
         }
       `,
     });
-
     expect(deploy.errors).toBeFalsy();
     expect(deploy.data).toBeTruthy();
     expect(deploy.data?.deployContract.indexOf("0x")).toBeGreaterThan(-1);
@@ -1048,6 +1047,46 @@ describe("Web3ApiClient", () => {
     expect(getWithUriType.data?.getData).toBe(55);
     expect(getWithUriType.data?.secondGetData).toBe(55);
     expect(getWithUriType.data?.thirdGetData).toBe(55);
+
+    const tryGet = await client.query<{
+      tryGetData: string;
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          tryGetData(
+            address: "${address}"
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
+          )
+        }
+      `,
+    });
+
+    expect(tryGet.errors).toBeFalsy();
+    expect(tryGet.data).toBeTruthy();
+    expect(tryGet.data?.tryGetData).toContain("VM Exception while processing transaction");
+
+    const throwGet = await client.query<{
+      throwGetData: string;
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          throwGetData(
+            address: "${address}"
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
+          )
+        }
+      `,
+    });
+
+    expect(throwGet.data?.throwGetData).toBeFalsy();
+    expect(throwGet.errors).toBeTruthy();
+    expect((throwGet.errors as Error[])[0].message).toContain("VM Exception while processing transaction")
   });
 
   it("object-types", async () => {
@@ -2049,6 +2088,7 @@ describe("Web3ApiClient", () => {
         }
       `,
     });
+
     expect(queryEnv.errors).toBeFalsy();
     expect(queryEnv.data).toBeTruthy();
     expect(queryEnv.data?.queryEnv).toMatchObject({arg1: 10});
@@ -2493,7 +2533,7 @@ describe("Web3ApiClient", () => {
     const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const actualManifestStr: string = readFileSync(
-      `${GetPathToTestApis()}/simple-storage/build/web3api.yaml`,
+      `${GetPathToTestApis()}/simple-storage/build/web3api.json`,
       "utf8"
     );
     const actualManifest: Web3ApiManifest = deserializeWeb3ApiManifest(
@@ -2505,7 +2545,7 @@ describe("Web3ApiClient", () => {
     expect(manifest).toStrictEqual(actualManifest);
 
     const actualBuildManifestStr: string = readFileSync(
-      `${GetPathToTestApis()}/simple-storage/build/web3api.build.yaml`,
+      `${GetPathToTestApis()}/simple-storage/build/web3api.build.json`,
       "utf8"
     );
     const actualBuildManifest: BuildManifest = deserializeBuildManifest(
@@ -2517,7 +2557,7 @@ describe("Web3ApiClient", () => {
     expect(buildManifest).toStrictEqual(actualBuildManifest);
 
     const actualMetaManifestStr: string = readFileSync(
-      `${GetPathToTestApis()}/simple-storage/build/web3api.meta.yaml`,
+      `${GetPathToTestApis()}/simple-storage/build/web3api.meta.json`,
       "utf8"
     );
     const actualMetaManifest: MetaManifest = deserializeMetaManifest(

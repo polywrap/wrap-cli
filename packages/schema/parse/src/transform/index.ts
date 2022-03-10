@@ -9,8 +9,8 @@ import {
   PropertyDefinition,
   ArrayDefinition,
   MethodDefinition,
-  QueryDefinition,
-  ImportedQueryDefinition,
+  ModuleDefinition,
+  ImportedModuleDefinition,
   ImportedObjectDefinition,
   DefinitionKind,
   isKind,
@@ -33,8 +33,8 @@ export * from "./addFirstLast";
 export * from "./interfaceUris";
 export * from "./methodParentPointers";
 export * from "./toGraphQLType";
+export * from "./moduleCapabilities";
 export * from "./addUnionNameToMemberTypes";
-export * from "./queryModuleCapabilities";
 
 export interface TypeInfoTransforms {
   enter?: TypeInfoTransformer;
@@ -55,17 +55,17 @@ export interface TypeInfoTransformer {
   PropertyDefinition?: (def: PropertyDefinition) => PropertyDefinition;
   ArrayDefinition?: (def: ArrayDefinition) => ArrayDefinition;
   MethodDefinition?: (def: MethodDefinition) => MethodDefinition;
-  QueryDefinition?: (def: QueryDefinition) => QueryDefinition;
+  ModuleDefinition?: (def: ModuleDefinition) => ModuleDefinition;
   InterfaceDefinition?: (def: InterfaceDefinition) => InterfaceDefinition;
   ImportedEnumDefinition?: (
     def: ImportedEnumDefinition
   ) => ImportedEnumDefinition;
+  ImportedModuleDefinition?: (
+    def: ImportedModuleDefinition
+  ) => ImportedModuleDefinition;
   ImportedUnionDefinition?: (
     def: ImportedUnionDefinition
   ) => ImportedUnionDefinition;
-  ImportedQueryDefinition?: (
-    def: ImportedQueryDefinition
-  ) => ImportedQueryDefinition;
   ImportedObjectDefinition?: (
     def: ImportedObjectDefinition
   ) => ImportedObjectDefinition;
@@ -110,9 +110,9 @@ export function transformTypeInfo(
     );
   }
 
-  for (let i = 0; i < result.queryTypes.length; ++i) {
-    result.queryTypes[i] = visitQueryDefinition(
-      result.queryTypes[i],
+  for (let i = 0; i < result.moduleTypes.length; ++i) {
+    result.moduleTypes[i] = visitModuleDefinition(
+      result.moduleTypes[i],
       transforms
     );
   }
@@ -124,9 +124,9 @@ export function transformTypeInfo(
     );
   }
 
-  for (let i = 0; i < result.importedQueryTypes.length; ++i) {
-    result.importedQueryTypes[i] = visitImportedQueryDefinition(
-      result.importedQueryTypes[i],
+  for (let i = 0; i < result.importedModuleTypes.length; ++i) {
+    result.importedModuleTypes[i] = visitImportedModuleDefinition(
+      result.importedModuleTypes[i],
       transforms
     );
   }
@@ -164,7 +164,6 @@ export function visitObjectDefinition(
 ): ObjectDefinition {
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
-  console.log(def)
 
   for (let i = 0; i < result.properties.length; ++i) {
     result.properties[i] = visitPropertyDefinition(
@@ -273,7 +272,6 @@ export function visitUnionRef(
   def: UnionRef,
   transforms: TypeInfoTransforms
 ): UnionRef {
-  console.log(def)
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
   return transformType(result, transforms.leave);
@@ -329,10 +327,10 @@ export function visitMethodDefinition(
   return transformType(result, transforms.leave);
 }
 
-export function visitQueryDefinition(
-  def: QueryDefinition,
+export function visitModuleDefinition(
+  def: ModuleDefinition,
   transforms: TypeInfoTransforms
-): QueryDefinition {
+): ModuleDefinition {
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
 
@@ -352,10 +350,10 @@ export function visitInterfaceDefinition(
   return transformType(result, transforms.leave);
 }
 
-export function visitImportedQueryDefinition(
-  def: ImportedQueryDefinition,
+export function visitImportedModuleDefinition(
+  def: ImportedModuleDefinition,
   transforms: TypeInfoTransforms
-): ImportedQueryDefinition {
+): ImportedModuleDefinition {
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
 
@@ -427,11 +425,11 @@ export function transformType<TDefinition extends WithKind>(
     ArrayDefinition,
     PropertyDefinition,
     MethodDefinition,
-    QueryDefinition,
+    ModuleDefinition,
     InterfaceDefinition,
     ImportedEnumDefinition,
+    ImportedModuleDefinition,
     ImportedUnionDefinition,
-    ImportedQueryDefinition,
     ImportedObjectDefinition,
     InterfaceImplementedDefinition,
     EnvDefinition,
@@ -473,14 +471,17 @@ export function transformType<TDefinition extends WithKind>(
   if (MethodDefinition && isKind(result, DefinitionKind.Method)) {
     result = Object.assign(result, MethodDefinition(result as any));
   }
-  if (QueryDefinition && isKind(result, DefinitionKind.Query)) {
-    result = Object.assign(result, QueryDefinition(result as any));
+  if (ModuleDefinition && isKind(result, DefinitionKind.Module)) {
+    result = Object.assign(result, ModuleDefinition(result as any));
   }
   if (InterfaceDefinition && isKind(result, DefinitionKind.Interface)) {
     result = Object.assign(result, InterfaceDefinition(result as any));
   }
-  if (ImportedQueryDefinition && isKind(result, DefinitionKind.ImportedQuery)) {
-    result = Object.assign(result, ImportedQueryDefinition(result as any));
+  if (
+    ImportedModuleDefinition &&
+    isKind(result, DefinitionKind.ImportedModule)
+  ) {
+    result = Object.assign(result, ImportedModuleDefinition(result as any));
   }
   if (ImportedEnumDefinition && isKind(result, DefinitionKind.ImportedEnum)) {
     result = Object.assign(result, ImportedEnumDefinition(result as any));

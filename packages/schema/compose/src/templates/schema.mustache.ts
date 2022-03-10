@@ -1,6 +1,6 @@
 const template = `
 {{#typeInfo}}
-{{#queryTypes}}{{#comment}}
+{{#moduleTypes}}{{#comment}}
 """
 {{comment}}
 """
@@ -36,7 +36,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
   {{/methods}}
 }{{/methods.length}}
 
-{{/queryTypes}}
+{{/moduleTypes}}
 {{#envTypes.query.client}}{{#comment}}
 """
 {{comment}}
@@ -144,7 +144,7 @@ union {{type}} =
 {{/unionTypes}}
 ### Imported Queries START ###
 
-{{#importedQueryTypes}}{{#comment}}
+{{#importedModuleTypes}}{{#comment}}
 """
 {{comment}}
 """
@@ -174,7 +174,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
   {{/methods}}
 }{{/methods.length}}
 
-{{/importedQueryTypes}}
+{{/importedModuleTypes}}
 ### Imported Queries END ###
 
 ### Imported Objects START ###

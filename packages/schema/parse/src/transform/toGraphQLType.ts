@@ -93,9 +93,9 @@ function toGraphQL(def: GenericDefinition, prefixed = false): string {
 ): ${toGraphQL(method.return, prefixed)}`;
       return result;
     }
-    case DefinitionKind.Query:
+    case DefinitionKind.Module:
       return def.type;
-    case DefinitionKind.ImportedQuery:
+    case DefinitionKind.ImportedModule:
       return def.type;
     default:
       throw Error(

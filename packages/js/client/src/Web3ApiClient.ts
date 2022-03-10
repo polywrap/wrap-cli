@@ -1,6 +1,4 @@
 import { getDefaultClientConfig } from "./default-client-config";
-import { PluginWeb3Api } from "./plugin/PluginWeb3Api";
-import { WasmWeb3Api } from "./wasm";
 
 import { v4 as uuid } from "uuid";
 import {
@@ -9,21 +7,18 @@ import {
   Client,
   InvokeApiOptions,
   InvokeApiResult,
-  PluginPackage,
   QueryApiOptions,
   QueryApiResult,
   Uri,
   UriRedirect,
   InterfaceImplementations,
   PluginRegistration,
-  Web3ApiManifest,
   Env,
   Subscription,
   SubscribeOptions,
   parseQuery,
-  resolveUri,
-  AnyManifest,
-  ManifestType,
+  AnyManifestArtifact,
+  ManifestArtifactType,
   GetRedirectsOptions,
   GetPluginsOptions,
   GetInterfacesOptions,
@@ -39,6 +34,14 @@ import {
   sanitizeUriRedirects,
   sanitizeEnvs,
   ClientConfig,
+  ResolveUriError,
+  UriResolutionHistory,
+  resolveUri,
+  UriToApiResolver,
+  GetResolversOptions,
+  CacheResolver,
+  Contextualized,
+  ResolveUriOptions,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
@@ -58,6 +61,7 @@ export class Web3ApiClient implements Client {
     plugins: [],
     interfaces: [],
     envs: [],
+    resolvers: [],
     tracingEnabled: false,
   };
 
@@ -85,6 +89,7 @@ export class Web3ApiClient implements Client {
           interfaces: config.interfaces
             ? sanitizeInterfaceImplementations(config.interfaces)
             : [],
+          resolvers: config.resolvers ?? [],
           tracingEnabled: !!config.tracingEnabled,
         };
       }
@@ -139,6 +144,13 @@ export class Web3ApiClient implements Client {
     return this._getConfig(options.contextId).envs;
   }
 
+  @Tracer.traceMethod("Web3ApiClient: getResolvers")
+  public getResolvers(
+    options: GetResolversOptions = {}
+  ): readonly UriToApiResolver[] {
+    return this._getConfig(options.contextId).resolvers;
+  }
+
   @Tracer.traceMethod("Web3ApiClient: getEnvByUri")
   public getEnvByUri<TUri extends Uri | string>(
     uri: TUri,
@@ -156,7 +168,7 @@ export class Web3ApiClient implements Client {
     uri: TUri,
     options: GetSchemaOptions = {}
   ): Promise<string> {
-    const api = await this._loadWeb3Api(this._toUri(uri), options.contextId);
+    const api = await this._loadWeb3Api(this._toUri(uri), options);
     const client = contextualizeClient(this, options.contextId);
     return await api.getSchema(client);
   }
@@ -164,12 +176,12 @@ export class Web3ApiClient implements Client {
   @Tracer.traceMethod("Web3ApiClient: getManifest")
   public async getManifest<
     TUri extends Uri | string,
-    TManifestType extends ManifestType
+    TManifestArtifactType extends ManifestArtifactType
   >(
     uri: TUri,
-    options: GetManifestOptions<TManifestType>
-  ): Promise<AnyManifest<TManifestType>> {
-    const api = await this._loadWeb3Api(this._toUri(uri), options.contextId);
+    options: GetManifestOptions<TManifestArtifactType>
+  ): Promise<AnyManifestArtifact<TManifestArtifactType>> {
+    const api = await this._loadWeb3Api(this._toUri(uri), options);
     const client = contextualizeClient(this, options.contextId);
     return await api.getManifest(options, client);
   }
@@ -179,7 +191,7 @@ export class Web3ApiClient implements Client {
     uri: TUri,
     options: GetFileOptions
   ): Promise<string | ArrayBuffer> {
-    const api = await this._loadWeb3Api(this._toUri(uri), options.contextId);
+    const api = await this._loadWeb3Api(this._toUri(uri), options);
     const client = contextualizeClient(this, options.contextId);
     return await api.getFile(options, client);
   }
@@ -306,7 +318,7 @@ export class Web3ApiClient implements Client {
         uri: this._toUri(options.uri),
       };
 
-      const api = await this._loadWeb3Api(typedOptions.uri, contextId);
+      const api = await this._loadWeb3Api(typedOptions.uri, { contextId });
 
       result = (await api.invoke(
         typedOptions,
@@ -419,6 +431,61 @@ export class Web3ApiClient implements Client {
     return subscription;
   }
 
+  @Tracer.traceMethod("Web3ApiClient: resolveUri")
+  public async resolveUri<TUri extends Uri | string>(
+    uri: TUri,
+    options?: ResolveUriOptions<ClientConfig>
+  ): Promise<{
+    api?: Api;
+    uri?: Uri;
+    uriHistory: UriResolutionHistory;
+    error?: ResolveUriError;
+  }> {
+    options = options || {};
+
+    const { contextId, shouldClearContext } = this._setContext(
+      options.contextId,
+      options.config
+    );
+
+    const ignoreCache = this._isContextualized(contextId);
+    const cacheWrite = !ignoreCache && !options?.noCacheWrite;
+    const cacheRead = !ignoreCache && !options?.noCacheRead;
+
+    const client = contextualizeClient(this, contextId);
+
+    let resolvers = this.getResolvers({ contextId: contextId });
+
+    if (!cacheRead) {
+      resolvers = resolvers.filter((x) => x.name !== CacheResolver.name);
+    }
+
+    const { api, uri: resolvedUri, uriHistory, error } = await resolveUri(
+      this._toUri(uri),
+      resolvers,
+      client,
+      this._apiCache
+    );
+
+    // Update cache for all URIs in the chain
+    if (cacheWrite && api) {
+      for (const item of uriHistory.getResolutionPath().stack) {
+        this._apiCache.set(item.sourceUri.uri, api);
+      }
+    }
+
+    if (shouldClearContext) {
+      this._clearContext(contextId);
+    }
+
+    return {
+      api,
+      uri: resolvedUri,
+      uriHistory,
+      error,
+    };
+  }
+
   private _addDefaultConfig() {
     const defaultClientConfig = getDefaultClientConfig();
 
@@ -432,6 +499,10 @@ export class Web3ApiClient implements Client {
 
     if (defaultClientConfig.interfaces) {
       this._config.interfaces.push(...defaultClientConfig.interfaces);
+    }
+
+    if (defaultClientConfig.resolvers) {
+      this._config.resolvers.push(...defaultClientConfig.resolvers);
     }
   }
 
@@ -518,6 +589,7 @@ export class Web3ApiClient implements Client {
         ? sanitizeInterfaceImplementations(context.interfaces)
         : config.interfaces,
       envs: context?.envs ? sanitizeEnvs(context.envs) : config.envs,
+      resolvers: context?.resolvers ?? config.resolvers,
       tracingEnabled: context?.tracingEnabled || config.tracingEnabled,
     });
 
@@ -535,40 +607,26 @@ export class Web3ApiClient implements Client {
   }
 
   @Tracer.traceMethod("Web3ApiClient: _loadWeb3Api")
-  private async _loadWeb3Api(
-    uri: Uri,
-    contextId: string | undefined
-  ): Promise<Api> {
-    const typedUri = typeof uri === "string" ? new Uri(uri) : uri;
-    const ignoreCache = this._isContextualized(contextId);
-    let api = ignoreCache ? undefined : this._apiCache.get(uri.uri);
+  private async _loadWeb3Api(uri: Uri, options?: Contextualized): Promise<Api> {
+    const { api, uriHistory, error } = await this.resolveUri(uri, {
+      contextId: options?.contextId,
+    });
 
     if (!api) {
-      const client = contextualizeClient(this, contextId);
-      const config = this._getConfig(contextId);
-      const environment = this.getEnvByUri(typedUri, { contextId });
-      api = await resolveUri(
-        typedUri,
-        config.redirects,
-        config.plugins,
-        config.interfaces,
-        <TData = unknown, TUri extends Uri | string = string>(
-          options: InvokeApiOptions<TUri>
-        ): Promise<InvokeApiResult<TData>> =>
-          client.invoke<TData, TUri>(options),
-        (uri: Uri, plugin: PluginPackage) =>
-          new PluginWeb3Api(uri, plugin, environment),
-        (uri: Uri, manifest: Web3ApiManifest, uriResolver: Uri) =>
-          new WasmWeb3Api(uri, manifest, uriResolver, environment)
+      if (error && error === ResolveUriError.InfiniteLoop) {
+        throw Error(
+          `Infinite loop while resolving URI "${uri}".\nResolution Stack: ${JSON.stringify(
+            uriHistory,
+            null,
+            2
+          )}`
+        );
+      }
+
+      throw Error(
+        `No Web3API found at URI: ${uri.uri}` +
+          `\nResolution history: ${JSON.stringify(uriHistory, null, 2)}`
       );
-
-      if (!api) {
-        throw Error(`Unable to resolve Web3API at uri: ${typedUri}`);
-      }
-
-      if (!ignoreCache) {
-        this._apiCache.set(typedUri.uri, api);
-      }
     }
 
     return api;
@@ -616,6 +674,9 @@ const contextualizeClient = (
         getEnvs: (options: GetEnvsOptions = {}) => {
           return client.getEnvs({ ...options, contextId });
         },
+        getResolvers: (options: GetResolversOptions = {}) => {
+          return client.getResolvers({ ...options, contextId });
+        },
         getEnvByUri: <TUri extends Uri | string>(
           uri: TUri,
           options: GetEnvsOptions = {}
@@ -630,10 +691,10 @@ const contextualizeClient = (
         },
         getManifest: <
           TUri extends Uri | string,
-          TManifestType extends ManifestType
+          TManifestArtifactType extends ManifestArtifactType
         >(
           uri: TUri,
-          options: GetManifestOptions<TManifestType>
+          options: GetManifestOptions<TManifestArtifactType>
         ) => {
           return client.getManifest(uri, { ...options, contextId });
         },
@@ -648,6 +709,17 @@ const contextualizeClient = (
           options: GetImplementationsOptions = {}
         ) => {
           return client.getImplementations(uri, { ...options, contextId });
+        },
+        resolveUri: <TUri extends Uri | string>(
+          uri: TUri,
+          options?: ResolveUriOptions<ClientConfig>
+        ): Promise<{
+          api?: Api;
+          uri?: Uri;
+          uriHistory: UriResolutionHistory;
+          error?: ResolveUriError;
+        }> => {
+          return client.resolveUri(uri, { ...options, contextId });
         },
       }
     : client;

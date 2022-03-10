@@ -45,21 +45,31 @@ export function readCustomUnion(reader: Read): CustomUnion {
   let AnotherObject: Types.AnotherObject | null = null;
   let YetAnotherObject: Types.YetAnotherObject | null = null;
 
-  let actualUnionType: string;
+  let unionMemberTypes = [
+    "AnotherObject",
+    "YetAnotherObject",
+  ]
+
+  let unionMemberType: string;
 
   while (numFields > 0) {
     numFields--;
     const field = reader.readString();
 
     if(field == "type") {
-      reader.context().push(field, "String", "type found, reading property");
-      actualUnionType = reader.readString();
+      reader.context().push(field, "String", "union member type declaration found, reading property");
+      unionMemberType = reader.readString();
+
+      if(!unionMemberTypes.includes(unionMemberType)) {
+        throw new Error(`Found invalid union member type '${unionMemberType}' for union 'CustomUnion'. Valid member types: ${unionMemberTypes.join(", ")}`)
+      }
+
       reader.context().pop();
     }
 
     if(field == "value") {
-      if (actualUnionType == "AnotherObject") {
-        reader.context().push(field, "Types.AnotherObject | null", "type found, reading property");
+      if (unionMemberType == "AnotherObject") {
+        reader.context().push(field, "Types.AnotherObject | null", "value for union member type 'AnotherObject' found, reading property");
 
         if (!reader.isNextNil()) {
           AnotherObject = Types.AnotherObject.read(reader);
@@ -67,8 +77,8 @@ export function readCustomUnion(reader: Read): CustomUnion {
 
         reader.context().pop();
       }
-      else if (actualUnionType == "YetAnotherObject") {
-        reader.context().push(field, "Types.YetAnotherObject | null", "type found, reading property");
+      else if (unionMemberType == "YetAnotherObject") {
+        reader.context().push(field, "Types.YetAnotherObject | null", "value for union member type 'YetAnotherObject' found, reading property");
 
         if (!reader.isNextNil()) {
           YetAnotherObject = Types.YetAnotherObject.read(reader);

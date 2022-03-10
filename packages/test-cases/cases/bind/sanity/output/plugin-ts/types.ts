@@ -88,6 +88,14 @@ export interface YetAnotherObject {
   prop: Boolean;
 }
 
+export interface AnotherObject {
+  prop: String;
+}
+
+export interface YetAnotherObject {
+  prop: Boolean;
+}
+
 export enum CustomEnumEnum {
   STRING,
   BYTES,

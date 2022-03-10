@@ -86,9 +86,9 @@ type QueryEnv {
 }
 
 """
-CustomQueryType comment
+CustomModuleType comment
 """
-type CustomQueryType {
+type CustomModuleType {
   str: String!
   optStr: String
   u: UInt!
@@ -108,7 +108,12 @@ type CustomQueryType {
   customType: Namespace_CustomType!
 }
 
-type AnotherQueryType {
+type AnotherModuleType {
+  prop: String
+}
+
+type TypeFromInterface implements AnotherModuleType {
+  prop2: UInt32!
   prop: String
 }
 
