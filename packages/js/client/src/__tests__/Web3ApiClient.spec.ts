@@ -1601,6 +1601,50 @@ describe("Web3ApiClient", () => {
       prop: "test"
     }
 
+    const argMethodErr = await client.query<any>({
+      uri: ensUri,
+      query: `
+        query {
+          argMethod(
+            arg: {
+              type: ArgUnionC,
+              value: $argUnionA
+            }
+          )
+        }
+      `,
+      variables: {
+        argUnionA
+      }
+    });
+
+    expect((argMethodErr.errors as Error[])[0].message).toMatch(
+      /__w3_abort: Found invalid union member type 'ArgUnionC' for union 'ArgUnion'. Valid member types: ArgUnionA, ArgUnionB/gm
+    );
+
+    const argMethodErr2 = await client.query<any>({
+      uri: ensUri,
+      query: `
+        query {
+          argMethod(
+            arg: {
+              type: ArgUnionA,
+              value: $argUnionA
+            }
+          )
+        }
+      `,
+      variables: {
+        argUnionA: {
+          propD: "test"
+        }
+      }
+    });
+
+    expect((argMethodErr2.errors as Error[])[0].message).toMatch(
+      /__w3_abort: __w3_abort: Missing required property: 'prop: String'/gm
+    );
+
     const argMethoda = await client.query<any>({
       uri: ensUri,
       query: `

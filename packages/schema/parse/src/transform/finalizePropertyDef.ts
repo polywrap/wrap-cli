@@ -129,7 +129,7 @@ function resolveObjectOrUnionOrEnumKind(
     ? envTypes.query.sanitized
     : undefined;
 
-  if(!customType) {
+  if (!customType) {
     const objectType = typeInfo.objectTypes.find(
       (type) => type.type === property.unresolvedObjectOrUnionOrEnum!.type
     );

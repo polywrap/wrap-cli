@@ -296,7 +296,7 @@ const extractObjectImportDependencies = (
 
     // if(obj.name === "NestedType") {
     //   console.log(obj)
-    // } 
+    // }
 
     // Create the new ImportedObjectDefinition
     return {
@@ -426,16 +426,15 @@ const extractObjectImportDependencies = (
             DefinitionKind.ImportedUnion
           ) as ImportedUnionDefinition;
 
-          //Import memberTypes's types (they are all object refs)
-          importFound.memberTypes = importFound.memberTypes?.map(
-            (memberType: GenericDefinition) => {
+          // Import memberTypes's types (they are all object refs)
+          importFound.memberTypes =
+            importFound.memberTypes?.map((memberType: GenericDefinition) => {
               ObjectRefVisit(memberType);
 
               // Namespace memberType refs
               memberType.type = appendNamespace(namespace, memberType.type);
               return memberType;
-            }
-          ) || null;
+            }) || null;
 
           importsFound[importFound.type] = importFound;
         }
@@ -781,7 +780,9 @@ async function resolveExternalImports(
           extTypeInfo.unionTypes.findIndex((def) => def.type === importedType);
         const impUnionIdx =
           unionIdx === -1 &&
-          extTypeInfo.importedUnionTypes.findIndex((def) => def.type === importedType);
+          extTypeInfo.importedUnionTypes.findIndex(
+            (def) => def.type === importedType
+          );
 
         if (objIdx > -1) {
           extTypes = extTypeInfo.objectTypes;
@@ -842,7 +843,7 @@ async function resolveExternalImports(
             namespace,
           });
         } else if (unionIdx !== false && unionIdx > -1) {
-          //If union
+          // If union
           extTypes = extTypeInfo.unionTypes;
           visitorFunc = visitUnionDefinition;
           const type = extTypeInfo.unionTypes[unionIdx];
@@ -858,7 +859,7 @@ async function resolveExternalImports(
             namespace,
           });
         } else if (impUnionIdx !== false && impUnionIdx > -1) {
-          //If imported union
+          // If imported union
           extTypes = extTypeInfo.importedUnionTypes;
           visitorFunc = visitUnionDefinition;
 
@@ -1086,7 +1087,7 @@ async function resolveLocalImports(
       ) => {
         // Skip objects that we've already processed
         if (typesToImport[def.type]) {
-          return typesToImport[def.type]
+          return typesToImport[def.type];
         }
 
         // Find the ObjectDefinition
@@ -1095,14 +1096,17 @@ async function resolveLocalImports(
         if (idx === -1) {
           throw Error(
             `resolveLocalImports: Cannot find the requested type within the TypeInfo.\n` +
-            `Type: ${def.type}\nTypeInfo: ${JSON.stringify(localTypeInfo)}`
+              `Type: ${def.type}\nTypeInfo: ${JSON.stringify(localTypeInfo)}`
           );
         }
 
         const objectDefinition = rootTypes[idx];
 
         if (!visitedTypes[objectDefinition.type]) {
-          if (objectDefinition.kind !== DefinitionKind.Enum && objectDefinition.kind !== DefinitionKind.Union) {
+          if (
+            objectDefinition.kind !== DefinitionKind.Enum &&
+            objectDefinition.kind !== DefinitionKind.Union
+          ) {
             visitedTypes[objectDefinition.type] = true;
             visitType(objectDefinition);
           }
@@ -1142,7 +1146,7 @@ async function resolveLocalImports(
                 ...localTypeInfo.importedUnionTypes,
               ]) as UnionDefinition;
 
-              //Import union's memberTypes
+              // Import union's memberTypes
               foundImport.memberTypes?.forEach(
                 (memberType: GenericDefinition) => {
                   return findImport(memberType, localTypeInfo.objectTypes);
@@ -1206,9 +1210,13 @@ async function resolveLocalImports(
         ) {
           typeInfo.enumTypes.push(typesToImport[importType] as EnumDefinition);
         }
-      } else if (isKind(typesToImport[importType], DefinitionKind.ImportedUnion)) {
+      } else if (
+        isKind(typesToImport[importType], DefinitionKind.ImportedUnion)
+      ) {
         if (
-          typeInfo.importedUnionTypes.findIndex((def) => def.type === importType) === -1
+          typeInfo.importedUnionTypes.findIndex(
+            (def) => def.type === importType
+          ) === -1
         ) {
           typeInfo.importedUnionTypes.push(
             typesToImport[importType] as ImportedUnionDefinition

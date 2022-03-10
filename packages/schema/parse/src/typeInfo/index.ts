@@ -163,7 +163,7 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
     for (const importedUnionType of typeInfo.importedUnionTypes) {
       tryInsert(combined.importedUnionTypes, importedUnionType);
     }
-    
+
     if (typeInfo.envTypes.query.client) {
       combined.envTypes.query.client = typeInfo.envTypes.query.client;
     }

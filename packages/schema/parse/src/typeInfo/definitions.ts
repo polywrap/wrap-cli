@@ -569,7 +569,7 @@ export function createImportedUnionDefinition(args: {
     nativeType: args.nativeType,
     comment: args.comment,
     kind: DefinitionKind.ImportedUnion,
-  }
+  };
 }
 
 export interface EnvDefinition extends WithKind {
