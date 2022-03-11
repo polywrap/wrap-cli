@@ -15,7 +15,7 @@ const pathStr = intlMsg.commands_create_options_o_path();
 
 export const supportedLangs: { [key: string]: string[] } = {
   api: ["assemblyscript", "interface"],
-  app: ["react"],
+  app: ["typescript-node", "typescript-react"],
   plugin: ["typescript"],
 };
 
