@@ -1087,7 +1087,7 @@ async function resolveLocalImports(
       ) => {
         // Skip objects that we've already processed
         if (typesToImport[def.type]) {
-          return typesToImport[def.type];
+          return def;
         }
 
         // Find the ObjectDefinition
@@ -1112,15 +1112,13 @@ async function resolveLocalImports(
           }
         }
 
-        const foundImport = rootTypes[idx];
-
         typesToImport[def.type] = {
-          ...foundImport,
+          ...objectDefinition,
           name: null,
           required: null,
         };
 
-        return foundImport;
+        return def;
       };
 
       const visitedTypes: Record<string, boolean> = {};
@@ -1168,6 +1166,7 @@ async function resolveLocalImports(
       };
 
       visitedTypes[type.type] = true;
+
       visitType(type);
     }
 

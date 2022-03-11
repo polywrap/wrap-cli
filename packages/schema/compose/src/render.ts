@@ -16,6 +16,7 @@ Mustache.escape = (value) => value;
 
 export function renderSchema(typeInfo: TypeInfo, header: boolean): string {
   // Prepare the TypeInfo for the renderer
+
   typeInfo = transformTypeInfo(typeInfo, addFirstLast);
   typeInfo = transformTypeInfo(typeInfo, toGraphQLType);
   typeInfo = transformTypeInfo(typeInfo, setMemberTypeParentUnionNames);
@@ -24,7 +25,6 @@ export function renderSchema(typeInfo: TypeInfo, header: boolean): string {
   let schema = Mustache.render(schemaTemplate, {
     typeInfo,
   });
-
   if (header) {
     schema = addHeader(schema);
   }

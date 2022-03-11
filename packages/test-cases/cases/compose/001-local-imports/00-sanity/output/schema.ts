@@ -15,6 +15,7 @@ import {
   createTypeInfo,
   createUnionDefinition,
   TypeInfo,
+  GenericDefinition,
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
@@ -355,12 +356,20 @@ export const typeInfo: TypeInfo = {
     createUnionDefinition({
       type: "CommonUnion",
       memberTypes: [
-        createObjectRef({
-          type: "NestedType"
-        }),
-        createObjectRef({
-          type: "ArrayObject"
-        })
+        {
+          ...createObjectRef({
+            type: "NestedType",
+          }),
+          first: true,
+          last: null 
+        } as GenericDefinition,
+        {
+          ...createObjectRef({
+            type: "ArrayObject"
+          }),
+          first: null,
+          last: true 
+        } as GenericDefinition
       ]
     })
   ]
