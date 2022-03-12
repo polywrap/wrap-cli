@@ -17,8 +17,8 @@ import {
   Subscription,
   SubscribeOptions,
   parseQuery,
-  AnyManifest,
-  ManifestType,
+  AnyManifestArtifact,
+  ManifestArtifactType,
   GetRedirectsOptions,
   GetPluginsOptions,
   GetInterfacesOptions,
@@ -176,11 +176,11 @@ export class Web3ApiClient implements Client {
   @Tracer.traceMethod("Web3ApiClient: getManifest")
   public async getManifest<
     TUri extends Uri | string,
-    TManifestType extends ManifestType
+    TManifestArtifactType extends ManifestArtifactType
   >(
     uri: TUri,
-    options: GetManifestOptions<TManifestType>
-  ): Promise<AnyManifest<TManifestType>> {
+    options: GetManifestOptions<TManifestArtifactType>
+  ): Promise<AnyManifestArtifact<TManifestArtifactType>> {
     const api = await this._loadWeb3Api(this._toUri(uri), options);
     const client = contextualizeClient(this, options.contextId);
     return await api.getManifest(options, client);
@@ -691,10 +691,10 @@ const contextualizeClient = (
         },
         getManifest: <
           TUri extends Uri | string,
-          TManifestType extends ManifestType
+          TManifestArtifactType extends ManifestArtifactType
         >(
           uri: TUri,
-          options: GetManifestOptions<TManifestType>
+          options: GetManifestOptions<TManifestArtifactType>
         ) => {
           return client.getManifest(uri, { ...options, contextId });
         },

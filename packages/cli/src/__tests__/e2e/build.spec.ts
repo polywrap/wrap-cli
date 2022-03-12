@@ -3,14 +3,14 @@ import { clearStyle, w3Cli } from "./utils";
 import { runCLI } from "@web3api/test-env-js";
 import fs from "fs";
 import path from "path";
-import { Web3ApiProject } from "../../lib";
-import { loadBuildManifest } from "../../lib/helpers";
+import { Web3ApiProject, loadBuildManifest } from "../../lib";
 
 const HELP = `
-w3 build [options] [<web3api-manifest>]
+w3 build [options]
 
 Options:
   -h, --help                         Show usage information
+  -m, --manifest-file <path>         Path to the Web3API Build manifest file (default: web3api.yaml | web3api.yml)
   -i, --ipfs [<node>]                Upload build results to an IPFS node (default: dev-server's node)
   -o, --output-dir <path>            Output directory for build results (default: build/)
   -e, --test-ens <[address,]domain>  Publish the package to a test ENS domain locally (requires --ipfs)
@@ -45,7 +45,7 @@ describe("e2e tests for build command", () => {
       },
     );
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output))
       .toEqual(`--output-dir option missing <path> argument
@@ -61,7 +61,7 @@ ${HELP}`);
       },
     );
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output))
       .toEqual(`--test-ens option missing <[address,]domain> argument
@@ -77,7 +77,7 @@ ${HELP}`);
       },
     );
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output))
       .toEqual(`--test-ens option requires the --ipfs [<node>] option
@@ -87,7 +87,7 @@ ${HELP}`);
   test("Should throw error for invalid web3api - invalid route", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["build", "invalid-web3api-1.yaml"],
+        args: ["build", "--manifest-file", "invalid-web3api-1.yaml"],
         cwd: projectRoot,
         cli: w3Cli,
       },
@@ -107,7 +107,7 @@ ${HELP}`);
   test("Should throw error for invalid web3api - invalid field", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["build", "invalid-web3api-2.yaml"],
+        args: ["build", "-m", "invalid-web3api-2.yaml"],
         cwd: projectRoot,
         cli: w3Cli,
       },
@@ -145,12 +145,13 @@ ${HELP}`);
 
   test("Adds uuid-v4 suffix to build-env image if no build manifest specified", async () => {
     const project = new Web3ApiProject({
+      rootCacheDir: projectRoot,
       web3apiManifestPath: path.join(projectRoot, "web3api.nobuild.yaml")
     });
 
     await project.cacheDefaultBuildManifestFiles();
 
-    const cacheBuildEnvPath = path.join(projectRoot, ".w3/build/env")
+    const cacheBuildEnvPath = path.join(projectRoot, ".w3/web3api/build/env")
     const cachedBuildManifest = await loadBuildManifest(
       path.join(cacheBuildEnvPath, "web3api.build.yaml")
     );
@@ -164,7 +165,7 @@ ${HELP}`);
   test("Successfully builds project w/ web3api.build.yaml but no dockerfile", async () => {
     const { exitCode: code, stdout: output } = await runCLI(
       {
-        args: ["build", "web3api.no-docker.yaml", "-v"],
+        args: ["build", "-m", "web3api.no-docker.yaml", "-v"],
         cwd: projectRoot,
         cli: w3Cli,
       },
@@ -186,7 +187,7 @@ ${HELP}`);
   test("Successfully builds project w/ web3api.build.yaml and linked packages", async () => {
     const { exitCode: code, stdout: output } = await runCLI(
       {
-        args: ["build", "web3api.linked-packages.yaml", "-v"],
+        args: ["build", "-m", "web3api.linked-packages.yaml", "-v"],
         cwd: projectRoot,
         cli: w3Cli,
       },
@@ -208,7 +209,7 @@ ${HELP}`);
   test("Successfully builds project w/ dockerfile", async () => {
     const { exitCode: code, stdout: output } = await runCLI(
       {
-        args: ["build", "web3api.docker.yaml", "-v"],
+        args: ["build", "-m", "web3api.docker.yaml", "-v"],
         cwd: projectRoot,
         cli: w3Cli,
       },
@@ -229,7 +230,7 @@ ${HELP}`);
 
   test("Successfully builds project w/ metadata", async () => {
     const { exitCode: code, stdout: output } = await runCLI({
-      args: ["build", "web3api-meta.yaml", "-v"],
+      args: ["build", "-m", "web3api-meta.yaml", "-v"],
       cwd: projectRoot,
       cli: w3Cli,
     });

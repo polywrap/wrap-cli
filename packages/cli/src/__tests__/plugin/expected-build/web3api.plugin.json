@@ -1,1 +1,5 @@
-{"format":"0.0.1-prealpha.1","language":"plugin/typescript","schema":"./schema.graphql"}
+{
+  "format": "0.0.1-prealpha.1",
+  "language": "plugin/typescript",
+  "schema": "./schema.graphql"
+}

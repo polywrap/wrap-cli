@@ -1,0 +1,6 @@
+format: 0.0.1-prealpha.1
+language: app/typescript
+schema: ./web3api.app.withPlugin.graphql
+import_redirects:
+    - uri: "w3://ens/http.web3api.eth"
+      schema: "./../../../../js/plugins/http/build/schema.graphql"

@@ -1,0 +1,2 @@
+#import * into HelloWorld from "ens/helloworld.web3api.eth"
+#import * into Ethereum from "ens/ethereum.web3api.eth"

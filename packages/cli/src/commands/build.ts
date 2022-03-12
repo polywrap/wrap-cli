@@ -6,29 +6,37 @@ import {
   Watcher,
   WatchEvent,
   watchEventName,
+  publishToIPFS,
+  intlMsg,
+  getDockerFileLock,
+  defaultWeb3ApiManifest,
+  resolvePathIfExists,
+  getTestEnvProviders,
+  isDockerInstalled,
 } from "../lib";
-import { fixParameters } from "../lib/helpers/parameters";
-import { publishToIPFS } from "../lib/publishers/ipfs-publisher";
-import { intlMsg } from "../lib/intl";
-import { SharedMiddlewareState } from "../lib/middleware";
 
 import chalk from "chalk";
 import axios from "axios";
+import path from "path";
 import readline from "readline";
-import { GluegunToolbox } from "gluegun";
+import { GluegunToolbox, GluegunPrint } from "gluegun";
 
+const defaultManifestStr = defaultWeb3ApiManifest.join(" | ");
+const defaultOutputDirectory = "./build";
 const optionsStr = intlMsg.commands_build_options_options();
-const manStr = intlMsg.commands_build_options_manifest();
 const nodeStr = intlMsg.commands_build_options_i_node();
 const pathStr = intlMsg.commands_build_options_o_path();
 const addrStr = intlMsg.commands_build_options_e_address();
 const domStr = intlMsg.commands_build_options_e_domain();
 
 const HELP = `
-${chalk.bold("w3 build")} [${optionsStr}] ${chalk.bold(`[<web3api-${manStr}>]`)}
+${chalk.bold("w3 build")} [${optionsStr}]
 
 ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
   -h, --help                         ${intlMsg.commands_build_options_h()}
+  -m, --manifest-file <${pathStr}>         ${intlMsg.commands_build_options_m({
+  default: defaultManifestStr,
+})}
   -i, --ipfs [<${nodeStr}>]                ${intlMsg.commands_build_options_i()}
   -o, --output-dir <${pathStr}>            ${intlMsg.commands_build_options_o()}
   -e, --test-ens <[${addrStr},]${domStr}>  ${intlMsg.commands_build_options_e()}
@@ -40,99 +48,71 @@ export default {
   alias: ["b"],
   description: intlMsg.commands_build_description(),
   run: async (toolbox: GluegunToolbox): Promise<void> => {
-    const { filesystem, parameters, print, middleware } = toolbox;
+    const { filesystem, parameters, print } = toolbox;
 
-    const { h, i, o, w, e, v } = parameters.options;
-    let { help, ipfs, outputDir, watch, testEns, verbose } = parameters.options;
+    // Options
+    const { h, m, i, o, w, e, v } = parameters.options;
+    let {
+      help,
+      manifestFile,
+      ipfs,
+      outputDir,
+      watch,
+      testEns,
+      verbose,
+    } = parameters.options;
 
     help = help || h;
+    manifestFile = manifestFile || m;
     ipfs = ipfs || i;
     outputDir = outputDir || o;
     watch = watch || w;
     testEns = testEns || e;
     verbose = verbose || v;
 
-    let manifestPath;
-    try {
-      const params = toolbox.parameters;
-      [manifestPath] = fixParameters(
-        {
-          options: params.options,
-          array: params.array,
-        },
-        {
-          h,
-          help,
-          w,
-          watch,
-          v,
-          verbose,
-        }
-      );
-    } catch (e) {
-      print.error(e.message);
-      process.exitCode = 1;
-      return;
-    }
+    // Validate Params
+    const paramsValid = validateBuildParams(
+      print,
+      manifestFile,
+      outputDir,
+      testEns,
+      ipfs
+    );
 
-    if (help) {
+    if (help || !paramsValid) {
       print.info(HELP);
+      if (!paramsValid) {
+        process.exitCode = 1;
+      }
       return;
     }
 
-    if (outputDir === true) {
-      const outputDirMissingPathMessage = intlMsg.commands_build_error_outputDirMissingPath(
-        {
-          option: "--output-dir",
-          argument: `<${pathStr}>`,
-        }
+    // Ensure docker is installed
+    if (!isDockerInstalled()) {
+      print.error(intlMsg.lib_docker_noInstall());
+      return;
+    }
+
+    // Resolve manifest & output directory
+    const manifestPaths = manifestFile
+      ? [manifestFile as string]
+      : defaultWeb3ApiManifest;
+    manifestFile = resolvePathIfExists(filesystem, manifestPaths);
+
+    if (!manifestFile) {
+      print.error(
+        intlMsg.commands_build_error_manifestNotFound({
+          paths: manifestPaths.join(", "),
+        })
       );
-      print.error(outputDirMissingPathMessage);
-      print.info(HELP);
       return;
     }
 
-    if (testEns === true) {
-      const testEnsAddressMissingMessage = intlMsg.commands_build_error_testEnsAddressMissing(
-        {
-          option: "--test-ens",
-          argument: `<[${addrStr},]${domStr}>`,
-        }
-      );
-      print.error(testEnsAddressMissingMessage);
-      print.info(HELP);
-      return;
-    }
-
-    if (testEns && !ipfs) {
-      const testEnsNodeMissingMessage = intlMsg.commands_build_error_testEnsNodeMissing(
-        {
-          option: "--test-ens",
-          required: `--ipfs [<${nodeStr}>]`,
-        }
-      );
-      print.error(testEnsNodeMissingMessage);
-      print.info(HELP);
-      return;
-    }
-
-    const middlewareState: SharedMiddlewareState = await middleware.run({
-      name: toolbox.command?.name,
-      options: { help, ipfs, outputDir, watch, testEns, verbose, manifestPath },
-    });
-
-    if (!middlewareState.dockerPath) {
-      print.error(intlMsg.middleware_dockerVerifyMiddleware_noDocker());
-      return;
-    }
-
-    // Resolve manifest & output directories
-    manifestPath =
-      (manifestPath && filesystem.resolve(manifestPath)) ||
-      filesystem.resolve("web3api.yaml");
     outputDir =
-      (outputDir && filesystem.resolve(outputDir)) || filesystem.path("build");
+      (outputDir && filesystem.resolve(outputDir)) ||
+      filesystem.path(defaultOutputDirectory);
 
+    // Gather providers
     let ipfsProvider: string | undefined;
     let ethProvider: string | undefined;
     let ensAddress: string | undefined;
@@ -142,13 +122,10 @@ export default {
       // Custom IPFS provider
       ipfsProvider = ipfs;
     } else if (ipfs) {
-      // Dev-server IPFS provider
-      // TODO: handle the case where the dev server isn't found
-      const {
-        data: { ipfs, ethereum },
-      } = await axios.get("http://localhost:4040/providers");
-      ipfsProvider = ipfs;
-      ethProvider = ethereum;
+      // Try to get the dev server's IPFS & ETH providers
+      const testEnvProviders = await getTestEnvProviders();
+      ipfsProvider = testEnvProviders.ipfsProvider;
+      ethProvider = testEnvProviders.ethProvider;
     }
 
     if (typeof testEns == "string") {
@@ -175,10 +152,15 @@ export default {
       }
     }
 
+    // Aquire a system-wide lock file for the docker service
+    const dockerLock = getDockerFileLock();
+
     const project = new Web3ApiProject({
-      web3apiManifestPath: manifestPath,
+      rootCacheDir: path.dirname(manifestFile),
+      web3apiManifestPath: manifestFile,
       quiet: verbose ? false : true,
     });
+    await project.validate();
 
     const schemaComposer = new SchemaComposer({
       project,
@@ -195,9 +177,7 @@ export default {
 
     const execute = async (): Promise<boolean> => {
       compiler.reset();
-      await middlewareState.dockerLock?.request();
       const result = await compiler.compile();
-      void middlewareState.dockerLock?.release();
 
       if (!result) {
         return result;
@@ -257,7 +237,9 @@ export default {
     };
 
     if (!watch) {
+      await dockerLock.request();
       const result = await execute();
+      await dockerLock.release();
 
       if (!result) {
         process.exitCode = 1;
@@ -265,12 +247,14 @@ export default {
       }
     } else {
       // Execute
+      await dockerLock.request();
       await execute();
+      await dockerLock.release();
 
       const keyPressListener = () => {
         // Watch for escape key presses
         print.info(
-          `${intlMsg.commands_build_keypressListener_watching()}: ${project.getWeb3ApiManifestDir()}`
+          `${intlMsg.commands_build_keypressListener_watching()}: ${project.getManifestDir()}`
         );
         print.info(intlMsg.commands_build_keypressListener_exit());
         readline.emitKeypressEvents(process.stdin);
@@ -281,6 +265,7 @@ export default {
             (key.name == "c" && key.ctrl)
           ) {
             await watcher.stop();
+            await dockerLock.release();
             process.kill(process.pid, "SIGINT");
           }
         });
@@ -297,11 +282,8 @@ export default {
       // Watch the directory
       const watcher = new Watcher();
 
-      watcher.start(project.getWeb3ApiManifestDir(), {
-        ignored: [
-          outputDir + "/**",
-          project.getWeb3ApiManifestDir() + "/**/w3/**",
-        ],
+      watcher.start(project.getManifestDir(), {
+        ignored: [outputDir + "/**", project.getManifestDir() + "/**/w3/**"],
         ignoreInitial: true,
         execute: async (events: WatchEvent[]) => {
           // Log all of the events encountered
@@ -310,7 +292,9 @@ export default {
           }
 
           // Execute the build
+          await dockerLock.request();
           await execute();
+          await dockerLock.release();
 
           // Process key presses
           keyPressListener();
@@ -321,3 +305,57 @@ export default {
     process.exitCode = 0;
   },
 };
+
+function validateBuildParams(
+  print: GluegunPrint,
+  manifestFile: unknown,
+  outputDir: unknown,
+  testEns: unknown,
+  ipfs: unknown
+): boolean {
+  if (manifestFile === true) {
+    const manifestPathMissingMessage = intlMsg.commands_build_error_manifestPathMissing(
+      {
+        option: "--manifest-file",
+        argument: `<${pathStr}>`,
+      }
+    );
+    print.error(manifestPathMissingMessage);
+    return false;
+  }
+
+  if (outputDir === true) {
+    const outputDirMissingPathMessage = intlMsg.commands_build_error_outputDirMissingPath(
+      {
+        option: "--output-dir",
+        argument: `<${pathStr}>`,
+      }
+    );
+    print.error(outputDirMissingPathMessage);
+    return false;
+  }
+
+  if (testEns === true) {
+    const testEnsAddressMissingMessage = intlMsg.commands_build_error_testEnsAddressMissing(
+      {
+        option: "--test-ens",
+        argument: `<[${addrStr},]${domStr}>`,
+      }
+    );
+    print.error(testEnsAddressMissingMessage);
+    return false;
+  }
+
+  if (testEns && !ipfs) {
+    const testEnsNodeMissingMessage = intlMsg.commands_build_error_testEnsNodeMissing(
+      {
+        option: "--test-ens",
+        required: `--ipfs [<${nodeStr}>]`,
+      }
+    );
+    print.error(testEnsNodeMissingMessage);
+    return false;
+  }
+
+  return true;
+}
