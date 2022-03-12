@@ -14,7 +14,7 @@
       "const": "0.0.1-prealpha.5"
     },
     "build": {
-      "description" : "Path to the customized build YAML file.",
+      "description" : "Path to the customized build manifest file.",
       "type": "string",
       "format": "yamlFile"
     },
