@@ -27,10 +27,6 @@ describe("e2e tests for docker", () => {
           expect(exitCode).toEqual(0);
         })
       );
-      // Sleep for a few milliseconds to avoid a race condition with the file lock
-      await new Promise<void>((resolve) => 
-        setTimeout(() => resolve(), 200)
-      );
     }
     await Promise.all(promises);
   });

@@ -152,6 +152,9 @@ export default {
       }
     }
 
+    // Aquire a system-wide lock file for the docker service
+    const dockerLock = getDockerFileLock();
+
     const project = new Web3ApiProject({
       rootCacheDir: path.dirname(manifestFile),
       web3apiManifestPath: manifestFile,
@@ -174,10 +177,7 @@ export default {
 
     const execute = async (): Promise<boolean> => {
       compiler.reset();
-      const dockerLock = getDockerFileLock();
-      await dockerLock.request();
       const result = await compiler.compile();
-      await dockerLock.release();
 
       if (!result) {
         return result;
@@ -237,7 +237,9 @@ export default {
     };
 
     if (!watch) {
+      await dockerLock.request();
       const result = await execute();
+      await dockerLock.release();
 
       if (!result) {
         process.exitCode = 1;
@@ -245,7 +247,9 @@ export default {
       }
     } else {
       // Execute
+      await dockerLock.request();
       await execute();
+      await dockerLock.release();
 
       const keyPressListener = () => {
         // Watch for escape key presses
@@ -261,6 +265,7 @@ export default {
             (key.name == "c" && key.ctrl)
           ) {
             await watcher.stop();
+            await dockerLock.release();
             process.kill(process.pid, "SIGINT");
           }
         });
@@ -287,7 +292,9 @@ export default {
           }
 
           // Execute the build
+          await dockerLock.request();
           await execute();
+          await dockerLock.release();
 
           // Process key presses
           keyPressListener();
