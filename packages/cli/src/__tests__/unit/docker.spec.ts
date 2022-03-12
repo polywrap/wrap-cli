@@ -1,6 +1,6 @@
 import path from "path";
 import { initTestEnvironment, runCLI, stopTestEnvironment } from "@web3api/test-env-js";
-import { w3Cli } from "./utils";
+import { w3Cli } from "../e2e/utils";
 
 describe("e2e tests for docker", () => {
   const projectRoot = path.resolve(__dirname, "../project/");
@@ -26,6 +26,10 @@ describe("e2e tests for docker", () => {
           expect(stderr.indexOf("Conflict. The container name \"/root-build-env\" is already in use")).toBeLessThan(0);
           expect(exitCode).toEqual(0);
         })
+      );
+      // Sleep for a few milliseconds to avoid a race condition with the file lock
+      await new Promise<void>((resolve) => 
+        setTimeout(() => resolve(), 200)
       );
     }
     await Promise.all(promises);
