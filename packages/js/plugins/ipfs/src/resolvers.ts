@@ -38,9 +38,15 @@ export const query = (ipfs: IpfsPlugin): Query.Module => ({
       return null;
     }
 
+    let error: ResolveUriError | undefined;
+
     if (!IpfsPlugin.isCID(input.path)) {
-      // Not a valid CID
-      return { manifest: null, uri: null };
+      error = {
+        type: EResolveUriErrorType.Ipfs,
+        error: new Error("Ipfs CID is not valid"),
+      };
+
+      return { manifest: null, uri: null, error };
     }
 
     const manifestSearchPatterns = [
@@ -50,7 +56,6 @@ export const query = (ipfs: IpfsPlugin): Query.Module => ({
     ];
 
     let manifest: string | undefined;
-    let error: ResolveUriError | undefined;
 
     for (const manifestSearchPattern of manifestSearchPatterns) {
       try {
@@ -63,7 +68,7 @@ export const query = (ipfs: IpfsPlugin): Query.Module => ({
         );
       } catch (e) {
         error = {
-          type: EResolveUriErrorType.Ens,
+          type: EResolveUriErrorType.Ipfs,
           error: e,
         };
 
