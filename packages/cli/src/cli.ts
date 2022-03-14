@@ -1,20 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { build, GluegunToolbox } from "gluegun";
+import * as Commands from "./commands";
+import { Command } from "./commands/types";
 
-interface Args {
-  [key: string]: unknown;
-}
+import { program } from "commander";
 
-export const run = async (argv: Args): Promise<GluegunToolbox> => {
-  const cli = build("w3")
+export const run = async (argv: string[]): Promise<void> => {
+  /*const cli = build("w3")
     .src(__dirname)
     .plugins(`${process.cwd()}/node_modules`, {
       matching: "w3-*",
       hidden: true,
     })
     .help()
-    .create();
+    .create();*/
 
-  return await cli.run(argv);
+  for (const command of Object.values(Commands) as Command[]) {
+    command.setup(program);
+  }
+
+  program.parse(argv);
 };

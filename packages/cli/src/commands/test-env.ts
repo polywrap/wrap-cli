@@ -1,80 +1,68 @@
+import { Command, Program } from "./types";
 import {
-  startupTestEnv,
-  shutdownTestEnv,
-  withSpinner,
   intlMsg,
   isDockerInstalled,
   getDockerFileLock,
+  startupTestEnv,
+  shutdownTestEnv
 } from "../lib";
 
-import { GluegunToolbox, print } from "gluegun";
-import chalk from "chalk";
+export const testEnv: Command = {
+  setup: (program: Program) => {
+    const testEnvCommand = program
+      .alias("t")
+      .command("test-env")
+      .description(intlMsg.commands_testEnv_description());
 
-const HELP = `
-${chalk.bold("w3 test-env")} ${intlMsg.commands_testEnv_options_command()}
+    testEnvCommand
+      .command("up")
+      .description(intlMsg.commands_testEnv_options_start())
+      .action(async (options) => {
+        await run("start");
+      });
 
-Commands:
-  ${chalk.bold("up")}    ${intlMsg.commands_testEnv_options_start()}
-  ${chalk.bold("down")}  ${intlMsg.commands_testEnv_options_stop()}
-`;
+    testEnvCommand
+      .command("down")
+      .description(intlMsg.commands_testEnv_options_stop())
+      .action(async (options) => {
+        await run("stop");
+      });
+  }
+}
 
-export default {
-  alias: ["t"],
-  description: intlMsg.commands_testEnv_description(),
-  run: async (toolbox: GluegunToolbox): Promise<unknown> => {
-    const { parameters } = toolbox;
+async function run(startStop: "start" | "stop") {
+  if (!isDockerInstalled()) {
+    throw new Error(intlMsg.lib_docker_noInstall());
+  }
 
-    // Command
-    const command = parameters.first;
+  const dockerLock = getDockerFileLock();
+  await dockerLock.request();
 
-    if (!command) {
-      print.error(intlMsg.commands_testEnv_error_noCommand());
-      print.info(HELP);
-      return;
-    }
+  if (startStop === "start") {
+    // TODO: create more robust logger
+    console.log(intlMsg.commands_testEnv_startup_text());
 
-    if (command !== "up" && command !== "down") {
-      const unrecognizedCommandMessage = intlMsg.commands_testEnv_error_unrecognizedCommand(
-        {
-          command: command,
-        }
-      );
-      print.error(unrecognizedCommandMessage);
-      print.info(HELP);
-      return;
-    }
-
-    if (!isDockerInstalled()) {
-      print.error(intlMsg.lib_docker_noInstall());
-      return;
-    }
-
-    const dockerLock = getDockerFileLock();
-    await dockerLock.request();
-
-    if (command === "up") {
-      return await withSpinner(
-        intlMsg.commands_testEnv_startup_text(),
-        intlMsg.commands_testEnv_startup_error(),
-        intlMsg.commands_testEnv_startup_warning(),
-        async (_spinner) => {
-          await startupTestEnv(true);
-          await dockerLock.release();
-        }
-      );
-    } else if (command === "down") {
-      return await withSpinner(
-        intlMsg.commands_testEnv_shutdown_text(),
-        intlMsg.commands_testEnv_shutdown_error(),
-        intlMsg.commands_testEnv_shutdown_warning(),
-        async (_spinner) => {
-          await shutdownTestEnv(true);
-          await dockerLock.release();
-        }
-      );
-    } else {
+    try {
+      await startupTestEnv(true);
       await dockerLock.release();
-      throw Error(intlMsg.commands_testEnv_error_never());
+    } catch (e) {
+      console.error(intlMsg.commands_testEnv_startup_error());
+      throw e;
     }
-  },
-};
+  } else if (startStop === "stop") {
+    // TODO: create more robust logger
+    console.log(intlMsg.commands_testEnv_shutdown_text());
+
+    try {
+      // TODO: this should be configurable & stream the docker ouput to console for added info
+      await shutdownTestEnv(true);
+      await dockerLock.release();
+    } catch (e) {
+      console.error(intlMsg.commands_testEnv_shutdown_error());
+      throw e;
+    }
+  } else {
+    await dockerLock.release();
+    throw Error(intlMsg.commands_testEnv_error_never());
+  }
+}
