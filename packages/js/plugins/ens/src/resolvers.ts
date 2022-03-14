@@ -1,7 +1,11 @@
 import { EnsPlugin } from "./";
 import { Query } from "./w3";
 
-import { Client } from "@web3api/core-js";
+import {
+  Client,
+  EResolveUriErrorType,
+  ResolveUriError,
+} from "@web3api/core-js";
 
 export const query = (ens: EnsPlugin, client: Client): Query.Module => ({
   // uri-resolver.core.web3api.eth
@@ -9,6 +13,8 @@ export const query = (ens: EnsPlugin, client: Client): Query.Module => ({
     if (input.authority !== "ens") {
       return null;
     }
+
+    let error: ResolveUriError | undefined;
 
     try {
       const cid = await ens.ensToCID(input.path, client);
@@ -22,11 +28,16 @@ export const query = (ens: EnsPlugin, client: Client): Query.Module => ({
         manifest: null,
       };
     } catch (e) {
+      error = {
+        type: EResolveUriErrorType.Ens,
+        error: e,
+      };
+
       // TODO: logging https://github.com/web3-api/monorepo/issues/33
     }
 
     // Nothing found
-    return { uri: null, manifest: null };
+    return { uri: null, manifest: null, error };
   },
   getFile: (_input: Query.Input_getFile) => {
     return null;

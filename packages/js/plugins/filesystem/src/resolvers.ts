@@ -2,6 +2,7 @@ import { Query } from "./w3";
 
 import path from "path";
 import fs from "fs";
+import { EResolveUriErrorType, ResolveUriError } from "@web3api/core-js";
 
 export const query = (): Query.Module => ({
   // uri-resolver.core.web3api.eth
@@ -17,6 +18,7 @@ export const query = (): Query.Module => ({
     ];
 
     let manifest: string | undefined;
+    let error: ResolveUriError | undefined;
 
     for (const manifestSearchPattern of manifestSearchPatterns) {
       const manifestPath = path.resolve(input.path, manifestSearchPattern);
@@ -25,6 +27,10 @@ export const query = (): Query.Module => ({
         try {
           manifest = fs.readFileSync(manifestPath, "utf-8");
         } catch (e) {
+          error = {
+            type: EResolveUriErrorType.Fs,
+            error: e,
+          };
           // TODO: logging
         }
       }
@@ -34,7 +40,7 @@ export const query = (): Query.Module => ({
       return { uri: null, manifest };
     } else {
       // Noting found
-      return { uri: null, manifest: null };
+      return { uri: null, manifest: null, error };
     }
   },
   getFile: async (_input: Query.Input_getFile) => {

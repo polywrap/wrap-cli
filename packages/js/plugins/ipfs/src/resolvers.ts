@@ -1,6 +1,8 @@
 import { IpfsPlugin } from "./";
 import { ResolveResult, Options, Query, Mutation, QueryEnv } from "./w3";
 
+import { EResolveUriErrorType, ResolveUriError } from "@web3api/core-js";
+
 const getOptions = (
   input: Options | undefined | null,
   env: QueryEnv
@@ -48,6 +50,7 @@ export const query = (ipfs: IpfsPlugin): Query.Module => ({
     ];
 
     let manifest: string | undefined;
+    let error: ResolveUriError | undefined;
 
     for (const manifestSearchPattern of manifestSearchPatterns) {
       try {
@@ -59,6 +62,11 @@ export const query = (ipfs: IpfsPlugin): Query.Module => ({
           }
         );
       } catch (e) {
+        error = {
+          type: EResolveUriErrorType.Ens,
+          error: e,
+        };
+
         // TODO: logging
         // https://github.com/web3-api/monorepo/issues/33
       }
@@ -68,7 +76,7 @@ export const query = (ipfs: IpfsPlugin): Query.Module => ({
       return { uri: null, manifest };
     } else {
       // Noting found
-      return { uri: null, manifest: null };
+      return { uri: null, manifest: null, error };
     }
   },
   getFile: async (input: Query.Input_getFile) => {
