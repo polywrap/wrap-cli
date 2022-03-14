@@ -35,6 +35,7 @@ import {
   sanitizeEnvs,
   ClientConfig,
   ResolveUriError,
+  EResolveUriErrorType,
   UriResolutionHistory,
   resolveUri,
   UriToApiResolver,
@@ -362,9 +363,7 @@ export class Web3ApiClient implements Client {
     if (freq && (freq.ms || freq.sec || freq.min || freq.hours)) {
       frequency =
         (freq.ms ?? 0) +
-        ((freq.hours ?? 0) * 3600 +
-          (freq.min ?? 0) * 60 +
-          (freq.sec ?? 0)) *
+        ((freq.hours ?? 0) * 3600 + (freq.min ?? 0) * 60 + (freq.sec ?? 0)) *
           1000;
     } else {
       frequency = 60000;
@@ -613,7 +612,7 @@ export class Web3ApiClient implements Client {
     });
 
     if (!api) {
-      if (error && error === ResolveUriError.InfiniteLoop) {
+      if (error && error.type === EResolveUriErrorType.InfiniteLoop) {
         throw Error(
           `Infinite loop while resolving URI "${uri}".\nResolution Stack: ${JSON.stringify(
             uriHistory,
@@ -621,12 +620,15 @@ export class Web3ApiClient implements Client {
             2
           )}`
         );
+      } else {
+        const err =
+          error?.error ||
+          new Error(
+            `No Web3API found at URI: ${uri.uri}` +
+              `\nResolution history: ${JSON.stringify(uriHistory, null, 2)}`
+          );
+        throw err;
       }
-
-      throw Error(
-        `No Web3API found at URI: ${uri.uri}` +
-          `\nResolution history: ${JSON.stringify(uriHistory, null, 2)}`
-      );
     }
 
     return api;

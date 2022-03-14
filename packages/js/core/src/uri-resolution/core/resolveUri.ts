@@ -1,5 +1,5 @@
 import { Api, ApiCache, Client, Uri } from "../../types";
-import { ResolveUriError } from "./types/ResolveUriError";
+import { EResolveUriErrorType, ResolveUriError } from "./types/ResolveUriError";
 import { UriResolutionHistory } from "./types/UriResolutionHistory";
 import { UriResolutionStack } from "./types/UriResolutionStack";
 import { UriResolutionResult } from "./types/UriResolutionResult";
@@ -24,6 +24,7 @@ export const resolveUri = async (
 
   let currentUri: Uri = uri;
   let api: Api | undefined;
+  let error: ResolveUriError | undefined;
 
   let runAgain = true;
 
@@ -42,7 +43,10 @@ export const resolveUri = async (
           api,
           uriHistory: new UriResolutionHistory(uriResolutionStack),
           error: infiniteLoopDetected
-            ? ResolveUriError.InfiniteLoop
+            ? {
+                type: EResolveUriErrorType.InfiniteLoop,
+                error: new Error("Infinite Loop detected"),
+              }
             : undefined,
         };
       }
@@ -53,6 +57,8 @@ export const resolveUri = async (
         cache,
         new UriResolutionHistory(uriResolutionStack).getResolutionPath().stack
       );
+
+      error = result.error;
 
       trackUriHistory(currentUri, resolver, result, uriResolutionStack);
 
@@ -82,6 +88,7 @@ export const resolveUri = async (
     uri: currentUri,
     api,
     uriHistory: new UriResolutionHistory(uriResolutionStack),
+    error,
   };
 };
 
