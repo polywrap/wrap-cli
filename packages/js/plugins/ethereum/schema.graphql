@@ -93,7 +93,7 @@ type Connection {
 
 type Network {
   name: String!
-  chainId: Int!
+  chainId: BigInt!
   ensAddress: String
 }
 
