@@ -65,6 +65,10 @@ type AnotherModuleType {
   prop: String
 }
 
+type TypeFromInterface implements AnotherModuleType {
+  prop2: UInt32!
+}
+
 type QueryEnv {
   bar: Bytes
 }

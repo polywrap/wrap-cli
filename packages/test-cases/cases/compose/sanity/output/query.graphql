@@ -31,6 +31,7 @@ directive @capability(
 directive @enabled_interface on OBJECT
 
 directive @annotate(type: String!) on FIELD
+
 ### Web3API Header END ###
 
 """
@@ -117,6 +118,11 @@ type CustomModuleType {
 }
 
 type AnotherModuleType {
+  prop: String
+}
+
+type TypeFromInterface implements AnotherModuleType {
+  prop2: UInt32!
   prop: String
 }
 

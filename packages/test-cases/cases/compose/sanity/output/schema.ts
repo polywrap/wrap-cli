@@ -408,6 +408,16 @@ export const typeInfo: TypeInfo = {
       properties: [createScalarPropertyDefinition({ name: "prop", type: "String" })],
     },
     {
+      ...createObjectDefinition({ type: "TypeFromInterface" }),
+      interfaces: [
+        createInterfaceImplementedDefinition({ type: "AnotherModuleType" }),
+      ],
+      properties: [
+        createScalarPropertyDefinition({ name: "prop2", type: "UInt32", required: true }),
+        createScalarPropertyDefinition({ name: "prop", type: "String" }),
+      ]
+    },
+    {
       ...createObjectDefinition({ type: "CommonType", comment: "CommonType comment" }),
       properties: [
         createScalarPropertyDefinition({ name: "prop", type: "UInt8", required: true }),

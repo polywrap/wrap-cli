@@ -1,3 +1,5 @@
+import { Uri } from "../types";
+
 export function file(path: unknown): boolean {
   if (typeof path !== "string") {
     return false;
@@ -37,6 +39,10 @@ export function wasmLanguage(language: unknown): boolean {
 
 export function pluginLanguage(language: unknown): boolean {
   return typeof language === "string" && language.indexOf("plugin/") > -1;
+}
+
+export function appLanguage(language: unknown): boolean {
+  return typeof language === "string" && language.indexOf("app/") > -1;
 }
 
 export function imageFile(filePath: unknown): boolean {
@@ -104,4 +110,12 @@ export function regexString(regex: unknown): boolean {
   }
 
   return isValid;
+}
+
+export function web3apiUri(uri: unknown): boolean {
+  return typeof uri === "string" && Uri.isValidUri(uri);
+}
+
+export function schemaFile(filePath: unknown): boolean {
+  return typeof filePath === "string" && file(filePath);
 }

@@ -107,6 +107,10 @@ export interface TestImport_AnotherObject {
   prop: String;
 }
 
+/// Imported Objects END ///
+
+/// Imported Enums START ///
+
 /* URI: "testimport.uri.eth" */
 export enum TestImport_EnumEnum {
   STRING,
@@ -119,7 +123,7 @@ export type TestImport_EnumString =
 
 export type TestImport_Enum = TestImport_EnumEnum | TestImport_EnumString;
 
-/// Imported Objects END ///
+/// Imported Enums END ///
 
 /// Imported Queries START ///
 

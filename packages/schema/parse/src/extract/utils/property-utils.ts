@@ -23,7 +23,7 @@ export function setPropertyType(
   }
 
   if (type.type === "Map") {
-    if (toBoolean(type.required) !== toBoolean(property.required)) {
+    if (toBoolean(type.required) !== toBoolean(property.map?.required)) {
       throw new Error(
         `Map defined as ${
           type.required ? "required" : "optional"

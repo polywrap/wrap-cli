@@ -33,6 +33,7 @@ directive @capability(
 directive @enabled_interface on OBJECT
 
 directive @annotate(type: String!) on FIELD
+
 ### Web3API Header END ###
 
 type Query @imports(
@@ -308,6 +309,7 @@ directive @capability(
 directive @enabled_interface on OBJECT
 
 directive @annotate(type: String!) on FIELD
+
 ### Web3API Header END ###
 
 type Mutation @imports(
@@ -544,6 +546,7 @@ directive @capability(
 directive @enabled_interface on OBJECT
 
 directive @annotate(type: String!) on FIELD
+
 ### Web3API Header END ###
 
 type Query @imports(

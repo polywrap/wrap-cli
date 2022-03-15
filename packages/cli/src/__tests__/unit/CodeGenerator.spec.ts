@@ -7,11 +7,12 @@ import rimraf from "rimraf";
 
 describe("CodeGenerator validation", () => {
   const manifestPath = path.join(__dirname, "../project", "web3api.yaml");
-  const customScript = path.join(__dirname, "../project", "web3api.gen.js");
+  const customScript = path.join(__dirname, "../project", "web3api.gen.ts");
   const outputDir = path.join(__dirname, "../project", "types");
 
   it("Should fail with invalid manifest path", async () => {
     const project = new Web3ApiProject({
+      rootCacheDir: __dirname,
       web3apiManifestPath: "invalidManifest",
       quiet: true,
     });
@@ -31,6 +32,7 @@ describe("CodeGenerator validation", () => {
 
   it("Should fail with invalid generation file", async () => {
     const project = new Web3ApiProject({
+      rootCacheDir: path.dirname(manifestPath),
       web3apiManifestPath: manifestPath,
       quiet: true,
     });
@@ -58,6 +60,7 @@ describe("CodeGenerator validation", () => {
     }
 
     const project = new Web3ApiProject({
+      rootCacheDir: path.dirname(manifestPath),
       web3apiManifestPath: manifestPath,
       quiet: true,
     });
