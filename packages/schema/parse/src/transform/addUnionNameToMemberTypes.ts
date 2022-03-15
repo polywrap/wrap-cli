@@ -8,22 +8,12 @@ import {
 export const setMemberTypeParentUnionNames: TypeInfoTransforms = {
   enter: {
     UnionDefinition: (def: UnionDefinition): UnionDefinition => {
-      return {
-        ...def,
-        memberTypes: def.memberTypes
-          ? def.memberTypes.map(setMemberTypeParentUnionName)
-          : null,
-      };
+      return setMemberTypeParentUnionName(def);
     },
     ImportedUnionDefinition: (
       def: ImportedUnionDefinition
     ): ImportedUnionDefinition => {
-      return {
-        ...def,
-        memberTypes: def.memberTypes
-          ? def.memberTypes.map(setMemberTypeParentUnionName)
-          : null,
-      };
+      return setMemberTypeParentUnionName(def) as ImportedUnionDefinition;
     },
     TypeInfo: (typeInfo: TypeInfo): TypeInfo => ({
       ...typeInfo,
@@ -40,11 +30,9 @@ function setMemberTypeParentUnionName(
 ): UnionDefinition | ImportedUnionDefinition {
   return {
     ...union,
-    memberTypes: union.memberTypes
-      ? union.memberTypes.map((memberType) => ({
-          ...memberType,
-          union: union.type,
-        }))
-      : null,
+    memberTypes: union.memberTypes.map((memberType) => ({
+      ...memberType,
+      union: union.type,
+    })),
   };
 }

@@ -294,10 +294,6 @@ const extractObjectImportDependencies = (
       obj = importedTypes[idx];
     }
 
-    // if(obj.name === "NestedType") {
-    //   console.log(obj)
-    // }
-
     // Create the new ImportedObjectDefinition
     return {
       ...obj,
@@ -312,7 +308,7 @@ const extractObjectImportDependencies = (
     };
   };
 
-  const ObjectRefVisit = (def: ObjectRef & Namespaced) => {
+  const visitObjectRef = (def: ObjectRef & Namespaced) => {
     if (def.__namespaced) {
       return def;
     }
@@ -350,7 +346,7 @@ const extractObjectImportDependencies = (
 
   return {
     enter: {
-      ObjectRef: ObjectRefVisit,
+      ObjectRef: visitObjectRef,
       InterfaceImplementedDefinition: (
         def: InterfaceImplementedDefinition & Namespaced
       ) => {
@@ -427,14 +423,15 @@ const extractObjectImportDependencies = (
           ) as ImportedUnionDefinition;
 
           // Import memberTypes's types (they are all object refs)
-          importFound.memberTypes =
-            importFound.memberTypes?.map((memberType: GenericDefinition) => {
-              ObjectRefVisit(memberType);
+          importFound.memberTypes = importFound.memberTypes.map(
+            (memberType: GenericDefinition) => {
+              visitObjectRef(memberType);
 
               // Namespace memberType refs
               memberType.type = appendNamespace(namespace, memberType.type);
               return memberType;
-            }) || null;
+            }
+          );
 
           importsFound[importFound.type] = importFound;
         }
@@ -850,7 +847,7 @@ async function resolveExternalImports(
 
           trueType = createImportedUnionDefinition({
             ...type,
-            memberTypes: type.memberTypes || [],
+            memberTypes: type.memberTypes,
             type: appendNamespace(namespace, importedType),
             name: undefined,
             required: undefined,
@@ -866,7 +863,7 @@ async function resolveExternalImports(
           const type = extTypeInfo.importedUnionTypes[impUnionIdx];
           trueType = createImportedUnionDefinition({
             ...type,
-            memberTypes: type.memberTypes || [],
+            memberTypes: type.memberTypes,
             type: appendNamespace(namespace, importedType),
             name: undefined,
             required: undefined,

@@ -144,7 +144,7 @@ export interface EnumDefinition extends GenericDefinition, WithComment {
 }
 
 export interface UnionDefinition extends GenericDefinition, WithComment {
-  memberTypes: GenericDefinition[] | null;
+  memberTypes: GenericDefinition[];
 }
 
 export function createEnumDefinition(args: {
@@ -179,7 +179,7 @@ export function createUnionDefinition(args: {
   type: string;
   name?: string | null;
   required?: boolean;
-  memberTypes: GenericDefinition[] | null;
+  memberTypes: GenericDefinition[];
   comment?: string;
 }): UnionDefinition {
   return {
