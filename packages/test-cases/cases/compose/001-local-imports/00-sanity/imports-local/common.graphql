@@ -14,12 +14,24 @@ type ArrayObject {
   prop: String!
 }
 
+type MemberTypeObj {
+  propA: Int!
+}
+
+type MemberTypeA {
+  nested: MemberTypeObj!
+}
+
+type MemberTypeB {
+  propB: String!
+}
+
 enum CommonEnum {
   STRING
   BYTES
 }
 
-union CommonUnion = NestedType | ArrayObject
+union CommonUnion = MemberTypeA | MemberTypeB
 type IgnoredType1 {
   prop: IgnoredType2
 }

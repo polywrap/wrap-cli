@@ -128,6 +128,30 @@ export const typeInfo: TypeInfo = {
       properties: [
         createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),
       ],
+    },
+    {
+      ...createObjectDefinition({
+        type: "MemberTypeObj"
+      }),
+      properties: [
+        createScalarPropertyDefinition({ name: "propA", type: "Int", required: true }),
+      ],
+    },
+    {
+      ...createObjectDefinition({
+        type: "MemberTypeA"
+      }),
+      properties: [
+        createObjectPropertyDefinition({ name: "nested", type: "MemberTypeObj", required: true }),
+      ],
+    },
+    {
+      ...createObjectDefinition({
+        type: "MemberTypeB"
+      }),
+      properties: [
+        createScalarPropertyDefinition({ name: "propB", type: "String", required: true }),
+      ],
     }
   ],
   moduleTypes: [
@@ -218,10 +242,10 @@ export const typeInfo: TypeInfo = {
     type: "CommonUnion",
     memberTypes: [
       createObjectRef({
-        type: "NestedType"
+        type: "MemberTypeA"
       }),
       createObjectRef({
-        type: "ArrayObject"
+        type: "MemberTypeB"
       })
     ]
   })],

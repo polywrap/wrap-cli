@@ -23,6 +23,21 @@ directive @imports(
 
 ### Web3API Header END ###
 
+type ExtMembTypeObj {
+  prop: Int!
+}
+
+type ExtMembTypeA {
+  nested: ExtMembTypeObj!
+}
+
+type ExtMembTypeB {
+  propB: String!
+}
+
+union ExtUnion = ExtMembTypeA | ExtMembTypeB
+
 type ExternalType {
-  str: String
+  str: String!
+  union: ExtUnion!
 }

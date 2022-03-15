@@ -206,7 +206,31 @@ export const typeInfo: TypeInfo = {
       properties: [
         createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),
       ],
-    }
+    },
+    {
+      ...createObjectDefinition({
+        type: "MemberTypeObj"
+      }),
+      properties: [
+        createScalarPropertyDefinition({ name: "propA", type: "Int", required: true }),
+      ],
+    },
+    {
+      ...createObjectDefinition({
+        type: "MemberTypeA"
+      }),
+      properties: [
+        createObjectPropertyDefinition({ name: "nested", type: "MemberTypeObj", required: true }),
+      ],
+    },
+    {
+      ...createObjectDefinition({
+        type: "MemberTypeB"
+      }),
+      properties: [
+        createScalarPropertyDefinition({ name: "propB", type: "String", required: true }),
+      ],
+    },
   ],
   enumTypes: [
     createEnumDefinition({
@@ -219,14 +243,14 @@ export const typeInfo: TypeInfo = {
     memberTypes: [
       {
         ...createObjectRef({
-          type: "NestedType",
+          type: "MemberTypeA",
         }),
         first: true,
         last: null 
       } as GenericDefinition,
       {
         ...createObjectRef({
-          type: "ArrayObject"
+          type: "MemberTypeB"
         }),
         first: null,
         last: true 

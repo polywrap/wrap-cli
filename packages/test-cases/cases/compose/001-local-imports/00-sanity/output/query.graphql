@@ -79,14 +79,26 @@ type ArrayObject {
   prop: String!
 }
 
+type MemberTypeObj {
+  propA: Int!
+}
+
+type MemberTypeA {
+  nested: MemberTypeObj!
+}
+
+type MemberTypeB {
+  propB: String!
+}
+
 enum CommonEnum {
   STRING
   BYTES
 }
 
 union CommonUnion =
-| NestedType
-| ArrayObject
+| MemberTypeA
+| MemberTypeB
 
 ### Imported Queries START ###
 

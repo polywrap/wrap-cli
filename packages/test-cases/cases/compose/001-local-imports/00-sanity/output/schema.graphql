@@ -92,6 +92,18 @@ type ArrayObject {
   prop: String!
 }
 
+type MemberTypeObj {
+  propA: Int!
+}
+
+type MemberTypeA {
+  nested: MemberTypeObj!
+}
+
+type MemberTypeB {
+  propB: String!
+}
+
 type CustomMutationType {
   str: String!
   optStr: String
@@ -118,8 +130,8 @@ enum CommonEnum {
 }
 
 union CommonUnion =
-| NestedType
-| ArrayObject
+| MemberTypeA
+| MemberTypeB
 
 ### Imported Queries START ###
 

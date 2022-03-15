@@ -32,7 +32,11 @@ directive @enabled_interface on OBJECT
 
 type Query @imports(
   types: [
-    "Namespace_ExternalType"
+    "Namespace_ExternalType",
+    "Namespace_ExtMembTypeA",
+    "Namespace_ExtMembTypeObj",
+    "Namespace_ExtMembTypeB",
+    "Namespace_ExtUnion"
   ]
 ) {
   method: Namespace_ExternalType
@@ -49,7 +53,40 @@ type Namespace_ExternalType @imported(
   namespace: "Namespace",
   nativeType: "ExternalType"
 ) {
-  str: String
+  str: String!
+  union: Namespace_ExtUnion!
 }
+
+type Namespace_ExtMembTypeA @imported(
+  uri: "external.eth",
+  namespace: "Namespace",
+  nativeType: "ExtMembTypeA"
+) {
+  nested: Namespace_ExtMembTypeObj!
+}
+
+type Namespace_ExtMembTypeObj @imported(
+  uri: "external.eth",
+  namespace: "Namespace",
+  nativeType: "ExtMembTypeObj"
+) {
+  prop: Int!
+}
+
+type Namespace_ExtMembTypeB @imported(
+  uri: "external.eth",
+  namespace: "Namespace",
+  nativeType: "ExtMembTypeB"
+) {
+  propB: String!
+}
+
+union Namespace_ExtUnion @imported(
+  uri: "external.eth",
+  namespace: "Namespace",
+  nativeType: "ExtUnion"
+) =
+| Namespace_ExtMembTypeA
+| Namespace_ExtMembTypeB
 
 ### Imported Objects END ###
