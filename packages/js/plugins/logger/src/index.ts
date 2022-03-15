@@ -4,7 +4,7 @@ import {
   Query,
   Logger_LogLevel,
   Logger_LogLevelEnum,
-} from "./w3-temp";
+} from "./w3";
 
 import { Plugin, PluginPackageManifest, PluginPackage } from "@web3api/core-js";
 
