@@ -28,7 +28,7 @@ export interface AnnotatedDefinition {
 }
 
 export function extractAnnotateDirective(
-  node: FieldDefinitionNode | InputValueDefinitionNode,
+  node: FieldDefinitionNode | InputValueDefinitionNode
 ): AnnotatedDefinition {
   let type: string | undefined;
   let def: GenericDefinition | undefined;
