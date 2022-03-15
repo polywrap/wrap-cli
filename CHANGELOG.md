@@ -1,3 +1,7 @@
+# Web3API 0.0.1-prealpha.68
+## Bugs
+* [PR-756](https://github.com/polywrap/monorepo/pull/756) `@web3api/schema-bind`: Imported enums are properly included in the schema bindings when there are no objects imported.
+
 # Web3API 0.0.1-prealpha.67
 ## Features
 * [PR-726](https://github.com/polywrap/monorepo/pull/726) Improved the application developer experience by creating a new `w3 app codegen` command, which generated types based on the apps wrapper / plugin integrations. For an example of how this works, see the updated application template projects by running `w3 create app typescript-node my-app` or `w3 create app typescript-react my-app`.
