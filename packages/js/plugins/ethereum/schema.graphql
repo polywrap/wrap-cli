@@ -27,7 +27,7 @@ type TxResponse {
   gasPrice: BigInt
   data: String!
   value: BigInt!
-  chainId: UInt32!
+  chainId: BigInt!
   blockNumber: BigInt
   blockHash: String
   timestamp: UInt32
@@ -48,7 +48,7 @@ type TxRequest {
   gasPrice: BigInt
   data: String
   value: BigInt
-  chainId: UInt32
+  chainId: BigInt
   type: UInt32
 }
 
