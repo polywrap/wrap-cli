@@ -19,6 +19,38 @@ export type BigInt = string;
 export type Json = string;
 export type String = string;
 export type Boolean = boolean;
+{{#envTypes.query.client}}
+
+export interface {{type}} {
+  {{#properties}}
+  {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
+  {{/properties}}
+}
+{{/envTypes.query.client}}
+{{#envTypes.query.sanitized}}
+
+export interface {{type}} {
+  {{#properties}}
+  {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
+  {{/properties}}
+}
+{{/envTypes.query.sanitized}}
+{{#envTypes.mutation.client}}
+
+export interface {{type}} {
+  {{#properties}}
+  {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
+  {{/properties}}
+}
+{{/envTypes.mutation.client}}
+{{#envTypes.mutation.sanitized}}
+
+export interface {{type}} {
+  {{#properties}}
+  {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
+  {{/properties}}
+}
+{{/envTypes.mutation.sanitized}}
 {{#objectTypes}}
 
 export interface {{type}} {
@@ -107,11 +139,10 @@ export const {{type}} = {
   {{#methods}}
   {{name}}: async (
     input: {{parent.type}}_Input_{{name}},
-    client: Client,
-    uri: string = "{{parent.uri}}"
+    client: Client
   ): Promise<InvokeApiResult<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>> => {
     return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>({
-      uri,
+      uri: "{{parent.uri}}",
       module: "{{type}}",
       method: "{{name}}",
       input

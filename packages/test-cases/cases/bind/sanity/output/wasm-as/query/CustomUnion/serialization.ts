@@ -94,6 +94,6 @@ export function readCustomUnion(reader: Read): CustomUnion {
   } else if(YetAnotherObject) {
     return CustomUnion.create(YetAnotherObject)
   } else {
-    throw new Error(`All serialized member types for CustomUnion are null`)
+    throw new Error(`All serialized union member types for CustomUnion are null`)
   }
 }

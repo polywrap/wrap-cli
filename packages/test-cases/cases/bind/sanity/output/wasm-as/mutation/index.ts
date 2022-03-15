@@ -7,9 +7,9 @@ export {
   Input_objectMethod
 };
 export { AnotherType } from "./AnotherType";
-export { CustomType } from "./CustomType";
 export { AnotherObject } from "./AnotherObject";
 export { YetAnotherObject } from "./YetAnotherObject";
+export { CustomType } from "./CustomType";
 export {
   CustomEnum,
   getCustomEnumKey,
@@ -19,7 +19,6 @@ export {
 export {
   CustomUnion,
 } from "./CustomUnion";
-
 export { TestImport_Query } from "./imported/TestImport_Query";
 export { TestImport_Mutation } from "./imported/TestImport_Mutation";
 export { TestImport_Object } from "./imported/TestImport_Object";

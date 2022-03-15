@@ -44,7 +44,7 @@ export function readTestImport_Union(reader: Read): TestImport_Union {
 
   let TestImport_AnotherObject: Types.TestImport_AnotherObject | null = null;
   let TestImport_YetAnotherObject: Types.TestImport_YetAnotherObject | null = null;
- 
+
   let unionMemberTypes = [
     "TestImport_AnotherObject",
     "TestImport_YetAnotherObject",

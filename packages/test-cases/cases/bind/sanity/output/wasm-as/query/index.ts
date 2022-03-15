@@ -19,7 +19,6 @@ export {
 export {
   CustomUnion,
 } from "./CustomUnion";
-
 export { TestImport_Query } from "./imported/TestImport_Query";
 export { TestImport_Object } from "./imported/TestImport_Object";
 export { TestImport_AnotherObject } from "./imported/TestImport_AnotherObject";

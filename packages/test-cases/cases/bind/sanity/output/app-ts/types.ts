@@ -56,9 +56,9 @@ export interface CustomType {
   optEnum?: Types.CustomEnum | null;
   enumArray: Array<Types.CustomEnum>;
   optEnumArray?: Array<Types.CustomEnum | null> | null;
-  union?: Types.CustomUnion | null;
+  union: Types.CustomUnion;
   optUnion?: Types.CustomUnion | null;
-  unionArray: Array<Types.CustomUnion | null>;
+  unionArray: Array<Types.CustomUnion>;
   optUnionArray?: Array<Types.CustomUnion | null> | null;
 }
 
@@ -86,6 +86,10 @@ export type CustomEnumString =
   | "BYTES"
 
 export type CustomEnum = CustomEnumEnum | CustomEnumString;
+
+export type CustomUnion =
+  | AnotherObject
+  | YetAnotherObject
 
 /// Imported Objects START ///
 
@@ -126,6 +130,11 @@ export type TestImport_EnumString =
   | "BYTES"
 
 export type TestImport_Enum = TestImport_EnumEnum | TestImport_EnumString;
+
+/* URI: "testimport.uri.eth" */
+export type TestImport_Union =
+  | TestImport_AnotherObject
+  | TestImport_YetAnotherObject
 
 /// Imported Objects END ///
 
