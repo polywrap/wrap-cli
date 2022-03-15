@@ -1,4 +1,4 @@
-export const schema: string = `### Web3API Header START ###
+export const schema = `### Web3API Header START ###
 scalar UInt
 scalar UInt8
 scalar UInt16

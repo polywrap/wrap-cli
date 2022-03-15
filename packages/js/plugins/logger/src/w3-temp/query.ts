@@ -1,3 +1,4 @@
+/* eslint-disable */
 // @ts-noCheck
 import {
   UInt,
@@ -12,24 +13,17 @@ import {
   BigInt,
   Json,
   String,
-  Boolean
+  Boolean,
 } from "./types";
 import * as Types from "./types";
 
-import {
-  Client,
-  PluginModule,
-  MaybeAsync
-} from "@web3api/core-js";
+import { Client, PluginModule, MaybeAsync } from "@web3api/core-js";
 
 export interface Input_log extends Record<string, unknown> {
   level: Types.Logger_LogLevel;
-  message: String;
+  message: string;
 }
 
 export interface Module extends PluginModule {
-  log(
-    input: Input_log,
-    client: Client
-  ): MaybeAsync<Boolean>;
+  log(input: Input_log, client: Client): MaybeAsync<boolean>;
 }

@@ -1,10 +1,8 @@
+/* eslint-disable */
 // @ts-noCheck
 import * as Types from "./";
 
-import {
-  Client,
-  InvokeApiResult
-} from "@web3api/core-js";
+import { Client, InvokeApiResult } from "@web3api/core-js";
 
 export type UInt = number;
 export type UInt8 = number;
@@ -30,11 +28,7 @@ export enum Logger_LogLevelEnum {
   ERROR,
 }
 
-export type Logger_LogLevelString =
-  | "DEBUG"
-  | "INFO"
-  | "WARN"
-  | "ERROR"
+export type Logger_LogLevelString = "DEBUG" | "INFO" | "WARN" | "ERROR";
 
 export type Logger_LogLevel = Logger_LogLevelEnum | Logger_LogLevelString;
 
@@ -45,7 +39,7 @@ export type Logger_LogLevel = Logger_LogLevelEnum | Logger_LogLevelString;
 /* URI: "ens/logger.core.web3api.eth" */
 interface Logger_Query_Input_log extends Record<string, unknown> {
   level: Types.Logger_LogLevel;
-  message: String;
+  message: string;
 }
 
 /* URI: "ens/logger.core.web3api.eth" */
@@ -53,14 +47,14 @@ export const Logger_Query = {
   log: async (
     input: Logger_Query_Input_log,
     client: Client
-  ): Promise<InvokeApiResult<Boolean>> => {
-    return client.invoke<Boolean>({
+  ): Promise<InvokeApiResult<boolean>> => {
+    return client.invoke<boolean>({
       uri: "ens/logger.core.web3api.eth",
       module: "query",
       method: "log",
-      input
+      input,
     });
-  }
-}
+  },
+};
 
 /// Imported Queries END ///
