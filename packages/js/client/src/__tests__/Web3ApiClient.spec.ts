@@ -1642,7 +1642,7 @@ describe("Web3ApiClient", () => {
     });
 
     expect((argMethodErr2.errors as Error[])[0].message).toMatch(
-      /__w3_abort: __w3_abort: Missing required property: 'prop: String'/gm
+      /__w3_abort: Missing required property: 'prop: String'/gm
     );
 
     const argMethoda = await client.query<any>({
