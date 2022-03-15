@@ -1081,12 +1081,7 @@ async function resolveLocalImports(
       const findImport = (
         def: GenericDefinition,
         rootTypes: EnumOrUnionOrObject[]
-      ) => {
-        // Skip objects that we've already processed
-        if (typesToImport[def.type]) {
-          return def;
-        }
-
+      ): EnumOrUnionOrObject => {
         // Find the ObjectDefinition
         const idx = rootTypes.findIndex((obj) => obj.type === def.type);
 
@@ -1097,66 +1092,76 @@ async function resolveLocalImports(
           );
         }
 
-        const objectDefinition = rootTypes[idx];
-
-        if (!visitedTypes[objectDefinition.type]) {
-          if (
-            objectDefinition.kind !== DefinitionKind.Enum &&
-            objectDefinition.kind !== DefinitionKind.Union
-          ) {
-            visitedTypes[objectDefinition.type] = true;
-            visitType(objectDefinition);
-          }
-        }
-
-        typesToImport[def.type] = {
-          ...objectDefinition,
+        return {
+          ...rootTypes[idx],
           name: null,
           required: null,
         };
-
-        return def;
       };
 
       const visitedTypes: Record<string, boolean> = {};
 
       const visitType = (type: GenericDefinition) => {
+        const visitObjectRef = (def: ObjectRef) => {
+          const foundObj = findImport(def, [
+            ...localTypeInfo.objectTypes,
+            ...localTypeInfo.importedObjectTypes,
+          ]);
+
+          if (!visitedTypes[foundObj.type]) {
+            visitedTypes[foundObj.type] = true;
+            visitType(foundObj);
+          }
+
+          typesToImport[def.type] = foundObj;
+
+          return def;
+        };
+
         visitorFunc(type, {
           enter: {
-            ObjectRef: (def: ObjectRef) => {
-              return findImport(def, [
-                ...localTypeInfo.objectTypes,
-                ...localTypeInfo.importedObjectTypes,
-              ]);
-            },
+            ObjectRef: visitObjectRef,
             EnumRef: (def: EnumRef) => {
-              return findImport(def, [
+              const foundEnum = findImport(def, [
                 ...localTypeInfo.enumTypes,
                 ...localTypeInfo.importedEnumTypes,
               ]);
+
+              typesToImport[def.type] = foundEnum;
+
+              return def;
             },
             UnionRef: (def: UnionRef) => {
-              const foundImport = findImport(def, [
+              const foundUnion = findImport(def, [
                 ...localTypeInfo.unionTypes,
                 ...localTypeInfo.importedUnionTypes,
               ]) as UnionDefinition;
 
+              typesToImport[def.type] = foundUnion;
+
               // Import union's memberTypes
-              foundImport.memberTypes?.forEach(
-                (memberType: GenericDefinition) => {
-                  return findImport(memberType, localTypeInfo.objectTypes);
-                }
+              foundUnion.memberTypes.forEach((memberType) =>
+                visitObjectRef(memberType)
               );
 
-              return foundImport;
+              return def;
             },
             InterfaceImplementedDefinition: (
               def: InterfaceImplementedDefinition
             ) => {
-              return findImport(def, [
+              const foundInterface = findImport(def, [
                 ...localTypeInfo.objectTypes,
                 ...localTypeInfo.importedObjectTypes,
               ]);
+
+              if (!visitedTypes[foundInterface.type]) {
+                visitedTypes[foundInterface.type] = true;
+                visitType(foundInterface);
+              }
+
+              typesToImport[def.type] = foundInterface;
+
+              return def;
             },
           },
         });
