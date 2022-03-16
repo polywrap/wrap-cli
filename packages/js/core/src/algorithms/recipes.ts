@@ -1,5 +1,6 @@
-import yaml from "js-yaml";
 import { NamespacedRecipes, Recipe } from "../types";
+
+import yaml from "js-yaml";
 
 /**
  * Returns the appropriate parser for the given file.
@@ -12,9 +13,12 @@ import { NamespacedRecipes, Recipe } from "../types";
  * @throws {@link URIError}
  * Thrown if the given path does not match one of the known parsers.
  */
-export function getParserForFile(path: string): (str: string) => any {
-  if (!!path.match(/\.ya?ml$/i)) return yaml.load;
-  else if (!!path.match(/\.json$/i)) return JSON.parse;
+export function getParserForFile<T>(
+  path: string
+): (str: string) => T | null | undefined {
+  if (path.match(/\.ya?ml$/i))
+    return yaml.load as (str: string) => T | undefined;
+  else if (path.match(/\.json$/i)) return JSON.parse;
   else throw URIError(path);
 }
 
@@ -51,7 +55,7 @@ export function resolveConstants(
   function resolveConstant(val: unknown): unknown {
     if (typeof val === "string" && val.startsWith("$")) {
       val = constants[val.slice(1)];
-      if (!!val) return val;
+      if (val) return val;
       throw new ReferenceError(
         `${val} refers to a constant that isn't defined`
       );
@@ -82,7 +86,7 @@ export function resolveRecipeQuery(
     | (NamespacedRecipes & { [menu: string]: string[] }),
   query: string[]
 ): Recipe[] {
-  const val = query.reduce((acc, cur) => (acc as any)?.[cur], cookbook);
+  const val = query.reduce((acc, cur) => acc?.[cur], cookbook);
   if (val == null)
     throw new Error(
       `Failed to resolve recipe query: could not find ${query.join(".")}`
@@ -90,7 +94,7 @@ export function resolveRecipeQuery(
 
   if (Array.isArray(val)) {
     if (typeof val[0] === "string")
-      return parseRecipeQuery(val).flatMap((q) =>
+      return parseRecipeQuery((val as unknown) as string[]).flatMap((q) =>
         resolveRecipeQuery(cookbook, q)
       );
     else return val as Recipe[];

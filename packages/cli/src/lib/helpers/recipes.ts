@@ -1,3 +1,4 @@
+import { NamespacedRecipes, Recipe } from "@web3api/core-js";
 import path from "path";
 import { GluegunFilesystem } from "gluegun";
 
@@ -10,12 +11,13 @@ import { GluegunFilesystem } from "gluegun";
  * @param {GluegunFilesystem} fs filesystem instance to read files with
  */
 export function resolveQueryFiles(
-  recipes: any,
+  recipes: NamespacedRecipes | Recipe[],
   dir: string,
   fs: GluegunFilesystem
 ): void {
   if (Array.isArray(recipes))
-    recipes.forEach((r) => { // if it's a .graphql file try to read it
+    recipes.forEach((r) => {
+      // if it's a .graphql file try to read it
       if (typeof r.query === "string" && r.query.endsWith(".graphql")) {
         const fileContent = fs.read(path.join(dir, r.query));
         if (fileContent == null) throw new URIError(r.query);

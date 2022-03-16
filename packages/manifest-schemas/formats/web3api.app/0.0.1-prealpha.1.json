@@ -1,0 +1,45 @@
+{
+  "id": "AppManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "language",
+    "schema"
+  ],
+  "properties": {
+    "format": {
+      "type": "string",
+      "const": "0.0.1-prealpha.1"
+    },
+    "language": {
+      "type": "string",
+      "format": "appLanguage"
+    },
+    "schema": {
+      "type": "string",
+      "format": "file"
+    },
+    "import_redirects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "uri": {
+            "type": "string",
+            "format": "web3apiUri"
+          },
+          "schema": {
+            "type": "string",
+            "format": "schemaFile"
+          }
+        },
+        "required": [
+          "uri",
+          "schema"
+        ]
+      }
+    }
+  }
+}

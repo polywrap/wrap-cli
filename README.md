@@ -14,7 +14,7 @@ The documentation is divided into helpful sections:
 
 - [What is Polywrap?](https://docs.polywrap.io/getting-started/what-is-polywrap)
 - [Creating a wrapper](https://docs.polywrap.io/guides/create-as-wrapper/project-setup)
-- [Integrating into a JS dapp](https://docs.polywrap.io/guides/create-js-dapp/install-client)
+- [Integrating into a JS app](https://docs.polywrap.io/guides/create-js-dapp/install-client)
 
 ## Overview of the Polywrap project
 

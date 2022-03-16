@@ -1,7 +1,11 @@
-import { startupTestEnv, shutdownTestEnv } from "../lib/test-env";
-import { withSpinner } from "../lib/helpers/spinner";
-import { intlMsg } from "../lib/intl";
-import { SharedMiddlewareState } from "../lib/middleware";
+import {
+  startupTestEnv,
+  shutdownTestEnv,
+  withSpinner,
+  intlMsg,
+  isDockerInstalled,
+  getDockerFileLock,
+} from "../lib";
 
 import { GluegunToolbox, print } from "gluegun";
 import chalk from "chalk";
@@ -18,7 +22,9 @@ export default {
   alias: ["t"],
   description: intlMsg.commands_testEnv_description(),
   run: async (toolbox: GluegunToolbox): Promise<unknown> => {
-    const { parameters, middleware } = toolbox;
+    const { parameters } = toolbox;
+
+    // Command
     const command = parameters.first;
 
     if (!command) {
@@ -38,15 +44,13 @@ export default {
       return;
     }
 
-    const middlewareState: SharedMiddlewareState = await middleware.run({
-      name: toolbox.command?.name,
-      options: { command },
-    });
-
-    if (!middlewareState.dockerPath) {
-      print.error(intlMsg.middleware_dockerVerifyMiddleware_noDocker());
+    if (!isDockerInstalled()) {
+      print.error(intlMsg.lib_docker_noInstall());
       return;
     }
+
+    const dockerLock = getDockerFileLock();
+    await dockerLock.request();
 
     if (command === "up") {
       return await withSpinner(
@@ -55,6 +59,7 @@ export default {
         intlMsg.commands_testEnv_startup_warning(),
         async (_spinner) => {
           await startupTestEnv(true);
+          await dockerLock.release();
         }
       );
     } else if (command === "down") {
@@ -64,9 +69,11 @@ export default {
         intlMsg.commands_testEnv_shutdown_warning(),
         async (_spinner) => {
           await shutdownTestEnv(true);
+          await dockerLock.release();
         }
       );
     } else {
+      await dockerLock.release();
       throw Error(intlMsg.commands_testEnv_error_never());
     }
   },

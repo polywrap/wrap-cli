@@ -2,7 +2,7 @@ import { getDefaultClientConfig } from "./default-client-config";
 
 import { v4 as uuid } from "uuid";
 import {
-  AnyManifest,
+  AnyManifestArtifact,
   Api,
   ApiCache,
   CacheResolver,
@@ -24,7 +24,7 @@ import {
   InterfaceImplementations,
   InvokeApiOptions,
   InvokeApiResult,
-  ManifestType,
+  ManifestArtifactType,
   PluginRegistration,
   QueryApiOptions,
   QueryApiResult,
@@ -151,7 +151,7 @@ export class Web3ApiClient implements Client {
     TData extends Record<string, unknown> = Record<string, unknown>
   >(options: CookRecipesOptions<TData>): Promise<void> {
     const { api, recipes } = await this._prepareRecipeQueries<TData>(options);
-    for (let r of recipes) {
+    for (const r of recipes) {
       const opts = {
         uri: api,
         query: r.query,
@@ -221,11 +221,11 @@ export class Web3ApiClient implements Client {
   @Tracer.traceMethod("Web3ApiClient: getManifest")
   public async getManifest<
     TUri extends Uri | string,
-    TManifestType extends ManifestType
+    TManifestArtifactType extends ManifestArtifactType
   >(
     uri: TUri,
-    options: GetManifestOptions<TManifestType>
-  ): Promise<AnyManifest<TManifestType>> {
+    options: GetManifestOptions<TManifestArtifactType>
+  ): Promise<AnyManifestArtifact<TManifestArtifactType>> {
     const api = await this._loadWeb3Api(this._toUri(uri), options);
     const client = contextualizeClient(this, options.contextId);
     return await api.getManifest(options, client);
@@ -568,6 +568,7 @@ export class Web3ApiClient implements Client {
     }
   }
 
+  @Tracer.traceMethod("Web3ApiClient: prepareRecipeQueries")
   private async _prepareRecipeQueries<
     TData extends Record<string, unknown> = Record<string, unknown>
   >(
@@ -576,7 +577,7 @@ export class Web3ApiClient implements Client {
     if ((!options.cookbook || !options.cookbook.api) && !options.wrapperUri)
       throw new Error("Must supply either a cookbook or a wrapper URI");
 
-    if (!!options.wrapperUri) {
+    if (options.wrapperUri) {
       const manifestCookbook = (
         await this.getManifest(options.wrapperUri, {
           type: "meta",
@@ -603,13 +604,12 @@ export class Web3ApiClient implements Client {
         }
       );
       try {
-        options.cookbook.constants = getParserForFile(
-          options.cookbook.constants
-        )(
-          constantsFile instanceof ArrayBuffer
-            ? new TextDecoder().decode(constantsFile)
-            : constantsFile
-        );
+        options.cookbook.constants =
+          getParserForFile<Record<string, string>>(options.cookbook.constants)(
+            constantsFile instanceof ArrayBuffer
+              ? new TextDecoder().decode(constantsFile)
+              : constantsFile
+          ) ?? undefined;
       } catch (e) {
         if (e instanceof URIError) {
           throw new URIError(
@@ -823,10 +823,10 @@ const contextualizeClient = (
         },
         getManifest: <
           TUri extends Uri | string,
-          TManifestType extends ManifestType
+          TManifestArtifactType extends ManifestArtifactType
         >(
           uri: TUri,
-          options: GetManifestOptions<TManifestType>
+          options: GetManifestOptions<TManifestArtifactType>
         ) => {
           return client.getManifest(uri, { ...options, contextId });
         },

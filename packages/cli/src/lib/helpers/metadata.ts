@@ -1,5 +1,5 @@
-import { withSpinner, displayPath } from "./";
-import { intlMsg } from "../intl";
+import { withSpinner } from "./";
+import { displayPath, intlMsg } from "../";
 
 import { normalizePath } from "@web3api/os-js";
 import { MetaManifest } from "@web3api/core-js";

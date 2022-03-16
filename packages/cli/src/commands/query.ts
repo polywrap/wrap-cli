@@ -1,11 +1,17 @@
-import { resolveQueryFiles } from "../lib/helpers";
-import { getTestEnvClientConfig } from "../lib/helpers/test-env-client-config";
-import { importTs } from "../lib/helpers/import-ts";
-import { fixParameters } from "../lib/helpers";
-import { validateClientConfig } from "../lib/helpers/validate-client-config";
-import { intlMsg } from "../lib/intl";
+import {
+  fixParameters,
+  getTestEnvClientConfig,
+  importTypescriptModule,
+  intlMsg,
+  resolveQueryFiles,
+  validateClientConfig,
+} from "../lib";
 
-import { Web3ApiClient, Web3ApiClientConfig } from "@web3api/client-js";
+import {
+  Cookbook,
+  Web3ApiClient,
+  Web3ApiClientConfig,
+} from "@web3api/client-js";
 import {
   QueryApiOptions,
   QueryApiResult,
@@ -50,7 +56,7 @@ export default {
   alias: ["q"],
   description: i18n.description,
   run: async (toolbox: GluegunToolbox): Promise<void> => {
-    const { filesystem: fs, parameters, print, middleware } = toolbox;
+    const { filesystem: fs, parameters, print } = toolbox;
     // eslint-disable-next-line prefer-const
     let { t, testEns, c, clientConfig, q, query } = parameters.options;
 
@@ -106,7 +112,7 @@ export default {
       if (clientConfig.endsWith(".js")) {
         configModule = await import(fs.resolve(clientConfig));
       } else if (clientConfig.endsWith(".ts")) {
-        configModule = await importTs(fs.resolve(clientConfig));
+        configModule = await importTypescriptModule(fs.resolve(clientConfig));
       } else {
         print.error(i18n.clientConfigBadFileExt({ module: clientConfig }));
         process.exitCode = 1;
@@ -127,11 +133,6 @@ export default {
         return;
       }
     }
-
-    await middleware.run({
-      name: toolbox.command?.name,
-      options: { testEns, cookbook: inputFile },
-    });
 
     const client = new Web3ApiClient(finalClientConfig);
 
@@ -163,18 +164,27 @@ export default {
 
     let cookbookParser;
     try {
-      cookbookParser = getParserForFile(inputFile);
-    } catch {}
+      cookbookParser = getParserForFile<Cookbook>(inputFile);
+    } catch {
+      // do nothing (intentionally)
+    }
 
-    if (!!cookbookParser) {
+    if (cookbookParser) {
       const cookbook = cookbookParser(fs.read(inputFile) as string);
+      if (cookbook == null || !("recipes" in cookbook)) {
+        print.error("bad cookbook");
+        process.exitCode = 1;
+        return;
+      }
+
       const dir = path.dirname(inputFile);
 
       if (!!cookbook.constants && typeof cookbook.constants === "string") {
         try {
-          cookbook.constants = getParserForFile(cookbook.constants)(
-            fs.read(path.join(dir, cookbook.constants)) as string
-          );
+          cookbook.constants =
+            getParserForFile<Record<string, string>>(cookbook.constants)(
+              fs.read(path.join(dir, cookbook.constants)) as string
+            ) ?? undefined;
         } catch (e) {
           if (e instanceof URIError)
             throw new URIError(i18n.badConstantsRead({ file: e.message }));

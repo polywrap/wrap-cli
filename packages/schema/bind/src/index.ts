@@ -1,55 +1,13 @@
 /* eslint-disable @typescript-eslint/naming-convention */
+import { BindOptions, BindOutput } from "./types";
 import { generateBinding } from "./bindings";
 import { getRelativePath, findCommonTypes, extendCommonTypes } from "./utils";
 
 import { transformTypeInfo, TypeInfo } from "@web3api/schema-parse";
 
+export * from "./types";
 export * from "./utils";
-
-export type BindLanguage = "wasm-as" | "plugin-ts";
-
-export type OutputEntry = FileEntry | DirectoryEntry | TemplateEntry;
-
-export interface FileEntry {
-  type: "File";
-  name: string;
-  data: string;
-}
-
-export interface DirectoryEntry {
-  type: "Directory";
-  name: string;
-  data: OutputEntry[];
-}
-
-export interface TemplateEntry {
-  type: "Template";
-  name: string;
-  data: string;
-}
-
-export interface OutputDirectory {
-  entries: OutputEntry[];
-}
-
-export interface BindOutput {
-  combined?: OutputDirectory;
-  query?: OutputDirectory;
-  mutation?: OutputDirectory;
-}
-
-export interface BindModuleOptions {
-  typeInfo: TypeInfo;
-  schema: string;
-  outputDirAbs: string;
-}
-
-export interface BindOptions {
-  bindLanguage: BindLanguage;
-  combined?: BindModuleOptions;
-  query?: BindModuleOptions;
-  mutation?: BindModuleOptions;
-}
+export * from "./bindings";
 
 export function bindSchema(options: BindOptions): BindOutput {
   const { combined, query, mutation, bindLanguage } = options;
@@ -83,13 +41,28 @@ export function bindSchema(options: BindOptions): BindOutput {
 
   return {
     combined: combined
-      ? generateBinding(bindLanguage, combined.typeInfo, combined.schema)
+      ? generateBinding(
+          bindLanguage,
+          combined.typeInfo,
+          combined.schema,
+          combined.config || {}
+        )
       : undefined,
     query: query
-      ? generateBinding(bindLanguage, query.typeInfo, query.schema)
+      ? generateBinding(
+          bindLanguage,
+          query.typeInfo,
+          query.schema,
+          query.config || {}
+        )
       : undefined,
     mutation: mutation
-      ? generateBinding(bindLanguage, mutation.typeInfo, mutation.schema)
+      ? generateBinding(
+          bindLanguage,
+          mutation.typeInfo,
+          mutation.schema,
+          mutation.config || {}
+        )
       : undefined,
   };
 }

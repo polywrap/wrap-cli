@@ -1,24 +1,31 @@
 /* eslint-disable prefer-const */
-import { CodeGenerator, PluginProject, SchemaComposer } from "../lib";
-import { fixParameters, outputManifest } from "../lib/helpers";
-import { intlMsg } from "../lib/intl";
+import {
+  CodeGenerator,
+  PluginProject,
+  SchemaComposer,
+  fixParameters,
+  resolvePathIfExists,
+  defaultPluginManifest,
+  outputManifest,
+  intlMsg,
+  getTestEnvProviders,
+} from "../lib";
 
 import { ComposerFilter } from "@web3api/schema-compose";
 import { writeFileSync } from "@web3api/os-js";
-import { GluegunToolbox, print } from "gluegun";
-import axios from "axios";
+import { GluegunPrint, GluegunToolbox, print } from "gluegun";
 import chalk from "chalk";
 import path from "path";
 import fs from "fs";
 
-export const defaultManifest = ["web3api.plugin.yaml", "web3api.plugin.yml"];
+const commands = ["codegen"];
 const defaultPublishDir = "./build";
 const defaultCodegenDir = "./src/w3";
 const cmdStr = intlMsg.commands_plugin_options_command();
 const optionsStr = intlMsg.commands_options_options();
 const codegenStr = intlMsg.commands_plugin_commands_codegen();
 const pathStr = intlMsg.commands_plugin_options_path();
-const defaultManifestStr = defaultManifest.join(" | ");
+const defaultManifestStr = defaultPluginManifest.join(" | ");
 const nodeStr = intlMsg.commands_plugin_options_i_node();
 const addrStr = intlMsg.commands_plugin_options_e_address();
 
@@ -30,7 +37,7 @@ Commands:
 
 Options:
   -h, --help                       ${intlMsg.commands_plugin_options_h()}
-  -m, --manifest-path <${pathStr}>       ${intlMsg.commands_plugin_options_m({
+  -m, --manifest-file <${pathStr}>       ${intlMsg.commands_plugin_options_m({
   default: defaultManifestStr,
 })}
   -p, --publish-dir <${pathStr}>  ${intlMsg.commands_plugin_options_publish({
@@ -52,7 +59,7 @@ export default {
     // Options
     let {
       help,
-      manifestPath,
+      manifestFile,
       publishDir,
       codegenDir,
       ipfs,
@@ -61,13 +68,14 @@ export default {
     const { h, m, p, c, i, e } = parameters.options;
 
     help = help || h;
-    manifestPath = manifestPath || m;
+    manifestFile = manifestFile || m;
     publishDir = publishDir || p;
     codegenDir = codegenDir || c;
     ipfs = ipfs || i;
     ens = ens || e;
 
-    let command = "";
+    // Command
+    let command: string | undefined;
     try {
       const params = parameters;
       [command] = fixParameters(
@@ -80,96 +88,46 @@ export default {
           help,
         }
       );
-    } catch (e) {
-      print.error(e.message);
-      process.exitCode = 1;
-      return;
-    }
+      // eslint-disable-next-line no-empty
+    } catch (e) {}
 
-    if (help) {
+    // Validate Params
+    const paramsValid = validatePluginParams(
+      print,
+      command,
+      publishDir,
+      (dir) => (publishDir = dir),
+      codegenDir,
+      (dir) => (codegenDir = dir),
+      ipfs,
+      ens
+    );
+
+    if (help || !paramsValid) {
       print.info(HELP);
-      return;
-    }
-
-    if (!command) {
-      print.error(intlMsg.commands_plugin_error_noCommand());
-      print.info(HELP);
-      return;
-    }
-
-    if (publishDir === true) {
-      const publishDirMessage = intlMsg.commands_plugin_error_optionMissingArgument(
-        {
-          option: "--publish-dir",
-          argument: `<${pathStr}>`,
-        }
-      );
-      print.error(publishDirMessage);
-      print.info(HELP);
-      return;
-    } else if (!publishDir) {
-      publishDir = defaultPublishDir;
-    }
-
-    if (codegenDir === true) {
-      const codegenDirMessage = intlMsg.commands_plugin_error_optionMissingArgument(
-        {
-          option: "--codegen-dir",
-          argument: `<${pathStr}>`,
-        }
-      );
-      print.error(codegenDirMessage);
-      print.info(HELP);
-      return;
-    } else if (!codegenDir) {
-      codegenDir = defaultCodegenDir;
-    }
-
-    if (ens === true) {
-      const domStr = intlMsg.commands_plugin_error_domain();
-      const ensAddressMissingMessage = intlMsg.commands_build_error_testEnsAddressMissing(
-        {
-          option: "--ens",
-          argument: `<[${addrStr},]${domStr}>`,
-        }
-      );
-      print.error(ensAddressMissingMessage);
-      print.info(HELP);
-      return;
-    }
-
-    let ipfsProvider: string | undefined;
-    let ethProvider: string | undefined;
-    let ensAddress: string | undefined = ens;
-
-    if (typeof ipfs === "string") {
-      // Custom IPFS provider
-      ipfsProvider = ipfs;
-    } else if (ipfs) {
-      // Dev-server IPFS provider
-      try {
-        const {
-          data: { ipfs, ethereum },
-        } = await axios.get("http://localhost:4040/providers");
-        ipfsProvider = ipfs;
-        ethProvider = ethereum;
-      } catch (e) {
-        // Dev server not found
+      if (!paramsValid) {
+        process.exitCode = 1;
       }
+      return;
     }
 
-    manifestPath =
-      (manifestPath && filesystem.resolve(manifestPath)) ||
-      ((await filesystem.existsAsync(defaultManifest[0]))
-        ? filesystem.resolve(defaultManifest[0])
-        : filesystem.resolve(defaultManifest[1]));
+    const { ipfsProvider, ethProvider } = await getTestEnvProviders(ipfs);
+    const ensAddress: string | undefined = ens;
+
+    manifestFile = resolvePathIfExists(
+      filesystem,
+      manifestFile ? [manifestFile] : defaultPluginManifest
+    );
     publishDir = publishDir && filesystem.resolve(publishDir);
     codegenDir = codegenDir && filesystem.resolve(codegenDir);
 
+    // Plugin project
     const project = new PluginProject({
-      pluginManifestPath: manifestPath,
+      rootCacheDir: path.dirname(manifestFile),
+      pluginManifestPath: manifestFile,
     });
-    const manifest = await project.getPluginManifest();
+    await project.validate();
+    const manifest = await project.getManifest();
 
     const schemaComposer = new SchemaComposer({
       project,
@@ -194,7 +152,7 @@ export default {
       process.exitCode = 1;
     }
 
-    // Output the built schema file
+    // Output the built schema & manifest
     const schemas = await schemaComposer.getComposedSchemas(
       ComposerFilter.Schema
     );
@@ -209,3 +167,77 @@ export default {
     await outputManifest(manifest, publishManifestPath);
   },
 };
+
+function validatePluginParams(
+  print: GluegunPrint,
+  command: unknown,
+  publishDir: unknown,
+  setPublishDir: (dir: string) => void,
+  codegenDir: unknown,
+  setCodegenDir: (dir: string) => void,
+  ipfs: unknown,
+  ens: unknown
+): boolean {
+  if (!command) {
+    print.error(intlMsg.commands_plugin_error_noCommand());
+    return false;
+  }
+
+  if (!command || typeof command !== "string") {
+    print.error(intlMsg.commands_plugin_error_noCommand());
+    return false;
+  } else if (commands.indexOf(command) === -1) {
+    print.error(intlMsg.commands_plugin_error_unknownCommand({ command }));
+    return false;
+  }
+
+  if (publishDir === true) {
+    const publishDirMessage = intlMsg.commands_plugin_error_optionMissingArgument(
+      {
+        option: "--publish-dir",
+        argument: `<${pathStr}>`,
+      }
+    );
+    print.error(publishDirMessage);
+    return false;
+  } else if (!publishDir) {
+    setPublishDir(defaultPublishDir);
+  }
+
+  if (codegenDir === true) {
+    const codegenDirMessage = intlMsg.commands_plugin_error_optionMissingArgument(
+      {
+        option: "--codegen-dir",
+        argument: `<${pathStr}>`,
+      }
+    );
+    print.error(codegenDirMessage);
+    return false;
+  } else if (!codegenDir) {
+    setCodegenDir(defaultCodegenDir);
+  }
+
+  if (ipfs === true) {
+    const ipfsMissingMessage = intlMsg.commands_plugin_error_optionMissingArgument(
+      {
+        option: "--ipfs",
+        argument: `[<${nodeStr}>]`,
+      }
+    );
+    print.error(ipfsMissingMessage);
+    return false;
+  }
+
+  if (ens === true) {
+    const ensAddressMissingMessage = intlMsg.commands_plugin_error_optionMissingArgument(
+      {
+        option: "--ens",
+        argument: `[<${addrStr}>]`,
+      }
+    );
+    print.error(ensAddressMissingMessage);
+    return false;
+  }
+
+  return true;
+}

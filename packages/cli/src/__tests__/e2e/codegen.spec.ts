@@ -1,5 +1,5 @@
 import path from "path";
-import { defaultManifest } from "../../commands/codegen";
+import { defaultWeb3ApiManifest } from "../../lib";
 import { clearStyle, w3Cli } from "./utils";
 
 import { runCLI } from "@web3api/test-env-js";
@@ -10,11 +10,11 @@ w3 codegen [options]
 
 Options:
   -h, --help                              Show usage information
-  -m, --manifest-path <path>              Path to the Web3API manifest file (default: ${defaultManifest.join(
+  -m, --manifest-file <path>              Path to the Web3API manifest file (default: ${defaultWeb3ApiManifest.join(
     " | "
   )})
-  -c, --custom <path>                     Path to a custom generation script (JavaScript | TypeScript)
-  -o, --output-dir <path>                 Output directory for custom generated types (default: 'types/')
+  -c, --codegen-dir <path>                Output directory for the generated code (default: ./w3)
+  -s, --script <path>                     Path to a custom generation script (JavaScript | TypeScript)
   -i, --ipfs [<node>]                     IPFS node to load external schemas (default: ipfs.io & localhost)
   -e, --ens [<address>]                   ENS address to lookup external schemas (default: 0x0000...2e1e)
 
@@ -35,17 +35,17 @@ describe("e2e tests for codegen command", () => {
     expect(clearStyle(output)).toEqual(HELP);
   });
 
-  test("Should throw error for invalid params - outputDir", async () => {
+  test("Should throw error for invalid params - script", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: ["codegen", "--output-dir"],
+      args: ["codegen", "--script"],
       cwd: projectRoot,
       cli: w3Cli,
     });
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output))
-      .toEqual(`--output-dir option missing <path> argument
+      .toEqual(`--script option missing <path> argument
 ${HELP}`);
   });
 
@@ -56,16 +56,16 @@ ${HELP}`);
       cli: w3Cli,
     });
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output))
-      .toEqual(`--ens option missing <[address,]domain> argument
+      .toEqual(`--ens option missing [<address>] argument
 ${HELP}`);
   });
 
   test("Should throw error for invalid generation file - wrong file", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: ["codegen", "--custom", `web3api-invalid.gen.js`],
+      args: ["codegen", "--script", `web3api-invalid.gen.js`],
       cwd: projectRoot,
       cli: w3Cli,
     });
@@ -79,14 +79,14 @@ ${HELP}`);
 
   test("Should throw error for invalid generation file - no run() method", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: ["codegen", "--custom", `web3api-norun.gen.js`],
+      args: ["codegen", "--script", `web3api-norun.gen.js`],
       cwd: projectRoot,
       cli: w3Cli,
     });
 
     expect(code).toEqual(1);
     expect(error).toBe("");
-    expect(clearStyle(output)).toContain(`Failed to generate types: The generation file provided doesn't have the 'run' method.`);
+    expect(clearStyle(output)).toContain(`Failed to generate types: The generation file provided doesn't have the 'generateBinding' method.`);
   });
 
   test("Should successfully generate types", async () => {

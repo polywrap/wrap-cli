@@ -1,19 +1,19 @@
 import {
-  QueryHandler,
-  InvokeHandler,
-  SubscriptionHandler,
-  UriRedirect,
-  Uri,
-  PluginRegistration,
-  InterfaceImplementations,
-  Env,
-  ResolveUriOptions,
   Api,
+  Cookbook,
+  Env,
+  InterfaceImplementations,
+  InvokeHandler,
+  PluginRegistration,
   QueryApiOptions,
   QueryApiResult,
-  Cookbook,
+  QueryHandler,
+  ResolveUriOptions,
+  SubscriptionHandler,
+  Uri,
+  UriRedirect,
 } from "./";
-import { ManifestType, AnyManifest } from "../manifest";
+import { AnyManifestArtifact, ManifestArtifactType } from "../manifest";
 import {
   UriToApiResolver,
   ResolveUriError,
@@ -45,20 +45,6 @@ export interface CookRecipesOptions<
    * that has a valid cookbook in its meta manifest.
    */
   cookbook?: Cookbook<TUri>;
-
-  /**
-   * An optional callback that is executed with the results of every `query`.
-   *
-   * @param {QueryApiOptions} recipe the recipe that was called
-   * @param {QueryApiResult<TData>["data"]} data any data the call returned
-   * @param {QueryApiResult<TData>["errors"]} errors any errors that arose
-   */
-  onExecution?(
-    recipe: QueryApiOptions,
-    data?: QueryApiResult<TData>["data"],
-    errors?: QueryApiResult<TData>["errors"]
-  ): void;
-
   /**
    * An optional list of one or more "queries", which are `.`-separated
    * namespaces of recipes in the cookbook. Queries are executed in the order
@@ -72,16 +58,24 @@ export interface CookRecipesOptions<
    * querying from a cookbook file directly.
    */
   wrapperUri?: TUri;
+
+  /**
+   * An optional callback that is executed with the results of every `query`.
+   *
+   * @param {QueryApiOptions} recipe the recipe that was called
+   * @param {QueryApiResult<TData>["data"]} data any data the call returned
+   * @param {QueryApiResult<TData>["errors"]} errors any errors that arose
+   */
+  onExecution?(
+    recipe: QueryApiOptions,
+    data?: QueryApiResult<TData>["data"],
+    errors?: QueryApiResult<TData>["errors"]
+  ): void;
 }
 
 export type GetEnvsOptions = Contextualized;
 
 export type GetResolversOptions = Contextualized;
-
-export interface GetManifestOptions<TManifestType extends ManifestType>
-  extends Contextualized {
-  type: TManifestType;
-}
 
 export interface GetFileOptions extends Contextualized {
   path: string;
@@ -94,9 +88,10 @@ export interface GetImplementationsOptions extends Contextualized {
 
 export type GetInterfacesOptions = Contextualized;
 
-export interface GetManifestOptions<TManifestType extends ManifestType>
-  extends Contextualized {
-  type: TManifestType;
+export interface GetManifestOptions<
+  TManifestArtifactType extends ManifestArtifactType
+> extends Contextualized {
+  type: TManifestArtifactType;
 }
 
 export type GetPluginsOptions = Contextualized;
@@ -140,10 +135,6 @@ export interface Client
     options: CookRecipesOptions<TData>
   ): Promise<void>;
 
-  getInterfaces(
-    options: GetInterfacesOptions
-  ): readonly InterfaceImplementations<Uri>[];
-
   getResolvers(options: GetResolversOptions): readonly UriToApiResolver[];
 
   getEnvByUri<TUri extends Uri | string>(
@@ -167,10 +158,13 @@ export interface Client
     options: GetInterfacesOptions
   ): readonly InterfaceImplementations<Uri>[];
 
-  getManifest<TUri extends Uri | string, TManifestType extends ManifestType>(
+  getManifest<
+    TUri extends Uri | string,
+    TManifestArtifactType extends ManifestArtifactType
+  >(
     uri: TUri,
-    options: GetManifestOptions<TManifestType>
-  ): Promise<AnyManifest<TManifestType>>;
+    options: GetManifestOptions<TManifestArtifactType>
+  ): Promise<AnyManifestArtifact<TManifestArtifactType>>;
 
   getPlugins(options: GetPluginsOptions): readonly PluginRegistration<Uri>[];
 
