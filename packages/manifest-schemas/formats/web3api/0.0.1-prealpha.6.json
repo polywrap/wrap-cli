@@ -19,7 +19,7 @@
       "format": "manifestFile"
     },
     "meta": {
-      "description" : "Path to wrapper metadata YAML file.",
+      "description" : "Path to wrapper metadata manifest file.",
       "type": "string",
       "format": "manifestFile"
     },
