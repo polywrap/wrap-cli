@@ -1,11 +1,14 @@
 import { ComposerOutput, ComposerOptions, ComposerFilter } from "..";
 
 import path from "path";
-import { readdirSync, readFileSync, Dirent, existsSync } from "fs";
+import { readdirSync, Dirent } from "fs";
 
 import { TypeInfo } from "@web3api/schema-parse";
-import { GetPathToComposeTestFiles } from "@web3api/test-cases"
-import { normalizeLineEndings } from "@web3api/os-js";
+import {
+  GetPathToComposeTestFiles,
+  readFileIfExists,
+  readNamedExportIfExists,
+} from "@web3api/test-cases"
 
 const root = GetPathToComposeTestFiles();
 
@@ -20,78 +23,70 @@ type TestCases = {
   name: string;
 }[];
 
-const importCase = async (basePath: string, dirent: Dirent): Promise<TestCase | undefined> => {
-  // The case must be a folder
-  if (!dirent.isDirectory()) {
-    return undefined;
-  }
+export function fetchTestCases(): TestCases {
+  const testCases: TestCases = [];
 
-  const getFilePath = (
-    subpath: string,
-    absolute = false
-  ): string => {
-    if (absolute) {
-      return subpath
-    } else {
-      return path.join(basePath, dirent.name, subpath);
-    }
-  }
-
-  const fetchIfExists = (
-    subpath: string,
-    absolute = false
-  ): string | undefined => {
-    const filePath = getFilePath(subpath, absolute);
-
-    if (existsSync(filePath)) {
-      return normalizeLineEndings(
-        readFileSync(filePath, { encoding: "utf-8" }),
-        "\n"
+  readdirSync(root, { withFileTypes: true }).forEach(
+    (dirent: Dirent) => {
+      buildTestCases(
+        path.join(root, dirent.name),
+        dirent.name,
+        testCases
       );
-    } else {
-      return undefined;
     }
-  };
+  );
 
-  const importIfExists = async (
-    subpath: string,
-    absolute = false
-  ): Promise<TypeInfo | undefined> => {
-    const filePath = getFilePath(subpath, absolute);
+  return testCases;
+}
 
-    if (existsSync(filePath)) {
-      const module = await import(filePath);
+function buildTestCases(
+  directory: string,
+  name: string,
+  testCases: TestCases
+): void {
+  const items = readdirSync(directory, { withFileTypes: true });
 
-      if (!module.typeInfo) {
-        throw Error(
-          `Required named export "typeInfo" is missing in ${filePath}`
-        );
-      }
-
-      return module.typeInfo as TypeInfo;
-    } else {
-      return undefined;
+  if (
+    items.some(x => x.name.startsWith("input")) &&
+    items.some(x => x.name.startsWith("output"))
+  ) {
+    testCases.push({
+      promise: importCase(directory, name),
+      name: name
+    });
+  } else {
+    for (const item of items) {
+      buildTestCases(
+        path.join(directory, item.name),
+        item.name,
+        testCases
+      );
     }
   }
+}
 
+async function importCase(
+  directory: string,
+  name: string,
+): Promise<TestCase | undefined> {
   // Fetch the input schemas
-  const queryInput = fetchIfExists("input/query.graphql");
-  const mutationInput = fetchIfExists("input/mutation.graphql");
+  const queryInput = readFileIfExists("input/query.graphql", directory);
+  const mutationInput = readFileIfExists("input/mutation.graphql", directory);
 
   // Fetch the output schemas
-  const querySchema = fetchIfExists("output/query.graphql");
-  const queryTypeInfo = await importIfExists("output/query.ts");
-  const mutationSchema = fetchIfExists("output/mutation.graphql");
-  const mutationTypeInfo = await importIfExists("output/mutation.ts");
-  const schemaSchema = fetchIfExists("output/schema.graphql");
-  const schemaTypeInfo = await importIfExists("output/schema.ts");
+  const querySchema = readFileIfExists("output/query.graphql", directory);
+  const ModuleTypeInfo = await readNamedExportIfExists<TypeInfo>("typeInfo", "output/query.ts", directory);
+  const mutationSchema = readFileIfExists("output/mutation.graphql", directory);
+  const mutationTypeInfo = await readNamedExportIfExists<TypeInfo>("typeInfo", "output/mutation.ts", directory);
+  const schemaSchema = readFileIfExists("output/schema.graphql", directory);
+  const schemaTypeInfo = await readNamedExportIfExists<TypeInfo>("typeInfo", "output/schema.ts", directory);
 
   const resolveExternal = (uri: string): Promise<string> => {
-    return Promise.resolve(fetchIfExists(`imports-ext/${uri}/schema.graphql`) || "");
+    return Promise.resolve(readFileIfExists(`imports-ext/${uri}/schema.graphql`, directory) || "");
   };
 
   const resolveLocal = (path: string): Promise<string> => {
-    return Promise.resolve(fetchIfExists(path, true) || "");
+    return Promise.resolve(readFileIfExists(path, directory, true) || "");
   };
 
   const input: ComposerOptions = {
@@ -107,8 +102,7 @@ const importCase = async (basePath: string, dirent: Dirent): Promise<TestCase | 
     input.schemas.query = {
       schema: queryInput,
       absolutePath: path.join(
-        basePath,
-        dirent.name,
+        directory,
         "input/query.graphql"
       ),
     };
@@ -118,8 +112,7 @@ const importCase = async (basePath: string, dirent: Dirent): Promise<TestCase | 
     input.schemas.mutation = {
       schema: mutationInput,
       absolutePath: path.join(
-        basePath,
-        dirent.name,
+        directory,
         "input/mutation.graphql"
       ),
     };
@@ -129,10 +122,10 @@ const importCase = async (basePath: string, dirent: Dirent): Promise<TestCase | 
     combined: {}
   };
 
-  if (querySchema && queryTypeInfo) {
+  if (querySchema && ModuleTypeInfo) {
     output.query = {
       schema: querySchema,
-      typeInfo: queryTypeInfo
+      typeInfo: ModuleTypeInfo
     };
   }
 
@@ -151,39 +144,8 @@ const importCase = async (basePath: string, dirent: Dirent): Promise<TestCase | 
   }
 
   return {
-    name: dirent.name,
+    name,
     input,
     output,
   };
-};
-
-export function fetchTestCases(): TestCases {
-  const testCases: TestCases = [];
-
-  readdirSync(root, { withFileTypes: true }).forEach(
-    (dirent: Dirent) => {
-      buildTestCases(root, root, dirent, testCases)
-    }
-  );
-
-  return testCases;
-}
-
-export const buildTestCases = (rootPath: string, basePath: string, dirent: Dirent, testCases: TestCases) => {
-  const fullPath = path.join(basePath, dirent.name);
-
-  const items = readdirSync(fullPath, { withFileTypes: true });
-
-  if(items.some(x => x.name === "input") && 
-    items.some(x => x.name === "output")
-  ) {
-    testCases.push({
-      promise: importCase(basePath, dirent),
-      name: path.relative(rootPath, fullPath), 
-    });
-  } else {
-    for(const item of items) {
-      buildTestCases(rootPath, fullPath, item, testCases);
-    }
-  }
 }

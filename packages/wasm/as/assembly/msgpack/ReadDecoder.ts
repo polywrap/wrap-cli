@@ -11,9 +11,9 @@ import {
 } from "./Format";
 import { Nullable } from "./Nullable";
 import { Read } from "./Read";
-import { BigInt } from "../BigInt";
-import { Context } from "./Context";
-import { JSON } from "../JSON";
+import { BigInt } from "../math";
+import { Context } from "../debug";
+import { JSON } from "../json";
 
 export class ReadDecoder extends Read {
   private readonly _context: Context;
@@ -131,6 +131,8 @@ export class ReadDecoder extends Read {
     const prefix = this._view.getUint8();
     if (isFloat64(prefix)) {
       return <f64>this._view.getFloat64();
+    } else if (isFloat32(prefix)) {
+      return <f64>this._view.getFloat32();
     }
     throw new Error(
       this._context.printWithContext(
@@ -539,128 +541,6 @@ export class ReadDecoder extends Read {
           )
         );
     }
-  }
-
-  private _skip(): void {
-    // getSize handles discarding 'msgpack header' info
-    let numberOfObjectsToDiscard = this._getSize();
-
-    while (numberOfObjectsToDiscard > 0) {
-      this._getSize(); // discard next object
-      numberOfObjectsToDiscard--;
-    }
-  }
-
-  private _getSize(): i32 {
-    const leadByte = this._view.getUint8(); // will discard one
-    let objectsToDiscard = <i32>0;
-    // Handled for fixed values
-    if (isNegativeFixedInt(leadByte)) {
-      // noop, will just discard the leadbyte
-    } else if (isFixedInt(leadByte)) {
-      // noop, will just discard the leadbyte
-    } else if (isFixedString(leadByte)) {
-      const strLength = leadByte & 0x1f;
-      this._view.discard(strLength);
-    } else if (isFixedArray(leadByte)) {
-      objectsToDiscard = <i32>(leadByte & Format.FOUR_LEAST_SIG_BITS_IN_BYTE);
-    } else if (isFixedMap(leadByte)) {
-      objectsToDiscard =
-        2 * <i32>(leadByte & Format.FOUR_LEAST_SIG_BITS_IN_BYTE);
-    } else {
-      switch (leadByte) {
-        case Format.NIL:
-          break;
-        case Format.TRUE:
-          break;
-        case Format.FALSE:
-          break;
-        case Format.BIN8:
-          this._view.discard(<i32>this._view.getUint8());
-          break;
-        case Format.BIN16:
-          this._view.discard(<i32>this._view.getUint16());
-          break;
-        case Format.BIN32:
-          this._view.discard(<i32>this._view.getUint32());
-          break;
-        case Format.FLOAT32:
-          this._view.discard(4);
-          break;
-        case Format.FLOAT64:
-          this._view.discard(8);
-          break;
-        case Format.UINT8:
-          this._view.discard(1);
-          break;
-        case Format.UINT16:
-          this._view.discard(2);
-          break;
-        case Format.UINT32:
-          this._view.discard(4);
-          break;
-        case Format.UINT64:
-          this._view.discard(8);
-          break;
-        case Format.INT8:
-          this._view.discard(1);
-          break;
-        case Format.INT16:
-          this._view.discard(2);
-          break;
-        case Format.INT32:
-          this._view.discard(4);
-          break;
-        case Format.INT64:
-          this._view.discard(8);
-          break;
-        case Format.FIXEXT1:
-          this._view.discard(2);
-          break;
-        case Format.FIXEXT2:
-          this._view.discard(3);
-          break;
-        case Format.FIXEXT4:
-          this._view.discard(5);
-          break;
-        case Format.FIXEXT8:
-          this._view.discard(9);
-          break;
-        case Format.FIXEXT16:
-          this._view.discard(17);
-          break;
-        case Format.STR8:
-          this._view.discard(this._view.getUint8());
-          break;
-        case Format.STR16:
-          this._view.discard(this._view.getUint16());
-          break;
-        case Format.STR32:
-          this._view.discard(this._view.getUint32());
-          break;
-        case Format.ARRAY16:
-          objectsToDiscard = <i32>this._view.getUint16();
-          break;
-        case Format.ARRAY32:
-          objectsToDiscard = <i32>this._view.getUint32();
-          break;
-        case Format.MAP16:
-          objectsToDiscard = 2 * <i32>this._view.getUint16();
-          break;
-        case Format.MAP32:
-          objectsToDiscard = 2 * <i32>this._view.getUint32();
-          break;
-        default:
-          throw new TypeError(
-            this._context.printWithContext(
-              "invalid prefix; cannot get size due to bad encoding for value: " +
-                leadByte.toString()
-            )
-          );
-      }
-    }
-
-    return objectsToDiscard;
   }
 
   // eslint-disable-next-line @typescript-eslint/naming-convention

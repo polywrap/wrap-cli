@@ -38,28 +38,43 @@ fn test_write_json() {
 }
 
 #[test]
-fn test_write_string() {
+fn test_write_fixstr() {
     let mut writer = WriteEncoder::new(&[], Context::new());
     writer
-        .write_string(&String::from("Polywrap wasm-rs runtime"))
+        .write_string("-This string contains 31 chars-")
         .unwrap();
     assert_eq!(
         [
-            184, 80, 111, 108, 121, 119, 114, 97, 112, 32, 119, 97, 115, 109, 45, 114, 115, 32,
-            114, 117, 110, 116, 105, 109, 101
+          191, 45, 84, 104, 105, 115, 32, 115, 116, 114, 105, 110, 103, 32, 99,
+           111, 110, 116, 97, 105, 110, 115, 32, 51, 49, 32, 99, 104, 97, 114, 115, 45
         ],
         writer.get_buffer().as_slice()
     );
 }
 
 #[test]
-fn test_write_str() {
-    let mut writer = WriteEncoder::new(&[], Context::new());
-    writer.write_str("Hello").unwrap();
-    assert_eq!(
-        [165, 72, 101, 108, 108, 111],
-        writer.get_buffer().as_slice()
-    );
+fn test_write_string() {
+  let mut writer = WriteEncoder::new(&[], Context::new());
+  writer
+      .write_string(concat!("This is a str 8 string of 255 bytes ",
+      "AC53LgxLLOKm0hfsPa1V0nfMjXtnmkEttruCPjc51dtEMLRJIEu1YoRGd9", "oXnM4CxcIiTc9V2DnAidZz22foIzc3kqHBoXgYskevfoJ5RK", 
+      "Yp52qvoDPufUebLksFl7astBNEnjPVUX2e3O9O6VKeUpB0iiHQXfzOOjTEK6Xy6ks4zAG2M6jCL01flIJlxplRXCV7 sadsadsadsadasdasaaaaa"))
+      .unwrap();
+  assert_eq!(
+    [ 217, 255, 84, 104, 105, 115, 32, 105, 115, 32, 97, 32, 115, 116, 114, 32, 56, 32, 115, 116, 114,
+      105, 110, 103, 32, 111, 102, 32, 50, 53, 53, 32, 98, 121, 116, 101, 115, 32, 65, 67, 53, 51, 76,
+      103, 120, 76, 76, 79, 75, 109, 48, 104, 102, 115, 80, 97, 49, 86, 48, 110, 102, 77, 106, 88, 116,
+      110, 109, 107, 69, 116, 116, 114, 117, 67, 80, 106, 99, 53, 49, 100, 116, 69, 77, 76, 82, 74, 73,
+      69, 117, 49, 89, 111, 82, 71, 100, 57, 111, 88, 110, 77, 52, 67, 120, 99, 73, 105, 84, 99, 57, 86,
+      50, 68, 110, 65, 105, 100, 90, 122, 50, 50, 102, 111, 73, 122, 99, 51, 107, 113, 72, 66, 111, 88,
+      103, 89, 115, 107, 101, 118, 102, 111, 74, 53, 82, 75, 89, 112, 53, 50, 113, 118, 111, 68, 80, 117,
+      102, 85, 101, 98, 76, 107, 115, 70, 108, 55, 97, 115, 116, 66, 78, 69, 110, 106, 80, 86, 85, 88, 50,
+      101, 51, 79, 57, 79, 54, 86, 75, 101, 85, 112, 66, 48, 105, 105, 72, 81, 88, 102, 122, 79, 79, 106,
+      84, 69, 75, 54, 88, 121, 54, 107, 115, 52, 122, 65, 71, 50, 77, 54, 106, 67, 76, 48, 49, 102, 108,
+      73, 74, 108, 120, 112, 108, 82, 88, 67, 86, 55, 32, 115, 97, 100, 115, 97, 100, 115, 97, 100, 115,
+      97, 100, 97, 115, 100, 97, 115, 97, 97, 97, 97, 97 ],
+      writer.get_buffer().as_slice()
+  );
 }
 
 #[test]
@@ -122,14 +137,14 @@ fn test_write_i16() {
 fn test_write_i32() {
     let mut writer = WriteEncoder::new(&[], Context::new());
     writer.write_i32(&(123456)).unwrap();
-    assert_eq!([206, 0, 1, 226, 64], writer.get_buffer().as_slice());
+    assert_eq!([210, 0, 1, 226, 64], writer.get_buffer().as_slice());
 }
 
 #[test]
-fn write_unsigned_int() {
+fn write_u64() {
     let mut writer = WriteEncoder::new(&[], Context::new());
     // u64::MAX == 18446744073709551615
-    writer.write_unsigned_int(&u64::MAX).unwrap();
+    writer.write_u64(&u64::MAX).unwrap();
     assert_eq!(
         [207, 255, 255, 255, 255, 255, 255, 255, 255],
         writer.get_buffer().as_slice()
@@ -137,14 +152,14 @@ fn write_unsigned_int() {
 }
 
 #[test]
-fn write_signed_int() {
+fn write_i64() {
     let mut writer = WriteEncoder::new(&[], Context::new());
     // i64::MAX == 9_223_372_036_854_775_807i64
     writer
-        .write_signed_int(&9_223_372_036_854_775_807i64)
+        .write_i64(&9_223_372_036_854_775_807i64)
         .unwrap();
     assert_eq!(
-        [207, 127, 255, 255, 255, 255, 255, 255, 255],
+        [211, 127, 255, 255, 255, 255, 255, 255, 255],
         writer.get_buffer().as_slice()
     );
 }
@@ -182,8 +197,23 @@ fn test_write_fixed_array() {
         .unwrap();
     assert_eq!(
         writer.get_buffer().as_slice(),
-        [147, 1, 2, 206, 0, 8, 82, 65]
+        [147, 1, 2, 210, 0, 8, 82, 65]
     );
+}
+
+#[test]
+fn test_write_16_array() {
+  let mut writer = WriteEncoder::new(&[], Context::new());
+  let input_arr = vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 
+    22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36];
+  writer
+      .write_array(&input_arr, |writer, item| writer.write_i32(item))
+      .unwrap();
+  assert_eq!(
+      writer.get_buffer().as_slice(),
+      [220, 0, 36, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
+       22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36]
+  );
 }
 
 // TODO: add tests for test_write_16_array test_write_32_array

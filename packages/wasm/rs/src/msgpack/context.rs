@@ -1,7 +1,7 @@
 //! Context stores debug information in a stack, and
 //! prints it in a clear format
 
-#[derive(Clone, Debug, Default)]
+#[derive(Clone, Debug)]
 pub struct Context {
     pub description: String,
     nodes: Vec<Node>,
@@ -13,6 +13,13 @@ impl Context {
             description: "context description not set".to_string(),
             nodes: vec![],
         }
+    }
+
+    pub fn with_description(description: &str) -> Self {
+      Self {
+        description: description.to_string(),
+        nodes: vec![],
+      }
     }
 
     pub fn is_empty(&self) -> bool {
@@ -31,11 +38,18 @@ impl Context {
         });
     }
 
-    pub fn pop(&mut self) {
+    pub fn pop(&mut self) -> String {
         if self.is_empty() {
             panic!("Error: tried to pop an item from an empty Context stack");
         }
-        let _ = self.nodes.pop();
+        let node = self.nodes.pop().unwrap();
+        let info = if node.node_info.eq(&String::from("")) {
+            String::from("")
+        } else {
+            format!(" >> {}", node.node_info)
+        };
+
+        format!("{}: {}{}", node.node_item, node.node_type, info)
     }
 
     pub fn context_to_string(&self) -> String {
@@ -77,7 +91,7 @@ impl Context {
 }
 
 #[allow(dead_code)]
-#[derive(Clone, Debug, Default)]
+#[derive(Debug, Clone)]
 struct Node {
     node_item: String,
     node_type: String,

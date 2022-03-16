@@ -11,7 +11,7 @@ type Query {
     object: Object!
   ): String!
 
-  methodJson(
+  methodJSON(
     valueA: Int!
     valueB: String!
     valueC: Boolean!

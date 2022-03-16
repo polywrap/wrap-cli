@@ -170,16 +170,13 @@ export const createImports = (config: {
           `__w3_abort: ${msg}\nFile: ${file}\nLocation: [${line},${column}]`
         );
       },
-      __w3_debug_log: (
-        ptr: u32,
-        len: u32
-      ): void => {
+      __w3_debug_log: (ptr: u32, len: u32): void => {
         const msg = readString(memory.buffer, ptr, len);
         console.debug(`__w3_debug_log: ${msg}`);
-      }
+      },
     },
     env: {
-      memory
-    }
+      memory,
+    },
   };
 };

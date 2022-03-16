@@ -47,8 +47,8 @@ pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &Input{{#toUpper}}
 pub fn write_{{#toLower}}{{name}}{{/toLower}}_args<W: Write>(input: &Input{{#toUpper}}{{name}}{{/toUpper}}, writer: &mut W) -> Result<(), EncodeError> {
     writer.write_map_length(&{{arguments.length}})?;
     {{#arguments}}
-    writer.context().push("{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
-    writer.write_str("{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}")?;
+    writer.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
+    writer.write_string("{{name}}")?;
     {{#scalar}}
     writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}})?;
     {{/scalar}}
@@ -86,8 +86,9 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_result(result: &[u8]) -> Res
     let mut context = Context::new();
     context.description = "Deserializing imported query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
     let mut reader = ReadDecoder::new(result, context);
+
     {{#return}}
-    reader.context().push("{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "reading function output");
+    reader.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "reading function output");
     {{#scalar}}
     let res = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}()?;
     {{/scalar}}

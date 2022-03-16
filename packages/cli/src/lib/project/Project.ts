@@ -1,8 +1,15 @@
+import { intlMsg } from "../intl";
+import {
+  ManifestLanguage,
+  isManifestLanguage,
+  manifestLanguages,
+} from "../helpers";
+
 import fs from "fs";
 import path from "path";
 import rimraf from "rimraf";
 import copyfiles from "copyfiles";
-import { TargetLanguage } from "@web3api/schema-bind";
+import { writeFileSync } from "@web3api/os-js";
 
 export interface ProjectConfig {
   quiet?: boolean;
@@ -16,7 +23,7 @@ export abstract class Project {
 
   public abstract getRootDir(): string;
 
-  public abstract getLanguage(): Promise<TargetLanguage>;
+  public abstract getManifestLanguage(): Promise<ManifestLanguage>;
 
   public abstract getSchemaNamedPaths(): Promise<{
     [name: string]: string;
@@ -39,16 +46,6 @@ export abstract class Project {
     return path.join(this.getRootDir(), ".w3");
   }
 
-  public readCacheFile(file: string): string | undefined {
-    const filePath = path.join(this.getCacheDir(), file);
-
-    if (!fs.existsSync(filePath)) {
-      return undefined;
-    }
-
-    return fs.readFileSync(filePath, "utf-8");
-  }
-
   public removeCacheDir(subfolder: string): void {
     const folderPath = path.join(this.getCacheDir(), subfolder);
     rimraf.sync(folderPath);
@@ -58,7 +55,33 @@ export abstract class Project {
     return path.join(this.getCacheDir(), subpath);
   }
 
-  public async copyFilesIntoCache(
+  public readCacheFile(file: string): string | undefined {
+    const filePath = this.getCachePath(file);
+
+    if (!fs.existsSync(filePath)) {
+      return undefined;
+    }
+
+    return fs.readFileSync(filePath, "utf-8");
+  }
+
+  public writeCacheFile(
+    subPath: string,
+    data: unknown,
+    options?: fs.WriteFileOptions
+  ): void {
+    const filePath = this.getCachePath(subPath);
+    const folderPath = path.dirname(filePath);
+
+    // Create folders if they don't exist
+    if (!fs.existsSync(folderPath)) {
+      fs.mkdirSync(folderPath, { recursive: true });
+    }
+
+    writeFileSync(filePath, data, options);
+  }
+
+  public async copyIntoCache(
     destSubfolder: string,
     sourceFolder: string,
     options: copyfiles.Options = {}
@@ -78,5 +101,30 @@ export abstract class Project {
         }
       });
     });
+  }
+
+  /// Validation
+
+  protected validateManifestLanguage(
+    language: string | undefined,
+    validPatterns: string[]
+  ): void {
+    if (!language) {
+      throw Error(intlMsg.lib_project_language_not_found());
+    }
+
+    const languagePatternValid = (test: string) =>
+      validPatterns.some((x) => test.indexOf(x) > -1);
+
+    if (!isManifestLanguage(language) || !languagePatternValid(language)) {
+      throw Error(
+        intlMsg.lib_project_invalid_manifest_language({
+          language,
+          validTypes: Object.keys(manifestLanguages)
+            .filter((x) => languagePatternValid(x))
+            .join(" | "),
+        })
+      );
+    }
   }
 }

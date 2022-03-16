@@ -1,7 +1,7 @@
 import { ethereumPlugin } from "..";
 import * as Schema from "../w3";
 
-import { Web3ApiClient } from "@web3api/client-js";
+import { Web3ApiClient, defaultIpfsProviders } from "@web3api/client-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import {
@@ -63,7 +63,7 @@ describe("Ethereum Plugin", () => {
           uri: "w3://ens/ipfs.web3api.eth",
           plugin: ipfsPlugin({
             provider: ipfs,
-            fallbackProviders: ["https://ipfs.io"]
+            fallbackProviders: defaultIpfsProviders
           })
         },
         {
@@ -232,6 +232,78 @@ describe("Ethereum Plugin", () => {
       });
 
       expect(acceptsArrayArg.errors).toBeUndefined();
+    });
+
+    it("solidityPack", async () => {
+      const types: string[] = ["address", "uint24", "address", "uint24", "address"];
+      const values: string[] = [
+        "0x0000000000000000000000000000000000000001",
+        "3000",
+        "0x0000000000000000000000000000000000000002",
+        "3000",
+        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+      ];
+      const result = await client.invoke<string>({
+        uri: uri,
+        module: "query",
+        method: "solidityPack",
+        input: {
+          types,
+          values,
+        },
+      });
+
+      expect(result.error).toBeFalsy();
+      expect(result.data).toBeTruthy();
+      expect(result.data).toBe("0x0000000000000000000000000000000000000001000bb80000000000000000000000000000000000000002000bb8c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2");
+    });
+
+    it("solidityKeccak256", async () => {
+      const types: string[] = ["address", "uint24", "address", "uint24", "address"];
+      const values: string[] = [
+        "0x0000000000000000000000000000000000000001",
+        "3000",
+        "0x0000000000000000000000000000000000000002",
+        "3000",
+        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+      ];
+      const result = await client.invoke<string>({
+        uri: uri,
+        module: "query",
+        method: "solidityKeccak256",
+        input: {
+          types,
+          values,
+        },
+      });
+
+      expect(result.error).toBeFalsy();
+      expect(result.data).toBeTruthy();
+      expect(result.data).toBe("0x5dd4ee83f9bab0157f0e929b6dddd106fd7de6e5089f0f05c2c0b861e3807588");
+    });
+
+    it("soliditySha256", async () => {
+      const types: string[] = ["address", "uint24", "address", "uint24", "address"];
+      const values: string[] = [
+        "0x0000000000000000000000000000000000000001",
+        "3000",
+        "0x0000000000000000000000000000000000000002",
+        "3000",
+        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+      ];
+      const result = await client.invoke<string>({
+        uri: uri,
+        module: "query",
+        method: "soliditySha256",
+        input: {
+          types,
+          values,
+        },
+      });
+
+      expect(result.error).toBeFalsy();
+      expect(result.data).toBeTruthy();
+      expect(result.data).toBe("0x8652504faf6e0d175e62c1d9c7e10d636d5ab8f153ec3257dab1726639058d27");
     });
 
     it("getSignerAddress", async () => {

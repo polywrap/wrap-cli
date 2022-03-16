@@ -1,4 +1,3 @@
-use super::error::{DecodeError, EncodeError};
 use byteorder::{self, ReadBytesExt, WriteBytesExt};
 
 const FIX_ARRAY_SIZE: u8 = 0x0f;
@@ -72,12 +71,15 @@ impl Format {
     pub fn set_format<W: std::io::Write>(
         writer: &mut W,
         format: Format,
-    ) -> Result<(), EncodeError> {
-        Ok(WriteBytesExt::write_u8(writer, format.to_u8())?)
+    ) -> Result<(), std::io::Error> {
+        WriteBytesExt::write_u8(writer, format.to_u8())?;
+        
+        Ok(())
     }
 
-    pub fn get_format<R: std::io::Read>(reader: &mut R) -> Result<Format, DecodeError> {
-        Ok(Format::from_u8(ReadBytesExt::read_u8(reader)?))
+    pub fn get_format<R: std::io::Read>(reader: &mut R) -> Result<Format, std::io::Error> {
+        let bytesval = ReadBytesExt::read_u8(reader)?;
+        Ok(Format::from_u8(bytesval))
     }
 
     /// Converts a single byte to its MsgPack marker representation

@@ -21,6 +21,7 @@ use crate::CustomType;
 pub struct AnotherType {
     pub prop: Option<String>,
     pub circular: Option<CustomType>,
+    pub m_const: Option<String>,
 }
 
 impl AnotherType {
@@ -28,6 +29,7 @@ impl AnotherType {
         AnotherType {
             prop: None,
             circular: None,
+            m_const: None,
         }
     }
 

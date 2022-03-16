@@ -1,20 +1,20 @@
 import { TypeInfoTransforms } from ".";
 import {
-  QueryDefinition,
-  ImportedQueryDefinition,
+  ModuleDefinition,
+  ImportedModuleDefinition,
   MethodDefinition,
 } from "../typeInfo";
 
 export function methodParentPointers(): TypeInfoTransforms {
-  const visitorStack: (QueryDefinition | ImportedQueryDefinition)[] = [];
+  const visitorStack: (ModuleDefinition | ImportedModuleDefinition)[] = [];
 
   return {
     enter: {
-      QueryDefinition: (def: QueryDefinition) => {
+      ModuleDefinition: (def: ModuleDefinition) => {
         visitorStack.push(def);
         return def;
       },
-      ImportedQueryDefinition: (def: ImportedQueryDefinition) => {
+      ImportedModuleDefinition: (def: ImportedModuleDefinition) => {
         visitorStack.push(def);
         return def;
       },
@@ -31,11 +31,11 @@ export function methodParentPointers(): TypeInfoTransforms {
       },
     },
     leave: {
-      QueryDefinition: (def: QueryDefinition) => {
+      ModuleDefinition: (def: ModuleDefinition) => {
         visitorStack.pop();
         return def;
       },
-      ImportedQueryDefinition: (def: ImportedQueryDefinition) => {
+      ImportedModuleDefinition: (def: ImportedModuleDefinition) => {
         visitorStack.pop();
         return def;
       },

@@ -30,11 +30,11 @@ impl TestImportMutation {
 
     pub fn imported_method(input: &InputImportedMethod) -> Result<Option<TestImportObject>, String> {
         let uri = TestImportMutation::URI;
-        let args = serialize_imported_method_args(input)?;
+        let args = serialize_imported_method_args(input).map_err(|e| e.to_string())?;
         let result = subinvoke::w3_subinvoke(
             uri,
             "mutation",
-            "imported_method",
+            "importedMethod",
             args,
         )?;
         deserialize_imported_method_result(result.as_slice()).map_err(|e| e.to_string())
@@ -42,11 +42,11 @@ impl TestImportMutation {
 
     pub fn another_method(input: &InputAnotherMethod) -> Result<i32, String> {
         let uri = TestImportMutation::URI;
-        let args = serialize_another_method_args(input)?;
+        let args = serialize_another_method_args(input).map_err(|e| e.to_string())?;
         let result = subinvoke::w3_subinvoke(
             uri,
             "mutation",
-            "another_method",
+            "anotherMethod",
             args,
         )?;
         deserialize_another_method_result(result.as_slice()).map_err(|e| e.to_string())

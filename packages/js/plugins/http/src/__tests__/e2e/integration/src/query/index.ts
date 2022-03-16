@@ -9,12 +9,12 @@ export function get(input: Input_get): HTTP_Response | null {
   return HTTP_Query.get({
     url: input.url,
     request: input.request
-  });
+  }).unwrap();
 }
 
 export function post(input: Input_post): HTTP_Response | null {
   return HTTP_Query.post({
     url: input.url,
     request: input.request
-  });
+  }).unwrap();
 }

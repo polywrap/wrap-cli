@@ -5,6 +5,7 @@
 import {
   ExternalImport,
   LocalImport,
+  SchemaKind,
   SchemaResolver,
   SchemaResolvers,
   SYNTAX_REFERENCE,
@@ -18,13 +19,13 @@ import {
   parseSchema,
   ObjectDefinition,
   ImportedObjectDefinition,
-  QueryDefinition,
+  ModuleDefinition,
   TypeInfoTransforms,
   visitObjectDefinition,
-  visitQueryDefinition,
-  ImportedQueryDefinition,
+  visitModuleDefinition,
+  ImportedModuleDefinition,
   DefinitionKind,
-  visitImportedQueryDefinition,
+  visitImportedModuleDefinition,
   visitImportedObjectDefinition,
   ImportedEnumDefinition,
   EnumDefinition,
@@ -40,11 +41,11 @@ import {
   InvokableModules,
   createImportedObjectDefinition,
   createImportedEnumDefinition,
-  createImportedQueryDefinition,
+  createImportedModuleDefinition,
   createInterfaceDefinition,
   createCapability,
-  QueryModuleCapability,
-  QueryModuleCapabilityMap,
+  ModuleCapability,
+  ModuleCapabilityMap,
   createEnvDefinition,
   createObjectDefinition,
   envTypes,
@@ -61,7 +62,7 @@ export async function resolveUseStatements(
   schema: string,
   schemaPath: string,
   typeInfo: TypeInfo
-): Promise<QueryModuleCapabilityMap> {
+): Promise<ModuleCapabilityMap> {
   const useKeywordCapture = /^[#]*["{3}]*use[ \n\t]/gm;
   const useCapture = /[#]*["{3}]*use[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*for[ \n\t]*(\w+)[ \n\t]/g;
 
@@ -74,33 +75,33 @@ export async function resolveUseStatements(
     );
   }
 
-  const importedQueryByNamespace: Record<string, ImportedQueryDefinition> = {};
+  const importedModuleByNamespace: Record<
+    string,
+    ImportedModuleDefinition
+  > = {};
 
-  typeInfo.importedQueryTypes.forEach((value) => {
-    importedQueryByNamespace[value.namespace] = value;
+  typeInfo.importedModuleTypes.forEach((value) => {
+    importedModuleByNamespace[value.namespace] = value;
   });
 
-  const capabilitiesByModule: Record<
-    InvokableModules,
-    QueryModuleCapability[]
-  > = {
+  const capabilitiesByModule: Record<InvokableModules, ModuleCapability[]> = {
     query: [],
     mutation: [],
   };
 
   const parsedUses = parseUse(useStatements);
   for (const parsedUse of parsedUses) {
-    const importedQuery = importedQueryByNamespace[parsedUse.namespace];
-    if (!importedQuery) {
+    const importedModule = importedModuleByNamespace[parsedUse.namespace];
+    if (!importedModule) {
       throw Error(`Invalid use statement: namespace used hasn't been imported`);
     }
-    const module = importedQuery.nativeType.toLowerCase() as InvokableModules;
+    const module = importedModule.nativeType.toLowerCase() as InvokableModules;
     const modules: InvokableModules[] = [module];
     const capabilities = parsedUse.usedTypes
       .map((type) => {
         capabilitiesByModule[module].push({
           type,
-          uri: importedQuery.uri,
+          uri: importedModule.uri,
           namespace: parsedUse.namespace,
         });
         return createCapability({ type, modules, enabled: true });
@@ -110,7 +111,7 @@ export async function resolveUseStatements(
     typeInfo.interfaceTypes.push(
       createInterfaceDefinition({
         type: parsedUse.namespace,
-        uri: importedQuery.uri,
+        uri: importedModule.uri,
         namespace: parsedUse.namespace,
         capabilities: capabilities,
       })
@@ -122,7 +123,7 @@ export async function resolveUseStatements(
 export async function resolveImportsAndParseSchemas(
   schema: string,
   schemaPath: string,
-  mutation: boolean,
+  schemaKind: SchemaKind,
   resolvers: SchemaResolvers
 ): Promise<TypeInfo> {
   const importKeywordCapture = /^#+["{3}]*import\s/gm;
@@ -153,7 +154,7 @@ export async function resolveImportsAndParseSchemas(
 
   const externalImportsToResolve: ExternalImport[] = parseExternalImports(
     externalImportStatements,
-    mutation
+    schemaKind
   );
 
   const localImportsToResolve: LocalImport[] = parseLocalImports(
@@ -163,12 +164,12 @@ export async function resolveImportsAndParseSchemas(
 
   const subTypeInfo: TypeInfo = {
     objectTypes: [],
-    queryTypes: [],
+    moduleTypes: [],
     enumTypes: [],
     interfaceTypes: [],
     importedEnumTypes: [],
     importedObjectTypes: [],
-    importedQueryTypes: [],
+    importedModuleTypes: [],
     envTypes: {
       mutation: createEnvDefinition({}),
       query: createEnvDefinition({}),
@@ -185,7 +186,7 @@ export async function resolveImportsAndParseSchemas(
     localImportsToResolve,
     resolvers.local,
     subTypeInfo,
-    mutation,
+    schemaKind,
     resolvers
   );
 
@@ -204,7 +205,7 @@ export async function resolveImportsAndParseSchemas(
   newSchema = newSchema.replace(/#[^\n]*\n/g, "");
 
   // Add the @imports directive
-  newSchema = addQueryImportsDirective(newSchema, externalImports, mutation);
+  newSchema = addModuleImportsDirective(newSchema, schemaKind, externalImports);
 
   // Add the @capability directive
   newSchema = addCapabilityDirective(newSchema, capabilitiesByModule);
@@ -214,8 +215,8 @@ export async function resolveImportsAndParseSchemas(
 
   newSchema = resolveInterfaces(newSchema, implementationsWithInterfaces);
 
-  //Replace types that have empty curly brackets with types that have no curly brackets
-  //because GraphQL parser doesn't support empty curly brackets but supports no curly brackets
+  // Replace types that have empty curly brackets with types that have no curly brackets
+  // because GraphQL parser doesn't support empty curly brackets but supports no curly brackets
   newSchema = newSchema.replace(
     new RegExp(`(type\\s+${TYPE_NAME_REGEX}[^{]*){\\s*}`, "g"),
     "$1"
@@ -235,7 +236,7 @@ type ImportMap = Record<
   string,
   (
     | ImportedObjectDefinition
-    | ImportedQueryDefinition
+    | ImportedModuleDefinition
     | ImportedEnumDefinition
   ) &
     Namespaced
@@ -438,38 +439,51 @@ function appendNamespace(namespace: string, str: string) {
   return `${namespace}_${str}`;
 }
 
-function addQueryImportsDirective(
+function addModuleImportsDirective(
   schema: string,
-  externalImports: string[],
-  mutation: boolean
+  schemaKind: SchemaKind,
+  externalImports: string[]
 ): string {
   if (!externalImports.length) {
     return schema;
   }
 
-  // Append the @imports(...) directive to the query type
-  const typeCapture = mutation
-    ? /type\s+Mutation\s+([^{]*)\s*{/g
-    : /type\s+Query\s+([^{]*)\s*{/g;
+  let result = schema;
 
-  const importedTypes = `${externalImports
-    .map((type) => `\"${type}\"`)
-    .join(",\n    ")}`;
+  const modifySchema = (mutation: boolean) => {
+    // Append the @imports(...) directive to the module type
+    const typeCapture = mutation
+      ? /type\s+Mutation\s+([^{]*)\s*{/g
+      : /type\s+Query\s+([^{]*)\s*{/g;
 
-  const replacementQueryStr = `type ${
-    mutation ? "Mutation" : "Query"
-  } $1@imports(
-  types: [
-    ${importedTypes}
-  ]
-) {`;
+    const importedTypes = `${externalImports
+      .map((type) => `\"${type}\"`)
+      .join(",\n    ")}`;
 
-  return schema.replace(typeCapture, replacementQueryStr);
+    const replacementModuleStr = `type ${
+      mutation ? "Mutation" : "Query"
+    } $1@imports(
+    types: [
+      ${importedTypes}
+    ]
+    ) {`;
+
+    return result.replace(typeCapture, replacementModuleStr);
+  };
+
+  if (schemaKind === "plugin") {
+    result = modifySchema(false);
+    result = modifySchema(true);
+  } else {
+    result = modifySchema(schemaKind === "mutation");
+  }
+
+  return result;
 }
 
 function addCapabilityDirective(
   schema: string,
-  capabilitiesByModule: QueryModuleCapabilityMap
+  capabilitiesByModule: ModuleCapabilityMap
 ): string {
   if (
     !capabilitiesByModule.query.length &&
@@ -485,7 +499,7 @@ function addCapabilityDirective(
           ? /type[ \n\t]+Mutation[ \n\t]+([^{]*)[ \n\t]*{/g
           : /type[ \n\t]+Query[ \n\t]+([^{]*)[ \n\t]*{/g;
 
-      const replacementQueryStr = `type ${
+      const replacementModuleStr = `type ${
         module === "mutation" ? "Mutation" : "Query"
       } $1@capability(
   type: "${capability.type}",
@@ -493,7 +507,7 @@ function addCapabilityDirective(
   namespace: "${capability.namespace}"
 ) {`;
 
-      schema = schema.replace(typeCapture, replacementQueryStr);
+      schema = schema.replace(typeCapture, replacementModuleStr);
     }
   }
   return schema;
@@ -629,27 +643,27 @@ async function resolveExternalImports(
     // For each imported type to resolve
     for (const importedType of importedTypes) {
       let extTypes: (
-        | QueryDefinition
+        | ModuleDefinition
         | ObjectDefinition
         | EnumDefinition
       )[] = [];
       let visitorFunc: Function | undefined;
       let trueType:
-        | ImportedQueryDefinition
+        | ImportedModuleDefinition
         | ImportedObjectDefinition
         | ImportedEnumDefinition
         | undefined;
 
-      // If it's a query type
+      // If it's a module type
       if (importedType === "Query" || importedType === "Mutation") {
-        extTypes = extTypeInfo.queryTypes;
-        visitorFunc = visitQueryDefinition;
-        const queryIdx = extTypeInfo.queryTypes.findIndex(
+        extTypes = extTypeInfo.moduleTypes;
+        visitorFunc = visitModuleDefinition;
+        const moduleIdx = extTypeInfo.moduleTypes.findIndex(
           (def) => def.type === importedType
         );
-        const type = extTypeInfo.queryTypes[queryIdx];
+        const type = extTypeInfo.moduleTypes[moduleIdx];
         trueType = {
-          ...createImportedQueryDefinition({
+          ...createImportedModuleDefinition({
             ...type,
             type: appendNamespace(namespace, importedType),
             required: undefined,
@@ -664,7 +678,7 @@ async function resolveExternalImports(
         importedType.endsWith("_Mutation")
       ) {
         throw Error(
-          `Cannot import an import's imported query type. Tried to import ${importedType} from ${uri}.`
+          `Cannot import an import's imported module type. Tried to import ${importedType} from ${uri}.`
         );
       } else {
         const objIdx = extTypeInfo.objectTypes.findIndex(
@@ -787,7 +801,7 @@ async function resolveExternalImports(
       const importType = typesToImport[importName];
       let destArray:
         | ImportedObjectDefinition[]
-        | ImportedQueryDefinition[]
+        | ImportedModuleDefinition[]
         | ImportedEnumDefinition[];
       let append;
 
@@ -800,13 +814,13 @@ async function resolveExternalImports(
             visitImportedObjectDefinition(importDef, namespaceTypes(namespace))
           );
         };
-      } else if (importType.kind === DefinitionKind.ImportedQuery) {
-        destArray = typeInfo.importedQueryTypes;
+      } else if (importType.kind === DefinitionKind.ImportedModule) {
+        destArray = typeInfo.importedModuleTypes;
         append = () => {
-          const importDef = importType as ImportedQueryDefinition;
+          const importDef = importType as ImportedModuleDefinition;
           // Namespace all object types
-          typeInfo.importedQueryTypes.push(
-            visitImportedQueryDefinition(importDef, namespaceTypes(namespace))
+          typeInfo.importedModuleTypes.push(
+            visitImportedModuleDefinition(importDef, namespaceTypes(namespace))
           );
         };
       } else if (importType.kind === DefinitionKind.ImportedEnum) {
@@ -834,7 +848,7 @@ async function resolveExternalImports(
           (
             def:
               | ImportedObjectDefinition
-              | ImportedQueryDefinition
+              | ImportedModuleDefinition
               | ImportedEnumDefinition
           ) => def.type === importType.type
         ) > -1;
@@ -852,7 +866,7 @@ async function resolveLocalImports(
   importsToResolve: LocalImport[],
   resolveSchema: SchemaResolver,
   typeInfo: TypeInfo,
-  mutation: boolean,
+  schemaKind: SchemaKind,
   resolvers: SchemaResolvers
 ): Promise<void> {
   for (const importToResolve of importsToResolve) {
@@ -874,7 +888,7 @@ async function resolveLocalImports(
     const localTypeInfo = await resolveImportsAndParseSchemas(
       schema,
       path,
-      mutation,
+      schemaKind,
       resolvers
     );
 
@@ -884,7 +898,7 @@ async function resolveLocalImports(
     for (const importedType of importedTypes) {
       if (importedType === "Query" || importedType === "Mutation") {
         throw Error(
-          `Importing query types from local schemas is prohibited. Tried to import from ${path}.`
+          `Importing module types from local schemas is prohibited. Tried to import from ${path}.`
         );
       }
 
@@ -1028,44 +1042,44 @@ async function resolveLocalImports(
   }
 }
 
-export function resolveEnvTypes(typeInfo: TypeInfo, mutation: boolean): void {
-  const genericEnvType = typeInfo.objectTypes.find(
-    (type) => type.type === "Env"
-  );
-  if (!genericEnvType) {
+export function resolveEnvTypes(
+  typeInfo: TypeInfo,
+  schemaKind: SchemaKind
+): void {
+  const sharedEnvDef = typeInfo.objectTypes.find((type) => type.type === "Env");
+  if (!sharedEnvDef) {
     return;
   }
 
-  const specificEnvType = mutation
+  const isMutationEnv = schemaKind === "mutation" || schemaKind === "plugin";
+
+  const moduleEnvDef = isMutationEnv
     ? typeInfo.envTypes.mutation
     : typeInfo.envTypes.query;
 
-  if (!specificEnvType.sanitized) {
-    specificEnvType.sanitized = createObjectDefinition({
-      type: mutation ? envTypes.MutationEnv : envTypes.QueryEnv,
+  if (!moduleEnvDef.sanitized) {
+    moduleEnvDef.sanitized = createObjectDefinition({
+      type: isMutationEnv ? envTypes.MutationEnv : envTypes.QueryEnv,
     });
   }
 
   typeInfo.objectTypes = typeInfo.objectTypes.filter((type) => {
-    return type.type !== genericEnvType.type;
+    return type.type !== sharedEnvDef.type;
   });
 
-  checkDuplicateEnvProperties(
-    specificEnvType.sanitized,
-    genericEnvType.properties
-  );
-  specificEnvType.sanitized.properties.push(...genericEnvType.properties);
+  checkDuplicateEnvProperties(moduleEnvDef.sanitized, sharedEnvDef.properties);
+  moduleEnvDef.sanitized.properties.push(...sharedEnvDef.properties);
 }
 
 export function checkDuplicateEnvProperties(
   envType: ObjectDefinition,
-  genericEnvProperties: AnyDefinition[]
+  envProperties: AnyDefinition[]
 ): void {
-  const genericEnvPropertiesSet = new Set(
-    genericEnvProperties.map((genericProperty) => genericProperty.name)
+  const envPropertiesSet = new Set(
+    envProperties.map((envProperty) => envProperty.name)
   );
   for (const specificProperty of envType.properties) {
-    if (genericEnvPropertiesSet.has(specificProperty.name)) {
+    if (envPropertiesSet.has(specificProperty.name)) {
       throw new Error(
         `Type '${envType.type}' contains duplicate property '${specificProperty.name}' of type 'Env'`
       );

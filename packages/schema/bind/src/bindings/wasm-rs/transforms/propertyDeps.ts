@@ -3,10 +3,10 @@
 import { isBaseType, isBuiltInType } from "../types";
 
 import {
-  ImportedQueryDefinition,
+  ImportedModuleDefinition,
   ObjectDefinition,
   AnyDefinition,
-  QueryDefinition,
+  ModuleDefinition,
   TypeInfoTransforms,
 } from "@web3api/schema-parse";
 
@@ -18,8 +18,8 @@ interface PropertyDep {
 
 interface PropertyDepsState {
   objectDefinition?: ObjectDefinition;
-  queryDefinition?: QueryDefinition;
-  importedQueryDefinition?: ImportedQueryDefinition;
+  moduleDefinition?: ModuleDefinition;
+  importedModuleDefinition?: ImportedModuleDefinition;
   propertyDeps?: PropertyDep[];
 }
 
@@ -33,13 +33,13 @@ export function propertyDeps(): TypeInfoTransforms {
         state.propertyDeps = [];
         return def;
       },
-      QueryDefinition: (def: QueryDefinition) => {
-        state.queryDefinition = def;
+      ModuleDefinition: (def: ModuleDefinition) => {
+        state.moduleDefinition = def;
         state.propertyDeps = [];
         return def;
       },
-      ImportedQueryDefinition: (def: ImportedQueryDefinition) => {
-        state.importedQueryDefinition = def;
+      ImportedModuleDefinition: (def: ImportedModuleDefinition) => {
+        state.importedModuleDefinition = def;
         state.propertyDeps = [];
         return def;
       },
@@ -86,14 +86,14 @@ export function propertyDeps(): TypeInfoTransforms {
             state.objectDefinition.type,
             state.propertyDeps
           );
-        } else if (state.queryDefinition && state.propertyDeps) {
+        } else if (state.moduleDefinition && state.propertyDeps) {
           state.propertyDeps = appendPropertyDep(
-            state.queryDefinition.type,
+            state.moduleDefinition.type,
             state.propertyDeps
           );
-        } else if (state.importedQueryDefinition && state.propertyDeps) {
+        } else if (state.importedModuleDefinition && state.propertyDeps) {
           state.propertyDeps = appendPropertyDep(
-            state.importedQueryDefinition.type,
+            state.importedModuleDefinition.type,
             state.propertyDeps
           );
         }
@@ -111,19 +111,19 @@ export function propertyDeps(): TypeInfoTransforms {
           propertyDeps,
         };
       },
-      QueryDefinition: (def: QueryDefinition) => {
+      ModuleDefinition: (def: ModuleDefinition) => {
         const propertyDeps = state.propertyDeps;
         state.propertyDeps = undefined;
-        state.queryDefinition = undefined;
+        state.moduleDefinition = undefined;
         return {
           ...def,
           propertyDeps,
         };
       },
-      ImportedQueryDefinition: (def: ImportedQueryDefinition) => {
+      ImportedModuleDefinition: (def: ImportedModuleDefinition) => {
         const propertyDeps = state.propertyDeps;
         state.propertyDeps = undefined;
-        state.importedQueryDefinition = undefined;
+        state.importedModuleDefinition = undefined;
         return {
           ...def,
           propertyDeps,

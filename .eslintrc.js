@@ -12,7 +12,7 @@ module.exports = {
       files: ["*.ts"],
       parser: "@typescript-eslint/parser",
       parserOptions: {
-        project: ["tsconfig.json"],
+        project: ["tsconfig.json", "./packages/**/tsconfig.json"],
       },
       plugins: [
         "eslint-plugin-import",
@@ -28,6 +28,7 @@ module.exports = {
       ],
       rules: {
         "prettier/prettier": ["error"],
+        "spaced-comment": ["error", "always", { "markers": ["/"] }],
         "@typescript-eslint/naming-convention": [
           "error",
           {selector: "default", format: ["camelCase"]},

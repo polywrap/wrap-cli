@@ -217,6 +217,30 @@ type B {
 }
 `
 
+const circularTypes7 = `
+type A {
+  prop: A
+}
+`
+
+const circularTypes8 = `
+type A {
+  prop: [A!]!
+}
+`
+
+const circularTypes9 = `
+type A {
+  prop: [A!]
+}
+`
+
+const circularTypes10 = `
+type A {
+  prop: [A]
+}
+`
+
 describe("Web3API Schema Type Validation", () => {
   it("typeDefinitions", () => {
     const exec = (schema: string) => () => parseSchema(schema, {
@@ -274,7 +298,7 @@ describe("Web3API Schema Type Validation", () => {
     );
 
     expect(exec(propertyTypes7)).toThrow(
-      /Methods can only be defined on query types \(Mutation, Query\)\.\nFound: type Queryy { method\(prop\) }/gm
+      /Methods can only be defined on module types \(Mutation, Query\)\.\nFound: type Queryy { method\(prop\) }/gm
     );
   })
 
@@ -304,5 +328,13 @@ describe("Web3API Schema Type Validation", () => {
 
     //Should allow circular references on nullable fields
     expect(exec(circularTypes6)).not.toThrow()
+
+    //Should allow recursive referece on nullable fields
+    expect(exec(circularTypes7)).not.toThrow()
+
+    //Should allow array of recursive references
+    expect(exec(circularTypes8)).not.toThrow()
+    expect(exec(circularTypes9)).not.toThrow()
+    expect(exec(circularTypes10)).not.toThrow()
   })
 });

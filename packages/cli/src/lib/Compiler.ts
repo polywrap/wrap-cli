@@ -8,9 +8,10 @@ import {
   outputManifest,
   outputMetadata,
   generateDockerfile,
+  generateDockerImageName,
   createBuildImage,
   copyArtifactsFromBuildImage,
-  manifestLanguageToTargetLanguage,
+  manifestLanguageToBindLanguage,
 } from "./helpers";
 import { intlMsg } from "./intl";
 
@@ -227,6 +228,7 @@ export class Compiler {
 
   private async _generateCode(state: CompilerState): Promise<string[]> {
     const { web3ApiManifest, composerOutput, modulesToBuild } = state;
+    const { project } = this._config;
 
     const queryModule = web3ApiManifest.modules.query?.module as string;
     const queryDirectory = web3ApiManifest.modules.query
@@ -256,11 +258,13 @@ export class Compiler {
       this._resetDir(mutationDirectory);
     }
 
+    const bindLanguage = manifestLanguageToBindLanguage(
+      await project.getManifestLanguage()
+    );
+
     // Generate the bindings
     const output = bindSchema({
-      language: web3ApiManifest.language
-        ? manifestLanguageToTargetLanguage(web3ApiManifest.language)
-        : "wasm-as",
+      bindLanguage,
       query: modulesToBuild.query
         ? {
             typeInfo: composerOutput.query?.typeInfo as TypeInfo,
@@ -326,7 +330,7 @@ export class Compiler {
       };
     }
 
-    web3ApiManifest.build = "./web3api.build.yaml";
+    web3ApiManifest.build = "./web3api.build.json";
 
     // Create the BuildManifest
     const buildManifest: BuildManifest = {
@@ -382,7 +386,9 @@ export class Compiler {
     const { project, outputDir } = this._config;
     const buildManifestDir = await project.getBuildManifestDir();
     const buildManifest = await project.getBuildManifest();
-    const imageName = buildManifest?.docker?.name || "web3api-build";
+    const imageName =
+      buildManifest?.docker?.name ||
+      generateDockerImageName(await project.getBuildUuid());
     let dockerfile = buildManifest?.docker?.dockerfile
       ? path.join(buildManifestDir, buildManifest?.docker?.dockerfile)
       : path.join(buildManifestDir, "Dockerfile");
@@ -467,14 +473,14 @@ export class Compiler {
 
     await outputManifest(
       web3ApiManifest,
-      path.join(outputDir, "web3api.yaml"),
+      path.join(outputDir, "web3api.json"),
       project.quiet
     );
 
     if (buildManifest) {
       await outputManifest(
         buildManifest,
-        path.join(outputDir, "web3api.build.yaml"),
+        path.join(outputDir, "web3api.build.json"),
         project.quiet
       );
     }
@@ -482,7 +488,7 @@ export class Compiler {
     if (metaManifest) {
       await outputManifest(
         metaManifest,
-        path.join(outputDir, "web3api.meta.yaml"),
+        path.join(outputDir, "web3api.meta.json"),
         project.quiet
       );
     }
@@ -592,7 +598,7 @@ export class Compiler {
       __w3_getImplementations_result_len: () => {},
       __w3_getImplementations_result: () => {},
       __w3_abort: () => {},
-      __w3_debug_log:() => {},
+      __w3_debug_log: () => {},
       __w3_load_env: () => {},
       __w3_sanitize_env_args: () => {},
       __w3_sanitize_env_result: () => {},
