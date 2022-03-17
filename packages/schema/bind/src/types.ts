@@ -27,12 +27,11 @@ export interface OutputDirectory {
 }
 
 export interface BindOutput {
-  combined?: OutputDirectory;
-  query?: OutputDirectory;
-  mutation?: OutputDirectory;
+  [name: string]: OutputDirectory;
 }
 
 export interface BindModuleOptions {
+  name: string;
   typeInfo: TypeInfo;
   schema: string;
   config?: Record<string, unknown>;
@@ -41,7 +40,6 @@ export interface BindModuleOptions {
 
 export interface BindOptions {
   bindLanguage: BindLanguage;
-  combined?: BindModuleOptions;
-  query?: BindModuleOptions;
-  mutation?: BindModuleOptions;
+  modules: BindModuleOptions[];
+  commonDirAbs: string;
 }
