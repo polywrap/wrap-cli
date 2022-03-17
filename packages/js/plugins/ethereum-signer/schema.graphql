@@ -41,26 +41,15 @@ type TxResponse {
 }
 
 type TxRequest {
-  to: String
-  from: String
-  nonce: UInt32
-  gasLimit: BigInt
-  gasPrice: BigInt
-  data: String
-  value: BigInt
-  chainId: UInt32
-  type: UInt32
-}
-
-type TxOverrides {
-  gasLimit: BigInt
-  gasPrice: BigInt
-  value: BigInt
-}
-
-type StaticTxResult {
-  result: String!
-  error: Boolean!
+  to: String!
+  from: String!
+  nonce: UInt32!
+  gasLimit: BigInt!
+  gasPrice: BigInt!
+  data: String!
+  value: BigInt!
+  chainId: UInt32!
+  type: UInt32!
 }
 
 type Log {
@@ -73,12 +62,6 @@ type Log {
   topics: [String!]!
   transactionHash: String!
   logIndex: UInt32!
-}
-
-type EventNotification {
-  data: String!
-  address: String!
-  log: Log!
 }
 
 type Access {
@@ -99,22 +82,24 @@ type Network {
 
 type Query {
   callView(
-    txRequest: TxRequest
+    txRequest: TxRequest!
     connection: Connection
   ): String!
+
+  getNetwork(connection: Connection): Network!
 }
 
 type Mutation {
   sendTransaction(
-    txRequest: TxRequest
+    txRequest: TxRequest!
     connection: Connection
   ): TxResponse!
 
   sendTransactionAndWait(
-    txRequest: TxRequest
+    txRequest: TxRequest!
     confirmations: UInt32
     connection: Connection
-  ): TxResponse!
+  ): TxReceipt!
 
   signMessage(
     message: String!

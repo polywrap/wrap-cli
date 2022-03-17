@@ -35,6 +35,7 @@
     "@web3api/core-js": "0.0.1-prealpha.65",
     "@web3api/ens-plugin-js": "0.0.1-prealpha.65",
     "@web3api/ethereum-plugin-js": "0.0.1-prealpha.65",
+    "@web3api/ethereum-signer-plugin-js": "0.0.1-prealpha.65",
     "@web3api/ipfs-plugin-js": "0.0.1-prealpha.65",
     "@web3api/os-js": "0.0.1-prealpha.65",
     "@web3api/schema-bind": "0.0.1-prealpha.65",

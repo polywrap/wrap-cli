@@ -2,7 +2,7 @@
   "name": "@web3api/testo-js",
   "description": "SHA3 Web3API",
   "private": true,
-  "version": "0.0.1-prealpha.59",
+  "version": "0.0.1-prealpha.65",
   "scripts": {
     "build": "npx w3 build -v",
     "test:env:up": "npx w3 test-env up",
@@ -12,6 +12,6 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "@web3api/cli": "0.0.1-prealpha.59"
+    "@web3api/cli": "0.0.1-prealpha.65"
   }
 }

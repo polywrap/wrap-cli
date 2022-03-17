@@ -3,10 +3,10 @@ use ethers::abi::Token;
 use ethers::contract::*;
 use ethers::prelude::Address;
 use ethers::types::{TransactionRequest, Bytes, BlockNumber};
-use crate::w3::Connection;
 use super::mapping::*;
 use std::str::FromStr;
 use crate::w3::*;
+use crate::w3::{ imported::{ ethereum_query }};
 
 fn from_method_and_args(method: &str, args: Vec<Token>) -> TransactionRequest {
   let function = AbiParser::default().parse_function(method).unwrap();
@@ -15,13 +15,22 @@ fn from_method_and_args(method: &str, args: Vec<Token>) -> TransactionRequest {
   TransactionRequest { data: Some(data), ..Default::default() }
 }
 
-pub fn call_contract_view(input: InputCallContractView) -> String {
-  // let to = Address::from_str(address).unwrap();
-  // let tx = from_method_and_args(method, args).to(to);
-  // let tx_request = to_tx_request(tx);
+pub async fn call_contract_view(input: InputCallContractView) -> String {
+  let to = Address::from_str(input.address).unwrap();
+  let tx = from_method_and_args(method, args).to(to);
+  let tx_request = to_tx_request(tx);
 
-  //await EthereumSigner_Query.callContractView(tx_request, connection)
-  "".to_string()
+  let contract_call_args = ethereum_query::InputCallContractView {
+    address: input.address,
+    method: "function get() view returns (uint256)".to_string(),
+    args: None,
+    connection: input.connection,
+  };
+
+  match EthereumQuery::call_contract_view(&contract_call_args) {
+    Ok(result) => result,
+    Err(e) => panic!("{}", e)
+  }
 }
 
 // pub async fn call_contract_method(input: InputCallContractMethod) {

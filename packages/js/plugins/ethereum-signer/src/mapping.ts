@@ -70,20 +70,6 @@ export const toTxResponse = (
   accessList: response.accessList?.map(toAccess),
 });
 
-export const toTxRequest = (
-  request: ethers.providers.TransactionRequest
-): TxRequest => ({
-  to: request.to,
-  from: request.from,
-  nonce: request.nonce ? Number(request.nonce.toString()) : undefined,
-  gasLimit: request.gasLimit?.toString(),
-  gasPrice: request.gasPrice?.toString(),
-  data: request.data?.toString(),
-  value: request.value?.toString(),
-  chainId: request.chainId,
-  type: request.type,
-});
-
 export const fromTxRequest = (
   request: TxRequest
 ): ethers.providers.TransactionRequest => ({

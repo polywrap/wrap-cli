@@ -1,9 +1,11 @@
+#import { Query, Connection } into Ethereum from "w3://ens/ethereum-signer.web3api.eth"
+
 type Query {
   callContractView(
     address: String!
     method: String!
     args: [String!]
-    connection: Connection
+    connection: Ethereum_Connection
   ): String!
 
 #  callContractStatic(
@@ -142,10 +144,10 @@ type EventNotification {
   log: Log!
 }
 
-type Connection {
-  node: String
-  networkNameOrChainId: String
-}
+# type Connection {
+#   node: String
+#   networkNameOrChainId: String
+# }
 
 type Network {
   name: String!
