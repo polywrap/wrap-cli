@@ -49,6 +49,11 @@ export interface State {
     error?: string;
     args: unknown[];
   };
+  subinvokeImplementation: {
+    result?: ArrayBuffer;
+    error?: string;
+    args: unknown[];
+  };
   invokeResult: InvokeResult;
   getImplementationsResult?: ArrayBuffer;
   sanitizeEnv: {
@@ -187,6 +192,9 @@ export class WasmWeb3Api extends Api {
       const state: State = {
         invoke: {},
         subinvoke: {
+          args: [],
+        },
+        subinvokeImplementation: {
           args: [],
         },
         invokeResult: {} as InvokeResult,
