@@ -1,14 +1,13 @@
-use ethers::abi::AbiParser;
+use ethers::abi::{AbiParser, Tokenize};
 use ethers::abi::Token;
 use ethers::contract::*;
 use ethers::prelude::Address;
 use ethers::types::{TransactionRequest, Bytes, BlockNumber};
 use super::mapping::*;
 use std::str::FromStr;
-use crate::w3::*;
-use crate::w3::{ imported::{ ethereum_query }};
+use crate::w3::{ imported::{ ethereum_query, serialization::{ InputCallView } }};
 
-fn from_method_and_args(method: &str, args: Vec<Token>) -> TransactionRequest {
+fn from_method_and_args<T: Tokenize>(method: &str, args: T) -> TransactionRequest {
   let function = AbiParser::default().parse_function(method).unwrap();
   let data = encode_function_data(&function, args).unwrap();
 
@@ -16,18 +15,23 @@ fn from_method_and_args(method: &str, args: Vec<Token>) -> TransactionRequest {
 }
 
 pub async fn call_contract_view(input: InputCallContractView) -> String {
-  let to = Address::from_str(input.address).unwrap();
-  let tx = from_method_and_args(method, args).to(to);
+  let to = Address::from_str(&input.address).unwrap();
+  let args = match input.args {
+    Some(a) => a,
+    None => vec![]
+  };
+
+  let tx = from_method_and_args(&input.method, args).to(to);
   let tx_request = to_tx_request(tx);
 
-  let contract_call_args = ethereum_query::InputCallContractView {
+  let contract_call_args = serialization::InputCallContractView {
     address: input.address,
     method: "function get() view returns (uint256)".to_string(),
     args: None,
     connection: input.connection,
   };
 
-  match EthereumQuery::call_contract_view(&contract_call_args) {
+  match ethereum_query::EthereumQuery::call_view(&contract_call_args) {
     Ok(result) => result,
     Err(e) => panic!("{}", e)
   }

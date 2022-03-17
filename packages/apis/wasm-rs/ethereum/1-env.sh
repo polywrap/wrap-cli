@@ -1,1 +1,1 @@
-../../../cli/bin/w3 build --ipfs http://localhost:5001 --test-ens eth-wrapper.eth -v
+../../../cli/bin/w3 codegen
