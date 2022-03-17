@@ -4,6 +4,7 @@ export { {{type}} } from "../../common";
 {{^__commonImport}}
 import {
   w3_subinvoke,
+  w3_subinvokeImplementation,
   Nullable,
   BigInt,
   JSON,
@@ -69,7 +70,8 @@ export class {{type}} {
     input: Input_{{name}}
   ): Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string> {
     const args = serialize{{name}}Args(input);
-    const result = w3_subinvoke(
+    const result = w3_subinvokeImplementation(
+      "{{uri}}",
       this.uri,
       "{{type}}",
       "{{name}}",
