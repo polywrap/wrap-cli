@@ -6,7 +6,7 @@ import {
   InvokeApiOptions,
   InvokeApiResult,
 } from ".";
-import { AnyManifest, ManifestType } from "../manifest";
+import { AnyManifestArtifact, ManifestArtifactType } from "../manifest";
 
 /**
  * The API definition, which can be used to spawn
@@ -40,14 +40,16 @@ export abstract class Api {
    * @param options Configuration options for manifest retrieval
    * @param client The client instance requesting the manifest.
    */
-  public abstract async getManifest<TManifestType extends ManifestType>(
-    options: GetManifestOptions<TManifestType>,
+  public abstract async getManifest<
+    TManifestArtifactType extends ManifestArtifactType
+  >(
+    options: GetManifestOptions<TManifestArtifactType>,
     client: Client
-  ): Promise<AnyManifest<TManifestType>>;
+  ): Promise<AnyManifestArtifact<TManifestArtifactType>>;
 
   /**
    * Get a file from the API package.
-   * Not implemented for plugin packages.
+   * Not implemented for plugin apis.
    *
    * @param options Configuration options for file retrieval
    * @param client The client instance requesting the file.

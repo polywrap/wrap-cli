@@ -14,8 +14,8 @@ import {
   deserializeWeb3ApiManifest,
   deserializeBuildManifest,
   deserializeMetaManifest,
-  AnyManifest,
-  ManifestType,
+  AnyManifestArtifact,
+  ManifestArtifactType,
   combinePaths,
   Env,
   UriResolver,
@@ -92,12 +92,12 @@ export class WasmWeb3Api extends Api {
   }
 
   @Tracer.traceMethod("WasmWeb3Api: getManifest")
-  public async getManifest<TManifest extends ManifestType>(
-    options: GetManifestOptions<TManifest>,
+  public async getManifest<TManifestArtifact extends ManifestArtifactType>(
+    options: GetManifestOptions<TManifestArtifact>,
     client: Client
-  ): Promise<AnyManifest<TManifest>> {
+  ): Promise<AnyManifestArtifact<TManifestArtifact>> {
     if (!options?.type) {
-      return this._manifest as AnyManifest<TManifest>;
+      return this._manifest as AnyManifestArtifact<TManifestArtifact>;
     }
     let manifest: string | undefined;
     const fileTitle: string =
@@ -121,11 +121,17 @@ export class WasmWeb3Api extends Api {
     }
     switch (options.type) {
       case "build":
-        return deserializeBuildManifest(manifest) as AnyManifest<TManifest>;
+        return deserializeBuildManifest(
+          manifest
+        ) as AnyManifestArtifact<TManifestArtifact>;
       case "meta":
-        return deserializeMetaManifest(manifest) as AnyManifest<TManifest>;
+        return deserializeMetaManifest(
+          manifest
+        ) as AnyManifestArtifact<TManifestArtifact>;
       default:
-        return deserializeWeb3ApiManifest(manifest) as AnyManifest<TManifest>;
+        return deserializeWeb3ApiManifest(
+          manifest
+        ) as AnyManifestArtifact<TManifestArtifact>;
     }
   }
 

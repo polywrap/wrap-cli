@@ -123,5 +123,4 @@ export const getDefaultClientConfig = Tracer.traceFunc(
 export const defaultIpfsProviders = [
   "https://ipfs.wrappers.io",
   "https://ipfs.io",
-  "https://ipfs.fleek.co",
 ];

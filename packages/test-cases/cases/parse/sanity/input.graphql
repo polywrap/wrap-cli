@@ -30,6 +30,7 @@ directive @capability(
 directive @enabled_interface on OBJECT
 
 directive @annotate(type: String!) on FIELD
+
 """
 CustomEnum comment
 """
@@ -100,6 +101,12 @@ UserObject comment
 type UserObject {
   fieldA: String
   fieldB: Int!
+}
+
+type UserObjectFromInterface implements UserObject {
+  fieldA: String
+  fieldB: Int!
+  fieldC: UInt32!
 }
 
 type QueryEnv {
