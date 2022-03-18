@@ -1,40 +1,91 @@
 import * as Functions from "./functions";
-import { reservedWordsAS } from "./reservedWords";
 import { GenerateBindingFn } from "../..";
-import { OutputDirectory, OutputEntry, readDirectory } from "../../../";
-import { fromReservedWord } from "../../../utils/templateFunctions";
+import { extractCommonTypeInfo } from "../../utils/typeInfo";
+import { readDirectory } from "../../utils/fs";
+import {
+  BindOptions,
+  BindOutput,
+  BindModuleOutput,
+  BindModuleOptions,
+  OutputEntry
+} from "../../..";
 
 import {
-  transformTypeInfo,
-  extendType,
-  addFirstLast,
-  toPrefixedGraphQLType,
   TypeInfo,
   ObjectDefinition,
+  transformTypeInfo,
+  addFirstLast,
+  extendType,
+  toPrefixedGraphQLType,
 } from "@web3api/schema-parse";
-import path from "path";
 import Mustache from "mustache";
+import path from "path";
 
 export const generateBinding: GenerateBindingFn = (
-  output: OutputDirectory,
-  typeInfo: TypeInfo,
-  _schema: string,
-  _config: Record<string, unknown>
-): void => {
-  // Transform the TypeInfo to our liking
-  const transforms = [
-    extendType(Functions),
-    addFirstLast,
-    toPrefixedGraphQLType,
-  ];
+  options: BindOptions
+): BindOutput => {
 
+  const result: BindOutput = {
+    modules: []
+  };
+
+  // If there's more than one module provided
+  if (options.modules.length > 1 && options.commonDirAbs) {
+    // Extract the common types
+    const commonTypeInfo = extractCommonTypeInfo(
+      options.modules,
+      options.commonDirAbs
+    );
+
+    // Generate the common type folder
+    result.common = generateTypeInfoBinding({
+      name: "common",
+      typeInfo: commonTypeInfo,
+      schema: "N/A",
+      outputDirAbs: options.commonDirAbs,
+    });
+  }
+
+  // Generate each module folder
+  for (const module of options.modules) {
+    result.modules.push(
+      generateTypeInfoBinding(module)
+    );
+  }
+
+  return result;
+};
+
+const transforms = [
+  extendType(Functions),
+  addFirstLast,
+  toPrefixedGraphQLType
+];
+
+function applyTransforms(typeInfo: TypeInfo): TypeInfo {
   for (const transform of transforms) {
     typeInfo = transformTypeInfo(typeInfo, transform);
   }
+  return typeInfo;
+}
 
-  const templatesDir = path.join(__dirname, "./templates");
-  const directory = readDirectory(templatesDir);
-  const subTemplates = loadSubTemplates(directory.entries);
+const templatesDir = readDirectory(
+  path.join(__dirname, "./templates")
+);
+
+function generateTypeInfoBinding(
+  module: BindModuleOptions
+): BindModuleOutput {
+
+  const subTemplates = loadSubTemplates(templatesDir.entries);
+  const result: BindModuleOutput = {
+    name: module.name,
+    output: {
+      entries: []
+    }
+  };
+  const output = result.output;
+  const typeInfo = applyTransforms(module.typeInfo);
 
   // Generate object type folders
   for (const objectType of typeInfo.objectTypes) {
@@ -145,11 +196,13 @@ export const generateBinding: GenerateBindingFn = (
 
   // Generate root entry file
   output.entries.push(...generateFiles("./templates", typeInfo, subTemplates));
-};
+
+  return result;
+}
 
 function generateFiles(
   subpath: string,
-  config: unknown,
+  view: unknown,
   subTemplates: Record<string, string>,
   subDirectories = false
 ): OutputEntry[] {
@@ -169,10 +222,7 @@ function generateFiles(
         if (name.indexOf("_") === -1) {
           const data = Mustache.render(
             dirent.data,
-            {
-              ...(config as Record<string, unknown>),
-              handleKeywords: fromReservedWord(reservedWordsAS),
-            },
+            view,
             subTemplates
           );
 

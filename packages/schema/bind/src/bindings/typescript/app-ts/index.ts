@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import * as Functions from "../functions";
+/*import * as Functions from "../functions";
 import { GenerateBindingFn } from "../..";
 import { OutputDirectory } from "../../..";
 
@@ -67,3 +67,4 @@ export const generateBinding: GenerateBindingFn = (
   renderTemplate("./templates/schema-ts.mustache", rootContext);
   renderTemplate("./templates/types-ts.mustache", rootContext);
 };
+*/

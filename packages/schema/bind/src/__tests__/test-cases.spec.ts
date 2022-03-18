@@ -1,7 +1,13 @@
 import { fetchTestCases } from "./index";
-import { readDirectory } from "../utils/fs";
-import { alphabeticalNamedSort } from "../utils/sort";
-import { bindSchema, OutputEntry, BindLanguage } from "../";
+import { readDirectory } from "../bindings/utils/fs";
+import { alphabeticalNamedSort } from "../bindings/utils/sort";
+import {
+  bindSchema,
+  OutputEntry,
+  BindLanguage,
+  BindOptions,
+  BindOutput
+} from "../";
 
 import { writeFileSync } from "@web3api/os-js";
 
@@ -19,30 +25,58 @@ describe("Web3API Binding Test Suite", () => {
         return;
       }
 
+      const commonDirAbs = testCase.input.commonDirAbs;
+      const modules = testCase.input.modules;
+
       // For each language
       for (const outputLanguage of testCase.outputLanguages) {
         // Verify it binds correctly
         const { language, directories } = outputLanguage;
 
+        if (language !== "wasm-as") {
+          continue;
+        }
+
         // Read the expected output directories
-        const expectedOutput = {
-          query: directories.query
-            ? readDirectory(directories.query)
-            : undefined,
-          mutation: directories.mutation
-            ? readDirectory(directories.mutation)
-            : undefined,
-          combined: directories.combined
-            ? readDirectory(directories.combined)
-            : undefined,
+        const expectedOutput: BindOutput = {
+          modules: []
         };
 
-        const output = bindSchema({
+        if (directories.query) {
+          expectedOutput.modules.push({
+            name: "query",
+            output: readDirectory(directories.query)
+          });
+        }
+
+        if (directories.mutation) {
+          expectedOutput.modules.push({
+            name: "mutation",
+            output: readDirectory(directories.mutation)
+          });
+        }
+
+        if (directories.combined) {
+          expectedOutput.modules.push({
+            name: "combined",
+            output: readDirectory(directories.combined)
+          });
+        }
+
+        if (directories.common) {
+          expectedOutput.common = {
+            name: "common",
+            output: readDirectory(directories.common)
+          };
+        }
+
+        const options: BindOptions = {
           bindLanguage: language as BindLanguage,
-          query: expectedOutput.query ? testCase.input.query : undefined,
-          mutation: expectedOutput.mutation ? testCase.input.mutation : undefined,
-          combined: expectedOutput.combined ? testCase.input.combined : undefined,
-        });
+          modules,
+          commonDirAbs: directories.common ? commonDirAbs : undefined
+        }
+
+        const output = bindSchema(options);
 
         const sort = (array: OutputEntry[]): OutputEntry[] => {
           array.forEach((entry) => {
@@ -52,16 +86,12 @@ describe("Web3API Binding Test Suite", () => {
           return array.sort(alphabeticalNamedSort);
         };
 
-        if (output.query) {
-          output.query.entries = sort(output.query.entries);
+        for (const module of output.modules) {
+          module.output.entries = sort(module.output.entries);
         }
 
-        if (output.mutation) {
-          output.mutation.entries = sort(output.mutation.entries);
-        }
-
-        if (output.combined) {
-          output.combined.entries = sort(output.combined.entries);
+        if (output.common) {
+          output.common.output.entries = sort(output.common.output.entries);
         }
 
         const testResultDir = path.join(__dirname, "/test-results/");

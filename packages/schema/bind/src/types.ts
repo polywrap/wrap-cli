@@ -26,8 +26,14 @@ export interface OutputDirectory {
   entries: OutputEntry[];
 }
 
+export interface BindModuleOutput {
+  name: string;
+  output: OutputDirectory;
+}
+
 export interface BindOutput {
-  [name: string]: OutputDirectory;
+  modules: BindModuleOutput[];
+  common?: BindModuleOutput;
 }
 
 export interface BindModuleOptions {
@@ -41,5 +47,5 @@ export interface BindModuleOptions {
 export interface BindOptions {
   bindLanguage: BindLanguage;
   modules: BindModuleOptions[];
-  commonDirAbs: string;
+  commonDirAbs?: string;
 }

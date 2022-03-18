@@ -13,9 +13,8 @@ export type TestCase = {
   name: string;
   directory: string;
   input: {
-    query?: BindModuleOptions;
-    mutation?: BindModuleOptions;
-    combined?: BindModuleOptions;
+    modules: BindModuleOptions[];
+    commonDirAbs: string;
   },
   outputLanguages: {
     language: string;
@@ -23,6 +22,7 @@ export type TestCase = {
       query?: string;
       mutation?: string;
       combined?: string;
+      common?: string;
     };
   }[];
 };
@@ -70,18 +70,23 @@ export function fetchTestCases(): TestCases {
         const outputMutation = fs.existsSync(outputMutationDir);
         const outputQueryDir = path.join(outputDir, item.name, "query");
         const outputQuery = fs.existsSync(outputQueryDir);
+        const outputCommonDir = path.join(outputDir, item.name, "common");
+        const outputCommon = fs.existsSync(outputCommonDir);
 
         return {
           language: item.name,
           directories: {
             query: outputMutation
-              ? path.join(outputDir, item.name, "query")
+              ? outputQueryDir
               : undefined,
             mutation: outputQuery
-              ? path.join(outputDir, item.name, "mutation")
+              ? outputMutationDir
               : undefined,
             combined: !outputMutation && !outputQuery
               ? path.join(outputDir, item.name)
+              : undefined,
+            common: outputCommon
+              ? outputCommonDir
               : undefined,
           }
         };
@@ -123,26 +128,40 @@ export function fetchTestCases(): TestCases {
       output: ComposerFilter.All
     })
 
+    const modules: BindModuleOptions[] = [];
+
+    if (querySchema) {
+      modules.push({
+        name: "query",
+        typeInfo: composed.query?.typeInfo as TypeInfo,
+        schema: composed.query?.schema as string,
+        outputDirAbs: path.join(root, "query")
+      });
+    }
+
+    if (mutationSchema) {
+      modules.push({
+        name: "mutation",
+        typeInfo: composed.mutation?.typeInfo as TypeInfo,
+        schema: composed.mutation?.schema as string,
+        outputDirAbs: path.join(root, "mutation")
+      });
+    }
+
+    modules.push({
+      name: "combined",
+      typeInfo: composed.combined.typeInfo as TypeInfo,
+      schema: composed.combined.schema as string,
+      outputDirAbs: path.join(root, "combined")
+    });
+
     // Add the newly formed test case
     return {
       name: dirent.name,
       directory: outputDir,
       input: {
-        query: querySchema ? {
-          typeInfo: composed.query?.typeInfo as TypeInfo,
-          schema: composed.query?.schema as string,
-          outputDirAbs: path.join(root, "query")
-        } : undefined,
-        mutation: mutationSchema ? {
-          typeInfo: composed.mutation?.typeInfo as TypeInfo,
-          schema: composed.mutation?.schema as string,
-          outputDirAbs: path.join(root, "mutation")
-        }: undefined,
-        combined: {
-          typeInfo: composed.combined.typeInfo as TypeInfo,
-          schema: composed.combined.schema as string,
-          outputDirAbs: ""
-        }
+        modules,
+        commonDirAbs: path.join(root, "common"),
       },
       outputLanguages
     };

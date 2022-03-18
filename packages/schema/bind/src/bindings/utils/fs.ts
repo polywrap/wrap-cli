@@ -1,4 +1,4 @@
-import { OutputDirectory, OutputEntry } from "../";
+import { OutputDirectory, OutputEntry } from "../../";
 import { alphabeticalNamedSort } from "./sort";
 
 import { writeFileSync } from "@web3api/os-js";
