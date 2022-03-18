@@ -117,13 +117,15 @@ export function extractInputValueDefinition(
     return;
   }
 
-  const { type, def } = extractAnnotateDirective(node);
+  const name = node.name.value;
+  const { type, def } = extractAnnotateDirective(node, name);
 
   const argument = createPropertyDefinition({
     type: type ? type : "N/A",
-    name: node.name.value,
-    map: def ? ({ ...def, name: node.name.value } as MapDefinition) : undefined,
+    name: name,
+    map: def ? (def as MapDefinition) : undefined,
     comment: node.description?.value,
+    required: def && def.required ? true : false,
   });
 
   method.arguments.push(argument);

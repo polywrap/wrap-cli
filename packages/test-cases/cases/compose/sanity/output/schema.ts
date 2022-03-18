@@ -145,10 +145,12 @@ export const typeInfo: TypeInfo = {
               type: "Map<String, Int>",
               comment: "Map<String!, Int!> comment",
               key: createMapKeyDefinition({
+                name: "map",
                 type: "String",
                 required: true
               }),
               value: createScalarDefinition({
+                name: "map",
                 type: "Int",
                 required: true
               })
@@ -390,10 +392,11 @@ export const typeInfo: TypeInfo = {
           type: "Map<String, Int>",
           required: false,
           key: createMapKeyDefinition({
+            name: "optMap",
             type: "String",
             required: true
           }),
-          value: createScalarDefinition({ type: "Int" })
+          value: createScalarDefinition({ name: "optMap", type: "Int" })
         }),
         createObjectPropertyDefinition({
           name: "customType",

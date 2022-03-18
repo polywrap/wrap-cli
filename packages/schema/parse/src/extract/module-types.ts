@@ -65,7 +65,9 @@ const visitorEnter = (moduleTypes: ModuleDefinition[], state: State) => ({
       return;
     }
 
-    const { type, def } = extractAnnotateDirective(node);
+    const name = node.name.value;
+
+    const { type, def } = extractAnnotateDirective(node, name);
 
     const returnType = createPropertyDefinition({
       type: type ? type : "N/A",
@@ -73,6 +75,7 @@ const visitorEnter = (moduleTypes: ModuleDefinition[], state: State) => ({
       map: def
         ? ({ ...def, name: node.name.value } as MapDefinition)
         : undefined,
+      required: def && def.required ? true : false,
     });
 
     const method = createMethodDefinition({

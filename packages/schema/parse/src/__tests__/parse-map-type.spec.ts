@@ -29,13 +29,16 @@ describe("parseMapType", () => {
   });
 
   test("Map<Int, Array<String>!>", () => {
-    const result = parseMapType("Map<Int, Array<String>!>");
+    const result = parseMapType("Map<Int, Array<String>!>", "customMap");
     expect(result).toMatchObject({
+      name: "customMap",
       type: "Map<Int, [String]>",
       key: {
+        name: "customMap",
         type: "Int",
       },
       value: {
+        name: "customMap",
         type: "[String]",
         item: {
           type: "String",
@@ -61,6 +64,28 @@ describe("parseMapType", () => {
       }
     });
   });
+
+  test("Map<String!, Map<String!, Int!>!>!", () => {
+    const result = parseMapType("Map<String!, Map<String!, Int!>!>!");
+    expect(result).toMatchObject({
+      type: "Map<String, Map<String, Int>>",
+      key: {
+        type: "String",
+      },
+      value: {
+        type: "Map<String, Int>",
+        key: {
+          type: "String",
+        },
+        value: {
+          type: "Int",
+          required: true,
+        },
+        required: true,
+      },
+      required: true,
+    });
+  })
 
   test("Map<CustomType, String!>", () => {
     expect(() => parseMapType("Map<CustomType, String!>")).toThrow(
@@ -128,6 +153,15 @@ describe("parseCurrentType", () => {
       required: true,
     });
   });
+
+  test("Map<String!, Map<String!, Int!>!>!", () => {
+    const result = parseCurrentType("Map<String!, Map<String!, Int!>!>!");
+    expect(result).toMatchObject({
+      currentType: "Map",
+      subType: "String!, Map<String!, Int!>!",
+      required: true,
+    });
+  })
 
   test("CustomType!", () => {
     const result = parseCurrentType("CustomType!");

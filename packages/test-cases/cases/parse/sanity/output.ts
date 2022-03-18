@@ -354,8 +354,8 @@ export const typeInfo: TypeInfo = {
         createMapPropertyDefinition({
           name: "map1",
           type: "Map<String, Int>",
-          key: createMapKeyDefinition({ type: "String", required: true }),
-          value: createScalarDefinition({ type: "Int" }),
+          key: createMapKeyDefinition({ name: "map1", type: "String", required: true }),
+          value: createScalarDefinition({ name: "map1", type: "Int" }),
         }),
       ],
     },
@@ -605,10 +605,12 @@ export const typeInfo: TypeInfo = {
               name: "transformMap",
               type: "Map<String, Int>",
               key: createMapKeyDefinition({
+                name: "transformMap",
                 type: "String",
                 required: true,
               }),
               value: createScalarDefinition({
+                name: "transformMap",
                 type: "Int",
                 required: true,
               }),
@@ -619,10 +621,12 @@ export const typeInfo: TypeInfo = {
               name: "map",
               type: "Map<String, Int>",
               key: createMapKeyDefinition({
+                name: "map",
                 type: "String",
                 required: true,
               }),
               value: createScalarDefinition({
+                name: "map",
                 type: "Int",
                 required: true,
               }),

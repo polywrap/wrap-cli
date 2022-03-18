@@ -29,6 +29,7 @@ export interface AnnotatedDefinition {
 
 export function extractAnnotateDirective(
   node: FieldDefinitionNode | InputValueDefinitionNode,
+  name: string
 ): AnnotatedDefinition {
   let type: string | undefined;
   let def: GenericDefinition | undefined;
@@ -44,7 +45,7 @@ export function extractAnnotateDirective(
               `Annotate directive: ${node.name.value} has invalid arguments`
             );
           }
-          def = parseMapType(type);
+          def = parseMapType(type, name);
           break;
         }
         default:
@@ -72,13 +73,15 @@ export function extractFieldDefinition(
     );
   }
 
-  const { type, def } = extractAnnotateDirective(node);
+  const name = node.name.value;
+  const { type, def } = extractAnnotateDirective(node, name);
 
   const property = createPropertyDefinition({
     type: type ? type : "N/A",
-    name: node.name.value,
-    map: def ? ({ ...def, name: node.name.value } as MapDefinition) : undefined,
+    name: name,
+    map: def ? (def as MapDefinition) : undefined,
     comment: node.description?.value,
+    required: def && def.required ? true : false,
   });
 
   state.currentProperty = property;

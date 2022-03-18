@@ -86,10 +86,14 @@ const _toGraphQLType = (rootType: string, type: string): string => {
       return `[${_toGraphQLType(rootType, subType)}]`;
     }
     case "Map": {
-      const [keyType, valueType] = subType.split(",").map((x) => x.trim());
+      const firstDelimiter = subType.indexOf(",");
+
+      const keyType = subType.substring(0, firstDelimiter).trim();
+      const valType = subType.substring(firstDelimiter + 1).trim();
+
       return `Map<${_toGraphQLType(rootType, keyType)}, ${_toGraphQLType(
         rootType,
-        valueType
+        valType
       )}>`;
     }
     default:
@@ -99,18 +103,24 @@ const _toGraphQLType = (rootType: string, type: string): string => {
   }
 };
 
-const _parseMapType = (rootType: string, type: string): GenericDefinition => {
+const _parseMapType = (
+  rootType: string,
+  type: string,
+  name?: string
+): GenericDefinition => {
   const { currentType, subType, required } = _parseCurrentType(rootType, type);
 
   if (!subType) {
     if (isScalarType(currentType)) {
       return createScalarDefinition({
+        name: name,
         type: currentType,
         required: required,
       });
     }
 
     return createUnresolvedObjectOrEnumRef({
+      name: name,
       type: currentType,
       required: required,
     });
@@ -119,23 +129,22 @@ const _parseMapType = (rootType: string, type: string): GenericDefinition => {
   switch (currentType) {
     case "Array": {
       return createArrayDefinition({
+        name: name,
         type: _toGraphQLType(rootType, type),
-        item: _parseMapType(rootType, subType),
+        item: _parseMapType(rootType, subType, name),
         required: required,
       });
     }
     case "Map": {
-      const keyValTypes = subType.split(",").map((x) => x.trim());
+      const firstDelimiter = subType.indexOf(",");
 
-      if (
-        keyValTypes.length !== 2 ||
-        keyValTypes[0] === "" ||
-        keyValTypes[1] === ""
-      ) {
+      const _keyType = subType.substring(0, firstDelimiter).trim();
+      const valType = subType.substring(firstDelimiter + 1).trim();
+
+      if (!_keyType || !valType) {
         throw new Error(`Invalid map value type: ${rootType}`);
       }
 
-      const [_keyType, _valueType] = keyValTypes;
       // TODO: Is there a better way to enforce this -> Map key should always be required
       // TODO: Should we throw an error if it's not?
       const keyRequired = true;
@@ -149,11 +158,13 @@ const _parseMapType = (rootType: string, type: string): GenericDefinition => {
 
       return createMapDefinition({
         type: _toGraphQLType(rootType, type),
+        name: name,
         key: createMapKeyDefinition({
+          name: name,
           type: keyType,
           required: keyRequired,
         }),
-        value: _parseMapType(rootType, _valueType),
+        value: _parseMapType(rootType, valType, name),
         required: required,
       });
     }
@@ -166,8 +177,8 @@ export function parseCurrentType(type: string): CurrentTypeInfo {
   return _parseCurrentType(type, type);
 }
 
-export function parseMapType(type: string): GenericDefinition {
-  return _parseMapType(type, type);
+export function parseMapType(type: string, name?: string): GenericDefinition {
+  return _parseMapType(type, type, name);
 }
 
 export function toGraphQLType(type: string): string {
