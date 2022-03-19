@@ -29,7 +29,7 @@ export function setPropertyType(
           type.required ? "required" : "optional"
         } while declaring type but defined as ${
           property.required ? "required" : "optional"
-        } while annotating: ${property.type}`
+        } while annotating: ${property.type} in ${property.name}`
       );
     }
 
