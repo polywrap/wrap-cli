@@ -1,14 +1,16 @@
 import { fetchTestCases } from "./index";
-import { readDirectory } from "../bindings/utils/fs";
-import { alphabeticalNamedSort } from "../bindings/utils/sort";
 import {
   bindSchema,
-  OutputEntry,
   BindLanguage,
   BindOutput
 } from "../";
 
-import { writeFileSync } from "@web3api/os-js";
+import {
+  readDirectorySync,
+  writeFileSync,
+  alphabeticalNamedSort,
+  OutputEntry
+} from "@web3api/os-js";
 
 import fs from "fs";
 import path from "path";
@@ -45,16 +47,20 @@ describe("Web3API Binding Test Suite", () => {
             if (moduleName === "common") {
               expectedModuleWiseOutput.common = {
                 name: moduleName,
-                output: readDirectory(
+                output: readDirectorySync(
                   directories.moduleWise[moduleName]
-                )
+                ),
+                outputDirAbs: testCase.input.commonDirAbs
               };
             } else {
               expectedModuleWiseOutput.modules.push({
                 name: moduleName,
-                output: readDirectory(
+                output: readDirectorySync(
                   directories.moduleWise[moduleName]
-                )
+                ),
+                outputDirAbs: testCase.input.modules.find(
+                  (module) => module.name === moduleName
+                )?.outputDirAbs || "",
               });
             }
           }
@@ -66,7 +72,8 @@ describe("Web3API Binding Test Suite", () => {
           };
           expectedCombinedOutput.modules.push({
             name: "combined",
-            output: readDirectory(directories.combined)
+            output: readDirectorySync(directories.combined),
+            outputDirAbs: testCase.input.combined.outputDirAbs,
           });
         }
 

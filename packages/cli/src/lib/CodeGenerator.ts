@@ -20,20 +20,17 @@ import {
 
 import { TypeInfo } from "@web3api/schema-parse";
 import {
-  OutputDirectory,
-  writeDirectory,
   bindSchema,
   BindLanguage,
   GenerateBindingFn,
 } from "@web3api/schema-bind";
+import { writeDirectorySync } from "@web3api/os-js";
 import path from "path";
 import fs, { readFileSync } from "fs";
 import * as gluegun from "gluegun";
 import { Ora } from "ora";
 import Mustache from "mustache";
 import rimraf from "rimraf";
-
-export { OutputDirectory };
 
 export interface CodeGeneratorConfig {
   outputDir: string;
@@ -106,9 +103,6 @@ export class CodeGenerator {
       }
 
       if (this._config.customScript) {
-        const output: OutputDirectory = {
-          entries: [],
-        };
         const customScript = this._config.customScript;
 
         // Check the generation file if it has the proper run() method
@@ -129,31 +123,47 @@ export class CodeGenerator {
           throw Error(intlMsg.lib_codeGenerator_nogenerateBindingMethod());
         }
 
-        await generateBinding(
-          output,
-          typeInfo,
-          this._schema || "",
-          config || {}
-        );
-
-        writeDirectory(this._config.outputDir, output, (templatePath: string) =>
-          this._generateTemplate(templatePath, typeInfo, spinner)
-        );
-      } else {
-        const content = bindSchema({
-          combined: {
-            typeInfo: composed.combined?.typeInfo as TypeInfo,
-            schema: composed.combined?.schema as string,
-            config,
-            outputDirAbs: "",
-          },
+        const output = await generateBinding({
+          modules: [{
+            name: "custom",
+            typeInfo,
+            schema: this._schema || "",
+            config: config || {},
+            outputDirAbs: this._config.outputDir,
+          }],
           bindLanguage,
         });
 
-        writeDirectory(
-          this._config.outputDir,
-          content.combined as OutputDirectory
-        );
+        for (const module of output.modules) {
+          writeDirectorySync(
+            this._config.outputDir,
+            module.output,
+            (templatePath: string) =>
+            this._generateTemplate(
+              templatePath,
+              typeInfo,
+              spinner
+            )
+          );
+        }
+      } else {
+        const output = bindSchema({
+          modules: [{
+            name: "combined",
+            typeInfo: composed.combined?.typeInfo as TypeInfo,
+            schema: composed.combined?.schema as string,
+            config,
+            outputDirAbs: this._config.outputDir,
+          }],
+          bindLanguage,
+        });
+
+        for (const module of output.modules) {
+          writeDirectorySync(
+            this._config.outputDir,
+            module.output
+          );
+        }
       }
     };
 

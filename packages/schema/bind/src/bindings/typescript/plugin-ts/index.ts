@@ -64,7 +64,8 @@ function generateModuleBindings(
     name: module.name,
     output: {
       entries: []
-    }
+    },
+    outputDirAbs: module.outputDirAbs
   };
   const output = result.output;
   const schema = module.schema;

@@ -1,12 +1,41 @@
-import { OutputDirectory, OutputEntry } from "../../";
+import { writeFileSync } from "./file";
 import { alphabeticalNamedSort } from "./sort";
 
-import { writeFileSync } from "@web3api/os-js";
 import path from "path";
-import { readdirSync, readFileSync, Dirent, mkdirSync, existsSync } from "fs";
+import {
+  readdirSync,
+  readFileSync,
+  Dirent,
+  mkdirSync,
+  existsSync
+} from "fs";
+
+export interface OutputDirectory {
+  entries: OutputEntry[];
+}
+
+export type OutputEntry = FileEntry | DirectoryEntry | TemplateEntry;
+
+export interface FileEntry {
+  type: "File";
+  name: string;
+  data: string;
+}
+
+export interface DirectoryEntry {
+  type: "Directory";
+  name: string;
+  data: OutputEntry[];
+}
+
+export interface TemplateEntry {
+  type: "Template";
+  name: string;
+  data: string;
+}
 
 // TODO: make this all async, making it run faster
-export function readDirectory(dir: string): OutputDirectory {
+export function readDirectorySync(dir: string): OutputDirectory {
   const importDirectoryEntry = (root: string, dirent: Dirent): OutputEntry => {
     const direntPath = path.join(root, dirent.name);
 
@@ -40,7 +69,7 @@ export function readDirectory(dir: string): OutputDirectory {
   return { entries };
 }
 
-export function writeDirectory(
+export function writeDirectorySync(
   outputDir: string,
   dir: OutputDirectory,
   renderTemplate?: (path: string) => string
@@ -59,7 +88,7 @@ export function writeDirectory(
       case "Directory": {
         for (const subEntry of entry.data) {
           if (!existsSync(entryPath)) {
-            mkdirSync(entryPath);
+            mkdirSync(entryPath, { recursive: true });
           }
           outputDirectoryEntry(entryPath, subEntry);
         }

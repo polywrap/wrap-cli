@@ -1,4 +1,3 @@
-import { getRelativePath } from "./path";
 import { BindModuleOptions } from "../../";
 
 import {
@@ -11,6 +10,7 @@ import {
   ImportedObjectDefinition,
   ObjectDefinition,
 } from "@web3api/schema-parse";
+import { getRelativePath } from "@web3api/os-js";
 
 export function extractCommonTypeInfo(modules: BindModuleOptions[], commonDirAbs: string): TypeInfo {
   const counts: Record<string, number> = {};

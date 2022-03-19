@@ -1,13 +1,11 @@
 import * as Functions from "./functions";
 import { GenerateBindingFn } from "../..";
 import { extractCommonTypeInfo } from "../../utils/typeInfo";
-import { readDirectory } from "../../utils/fs";
 import {
   BindOptions,
   BindOutput,
   BindModuleOutput,
   BindModuleOptions,
-  OutputEntry
 } from "../../..";
 
 import {
@@ -18,6 +16,11 @@ import {
   extendType,
   toPrefixedGraphQLType,
 } from "@web3api/schema-parse";
+import {
+  OutputEntry,
+  readDirectorySync
+} from "@web3api/os-js";
+
 import Mustache from "mustache";
 import path from "path";
 
@@ -69,7 +72,7 @@ function applyTransforms(typeInfo: TypeInfo): TypeInfo {
   return typeInfo;
 }
 
-const templatesDir = readDirectory(
+const templatesDir = readDirectorySync(
   path.join(__dirname, "./templates")
 );
 
@@ -82,7 +85,8 @@ function generateModuleBinding(
     name: module.name,
     output: {
       entries: []
-    }
+    },
+    outputDirAbs: module.outputDirAbs
   };
   const output = result.output;
   const typeInfo = applyTransforms(module.typeInfo);
@@ -212,7 +216,7 @@ function generateFiles(
 ): OutputEntry[] {
   const output: OutputEntry[] = [];
   const absolutePath = path.join(__dirname, subpath);
-  const directory = readDirectory(absolutePath);
+  const directory = readDirectorySync(absolutePath);
 
   const processDirectory = (entries: OutputEntry[], output: OutputEntry[]) => {
     subTemplates = loadSubTemplates(entries, subTemplates);

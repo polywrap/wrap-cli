@@ -37,10 +37,9 @@ COPY {{.}} {{.}}
 {{#web3api_modules}}
 COPY {{dir}} {{dir}}
 {{/web3api_modules}}
-
-{{#web3api_modules}}
-COPY {{dir}} {{dir}}
-{{/web3api_modules}}
+{{#web3api_common_dir}}
+COPY {{.}} {{.}}
+{{/web3api_common_dir}}
 
 {{#web3api_modules}}
 # Build the module at {{dir}}
