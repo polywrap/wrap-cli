@@ -5,7 +5,6 @@ import {
   bindSchema,
   OutputEntry,
   BindLanguage,
-  BindOptions,
   BindOutput
 } from "../";
 
@@ -33,58 +32,60 @@ describe("Web3API Binding Test Suite", () => {
         // Verify it binds correctly
         const { language, directories } = outputLanguage;
 
-        if (language !== "wasm-as") {
-          continue;
-        }
-
         // Read the expected output directories
-        const expectedModuleWiseOutput: BindOutput = {
-          modules: []
-        };
-        const expectedCombinedOutput: BindOutput = {
-          modules: []
-        };
+        let expectedModuleWiseOutput: BindOutput | undefined;
+        let expectedCombinedOutput: BindOutput | undefined;
 
-        if (directories.query) {
-          expectedModuleWiseOutput.modules.push({
-            name: "query",
-            output: readDirectory(directories.query)
-          });
-        }
-
-        if (directories.mutation) {
-          expectedModuleWiseOutput.modules.push({
-            name: "mutation",
-            output: readDirectory(directories.mutation)
-          });
-        }
-
-        if (directories.common) {
-          expectedModuleWiseOutput.common = {
-            name: "common",
-            output: readDirectory(directories.common)
+        if (directories.moduleWise) {
+          expectedModuleWiseOutput = {
+            modules: []
           };
+
+          for (const moduleName of Object.keys(directories.moduleWise)) {
+            if (moduleName === "common") {
+              expectedModuleWiseOutput.common = {
+                name: moduleName,
+                output: readDirectory(
+                  directories.moduleWise[moduleName]
+                )
+              };
+            } else {
+              expectedModuleWiseOutput.modules.push({
+                name: moduleName,
+                output: readDirectory(
+                  directories.moduleWise[moduleName]
+                )
+              });
+            }
+          }
         }
 
         if (directories.combined) {
+          expectedCombinedOutput = {
+            modules: []
+          };
           expectedCombinedOutput.modules.push({
             name: "combined",
             output: readDirectory(directories.combined)
           });
         }
 
-        const moduleWiseOptions: BindOptions = {
-          bindLanguage: language as BindLanguage,
-          modules,
-          commonDirAbs: directories.common ? commonDirAbs : undefined
-        };
-        const combinedOptions: BindOptions | undefined = directories.combined ? {
-          bindLanguage: language as BindLanguage,
-          modules: [testCase.input.combined]
-        } : undefined;
+        const hasCommonModule = Object.keys(directories.moduleWise || {})
+          .indexOf("common") > -1;
+        const moduleWiseOutput = expectedModuleWiseOutput
+          ? bindSchema({
+            bindLanguage: language as BindLanguage,
+            modules,
+            commonDirAbs: hasCommonModule ? commonDirAbs : undefined
+          })
+          : undefined;
 
-        const moduleWiseOutput = bindSchema(moduleWiseOptions);
-        const combinedOutput = combinedOptions ? bindSchema(combinedOptions) : undefined;
+        const combinedOutput = expectedCombinedOutput
+          ? bindSchema({
+            bindLanguage: language as BindLanguage,
+            modules: [testCase.input.combined]
+          })
+          : undefined;
 
         const validateOutput = (output: BindOutput, expected: BindOutput, tag?: string) => {
           const sort = (array: OutputEntry[]): OutputEntry[] => {
@@ -95,12 +96,21 @@ describe("Web3API Binding Test Suite", () => {
             return array.sort(alphabeticalNamedSort);
           };
 
+          output.modules = output.modules.sort(alphabeticalNamedSort);
+          expected.modules = expected.modules.sort(alphabeticalNamedSort);
+
           for (const module of output.modules) {
+            module.output.entries = sort(module.output.entries);
+          }
+          for (const module of expected.modules) {
             module.output.entries = sort(module.output.entries);
           }
 
           if (output.common) {
             output.common.output.entries = sort(output.common.output.entries);
+          }
+          if (expected.common) {
+            expected.common.output.entries = sort(expected.common.output.entries);
           }
 
           const testResultDir = path.join(__dirname, "/test-results/");
@@ -131,8 +141,13 @@ describe("Web3API Binding Test Suite", () => {
           expect(output).toMatchObject(expected);
         }
 
-        validateOutput(moduleWiseOutput, expectedModuleWiseOutput);
-        combinedOutput && validateOutput(combinedOutput, expectedCombinedOutput, "combined");
+        if (expectedModuleWiseOutput && moduleWiseOutput) {
+          validateOutput(moduleWiseOutput, expectedModuleWiseOutput);
+        }
+
+        if (expectedCombinedOutput && combinedOutput) {
+          validateOutput(combinedOutput, expectedCombinedOutput, "combined");
+        }
       }
     });
   }

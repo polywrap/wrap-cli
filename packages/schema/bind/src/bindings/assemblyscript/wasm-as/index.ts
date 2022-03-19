@@ -38,7 +38,7 @@ export const generateBinding: GenerateBindingFn = (
     );
 
     // Generate the common type folder
-    result.common = generateTypeInfoBinding({
+    result.common = generateModuleBinding({
       name: "common",
       typeInfo: commonTypeInfo,
       schema: "N/A",
@@ -49,7 +49,7 @@ export const generateBinding: GenerateBindingFn = (
   // Generate each module folder
   for (const module of options.modules) {
     result.modules.push(
-      generateTypeInfoBinding(module)
+      generateModuleBinding(module)
     );
   }
 
@@ -73,7 +73,7 @@ const templatesDir = readDirectory(
   path.join(__dirname, "./templates")
 );
 
-function generateTypeInfoBinding(
+function generateModuleBinding(
   module: BindModuleOptions
 ): BindModuleOutput {
 

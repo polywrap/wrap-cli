@@ -16,14 +16,14 @@ export type TestCase = {
     modules: BindModuleOptions[];
     combined: BindModuleOptions;
     commonDirAbs: string;
-  },
+  };
   outputLanguages: {
     language: string;
     directories: {
-      query?: string;
-      mutation?: string;
+      moduleWise?: {
+        [name: string]: string
+      };
       combined?: string;
-      common?: string;
     };
   }[];
 };
@@ -62,36 +62,39 @@ export function fetchTestCases(): TestCases {
     const querySchema = fetchIfExists(querySchemaFile);
     const mutationSchema = fetchIfExists(mutationSchemaFile);
 
-    // Fetch the output languages
+    // Fetch each language's expected output
     const outputDir = path.join(root, dirent.name, "output");
     const outputLanguages = fs.readdirSync(outputDir, { withFileTypes: true })
       .filter((item: fs.Dirent) => item.isDirectory())
       .map((item: fs.Dirent) => {
-        const outputMutationDir = path.join(outputDir, item.name, "mutation");
-        const outputMutation = fs.existsSync(outputMutationDir);
-        const outputQueryDir = path.join(outputDir, item.name, "query");
-        const outputQuery = fs.existsSync(outputQueryDir);
-        const outputCommonDir = path.join(outputDir, item.name, "common");
-        const outputCommon = fs.existsSync(outputCommonDir);
-        const outputCombinedDir = path.join(outputDir, item.name, "combined");
-        const outputCombined = fs.existsSync(outputCombinedDir);
+        const outputLanguageDir = path.join(outputDir, item.name);
+        const outputDirectories: {
+          moduleWise?: {
+            [name: string]: string
+          };
+          combined?: string;
+        } = { };
+
+        fs.readdirSync(outputLanguageDir, { withFileTypes: true })
+          .filter((item: fs.Dirent) => item.isDirectory())
+          .map((item: fs.Dirent) => {
+            if (item.name === "combined") {
+              outputDirectories.combined = path.join(
+                outputLanguageDir, item.name
+              );
+            } else {
+              if (!outputDirectories.moduleWise) {
+                outputDirectories.moduleWise = { };
+              }
+              outputDirectories.moduleWise[item.name] = path.join(
+                outputLanguageDir, item.name
+              );
+            }
+          })
 
         return {
           language: item.name,
-          directories: {
-            query: outputMutation
-              ? outputQueryDir
-              : undefined,
-            mutation: outputQuery
-              ? outputMutationDir
-              : undefined,
-            combined: outputCombined
-              ? outputCombinedDir
-              : undefined,
-            common: outputCommon
-              ? outputCommonDir
-              : undefined,
-          }
+          directories: outputDirectories
         };
       });
 
