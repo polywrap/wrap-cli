@@ -2998,6 +2998,26 @@ enum Logger_LogLevel @imported(
 
     expect(queryEnv.errors).toBeFalsy();
     expect(queryEnv.data).toBeTruthy();
-    expect(queryEnv.data?.getMap).toMatchObject(new Map<string, number>().set("a", 1).set("b", 2));
+    expect(queryEnv.data?.getMap).toMatchObject(
+      new Map<string, number>().set("a", 1).set("b", 2)
+    );
+
+    const mutationEnv = await client.query({
+      uri: implementationUri,
+      query: `
+      mutation {
+        updateMap(map: $map)
+      }
+      `,
+      variables: {
+        map: new Map<string, number>().set("b", 1).set("c", 5),
+      },
+    });
+
+    expect(mutationEnv.errors).toBeFalsy();
+    expect(mutationEnv.data).toBeTruthy();
+    expect(mutationEnv.data?.updateMap).toMatchObject(
+      new Map<string, number>().set("a", 1).set("b", 3).set("c", 5)
+    );
   });
 });
