@@ -27,7 +27,11 @@ import { AsyncWasmInstance } from "@web3api/asyncify-js";
 import { bindSchema, BindOptions } from "@web3api/schema-bind";
 import { TypeInfo } from "@web3api/schema-parse";
 import { ComposerOutput } from "@web3api/schema-compose";
-import { getCommonPath, writeFileSync, writeDirectorySync } from "@web3api/os-js";
+import {
+  getCommonPath,
+  writeFileSync,
+  writeDirectorySync,
+} from "@web3api/os-js";
 import * as gluegun from "gluegun";
 import fs from "fs";
 import path from "path";

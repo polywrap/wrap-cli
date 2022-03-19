@@ -124,13 +124,15 @@ export class CodeGenerator {
         }
 
         const output = await generateBinding({
-          modules: [{
-            name: "custom",
-            typeInfo,
-            schema: this._schema || "",
-            config: config || {},
-            outputDirAbs: this._config.outputDir,
-          }],
+          modules: [
+            {
+              name: "custom",
+              typeInfo,
+              schema: this._schema || "",
+              config: config || {},
+              outputDirAbs: this._config.outputDir,
+            },
+          ],
           bindLanguage,
         });
 
@@ -139,30 +141,25 @@ export class CodeGenerator {
             this._config.outputDir,
             module.output,
             (templatePath: string) =>
-            this._generateTemplate(
-              templatePath,
-              typeInfo,
-              spinner
-            )
+              this._generateTemplate(templatePath, typeInfo, spinner)
           );
         }
       } else {
         const output = bindSchema({
-          modules: [{
-            name: "combined",
-            typeInfo: composed.combined?.typeInfo as TypeInfo,
-            schema: composed.combined?.schema as string,
-            config,
-            outputDirAbs: this._config.outputDir,
-          }],
+          modules: [
+            {
+              name: "combined",
+              typeInfo: composed.combined?.typeInfo as TypeInfo,
+              schema: composed.combined?.schema as string,
+              config,
+              outputDirAbs: this._config.outputDir,
+            },
+          ],
           bindLanguage,
         });
 
         for (const module of output.modules) {
-          writeDirectorySync(
-            this._config.outputDir,
-            module.output
-          );
+          writeDirectorySync(this._config.outputDir, module.output);
         }
       }
     };

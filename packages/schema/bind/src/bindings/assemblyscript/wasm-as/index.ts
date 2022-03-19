@@ -16,20 +16,15 @@ import {
   extendType,
   toPrefixedGraphQLType,
 } from "@web3api/schema-parse";
-import {
-  OutputEntry,
-  readDirectorySync
-} from "@web3api/os-js";
-
+import { OutputEntry, readDirectorySync } from "@web3api/os-js";
 import Mustache from "mustache";
 import path from "path";
 
 export const generateBinding: GenerateBindingFn = (
   options: BindOptions
 ): BindOutput => {
-
   const result: BindOutput = {
-    modules: []
+    modules: [],
   };
 
   // If there's more than one module provided
@@ -51,9 +46,7 @@ export const generateBinding: GenerateBindingFn = (
 
   // Generate each module folder
   for (const module of options.modules) {
-    result.modules.push(
-      generateModuleBinding(module)
-    );
+    result.modules.push(generateModuleBinding(module));
   }
 
   return result;
@@ -72,21 +65,16 @@ function applyTransforms(typeInfo: TypeInfo): TypeInfo {
   return typeInfo;
 }
 
-const templatesDir = readDirectorySync(
-  path.join(__dirname, "./templates")
-);
+const templatesDir = readDirectorySync(path.join(__dirname, "./templates"));
 
-function generateModuleBinding(
-  module: BindModuleOptions
-): BindModuleOutput {
-
+function generateModuleBinding(module: BindModuleOptions): BindModuleOutput {
   const subTemplates = loadSubTemplates(templatesDir.entries);
   const result: BindModuleOutput = {
     name: module.name,
     output: {
-      entries: []
+      entries: [],
     },
-    outputDirAbs: module.outputDirAbs
+    outputDirAbs: module.outputDirAbs,
   };
   const output = result.output;
   const typeInfo = applyTransforms(module.typeInfo);
@@ -96,11 +84,7 @@ function generateModuleBinding(
     output.entries.push({
       type: "Directory",
       name: objectType.type,
-      data: generateFiles(
-        "./templates/object-type",
-        objectType,
-        subTemplates
-      ),
+      data: generateFiles("./templates/object-type", objectType, subTemplates),
     });
   }
 
@@ -228,11 +212,7 @@ function generateFiles(
 
         // file templates don't contain '_'
         if (name.indexOf("_") === -1) {
-          const data = Mustache.render(
-            dirent.data,
-            view,
-            subTemplates
-          );
+          const data = Mustache.render(dirent.data, view, subTemplates);
 
           // If the file isn't empty, add it to the output
           if (data) {

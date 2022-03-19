@@ -5,7 +5,7 @@ import {
   BindOptions,
   BindOutput,
   BindModuleOptions,
-  BindModuleOutput
+  BindModuleOutput,
 } from "../../..";
 
 import {
@@ -27,15 +27,12 @@ export { Functions };
 export const generateBinding: GenerateBindingFn = (
   options: BindOptions
 ): BindOutput => {
-
   const result: BindOutput = {
-    modules: []
+    modules: [],
   };
 
   for (const module of options.modules) {
-    result.modules.push(
-      generateModuleBindings(module)
-    );
+    result.modules.push(generateModuleBindings(module));
   }
 
   return result;
@@ -56,16 +53,13 @@ function applyTransforms(typeInfo: TypeInfo): TypeInfo {
   return typeInfo;
 }
 
-function generateModuleBindings(
-  module: BindModuleOptions
-): BindModuleOutput {
-
+function generateModuleBindings(module: BindModuleOptions): BindModuleOutput {
   const result: BindModuleOutput = {
     name: module.name,
     output: {
-      entries: []
+      entries: [],
     },
-    outputDirAbs: module.outputDirAbs
+    outputDirAbs: module.outputDirAbs,
   };
   const output = result.output;
   const schema = module.schema;

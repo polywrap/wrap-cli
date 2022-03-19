@@ -2,7 +2,6 @@ import { GenerateBindingFn } from "./types";
 import * as WasmAs from "./assemblyscript/wasm-as";
 import * as PluginTs from "./typescript/plugin-ts";
 import * as AppTs from "./typescript/app-ts";
-
 import { BindLanguage } from "../";
 
 export { WasmAs, PluginTs, AppTs };

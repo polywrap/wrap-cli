@@ -2,13 +2,7 @@ import { writeFileSync } from "./file";
 import { alphabeticalNamedSort } from "./sort";
 
 import path from "path";
-import {
-  readdirSync,
-  readFileSync,
-  Dirent,
-  mkdirSync,
-  existsSync
-} from "fs";
+import { readdirSync, readFileSync, Dirent, mkdirSync, existsSync } from "fs";
 
 export interface OutputDirectory {
   entries: OutputEntry[];
