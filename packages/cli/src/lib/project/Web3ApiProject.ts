@@ -177,7 +177,10 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
             };
           }
         ),
-        web3api_common_dir: modules.commonDir,
+        web3api_common_dir: () =>
+          modules.commonDir && fs.existsSync(modules.commonDir)
+            ? modules.commonDir
+            : undefined,
         web3api_manifests: (await this.getManifestPaths()).map(
           (path: string) => {
             return normalizePath(path);
