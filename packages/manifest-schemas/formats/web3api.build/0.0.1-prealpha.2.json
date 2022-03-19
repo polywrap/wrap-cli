@@ -5,7 +5,7 @@
   "required": ["format"],
   "properties": {
     "format": {
-      "description": "Polywrap build YAML format version.",
+      "description": "Polywrap build manifest format version.",
       "type": "string",
       "const": "0.0.1-prealpha.2"
     },
