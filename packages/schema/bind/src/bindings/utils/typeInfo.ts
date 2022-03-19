@@ -8,7 +8,6 @@ import {
   EnumDefinition,
   GenericDefinition,
   ImportedEnumDefinition,
-  ImportedModuleDefinition,
   ImportedObjectDefinition,
   ObjectDefinition,
 } from "@web3api/schema-parse";
@@ -18,7 +17,7 @@ export function extractCommonTypeInfo(modules: BindModuleOptions[], commonDirAbs
   const firstDefinition: Record<string, GenericDefinition> = {};
   const commonTypeInfo: TypeInfo = createTypeInfo();
 
-  const trackCommonTypes = (commonPath: string) =>
+  const trackCommonTypes = (commonProps: unknown) =>
     (def: GenericDefinition) => {
       if (!counts[def.type]) {
         counts[def.type] = 0;
@@ -28,42 +27,30 @@ export function extractCommonTypeInfo(modules: BindModuleOptions[], commonDirAbs
       if (counts[def.type] === 1) {
         firstDefinition[def.type] = def;
       } else {
-        // Mark both the first definition & current definition as "common"
-        const commonProps = {
-          __commonPath: commonPath
-        };
 
         // If this is the first duplicate being tracked
+        // Mark both the first definition & current definition as "common"
         if (firstDefinition[def.type]) {
-          // Add common props to first & second instances
-          Object.assign(firstDefinition[def.type], commonProps);
-          Object.assign(def, commonProps);
-
           // Add the definition to the common TypeInfo
           switch (def.kind) {
             case DefinitionKind.Enum:
               commonTypeInfo.enumTypes.push(
-                def as EnumDefinition
+                { ...def } as EnumDefinition
               );
               break;
             case DefinitionKind.Object:
               commonTypeInfo.objectTypes.push(
-                def as ObjectDefinition
+                { ...def } as ObjectDefinition
               );
               break;
             case DefinitionKind.ImportedEnum:
               commonTypeInfo.importedEnumTypes.push(
-                def as ImportedEnumDefinition
+                { ...def } as ImportedEnumDefinition
               );
               break;
             case DefinitionKind.ImportedObject:
               commonTypeInfo.importedObjectTypes.push(
-                def as ImportedObjectDefinition
-              );
-              break;
-            case DefinitionKind.ImportedModule:
-              commonTypeInfo.importedModuleTypes.push(
-                def as ImportedModuleDefinition
+                { ...def } as ImportedObjectDefinition
               );
               break;
             default:
@@ -72,22 +59,42 @@ export function extractCommonTypeInfo(modules: BindModuleOptions[], commonDirAbs
               );
           }
 
+          // Add common props to first & second instances
+          Object.assign(firstDefinition[def.type], commonProps);
+          Object.assign(def, commonProps);
+
           // Remove the "first instance" so it is no longer modified
           delete firstDefinition[def.type];
         }
       }
     };
 
-  for (const module of modules) {
-    const typeInfo = module.typeInfo;
+  const getCommonProps = (module: BindModuleOptions) => {
     const commonPath = getRelativePath(module.outputDirAbs, commonDirAbs);
-
-    typeInfo.enumTypes.forEach(trackCommonTypes(commonPath));
-    typeInfo.objectTypes.forEach(trackCommonTypes(commonPath));
-    typeInfo.importedEnumTypes.forEach(trackCommonTypes(commonPath));
-    typeInfo.importedObjectTypes.forEach(trackCommonTypes(commonPath));
-    typeInfo.importedModuleTypes.forEach(trackCommonTypes(commonPath));
+    return {
+      __commonPath: commonPath
+    };
   }
 
-  return commonTypeInfo;
+  for (const module of modules) {
+    const typeInfo = module.typeInfo;
+    const commonProps = getCommonProps(module);
+
+    typeInfo.enumTypes.forEach(trackCommonTypes(commonProps));
+    typeInfo.objectTypes.forEach(trackCommonTypes(commonProps));
+    typeInfo.importedEnumTypes.forEach(trackCommonTypes(commonProps));
+    typeInfo.importedObjectTypes.forEach(trackCommonTypes(commonProps));
+  }
+
+  if (Object.values(counts).filter((x) => x > 1).length) {
+    for (const module of modules) {
+      const commonProps = getCommonProps(module);
+      Object.assign(module.typeInfo, commonProps)
+    }
+  }
+
+  return {
+    ...commonTypeInfo,
+    __commonModule: true
+  } as TypeInfo;
 }

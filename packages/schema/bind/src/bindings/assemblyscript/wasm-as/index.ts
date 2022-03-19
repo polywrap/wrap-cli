@@ -56,13 +56,13 @@ export const generateBinding: GenerateBindingFn = (
   return result;
 };
 
-const transforms = [
-  extendType(Functions),
-  addFirstLast,
-  toPrefixedGraphQLType
-];
-
 function applyTransforms(typeInfo: TypeInfo): TypeInfo {
+  const transforms = [
+    extendType(Functions),
+    addFirstLast,
+    toPrefixedGraphQLType,
+  ];
+
   for (const transform of transforms) {
     typeInfo = transformTypeInfo(typeInfo, transform);
   }
@@ -92,7 +92,11 @@ function generateTypeInfoBinding(
     output.entries.push({
       type: "Directory",
       name: objectType.type,
-      data: generateFiles("./templates/object-type", objectType, subTemplates),
+      data: generateFiles(
+        "./templates/object-type",
+        objectType,
+        subTemplates
+      ),
     });
   }
 

@@ -1,4 +1,4 @@
-{{^__commonImport}}
+{{^__commonPath}}
 {{> serialization_imports}}
 import { {{type}} } from "./";
 import * as Types from "..";
@@ -129,4 +129,4 @@ export function read{{type}}(reader: Read): {{type}} {
     {{/properties}}
   };
 }
-{{/__commonImport}}
+{{/__commonPath}}

@@ -1,7 +1,7 @@
-{{#__commonImport}}
+{{#__commonPath}}
 export { {{type}} } from "../../common";
-{{/__commonImport}}
-{{^__commonImport}}
+{{/__commonPath}}
+{{^__commonPath}}
 import {
   Read,
   Write,
@@ -41,4 +41,4 @@ export class {{type}} {
     return read{{type}}(reader);
   }
 }
-{{/__commonImport}}
+{{/__commonPath}}

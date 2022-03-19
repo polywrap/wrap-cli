@@ -38,78 +38,101 @@ describe("Web3API Binding Test Suite", () => {
         }
 
         // Read the expected output directories
-        const expectedOutput: BindOutput = {
+        const expectedModuleWiseOutput: BindOutput = {
+          modules: []
+        };
+        const expectedCombinedOutput: BindOutput = {
           modules: []
         };
 
         if (directories.query) {
-          expectedOutput.modules.push({
+          expectedModuleWiseOutput.modules.push({
             name: "query",
             output: readDirectory(directories.query)
           });
         }
 
         if (directories.mutation) {
-          expectedOutput.modules.push({
+          expectedModuleWiseOutput.modules.push({
             name: "mutation",
             output: readDirectory(directories.mutation)
           });
         }
 
-        if (directories.combined) {
-          expectedOutput.modules.push({
-            name: "combined",
-            output: readDirectory(directories.combined)
-          });
-        }
-
         if (directories.common) {
-          expectedOutput.common = {
+          expectedModuleWiseOutput.common = {
             name: "common",
             output: readDirectory(directories.common)
           };
         }
 
-        const options: BindOptions = {
+        if (directories.combined) {
+          expectedCombinedOutput.modules.push({
+            name: "combined",
+            output: readDirectory(directories.combined)
+          });
+        }
+
+        const moduleWiseOptions: BindOptions = {
           bindLanguage: language as BindLanguage,
           modules,
           commonDirAbs: directories.common ? commonDirAbs : undefined
-        }
-
-        const output = bindSchema(options);
-
-        const sort = (array: OutputEntry[]): OutputEntry[] => {
-          array.forEach((entry) => {
-            if (typeof entry.data !== "string") entry.data = sort(entry.data);
-          });
-
-          return array.sort(alphabeticalNamedSort);
         };
+        const combinedOptions: BindOptions | undefined = directories.combined ? {
+          bindLanguage: language as BindLanguage,
+          modules: [testCase.input.combined]
+        } : undefined;
 
-        for (const module of output.modules) {
-          module.output.entries = sort(module.output.entries);
+        const moduleWiseOutput = bindSchema(moduleWiseOptions);
+        const combinedOutput = combinedOptions ? bindSchema(combinedOptions) : undefined;
+
+        const validateOutput = (output: BindOutput, expected: BindOutput, tag?: string) => {
+          const sort = (array: OutputEntry[]): OutputEntry[] => {
+            array.forEach((entry) => {
+              if (typeof entry.data !== "string") entry.data = sort(entry.data);
+            });
+
+            return array.sort(alphabeticalNamedSort);
+          };
+
+          for (const module of output.modules) {
+            module.output.entries = sort(module.output.entries);
+          }
+
+          if (output.common) {
+            output.common.output.entries = sort(output.common.output.entries);
+          }
+
+          const testResultDir = path.join(__dirname, "/test-results/");
+
+          if (!fs.existsSync(testResultDir)) {
+            fs.mkdirSync(testResultDir);
+          }
+
+          writeFileSync(
+            path.join(
+              testResultDir,
+              tag ?
+              `${language}-${tag}-output.json` :
+              `${language}-output.json`
+            ),
+            JSON.stringify(output, null, 2),
+          );
+          writeFileSync(
+            path.join(
+              testResultDir,
+              tag ?
+              `${language}-${tag}-expected.json` :
+              `${language}-expected.json`
+            ),
+            JSON.stringify(expected, null, 2),
+          );
+
+          expect(output).toMatchObject(expected);
         }
 
-        if (output.common) {
-          output.common.output.entries = sort(output.common.output.entries);
-        }
-
-        const testResultDir = path.join(__dirname, "/test-results/");
-
-        if (!fs.existsSync(testResultDir)) {
-          fs.mkdirSync(testResultDir);
-        }
-
-        writeFileSync(
-          path.join(testResultDir, `${language}-output.json`),
-          JSON.stringify(output, null, 2),
-        );
-        writeFileSync(
-          path.join(testResultDir, `${language}-expected.json`),
-          JSON.stringify(expectedOutput, null, 2),
-        );
-
-        expect(output).toMatchObject(expectedOutput);
+        validateOutput(moduleWiseOutput, expectedModuleWiseOutput);
+        combinedOutput && validateOutput(combinedOutput, expectedCombinedOutput, "combined");
       }
     });
   }

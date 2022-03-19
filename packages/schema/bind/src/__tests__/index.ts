@@ -14,6 +14,7 @@ export type TestCase = {
   directory: string;
   input: {
     modules: BindModuleOptions[];
+    combined: BindModuleOptions;
     commonDirAbs: string;
   },
   outputLanguages: {
@@ -72,6 +73,8 @@ export function fetchTestCases(): TestCases {
         const outputQuery = fs.existsSync(outputQueryDir);
         const outputCommonDir = path.join(outputDir, item.name, "common");
         const outputCommon = fs.existsSync(outputCommonDir);
+        const outputCombinedDir = path.join(outputDir, item.name, "combined");
+        const outputCombined = fs.existsSync(outputCombinedDir);
 
         return {
           language: item.name,
@@ -82,8 +85,8 @@ export function fetchTestCases(): TestCases {
             mutation: outputQuery
               ? outputMutationDir
               : undefined,
-            combined: !outputMutation && !outputQuery
-              ? path.join(outputDir, item.name)
+            combined: outputCombined
+              ? outputCombinedDir
               : undefined,
             common: outputCommon
               ? outputCommonDir
@@ -148,12 +151,12 @@ export function fetchTestCases(): TestCases {
       });
     }
 
-    modules.push({
+    const combined: BindModuleOptions = {
       name: "combined",
       typeInfo: composed.combined.typeInfo as TypeInfo,
       schema: composed.combined.schema as string,
       outputDirAbs: path.join(root, "combined")
-    });
+    };
 
     // Add the newly formed test case
     return {
@@ -161,6 +164,7 @@ export function fetchTestCases(): TestCases {
       directory: outputDir,
       input: {
         modules,
+        combined,
         commonDirAbs: path.join(root, "common"),
       },
       outputLanguages
