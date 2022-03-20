@@ -159,6 +159,14 @@ export class EthereumPlugin extends Plugin {
     };
   }
 
+  public async callView(input: Query.Input_callView): Promise<string> {
+    const connection = await this.getConnection(input.connection);
+    const res = await connection
+      .getProvider()
+      .call(Mapping.fromTxRequest(input.txRequest));
+    return res.toString();
+  }
+
   public async callContractView(
     input: Query.Input_callContractView
   ): Promise<string> {

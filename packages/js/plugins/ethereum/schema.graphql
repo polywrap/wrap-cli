@@ -105,6 +105,11 @@ type Query {
     connection: Connection
   ): String!
 
+  callView(
+    txRequest: TxRequest!
+    connection: Connection
+  ): String!
+
   callContractStatic(
     address: String!
     method: String!

@@ -1,4 +1,4 @@
-#import { Query, Connection } into Ethereum from "w3://ens/ethereum-signer.web3api.eth"
+#import { Query, Connection } into Ethereum from "w3://ens/ethereum.web3api.eth"
 
 type Query {
   callContractView(

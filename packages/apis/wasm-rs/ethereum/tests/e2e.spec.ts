@@ -1,6 +1,5 @@
 import { Web3ApiClient } from "@web3api/client-js";
-// import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
-import { ethereumSignerPlugin } from "@web3api/ethereum-signer-plugin-js";
+import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 // import { ensPlugin } from "@web3api/ens-plugin-js";
 // import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import {
@@ -44,8 +43,8 @@ describe("Ethereum Wrapper", () => {
     client = new Web3ApiClient({
       plugins: [
         {
-          uri: "w3://ens/ethereum-signer.web3api.eth",
-          plugin: ethereumSignerPlugin({
+          uri: "w3://ens/ethereum.web3api.eth",
+          plugin: ethereumPlugin({
             networks: {
               testnet: {
                 provider: ethereum,

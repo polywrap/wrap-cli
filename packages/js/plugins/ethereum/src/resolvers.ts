@@ -49,6 +49,10 @@ export const query = (plugin: Plugin): Query.Module => ({
     return plugin.callContractView(input);
   },
 
+  callView: (input: Query.Input_callView): Promise<string> => {
+    return plugin.callView(input);
+  },
+
   callContractStatic: async (
     input: Query.Input_callContractStatic
   ): Promise<Types.StaticTxResult> => {
