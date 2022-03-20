@@ -41,15 +41,15 @@ type TxResponse {
 }
 
 type TxRequest {
-  to: String!
-  from: String!
-  nonce: UInt32!
-  gasLimit: BigInt!
-  gasPrice: BigInt!
-  data: String!
-  value: BigInt!
-  chainId: UInt32!
-  type: UInt32!
+  to: String
+  from: String
+  nonce: UInt32
+  gasLimit: BigInt
+  gasPrice: BigInt
+  data: String
+  value: BigInt
+  chainId: UInt32
+  type: UInt32
 }
 
 type Log {

@@ -104,13 +104,14 @@ type TxReceipt {
 }
 
 type TxRequest {
-  from: String
   to: String
+  from: String
+  nonce: UInt32
   gas: BigInt
   gasPrice: BigInt
-  value: BigInt
   data: String
-  nonce: UInt32
+  value: BigInt
+  chainId: UInt32
 }
 
 type TxOverrides {

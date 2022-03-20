@@ -83,7 +83,9 @@ export class EthereumSignerPlugin extends Plugin {
   ): Promise<Types.TxResponse> {
     const connection = await this.getConnection(input.connection);
     const signer = connection.getSigner();
-    const res = await signer.sendTransaction(input.txRequest);
+    const res = await signer.sendTransaction(
+      Mapping.fromTxRequest(input.txRequest)
+    );
     return Mapping.toTxResponse(res);
   }
 
@@ -92,7 +94,9 @@ export class EthereumSignerPlugin extends Plugin {
   ): Promise<Types.TxReceipt> {
     const connection = await this.getConnection(input.connection);
     const signer = connection.getSigner();
-    const response = await signer.sendTransaction(input.txRequest);
+    const response = await signer.sendTransaction(
+      Mapping.fromTxRequest(input.txRequest)
+    );
     const receipt = await response.wait();
     return Mapping.toTxReceipt(receipt);
   }
@@ -126,7 +130,9 @@ export class EthereumSignerPlugin extends Plugin {
 
   public async callView(input: Query.Input_callView): Promise<string> {
     const connection = await this.getConnection(input.connection);
-    const res = await connection.getProvider().call(input.txRequest);
+    const res = await connection
+      .getProvider()
+      .call(Mapping.fromTxRequest(input.txRequest));
     return res.toString();
   }
 
@@ -200,7 +206,7 @@ export class EthereumSignerPlugin extends Plugin {
   }
 }
 
-export const ethereumPlugin: PluginFactory<EthereumConfig> = (
+export const ethereumSignerPlugin: PluginFactory<EthereumConfig> = (
   opts: EthereumConfig
 ) => {
   return {
@@ -208,4 +214,4 @@ export const ethereumPlugin: PluginFactory<EthereumConfig> = (
     manifest: manifest,
   };
 };
-export const plugin = ethereumPlugin;
+export const plugin = ethereumSignerPlugin;

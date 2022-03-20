@@ -1,82 +1,74 @@
 //! Query module of the Ethereum polywrapper
 
-// pub mod connection_configs;
-// pub mod mapping;
-pub mod resolvers;
 pub mod mapping;
-pub mod connection;
-pub mod network;
 pub mod w3;
 pub use w3::*;
-pub use resolvers::*;
-// pub mod connection;
-// pub mod resolvers;
-// pub mod abi;
-//
-// pub use mapping::*;
-// // use polywrap_wasm_rs::BigInt;
-// // pub use w3::*;
-//
-// pub fn call_contract_view(input: InputCallContractView) -> String {
-//     todo!()
+
+use ethers::abi::{AbiParser, Tokenize};
+use ethers::abi::Token;
+use ethers::contract::*;
+use ethers::prelude::Address;
+use ethers::types::{TransactionRequest, Bytes, BlockNumber};
+pub use mapping::*;
+use std::str::FromStr;
+pub use w3::*;
+pub use w3::imported::InputCallView;
+use polywrap_wasm_rs::w3_debug_log;
+
+fn from_method_and_args<T: Tokenize>(method: &str, args: T) -> TransactionRequest {
+  let function = AbiParser::default().parse_function(method).unwrap();
+  let data = encode_function_data(&function, args).unwrap();
+
+  TransactionRequest { data: Some(data), ..Default::default() }
+}
+
+pub fn call_contract_view(input: InputCallContractView) -> String {
+  let to = Address::from_str(&input.address).unwrap();
+  let args = match input.args {
+    Some(a) => a,
+    None => vec![]
+  };
+
+  let tx = from_method_and_args(&input.method, args).to(to);
+  let tx_request = to_tx_request(tx);
+
+  let contract_call_args = InputCallView {
+    tx_request,
+    connection: input.connection
+  };
+
+  w3_debug_log("got here");
+
+  match EthereumQuery::call_view(&contract_call_args) {
+    Ok(result) => result,
+    Err(e) => panic!("{}", e)
+  }
+}
+
+// pub async fn call_contract_method(input: InputCallContractMethod) {
+//   let to = Address::from_str(address).unwrap();
+//   let tx = from_method_and_args(method, args).to(to);
+//   let tx_request = to_tx_request(tx);
+
+//   await EthereumSigner_Mutation.sendTransaction(tx_request, connection)
 // }
-//
-// pub fn call_contract_static(input: InputCallContractStatic) -> StaticTxResult {
-//     todo!()
+
+// pub async fn deploy_contract(input: InputDeployContract) {
+  // let abi = AbiParser::default().parse_str(abi_str).unwrap();
+  //
+  // let data: Bytes = match (abi.constructor(), args.is_empty()) {
+  //   (None, false) => return panic!("Constructor error"),
+  //   (None, true) => bytecode.clone(),
+  //   (Some(constructor), _) => {
+  //       constructor.encode_input(bytecode.to_vec(), &args).unwrap().into()
+  //   }
+  // };
+  //
+  // let tx = TransactionRequest { to: None, data: Some(data), ..Default::default() };
+
+  //await EthereumSigner_Mutation.sendTransactionAndWait(tx_request, 1, connection)
 // }
-//
-// pub fn encode_params(input: InputEncodeParams) -> String {
-//     todo!()
-// }
-//
-// pub fn encode_function(input: InputEncodeFunction) -> String {
-//     todo!()
-// }
-//
-// pub fn get_signer_address(input: InputGetSignerAddress) -> String {
-//     todo!()
-// }
-//
-// pub fn get_signer_balance(input: InputGetSignerBalance) -> BigInt {
-//     todo!()
-// }
-//
-// pub fn get_signer_transaction_count(input: InputGetSignerTransactionCount) -> BigInt {
-//     todo!()
-// }
-//
-// pub fn get_gas_price(input: InputGetGasPrice) -> BigInt {
-//     todo!()
-// }
-//
-// pub fn estimate_transaction_gas(input: InputEstimateTransactionGas) -> BigInt {
-//     todo!()
-// }
-//
-// pub fn estimate_contract_call_gas(input: InputEstimateContractCallGas) -> BigInt {
-//     todo!()
-// }
-//
-// pub fn check_address(input: InputCheckAddress) -> bool {
-//     todo!()
-// }
-//
-// pub fn to_wei(input: InputToWei) -> BigInt {
-//     todo!()
-// }
-//
-// pub fn to_eth(input: InputToEth) -> String {
-//     todo!()
-// }
-//
-// pub fn wait_for_event(input: InputWaitForEvent) -> EventNotification {
-//     todo!()
-// }
-//
-// pub fn await_transaction(input: InputAwaitTransaction) -> TxReceipt {
-//     todo!()
-// }
-//
-// pub fn get_network(input: InputGetNetwork) -> Network {
-//     todo!()
+
+// pub async fn sign_message(input: InputSignMessage) {
+  //await EthereumSigner_Mutation.signMessage(tx_request, 1, connection)
 // }
