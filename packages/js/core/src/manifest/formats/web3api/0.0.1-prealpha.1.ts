@@ -7,29 +7,83 @@
  */
 
 export interface Web3ApiManifest {
+  /**
+   * Polywrap manifest format version.
+   */
   format: "0.0.1-prealpha.1";
+  /**
+   * Description about this wrapper.
+   */
   description?: string;
+  /**
+   * Reference to the repository holding source code.
+   */
   repository?: string;
+  /**
+   * Mutation module metadata.
+   */
   mutation?: {
+    /**
+     * Path to graphql schema.
+     */
     schema: {
+      /**
+       * Path to graphql schema file.
+       */
       file: string;
     };
+    /**
+     * Module for mutation operations.
+     */
     module: {
+      /**
+       * Language in which the source code is written.
+       */
       language: string;
+      /**
+       * Path to Polywrap module implementation file.
+       */
       file: string;
     };
   };
+  /**
+   * Module for query operations.
+   */
   query?: {
+    /**
+     * Path to graphql schema.
+     */
     schema: {
+      /**
+       * Path to graphql schema file.
+       */
       file: string;
     };
+    /**
+     * Module for query operations.
+     */
     module: {
+      /**
+       * Language in which the source code is written.
+       */
       language: string;
+      /**
+       * Path to Polywrap module implementation file.
+       */
       file: string;
     };
   };
+  /**
+   * Redirects enabling the import of plugins.
+   */
   import_redirects?: {
+    /**
+     * URI resolving to the plugin schema.
+     */
     uri: string;
+    /**
+     * Graphql schema for imported plugin.
+     */
     schema: string;
   }[];
   __type: "Web3ApiManifest";

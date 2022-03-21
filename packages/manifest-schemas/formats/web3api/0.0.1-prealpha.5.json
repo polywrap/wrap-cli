@@ -9,7 +9,7 @@
   ],
   "properties": {
     "format": {
-      "description": "Polywrap YAML format version.",
+      "description": "Polywrap manifest format version.",
       "type": "string",
       "const": "0.0.1-prealpha.5"
     },
@@ -19,12 +19,12 @@
       "format": "yamlFile"
     },
     "meta": {
-      "description" : "Path to wrapper metadata YAML file.",
+      "description" : "Path to wrapper metadata manifest file.",
       "type": "string",
       "format": "yamlFile"
     },
     "language": {
-      "description" : "Language that will be compiled to wasm.",
+      "description" : "Language in which the source code is written.",
       "type": "string",
       "format": "wasmLanguage"
     },
