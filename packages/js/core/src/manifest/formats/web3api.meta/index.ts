@@ -8,21 +8,27 @@
 import {
   MetaManifest as MetaManifest0_0_1_prealpha_1
 } from "./0.0.1-prealpha.1";
+import {
+  MetaManifest as MetaManifest0_0_1_prealpha_2
+} from "./0.0.1-prealpha.2";
 
 export {
   MetaManifest0_0_1_prealpha_1,
+  MetaManifest0_0_1_prealpha_2,
 };
 
 export enum MetaManifestFormats {
   "0.0.1-prealpha.1" = "0.0.1-prealpha.1",
+  "0.0.1-prealpha.2" = "0.0.1-prealpha.2",
 }
 
 export type AnyMetaManifest =
   | MetaManifest0_0_1_prealpha_1
+  | MetaManifest0_0_1_prealpha_2
 
-export type MetaManifest = MetaManifest0_0_1_prealpha_1;
+export type MetaManifest = MetaManifest0_0_1_prealpha_2;
 
-export const latestMetaManifestFormat = MetaManifestFormats["0.0.1-prealpha.1"]
+export const latestMetaManifestFormat = MetaManifestFormats["0.0.1-prealpha.2"]
 
 export { migrateMetaManifest } from "./migrate";
 

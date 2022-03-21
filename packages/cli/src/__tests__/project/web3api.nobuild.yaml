@@ -1,4 +1,5 @@
-format: 0.0.1-prealpha.5
+format: 0.0.1-prealpha.7
+name: test-project
 language: wasm/assemblyscript
 modules:
   mutation:
