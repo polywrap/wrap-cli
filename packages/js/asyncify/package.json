@@ -1,7 +1,7 @@
 {
   "name": "@web3api/asyncify-js",
   "description": "Async Wasm Imports Support Using Asyncify",
-  "version": "0.0.1-prealpha.61",
+  "version": "0.0.1-prealpha.68",
   "license": "MIT",
   "repository": {
     "type": "git",

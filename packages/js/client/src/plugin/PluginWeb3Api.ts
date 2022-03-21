@@ -9,8 +9,8 @@ import {
   Plugin,
   PluginPackage,
   Uri,
-  AnyManifest,
-  ManifestType,
+  AnyManifestArtifact,
+  ManifestArtifactType,
   GetFileOptions,
   Env,
   InvokableModules,
@@ -45,10 +45,10 @@ export class PluginWeb3Api extends Api {
     return Promise.resolve(this._plugin.manifest.schema);
   }
 
-  public async getManifest<T extends ManifestType>(
+  public async getManifest<T extends ManifestArtifactType>(
     _options: GetManifestOptions<T>,
     _client: Client
-  ): Promise<AnyManifest<T>> {
+  ): Promise<AnyManifestArtifact<T>> {
     throw Error("client.getManifest(...) is not implemented for Plugins.");
   }
 

@@ -108,6 +108,21 @@ type Ethereum_Query @imported(
     args: [String!]
   ): String!
 
+  solidityPack(
+    types: [String!]!
+    values: [String!]!
+  ): String!
+
+  solidityKeccak256(
+    types: [String!]!
+    values: [String!]!
+  ): String!
+
+  soliditySha256(
+    types: [String!]!
+    values: [String!]!
+  ): String!
+
   getSignerAddress(
     connection: Ethereum_Connection
   ): String!

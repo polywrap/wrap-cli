@@ -1,7 +1,7 @@
 {
   "name": "@web3api/react",
   "description": "Web3API React Integration",
-  "version": "0.0.1-prealpha.61",
+  "version": "0.0.1-prealpha.68",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -19,19 +19,19 @@
     "test:watch": "yarn test --watch"
   },
   "dependencies": {
-    "@web3api/client-js": "0.0.1-prealpha.61",
-    "@web3api/core-js": "0.0.1-prealpha.61"
+    "@web3api/client-js": "0.0.1-prealpha.68",
+    "@web3api/core-js": "0.0.1-prealpha.68"
   },
   "devDependencies": {
     "@testing-library/react": "11.2.5",
     "@testing-library/react-hooks": "5.1.0",
     "@types/jest": "26.0.8",
-    "@web3api/cli": "0.0.1-prealpha.61",
-    "@web3api/ens-plugin-js": "0.0.1-prealpha.61",
-    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.61",
-    "@web3api/ipfs-plugin-js": "0.0.1-prealpha.61",
-    "@web3api/test-cases": "0.0.1-prealpha.61",
-    "@web3api/test-env-js": "0.0.1-prealpha.61",
+    "@web3api/cli": "0.0.1-prealpha.68",
+    "@web3api/ens-plugin-js": "0.0.1-prealpha.68",
+    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.68",
+    "@web3api/ipfs-plugin-js": "0.0.1-prealpha.68",
+    "@web3api/test-cases": "0.0.1-prealpha.68",
+    "@web3api/test-env-js": "0.0.1-prealpha.68",
     "jest": "26.6.3",
     "jest-environment-jsdom": "^26.0.1",
     "rimraf": "3.0.2",

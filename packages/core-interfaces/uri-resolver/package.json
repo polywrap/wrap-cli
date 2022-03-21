@@ -2,7 +2,7 @@
   "name": "uri-resolver-interface",
   "description": "URI Resolver Interface",
   "private": true,
-  "version": "0.0.1-prealpha.61",
+  "version": "0.0.1-prealpha.68",
   "scripts": {
     "build": "npx w3 build",
     "lint": "eslint --color -c ../../../.eslintrc.js .",
@@ -11,6 +11,6 @@
     "deploy": "npx w3 build --ipfs http://localhost:5001"
   },
   "devDependencies": {
-    "@web3api/cli": "0.0.1-prealpha.61"
+    "@web3api/cli": "0.0.1-prealpha.68"
   }
 }

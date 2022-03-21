@@ -1,18 +1,19 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-empty-function */
 
-import { Web3ApiProject } from "./project";
-import { SchemaComposer } from "./SchemaComposer";
 import {
+  Web3ApiProject,
+  SchemaComposer,
   withSpinner,
   outputManifest,
   outputMetadata,
+  web3apiManifestLanguageToBindLanguage,
   generateDockerfile,
+  generateDockerImageName,
   createBuildImage,
   copyArtifactsFromBuildImage,
-  manifestLanguageToBindLanguage,
-} from "./helpers";
-import { intlMsg } from "./intl";
+  intlMsg,
+} from "./";
 
 import {
   InvokableModules,
@@ -23,10 +24,14 @@ import {
 import { WasmWeb3Api } from "@web3api/client-js";
 import { W3Imports } from "@web3api/client-js/build/wasm/types";
 import { AsyncWasmInstance } from "@web3api/asyncify-js";
-import { bindSchema, writeDirectory } from "@web3api/schema-bind";
+import { bindSchema, BindOptions } from "@web3api/schema-bind";
 import { TypeInfo } from "@web3api/schema-parse";
 import { ComposerOutput } from "@web3api/schema-compose";
-import { writeFileSync } from "@web3api/os-js";
+import {
+  getCommonPath,
+  writeFileSync,
+  writeDirectorySync,
+} from "@web3api/os-js";
 import * as gluegun from "gluegun";
 import fs from "fs";
 import path from "path";
@@ -153,7 +158,7 @@ export class Compiler {
     const { project } = this._config;
 
     // Get the Web3ApiManifest
-    const web3ApiManifest = await project.getWeb3ApiManifest();
+    const web3ApiManifest = await project.getManifest();
 
     // Determine what modules to build
     const modulesToBuild = this._getModulesToBuild(web3ApiManifest);
@@ -222,36 +227,56 @@ export class Compiler {
       this._resetDir(mutationDirectory);
     }
 
-    const bindLanguage = manifestLanguageToBindLanguage(
+    const bindLanguage = web3apiManifestLanguageToBindLanguage(
       await project.getManifestLanguage()
     );
 
-    // Generate the bindings
-    const output = bindSchema({
+    const options: BindOptions = {
+      modules: [],
       bindLanguage,
-      query: modulesToBuild.query
-        ? {
-            typeInfo: composerOutput.query?.typeInfo as TypeInfo,
-            outputDirAbs: queryDirectory as string,
-          }
-        : undefined,
-      mutation: modulesToBuild.mutation
-        ? {
-            typeInfo: composerOutput.mutation?.typeInfo as TypeInfo,
-            outputDirAbs: mutationDirectory as string,
-          }
-        : undefined,
-    });
+    };
+
+    if (modulesToBuild.query) {
+      options.modules.push({
+        name: "query",
+        typeInfo: composerOutput.query?.typeInfo as TypeInfo,
+        schema: composerOutput.combined?.schema as string,
+        outputDirAbs: queryDirectory as string,
+      });
+    }
+
+    if (modulesToBuild.mutation) {
+      options.modules.push({
+        name: "mutation",
+        typeInfo: composerOutput.mutation?.typeInfo as TypeInfo,
+        schema: composerOutput.combined?.schema as string,
+        outputDirAbs: mutationDirectory as string,
+      });
+    }
+
+    if (mutationDirectory && queryDirectory) {
+      options.commonDirAbs = path.join(
+        getCommonPath(queryDirectory, mutationDirectory),
+        "w3"
+      );
+    }
+
+    // Generate the bindings
+    const output = bindSchema(options);
 
     // Output the bindings
     const filesWritten: string[] = [];
 
-    if (output.query && queryDirectory) {
-      filesWritten.push(...writeDirectory(queryDirectory, output.query));
+    for (const module of output.modules) {
+      filesWritten.push(
+        ...writeDirectorySync(module.outputDirAbs, module.output)
+      );
     }
 
-    if (output.mutation && mutationDirectory) {
-      filesWritten.push(...writeDirectory(mutationDirectory, output.mutation));
+    if (output.common) {
+      filesWritten.push(
+        ...writeDirectorySync(output.common.outputDirAbs, output.common.output)
+      );
     }
 
     return filesWritten;
@@ -292,7 +317,7 @@ export class Compiler {
       };
     }
 
-    web3ApiManifest.build = "./web3api.build.yaml";
+    web3ApiManifest.build = "./web3api.build.json";
 
     // Create the BuildManifest
     const buildManifest: BuildManifest = {
@@ -330,7 +355,7 @@ export class Compiler {
 
     const absolute = path.isAbsolute(entryPoint)
       ? entryPoint
-      : path.join(project.getWeb3ApiManifestDir(), entryPoint);
+      : path.join(project.getManifestDir(), entryPoint);
     return `${path.dirname(absolute)}/w3`;
   }
 
@@ -338,7 +363,9 @@ export class Compiler {
     const { project, outputDir } = this._config;
     const buildManifestDir = await project.getBuildManifestDir();
     const buildManifest = await project.getBuildManifest();
-    const imageName = buildManifest?.docker?.name || "web3api-build";
+    const imageName =
+      buildManifest?.docker?.name ||
+      generateDockerImageName(await project.getBuildUuid());
     let dockerfile = buildManifest?.docker?.dockerfile
       ? path.join(buildManifestDir, buildManifest?.docker?.dockerfile)
       : path.join(buildManifestDir, "Dockerfile");
@@ -347,7 +374,7 @@ export class Compiler {
 
     // If the dockerfile path isn't provided, generate it
     if (!buildManifest?.docker?.dockerfile) {
-      // Make sure the default template is in the cached .w3/build/env folder
+      // Make sure the default template is in the cached .w3/web3api/build/env folder
       await project.cacheDefaultBuildManifestFiles();
 
       dockerfile = generateDockerfile(
@@ -361,16 +388,28 @@ export class Compiler {
       dockerfile = generateDockerfile(dockerfile, buildManifest.config || {});
     }
 
+    // Construct the build image
     const dockerImageId = await createBuildImage(
-      project.getWeb3ApiManifestDir(),
+      project.getManifestDir(),
       imageName,
       dockerfile,
       project.quiet
     );
 
+    // Determine what build artifacts to expext
+    const web3apiManifest = await project.getManifest();
+    const web3apiArtifacts = [];
+
+    if (web3apiManifest.modules.mutation) {
+      web3apiArtifacts.push("mutation.wasm");
+    }
+    if (web3apiManifest.modules.query) {
+      web3apiArtifacts.push("query.wasm");
+    }
+
     await copyArtifactsFromBuildImage(
       outputDir,
-      await project.getWeb3ApiArtifacts(),
+      web3apiArtifacts,
       imageName,
       project.quiet
     );
@@ -423,14 +462,14 @@ export class Compiler {
 
     await outputManifest(
       web3ApiManifest,
-      path.join(outputDir, "web3api.yaml"),
+      path.join(outputDir, "web3api.json"),
       project.quiet
     );
 
     if (buildManifest) {
       await outputManifest(
         buildManifest,
-        path.join(outputDir, "web3api.build.yaml"),
+        path.join(outputDir, "web3api.build.json"),
         project.quiet
       );
     }
@@ -438,7 +477,7 @@ export class Compiler {
     if (metaManifest) {
       await outputManifest(
         metaManifest,
-        path.join(outputDir, "web3api.meta.yaml"),
+        path.join(outputDir, "web3api.meta.json"),
         project.quiet
       );
     }
@@ -455,7 +494,7 @@ export class Compiler {
     return await outputMetadata(
       metaManifest,
       outputDir,
-      project.getRootDir(),
+      project.getManifestDir(),
       project.quiet
     );
   }

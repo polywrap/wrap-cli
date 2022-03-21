@@ -1,37 +1,30 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-empty-function */
 
-import { Project } from "./project";
+import { Project, AnyManifest, getSimpleClient } from "./";
 
-import {
-  Uri,
-  Web3ApiClient,
-  PluginRegistration,
-  defaultIpfsProviders,
-} from "@web3api/client-js";
+import { Uri, Web3ApiClient } from "@web3api/client-js";
 import {
   composeSchema,
   ComposerOutput,
   ComposerFilter,
   ComposerOptions,
   SchemaKind,
+  SchemaFile,
 } from "@web3api/schema-compose";
-import { ensPlugin } from "@web3api/ens-plugin-js";
-import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
-import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import fs from "fs";
 import path from "path";
 import * as gluegun from "gluegun";
-import { SchemaFile } from "@web3api/schema-compose";
 
 export interface SchemaComposerConfig {
-  project: Project;
+  project: Project<AnyManifest>;
 
   // TODO: add this to the project configuration
   //       and make it configurable
   ensAddress?: string;
   ethProvider?: string;
   ipfsProvider?: string;
+  client?: Web3ApiClient;
 }
 
 export class SchemaComposer {
@@ -39,44 +32,7 @@ export class SchemaComposer {
   private _composerOutput: ComposerOutput | undefined;
 
   constructor(private _config: SchemaComposerConfig) {
-    const { ensAddress, ethProvider, ipfsProvider } = this._config;
-    const plugins: PluginRegistration[] = [];
-
-    if (ensAddress) {
-      plugins.push({
-        uri: "w3://ens/ens.web3api.eth",
-        plugin: ensPlugin({
-          addresses: {
-            testnet: ensAddress,
-          },
-        }),
-      });
-    }
-
-    if (ethProvider) {
-      plugins.push({
-        uri: "w3://ens/ethereum.web3api.eth",
-        plugin: ethereumPlugin({
-          networks: {
-            testnet: {
-              provider: ethProvider,
-            },
-          },
-        }),
-      });
-    }
-
-    if (ipfsProvider) {
-      plugins.push({
-        uri: "w3://ens/ipfs.web3api.eth",
-        plugin: ipfsPlugin({
-          provider: ipfsProvider,
-          fallbackProviders: defaultIpfsProviders,
-        }),
-      });
-    }
-
-    this._client = new Web3ApiClient({ plugins });
+    this._client = this._config.client ?? getSimpleClient(this._config);
   }
 
   public async getComposedSchemas(
@@ -174,7 +130,7 @@ export class SchemaComposer {
     return fs.readFileSync(
       path.isAbsolute(schemaPath)
         ? schemaPath
-        : path.join(this._config.project.getRootDir(), schemaPath),
+        : path.join(this._config.project.getManifestDir(), schemaPath),
       "utf-8"
     );
   }

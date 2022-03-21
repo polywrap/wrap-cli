@@ -1,14 +1,14 @@
 import {
   createArrayPropertyDefinition,
   createMethodDefinition,
-  createQueryDefinition,
+  createModuleDefinition,
   createScalarDefinition,
   createScalarPropertyDefinition,
   createArrayDefinition,
   createObjectPropertyDefinition,
   createObjectDefinition,
   createEnumPropertyDefinition,
-  createImportedQueryDefinition,
+  createImportedModuleDefinition,
   createImportedObjectDefinition,
   createImportedEnumDefinition,
   createInterfaceImplementedDefinition,
@@ -71,9 +71,9 @@ export const typeInfo: TypeInfo = {
       }),
     })
   ],
-  queryTypes: [
+  moduleTypes: [
     {
-      ...createQueryDefinition({ type: "Query", comment: "Query comment" }),
+      ...createModuleDefinition({ type: "Query", comment: "Query comment" }),
       imports: [
         { type: "Namespace_Query" },
         { type: "Namespace_CustomType" },
@@ -189,7 +189,7 @@ export const typeInfo: TypeInfo = {
       ]
     },
     {
-      ...createQueryDefinition({ type: "Mutation", comment: "Mutation comment" }),
+      ...createModuleDefinition({ type: "Mutation", comment: "Mutation comment" }),
       imports: [
         { type: "Namespace_Query" },
         { type: "Namespace_Mutation" },
@@ -315,7 +315,7 @@ export const typeInfo: TypeInfo = {
   ],
   objectTypes: [
     {
-      ...createObjectDefinition({ type: "CustomQueryType", comment: "CustomQueryType comment" }),
+      ...createObjectDefinition({ type: "CustomModuleType", comment: "CustomModuleType comment" }),
       properties: [
         createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
         createScalarPropertyDefinition({ name: "optStr", type: "String", required: false }),
@@ -378,8 +378,18 @@ export const typeInfo: TypeInfo = {
       ],
     },
     {
-      ...createObjectDefinition({ type: "AnotherQueryType" }),
+      ...createObjectDefinition({ type: "AnotherModuleType" }),
       properties: [createScalarPropertyDefinition({ name: "prop", type: "String" })],
+    },
+    {
+      ...createObjectDefinition({ type: "TypeFromInterface" }),
+      interfaces: [
+        createInterfaceImplementedDefinition({ type: "AnotherModuleType" }),
+      ],
+      properties: [
+        createScalarPropertyDefinition({ name: "prop2", type: "UInt32", required: true }),
+        createScalarPropertyDefinition({ name: "prop", type: "String" }),
+      ]
     },
     {
       ...createObjectDefinition({ type: "CommonType", comment: "CommonType comment" }),
@@ -537,9 +547,9 @@ export const typeInfo: TypeInfo = {
       ]
     },
   ],
-  importedQueryTypes: [
+  importedModuleTypes: [
     {
-      ...createImportedQueryDefinition({
+      ...createImportedModuleDefinition({
         uri: "test.eth",
         namespace: "Namespace",
         nativeType: "Query",
@@ -629,7 +639,7 @@ export const typeInfo: TypeInfo = {
       ]
     },
     {
-      ...createImportedQueryDefinition({
+      ...createImportedModuleDefinition({
         uri: "test-interface.eth",
         namespace: "Interface",
         nativeType: "Query",
@@ -661,7 +671,7 @@ export const typeInfo: TypeInfo = {
       ]
     },
     {
-      ...createImportedQueryDefinition({
+      ...createImportedModuleDefinition({
         uri: "test.eth",
         namespace: "Namespace",
         nativeType: "Mutation",
@@ -805,7 +815,7 @@ export const typeInfo: TypeInfo = {
       ]
     },
     {
-      ...createImportedQueryDefinition({
+      ...createImportedModuleDefinition({
         uri: "just.mutation.eth",
         namespace: "JustMutation",
         nativeType: "Mutation",
@@ -844,7 +854,7 @@ export const typeInfo: TypeInfo = {
       ]
     },
     {
-      ...createImportedQueryDefinition({
+      ...createImportedModuleDefinition({
         uri: "test-interface.eth",
         namespace: "Interface",
         nativeType: "Mutation",

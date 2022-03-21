@@ -1,7 +1,7 @@
 {
   "name": "@web3api/ipfs-plugin-js",
   "description": "Web3API IPFS Javascript Plugin",
-  "version": "0.0.1-prealpha.61",
+  "version": "0.0.1-prealpha.68",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@dorgjelli-test/ipfs-http-client-lite": "0.3.1",
-    "@web3api/core-js": "0.0.1-prealpha.61",
+    "@web3api/core-js": "0.0.1-prealpha.68",
     "abort-controller": "3.0.0",
     "cids": "^1.1.4",
     "is-ipfs": "1.0.3"

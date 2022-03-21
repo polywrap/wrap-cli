@@ -2,7 +2,7 @@
   "name": "ethereum-js-plugin-integration-test",
   "description": "Ethereum JS Plugin Integration Test",
   "private": true,
-  "version": "0.0.1-prealpha.61",
+  "version": "0.0.1-prealpha.68",
   "scripts": {
     "build": "yarn build:web3api",
     "build:web3api": "npx w3 build",
@@ -12,9 +12,9 @@
     "deploy:web3api": "npx w3 build --ipfs http://localhost:5001 --test-ens simplestorage.eth"
   },
   "dependencies": {
-    "@web3api/wasm-as": "0.0.1-prealpha.61"
+    "@web3api/wasm-as": "0.0.1-prealpha.68"
   },
   "devDependencies": {
-    "@web3api/cli": "0.0.1-prealpha.61"
+    "@web3api/cli": "0.0.1-prealpha.68"
   }
 }

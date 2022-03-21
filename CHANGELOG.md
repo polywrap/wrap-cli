@@ -1,3 +1,62 @@
+# Web3API 0.0.1-prealpha.68
+## Bugs
+* [PR-756](https://github.com/polywrap/monorepo/pull/756) `@web3api/schema-bind`: Imported enums are properly included in the schema bindings when there are no objects imported.
+
+# Web3API 0.0.1-prealpha.67
+## Features
+* [PR-726](https://github.com/polywrap/monorepo/pull/726) Improved the application developer experience by creating a new `w3 app codegen` command, which generated types based on the apps wrapper / plugin integrations. For an example of how this works, see the updated application template projects by running `w3 create app typescript-node my-app` or `w3 create app typescript-react my-app`.
+* [PR-726](https://github.com/polywrap/monorepo/pull/726) `@web3api/react`: Added the `useWeb3ApiInvoke` hook as a non-graphql alternative to `useWeb3ApiQuery`.
+* [PR-726](https://github.com/polywrap/monorepo/pull/726) `@web3api/schema-compose`: Importing all dependency types from a schema import schema statement can now be done through the new wild-card syntax: `#import * into Namespace from "w3://authority/path"`.
+
+## Breaking Changes
+* [PR-726](https://github.com/polywrap/monorepo/pull/726) `@web3api/cli`: `w3 build` CLI command now requires the use of the `--manifest-file <path>` option in order to specify a custom build manifest file path.
+* [PR-726](https://github.com/polywrap/monorepo/pull/726) `@web3api/cli`: `w3 codegen` CLI command option renaming:
+  * `-m, --manifest-path <path>` to `-m, --manifest-file <path>`
+  * `-c, --custom <path>` to `-s, --script <path>`
+  * `-o, --output-dir <path>` to `-c, --codegen-dir <path>`
+* [PR-726](https://github.com/polywrap/monorepo/pull/726) `@web3api/cli`: `w3 plugin` CLI command option renaming:
+  * `-m, --manifest-path <path>` to `-m, --manifest-file <path>`
+
+# Web3API 0.0.1-prealpha.66
+## Features
+* [PR-718](https://github.com/polywrap/monorepo/pull/718) `@web3api/cli`: `w3 plugin codegen` now outputs the plugin manifest to the build directory.
+* [PR-695](https://github.com/polywrap/monorepo/pull/695) `@web3api/ethereum-plugin-js`: Added Query methods: `solidityPack`, `solidityKeccak256`, `soliditySha256`.
+
+## Breaking Changes
+* [PR-718](https://github.com/polywrap/monorepo/pull/718) `@web3api/cli`: `w3 plugin codegen` option `-s, --output-schema-path` changed to `-p, --publish-dir`.
+* [PR-718](https://github.com/polywrap/monorepo/pull/718) `@web3api/cli`: `w3 plugin codegen` option `-t, --output-types-dir` changed to `-c, --codegen-dir`.
+
+# Web3API 0.0.1-prealpha.65
+## Bugs
+* [PR-690](https://github.com/polywrap/monorepo/pull/690) `@web3api/http-plugin-js`: Better axios response header handling for lists.
+* [PR-692](https://github.com/polywrap/monorepo/pull/692) `@web3api/wasm-as`: Properly propogate `Result<T, E>` error upon unwrap exception.
+
+# Web3API 0.0.1-prealpha.64
+## Bugs
+* [PR-685](https://github.com/polywrap/monorepo/pull/685) `@web3api/schema-parse`: Properly support recursive object definition properties.
+
+# Web3API 0.0.1-prealpha.63
+## Features
+* [PR-650](https://github.com/polywrap/monorepo/pull/650) `@web3api/cli`: Add YAML support for query recipes.
+* [PR-385](https://github.com/polywrap/monorepo/pull/385) `@web3api/cli`, `@web3api/client-js`: Use JSON for manifest build artifacts.
+* [PR-678](https://github.com/polywrap/monorepo/pull/678) `@web3api/cli`: Build command no longer uses same docker image name by default. The concept of a "build UUID" has been added, and will be appended to the docker image name (if the develoer has not specified their own inside `web3api.build.yaml`).
+* [PR-610](https://github.com/polywrap/monorepo/pull/610) `@web3api/client-js`: Support the `resolveUri(...)` method on `Web3ApiClient` instances.
+
+## Bugs
+* [PR-665](https://github.com/polywrap/monorepo/pull/665) `@web3api/ethereum-plugin-js`: Fix `TxRequest` property mapping to ethers.js types.
+* [PR-672](https://github.com/polywrap/monorepo/pull/672) `@web3api/core-js`, `@web3api/schema-bind`, `@web3api/schema-parse`: Remove use of the JS string `.substr` method.
+* [PR-673](https://github.com/polywrap/monorepo/pull/673) `@web3api/cli`: The `w3 query ...` command now property sets `exitCode` to 1 if a query fails.
+* [PR-651](https://github.com/polywrap/monorepo/pull/651) `@web3api/http-plugin-js`: JSON payloads are now property supported.
+
+## Breaking Changes
+* [PR-674](https://github.com/polywrap/monorepo/pull/674) `@web3api/cli`, `@web3api/schema-bind`: Return `Result<T, E>` objects from all AssemblyScript subinvoke methods.
+
+# Web3API 0.0.1-prealpha.62
+## Features
+* Use the https://ipfs.wrappers.io IPFS gateway throughout the codebase.
+* Rename TypeInfo `queryTypes` & `importedQueryTypes` to `moduleTypes` & `importedModuleTypes`.
+* `@web3api/ipfs-plugin-js`: Improve the IPFS plugin's URI resolver implementation, and add the ability to query from multiple gateways in parallel.
+
 # Web3API 0.0.1-prealpha.61
 ## Features
 * `@web3api/cli`: Added the `--client-config` / `-c` option to the `w3 query` CLI command, allowing the user the define their own client configurations within a JavaScript or TypeScript module.
