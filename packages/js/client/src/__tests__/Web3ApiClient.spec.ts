@@ -2810,7 +2810,10 @@ enum Logger_LogLevel @imported(
   it("e2e Interface invoke method", async () => {
     const interfaceUri = "w3://ens/interface.eth";
     // Build interface polywrapper
-    await runCLI({ args: ["build"], cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`});
+    await runCLI({
+      args: ["build"],
+      cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`,
+    });
 
     const implementationApi = await buildAndDeployApi(
       `${GetPathToTestApis()}/interface-invoke/test-implementation`,
@@ -2824,7 +2827,7 @@ enum Logger_LogLevel @imported(
         {
           interface: interfaceUri,
           implementations: [implementationUri],
-        }
+        },
       ],
     });
 
@@ -2864,7 +2867,7 @@ enum Logger_LogLevel @imported(
         mutationMethod(
           arg: 1
         )
-      }`
+      }`,
     });
 
     expect(mutation.errors).toBeFalsy();
@@ -2872,4 +2875,68 @@ enum Logger_LogLevel @imported(
     expect(mutation.data?.mutationMethod).toBe(1);
   });
 
+  it("merge user-defined interface implementations with each other", async () => {
+    const interfaceUri = "w3://ens/interface.eth";
+    const implementationUri1 = "w3://ens/implementation1.eth";
+    const implementationUri2 = "w3://ens/implementation2.eth";
+
+    const client = new Web3ApiClient({
+      interfaces: [
+        {
+          interface: interfaceUri,
+          implementations: [implementationUri1],
+        },
+        {
+          interface: interfaceUri,
+          implementations: [implementationUri2],
+        },
+      ],
+    });
+
+    const interfaces = client
+      .getInterfaces()
+      .filter((x) => x.interface.uri === interfaceUri);
+    expect(interfaces.length).toEqual(1);
+
+    const implementationUris = interfaces[0].implementations;
+
+    expect(implementationUris).toEqual([
+      new Uri(implementationUri1),
+      new Uri(implementationUri2),
+    ]);
+  });
+
+  it("merge user-defined interface implementations with defaults", async () => {
+    const interfaceUri = coreInterfaceUris.uriResolver.uri;
+    const implementationUri1 = "w3://ens/implementation1.eth";
+    const implementationUri2 = "w3://ens/implementation2.eth";
+
+    const client = new Web3ApiClient({
+      interfaces: [
+        {
+          interface: interfaceUri,
+          implementations: [implementationUri1],
+        },
+        {
+          interface: interfaceUri,
+          implementations: [implementationUri2],
+        },
+      ],
+    });
+
+    const interfaces = client
+      .getInterfaces()
+      .filter((x) => x.interface.uri === interfaceUri);
+    expect(interfaces.length).toEqual(1);
+
+    const implementationUris = interfaces[0].implementations;
+
+    expect(implementationUris).toEqual([
+      new Uri(implementationUri1),
+      new Uri(implementationUri2),
+      ...getDefaultClientConfig().interfaces.find(
+        (x) => x.interface.uri === interfaceUri
+      )!.implementations,
+    ]);
+  });
 });
