@@ -1,4 +1,4 @@
-{{^__commonImport}}
+{{^__commonPath}}
 {{#methods.length}}
 {{> serialization_imports}}
 import * as Types from "../..";
@@ -107,4 +107,4 @@ export function deserialize{{name}}Result(buffer: ArrayBuffer): {{#return}}{{#to
 {{/last}}
 {{/methods}}
 {{/methods.length}}
-{{/__commonImport}}
+{{/__commonPath}}
