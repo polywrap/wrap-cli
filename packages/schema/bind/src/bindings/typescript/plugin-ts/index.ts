@@ -31,6 +31,9 @@ export const generateBinding: GenerateBindingFn = (
     modules: [],
   };
 
+  // TODO: generate entry point files
+
+  // Generate types for each module
   for (const module of options.modules) {
     result.modules.push(generateModuleBindings(module));
   }
