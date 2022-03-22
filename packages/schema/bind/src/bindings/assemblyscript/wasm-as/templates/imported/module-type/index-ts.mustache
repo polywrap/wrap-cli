@@ -1,7 +1,7 @@
-{{#__commonImport}}
+{{#__commonPath}}
 export { {{type}} } from "../../common";
-{{/__commonImport}}
-{{^__commonImport}}
+{{/__commonPath}}
+{{^__commonPath}}
 import {
   w3_subinvoke,
   w3_subinvokeImplementation,
@@ -94,4 +94,4 @@ export class {{type}} {
   {{/methods}}
 }
 {{/isInterface}}
-{{/__commonImport}}
+{{/__commonPath}}

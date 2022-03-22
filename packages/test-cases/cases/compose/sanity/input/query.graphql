@@ -23,6 +23,10 @@ method1 comment
 uArrayArray comment
 """
     uArrayArray: [[UInt]]!
+"""
+Map<String!, Int!> comment
+"""
+    map: Map! @annotate(type: "Map<String!, Int!>!")
   ): String!
 
 """
@@ -50,6 +54,7 @@ type CustomModuleType {
   optStrOptArray: [String]
   crazyArray: [[[[UInt32!]]!]]
   commonType: CommonType!
+  optMap: Map @annotate(type: "Map<String, Int>")
 """
 customType comment
 """

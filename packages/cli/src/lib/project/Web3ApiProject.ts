@@ -15,7 +15,7 @@ import {
 } from "..";
 
 import { Web3ApiManifest, BuildManifest, MetaManifest } from "@web3api/core-js";
-import { normalizePath } from "@web3api/os-js";
+import { getCommonPath, normalizePath } from "@web3api/os-js";
 import regexParser from "regex-parser";
 import path from "path";
 import fs from "fs";
@@ -167,8 +167,9 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
       const cacheDir = this.getCachePath(cacheLayout.buildLinkedPackagesDir);
 
       // Add default env variables
+      const modules = await this._getWeb3ApiModules();
       const defaultConfig = {
-        web3api_modules: (await this.getWeb3ApiModules()).map(
+        web3api_modules: modules.modules.map(
           (module: { dir: string; name: string }) => {
             return {
               name: module.name,
@@ -176,6 +177,11 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
             };
           }
         ),
+        web3api_common_dir: () =>
+          modules.commonDir &&
+          fs.existsSync(path.join(this.getManifestDir(), modules.commonDir))
+            ? modules.commonDir
+            : undefined,
         web3api_manifests: (await this.getManifestPaths()).map(
           (path: string) => {
             return normalizePath(path);
@@ -200,38 +206,6 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     }
 
     return this._buildManifest;
-  }
-
-  public async getWeb3ApiModules(): Promise<
-    {
-      dir: string;
-      name: string;
-    }[]
-  > {
-    const web3apiManifest = await this.getManifest();
-    const web3apiModules: {
-      dir: string;
-      name: string;
-    }[] = [];
-
-    if (web3apiManifest.modules.mutation?.module) {
-      web3apiModules.push({
-        dir: path
-          .dirname(web3apiManifest.modules.mutation.module)
-          .replace("./", ""),
-        name: "mutation",
-      });
-    }
-    if (web3apiManifest.modules.query?.module) {
-      web3apiModules.push({
-        dir: path
-          .dirname(web3apiManifest.modules.query.module)
-          .replace("./", ""),
-        name: "query",
-      });
-    }
-
-    return web3apiModules;
   }
 
   public async getBuildUuid(): Promise<string> {
@@ -401,5 +375,51 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     }
 
     return paths;
+  }
+
+  /// Private Helpers
+
+  private async _getWeb3ApiModules(): Promise<{
+    modules: {
+      dir: string;
+      name: string;
+    }[];
+    commonDir?: string;
+  }> {
+    const web3apiManifest = await this.getManifest();
+    const web3apiModules: {
+      dir: string;
+      name: string;
+    }[] = [];
+
+    if (web3apiManifest.modules.mutation?.module) {
+      web3apiModules.push({
+        dir: path
+          .dirname(web3apiManifest.modules.mutation.module)
+          .replace("./", ""),
+        name: "mutation",
+      });
+    }
+    if (web3apiManifest.modules.query?.module) {
+      web3apiModules.push({
+        dir: path
+          .dirname(web3apiManifest.modules.query.module)
+          .replace("./", ""),
+        name: "query",
+      });
+    }
+
+    let commonDir: string | undefined;
+
+    if (web3apiModules.length > 1) {
+      const module1 = web3apiModules[0];
+      const module2 = web3apiModules[1];
+      commonDir = getCommonPath(module1.dir, module2.dir) + "w3";
+    }
+
+    return {
+      modules: web3apiModules,
+      commonDir,
+    };
   }
 }
