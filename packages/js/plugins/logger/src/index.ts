@@ -1,7 +1,16 @@
 import { query } from "./resolvers";
-import { manifest, Query, Logger_LogLevel, Logger_LogLevelEnum } from "./w3";
+import {
+  manifest,
+  Query,
+  Logger_LogLevel,
+  Logger_LogLevelEnum
+} from "./w3";
 
-import { Plugin, PluginPackageManifest, PluginPackage } from "@web3api/core-js";
+import {
+  Plugin,
+  PluginPackageManifest,
+  PluginPackage
+} from "@web3api/core-js";
 
 export type LogFunc = (level: Logger_LogLevel, message: string) => boolean;
 
