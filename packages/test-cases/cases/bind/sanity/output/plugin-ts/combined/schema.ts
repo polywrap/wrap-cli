@@ -10,6 +10,7 @@ scalar Int32
 scalar Bytes
 scalar BigInt
 scalar JSON
+scalar Map
 
 directive @imported(
   uri: String!
@@ -28,6 +29,9 @@ directive @capability(
 ) repeatable on OBJECT
 
 directive @enabled_interface on OBJECT
+
+directive @annotate(type: String!) on FIELD
+
 ### Web3API Header END ###
 
 type Query @imports(
@@ -49,6 +53,7 @@ type Query @imports(
     optEnum: CustomEnum
     enumArray: [CustomEnum!]!
     optEnumArray: [CustomEnum]
+    map: Map! @annotate(type: "Map<String!, Int!>!")
   ): Int!
 
   objectMethod(
@@ -87,6 +92,7 @@ type Mutation @imports(
 
 type QueryEnv {
   queryProp: String!
+  optMap: Map @annotate(type: "Map<String!, Int>")
   prop: String!
   optProp: String
 }

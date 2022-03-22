@@ -1,10 +1,10 @@
 /* eslint-disable */
 
-// Get Invoke Arguments
+// Abort Execution
 @external("w3", "__w3_abort")
 export declare function __w3_abort(
   msg_ptr: u32,
-  msg_en: u32,
+  msg_len: u32,
   file_ptr: u32,
   file_len: u32,
   line: u32,

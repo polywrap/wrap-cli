@@ -58,7 +58,7 @@ function buildTestCases(
     for (const item of items) {
       buildTestCases(
         path.join(directory, item.name),
-        item.name,
+        name + " " + item.name,
         testCases
       );
     }

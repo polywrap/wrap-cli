@@ -1,4 +1,4 @@
-import { ImportedDefinition } from "../typeInfo";
+import { ImportedDefinition } from "../../typeInfo";
 
 import { DirectiveNode, TypeDefinitionNode } from "graphql";
 

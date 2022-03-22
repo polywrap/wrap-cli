@@ -17,7 +17,8 @@ export function queryMethodWrapped(argsBuf: ArrayBuffer): ArrayBuffer {
     en: args.en,
     optEnum: args.optEnum,
     enumArray: args.enumArray,
-    optEnumArray: args.optEnumArray
+    optEnumArray: args.optEnumArray,
+    map: args.map
   });
   return serializequeryMethodResult(result);
 }
