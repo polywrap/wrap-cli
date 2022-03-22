@@ -6,8 +6,10 @@ import {
   ModuleDefinition,
   createArrayDefinition,
   InterfaceDefinition,
-} from "../typeInfo";
+  MapDefinition,
+} from "../../typeInfo";
 import { setPropertyType } from "./property-utils";
+import { extractAnnotateDirective } from "./object-types-utils";
 
 import { InputValueDefinitionNode, NamedTypeNode } from "graphql";
 
@@ -115,11 +117,17 @@ export function extractInputValueDefinition(
     return;
   }
 
+  const name = node.name.value;
+  const { type, def } = extractAnnotateDirective(node, name);
+
   const argument = createPropertyDefinition({
-    type: "N/A",
-    name: node.name.value,
+    type: type ? type : "N/A",
+    name: name,
+    map: def ? (def as MapDefinition) : undefined,
     comment: node.description?.value,
+    required: def && def.required ? true : false,
   });
+
   method.arguments.push(argument);
   state.currentArgument = argument;
 }

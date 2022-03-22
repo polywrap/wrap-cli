@@ -29,6 +29,7 @@ export interface Input_queryMethod extends Record<string, unknown> {
   optEnum?: Types.CustomEnum | null;
   enumArray: Array<Types.CustomEnum>;
   optEnumArray?: Array<Types.CustomEnum | null> | null;
+  map: Map<String, Int>;
 }
 
 export interface Input_objectMethod extends Record<string, unknown> {

@@ -10,6 +10,7 @@ type Query {
     optEnum: CustomEnum
     enumArray: [CustomEnum!]!
     optEnumArray: [CustomEnum]
+    map: Map! @annotate(type: "Map<String!, Int!>!")
   ): Int!
 
   objectMethod(
@@ -22,4 +23,5 @@ type Query {
 
 type QueryEnv {
   queryProp: String!
+  optMap: Map @annotate(type: "Map<String, Int>")
 }
