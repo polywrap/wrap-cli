@@ -2,6 +2,10 @@ format: 0.0.1-prealpha.2
 displayName: Test Name
 subtext: test subtext
 description: test description
+tags:
+  - test
+  - another-tag
+  - test2
 repository: https://github.com/test/test
 icon: ./meta/icon.png
 links:

@@ -1,5 +1,9 @@
 format: 0.0.1-prealpha.2
 displayName: Simple Storage
+tags:
+ - ethereum
+ - storage
+ - example
 subtext: test subtext
 description: test description
 repository: https://github.com/test/test
