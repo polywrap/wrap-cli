@@ -1,12 +1,11 @@
 import { Command, Program } from "./types";
-import fs from 'fs';
+
 import {
     AppProject,
     CodeGenerator,
     SchemaComposer,
     intlMsg,
-    //fixParameters,
-    //resolvePathIfExists,
+    resolvePathIfExistsRefactor,
     defaultAppManifest,
     getSimpleClient,
     getTestEnvProviders,
@@ -21,8 +20,8 @@ export const app: Command = {
     setup: (program: Program) => {
 
         const appCommand = program
-            .alias("a")
             .command("app")
+            .alias("a")
             .description(intlMsg.commands_app_description())
 
         appCommand
@@ -48,23 +47,12 @@ export const app: Command = {
 
 async function run(options: any) {
 
-    let { codegenDir, ipfs, ens } = options;
+    let { manifestFile, codegenDir, ipfs, ens } = options;
 
     // Resolve manifest
-    const manifestPaths = options.manifestFile ? [options.manifestFile] : defaultAppManifest;
+    const manifestPaths = manifestFile ? [manifestFile] : defaultAppManifest;
 
-    function resolvePathIfExists(
-        searchPaths: string[]
-    ): string | undefined {
-        for (let i = 0; i < manifestPaths.length; i++) {
-            if (fs.existsSync(searchPaths[i])) {
-                return searchPaths[i];
-            }
-        }
-        return undefined;
-    }
-
-    let manifestFile = resolvePathIfExists(manifestPaths)
+    manifestFile = resolvePathIfExistsRefactor(manifestPaths)
 
     if (!manifestFile) {
         console.error(
