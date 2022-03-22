@@ -981,4 +981,18 @@ describe("Web3ApiClient - resolveUri", () => {
       }
     ]);
   });
+
+  it("can resolve uri with custom resolver at query-time", async () => {
+    const client = await getClient({
+      interfaces: [
+        {
+          interface: "ens/uri-resolver.core.web3api.eth",
+          implementations: ["ens/test-resolver.eth"],
+        },
+      ],
+    });
+
+    const result = await client.resolveUri("ens/test.eth");
+    console.log("result", result);
+  });
 });
