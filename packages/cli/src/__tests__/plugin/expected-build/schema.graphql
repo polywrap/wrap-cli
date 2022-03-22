@@ -287,7 +287,7 @@ type Ethereum_TxRequest @imported(
   gasPrice: BigInt
   data: String
   value: BigInt
-  chainId: UInt32
+  chainId: BigInt
   type: UInt32
 }
 
@@ -347,7 +347,7 @@ type Ethereum_Network @imported(
   nativeType: "Network"
 ) {
   name: String!
-  chainId: Int!
+  chainId: BigInt!
   ensAddress: String
 }
 
@@ -364,7 +364,7 @@ type Ethereum_TxResponse @imported(
   gasPrice: BigInt
   data: String!
   value: BigInt!
-  chainId: UInt32!
+  chainId: BigInt!
   blockNumber: BigInt
   blockHash: String
   timestamp: UInt32

@@ -3020,4 +3020,69 @@ enum Logger_LogLevel @imported(
       new Map<string, number>().set("a", 1).set("b", 3).set("c", 5)
     );
   });
+
+  it("merge user-defined interface implementations with each other", async () => {
+    const interfaceUri = "w3://ens/interface.eth";
+    const implementationUri1 = "w3://ens/implementation1.eth";
+    const implementationUri2 = "w3://ens/implementation2.eth";
+
+    const client = new Web3ApiClient({
+      interfaces: [
+        {
+          interface: interfaceUri,
+          implementations: [implementationUri1],
+        },
+        {
+          interface: interfaceUri,
+          implementations: [implementationUri2],
+        },
+      ],
+    });
+
+    const interfaces = client
+      .getInterfaces()
+      .filter((x) => x.interface.uri === interfaceUri);
+    expect(interfaces.length).toEqual(1);
+
+    const implementationUris = interfaces[0].implementations;
+
+    expect(implementationUris).toEqual([
+      new Uri(implementationUri1),
+      new Uri(implementationUri2),
+    ]);
+  });
+
+  it("merge user-defined interface implementations with defaults", async () => {
+    const interfaceUri = coreInterfaceUris.uriResolver.uri;
+    const implementationUri1 = "w3://ens/implementation1.eth";
+    const implementationUri2 = "w3://ens/implementation2.eth";
+
+    const client = new Web3ApiClient({
+      interfaces: [
+        {
+          interface: interfaceUri,
+          implementations: [implementationUri1],
+        },
+        {
+          interface: interfaceUri,
+          implementations: [implementationUri2],
+        },
+      ],
+    });
+
+    const interfaces = client
+      .getInterfaces()
+      .filter((x) => x.interface.uri === interfaceUri);
+    expect(interfaces.length).toEqual(1);
+
+    const implementationUris = interfaces[0].implementations;
+
+    expect(implementationUris).toEqual([
+      new Uri(implementationUri1),
+      new Uri(implementationUri2),
+      ...getDefaultClientConfig().interfaces.find(
+        (x) => x.interface.uri === interfaceUri
+      )!.implementations,
+    ]);
+  });
 });

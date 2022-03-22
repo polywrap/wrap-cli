@@ -91,6 +91,97 @@ export const createImports = (config: {
         }
         writeString(state.subinvoke.error, memory.buffer, ptr);
       },
+      __w3_subinvokeImplementation: async (
+        interfaceUriPtr: u32,
+        interfaceUriLen: u32,
+        implUriPtr: u32,
+        implUriLen: u32,
+        modulePtr: u32,
+        moduleLen: u32,
+        methodPtr: u32,
+        methodLen: u32,
+        inputPtr: u32,
+        inputLen: u32
+      ): Promise<boolean> => {
+        state.subinvokeImplementation.result = undefined;
+        state.subinvokeImplementation.error = undefined;
+
+        // const interfaceUri = readString(
+        //   memory.buffer,
+        //   interfaceUriPtr,
+        //   interfaceUriLen
+        // );
+        const implUri = readString(memory.buffer, implUriPtr, implUriLen);
+        const moduleToInvoke = readString(memory.buffer, modulePtr, moduleLen);
+        const method = readString(memory.buffer, methodPtr, methodLen);
+        const input = readBytes(memory.buffer, inputPtr, inputLen);
+
+        state.subinvokeImplementation.args = [
+          implUri,
+          moduleToInvoke as InvokableModules,
+          method,
+          input,
+        ];
+
+        const { data, error } = await client.invoke<unknown | ArrayBuffer>({
+          uri: implUri,
+          module: moduleToInvoke as InvokableModules,
+          method: method,
+          input: input,
+          noDecode: true,
+        });
+
+        if (!error) {
+          let msgpack: ArrayBuffer;
+          if (data instanceof ArrayBuffer) {
+            msgpack = data;
+          } else {
+            msgpack = msgpackEncode(data);
+          }
+
+          state.subinvokeImplementation.result = msgpack;
+        } else {
+          state.subinvokeImplementation.error = `${error.name}: ${error.message}`;
+        }
+
+        return !error;
+      },
+      __w3_subinvokeImplementation_result_len: (): u32 => {
+        if (!state.subinvokeImplementation.result) {
+          abort(
+            "__w3_subinvokeImplementation_result_len: subinvokeImplementation.result is not set"
+          );
+          return 0;
+        }
+        return state.subinvokeImplementation.result.byteLength;
+      },
+      __w3_subinvokeImplementation_result: (ptr: u32): void => {
+        if (!state.subinvokeImplementation.result) {
+          abort(
+            "__w3_subinvokeImplementation_result: subinvokeImplementation.result is not set"
+          );
+          return;
+        }
+        writeBytes(state.subinvokeImplementation.result, memory.buffer, ptr);
+      },
+      __w3_subinvokeImplementation_error_len: (): u32 => {
+        if (!state.subinvokeImplementation.error) {
+          abort(
+            "__w3_subinvokeImplementation_error_len: subinvokeImplementation.error is not set"
+          );
+          return 0;
+        }
+        return state.subinvokeImplementation.error.length;
+      },
+      __w3_subinvokeImplementation_error: (ptr: u32): void => {
+        if (!state.subinvokeImplementation.error) {
+          abort(
+            "__w3_subinvokeImplementation_error: subinvokeImplementation.error is not set"
+          );
+          return;
+        }
+        writeString(state.subinvokeImplementation.error, memory.buffer, ptr);
+      },
       // Copy the invocation's method & args into WASM
       __w3_invoke_args: (methodPtr: u32, argsPtr: u32): void => {
         if (!state.method) {
