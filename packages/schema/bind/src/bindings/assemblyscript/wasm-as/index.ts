@@ -1,6 +1,7 @@
 import * as Functions from "./functions";
 import { GenerateBindingFn } from "../..";
 import { extractCommonTypeInfo } from "../../utils/typeInfo";
+import { renderTemplates, loadSubTemplates } from "../../utils/templates";
 import {
   BindOptions,
   BindOutput,
@@ -17,8 +18,12 @@ import {
   toPrefixedGraphQLType,
 } from "@web3api/schema-parse";
 import { OutputEntry, readDirectorySync } from "@web3api/os-js";
-import Mustache from "mustache";
 import path from "path";
+
+const templatesDir = readDirectorySync(path.join(__dirname, "./templates"));
+const subTemplates = loadSubTemplates(templatesDir.entries);
+const templatePath = (subpath: string) =>
+  path.join(__dirname, "./templates", subpath);
 
 export const generateBinding: GenerateBindingFn = (
   options: BindOptions
@@ -65,10 +70,7 @@ function applyTransforms(typeInfo: TypeInfo): TypeInfo {
   return typeInfo;
 }
 
-const templatesDir = readDirectorySync(path.join(__dirname, "./templates"));
-
 function generateModuleBinding(module: BindModuleOptions): BindModuleOutput {
-  const subTemplates = loadSubTemplates(templatesDir.entries);
   const result: BindModuleOutput = {
     name: module.name,
     output: {
@@ -84,7 +86,11 @@ function generateModuleBinding(module: BindModuleOptions): BindModuleOutput {
     output.entries.push({
       type: "Directory",
       name: objectType.type,
-      data: generateFiles("./templates/object-type", objectType, subTemplates),
+      data: renderTemplates(
+        templatePath("object-type"),
+        objectType,
+        subTemplates
+      ),
     });
   }
 
@@ -96,8 +102,8 @@ function generateModuleBinding(module: BindModuleOptions): BindModuleOutput {
     importEntries.push({
       type: "Directory",
       name: importedModuleType.type,
-      data: generateFiles(
-        "./templates/imported/module-type",
+      data: renderTemplates(
+        templatePath("imported/module-type"),
         importedModuleType,
         subTemplates
       ),
@@ -109,8 +115,8 @@ function generateModuleBinding(module: BindModuleOptions): BindModuleOutput {
     importEntries.push({
       type: "Directory",
       name: importedEnumType.type,
-      data: generateFiles(
-        "./templates/imported/enum-type",
+      data: renderTemplates(
+        templatePath("imported/enum-type"),
         importedEnumType,
         subTemplates
       ),
@@ -122,8 +128,8 @@ function generateModuleBinding(module: BindModuleOptions): BindModuleOutput {
     importEntries.push({
       type: "Directory",
       name: importedObectType.type,
-      data: generateFiles(
-        "./templates/imported/object-type",
+      data: renderTemplates(
+        templatePath("imported/object-type"),
         importedObectType,
         subTemplates
       ),
@@ -136,7 +142,11 @@ function generateModuleBinding(module: BindModuleOptions): BindModuleOutput {
       name: "imported",
       data: [
         ...importEntries,
-        ...generateFiles("./templates/imported", typeInfo, subTemplates),
+        ...renderTemplates(
+          templatePath("imported"),
+          typeInfo,
+          subTemplates
+        ),
       ],
     });
   }
@@ -146,8 +156,8 @@ function generateModuleBinding(module: BindModuleOptions): BindModuleOutput {
     output.entries.push({
       type: "Directory",
       name: interfaceType.type,
-      data: generateFiles(
-        "./templates/interface-type",
+      data: renderTemplates(
+        templatePath("interface-type"),
         interfaceType,
         subTemplates
       ),
@@ -159,7 +169,11 @@ function generateModuleBinding(module: BindModuleOptions): BindModuleOutput {
     output.entries.push({
       type: "Directory",
       name: moduleType.type,
-      data: generateFiles("./templates/module-type", moduleType, subTemplates),
+      data: renderTemplates(
+        templatePath("module-type"),
+        moduleType,
+        subTemplates
+      ),
     });
   }
 
@@ -168,7 +182,11 @@ function generateModuleBinding(module: BindModuleOptions): BindModuleOutput {
     output.entries.push({
       type: "Directory",
       name: enumType.type,
-      data: generateFiles("./templates/enum-type", enumType, subTemplates),
+      data: renderTemplates(
+        templatePath("enum-type"),
+        enumType,
+        subTemplates
+      ),
     });
   }
 
@@ -178,7 +196,11 @@ function generateModuleBinding(module: BindModuleOptions): BindModuleOutput {
       output.entries.push({
         type: "Directory",
         name: def.type,
-        data: generateFiles("./templates/object-type", def, subTemplates),
+        data: renderTemplates(
+          templatePath("object-type"),
+          def,
+          subTemplates
+        ),
       });
   };
   generateEnvTypeFolder(typeInfo.envTypes.query.client);
@@ -187,81 +209,13 @@ function generateModuleBinding(module: BindModuleOptions): BindModuleOutput {
   generateEnvTypeFolder(typeInfo.envTypes.mutation.sanitized);
 
   // Generate root entry file
-  output.entries.push(...generateFiles("./templates", typeInfo, subTemplates));
+  output.entries.push(
+    ...renderTemplates(
+      templatePath(""),
+      typeInfo,
+      subTemplates
+    )
+  );
 
   return result;
-}
-
-function generateFiles(
-  subpath: string,
-  view: unknown,
-  subTemplates: Record<string, string>,
-  subDirectories = false
-): OutputEntry[] {
-  const output: OutputEntry[] = [];
-  const absolutePath = path.join(__dirname, subpath);
-  const directory = readDirectorySync(absolutePath);
-
-  const processDirectory = (entries: OutputEntry[], output: OutputEntry[]) => {
-    subTemplates = loadSubTemplates(entries, subTemplates);
-
-    // Generate all files, recurse all directories
-    for (const dirent of entries) {
-      if (dirent.type === "File") {
-        const name = path.parse(dirent.name).name;
-
-        // file templates don't contain '_'
-        if (name.indexOf("_") === -1) {
-          const data = Mustache.render(dirent.data, view, subTemplates);
-
-          // If the file isn't empty, add it to the output
-          if (data) {
-            output.push({
-              type: "File",
-              name: name.replace("-", "."),
-              data,
-            });
-          }
-        }
-      } else if (dirent.type === "Directory" && subDirectories) {
-        const subOutput: OutputEntry[] = [];
-
-        processDirectory(dirent.data as OutputEntry[], subOutput);
-
-        output.push({
-          type: "Directory",
-          name: dirent.name,
-          data: subOutput,
-        });
-      }
-    }
-  };
-
-  processDirectory(directory.entries, output);
-
-  return output;
-}
-
-function loadSubTemplates(
-  entries: OutputEntry[],
-  existingSubTemplates?: Record<string, string>
-): Record<string, string> {
-  const subTemplates: Record<string, string> = existingSubTemplates
-    ? existingSubTemplates
-    : {};
-
-  for (const file of entries) {
-    if (file.type !== "File") {
-      continue;
-    }
-
-    const name = path.parse(file.name).name;
-
-    // sub-templates contain '_' in their file names
-    if (name.indexOf("_") > -1) {
-      subTemplates[name] = file.data as string;
-    }
-  }
-
-  return subTemplates;
 }

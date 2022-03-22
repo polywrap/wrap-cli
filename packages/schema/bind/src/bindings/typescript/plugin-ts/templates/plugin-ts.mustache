@@ -7,28 +7,21 @@ import {
   InvokableModules 
 } from "@web3api/core-js";
 {{#modules}}
-{{#query}}
 {{#env}}
-import { loadEnv as loadQueryEnv, QueryEnv } from "../{{modulePath}}";
+import { loadEnv as load{{#toClassName}}{{name}}{{/toClassName}}Env, {{#toClassName}}{{name}}{{/toClassName}}Env } from "../{{modulePath}}";
 {{/env}}
-import { Query, QueryConfigs } from "../{{modulePath}}";
-{{/query}}
-{{#mutation}}
-{{#env}}
-import { loadEnv as loadMutationEnv, MutationEnv } from "../{{modulePath}}";
-{{/env}}
-import { Mutation, MutationConfigs } from "../{{modulePath}}";
-{{/mutation}}
+import { {{#toClassName}}{{name}}{{/toClassName}}, {{#toClassName}}{{name}}{{/toClassName}}Configs } from "../{{modulePath}}";
 {{/modules}}
 import { manifest } from "./manifest";
 
-export interface PluginConfigs {
-  query: QueryConfigs;
-  mutation: MutationConfigs;
+export interface {{#toClassName}}{{projectName}}{{/toClassName}}PluginConfigs {
+{{#modules}}
+  {{name}}: {{#toClassName}}{{name}}{{/toClassName}}Configs;
+{{/modules}}
 }
 
-class {{className}}Plugin extends Plugin {
-  constructor(private _configs: PluginConfigs) {
+class {{#toClassName}}{{projectName}}{{/toClassName}}Plugin extends Plugin {
+  constructor(private _configs: {{#toClassName}}{{projectName}}{{/toClassName}}PluginConfigs) {
     super();
   }
 
@@ -39,12 +32,7 @@ class {{className}}Plugin extends Plugin {
   public getModules(): PluginModules {
     return {
       {{#modules}}
-      {{#query}}
-      query: ((new Query(this._configs.query)) as unknown) as PluginModule,
-      {{/query}}
-      {{#mutation}}
-      mutation: ((new Mutation(this._configs.mutation)) as unknown) as PluginModule,
-      {{/mutation}}
+      {{name}}: new {{#toClassName}}{{name}}{{/toClassName}}(this._configs.{{name}}),
       {{/modules}}
     };
   }
@@ -52,18 +40,10 @@ class {{className}}Plugin extends Plugin {
   public loadModuleEnv(module: InvokableModules, env: unknown ): void {
     switch(module) {
       {{#modules}}
-      {{#query}}
       {{#env}}
-      case "query":
-        return loadQueryEnv(env as QueryEnv);
+      case "{{name}}":
+        return load{{#toClassName}}{{name}}{{/toClassName}}Env(env as {{#toClassName}}{{name}}{{/toClassName}}Env);
       {{/env}}
-      {{/query}}
-      {{#mutation}}
-      {{#env}}
-      case "mutation":
-        return loadMutationEnv(env as MutationEnv);
-      {{/env}}
-      {{/mutation}}
       {{/modules}}
       default:
         throw new Error(`Unknown module: ${module}`);
@@ -71,12 +51,14 @@ class {{className}}Plugin extends Plugin {
   }
 }
 
-export const {{funcName}}Plugin: PluginFactory<PluginConfigs> = (
-  opts: PluginConfigs
+export const {{#toFuncName}}{{projectName}}{{/toFuncName}}Plugin: PluginFactory<
+  {{#toClassName}}{{projectName}}{{/toClassName}}PluginConfigs
+> = (
+  opts: {{#toClassName}}{{projectName}}{{/toClassName}}PluginConfigs
 ) => {
   return {
     factory: () => new {{className}}Plugin(opts),
     manifest: manifest,
   };
 };
-export const plugin = {{funcName}}Plugin;
+export const plugin = {{#toFuncName}}{{projectName}}{{/toFuncName}}Plugin;

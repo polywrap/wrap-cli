@@ -7,6 +7,31 @@ export const toLowerCase: MustacheFn = () => {
   };
 };
 
+export const toClassName: MustacheFn = () => {
+  return (value: string, render: (template: string) => string) => {
+    let rendered = render(value);
+    rendered.replace(/([^A-Za-z])+/g, ",");
+    return rendered
+      .split(",")
+      .map((x) =>
+        x.replace(",", "").toUpperCase()
+      ).join();
+  };
+}
+
+export const toFuncName: MustacheFn = () => {
+  return (value: string, render: (template: string) => string) => {
+    let rendered = render(value);
+    rendered = rendered.replace(/([^A-Za-z])+/g, ",");
+    return rendered
+      .split(",")
+      .map((x, index) => {
+        x = x.replace(",", "");
+        return index === 0 ? x.toLowerCase() : x.toUpperCase()
+      }).join();
+  };
+}
+
 export const toTypescript: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
