@@ -159,7 +159,7 @@ export class {{type}} {
   public async {{name}} (
     input: {{parent.type}}_Input_{{name}},
     client: Client
-  ): Promise<InvokeApiResult<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>> => {
+  ): Promise<InvokeApiResult<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>> {
     return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>({
       uri: this.uri,
       module: "{{type}}",
