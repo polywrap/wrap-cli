@@ -151,10 +151,8 @@ interface TestImport_Query_Input_anotherMethod extends Record<string, unknown> {
 /* URI: "testimport.uri.eth" */
 export class TestImport_Query {
   public static interfaceUri: string = "testimport.uri.eth";
-  public uri: string;
 
-  constructor(uri: string) {
-    this.uri = uri;
+  constructor(public uri: string) {
   }
 
   public async importedMethod (

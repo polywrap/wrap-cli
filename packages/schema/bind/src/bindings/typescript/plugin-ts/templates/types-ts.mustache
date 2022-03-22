@@ -149,10 +149,8 @@ export const {{type}} = {
 {{#isInterface}}
 export class {{type}} {
   public static interfaceUri: string = "{{uri}}";
-  public uri: string;
 
-  constructor(uri: string) {
-    this.uri = uri;
+  constructor(public uri: string) {
   }
 
   {{#methods}}
