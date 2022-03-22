@@ -982,7 +982,7 @@ describe("Web3ApiClient - resolveUri", () => {
     ]);
   });
 
-  it("can resolve uri with custom resolver at query-time", async () => {
+  it("custom wrapper resolver does not cause infinite recursion", async () => {
     const client = await getClient({
       interfaces: [
         {
