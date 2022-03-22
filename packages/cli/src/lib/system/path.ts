@@ -1,6 +1,6 @@
 import path from "path";
 import { GluegunFilesystem } from "gluegun";
-import fs from 'fs';
+import * as jetpack from "fs-jetpack";
 export function displayPath(p: string): string {
   return "./" + path.relative(process.cwd(), p);
 }
@@ -22,9 +22,9 @@ export function resolvePathIfExistsRefactor(
   searchPaths: string[]
 ): string | undefined {
   for (let i = 0; i < searchPaths.length; i++) {
-      if (fs.existsSync(searchPaths[i])) {
-          return searchPaths[i];
-      }
+    if (jetpack.exists(searchPaths[i])) {
+      return path.resolve(searchPaths[i]);
+    }
   }
   return undefined;
 }

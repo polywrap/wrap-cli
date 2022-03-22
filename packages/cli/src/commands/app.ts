@@ -80,11 +80,11 @@ async function run(options: any) {
     });
     await project.validate();
 
-     if (codegenDir) {
-         codegenDir = codegenDir;
-     } else {
-         codegenDir = defaultOutputTypesDir;
-     }
+    if (codegenDir) {
+        codegenDir = path.resolve(codegenDir);
+      } else {
+        codegenDir = path.resolve(defaultOutputTypesDir);
+      }
 
     const schemaComposer = new SchemaComposer({
         project,
