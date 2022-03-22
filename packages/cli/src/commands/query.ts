@@ -46,10 +46,10 @@ export const query: Command = {
 
 async function run(options: any) {
   let { testEns, clientConfig } = options;
-
+  console.log(options);
   console.log(testEns)
   console.log(clientConfig);
-  let recipePath;
+  let recipePath = testEns;
   try {
     const params = options;
     [recipePath] = fixParameters(
