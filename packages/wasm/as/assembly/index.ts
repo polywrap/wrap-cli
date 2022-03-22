@@ -14,5 +14,6 @@ export * from "./debug";
 export * from "./abort";
 export * from "./invoke";
 export * from "./subinvoke";
+export * from "./implementation-subinvoke";
 export * from "./env";
 export * from "./get-implementations";
