@@ -46,51 +46,48 @@ export const generateBinding: GenerateBindingFn = (
   }
 
   // Generate imported folder
-  if (
-    typeInfo.importedModuleTypes.length > 0 ||
-    typeInfo.importedObjectTypes.length > 0
-  ) {
-    const importEntries: OutputEntry[] = [];
+  const importEntries: OutputEntry[] = [];
 
-    // Generate imported module type folders
-    for (const importedModuleType of typeInfo.importedModuleTypes) {
-      importEntries.push({
-        type: "Directory",
-        name: importedModuleType.type,
-        data: generateFiles(
-          "./templates/imported/module-type",
-          importedModuleType,
-          subTemplates
-        ),
-      });
-    }
+  // Generate imported module type folders
+  for (const importedModuleType of typeInfo.importedModuleTypes) {
+    importEntries.push({
+      type: "Directory",
+      name: importedModuleType.type,
+      data: generateFiles(
+        "./templates/imported/module-type",
+        importedModuleType,
+        subTemplates
+      ),
+    });
+  }
 
-    // Generate imported enum type folders
-    for (const importedEnumType of typeInfo.importedEnumTypes) {
-      importEntries.push({
-        type: "Directory",
-        name: importedEnumType.type,
-        data: generateFiles(
-          "./templates/imported/enum-type",
-          importedEnumType,
-          subTemplates
-        ),
-      });
-    }
+  // Generate imported enum type folders
+  for (const importedEnumType of typeInfo.importedEnumTypes) {
+    importEntries.push({
+      type: "Directory",
+      name: importedEnumType.type,
+      data: generateFiles(
+        "./templates/imported/enum-type",
+        importedEnumType,
+        subTemplates
+      ),
+    });
+  }
 
-    // Generate imported object type folders
-    for (const importedObectType of typeInfo.importedObjectTypes) {
-      importEntries.push({
-        type: "Directory",
-        name: importedObectType.type,
-        data: generateFiles(
-          "./templates/imported/object-type",
-          importedObectType,
-          subTemplates
-        ),
-      });
-    }
+  // Generate imported object type folders
+  for (const importedObectType of typeInfo.importedObjectTypes) {
+    importEntries.push({
+      type: "Directory",
+      name: importedObectType.type,
+      data: generateFiles(
+        "./templates/imported/object-type",
+        importedObectType,
+        subTemplates
+      ),
+    });
+  }
 
+  if (importEntries.length) {
     output.entries.push({
       type: "Directory",
       name: "imported",
