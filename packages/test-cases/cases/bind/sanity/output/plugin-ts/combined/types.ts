@@ -150,31 +150,37 @@ interface TestImport_Query_Input_anotherMethod extends Record<string, unknown> {
 }
 
 /* URI: "testimport.uri.eth" */
-export const TestImport_Query = {
-  importedMethod: async (
+export class TestImport_Query {
+  public static interfaceUri: string = "testimport.uri.eth";
+
+  constructor(public uri: string) {
+  }
+
+  public async importedMethod (
     input: TestImport_Query_Input_importedMethod,
     client: Client
-  ): Promise<InvokeApiResult<Types.TestImport_Object | null>> => {
+  ): Promise<InvokeApiResult<Types.TestImport_Object | null>> {
     return client.invoke<Types.TestImport_Object | null>({
-      uri: "testimport.uri.eth",
+      uri: this.uri,
       module: "query",
       method: "importedMethod",
       input
     });
   },
 
-  anotherMethod: async (
+  public async anotherMethod (
     input: TestImport_Query_Input_anotherMethod,
     client: Client
-  ): Promise<InvokeApiResult<Int32>> => {
+  ): Promise<InvokeApiResult<Int32>> {
     return client.invoke<Int32>({
-      uri: "testimport.uri.eth",
+      uri: this.uri,
       module: "query",
       method: "anotherMethod",
       input
     });
   }
 }
+
 
 /* URI: "testimport.uri.eth" */
 interface TestImport_Mutation_Input_importedMethod extends Record<string, unknown> {
@@ -215,4 +221,13 @@ export const TestImport_Mutation = {
   }
 }
 
+
 /// Imported Queries END ///
+
+export class TestImport {
+  static uri: string = "testimport.uri.eth";
+
+  public static getImplementations(client: Client): string[] {
+    return client.getImplementations(this.uri, {});
+  }
+}

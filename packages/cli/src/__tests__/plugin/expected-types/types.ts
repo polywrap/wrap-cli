@@ -493,6 +493,7 @@ export const Ethereum_Query = {
   }
 }
 
+
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Mutation_Input_callContractMethod extends Record<string, unknown> {
   address: String;
@@ -631,4 +632,6 @@ export const Ethereum_Mutation = {
   }
 }
 
+
 /// Imported Queries END ///
+
