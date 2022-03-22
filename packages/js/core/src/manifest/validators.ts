@@ -16,6 +16,10 @@ export function file(path: unknown): boolean {
   return result;
 }
 
+export function packageName(name: unknown): boolean {
+  return typeof name === "string";
+}
+
 export function dockerImageName(name: unknown): boolean {
   return typeof name === "string";
 }
