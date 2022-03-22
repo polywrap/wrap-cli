@@ -15,11 +15,10 @@ import {
 import { Web3ApiClient } from "@web3api/client-js";
 import * as path from "path";
 
+const defaultOutputTypesDir = "./src/w3";
 
 export const app: Command = {
     setup: (program: Program) => {
-
-        const defaultOutputTypesDir = "./src/w3";
 
         const appCommand = program
             .alias("a")
@@ -48,8 +47,6 @@ export const app: Command = {
 }
 
 async function run(options: any) {
-
-    console.log(options)
 
     let { codegenDir, ipfs, ens } = options;
 
@@ -95,12 +92,11 @@ async function run(options: any) {
     });
     await project.validate();
 
-    // TODO
-    // if (codegenDir) {
-    //     codegenDir = filesystem.resolve(codegenDir);
-    // } else {
-    //     codegenDir = filesystem.resolve(defaultOutputTypesDir);
-    // }
+     if (codegenDir) {
+         codegenDir = codegenDir;
+     } else {
+         codegenDir = defaultOutputTypesDir;
+     }
 
     const schemaComposer = new SchemaComposer({
         project,
@@ -111,7 +107,6 @@ async function run(options: any) {
         schemaComposer,
         outputDir: codegenDir,
     });
-
 
     if (await codeGenerator.generate()) {
         console.log(`🔥 ${intlMsg.commands_app_success()} 🔥`);
