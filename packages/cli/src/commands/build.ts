@@ -1,4 +1,3 @@
-// TODO build refactor
 import { Command, Program } from "./types";
 import {
     // Compiler,
