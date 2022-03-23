@@ -1,17 +1,15 @@
 import { Command, Program } from "./types";
 import {
-  //generateProjectTemplate, 
-  //fixParameters, 
+  generateProjectTemplate,
   intlMsg
 } from "../lib";
 
 
-
 // import chalk from "chalk";
-// import { GluegunToolbox, GluegunPrint } from "gluegun";
+import { prompt, filesystem } from "gluegun";
 
 // const cmdStr = intlMsg.commands_create_options_command();
-// const nameStr = intlMsg.commands_create_options_projectName();
+const nameStr = intlMsg.commands_create_options_projectName();
 // const optionsStr = intlMsg.commands_options_options();
 const langStr = intlMsg.commands_create_options_lang();
 const langsStr = intlMsg.commands_create_options_langs();
@@ -35,44 +33,88 @@ export const create: Command = {
       .alias("c")
       .description(intlMsg.commands_create_description())
 
-
-
     createCommand
-      .command(`api <${langStr}>`)
+      .command(`api <${langStr}> <${nameStr}>`)
       .description(`${createProjStr} ${langsStr}: ${supportedLangs.api.join(", ")}`)
       .option(`-o, --output-dir <${pathStr}>`, `${intlMsg.commands_create_options_o()}`)
-      .action(async (langStr, options) => {
-        await run("api", langStr, options);
+      .action(async (langStr, nameStr, options) => {
+        await run("api", langStr, nameStr, options);
       });
 
     createCommand
       .command(`app <${langStr}>`)
       .description(`${createAppStr} ${langsStr}: ${supportedLangs.app.join(", ")}`)
       .option(`-o, --output-dir <${pathStr}>`, `${intlMsg.commands_create_options_o()}`)
-      .action(async (langStr, options) => {
-        await run("app", langStr, options);
+      .action(async (langStr, nameStr, options) => {
+        await run("app", langStr, nameStr, options);
       });
 
     createCommand
       .command(`plugin <${langStr}>`)
       .description(`${createPluginStr} ${langsStr}: ${supportedLangs.plugin.join(", ")}`)
       .option(`-o, --output-dir <${pathStr}>`, `${intlMsg.commands_create_options_o()}`)
-      .action(async (langStr, options) => {
-        await run("plugin", langStr, options);
+      .action(async (langStr, nameStr, options) => {
+        await run("plugin", langStr, nameStr, options);
       });
-
-
-
-
 
   }
 }
 
-async function run(command: "api" | "app" | "plugin", langStr:any, options: any) {
+async function run(command: "api" | "app" | "plugin", lang: any, name: any, options: any) {
+  let { outputDir } = options;
+
+  console.log(command, lang, options)
+  console.log(outputDir)
+  console.log(name);
 
 
-  console.log(command, langStr, options)
+  const projectDir = outputDir ? `${outputDir}/${name}` : name;
+
+  // check if project already exists
+  if (!filesystem.exists(projectDir)) {
+    console.log();
+    console.info(intlMsg.commands_create_settingUp());
+  } else {
+    const directoryExistsMessage = intlMsg.commands_create_directoryExists({
+      dir: projectDir,
+    });
+    console.info(directoryExistsMessage);
+    const overwrite = await prompt.confirm(
+      intlMsg.commands_create_overwritePrompt()
+    );
+    if (overwrite) {
+      const overwritingMessage = intlMsg.commands_create_overwriting({
+        dir: projectDir,
+      });
+      console.info(overwritingMessage);
+      filesystem.remove(projectDir);
+    } else {
+      process.exit(8);
+    }
+  }
+
+  generateProjectTemplate(command, lang, projectDir, filesystem)
+    .then(() => {
+      console.log();
+      let readyMessage;
+      if (command === "api") {
+        readyMessage = intlMsg.commands_create_readyProtocol();
+      } else if (command === "app") {
+        readyMessage = intlMsg.commands_create_readyApp();
+      } else if (command === "plugin") {
+        readyMessage = intlMsg.commands_create_readyPlugin();
+      }
+      console.info(`🔥 ${readyMessage} 🔥`);
+    })
+    .catch((err) => {
+      const commandFailError = intlMsg.commands_create_error_commandFail({
+        error: err.command,
+      });
+      console.error(commandFailError);
+    });
 }
+
+
 
 // export const supportedLangs: { [key: string]: string[] } = {
 //   api: ["assemblyscript", "interface"],
@@ -191,50 +233,50 @@ async function run(command: "api" | "app" | "plugin", langStr:any, options: any)
 //   },
 // };
 
-// function validateCreateParams(
-//   print: GluegunPrint,
-//   type: unknown,
-//   lang: unknown,
-//   name: unknown,
-//   outputDir: unknown
-// ): boolean {
-//   if (!type || typeof type !== "string") {
-//     print.error(intlMsg.commands_create_error_noCommand());
-//     return false;
-//   }
+// // function validateCreateParams(
+// //   print: GluegunPrint,
+// //   type: unknown,
+// //   lang: unknown,
+// //   name: unknown,
+// //   outputDir: unknown
+// // ): boolean {
+// //   if (!type || typeof type !== "string") {
+// //     print.error(intlMsg.commands_create_error_noCommand());
+// //     return false;
+// //   }
 
-//   if (!lang || typeof lang !== "string") {
-//     print.error(intlMsg.commands_create_error_noLang());
-//     return false;
-//   }
+// //   if (!lang || typeof lang !== "string") {
+// //     print.error(intlMsg.commands_create_error_noLang());
+// //     return false;
+// //   }
 
-//   if (!name || typeof name !== "string") {
-//     print.error(intlMsg.commands_create_error_noName());
-//     return false;
-//   }
+// //   if (!name || typeof name !== "string") {
+// //     print.error(intlMsg.commands_create_error_noName());
+// //     return false;
+// //   }
 
-//   if (!supportedLangs[type]) {
-//     const unrecognizedCommand = intlMsg.commands_create_error_unrecognizedCommand();
-//     print.error(`${unrecognizedCommand} "${type}"`);
-//     return false;
-//   }
+// //   if (!supportedLangs[type]) {
+// //     const unrecognizedCommand = intlMsg.commands_create_error_unrecognizedCommand();
+// //     print.error(`${unrecognizedCommand} "${type}"`);
+// //     return false;
+// //   }
 
-//   if (supportedLangs[type].indexOf(lang) === -1) {
-//     const unrecognizedLanguage = intlMsg.commands_create_error_unrecognizedLanguage();
-//     print.error(`${unrecognizedLanguage} "${lang}"`);
-//     return false;
-//   }
+// //   if (supportedLangs[type].indexOf(lang) === -1) {
+// //     const unrecognizedLanguage = intlMsg.commands_create_error_unrecognizedLanguage();
+// //     print.error(`${unrecognizedLanguage} "${lang}"`);
+// //     return false;
+// //   }
 
-//   if (outputDir === true) {
-//     const outputDirMissingPathMessage = intlMsg.commands_create_error_outputDirMissingPath(
-//       {
-//         option: "--output-dir",
-//         argument: `<${pathStr}>`,
-//       }
-//     );
-//     print.error(outputDirMissingPathMessage);
-//     return false;
-//   }
+// //   if (outputDir === true) {
+// //     const outputDirMissingPathMessage = intlMsg.commands_create_error_outputDirMissingPath(
+// //       {
+// //         option: "--output-dir",
+// //         argument: `<${pathStr}>`,
+// //       }
+// //     );
+// //     print.error(outputDirMissingPathMessage);
+// //     return false;
+// //   }
 
-//   return true;
-// }
+// //   return true;
+// // }
