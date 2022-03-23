@@ -1,4 +1,11 @@
-import { Client, Plugin, createWeb3ApiClient, Uri, Web3ApiClientConfig } from "..";
+import {
+  Client,
+  Plugin,
+  createWeb3ApiClient,
+  Uri,
+  Web3ApiClientConfig,
+  Web3ApiClient,
+} from "..";
 import {
   buildAndDeployApi,
   initTestEnvironment,
@@ -15,16 +22,12 @@ describe("Web3ApiClient - resolveUri", () => {
   let ethProvider: string;
   let ensAddress: string;
 
-  beforeAll(async () => {
+  const startTestEnvironment = async () => {
     const { ipfs, ethereum, ensAddress: ens } = await initTestEnvironment();
     ipfsProvider = ipfs;
     ethProvider = ethereum;
     ensAddress = ens;
-  });
-
-  afterAll(async () => {
-    await stopTestEnvironment();
-  });
+  };
 
   const getClient = async (config?: Partial<Web3ApiClientConfig>) => {
     return createWeb3ApiClient(
@@ -230,6 +233,8 @@ describe("Web3ApiClient - resolveUri", () => {
   });
 
   it("can resolve api", async () => {
+    await startTestEnvironment();
+
     await runCLI({
       args: ["build"],
       cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`,
@@ -324,9 +329,13 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
     ]);
+
+    await stopTestEnvironment();
   });
 
   it("can resolve cache", async () => {
+    await startTestEnvironment();
+
     await runCLI({
       args: ["build"],
       cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`,
@@ -458,9 +467,13 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
     ]);
+
+    await stopTestEnvironment();
   });
 
   it("can resolve cache - noCacheRead", async () => {
+    await startTestEnvironment();
+
     await runCLI({
       args: ["build"],
       cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`,
@@ -585,9 +598,13 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
     ]);
+
+    await stopTestEnvironment();
   });
 
   it("can resolve cache - noCacheWrite", async () => {
+    await startTestEnvironment();
+
     await runCLI({
       args: ["build"],
       cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`,
@@ -728,9 +745,13 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
     ]);
+
+    await stopTestEnvironment();
   });
 
   it("can resolve api with redirects", async () => {
+    await startTestEnvironment();
+
     await runCLI({
       args: ["build"],
       cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`,
@@ -841,13 +862,15 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
     ]);
+
+    await stopTestEnvironment();
   });
 
   it("can resolve uri with custom resolver", async () => {
     const ensUri = new Uri(`ens/test`);
     const redirectUri = new Uri(`ens/redirect.eth`);
 
-    const client = await getClient({
+    const client = await new Web3ApiClient({
       resolvers: [
         {
           name: "CustomResolver",
@@ -932,7 +955,7 @@ describe("Web3ApiClient - resolveUri", () => {
     const ensUri = new Uri(`ens/test`);
     const redirectUri = new Uri(`ens/redirect.eth`);
 
-    const client = await getClient();
+    const client = await new Web3ApiClient();
 
     const result = await client.resolveUri(ensUri, {
       config: {
@@ -983,8 +1006,8 @@ describe("Web3ApiClient - resolveUri", () => {
     ]);
   });
 
-  it("custom wrapper resolver does not cause infinite recursion", async () => {
-    const client = await getClient({
+  it("custom wrapper resolver does not cause infinite recursion when resolved at runtime", async () => {
+    const client = await new Web3ApiClient({
       interfaces: [
         {
           interface: "ens/uri-resolver.core.web3api.eth",
@@ -996,11 +1019,56 @@ describe("Web3ApiClient - resolveUri", () => {
     const { error } = await client.resolveUri("ens/test.eth");
 
     expect(error).toBeTruthy();
-    if(!error) {
+    if (!error) {
       throw Error();
     }
 
     expect(error.type).toEqual(ResolveUriError.CustomResolverError);
-    expect(error.message).toEqual("Could not load the following API resolvers: w3://ens/test-resolver.eth");
+    expect(error.message).toEqual(
+      "Could not load the following API resolvers: w3://ens/test-resolver.eth"
+    );
+  });
+
+  it("unresolvable custom wrapper resolver is found when preloaded", async () => {
+    const client = await new Web3ApiClient({
+      interfaces: [
+        {
+          interface: "ens/uri-resolver.core.web3api.eth",
+          implementations: ["ens/test-resolver.eth"],
+        },
+      ],
+    });
+
+    const { success, failedResolverUris } = await client.tryLoadApiResolvers();
+    expect(success).toBeFalsy();
+    expect(failedResolverUris).toEqual(["w3://ens/test-resolver.eth"]);
+
+    const { error } = await client.resolveUri("ens/test.eth");
+    expect(error).toBeTruthy();
+
+    if (!error) {
+      throw Error();
+    }
+
+    expect(error.type).toEqual(ResolveUriError.CustomResolverError);
+    expect(error.message).toEqual(
+      "Could not load the following API resolvers: w3://ens/test-resolver.eth"
+    );
+  });
+
+  it("can preload API resolvers", async () => {
+    const client = await new Web3ApiClient();
+
+    const { success, failedResolverUris } = await client.tryLoadApiResolvers();
+
+    console.log(failedResolverUris);
+    expect(success).toBeTruthy();
+    expect(failedResolverUris.length).toEqual(0);
+
+    const { error, uri, api } = await client.resolveUri("ens/test.eth");
+
+    expect(error).toBeFalsy();
+    expect(api).toBeFalsy();
+    expect(uri?.uri).toEqual("w3://ens/test.eth");
   });
 });
