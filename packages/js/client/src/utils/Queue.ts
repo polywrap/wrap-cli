@@ -9,7 +9,7 @@ export class Queue<T> {
     this.tail = 0;
   }
 
-  enqueue(element: T) {
+  enqueue(element: T): void {
     this.elements[this.tail] = element;
     this.tail++;
   }
@@ -27,15 +27,15 @@ export class Queue<T> {
     return item;
   }
 
-  peek() {
+  peek(): T | undefined {
     return this.elements[this.head];
   }
 
-  get length() {
+  get length(): number {
     return this.tail - this.head;
   }
 
-  get isEmpty() {
+  get isEmpty(): boolean {
     return this.length === 0;
   }
 

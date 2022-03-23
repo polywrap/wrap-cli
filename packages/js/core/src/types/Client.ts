@@ -52,10 +52,7 @@ export interface GetImplementationsOptions extends Contextualized {
   applyRedirects?: boolean;
 }
 
-export interface Client
-  extends QueryHandler,
-    SubscriptionHandler,
-    InvokeHandler {
+export interface Client extends QueryHandler, SubscriptionHandler, InvokeHandler {
   getRedirects(options: GetRedirectsOptions): readonly UriRedirect<Uri>[];
 
   getPlugins(options: GetPluginsOptions): readonly PluginRegistration<Uri>[];
@@ -100,4 +97,9 @@ export interface Client
     uri: TUri,
     options?: ResolveUriOptions<ClientConfig>
   ): Promise<ResolveUriResult>;
+
+  tryLoadApiResolvers(): Promise<{
+    success: boolean;
+    failedResolverUris: string[];
+  }>;
 }

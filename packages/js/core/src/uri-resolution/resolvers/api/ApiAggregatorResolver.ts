@@ -10,7 +10,6 @@ import { CreateApiFunc } from "./types/CreateApiFunc";
 import { UriResolutionResult } from "../../core/types/UriResolutionResult";
 import { UriToApiResolver, UriResolutionStack } from "../../core";
 import { ApiResolver } from "./ApiResolver";
-import { Queue } from "../../../utils/Queue";
 
 export type ApiAggregatorResolverResult = UriResolutionResult & {
   resolverUri?: Uri;
@@ -41,11 +40,10 @@ export class ApiAggregatorResolver implements UriToApiResolver {
     );
 
     if (!this.hasLoadedAllResolvers) {
-      const { success, failedResolverUris } = await tryLoadAllApiResolvers(
-        resolverUris,
-        client,
-        cache
-      );
+      const {
+        success,
+        failedResolverUris,
+      } = await client.tryLoadApiResolvers();
 
       if (!success) {
         return {
@@ -97,64 +95,3 @@ export class ApiAggregatorResolver implements UriToApiResolver {
     return resolvers;
   }
 }
-const tryLoadAllApiResolvers = async (
-  resolverUris: Uri[],
-  client: Client,
-  cache: ApiCache
-): Promise<{
-  success: boolean;
-  failedResolverUris: string[];
-}> => {
-  const bootstrapResolvers = getAllResolversWithoutApiAggregatorResolver(
-    client
-  );
-  const unloadedResolvers = new Queue<Uri>();
-
-  for (const resolverUri of resolverUris) {
-    if (!cache.has(resolverUri.uri)) {
-      unloadedResolvers.enqueue(resolverUri);
-    }
-  }
-
-  let resolverUri: Uri | undefined;
-  let failedAttempts = 0;
-
-  while ((resolverUri = unloadedResolvers.dequeue())) {
-    console.log("loading resolver", resolverUri);
-
-    // Use only the bootstrap (cached) resolvers to resolve the resolverUri
-    // If successful, it is automatically cached
-    const { api } = await client.resolveUri(resolverUri, {
-      config: {
-        resolvers: bootstrapResolvers,
-      },
-    });
-
-    if (!api) {
-      // If not successful, add the resolver to the end of the queue
-      unloadedResolvers.enqueue(resolverUri);
-      failedAttempts++;
-    } else {
-      // If successful, it is automatically cached during the resolveUri method
-      failedAttempts = 0;
-    }
-
-    if (failedAttempts === unloadedResolvers.length) {
-      return {
-        success: false,
-        failedResolverUris: unloadedResolvers.toArray().map((x) => x.uri),
-      };
-    }
-  }
-
-  return {
-    success: true,
-    failedResolverUris: [],
-  };
-};
-
-const getAllResolversWithoutApiAggregatorResolver = (client: Client) => {
-  const resolvers = client.getResolvers({});
-
-  return resolvers.filter((x) => x.name !== ApiAggregatorResolver.name);
-};

@@ -1,4 +1,5 @@
 import { getDefaultClientConfig } from "./default-client-config";
+import { Queue } from "./utils/Queue";
 
 import { v4 as uuid } from "uuid";
 import {
@@ -42,6 +43,8 @@ import {
   Contextualized,
   ResolveUriOptions,
   ResolveUriResult,
+  ApiAggregatorResolver,
+  coreInterfaceUris,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
@@ -481,6 +484,63 @@ export class Web3ApiClient implements Client {
     };
   }
 
+  @Tracer.traceMethod("Web3ApiClient: tryLoadApiResolvers")
+  public async tryLoadApiResolvers(): Promise<{
+    success: boolean;
+    failedResolverUris: string[];
+  }> {
+    const resolverUris = getImplementations(
+      coreInterfaceUris.uriResolver,
+      this.getInterfaces({}),
+      this.getRedirects({})
+    );
+
+    const bootstrapResolvers = this.getResolvers().filter(
+      (x) => x.name !== ApiAggregatorResolver.name
+    );
+    const unloadedResolvers = new Queue<Uri>();
+
+    for (const resolverUri of resolverUris) {
+      if (!this._apiCache.has(resolverUri.uri)) {
+        unloadedResolvers.enqueue(resolverUri);
+      }
+    }
+
+    let resolverUri: Uri | undefined;
+    let failedAttempts = 0;
+
+    while ((resolverUri = unloadedResolvers.dequeue())) {
+      // Use only the bootstrap resolvers to resolve the resolverUri
+      // If successful, it is automatically cached
+      const { api } = await this.resolveUri(resolverUri, {
+        config: {
+          resolvers: bootstrapResolvers,
+        },
+      });
+
+      if (!api) {
+        // If not successful, add the resolver to the end of the queue
+        unloadedResolvers.enqueue(resolverUri);
+        failedAttempts++;
+
+        if (failedAttempts === unloadedResolvers.length) {
+          return {
+            success: false,
+            failedResolverUris: unloadedResolvers.toArray().map((x) => x.uri),
+          };
+        }
+      } else {
+        // If successful, it is automatically cached during the resolveUri method
+        failedAttempts = 0;
+      }
+    }
+
+    return {
+      success: true,
+      failedResolverUris: [],
+    };
+  }
+
   private _addDefaultConfig() {
     const defaultClientConfig = getDefaultClientConfig();
 
@@ -785,6 +845,12 @@ const contextualizeClient = (
           options?: ResolveUriOptions<ClientConfig>
         ): Promise<ResolveUriResult> => {
           return client.resolveUri(uri, { ...options, contextId });
+        },
+        tryLoadApiResolvers: (): Promise<{
+          success: boolean;
+          failedResolverUris: string[];
+        }> => {
+          return client.tryLoadApiResolvers();
         },
       }
     : client;
