@@ -33,8 +33,6 @@ export const resolveUri = async (
   while (runAgain) {
     runAgain = false;
 
-    console.log(`Resolving URI ${currentUri.uri}`);
-
     const { infiniteLoopDetected } = trackVisitedUri(
       currentUri.uri,
       visitedUriMap
