@@ -17,7 +17,7 @@ export type ApiAggregatorResolverResult = UriResolutionResult & {
 };
 
 export class ApiAggregatorResolver implements UriToApiResolver {
-  private hadLoadedAllResolvers: boolean = false;
+  private hasLoadedAllResolvers: boolean;
 
   constructor(
     private readonly createApi: CreateApiFunc,
@@ -34,10 +34,30 @@ export class ApiAggregatorResolver implements UriToApiResolver {
     cache: ApiCache,
     resolutionPath: UriResolutionStack
   ): Promise<ApiAggregatorResolverResult> {
-    const resolvers: ApiResolver[] = await this.buildApiResolvers(
-      client,
-      cache
+    const resolverUris = getImplementations(
+      coreInterfaceUris.uriResolver,
+      client.getInterfaces({}),
+      client.getRedirects({})
     );
+
+    if (!this.hasLoadedAllResolvers) {
+      const { success, failedResolverUris } = await tryLoadAllApiResolvers(
+        resolverUris,
+        client,
+        cache
+      );
+
+      if (!success) {
+        return {
+          uri: uri,
+          error: `Could not load the following API resolvers: ${failedResolverUris}`,
+        };
+      }
+
+      this.hasLoadedAllResolvers = true;
+    }
+
+    const resolvers: ApiResolver[] = await this.buildApiResolvers(resolverUris);
 
     for (const resolver of resolvers) {
       const result = await resolver.resolveUri(
@@ -61,23 +81,7 @@ export class ApiAggregatorResolver implements UriToApiResolver {
     };
   }
 
-  async buildApiResolvers(
-    client: Client,
-    cache: ApiCache
-  ): Promise<ApiResolver[]> {
-    const resolverUris = getImplementations(
-      coreInterfaceUris.uriResolver,
-      client.getInterfaces({}),
-      client.getRedirects({})
-    );
-
-    console.log("building resolvers - ", this.hadLoadedAllResolvers);
-    if (!this.hadLoadedAllResolvers) {
-      await loadUriResolvers(resolverUris, client, cache);
-      this.hadLoadedAllResolvers = true;
-      console.log("loaded");
-    }
-
+  async buildApiResolvers(resolverUris: Uri[]): Promise<ApiResolver[]> {
     const resolvers: ApiResolver[] = [];
 
     for (const resolverUri of resolverUris) {
@@ -93,33 +97,33 @@ export class ApiAggregatorResolver implements UriToApiResolver {
     return resolvers;
   }
 }
-
-export async function loadUriResolvers(
+const tryLoadAllApiResolvers = async (
   resolverUris: Uri[],
   client: Client,
   cache: ApiCache
-) {
-  const bootstrapResolvers =
-    getAllResolversWithoutApiAggregatorResolver(client);
+): Promise<{
+  success: boolean;
+  failedResolverUris: string[];
+}> => {
+  const bootstrapResolvers = getAllResolversWithoutApiAggregatorResolver(
+    client
+  );
   const unloadedResolvers = new Queue<Uri>();
 
-  console.log("resolverUris", resolverUris);
-  // create 2 buckets, pre-loaded & unloaded resolvers
   for (const resolverUri of resolverUris) {
     if (!cache.has(resolverUri.uri)) {
       unloadedResolvers.enqueue(resolverUri);
     }
   }
-  console.log("unloadedResolvers", unloadedResolvers);
 
-  // load all missing resolvers
   let resolverUri: Uri | undefined;
   let failedAttempts = 0;
 
-  while (!!(resolverUri = unloadedResolvers.dequeue())) {
+  while ((resolverUri = unloadedResolvers.dequeue())) {
     console.log("loading resolver", resolverUri);
-    // We are ONLY using the bootstrap resolvers
-    // to load the resolver itself
+
+    // Use only the bootstrap (cached) resolvers to resolve the resolverUri
+    // If successful, it is automatically cached
     const { api } = await client.resolveUri(resolverUri, {
       config: {
         resolvers: bootstrapResolvers,
@@ -127,26 +131,30 @@ export async function loadUriResolvers(
     });
 
     if (!api) {
-      console.log("failed to load", resolverUri);
+      // If not successful, add the resolver to the end of the queue
       unloadedResolvers.enqueue(resolverUri);
       failedAttempts++;
     } else {
+      // If successful, it is automatically cached during the resolveUri method
       failedAttempts = 0;
-      console.log("loaded", resolverUri);
     }
 
     if (failedAttempts === unloadedResolvers.length) {
-      throw Error(
-        `Unable to load the following URI resolvers: ${unloadedResolvers.toArray()}`
-      );
+      return {
+        success: false,
+        failedResolverUris: unloadedResolvers.toArray().map((x) => x.uri),
+      };
     }
   }
 
-  return bootstrapResolvers;
-}
+  return {
+    success: true,
+    failedResolverUris: [],
+  };
+};
 
-export function getAllResolversWithoutApiAggregatorResolver(client: Client) {
+const getAllResolversWithoutApiAggregatorResolver = (client: Client) => {
   const resolvers = client.getResolvers({});
 
   return resolvers.filter((x) => x.name !== ApiAggregatorResolver.name);
-}
+};

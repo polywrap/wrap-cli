@@ -8,14 +8,10 @@ import {
   InterfaceImplementations,
   Env,
   ResolveUriOptions,
-  Api,
 } from "./";
 import { AnyManifestArtifact, ManifestArtifactType } from "../manifest";
-import {
-  UriToApiResolver,
-  ResolveUriError,
-  UriResolutionHistory,
-} from "../uri-resolution/core";
+import { UriToApiResolver } from "../uri-resolution/core";
+import { ResolveUriResult } from "./ResolveUriResult";
 
 export interface ClientConfig<TUri extends Uri | string = string> {
   redirects: UriRedirect<TUri>[];
@@ -103,10 +99,5 @@ export interface Client
   resolveUri<TUri extends Uri | string>(
     uri: TUri,
     options?: ResolveUriOptions<ClientConfig>
-  ): Promise<{
-    api?: Api;
-    uri?: Uri;
-    uriHistory: UriResolutionHistory;
-    error?: ResolveUriError;
-  }>;
+  ): Promise<ResolveUriResult>;
 }

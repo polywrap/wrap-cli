@@ -16,7 +16,10 @@ export const resolveUri = async (
   uri?: Uri;
   api?: Api;
   uriHistory: UriResolutionHistory;
-  error?: ResolveUriError;
+  error?: {
+    type: ResolveUriError;
+    message?: string;
+  };
 }> => {
   // Keep track of past URIs to avoid infinite loops
   const visitedUriMap: Map<string, boolean> = new Map<string, boolean>();
@@ -44,7 +47,9 @@ export const resolveUri = async (
           api,
           uriHistory: new UriResolutionHistory(uriResolutionStack),
           error: infiniteLoopDetected
-            ? ResolveUriError.InfiniteLoop
+            ? {
+                type: ResolveUriError.InfiniteLoop,
+              }
             : undefined,
         };
       }
@@ -76,6 +81,15 @@ export const resolveUri = async (
         currentUri = result.uri;
         runAgain = true;
         break;
+      } else if (result.error) {
+        return {
+          uri: currentUri,
+          uriHistory: new UriResolutionHistory(uriResolutionStack),
+          error: {
+            type: ResolveUriError.CustomResolverError,
+            message: result.error,
+          },
+        };
       }
     }
   }

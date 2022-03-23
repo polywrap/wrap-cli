@@ -35,13 +35,13 @@ import {
   sanitizeEnvs,
   ClientConfig,
   ResolveUriError,
-  UriResolutionHistory,
   resolveUri,
   UriToApiResolver,
   GetResolversOptions,
   CacheResolver,
   Contextualized,
   ResolveUriOptions,
+  ResolveUriResult,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
@@ -435,12 +435,7 @@ export class Web3ApiClient implements Client {
   public async resolveUri<TUri extends Uri | string>(
     uri: TUri,
     options?: ResolveUriOptions<ClientConfig>
-  ): Promise<{
-    api?: Api;
-    uri?: Uri;
-    uriHistory: UriResolutionHistory;
-    error?: ResolveUriError;
-  }> {
+  ): Promise<ResolveUriResult> {
     options = options || {};
 
     const { contextId, shouldClearContext } = this._setContext(
@@ -671,20 +666,37 @@ export class Web3ApiClient implements Client {
     });
 
     if (!api) {
-      if (error && error === ResolveUriError.InfiniteLoop) {
+      if (error) {
+        switch (error.type) {
+          case ResolveUriError.InfiniteLoop:
+            throw Error(
+              `Infinite loop while resolving URI "${uri}".\nResolution Stack: ${JSON.stringify(
+                uriHistory,
+                null,
+                2
+              )}`
+            );
+            break;
+          case ResolveUriError.CustomResolverError:
+            throw Error(
+              `URI resolution error while resolving URI "${uri}".\n${
+                error.message
+              }\nResolution Stack: ${JSON.stringify(uriHistory, null, 2)}`
+            );
+            break;
+          default:
+            throw Error(`Unsupported URI resolution error type occurred`);
+            break;
+        }
+      } else {
         throw Error(
-          `Infinite loop while resolving URI "${uri}".\nResolution Stack: ${JSON.stringify(
+          `Uknown URI resolution error while resolving URI "${uri}"\nResolution Stack: ${JSON.stringify(
             uriHistory,
             null,
             2
           )}`
         );
       }
-
-      throw Error(
-        `No Web3API found at URI: ${uri.uri}` +
-          `\nResolution history: ${JSON.stringify(uriHistory, null, 2)}`
-      );
     }
 
     return api;
@@ -771,12 +783,7 @@ const contextualizeClient = (
         resolveUri: <TUri extends Uri | string>(
           uri: TUri,
           options?: ResolveUriOptions<ClientConfig>
-        ): Promise<{
-          api?: Api;
-          uri?: Uri;
-          uriHistory: UriResolutionHistory;
-          error?: ResolveUriError;
-        }> => {
+        ): Promise<ResolveUriResult> => {
           return client.resolveUri(uri, { ...options, contextId });
         },
       }
