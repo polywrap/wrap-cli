@@ -165,6 +165,26 @@ describe("Ethereum Plugin", () => {
       expect(response.data?.callContractStatic.result).toBe("missing revert data in call exception");
     });
 
+    it("getBalance", async () => {
+      const signerAddressQuery = await client.invoke<string>({
+        uri,
+        module: "query",
+        method: "getSignerAddress",
+      });
+
+      const response = await client.invoke<string>({
+        uri,
+        module: "query",
+        method: "getBalance",
+        input: {
+          address: signerAddressQuery.data
+        }
+      })
+
+      expect(response.error).toBeUndefined()
+      expect(response.data).toBeDefined()
+    });
+
     it("encodeParams", async () => {
       const response = await client.query<{ encodeParams: string }>({
         uri,
