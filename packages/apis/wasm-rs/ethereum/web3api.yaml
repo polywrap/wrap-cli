@@ -5,3 +5,9 @@ modules:
   query:
     schema: ./query/schema.graphql
     module: ./query/Cargo.toml
+  mutation:
+    schema: ./mutation/schema.graphql
+    module: ./mutation/Cargo.toml
+import_redirects:
+  - uri: w3://ens/ethereum-signer.web3api.eth
+    schema: ../../../js/plugins/ethereum-signer/build/schema.graphql

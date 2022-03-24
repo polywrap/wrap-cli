@@ -11,14 +11,11 @@ license = "MIT"
 edition = "2021"
 
 [dependencies]
-async-trait = "0.1.51"
 thiserror = "1.0.30"
-tokio = { version = "1.4.0", features = ["rt"] }
-getrandom = { version = "*", features = ["js"] }
-num-traits = { version = "0.2", default-features = false }
+getrandom = { version = "*", features = ["custom"] }
 polywrap-wasm-rs = { path = "../../../../wasm/rs" }
 serde = { version = "1.0", features = ["derive"] }
-ethers = { git = "https://github.com/gakonst/ethers-rs" }
+ethers-core = { version = "0.6.0", features = [] }
 
 [lib]
 crate-type = ["cdylib", "rlib"]

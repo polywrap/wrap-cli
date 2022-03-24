@@ -1,0 +1,82 @@
+#import { Query, Mutation, Connection, TxResponse } into Ethereum from "w3://ens/ethereum.web3api.eth"
+
+type Mutation {
+  deployContract(
+    abi: String!
+    bytecode: String!
+    args: [String!]
+    connection: Ethereum_Connection
+  ): Ethereum_TxResponse!
+
+  # callContractMethod(
+  #   address: String!
+  #   method: String!
+  #   args: [String!]
+  #   connection: Ethereum_Connection
+  #   txOverrides: TxOverrides
+  # ): Ethereum_TxResponse!
+}
+
+type TxReceipt {
+  transactionHash: String!
+  transactionIndex: UInt32!
+  blockHash: String
+  blockNumber: BigInt
+  cumulativeGasUsed: BigInt!
+  gasUsed: BigInt
+  contractAddress: String
+  logs: [Log!]!
+  status: UInt32
+  root: String
+  logsBloom: String!
+  transactionType: UInt32
+  effectiveGasPrice: BigInt
+}
+
+type TxRequest {
+  to: String
+  from: String
+  nonce: UInt32
+  gas: BigInt
+  gasPrice: BigInt
+  data: String
+  value: BigInt
+  chainId: UInt32
+}
+
+type TxOverrides {
+  gas: BigInt
+  gasPrice: BigInt
+  value: BigInt
+}
+
+type StaticTxResult {
+  result: String!
+  error: Boolean!
+}
+
+type Log {
+  address: String!
+  topics: [String!]!
+  data: String!
+  blockHash: String
+  blockNumber: BigInt
+  transactionHash: String
+  transactionIndex: UInt32
+  logIndex: UInt32
+  transactionLogIndex: UInt32
+  logType: String
+  removed: Boolean
+}
+
+type EventNotification {
+  data: String!
+  address: String!
+  log: Log!
+}
+
+type Network {
+  name: String!
+  chainId: Int!
+  ensAddress: String
+}

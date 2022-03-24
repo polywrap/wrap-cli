@@ -1,12 +1,11 @@
-use crate::w3::imported::{EthereumTxRequest};
-use ethers::core::{
+use super::w3::imported::{EthereumTxRequest};
+use ethers_core::{
     abi::ethereum_types::{Address, H160, H256, U256, U64},
     types::{
         transaction::{request::TransactionRequest, response::TransactionReceipt},
         Bloom, Bytes, Log as EthersLog, NameOrAddress,
     },
 };
-use num_traits::ToPrimitive;
 use polywrap_wasm_rs::BigInt;
 
 // pub fn to_tx_receipt(receipt: TransactionReceipt) -> EthereumTxReceipt {
@@ -84,7 +83,7 @@ pub fn to_tx_request(request: TransactionRequest) -> EthereumTxRequest {
             .value
             .map(|f| BigInt::try_from(f.as_u128()).unwrap()),
         nonce: request.nonce.map(|f| f.as_u32()),
-        chain_id: request.chain_id.map(|f| f.as_u32()),
+        chain_id: Option::None,
         m_type: Option::None
     }
 }

@@ -11,18 +11,15 @@ license = "MIT"
 edition = "2021"
 
 [dependencies]
-async-trait = "0.1.51"
-ethers = "0.6.1"
 thiserror = "1.0.30"
-tokio = { version = "1.4.0", features = ["rt"] }
-getrandom = { version = "*", features = ["js"] }
-num-traits = { version = "0.2", default-features = false }
-polywrap-wasm-rs = { version = "0.0.1-prealpha-dev.37.4", path = "../../../../wasm/rs" }
+
 query = { version = "0.1.0", path = "../query", default-features = false }
+polywrap-wasm-rs = { path = "../../../../wasm/rs" }
 serde = { version = "1.0", features = ["derive"] }
+ethers-core = { git = "https://github.com/gakonst/ethers-rs", features = [] }
 
 [lib]
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "rlib"]
 
 [profile.release]
 opt-level = 'z'
