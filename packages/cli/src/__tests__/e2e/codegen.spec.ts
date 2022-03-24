@@ -3,7 +3,7 @@ import { defaultWeb3ApiManifest } from "../../lib";
 import { clearStyle, w3Cli } from "./utils";
 
 import { runCLI } from "@web3api/test-env-js";
-// import rimraf from "rimraf";
+import rimraf from "rimraf";
 
 const HELP = `Usage: w3 codegen|g [options]
 
@@ -38,73 +38,69 @@ describe("e2e tests for codegen command", () => {
         expect(clearStyle(output)).toEqual(HELP);
     });
 
-    //   test("Should throw error for invalid params - script", async () => {
-    //     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-    //       args: ["codegen", "--script"],
-    //       cwd: projectRoot,
-    //       cli: w3Cli,
-    //     });
+    test("Should throw error for invalid params - script", async () => {
+        const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+            args: ["codegen", "--script"],
+            cwd: projectRoot,
+            cli: w3Cli,
+        });
 
-    //     expect(code).toEqual(1);
-    //     expect(error).toBe("");
-    //     expect(clearStyle(output))
-    //       .toEqual(`--script option missing <path> argument
-    // ${HELP}`);
-    //   });
+        expect(code).toEqual(1);
+        expect(error).toBe("error: option '-s, --script <path>' argument missing\n");
+        expect(output).toEqual(``);
+    });
 
-    //   test("Should throw error for invalid params - ens", async () => {
-    //     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-    //       args: ["codegen", "--ens"],
-    //       cwd: projectRoot,
-    //       cli: w3Cli,
-    //     });
+    test("Should throw error for invalid params - ens", async () => {
+        const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+            args: ["codegen", "--ens"],
+            cwd: projectRoot,
+            cli: w3Cli,
+        });
 
-    //     expect(code).toEqual(1);
-    //     expect(error).toBe("");
-    //     expect(clearStyle(output))
-    //       .toEqual(`--ens option missing [<address>] argument
-    // ${HELP}`);
-    //   });
+        expect(code).toEqual(1);
+        expect(error).toBe("error: option '-e, --ens [<address>]' argument missing\n");
+        expect(clearStyle(output)).toEqual(``);
+    });
 
-    //   test("Should throw error for invalid generation file - wrong file", async () => {
-    //     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-    //       args: ["codegen", "--script", `web3api-invalid.gen.js`],
-    //       cwd: projectRoot,
-    //       cli: w3Cli,
-    //     });
+    test("Should throw error for invalid generation file - wrong file", async () => {
+        const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+            args: ["codegen", "--script", `web3api-invalid.gen.js`],
+            cwd: projectRoot,
+            cli: w3Cli,
+        });
 
-    //     const genFile = path.normalize(`${projectRoot}/web3api-invalid.gen.js`);
+        const genFile = path.normalize(`${projectRoot}/web3api-invalid.gen.js`);
 
-    //     expect(code).toEqual(1);
-    //     expect(error).toBe("");
-    //     expect(clearStyle(output)).toContain(`Failed to generate types: Cannot find module '${genFile}'`);
-    //   });
+        expect(code).toEqual(1);
+        expect(error).toBe("");
+        expect(clearStyle(output)).toContain(`Failed to generate types: Cannot find module '${genFile}'`);
+    });
 
-    //   test("Should throw error for invalid generation file - no run() method", async () => {
-    //     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-    //       args: ["codegen", "--script", `web3api-norun.gen.js`],
-    //       cwd: projectRoot,
-    //       cli: w3Cli,
-    //     });
+    test("Should throw error for invalid generation file - no run() method", async () => {
+        const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+            args: ["codegen", "--script", `web3api-norun.gen.js`],
+            cwd: projectRoot,
+            cli: w3Cli,
+        });
 
-    //     expect(code).toEqual(1);
-    //     expect(error).toBe("");
-    //     expect(clearStyle(output)).toContain(`Failed to generate types: The generation file provided doesn't have the 'generateBinding' method.`);
-    //   });
+        expect(code).toEqual(1);
+        expect(error).toBe("");
+        expect(clearStyle(output)).toContain(`Failed to generate types: The generation file provided doesn't have the 'generateBinding' method.`);
+    });
 
-    //   test("Should successfully generate types", async () => {
-    //     rimraf.sync(`${projectRoot}/types`);
+    test("Should successfully generate types", async () => {
+        rimraf.sync(`${projectRoot}/types`);
 
-    //     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-    //       args: ["codegen"],
-    //       cwd: projectRoot,
-    //       cli: w3Cli,
-    //     });
+        const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+            args: ["codegen"],
+            cwd: projectRoot,
+            cli: w3Cli,
+        });
 
-    //     expect(code).toEqual(0);
-    //     expect(error).toBe("");
-    //     expect(clearStyle(output)).toContain(`🔥 Types were generated successfully 🔥`);
+        expect(code).toEqual(1);
+        expect(error).toBe("");
+        expect(clearStyle(output)).toContain(`🔥 Types were generated successfully 🔥`);
 
-    //     rimraf.sync(`${projectRoot}/types`);
-    //   });
+        rimraf.sync(`${projectRoot}/types`);
+    });
 });
