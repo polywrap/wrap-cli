@@ -55,6 +55,10 @@ export const query = (plugin: Plugin): Query.Module => ({
     return plugin.callContractStatic(input);
   },
 
+  getBalance: async (input: Query.Input_getBalance): Promise<string> => {
+    return plugin.getBalance(input);
+  },
+
   encodeParams: async (input: Query.Input_encodeParams): Promise<string> => {
     return plugin.encodeParams(input);
   },
