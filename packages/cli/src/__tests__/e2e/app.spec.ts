@@ -46,90 +46,86 @@ describe("e2e tests for app command", () => {
     expect(clearStyle(output)).toEqual(HELP);
   });
 
-//   test("Should throw error for invalid params - no command", async () => {
-//     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
-//       {
-//         args: ["app", "--output-dir"],
-//         cwd: projectRoot,
-//         cli: w3Cli,
-//       },
-//     );
+  test("Should throw error for invalid params - no command", async () => {
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
+      {
+        args: ["app", "--output-dir"],
+        cwd: projectRoot,
+        cli: w3Cli,
+      },
+    );
 
-//     expect(code).toEqual(1);
-//     expect(error).toBe("");
-//     expect(clearStyle(output)).toEqual(`Please provide a command
-// ${HELP}`);
-//   });
+    expect(code).toEqual(1);
+    expect(error).toBe("error: unknown option '--output-dir'\n");
+    expect(output).toEqual(``);
+  });
 
-//   test("Should throw error for invalid params - codegen-dir", async () => {
-//     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
-//       {
-//         args: ["app", "codegen", "--codegen-dir"],
-//         cwd: projectRoot,
-//         cli: w3Cli,
-//       },
-//     );
+  test("Should throw error for invalid params - codegen-dir", async () => {
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
+      {
+        args: ["app", "codegen", "--codegen-dir"],
+        cwd: projectRoot,
+        cli: w3Cli,
+      },
+    );
 
-//     expect(code).toEqual(1);
-//     expect(error).toBe("");
-//     expect(clearStyle(output))
-//       .toEqual(`--codegen-dir option missing <path> argument
-// ${HELP}`);
-//   });
+    expect(code).toEqual(1);
+    expect(error).toBe(`error: option '-c, --codegen-dir <path>' argument missing\n`);
+    expect(output).toEqual(``);
+  });
 
-//   test("Should throw error for invalid params - ens", async () => {
-//     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
-//       {
-//         args: ["app", "codegen", "--ens"],
-//         cwd: projectRoot,
-//         cli: w3Cli,
-//       },
-//     );
+  test("Should throw error for invalid params - ens", async () => {
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
+      {
+        args: ["app", "codegen", "--ens"],
+        cwd: projectRoot,
+        cli: w3Cli,
+      },
+    );
 
-//     expect(code).toEqual(1);
-//     expect(error).toBe("");
-//     expect(clearStyle(output))
-//       .toEqual(`--ens option missing [<address>] argument
-// ${HELP}`);
-//   });
+    expect(code).toEqual(1);
+    expect(error).toBe("error: option '-e, --ens [<address>]' argument missing\n");
+    expect(output)
+      .toEqual(``);
+  });
 
-//   test("Should successfully generate types for plugins", async () => {
-//     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
-//       {
-//         args: ["app", "codegen", "-m", `${projectRoot}/web3api.app.withPlugin.yaml`],
-//         cwd: projectRoot,
-//         cli: w3Cli,
-//       },
-//     );
+    test("Should successfully generate types for plugins", async () => {
+      const { exitCode: code, stdout: output, stderr: error } = await runCLI(
+        {
+          args: ["app", "codegen", "-m", `${projectRoot}/web3api.app.withPlugin.yaml`],
+          cwd: projectRoot,
+          cli: w3Cli,
+        },
+      );
 
-//     expect(error).toBe("");
-//     expect(code).toEqual(0);
-//     expect(clearStyle(output)).toEqual(`- Manifest loaded from ./web3api.app.withPlugin.yaml
-// ✔ Manifest loaded from ./web3api.app.withPlugin.yaml
-// - Generate types
-// ✔ Generate types
-// 🔥 Code was generated successfully 🔥
-// `);
-//   });
+      expect(error).toBe("");
+      expect(code).toEqual(0);
+      expect(clearStyle(output)).toEqual(`- Manifest loaded from ./web3api.app.withPlugin.yaml
+✔ Manifest loaded from ./web3api.app.withPlugin.yaml
+- Generate types
+✔ Generate types
+🔥 Code was generated successfully 🔥
+`);
+    });
 
-//   test("Should successfully generate types for multiple packages", async () => {
-//     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
-//       {
-//         args: ["app", "codegen", "-m", `${projectRoot}/web3api.app.multiPackage.yaml`],
-//         cwd: projectRoot,
-//         cli: w3Cli,
-//       },
-//     );
+    test("Should successfully generate types for multiple packages", async () => {
+      const { exitCode: code, stdout: output, stderr: error } = await runCLI(
+        {
+          args: ["app", "codegen", "-m", `${projectRoot}/web3api.app.multiPackage.yaml`],
+          cwd: projectRoot,
+          cli: w3Cli,
+        },
+      );
 
-//     expect(error).toBe("");
-//     expect(code).toEqual(0);
-//     expect(clearStyle(output)).toEqual(`- Manifest loaded from ./web3api.app.multiPackage.yaml
-// ✔ Manifest loaded from ./web3api.app.multiPackage.yaml
-// - Generate types
-// ✔ Generate types
-// 🔥 Code was generated successfully 🔥
-// `);
-//   });
+      expect(error).toBe("");
+      expect(code).toEqual(0);
+      expect(clearStyle(output)).toEqual(`- Manifest loaded from ./web3api.app.multiPackage.yaml
+✔ Manifest loaded from ./web3api.app.multiPackage.yaml
+- Generate types
+✔ Generate types
+🔥 Code was generated successfully 🔥
+`);
+    });
 });
 
 async function testEnvUp(cwd: string): Promise<void> {
@@ -151,13 +147,13 @@ async function testEnvDown(cwd: string): Promise<void> {
 }
 
 async function buildApi(cwd: string): Promise<void> {
-//   const { exitCode: buildCode, stderr: buildErr } = await runCLI({
-//     args: [
-//       "build",
-//     ],
-//     cwd: cwd,
-//     cli: w3Cli,
-//   });
-  //expect(buildErr).toBe("");
-  //expect(buildCode).toEqual(0);
+    const { exitCode: buildCode, stderr: buildErr } = await runCLI({
+      args: [
+        "build",
+      ],
+      cwd: cwd,
+      cli: w3Cli,
+    });
+  expect(buildErr).toBe("");
+  expect(buildCode).toEqual(0);
 }

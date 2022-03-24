@@ -10,6 +10,8 @@ Options:
 
 Commands:
   app|a              Build/generate types for your app
+  build|b [options]  Builds a Web3API and (optionally) uploads it to IPFS
+  create|c           Create a new project with w3 CLI
   query|q [options]  Query Web3APIs using recipe scripts
   test-env|t         Manage a test environment for Web3API
   help [command]     display help for command
