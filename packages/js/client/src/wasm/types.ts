@@ -25,6 +25,22 @@ export interface W3Imports extends WebAssembly.Imports {
     __w3_subinvoke_result: (ptr: u32) => void;
     __w3_subinvoke_error_len: () => u32;
     __w3_subinvoke_error: (ptr: u32) => void;
+    __w3_subinvokeImplementation: (
+      interfaceUriPtr: u32,
+      interfaceUriLen: u32,
+      implUriPtr: u32,
+      implUriLen: u32,
+      modulePtr: u32,
+      moduleLen: u32,
+      methodPtr: u32,
+      methodLen: u32,
+      inputPtr: u32,
+      inputLen: u32
+    ) => Promise<boolean>;
+    __w3_subinvokeImplementation_result_len: () => u32;
+    __w3_subinvokeImplementation_result: (ptr: u32) => void;
+    __w3_subinvokeImplementation_error_len: () => u32;
+    __w3_subinvokeImplementation_error: (ptr: u32) => void;
     __w3_invoke_args: (methodPtr: u32, argsPtr: u32) => void;
     __w3_invoke_result: (ptr: u32, len: u32) => void;
     __w3_invoke_error: (ptr: u32, len: u32) => void;
@@ -39,6 +55,7 @@ export interface W3Imports extends WebAssembly.Imports {
       line: u32,
       column: u32
     ) => void;
+    __w3_debug_log: (ptr: u32, len: u32) => void;
     __w3_load_env: (ptr: u32) => void;
     __w3_sanitize_env_args: (ptr: u32) => void;
     __w3_sanitize_env_result: (ptr: u32, len: u32) => void;

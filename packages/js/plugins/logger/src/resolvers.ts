@@ -1,5 +1,5 @@
 import { LoggerPlugin } from ".";
-import { Query } from "./w3-temp";
+import { Query } from "./w3";
 
 export const query = (plugin: LoggerPlugin): Query.Module => ({
   log: (input: Query.Input_log) => {

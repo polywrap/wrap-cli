@@ -165,6 +165,26 @@ describe("Ethereum Plugin", () => {
       expect(response.data?.callContractStatic.result).toBe("missing revert data in call exception");
     });
 
+    it("getBalance", async () => {
+      const signerAddressQuery = await client.invoke<string>({
+        uri,
+        module: "query",
+        method: "getSignerAddress",
+      });
+
+      const response = await client.invoke<string>({
+        uri,
+        module: "query",
+        method: "getBalance",
+        input: {
+          address: signerAddressQuery.data
+        }
+      })
+
+      expect(response.error).toBeUndefined()
+      expect(response.data).toBeDefined()
+    });
+
     it("encodeParams", async () => {
       const response = await client.query<{ encodeParams: string }>({
         uri,
@@ -622,7 +642,7 @@ describe("Ethereum Plugin", () => {
 
       expect(mainnetNetwork.data).toBeTruthy();
       expect(mainnetNetwork.errors).toBeFalsy();
-      expect(mainnetNetwork.data?.getNetwork.chainId).toBe(1);
+      expect(mainnetNetwork.data?.getNetwork.chainId).toBe("1");
       expect(mainnetNetwork.data?.getNetwork.name).toBe("homestead");
       expect(mainnetNetwork.data?.getNetwork.ensAddress).toBe("0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e");
 
@@ -646,7 +666,7 @@ describe("Ethereum Plugin", () => {
 
       expect(polygonNetwork.data).toBeTruthy();
       expect(polygonNetwork.errors).toBeFalsy();
-      expect(polygonNetwork.data?.getNetwork.chainId).toBe(137);
+      expect(polygonNetwork.data?.getNetwork.chainId).toBe("137");
       expect(polygonNetwork.data?.getNetwork.name).toBe("matic");
       expect(polygonNetwork.data?.getNetwork.ensAddress).toBeFalsy();
     });

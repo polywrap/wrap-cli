@@ -1,4 +1,4 @@
-{{^__commonImport}}
+{{^__commonPath}}
 {{#methods.length}}
 {{> serialization_imports}}
 import * as Types from "../..";
@@ -16,7 +16,7 @@ export function serialize{{name}}Args(input: Input_{{name}}): ArrayBuffer {
   write{{name}}Args(sizer, input);
   const buffer = new ArrayBuffer(sizer.length);
   const encoderContext: Context = new Context("Serializing (encoding) imported module-type: {{name}}");
-  const encoder = new WriteEncoder(buffer, encoderContext);
+  const encoder = new WriteEncoder(buffer, sizer, encoderContext);
   write{{name}}Args(encoder, input);
   return buffer;
 }
@@ -37,6 +37,13 @@ export function write{{name}}Args(
     {{> serialize_array}}
   });
   {{/array}}
+  {{#map}}
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(input.{{#handleKeywords}}{{name}}{{/handleKeywords}}, (writer: Write, key: {{#key}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/key}}) => {
+    writer.write{{#key}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/key}}(key);
+  }, (writer: Write, value: {{#value}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/value}}): void => {
+    {{> serialize_map_value}}
+  });
+  {{/map}}
   {{#enum}}
   {{#required}}
   writer.writeInt32(input.{{#handleKeywords}}{{name}}{{/handleKeywords}});
@@ -75,6 +82,13 @@ export function deserialize{{name}}Result(buffer: ArrayBuffer): {{#return}}{{#to
     {{> deserialize_array}}
   });
   {{/array}}
+  {{#map}}
+  const res: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}((reader: Read): {{#key}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/key}} => {
+    return reader.read{{#key}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/key}}();
+  }, (reader: Read): {{#value}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/value}} => {
+    {{> deserialize_map_value}}
+  });
+  {{/map}}
   {{#enum}}
   {{> deserialize_enum}}
   const res: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} =  value;
@@ -93,4 +107,4 @@ export function deserialize{{name}}Result(buffer: ArrayBuffer): {{#return}}{{#to
 {{/last}}
 {{/methods}}
 {{/methods.length}}
-{{/__commonImport}}
+{{/__commonPath}}

@@ -1,18 +1,11 @@
-import { OutputDirectory, BindLanguage } from "../";
+import { GenerateBindingFn } from "./types";
 import * as WasmAs from "./assemblyscript/wasm-as";
 import * as PluginTs from "./typescript/plugin-ts";
 import * as AppTs from "./typescript/app-ts";
-
-import { TypeInfo } from "@web3api/schema-parse";
+import { BindLanguage } from "../";
 
 export { WasmAs, PluginTs, AppTs };
-
-export type GenerateBindingFn = (
-  output: OutputDirectory,
-  typeInfo: TypeInfo,
-  schema: string,
-  config: Record<string, unknown>
-) => void;
+export * from "./types";
 
 export function getGenerateBindingFn(
   bindLanguage: BindLanguage
@@ -27,19 +20,4 @@ export function getGenerateBindingFn(
     default:
       throw Error(`Error: Language binding unsupported - ${bindLanguage}`);
   }
-}
-
-export function generateBinding(
-  bindLanguage: BindLanguage,
-  typeInfo: TypeInfo,
-  schema: string,
-  config: Record<string, unknown>
-): OutputDirectory {
-  const output: OutputDirectory = {
-    entries: [],
-  };
-
-  getGenerateBindingFn(bindLanguage)(output, typeInfo, schema, config);
-
-  return output;
 }

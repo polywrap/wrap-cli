@@ -1,7 +1,18 @@
-import { isBaseType } from "./types";
-import { MustacheFunction } from "../../types";
+import { isBaseType } from "./baseTypes";
+import { reservedWordsAS } from "./reservedWords";
+import { MustacheFn } from "../../types";
 
-export const toMsgPack: MustacheFunction = () => {
+export const handleKeywords: MustacheFn = () => {
+  return (text: string, render: (template: string) => string): string => {
+    const rendered: string = render(text);
+    if (reservedWordsAS.has(rendered)) {
+      return "m_" + rendered;
+    }
+    return rendered;
+  };
+};
+
+export const toMsgPack: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
 
@@ -14,6 +25,9 @@ export const toMsgPack: MustacheFunction = () => {
 
     if (type[0] === "[") {
       return modifier + "Array";
+    }
+    if (type.startsWith("Map<")) {
+      return modifier + "ExtGenericMap";
     }
     switch (type) {
       case "Int":
@@ -28,7 +42,7 @@ export const toMsgPack: MustacheFunction = () => {
   };
 };
 
-export const toWasmInit: MustacheFunction = () => {
+export const toWasmInit: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
 
@@ -48,6 +62,16 @@ export const toWasmInit: MustacheFunction = () => {
 
     if (type[0] === "[") {
       return "[]";
+    }
+
+    if (type.startsWith("Map<")) {
+      const openBracketIdx = type.indexOf("<");
+      const closeBracketIdx = type.lastIndexOf(">");
+      const [key, value] = type
+        .substring(openBracketIdx + 1, closeBracketIdx)
+        .split(",")
+        .map((x) => toWasm()(x.trim(), render));
+      return `new Map<${key}, ${value}>()`;
     }
 
     switch (type) {
@@ -80,7 +104,7 @@ export const toWasmInit: MustacheFunction = () => {
   };
 };
 
-export const toWasm: MustacheFunction = () => {
+export const toWasm: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
     let isEnum = false;
@@ -94,6 +118,10 @@ export const toWasm: MustacheFunction = () => {
 
     if (type[0] === "[") {
       return toWasmArray(type, nullable);
+    }
+
+    if (type.startsWith("Map<")) {
+      return toWasmMap(type, nullable);
     }
 
     switch (type) {
@@ -156,6 +184,29 @@ const toWasmArray = (type: string, nullable: boolean): string => {
 
   const wasmType = toWasm()(result[2], (str) => str);
   return applyNullable("Array<" + wasmType + ">", nullable, false);
+};
+
+const toWasmMap = (type: string, nullable: boolean): string => {
+  const firstOpenBracketIdx = type.indexOf("<");
+  const lastCloseBracketIdx = type.lastIndexOf(">");
+
+  if (!(firstOpenBracketIdx !== -1 && lastCloseBracketIdx !== -1)) {
+    throw new Error(`Invalid Map: ${type}`);
+  }
+
+  const keyValTypes = type
+    .substring(firstOpenBracketIdx + 1, lastCloseBracketIdx)
+    .split(",")
+    .map((x) => x.trim());
+
+  if (keyValTypes.length !== 2 || !keyValTypes[0] || !keyValTypes[1]) {
+    throw new Error(`Invalid Map: ${type}`);
+  }
+
+  const keyType = toWasm()(keyValTypes[0], (str) => str);
+  const valType = toWasm()(keyValTypes[1], (str) => str);
+
+  return applyNullable(`Map<${keyType}, ${valType}>`, nullable, false);
 };
 
 const applyNullable = (

@@ -22,7 +22,7 @@ import {
   Input_toEth,
   Input_awaitTransaction,
   Input_waitForEvent,
-  Input_getNetwork
+  Input_getNetwork, Input_getBalance,
 } from "./w3";
 import { BigInt } from "@web3api/wasm-as";
 
@@ -46,6 +46,16 @@ export function callContractStatic(
     args: input.args,
     connection: input.connection,
     txOverrides: input.txOverrides
+  }).unwrap();
+}
+
+export function getBalance(
+  input: Input_getBalance
+): BigInt {
+  return Ethereum_Query.getBalance({
+    address: input.address,
+    blockTag: input.blockTag,
+    connection: input.connection
   }).unwrap();
 }
 
