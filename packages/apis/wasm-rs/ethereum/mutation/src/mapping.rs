@@ -9,7 +9,7 @@ use polywrap_wasm_rs::BigInt;
 pub fn to_tx_request(request: TransactionRequest) -> EthereumTxRequest {
   EthereumTxRequest {
       to: request.to.map(|f| match f {
-        NameOrAddress::Address(addr) => addr.to_string(),
+        NameOrAddress::Address(addr) => format!("{addr:x}"),
         NameOrAddress::Name(name) => name.to_string(),
       }),
       from: request.from.map(|f| f.to_string()),

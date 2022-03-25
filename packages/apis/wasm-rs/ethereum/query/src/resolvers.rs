@@ -6,7 +6,6 @@ use super::mapping::*;
 use ethers_core::abi::{AbiParser, Tokenize, AbiError, Function};
 use ethers_core::types::Address;
 use ethers_core::types::{TransactionRequest, Bytes};
-
 use std::str::FromStr;
 
 fn encode_function_data<T: Tokenize>(function: &Function, args: T) -> Result<Bytes, AbiError> {

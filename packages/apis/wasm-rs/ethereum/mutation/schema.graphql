@@ -1,4 +1,4 @@
-#import { Query, Mutation, Connection, TxResponse } into Ethereum from "w3://ens/ethereum.web3api.eth"
+#import { Query, Mutation, Connection, TxResponse, TxReceipt } into Ethereum from "w3://ens/ethereum.web3api.eth"
 
 type Mutation {
   deployContract(
@@ -6,15 +6,15 @@ type Mutation {
     bytecode: String!
     args: [String!]
     connection: Ethereum_Connection
-  ): Ethereum_TxResponse!
+  ): Ethereum_TxReceipt!
 
-  # callContractMethod(
-  #   address: String!
-  #   method: String!
-  #   args: [String!]
-  #   connection: Ethereum_Connection
-  #   txOverrides: TxOverrides
-  # ): Ethereum_TxResponse!
+  callContractMethod(
+    address: String!
+    method: String!
+    args: [String!]
+    connection: Ethereum_Connection
+    txOverrides: TxOverrides
+  ): Ethereum_TxResponse!
 }
 
 type TxReceipt {
