@@ -1,15 +1,16 @@
-import { OutputDirectory } from "@web3api/schema-bind";
-import { TypeInfo } from "@web3api/schema-parse";
+import { GenerateBindingFn, BindOptions, BindOutput } from "@web3api/schema-bind";
+import { OutputDirectory } from "@web3api/os-js";
 import Mustache from "mustache";
 import path from "path";
 import fs from "fs";
 
-export function generateBinding(
-  output: OutputDirectory,
-  typeInfo: TypeInfo,
-  schema: string,
-  config: Record<string, unknown>
-) {
+export const generateBinding: GenerateBindingFn = (
+  options: BindOptions
+): BindOutput => {
+  const schema = options.modules[0].schema;
+  const output: OutputDirectory = {
+    entries: []
+  };
   const schemaTemplate = fs.readFileSync(
     path.join(__dirname, "/templates/schema.mustache"),
     "utf-8"
@@ -38,4 +39,12 @@ export function generateBinding(
     name: "./schema3.ts",
     data: "./templates/schema.mustache",
   });
+
+  return {
+    modules: [{
+      name: "custom",
+      outputDirAbs: __dirname,
+      output,
+    }]
+  };
 };

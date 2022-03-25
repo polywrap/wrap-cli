@@ -1,7 +1,18 @@
-import { isBaseType } from "./types";
-import { MustacheFunction } from "../../types";
+import { isBaseType } from "./baseTypes";
+import { reservedWordsAS } from "./reservedWords";
+import { MustacheFn } from "../../types";
 
-export const toMsgPack: MustacheFunction = () => {
+export const handleKeywords: MustacheFn = () => {
+  return (text: string, render: (template: string) => string): string => {
+    const rendered: string = render(text);
+    if (reservedWordsAS.has(rendered)) {
+      return "m_" + rendered;
+    }
+    return rendered;
+  };
+};
+
+export const toMsgPack: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
 
@@ -31,7 +42,7 @@ export const toMsgPack: MustacheFunction = () => {
   };
 };
 
-export const toWasmInit: MustacheFunction = () => {
+export const toWasmInit: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
 
@@ -93,7 +104,7 @@ export const toWasmInit: MustacheFunction = () => {
   };
 };
 
-export const toWasm: MustacheFunction = () => {
+export const toWasm: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
     let isEnum = false;

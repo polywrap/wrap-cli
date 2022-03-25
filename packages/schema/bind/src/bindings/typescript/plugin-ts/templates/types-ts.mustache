@@ -126,6 +126,7 @@ interface {{parent.type}}_Input_{{name}} extends Record<string, unknown> {
 {{/methods}}
 
 /* URI: "{{uri}}" */
+{{^isInterface}}
 export const {{type}} = {
   {{#methods}}
   {{name}}: async (
@@ -144,7 +145,52 @@ export const {{type}} = {
   {{/last}}
   {{/methods}}
 }
+{{/isInterface}}
+{{#isInterface}}
+export class {{type}} {
+  public static interfaceUri: string = "{{uri}}";
+
+  constructor(public uri: string) {
+  }
+
+  {{#methods}}
+  public async {{name}} (
+    input: {{parent.type}}_Input_{{name}},
+    client: Client
+  ): Promise<InvokeApiResult<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>> {
+    return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>({
+      uri: this.uri,
+      module: "{{type}}",
+      method: "{{name}}",
+      input
+    });
+  }{{^last}},{{/last}}
+  {{^last}}
+
+  {{/last}}
+  {{/methods}}
+}
+{{/isInterface}}
+
 {{/importedModuleTypes}}
 
 /// Imported Queries END ///
 {{/importedModuleTypes.length}}
+
+{{#interfaceTypes.length}}
+{{#interfaceTypes}}
+export class {{namespace}} {
+  static uri: string = "{{uri}}";
+
+  {{#capabilities}}
+  {{#getImplementations}}
+  {{#enabled}}
+  public static getImplementations(client: Client): string[] {
+    return client.getImplementations(this.uri, {});
+  }
+  {{/enabled}}
+  {{/getImplementations}}
+  {{/capabilities}}
+}
+{{/interfaceTypes}}
+{{/interfaceTypes.length}}

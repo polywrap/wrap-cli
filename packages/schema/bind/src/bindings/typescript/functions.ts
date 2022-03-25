@@ -1,6 +1,6 @@
-import { MustacheFunction } from "../types";
+import { MustacheFn } from "../types";
 
-export const toTypescript: MustacheFunction = () => {
+export const toTypescript: MustacheFn = () => {
   return _toTypescript;
 };
 
