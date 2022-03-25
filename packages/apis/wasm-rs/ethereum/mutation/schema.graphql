@@ -8,6 +8,16 @@ type Mutation {
     connection: Ethereum_Connection
   ): Ethereum_TxReceipt!
 
+  sendTransaction(
+    tx: Ethereum_TxRequest!
+    connection: Ethereum_Connection
+  ): Ethereum_TxResponse!
+
+  sendTransactionAndWait(
+    tx: Ethereum_TxRequest!
+    connection: Ethereum_Connection
+  ): Ethereum_TxReceipt!
+
   callContractMethod(
     address: String!
     method: String!
@@ -15,6 +25,25 @@ type Mutation {
     connection: Ethereum_Connection
     txOverrides: TxOverrides
   ): Ethereum_TxResponse!
+
+  callContractMethodAndWait(
+    address: String!
+    method: String!
+    args: [String!]
+    connection: Ethereum_Connection
+    txOverrides: TxOverrides
+  ): Ethereum_TxResponse!
+
+  signMessage(
+    message: String!
+    connection: Ethereum_Connection
+  ): String!
+
+  sendRpc(
+    method: String!
+    params: [String!]!
+    connection: Ethereum_Connection
+  ): String
 }
 
 type TxReceipt {

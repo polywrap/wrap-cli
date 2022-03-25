@@ -13,7 +13,8 @@
     "schema.graphql"
   ],
   "scripts": {
-    "test": "jest --passWithNoTests --runInBand --verbose"
+    "test": "jest --passWithNoTests --runInBand --verbose",
+    "codegen": "../../../cli/bin/w3 codegen"
   },
   "dependencies": {
     "@ethersproject/address": "5.0.7",
