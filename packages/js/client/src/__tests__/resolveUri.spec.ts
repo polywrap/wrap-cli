@@ -13,7 +13,7 @@ import {
   stopTestEnvironment,
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
-import { ResolveUriError } from "@web3api/core-js";
+import { ResolveUriErrorType } from "@web3api/core-js";
 
 jest.setTimeout(200000);
 
@@ -1023,8 +1023,8 @@ describe("Web3ApiClient - resolveUri", () => {
       throw Error();
     }
 
-    expect(error.type).toEqual(ResolveUriError.CustomResolverError);
-    expect(error.message).toEqual(
+    expect(error.type).toEqual(ResolveUriErrorType.InternalResolver);
+    expect(error.error?.message).toEqual(
       "Could not load the following API resolvers: w3://ens/test-resolver.eth"
     );
   });
@@ -1050,8 +1050,8 @@ describe("Web3ApiClient - resolveUri", () => {
       throw Error();
     }
 
-    expect(error.type).toEqual(ResolveUriError.CustomResolverError);
-    expect(error.message).toEqual(
+    expect(error.type).toEqual(ResolveUriErrorType.InternalResolver);
+    expect(error.error?.message).toEqual(
       "Could not load the following API resolvers: w3://ens/test-resolver.eth"
     );
   });

@@ -11,7 +11,7 @@ import {
 } from "./";
 import { AnyManifestArtifact, ManifestArtifactType } from "../manifest";
 import { UriToApiResolver } from "../uri-resolution/core";
-import { ResolveUriResult } from "./ResolveUriResult";
+import { ResolveUriResult } from "../uri-resolution/core/types/ResolveUriResult";
 
 export interface ClientConfig<TUri extends Uri | string = string> {
   redirects: UriRedirect<TUri>[];

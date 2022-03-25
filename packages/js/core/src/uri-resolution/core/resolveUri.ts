@@ -1,9 +1,10 @@
-import { Api, ApiCache, Client, ResolveUriResult, Uri } from "../../types";
-import { ResolveUriError } from "./types/ResolveUriError";
+import { Api, ApiCache, Client, Uri } from "../../types";
 import { UriResolutionHistory } from "./types/UriResolutionHistory";
 import { UriResolutionStack } from "./types/UriResolutionStack";
 import { UriResolutionResult } from "./types/UriResolutionResult";
 import { UriToApiResolver } from "./types/UriToApiResolver";
+import { ResolveUriErrorType, ResolveUriResult } from "./types";
+import { InternalResolverError } from "./types/InternalResolverError";
 
 import { Tracer } from "@web3api/tracing-js";
 
@@ -38,7 +39,7 @@ export const resolveUri = async (
           uriHistory: new UriResolutionHistory(uriResolutionStack),
           error: infiniteLoopDetected
             ? {
-                type: ResolveUriError.InfiniteLoop,
+                type: ResolveUriErrorType.InfiniteLoop,
               }
             : undefined,
         };
@@ -75,10 +76,7 @@ export const resolveUri = async (
         return {
           uri: currentUri,
           uriHistory: new UriResolutionHistory(uriResolutionStack),
-          error: {
-            type: ResolveUriError.CustomResolverError,
-            error: result.error,
-          },
+          error: new InternalResolverError(resolver.name, result.error),
         };
       }
     }

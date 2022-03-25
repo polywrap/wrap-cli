@@ -34,16 +34,16 @@ import {
   sanitizeUriRedirects,
   sanitizeEnvs,
   ClientConfig,
-  ResolveUriError,
   resolveUri,
   UriToApiResolver,
   GetResolversOptions,
   CacheResolver,
   Contextualized,
   ResolveUriOptions,
-  ResolveUriResult,
   ApiAggregatorResolver,
   coreInterfaceUris,
+  ResolveUriErrorType,
+  ResolveUriResult,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
@@ -700,7 +700,7 @@ export class Web3ApiClient implements Client {
         const errorMessage = error.error?.message ?? "";
 
         switch (error.type) {
-          case ResolveUriError.InfiniteLoop:
+          case ResolveUriErrorType.InfiniteLoop:
             throw Error(
               `Infinite loop while resolving URI "${uri}".\nResolution Stack: ${JSON.stringify(
                 uriHistory,
@@ -709,7 +709,7 @@ export class Web3ApiClient implements Client {
               )}`
             );
             break;
-          case ResolveUriError.CustomResolverError:
+          case ResolveUriErrorType.InternalResolver:
             throw Error(
               `URI resolution error while resolving URI "${uri}".\n${errorMessage}\nResolution Stack: ${JSON.stringify(
                 uriHistory,

@@ -21,8 +21,13 @@ export class ApiAggregatorResolver implements UriToApiResolver {
 
   constructor(
     private readonly createApi: CreateApiFunc,
-    private deserializeOptions?: DeserializeManifestOptions
-  ) {}
+    private deserializeOptions?: DeserializeManifestOptions,
+    disablePreloadResolvers?: boolean
+  ) {
+    if (disablePreloadResolvers) {
+      this.hasLoadedAllResolvers = true;
+    }
+  }
 
   public get name(): string {
     return ApiAggregatorResolver.name;
