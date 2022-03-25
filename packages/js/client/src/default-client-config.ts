@@ -97,6 +97,7 @@ export const getDefaultClientConfig = Tracer.traceFunc(
       ],
       resolvers: [
         new RedirectsResolver(),
+        new CacheResolver(),
         new PluginResolver(
           (
             uri: Uri,
@@ -104,7 +105,6 @@ export const getDefaultClientConfig = Tracer.traceFunc(
             environment: Env<Uri> | undefined
           ) => new PluginWeb3Api(uri, plugin, environment)
         ),
-        new CacheResolver(),
         new ApiAggregatorResolver(
           (
             uri: Uri,

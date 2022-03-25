@@ -1,5 +1,4 @@
 import {
-  Client,
   Plugin,
   createWeb3ApiClient,
   Uri,
@@ -13,7 +12,7 @@ import {
   stopTestEnvironment,
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
-import { ResolveUriErrorType } from "@web3api/core-js";
+import { ResolveUriErrorType, Client } from "@web3api/core-js";
 
 jest.setTimeout(200000);
 
@@ -22,12 +21,16 @@ describe("Web3ApiClient - resolveUri", () => {
   let ethProvider: string;
   let ensAddress: string;
 
-  const startTestEnvironment = async () => {
+  beforeAll(async () => {
     const { ipfs, ethereum, ensAddress: ens } = await initTestEnvironment();
     ipfsProvider = ipfs;
     ethProvider = ethereum;
     ensAddress = ens;
-  };
+  });
+
+  afterAll(async () => {
+    await stopTestEnvironment();
+  });
 
   const getClient = async (config?: Partial<Web3ApiClientConfig>) => {
     return createWeb3ApiClient(
@@ -73,7 +76,7 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
       {
-        resolver: "PluginResolver",
+        resolver: "CacheResolver",
         sourceUri: uri,
         result: {
           uri: uri,
@@ -81,7 +84,7 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
       {
-        resolver: "CacheResolver",
+        resolver: "PluginResolver",
         sourceUri: uri,
         result: {
           uri: uri,
@@ -99,8 +102,8 @@ describe("Web3ApiClient - resolveUri", () => {
     ]);
     expect(result.uriHistory.getResolvers()).toEqual([
       "RedirectsResolver",
-      "PluginResolver",
       "CacheResolver",
+      "PluginResolver",
       "ApiAggregatorResolver",
     ]);
     expect(result.uriHistory.getUris()).toMatchObject([new Uri("ens/uri.eth")]);
@@ -152,7 +155,7 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
       {
-        resolver: "PluginResolver",
+        resolver: "CacheResolver",
         sourceUri: toUri2,
         result: {
           uri: toUri2,
@@ -160,7 +163,7 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
       {
-        resolver: "CacheResolver",
+        resolver: "PluginResolver",
         sourceUri: toUri2,
         result: {
           uri: toUri2,
@@ -218,6 +221,14 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
       {
+        resolver: "CacheResolver",
+        sourceUri: pluginUri,
+        result: {
+          uri: pluginUri,
+          api: false,
+        },
+      },
+      {
         resolver: "PluginResolver",
         sourceUri: pluginUri,
         result: {
@@ -233,8 +244,6 @@ describe("Web3ApiClient - resolveUri", () => {
   });
 
   it("can resolve api", async () => {
-    await startTestEnvironment();
-
     await runCLI({
       args: ["build"],
       cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`,
@@ -271,7 +280,7 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
       {
-        resolver: "PluginResolver",
+        resolver: "CacheResolver",
         sourceUri: ensUri,
         result: {
           uri: ensUri,
@@ -279,7 +288,7 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
       {
-        resolver: "CacheResolver",
+        resolver: "PluginResolver",
         sourceUri: ensUri,
         result: {
           uri: ensUri,
@@ -304,7 +313,7 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
       {
-        resolver: "PluginResolver",
+        resolver: "CacheResolver",
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
@@ -312,7 +321,7 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
       {
-        resolver: "CacheResolver",
+        resolver: "PluginResolver",
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
@@ -329,13 +338,9 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
     ]);
-
-    await stopTestEnvironment();
   });
 
   it("can resolve cache", async () => {
-    await startTestEnvironment();
-
     await runCLI({
       args: ["build"],
       cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`,
@@ -371,16 +376,16 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
       {
-        resolver: "PluginResolver",
         sourceUri: ipfsUri,
+        resolver: "CacheResolver",
         result: {
           uri: ipfsUri,
           api: false,
         },
       },
       {
+        resolver: "PluginResolver",
         sourceUri: ipfsUri,
-        resolver: "CacheResolver",
         result: {
           uri: ipfsUri,
           api: false,
@@ -418,16 +423,16 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
       {
-        resolver: "PluginResolver",
         sourceUri: ensUri,
+        resolver: "CacheResolver",
         result: {
           uri: ensUri,
           api: false,
         },
       },
       {
+        resolver: "PluginResolver",
         sourceUri: ensUri,
-        resolver: "CacheResolver",
         result: {
           uri: ensUri,
           api: false,
@@ -451,14 +456,6 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
       {
-        resolver: "PluginResolver",
-        sourceUri: ipfsUri,
-        result: {
-          uri: ipfsUri,
-          api: false,
-        },
-      },
-      {
         sourceUri: ipfsUri,
         resolver: "CacheResolver",
         result: {
@@ -467,13 +464,9 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
     ]);
-
-    await stopTestEnvironment();
   });
 
   it("can resolve cache - noCacheRead", async () => {
-    await startTestEnvironment();
-
     await runCLI({
       args: ["build"],
       cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`,
@@ -509,16 +502,16 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
       {
-        resolver: "PluginResolver",
         sourceUri: ipfsUri,
+        resolver: "CacheResolver",
         result: {
           uri: ipfsUri,
           api: false,
         },
       },
       {
+        resolver: "PluginResolver",
         sourceUri: ipfsUri,
-        resolver: "CacheResolver",
         result: {
           uri: ipfsUri,
           api: false,
@@ -598,13 +591,9 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
     ]);
-
-    await stopTestEnvironment();
   });
 
   it("can resolve cache - noCacheWrite", async () => {
-    await startTestEnvironment();
-
     await runCLI({
       args: ["build"],
       cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`,
@@ -640,7 +629,7 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
       {
-        resolver: "PluginResolver",
+        resolver: "CacheResolver",
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
@@ -648,7 +637,7 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
       {
-        resolver: "CacheResolver",
+        resolver: "PluginResolver",
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
@@ -687,7 +676,7 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
       {
-        resolver: "PluginResolver",
+        resolver: "CacheResolver",
         sourceUri: ensUri,
         result: {
           uri: ensUri,
@@ -695,7 +684,7 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
       {
-        resolver: "CacheResolver",
+        resolver: "PluginResolver",
         sourceUri: ensUri,
         result: {
           uri: ensUri,
@@ -720,7 +709,7 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
       {
-        resolver: "PluginResolver",
+        resolver: "CacheResolver",
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
@@ -728,7 +717,7 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
       {
-        resolver: "CacheResolver",
+        resolver: "PluginResolver",
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
@@ -745,13 +734,9 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
     ]);
-
-    await stopTestEnvironment();
   });
 
   it("can resolve api with redirects", async () => {
-    await startTestEnvironment();
-
     await runCLI({
       args: ["build"],
       cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`,
@@ -797,7 +782,7 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
       {
-        resolver: "PluginResolver",
+        resolver: "CacheResolver",
         sourceUri: ensUri,
         result: {
           uri: ensUri,
@@ -805,7 +790,7 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
       {
-        resolver: "CacheResolver",
+        resolver: "PluginResolver",
         sourceUri: ensUri,
         result: {
           uri: ensUri,
@@ -838,7 +823,7 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
       {
-        resolver: "PluginResolver",
+        resolver: "CacheResolver",
         sourceUri: redirectUri,
         result: {
           uri: redirectUri,
@@ -846,7 +831,7 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
       {
-        resolver: "CacheResolver",
+        resolver: "PluginResolver",
         sourceUri: redirectUri,
         result: {
           uri: redirectUri,
@@ -862,8 +847,6 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
     ]);
-
-    await stopTestEnvironment();
   });
 
   it("can resolve uri with custom resolver", async () => {
@@ -925,7 +908,7 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
       {
-        resolver: "PluginResolver",
+        resolver: "CacheResolver",
         sourceUri: redirectUri,
         result: {
           uri: redirectUri,
@@ -933,7 +916,7 @@ describe("Web3ApiClient - resolveUri", () => {
         },
       },
       {
-        resolver: "CacheResolver",
+        resolver: "PluginResolver",
         sourceUri: redirectUri,
         result: {
           uri: redirectUri,
