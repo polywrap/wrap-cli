@@ -1,4 +1,4 @@
-import { Api, ApiCache, Client, Uri } from "../../types";
+import { Api, ApiCache, Client, ResolveUriResult, Uri } from "../../types";
 import { ResolveUriError } from "./types/ResolveUriError";
 import { UriResolutionHistory } from "./types/UriResolutionHistory";
 import { UriResolutionStack } from "./types/UriResolutionStack";
@@ -12,15 +12,7 @@ export const resolveUri = async (
   resolvers: readonly UriToApiResolver[],
   client: Client,
   cache: ApiCache
-): Promise<{
-  uri?: Uri;
-  api?: Api;
-  uriHistory: UriResolutionHistory;
-  error?: {
-    type: ResolveUriError;
-    message?: string;
-  };
-}> => {
+): Promise<ResolveUriResult> => {
   // Keep track of past URIs to avoid infinite loops
   const visitedUriMap: Map<string, boolean> = new Map<string, boolean>();
   const uriResolutionStack: UriResolutionStack = [];
@@ -85,7 +77,7 @@ export const resolveUri = async (
           uriHistory: new UriResolutionHistory(uriResolutionStack),
           error: {
             type: ResolveUriError.CustomResolverError,
-            message: result.error,
+            error: result.error,
           },
         };
       }

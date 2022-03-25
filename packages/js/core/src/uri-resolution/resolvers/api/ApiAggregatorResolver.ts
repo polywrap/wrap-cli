@@ -50,7 +50,9 @@ export class ApiAggregatorResolver implements UriToApiResolver {
       if (!success) {
         return {
           uri: uri,
-          error: `Could not load the following API resolvers: ${failedResolverUris}`,
+          error: new Error(
+            `Could not load the following API resolvers: ${failedResolverUris}`
+          ),
         };
       }
 

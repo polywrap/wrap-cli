@@ -697,6 +697,8 @@ export class Web3ApiClient implements Client {
 
     if (!api) {
       if (error) {
+        const errorMessage = error.error?.message ?? "";
+
         switch (error.type) {
           case ResolveUriError.InfiniteLoop:
             throw Error(
@@ -709,9 +711,11 @@ export class Web3ApiClient implements Client {
             break;
           case ResolveUriError.CustomResolverError:
             throw Error(
-              `URI resolution error while resolving URI "${uri}".\n${
-                error.message
-              }\nResolution Stack: ${JSON.stringify(uriHistory, null, 2)}`
+              `URI resolution error while resolving URI "${uri}".\n${errorMessage}\nResolution Stack: ${JSON.stringify(
+                uriHistory,
+                null,
+                2
+              )}`
             );
             break;
           default:

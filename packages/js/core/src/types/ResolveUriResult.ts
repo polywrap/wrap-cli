@@ -7,6 +7,6 @@ export type ResolveUriResult = {
   uriHistory: UriResolutionHistory;
   error?: {
     type: ResolveUriError;
-    message?: string;
+    error?: Error;
   };
 };
