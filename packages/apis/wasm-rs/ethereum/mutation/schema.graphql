@@ -32,7 +32,7 @@ type Mutation {
     args: [String!]
     connection: Ethereum_Connection
     txOverrides: TxOverrides
-  ): Ethereum_TxResponse!
+  ): Ethereum_TxReceipt!
 
   signMessage(
     message: String!

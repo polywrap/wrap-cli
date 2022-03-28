@@ -88,7 +88,7 @@ pub fn call_contract_method_and_wait(input: super::w3::InputCallContractMethodAn
   let tx = tx_from_method_and_args(&input.method, args_list).to(to);
   let tx_request = to_tx_request(tx);
 
-  let send_transaction_args = super::w3::imported::ethereum_mutation::InputSendTransactionAndWait {
+  let send_transaction_args = InputSendTransactionAndWait {
     tx: tx_request,
     connection: input.connection
   };
