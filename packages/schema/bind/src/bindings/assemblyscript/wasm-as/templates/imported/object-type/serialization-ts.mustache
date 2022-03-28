@@ -20,15 +20,15 @@ export function write{{type}}(writer: Write, type: {{type}}): void {
   writer.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
   writer.writeString("{{name}}");
   {{#scalar}}
-  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{#handleKeywords}}{{name}}{{/handleKeywords}});
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{name}});
   {{/scalar}}
   {{#array}}
-  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{#handleKeywords}}{{name}}{{/handleKeywords}}, (writer: Write, item: {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}}): void => {
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{name}}, (writer: Write, item: {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}}): void => {
     {{> serialize_array}}
   });
   {{/array}}
   {{#map}}
-  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{#handleKeywords}}{{name}}{{/handleKeywords}}, (writer: Write, key: {{#key}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/key}}) => {
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{name}}, (writer: Write, key: {{#key}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/key}}) => {
     writer.write{{#key}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/key}}(key);
   }, (writer: Write, value: {{#value}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/value}}): void => {
     {{> serialize_map_value}}
@@ -36,11 +36,11 @@ export function write{{type}}(writer: Write, type: {{type}}): void {
   {{/map}}
   {{#object}}
   {{#required}}
-  Types.{{type}}.write(writer, type.{{#handleKeywords}}{{name}}{{/handleKeywords}});
+  Types.{{type}}.write(writer, type.{{name}});
   {{/required}}
   {{^required}}
-  if (type.{{#handleKeywords}}{{name}}{{/handleKeywords}}) {
-    Types.{{type}}.write(writer, type.{{#handleKeywords}}{{name}}{{/handleKeywords}} as Types.{{type}});
+  if (type.{{name}}) {
+    Types.{{type}}.write(writer, type.{{name}} as Types.{{type}});
   } else {
     writer.writeNil();
   }
@@ -48,10 +48,10 @@ export function write{{type}}(writer: Write, type: {{type}}): void {
   {{/object}}
   {{#enum}}
   {{#required}}
-  writer.writeInt32(type.{{#handleKeywords}}{{name}}{{/handleKeywords}});
+  writer.writeInt32(type.{{name}});
   {{/required}}
   {{^required}}
-  writer.writeNullableInt32(type.{{#handleKeywords}}{{name}}{{/handleKeywords}});
+  writer.writeNullableInt32(type.{{name}});
   {{/required}}
   {{/enum}}
   writer.context().pop();
@@ -139,7 +139,7 @@ export function read{{type}}(reader: Read): {{type}} {
 
   return {
     {{#properties}}
-    {{#handleKeywords}}{{name}}{{/handleKeywords}}: _{{name}}{{^last}},{{/last}}
+    {{name}}: _{{name}}{{^last}},{{/last}}
     {{/properties}}
   };
 }
