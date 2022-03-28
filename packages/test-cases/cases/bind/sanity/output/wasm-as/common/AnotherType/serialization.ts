@@ -39,7 +39,7 @@ export function writeAnotherType(writer: Write, type: AnotherType): void {
   writer.context().pop();
   writer.context().push("const", "string | null", "writing property");
   writer.writeString("const");
-  writer.writeNullableString(type.m_const);
+  writer.writeNullableString(type.const);
   writer.context().pop();
 }
 
@@ -87,6 +87,6 @@ export function readAnotherType(reader: Read): AnotherType {
   return {
     prop: _prop,
     circular: _circular,
-    m_const: _const
+    const: _const
   };
 }
