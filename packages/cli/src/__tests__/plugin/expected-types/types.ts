@@ -159,6 +159,13 @@ interface Ethereum_Query_Input_callContractStatic extends Record<string, unknown
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
+interface Ethereum_Query_Input_getBalance extends Record<string, unknown> {
+  address: String;
+  blockTag?: BigInt | null;
+  connection?: Types.Ethereum_Connection | null;
+}
+
+/* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_encodeParams extends Record<string, unknown> {
   types: Array<String>;
   values: Array<String>;
@@ -284,6 +291,18 @@ export const Ethereum_Query = {
       uri: "ens/ethereum.web3api.eth",
       module: "query",
       method: "callContractStatic",
+      input
+    });
+  },
+
+  getBalance: async (
+    input: Ethereum_Query_Input_getBalance,
+    client: Client
+  ): Promise<InvokeApiResult<BigInt>> => {
+    return client.invoke<BigInt>({
+      uri: "ens/ethereum.web3api.eth",
+      module: "query",
+      method: "getBalance",
       input
     });
   },

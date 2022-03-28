@@ -205,6 +205,15 @@ export class EthereumPlugin extends Plugin {
     }
   }
 
+  public async getBalance(input: Query.Input_getBalance): Promise<string> {
+    const connection = await this.getConnection(input.connection);
+    return (
+      await connection
+        .getProvider()
+        .getBalance(input.address, input.blockTag || undefined)
+    ).toString();
+  }
+
   public encodeParams(input: Query.Input_encodeParams): string {
     return defaultAbiCoder.encode(input.types, this.parseArgs(input.values));
   }

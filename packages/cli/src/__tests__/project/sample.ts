@@ -77,6 +77,12 @@ type Ethereum_Query @imported(
     txOverrides: Ethereum_TxOverrides
   ): Ethereum_StaticTxResult!
 
+  getBalance(
+    address: String!
+    blockTag: BigInt
+    connection: Ethereum_Connection
+  ): BigInt!
+
   encodeParams(
     types: [String!]!
     values: [String!]!
@@ -621,6 +627,12 @@ type Ethereum_Query @imported(
     connection: Ethereum_Connection
     txOverrides: Ethereum_TxOverrides
   ): Ethereum_StaticTxResult!
+
+  getBalance(
+    address: String!
+    blockTag: BigInt
+    connection: Ethereum_Connection
+  ): BigInt!
 
   encodeParams(
     types: [String!]!
