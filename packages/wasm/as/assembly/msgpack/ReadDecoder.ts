@@ -11,7 +11,7 @@ import {
 } from "./Format";
 import { Nullable } from "./Nullable";
 import { Read } from "./Read";
-import { BigInt, BigNumber, Fraction } from "../math";
+import { BigInt, BigNumber } from "../math";
 import { Context } from "../debug";
 import { JSON } from "../json";
 
@@ -215,15 +215,6 @@ export class ReadDecoder extends Read {
     return BigNumber.fromString(str);
   }
 
-  readFraction(): Fraction {
-    const arr = this.readArray<BigInt>(
-      (reader: Read): BigInt => {
-        return reader.readBigInt();
-      }
-    );
-    return Fraction.fromArray(arr);
-  }
-
   readJSON(): JSON.Value {
     const str = this.readString();
     return JSON.parse(str);
@@ -392,13 +383,6 @@ export class ReadDecoder extends Read {
       return null;
     }
     return this.readBigNumber();
-  }
-
-  readNullableFraction(): Fraction | null {
-    if (this.isNextNil()) {
-      return null;
-    }
-    return this.readFraction();
   }
 
   readNullableJSON(): JSON.Value | null {

@@ -7,7 +7,6 @@ import {
   Nullable,
   BigInt,
   BigNumber,
-  Fraction,
   JSON,
   Context
 } from "@web3api/wasm-as";
@@ -86,14 +85,6 @@ export function writeCustomType(writer: Write, type: CustomType): void {
   writer.context().push("optBignumber", "BigNumber | null", "writing property");
   writer.writeString("optBignumber");
   writer.writeNullableBigNumber(type.optBignumber);
-  writer.context().pop();
-  writer.context().push("fraction", "Fraction", "writing property");
-  writer.writeString("fraction");
-  writer.writeFraction(type.fraction);
-  writer.context().pop();
-  writer.context().push("optFraction", "Fraction | null", "writing property");
-  writer.writeString("optFraction");
-  writer.writeNullableFraction(type.optFraction);
   writer.context().pop();
   writer.context().push("json", "JSON.Value", "writing property");
   writer.writeString("json");
@@ -266,9 +257,6 @@ export function readCustomType(reader: Read): CustomType {
   let _bignumber: BigNumber = new BigNumber(BigInt.fromUInt16(0), 0, 0);
   let _bignumberSet: bool = false;
   let _optBignumber: BigNumber | null = null;
-  let _fraction: Fraction = new Fraction(BigInt.fromUInt16(0), BigInt.fromUInt16(1));
-  let _fractionSet: bool = false;
-  let _optFraction: Fraction | null = null;
   let _json: JSON.Value = JSON.Value.Null();
   let _jsonSet: bool = false;
   let _optJson: JSON.Value | null = null;
@@ -392,17 +380,6 @@ export function readCustomType(reader: Read): CustomType {
     else if (field == "optBignumber") {
       reader.context().push(field, "BigNumber | null", "type found, reading property");
       _optBignumber = reader.readNullableBigNumber();
-      reader.context().pop();
-    }
-    else if (field == "fraction") {
-      reader.context().push(field, "Fraction", "type found, reading property");
-      _fraction = reader.readFraction();
-      _fractionSet = true;
-      reader.context().pop();
-    }
-    else if (field == "optFraction") {
-      reader.context().push(field, "Fraction | null", "type found, reading property");
-      _optFraction = reader.readNullableFraction();
       reader.context().pop();
     }
     else if (field == "json") {
@@ -654,9 +631,6 @@ export function readCustomType(reader: Read): CustomType {
   if (!_bignumberSet) {
     throw new Error(reader.context().printWithContext("Missing required property: 'bignumber: BigNumber'"));
   }
-  if (!_fractionSet) {
-    throw new Error(reader.context().printWithContext("Missing required property: 'fraction: Fraction'"));
-  }
   if (!_jsonSet) {
     throw new Error(reader.context().printWithContext("Missing required property: 'json: JSON'"));
   }
@@ -707,8 +681,6 @@ export function readCustomType(reader: Read): CustomType {
     optBigint: _optBigint,
     bignumber: _bignumber,
     optBignumber: _optBignumber,
-    fraction: _fraction,
-    optFraction: _optFraction,
     json: _json,
     optJson: _optJson,
     bytes: _bytes,

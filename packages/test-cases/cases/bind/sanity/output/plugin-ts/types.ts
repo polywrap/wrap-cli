@@ -17,7 +17,6 @@ export type Int32 = number;
 export type Bytes = Uint8Array;
 export type BigInt = string;
 export type BigNumber = string;
-export type Fraction = Array<BigInt>;
 export type Json = string;
 export type String = string;
 export type Boolean = boolean;
@@ -50,8 +49,6 @@ export interface CustomType {
   optBigint?: BigInt | null;
   bignumber: BigNumber;
   optBignumber?: BigNumber | null;
-  fraction: Fraction;
-  optFraction?: Fraction | null;
   json: Json;
   optJson?: Json | null;
   bytes: Bytes;

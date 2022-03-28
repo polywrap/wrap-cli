@@ -85,8 +85,6 @@ export const typeInfo: TypeInfo = {
         createScalarPropertyDefinition({ name: "optBigint", type: "BigInt", required: false }),
         createScalarPropertyDefinition({ name: "bignumber", type: "BigNumber", required: true }),
         createScalarPropertyDefinition({ name: "optBignumber", type: "BigNumber", required: false }),
-        createScalarPropertyDefinition({ name: "fraction", type: "Fraction", required: true }),
-        createScalarPropertyDefinition({ name: "optFraction", type: "Fraction", required: false }),
         createScalarPropertyDefinition({ name: "json", type: "JSON", required: true }),
         createScalarPropertyDefinition({ name: "optJson", type: "JSON", required: false }),
         createScalarPropertyDefinition({ name: "bytes", type: "Bytes", required: true }),

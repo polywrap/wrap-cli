@@ -29,7 +29,6 @@ export const toTypescript: MustacheFunction = () => {
       case "Bytes":
       case "BigInt":
       case "BigNumber":
-      case "Fraction":
         break;
       case "JSON":
         type = "Json";

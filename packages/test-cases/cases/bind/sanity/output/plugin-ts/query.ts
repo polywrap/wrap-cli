@@ -11,7 +11,6 @@ import {
   Bytes,
   BigInt,
   BigNumber,
-  Fraction,
   Json,
   String,
   Boolean

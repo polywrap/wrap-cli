@@ -70,8 +70,6 @@ export const toWasmInit: MustacheFunction = () => {
         return `BigInt.fromUInt16(0)`;
       case "BigNumber":
         return `new BigNumber(BigInt.fromUInt16(0), 0, 0)`;
-      case "Fraction":
-        return `new Fraction(BigInt.fromUInt16(0), BigInt.fromUInt16(1))`;
       case "JSON":
         return `JSON.Value.Null()`;
       default:
@@ -137,9 +135,6 @@ export const toWasm: MustacheFunction = () => {
         break;
       case "BigNumber":
         type = "BigNumber";
-        break;
-      case "Fraction":
-        type = "Fraction";
         break;
       case "JSON":
         type = "JSON.Value";

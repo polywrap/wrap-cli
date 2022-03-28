@@ -1,5 +1,5 @@
 import { Nullable } from "./Nullable";
-import { BigInt, BigNumber, Fraction } from "../math";
+import { BigInt, BigNumber } from "../math";
 import { Context } from "../debug";
 import { JSON } from "../json";
 
@@ -19,7 +19,6 @@ export abstract class Read {
   abstract readBytes(): ArrayBuffer;
   abstract readBigInt(): BigInt;
   abstract readBigNumber(): BigNumber;
-  abstract readFraction(): Fraction;
   abstract readJSON(): JSON.Value;
   abstract readArrayLength(): u32;
   abstract readArray<T>(fn: (reader: Read) => T): Array<T>;
@@ -42,7 +41,6 @@ export abstract class Read {
   abstract readNullableBytes(): ArrayBuffer | null;
   abstract readNullableBigInt(): BigInt | null;
   abstract readNullableBigNumber(): BigNumber | null;
-  abstract readNullableFraction(): Fraction | null;
   abstract readNullableJSON(): JSON.Value | null;
   abstract readNullableArray<T>(fn: (decoder: Read) => T): Array<T> | null;
   abstract readNullableMap<K, V>(

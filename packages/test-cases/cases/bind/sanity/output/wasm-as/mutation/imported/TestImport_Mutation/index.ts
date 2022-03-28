@@ -3,7 +3,6 @@ import {
   Nullable,
   BigInt,
   BigNumber,
-  Fraction,
   JSON,
   Result
 } from "@web3api/wasm-as";

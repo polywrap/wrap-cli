@@ -2,7 +2,7 @@ import { DataView } from "./DataView";
 import { Format } from "./Format";
 import { Nullable } from "./Nullable";
 import { Write } from "./Write";
-import { BigInt, BigNumber, Fraction } from "../math";
+import { BigInt, BigNumber } from "../math";
 import { Context } from "../debug";
 import { JSON } from "../json";
 
@@ -137,12 +137,6 @@ export class WriteEncoder extends Write {
   writeBigNumber(value: BigNumber): void {
     const str = value.toString();
     this.writeString(str);
-  }
-
-  writeFraction(value: Fraction): void {
-    this.writeArray(value.toArray(), (writer: Write, item: BigInt) => {
-      writer.writeBigInt(item);
-    });
   }
 
   writeJSON(value: JSON.Value): void {
@@ -311,15 +305,6 @@ export class WriteEncoder extends Write {
     }
 
     this.writeBigNumber(value);
-  }
-
-  writeNullableFraction(value: Fraction | null): void {
-    if (value === null) {
-      this.writeNil();
-      return;
-    }
-
-    this.writeFraction(value);
   }
 
   writeNullableJSON(value: JSON.Value | null): void {

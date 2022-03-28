@@ -4,7 +4,6 @@ import {
   Nullable,
   BigInt,
   BigNumber,
-  Fraction,
   JSON
 } from "@web3api/wasm-as";
 import {
@@ -31,8 +30,6 @@ export class CustomType {
   optBigint: BigInt | null;
   bignumber: BigNumber;
   optBignumber: BigNumber | null;
-  fraction: Fraction;
-  optFraction: Fraction | null;
   json: JSON.Value;
   optJson: JSON.Value | null;
   bytes: ArrayBuffer;

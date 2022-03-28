@@ -10,7 +10,6 @@ import {
   JSON,
   BigInt,
   BigNumber,
-  Fraction
 } from "../";
 
 class Sanity {
@@ -29,7 +28,6 @@ class Sanity {
   str: string = "";
   bigint: BigInt = BigInt.ONE;
   bignumber: BigNumber = BigNumber.ONE;
-  fraction: Fraction = new Fraction(BigInt.ONE);
   json: JSON.Value = JSON.Value.Object();
   largeStr: string = "";
   bytes: ArrayBuffer = new ArrayBuffer(1);
@@ -58,7 +56,6 @@ class Sanity {
     this.str = "Hello, world!";
     this.bigint = BigInt.fromString("3124124512598273468017578125");
     this.bignumber = BigNumber.fromString("3124124512.598273468017578125");
-    this.fraction = new Fraction(BigInt.from(1), BigInt.from(3));
     this.json = JSON.parse(`{"foo": "bar", "bar": "baz"}`);
     this.largeStr = new Array<string>(10).join("web3api ");
     this.bytes = new ArrayBuffer(12);
@@ -102,7 +99,7 @@ class Sanity {
 }
 
 function serializeSanity(writer: Write, type: Sanity): void {
-  writer.writeMapLength(24);
+  writer.writeMapLength(23);
   writer.writeString("nil");
   writer.writeNullableString(type.nil);
   writer.writeString("int8");
@@ -139,8 +136,6 @@ function serializeSanity(writer: Write, type: Sanity): void {
   writer.writeBigInt(type.bigint);
   writer.writeString("bignumber");
   writer.writeBigNumber(type.bignumber);
-  writer.writeString("fraction");
-  writer.writeFraction(type.fraction);
   writer.writeString("json");
   writer.writeJSON(type.json);
   writer.writeString("array");
@@ -208,8 +203,6 @@ function deserializeSanity(reader: Read, type: Sanity): void {
       type.bigint = reader.readBigInt();
     } else if (field == "bignumber") {
       type.bignumber = reader.readBigNumber();
-    } else if (field == "fraction") {
-      type.fraction = reader.readFraction();
     } else if (field == "json") {
       type.json = reader.readJSON();
     } else if (field == "largeStr") {
@@ -290,8 +283,6 @@ function deserializeWithOverflow(reader: Read, type: Sanity): void {
       type.bigint = reader.readBigInt();
     } else if (field == "bignumber") {
       type.bignumber = reader.readBigNumber();
-    } else if (field == "fraction") {
-      type.fraction = reader.readFraction();
     } else if (field == "json") {
       type.json = reader.readJSON();
     } else if (field == "bytes") {
@@ -360,8 +351,6 @@ function deserializeWithInvalidTypes(reader: Read, type: Sanity): void {
       type.bigint = reader.readBigInt();
     } else if (field == "bignumber") {
       type.bignumber = reader.readBigNumber();
-    } else if (field == "fraction") {
-      type.fraction = reader.readFraction();
     } else if (field == "json") {
       type.json = reader.readJSON();
     } else if (field == "largeStr") {

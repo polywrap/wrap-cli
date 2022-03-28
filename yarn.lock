@@ -5016,25 +5016,10 @@ as-bignumber@0.2.0:
   dependencies:
     as-bigint "^0.5.1"
 
-as-bignumber@^0.1.1:
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/as-bignumber/-/as-bignumber-0.1.1.tgz#92239952ff5ca7c26ccb665a7794da0da4f8db18"
-  integrity sha512-H0Sou/bFZwg/8njVR2lDtmOTFm5Kz2toudxfCNSwr8ETVskvzdN+emeP6AnDt4kKbFHsgpQ8r7D3xB6fjX7MMQ==
-  dependencies:
-    as-bigint "^0.5.1"
-
 as-container@0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/as-container/-/as-container-0.6.1.tgz#94806a91e96b68622c55f301fc04e6339a1228c2"
   integrity sha512-cgQ7P/dQAGeU2lLhPpinThYfFcUw3HzV8b00CoqV+l5Tsgpl7xhXdoc/2srCyK0um1BVAQwlrEpNTtthzkMF+g==
-
-as-fraction@0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/as-fraction/-/as-fraction-0.2.0.tgz#ff256555a6902eea88ffc0e6487249fcdb5e8be6"
-  integrity sha512-b/3kHaTKNZ4m8tWqYooBQTyOpg+9m45IvaLQfL0IFcRpRPSXV7ZL1GKXUrDhdGhl5g+x/NjVFQsTbFJ0Y8KVkQ==
-  dependencies:
-    as-bigint "^0.5.1"
-    as-bignumber "^0.1.1"
 
 asap@^2.0.0, asap@~2.0.6:
   version "2.0.6"
