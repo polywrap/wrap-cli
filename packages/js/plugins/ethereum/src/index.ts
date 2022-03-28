@@ -154,7 +154,7 @@ export class EthereumPlugin extends Plugin {
     const network = await provider.getNetwork();
     return {
       name: network.name,
-      chainId: network.chainId,
+      chainId: network.chainId.toString(),
       ensAddress: network.ensAddress,
     };
   }
@@ -203,6 +203,15 @@ export class EthereumPlugin extends Plugin {
         error: true,
       };
     }
+  }
+
+  public async getBalance(input: Query.Input_getBalance): Promise<string> {
+    const connection = await this.getConnection(input.connection);
+    return (
+      await connection
+        .getProvider()
+        .getBalance(input.address, input.blockTag || undefined)
+    ).toString();
   }
 
   public encodeParams(input: Query.Input_encodeParams): string {

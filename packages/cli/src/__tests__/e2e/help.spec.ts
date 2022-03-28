@@ -12,6 +12,7 @@ const HELP = `
   create (c)     Create a new project with w3 CLI                     
   codegen (g)    Auto-generate API Types                              
   build (b)      Builds a Web3API and (optionally) uploads it to IPFS 
+  app (a)        Build/generate types for your app                    
 `;
 
 describe("e2e tests for no help", () => {

@@ -24,7 +24,7 @@ export function serializeimportedMethodArgs(input: Input_importedMethod): ArrayB
   writeimportedMethodArgs(sizer, input);
   const buffer = new ArrayBuffer(sizer.length);
   const encoderContext: Context = new Context("Serializing (encoding) imported module-type: importedMethod");
-  const encoder = new WriteEncoder(buffer, encoderContext);
+  const encoder = new WriteEncoder(buffer, sizer, encoderContext);
   writeimportedMethodArgs(encoder, input);
   return buffer;
 }
@@ -75,7 +75,7 @@ export function serializeanotherMethodArgs(input: Input_anotherMethod): ArrayBuf
   writeanotherMethodArgs(sizer, input);
   const buffer = new ArrayBuffer(sizer.length);
   const encoderContext: Context = new Context("Serializing (encoding) imported module-type: anotherMethod");
-  const encoder = new WriteEncoder(buffer, encoderContext);
+  const encoder = new WriteEncoder(buffer, sizer, encoderContext);
   writeanotherMethodArgs(encoder, input);
   return buffer;
 }

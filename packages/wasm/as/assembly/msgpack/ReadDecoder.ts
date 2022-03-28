@@ -14,6 +14,7 @@ import { Read } from "./Read";
 import { BigInt, BigNumber } from "../math";
 import { Context } from "../debug";
 import { JSON } from "../json";
+import { ExtensionType } from "./ExtensionType";
 
 export class ReadDecoder extends Read {
   private readonly _context: Context;
@@ -294,6 +295,72 @@ export class ReadDecoder extends Read {
     return m;
   }
 
+  readExtGenericMap<K, V>(
+    key_fn: (reader: Read) => K,
+    value_fn: (reader: Read) => V
+  ): Map<K, V> {
+    const leadByte = this._view.peekUint8();
+    let byteLength: u32;
+
+    if (isFixedMap(leadByte)) {
+      return this.readMap(key_fn, value_fn);
+    }
+
+    switch (leadByte) {
+      case Format.FIXMAP:
+      case Format.MAP16:
+        return this.readMap(key_fn, value_fn);
+      case Format.FIXEXT1:
+        byteLength = 1;
+        break;
+      case Format.FIXEXT2:
+        byteLength = 2;
+        break;
+      case Format.FIXEXT4:
+        byteLength = 4;
+        break;
+      case Format.FIXEXT8:
+        byteLength = 8;
+        break;
+      case Format.FIXEXT16:
+        byteLength = 16;
+        break;
+      case Format.EXT8:
+        byteLength = <u32>this._view.getUint8();
+        break;
+      case Format.EXT16:
+        byteLength = <u32>this._view.getUint16();
+        break;
+      case Format.EXT32:
+        byteLength = this._view.getUint32();
+        break;
+      default:
+        throw new TypeError(
+          this._context.printWithContext(
+            "Property must be of type 'ext generic map'. " +
+              this._getErrorMessage(leadByte)
+          )
+        );
+    }
+
+    // Consule the leadByte
+    this._view.getUint8();
+
+    // Get the extension type
+    const extType = this._view.getUint8();
+
+    if (extType !== ExtensionType.GENERIC_MAP) {
+      throw new TypeError(
+        this._context.printWithContext(
+          "Extension must be of type 'ext generic map'. Found " +
+            extType.toString()
+        )
+      );
+    }
+
+    return this.readMap(key_fn, value_fn);
+  }
+
   readNullableBool(): Nullable<bool> {
     if (this.isNextNil()) {
       return Nullable.fromNull<bool>();
@@ -408,6 +475,16 @@ export class ReadDecoder extends Read {
       return null;
     }
     return this.readMap(key_fn, value_fn);
+  }
+
+  readNullableExtGenericMap<K, V>(
+    key_fn: (decoder: Read) => K,
+    value_fn: (decoder: Read) => V
+  ): Map<K, V> | null {
+    if (this.isNextNil()) {
+      return null;
+    }
+    return this.readExtGenericMap(key_fn, value_fn);
   }
 
   isNextNil(): bool {

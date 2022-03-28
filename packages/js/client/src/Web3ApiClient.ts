@@ -17,8 +17,8 @@ import {
   Subscription,
   SubscribeOptions,
   parseQuery,
-  AnyManifest,
-  ManifestType,
+  AnyManifestArtifact,
+  ManifestArtifactType,
   GetRedirectsOptions,
   GetPluginsOptions,
   GetInterfacesOptions,
@@ -100,6 +100,8 @@ export class Web3ApiClient implements Client {
 
       this._validateConfig();
 
+      this._sanitizeConfig();
+
       Tracer.setAttribute("config", this._config);
     } catch (error) {
       Tracer.recordException(error);
@@ -176,11 +178,11 @@ export class Web3ApiClient implements Client {
   @Tracer.traceMethod("Web3ApiClient: getManifest")
   public async getManifest<
     TUri extends Uri | string,
-    TManifestType extends ManifestType
+    TManifestArtifactType extends ManifestArtifactType
   >(
     uri: TUri,
-    options: GetManifestOptions<TManifestType>
-  ): Promise<AnyManifest<TManifestType>> {
+    options: GetManifestOptions<TManifestArtifactType>
+  ): Promise<AnyManifestArtifact<TManifestArtifactType>> {
     const api = await this._loadWeb3Api(this._toUri(uri), options);
     const client = contextualizeClient(this, options.contextId);
     return await api.getManifest(options, client);
@@ -362,9 +364,7 @@ export class Web3ApiClient implements Client {
     if (freq && (freq.ms || freq.sec || freq.min || freq.hours)) {
       frequency =
         (freq.ms ?? 0) +
-        ((freq.hours ?? 0) * 3600 +
-          (freq.min ?? 0) * 60 +
-          (freq.sec ?? 0)) *
+        ((freq.hours ?? 0) * 3600 + (freq.min ?? 0) * 60 + (freq.sec ?? 0)) *
           1000;
     } else {
       frequency = 60000;
@@ -523,6 +523,64 @@ export class Web3ApiClient implements Client {
     } else {
       return this._config;
     }
+  }
+
+  @Tracer.traceMethod("Web3ApiClient: sanitizeConfig")
+  private _sanitizeConfig(): void {
+    this._sanitizeInterfacesAndImplementations();
+  }
+
+  // Make sure interface URIs are unique and that all of their implementation URIs are unique
+  // If not, then merge them
+  @Tracer.traceMethod("Web3ApiClient: sanitizeInterfacesAndImplementations")
+  private _sanitizeInterfacesAndImplementations(): void {
+    const interfaces = this._config.interfaces;
+    // Interface hash map used to keep track of interfaces with same URI
+    // A set is used to keep track of unique implementation URIs
+    const addedInterfacesHashMap = new Map<string, Set<string>>();
+
+    for (const interfaceImplementations of interfaces) {
+      const interfaceUri = interfaceImplementations.interface.uri;
+
+      if (!addedInterfacesHashMap.has(interfaceUri)) {
+        // If the interface is not added yet then just add it along with its implementations
+        addedInterfacesHashMap.set(
+          interfaceUri,
+          new Set(interfaceImplementations.implementations.map((x) => x.uri))
+        );
+      } else {
+        const existingInterfaceImplementations = addedInterfacesHashMap.get(
+          interfaceUri
+        ) as Set<string>;
+
+        // Get implementations to add to existing set of implementations
+        const newImplementationUris = interfaceImplementations.implementations.map(
+          (x) => x.uri
+        );
+
+        // Add new implementations to existing set
+        newImplementationUris.forEach(
+          existingInterfaceImplementations.add,
+          existingInterfaceImplementations
+        );
+      }
+    }
+
+    // Collection of unique interfaces with implementations merged
+    const sanitizedInterfaces: InterfaceImplementations<Uri>[] = [];
+
+    // Go through the unique hash map of interfaces and implementations and add them to the sanitized interfaces
+    for (const [
+      interfaceUri,
+      implementationSet,
+    ] of addedInterfacesHashMap.entries()) {
+      sanitizedInterfaces.push({
+        interface: new Uri(interfaceUri),
+        implementations: [...implementationSet].map((x) => new Uri(x)),
+      });
+    }
+
+    this._config.interfaces = sanitizedInterfaces;
   }
 
   @Tracer.traceMethod("Web3ApiClient: validateConfig")
@@ -691,10 +749,10 @@ const contextualizeClient = (
         },
         getManifest: <
           TUri extends Uri | string,
-          TManifestType extends ManifestType
+          TManifestArtifactType extends ManifestArtifactType
         >(
           uri: TUri,
-          options: GetManifestOptions<TManifestType>
+          options: GetManifestOptions<TManifestArtifactType>
         ) => {
           return client.getManifest(uri, { ...options, contextId });
         },

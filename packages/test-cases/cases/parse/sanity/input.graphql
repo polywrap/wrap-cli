@@ -10,6 +10,7 @@ scalar Bytes
 scalar BigInt
 scalar BigNumber
 scalar JSON
+scalar Map
 
 directive @imported(
   uri: String!
@@ -28,6 +29,9 @@ directive @capability(
 ) repeatable on OBJECT
 
 directive @enabled_interface on OBJECT
+
+directive @annotate(type: String!) on FIELD
+
 """
 CustomEnum comment
 """
@@ -80,7 +84,8 @@ optStr comment
   optEnum: CustomEnum
   enum: CustomEnum!
   enumArray: [CustomEnum!]!,
-  optEnumArray: [CustomEnum]
+  optEnumArray: [CustomEnum],
+  map1: Map @annotate(type: "Map<String, Int>")
 }
 
 """
@@ -99,6 +104,12 @@ UserObject comment
 type UserObject {
   fieldA: String
   fieldB: Int!
+}
+
+type UserObjectFromInterface implements UserObject {
+  fieldA: String
+  fieldB: Int!
+  fieldC: UInt32!
 }
 
 type QueryEnv {
@@ -186,6 +197,10 @@ abstractMethod comment
   abstractMethod(
     arg: UInt8!
   ): String!
+
+  transformMap(
+    map: Map @annotate(type: "Map<String!, Int!>")
+  ): Map @annotate(type: "Map<String!, Int!>")
 }
 
 """

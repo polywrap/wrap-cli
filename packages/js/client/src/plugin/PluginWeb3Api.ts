@@ -9,13 +9,14 @@ import {
   Plugin,
   PluginPackage,
   Uri,
-  AnyManifest,
-  ManifestType,
+  AnyManifestArtifact,
+  ManifestArtifactType,
   GetFileOptions,
   Env,
   InvokableModules,
+  msgpackEncode,
+  msgpackDecode,
 } from "@web3api/core-js";
-import * as MsgPack from "@msgpack/msgpack";
 import { Tracer } from "@web3api/tracing-js";
 
 function isValidEnv(env: Record<string, unknown>): boolean {
@@ -45,10 +46,10 @@ export class PluginWeb3Api extends Api {
     return Promise.resolve(this._plugin.manifest.schema);
   }
 
-  public async getManifest<T extends ManifestType>(
+  public async getManifest<T extends ManifestArtifactType>(
     _options: GetManifestOptions<T>,
     _client: Client
-  ): Promise<AnyManifest<T>> {
+  ): Promise<AnyManifestArtifact<T>> {
     throw Error("client.getManifest(...) is not implemented for Plugins.");
   }
 
@@ -95,7 +96,7 @@ export class PluginWeb3Api extends Api {
 
       // If the input is a msgpack buffer, deserialize it
       if (input instanceof ArrayBuffer) {
-        const result = MsgPack.decode(input);
+        const result = msgpackDecode(input);
 
         Tracer.addEvent("msgpack-decoded", result);
 
@@ -126,7 +127,7 @@ export class PluginWeb3Api extends Api {
             // try to encode the returned result,
             // ensuring it's msgpack compliant
             try {
-              MsgPack.encode(data);
+              msgpackEncode(data);
             } catch (e) {
               throw Error(
                 `TEST_PLUGIN msgpack encode failure.` +

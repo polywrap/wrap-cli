@@ -14,14 +14,15 @@ import {
   deserializeWeb3ApiManifest,
   deserializeBuildManifest,
   deserializeMetaManifest,
-  AnyManifest,
-  ManifestType,
+  AnyManifestArtifact,
+  ManifestArtifactType,
   combinePaths,
   Env,
   UriResolver,
   GetFileOptions,
+  msgpackEncode,
+  msgpackDecode,
 } from "@web3api/core-js";
-import * as MsgPack from "@msgpack/msgpack";
 import { Tracer } from "@web3api/tracing-js";
 import { AsyncWasmInstance } from "@web3api/asyncify-js";
 
@@ -45,6 +46,11 @@ export interface State {
     error?: string;
   };
   subinvoke: {
+    result?: ArrayBuffer;
+    error?: string;
+    args: unknown[];
+  };
+  subinvokeImplementation: {
     result?: ArrayBuffer;
     error?: string;
     args: unknown[];
@@ -92,12 +98,12 @@ export class WasmWeb3Api extends Api {
   }
 
   @Tracer.traceMethod("WasmWeb3Api: getManifest")
-  public async getManifest<TManifest extends ManifestType>(
-    options: GetManifestOptions<TManifest>,
+  public async getManifest<TManifestArtifact extends ManifestArtifactType>(
+    options: GetManifestOptions<TManifestArtifact>,
     client: Client
-  ): Promise<AnyManifest<TManifest>> {
+  ): Promise<AnyManifestArtifact<TManifestArtifact>> {
     if (!options?.type) {
-      return this._manifest as AnyManifest<TManifest>;
+      return this._manifest as AnyManifestArtifact<TManifestArtifact>;
     }
     let manifest: string | undefined;
     const fileTitle: string =
@@ -121,11 +127,17 @@ export class WasmWeb3Api extends Api {
     }
     switch (options.type) {
       case "build":
-        return deserializeBuildManifest(manifest) as AnyManifest<TManifest>;
+        return deserializeBuildManifest(
+          manifest
+        ) as AnyManifestArtifact<TManifestArtifact>;
       case "meta":
-        return deserializeMetaManifest(manifest) as AnyManifest<TManifest>;
+        return deserializeMetaManifest(
+          manifest
+        ) as AnyManifestArtifact<TManifestArtifact>;
       default:
-        return deserializeWeb3ApiManifest(manifest) as AnyManifest<TManifest>;
+        return deserializeWeb3ApiManifest(
+          manifest
+        ) as AnyManifestArtifact<TManifestArtifact>;
     }
   }
 
@@ -183,13 +195,13 @@ export class WasmWeb3Api extends Api {
         subinvoke: {
           args: [],
         },
+        subinvokeImplementation: {
+          args: [],
+        },
         invokeResult: {} as InvokeResult,
         method,
         sanitizeEnv: {},
-        args:
-          input instanceof ArrayBuffer
-            ? input
-            : MsgPack.encode(input, { ignoreUndefined: true }),
+        args: input instanceof ArrayBuffer ? input : msgpackEncode(input),
       };
 
       const abort = (message: string) => {
@@ -242,7 +254,7 @@ export class WasmWeb3Api extends Api {
 
           try {
             return {
-              data: MsgPack.decode(invokeResult.invokeResult as ArrayBuffer),
+              data: msgpackDecode(invokeResult.invokeResult as ArrayBuffer),
             } as InvokeApiResult<unknown>;
           } catch (err) {
             throw Error(
@@ -327,18 +339,13 @@ export class WasmWeb3Api extends Api {
         const clientEnv = this._getModuleClientEnv(module);
 
         if (hasExport("_w3_sanitize_env", exports)) {
-          state.sanitizeEnv.args = MsgPack.encode(
-            { env: clientEnv },
-            { ignoreUndefined: true }
-          );
+          state.sanitizeEnv.args = msgpackEncode({ env: clientEnv });
 
           await exports._w3_sanitize_env(state.sanitizeEnv.args.byteLength);
           state.env = state.sanitizeEnv.result as ArrayBuffer;
           this._sanitizedEnv[module] = state.env;
         } else {
-          state.env = MsgPack.encode(clientEnv, {
-            ignoreUndefined: true,
-          });
+          state.env = msgpackEncode(clientEnv);
           this._sanitizedEnv[module] = state.env;
         }
       }

@@ -1,5 +1,6 @@
 import {
   w3_subinvoke,
+  w3_subinvokeImplementation,
   Nullable,
   BigInt,
   BigNumber,
@@ -30,7 +31,8 @@ export class TestImport_Query {
     input: Input_importedMethod
   ): Result<Types.TestImport_Object | null, string> {
     const args = serializeimportedMethodArgs(input);
-    const result = w3_subinvoke(
+    const result = w3_subinvokeImplementation(
+      "testimport.uri.eth",
       this.uri,
       "query",
       "importedMethod",
@@ -52,7 +54,8 @@ export class TestImport_Query {
     input: Input_anotherMethod
   ): Result<i32, string> {
     const args = serializeanotherMethodArgs(input);
-    const result = w3_subinvoke(
+    const result = w3_subinvokeImplementation(
+      "testimport.uri.eth",
       this.uri,
       "query",
       "anotherMethod",

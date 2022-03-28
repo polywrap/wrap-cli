@@ -57,7 +57,7 @@ export interface Ethereum_TxRequest {
   gasPrice?: BigInt | null;
   data?: String | null;
   value?: BigInt | null;
-  chainId?: UInt32 | null;
+  chainId?: BigInt | null;
   type?: UInt32 | null;
 }
 
@@ -105,7 +105,7 @@ export interface Ethereum_EventNotification {
 /* URI: "ens/ethereum.web3api.eth" */
 export interface Ethereum_Network {
   name: String;
-  chainId: Int;
+  chainId: BigInt;
   ensAddress?: String | null;
 }
 
@@ -119,7 +119,7 @@ export interface Ethereum_TxResponse {
   gasPrice?: BigInt | null;
   data: String;
   value: BigInt;
-  chainId: UInt32;
+  chainId: BigInt;
   blockNumber?: BigInt | null;
   blockHash?: String | null;
   timestamp?: UInt32 | null;
@@ -157,6 +157,13 @@ interface Ethereum_Query_Input_callContractStatic extends Record<string, unknown
   args?: Array<String> | null;
   connection?: Types.Ethereum_Connection | null;
   txOverrides?: Types.Ethereum_TxOverrides | null;
+}
+
+/* URI: "ens/ethereum.web3api.eth" */
+interface Ethereum_Query_Input_getBalance extends Record<string, unknown> {
+  address: String;
+  blockTag?: BigInt | null;
+  connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
@@ -285,6 +292,18 @@ export const Ethereum_Query = {
       uri: "ens/ethereum.web3api.eth",
       module: "query",
       method: "callContractStatic",
+      input
+    });
+  },
+
+  getBalance: async (
+    input: Ethereum_Query_Input_getBalance,
+    client: Client
+  ): Promise<InvokeApiResult<BigInt>> => {
+    return client.invoke<BigInt>({
+      uri: "ens/ethereum.web3api.eth",
+      module: "query",
+      method: "getBalance",
       input
     });
   },
@@ -494,6 +513,7 @@ export const Ethereum_Query = {
   }
 }
 
+
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Mutation_Input_callContractMethod extends Record<string, unknown> {
   address: String;
@@ -632,4 +652,6 @@ export const Ethereum_Mutation = {
   }
 }
 
+
 /// Imported Queries END ///
+

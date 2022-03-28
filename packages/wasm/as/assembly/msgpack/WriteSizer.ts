@@ -6,11 +6,13 @@ import { JSON } from "../json";
 
 export class WriteSizer extends Write {
   length: i32;
+  extByteLengths: Array<u32>;
   private readonly _context: Context;
 
   constructor(context: Context = new Context()) {
     super();
     this._context = context;
+    this.extByteLengths = new Array<u32>();
   }
 
   context(): Context {
@@ -167,6 +169,31 @@ export class WriteSizer extends Write {
     }
   }
 
+  writeExtGenericMap<K, V>(
+    m: Map<K, V>,
+    key_fn: (encoder: Write, key: K) => void,
+    value_fn: (encoder: Write, value: V) => void
+  ): void {
+    // type = GENERIC_MAP
+    this.length++;
+
+    const startingLength = this.length;
+
+    this.writeMap(m, key_fn, value_fn);
+
+    const byteLength: u32 = this.length - startingLength;
+
+    if (byteLength <= <u32>u8.MAX_VALUE) {
+      this.length += 2;
+    } else if (byteLength <= <u32>u16.MAX_VALUE) {
+      this.length += 3;
+    } else {
+      this.length += 5;
+    }
+
+    this.extByteLengths.push(byteLength);
+  }
+
   writeNullableBool(value: Nullable<bool>): void {
     if (value.isNull) {
       this.writeNil();
@@ -316,5 +343,17 @@ export class WriteSizer extends Write {
     }
 
     this.writeMap(m, key_fn, value_fn);
+  }
+
+  writeNullableExtGenericMap<K, V>(
+    m: Map<K, V> | null,
+    key_fn: (sizer: Write, key: K) => void,
+    value_fn: (sizer: Write, value: V) => void
+  ): void {
+    if (m === null) {
+      this.writeNil();
+      return;
+    }
+    this.writeExtGenericMap(m, key_fn, value_fn);
   }
 }
