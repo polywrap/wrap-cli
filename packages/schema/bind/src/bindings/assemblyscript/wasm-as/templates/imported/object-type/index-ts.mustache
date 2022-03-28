@@ -22,7 +22,7 @@ export class {{type}} {
   public static uri: string = "{{uri}}";
 
   {{#properties}}
-  {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
+  {{#handleKeywords}}{{name}}{{/handleKeywords}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
   {{/properties}}
 
   static toBuffer(type: {{type}}): ArrayBuffer {
