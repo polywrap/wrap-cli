@@ -86,33 +86,3 @@ type Query {
 
  getNetwork(connection: Ethereum_Connection): Ethereum_Network!
 }
-
-type TxReceipt {
-  transactionHash: String!
-  transactionIndex: UInt32!
-  blockHash: String
-  blockNumber: BigInt
-  cumulativeGasUsed: BigInt!
-  gasUsed: BigInt
-  contractAddress: String
-  logs: [Log!]!
-  status: UInt32
-  root: String
-  logsBloom: String!
-  transactionType: UInt32
-  effectiveGasPrice: BigInt
-}
-
-type Log {
-  address: String!
-  topics: [String!]!
-  data: String!
-  blockHash: String
-  blockNumber: BigInt
-  transactionHash: String
-  transactionIndex: UInt32
-  logIndex: UInt32
-  transactionLogIndex: UInt32
-  logType: String
-  removed: Boolean
-}

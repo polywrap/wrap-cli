@@ -1,4 +1,4 @@
-#import { Query, Mutation, Connection, TxResponse, TxReceipt } into Ethereum from "w3://ens/ethereum.web3api.eth"
+#import { Query, Mutation, Connection, TxResponse, TxReceipt, TxOverrides } into Ethereum from "w3://ens/ethereum.web3api.eth"
 
 type Mutation {
   deployContract(
@@ -23,7 +23,7 @@ type Mutation {
     method: String!
     args: [String!]
     connection: Ethereum_Connection
-    txOverrides: TxOverrides
+    txOverrides: Ethereum_TxOverrides
   ): Ethereum_TxResponse!
 
   callContractMethodAndWait(
@@ -31,7 +31,7 @@ type Mutation {
     method: String!
     args: [String!]
     connection: Ethereum_Connection
-    txOverrides: TxOverrides
+    txOverrides: Ethereum_TxOverrides
   ): Ethereum_TxReceipt!
 
   signMessage(
@@ -44,68 +44,4 @@ type Mutation {
     params: [String!]!
     connection: Ethereum_Connection
   ): String
-}
-
-type TxReceipt {
-  transactionHash: String!
-  transactionIndex: UInt32!
-  blockHash: String
-  blockNumber: BigInt
-  cumulativeGasUsed: BigInt!
-  gasUsed: BigInt
-  contractAddress: String
-  logs: [Log!]!
-  status: UInt32
-  root: String
-  logsBloom: String!
-  transactionType: UInt32
-  effectiveGasPrice: BigInt
-}
-
-type TxRequest {
-  to: String
-  from: String
-  nonce: UInt32
-  gas: BigInt
-  gasPrice: BigInt
-  data: String
-  value: BigInt
-  chainId: UInt32
-}
-
-type TxOverrides {
-  gas: BigInt
-  gasPrice: BigInt
-  value: BigInt
-}
-
-type StaticTxResult {
-  result: String!
-  error: Boolean!
-}
-
-type Log {
-  address: String!
-  topics: [String!]!
-  data: String!
-  blockHash: String
-  blockNumber: BigInt
-  transactionHash: String
-  transactionIndex: UInt32
-  logIndex: UInt32
-  transactionLogIndex: UInt32
-  logType: String
-  removed: Boolean
-}
-
-type EventNotification {
-  data: String!
-  address: String!
-  log: Log!
-}
-
-type Network {
-  name: String!
-  chainId: Int!
-  ensAddress: String
 }

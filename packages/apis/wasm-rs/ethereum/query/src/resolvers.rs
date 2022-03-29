@@ -1,38 +1,19 @@
 use super::w3::imported::InputCallView;
 use super::w3::imported::*;
 use super::w3::InputCallContractView;
-use super::mapping::*;
-use super::encoding_utils::{encode_function_args, tokenize_str_args, get_address};
+use super::utils::{encode_function_args, tokenize_str_args, contract_call_to_tx, get_address};
 
-use ethers_core::abi::{AbiParser, encode};
-use ethers_core::utils::{parse_ether, format_ether};
-use ethers_core::types::{TransactionRequest, Address, NameOrAddress};
+use ethers_core::{
+  abi::{AbiParser, encode},
+  utils::{parse_ether, format_ether},
+  types::{Address}
+};
 use std::str::FromStr;
 use polywrap_wasm_rs::{BigInt};
 use num_traits::{FromPrimitive, ToPrimitive};
 
 pub fn call_contract_view(input: InputCallContractView) -> String {
-  let to = match Address::from_str(&input.address) {
-    Ok(a) => a,
-    Err(e) => panic!("Invalid contract address: {}. Error: {}", &input.address, e)
-  };
-  let args = match input.args {
-    Some(a) => a,
-    None => vec![]
-  };
-
-  let tx_data = match encode_function_args(&input.method, args) {
-    Ok(data) => data,
-    Err(e) => panic!("Error encoding function '{}'. Error: {}", &input.method, e)
-  };
-
-  let tx = TransactionRequest { 
-    data: Some(tx_data),
-    to: Some(NameOrAddress::Address(to)),
-    ..Default::default()
-  };
-
-  let tx_request = to_tx_request(tx);
+  let tx_request = contract_call_to_tx(&input.address, &input.method, input.args);
 
   let contract_call_args = InputCallView {
     tx_request,
@@ -139,28 +120,8 @@ pub fn estimate_transaction_gas(input: super::w3::InputEstimateTransactionGas) -
 }
 
 pub fn estimate_contract_call_gas(input: super::w3::InputEstimateContractCallGas) -> BigInt {
-  let to = match Address::from_str(&input.address) {
-    Ok(a) => a,
-    Err(e) => panic!("Invalid contract address: {}. Error: {}", &input.address, e)
-  };
-  let args = match input.args {
-    Some(a) => a,
-    None => vec![]
-  };
-
-  let tx_data = match encode_function_args(&input.method, args) {
-    Ok(data) => data,
-    Err(e) => panic!("Error encoding function '{}'. Error: {}", &input.method, e)
-  };
-
-  let tx = TransactionRequest { 
-    data: Some(tx_data),
-    to: Some(NameOrAddress::Address(to)),
-    ..Default::default()
-  };
-
   let contract_call_estimate_args = super::w3::imported::ethereum_query::InputEstimateTransactionGas {
-    tx: to_tx_request(tx),
+    tx: contract_call_to_tx(&input.address, &input.method, input.args),
     connection: input.connection
   };
   

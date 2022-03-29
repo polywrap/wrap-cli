@@ -5,8 +5,8 @@ pub mod w3;
 pub mod mapping;
 pub use w3::*;
 pub use mapping::*;
-pub mod encoding_utils;
-pub use encoding_utils::*;
+pub mod utils;
+pub use utils::*;
 
 use core::num::NonZeroU32;
 use getrandom::{register_custom_getrandom, Error};

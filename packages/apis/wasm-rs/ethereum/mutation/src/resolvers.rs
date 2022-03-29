@@ -1,33 +1,12 @@
 use super::w3::imported::{InputSendTransaction, InputSendTransactionAndWait,
   EthereumMutation, ethereum_tx_receipt, ethereum_tx_response};
-use super::mapping::to_tx_request;
+use query::{to_tx_request, contract_call_to_tx, tokenize_str_args};
 
-use ethers_core::abi::{AbiParser, Token, Param};
-use ethers_core::abi::token::{Tokenizer, LenientTokenizer};
-use ethers_core::types::{TransactionRequest, Bytes, Address};
-
+use ethers_core::{
+  abi::{AbiParser, ParamType},
+  types::{transaction::request::TransactionRequest, Bytes}
+};
 use std::str::FromStr;
-
-fn tokenize_str_args(inputs: Vec<Param>, args: Vec<String>) -> Vec<Token> {
-  inputs.into_iter().enumerate().map(|(i, param_type)| 
-    match LenientTokenizer::tokenize(&param_type.kind, &args[i]) {
-      Ok(token) => token,
-      Err(e) => panic!("Error while tokenizing contract method argument. Err: {}", e)
-    }
-  ).collect()
-}
-
-fn tx_from_method_and_args(method: &str, args: Vec<String>) -> TransactionRequest {
-  let function = AbiParser::default().parse_function(method).unwrap();
-  let tokenized_args: Vec<Token> = tokenize_str_args(function.inputs.clone(), args);
-
-  let data = match function.encode_input(&tokenized_args).map(Into::<Bytes>::into) {
-    Ok(bytes) => bytes,
-    Err(e) => panic!("{}", e)
-  };
-
-  TransactionRequest { data: Some(data), ..Default::default() }
-}
 
 pub fn deploy_contract(input: super::w3::InputDeployContract) -> ethereum_tx_receipt::EthereumTxReceipt {
   let abi = AbiParser::default().parse_str(&input.abi).unwrap();
@@ -41,7 +20,10 @@ pub fn deploy_contract(input: super::w3::InputDeployContract) -> ethereum_tx_rec
     (None, false) => panic!("Constructor error"),
     (None, true) => bytecode.clone(),
     (Some(constructor), _) => {
-        constructor.encode_input(bytecode.to_vec(), &tokenize_str_args(constructor.inputs.clone(), args_list)).unwrap().into()
+        let param_types: Vec<ParamType> = constructor.inputs.clone().into_iter().map(|x| x.kind).collect();
+        let str_args = tokenize_str_args(param_types, args_list).unwrap();
+
+        constructor.encode_input(bytecode.to_vec(), &str_args).unwrap().into()
     }
   };
   
@@ -60,13 +42,7 @@ pub fn deploy_contract(input: super::w3::InputDeployContract) -> ethereum_tx_rec
 }
 
 pub fn call_contract_method(input: super::w3::InputCallContractMethod) -> ethereum_tx_response::EthereumTxResponse {
-  let to = Address::from_str(&input.address).unwrap();
-  let args_list = match input.args {
-    Some(a) => a,
-    None => vec![]
-  };
-  let tx = tx_from_method_and_args(&input.method, args_list).to(to);
-  let tx_request = to_tx_request(tx);
+  let tx_request = contract_call_to_tx(&input.address, &input.method, input.args);
 
   let send_transaction_args = InputSendTransaction {
     tx: tx_request,
@@ -80,13 +56,7 @@ pub fn call_contract_method(input: super::w3::InputCallContractMethod) -> ethere
 }
 
 pub fn call_contract_method_and_wait(input: super::w3::InputCallContractMethodAndWait) -> ethereum_tx_receipt::EthereumTxReceipt {
-  let to = Address::from_str(&input.address).unwrap();
-  let args_list = match input.args {
-    Some(a) => a,
-    None => vec![]
-  };
-  let tx = tx_from_method_and_args(&input.method, args_list).to(to);
-  let tx_request = to_tx_request(tx);
+  let tx_request = contract_call_to_tx(&input.address, &input.method, input.args);
 
   let send_transaction_args = InputSendTransactionAndWait {
     tx: tx_request,

@@ -1,6 +1,6 @@
 use ethers_core::{
   utils::{to_checksum},
-  types::{Bytes, H160},
+  types::{Bytes, H160, Address, transaction::request::TransactionRequest, NameOrAddress},
   abi::{
     AbiParser, Token, Error, ParamType,
     token::{LenientTokenizer, Tokenizer}
@@ -8,6 +8,7 @@ use ethers_core::{
 };
 use regex::Regex;
 use std::str::FromStr;
+use super::mapping::to_tx_request;
 
 pub fn tokenize_str_args(param_types: Vec<ParamType>, args: Vec<String>) -> Result<Vec<Token>, Error> {
   let mut tokens: Vec<Result<Token, Error>> = Vec::new();
@@ -52,4 +53,28 @@ pub fn get_address(addr_str: &str) -> Result<String, String> {
   } else {
     Err(format!("Invalid address: {}", addr_str))
   }
+}
+
+pub fn contract_call_to_tx(address: &str, method: &str, args: Option<Vec<String>>) -> super::w3::imported::EthereumTxRequest {
+  let to = match Address::from_str(&address) {
+    Ok(a) => a,
+    Err(e) => panic!("Invalid contract address: {}. Error: {}", &address, e)
+  };
+  let args = match args {
+    Some(a) => a,
+    None => vec![]
+  };
+
+  let tx_data = match encode_function_args(&method, args) {
+    Ok(data) => data,
+    Err(e) => panic!("Error encoding function '{}'. Error: {}", &method, e)
+  };
+
+  let tx = TransactionRequest { 
+    data: Some(tx_data),
+    to: Some(NameOrAddress::Address(to)),
+    ..Default::default()
+  };
+
+  to_tx_request(tx)
 }
