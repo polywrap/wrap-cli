@@ -1,4 +1,4 @@
-#import { Query, Connection, StaticTxResult } into Ethereum from "w3://ens/ethereum.web3api.eth"
+#import { Query, Network, Connection, StaticTxResult, EventNotification, TxOverrides } into Ethereum from "w3://ens/ethereum.web3api.eth"
 
 type Query {
   callContractView(
@@ -12,8 +12,8 @@ type Query {
    address: String!
    method: String!
    args: [String!]
-   connection: Connection
-   txOverrides: TxOverrides
+   connection: Ethereum_Connection
+   txOverrides: Ethereum_TxOverrides
  ): Ethereum_StaticTxResult!
 
  encodeParams(
@@ -27,34 +27,34 @@ type Query {
  ): String!
 
  getSignerAddress(
-   connection: Connection
+   connection: Ethereum_Connection
  ): String!
 
  getSignerBalance(
    blockTag: BigInt
-   connection: Connection
+   connection: Ethereum_Connection
  ): BigInt!
 
  getSignerTransactionCount(
    blockTag: BigInt
-   connection: Connection
+   connection: Ethereum_Connection
  ): BigInt!
 
  getGasPrice(
-   connection: Connection
+   connection: Ethereum_Connection
  ): BigInt!
 
  estimateTransactionGas(
-   tx: TxRequest!
-   connection: Connection
+   tx: Ethereum_TxRequest!
+   connection: Ethereum_Connection
  ): BigInt!
 
  estimateContractCallGas(
    address: String!
    method: String!
    args: [String!]
-   connection: Connection
-   txOverrides: TxOverrides
+   connection: Ethereum_Connection
+   txOverrides: Ethereum_TxOverrides
  ): BigInt!
 
  checkAddress(
@@ -73,18 +73,18 @@ type Query {
    txHash: String!
    confirmations: UInt32!
    timeout: UInt32!
-   connection: Connection
- ): TxReceipt!
+   connection: Ethereum_Connection
+ ): Ethereum_TxReceipt!
 
  waitForEvent(
    address: String!
    event: String!
    args: [String!]
    timeout: UInt32
-   connection: Connection
- ): EventNotification!
+   connection: Ethereum_Connection
+ ): Ethereum_EventNotification!
 
- getNetwork(connection: Connection): Network!
+ getNetwork(connection: Ethereum_Connection): Ethereum_Network!
 }
 
 type TxReceipt {
@@ -103,28 +103,6 @@ type TxReceipt {
   effectiveGasPrice: BigInt
 }
 
-type TxRequest {
-  to: String
-  from: String
-  nonce: UInt32
-  gas: BigInt
-  gasPrice: BigInt
-  data: String
-  value: BigInt
-  chainId: UInt32
-}
-
-type TxOverrides {
-  gas: BigInt
-  gasPrice: BigInt
-  value: BigInt
-}
-
-type StaticTxResult {
-  result: String!
-  error: Boolean!
-}
-
 type Log {
   address: String!
   topics: [String!]!
@@ -137,21 +115,4 @@ type Log {
   transactionLogIndex: UInt32
   logType: String
   removed: Boolean
-}
-
-type EventNotification {
-  data: String!
-  address: String!
-  log: Log!
-}
-
-# type Connection {
-#   node: String
-#   networkNameOrChainId: String
-# }
-
-type Network {
-  name: String!
-  chainId: Int!
-  ensAddress: String
 }

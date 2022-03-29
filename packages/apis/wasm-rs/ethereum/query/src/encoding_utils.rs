@@ -1,10 +1,13 @@
 use ethers_core::{
-  types::{Bytes},
+  utils::{to_checksum},
+  types::{Bytes, H160},
   abi::{
     AbiParser, Token, Error, ParamType,
     token::{LenientTokenizer, Tokenizer}
   }
 };
+use regex::Regex;
+use std::str::FromStr;
 
 pub fn tokenize_str_args(param_types: Vec<ParamType>, args: Vec<String>) -> Result<Vec<Token>, Error> {
   let mut tokens: Vec<Result<Token, Error>> = Vec::new();
@@ -20,8 +23,33 @@ pub fn tokenize_str_args(param_types: Vec<ParamType>, args: Vec<String>) -> Resu
 
 pub fn encode_function_args(method: &str, args: Vec<String>) -> Result<Bytes, Error> {
   let function = AbiParser::default().parse_function(method).unwrap();
-  let tokenized_args: Vec<Token> = tokenize_str_args(function.inputs.into_iter()
+  let tokenized_args: Vec<Token> = tokenize_str_args(function.inputs.clone().into_iter()
     .map(|x| x.kind).collect(), args)?;
 
   Ok(function.encode_input(&tokenized_args).map(Into::into)?)
+}
+
+pub fn get_address(addr_str: &str) -> Result<String, String> {
+  let is_regular_regex = Regex::new(r"^(0x)?[0-9a-fA-F]{40}$").unwrap();
+
+  if is_regular_regex.is_match(addr_str) {
+    let mut address = String::from(addr_str);
+
+    if !addr_str.starts_with("0x") {
+      address = String::from("0x") + &address;
+    }
+
+    let h160_address = H160::from_str(&address).map_err(|e| e.to_string())?;
+    let checksum_regex = Regex::new(r"([A-F].*[a-f])|([a-f].*[A-F])").unwrap();
+
+    let checksum = to_checksum(&h160_address, Option::None);
+
+    if checksum_regex.is_match(&address) && address.ne(&checksum) {
+      return Err(format!("Bad address checksum: {}", addr_str))
+    }
+
+    Ok(checksum)
+  } else {
+    Err(format!("Invalid address: {}", addr_str))
+  }
 }
