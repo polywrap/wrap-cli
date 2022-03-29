@@ -137,10 +137,10 @@ export function read{{type}}(reader: Read): {{type}} {
   {{/required}}
   {{/properties}}
 
-  return {
-    {{#properties}}
-    {{name}}: _{{name}}{{^last}},{{/last}}
-    {{/properties}}
-  };
+  return new {{type}}(
+  {{#properties}}
+    _{{name}}{{^last}},{{/last}}
+  {{/properties}}
+  );
 }
 {{/__commonPath}}

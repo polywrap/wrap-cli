@@ -18,6 +18,16 @@ export class MutationEnv {
   prop: string;
   optProp: string | null;
 
+  constructor(
+    mutProp: string,
+    prop: string,
+    optProp: string | null,
+  ) {
+    this.mutProp = mutProp;
+    this.prop = prop;
+    this.optProp = optProp;
+  }
+
   static toBuffer(type: MutationEnv): ArrayBuffer {
     return serializeMutationEnv(type);
   }

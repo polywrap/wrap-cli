@@ -4,7 +4,7 @@ import {
 } from "./w3";
 
 export function method1(input: Input_method1): Result {
-  return {
-    m_const: "result: " + input.m_const.m_const,
-  };
+  return new Result({
+    const: "result: " + input.m_const.const,
+  });
 }

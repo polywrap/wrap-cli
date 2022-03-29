@@ -5,31 +5,35 @@ import {
 import {
   deserializequeryMethodArgs,
   serializequeryMethodResult,
+  Input_queryMethod,
   deserializeobjectMethodArgs,
-  serializeobjectMethodResult
+  serializeobjectMethodResult,
+  Input_objectMethod
 } from "./serialization";
 
 export function queryMethodWrapped(argsBuf: ArrayBuffer): ArrayBuffer {
   const args = deserializequeryMethodArgs(argsBuf);
-  const result = queryMethod({
-    str: args.str,
-    optStr: args.optStr,
-    en: args.en,
-    optEnum: args.optEnum,
-    enumArray: args.enumArray,
-    optEnumArray: args.optEnumArray,
-    map: args.map
-  });
+  const input = new Input_queryMethod(
+    args.str,
+    args.optStr,
+    args.en,
+    args.optEnum,
+    args.enumArray,
+    args.optEnumArray,
+    args.map
+  );
+  const result = queryMethod(input);
   return serializequeryMethodResult(result);
 }
 
 export function objectMethodWrapped(argsBuf: ArrayBuffer): ArrayBuffer {
   const args = deserializeobjectMethodArgs(argsBuf);
-  const result = objectMethod({
-    object: args.object,
-    optObject: args.optObject,
-    objectArray: args.objectArray,
-    optObjectArray: args.optObjectArray
-  });
+  const input = new Input_objectMethod(
+    args.object,
+    args.optObject,
+    args.objectArray,
+    args.optObjectArray
+  );
+  const result = objectMethod(input);
   return serializeobjectMethodResult(result);
 }

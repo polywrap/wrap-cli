@@ -22,6 +22,16 @@ export class {{type}} {
   {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
   {{/properties}}
 
+  constructor(
+  {{#properties}}
+    {{#handleKeywords}}{{name}}{{/handleKeywords}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
+  {{/properties}}
+  ) {
+  {{#properties}}
+    this.{{name}} = {{#handleKeywords}}{{name}}{{/handleKeywords}};
+  {{/properties}}
+  }
+
   static toBuffer(type: {{type}}): ArrayBuffer {
     return serialize{{type}}(type);
   }

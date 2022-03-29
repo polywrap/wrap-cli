@@ -19,6 +19,18 @@ export class QueryEnv {
   prop: string;
   optProp: string | null;
 
+  constructor(
+    queryProp: string,
+    optMap: Map<string, Nullable<i32>> | null,
+    prop: string,
+    optProp: string | null,
+  ) {
+    this.queryProp = queryProp;
+    this.optMap = optMap;
+    this.prop = prop;
+    this.optProp = optProp;
+  }
+
   static toBuffer(type: QueryEnv): ArrayBuffer {
     return serializeQueryEnv(type);
   }

@@ -7,7 +7,8 @@ import {
 import {
   {{#methods}}
   deserialize{{name}}Args,
-  serialize{{name}}Result{{^last}},{{/last}}
+  serialize{{name}}Result,
+  Input_{{name}}{{^last}},{{/last}}
   {{/methods}}
 } from "./serialization";
 {{/methods.length}}
@@ -17,11 +18,12 @@ export function {{name}}Wrapped(argsBuf: ArrayBuffer): ArrayBuffer {
   {{#arguments.length}}
   const args = deserialize{{name}}Args(argsBuf);
   {{/arguments.length}}
-  const result = {{name}}({{#arguments.length}}{
-    {{#arguments}}
-    {{#handleKeywords}}{{name}}{{/handleKeywords}}: args.{{#handleKeywords}}{{name}}{{/handleKeywords}}{{^last}},{{/last}}
-    {{/arguments}}
-  }{{/arguments.length}});
+  const input = new Input_{{name}}(
+  {{#arguments}}
+    args.{{name}}{{^last}},{{/last}}
+  {{/arguments}}
+  );
+  const result = {{name}}({{#arguments.length}}input{{/arguments.length}});
   return serialize{{name}}Result(result);
 }
 {{^last}}

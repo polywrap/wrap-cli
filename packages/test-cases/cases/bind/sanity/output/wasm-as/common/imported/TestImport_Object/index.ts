@@ -26,6 +26,26 @@ export class TestImport_Object {
   enumArray: Array<Types.TestImport_Enum>;
   optEnumArray: Array<Nullable<Types.TestImport_Enum>> | null;
 
+  constructor(
+    object: Types.TestImport_AnotherObject,
+    optObject: Types.TestImport_AnotherObject | null,
+    objectArray: Array<Types.TestImport_AnotherObject>,
+    optObjectArray: Array<Types.TestImport_AnotherObject | null> | null,
+    en: Types.TestImport_Enum,
+    optEnum: Nullable<Types.TestImport_Enum>,
+    enumArray: Array<Types.TestImport_Enum>,
+    optEnumArray: Array<Nullable<Types.TestImport_Enum>> | null,
+  ) {
+    this.object = object;
+    this.optObject = optObject;
+    this.objectArray = objectArray;
+    this.optObjectArray = optObjectArray;
+    this.en = en;
+    this.optEnum = optEnum;
+    this.enumArray = enumArray;
+    this.optEnumArray = optEnumArray;
+  }
+
   static toBuffer(type: TestImport_Object): ArrayBuffer {
     return serializeTestImport_Object(type);
   }

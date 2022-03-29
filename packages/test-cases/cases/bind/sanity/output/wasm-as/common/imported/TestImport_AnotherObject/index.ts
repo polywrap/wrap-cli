@@ -19,6 +19,12 @@ export class TestImport_AnotherObject {
 
   prop: string;
 
+  constructor(
+    prop: string,
+  ) {
+    this.prop = prop;
+  }
+
   static toBuffer(type: TestImport_AnotherObject): ArrayBuffer {
     return serializeTestImport_AnotherObject(type);
   }
