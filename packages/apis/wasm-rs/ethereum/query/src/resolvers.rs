@@ -6,11 +6,10 @@ use super::utils::{encode_function_args, tokenize_str_args, contract_call_to_tx,
 use ethers_core::{
   abi::{AbiParser, encode},
   utils::{parse_ether, format_ether},
-  types::{Address}
+  types::{Address, U256}
 };
 use std::str::FromStr;
 use polywrap_wasm_rs::{BigInt};
-use num_traits::{FromPrimitive, ToPrimitive};
 
 pub fn call_contract_view(input: InputCallContractView) -> String {
   let tx_request = contract_call_to_tx(&input.address, &input.method, input.args);
@@ -138,17 +137,17 @@ pub fn check_address(input: super::w3::InputCheckAddress) -> bool {
   }
 }
 
-pub fn to_wei(input: super::w3::InputToWei) -> BigInt {
+pub fn to_wei(input: super::w3::InputToWei) -> String {
   match parse_ether(input.eth) {
-    Ok(wei) => FromPrimitive::from_u64(wei.as_u64()).unwrap(),
+    Ok(wei) => wei.to_string(),
     Err(e) => panic!("{}", e)
   }
 }
 
 pub fn to_eth(input: super::w3::InputToEth) -> String {
-  let wei = match input.wei.to_u64() {
-    Some(w) => w,
-    None => panic!("Invalid Wei number: {}", input.wei)
+  let wei = match U256::from_dec_str(&input.wei) {
+    Ok(w) => w,
+    Err(_) => panic!("Invalid Wei number: {}", input.wei)
   };
 
   format_ether(wei).to_string()

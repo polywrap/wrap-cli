@@ -10,7 +10,7 @@ use polywrap_wasm_rs::BigInt;
 pub fn to_tx_request(request: TransactionRequest) -> EthereumTxRequest {
     EthereumTxRequest {
         to: request.to.map(|f| match f {
-          NameOrAddress::Address(addr) => addr.to_string(),
+          NameOrAddress::Address(addr) => format!("{addr:x}"),
           NameOrAddress::Name(name) => name.to_string(),
         }),
         from: request.from.map(|f| f.to_string()),
@@ -19,8 +19,8 @@ pub fn to_tx_request(request: TransactionRequest) -> EthereumTxRequest {
             .gas_price
             .map(|f| BigInt::try_from(f.as_u128()).unwrap()),
         data: request
-            .data
-            .map(|f| String::from_utf8(f.0.to_vec()).unwrap()),
+          .data
+          .map(|f| format!("{f:#x}")),
         value: request
             .value
             .map(|f| BigInt::try_from(f.as_u128()).unwrap()),

@@ -63,10 +63,10 @@ type Query {
 
  toWei(
    eth: String!
- ): BigInt!
+ ): String!
 
  toEth(
-   wei: BigInt!
+   wei: String!
  ): String!
 
  awaitTransaction(
