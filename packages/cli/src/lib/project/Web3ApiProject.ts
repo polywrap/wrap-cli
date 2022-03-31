@@ -14,7 +14,12 @@ import {
   intlMsg,
 } from "..";
 
-import { Web3ApiManifest, BuildManifest, MetaManifest } from "@web3api/core-js";
+import {
+  Web3ApiManifest,
+  BuildManifest,
+  MetaManifest,
+  DeployManifest,
+} from "@web3api/core-js";
 import { getCommonPath, normalizePath } from "@web3api/os-js";
 import regexParser from "regex-parser";
 import path from "path";
@@ -32,12 +37,14 @@ const cacheLayout = {
 export interface Web3ApiProjectConfig extends ProjectConfig {
   web3apiManifestPath: string;
   buildManifestPath?: string;
+  deployManifestPath?: string;
   metaManifestPath?: string;
 }
 
 export class Web3ApiProject extends Project<Web3ApiManifest> {
   private _web3apiManifest: Web3ApiManifest | undefined;
   private _buildManifest: BuildManifest | undefined;
+  private _deployManifest: DeployManifest | undefined;
   private _metaManifest: MetaManifest | undefined;
   private _defaultBuildManifestCached = false;
 
@@ -51,6 +58,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     this._web3apiManifest = undefined;
     this._buildManifest = undefined;
     this._metaManifest = undefined;
+    this._deployManifest = undefined;
     this._defaultBuildManifestCached = false;
     this.resetCache();
   }
@@ -311,6 +319,53 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     }
   }
 
+  /// Web3API Deploy Manifest (web3api.deploy.yaml)
+
+  public async getDeployManifestPath(): Promise<string | undefined> {
+    const web3apiManifest = await this.getManifest();
+
+    // If a custom deploy manifest path is configured
+    if (this._config.deployManifestPath) {
+      return this._config.deployManifestPath;
+    }
+    // If the web3api.yaml manifest specifies a custom deploy manifest
+    else if (web3apiManifest.deploy) {
+      this._config.deployManifestPath = path.join(
+        this.getManifestDir(),
+        web3apiManifest.deploy
+      );
+      return this._config.deployManifestPath;
+    }
+    // No deploy manifest found
+    else {
+      return undefined;
+    }
+  }
+
+  public async getDeployManifestDir(): Promise<string | undefined> {
+    const manifestPath = await this.getDeployManifestPath();
+
+    if (manifestPath) {
+      return path.dirname(manifestPath);
+    } else {
+      return undefined;
+    }
+  }
+
+  public async getDeployManifest(): Promise<DeployManifest | undefined> {
+    if (!this._deployManifest) {
+      const manifestPath = await this.getDeployManifestPath();
+
+      if (manifestPath) {
+        this._deployManifest = await loadDeployManifest(
+          manifestPath,
+          this.quiet
+        );
+      }
+    }
+    return this._deployManifest;
+  }
+
   /// Web3API Meta Manifest (web3api.build.yaml)
 
   public async getMetaManifestPath(): Promise<string | undefined> {
@@ -371,6 +426,14 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     if (metaManifestPath) {
       paths.push(
         absolute ? metaManifestPath : path.relative(root, metaManifestPath)
+      );
+    }
+
+    const deployManifestPath = await this.getDeployManifestPath();
+
+    if (deployManifestPath) {
+      paths.push(
+        absolute ? deployManifestPath : path.relative(root, deployManifestPath)
       );
     }
 

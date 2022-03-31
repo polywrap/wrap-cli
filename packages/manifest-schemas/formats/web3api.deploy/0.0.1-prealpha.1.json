@@ -1,0 +1,62 @@
+{
+  "id": "DeployManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format"
+  ],
+  "properties": {
+    "format": {
+      "type": "string",
+      "const": "0.0.1-prealpha.1"
+    },
+    "deployments": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "deploy": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "package": {
+                "type": "string",
+                "format": "packageOrPath"
+              },
+              "config": {
+                "patternProperties": {
+                  "^.*$": {
+                    "type": ["string", "number"]
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          },
+          "publish": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "package": {
+                "type": "string"
+              },
+              "config": {
+                "patternProperties": {
+                  "^.*$": {
+                    "type": ["string", "number"]
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "required": ["name", "deploy", "publish"]
+      }
+    }
+  }
+}
