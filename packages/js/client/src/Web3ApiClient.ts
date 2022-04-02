@@ -42,15 +42,34 @@ import {
   CacheResolver,
   Contextualized,
   ResolveUriOptions,
+  RUNTIME_VERSION,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
 export interface Web3ApiClientConfig<TUri extends Uri | string = string>
   extends ClientConfig<TUri> {
   tracingEnabled: boolean;
+  rejectUnsupportedWrapperVersions: boolean;
 }
 
+type SemverTuple = [
+  number,
+  number,
+  number,
+  string | undefined,
+  string | undefined
+];
+
 export class Web3ApiClient implements Client {
+  private static readonly _semverRange = /^(([[(])(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][\da-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][\da-zA-Z-]*))*))?(?:\+([\da-zA-Z-]+(?:\.[\da-zA-Z-]+)*))?, ?(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][\da-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][\da-zA-Z-]*))*))?(?:\+([\da-zA-Z-]+(?:\.[\da-zA-Z-]+)*))?([\])]))|((0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)(?:-((?:0|[1-9]\d*|\d*[a-zA-Z-][\da-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][\da-zA-Z-]*))*))?(?:\+([\da-zA-Z-]+(?:\.[\da-zA-Z-]+)*))?)$/i;
+  private static readonly _runtimeVersionComponents: SemverTuple = (RUNTIME_VERSION.match(
+    Web3ApiClient._semverRange
+  ) as Array<string | undefined>)
+    .slice(15)
+    .map((x: string | undefined, i: number) =>
+      i < 3 ? Number(x) : x
+    ) as SemverTuple;
+
   // TODO: the API cache needs to be more like a routing table.
   // It should help us keep track of what URI's map to what APIs,
   // and handle cases where the are multiple jumps. For example, if
@@ -63,6 +82,7 @@ export class Web3ApiClient implements Client {
     envs: [],
     resolvers: [],
     tracingEnabled: false,
+    rejectUnsupportedWrapperVersions: true,
   };
 
   // Invoke specific contexts
@@ -91,6 +111,7 @@ export class Web3ApiClient implements Client {
             : [],
           resolvers: config.resolvers ?? [],
           tracingEnabled: !!config.tracingEnabled,
+          rejectUnsupportedWrapperVersions: !!config.rejectUnsupportedWrapperVersions,
         };
       }
 
@@ -103,6 +124,10 @@ export class Web3ApiClient implements Client {
       this._sanitizeConfig();
 
       Tracer.setAttribute("config", this._config);
+
+      this._isWrapperVersionSupported = this._isWrapperVersionSupported.bind(
+        this
+      );
     } catch (error) {
       Tracer.recordException(error);
       throw error;
@@ -486,6 +511,45 @@ export class Web3ApiClient implements Client {
     };
   }
 
+  /**
+   * Compare two SemVer quintuples.
+   *
+   * Follows rule 11 of the SemVer 2.0.0 specification
+   * (https://semver.org/spec/v2.0.0.html).
+   *
+   * @param {SemverTuple} l left-hand comparable
+   * @param {SemverTuple} r right-hand comparable
+   * @returns {number} negative if `l < r`, positive if `l > r`, otherwise 0.
+   * @private
+   * @static
+   */
+  private static _compareSemver(l: SemverTuple, r: SemverTuple): number {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    for (let i = 0; i < 3; i++) if (l[i] !== r[i]) return l[i] - r[i];
+    if (l[3] == null && r[3] != null) return 1;
+    if (l[3] != null && r[3] == null) return -1;
+
+    const lPR = (l[3] as string).split("."),
+      rPR = (r[3] as string).split(".");
+    for (let i = 0; i < Math.min(lPR.length, rPR.length); i++) {
+      const li = lPR[i],
+        ri = rPR[i];
+      if (li.match(/^\d+$/g)) {
+        if (ri.match(/^\d+$/g)) {
+          const liNumeric = Number(li),
+            riNumeric = Number(ri);
+          if (liNumeric !== riNumeric) return liNumeric - riNumeric;
+        } else return -1;
+      } else {
+        if (ri.match(/^\d+$/g)) return 1;
+        else if (li !== ri) return li.localeCompare(ri);
+      }
+    }
+
+    return lPR.length - rPR.length; // it's 0 anyway if they're the same
+  }
+
   private _addDefaultConfig() {
     const defaultClientConfig = getDefaultClientConfig();
 
@@ -649,6 +713,9 @@ export class Web3ApiClient implements Client {
       envs: context?.envs ? sanitizeEnvs(context.envs) : config.envs,
       resolvers: context?.resolvers ?? config.resolvers,
       tracingEnabled: context?.tracingEnabled || config.tracingEnabled,
+      rejectUnsupportedWrapperVersions:
+        context?.rejectUnsupportedWrapperVersions ||
+        config.rejectUnsupportedWrapperVersions,
     });
 
     return {
@@ -669,7 +736,6 @@ export class Web3ApiClient implements Client {
     const { api, uriHistory, error } = await this.resolveUri(uri, {
       contextId: options?.contextId,
     });
-
     if (!api) {
       if (error && error === ResolveUriError.InfiniteLoop) {
         throw Error(
@@ -687,7 +753,124 @@ export class Web3ApiClient implements Client {
       );
     }
 
+    const manifest = await api.getManifest(
+      { type: "web3api" },
+      contextualizeClient(this, options?.contextId)
+    );
+    if (!this._isWrapperVersionSupported(manifest?.targets)) {
+      const errorMessage = `This runtime is not supported by the provided wrapper.
+         runtime=${RUNTIME_VERSION}
+         targets=${JSON.stringify(manifest?.targets, null, 2)}`;
+
+      if (this._config.rejectUnsupportedWrapperVersions)
+        throw new RangeError(
+          errorMessage,
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          uri.toString()
+        );
+      else console.error(errorMessage, uri.toString());
+    }
+
     return api;
+  }
+
+  /**
+   * Checks if a given wrapper targets the runtime provided by this client.
+   *
+   * @param {string | string[] | undefined} v target declaration for a wrapper
+   * @returns {boolean} whether the current runtime version is targeted.
+   * @private
+   */
+  @Tracer.traceMethod("Web3ApiClient: _isWrapperVersionSupported")
+  private _isWrapperVersionSupported(
+    v: string | string[] | undefined
+  ): boolean {
+    if (v == null) v = "0.0.1-prealpha.69"; // the last version before versioning
+    if (Array.isArray(v)) return v.some(this._isWrapperVersionSupported);
+
+    const components = v.match(Web3ApiClient._semverRange);
+    if (components == null) return false;
+
+    /*
+     * These array deconstructions and number conversions should never fail,
+     * in principle, because of the regex. That is, the regex should catch and
+     * reject any cases where these values would fail to convert to be
+     * separated and converted to numbers correctly. So try/catches shouldn't
+     * be necessary in either of the branches here.
+     */
+    if (components[1] != null) {
+      // target was a range
+      const [
+        lowerBound,
+        lbMajor,
+        lbMinor,
+        lbPatch,
+        lbPreRelease,
+        lbBuild,
+        ubMajor,
+        ubMinor,
+        ubPatch,
+        ubPreRelease,
+        ubBuild,
+        upperBound,
+      ] = components.slice(2, 14);
+      const lb: SemverTuple = [
+          Number(lbMajor),
+          Number(lbMinor),
+          Number(lbPatch),
+          lbPreRelease,
+          lbBuild,
+        ],
+        ub: SemverTuple = [
+          Number(ubMajor),
+          Number(ubMinor),
+          Number(ubPatch),
+          ubPreRelease,
+          ubBuild,
+        ];
+
+      if (Web3ApiClient._compareSemver(lb, ub) > 0) {
+        // check if they're reversed
+        const l = Web3ApiClient._compareSemver(
+            ub,
+            Web3ApiClient._runtimeVersionComponents
+          ),
+          r = Web3ApiClient._compareSemver(
+            Web3ApiClient._runtimeVersionComponents,
+            lb
+          );
+        return (
+          (lowerBound === "[" ? r <= 0 : r < 0) &&
+          (upperBound === "]" ? l <= 0 : l < 0)
+        );
+      } else {
+        const l = Web3ApiClient._compareSemver(
+            lb,
+            Web3ApiClient._runtimeVersionComponents
+          ),
+          r = Web3ApiClient._compareSemver(
+            Web3ApiClient._runtimeVersionComponents,
+            ub
+          );
+        return (
+          (lowerBound === "[" ? l <= 0 : l < 0) &&
+          (upperBound === "]" ? r <= 0 : r < 0)
+        );
+      }
+    } else {
+      // target was a single version
+      const [major, minor, patch, preRelease, build] = components.slice(15);
+      return (
+        Web3ApiClient._compareSemver(Web3ApiClient._runtimeVersionComponents, [
+          Number(major),
+          Number(minor),
+          Number(patch),
+          preRelease,
+          build,
+        ]) === 0
+      );
+    }
   }
 }
 

@@ -14,7 +14,12 @@ import {
   intlMsg,
 } from "..";
 
-import { Web3ApiManifest, BuildManifest, MetaManifest } from "@web3api/core-js";
+import {
+  Web3ApiManifest,
+  BuildManifest,
+  MetaManifest,
+  RUNTIME_VERSION,
+} from "@web3api/core-js";
 import { getCommonPath, normalizePath } from "@web3api/os-js";
 import regexParser from "regex-parser";
 import path from "path";
@@ -68,6 +73,9 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
         this._config.quiet
       );
     }
+
+    if (this._web3apiManifest.targets == null)
+      this._web3apiManifest.targets = RUNTIME_VERSION;
 
     return Promise.resolve(this._web3apiManifest);
   }

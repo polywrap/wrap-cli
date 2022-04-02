@@ -14,6 +14,7 @@ import {
   copyArtifactsFromBuildImage,
   intlMsg,
 } from "./";
+import { BUILDER_ID } from "../version";
 
 import {
   InvokableModules,
@@ -319,16 +320,14 @@ export class Compiler {
 
     web3ApiManifest.build = "./web3api.build.json";
 
-    // Create the BuildManifest
-    const buildManifest: BuildManifest = {
-      format: "0.0.1-prealpha.2",
+    return {
+      format: "0.0.1-prealpha.3",
       __type: "BuildManifest",
+      built_by: BUILDER_ID,
       docker: {
         buildImageId: dockerImageId,
       },
-    };
-
-    return buildManifest;
+    } as BuildManifest;
   }
 
   private _getModulesToBuild(manifest: Web3ApiManifest): ModulesToBuild {

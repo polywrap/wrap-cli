@@ -18,7 +18,7 @@
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json && yarn build:envs",
     "build:envs": "copyfiles ./src/lib/build-envs/**/**/* ./build/lib/build-envs/ -u 3",
-    "prebuild": "ts-node ./scripts/generateIntlTypes.ts",
+    "prebuild": "ts-node ./scripts/generateIntlTypes.ts && ts-node ./scripts/generateVersionFile.ts",
     "lint": "eslint --color -c ../../.eslintrc.js .",
     "test": "cross-env TEST=true jest --passWithNoTests --runInBand --verbose",
     "test:ci": "cross-env TEST=true jest --passWithNoTests --runInBand --verbose",
