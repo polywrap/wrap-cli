@@ -61,7 +61,7 @@ export function readTestImport_AnotherObject(reader: Read): TestImport_AnotherOb
     throw new Error(reader.context().printWithContext("Missing required property: 'prop: String'"));
   }
 
-  return new TestImport_AnotherObject(
-    _prop
-  );
+  return {
+    prop: _prop
+  };
 }

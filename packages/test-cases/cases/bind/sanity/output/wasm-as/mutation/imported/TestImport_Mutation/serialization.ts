@@ -15,16 +15,6 @@ export class Input_importedMethod {
   str: string;
   object: Types.TestImport_Object;
   objectArray: Array<Types.TestImport_Object>;
-
-  constructor(
-    str: string,
-    object: Types.TestImport_Object,
-    objectArray: Array<Types.TestImport_Object>,
-  ) {
-    this.str = str;
-    this.object = object;
-    this.objectArray = objectArray;
-  }
 }
 
 export function serializeimportedMethodArgs(input: Input_importedMethod): ArrayBuffer {
@@ -76,12 +66,6 @@ export function deserializeimportedMethodResult(buffer: ArrayBuffer): Types.Test
 
 export class Input_anotherMethod {
   arg: Array<string>;
-
-  constructor(
-    arg: Array<string>,
-  ) {
-    this.arg = arg;
-  }
 }
 
 export function serializeanotherMethodArgs(input: Input_anotherMethod): ArrayBuffer {

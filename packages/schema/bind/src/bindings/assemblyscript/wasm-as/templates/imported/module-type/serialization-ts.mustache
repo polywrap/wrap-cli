@@ -6,18 +6,8 @@ import * as Types from "../..";
 {{#methods}}
 export class Input_{{name}} {
   {{#arguments}}
-  {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
+  {{#handleKeywords}}{{name}}{{/handleKeywords}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
   {{/arguments}}
-
-  constructor(
-  {{#arguments}}
-    {{#handleKeywords}}{{name}}{{/handleKeywords}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
-  {{/arguments}}
-  ) {
-  {{#arguments}}
-    this.{{name}} = {{#handleKeywords}}{{name}}{{/handleKeywords}};
-  {{/arguments}}
-  }
 }
 
 export function serialize{{name}}Args(input: Input_{{name}}): ArrayBuffer {
@@ -40,15 +30,15 @@ export function write{{name}}Args(
   writer.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
   writer.writeString("{{name}}");
   {{#scalar}}
-  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(input.{{name}});
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(input.{{#handleKeywords}}{{name}}{{/handleKeywords}});
   {{/scalar}}
   {{#array}}
-  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(input.{{name}}, (writer: Write, item: {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}}): void => {
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(input.{{#handleKeywords}}{{name}}{{/handleKeywords}}, (writer: Write, item: {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}}): void => {
     {{> serialize_array}}
   });
   {{/array}}
   {{#map}}
-  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(input.{{name}}, (writer: Write, key: {{#key}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/key}}) => {
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(input.{{#handleKeywords}}{{name}}{{/handleKeywords}}, (writer: Write, key: {{#key}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/key}}) => {
     writer.write{{#key}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/key}}(key);
   }, (writer: Write, value: {{#value}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/value}}): void => {
     {{> serialize_map_value}}
@@ -56,19 +46,19 @@ export function write{{name}}Args(
   {{/map}}
   {{#enum}}
   {{#required}}
-  writer.writeInt32(input.{{name}});
+  writer.writeInt32(input.{{#handleKeywords}}{{name}}{{/handleKeywords}});
   {{/required}}
   {{^required}}
-  writer.writeNullableInt32(input.{{name}});
+  writer.writeNullableInt32(input.{{#handleKeywords}}{{name}}{{/handleKeywords}});
   {{/required}}
   {{/enum}}
   {{#object}}
   {{#required}}
-  Types.{{type}}.write(writer, input.{{name}});
+  Types.{{type}}.write(writer, input.{{#handleKeywords}}{{name}}{{/handleKeywords}});
   {{/required}}
   {{^required}}
-  if (input.{{name}}) {
-    Types.{{type}}.write(writer, input.{{name}} as Types.{{type}});
+  if (input.{{#handleKeywords}}{{name}}{{/handleKeywords}}) {
+    Types.{{type}}.write(writer, input.{{#handleKeywords}}{{name}}{{/handleKeywords}} as Types.{{type}});
   } else {
     writer.writeNil();
   }

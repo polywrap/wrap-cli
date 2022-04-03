@@ -84,9 +84,9 @@ export function readAnotherType(reader: Read): AnotherType {
   }
 
 
-  return new AnotherType(
-    _prop,
-    _circular,
-    _const
-  );
+  return {
+    prop: _prop,
+    circular: _circular,
+    const: _const
+  };
 }

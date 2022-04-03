@@ -86,9 +86,9 @@ export function readMutationEnv(reader: Read): MutationEnv {
     throw new Error(reader.context().printWithContext("Missing required property: 'prop: String'"));
   }
 
-  return new MutationEnv(
-    _mutProp,
-    _prop,
-    _optProp
-  );
+  return {
+    mutProp: _mutProp,
+    prop: _prop,
+    optProp: _optProp
+  };
 }

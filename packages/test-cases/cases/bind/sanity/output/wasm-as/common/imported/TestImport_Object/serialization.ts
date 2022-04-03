@@ -224,14 +224,14 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
     throw new Error(reader.context().printWithContext("Missing required property: 'enumArray: [TestImport_Enum]'"));
   }
 
-  return new TestImport_Object(
-    _object,
-    _optObject,
-    _objectArray,
-    _optObjectArray,
-    _en,
-    _optEnum,
-    _enumArray,
-    _optEnumArray
-  );
+  return {
+    object: _object,
+    optObject: _optObject,
+    objectArray: _objectArray,
+    optObjectArray: _optObjectArray,
+    en: _en,
+    optEnum: _optEnum,
+    enumArray: _enumArray,
+    optEnumArray: _optEnumArray
+  };
 }

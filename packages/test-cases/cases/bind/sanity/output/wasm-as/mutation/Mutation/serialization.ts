@@ -18,22 +18,6 @@ export class Input_mutationMethod {
   optEnum: Nullable<Types.CustomEnum>;
   enumArray: Array<Types.CustomEnum>;
   optEnumArray: Array<Nullable<Types.CustomEnum>> | null;
-
-  constructor(
-    str: string,
-    optStr: string | null,
-    en: Types.CustomEnum,
-    optEnum: Nullable<Types.CustomEnum>,
-    enumArray: Array<Types.CustomEnum>,
-    optEnumArray: Array<Nullable<Types.CustomEnum>> | null,
-  ) {
-    this.str = str;
-    this.optStr = optStr;
-    this.en = en;
-    this.optEnum = optEnum;
-    this.enumArray = enumArray;
-    this.optEnumArray = optEnumArray;
-  }
 }
 
 export function deserializemutationMethodArgs(argsBuf: ArrayBuffer): Input_mutationMethod {
@@ -150,14 +134,14 @@ export function deserializemutationMethodArgs(argsBuf: ArrayBuffer): Input_mutat
     throw new Error(reader.context().printWithContext("Missing required argument: 'enumArray: [CustomEnum]'"));
   }
 
-  return new Input_mutationMethod(
-    _str,
-    _optStr,
-    _en,
-    _optEnum,
-    _enumArray,
-    _optEnumArray
-  );
+  return {
+    str: _str,
+    optStr: _optStr,
+    en: _en,
+    optEnum: _optEnum,
+    enumArray: _enumArray,
+    optEnumArray: _optEnumArray
+  };
 }
 
 export function serializemutationMethodResult(result: i32): ArrayBuffer {
@@ -182,18 +166,6 @@ export class Input_objectMethod {
   optObject: Types.AnotherType | null;
   objectArray: Array<Types.AnotherType>;
   optObjectArray: Array<Types.AnotherType | null> | null;
-
-  constructor(
-    object: Types.AnotherType,
-    optObject: Types.AnotherType | null,
-    objectArray: Array<Types.AnotherType>,
-    optObjectArray: Array<Types.AnotherType | null> | null,
-  ) {
-    this.object = object;
-    this.optObject = optObject;
-    this.objectArray = objectArray;
-    this.optObjectArray = optObjectArray;
-  }
 }
 
 export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectMethod {
@@ -259,12 +231,12 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectM
     throw new Error(reader.context().printWithContext("Missing required argument: 'objectArray: [AnotherType]'"));
   }
 
-  return new Input_objectMethod(
-    _object,
-    _optObject,
-    _objectArray,
-    _optObjectArray
-  );
+  return {
+    object: _object,
+    optObject: _optObject,
+    objectArray: _objectArray,
+    optObjectArray: _optObjectArray
+  };
 }
 
 export function serializeobjectMethodResult(result: Types.AnotherType | null): ArrayBuffer {

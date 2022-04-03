@@ -4,18 +4,8 @@ import * as Types from "..";
 
 export class Input_{{name}} {
   {{#arguments}}
-  {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
+  {{#handleKeywords}}{{name}}{{/handleKeywords}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
   {{/arguments}}
-
-  constructor(
-  {{#arguments}}
-    {{#handleKeywords}}{{name}}{{/handleKeywords}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
-  {{/arguments}}
-  ) {
-  {{#arguments}}
-    this.{{name}} = {{#handleKeywords}}{{name}}{{/handleKeywords}};
-  {{/arguments}}
-  }
 }
 
 export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
@@ -95,11 +85,11 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
   {{/arguments}}
   {{/arguments.length}}
 
-  return new Input_{{name}}(
-  {{#arguments}}
-    _{{name}}{{^last}},{{/last}}
-  {{/arguments}}
-  );
+  return {
+    {{#arguments}}
+    {{#handleKeywords}}{{name}}{{/handleKeywords}}: _{{name}}{{^last}},{{/last}}
+    {{/arguments}}
+  };
 }
 
 export function serialize{{name}}Result(result: {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}): ArrayBuffer {

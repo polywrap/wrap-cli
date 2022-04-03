@@ -25,36 +25,6 @@ export class Input_importedMethod {
   optEnum: Nullable<Types.TestImport_Enum>;
   enumArray: Array<Types.TestImport_Enum>;
   optEnumArray: Array<Nullable<Types.TestImport_Enum>> | null;
-
-  constructor(
-    str: string,
-    optStr: string | null,
-    u: u32,
-    optU: Nullable<u32>,
-    uArrayArray: Array<Array<Nullable<u32>> | null>,
-    object: Types.TestImport_Object,
-    optObject: Types.TestImport_Object | null,
-    objectArray: Array<Types.TestImport_Object>,
-    optObjectArray: Array<Types.TestImport_Object | null> | null,
-    en: Types.TestImport_Enum,
-    optEnum: Nullable<Types.TestImport_Enum>,
-    enumArray: Array<Types.TestImport_Enum>,
-    optEnumArray: Array<Nullable<Types.TestImport_Enum>> | null,
-  ) {
-    this.str = str;
-    this.optStr = optStr;
-    this.u = u;
-    this.optU = optU;
-    this.uArrayArray = uArrayArray;
-    this.object = object;
-    this.optObject = optObject;
-    this.objectArray = objectArray;
-    this.optObjectArray = optObjectArray;
-    this.en = en;
-    this.optEnum = optEnum;
-    this.enumArray = enumArray;
-    this.optEnumArray = optEnumArray;
-  }
 }
 
 export function serializeimportedMethodArgs(input: Input_importedMethod): ArrayBuffer {
@@ -164,12 +134,6 @@ export function deserializeimportedMethodResult(buffer: ArrayBuffer): Types.Test
 
 export class Input_anotherMethod {
   arg: Array<string>;
-
-  constructor(
-    arg: Array<string>,
-  ) {
-    this.arg = arg;
-  }
 }
 
 export function serializeanotherMethodArgs(input: Input_anotherMethod): ArrayBuffer {

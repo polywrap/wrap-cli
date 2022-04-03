@@ -18,16 +18,6 @@ export class AnotherType {
   circular: Types.CustomType | null;
   const: string | null;
 
-  constructor(
-    prop: string | null,
-    circular: Types.CustomType | null,
-    m_const: string | null,
-  ) {
-    this.prop = prop;
-    this.circular = circular;
-    this.const = m_const;
-  }
-
   static toBuffer(type: AnotherType): ArrayBuffer {
     return serializeAnotherType(type);
   }

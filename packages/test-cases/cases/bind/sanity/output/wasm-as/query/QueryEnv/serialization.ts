@@ -104,10 +104,10 @@ export function readQueryEnv(reader: Read): QueryEnv {
     throw new Error(reader.context().printWithContext("Missing required property: 'prop: String'"));
   }
 
-  return new QueryEnv(
-    _queryProp,
-    _optMap,
-    _prop,
-    _optProp
-  );
+  return {
+    queryProp: _queryProp,
+    optMap: _optMap,
+    prop: _prop,
+    optProp: _optProp
+  };
 }

@@ -5,34 +5,30 @@ import {
 import {
   deserializemutationMethodArgs,
   serializemutationMethodResult,
-  Input_mutationMethod,
   deserializeobjectMethodArgs,
-  serializeobjectMethodResult,
-  Input_objectMethod
+  serializeobjectMethodResult
 } from "./serialization";
 
 export function mutationMethodWrapped(argsBuf: ArrayBuffer): ArrayBuffer {
   const args = deserializemutationMethodArgs(argsBuf);
-  const input = new Input_mutationMethod(
-    args.str,
-    args.optStr,
-    args.en,
-    args.optEnum,
-    args.enumArray,
-    args.optEnumArray
-  );
-  const result = mutationMethod(input);
+  const result = mutationMethod({
+    str: args.str,
+    optStr: args.optStr,
+    en: args.en,
+    optEnum: args.optEnum,
+    enumArray: args.enumArray,
+    optEnumArray: args.optEnumArray
+  });
   return serializemutationMethodResult(result);
 }
 
 export function objectMethodWrapped(argsBuf: ArrayBuffer): ArrayBuffer {
   const args = deserializeobjectMethodArgs(argsBuf);
-  const input = new Input_objectMethod(
-    args.object,
-    args.optObject,
-    args.objectArray,
-    args.optObjectArray
-  );
-  const result = objectMethod(input);
+  const result = objectMethod({
+    object: args.object,
+    optObject: args.optObject,
+    objectArray: args.objectArray,
+    optObjectArray: args.optObjectArray
+  });
   return serializeobjectMethodResult(result);
 }
