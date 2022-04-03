@@ -62,6 +62,6 @@ export function readTestImport_AnotherObject(reader: Read): TestImport_AnotherOb
   }
 
   return {
-    prop: _prop
+    "prop": _prop
   };
 }

@@ -151,13 +151,13 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
   }
 
   return {
-    str: _str,
-    optStr: _optStr,
-    en: _en,
-    optEnum: _optEnum,
-    enumArray: _enumArray,
-    optEnumArray: _optEnumArray,
-    map: _map
+    "str": _str,
+    "optStr": _optStr,
+    "en": _en,
+    "optEnum": _optEnum,
+    "enumArray": _enumArray,
+    "optEnumArray": _optEnumArray,
+    "map": _map
   };
 }
 
@@ -249,10 +249,10 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectM
   }
 
   return {
-    object: _object,
-    optObject: _optObject,
-    objectArray: _objectArray,
-    optObjectArray: _optObjectArray
+    "object": _object,
+    "optObject": _optObject,
+    "objectArray": _objectArray,
+    "optObjectArray": _optObjectArray
   };
 }
 

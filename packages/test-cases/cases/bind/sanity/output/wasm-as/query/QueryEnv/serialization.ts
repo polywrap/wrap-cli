@@ -105,9 +105,9 @@ export function readQueryEnv(reader: Read): QueryEnv {
   }
 
   return {
-    queryProp: _queryProp,
-    optMap: _optMap,
-    prop: _prop,
-    optProp: _optProp
+    "queryProp": _queryProp,
+    "optMap": _optMap,
+    "prop": _prop,
+    "optProp": _optProp
   };
 }

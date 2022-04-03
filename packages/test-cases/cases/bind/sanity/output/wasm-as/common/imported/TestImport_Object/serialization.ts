@@ -225,13 +225,13 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
   }
 
   return {
-    object: _object,
-    optObject: _optObject,
-    objectArray: _objectArray,
-    optObjectArray: _optObjectArray,
-    en: _en,
-    optEnum: _optEnum,
-    enumArray: _enumArray,
-    optEnumArray: _optEnumArray
+    "object": _object,
+    "optObject": _optObject,
+    "objectArray": _objectArray,
+    "optObjectArray": _optObjectArray,
+    "en": _en,
+    "optEnum": _optEnum,
+    "enumArray": _enumArray,
+    "optEnumArray": _optEnumArray
   };
 }

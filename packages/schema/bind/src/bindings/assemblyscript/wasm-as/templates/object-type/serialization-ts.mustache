@@ -139,7 +139,7 @@ export function read{{type}}(reader: Read): {{type}} {
 
   return {
     {{#properties}}
-    {{name}}: _{{name}}{{^last}},{{/last}}
+    "{{name}}": _{{name}}{{^last}},{{/last}}
     {{/properties}}
   };
 }

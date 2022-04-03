@@ -135,12 +135,12 @@ export function deserializemutationMethodArgs(argsBuf: ArrayBuffer): Input_mutat
   }
 
   return {
-    str: _str,
-    optStr: _optStr,
-    en: _en,
-    optEnum: _optEnum,
-    enumArray: _enumArray,
-    optEnumArray: _optEnumArray
+    "str": _str,
+    "optStr": _optStr,
+    "en": _en,
+    "optEnum": _optEnum,
+    "enumArray": _enumArray,
+    "optEnumArray": _optEnumArray
   };
 }
 
@@ -232,10 +232,10 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectM
   }
 
   return {
-    object: _object,
-    optObject: _optObject,
-    objectArray: _objectArray,
-    optObjectArray: _optObjectArray
+    "object": _object,
+    "optObject": _optObject,
+    "objectArray": _objectArray,
+    "optObjectArray": _optObjectArray
   };
 }
 

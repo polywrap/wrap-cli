@@ -87,8 +87,8 @@ export function readMutationEnv(reader: Read): MutationEnv {
   }
 
   return {
-    mutProp: _mutProp,
-    prop: _prop,
-    optProp: _optProp
+    "mutProp": _mutProp,
+    "prop": _prop,
+    "optProp": _optProp
   };
 }

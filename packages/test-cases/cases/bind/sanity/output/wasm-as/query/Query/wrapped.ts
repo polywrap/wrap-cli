@@ -12,13 +12,13 @@ import {
 export function queryMethodWrapped(argsBuf: ArrayBuffer): ArrayBuffer {
   const args = deserializequeryMethodArgs(argsBuf);
   const result = queryMethod({
-    str: args.str,
-    optStr: args.optStr,
-    en: args.en,
-    optEnum: args.optEnum,
-    enumArray: args.enumArray,
-    optEnumArray: args.optEnumArray,
-    map: args.map
+    "str": args.str,
+    "optStr": args.optStr,
+    "en": args.en,
+    "optEnum": args.optEnum,
+    "enumArray": args.enumArray,
+    "optEnumArray": args.optEnumArray,
+    "map": args.map
   });
   return serializequeryMethodResult(result);
 }
@@ -26,10 +26,10 @@ export function queryMethodWrapped(argsBuf: ArrayBuffer): ArrayBuffer {
 export function objectMethodWrapped(argsBuf: ArrayBuffer): ArrayBuffer {
   const args = deserializeobjectMethodArgs(argsBuf);
   const result = objectMethod({
-    object: args.object,
-    optObject: args.optObject,
-    objectArray: args.objectArray,
-    optObjectArray: args.optObjectArray
+    "object": args.object,
+    "optObject": args.optObject,
+    "objectArray": args.objectArray,
+    "optObjectArray": args.optObjectArray
   });
   return serializeobjectMethodResult(result);
 }
