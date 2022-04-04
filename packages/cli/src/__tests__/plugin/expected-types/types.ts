@@ -104,7 +104,7 @@ export interface Ethereum_EventNotification {
 /* URI: "ens/ethereum.web3api.eth" */
 export interface Ethereum_Network {
   name: String;
-  chainId: BigInt;
+  chainId: UInt32;
   ensAddress?: String | null;
 }
 
@@ -118,7 +118,7 @@ export interface Ethereum_TxResponse {
   gasPrice?: BigInt | null;
   data: String;
   value: BigInt;
-  chainId: BigInt;
+  chainId: UInt32;
   blockNumber?: BigInt | null;
   blockHash?: String | null;
   timestamp?: UInt32 | null;

@@ -215,7 +215,7 @@ type Ethereum_TxRequest @imported(
   gasPrice: BigInt
   data: String
   value: BigInt
-  chainId: BigInt
+  chainId: UInt32
   type: UInt32
 }
 
@@ -275,7 +275,7 @@ type Ethereum_Network @imported(
   nativeType: "Network"
 ) {
   name: String!
-  chainId: BigInt!
+  chainId: UInt32!
   ensAddress: String
 }
 
@@ -438,7 +438,7 @@ type Ethereum_TxResponse @imported(
   gasPrice: BigInt
   data: String!
   value: BigInt!
-  chainId: BigInt!
+  chainId: UInt32!
   blockNumber: BigInt
   blockHash: String
   timestamp: UInt32
@@ -512,7 +512,7 @@ type Ethereum_TxRequest @imported(
   gasPrice: BigInt
   data: String
   value: BigInt
-  chainId: BigInt
+  chainId: UInt32
   type: UInt32
 }
 
@@ -816,7 +816,7 @@ type Ethereum_TxRequest @imported(
   gasPrice: BigInt
   data: String
   value: BigInt
-  chainId: BigInt
+  chainId: UInt32
   type: UInt32
 }
 
@@ -876,7 +876,7 @@ type Ethereum_Network @imported(
   nativeType: "Network"
 ) {
   name: String!
-  chainId: BigInt!
+  chainId: UInt32!
   ensAddress: String
 }
 
@@ -893,7 +893,7 @@ type Ethereum_TxResponse @imported(
   gasPrice: BigInt
   data: String!
   value: BigInt!
-  chainId: BigInt!
+  chainId: UInt32!
   blockNumber: BigInt
   blockHash: String
   timestamp: UInt32

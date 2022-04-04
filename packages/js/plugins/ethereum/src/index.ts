@@ -154,7 +154,7 @@ export class EthereumPlugin extends Plugin {
     const network = await provider.getNetwork();
     return {
       name: network.name,
-      chainId: network.chainId.toString(),
+      chainId: network.chainId,
       ensAddress: network.ensAddress,
     };
   }
