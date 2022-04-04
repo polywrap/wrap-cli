@@ -30,7 +30,7 @@ const schemas: DeployManifestSchemas = {
 
 const validator = new Validator();
 
-Validator.prototype.customFormats.packageOrPath = Validators.packageOrPath;
+Validator.prototype.customFormats.packageName = Validators.packageName;
 
 export const validateDeployManifest = Tracer.traceFunc(
   "core: validateDeployManifest",

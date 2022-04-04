@@ -20,10 +20,6 @@ export function packageName(name: unknown): boolean {
   return typeof name === "string";
 }
 
-export function packageOrPath(name: unknown): boolean {
-  return typeof name === "string";
-}
-
 export function packageTag(tag: unknown): boolean {
   return typeof tag === "string";
 }

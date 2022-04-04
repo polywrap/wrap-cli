@@ -3,7 +3,8 @@
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "format"
+    "format",
+    "deployments"
   ],
   "properties": {
     "format": {
@@ -24,8 +25,18 @@
             "additionalProperties": false,
             "properties": {
               "package": {
-                "type": "string",
-                "format": "packageOrPath"
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type" : "string",
+                    "format": "packageName"
+                  },
+                  "versionOrPath": {
+                    "type": "string"
+                  }
+                },
+                "required": ["versionOrPath", "name"],
+                "additionalProperties": false
               },
               "config": {
                 "patternProperties": {
@@ -35,14 +46,26 @@
                 },
                 "additionalProperties": false
               }
-            }
+            },
+            "required": ["package"]
           },
           "publish": {
             "type": "object",
             "additionalProperties": false,
             "properties": {
               "package": {
-                "type": "string"
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type" : "string",
+                    "format": "packageName"
+                  },
+                  "versionOrPath": {
+                    "type": "string"
+                  }
+                },
+                "required": ["versionOrPath", "name"],
+                "additionalProperties": false
               },
               "config": {
                 "patternProperties": {
@@ -52,10 +75,11 @@
                 },
                 "additionalProperties": false
               }
-            }
+            },
+            "required": ["package"]
           }
         },
-        "required": ["name", "deploy", "publish"]
+        "required": ["name"]
       }
     }
   }

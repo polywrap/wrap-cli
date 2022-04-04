@@ -8,10 +8,13 @@
 
 export interface DeployManifest {
   format: "0.0.1-prealpha.1";
-  deployments?: {
+  deployments: {
     name: string;
-    deploy: {
-      package?: string;
+    deploy?: {
+      package: {
+        name: string;
+        versionOrPath: string;
+      };
       config?: {
         /**
          * This interface was referenced by `undefined`'s JSON-Schema definition
@@ -20,8 +23,11 @@ export interface DeployManifest {
         [k: string]: string | number;
       };
     };
-    publish: {
-      package?: string;
+    publish?: {
+      package: {
+        name: string;
+        versionOrPath: string;
+      };
       config?: {
         /**
          * This interface was referenced by `undefined`'s JSON-Schema definition
