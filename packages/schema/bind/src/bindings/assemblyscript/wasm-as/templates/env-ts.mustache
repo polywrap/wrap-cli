@@ -4,6 +4,11 @@ import {
 } from "./QueryEnv";
 
 export let env: QueryEnv | null = null;
+
+export function ensureEnv(): QueryEnv {
+  if (env == null) throw new Error("Undefined query env");
+  return env as QueryEnv;
+}
 {{/envTypes.query.sanitized}}
 {{#envTypes.mutation.sanitized}}
 import {
@@ -11,4 +16,9 @@ import {
 } from "./MutationEnv";
 
 export let env: MutationEnv | null = null;
+
+export function ensureEnv(): MutationEnv {
+  if (env == null) throw new Error("Undefined mutation env");
+  return env as MutationEnv;
+}
 {{/envTypes.mutation.sanitized}}
