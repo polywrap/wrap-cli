@@ -4,7 +4,7 @@ import {
 
 export let env: MutationEnv | null = null;
 
-export function ensureEnv(): MutationEnv {
+export function requireEnv(): MutationEnv {
   if (env == null) throw new Error("Undefined mutation env");
   return env as MutationEnv;
 }
