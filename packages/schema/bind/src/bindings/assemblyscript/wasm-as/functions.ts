@@ -1,5 +1,16 @@
 import { isBaseType } from "./baseTypes";
+import { reservedWordsAS } from "./reservedWords";
 import { MustacheFn } from "../../types";
+
+export const handleKeywords: MustacheFn = () => {
+  return (text: string, render: (template: string) => string): string => {
+    const rendered: string = render(text);
+    if (reservedWordsAS.has(rendered)) {
+      return "m_" + rendered;
+    }
+    return rendered;
+  };
+};
 
 export const toMsgPack: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
