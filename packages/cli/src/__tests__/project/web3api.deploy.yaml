@@ -1,0 +1,9 @@
+format: 0.0.1-prealpha.1
+deployments:
+  - name: "IPFS and ENS"
+    deploy:
+      package: 
+        name: "@namestyd/ipfs-deployer"
+        versionOrPath: "npm:"
+    publish:
+      package: "npm:@namestyd/ens-publisher"
