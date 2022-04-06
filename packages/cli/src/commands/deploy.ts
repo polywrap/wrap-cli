@@ -6,17 +6,18 @@ import {
   defaultWeb3ApiManifest,
   resolvePathIfExists,
 } from "../lib";
-import { DeploymentManager } from "../lib/deploy/DeploymentManager";
+import { Deployer, Publisher, PublishHandler } from "../lib/deploy/DeploymentManager";
 import { convertDirectoryToEntry } from "../lib/deploy/file";
 
 import chalk from "chalk";
+import fs from "fs";
+import path from "path";
 import { GluegunToolbox, GluegunPrint } from "gluegun";
 
 const defaultManifestStr = defaultWeb3ApiManifest.join(" | ");
 const defaultOutputDirectory = defaultBuildPath;
 const optionsStr = intlMsg.commands_deploy_options_options();
 const pathStr = intlMsg.commands_deploy_options_o_path();
-const strStr = intlMsg.commands_deploy_options_o_string();
 
 const HELP = `
 ${chalk.bold("w3 deploy")} [${optionsStr}]
@@ -26,8 +27,6 @@ ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
   -m, --manifest-file <${pathStr}>         ${intlMsg.commands_deploy_options_m({
   default: defaultManifestStr,
 })}
-  -n, --name <${strStr}>                       ${intlMsg.commands_deploy_options_n()}
-  -c, --cid <${strStr}>                     ${intlMsg.commands_deploy_options_c()}
   -v, --verbose                      ${intlMsg.commands_deploy_options_v()}
   -p, --path [<${pathStr}>]"                ${intlMsg.commands_deploy_options_p()}
 `;
@@ -96,56 +95,82 @@ export default {
       throw new Error("No deploy manifest");
     }
 
-    const deploymentManager = new DeploymentManager(project, deployManifest);
+    const packages = {
+      deploy: deployManifest.deploy
+        ? Object.values(deployManifest.deploy).map((d) => d.package)
+        : [],
+      publish: deployManifest.publish
+        ? Object.values(deployManifest.publish).map((p) => p.package)
+        : [],
+    };
 
-    await deploymentManager.installPackages(name);
+    sanitizePackages(packages);
 
-    const deployment = deploymentManager.getDeployment(name);
+    await project.cacheDeploymentPackages(packages);
 
-    if (!deployment.deployer && !cid) {
-      throw new Error(
-        `No deploy stage is present in deployment '${name}', a cid arg is required for publish`
-      );
-    }
+    const deployments: Record<string, string> = {};
 
-    const uris: string[][] = [];
-    let deployResult: string | undefined;
-    let publishResult: string | undefined;
-
-    if (deployment.deployer) {
+    // Deploy steps don't depend on anything. Execute them all
+    if (deployManifest.deploy) {
       const buildDirEntry = convertDirectoryToEntry(buildPath);
 
-      try {
-        deployResult = await deployment.deployer.deploy(
-          buildDirEntry,
-          deployment.deployerConfig
-        );
+      for await (const key of Object.keys(deployManifest.deploy)) {
+        const deployer = getDeployer(key);
 
-        uris.push(["Deploy", deployResult]);
-      } catch (e) {
-        throw new Error(
-          `Deployment '${name}' deploy stage failed. Error: ${e}`
-        );
+        const uri = await deployer.deploy({
+          files: [],
+          directories: [buildDirEntry],
+        });
+
+        deployments[key] = uri;
       }
+
+      console.log(deployments);
     }
 
-    if (deployment.publisher) {
-      try {
-        publishResult = await deployment.publisher.publish(
-          deployResult ?? cid,
-          deployment.deployerConfig
-        );
+    if (deployManifest.publish) {
+      const handlers: Record<string, PublishHandler> = {};
+      const roots: { handler: PublishHandler; uri: string }[] = [];
 
-        uris.push(["Publish", publishResult]);
-      } catch (e) {
-        throw new Error(
-          `Deployment '${name}' publish stage failed. Error: ${e}`
-        );
+      // Create all handlers
+      Object.entries(deployManifest.publish).forEach(([key, value]) => {
+        const publisher = getPublisher(value.package);
+        const handler = new PublishHandler(publisher, value.config);
+
+        handlers[key] = handler;
+      });
+
+      // Establish dependency chains
+      Object.entries(deployManifest.publish).forEach(([key, value]) => {
+        const thisHandler = handlers[key];
+
+        if (value.publish) {
+          // Depends on other publish step
+          handlers[value.publish].addNext(thisHandler);
+        } else if (typeof value.deployment === "string") {
+          // Depends on deploy step
+          roots.push({
+            uri: deployments[value.deployment],
+            handler: thisHandler,
+          });
+        } else if (typeof value.deployment === "object") {
+          // It is a root node
+          roots.push({ uri: value.deployment.uri, handler: thisHandler });
+        } else {
+          throw new Error("Needs either previous step or URI");
+        }
+      });
+
+      // Execute roots
+
+      const uris: string[][] = [];
+
+      for await (const root of roots) {
+        uris.push(await root.handler.handle(root.uri));
       }
-    }
 
-    print.success(`${intlMsg.commands_build_uriViewers()}:`);
-    print.table(uris);
+      print.table(uris);
+    }
 
     process.exitCode = 0;
   },
@@ -160,7 +185,7 @@ function validateDeployParams(
     cid: unknown;
   }
 ): boolean {
-  const { manifestFile, path, name, cid } = params;
+  const { manifestFile, path } = params;
 
   if (manifestFile === true) {
     const manifestPathMissingMessage = intlMsg.commands_build_error_manifestPathMissing(
@@ -182,23 +207,38 @@ function validateDeployParams(
     return false;
   }
 
-  if (name === true) {
-    const nameMissingMessage = intlMsg.commands_deploy_error_nameMissing({
-      option: "--name",
-      argument: `<${strStr}>`,
-    });
-    print.error(nameMissingMessage);
-    return false;
-  }
-
-  if (cid === true) {
-    const cidPathMissingMessage = intlMsg.commands_deploy_error_cidMissing({
-      option: "--cid",
-      argument: `<${strStr}>`,
-    });
-    print.error(cidPathMissingMessage);
-    return false;
-  }
-
   return true;
 }
+
+function sanitizePackages(packages: { deploy: string[]; publish: string[] }) {
+  const unrecognizedPackages: string[] = [];
+
+  const availableDeployers = fs.readdirSync(
+    path.join(__dirname, "..", "deployers")
+  );
+
+  const availablePublishers = fs.readdirSync(
+    path.join(__dirname, "..", "publishers")
+  );
+
+  packages.deploy.forEach((p) => {
+    if (!availableDeployers.includes(p)) {
+      unrecognizedPackages.push(p);
+    }
+  });
+
+  packages.publish.forEach((p) => {
+    if (!availablePublishers.includes(p)) {
+      unrecognizedPackages.push(p);
+    }
+  });
+
+  if (unrecognizedPackages.length) {
+    throw new Error(
+      `Unrecognized packages: ${unrecognizedPackages.join(", ")}`
+    );
+  }
+}
+
+function getPublisher(name: string): Publisher {}
+function getDeployer(name: string): Deployer {}
