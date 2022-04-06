@@ -117,19 +117,19 @@ describe("Web3ApiClient", () => {
       });
     });
 
-    test("query: tryGetEnv - when set", async () => {
+    test("queryEnv", async () => {
       const queryEnv = await client.query({
         uri: ensUri,
         query: `
-            query {
-              tryGetEnv(
-                arg: "string"
-              )
-            }
-          `,
+          query {
+            queryEnv(
+              arg: "string"
+            )
+          }
+        `,
       });
       expect(queryEnv.errors).toBeFalsy();
-      expect(queryEnv.data?.tryGetEnv).toEqual({
+      expect(queryEnv.data?.queryEnv).toEqual({
         str: "string",
         optFilledStr: "optional string",
         optStr: null,
@@ -148,37 +148,19 @@ describe("Web3ApiClient", () => {
       });
     });
 
-    test("query: tryGetEnv - when not set", async () => {
-      const queryEnv = await client.query({
-        uri: ensUri,
-        query: `
-            query {
-              tryGetEnv(
-                arg: "not set"
-              )
-            }
-          `,
-        config: {
-          envs: [],
-        },
-      });
-      expect(queryEnv.errors).toBeFalsy();
-      expect(queryEnv.data?.tryGetEnv).toBeNull();
-    });
-
-    test("mutation: tryGetEnv - when set", async () => {
+    test("mutationEnv", async () => {
       const mutationEnv = await client.query({
         uri: ensUri,
         query: `
-            mutation {
-              tryGetEnv(
-                arg: "string"
-              )
-            }
-          `,
+          mutation {
+            mutationEnv(
+              arg: "string"
+            )
+          }
+        `,
       });
       expect(mutationEnv.errors).toBeFalsy();
-      expect(mutationEnv.data?.tryGetEnv).toEqual({
+      expect(mutationEnv.data?.mutationEnv).toEqual({
         str: "string",
         optFilledStr: "optional string",
         optStr: null,
@@ -195,126 +177,6 @@ describe("Web3ApiClient", () => {
         mutStr: "mutation string",
         array: [32, 23],
       });
-    });
-
-    test("mutation: tryGetEnv - when not set", async () => {
-      const mutationEnv = await client.query({
-        uri: ensUri,
-        query: `
-            mutation {
-              tryGetEnv(
-                arg: "not set"
-              )
-            }
-          `,
-        config: {
-          envs: [],
-        },
-      });
-      expect(mutationEnv.errors).toBeFalsy();
-      expect(mutationEnv.data?.tryGetEnv).toBeNull();
-    });
-
-    test("query: getEnv - when set", async () => {
-      const queryEnv = await client.query({
-        uri: ensUri,
-        query: `
-            query {
-              getEnv(
-                arg: "string"
-              )
-            }
-          `,
-      });
-      expect(queryEnv.errors).toBeFalsy();
-      expect(queryEnv.data?.getEnv).toEqual({
-        str: "string",
-        optFilledStr: "optional string",
-        optStr: null,
-        number: 10,
-        optNumber: null,
-        bool: true,
-        optBool: null,
-        object: {
-          prop: "object string",
-        },
-        optObject: null,
-        en: 0,
-        optEnum: null,
-        queryStr: "query string",
-        array: [32, 23],
-      });
-    });
-
-    test("query: getEnv - when not set", async () => {
-      const queryEnv = await client.query({
-        uri: ensUri,
-        query: `
-            query {
-              getEnv(
-                arg: "not set"
-              )
-            }
-          `,
-        config: {
-          envs: [],
-        },
-      });
-      expect(queryEnv.data).toBeFalsy();
-      expect(queryEnv.errors).toBeTruthy();
-      expect(queryEnv.errors?.length).toBe(1);
-      expect(queryEnv.errors?.[0].message).toBe("Undefined query env");
-    });
-
-    test("mutation: getEnv - when set", async () => {
-      const mutationEnv = await client.query({
-        uri: ensUri,
-        query: `
-            mutation {
-              getEnv(
-                arg: "string"
-              )
-            }
-          `,
-      });
-      expect(mutationEnv.errors).toBeFalsy();
-      expect(mutationEnv.data?.getEnv).toEqual({
-        str: "string",
-        optFilledStr: "optional string",
-        optStr: null,
-        number: 10,
-        optNumber: null,
-        bool: true,
-        optBool: null,
-        object: {
-          prop: "object string",
-        },
-        en: 0,
-        optEnum: null,
-        optObject: null,
-        mutStr: "mutation string",
-        array: [32, 23],
-      });
-    });
-
-    test("mutation: getEnv - when not set", async () => {
-      const mutationEnv = await client.query({
-        uri: ensUri,
-        query: `
-            mutation {
-              getEnv(
-                arg: "not set"
-              )
-            }
-          `,
-        config: {
-          envs: [],
-        },
-      });
-      expect(mutationEnv.data).toBeFalsy();
-      expect(mutationEnv.errors).toBeTruthy();
-      expect(mutationEnv.errors?.length).toBe(1);
-      expect(mutationEnv.errors?.[0].message).toBe("Undefined mutation env");
     });
 
     test("query time env types", async () => {
@@ -322,14 +184,14 @@ describe("Web3ApiClient", () => {
         uri: ensUri,
         query: `
           query {
-            getEnv(
+            queryEnv(
               arg: "string"
             )
           }
         `,
       });
       expect(queryEnv.errors).toBeFalsy();
-      expect(queryEnv.data?.getEnv).toEqual({
+      expect(queryEnv.data?.queryEnv).toEqual({
         str: "string",
         optFilledStr: "optional string",
         optStr: null,
@@ -351,7 +213,7 @@ describe("Web3ApiClient", () => {
         uri: ensUri,
         query: `
           query {
-            getEnv(
+            queryEnv(
               arg: "string"
             )
           }
@@ -382,7 +244,7 @@ describe("Web3ApiClient", () => {
         },
       });
       expect(queryUpdatedEnv.errors).toBeFalsy();
-      expect(queryUpdatedEnv.data?.getEnv).toEqual({
+      expect(queryUpdatedEnv.data?.queryEnv).toEqual({
         str: "another string",
         optFilledStr: "optional string",
         optStr: null,

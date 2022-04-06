@@ -1,15 +1,9 @@
 import {
   env,
-  requireEnv,
   MutationEnv,
-  Input_getEnv,
-  Input_tryGetEnv
+  Input_mutationEnv,
 } from "./w3";
 
-export function tryGetEnv(input: Input_tryGetEnv): MutationEnv | null {
-  return env;
-}
-
-export function getEnv(input: Input_getEnv): MutationEnv {
-  return requireEnv();
+export function mutationEnv(input: Input_mutationEnv): MutationEnv {
+  return env as MutationEnv;
 }
