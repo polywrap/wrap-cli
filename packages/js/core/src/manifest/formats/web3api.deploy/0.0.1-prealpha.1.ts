@@ -8,34 +8,43 @@
 
 export interface DeployManifest {
   format: "0.0.1-prealpha.1";
-  deployments: {
-    name: string;
-    deploy?: {
-      package: {
-        name: string;
-        versionOrPath: string;
-      };
+  deploy?: {
+    /**
+     * This interface was referenced by `undefined`'s JSON-Schema definition
+     * via the `patternProperty` "^.*$".
+     */
+    [k: string]: {
+      package: string;
       config?: {
         /**
          * This interface was referenced by `undefined`'s JSON-Schema definition
          * via the `patternProperty` "^.*$".
          */
-        [k: string]: string | number;
+        [k: string]: unknown;
       };
     };
-    publish?: {
-      package: {
-        name: string;
-        versionOrPath: string;
-      };
+  };
+  publish?: {
+    /**
+     * This interface was referenced by `undefined`'s JSON-Schema definition
+     * via the `patternProperty` "^.*$".
+     */
+    [k: string]: {
+      package: string;
       config?: {
         /**
          * This interface was referenced by `undefined`'s JSON-Schema definition
          * via the `patternProperty` "^.*$".
          */
-        [k: string]: string | number;
+        [k: string]: unknown;
       };
+      deployment?:
+        | string
+        | {
+            uri: string;
+          };
+      publish?: string;
     };
-  }[];
+  };
   __type: "DeployManifest";
 }

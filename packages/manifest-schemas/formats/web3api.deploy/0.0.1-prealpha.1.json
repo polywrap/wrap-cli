@@ -11,75 +11,58 @@
       "type": "string",
       "const": "0.0.1-prealpha.1"
     },
-    "deployments": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "deploy": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "package": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type" : "string",
-                    "format": "packageName"
-                  },
-                  "versionOrPath": {
-                    "type": "string"
-                  }
-                },
-                "required": ["versionOrPath", "name"],
-                "additionalProperties": false
-              },
-              "config": {
-                "patternProperties": {
-                  "^.*$": {
-                    "type": ["string", "number"]
-                  }
-                },
-                "additionalProperties": false
-              }
+    "deploy": {
+      "patternProperties": {
+        "^.*$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "package": {
+              "type": "string"
             },
-            "required": ["package"]
-          },
-          "publish": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "package": {
-                "type": "object",
-                "properties": {
-                  "name": {
-                    "type" : "string",
-                    "format": "packageName"
-                  },
-                  "versionOrPath": {
-                    "type": "string"
-                  }
-                },
-                "required": ["versionOrPath", "name"],
-                "additionalProperties": false
+            "config": {
+              "patternProperties": {
+                "^.*$": { }
               },
-              "config": {
-                "patternProperties": {
-                  "^.*$": {
-                    "type": ["string", "number"]
-                  }
-                },
-                "additionalProperties": false
-              }
+              "additionalProperties": false
+            }
+          },
+          "required": ["package"]
+        }
+      }
+    },
+    "publish": {
+      "patternProperties": {
+        "^.*$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["package"],
+          "properties": {
+            "package": {
+              "type": "string"
             },
-            "required": ["package"]
+            "config": {
+              "patternProperties": {
+                "^.*$": {}
+              },
+              "additionalProperties": false
+            },
+            "deployment": {
+              "type": ["string", "object"],
+              "properties": {
+                "uri": {
+                  "type" : "string",
+                  "format": "web3apiUri"
+                }
+              },
+              "additionalProperties": false,
+              "required": ["uri"]
+            },
+            "publish": {
+              "type": "string"
+            }
           }
-        },
-        "required": ["name"]
+        }
       }
     }
   }
