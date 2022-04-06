@@ -213,7 +213,7 @@ describe("e2e tests for query command", () => {
       JSON.parse(fs.readFileSync(`${projectRoot}/recipes/output.json`, "utf8"))
     ).toMatchObject(getSampleJsonOutput(constants.SimpleStorageAddr));
 
-    fs.unlinkSync(`${projectRoot}/recipes/output.yaml`);
+    fs.unlinkSync(`${projectRoot}/recipes/output.json`);
   }, 48000);
 
   test("Should successfully create yaml output file if specified", async () => {
