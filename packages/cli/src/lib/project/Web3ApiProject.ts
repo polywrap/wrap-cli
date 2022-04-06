@@ -12,6 +12,7 @@ import {
   isWeb3ApiManifestLanguage,
   outputManifest,
   intlMsg,
+  loadDeployManifest,
 } from "..";
 
 import {
@@ -32,6 +33,8 @@ const cacheLayout = {
   buildEnvDir: "build/env/",
   buildUuidFile: "build/uuid",
   buildLinkedPackagesDir: "build/linked-packages/",
+  deployDir: "deploy/",
+  deployEnvDir: "deploy/env/",
 };
 
 export interface Web3ApiProjectConfig extends ProjectConfig {
@@ -47,6 +50,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
   private _deployManifest: DeployManifest | undefined;
   private _metaManifest: MetaManifest | undefined;
   private _defaultBuildManifestCached = false;
+  private _deploymentPackagesCached = false;
 
   constructor(protected _config: Web3ApiProjectConfig) {
     super(_config, cacheLayout.root);
@@ -60,6 +64,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     this._metaManifest = undefined;
     this._deployManifest = undefined;
     this._defaultBuildManifestCached = false;
+    this._deploymentPackagesCached = false;
     this.resetCache();
   }
 
@@ -364,6 +369,35 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
       }
     }
     return this._deployManifest;
+  }
+
+  public async cacheDeploymentPackages(packages: {
+    deploy: string[];
+    publish: string[];
+  }): Promise<void> {
+    if (this._deploymentPackagesCached) {
+      return;
+    }
+
+    this.removeCacheDir(cacheLayout.deployEnvDir);
+
+    for await (const deployPackage of packages.deploy) {
+      await this.copyIntoCache(
+        `${cacheLayout.deployEnvDir}/${deployPackage}`,
+        `${__dirname}/../deployers/${deployPackage}/*`,
+        { up: true }
+      );
+    }
+
+    for await (const publishPackage of packages.publish) {
+      await this.copyIntoCache(
+        `${cacheLayout.deployEnvDir}/${publishPackage}`,
+        `${__dirname}/../publishers/${publishPackage}/*`,
+        { up: true }
+      );
+    }
+
+    this._deploymentPackagesCached = true;
   }
 
   /// Web3API Meta Manifest (web3api.build.yaml)
