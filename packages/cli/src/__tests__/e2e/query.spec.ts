@@ -8,6 +8,7 @@ import { runCLI } from "@web3api/test-env-js";
 import { normalizeLineEndings } from "@web3api/os-js";
 import {
   checkSampleQueryOutput,
+  getSampleJsonOutput,
   getSampleOutputWithClientConfig,
   ISampleOutputOptions,
 } from "./query.spec.helper";
@@ -185,4 +186,86 @@ describe("e2e tests for query command", () => {
       SimpleStorageAddr: constants.SimpleStorageAddr,
     });
   }, 480000);
+
+  test("Should successfully create json output file if specified", async () => {
+    const { exitCode: code, stdout: output, stderr: queryErr } = await runCLI({
+      args: [
+        "query",
+        "./recipes/e2e.json",
+        "--test-ens",
+        "--output-file",
+        "./recipes/output.json",
+      ],
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
+
+    expect(code).toEqual(0);
+    expect(queryErr).toBe("");
+
+    const constants = require(`${projectRoot}/recipes/constants.json`);
+    checkSampleQueryOutput(output, {
+      SimpleStorageAddr: constants.SimpleStorageAddr,
+    });
+
+    expect(fs.existsSync(`${projectRoot}/recipes/output.json`)).toBeTruthy();
+    expect(
+      JSON.parse(fs.readFileSync(`${projectRoot}/recipes/output.json`, "utf8"))
+    ).toMatchObject(getSampleJsonOutput(constants.SimpleStorageAddr));
+
+    fs.unlinkSync(`${projectRoot}/recipes/output.yaml`);
+  }, 48000);
+
+  test("Should successfully create yaml output file if specified", async () => {
+    const { exitCode: code, stdout: output, stderr: queryErr } = await runCLI({
+      args: [
+        "query",
+        "./recipes/e2e.yaml",
+        "--test-ens",
+        "--output-file",
+        "./recipes/output.yaml",
+      ],
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
+
+    expect(code).toEqual(0);
+    expect(queryErr).toBe("");
+
+    const constants = yaml.load(
+      await fs.promises.readFile(
+        `${projectRoot}/recipes/constants.yaml`,
+        "utf8"
+      )
+    ) as ISampleOutputOptions;
+
+    checkSampleQueryOutput(output, {
+      SimpleStorageAddr: constants.SimpleStorageAddr,
+    });
+
+    expect(fs.existsSync(`${projectRoot}/recipes/output.yaml`)).toBeTruthy();
+    expect(
+      yaml.load(
+        fs.readFileSync(`${projectRoot}/recipes/output.yaml`, "utf8")
+      )
+    ).toMatchObject(getSampleJsonOutput(constants.SimpleStorageAddr));
+
+    fs.unlinkSync(`${projectRoot}/recipes/output.yaml`);
+  }, 48000);
+  test("Should suppress the ouput if --quiet option is specified", async () => {
+    const { exitCode: code, stdout: output, stderr: queryErr } = await runCLI({
+      args: [
+        "query",
+        "./recipes/e2e.json",
+        "--test-ens",
+        "--quiet",
+      ],
+      cwd: projectRoot,
+      cli: w3Cli,
+    });
+
+    expect(code).toEqual(0);
+    expect(queryErr).toBe("");
+    expect(output).toBeFalsy();
+  }, 48000);
 });

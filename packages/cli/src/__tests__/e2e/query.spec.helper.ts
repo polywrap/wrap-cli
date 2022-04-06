@@ -89,3 +89,25 @@ export function getSampleOutputSetDataValue(): string {
 -----------------------------------
 `;
 }
+
+export function getSampleJsonOutput(address: string): any {
+  return [
+    {
+      uri: "ens/testnet/simplestorage.eth",
+      query:
+        "mutation {\n  setData(\n    options: {\n      address: $address\n      value: $value\n    }\n    connection: {\n      networkNameOrChainId: $network\n    }\n  ) {\n    value\n    txReceipt\n  }\n}\n",
+      variables: {
+        address: address,
+        value: 569,
+        network: "testnet",
+      },
+      output: {
+        data: {
+          setData: {
+            value: 569,
+          },
+        },
+      },
+    },
+  ];
+}
