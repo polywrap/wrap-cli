@@ -19,6 +19,8 @@ w3 query [options] <recipe-script>
 Options:
   -t, --test-ens  Use the development server's ENS instance
   -c, --client-config <config-path> Add custom configuration to the Web3ApiClient
+  -o, --output-file  Output file path for the query result
+  -q, --quiet  Suppress output
 
 `;
 

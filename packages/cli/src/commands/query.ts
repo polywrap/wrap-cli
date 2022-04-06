@@ -25,8 +25,8 @@ ${chalk.bold("w3 query")} [${optionsString}] ${chalk.bold(`<${scriptStr}>`)}
 ${optionsString[0].toUpperCase() + optionsString.slice(1)}:
   -t, --test-ens  ${intlMsg.commands_build_options_t()}
   -c, --client-config <${configPathStr}> ${intlMsg.commands_query_options_config()}
-  -o, --output-file <${intlMsg.commands_query_options_outputFile()}>
-  -q, --quiet <${intlMsg.commands_query_options_quiet()}>
+  -o, --output-file  ${intlMsg.commands_query_options_outputFile()}
+  -q, --quiet  ${intlMsg.commands_query_options_quiet()}
 `;
 
 export default {
