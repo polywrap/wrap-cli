@@ -1,6 +1,11 @@
 import fs from "fs";
 import path from "path";
 
+export interface DirectoryBlob {
+  directories: DirectoryEntry[];
+  files: FileEntry[];
+}
+
 export interface FileEntry {
   name: string;
   data: string;
