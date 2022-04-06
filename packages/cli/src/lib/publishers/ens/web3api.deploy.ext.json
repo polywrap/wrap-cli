@@ -1,0 +1,28 @@
+{
+  "id": "DeployManifest_Publisher_WasmAsExt",
+  "type": "object",
+  "required": [
+    "config"
+  ],
+  "properties": {
+    "config": {
+      "type": "object",
+      "required": [
+        "domainName",
+        "provider",
+        "privateKey"
+      ],
+      "properties": {
+        "domainName": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "privateKey": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
