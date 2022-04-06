@@ -161,12 +161,18 @@ export default {
     for (const task of recipe) {
       if (task.api) {
         uri = task.api;
+        recipeOutput.push({
+          api: task.api,
+        });
       }
 
       if (task.constants) {
         constants = getParser(task.constants)(
           filesystem.read(path.join(dir, task.constants)) as string
         );
+        recipeOutput.push({
+          constants: task.constants,
+        });
       }
 
       if (task.query) {
@@ -236,9 +242,8 @@ export default {
 
         if (outputFile) {
           recipeOutput.push({
-            uri,
-            query,
-            variables,
+            query: task.query,
+            variables: task.variables,
             output: {
               data,
               errors,
@@ -270,10 +275,10 @@ export default {
       switch (outputFileExt) {
         case "yaml":
         case "yml":
-          fs.writeSync(outputFile, yaml.dump(recipeOutput));
+          fs.writeFileSync(outputFile, yaml.dump(recipeOutput));
           break;
         case "json":
-          fs.writeSync(outputFile, JSON.stringify(recipeOutput));
+          fs.writeFileSync(outputFile, JSON.stringify(recipeOutput));
           break;
         default:
           throw new Error(`Unsupported outputFile extention: ${outputFileExt}`);
