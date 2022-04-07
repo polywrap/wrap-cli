@@ -1,3 +1,7 @@
+# Web3API 0.0.1-prealpha.70
+## Bugs
+* `@web3api/core-js`: Fixed the manifest migration script for `web3api.meta` from v1 to v3. The `name` property is now migrating properly to `displayName`.
+
 # Web3API 0.0.1-prealpha.69
 ## Features
 * [PR-669](https://github.com/polywrap/monorepo/pull/669) `Map<K, V>` schema base-type has been added.
