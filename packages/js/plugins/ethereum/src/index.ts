@@ -154,7 +154,7 @@ export class EthereumPlugin extends Plugin {
     const network = await provider.getNetwork();
     return {
       name: network.name,
-      chainId: network.chainId,
+      chainId: network.chainId.toString(),
       ensAddress: network.ensAddress,
     };
   }
@@ -205,6 +205,15 @@ export class EthereumPlugin extends Plugin {
     }
   }
 
+  public async getBalance(input: Query.Input_getBalance): Promise<string> {
+    const connection = await this.getConnection(input.connection);
+    return (
+      await connection
+        .getProvider()
+        .getBalance(input.address, input.blockTag || undefined)
+    ).toString();
+  }
+
   public encodeParams(input: Query.Input_encodeParams): string {
     return defaultAbiCoder.encode(input.types, this.parseArgs(input.values));
   }
@@ -214,6 +223,24 @@ export class EthereumPlugin extends Plugin {
     return functionInterface.encodeFunctionData(
       functionInterface.functions[Object.keys(functionInterface.functions)[0]],
       this.parseArgs(input.args)
+    );
+  }
+
+  public solidityPack(input: Query.Input_solidityPack): string {
+    return ethers.utils.solidityPack(input.types, this.parseArgs(input.values));
+  }
+
+  public solidityKeccak256(input: Query.Input_solidityKeccak256): string {
+    return ethers.utils.solidityKeccak256(
+      input.types,
+      this.parseArgs(input.values)
+    );
+  }
+
+  public soliditySha256(input: Query.Input_soliditySha256): string {
+    return ethers.utils.soliditySha256(
+      input.types,
+      this.parseArgs(input.values)
     );
   }
 

@@ -8,6 +8,9 @@ import {
   Input_callContractStatic,
   Input_encodeParams,
   Input_encodeFunction,
+  Input_solidityPack,
+  Input_solidityKeccak256,
+  Input_soliditySha256,
   Input_getSignerAddress,
   Input_getSignerBalance,
   Input_getSignerTransactionCount,
@@ -19,7 +22,7 @@ import {
   Input_toEth,
   Input_awaitTransaction,
   Input_waitForEvent,
-  Input_getNetwork
+  Input_getNetwork, Input_getBalance,
 } from "./w3";
 import { BigInt } from "@web3api/wasm-as";
 
@@ -46,6 +49,16 @@ export function callContractStatic(
   }).unwrap();
 }
 
+export function getBalance(
+  input: Input_getBalance
+): BigInt {
+  return Ethereum_Query.getBalance({
+    address: input.address,
+    blockTag: input.blockTag,
+    connection: input.connection
+  }).unwrap();
+}
+
 export function encodeParams(
   input: Input_encodeParams
 ): string {
@@ -61,6 +74,33 @@ export function encodeFunction(
   return Ethereum_Query.encodeFunction({
     method: input.method,
     args: input.args
+  }).unwrap();
+}
+
+export function solidityPack(
+  input: Input_solidityPack
+): string {
+  return Ethereum_Query.solidityPack({
+    types: input.types,
+    values: input.values
+  }).unwrap();
+}
+
+export function solidityKeccak256(
+  input: Input_solidityKeccak256
+): string {
+  return Ethereum_Query.solidityKeccak256({
+    types: input.types,
+    values: input.values
+  }).unwrap();
+}
+
+export function soliditySha256(
+  input: Input_soliditySha256
+): string {
+  return Ethereum_Query.soliditySha256({
+    types: input.types,
+    values: input.values
   }).unwrap();
 }
 

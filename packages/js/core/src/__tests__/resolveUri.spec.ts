@@ -11,10 +11,10 @@ import {
   QueryApiResult,
   Uri,
   UriRedirect,
-  AnyManifest,
+  AnyManifestArtifact,
 } from "..";
 import { coreInterfaceUris } from "../interfaces";
-import { ManifestType } from "../manifest";
+import { ManifestArtifactType } from "../manifest";
 import {
   Api,
   Env,
@@ -80,18 +80,18 @@ describe("resolveUri", () => {
     },
     getManifest: <
       TUri extends Uri | string,
-      TManifestType extends ManifestType
+      TManifestType extends ManifestArtifactType
     >(
       uri: TUri,
       options: GetManifestOptions<TManifestType>
     ) => {
       const manifest = {
-        format: "0.0.1-prealpha.6",
+        format: "0.0.1-prealpha.7",
         language: "",
         modules: {},
         __type: "Web3ApiManifest",
       };
-      return Promise.resolve(manifest as AnyManifest<TManifestType>);
+      return Promise.resolve(manifest as AnyManifestArtifact<TManifestType>);
     },
     getFile: () => {
       return Promise.resolve("");
@@ -113,17 +113,17 @@ describe("resolveUri", () => {
         } as InvokeApiResult),
       getSchema: (_client: Client): Promise<string> => Promise.resolve(""),
       getFile: (options: GetFileOptions, client: Client) => Promise.resolve(""),
-      getManifest: <TManifestType extends ManifestType>(
+      getManifest: <TManifestType extends ManifestArtifactType>(
         options: GetManifestOptions<TManifestType>,
         client: Client
       ) => {
         const manifest = {
-          format: "0.0.1-prealpha.6",
+          format: "0.0.1-prealpha.7",
           language: "",
           modules: {},
           __type: "Web3ApiManifest",
         };
-        return Promise.resolve(manifest as AnyManifest<TManifestType>);
+        return Promise.resolve(manifest as AnyManifestArtifact<TManifestType>);
       },
     };
   };
@@ -142,17 +142,17 @@ describe("resolveUri", () => {
         } as InvokeApiResult),
       getSchema: (_client: Client): Promise<string> => Promise.resolve(""),
       getFile: (options: GetFileOptions, client: Client) => Promise.resolve(""),
-      getManifest: <TManifestType extends ManifestType>(
+      getManifest: <TManifestType extends ManifestArtifactType>(
         options: GetManifestOptions<TManifestType>,
         client: Client
       ) => {
         const manifest = {
-          format: "0.0.1-prealpha.6",
+          format: "0.0.1-prealpha.7",
           language: "",
           modules: {},
           __type: "Web3ApiManifest",
         };
-        return Promise.resolve(manifest as AnyManifest<TManifestType>);
+        return Promise.resolve(manifest as AnyManifestArtifact<TManifestType>);
       },
     };
   };
@@ -272,7 +272,7 @@ describe("resolveUri", () => {
     expect(apiIdentity).toMatchObject({
       uri: new Uri("ipfs/QmHash"),
       manifest: {
-        format: "0.0.1-prealpha.6",
+        format: "0.0.1-prealpha.7",
       },
       uriResolver: new Uri("ens/ipfs"),
     });
@@ -296,7 +296,7 @@ describe("resolveUri", () => {
     expect(apiIdentity).toMatchObject({
       uri: new Uri("my/something-different"),
       manifest: {
-        format: "0.0.1-prealpha.6",
+        format: "0.0.1-prealpha.7",
       },
       uriResolver: new Uri("ens/my-plugin"),
     });
@@ -320,7 +320,7 @@ describe("resolveUri", () => {
     expect(apiIdentity).toMatchObject({
       uri: new Uri("ipfs/QmHash"),
       manifest: {
-        format: "0.0.1-prealpha.6",
+        format: "0.0.1-prealpha.7",
         dog: "cat",
       },
       uriResolver: new Uri("ens/ipfs"),
@@ -345,7 +345,7 @@ describe("resolveUri", () => {
     expect(apiIdentity).toMatchObject({
       uri: new Uri("my/something-different"),
       manifest: {
-        format: "0.0.1-prealpha.6",
+        format: "0.0.1-prealpha.7",
       },
       uriResolver: new Uri("ens/my-plugin"),
     });

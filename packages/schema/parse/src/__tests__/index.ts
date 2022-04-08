@@ -1,59 +1,92 @@
 import { TypeInfo } from "../typeInfo";
 
 import path from "path";
-import { readdirSync, readFileSync, Dirent } from "fs";
+import { readdirSync, Dirent } from "fs";
 
-import {GetPathToParseTestFiles} from "@web3api/test-cases"
+import {
+  GetPathToParseTestFiles,
+  readFileIfExists,
+  readNamedExportIfExists
+} from "@web3api/test-cases"
 
 const root = GetPathToParseTestFiles();
 
-const outputs = {
-  // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
-  sanity: require(`${GetPathToParseTestFiles()}/sanity/output`).output,
-};
-
-export type TestCases = {
+export type TestCase = {
   name: string;
   input: string;
   output: TypeInfo;
+};
+
+export type TestCases = {
+  promise: Promise<TestCase | undefined>;
+  name: string;
 }[];
 
 export function fetchTestCases(): TestCases {
-  const cases: TestCases = [];
+  const testCases: TestCases = [];
 
-  const importCase = (dirent: Dirent) => {
-    // The case must be a folder
-    if (!dirent.isDirectory()) {
-      return;
-    }
-
-    // Fetch the input schema
-    const inputSchema = readFileSync(
-      path.join(root, dirent.name, "input.graphql"),
-      {
-        encoding: "utf-8",
-      }
-    );
-
-    // Fetch the output TypeInfo
-    const outputTypeInfo = (outputs as any)[dirent.name];
-
-    if (!outputTypeInfo) {
-      throw Error(
-        `Test case output TypeInfo is missing for case "${dirent.name}"`
+  readdirSync(root, { withFileTypes: true }).forEach(
+    (dirent: Dirent) => {
+      buildTestCases(
+        path.join(root, dirent.name),
+        dirent.name,
+        testCases
       );
     }
+  );
 
-    cases.push({
-      name: dirent.name,
-      input: inputSchema,
-      output: outputTypeInfo,
+  return testCases;
+}
+
+function buildTestCases(
+  directory: string,
+  name: string,
+  testCases: TestCases
+): void {
+  const items = readdirSync(directory, { withFileTypes: true });
+
+  if (
+    items.some(x => x.name.startsWith("input")) &&
+    items.some(x => x.name.startsWith("output"))
+  ) {
+    testCases.push({
+      promise: importCase(directory, name),
+      name: name
     });
+  } else {
+    for (const item of items) {
+      buildTestCases(
+        path.join(directory, item.name),
+        item.name,
+        testCases
+      );
+    }
+  }
+}
+
+async function importCase(
+  directory: string,
+  name: string,
+): Promise<TestCase | undefined> {
+  // Fetch the input schema
+  const input = readFileIfExists("input.graphql", directory);
+
+  // Fetch the output TypeInfo
+  const output = await readNamedExportIfExists<TypeInfo>("typeInfo", "output.ts", directory);
+
+  if (!input) {
+    console.error(`Missing input file "input.graphql" for test case "${name}" at ${directory}`);
+    return undefined;
+  }
+
+  if (!output) {
+    console.error(`Missing output file "output.ts" for test case "${name}" at ${directory}`);
+    return undefined;
+  }
+
+  return {
+    name,
+    input,
+    output
   };
-
-  readdirSync(root, {
-    withFileTypes: true,
-  }).forEach(importCase);
-
-  return cases;
 }
