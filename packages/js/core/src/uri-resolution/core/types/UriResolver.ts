@@ -1,7 +1,7 @@
 import { ApiCache, Client, Uri } from "../../../types";
 import { UriResolutionResult, UriResolutionStack } from ".";
 
-export abstract class UriToApiResolver {
+export abstract class UriResolver {
   public abstract get name(): string;
 
   public abstract resolveUri(

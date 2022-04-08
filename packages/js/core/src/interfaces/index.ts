@@ -1,4 +1,2 @@
-import * as UriResolver from "./uri-resolver";
-
-export { UriResolver };
+export * as UriResolverInterface from "./uri-resolver";
 export * from "./core-interface-uris";

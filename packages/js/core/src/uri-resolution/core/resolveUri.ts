@@ -2,7 +2,7 @@ import { Api, ApiCache, Client, Uri } from "../../types";
 import { UriResolutionHistory } from "./types/UriResolutionHistory";
 import { UriResolutionStack } from "./types/UriResolutionStack";
 import { UriResolutionResult } from "./types/UriResolutionResult";
-import { UriToApiResolver } from "./types/UriToApiResolver";
+import { UriResolver } from "./types/UriResolver";
 import { ResolveUriErrorType, ResolveUriResult } from "./types";
 import { InternalResolverError } from "./types/InternalResolverError";
 
@@ -10,7 +10,7 @@ import { Tracer } from "@web3api/tracing-js";
 
 export const resolveUri = async (
   uri: Uri,
-  resolvers: readonly UriToApiResolver[],
+  uriResolvers: readonly UriResolver[],
   client: Client,
   cache: ApiCache
 ): Promise<ResolveUriResult> => {
@@ -31,7 +31,7 @@ export const resolveUri = async (
       visitedUriMap
     );
 
-    for (const resolver of resolvers) {
+    for (const resolver of uriResolvers) {
       if (infiniteLoopDetected) {
         return {
           uri: currentUri,
@@ -105,12 +105,12 @@ const trackVisitedUri = (uri: string, visitedUriMap: Map<string, boolean>) => {
 
 const trackUriHistory = (
   sourceUri: Uri,
-  resolver: UriToApiResolver,
+  resolver: UriResolver,
   result: UriResolutionResult,
   uriResolutionStack: UriResolutionStack
 ) => {
   uriResolutionStack.push({
-    resolver: resolver.name,
+    uriResolver: resolver.name,
     sourceUri,
     result: {
       ...result,

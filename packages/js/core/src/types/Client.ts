@@ -10,7 +10,7 @@ import {
   ResolveUriOptions,
 } from "./";
 import { AnyManifestArtifact, ManifestArtifactType } from "../manifest";
-import { UriToApiResolver } from "../uri-resolution/core";
+import { UriResolver } from "../uri-resolution/core";
 import { ResolveUriResult } from "../uri-resolution/core/types/ResolveUriResult";
 
 export interface ClientConfig<TUri extends Uri | string = string> {
@@ -18,7 +18,7 @@ export interface ClientConfig<TUri extends Uri | string = string> {
   plugins: PluginRegistration<TUri>[];
   interfaces: InterfaceImplementations<TUri>[];
   envs: Env<TUri>[];
-  resolvers: UriToApiResolver[];
+  uriResolvers: UriResolver[];
 }
 
 export interface Contextualized {
@@ -35,7 +35,7 @@ export type GetSchemaOptions = Contextualized;
 
 export type GetEnvsOptions = Contextualized;
 
-export type GetResolversOptions = Contextualized;
+export type GetUriResolversOptions = Contextualized;
 
 export interface GetManifestOptions<
   TManifestArtifactType extends ManifestArtifactType
@@ -66,12 +66,12 @@ export interface Client
 
   getEnvs(options: GetEnvsOptions): readonly Env<Uri>[];
 
-  getResolvers(options: GetResolversOptions): readonly UriToApiResolver[];
-
   getEnvByUri<TUri extends Uri | string>(
     uri: TUri,
     options: GetEnvsOptions
   ): Env<Uri> | undefined;
+
+  getUriResolvers(options: GetUriResolversOptions): readonly UriResolver[];
 
   getSchema<TUri extends Uri | string>(
     uri: TUri,
@@ -101,8 +101,8 @@ export interface Client
     options?: ResolveUriOptions<ClientConfig>
   ): Promise<ResolveUriResult>;
 
-  tryLoadApiResolvers(): Promise<{
+  loadUriResolvers(): Promise<{
     success: boolean;
-    failedResolverUris: string[];
+    failedUriResolvers: string[];
   }>;
 }

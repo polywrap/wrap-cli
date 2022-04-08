@@ -1,11 +1,11 @@
-import { UriResolver } from "../../../interfaces";
+import { UriResolverInterface } from "../../../interfaces";
 import {
   DeserializeManifestOptions,
   deserializeWeb3ApiManifest,
 } from "../../../manifest";
 import { Uri, ApiCache, Client, InvokeHandler } from "../../../types";
 import {
-  UriToApiResolver,
+  UriResolver,
   UriResolutionStack,
   UriResolutionResult,
 } from "../../core";
@@ -14,15 +14,15 @@ import { getEnvFromUriOrResolutionStack } from "../getEnvFromUriOrResolutionStac
 
 import { Tracer } from "@web3api/tracing-js";
 
-export class ApiResolver implements UriToApiResolver {
+export class UriResolverImplementation implements UriResolver {
   constructor(
-    public readonly resolverUri: Uri,
+    public readonly implementationUri: Uri,
     private readonly createApi: CreateApiFunc,
     private readonly deserializeOptions?: DeserializeManifestOptions
   ) {}
 
   public get name(): string {
-    return ApiResolver.name;
+    return UriResolverImplementation.name;
   }
 
   async resolveUri(
@@ -31,9 +31,9 @@ export class ApiResolver implements UriToApiResolver {
     cache: ApiCache,
     resolutionPath: UriResolutionStack
   ): Promise<UriResolutionResult> {
-    const result = await tryResolveUriWithUriResolver(
+    const result = await tryResolveUriWithImplementation(
       uri,
-      this.resolverUri,
+      this.implementationUri,
       client.invoke.bind(client)
     );
 
@@ -48,7 +48,7 @@ export class ApiResolver implements UriToApiResolver {
         uri: new Uri(result.uri),
       };
     } else if (result.manifest) {
-      // We've found our manifest at the current URI resolver
+      // We've found our manifest at the current implementation,
       // meaning the URI resolver can also be used as an API resolver
       const manifest = deserializeWeb3ApiManifest(
         result.manifest,
@@ -60,7 +60,12 @@ export class ApiResolver implements UriToApiResolver {
         resolutionPath,
         client
       );
-      const api = this.createApi(uri, manifest, this.resolverUri, environment);
+      const api = this.createApi(
+        uri,
+        manifest,
+        this.implementationUri.uri,
+        environment
+      );
 
       return {
         uri,
@@ -74,20 +79,20 @@ export class ApiResolver implements UriToApiResolver {
   }
 }
 
-const tryResolveUriWithUriResolver = async (
+const tryResolveUriWithImplementation = async (
   uri: Uri,
-  uriResolver: Uri,
+  implementationUri: Uri,
   invoke: InvokeHandler["invoke"]
-): Promise<UriResolver.MaybeUriOrManifest | undefined> => {
-  const { data } = await UriResolver.Query.tryResolveUri(
+): Promise<UriResolverInterface.MaybeUriOrManifest | undefined> => {
+  const { data } = await UriResolverInterface.Query.tryResolveUri(
     invoke,
-    uriResolver,
+    implementationUri,
     uri
   );
 
   // If nothing was returned, the URI is not supported
   if (!data || (!data.uri && !data.manifest)) {
-    Tracer.addEvent("continue", uriResolver.uri);
+    Tracer.addEvent("continue", implementationUri.uri);
     return undefined;
   }
 
