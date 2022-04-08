@@ -495,7 +495,7 @@ export class Web3ApiClient implements Client {
     if (!extendableUriResolver) {
       return {
         success: true,
-        failedUriResolvers: []
+        failedUriResolvers: [],
       };
     }
 

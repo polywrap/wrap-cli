@@ -46,7 +46,10 @@ export class ExtendableUriResolver implements UriResolver {
     );
 
     if (!this._hasLoadedUriResolvers) {
-      const { success, failedUriResolvers } = await this.loadUriResolverImplementations(
+      const {
+        success,
+        failedUriResolvers,
+      } = await this.loadUriResolverImplementations(
         client,
         cache,
         uriResolverImpls
@@ -130,7 +133,9 @@ export class ExtendableUriResolver implements UriResolver {
         if (failedAttempts === implementationsToLoad.length) {
           return {
             success: false,
-            failedUriResolvers: implementationsToLoad.toArray().map((x) => x.uri),
+            failedUriResolvers: implementationsToLoad
+              .toArray()
+              .map((x) => x.uri),
           };
         }
       } else {

@@ -26,6 +26,8 @@
     "@testing-library/react": "11.2.5",
     "@testing-library/react-hooks": "5.1.0",
     "@types/jest": "26.0.8",
+    "@types/react": "16.9.0",
+    "@types/react-dom": "16.9.0",
     "@web3api/cli": "0.0.1-prealpha.68",
     "@web3api/ens-plugin-js": "0.0.1-prealpha.68",
     "@web3api/ethereum-plugin-js": "0.0.1-prealpha.68",
@@ -38,7 +40,7 @@
     "typescript": "4.0.7"
   },
   "peerDependencies": {
-    "react": ">=16.x"
+    "react": ">=16.9.x"
   },
   "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
   "publishConfig": {
