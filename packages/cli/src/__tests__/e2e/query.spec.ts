@@ -8,7 +8,7 @@ import { runCLI } from "@web3api/test-env-js";
 import { normalizeLineEndings } from "@web3api/os-js";
 import {
   checkSampleQueryOutput,
-  getSampleJsonOutput,
+  getSampleObjectOutput,
   getSampleOutputWithClientConfig,
   ISampleOutputOptions,
 } from "./query.spec.helper";
@@ -211,9 +211,12 @@ describe("e2e tests for query command", () => {
     });
 
     expect(fs.existsSync(`${projectRoot}/recipes/output.json`)).toBeTruthy();
+    const arr: Array<unknown> = JSON.parse(fs.readFileSync(`${projectRoot}/recipes/output.json`, "utf8"))
+    expect(Array.isArray(arr)).toBeTruthy();
+    
     expect(
-      JSON.parse(fs.readFileSync(`${projectRoot}/recipes/output.json`, "utf8"))
-    ).toMatchObject(getSampleJsonOutput(constants.SimpleStorageAddr));
+      arr[2]
+    ).toMatchObject(getSampleObjectOutput());
 
     fs.unlinkSync(`${projectRoot}/recipes/output.json`);
   }, 48000);
@@ -246,11 +249,13 @@ describe("e2e tests for query command", () => {
     });
 
     expect(fs.existsSync(`${projectRoot}/recipes/output.yaml`)).toBeTruthy();
+    const arr: Array<unknown> = yaml.load(
+      fs.readFileSync(`${projectRoot}/recipes/output.yaml`, "utf8")
+    ) as unknown as Array<unknown>;
+    expect(Array.isArray(arr)).toBeTruthy();
     expect(
-      yaml.load(
-        fs.readFileSync(`${projectRoot}/recipes/output.yaml`, "utf8")
-      )
-    ).toMatchObject(getSampleJsonOutput(constants.SimpleStorageAddr));
+      arr[2]
+    ).toMatchObject(getSampleObjectOutput());
 
     fs.unlinkSync(`${projectRoot}/recipes/output.yaml`);
   }, 48000);
