@@ -854,7 +854,7 @@ describe("Web3ApiClient - resolveUri", () => {
     const redirectUri = new Uri(`ens/redirect.eth`);
 
     const client = await new Web3ApiClient({
-      resolvers: [
+      uriResolvers: [
         {
           name: "CustomResolver",
           resolveUri: async (uri: Uri) => {
@@ -942,7 +942,7 @@ describe("Web3ApiClient - resolveUri", () => {
 
     const result = await client.resolveUri(ensUri, {
       config: {
-        resolvers: [
+        uriResolvers: [
           {
             name: "CustomResolver",
             resolveUri: async (uri: Uri) => {
@@ -1008,7 +1008,7 @@ describe("Web3ApiClient - resolveUri", () => {
 
     expect(error.type).toEqual(ResolveUriErrorType.InternalResolver);
     expect(error.error?.message).toEqual(
-      "Could not load the following API resolvers: w3://ens/test-resolver.eth"
+      "Could not load the following URI Resolver implementations: w3://ens/test-resolver.eth"
     );
   });
 
@@ -1035,7 +1035,7 @@ describe("Web3ApiClient - resolveUri", () => {
 
     expect(error.type).toEqual(ResolveUriErrorType.InternalResolver);
     expect(error.error?.message).toEqual(
-      "Could not load the following API resolvers: w3://ens/test-resolver.eth"
+      "Could not load the following URI Resolver implementations: w3://ens/test-resolver.eth"
     );
   });
 
