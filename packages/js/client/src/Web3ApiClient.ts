@@ -35,12 +35,12 @@ import {
   sanitizeEnvs,
   ClientConfig,
   resolveUri,
-  UriToApiResolver,
-  GetResolversOptions,
+  UriResolver,
+  GetUriResolversOptions,
   CacheResolver,
+  ExtendableUriResolver,
   Contextualized,
   ResolveUriOptions,
-  ApiAggregatorResolver,
   coreInterfaceUris,
   ResolveUriErrorType,
   ResolveUriResult,
@@ -63,7 +63,7 @@ export class Web3ApiClient implements Client {
     plugins: [],
     interfaces: [],
     envs: [],
-    resolvers: [],
+    uriResolvers: [],
     tracingEnabled: false,
   };
 
@@ -91,7 +91,7 @@ export class Web3ApiClient implements Client {
           interfaces: config.interfaces
             ? sanitizeInterfaceImplementations(config.interfaces)
             : [],
-          resolvers: config.resolvers ?? [],
+          uriResolvers: config.uriResolvers ?? [],
           tracingEnabled: !!config.tracingEnabled,
         };
       }
@@ -148,11 +148,11 @@ export class Web3ApiClient implements Client {
     return this._getConfig(options.contextId).envs;
   }
 
-  @Tracer.traceMethod("Web3ApiClient: getResolvers")
-  public getResolvers(
-    options: GetResolversOptions = {}
-  ): readonly UriToApiResolver[] {
-    return this._getConfig(options.contextId).resolvers;
+  @Tracer.traceMethod("Web3ApiClient: getUriResolvers")
+  public getUriResolvers(
+    options: GetUriResolversOptions = {}
+  ): readonly UriResolver[] {
+    return this._getConfig(options.contextId).uriResolvers;
   }
 
   @Tracer.traceMethod("Web3ApiClient: getEnvByUri")
@@ -451,15 +451,15 @@ export class Web3ApiClient implements Client {
 
     const client = contextualizeClient(this, contextId);
 
-    let resolvers = this.getResolvers({ contextId: contextId });
+    let uriResolvers = this.getUriResolvers({ contextId: contextId });
 
     if (!cacheRead) {
-      resolvers = resolvers.filter((x) => x.name !== CacheResolver.name);
+      uriResolvers = uriResolvers.filter((x) => x.name !== CacheResolver.name);
     }
 
     const { api, uri: resolvedUri, uriHistory, error } = await resolveUri(
       this._toUri(uri),
-      resolvers,
+      uriResolvers,
       client,
       this._apiCache
     );
@@ -483,31 +483,32 @@ export class Web3ApiClient implements Client {
     };
   }
 
-  @Tracer.traceMethod("Web3ApiClient: tryLoadApiResolvers")
-  public async tryLoadApiResolvers(): Promise<{
+  @Tracer.traceMethod("Web3ApiClient: loadUriResolverWrappers")
+  public async loadUriResolvers(): Promise<{
     success: boolean;
-    failedResolverUris: string[];
+    failedUriResolvers: string[];
   }> {
-    const apiAggregatorResolver = this.getResolvers().find(
-      (x) => x.name === ApiAggregatorResolver.name
-    ) as ApiAggregatorResolver;
+    const extendableUriResolver = this.getUriResolvers().find(
+      (x) => x.name === ExtendableUriResolver.name
+    ) as ExtendableUriResolver;
 
-    if (!apiAggregatorResolver) {
-      throw new Error(
-        "Unnecessary tryLoadApiResolvers call, no ApiAggregatorResolver configured."
-      );
+    if (!extendableUriResolver) {
+      return {
+        success: true,
+        failedUriResolvers: [],
+      };
     }
 
-    const resolverUris = getImplementations(
+    const uriResolverImpls = getImplementations(
       coreInterfaceUris.uriResolver,
-      this.getInterfaces({}),
-      this.getRedirects({})
+      this.getInterfaces(),
+      this.getRedirects()
     );
 
-    return apiAggregatorResolver.tryLoadApiResolvers(
+    return extendableUriResolver.loadUriResolverWrappers(
       this,
       this._apiCache,
-      resolverUris
+      uriResolverImpls
     );
   }
 
@@ -526,8 +527,8 @@ export class Web3ApiClient implements Client {
       this._config.interfaces.push(...defaultClientConfig.interfaces);
     }
 
-    if (defaultClientConfig.resolvers) {
-      this._config.resolvers.push(...defaultClientConfig.resolvers);
+    if (defaultClientConfig.uriResolvers) {
+      this._config.uriResolvers.push(...defaultClientConfig.uriResolvers);
     }
   }
 
@@ -672,7 +673,7 @@ export class Web3ApiClient implements Client {
         ? sanitizeInterfaceImplementations(context.interfaces)
         : config.interfaces,
       envs: context?.envs ? sanitizeEnvs(context.envs) : config.envs,
-      resolvers: context?.resolvers ?? config.resolvers,
+      uriResolvers: context?.uriResolvers ?? config.uriResolvers,
       tracingEnabled: context?.tracingEnabled || config.tracingEnabled,
     });
 
@@ -778,8 +779,8 @@ const contextualizeClient = (
         getEnvs: (options: GetEnvsOptions = {}) => {
           return client.getEnvs({ ...options, contextId });
         },
-        getResolvers: (options: GetResolversOptions = {}) => {
-          return client.getResolvers({ ...options, contextId });
+        getUriResolvers: (options: GetUriResolversOptions = {}) => {
+          return client.getUriResolvers({ ...options, contextId });
         },
         getEnvByUri: <TUri extends Uri | string>(
           uri: TUri,
@@ -820,11 +821,11 @@ const contextualizeClient = (
         ): Promise<ResolveUriResult> => {
           return client.resolveUri(uri, { ...options, contextId });
         },
-        tryLoadApiResolvers: (): Promise<{
+        loadUriResolvers: (): Promise<{
           success: boolean;
-          failedResolverUris: string[];
+          failedUriResolvers: string[];
         }> => {
-          return client.tryLoadApiResolvers();
+          return client.loadUriResolvers();
         },
       }
     : client;

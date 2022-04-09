@@ -1,8 +1,8 @@
 import { applyRedirects } from "../../../algorithms";
 import { Uri, Client } from "../../../types";
-import { UriToApiResolver, UriResolutionResult } from "../../core";
+import { UriResolver, UriResolutionResult } from "../../core";
 
-export class RedirectsResolver implements UriToApiResolver {
+export class RedirectsResolver implements UriResolver {
   public get name(): string {
     return RedirectsResolver.name;
   }
