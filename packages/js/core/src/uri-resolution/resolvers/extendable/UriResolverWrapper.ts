@@ -14,7 +14,7 @@ import { getEnvFromUriOrResolutionStack } from "../getEnvFromUriOrResolutionStac
 
 import { Tracer } from "@web3api/tracing-js";
 
-export class UriResolverImplementation implements UriResolver {
+export class UriResolverWrapper implements UriResolver {
   constructor(
     public readonly implementationUri: Uri,
     private readonly createApi: CreateApiFunc,
@@ -22,7 +22,7 @@ export class UriResolverImplementation implements UriResolver {
   ) {}
 
   public get name(): string {
-    return UriResolverImplementation.name;
+    return UriResolverWrapper.name;
   }
 
   async resolveUri(

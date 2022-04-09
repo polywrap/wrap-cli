@@ -1022,9 +1022,9 @@ describe("Web3ApiClient - resolveUri", () => {
       ],
     });
 
-    const { success, failedResolverUris } = await client.tryLoadResolvers();
+    const { success, failedUriResolvers } = await client.loadUriResolvers();
     expect(success).toBeFalsy();
-    expect(failedResolverUris).toEqual(["w3://ens/test-resolver.eth"]);
+    expect(failedUriResolvers).toEqual(["w3://ens/test-resolver.eth"]);
 
     const { error } = await client.resolveUri("ens/test.eth");
     expect(error).toBeTruthy();
@@ -1042,11 +1042,10 @@ describe("Web3ApiClient - resolveUri", () => {
   it("can preload API resolvers", async () => {
     const client = await new Web3ApiClient();
 
-    const { success, failedResolverUris } = await client.tryLoadResolvers();
+    const { success, failedUriResolvers } = await client.loadUriResolvers();
 
-    console.log(failedResolverUris);
     expect(success).toBeTruthy();
-    expect(failedResolverUris.length).toEqual(0);
+    expect(failedUriResolvers.length).toEqual(0);
 
     const { error, uri, api } = await client.resolveUri("ens/test.eth");
 

@@ -287,7 +287,7 @@ describe("resolveUri", () => {
       manifest: {
         format: "0.0.1-prealpha.7",
       },
-      uriResolver: new Uri("ens/ipfs"),
+      uriResolver: "w3://ens/ipfs",
     });
   });
 
@@ -311,7 +311,7 @@ describe("resolveUri", () => {
       manifest: {
         format: "0.0.1-prealpha.7",
       },
-      uriResolver: new Uri("ens/my-plugin"),
+      uriResolver: "w3://ens/my-plugin",
     });
   });
 
@@ -336,7 +336,7 @@ describe("resolveUri", () => {
         format: "0.0.1-prealpha.7",
         dog: "cat",
       },
-      uriResolver: new Uri("ens/ipfs"),
+      uriResolver: "w3://ens/ipfs",
     });
   });
 
@@ -360,7 +360,7 @@ describe("resolveUri", () => {
       manifest: {
         format: "0.0.1-prealpha.7",
       },
-      uriResolver: new Uri("ens/my-plugin"),
+      uriResolver: "w3://ens/my-plugin",
     });
   });
 

@@ -9,7 +9,7 @@ import {
 import { CreateApiFunc } from "./types/CreateApiFunc";
 import { UriResolutionResult } from "../../core/types/UriResolutionResult";
 import { UriResolver, UriResolutionStack } from "../../core";
-import { UriResolverImplementation } from "./UriResolverImplementation";
+import { UriResolverWrapper } from "./UriResolverWrapper";
 import { Queue } from "../../../utils/Queue";
 
 export type ExtendableUriResolverResult = UriResolutionResult & {
@@ -49,7 +49,7 @@ export class ExtendableUriResolver implements UriResolver {
       const {
         success,
         failedUriResolvers,
-      } = await this.loadUriResolverImplementations(
+      } = await this.loadUriResolverWrappers(
         client,
         cache,
         uriResolverImpls
@@ -67,7 +67,7 @@ export class ExtendableUriResolver implements UriResolver {
       this._hasLoadedUriResolvers = true;
     }
 
-    const resolvers: UriResolverImplementation[] = await this._createUriResolverImplementations(
+    const resolvers: UriResolverWrapper[] = await this._createUriResolverWrappers(
       uriResolverImpls
     );
 
@@ -93,7 +93,7 @@ export class ExtendableUriResolver implements UriResolver {
     };
   }
 
-  async loadUriResolverImplementations(
+  async loadUriResolverWrappers(
     client: Client,
     cache: ApiCache,
     implementationUris: Uri[]
@@ -152,13 +152,13 @@ export class ExtendableUriResolver implements UriResolver {
     };
   }
 
-  private async _createUriResolverImplementations(
+  private async _createUriResolverWrappers(
     implementationUris: Uri[]
-  ): Promise<UriResolverImplementation[]> {
-    const uriResolverImpls: UriResolverImplementation[] = [];
+  ): Promise<UriResolverWrapper[]> {
+    const uriResolverImpls: UriResolverWrapper[] = [];
 
     for (const implementationUri of implementationUris) {
-      const uriResolverImpl = new UriResolverImplementation(
+      const uriResolverImpl = new UriResolverWrapper(
         implementationUri,
         this._createApi,
         this._deserializeOptions

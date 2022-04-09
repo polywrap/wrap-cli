@@ -483,7 +483,7 @@ export class Web3ApiClient implements Client {
     };
   }
 
-  @Tracer.traceMethod("Web3ApiClient: loadUriResolverImplementations")
+  @Tracer.traceMethod("Web3ApiClient: loadUriResolverWrappers")
   public async loadUriResolvers(): Promise<{
     success: boolean;
     failedUriResolvers: string[];
@@ -505,7 +505,7 @@ export class Web3ApiClient implements Client {
       this.getRedirects()
     );
 
-    return extendableUriResolver.loadUriResolverImplementations(
+    return extendableUriResolver.loadUriResolverWrappers(
       this,
       this._apiCache,
       uriResolverImpls
