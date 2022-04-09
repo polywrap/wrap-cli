@@ -49,11 +49,7 @@ export class ExtendableUriResolver implements UriResolver {
       const {
         success,
         failedUriResolvers,
-      } = await this.loadUriResolverWrappers(
-        client,
-        cache,
-        uriResolverImpls
-      );
+      } = await this.loadUriResolverWrappers(client, cache, uriResolverImpls);
 
       if (!success) {
         return {
