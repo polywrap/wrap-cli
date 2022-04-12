@@ -1,88 +1,33 @@
-import { Deployer } from "../../deploy/DeploymentManager";
-import { DirectoryBlob, DirectoryEntry, FileEntry } from "../../deploy/file";
+import { Deployer } from "../../deploy/deployer";
+import { convertDirectoryBlobToFormData } from "./formData";
+import { parseAddDirectoryResponse } from "./utils";
+import { convertDirectoryToEntry, DirectoryBlob } from "./file";
 
 import FormData from "form-data";
 import axios from "axios";
+import { Uri } from "@web3api/core-js";
 
-interface FormDataEntry {
-  key: string;
-  data?: string;
-  opts?: FormDataOptions;
-}
+const isValidUri = (uri: Uri) => uri.authority === "file";
 
-interface FormDataOptions {
-  contentType?: string;
-  fileName?: string;
-  filePath?: string;
-}
+const resolveBuildDir = (path: string): DirectoryBlob => {
+  const dirEntry = convertDirectoryToEntry(path);
 
-function convertDirectoryEntryToFormData(
-  dirs: DirectoryEntry[],
-  path: string
-): FormDataEntry[] {
-  let formData: FormDataEntry[] = [];
-  for (let i = 0; i < dirs.length; i++) {
-    const dir = dirs[i];
-    formData.push({
-      key: dir.name,
-      opts: {
-        contentType: "application/x-directory",
-        fileName: encodeURIComponent(dir.name),
-        filePath: "",
-      },
-    });
-    const newPath = path + dir.name + "/";
-    for (let j = 0; j < dir.files.length; j++) {
-      formData.push(convertFileEntryToFormData(dir.files[j], newPath));
-    }
-    const rest = convertDirectoryEntryToFormData(dir.directories, newPath);
-    formData = formData.concat(rest);
-  }
-  return formData;
-}
-
-function convertFileEntryToFormData(
-  fileEntry: FileEntry,
-  path: string
-): FormDataEntry {
   return {
-    key: fileEntry.name,
-    data: fileEntry.data,
-    opts: {
-      contentType: "application/octet-stream",
-      fileName: encodeURIComponent(path + fileEntry.name),
-    },
+    files: [],
+    directories: [dirEntry],
   };
-}
-
-function convertDirectoryBlobToFormData(
-  directoryBlob: DirectoryBlob
-): FormDataEntry[] {
-  let formData: FormDataEntry[] = [];
-  const files = directoryBlob.files;
-
-  for (let i = 0; i < files.length; i++) {
-    formData.push(convertFileEntryToFormData(files[i], ""));
-  }
-
-  if (directoryBlob.directories.length != 0) {
-    const dirFormData = convertDirectoryEntryToFormData(
-      directoryBlob.directories,
-      ""
-    );
-    formData = formData.concat(dirFormData);
-  }
-  return formData;
-}
+};
 
 class IPFSDeployer implements Deployer {
-  async deploy(
-    buildDirBlob: DirectoryBlob,
-    config?: { gatewayUri: string }
-  ): Promise<string> {
-    console.log(`Publishing build contents to IPFS...`);
+  async execute(uri: Uri, config?: { gatewayUri: string }): Promise<Uri> {
+    if (!isValidUri(uri)) {
+      throw new Error("Invalid URI");
+    }
 
-    const ipfsUrl = config?.gatewayUri ?? "https://ipfs.wrappers.io";
+    const path = uri.path;
+    const buildDirBlob = resolveBuildDir(path);
+
+    const ipfsUrl = config?.gatewayUri ?? "http://localhost:5001";
 
     const formDataEntries = convertDirectoryBlobToFormData(buildDirBlob);
 
@@ -109,23 +54,26 @@ class IPFSDeployer implements Deployer {
       fd.append(formDataEntry.key, elementData, options);
     });
 
-    const resp = await axios.post(`${ipfsUrl}/add`, fd, {
+    const resp = await axios.post(`${ipfsUrl}/api/v0/add`, fd, {
       headers: {
         ...fd.getHeaders(),
       },
     });
 
-    if (resp.status === 200 && !resp.data.error) {
-      const cid = resp.data.cid;
+    if (resp.status === 200) {
+      const directoryCID = parseAddDirectoryResponse(resp.data).find(
+        (a) => !a.name.includes("/")
+      )?.hash;
 
-      console.log(`Publish to IPFS successful, CID: ${cid}`);
-      return cid;
-    } else if (resp.status === 200 && resp.data.error) {
-      throw new Error(resp.data.error);
+      if (!directoryCID) {
+        throw new Error("Could not find root folder's CID");
+      }
+
+      return new Uri(`ipfs/${directoryCID}`);
     } else {
       throw new Error("Unexpected error: " + resp.status);
     }
   }
 }
 
-export default IPFSDeployer;
+export default new IPFSDeployer();

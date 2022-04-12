@@ -1,21 +1,19 @@
 /* eslint-disable prefer-const */
 import {
   intlMsg,
-  defaultBuildPath,
   Web3ApiProject,
   defaultWeb3ApiManifest,
   resolvePathIfExists,
 } from "../lib";
-import { Deployer, Publisher, PublishHandler } from "../lib/deploy/DeploymentManager";
-import { convertDirectoryToEntry } from "../lib/deploy/file";
+import { DeployerHandler } from "../lib/deploy/deployer";
 
 import chalk from "chalk";
 import fs from "fs";
-import path from "path";
+import nodePath from "path";
 import { GluegunToolbox, GluegunPrint } from "gluegun";
+import { Uri } from "@web3api/core-js";
 
 const defaultManifestStr = defaultWeb3ApiManifest.join(" | ");
-const defaultOutputDirectory = defaultBuildPath;
 const optionsStr = intlMsg.commands_deploy_options_options();
 const pathStr = intlMsg.commands_deploy_options_o_path();
 
@@ -24,11 +22,10 @@ ${chalk.bold("w3 deploy")} [${optionsStr}]
 
 ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
   -h, --help                         ${intlMsg.commands_deploy_options_h()}
-  -m, --manifest-file <${pathStr}>         ${intlMsg.commands_deploy_options_m({
+  -m, --manifest-file <${pathStr}>   ${intlMsg.commands_deploy_options_m({
   default: defaultManifestStr,
 })}
   -v, --verbose                      ${intlMsg.commands_deploy_options_v()}
-  -p, --path [<${pathStr}>]"                ${intlMsg.commands_deploy_options_p()}
 `;
 
 export default {
@@ -38,11 +35,10 @@ export default {
     const { filesystem, parameters, print } = toolbox;
 
     // Options
-    const { h, p, m, v, n, c } = parameters.options;
-    let { help, path, manifestFile, verbose, name, cid } = parameters.options;
+    const { h, m, v, n, c } = parameters.options;
+    let { help, manifestFile, verbose, name, cid } = parameters.options;
 
     help = help || h;
-    path = path || p;
     verbose = verbose || v;
     manifestFile = manifestFile || m;
     name = name || n;
@@ -52,7 +48,6 @@ export default {
     const paramsValid = validateDeployParams(print, {
       name,
       cid,
-      path,
       manifestFile,
     });
 
@@ -79,10 +74,8 @@ export default {
       return;
     }
 
-    const buildPath: string = path ?? defaultOutputDirectory;
-
     const project = new Web3ApiProject({
-      rootCacheDir: path.dirname(manifestFile),
+      rootCacheDir: nodePath.dirname(manifestFile),
       web3apiManifestPath: manifestFile,
       quiet: verbose ? false : true,
     });
@@ -95,82 +88,57 @@ export default {
       throw new Error("No deploy manifest");
     }
 
-    const packages = {
-      deploy: deployManifest.deploy
-        ? Object.values(deployManifest.deploy).map((d) => d.package)
-        : [],
-      publish: deployManifest.publish
-        ? Object.values(deployManifest.publish).map((p) => p.package)
-        : [],
-    };
+    const packages = Object.values(deployManifest.stages).map((d) => d.package);
 
     sanitizePackages(packages);
 
     await project.cacheDeploymentPackages(packages);
 
-    const deployments: Record<string, string> = {};
+    const handlers: Record<string, DeployerHandler> = {};
+    const roots: { handler: DeployerHandler; uri: Uri }[] = [];
 
-    // Deploy steps don't depend on anything. Execute them all
-    if (deployManifest.deploy) {
-      const buildDirEntry = convertDirectoryToEntry(buildPath);
+    // Create all handlers
+    Object.entries(deployManifest.stages).forEach(([key, value]) => {
+      const publisher = project.getDeploymentPackage(value.package);
+      const handler = new DeployerHandler(key, publisher, value.config);
 
-      for await (const key of Object.keys(deployManifest.deploy)) {
-        const deployer = getDeployer(key);
+      handlers[key] = handler;
+    });
 
-        const uri = await deployer.deploy({
-          files: [],
-          directories: [buildDirEntry],
-        });
+    // Establish dependency chains
+    Object.entries(deployManifest.stages).forEach(([key, value]) => {
+      const thisHandler = handlers[key];
 
-        deployments[key] = uri;
+      if (value.depends_on) {
+        // Depends on another stage
+        handlers[value.depends_on].addNext(thisHandler);
+      } else if (value.uri) {
+        // It is a root node
+        roots.push({ uri: new Uri(value.uri), handler: thisHandler });
+      } else {
+        throw new Error(
+          `Stage '${key}' needs either previous (depends_on) stage or URI`
+        );
       }
+    });
 
-      console.log(deployments);
+    // Execute roots
+
+    roots.forEach((root) => {
+      console.log(root.handler.getList());
+    });
+
+    const uris: Uri[][] = [];
+
+    for await (const root of roots) {
+      uris.push(await root.handler.handle(root.uri));
     }
 
-    if (deployManifest.publish) {
-      const handlers: Record<string, PublishHandler> = {};
-      const roots: { handler: PublishHandler; uri: string }[] = [];
+    roots.forEach((root) => {
+      console.log(root.handler.getResultsList());
+    });
 
-      // Create all handlers
-      Object.entries(deployManifest.publish).forEach(([key, value]) => {
-        const publisher = getPublisher(value.package);
-        const handler = new PublishHandler(publisher, value.config);
-
-        handlers[key] = handler;
-      });
-
-      // Establish dependency chains
-      Object.entries(deployManifest.publish).forEach(([key, value]) => {
-        const thisHandler = handlers[key];
-
-        if (value.publish) {
-          // Depends on other publish step
-          handlers[value.publish].addNext(thisHandler);
-        } else if (typeof value.deployment === "string") {
-          // Depends on deploy step
-          roots.push({
-            uri: deployments[value.deployment],
-            handler: thisHandler,
-          });
-        } else if (typeof value.deployment === "object") {
-          // It is a root node
-          roots.push({ uri: value.deployment.uri, handler: thisHandler });
-        } else {
-          throw new Error("Needs either previous step or URI");
-        }
-      });
-
-      // Execute roots
-
-      const uris: string[][] = [];
-
-      for await (const root of roots) {
-        uris.push(await root.handler.handle(root.uri));
-      }
-
-      print.table(uris);
-    }
+    console.log(uris.map((uArray) => uArray.map((u) => u.toString())));
 
     process.exitCode = 0;
   },
@@ -180,12 +148,11 @@ function validateDeployParams(
   print: GluegunPrint,
   params: {
     manifestFile: unknown;
-    path: unknown;
     name: unknown;
     cid: unknown;
   }
 ): boolean {
-  const { manifestFile, path } = params;
+  const { manifestFile } = params;
 
   if (manifestFile === true) {
     const manifestPathMissingMessage = intlMsg.commands_build_error_manifestPathMissing(
@@ -198,37 +165,18 @@ function validateDeployParams(
     return false;
   }
 
-  if (path === true) {
-    const pathMissingMessage = intlMsg.commands_deploy_error_pathMissing({
-      option: "--path",
-      argument: `<${pathStr}>`,
-    });
-    print.error(pathMissingMessage);
-    return false;
-  }
-
   return true;
 }
 
-function sanitizePackages(packages: { deploy: string[]; publish: string[] }) {
+function sanitizePackages(packages: string[]) {
   const unrecognizedPackages: string[] = [];
 
   const availableDeployers = fs.readdirSync(
-    path.join(__dirname, "..", "deployers")
+    nodePath.join(__dirname, "..", "lib", "deployers")
   );
 
-  const availablePublishers = fs.readdirSync(
-    path.join(__dirname, "..", "publishers")
-  );
-
-  packages.deploy.forEach((p) => {
+  packages.forEach((p) => {
     if (!availableDeployers.includes(p)) {
-      unrecognizedPackages.push(p);
-    }
-  });
-
-  packages.publish.forEach((p) => {
-    if (!availablePublishers.includes(p)) {
       unrecognizedPackages.push(p);
     }
   });
@@ -239,6 +187,3 @@ function sanitizePackages(packages: { deploy: string[]; publish: string[] }) {
     );
   }
 }
-
-function getPublisher(name: string): Publisher {}
-function getDeployer(name: string): Deployer {}

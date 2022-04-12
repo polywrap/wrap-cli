@@ -1,9 +1,26 @@
 format: 0.0.1-prealpha.1
-deployments:
-  - name: "IPFS and ENS"
-    deploy:
-      package: 
-        name: "@namestyd/ipfs-deployer"
-        versionOrPath: "npm:"
-    publish:
-      package: "npm:@namestyd/ens-publisher"
+stages:
+  ipfs_deploy:
+    package: ipfs
+    uri: file/./build
+  from_deploy:
+    package: ens
+    depends_on: ipfs_deploy
+    config:
+      domainName: test1.eth
+      provider: 'http://localhost:8545'
+      ensRegistryAddress: '0x9b1f7F645351AF3631a656421eD2e40f2802E6c0'
+  from_deploy2:
+    package: ens
+    depends_on: ipfs_deploy
+    config:
+      domainName: test2.eth
+      provider: 'http://localhost:8545'
+      ensRegistryAddress: '0x9b1f7F645351AF3631a656421eD2e40f2802E6c0'
+  from_uri:
+    package: ens
+    uri: ipfs/QmVdDR6QtigTt38Xwpj2Ki73X1AyZn5WRCreBCJq1CEtpF
+    config:
+      domainName: test3.eth
+      provider: 'http://localhost:8545'
+      ensRegistryAddress: '0x9b1f7F645351AF3631a656421eD2e40f2802E6c0'

@@ -1,2 +1,1 @@
-export * from "./DeploymentManager";
-export * from "./file";
+export * from "./deployer";

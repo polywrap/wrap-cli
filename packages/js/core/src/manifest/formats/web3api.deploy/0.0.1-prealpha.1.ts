@@ -8,7 +8,7 @@
 
 export interface DeployManifest {
   format: "0.0.1-prealpha.1";
-  deploy?: {
+  stages: {
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition
      * via the `patternProperty` "^.*$".
@@ -22,28 +22,8 @@ export interface DeployManifest {
          */
         [k: string]: unknown;
       };
-    };
-  };
-  publish?: {
-    /**
-     * This interface was referenced by `undefined`'s JSON-Schema definition
-     * via the `patternProperty` "^.*$".
-     */
-    [k: string]: {
-      package: string;
-      config?: {
-        /**
-         * This interface was referenced by `undefined`'s JSON-Schema definition
-         * via the `patternProperty` "^.*$".
-         */
-        [k: string]: unknown;
-      };
-      deployment?:
-        | string
-        | {
-            uri: string;
-          };
-      publish?: string;
+      depends_on?: string;
+      uri?: string;
     };
   };
   __type: "DeployManifest";

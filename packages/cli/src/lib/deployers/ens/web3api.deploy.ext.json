@@ -1,5 +1,5 @@
 {
-  "id": "DeployManifest_Publisher_WasmAsExt",
+  "id": "DeployManifest_ENS_WasmAsExt",
   "type": "object",
   "required": [
     "config"

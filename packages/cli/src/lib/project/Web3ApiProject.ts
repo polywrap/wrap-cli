@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import { ProjectConfig, Project } from ".";
@@ -14,6 +15,7 @@ import {
   intlMsg,
   loadDeployManifest,
 } from "..";
+import { Deployer } from "../deploy";
 
 import {
   Web3ApiManifest,
@@ -371,28 +373,30 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     return this._deployManifest;
   }
 
-  public async cacheDeploymentPackages(packages: {
-    deploy: string[];
-    publish: string[];
-  }): Promise<void> {
+  public getDeploymentPackage(packageName: string): Deployer {
+    if (!this._deploymentPackagesCached) {
+      throw new Error("Deployment packages have not been cached");
+    }
+
+    const cachePath = this.getCachePath(
+      `${cacheLayout.deployEnvDir}/${packageName}`
+    );
+
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    return require(cachePath).default as Deployer;
+  }
+
+  public async cacheDeploymentPackages(packages: string[]): Promise<void> {
     if (this._deploymentPackagesCached) {
       return;
     }
 
     this.removeCacheDir(cacheLayout.deployEnvDir);
 
-    for await (const deployPackage of packages.deploy) {
+    for await (const deployPackage of packages) {
       await this.copyIntoCache(
         `${cacheLayout.deployEnvDir}/${deployPackage}`,
         `${__dirname}/../deployers/${deployPackage}/*`,
-        { up: true }
-      );
-    }
-
-    for await (const publishPackage of packages.publish) {
-      await this.copyIntoCache(
-        `${cacheLayout.deployEnvDir}/${publishPackage}`,
-        `${__dirname}/../publishers/${publishPackage}/*`,
         { up: true }
       );
     }
