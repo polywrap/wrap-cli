@@ -1,4 +1,6 @@
-// @ts-noCheck
+/// NOTE: This is an auto-generated file.
+///       All modifications will be overwritten.
+
 import * as Types from "./";
 
 import {
@@ -117,7 +119,7 @@ export type {{type}} = {{type}}Enum | {{type}}String;
 
 /// Imported Queries START ///
 
-{{#importedQueryTypes}}
+{{#importedModuleTypes}}
 {{#methods}}
 /* URI: "{{parent.uri}}" */
 interface {{parent.type}}_Input_{{name}} extends Record<string, unknown> {
@@ -147,5 +149,5 @@ export const {{type}} = {
   {{/methods}}
 }
 
-{{/importedQueryTypes}}
+{{/importedModuleTypes}}
 /// Imported Queries END ///

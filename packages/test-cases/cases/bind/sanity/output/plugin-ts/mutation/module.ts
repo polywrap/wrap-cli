@@ -1,4 +1,6 @@
-// @ts-noCheck
+/// NOTE: This is an auto-generated file.
+///       All modifications will be overwritten.
+
 import {
   UInt,
   UInt8,
@@ -22,7 +24,7 @@ import {
   MaybeAsync
 } from "@web3api/core-js";
 
-export interface Input_queryMethod extends Record<string, unknown> {
+export interface Input_mutationMethod extends Record<string, unknown> {
   str: String;
   optStr?: String | null;
   en: Types.CustomEnum;
@@ -38,13 +40,19 @@ export interface Input_objectMethod extends Record<string, unknown> {
   optObjectArray?: Array<Types.AnotherType | null> | null;
 }
 
-export interface Module extends PluginModule {
-  queryMethod(
-    input: Input_queryMethod,
+export abstract class Module<
+  TConfig = {}
+> extends PluginModule<
+  TConfig,
+  Types.MutationEnv,
+> {
+
+  abstract mutationMethod(
+    input: Input_mutationMethod,
     client: Client
   ): MaybeAsync<Int>;
 
-  objectMethod(
+  abstract objectMethod(
     input: Input_objectMethod,
     client: Client
   ): MaybeAsync<Types.AnotherType | null>;

@@ -1,4 +1,6 @@
-// @ts-noCheck
+/// NOTE: This is an auto-generated file.
+///       All modifications will be overwritten.
+
 import * as Types from "./";
 
 import {

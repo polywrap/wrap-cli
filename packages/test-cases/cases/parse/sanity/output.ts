@@ -289,8 +289,8 @@ export const typeInfo: TypeInfo = {
         {
           ...createMethodDefinition({
             type: "mutation",
-            name: "sanitizeMutationEnv",
-            return: createObjectPropertyDefinition({ name: "sanitizeMutationEnv", type: "MutationEnv", required: true }),
+            name: "sanitizeEnv",
+            return: createObjectPropertyDefinition({ name: "sanitizeEnv", type: "MutationEnv", required: true }),
             arguments: [createObjectPropertyDefinition({ name: "env", type: "MutationClientEnv", required: true })],
           })
         },
@@ -309,8 +309,8 @@ export const typeInfo: TypeInfo = {
         {
           ...createMethodDefinition({
             type: "query",
-            name: "sanitizeQueryEnv",
-            return: createObjectPropertyDefinition({ name: "sanitizeQueryEnv", type: "QueryEnv", required: true }),
+            name: "sanitizeEnv",
+            return: createObjectPropertyDefinition({ name: "sanitizeEnv", type: "QueryEnv", required: true }),
             arguments: [createObjectPropertyDefinition({ name: "env", type: "QueryClientEnv", required: true })],
           })
         },

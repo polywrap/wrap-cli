@@ -135,8 +135,7 @@ export const getPropertyTypesValidator = (): SchemaValidator => {
         },
         FieldDefinition: (node) => {
           if (
-            node.name.value === "sanitizeMutationEnv" ||
-            node.name.value === "sanitizeQueryEnv"
+            node.name.value === "sanitizeEnv"
           ) {
             return;
           }

@@ -1,3 +1,6 @@
+/// NOTE: This is an auto-generated file.
+///       All modifications will be overwritten.
+
 export const schema: string = `### Web3API Header START ###
 scalar UInt
 scalar UInt8

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import * as Functions from "../functions";
 import { GenerateBindingFn } from "../..";
+import { renderTemplates } from "../../utils/templates";
 import {
   BindOptions,
   BindOutput,
@@ -16,8 +17,6 @@ import {
   methodParentPointers,
   TypeInfo,
 } from "@web3api/schema-parse";
-import Mustache from "mustache";
-import { readFileSync } from "fs";
 import path from "path";
 
 export { Functions };
@@ -62,37 +61,11 @@ function generateModuleBindings(module: BindModuleOptions): BindModuleOutput {
   const schema = module.schema;
   const typeInfo = applyTransforms(module.typeInfo);
 
-  const renderTemplate = (
-    subPath: string,
-    context: unknown,
-    fileName?: string
-  ) => {
-    const absPath = path.join(__dirname, subPath);
-    const template = readFileSync(absPath, { encoding: "utf-8" });
-    fileName =
-      fileName ||
-      absPath
-        .replace(path.dirname(absPath), "")
-        .replace(".mustache", "")
-        .replace("/", "")
-        .replace("\\", "")
-        .replace("-", ".");
-
-    output.entries.push({
-      type: "File",
-      name: fileName,
-      data: Mustache.render(template, context),
-    });
-  };
-
-  const rootContext = {
-    ...typeInfo,
-    schema,
-  };
-
-  renderTemplate("./templates/index-ts.mustache", rootContext);
-  renderTemplate("./templates/schema-ts.mustache", rootContext);
-  renderTemplate("./templates/types-ts.mustache", rootContext);
+  output.entries = renderTemplates(
+    path.join(__dirname, "./templates"),
+    { ...typeInfo, schema },
+    { }
+  );
 
   return result;
 }

@@ -21,7 +21,11 @@ export type String = string;
 export type Boolean = boolean;
 
 /// Envs START ///
-export interface QueryEnv {
+export interface ClientQueryEnv {
+  userProp: String;
+}
+
+export interface Env {
   arg1: String;
 }
 /// Envs END ///

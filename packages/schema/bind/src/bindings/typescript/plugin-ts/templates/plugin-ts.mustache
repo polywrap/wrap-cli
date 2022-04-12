@@ -1,29 +1,25 @@
-import { 
-  Plugin, 
-  PluginFactory, 
-  PluginPackageManifest, 
-  PluginModules, 
-  PluginModule, 
-  InvokableModules 
+/// NOTE: This is an auto-generated file.
+///       All modifications will be overwritten.
+
+import {
+  Plugin,
+  PluginFactory,
+  PluginPackageManifest,
+  PluginModules,
 } from "@web3api/core-js";
 {{#modules}}
-{{#env}}
-import { loadEnv as load{{#toClassName}}{{name}}{{/toClassName}}Env, {{#toClassName}}{{name}}{{/toClassName}}Env } from "../{{modulePath}}";
-{{/env}}
-import { {{#toClassName}}{{name}}{{/toClassName}}, {{#toClassName}}{{name}}{{/toClassName}}Configs } from "../{{modulePath}}";
+import { {{#toClassName}}{{name}}{{/toClassName}}, {{#toClassName}}{{name}}{{/toClassName}}Config } from "../{{modulePath}}";
 {{/modules}}
 import { manifest } from "./manifest";
 
 export interface {{#toClassName}}{{projectName}}{{/toClassName}}PluginConfigs {
 {{#modules}}
-  {{name}}: {{#toClassName}}{{name}}{{/toClassName}}Configs;
+  {{name}}: {{#toClassName}}{{name}}{{/toClassName}}Config;
 {{/modules}}
 }
 
-class {{#toClassName}}{{projectName}}{{/toClassName}}Plugin extends Plugin {
-  constructor(private _configs: {{#toClassName}}{{projectName}}{{/toClassName}}PluginConfigs) {
-    super();
-  }
+export class {{#toClassName}}{{projectName}}{{/toClassName}}Plugin implements Plugin {
+  constructor(private _configs: {{#toClassName}}{{projectName}}{{/toClassName}}PluginConfigs) { }
 
   public static manifest(): PluginPackageManifest {
     return manifest;
@@ -36,29 +32,15 @@ class {{#toClassName}}{{projectName}}{{/toClassName}}Plugin extends Plugin {
       {{/modules}}
     };
   }
-
-  public loadModuleEnv(module: InvokableModules, env: unknown ): void {
-    switch(module) {
-      {{#modules}}
-      {{#env}}
-      case "{{name}}":
-        return load{{#toClassName}}{{name}}{{/toClassName}}Env(env as {{#toClassName}}{{name}}{{/toClassName}}Env);
-      {{/env}}
-      {{/modules}}
-      default:
-        throw new Error(`Unknown module: ${module}`);
-    }
-  }
 }
 
-export const {{#toFuncName}}{{projectName}}{{/toFuncName}}Plugin: PluginFactory<
-  {{#toClassName}}{{projectName}}{{/toClassName}}PluginConfigs
-> = (
+export const {{#toFuncName}}{{projectName}}{{/toFuncName}}Plugin: PluginFactory<{{#toClassName}}{{projectName}}{{/toClassName}}PluginConfigs> = (
   opts: {{#toClassName}}{{projectName}}{{/toClassName}}PluginConfigs
 ) => {
   return {
-    factory: () => new {{className}}Plugin(opts),
+    factory: () => new {{#toClassName}}{{projectName}}{{/toClassName}}Plugin(opts),
     manifest: manifest,
   };
 };
+
 export const plugin = {{#toFuncName}}{{projectName}}{{/toFuncName}}Plugin;

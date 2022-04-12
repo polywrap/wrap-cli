@@ -26,9 +26,12 @@ export interface Input_method extends Record<string, unknown> {
   arg: UInt32;
 }
 
-
-export interface IMutation {
-  method(
+export abstract class Module<
+  TConfig = {}
+> extends PluginModule<
+  TConfig,
+> {
+  abstract method(
     input: Input_method,
     client: Client
   ): MaybeAsync<String>;
