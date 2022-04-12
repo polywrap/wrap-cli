@@ -19,6 +19,8 @@ Options:
 
 `;
 
+jest.setTimeout(500000);
+
 describe("e2e tests for build command", () => {
   const projectRoot = path.resolve(__dirname, "../project/");
 
@@ -255,5 +257,28 @@ ${HELP}`);
     expect(fs.existsSync(path.join(projectRoot, queryVarPath))).toBeTruthy();
     expect(fs.existsSync(path.join(projectRoot, linkIconPath))).toBeTruthy();
     expect(fs.existsSync(path.join(projectRoot, iconPath))).toBeTruthy();
+  });
+
+  test("Successfully builds project with buildkit options", async () => {
+    const { exitCode: code, stdout: output } = await runCLI(
+      {
+        args: ["build", "-m", "web3api-buildx.yaml", "-v"],
+        cwd: projectRoot,
+        cli: w3Cli,
+      },
+    );
+
+    const manifestPath = "build/web3api.json";
+    const sanitizedOutput = clearStyle(output);
+
+    expect(code).toEqual(0);
+    expect(sanitizedOutput).toContain(
+      "Artifacts written to ./build from the image `polywrap-build-env-"
+    );
+    expect(sanitizedOutput).toContain(
+      "Manifest written to ./build/web3api.json"
+    );
+    expect(sanitizedOutput).toContain(manifestPath);
+    expect(fs.existsSync(path.join(projectRoot, ".w3", "web3api", "build", "cache"))).toBeTruthy();
   });
 });

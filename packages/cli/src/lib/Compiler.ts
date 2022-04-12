@@ -321,7 +321,7 @@ export class Compiler {
 
     // Create the BuildManifest
     const buildManifest: BuildManifest = {
-      format: "0.0.1-prealpha.2",
+      format: "0.0.1-prealpha.3",
       __type: "BuildManifest",
       docker: {
         buildImageId: dockerImageId,
@@ -383,6 +383,30 @@ export class Compiler {
       );
     }
 
+    let cacheDir = buildManifest?.docker?.buildkit?.cacheDir
+      ? buildManifest.docker.buildkit.cacheDir
+      : undefined;
+
+    if (cacheDir == "DEFAULT") {
+      cacheDir = project.getCachePath("build/cache");
+    } else if (cacheDir && !path.isAbsolute(cacheDir)) {
+      cacheDir = path.join(project.getManifestDir(), cacheDir);
+    }
+
+    const buildxOutput = buildManifest?.docker?.buildkit?.output
+      ? buildManifest.docker.buildkit.output
+      : undefined;
+
+    const useBuildkit = buildManifest?.docker?.buildkit?.enabled ? true : false;
+
+    const removeBuilder = buildManifest?.docker?.buildkit?.removeBuilder
+      ? true
+      : false;
+
+    const removeImage = buildManifest?.docker?.buildkit?.removeImage
+      ? true
+      : false;
+
     // If the dockerfile path contains ".mustache", generate
     if (dockerfile.indexOf(".mustache") > -1) {
       dockerfile = generateDockerfile(dockerfile, buildManifest.config || {});
@@ -393,7 +417,10 @@ export class Compiler {
       project.getManifestDir(),
       imageName,
       dockerfile,
-      project.quiet
+      cacheDir,
+      buildxOutput,
+      project.quiet,
+      useBuildkit
     );
 
     // Determine what build artifacts to expext
@@ -411,7 +438,10 @@ export class Compiler {
       outputDir,
       web3apiArtifacts,
       imageName,
-      project.quiet
+      project.quiet,
+      useBuildkit,
+      removeBuilder,
+      removeImage
     );
 
     return dockerImageId;
