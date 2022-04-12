@@ -8,13 +8,14 @@ import {
   watchEventName,
   publishToIPFS,
   intlMsg,
-  // getDockerFileLock,
   defaultWeb3ApiManifest,
   resolvePathIfExists,
   getTestEnvProviders,
   isDockerInstalled,
+  FileLock,
 } from "../lib";
 
+import fs from "fs";
 import chalk from "chalk";
 import axios from "axios";
 import path from "path";
@@ -152,15 +153,20 @@ export default {
       }
     }
 
-    // // Aquire a system-wide lock file for the docker service
-    // const dockerLock = getDockerFileLock();
-
     const project = new Web3ApiProject({
       rootCacheDir: path.dirname(manifestFile),
       web3apiManifestPath: manifestFile,
       quiet: verbose ? false : true,
     });
     await project.validate();
+
+    // Aquire a project specific lock file for the docker service
+    console.log(project.getCachePath("build/DOCKER_LOCK"));
+    const dockerLock = new FileLock(
+      project.getCachePath("build/DOCKER_LOCK"),
+      print.error
+    );
+    console.log(fs.existsSync(project.getCachePath("build/DOCKER_LOCK")));
 
     const schemaComposer = new SchemaComposer({
       project,
@@ -237,9 +243,9 @@ export default {
     };
 
     if (!watch) {
-      // await dockerLock.request();
+      await dockerLock.request();
       const result = await execute();
-      // await dockerLock.release();
+      await dockerLock.release();
 
       if (!result) {
         process.exitCode = 1;
@@ -247,9 +253,9 @@ export default {
       }
     } else {
       // Execute
-      // await dockerLock.request();
+      await dockerLock.request();
       await execute();
-      // await dockerLock.release();
+      await dockerLock.release();
 
       const keyPressListener = () => {
         // Watch for escape key presses
@@ -292,9 +298,9 @@ export default {
           }
 
           // Execute the build
-          // await dockerLock.request();
+          await dockerLock.request();
           await execute();
-          // await dockerLock.release();
+          await dockerLock.release();
 
           // Process key presses
           keyPressListener();
