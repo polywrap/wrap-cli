@@ -15,7 +15,6 @@ import {
   FileLock,
 } from "../lib";
 
-import fs from "fs";
 import chalk from "chalk";
 import axios from "axios";
 import path from "path";
@@ -161,12 +160,10 @@ export default {
     await project.validate();
 
     // Aquire a project specific lock file for the docker service
-    console.log(project.getCachePath("build/DOCKER_LOCK"));
     const dockerLock = new FileLock(
       project.getCachePath("build/DOCKER_LOCK"),
       print.error
     );
-    console.log(fs.existsSync(project.getCachePath("build/DOCKER_LOCK")));
 
     const schemaComposer = new SchemaComposer({
       project,

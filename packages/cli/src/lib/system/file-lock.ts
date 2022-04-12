@@ -1,4 +1,17 @@
 import * as fs from "fs";
+import path from "path";
+
+export function createDirs(dirPath: string): void {
+  dirPath.split("/").reduce((directories, directory) => {
+    directories += `${directory}/`;
+
+    if (!fs.existsSync(directories)) {
+      fs.mkdirSync(directories);
+    }
+
+    return directories;
+  }, "");
+}
 
 export class FileLock {
   constructor(
@@ -33,6 +46,7 @@ export class FileLock {
     }
     // try to get the lock, and recurse if another process gets the lock first.
     try {
+      createDirs(path.dirname(this._lockFilePath));
       await fs.promises.writeFile(this._lockFilePath, `${process.pid}`, {
         flag: "wx",
       });

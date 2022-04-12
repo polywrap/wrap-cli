@@ -52,7 +52,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     this._buildManifest = undefined;
     this._metaManifest = undefined;
     this._defaultBuildManifestCached = false;
-    this.resetCache();
+    this.removeCacheDir(cacheLayout.buildEnvDir);
   }
 
   public async validate(): Promise<void> {
