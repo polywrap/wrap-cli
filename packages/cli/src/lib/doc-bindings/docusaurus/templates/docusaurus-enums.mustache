@@ -1,0 +1,20 @@
+---
+id: enums
+title: Enum Types
+---
+
+
+{{#enumTypes}}
+### {{type}}
+
+{{#markdownItalics}}{{comment}}{{/markdownItalics}}
+
+```graphql
+enum {{type}} {
+  {{#constants}}
+  {{.}}
+  {{/constants}}
+}
+```
+
+{{/enumTypes}}

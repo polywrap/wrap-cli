@@ -1,0 +1,57 @@
+/**
+* Queries
+* @module query
+*/
+
+/**
+* Mutations
+* @module mutation
+*/
+
+/**
+* Types
+* @module types
+*/
+
+/**
+* Enums
+* @module enums
+*/
+
+{{#queryTypes}}
+{{#methods}}
+/**
+ * {{comment}}
+ * @function module:{{type}}.{{name}}
+{{#arguments}}
+  {{#required}}
+ * @param { {{#typeFormatFilter}}{{type}}{{/typeFormatFilter}} } {{name}} {{comment}}
+  {{/required}}
+  {{^required}}
+ * @param { {{#typeFormatFilter}}{{type}}{{/typeFormatFilter}} | null } {{name}} {{comment}}
+  {{/required}}
+{{/arguments}}
+ * @returns { {{#return}}{{#typeFormatFilter}}{{type}}{{/typeFormatFilter}}{{/return}} }
+ */
+
+{{/methods}}
+{{/queryTypes}}
+
+{{#objectTypes}}
+/**
+* {{comment}}
+* @typedef {Object} module:types.{{type}}
+{{#properties}}
+  * @property { {{#typeFormatFilter}}{{type}}{{/typeFormatFilter}} } {{name}} {{comment}}
+{{/properties}}
+*/
+
+{{/objectTypes}}
+
+{{#enumTypes}}
+/**
+* {{comment}}
+* @typedef { {{#unionTypeTrim}}{{#constants}}"{{.}}" | {{/constants}}{{/unionTypeTrim}} } module:enums.{{type}} {{comment}}
+*/
+
+{{/enumTypes}}

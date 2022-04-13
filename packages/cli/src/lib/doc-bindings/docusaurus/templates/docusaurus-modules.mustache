@@ -1,0 +1,19 @@
+---
+id: {{#lowerFirst}}{{type}}{{/lowerFirst}}
+title: {{#title}}{{type}}{{/title}}
+---
+
+{{#methods}}
+### {{name}}
+
+{{#markdownItalics}}{{comment}}{{/markdownItalics}}
+
+```graphql
+{{name}}(
+  {{#arguments}}
+  {{name}}: {{#typeFormatFilter}}{{type}}{{/typeFormatFilter}}{{#required}}!{{/required}} {{#hashtagPrefix}}{{comment}}{{/hashtagPrefix}}
+  {{/arguments}}
+): {{#return}}{{#typeFormatFilter}}{{type}}{{/typeFormatFilter}}{{#required}}!{{/required}}{{/return}}
+```
+
+{{/methods}}
