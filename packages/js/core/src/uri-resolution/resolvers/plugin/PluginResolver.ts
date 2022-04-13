@@ -1,13 +1,13 @@
 import { getEnvFromUriOrResolutionStack } from "../getEnvFromUriOrResolutionStack";
 import {
-  UriToApiResolver,
+  UriResolver,
   UriResolutionResult,
   UriResolutionStack,
 } from "../../core";
 import { Api, ApiCache, Client, Env, PluginPackage, Uri } from "../../../types";
 import { findPluginPackage } from "../../../algorithms";
 
-export class PluginResolver implements UriToApiResolver {
+export class PluginResolver implements UriResolver {
   constructor(
     private readonly createPluginApi: (
       uri: Uri,
