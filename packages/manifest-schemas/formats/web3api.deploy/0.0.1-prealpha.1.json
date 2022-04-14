@@ -22,10 +22,7 @@
               "type": "string"
             },
             "config": {
-              "patternProperties": {
-                "^.*$": {}
-              },
-              "additionalProperties": false
+              "type": "object"
             },
             "depends_on": {
               "type": "string"

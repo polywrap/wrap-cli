@@ -2,19 +2,11 @@
   "id": "DeployManifest_Deployer_WasmAsExt",
   "type": "object",
   "required": [
-    "config"
+    "gatewayUri"
   ],
   "properties": {
-    "config": {
-      "type": "object",
-      "required": [
-        "gatewayUri"
-      ],
-      "properties": {
-        "gatewayUri": {
-          "type": "string"
-        }
-      }
+    "gatewayUri": {
+      "type": "string"
     }
   }
 }

@@ -2,27 +2,22 @@
   "id": "DeployManifest_ENS_WasmAsExt",
   "type": "object",
   "required": [
-    "config"
+    "domainName",
+    "provider",
+    "ensRegistryAddress"
   ],
   "properties": {
-    "config": {
-      "type": "object",
-      "required": [
-        "domainName",
-        "provider",
-        "privateKey"
-      ],
-      "properties": {
-        "domainName": {
-          "type": "string"
-        },
-        "provider": {
-          "type": "string"
-        },
-        "privateKey": {
-          "type": "string"
-        }
-      }
+    "domainName": {
+      "type": "string"
+    },
+    "provider": {
+      "type": "string"
+    },
+    "privateKey": {
+      "type": "string"
+    },
+    "ensRegistryAddress": {
+      "type": "string"
     }
   }
 }
