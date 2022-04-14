@@ -23,7 +23,6 @@ Options:
   -h, --help                         Show usage information
   -m, --manifest-file <path>         Path to the Web3API Deploy manifest file (default: web3api.yaml | web3api.yml)
   -v, --verbose                      Verbose output (default: false)
-  -p, --path <path>                  Path to the build directory
 `;
 
 const setup = async (domainNames: string[]) => {
@@ -136,8 +135,8 @@ describe("e2e tests for deploy command", () => {
     expect(clearStyle(output)).toEqual(HELP);
   });
 
-  test.only("Successfully deploys the project", async () => {
-    const { stdout: output, stderr: error } = await runCLI(
+  test("Successfully deploys the project", async () => {
+    const { exitCode: code, stdout: output } = await runCLI(
       {
         args: ["deploy"],
         cwd: projectRoot,
@@ -145,7 +144,80 @@ describe("e2e tests for deploy command", () => {
       },
     );
 
-    console.log(output)
-    console.log(error)
+    const sanitizedOutput = clearStyle(output);
+
+    expect(code).toEqual(0);
+    expect(sanitizedOutput).toContain(
+      "Successfully executed stage 'ipfs_deploy'"
+    );
+    expect(sanitizedOutput).toContain(
+      "Successfully executed stage 'from_deploy'"
+    );
+    expect(sanitizedOutput).toContain(
+      "Successfully executed stage 'from_deploy2'"
+    );
+    expect(sanitizedOutput).toContain(
+      "Successfully executed stage 'from_uri'"
+    );
+  });
+
+  test("Throws and stops chain if error is found", async () => {
+    const { exitCode: code, stdout: output, stderr } = await runCLI(
+      {
+        args: ["deploy", "--manifest-file", "web3api-deploy-fail-between.yaml"],
+        cwd: projectRoot,
+        cli: w3Cli,
+      },
+    );
+
+    const sanitizedOutput = clearStyle(output);
+    const sanitizedErr = clearStyle(stderr);
+
+    expect(code).toEqual(1);
+    expect(sanitizedOutput).toContain(
+      "Successfully executed stage 'ipfs_deploy'"
+    );
+    expect(sanitizedOutput).not.toContain(
+      "Successfully executed stage 'from_deploy2'"
+    );
+
+    expect(sanitizedErr).toContain(
+      "Failed to execute stage 'from_deploy'"
+    );
+  });
+
+  test("Throws if manifest ext exists and config property is invalid", async () => {
+    const { exitCode: code, stderr } = await runCLI(
+      {
+        args: ["deploy", "--manifest-file", "web3api-deploy-invalid-config.yaml"],
+        cwd: projectRoot,
+        cli: w3Cli,
+      },
+    );
+
+    const sanitizedErr = clearStyle(stderr);
+
+    expect(code).toEqual(1);
+    expect(sanitizedErr).toContain("domainName is not of a type(s) string")
+  });
+
+  test("Throws and stops chain if error is found", async () => {
+    const { exitCode: code, stdout: output } = await runCLI(
+      {
+        args: ["deploy", "--manifest-file", "web3api-deploy-no-ext.yaml"],
+        cwd: projectRoot,
+        cli: w3Cli,
+      },
+    );
+
+    const sanitizedOutput = clearStyle(output);
+
+    expect(code).toEqual(0);
+    expect(sanitizedOutput).toContain(
+      "No manifest extension found in"
+    );
+    expect(sanitizedOutput).toContain(
+      "Successfully executed stage 'ipfs_test'"
+    );
   });
 });
