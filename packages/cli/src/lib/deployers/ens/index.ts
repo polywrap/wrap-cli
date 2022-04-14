@@ -10,9 +10,6 @@ const contentHash = require("content-hash");
 const ENS = require("@ensdomains/ensjs");
 
 class ENSPublisher implements Deployer {
-  blockchain = "Ethereum";
-  name = "ens";
-
   async execute(
     uri: Uri,
     config: {

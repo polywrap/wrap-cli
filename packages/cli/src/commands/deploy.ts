@@ -36,19 +36,15 @@ export default {
     const { filesystem, parameters, print } = toolbox;
 
     // Options
-    const { h, m, v, n, c } = parameters.options;
-    let { help, manifestFile, verbose, name, cid } = parameters.options;
+    const { h, m, v } = parameters.options;
+    let { help, manifestFile, verbose } = parameters.options;
 
     help = help || h;
     verbose = verbose || v;
     manifestFile = manifestFile || m;
-    name = name || n;
-    cid = cid || c;
 
     // Validate Params
     const paramsValid = validateDeployParams(print, {
-      name,
-      cid,
       manifestFile,
     });
 
@@ -160,8 +156,6 @@ function validateDeployParams(
   print: GluegunPrint,
   params: {
     manifestFile: unknown;
-    name: unknown;
-    cid: unknown;
   }
 ): boolean {
   const { manifestFile } = params;

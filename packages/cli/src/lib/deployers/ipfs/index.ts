@@ -7,7 +7,7 @@ import FormData from "form-data";
 import axios from "axios";
 import { Uri } from "@web3api/core-js";
 
-const isValidUri = (uri: Uri) => uri.authority === "file";
+const isValidUri = (uri: Uri) => uri.authority === "fs";
 
 const resolveBuildDir = (buildDirPath: string): DirectoryBlob => {
   const dirEntry = convertDirectoryToEntry(buildDirPath);
@@ -21,7 +21,9 @@ const resolveBuildDir = (buildDirPath: string): DirectoryBlob => {
 class IPFSDeployer implements Deployer {
   async execute(uri: Uri, config?: { gatewayUri: string }): Promise<Uri> {
     if (!isValidUri(uri)) {
-      throw new Error("Invalid URI");
+      throw new Error(
+        `IPFS Deployer error: Invalid URI: ${uri.toString()}. Supplied URI needs to be a Filesystem URI, example: fs/./build`
+      );
     }
 
     const path = uri.path;
