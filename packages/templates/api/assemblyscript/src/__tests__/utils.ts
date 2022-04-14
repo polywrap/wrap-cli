@@ -1,4 +1,4 @@
-import { ClientConfig, coreInterfaceUris } from "@web3api/client-js";
+import { ClientConfig } from "@web3api/client-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
@@ -42,16 +42,6 @@ export function getPlugins(
           },
           defaultNetwork: "testnet",
         }),
-      },
-    ],
-    interfaces: [
-      {
-        interface: coreInterfaceUris.uriResolver.uri,
-        implementations: ["w3://ens/ipfs.web3api.eth", "w3://ens/ens.web3api.eth"],
-      },
-      {
-        interface: coreInterfaceUris.logger.uri,
-        implementations: ["w3://ens/js-logger.web3api.eth"],
       },
     ],
   };
