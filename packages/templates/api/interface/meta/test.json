@@ -1,1 +1,3 @@
-test json
+{
+  "arg": "foo"
+}

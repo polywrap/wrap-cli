@@ -1,1 +1,5 @@
-test graphql
+query {
+  methodToImplement(
+    arg: $arg
+  )
+}
