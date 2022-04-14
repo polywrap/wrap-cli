@@ -1,4 +1,4 @@
-import { displayPath, withSpinner, intlMsg } from "../../";
+import { displayPath, withSpinner, intlMsg, searchOptional } from "../../";
 
 import {
   Web3ApiManifest,
@@ -150,6 +150,46 @@ export async function loadDeployManifest(
         return await run();
       }
     )) as DeployManifest;
+  }
+}
+
+export async function loadDeployManifestExt(
+  manifestExtPath: string,
+  quiet = false
+): Promise<JsonSchema | undefined> {
+  const run = (): JsonSchema | undefined => {
+    const configSchemaPath = path.join(
+      path.dirname(manifestExtPath),
+      "/web3api.deploy.ext.json"
+    );
+
+    let extSchema: JsonSchema | undefined;
+
+    if (fs.existsSync(configSchemaPath)) {
+      extSchema = JSON.parse(
+        fs.readFileSync(configSchemaPath, "utf-8")
+      ) as JsonSchema;
+    }
+
+    return extSchema;
+  };
+
+  if (quiet) {
+    return run();
+  } else {
+    manifestExtPath = displayPath(manifestExtPath);
+    return await searchOptional(
+      intlMsg.lib_helpers_deployManifestExt_loadText({ path: manifestExtPath }),
+      intlMsg.lib_helpers_deployManifestExt_loadError({
+        path: manifestExtPath,
+      }),
+      intlMsg.lib_helpers_deployManifestExt_loadWarning({
+        path: manifestExtPath,
+      }),
+      async (_spinner) => {
+        return run();
+      }
+    );
   }
 }
 

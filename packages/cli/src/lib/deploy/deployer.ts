@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
+import { AsciiTree } from "./asciiTree";
+
 import { Uri } from "@web3api/core-js";
+import { GluegunPrint } from "gluegun";
 
 export interface Deployer {
   execute(uri: Uri, config?: unknown): Promise<Uri>;
@@ -22,13 +25,17 @@ interface Handler {
 }
 
 abstract class AbstractHandler implements Handler {
+  private dependencyTree: AsciiTree;
   private nextHandlers: AbstractHandler[] = [];
   protected result: string;
 
-  constructor(public name: string) {}
+  constructor(public name: string) {
+    this.dependencyTree = new AsciiTree(this.name);
+  }
 
   public addNext(handler: AbstractHandler): void {
     this.nextHandlers.push(handler);
+    this.dependencyTree.add(handler.dependencyTree);
   }
 
   public async handle(uri: Uri): Promise<Uri[]> {
@@ -47,6 +54,10 @@ abstract class AbstractHandler implements Handler {
     };
   }
 
+  public getDependencyTree(): AsciiTree {
+    return this.dependencyTree;
+  }
+
   public getResultsList(): ResultList {
     return {
       name: this.name,
@@ -60,14 +71,27 @@ export class DeployerHandler extends AbstractHandler {
   constructor(
     name: string,
     private deployer: Deployer,
-    private config: unknown
+    private config: unknown,
+    private printer: GluegunPrint
   ) {
     super(name);
   }
 
   public async handle(uri: Uri): Promise<Uri[]> {
-    const nextUri = await this.deployer.execute(uri, this.config);
-    this.result = nextUri.toString();
-    return [nextUri, ...(await super.handle(nextUri))];
+    this.printer.info(
+      `Executing stage: '${this.name}', with URI: '${uri.toString()}'`
+    );
+
+    try {
+      const nextUri = await this.deployer.execute(uri, this.config);
+      this.result = nextUri.toString();
+
+      this.printer.success(
+        `Successfully executed stage '${this.name}'. Result: '${this.result}'`
+      );
+      return [nextUri, ...(await super.handle(nextUri))];
+    } catch (e) {
+      throw new Error(`Failed to execute stage '${this.name}'. Error: ${e}`);
+    }
   }
 }

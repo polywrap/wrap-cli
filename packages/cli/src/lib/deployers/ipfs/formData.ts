@@ -57,8 +57,6 @@ export function convertDirectoryBlobToFormData(
   let formData: FormDataEntry[] = [];
   const files = directoryBlob.files;
 
-  console.log(files.map((f) => f.name));
-
   for (let i = 0; i < files.length; i++) {
     formData.push(convertFileEntryToFormData(files[i], ""));
   }

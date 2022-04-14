@@ -9,8 +9,8 @@ import { Uri } from "@web3api/core-js";
 
 const isValidUri = (uri: Uri) => uri.authority === "file";
 
-const resolveBuildDir = (path: string): DirectoryBlob => {
-  const dirEntry = convertDirectoryToEntry(path);
+const resolveBuildDir = (buildDirPath: string): DirectoryBlob => {
+  const dirEntry = convertDirectoryToEntry(buildDirPath);
 
   return {
     files: [],

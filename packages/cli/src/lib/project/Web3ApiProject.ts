@@ -14,6 +14,7 @@ import {
   outputManifest,
   intlMsg,
   loadDeployManifest,
+  loadDeployManifestExt,
 } from "..";
 import { Deployer } from "../deploy";
 
@@ -26,6 +27,7 @@ import {
 import { getCommonPath, normalizePath } from "@web3api/os-js";
 import regexParser from "regex-parser";
 import path from "path";
+import { Schema as JsonSchema } from "jsonschema";
 import fs from "fs";
 import fsExtra from "fs-extra";
 
@@ -373,7 +375,9 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     return this._deployManifest;
   }
 
-  public getDeploymentPackage(packageName: string): Deployer {
+  public async getDeploymentPackage(
+    packageName: string
+  ): Promise<{ deployer: Deployer; manifestExt: JsonSchema | undefined }> {
     if (!this._deploymentPackagesCached) {
       throw new Error("Deployment packages have not been cached");
     }
@@ -382,8 +386,15 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
       `${cacheLayout.deployEnvDir}/${packageName}`
     );
 
-    // eslint-disable-next-line @typescript-eslint/no-require-imports
-    return require(cachePath).default as Deployer;
+    const manifestExtPath = path.join(cachePath, "web3api.deploy.ext.json");
+
+    const manifestExt = await loadDeployManifestExt(manifestExtPath);
+
+    return {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      deployer: require(cachePath).default as Deployer,
+      manifestExt,
+    };
   }
 
   public async cacheDeploymentPackages(packages: string[]): Promise<void> {

@@ -4,6 +4,7 @@ import {
   Web3ApiProject,
   defaultWeb3ApiManifest,
   resolvePathIfExists,
+  DeployPackage,
 } from "../lib";
 import { DeployerHandler } from "../lib/deploy/deployer";
 
@@ -11,7 +12,8 @@ import chalk from "chalk";
 import fs from "fs";
 import nodePath from "path";
 import { GluegunToolbox, GluegunPrint } from "gluegun";
-import { Uri } from "@web3api/core-js";
+import { Uri, DeployManifest } from "@web3api/core-js";
+import { validate } from "jsonschema";
 
 const defaultManifestStr = defaultWeb3ApiManifest.join(" | ");
 const optionsStr = intlMsg.commands_deploy_options_options();
@@ -22,11 +24,10 @@ ${chalk.bold("w3 deploy")} [${optionsStr}]
 
 ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
   -h, --help                         ${intlMsg.commands_deploy_options_h()}
-  -m, --manifest-file <${pathStr}>   ${intlMsg.commands_deploy_options_m({
+  -m, --manifest-file <${pathStr}>         ${intlMsg.commands_deploy_options_m({
   default: defaultManifestStr,
 })}
-  -v, --verbose                      ${intlMsg.commands_deploy_options_v()}
-`;
+  -v, --verbose                      ${intlMsg.commands_deploy_options_v()}`;
 
 export default {
   alias: ["b"],
@@ -88,21 +89,41 @@ export default {
       throw new Error("No deploy manifest");
     }
 
-    const packages = Object.values(deployManifest.stages).map((d) => d.package);
+    const packageNames = [
+      ...new Set(Object.values(deployManifest.stages).map((d) => d.package)),
+    ];
 
-    sanitizePackages(packages);
+    sanitizePackages(packageNames);
 
-    await project.cacheDeploymentPackages(packages);
+    await project.cacheDeploymentPackages(packageNames);
+
+    const packageMap: Record<string, DeployPackage> = {};
+    const stageToPackageMap: Record<string, DeployPackage> = {};
+
+    for await (const packageName of packageNames) {
+      packageMap[packageName] = await project.getDeploymentPackage(packageName);
+    }
+
+    Object.entries(deployManifest.stages).forEach(([stageName, stageValue]) => {
+      stageToPackageMap[stageName] = packageMap[stageValue.package];
+    });
+
+    validateManifestWithExts(deployManifest, stageToPackageMap);
 
     const handlers: Record<string, DeployerHandler> = {};
     const roots: { handler: DeployerHandler; uri: Uri }[] = [];
 
     // Create all handlers
-    Object.entries(deployManifest.stages).forEach(([key, value]) => {
-      const publisher = project.getDeploymentPackage(value.package);
-      const handler = new DeployerHandler(key, publisher, value.config);
+    Object.entries(deployManifest.stages).forEach(([stageName, stageValue]) => {
+      const publisher = stageToPackageMap[stageName].deployer;
+      const handler = new DeployerHandler(
+        stageName,
+        publisher,
+        stageValue.config,
+        print
+      );
 
-      handlers[key] = handler;
+      handlers[stageName] = handler;
     });
 
     // Establish dependency chains
@@ -124,21 +145,12 @@ export default {
 
     // Execute roots
 
-    roots.forEach((root) => {
-      console.log(root.handler.getList());
-    });
-
-    const uris: Uri[][] = [];
-
     for await (const root of roots) {
-      uris.push(await root.handler.handle(root.uri));
+      print.info(`\nExecuting deployment chain: \n`);
+      root.handler.getDependencyTree().printTree();
+      print.info("");
+      await root.handler.handle(root.uri);
     }
-
-    roots.forEach((root) => {
-      console.log(root.handler.getResultsList());
-    });
-
-    console.log(uris.map((uArray) => uArray.map((u) => u.toString())));
 
     process.exitCode = 0;
   },
@@ -184,6 +196,31 @@ function sanitizePackages(packages: string[]) {
   if (unrecognizedPackages.length) {
     throw new Error(
       `Unrecognized packages: ${unrecognizedPackages.join(", ")}`
+    );
+  }
+}
+
+function validateManifestWithExts(
+  deployManifest: DeployManifest,
+  stageToPackageMap: Record<string, DeployPackage>
+) {
+  const errors = Object.entries(
+    stageToPackageMap
+  ).flatMap(([stageName, deployPackage]) =>
+    deployPackage.manifestExt
+      ? validate(
+          deployManifest.stages[stageName].config,
+          deployPackage.manifestExt
+        ).errors
+      : []
+  );
+
+  if (errors.length) {
+    throw new Error(
+      [
+        `Validation errors encountered while sanitizing DeployManifest format ${deployManifest.format}`,
+        ...errors.map((error) => error.toString()),
+      ].join("\n")
     );
   }
 }
