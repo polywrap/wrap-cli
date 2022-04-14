@@ -1,3 +1,18 @@
+# Web3API 0.0.1-prealpha.71
+## Features
+* [PR-777](https://github.com/polywrap/monorepo/pull/777) `@web3api/client-js`: The `Web3ApiClient` now has a public method `loadUriResolvers()`, which will pre-fetch all URI resolver implementations.
+
+## Bugs
+* [Issue-715](https://github.com/polywrap/monorepo/pull/777) [PR-777](https://github.com/polywrap/monorepo/pull/777) `@web3api/client-js`: Custom URI resolver implementations now no longer cause an infinite loop during URI resolution.
+
+## Breaking Changes
+* [PR-777](https://github.com/polywrap/monorepo/pull/777) `@web3api/client-js`: `Web3ApiClient` public method `getResolvers(...)` renamed to `getUriResolvers(...)`.
+* [PR-777](https://github.com/polywrap/monorepo/pull/777) `@web3api/client-js`: `Web3ApiClientConfig` property `resolvers` renamed to `uriResolvers`.
+
+# Web3API 0.0.1-prealpha.70
+## Bugs
+* `@web3api/core-js`: Fixed the manifest migration script for `web3api.meta` from v1 to v3. The `name` property is now migrating properly to `displayName`.
+
 # Web3API 0.0.1-prealpha.69
 ## Features
 * [PR-669](https://github.com/polywrap/monorepo/pull/669) `Map<K, V>` schema base-type has been added.
