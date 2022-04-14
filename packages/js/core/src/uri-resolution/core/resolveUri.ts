@@ -1,23 +1,19 @@
 import { Api, ApiCache, Client, Uri } from "../../types";
-import { ResolveUriError } from "./types/ResolveUriError";
 import { UriResolutionHistory } from "./types/UriResolutionHistory";
 import { UriResolutionStack } from "./types/UriResolutionStack";
 import { UriResolutionResult } from "./types/UriResolutionResult";
-import { UriToApiResolver } from "./types/UriToApiResolver";
+import { UriResolver } from "./types/UriResolver";
+import { ResolveUriErrorType, ResolveUriResult } from "./types";
+import { InternalResolverError } from "./types/InternalResolverError";
 
 import { Tracer } from "@web3api/tracing-js";
 
 export const resolveUri = async (
   uri: Uri,
-  resolvers: readonly UriToApiResolver[],
+  uriResolvers: readonly UriResolver[],
   client: Client,
   cache: ApiCache
-): Promise<{
-  uri?: Uri;
-  api?: Api;
-  uriHistory: UriResolutionHistory;
-  error?: ResolveUriError;
-}> => {
+): Promise<ResolveUriResult> => {
   // Keep track of past URIs to avoid infinite loops
   const visitedUriMap: Map<string, boolean> = new Map<string, boolean>();
   const uriResolutionStack: UriResolutionStack = [];
@@ -35,14 +31,16 @@ export const resolveUri = async (
       visitedUriMap
     );
 
-    for (const resolver of resolvers) {
+    for (const resolver of uriResolvers) {
       if (infiniteLoopDetected) {
         return {
           uri: currentUri,
           api,
           uriHistory: new UriResolutionHistory(uriResolutionStack),
           error: infiniteLoopDetected
-            ? ResolveUriError.InfiniteLoop
+            ? {
+                type: ResolveUriErrorType.InfiniteLoop,
+              }
             : undefined,
         };
       }
@@ -74,6 +72,12 @@ export const resolveUri = async (
         currentUri = result.uri;
         runAgain = true;
         break;
+      } else if (result.error) {
+        return {
+          uri: currentUri,
+          uriHistory: new UriResolutionHistory(uriResolutionStack),
+          error: new InternalResolverError(resolver.name, result.error),
+        };
       }
     }
   }
@@ -101,12 +105,12 @@ const trackVisitedUri = (uri: string, visitedUriMap: Map<string, boolean>) => {
 
 const trackUriHistory = (
   sourceUri: Uri,
-  resolver: UriToApiResolver,
+  resolver: UriResolver,
   result: UriResolutionResult,
   uriResolutionStack: UriResolutionStack
 ) => {
   uriResolutionStack.push({
-    resolver: resolver.name,
+    uriResolver: resolver.name,
     sourceUri,
     result: {
       ...result,
