@@ -11,10 +11,10 @@ import {
   resolvePathIfExists,
   SchemaComposer,
   Web3ApiProject,
+  intlMsg,
+  fixParameters,
+  generateProjectTemplate,
 } from "../lib";
-import { intlMsg } from "../lib/intl";
-import { fixParameters } from "../lib/helpers";
-import { generateProjectTemplate } from "../lib/project-templates";
 
 import { GluegunToolbox, GluegunPrint } from "gluegun";
 import chalk from "chalk";
@@ -29,24 +29,24 @@ interface SupportedCommands extends Record<string, string> {
 }
 
 const supportedCommands: SupportedCommands = {
-  html: __dirname + "/../lib/doc-bindings/html/index.ts",
-  jsdoc: __dirname + "/../lib/doc-bindings/jsdoc/index.ts",
-  docusaurus: __dirname + "/../lib/doc-bindings/docusaurus/index.ts",
-  "docusaurus-react": __dirname + "/../lib/doc-bindings/docusaurus/index.ts",
+  html: "@web3api/schema-bind/bindings/documentation/html/index.ts",
+  jsdoc: "@web3api/schema-bind/bindings/documentation/jsdoc/index.ts",
+  docusaurus: "@web3api/schema-bind/bindings/documentation/docusaurus/index.ts",
+  "docusaurus-react":
+    "@web3api/schema-bind/bindings/documentation/html/index.ts",
 };
 
-const commands = ["html", "jsdoc", "docusaurus", "docusaurus-react"];
-export const defaultManifest = ["web3api.yaml", "web3api.yml"];
+const defaultManifest = defaultWeb3ApiManifest.concat(defaultAppManifest);
+const defaultManifestStr = defaultManifest.join(" | ");
 const defaultOutputDir = "docs";
+const outputDirStr = `${intlMsg.commands_docgen_options_c({
+  default: `${defaultOutputDir}/`,
+})}`;
 const genFileOp = "doc-format";
 const optionsStr = intlMsg.commands_options_options();
 const nodeStr = intlMsg.commands_codegen_options_i_node();
 const pathStr = intlMsg.commands_codegen_options_o_path();
 const addrStr = intlMsg.commands_codegen_options_e_address();
-const outputDirStr = `${intlMsg.commands_docgen_options_c({
-  default: `${defaultOutputDir}/`,
-})}`;
-const defaultManifestStr = defaultManifest.join(" | ");
 
 const HELP = `
 ${chalk.bold("w3 docgen")} ${chalk.bold(`[<${genFileOp}>]`)} [${optionsStr}]
@@ -62,7 +62,7 @@ ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
   -m, --manifest-file <${pathStr}>              ${intlMsg.commands_docgen_options_m(
   { default: defaultManifestStr }
 )}
-  -c, --codegen-dir <${pathStr}>                 ${outputDirStr}
+  -c, --codegen-dir <${pathStr}>                ${outputDirStr}
   -i, --ipfs [<${nodeStr}>]                     ${intlMsg.commands_codegen_options_i()}
   -e, --ens [<${addrStr}>]                   ${intlMsg.commands_codegen_options_e()}
 `;
@@ -205,14 +205,6 @@ export default {
       schemaComposer,
       customScript,
       outputDir: codegenDir,
-      mustacheView: {
-        unionTypeTrim,
-        typeFormatFilter,
-        isMutation,
-        isQuery,
-        hashtagPrefix,
-        markdownItalics,
-      },
       omitHeader: true,
     });
 
@@ -235,7 +227,7 @@ function validateDocgenParams(
   if (!command || typeof command !== "string") {
     print.error(intlMsg.commands_plugin_error_noCommand());
     return false;
-  } else if (commands.indexOf(command) === -1) {
+  } else if (Object.keys(supportedCommands).indexOf(command) === -1) {
     print.error(intlMsg.commands_app_error_unknownCommand({ command }));
     return false;
   }
@@ -274,70 +266,4 @@ function validateDocgenParams(
   }
 
   return true;
-}
-
-function unionTypeTrim() {
-  return (text: string, render: (text: string) => string): string => {
-    const rendered: string = render(text);
-    if (rendered.endsWith(" | ")) {
-      return rendered.substring(0, rendered.length - 3);
-    } else if (rendered.startsWith(" | ")) {
-      return rendered.substring(3);
-    }
-    return rendered;
-  };
-}
-
-function typeFormatFilter() {
-  return (text: string, render: (text: string) => string): string => {
-    const rendered: string = render(text);
-    if (rendered.startsWith("[")) {
-      return rendered.substring(1, rendered.length - 1) + "[]";
-    }
-    return rendered;
-  };
-}
-
-function isMutation() {
-  return (text: string, render: (text: string) => string): string => {
-    const rendered: string = render(text);
-    const firstReturn: number = rendered.indexOf("\n", 1);
-    const queryType: string = rendered.substring(1, firstReturn).trim();
-    if (queryType === "mutation") {
-      return rendered.substring(firstReturn + 1);
-    }
-    return "";
-  };
-}
-
-function isQuery() {
-  return (text: string, render: (text: string) => string): string => {
-    const rendered: string = render(text);
-    const firstReturn: number = rendered.indexOf("\n", 1);
-    const queryType: string = rendered.substring(1, firstReturn).trim();
-    if (queryType === "query") {
-      return rendered.substring(firstReturn + 1);
-    }
-    return "";
-  };
-}
-
-function hashtagPrefix() {
-  return (text: string, render: (text: string) => string): string => {
-    const rendered: string = render(text);
-    if (rendered === "") {
-      return "";
-    }
-    return "# " + rendered;
-  };
-}
-
-function markdownItalics() {
-  return (text: string, render: (text: string) => string): string => {
-    const rendered: string = render(text);
-    if (rendered === "") {
-      return "";
-    }
-    return "_" + rendered + "_";
-  };
 }
