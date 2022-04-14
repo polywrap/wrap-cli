@@ -3,8 +3,8 @@ import {
   buildAndDeployApi,
   initTestEnvironment,
   stopTestEnvironment,
-  runCLI,
 } from "@web3api/test-env-js";
+import * as App from "../types/w3";
 import path from "path";
 
 import { getPlugins } from "../utils";
@@ -16,7 +16,6 @@ describe("SimpleStorage", () => {
 
   let client: Web3ApiClient;
   let ensUri: string;
-  let app: any;
 
   beforeAll(async () => {
     const {
@@ -34,15 +33,6 @@ describe("SimpleStorage", () => {
     const api = await buildAndDeployApi(apiPath, ipfs, ensAddress);
     ensUri = `ens/testnet/${api.ensDomain}`;
 
-    //generate types
-    const typesPath = path.join(path.resolve(__dirname), "..", "types");
-    await runCLI({
-      args: ["app", "codegen", "-c", "./w3"],
-      cwd: typesPath,
-    });
-    // Note: module doesn't exist at compile time
-    app = await import("../types/w3");
-
     // get client
     const config = getPlugins(testEnvEtherem, ipfs, ensAddress);
     client = new Web3ApiClient(config);
@@ -53,7 +43,7 @@ describe("SimpleStorage", () => {
   });
 
   const getData = async (contractAddr: string): Promise<number> => {
-    const response = await app.SimpleStorage_Query.getData(
+    const response = await App.SimpleStorage_Query.getData(
       {
         address: contractAddr,
         connection: CONNECTION,
@@ -70,7 +60,7 @@ describe("SimpleStorage", () => {
   }
 
   const setData = async (contractAddr: string, value: number): Promise<string> => {
-    const response = await app.SimpleStorage_Mutation.setData(
+    const response = await App.SimpleStorage_Mutation.setData(
       {
         address: contractAddr,
         connection: CONNECTION,
@@ -89,7 +79,7 @@ describe("SimpleStorage", () => {
 
   test("sanity", async () => {
     // Deploy contract
-    const deployContractResponse = await app.SimpleStorage_Mutation.deployContract({connection: CONNECTION}, client, ensUri);
+    const deployContractResponse = await App.SimpleStorage_Mutation.deployContract({connection: CONNECTION}, client, ensUri);
     expect(deployContractResponse).toBeTruthy();
     expect(deployContractResponse.error).toBeFalsy();
     expect(deployContractResponse.data).toBeTruthy();
