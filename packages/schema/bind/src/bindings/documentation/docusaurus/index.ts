@@ -105,7 +105,7 @@ function generateModuleBindings(module: BindModuleOptions): BindModuleOutput {
     renderTemplate(
       "./templates/docusaurus-modules.mustache",
       moduleContext,
-      `${moduleType.name}.md`
+      `${moduleType.type.toLowerCase()}.md`
     );
   }
 

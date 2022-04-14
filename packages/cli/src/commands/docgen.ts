@@ -21,24 +21,25 @@ import chalk from "chalk";
 import path from "path";
 import { Web3ApiClient } from "@web3api/client-js";
 
-interface SupportedCommands extends Record<string, string> {
+interface DocumentationCommands extends Record<string, string> {
   html: string;
   jsdoc: string;
   docusaurus: string;
   "docusaurus-react": string;
 }
 
-const supportedCommands: SupportedCommands = {
-  html: "@web3api/schema-bind/bindings/documentation/html/index.ts",
-  jsdoc: "@web3api/schema-bind/bindings/documentation/jsdoc/index.ts",
-  docusaurus: "@web3api/schema-bind/bindings/documentation/docusaurus/index.ts",
+const commands: DocumentationCommands = {
+  html: "@web3api/schema-bind/build/bindings/documentation/html/index.js",
+  jsdoc: "@web3api/schema-bind/build/bindings/documentation/jsdoc/index.js",
+  docusaurus:
+    "@web3api/schema-bind/build/bindings/documentation/docusaurus/index.js",
   "docusaurus-react":
-    "@web3api/schema-bind/bindings/documentation/html/index.ts",
+    "@web3api/schema-bind/build/bindings/documentation/docusaurus/index.js",
 };
 
 const defaultManifest = defaultWeb3ApiManifest.concat(defaultAppManifest);
 const defaultManifestStr = defaultManifest.join(" | ");
-const defaultOutputDir = "docs";
+const defaultOutputDir = "./w3";
 const outputDirStr = `${intlMsg.commands_docgen_options_c({
   default: `${defaultOutputDir}/`,
 })}`;
@@ -138,7 +139,7 @@ export default {
       (<string>manifestFile).toLowerCase().includes("web3Api.app.yml");
 
     // Resolve custom script
-    const customScript = filesystem.resolve(supportedCommands[command]);
+    const customScript = require.resolve(commands[command]);
 
     // Get providers
     const { ipfsProvider, ethProvider } = await getTestEnvProviders(ipfs);
@@ -227,7 +228,7 @@ function validateDocgenParams(
   if (!command || typeof command !== "string") {
     print.error(intlMsg.commands_plugin_error_noCommand());
     return false;
-  } else if (Object.keys(supportedCommands).indexOf(command) === -1) {
+  } else if (Object.keys(commands).indexOf(command) === -1) {
     print.error(intlMsg.commands_app_error_unknownCommand({ command }));
     return false;
   }
