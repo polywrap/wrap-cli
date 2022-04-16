@@ -15,6 +15,9 @@ x make sure all generated files have the header added
 -> build: plugin tsc, build cli + client, re-build plugins w/ new CLI (schema + manifest in build folder)
 - - [x] ENS, [x] ETH, [] FS, [] Graph, [] HTTP, [] IPFS, [] Logger, [] Sha3, [] UTS46
 
+- properly handle shared types
+- add back entrypoint, use its directory as the "common directory"
+
 !!!! How to handle shared config?
 
 

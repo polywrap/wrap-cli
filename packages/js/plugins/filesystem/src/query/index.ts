@@ -1,11 +1,23 @@
-import { Query } from "./w3";
+import {
+  Client,
+  Module,
+  Input_tryResolveUri,
+  Input_getFile,
+  UriResolver_MaybeUriOrManifest,
+  Bytes,
+} from "./w3-man";
 
 import path from "path";
 import fs from "fs";
 
-export const query = (): Query.Module => ({
-  // uri-resolver.core.web3api.eth
-  tryResolveUri: async (input: Query.Input_tryResolveUri) => {
+export interface QueryConfig { }
+
+export class Query extends Module<QueryConfig> {
+
+  async tryResolveUri(
+    input: Input_tryResolveUri,
+    client: Client
+  ): Promise<UriResolver_MaybeUriOrManifest | null> {
     if (input.authority !== "fs") {
       return null;
     }
@@ -36,12 +48,13 @@ export const query = (): Query.Module => ({
       // Noting found
       return { uri: null, manifest: null };
     }
-  },
-  getFile: async (_input: Query.Input_getFile) => {
+  }
+
+  async getFile(_input: Input_getFile, _client: Client): Promise<Bytes | null> {
     try {
       return await fs.promises.readFile(_input.path);
     } catch (e) {
       return null;
     }
-  },
-});
+  }
+}
