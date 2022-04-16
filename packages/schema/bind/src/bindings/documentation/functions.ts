@@ -1,78 +1,56 @@
-export function unionTypeTrim() {
-  return (text: string, render: (text: string) => string): string => {
-    const rendered: string = render(text);
-    if (rendered.endsWith(" | ")) {
-      return rendered.substring(0, rendered.length - 3);
-    } else if (rendered.startsWith(" | ")) {
-      return rendered.substring(3);
-    }
-    return rendered;
-  };
-}
+import { MustacheFn } from "../types";
 
-export function typeFormatFilter() {
-  return (text: string, render: (text: string) => string): string => {
+export const typeFormatFilter: MustacheFn = () => {
+  return (text: string, render: (template: string) => string): string => {
     const rendered: string = render(text);
     if (rendered.startsWith("[")) {
       return rendered.substring(1, rendered.length - 1) + "[]";
     }
     return rendered;
   };
-}
+};
 
-export function isMutation() {
-  return (text: string, render: (text: string) => string): string => {
-    const rendered: string = render(text);
-    const firstReturn: number = rendered.indexOf("\n", 1);
-    const queryType: string = rendered.substring(1, firstReturn).trim();
-    if (queryType === "mutation") {
-      return rendered.substring(firstReturn + 1);
-    }
-    return "";
-  };
-}
-
-export function isQuery() {
-  return (text: string, render: (text: string) => string): string => {
-    const rendered: string = render(text);
-    const firstReturn: number = rendered.indexOf("\n", 1);
-    const queryType: string = rendered.substring(1, firstReturn).trim();
-    if (queryType === "query") {
-      return rendered.substring(firstReturn + 1);
-    }
-    return "";
-  };
-}
-
-export function hashtagPrefix() {
-  return (text: string, render: (text: string) => string): string => {
+export const hashtagPrefix: MustacheFn = () => {
+  return (text: string, render: (template: string) => string): string => {
     const rendered: string = render(text);
     if (rendered === "") {
       return "";
     }
     return "# " + rendered;
   };
-}
+};
 
-export function markdownItalics() {
-  return (text: string, render: (text: string) => string): string => {
+export const markdownItalics: MustacheFn = () => {
+  return (text: string, render: (template: string) => string): string => {
     const rendered: string = render(text);
     if (rendered === "") {
       return "";
     }
     return "_" + rendered + "_";
   };
-}
+};
 
-export function title() {
-  return (text: string, render: (text: string) => string): string => {
+export const toTitle: MustacheFn = () => {
+  return (text: string, render: (template: string) => string): string => {
     const rendered: string = render(text);
-    return rendered.charAt(0).toUpperCase() + rendered.substring(1);
+    const tokens: string[] = rendered.split("_");
+    for (let i = 0; i < tokens.length; i++) {
+      tokens[i] = tokens[i].charAt(0).toUpperCase() + tokens[i].substring(1);
+    }
+    return tokens.join(" ");
   };
-}
-export function lowerFirst() {
-  return (text: string, render: (text: string) => string): string => {
+};
+
+export const toLower: MustacheFn = () => {
+  return (text: string, render: (template: string) => string): string => {
     const rendered: string = render(text);
-    return rendered.charAt(0).toLowerCase() + rendered.substring(1);
+    return rendered.toLowerCase();
   };
-}
+};
+
+export const moduleToLower: MustacheFn = () => {
+  return (text: string, render: (template: string) => string): string => {
+    const rendered: string = render(text);
+    return rendered.replace("Query", "query").replace("Mutation", "mutation");
+  };
+};

@@ -21,48 +21,49 @@ import chalk from "chalk";
 import path from "path";
 import { Web3ApiClient } from "@web3api/client-js";
 
-interface DocumentationCommands extends Record<string, string> {
-  html: string;
-  jsdoc: string;
-  docusaurus: string;
-  "docusaurus-react": string;
-}
-
-const commands: DocumentationCommands = {
-  html: "@web3api/schema-bind/build/bindings/documentation/html/index.js",
+const commandToPathMap: Record<string, string> = {
+  schema: "@web3api/schema-bind/build/bindings/documentation/schema/index.js",
   jsdoc: "@web3api/schema-bind/build/bindings/documentation/jsdoc/index.js",
   docusaurus:
     "@web3api/schema-bind/build/bindings/documentation/docusaurus/index.js",
-  "docusaurus-react":
+  react:
     "@web3api/schema-bind/build/bindings/documentation/docusaurus/index.js",
 };
 
 const defaultManifest = defaultWeb3ApiManifest.concat(defaultAppManifest);
-const defaultManifestStr = defaultManifest.join(" | ");
+const manifestPathStr = intlMsg.commands_docgen_options_m({
+  default: defaultManifest.join(" | "),
+});
 const defaultOutputDir = "./w3";
 const outputDirStr = `${intlMsg.commands_docgen_options_c({
-  default: `${defaultOutputDir}/`,
+  default: `${defaultOutputDir}`,
 })}`;
-const genFileOp = "doc-format";
+const cmdStr = intlMsg.commands_app_options_command();
 const optionsStr = intlMsg.commands_options_options();
 const nodeStr = intlMsg.commands_codegen_options_i_node();
 const pathStr = intlMsg.commands_codegen_options_o_path();
 const addrStr = intlMsg.commands_codegen_options_e_address();
+const jsdocDescription = intlMsg.commands_docgen_options_markdown({
+  framework: "JSDoc",
+});
+const docusaurusDescription = intlMsg.commands_docgen_options_markdown({
+  framework: "Docusaurus",
+});
+const reactAppDescription = intlMsg.commands_docgen_options_react();
+const schemaDescription = intlMsg.commands_docgen_options_schema();
 
 const HELP = `
-${chalk.bold("w3 docgen")} ${chalk.bold(`[<${genFileOp}>]`)} [${optionsStr}]
+${chalk.bold("w3 docgen")} ${cmdStr} [${optionsStr}]
 
-${intlMsg.commands_docgen_supported()}:
-  html (single-page site)
-  jsdoc (markdown)
-  docusaurus (markdown)
-  docusaurus-react (styled react app)
+${intlMsg.commands_create_options_commands()}:
+  ${chalk.bold("schema")}        ${schemaDescription}
+  ${chalk.bold("jsdoc")}        ${jsdocDescription}
+  ${chalk.bold("docusaurus")}   ${docusaurusDescription}
+  ${chalk.bold("react")}        ${reactAppDescription}
 
 ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
   -h, --help                              ${intlMsg.commands_codegen_options_h()}
-  -m, --manifest-file <${pathStr}>              ${intlMsg.commands_docgen_options_m(
-  { default: defaultManifestStr }
-)}
+  -m, --manifest-file <${pathStr}>              ${manifestPathStr}
   -c, --codegen-dir <${pathStr}>                ${outputDirStr}
   -i, --ipfs [<${nodeStr}>]                     ${intlMsg.commands_codegen_options_i()}
   -e, --ens [<${addrStr}>]                   ${intlMsg.commands_codegen_options_e()}
@@ -135,11 +136,11 @@ export default {
     }
 
     const isAppManifest: boolean =
-      (<string>manifestFile).toLowerCase().includes("web3Api.app.yaml") ||
-      (<string>manifestFile).toLowerCase().includes("web3Api.app.yml");
+      (<string>manifestFile).toLowerCase().endsWith("web3api.app.yaml") ||
+      (<string>manifestFile).toLowerCase().endsWith("web3api.app.yml");
 
     // Resolve custom script
-    const customScript = require.resolve(commands[command]);
+    const customScript = require.resolve(commandToPathMap[command]);
 
     // Get providers
     const { ipfsProvider, ethProvider } = await getTestEnvProviders(ipfs);
@@ -181,7 +182,7 @@ export default {
       ensAddress,
     });
 
-    if (command === "docusaurus-react") {
+    if (command === "react") {
       const projectDir = path.join(codegenDir, "docusaurus-react-app");
       try {
         await generateProjectTemplate(
@@ -228,7 +229,7 @@ function validateDocgenParams(
   if (!command || typeof command !== "string") {
     print.error(intlMsg.commands_plugin_error_noCommand());
     return false;
-  } else if (Object.keys(commands).indexOf(command) === -1) {
+  } else if (Object.keys(commandToPathMap).indexOf(command) === -1) {
     print.error(intlMsg.commands_app_error_unknownCommand({ command }));
     return false;
   }

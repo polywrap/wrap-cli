@@ -7,7 +7,6 @@ import {
   BindModuleOptions,
 } from "../../..";
 import * as Functions from "./../functions";
-import * as AssemblyScriptFunctions from "./../../assemblyscript/wasm-as/functions";
 import * as TypeScriptFunctions from "./../../typescript/functions";
 
 import {
@@ -17,6 +16,7 @@ import {
   toPrefixedGraphQLType,
   extendType,
   methodParentPointers,
+  ImportedDefinition,
 } from "@web3api/schema-parse";
 import Mustache from "mustache";
 import path from "path";
@@ -56,7 +56,6 @@ export const generateBinding: GenerateBindingFn = (
 function applyTransforms(typeInfo: TypeInfo): TypeInfo {
   const transforms = [
     extendType(Functions),
-    extendType(AssemblyScriptFunctions),
     extendType(TypeScriptFunctions),
     addFirstLast,
     toPrefixedGraphQLType,
@@ -78,7 +77,6 @@ function generateModuleBindings(module: BindModuleOptions): BindModuleOutput {
     outputDirAbs: module.outputDirAbs,
   };
   const output = result.output;
-  const schema = module.schema;
   const typeInfo = applyTransforms(module.typeInfo);
 
   const renderTemplate = (
@@ -96,11 +94,83 @@ function generateModuleBindings(module: BindModuleOptions): BindModuleOutput {
     });
   };
 
-  const rootContext = {
-    ...typeInfo,
-    schema,
-  };
-  renderTemplate("./templates/jsdoc.mustache", rootContext, "jsdoc.js");
+  // generate modules
+  for (const module of typeInfo.moduleTypes) {
+    renderTemplate(
+      "./templates/jsdoc-module.mustache",
+      module,
+      `${module.type.toLowerCase()}.js`
+    );
+  }
 
+  // TODO: for imported modules, module.type contains the namespace. Should it?
+  // generate imported modules
+  for (const module of typeInfo.importedModuleTypes) {
+    renderTemplate(
+      "./templates/jsdoc-module.mustache",
+      module,
+      `${module.type}.js`
+    );
+  }
+
+  // generate object types
+  if (typeInfo.objectTypes.length > 0) {
+    renderTemplate(
+      "./templates/jsdoc-objects.mustache",
+      typeInfo,
+      "objects.js"
+    );
+  }
+
+  // generated imported object types
+  const importedObjects = sortByNamespace(typeInfo.importedObjectTypes);
+  for (const [namespace, objectTypes] of Object.entries(importedObjects)) {
+    if (objectTypes.length > 0) {
+      const objectContext = {
+        objectTypes,
+        imported: { namespace },
+      };
+      renderTemplate(
+        "./templates/jsdoc-objects.mustache",
+        objectContext,
+        `${namespace}_objects.js`
+      );
+    }
+  }
+
+  // generate enum types
+  if (typeInfo.enumTypes.length > 0) {
+    renderTemplate("./templates/jsdoc-enums.mustache", typeInfo, "enums.js");
+  }
+
+  // generate imported enum types
+  const importedEnums = sortByNamespace(typeInfo.importedEnumTypes);
+  for (const [namespace, enumTypes] of Object.entries(importedEnums)) {
+    if (enumTypes.length > 0) {
+      const enumContext = {
+        enumTypes,
+        imported: { namespace },
+      };
+      renderTemplate(
+        "./templates/jsdoc-enums.mustache",
+        enumContext,
+        `${namespace}_enums.js`
+      );
+    }
+  }
+
+  return result;
+}
+
+function sortByNamespace<T extends ImportedDefinition>(
+  definitions: Array<T>
+): Record<string, Array<T>> {
+  const result: Record<string, Array<T>> = {};
+  for (const val of definitions) {
+    if (!result[val.namespace]) {
+      result[val.namespace] = new Array<T>();
+    }
+    result[val.namespace].push(val);
+  }
   return result;
 }
