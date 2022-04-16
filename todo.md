@@ -9,15 +9,32 @@ x rewrite plugin typings + invocation flow to be similar to wasm modules
 x update core/plugin types to support module-wise environments
 x environment shouldn't be stored globally
 x make sure all generated files have the header added
+
+- figure out how to integrate the core changes into the client+CLI+plugins
+-> hand-write the generated code for all plugins, use them in the client (plugins -> client -> cli)
+-> build: plugin tsc, build cli + client, re-build plugins w/ new CLI (schema + manifest in build folder)
+- - [x] ENS, [x] ETH, [] FS, [] Graph, [] HTTP, [] IPFS, [] Logger, [] Sha3, [] UTS46
+
+!!!! How to handle shared config?
+
+
 - environment should be fully typed in the JS case
 - try to make things as fully typed as possible
 - generated plugin types must compile
 - CLI e2e tests should replicate an example developer's project, instead of only diffing the codegen.
 - comment everything :P
-- remove all @ts-nocheck, make sure everything compiles, explicitely disable checks
+- remove all @ts-nocheck, //@ts-ignore, make sure everything compiles, explicitely disable checks, move to
 - make sure the no-config + no-env cases work as expected, and you don't have to pass in "{}"
 - rename the "common" directory to "w3" everywhere
 - how to handle the circular dependency w/ plugins & CLI... release CLI first, then update the plugins
+
+CLI -> client -> plugins -> CLI (codegen) & core (plugin types)
+- dynamically inject plugins, can still use CLI codegen w/o plugins
+
+- cleanup
+- fix circular dep
+- make the all tests pass (CLI, client)
+- add more tests for plugins
 
 # Tests
 - plugin shared env

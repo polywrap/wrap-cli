@@ -1,12 +1,15 @@
 import { Client, MaybeAsync } from "@web3api/core-js";
-import { Input_method } from "../../expected-types/query";
-import { IQuery, Object } from "./w3";
+import {
+  Module,
+  Object,
+  Input_method
+} from "./w3";
 
 export interface QueryConfigs {
 
 }
 
-export class Query implements IQuery {
+export class Query implements Module {
   constructor(private _configs: QueryConfigs) {
   }
 

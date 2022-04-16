@@ -18,7 +18,7 @@ export class Query extends Module<QueryConfig> {
     client: Client
   ): Promise<Env> {
     return Promise.resolve({
-      arg1: "sanitized: " + input.env
+      arg1: "sanitized: " + input.env.userProp
     });
   }
 

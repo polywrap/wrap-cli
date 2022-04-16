@@ -11,13 +11,13 @@ import { Query, QueryConfig } from "../query";
 import { Mutation, MutationConfig } from "../mutation";
 import { manifest } from "./manifest";
 
-export interface TestPluginConfigs {
+export interface EthereumPluginConfigs {
   query: QueryConfig;
   mutation: MutationConfig;
 }
 
-export class TestPlugin implements Plugin {
-  constructor(private _configs: TestPluginConfigs) { }
+export class EthereumPlugin implements Plugin {
+  constructor(private _configs: EthereumPluginConfigs) { }
 
   public static manifest(): PluginPackageManifest {
     return manifest;
@@ -31,13 +31,13 @@ export class TestPlugin implements Plugin {
   }
 }
 
-export const testPlugin: PluginFactory<TestPluginConfigs> = (
-  opts: TestPluginConfigs
+export const ethereumPlugin: PluginFactory<EthereumPluginConfigs> = (
+  opts: EthereumPluginConfigs
 ) => {
   return {
-    factory: () => new TestPlugin(opts),
+    factory: () => new EthereumPlugin(opts),
     manifest: manifest,
   };
 };
 
-export const plugin = testPlugin;
+export const plugin = ethereumPlugin;
