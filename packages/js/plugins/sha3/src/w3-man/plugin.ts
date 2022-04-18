@@ -10,12 +10,12 @@ import {
 import { Query, QueryConfig } from "../query";
 import { manifest } from "./manifest";
 
-export interface HttpPluginConfigs {
+export interface Sha3PluginConfigs {
   query: QueryConfig;
 }
 
-export class HttpPlugin implements Plugin {
-  constructor(private _configs: HttpPluginConfigs) { }
+export class Sha3Plugin implements Plugin {
+  constructor(private _configs: Sha3PluginConfigs) { }
 
   public static manifest(): PluginPackageManifest {
     return manifest;
@@ -28,13 +28,13 @@ export class HttpPlugin implements Plugin {
   }
 }
 
-export const httpPlugin: PluginFactory<HttpPluginConfigs> = (
-  opts: HttpPluginConfigs
+export const sha3Plugin: PluginFactory<Sha3PluginConfigs> = (
+  opts: Sha3PluginConfigs
 ) => {
   return {
-    factory: () => new HttpPlugin(opts),
+    factory: () => new Sha3Plugin(opts),
     manifest: manifest,
   };
 };
 
-export const plugin = httpPlugin;
+export const plugin = sha3Plugin;

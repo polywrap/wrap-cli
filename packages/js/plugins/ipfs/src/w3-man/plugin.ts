@@ -31,7 +31,7 @@ export class IpfsPlugin implements Plugin {
   }
 }
 
-export const ipfsNodePlugin: PluginFactory<IpfsPluginConfigs> = (
+export const ipfsPlugin: PluginFactory<IpfsPluginConfigs> = (
   opts: IpfsPluginConfigs
 ) => {
   return {
@@ -40,4 +40,4 @@ export const ipfsNodePlugin: PluginFactory<IpfsPluginConfigs> = (
   };
 };
 
-export const plugin = ipfsNodePlugin;
+export const plugin = ipfsPlugin;

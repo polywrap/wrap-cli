@@ -10,12 +10,12 @@ import {
 import { Query, QueryConfig } from "../query";
 import { manifest } from "./manifest";
 
-export interface HttpPluginConfigs {
+export interface LoggerPluginConfigs {
   query: QueryConfig;
 }
 
-export class HttpPlugin implements Plugin {
-  constructor(private _configs: HttpPluginConfigs) { }
+export class LoggerPlugin implements Plugin {
+  constructor(private _configs: LoggerPluginConfigs) { }
 
   public static manifest(): PluginPackageManifest {
     return manifest;
@@ -28,13 +28,13 @@ export class HttpPlugin implements Plugin {
   }
 }
 
-export const httpPlugin: PluginFactory<HttpPluginConfigs> = (
-  opts: HttpPluginConfigs
+export const loggerPlugin: PluginFactory<LoggerPluginConfigs> = (
+  opts: LoggerPluginConfigs
 ) => {
   return {
-    factory: () => new HttpPlugin(opts),
+    factory: () => new LoggerPlugin(opts),
     manifest: manifest,
   };
 };
 
-export const plugin = httpPlugin;
+export const plugin = loggerPlugin;
