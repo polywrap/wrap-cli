@@ -82,7 +82,7 @@ export default {
     const deployManifest = await project.getDeployManifest();
 
     if (!deployManifest) {
-      throw new Error("No deploy manifest");
+      throw new Error("No deploy manifest found.");
     }
 
     const packageNames = [

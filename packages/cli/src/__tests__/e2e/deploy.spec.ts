@@ -34,6 +34,7 @@ const setup = async (domainNames: string[]) => {
   const registrarAddress = data.registrarAddress
   const signer = new Wallet("0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d");
 
+  // TODO: use the "loadDeployManifest" function
   const deployManifest = yaml.load(
     await fs.promises.readFile(
       `${projectRoot}/web3api.deploy.yaml`,
@@ -69,6 +70,7 @@ const setup = async (domainNames: string[]) => {
     ],
   });
 
+  // TODO: why not use the ENS wrapper here?
   for await (const domainName of domainNames) {
     const label = "0x" + keccak256(domainName)
     await client.query({
@@ -89,7 +91,7 @@ const setup = async (domainNames: string[]) => {
         }
       `,
     });
-    
+
     await client.query({
       uri: "w3://ens/ethereum.web3api.eth",
       query: `

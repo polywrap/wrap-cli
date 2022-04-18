@@ -137,30 +137,40 @@ export async function buildAndDeployApi(
   // create a new ENS domain
   const apiEns = `${generateName()}.eth`;
 
-  // build & deploy the protocol
-  const { exitCode, stdout, stderr } = await runCLI({
-    args: [
-      "build",
-      "--manifest-file",
-      `${apiAbsPath}/web3api.yaml`,
-      "--output-dir",
-      `${apiAbsPath}/build`,
-      "--ipfs",
-      ipfsProvider,
-      "--test-ens",
-      `${ensAddress},${apiEns}`,
-    ],
-  });
+  // build API
+  {
+    const { exitCode, stdout, stderr } = await runCLI({
+      args: [
+        "build",
+        "--manifest-file",
+        `${apiAbsPath}/web3api.yaml`,
+        "--output-dir",
+        `${apiAbsPath}/build`,
+      ],
+    });
 
-  if (exitCode !== 0) {
-    console.error(`w3 exited with code: ${exitCode}`);
-    console.log(`stderr:\n${stderr}`);
-    console.log(`stdout:\n${stdout}`);
-    throw Error("w3 CLI failed");
+    if (exitCode !== 0) {
+      console.error(`w3 exited with code: ${exitCode}`);
+      console.log(`stderr:\n${stderr}`);
+      console.log(`stdout:\n${stdout}`);
+      throw Error("w3 CLI failed");
+    }
   }
 
+  // register ENS domain
+  
+
+  // manually configure manifests
+
+  // deploy API
+  {
+
+  }
+
+  // remove manually configured manifests
+
   // get the IPFS CID of the published package
-  const extractCID = /IPFS { (([A-Z]|[a-z]|[0-9])*) }/;
+  const extractCID = /(w3:\/\/ipfs\/[A-Za-z0-9]+)/;
   const result = stdout.match(extractCID);
 
   if (!result) {
