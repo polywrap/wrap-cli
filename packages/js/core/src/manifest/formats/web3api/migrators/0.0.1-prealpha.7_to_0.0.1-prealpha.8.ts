@@ -8,6 +8,5 @@ export function migrate(old: OldManifest): NewManifest {
     ...old,
     __type: "Web3ApiManifest",
     format: "0.0.1-prealpha.8",
-    name: "Unnamed",
   };
 }

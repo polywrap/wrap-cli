@@ -948,7 +948,7 @@ describe("Web3ApiClient", () => {
     ).toBe(true);
   });
 
-  it.only("simple-storage", async () => {
+  it("simple-storage", async () => {
     const api = await buildAndDeployApi(
       `${GetPathToTestApis()}/simple-storage`,
       ipfsProvider,
