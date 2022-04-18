@@ -1,4 +1,4 @@
-import { IpfsClient } from "../types/IpfsClient";
+import { IpfsClient } from "../IpfsClient";
 import { execAbortable } from "./abortable";
 
 // Executes function in a try catch and returns error (if any) and result

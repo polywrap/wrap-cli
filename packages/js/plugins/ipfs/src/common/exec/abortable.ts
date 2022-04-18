@@ -1,4 +1,4 @@
-import { IpfsClient } from "../types/IpfsClient";
+import { IpfsClient } from "../IpfsClient";
 
 import AbortController from "abort-controller";
 

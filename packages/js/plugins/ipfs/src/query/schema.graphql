@@ -1,5 +1,12 @@
 #import { Query, MaybeUriOrManifest } into UriResolver from "ens/uri-resolver.core.web3api.eth"
 
+type QueryEnv {
+  """
+  Disable querying providers in parallel when resolving URIs
+  """
+  disableParallelRequests: Boolean
+}
+
 type Query implements UriResolver_Query {
   catFile(
     cid: String!
@@ -10,12 +17,6 @@ type Query implements UriResolver_Query {
     cid: String!
     options: Options
   ): ResolveResult
-}
-
-type Mutation {
-  # TODO: Allow for custom type CID
-  # https://github.com/web3-api/monorepo/issues/103
-  addFile(data: Bytes!): String!
 }
 
 type ResolveResult {
@@ -35,13 +36,6 @@ type Options {
   """
   provider: String
 
-  """
-  Disable querying providers in parallel when resolving URIs
-  """
-  disableParallelRequests: Boolean
-}
-
-type QueryEnv {
   """
   Disable querying providers in parallel when resolving URIs
   """

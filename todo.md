@@ -13,7 +13,7 @@ x make sure all generated files have the header added
 - figure out how to integrate the core changes into the client+CLI+plugins
 -> hand-write the generated code for all plugins, use them in the client (plugins -> client -> cli)
 -> build: plugin tsc, build cli + client, re-build plugins w/ new CLI (schema + manifest in build folder)
-- - [x] ENS, [x] ETH, [] FS, [] Graph, [] HTTP, [] IPFS, [] Logger, [] Sha3, [] UTS46
+- - [x] ENS, [x] ETH, [x] FS, [x] Graph, [x] HTTP, [x] IPFS, [] Logger, [] Sha3, [] UTS46
 
 - properly handle shared types
 - add back entrypoint, use its directory as the "common directory"

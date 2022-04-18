@@ -1,4 +1,4 @@
-import { IpfsClient } from "../types/IpfsClient";
+import { IpfsClient } from "../IpfsClient";
 import { execAbortable, AbortablePromise } from "./abortable";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention
