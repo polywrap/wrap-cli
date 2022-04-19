@@ -1,15 +1,16 @@
 /// NOTE: This is an auto-generated file.
 ///       All modifications will be overwritten.
 
+import { Query, QueryConfig } from "../query";
+import { Mutation, MutationConfig } from "../mutation";
+import { manifest } from "./manifest";
+
 import {
   Plugin,
   PluginFactory,
   PluginPackageManifest,
-  PluginModules
+  PluginModules,
 } from "@web3api/core-js";
-import { Query, QueryConfig } from "../query";
-import { Mutation, MutationConfig } from "../mutation";
-import { manifest } from "./manifest";
 
 export interface IpfsPluginConfigs {
   query: QueryConfig;
@@ -17,7 +18,7 @@ export interface IpfsPluginConfigs {
 }
 
 export class IpfsPlugin implements Plugin {
-  constructor(private _configs: IpfsPluginConfigs) { }
+  constructor(private _configs: IpfsPluginConfigs) {}
 
   public static manifest(): PluginPackageManifest {
     return manifest;

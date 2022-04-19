@@ -2,23 +2,19 @@ import {
   Module,
   Input_log,
   Logger_LogLevel,
-  Logger_LogLevelEnum
+  Logger_LogLevelEnum,
 } from "./w3-man";
 
 export type LogFunc = (level: Logger_LogLevel, message: string) => boolean;
 
-export interface QueryConfig {
+export interface QueryConfig extends Record<string, unknown> {
   logFunc?: LogFunc;
 }
 
 export class Query extends Module<QueryConfig> {
-
   public log(input: Input_log): boolean {
     if (this.config.logFunc) {
-      return this.config.logFunc(
-        input.level,
-        input.message
-      );
+      return this.config.logFunc(input.level, input.message);
     }
 
     switch (input.level) {

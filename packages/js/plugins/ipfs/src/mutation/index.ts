@@ -1,14 +1,11 @@
-import {
-  Module,
-  Input_addFile
-} from "./w3-man";
+import { Module, Input_addFile } from "./w3-man";
 import { IpfsConfig } from "../common/IpfsConfig";
 import { IpfsClient } from "../common/IpfsClient";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention
 const createIpfsClient = require("@dorgjelli-test/ipfs-http-client-lite");
 
-export interface MutationConfig extends IpfsConfig { }
+export interface MutationConfig extends IpfsConfig, Record<string, unknown> {}
 
 export class Mutation extends Module<MutationConfig> {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -20,9 +17,7 @@ export class Mutation extends Module<MutationConfig> {
     this._ipfs = createIpfsClient(this.config.provider);
   }
 
-  public async addFile(
-    input: Input_addFile
-  ): Promise<string> {
+  public async addFile(input: Input_addFile): Promise<string> {
     const result = await this._ipfs.add(input.data);
 
     if (result.length === 0) {

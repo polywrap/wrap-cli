@@ -89,17 +89,11 @@ export class PluginProject extends Project<PluginManifest> {
     const namedPaths: { [name: string]: string } = {};
 
     if (manifest.modules.mutation) {
-      namedPaths["mutation"] = path.join(
-        dir,
-        manifest.modules.mutation.schema
-      );
+      namedPaths["mutation"] = path.join(dir, manifest.modules.mutation.schema);
     }
 
     if (manifest.modules.query) {
-      namedPaths["query"] = path.join(
-        dir,
-        manifest.modules.query.schema
-      );
+      namedPaths["query"] = path.join(dir, manifest.modules.query.schema);
     }
 
     return namedPaths;

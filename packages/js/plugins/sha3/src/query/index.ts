@@ -1,3 +1,7 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable @typescript-eslint/no-empty-interface */
+
 import {
   Module,
   Input_sha3_512,
@@ -13,6 +17,7 @@ import {
   Input_shake_128,
   Input_shake_256,
 } from "./w3-man";
+
 import {
   sha3_512,
   sha3_384,
@@ -26,10 +31,9 @@ import {
   shake_256,
 } from "js-sha3";
 
-export interface QueryConfig { }
+export interface QueryConfig extends Record<string, unknown> {}
 
 export class Query extends Module<QueryConfig> {
-
   public sha3_512(input: Input_sha3_512): string {
     return sha3_512(input.message);
   }

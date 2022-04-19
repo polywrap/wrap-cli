@@ -1,19 +1,6 @@
-// @ts-noCheck
-import {
-  UInt,
-  UInt8,
-  UInt16,
-  UInt32,
-  Int,
-  Int8,
-  Int16,
-  Int32,
-  Bytes,
-  BigInt,
-  Json,
-  String,
-  Boolean
-} from "./types";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import * as Types from "./types";
 
 import {
@@ -27,16 +14,16 @@ export interface Input_sanitizeEnv extends Record<string, unknown> {
 }
 
 export interface Input_method extends Record<string, unknown> {
-  str: String;
-  optStr?: String | null;
+  str: Types.String;
+  optStr?: Types.String | null;
 }
 
 export abstract class Module<
-  TConfig = {}
+  TConfig extends Record<string, unknown>
 > extends PluginModule<
   TConfig,
   Types.Env,
-  Types.ClientQueryEnv,
+  Types.ClientQueryEnv
 > {
   constructor(config: TConfig) {
     super(config);

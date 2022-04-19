@@ -1,21 +1,22 @@
 /// NOTE: This is an auto-generated file.
 ///       All modifications will be overwritten.
 
+import { Query, QueryConfig } from "../query";
+import { manifest } from "./manifest";
+
 import {
   Plugin,
   PluginFactory,
   PluginPackageManifest,
-  PluginModules
+  PluginModules,
 } from "@web3api/core-js";
-import { Query, QueryConfig } from "../query";
-import { manifest } from "./manifest";
 
 export interface Sha3PluginConfigs {
   query: QueryConfig;
 }
 
 export class Sha3Plugin implements Plugin {
-  constructor(private _configs: Sha3PluginConfigs) { }
+  constructor(private _configs: Sha3PluginConfigs) {}
 
   public static manifest(): PluginPackageManifest {
     return manifest;

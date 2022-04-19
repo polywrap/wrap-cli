@@ -142,11 +142,7 @@ function generateModuleBinding(module: BindModuleOptions): BindModuleOutput {
       name: "imported",
       data: [
         ...importEntries,
-        ...renderTemplates(
-          templatePath("imported"),
-          typeInfo,
-          subTemplates
-        ),
+        ...renderTemplates(templatePath("imported"), typeInfo, subTemplates),
       ],
     });
   }
@@ -182,11 +178,7 @@ function generateModuleBinding(module: BindModuleOptions): BindModuleOutput {
     output.entries.push({
       type: "Directory",
       name: enumType.type,
-      data: renderTemplates(
-        templatePath("enum-type"),
-        enumType,
-        subTemplates
-      ),
+      data: renderTemplates(templatePath("enum-type"), enumType, subTemplates),
     });
   }
 
@@ -196,11 +188,7 @@ function generateModuleBinding(module: BindModuleOptions): BindModuleOutput {
       output.entries.push({
         type: "Directory",
         name: def.type,
-        data: renderTemplates(
-          templatePath("object-type"),
-          def,
-          subTemplates
-        ),
+        data: renderTemplates(templatePath("object-type"), def, subTemplates),
       });
   };
   generateEnvTypeFolder(typeInfo.envTypes.query.client);
@@ -210,11 +198,7 @@ function generateModuleBinding(module: BindModuleOptions): BindModuleOutput {
 
   // Generate root entry file
   output.entries.push(
-    ...renderTemplates(
-      templatePath(""),
-      typeInfo,
-      subTemplates
-    )
+    ...renderTemplates(templatePath(""), typeInfo, subTemplates)
   );
 
   return result;

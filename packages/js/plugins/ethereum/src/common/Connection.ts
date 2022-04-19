@@ -1,4 +1,5 @@
 import { Connection as SchemaConnection } from "../query/w3-man";
+
 import { Signer, ethers } from "ethers";
 import {
   ExternalProvider,
@@ -168,7 +169,7 @@ export class Connection {
 export async function getConnection(
   connections: Connections,
   defaultNetwork: string,
-  connection?: SchemaConnection | null,
+  connection?: SchemaConnection | null
 ): Promise<Connection> {
   if (!connection) {
     return connections[defaultNetwork];

@@ -1,10 +1,9 @@
-// @ts-noCheck
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import * as Types from "./";
 
-import {
-  Client,
-  InvokeApiResult
-} from "@web3api/core-js";
+import { Client, InvokeApiResult } from "@web3api/core-js";
 
 export type UInt = number;
 export type UInt8 = number;
@@ -21,26 +20,26 @@ export type String = string;
 export type Boolean = boolean;
 
 export interface QueryEnv extends Record<string, unknown> {
-  disableParallelRequests?: Boolean | null;
+  disableParallelRequests?: boolean | null;
 }
 
 export interface ResolveResult {
-  cid: String;
-  provider: String;
+  cid: string;
+  provider: string;
 }
 
 export interface Options {
   timeout?: UInt32 | null;
-  provider?: String | null;
-  disableParallelRequests?: Boolean | null;
+  provider?: string | null;
+  disableParallelRequests?: boolean | null;
 }
 
 /// Imported Objects START ///
 
 /* URI: "ens/uri-resolver.core.web3api.eth" */
 export interface UriResolver_MaybeUriOrManifest {
-  uri?: String | null;
-  manifest?: String | null;
+  uri?: string | null;
+  manifest?: string | null;
 }
 
 /// Imported Objects END ///
@@ -48,14 +47,15 @@ export interface UriResolver_MaybeUriOrManifest {
 /// Imported Queries START ///
 
 /* URI: "ens/uri-resolver.core.web3api.eth" */
-interface UriResolver_Query_Input_tryResolveUri extends Record<string, unknown> {
-  authority: String;
-  path: String;
+interface UriResolver_Query_Input_tryResolveUri
+  extends Record<string, unknown> {
+  authority: string;
+  path: string;
 }
 
 /* URI: "ens/uri-resolver.core.web3api.eth" */
 interface UriResolver_Query_Input_getFile extends Record<string, unknown> {
-  path: String;
+  path: string;
 }
 
 /* URI: "ens/uri-resolver.core.web3api.eth" */
@@ -68,7 +68,7 @@ export const UriResolver_Query = {
       uri: "ens/uri-resolver.core.web3api.eth",
       module: "query",
       method: "tryResolveUri",
-      input
+      input,
     });
   },
 
@@ -80,9 +80,9 @@ export const UriResolver_Query = {
       uri: "ens/uri-resolver.core.web3api.eth",
       module: "query",
       method: "getFile",
-      input
+      input,
     });
-  }
-}
+  },
+};
 
 /// Imported Queries END ///

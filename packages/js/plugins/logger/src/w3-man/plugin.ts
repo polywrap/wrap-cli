@@ -1,21 +1,22 @@
 /// NOTE: This is an auto-generated file.
 ///       All modifications will be overwritten.
 
+import { Query, QueryConfig } from "../query";
+import { manifest } from "./manifest";
+
 import {
   Plugin,
   PluginFactory,
   PluginPackageManifest,
-  PluginModules
+  PluginModules,
 } from "@web3api/core-js";
-import { Query, QueryConfig } from "../query";
-import { manifest } from "./manifest";
 
 export interface LoggerPluginConfigs {
   query: QueryConfig;
 }
 
 export class LoggerPlugin implements Plugin {
-  constructor(private _configs: LoggerPluginConfigs) { }
+  constructor(private _configs: LoggerPluginConfigs) {}
 
   public static manifest(): PluginPackageManifest {
     return manifest;

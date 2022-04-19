@@ -35,7 +35,7 @@ const getOptions = (
   return options;
 };
 
-export interface QueryConfig extends IpfsConfig { }
+export interface QueryConfig extends IpfsConfig, Record<string, unknown> {}
 
 export class Query extends Module<QueryConfig> {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -90,7 +90,6 @@ export class Query extends Module<QueryConfig> {
   public async tryResolveUri(
     input: Input_tryResolveUri
   ): Promise<UriResolver_MaybeUriOrManifest | null> {
-
     if (input.authority !== "ipfs") {
       return null;
     }
@@ -132,14 +131,13 @@ export class Query extends Module<QueryConfig> {
   }
 
   public async getFile(input: Input_getFile): Promise<Bytes | null> {
-
     try {
       const result = await this.resolve({
         cid: input.path,
         options: {
           timeout: 5000,
           disableParallelRequests: this.env.disableParallelRequests,
-        }
+        },
       });
 
       if (!result) {

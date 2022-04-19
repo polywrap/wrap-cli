@@ -7,7 +7,7 @@ import {
   Object,
 } from "./w3";
 
-export interface QueryConfig {
+export interface QueryConfig extends Record<string, unknown> {
   prop: string;
 }
 
@@ -15,7 +15,7 @@ export class Query extends Module<QueryConfig> {
 
   sanitizeEnv(
     input: Input_sanitizeEnv,
-    client: Client
+    _client: Client
   ): Promise<Env> {
     return Promise.resolve({
       arg1: "sanitized: " + input.env.userProp
@@ -24,7 +24,7 @@ export class Query extends Module<QueryConfig> {
 
   method(
     input: Input_method,
-    client: Client
+    _client: Client
   ): Object {
     console.log(input.str);
     console.log(this.env.arg1);

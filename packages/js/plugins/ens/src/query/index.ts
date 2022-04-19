@@ -5,8 +5,9 @@ import {
   Input_getFile,
   UriResolver_MaybeUriOrManifest,
   Bytes,
-  Ethereum_Query
+  Ethereum_Query,
 } from "./w3-man";
+
 import { ethers } from "ethers";
 import { Base58 } from "@ethersproject/basex";
 import { getAddress } from "@ethersproject/address";
@@ -17,12 +18,11 @@ export interface Addresses {
   [network: string]: Address;
 }
 
-export interface QueryConfig {
+export interface QueryConfig extends Record<string, unknown> {
   addresses?: Addresses;
 }
 
 export class Query extends Module<QueryConfig> {
-
   public static defaultEnsAddress =
     "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
 

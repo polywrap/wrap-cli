@@ -11,7 +11,7 @@ import { renderSchema } from "./render";
 import { TypeInfo, combineTypeInfo } from "@web3api/schema-parse";
 
 export * from "./types";
-export { renderSchema } ;
+export { renderSchema };
 
 export type ComposerOutput = Partial<SchemaInfos> &
   Required<{ combined: SchemaInfos["combined"] }>;

@@ -26,14 +26,14 @@ export type Boolean = boolean;
 {{#envTypes}}
 {{#query}}
 {{#client}}
-export interface {{type}} {
+export interface {{type}} extends Record<string, unknown> {
   {{#properties}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/properties}}
 }
 {{/client}}
 {{#sanitized}}
-export interface {{type}} {
+export interface {{type}} extends Record<string, unknown> {
   {{#properties}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/properties}}
@@ -42,14 +42,14 @@ export interface {{type}} {
 {{/query}}
 {{#mutation}}
 {{#client}}
-export interface {{type}} {
+export interface {{type}} extends Record<string, unknown> {
   {{#properties}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/properties}}
 }
 {{/client}}
 {{#sanitized}}
-export interface {{type}} {
+export interface {{type}} extends Record<string, unknown> {
   {{#properties}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/properties}}
@@ -149,6 +149,7 @@ export const {{type}} = {
   {{/last}}
   {{/methods}}
 }
+
 {{/isInterface}}
 {{#isInterface}}
 export class {{type}} {
@@ -168,20 +169,19 @@ export class {{type}} {
       method: "{{name}}",
       input
     });
-  }{{^last}},{{/last}}
+  }
   {{^last}}
 
   {{/last}}
   {{/methods}}
 }
+
 {{/isInterface}}
-
 {{/importedModuleTypes}}
-
 /// Imported Queries END ///
-
 {{#interfaceTypes.length}}
 {{#interfaceTypes}}
+
 export class {{namespace}} {
   static uri: string = "{{uri}}";
 

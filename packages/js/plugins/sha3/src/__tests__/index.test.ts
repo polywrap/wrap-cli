@@ -23,7 +23,7 @@ describe("js-sha3 algorithms returned values match the plugin's", () => {
       plugins: [
         {
           uri: "w3://ens/sha3.web3api.eth",
-          plugin: sha3Plugin(),
+          plugin: sha3Plugin({ query: {} }),
         },
       ]
     })

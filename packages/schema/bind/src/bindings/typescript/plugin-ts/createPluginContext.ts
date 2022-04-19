@@ -1,4 +1,4 @@
-/*import { toImportablePath } from "../../utils/toImportablePath";
+/* import { toImportablePath } from "../../utils/toImportablePath";
 
 import { InvokableModules, Manifest, MetaManifest } from "@web3api/core-js";
 import { TypeInfo } from "@web3api/schema-parse";

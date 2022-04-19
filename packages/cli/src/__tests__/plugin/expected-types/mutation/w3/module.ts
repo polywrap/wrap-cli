@@ -1,19 +1,6 @@
-// @ts-noCheck
-import {
-  UInt,
-  UInt8,
-  UInt16,
-  UInt32,
-  Int,
-  Int8,
-  Int16,
-  Int32,
-  Bytes,
-  BigInt,
-  Json,
-  String,
-  Boolean
-} from "./types";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import * as Types from "./types";
 
 import {
@@ -23,16 +10,16 @@ import {
 } from "@web3api/core-js";
 
 export interface Input_method extends Record<string, unknown> {
-  arg: UInt32;
+  arg: Types.UInt32;
 }
 
 export abstract class Module<
-  TConfig = {}
+  TConfig extends Record<string, unknown>
 > extends PluginModule<
-  TConfig,
+  TConfig
 > {
   abstract method(
     input: Input_method,
     client: Client
-  ): MaybeAsync<String>;
+  ): MaybeAsync<Types.String>;
 }

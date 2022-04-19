@@ -1,18 +1,18 @@
+/* eslint-disable @typescript-eslint/no-empty-interface */
 import {
   Module,
   Input_toAscii,
   Input_toUnicode,
   Input_convert,
-  ConvertResult
+  ConvertResult,
 } from "./w3-man";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires
 const uts46 = require("idna-uts46-hx/uts46bundle.js");
 
-export interface QueryConfig { }
+export interface QueryConfig extends Record<string, unknown> {}
 
 export class Query extends Module<QueryConfig> {
-
   public toAscii(input: Input_toAscii): string {
     return uts46.toAscii(input.value);
   }

@@ -13,17 +13,15 @@ import {
   Connection as SchemaConnection,
 } from "./w3-man";
 import { EthereumConfig } from "../common/EthereumConfig";
-import {
-  Connections,
-  Connection,
-  getConnection
-} from "../common/Connection";
+import { Connections, Connection, getConnection } from "../common/Connection";
 import * as Mapping from "../common/mapping";
 import { parseArgs } from "../common/parsing";
 
 import { ethers } from "ethers";
 
-export interface MutationConfig extends EthereumConfig { }
+export interface MutationConfig
+  extends EthereumConfig,
+    Record<string, unknown> {}
 
 export class Mutation extends Module<MutationConfig> {
   private _connections: Connections;
@@ -50,7 +48,7 @@ export class Mutation extends Module<MutationConfig> {
 
   public async callContractMethod(
     input: Input_callContractMethod,
-    client: Client
+    _client: Client
   ): Promise<TxResponse> {
     const res = await this._callContractMethod(input);
     return Mapping.toTxResponse(res);
@@ -58,7 +56,7 @@ export class Mutation extends Module<MutationConfig> {
 
   public async callContractMethodAndWait(
     input: Input_callContractMethodAndWait,
-    client: Client
+    _client: Client
   ): Promise<TxReceipt> {
     const response = await this._callContractMethod(input);
     const res = await response.wait();
@@ -67,7 +65,7 @@ export class Mutation extends Module<MutationConfig> {
 
   public async sendTransaction(
     input: Input_sendTransaction,
-    client: Client
+    _client: Client
   ): Promise<TxResponse> {
     const connection = await this._getConnection(input.connection);
     const signer = connection.getSigner();
@@ -77,7 +75,7 @@ export class Mutation extends Module<MutationConfig> {
 
   public async sendTransactionAndWait(
     input: Input_sendTransactionAndWait,
-    client: Client
+    _client: Client
   ): Promise<TxReceipt> {
     const connection = await this._getConnection(input.connection);
     const signer = connection.getSigner();
@@ -90,7 +88,7 @@ export class Mutation extends Module<MutationConfig> {
 
   public async deployContract(
     input: Input_deployContract,
-    client: Client
+    _client: Client
   ): Promise<string> {
     const connection = await this._getConnection(input.connection);
     const signer = connection.getSigner();
@@ -107,16 +105,13 @@ export class Mutation extends Module<MutationConfig> {
 
   public async signMessage(
     input: Input_signMessage,
-    client: Client
+    _client: Client
   ): Promise<string> {
     const connection = await this._getConnection(input.connection);
     return await connection.getSigner().signMessage(input.message);
   }
 
-  public async sendRPC(
-    input: Input_sendRPC,
-    client: Client
-  ): Promise<string> {
+  public async sendRPC(input: Input_sendRPC, _client: Client): Promise<string> {
     const connection = await this._getConnection(input.connection);
     const provider = connection.getProvider();
     const response = await provider.send(input.method, input.params);
@@ -142,12 +137,8 @@ export class Mutation extends Module<MutationConfig> {
   }
 
   private async _getConnection(
-    connection?: SchemaConnection | null,
+    connection?: SchemaConnection | null
   ): Promise<Connection> {
-    return getConnection(
-      this._connections,
-      this._defaultNetwork,
-      connection
-    );
+    return getConnection(this._connections, this._defaultNetwork, connection);
   }
 }

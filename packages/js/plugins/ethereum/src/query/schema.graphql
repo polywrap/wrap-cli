@@ -16,6 +16,12 @@ type Query {
     txOverrides: TxOverrides
   ): StaticTxResult!
 
+  getBalance(
+    address: String!
+    blockTag: BigInt
+    connection: Connection
+  ): BigInt!
+
   encodeParams(
     types: [String!]!
     values: [String!]!

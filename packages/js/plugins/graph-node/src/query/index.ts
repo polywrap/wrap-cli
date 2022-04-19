@@ -1,20 +1,11 @@
-import {
-  Client,
-  Module,
-  Input_querySubgraph,
-  HTTP_Query,
-} from "./w3-man";
-import {
-  RequestData,
-  RequestError
-} from "./types";
+import { Client, Module, Input_querySubgraph, HTTP_Query } from "./w3-man";
+import { RequestData, RequestError } from "./types";
 
-export interface QueryConfig {
+export interface QueryConfig extends Record<string, unknown> {
   provider: string;
 }
 
 export class Query extends Module<QueryConfig> {
-
   public async querySubgraph(
     input: Input_querySubgraph,
     client: Client

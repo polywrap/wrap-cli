@@ -1,42 +1,23 @@
-// @ts-noCheck
-import {
-  UInt,
-  UInt8,
-  UInt16,
-  UInt32,
-  Int,
-  Int8,
-  Int16,
-  Int32,
-  Bytes,
-  BigInt,
-  Json,
-  String,
-  Boolean
-} from "./types";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import * as Types from "./types";
 
-import {
-  Client,
-  PluginModule,
-  MaybeAsync
-} from "@web3api/core-js";
+import { Client, PluginModule, MaybeAsync } from "@web3api/core-js";
 
 export interface Input_get extends Record<string, unknown> {
-  url: String;
+  url: Types.String;
   request?: Types.Request | null;
 }
 
 export interface Input_post extends Record<string, unknown> {
-  url: String;
+  url: Types.String;
   request?: Types.Request | null;
 }
 
 export abstract class Module<
-  TConfig = {}
-> extends PluginModule<
-  TConfig
-> {
+  TConfig extends Record<string, unknown>
+> extends PluginModule<TConfig> {
   abstract get(
     input: Input_get,
     client: Client

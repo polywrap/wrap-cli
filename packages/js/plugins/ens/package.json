@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@ethersproject/address": "5.0.7",
+    "@ethersproject/basex": "5.0.7",
     "@web3api/core-js": "0.0.1-prealpha.71",
     "ethers": "5.0.7"
   },

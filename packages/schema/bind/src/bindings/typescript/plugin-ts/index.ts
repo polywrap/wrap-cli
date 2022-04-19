@@ -41,15 +41,15 @@ export const generateBinding: GenerateBindingFn = (
 
   // Aggregate the schemas (will be removed once user-defined modules are supported)
   const schema = renderSchema(
-    combineTypeInfo(
-      options.modules.map((m) => m.typeInfo)
-    ), true
+    combineTypeInfo(options.modules.map((m) => m.typeInfo)),
+    true
   );
 
   // Apply TypeInfo transforms
-  options.modules = options.modules.map(
-    (m) => ({ ...m, typeInfo: applyTransforms(m.typeInfo) })
-  );
+  options.modules = options.modules.map((m) => ({
+    ...m,
+    typeInfo: applyTransforms(m.typeInfo),
+  }));
 
   // Generate root entry point files
   result.common = {
@@ -60,9 +60,9 @@ export const generateBinding: GenerateBindingFn = (
         {
           ...options,
           ...Functions,
-          schema
+          schema,
         },
-        { }
+        {}
       ),
     },
     outputDirAbs: options.commonDirAbs,
@@ -104,7 +104,7 @@ function generateModuleBindings(module: BindModuleOptions): BindModuleOutput {
   output.entries = renderTemplates(
     templatePath("module-type"),
     module.typeInfo,
-    { }
+    {}
   );
 
   return result;

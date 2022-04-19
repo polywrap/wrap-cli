@@ -8,7 +8,7 @@ export interface EnsPluginConfigs {
   query: QueryConfig;
 }
 
-export interface QueryConfig {
+export interface QueryConfig extends Record<string, unknown> {
   addresses?: Addresses;
 }
 

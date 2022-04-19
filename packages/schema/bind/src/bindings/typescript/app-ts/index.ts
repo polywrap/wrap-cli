@@ -64,7 +64,7 @@ function generateModuleBindings(module: BindModuleOptions): BindModuleOutput {
   output.entries = renderTemplates(
     path.join(__dirname, "./templates"),
     { ...typeInfo, schema },
-    { }
+    {}
   );
 
   return result;

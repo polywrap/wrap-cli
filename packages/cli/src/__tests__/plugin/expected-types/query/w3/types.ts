@@ -1,4 +1,6 @@
-// @ts-noCheck
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import * as Types from "./";
 
 import {
@@ -21,11 +23,11 @@ export type String = string;
 export type Boolean = boolean;
 
 /// Envs START ///
-export interface ClientQueryEnv {
+export interface ClientQueryEnv extends Record<string, unknown> {
   userProp: String;
 }
 
-export interface Env {
+export interface Env extends Record<string, unknown> {
   arg1: String;
 }
 /// Envs END ///

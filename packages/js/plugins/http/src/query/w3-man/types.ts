@@ -1,10 +1,7 @@
-// @ts-noCheck
-import * as Types from "./";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/naming-convention */
 
-import {
-  Client,
-  InvokeApiResult
-} from "@web3api/core-js";
+import * as Types from "./";
 
 export type UInt = number;
 export type UInt8 = number;
@@ -21,27 +18,27 @@ export type String = string;
 export type Boolean = boolean;
 
 export interface Header {
-  key: String;
-  value: String;
+  key: string;
+  value: string;
 }
 
 export interface UrlParam {
-  key: String;
-  value: String;
+  key: string;
+  value: string;
 }
 
 export interface Response {
   status: Int;
-  statusText: String;
+  statusText: string;
   headers?: Array<Types.Header> | null;
-  body?: String | null;
+  body?: string | null;
 }
 
 export interface Request {
   headers?: Array<Types.Header> | null;
   urlParams?: Array<Types.UrlParam> | null;
   responseType: Types.ResponseType;
-  body?: String | null;
+  body?: string | null;
 }
 
 export enum ResponseTypeEnum {
@@ -49,9 +46,6 @@ export enum ResponseTypeEnum {
   BINARY,
 }
 
-export type ResponseTypeString =
-  | "TEXT"
-  | "BINARY"
+export type ResponseTypeString = "TEXT" | "BINARY";
 
 export type ResponseType = ResponseTypeEnum | ResponseTypeString;
-

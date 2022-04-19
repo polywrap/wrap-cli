@@ -1,21 +1,6 @@
 /// NOTE: This is an auto-generated file.
 ///       All modifications will be overwritten.
 
-import {
-  UInt,
-  UInt8,
-  UInt16,
-  UInt32,
-  Int,
-  Int8,
-  Int16,
-  Int32,
-  Bytes,
-  BigInt,
-  Json,
-  String,
-  Boolean
-} from "./types";
 import * as Types from "./types";
 
 import {
@@ -25,8 +10,8 @@ import {
 } from "@web3api/core-js";
 
 export interface Input_mutationMethod extends Record<string, unknown> {
-  str: String;
-  optStr?: String | null;
+  str: Types.String;
+  optStr?: Types.String | null;
   en: Types.CustomEnum;
   optEnum?: Types.CustomEnum | null;
   enumArray: Array<Types.CustomEnum>;
@@ -41,16 +26,16 @@ export interface Input_objectMethod extends Record<string, unknown> {
 }
 
 export abstract class Module<
-  TConfig = {}
+  TConfig extends Record<string, unknown>
 > extends PluginModule<
   TConfig,
-  Types.MutationEnv,
+  Types.MutationEnv
 > {
 
   abstract mutationMethod(
     input: Input_mutationMethod,
     client: Client
-  ): MaybeAsync<Int>;
+  ): MaybeAsync<Types.Int>;
 
   abstract objectMethod(
     input: Input_objectMethod,

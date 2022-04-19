@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import {
   Uri,
   Client,
   InvokableModules,
   MaybeAsync,
-  executeMaybeAsyncFunction
+  executeMaybeAsyncFunction,
 } from ".";
 
 /**
@@ -15,20 +16,16 @@ import {
  * This client will be used for any sub-queries that occur.
  */
 export type PluginMethod<
-  TInput extends Record<string, unknown> = {},
+  TInput extends Record<string, unknown> = Record<string, unknown>,
   TResult = unknown
-> = (
-  input: TInput,
-  client: Client,
-) => MaybeAsync<TResult>;
+> = (input: TInput, client: Client) => MaybeAsync<TResult>;
 
 export abstract class PluginModule<
-  TConfig = {},
-  TEnv extends Record<string, unknown> = {},
-  TClientEnv extends Record<string, unknown> = TEnv,
+  TConfig extends Record<string, unknown> = Record<string, unknown>,
+  TEnv extends Record<string, unknown> = Record<string, unknown>,
+  TClientEnv extends Record<string, unknown> = TEnv
 > {
-
-  private _env: TEnv
+  private _env: TEnv;
   private _config: TConfig;
 
   constructor(config: TConfig) {
@@ -43,9 +40,7 @@ export abstract class PluginModule<
     return this._config;
   }
 
-  public _w3_load_env(
-    env: TEnv
-  ): void {
+  public _w3_load_env(env: TEnv): void {
     this._env = env;
   }
 
@@ -65,37 +60,34 @@ export abstract class PluginModule<
   }
 
   public async _w3_invoke<
-    TInput extends Record<string, unknown> = {},
+    TInput extends Record<string, unknown> = Record<string, unknown>,
     TResult = unknown
-  >(
-    method: string,
-    input: TInput,
-    client: Client
-  ): Promise<TResult> {
+  >(method: string, input: TInput, client: Client): Promise<TResult> {
     const fn = this.getMethod<TInput, TResult>(method);
 
     if (!fn) {
-      throw Error("TODO: missing function")
+      throw Error("TODO: missing function");
     }
 
     if (typeof fn !== "function") {
-      throw Error("TODO: ${method} must be a function")
+      throw Error("TODO: ${method} must be a function");
     }
 
     return await executeMaybeAsyncFunction<TResult>(
-      fn.call(this, input, client)
+      fn.bind(this, input, client)
     );
   }
 
   public getMethod<
-    TInput extends Record<string, unknown> = {},
+    TInput extends Record<string, unknown> = Record<string, unknown>,
     TResult = unknown
-  >(
-    method: string
-  ): PluginMethod<TInput, TResult> | undefined {
-    const fn: PluginMethod<TInput, TResult> | undefined = (
-      (this as unknown) as Record<string, PluginMethod<TInput, TResult>>
-    )[method];
+  >(method: string): PluginMethod<TInput, TResult> | undefined {
+    const fn:
+      | PluginMethod<TInput, TResult>
+      | undefined = ((this as unknown) as Record<
+      string,
+      PluginMethod<TInput, TResult>
+    >)[method];
 
     return fn;
   }

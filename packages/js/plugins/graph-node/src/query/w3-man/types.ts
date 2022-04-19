@@ -1,9 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import * as Types from "./";
 
-import {
-  Client,
-  InvokeApiResult
-} from "@web3api/core-js";
+import { Client, InvokeApiResult } from "@web3api/core-js";
 
 export type UInt = number;
 export type UInt8 = number;
@@ -26,27 +26,27 @@ export interface HTTP_Request {
   headers?: Array<Types.HTTP_Header> | null;
   urlParams?: Array<Types.HTTP_UrlParam> | null;
   responseType: Types.HTTP_ResponseType;
-  body?: String | null;
+  body?: string | null;
 }
 
 /* URI: "ens/http.web3api.eth" */
 export interface HTTP_Header {
-  key: String;
-  value: String;
+  key: string;
+  value: string;
 }
 
 /* URI: "ens/http.web3api.eth" */
 export interface HTTP_UrlParam {
-  key: String;
-  value: String;
+  key: string;
+  value: string;
 }
 
 /* URI: "ens/http.web3api.eth" */
 export interface HTTP_Response {
   status: Int;
-  statusText: String;
+  statusText: string;
   headers?: Array<Types.HTTP_Header> | null;
-  body?: String | null;
+  body?: string | null;
 }
 
 /// Imported Objects END ///
@@ -59,9 +59,7 @@ export enum HTTP_ResponseTypeEnum {
   BINARY,
 }
 
-export type HTTP_ResponseTypeString =
-  | "TEXT"
-  | "BINARY"
+export type HTTP_ResponseTypeString = "TEXT" | "BINARY";
 
 export type HTTP_ResponseType = HTTP_ResponseTypeEnum | HTTP_ResponseTypeString;
 
@@ -71,13 +69,13 @@ export type HTTP_ResponseType = HTTP_ResponseTypeEnum | HTTP_ResponseTypeString;
 
 /* URI: "ens/http.web3api.eth" */
 interface HTTP_Query_Input_get extends Record<string, unknown> {
-  url: String;
+  url: string;
   request?: Types.HTTP_Request | null;
 }
 
 /* URI: "ens/http.web3api.eth" */
 interface HTTP_Query_Input_post extends Record<string, unknown> {
-  url: String;
+  url: string;
   request?: Types.HTTP_Request | null;
 }
 
@@ -91,7 +89,7 @@ export const HTTP_Query = {
       uri: "ens/http.web3api.eth",
       module: "query",
       method: "get",
-      input
+      input,
     });
   },
 
@@ -103,11 +101,9 @@ export const HTTP_Query = {
       uri: "ens/http.web3api.eth",
       module: "query",
       method: "post",
-      input
+      input,
     });
-  }
-}
-
+  },
+};
 
 /// Imported Queries END ///
-

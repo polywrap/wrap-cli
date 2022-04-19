@@ -4,15 +4,15 @@ import {
   Input_method
 } from "./w3";
 
-export interface MutationConfig {
+export interface MutationConfig extends Record<string, unknown> {
   prop: string;
 }
 
 export class Mutation extends Module<MutationConfig> {
 
   method(
-    input: Input_method,
-    client: Client
+    _input: Input_method,
+    _client: Client
   ): string {
     return "Mutation method called" + this.config.prop;
   }

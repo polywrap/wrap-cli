@@ -10,13 +10,12 @@ import {
 import path from "path";
 import fs from "fs";
 
-export interface QueryConfig { }
+export type QueryConfig = Record<string, unknown>;
 
 export class Query extends Module<QueryConfig> {
-
   async tryResolveUri(
     input: Input_tryResolveUri,
-    client: Client
+    _client: Client
   ): Promise<UriResolver_MaybeUriOrManifest | null> {
     if (input.authority !== "fs") {
       return null;

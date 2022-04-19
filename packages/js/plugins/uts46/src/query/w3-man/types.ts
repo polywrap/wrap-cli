@@ -1,10 +1,5 @@
-// @ts-noCheck
-import * as Types from "./";
-
-import {
-  Client,
-  InvokeApiResult
-} from "@web3api/core-js";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/naming-convention */
 
 export type UInt = number;
 export type UInt8 = number;
@@ -21,6 +16,6 @@ export type String = string;
 export type Boolean = boolean;
 
 export interface ConvertResult {
-  IDN: String;
-  PC: String;
+  IDN: string;
+  PC: string;
 }

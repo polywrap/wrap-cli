@@ -5,17 +5,14 @@ import { IpfsConfig } from "./common/IpfsConfig";
 
 import { PluginFactory } from "@web3api/core-js";
 
-export {
-  manifest,
-  schema,
-} from "./w3-man";
+export { manifest, schema } from "./w3-man";
 
-export interface IpfsPluginConfigs extends IpfsConfig { }
+export interface IpfsPluginConfigs
+  extends IpfsConfig,
+    Record<string, unknown> {}
 
 export class IpfsPlugin extends Internal.IpfsPlugin {
-  constructor(
-    config: IpfsPluginConfigs
-  ) {
+  constructor(config: IpfsPluginConfigs) {
     super({
       query: config,
       mutation: config,
@@ -25,9 +22,10 @@ export class IpfsPlugin extends Internal.IpfsPlugin {
 
 export const ipfsPlugin: PluginFactory<IpfsPluginConfigs> = (
   opts: IpfsPluginConfigs
-) => Internal.ipfsPlugin({
-  query: opts,
-  mutation: opts,
-});
+) =>
+  Internal.ipfsPlugin({
+    query: opts,
+    mutation: opts,
+  });
 
 export const plugin = ipfsPlugin;

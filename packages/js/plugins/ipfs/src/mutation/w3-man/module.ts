@@ -1,38 +1,19 @@
-// @ts-noCheck
-import {
-  UInt,
-  UInt8,
-  UInt16,
-  UInt32,
-  Int,
-  Int8,
-  Int16,
-  Int32,
-  Bytes,
-  BigInt,
-  Json,
-  String,
-  Boolean
-} from "./types";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import * as Types from "./types";
 
-import {
-  Client,
-  PluginModule,
-  MaybeAsync
-} from "@web3api/core-js";
+import { Client, PluginModule, MaybeAsync } from "@web3api/core-js";
 
 export interface Input_addFile extends Record<string, unknown> {
-  data: Bytes;
+  data: Types.Bytes;
 }
 
 export abstract class Module<
-  TConfig = {},
-> extends PluginModule<
-  TConfig,
-> {
+  TConfig extends Record<string, unknown>
+> extends PluginModule<TConfig> {
   abstract addFile(
     input: Input_addFile,
     client: Client
-  ): MaybeAsync<String>;
+  ): MaybeAsync<Types.String>;
 }

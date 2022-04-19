@@ -1,21 +1,22 @@
 /// NOTE: This is an auto-generated file.
 ///       All modifications will be overwritten.
 
+import { Query, QueryConfig } from "../query";
+import { manifest } from "./manifest";
+
 import {
   Plugin,
   PluginFactory,
   PluginPackageManifest,
-  PluginModules
+  PluginModules,
 } from "@web3api/core-js";
-import { Query, QueryConfig } from "../query";
-import { manifest } from "./manifest";
 
 export interface Uts46PluginConfigs {
   query: QueryConfig;
 }
 
 export class Uts46Plugin implements Plugin {
-  constructor(private _configs: Uts46PluginConfigs) { }
+  constructor(private _configs: Uts46PluginConfigs) {}
 
   public static manifest(): PluginPackageManifest {
     return manifest;

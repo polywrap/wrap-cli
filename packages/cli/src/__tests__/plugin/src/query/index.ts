@@ -5,15 +5,15 @@ import {
   Input_method
 } from "./w3";
 
-export interface QueryConfigs {
+export interface QueryConfig extends Record<string, unknown> {
 
 }
 
-export class Query implements Module {
-  constructor(private _configs: QueryConfigs) {
+export class Query implements Module<QueryConfig> {
+  constructor(private _configs: QueryConfig) {
   }
 
-  public method(input: Input_method, client: Client): MaybeAsync<Object> {
+  public method(_input: Input_method, _client: Client): MaybeAsync<Object> {
     return {
       u: 0,
       array: [true],

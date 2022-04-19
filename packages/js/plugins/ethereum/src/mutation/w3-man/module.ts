@@ -1,39 +1,23 @@
-// @ts-noCheck
-import {
-  UInt,
-  UInt8,
-  UInt16,
-  UInt32,
-  Int,
-  Int8,
-  Int16,
-  Int32,
-  Bytes,
-  BigInt,
-  Json,
-  String,
-  Boolean
-} from "./types";
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import * as Types from "./types";
 
-import {
-  Client,
-  PluginModule,
-  MaybeAsync
-} from "@web3api/core-js";
+import { Client, PluginModule, MaybeAsync } from "@web3api/core-js";
 
 export interface Input_callContractMethod extends Record<string, unknown> {
-  address: String;
-  method: String;
-  args?: Array<String> | null;
+  address: Types.String;
+  method: Types.String;
+  args?: Array<Types.String> | null;
   connection?: Types.Connection | null;
   txOverrides?: Types.TxOverrides | null;
 }
 
-export interface Input_callContractMethodAndWait extends Record<string, unknown> {
-  address: String;
-  method: String;
-  args?: Array<String> | null;
+export interface Input_callContractMethodAndWait
+  extends Record<string, unknown> {
+  address: Types.String;
+  method: Types.String;
+  args?: Array<Types.String> | null;
   connection?: Types.Connection | null;
   txOverrides?: Types.TxOverrides | null;
 }
@@ -49,28 +33,26 @@ export interface Input_sendTransactionAndWait extends Record<string, unknown> {
 }
 
 export interface Input_deployContract extends Record<string, unknown> {
-  abi: String;
-  bytecode: String;
-  args?: Array<String> | null;
+  abi: Types.String;
+  bytecode: Types.String;
+  args?: Array<Types.String> | null;
   connection?: Types.Connection | null;
 }
 
 export interface Input_signMessage extends Record<string, unknown> {
-  message: String;
+  message: Types.String;
   connection?: Types.Connection | null;
 }
 
 export interface Input_sendRPC extends Record<string, unknown> {
-  method: String;
-  params: Array<String>;
+  method: Types.String;
+  params: Array<Types.String>;
   connection?: Types.Connection | null;
 }
 
 export abstract class Module<
-  TConfig = {}
-> extends PluginModule<
-  TConfig
-> {
+  TConfig extends Record<string, unknown>
+> extends PluginModule<TConfig> {
   constructor(config: TConfig) {
     super(config);
   }
@@ -98,15 +80,15 @@ export abstract class Module<
   abstract deployContract(
     input: Input_deployContract,
     client: Client
-  ): MaybeAsync<String>;
+  ): MaybeAsync<Types.String>;
 
   abstract signMessage(
     input: Input_signMessage,
     client: Client
-  ): MaybeAsync<String>;
+  ): MaybeAsync<Types.String>;
 
   abstract sendRPC(
     input: Input_sendRPC,
     client: Client
-  ): MaybeAsync<String | null>;
+  ): MaybeAsync<Types.String | null>;
 }

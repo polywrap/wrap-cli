@@ -3,6 +3,7 @@ import {
   Module,
   Input_callContractView,
   Input_callContractStatic,
+  Input_getBalance,
   Input_encodeParams,
   Input_encodeFunction,
   Input_solidityPack,
@@ -20,25 +21,22 @@ import {
   Input_waitForEvent,
   Input_awaitTransaction,
   Input_getNetwork,
+  BigInt,
   StaticTxResult,
   EventNotification,
   TxReceipt,
   Network,
-  Connection as SchemaConnection
+  Connection as SchemaConnection,
 } from "./w3-man";
 import { EthereumConfig } from "../common/EthereumConfig";
-import {
-  Connections,
-  Connection,
-  getConnection
-} from "../common/Connection";
+import { Connections, Connection, getConnection } from "../common/Connection";
 import * as Mapping from "../common/mapping";
 import { parseArgs } from "../common/parsing";
 
 import { ethers } from "ethers";
 import { defaultAbiCoder } from "ethers/lib/utils";
 
-export interface QueryConfig extends EthereumConfig { }
+export interface QueryConfig extends EthereumConfig, Record<string, unknown> {}
 
 export class Query extends Module<QueryConfig> {
   private _connections: Connections;
@@ -65,7 +63,7 @@ export class Query extends Module<QueryConfig> {
 
   async callContractView(
     input: Input_callContractView,
-    client: Client
+    _client: Client
   ): Promise<string> {
     const connection = await this._getConnection(input.connection);
     const contract = connection.getContract(
@@ -80,7 +78,7 @@ export class Query extends Module<QueryConfig> {
 
   async callContractStatic(
     input: Input_callContractStatic,
-    client: Client
+    _client: Client
   ): Promise<StaticTxResult> {
     const connection = await this._getConnection(input.connection);
     const contract = connection.getContract(input.address, [input.method]);
@@ -111,16 +109,25 @@ export class Query extends Module<QueryConfig> {
     }
   }
 
+  async getBalance(input: Input_getBalance, _client: Client): Promise<BigInt> {
+    const connection = await this._getConnection(input.connection);
+    return (
+      await connection
+        .getProvider()
+        .getBalance(input.address, input.blockTag || undefined)
+    ).toString();
+  }
+
   async encodeParams(
     input: Input_encodeParams,
-    client: Client
+    _client: Client
   ): Promise<string> {
     return defaultAbiCoder.encode(input.types, parseArgs(input.values));
   }
 
   async encodeFunction(
     input: Input_encodeFunction,
-    client: Client
+    _client: Client
   ): Promise<string> {
     const functionInterface = ethers.Contract.getInterface([input.method]);
     return functionInterface.encodeFunctionData(
@@ -131,34 +138,28 @@ export class Query extends Module<QueryConfig> {
 
   async solidityPack(
     input: Input_solidityPack,
-    client: Client
+    _client: Client
   ): Promise<string> {
     return ethers.utils.solidityPack(input.types, parseArgs(input.values));
   }
 
   async solidityKeccak256(
     input: Input_solidityKeccak256,
-    client: Client
+    _client: Client
   ): Promise<string> {
-    return ethers.utils.solidityKeccak256(
-      input.types,
-      parseArgs(input.values)
-    );
+    return ethers.utils.solidityKeccak256(input.types, parseArgs(input.values));
   }
 
   async soliditySha256(
     input: Input_soliditySha256,
-    client: Client
+    _client: Client
   ): Promise<string> {
-    return ethers.utils.soliditySha256(
-      input.types,
-      parseArgs(input.values)
-    );
+    return ethers.utils.soliditySha256(input.types, parseArgs(input.values));
   }
 
   async getSignerAddress(
     input: Input_getSignerAddress,
-    client: Client
+    _client: Client
   ): Promise<string> {
     const connection = await this._getConnection(input.connection);
     return await connection.getSigner().getAddress();
@@ -166,7 +167,7 @@ export class Query extends Module<QueryConfig> {
 
   async getSignerBalance(
     input: Input_getSignerBalance,
-    client: Client
+    _client: Client
   ): Promise<string> {
     const connection = await this._getConnection(input.connection);
     return (
@@ -176,7 +177,7 @@ export class Query extends Module<QueryConfig> {
 
   async getSignerTransactionCount(
     input: Input_getSignerTransactionCount,
-    client: Client
+    _client: Client
   ): Promise<string> {
     const connection = await this._getConnection(input.connection);
     return (
@@ -188,7 +189,7 @@ export class Query extends Module<QueryConfig> {
 
   async getGasPrice(
     input: Input_getGasPrice,
-    client: Client
+    _client: Client
   ): Promise<string> {
     const connection = await this._getConnection(input.connection);
     return (await connection.getSigner().getGasPrice()).toString();
@@ -196,7 +197,7 @@ export class Query extends Module<QueryConfig> {
 
   async estimateTransactionGas(
     input: Input_estimateTransactionGas,
-    client: Client
+    _client: Client
   ): Promise<string> {
     const connection = await this._getConnection(input.connection);
     return (
@@ -206,7 +207,7 @@ export class Query extends Module<QueryConfig> {
 
   async estimateContractCallGas(
     input: Input_estimateContractCallGas,
-    client: Client
+    _client: Client
   ): Promise<string> {
     const connection = await this._getConnection(input.connection);
     const contract = connection.getContract(input.address, [input.method]);
@@ -216,21 +217,18 @@ export class Query extends Module<QueryConfig> {
     const gasLimit: string | null | undefined = input.txOverrides?.gasLimit;
     const value: string | null | undefined = input.txOverrides?.value;
 
-    const gas = await contract.estimateGas[funcs[0]](
-      ...parseArgs(input.args),
-      {
-        gasPrice: gasPrice ? ethers.BigNumber.from(gasPrice) : undefined,
-        gasLimit: gasLimit ? ethers.BigNumber.from(gasLimit) : undefined,
-        value: value ? ethers.BigNumber.from(value) : undefined,
-      }
-    );
+    const gas = await contract.estimateGas[funcs[0]](...parseArgs(input.args), {
+      gasPrice: gasPrice ? ethers.BigNumber.from(gasPrice) : undefined,
+      gasLimit: gasLimit ? ethers.BigNumber.from(gasLimit) : undefined,
+      value: value ? ethers.BigNumber.from(value) : undefined,
+    });
 
     return gas.toString();
   }
 
   async checkAddress(
     input: Input_checkAddress,
-    client: Client
+    _client: Client
   ): Promise<boolean> {
     let address = input.address;
 
@@ -251,25 +249,19 @@ export class Query extends Module<QueryConfig> {
     }
   }
 
-  async toWei(
-    input: Input_toWei,
-    client: Client
-  ): Promise<string> {
+  async toWei(input: Input_toWei, _client: Client): Promise<string> {
     const weiAmount = ethers.utils.parseEther(input.eth);
     return weiAmount.toString();
   }
 
-  async toEth(
-    input: Input_toEth,
-    client: Client
-  ): Promise<string> {
+  async toEth(input: Input_toEth, _client: Client): Promise<string> {
     const etherAmount = ethers.utils.formatEther(input.wei);
     return etherAmount.toString();
   }
 
   async waitForEvent(
     input: Input_waitForEvent,
-    client: Client
+    _client: Client
   ): Promise<EventNotification> {
     const connection = await this._getConnection(input.connection);
     const contract = connection.getContract(input.address, [input.event]);
@@ -299,9 +291,7 @@ export class Query extends Module<QueryConfig> {
     ]);
   }
 
-  async awaitTransaction(
-    input: Input_awaitTransaction
-  ): Promise<TxReceipt> {
+  async awaitTransaction(input: Input_awaitTransaction): Promise<TxReceipt> {
     const connection = await this._getConnection(input.connection);
     const provider = connection.getProvider();
 
@@ -314,9 +304,7 @@ export class Query extends Module<QueryConfig> {
     return Mapping.toTxReceipt(res);
   }
 
-  async getNetwork(
-    input: Input_getNetwork
-  ): Promise<Network> {
+  async getNetwork(input: Input_getNetwork): Promise<Network> {
     const connection = await this._getConnection(input.connection);
     const provider = connection.getProvider();
     const network = await provider.getNetwork();
@@ -328,12 +316,8 @@ export class Query extends Module<QueryConfig> {
   }
 
   private async _getConnection(
-    connection?: SchemaConnection | null,
+    connection?: SchemaConnection | null
   ): Promise<Connection> {
-    return getConnection(
-      this._connections,
-      this._defaultNetwork,
-      connection
-    );
+    return getConnection(this._connections, this._defaultNetwork, connection);
   }
 }
