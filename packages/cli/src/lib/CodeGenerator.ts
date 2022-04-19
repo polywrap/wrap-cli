@@ -18,10 +18,7 @@ import {
   intlMsg,
 } from "./";
 
-import {
-  BindLanguage,
-  GenerateBindingFn,
-} from "@web3api/schema-bind";
+import { BindLanguage, GenerateBindingFn } from "@web3api/schema-bind";
 import { writeDirectorySync } from "@web3api/os-js";
 import path from "path";
 import fs, { readFileSync } from "fs";

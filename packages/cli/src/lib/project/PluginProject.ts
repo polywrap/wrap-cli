@@ -120,7 +120,6 @@ export class PluginProject extends Project<PluginManifest> {
   public async generateSchemaBindings(
     composerOutput: ComposerOutput
   ): Promise<BindOutput> {
-
     const manifest = await this.getManifest();
     const queryModule = manifest.modules.query?.module as string;
     const queryDirectory = manifest.modules.query
@@ -184,9 +183,9 @@ export class PluginProject extends Project<PluginManifest> {
         "w3"
       );
     } else if (mutationDirectory || queryDirectory) {
-      options.commonDirAbs = path.resolve(path.join(
-        mutationDirectory || queryDirectory || "", "../w3"
-      ));
+      options.commonDirAbs = path.resolve(
+        path.join(mutationDirectory || queryDirectory || "", "../w3")
+      );
     }
 
     return bindSchema(options);

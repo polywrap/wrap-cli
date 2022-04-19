@@ -134,7 +134,6 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
   public async generateSchemaBindings(
     composerOutput: ComposerOutput
   ): Promise<BindOutput> {
-
     const manifest = await this.getManifest();
     const queryModule = manifest.modules.query?.module as string;
     const queryDirectory = manifest.modules.query

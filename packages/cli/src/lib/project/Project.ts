@@ -69,7 +69,7 @@ export abstract class Project<TManifest extends AnyManifest> {
 
   public abstract generateSchemaBindings(
     composerOutput: ComposerOutput,
-    outputDir?: string,
+    outputDir?: string
   ): Promise<BindOutput>;
 
   public get quiet(): boolean {
