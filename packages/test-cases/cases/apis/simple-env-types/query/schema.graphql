@@ -1,8 +1,8 @@
 type Query {
-  tryGetEnv(arg: String!): QueryEnv
   getEnv(arg: String!): QueryEnv!
 }
 
 type QueryEnv {
   str: String
+  requiredInt: Int!
 }

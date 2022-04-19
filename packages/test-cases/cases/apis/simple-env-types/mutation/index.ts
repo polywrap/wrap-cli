@@ -1,9 +1,5 @@
-import {
-  env,
-  MutationEnv,
-  Input_mutationEnv,
-} from "./w3";
+import { env, MutationEnv, Input_getEnv } from "./w3";
 
-export function mutationEnv(input: Input_mutationEnv): MutationEnv {
+export function getEnv(input: Input_getEnv): MutationEnv {
   return env as MutationEnv;
 }
