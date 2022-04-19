@@ -71,7 +71,7 @@ class IPFSDeployer implements Deployer {
         throw new Error("Could not find root folder's CID");
       }
 
-      return new Uri(`ipfs/${directoryCID}`);
+      return new Uri(`w3://ipfs/${directoryCID}`);
     } else {
       throw new Error("Unexpected error: " + resp.status);
     }
