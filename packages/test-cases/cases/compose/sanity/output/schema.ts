@@ -19,6 +19,8 @@ import {
   createEnvDefinition,
   TypeInfo,
   AnyDefinition,
+  createMapPropertyDefinition,
+  createMapKeyDefinition,
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
@@ -135,6 +137,22 @@ export const typeInfo: TypeInfo = {
                   required: false,
                   type: "UInt"
                 })
+              })
+            }),
+            createMapPropertyDefinition({
+              name: "map",
+              required: true,
+              type: "Map<String, Int>",
+              comment: "Map<String!, Int!> comment",
+              key: createMapKeyDefinition({
+                name: "map",
+                type: "String",
+                required: true
+              }),
+              value: createScalarDefinition({
+                name: "map",
+                type: "Int",
+                required: true
               })
             })
           ]
@@ -368,6 +386,17 @@ export const typeInfo: TypeInfo = {
           name: "commonType",
           type: "CommonType",
           required: true
+        }),
+        createMapPropertyDefinition({
+          name: "optMap",
+          type: "Map<String, Int>",
+          required: false,
+          key: createMapKeyDefinition({
+            name: "optMap",
+            type: "String",
+            required: true
+          }),
+          value: createScalarDefinition({ name: "optMap", type: "Int" })
         }),
         createObjectPropertyDefinition({
           name: "customType",

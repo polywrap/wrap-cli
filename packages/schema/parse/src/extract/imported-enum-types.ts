@@ -3,7 +3,7 @@ import {
   createImportedEnumDefinition,
   ImportedEnumDefinition,
 } from "../typeInfo";
-import { extractImportedDefinition } from "./imported-types-utils";
+import { extractImportedDefinition } from "./utils/imported-types-utils";
 
 import { ASTVisitor, EnumTypeDefinitionNode } from "graphql";
 

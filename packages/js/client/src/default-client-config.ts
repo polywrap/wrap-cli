@@ -7,7 +7,7 @@ import {
   PluginPackage,
   Web3ApiManifest,
   Env,
-  ApiAggregatorResolver,
+  ExtendableUriResolver,
   CacheResolver,
   PluginResolver,
   RedirectsResolver,
@@ -97,8 +97,9 @@ export const getDefaultClientConfig = Tracer.traceFunc(
           implementations: [new Uri("w3://ens/js-logger.web3api.eth")],
         },
       ],
-      resolvers: [
+      uriResolvers: [
         new RedirectsResolver(),
+        new CacheResolver(),
         new PluginResolver(
           (
             uri: Uri,
@@ -106,12 +107,11 @@ export const getDefaultClientConfig = Tracer.traceFunc(
             environment: Env<Uri> | undefined
           ) => new PluginWeb3Api(uri, plugin, environment)
         ),
-        new CacheResolver(),
-        new ApiAggregatorResolver(
+        new ExtendableUriResolver(
           (
             uri: Uri,
             manifest: Web3ApiManifest,
-            uriResolver: Uri,
+            uriResolver: string,
             environment: Env<Uri> | undefined
           ) => {
             return new WasmWeb3Api(uri, manifest, uriResolver, environment);

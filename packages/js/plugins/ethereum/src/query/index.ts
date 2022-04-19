@@ -322,7 +322,7 @@ export class Query extends Module<QueryConfig> {
     const network = await provider.getNetwork();
     return {
       name: network.name,
-      chainId: network.chainId,
+      chainId: network.chainId.toString(),
       ensAddress: network.ensAddress,
     };
   }

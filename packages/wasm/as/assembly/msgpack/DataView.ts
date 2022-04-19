@@ -1,4 +1,8 @@
-import { E_INVALIDLENGTH, BLOCK_MAXSIZE, throwIndexOutOfRange } from "./utils";
+import {
+  E_INVALIDLENGTH,
+  BLOCK_MAXSIZE,
+  throwByteIndexOutOfRange,
+} from "./utils";
 import { Context } from "../debug";
 
 export class DataView {
@@ -210,7 +214,7 @@ export class DataView {
 
   private _checkIndexInRange(method: string, length: i32): void {
     if (this._byteOffset + length > this.byteLength) {
-      throwIndexOutOfRange(
+      throwByteIndexOutOfRange(
         this._context,
         method,
         length,

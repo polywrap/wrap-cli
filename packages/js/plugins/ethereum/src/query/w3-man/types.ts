@@ -49,7 +49,7 @@ export interface TxResponse {
   gasPrice?: BigInt | null;
   data: String;
   value: BigInt;
-  chainId: UInt32;
+  chainId: BigInt;
   blockNumber?: BigInt | null;
   blockHash?: String | null;
   timestamp?: UInt32 | null;
@@ -70,7 +70,7 @@ export interface TxRequest {
   gasPrice?: BigInt | null;
   data?: String | null;
   value?: BigInt | null;
-  chainId?: UInt32 | null;
+  chainId?: BigInt | null;
   type?: UInt32 | null;
 }
 
@@ -115,6 +115,6 @@ export interface Connection {
 
 export interface Network {
   name: String;
-  chainId: Int;
+  chainId: BigInt;
   ensAddress?: String | null;
 }

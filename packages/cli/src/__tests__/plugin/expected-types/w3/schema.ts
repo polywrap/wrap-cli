@@ -13,6 +13,7 @@ scalar Int32
 scalar Bytes
 scalar BigInt
 scalar JSON
+scalar Map
 
 directive @imported(
   uri: String!
@@ -31,6 +32,9 @@ directive @capability(
 ) repeatable on OBJECT
 
 directive @enabled_interface on OBJECT
+
+directive @annotate(type: String!) on FIELD
+
 ### Web3API Header END ###
 
 type Query @imports(
@@ -100,6 +104,12 @@ type Ethereum_Query @imported(
     connection: Ethereum_Connection
     txOverrides: Ethereum_TxOverrides
   ): Ethereum_StaticTxResult!
+
+  getBalance(
+    address: String!
+    blockTag: BigInt
+    connection: Ethereum_Connection
+  ): BigInt!
 
   encodeParams(
     types: [String!]!
@@ -283,7 +293,7 @@ type Ethereum_TxRequest @imported(
   gasPrice: BigInt
   data: String
   value: BigInt
-  chainId: UInt32
+  chainId: BigInt
   type: UInt32
 }
 
@@ -343,7 +353,7 @@ type Ethereum_Network @imported(
   nativeType: "Network"
 ) {
   name: String!
-  chainId: Int!
+  chainId: BigInt!
   ensAddress: String
 }
 
@@ -360,7 +370,7 @@ type Ethereum_TxResponse @imported(
   gasPrice: BigInt
   data: String!
   value: BigInt!
-  chainId: UInt32!
+  chainId: BigInt!
   blockNumber: BigInt
   blockHash: String
   timestamp: UInt32

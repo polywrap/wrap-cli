@@ -15,6 +15,7 @@ import * as Types from "..";
 
 export class QueryEnv {
   queryProp: string;
+  optMap: Map<string, Nullable<i32>> | null;
   prop: string;
   optProp: string | null;
 

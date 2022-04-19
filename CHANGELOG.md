@@ -1,3 +1,55 @@
+# Web3API 0.0.1-prealpha.71
+## Features
+* [PR-777](https://github.com/polywrap/monorepo/pull/777) `@web3api/client-js`: The `Web3ApiClient` now has a public method `loadUriResolvers()`, which will pre-fetch all URI resolver implementations.
+
+## Bugs
+* [Issue-715](https://github.com/polywrap/monorepo/pull/777) [PR-777](https://github.com/polywrap/monorepo/pull/777) `@web3api/client-js`: Custom URI resolver implementations now no longer cause an infinite loop during URI resolution.
+
+## Breaking Changes
+* [PR-777](https://github.com/polywrap/monorepo/pull/777) `@web3api/client-js`: `Web3ApiClient` public method `getResolvers(...)` renamed to `getUriResolvers(...)`.
+* [PR-777](https://github.com/polywrap/monorepo/pull/777) `@web3api/client-js`: `Web3ApiClientConfig` property `resolvers` renamed to `uriResolvers`.
+
+# Web3API 0.0.1-prealpha.70
+## Bugs
+* `@web3api/core-js`: Fixed the manifest migration script for `web3api.meta` from v1 to v3. The `name` property is now migrating properly to `displayName`.
+
+# Web3API 0.0.1-prealpha.69
+## Features
+* [PR-669](https://github.com/polywrap/monorepo/pull/669) `Map<K, V>` schema base-type has been added.
+* [PR-761](https://github.com/polywrap/monorepo/pull/761) Modules now subinvoke interface implementation wrappers through the `__w3_subinvokeImplementation` host import. This now gives us a specific import function for these sort of invocations, which can allow for additional types of verification features to be added by clients.
+* [PR-769](https://github.com/polywrap/monorepo/pull/769) `@web3api/schema-bind`: Add support for `getImplementations` capability in TypeScript plugin (`plugin-ts`) codegen.
+* [PR-763](https://github.com/polywrap/monorepo/pull/763) `@web3api/schema-bind`: The `schema-bind` project is now "module agnostic" and accepts an array of arbitrary modules, which it will pass directly to the different binding projects (`wasm-as`, `plugin-ts`, `app-ts`, etc).
+* [PR-759](https://github.com/polywrap/monorepo/pull/759) `@web3api/manifest-schemas`: Added the `name: string` property to the `web3api` manifest.
+* [PR-759](https://github.com/polywrap/monorepo/pull/759) `@web3api/manifest-schemas`: Renamed `web3api.meta`'s `name` property to `displayName`.
+* [PR-772](https://github.com/polywrap/monorepo/pull/772) `@web3api/manifest-schemas`: Added the `tags: string[]` property to the `web3api.meta` manifest, allowing wrapper to developers to add tag keywords to their package's metadata, helping improve searchability on package indexers like The Polywrap Hub.
+* [PR-747](https://github.com/polywrap/monorepo/pull/747) `@web3api/ethereum-plugin-js`: Changed all instances of the `chainId` property's type to `BigInt` from `UInt32`.
+* [PR-776](https://github.com/polywrap/monorepo/pull/776) `@web3api/ethereum-plugin-js`: Added `getBalance` to the `Query` module, allowing callers to check the native balance of arbitrary addresses.
+
+## Breaking Changes
+* [PR-669](https://github.com/polywrap/monorepo/pull/669) Wrappers that utilize the new `Map<K, V>` schema base-type will break forward compatability of Polywrap clients.
+  * Relevant Downstream Dependencies: `@web3api/client-js`
+* [PR-761](https://github.com/polywrap/monorepo/pull/761) Modules that use the `getImplementations` capability for interfaces will now require the following host imports: `__w3_subinvokeImplementation`, `__w3_subinvokeImplementation_result_len`, `__w3_subinvokeImplementation_result`, `__w3_subinvokeImplementation_error_len`, `__w3_subinvokeImplementation_error`  
+  * Relevant Upstream Dependencies: `@web3api/wasm-as`, `@web3api/schema-bind`, `@web3api/cli`, `@web3api/client-js`
+* [PR-763](https://github.com/polywrap/monorepo/pull/763) `@web3api/schema-bind`: The entry point function's input & output types have changed.
+* [PR-763](https://github.com/polywrap/monorepo/pull/763) `@web3api/cli`: The type of the expected export from user-defined codegen scripts has changed from:
+```typescript
+generateBinding = (
+  output: OutputDirectory,
+  typeInfo: TypeInfo,
+  schema: string,
+  config: Record<string, unknown>
+) => void;
+```
+to
+```typescript
+generateBinding = (
+  options: BindOptions
+) => BindOutput;
+```
+
+## Bugs
+* [PR-766](https://github.com/polywrap/monorepo/pull/766) `@web3api/client-js`: User-configured interface implementations now extend the default configuration's, instead of overwritting them.
+
 # Web3API 0.0.1-prealpha.68
 ## Bugs
 * [PR-756](https://github.com/polywrap/monorepo/pull/756) `@web3api/schema-bind`: Imported enums are properly included in the schema bindings when there are no objects imported.

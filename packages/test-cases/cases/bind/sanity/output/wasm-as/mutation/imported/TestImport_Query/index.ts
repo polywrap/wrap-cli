@@ -1,5 +1,6 @@
 import {
   w3_subinvoke,
+  w3_subinvokeImplementation,
   Nullable,
   BigInt,
   JSON,

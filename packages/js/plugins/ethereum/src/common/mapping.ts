@@ -57,7 +57,7 @@ export const toTxResponse = (
   gasPrice: response.gasPrice?.toString(),
   data: response.data,
   value: response.value.toString(),
-  chainId: response.chainId,
+  chainId: response.chainId.toString(),
   blockNumber: response.blockNumber?.toString(),
   blockHash: response.blockHash,
   timestamp: response.timestamp,
@@ -80,7 +80,7 @@ export const toTxRequest = (
   gasPrice: request.gasPrice?.toString(),
   data: request.data?.toString(),
   value: request.value?.toString(),
-  chainId: request.chainId,
+  chainId: request.chainId?.toString(),
   type: request.type,
 });
 
@@ -98,7 +98,7 @@ export const fromTxRequest = (
     : undefined,
   data: request.data || undefined,
   value: request.value ? ethers.BigNumber.from(request.value) : undefined,
-  chainId: request.chainId || undefined,
+  chainId: request.chainId ? Number.parseInt(request.chainId) : undefined,
   type: request.type || undefined,
 });
 
