@@ -6,13 +6,14 @@ import {
 } from "@web3api/test-env-js";
 import path from "path";
 import axios from "axios";
-import { DeployManifest, Web3ApiClient } from "@web3api/client-js";
+import { Web3ApiClient } from "@web3api/client-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { keccak256 } from "js-sha3";
 import { Wallet } from "ethers";
 import { namehash } from "ethers/lib/utils";
 import yaml from "js-yaml";
 import fs from "fs";
+import { loadDeployManifest } from "../../lib";
 
 const projectRoot = path.resolve(__dirname, "../project/");
 
@@ -35,12 +36,7 @@ const setup = async (domainNames: string[]) => {
   const signer = new Wallet("0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d");
 
   // TODO: use the "loadDeployManifest" function
-  const deployManifest = yaml.load(
-    await fs.promises.readFile(
-      `${projectRoot}/web3api.deploy.yaml`,
-      "utf8"
-    )
-  ) as DeployManifest;
+  const deployManifest = await loadDeployManifest(`${projectRoot}/web3api.deploy.yaml`);
 
   Object.entries(deployManifest.stages).forEach(([key, value]) => {
     if (value.config && value.config.ensRegistryAddress) {
