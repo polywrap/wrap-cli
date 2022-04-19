@@ -7,11 +7,8 @@ A simple starter template that uses a SimpleStorage.sol contract ethereum. For m
 `nvm install && nvm use`  
 `yarn`  
 
-## Start Test Environment
-`yarn test:env:up`  
+## Build
+`yarn build`  
 
-## Build & Deploy Web3API
-`yarn deploy`  
-
-## Run Test Query Recipe
+## Test
 `yarn test`  
