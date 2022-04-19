@@ -9,8 +9,7 @@
   },
   "main": "build/index.js",
   "files": [
-    "build",
-    "schema.graphql"
+    "build"
   ],
   "scripts": {
     "build": "rimraf ./build ./**/w3 ./*/**/w3 && tsc --project tsconfig.build.json",
