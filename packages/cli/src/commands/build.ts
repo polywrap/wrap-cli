@@ -268,7 +268,7 @@ export default {
             (key.name == "c" && key.ctrl)
           ) {
             await watcher.stop();
-            // await dockerLock.release();
+            await dockerLock.release();
             process.kill(process.pid, "SIGINT");
           }
         });
