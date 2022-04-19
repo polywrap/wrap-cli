@@ -2,7 +2,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 /// Types generated from @web3api/ethereum-plugin-js build files:
-/// build/index.d.ts, build/Connection.d.ts
+/// build/index.d.ts, build/common/EthereumConfig.d.ts, build/common/Connection.d.ts
+
+export interface EthereumPluginConfigs extends EthereumConfig {
+}
 
 export interface EthereumConfig {
   networks: ConnectionConfigs;

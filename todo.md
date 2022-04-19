@@ -18,6 +18,8 @@ x make sure all generated files have the header added
 - - ensure the schema + manifest is output to the build folder
 - - remove schema.graphql from the package.json files
 
+- add "name" to the root of all project manifests (wrapper, interface, plugin, app)
+
 - properly handle shared types
 - add back entrypoint, use its directory as the "common directory"
 

@@ -5,9 +5,7 @@ export interface SchemaFile {
   absolutePath: string;
 }
 
-export const schemaKinds = ["query", "mutation", "plugin", "combined"] as const;
-
-export type SchemaKind = typeof schemaKinds[number];
+export type SchemaKind = "combined" | string;
 
 export interface SchemaInfo {
   schema?: string;

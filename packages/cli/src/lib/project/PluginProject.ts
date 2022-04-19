@@ -44,6 +44,10 @@ export class PluginProject extends Project<PluginManifest> {
 
   /// Manifest (web3api.plugin.yaml)
 
+  public async getName(): Promise<string> {
+    return (await this.getManifest()).name;
+  }
+
   public async getManifest(): Promise<PluginManifest> {
     if (!this._pluginManifest) {
       this._pluginManifest = await loadPluginManifest(
@@ -87,7 +91,6 @@ export class PluginProject extends Project<PluginManifest> {
     if (manifest.modules.mutation) {
       namedPaths["mutation"] = path.join(
         dir,
-        manifest.entrypoint,
         manifest.modules.mutation.schema
       );
     }
@@ -95,7 +98,6 @@ export class PluginProject extends Project<PluginManifest> {
     if (manifest.modules.query) {
       namedPaths["query"] = path.join(
         dir,
-        manifest.entrypoint,
         manifest.modules.query.schema
       );
     }

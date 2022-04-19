@@ -45,6 +45,10 @@ export class AppProject extends Project<AppManifest> {
 
   /// Manifest (web3api.app.yaml)
 
+  public async getName(): Promise<string> {
+    return (await this.getManifest()).name;
+  }
+
   public async getManifest(): Promise<AppManifest> {
     if (!this._appManifest) {
       this._appManifest = await loadAppManifest(

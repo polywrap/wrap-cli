@@ -34,7 +34,7 @@ const validator = new Validator();
 
 Validator.prototype.customFormats.pluginLanguage = Validators.pluginLanguage;
 Validator.prototype.customFormats.file = Validators.file;
-Validator.prototype.customFormats.yamlFile = Validators.yamlFile;
+Validator.prototype.customFormats.packageName = Validators.packageName;
 Validator.prototype.customFormats.graphqlFile = Validators.graphqlFile;
 
 export const validatePluginManifest = Tracer.traceFunc(

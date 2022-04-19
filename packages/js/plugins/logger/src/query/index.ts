@@ -8,7 +8,7 @@ import {
 export type LogFunc = (level: Logger_LogLevel, message: string) => boolean;
 
 export interface QueryConfig {
-  logFunc: LogFunc;
+  logFunc?: LogFunc;
 }
 
 export class Query extends Module<QueryConfig> {

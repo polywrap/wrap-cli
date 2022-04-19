@@ -6,23 +6,14 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export interface PluginManifest {
+export interface AppManifest {
   format: "0.0.1-prealpha.2";
   name: string;
   language: string;
-  modules: {
-    mutation?: {
-      schema: string;
-      module?: string;
-    };
-    query?: {
-      schema: string;
-      module?: string;
-    };
-  };
+  schema: string;
   import_redirects?: {
     uri: string;
     schema: string;
   }[];
-  __type: "PluginManifest";
+  __type: "AppManifest";
 }

@@ -20,7 +20,7 @@ export type Json = string;
 export type String = string;
 export type Boolean = boolean;
 
-export interface QueryEnv {
+export interface QueryEnv extends Record<string, unknown> {
   disableParallelRequests?: Boolean | null;
 }
 

@@ -44,6 +44,8 @@ export abstract class Project<TManifest extends AnyManifest> {
 
   public abstract validate(): Promise<void>;
 
+  public abstract getName(): Promise<string>;
+
   public abstract getManifest(): Promise<TManifest>;
 
   public abstract getManifestDir(): string;
@@ -62,10 +64,6 @@ export abstract class Project<TManifest extends AnyManifest> {
       schema: string;
     }[]
   >;
-
-  public abstract getManifest<TManifest extends Manifest>(): Promise<TManifest>;
-
-  public abstract getMetaManifest(): Promise<MetaManifest | undefined>;
 
   public get quiet(): boolean {
     return !!this._config.quiet;

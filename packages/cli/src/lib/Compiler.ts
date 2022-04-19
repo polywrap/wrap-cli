@@ -232,6 +232,7 @@ export class Compiler {
     );
 
     const options: BindOptions = {
+      projectName: web3ApiManifest.name,
       modules: [],
       bindLanguage,
     };

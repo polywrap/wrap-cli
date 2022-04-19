@@ -4,8 +4,8 @@
   "additionalProperties": false,
   "required": [
     "format",
+    "name",
     "language",
-    "entrypoint",
     "modules"
   ],
   "properties": {
@@ -13,16 +13,13 @@
       "type": "string",
       "const": "0.0.1-prealpha.2"
     },
-    "meta": {
+    "name": {
       "type": "string",
-      "format": "yamlFile"
+      "format": "packageName"
     },
     "language": {
       "type": "string",
       "format": "pluginLanguage"
-    },
-    "entrypoint": {
-      "type": "string"
     },
     "modules": {
       "type": "object",

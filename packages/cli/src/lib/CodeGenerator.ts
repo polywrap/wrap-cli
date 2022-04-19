@@ -26,17 +26,11 @@ import {
 } from "@web3api/schema-bind";
 import { writeDirectorySync } from "@web3api/os-js";
 import path from "path";
-import fs, { readFileSync, existsSync, mkdirSync } from "fs";
+import fs, { readFileSync } from "fs";
 import * as gluegun from "gluegun";
 import { Ora } from "ora";
 import Mustache from "mustache";
 import rimraf from "rimraf";
-
-export interface CodeGeneratorState {
-  manifest: PluginManifest | Web3ApiManifest;
-  composerOutput: ComposerOutput;
-  modulesToBuild: ModulesToBuild;
-}
 
 export interface CodeGeneratorConfig {
   outputDir: string;
@@ -130,6 +124,7 @@ export class CodeGenerator {
         }
 
         const output = await generateBinding({
+          projectName: await project.getName(),
           modules: [
             {
               name: "custom",
@@ -152,6 +147,7 @@ export class CodeGenerator {
         }
       } else {
         const output = bindSchema({
+          projectName: await project.getName(),
           modules: [
             {
               name: "combined",
@@ -229,13 +225,5 @@ ${content}
 `;
 
     return content;
-  }
-
-  private _resetDir(dir: string) {
-    if (fs.existsSync(dir)) {
-      rimraf.sync(dir);
-    }
-
-    fs.mkdirSync(dir, { recursive: true });
   }
 }
