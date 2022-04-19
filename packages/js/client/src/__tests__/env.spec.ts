@@ -9,7 +9,7 @@ import { GetPathToTestApis } from "@web3api/test-cases";
 
 jest.setTimeout(200000);
 
-describe("Web3ApiClient", () => {
+describe("env", () => {
   let ipfsProvider: string;
   let ethProvider: string;
   let ensAddress: string;
