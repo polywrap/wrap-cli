@@ -26,15 +26,15 @@ export async function copyArtifactsFromBuildImage(
   outputDir: string,
   buildArtifacts: string[],
   imageName: string,
-  quiet = true,
-  useBuildkit = false,
   removeBuilder = false,
-  removeImage = false
+  removeImage = false,
+  useBuildx = false,
+  quiet = true
 ): Promise<void> {
   const run = async (): Promise<void> => {
     // Make sure the interactive terminal name is available
 
-    useBuildkit &&= await isDockerBuildxInstalled();
+    useBuildx &&= await isDockerBuildxInstalled();
 
     const { stdout: containerLsOutput } = await runCommand(
       "docker container ls -a",
@@ -88,13 +88,13 @@ export async function copyArtifactsFromBuildImage(
 
     await runCommand(`docker rm -f root-${imageName}`, quiet);
 
-    if (useBuildkit) {
+    if (useBuildx) {
       if (removeBuilder) {
         await runCommand(`docker buildx rm ${imageName}`, quiet);
       }
-      if (removeImage) {
-        await runCommand(`docker rmi ${imageName}`, quiet);
-      }
+    }
+    if (removeImage) {
+      await runCommand(`docker rmi ${imageName}`, quiet);
     }
   };
 
@@ -122,13 +122,13 @@ export async function createBuildImage(
   dockerfile: string,
   cacheDir?: string,
   buildxOutput?: string,
-  quiet = true,
-  useBuildkit = false
+  useBuildx = false,
+  quiet = true
 ): Promise<string> {
   const run = async (): Promise<string> => {
-    useBuildkit = useBuildkit && (await isDockerBuildxInstalled());
+    useBuildx = useBuildx && (await isDockerBuildxInstalled());
 
-    if (useBuildkit) {
+    if (useBuildx) {
       const cacheFrom = cacheDir
         ? `--cache-from type=local,src=${cacheDir}`
         : "";

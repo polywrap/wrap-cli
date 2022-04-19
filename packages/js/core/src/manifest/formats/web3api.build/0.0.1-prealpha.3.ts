@@ -12,13 +12,14 @@ export interface BuildManifest {
     name?: string;
     dockerfile?: string;
     buildImageId?: string;
-    buildkit?: {
-      enabled: boolean;
-      cacheDir?: string;
-      output?: string;
-      removeBuilder?: boolean;
-      removeImage?: boolean;
-    };
+    buildx?:
+      | {
+          cache?: string | boolean;
+          output?: string | boolean;
+          removeBuilder?: boolean;
+        }
+      | boolean;
+    removeImage?: boolean;
   };
   config?: {
     [k: string]: unknown;

@@ -259,7 +259,7 @@ ${HELP}`);
     expect(fs.existsSync(path.join(projectRoot, iconPath))).toBeTruthy();
   });
 
-  test("Successfully builds project with buildkit options", async () => {
+  test("Successfully builds project with buildx options", async () => {
     const { exitCode: code, stdout: output } = await runCLI(
       {
         args: ["build", "-m", "web3api-buildx.yaml", "-v"],
@@ -279,6 +279,12 @@ ${HELP}`);
       "Manifest written to ./build/web3api.json"
     );
     expect(sanitizedOutput).toContain(manifestPath);
-    expect(fs.existsSync(path.join(projectRoot, ".w3", "web3api", "build", "cache"))).toBeTruthy();
+    expect(sanitizedOutput).toContain("docker rmi polywrap-build-env-");
+    expect(sanitizedOutput).toContain("docker buildx rm polywrap-build-env-");
+
+    const cacheDir = path.join(projectRoot, ".w3", "web3api", "build", "cache");
+    expect(fs.existsSync(cacheDir)).toBeTruthy();
+    expect(fs.existsSync(path.join(cacheDir, "index.json"))).toBeTruthy();
+    expect(fs.readdirSync(path.join(cacheDir, "blobs", "sha256")).length).toBeGreaterThan(0);
   });
 });

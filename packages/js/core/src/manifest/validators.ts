@@ -129,6 +129,9 @@ export function schemaFile(filePath: unknown): boolean {
 }
 
 export function directory(path: unknown): boolean {
+  if (typeof path === "boolean") {
+    return true;
+  }
   if (typeof path !== "string") {
     return false;
   }
@@ -139,6 +142,9 @@ export function directory(path: unknown): boolean {
 }
 
 export function buildxOutput(output: unknown): boolean {
+  if (typeof output === "boolean") {
+    return true;
+  }
   if (typeof output !== "string") {
     return false;
   }

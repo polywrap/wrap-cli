@@ -24,32 +24,27 @@
           "type": "string",
           "format": "dockerImageId"
         },
-        "buildkit": {
-          "type": "object",
+        "buildx": {
+          "type": ["object", "boolean"],
           "additionalProperties": false,
-          "required": ["enabled"],
           "properties": {
-            "enabled": {
-              "type": "boolean"
-            },
-            "cacheDir": {
-              "type": "string",
+            "cache": {
+              "type": ["string", "boolean"],
               "format": "directory"
             },
             "output": {
-              "type": "string",
+              "type": ["string", "boolean"],
               "format": "buildxOutput"
             },
             "removeBuilder": {
               "type": "boolean"
-            },
-            "removeImage": {
-              "type": "boolean"
             }
           }
+        },
+        "removeImage": {
+          "type": "boolean"
         }
       }
-      
     },
     "config": {
       "type": "object"

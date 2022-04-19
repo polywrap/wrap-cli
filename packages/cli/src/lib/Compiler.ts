@@ -383,29 +383,40 @@ export class Compiler {
       );
     }
 
-    let cacheDir = buildManifest?.docker?.buildkit?.cacheDir
-      ? buildManifest.docker.buildkit.cacheDir
-      : undefined;
+    const useBuildx = buildManifest?.docker?.buildx ? true : false;
 
-    if (cacheDir == "DEFAULT") {
-      cacheDir = project.getCachePath("build/cache");
-    } else if (cacheDir && !path.isAbsolute(cacheDir)) {
-      cacheDir = path.join(project.getManifestDir(), cacheDir);
+    let cacheDir: string | undefined;
+    let buildxOutput: string | undefined;
+    let removeBuilder = false;
+
+    if (
+      buildManifest?.docker?.buildx &&
+      typeof buildManifest?.docker?.buildx !== "boolean"
+    ) {
+      const cache = buildManifest.docker.buildx.cache
+        ? buildManifest.docker.buildx.cache
+        : undefined;
+
+      if (cache == true) {
+        cacheDir = project.getCachePath("build/cache");
+      } else if (cache && !path.isAbsolute(cache)) {
+        cacheDir = path.join(project.getManifestDir(), cache);
+      }
+
+      const output = buildManifest.docker.buildx.output
+        ? buildManifest.docker.buildx.output
+        : undefined;
+
+      if (output === true) {
+        buildxOutput = "docker";
+      } else if (typeof output === "string") {
+        buildxOutput = output;
+      }
+
+      removeBuilder = buildManifest.docker.buildx.removeBuilder ? true : false;
     }
 
-    const buildxOutput = buildManifest?.docker?.buildkit?.output
-      ? buildManifest.docker.buildkit.output
-      : undefined;
-
-    const useBuildkit = buildManifest?.docker?.buildkit?.enabled ? true : false;
-
-    const removeBuilder = buildManifest?.docker?.buildkit?.removeBuilder
-      ? true
-      : false;
-
-    const removeImage = buildManifest?.docker?.buildkit?.removeImage
-      ? true
-      : false;
+    const removeImage = buildManifest?.docker?.removeImage ? true : false;
 
     // If the dockerfile path contains ".mustache", generate
     if (dockerfile.indexOf(".mustache") > -1) {
@@ -419,8 +430,8 @@ export class Compiler {
       dockerfile,
       cacheDir,
       buildxOutput,
-      project.quiet,
-      useBuildkit
+      useBuildx,
+      project.quiet
     );
 
     // Determine what build artifacts to expext
@@ -438,10 +449,10 @@ export class Compiler {
       outputDir,
       web3apiArtifacts,
       imageName,
-      project.quiet,
-      useBuildkit,
       removeBuilder,
-      removeImage
+      removeImage,
+      useBuildx,
+      project.quiet
     );
 
     return dockerImageId;
