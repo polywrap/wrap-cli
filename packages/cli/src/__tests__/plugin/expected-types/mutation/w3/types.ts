@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/naming-convention */
+/// NOTE: This is an auto-generated file.
+///       All modifications will be overwritten.
 
 import * as Types from "./";
 
@@ -35,91 +35,91 @@ export type Boolean = boolean;
 
 /* URI: "ens/ethereum.web3api.eth" */
 export interface Ethereum_Connection {
-  node?: String | null;
-  networkNameOrChainId?: String | null;
+  node?: Types.String | null;
+  networkNameOrChainId?: Types.String | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 export interface Ethereum_TxOverrides {
-  gasLimit?: BigInt | null;
-  gasPrice?: BigInt | null;
-  value?: BigInt | null;
+  gasLimit?: Types.BigInt | null;
+  gasPrice?: Types.BigInt | null;
+  value?: Types.BigInt | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 export interface Ethereum_TxResponse {
-  hash: String;
-  to?: String | null;
-  from: String;
-  nonce: UInt32;
-  gasLimit: BigInt;
-  gasPrice?: BigInt | null;
-  data: String;
-  value: BigInt;
-  chainId: BigInt;
-  blockNumber?: BigInt | null;
-  blockHash?: String | null;
-  timestamp?: UInt32 | null;
-  confirmations: UInt32;
-  raw?: String | null;
-  r?: String | null;
-  s?: String | null;
-  v?: UInt32 | null;
-  type?: UInt32 | null;
+  hash: Types.String;
+  to?: Types.String | null;
+  from: Types.String;
+  nonce: Types.UInt32;
+  gasLimit: Types.BigInt;
+  gasPrice?: Types.BigInt | null;
+  data: Types.String;
+  value: Types.BigInt;
+  chainId: Types.BigInt;
+  blockNumber?: Types.BigInt | null;
+  blockHash?: Types.String | null;
+  timestamp?: Types.UInt32 | null;
+  confirmations: Types.UInt32;
+  raw?: Types.String | null;
+  r?: Types.String | null;
+  s?: Types.String | null;
+  v?: Types.UInt32 | null;
+  type?: Types.UInt32 | null;
   accessList?: Array<Types.Ethereum_Access> | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 export interface Ethereum_Access {
-  address: String;
-  storageKeys: Array<String>;
+  address: Types.String;
+  storageKeys: Array<Types.String>;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 export interface Ethereum_TxReceipt {
-  to: String;
-  from: String;
-  contractAddress: String;
-  transactionIndex: UInt32;
-  root?: String | null;
-  gasUsed: BigInt;
-  logsBloom: String;
-  transactionHash: String;
+  to: Types.String;
+  from: Types.String;
+  contractAddress: Types.String;
+  transactionIndex: Types.UInt32;
+  root?: Types.String | null;
+  gasUsed: Types.BigInt;
+  logsBloom: Types.String;
+  transactionHash: Types.String;
   logs: Array<Types.Ethereum_Log>;
-  blockNumber: BigInt;
-  blockHash: String;
-  confirmations: UInt32;
-  cumulativeGasUsed: BigInt;
-  effectiveGasPrice: BigInt;
-  byzantium: Boolean;
-  type: UInt32;
-  status?: UInt32 | null;
+  blockNumber: Types.BigInt;
+  blockHash: Types.String;
+  confirmations: Types.UInt32;
+  cumulativeGasUsed: Types.BigInt;
+  effectiveGasPrice: Types.BigInt;
+  byzantium: Types.Boolean;
+  type: Types.UInt32;
+  status?: Types.UInt32 | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 export interface Ethereum_Log {
-  blockNumber: BigInt;
-  blockHash: String;
-  transactionIndex: UInt32;
-  removed: Boolean;
-  address: String;
-  data: String;
-  topics: Array<String>;
-  transactionHash: String;
-  logIndex: UInt32;
+  blockNumber: Types.BigInt;
+  blockHash: Types.String;
+  transactionIndex: Types.UInt32;
+  removed: Types.Boolean;
+  address: Types.String;
+  data: Types.String;
+  topics: Array<Types.String>;
+  transactionHash: Types.String;
+  logIndex: Types.UInt32;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 export interface Ethereum_TxRequest {
-  to?: String | null;
-  from?: String | null;
-  nonce?: UInt32 | null;
-  gasLimit?: BigInt | null;
-  gasPrice?: BigInt | null;
-  data?: String | null;
-  value?: BigInt | null;
-  chainId?: BigInt | null;
-  type?: UInt32 | null;
+  to?: Types.String | null;
+  from?: Types.String | null;
+  nonce?: Types.UInt32 | null;
+  gasLimit?: Types.BigInt | null;
+  gasPrice?: Types.BigInt | null;
+  data?: Types.String | null;
+  value?: Types.BigInt | null;
+  chainId?: Types.BigInt | null;
+  type?: Types.UInt32 | null;
 }
 
 /// Imported Objects END ///
@@ -128,18 +128,18 @@ export interface Ethereum_TxRequest {
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Mutation_Input_callContractMethod extends Record<string, unknown> {
-  address: String;
-  method: String;
-  args?: Array<String> | null;
+  address: Types.String;
+  method: Types.String;
+  args?: Array<Types.String> | null;
   connection?: Types.Ethereum_Connection | null;
   txOverrides?: Types.Ethereum_TxOverrides | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Mutation_Input_callContractMethodAndWait extends Record<string, unknown> {
-  address: String;
-  method: String;
-  args?: Array<String> | null;
+  address: Types.String;
+  method: Types.String;
+  args?: Array<Types.String> | null;
   connection?: Types.Ethereum_Connection | null;
   txOverrides?: Types.Ethereum_TxOverrides | null;
 }
@@ -158,22 +158,22 @@ interface Ethereum_Mutation_Input_sendTransactionAndWait extends Record<string, 
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Mutation_Input_deployContract extends Record<string, unknown> {
-  abi: String;
-  bytecode: String;
-  args?: Array<String> | null;
+  abi: Types.String;
+  bytecode: Types.String;
+  args?: Array<Types.String> | null;
   connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Mutation_Input_signMessage extends Record<string, unknown> {
-  message: String;
+  message: Types.String;
   connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Mutation_Input_sendRPC extends Record<string, unknown> {
-  method: String;
-  params: Array<String>;
+  method: Types.String;
+  params: Array<Types.String>;
   connection?: Types.Ethereum_Connection | null;
 }
 
@@ -230,8 +230,8 @@ export const Ethereum_Mutation = {
   deployContract: async (
     input: Ethereum_Mutation_Input_deployContract,
     client: Client
-  ): Promise<InvokeApiResult<String>> => {
-    return client.invoke<String>({
+  ): Promise<InvokeApiResult<Types.String>> => {
+    return client.invoke<Types.String>({
       uri: "ens/ethereum.web3api.eth",
       module: "mutation",
       method: "deployContract",
@@ -242,8 +242,8 @@ export const Ethereum_Mutation = {
   signMessage: async (
     input: Ethereum_Mutation_Input_signMessage,
     client: Client
-  ): Promise<InvokeApiResult<String>> => {
-    return client.invoke<String>({
+  ): Promise<InvokeApiResult<Types.String>> => {
+    return client.invoke<Types.String>({
       uri: "ens/ethereum.web3api.eth",
       module: "mutation",
       method: "signMessage",
@@ -254,8 +254,8 @@ export const Ethereum_Mutation = {
   sendRPC: async (
     input: Ethereum_Mutation_Input_sendRPC,
     client: Client
-  ): Promise<InvokeApiResult<String | null>> => {
-    return client.invoke<String | null>({
+  ): Promise<InvokeApiResult<Types.String | null>> => {
+    return client.invoke<Types.String | null>({
       uri: "ens/ethereum.web3api.eth",
       module: "mutation",
       method: "sendRPC",

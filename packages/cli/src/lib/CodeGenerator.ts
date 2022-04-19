@@ -18,9 +18,7 @@ import {
   intlMsg,
 } from "./";
 
-import { TypeInfo } from "@web3api/schema-parse";
 import {
-  bindSchema,
   BindLanguage,
   GenerateBindingFn,
 } from "@web3api/schema-bind";
@@ -45,10 +43,10 @@ export class CodeGenerator {
 
   constructor(private _config: CodeGeneratorConfig) {}
 
-  public async generate(config?: Record<string, unknown>): Promise<boolean> {
+  public async generate(): Promise<boolean> {
     try {
       // Compile the API
-      await this._generateCode(config);
+      await this._generateCode();
 
       return true;
     } catch (e) {
@@ -57,7 +55,7 @@ export class CodeGenerator {
     }
   }
 
-  private async _generateCode(config?: Record<string, unknown>) {
+  private async _generateCode() {
     const { schemaComposer, project } = this._config;
 
     const run = async (spinner?: Ora) => {
@@ -130,7 +128,6 @@ export class CodeGenerator {
               name: "custom",
               typeInfo,
               schema: this._schema || "",
-              config: config || {},
               outputDirAbs: this._config.outputDir,
             },
           ],
@@ -146,22 +143,18 @@ export class CodeGenerator {
           );
         }
       } else {
-        const output = bindSchema({
-          projectName: await project.getName(),
-          modules: [
-            {
-              name: "combined",
-              typeInfo: composed.combined?.typeInfo as TypeInfo,
-              schema: composed.combined?.schema as string,
-              config,
-              outputDirAbs: this._config.outputDir,
-            },
-          ],
-          bindLanguage,
-        });
+        const output = await project.generateSchemaBindings(
+          composed,
+          this._config.outputDir
+        );
 
+        // Output the bindings
         for (const module of output.modules) {
-          writeDirectorySync(this._config.outputDir, module.output);
+          writeDirectorySync(module.outputDirAbs, module.output);
+        }
+
+        if (output.common) {
+          writeDirectorySync(output.common.outputDirAbs, output.common.output);
         }
       }
     };

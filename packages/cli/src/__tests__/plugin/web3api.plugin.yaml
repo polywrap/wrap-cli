@@ -3,8 +3,8 @@ name: Test
 language: plugin/typescript
 modules: 
   mutation:
-    schema: ./mutation/schema.graphql
-    module: ./mutation/index.ts
+    schema: ./src/mutation/schema.graphql
+    module: ./src/mutation/index.ts
   query:
-    schema: ./query/schema.graphql
-    module: ./query/index.ts
+    schema: ./src/query/schema.graphql
+    module: ./src/query/index.ts

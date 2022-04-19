@@ -8,7 +8,7 @@ import {
   PluginModules,
 } from "@web3api/core-js";
 {{#modules}}
-import { {{#toClassName}}{{name}}{{/toClassName}}, {{#toClassName}}{{name}}{{/toClassName}}Config } from "../{{modulePath}}";
+import { {{#toClassName}}{{name}}{{/toClassName}}, {{#toClassName}}{{name}}{{/toClassName}}Config } from "../{{name}}";
 {{/modules}}
 import { manifest } from "./manifest";
 

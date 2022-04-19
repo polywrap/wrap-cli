@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/naming-convention */
+/// NOTE: This is an auto-generated file.
+///       All modifications will be overwritten.
 
 import * as Types from "./types";
 
@@ -18,6 +18,7 @@ export abstract class Module<
 > extends PluginModule<
   TConfig
 > {
+
   abstract method(
     input: Input_method,
     client: Client

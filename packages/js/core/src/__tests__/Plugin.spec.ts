@@ -33,7 +33,7 @@ class TestPluginMutation extends PluginModule {
 }
 
 class TestPlugin implements Plugin {
-  public getModules(_client: Client): PluginModules {
+  public getModules(): PluginModules {
     return {
       query: new TestPluginQuery({}),
       mutation: new TestPluginMutation({}),
@@ -45,7 +45,7 @@ describe("Plugin", () => {
   const plugin = new TestPlugin();
 
   it("sanity", () => {
-    const modules = plugin.getModules({} as Client);
+    const modules = plugin.getModules();
 
     expect(testPluginManifest.implements.length).toBe(1);
     expect(modules.mutation).toBeTruthy();

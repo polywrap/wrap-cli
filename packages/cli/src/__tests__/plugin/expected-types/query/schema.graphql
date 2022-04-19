@@ -1,10 +1,6 @@
 #import { Query } into Ethereum from "ens/ethereum.web3api.eth"
 
 type Query {
-  sanitizeEnv(
-    env: ClientQueryEnv!
-  ): Env!
-
   method(
     str: String!
     optStr: String
@@ -15,10 +11,6 @@ type Object {
   u: UInt!
   array: [Boolean!]!
   bytes: Bytes
-}
-
-type ClientQueryEnv {
-  userProp: String!
 }
 
 type Env {

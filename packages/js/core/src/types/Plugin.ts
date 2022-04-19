@@ -108,7 +108,7 @@ export interface Plugin {
    * @param client The client instance requesting the modules.
    * This client will be used for any sub-queries that occur.
    */
-  getModules(client: Client): PluginModules;
+  getModules(): PluginModules;
 }
 
 /** The plugin package's manifest */

@@ -5,7 +5,7 @@ import {
   Plugin,
   PluginFactory,
   PluginPackageManifest,
-  PluginModules
+  PluginModules,
 } from "@web3api/core-js";
 import { Query, QueryConfig } from "../query";
 import { Mutation, MutationConfig } from "../mutation";

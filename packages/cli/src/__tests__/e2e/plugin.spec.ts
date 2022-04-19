@@ -106,31 +106,18 @@ ${HELP}`);
     expect(code).toEqual(0);
     expect(clearStyle(output)).toEqual(`- Manifest loaded from ./web3api.plugin.yaml
 ✔ Manifest loaded from ./web3api.plugin.yaml
+- Generate types
 ✔ Generate types
 - Manifest written to ./build/web3api.plugin.json
 ✔ Manifest written to ./build/web3api.plugin.json
 `);
 
-    const expectedEntrypointTypesResult = compareSync(
-      `${projectRoot}/src/w3`,
-      `${projectRoot}/expected-types/entrypoint`,
+    const expectedTypesResult = compareSync(
+      `${projectRoot}/src`,
+      `${projectRoot}/expected-types`,
       { compareContent: true }
     );
-    expect(expectedEntrypointTypesResult.differences).toBe(0);
-
-    const expectedQueryTypesResult = compareSync(
-      `${projectRoot}/src/query/w3`,
-      `${projectRoot}/expected-types/query`,
-      { compareContent: true }
-    );
-    expect(expectedQueryTypesResult.differences).toBe(0);
-
-    const expectedMutationTypesResult = compareSync(
-      `${projectRoot}/src/mutation/w3`,
-      `${projectRoot}/expected-types/mutation`,
-      { compareContent: true }
-    );
-    expect(expectedMutationTypesResult.differences).toBe(0);
+    expect(expectedTypesResult.differences).toBe(0);
 
     const expectedBuildResult = compareSync(
       `${projectRoot}/build`,

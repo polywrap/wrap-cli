@@ -72,7 +72,7 @@ export class PluginWeb3Api extends Api {
     try {
       const { module, method, resultFilter } = options;
       const input = options.input || {};
-      const modules = this._getInstance().getModules(client);
+      const modules = this._getInstance().getModules();
       const pluginModule = modules[module];
 
       if (!pluginModule) {

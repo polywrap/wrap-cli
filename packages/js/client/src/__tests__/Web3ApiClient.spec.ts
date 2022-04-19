@@ -19,7 +19,7 @@ import {
   deserializeBuildManifest,
   deserializeMetaManifest,
   coreInterfaceUris,
-  Client,
+  PluginModule,
   PluginModules,
   msgpackDecode,
 } from "@web3api/core-js";
@@ -55,8 +55,10 @@ describe("Web3ApiClient", () => {
         },
         ipfs: { provider: ipfsProvider },
         ens: {
-          addresses: {
-            testnet: ensAddress,
+          query: {
+            addresses: {
+              testnet: ensAddress,
+            },
           },
         },
       },
@@ -65,15 +67,19 @@ describe("Web3ApiClient", () => {
   };
 
   const mockPlugin = () => {
-    class MockPlugin extends Plugin {
-      getModules(_client: Client): PluginModules {
+    class Query extends PluginModule {
+      getData(_: unknown) { return 100; }
+    }
+
+    class Mutation extends PluginModule {
+      deployContract(_: unknown): string { return "0x100" }
+    }
+
+    class MockPlugin implements Plugin {
+      getModules(): PluginModules {
         return {
-          query: {
-            getData: async (_: unknown) => 100,
-          },
-          mutation: {
-            deployContract: (_: unknown): string => "0x100",
-          },
+          query: new Query({}),
+          mutation: new Mutation({}),
         };
       }
     }
@@ -88,28 +94,43 @@ describe("Web3ApiClient", () => {
   };
 
   const mockEnvPlugin = () => {
-    class MockEnvPlugin extends Plugin {
-      getModules(_client: Client): PluginModules {
+    interface Env extends Record<string, unknown> {
+      arg1: number;
+    }
+
+    interface ClientEnv extends Record<string, unknown> {
+      arg1: string;
+    }
+
+    class Query extends PluginModule<{}, Env, ClientEnv> {
+      sanitizeEnv(env: ClientEnv): Env {
+        return { arg1: parseInt(env.arg1) };
+      }
+
+      queryEnv(): Env {
+        return this.env;
+      }
+    }
+
+    class Mutation extends PluginModule<{}, ClientEnv, Env> {
+      sanitizeEnv(env: Env): ClientEnv {
+        return { arg1: env.arg1.toString() };
+      }
+
+      mutationEnv(): ClientEnv {
+        return this.env;
+      }
+    }
+
+    class MockEnvPlugin implements Plugin {
+      getModules(): PluginModules {
         return {
-          query: {
-            sanitizeEnv: async (env: { arg1: string }) => {
-              return { arg1: parseInt(env.arg1) };
-            },
-            queryEnv: () => {
-              return this.getEnv("query");
-            },
-          },
-          mutation: {
-            sanitizeEnv: async (env: { arg1: number }) => {
-              return { arg1: env.arg1.toString() };
-            },
-            mutationEnv: () => {
-              return this.getEnv("mutation");
-            },
-          },
+          query: new Query({}),
+          mutation: new Mutation({}),
         };
       }
     }
+
     return {
       factory: () => new MockEnvPlugin(),
       manifest: {
@@ -120,27 +141,36 @@ describe("Web3ApiClient", () => {
   };
 
   const mockMapPlugin = () => {
-    class MockMapPlugin extends Plugin {
-      private map: Map<string, number> = new Map().set("a", 1).set("b", 2);
+    interface Config extends Record<string, unknown> {
+      map: Map<string, number>;
+    }
 
-      getModules(_client: Client): PluginModules {
+    class Query extends PluginModule<Config> {
+      async getMap(_: unknown) { return this.config.map }
+    }
+
+    class Mutation extends PluginModule<Config> {
+      updateMap(input: {
+        map: Map<string, number>;
+      }): Map<string, number> {
+        for (const key of input.map.keys()) {
+          this.config.map.set(
+            key,
+            (this.config.map.get(key) || 0) + (input.map.get(key) || 0)
+          );
+        }
+        return this.config.map;
+      }
+    }
+
+    class MockMapPlugin implements Plugin {
+
+      private map = new Map().set("a", 1).set("b", 2)
+
+      getModules(): PluginModules {
         return {
-          query: {
-            getMap: async (_: unknown) => this.map,
-          },
-          mutation: {
-            updateMap: (input: {
-              map: Map<string, number>;
-            }): Map<string, number> => {
-              for (const key of input.map.keys()) {
-                this.map.set(
-                  key,
-                  (this.map.get(key) || 0) + (input.map.get(key) || 0)
-                );
-              }
-              return this.map;
-            },
-          },
+          query: new Query({ map: this.map }),
+          mutation: new Mutation({ map: this.map }),
         };
       }
     }

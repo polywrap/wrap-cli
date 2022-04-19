@@ -1,4 +1,4 @@
-import { Client, MaybeAsync } from "@web3api/core-js";
+import { Client } from "@web3api/core-js";
 import {
   Module,
   Object,
@@ -9,11 +9,9 @@ export interface QueryConfig extends Record<string, unknown> {
 
 }
 
-export class Query implements Module<QueryConfig> {
-  constructor(private _configs: QueryConfig) {
-  }
+export class Query extends Module<QueryConfig> {
 
-  public method(_input: Input_method, _client: Client): MaybeAsync<Object> {
+  public method(_input: Input_method, _client: Client): Object {
     return {
       u: 0,
       array: [true],

@@ -1,8 +1,8 @@
 import { MustacheFn } from "../types";
 
-const firstUpper = (str: string) => str[0].toUpperCase() + str.slice(1);
+const firstUpper = (str: string) => str ? str[0].toUpperCase() + str.slice(1) : "";
 
-const firstLower = (str: string) => str[0].toLowerCase() + str.slice(1);
+const firstLower = (str: string) => str ? str[0].toLowerCase() + str.slice(1) : "";
 
 export const toLowerCase: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
@@ -14,10 +14,10 @@ export const toLowerCase: MustacheFn = () => {
 export const toClassName: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     const rendered = render(value);
-    rendered.replace(/([^A-Za-z])+/g, ",");
+    rendered.replace(/([^A-Za-z0-9])+/g, ",");
     return rendered
       .split(",")
-      .map((x) => firstUpper(x.replace(",", "")))
+      .map((x) => x ? firstUpper(x.replace(",", "")) : "")
       .join();
   };
 };

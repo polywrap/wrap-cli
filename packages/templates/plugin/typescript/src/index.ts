@@ -12,10 +12,8 @@ export interface SamplePluginConfig {
   defaultValue: string;
 }
 
-export class SamplePlugin extends Plugin {
-  constructor(private _config: SamplePluginConfig) {
-    super();
-  }
+export class SamplePlugin implements Plugin {
+  constructor(private _config: SamplePluginConfig) { }
 
   public static manifest(): PluginPackageManifest {
     return manifest;

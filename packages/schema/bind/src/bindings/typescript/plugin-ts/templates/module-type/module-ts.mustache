@@ -20,11 +20,11 @@ export interface Input_{{name}} extends Record<string, unknown> {
 {{/moduleTypes}}
 
 export abstract class Module<
-  TConfig
+  TConfig extends Record<string, unknown>
 > extends PluginModule<
   TConfig{{#envTypes.query.sanitized}},
   Types.QueryEnv{{#envTypes.query.client}},
-  Types.QueryClientEnv{{/envTypes.query.client}}{{/envTypes.query.sanitized}}{{#envTypes.mutation.sanitized}}
+  Types.QueryClientEnv{{/envTypes.query.client}}{{/envTypes.query.sanitized}}{{#envTypes.mutation.sanitized}},
   Types.MutationEnv{{#envTypes.mutation.client}},
   Types.MutationClientEnv{{/envTypes.mutation.client}}{{/envTypes.mutation.sanitized}}
 > {

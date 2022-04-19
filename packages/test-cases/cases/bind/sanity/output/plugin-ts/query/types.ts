@@ -24,42 +24,42 @@ export type Boolean = boolean;
 
 /// Envs START ///
 export interface QueryEnv extends Record<string, unknown> {
-  queryProp: String;
-  optMap?: Map<String, Int | undefined> | null;
-  prop: String;
-  optProp?: String | null;
+  queryProp: Types.String;
+  optMap?: Map<Types.String, Types.Int | undefined> | null;
+  prop: Types.String;
+  optProp?: Types.String | null;
 }
 /// Envs END ///
 
 /// Objects START ///
 export interface CustomType {
-  str: String;
-  optStr?: String | null;
-  u: UInt;
-  optU?: UInt | null;
-  u8: UInt8;
-  u16: UInt16;
-  u32: UInt32;
-  i: Int;
-  i8: Int8;
-  i16: Int16;
-  i32: Int32;
-  bigint: BigInt;
-  optBigint?: BigInt | null;
+  str: Types.String;
+  optStr?: Types.String | null;
+  u: Types.UInt;
+  optU?: Types.UInt | null;
+  u8: Types.UInt8;
+  u16: Types.UInt16;
+  u32: Types.UInt32;
+  i: Types.Int;
+  i8: Types.Int8;
+  i16: Types.Int16;
+  i32: Types.Int32;
+  bigint: Types.BigInt;
+  optBigint?: Types.BigInt | null;
   json: Json;
   optJson?: Json | null;
-  bytes: Bytes;
-  optBytes?: Bytes | null;
-  boolean: Boolean;
-  optBoolean?: Boolean | null;
-  uArray: Array<UInt>;
-  uOptArray?: Array<UInt> | null;
-  optUOptArray?: Array<UInt | null> | null;
-  optStrOptArray?: Array<String | null> | null;
-  uArrayArray: Array<Array<UInt>>;
-  uOptArrayOptArray: Array<Array<UInt32 | null> | null>;
-  uArrayOptArrayArray: Array<Array<Array<UInt32>> | null>;
-  crazyArray?: Array<Array<Array<Array<UInt32> | null>> | null> | null;
+  bytes: Types.Bytes;
+  optBytes?: Types.Bytes | null;
+  boolean: Types.Boolean;
+  optBoolean?: Types.Boolean | null;
+  uArray: Array<Types.UInt>;
+  uOptArray?: Array<Types.UInt> | null;
+  optUOptArray?: Array<Types.UInt | null> | null;
+  optStrOptArray?: Array<Types.String | null> | null;
+  uArrayArray: Array<Array<Types.UInt>>;
+  uOptArrayOptArray: Array<Array<Types.UInt32 | null> | null>;
+  uArrayOptArrayArray: Array<Array<Array<Types.UInt32>> | null>;
+  crazyArray?: Array<Array<Array<Array<Types.UInt32> | null>> | null> | null;
   object: Types.AnotherType;
   optObject?: Types.AnotherType | null;
   objectArray: Array<Types.AnotherType>;
@@ -71,9 +71,9 @@ export interface CustomType {
 }
 
 export interface AnotherType {
-  prop?: String | null;
+  prop?: Types.String | null;
   circular?: Types.CustomType | null;
-  const?: String | null;
+  const?: Types.String | null;
 }
 
 /// Objects END ///
@@ -108,7 +108,7 @@ export interface TestImport_Object {
 
 /* URI: "testimport.uri.eth" */
 export interface TestImport_AnotherObject {
-  prop: String;
+  prop: Types.String;
 }
 
 /* URI: "testimport.uri.eth" */
@@ -129,11 +129,11 @@ export type TestImport_Enum = TestImport_EnumEnum | TestImport_EnumString;
 
 /* URI: "testimport.uri.eth" */
 interface TestImport_Query_Input_importedMethod extends Record<string, unknown> {
-  str: String;
-  optStr?: String | null;
-  u: UInt;
-  optU?: UInt | null;
-  uArrayArray: Array<Array<UInt | null> | null>;
+  str: Types.String;
+  optStr?: Types.String | null;
+  u: Types.UInt;
+  optU?: Types.UInt | null;
+  uArrayArray: Array<Array<Types.UInt | null> | null>;
   object: Types.TestImport_Object;
   optObject?: Types.TestImport_Object | null;
   objectArray: Array<Types.TestImport_Object>;
@@ -146,7 +146,7 @@ interface TestImport_Query_Input_importedMethod extends Record<string, unknown> 
 
 /* URI: "testimport.uri.eth" */
 interface TestImport_Query_Input_anotherMethod extends Record<string, unknown> {
-  arg: Array<String>;
+  arg: Array<Types.String>;
 }
 
 /* URI: "testimport.uri.eth" */
@@ -171,8 +171,8 @@ export class TestImport_Query {
   public async anotherMethod (
     input: TestImport_Query_Input_anotherMethod,
     client: Client
-  ): Promise<InvokeApiResult<Int32>> {
-    return client.invoke<Int32>({
+  ): Promise<InvokeApiResult<Types.Int32>> {
+    return client.invoke<Types.Int32>({
       uri: this.uri,
       module: "query",
       method: "anotherMethod",

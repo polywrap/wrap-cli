@@ -25,6 +25,8 @@ x make sure all generated files have the header added
 
 !!!! How to handle shared config?
 
+- update template project
+- remove "resetDir" from the project classes, should not modify files
 
 - environment should be fully typed in the JS case
 - try to make things as fully typed as possible

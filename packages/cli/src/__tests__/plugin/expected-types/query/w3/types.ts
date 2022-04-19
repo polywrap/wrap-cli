@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/naming-convention */
+/// NOTE: This is an auto-generated file.
+///       All modifications will be overwritten.
 
 import * as Types from "./";
 
@@ -23,20 +23,16 @@ export type String = string;
 export type Boolean = boolean;
 
 /// Envs START ///
-export interface ClientQueryEnv extends Record<string, unknown> {
-  userProp: String;
-}
-
-export interface Env extends Record<string, unknown> {
-  arg1: String;
+export interface QueryEnv extends Record<string, unknown> {
+  arg1: Types.String;
 }
 /// Envs END ///
 
 /// Objects START ///
 export interface Object {
-  u: UInt;
-  array: Array<Boolean>;
-  bytes?: Bytes | null;
+  u: Types.UInt;
+  array: Array<Types.Boolean>;
+  bytes?: Types.Bytes | null;
 }
 
 /// Objects END ///
@@ -48,82 +44,82 @@ export interface Object {
 
 /* URI: "ens/ethereum.web3api.eth" */
 export interface Ethereum_Connection {
-  node?: String | null;
-  networkNameOrChainId?: String | null;
+  node?: Types.String | null;
+  networkNameOrChainId?: Types.String | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 export interface Ethereum_TxOverrides {
-  gasLimit?: BigInt | null;
-  gasPrice?: BigInt | null;
-  value?: BigInt | null;
+  gasLimit?: Types.BigInt | null;
+  gasPrice?: Types.BigInt | null;
+  value?: Types.BigInt | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 export interface Ethereum_StaticTxResult {
-  result: String;
-  error: Boolean;
+  result: Types.String;
+  error: Types.Boolean;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 export interface Ethereum_TxRequest {
-  to?: String | null;
-  from?: String | null;
-  nonce?: UInt32 | null;
-  gasLimit?: BigInt | null;
-  gasPrice?: BigInt | null;
-  data?: String | null;
-  value?: BigInt | null;
-  chainId?: BigInt | null;
-  type?: UInt32 | null;
+  to?: Types.String | null;
+  from?: Types.String | null;
+  nonce?: Types.UInt32 | null;
+  gasLimit?: Types.BigInt | null;
+  gasPrice?: Types.BigInt | null;
+  data?: Types.String | null;
+  value?: Types.BigInt | null;
+  chainId?: Types.BigInt | null;
+  type?: Types.UInt32 | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 export interface Ethereum_TxReceipt {
-  to: String;
-  from: String;
-  contractAddress: String;
-  transactionIndex: UInt32;
-  root?: String | null;
-  gasUsed: BigInt;
-  logsBloom: String;
-  transactionHash: String;
+  to: Types.String;
+  from: Types.String;
+  contractAddress: Types.String;
+  transactionIndex: Types.UInt32;
+  root?: Types.String | null;
+  gasUsed: Types.BigInt;
+  logsBloom: Types.String;
+  transactionHash: Types.String;
   logs: Array<Types.Ethereum_Log>;
-  blockNumber: BigInt;
-  blockHash: String;
-  confirmations: UInt32;
-  cumulativeGasUsed: BigInt;
-  effectiveGasPrice: BigInt;
-  byzantium: Boolean;
-  type: UInt32;
-  status?: UInt32 | null;
+  blockNumber: Types.BigInt;
+  blockHash: Types.String;
+  confirmations: Types.UInt32;
+  cumulativeGasUsed: Types.BigInt;
+  effectiveGasPrice: Types.BigInt;
+  byzantium: Types.Boolean;
+  type: Types.UInt32;
+  status?: Types.UInt32 | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 export interface Ethereum_Log {
-  blockNumber: BigInt;
-  blockHash: String;
-  transactionIndex: UInt32;
-  removed: Boolean;
-  address: String;
-  data: String;
-  topics: Array<String>;
-  transactionHash: String;
-  logIndex: UInt32;
+  blockNumber: Types.BigInt;
+  blockHash: Types.String;
+  transactionIndex: Types.UInt32;
+  removed: Types.Boolean;
+  address: Types.String;
+  data: Types.String;
+  topics: Array<Types.String>;
+  transactionHash: Types.String;
+  logIndex: Types.UInt32;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 export interface Ethereum_EventNotification {
-  data: String;
-  address: String;
+  data: Types.String;
+  address: Types.String;
   log: Types.Ethereum_Log;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 export interface Ethereum_Network {
-  name: String;
-  chainId: BigInt;
-  ensAddress?: String | null;
+  name: Types.String;
+  chainId: Types.BigInt;
+  ensAddress?: Types.String | null;
 }
 
 /// Imported Objects END ///
@@ -132,49 +128,56 @@ export interface Ethereum_Network {
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_callContractView extends Record<string, unknown> {
-  address: String;
-  method: String;
-  args?: Array<String> | null;
+  address: Types.String;
+  method: Types.String;
+  args?: Array<Types.String> | null;
   connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_callContractStatic extends Record<string, unknown> {
-  address: String;
-  method: String;
-  args?: Array<String> | null;
+  address: Types.String;
+  method: Types.String;
+  args?: Array<Types.String> | null;
   connection?: Types.Ethereum_Connection | null;
   txOverrides?: Types.Ethereum_TxOverrides | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
+interface Ethereum_Query_Input_getBalance extends Record<string, unknown> {
+  address: Types.String;
+  blockTag?: Types.BigInt | null;
+  connection?: Types.Ethereum_Connection | null;
+}
+
+/* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_encodeParams extends Record<string, unknown> {
-  types: Array<String>;
-  values: Array<String>;
+  types: Array<Types.String>;
+  values: Array<Types.String>;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_encodeFunction extends Record<string, unknown> {
-  method: String;
-  args?: Array<String> | null;
+  method: Types.String;
+  args?: Array<Types.String> | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_solidityPack extends Record<string, unknown> {
-  types: Array<String>;
-  values: Array<String>;
+  types: Array<Types.String>;
+  values: Array<Types.String>;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_solidityKeccak256 extends Record<string, unknown> {
-  types: Array<String>;
-  values: Array<String>;
+  types: Array<Types.String>;
+  values: Array<Types.String>;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_soliditySha256 extends Record<string, unknown> {
-  types: Array<String>;
-  values: Array<String>;
+  types: Array<Types.String>;
+  values: Array<Types.String>;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
@@ -184,13 +187,13 @@ interface Ethereum_Query_Input_getSignerAddress extends Record<string, unknown> 
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_getSignerBalance extends Record<string, unknown> {
-  blockTag?: BigInt | null;
+  blockTag?: Types.BigInt | null;
   connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_getSignerTransactionCount extends Record<string, unknown> {
-  blockTag?: BigInt | null;
+  blockTag?: Types.BigInt | null;
   connection?: Types.Ethereum_Connection | null;
 }
 
@@ -207,42 +210,42 @@ interface Ethereum_Query_Input_estimateTransactionGas extends Record<string, unk
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_estimateContractCallGas extends Record<string, unknown> {
-  address: String;
-  method: String;
-  args?: Array<String> | null;
+  address: Types.String;
+  method: Types.String;
+  args?: Array<Types.String> | null;
   connection?: Types.Ethereum_Connection | null;
   txOverrides?: Types.Ethereum_TxOverrides | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_checkAddress extends Record<string, unknown> {
-  address: String;
+  address: Types.String;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_toWei extends Record<string, unknown> {
-  eth: String;
+  eth: Types.String;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_toEth extends Record<string, unknown> {
-  wei: BigInt;
+  wei: Types.BigInt;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_awaitTransaction extends Record<string, unknown> {
-  txHash: String;
-  confirmations: UInt32;
-  timeout: UInt32;
+  txHash: Types.String;
+  confirmations: Types.UInt32;
+  timeout: Types.UInt32;
   connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.web3api.eth" */
 interface Ethereum_Query_Input_waitForEvent extends Record<string, unknown> {
-  address: String;
-  event: String;
-  args?: Array<String> | null;
-  timeout?: UInt32 | null;
+  address: Types.String;
+  event: Types.String;
+  args?: Array<Types.String> | null;
+  timeout?: Types.UInt32 | null;
   connection?: Types.Ethereum_Connection | null;
 }
 
@@ -256,8 +259,8 @@ export const Ethereum_Query = {
   callContractView: async (
     input: Ethereum_Query_Input_callContractView,
     client: Client
-  ): Promise<InvokeApiResult<String>> => {
-    return client.invoke<String>({
+  ): Promise<InvokeApiResult<Types.String>> => {
+    return client.invoke<Types.String>({
       uri: "ens/ethereum.web3api.eth",
       module: "query",
       method: "callContractView",
@@ -277,11 +280,23 @@ export const Ethereum_Query = {
     });
   },
 
+  getBalance: async (
+    input: Ethereum_Query_Input_getBalance,
+    client: Client
+  ): Promise<InvokeApiResult<Types.BigInt>> => {
+    return client.invoke<Types.BigInt>({
+      uri: "ens/ethereum.web3api.eth",
+      module: "query",
+      method: "getBalance",
+      input
+    });
+  },
+
   encodeParams: async (
     input: Ethereum_Query_Input_encodeParams,
     client: Client
-  ): Promise<InvokeApiResult<String>> => {
-    return client.invoke<String>({
+  ): Promise<InvokeApiResult<Types.String>> => {
+    return client.invoke<Types.String>({
       uri: "ens/ethereum.web3api.eth",
       module: "query",
       method: "encodeParams",
@@ -292,8 +307,8 @@ export const Ethereum_Query = {
   encodeFunction: async (
     input: Ethereum_Query_Input_encodeFunction,
     client: Client
-  ): Promise<InvokeApiResult<String>> => {
-    return client.invoke<String>({
+  ): Promise<InvokeApiResult<Types.String>> => {
+    return client.invoke<Types.String>({
       uri: "ens/ethereum.web3api.eth",
       module: "query",
       method: "encodeFunction",
@@ -304,8 +319,8 @@ export const Ethereum_Query = {
   solidityPack: async (
     input: Ethereum_Query_Input_solidityPack,
     client: Client
-  ): Promise<InvokeApiResult<String>> => {
-    return client.invoke<String>({
+  ): Promise<InvokeApiResult<Types.String>> => {
+    return client.invoke<Types.String>({
       uri: "ens/ethereum.web3api.eth",
       module: "query",
       method: "solidityPack",
@@ -316,8 +331,8 @@ export const Ethereum_Query = {
   solidityKeccak256: async (
     input: Ethereum_Query_Input_solidityKeccak256,
     client: Client
-  ): Promise<InvokeApiResult<String>> => {
-    return client.invoke<String>({
+  ): Promise<InvokeApiResult<Types.String>> => {
+    return client.invoke<Types.String>({
       uri: "ens/ethereum.web3api.eth",
       module: "query",
       method: "solidityKeccak256",
@@ -328,8 +343,8 @@ export const Ethereum_Query = {
   soliditySha256: async (
     input: Ethereum_Query_Input_soliditySha256,
     client: Client
-  ): Promise<InvokeApiResult<String>> => {
-    return client.invoke<String>({
+  ): Promise<InvokeApiResult<Types.String>> => {
+    return client.invoke<Types.String>({
       uri: "ens/ethereum.web3api.eth",
       module: "query",
       method: "soliditySha256",
@@ -340,8 +355,8 @@ export const Ethereum_Query = {
   getSignerAddress: async (
     input: Ethereum_Query_Input_getSignerAddress,
     client: Client
-  ): Promise<InvokeApiResult<String>> => {
-    return client.invoke<String>({
+  ): Promise<InvokeApiResult<Types.String>> => {
+    return client.invoke<Types.String>({
       uri: "ens/ethereum.web3api.eth",
       module: "query",
       method: "getSignerAddress",
@@ -352,8 +367,8 @@ export const Ethereum_Query = {
   getSignerBalance: async (
     input: Ethereum_Query_Input_getSignerBalance,
     client: Client
-  ): Promise<InvokeApiResult<BigInt>> => {
-    return client.invoke<BigInt>({
+  ): Promise<InvokeApiResult<Types.BigInt>> => {
+    return client.invoke<Types.BigInt>({
       uri: "ens/ethereum.web3api.eth",
       module: "query",
       method: "getSignerBalance",
@@ -364,8 +379,8 @@ export const Ethereum_Query = {
   getSignerTransactionCount: async (
     input: Ethereum_Query_Input_getSignerTransactionCount,
     client: Client
-  ): Promise<InvokeApiResult<BigInt>> => {
-    return client.invoke<BigInt>({
+  ): Promise<InvokeApiResult<Types.BigInt>> => {
+    return client.invoke<Types.BigInt>({
       uri: "ens/ethereum.web3api.eth",
       module: "query",
       method: "getSignerTransactionCount",
@@ -376,8 +391,8 @@ export const Ethereum_Query = {
   getGasPrice: async (
     input: Ethereum_Query_Input_getGasPrice,
     client: Client
-  ): Promise<InvokeApiResult<BigInt>> => {
-    return client.invoke<BigInt>({
+  ): Promise<InvokeApiResult<Types.BigInt>> => {
+    return client.invoke<Types.BigInt>({
       uri: "ens/ethereum.web3api.eth",
       module: "query",
       method: "getGasPrice",
@@ -388,8 +403,8 @@ export const Ethereum_Query = {
   estimateTransactionGas: async (
     input: Ethereum_Query_Input_estimateTransactionGas,
     client: Client
-  ): Promise<InvokeApiResult<BigInt>> => {
-    return client.invoke<BigInt>({
+  ): Promise<InvokeApiResult<Types.BigInt>> => {
+    return client.invoke<Types.BigInt>({
       uri: "ens/ethereum.web3api.eth",
       module: "query",
       method: "estimateTransactionGas",
@@ -400,8 +415,8 @@ export const Ethereum_Query = {
   estimateContractCallGas: async (
     input: Ethereum_Query_Input_estimateContractCallGas,
     client: Client
-  ): Promise<InvokeApiResult<BigInt>> => {
-    return client.invoke<BigInt>({
+  ): Promise<InvokeApiResult<Types.BigInt>> => {
+    return client.invoke<Types.BigInt>({
       uri: "ens/ethereum.web3api.eth",
       module: "query",
       method: "estimateContractCallGas",
@@ -412,8 +427,8 @@ export const Ethereum_Query = {
   checkAddress: async (
     input: Ethereum_Query_Input_checkAddress,
     client: Client
-  ): Promise<InvokeApiResult<Boolean>> => {
-    return client.invoke<Boolean>({
+  ): Promise<InvokeApiResult<Types.Boolean>> => {
+    return client.invoke<Types.Boolean>({
       uri: "ens/ethereum.web3api.eth",
       module: "query",
       method: "checkAddress",
@@ -424,8 +439,8 @@ export const Ethereum_Query = {
   toWei: async (
     input: Ethereum_Query_Input_toWei,
     client: Client
-  ): Promise<InvokeApiResult<BigInt>> => {
-    return client.invoke<BigInt>({
+  ): Promise<InvokeApiResult<Types.BigInt>> => {
+    return client.invoke<Types.BigInt>({
       uri: "ens/ethereum.web3api.eth",
       module: "query",
       method: "toWei",
@@ -436,8 +451,8 @@ export const Ethereum_Query = {
   toEth: async (
     input: Ethereum_Query_Input_toEth,
     client: Client
-  ): Promise<InvokeApiResult<String>> => {
-    return client.invoke<String>({
+  ): Promise<InvokeApiResult<Types.String>> => {
+    return client.invoke<Types.String>({
       uri: "ens/ethereum.web3api.eth",
       module: "query",
       method: "toEth",
