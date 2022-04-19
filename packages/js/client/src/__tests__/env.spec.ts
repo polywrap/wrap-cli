@@ -78,13 +78,13 @@ describe("env", () => {
     };
   };
 
-  describe("env types", () => {
+  describe("complex env types", () => {
     let client: Client;
     let ensUri: string;
 
     beforeAll(async () => {
       const api = await buildAndDeployApi(
-        `${GetPathToTestApis()}/env-types`,
+        `${GetPathToTestApis()}/complex-env-types`,
         ipfsProvider,
         ensAddress
       );
