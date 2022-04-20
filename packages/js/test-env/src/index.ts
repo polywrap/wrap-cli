@@ -189,7 +189,6 @@ export async function buildAndDeployApi({
   const ethersProvider = new ethers.providers.JsonRpcProvider(ethereumProvider);
   const owner = await ethersProvider.getSigner(0).getAddress();
 
-  // TODO: deploy ENS wrapper to testenv
   const { error: registerError } = await client.invoke({
     uri: `w3://ens/rinkeby/ens.web3api.eth`,
     module: "mutation",

@@ -8,9 +8,7 @@ import path from "path";
 import axios from "axios";
 import { Web3ApiClient } from "@web3api/client-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
-import { keccak256 } from "js-sha3";
 import { Wallet } from "ethers";
-import { namehash } from "ethers/lib/utils";
 import yaml from "js-yaml";
 import fs from "fs";
 import { loadDeployManifest } from "../../lib";
@@ -35,7 +33,6 @@ const setup = async (domainNames: string[]) => {
   const registrarAddress = data.registrarAddress
   const signer = new Wallet("0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d");
 
-  // TODO: use the "loadDeployManifest" function
   const { __type, ...deployManifest } = await loadDeployManifest(`${projectRoot}/web3api.deploy.yaml`);
 
   Object.entries(deployManifest.stages).forEach(([key, value]) => {
@@ -66,39 +63,34 @@ const setup = async (domainNames: string[]) => {
     ],
   });
 
-  // TODO: why not use the ENS wrapper here?
   for await (const domainName of domainNames) {
-    const label = "0x" + keccak256(domainName)
-    await client.query({
-      uri: "w3://ens/ethereum.web3api.eth",
-      query: `
-        mutation {
-          callContractMethodAndWait(
-            address: "${registrarAddress}", 
-            method: "function register(bytes32 label, address owner)", 
-            args: ["${label}", "${signer.address}"],
-            txOverrides: {
-              value: null,
-              nonce: null,
-              gasPrice: "50",
-              gasLimit: "200000"
-            }
-          )
-        }
-      `,
-    });
+    await client.invoke({
+      uri: "w3://ens/rinkeby/ens.web3api.eth",
+      module: "mutation",
+      method: "registerDomain",
+      input: {
+        domain: domainName,
+        owner: signer.address,
+        registrarAddress,
+        registryAddress: ensAddress,
+        connection: {
+          networkNameOrChainId: "testnet",
+        },
+      },
+    })
 
-    await client.query({
-      uri: "w3://ens/ethereum.web3api.eth",
-      query: `
-        mutation {
-          callContractMethod(
-            address: "${ensAddress}",
-            method: "function setResolver(bytes32 node, address owner)",
-            args: ["${namehash(`${domainName}.eth`)}", "${resolverAddress}"]
-          )
-        }
-      `
+    await client.invoke({
+      uri: `w3://ens/rinkeby/ens.web3api.eth`,
+      module: "mutation",
+      method: "setResolver",
+      input: {
+        domain: domainName,
+        resolverAddress,
+        registryAddress: ensAddress,
+        connection: {
+          networkNameOrChainId: "testnet",
+        },
+      },
     });
   }
 }
@@ -134,7 +126,7 @@ describe("e2e tests for deploy command", () => {
   });
 
   test("Successfully deploys the project", async () => {
-    const { exitCode: code, stdout: output, stderr } = await runCLI(
+    const { exitCode: code, stdout: output } = await runCLI(
       {
         args: ["deploy"],
         cwd: projectRoot,
