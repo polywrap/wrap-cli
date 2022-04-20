@@ -7,8 +7,8 @@ import {
   PluginPackageManifest,
   PluginModules,
 } from "@web3api/core-js";
-import { Query, QueryConfig } from "../";
-import { Mutation, MutationConfig } from "../";
+import { Query, QueryConfig } from "../query";
+import { Mutation, MutationConfig } from "../mutation";
 import { manifest } from "./manifest";
 
 export interface TestCasePluginConfigs {
