@@ -3,6 +3,7 @@ import {
   Write,
   Nullable,
   BigInt,
+  BigNumber,
   JSON
 } from "@web3api/wasm-as";
 import {

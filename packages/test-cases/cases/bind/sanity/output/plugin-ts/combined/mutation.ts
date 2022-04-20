@@ -10,6 +10,7 @@ import {
   Int32,
   Bytes,
   BigInt,
+  BigNumber,
   Json,
   String,
   Boolean

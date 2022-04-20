@@ -5,7 +5,7 @@ import { ExtensionType } from "./ExtensionType";
 import { Nullable } from "./Nullable";
 import { Write } from "./Write";
 import { throwArrayIndexOutOfRange } from "./utils";
-import { BigInt } from "../math";
+import { BigInt, BigNumber } from "../math";
 import { Context } from "../debug";
 import { JSON } from "../json";
 
@@ -141,6 +141,11 @@ export class WriteEncoder extends Write {
   }
 
   writeBigInt(value: BigInt): void {
+    const str = value.toString();
+    this.writeString(str);
+  }
+
+  writeBigNumber(value: BigNumber): void {
     const str = value.toString();
     this.writeString(str);
   }
@@ -335,6 +340,15 @@ export class WriteEncoder extends Write {
     }
 
     this.writeBigInt(value);
+  }
+
+  writeNullableBigNumber(value: BigNumber): void {
+    if (value === null) {
+      this.writeNil();
+      return;
+    }
+
+    this.writeBigNumber(value);
   }
 
   writeNullableJSON(value: JSON.Value | null): void {

@@ -39,6 +39,7 @@ const _toTypescript = (
     case "Boolean":
     case "Bytes":
     case "BigInt":
+    case "BigNumber":
       break;
     case "JSON":
       type = "Json";
