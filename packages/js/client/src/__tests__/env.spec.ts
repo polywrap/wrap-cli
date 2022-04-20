@@ -13,12 +13,16 @@ describe("env", () => {
   let ipfsProvider: string;
   let ethProvider: string;
   let ensAddress: string;
+  let ensRegistrarAddress: string;
+  let ensResolverAddress: string;
 
   beforeAll(async () => {
-    const { ipfs, ethereum, ensAddress: ens } = await initTestEnvironment();
+    const { ipfs, ethereum, ensAddress: ens, resolverAddress, registrarAddress } = await initTestEnvironment();
     ipfsProvider = ipfs;
     ethProvider = ethereum;
     ensAddress = ens;
+    ensRegistrarAddress = registrarAddress;
+    ensResolverAddress = resolverAddress;
   });
 
   afterAll(async () => {
@@ -83,11 +87,16 @@ describe("env", () => {
     let ensUri: string;
 
     beforeAll(async () => {
-      const api = await buildAndDeployApi(
-        `${GetPathToTestApis()}/simple-env-types`,
+      const deployClient = await getClient()
+      const api = await buildAndDeployApi({
+        apiAbsPath: `${GetPathToTestApis()}/simple-env-types`,
         ipfsProvider,
-        ensAddress
-      );
+        ensRegistryAddress: ensAddress,
+        ethereumProvider: ethProvider,
+        ensRegistrarAddress,
+        ensResolverAddress,
+        client: deployClient
+      });
 
       ensUri = `ens/testnet/${api.ensDomain}`;
 
@@ -256,11 +265,16 @@ describe("env", () => {
     let ensUri: string;
 
     beforeAll(async () => {
-      const api = await buildAndDeployApi(
-        `${GetPathToTestApis()}/complex-env-types`,
+      const deployClient = await getClient();
+      const api = await buildAndDeployApi({
+        apiAbsPath: `${GetPathToTestApis()}/complex-env-types`,
         ipfsProvider,
-        ensAddress
-      );
+        ensRegistryAddress: ensAddress,
+        ethereumProvider: ethProvider,
+        ensRegistrarAddress,
+        ensResolverAddress,
+        client: deployClient
+      });
 
       ensUri = `ens/testnet/${api.ensDomain}`;
 
@@ -442,11 +456,16 @@ describe("env", () => {
     let client: Client;
 
     beforeAll(async () => {
-      const api = await buildAndDeployApi(
-        `${GetPathToTestApis()}/env-client-types`,
+      const deployClient = await getClient()
+      const api = await buildAndDeployApi({
+        apiAbsPath: `${GetPathToTestApis()}/env-client-types`,
         ipfsProvider,
-        ensAddress
-      );
+        ensRegistryAddress: ensAddress,
+        ethereumProvider: ethProvider,
+        ensRegistrarAddress,
+        ensResolverAddress,
+        client: deployClient
+      });
 
       ensUri = `ens/testnet/${api.ensDomain}`;
       client = await getClient({
@@ -504,11 +523,16 @@ describe("env", () => {
   });
 
   test("set env when not required", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/enum-types`,
+    const deployClient = await getClient()
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/enum-types`,
       ipfsProvider,
-      ensAddress
-    );
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+      client: deployClient
+    });
 
     const ensUri = `ens/testnet/${api.ensDomain}`;
     const client = await getClient({
