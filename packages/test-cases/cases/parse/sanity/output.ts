@@ -159,6 +159,16 @@ export const typeInfo: TypeInfo = {
           required: false,
         }),
         createScalarPropertyDefinition({
+          name: "bignumber",
+          type: "BigNumber",
+          required: true,
+        }),
+        createScalarPropertyDefinition({
+          name: "optBignumber",
+          type: "BigNumber",
+          required: false,
+        }),
+        createScalarPropertyDefinition({
           name: "json",
           type: "JSON",
           required: true,
