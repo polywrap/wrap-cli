@@ -68,7 +68,7 @@ class ENSPublisher implements Deployer {
 
     await tx.wait();
 
-    return new Uri(`w3://ens/${config.domainName}`);
+    return new Uri(`ens/${config.domainName}`);
   }
 }
 

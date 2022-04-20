@@ -4,7 +4,7 @@ import axios from "axios";
 import fs from "fs";
 import { ethers } from "ethers";
 import yaml from "js-yaml";
-import { Client, deserializeWeb3ApiManifest } from "@web3api/core-js";
+import { Client, deserializeWeb3ApiManifest, Uri } from "@web3api/core-js";
 
 interface TestEnvironment {
   ipfs: string;
@@ -314,7 +314,7 @@ export async function buildAndDeployApi({
     throw Error(`W3 CLI output missing IPFS CID.\nOutput: ${deployStdout}`);
   }
 
-  const apiCid = result[1];
+  const apiCid = new Uri(result[1]).path;
 
   return {
     ensDomain: apiEns,

@@ -40,7 +40,7 @@ class IPFSDeployer implements Deployer {
       }
     }
 
-    return new Uri(`w3://ipfs/${rootCID}`);
+    return new Uri(`ipfs/${rootCID}`);
   }
 }
 
