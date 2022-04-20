@@ -11,7 +11,7 @@ import {
 } from "./Format";
 import { Nullable } from "./Nullable";
 import { Read } from "./Read";
-import { BigInt } from "../math";
+import { BigInt, BigNumber } from "../math";
 import { Context } from "../debug";
 import { JSON } from "../json";
 import { ExtensionType } from "./ExtensionType";
@@ -209,6 +209,11 @@ export class ReadDecoder extends Read {
   readBigInt(): BigInt {
     const str = this.readString();
     return BigInt.fromString(str);
+  }
+
+  readBigNumber(): BigNumber {
+    const str = this.readString();
+    return BigNumber.fromString(str);
   }
 
   readJSON(): JSON.Value {
@@ -438,6 +443,13 @@ export class ReadDecoder extends Read {
       return null;
     }
     return this.readBigInt();
+  }
+
+  readNullableBigNumber(): BigNumber | null {
+    if (this.isNextNil()) {
+      return null;
+    }
+    return this.readBigNumber();
   }
 
   readNullableJSON(): JSON.Value | null {

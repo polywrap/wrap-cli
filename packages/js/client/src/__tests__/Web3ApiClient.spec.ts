@@ -2105,8 +2105,7 @@ describe("Web3ApiClient", () => {
     const schema: string = await client.getSchema(
       "w3://ens/js-logger.web3api.eth"
     );
-
-    // TODO: add scalar Map and annotate directive in next release
+    
     expect(schema).toStrictEqual(
       `### Web3API Header START ###
 scalar UInt
