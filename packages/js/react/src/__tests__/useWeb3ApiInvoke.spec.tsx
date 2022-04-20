@@ -20,6 +20,8 @@ import {
   RenderHookOptions,
   cleanup
 } from "@testing-library/react-hooks";
+import { Web3ApiClient } from "@web3api/client-js";
+import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 
 jest.setTimeout(360000);
 
@@ -32,14 +34,36 @@ describe("useWeb3ApiInvoke hook", () => {
     const {
       ipfs,
       ethereum,
-      ensAddress
+      ensAddress,
+      registrarAddress,
+      resolverAddress
     } = await initTestEnvironment();
 
-    const { ensDomain } = await buildAndDeployApi(
-      `${GetPathToTestApis()}/simple-storage`,
-      ipfs,
-      ensAddress
-    );
+    const client = new Web3ApiClient({
+      plugins: [
+        {
+          uri: "w3://ens/ethereum.web3api.eth",
+          plugin: ethereumPlugin({
+            networks: {
+              testnet: {
+                provider: ethereum,
+              }
+            },
+            defaultNetwork: "testnet"
+          }),
+        }
+      ],
+    });
+
+    const { ensDomain } = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/simple-storage`,
+      ipfsProvider: ipfs,
+      ethereumProvider: ethereum,
+      ensRegistrarAddress: registrarAddress,
+      ensRegistryAddress: ensAddress,
+      ensResolverAddress: resolverAddress,
+      client
+    });
 
     uri = `ens/testnet/${ensDomain}`;
     plugins = createPlugins(ensAddress, ethereum, ipfs);

@@ -22,11 +22,17 @@ describe("Filesystem plugin", () => {
   let client: Web3ApiClient;
   let ipfsProvider: string;
   let ensAddress: string;
+  let ethereumProvider: string;
+  let ensRegistrarAddress: string;
+  let ensResolverAddress: string;
 
   beforeAll(async () => {
-    const { ipfs, ethereum, ensAddress: ens } = await initTestEnvironment();
+    const { ipfs, ethereum, ensAddress: ens, registrarAddress, resolverAddress } = await initTestEnvironment();
     ipfsProvider = ipfs;
     ensAddress = ens;
+    ethereumProvider = ethereum;
+    ensRegistrarAddress = registrarAddress;
+    ensResolverAddress = resolverAddress;
 
     const config: Partial<Web3ApiClientConfig> = {
       plugins: [
@@ -75,7 +81,15 @@ describe("Filesystem plugin", () => {
     const apiPath = path.resolve(
       `${GetPathToTestApis()}/simple-storage`
     );
-    await buildAndDeployApi(apiPath, ipfsProvider, ensAddress);
+    await buildAndDeployApi({
+      apiAbsPath: apiPath,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ensRegistrarAddress,
+      ensResolverAddress,
+      ethereumProvider,
+      client
+    });
     const fsPath = `${apiPath}/build`;
     const fsUri = `fs/${fsPath}`;
 

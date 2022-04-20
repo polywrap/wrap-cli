@@ -55,10 +55,3 @@ export async function getProviders(): Promise<TestEnvironment> {
   const clientConfig = getPlugins(ethereum, ipfs, data.ensAddress);
   return { ipfs, ethereum, ensAddress: data.ensAddress, clientConfig };
 }
-
-export async function getEnsUri(): Promise<string> {
-  const { ensAddress, ipfs } = await getProviders();
-  const apiPath: string = path.resolve(__dirname + "/../../");
-  const api = await buildAndDeployApi(apiPath, ipfs, ensAddress);
-  return `ens/testnet/${api.ensDomain}`;
-}
