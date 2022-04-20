@@ -94,8 +94,8 @@ describe("Ethereum Plugin", () => {
     await stopTestEnvironment();
   });
 
-  describe.only("Query", () => {
-    it.only("callContractView", async () => {
+  describe("Query", () => {
+    it("callContractView", async () => {
       const node = namehash("whatever.eth")
       const response = await client.query<{ callContractView: string }>({
         uri,

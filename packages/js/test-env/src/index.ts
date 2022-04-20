@@ -17,7 +17,6 @@ interface TestEnvironment {
 
 const monorepoCli = `${__dirname}/../../../cli/bin/w3`;
 const npmCli = `${__dirname}/../../cli/bin/w3`;
-const ensWrapperPath = `${__dirname}/ens-wrapper`;
 
 export const initTestEnvironment = async (
   cli?: string
@@ -190,7 +189,7 @@ export async function buildAndDeployApi({
 
   // TODO: deploy ENS wrapper to testenv
   const { error: registerError } = await client.invoke({
-    uri: `fs/${ensWrapperPath}`,
+    uri: `w3://ens/rinkeby/ens.web3api.eth`,
     module: "mutation",
     method: "registerDomain",
     input: {
@@ -211,7 +210,7 @@ export async function buildAndDeployApi({
   }
 
   const { error: setResolverError } = await client.invoke({
-    uri: `fs/${ensWrapperPath}`,
+    uri: `w3://ens/rinkeby/ens.web3api.eth`,
     module: "mutation",
     method: "setResolver",
     input: {
