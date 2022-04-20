@@ -2,7 +2,7 @@ import path from "path";
 import spawn from "spawn-command";
 import axios from "axios";
 import fs from "fs";
-import ethers from "ethers";
+import { ethers } from "ethers";
 import yaml from "js-yaml";
 import { Client, deserializeWeb3ApiManifest } from "@web3api/core-js";
 
@@ -17,6 +17,7 @@ interface TestEnvironment {
 
 const monorepoCli = `${__dirname}/../../../cli/bin/w3`;
 const npmCli = `${__dirname}/../../cli/bin/w3`;
+const ensWrapperPath = `${__dirname}/ens-wrapper`;
 
 export const initTestEnvironment = async (
   cli?: string
@@ -189,7 +190,7 @@ export async function buildAndDeployApi({
 
   // TODO: deploy ENS wrapper to testenv
   const { error: registerError } = await client.invoke({
-    uri: ensUri,
+    uri: `fs/${ensWrapperPath}`,
     module: "mutation",
     method: "registerDomain",
     input: {
@@ -210,7 +211,7 @@ export async function buildAndDeployApi({
   }
 
   const { error: setResolverError } = await client.invoke({
-    uri: ensUri,
+    uri: `fs/${ensWrapperPath}`,
     module: "mutation",
     method: "setResolver",
     input: {
@@ -232,7 +233,7 @@ export async function buildAndDeployApi({
   // manually configure manifests
 
   const web3apiManifest = deserializeWeb3ApiManifest(
-    fs.readFileSync(path.join(apiAbsPath, "web3api.yaml"), "utf-8")
+    fs.readFileSync(manifestPath, "utf-8")
   );
 
   const useTempManifests = !web3apiManifest.deploy;
@@ -240,20 +241,24 @@ export async function buildAndDeployApi({
   if (useTempManifests) {
     fs.writeFileSync(
       tempManifestPath,
-      yaml.safeDump({
-        ...web3apiManifest,
-        deploy: `./${tempManifestFilename}`,
+      yaml.dump({
+        format: web3apiManifest.format,
+        name: web3apiManifest.name,
+        build: web3apiManifest.build,
+        language: web3apiManifest.language,
+        modules: web3apiManifest.modules,
+        deploy: `./${tempDeployManifestFilename}`,
       })
     );
 
     fs.writeFileSync(
       tempDeployManifestPath,
-      yaml.safeDump({
+      yaml.dump({
         format: "0.0.1-prealpha.1",
         stages: {
           ipfsDeploy: {
             package: "ipfs",
-            uri: "fs/./build",
+            uri: `fs/${apiAbsPath}/build`,
             config: {
               gatewayUri: ipfsProvider,
             },
