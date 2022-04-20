@@ -31,7 +31,7 @@ ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
 
 export default {
   alias: ["b"],
-  description: intlMsg.commands_build_description(),
+  description: intlMsg.commands_deploy_description(),
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { filesystem, parameters, print } = toolbox;
 

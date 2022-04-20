@@ -136,6 +136,7 @@ export async function buildAndDeployApi({
   ensRegistrarAddress,
   ensResolverAddress,
   ethereumProvider,
+  ensName,
   client,
 }: {
   apiAbsPath: string;
@@ -144,6 +145,7 @@ export async function buildAndDeployApi({
   ensRegistrarAddress: string;
   ensResolverAddress: string;
   ethereumProvider: string;
+  ensName?: string;
   client: Client;
 }): Promise<{
   ensDomain: string;
@@ -159,7 +161,7 @@ export async function buildAndDeployApi({
   );
 
   // create a new ENS domain
-  const apiEns = `${generateName()}.eth`;
+  const apiEns = ensName ?? `${generateName()}.eth`;
 
   // build API
   const {
@@ -231,51 +233,43 @@ export async function buildAndDeployApi({
 
   // manually configure manifests
 
-  const web3apiManifest = deserializeWeb3ApiManifest(
+  const { __type, ...web3apiManifest } = deserializeWeb3ApiManifest(
     fs.readFileSync(manifestPath, "utf-8")
   );
 
-  const useTempManifests = !web3apiManifest.deploy;
+  fs.writeFileSync(
+    tempManifestPath,
+    yaml.dump({
+      ...web3apiManifest,
+      deploy: `./${tempDeployManifestFilename}`,
+    })
+  );
 
-  if (useTempManifests) {
-    fs.writeFileSync(
-      tempManifestPath,
-      yaml.dump({
-        format: web3apiManifest.format,
-        name: web3apiManifest.name,
-        build: web3apiManifest.build,
-        language: web3apiManifest.language,
-        modules: web3apiManifest.modules,
-        deploy: `./${tempDeployManifestFilename}`,
-      })
-    );
-
-    fs.writeFileSync(
-      tempDeployManifestPath,
-      yaml.dump({
-        format: "0.0.1-prealpha.1",
-        stages: {
-          ipfsDeploy: {
-            package: "ipfs",
-            uri: `fs/${apiAbsPath}/build`,
-            config: {
-              gatewayUri: ipfsProvider,
-            },
-          },
-          ensPublish: {
-            package: "ens",
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            depends_on: "ipfsDeploy",
-            config: {
-              domainName: apiEns,
-              provider: ethereumProvider,
-              ensRegistryAddress,
-            },
+  fs.writeFileSync(
+    tempDeployManifestPath,
+    yaml.dump({
+      format: "0.0.1-prealpha.1",
+      stages: {
+        ipfsDeploy: {
+          package: "ipfs",
+          uri: `fs/${apiAbsPath}/build`,
+          config: {
+            gatewayUri: ipfsProvider,
           },
         },
-      })
-    );
-  }
+        ensPublish: {
+          package: "ens",
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          depends_on: "ipfsDeploy",
+          config: {
+            domainName: apiEns,
+            provider: ethereumProvider,
+            ensRegistryAddress,
+          },
+        },
+      },
+    })
+  );
 
   // deploy API
 
@@ -284,11 +278,7 @@ export async function buildAndDeployApi({
     stdout: deployStdout,
     stderr: deployStderr,
   } = await runCLI({
-    args: [
-      "deploy",
-      "--manifest-file",
-      useTempManifests ? tempManifestPath : manifestPath,
-    ],
+    args: ["deploy", "--manifest-file", tempManifestPath],
   });
 
   if (deployExitCode !== 0) {
@@ -300,10 +290,8 @@ export async function buildAndDeployApi({
 
   // remove manually configured manifests
 
-  if (useTempManifests) {
-    fs.unlinkSync(tempManifestPath);
-    fs.unlinkSync(tempDeployManifestPath);
-  }
+  fs.unlinkSync(tempManifestPath);
+  fs.unlinkSync(tempDeployManifestPath);
 
   // get the IPFS CID of the published package
   const extractCID = /(w3:\/\/ipfs\/[A-Za-z0-9]+)/;

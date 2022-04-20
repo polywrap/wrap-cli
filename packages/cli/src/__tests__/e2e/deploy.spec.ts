@@ -36,7 +36,7 @@ const setup = async (domainNames: string[]) => {
   const signer = new Wallet("0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d");
 
   // TODO: use the "loadDeployManifest" function
-  const deployManifest = await loadDeployManifest(`${projectRoot}/web3api.deploy.yaml`);
+  const { __type, ...deployManifest } = await loadDeployManifest(`${projectRoot}/web3api.deploy.yaml`);
 
   Object.entries(deployManifest.stages).forEach(([key, value]) => {
     if (value.config && value.config.ensRegistryAddress) {
@@ -134,7 +134,7 @@ describe("e2e tests for deploy command", () => {
   });
 
   test("Successfully deploys the project", async () => {
-    const { exitCode: code, stdout: output } = await runCLI(
+    const { exitCode: code, stdout: output, stderr } = await runCLI(
       {
         args: ["deploy"],
         cwd: projectRoot,

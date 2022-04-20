@@ -11,9 +11,7 @@ w3 build [options]
 Options:
   -h, --help                         Show usage information
   -m, --manifest-file <path>         Path to the Web3API Build manifest file (default: web3api.yaml | web3api.yml)
-  -i, --ipfs [<node>]                Upload build results to an IPFS node (default: dev-server's node)
   -o, --output-dir <path>            Output directory for build results (default: build/)
-  -e, --test-ens <[address,]domain>  Publish the package to a test ENS domain locally (requires --ipfs)
   -w, --watch                        Automatically rebuild when changes are made (default: false)
   -v, --verbose                      Verbose output (default: false)
 
@@ -49,38 +47,6 @@ describe("e2e tests for build command", () => {
     expect(error).toBe("");
     expect(clearStyle(output))
       .toEqual(`--output-dir option missing <path> argument
-${HELP}`);
-  });
-
-  test("Should throw error for invalid params - testEns", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
-      {
-        args: ["build", "--test-ens"],
-        cwd: projectRoot,
-        cli: w3Cli,
-      },
-    );
-
-    expect(code).toEqual(1);
-    expect(error).toBe("");
-    expect(clearStyle(output))
-      .toEqual(`--test-ens option missing <[address,]domain> argument
-${HELP}`);
-  });
-
-  test("Should throw error for invalid params - ipfs", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
-      {
-        args: ["build", "--test-ens", "test.eth"],
-        cwd: projectRoot,
-        cli: w3Cli,
-      },
-    );
-
-    expect(code).toEqual(1);
-    expect(error).toBe("");
-    expect(clearStyle(output))
-      .toEqual(`--test-ens option requires the --ipfs [<node>] option
 ${HELP}`);
   });
 
