@@ -143,6 +143,7 @@ export async function buildAndDeployApi(
   const { exitCode, stdout, stderr } = await runCLI({
     args: [
       "build",
+      "--manifest-file",
       `${apiAbsPath}/web3api.yaml`,
       "--output-dir",
       `${apiAbsPath}/build`,

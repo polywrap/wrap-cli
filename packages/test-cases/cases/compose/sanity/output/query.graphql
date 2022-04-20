@@ -10,6 +10,7 @@ scalar Int32
 scalar Bytes
 scalar BigInt
 scalar JSON
+scalar Map
 
 directive @imported(
   uri: String!
@@ -28,6 +29,9 @@ directive @capability(
 ) repeatable on OBJECT
 
 directive @enabled_interface on OBJECT
+
+directive @annotate(type: String!) on FIELD
+
 ### Web3API Header END ###
 
 """
@@ -66,6 +70,10 @@ type Query implements Interface_Query @imports(
     uArrayArray comment
     """
     uArrayArray: [[UInt]]!
+    """
+    Map<String!, Int!> comment
+    """
+    map: Map! @annotate(type: "Map<String!, Int!>!")
   ): String!
 
   """
@@ -86,9 +94,9 @@ type QueryEnv {
 }
 
 """
-CustomQueryType comment
+CustomModuleType comment
 """
-type CustomQueryType {
+type CustomModuleType {
   str: String!
   optStr: String
   u: UInt!
@@ -102,13 +110,19 @@ type CustomQueryType {
   optStrOptArray: [String]
   crazyArray: [[[[UInt32!]]!]]
   commonType: CommonType!
+  optMap: Map @annotate(type: "Map<String!, Int>")
   """
   customType comment
   """
   customType: Namespace_CustomType!
 }
 
-type AnotherQueryType {
+type AnotherModuleType {
+  prop: String
+}
+
+type TypeFromInterface implements AnotherModuleType {
+  prop2: UInt32!
   prop: String
 }
 

@@ -1,3 +1,7 @@
-export * from "./query";
+/// NOTE: This is an auto-generated file.
+///       All modifications will be overwritten.
+
+export * from "./module";
 export * from "./types";
-export * from "./env";
+
+export { Client } from "@web3api/client-js";

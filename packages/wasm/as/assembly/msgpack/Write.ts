@@ -1,7 +1,7 @@
 import { Nullable } from "./Nullable";
-import { BigInt } from "../BigInt";
-import { Context } from "./Context";
-import { JSON } from "../JSON";
+import { BigInt } from "../math";
+import { Context } from "../debug";
+import { JSON } from "../json";
 
 export abstract class Write {
   abstract writeNil(): void;
@@ -31,6 +31,11 @@ export abstract class Write {
     key_fn: (writer: Write, key: K) => void,
     value_fn: (writer: Write, value: V) => void
   ): void;
+  abstract writeExtGenericMap<K, V>(
+    m: Map<K, V>,
+    key_fn: (writer: Write, key: K) => void,
+    value_fn: (writer: Write, value: V) => void
+  ): void;
 
   abstract writeNullableBool(value: Nullable<bool>): void;
   abstract writeNullableInt8(value: Nullable<i8>): void;
@@ -51,6 +56,11 @@ export abstract class Write {
   ): void;
   abstract writeNullableMap<K, V>(
     m: Map<K, V> | null,
+    key_fn: (writer: Write, key: K) => void,
+    value_fn: (writer: Write, value: V) => void
+  ): void;
+  abstract writeNullableExtGenericMap<K, V>(
+    m: Map<K, V>,
     key_fn: (writer: Write, key: K) => void,
     value_fn: (writer: Write, value: V) => void
   ): void;

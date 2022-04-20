@@ -1,5 +1,5 @@
 import {
-  createQueryDefinition,
+  createModuleDefinition,
   createObjectDefinition,
   createTypeInfo,
   TypeInfo,
@@ -16,16 +16,16 @@ export const typeInfo: TypeInfo = {
       ],
     },
   ],
-  queryTypes: [
+  moduleTypes: [
     {
-      ...createQueryDefinition({ type: "Query" }),
+      ...createModuleDefinition({ type: "Query" }),
       imports: [],
       interfaces: [],
       methods: [
       ],
     },
     {
-      ...createQueryDefinition({ type: "Mutation" }),
+      ...createModuleDefinition({ type: "Mutation" }),
       imports: [],
       interfaces: [],
       methods: [

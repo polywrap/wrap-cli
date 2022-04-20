@@ -1,5 +1,5 @@
 import { httpPlugin } from "../..";
-import { Response } from "../../w3";
+import { Response } from "../../query/w3-man";
 
 import { Web3ApiClient, defaultIpfsProviders } from "@web3api/client-js"
 import { ensPlugin } from "@web3api/ens-plugin-js";
@@ -38,7 +38,7 @@ describe("e2e tests for HttpPlugin", () => {
         plugins: [
           {
             uri: "w3://ens/http.web3api.eth",
-            plugin: httpPlugin(),
+            plugin: httpPlugin({ query: {} }),
           },
           {
             uri: "w3://ens/ethereum.web3api.eth",
@@ -61,8 +61,10 @@ describe("e2e tests for HttpPlugin", () => {
           {
             uri: "w3://ens/ens.web3api.eth",
             plugin: ensPlugin({
-              addresses: {
-                testnet: ensAddress
+              query: {
+                addresses: {
+                  testnet: ensAddress
+                }
               }
             })
           }

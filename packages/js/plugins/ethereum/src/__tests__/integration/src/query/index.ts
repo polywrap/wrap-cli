@@ -8,6 +8,9 @@ import {
   Input_callContractStatic,
   Input_encodeParams,
   Input_encodeFunction,
+  Input_solidityPack,
+  Input_solidityKeccak256,
+  Input_soliditySha256,
   Input_getSignerAddress,
   Input_getSignerBalance,
   Input_getSignerTransactionCount,
@@ -19,7 +22,7 @@ import {
   Input_toEth,
   Input_awaitTransaction,
   Input_waitForEvent,
-  Input_getNetwork
+  Input_getNetwork, Input_getBalance,
 } from "./w3";
 import { BigInt } from "@web3api/wasm-as";
 
@@ -31,7 +34,7 @@ export function callContractView(
     method: input.method,
     args: input.args,
     connection: input.connection
-  });
+  }).unwrap();
 }
 
 export function callContractStatic(
@@ -43,7 +46,17 @@ export function callContractStatic(
     args: input.args,
     connection: input.connection,
     txOverrides: input.txOverrides
-  });
+  }).unwrap();
+}
+
+export function getBalance(
+  input: Input_getBalance
+): BigInt {
+  return Ethereum_Query.getBalance({
+    address: input.address,
+    blockTag: input.blockTag,
+    connection: input.connection
+  }).unwrap();
 }
 
 export function encodeParams(
@@ -52,7 +65,7 @@ export function encodeParams(
   return Ethereum_Query.encodeParams({
     types: input.types,
     values: input.values
-  });
+  }).unwrap();
 }
 
 export function encodeFunction(
@@ -61,7 +74,34 @@ export function encodeFunction(
   return Ethereum_Query.encodeFunction({
     method: input.method,
     args: input.args
-  });
+  }).unwrap();
+}
+
+export function solidityPack(
+  input: Input_solidityPack
+): string {
+  return Ethereum_Query.solidityPack({
+    types: input.types,
+    values: input.values
+  }).unwrap();
+}
+
+export function solidityKeccak256(
+  input: Input_solidityKeccak256
+): string {
+  return Ethereum_Query.solidityKeccak256({
+    types: input.types,
+    values: input.values
+  }).unwrap();
+}
+
+export function soliditySha256(
+  input: Input_soliditySha256
+): string {
+  return Ethereum_Query.soliditySha256({
+    types: input.types,
+    values: input.values
+  }).unwrap();
 }
 
 export function getSignerAddress(
@@ -69,7 +109,7 @@ export function getSignerAddress(
 ): string {
   return Ethereum_Query.getSignerAddress({
     connection: input.connection
-  });
+  }).unwrap();
 }
 
 export function getSignerBalance(
@@ -78,7 +118,7 @@ export function getSignerBalance(
   return Ethereum_Query.getSignerBalance({
     blockTag: input.blockTag,
     connection: input.connection
-  });
+  }).unwrap();
 }
 
 export function getSignerTransactionCount(
@@ -87,7 +127,7 @@ export function getSignerTransactionCount(
   return Ethereum_Query.getSignerTransactionCount({
     blockTag: input.blockTag,
     connection: input.connection
-  });
+  }).unwrap();
 }
 
 export function getGasPrice(
@@ -95,7 +135,7 @@ export function getGasPrice(
 ): BigInt {
   return Ethereum_Query.getGasPrice({
     connection: input.connection
-  });
+  }).unwrap();
 }
 
 export function estimateTransactionGas(
@@ -104,7 +144,7 @@ export function estimateTransactionGas(
   return Ethereum_Query.estimateTransactionGas({
     tx: input.tx,
     connection: input.connection
-  });
+  }).unwrap();
 }
 
 export function estimateContractCallGas(
@@ -116,7 +156,7 @@ export function estimateContractCallGas(
     args: input.args,
     connection: input.connection,
     txOverrides: input.txOverrides
-  });
+  }).unwrap();
 }
 
 export function checkAddress(
@@ -124,7 +164,7 @@ export function checkAddress(
 ): bool {
   return Ethereum_Query.checkAddress({
     address: input.address
-  });
+  }).unwrap();
 }
 
 export function toWei(
@@ -132,7 +172,7 @@ export function toWei(
 ): BigInt {
   return Ethereum_Query.toWei({
     eth: input.eth
-  });
+  }).unwrap();
 }
 
 export function toEth(
@@ -140,7 +180,7 @@ export function toEth(
 ): String {
   return Ethereum_Query.toEth({
     wei: input.wei
-  });
+  }).unwrap();
 }
 
 export function awaitTransaction(
@@ -151,7 +191,7 @@ export function awaitTransaction(
     confirmations: input.confirmations,
     timeout: input.timeout,
     connection: input.connection
-  });
+  }).unwrap();
 }
 
 export function waitForEvent(
@@ -163,7 +203,7 @@ export function waitForEvent(
     args: input.args,
     timeout: input.timeout,
     connection: input.connection
-  });
+  }).unwrap();
 }
 
 export function getNetwork(
@@ -171,5 +211,5 @@ export function getNetwork(
 ): Ethereum_Network {
   return Ethereum_Query.getNetwork({
     connection: input.connection
-  });
+  }).unwrap();
 }

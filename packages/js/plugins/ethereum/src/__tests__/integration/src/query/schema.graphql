@@ -16,6 +16,12 @@ type Query {
     txOverrides: Ethereum_TxOverrides
   ): Ethereum_StaticTxResult!
 
+  getBalance(
+    address: String!
+    blockTag: BigInt
+    connection: Ethereum_Connection
+  ): BigInt!
+
   encodeParams(
     types: [String!]!
     values: [String!]!
@@ -24,6 +30,21 @@ type Query {
   encodeFunction(
     method: String!
     args: [String!]
+  ): String!
+
+  solidityPack(
+    types: [String!]!
+    values: [String!]!
+  ): String!
+
+  solidityKeccak256(
+    types: [String!]!
+    values: [String!]!
+  ): String!
+
+  soliditySha256(
+    types: [String!]!
+    values: [String!]!
   ): String!
 
   getSignerAddress(

@@ -5,14 +5,14 @@ module.exports = {
     "**/build/**/*.*",
     "**/__tests__/**/*.*",
     "**/node_modules/**/*.*",
-    "**/coverage/**/*.*",
+    "**/coverage/**/*.*"
   ],
   overrides: [
     {
       files: ["*.ts"],
       parser: "@typescript-eslint/parser",
       parserOptions: {
-        project: ["tsconfig.json"],
+        project: ["tsconfig.json", "./packages/**/tsconfig.json"],
       },
       plugins: [
         "eslint-plugin-import",
@@ -28,6 +28,7 @@ module.exports = {
       ],
       rules: {
         "prettier/prettier": ["error"],
+        "spaced-comment": ["error", "always", { "markers": ["/"] }],
         "@typescript-eslint/naming-convention": [
           "error",
           {selector: "default", format: ["camelCase"]},
@@ -131,44 +132,6 @@ module.exports = {
     {
       files: ["*.json"],
       extends: ["plugin:json/recommended"],
-    },
-    {
-      files: ["*.graphql"],
-      plugins: ["@graphql-eslint"],
-      parser: "@graphql-eslint/eslint-plugin",
-      rules: {
-        "function-call-argument-newline": ["error"],
-        "@graphql-eslint/avoid-typename-prefix": ["warn"],
-        "@graphql-eslint/no-hashtag-description": ["off"],
-        "@graphql-eslint/require-deprecation-reason": ["error"],
-        "@graphql-eslint/no-case-insensitive-enum-values-duplicates": ["error"],
-        "@graphql-eslint/description-style": ["warn", {"style":"inline"}],
-        "@graphql-eslint/avoid-duplicate-fields": ["error"],
-        "@graphql-eslint/naming-convention": ["error",
-          {
-            "FieldDefinition":"camelCase",
-            "InputObjectTypeDefinition":"PascalCase",
-            "EnumValueDefinition":"UPPER_CASE",
-            "InputValueDefinition":"camelCase",
-            "ObjectTypeDefinition":"PascalCase",
-            "InterfaceTypeDefinition":"PascalCase",
-            "EnumTypeDefinition":"PascalCase",
-            "UnionTypeDefinition":"PascalCase",
-            "ScalarTypeDefinition":"PascalCase",
-            "OperationDefinition":"PascalCase",
-            "FragmentDefinition":"PascalCase",
-            "QueryDefinition":"camelCase",
-            "leadingUnderscore":"forbid",
-            "trailingUnderscore":"forbid"
-          }],
-        "@graphql-eslint/possible-type-extension": ["error"],
-        "@graphql-eslint/unique-operation-name": ["error"],
-        "@graphql-eslint/unique-directive-names": ["error"],
-        "@graphql-eslint/unique-enum-value-names": ["error"],
-        "@graphql-eslint/unique-field-definition-names": ["error"],
-        "@graphql-eslint/unique-input-field-names": ["error"],
-        "@graphql-eslint/unique-type-names": ["error"],
-      }
     }
   ]
 };

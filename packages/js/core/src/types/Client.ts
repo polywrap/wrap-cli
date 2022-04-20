@@ -7,14 +7,18 @@ import {
   PluginRegistration,
   InterfaceImplementations,
   Env,
+  ResolveUriOptions,
 } from "./";
-import { ManifestType, AnyManifest } from "../manifest";
+import { AnyManifestArtifact, ManifestArtifactType } from "../manifest";
+import { UriResolver } from "../uri-resolution/core";
+import { ResolveUriResult } from "../uri-resolution/core/types/ResolveUriResult";
 
 export interface ClientConfig<TUri extends Uri | string = string> {
   redirects: UriRedirect<TUri>[];
   plugins: PluginRegistration<TUri>[];
   interfaces: InterfaceImplementations<TUri>[];
   envs: Env<TUri>[];
+  uriResolvers: UriResolver[];
 }
 
 export interface Contextualized {
@@ -31,9 +35,12 @@ export type GetSchemaOptions = Contextualized;
 
 export type GetEnvsOptions = Contextualized;
 
-export interface GetManifestOptions<TManifestType extends ManifestType>
-  extends Contextualized {
-  type: TManifestType;
+export type GetUriResolversOptions = Contextualized;
+
+export interface GetManifestOptions<
+  TManifestArtifactType extends ManifestArtifactType
+> extends Contextualized {
+  type: TManifestArtifactType;
 }
 
 export interface GetFileOptions extends Contextualized {
@@ -64,15 +71,20 @@ export interface Client
     options: GetEnvsOptions
   ): Env<Uri> | undefined;
 
+  getUriResolvers(options: GetUriResolversOptions): readonly UriResolver[];
+
   getSchema<TUri extends Uri | string>(
     uri: TUri,
     options: GetSchemaOptions
   ): Promise<string>;
 
-  getManifest<TUri extends Uri | string, TManifestType extends ManifestType>(
+  getManifest<
+    TUri extends Uri | string,
+    TManifestArtifactType extends ManifestArtifactType
+  >(
     uri: TUri,
-    options: GetManifestOptions<TManifestType>
-  ): Promise<AnyManifest<TManifestType>>;
+    options: GetManifestOptions<TManifestArtifactType>
+  ): Promise<AnyManifestArtifact<TManifestArtifactType>>;
 
   getFile<TUri extends Uri | string>(
     uri: TUri,
@@ -83,4 +95,14 @@ export interface Client
     uri: TUri,
     options: GetImplementationsOptions
   ): TUri[];
+
+  resolveUri<TUri extends Uri | string>(
+    uri: TUri,
+    options?: ResolveUriOptions<ClientConfig>
+  ): Promise<ResolveUriResult>;
+
+  loadUriResolvers(): Promise<{
+    success: boolean;
+    failedUriResolvers: string[];
+  }>;
 }
