@@ -7,7 +7,7 @@ import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
-  buildAndDeployApi
+  buildAndDeployApi,
 } from "@web3api/test-env-js";
 import { Wallet } from "ethers";
 
@@ -77,11 +77,15 @@ describe("Ethereum Plugin", () => {
       ],
     });
 
-    const api = await buildAndDeployApi(
-      `${__dirname}/integration`,
-      ipfs,
-      ensAddress
-    );
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${__dirname}/integration`,
+      ipfsProvider: ipfs,
+      ensRegistryAddress: ensAddress,
+      ensRegistrarAddress: registrarAddress,
+      ensResolverAddress: resolverAddress,
+      client,
+      ethereumProvider: ethereum,
+    });
 
     uri = `ens/testnet/${api.ensDomain}`;
   });
@@ -162,7 +166,7 @@ describe("Ethereum Plugin", () => {
       expect(response.errors).toBeUndefined();
       expect(response.data?.callContractStatic).toBeDefined();
       expect(response.data?.callContractStatic.error).toBeTruthy();
-      expect(response.data?.callContractStatic.result).toBe("missing revert data in call exception");
+      expect(response.data?.callContractStatic.result).toContain("missing revert data in call exception");
     });
 
     it("getBalance", async () => {
