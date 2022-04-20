@@ -24,10 +24,12 @@ describe("Web3ApiClient - resolveUri", () => {
   let ensResolverAddress: string;
 
   beforeAll(async () => {
-    const { ipfs, ethereum, ensAddress: ens } = await initTestEnvironment();
+    const { ipfs, ethereum, ensAddress: ens, registrarAddress, resolverAddress } = await initTestEnvironment();
     ipfsProvider = ipfs;
     ethProvider = ethereum;
     ensAddress = ens;
+    ensRegistrarAddress = registrarAddress;
+    ensResolverAddress = resolverAddress;
   });
 
   afterAll(async () => {
