@@ -13,6 +13,7 @@ import {
   outputManifest,
   intlMsg,
   web3apiManifestLanguageToBindLanguage,
+  resetDir,
 } from "..";
 
 import { Web3ApiManifest, BuildManifest, MetaManifest } from "@web3api/core-js";
@@ -24,7 +25,6 @@ import regexParser from "regex-parser";
 import path from "path";
 import fs from "fs";
 import fsExtra from "fs-extra";
-import rimraf from "rimraf";
 
 const cacheLayout = {
   root: "web3api/",
@@ -57,7 +57,8 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     this._buildManifest = undefined;
     this._metaManifest = undefined;
     this._defaultBuildManifestCached = false;
-    this.resetCache();
+    this.removeCacheDir(cacheLayout.buildEnvDir);
+    this.removeCacheDir(cacheLayout.buildLinkedPackagesDir);
   }
 
   public async validate(): Promise<void> {
@@ -156,11 +157,11 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
 
     // Clean the code generation
     if (queryDirectory) {
-      this._resetDir(queryDirectory);
+      resetDir(queryDirectory);
     }
 
     if (mutationDirectory) {
-      this._resetDir(mutationDirectory);
+      resetDir(mutationDirectory);
     }
 
     const bindLanguage = web3apiManifestLanguageToBindLanguage(
@@ -507,13 +508,5 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
       ? entryPoint
       : path.join(this.getManifestDir(), entryPoint);
     return `${path.dirname(absolute)}/w3`;
-  }
-
-  private _resetDir(dir: string) {
-    if (fs.existsSync(dir)) {
-      rimraf.sync(dir);
-    }
-
-    fs.mkdirSync(dir, { recursive: true });
   }
 }

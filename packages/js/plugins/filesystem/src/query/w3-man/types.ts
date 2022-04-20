@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/naming-convention */
 
+// @ts-ignore
 import * as Types from "./";
 
+// @ts-ignore
 import { Client, InvokeApiResult } from "@web3api/core-js";
 
 export type UInt = number;

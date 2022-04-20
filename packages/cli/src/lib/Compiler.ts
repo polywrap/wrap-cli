@@ -12,6 +12,7 @@ import {
   createBuildImage,
   copyArtifactsFromBuildImage,
   intlMsg,
+  resetDir,
 } from "./";
 
 import {
@@ -28,7 +29,6 @@ import { writeFileSync, writeDirectorySync } from "@web3api/os-js";
 import * as gluegun from "gluegun";
 import fs from "fs";
 import path from "path";
-import rimraf from "rimraf";
 
 type ModulesToBuild = Record<InvokableModules, boolean>;
 
@@ -92,7 +92,7 @@ export class Compiler {
       const state = await this._getCompilerState();
 
       // Init & clean output directory
-      this._resetDir(this._config.outputDir);
+      resetDir(this._config.outputDir);
 
       await this._outputComposedSchema(state);
 
@@ -337,14 +337,6 @@ export class Compiler {
     );
 
     return dockerImageId;
-  }
-
-  private _resetDir(dir: string) {
-    if (fs.existsSync(dir)) {
-      rimraf.sync(dir);
-    }
-
-    fs.mkdirSync(dir, { recursive: true });
   }
 
   private async _outputComposedSchema(state: CompilerState): Promise<void> {

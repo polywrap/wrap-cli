@@ -6,6 +6,7 @@ import {
   isPluginManifestLanguage,
   pluginManifestLanguageToBindLanguage,
   intlMsg,
+  resetDir,
 } from "..";
 
 import { PluginManifest } from "@web3api/core-js";
@@ -14,8 +15,6 @@ import { bindSchema, BindOutput, BindOptions } from "@web3api/schema-bind";
 import { ComposerOutput } from "@web3api/schema-compose";
 import { TypeInfo } from "@web3api/schema-parse";
 import path from "path";
-import fs from "fs";
-import rimraf from "rimraf";
 
 const cacheLayout = {
   root: "plugin",
@@ -142,11 +141,11 @@ export class PluginProject extends Project<PluginManifest> {
 
     // Clean the code generation
     if (queryDirectory) {
-      this._resetDir(queryDirectory);
+      resetDir(queryDirectory);
     }
 
     if (mutationDirectory) {
-      this._resetDir(mutationDirectory);
+      resetDir(mutationDirectory);
     }
 
     const bindLanguage = pluginManifestLanguageToBindLanguage(
@@ -196,13 +195,5 @@ export class PluginProject extends Project<PluginManifest> {
       ? entryPoint
       : path.join(this.getManifestDir(), entryPoint);
     return `${path.dirname(absolute)}/w3`;
-  }
-
-  private _resetDir(dir: string) {
-    if (fs.existsSync(dir)) {
-      rimraf.sync(dir);
-    }
-
-    fs.mkdirSync(dir, { recursive: true });
   }
 }

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/naming-convention */
 
+// @ts-ignore
 import * as Types from "./";
 
 export type UInt = number;

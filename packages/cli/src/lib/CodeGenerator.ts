@@ -16,16 +16,16 @@ import {
   AnyManifest,
   SchemaComposer,
   intlMsg,
+  resetDir,
 } from "./";
 
 import { BindLanguage, GenerateBindingFn } from "@web3api/schema-bind";
 import { writeDirectorySync } from "@web3api/os-js";
 import path from "path";
-import fs, { readFileSync } from "fs";
+import { readFileSync } from "fs";
 import * as gluegun from "gluegun";
 import { Ora } from "ora";
 import Mustache from "mustache";
-import rimraf from "rimraf";
 
 export interface CodeGeneratorConfig {
   outputDir: string;
@@ -81,7 +81,7 @@ export class CodeGenerator {
       }
 
       // Make sure the output dir is reset
-      this._resetDir(this._config.outputDir);
+      resetDir(this._config.outputDir);
 
       // Get the fully composed schema
       const composed = await schemaComposer.getComposedSchemas();
@@ -168,14 +168,6 @@ export class CodeGenerator {
         }
       );
     }
-  }
-
-  private _resetDir(dir: string) {
-    if (fs.existsSync(dir)) {
-      rimraf.sync(dir);
-    }
-
-    fs.mkdirSync(dir, { recursive: true });
   }
 
   private _generateTemplate(

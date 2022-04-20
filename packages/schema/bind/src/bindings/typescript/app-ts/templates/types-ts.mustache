@@ -1,6 +1,7 @@
-// @ts-noCheck
+// @ts-ignore
 import * as Types from "./";
 
+// @ts-ignore
 import {
   Client,
   InvokeApiResult
