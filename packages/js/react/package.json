@@ -15,7 +15,7 @@
     "build": "rimraf ./build && tsc --project tsconfig.build.json",
     "lint": "eslint --color -c ../../../.eslintrc.js src/",
     "test:ci": "yarn test",
-    "test": "jest --passWithNoTests --runInBand --verbose --env=./src/__tests__/env/index.ts",
+    "test": "jest --passWithNoTests --runInBand --verbose --onlyChanged --env=./src/__tests__/env/index.ts",
     "test:watch": "yarn test --watch"
   },
   "dependencies": {

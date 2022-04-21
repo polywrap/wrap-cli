@@ -13,7 +13,7 @@
     "deploy:web3api": "npx w3 build --ipfs http://localhost:5001 --test-ens simplestorage.eth",
     "deploy:contract": "node ./scripts/deploy-contract.js",
     "test": "yarn test:e2e && yarn test:env:up && yarn deploy && yarn test:recipe && yarn test:env:down",
-    "test:e2e": "yarn build && yarn test:e2e:codegen && jest --passWithNoTests --runInBand --verbose",
+    "test:e2e": "yarn build && yarn test:e2e:codegen && jest --passWithNoTests --runInBand --verbose --onlyChanged",
     "test:e2e:codegen": "npx w3 app codegen -m ./src/__tests__/types/web3api.app.yaml -c ./src/__tests__/types/w3",
     "test:recipe": "npx w3 query ./recipes/e2e.json"
   },
