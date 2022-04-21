@@ -10,6 +10,7 @@ scalar Int32
 scalar Bytes
 scalar BigInt
 scalar BigNumber
+scalar JSON
 scalar Map
 
 directive @imported(
