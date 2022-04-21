@@ -2,7 +2,6 @@ import { Write } from "./Write";
 import { Nullable } from "./Nullable";
 import { BigInt, BigNumber } from "../math";
 import { Context } from "../debug";
-import { JSON } from "../json";
 
 export class WriteSizer extends Write {
   length: i32;
@@ -119,11 +118,6 @@ export class WriteSizer extends Write {
 
   writeBigNumber(value: BigNumber): void {
     const str = value.toString();
-    this.writeString(str);
-  }
-
-  writeJSON(value: JSON.Value): void {
-    const str = value.stringify();
     this.writeString(str);
   }
 
@@ -309,15 +303,6 @@ export class WriteSizer extends Write {
     }
 
     this.writeBigNumber(value);
-  }
-
-  writeNullableJSON(value: JSON.Value | null): void {
-    if (value === null) {
-      this.writeNil();
-      return;
-    }
-
-    this.writeJSON(value);
   }
 
   writeNullableArray<T>(

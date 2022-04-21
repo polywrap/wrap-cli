@@ -1,1 +1,2 @@
-export * from "@web3api/assemblyscript-json";
+import * as JSON from "@serial-as/json";
+export { JSON };
