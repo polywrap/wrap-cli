@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 
 // @ts-ignore
 import * as Types from "./";

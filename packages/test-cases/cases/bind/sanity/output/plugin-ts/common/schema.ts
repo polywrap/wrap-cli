@@ -12,6 +12,7 @@ scalar Int16
 scalar Int32
 scalar Bytes
 scalar BigInt
+scalar BigNumber
 scalar JSON
 scalar Map
 
@@ -120,6 +121,8 @@ type CustomType {
   i32: Int32!
   bigint: BigInt!
   optBigint: BigInt
+  bignumber: BigNumber!
+  optBignumber: BigNumber
   json: JSON!
   optJson: JSON
   bytes: Bytes!

@@ -2,6 +2,7 @@
 ///       All modifications will be overwritten.
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 
 import { schema } from "./";
 

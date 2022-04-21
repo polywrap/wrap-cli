@@ -8,6 +8,8 @@ import {
   WriteEncoder,
   WriteSizer,
   JSON,
+  BigInt,
+  BigNumber,
 } from "../";
 
 class Sanity {
@@ -24,6 +26,8 @@ class Sanity {
   float32: f32;
   float64: f64;
   str: string = "";
+  bigint: BigInt = BigInt.ONE;
+  bignumber: BigNumber = BigNumber.ONE;
   json: JSON.Value = JSON.Value.Object();
   largeStr: string = "";
   bytes: ArrayBuffer = new ArrayBuffer(1);
@@ -50,6 +54,8 @@ class Sanity {
     this.float32 = 3.40282344818115234375;
     this.float64 = 3124124512.598273468017578125;
     this.str = "Hello, world!";
+    this.bigint = BigInt.fromString("3124124512598273468017578125");
+    this.bignumber = BigNumber.fromString("3124124512.598273468017578125");
     this.json = JSON.parse(`{"foo": "bar", "bar": "baz"}`);
     this.largeStr = new Array<string>(10).join("web3api ");
     this.bytes = new ArrayBuffer(12);
@@ -93,7 +99,7 @@ class Sanity {
 }
 
 function serializeSanity(writer: Write, type: Sanity): void {
-  writer.writeMapLength(21);
+  writer.writeMapLength(23);
   writer.writeString("nil");
   writer.writeNullableString(type.nil);
   writer.writeString("int8");
@@ -126,6 +132,10 @@ function serializeSanity(writer: Write, type: Sanity): void {
   writer.writeBytes(type.bytes);
   writer.writeString("largeBytes");
   writer.writeBytes(type.largeBytes);
+  writer.writeString("bigint");
+  writer.writeBigInt(type.bigint);
+  writer.writeString("bignumber");
+  writer.writeBigNumber(type.bignumber);
   writer.writeString("json");
   writer.writeJSON(type.json);
   writer.writeString("array");
@@ -189,6 +199,10 @@ function deserializeSanity(reader: Read, type: Sanity): void {
       type.float64 = reader.readFloat64();
     } else if (field == "str") {
       type.str = reader.readString();
+    } else if (field == "bigint") {
+      type.bigint = reader.readBigInt();
+    } else if (field == "bignumber") {
+      type.bignumber = reader.readBigNumber();
     } else if (field == "json") {
       type.json = reader.readJSON();
     } else if (field == "largeStr") {
@@ -265,6 +279,10 @@ function deserializeWithOverflow(reader: Read, type: Sanity): void {
       type.float64 = <f64>reader.readFloat32();
     } else if (field == "str") {
       type.str = reader.readString();
+    } else if (field == "bigint") {
+      type.bigint = reader.readBigInt();
+    } else if (field == "bignumber") {
+      type.bignumber = reader.readBigNumber();
     } else if (field == "json") {
       type.json = reader.readJSON();
     } else if (field == "bytes") {
@@ -329,6 +347,10 @@ function deserializeWithInvalidTypes(reader: Read, type: Sanity): void {
       type.float64 = reader.readFloat64();
     } else if (field == "str") {
       type.str = reader.readString();
+    } else if (field == "bigint") {
+      type.bigint = reader.readBigInt();
+    } else if (field == "bignumber") {
+      type.bignumber = reader.readBigNumber();
     } else if (field == "json") {
       type.json = reader.readJSON();
     } else if (field == "largeStr") {

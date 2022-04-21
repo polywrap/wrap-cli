@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/naming-convention */
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 
 // @ts-ignore
 import * as Types from "./";
@@ -17,6 +18,7 @@ export type Int16 = number;
 export type Int32 = number;
 export type Bytes = Uint8Array;
 export type BigInt = string;
+export type BigNumber = string;
 export type Json = string;
 export type String = string;
 export type Boolean = boolean;

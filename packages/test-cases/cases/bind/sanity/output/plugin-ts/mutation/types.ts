@@ -20,6 +20,7 @@ export type Int16 = number;
 export type Int32 = number;
 export type Bytes = Uint8Array;
 export type BigInt = string;
+export type BigNumber = string;
 export type Json = string;
 export type String = string;
 export type Boolean = boolean;
@@ -53,6 +54,8 @@ export interface CustomType {
   i32: Types.Int32;
   bigint: Types.BigInt;
   optBigint?: Types.BigInt | null;
+  bignumber: Types.BigNumber;
+  optBignumber?: Types.BigNumber | null;
   json: Json;
   optJson?: Json | null;
   bytes: Types.Bytes;
