@@ -1,7 +1,7 @@
 format: 0.0.1-prealpha.7
 name: TODO
-repository: https://github.com/web3-api/monorepo
 language: interface
+meta: ./web3api.meta.yaml
 modules:
   query:
     schema: ./query.graphql

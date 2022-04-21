@@ -1,12 +1,12 @@
 import {
   Api,
   Client,
-  executeMaybeAsyncFunction,
   filterResults,
   GetManifestOptions,
   InvokeApiOptions,
   InvokeApiResult,
   Plugin,
+  PluginModule,
   PluginPackage,
   Uri,
   AnyManifestArtifact,
@@ -19,12 +19,16 @@ import {
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
-function isValidEnv(env: Record<string, unknown>): boolean {
-  return typeof env === "object" && !Array.isArray(env) && env !== null;
-}
-
 export class PluginWeb3Api extends Api {
   private _instance: Plugin | undefined;
+
+  private _sanitizedEnv: Record<
+    InvokableModules,
+    Record<string, unknown> | undefined
+  > = {
+    query: undefined,
+    mutation: undefined,
+  };
 
   constructor(
     private _uri: Uri,
@@ -68,29 +72,19 @@ export class PluginWeb3Api extends Api {
     try {
       const { module, method, resultFilter } = options;
       const input = options.input || {};
-      const modules = this._getInstance().getModules(client);
+      const modules = this._getInstance().getModules();
       const pluginModule = modules[module];
 
       if (!pluginModule) {
         throw new Error(`PluginWeb3Api: module "${module}" not found.`);
       }
 
-      if (!pluginModule[method]) {
+      if (!pluginModule.getMethod(method)) {
         throw new Error(`PluginWeb3Api: method "${method}" not found.`);
       }
 
-      let env = this._getModuleClientEnv(module);
-      if (isValidEnv(env)) {
-        if (pluginModule["sanitizeEnv"]) {
-          env = (await executeMaybeAsyncFunction(
-            pluginModule["sanitizeEnv"],
-            env,
-            client
-          )) as Record<string, unknown>;
-        }
-
-        this._getInstance().loadEnv(env, module);
-      }
+      // Sanitize & load the module's environment
+      await this._sanitizeAndLoadEnv(client, module, pluginModule);
 
       let jsInput: Record<string, unknown>;
 
@@ -111,9 +105,10 @@ export class PluginWeb3Api extends Api {
         jsInput = input;
       }
 
+      // Invoke the function
       try {
-        const result = (await executeMaybeAsyncFunction(
-          pluginModule[method],
+        const result = (await pluginModule._w3_invoke(
+          method,
           jsInput,
           client
         )) as TData;
@@ -174,7 +169,24 @@ export class PluginWeb3Api extends Api {
     return this._instance;
   }
 
-  @Tracer.traceMethod("PluginWeb3Api: getModuleClientEnv")
+  @Tracer.traceMethod("PluginWeb3Api: _sanitizeAndLoadEnv")
+  private async _sanitizeAndLoadEnv(
+    client: Client,
+    module: InvokableModules,
+    pluginModule: PluginModule
+  ): Promise<void> {
+    if (this._sanitizedEnv[module] === undefined) {
+      const clientEnv = this._getModuleClientEnv(module);
+
+      const env = await pluginModule._w3_sanitize_env(clientEnv, client);
+
+      this._sanitizedEnv[module] = env;
+    }
+
+    pluginModule._w3_load_env(this._sanitizedEnv[module] || {});
+  }
+
+  @Tracer.traceMethod("PluginWeb3Api: _getModuleClientEnv")
   private _getModuleClientEnv(
     module: InvokableModules
   ): Record<string, unknown> {

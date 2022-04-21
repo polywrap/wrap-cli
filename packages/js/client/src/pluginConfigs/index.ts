@@ -1,14 +1,14 @@
 /// NOTE: This is an auto-generated file. See scripts/extractPluginConfigs.ts
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { IpfsConfig } from "./Ipfs";
-import { EthereumConfig } from "./Ethereum";
-import { EnsConfig } from "./Ens";
+import { IpfsPluginConfigs } from "./Ipfs";
+import { EthereumPluginConfigs } from "./Ethereum";
+import { EnsPluginConfigs } from "./Ens";
 
 interface PluginConfigs {
-  ipfs?: IpfsConfig;
-  ethereum?: EthereumConfig;
-  ens?: EnsConfig;
+  ipfs?: IpfsPluginConfigs;
+  ethereum?: EthereumPluginConfigs;
+  ens?: EnsPluginConfigs;
 }
 
 const modules: Record<string, string> = {

@@ -45,7 +45,7 @@ type QueryEnv {
 }
 
 type Query {
-  sanitizeQueryEnv(prop: String): String
+  sanitizeEnv(prop: String): String
 }
 `
 
@@ -59,7 +59,7 @@ type QueryEnv {
 }
 
 type Query {
-  sanitizeQueryEnv(env: QueryClientEnv): String
+  sanitizeEnv(env: QueryClientEnv): String
 }
 `
 
@@ -97,7 +97,7 @@ type MutationEnv {
 }
 
 type Mutation {
-  sanitizeMutationEnv(prop: String): String
+  sanitizeEnv(prop: String): String
 }
 `
 
@@ -111,7 +111,7 @@ type MutationEnv {
 }
 
 type Mutation {
-  sanitizeMutationEnv(env: MutationClientEnv): String
+  sanitizeEnv(env: MutationClientEnv): String
 }
 `
 
@@ -133,35 +133,35 @@ describe("Web3API Schema Environment Validation", () => {
 
   it("throws error if sanitize environment method invalid", () => {
     expect(exec(missingQuery)).toThrow(
-      /Must have 'sanitizeQueryEnv' method inside module methods when using 'QueryClientEnv'/gm
+      /validateClientEnvironment: Cannot find the specified module type by name 'Query' while trying to validate 'QueryClientEnv'/gm
     );
 
     expect(exec(missingMutation)).toThrow(
-      /Must have 'sanitizeMutationEnv' method inside module methods when using 'MutationClientEnv'/gm
+      /validateClientEnvironment: Cannot find the specified module type by name 'Mutation' while trying to validate 'MutationClientEnv'/gm
     );
 
     expect(exec(missingQuerySanitizeEnvironment)).toThrow(
-      /Must have 'sanitizeQueryEnv' method inside module methods when using 'QueryClientEnv'/gm
+      /Must have 'sanitizeEnv' method inside module methods when using 'QueryClientEnv'/gm
     );
 
     expect(exec(missingMutationSanitizeEnvironment)).toThrow(
-      /Must have 'sanitizeMutationEnv' method inside module methods when using 'MutationClientEnv'/gm
+      /Must have 'sanitizeEnv' method inside module methods when using 'MutationClientEnv'/gm
     );
 
     expect(exec(invalidQuerySanitizeEnvironmentArguments)).toThrow(
-      /'sanitizeQueryEnv' module method should have single argument 'env: QueryClientEnv'/gm
+      /'sanitizeEnv' module method should have single argument 'env: QueryClientEnv'/gm
     );
 
     expect(exec(invalidMutationSanitizeEnviromentArguments)).toThrow(
-      /'sanitizeMutationEnv' module method should have single argument 'env: MutationClientEnv'/gm
+      /'sanitizeEnv' module method should have single argument 'env: MutationClientEnv'/gm
     );
 
     expect(exec(invalidQuerySanitizeEnvironmentReturnType)).toThrow(
-      /'sanitizeQueryEnv' module method should have required return type 'QueryEnv'/gm
+      /'sanitizeEnv' module method should have required return type 'QueryEnv'/gm
     );
 
     expect(exec(invalidMutationSanitizeEnvironmentReturnType)).toThrow(
-      /'sanitizeMutationEnv' module method should have required return type 'MutationEnv'/gm
+      /'sanitizeEnv' module method should have required return type 'MutationEnv'/gm
     );
   });
 });

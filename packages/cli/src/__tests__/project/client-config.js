@@ -1,22 +1,29 @@
-const { Plugin } = require("@web3api/core-js");
+const { Plugin, PluginModule, PluginModules } = require("@web3api/core-js");
 
 const mockPlugin = () => {
-  class MockPlugin extends Plugin {
-    _val = 0;
-    getModules(_client) {
+
+  class Query extends PluginModule {
+    getData() { return this.config.val; }
+  }
+
+  class Mutation extends PluginModule {
+    setData(input) {
+      this.config.val = +input.options.value;
+      return { txReceipt: "0xdone", value: this.config.val };
+    }
+
+    deployContract() { return "0x100"; }
+  }
+
+  class MockPlugin {
+    _config = {
+      val: 0,
+    };
+
+    getModules() {
       return {
-        query: {
-          getData: async (_) => {
-            this._val;
-          },
-        },
-        mutation: {
-          setData: (input) => {
-            this._val = parseInt(input.options.value);
-            return { txReceipt: "0xdone", value: this._val };
-          },
-          deployContract: (_) => "0x100",
-        },
+        query: new Query(this._config),
+        mutation: new Mutation(this._config),
       };
     }
   }

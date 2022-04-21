@@ -1,25 +1,37 @@
 import { Web3ApiClientConfig } from "@web3api/client-js";
-import { Plugin, Client, PluginModules } from "@web3api/core-js";
+import { Plugin, PluginModule, PluginModules } from "@web3api/core-js";
 
-const mockPlugin = () => {
-  class MockPlugin extends Plugin {
-    private _val: number = 0;
-    getModules(_client: Client): PluginModules {
-      return {
-        query: {
-          getData: async (_: unknown) => this._val,
-        },
-        mutation: {
-          setData: (input: { options: { value: number } }) => {
-            this._val = +input.options.value;
-            return { txReceipt: "0xdone", value: this._val };
-          },
-          deployContract: (_) => "0x100",
-        },
-      };
-    }
+interface Config extends Record<string, unknown> {
+  val: number;
+}
+
+class Query extends PluginModule<Config> {
+  getData(_: unknown): number { return this.config.val; }
+}
+
+class Mutation extends PluginModule<Config> {
+  setData(input: { options: { value: number } }) {
+    this.config.val = +input.options.value;
+    return { txReceipt: "0xdone", value: this.config.val };
   }
 
+  deployContract(): string { return "0x100"; }
+}
+
+class MockPlugin implements Plugin {
+  private _config: Config = {
+    val: 0,
+  };
+
+  getModules(): PluginModules {
+    return {
+      query: new Query(this._config),
+      mutation: new Mutation(this._config),
+    };
+  }
+}
+
+const mockPlugin = () => {
   return {
     factory: () => new MockPlugin(),
     manifest: {

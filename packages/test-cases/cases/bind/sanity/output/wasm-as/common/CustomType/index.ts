@@ -3,6 +3,7 @@ import {
   Write,
   Nullable,
   BigInt,
+  BigNumber,
   JSON
 } from "@web3api/wasm-as";
 import {
@@ -27,6 +28,8 @@ export class CustomType {
   m_i32: i32;
   bigint: BigInt;
   optBigint: BigInt | null;
+  bignumber: BigNumber;
+  optBignumber: BigNumber | null;
   json: JSON.Value;
   optJson: JSON.Value | null;
   bytes: ArrayBuffer;

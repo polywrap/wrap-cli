@@ -113,11 +113,10 @@ ${HELP}`);
 `);
 
     const expectedTypesResult = compareSync(
-      `${projectRoot}/src/w3`,
+      `${projectRoot}/src`,
       `${projectRoot}/expected-types`,
       { compareContent: true }
     );
-
     expect(expectedTypesResult.differences).toBe(0);
 
     const expectedBuildResult = compareSync(
