@@ -41,9 +41,6 @@ const _toTypescript = (
     case "BigInt":
     case "BigNumber":
       break;
-    case "JSON":
-      type = "Json";
-      break;
     default:
       if (type.includes("Enum_")) {
         type = `Types.${type.replace("Enum_", "")}`;

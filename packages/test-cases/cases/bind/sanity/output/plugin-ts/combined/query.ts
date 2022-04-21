@@ -11,7 +11,6 @@ import {
   Bytes,
   BigInt,
   BigNumber,
-  Json,
   String,
   Boolean
 } from "./types";

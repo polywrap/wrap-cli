@@ -94,8 +94,6 @@ export const toWasmInit: MustacheFn = () => {
         return `BigInt.fromUInt16(0)`;
       case "BigNumber":
         return `new BigNumber(BigInt.fromUInt16(0), 0, 0)`;
-      case "JSON":
-        return `JSON.Value.Null()`;
       default:
         if (type.includes("Enum_")) {
           return "0";
@@ -163,9 +161,6 @@ export const toWasm: MustacheFn = () => {
         break;
       case "BigNumber":
         type = "BigNumber";
-        break;
-      case "JSON":
-        type = "JSON.Value";
         break;
       default:
         if (type.includes("Enum_")) {

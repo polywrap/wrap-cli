@@ -10,7 +10,6 @@ scalar Int32
 scalar Bytes
 scalar BigInt
 scalar BigNumber
-scalar JSON
 scalar Map
 
 directive @imported(
@@ -120,8 +119,6 @@ type CustomType {
   optBigint: BigInt
   bignumber: BigNumber!
   optBignumber: BigNumber
-  json: JSON!
-  optJson: JSON
   bytes: Bytes!
   optBytes: Bytes
   boolean: Boolean!

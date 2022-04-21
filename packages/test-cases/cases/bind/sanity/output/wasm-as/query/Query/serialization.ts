@@ -7,11 +7,11 @@ import {
   Nullable,
   BigInt,
   BigNumber,
-  JSON,
   Context
 } from "@web3api/wasm-as";
 import * as Types from "..";
 
+@serializable
 export class Input_queryMethod {
   str: string;
   optStr: string | null;
@@ -179,6 +179,7 @@ export function writequeryMethodResult(writer: Write, result: i32): void {
   writer.context().pop();
 }
 
+@serializable
 export class Input_objectMethod {
   object: Types.AnotherType;
   optObject: Types.AnotherType | null;

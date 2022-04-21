@@ -4,7 +4,6 @@ import {
   Nullable,
   BigInt,
   BigNumber,
-  JSON,
   Result
 } from "@web3api/wasm-as";
 import {
@@ -17,6 +16,7 @@ import {
 } from "./serialization";
 import * as Types from "../..";
 
+@serializable
 export class TestImport_Mutation {
 
   public static uri: string = "testimport.uri.eth";
