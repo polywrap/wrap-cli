@@ -92,7 +92,8 @@ const plugins: PluginConfigSource[] = [
 function main(): void {
 
   const header = "/// NOTE: This is an auto-generated file. See scripts/extractPluginConfigs.ts\n" +
-    "/* eslint-disable @typescript-eslint/no-explicit-any */";
+    "/* eslint-disable @typescript-eslint/no-explicit-any */\n" +
+    "/* eslint-disable prettier/prettier */";
   const outputFiles: {
     fileName: string,
     content: string
