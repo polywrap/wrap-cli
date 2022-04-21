@@ -12,7 +12,6 @@ export const scalarTypes = {
   Bytes: "Bytes",
   BigInt: "BigInt",
   BigNumber: "BigNumber",
-  JSON: "JSON",
 };
 
 export type ScalarTypes = typeof scalarTypes;
