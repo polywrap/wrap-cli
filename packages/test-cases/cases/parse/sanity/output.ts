@@ -169,6 +169,16 @@ export const typeInfo: TypeInfo = {
           required: false,
         }),
         createScalarPropertyDefinition({
+          name: "json",
+          type: "JSON",
+          required: true,
+        }),
+        createScalarPropertyDefinition({
+          name: "optJson",
+          type: "JSON",
+          required: false,
+        }),
+        createScalarPropertyDefinition({
           name: "bytes",
           type: "Bytes",
           required: true,
