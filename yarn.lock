@@ -3844,6 +3844,30 @@
     "@opentelemetry/semantic-conventions" "0.20.0"
     "@opentelemetry/tracing" "0.20.0"
 
+"@serial-as/core@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@serial-as/core/-/core-1.0.2.tgz#a3b21d6962fed7aaae978d63bc0551be65b36ea6"
+  integrity sha512-aJFMzEn5eztHI5ZcxCGYiRXuj8xVQt+JGTzCVHq/NMBHubAi4MC48/e3VVjqGoHo+FdPlnGropx08YPrc3ENCw==
+  dependencies:
+    "@serial-as/transform" "1.0.2"
+    as-bignum "^0.2.17"
+
+"@serial-as/json@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@serial-as/json/-/json-1.0.2.tgz#7854a37df7f1805f3b1ad4508d1177faba9d79a5"
+  integrity sha512-ZuMb8bUJmo7aJGoAWp3xHYh/5K/BbYcID+sZlcILHQEWAz/2RaW4dkOquMmtBha+4PaaJ1RzDuTDe3zHuWBsSQ==
+  dependencies:
+    "@serial-as/core" "1.0.2"
+    as-base64 "^0.2.0"
+    assemblyscript-json "^1.1.0"
+
+"@serial-as/transform@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@serial-as/transform/-/transform-1.0.2.tgz#95ed7aa2879f13825ea4b404718ee1eca9ad71c7"
+  integrity sha512-1Uti3bxGYrkN1yhV0aVuAQ46dsEvWXUDVQ+2btC5nFo0N2UJ8860K3HVc6y3Xm2pEDMW/6IrmfZoapNV1E3jMw==
+  dependencies:
+    visitor-as "^0.7.0-1"
+
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"
@@ -5213,6 +5237,11 @@ arrify@^2.0.1:
   resolved "https://registry.yarnpkg.com/arrify/-/arrify-2.0.1.tgz#c9655e9331e0abcd588d2a7cad7e9956f66701fa"
   integrity sha512-3duEwti880xqi4eAMN8AyR4a0ByT90zoYdLlevfrvU43vb0YZwZVfxOgxWrLXXXpyugL0hNZc9G6BiB5B3nUug==
 
+as-base64@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/as-base64/-/as-base64-0.2.0.tgz#b4bed937c93bfb6524b932b517e1b8571a0dd518"
+  integrity sha512-j6JxprAVN4SXUcZiSChuMBf0JJOCdh5OfrHAepluxmFWuDZZm+YjmfNSk8djUHRPEB+Ui5HGvrz46GLvTJf3ig==
+
 as-bigint@0.5.3:
   version "0.5.3"
   resolved "https://registry.yarnpkg.com/as-bigint/-/as-bigint-0.5.3.tgz#a0647d0b7ce835077aca33115e71eb26a83df8be"
@@ -5222,6 +5251,11 @@ as-bigint@^0.5.1:
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/as-bigint/-/as-bigint-0.5.1.tgz#c14c381bf816798bbda35a8080a8085d036f72f1"
   integrity sha512-1yFnss/Xz6ii69fK8uVWyZim/+ybgQWX98r8mqIfgs5MFEQaI+PkHtIDWZOwb8k0ASuZx0VQVvgnYtVo+/eMtg==
+
+as-bignum@^0.2.17:
+  version "0.2.18"
+  resolved "https://registry.yarnpkg.com/as-bignum/-/as-bignum-0.2.18.tgz#61ed4dd07d4a62107bde227fdb4370190217bf0b"
+  integrity sha512-5LODrOr7wvS643oh7PHfyRtbBO9vCcU69vNNvrqh5yovrApM9nRHDeT5XcqnaSI8TqK9ZhN12qhZnq4rdIGcwQ==
 
 as-bignumber@0.2.0:
   version "0.2.0"
@@ -5256,6 +5290,11 @@ asn1@~0.2.3:
   integrity sha512-ix/FxPn0MDjeyJ7i/yoHGFt/EX6LyNbxSEhPPXODPL+KB0VPk86UYfL0lMdy+KCnv+fmvIzySwaK5COwqVbWTQ==
   dependencies:
     safer-buffer "~2.1.0"
+
+assemblyscript-json@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/assemblyscript-json/-/assemblyscript-json-1.1.0.tgz#49d38bc21f1ac36f2887528a35de6cf7d59c17be"
+  integrity sha512-UbE8ts8csTWQgd5TnSPN7MRV9NveuHv1bVnKmDLoo/tzjqxkmsZb3lu59Uk8H7SGoqdkDSEE049alx/nHnSdFw==
 
 assemblyscript@0.19.1:
   version "0.19.1"
@@ -20764,6 +20803,14 @@ visitor-as@^0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/visitor-as/-/visitor-as-0.6.0.tgz#b0cca3c918bd9d396545faf08529d2b9ba968a40"
   integrity sha512-4WcnwCLXWjhNkwJj9gSqh46sdIv9CyIvnSuwr61OOfrGCtN2mKcW5KE828OeEr1rYjEy0Z/CIdPBJKJRLsUgDA==
+  dependencies:
+    lodash.clonedeep "^4.5.0"
+    ts-mixer "^5.4.1"
+
+visitor-as@^0.7.0-1:
+  version "0.7.0-2"
+  resolved "https://registry.yarnpkg.com/visitor-as/-/visitor-as-0.7.0-2.tgz#28f1c51801a677f14c4487c78a85ad541cfe382d"
+  integrity sha512-JDviqVnGn8i5qafLYuZUGlNeyc/8STIBnmNiXizvHO29xxJDaHNHxbr4Gh+9ksIJvMh9TNQKBeSyT2tldNbpJw==
   dependencies:
     lodash.clonedeep "^4.5.0"
     ts-mixer "^5.4.1"
