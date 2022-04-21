@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import * as Functions from "../functions";
 import { GenerateBindingFn } from "../..";
+import { renderTemplates } from "../../utils/templates";
 import {
   BindOptions,
   BindOutput,
@@ -10,19 +11,21 @@ import {
 
 import {
   TypeInfo,
-  ModuleDefinition,
   transformTypeInfo,
   extendType,
   addFirstLast,
   toPrefixedGraphQLType,
   methodParentPointers,
   interfaceUris,
+  combineTypeInfo,
 } from "@web3api/schema-parse";
-import Mustache from "mustache";
-import { readFileSync } from "fs";
+import { renderSchema } from "@web3api/schema-compose";
 import path from "path";
 
 export { Functions };
+
+const templatePath = (subpath: string) =>
+  path.join(__dirname, "./templates", subpath);
 
 export const generateBinding: GenerateBindingFn = (
   options: BindOptions
@@ -31,6 +34,41 @@ export const generateBinding: GenerateBindingFn = (
     modules: [],
   };
 
+  // Require a common directory
+  if (!options.commonDirAbs) {
+    throw new Error("plugin-ts schema binding requires a common directory.");
+  }
+
+  // Aggregate the schemas (will be removed once user-defined modules are supported)
+  const schema = renderSchema(
+    combineTypeInfo(options.modules.map((m) => m.typeInfo)),
+    true
+  );
+
+  // Apply TypeInfo transforms
+  options.modules = options.modules.map((m) => ({
+    ...m,
+    typeInfo: applyTransforms(m.typeInfo),
+  }));
+
+  // Generate root entry point files
+  result.common = {
+    name: "common",
+    output: {
+      entries: renderTemplates(
+        templatePath(""),
+        {
+          ...options,
+          ...Functions,
+          schema,
+        },
+        {}
+      ),
+    },
+    outputDirAbs: options.commonDirAbs,
+  };
+
+  // Generate each module
   for (const module of options.modules) {
     result.modules.push(generateModuleBindings(module));
   }
@@ -62,60 +100,12 @@ function generateModuleBindings(module: BindModuleOptions): BindModuleOutput {
     outputDirAbs: module.outputDirAbs,
   };
   const output = result.output;
-  const schema = module.schema;
-  const typeInfo = applyTransforms(module.typeInfo);
 
-  const renderTemplate = (
-    subPath: string,
-    context: unknown,
-    fileName?: string
-  ) => {
-    const absPath = path.join(__dirname, subPath);
-    const template = readFileSync(absPath, { encoding: "utf-8" });
-    fileName =
-      fileName ||
-      absPath
-        .replace(path.dirname(absPath), "")
-        .replace(".mustache", "")
-        .replace("/", "")
-        .replace("\\", "")
-        .replace("-", ".");
-
-    output.entries.push({
-      type: "File",
-      name: fileName,
-      data: Mustache.render(template, context),
-    });
-  };
-
-  const queryContext = typeInfo.moduleTypes.find((def: ModuleDefinition) => {
-    return def.type === "Query";
-  });
-  const mutationContext = typeInfo.moduleTypes.find((def: ModuleDefinition) => {
-    return def.type === "Mutation";
-  });
-
-  const rootContext = {
-    ...typeInfo,
-    schema,
-    __mutation: !!mutationContext,
-    __query: !!queryContext,
-  };
-
-  renderTemplate("./templates/index-ts.mustache", rootContext);
-  renderTemplate("./templates/manifest-ts.mustache", rootContext);
-  if (mutationContext) {
-    renderTemplate(
-      "./templates/module_ts.mustache",
-      mutationContext,
-      "mutation.ts"
-    );
-  }
-  if (queryContext) {
-    renderTemplate("./templates/module_ts.mustache", queryContext, "query.ts");
-  }
-  renderTemplate("./templates/schema-ts.mustache", rootContext);
-  renderTemplate("./templates/types-ts.mustache", rootContext);
+  output.entries = renderTemplates(
+    templatePath("module-type"),
+    module.typeInfo,
+    {}
+  );
 
   return result;
 }

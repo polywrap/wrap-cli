@@ -1,4 +1,11 @@
-import { Uri, Client, InvokableModules, MaybeAsync } from ".";
+/* eslint-disable @typescript-eslint/naming-convention */
+import {
+  Uri,
+  Client,
+  InvokableModules,
+  MaybeAsync,
+  executeMaybeAsyncFunction,
+} from ".";
 
 /**
  * Invocable plugin method.
@@ -8,66 +15,100 @@ import { Uri, Client, InvokableModules, MaybeAsync } from ".";
  * @param client The client instance requesting this invocation.
  * This client will be used for any sub-queries that occur.
  */
-export type PluginMethod = (
-  input: Record<string, unknown>,
-  client: Client
-) => MaybeAsync<unknown>;
+export type PluginMethod<
+  TInput extends Record<string, unknown> = Record<string, unknown>,
+  TResult = unknown
+> = (input: TInput, client: Client) => MaybeAsync<TResult>;
 
-/**
- * A plugin "module" is a named map of [[PluginMethod | invocable methods]].
- * The names of these methods map 1:1 with the schema's query methods.
- */
-export type PluginModule = Record<string, PluginMethod>;
+export abstract class PluginModule<
+  TConfig extends Record<string, unknown> = Record<string, unknown>,
+  TEnv extends Record<string, unknown> = Record<string, unknown>,
+  TClientEnv extends Record<string, unknown> = TEnv
+> {
+  private _env: TEnv;
+  private _config: TConfig;
 
-/** @ignore */
-type PluginModulesType = {
-  [module in InvokableModules]?: PluginModule;
-};
+  constructor(config: TConfig) {
+    this._config = config;
+  }
+
+  public get env(): TEnv {
+    return this._env;
+  }
+
+  public get config(): TConfig {
+    return this._config;
+  }
+
+  public _w3_load_env(env: TEnv): void {
+    this._env = env;
+  }
+
+  public async _w3_sanitize_env(
+    clientEnv: TClientEnv,
+    client: Client
+  ): Promise<TEnv> {
+    if (this.getMethod("sanitizeEnv")) {
+      return this._w3_invoke<TClientEnv, TEnv>(
+        "sanitizeEnv",
+        clientEnv,
+        client
+      );
+    } else {
+      return Promise.resolve(clientEnv as TEnv);
+    }
+  }
+
+  public async _w3_invoke<
+    TInput extends Record<string, unknown> = Record<string, unknown>,
+    TResult = unknown
+  >(method: string, input: TInput, client: Client): Promise<TResult> {
+    const fn = this.getMethod<TInput, TResult>(method);
+
+    if (!fn) {
+      throw Error("TODO: missing function");
+    }
+
+    if (typeof fn !== "function") {
+      throw Error("TODO: ${method} must be a function");
+    }
+
+    return await executeMaybeAsyncFunction<TResult>(
+      fn.bind(this, input, client)
+    );
+  }
+
+  public getMethod<
+    TInput extends Record<string, unknown> = Record<string, unknown>,
+    TResult = unknown
+  >(method: string): PluginMethod<TInput, TResult> | undefined {
+    const fn:
+      | PluginMethod<TInput, TResult>
+      | undefined = ((this as unknown) as Record<
+      string,
+      PluginMethod<TInput, TResult>
+    >)[method];
+
+    return fn;
+  }
+}
 
 /** The plugin's query "modules" */
-export type PluginModules = PluginModulesType;
+export type PluginModules = {
+  [module in InvokableModules]?: PluginModule;
+};
 
 /**
  * The plugin instance.
  */
-export abstract class Plugin {
-  private _env: Record<InvokableModules, Record<string, unknown>> = {
-    query: {},
-    mutation: {},
-  };
+export interface Plugin {
   /**
    * Get an instance of this plugin's modules.
    *
    * @param client The client instance requesting the modules.
    * This client will be used for any sub-queries that occur.
    */
-  public abstract getModules(client: Client): PluginModules;
-
-  /**
-   * Sanitize plugin environment.
-   * This can optionally implemented by plugin
-   *
-   * @param env Module environment to be sanitized
-   */
-  public sanitizeEnv?(
-    env: Record<string, unknown>
-  ): Promise<Record<string, unknown>>;
-
-  /**
-   * Load module enviroment to be used
-   *
-   * @param env module enviroment to be set inside plugin
-   */
-  public loadEnv(env: Record<string, unknown>, module: InvokableModules): void {
-    this._env[module] = env;
-  }
-
-  /**
-   * Get module environment
-   */
-  public getEnv(module: InvokableModules): Record<string, unknown> {
-    return this._env[module];
-  }
+  getModules(): PluginModules;
 }
 
 /** The plugin package's manifest */

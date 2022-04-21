@@ -2,9 +2,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 /// Types generated from @web3api/ens-plugin-js build files:
-/// build/index.d.ts
+/// build/w3-man/plugin.d.ts, build/query/index.d.ts
 
-export interface EnsConfig {
+export interface EnsPluginConfigs {
+  query: QueryConfig;
+}
+
+export interface QueryConfig extends Record<string, unknown> {
   addresses?: Addresses;
 }
 

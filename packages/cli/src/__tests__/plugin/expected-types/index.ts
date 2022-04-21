@@ -1,5 +1,3 @@
-export * as Query from "./query";
-export * as Mutation from "./mutation";
-export * from "./types";
-export * from "./schema";
-export * from "./manifest";
+// TIP: All user-defined code lives in the module folders (./query, ./mutation)
+
+export * from "./w3";

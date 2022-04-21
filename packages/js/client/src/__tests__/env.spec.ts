@@ -4,7 +4,7 @@ import {
   stopTestEnvironment,
 } from "@web3api/test-env-js";
 import { createWeb3ApiClient, Web3ApiClientConfig } from "..";
-import { Client, Plugin, PluginModules } from "@web3api/core-js";
+import { Client, Plugin, PluginModule, PluginModules } from "@web3api/core-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 
 jest.setTimeout(200000);
@@ -37,8 +37,10 @@ describe("env", () => {
         },
         ipfs: { provider: ipfsProvider },
         ens: {
-          addresses: {
-            testnet: ensAddress,
+          query: {
+           addresses: {
+              testnet: ensAddress,
+            },
           },
         },
       },
@@ -47,28 +49,43 @@ describe("env", () => {
   };
 
   const mockEnvPlugin = () => {
-    class MockEnvPlugin extends Plugin {
-      getModules(_client: Client): PluginModules {
+    interface Env extends Record<string, unknown> {
+      arg1: number;
+    }
+
+    interface ClientEnv extends Record<string, unknown> {
+      arg1: string;
+    }
+
+    class Query extends PluginModule<{}, Env, ClientEnv> {
+      sanitizeEnv(env: ClientEnv): Env {
+        return { arg1: parseInt(env.arg1) };
+      }
+
+      queryEnv(): Env {
+        return this.env;
+      }
+    }
+
+    class Mutation extends PluginModule<{}, ClientEnv, Env> {
+      sanitizeEnv(env: Env): ClientEnv {
+        return { arg1: env.arg1.toString() };
+      }
+
+      mutationEnv(): ClientEnv {
+        return this.env;
+      }
+    }
+
+    class MockEnvPlugin implements Plugin {
+      getModules(): PluginModules {
         return {
-          query: {
-            sanitizeEnv: async (env: { arg1: string }) => {
-              return { arg1: parseInt(env.arg1) };
-            },
-            queryEnv: () => {
-              return this.getEnv("query");
-            },
-          },
-          mutation: {
-            sanitizeEnv: async (env: { arg1: number }) => {
-              return { arg1: env.arg1.toString() };
-            },
-            mutationEnv: () => {
-              return this.getEnv("mutation");
-            },
-          },
+          query: new Query({}),
+          mutation: new Mutation({}),
         };
       }
     }
+
     return {
       factory: () => new MockEnvPlugin(),
       manifest: {

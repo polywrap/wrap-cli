@@ -1,5 +1,43 @@
 import { MustacheFn } from "../types";
 
+const firstUpper = (str: string) =>
+  str ? str[0].toUpperCase() + str.slice(1) : "";
+
+const firstLower = (str: string) =>
+  str ? str[0].toLowerCase() + str.slice(1) : "";
+
+export const toLowerCase: MustacheFn = () => {
+  return (value: string, render: (template: string) => string) => {
+    const rendered = render(value);
+    return rendered.toLowerCase();
+  };
+};
+
+export const toClassName: MustacheFn = () => {
+  return (value: string, render: (template: string) => string) => {
+    const rendered = render(value);
+    rendered.replace(/([^A-Za-z0-9])+/g, ",");
+    return rendered
+      .split(",")
+      .map((x) => (x ? firstUpper(x.replace(",", "")) : ""))
+      .join();
+  };
+};
+
+export const toFuncName: MustacheFn = () => {
+  return (value: string, render: (template: string) => string) => {
+    let rendered = render(value);
+    rendered = rendered.replace(/([^A-Za-z])+/g, ",");
+    return rendered
+      .split(",")
+      .map((x, index) => {
+        x = x.replace(",", "");
+        return index === 0 ? firstLower(x) : firstUpper(x);
+      })
+      .join();
+  };
+};
+
 export const toTypescript: MustacheFn = () => {
   return _toTypescript;
 };
@@ -27,20 +65,6 @@ const _toTypescript = (
   }
 
   switch (type) {
-    case "Int":
-    case "Int8":
-    case "Int16":
-    case "Int32":
-    case "UInt":
-    case "UInt32":
-    case "UInt8":
-    case "UInt16":
-    case "String":
-    case "Boolean":
-    case "Bytes":
-    case "BigInt":
-    case "BigNumber":
-      break;
     case "JSON":
       type = "Json";
       break;
