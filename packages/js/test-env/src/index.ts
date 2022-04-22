@@ -233,6 +233,7 @@ export async function buildAndDeployApi({
     tempManifestPath,
     yaml.dump({
       ...web3apiManifest,
+      format: "0.0.1-prealpha.8",
       deploy: `./${tempDeployManifestFilename}`,
     })
   );
