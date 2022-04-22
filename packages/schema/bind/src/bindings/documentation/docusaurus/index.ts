@@ -22,7 +22,7 @@ import Mustache from "mustache";
 import path from "path";
 import { readFileSync } from "fs";
 
-const LOCAL_NAMESPACE = "Local";
+export const LOCAL_NAMESPACE = "Local";
 
 export const generateBinding: GenerateBindingFn = (
   options: BindOptions
@@ -41,7 +41,7 @@ export const generateBinding: GenerateBindingFn = (
       );
 
       // Generate the common type folder
-      result.common = generateModuleBindings({
+      result.common = generateDocusaurusModuleBindings({
         name: "common",
         typeInfo: commonTypeInfo,
         schema: "N/A",
@@ -51,7 +51,7 @@ export const generateBinding: GenerateBindingFn = (
   }
 
   for (const module of options.modules) {
-    result.modules.push(generateModuleBindings(module));
+    result.modules.push(generateDocusaurusModuleBindings(module));
   }
 
   return result;
@@ -72,7 +72,10 @@ function applyTransforms(typeInfo: TypeInfo): TypeInfo {
   return typeInfo;
 }
 
-function generateModuleBindings(module: BindModuleOptions): BindModuleOutput {
+export function generateDocusaurusModuleBindings(
+  module: BindModuleOptions,
+  _typeInfo?: TypeInfo
+): BindModuleOutput {
   const result: BindModuleOutput = {
     name: module.name,
     output: {
@@ -81,7 +84,7 @@ function generateModuleBindings(module: BindModuleOptions): BindModuleOutput {
     outputDirAbs: module.outputDirAbs,
   };
   const output = result.output;
-  const typeInfo = applyTransforms(module.typeInfo);
+  const typeInfo = _typeInfo ?? applyTransforms(module.typeInfo);
 
   const renderTemplate = (
     subPath: string,
@@ -102,8 +105,7 @@ function generateModuleBindings(module: BindModuleOptions): BindModuleOutput {
   for (const module of typeInfo.moduleTypes) {
     const moduleContext = {
       ...module,
-      getNamespace: { namespace: LOCAL_NAMESPACE },
-      getType: { type: module.type },
+      namespace: LOCAL_NAMESPACE,
     };
     renderTemplate(
       "./templates/docusaurus-module.mustache",
@@ -116,7 +118,7 @@ function generateModuleBindings(module: BindModuleOptions): BindModuleOutput {
   if (typeInfo.objectTypes.length > 0) {
     const objectContext = {
       objectTypes: typeInfo.objectTypes,
-      getNamespace: { namespace: LOCAL_NAMESPACE },
+      namespace: LOCAL_NAMESPACE,
     };
     renderTemplate(
       "./templates/docusaurus-objects.mustache",
@@ -129,7 +131,7 @@ function generateModuleBindings(module: BindModuleOptions): BindModuleOutput {
   if (typeInfo.enumTypes.length > 0) {
     const enumContext = {
       enumTypes: typeInfo.enumTypes,
-      getNamespace: { namespace: LOCAL_NAMESPACE },
+      namespace: LOCAL_NAMESPACE,
     };
     renderTemplate(
       "./templates/docusaurus-enums.mustache",
@@ -144,8 +146,8 @@ function generateModuleBindings(module: BindModuleOptions): BindModuleOutput {
     const moduleType = module.type.split("_")[1];
     const moduleContext = {
       ...module,
-      getNamespace: { namespace: module.namespace },
-      getType: { type: moduleType },
+      namespace: module.namespace,
+      type: moduleType,
     };
     renderTemplate(
       "./templates/docusaurus-module.mustache",
@@ -160,7 +162,7 @@ function generateModuleBindings(module: BindModuleOptions): BindModuleOutput {
     if (objectTypes.length > 0) {
       const objectContext = {
         objectTypes,
-        getNamespace: { namespace },
+        namespace,
       };
       renderTemplate(
         "./templates/docusaurus-objects.mustache",
@@ -176,7 +178,7 @@ function generateModuleBindings(module: BindModuleOptions): BindModuleOutput {
     if (enumTypes.length > 0) {
       const enumContext = {
         enumTypes,
-        getNamespace: { namespace },
+        namespace,
       };
       renderTemplate(
         "./templates/docusaurus-enums.mustache",

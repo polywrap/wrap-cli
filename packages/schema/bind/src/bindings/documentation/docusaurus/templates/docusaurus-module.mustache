@@ -1,6 +1,6 @@
 ---
-id: {{#getNamespace}}{{namespace}}_{{/getNamespace}}{{#toLower}}{{#getType}}{{type}}{{/getType}}{{/toLower}}
-title: {{#toTitle}}{{#getNamespace}}{{namespace}}_{{/getNamespace}}{{#getType}}{{type}}{{/getType}}{{/toTitle}}
+id: {{namespace}}_{{#toLower}}{{type}}{{/toLower}}
+title: {{#toTitle}}{{namespace}}_{{type}}{{/toTitle}}
 ---
 
 {{#methods}}

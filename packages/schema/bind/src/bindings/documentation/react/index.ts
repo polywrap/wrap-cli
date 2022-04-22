@@ -8,8 +8,8 @@ import {
 } from "../../..";
 import * as Functions from "./../functions";
 import * as TypeScriptFunctions from "./../../typescript/functions";
-import { createNamespaceSections, LOCAL_NAMESPACE } from "./namespaceSections";
-import { sortByNamespace } from "../utils";
+import { createNamespaceSections } from "./namespaceSections";
+import { generateDocusaurusModuleBindings } from "../docusaurus";
 
 import {
   TypeInfo,
@@ -72,15 +72,12 @@ function applyTransforms(typeInfo: TypeInfo): TypeInfo {
 }
 
 function generateModuleBindings(module: BindModuleOptions): BindModuleOutput {
-  const result: BindModuleOutput = {
-    name: module.name,
-    output: {
-      entries: [],
-    },
-    outputDirAbs: module.outputDirAbs,
-  };
-  const output = result.output;
   const typeInfo = applyTransforms(module.typeInfo);
+  const result: BindModuleOutput = generateDocusaurusModuleBindings(
+    module,
+    typeInfo
+  );
+  const output = result.output;
 
   const renderTemplate = (
     subPath: string,
@@ -97,100 +94,8 @@ function generateModuleBindings(module: BindModuleOptions): BindModuleOutput {
     });
   };
 
-  // generate modules
-  for (const module of typeInfo.moduleTypes) {
-    const moduleContext = {
-      ...module,
-      getNamespace: { namespace: LOCAL_NAMESPACE },
-      getType: { type: module.type },
-    };
-    renderTemplate(
-      "./templates/docusaurus-module.mustache",
-      moduleContext,
-      `${LOCAL_NAMESPACE}_${module.type.toLowerCase()}.md`
-    );
-  }
-
-  // generate object types
-  if (typeInfo.objectTypes.length > 0) {
-    const objectContext = {
-      objectTypes: typeInfo.objectTypes,
-      getNamespace: { namespace: LOCAL_NAMESPACE },
-    };
-    renderTemplate(
-      "./templates/docusaurus-objects.mustache",
-      objectContext,
-      `${LOCAL_NAMESPACE}_objects.md`
-    );
-  }
-
-  // generate enum types
-  if (typeInfo.enumTypes.length > 0) {
-    const enumContext = {
-      enumTypes: typeInfo.enumTypes,
-      getNamespace: { namespace: LOCAL_NAMESPACE },
-    };
-    renderTemplate(
-      "./templates/docusaurus-enums.mustache",
-      enumContext,
-      `${LOCAL_NAMESPACE}_enums.md`
-    );
-  }
-
-  // TODO: for imported modules, module.type contains the namespace. Should it?
-  // generate imported modules
-  for (const module of typeInfo.importedModuleTypes) {
-    const moduleType = module.type.split("_")[1];
-    const moduleContext = {
-      ...module,
-      getNamespace: { namespace: module.namespace },
-      getType: { type: moduleType },
-    };
-    renderTemplate(
-      "./templates/docusaurus-module.mustache",
-      moduleContext,
-      `${module.namespace}_${moduleType.toLowerCase()}.md`
-    );
-  }
-
-  // generated imported object types
-  const importedObjects = sortByNamespace(typeInfo.importedObjectTypes);
-  for (const [namespace, objectTypes] of Object.entries(importedObjects)) {
-    if (objectTypes.length > 0) {
-      const objectContext = {
-        objectTypes,
-        getNamespace: { namespace },
-      };
-      renderTemplate(
-        "./templates/docusaurus-objects.mustache",
-        objectContext,
-        `${namespace}_objects.md`
-      );
-    }
-  }
-
-  // generate imported enum types
-  const importedEnums = sortByNamespace(typeInfo.importedEnumTypes);
-  for (const [namespace, enumTypes] of Object.entries(importedEnums)) {
-    if (enumTypes.length > 0) {
-      const enumContext = {
-        enumTypes,
-        getNamespace: { namespace },
-      };
-      renderTemplate(
-        "./templates/docusaurus-enums.mustache",
-        enumContext,
-        `${namespace}_enums.md`
-      );
-    }
-  }
-
   // generate sidebar.js
-  const namespaceSections = createNamespaceSections(typeInfo);
-  const sidebarContext = {
-    ...typeInfo,
-    ...namespaceSections,
-  };
+  const sidebarContext = createNamespaceSections(typeInfo);
   renderTemplate(
     "./templates/sidebars-js.mustache",
     sidebarContext,

@@ -1,6 +1,17 @@
 module.exports = {
   docs: [
     'intro',
+    {{#namespaces}}
+    {
+      type: 'category',
+      label: '{{namespace}}',
+      items: [
+      {{#sections}}
+        'polywrap/{{namespace}}_{{section}}',
+      {{/sections}}
+      ],
+    },
+    {{/namespaces}}
     {
       type: 'category',
       label: '👋 Getting started',
@@ -30,16 +41,5 @@ module.exports = {
       ],
     },
     'resources/talks-and-videos',
-    {{#namespaces}}
-    {
-      type: 'category',
-      label: '{{namespace}}',
-      items: [
-      {{#sections}}
-        'polywrap/{{namespace}}_{{section}}',
-      {{/sections}}
-      ],
-    },
-    {{/namespaces}}
   ],
 };

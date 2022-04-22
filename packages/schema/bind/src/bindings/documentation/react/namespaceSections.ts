@@ -1,14 +1,14 @@
 // indicates what "sections" are imported--i.e. moduleTypes, objectTypes, enumTypes
+import { LOCAL_NAMESPACE } from "../docusaurus";
+
 import { TypeInfo } from "@web3api/schema-parse";
 
-export const LOCAL_NAMESPACE = "Local";
-
-export interface NamespaceSection {
+interface NamespaceSection {
   namespace: string;
   sections: { section: string }[];
 }
 // used in mustache template sidebars-js.mustache
-export interface NamespaceSections {
+interface NamespaceSections {
   namespaces: NamespaceSection[];
 }
 
