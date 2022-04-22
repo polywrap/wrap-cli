@@ -202,8 +202,6 @@ export default {
       codegenDir = path.join(projectDir, "docs/polywrap");
     }
 
-    console.log(codegenDir);
-
     const codeGenerator = new CodeGenerator({
       project,
       schemaComposer,
