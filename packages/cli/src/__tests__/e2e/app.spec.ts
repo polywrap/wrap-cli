@@ -28,7 +28,7 @@ const CODEGEN_SUCCESS = `- Manifest loaded from ./web3api.app.yaml
 `;
 
 describe("e2e tests for app command", () => {
-  const testCaseRoot = path.join(GetPathToCliTestFiles(), "app");
+  const testCaseRoot = path.join(GetPathToCliTestFiles(), "app/codegen");
   const testCases =
     fs.readdirSync(testCaseRoot, { withFileTypes: true })
       .filter((dirent) => dirent.isDirectory())

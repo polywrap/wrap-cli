@@ -34,7 +34,7 @@ const CODEGEN_SUCCESS = `- Manifest loaded from ./web3api.plugin.yaml
 `;
 
 describe("e2e tests for plugin command", () => {
-  const testCaseRoot = path.join(GetPathToCliTestFiles(), "plugin");
+  const testCaseRoot = path.join(GetPathToCliTestFiles(), "plugin/codegen");
   const testCases =
     fs.readdirSync(testCaseRoot, { withFileTypes: true })
       .filter((dirent) => dirent.isDirectory())
