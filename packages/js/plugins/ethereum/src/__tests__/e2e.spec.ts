@@ -1,5 +1,5 @@
 import { ethereumPlugin } from "..";
-import * as Schema from "../w3";
+import * as Schema from "../query/w3-man";
 
 import { Web3ApiClient, defaultIpfsProviders } from "@web3api/client-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
@@ -69,8 +69,10 @@ describe("Ethereum Plugin", () => {
         {
           uri: "w3://ens/ens.web3api.eth",
           plugin: ensPlugin({
-            addresses: {
-              testnet: ensAddress
+            query: {
+              addresses: {
+                testnet: ensAddress
+              }
             }
           })
         }

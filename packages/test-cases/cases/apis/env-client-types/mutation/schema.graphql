@@ -1,5 +1,5 @@
 type Mutation {
-  sanitizeMutationEnv(env: MutationClientEnv!): MutationEnv!
+  sanitizeEnv(env: MutationClientEnv!): MutationEnv!
   mutEnvironment(arg: String!): MutationEnv
 }
 

@@ -15,6 +15,8 @@ import {
   intlMsg,
   loadDeployManifest,
   loadDeployManifestExt,
+  web3apiManifestLanguageToBindLanguage,
+  resetDir,
 } from "..";
 import { Deployer } from "../deploy";
 
@@ -25,6 +27,9 @@ import {
   DeployManifest,
 } from "@web3api/core-js";
 import { getCommonPath, normalizePath } from "@web3api/os-js";
+import { bindSchema, BindOutput, BindOptions } from "@web3api/schema-bind";
+import { ComposerOutput } from "@web3api/schema-compose";
+import { TypeInfo } from "@web3api/schema-parse";
 import regexParser from "regex-parser";
 import path from "path";
 import { Schema as JsonSchema } from "jsonschema";
@@ -69,7 +74,8 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     this._deployManifest = undefined;
     this._defaultBuildManifestCached = false;
     this._deploymentPackagesCached = false;
-    this.resetCache();
+    this.removeCacheDir(cacheLayout.buildEnvDir);
+    this.removeCacheDir(cacheLayout.buildLinkedPackagesDir);
   }
 
   public async validate(): Promise<void> {
@@ -77,6 +83,10 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
   }
 
   /// Manifest (web3api.yaml)
+
+  public async getName(): Promise<string> {
+    return (await this.getManifest()).name;
+  }
 
   public async getManifest(): Promise<Web3ApiManifest> {
     if (!this._web3apiManifest) {
@@ -109,7 +119,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     return language as Web3ApiManifestLanguage;
   }
 
-  /// ProjectWithSchema Base Methods
+  /// Schema
 
   public async getSchemaNamedPaths(): Promise<{
     [name: string]: string;
@@ -137,6 +147,76 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
   > {
     const manifest = await this.getManifest();
     return manifest.import_redirects || [];
+  }
+
+  public async generateSchemaBindings(
+    composerOutput: ComposerOutput
+  ): Promise<BindOutput> {
+    const manifest = await this.getManifest();
+    const queryModule = manifest.modules.query?.module as string;
+    const queryDirectory = manifest.modules.query
+      ? this._getGenerationDirectory(queryModule)
+      : undefined;
+    const mutationModule = manifest.modules.mutation?.module as string;
+    const mutationDirectory = manifest.modules.mutation
+      ? this._getGenerationDirectory(mutationModule)
+      : undefined;
+
+    if (
+      queryDirectory &&
+      mutationDirectory &&
+      queryDirectory === mutationDirectory
+    ) {
+      throw Error(
+        intlMsg.lib_compiler_dup_code_folder({ directory: queryDirectory })
+      );
+    }
+
+    // Clean the code generation
+    if (queryDirectory) {
+      resetDir(queryDirectory);
+    }
+
+    if (mutationDirectory) {
+      resetDir(mutationDirectory);
+    }
+
+    const bindLanguage = web3apiManifestLanguageToBindLanguage(
+      await this.getManifestLanguage()
+    );
+
+    const options: BindOptions = {
+      projectName: manifest.name,
+      modules: [],
+      bindLanguage,
+    };
+
+    if (manifest.modules.query) {
+      options.modules.push({
+        name: "query",
+        typeInfo: composerOutput.query?.typeInfo as TypeInfo,
+        schema: composerOutput.combined?.schema as string,
+        outputDirAbs: queryDirectory as string,
+      });
+    }
+
+    if (manifest.modules.mutation) {
+      options.modules.push({
+        name: "mutation",
+        typeInfo: composerOutput.mutation?.typeInfo as TypeInfo,
+        schema: composerOutput.combined?.schema as string,
+        outputDirAbs: mutationDirectory as string,
+      });
+    }
+
+    if (mutationDirectory && queryDirectory) {
+      options.commonDirAbs = path.join(
+        getCommonPath(queryDirectory, mutationDirectory),
+        "w3"
+      );
+    }
+
+    return bindSchema(options);
   }
 
   /// Web3API Build Manifest (web3api.build.yaml)
@@ -533,5 +613,12 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
       modules: web3apiModules,
       commonDir,
     };
+  }
+
+  private _getGenerationDirectory(entryPoint: string): string {
+    const absolute = path.isAbsolute(entryPoint)
+      ? entryPoint
+      : path.join(this.getManifestDir(), entryPoint);
+    return `${path.dirname(absolute)}/w3`;
   }
 }

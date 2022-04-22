@@ -48,8 +48,10 @@ describe("Web3ApiClient - resolveUri", () => {
         },
         ipfs: { provider: ipfsProvider },
         ens: {
-          addresses: {
-            testnet: ensAddress,
+          query: {
+            addresses: {
+              testnet: ensAddress,
+            },
           },
         },
       },

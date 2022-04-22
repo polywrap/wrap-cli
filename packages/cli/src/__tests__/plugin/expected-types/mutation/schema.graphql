@@ -1,0 +1,7 @@
+#import { Mutation } into Ethereum from "ens/ethereum.web3api.eth"
+
+type Mutation {
+  method(
+    arg: UInt32!
+  ): String!
+}
