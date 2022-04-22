@@ -20,7 +20,8 @@
     "spawn-command": "0.0.2-1",
     "@web3api/core-js": "0.0.1-prealpha.71",
     "ethers": "5.6.4",
-    "js-yaml": "4.1.0"
+    "js-yaml": "4.1.0",
+    "js-sha3": "0.8.0"
   },
   "devDependencies": {
     "rimraf": "3.0.2",

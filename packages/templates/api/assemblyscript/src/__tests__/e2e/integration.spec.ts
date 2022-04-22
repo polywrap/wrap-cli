@@ -43,7 +43,6 @@ describe("SimpleStorage", () => {
       ensRegistryAddress: ensAddress,
       ensRegistrarAddress: registrarAddress,
       ensResolverAddress: resolverAddress,
-      client,
       ethereumProvider: testEnvEtherem,
     });
     

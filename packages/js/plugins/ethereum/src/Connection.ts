@@ -67,10 +67,15 @@ export class Connection {
       networkish = networkish.toLowerCase();
     }
 
+    const provider = (ethers.providers.getDefaultProvider(
+      ethers.providers.getNetwork(networkish),
+      {
+        infura: "a817ee00c2714fe3a908c91d5713d302",
+      }
+    ) as unknown) as JsonRpcProvider;
+
     return new Connection({
-      provider: (ethers.providers.getDefaultProvider(
-        ethers.providers.getNetwork(networkish)
-      ) as unknown) as JsonRpcProvider,
+      provider,
     });
   }
 
@@ -87,9 +92,9 @@ export class Connection {
     this._config.provider = provider;
 
     if (typeof provider === "string") {
-      this._client = (ethers.providers.getDefaultProvider(
-        provider
-      ) as unknown) as JsonRpcProvider | WebSocketProvider;
+      this._client = (ethers.providers.getDefaultProvider(provider, {
+        infura: "a817ee00c2714fe3a908c91d5713d302",
+      }) as unknown) as JsonRpcProvider | WebSocketProvider;
     } else {
       if ((provider as JsonRpcProvider).anyNetwork !== undefined) {
         this._client = provider as JsonRpcProvider;

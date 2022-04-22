@@ -12,8 +12,6 @@ import {
   getSampleOutputWithClientConfig,
   ISampleOutputOptions,
 } from "./query.spec.helper";
-import { Web3ApiClient } from "@web3api/client-js";
-import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 
 const HELP = `
 w3 query [options] <recipe-script>
@@ -70,22 +68,6 @@ describe("e2e tests for query command", () => {
 
     expect(deployErr).toBe("");
 
-    const client = new Web3ApiClient({
-      plugins: [
-        {
-          uri: "w3://ens/ethereum.web3api.eth",
-          plugin: ethereumPlugin({
-            networks: {
-              testnet: {
-                provider: ethereum,
-              }
-            },
-            defaultNetwork: "testnet"
-          }),
-        }
-      ],
-    });
-
     await buildAndDeployApi({
       apiAbsPath: projectRoot,
       ipfsProvider: ipfs,
@@ -93,8 +75,7 @@ describe("e2e tests for query command", () => {
       ensRegistrarAddress: registrarAddress,
       ensResolverAddress: resolverAddress,
       ensRegistryAddress: ens,
-      ensName: "simplestorage.eth",
-      client
+      ensName: "simplestorage",
     })
   });
 

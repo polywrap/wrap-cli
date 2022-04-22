@@ -83,7 +83,6 @@ describe("Ethereum Plugin", () => {
       ensRegistryAddress: ensAddress,
       ensRegistrarAddress: registrarAddress,
       ensResolverAddress: resolverAddress,
-      client,
       ethereumProvider: ethereum,
     });
 

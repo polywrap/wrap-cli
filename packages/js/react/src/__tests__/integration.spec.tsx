@@ -13,9 +13,6 @@ import { PluginRegistration } from "@web3api/core-js";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import React from "react";
 import { render, fireEvent, screen, waitFor } from "@testing-library/react";
-import { Web3ApiClient } from "@web3api/client-js";
-import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
-
 jest.setTimeout(360000);
 
 describe("Web3API React Integration", () => {
@@ -37,22 +34,6 @@ describe("Web3API React Integration", () => {
 
     plugins = createPlugins(ensAddress, ethereum, ipfs);
 
-    const client = new Web3ApiClient({
-      plugins: [
-        {
-          uri: "w3://ens/ethereum.web3api.eth",
-          plugin: ethereumPlugin({
-            networks: {
-              testnet: {
-                provider: ethereum,
-              }
-            },
-            defaultNetwork: "testnet"
-          }),
-        }
-      ],
-    });
-
     api = await buildAndDeployApi({
       apiAbsPath: `${GetPathToTestApis()}/simple-storage`,
       ipfsProvider: ipfs,
@@ -60,7 +41,6 @@ describe("Web3API React Integration", () => {
       ensRegistrarAddress: registrarAddress,
       ensRegistryAddress: ensAddress,
       ensResolverAddress: resolverAddress,
-      client
     });
 
     ensUri = `ens/testnet/${api.ensDomain}`;

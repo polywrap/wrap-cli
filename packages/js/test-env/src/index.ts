@@ -4,7 +4,9 @@ import axios from "axios";
 import fs from "fs";
 import { ethers } from "ethers";
 import yaml from "js-yaml";
-import { Client, deserializeWeb3ApiManifest, Uri } from "@web3api/core-js";
+import { keccak256 } from "js-sha3";
+import { deserializeWeb3ApiManifest, Uri } from "@web3api/core-js";
+import { namehash } from "ethers/lib/utils";
 
 interface TestEnvironment {
   ipfs: string;
@@ -137,7 +139,6 @@ export async function buildAndDeployApi({
   ensResolverAddress,
   ethereumProvider,
   ensName,
-  client,
 }: {
   apiAbsPath: string;
   ipfsProvider: string;
@@ -146,7 +147,6 @@ export async function buildAndDeployApi({
   ensResolverAddress: string;
   ethereumProvider: string;
   ensName?: string;
-  client: Client;
 }): Promise<{
   ensDomain: string;
   ipfsCid: string;
@@ -161,7 +161,8 @@ export async function buildAndDeployApi({
   );
 
   // create a new ENS domain
-  const apiEns = ensName ?? `${generateName()}.eth`;
+  const domainName = ensName ?? generateName();
+  const apiEns = `${domainName}.eth`;
 
   // build API
   const {
@@ -187,48 +188,38 @@ export async function buildAndDeployApi({
 
   // register ENS domain
   const ethersProvider = new ethers.providers.JsonRpcProvider(ethereumProvider);
-  const owner = await ethersProvider.getSigner(0).getAddress();
+  const signer = await ethersProvider.getSigner(0);
+  const owner = await signer.getAddress();
 
-  const { error: registerError } = await client.invoke({
-    uri: `w3://ens/rinkeby/ens.web3api.eth`,
-    module: "mutation",
-    method: "registerDomain",
-    input: {
-      domain: apiEns,
-      owner,
-      registrarAddress: ensRegistrarAddress,
-      registryAddress: ensRegistryAddress,
-      connection: {
-        networkNameOrChainId: "testnet",
-      },
-    },
+  const label = "0x" + keccak256(domainName);
+
+  const ensRegistrarContract = new ethers.Contract(
+    ensRegistrarAddress,
+    ["function register(bytes32 label, address owner)"],
+    signer
+  );
+
+  const ensRegistryContract = new ethers.Contract(
+    ensRegistryAddress,
+    ["function setResolver(bytes32 node, address owner)"],
+    signer
+  );
+
+  const registerTx = await ensRegistrarContract.register(label, owner, {
+    value: null,
+    nonce: null,
+    gasPrice: "50",
+    gasLimit: "200000",
   });
 
-  if (registerError) {
-    throw new Error(
-      `Error publishing API to ENS. Path: ${apiAbsPath}. Error: ${registerError}`
-    );
-  }
+  await registerTx.wait();
 
-  const { error: setResolverError } = await client.invoke({
-    uri: `w3://ens/rinkeby/ens.web3api.eth`,
-    module: "mutation",
-    method: "setResolver",
-    input: {
-      domain: apiEns,
-      resolverAddress: ensResolverAddress,
-      registryAddress: ensRegistryAddress,
-      connection: {
-        networkNameOrChainId: "testnet",
-      },
-    },
-  });
+  const setResolverTx = await ensRegistryContract.setResolver(
+    namehash(apiEns),
+    ensResolverAddress
+  );
 
-  if (setResolverError) {
-    throw new Error(
-      `Error publishing API to ENS. Path: ${apiAbsPath}. Error: ${setResolverError}`
-    );
-  }
+  await setResolverTx.wait();
 
   // manually configure manifests
 

@@ -48,7 +48,7 @@ describe("Web3ApiClient", () => {
   });
 
   const getClient = async (config?: Partial<Web3ApiClientConfig>) => {
-    return createWeb3ApiClient(
+    const client = await createWeb3ApiClient(
       {
         ethereum: {
           networks: {
@@ -66,6 +66,8 @@ describe("Web3ApiClient", () => {
       },
       config
     );
+
+    return client;
   };
 
   const mockPlugin = () => {
@@ -167,7 +169,6 @@ describe("Web3ApiClient", () => {
       ethereumProvider: ethProvider,
       ensRegistrarAddress,
       ensResolverAddress,
-      client
     });
 
     const ensUri = `ens/testnet/${api.ensDomain}`;
@@ -243,7 +244,6 @@ describe("Web3ApiClient", () => {
       ethereumProvider: ethProvider,
       ensRegistrarAddress,
       ensResolverAddress,
-      client
     });
 
     const ensUri = `ens/testnet/${api.ensDomain}`;
@@ -285,8 +285,7 @@ describe("Web3ApiClient", () => {
       ensRegistryAddress: ensAddress,
       ethereumProvider: ethProvider,
       ensRegistrarAddress,
-      ensResolverAddress,
-      client
+      ensResolverAddress
     });
 
     const ensUri = `ens/testnet/${api.ensDomain}`;
@@ -703,7 +702,6 @@ describe("Web3ApiClient", () => {
       ethereumProvider: ethProvider,
       ensRegistrarAddress,
       ensResolverAddress,
-      client
     });
 
     const ensUri = `ens/testnet/${api.ensDomain}`;
@@ -947,7 +945,6 @@ describe("Web3ApiClient", () => {
       ethereumProvider: ethProvider,
       ensRegistrarAddress,
       ensResolverAddress,
-      client
     });
 
     const ensUri = `ens/testnet/${api.ensDomain}`;
@@ -1127,7 +1124,6 @@ describe("Web3ApiClient", () => {
       ethereumProvider: ethProvider,
       ensRegistrarAddress,
       ensResolverAddress,
-      client
     });
     const ensUri = `ens/testnet/${api.ensDomain}`;
 
@@ -1363,7 +1359,6 @@ describe("Web3ApiClient", () => {
       ethereumProvider: ethProvider,
       ensRegistrarAddress,
       ensResolverAddress,
-      client
     });
     const ensUri = `ens/testnet/${api.ensDomain}`;
 
@@ -1435,7 +1430,6 @@ describe("Web3ApiClient", () => {
       ethereumProvider: ethProvider,
       ensRegistrarAddress,
       ensResolverAddress,
-      client
     });
     const ensUri = `ens/testnet/${api.ensDomain}`;
 
@@ -1523,7 +1517,6 @@ describe("Web3ApiClient", () => {
       ethereumProvider: ethProvider,
       ensRegistrarAddress,
       ensResolverAddress,
-      client
     });
     const ensUri = `ens/testnet/${api.ensDomain}`;
 
@@ -1562,7 +1555,6 @@ describe("Web3ApiClient", () => {
       ethereumProvider: ethProvider,
       ensRegistrarAddress,
       ensResolverAddress,
-      client
     });
     const ensUri = `ens/testnet/${api.ensDomain}`;
 
@@ -1646,7 +1638,6 @@ describe("Web3ApiClient", () => {
       ethereumProvider: ethProvider,
       ensRegistrarAddress,
       ensResolverAddress,
-      client
     });
     const ensUri = `ens/testnet/${api.ensDomain}`;
     const largeStr = new Array(10000).join("web3api ");
@@ -1702,7 +1693,6 @@ describe("Web3ApiClient", () => {
       ethereumProvider: ethProvider,
       ensRegistrarAddress,
       ensResolverAddress,
-      client
     });
     const ensUri = `ens/testnet/${api.ensDomain}`;
 
@@ -1855,7 +1845,6 @@ describe("Web3ApiClient", () => {
       ethereumProvider: ethProvider,
       ensRegistrarAddress,
       ensResolverAddress,
-      client
     });
     const ensUri = `ens/testnet/${api.ensDomain}`;
 
@@ -2025,8 +2014,6 @@ describe("Web3ApiClient", () => {
   });
 
   it("e2e interface implementations", async () => {
-    const deployClient = await getClient();
-
     let interfaceApi = await buildAndDeployApi({
       apiAbsPath: `${GetPathToTestApis()}/implementations/test-interface`,
       ipfsProvider,
@@ -2034,7 +2021,6 @@ describe("Web3ApiClient", () => {
       ethereumProvider: ethProvider,
       ensRegistrarAddress,
       ensResolverAddress,
-      client: deployClient
     });
     const interfaceUri = `w3://ens/testnet/${interfaceApi.ensDomain}`;
 
@@ -2045,7 +2031,6 @@ describe("Web3ApiClient", () => {
       ethereumProvider: ethProvider,
       ensRegistrarAddress,
       ensResolverAddress,
-      client: deployClient
     });
     const implementationUri = `w3://ens/testnet/${implementationApi.ensDomain}`;
 
@@ -2134,7 +2119,6 @@ describe("Web3ApiClient", () => {
       ethereumProvider: ethProvider,
       ensRegistrarAddress,
       ensResolverAddress,
-      client
     });
 
     const ensUri = `ens/testnet/${api.ensDomain}`;
@@ -2273,7 +2257,6 @@ enum Logger_LogLevel @imported(
       ethereumProvider: ethProvider,
       ensRegistrarAddress,
       ensResolverAddress,
-      client
     });
 
     const ensUri = `ens/testnet/${api.ensDomain}`;
@@ -2327,7 +2310,6 @@ enum Logger_LogLevel @imported(
       ethereumProvider: ethProvider,
       ensRegistrarAddress,
       ensResolverAddress,
-      client
     });
 
     const ensUri = `ens/testnet/${api.ensDomain}`;
@@ -2428,7 +2410,6 @@ enum Logger_LogLevel @imported(
       ethereumProvider: ethProvider,
       ensRegistrarAddress,
       ensResolverAddress,
-      client
     });
     const ensUri = `ens/testnet/${api.ensDomain}`;
     const ipfsUri = `ipfs/${api.ipfsCid}`;
@@ -2533,7 +2514,6 @@ enum Logger_LogLevel @imported(
       ethereumProvider: ethProvider,
       ensRegistrarAddress,
       ensResolverAddress,
-      client
     });
     const ensUri = `ens/testnet/${api.ensDomain}`;
 
@@ -2565,7 +2545,6 @@ enum Logger_LogLevel @imported(
 
   it("e2e getImplementations capability", async () => {
     const interfaceUri = "w3://ens/interface.eth";
-    const deployClient = await getClient();
 
     const implementationApi = await buildAndDeployApi({
       apiAbsPath: `${GetPathToTestApis()}/implementations/test-use-getImpl`,
@@ -2574,7 +2553,6 @@ enum Logger_LogLevel @imported(
       ethereumProvider: ethProvider,
       ensRegistrarAddress,
       ensResolverAddress,
-      client: deployClient
     });
     const implementationUri = `w3://ens/testnet/${implementationApi.ensDomain}`;
 
@@ -2613,7 +2591,6 @@ enum Logger_LogLevel @imported(
 
   it("e2e Interface invoke method", async () => {
     const interfaceUri = "w3://ens/interface.eth";
-    const deployClient = await getClient();
     // Build interface polywrapper
     await runCLI({
       args: ["build"],
@@ -2627,7 +2604,6 @@ enum Logger_LogLevel @imported(
       ethereumProvider: ethProvider,
       ensRegistrarAddress,
       ensResolverAddress,
-      client: deployClient
     });
     const implementationUri = `w3://ens/testnet/${implementationApi.ensDomain}`;
 
@@ -2647,7 +2623,6 @@ enum Logger_LogLevel @imported(
       ethereumProvider: ethProvider,
       ensRegistrarAddress,
       ensResolverAddress,
-      client
     });
     const apiUri = `w3://ens/testnet/${api.ensDomain}`;
 
@@ -2697,7 +2672,6 @@ enum Logger_LogLevel @imported(
       ethereumProvider: ethProvider,
       ensRegistrarAddress,
       ensResolverAddress,
-      client
     });
     const ensUri = `ens/testnet/${api.ensDomain}`;
 

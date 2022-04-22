@@ -88,7 +88,6 @@ describe("Filesystem plugin", () => {
       ensRegistrarAddress,
       ensResolverAddress,
       ethereumProvider,
-      client
     });
     const fsPath = `${apiPath}/build`;
     const fsUri = `fs/${fsPath}`;

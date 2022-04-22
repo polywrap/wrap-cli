@@ -262,7 +262,6 @@ describe("Web3ApiClient - resolveUri", () => {
       ethereumProvider: ethProvider,
       ensRegistrarAddress,
       ensResolverAddress,
-      client
     });
 
     const ensUri = new Uri(`ens/testnet/${deployResult.ensDomain}`);
@@ -364,7 +363,6 @@ describe("Web3ApiClient - resolveUri", () => {
       ethereumProvider: ethProvider,
       ensRegistrarAddress,
       ensResolverAddress,
-      client
     });
     
     const ensUri = new Uri(`ens/testnet/${deployResult.ensDomain}`);
@@ -495,7 +493,6 @@ describe("Web3ApiClient - resolveUri", () => {
       ethereumProvider: ethProvider,
       ensRegistrarAddress,
       ensResolverAddress,
-      client
     });
 
     const ensUri = new Uri(`ens/testnet/${deployResult.ensDomain}`);
@@ -627,7 +624,6 @@ describe("Web3ApiClient - resolveUri", () => {
       ethereumProvider: ethProvider,
       ensRegistrarAddress,
       ensResolverAddress,
-      client
     });
 
     const ensUri = new Uri(`ens/testnet/${deployResult.ensDomain}`);
@@ -766,8 +762,6 @@ describe("Web3ApiClient - resolveUri", () => {
       cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`,
     });
 
-    const client = await getClient();
-
     const deployResult = await buildAndDeployApi({
       apiAbsPath: `${GetPathToTestApis()}/interface-invoke/test-api`,
       ipfsProvider,
@@ -775,14 +769,13 @@ describe("Web3ApiClient - resolveUri", () => {
       ethereumProvider: ethProvider,
       ensRegistrarAddress,
       ensResolverAddress,
-      client
     });
 
     const ensUri = new Uri(`ens/testnet/${deployResult.ensDomain}`);
     const ipfsUri = new Uri(`ipfs/${deployResult.ipfsCid}`);
     const redirectUri = new Uri(`ens/redirect.eth`);
 
-    const clientWithRedirects = await getClient({
+    const client = await getClient({
       redirects: [
         {
           from: ipfsUri.uri,
@@ -791,7 +784,7 @@ describe("Web3ApiClient - resolveUri", () => {
       ],
     });
 
-    const result = await clientWithRedirects.resolveUri(ensUri);
+    const result = await client.resolveUri(ensUri);
 
     expect(result.api).toBeFalsy();
     expect(result.uri).toEqual(redirectUri);
