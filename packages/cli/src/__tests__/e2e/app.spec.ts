@@ -1,7 +1,9 @@
-import path from "path";
 import { clearStyle, w3Cli } from "./utils";
+
 import { runCLI } from "@web3api/test-env-js";
 import { GetPathToCliTestFiles } from "@web3api/test-cases";
+import path from "path";
+import fs from "fs";
 
 const HELP = `
 w3 app command [options]
@@ -27,17 +29,18 @@ const CODEGEN_SUCCESS = `- Manifest loaded from ./web3api.app.yaml
 
 describe("e2e tests for app command", () => {
   const testCaseRoot = path.join(GetPathToCliTestFiles(), "app");
-  const testCases = {
-    sanity: path.join(testCaseRoot, "001-sanity"),
-    withPlugin: path.join(testCaseRoot, "002-with-plugin"),
-    multiImport: path.join(testCaseRoot, "003-multi-import"),
-  };
+  const testCases =
+    fs.readdirSync(testCaseRoot, { withFileTypes: true })
+      .filter((dirent) => dirent.isDirectory())
+      .map((dirent) => dirent.name);
+  const getTestCaseDir = (index: number) =>
+    path.join(testCaseRoot, testCases[index]);
 
   test("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
         args: ["app", "codegen", "--help"],
-        cwd: testCases.sanity,
+        cwd: getTestCaseDir(0),
         cli: w3Cli,
       },
     );
@@ -51,7 +54,7 @@ describe("e2e tests for app command", () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
         args: ["app", "--output-dir"],
-        cwd: testCases.sanity,
+        cwd: getTestCaseDir(0),
         cli: w3Cli,
       },
     );
@@ -66,7 +69,7 @@ ${HELP}`);
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
         args: ["app", "codegen", "--codegen-dir"],
-        cwd: testCases.sanity,
+        cwd: getTestCaseDir(0),
         cli: w3Cli,
       },
     );
@@ -82,7 +85,7 @@ ${HELP}`);
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
         args: ["app", "codegen", "--ens"],
-        cwd: testCases.sanity,
+        cwd: getTestCaseDir(0),
         cli: w3Cli,
       },
     );
@@ -94,45 +97,24 @@ ${HELP}`);
 ${HELP}`);
   });
 
-  test("Should successfully generate types", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
-      {
-        args: ["app", "codegen"],
-        cwd: testCases.sanity,
-        cli: w3Cli,
-      },
-    );
+  describe("test-cases", () => {
+    for (let i = 0; i < testCases.length; ++i) {
+      const testCaseName = testCases[i];
+      const testCaseDir = getTestCaseDir(i);
 
-    expect(error).toBe("");
-    expect(code).toEqual(0);
-    expect(clearStyle(output)).toEqual(CODEGEN_SUCCESS);
-  });
+      test(testCaseName, async () => {
+        const { exitCode: code, stdout: output, stderr: error } = await runCLI(
+          {
+            args: ["app", "codegen"],
+            cwd: testCaseDir,
+            cli: w3Cli,
+          },
+        );
 
-  test("Should successfully generate types for plugins", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
-      {
-        args: ["app", "codegen", "-m", path.join(testCases.withPlugin, "web3api.app.yaml")],
-        cwd: testCases.withPlugin,
-        cli: w3Cli,
-      },
-    );
-
-    expect(error).toBe("");
-    expect(code).toEqual(0);
-    expect(clearStyle(output)).toEqual(CODEGEN_SUCCESS);
-  });
-
-  test("Should successfully generate types for multiple packages", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
-      {
-        args: ["app", "codegen", "-m", path.join(testCases.multiImport, "web3api.app.yaml")],
-        cwd: testCases.multiImport,
-        cli: w3Cli,
-      },
-    );
-
-    expect(error).toBe("");
-    expect(clearStyle(output)).toEqual(CODEGEN_SUCCESS);
-    expect(code).toEqual(0);
+        expect(error).toBe("");
+        expect(code).toEqual(0);
+        expect(clearStyle(output)).toEqual(CODEGEN_SUCCESS);
+      });
+    }
   });
 });
