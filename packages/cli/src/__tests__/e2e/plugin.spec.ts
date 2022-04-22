@@ -110,61 +110,38 @@ ${HELP}`);
 ${HELP}`);
   });
 
-  test("Should successfully generate types", async () => {
-    const testCaseDir = getTestCaseDir(0);
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
-      {
-        args: ["plugin", "codegen"],
-        cwd: testCaseDir,
-      }
-    );
+  describe("test-cases", () => {
+    for (let i = 0; i < testCases.length; ++i) {
+      const testCaseName = testCases[i];
+      const testCaseDir = getTestCaseDir(i);
 
-    expect(error).toBe("");
-    expect(code).toEqual(0);
-    expect(clearStyle(output)).toEqual(CODEGEN_SUCCESS);
+      test(testCaseName, async () => {
+        const { exitCode: code, stdout: output, stderr: error } = await runCLI(
+          {
+            args: ["plugin", "codegen"],
+            cwd: testCaseDir,
+          }
+        );
 
-    const expectedTypesResult = compareSync(
-      `${testCaseDir}/src`,
-      `${testCaseDir}/expected/src`,
-      { compareContent: true }
-    );
-    expect(expectedTypesResult.differences).toBe(0);
+        expect(error).toBe("");
+        expect(code).toEqual(0);
+        expect(clearStyle(output)).toEqual(CODEGEN_SUCCESS);
 
-    const expectedBuildResult = compareSync(
-      `${testCaseDir}/build`,
-      `${testCaseDir}/expected/build`,
-      { compareContent: true }
-    );
+        const expectedTypesResult = compareSync(
+          `${testCaseDir}/src`,
+          `${testCaseDir}/expected/src`,
+          { compareContent: true }
+        );
+        expect(expectedTypesResult.differences).toBe(0);
 
-    expect(expectedBuildResult.differences).toBe(0);
-  });
+        const expectedBuildResult = compareSync(
+          `${testCaseDir}/build`,
+          `${testCaseDir}/expected/build`,
+          { compareContent: true }
+        );
 
-  test("single module", async () => {
-    const testCaseDir = getTestCaseDir(1);
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
-      {
-        args: ["plugin", "codegen"],
-        cwd: testCaseDir,
-      }
-    );
-
-    expect(error).toBe("");
-    expect(code).toEqual(0);
-    expect(clearStyle(output)).toEqual(CODEGEN_SUCCESS);
-
-    const expectedTypesResult = compareSync(
-      `${testCaseDir}/src`,
-      `${testCaseDir}/expected/src`,
-      { compareContent: true }
-    );
-    expect(expectedTypesResult.differences).toBe(0);
-
-    const expectedBuildResult = compareSync(
-      `${testCaseDir}/build`,
-      `${testCaseDir}/expected/build`,
-      { compareContent: true }
-    );
-
-    expect(expectedBuildResult.differences).toBe(0);
+        expect(expectedBuildResult.differences).toBe(0);
+      });
+    }
   });
 });
