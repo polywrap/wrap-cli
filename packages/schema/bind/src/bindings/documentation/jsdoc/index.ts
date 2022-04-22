@@ -8,6 +8,7 @@ import {
 } from "../../..";
 import * as Functions from "./../functions";
 import * as TypeScriptFunctions from "./../../typescript/functions";
+import { sortMethodsInPlaceByName, sortObjectsInPlaceByType } from "../utils";
 
 import {
   TypeInfo,
@@ -78,6 +79,8 @@ function generateModuleBindings(module: BindModuleOptions): BindModuleOutput {
   };
   const output = result.output;
   const typeInfo = applyTransforms(module.typeInfo);
+  sortObjectsInPlaceByType(typeInfo);
+  sortMethodsInPlaceByName(typeInfo);
 
   const renderTemplate = (
     subPath: string,

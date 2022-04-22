@@ -8,7 +8,11 @@ import {
 } from "../../..";
 import * as Functions from "./../functions";
 import * as TypeScriptFunctions from "./../../typescript/functions";
-import { sortByNamespace } from "../utils";
+import {
+  arrangeByNamespace,
+  sortMethodsInPlaceByName,
+  sortObjectsInPlaceByType,
+} from "../utils";
 
 import {
   TypeInfo,
@@ -85,6 +89,8 @@ export function generateDocusaurusModuleBindings(
   };
   const output = result.output;
   const typeInfo = _typeInfo ?? applyTransforms(module.typeInfo);
+  sortObjectsInPlaceByType(typeInfo);
+  sortMethodsInPlaceByName(typeInfo);
 
   const renderTemplate = (
     subPath: string,
@@ -157,7 +163,7 @@ export function generateDocusaurusModuleBindings(
   }
 
   // generated imported object types
-  const importedObjects = sortByNamespace(typeInfo.importedObjectTypes);
+  const importedObjects = arrangeByNamespace(typeInfo.importedObjectTypes);
   for (const [namespace, objectTypes] of Object.entries(importedObjects)) {
     if (objectTypes.length > 0) {
       const objectContext = {
@@ -173,7 +179,7 @@ export function generateDocusaurusModuleBindings(
   }
 
   // generate imported enum types
-  const importedEnums = sortByNamespace(typeInfo.importedEnumTypes);
+  const importedEnums = arrangeByNamespace(typeInfo.importedEnumTypes);
   for (const [namespace, enumTypes] of Object.entries(importedEnums)) {
     if (enumTypes.length > 0) {
       const enumContext = {
