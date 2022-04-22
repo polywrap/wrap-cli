@@ -15,11 +15,11 @@ const useStyles = makeStyles(() => ({
 
 const showcaseCards = [
   {
-    title: "My Wrapper",
+    title: "API Docs",
     description:
-      "Generated documentation for my Polywrap wrapper",
+      "Generated documentation for Polywrap wrappers and plugins",
     cta: "Learn more",
-    link: "/wrapper/intro",
+    link: "/intro",
   },
   {
     title: "Get Started",

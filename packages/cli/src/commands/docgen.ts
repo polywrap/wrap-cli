@@ -23,11 +23,10 @@ import { Web3ApiClient } from "@web3api/client-js";
 
 const commandToPathMap: Record<string, string> = {
   schema: "@web3api/schema-bind/build/bindings/documentation/schema/index.js",
-  jsdoc: "@web3api/schema-bind/build/bindings/documentation/jsdoc/index.js",
+  react: "@web3api/schema-bind/build/bindings/documentation/react/index.js",
   docusaurus:
     "@web3api/schema-bind/build/bindings/documentation/docusaurus/index.js",
-  react:
-    "@web3api/schema-bind/build/bindings/documentation/docusaurus/index.js",
+  jsdoc: "@web3api/schema-bind/build/bindings/documentation/jsdoc/index.js",
 };
 
 const defaultManifest = defaultWeb3ApiManifest.concat(defaultAppManifest);
@@ -43,23 +42,23 @@ const optionsStr = intlMsg.commands_options_options();
 const nodeStr = intlMsg.commands_codegen_options_i_node();
 const pathStr = intlMsg.commands_codegen_options_o_path();
 const addrStr = intlMsg.commands_codegen_options_e_address();
-const jsdocDescription = intlMsg.commands_docgen_options_markdown({
-  framework: "JSDoc",
-});
+const schemaDescription = intlMsg.commands_docgen_options_schema();
+const reactAppDescription = intlMsg.commands_docgen_options_react();
 const docusaurusDescription = intlMsg.commands_docgen_options_markdown({
   framework: "Docusaurus",
 });
-const reactAppDescription = intlMsg.commands_docgen_options_react();
-const schemaDescription = intlMsg.commands_docgen_options_schema();
+const jsdocDescription = intlMsg.commands_docgen_options_markdown({
+  framework: "JSDoc",
+});
 
 const HELP = `
 ${chalk.bold("w3 docgen")} ${cmdStr} [${optionsStr}]
 
 ${intlMsg.commands_create_options_commands()}:
   ${chalk.bold("schema")}        ${schemaDescription}
-  ${chalk.bold("jsdoc")}        ${jsdocDescription}
-  ${chalk.bold("docusaurus")}   ${docusaurusDescription}
   ${chalk.bold("react")}        ${reactAppDescription}
+  ${chalk.bold("docusaurus")}   ${docusaurusDescription}
+  ${chalk.bold("jsdoc")}        ${jsdocDescription}
 
 ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
   -h, --help                              ${intlMsg.commands_codegen_options_h()}
@@ -183,6 +182,7 @@ export default {
     });
 
     if (command === "react") {
+      // copy react template and adjust output dir
       const projectDir = path.join(codegenDir, "docusaurus-react-app");
       try {
         await generateProjectTemplate(
@@ -199,8 +199,10 @@ export default {
         process.exitCode = 1;
         return;
       }
-      codegenDir = path.join(projectDir, "docs/wrapper");
+      codegenDir = path.join(projectDir, "docs/polywrap");
     }
+
+    console.log(codegenDir);
 
     const codeGenerator = new CodeGenerator({
       project,

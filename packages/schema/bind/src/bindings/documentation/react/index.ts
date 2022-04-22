@@ -8,6 +8,7 @@ import {
 } from "../../..";
 import * as Functions from "./../functions";
 import * as TypeScriptFunctions from "./../../typescript/functions";
+import { createNamespaceSections, LOCAL_NAMESPACE } from "./namespaceSections";
 import { sortByNamespace } from "../utils";
 
 import {
@@ -21,8 +22,6 @@ import {
 import Mustache from "mustache";
 import path from "path";
 import { readFileSync } from "fs";
-
-const LOCAL_NAMESPACE = "Local";
 
 export const generateBinding: GenerateBindingFn = (
   options: BindOptions
@@ -185,6 +184,18 @@ function generateModuleBindings(module: BindModuleOptions): BindModuleOutput {
       );
     }
   }
+
+  // generate sidebar.js
+  const namespaceSections = createNamespaceSections(typeInfo);
+  const sidebarContext = {
+    ...typeInfo,
+    ...namespaceSections,
+  };
+  renderTemplate(
+    "./templates/sidebars-js.mustache",
+    sidebarContext,
+    `../../sidebars.js`
+  );
 
   return result;
 }

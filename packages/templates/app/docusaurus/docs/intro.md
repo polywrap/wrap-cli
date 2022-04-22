@@ -1,13 +1,13 @@
 ---
 id: intro
-title: Wrapper Documentation
+title: Polywrap Generated Documentation
 ---
 
 ## Overview
 
-Welcome to My Wrapper documentation!
+Welcome to your generated Polywrap documentation!
 
-Developers integrating the My Wrapper into their app would use [GraphQL](https://graphql.org/) queries to execute functions provided by the My Wrapper. This documentation shows you which **query** and **mutation** functions are made available by My Wrapper and how to use them.
+Developers integrating wrappers into their app would use [GraphQL](https://graphql.org/) queries to execute functions provided by the wrappers. This documentation shows you which **query** and **mutation** functions are declared or imported in your schema, and how to use them.
 
 Functions are executed by a Polywrap Client. The first Polywrap client is for JavaScript(`@web3api/client-js`) and it can run in any environment that can execute JavaScript. In the future, there will be Polywrap clients for other environments (Python, Go, and more).
 
@@ -55,4 +55,4 @@ Take a look at more sophisticated tooling, such as Polywrap's `useWeb3ApiQuery` 
 
 ## Code
 
-The **Pre-alpha** [Polywrap source code is available on GitHub](https://github.com/polywrap/integrations).
+The **Pre-alpha** [Polywrap source code is available on GitHub](https://github.com/polywrap/monorepo).

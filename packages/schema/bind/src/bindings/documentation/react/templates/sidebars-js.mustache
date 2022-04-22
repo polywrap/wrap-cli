@@ -29,6 +29,17 @@ module.exports = {
         'devtools/polywrap-react',
       ],
     },
-    'resources/talks-and-videos'
+    'resources/talks-and-videos',
+    {{#namespaces}}
+    {
+      type: 'category',
+      label: '{{namespace}}',
+      items: [
+      {{#sections}}
+        'polywrap/{{namespace}}_{{section}}',
+      {{/sections}}
+      ],
+    },
+    {{/namespaces}}
   ],
 };
