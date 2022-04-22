@@ -89,3 +89,21 @@ export function getSampleOutputSetDataValue(): string {
 -----------------------------------
 `;
 }
+
+export function getSampleObjectOutput(): any {
+  return {
+    query: "./set.graphql",
+    variables: {
+      address: "$SimpleStorageAddr",
+      value: 569,
+      network: "testnet",
+    },
+    output: {
+      data: {
+        setData: {
+          value: 569,
+        },
+      },
+    },
+  };
+}

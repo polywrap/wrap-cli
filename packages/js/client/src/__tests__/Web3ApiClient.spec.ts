@@ -19,7 +19,7 @@ import {
   deserializeBuildManifest,
   deserializeMetaManifest,
   coreInterfaceUris,
-  Client,
+  PluginModule,
   PluginModules,
   msgpackDecode,
 } from "@web3api/core-js";
@@ -55,8 +55,10 @@ describe("Web3ApiClient", () => {
         },
         ipfs: { provider: ipfsProvider },
         ens: {
-          addresses: {
-            testnet: ensAddress,
+          query: {
+            addresses: {
+              testnet: ensAddress,
+            },
           },
         },
       },
@@ -65,15 +67,19 @@ describe("Web3ApiClient", () => {
   };
 
   const mockPlugin = () => {
-    class MockPlugin extends Plugin {
-      getModules(_client: Client): PluginModules {
+    class Query extends PluginModule {
+      getData(_: unknown) { return 100; }
+    }
+
+    class Mutation extends PluginModule {
+      deployContract(_: unknown): string { return "0x100" }
+    }
+
+    class MockPlugin implements Plugin {
+      getModules(): PluginModules {
         return {
-          query: {
-            getData: async (_: unknown) => 100,
-          },
-          mutation: {
-            deployContract: (_: unknown): string => "0x100",
-          },
+          query: new Query({}),
+          mutation: new Mutation({}),
         };
       }
     }
@@ -87,60 +93,37 @@ describe("Web3ApiClient", () => {
     };
   };
 
-  const mockEnvPlugin = () => {
-    class MockEnvPlugin extends Plugin {
-      getModules(_client: Client): PluginModules {
-        return {
-          query: {
-            sanitizeEnv: async (env: { arg1: string }) => {
-              return { arg1: parseInt(env.arg1) };
-            },
-            queryEnv: () => {
-              return this.getEnv("query");
-            },
-          },
-          mutation: {
-            sanitizeEnv: async (env: { arg1: number }) => {
-              return { arg1: env.arg1.toString() };
-            },
-            mutationEnv: () => {
-              return this.getEnv("mutation");
-            },
-          },
-        };
+  const mockMapPlugin = () => {
+    interface Config extends Record<string, unknown> {
+      map: Map<string, number>;
+    }
+
+    class Query extends PluginModule<Config> {
+      async getMap(_: unknown) { return this.config.map }
+    }
+
+    class Mutation extends PluginModule<Config> {
+      updateMap(input: {
+        map: Map<string, number>;
+      }): Map<string, number> {
+        for (const key of input.map.keys()) {
+          this.config.map.set(
+            key,
+            (this.config.map.get(key) || 0) + (input.map.get(key) || 0)
+          );
+        }
+        return this.config.map;
       }
     }
-    return {
-      factory: () => new MockEnvPlugin(),
-      manifest: {
-        schema: ``,
-        implements: [],
-      },
-    };
-  };
 
-  const mockMapPlugin = () => {
-    class MockMapPlugin extends Plugin {
-      private map: Map<string, number> = new Map().set("a", 1).set("b", 2);
+    class MockMapPlugin implements Plugin {
 
-      getModules(_client: Client): PluginModules {
+      private map = new Map().set("a", 1).set("b", 2)
+
+      getModules(): PluginModules {
         return {
-          query: {
-            getMap: async (_: unknown) => this.map,
-          },
-          mutation: {
-            updateMap: (input: {
-              map: Map<string, number>;
-            }): Map<string, number> => {
-              for (const key of input.map.keys()) {
-                this.map.set(
-                  key,
-                  (this.map.get(key) || 0) + (input.map.get(key) || 0)
-                );
-              }
-              return this.map;
-            },
-          },
+          query: new Query({ map: this.map }),
+          mutation: new Mutation({ map: this.map }),
         };
       }
     }
@@ -1924,312 +1907,6 @@ describe("Web3ApiClient", () => {
     );
   });
 
-  it("plugin env types", async () => {
-    const implementationUri = "w3://ens/some-implementation.eth";
-    const envPlugin = mockEnvPlugin();
-    const client = await getClient({
-      plugins: [
-        {
-          uri: implementationUri,
-          plugin: envPlugin,
-        },
-      ],
-      envs: [
-        {
-          uri: implementationUri,
-          query: {
-            arg1: "10",
-          },
-          mutation: {
-            arg1: 11,
-          },
-        },
-      ],
-    });
-
-    const queryEnv = await client.query({
-      uri: implementationUri,
-      query: `
-        query {
-          queryEnv
-        }
-        mutation {
-          mutationEnv
-        }
-      `,
-    });
-
-    expect(queryEnv.errors).toBeFalsy();
-    expect(queryEnv.data).toBeTruthy();
-    expect(queryEnv.data?.queryEnv).toMatchObject({ arg1: 10 });
-    expect(queryEnv.data?.mutationEnv).toMatchObject({ arg1: "11" });
-  });
-
-  it("env types", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/env-types`,
-      ipfsProvider,
-      ensAddress
-    );
-
-    const ensUri = `ens/testnet/${api.ensDomain}`;
-    const client = await getClient({
-      envs: [
-        {
-          uri: ensUri,
-          common: {
-            object: {
-              prop: "object string",
-            },
-            str: "string",
-            optFilledStr: "optional string",
-            number: 10,
-            bool: true,
-            en: "FIRST",
-            array: [32, 23],
-          },
-          mutation: {
-            mutStr: "mutation string",
-          },
-          query: {
-            queryStr: "query string",
-          },
-        },
-      ],
-    });
-
-    const queryEnv = await client.query({
-      uri: ensUri,
-      query: `
-        query {
-          queryEnv(
-            arg: "string"
-          )
-        }
-      `,
-    });
-    expect(queryEnv.errors).toBeFalsy();
-    expect(queryEnv.data?.queryEnv).toEqual({
-      str: "string",
-      optFilledStr: "optional string",
-      optStr: null,
-      number: 10,
-      optNumber: null,
-      bool: true,
-      optBool: null,
-      object: {
-        prop: "object string",
-      },
-      optObject: null,
-      en: 0,
-      optEnum: null,
-      queryStr: "query string",
-      array: [32, 23],
-    });
-
-    const mutationEnv = await client.query({
-      uri: ensUri,
-      query: `
-        mutation {
-          mutationEnv(
-            arg: "string"
-          )
-        }
-      `,
-    });
-    expect(mutationEnv.errors).toBeFalsy();
-    expect(mutationEnv.data?.mutationEnv).toEqual({
-      str: "string",
-      optFilledStr: "optional string",
-      optStr: null,
-      number: 10,
-      optNumber: null,
-      bool: true,
-      optBool: null,
-      object: {
-        prop: "object string",
-      },
-      en: 0,
-      optEnum: null,
-      optObject: null,
-      mutStr: "mutation string",
-      array: [32, 23],
-    });
-  });
-
-  it("query time env types", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/env-types`,
-      ipfsProvider,
-      ensAddress
-    );
-
-    const ensUri = `ens/testnet/${api.ensDomain}`;
-    const client = await getClient({
-      envs: [
-        {
-          uri: ensUri,
-          common: {
-            object: {
-              prop: "object string",
-            },
-            str: "string",
-            optFilledStr: "optional string",
-            number: 10,
-            bool: true,
-            en: "FIRST",
-            array: [32, 23],
-          },
-          mutation: {
-            mutStr: "mutation string",
-          },
-          query: {
-            queryStr: "query string",
-          },
-        },
-      ],
-    });
-
-    const queryEnv = await client.query({
-      uri: ensUri,
-      query: `
-        query {
-          queryEnv(
-            arg: "string"
-          )
-        }
-      `,
-    });
-    expect(queryEnv.errors).toBeFalsy();
-    expect(queryEnv.data?.queryEnv).toEqual({
-      str: "string",
-      optFilledStr: "optional string",
-      optStr: null,
-      number: 10,
-      optNumber: null,
-      bool: true,
-      optBool: null,
-      object: {
-        prop: "object string",
-      },
-      optObject: null,
-      en: 0,
-      optEnum: null,
-      queryStr: "query string",
-      array: [32, 23],
-    });
-
-    const queryUpdatedEnv = await client.query({
-      uri: ensUri,
-      query: `
-        query {
-          queryEnv(
-            arg: "string"
-          )
-        }
-      `,
-      config: {
-        envs: [
-          {
-            uri: ensUri,
-            common: {
-              object: {
-                prop: "object another string",
-              },
-              str: "another string",
-              optFilledStr: "optional string",
-              number: 10,
-              bool: true,
-              en: "FIRST",
-              array: [32, 23],
-            },
-            mutation: {
-              mutStr: "mutation string",
-            },
-            query: {
-              queryStr: "query string",
-            },
-          },
-        ],
-      },
-    });
-    expect(queryUpdatedEnv.errors).toBeFalsy();
-    expect(queryUpdatedEnv.data?.queryEnv).toEqual({
-      str: "another string",
-      optFilledStr: "optional string",
-      optStr: null,
-      number: 10,
-      optNumber: null,
-      bool: true,
-      optBool: null,
-      object: {
-        prop: "object another string",
-      },
-      optObject: null,
-      en: 0,
-      optEnum: null,
-      queryStr: "query string",
-      array: [32, 23],
-    });
-  });
-
-  it("env client types", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/env-client-types`,
-      ipfsProvider,
-      ensAddress
-    );
-
-    const ensUri = `ens/testnet/${api.ensDomain}`;
-    const client = await getClient({
-      envs: [
-        {
-          uri: ensUri,
-          mutation: {
-            str: "string",
-          },
-          query: {
-            str: "string",
-          },
-        },
-      ],
-    });
-
-    const queryEnv = await client.query({
-      uri: ensUri,
-      query: `
-        query {
-          environment(
-            arg: "string"
-          )
-        }
-      `,
-    });
-    expect(queryEnv.errors).toBeFalsy();
-    expect(queryEnv.data?.environment).toEqual({
-      str: "string",
-      optStr: null,
-      defStr: "default string",
-    });
-
-    const mutationEnv = await client.query({
-      uri: ensUri,
-      query: `
-        mutation {
-          mutEnvironment(
-            arg: "string"
-          )
-        }
-      `,
-    });
-    expect(mutationEnv.errors).toBeFalsy();
-    expect(mutationEnv.data?.mutEnvironment).toEqual({
-      str: "string",
-      optStr: null,
-      defMutStr: "default mutation string",
-    });
-  });
-
   it("loadWeb3Api - pass string or Uri", async () => {
     const implementationUri = "w3://ens/some-implementation.eth";
     const schemaStr = "test-schema";
@@ -2443,8 +2120,7 @@ describe("Web3ApiClient", () => {
     const schema: string = await client.getSchema(
       "w3://ens/js-logger.web3api.eth"
     );
-
-    // TODO: add scalar Map and annotate directive in next release
+    
     expect(schema).toStrictEqual(
       `### Web3API Header START ###
 scalar UInt

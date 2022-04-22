@@ -1,7 +1,7 @@
 {
   "name": "@web3api/ethereum-plugin-js",
   "description": "Web3API Ethereum Javascript Plugin",
-  "version": "0.0.1-prealpha.70",
+  "version": "0.0.1-prealpha.72",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -9,11 +9,12 @@
   },
   "main": "build/index.js",
   "files": [
-    "build",
-    "schema.graphql"
+    "build"
   ],
   "scripts": {
-    "build": "rimraf ./build && yarn codegen && tsc --project tsconfig.build.json",
+    "build": "rimraf ./build ./**/w3 ./*/**/w3 && tsc --project tsconfig.build.json",
+    "build:migrate": "npx w3 plugin codegen",
+    "build:bak": "rimraf ./build && yarn codegen && tsc --project tsconfig.build.json",
     "codegen": "node ../../../../dependencies/node_modules/@web3api/cli/bin/w3 plugin codegen",
     "lint": "eslint --color -c ../../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
@@ -23,15 +24,15 @@
   "dependencies": {
     "@ethersproject/address": "5.0.7",
     "@ethersproject/providers": "5.0.7",
-    "@web3api/core-js": "0.0.1-prealpha.70",
+    "@web3api/core-js": "0.0.1-prealpha.72",
     "ethers": "5.0.7"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",
-    "@web3api/client-js": "0.0.1-prealpha.70",
-    "@web3api/ens-plugin-js": "0.0.1-prealpha.70",
-    "@web3api/ipfs-plugin-js": "0.0.1-prealpha.70",
-    "@web3api/test-env-js": "0.0.1-prealpha.70",
+    "@web3api/client-js": "0.0.1-prealpha.72",
+    "@web3api/ens-plugin-js": "0.0.1-prealpha.72",
+    "@web3api/ipfs-plugin-js": "0.0.1-prealpha.72",
+    "@web3api/test-env-js": "0.0.1-prealpha.72",
     "eth-ens-namehash": "2.0.8",
     "jest": "26.6.3",
     "js-sha3": "0.8.0",

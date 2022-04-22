@@ -81,6 +81,7 @@ describe("Web3API Binding Test Suite", () => {
           .indexOf("common") > -1;
         const moduleWiseOutput = expectedModuleWiseOutput
           ? bindSchema({
+            projectName: "TestCase",
             bindLanguage: language as BindLanguage,
             modules,
             commonDirAbs: hasCommonModule ? commonDirAbs : undefined
@@ -89,6 +90,7 @@ describe("Web3API Binding Test Suite", () => {
 
         const combinedOutput = expectedCombinedOutput
           ? bindSchema({
+            projectName: "TestCase",
             bindLanguage: language as BindLanguage,
             modules: [testCase.input.combined]
           })

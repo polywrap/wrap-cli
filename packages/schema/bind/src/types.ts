@@ -23,7 +23,8 @@ export interface BindModuleOptions {
 }
 
 export interface BindOptions {
-  bindLanguage: BindLanguage;
   modules: BindModuleOptions[];
+  projectName: string;
+  bindLanguage: BindLanguage;
   commonDirAbs?: string;
 }

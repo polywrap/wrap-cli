@@ -2,17 +2,17 @@
   "name": "templates-app-typescript-node",
   "description": "Web3API App TypeScript Node Template",
   "private": true,
-  "version": "0.0.1-prealpha.70",
+  "version": "0.0.1-prealpha.72",
   "scripts": {
     "start": "ts-node ./src/index.ts",
     "prestart": "npx w3 app codegen"
   },
   "dependencies": {
-    "@web3api/client-js": "0.0.1-prealpha.70"
+    "@web3api/client-js": "0.0.1-prealpha.72"
   },
   "devDependencies": {
     "@types/node": "12.12.26",
-    "@web3api/cli": "0.0.1-prealpha.70",
+    "@web3api/cli": "0.0.1-prealpha.72",
     "ts-node": "10.7.0",
     "typescript": "4.0.7"
   }

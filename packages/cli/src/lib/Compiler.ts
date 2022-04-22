@@ -7,12 +7,12 @@ import {
   withSpinner,
   outputManifest,
   outputMetadata,
-  web3apiManifestLanguageToBindLanguage,
   generateDockerfile,
   generateDockerImageName,
   createBuildImage,
   copyArtifactsFromBuildImage,
   intlMsg,
+  resetDir,
 } from "./";
 
 import {
@@ -24,18 +24,11 @@ import {
 import { WasmWeb3Api } from "@web3api/client-js";
 import { W3Imports } from "@web3api/client-js/build/wasm/types";
 import { AsyncWasmInstance } from "@web3api/asyncify-js";
-import { bindSchema, BindOptions } from "@web3api/schema-bind";
-import { TypeInfo } from "@web3api/schema-parse";
 import { ComposerOutput } from "@web3api/schema-compose";
-import {
-  getCommonPath,
-  writeFileSync,
-  writeDirectorySync,
-} from "@web3api/os-js";
+import { writeFileSync, writeDirectorySync } from "@web3api/os-js";
 import * as gluegun from "gluegun";
 import fs from "fs";
 import path from "path";
-import rimraf from "rimraf";
 
 type ModulesToBuild = Record<InvokableModules, boolean>;
 
@@ -99,7 +92,7 @@ export class Compiler {
       const state = await this._getCompilerState();
 
       // Init & clean output directory
-      this._resetDir(this._config.outputDir);
+      resetDir(this._config.outputDir);
 
       await this._outputComposedSchema(state);
 
@@ -196,73 +189,11 @@ export class Compiler {
   }
 
   private async _generateCode(state: CompilerState): Promise<string[]> {
-    const { web3ApiManifest, composerOutput, modulesToBuild } = state;
+    const { composerOutput } = state;
     const { project } = this._config;
 
-    const queryModule = web3ApiManifest.modules.query?.module as string;
-    const queryDirectory = web3ApiManifest.modules.query
-      ? this._getGenerationDirectory(queryModule)
-      : undefined;
-    const mutationModule = web3ApiManifest.modules.mutation?.module as string;
-    const mutationDirectory = web3ApiManifest.modules.mutation
-      ? this._getGenerationDirectory(mutationModule)
-      : undefined;
-
-    if (
-      queryDirectory &&
-      mutationDirectory &&
-      queryDirectory === mutationDirectory
-    ) {
-      throw Error(
-        intlMsg.lib_compiler_dup_code_folder({ directory: queryDirectory })
-      );
-    }
-
-    // Clean the code generation
-    if (queryDirectory) {
-      this._resetDir(queryDirectory);
-    }
-
-    if (mutationDirectory) {
-      this._resetDir(mutationDirectory);
-    }
-
-    const bindLanguage = web3apiManifestLanguageToBindLanguage(
-      await project.getManifestLanguage()
-    );
-
-    const options: BindOptions = {
-      modules: [],
-      bindLanguage,
-    };
-
-    if (modulesToBuild.query) {
-      options.modules.push({
-        name: "query",
-        typeInfo: composerOutput.query?.typeInfo as TypeInfo,
-        schema: composerOutput.combined?.schema as string,
-        outputDirAbs: queryDirectory as string,
-      });
-    }
-
-    if (modulesToBuild.mutation) {
-      options.modules.push({
-        name: "mutation",
-        typeInfo: composerOutput.mutation?.typeInfo as TypeInfo,
-        schema: composerOutput.combined?.schema as string,
-        outputDirAbs: mutationDirectory as string,
-      });
-    }
-
-    if (mutationDirectory && queryDirectory) {
-      options.commonDirAbs = path.join(
-        getCommonPath(queryDirectory, mutationDirectory),
-        "w3"
-      );
-    }
-
     // Generate the bindings
-    const output = bindSchema(options);
+    const output = await project.generateSchemaBindings(composerOutput);
 
     // Output the bindings
     const filesWritten: string[] = [];
@@ -350,15 +281,6 @@ export class Compiler {
     return modulesToBuild;
   }
 
-  private _getGenerationDirectory(entryPoint: string): string {
-    const { project } = this._config;
-
-    const absolute = path.isAbsolute(entryPoint)
-      ? entryPoint
-      : path.join(project.getManifestDir(), entryPoint);
-    return `${path.dirname(absolute)}/w3`;
-  }
-
   private async _buildSourcesInDocker(): Promise<string> {
     const { project, outputDir } = this._config;
     const buildManifestDir = await project.getBuildManifestDir();
@@ -415,14 +337,6 @@ export class Compiler {
     );
 
     return dockerImageId;
-  }
-
-  private _resetDir(dir: string) {
-    if (fs.existsSync(dir)) {
-      rimraf.sync(dir);
-    }
-
-    fs.mkdirSync(dir, { recursive: true });
   }
 
   private async _outputComposedSchema(state: CompilerState): Promise<void> {

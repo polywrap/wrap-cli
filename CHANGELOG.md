@@ -1,3 +1,25 @@
+# Web3API 0.0.1-prealpha.72
+## Features
+* [PR-620](https://github.com/polywrap/monorepo/pull/620) Plugin DevExp Improvements: The plugin developer experience has been revised to be very close to the API development experience.
+* [PR-697](https://github.com/polywrap/monorepo/pull/697) `BigNumber` Schema Type: The `BigNumber` type is now available for use as a base type for Web3API schemas.
+* [PR-802](https://github.com/polywrap/monorepo/pull/802) `@web3api/cli`: `w3 query ...` command now supports the following options:
+  * `-o, --output-file`: Output file path for the query result.
+  * `-q, --quiet`: Suppress output.
+* [PR-790](https://github.com/polywrap/monorepo/pull/790) `@web3api/schema-bind`: `wasm-as` bindings have been updated to include a helper function `requireEnv()`, which can be used to check if the environment is null or not.
+* [PR-795](https://github.com/polywrap/monorepo/pull/795) `@web3api/templates`: The AssemblyScript & interface templates used for the `w3 create api ...` command has been updated to include metadata (descriptions, icons, etc).
+* [PR-794](https://github.com/polywrap/monorepo/pull/794) `@web3api/templates`: The AssemblyScript template used for the `w3 create api assemblyscript ...` command has been updated to include e2e tests.
+
+# Web3API 0.0.1-prealpha.71
+## Features
+* [PR-777](https://github.com/polywrap/monorepo/pull/777) `@web3api/client-js`: The `Web3ApiClient` now has a public method `loadUriResolvers()`, which will pre-fetch all URI resolver implementations.
+
+## Bugs
+* [Issue-715](https://github.com/polywrap/monorepo/pull/777) [PR-777](https://github.com/polywrap/monorepo/pull/777) `@web3api/client-js`: Custom URI resolver implementations now no longer cause an infinite loop during URI resolution.
+
+## Breaking Changes
+* [PR-777](https://github.com/polywrap/monorepo/pull/777) `@web3api/client-js`: `Web3ApiClient` public method `getResolvers(...)` renamed to `getUriResolvers(...)`.
+* [PR-777](https://github.com/polywrap/monorepo/pull/777) `@web3api/client-js`: `Web3ApiClientConfig` property `resolvers` renamed to `uriResolvers`.
+
 # Web3API 0.0.1-prealpha.70
 ## Bugs
 * `@web3api/core-js`: Fixed the manifest migration script for `web3api.meta` from v1 to v3. The `name` property is now migrating properly to `displayName`.
