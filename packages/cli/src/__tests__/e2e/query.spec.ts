@@ -24,13 +24,10 @@ Options:
 
 `;
 
-const projectRoot = path.resolve(__dirname, "../project/");
-
 describe("sanity tests for query command", () => {
   test("Should throw error for missing recipe-string", async () => {
     const { exitCode, stdout, stderr } = await runCLI({
       args: ["query"],
-      cwd: projectRoot,
       cli: w3Cli,
     });
 
@@ -44,7 +41,6 @@ ${HELP}`);
   test("Should throw error is --client-config doesn't contain arguments", async () => {
     const { exitCode, stdout, stderr } = await runCLI({
       args: ["query", "./recipes/e2e.json", "--client-config"],
-      cwd: projectRoot,
       cli: w3Cli,
     });
 
@@ -259,6 +255,7 @@ describe("e2e tests for query command", () => {
 
     fs.unlinkSync(`${projectRoot}/recipes/output.yaml`);
   }, 48000);
+
   test("Should suppress the ouput if --quiet option is specified", async () => {
     const { exitCode: code, stdout: output, stderr: queryErr } = await runCLI({
       args: [

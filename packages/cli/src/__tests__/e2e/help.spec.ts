@@ -16,12 +16,10 @@ const HELP = `
 `;
 
 describe("e2e tests for no help", () => {
-  const projectRoot = path.resolve(__dirname, "../project/");
 
   test("Should display the help content", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["help"],
-      cwd: projectRoot,
       cli: w3Cli,
     });
 
