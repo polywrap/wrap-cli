@@ -14,6 +14,8 @@ import {
   intlMsg,
   fixParameters,
   generateProjectTemplate,
+  PluginProject,
+  defaultPluginManifest,
 } from "../lib";
 
 import { GluegunToolbox, GluegunPrint } from "gluegun";
@@ -122,7 +124,9 @@ export default {
     // Resolve manifest
     let manifestPaths = manifestFile
       ? [manifestFile]
-      : defaultWeb3ApiManifest.concat(defaultAppManifest);
+      : defaultWeb3ApiManifest
+          .concat(defaultAppManifest)
+          .concat(defaultPluginManifest);
     manifestFile = resolvePathIfExists(filesystem, manifestPaths);
 
     if (!manifestFile) {
@@ -137,6 +141,9 @@ export default {
     const isAppManifest: boolean =
       (<string>manifestFile).toLowerCase().endsWith("web3api.app.yaml") ||
       (<string>manifestFile).toLowerCase().endsWith("web3api.app.yml");
+    const isPluginManifest: boolean =
+      (<string>manifestFile).toLowerCase().endsWith("web3api.plugin.yaml") ||
+      (<string>manifestFile).toLowerCase().endsWith("web3api.plugin.yml");
 
     // Resolve custom script
     const customScript = require.resolve(commandToPathMap[command]);
@@ -157,6 +164,13 @@ export default {
         rootCacheDir: path.dirname(manifestFile),
         appManifestPath: manifestFile,
         client,
+        quiet: true,
+      });
+    } else if (isPluginManifest) {
+      project = new PluginProject({
+        rootCacheDir: path.dirname(manifestFile),
+        pluginManifestPath: manifestFile,
+        quiet: true,
       });
     } else {
       project = new Web3ApiProject({
