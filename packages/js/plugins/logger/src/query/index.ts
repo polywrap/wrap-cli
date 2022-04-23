@@ -3,7 +3,7 @@ import {
   Input_log,
   Logger_LogLevel,
   Logger_LogLevelEnum,
-} from "./w3-man";
+} from "./w3";
 
 export type LogFunc = (level: Logger_LogLevel, message: string) => boolean;
 

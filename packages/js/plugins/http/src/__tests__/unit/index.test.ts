@@ -1,5 +1,5 @@
 import { Query } from "../../query";
-import { ResponseTypeEnum, Client } from "../../query/w3-man";
+import { ResponseTypeEnum, Client } from "../../query/w3";
 
 import axios, { AxiosResponse, AxiosRequestConfig } from "axios";
 

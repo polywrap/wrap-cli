@@ -5,7 +5,7 @@ import {
   Input_toUnicode,
   Input_convert,
   ConvertResult,
-} from "./w3-man";
+} from "./w3";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires
 const uts46 = require("idna-uts46-hx/uts46bundle.js");
