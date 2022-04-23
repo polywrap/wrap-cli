@@ -104,8 +104,6 @@ export class Compiler {
 
         // Compile the API
         buildManifest = await this._buildModules(state);
-
-        console.log(JSON.stringify(buildManifest));
       }
 
       // Output all metadata if present
