@@ -20,14 +20,6 @@ jobs:
       - name: Read VERSION into env.RELEASE_VERSION
         run: echo RELEASE_VERSION=$(cat VERSION) >> $GITHUB_ENV
 
-      - name: Read .nvmrc into env.NVMRC
-        run: echo NVMRC=$(cat .nvmrc) >> $GITHUB_ENV
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: '${{env.NVMRC}}'
-
       - name: Set Git Identity
         run: |
           git config --global user.name 'github-actions[bot]'
