@@ -1,9 +1,11 @@
-import path from "path";
 import { defaultPluginManifest } from "../../lib";
 import { clearStyle } from "./utils";
 
 import { runCLI } from "@web3api/test-env-js";
+import { GetPathToCliTestFiles } from "@web3api/test-cases";
 import { compareSync } from "dir-compare";
+import path from "path";
+import fs from "fs";
 
 const HELP = `
 w3 plugin command [options]
@@ -23,14 +25,28 @@ Options:
 
 `;
 
+const CODEGEN_SUCCESS = `- Manifest loaded from ./web3api.plugin.yaml
+✔ Manifest loaded from ./web3api.plugin.yaml
+- Generate types
+✔ Generate types
+- Manifest written to ./build/web3api.plugin.json
+✔ Manifest written to ./build/web3api.plugin.json
+`;
+
 describe("e2e tests for plugin command", () => {
-  const projectRoot = path.resolve(__dirname, "../plugin/");
+  const testCaseRoot = path.join(GetPathToCliTestFiles(), "plugin/codegen");
+  const testCases =
+    fs.readdirSync(testCaseRoot, { withFileTypes: true })
+      .filter((dirent) => dirent.isDirectory())
+      .map((dirent) => dirent.name);
+  const getTestCaseDir = (index: number) =>
+    path.join(testCaseRoot, testCases[index]);
 
   test("Should show help text", async () => {
     const { exitCode: code, stdout: output } = await runCLI(
       {
         args: ["plugin", "codegen", "--help"],
-        cwd: projectRoot,
+        cwd: getTestCaseDir(0),
       }
     );
 
@@ -42,7 +58,7 @@ describe("e2e tests for plugin command", () => {
     const { exitCode: code, stdout: output } = await runCLI(
       {
         args: ["plugin", "--codegen-dir"],
-        cwd: projectRoot,
+        cwd: getTestCaseDir(0),
       }
     );
 
@@ -54,7 +70,7 @@ describe("e2e tests for plugin command", () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
         args: ["plugin", "codegen", "--publish-dir"],
-        cwd: projectRoot,
+        cwd: getTestCaseDir(0),
       }
     );
 
@@ -68,7 +84,7 @@ describe("e2e tests for plugin command", () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
         args: ["plugin", "codegen", "--codegen-dir"],
-        cwd: projectRoot,
+        cwd: getTestCaseDir(0),
       }
     );
 
@@ -83,7 +99,7 @@ ${HELP}`);
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
         args: ["plugin", "codegen", "--ens"],
-        cwd: projectRoot,
+        cwd: getTestCaseDir(0),
       }
     );
 
@@ -94,37 +110,38 @@ ${HELP}`);
 ${HELP}`);
   });
 
-  test("Should successfully generate types", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
-      {
-        args: ["plugin", "codegen"],
-        cwd: projectRoot,
-      }
-    );
+  describe("test-cases", () => {
+    for (let i = 0; i < testCases.length; ++i) {
+      const testCaseName = testCases[i];
+      const testCaseDir = getTestCaseDir(i);
 
-    expect(error).toBe("");
-    expect(code).toEqual(0);
-    expect(clearStyle(output)).toEqual(`- Manifest loaded from ./web3api.plugin.yaml
-✔ Manifest loaded from ./web3api.plugin.yaml
-- Generate types
-✔ Generate types
-- Manifest written to ./build/web3api.plugin.json
-✔ Manifest written to ./build/web3api.plugin.json
-`);
+      test(testCaseName, async () => {
+        const { exitCode: code, stdout: output, stderr: error } = await runCLI(
+          {
+            args: ["plugin", "codegen"],
+            cwd: testCaseDir,
+          }
+        );
 
-    const expectedTypesResult = compareSync(
-      `${projectRoot}/src`,
-      `${projectRoot}/expected-types`,
-      { compareContent: true }
-    );
-    expect(expectedTypesResult.differences).toBe(0);
+        expect(error).toBe("");
+        expect(code).toEqual(0);
+        expect(clearStyle(output)).toEqual(CODEGEN_SUCCESS);
 
-    const expectedBuildResult = compareSync(
-      `${projectRoot}/build`,
-      `${projectRoot}/expected-build`,
-      { compareContent: true }
-    );
+        const expectedTypesResult = compareSync(
+          `${testCaseDir}/src`,
+          `${testCaseDir}/expected/src`,
+          { compareContent: true }
+        );
+        expect(expectedTypesResult.differences).toBe(0);
 
-    expect(expectedBuildResult.differences).toBe(0);
+        const expectedBuildResult = compareSync(
+          `${testCaseDir}/build`,
+          `${testCaseDir}/expected/build`,
+          { compareContent: true }
+        );
+
+        expect(expectedBuildResult.differences).toBe(0);
+      });
+    }
   });
 });

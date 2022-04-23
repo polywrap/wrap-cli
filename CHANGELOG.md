@@ -1,3 +1,7 @@
+# Web3API 0.0.1-prealpha.73
+## Bugs
+* [PR-821](https://github.com/polywrap/monorepo/pull/821) `@web3api/cli`: Fixed a codegen issue when generating types for plugins with only one module.
+
 # Web3API 0.0.1-prealpha.72
 ## Features
 * [PR-620](https://github.com/polywrap/monorepo/pull/620) Plugin DevExp Improvements: The plugin developer experience has been revised to be very close to the API development experience.
