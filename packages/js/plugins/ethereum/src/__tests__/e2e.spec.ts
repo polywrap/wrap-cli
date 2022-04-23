@@ -1,5 +1,5 @@
 import { ethereumPlugin } from "..";
-import * as Schema from "../query/w3-man";
+import * as Schema from "../query/w3";
 
 import { Web3ApiClient, defaultIpfsProviders } from "@web3api/client-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";

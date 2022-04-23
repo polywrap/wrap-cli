@@ -1,5 +1,5 @@
 import { httpPlugin } from "../..";
-import { Response } from "../../query/w3-man";
+import { Response } from "../../query/w3";
 
 import { Web3ApiClient, defaultIpfsProviders } from "@web3api/client-js"
 import { ensPlugin } from "@web3api/ens-plugin-js";
