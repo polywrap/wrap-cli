@@ -57,7 +57,7 @@ const HELP = `
 ${chalk.bold("w3 docgen")} ${cmdStr} [${optionsStr}]
 
 ${intlMsg.commands_create_options_commands()}:
-  ${chalk.bold("schema")}        ${schemaDescription}
+  ${chalk.bold("schema")}       ${schemaDescription}
   ${chalk.bold("react")}        ${reactAppDescription}
   ${chalk.bold("docusaurus")}   ${docusaurusDescription}
   ${chalk.bold("jsdoc")}        ${jsdocDescription}
