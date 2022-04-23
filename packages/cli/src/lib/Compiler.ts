@@ -102,8 +102,6 @@ export class Compiler {
         // Generate the bindings
         await this._generateCode(state);
 
-        console.log("HERERE")
-
         // Compile the API
         buildManifest = await this._buildModules(state);
 
