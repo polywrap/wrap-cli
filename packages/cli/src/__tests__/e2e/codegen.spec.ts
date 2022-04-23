@@ -1,9 +1,10 @@
-import path from "path";
 import { defaultWeb3ApiManifest } from "../../lib";
 import { clearStyle, w3Cli } from "./utils";
 
 import { runCLI } from "@web3api/test-env-js";
-import rimraf from "rimraf";
+import { GetPathToCliTestFiles } from "@web3api/test-cases";
+import path from "path";
+import fs from "fs";
 
 const HELP = `
 w3 codegen [options]
@@ -21,12 +22,18 @@ Options:
 `;
 
 describe("e2e tests for codegen command", () => {
-  const projectRoot = path.resolve(__dirname, "../project/");
+  const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/codegen");
+  const testCases =
+    fs.readdirSync(testCaseRoot, { withFileTypes: true })
+      .filter((dirent) => dirent.isDirectory())
+      .map((dirent) => dirent.name);
+  const getTestCaseDir = (index: number) =>
+    path.join(testCaseRoot, testCases[index]);
 
   test("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["codegen", "--help"],
-      cwd: projectRoot,
+      cwd: getTestCaseDir(0),
       cli: w3Cli,
     });
 
@@ -38,7 +45,7 @@ describe("e2e tests for codegen command", () => {
   test("Should throw error for invalid params - script", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["codegen", "--script"],
-      cwd: projectRoot,
+      cwd: getTestCaseDir(0),
       cli: w3Cli,
     });
 
@@ -52,7 +59,7 @@ ${HELP}`);
   test("Should throw error for invalid params - ens", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["codegen", "--ens"],
-      cwd: projectRoot,
+      cwd: getTestCaseDir(0),
       cli: w3Cli,
     });
 
@@ -66,42 +73,74 @@ ${HELP}`);
   test("Should throw error for invalid generation file - wrong file", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["codegen", "--script", `web3api-invalid.gen.js`],
-      cwd: projectRoot,
+      cwd: getTestCaseDir(0),
       cli: w3Cli,
     });
 
-    const genFile = path.normalize(`${projectRoot}/web3api-invalid.gen.js`);
+    const genFile = path.normalize(`${getTestCaseDir(0)}/web3api-invalid.gen.js`);
 
     expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output)).toContain(`Failed to generate types: Cannot find module '${genFile}'`);
   });
 
-  test("Should throw error for invalid generation file - no run() method", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: ["codegen", "--script", `web3api-norun.gen.js`],
-      cwd: projectRoot,
-      cli: w3Cli,
-    });
+  describe("test-cases", () => {
+    for (let i = 0; i < testCases.length; ++i) {
+      const testCaseName = testCases[i];
+      const testCaseDir = getTestCaseDir(i);
 
-    expect(code).toEqual(1);
-    expect(error).toBe("");
-    expect(clearStyle(output)).toContain(`Failed to generate types: The generation file provided doesn't have the 'generateBinding' method.`);
-  });
+      test(testCaseName, async () => {
 
-  test("Should successfully generate types", async () => {
-    rimraf.sync(`${projectRoot}/types`);
+        let cmdArgs = [];
+        let cmdFile = path.join(testCaseDir, "cmd.json");
+        if (fs.existsSync(cmdFile)) {
+          const cmdConfig = JSON.parse(fs.readFileSync(cmdFile, "utf-8"));
+          if (cmdConfig.args) {
+            cmdArgs.push(...cmdConfig.args);
+          }
+        }
 
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: ["codegen"],
-      cwd: projectRoot,
-      cli: w3Cli,
-    });
+        let { exitCode, stdout, stderr } = await runCLI(
+          {
+            args: ["codegen", ...cmdArgs],
+            cwd: testCaseDir,
+           cli: w3Cli,
+          },
+        );
 
-    expect(code).toEqual(0);
-    expect(error).toBe("");
-    expect(clearStyle(output)).toContain(`🔥 Types were generated successfully 🔥`);
+        stdout = clearStyle(stdout);
+        stderr = clearStyle(stderr);
 
-    rimraf.sync(`${projectRoot}/types`);
+        const expected = JSON.parse(
+          fs.readFileSync(
+            path.join(testCaseDir, "expected/output.json"), "utf-8"
+          )
+        );
+
+        if (expected.stdout) {
+          if (Array.isArray(expected.stdout)) {
+            for (const line of expected.stdout) {
+              expect(stdout).toContain(line);
+            }
+          } else {
+            expect(stdout).toContain(expected.stdout);
+          }
+        }
+
+        if (expected.stderr) {
+          if (Array.isArray(expected.stderr)) {
+            for (const line of expected.stderr) {
+              expect(stderr).toContain(line);
+            }
+          } else {
+            expect(stderr).toContain(expected.stderr);
+          }
+        }
+
+        if (expected.exitCode) {
+          expect(exitCode).toEqual(expected.exitCode);
+        }
+      });
+    }
   });
 });

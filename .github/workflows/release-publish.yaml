@@ -20,14 +20,6 @@ jobs:
       - name: Read VERSION into env.RELEASE_VERSION
         run: echo RELEASE_VERSION=$(cat VERSION) >> $GITHUB_ENV
 
-      - name: Read .nvmrc into env.NVMRC
-        run: echo NVMRC=$(cat .nvmrc) >> $GITHUB_ENV
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: '${{env.NVMRC}}'
-
       - name: Set Git Identity
         run: |
           git config --global user.name 'github-actions[bot]'
@@ -94,6 +86,22 @@ jobs:
       github.event.pull_request.merged == true
     runs-on: ubuntu-18.04
     steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
+
+      - name: Read VERSION into env.RELEASE_VERSION
+        run: echo RELEASE_VERSION=$(cat VERSION) >> $GITHUB_ENV
+
+      - name: Read .nvmrc into env.NVMRC
+        run: echo NVMRC=$(cat .nvmrc) >> $GITHUB_ENV
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '${{env.NVMRC}}'
+
       - name: Auth into NPM
         if: ${{env.TAG_EXISTS}} == 'false'
         run: |

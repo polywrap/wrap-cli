@@ -11,7 +11,7 @@ import {
   TxResponse,
   TxReceipt,
   Connection as SchemaConnection,
-} from "./w3-man";
+} from "./w3";
 import { EthereumConfig } from "../common/EthereumConfig";
 import { Connections, Connection, getConnection } from "../common/Connection";
 import * as Mapping from "../common/mapping";

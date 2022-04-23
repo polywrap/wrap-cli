@@ -5,7 +5,7 @@ import {
   Input_getFile,
   UriResolver_MaybeUriOrManifest,
   Bytes,
-} from "./w3-man";
+} from "./w3";
 
 import path from "path";
 import fs from "fs";

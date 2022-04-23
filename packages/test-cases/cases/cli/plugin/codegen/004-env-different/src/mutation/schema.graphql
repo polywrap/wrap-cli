@@ -1,0 +1,9 @@
+type Env {
+  mutationArg: String!
+}
+
+type Mutation {
+  method(
+    arg: UInt32!
+  ): String!
+}
