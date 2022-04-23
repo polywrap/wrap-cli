@@ -1,4 +1,4 @@
-import { Access, TxReceipt, TxResponse, TxRequest, Log } from "../query/w3-man";
+import { Access, TxReceipt, TxResponse, TxRequest, Log } from "../query/w3";
 
 import { ethers } from "ethers";
 

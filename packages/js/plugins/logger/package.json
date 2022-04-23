@@ -12,9 +12,7 @@
   "version": "0.0.1-prealpha.74",
   "main": "build/index.js",
   "scripts": {
-    "build": "rimraf ./build ./**/w3 ./*/**/w3 && tsc --project tsconfig.build.json",
-    "build:migrate": "npx w3 plugin codegen",
-    "build:bak": "rimraf ./build && yarn codegen && tsc --project tsconfig.build.json",
+    "build": "rimraf ./build && yarn codegen && tsc --project tsconfig.build.json",
     "codegen": "node ../../../../dependencies/node_modules/@web3api/cli/bin/w3 plugin codegen",
     "lint": "eslint --color -c ../../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",

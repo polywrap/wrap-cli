@@ -6,7 +6,7 @@ import {
   UriResolver_MaybeUriOrManifest,
   Bytes,
   Ethereum_Query,
-} from "./w3-man";
+} from "./w3";
 
 import { ethers } from "ethers";
 import { Base58 } from "@ethersproject/basex";
