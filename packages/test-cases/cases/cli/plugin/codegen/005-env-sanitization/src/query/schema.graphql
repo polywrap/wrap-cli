@@ -1,0 +1,17 @@
+type QueryClientEnv {
+  bar: UInt32!
+}
+
+type QueryEnv {
+  queryArg: String!
+}
+
+type Query {
+  sanitizeEnv(
+    env: QueryClientEnv!
+  ): QueryEnv!
+
+  method(
+    str: String!
+  ): String!
+}

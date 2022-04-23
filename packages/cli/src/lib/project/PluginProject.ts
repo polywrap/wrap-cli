@@ -183,7 +183,7 @@ export class PluginProject extends Project<PluginManifest> {
       );
     } else if (mutationDirectory || queryDirectory) {
       options.commonDirAbs = path.resolve(
-        path.join(mutationDirectory || queryDirectory || "", "../w3")
+        path.join(mutationDirectory || queryDirectory || "", "../../w3")
       );
     }
 
