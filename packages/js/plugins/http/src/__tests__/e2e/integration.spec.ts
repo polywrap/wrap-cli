@@ -80,7 +80,6 @@ describe("e2e tests for HttpPlugin", () => {
         ensRegistryAddress: ensAddress,
         ensRegistrarAddress: registrarAddress,
         ensResolverAddress: resolverAddress,
-        client,
         ethereumProvider: ethereum
       });
 
