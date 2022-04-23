@@ -4,4 +4,4 @@
 export * from "./module";
 export * from "./types";
 
-export { Client } from "@web3api/client-js";
+export { Client } from "@web3api/core-js";

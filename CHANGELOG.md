@@ -1,3 +1,7 @@
+# Web3API 0.0.1-prealpha.74
+## Bugs
+* `@web3api/schema-bind`: Fix incorrect export from `plugin-ts` bindings.
+
 # Web3API 0.0.1-prealpha.73
 ## Bugs
 * [PR-821](https://github.com/polywrap/monorepo/pull/821) `@web3api/cli`: Fixed a codegen issue when generating types for plugins with only one module.
