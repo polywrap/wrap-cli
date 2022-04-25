@@ -52,8 +52,10 @@ export async function getTestEnvClientConfig(): Promise<
     {
       uri: "w3://ens/ens.web3api.eth",
       plugin: ensPlugin({
-        addresses: {
-          testnet: ensAddress,
+        query: {
+          addresses: {
+            testnet: ensAddress,
+          },
         },
       }),
     },

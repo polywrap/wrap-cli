@@ -1,10 +1,10 @@
-import path from "path";
-import { initTestEnvironment, runCLI, stopTestEnvironment } from "@web3api/test-env-js";
 import { w3Cli } from "../e2e/utils";
 
-describe("e2e tests for docker", () => {
-  const projectRoot = path.resolve(__dirname, "../project/");
+import { initTestEnvironment, runCLI, stopTestEnvironment } from "@web3api/test-env-js";
+import { GetPathToCliTestFiles } from "@web3api/test-cases";
+import path from "path";
 
+describe("e2e tests for docker", () => {
   beforeAll(async () => {
     await initTestEnvironment();
   });
@@ -19,7 +19,7 @@ describe("e2e tests for docker", () => {
       promises.push(
         runCLI({
           args: ["build", "-v"],
-          cwd: projectRoot,
+          cwd: path.join(GetPathToCliTestFiles(), "api/build/001-sanity"),
           cli: w3Cli
         }).then((result: { exitCode: number; stdout: string; stderr: string }) => {
           const { exitCode, stderr } = result;
@@ -30,5 +30,4 @@ describe("e2e tests for docker", () => {
     }
     await Promise.all(promises);
   });
-
 });

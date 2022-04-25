@@ -1,6 +1,7 @@
-// @ts-noCheck
+// @ts-ignore
 import * as Types from "./";
 
+// @ts-ignore
 import {
   Client,
   InvokeApiResult
@@ -59,9 +60,9 @@ export interface CustomType {
 }
 
 export interface AnotherType {
-  prop?: String | null;
+  prop?: Types.String | null;
   circular?: Types.CustomType | null;
-  const?: String | null;
+  const?: Types.String | null;
 }
 
 export enum CustomEnumEnum {
@@ -91,7 +92,7 @@ export interface TestImport_Object {
 
 /* URI: "testimport.uri.eth" */
 export interface TestImport_AnotherObject {
-  prop: String;
+  prop: Types.String;
 }
 
 /// Imported Objects END ///
@@ -116,11 +117,11 @@ export type TestImport_Enum = TestImport_EnumEnum | TestImport_EnumString;
 
 /* URI: "testimport.uri.eth" */
 interface TestImport_Query_Input_importedMethod extends Record<string, unknown> {
-  str: String;
-  optStr?: String | null;
-  u: UInt;
-  optU?: UInt | null;
-  uArrayArray: Array<Array<UInt | null> | null>;
+  str: Types.String;
+  optStr?: Types.String | null;
+  u: Types.UInt;
+  optU?: Types.UInt | null;
+  uArrayArray: Array<Array<Types.UInt | null> | null>;
   object: Types.TestImport_Object;
   optObject?: Types.TestImport_Object | null;
   objectArray: Array<Types.TestImport_Object>;
@@ -133,7 +134,7 @@ interface TestImport_Query_Input_importedMethod extends Record<string, unknown> 
 
 /* URI: "testimport.uri.eth" */
 interface TestImport_Query_Input_anotherMethod extends Record<string, unknown> {
-  arg: Array<String>;
+  arg: Array<Types.String>;
 }
 
 /* URI: "testimport.uri.eth" */
@@ -155,8 +156,8 @@ export const TestImport_Query = {
     input: TestImport_Query_Input_anotherMethod,
     client: Client,
     uri: string = "testimport.uri.eth"
-  ): Promise<InvokeApiResult<Int32>> => {
-    return client.invoke<Int32>({
+  ): Promise<InvokeApiResult<Types.Int32>> => {
+    return client.invoke<Types.Int32>({
       uri,
       module: "query",
       method: "anotherMethod",
@@ -167,14 +168,14 @@ export const TestImport_Query = {
 
 /* URI: "testimport.uri.eth" */
 interface TestImport_Mutation_Input_importedMethod extends Record<string, unknown> {
-  str: String;
+  str: Types.String;
   object: Types.TestImport_Object;
   objectArray: Array<Types.TestImport_Object>;
 }
 
 /* URI: "testimport.uri.eth" */
 interface TestImport_Mutation_Input_anotherMethod extends Record<string, unknown> {
-  arg: Array<String>;
+  arg: Array<Types.String>;
 }
 
 /* URI: "testimport.uri.eth" */
@@ -196,8 +197,8 @@ export const TestImport_Mutation = {
     input: TestImport_Mutation_Input_anotherMethod,
     client: Client,
     uri: string = "testimport.uri.eth"
-  ): Promise<InvokeApiResult<Int32>> => {
-    return client.invoke<Int32>({
+  ): Promise<InvokeApiResult<Types.Int32>> => {
+    return client.invoke<Types.Int32>({
       uri,
       module: "mutation",
       method: "anotherMethod",
