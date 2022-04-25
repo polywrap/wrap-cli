@@ -7,7 +7,7 @@ import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
-  buildAndDeployApi
+  buildAndDeployApi,
 } from "@web3api/test-env-js";
 import { Wallet } from "ethers";
 
@@ -19,15 +19,15 @@ const { hash: namehash } = require("eth-ens-namehash");
 const contracts = {
   StructArg: {
     abi: require("./contracts/StructArg.ABI.json"),
-    bytecode: `0x${require("./contracts/StructArg.Bytecode.json").object}`
+    bytecode: `0x${require("./contracts/StructArg.Bytecode.json").object}`,
   },
   SimpleStorage: {
     abi: require("./contracts/SimpleStorage.ABI.json"),
-    bytecode: `0x${require("./contracts/SimpleStorage.Bytecode.json").object}`
-  }
+    bytecode: `0x${require("./contracts/SimpleStorage.Bytecode.json").object}`,
+  },
 };
 
-jest.setTimeout(360000)
+jest.setTimeout(360000);
 
 describe("Ethereum Plugin", () => {
   let client: Web3ApiClient;
@@ -35,15 +35,15 @@ describe("Ethereum Plugin", () => {
   let ensAddress: string;
   let resolverAddress: string;
   let registrarAddress: string;
-  const signer = "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1"
+  const signer = "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1";
 
   beforeAll(async () => {
     const { ethereum, ipfs } = await initTestEnvironment();
     const { data } = await axios.get("http://localhost:4040/deploy-ens");
 
-    ensAddress = data.ensAddress
-    resolverAddress = data.resolverAddress
-    registrarAddress = data.registrarAddress
+    ensAddress = data.ensAddress;
+    resolverAddress = data.resolverAddress;
+    registrarAddress = data.registrarAddress;
 
     client = new Web3ApiClient({
       plugins: [
@@ -53,29 +53,31 @@ describe("Ethereum Plugin", () => {
             networks: {
               testnet: {
                 provider: ethereum,
-                signer: new Wallet("0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d"),
-              }
+                signer: new Wallet(
+                  "0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d"
+                ),
+              },
             },
-            defaultNetwork: "testnet"
+            defaultNetwork: "testnet",
           }),
         },
         {
           uri: "w3://ens/ipfs.web3api.eth",
           plugin: ipfsPlugin({
             provider: ipfs,
-            fallbackProviders: defaultIpfsProviders
-          })
+            fallbackProviders: defaultIpfsProviders,
+          }),
         },
         {
           uri: "w3://ens/ens.web3api.eth",
           plugin: ensPlugin({
             query: {
               addresses: {
-                testnet: ensAddress
-              }
-            }
-          })
-        }
+                testnet: ensAddress,
+              },
+            },
+          }),
+        },
       ],
     });
 
@@ -94,7 +96,7 @@ describe("Ethereum Plugin", () => {
 
   describe("Query", () => {
     it("callContractView", async () => {
-      const node = namehash("whatever.eth")
+      const node = namehash("whatever.eth");
       const response = await client.query<{ callContractView: string }>({
         uri,
         query: `
@@ -108,14 +110,18 @@ describe("Ethereum Plugin", () => {
         `,
       });
 
-      expect(response.errors).toBeUndefined()
-      expect(response.data?.callContractView).toBeDefined()
-      expect(response.data?.callContractView).toBe("0x0000000000000000000000000000000000000000")
+      expect(response.errors).toBeUndefined();
+      expect(response.data?.callContractView).toBeDefined();
+      expect(response.data?.callContractView).toBe(
+        "0x0000000000000000000000000000000000000000"
+      );
     });
 
     it("callContractStatic (no error)", async () => {
-      const label = "0x" + keccak256("testwhatever")
-      const response = await client.query<{ callContractStatic: Schema.StaticTxResult }>({
+      const label = "0x" + keccak256("testwhatever");
+      const response = await client.query<{
+        callContractStatic: Schema.StaticTxResult;
+      }>({
         uri,
         query: `
           query {
@@ -141,8 +147,10 @@ describe("Ethereum Plugin", () => {
     });
 
     it("callContractStatic (expecting error)", async () => {
-      const label = "0x" + keccak256("testwhatever")
-      const response = await client.query<{ callContractStatic: Schema.StaticTxResult }>({
+      const label = "0x" + keccak256("testwhatever");
+      const response = await client.query<{
+        callContractStatic: Schema.StaticTxResult;
+      }>({
         uri,
         query: `
           query {
@@ -164,7 +172,9 @@ describe("Ethereum Plugin", () => {
       expect(response.errors).toBeUndefined();
       expect(response.data?.callContractStatic).toBeDefined();
       expect(response.data?.callContractStatic.error).toBeTruthy();
-      expect(response.data?.callContractStatic.result).toContain("missing revert data in call exception");
+      expect(response.data?.callContractStatic.result).toContain(
+        "missing revert data in call exception"
+      );
     });
 
     it("getBalance", async () => {
@@ -179,12 +189,12 @@ describe("Ethereum Plugin", () => {
         module: "query",
         method: "getBalance",
         input: {
-          address: signerAddressQuery.data
-        }
-      })
+          address: signerAddressQuery.data,
+        },
+      });
 
-      expect(response.error).toBeUndefined()
-      expect(response.data).toBeDefined()
+      expect(response.error).toBeUndefined();
+      expect(response.data).toBeDefined();
     });
 
     it("encodeParams", async () => {
@@ -200,7 +210,9 @@ describe("Ethereum Plugin", () => {
         `,
       });
 
-      expect(response.data?.encodeParams).toBe("0x000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000")
+      expect(response.data?.encodeParams).toBe(
+        "0x000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000"
+      );
 
       const acceptsTupleArg = await client.query<{ encodeFunction: string }>({
         uri,
@@ -214,8 +226,14 @@ describe("Ethereum Plugin", () => {
         `,
         variables: {
           types: ["tuple(uint256 startTime, uint256 endTime, address token)"],
-          values: [JSON.stringify({ startTime: "8", endTime: "16", token: "0x0000000000000000000000000000000000000000" })]
-        }
+          values: [
+            JSON.stringify({
+              startTime: "8",
+              endTime: "16",
+              token: "0x0000000000000000000000000000000000000000",
+            }),
+          ],
+        },
       });
 
       expect(acceptsTupleArg.errors).toBeUndefined();
@@ -235,7 +253,9 @@ describe("Ethereum Plugin", () => {
       });
 
       expect(response.errors).toBeUndefined();
-      expect(response.data?.encodeFunction).toBe("0x46d4adf20000000000000000000000000000000000000000000000000000000000000064")
+      expect(response.data?.encodeFunction).toBe(
+        "0x46d4adf20000000000000000000000000000000000000000000000000000000000000064"
+      );
 
       const acceptsArrayArg = await client.query<{ encodeFunction: string }>({
         uri,
@@ -249,21 +269,27 @@ describe("Ethereum Plugin", () => {
         `,
         variables: {
           method: "function createArr(uint256[] memory)",
-          args: [JSON.stringify([1, 2])]
-        }
+          args: [JSON.stringify([1, 2])],
+        },
       });
 
       expect(acceptsArrayArg.errors).toBeUndefined();
     });
 
     it("solidityPack", async () => {
-      const types: string[] = ["address", "uint24", "address", "uint24", "address"];
+      const types: string[] = [
+        "address",
+        "uint24",
+        "address",
+        "uint24",
+        "address",
+      ];
       const values: string[] = [
         "0x0000000000000000000000000000000000000001",
         "3000",
         "0x0000000000000000000000000000000000000002",
         "3000",
-        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       ];
       const result = await client.invoke<string>({
         uri: uri,
@@ -277,17 +303,25 @@ describe("Ethereum Plugin", () => {
 
       expect(result.error).toBeFalsy();
       expect(result.data).toBeTruthy();
-      expect(result.data).toBe("0x0000000000000000000000000000000000000001000bb80000000000000000000000000000000000000002000bb8c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2");
+      expect(result.data).toBe(
+        "0x0000000000000000000000000000000000000001000bb80000000000000000000000000000000000000002000bb8c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2"
+      );
     });
 
     it("solidityKeccak256", async () => {
-      const types: string[] = ["address", "uint24", "address", "uint24", "address"];
+      const types: string[] = [
+        "address",
+        "uint24",
+        "address",
+        "uint24",
+        "address",
+      ];
       const values: string[] = [
         "0x0000000000000000000000000000000000000001",
         "3000",
         "0x0000000000000000000000000000000000000002",
         "3000",
-        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       ];
       const result = await client.invoke<string>({
         uri: uri,
@@ -301,17 +335,25 @@ describe("Ethereum Plugin", () => {
 
       expect(result.error).toBeFalsy();
       expect(result.data).toBeTruthy();
-      expect(result.data).toBe("0x5dd4ee83f9bab0157f0e929b6dddd106fd7de6e5089f0f05c2c0b861e3807588");
+      expect(result.data).toBe(
+        "0x5dd4ee83f9bab0157f0e929b6dddd106fd7de6e5089f0f05c2c0b861e3807588"
+      );
     });
 
     it("soliditySha256", async () => {
-      const types: string[] = ["address", "uint24", "address", "uint24", "address"];
+      const types: string[] = [
+        "address",
+        "uint24",
+        "address",
+        "uint24",
+        "address",
+      ];
       const values: string[] = [
         "0x0000000000000000000000000000000000000001",
         "3000",
         "0x0000000000000000000000000000000000000002",
         "3000",
-        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       ];
       const result = await client.invoke<string>({
         uri: uri,
@@ -325,7 +367,9 @@ describe("Ethereum Plugin", () => {
 
       expect(result.error).toBeFalsy();
       expect(result.data).toBeTruthy();
-      expect(result.data).toBe("0x8652504faf6e0d175e62c1d9c7e10d636d5ab8f153ec3257dab1726639058d27");
+      expect(result.data).toBe(
+        "0x8652504faf6e0d175e62c1d9c7e10d636d5ab8f153ec3257dab1726639058d27"
+      );
     });
 
     it("getSignerAddress", async () => {
@@ -338,9 +382,9 @@ describe("Ethereum Plugin", () => {
         `,
       });
 
-      expect(response.errors).toBeUndefined()
-      expect(response.data?.getSignerAddress).toBeDefined()
-      expect(response.data?.getSignerAddress.startsWith("0x")).toBe(true)
+      expect(response.errors).toBeUndefined();
+      expect(response.data?.getSignerAddress).toBeDefined();
+      expect(response.data?.getSignerAddress.startsWith("0x")).toBe(true);
     });
 
     it("getSignerBalance", async () => {
@@ -352,13 +396,15 @@ describe("Ethereum Plugin", () => {
           }
         `,
       });
-  
-      expect(response.errors).toBeUndefined()
-      expect(response.data?.getSignerBalance).toBeDefined()
+
+      expect(response.errors).toBeUndefined();
+      expect(response.data?.getSignerBalance).toBeDefined();
     });
 
     it("getSignerTransactionCount", async () => {
-      const response = await client.query<{ getSignerTransactionCount: string }>({
+      const response = await client.query<{
+        getSignerTransactionCount: string;
+      }>({
         uri,
         query: `
           query {
@@ -366,10 +412,10 @@ describe("Ethereum Plugin", () => {
           }
         `,
       });
-  
-      expect(response.errors).toBeUndefined()
-      expect(response.data?.getSignerTransactionCount).toBeDefined()
-      expect(Number(response.data?.getSignerTransactionCount)).toBeTruthy()
+
+      expect(response.errors).toBeUndefined();
+      expect(response.data?.getSignerTransactionCount).toBeDefined();
+      expect(Number(response.data?.getSignerTransactionCount)).toBeTruthy();
     });
 
     it("getGasPrice", async () => {
@@ -381,10 +427,10 @@ describe("Ethereum Plugin", () => {
           }
         `,
       });
-  
-      expect(response.errors).toBeUndefined()
-      expect(response.data?.getGasPrice).toBeDefined()
-      expect(Number(response.data?.getGasPrice)).toBeTruthy()
+
+      expect(response.errors).toBeUndefined();
+      expect(response.data?.getGasPrice).toBeDefined();
+      expect(Number(response.data?.getGasPrice)).toBeTruthy();
     });
 
     it("estimateTransactionGas", async () => {
@@ -403,14 +449,14 @@ describe("Ethereum Plugin", () => {
         `,
       });
 
-      expect(response.errors).toBeUndefined()
-      expect(response.data?.estimateTransactionGas).toBeDefined()
+      expect(response.errors).toBeUndefined();
+      expect(response.data?.estimateTransactionGas).toBeDefined();
       const num = ethers.BigNumber.from(response.data?.estimateTransactionGas);
       expect(num.gt(0)).toBeTruthy();
     });
 
     it("estimateContractCallGas", async () => {
-      const label = "0x" + keccak256("testwhatever2")
+      const label = "0x" + keccak256("testwhatever2");
       const response = await client.query<{ estimateContractCallGas: string }>({
         uri,
         query: `
@@ -423,9 +469,9 @@ describe("Ethereum Plugin", () => {
           }
         `,
       });
-  
-      expect(response.data?.estimateContractCallGas).toBeDefined()
-      expect(response.errors).toBeUndefined()
+
+      expect(response.data?.estimateContractCallGas).toBeDefined();
+      expect(response.errors).toBeUndefined();
       const num = ethers.BigNumber.from(response.data?.estimateContractCallGas);
       expect(num.gt(0)).toBeTruthy();
     });
@@ -439,10 +485,10 @@ describe("Ethereum Plugin", () => {
           }
         `,
       });
-  
-      expect(response.errors).toBeUndefined()
-      expect(response.data?.checkAddress).toBeDefined()
-      expect(response.data?.checkAddress).toEqual(true)
+
+      expect(response.errors).toBeUndefined();
+      expect(response.data?.checkAddress).toBeDefined();
+      expect(response.data?.checkAddress).toEqual(true);
     });
 
     it("toWei", async () => {
@@ -454,10 +500,10 @@ describe("Ethereum Plugin", () => {
           }
         `,
       });
-  
-      expect(response.errors).toBeUndefined()
-      expect(response.data?.toWei).toBeDefined()
-      expect(response.data?.toWei).toEqual("20000000000000000000")
+
+      expect(response.errors).toBeUndefined();
+      expect(response.data?.toWei).toBeDefined();
+      expect(response.data?.toWei).toEqual("20000000000000000000");
     });
 
     it("toEth", async () => {
@@ -470,15 +516,17 @@ describe("Ethereum Plugin", () => {
         `,
       });
 
-      expect(response.errors).toBeUndefined()
-      expect(response.data?.toEth).toBeDefined()
-      expect(response.data?.toEth).toEqual("20.0")
+      expect(response.errors).toBeUndefined();
+      expect(response.data?.toEth).toBeDefined();
+      expect(response.data?.toEth).toEqual("20.0");
     });
 
     it("awaitTransaction", async () => {
       const data = contracts.SimpleStorage.bytecode;
 
-      const response = await client.query<{ sendTransaction: Schema.TxResponse }>({
+      const response = await client.query<{
+        sendTransaction: Schema.TxResponse;
+      }>({
         uri,
         query: `
           mutation {
@@ -493,9 +541,11 @@ describe("Ethereum Plugin", () => {
 
       expect(response.errors).toBeUndefined();
       expect(response.data?.sendTransaction.hash).toBeTruthy();
-      const txHash = response.data?.sendTransaction.hash as string
+      const txHash = response.data?.sendTransaction.hash as string;
 
-      const awaitResponse = await client.query<{ awaitTransaction: Schema.TxReceipt }>({
+      const awaitResponse = await client.query<{
+        awaitTransaction: Schema.TxReceipt;
+      }>({
         uri,
         query: `
           query {
@@ -508,20 +558,23 @@ describe("Ethereum Plugin", () => {
         `,
       });
 
-      expect(awaitResponse.errors).toBeUndefined()
-      expect(awaitResponse.data?.awaitTransaction).toBeDefined()
-      expect(awaitResponse.data?.awaitTransaction.transactionHash).toBeDefined()
+      expect(awaitResponse.errors).toBeUndefined();
+      expect(awaitResponse.data?.awaitTransaction).toBeDefined();
+      expect(
+        awaitResponse.data?.awaitTransaction.transactionHash
+      ).toBeDefined();
     });
 
     it("waitForEvent (NameTransfer)", async () => {
-      const event = "event Transfer(bytes32 indexed node, address owner)"
-      const label = "0x" + keccak256("testwhatever10")
-      const domain = "testwhatever10.eth"
-      const newOwner = "0xFFcf8FDEE72ac11b5c542428B35EEF5769C409f0"
+      const event = "event Transfer(bytes32 indexed node, address owner)";
+      const label = "0x" + keccak256("testwhatever10");
+      const domain = "testwhatever10.eth";
+      const newOwner = "0xFFcf8FDEE72ac11b5c542428B35EEF5769C409f0";
 
-      const listenerPromise = client.query<{ waitForEvent: Schema.EventNotification }>({
-        uri,
-        query: `
+      const listenerPromise = client
+        .query<{ waitForEvent: Schema.EventNotification }>({
+          uri,
+          query: `
           query {
             waitForEvent(
               address: "${ensAddress}",
@@ -531,14 +584,22 @@ describe("Ethereum Plugin", () => {
             )
           }
         `,
-      }).then((result: { data: { waitForEvent: Schema.EventNotification } }) => {
-        expect(typeof result.data?.waitForEvent.data === "string").toBe(true)
-        expect(typeof result.data?.waitForEvent.address === "string").toBe(true)
-        expect(result.data?.waitForEvent.log).toBeDefined()
-        expect(typeof result.data?.waitForEvent.log.transactionHash === "string").toBe(true)
-      });
+        })
+        .then(
+          (result: { data: { waitForEvent: Schema.EventNotification } }) => {
+            expect(typeof result.data?.waitForEvent.data === "string").toBe(
+              true
+            );
+            expect(typeof result.data?.waitForEvent.address === "string").toBe(
+              true
+            );
+            expect(result.data?.waitForEvent.log).toBeDefined();
+            expect(
+              typeof result.data?.waitForEvent.log.transactionHash === "string"
+            ).toBe(true);
+          }
+        );
 
-      
       await client.query<{ callContractMethod: Schema.TxResponse }>({
         uri,
         query: `
@@ -562,20 +623,21 @@ describe("Ethereum Plugin", () => {
               args: ["${namehash(domain)}", "${newOwner}"]
             )
           }
-        `
+        `,
       });
 
       await listenerPromise;
     });
 
     it("waitForEvent (NewResolver)", async () => {
-      const event = "event NewResolver(bytes32 indexed node, address resolver)"
-      const label = "0x" + keccak256("testwhatever12")
-      const domain = "testwhatever12.eth"
+      const event = "event NewResolver(bytes32 indexed node, address resolver)";
+      const label = "0x" + keccak256("testwhatever12");
+      const domain = "testwhatever12.eth";
 
-      const listenerPromise = client.query<{ waitForEvent: Schema.EventNotification }>({
-        uri,
-        query: `
+      const listenerPromise = client
+        .query<{ waitForEvent: Schema.EventNotification }>({
+          uri,
+          query: `
           query {
             waitForEvent(
               address: "${ensAddress}",
@@ -585,14 +647,23 @@ describe("Ethereum Plugin", () => {
             )
           }
         `,
-      }).then((result: { data: { waitForEvent: Schema.EventNotification } }) => {
-        expect(typeof result.data?.waitForEvent.data === "string").toBe(true)
-        expect(typeof result.data?.waitForEvent.address === "string").toBe(true)
-        expect(result.data?.waitForEvent.log).toBeDefined()
-        expect(typeof result.data?.waitForEvent.log.transactionHash === "string").toBe(true)
+        })
+        .then(
+          (result: { data: { waitForEvent: Schema.EventNotification } }) => {
+            expect(typeof result.data?.waitForEvent.data === "string").toBe(
+              true
+            );
+            expect(typeof result.data?.waitForEvent.address === "string").toBe(
+              true
+            );
+            expect(result.data?.waitForEvent.log).toBeDefined();
+            expect(
+              typeof result.data?.waitForEvent.log.transactionHash === "string"
+            ).toBe(true);
 
-        return;
-      });
+            return;
+          }
+        );
 
       await client.query({
         uri,
@@ -617,15 +688,15 @@ describe("Ethereum Plugin", () => {
               args: ["${namehash(domain)}", "${resolverAddress}"]
             )
           }
-        `
+        `,
       });
 
       await listenerPromise;
     });
 
-    it("getNetwork", async () => {
+    it("getNetwork - mainnet", async () => {
       const mainnetNetwork = await client.query<{
-        getNetwork: Schema.Network
+        getNetwork: Schema.Network;
       }>({
         uri,
         query: `
@@ -638,18 +709,21 @@ describe("Ethereum Plugin", () => {
           }
         `,
         variables: {
-          networkNameOrChainId: "mainnet"
-        }
+          networkNameOrChainId: "mainnet",
+        },
       });
 
       expect(mainnetNetwork.data).toBeTruthy();
       expect(mainnetNetwork.errors).toBeFalsy();
       expect(mainnetNetwork.data?.getNetwork.chainId).toBe("1");
       expect(mainnetNetwork.data?.getNetwork.name).toBe("homestead");
-      expect(mainnetNetwork.data?.getNetwork.ensAddress).toBe("0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e");
-
+      expect(mainnetNetwork.data?.getNetwork.ensAddress).toBe(
+        "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"
+      );
+    });
+    it("getNetwork - polygon", async () => {
       const polygonNetwork = await client.query<{
-        getNetwork: Schema.Network
+        getNetwork: Schema.Network;
       }>({
         uri,
         query: `
@@ -662,8 +736,8 @@ describe("Ethereum Plugin", () => {
           }
         `,
         variables: {
-          node: "https://polygon-rpc.com"
-        }
+          node: "https://polygon-rpc.com",
+        },
       });
 
       expect(polygonNetwork.data).toBeTruthy();
@@ -672,12 +746,77 @@ describe("Ethereum Plugin", () => {
       expect(polygonNetwork.data?.getNetwork.name).toBe("matic");
       expect(polygonNetwork.data?.getNetwork.ensAddress).toBeFalsy();
     });
+
+    it("getNetwork - mainnet with env", async () => {
+      const mainnetNetwork = await client.query<{
+        getNetwork: Schema.Network;
+      }>({
+        uri,
+        query: `
+          query {
+            getNetwork
+          }
+        `,
+        config: {
+          envs: [
+            {
+              uri: "w3://ens/ethereum.web3api.eth",
+              common: {
+                connection: {
+                  networkNameOrChainId: "mainnet",
+                },
+              },
+            },
+          ],
+        },
+      });
+
+      expect(mainnetNetwork.data).toBeTruthy();
+      expect(mainnetNetwork.errors).toBeFalsy();
+      expect(mainnetNetwork.data?.getNetwork.chainId).toBe("1");
+      expect(mainnetNetwork.data?.getNetwork.name).toBe("homestead");
+      expect(mainnetNetwork.data?.getNetwork.ensAddress).toBe(
+        "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"
+      );
+    });
+
+    it("getNetwork - polygon with env", async () => {
+      const polygonNetwork = await client.query<{
+        getNetwork: Schema.Network;
+      }>({
+        uri,
+        query: `
+          query {
+            getNetwork
+          }
+        `,
+        config: {
+          envs: [
+            {
+              uri: "w3://ens/ethereum.web3api.eth",
+              common: {
+                connection: {
+                  node: "https://polygon-rpc.com",
+                },
+              },
+            },
+          ],
+        },
+      });
+
+      expect(polygonNetwork.data).toBeTruthy();
+      expect(polygonNetwork.errors).toBeFalsy();
+      expect(polygonNetwork.data?.getNetwork.chainId).toBe("137");
+      expect(polygonNetwork.data?.getNetwork.name).toBe("matic");
+    });
   });
 
   describe("Mutation", () => {
     it("callContractMethod", async () => {
-      const label = "0x" + keccak256("testwhatever")
-      const response = await client.query<{ callContractMethod: Schema.TxResponse }>({
+      const label = "0x" + keccak256("testwhatever");
+      const response = await client.query<{
+        callContractMethod: Schema.TxResponse;
+      }>({
         uri,
         query: `
           mutation {
@@ -696,13 +835,15 @@ describe("Ethereum Plugin", () => {
         `,
       });
 
-      expect(response.errors).toBeUndefined()
-      expect(response.data?.callContractMethod).toBeDefined()
+      expect(response.errors).toBeUndefined();
+      expect(response.data?.callContractMethod).toBeDefined();
     });
 
     it("callContractMethodAndWait", async () => {
-      const label = "0x" + keccak256("testwhatever")
-      const response = await client.query<{ callContractMethodAndWait: Schema.TxReceipt }>({
+      const label = "0x" + keccak256("testwhatever");
+      const response = await client.query<{
+        callContractMethodAndWait: Schema.TxReceipt;
+      }>({
         uri,
         query: `
           mutation {
@@ -721,12 +862,14 @@ describe("Ethereum Plugin", () => {
         `,
       });
 
-      expect(response.errors).toBeUndefined()
-      expect(response.data?.callContractMethodAndWait).toBeDefined()
+      expect(response.errors).toBeUndefined();
+      expect(response.data?.callContractMethodAndWait).toBeDefined();
     });
 
     it("sendTransaction", async () => {
-      const response = await client.query<{ sendTransaction: Schema.TxResponse }>({
+      const response = await client.query<{
+        sendTransaction: Schema.TxResponse;
+      }>({
         uri,
         query: `
           mutation {
@@ -735,13 +878,15 @@ describe("Ethereum Plugin", () => {
         `,
       });
 
-      expect(response.errors).toBeUndefined()
-      expect(response.data?.sendTransaction).toBeDefined()
-      expect(response.data?.sendTransaction.hash).toBeDefined()
+      expect(response.errors).toBeUndefined();
+      expect(response.data?.sendTransaction).toBeDefined();
+      expect(response.data?.sendTransaction.hash).toBeDefined();
     });
 
     it("sendTransactionAndWait", async () => {
-      const response = await client.query<{ sendTransactionAndWait: Schema.TxReceipt }>({
+      const response = await client.query<{
+        sendTransactionAndWait: Schema.TxReceipt;
+      }>({
         uri,
         query: `
           mutation {
@@ -750,9 +895,11 @@ describe("Ethereum Plugin", () => {
         `,
       });
 
-      expect(response.errors).toBeUndefined()
-      expect(response.data?.sendTransactionAndWait).toBeDefined()
-      expect(response.data?.sendTransactionAndWait.transactionHash).toBeDefined()
+      expect(response.errors).toBeUndefined();
+      expect(response.data?.sendTransactionAndWait).toBeDefined();
+      expect(
+        response.data?.sendTransactionAndWait.transactionHash
+      ).toBeDefined();
     });
 
     it("deployContract", async () => {
@@ -766,8 +913,8 @@ describe("Ethereum Plugin", () => {
         }`,
         variables: {
           abi: JSON.stringify(contracts.SimpleStorage.abi),
-          bytecode: contracts.SimpleStorage.bytecode
-        }
+          bytecode: contracts.SimpleStorage.bytecode,
+        },
       });
 
       expect(response.errors).toBeUndefined();
@@ -784,9 +931,11 @@ describe("Ethereum Plugin", () => {
           }
         `,
       });
-  
-      expect(response.errors).toBeUndefined()
-      expect(response.data?.signMessage).toBe("0xa4708243bf782c6769ed04d83e7192dbcf4fc131aa54fde9d889d8633ae39dab03d7babd2392982dff6bc20177f7d887e27e50848c851320ee89c6c63d18ca761c")
+
+      expect(response.errors).toBeUndefined();
+      expect(response.data?.signMessage).toBe(
+        "0xa4708243bf782c6769ed04d83e7192dbcf4fc131aa54fde9d889d8633ae39dab03d7babd2392982dff6bc20177f7d887e27e50848c851320ee89c6c63d18ca761c"
+      );
     });
 
     it("sendRPC", async () => {
@@ -817,8 +966,8 @@ describe("Ethereum Plugin", () => {
         }`,
         variables: {
           abi: JSON.stringify(contracts.StructArg.abi),
-          bytecode: contracts.StructArg.bytecode
-        }
+          bytecode: contracts.StructArg.bytecode,
+        },
       });
 
       expect(response1.errors).toBeUndefined();
@@ -829,10 +978,12 @@ describe("Ethereum Plugin", () => {
       const structArg = JSON.stringify({
         str: "foo bar",
         unsigned256: 123456,
-        unsigned256Array: [2345, 6789]
+        unsigned256Array: [2345, 6789],
       });
 
-      const response2 = await client.query<{ callContractMethodAndWait: Schema.TxReceipt }>({
+      const response2 = await client.query<{
+        callContractMethodAndWait: Schema.TxReceipt;
+      }>({
         uri,
         query: `
           mutation {
@@ -844,13 +995,15 @@ describe("Ethereum Plugin", () => {
           }
         `,
         variables: {
-          structArg
-        }
+          structArg,
+        },
       });
 
-      expect(response2.errors).toBeUndefined()
-      expect(response2.data?.callContractMethodAndWait).toBeDefined()
-      expect(response2.data?.callContractMethodAndWait.transactionHash).toBeDefined()
+      expect(response2.errors).toBeUndefined();
+      expect(response2.data?.callContractMethodAndWait).toBeDefined();
+      expect(
+        response2.data?.callContractMethodAndWait.transactionHash
+      ).toBeDefined();
     });
   });
 });
