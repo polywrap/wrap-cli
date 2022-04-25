@@ -25,15 +25,20 @@ export type String = string;
 export type Boolean = boolean;
 
 /// Envs START ///
-export interface QueryEnv extends Record<string, unknown> {
-  queryProp: Types.String;
-  optMap?: Map<Types.String, Types.Int | undefined> | null;
+export interface MutationEnv extends Record<string, unknown> {
+  mutProp: Types.String;
   prop: Types.String;
   optProp?: Types.String | null;
 }
 /// Envs END ///
 
 /// Objects START ///
+export interface AnotherType {
+  prop?: Types.String | null;
+  circular?: Types.CustomType | null;
+  const?: Types.String | null;
+}
+
 export interface CustomType {
   str: Types.String;
   optStr?: Types.String | null;
@@ -70,12 +75,6 @@ export interface CustomType {
   optEnum?: Types.CustomEnum | null;
   enumArray: Array<Types.CustomEnum>;
   optEnumArray?: Array<Types.CustomEnum | null> | null;
-}
-
-export interface AnotherType {
-  prop?: Types.String | null;
-  circular?: Types.CustomType | null;
-  const?: Types.String | null;
 }
 
 /// Objects END ///
@@ -152,30 +151,25 @@ interface TestImport_Query_Input_anotherMethod extends Record<string, unknown> {
 }
 
 /* URI: "testimport.uri.eth" */
-export class TestImport_Query {
-  public static interfaceUri: string = "testimport.uri.eth";
-
-  constructor(public uri: string) {
-  }
-
-  public async importedMethod (
+export const TestImport_Query = {
+  importedMethod: async (
     input: TestImport_Query_Input_importedMethod,
     client: Client
-  ): Promise<InvokeApiResult<Types.TestImport_Object | null>> {
+  ): Promise<InvokeApiResult<Types.TestImport_Object | null>> => {
     return client.invoke<Types.TestImport_Object | null>({
-      uri: this.uri,
+      uri: "testimport.uri.eth",
       module: "query",
       method: "importedMethod",
       input
     });
-  }
+  },
 
-  public async anotherMethod (
+  anotherMethod: async (
     input: TestImport_Query_Input_anotherMethod,
     client: Client
-  ): Promise<InvokeApiResult<Types.Int32>> {
+  ): Promise<InvokeApiResult<Types.Int32>> => {
     return client.invoke<Types.Int32>({
-      uri: this.uri,
+      uri: "testimport.uri.eth",
       module: "query",
       method: "anotherMethod",
       input
@@ -183,12 +177,43 @@ export class TestImport_Query {
   }
 }
 
-/// Imported Queries END ///
+/* URI: "testimport.uri.eth" */
+interface TestImport_Mutation_Input_importedMethod extends Record<string, unknown> {
+  str: Types.String;
+  object: Types.TestImport_Object;
+  objectArray: Array<Types.TestImport_Object>;
+}
 
-export class TestImport {
-  static uri: string = "testimport.uri.eth";
+/* URI: "testimport.uri.eth" */
+interface TestImport_Mutation_Input_anotherMethod extends Record<string, unknown> {
+  arg: Array<Types.String>;
+}
 
-  public static getImplementations(client: Client): string[] {
-    return client.getImplementations(this.uri, {});
+/* URI: "testimport.uri.eth" */
+export const TestImport_Mutation = {
+  importedMethod: async (
+    input: TestImport_Mutation_Input_importedMethod,
+    client: Client
+  ): Promise<InvokeApiResult<Types.TestImport_Object | null>> => {
+    return client.invoke<Types.TestImport_Object | null>({
+      uri: "testimport.uri.eth",
+      module: "mutation",
+      method: "importedMethod",
+      input
+    });
+  },
+
+  anotherMethod: async (
+    input: TestImport_Mutation_Input_anotherMethod,
+    client: Client
+  ): Promise<InvokeApiResult<Types.Int32>> => {
+    return client.invoke<Types.Int32>({
+      uri: "testimport.uri.eth",
+      module: "mutation",
+      method: "anotherMethod",
+      input
+    });
   }
 }
+
+/// Imported Queries END ///
