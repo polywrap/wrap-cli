@@ -61,8 +61,14 @@ export const getTypeDefinitionsValidator = (): SchemaValidator => {
           objectTypes[node.name.value] = true;
         },
         // No New Scalars
+        // TODO: Remove JSON after next release
+        // NOTE: BREAKING CHANGE: no plugin or wrapper should have json
         ScalarTypeDefinition: (node: ScalarTypeDefinitionNode) => {
-          if (node.name.value !== "Map" && !isScalarType(node.name.value)) {
+          if (
+            node.name.value !== "JSON" &&
+            node.name.value !== "Map" &&
+            !isScalarType(node.name.value)
+          ) {
             throw Error(
               `Custom scalar types are not supported. Found: "${node.name.value}". Supported scalars: ${scalarTypeNames}`
             );
