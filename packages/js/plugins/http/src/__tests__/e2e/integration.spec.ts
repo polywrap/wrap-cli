@@ -33,6 +33,9 @@ describe("e2e tests for HttpPlugin", () => {
       const { data } = await axios.get("http://localhost:4040/deploy-ens");
 
       ensAddress = data.ensAddress
+      
+      const registrarAddress = data.registrarAddress
+      const resolverAddress = data.resolverAddress
 
       client = new Web3ApiClient({
         plugins: [
@@ -71,11 +74,14 @@ describe("e2e tests for HttpPlugin", () => {
         ],
       });
 
-      const api = await buildAndDeployApi(
-        `${__dirname}/integration`,
-        ipfs,
-        ensAddress
-      );
+      const api = await buildAndDeployApi({
+        apiAbsPath: `${__dirname}/integration`,
+        ipfsProvider: ipfs,
+        ensRegistryAddress: ensAddress,
+        ensRegistrarAddress: registrarAddress,
+        ensResolverAddress: resolverAddress,
+        ethereumProvider: ethereum
+      });
 
       uri = `ens/testnet/${api.ensDomain}`;
     });

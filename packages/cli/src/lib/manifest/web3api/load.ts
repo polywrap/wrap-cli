@@ -1,18 +1,21 @@
-import { displayPath, withSpinner, intlMsg } from "../../";
+import { displayPath, withSpinner, intlMsg, searchOptional } from "../../";
 
 import {
   Web3ApiManifest,
   BuildManifest,
   MetaManifest,
+  DeployManifest,
   deserializeWeb3ApiManifest,
   deserializeBuildManifest,
   deserializeMetaManifest,
+  deserializeDeployManifest,
 } from "@web3api/core-js";
 import { Schema as JsonSchema } from "jsonschema";
 import path from "path";
 import fs from "fs";
 
 export const defaultWeb3ApiManifest = ["web3api.yaml", "web3api.yml"];
+export const defaultBuildPath = "./build";
 
 export async function loadWeb3ApiManifest(
   manifestPath: string,
@@ -105,6 +108,88 @@ export async function loadBuildManifest(
         return await run();
       }
     )) as BuildManifest;
+  }
+}
+
+export const defaultDeployManifest = [
+  "web3api.deploy.yaml",
+  "web3api.deploy.yml",
+];
+
+export async function loadDeployManifest(
+  manifestPath: string,
+  quiet = false
+): Promise<DeployManifest> {
+  const run = (): Promise<DeployManifest> => {
+    const manifest = fs.readFileSync(manifestPath, "utf-8");
+
+    if (!manifest) {
+      const noLoadMessage = intlMsg.lib_helpers_manifest_unableToLoad({
+        path: `${manifestPath}`,
+      });
+      throw Error(noLoadMessage);
+    }
+
+    try {
+      const result = deserializeDeployManifest(manifest);
+      return Promise.resolve(result);
+    } catch (e) {
+      return Promise.reject(e);
+    }
+  };
+
+  if (quiet) {
+    return await run();
+  } else {
+    manifestPath = displayPath(manifestPath);
+    return (await withSpinner(
+      intlMsg.lib_helpers_manifest_loadText({ path: manifestPath }),
+      intlMsg.lib_helpers_manifest_loadError({ path: manifestPath }),
+      intlMsg.lib_helpers_manifest_loadWarning({ path: manifestPath }),
+      async (_spinner) => {
+        return await run();
+      }
+    )) as DeployManifest;
+  }
+}
+
+export async function loadDeployManifestExt(
+  manifestExtPath: string,
+  quiet = false
+): Promise<JsonSchema | undefined> {
+  const run = (): JsonSchema | undefined => {
+    const configSchemaPath = path.join(
+      path.dirname(manifestExtPath),
+      "/web3api.deploy.ext.json"
+    );
+
+    let extSchema: JsonSchema | undefined;
+
+    if (fs.existsSync(configSchemaPath)) {
+      extSchema = JSON.parse(
+        fs.readFileSync(configSchemaPath, "utf-8")
+      ) as JsonSchema;
+    }
+
+    return extSchema;
+  };
+
+  if (quiet) {
+    return run();
+  } else {
+    manifestExtPath = displayPath(manifestExtPath);
+    return await searchOptional(
+      intlMsg.lib_helpers_deployManifestExt_loadText({ path: manifestExtPath }),
+      intlMsg.lib_helpers_deployManifestExt_loadError({
+        path: manifestExtPath,
+      }),
+      intlMsg.lib_helpers_deployManifestExt_loadWarning({
+        path: manifestExtPath,
+      }),
+      async (_spinner) => {
+        return run();
+      }
+    );
   }
 }
 

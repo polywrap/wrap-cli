@@ -34,14 +34,19 @@ describe("useWeb3ApiQuery hook", () => {
     const {
       ipfs,
       ethereum,
-      ensAddress
+      ensAddress,
+      registrarAddress,
+      resolverAddress
     } = await initTestEnvironment();
 
-    const { ensDomain } = await buildAndDeployApi(
-      `${GetPathToTestApis()}/simple-storage`,
-      ipfs,
-      ensAddress
-    );
+    const { ensDomain } = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/simple-storage`,
+      ipfsProvider: ipfs,
+      ethereumProvider: ethereum,
+      ensRegistrarAddress: registrarAddress,
+      ensRegistryAddress: ensAddress,
+      ensResolverAddress: resolverAddress,
+    });
 
     uri = `ens/testnet/${ensDomain}`;
     plugins = createPlugins(ensAddress, ethereum, ipfs);

@@ -136,7 +136,7 @@ ${HELP}`);
 
         const expectedBuildResult = compareSync(
           `${testCaseDir}/build`,
-          `${testCaseDir}/expected/build`,
+          `${testCaseDir}/expected/build-artifacts`,
           { compareContent: true }
         );
 

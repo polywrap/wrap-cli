@@ -18,7 +18,10 @@
   "dependencies": {
     "@web3api/core-js": "0.0.1-prealpha.74",
     "axios": "0.21.2",
-    "spawn-command": "0.0.2-1"
+    "spawn-command": "0.0.2-1",
+    "ethers": "5.6.4",
+    "js-yaml": "4.1.0",
+    "js-sha3": "0.8.0"
   },
   "devDependencies": {
     "rimraf": "3.0.2",
