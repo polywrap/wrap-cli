@@ -107,14 +107,17 @@ const setup = async (domainNames: string[]) => {
 describe("e2e tests for deploy command", () => {
   beforeAll(async () => {
     await setup(["test1", "test2", "test3"])
-    await runCLI(
-      {
-        args: ["build", "-v"],
-        cwd: getTestCaseDir(0),
-       cli: w3Cli,
-      },
-    );
-  })
+
+    for (let i = 0; i < testCases.length; ++i) {
+      await runCLI(
+        {
+          args: ["build", "-v"],
+          cwd: getTestCaseDir(i),
+         cli: w3Cli,
+        },
+      );
+    }
+  });
 
   afterAll(async () => {
     await stopTestEnvironment();
@@ -163,7 +166,7 @@ describe("e2e tests for deploy command", () => {
   test("Throws and stops chain if error is found", async () => {
     const { exitCode: code, stdout: output } = await runCLI(
       {
-        args: ["deploy", "--manifest-file", "web3api-deploy-no-ext.yaml"],
+        args: ["deploy"],
         cwd: getTestCaseDir(1),
         cli: w3Cli,
       },
@@ -183,7 +186,7 @@ describe("e2e tests for deploy command", () => {
   test("Throws if manifest ext exists and config property is invalid", async () => {
     const { exitCode: code, stderr } = await runCLI(
       {
-        args: ["deploy", "--manifest-file", "web3api-deploy-invalid-config.yaml"],
+        args: ["deploy"],
         cwd: getTestCaseDir(2),
         cli: w3Cli,
       },
@@ -198,7 +201,7 @@ describe("e2e tests for deploy command", () => {
   test("Throws and stops chain if error is found", async () => {
     const { exitCode: code, stdout: output, stderr } = await runCLI(
       {
-        args: ["deploy", "--manifest-file", "web3api-deploy-fail-between.yaml"],
+        args: ["deploy"],
         cwd: getTestCaseDir(3),
         cli: w3Cli,
       },
