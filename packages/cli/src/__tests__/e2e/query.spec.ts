@@ -74,7 +74,7 @@ describe("e2e tests for query command", () => {
     expect(deployErr).toBe("");
 
     await buildAndDeployApi({
-      apiAbsPath: projectRoot,
+      apiAbsPath: testCaseRoot,
       ipfsProvider: ipfs,
       ethereumProvider: ethereum,
       ensRegistrarAddress: registrarAddress,

@@ -1,4 +1,3 @@
-import path from "path";
 import { clearStyle, w3Cli } from "./utils";
 
 import { runCLI } from "@web3api/test-env-js";

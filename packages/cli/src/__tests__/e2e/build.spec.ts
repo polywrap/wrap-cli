@@ -19,7 +19,7 @@ Options:
 `;
 
 describe("e2e tests for build command", () => {
-  const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/build");
+  const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/build-cmd");
   const testCases =
     fs.readdirSync(testCaseRoot, { withFileTypes: true })
       .filter((dirent) => dirent.isDirectory())

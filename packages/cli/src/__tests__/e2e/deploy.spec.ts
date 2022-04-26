@@ -1,19 +1,19 @@
 import { clearStyle, w3Cli } from "./utils";
+import { loadDeployManifest } from "../../lib";
 
 import { 
   initTestEnvironment,
-  runCLI, stopTestEnvironment,
+  runCLI,
+  stopTestEnvironment,
 } from "@web3api/test-env-js";
-import path from "path";
+import { GetPathToCliTestFiles } from "@web3api/test-cases";
 import axios from "axios";
 import { Web3ApiClient } from "@web3api/client-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { Wallet } from "ethers";
 import yaml from "js-yaml";
+import path from "path";
 import fs from "fs";
-import { loadDeployManifest } from "../../lib";
-
-const projectRoot = path.resolve(__dirname, "../project/");
 
 const HELP = `
 w3 deploy [options]
@@ -24,7 +24,16 @@ Options:
   -v, --verbose                      Verbose output (default: false)
 `;
 
+const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/deploy");
+  const testCases =
+    fs.readdirSync(testCaseRoot, { withFileTypes: true })
+      .filter((dirent) => dirent.isDirectory())
+      .map((dirent) => dirent.name);
+  const getTestCaseDir = (index: number) =>
+    path.join(testCaseRoot, testCases[index]);
+
 const setup = async (domainNames: string[]) => {
+  const projectRoot = getTestCaseDir(0);
   const { ethereum } = await initTestEnvironment();
   const { data } = await axios.get("http://localhost:4040/deploy-ens");
 
@@ -101,7 +110,7 @@ describe("e2e tests for deploy command", () => {
     await runCLI(
       {
         args: ["build", "-v"],
-        cwd: projectRoot,
+        cwd: getTestCaseDir(0),
        cli: w3Cli,
       },
     );
@@ -115,7 +124,7 @@ describe("e2e tests for deploy command", () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
         args: ["deploy", "--help"],
-        cwd: projectRoot,
+        cwd: getTestCaseDir(0),
         cli: w3Cli,
       },
     );
@@ -129,7 +138,7 @@ describe("e2e tests for deploy command", () => {
     const { exitCode: code, stdout: output } = await runCLI(
       {
         args: ["deploy"],
-        cwd: projectRoot,
+        cwd: getTestCaseDir(0),
         cli: w3Cli,
       },
     );
@@ -152,10 +161,45 @@ describe("e2e tests for deploy command", () => {
   });
 
   test("Throws and stops chain if error is found", async () => {
+    const { exitCode: code, stdout: output } = await runCLI(
+      {
+        args: ["deploy", "--manifest-file", "web3api-deploy-no-ext.yaml"],
+        cwd: getTestCaseDir(1),
+        cli: w3Cli,
+      },
+    );
+
+    const sanitizedOutput = clearStyle(output);
+
+    expect(code).toEqual(0);
+    expect(sanitizedOutput).toContain(
+      "No manifest extension found in"
+    );
+    expect(sanitizedOutput).toContain(
+      "Successfully executed stage 'ipfs_test'"
+    );
+  });
+
+  test("Throws if manifest ext exists and config property is invalid", async () => {
+    const { exitCode: code, stderr } = await runCLI(
+      {
+        args: ["deploy", "--manifest-file", "web3api-deploy-invalid-config.yaml"],
+        cwd: getTestCaseDir(2),
+        cli: w3Cli,
+      },
+    );
+
+    const sanitizedErr = clearStyle(stderr);
+
+    expect(code).toEqual(1);
+    expect(sanitizedErr).toContain("domainName is not of a type(s) string")
+  });
+
+  test("Throws and stops chain if error is found", async () => {
     const { exitCode: code, stdout: output, stderr } = await runCLI(
       {
         args: ["deploy", "--manifest-file", "web3api-deploy-fail-between.yaml"],
-        cwd: projectRoot,
+        cwd: getTestCaseDir(3),
         cli: w3Cli,
       },
     );
@@ -173,41 +217,6 @@ describe("e2e tests for deploy command", () => {
 
     expect(sanitizedErr).toContain(
       "Failed to execute stage 'from_deploy'"
-    );
-  });
-
-  test("Throws if manifest ext exists and config property is invalid", async () => {
-    const { exitCode: code, stderr } = await runCLI(
-      {
-        args: ["deploy", "--manifest-file", "web3api-deploy-invalid-config.yaml"],
-        cwd: projectRoot,
-        cli: w3Cli,
-      },
-    );
-
-    const sanitizedErr = clearStyle(stderr);
-
-    expect(code).toEqual(1);
-    expect(sanitizedErr).toContain("domainName is not of a type(s) string")
-  });
-
-  test("Throws and stops chain if error is found", async () => {
-    const { exitCode: code, stdout: output } = await runCLI(
-      {
-        args: ["deploy", "--manifest-file", "web3api-deploy-no-ext.yaml"],
-        cwd: projectRoot,
-        cli: w3Cli,
-      },
-    );
-
-    const sanitizedOutput = clearStyle(output);
-
-    expect(code).toEqual(0);
-    expect(sanitizedOutput).toContain(
-      "No manifest extension found in"
-    );
-    expect(sanitizedOutput).toContain(
-      "Successfully executed stage 'ipfs_test'"
     );
   });
 });
