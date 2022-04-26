@@ -1,4 +1,4 @@
-import { Client, Module, Input_get, Input_post, Response } from "./w3-man";
+import { Client, Module, Input_get, Input_post, Response } from "./w3";
 import { fromAxiosResponse, toAxiosRequestConfig } from "./util";
 
 import axios from "axios";

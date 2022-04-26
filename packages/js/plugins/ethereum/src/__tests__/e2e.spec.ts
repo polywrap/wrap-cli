@@ -1,5 +1,5 @@
 import { ethereumPlugin } from "..";
-import * as Schema from "../query/w3-man";
+import * as Schema from "../query/w3";
 
 import { Web3ApiClient, defaultIpfsProviders } from "@web3api/client-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
@@ -7,7 +7,7 @@ import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
-  buildAndDeployApi
+  buildAndDeployApi,
 } from "@web3api/test-env-js";
 import { Wallet } from "ethers";
 
@@ -79,11 +79,14 @@ describe("Ethereum Plugin", () => {
       ],
     });
 
-    const api = await buildAndDeployApi(
-      `${__dirname}/integration`,
-      ipfs,
-      ensAddress
-    );
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${__dirname}/integration`,
+      ipfsProvider: ipfs,
+      ensRegistryAddress: ensAddress,
+      ensRegistrarAddress: registrarAddress,
+      ensResolverAddress: resolverAddress,
+      ethereumProvider: ethereum,
+    });
 
     uri = `ens/testnet/${api.ensDomain}`;
   });

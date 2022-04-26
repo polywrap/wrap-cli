@@ -16,7 +16,7 @@ import {
   Input_buffer_keccak_256,
   Input_shake_128,
   Input_shake_256,
-} from "./w3-man";
+} from "./w3";
 
 import {
   sha3_512,

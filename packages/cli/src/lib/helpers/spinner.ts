@@ -57,3 +57,30 @@ export const step = (spinner: Ora, subject: string, text?: string): unknown => {
   spinner.start();
   return spinner;
 };
+
+export const searchOptional = async <T>(
+  loadText: string,
+  errorText: string,
+  warningText: string,
+  execute: (spinner: Ora) => Promise<T>
+): Promise<T> => {
+  const spinner = gluegun.print.spin({
+    text: loadText,
+    stream: process.stdout,
+  });
+
+  try {
+    const result = await execute(spinner);
+
+    if (!result) {
+      spinner.warn(warningText);
+    } else {
+      spinner.succeed(loadText);
+    }
+
+    return result as T;
+  } catch (e) {
+    spinner.fail(`${errorText}: ${e.message}`);
+    throw e;
+  }
+};

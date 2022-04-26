@@ -77,7 +77,7 @@ const plugins: PluginConfigSource[] = [
     config: "EnsPluginConfigs",
     files: [
       {
-        name: "build/w3-man/plugin.d.ts",
+        name: "build/w3/plugin.d.ts",
         interfaces: ["EnsPluginConfigs"],
       },
       {

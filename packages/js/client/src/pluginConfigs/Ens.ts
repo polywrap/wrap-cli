@@ -3,7 +3,7 @@
 /* eslint-disable prettier/prettier */
 
 /// Types generated from @web3api/ens-plugin-js build files:
-/// build/w3-man/plugin.d.ts, build/query/index.d.ts
+/// build/w3/plugin.d.ts, build/query/index.d.ts
 
 export interface EnsPluginConfigs {
   query: QueryConfig;

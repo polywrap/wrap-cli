@@ -1,11 +1,11 @@
 // TIP: All user-defined code lives in the module folders (./query, ./mutation)
 
-import * as Internal from "./w3-man";
+import * as Internal from "./w3";
 import { IpfsConfig } from "./common/IpfsConfig";
 
 import { PluginFactory } from "@web3api/core-js";
 
-export { manifest, schema } from "./w3-man";
+export { manifest, schema } from "./w3";
 
 export interface IpfsPluginConfigs
   extends IpfsConfig,
