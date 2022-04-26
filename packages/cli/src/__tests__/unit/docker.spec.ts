@@ -19,7 +19,7 @@ describe("e2e tests for docker", () => {
       promises.push(
         runCLI({
           args: ["build", "-v"],
-          cwd: path.join(GetPathToCliTestFiles(), "api/build/001-sanity"),
+          cwd: path.join(GetPathToCliTestFiles(), "api/build-cmd/001-sanity"),
           cli: w3Cli
         }).then((result: { exitCode: number; stdout: string; stderr: string }) => {
           const { exitCode, stderr } = result;

@@ -20,12 +20,16 @@ describe("Web3ApiClient - resolveUri", () => {
   let ipfsProvider: string;
   let ethProvider: string;
   let ensAddress: string;
+  let ensRegistrarAddress: string;
+  let ensResolverAddress: string;
 
   beforeAll(async () => {
-    const { ipfs, ethereum, ensAddress: ens } = await initTestEnvironment();
+    const { ipfs, ethereum, ensAddress: ens, registrarAddress, resolverAddress } = await initTestEnvironment();
     ipfsProvider = ipfs;
     ethProvider = ethereum;
     ensAddress = ens;
+    ensRegistrarAddress = registrarAddress;
+    ensResolverAddress = resolverAddress;
   });
 
   afterAll(async () => {
@@ -253,11 +257,15 @@ describe("Web3ApiClient - resolveUri", () => {
 
     const client = await getClient();
 
-    const deployResult = await buildAndDeployApi(
-      `${GetPathToTestApis()}/interface-invoke/test-api`,
+    const deployResult = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/interface-invoke/test-api`,
       ipfsProvider,
-      ensAddress
-    );
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+
     const ensUri = new Uri(`ens/testnet/${deployResult.ensDomain}`);
     const ipfsUri = new Uri(`ipfs/${deployResult.ipfsCid}`);
 
@@ -350,11 +358,15 @@ describe("Web3ApiClient - resolveUri", () => {
 
     const client = await getClient();
 
-    const deployResult = await buildAndDeployApi(
-      `${GetPathToTestApis()}/interface-invoke/test-api`,
+    const deployResult = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/interface-invoke/test-api`,
       ipfsProvider,
-      ensAddress
-    );
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    
     const ensUri = new Uri(`ens/testnet/${deployResult.ensDomain}`);
     const ipfsUri = new Uri(`ipfs/${deployResult.ipfsCid}`);
 
@@ -476,11 +488,15 @@ describe("Web3ApiClient - resolveUri", () => {
 
     const client = await getClient();
 
-    const deployResult = await buildAndDeployApi(
-      `${GetPathToTestApis()}/interface-invoke/test-api`,
+    const deployResult = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/interface-invoke/test-api`,
       ipfsProvider,
-      ensAddress
-    );
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+
     const ensUri = new Uri(`ens/testnet/${deployResult.ensDomain}`);
     const ipfsUri = new Uri(`ipfs/${deployResult.ipfsCid}`);
 
@@ -603,11 +619,15 @@ describe("Web3ApiClient - resolveUri", () => {
 
     const client = await getClient();
 
-    const deployResult = await buildAndDeployApi(
-      `${GetPathToTestApis()}/interface-invoke/test-api`,
+    const deployResult = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/interface-invoke/test-api`,
       ipfsProvider,
-      ensAddress
-    );
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+
     const ensUri = new Uri(`ens/testnet/${deployResult.ensDomain}`);
     const ipfsUri = new Uri(`ipfs/${deployResult.ipfsCid}`);
 
@@ -744,11 +764,14 @@ describe("Web3ApiClient - resolveUri", () => {
       cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`,
     });
 
-    const deployResult = await buildAndDeployApi(
-      `${GetPathToTestApis()}/interface-invoke/test-api`,
+    const deployResult = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/interface-invoke/test-api`,
       ipfsProvider,
-      ensAddress
-    );
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
 
     const ensUri = new Uri(`ens/testnet/${deployResult.ensDomain}`);
     const ipfsUri = new Uri(`ipfs/${deployResult.ipfsCid}`);
