@@ -1,8 +1,8 @@
 import {
   isScalarType,
   scalarTypeNames,
-  isQueryType,
-  queryTypeNames,
+  isModuleType,
+  ModuleTypeNames,
 } from "../typeInfo";
 import { SchemaValidator } from "./";
 
@@ -10,7 +10,6 @@ import {
   DirectiveNode,
   DocumentNode,
   EnumTypeDefinitionNode,
-  FieldDefinitionNode,
   InputObjectTypeDefinitionNode,
   InputValueDefinitionNode,
   InterfaceTypeDefinitionNode,
@@ -20,7 +19,7 @@ import {
   StringValueNode,
   UnionTypeDefinitionNode,
 } from "graphql";
-import { getSchemaCycles } from "graphql-schema-cycles";
+import { getSchemaCycles } from "@dorgjelli/graphql-schema-cycles";
 
 export const getTypeDefinitionsValidator = (): SchemaValidator => {
   const objectTypes: Record<string, boolean> = {};
@@ -63,7 +62,7 @@ export const getTypeDefinitionsValidator = (): SchemaValidator => {
         },
         // No New Scalars
         ScalarTypeDefinition: (node: ScalarTypeDefinitionNode) => {
-          if (!isScalarType(node.name.value)) {
+          if (node.name.value !== "Map" && !isScalarType(node.name.value)) {
             throw Error(
               `Custom scalar types are not supported. Found: "${node.name.value}". Supported scalars: ${scalarTypeNames}`
             );
@@ -134,7 +133,11 @@ export const getPropertyTypesValidator = (): SchemaValidator => {
             }
           }
         },
-        FieldDefinition: (node: FieldDefinitionNode) => {
+        FieldDefinition: (node) => {
+          if (node.name.value === "sanitizeEnv") {
+            return;
+          }
+
           currentField = node.name.value;
         },
         NamedType: (node: NamedTypeNode) => {
@@ -150,10 +153,10 @@ export const getPropertyTypesValidator = (): SchemaValidator => {
           const typeName = currentImportType
             ? currentImportType
             : currentObject;
-          if (typeName && !isQueryType(typeName)) {
-            // Arguments not supported on non-query types
+          if (typeName && !isModuleType(typeName)) {
+            // Arguments not supported on non-module types
             throw Error(
-              `Methods can only be defined on query types (${queryTypeNames.join(
+              `Methods can only be defined on module types (${ModuleTypeNames.join(
                 ", "
               )}).\n` +
                 `Found: type ${typeName} { ${currentField}(${node.name.value}) }`
@@ -171,14 +174,15 @@ export const getPropertyTypesValidator = (): SchemaValidator => {
         },
       },
     },
-    displayValidationMessagesIfExist: () => {
+    cleanup: () => {
       // Ensure all property types are either a
       // supported scalar, enum or an object type definition
       for (const field of fieldTypes) {
         if (
           !isScalarType(field.type) &&
           !objectTypes[field.type] &&
-          !enumTypes[field.type]
+          !enumTypes[field.type] &&
+          field.type !== "Map"
         ) {
           throw Error(
             `Unknown property type found: type ${field.object} { ${field.field}: ${field.type} }`
@@ -220,7 +224,7 @@ export function getCircularDefinitionsValidator(): SchemaValidator {
         },
       },
     },
-    displayValidationMessagesIfExist: (documentNode: DocumentNode) => {
+    cleanup: (documentNode: DocumentNode) => {
       const { cycleStrings, foundCycle } = getSchemaCycles(documentNode, {
         ignoreTypeNames: operationTypes,
         allowOnNullableFields: true,

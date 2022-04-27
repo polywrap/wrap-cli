@@ -1,18 +1,19 @@
 import { ethereumPlugin } from "..";
-import * as Schema from "../w3";
+import * as Schema from "../query/w3";
 
-import { Web3ApiClient } from "@web3api/client-js";
+import { Web3ApiClient, defaultIpfsProviders } from "@web3api/client-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
-  buildAndDeployApi
+  buildAndDeployApi,
 } from "@web3api/test-env-js";
+import { Wallet } from "ethers";
 
 import { ethers } from "ethers";
 import { keccak256 } from "js-sha3";
-import axios from "axios"
+import axios from "axios";
 
 const { hash: namehash } = require("eth-ens-namehash");
 const contracts = {
@@ -51,7 +52,8 @@ describe("Ethereum Plugin", () => {
           plugin: ethereumPlugin({
             networks: {
               testnet: {
-                provider: ethereum
+                provider: ethereum,
+                signer: new Wallet("0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d"),
               }
             },
             defaultNetwork: "testnet"
@@ -61,25 +63,30 @@ describe("Ethereum Plugin", () => {
           uri: "w3://ens/ipfs.web3api.eth",
           plugin: ipfsPlugin({
             provider: ipfs,
-            fallbackProviders: ["https://ipfs.io"]
+            fallbackProviders: defaultIpfsProviders
           })
         },
         {
           uri: "w3://ens/ens.web3api.eth",
           plugin: ensPlugin({
-            addresses: {
-              testnet: ensAddress
+            query: {
+              addresses: {
+                testnet: ensAddress
+              }
             }
           })
         }
       ],
     });
 
-    const api = await buildAndDeployApi(
-      `${__dirname}/integration`,
-      ipfs,
-      ensAddress
-    );
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${__dirname}/integration`,
+      ipfsProvider: ipfs,
+      ensRegistryAddress: ensAddress,
+      ensRegistrarAddress: registrarAddress,
+      ensResolverAddress: resolverAddress,
+      ethereumProvider: ethereum,
+    });
 
     uri = `ens/testnet/${api.ensDomain}`;
   });
@@ -160,7 +167,27 @@ describe("Ethereum Plugin", () => {
       expect(response.errors).toBeUndefined();
       expect(response.data?.callContractStatic).toBeDefined();
       expect(response.data?.callContractStatic.error).toBeTruthy();
-      expect(response.data?.callContractStatic.result).toBe("missing revert data in call exception");
+      expect(response.data?.callContractStatic.result).toContain("missing revert data in call exception");
+    });
+
+    it("getBalance", async () => {
+      const signerAddressQuery = await client.invoke<string>({
+        uri,
+        module: "query",
+        method: "getSignerAddress",
+      });
+
+      const response = await client.invoke<string>({
+        uri,
+        module: "query",
+        method: "getBalance",
+        input: {
+          address: signerAddressQuery.data
+        }
+      })
+
+      expect(response.error).toBeUndefined()
+      expect(response.data).toBeDefined()
     });
 
     it("encodeParams", async () => {
@@ -177,6 +204,131 @@ describe("Ethereum Plugin", () => {
       });
 
       expect(response.data?.encodeParams).toBe("0x000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000")
+
+      const acceptsTupleArg = await client.query<{ encodeFunction: string }>({
+        uri,
+        query: `
+          query {
+            encodeParams(
+              types: $types
+              values: $values
+            )
+          }
+        `,
+        variables: {
+          types: ["tuple(uint256 startTime, uint256 endTime, address token)"],
+          values: [JSON.stringify({ startTime: "8", endTime: "16", token: "0x0000000000000000000000000000000000000000" })]
+        }
+      });
+
+      expect(acceptsTupleArg.errors).toBeUndefined();
+    });
+
+    it("encodeFunction", async () => {
+      const response = await client.query<{ encodeFunction: string }>({
+        uri,
+        query: `
+          query {
+            encodeFunction(
+              method: "function increaseCount(uint256)",
+              args: ["100"]
+            )
+          }
+        `,
+      });
+
+      expect(response.errors).toBeUndefined();
+      expect(response.data?.encodeFunction).toBe("0x46d4adf20000000000000000000000000000000000000000000000000000000000000064")
+
+      const acceptsArrayArg = await client.query<{ encodeFunction: string }>({
+        uri,
+        query: `
+          query {
+            encodeFunction(
+              method: $method
+              args: $args
+            )
+          }
+        `,
+        variables: {
+          method: "function createArr(uint256[] memory)",
+          args: [JSON.stringify([1, 2])]
+        }
+      });
+
+      expect(acceptsArrayArg.errors).toBeUndefined();
+    });
+
+    it("solidityPack", async () => {
+      const types: string[] = ["address", "uint24", "address", "uint24", "address"];
+      const values: string[] = [
+        "0x0000000000000000000000000000000000000001",
+        "3000",
+        "0x0000000000000000000000000000000000000002",
+        "3000",
+        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+      ];
+      const result = await client.invoke<string>({
+        uri: uri,
+        module: "query",
+        method: "solidityPack",
+        input: {
+          types,
+          values,
+        },
+      });
+
+      expect(result.error).toBeFalsy();
+      expect(result.data).toBeTruthy();
+      expect(result.data).toBe("0x0000000000000000000000000000000000000001000bb80000000000000000000000000000000000000002000bb8c02aaa39b223fe8d0a0e5c4f27ead9083c756cc2");
+    });
+
+    it("solidityKeccak256", async () => {
+      const types: string[] = ["address", "uint24", "address", "uint24", "address"];
+      const values: string[] = [
+        "0x0000000000000000000000000000000000000001",
+        "3000",
+        "0x0000000000000000000000000000000000000002",
+        "3000",
+        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+      ];
+      const result = await client.invoke<string>({
+        uri: uri,
+        module: "query",
+        method: "solidityKeccak256",
+        input: {
+          types,
+          values,
+        },
+      });
+
+      expect(result.error).toBeFalsy();
+      expect(result.data).toBeTruthy();
+      expect(result.data).toBe("0x5dd4ee83f9bab0157f0e929b6dddd106fd7de6e5089f0f05c2c0b861e3807588");
+    });
+
+    it("soliditySha256", async () => {
+      const types: string[] = ["address", "uint24", "address", "uint24", "address"];
+      const values: string[] = [
+        "0x0000000000000000000000000000000000000001",
+        "3000",
+        "0x0000000000000000000000000000000000000002",
+        "3000",
+        "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
+      ];
+      const result = await client.invoke<string>({
+        uri: uri,
+        module: "query",
+        method: "soliditySha256",
+        input: {
+          types,
+          values,
+        },
+      });
+
+      expect(result.error).toBeFalsy();
+      expect(result.data).toBeTruthy();
+      expect(result.data).toBe("0x8652504faf6e0d175e62c1d9c7e10d636d5ab8f153ec3257dab1726639058d27");
     });
 
     it("getSignerAddress", async () => {
@@ -472,7 +624,57 @@ describe("Ethereum Plugin", () => {
       });
 
       await listenerPromise;
-    })
+    });
+
+    it("getNetwork", async () => {
+      const mainnetNetwork = await client.query<{
+        getNetwork: Schema.Network
+      }>({
+        uri,
+        query: `
+          query($networkNameOrChainId: String!) {
+            getNetwork(
+              connection: {
+                networkNameOrChainId: $networkNameOrChainId
+              }
+            )
+          }
+        `,
+        variables: {
+          networkNameOrChainId: "mainnet"
+        }
+      });
+
+      expect(mainnetNetwork.data).toBeTruthy();
+      expect(mainnetNetwork.errors).toBeFalsy();
+      expect(mainnetNetwork.data?.getNetwork.chainId).toBe("1");
+      expect(mainnetNetwork.data?.getNetwork.name).toBe("homestead");
+      expect(mainnetNetwork.data?.getNetwork.ensAddress).toBe("0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e");
+
+      const polygonNetwork = await client.query<{
+        getNetwork: Schema.Network
+      }>({
+        uri,
+        query: `
+          query($node: String!) {
+            getNetwork(
+              connection: {
+                node: $node
+              }
+            )
+          }
+        `,
+        variables: {
+          node: "https://polygon-rpc.com"
+        }
+      });
+
+      expect(polygonNetwork.data).toBeTruthy();
+      expect(polygonNetwork.errors).toBeFalsy();
+      expect(polygonNetwork.data?.getNetwork.chainId).toBe("137");
+      expect(polygonNetwork.data?.getNetwork.name).toBe("matic");
+      expect(polygonNetwork.data?.getNetwork.ensAddress).toBeFalsy();
+    });
   });
 
   describe("Mutation", () => {
@@ -587,7 +789,7 @@ describe("Ethereum Plugin", () => {
       });
   
       expect(response.errors).toBeUndefined()
-      expect(response.data?.signMessage).toBe("0x3c7140261c7089ac1e2c22df6940945bfdece5bea5202f90644b3c0efe29b4fc454a3bcba410455bd0d539304057511a36b224fdaa95bff9d9bfc5cefd751ee300")
+      expect(response.data?.signMessage).toBe("0xa4708243bf782c6769ed04d83e7192dbcf4fc131aa54fde9d889d8633ae39dab03d7babd2392982dff6bc20177f7d887e27e50848c851320ee89c6c63d18ca761c")
     });
 
     it("sendRPC", async () => {

@@ -7,12 +7,13 @@ import {
   ObjectDefinition,
   PropertyDefinition,
   TypeInfo,
-  createQueryDefinition,
-  QueryDefinition,
+  createModuleDefinition,
+  ModuleDefinition,
   createMethodDefinition,
   MethodDefinition,
-  createImportedQueryDefinition,
-  ImportedQueryDefinition
+  createImportedModuleDefinition,
+  ImportedModuleDefinition,
+  createEnvDefinition
 } from "../typeInfo";
 
 const schema1 = `
@@ -81,8 +82,13 @@ describe("Web3API Schema TypeInfo Transformations", () => {
       transforms: [addFirstLast],
     });
     const expected: TypeInfo = {
+      envTypes: {
+        query: createEnvDefinition({}),
+        mutation: createEnvDefinition({}),
+      },
       enumTypes: [],
       importedEnumTypes: [],
+      interfaceTypes: [],
       objectTypes: [
         {
           ...createObjectDefinition({ type: "MyType" }),
@@ -126,9 +132,9 @@ describe("Web3API Schema TypeInfo Transformations", () => {
           last: true,
         } as ObjectDefinition,
       ],
-      queryTypes: [
+      moduleTypes: [
         {
-          ...createQueryDefinition({ type: "Query" }),
+          ...createModuleDefinition({ type: "Query" }),
           methods: [
             {
               ...createMethodDefinition({
@@ -214,9 +220,9 @@ describe("Web3API Schema TypeInfo Transformations", () => {
           ],
           first: true,
           last: null
-        } as QueryDefinition,
+        } as ModuleDefinition,
         {
-          ...createQueryDefinition({ type: "Mutation" }),
+          ...createModuleDefinition({ type: "Mutation" }),
           methods: [
             {
               ...createMethodDefinition({
@@ -259,15 +265,16 @@ describe("Web3API Schema TypeInfo Transformations", () => {
           ],
           first: null,
           last: true
-        } as QueryDefinition,
+        } as ModuleDefinition,
       ],
       importedObjectTypes: [],
-      importedQueryTypes: [
+      importedModuleTypes: [
         {
-          ...createImportedQueryDefinition({
+          ...createImportedModuleDefinition({
             uri: "testimport.uri.eth",
             namespace: "TestImport",
             nativeType: "Query",
+            isInterface: false,
             type: "TestImport_Query"
           }),
           methods: [
@@ -322,7 +329,7 @@ describe("Web3API Schema TypeInfo Transformations", () => {
           ],
           first: true,
           last: true
-        } as ImportedQueryDefinition,
+        } as ImportedModuleDefinition,
       ],
     };
 
@@ -338,7 +345,12 @@ describe("Web3API Schema TypeInfo Transformations", () => {
       ],
     });
     const expected: TypeInfo = {
+      envTypes: {
+        query: createEnvDefinition({}),
+        mutation: createEnvDefinition({}),
+      },
       enumTypes: [],
+      interfaceTypes: [],
       importedEnumTypes: [],
       objectTypes: [
         {
@@ -378,9 +390,9 @@ describe("Web3API Schema TypeInfo Transformations", () => {
           foo: "bar",
         } as ObjectDefinition,
       ],
-      queryTypes: [],
+      moduleTypes: [],
       importedObjectTypes: [],
-      importedQueryTypes: [],
+      importedModuleTypes: [],
     };
 
     expect(typeInfo).toMatchObject(expected);

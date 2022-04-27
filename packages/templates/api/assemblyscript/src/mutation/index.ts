@@ -11,7 +11,7 @@ export function setData(input: Input_setData): string {
     method: "function set(uint256 value)",
     args: [input.value.toString()],
     connection: input.connection
-  });
+  }).unwrap();
 
   return res.hash;
 }
@@ -22,5 +22,5 @@ export function deployContract(input: Input_deployContract): string {
     bytecode,
     args: null,
     connection: input.connection
-  });
+  }).unwrap();
 }

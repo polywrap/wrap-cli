@@ -15,6 +15,8 @@ import schema_0_0_1_prealpha_3 from "@web3api/manifest-schemas/formats/web3api/0
 import schema_0_0_1_prealpha_4 from "@web3api/manifest-schemas/formats/web3api/0.0.1-prealpha.4.json";
 import schema_0_0_1_prealpha_5 from "@web3api/manifest-schemas/formats/web3api/0.0.1-prealpha.5.json";
 import schema_0_0_1_prealpha_6 from "@web3api/manifest-schemas/formats/web3api/0.0.1-prealpha.6.json";
+import schema_0_0_1_prealpha_7 from "@web3api/manifest-schemas/formats/web3api/0.0.1-prealpha.7.json";
+import schema_0_0_1_prealpha_8 from "@web3api/manifest-schemas/formats/web3api/0.0.1-prealpha.8.json";
 import { Tracer } from "@web3api/tracing-js"
 
 import {
@@ -35,6 +37,8 @@ const schemas: Web3ApiManifestSchemas = {
   "0.0.1-prealpha.4": schema_0_0_1_prealpha_4,
   "0.0.1-prealpha.5": schema_0_0_1_prealpha_5,
   "0.0.1-prealpha.6": schema_0_0_1_prealpha_6,
+  "0.0.1-prealpha.7": schema_0_0_1_prealpha_7,
+  "0.0.1-prealpha.8": schema_0_0_1_prealpha_8,
 };
 
 const validator = new Validator();
@@ -43,6 +47,8 @@ Validator.prototype.customFormats.file = Validators.file;
 Validator.prototype.customFormats.wasmLanguage = Validators.wasmLanguage;
 Validator.prototype.customFormats.yamlFile = Validators.yamlFile;
 Validator.prototype.customFormats.graphqlFile = Validators.graphqlFile;
+Validator.prototype.customFormats.manifestFile = Validators.manifestFile;
+Validator.prototype.customFormats.packageName = Validators.packageName;
 
 export const validateWeb3ApiManifest = Tracer.traceFunc(
   "core: validateWeb3ApiManifest",
@@ -53,7 +59,7 @@ export const validateWeb3ApiManifest = Tracer.traceFunc(
     const schema = schemas[manifest.format as Web3ApiManifestFormats];
 
     if (!schema) {
-      throw Error(`Unrecognized Web3ApiManifest schema format "${manifest.format}"`);
+      throw Error(`Unrecognized Web3ApiManifest schema format "${manifest.format}"\nmanifest: ${JSON.stringify(manifest, null, 2)}`);
     }
 
     const throwIfErrors = (result: ValidatorResult) => {

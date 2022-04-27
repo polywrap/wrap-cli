@@ -4,7 +4,13 @@ import { SchemaValidator } from ".";
 import { DirectiveNode, ASTNode, ObjectTypeDefinitionNode } from "graphql";
 
 export const getSupportedDirectivesValidator = (): SchemaValidator => {
-  const supportedDirectives = ["imported", "imports"];
+  const supportedDirectives = [
+    "imported",
+    "imports",
+    "capability",
+    "enabled_interface",
+    "annotate",
+  ];
   const unsupportedUsages: string[] = [];
 
   return {
@@ -19,7 +25,7 @@ export const getSupportedDirectivesValidator = (): SchemaValidator => {
         },
       },
     },
-    displayValidationMessagesIfExist: () => {
+    cleanup: () => {
       if (unsupportedUsages.length) {
         throw new Error(
           `Found the following usages of unsupported directives:${unsupportedUsages.map(

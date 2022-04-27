@@ -1,37 +1,38 @@
-import { SchemaComposer } from "./SchemaComposer";
-import { Project } from "./project";
-import { step, withSpinner, isTypescriptFile, loadTsNode } from "./helpers";
-import { intlMsg } from "./intl";
-
-import { TypeInfo } from "@web3api/schema-parse";
 import {
-  OutputDirectory,
-  writeDirectory,
-  bindSchema,
-} from "@web3api/schema-bind";
+  step,
+  withSpinner,
+  isTypescriptFile,
+  importTypescriptModule,
+  web3apiManifestLanguages,
+  isWeb3ApiManifestLanguage,
+  web3apiManifestLanguageToBindLanguage,
+  pluginManifestLanguages,
+  isPluginManifestLanguage,
+  pluginManifestLanguageToBindLanguage,
+  appManifestLanguages,
+  isAppManifestLanguage,
+  appManifestLanguageToBindLanguage,
+  Project,
+  AnyManifest,
+  SchemaComposer,
+  intlMsg,
+  resetDir,
+} from "./";
+
+import { BindLanguage, GenerateBindingFn } from "@web3api/schema-bind";
+import { writeDirectorySync } from "@web3api/os-js";
 import path from "path";
-import fs, { readFileSync } from "fs";
+import { readFileSync } from "fs";
 import * as gluegun from "gluegun";
 import { Ora } from "ora";
 import Mustache from "mustache";
 
-export interface CustomScriptConfig {
-  typeInfo: TypeInfo;
-  generate: (templatePath: string, config: unknown) => string;
-}
-
-export { OutputDirectory };
-
-export type CustomScriptRunFn = (
-  output: OutputDirectory,
-  config: CustomScriptConfig
-) => void;
-
 export interface CodeGeneratorConfig {
   outputDir: string;
-  project: Project;
+  project: Project<AnyManifest>;
   schemaComposer: SchemaComposer;
   customScript?: string;
+  mustacheView?: Record<string, unknown>;
 }
 
 export class CodeGenerator {
@@ -55,10 +56,32 @@ export class CodeGenerator {
     const { schemaComposer, project } = this._config;
 
     const run = async (spinner?: Ora) => {
-      // Make sure that the output dir exists, if not create a new one
-      if (!fs.existsSync(this._config.outputDir)) {
-        fs.mkdirSync(this._config.outputDir);
+      const language = await project.getManifestLanguage();
+      let bindLanguage: BindLanguage | undefined;
+
+      if (isWeb3ApiManifestLanguage(language)) {
+        bindLanguage = web3apiManifestLanguageToBindLanguage(language);
+      } else if (isPluginManifestLanguage(language)) {
+        bindLanguage = pluginManifestLanguageToBindLanguage(language);
+      } else if (isAppManifestLanguage(language)) {
+        bindLanguage = appManifestLanguageToBindLanguage(language);
       }
+
+      if (!bindLanguage) {
+        throw Error(
+          intlMsg.lib_language_unsupportedManifestLanguage({
+            language: language,
+            supported: [
+              ...Object.keys(web3apiManifestLanguages),
+              ...Object.keys(pluginManifestLanguages),
+              ...Object.keys(appManifestLanguages),
+            ].join(", "),
+          })
+        );
+      }
+
+      // Make sure the output dir is reset
+      resetDir(this._config.outputDir);
 
       // Get the fully composed schema
       const composed = await schemaComposer.getComposedSchemas();
@@ -75,49 +98,61 @@ export class CodeGenerator {
       }
 
       if (this._config.customScript) {
-        const output: OutputDirectory = {
-          entries: [],
-        };
-
-        if (isTypescriptFile(this._config.customScript)) {
-          loadTsNode();
-        }
+        const customScript = this._config.customScript;
 
         // Check the generation file if it has the proper run() method
-        // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention
-        const generator = await require(this._config.customScript);
+        // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
+        const generator = isTypescriptFile(customScript)
+          ? await importTypescriptModule(customScript)
+          : // eslint-disable-next-line @typescript-eslint/no-require-imports
+            await require(customScript);
+
         if (!generator) {
           throw Error(intlMsg.lib_codeGenerator_wrongGenFile());
         }
 
-        const { run } = generator as { run: CustomScriptRunFn };
-        if (!run) {
-          throw Error(intlMsg.lib_codeGenerator_noRunMethod());
+        const { generateBinding } = generator as {
+          generateBinding: GenerateBindingFn;
+        };
+        if (!generateBinding) {
+          throw Error(intlMsg.lib_codeGenerator_nogenerateBindingMethod());
         }
 
-        await run(output, {
-          typeInfo,
-          generate: (templatePath: string, config: unknown) =>
-            this._generateTemplate(templatePath, config, spinner),
+        const output = await generateBinding({
+          projectName: await project.getName(),
+          modules: [
+            {
+              name: "custom",
+              typeInfo,
+              schema: this._schema || "",
+              outputDirAbs: this._config.outputDir,
+            },
+          ],
+          bindLanguage,
         });
 
-        writeDirectory(this._config.outputDir, output, (templatePath: string) =>
-          this._generateTemplate(templatePath, typeInfo, spinner)
-        );
+        for (const module of output.modules) {
+          writeDirectorySync(
+            this._config.outputDir,
+            module.output,
+            (templatePath: string) =>
+              this._generateTemplate(templatePath, typeInfo, spinner)
+          );
+        }
       } else {
-        const content = bindSchema({
-          combined: {
-            typeInfo: composed.combined?.typeInfo as TypeInfo,
-            schema: composed.combined?.schema as string,
-            outputDirAbs: "",
-          },
-          language: await project.getLanguage(),
-        });
-
-        writeDirectory(
-          this._config.outputDir,
-          content.combined as OutputDirectory
+        const output = await project.generateSchemaBindings(
+          composed,
+          this._config.outputDir
         );
+
+        // Output the bindings
+        for (const module of output.modules) {
+          writeDirectorySync(module.outputDirAbs, module.output);
+        }
+
+        if (output.common) {
+          writeDirectorySync(output.common.outputDirAbs, output.common.output);
+        }
       }
     };
 
@@ -163,6 +198,7 @@ export class CodeGenerator {
     let content = Mustache.render(template.toString(), {
       ...types,
       schema: this._schema,
+      ...this._config.mustacheView,
     });
 
     content = `// ${intlMsg.lib_codeGenerator_templateNoModify()}

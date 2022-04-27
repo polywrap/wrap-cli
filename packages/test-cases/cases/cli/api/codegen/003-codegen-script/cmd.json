@@ -1,0 +1,3 @@
+{
+  "args": ["--script", "web3api.gen.ts"]
+}

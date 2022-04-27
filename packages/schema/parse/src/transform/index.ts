@@ -9,8 +9,8 @@ import {
   PropertyDefinition,
   ArrayDefinition,
   MethodDefinition,
-  QueryDefinition,
-  ImportedQueryDefinition,
+  ModuleDefinition,
+  ImportedModuleDefinition,
   ImportedObjectDefinition,
   DefinitionKind,
   isKind,
@@ -19,6 +19,10 @@ import {
   InterfaceImplementedDefinition,
   EnumRef,
   ObjectRef,
+  InterfaceDefinition,
+  EnvDefinition,
+  WithKind,
+  MapDefinition,
 } from "../typeInfo";
 
 export * from "./finalizePropertyDef";
@@ -27,6 +31,8 @@ export * from "./addFirstLast";
 export * from "./interfaceUris";
 export * from "./methodParentPointers";
 export * from "./toGraphQLType";
+export * from "./moduleCapabilities";
+export * from "./addAnnotations";
 
 export interface TypeInfoTransforms {
   enter?: TypeInfoTransformer;
@@ -45,19 +51,22 @@ export interface TypeInfoTransformer {
   PropertyDefinition?: (def: PropertyDefinition) => PropertyDefinition;
   ArrayDefinition?: (def: ArrayDefinition) => ArrayDefinition;
   MethodDefinition?: (def: MethodDefinition) => MethodDefinition;
-  QueryDefinition?: (def: QueryDefinition) => QueryDefinition;
+  ModuleDefinition?: (def: ModuleDefinition) => ModuleDefinition;
+  InterfaceDefinition?: (def: InterfaceDefinition) => InterfaceDefinition;
   ImportedEnumDefinition?: (
     def: ImportedEnumDefinition
   ) => ImportedEnumDefinition;
-  ImportedQueryDefinition?: (
-    def: ImportedQueryDefinition
-  ) => ImportedQueryDefinition;
+  ImportedModuleDefinition?: (
+    def: ImportedModuleDefinition
+  ) => ImportedModuleDefinition;
   ImportedObjectDefinition?: (
     def: ImportedObjectDefinition
   ) => ImportedObjectDefinition;
   InterfaceImplementedDefinition?: (
     def: InterfaceImplementedDefinition
   ) => InterfaceImplementedDefinition;
+  EnvDefinition?: (def: EnvDefinition) => EnvDefinition;
+  MapDefinition?: (def: MapDefinition) => MapDefinition;
 }
 
 export function transformTypeInfo(
@@ -68,6 +77,13 @@ export function transformTypeInfo(
 
   if (transforms.enter && transforms.enter.TypeInfo) {
     result = transforms.enter.TypeInfo(result);
+  }
+
+  for (let i = 0; i < result.interfaceTypes.length; ++i) {
+    result.interfaceTypes[i] = visitInterfaceDefinition(
+      result.interfaceTypes[i],
+      transforms
+    );
   }
 
   for (let i = 0; i < result.enumTypes.length; ++i) {
@@ -81,9 +97,9 @@ export function transformTypeInfo(
     );
   }
 
-  for (let i = 0; i < result.queryTypes.length; ++i) {
-    result.queryTypes[i] = visitQueryDefinition(
-      result.queryTypes[i],
+  for (let i = 0; i < result.moduleTypes.length; ++i) {
+    result.moduleTypes[i] = visitModuleDefinition(
+      result.moduleTypes[i],
       transforms
     );
   }
@@ -95,9 +111,9 @@ export function transformTypeInfo(
     );
   }
 
-  for (let i = 0; i < result.importedQueryTypes.length; ++i) {
-    result.importedQueryTypes[i] = visitImportedQueryDefinition(
-      result.importedQueryTypes[i],
+  for (let i = 0; i < result.importedModuleTypes.length; ++i) {
+    result.importedModuleTypes[i] = visitImportedModuleDefinition(
+      result.importedModuleTypes[i],
       transforms
     );
   }
@@ -108,6 +124,13 @@ export function transformTypeInfo(
       transforms
     );
   }
+
+  result.envTypes.query = visitEnvDefinition(result.envTypes.query, transforms);
+
+  result.envTypes.mutation = visitEnvDefinition(
+    result.envTypes.mutation,
+    transforms
+  );
 
   if (transforms.leave && transforms.leave.TypeInfo) {
     result = transforms.leave.TypeInfo(result);
@@ -169,6 +192,10 @@ export function visitAnyDefinition(
 
   if (result.array) {
     result.array = visitArrayDefinition(result.array, transforms);
+  }
+
+  if (result.map) {
+    result.map = visitMapDefinition(result.map, transforms);
   }
 
   if (result.scalar) {
@@ -263,10 +290,10 @@ export function visitMethodDefinition(
   return transformType(result, transforms.leave);
 }
 
-export function visitQueryDefinition(
-  def: QueryDefinition,
+export function visitModuleDefinition(
+  def: ModuleDefinition,
   transforms: TypeInfoTransforms
-): QueryDefinition {
+): ModuleDefinition {
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
 
@@ -277,10 +304,19 @@ export function visitQueryDefinition(
   return transformType(result, transforms.leave);
 }
 
-export function visitImportedQueryDefinition(
-  def: ImportedQueryDefinition,
+export function visitInterfaceDefinition(
+  def: InterfaceDefinition,
   transforms: TypeInfoTransforms
-): ImportedQueryDefinition {
+): InterfaceDefinition {
+  let result = Object.assign({}, def);
+  result = transformType(result, transforms.enter);
+  return transformType(result, transforms.leave);
+}
+
+export function visitImportedModuleDefinition(
+  def: ImportedModuleDefinition,
+  transforms: TypeInfoTransforms
+): ImportedModuleDefinition {
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
 
@@ -305,7 +341,47 @@ export function visitImportedEnumDefinition(
   return visitEnumDefinition(def, transforms) as ImportedEnumDefinition;
 }
 
-export function transformType<TDefinition extends GenericDefinition>(
+export function visitEnvDefinition(
+  def: EnvDefinition,
+  transforms: TypeInfoTransforms
+): EnvDefinition {
+  let result = Object.assign({}, def);
+  result = transformType(result, transforms.enter);
+
+  if (result.sanitized) {
+    result.sanitized = visitObjectDefinition(result.sanitized, transforms);
+  }
+
+  if (result.client) {
+    result.client = visitObjectDefinition(result.client, transforms);
+  }
+
+  return transformType(result, transforms.leave);
+}
+
+export function visitMapDefinition(
+  def: MapDefinition,
+  transforms: TypeInfoTransforms
+): MapDefinition {
+  let result = Object.assign({}, def);
+  result = transformType(result, transforms.enter);
+
+  result = visitAnyDefinition(result, transforms) as any;
+
+  if (result.key) {
+    result.key = transformType(result.key, transforms.enter);
+    result.key = transformType(result.key, transforms.leave);
+  }
+
+  if (result.value) {
+    result.value = transformType(result.value, transforms.enter);
+    result.value = transformType(result.value, transforms.leave);
+  }
+
+  return transformType(result, transforms.leave);
+}
+
+export function transformType<TDefinition extends WithKind>(
   type: TDefinition,
   transform?: TypeInfoTransformer
 ): TDefinition {
@@ -325,15 +401,18 @@ export function transformType<TDefinition extends GenericDefinition>(
     ArrayDefinition,
     PropertyDefinition,
     MethodDefinition,
-    QueryDefinition,
+    ModuleDefinition,
+    InterfaceDefinition,
     ImportedEnumDefinition,
-    ImportedQueryDefinition,
+    ImportedModuleDefinition,
     ImportedObjectDefinition,
     InterfaceImplementedDefinition,
+    EnvDefinition,
+    MapDefinition,
   } = transform;
 
   if (GenericDefinition && isKind(result, DefinitionKind.Generic)) {
-    result = Object.assign(result, GenericDefinition(result));
+    result = Object.assign(result, GenericDefinition(result as any));
   }
   if (ObjectDefinition && isKind(result, DefinitionKind.Object)) {
     result = Object.assign(result, ObjectDefinition(result as any));
@@ -362,11 +441,17 @@ export function transformType<TDefinition extends GenericDefinition>(
   if (MethodDefinition && isKind(result, DefinitionKind.Method)) {
     result = Object.assign(result, MethodDefinition(result as any));
   }
-  if (QueryDefinition && isKind(result, DefinitionKind.Query)) {
-    result = Object.assign(result, QueryDefinition(result as any));
+  if (ModuleDefinition && isKind(result, DefinitionKind.Module)) {
+    result = Object.assign(result, ModuleDefinition(result as any));
   }
-  if (ImportedQueryDefinition && isKind(result, DefinitionKind.ImportedQuery)) {
-    result = Object.assign(result, ImportedQueryDefinition(result as any));
+  if (InterfaceDefinition && isKind(result, DefinitionKind.Interface)) {
+    result = Object.assign(result, InterfaceDefinition(result as any));
+  }
+  if (
+    ImportedModuleDefinition &&
+    isKind(result, DefinitionKind.ImportedModule)
+  ) {
+    result = Object.assign(result, ImportedModuleDefinition(result as any));
   }
   if (ImportedEnumDefinition && isKind(result, DefinitionKind.ImportedEnum)) {
     result = Object.assign(result, ImportedEnumDefinition(result as any));
@@ -385,6 +470,12 @@ export function transformType<TDefinition extends GenericDefinition>(
       result,
       InterfaceImplementedDefinition(result as any)
     );
+  }
+  if (EnvDefinition && isKind(result, DefinitionKind.Env)) {
+    result = Object.assign(result, EnvDefinition(result as any));
+  }
+  if (MapDefinition && isKind(result, DefinitionKind.Map)) {
+    result = Object.assign(result, MapDefinition(result as any));
   }
 
   return result;

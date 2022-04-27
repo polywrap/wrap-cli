@@ -1,4 +1,5 @@
 import { Uri } from "./Uri";
+import { ClientConfig } from "./Client";
 import { QueryApiOptions, QueryApiResult } from "./Query";
 
 /** Defines the frequency of API invocations for an API subscription */
@@ -12,8 +13,9 @@ export interface SubscriptionFrequency {
 /** Options required for an API subscription. */
 export interface SubscribeOptions<
   TVariables extends Record<string, unknown> = Record<string, unknown>,
-  TUri extends Uri | string = string
-> extends QueryApiOptions<TVariables, TUri> {
+  TUri extends Uri | string = string,
+  TClientConfig extends ClientConfig = ClientConfig
+> extends QueryApiOptions<TVariables, TUri, TClientConfig> {
   /**
    * The frequency of API invocations. Defaults to one query per minute.
    */

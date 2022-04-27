@@ -2,12 +2,10 @@ import {
   Input_queryMethod,
   Input_objectMethod
 } from "./Query";
-
 export {
   Input_queryMethod,
   Input_objectMethod
 };
-
 export { CustomType } from "./CustomType";
 export { AnotherType } from "./AnotherType";
 export {
@@ -16,7 +14,6 @@ export {
   getCustomEnumValue,
   sanitizeCustomEnumValue
 } from "./CustomEnum";
-
 export { TestImport_Query } from "./imported/TestImport_Query";
 export { TestImport_Object } from "./imported/TestImport_Object";
 export { TestImport_AnotherObject } from "./imported/TestImport_AnotherObject";
@@ -26,3 +23,6 @@ export {
   getTestImport_EnumValue,
   sanitizeTestImport_EnumValue
 } from "./imported/TestImport_Enum";
+export { TestImport } from "./TestImport";
+export { env, requireEnv } from "./env";
+export { QueryEnv } from "./QueryEnv";

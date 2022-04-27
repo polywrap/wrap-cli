@@ -1,3 +1,10 @@
-format: 0.0.1-prealpha.1
+format: 0.0.1-prealpha.2
 language: plugin/typescript
-schema: ./schema.graphql
+name: Ens
+modules:
+  query:
+    module: ./src/query/index.ts
+    schema: ./src/query/schema.graphql
+import_redirects:
+  - uri: "ens/uri-resolver.core.web3api.eth"
+    schema: ../../../core-interfaces/uri-resolver/src/query.graphql

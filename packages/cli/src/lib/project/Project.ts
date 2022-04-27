@@ -1,16 +1,77 @@
+import { intlMsg, AnyManifest, AnyManifestLanguage } from "../";
+
 import fs from "fs";
 import path from "path";
 import rimraf from "rimraf";
 import copyfiles from "copyfiles";
-import { writeFileSync } from "@web3api/os-js";
 import { TargetLanguage } from "@web3api/schema-bind";
+import { writeFileSync } from "@web3api/os-js";
+import { BindOutput } from "@web3api/schema-bind";
+import { ComposerOutput } from "@web3api/schema-compose";
 
 export interface ProjectConfig {
+  rootCacheDir: string;
   quiet?: boolean;
 }
 
-export abstract class Project {
-  constructor(protected _config: ProjectConfig) {}
+export abstract class Project<TManifest extends AnyManifest> {
+  constructor(
+    protected _config: ProjectConfig,
+    protected _projectCacheSubDir: string
+  ) {}
+
+  /// Validation
+
+  public static validateManifestLanguage(
+    language: string | undefined,
+    manifestLanguages: Record<string, string>,
+    isManifestLanguage: (language: string) => boolean
+  ): void {
+    if (!language) {
+      throw Error(intlMsg.lib_project_language_not_found());
+    }
+
+    if (!isManifestLanguage(language)) {
+      throw Error(
+        intlMsg.lib_project_invalid_manifest_language({
+          language,
+          validTypes: Object.keys(manifestLanguages).join(", "),
+        })
+      );
+    }
+  }
+
+  /// Abstract Interface
+
+  public abstract reset(): void;
+
+  public abstract validate(): Promise<void>;
+
+  public abstract getName(): Promise<string>;
+
+  public abstract getManifest(): Promise<TManifest>;
+
+  public abstract getManifestDir(): string;
+
+  public abstract getManifestPath(): string;
+
+  public abstract getManifestLanguage(): Promise<AnyManifestLanguage>;
+
+  public abstract getSchemaNamedPaths(): Promise<{
+    [name: string]: string;
+  }>;
+
+  public abstract getImportRedirects(): Promise<
+    {
+      uri: string;
+      schema: string;
+    }[]
+  >;
+
+  public abstract generateSchemaBindings(
+    composerOutput: ComposerOutput,
+    outputDir?: string
+  ): Promise<BindOutput>;
 
   public get quiet(): boolean {
     return !!this._config.quiet;
@@ -19,17 +80,15 @@ export abstract class Project {
   /// Cache (.w3 folder)
 
   public getCacheDir(): string {
-    return path.join(this.getRootDir(), ".w3");
+    return path.join(
+      this._config.rootCacheDir,
+      ".w3",
+      this._projectCacheSubDir
+    );
   }
 
-  public readCacheFile(file: string): string | undefined {
-    const filePath = path.join(this.getCacheDir(), file);
-
-    if (!fs.existsSync(filePath)) {
-      return undefined;
-    }
-
-    return fs.readFileSync(filePath, "utf-8");
+  public resetCache(): void {
+    rimraf.sync(this.getCacheDir());
   }
 
   public removeCacheDir(subfolder: string): void {
@@ -41,7 +100,33 @@ export abstract class Project {
     return path.join(this.getCacheDir(), subpath);
   }
 
-  public async copyFilesIntoCache(
+  public readCacheFile(file: string): string | undefined {
+    const filePath = this.getCachePath(file);
+
+    if (!fs.existsSync(filePath)) {
+      return undefined;
+    }
+
+    return fs.readFileSync(filePath, "utf-8");
+  }
+
+  public writeCacheFile(
+    subPath: string,
+    data: unknown,
+    options?: fs.WriteFileOptions
+  ): void {
+    const filePath = this.getCachePath(subPath);
+    const folderPath = path.dirname(filePath);
+
+    // Create folders if they don't exist
+    if (!fs.existsSync(folderPath)) {
+      fs.mkdirSync(folderPath, { recursive: true });
+    }
+
+    writeFileSync(filePath, data, options);
+  }
+
+  public async copyIntoCache(
     destSubfolder: string,
     sourceFolder: string,
     options: copyfiles.Options = {}
@@ -62,34 +147,4 @@ export abstract class Project {
       });
     });
   }
-
-  public writeFileIntoCache(
-    destSubFolder: string,
-    data: unknown,
-    options?: fs.WriteFileOptions
-  ): void {
-    writeFileSync(
-      this.getCachePath(destSubFolder),
-      data,
-      options
-    );
-  }
-
-  /// Abstract Interface
-  public abstract reset(): void;
-
-  public abstract getRootDir(): string;
-
-  public abstract getLanguage(): Promise<TargetLanguage>;
-
-  public abstract getSchemaNamedPaths(): Promise<{
-    [name: string]: string;
-  }>;
-
-  public abstract getImportRedirects(): Promise<
-    {
-      uri: string;
-      schema: string;
-    }[]
-  >;
 }

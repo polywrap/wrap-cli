@@ -1,4 +1,4 @@
-import { Context } from "../msgpack";
+import { Context } from "../debug";
 
 describe("Context class", () => {
   it("pushes and pops values", () => {

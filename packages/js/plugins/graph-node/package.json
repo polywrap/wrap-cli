@@ -1,7 +1,7 @@
 {
   "name": "@web3api/graph-node-plugin-js",
   "description": "Web3API Graph Node Javascript Plugin",
-  "version": "0.0.1-prealpha.44",
+  "version": "0.0.1-prealpha.75",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -9,20 +9,19 @@
   },
   "main": "build/index.js",
   "files": [
-    "build",
-    "schema.graphql"
+    "build"
   ],
   "scripts": {
     "build": "rimraf ./build && yarn codegen && tsc --project tsconfig.build.json",
-    "codegen": "npx -p @web3api/cli w3 plugin codegen",
-    "lint": "eslint --color --ext .ts src/",
+    "codegen": "node ../../../../dependencies/node_modules/@web3api/cli/bin/w3 plugin codegen",
+    "lint": "eslint --color -c ../../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@web3api/core-js": "0.0.1-prealpha.44",
-    "@web3api/http-plugin-js": "0.0.1-prealpha.44",
+    "@web3api/core-js": "0.0.1-prealpha.75",
+    "@web3api/http-plugin-js": "0.0.1-prealpha.75",
     "apollo-link": "1.2.14",
     "apollo-link-http": "1.5.17",
     "cross-fetch": "3.0.5",
@@ -30,7 +29,7 @@
   },
   "devDependencies": {
     "@types/jest": "26.0.8",
-    "@web3api/client-js": "0.0.1-prealpha.44",
+    "@web3api/client-js": "0.0.1-prealpha.75",
     "jest": "26.6.3",
     "rimraf": "3.0.2",
     "ts-jest": "26.5.4",

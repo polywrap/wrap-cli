@@ -1,8 +1,11 @@
 import {
   w3_subinvoke,
+  w3_subinvokeImplementation,
   Nullable,
   BigInt,
-  JSON
+  BigNumber,
+  JSON,
+  Result
 } from "@web3api/wasm-as";
 import {
   serializeimportedMethodArgs,
@@ -16,27 +19,57 @@ import * as Types from "../..";
 
 export class TestImport_Query {
 
-  public static uri: string = "testimport.uri.eth";
+  public static interfaceUri: string = "testimport.uri.eth";
 
-  public static importedMethod(input: Input_importedMethod): Types.TestImport_Object | null {
+  public uri: string;
+
+  constructor(uri: string) {
+    this.uri = uri;
+  }
+
+  public importedMethod(
+    input: Input_importedMethod
+  ): Result<Types.TestImport_Object | null, string> {
     const args = serializeimportedMethodArgs(input);
-    const result = w3_subinvoke(
+    const result = w3_subinvokeImplementation(
       "testimport.uri.eth",
+      this.uri,
       "query",
       "importedMethod",
       args
     );
-    return deserializeimportedMethodResult(result);
+
+    if (result.isErr) {
+      return Result.Err<Types.TestImport_Object | null, string>(
+        result.unwrapErr()
+      );
+    }
+
+    return Result.Ok<Types.TestImport_Object | null, string>(
+      deserializeimportedMethodResult(result.unwrap())
+    );
   }
 
-  public static anotherMethod(input: Input_anotherMethod): i32 {
+  public anotherMethod(
+    input: Input_anotherMethod
+  ): Result<i32, string> {
     const args = serializeanotherMethodArgs(input);
-    const result = w3_subinvoke(
+    const result = w3_subinvokeImplementation(
       "testimport.uri.eth",
+      this.uri,
       "query",
       "anotherMethod",
       args
     );
-    return deserializeanotherMethodResult(result);
+
+    if (result.isErr) {
+      return Result.Err<i32, string>(
+        result.unwrapErr()
+      );
+    }
+
+    return Result.Ok<i32, string>(
+      deserializeanotherMethodResult(result.unwrap())
+    );
   }
 }

@@ -12,25 +12,30 @@ describe("e2e", () => {
       plugins: [
         {
           uri: uri,
-          plugin: samplePlugin({ defaultValue: "foo bar" })
+          plugin: samplePlugin({
+            query: {
+              defaultValue: "foo bar"
+            },
+            mutation: { }
+          })
         }
       ]
     });
   });
 
   it("sampleQuery", async () => {
-    const result = await client.query({
+    const result = await client.invoke({
       uri,
-      query: `query {
-        sampleQuery(
-          data: "fuz baz "
-        )
-      }`
+      module: "query",
+      method: "sampleQuery",
+      input: {
+        data: "fuz baz "
+      },
     });
 
-    expect(result.errors).toBeFalsy();
+    expect(result.error).toBeFalsy();
     expect(result.data).toBeTruthy();
-    expect(result.data?.sampleQuery).toBe("fuz baz foo bar");
+    expect(result.data).toBe("fuz baz foo bar");
   });
 
   it("sampleMutation", async () => {

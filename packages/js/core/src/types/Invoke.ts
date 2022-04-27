@@ -1,9 +1,12 @@
-import { Uri } from ".";
+import { ClientConfig, Uri } from ".";
 
 export type InvokableModules = "query" | "mutation";
 
 /** Options required for an API invocation. */
-export interface InvokeApiOptions<TUri extends Uri | string = string> {
+export interface InvokeApiOptions<
+  TUri extends Uri | string = string,
+  TClientConfig extends ClientConfig = ClientConfig
+> {
   /** The API's URI */
   uri: TUri;
 
@@ -17,7 +20,7 @@ export interface InvokeApiOptions<TUri extends Uri | string = string> {
    * Input arguments for the method, structured as a map,
    * removing the chance of incorrectly ordering arguments.
    */
-  input: Record<string, unknown> | ArrayBuffer;
+  input?: Record<string, unknown> | ArrayBuffer;
 
   /**
    * Filters the [[InvokeApiResult]] data properties. The key
@@ -28,10 +31,20 @@ export interface InvokeApiOptions<TUri extends Uri | string = string> {
   resultFilter?: Record<string, unknown>;
 
   /**
-   * If set to true, the invoke function will decode all msgpack results
-   * into JavaScript objects.
+   * If set to true, the invoke function will not decode the msgpack results
+   * into JavaScript objects, and instead return the raw ArrayBuffer.
    */
-  decode?: boolean;
+  noDecode?: boolean;
+
+  /**
+   * Override the client's config for all invokes within this invoke.
+   */
+  config?: Partial<TClientConfig>;
+
+  /**
+   * Invoke id used to track query context data set internally.
+   */
+  contextId?: string;
 }
 
 /**

@@ -12,6 +12,8 @@ type CustomType {
   i32: Int32!
   bigint: BigInt!
   optBigint: BigInt
+  bignumber: BigNumber!
+  optBignumber: BigNumber
   json: JSON!
   optJson: JSON
   bytes: Bytes!
@@ -39,9 +41,15 @@ type CustomType {
 type AnotherType {
   prop: String
   circular: CustomType
+  const: String
 }
 
 enum CustomEnum {
   STRING
   BYTES
+}
+
+type Env {
+  prop: String!
+  optProp: String
 }

@@ -1,11 +1,12 @@
 import {
   Read,
   ReadDecoder,
+  Write,
   WriteSizer,
   WriteEncoder,
-  Write,
   Nullable,
   BigInt,
+  BigNumber,
   JSON,
   Context
 } from "@web3api/wasm-as";
@@ -18,10 +19,11 @@ export class Input_queryMethod {
   optEnum: Nullable<Types.CustomEnum>;
   enumArray: Array<Types.CustomEnum>;
   optEnumArray: Array<Nullable<Types.CustomEnum>> | null;
+  map: Map<string, i32>;
 }
 
 export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMethod {
-  const context: Context =  new Context("Deserializing query-type: queryMethod");
+  const context: Context =  new Context("Deserializing module-type: queryMethod");
   const reader = new ReadDecoder(argsBuf, context);
   let numFields = reader.readMapLength();
 
@@ -34,6 +36,8 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
   let _enumArray: Array<Types.CustomEnum> = [];
   let _enumArraySet: bool = false;
   let _optEnumArray: Array<Nullable<Types.CustomEnum>> | null = null;
+  let _map: Map<string, i32> = new Map<string, i32>();
+  let _mapSet: bool = false;
 
   while (numFields > 0) {
     numFields--;
@@ -121,6 +125,16 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
       });
       reader.context().pop();
     }
+    else if (field == "map") {
+      reader.context().push(field, "Map<string, i32>", "type found, reading property");
+      _map = reader.readExtGenericMap((reader: Read): string => {
+        return reader.readString();
+      }, (reader: Read): i32 => {
+        return reader.readInt32();
+      });
+      _mapSet = true;
+      reader.context().pop();
+    }
     reader.context().pop();
   }
 
@@ -133,6 +147,9 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
   if (!_enumArraySet) {
     throw new Error(reader.context().printWithContext("Missing required argument: 'enumArray: [CustomEnum]'"));
   }
+  if (!_mapSet) {
+    throw new Error(reader.context().printWithContext("Missing required argument: 'map: Map<String, Int>'"));
+  }
 
   return {
     str: _str,
@@ -140,17 +157,18 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
     en: _en,
     optEnum: _optEnum,
     enumArray: _enumArray,
-    optEnumArray: _optEnumArray
+    optEnumArray: _optEnumArray,
+    map: _map
   };
 }
 
 export function serializequeryMethodResult(result: i32): ArrayBuffer {
-  const sizerContext: Context = new Context("Serializing (sizing) query-type: queryMethod");
+  const sizerContext: Context = new Context("Serializing (sizing) module-type: queryMethod");
   const sizer = new WriteSizer(sizerContext);
   writequeryMethodResult(sizer, result);
   const buffer = new ArrayBuffer(sizer.length);
-  const encoderContext: Context = new Context("Serializing (encoding) query-type: queryMethod");
-  const encoder = new WriteEncoder(buffer, encoderContext);
+  const encoderContext: Context = new Context("Serializing (encoding) module-type: queryMethod");
+  const encoder = new WriteEncoder(buffer, sizer, encoderContext);
   writequeryMethodResult(encoder, result);
   return buffer;
 }
@@ -169,7 +187,7 @@ export class Input_objectMethod {
 }
 
 export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectMethod {
-  const context: Context =  new Context("Deserializing query-type: objectMethod");
+  const context: Context =  new Context("Deserializing module-type: objectMethod");
   const reader = new ReadDecoder(argsBuf, context);
   let numFields = reader.readMapLength();
 
@@ -240,12 +258,12 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectM
 }
 
 export function serializeobjectMethodResult(result: Types.AnotherType | null): ArrayBuffer {
-  const sizerContext: Context = new Context("Serializing (sizing) query-type: objectMethod");
+  const sizerContext: Context = new Context("Serializing (sizing) module-type: objectMethod");
   const sizer = new WriteSizer(sizerContext);
   writeobjectMethodResult(sizer, result);
   const buffer = new ArrayBuffer(sizer.length);
-  const encoderContext: Context = new Context("Serializing (encoding) query-type: objectMethod");
-  const encoder = new WriteEncoder(buffer, encoderContext);
+  const encoderContext: Context = new Context("Serializing (encoding) module-type: objectMethod");
+  const encoder = new WriteEncoder(buffer, sizer, encoderContext);
   writeobjectMethodResult(encoder, result);
   return buffer;
 }

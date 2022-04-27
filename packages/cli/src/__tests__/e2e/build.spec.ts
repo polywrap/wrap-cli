@@ -1,32 +1,39 @@
+import { Web3ApiProject, loadBuildManifest } from "../../lib";
 import { clearStyle, w3Cli } from "./utils";
 
 import { runCLI } from "@web3api/test-env-js";
+import { GetPathToCliTestFiles } from "@web3api/test-cases";
 import fs from "fs";
 import path from "path";
 
 const HELP = `
-w3 build [options] [<web3api-manifest>]
+w3 build [options]
 
 Options:
   -h, --help                         Show usage information
-  -i, --ipfs [<node>]                Upload build results to an IPFS node (default: dev-server's node)
+  -m, --manifest-file <path>         Path to the Web3API Build manifest file (default: web3api.yaml | web3api.yml)
   -o, --output-dir <path>            Output directory for build results (default: build/)
-  -e, --test-ens <[address,]domain>  Publish the package to a test ENS domain locally (requires --ipfs)
   -w, --watch                        Automatically rebuild when changes are made (default: false)
   -v, --verbose                      Verbose output (default: false)
 
 `;
 
 describe("e2e tests for build command", () => {
-  const projectRoot = path.resolve(__dirname, "../project/");
+  const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/build-cmd");
+  const testCases =
+    fs.readdirSync(testCaseRoot, { withFileTypes: true })
+      .filter((dirent) => dirent.isDirectory())
+      .map((dirent) => dirent.name);
+  const getTestCaseDir = (index: number) =>
+    path.join(testCaseRoot, testCases[index]);
 
   test("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
         args: ["build", "--help"],
-        cwd: projectRoot,
+        cwd: getTestCaseDir(0),
+        cli: w3Cli,
       },
-      w3Cli
     );
 
     expect(code).toEqual(0);
@@ -38,199 +45,85 @@ describe("e2e tests for build command", () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
         args: ["build", "--output-dir"],
-        cwd: projectRoot,
+        cwd: getTestCaseDir(0),
+        cli: w3Cli,
       },
-      w3Cli
     );
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output))
       .toEqual(`--output-dir option missing <path> argument
 ${HELP}`);
   });
 
-  test("Should throw error for invalid params - testEns", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
-      {
-        args: ["build", "--test-ens"],
-        cwd: projectRoot,
-      },
-      w3Cli
+  test("Adds uuid-v4 suffix to build-env image if no build manifest specified", async () => {
+    const projectRoot = getTestCaseDir(0);
+    const project = new Web3ApiProject({
+      rootCacheDir: projectRoot,
+      web3apiManifestPath: path.join(projectRoot, "web3api.yaml")
+    });
+
+    await project.cacheDefaultBuildManifestFiles();
+
+    const cacheBuildEnvPath = path.join(projectRoot, ".w3/web3api/build/env")
+    const cachedBuildManifest = await loadBuildManifest(
+      path.join(cacheBuildEnvPath, "web3api.build.yaml")
     );
 
-    expect(code).toEqual(0);
-    expect(error).toBe("");
-    expect(clearStyle(output))
-      .toEqual(`--test-ens option missing <[address,]domain> argument
-${HELP}`);
+    const buildImageName = cachedBuildManifest.docker?.name
+
+    expect(buildImageName?.length).toBeGreaterThan(36)
+    expect((buildImageName?.match(/-/g) || []).length).toBeGreaterThanOrEqual(4);
   });
 
-  test("Should throw error for invalid params - ipfs", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
-      {
-        args: ["build", "--test-ens", "test.eth"],
-        cwd: projectRoot,
-      },
-      w3Cli
-    );
+  describe("test-cases", () => {
+    for (let i = 0; i < testCases.length; ++i) {
+      const testCaseName = testCases[i];
+      const testCaseDir = getTestCaseDir(i);
 
-    expect(code).toEqual(0);
-    expect(error).toBe("");
-    expect(clearStyle(output))
-      .toEqual(`--test-ens option requires the --ipfs [<node>] option
-${HELP}`);
-  });
+      test(testCaseName, async () => {
+        let { exitCode, stdout, stderr } = await runCLI(
+          {
+            args: ["build", "-v"],
+            cwd: testCaseDir,
+           cli: w3Cli,
+          },
+        );
 
-  test("Should throw error for invalid web3api - invalid route", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
-      {
-        args: ["build", "invalid-web3api-1.yaml"],
-        cwd: projectRoot,
-      },
-      w3Cli
-    );
+        stdout = clearStyle(stdout);
+        stderr = clearStyle(stderr);
 
-    const schemaPath = path.normalize(
-      `${projectRoot}/src/wrong/schema.graphql`
-    );
+        const expected = JSON.parse(
+          fs.readFileSync(
+            path.join(testCaseDir, "expected/output.json"), "utf-8"
+          )
+        );
 
-    expect(code).toEqual(1);
-    expect(error).toBe("");
-    expect(clearStyle(output)).toContain(
-      `ENOENT: no such file or directory, open '${schemaPath}'`
-    );
-  });
+        if (expected.stdout) {
+          if (Array.isArray(expected.stdout)) {
+            for (const line of expected.stdout) {
+              expect(stdout).toContain(line);
+            }
+          } else {
+            expect(stdout).toContain(expected.stdout);
+          }
+        }
 
-  test("Should throw error for invalid web3api - invalid field", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
-      {
-        args: ["build", "invalid-web3api-2.yaml"],
-        cwd: projectRoot,
-      },
-      w3Cli
-    );
+        if (expected.stderr) {
+          if (Array.isArray(expected.stderr)) {
+            for (const line of expected.stderr) {
+              expect(stderr).toContain(line);
+            }
+          } else {
+            expect(stderr).toContain(expected.stderr);
+          }
+        }
 
-    expect(code).toEqual(1);
-    expect(error).toBe("");
-    expect(clearStyle(output)).toContain(
-      `instance is not allowed to have the additional property \"wrong_mutation\"`
-    );
-  });
-
-  test("Successfully build the project", async () => {
-    const { exitCode: code, stdout: output } = await runCLI(
-      {
-        args: ["build", "-v"],
-        cwd: projectRoot,
-      },
-      w3Cli
-    );
-
-    const manifestPath = "build/web3api.yaml";
-    const sanitizedOutput = clearStyle(output);
-
-    expect(code).toEqual(0);
-    expect(sanitizedOutput).toContain(
-      "Artifacts written to ./build from the image `build-env`"
-    );
-    expect(sanitizedOutput).toContain(
-      "Manifest written to ./build/web3api.yaml"
-    );
-    expect(sanitizedOutput).toContain(manifestPath);
-  });
-
-  test("Successfully builds project w/ web3api.build.yaml but no dockerfile", async () => {
-    const { exitCode: code, stdout: output } = await runCLI(
-      {
-        args: ["build", "web3api.no-docker.yaml", "-v"],
-        cwd: projectRoot,
-      },
-      w3Cli
-    );
-
-    const manifestPath = "build/web3api.yaml";
-    const sanitizedOutput = clearStyle(output);
-
-    expect(code).toEqual(0);
-    expect(sanitizedOutput).toContain(
-      "Artifacts written to ./build from the image `build-env`"
-    );
-    expect(sanitizedOutput).toContain(
-      "Manifest written to ./build/web3api.yaml"
-    );
-    expect(sanitizedOutput).toContain(manifestPath);
-  });
-
-  test("Successfully builds project w/ web3api.build.yaml and linked packages", async () => {
-    const { exitCode: code, stdout: output } = await runCLI(
-      {
-        args: ["build", "web3api.linked-packages.yaml", "-v"],
-        cwd: projectRoot,
-      },
-      w3Cli
-    );
-
-    const manifestPath = "build/web3api.yaml";
-    const sanitizedOutput = clearStyle(output);
-
-    expect(code).toEqual(0);
-    expect(sanitizedOutput).toContain(
-      "Artifacts written to ./build from the image `build-env`"
-    );
-    expect(sanitizedOutput).toContain(
-      "Manifest written to ./build/web3api.yaml"
-    );
-    expect(sanitizedOutput).toContain(manifestPath);
-  });
-
-  test("Successfully builds project w/ dockerfile", async () => {
-    const { exitCode: code, stdout: output } = await runCLI(
-      {
-        args: ["build", "web3api.docker.yaml", "-v"],
-        cwd: projectRoot,
-      },
-      w3Cli
-    );
-
-    const manifestPath = "build/web3api.yaml";
-    const sanitizedOutput = clearStyle(output);
-
-    expect(code).toEqual(0);
-    expect(sanitizedOutput).toContain(
-      "Artifacts written to ./build from the image `build-env`"
-    );
-    expect(sanitizedOutput).toContain(
-      "Manifest written to ./build/web3api.yaml"
-    );
-    expect(sanitizedOutput).toContain(manifestPath);
-  });
-
-  test("Successfully builds project w/ metadata", async () => {
-    const { exitCode: code, stdout: output } = await runCLI({
-      args: ["build", "web3api-meta.yaml", "-v"],
-      cwd: projectRoot
-    }, w3Cli);
-
-    const manifestPath = "build/web3api.meta.yaml";
-    const queryPath = "build/meta/queries/test.graphql";
-    const queryVarPath = "build/meta/queries/test.json";
-    const linkIconPath = "build/meta/links/link.svg";
-    const iconPath = "build/meta/icon/icon.png";
-    const sanitizedOutput = clearStyle(output);
-
-    expect(code).toEqual(0);
-    expect(sanitizedOutput).toContain("Artifacts written to ./build from the image `build-env`");
-    expect(sanitizedOutput).toContain("Manifest written to ./build/web3api.yaml");
-    expect(sanitizedOutput).toContain(manifestPath);
-    expect(sanitizedOutput).toContain(queryPath);
-    expect(sanitizedOutput).toContain(queryVarPath);
-    expect(sanitizedOutput).toContain(linkIconPath);
-    expect(sanitizedOutput).toContain(iconPath);
-
-    expect(fs.existsSync(path.join(projectRoot, queryPath))).toBeTruthy();
-    expect(fs.existsSync(path.join(projectRoot, queryVarPath))).toBeTruthy();
-    expect(fs.existsSync(path.join(projectRoot, linkIconPath))).toBeTruthy();
-    expect(fs.existsSync(path.join(projectRoot, iconPath))).toBeTruthy();
+        if (expected.exitCode) {
+          expect(exitCode).toEqual(expected.exitCode);
+        }
+      });
+    }
   });
 });

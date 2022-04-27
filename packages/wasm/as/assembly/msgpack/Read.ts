@@ -1,7 +1,7 @@
 import { Nullable } from "./Nullable";
-import { BigInt } from "../BigInt";
-import { Context } from "./Context";
-import { JSON } from "../JSON";
+import { BigInt, BigNumber } from "../math";
+import { Context } from "../debug";
+import { JSON } from "../json";
 
 export abstract class Read {
   abstract readBool(): bool;
@@ -18,11 +18,16 @@ export abstract class Read {
   abstract readBytesLength(): u32;
   abstract readBytes(): ArrayBuffer;
   abstract readBigInt(): BigInt;
+  abstract readBigNumber(): BigNumber;
   abstract readJSON(): JSON.Value;
   abstract readArrayLength(): u32;
   abstract readArray<T>(fn: (reader: Read) => T): Array<T>;
   abstract readMapLength(): u32;
   abstract readMap<K, V>(
+    key_fn: (reader: Read) => K,
+    value_fn: (reader: Read) => V
+  ): Map<K, V>;
+  abstract readExtGenericMap<K, V>(
     key_fn: (reader: Read) => K,
     value_fn: (reader: Read) => V
   ): Map<K, V>;
@@ -39,9 +44,14 @@ export abstract class Read {
   abstract readNullableString(): string | null;
   abstract readNullableBytes(): ArrayBuffer | null;
   abstract readNullableBigInt(): BigInt | null;
+  abstract readNullableBigNumber(): BigNumber | null;
   abstract readNullableJSON(): JSON.Value | null;
   abstract readNullableArray<T>(fn: (decoder: Read) => T): Array<T> | null;
   abstract readNullableMap<K, V>(
+    key_fn: (reader: Read) => K,
+    value_fn: (reader: Read) => V
+  ): Map<K, V> | null;
+  abstract readNullableExtGenericMap<K, V>(
     key_fn: (reader: Read) => K,
     value_fn: (reader: Read) => V
   ): Map<K, V> | null;

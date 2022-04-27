@@ -1,5 +1,5 @@
 import { createWeb3ApiProvider } from "..";
-import { SimpleStorageContainer } from "./dapp/SimpleStorage";
+import { SimpleStorageContainer } from "./app/SimpleStorage";
 import { createPlugins } from "./plugins";
 
 import {
@@ -10,9 +10,9 @@ import {
 import { GetPathToTestApis } from "@web3api/test-cases";
 import { PluginRegistration } from "@web3api/core-js";
 
+// eslint-disable-next-line import/no-extraneous-dependencies
 import React from "react";
 import { render, fireEvent, screen, waitFor } from "@testing-library/react";
-
 jest.setTimeout(360000);
 
 describe("Web3API React Integration", () => {
@@ -28,15 +28,21 @@ describe("Web3API React Integration", () => {
       ipfs,
       ethereum,
       ensAddress,
+      registrarAddress,
+      resolverAddress
     } = await initTestEnvironment();
 
     plugins = createPlugins(ensAddress, ethereum, ipfs);
 
-    api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/simple-storage`,
-      ipfs,
-      ensAddress
-    );
+    api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/simple-storage`,
+      ipfsProvider: ipfs,
+      ethereumProvider: ethereum,
+      ensRegistrarAddress: registrarAddress,
+      ensRegistryAddress: ensAddress,
+      ensResolverAddress: resolverAddress,
+    });
+
     ensUri = `ens/testnet/${api.ensDomain}`;
   });
 
@@ -48,17 +54,17 @@ describe("Web3API React Integration", () => {
     render(<SimpleStorageContainer plugins={plugins} ensUri={ensUri} />);
 
     fireEvent.click(screen.getByText("Deploy"));
-    await waitFor(() => screen.getByText(/0x/), { timeout: 15000 });
+    await waitFor(() => screen.getByText(/0x/), { timeout: 30000 });
     expect(screen.getByText(/0x/)).toBeTruthy();
 
     // check storage is 0
     fireEvent.click(screen.getByText("Check storage"));
-    await waitFor(() => screen.getByText("0"), { timeout: 15000 });
+    await waitFor(() => screen.getByText("0"), { timeout: 30000 });
     expect(screen.getByText("0")).toBeTruthy();
 
     // update storage to five and check it
     fireEvent.click(screen.getByText("Set the storage to 5!"));
-    await waitFor(() => screen.getByText("5"), { timeout: 15000 });
+    await waitFor(() => screen.getByText("5"), { timeout: 30000 });
     expect(screen.getByText("5")).toBeTruthy();
 
     // check for provider redirects

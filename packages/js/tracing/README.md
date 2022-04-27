@@ -24,4 +24,4 @@
     client.tracingEnabled(false);
     ```
 
-3. Once you run the dapp and started producing logs, go to zipkin client which is running on `http://localhost:9411`. There you can click `RUN QUERY` button without any filters to show all the logs.
+3. Once you run the app and started producing logs, go to zipkin client which is running on `http://localhost:9411`. There you can click `RUN QUERY` button without any filters to show all the logs.

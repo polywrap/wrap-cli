@@ -1,5 +1,5 @@
-import { fromAxiosResponse, toAxiosRequestConfig } from "../../util";
-import { ResponseTypeEnum } from "../../w3";
+import { fromAxiosResponse, toAxiosRequestConfig } from "../../query/util";
+import { ResponseTypeEnum } from "../../query/w3";
 
 describe("converting axios response", () => {
   test("response type: text", () => {
@@ -19,12 +19,31 @@ describe("converting axios response", () => {
     expect(response.statusText).toBe("Ok");
     expect(response.body).toBe("body-content");
   });
+  
+  test("response type: text; with header as a map", () => {
+    const response = fromAxiosResponse({
+      status: 200,
+      statusText: "Ok",
+      data: "body-content",
+      headers: { ["Accept"]: "application-json", ["X-Header"]: "test-value", ["set-cookie"]: ['key=val;', 'key2=val2;'] },
+      config: { responseType: "text" },
+    });
+
+    expect(response.headers).toStrictEqual([
+      { key: "Accept", value: "application-json" },
+      { key: "X-Header", value: "test-value" },
+      { key: "set-cookie", value: "key=val; key2=val2;" },
+    ]);
+    expect(response.status).toBe(200);
+    expect(response.statusText).toBe("Ok");
+    expect(response.body).toBe("body-content");
+  });
 
   test("response type: arraybuffer", () => {
     const response = fromAxiosResponse({
       status: 200,
       statusText: "Ok",
-      data: "body-content",
+      data: Buffer.from("body-content"),
       headers: { ["Accept"]: "application-json", ["X-Header"]: "test-value" },
       config: { responseType: "arraybuffer" },
     });

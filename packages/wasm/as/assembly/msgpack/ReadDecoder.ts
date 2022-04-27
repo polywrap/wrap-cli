@@ -11,9 +11,10 @@ import {
 } from "./Format";
 import { Nullable } from "./Nullable";
 import { Read } from "./Read";
-import { BigInt } from "../BigInt";
-import { Context } from "./Context";
-import { JSON } from "../JSON";
+import { BigInt, BigNumber } from "../math";
+import { Context } from "../debug";
+import { JSON } from "../json";
+import { ExtensionType } from "./ExtensionType";
 
 export class ReadDecoder extends Read {
   private readonly _context: Context;
@@ -210,6 +211,11 @@ export class ReadDecoder extends Read {
     return BigInt.fromString(str);
   }
 
+  readBigNumber(): BigNumber {
+    const str = this.readString();
+    return BigNumber.fromString(str);
+  }
+
   readJSON(): JSON.Value {
     const str = this.readString();
     return JSON.parse(str);
@@ -287,6 +293,72 @@ export class ReadDecoder extends Read {
       this._context.pop();
     }
     return m;
+  }
+
+  readExtGenericMap<K, V>(
+    key_fn: (reader: Read) => K,
+    value_fn: (reader: Read) => V
+  ): Map<K, V> {
+    const leadByte = this._view.peekUint8();
+    let byteLength: u32;
+
+    if (isFixedMap(leadByte)) {
+      return this.readMap(key_fn, value_fn);
+    }
+
+    switch (leadByte) {
+      case Format.FIXMAP:
+      case Format.MAP16:
+        return this.readMap(key_fn, value_fn);
+      case Format.FIXEXT1:
+        byteLength = 1;
+        break;
+      case Format.FIXEXT2:
+        byteLength = 2;
+        break;
+      case Format.FIXEXT4:
+        byteLength = 4;
+        break;
+      case Format.FIXEXT8:
+        byteLength = 8;
+        break;
+      case Format.FIXEXT16:
+        byteLength = 16;
+        break;
+      case Format.EXT8:
+        byteLength = <u32>this._view.getUint8();
+        break;
+      case Format.EXT16:
+        byteLength = <u32>this._view.getUint16();
+        break;
+      case Format.EXT32:
+        byteLength = this._view.getUint32();
+        break;
+      default:
+        throw new TypeError(
+          this._context.printWithContext(
+            "Property must be of type 'ext generic map'. " +
+              this._getErrorMessage(leadByte)
+          )
+        );
+    }
+
+    // Consule the leadByte
+    this._view.getUint8();
+
+    // Get the extension type
+    const extType = this._view.getUint8();
+
+    if (extType !== ExtensionType.GENERIC_MAP) {
+      throw new TypeError(
+        this._context.printWithContext(
+          "Extension must be of type 'ext generic map'. Found " +
+            extType.toString()
+        )
+      );
+    }
+
+    return this.readMap(key_fn, value_fn);
   }
 
   readNullableBool(): Nullable<bool> {
@@ -373,6 +445,13 @@ export class ReadDecoder extends Read {
     return this.readBigInt();
   }
 
+  readNullableBigNumber(): BigNumber | null {
+    if (this.isNextNil()) {
+      return null;
+    }
+    return this.readBigNumber();
+  }
+
   readNullableJSON(): JSON.Value | null {
     if (this.isNextNil()) {
       return null;
@@ -396,6 +475,16 @@ export class ReadDecoder extends Read {
       return null;
     }
     return this.readMap(key_fn, value_fn);
+  }
+
+  readNullableExtGenericMap<K, V>(
+    key_fn: (decoder: Read) => K,
+    value_fn: (decoder: Read) => V
+  ): Map<K, V> | null {
+    if (this.isNextNil()) {
+      return null;
+    }
+    return this.readExtGenericMap(key_fn, value_fn);
   }
 
   isNextNil(): bool {
@@ -435,6 +524,23 @@ export class ReadDecoder extends Read {
         return i64(this._view.getInt32());
       case Format.INT64:
         return this._view.getInt64();
+      case Format.UINT8:
+        return i64(this._view.getUint8());
+      case Format.UINT16:
+        return i64(this._view.getUint16());
+      case Format.UINT32:
+        return i64(this._view.getUint32());
+      case Format.UINT64: {
+        const value = this._view.getUint64();
+        if (value <= u64(i64.MAX_VALUE)) {
+          return i64(value);
+        }
+        throw new RangeError(
+          this._context.printWithContext(
+            "integer overflow: value = " + value.toString() + "; bits = 64"
+          )
+        );
+      }
       default:
         throw new TypeError(
           this._context.printWithContext(
@@ -452,7 +558,8 @@ export class ReadDecoder extends Read {
     } else if (isNegativeFixedInt(prefix)) {
       throw new RangeError(
         this._context.printWithContext(
-          "unsigned integer cannot be negative: prefix = " + prefix.toString()
+          "unsigned integer cannot be negative. " +
+            this._getErrorMessage(prefix)
         )
       );
     }
@@ -466,6 +573,54 @@ export class ReadDecoder extends Read {
         return u64(this._view.getUint32());
       case Format.UINT64:
         return this._view.getUint64();
+      case Format.INT8: {
+        const int8 = this._view.getInt8();
+        if (int8 >= 0) {
+          return u64(int8);
+        }
+        throw new RangeError(
+          this._context.printWithContext(
+            "unsigned integer cannot be negative. " +
+              this._getErrorMessage(prefix)
+          )
+        );
+      }
+      case Format.INT16: {
+        const int16 = this._view.getInt16();
+        if (int16 >= 0) {
+          return u64(int16);
+        }
+        throw new RangeError(
+          this._context.printWithContext(
+            "unsigned integer cannot be negative. " +
+              this._getErrorMessage(prefix)
+          )
+        );
+      }
+      case Format.INT32: {
+        const int32 = this._view.getInt32();
+        if (int32 >= 0) {
+          return u64(int32);
+        }
+        throw new RangeError(
+          this._context.printWithContext(
+            "unsigned integer cannot be negative. " +
+              this._getErrorMessage(prefix)
+          )
+        );
+      }
+      case Format.INT64: {
+        const int64 = this._view.getInt64();
+        if (int64 >= 0) {
+          return u64(int64);
+        }
+        throw new RangeError(
+          this._context.printWithContext(
+            "unsigned integer cannot be negative. " +
+              this._getErrorMessage(prefix)
+          )
+        );
+      }
       default:
         throw new TypeError(
           this._context.printWithContext(

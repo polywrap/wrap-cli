@@ -1,4 +1,4 @@
-const scalarTypes = {
+export const scalarTypes = {
   UInt: "UInt",
   UInt8: "UInt8",
   UInt16: "UInt16",
@@ -11,6 +11,7 @@ const scalarTypes = {
   Boolean: "Boolean",
   Bytes: "Bytes",
   BigInt: "BigInt",
+  BigNumber: "BigNumber",
   JSON: "JSON",
 };
 

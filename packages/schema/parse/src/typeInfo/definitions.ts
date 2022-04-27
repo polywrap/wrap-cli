@@ -1,6 +1,7 @@
 import { ScalarType, isScalarType } from "./scalar";
 import { OperationType, isOperationType } from "./operation";
-import { QueryType, isQueryType } from "./query";
+import { ModuleType, isModuleType } from "./module";
+import { isMapKeyType, MapKeyType } from "./map";
 
 export enum DefinitionKind {
   Generic = 0,
@@ -11,28 +12,36 @@ export enum DefinitionKind {
   Array = (1 << 4) | DefinitionKind.Any,
   Property = (1 << 5) | DefinitionKind.Any,
   Method = 1 << 6,
-  Query = 1 << 7,
-  ImportedQuery = 1 << 8,
-  ImportedEnum = 1 << 9,
+  Module = 1 << 7,
+  ImportedModule = 1 << 8,
+  ImportedEnum = (1 << 9) | DefinitionKind.Enum,
   ImportedObject = (1 << 10) | DefinitionKind.Object,
   InterfaceImplemented = 1 << 11,
   UnresolvedObjectOrEnum = 1 << 12,
   ObjectRef = 1 << 13,
   EnumRef = 1 << 14,
+  Interface = 1 << 15,
+  Env = 1 << 16,
+  MapKey = 1 << 17,
+  Map = (1 << 18) | DefinitionKind.Any,
 }
 
-export function isKind(type: GenericDefinition, kind: DefinitionKind): boolean {
+export function isKind(type: WithKind, kind: DefinitionKind): boolean {
   return (type.kind & kind) === kind;
 }
 
-export type WithComment = {
+export interface WithComment {
   comment?: string;
-};
-export interface GenericDefinition {
+}
+
+export interface WithKind {
+  kind: DefinitionKind;
+}
+
+export interface GenericDefinition extends WithKind {
   type: string;
   name: string | null;
   required: boolean | null;
-  kind: DefinitionKind;
 }
 export function createGenericDefinition(args: {
   type: string;
@@ -83,6 +92,7 @@ export function createObjectRef(args: {
 export interface AnyDefinition extends GenericDefinition {
   array: ArrayDefinition | null;
   scalar: ScalarDefinition | null;
+  map: MapDefinition | null;
   object: ObjectRef | null;
   enum: EnumRef | null;
   unresolvedObjectOrEnum: UnresolvedObjectOrEnumRef | null;
@@ -92,6 +102,7 @@ export function createAnyDefinition(args: {
   name?: string | null;
   required?: boolean;
   array?: ArrayDefinition;
+  map?: MapDefinition;
   scalar?: ScalarDefinition;
   object?: ObjectRef;
   enum?: EnumRef;
@@ -99,11 +110,32 @@ export function createAnyDefinition(args: {
   return {
     ...createGenericDefinition(args),
     array: args.array ? args.array : null,
+    map: args.map ? args.map : null,
     scalar: args.scalar ? args.scalar : null,
     object: args.object ? args.object : null,
     enum: args.enum ? args.enum : null,
     unresolvedObjectOrEnum: null,
     kind: DefinitionKind.Any,
+  };
+}
+
+export interface MapKeyDefinition extends GenericDefinition {
+  type: MapKeyType;
+}
+export function createMapKeyDefinition(args: {
+  type: string;
+  name?: string | null;
+  required?: boolean;
+}): MapKeyDefinition {
+  if (!isMapKeyType(args.type)) {
+    throw Error(
+      `createMapKeyDefinition: Unrecognized Map key type provided "${args.type}"`
+    );
+  }
+  return {
+    ...createGenericDefinition(args),
+    type: args.type,
+    kind: DefinitionKind.Scalar,
   };
 }
 
@@ -171,6 +203,47 @@ export function createUnresolvedObjectOrEnumRef(args: {
   };
 }
 
+export interface MapDefinition extends AnyDefinition, WithComment {
+  key: MapKeyDefinition | null;
+  value: GenericDefinition | null;
+}
+export function createMapDefinition(args: {
+  type: string;
+  name?: string | null;
+  required?: boolean;
+  key?: MapKeyDefinition;
+  value?: GenericDefinition | null;
+}): MapDefinition {
+  return {
+    ...createAnyDefinition({
+      ...args,
+      array:
+        args.value && isKind(args.value, DefinitionKind.Array)
+          ? (args.value as ArrayDefinition)
+          : undefined,
+      map:
+        args.value && isKind(args.value, DefinitionKind.Map)
+          ? (args.value as MapDefinition)
+          : undefined,
+      scalar:
+        args.value && isKind(args.value, DefinitionKind.Scalar)
+          ? (args.value as ScalarDefinition)
+          : undefined,
+      object:
+        args.value && isKind(args.value, DefinitionKind.ObjectRef)
+          ? (args.value as ObjectRef)
+          : undefined,
+      enum:
+        args.value && isKind(args.value, DefinitionKind.EnumRef)
+          ? (args.value as EnumRef)
+          : undefined,
+    }),
+    key: args.key ? args.key : null,
+    value: args.value ? args.value : null,
+    kind: DefinitionKind.Map,
+  };
+}
+
 export interface ArrayDefinition extends AnyDefinition {
   item: GenericDefinition | null;
 }
@@ -186,6 +259,10 @@ export function createArrayDefinition(args: {
       array:
         args.item && isKind(args.item, DefinitionKind.Array)
           ? (args.item as ArrayDefinition)
+          : undefined,
+      map:
+        args.item && isKind(args.item, DefinitionKind.Map)
+          ? (args.item as MapDefinition)
           : undefined,
       scalar:
         args.item && isKind(args.item, DefinitionKind.Scalar)
@@ -211,6 +288,7 @@ export function createPropertyDefinition(args: {
   name?: string | null;
   required?: boolean;
   array?: ArrayDefinition;
+  map?: MapDefinition;
   scalar?: ScalarDefinition;
   object?: ObjectRef;
   enum?: EnumRef;
@@ -229,6 +307,7 @@ export function createInterfaceImplementedDefinition(args: {
   name?: string | null;
   required?: boolean;
   array?: ArrayDefinition;
+  map?: MapDefinition;
   scalar?: ScalarDefinition;
   object?: ObjectDefinition;
   enum?: EnumDefinition;
@@ -249,6 +328,20 @@ export function createArrayPropertyDefinition(args: {
   return createPropertyDefinition({
     ...args,
     array: createArrayDefinition(args),
+  });
+}
+
+export function createMapPropertyDefinition(args: {
+  type: string;
+  name?: string | null;
+  required?: boolean;
+  key: MapKeyDefinition;
+  value?: GenericDefinition;
+  comment?: string;
+}): PropertyDefinition {
+  return createPropertyDefinition({
+    ...args,
+    map: createMapDefinition(args),
   });
 }
 
@@ -319,22 +412,22 @@ export function createMethodDefinition(args: {
   };
 }
 
-export interface QueryDefinition extends GenericDefinition, WithComment {
-  type: QueryType;
+export interface ModuleDefinition extends GenericDefinition, WithComment {
+  type: ModuleType;
   methods: MethodDefinition[];
   imports: { type: string }[];
   interfaces: InterfaceImplementedDefinition[];
 }
-export function createQueryDefinition(args: {
+export function createModuleDefinition(args: {
   type: string;
   imports?: { type: string }[];
   interfaces?: InterfaceImplementedDefinition[];
   required?: boolean;
   comment?: string;
-}): QueryDefinition {
-  if (!isQueryType(args.type)) {
+}): ModuleDefinition {
+  if (!isModuleType(args.type)) {
     throw Error(
-      `createQueryDefinition: Unrecognized query type provided "${args.type}"`
+      `createModuleDefinition: Unrecognized module type provided "${args.type}"`
     );
   }
 
@@ -345,7 +438,7 @@ export function createQueryDefinition(args: {
     imports: args.imports ? args.imports : [],
     interfaces: args.interfaces ? args.interfaces : [],
     comment: args.comment,
-    kind: DefinitionKind.Query,
+    kind: DefinitionKind.Module,
   };
 }
 
@@ -379,24 +472,70 @@ export function createImportedEnumDefinition(args: {
   };
 }
 
-export interface ImportedQueryDefinition
+export const capabilityTypes = ["getImplementations"] as const;
+export type CapabilityType = typeof capabilityTypes[number];
+export type InvokableModules = "query" | "mutation";
+export interface Capability {
+  enabled: boolean;
+  modules: InvokableModules[];
+}
+export function createCapability(args: {
+  type: CapabilityType;
+  enabled: boolean;
+  modules: InvokableModules[];
+}): CapabilityDefinition {
+  return {
+    [args.type]: {
+      enabled: args.enabled,
+      modules: args.modules,
+    },
+  };
+}
+
+export type CapabilityDefinition = Record<CapabilityType, Capability>;
+
+export interface InterfaceDefinition
+  extends GenericDefinition,
+    ImportedDefinition {
+  capabilities: CapabilityDefinition;
+}
+export function createInterfaceDefinition(args: {
+  type: string;
+  required?: boolean;
+  namespace: string;
+  uri: string;
+  capabilities: CapabilityDefinition;
+}): InterfaceDefinition {
+  return {
+    ...createGenericDefinition(args),
+    namespace: args.namespace,
+    uri: args.uri,
+    nativeType: "Interface",
+    capabilities: args.capabilities,
+    kind: DefinitionKind.Interface,
+  };
+}
+
+export interface ImportedModuleDefinition
   extends GenericDefinition,
     ImportedDefinition,
     WithComment {
   methods: MethodDefinition[];
+  isInterface?: boolean;
 }
-export function createImportedQueryDefinition(args: {
+export function createImportedModuleDefinition(args: {
   type: string;
   required?: boolean;
   uri: string;
   namespace: string;
   nativeType: string;
+  isInterface?: boolean;
   interfaces?: InterfaceImplementedDefinition[];
   comment?: string;
-}): ImportedQueryDefinition {
-  if (!isQueryType(args.nativeType)) {
+}): ImportedModuleDefinition {
+  if (!isModuleType(args.nativeType)) {
     throw Error(
-      `createImportedQueryDefinition: Unrecognized query type provided "${args.nativeType}"`
+      `createImportedModuleDefinition: Unrecognized module type provided "${args.nativeType}"`
     );
   }
 
@@ -407,7 +546,8 @@ export function createImportedQueryDefinition(args: {
     namespace: args.namespace,
     nativeType: args.nativeType,
     comment: args.comment,
-    kind: DefinitionKind.ImportedQuery,
+    isInterface: args.isInterface,
+    kind: DefinitionKind.ImportedModule,
   };
 }
 
@@ -432,5 +572,20 @@ export function createImportedObjectDefinition(args: {
     nativeType: args.nativeType,
     comment: args.comment,
     kind: DefinitionKind.ImportedObject,
+  };
+}
+
+export interface EnvDefinition extends WithKind {
+  sanitized?: ObjectDefinition;
+  client?: ObjectDefinition;
+}
+export function createEnvDefinition(args: {
+  sanitized?: ObjectDefinition;
+  client?: ObjectDefinition;
+}): EnvDefinition {
+  return {
+    kind: DefinitionKind.Env,
+    sanitized: args.sanitized,
+    client: args.client,
   };
 }

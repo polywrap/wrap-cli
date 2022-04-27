@@ -1,25 +1,65 @@
 import {
   createArrayPropertyDefinition,
   createMethodDefinition,
-  createQueryDefinition,
+  createModuleDefinition,
   createScalarDefinition,
   createScalarPropertyDefinition,
   createArrayDefinition,
   createObjectPropertyDefinition,
   createObjectDefinition,
-  TypeInfo,
   createEnumPropertyDefinition,
-  createImportedQueryDefinition,
+  createImportedModuleDefinition,
   createImportedObjectDefinition,
   createImportedEnumDefinition,
   createInterfaceImplementedDefinition,
-  createObjectRef
+  createObjectRef,
+  createInterfaceDefinition,
+  createCapability,
+  createEnvDefinition,
+  createTypeInfo,
+  AnyDefinition,
+  TypeInfo,
+  createMapPropertyDefinition,
+  createMapKeyDefinition,
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
+  ...createTypeInfo(),
+  interfaceTypes: [
+    createInterfaceDefinition({
+      type: "Namespace",
+      uri: "test.eth",
+      namespace: "Namespace",
+      capabilities: createCapability({
+        type: "getImplementations",
+        enabled: true,
+        modules: ["query"],
+      }),
+    })
+  ],
+  envTypes: {
+    query: createEnvDefinition({
+      sanitized: {
+        ...createObjectDefinition({ type: "QueryEnv" }),
+        properties: [
+          {
+            ...createScalarPropertyDefinition({ name: "bar", type: "Bytes", required: false }),
+            first: true,
+            last: null,
+          } as AnyDefinition,
+          {
+            ...createScalarPropertyDefinition({ name: "foo", type: "String", required: true }),
+            first: null,
+            last: true,
+          } as AnyDefinition,
+        ],
+      }
+    }),
+    mutation: createEnvDefinition({}),
+  },
   objectTypes: [
     {
-      ...createObjectDefinition({ type: "CustomQueryType", comment: "CustomQueryType comment" }),
+      ...createObjectDefinition({ type: "CustomModuleType", comment: "CustomModuleType comment" }),
       properties: [
         createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
         createScalarPropertyDefinition({ name: "optStr", type: "String", required: false }),
@@ -73,6 +113,17 @@ export const typeInfo: TypeInfo = {
           type: "CommonType",
           required: true
         }),
+        createMapPropertyDefinition({
+          name: "optMap",
+          type: "Map<String, Int>",
+          required: false,
+          key: createMapKeyDefinition({
+            name: "optMap",
+            type: "String",
+            required: true
+          }),
+          value: createScalarDefinition({ name: "optMap", type: "Int" })
+        }),
         createObjectPropertyDefinition({
           name: "customType",
           type: "Namespace_CustomType",
@@ -82,8 +133,18 @@ export const typeInfo: TypeInfo = {
       ],
     },
     {
-      ...createObjectDefinition({ type: "AnotherQueryType" }),
+      ...createObjectDefinition({ type: "AnotherModuleType" }),
       properties: [createScalarPropertyDefinition({ name: "prop", type: "String" })],
+    },
+    {
+      ...createObjectDefinition({ type: "TypeFromInterface" }),
+      interfaces: [
+        createInterfaceImplementedDefinition({ type: "AnotherModuleType" }),
+      ],
+      properties: [
+        createScalarPropertyDefinition({ name: "prop2", type: "UInt32", required: true }),
+        createScalarPropertyDefinition({ name: "prop", type: "String" }),
+      ]
     },
     {
       ...createObjectDefinition({ type: "CommonType", comment: "CommonType comment" }),
@@ -105,7 +166,8 @@ export const typeInfo: TypeInfo = {
               required: false
             })
           })
-        })
+        }),
+        createObjectPropertyDefinition({ name: "anotherLocal", type: "AnotherLocal", required: true }),
       ],
     },
     {
@@ -125,11 +187,19 @@ export const typeInfo: TypeInfo = {
       properties: [
         createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),
       ],
-    }
-  ],
-  queryTypes: [
+    },
     {
-      ...createQueryDefinition({ type: "Query", comment: "Query comment" }),
+      ...createObjectDefinition({
+        type: "AnotherLocal",
+      }),
+      properties: [
+        createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),
+      ],
+    },
+  ],
+  moduleTypes: [
+    {
+      ...createModuleDefinition({ type: "Query", comment: "Query comment" }),
       imports: [
         { type: "Namespace_Query" },
         { type: "Namespace_CustomType" },
@@ -191,6 +261,22 @@ export const typeInfo: TypeInfo = {
                   required: false,
                   type: "UInt"
                 })
+              })
+            }),
+            createMapPropertyDefinition({
+              name: "map",
+              required: true,
+              type: "Map<String, Int>",
+              comment: "Map<String!, Int!> comment",
+              key: createMapKeyDefinition({
+                name: "map",
+                type: "String",
+                required: true
+              }),
+              value: createScalarDefinition({
+                name: "map",
+                type: "Int",
+                required: true
               })
             })
           ]
@@ -458,7 +544,7 @@ export const typeInfo: TypeInfo = {
     },
     {
       ...createImportedObjectDefinition({
-        uri: "interface.eth",
+        uri: "test-interface.eth",
         namespace: "Interface",
         nativeType: "QueryInterfaceArgument",
         type: "Interface_QueryInterfaceArgument",
@@ -474,7 +560,7 @@ export const typeInfo: TypeInfo = {
     },
     {
       ...createImportedObjectDefinition({
-        uri: "interface.eth",
+        uri: "test-interface.eth",
         namespace: "Interface",
         nativeType: "NestedQueryInterfaceArgument",
         type: "Interface_NestedQueryInterfaceArgument",
@@ -486,7 +572,7 @@ export const typeInfo: TypeInfo = {
     },
     {
       ...createImportedObjectDefinition({
-        uri: "interface.eth",
+        uri: "test-interface.eth",
         namespace: "Interface",
         nativeType: "InterfaceObject2",
         type: "Interface_InterfaceObject2",
@@ -502,7 +588,7 @@ export const typeInfo: TypeInfo = {
     },
     {
       ...createImportedObjectDefinition({
-        uri: "interface.eth",
+        uri: "test-interface.eth",
         namespace: "Interface",
         nativeType: "Object",
         type: "Interface_Object",
@@ -514,7 +600,7 @@ export const typeInfo: TypeInfo = {
     },
     {
       ...createImportedObjectDefinition({
-        uri: "interface.eth",
+        uri: "test-interface.eth",
         namespace: "Interface",
         nativeType: "NestedInterfaceObject",
         type: "Interface_NestedInterfaceObject",
@@ -525,14 +611,15 @@ export const typeInfo: TypeInfo = {
       ]
     },
   ],
-  importedQueryTypes: [
+  importedModuleTypes: [
     {
-      ...createImportedQueryDefinition({
+      ...createImportedModuleDefinition({
         uri: "test.eth",
         namespace: "Namespace",
         nativeType: "Query",
+        isInterface: true,
         type: "Namespace_Query",
-        comment: "Query comment"
+        comment: "Query comment",
       }),
       methods: [
         {
@@ -616,12 +703,13 @@ export const typeInfo: TypeInfo = {
       ],
     },
     {
-      ...createImportedQueryDefinition({
-        uri: "interface.eth",
+      ...createImportedModuleDefinition({
+        uri: "test-interface.eth",
         namespace: "Interface",
         nativeType: "Query",
+        isInterface: false,
         type: "Interface_Query",
-        comment: "Query comment"
+        comment: "Query comment",
       }),
       methods: [
         {

@@ -1,10 +1,8 @@
-import {
-  ClientConfig,
-  createWeb3ApiClient,
-} from "../";
+import { createWeb3ApiClient, Web3ApiClientConfig } from "../";
 import {
   buildAndDeployApi,
   initTestEnvironment,
+  runCLI,
   stopTestEnvironment,
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
@@ -21,7 +19,10 @@ import {
   deserializeBuildManifest,
   deserializeMetaManifest,
   coreInterfaceUris,
-} from '@web3api/core-js';
+  PluginModule,
+  PluginModules,
+  msgpackDecode,
+} from "@web3api/core-js";
 import { readFileSync } from "fs";
 
 jest.setTimeout(200000);
@@ -30,68 +31,350 @@ describe("Web3ApiClient", () => {
   let ipfsProvider: string;
   let ethProvider: string;
   let ensAddress: string;
+  let ensRegistrarAddress: string;
+  let ensResolverAddress: string;
 
   beforeAll(async () => {
-    const { ipfs, ethereum, ensAddress: ens } = await initTestEnvironment();
+    const { ipfs, ethereum, ensAddress: ens, registrarAddress, resolverAddress } = await initTestEnvironment();
     ipfsProvider = ipfs;
     ethProvider = ethereum;
     ensAddress = ens;
+    ensRegistrarAddress = registrarAddress;
+    ensResolverAddress = resolverAddress;
   });
 
   afterAll(async () => {
     await stopTestEnvironment();
   });
 
-  const getClient = async (config?: ClientConfig) => {
-    return createWeb3ApiClient({
-      ethereum: {
-        networks: {
-          testnet: {
-            provider: ethProvider,
+  const getClient = async (config?: Partial<Web3ApiClientConfig>) => {
+    const client = await createWeb3ApiClient(
+      {
+        ethereum: {
+          networks: {
+            testnet: {
+              provider: ethProvider,
+            },
+          },
+        },
+        ipfs: { provider: ipfsProvider },
+        ens: {
+          query: {
+            addresses: {
+              testnet: ensAddress,
+            },
           },
         },
       },
-      ipfs: { provider: ipfsProvider },
-      ens: {
-        addresses: {
-          testnet: ensAddress,
-        },
+      config
+    );
+
+    return client;
+  };
+
+  const mockPlugin = () => {
+    class Query extends PluginModule {
+      getData(_: unknown) { return 100; }
+    }
+
+    class Mutation extends PluginModule {
+      deployContract(_: unknown): string { return "0x100" }
+    }
+
+    class MockPlugin implements Plugin {
+      getModules(): PluginModules {
+        return {
+          query: new Query({}),
+          mutation: new Mutation({}),
+        };
+      }
+    }
+
+    return {
+      factory: () => new MockPlugin(),
+      manifest: {
+        schema: ``,
+        implements: [],
       },
-    }, config);
-  }
+    };
+  };
+
+  const mockMapPlugin = () => {
+    interface Config extends Record<string, unknown> {
+      map: Map<string, number>;
+    }
+
+    class Query extends PluginModule<Config> {
+      async getMap(_: unknown) { return this.config.map }
+    }
+
+    class Mutation extends PluginModule<Config> {
+      updateMap(input: {
+        map: Map<string, number>;
+      }): Map<string, number> {
+        for (const key of input.map.keys()) {
+          this.config.map.set(
+            key,
+            (this.config.map.get(key) || 0) + (input.map.get(key) || 0)
+          );
+        }
+        return this.config.map;
+      }
+    }
+
+    class MockMapPlugin implements Plugin {
+
+      private map = new Map().set("a", 1).set("b", 2)
+
+      getModules(): PluginModules {
+        return {
+          query: new Query({ map: this.map }),
+          mutation: new Mutation({ map: this.map }),
+        };
+      }
+    }
+
+    return {
+      factory: () => new MockMapPlugin(),
+      manifest: {
+        schema: ``,
+        implements: [],
+      },
+    };
+  };
 
   it("default client config", () => {
     const client = new Web3ApiClient();
 
-    expect(client.redirects()).toStrictEqual([]);
-    expect(
-        client.plugins().map(x => x.uri)
-      ).toStrictEqual([
-        new Uri("w3://ens/ipfs.web3api.eth"),
-        new Uri("w3://ens/ens.web3api.eth"),
-        new Uri("w3://ens/ethereum.web3api.eth"),
-        new Uri("w3://ens/http.web3api.eth"),
-        new Uri("w3://ens/js-logger.web3api.eth"),
-        new Uri("w3://ens/uts46.web3api.eth"),
-        new Uri("w3://ens/sha3.web3api.eth"),
-      ]);
-    expect(
-        client.interfaces()
-      ).toStrictEqual([
+    expect(client.getRedirects()).toStrictEqual([]);
+    expect(client.getPlugins().map((x) => x.uri)).toStrictEqual([
+      new Uri("w3://ens/ipfs.web3api.eth"),
+      new Uri("w3://ens/ens.web3api.eth"),
+      new Uri("w3://ens/ethereum.web3api.eth"),
+      new Uri("w3://ens/http.web3api.eth"),
+      new Uri("w3://ens/js-logger.web3api.eth"),
+      new Uri("w3://ens/uts46.web3api.eth"),
+      new Uri("w3://ens/sha3.web3api.eth"),
+      new Uri("w3://ens/graph-node.web3api.eth"),
+      new Uri("w3://ens/fs.web3api.eth"),
+    ]);
+    expect(client.getInterfaces()).toStrictEqual([
       {
         interface: coreInterfaceUris.uriResolver,
         implementations: [
           new Uri("w3://ens/ipfs.web3api.eth"),
-          new Uri("w3://ens/ens.web3api.eth")
-        ]
+          new Uri("w3://ens/ens.web3api.eth"),
+          new Uri("w3://ens/fs.web3api.eth"),
+        ],
       },
       {
         interface: coreInterfaceUris.logger,
-        implementations: [
-          new Uri("w3://ens/js-logger.web3api.eth")
-        ],
+        implementations: [new Uri("w3://ens/js-logger.web3api.eth")],
       },
     ]);
+  });
+
+  it("invoke with decode false/true works as expected", async () => {
+    const client = await getClient();
+    
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/simple-storage`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+    
+    // The decode option is defaulted to true
+    {
+      const result = await client.invoke<string>({
+        uri: ensUri,
+        module: "mutation",
+        method: "deployContract",
+        input: {
+          connection: {
+            networkNameOrChainId: "testnet",
+          },
+        },
+      });
+
+      expect(result.error).toBeFalsy();
+      expect(result.data).toBeTruthy();
+      expect(typeof result.data).toBe("string");
+      expect(result.data).toContain("0x");
+    }
+
+    // When decode is set to false, an ArrayBuffer is returned
+    {
+      const result = await client.invoke({
+        uri: ensUri,
+        module: "mutation",
+        method: "deployContract",
+        input: {
+          connection: {
+            networkNameOrChainId: "testnet",
+          },
+        },
+        noDecode: true,
+      });
+
+      expect(result.error).toBeFalsy();
+      expect(result.data).toBeTruthy();
+      expect(result.data instanceof ArrayBuffer).toBeTruthy();
+      expect(msgpackDecode(result.data as ArrayBuffer)).toContain("0x");
+    }
+  });
+
+  it("client noDefaults flag works as expected", async () => {
+    let client = new Web3ApiClient();
+    expect(client.getPlugins().length !== 0).toBeTruthy();
+
+    client = new Web3ApiClient({}, {});
+    expect(client.getPlugins().length !== 0).toBeTruthy();
+
+    client = new Web3ApiClient({}, { noDefaults: false });
+    expect(client.getPlugins().length !== 0).toBeTruthy();
+
+    client = new Web3ApiClient({}, { noDefaults: true });
+    expect(client.getPlugins().length === 0).toBeTruthy();
+  });
+
+  it("invoke simple-storage with custom redirects", async () => {
+    const client = await getClient({
+      plugins: [
+        {
+          uri: "w3://ens/mock.web3api.eth",
+          plugin: mockPlugin(),
+        },
+      ],
+    });
+    
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/simple-storage`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+
+    const redirects = [
+      {
+        from: ensUri,
+        to: "w3://ens/mock.web3api.eth",
+      },
+    ];
+
+    const result = await client.invoke({
+      uri: ensUri,
+      module: "mutation",
+      method: "deployContract",
+      input: {},
+      config: {
+        redirects,
+      },
+    });
+
+    expect(result.data).toBeTruthy();
+    expect(result.data).toBe("0x100");
+  });
+
+  it("simple-storage with query time redirects", async () => {
+    const client = await getClient({
+      plugins: [
+        {
+          uri: "w3://ens/mock.web3api.eth",
+          plugin: mockPlugin(),
+        },
+      ],
+    });
+    
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/simple-storage`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress
+    });
+
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+
+    const redirects = [
+      {
+        from: ensUri,
+        to: "w3://ens/mock.web3api.eth",
+      },
+    ];
+
+    const deploy = await client.query<{
+      deployContract: string;
+    }>({
+      uri: ensUri,
+      query: `
+        mutation {
+          deployContract(
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
+          )
+        }
+      `,
+      config: {
+        redirects,
+      },
+    });
+
+    expect(deploy.errors).toBeFalsy();
+    expect(deploy.data).toBeTruthy();
+    expect(deploy.data?.deployContract).toBe("0x100");
+
+    const get = await client.query<{
+      getData: number;
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          getData(
+            address: "0x10"
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
+          )
+        }
+      `,
+      config: {
+        redirects,
+      },
+    });
+
+    expect(get.errors).toBeFalsy();
+    expect(get.data).toBeTruthy();
+    expect(get.data?.getData).toBe(100);
+
+    const getFail = await client.query<{
+      getData: number;
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          getData(
+            address: "0x10"
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
+          )
+        }
+      `,
+    });
+
+    expect(getFail.errors).toBeTruthy();
+    expect(getFail.data?.getData).toBeFalsy();
   });
 
   it("redirect registration", () => {
@@ -107,7 +390,7 @@ describe("Web3ApiClient", () => {
       ],
     });
 
-    const redirects = client.redirects();
+    const redirects = client.getRedirects();
 
     expect(redirects).toEqual([
       {
@@ -127,6 +410,8 @@ describe("Web3ApiClient", () => {
       "w3://ens/js-logger.web3api.eth",
       "w3://ens/uts46.web3api.eth",
       "w3://ens/sha3.web3api.eth",
+      "w3://ens/graph-node.web3api.eth",
+      "w3://ens/fs.web3api.eth",
     ];
 
     const client = new Web3ApiClient({
@@ -144,7 +429,7 @@ describe("Web3ApiClient", () => {
       ],
     });
 
-    const pluginUris = client.plugins().map((x) => x.uri.uri);
+    const pluginUris = client.getPlugins().map((x) => x.uri.uri);
 
     expect(pluginUris).toEqual([implementationUri].concat(defaultPlugins));
   });
@@ -163,7 +448,7 @@ describe("Web3ApiClient", () => {
       ],
     });
 
-    const interfaces = client.interfaces();
+    const interfaces = client.getInterfaces();
 
     const defaultClientConfig = getDefaultClientConfig();
 
@@ -181,10 +466,7 @@ describe("Web3ApiClient", () => {
 
     const implementations = client.getImplementations(interfaceUri);
 
-    expect(implementations).toEqual([
-      implementation1Uri,
-      implementation2Uri
-    ]);
+    expect(implementations).toEqual([implementation1Uri, implementation2Uri]);
   });
 
   it("get all implementations of interface", async () => {
@@ -227,23 +509,15 @@ describe("Web3ApiClient", () => {
       interfaces: [
         {
           interface: interface1Uri,
-          implementations: [
-            implementation1Uri,
-            implementation2Uri
-          ],
+          implementations: [implementation1Uri, implementation2Uri],
         },
         {
           interface: interface2Uri,
-          implementations: [
-            implementation3Uri
-          ],
+          implementations: [implementation3Uri],
         },
         {
           interface: interface3Uri,
-          implementations: [
-            implementation3Uri,
-            implementation4Uri
-          ],
+          implementations: [implementation3Uri, implementation4Uri],
         },
       ],
     });
@@ -307,21 +581,15 @@ describe("Web3ApiClient", () => {
         interfaces: [
           {
             interface: interface1Uri,
-            implementations: [
-              implementationUri
-            ],
+            implementations: [implementationUri],
           },
           {
             interface: interface2Uri,
-            implementations: [
-              implementationUri
-            ],
+            implementations: [implementationUri],
           },
           {
             interface: interface3Uri,
-            implementations: [
-              implementationUri
-            ],
+            implementations: [implementationUri],
           },
         ],
       });
@@ -355,9 +623,7 @@ describe("Web3ApiClient", () => {
         interfaces: [
           {
             interface: interfaceUri,
-            implementations: [
-              implementationUri
-            ],
+            implementations: [implementationUri],
           },
         ],
       });
@@ -390,21 +656,17 @@ describe("Web3ApiClient", () => {
       interfaces: [
         {
           interface: interfaceUri,
-          implementations: [
-            implementation2Uri
-          ],
+          implementations: [implementation2Uri],
         },
       ],
     });
 
     const getImplementationsResult = client.getImplementations(
-        new Uri(interfaceUri),
-        { applyRedirects: true }
-      );
+      new Uri(interfaceUri),
+      { applyRedirects: true }
+    );
 
-    expect(getImplementationsResult).toEqual([
-      new Uri(implementation2Uri)
-    ]);
+    expect(getImplementationsResult).toEqual([new Uri(implementation2Uri)]);
   });
 
   it("get implementations - return implementations for plugins which don't have interface stated in manifest", () => {
@@ -422,17 +684,14 @@ describe("Web3ApiClient", () => {
             manifest: {
               schema: "",
               implements: [],
-            }
-          }
-        }
+            },
+          },
+        },
       ],
       interfaces: [
         {
           interface: interfaceUri,
-          implementations: [
-            implementation1Uri,
-            implementation2Uri
-          ],
+          implementations: [implementation1Uri, implementation2Uri],
         },
       ],
     });
@@ -449,13 +708,16 @@ describe("Web3ApiClient", () => {
   });
 
   it("asyncify", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/asyncify`,
-      ipfsProvider,
-      ensAddress
-    );
-
     const client = await getClient();
+    
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/asyncify`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
 
     const ensUri = `ens/testnet/${api.ensDomain}`;
     const ipfsUri = `ipfs/${api.ipfsCid}`;
@@ -689,13 +951,16 @@ describe("Web3ApiClient", () => {
   });
 
   it("simple-storage", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/simple-storage`,
-      ipfsProvider,
-      ensAddress
-    );
-
     const client = await getClient();
+    
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/simple-storage`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
 
     const ensUri = `ens/testnet/${api.ensDomain}`;
     const ipfsUri = `ipfs/${api.ipfsCid}`;
@@ -714,7 +979,6 @@ describe("Web3ApiClient", () => {
         }
       `,
     });
-
     expect(deploy.errors).toBeFalsy();
     expect(deploy.data).toBeTruthy();
     expect(deploy.data?.deployContract.indexOf("0x")).toBeGreaterThan(-1);
@@ -819,17 +1083,64 @@ describe("Web3ApiClient", () => {
     expect(getWithUriType.data?.getData).toBe(55);
     expect(getWithUriType.data?.secondGetData).toBe(55);
     expect(getWithUriType.data?.thirdGetData).toBe(55);
+
+    const tryGet = await client.query<{
+      tryGetData: string;
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          tryGetData(
+            address: "${address}"
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
+          )
+        }
+      `,
+    });
+
+    expect(tryGet.errors).toBeFalsy();
+    expect(tryGet.data).toBeTruthy();
+    expect(tryGet.data?.tryGetData).toContain(
+      "VM Exception while processing transaction"
+    );
+
+    const throwGet = await client.query<{
+      throwGetData: string;
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          throwGetData(
+            address: "${address}"
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
+          )
+        }
+      `,
+    });
+
+    expect(throwGet.data?.throwGetData).toBeFalsy();
+    expect(throwGet.errors).toBeTruthy();
+    expect((throwGet.errors as Error[])[0].message).toContain(
+      "VM Exception while processing transaction"
+    );
   });
 
   it("object-types", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/object-types`,
-      ipfsProvider,
-      ensAddress
-    );
-    const ensUri = `ens/testnet/${api.ensDomain}`;
-
     const client = await getClient();
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/object-types`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const method1a = await client.query<{
       method1: {
@@ -1054,14 +1365,17 @@ describe("Web3ApiClient", () => {
   });
 
   it("bigint-type", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/bigint-type`,
-      ipfsProvider,
-      ensAddress
-    );
-    const ensUri = `ens/testnet/${api.ensDomain}`;
-
     const client = await getClient();
+    
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/bigint-type`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
 
     {
       const response = await client.query<{
@@ -1122,13 +1436,17 @@ describe("Web3ApiClient", () => {
   it("JSON-type", async () => {
     type Json = string;
 
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/json-type`,
-      ipfsProvider,
-      ensAddress
-    );
-    const ensUri = `ens/testnet/${api.ensDomain}`;
     const client = await getClient();
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/json-type`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const value = { foo: "bar", bar: "baz" };
     const parseResponse = await client.query<{
@@ -1147,8 +1465,8 @@ describe("Web3ApiClient", () => {
 
     const values = [
       JSON.stringify({ bar: "foo" }),
-      JSON.stringify({ baz: "fuz" })
-    ]
+      JSON.stringify({ baz: "fuz" }),
+    ];
     const stringifyResponse = await client.query<{
       stringify: Json;
     }>({
@@ -1205,14 +1523,17 @@ describe("Web3ApiClient", () => {
   });
 
   it("bytes-type", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/bytes-type`,
-      ipfsProvider,
-      ensAddress
-    );
-    const ensUri = `ens/testnet/${api.ensDomain}`;
-
     const client = await getClient();
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/bytes-type`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const response = await client.query<{
       bytesMethod: Buffer;
@@ -1240,14 +1561,17 @@ describe("Web3ApiClient", () => {
   });
 
   it("enum-types", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/enum-types`,
-      ipfsProvider,
-      ensAddress
-    );
-    const ensUri = `ens/testnet/${api.ensDomain}`;
-
     const client = await getClient();
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/enum-types`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const method1a = await client.query<any>({
       uri: ensUri,
@@ -1320,14 +1644,17 @@ describe("Web3ApiClient", () => {
   });
 
   it("should work with large types", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/large-types`,
-      ipfsProvider,
-      ensAddress
-    );
-    const ensUri = `ens/testnet/${api.ensDomain}`;
     const client = await getClient();
 
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/large-types`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
     const largeStr = new Array(10000).join("web3api ");
     const largeBytes = new Uint8Array(Buffer.from(largeStr));
     const largeStrArray = [];
@@ -1372,13 +1699,17 @@ describe("Web3ApiClient", () => {
   });
 
   it("number-types under and overflows", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/number-types`,
-      ipfsProvider,
-      ensAddress
-    );
-    const ensUri = `ens/testnet/${api.ensDomain}`;
     const client = await getClient();
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/number-types`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const i8Underflow = await client.query<{
       i8Method: number;
@@ -1520,13 +1851,17 @@ describe("Web3ApiClient", () => {
   });
 
   it("invalid type errors", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/invalid-types`,
-      ipfsProvider,
-      ensAddress
-    );
-    const ensUri = `ens/testnet/${api.ensDomain}`;
     const client = await getClient();
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/invalid-types`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const invalidBoolIntSent = await client.query({
       uri: ensUri,
@@ -1626,19 +1961,19 @@ describe("Web3ApiClient", () => {
     const schemaStr = "test-schema";
 
     const client = new Web3ApiClient({
-        plugins: [
-          {
-            uri: implementationUri,
-            plugin: {
-              factory: () => ({} as Plugin),
-              manifest: {
-                schema: schemaStr,
-                implements: [],
-              }
-            }
-          }
-        ]
-      });
+      plugins: [
+        {
+          uri: implementationUri,
+          plugin: {
+            factory: () => ({} as Plugin),
+            manifest: {
+              schema: schemaStr,
+              implements: [],
+            },
+          },
+        },
+      ],
+    });
 
     const schemaWhenString = await client.getSchema(implementationUri);
     const schemaWhenUri = await client.getSchema(new Uri(implementationUri));
@@ -1676,29 +2011,42 @@ describe("Web3ApiClient", () => {
     let result = client.getImplementations(oldInterfaceUri);
     expect(result).toEqual([implementation1Uri]);
 
-    result = client.getImplementations(oldInterfaceUri, { applyRedirects: true });
+    result = client.getImplementations(oldInterfaceUri, {
+      applyRedirects: true,
+    });
     expect(result).toEqual([implementation1Uri, implementation2Uri]);
 
     let result2 = client.getImplementations(new Uri(oldInterfaceUri));
     expect(result2).toEqual([new Uri(implementation1Uri)]);
 
-    result2 = client.getImplementations(new Uri(oldInterfaceUri), { applyRedirects: true });
-    expect(result2).toEqual([new Uri(implementation1Uri), new Uri(implementation2Uri)]);
+    result2 = client.getImplementations(new Uri(oldInterfaceUri), {
+      applyRedirects: true,
+    });
+    expect(result2).toEqual([
+      new Uri(implementation1Uri),
+      new Uri(implementation2Uri),
+    ]);
   });
 
   it("e2e interface implementations", async () => {
-    let interfaceApi = await buildAndDeployApi(
-      `${GetPathToTestApis()}/implementations/test-interface`,
+    let interfaceApi = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/implementations/test-interface`,
       ipfsProvider,
-      ensAddress
-    );
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
     const interfaceUri = `w3://ens/testnet/${interfaceApi.ensDomain}`;
 
-    const implementationApi = await buildAndDeployApi(
-      `${GetPathToTestApis()}/implementations/test-api`,
+    const implementationApi = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/implementations/test-api`,
       ipfsProvider,
-      ensAddress
-    );
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
     const implementationUri = `w3://ens/testnet/${implementationApi.ensDomain}`;
 
     const client = await getClient({
@@ -1710,8 +2058,9 @@ describe("Web3ApiClient", () => {
       ],
     });
 
-    expect(client.getImplementations(interfaceUri))
-      .toEqual([implementationUri]);
+    expect(client.getImplementations(interfaceUri)).toEqual([
+      implementationUri,
+    ]);
 
     const query = await client.query<{
       queryMethod: string;
@@ -1776,32 +2125,52 @@ describe("Web3ApiClient", () => {
   });
 
   it("getManifest -- web3api manifest, build manifest, meta manifest", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/simple-storage`,
-      ipfsProvider,
-      ensAddress
-    );
     const client = await getClient();
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/simple-storage`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+
     const ensUri = `ens/testnet/${api.ensDomain}`;
 
-    const actualManifestStr: string = readFileSync(`${GetPathToTestApis()}/simple-storage/build/web3api.yaml`, 'utf8');
-    const actualManifest: Web3ApiManifest = deserializeWeb3ApiManifest(actualManifestStr);
+    const actualManifestStr: string = readFileSync(
+      `${GetPathToTestApis()}/simple-storage/build/web3api.json`,
+      "utf8"
+    );
+    const actualManifest: Web3ApiManifest = deserializeWeb3ApiManifest(
+      actualManifestStr
+    );
     const manifest: Web3ApiManifest = await client.getManifest(ensUri, {
-      type: 'web3api'
+      type: "web3api",
     });
     expect(manifest).toStrictEqual(actualManifest);
 
-    const actualBuildManifestStr: string = readFileSync(`${GetPathToTestApis()}/simple-storage/build/web3api.build.yaml`, 'utf8');
-    const actualBuildManifest: BuildManifest = deserializeBuildManifest(actualBuildManifestStr);
+    const actualBuildManifestStr: string = readFileSync(
+      `${GetPathToTestApis()}/simple-storage/build/web3api.build.json`,
+      "utf8"
+    );
+    const actualBuildManifest: BuildManifest = deserializeBuildManifest(
+      actualBuildManifestStr
+    );
     const buildManifest: BuildManifest = await client.getManifest(ensUri, {
-      type: 'build'
+      type: "build",
     });
     expect(buildManifest).toStrictEqual(actualBuildManifest);
 
-    const actualMetaManifestStr: string = readFileSync(`${GetPathToTestApis()}/simple-storage/build/web3api.meta.yaml`, 'utf8');
-    const actualMetaManifest: MetaManifest = deserializeMetaManifest(actualMetaManifestStr);
+    const actualMetaManifestStr: string = readFileSync(
+      `${GetPathToTestApis()}/simple-storage/build/web3api.meta.json`,
+      "utf8"
+    );
+    const actualMetaManifest: MetaManifest = deserializeMetaManifest(
+      actualMetaManifestStr
+    );
     const metaManifest: MetaManifest = await client.getManifest(ensUri, {
-      type: 'meta'
+      type: "meta",
     });
     expect(metaManifest).toStrictEqual(actualMetaManifest);
   });
@@ -1811,9 +2180,9 @@ describe("Web3ApiClient", () => {
     const schema: string = await client.getSchema(
       "w3://ens/js-logger.web3api.eth"
     );
-
+    
     expect(schema).toStrictEqual(
-`### Web3API Header START ###
+      `### Web3API Header START ###
 scalar UInt
 scalar UInt8
 scalar UInt16
@@ -1824,7 +2193,9 @@ scalar Int16
 scalar Int32
 scalar Bytes
 scalar BigInt
+scalar BigNumber
 scalar JSON
+scalar Map
 
 directive @imported(
   uri: String!
@@ -1835,6 +2206,17 @@ directive @imported(
 directive @imports(
   types: [String!]!
 ) on OBJECT
+
+directive @capability(
+  type: String!
+  uri: String!
+  namespace: String!
+) repeatable on OBJECT
+
+directive @enabled_interface on OBJECT
+
+directive @annotate(type: String!) on FIELD
+
 ### Web3API Header END ###
 
 type Query implements Logger_Query @imports(
@@ -1878,36 +2260,41 @@ enum Logger_LogLevel @imported(
 }
 
 ### Imported Objects END ###
-`);
+`
+    );
   });
 
   it("getFile -- simple-storage web3api", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/simple-storage`,
-      ipfsProvider,
-      ensAddress
-    );
     const client = await getClient();
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/simple-storage`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+
     const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const manifest: Web3ApiManifest = await client.getManifest(ensUri, {
-      type: 'web3api'
+      type: "web3api",
     });
 
-    const fileStr: string = await client.getFile(ensUri, {
+    const fileStr: string = (await client.getFile(ensUri, {
       path: manifest.modules.query?.schema as string,
-      encoding: 'utf8'
-    }) as string;
+      encoding: "utf8",
+    })) as string;
     expect(fileStr).toContain(`getData(
     address: String!
     connection: Ethereum_Connection
   ): Int!
 `);
 
-    const fileBuffer: ArrayBuffer = await client.getFile(ensUri, {
+    const fileBuffer: ArrayBuffer = (await client.getFile(ensUri, {
       path: manifest.modules.query?.schema!,
-    }) as ArrayBuffer;
-    const decoder = new TextDecoder('utf8');
+    })) as ArrayBuffer;
+    const decoder = new TextDecoder("utf8");
     const text = decoder.decode(fileBuffer);
     expect(text).toContain(`getData(
     address: String!
@@ -1915,21 +2302,32 @@ enum Logger_LogLevel @imported(
   ): Int!
 `);
 
-    await expect(() => client.getManifest(new Uri("w3://ens/ipfs.web3api.eth"), {
-      type: "web3api"
-    })).rejects.toThrow("client.getManifest(...) is not implemented for Plugins.");
-    await expect(() => client.getFile(new Uri("w3://ens/ipfs.web3api.eth"), {
-      path: "./index.js",
-    })).rejects.toThrow("client.getFile(...) is not implemented for Plugins.");
+    await expect(() =>
+      client.getManifest(new Uri("w3://ens/ipfs.web3api.eth"), {
+        type: "web3api",
+      })
+    ).rejects.toThrow(
+      "client.getManifest(...) is not implemented for Plugins."
+    );
+    await expect(() =>
+      client.getFile(new Uri("w3://ens/ipfs.web3api.eth"), {
+        path: "./index.js",
+      })
+    ).rejects.toThrow("client.getFile(...) is not implemented for Plugins.");
   });
 
   it("simple-storage: subscribe", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/simple-storage`,
-      ipfsProvider,
-      ensAddress
-    );
     const client = await getClient();
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/simple-storage`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+
     const ensUri = `ens/testnet/${api.ensDomain}`;
     const ipfsUri = `ipfs/${api.ipfsCid}`;
 
@@ -1958,7 +2356,7 @@ enum Logger_LogLevel @imported(
     let results: number[] = [];
     let value = 0;
 
-    const setter = setInterval(async() => {
+    const setter = setInterval(async () => {
       await client.query<{
         setData: string;
       }>({
@@ -1998,9 +2396,9 @@ enum Logger_LogLevel @imported(
         }
       `,
       variables: {
-        address
+        address,
       },
-      frequency: { ms: 4500 }
+      frequency: { ms: 4500 },
     });
 
     for await (let query of getSubscription) {
@@ -2019,12 +2417,16 @@ enum Logger_LogLevel @imported(
   });
 
   it("simple-storage: subscription early stop", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/simple-storage`,
-      ipfsProvider,
-      ensAddress
-    );
     const client = await getClient();
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/simple-storage`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
     const ensUri = `ens/testnet/${api.ensDomain}`;
     const ipfsUri = `ipfs/${api.ipfsCid}`;
 
@@ -2053,7 +2455,7 @@ enum Logger_LogLevel @imported(
     let results: number[] = [];
     let value = 0;
 
-    const setter = setInterval(async() => {
+    const setter = setInterval(async () => {
       await client.query<{
         setData: string;
       }>({
@@ -2093,30 +2495,363 @@ enum Logger_LogLevel @imported(
           }
         `,
       variables: {
-        address
+        address,
       },
-      frequency: { ms: 4500 }
+      frequency: { ms: 4500 },
     });
 
     new Promise(async () => {
-        for await (let query of getSubscription) {
-          expect(query.errors).toBeFalsy();
-          const val = query.data?.getData;
-          if (val !== undefined) {
-            results.push(val);
-            if (val >= 2) {
-              break;
-            }
+      for await (let query of getSubscription) {
+        expect(query.errors).toBeFalsy();
+        const val = query.data?.getData;
+        if (val !== undefined) {
+          results.push(val);
+          if (val >= 2) {
+            break;
           }
         }
       }
-    );
-    await new Promise(r => setTimeout(r, 8000));
+    });
+    await new Promise((r) => setTimeout(r, 8000));
     getSubscription.stop();
     clearInterval(setter);
 
     expect(results).toContain(0);
     expect(results).not.toContain(2);
   });
-});
 
+  it("queries API schemas that use reserved keywords", async () => {
+    const client = await getClient();
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/reserved-words`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+
+    const query = await client.query<{
+      method1: {
+        const: string;
+      };
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          method1(
+            const: {
+              const: "successfully used reserved keyword"
+            }
+          )
+        }
+      `,
+    });
+
+    expect(query.errors).toBeFalsy();
+    expect(query.data).toBeTruthy();
+    expect(query.data).toMatchObject({
+      method1: {
+        const: "result: successfully used reserved keyword",
+      },
+    });
+  });
+
+  it("e2e getImplementations capability", async () => {
+    const interfaceUri = "w3://ens/interface.eth";
+
+    const implementationApi = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/implementations/test-use-getImpl`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const implementationUri = `w3://ens/testnet/${implementationApi.ensDomain}`;
+
+    const client = await getClient({
+      interfaces: [
+        {
+          interface: interfaceUri,
+          implementations: [implementationUri],
+        },
+      ],
+    });
+
+    expect(client.getImplementations(interfaceUri)).toEqual([
+      implementationUri,
+    ]);
+
+    const query = await client.query<{
+      queryMethod: string;
+      abstractQueryMethod: string;
+    }>({
+      uri: implementationUri,
+      query: `
+        query {
+          queryImplementations
+        }
+      `,
+      variables: {},
+    });
+
+    expect(query.errors).toBeFalsy();
+    expect(query.data).toBeTruthy();
+    expect((query.data as any).queryImplementations).toEqual([
+      implementationUri,
+    ]);
+  });
+
+  it("e2e Interface invoke method", async () => {
+    const interfaceUri = "w3://ens/interface.eth";
+    // Build interface polywrapper
+    await runCLI({
+      args: ["build"],
+      cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`,
+    });
+
+    const implementationApi = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/interface-invoke/test-implementation`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const implementationUri = `w3://ens/testnet/${implementationApi.ensDomain}`;
+
+    const client = await getClient({
+      interfaces: [
+        {
+          interface: interfaceUri,
+          implementations: [implementationUri],
+        },
+      ],
+    });
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/interface-invoke/test-api`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const apiUri = `w3://ens/testnet/${api.ensDomain}`;
+
+    const query = await client.query<{
+      queryMethod: string;
+    }>({
+      uri: apiUri,
+      query: `query{
+        queryMethod(
+          arg: {
+            uint8: 1,
+            str: "Test String 1",
+          }
+        )
+      }`,
+    });
+
+    expect(query.errors).toBeFalsy();
+    expect(query.data).toBeTruthy();
+    expect(query.data?.queryMethod).toEqual({
+      uint8: 1,
+      str: "Test String 1",
+    });
+
+    const mutation = await client.query<{
+      mutationMethod: string;
+    }>({
+      uri: apiUri,
+      query: `mutation {
+        mutationMethod(
+          arg: 1
+        )
+      }`,
+    });
+
+    expect(mutation.errors).toBeFalsy();
+    expect(mutation.data).toBeTruthy();
+    expect(mutation.data?.mutationMethod).toBe(1);
+  });
+
+  it("Map-type", async () => {
+    const client = await getClient();
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/map-type`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+
+    const mapClass = new Map<string, number>().set("Hello", 1).set("Heyo", 50);
+    const mapRecord: Record<string, number> = {
+      Hello: 1,
+      Heyo: 50,
+    };
+
+    const returnMapResponse1 = await client.invoke<Map<string, number>>({
+      uri: ensUri,
+      module: "query",
+      method: "returnMap",
+      input: {
+        map: mapClass,
+      },
+    });
+    expect(returnMapResponse1.error).toBeUndefined();
+    expect(returnMapResponse1.data).toEqual(mapClass);
+
+    const returnMapResponse2 = await client.invoke<Map<string, number>>({
+      uri: ensUri,
+      module: "query",
+      method: "returnMap",
+      input: {
+        map: mapRecord,
+      },
+    });
+    expect(returnMapResponse2.error).toBeUndefined();
+    expect(returnMapResponse2.data).toEqual(mapClass);
+
+    const getKeyResponse1 = await client.invoke<number>({
+      uri: ensUri,
+      module: "query",
+      method: "getKey",
+      input: {
+        map: mapClass,
+        key: "Hello",
+      },
+    });
+    expect(getKeyResponse1.error).toBeUndefined();
+    expect(getKeyResponse1.data).toEqual(mapClass.get("Hello"));
+
+    const getKeyResponse2 = await client.invoke<number>({
+      uri: ensUri,
+      module: "query",
+      method: "getKey",
+      input: {
+        map: mapRecord,
+        key: "Heyo",
+      },
+    });
+    expect(getKeyResponse2.error).toBeUndefined();
+    expect(getKeyResponse2.data).toEqual(mapRecord.Heyo);
+  });
+
+  it("plugin map types", async () => {
+    const implementationUri = "w3://ens/some-implementation.eth";
+    const mockPlugin = mockMapPlugin();
+    const client = await getClient({
+      plugins: [
+        {
+          uri: implementationUri,
+          plugin: mockPlugin,
+        },
+      ],
+    });
+
+    const queryEnv = await client.query({
+      uri: implementationUri,
+      query: `
+      query {
+        getMap
+      }
+    `,
+    });
+
+    expect(queryEnv.errors).toBeFalsy();
+    expect(queryEnv.data).toBeTruthy();
+    expect(queryEnv.data?.getMap).toMatchObject(
+      new Map<string, number>().set("a", 1).set("b", 2)
+    );
+
+    const mutationEnv = await client.query({
+      uri: implementationUri,
+      query: `
+      mutation {
+        updateMap(map: $map)
+      }
+      `,
+      variables: {
+        map: new Map<string, number>().set("b", 1).set("c", 5),
+      },
+    });
+
+    expect(mutationEnv.errors).toBeFalsy();
+    expect(mutationEnv.data).toBeTruthy();
+    expect(mutationEnv.data?.updateMap).toMatchObject(
+      new Map<string, number>().set("a", 1).set("b", 3).set("c", 5)
+    );
+  });
+
+  it("merge user-defined interface implementations with each other", async () => {
+    const interfaceUri = "w3://ens/interface.eth";
+    const implementationUri1 = "w3://ens/implementation1.eth";
+    const implementationUri2 = "w3://ens/implementation2.eth";
+
+    const client = new Web3ApiClient({
+      interfaces: [
+        {
+          interface: interfaceUri,
+          implementations: [implementationUri1],
+        },
+        {
+          interface: interfaceUri,
+          implementations: [implementationUri2],
+        },
+      ],
+    });
+
+    const interfaces = client
+      .getInterfaces()
+      .filter((x) => x.interface.uri === interfaceUri);
+    expect(interfaces.length).toEqual(1);
+
+    const implementationUris = interfaces[0].implementations;
+
+    expect(implementationUris).toEqual([
+      new Uri(implementationUri1),
+      new Uri(implementationUri2),
+    ]);
+  });
+
+  it("merge user-defined interface implementations with defaults", async () => {
+    const interfaceUri = coreInterfaceUris.uriResolver.uri;
+    const implementationUri1 = "w3://ens/implementation1.eth";
+    const implementationUri2 = "w3://ens/implementation2.eth";
+
+    const client = new Web3ApiClient({
+      interfaces: [
+        {
+          interface: interfaceUri,
+          implementations: [implementationUri1],
+        },
+        {
+          interface: interfaceUri,
+          implementations: [implementationUri2],
+        },
+      ],
+    });
+
+    const interfaces = client
+      .getInterfaces()
+      .filter((x) => x.interface.uri === interfaceUri);
+    expect(interfaces.length).toEqual(1);
+
+    const implementationUris = interfaces[0].implementations;
+
+    expect(implementationUris).toEqual([
+      new Uri(implementationUri1),
+      new Uri(implementationUri2),
+      ...getDefaultClientConfig().interfaces.find(
+        (x) => x.interface.uri === interfaceUri
+      )!.implementations,
+    ]);
+  });
+});

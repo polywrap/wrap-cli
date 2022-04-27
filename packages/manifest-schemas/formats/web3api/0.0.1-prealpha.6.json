@@ -14,15 +14,11 @@
     },
     "build": {
       "type": "string",
-      "format": "yamlFile"
-    },
-    "infra": {
-      "type": "string",
-      "format": "file"
+      "format": "manifestFile"
     },
     "meta": {
       "type": "string",
-      "format": "yamlFile"
+      "format": "manifestFile"
     },
     "language": {
       "type": "string",

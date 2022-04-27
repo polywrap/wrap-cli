@@ -7,5 +7,7 @@ export * from "./Query";
 export * from "./Subscription";
 export * from "./Uri";
 export * from "./UriRedirect";
+export * from "./Env";
 export * from "./InterfaceImplementations";
 export * from "./PluginRegistration";
+export * from "./ResolveUriOptions";

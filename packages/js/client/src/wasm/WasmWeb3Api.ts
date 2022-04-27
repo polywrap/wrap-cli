@@ -9,24 +9,34 @@ import {
   Web3ApiManifest,
   Uri,
   Client,
-  UriResolver,
   InvokableModules,
   GetManifestOptions,
   deserializeWeb3ApiManifest,
   deserializeBuildManifest,
   deserializeMetaManifest,
-  AnyManifest,
-  ManifestType,
+  AnyManifestArtifact,
+  ManifestArtifactType,
   combinePaths,
+  Env,
+  UriResolverInterface,
   GetFileOptions,
+  msgpackEncode,
+  msgpackDecode,
 } from "@web3api/core-js";
-import * as MsgPack from "@msgpack/msgpack";
 import { Tracer } from "@web3api/tracing-js";
 import { AsyncWasmInstance } from "@web3api/asyncify-js";
 
 type InvokeResult =
   | { type: "InvokeResult"; invokeResult: ArrayBuffer }
   | { type: "InvokeError"; invokeError: string };
+
+const hasExport = (name: string, exports: Record<string, unknown>): boolean => {
+  if (!exports[name]) {
+    return false;
+  }
+
+  return true;
+};
 
 export interface State {
   method: string;
@@ -40,7 +50,18 @@ export interface State {
     error?: string;
     args: unknown[];
   };
+  subinvokeImplementation: {
+    result?: ArrayBuffer;
+    error?: string;
+    args: unknown[];
+  };
   invokeResult: InvokeResult;
+  getImplementationsResult?: ArrayBuffer;
+  sanitizeEnv: {
+    args?: ArrayBuffer;
+    result?: ArrayBuffer;
+  };
+  env?: ArrayBuffer;
 }
 
 export class WasmWeb3Api extends Api {
@@ -48,15 +69,21 @@ export class WasmWeb3Api extends Api {
 
   private _schema?: string;
 
-  private _wasm: {
-    query?: ArrayBuffer;
-    mutation?: ArrayBuffer;
-  } = {};
+  private _wasm: Record<InvokableModules, ArrayBuffer | undefined> = {
+    query: undefined,
+    mutation: undefined,
+  };
+
+  private _sanitizedEnv: Record<InvokableModules, ArrayBuffer | undefined> = {
+    query: undefined,
+    mutation: undefined,
+  };
 
   constructor(
     private _uri: Uri,
     private _manifest: Web3ApiManifest,
-    private _uriResolver: Uri
+    private _uriResolver: string,
+    private _clientEnv?: Env<Uri>
   ) {
     super();
 
@@ -64,181 +91,68 @@ export class WasmWeb3Api extends Api {
     Tracer.setAttribute("input", {
       uri: this._uri,
       manifest: this._manifest,
+      clientEnv: this._clientEnv,
       uriResolver: this._uriResolver,
     });
     Tracer.endSpan();
   }
 
-  public async invoke(
-    options: InvokeApiOptions<Uri>,
+  @Tracer.traceMethod("WasmWeb3Api: getManifest")
+  public async getManifest<TManifestArtifact extends ManifestArtifactType>(
+    options: GetManifestOptions<TManifestArtifact>,
     client: Client
-  ): Promise<InvokeApiResult<unknown | ArrayBuffer>> {
-    const run = Tracer.traceFunc(
-      "WasmWeb3Api: invoke",
-      async (
-        options: InvokeApiOptions<Uri>,
-        client: Client
-      ): Promise<InvokeApiResult<unknown | ArrayBuffer>> => {
-        const { module: invokableModule, method, input, decode } = options;
-        const wasm = await this._getWasmModule(invokableModule, client);
-        const state: State = {
-          invoke: {},
-          subinvoke: {
-            args: [],
-          },
-          invokeResult: {} as InvokeResult,
-          method,
-          args:
-            input instanceof ArrayBuffer
-              ? input
-              : MsgPack.encode(input, { ignoreUndefined: true }),
-        };
-
-        const abort = (message: string) => {
-          throw new Error(
-            `WasmWeb3Api: Thread aborted execution.\nURI: ${this._uri.uri}\n` +
-              `Module: ${module}\nMethod: ${method}\n` +
-              `Input: ${JSON.stringify(input, null, 2)}\nMessage: ${message}.\n`
-          );
-        };
-
-        const memory = new WebAssembly.Memory({ initial: 1 });
-        const instance = await AsyncWasmInstance.createInstance({
-          module: wasm,
-          imports: createImports({
-            state,
-            client,
-            memory,
-            abort,
-          }),
-          requiredExports: WasmWeb3Api.requiredExports,
-        });
-
-        const exports = instance.exports as W3Exports;
-
-        const result = await exports._w3_invoke(
-          state.method.length,
-          state.args.byteLength
-        );
-
-        const invokeResult = this._processInvokeResult(state, result, abort);
-
-        switch (invokeResult.type) {
-          case "InvokeError": {
-            throw Error(
-              `WasmWeb3Api: invocation exception encountered.\n` +
-                `uri: ${this._uri.uri}\nmodule: ${module}\n` +
-                `method: ${method}\n` +
-                `input: ${JSON.stringify(input, null, 2)}\n` +
-                `exception: ${invokeResult.invokeError}`
-            );
-          }
-          case "InvokeResult": {
-            if (decode) {
-              try {
-                return {
-                  data: MsgPack.decode(
-                    invokeResult.invokeResult as ArrayBuffer
-                  ),
-                };
-              } catch (err) {
-                throw Error(
-                  `WasmWeb3Api: Failed to decode query result.\nResult: ${JSON.stringify(
-                    invokeResult.invokeResult
-                  )}\nError: ${err}`
-                );
-              }
-            } else {
-              return { data: invokeResult.invokeResult };
-            }
-          }
-          default: {
-            throw Error(`WasmWeb3Api: Unknown state "${state}"`);
-          }
-        }
-      }
-    );
-
-    return run(options, client).catch((error: Error) => {
-      return {
-        error,
-      };
-    });
-  }
-
-  public async getSchema(client: Client): Promise<string> {
-    const run = Tracer.traceFunc(
-      "WasmWeb3Api: getSchema",
-      async (client: Client): Promise<string> => {
-        if (this._schema) {
-          return this._schema;
-        }
-
-        // Either the query or mutation module will work,
-        // as they share the same schema file
-        const module =
-          this._manifest.modules.mutation || this._manifest.modules.query;
-
-        if (!module) {
-          // TODO: this won't work for abstract APIs
-          throw Error(`WasmWeb3Api: No module was found.`);
-        }
-
-        this._schema = (await this.getFile(
-          { path: module.schema, encoding: "utf8" },
-          client
-        )) as string;
-
-        return this._schema;
-      }
-    );
-
-    return run(client);
-  }
-
-  public async getManifest<TManifest extends ManifestType>(
-    options: GetManifestOptions<TManifest>,
-    client: Client
-  ): Promise<AnyManifest<TManifest>> {
+  ): Promise<AnyManifestArtifact<TManifestArtifact>> {
     if (!options?.type) {
-      return this._manifest as AnyManifest<TManifest>;
+      return this._manifest as AnyManifestArtifact<TManifestArtifact>;
     }
-    let manifest: string;
+    let manifest: string | undefined;
     const fileTitle: string =
       options.type === "web3api" ? "web3api" : "web3api." + options.type;
-    try {
-      // try common yaml suffix
-      const path: string = fileTitle + ".yaml";
-      manifest = (await this.getFile(
-        { path, encoding: "utf8" },
-        client
-      )) as string;
-    } catch {
-      // try alternate yaml suffix
-      const path: string = fileTitle + ".yml";
-      manifest = (await this.getFile(
-        { path, encoding: "utf8" },
-        client
-      )) as string;
+
+    const manifestExts = ["json", "yaml", "yml"];
+    for (const ext of manifestExts) {
+      const path = `${fileTitle}.${ext}`;
+      try {
+        manifest = (await this.getFile(
+          { path, encoding: "utf8" },
+          client
+        )) as string;
+        break;
+      } catch (error) {
+        continue;
+      }
+    }
+    if (!manifest) {
+      throw new Error("WasmWeb3Api: Manifest was not found.");
     }
     switch (options.type) {
       case "build":
-        return deserializeBuildManifest(manifest) as AnyManifest<TManifest>;
+        return deserializeBuildManifest(
+          manifest
+        ) as AnyManifestArtifact<TManifestArtifact>;
       case "meta":
-        return deserializeMetaManifest(manifest) as AnyManifest<TManifest>;
+        return deserializeMetaManifest(
+          manifest
+        ) as AnyManifestArtifact<TManifestArtifact>;
       default:
-        return deserializeWeb3ApiManifest(manifest) as AnyManifest<TManifest>;
+        return deserializeWeb3ApiManifest(
+          manifest
+        ) as AnyManifestArtifact<TManifestArtifact>;
     }
   }
 
+  @Tracer.traceMethod("WasmWeb3Api: getFile")
   public async getFile(
     options: GetFileOptions,
     client: Client
   ): Promise<ArrayBuffer | string> {
     const { path, encoding } = options;
-    const { data, error } = await UriResolver.Query.getFile(
-      client,
-      this._uriResolver,
+    const { data, error } = await UriResolverInterface.Query.getFile(
+      <TData = unknown, TUri extends Uri | string = string>(
+        options: InvokeApiOptions<TUri>
+      ): Promise<InvokeApiResult<TData>> => client.invoke<TData, TUri>(options),
+      // TODO: support all types of URI resolvers (cache, etc)
+      new Uri(this._uriResolver),
       combinePaths(this._uri.path, path)
     );
 
@@ -267,47 +181,126 @@ export class WasmWeb3Api extends Api {
     return data;
   }
 
-  private async _getWasmModule(
-    module: InvokableModules,
+  @Tracer.traceMethod("WasmWeb3Api: invoke")
+  public async invoke(
+    options: InvokeApiOptions<Uri>,
     client: Client
-  ): Promise<ArrayBuffer> {
-    const run = Tracer.traceFunc(
-      "WasmWeb3Api: getWasmModule",
-      async (
-        module: InvokableModules,
-        client: Client
-      ): Promise<ArrayBuffer> => {
-        if (this._wasm[module] !== undefined) {
-          return this._wasm[module] as ArrayBuffer;
-        }
+  ): Promise<InvokeApiResult<unknown | ArrayBuffer>> {
+    try {
+      const { module: invokableModule, method, noDecode } = options;
+      const input = options.input || {};
+      const wasm = await this._getWasmModule(invokableModule, client);
 
-        const moduleManifest = this._manifest.modules[module];
+      const state: State = {
+        invoke: {},
+        subinvoke: {
+          args: [],
+        },
+        subinvokeImplementation: {
+          args: [],
+        },
+        invokeResult: {} as InvokeResult,
+        method,
+        sanitizeEnv: {},
+        args: input instanceof ArrayBuffer ? input : msgpackEncode(input),
+      };
 
-        if (!moduleManifest) {
+      const abort = (message: string) => {
+        throw new Error(
+          `WasmWeb3Api: Wasm module aborted execution.\nURI: ${this._uri.uri}\n` +
+            `Module: ${invokableModule}\nMethod: ${method}\n` +
+            `Input: ${JSON.stringify(input, null, 2)}\nMessage: ${message}.\n`
+        );
+      };
+
+      const memory = AsyncWasmInstance.createMemory({ module: wasm });
+      const instance = await AsyncWasmInstance.createInstance({
+        module: wasm,
+        imports: createImports({
+          state,
+          client,
+          memory,
+          abort,
+        }),
+        requiredExports: WasmWeb3Api.requiredExports,
+      });
+
+      const exports = instance.exports as W3Exports;
+
+      await this._sanitizeAndLoadEnv(invokableModule, state, exports);
+
+      const result = await exports._w3_invoke(
+        state.method.length,
+        state.args.byteLength
+      );
+
+      const invokeResult = this._processInvokeResult(state, result, abort);
+
+      switch (invokeResult.type) {
+        case "InvokeError": {
           throw Error(
-            `Package manifest does not contain a definition for module "${module}"`
+            `WasmWeb3Api: invocation exception encountered.\n` +
+              `uri: ${this._uri.uri}\nmodule: ${invokableModule}\n` +
+              `method: ${method}\n` +
+              `input: ${JSON.stringify(input, null, 2)}\n` +
+              `exception: ${invokeResult.invokeError}`
           );
         }
+        case "InvokeResult": {
+          if (noDecode) {
+            return {
+              data: invokeResult.invokeResult,
+            } as InvokeApiResult<ArrayBuffer>;
+          }
 
-        if (!moduleManifest.module) {
-          throw Error(
-            `Package manifest module ${module} does not contain a definition for module"`
-          );
+          try {
+            return {
+              data: msgpackDecode(invokeResult.invokeResult as ArrayBuffer),
+            } as InvokeApiResult<unknown>;
+          } catch (err) {
+            throw Error(
+              `WasmWeb3Api: Failed to decode query result.\nResult: ${JSON.stringify(
+                invokeResult.invokeResult
+              )}\nError: ${err}`
+            );
+          }
         }
-
-        const data = (await this.getFile(
-          { path: moduleManifest.module },
-          client
-        )) as ArrayBuffer;
-
-        this._wasm[module] = data;
-        return data;
+        default: {
+          throw Error(`WasmWeb3Api: Unknown state "${state}"`);
+        }
       }
-    );
-
-    return run(module, client);
+    } catch (error) {
+      return {
+        error,
+      };
+    }
   }
 
+  @Tracer.traceMethod("WasmWeb3Api: getSchema")
+  public async getSchema(client: Client): Promise<string> {
+    if (this._schema) {
+      return this._schema;
+    }
+
+    // Either the query or mutation module will work,
+    // as they share the same schema file
+    const module =
+      this._manifest.modules.mutation || this._manifest.modules.query;
+
+    if (!module) {
+      // TODO: this won't work for abstract APIs
+      throw Error(`WasmWeb3Api: No module was found.`);
+    }
+
+    this._schema = (await this.getFile(
+      { path: module.schema, encoding: "utf8" },
+      client
+    )) as string;
+
+    return this._schema;
+  }
+
+  @Tracer.traceMethod("WasmWeb3Api: _processInvokeResult")
   private _processInvokeResult(
     state: State,
     result: boolean,
@@ -332,5 +325,86 @@ export class WasmWeb3Api extends Api {
         invokeError: state.invoke.error,
       };
     }
+  }
+
+  @Tracer.traceMethod("WasmWeb3Api: _sanitizeAndLoadEnv")
+  private async _sanitizeAndLoadEnv(
+    module: InvokableModules,
+    state: State,
+    exports: W3Exports
+  ): Promise<void> {
+    if (hasExport("_w3_load_env", exports)) {
+      if (this._sanitizedEnv[module] !== undefined) {
+        state.env = this._sanitizedEnv[module] as ArrayBuffer;
+      } else {
+        const clientEnv = this._getModuleClientEnv(module);
+
+        if (hasExport("_w3_sanitize_env", exports)) {
+          state.sanitizeEnv.args = msgpackEncode({ env: clientEnv });
+
+          await exports._w3_sanitize_env(state.sanitizeEnv.args.byteLength);
+          state.env = state.sanitizeEnv.result as ArrayBuffer;
+          this._sanitizedEnv[module] = state.env;
+        } else {
+          state.env = msgpackEncode(clientEnv);
+          this._sanitizedEnv[module] = state.env;
+        }
+      }
+
+      await exports._w3_load_env(state.env.byteLength);
+    }
+  }
+
+  @Tracer.traceMethod("WasmWeb3Api: _getModuleClientEnv")
+  private _getModuleClientEnv(
+    module: InvokableModules
+  ): Record<string, unknown> {
+    if (!this._clientEnv) {
+      return {};
+    }
+
+    if (module === "query") {
+      return {
+        ...this._clientEnv.common,
+        ...this._clientEnv.query,
+      };
+    } else {
+      return {
+        ...this._clientEnv.common,
+        ...this._clientEnv.mutation,
+      };
+    }
+  }
+
+  @Tracer.traceMethod("WasmWeb3Api: getWasmModule")
+  private async _getWasmModule(
+    module: InvokableModules,
+    client: Client
+  ): Promise<ArrayBuffer> {
+    if (this._wasm[module] !== undefined) {
+      return this._wasm[module] as ArrayBuffer;
+    }
+
+    const moduleManifest = this._manifest.modules[module];
+
+    if (!moduleManifest) {
+      throw Error(
+        `Package manifest does not contain a definition for module "${module}"`
+      );
+    }
+
+    if (!moduleManifest.module) {
+      throw Error(
+        `Package manifest module ${module} does not contain a definition for module"`
+      );
+    }
+
+    const data = (await this.getFile(
+      { path: moduleManifest.module },
+      client
+    )) as ArrayBuffer;
+
+    this._wasm[module] = data;
+    return data;
   }
 }

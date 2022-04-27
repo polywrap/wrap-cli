@@ -20,7 +20,7 @@ export function callContractMethod(
     args: input.args,
     connection: input.connection,
     txOverrides: input.txOverrides
-  });
+  }).unwrap();
 }
 
 export function callContractMethodAndWait(
@@ -32,7 +32,7 @@ export function callContractMethodAndWait(
     args: input.args,
     connection: input.connection,
     txOverrides: input.txOverrides
-  });
+  }).unwrap();
 }
 
 export function sendTransaction(
@@ -41,7 +41,7 @@ export function sendTransaction(
   return Ethereum_Mutation.sendTransaction({
     tx: input.tx,
     connection: input.connection
-  });
+  }).unwrap();
 }
 
 export function sendTransactionAndWait(
@@ -50,7 +50,7 @@ export function sendTransactionAndWait(
   return Ethereum_Mutation.sendTransactionAndWait({
     tx: input.tx,
     connection: input.connection
-  });
+  }).unwrap();
 }
 
 export function deployContract(
@@ -61,7 +61,7 @@ export function deployContract(
     bytecode: input.bytecode,
     args: input.args,
     connection: input.connection
-  });
+  }).unwrap();
 }
 
 export function signMessage(
@@ -70,7 +70,7 @@ export function signMessage(
   return Ethereum_Mutation.signMessage({
     message: input.message,
     connection: input.connection
-  });
+  }).unwrap();
 }
 
 export function sendRPC(
@@ -80,5 +80,5 @@ export function sendRPC(
     method: input.method,
     params: input.params,
     connection: input.connection
-  });
+  }).unwrap();
 }
