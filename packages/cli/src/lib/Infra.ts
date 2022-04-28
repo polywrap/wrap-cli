@@ -1,7 +1,5 @@
 import { Web3ApiProject } from "./project";
-import {
-  correctBuildContextPathsFromCompose,
-} from "./helpers";
+import { correctBuildContextPathsFromCompose } from "./helpers";
 import { intlMsg } from "./intl";
 import { runCommand } from "./helpers/command";
 
@@ -16,28 +14,84 @@ export interface InfraConfig {
   quiet?: boolean;
 }
 
+interface InitData {
+  baseCommand: string;
+  correctedDockerComposePaths: string[];
+}
+
 type Package = Exclude<InfraManifest["packages"], undefined>[number];
 
 export class Infra {
-  constructor(private _config: InfraConfig) {}
+  private _dockerComposePath: string;
+  private _initData: InitData | undefined;
 
-  public async up() {
+  constructor(private _config: InfraConfig) {
+    this._dockerComposePath = path.join(
+      _config.project.getCachePath("infra"),
+      "docker-compose.yml"
+    );
+  }
 
-    // install modules
-    // generate base docker compose
-    // generate base composed command
+  public async up(): Promise<void> {
+    const { quiet } = this._config;
+    const { baseCommand } = await this.getInitData();
+
+    await runCommand(`${baseCommand} up -d --build`, quiet);
     // run docker command up -d --build
     // getCorrectedDockerComposePaths
     // print vars?
-    // 
+    //
   }
 
-  public async down() {
+  public async down(): Promise<void> {
+    const { quiet } = this._config;
+    const { baseCommand } = await this.getInitData();
 
+    await runCommand(`${baseCommand} down`, quiet);
   }
 
-  public async config() {
-    
+  public async config(): Promise<void> {
+    const { quiet } = this._config;
+    const { baseCommand } = await this.getInitData();
+
+    await runCommand(`${baseCommand} config`, quiet);
+  }
+
+  public async getVars(): Promise<string[]> {
+    const { correctedDockerComposePaths } = await this.getInitData();
+
+    const envVarRegex = /\${([^}]+)}/gm;
+
+    const envVars = correctedDockerComposePaths.reduce((acc, current) => {
+      const rawManifest = fs.readFileSync(current, "utf-8");
+      const matches = rawManifest.match(envVarRegex) || [];
+
+      return [
+        ...acc,
+        ...matches.map((match) => {
+          if (match.startsWith("$")) {
+            if (match.startsWith("${")) {
+              return match.slice(2, match.length - 1);
+            }
+
+            return match.slice(1);
+          }
+
+          return match;
+        }),
+      ];
+    }, [] as string[]);
+
+    return Array.from(new Set(envVars));
+    // return `${variables.map((variable) => `\n- ${variable}`).join("")}`;
+  }
+
+  private async getInitData(): Promise<InitData> {
+    if (!this._initData) {
+      await this._init();
+    }
+
+    return this._initData as InitData;
   }
 
   private async _init() {
@@ -50,11 +104,21 @@ export class Infra {
     this._sanitizePackages(manifest, packagesToUse);
 
     // Install infra packages
-    await this._installPackages(
-      project,
-      manifest,
-      packagesToUse
-    );
+    await this._installPackages(project, manifest, packagesToUse);
+
+    // generate base docker compose
+
+    await this._generateBaseDockerCompose();
+
+    // generate base composed command
+
+    const packagePaths = await this.getCorrectedDockerComposePaths();
+    const command = await this._generateBaseComposedCommand(packagePaths);
+
+    this._initData = {
+      baseCommand: command,
+      correctedDockerComposePaths: packagePaths,
+    };
   }
 
   private _sanitizePackages(
@@ -62,9 +126,7 @@ export class Infra {
     packagesToUse?: string[]
   ): void {
     if (manifest.packages && packagesToUse) {
-      const manifestPackageNames = manifest.packages.map(
-        (p) => p.name
-      );
+      const manifestPackageNames = manifest.packages.map((p) => p.name);
       const unrecognizedPackages: string[] = [];
       packagesToUse.forEach((p: string) => {
         if (!manifestPackageNames.includes(p)) {
@@ -75,11 +137,63 @@ export class Infra {
       if (unrecognizedPackages.length) {
         throw new Error(
           intlMsg.lib_infra_unrecognizedPackage({
-            packages: unrecognizedPackages.join(", ")
+            packages: unrecognizedPackages.join(", "),
           })
         );
       }
     }
+  }
+
+  private async _generateBaseComposedCommand(
+    correctedDockerComposePaths: string[]
+  ): Promise<string> {
+    const { project } = this._config;
+    const manifest = await project.getInfraManifest();
+    const env = manifest.env || {};
+    const envKeys = Object.keys(env);
+
+    return `${envKeys
+      .map(
+        (key, i) =>
+          `export ${key}=${env[key]} ${i < envKeys.length ? "&& " : ""}`
+      )
+      .join("")} docker-compose -f ${
+      this._dockerComposePath
+    } ${correctedDockerComposePaths.map((path) => ` -f ${path}`).join("")}`;
+  }
+
+  private async _generateBaseDockerCompose(): Promise<void> {
+    const { project } = this._config;
+    const manifest = await project.getInfraManifest();
+    const fileContent = YAML.dump(manifest.dockerCompose);
+
+    fs.writeFileSync(this._dockerComposePath, fileContent);
+  }
+
+  private async getCorrectedDockerComposePaths(): Promise<string[]> {
+    const { project, packagesToUse } = this._config;
+    const manifest = await project.getInfraManifest();
+
+    if (manifest.packages && !this._initData) {
+      throw new Error("Infra packages have not been installed");
+    }
+
+    const packages = this._getFilteredPackages(manifest, packagesToUse);
+
+    const defaultPath = "./docker-compose.web3api.yml";
+
+    return packages.map((p) => {
+      const dockerComposePath = p.dockerComposePath
+        ? path.join(p.dockerComposePath, "..", defaultPath)
+        : defaultPath;
+
+      return path.join(
+        project.getCachePath("infra"),
+        "node_modules",
+        p.package,
+        dockerComposePath
+      );
+    });
   }
 
   // Compose package.json under .w3 folder and install deps
@@ -88,12 +202,8 @@ export class Infra {
     manifest: InfraManifest,
     packagesToUse?: string[]
   ): Promise<void> {
-
     // Get full list of packages needed
-    const packages = this._getFilteredPackages(
-      manifest,
-      packagesToUse
-    );
+    const packages = this._getFilteredPackages(manifest, packagesToUse);
 
     if (!packages || !packages.length) {
       return;
@@ -142,7 +252,7 @@ export class Infra {
         packageDir
       );
 
-      //Write new docker-compose manifests with corrected build path and 'web3api' prefix
+      // Write new docker-compose manifests with corrected build path and 'web3api' prefix
       const newComposeFile = YAML.dump(composeFileWithCorrectPaths);
       const correctedFilePath = path.join(
         packageDir,
@@ -151,8 +261,6 @@ export class Infra {
       );
       fs.writeFileSync(correctedFilePath, newComposeFile);
     });
-
-    this._packagesInstalled = true;
   }
 
   private _getFilteredPackages(
@@ -167,165 +275,6 @@ export class Infra {
       return manifest.packages;
     }
 
-    return manifest.packages.filter((p) =>
-      packagesToUse.includes(p.name)
-    );
-  };
-}
-
-export class InfraOld {
-  private _packagesInstalled = false;
-
-  constructor(private _config: InfraConfig) {}
-
-  public  async getFilteredPackages(): Promise<Package[]> {
-    const manifest = await this._getManifest();
-
-    if (!manifest.packages) {
-      return [];
-    }
-
-    if (!this._config.packagesToUse || !this._config.packagesToUse.length) {
-      return manifest.packages;
-    }
-
-    return manifest.packages.filter((p) =>
-      this._config.packagesToUse.includes(p.name)
-    );
-  };
-
-  public async installPackages(): Promise<void> {
-    // Compose package.json under .w3 folder and install deps
-
-    const { project } = this._config;
-
-    if (!fs.existsSync(project.getCachePath("infra/packages"))) {
-      fs.mkdirSync(project.getCachePath("infra/packages"), { recursive: true });
-    }
-
-    const packages = await this.getFilteredPackages();
-
-    if (!packages || !packages.length) {
-      return;
-    }
-
-    const packageJSON = {
-      ...BASE_PACKAGE_JSON,
-      dependencies: packages.reduce((acc, current) => {
-        acc[current.package] = current.version;
-        return acc;
-      }, {} as Record<string, string>),
-    };
-
-    fs.writeFileSync(
-      path.join(project.getCachePath("infra"), "package.json"),
-      JSON.stringify(packageJSON)
-    );
-
-    await runCommand(`cd ${project.getCachePath("infra")} && npm i`);
-
-    packages.forEach((p) => {
-      const defaultPath = "./docker-compose.yml";
-
-      const packageDir = path.join(
-        project.getCachePath("infra"),
-        "node_modules",
-        p.package,
-        p.dockerComposePath || defaultPath
-      );
-
-      // Adjust package's docker-compose's build option if it exists
-
-      if (!fs.existsSync(packageDir)) {
-        throw new Error(
-          `Couldn't find docker-compose.yml file for package "${p.package}" at path '${packageDir}'`
-        );
-      }
-
-      const composeFileWithCorrectPaths = correctBuildContextPathsFromCompose(
-        packageDir
-      );
-
-      //Write new docker-compose manifests with corrected build path and 'web3api' prefix
-      const newComposeFile = YAML.dump(composeFileWithCorrectPaths);
-      const correctedFilePath = path.join(
-        packageDir,
-        "..",
-        "docker-compose.web3api.yml"
-      );
-      fs.writeFileSync(correctedFilePath, newComposeFile);
-    });
-
-    this._packagesInstalled = true;
-  }
-
-  public async generateBaseDockerCompose(): Promise<void> {
-    const { project } = this._config;
-    const manifest = await this._getManifest();
-    const fileContent = YAML.dump(manifest.dockerCompose);
-
-    fs.writeFileSync(
-      path.join(project.getCachePath("infra"), "docker-compose.yml"),
-      fileContent
-    );
-  }
-
-  public async getCorrectedDockerComposePaths(): Promise<string[]> {
-    const { project } = this._config;
-    const manifest = await this._getManifest();
-
-    if (manifest.packages && !this._packagesInstalled) {
-      throw new Error("Infra packages have not been installed");
-    }
-
-    const packages = await this.getFilteredPackages();
-
-    const defaultPath = "./docker-compose.web3api.yml";
-
-    return packages.map((p) => {
-      const dockerComposePath = p.dockerComposePath
-        ? path.join(p.dockerComposePath, "..", defaultPath)
-        : defaultPath;
-
-      return path.join(
-        project.getCachePath("infra"),
-        "node_modules",
-        p.package,
-        dockerComposePath
-      );
-    });
-  }
-
-  public async generateBaseComposedCommand(): Promise<string> {
-    const { project } = this._config;
-    const baseComposePath = path.join(
-      project.getCachePath("infra"),
-      "docker-compose.yml"
-    );
-    const manifest = await this._getManifest();
-    const env = manifest.env || {};
-    const packagePaths = await this.getCorrectedDockerComposePaths();
-    const envKeys = Object.keys(env);
-
-    return `${envKeys
-      .map(
-        (key, i) =>
-          `export ${key}=${env[key]} ${i < envKeys.length ? "&& " : ""}`
-      )
-      .join("")} docker-compose -f ${baseComposePath} ${packagePaths
-      .map((path) => ` -f ${path}`)
-      .join("")}`;
-  }
-
-  private async _getManifest(): Promise<InfraManifest> {
-    const manifest = await this._config.project.getInfraManifest();
-
-    if (!manifest.packages && !manifest.dockerCompose) {
-      throw new Error(
-        `At least one is required in infra manifest: "dockerCompose", "packages"`
-      );
-    }
-
-    return manifest;
+    return manifest.packages.filter((p) => packagesToUse.includes(p.name));
   }
 }

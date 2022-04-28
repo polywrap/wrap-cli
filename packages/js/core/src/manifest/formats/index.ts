@@ -12,8 +12,12 @@ import { InfraManifest } from "./web3api.infra";
 import { DeployManifest } from "./web3api.deploy";
 import { MetaManifest } from "./web3api.meta";
 
-export type ManifestArtifactType = "web3api" | "meta" | "build" | "deploy";
-  | "infra"
+export type ManifestArtifactType =
+  | "web3api"
+  | "meta"
+  | "build"
+  | "deploy"
+  | "infra";
 
 export type AnyManifestArtifact<
   TManifestType extends ManifestArtifactType

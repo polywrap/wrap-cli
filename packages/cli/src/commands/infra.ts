@@ -95,16 +95,13 @@ export default {
     });
 
 
-
-    ///////
-
-    /*const infra = await Infra.getInstance({
+    const infra = await Infra.getInstance({
       web3apiManifestPath: manifestPath,
       quiet: !verbose,
       modulesToUse: modules,
-    });*/
+    });
 
-    /*const manifest = await infra.getInfraManifest();
+    const manifest = await infra.getInfraManifest();
 
     if (manifest.modules && modules) {
       const manifestModuleNames = manifest.modules.map((module) => module.name);
@@ -120,9 +117,9 @@ export default {
           `Unrecognized modules: ${unrecognizedModules.join(", ")}`
         );
       }
-    }*/
+    }
 
-    // await project.installModules();
+    await project.installModules();
     await project.generateBaseDockerCompose();
 
     const baseCommand = await project.generateBaseComposedCommand();

@@ -39,7 +39,7 @@ export const validateInfraManifest = Tracer.traceFunc(
     const schema = schemas[manifest.format as InfraManifestFormats];
 
     if (!schema) {
-      throw Error(`Unrecognized InfraManifest schema format "${manifest.format}"`);
+      throw Error(`Unrecognized InfraManifest schema format "${manifest.format}"\nmanifest: ${JSON.stringify(manifest, null, 2)}`);
     }
 
     const throwIfErrors = (result: ValidatorResult) => {

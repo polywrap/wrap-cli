@@ -4,7 +4,6 @@ import fs from "fs";
 import path from "path";
 import rimraf from "rimraf";
 import copyfiles from "copyfiles";
-import { TargetLanguage } from "@web3api/schema-bind";
 import { writeFileSync } from "@web3api/os-js";
 import { BindOutput } from "@web3api/schema-bind";
 import { ComposerOutput } from "@web3api/schema-compose";

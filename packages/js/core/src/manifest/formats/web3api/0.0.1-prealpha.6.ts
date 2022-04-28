@@ -9,7 +9,6 @@
 export interface Web3ApiManifest {
   format: "0.0.1-prealpha.6";
   build?: string;
-  infra?: string;
   meta?: string;
   language: string;
   modules: {

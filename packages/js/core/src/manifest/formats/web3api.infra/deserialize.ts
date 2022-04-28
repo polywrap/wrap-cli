@@ -21,9 +21,14 @@ import { Tracer } from "@web3api/tracing-js";
 export const deserializeInfraManifest = Tracer.traceFunc(
   "core: deserializeInfraManifest",
   (manifest: string, options?: DeserializeManifestOptions): InfraManifest => {
-    const anyInfraManifest = YAML.safeLoad(manifest) as
+    let anyInfraManifest: AnyInfraManifest | undefined;
+    try {
+      anyInfraManifest = JSON.parse(manifest) as AnyInfraManifest;
+    } catch (e) {
+      anyInfraManifest = YAML.safeLoad(manifest) as
       | AnyInfraManifest
       | undefined;
+    }
 
     if (!anyInfraManifest) {
       throw Error(`Unable to parse InfraManifest: ${manifest}`);
