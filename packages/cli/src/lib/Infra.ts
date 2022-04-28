@@ -2,6 +2,7 @@ import { Web3ApiProject } from "./project";
 import { correctBuildContextPathsFromCompose } from "./helpers";
 import { intlMsg } from "./intl";
 import { runCommand } from "./helpers/command";
+import { NodePackageManager } from "./InfraPackageManager";
 
 import { InfraManifest } from "@web3api/core-js";
 import path from "path";
@@ -36,7 +37,7 @@ export class Infra {
     const { quiet } = this._config;
     const { baseCommand } = await this.getInitData();
 
-    await runCommand(`${baseCommand} up -d --build`, quiet);
+    return await runCommand(`${baseCommand} up -d --build`, quiet);
     // run docker command up -d --build
     // getCorrectedDockerComposePaths
     // print vars?
@@ -47,14 +48,14 @@ export class Infra {
     const { quiet } = this._config;
     const { baseCommand } = await this.getInitData();
 
-    await runCommand(`${baseCommand} down`, quiet);
+    return await runCommand(`${baseCommand} down`, quiet);
   }
 
   public async config(): Promise<void> {
     const { quiet } = this._config;
     const { baseCommand } = await this.getInitData();
 
-    await runCommand(`${baseCommand} config`, quiet);
+    return await runCommand(`${baseCommand} config`, quiet);
   }
 
   public async getVars(): Promise<string[]> {
@@ -209,34 +210,18 @@ export class Infra {
       return;
     }
 
-    // Compose the package.json file
-    const packageJson = {
-      name: "web3api-infra",
-      version: "1.0.0",
-      private: true,
-      dependencies: packages.reduce((acc, current) => {
-        acc[current.package] = current.versionOrPath;
-        return acc;
-      }, {} as Record<string, string>),
-    };
+    const packageManager = new NodePackageManager({
+      project,
+      installationDirectory: project.getCachePath("infra"),
+    });
 
-    // Write the package.json file into the cache
-    project.writeFileIntoCache(
-      project.getInfraPackagesPath(),
-      JSON.stringify(packageJson)
-    );
-
-    // Install all infra package.json dependencies
-    // TODO: make an "npm/yarn" helper...
-    await runCommand(`cd ${project.getCachePath("infra")} && npm i`);
+    await packageManager.installPackages(packages);
 
     packages.forEach((p) => {
       const defaultPath = "./docker-compose.yml";
 
       const packageDir = path.join(
-        project.getCachePath("infra"),
-        "node_modules",
-        p.package,
+        packageManager.getPackageDir(p.package),
         p.dockerComposePath || defaultPath
       );
 
