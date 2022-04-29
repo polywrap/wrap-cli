@@ -31,3 +31,18 @@ write_encoder.rs:
 * handleKeywords in rust
 * error types for encoder / decoder
 * all existing assemblyscript test cases are ported to rust
+
+# TODO
+## CI/CD
+- ensure the VERSION string is applied to the wasm-rs crate package
+- ensure CI + CD workflows are correct
+
+## Env Support
+- create the env tests
+- add bindings
+- run tests
+
+## BigNumber Type Support
+- research bignum Rust type
+- add bindings
+- run tests

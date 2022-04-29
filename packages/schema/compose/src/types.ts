@@ -5,9 +5,7 @@ export interface SchemaFile {
   absolutePath: string;
 }
 
-export const schemaKinds = ["query", "mutation", "plugin", "combined"] as const;
-
-export type SchemaKind = typeof schemaKinds[number];
+export type SchemaKind = "combined" | string;
 
 export interface SchemaInfo {
   schema?: string;
@@ -40,5 +38,9 @@ export interface LocalImport {
 }
 
 export const SYNTAX_REFERENCE =
-  `External Import: import { Type, Query } into Namespace from "external.uri"\n` +
-  `Local Import: import { Type } from "./local/path/file.graphql"`;
+  "External Import:\n" +
+  `import { Type, Query } into Namespace from "external.uri"\n` +
+  `import * into Namespace from "external.uri"\n` +
+  "Local Import:\n" +
+  `import { Type } from "./local/path/file.graphql"\n` +
+  `import * from "./local/path/file.graphql"`;

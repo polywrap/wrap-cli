@@ -1,0 +1,39 @@
+{
+  "id": "DeployManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "stages"
+  ],
+  "properties": {
+    "format": {
+      "type": "string",
+      "const": "0.0.1-prealpha.1"
+    },
+    "stages": {
+      "patternProperties": {
+        "^.*$": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["package"],
+          "properties": {
+            "package": {
+              "type": "string"
+            },
+            "config": {
+              "type": "object"
+            },
+            "depends_on": {
+              "type": "string"
+            },
+            "uri": {
+              "type": "string",
+              "format": "web3apiUri"
+            }
+          }
+        }
+      }
+    }
+  }
+}

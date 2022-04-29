@@ -1,5 +1,5 @@
 import { ethereumPlugin } from "..";
-import * as Schema from "../w3";
+import * as Schema from "../query/w3";
 
 import { Web3ApiClient, defaultIpfsProviders } from "@web3api/client-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
@@ -7,7 +7,7 @@ import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
-  buildAndDeployApi
+  buildAndDeployApi,
 } from "@web3api/test-env-js";
 import { Wallet } from "ethers";
 
@@ -69,19 +69,24 @@ describe("Ethereum Plugin", () => {
         {
           uri: "w3://ens/ens.web3api.eth",
           plugin: ensPlugin({
-            addresses: {
-              testnet: ensAddress
+            query: {
+              addresses: {
+                testnet: ensAddress
+              }
             }
           })
         }
       ],
     });
 
-    const api = await buildAndDeployApi(
-      `${__dirname}/integration`,
-      ipfs,
-      ensAddress
-    );
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${__dirname}/integration`,
+      ipfsProvider: ipfs,
+      ensRegistryAddress: ensAddress,
+      ensRegistrarAddress: registrarAddress,
+      ensResolverAddress: resolverAddress,
+      ethereumProvider: ethereum,
+    });
 
     uri = `ens/testnet/${api.ensDomain}`;
   });
@@ -162,7 +167,27 @@ describe("Ethereum Plugin", () => {
       expect(response.errors).toBeUndefined();
       expect(response.data?.callContractStatic).toBeDefined();
       expect(response.data?.callContractStatic.error).toBeTruthy();
-      expect(response.data?.callContractStatic.result).toBe("missing revert data in call exception");
+      expect(response.data?.callContractStatic.result).toContain("missing revert data in call exception");
+    });
+
+    it("getBalance", async () => {
+      const signerAddressQuery = await client.invoke<string>({
+        uri,
+        module: "query",
+        method: "getSignerAddress",
+      });
+
+      const response = await client.invoke<string>({
+        uri,
+        module: "query",
+        method: "getBalance",
+        input: {
+          address: signerAddressQuery.data
+        }
+      })
+
+      expect(response.error).toBeUndefined()
+      expect(response.data).toBeDefined()
     });
 
     it("encodeParams", async () => {
@@ -622,7 +647,7 @@ describe("Ethereum Plugin", () => {
 
       expect(mainnetNetwork.data).toBeTruthy();
       expect(mainnetNetwork.errors).toBeFalsy();
-      expect(mainnetNetwork.data?.getNetwork.chainId).toBe(1);
+      expect(mainnetNetwork.data?.getNetwork.chainId).toBe("1");
       expect(mainnetNetwork.data?.getNetwork.name).toBe("homestead");
       expect(mainnetNetwork.data?.getNetwork.ensAddress).toBe("0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e");
 
@@ -646,7 +671,7 @@ describe("Ethereum Plugin", () => {
 
       expect(polygonNetwork.data).toBeTruthy();
       expect(polygonNetwork.errors).toBeFalsy();
-      expect(polygonNetwork.data?.getNetwork.chainId).toBe(137);
+      expect(polygonNetwork.data?.getNetwork.chainId).toBe("137");
       expect(polygonNetwork.data?.getNetwork.name).toBe("matic");
       expect(polygonNetwork.data?.getNetwork.ensAddress).toBeFalsy();
     });

@@ -19,10 +19,10 @@ import {
   deserializeBuildManifest,
   deserializeMetaManifest,
   coreInterfaceUris,
-  Client,
+  PluginModule,
   PluginModules,
+  msgpackDecode,
 } from "@web3api/core-js";
-import * as MsgPack from "@msgpack/msgpack";
 import { readFileSync } from "fs";
 
 jest.setTimeout(200000);
@@ -31,12 +31,16 @@ describe("Web3ApiClient", () => {
   let ipfsProvider: string;
   let ethProvider: string;
   let ensAddress: string;
+  let ensRegistrarAddress: string;
+  let ensResolverAddress: string;
 
   beforeAll(async () => {
-    const { ipfs, ethereum, ensAddress: ens } = await initTestEnvironment();
+    const { ipfs, ethereum, ensAddress: ens, registrarAddress, resolverAddress } = await initTestEnvironment();
     ipfsProvider = ipfs;
     ethProvider = ethereum;
     ensAddress = ens;
+    ensRegistrarAddress = registrarAddress;
+    ensResolverAddress = resolverAddress;
   });
 
   afterAll(async () => {
@@ -44,7 +48,7 @@ describe("Web3ApiClient", () => {
   });
 
   const getClient = async (config?: Partial<Web3ApiClientConfig>) => {
-    return createWeb3ApiClient(
+    const client = await createWeb3ApiClient(
       {
         ethereum: {
           networks: {
@@ -55,25 +59,33 @@ describe("Web3ApiClient", () => {
         },
         ipfs: { provider: ipfsProvider },
         ens: {
-          addresses: {
-            testnet: ensAddress,
+          query: {
+            addresses: {
+              testnet: ensAddress,
+            },
           },
         },
       },
       config
     );
+
+    return client;
   };
 
   const mockPlugin = () => {
-    class MockPlugin extends Plugin {
-      getModules(_client: Client): PluginModules {
+    class Query extends PluginModule {
+      getData(_: unknown) { return 100; }
+    }
+
+    class Mutation extends PluginModule {
+      deployContract(_: unknown): string { return "0x100" }
+    }
+
+    class MockPlugin implements Plugin {
+      getModules(): PluginModules {
         return {
-          query: {
-            getData: async (_: unknown) => 100,
-          },
-          mutation: {
-            deployContract: (_: unknown): string => "0x100",
-          },
+          query: new Query({}),
+          mutation: new Mutation({}),
         };
       }
     }
@@ -87,65 +99,73 @@ describe("Web3ApiClient", () => {
     };
   };
 
-  const mockEnvPlugin = () => {
-    class MockEnvPlugin extends Plugin {
-      getModules(_client: Client): PluginModules {
+  const mockMapPlugin = () => {
+    interface Config extends Record<string, unknown> {
+      map: Map<string, number>;
+    }
+
+    class Query extends PluginModule<Config> {
+      async getMap(_: unknown) { return this.config.map }
+    }
+
+    class Mutation extends PluginModule<Config> {
+      updateMap(input: {
+        map: Map<string, number>;
+      }): Map<string, number> {
+        for (const key of input.map.keys()) {
+          this.config.map.set(
+            key,
+            (this.config.map.get(key) || 0) + (input.map.get(key) || 0)
+          );
+        }
+        return this.config.map;
+      }
+    }
+
+    class MockMapPlugin implements Plugin {
+
+      private map = new Map().set("a", 1).set("b", 2)
+
+      getModules(): PluginModules {
         return {
-          query: {
-            sanitizeEnv: async (env: {arg1: string}) => {
-              return { arg1: parseInt(env.arg1) }
-            },
-            queryEnv: () => {
-              return this.getEnv("query");
-            }
-          },
-          mutation: {
-            sanitizeEnv: async (env: {arg1: number}) => {
-              return { arg1: env.arg1.toString() }
-            },
-            mutationEnv: () => {
-              return this.getEnv("mutation");
-            }
-          },
+          query: new Query({ map: this.map }),
+          mutation: new Mutation({ map: this.map }),
         };
       }
     }
+
     return {
-      factory: () => new MockEnvPlugin(),
+      factory: () => new MockMapPlugin(),
       manifest: {
         schema: ``,
         implements: [],
       },
     };
-  }
+  };
 
   it("default client config", () => {
     const client = new Web3ApiClient();
 
     expect(client.getRedirects()).toStrictEqual([]);
-    expect(
-        client.getPlugins().map(x => x.uri)
-      ).toStrictEqual([
-        new Uri("w3://ens/ipfs.web3api.eth"),
-        new Uri("w3://ens/ens.web3api.eth"),
-        new Uri("w3://ens/ethereum.web3api.eth"),
-        new Uri("w3://ens/http.web3api.eth"),
-        new Uri("w3://ens/js-logger.web3api.eth"),
-        new Uri("w3://ens/uts46.web3api.eth"),
-        new Uri("w3://ens/sha3.web3api.eth"),
-        new Uri("w3://ens/graph-node.web3api.eth"),
-        new Uri("w3://ens/fs.web3api.eth")
-      ]);
-    expect(
-        client.getInterfaces()
-      ).toStrictEqual([
+    expect(client.getPlugins().map((x) => x.uri)).toStrictEqual([
+      new Uri("w3://ens/ipfs.web3api.eth"),
+      new Uri("w3://ens/ens.web3api.eth"),
+      new Uri("w3://ens/ethereum.web3api.eth"),
+      new Uri("w3://ens/http.web3api.eth"),
+      new Uri("w3://ens/js-logger.web3api.eth"),
+      new Uri("w3://ens/uts46.web3api.eth"),
+      new Uri("w3://ens/sha3.web3api.eth"),
+      new Uri("w3://ens/graph-node.web3api.eth"),
+      new Uri("w3://ens/fs.web3api.eth"),
+    ]);
+    expect(client.getInterfaces()).toStrictEqual([
       {
         interface: coreInterfaceUris.uriResolver,
         implementations: [
           new Uri("w3://ens/ipfs.web3api.eth"),
           new Uri("w3://ens/ens.web3api.eth"),
-          new Uri("w3://ens/fs.web3api.eth")
-        ]
+          new Uri("w3://ens/fs.web3api.eth"),
+        ],
       },
       {
         interface: coreInterfaceUris.logger,
@@ -155,15 +175,19 @@ describe("Web3ApiClient", () => {
   });
 
   it("invoke with decode false/true works as expected", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/simple-storage`,
+    const client = await getClient();
+    
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/simple-storage`,
       ipfsProvider,
-      ensAddress
-    );
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
 
     const ensUri = `ens/testnet/${api.ensDomain}`;
-    const client = await getClient();
-
+    
     // The decode option is defaulted to true
     {
       const result = await client.invoke<string>({
@@ -172,8 +196,8 @@ describe("Web3ApiClient", () => {
         method: "deployContract",
         input: {
           connection: {
-            networkNameOrChainId: "testnet"
-          }
+            networkNameOrChainId: "testnet",
+          },
         },
       });
 
@@ -191,16 +215,16 @@ describe("Web3ApiClient", () => {
         method: "deployContract",
         input: {
           connection: {
-            networkNameOrChainId: "testnet"
-          }
+            networkNameOrChainId: "testnet",
+          },
         },
-        noDecode: true
+        noDecode: true,
       });
 
       expect(result.error).toBeFalsy();
       expect(result.data).toBeTruthy();
       expect(result.data instanceof ArrayBuffer).toBeTruthy();
-      expect(MsgPack.decode(result.data as ArrayBuffer)).toContain("0x");
+      expect(msgpackDecode(result.data as ArrayBuffer)).toContain("0x");
     }
   });
 
@@ -219,11 +243,23 @@ describe("Web3ApiClient", () => {
   });
 
   it("invoke simple-storage with custom redirects", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/simple-storage`,
+    const client = await getClient({
+      plugins: [
+        {
+          uri: "w3://ens/mock.web3api.eth",
+          plugin: mockPlugin(),
+        },
+      ],
+    });
+    
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/simple-storage`,
       ipfsProvider,
-      ensAddress
-    );
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
 
     const ensUri = `ens/testnet/${api.ensDomain}`;
 
@@ -233,15 +269,6 @@ describe("Web3ApiClient", () => {
         to: "w3://ens/mock.web3api.eth",
       },
     ];
-
-    const client = await getClient({
-      plugins: [
-        {
-          uri: "w3://ens/mock.web3api.eth",
-          plugin: mockPlugin(),
-        },
-      ],
-    });
 
     const result = await client.invoke({
       uri: ensUri,
@@ -258,11 +285,23 @@ describe("Web3ApiClient", () => {
   });
 
   it("simple-storage with query time redirects", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/simple-storage`,
+    const client = await getClient({
+      plugins: [
+        {
+          uri: "w3://ens/mock.web3api.eth",
+          plugin: mockPlugin(),
+        },
+      ],
+    });
+    
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/simple-storage`,
       ipfsProvider,
-      ensAddress
-    );
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress
+    });
 
     const ensUri = `ens/testnet/${api.ensDomain}`;
 
@@ -272,15 +311,6 @@ describe("Web3ApiClient", () => {
         to: "w3://ens/mock.web3api.eth",
       },
     ];
-
-    const client = await getClient({
-      plugins: [
-        {
-          uri: "w3://ens/mock.web3api.eth",
-          plugin: mockPlugin(),
-        },
-      ],
-    });
 
     const deploy = await client.query<{
       deployContract: string;
@@ -654,9 +684,9 @@ describe("Web3ApiClient", () => {
             manifest: {
               schema: "",
               implements: [],
-            }
-          }
-        }
+            },
+          },
+        },
       ],
       interfaces: [
         {
@@ -678,13 +708,16 @@ describe("Web3ApiClient", () => {
   });
 
   it("asyncify", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/asyncify`,
-      ipfsProvider,
-      ensAddress
-    );
-
     const client = await getClient();
+    
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/asyncify`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
 
     const ensUri = `ens/testnet/${api.ensDomain}`;
     const ipfsUri = `ipfs/${api.ipfsCid}`;
@@ -918,13 +951,16 @@ describe("Web3ApiClient", () => {
   });
 
   it("simple-storage", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/simple-storage`,
-      ipfsProvider,
-      ensAddress
-    );
-
     const client = await getClient();
+    
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/simple-storage`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
 
     const ensUri = `ens/testnet/${api.ensDomain}`;
     const ipfsUri = `ipfs/${api.ipfsCid}`;
@@ -1066,7 +1102,9 @@ describe("Web3ApiClient", () => {
 
     expect(tryGet.errors).toBeFalsy();
     expect(tryGet.data).toBeTruthy();
-    expect(tryGet.data?.tryGetData).toContain("VM Exception while processing transaction");
+    expect(tryGet.data?.tryGetData).toContain(
+      "VM Exception while processing transaction"
+    );
 
     const throwGet = await client.query<{
       throwGetData: string;
@@ -1086,18 +1124,23 @@ describe("Web3ApiClient", () => {
 
     expect(throwGet.data?.throwGetData).toBeFalsy();
     expect(throwGet.errors).toBeTruthy();
-    expect((throwGet.errors as Error[])[0].message).toContain("VM Exception while processing transaction")
+    expect((throwGet.errors as Error[])[0].message).toContain(
+      "VM Exception while processing transaction"
+    );
   });
 
   it("object-types", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/object-types`,
-      ipfsProvider,
-      ensAddress
-    );
-    const ensUri = `ens/testnet/${api.ensDomain}`;
-
     const client = await getClient();
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/object-types`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const method1a = await client.query<{
       method1: {
@@ -1322,14 +1365,17 @@ describe("Web3ApiClient", () => {
   });
 
   it("bigint-type", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/bigint-type`,
-      ipfsProvider,
-      ensAddress
-    );
-    const ensUri = `ens/testnet/${api.ensDomain}`;
-
     const client = await getClient();
+    
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/bigint-type`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
 
     {
       const response = await client.query<{
@@ -1390,13 +1436,17 @@ describe("Web3ApiClient", () => {
   it("JSON-type", async () => {
     type Json = string;
 
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/json-type`,
-      ipfsProvider,
-      ensAddress
-    );
-    const ensUri = `ens/testnet/${api.ensDomain}`;
     const client = await getClient();
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/json-type`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const value = { foo: "bar", bar: "baz" };
     const parseResponse = await client.query<{
@@ -1473,14 +1523,17 @@ describe("Web3ApiClient", () => {
   });
 
   it("bytes-type", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/bytes-type`,
-      ipfsProvider,
-      ensAddress
-    );
-    const ensUri = `ens/testnet/${api.ensDomain}`;
-
     const client = await getClient();
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/bytes-type`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const response = await client.query<{
       bytesMethod: Buffer;
@@ -1508,14 +1561,17 @@ describe("Web3ApiClient", () => {
   });
 
   it("enum-types", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/enum-types`,
-      ipfsProvider,
-      ensAddress
-    );
-    const ensUri = `ens/testnet/${api.ensDomain}`;
-
     const client = await getClient();
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/enum-types`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const method1a = await client.query<any>({
       uri: ensUri,
@@ -1588,14 +1644,17 @@ describe("Web3ApiClient", () => {
   });
 
   it("should work with large types", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/large-types`,
-      ipfsProvider,
-      ensAddress
-    );
-    const ensUri = `ens/testnet/${api.ensDomain}`;
     const client = await getClient();
 
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/large-types`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
     const largeStr = new Array(10000).join("web3api ");
     const largeBytes = new Uint8Array(Buffer.from(largeStr));
     const largeStrArray = [];
@@ -1640,13 +1699,17 @@ describe("Web3ApiClient", () => {
   });
 
   it("number-types under and overflows", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/number-types`,
-      ipfsProvider,
-      ensAddress
-    );
-    const ensUri = `ens/testnet/${api.ensDomain}`;
     const client = await getClient();
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/number-types`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const i8Underflow = await client.query<{
       i8Method: number;
@@ -1788,13 +1851,17 @@ describe("Web3ApiClient", () => {
   });
 
   it("invalid type errors", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/invalid-types`,
-      ipfsProvider,
-      ensAddress
-    );
-    const ensUri = `ens/testnet/${api.ensDomain}`;
     const client = await getClient();
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/invalid-types`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const invalidBoolIntSent = await client.query({
       uri: ensUri,
@@ -1889,313 +1956,6 @@ describe("Web3ApiClient", () => {
     );
   });
 
-  it("plugin env types", async () => {
-    const implementationUri = "w3://ens/some-implementation.eth";
-    const envPlugin = mockEnvPlugin();
-    const client = await getClient({
-      plugins: [
-        {
-          uri: implementationUri,
-          plugin: envPlugin
-        }
-      ],
-      envs: [
-        {
-          uri: implementationUri,
-          query: {
-            arg1: "10"
-          },
-          mutation: {
-            arg1: 11
-          }
-        }
-      ]
-    });
-
-    const queryEnv = await client.query({
-      uri: implementationUri,
-      query: `
-        query {
-          queryEnv
-        }
-        mutation {
-          mutationEnv
-        }
-      `,
-    });
-
-    expect(queryEnv.errors).toBeFalsy();
-    expect(queryEnv.data).toBeTruthy();
-    expect(queryEnv.data?.queryEnv).toMatchObject({arg1: 10});
-    expect(queryEnv.data?.mutationEnv).toMatchObject({arg1: "11"});
-  })
-
-  it("env types", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/env-types`,
-      ipfsProvider,
-      ensAddress
-    );
-
-    const ensUri = `ens/testnet/${api.ensDomain}`;
-    const client = await getClient({
-      envs: [
-        {
-          uri: ensUri,
-          common: {
-            object: {
-              prop: "object string"
-            },
-            str: "string",
-            optFilledStr: "optional string",
-            number: 10,
-            bool: true,
-            en: "FIRST",
-            array: [32, 23]
-          },
-          mutation: {
-            mutStr: "mutation string",
-          },
-          query: {
-            queryStr: "query string",
-          }
-        }
-      ]
-    });
-
-    const queryEnv = await client.query({
-      uri: ensUri,
-      query: `
-        query {
-          queryEnv(
-            arg: "string"
-          )
-        }
-      `,
-    });
-    expect(queryEnv.errors).toBeFalsy();
-    expect(queryEnv.data?.queryEnv).toEqual({
-      str: "string",
-      optFilledStr: "optional string",
-      optStr: null,
-      number: 10,
-      optNumber: null,
-      bool: true,
-      optBool: null,
-      object: {
-        prop: "object string"
-      },
-      optObject: null,
-      en: 0,
-      optEnum: null,
-      queryStr: "query string",
-      array: [32, 23]
-    });
-
-    const mutationEnv = await client.query({
-      uri: ensUri,
-      query: `
-        mutation {
-          mutationEnv(
-            arg: "string"
-          )
-        }
-      `,
-    });
-    expect(mutationEnv.errors).toBeFalsy();
-    expect(mutationEnv.data?.mutationEnv).toEqual({
-      str: "string",
-      optFilledStr: "optional string",
-      optStr: null,
-      number: 10,
-      optNumber: null,
-      bool: true,
-      optBool: null,
-      object: {
-        prop: "object string"
-      },
-      en: 0,
-      optEnum: null,
-      optObject: null,
-      mutStr: "mutation string",
-      array: [32, 23]
-    });
-  });
-
-  it("query time env types", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/env-types`,
-      ipfsProvider,
-      ensAddress
-    );
-
-    const ensUri = `ens/testnet/${api.ensDomain}`;
-    const client = await getClient({
-      envs: [
-        {
-          uri: ensUri,
-          common: {
-            object: {
-              prop: "object string"
-            },
-            str: "string",
-            optFilledStr: "optional string",
-            number: 10,
-            bool: true,
-            en: "FIRST",
-            array: [32, 23]
-          },
-          mutation: {
-            mutStr: "mutation string",
-          },
-          query: {
-            queryStr: "query string",
-          }
-        }
-      ]
-    });
-
-    const queryEnv = await client.query({
-      uri: ensUri,
-      query: `
-        query {
-          queryEnv(
-            arg: "string"
-          )
-        }
-      `,
-    });
-    expect(queryEnv.errors).toBeFalsy();
-    expect(queryEnv.data?.queryEnv).toEqual({
-      str: "string",
-      optFilledStr: "optional string",
-      optStr: null,
-      number: 10,
-      optNumber: null,
-      bool: true,
-      optBool: null,
-      object: {
-        prop: "object string"
-      },
-      optObject: null,
-      en: 0,
-      optEnum: null,
-      queryStr: "query string",
-      array: [32, 23]
-    });
-
-    const queryUpdatedEnv = await client.query({
-      uri: ensUri,
-      query: `
-        query {
-          queryEnv(
-            arg: "string"
-          )
-        }
-      `,
-      config: {
-        envs: [
-          {
-            uri: ensUri,
-            common: {
-              object: {
-                prop: "object another string"
-              },
-              str: "another string",
-              optFilledStr: "optional string",
-              number: 10,
-              bool: true,
-              en: "FIRST",
-              array: [32, 23]
-            },
-            mutation: {
-              mutStr: "mutation string",
-            },
-            query: {
-              queryStr: "query string",
-            }
-          }
-        ]
-      }
-    });
-    expect(queryUpdatedEnv.errors).toBeFalsy();
-    expect(queryUpdatedEnv.data?.queryEnv).toEqual({
-      str: "another string",
-      optFilledStr: "optional string",
-      optStr: null,
-      number: 10,
-      optNumber: null,
-      bool: true,
-      optBool: null,
-      object: {
-        prop: "object another string"
-      },
-      optObject: null,
-      en: 0,
-      optEnum: null,
-      queryStr: "query string",
-      array: [32, 23]
-    });
-  });
-
-
-  it("env client types", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/env-client-types`,
-      ipfsProvider,
-      ensAddress
-    );
-
-    const ensUri = `ens/testnet/${api.ensDomain}`;
-    const client = await getClient({
-      envs: [
-        {
-          uri: ensUri,
-          mutation: {
-            str: "string",
-          },
-          query: {
-            str: "string",
-          }
-        }
-      ]
-    });
-
-    const queryEnv = await client.query({
-      uri: ensUri,
-      query: `
-        query {
-          environment(
-            arg: "string"
-          )
-        }
-      `,
-    });
-    expect(queryEnv.errors).toBeFalsy();
-    expect(queryEnv.data?.environment).toEqual({
-      str: "string",
-      optStr: null,
-      defStr: "default string"
-    });
-
-    const mutationEnv = await client.query({
-      uri: ensUri,
-      query: `
-        mutation {
-          mutEnvironment(
-            arg: "string"
-          )
-        }
-      `,
-    });
-    expect(mutationEnv.errors).toBeFalsy();
-    expect(mutationEnv.data?.mutEnvironment).toEqual({
-      str: "string",
-      optStr: null,
-      defMutStr: "default mutation string"
-    });
-  });
-
   it("loadWeb3Api - pass string or Uri", async () => {
     const implementationUri = "w3://ens/some-implementation.eth";
     const schemaStr = "test-schema";
@@ -2269,18 +2029,24 @@ describe("Web3ApiClient", () => {
   });
 
   it("e2e interface implementations", async () => {
-    let interfaceApi = await buildAndDeployApi(
-      `${GetPathToTestApis()}/implementations/test-interface`,
+    let interfaceApi = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/implementations/test-interface`,
       ipfsProvider,
-      ensAddress
-    );
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
     const interfaceUri = `w3://ens/testnet/${interfaceApi.ensDomain}`;
 
-    const implementationApi = await buildAndDeployApi(
-      `${GetPathToTestApis()}/implementations/test-api`,
+    const implementationApi = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/implementations/test-api`,
       ipfsProvider,
-      ensAddress
-    );
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
     const implementationUri = `w3://ens/testnet/${implementationApi.ensDomain}`;
 
     const client = await getClient({
@@ -2359,12 +2125,17 @@ describe("Web3ApiClient", () => {
   });
 
   it("getManifest -- web3api manifest, build manifest, meta manifest", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/wasm-as/simple-storage`,
-      ipfsProvider,
-      ensAddress
-    );
     const client = await getClient();
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/wasm-as/simple-storage`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+
     const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const actualManifestStr: string = readFileSync(
@@ -2409,7 +2180,7 @@ describe("Web3ApiClient", () => {
     const schema: string = await client.getSchema(
       "w3://ens/js-logger.web3api.eth"
     );
-
+    
     expect(schema).toStrictEqual(
       `### Web3API Header START ###
 scalar UInt
@@ -2422,7 +2193,9 @@ scalar Int16
 scalar Int32
 scalar Bytes
 scalar BigInt
+scalar BigNumber
 scalar JSON
+scalar Map
 
 directive @imported(
   uri: String!
@@ -2441,6 +2214,9 @@ directive @capability(
 ) repeatable on OBJECT
 
 directive @enabled_interface on OBJECT
+
+directive @annotate(type: String!) on FIELD
+
 ### Web3API Header END ###
 
 type Query implements Logger_Query @imports(
@@ -2489,12 +2265,16 @@ enum Logger_LogLevel @imported(
   });
 
   it("getFile -- simple-storage web3api", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/wasm-as/simple-storage`,
-      ipfsProvider,
-      ensAddress
-    );
     const client = await getClient();
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/wasm-as/simple-storage`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+
     const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const manifest: Web3ApiManifest = await client.getManifest(ensUri, {
@@ -2537,12 +2317,17 @@ enum Logger_LogLevel @imported(
   });
 
   it("simple-storage: subscribe", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/wasm-as/simple-storage`,
-      ipfsProvider,
-      ensAddress
-    );
     const client = await getClient();
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/wasm-as/simple-storage`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+
     const ensUri = `ens/testnet/${api.ensDomain}`;
     const ipfsUri = `ipfs/${api.ipfsCid}`;
 
@@ -2632,12 +2417,16 @@ enum Logger_LogLevel @imported(
   });
 
   it("simple-storage: subscription early stop", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/wasm-as/simple-storage`,
-      ipfsProvider,
-      ensAddress
-    );
     const client = await getClient();
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/wasm-as/simple-storage`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
     const ensUri = `ens/testnet/${api.ensDomain}`;
     const ipfsUri = `ipfs/${api.ipfsCid}`;
 
@@ -2732,19 +2521,22 @@ enum Logger_LogLevel @imported(
   });
 
   it("queries API schemas that use reserved keywords", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/reserved-words`,
-      ipfsProvider,
-      ensAddress
-    );
-    const ensUri = `ens/testnet/${api.ensDomain}`;
-
     const client = await getClient();
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/reserved-words`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const query = await client.query<{
       method1: {
         const: string;
-      }
+      };
     }>({
       uri: ensUri,
       query: `
@@ -2768,13 +2560,16 @@ enum Logger_LogLevel @imported(
   });
 
   it("e2e getImplementations capability", async () => {
-    const interfaceUri = "w3://ens/interface.eth"
+    const interfaceUri = "w3://ens/interface.eth";
 
-    const implementationApi = await buildAndDeployApi(
-      `${GetPathToTestApis()}/implementations/test-use-getImpl`,
+    const implementationApi = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/implementations/test-use-getImpl`,
       ipfsProvider,
-      ensAddress
-    );
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
     const implementationUri = `w3://ens/testnet/${implementationApi.ensDomain}`;
 
     const client = await getClient({
@@ -2782,12 +2577,13 @@ enum Logger_LogLevel @imported(
         {
           interface: interfaceUri,
           implementations: [implementationUri],
-        }
+        },
       ],
     });
 
-    expect(client.getImplementations(interfaceUri))
-      .toEqual([implementationUri]);
+    expect(client.getImplementations(interfaceUri)).toEqual([
+      implementationUri,
+    ]);
 
     const query = await client.query<{
       queryMethod: string;
@@ -2804,19 +2600,27 @@ enum Logger_LogLevel @imported(
 
     expect(query.errors).toBeFalsy();
     expect(query.data).toBeTruthy();
-    expect((query.data as any).queryImplementations).toEqual([implementationUri]);
+    expect((query.data as any).queryImplementations).toEqual([
+      implementationUri,
+    ]);
   });
 
   it("e2e Interface invoke method", async () => {
     const interfaceUri = "w3://ens/interface.eth";
     // Build interface polywrapper
-    await runCLI({ args: ["build"], cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`});
+    await runCLI({
+      args: ["build"],
+      cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`,
+    });
 
-    const implementationApi = await buildAndDeployApi(
-      `${GetPathToTestApis()}/interface-invoke/test-implementation`,
+    const implementationApi = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/interface-invoke/test-implementation`,
       ipfsProvider,
-      ensAddress
-    );
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
     const implementationUri = `w3://ens/testnet/${implementationApi.ensDomain}`;
 
     const client = await getClient({
@@ -2824,15 +2628,18 @@ enum Logger_LogLevel @imported(
         {
           interface: interfaceUri,
           implementations: [implementationUri],
-        }
+        },
       ],
     });
 
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/interface-invoke/test-api`,
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/interface-invoke/test-api`,
       ipfsProvider,
-      ensAddress
-    );
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
     const apiUri = `w3://ens/testnet/${api.ensDomain}`;
 
     const query = await client.query<{
@@ -2864,7 +2671,7 @@ enum Logger_LogLevel @imported(
         mutationMethod(
           arg: 1
         )
-      }`
+      }`,
     });
 
     expect(mutation.errors).toBeFalsy();
@@ -2872,4 +2679,179 @@ enum Logger_LogLevel @imported(
     expect(mutation.data?.mutationMethod).toBe(1);
   });
 
+  it("Map-type", async () => {
+    const client = await getClient();
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/map-type`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+
+    const mapClass = new Map<string, number>().set("Hello", 1).set("Heyo", 50);
+    const mapRecord: Record<string, number> = {
+      Hello: 1,
+      Heyo: 50,
+    };
+
+    const returnMapResponse1 = await client.invoke<Map<string, number>>({
+      uri: ensUri,
+      module: "query",
+      method: "returnMap",
+      input: {
+        map: mapClass,
+      },
+    });
+    expect(returnMapResponse1.error).toBeUndefined();
+    expect(returnMapResponse1.data).toEqual(mapClass);
+
+    const returnMapResponse2 = await client.invoke<Map<string, number>>({
+      uri: ensUri,
+      module: "query",
+      method: "returnMap",
+      input: {
+        map: mapRecord,
+      },
+    });
+    expect(returnMapResponse2.error).toBeUndefined();
+    expect(returnMapResponse2.data).toEqual(mapClass);
+
+    const getKeyResponse1 = await client.invoke<number>({
+      uri: ensUri,
+      module: "query",
+      method: "getKey",
+      input: {
+        map: mapClass,
+        key: "Hello",
+      },
+    });
+    expect(getKeyResponse1.error).toBeUndefined();
+    expect(getKeyResponse1.data).toEqual(mapClass.get("Hello"));
+
+    const getKeyResponse2 = await client.invoke<number>({
+      uri: ensUri,
+      module: "query",
+      method: "getKey",
+      input: {
+        map: mapRecord,
+        key: "Heyo",
+      },
+    });
+    expect(getKeyResponse2.error).toBeUndefined();
+    expect(getKeyResponse2.data).toEqual(mapRecord.Heyo);
+  });
+
+  it("plugin map types", async () => {
+    const implementationUri = "w3://ens/some-implementation.eth";
+    const mockPlugin = mockMapPlugin();
+    const client = await getClient({
+      plugins: [
+        {
+          uri: implementationUri,
+          plugin: mockPlugin,
+        },
+      ],
+    });
+
+    const queryEnv = await client.query({
+      uri: implementationUri,
+      query: `
+      query {
+        getMap
+      }
+    `,
+    });
+
+    expect(queryEnv.errors).toBeFalsy();
+    expect(queryEnv.data).toBeTruthy();
+    expect(queryEnv.data?.getMap).toMatchObject(
+      new Map<string, number>().set("a", 1).set("b", 2)
+    );
+
+    const mutationEnv = await client.query({
+      uri: implementationUri,
+      query: `
+      mutation {
+        updateMap(map: $map)
+      }
+      `,
+      variables: {
+        map: new Map<string, number>().set("b", 1).set("c", 5),
+      },
+    });
+
+    expect(mutationEnv.errors).toBeFalsy();
+    expect(mutationEnv.data).toBeTruthy();
+    expect(mutationEnv.data?.updateMap).toMatchObject(
+      new Map<string, number>().set("a", 1).set("b", 3).set("c", 5)
+    );
+  });
+
+  it("merge user-defined interface implementations with each other", async () => {
+    const interfaceUri = "w3://ens/interface.eth";
+    const implementationUri1 = "w3://ens/implementation1.eth";
+    const implementationUri2 = "w3://ens/implementation2.eth";
+
+    const client = new Web3ApiClient({
+      interfaces: [
+        {
+          interface: interfaceUri,
+          implementations: [implementationUri1],
+        },
+        {
+          interface: interfaceUri,
+          implementations: [implementationUri2],
+        },
+      ],
+    });
+
+    const interfaces = client
+      .getInterfaces()
+      .filter((x) => x.interface.uri === interfaceUri);
+    expect(interfaces.length).toEqual(1);
+
+    const implementationUris = interfaces[0].implementations;
+
+    expect(implementationUris).toEqual([
+      new Uri(implementationUri1),
+      new Uri(implementationUri2),
+    ]);
+  });
+
+  it("merge user-defined interface implementations with defaults", async () => {
+    const interfaceUri = coreInterfaceUris.uriResolver.uri;
+    const implementationUri1 = "w3://ens/implementation1.eth";
+    const implementationUri2 = "w3://ens/implementation2.eth";
+
+    const client = new Web3ApiClient({
+      interfaces: [
+        {
+          interface: interfaceUri,
+          implementations: [implementationUri1],
+        },
+        {
+          interface: interfaceUri,
+          implementations: [implementationUri2],
+        },
+      ],
+    });
+
+    const interfaces = client
+      .getInterfaces()
+      .filter((x) => x.interface.uri === interfaceUri);
+    expect(interfaces.length).toEqual(1);
+
+    const implementationUris = interfaces[0].implementations;
+
+    expect(implementationUris).toEqual([
+      new Uri(implementationUri1),
+      new Uri(implementationUri2),
+      ...getDefaultClientConfig().interfaces.find(
+        (x) => x.interface.uri === interfaceUri
+      )!.implementations,
+    ]);
+  });
 });

@@ -10,7 +10,7 @@ import {
   extractListType,
   extractNamedType,
   State,
-} from "./object-types-utils";
+} from "./utils/object-types-utils";
 
 import {
   ObjectTypeDefinitionNode,

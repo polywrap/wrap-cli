@@ -17,7 +17,7 @@
 //!
 //! ```toml
 //! [dependencies.polywrap-wasm-rs]
-//! polywrap-wasm-rs = "0.0.1-prealpha.57"
+//! polywrap-wasm-rs = "$version"
 //! ```
 //!
 //! Then, import the crate into your module/file with the `use` keyword:

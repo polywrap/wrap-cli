@@ -4,8 +4,8 @@ import { UriResolutionStack } from "./UriResolutionStack";
 export class UriResolutionHistory {
   constructor(public readonly stack: UriResolutionStack) {}
 
-  getResolvers(): string[] {
-    return this.stack.map(({ resolver }) => resolver);
+  getUriResolvers(): string[] {
+    return this.stack.map(({ uriResolver }) => uriResolver);
   }
 
   getUris(): Uri[] {
