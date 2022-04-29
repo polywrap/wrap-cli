@@ -1,8 +1,8 @@
 import { Web3ApiProject } from "./project";
-import { correctBuildContextPathsFromCompose } from "./helpers";
 import { intlMsg } from "./intl";
-import { runCommand } from "./helpers/command";
-import { NodePackageManager } from "./InfraPackageManager";
+import { packageManagerClassMap } from "./InfraPackageManager";
+import { runCommand } from "./system";
+import { correctBuildContextPathsFromCompose } from "./helpers/docker";
 
 import { InfraManifest } from "@web3api/core-js";
 import path from "path";
@@ -21,6 +21,7 @@ interface InitData {
 }
 
 type Package = Exclude<InfraManifest["packages"], undefined>[number];
+type Registry = keyof typeof packageManagerClassMap;
 
 export class Infra {
   private _dockerComposePath: string;
@@ -37,25 +38,21 @@ export class Infra {
     const { quiet } = this._config;
     const { baseCommand } = await this.getInitData();
 
-    return await runCommand(`${baseCommand} up -d --build`, quiet);
-    // run docker command up -d --build
-    // getCorrectedDockerComposePaths
-    // print vars?
-    //
+    await runCommand(`${baseCommand} up -d --build`, quiet);
   }
 
   public async down(): Promise<void> {
     const { quiet } = this._config;
     const { baseCommand } = await this.getInitData();
 
-    return await runCommand(`${baseCommand} down`, quiet);
+    await runCommand(`${baseCommand} down`, quiet);
   }
 
   public async config(): Promise<void> {
     const { quiet } = this._config;
     const { baseCommand } = await this.getInitData();
 
-    return await runCommand(`${baseCommand} config`, quiet);
+    await runCommand(`${baseCommand} config`, quiet);
   }
 
   public async getVars(): Promise<string[]> {
@@ -210,42 +207,56 @@ export class Infra {
       return;
     }
 
-    const packageManager = new NodePackageManager({
-      project,
-      installationDirectory: project.getCachePath("infra"),
-    });
-
-    await packageManager.installPackages(packages);
-
-    packages.forEach((p) => {
-      const defaultPath = "./docker-compose.yml";
-
-      const packageDir = path.join(
-        packageManager.getPackageDir(p.package),
-        p.dockerComposePath || defaultPath
-      );
-
-      // Adjust package's docker-compose's build option if it exists
-
-      if (!fs.existsSync(packageDir)) {
-        throw new Error(
-          `Couldn't find docker-compose.yml file for package "${p.package}" at path '${packageDir}'`
-        );
+    const classifiedPackages = packages.reduce((prev, current) => {
+      if (prev[current.registry as Registry]) {
+        prev[current.registry as Registry].push(current);
+      } else {
+        prev[current.registry as Registry] = [current];
       }
 
-      const composeFileWithCorrectPaths = correctBuildContextPathsFromCompose(
-        packageDir
-      );
+      return prev;
+    }, {} as Record<Registry, Package[]>);
 
-      // Write new docker-compose manifests with corrected build path and 'web3api' prefix
-      const newComposeFile = YAML.dump(composeFileWithCorrectPaths);
-      const correctedFilePath = path.join(
-        packageDir,
-        "..",
-        "docker-compose.web3api.yml"
-      );
-      fs.writeFileSync(correctedFilePath, newComposeFile);
-    });
+    for await (const [registry, packages] of Object.entries(
+      classifiedPackages
+    )) {
+      const packageManager = new packageManagerClassMap[registry as Registry]({
+        project,
+        installationDirectory: project.getCachePath("infra"),
+      });
+
+      await packageManager.installPackages(packages);
+
+      packages.forEach((p) => {
+        const defaultPath = "./docker-compose.yml";
+
+        const packageDir = path.join(
+          packageManager.getPackageDir(p.package),
+          p.dockerComposePath || defaultPath
+        );
+
+        // Adjust package's docker-compose's build option if it exists
+
+        if (!fs.existsSync(packageDir)) {
+          throw new Error(
+            `Couldn't find docker-compose.yml file for package "${p.package}" at path '${packageDir}'`
+          );
+        }
+
+        const composeFileWithCorrectPaths = correctBuildContextPathsFromCompose(
+          packageDir
+        );
+
+        // Write new docker-compose manifests with corrected build path and 'web3api' prefix
+        const newComposeFile = YAML.dump(composeFileWithCorrectPaths);
+        const correctedFilePath = path.join(
+          packageDir,
+          "..",
+          "docker-compose.web3api.yml"
+        );
+        fs.writeFileSync(correctedFilePath, newComposeFile);
+      });
+    }
   }
 
   private _getFilteredPackages(

@@ -31,6 +31,9 @@
           "package": {
             "type": "string"
           },
+          "registry": {
+            "type": "string"
+          },
           "versionOrPath": {
             "type": "string"
           },
@@ -38,7 +41,7 @@
             "type": "string"
           }
         },
-        "required": ["name", "package", "versionOrPath"]
+        "required": ["name", "package", "versionOrPath", "registry"]
       }
     }
   }

@@ -245,7 +245,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     }
     // Use a default build manifest for the provided language
     else {
-      await this.cacheDefaultBuildConfig();
+      await this.cacheDefaultBuildManifestFiles();
 
       // Return the cached manifest
       this._config.buildManifestPath = path.join(
@@ -505,7 +505,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
   /// Web3API Infra Manifest (web3api.infra.yaml)
 
   public async getInfraManifestPath(): Promise<string> {
-    const web3apiManifest = await this.getWeb3ApiManifest();
+    const web3apiManifest = await this.getManifest();
 
     // If a custom infra manifest path is configured
     if (this._config.infraManifestPath) {
@@ -514,7 +514,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     // If the web3api.yaml manifest specifies a custom infra manifest
     else if (web3apiManifest.infra) {
       this._config.infraManifestPath = path.join(
-        this.getWeb3ApiManifestDir(),
+        this.getManifestDir(),
         web3apiManifest.infra
       );
 
@@ -555,7 +555,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
 
     // Update the cache
     this.removeCacheDir(this.getDefaultInfraManifestPath());
-    await this.copyFilesIntoCache(
+    await this.copyIntoCache(
       this.getDefaultInfraManifestPath(),
       `${__dirname}/../${this.getDefaultInfraManifestPath()}/*`
     );

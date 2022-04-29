@@ -11,16 +11,16 @@ import { GluegunToolbox, print } from "gluegun";
 import chalk from "chalk";
 
 const HELP = `
-${chalk.bold("w3 test-env")} ${intlMsg.commands_testEnv_options_command()}
+${chalk.bold("w3 test-env")} ${intlMsg.commands_infra_options_command()}
 
 Commands:
-  ${chalk.bold("up")}    ${intlMsg.commands_testEnv_options_start()}
-  ${chalk.bold("down")}  ${intlMsg.commands_testEnv_options_stop()}
+  ${chalk.bold("up")}    ${intlMsg.commands_infra_options_start()}
+  ${chalk.bold("down")}  ${intlMsg.commands_infra_options_stop()}
 `;
 
 export default {
   alias: ["t"],
-  description: intlMsg.commands_testEnv_description(),
+  description: intlMsg.commands_infra_description(),
   run: async (toolbox: GluegunToolbox): Promise<unknown> => {
     const { parameters } = toolbox;
 
@@ -28,13 +28,13 @@ export default {
     const command = parameters.first;
 
     if (!command) {
-      print.error(intlMsg.commands_testEnv_error_noCommand());
+      print.error(intlMsg.commands_infra_error_noCommand());
       print.info(HELP);
       return;
     }
 
     if (command !== "up" && command !== "down") {
-      const unrecognizedCommandMessage = intlMsg.commands_testEnv_error_unrecognizedCommand(
+      const unrecognizedCommandMessage = intlMsg.commands_infra_error_unrecognizedCommand(
         {
           command: command,
         }
@@ -54,9 +54,9 @@ export default {
 
     if (command === "up") {
       return await withSpinner(
-        intlMsg.commands_testEnv_startup_text(),
-        intlMsg.commands_testEnv_startup_error(),
-        intlMsg.commands_testEnv_startup_warning(),
+        intlMsg.commands_infra_startup_text(),
+        intlMsg.commands_infra_startup_error(),
+        intlMsg.commands_infra_startup_warning(),
         async (_spinner) => {
           await startupTestEnv(true);
           await dockerLock.release();
@@ -64,9 +64,9 @@ export default {
       );
     } else if (command === "down") {
       return await withSpinner(
-        intlMsg.commands_testEnv_shutdown_text(),
-        intlMsg.commands_testEnv_shutdown_error(),
-        intlMsg.commands_testEnv_shutdown_warning(),
+        intlMsg.commands_infra_shutdown_text(),
+        intlMsg.commands_infra_shutdown_error(),
+        intlMsg.commands_infra_shutdown_warning(),
         async (_spinner) => {
           await shutdownTestEnv(true);
           await dockerLock.release();
@@ -74,7 +74,7 @@ export default {
       );
     } else {
       await dockerLock.release();
-      throw Error(intlMsg.commands_testEnv_error_never());
+      throw Error(intlMsg.commands_infra_error_never());
     }
   },
 };

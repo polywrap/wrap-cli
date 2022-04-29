@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { displayPath } from "./path";
-import { runCommand } from "./command";
 import { withSpinner } from "./spinner";
 import { intlMsg } from "../intl";
+import { displayPath, runCommand } from "../system";
 
 import { isWin, writeFileSync } from "@web3api/os-js";
 import Mustache from "mustache";

@@ -62,3 +62,8 @@ export class YarnPackageManager extends NodePackageManager {
     await runCommand(`cd ${this.config.installationDirectory} && yarn`);
   }
 }
+
+export const packageManagerClassMap = {
+  npm: NodePackageManager,
+  yarn: YarnPackageManager,
+};

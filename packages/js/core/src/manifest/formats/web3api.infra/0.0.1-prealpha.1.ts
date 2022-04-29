@@ -19,6 +19,7 @@ export interface InfraManifest {
   packages?: {
     name: string;
     package: string;
+    registry: string;
     versionOrPath: string;
     dockerComposePath?: string;
   }[];
