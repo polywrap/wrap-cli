@@ -2,6 +2,7 @@ import { Web3ApiProject } from "./project";
 import { runCommand } from "./system";
 
 import path from "path";
+import fs from "fs";
 
 interface Package {
   package: string;
@@ -49,7 +50,7 @@ export class NodePackageManager extends InfraPackageManager {
       }, {} as Record<string, string>),
     };
 
-    this.config.project.writeFileIntoCache(
+    fs.writeFileSync(
       this.config.installationDirectory,
       JSON.stringify(packageJson)
     );

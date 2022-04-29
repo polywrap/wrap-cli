@@ -300,9 +300,7 @@ export class Compiler {
       await project.cacheDefaultBuildManifestFiles();
 
       dockerfile = generateDockerfile(
-        project.getCachePath(
-          `${project.getDefaultBuildManifestPath()}/Dockerfile.mustache`
-        ),
+        project.getCachePath("build/env/Dockerfile.mustache"),
         buildManifest.config || {}
       );
     }

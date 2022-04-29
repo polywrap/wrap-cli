@@ -1,12 +1,10 @@
 import { intlMsg } from "../lib/intl";
-import { withSpinner } from "../lib/helpers";
 import { Web3ApiProject } from "../lib/project";
 import { Infra } from "../lib/Infra";
-import { runCommand } from "../lib/helpers/command";
 
 import { GluegunToolbox } from "gluegun";
 import chalk from "chalk";
-import fs from "fs";
+import path from "path";
 
 const optionsStr = intlMsg.commands_infra_options_options();
 const manStr = intlMsg.commands_infra_options_manifest();
@@ -44,7 +42,7 @@ export default {
     const command = parameters.first;
     const { p, v } = parameters.options;
     let { packages, verbose } = parameters.options;
-    let manifestPath = parameters.second;
+    const manifestFile = parameters.second;
 
     packages = packages || p;
     verbose = !!(verbose || v);
@@ -64,8 +62,8 @@ export default {
       return;
     }
 
-    manifestPath =
-      (manifestPath && filesystem.resolve(manifestPath)) ||
+    const manifestPath =
+      (manifestFile && filesystem.resolve(manifestFile)) ||
       filesystem.resolve("web3api.yaml");
 
     if (!COMMANDS.includes(command)) {
@@ -79,99 +77,32 @@ export default {
       return;
     }
 
-    // TODO
-    // - create Project w/ web3apimanifestpath & inframanifestpath
-    // - create infra w/ project
-    // - infra.up()
-
     const project = new Web3ApiProject({
+      rootCacheDir: path.dirname(manifestPath),
       web3apiManifestPath: manifestPath,
       quiet: verbose ? false : true,
     });
 
     const infra = new Infra({
       project,
-      packagesToUse: packages
-    });
-
-
-    const infra = await Infra.getInstance({
-      web3apiManifestPath: manifestPath,
+      packagesToUse: packages,
       quiet: !verbose,
-      modulesToUse: modules,
     });
-
-    const manifest = await infra.getInfraManifest();
-
-    if (manifest.modules && modules) {
-      const manifestModuleNames = manifest.modules.map((module) => module.name);
-      const unrecognizedModules: string[] = [];
-      modules.forEach((module: string) => {
-        if (!manifestModuleNames.includes(module)) {
-          unrecognizedModules.push(module);
-        }
-      });
-
-      if (unrecognizedModules.length) {
-        throw new Error(
-          `Unrecognized modules: ${unrecognizedModules.join(", ")}`
-        );
-      }
-    }
-
-    await project.installModules();
-    await project.generateBaseDockerCompose();
-
-    const baseCommand = await project.generateBaseComposedCommand();
 
     if (command === "up") {
-      await runCommand(`${baseCommand} up -d --build`, !verbose);
+      await infra.up();
     } else if (command === "down") {
-      await runCommand(`${baseCommand} down`, !verbose);
+      await infra.down();
     } else if (command === "vars") {
-      let vars = "";
-
-      await withSpinner(
-        intlMsg.commands_infra_vars_text(),
-        intlMsg.commands_infra_vars_error(),
-        intlMsg.commands_infra_vars_warning(),
-        async (_spinner) => {
-          const envVarRegex = /\${([^}]+)}/gm;
-          const composePaths = await project.getCorrectedDockerComposePaths();
-
-          const envVars = composePaths.reduce((acc, current) => {
-            const rawManifest = fs.readFileSync(current, "utf-8");
-            const matches = rawManifest.match(envVarRegex) || [];
-
-            return [
-              ...acc,
-              ...matches.map((match) => {
-                if (match.startsWith("$")) {
-                  if (match.startsWith("${")) {
-                    return match.slice(2, match.length - 1);
-                  }
-
-                  return match.slice(1);
-                }
-
-                return match;
-              }),
-            ];
-          }, [] as string[]);
-
-          const variables = Array.from(new Set(envVars));
-
-          vars = `${variables.map((variable) => `\n- ${variable}`).join("")}`;
-        }
-      );
+      const vars = await infra.getVars();
 
       print.info(vars);
     } else if (command === "config") {
-      const { stdout } = await runCommand(`${baseCommand} config`, !verbose);
+      const { stdout } = await infra.config();
 
       print.info(stdout);
     } else {
-      throw Error(intlMsg.commands__error_never());
+      throw Error(intlMsg.commands_infra_error_never());
     }
   },
 };

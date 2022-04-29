@@ -6,7 +6,7 @@ import url from "url";
 // make a single "exec" interface
 // use it for all "runCommand" and "exec" and "execSync" operations
 
-function shouldUseYarn(): boolean {
+export function shouldUseYarn(): boolean {
   try {
     execSync("yarnpkg --version", { stdio: "ignore" });
     return true;
@@ -31,7 +31,7 @@ function getProxy() {
   }
 }
 
-function checkIfOnline(useYarn: boolean) {
+export function checkIfOnline(useYarn: boolean): Promise<unknown> {
   if (!useYarn) {
     // Don't ping the Yarn registry.
     // We'll just assume the best case.

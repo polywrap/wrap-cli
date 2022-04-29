@@ -545,7 +545,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
       );
     }
 
-    return this._infraManifest;
+    return this._infraManifest as InfraManifest;
   }
 
   public async cacheDefaultInfraConfig(): Promise<void> {

@@ -48,11 +48,14 @@ export class Infra {
     await runCommand(`${baseCommand} down`, quiet);
   }
 
-  public async config(): Promise<void> {
+  public async config(): Promise<{
+    stdout: string;
+    stderr: string;
+  }> {
     const { quiet } = this._config;
     const { baseCommand } = await this.getInitData();
 
-    await runCommand(`${baseCommand} config`, quiet);
+    return await runCommand(`${baseCommand} config`, quiet);
   }
 
   public async getVars(): Promise<string[]> {
