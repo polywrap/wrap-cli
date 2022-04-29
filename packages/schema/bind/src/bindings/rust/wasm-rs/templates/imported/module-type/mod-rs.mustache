@@ -39,7 +39,7 @@ impl {{#toUpper}}{{type}}{{/toUpper}} {
 
     {{#methods}}
     pub fn {{#toLower}}{{name}}{{/toLower}}(input: &Input{{#toUpper}}{{name}}{{/toUpper}}) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, String> {
-        let uri = {{#query}}{{#toUpper}}{{type}}{{/toUpper}}{{/query}}::URI;
+        let uri = {{#parent}}{{#toUpper}}{{type}}{{/toUpper}}{{/parent}}::URI;
         let args = serialize_{{#toLower}}{{name}}{{/toLower}}_args(input).map_err(|e| e.to_string())?;
         let result = subinvoke::w3_subinvoke(
             uri,
