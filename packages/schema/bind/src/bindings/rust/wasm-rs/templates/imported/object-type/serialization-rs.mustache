@@ -1,4 +1,4 @@
-{{^__commonImport}}
+{{^__commonPath}}
 use std::convert::TryFrom;
 use polywrap_wasm_rs::{
     BigInt,
@@ -147,4 +147,4 @@ pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<
         {{/properties}}
     })
 }
-{{/__commonImport}}
+{{/__commonPath}}

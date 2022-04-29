@@ -1,7 +1,7 @@
-{{#__commonImport}}
+{{#__commonPath}}
 pub use super::super::common::{{#toUpper}}{{type}}{{/toUpper}};
-{{/__commonImport}}
-{{^__commonImport}}
+{{/__commonPath}}
+{{^__commonPath}}
 use serde::{Serialize, Deserialize};
 use polywrap_wasm_rs::{
     BigInt,
@@ -54,4 +54,4 @@ impl {{#toUpper}}{{type}}{{/toUpper}} {
     {{/last}}
     {{/methods}}
 }
-{{/__commonImport}}
+{{/__commonPath}}

@@ -1,12 +1,12 @@
-{{#__commonImport}}
+{{#__commonPath}}
 pub use super::common::{
     get_{{#toLower}}{{type}}{{/toLower}}_key,
     get_{{#toLower}}{{type}}{{/toLower}}_value,
     sanitize_{{#toLower}}{{type}}{{/toLower}}_value,
     {{#toUpper}}{{type}}{{/toUpper}}
 };
-{{/__commonImport}}
-{{^__commonImport}}
+{{/__commonPath}}
+{{^__commonPath}}
 use polywrap_wasm_rs::{EnumTypeError};
 use serde::{Serialize, Deserialize};
 use std::convert::TryFrom;
@@ -62,4 +62,4 @@ impl TryFrom<i32> for {{#toUpper}}{{type}}{{/toUpper}} {
         }
     }
 }
-{{/__commonImport}}
+{{/__commonPath}}

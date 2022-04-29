@@ -1,3 +1,4 @@
+{{^__commonModule}}
 {{#moduleTypes}}
 {{#methods.length}}
 use crate::{
@@ -30,3 +31,4 @@ pub extern "C" fn _w3_invoke(method_size: u32, args_size: u32) -> bool {
         _ => invoke::w3_invoke(args, None),
     }
 }
+{{/__commonModule}}

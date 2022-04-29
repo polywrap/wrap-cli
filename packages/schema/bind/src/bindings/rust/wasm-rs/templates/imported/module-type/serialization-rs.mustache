@@ -1,4 +1,4 @@
-{{^__commonImport}}
+{{^__commonPath}}
 {{#methods.length}}
 use serde::{Serialize, Deserialize};
 use polywrap_wasm_rs::{
@@ -114,4 +114,4 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_result(result: &[u8]) -> Res
 {{/last}}
 {{/methods}}
 {{/methods.length}}
-{{/__commonImport}}
+{{/__commonPath}}

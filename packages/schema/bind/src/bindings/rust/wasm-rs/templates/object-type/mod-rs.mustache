@@ -1,7 +1,7 @@
-{{#__commonImport}}
+{{#__commonPath}}
 pub use super::common::{{#toUpper}}{{type}}{{/toUpper}};
-{{/__commonImport}}
-{{^__commonImport}}
+{{/__commonPath}}
+{{^__commonPath}}
 use serde::{Serialize, Deserialize};
 pub mod serialization;
 use polywrap_wasm_rs::{
@@ -55,4 +55,4 @@ impl {{#toUpper}}{{type}}{{/toUpper}} {
         read_{{#toLower}}{{type}}{{/toLower}}(reader).map_err(|e| DecodeError::TypeReadError(e.to_string()))
     }
 }
-{{/__commonImport}}
+{{/__commonPath}}
