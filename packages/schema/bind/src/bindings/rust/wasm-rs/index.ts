@@ -26,8 +26,7 @@ const subTemplates = loadSubTemplates(templatesDir.entries);
 const templatePath = (subpath: string) =>
   path.join(__dirname, "./templates", subpath);
 
-const toLower = (type: string) =>
-  Functions.toLower()(type, (str) => str);
+const toLower = (type: string) => Functions.toLower()(type, (str) => str);
 
 export const generateBinding: GenerateBindingFn = (
   options: BindOptions
@@ -59,7 +58,7 @@ export const generateBinding: GenerateBindingFn = (
   }
 
   return result;
-}
+};
 
 function applyTransforms(typeInfo: TypeInfo): TypeInfo {
   const transforms = [
@@ -149,11 +148,7 @@ function generateModuleBinding(module: BindModuleOptions): BindModuleOutput {
       name: "imported",
       data: [
         ...importEntries,
-        ...renderTemplates(
-          templatePath("imported"),
-          typeInfo,
-          subTemplates
-        ),
+        ...renderTemplates(templatePath("imported"), typeInfo, subTemplates),
       ],
     });
   }
@@ -189,11 +184,7 @@ function generateModuleBinding(module: BindModuleOptions): BindModuleOutput {
     output.entries.push({
       type: "Directory",
       name: toLower(enumType.type),
-      data: renderTemplates(
-        templatePath("enum-type"),
-        enumType,
-        subTemplates
-      ),
+      data: renderTemplates(templatePath("enum-type"), enumType, subTemplates),
     });
   }
 

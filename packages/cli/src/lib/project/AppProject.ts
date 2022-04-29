@@ -109,7 +109,7 @@ export class AppProject extends Project<AppManifest> {
 
   public async generateSchemaBindings(
     composerOutput: ComposerOutput,
-    generationSubPath: string = "src/w3"
+    generationSubPath = "src/w3"
   ): Promise<BindOutput> {
     return bindSchema({
       projectName: await this.getName(),

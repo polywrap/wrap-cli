@@ -12,7 +12,7 @@ export function getGenerateBindingFn(
   bindLanguage: BindLanguage
 ): GenerateBindingFn {
   switch (bindLanguage) {
-    case "wasm-as": 
+    case "wasm-as":
       return WasmAs.generateBinding;
     case "wasm-rs":
       return WasmRs.generateBinding;

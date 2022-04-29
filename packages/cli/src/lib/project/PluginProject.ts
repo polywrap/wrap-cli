@@ -118,7 +118,7 @@ export class PluginProject extends Project<PluginManifest> {
 
   public async generateSchemaBindings(
     composerOutput: ComposerOutput,
-    generationSubPath: string = "w3"
+    generationSubPath = "w3"
   ): Promise<BindOutput> {
     const manifest = await this.getManifest();
     const queryModule = manifest.modules.query?.module as string;
@@ -191,7 +191,10 @@ export class PluginProject extends Project<PluginManifest> {
     return bindSchema(options);
   }
 
-  private _getGenerationDirectory(entryPoint: string, generationSubPath: string): string {
+  private _getGenerationDirectory(
+    entryPoint: string,
+    generationSubPath: string
+  ): string {
     const absolute = path.isAbsolute(entryPoint)
       ? entryPoint
       : path.join(this.getManifestDir(), entryPoint);

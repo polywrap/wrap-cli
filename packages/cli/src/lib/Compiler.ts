@@ -187,7 +187,7 @@ export class Compiler {
 
       if (compilerOverrides) {
         // Validate the manifest for the given build-env
-        if (!!compilerOverrides.validateManifest) {
+        if (compilerOverrides.validateManifest) {
           compilerOverrides.validateManifest(web3ApiManifest);
         }
       }
