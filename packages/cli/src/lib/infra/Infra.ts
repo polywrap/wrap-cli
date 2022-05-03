@@ -1,8 +1,8 @@
-import { Web3ApiProject } from "./project";
-import { intlMsg } from "./intl";
-import { packageManagerClassMap } from "./InfraPackageManager";
-import { runCommand } from "./system";
-import { correctBuildContextPathsFromCompose } from "./helpers/docker";
+import { Web3ApiProject } from "../project";
+import { intlMsg } from "../intl";
+import { dependencyFetcherClassMap } from "./fetchers";
+import { runCommand } from "../system";
+import { correctBuildContextPathsFromCompose } from "../helpers/docker";
 
 import { InfraManifest } from "@web3api/core-js";
 import path from "path";
@@ -21,7 +21,8 @@ interface InitData {
 }
 
 type Package = Exclude<InfraManifest["packages"], undefined>[number];
-type Registry = keyof typeof packageManagerClassMap;
+type NamedPackage = Package & { name: string };
+type Registry = keyof typeof dependencyFetcherClassMap;
 
 export class Infra {
   private _dockerComposePath: string;
@@ -98,6 +99,12 @@ export class Infra {
   private async _init() {
     const { project, packagesToUse } = this._config;
 
+    const cacheDir = project.getCachePath("infra");
+
+    if (!fs.existsSync(cacheDir)) {
+      fs.mkdirSync(cacheDir, { recursive: true });
+    }
+
     // Get the infra manifest
     const manifest = await project.getInfraManifest();
 
@@ -108,7 +115,6 @@ export class Infra {
     await this._installPackages(project, manifest, packagesToUse);
 
     // generate base docker compose
-
     await this._generateBaseDockerCompose();
 
     // generate base composed command
@@ -127,7 +133,7 @@ export class Infra {
     packagesToUse?: string[]
   ): void {
     if (manifest.packages && packagesToUse) {
-      const manifestPackageNames = manifest.packages.map((p) => p.name);
+      const manifestPackageNames = Object.keys(manifest.packages);
       const unrecognizedPackages: string[] = [];
       packagesToUse.forEach((p: string) => {
         if (!manifestPackageNames.includes(p)) {
@@ -175,23 +181,20 @@ export class Infra {
     const { project, packagesToUse } = this._config;
     const manifest = await project.getInfraManifest();
 
-    if (manifest.packages && !this._initData) {
-      throw new Error("Infra packages have not been installed");
-    }
-
     const packages = this._getFilteredPackages(manifest, packagesToUse);
 
     const defaultPath = "./docker-compose.web3api.yml";
 
     return packages.map((p) => {
-      const dockerComposePath = p.dockerComposePath
-        ? path.join(p.dockerComposePath, "..", defaultPath)
-        : defaultPath;
+      const dockerComposePath =
+        this._isLocalPackage(p) || !p.dockerComposePath
+          ? defaultPath
+          : path.join(p.dockerComposePath, "..", defaultPath);
 
       return path.join(
         project.getCachePath("infra"),
         "node_modules",
-        p.package,
+        p.name,
         dockerComposePath
       );
     });
@@ -211,38 +214,60 @@ export class Infra {
     }
 
     const classifiedPackages = packages.reduce((prev, current) => {
-      if (prev[current.registry as Registry]) {
-        prev[current.registry as Registry].push(current);
+      const registry = this._isLocalPackage(current)
+        ? "file"
+        : (current.registry as Registry);
+
+      if (prev[registry]) {
+        prev[registry].push(current);
       } else {
-        prev[current.registry as Registry] = [current];
+        prev[registry] = [current];
       }
 
       return prev;
-    }, {} as Record<Registry, Package[]>);
+    }, {} as Record<Registry, NamedPackage[]>);
 
     for await (const [registry, packages] of Object.entries(
       classifiedPackages
     )) {
-      const packageManager = new packageManagerClassMap[registry as Registry]({
+      const dependencyFetcher = new dependencyFetcherClassMap[
+        registry as Registry
+      ]({
         project,
         installationDirectory: project.getCachePath("infra"),
       });
 
-      await packageManager.installPackages(packages);
+      const mappedInfraPackages = packages.map((p) => {
+        if (this._isLocalPackage(p)) {
+          return {
+            name: p.name,
+            versionOrPath: p.path,
+          };
+        }
+
+        return {
+          name: p.package,
+          versionOrPath: p.version,
+        };
+      });
+
+      await dependencyFetcher.installPackages(mappedInfraPackages);
 
       packages.forEach((p) => {
         const defaultPath = "./docker-compose.yml";
 
         const packageDir = path.join(
-          packageManager.getPackageDir(p.package),
-          p.dockerComposePath || defaultPath
+          dependencyFetcher.getPackageDir(p.name),
+          this._isLocalPackage(p) || !p.dockerComposePath
+            ? defaultPath
+            : p.dockerComposePath
         );
 
         // Adjust package's docker-compose's build option if it exists
 
         if (!fs.existsSync(packageDir)) {
           throw new Error(
-            `Couldn't find docker-compose.yml file for package "${p.package}" at path '${packageDir}'`
+            `Couldn't find docker-compose.yml file for package "${p.name}" at path '${packageDir}'`
           );
         }
 
@@ -265,15 +290,20 @@ export class Infra {
   private _getFilteredPackages(
     manifest: InfraManifest,
     packagesToUse?: string[]
-  ): Package[] {
-    if (!manifest.packages) {
-      return [];
-    }
-
+  ): NamedPackage[] {
     if (!packagesToUse || !packagesToUse.length) {
-      return manifest.packages;
+      return Object.entries(manifest.packages).map(([name, value]) => ({
+        name,
+        ...value,
+      }));
     }
 
-    return manifest.packages.filter((p) => packagesToUse.includes(p.name));
+    return Object.entries(manifest.packages)
+      .filter(([name]) => packagesToUse.includes(name))
+      .map(([name, value]) => ({ name, ...value }));
+  }
+
+  private _isLocalPackage(object: unknown): object is { path: string } {
+    return Object.prototype.hasOwnProperty.call(object, "path");
   }
 }
