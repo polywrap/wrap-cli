@@ -46,6 +46,7 @@ const cacheLayout = {
   buildLinkedPackagesDir: "build/linked-packages/",
   deployDir: "deploy/",
   deployEnvDir: "deploy/env/",
+  infraDir: "infra",
 };
 
 export interface Web3ApiProjectConfig extends ProjectConfig {

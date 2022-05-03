@@ -2,7 +2,7 @@
   "id": "InfraManifest",
   "type": "object",
   "additionalProperties": false,
-  "required": ["format"],
+  "required": ["format", "packages"],
   "properties": {
     "format": {
       "type": "string",
@@ -20,29 +20,45 @@
       "additionalProperties": false
     },
     "packages": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "name": {
-            "type": "string"
-          },
-          "package": {
-            "type": "string"
-          },
-          "registry": {
-            "type": "string"
-          },
-          "versionOrPath": {
-            "type": "string"
-          },
-          "dockerComposePath": {
-            "type": "string"
-          }
-        },
-        "required": ["name", "package", "versionOrPath", "registry"]
+      "patternProperties": {
+        "^.*$": {
+          "oneOf": [
+            {"$ref": "#/definitions/remotePackage"},
+            {"$ref": "#/definitions/localPackage"}
+          ]
+        }
       }
+    }
+  },
+  "definitions": {
+    "remotePackage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "package": {
+          "type": "string"
+        },
+        "registry": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "dockerComposePath": {
+          "type": "string"
+        }
+      },
+      "required": ["name", "package", "version", "registry"]
+    },
+    "localPackage": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string"
+        }
+      },
+      "required": ["path"]
     }
   }
 }
