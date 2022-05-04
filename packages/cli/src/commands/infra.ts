@@ -8,7 +8,7 @@ import path from "path";
 
 const optionsStr = intlMsg.commands_infra_options_options();
 const manStr = intlMsg.commands_infra_options_manifest();
-const packageNameStr = intlMsg.commands_infra_packageName();
+const moduleNameStr = intlMsg.commands_infra_moduleName();
 
 const cmdStr = intlMsg.commands_create_options_command();
 const upStr = intlMsg.commands_infra_command_up();
@@ -23,14 +23,14 @@ const HELP = `
 ${chalk.bold("w3 infra")} <${cmdStr}> <web3api-${manStr}> [${optionsStr}]
 
 ${intlMsg.commands_create_options_commands()}:
-  ${chalk.bold("up")}     ${upStr}
-  ${chalk.bold("down")}     ${downStr}
   ${chalk.bold("config")}  ${configStr}
-  ${chalk.bold("vars")}  ${varsStr}
+  ${chalk.bold("down")}     ${downStr}
   ${chalk.bold("help")}     ${helpStr}
+  ${chalk.bold("up")}     ${upStr}
+  ${chalk.bold("vars")}  ${varsStr}
 
 ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
-  -p, --packages [<${packageNameStr}>]       ${intlMsg.commands_infra_options_m()}
+  -m, --modules [<${moduleNameStr}>]       ${intlMsg.commands_infra_options_m()}
   -v, --verbose                      ${intlMsg.commands_infra_options_v()}
 `;
 
