@@ -47,6 +47,7 @@ const cacheLayout = {
   deployDir: "deploy/",
   deployEnvDir: "deploy/env/",
   infraDir: "infra",
+  infraModulesDir: "infra/modules",
 };
 
 export interface Web3ApiProjectConfig extends ProjectConfig {
@@ -568,8 +569,12 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     return `default-manifests/infra/`;
   }
 
-  public getInfraPackagesPath(): string {
-    return "infra/packages";
+  public getInfraCachePath(): string {
+    return this.getCachePath(cacheLayout.infraDir);
+  }
+
+  public getInfraCacheModulesPath(): string {
+    return this.getCachePath(cacheLayout.infraModulesDir);
   }
 
   /// Web3API Meta Manifest (web3api.build.yaml)

@@ -32,7 +32,7 @@ export class Infra {
 
   constructor(private _config: InfraConfig) {
     this._dockerComposePath = path.join(
-      _config.project.getCachePath("infra"),
+      _config.project.getInfraCacheModulesPath(),
       "docker-compose.yml"
     );
   }
@@ -101,7 +101,7 @@ export class Infra {
   private async _init() {
     const { project, packagesToUse } = this._config;
 
-    const cacheDir = project.getCachePath("infra");
+    const cacheDir = project.getInfraCacheModulesPath();
 
     if (!fs.existsSync(cacheDir)) {
       fs.mkdirSync(cacheDir, { recursive: true });
@@ -240,7 +240,7 @@ export class Infra {
     const localModules = modules.filter((m): m is NamedLocalModule =>
       this._isLocalModule(m)
     );
-    const installationDir = this._config.project.getCachePath("infra");
+    const installationDir = this._config.project.getInfraCacheModulesPath();
 
     const remoteComposePaths = await this._fetchRemoteModules(
       remoteModules,
@@ -261,8 +261,6 @@ export class Infra {
 
       // Write new docker-compose manifests with corrected build path and 'web3api' prefix
       const newComposeFile = YAML.dump(composeFileWithCorrectPaths);
-
-      console.log(newComposeFile);
       fs.writeFileSync(composePath, newComposeFile);
     });
 
@@ -274,7 +272,10 @@ export class Infra {
     _: string
   ): Promise<string[]> {
     const dockerComposePaths: string[] = [];
-    const basePath = path.join("infra", "local");
+    const basePath = path.join(
+      this._config.project.getInfraCacheModulesPath(),
+      "local"
+    );
     const defaultComposePaths = [
       "./docker-compose.yml",
       "./docker-compose.yaml",
