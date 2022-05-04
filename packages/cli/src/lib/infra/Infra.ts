@@ -2,7 +2,7 @@ import { Web3ApiProject } from "../project";
 import { intlMsg } from "../intl";
 import { dependencyFetcherClassMap } from "./fetchers";
 import { runCommand } from "../system";
-// import { correctBuildContextPathsFromCompose } from "../helpers/docker";
+import { correctBuildContextPathsFromCompose } from "../helpers/docker";
 
 import { InfraManifest } from "@web3api/core-js";
 import path from "path";
@@ -177,29 +177,6 @@ export class Infra {
     fs.writeFileSync(this._dockerComposePath, fileContent);
   }
 
-  // private async getCorrectedDockerComposePaths(): Promise<string[]> {
-  //   const { project, packagesToUse } = this._config;
-  //   const manifest = await project.getInfraManifest();
-
-  //   const packages = this._getFilteredModules(manifest, packagesToUse);
-
-  //   const defaultPath = "./docker-compose.web3api.yml";
-
-  //   return packages.map((p) => {
-  //     const dockerComposePath =
-  //       this._isLocalModule(p) || !p.dockerComposePath
-  //         ? defaultPath
-  //         : path.join(p.dockerComposePath, "..", defaultPath);
-
-  //     return path.join(
-  //       project.getCachePath("infra"),
-  //       "node_modules",
-  //       p.name,
-  //       dockerComposePath
-  //     );
-  //   });
-  // }
-
   // Compose package.json under .w3 folder and install deps
   private async _fetchRemoteModules(
     modules: NamedRemoteModule[],
@@ -247,37 +224,6 @@ export class Infra {
       });
 
       dockerComposePaths.push(...paths);
-
-      // modules.forEach((module) => {
-      //   const defaultPath = "./docker-compose.yml";
-
-      //   const moduleComposeFilePath = path.join(
-      //     dependencyFetcher.getPackageDir(module.package),
-      //     module.dockerComposePath ?? defaultPath
-      //   );
-
-      //   // Adjust package's docker-compose's build option if it exists
-
-      //   if (!fs.existsSync(moduleComposeFilePath)) {
-      //     if(!fs.existsSync(moduleComposeFilePath))
-      //     throw new Error(
-      //       `Couldn't find docker-compose.yml file for package "${module.name}" at path '${moduleComposeFilePath}'`
-      //     );
-      //   }
-
-      //   const composeFileWithCorrectPaths = correctBuildContextPathsFromCompose(
-      //     moduleComposeFilePath
-      //   );
-
-      //   // Write new docker-compose manifests with corrected build path and 'web3api' prefix
-      //   const newComposeFile = YAML.dump(composeFileWithCorrectPaths);
-      //   const correctedFilePath = path.join(
-      //     moduleComposeFilePath,
-      //     "..",
-      //     "docker-compose.web3api.yml"
-      //   );
-      //   fs.writeFileSync(correctedFilePath, newComposeFile);
-      // });
     }
 
     return dockerComposePaths;
@@ -305,7 +251,22 @@ export class Infra {
       installationDir
     );
 
-    return [...remoteComposePaths, ...localComposePaths];
+    const composePaths = [...remoteComposePaths, ...localComposePaths];
+
+    composePaths.forEach((composePath) => {
+      // Adjust package's docker-compose's build option if it exists
+      const composeFileWithCorrectPaths = correctBuildContextPathsFromCompose(
+        composePath
+      );
+
+      // Write new docker-compose manifests with corrected build path and 'web3api' prefix
+      const newComposeFile = YAML.dump(composeFileWithCorrectPaths);
+
+      console.log(newComposeFile);
+      fs.writeFileSync(composePath, newComposeFile);
+    });
+
+    return composePaths;
   }
 
   private async _fetchLocalModules(

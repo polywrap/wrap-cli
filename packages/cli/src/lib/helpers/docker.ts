@@ -170,6 +170,8 @@ export function correctBuildContextPathsFromCompose(
     fs.readFileSync(dockerComposePath, "utf-8")
   ) as DockerCompose;
 
+  const composeContextDir = path.dirname(path.resolve(dockerComposePath));
+
   const correctedServiceEntries = Object.entries(
     dockerComposeFile.services || {}
   ).map(([serviceName, value]) => {
@@ -182,7 +184,7 @@ export function correctBuildContextPathsFromCompose(
         serviceName,
         {
           ...value,
-          build: path.join(path.join(dockerComposePath, ".."), value.build),
+          build: path.join(composeContextDir, value.build),
         },
       ];
     } else {
@@ -192,7 +194,7 @@ export function correctBuildContextPathsFromCompose(
           ...value,
           build: {
             ...value.build,
-            context: path.join(dockerComposePath, ".."),
+            context: path.join(composeContextDir, value.build.context),
           },
         },
       ];
