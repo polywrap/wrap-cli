@@ -2,7 +2,7 @@ import { Web3ApiProject } from "../project";
 import { intlMsg } from "../intl";
 import { dependencyFetcherClassMap } from "./fetchers";
 import { runCommand } from "../system";
-import { correctBuildContextPathsFromCompose } from "../helpers/docker";
+// import { correctBuildContextPathsFromCompose } from "../helpers/docker";
 
 import { InfraManifest } from "@web3api/core-js";
 import path from "path";
@@ -20,8 +20,10 @@ interface InitData {
   correctedDockerComposePaths: string[];
 }
 
-type Package = Exclude<InfraManifest["packages"], undefined>[number];
-type NamedPackage = Package & { name: string };
+type Module = Exclude<InfraManifest["modules"], undefined>[number];
+type NamedModule = Module & { name: string };
+type NamedRemoteModule = Extract<NamedModule, { registry: string }>;
+type NamedLocalModule = Extract<NamedModule, { path: string }>;
 type Registry = keyof typeof dependencyFetcherClassMap;
 
 export class Infra {
@@ -108,18 +110,16 @@ export class Infra {
     // Get the infra manifest
     const manifest = await project.getInfraManifest();
 
-    // Check for unrecognized infra packages
-    this._sanitizePackages(manifest, packagesToUse);
+    // Check for unrecognized infra modules
+    this._sanitizeModules(manifest, packagesToUse);
 
-    // Install infra packages
-    await this._installPackages(project, manifest, packagesToUse);
+    // Fetch infra modules
+    const packagePaths = await this._fetchModules(manifest, packagesToUse);
 
     // generate base docker compose
     await this._generateBaseDockerCompose();
 
     // generate base composed command
-
-    const packagePaths = await this.getCorrectedDockerComposePaths();
     const command = await this._generateBaseComposedCommand(packagePaths);
 
     this._initData = {
@@ -128,23 +128,23 @@ export class Infra {
     };
   }
 
-  private _sanitizePackages(
+  private _sanitizeModules(
     manifest: InfraManifest,
-    packagesToUse?: string[]
+    modulesToUse?: string[]
   ): void {
-    if (manifest.packages && packagesToUse) {
-      const manifestPackageNames = Object.keys(manifest.packages);
-      const unrecognizedPackages: string[] = [];
-      packagesToUse.forEach((p: string) => {
-        if (!manifestPackageNames.includes(p)) {
-          unrecognizedPackages.push(p);
+    if (modulesToUse) {
+      const manifestModuleNames = Object.keys(manifest.modules);
+      const unrecognizedModules: string[] = [];
+      modulesToUse.forEach((p: string) => {
+        if (!manifestModuleNames.includes(p)) {
+          unrecognizedModules.push(p);
         }
       });
 
-      if (unrecognizedPackages.length) {
+      if (unrecognizedModules.length) {
         throw new Error(
-          intlMsg.lib_infra_unrecognizedPackage({
-            packages: unrecognizedPackages.join(", "),
+          intlMsg.lib_infra_unrecognizedModule({
+            modules: unrecognizedModules.join(", "),
           })
         );
       }
@@ -177,46 +177,40 @@ export class Infra {
     fs.writeFileSync(this._dockerComposePath, fileContent);
   }
 
-  private async getCorrectedDockerComposePaths(): Promise<string[]> {
-    const { project, packagesToUse } = this._config;
-    const manifest = await project.getInfraManifest();
+  // private async getCorrectedDockerComposePaths(): Promise<string[]> {
+  //   const { project, packagesToUse } = this._config;
+  //   const manifest = await project.getInfraManifest();
 
-    const packages = this._getFilteredPackages(manifest, packagesToUse);
+  //   const packages = this._getFilteredModules(manifest, packagesToUse);
 
-    const defaultPath = "./docker-compose.web3api.yml";
+  //   const defaultPath = "./docker-compose.web3api.yml";
 
-    return packages.map((p) => {
-      const dockerComposePath =
-        this._isLocalPackage(p) || !p.dockerComposePath
-          ? defaultPath
-          : path.join(p.dockerComposePath, "..", defaultPath);
+  //   return packages.map((p) => {
+  //     const dockerComposePath =
+  //       this._isLocalModule(p) || !p.dockerComposePath
+  //         ? defaultPath
+  //         : path.join(p.dockerComposePath, "..", defaultPath);
 
-      return path.join(
-        project.getCachePath("infra"),
-        "node_modules",
-        p.name,
-        dockerComposePath
-      );
-    });
-  }
+  //     return path.join(
+  //       project.getCachePath("infra"),
+  //       "node_modules",
+  //       p.name,
+  //       dockerComposePath
+  //     );
+  //   });
+  // }
 
   // Compose package.json under .w3 folder and install deps
-  private async _installPackages(
-    project: Web3ApiProject,
-    manifest: InfraManifest,
-    packagesToUse?: string[]
-  ): Promise<void> {
-    // Get full list of packages needed
-    const packages = this._getFilteredPackages(manifest, packagesToUse);
-
-    if (!packages || !packages.length) {
-      return;
-    }
-
-    const classifiedPackages = packages.reduce((prev, current) => {
-      const registry = this._isLocalPackage(current)
-        ? "file"
-        : (current.registry as Registry);
+  private async _fetchRemoteModules(
+    modules: NamedRemoteModule[],
+    installationDir: string
+  ): Promise<string[]> {
+    const defaultComposePaths = [
+      "./docker-compose.yml",
+      "./docker-compose.yaml",
+    ];
+    const classifiedModules = modules.reduce((prev, current) => {
+      const registry = current.registry as Registry;
 
       if (prev[registry]) {
         prev[registry].push(current);
@@ -225,85 +219,166 @@ export class Infra {
       }
 
       return prev;
-    }, {} as Record<Registry, NamedPackage[]>);
+    }, {} as Record<Registry, NamedRemoteModule[]>);
 
-    for await (const [registry, packages] of Object.entries(
-      classifiedPackages
-    )) {
+    const dockerComposePaths: string[] = [];
+
+    for await (const [registry, modules] of Object.entries(classifiedModules)) {
       const dependencyFetcher = new dependencyFetcherClassMap[
         registry as Registry
       ]({
-        project,
-        installationDirectory: project.getCachePath("infra"),
+        project: this._config.project,
+        installationDirectory: installationDir,
+        name: registry,
       });
 
-      const mappedInfraPackages = packages.map((p) => {
-        if (this._isLocalPackage(p)) {
-          return {
-            name: p.name,
-            versionOrPath: p.path,
-          };
-        }
+      const mappedInfraModules = modules.map((p) => ({
+        name: p.package,
+        versionOrPath: p.version,
+      }));
 
-        return {
-          name: p.package,
-          versionOrPath: p.version,
-        };
+      await dependencyFetcher.installPackages(mappedInfraModules);
+
+      const paths = modules.map((m) => {
+        const packageDir = dependencyFetcher.getPackageDir(m.package);
+        return m.dockerComposePath
+          ? path.join(packageDir, m.dockerComposePath)
+          : this.tryResolveComposeFile(packageDir, defaultComposePaths);
       });
 
-      await dependencyFetcher.installPackages(mappedInfraPackages);
+      dockerComposePaths.push(...paths);
 
-      packages.forEach((p) => {
-        const defaultPath = "./docker-compose.yml";
+      // modules.forEach((module) => {
+      //   const defaultPath = "./docker-compose.yml";
 
-        const packageDir = path.join(
-          dependencyFetcher.getPackageDir(p.name),
-          this._isLocalPackage(p) || !p.dockerComposePath
-            ? defaultPath
-            : p.dockerComposePath
-        );
+      //   const moduleComposeFilePath = path.join(
+      //     dependencyFetcher.getPackageDir(module.package),
+      //     module.dockerComposePath ?? defaultPath
+      //   );
 
-        // Adjust package's docker-compose's build option if it exists
+      //   // Adjust package's docker-compose's build option if it exists
 
-        if (!fs.existsSync(packageDir)) {
-          throw new Error(
-            `Couldn't find docker-compose.yml file for package "${p.name}" at path '${packageDir}'`
-          );
-        }
+      //   if (!fs.existsSync(moduleComposeFilePath)) {
+      //     if(!fs.existsSync(moduleComposeFilePath))
+      //     throw new Error(
+      //       `Couldn't find docker-compose.yml file for package "${module.name}" at path '${moduleComposeFilePath}'`
+      //     );
+      //   }
 
-        const composeFileWithCorrectPaths = correctBuildContextPathsFromCompose(
-          packageDir
-        );
+      //   const composeFileWithCorrectPaths = correctBuildContextPathsFromCompose(
+      //     moduleComposeFilePath
+      //   );
 
-        // Write new docker-compose manifests with corrected build path and 'web3api' prefix
-        const newComposeFile = YAML.dump(composeFileWithCorrectPaths);
-        const correctedFilePath = path.join(
-          packageDir,
-          "..",
-          "docker-compose.web3api.yml"
-        );
-        fs.writeFileSync(correctedFilePath, newComposeFile);
-      });
+      //   // Write new docker-compose manifests with corrected build path and 'web3api' prefix
+      //   const newComposeFile = YAML.dump(composeFileWithCorrectPaths);
+      //   const correctedFilePath = path.join(
+      //     moduleComposeFilePath,
+      //     "..",
+      //     "docker-compose.web3api.yml"
+      //   );
+      //   fs.writeFileSync(correctedFilePath, newComposeFile);
+      // });
     }
+
+    return dockerComposePaths;
   }
 
-  private _getFilteredPackages(
+  private async _fetchModules(
+    manifest: InfraManifest,
+    modulesToUse?: string[]
+  ): Promise<string[]> {
+    const modules = this._getFilteredModules(manifest, modulesToUse);
+    const remoteModules = modules.filter(
+      (m): m is NamedRemoteModule => !this._isLocalModule(m)
+    );
+    const localModules = modules.filter((m): m is NamedLocalModule =>
+      this._isLocalModule(m)
+    );
+    const installationDir = this._config.project.getCachePath("infra");
+
+    const remoteComposePaths = await this._fetchRemoteModules(
+      remoteModules,
+      installationDir
+    );
+    const localComposePaths = await this._fetchLocalModules(
+      localModules,
+      installationDir
+    );
+
+    return [...remoteComposePaths, ...localComposePaths];
+  }
+
+  private async _fetchLocalModules(
+    modules: NamedLocalModule[],
+    _: string
+  ): Promise<string[]> {
+    const dockerComposePaths: string[] = [];
+    const basePath = path.join("infra", "local");
+    const defaultComposePaths = [
+      "./docker-compose.yml",
+      "./docker-compose.yaml",
+    ];
+
+    for await (const module of modules) {
+      const modulePath = path.join(basePath, module.name);
+
+      await this._config.project.copyIntoCache(
+        modulePath,
+        path.join(module.path, "*"),
+        { up: true }
+      );
+
+      dockerComposePaths.push(
+        this.tryResolveComposeFile(
+          this._config.project.getCachePath(modulePath),
+          defaultComposePaths
+        )
+      );
+    }
+
+    return dockerComposePaths;
+  }
+
+  private _getFilteredModules(
     manifest: InfraManifest,
     packagesToUse?: string[]
-  ): NamedPackage[] {
+  ): NamedModule[] {
     if (!packagesToUse || !packagesToUse.length) {
-      return Object.entries(manifest.packages).map(([name, value]) => ({
+      return Object.entries(manifest.modules).map(([name, value]) => ({
         name,
         ...value,
       }));
     }
 
-    return Object.entries(manifest.packages)
+    return Object.entries(manifest.modules)
       .filter(([name]) => packagesToUse.includes(name))
       .map(([name, value]) => ({ name, ...value }));
   }
 
-  private _isLocalPackage(object: unknown): object is { path: string } {
+  private _isLocalModule(object: unknown): object is { path: string } {
     return Object.prototype.hasOwnProperty.call(object, "path");
+  }
+
+  private tryResolveComposeFile(
+    moduleDir: string,
+    pathsToTry: string[],
+    triedPaths: string[] = []
+  ): string {
+    if (!pathsToTry.length) {
+      throw new Error(
+        `Could not resolve docker compose file. Tried paths: ${triedPaths}`
+      );
+    }
+
+    const pathToTry = path.join(moduleDir, pathsToTry.pop() as string);
+
+    if (fs.existsSync(pathToTry)) {
+      return pathToTry;
+    }
+
+    return this.tryResolveComposeFile(moduleDir, pathsToTry, [
+      ...triedPaths,
+      pathToTry,
+    ]);
   }
 }

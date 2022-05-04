@@ -16,21 +16,21 @@ export interface InfraManifest {
      */
     [k: string]: string | number;
   };
-  packages: {
+  modules: {
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition
      * via the `patternProperty` "^.*$".
      */
-    [k: string]: RemotePackage | LocalPackage;
+    [k: string]: RemoteModule | LocalModule;
   };
   __type: "InfraManifest";
 }
-export interface RemotePackage {
+export interface RemoteModule {
   package: string;
   registry: string;
   version: string;
   dockerComposePath?: string;
 }
-export interface LocalPackage {
+export interface LocalModule {
   path: string;
 }

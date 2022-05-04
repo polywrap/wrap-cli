@@ -2,7 +2,7 @@
   "id": "InfraManifest",
   "type": "object",
   "additionalProperties": false,
-  "required": ["format", "packages"],
+  "required": ["format", "modules"],
   "properties": {
     "format": {
       "type": "string",
@@ -19,19 +19,19 @@
       },
       "additionalProperties": false
     },
-    "packages": {
+    "modules": {
       "patternProperties": {
         "^.*$": {
           "oneOf": [
-            {"$ref": "#/definitions/remotePackage"},
-            {"$ref": "#/definitions/localPackage"}
+            {"$ref": "#/definitions/remoteModule"},
+            {"$ref": "#/definitions/localModule"}
           ]
         }
       }
     }
   },
   "definitions": {
-    "remotePackage": {
+    "remoteModule": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -48,9 +48,9 @@
           "type": "string"
         }
       },
-      "required": ["name", "package", "version", "registry"]
+      "required": ["package", "version", "registry"]
     },
-    "localPackage": {
+    "localModule": {
       "type": "object",
       "additionalProperties": false,
       "properties": {

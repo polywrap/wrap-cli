@@ -1,6 +1,6 @@
 import { intlMsg } from "../lib/intl";
 import { Web3ApiProject } from "../lib/project";
-import { Infra } from "../lib/Infra";
+import { Infra } from "../lib/infra/Infra";
 
 import { GluegunToolbox } from "gluegun";
 import chalk from "chalk";

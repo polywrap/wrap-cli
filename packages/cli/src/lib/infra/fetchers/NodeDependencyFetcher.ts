@@ -32,6 +32,10 @@ export class NodeDependencyFetcher extends InfraDependencyFetcher {
       }, {} as Record<string, string>),
     };
 
+    if (!fs.existsSync(this.config.installationDirectory)) {
+      fs.mkdirSync(this.config.installationDirectory, { recursive: true });
+    }
+
     fs.writeFileSync(
       path.join(this.config.installationDirectory, "package.json"),
       JSON.stringify(packageJson)
