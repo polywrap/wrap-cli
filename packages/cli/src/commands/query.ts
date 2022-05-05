@@ -6,7 +6,7 @@ import {
   intlMsg,
 } from "../lib";
 
-import { Web3ApiClient, Web3ApiClientConfig } from "@web3api/client-js";
+import { executeMaybeAsyncFunction, Web3ApiClient, Web3ApiClientConfig } from "@web3api/client-js";
 import chalk from "chalk";
 import { GluegunToolbox } from "gluegun";
 import gql from "graphql-tag";
@@ -140,7 +140,10 @@ export default {
         return;
       }
 
-      finalClientConfig = configModule.getClientConfig(finalClientConfig);
+      finalClientConfig = await executeMaybeAsyncFunction(
+        configModule.getClientConfig,
+        finalClientConfig
+      );
 
       try {
         validateClientConfig(finalClientConfig);
