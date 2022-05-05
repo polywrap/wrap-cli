@@ -39,7 +39,7 @@ describe("e2e tests for app command", () => {
   test("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["app", "codegen", "--help"],
+        args: ["app", "--help"],
         cwd: getTestCaseDir(0),
         cli: w3Cli,
       },

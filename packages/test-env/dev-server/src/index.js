@@ -56,27 +56,6 @@ router.get('/deploy-ens', async (req, res) => {
   res.send(addresses);
 });
 
-router.get('/register-ens', async (req, res) => {
-  if (addresses.ensAddress === undefined) {
-    throw Error("ENS hasn't been deployed, call /deploy-ens");
-  }
-
-  const web3 = getWeb3();
-  const accounts = await web3.eth.getAccounts();
-
-  await registerENS({
-    web3,
-    accounts,
-    addresses,
-    domain: req.query.domain,
-    cid: req.query.cid
-  });
-
-  res.send({
-    success: true
-  });
-});
-
 router.get('/status', (req, res) => {
   res.send({
     running: true

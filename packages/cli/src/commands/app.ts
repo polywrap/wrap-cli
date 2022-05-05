@@ -83,6 +83,11 @@ export default {
       return;
     }
 
+    if (help) {
+      print.info(HELP);
+      return;
+    }
+
     // Validate Params
     const paramsValid = validateAppParams(
       print,
@@ -92,11 +97,9 @@ export default {
       ens
     );
 
-    if (help || !paramsValid) {
+    if (!paramsValid) {
       print.info(HELP);
-      if (!paramsValid) {
-        process.exitCode = 1;
-      }
+      process.exitCode = 1;
       return;
     }
 

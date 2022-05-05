@@ -4,7 +4,7 @@ import yaml from "js-yaml";
 
 import { clearStyle, w3Cli } from "./utils";
 
-import { runCLI } from "@web3api/test-env-js";
+import { buildAndDeployApi, initTestEnvironment, runCLI } from "@web3api/test-env-js";
 import { GetPathToCliTestFiles } from "@web3api/test-cases";
 import { normalizeLineEndings } from "@web3api/os-js";
 import {
@@ -18,14 +18,26 @@ const HELP = `
 w3 query [options] <recipe-script>
 
 Options:
-  -t, --test-ens  Use the development server's ENS instance
-  -c, --client-config <config-path> Add custom configuration to the Web3ApiClient
-  -o, --output-file  Output file path for the query result
-  -q, --quiet  Suppress output
+  -h, --help                         Show usage information
+  -t, --test-ens                     Use the development server's ENS instance
+  -c, --client-config <config-path>  Add custom configuration to the Web3ApiClient
+  -o, --output-file                  Output file path for the query result
+  -q, --quiet                        Suppress output
 
 `;
 
 describe("sanity tests for query command", () => {
+  test("Should output help text", async () => {
+    const { exitCode, stdout, stderr } = await runCLI({
+      args: ["query", "--help"],
+      cli: w3Cli,
+    });
+
+    expect(exitCode).toEqual(0);
+    expect(stderr).toBe("");
+    expect(clearStyle(stdout)).toEqual(HELP);
+  });
+
   test("Should throw error for missing recipe-string", async () => {
     const { exitCode, stdout, stderr } = await runCLI({
       args: ["query"],
@@ -57,13 +69,13 @@ describe("e2e tests for query command", () => {
   const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/query");
 
   beforeAll(async () => {
-    const { exitCode: testenvCode, stderr: testEnvUpErr } = await runCLI({
-      args: ["test-env", "up"],
-      cwd: testCaseRoot,
-      cli: w3Cli,
-    });
-    expect(testEnvUpErr).toBe("");
-    expect(testenvCode).toEqual(0);
+    const {
+      ipfs,
+      ethereum,
+      ensAddress: ens,
+      registrarAddress,
+      resolverAddress
+    } = await initTestEnvironment();
 
     const { stderr: deployErr } = await runCLI({
       args: ["./deploy-contracts.js"],
@@ -73,20 +85,15 @@ describe("e2e tests for query command", () => {
 
     expect(deployErr).toBe("");
 
-    const { exitCode: buildCode, stderr: buildErr } = await runCLI({
-      args: [
-        "build",
-        "--ipfs",
-        "http://localhost:5001",
-        "--test-ens",
-        "simplestorage.eth",
-      ],
-      cwd: testCaseRoot,
-      cli: w3Cli,
-    });
-
-    expect(buildErr).toBe("");
-    expect(buildCode).toEqual(0);
+    await buildAndDeployApi({
+      apiAbsPath: testCaseRoot,
+      ipfsProvider: ipfs,
+      ethereumProvider: ethereum,
+      ensRegistrarAddress: registrarAddress,
+      ensResolverAddress: resolverAddress,
+      ensRegistryAddress: ens,
+      ensName: "simplestorage",
+    })
   });
 
   afterAll(async () => {

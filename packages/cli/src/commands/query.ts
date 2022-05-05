@@ -23,10 +23,11 @@ const HELP = `
 ${chalk.bold("w3 query")} [${optionsString}] ${chalk.bold(`<${scriptStr}>`)}
 
 ${optionsString[0].toUpperCase() + optionsString.slice(1)}:
-  -t, --test-ens  ${intlMsg.commands_build_options_t()}
-  -c, --client-config <${configPathStr}> ${intlMsg.commands_query_options_config()}
-  -o, --output-file  ${intlMsg.commands_query_options_outputFile()}
-  -q, --quiet  ${intlMsg.commands_query_options_quiet()}
+  -h, --help                         ${intlMsg.commands_build_options_h()}
+  -t, --test-ens                     ${intlMsg.commands_build_options_t()}
+  -c, --client-config <${configPathStr}>  ${intlMsg.commands_query_options_config()}
+  -o, --output-file                  ${intlMsg.commands_query_options_outputFile()}
+  -q, --quiet                        ${intlMsg.commands_query_options_quiet()}
 `;
 
 export default {
@@ -36,9 +37,10 @@ export default {
     const { filesystem, parameters, print } = toolbox;
 
     // Options
-    let { testEns, clientConfig, outputFile, quiet } = parameters.options;
-    const { t, c, o, q } = parameters.options;
+    let { help, testEns, clientConfig, outputFile, quiet } = parameters.options;
+    const { h, t, c, o, q } = parameters.options;
 
+    help = help || h;
     testEns = testEns || t;
     clientConfig = clientConfig || c;
     outputFile = outputFile || o;
@@ -61,6 +63,11 @@ export default {
       recipePath = null;
       print.error(e.message);
       process.exitCode = 1;
+      return;
+    }
+
+    if (help) {
+      print.info(HELP);
       return;
     }
 

@@ -31,12 +31,16 @@ describe("Web3ApiClient", () => {
   let ipfsProvider: string;
   let ethProvider: string;
   let ensAddress: string;
+  let ensRegistrarAddress: string;
+  let ensResolverAddress: string;
 
   beforeAll(async () => {
-    const { ipfs, ethereum, ensAddress: ens } = await initTestEnvironment();
+    const { ipfs, ethereum, ensAddress: ens, registrarAddress, resolverAddress } = await initTestEnvironment();
     ipfsProvider = ipfs;
     ethProvider = ethereum;
     ensAddress = ens;
+    ensRegistrarAddress = registrarAddress;
+    ensResolverAddress = resolverAddress;
   });
 
   afterAll(async () => {
@@ -44,7 +48,7 @@ describe("Web3ApiClient", () => {
   });
 
   const getClient = async (config?: Partial<Web3ApiClientConfig>) => {
-    return createWeb3ApiClient(
+    const client = await createWeb3ApiClient(
       {
         ethereum: {
           networks: {
@@ -64,6 +68,8 @@ describe("Web3ApiClient", () => {
       },
       config
     );
+
+    return client;
   };
 
   const mockPlugin = () => {
@@ -169,15 +175,19 @@ describe("Web3ApiClient", () => {
   });
 
   it("invoke with decode false/true works as expected", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/simple-storage`,
+    const client = await getClient();
+    
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/simple-storage`,
       ipfsProvider,
-      ensAddress
-    );
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
 
     const ensUri = `ens/testnet/${api.ensDomain}`;
-    const client = await getClient();
-
+    
     // The decode option is defaulted to true
     {
       const result = await client.invoke<string>({
@@ -233,11 +243,23 @@ describe("Web3ApiClient", () => {
   });
 
   it("invoke simple-storage with custom redirects", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/simple-storage`,
+    const client = await getClient({
+      plugins: [
+        {
+          uri: "w3://ens/mock.web3api.eth",
+          plugin: mockPlugin(),
+        },
+      ],
+    });
+    
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/simple-storage`,
       ipfsProvider,
-      ensAddress
-    );
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
 
     const ensUri = `ens/testnet/${api.ensDomain}`;
 
@@ -247,15 +269,6 @@ describe("Web3ApiClient", () => {
         to: "w3://ens/mock.web3api.eth",
       },
     ];
-
-    const client = await getClient({
-      plugins: [
-        {
-          uri: "w3://ens/mock.web3api.eth",
-          plugin: mockPlugin(),
-        },
-      ],
-    });
 
     const result = await client.invoke({
       uri: ensUri,
@@ -272,11 +285,23 @@ describe("Web3ApiClient", () => {
   });
 
   it("simple-storage with query time redirects", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/simple-storage`,
+    const client = await getClient({
+      plugins: [
+        {
+          uri: "w3://ens/mock.web3api.eth",
+          plugin: mockPlugin(),
+        },
+      ],
+    });
+    
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/simple-storage`,
       ipfsProvider,
-      ensAddress
-    );
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress
+    });
 
     const ensUri = `ens/testnet/${api.ensDomain}`;
 
@@ -286,15 +311,6 @@ describe("Web3ApiClient", () => {
         to: "w3://ens/mock.web3api.eth",
       },
     ];
-
-    const client = await getClient({
-      plugins: [
-        {
-          uri: "w3://ens/mock.web3api.eth",
-          plugin: mockPlugin(),
-        },
-      ],
-    });
 
     const deploy = await client.query<{
       deployContract: string;
@@ -692,13 +708,16 @@ describe("Web3ApiClient", () => {
   });
 
   it("asyncify", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/asyncify`,
-      ipfsProvider,
-      ensAddress
-    );
-
     const client = await getClient();
+    
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/asyncify`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
 
     const ensUri = `ens/testnet/${api.ensDomain}`;
     const ipfsUri = `ipfs/${api.ipfsCid}`;
@@ -932,13 +951,16 @@ describe("Web3ApiClient", () => {
   });
 
   it("simple-storage", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/simple-storage`,
-      ipfsProvider,
-      ensAddress
-    );
-
     const client = await getClient();
+    
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/simple-storage`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
 
     const ensUri = `ens/testnet/${api.ensDomain}`;
     const ipfsUri = `ipfs/${api.ipfsCid}`;
@@ -1108,14 +1130,17 @@ describe("Web3ApiClient", () => {
   });
 
   it("object-types", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/object-types`,
-      ipfsProvider,
-      ensAddress
-    );
-    const ensUri = `ens/testnet/${api.ensDomain}`;
-
     const client = await getClient();
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/object-types`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const method1a = await client.query<{
       method1: {
@@ -1340,14 +1365,17 @@ describe("Web3ApiClient", () => {
   });
 
   it("bigint-type", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/bigint-type`,
-      ipfsProvider,
-      ensAddress
-    );
-    const ensUri = `ens/testnet/${api.ensDomain}`;
-
     const client = await getClient();
+    
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/bigint-type`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
 
     {
       const response = await client.query<{
@@ -1405,15 +1433,20 @@ describe("Web3ApiClient", () => {
     }
   });
 
-  it("JSON type", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/json-type`,
-      ipfsProvider,
-      ensAddress
-    );
+  it("JSON-type", async () => {
+    type Json = string;
 
-    const ensUri = `ens/testnet/${api.ensDomain}`;
     const client = await getClient();
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/json-type`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const parse = await client.invoke<{ x: number; y: number }>({
       uri: ensUri,
@@ -1454,14 +1487,17 @@ describe("Web3ApiClient", () => {
   });
 
   it("bytes-type", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/bytes-type`,
-      ipfsProvider,
-      ensAddress
-    );
-    const ensUri = `ens/testnet/${api.ensDomain}`;
-
     const client = await getClient();
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/bytes-type`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const response = await client.query<{
       bytesMethod: Buffer;
@@ -1489,14 +1525,17 @@ describe("Web3ApiClient", () => {
   });
 
   it("enum-types", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/enum-types`,
-      ipfsProvider,
-      ensAddress
-    );
-    const ensUri = `ens/testnet/${api.ensDomain}`;
-
     const client = await getClient();
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/enum-types`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const method1a = await client.query<any>({
       uri: ensUri,
@@ -1569,14 +1608,17 @@ describe("Web3ApiClient", () => {
   });
 
   it("should work with large types", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/large-types`,
-      ipfsProvider,
-      ensAddress
-    );
-    const ensUri = `ens/testnet/${api.ensDomain}`;
     const client = await getClient();
 
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/large-types`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
     const largeStr = new Array(10000).join("web3api ");
     const largeBytes = new Uint8Array(Buffer.from(largeStr));
     const largeStrArray = [];
@@ -1621,13 +1663,17 @@ describe("Web3ApiClient", () => {
   });
 
   it("number-types under and overflows", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/number-types`,
-      ipfsProvider,
-      ensAddress
-    );
-    const ensUri = `ens/testnet/${api.ensDomain}`;
     const client = await getClient();
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/number-types`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const i8Underflow = await client.query<{
       i8Method: number;
@@ -1769,13 +1815,17 @@ describe("Web3ApiClient", () => {
   });
 
   it("invalid type errors", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/invalid-types`,
-      ipfsProvider,
-      ensAddress
-    );
-    const ensUri = `ens/testnet/${api.ensDomain}`;
     const client = await getClient();
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/invalid-types`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const invalidBoolIntSent = await client.query({
       uri: ensUri,
@@ -1943,18 +1993,24 @@ describe("Web3ApiClient", () => {
   });
 
   it("e2e interface implementations", async () => {
-    let interfaceApi = await buildAndDeployApi(
-      `${GetPathToTestApis()}/implementations/test-interface`,
+    let interfaceApi = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/implementations/test-interface`,
       ipfsProvider,
-      ensAddress
-    );
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
     const interfaceUri = `w3://ens/testnet/${interfaceApi.ensDomain}`;
 
-    const implementationApi = await buildAndDeployApi(
-      `${GetPathToTestApis()}/implementations/test-api`,
+    const implementationApi = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/implementations/test-api`,
       ipfsProvider,
-      ensAddress
-    );
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
     const implementationUri = `w3://ens/testnet/${implementationApi.ensDomain}`;
 
     const client = await getClient({
@@ -2033,12 +2089,17 @@ describe("Web3ApiClient", () => {
   });
 
   it("getManifest -- web3api manifest, build manifest, meta manifest", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/simple-storage`,
-      ipfsProvider,
-      ensAddress
-    );
     const client = await getClient();
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/simple-storage`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+
     const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const actualManifestStr: string = readFileSync(
@@ -2167,12 +2228,16 @@ enum Logger_LogLevel @imported(
   });
 
   it("getFile -- simple-storage web3api", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/simple-storage`,
-      ipfsProvider,
-      ensAddress
-    );
     const client = await getClient();
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/simple-storage`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+
     const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const manifest: Web3ApiManifest = await client.getManifest(ensUri, {
@@ -2215,12 +2280,17 @@ enum Logger_LogLevel @imported(
   });
 
   it("simple-storage: subscribe", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/simple-storage`,
-      ipfsProvider,
-      ensAddress
-    );
     const client = await getClient();
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/simple-storage`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+
     const ensUri = `ens/testnet/${api.ensDomain}`;
     const ipfsUri = `ipfs/${api.ipfsCid}`;
 
@@ -2310,12 +2380,16 @@ enum Logger_LogLevel @imported(
   });
 
   it("simple-storage: subscription early stop", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/simple-storage`,
-      ipfsProvider,
-      ensAddress
-    );
     const client = await getClient();
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/simple-storage`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
     const ensUri = `ens/testnet/${api.ensDomain}`;
     const ipfsUri = `ipfs/${api.ipfsCid}`;
 
@@ -2410,14 +2484,17 @@ enum Logger_LogLevel @imported(
   });
 
   it("queries API schemas that use reserved keywords", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/reserved-words`,
-      ipfsProvider,
-      ensAddress
-    );
-    const ensUri = `ens/testnet/${api.ensDomain}`;
-
     const client = await getClient();
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/reserved-words`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const query = await client.query<{
       method1: {
@@ -2448,11 +2525,14 @@ enum Logger_LogLevel @imported(
   it("e2e getImplementations capability", async () => {
     const interfaceUri = "w3://ens/interface.eth";
 
-    const implementationApi = await buildAndDeployApi(
-      `${GetPathToTestApis()}/implementations/test-use-getImpl`,
+    const implementationApi = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/implementations/test-use-getImpl`,
       ipfsProvider,
-      ensAddress
-    );
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
     const implementationUri = `w3://ens/testnet/${implementationApi.ensDomain}`;
 
     const client = await getClient({
@@ -2496,11 +2576,14 @@ enum Logger_LogLevel @imported(
       cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`,
     });
 
-    const implementationApi = await buildAndDeployApi(
-      `${GetPathToTestApis()}/interface-invoke/test-implementation`,
+    const implementationApi = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/interface-invoke/test-implementation`,
       ipfsProvider,
-      ensAddress
-    );
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
     const implementationUri = `w3://ens/testnet/${implementationApi.ensDomain}`;
 
     const client = await getClient({
@@ -2512,11 +2595,14 @@ enum Logger_LogLevel @imported(
       ],
     });
 
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/interface-invoke/test-api`,
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/interface-invoke/test-api`,
       ipfsProvider,
-      ensAddress
-    );
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
     const apiUri = `w3://ens/testnet/${api.ensDomain}`;
 
     const query = await client.query<{
@@ -2557,13 +2643,16 @@ enum Logger_LogLevel @imported(
   });
 
   it("Map-type", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/map-type`,
-      ipfsProvider,
-      ensAddress
-    );
-    const ensUri = `ens/testnet/${api.ensDomain}`;
     const client = await getClient();
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/map-type`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const mapClass = new Map<string, number>().set("Hello", 1).set("Heyo", 50);
     const mapRecord: Record<string, number> = {

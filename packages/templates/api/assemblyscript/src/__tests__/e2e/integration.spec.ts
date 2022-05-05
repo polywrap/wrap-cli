@@ -21,6 +21,8 @@ describe("SimpleStorage", () => {
     const {
       ethereum: testEnvEtherem,
       ensAddress,
+      registrarAddress,
+      resolverAddress,
       ipfs,
     } = await initTestEnvironment();
     // deploy api
@@ -30,12 +32,21 @@ describe("SimpleStorage", () => {
       "..",
       ".."
     );
-    const api = await buildAndDeployApi(apiPath, ipfs, ensAddress);
-    ensUri = `ens/testnet/${api.ensDomain}`;
 
     // get client
     const config = getPlugins(testEnvEtherem, ipfs, ensAddress);
     client = new Web3ApiClient(config);
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: apiPath,
+      ipfsProvider: ipfs,
+      ensRegistryAddress: ensAddress,
+      ensRegistrarAddress: registrarAddress,
+      ensResolverAddress: resolverAddress,
+      ethereumProvider: testEnvEtherem,
+    });
+    
+    ensUri = `ens/testnet/${api.ensDomain}`;
   });
 
   afterAll(async () => {
