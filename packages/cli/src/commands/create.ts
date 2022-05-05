@@ -66,6 +66,11 @@ export default {
       // eslint-disable-next-line no-empty
     } catch (e) {}
 
+    if (help) {
+      print.info(HELP);
+      return;
+    }
+
     // Validate Params
     const paramsValid = validateCreateParams(
       print,
@@ -75,11 +80,9 @@ export default {
       outputDir
     );
 
-    if (help || !paramsValid) {
+    if (!paramsValid) {
       print.info(HELP);
-      if (!paramsValid) {
-        process.exitCode = 1;
-      }
+      process.exitCode = 1;
       return;
     }
 
