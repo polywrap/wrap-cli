@@ -45,14 +45,10 @@ export function extractCommonTypeInfo(
         // Add the definition to the common TypeInfo
         switch (def.kind) {
           case DefinitionKind.Enum:
-            commonTypeInfo.enumTypes.push(
-              defCopy as EnumDefinition
-            );
+            commonTypeInfo.enumTypes.push(defCopy as EnumDefinition);
             break;
           case DefinitionKind.Object:
-            commonTypeInfo.objectTypes.push(
-              defCopy as ObjectDefinition
-            );
+            commonTypeInfo.objectTypes.push(defCopy as ObjectDefinition);
             break;
           case DefinitionKind.ImportedEnum:
             commonTypeInfo.importedEnumTypes.push(

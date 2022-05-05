@@ -17,7 +17,7 @@ import {
   addFirstLast,
   toPrefixedGraphQLType,
   hasImports,
-  methodParentPointers
+  methodParentPointers,
 } from "@web3api/schema-parse";
 import { OutputEntry, readDirectorySync } from "@web3api/os-js";
 import path from "path";
@@ -38,18 +38,11 @@ export const generateBinding: GenerateBindingFn = (
 
   // If there's more than one module provided
   if (options.modules.length > 1 && options.commonDirAbs) {
-
     // Extract the common types
     const commonTypeInfo = extractCommonTypeInfo(
       options.modules,
       options.commonDirAbs
     );
-
-    for (const obj of commonTypeInfo.objectTypes) {
-      if ((obj as any).__commonPath) {
-        throw Error("COMMON PATH");
-      }
-    }
 
     // Generate the common type folder
     result.common = generateModuleBinding({
