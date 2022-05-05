@@ -1,3 +1,7 @@
+# Web3API 0.0.1-prealpha.76
+## Bugs
+* [PR-836](https://github.com/polywrap/monorepo/pull/836) `@web3api/cli`: All commands properly handle the `--help` option.
+
 # Web3API 0.0.1-prealpha.75
 ## Features
 * [PR-814](https://github.com/polywrap/monorepo/pull/814) `@web3api/cli`: A modular deployment pipeline has been added to the CLI. It can be accessed via the `w3 deploy` command.
