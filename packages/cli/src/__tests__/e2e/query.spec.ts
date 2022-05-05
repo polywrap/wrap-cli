@@ -18,14 +18,26 @@ const HELP = `
 w3 query [options] <recipe-script>
 
 Options:
-  -t, --test-ens  Use the development server's ENS instance
-  -c, --client-config <config-path> Add custom configuration to the Web3ApiClient
-  -o, --output-file  Output file path for the query result
-  -q, --quiet  Suppress output
+  -h, --help                         Show usage information
+  -t, --test-ens                     Use the development server's ENS instance
+  -c, --client-config <config-path>  Add custom configuration to the Web3ApiClient
+  -o, --output-file                  Output file path for the query result
+  -q, --quiet                        Suppress output
 
 `;
 
 describe("sanity tests for query command", () => {
+  test("Should output help text", async () => {
+    const { exitCode, stdout, stderr } = await runCLI({
+      args: ["query", "--help"],
+      cli: w3Cli,
+    });
+
+    expect(exitCode).toEqual(0);
+    expect(stderr).toBe("");
+    expect(clearStyle(stdout)).toEqual(HELP);
+  });
+
   test("Should throw error for missing recipe-string", async () => {
     const { exitCode, stdout, stderr } = await runCLI({
       args: ["query"],
