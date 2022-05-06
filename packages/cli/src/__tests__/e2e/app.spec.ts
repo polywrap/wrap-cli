@@ -111,8 +111,6 @@ ${HELP}`);
           },
         );
 
-        console.log(output, error);
-
         expect(error).toBe("");
         expect(code).toEqual(0);
         expect(clearStyle(output)).toEqual(CODEGEN_SUCCESS);

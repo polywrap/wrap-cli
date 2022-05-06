@@ -140,7 +140,6 @@ ${HELP}`);
           `${testCaseDir}/expected/build-artifacts`,
           { compareContent: true }
         );
-
         expect(expectedBuildResult.differences).toBe(0);
       });
     }

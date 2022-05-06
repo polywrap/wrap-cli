@@ -1434,8 +1434,6 @@ describe("Web3ApiClient", () => {
   });
 
   it("JSON-type", async () => {
-    type Json = string;
-
     const client = await getClient();
 
     const api = await buildAndDeployApi({
@@ -2158,6 +2156,7 @@ scalar Int32
 scalar Bytes
 scalar BigInt
 scalar BigNumber
+scalar Json
 scalar Map
 
 directive @imported(
