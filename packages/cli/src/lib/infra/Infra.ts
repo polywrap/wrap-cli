@@ -29,6 +29,10 @@ type Registry = keyof typeof dependencyFetcherClassMap;
 export class Infra {
   private _dockerComposePath: string;
   private _initData: InitData | undefined;
+  private _defaultModuleComposePaths = [
+    "./docker-compose.yml",
+    "./docker-compose.yaml",
+  ];
 
   constructor(private _config: InfraConfig) {
     this._dockerComposePath = path.join(
@@ -101,12 +105,6 @@ export class Infra {
   private async _init() {
     const { project, packagesToUse } = this._config;
 
-    const cacheDir = project.getInfraCacheModulesPath();
-
-    if (!fs.existsSync(cacheDir)) {
-      fs.mkdirSync(cacheDir, { recursive: true });
-    }
-
     // Get the infra manifest
     const manifest = await project.getInfraManifest();
 
@@ -169,12 +167,24 @@ export class Infra {
     } ${correctedDockerComposePaths.map((path) => ` -f ${path}`).join("")}`;
   }
 
+  private _writeFileToCacheFromAbsPath(
+    absPath: string,
+    data: unknown,
+    options?: fs.WriteFileOptions
+  ) {
+    this._config.project.writeCacheFile(
+      path.relative(this._config.project.getCacheDir(), absPath),
+      data,
+      options
+    );
+  }
+
   private async _generateBaseDockerCompose(): Promise<void> {
     const { project } = this._config;
     const manifest = await project.getInfraManifest();
     const fileContent = YAML.dump(manifest.dockerCompose);
 
-    fs.writeFileSync(this._dockerComposePath, fileContent);
+    this._writeFileToCacheFromAbsPath(this._dockerComposePath, fileContent);
   }
 
   // Compose package.json under .w3 folder and install deps
@@ -182,10 +192,6 @@ export class Infra {
     modules: NamedRemoteModule[],
     installationDir: string
   ): Promise<string[]> {
-    const defaultComposePaths = [
-      "./docker-compose.yml",
-      "./docker-compose.yaml",
-    ];
     const classifiedModules = modules.reduce((prev, current) => {
       const registry = current.registry as Registry;
 
@@ -220,7 +226,10 @@ export class Infra {
         const packageDir = dependencyFetcher.getPackageDir(m.package);
         return m.dockerComposePath
           ? path.join(packageDir, m.dockerComposePath)
-          : this.tryResolveComposeFile(packageDir, defaultComposePaths);
+          : this.tryResolveComposeFile(
+              packageDir,
+              this._defaultModuleComposePaths
+            );
       });
 
       dockerComposePaths.push(...paths);
@@ -261,7 +270,7 @@ export class Infra {
 
       // Write new docker-compose manifests with corrected build path and 'web3api' prefix
       const newComposeFile = YAML.dump(composeFileWithCorrectPaths);
-      fs.writeFileSync(composePath, newComposeFile);
+      this._writeFileToCacheFromAbsPath(composePath, newComposeFile);
     });
 
     return composePaths;
@@ -276,25 +285,18 @@ export class Infra {
       this._config.project.getInfraCacheModulesPath(),
       "local"
     );
-    const defaultComposePaths = [
-      "./docker-compose.yml",
-      "./docker-compose.yaml",
-    ];
 
     for await (const module of modules) {
       const modulePath = path.join(basePath, module.name);
 
       await this._config.project.copyIntoCache(
-        modulePath,
+        path.relative(this._config.project.getCacheDir(), modulePath),
         path.join(module.path, "*"),
         { up: true }
       );
 
       dockerComposePaths.push(
-        this.tryResolveComposeFile(
-          this._config.project.getCachePath(modulePath),
-          defaultComposePaths
-        )
+        this.tryResolveComposeFile(modulePath, this._defaultModuleComposePaths)
       );
     }
 
@@ -332,13 +334,13 @@ export class Infra {
       );
     }
 
-    const pathToTry = path.join(moduleDir, pathsToTry.pop() as string);
+    const pathToTry = path.join(moduleDir, pathsToTry[0]);
 
     if (fs.existsSync(pathToTry)) {
       return pathToTry;
     }
 
-    return this.tryResolveComposeFile(moduleDir, pathsToTry, [
+    return this.tryResolveComposeFile(moduleDir, pathsToTry.slice(1), [
       ...triedPaths,
       pathToTry,
     ]);
