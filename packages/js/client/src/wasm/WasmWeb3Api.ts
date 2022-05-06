@@ -18,7 +18,7 @@ import {
   ManifestArtifactType,
   combinePaths,
   Env,
-  UriResolver,
+  UriResolverInterface,
   GetFileOptions,
   msgpackEncode,
   msgpackDecode,
@@ -82,7 +82,7 @@ export class WasmWeb3Api extends Api {
   constructor(
     private _uri: Uri,
     private _manifest: Web3ApiManifest,
-    private _uriResolver: Uri,
+    private _uriResolver: string,
     private _clientEnv?: Env<Uri>
   ) {
     super();
@@ -147,11 +147,12 @@ export class WasmWeb3Api extends Api {
     client: Client
   ): Promise<ArrayBuffer | string> {
     const { path, encoding } = options;
-    const { data, error } = await UriResolver.Query.getFile(
+    const { data, error } = await UriResolverInterface.Query.getFile(
       <TData = unknown, TUri extends Uri | string = string>(
         options: InvokeApiOptions<TUri>
       ): Promise<InvokeApiResult<TData>> => client.invoke<TData, TUri>(options),
-      this._uriResolver,
+      // TODO: support all types of URI resolvers (cache, etc)
+      new Uri(this._uriResolver),
       combinePaths(this._uri.path, path)
     );
 

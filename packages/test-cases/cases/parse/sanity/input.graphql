@@ -8,6 +8,7 @@ scalar Int16
 scalar Int32
 scalar Bytes
 scalar BigInt
+scalar BigNumber
 scalar JSON
 scalar Map
 
@@ -63,6 +64,8 @@ optStr comment
   i32: Int32!
   bigint: BigInt!
   optBigint: BigInt
+  bignumber: BigNumber!
+  optBignumber: BigNumber
   json: JSON!
   optJson: JSON
   bytes: Bytes!
@@ -126,7 +129,7 @@ type MutationClientEnv {
 }
 
 type Mutation {
-  sanitizeMutationEnv(env: MutationClientEnv!): MutationEnv!
+  sanitizeEnv(env: MutationClientEnv!): MutationEnv!
 }
 
 """
@@ -152,7 +155,7 @@ type Query implements Interface_Query @imports(
   uri: "testimport.uri.eth",
   namespace: "TestImport",
 ) {
-  sanitizeQueryEnv(env: QueryClientEnv!): QueryEnv!
+  sanitizeEnv(env: QueryClientEnv!): QueryEnv!
 """
 queryMethod comment
 """

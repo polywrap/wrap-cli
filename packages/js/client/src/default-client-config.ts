@@ -7,7 +7,7 @@ import {
   PluginPackage,
   Web3ApiManifest,
   Env,
-  ApiAggregatorResolver,
+  ExtendableUriResolver,
   CacheResolver,
   PluginResolver,
   RedirectsResolver,
@@ -41,7 +41,7 @@ export const getDefaultClientConfig = Tracer.traceFunc(
         // ENS is required for resolving domain to IPFS hashes
         {
           uri: new Uri("w3://ens/ens.web3api.eth"),
-          plugin: ensPlugin({}),
+          plugin: ensPlugin({ query: {} }),
         },
         {
           uri: new Uri("w3://ens/ethereum.web3api.eth"),
@@ -56,29 +56,31 @@ export const getDefaultClientConfig = Tracer.traceFunc(
         },
         {
           uri: new Uri("w3://ens/http.web3api.eth"),
-          plugin: httpPlugin(),
+          plugin: httpPlugin({ query: {} }),
         },
         {
           uri: new Uri("w3://ens/js-logger.web3api.eth"),
-          plugin: loggerPlugin(),
+          plugin: loggerPlugin({ query: {} }),
         },
         {
           uri: new Uri("w3://ens/uts46.web3api.eth"),
-          plugin: uts46Plugin(),
+          plugin: uts46Plugin({ query: {} }),
         },
         {
           uri: new Uri("w3://ens/sha3.web3api.eth"),
-          plugin: sha3Plugin(),
+          plugin: sha3Plugin({ query: {} }),
         },
         {
           uri: new Uri("w3://ens/graph-node.web3api.eth"),
           plugin: graphNodePlugin({
-            provider: "https://api.thegraph.com",
+            query: {
+              provider: "https://api.thegraph.com",
+            },
           }),
         },
         {
           uri: new Uri("w3://ens/fs.web3api.eth"),
-          plugin: filesystemPlugin(),
+          plugin: filesystemPlugin({ query: {} }),
         },
       ],
       interfaces: [
@@ -95,8 +97,9 @@ export const getDefaultClientConfig = Tracer.traceFunc(
           implementations: [new Uri("w3://ens/js-logger.web3api.eth")],
         },
       ],
-      resolvers: [
+      uriResolvers: [
         new RedirectsResolver(),
+        new CacheResolver(),
         new PluginResolver(
           (
             uri: Uri,
@@ -104,12 +107,11 @@ export const getDefaultClientConfig = Tracer.traceFunc(
             environment: Env<Uri> | undefined
           ) => new PluginWeb3Api(uri, plugin, environment)
         ),
-        new CacheResolver(),
-        new ApiAggregatorResolver(
+        new ExtendableUriResolver(
           (
             uri: Uri,
             manifest: Web3ApiManifest,
-            uriResolver: Uri,
+            uriResolver: string,
             environment: Env<Uri> | undefined
           ) => {
             return new WasmWeb3Api(uri, manifest, uriResolver, environment);

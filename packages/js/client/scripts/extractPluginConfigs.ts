@@ -23,24 +23,34 @@ const plugins: PluginConfigSource[] = [
     name: "Ipfs",
     module: "@web3api/ipfs-plugin-js",
     uri: "w3://ens/ipfs.web3api.eth",
-    config: "IpfsConfig",
-    files: [{
-      name: "build/index.d.ts",
-      interfaces: ["IpfsConfig"]
-    }]
+    config: "IpfsPluginConfigs",
+    files: [
+      {
+        name: "build/index.d.ts",
+        interfaces: ["IpfsPluginConfigs"]
+      },
+      {
+        name: "build/common/IpfsConfig.d.ts",
+        interfaces: ["IpfsConfig"],
+      }
+    ],
   },
   {
     name: "Ethereum",
     module: "@web3api/ethereum-plugin-js",
     uri: "w3://ens/ethereum.web3api.eth",
-    config: "EthereumConfig",
+    config: "EthereumPluginConfigs",
     files: [
       {
         name: "build/index.d.ts",
+        interfaces: ["EthereumPluginConfigs"],
+      },
+      {
+        name: "build/common/EthereumConfig.d.ts",
         interfaces: ["EthereumConfig"],
       },
       {
-        name: "build/Connection.d.ts",
+        name: "build/common/Connection.d.ts",
         interfaces: ["ConnectionConfig", "ConnectionConfigs"],
         types: ["EthereumProvider", "EthereumSigner", "AccountIndex", "Address"],
       },
@@ -64,19 +74,26 @@ const plugins: PluginConfigSource[] = [
     name: "Ens",
     module: "@web3api/ens-plugin-js",
     uri: "w3://ens/ens.web3api.eth",
-    config: "EnsConfig",
-    files: [{
-      name: "build/index.d.ts",
-      interfaces: ["EnsConfig", "Addresses"],
-      types: ["Address"]
-    }]
+    config: "EnsPluginConfigs",
+    files: [
+      {
+        name: "build/w3/plugin.d.ts",
+        interfaces: ["EnsPluginConfigs"],
+      },
+      {
+        name: "build/query/index.d.ts",
+        interfaces: ["QueryConfig", "Addresses"],
+        types: ["Address"],
+      },
+    ]
   }
 ];
 
 function main(): void {
 
   const header = "/// NOTE: This is an auto-generated file. See scripts/extractPluginConfigs.ts\n" +
-    "/* eslint-disable @typescript-eslint/no-explicit-any */";
+    "/* eslint-disable @typescript-eslint/no-explicit-any */\n" +
+    "/* eslint-disable prettier/prettier */";
   const outputFiles: {
     fileName: string,
     content: string

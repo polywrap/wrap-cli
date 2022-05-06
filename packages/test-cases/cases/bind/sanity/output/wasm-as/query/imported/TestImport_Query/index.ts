@@ -3,6 +3,7 @@ import {
   w3_subinvokeImplementation,
   Nullable,
   BigInt,
+  BigNumber,
   JSON,
   Result
 } from "@web3api/wasm-as";

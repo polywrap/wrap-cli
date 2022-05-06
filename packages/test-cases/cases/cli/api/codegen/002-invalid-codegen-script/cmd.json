@@ -1,0 +1,3 @@
+{
+  "args": ["--script", "web3api-norun.gen.js"]
+}

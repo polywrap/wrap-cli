@@ -1,5 +1,5 @@
 type Query {
-  sanitizeQueryEnv(env: QueryClientEnv!): QueryEnv!
+  sanitizeEnv(env: QueryClientEnv!): QueryEnv!
   environment(arg: String!): QueryEnv
 }
 

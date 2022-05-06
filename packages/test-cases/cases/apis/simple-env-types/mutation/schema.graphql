@@ -1,0 +1,8 @@
+type Mutation {
+  getEnv(arg: String!): MutationEnv!
+}
+
+type MutationEnv {
+  str: String
+  requiredInt: Int!
+}
