@@ -253,7 +253,7 @@ describe("e2e tests for query command", () => {
   }, 48000);
 
   test("Should use custom config for client if specified", async () => {
-    const configs = ["./client-config.ts", "./client-config.js"];
+    const configs = ["./client-config.ts", "./client-config.js", "./client-async-config.ts", "./client-async-config.js"];
 
     for (const config of configs) {
       const { exitCode, stdout, stderr } = await runCLI({
