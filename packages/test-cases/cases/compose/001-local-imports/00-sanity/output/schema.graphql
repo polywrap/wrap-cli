@@ -10,7 +10,7 @@ scalar Int32
 scalar Bytes
 scalar BigInt
 scalar BigNumber
-scalar JSON
+scalar Json
 scalar Map
 
 directive @imported(
@@ -70,6 +70,7 @@ type CustomModuleType {
   i: Int!
   i8: Int8!
   bytes: Bytes!
+  json: Json!
   uArray: [UInt!]!
   uOptArray: [UInt!]
   optStrOptArray: [String]

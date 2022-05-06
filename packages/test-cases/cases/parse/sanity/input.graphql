@@ -9,7 +9,7 @@ scalar Int32
 scalar Bytes
 scalar BigInt
 scalar BigNumber
-scalar JSON
+scalar Json
 scalar Map
 
 directive @imported(
@@ -66,8 +66,8 @@ optStr comment
   optBigint: BigInt
   bignumber: BigNumber!
   optBignumber: BigNumber
-  json: JSON!
-  optJson: JSON
+  json: Json!
+  optJson: Json
   bytes: Bytes!
   uArray: [UInt!]!
   uOptArray: [UInt!]

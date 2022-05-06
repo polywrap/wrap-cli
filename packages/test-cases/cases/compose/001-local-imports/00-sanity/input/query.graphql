@@ -22,6 +22,7 @@ type CustomModuleType {
   i: Int!
   i8: Int8!
   bytes: Bytes!
+  json: Json!
   uArray: [UInt!]!
   uOptArray: [UInt!]
   optStrOptArray: [String]

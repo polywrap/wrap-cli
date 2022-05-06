@@ -52,6 +52,7 @@ export interface CustomType {
   i8: Types.Int8;
   i16: Types.Int16;
   i32: Types.Int32;
+  json: Types.Json;
   bigint: Types.BigInt;
   optBigint?: Types.BigInt | null;
   bignumber: Types.BigNumber;

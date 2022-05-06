@@ -15,6 +15,7 @@ export abstract class Write {
   abstract writeFloat64(value: f64): void;
   abstract writeStringLength(length: u32): void;
   abstract writeString(value: string): void;
+  abstract writeJson(value: string): void;
   abstract writeBytesLength(length: u32): void;
   abstract writeBytes(value: ArrayBuffer): void;
   abstract writeBigInt(value: BigInt): void;

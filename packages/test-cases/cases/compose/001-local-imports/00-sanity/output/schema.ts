@@ -183,6 +183,7 @@ export const typeInfo: TypeInfo = {
         createScalarPropertyDefinition({ name: "i", type: "Int", required: true }),
         createScalarPropertyDefinition({ name: "i8", type: "Int8", required: true }),
         createScalarPropertyDefinition({ name: "bytes", type: "Bytes", required: true }),
+        createScalarPropertyDefinition({ name: "json", type: "Json", required: true }),
         createArrayPropertyDefinition({
           name: "uArray",
           type: "[UInt]",

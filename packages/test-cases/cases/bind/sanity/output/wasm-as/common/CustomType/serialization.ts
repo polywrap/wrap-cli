@@ -7,6 +7,7 @@ import {
   Nullable,
   BigInt,
   BigNumber,
+  Json,
   Context
 } from "@web3api/wasm-as";
 import { CustomType } from "./";
@@ -24,7 +25,7 @@ export function serializeCustomType(type: CustomType): ArrayBuffer {
 }
 
 export function writeCustomType(writer: Write, type: CustomType): void {
-  writer.writeMapLength(35);
+  writer.writeMapLength(36);
   writer.context().push("str", "string", "writing property");
   writer.writeString("str");
   writer.writeString(type.str);
@@ -68,6 +69,10 @@ export function writeCustomType(writer: Write, type: CustomType): void {
   writer.context().push("i32", "i32", "writing property");
   writer.writeString("i32");
   writer.writeInt32(type.m_i32);
+  writer.context().pop();
+  writer.context().push("json", "Json", "writing property");
+  writer.writeString("json");
+  writer.writeJson(type.json);
   writer.context().pop();
   writer.context().push("bigint", "BigInt", "writing property");
   writer.writeString("bigint");
@@ -242,6 +247,8 @@ export function readCustomType(reader: Read): CustomType {
   let _i16Set: bool = false;
   let _i32: i32 = 0;
   let _i32Set: bool = false;
+  let _json: Json = "";
+  let _jsonSet: bool = false;
   let _bigint: BigInt = BigInt.fromUInt16(0);
   let _bigintSet: bool = false;
   let _optBigint: BigInt | null = null;
@@ -346,6 +353,12 @@ export function readCustomType(reader: Read): CustomType {
       reader.context().push(field, "i32", "type found, reading property");
       _i32 = reader.readInt32();
       _i32Set = true;
+      reader.context().pop();
+    }
+    else if (field == "json") {
+      reader.context().push(field, "Json", "type found, reading property");
+      _json = reader.readJson();
+      _jsonSet = true;
       reader.context().pop();
     }
     else if (field == "bigint") {
@@ -602,6 +615,9 @@ export function readCustomType(reader: Read): CustomType {
   if (!_i32Set) {
     throw new Error(reader.context().printWithContext("Missing required property: 'i32: Int32'"));
   }
+  if (!_jsonSet) {
+    throw new Error(reader.context().printWithContext("Missing required property: 'json: Json'"));
+  }
   if (!_bigintSet) {
     throw new Error(reader.context().printWithContext("Missing required property: 'bigint: BigInt'"));
   }
@@ -651,6 +667,7 @@ export function readCustomType(reader: Read): CustomType {
     m_i8: _i8,
     m_i16: _i16,
     m_i32: _i32,
+    json: _json,
     bigint: _bigint,
     optBigint: _optBigint,
     bignumber: _bignumber,

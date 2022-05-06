@@ -4,6 +4,7 @@ import {
   Nullable,
   BigInt,
   BigNumber,
+  Json,
   Result
 } from "@web3api/wasm-as";
 import {

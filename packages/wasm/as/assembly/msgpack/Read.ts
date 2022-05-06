@@ -17,6 +17,7 @@ export abstract class Read {
   abstract readBytesLength(): u32;
   abstract readBytes(): ArrayBuffer;
   abstract readBigInt(): BigInt;
+  abstract readJson(): string;
   abstract readBigNumber(): BigNumber;
   abstract readArrayLength(): u32;
   abstract readArray<T>(fn: (reader: Read) => T): Array<T>;
@@ -42,6 +43,7 @@ export abstract class Read {
   abstract readNullableString(): string | null;
   abstract readNullableBytes(): ArrayBuffer | null;
   abstract readNullableBigInt(): BigInt | null;
+  abstract readNullableJson(): string | null;
   abstract readNullableBigNumber(): BigNumber | null;
   abstract readNullableArray<T>(fn: (decoder: Read) => T): Array<T> | null;
   abstract readNullableMap<K, V>(

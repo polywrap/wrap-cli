@@ -215,6 +215,10 @@ export class ReadDecoder extends Read {
     return BigNumber.fromString(str);
   }
 
+  readJson(): string {
+    return this.readString();
+  }
+
   readArrayLength(): u32 {
     if (this.isNextNil()) {
       return 0;
@@ -444,6 +448,10 @@ export class ReadDecoder extends Read {
       return null;
     }
     return this.readBigNumber();
+  }
+
+  readNullableJson(): string | null {
+    return this.readNullableString();
   }
 
   readNullableArray<T>(fn: (decoder: Read) => T): Array<T> | null {

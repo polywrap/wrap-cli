@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-inferrable-types */
-
 import {
   Nullable,
   Read,
@@ -7,6 +5,7 @@ import {
   Write,
   WriteEncoder,
   WriteSizer,
+  Json,
   BigInt,
   BigNumber,
 } from "../";
@@ -27,6 +26,7 @@ class Sanity {
   str: string = "";
   bigint: BigInt = BigInt.ONE;
   bignumber: BigNumber = BigNumber.ONE;
+  json: Json = "";
   largeStr: string = "";
   bytes: ArrayBuffer = new ArrayBuffer(1);
   largeBytes: ArrayBuffer = new ArrayBuffer(1);
@@ -54,6 +54,7 @@ class Sanity {
     this.str = "Hello, world!";
     this.bigint = BigInt.fromString("3124124512598273468017578125");
     this.bignumber = BigNumber.fromString("3124124512.598273468017578125");
+    this.json = `{"foo": "bar", "bar": "baz"}`;
     this.largeStr = new Array<string>(10).join("web3api ");
     this.bytes = new ArrayBuffer(12);
     this.largeBytes = largeBytes;
@@ -96,7 +97,7 @@ class Sanity {
 }
 
 function serializeSanity(writer: Write, type: Sanity): void {
-  writer.writeMapLength(22);
+  writer.writeMapLength(23);
   writer.writeString("nil");
   writer.writeNullableString(type.nil);
   writer.writeString("int8");
@@ -133,6 +134,8 @@ function serializeSanity(writer: Write, type: Sanity): void {
   writer.writeBigInt(type.bigint);
   writer.writeString("bignumber");
   writer.writeBigNumber(type.bignumber);
+  writer.writeString("json");
+  writer.writeJson(type.json);
   writer.writeString("array");
   writer.writeArray(type.array, (writer: Write, item: u8) => {
     writer.writeUInt8(item);
@@ -198,6 +201,8 @@ function deserializeSanity(reader: Read, type: Sanity): void {
       type.bigint = reader.readBigInt();
     } else if (field == "bignumber") {
       type.bignumber = reader.readBigNumber();
+    } else if (field == "json") {
+      type.json = reader.readJson();
     } else if (field == "largeStr") {
       type.largeStr = reader.readString();
     } else if (field == "bytes") {
@@ -276,6 +281,8 @@ function deserializeWithOverflow(reader: Read, type: Sanity): void {
       type.bigint = reader.readBigInt();
     } else if (field == "bignumber") {
       type.bignumber = reader.readBigNumber();
+    } else if (field == "json") {
+      type.json = reader.readJson();
     } else if (field == "bytes") {
       type.bytes = reader.readBytes();
     } else if (field == "array") {
@@ -342,6 +349,8 @@ function deserializeWithInvalidTypes(reader: Read, type: Sanity): void {
       type.bigint = reader.readBigInt();
     } else if (field == "bignumber") {
       type.bignumber = reader.readBigNumber();
+    } else if (field == "json") {
+      type.json = reader.readJson();
     } else if (field == "largeStr") {
       type.largeStr = reader.readString();
     } else if (field == "bytes") {

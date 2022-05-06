@@ -117,6 +117,10 @@ export class WriteEncoder extends Write {
     this._view.setBytes(buf);
   }
 
+  writeJson(value: string): void {
+    this.writeString(value);
+  }
+
   writeBytesLength(length: u32): void {
     if (length <= <u32>u8.MAX_VALUE) {
       this._view.setUint8(<u8>Format.BIN8);

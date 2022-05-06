@@ -7,6 +7,7 @@ import {
   Nullable,
   BigInt,
   BigNumber,
+  Json,
   Context
 } from "@web3api/wasm-as";
 import * as Types from "..";

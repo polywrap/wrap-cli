@@ -92,6 +92,10 @@ export class WriteSizer extends Write {
     this.length += buf.byteLength;
   }
 
+  writeJson(value: string): void {
+    this.writeString(value);
+  }
+
   writeBytesLength(length: u32): void {
     if (length <= <u32>u8.MAX_VALUE) {
       this.length += 2;
