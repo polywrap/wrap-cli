@@ -3,6 +3,9 @@
   "description": "Web3API Templates",
   "version": "0.0.1-prealpha.75",
   "license": "MIT",
+  "scripts": {
+    "test": "npx ts-node ./scripts/test-runner.ts"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/web3-api/monorepo.git"

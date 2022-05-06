@@ -1,5 +1,6 @@
-import { Web3ApiClient } from "@web3api/client-js";
 import { HelloWorld_Query, Ethereum_Query } from "./w3";
+
+import { Web3ApiClient } from "@web3api/client-js";
 
 const client = new Web3ApiClient();
 

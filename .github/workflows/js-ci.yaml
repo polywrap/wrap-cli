@@ -6,6 +6,7 @@ on:
       - master
       - prealpha
       - prealpha-dev
+      - feat/script-tests-to-templates
   pull_request:
 
 jobs:
