@@ -10,7 +10,7 @@ on:
 
 jobs:
   JS-Core-CI-Linux:
-    name: JS-CI-Linux
+    name: JS-Core-CI-Linux
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
@@ -50,7 +50,7 @@ jobs:
         run: yarn test:ci:core
 
   JS-Client-CI-Linux:
-    name: JS-CI-Linux
+    name: JS-Client-CI-Linux
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
