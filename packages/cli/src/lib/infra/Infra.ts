@@ -32,19 +32,33 @@ type NamedRemoteModule = Extract<NamedModule, { registry: string }>;
 type NamedLocalModule = Extract<NamedModule, { path: string }>;
 type Registry = keyof typeof dependencyFetcherClassMap;
 
+const DEFAULT_BASE_COMPOSE = {
+  version: "3",
+};
+
 export class Infra {
-  private _dockerComposePath: string;
+  private _baseDockerComposePath: string;
   private _fetchedModulesData: FetchedModulesData | undefined;
   private _defaultModuleComposePaths = [
     "./docker-compose.yml",
     "./docker-compose.yaml",
   ];
+  private _config: InfraConfig;
 
-  constructor(private _config: InfraConfig) {
-    this._dockerComposePath = path.join(
-      _config.project.getInfraCacheModulesPath(),
-      "docker-compose.yml"
-    );
+  constructor(config: InfraConfig & { baseDockerComposePath?: string }) {
+    this._config = config;
+
+    if (config.baseDockerComposePath) {
+      this._baseDockerComposePath = config.baseDockerComposePath;
+    } else {
+      // If user did not specify a base compose, generate a default one
+      this._baseDockerComposePath = path.join(
+        config.project.getInfraCacheModulesPath(),
+        "docker-compose.yml"
+      );
+
+      this._generateDefaultBaseDockerCompose(this._baseDockerComposePath);
+    }
 
     this._sanitizeModules();
   }
@@ -154,7 +168,7 @@ export class Infra {
           `export ${key}=${env[key]} ${i < envKeys.length ? "&& " : ""}`
       )
       .join("")} docker-compose -f ${
-      this._dockerComposePath
+      this._baseDockerComposePath
     } ${modulesWithComposePaths
       .map((module) => ` -f ${module.path}`)
       .join("")}`;
@@ -172,11 +186,10 @@ export class Infra {
     );
   }
 
-  private _generateBaseDockerCompose(): void {
-    const { infraManifest } = this._config;
-    const fileContent = YAML.dump(infraManifest.dockerCompose);
+  private _generateDefaultBaseDockerCompose(composePath: string): void {
+    const fileContent = YAML.dump(DEFAULT_BASE_COMPOSE);
 
-    this._writeFileToCacheFromAbsPath(this._dockerComposePath, fileContent);
+    this._writeFileToCacheFromAbsPath(composePath, fileContent);
   }
 
   // Compose package.json under .w3 folder and install deps
@@ -274,9 +287,6 @@ export class Infra {
       const newComposeFile = YAML.dump(composeFileWithCorrectPaths);
       this._writeFileToCacheFromAbsPath(m.path, newComposeFile);
     });
-
-    // generate base docker compose
-    this._generateBaseDockerCompose();
 
     // generate base composed command
     const command = this._generateBaseComposedCommand(modulesWithComposePaths);

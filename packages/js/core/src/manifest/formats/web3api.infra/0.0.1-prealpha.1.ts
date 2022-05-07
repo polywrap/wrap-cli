@@ -8,7 +8,7 @@
 
 export interface InfraManifest {
   format: "0.0.1-prealpha.1";
-  dockerCompose?: unknown;
+  dockerCompose?: string;
   env?: {
     /**
      * This interface was referenced by `undefined`'s JSON-Schema definition

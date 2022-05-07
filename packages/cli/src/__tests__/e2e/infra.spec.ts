@@ -3,18 +3,26 @@ import path from "path";
 import net from "net";
 import { clearStyle, w3Cli } from "./utils";
 
+import { GetPathToCliTestFiles } from "@web3api/test-cases";
 import { runCLI } from "@web3api/test-env-js";
-import rimraf from "rimraf";
+
+const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/infra");
+  const testCases =
+    fs.readdirSync(testCaseRoot, { withFileTypes: true })
+      .filter((dirent) => dirent.isDirectory())
+      .map((dirent) => dirent.name);
+  const getTestCaseDir = (index: number) =>
+    path.join(testCaseRoot, testCases[index]);
 
 const HELP = `
-w3 env <command> <web3api-manifest> [options]
+w3 infra <command> <web3api-manifest> [options]
 
 Commands:
-  config  Validate and display Web3API environment's bundled docker-compose manifest
-  down     Stop Web3API environment
+  config  Validate and display Web3API infrastructure's bundled docker-compose manifest
+  down     Stop Web3API infrastructure
   help     Show usage information
-  up     Start Web3API environment
-  vars  Show Web3API environment's required .env variables
+  up     Start Web3API infrastructure
+  vars  Show Web3API infrastructure's required .env variables
 
 Options:
   -m, --modules [<module-name>]       Use only specified modules
@@ -69,16 +77,14 @@ const waitForPorts = (ports: { port: number; expected: boolean }[]) => {
   });
 };
 
-describe("e2e tests for env command", () => {
-  const projectRoot = path.resolve(__dirname, "../project/");
-
+describe("e2e tests for infra command", () => {
   afterEach(async () => {
     await runCLI(
       {
-        args: ["env", "down", "web3api.docker.yaml", "-v"],
-        cwd: projectRoot,
+        args: ["infra", "down", "web3api.yaml", "-v"],
+        cwd: getTestCaseDir(0),
+        cli: w3Cli
       },
-      w3Cli
     );
 
     await waitForPorts([
@@ -90,10 +96,10 @@ describe("e2e tests for env command", () => {
   test("Should throw error for no command given", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["env"],
-        cwd: projectRoot,
+        args: ["infra"],
+        cwd: getTestCaseDir(0),
+        cli: w3Cli
       },
-      w3Cli
     );
 
     expect(code).toEqual(0);
@@ -105,10 +111,10 @@ ${HELP}`);
   test("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["env", "help"],
-        cwd: projectRoot,
+        args: ["infra", "help"],
+        cwd: getTestCaseDir(0),
+        cli: w3Cli
       },
-      w3Cli
     );
 
     expect(code).toEqual(0);
@@ -119,10 +125,10 @@ ${HELP}`);
   test("Extracts composed docker manifest's environment variable list", async () => {
     const { exitCode: code, stdout: output } = await runCLI(
       {
-        args: ["env", "vars", "web3api.docker.yaml"],
-        cwd: projectRoot,
+        args: ["infra", "vars", "web3api.yaml"],
+        cwd: getTestCaseDir(0),
+        cli: w3Cli
       },
-      w3Cli
     );
 
     const sanitizedOutput = clearStyle(output);
@@ -136,10 +142,10 @@ ${HELP}`);
   test("Validates and displays composed docker manifest", async () => {
     const { exitCode: code, stdout: output } = await runCLI(
       {
-        args: ["env", "config", "web3api.docker.yaml"],
-        cwd: projectRoot,
+        args: ["infra", "config", "web3api.yaml"],
+        cwd: getTestCaseDir(0),
+        cli: w3Cli
       },
-      w3Cli
     );
 
     const sanitizedOutput = clearStyle(output);
@@ -151,13 +157,16 @@ ${HELP}`);
   });
 
   test("Sets environment up with all modules if no --modules are passed", async () => {
-    await runCLI(
+    const {stderr, stdout} = await runCLI(
       {
-        args: ["env", "up", "web3api.docker.yaml"],
-        cwd: projectRoot,
+        args: ["infra", "up", "web3api.yaml"],
+        cwd: getTestCaseDir(0),
+        cli: w3Cli
       },
-      w3Cli
     );
+
+    console.log(stderr)
+    console.log(stdout)
 
     await waitForPorts([
       { port: 3000, expected: true },
@@ -168,10 +177,10 @@ ${HELP}`);
   test("Tears down environment", async () => {
     await runCLI(
       {
-        args: ["env", "up", "web3api.docker.yaml"],
-        cwd: projectRoot,
+        args: ["infra", "up", "web3api.yaml"],
+        cwd: getTestCaseDir(0),
+        cli: w3Cli
       },
-      w3Cli
     );
 
     await waitForPorts([
@@ -181,10 +190,10 @@ ${HELP}`);
 
     await runCLI(
       {
-        args: ["env", "down", "web3api.docker.yaml"],
-        cwd: projectRoot,
+        args: ["infra", "down", "web3api.yaml"],
+        cwd: getTestCaseDir(0),
+        cli: w3Cli
       },
-      w3Cli
     );
 
     await waitForPorts([
@@ -196,10 +205,10 @@ ${HELP}`);
   test("Sets environment up with only selected modules", async () => {
     await runCLI(
       {
-        args: ["env", "up", "web3api.docker.yaml", "--modules=ipfs"],
-        cwd: projectRoot,
+        args: ["infra", "up", "web3api.yaml", "--modules=ipfs"],
+        cwd: getTestCaseDir(0),
+        cli: w3Cli
       },
-      w3Cli
     );
 
     await waitForPorts([
@@ -208,18 +217,18 @@ ${HELP}`);
     ]);
   });
 
-  test("Should throw error for --modules that don't exist in env manifest", async () => {
+  test("Should throw error for --modules that don't exist in infra manifest", async () => {
     const { exitCode: code, stderr } = await runCLI(
       {
         args: [
-          "env",
+          "infra",
           "config",
-          "web3api.docker.yaml",
+          "web3api.yaml",
           "--modules=notExistingModule,alsoNotExisting",
         ],
-        cwd: projectRoot,
+        cwd: getTestCaseDir(0),
+        cli: w3Cli
       },
-      w3Cli
     );
 
     expect(code).toEqual(1);
@@ -228,82 +237,31 @@ ${HELP}`);
     );
   });
 
-  test("Should throw error for manifest with no 'dockerCompose' and no 'modules'", async () => {
-    const { exitCode: code, stderr } = await runCLI(
-      {
-        args: [
-          "env",
-          "config",
-          "web3api.no-modules-docker.yaml",
-        ],
-        cwd: projectRoot,
-      },
-      w3Cli
-    );
+  // test("Should setup and use default test env if no 'env' in manifest is provided", async () => {
 
-    expect(code).toEqual(1);
-    expect(stderr).toContain(
-      `At least one is required in env manifest: "dockerCompose", "modules"`
-    );
-  });
+  //   const envCachePath = path.join(__dirname, "..", "project", ".w3", "infra")
 
-  test.skip("Should tolerate manifest with no 'dockerCompose'", async () => {
-    const { exitCode: code } = await runCLI(
-      {
-        args: [
-          "env",
-          "config",
-          "web3api.no-env-docker.yaml",
-        ],
-        cwd: projectRoot,
-      },
-      w3Cli
-    );
+  //   if(fs.existsSync(envCachePath)) {
+  //     rimraf.sync(envCachePath)
+  //   }
 
-    expect(code).toEqual(0);
-  });
+  //   const { exitCode: code, stdout } = await runCLI(
+  //     {
+  //       args: [
+  //         "infra",
+  //         "config",
+  //         "web3api.yaml",
+  //       ],
+  //       cwd: getTestCaseDir(0),
+  //       cli: w3Cli
+  //     },
+  //   );
 
-  test("Should tolerate manifest with no 'modules'", async () => {
-    const { exitCode: code } = await runCLI(
-      {
-        args: [
-          "env",
-          "config",
-          "web3api.no-modules.yaml",
-        ],
-        cwd: projectRoot,
-      },
-      w3Cli
-    );
+  //   const sanitizedOutput = clearStyle(stdout);
 
-    expect(code).toEqual(0);
-  });
-
-  test("Should setup and use default test env if no 'env' in manifest is provided", async () => {
-
-    const envCachePath = path.join(__dirname, "..", "project", ".w3", "env")
-
-    if(fs.existsSync(envCachePath)) {
-      rimraf.sync(envCachePath)
-    }
-
-    const { exitCode: code, stdout } = await runCLI(
-      {
-        args: [
-          "env",
-          "config",
-          "web3api.yaml",
-        ],
-        cwd: projectRoot,
-      },
-      w3Cli
-    );
-
-    const sanitizedOutput = clearStyle(stdout);
-
-    expect(code).toEqual(0);
-    expect(sanitizedOutput).toContain("services:");
-    expect(sanitizedOutput).toContain("dev-server:");
-    expect(sanitizedOutput).toContain("ipfs:");
-  })
+  //   expect(code).toEqual(0);
+  //   expect(sanitizedOutput).toContain("services:");
+  //   expect(sanitizedOutput).toContain("dev-server:");
+  //   expect(sanitizedOutput).toContain("ipfs:");
+  // })
 });

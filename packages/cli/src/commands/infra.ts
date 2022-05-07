@@ -92,17 +92,30 @@ export default {
       quiet: !verbose,
     });
 
+    const modulesDeclared = Object.keys(infraManifest.modules);
     const filteredModules = infra.getFilteredModules();
 
-    if (!filteredModules.length) {
-      throw new Error("No modules to fetch");
+    if (!infraManifest.dockerCompose && !modulesDeclared.length) {
+      throw new Error("No base docker-compose file or modules specified");
     }
 
-    print.info(
-      `Using infra modules: ${filteredModules
-        .map((f) => `\n- ${f.name}`)
-        .join("")}`
-    );
+    if (infraManifest.dockerCompose) {
+      print.info(
+        `Using ${infraManifest.dockerCompose} as base docker-compose file`
+      );
+    }
+
+    if (modulesDeclared) {
+      if (filteredModules.length) {
+        print.info(
+          `Using infra modules: ${filteredModules
+            .map((f) => `\n- ${f.name}`)
+            .join("")}`
+        );
+      } else {
+        print.warning(`"${modules}" did not match any module names`);
+      }
+    }
 
     if (command === "up") {
       await infra.up();
