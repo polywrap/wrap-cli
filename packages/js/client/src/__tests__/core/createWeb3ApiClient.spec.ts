@@ -1,4 +1,4 @@
-import { createWeb3ApiClient, PluginConfigs } from "../createWeb3ApiClient";
+import { createWeb3ApiClient, PluginConfigs } from "../../createWeb3ApiClient";
 
 it("Should throw because the plugin requested it's not installed ", async () => {
   const clientParams = {

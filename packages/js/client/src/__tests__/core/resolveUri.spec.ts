@@ -4,7 +4,7 @@ import {
   Uri,
   Web3ApiClientConfig,
   Web3ApiClient,
-} from "..";
+} from "../..";
 import {
   buildAndDeployApi,
   initTestEnvironment,
