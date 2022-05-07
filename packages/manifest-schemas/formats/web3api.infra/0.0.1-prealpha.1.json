@@ -9,7 +9,7 @@
       "const": "0.0.1-prealpha.1"
     },
     "dockerCompose": {
-      "type": "any"
+      "type": "string"
     },
     "env": {
       "patternProperties": {

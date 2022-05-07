@@ -11,13 +11,19 @@ import YAML from "js-yaml";
 
 export interface InfraConfig {
   project: Web3ApiProject;
-  packagesToUse?: string[];
+  infraManifest: InfraManifest;
+  modulesToUse?: string[];
   quiet?: boolean;
 }
 
-interface InitData {
+interface FetchedModulesData {
   baseCommand: string;
-  correctedDockerComposePaths: string[];
+  modulesWithComposePaths: ModuleWithPath[];
+}
+
+interface ModuleWithPath {
+  moduleName: string;
+  path: string;
 }
 
 type Module = Exclude<InfraManifest["modules"], undefined>[number];
@@ -28,7 +34,7 @@ type Registry = keyof typeof dependencyFetcherClassMap;
 
 export class Infra {
   private _dockerComposePath: string;
-  private _initData: InitData | undefined;
+  private _fetchedModulesData: FetchedModulesData | undefined;
   private _defaultModuleComposePaths = [
     "./docker-compose.yml",
     "./docker-compose.yaml",
@@ -39,18 +45,20 @@ export class Infra {
       _config.project.getInfraCacheModulesPath(),
       "docker-compose.yml"
     );
+
+    this._sanitizeModules();
   }
 
   public async up(): Promise<void> {
     const { quiet } = this._config;
-    const { baseCommand } = await this.getInitData();
+    const { baseCommand } = await this._fetchModules();
 
     await runCommand(`${baseCommand} up -d --build`, quiet);
   }
 
   public async down(): Promise<void> {
     const { quiet } = this._config;
-    const { baseCommand } = await this.getInitData();
+    const { baseCommand } = await this._fetchModules();
 
     await runCommand(`${baseCommand} down`, quiet);
   }
@@ -60,18 +68,18 @@ export class Infra {
     stderr: string;
   }> {
     const { quiet } = this._config;
-    const { baseCommand } = await this.getInitData();
+    const { baseCommand } = await this._fetchModules();
 
     return await runCommand(`${baseCommand} config`, quiet);
   }
 
   public async getVars(): Promise<string[]> {
-    const { correctedDockerComposePaths } = await this.getInitData();
+    const { modulesWithComposePaths } = await this._fetchModules();
 
     const envVarRegex = /\${([^}]+)}/gm;
 
-    const envVars = correctedDockerComposePaths.reduce((acc, current) => {
-      const rawManifest = fs.readFileSync(current, "utf-8");
+    const envVars = modulesWithComposePaths.reduce((acc, current) => {
+      const rawManifest = fs.readFileSync(current.path, "utf-8");
       const matches = rawManifest.match(envVarRegex) || [];
 
       return [
@@ -94,50 +102,34 @@ export class Infra {
     // return `${variables.map((variable) => `\n- ${variable}`).join("")}`;
   }
 
-  private async getInitData(): Promise<InitData> {
-    if (!this._initData) {
-      await this._init();
+  public getFilteredModules(): NamedModule[] {
+    const { modulesToUse, infraManifest } = this._config;
+
+    if (!modulesToUse || !modulesToUse.length) {
+      return Object.entries(infraManifest.modules).map(([name, value]) => ({
+        name,
+        ...value,
+      }));
     }
 
-    return this._initData as InitData;
+    return Object.entries(infraManifest.modules)
+      .filter(([name]) => modulesToUse.includes(name))
+      .map(([name, value]) => ({ name, ...value }));
   }
 
-  private async _init() {
-    const { project, packagesToUse } = this._config;
+  private _sanitizeModules(): void {
+    const { modulesToUse, infraManifest } = this._config;
 
-    // Get the infra manifest
-    const manifest = await project.getInfraManifest();
-
-    // Check for unrecognized infra modules
-    this._sanitizeModules(manifest, packagesToUse);
-
-    // Fetch infra modules
-    const packagePaths = await this._fetchModules(manifest, packagesToUse);
-
-    // generate base docker compose
-    await this._generateBaseDockerCompose();
-
-    // generate base composed command
-    const command = await this._generateBaseComposedCommand(packagePaths);
-
-    this._initData = {
-      baseCommand: command,
-      correctedDockerComposePaths: packagePaths,
-    };
-  }
-
-  private _sanitizeModules(
-    manifest: InfraManifest,
-    modulesToUse?: string[]
-  ): void {
     if (modulesToUse) {
-      const manifestModuleNames = Object.keys(manifest.modules);
+      const manifestModuleNames = Object.keys(infraManifest.modules);
       const unrecognizedModules: string[] = [];
       modulesToUse.forEach((p: string) => {
         if (!manifestModuleNames.includes(p)) {
           unrecognizedModules.push(p);
         }
       });
+
+      console.log(unrecognizedModules);
 
       if (unrecognizedModules.length) {
         throw new Error(
@@ -149,12 +141,11 @@ export class Infra {
     }
   }
 
-  private async _generateBaseComposedCommand(
-    correctedDockerComposePaths: string[]
-  ): Promise<string> {
-    const { project } = this._config;
-    const manifest = await project.getInfraManifest();
-    const env = manifest.env || {};
+  private _generateBaseComposedCommand(
+    modulesWithComposePaths: ModuleWithPath[]
+  ): string {
+    const { infraManifest } = this._config;
+    const env = infraManifest.env || {};
     const envKeys = Object.keys(env);
 
     return `${envKeys
@@ -164,7 +155,9 @@ export class Infra {
       )
       .join("")} docker-compose -f ${
       this._dockerComposePath
-    } ${correctedDockerComposePaths.map((path) => ` -f ${path}`).join("")}`;
+    } ${modulesWithComposePaths
+      .map((module) => ` -f ${module.path}`)
+      .join("")}`;
   }
 
   private _writeFileToCacheFromAbsPath(
@@ -179,10 +172,9 @@ export class Infra {
     );
   }
 
-  private async _generateBaseDockerCompose(): Promise<void> {
-    const { project } = this._config;
-    const manifest = await project.getInfraManifest();
-    const fileContent = YAML.dump(manifest.dockerCompose);
+  private _generateBaseDockerCompose(): void {
+    const { infraManifest } = this._config;
+    const fileContent = YAML.dump(infraManifest.dockerCompose);
 
     this._writeFileToCacheFromAbsPath(this._dockerComposePath, fileContent);
   }
@@ -191,7 +183,7 @@ export class Infra {
   private async _fetchRemoteModules(
     modules: NamedRemoteModule[],
     installationDir: string
-  ): Promise<string[]> {
+  ): Promise<ModuleWithPath[]> {
     const classifiedModules = modules.reduce((prev, current) => {
       const registry = current.registry as Registry;
 
@@ -204,7 +196,7 @@ export class Infra {
       return prev;
     }, {} as Record<Registry, NamedRemoteModule[]>);
 
-    const dockerComposePaths: string[] = [];
+    const modulesWithComposePaths: ModuleWithPath[] = [];
 
     for await (const [registry, modules] of Object.entries(classifiedModules)) {
       const dependencyFetcher = new dependencyFetcherClassMap[
@@ -222,27 +214,35 @@ export class Infra {
 
       await dependencyFetcher.installPackages(mappedInfraModules);
 
-      const paths = modules.map((m) => {
+      const modulesWithPaths = modules.map((m) => {
         const packageDir = dependencyFetcher.getPackageDir(m.package);
-        return m.dockerComposePath
+        const packagePath = m.dockerComposePath
           ? path.join(packageDir, m.dockerComposePath)
           : this.tryResolveComposeFile(
               packageDir,
               this._defaultModuleComposePaths
             );
+
+        return { moduleName: m.name, path: packagePath };
       });
 
-      dockerComposePaths.push(...paths);
+      modulesWithComposePaths.push(...modulesWithPaths);
     }
 
-    return dockerComposePaths;
+    return modulesWithComposePaths;
   }
 
-  private async _fetchModules(
-    manifest: InfraManifest,
-    modulesToUse?: string[]
-  ): Promise<string[]> {
-    const modules = this._getFilteredModules(manifest, modulesToUse);
+  private async _fetchModules(): Promise<FetchedModulesData> {
+    if (this._fetchedModulesData) {
+      return this._fetchedModulesData;
+    }
+
+    const modules = await this.getFilteredModules();
+
+    if (!modules.length) {
+      throw new Error("No modules to fetch");
+    }
+
     const remoteModules = modules.filter(
       (m): m is NamedRemoteModule => !this._isLocalModule(m)
     );
@@ -251,36 +251,48 @@ export class Infra {
     );
     const installationDir = this._config.project.getInfraCacheModulesPath();
 
-    const remoteComposePaths = await this._fetchRemoteModules(
+    const remoteModulesWithComposePaths = await this._fetchRemoteModules(
       remoteModules,
       installationDir
     );
-    const localComposePaths = await this._fetchLocalModules(
-      localModules,
-      installationDir
+    const localModulesWithComposePaths = await this._fetchLocalModules(
+      localModules
     );
 
-    const composePaths = [...remoteComposePaths, ...localComposePaths];
+    const modulesWithComposePaths = [
+      ...remoteModulesWithComposePaths,
+      ...localModulesWithComposePaths,
+    ];
 
-    composePaths.forEach((composePath) => {
+    modulesWithComposePaths.forEach((m) => {
       // Adjust package's docker-compose's build option if it exists
       const composeFileWithCorrectPaths = correctBuildContextPathsFromCompose(
-        composePath
+        m.path
       );
 
       // Write new docker-compose manifests with corrected build path and 'web3api' prefix
       const newComposeFile = YAML.dump(composeFileWithCorrectPaths);
-      this._writeFileToCacheFromAbsPath(composePath, newComposeFile);
+      this._writeFileToCacheFromAbsPath(m.path, newComposeFile);
     });
 
-    return composePaths;
+    // generate base docker compose
+    this._generateBaseDockerCompose();
+
+    // generate base composed command
+    const command = this._generateBaseComposedCommand(modulesWithComposePaths);
+
+    this._fetchedModulesData = {
+      baseCommand: command,
+      modulesWithComposePaths,
+    };
+
+    return this._fetchedModulesData as FetchedModulesData;
   }
 
   private async _fetchLocalModules(
-    modules: NamedLocalModule[],
-    _: string
-  ): Promise<string[]> {
-    const dockerComposePaths: string[] = [];
+    modules: NamedLocalModule[]
+  ): Promise<ModuleWithPath[]> {
+    const modulesWithComposePaths: ModuleWithPath[] = [];
     const basePath = path.join(
       this._config.project.getInfraCacheModulesPath(),
       "local"
@@ -295,28 +307,18 @@ export class Infra {
         { up: true }
       );
 
-      dockerComposePaths.push(
-        this.tryResolveComposeFile(modulePath, this._defaultModuleComposePaths)
+      const composePath = this.tryResolveComposeFile(
+        modulePath,
+        this._defaultModuleComposePaths
       );
+
+      modulesWithComposePaths.push({
+        moduleName: module.name,
+        path: composePath,
+      });
     }
 
-    return dockerComposePaths;
-  }
-
-  private _getFilteredModules(
-    manifest: InfraManifest,
-    packagesToUse?: string[]
-  ): NamedModule[] {
-    if (!packagesToUse || !packagesToUse.length) {
-      return Object.entries(manifest.modules).map(([name, value]) => ({
-        name,
-        ...value,
-      }));
-    }
-
-    return Object.entries(manifest.modules)
-      .filter(([name]) => packagesToUse.includes(name))
-      .map(([name, value]) => ({ name, ...value }));
+    return modulesWithComposePaths;
   }
 
   private _isLocalModule(object: unknown): object is { path: string } {

@@ -41,14 +41,14 @@ export default {
     const { parameters, print, filesystem } = toolbox;
     const command = parameters.first;
     const { p, v } = parameters.options;
-    let { packages, verbose } = parameters.options;
+    let { modules, verbose } = parameters.options;
     const manifestFile = parameters.second;
 
-    packages = packages || p;
+    modules = modules || p;
     verbose = !!(verbose || v);
 
-    if (packages) {
-      packages = packages.split(",").map((m: string) => m.trim());
+    if (modules) {
+      modules = modules.split(",").map((m: string) => m.trim());
     }
 
     if (command === "help") {
@@ -83,11 +83,26 @@ export default {
       quiet: verbose ? false : true,
     });
 
+    const infraManifest = await project.getInfraManifest();
+
     const infra = new Infra({
       project,
-      packagesToUse: packages,
+      modulesToUse: modules,
+      infraManifest,
       quiet: !verbose,
     });
+
+    const filteredModules = infra.getFilteredModules();
+
+    if (!filteredModules.length) {
+      throw new Error("No modules to fetch");
+    }
+
+    print.info(
+      `Using infra modules: ${filteredModules
+        .map((f) => `\n- ${f.name}`)
+        .join("")}`
+    );
 
     if (command === "up") {
       await infra.up();
