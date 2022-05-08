@@ -146,7 +146,7 @@ describe("Graph Node Plugin", () => {
       }, client)
     ).rejects.toThrowError(
       new RegExp(
-        "Store error: query execution failed: Subgraph `ens/ens` not found",
+        "deployment `ens/ens` does not exist",
         "g"
       )
     );
@@ -174,7 +174,7 @@ describe("Graph Node Plugin", () => {
       }, client)
     ).rejects.toThrowError(
       new RegExp(
-        "Store error: query execution failed: Subgraph `ensdomains/foo` not found",
+        "deployment `ensdomains/foo` does not exist",
         "g"
       )
     );
