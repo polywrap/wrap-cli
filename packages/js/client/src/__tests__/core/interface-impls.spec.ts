@@ -9,6 +9,8 @@ import {
   Web3ApiClientConfig,
 } from "../..";
 
+jest.setTimeout(200000);
+
 describe("sanity", () => {
   let ipfsProvider: string;
   let ethProvider: string;

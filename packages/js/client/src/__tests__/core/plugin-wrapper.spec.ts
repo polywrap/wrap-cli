@@ -9,6 +9,8 @@ import {
 } from "../..";
 import { createWeb3ApiClient } from "../../createWeb3ApiClient";
 
+jest.setTimeout(200000);
+
 describe("plugin-wrapper", () => {
   let ipfsProvider: string;
   let ethProvider: string;

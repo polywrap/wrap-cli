@@ -69,16 +69,6 @@ describe("large-types", () => {
 
   it("should work with large types", async () => {
     const client = await getClient();
-
-    const api = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/large-types`,
-      ipfsProvider,
-      ensRegistryAddress: ensAddress,
-      ethereumProvider: ethProvider,
-      ensRegistrarAddress,
-      ensResolverAddress,
-    });
-    const ensUri = `ens/testnet/${api.ensDomain}`;
     const largeStr = new Array(10000).join("web3api ");
     const largeBytes = new Uint8Array(Buffer.from(largeStr));
     const largeStrArray = [];

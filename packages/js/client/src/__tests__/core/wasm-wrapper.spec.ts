@@ -98,7 +98,7 @@ describe("wasm-wrapper", () => {
     };
   };
 
-  it("should invoke with decode defaulted to true works as expected", async () => {
+  test("invoke with decode defaulted to true works as expected", async () => {
     let client = new Web3ApiClient();
     const result = await client.invoke<string>({
       uri: ensUri,
@@ -117,7 +117,7 @@ describe("wasm-wrapper", () => {
     expect(result.data).toContain("0x");
   });
 
-  it("should invoke with decode set to false works as expected", async () => {
+  test("invoke with decode set to false works as expected", async () => {
     let client = new Web3ApiClient();
     const result = await client.invoke({
       uri: ensUri,
