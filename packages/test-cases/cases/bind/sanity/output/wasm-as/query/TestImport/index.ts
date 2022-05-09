@@ -2,6 +2,7 @@ import {
   w3_getImplementations
 } from "@web3api/wasm-as";
 
+@serializable
 export class TestImport {
   static uri: string = "testimport.uri.eth"
 

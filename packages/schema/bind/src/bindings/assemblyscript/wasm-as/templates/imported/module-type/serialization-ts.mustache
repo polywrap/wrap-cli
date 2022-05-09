@@ -4,6 +4,7 @@
 import * as Types from "../..";
 
 {{#methods}}
+@serializable
 export class Input_{{name}} {
   {{#arguments}}
   {{#handleKeywords}}{{name}}{{/handleKeywords}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};

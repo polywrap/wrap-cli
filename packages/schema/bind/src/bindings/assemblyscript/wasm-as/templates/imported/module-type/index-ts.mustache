@@ -8,7 +8,6 @@ import {
   Nullable,
   BigInt,
   BigNumber,
-  JSON,
   Result
 } from "@web3api/wasm-as";
 {{#methods.length}}
@@ -23,6 +22,7 @@ import {
 import * as Types from "../..";
 
 {{^isInterface}}
+@serializable
 export class {{type}} {
 
   public static uri: string = "{{uri}}";
@@ -56,6 +56,7 @@ export class {{type}} {
 }
 {{/isInterface}}
 {{#isInterface}}
+@serializable
 export class {{type}} {
 
   public static interfaceUri: string = "{{uri}}";

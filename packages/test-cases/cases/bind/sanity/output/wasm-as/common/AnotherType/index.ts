@@ -4,7 +4,6 @@ import {
   Nullable,
   BigInt,
   BigNumber,
-  JSON
 } from "@web3api/wasm-as";
 import {
   serializeAnotherType,
@@ -14,6 +13,7 @@ import {
 } from "./serialization";
 import * as Types from "..";
 
+@serializable
 export class AnotherType {
   prop: string | null;
   circular: Types.CustomType | null;

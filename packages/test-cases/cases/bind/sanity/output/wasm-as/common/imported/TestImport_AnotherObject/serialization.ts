@@ -7,7 +7,6 @@ import {
   Nullable,
   BigInt,
   BigNumber,
-  JSON,
   Context
 } from "@web3api/wasm-as";
 import { TestImport_AnotherObject } from "./";
