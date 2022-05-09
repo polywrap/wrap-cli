@@ -37,7 +37,7 @@
     "test": "lerna run test --no-private --ignore @web3api/client-js --concurrency 1 && lerna run test --scope @web3api/client-js",
     "test:ci": "lerna run test:ci --no-private --ignore @web3api/client-js --concurrency 1 && lerna run test:ci --scope @web3api/client-js",
     "test:core": "lerna run test:ci --no-private --ignore @web3api/*-plugin-js --ignore @web3api/cli* --ignore @web3api/client-js",
-    "test:plugins": "lerna run test:ci --no-private --scope @web3api/*-plugin-js",
+    "test:plugins": "lerna run test:ci --no-private --scope @web3api/*-plugin-js --concurrency 1",
     "test:client": "lerna run test:ci --no-private --scope @web3api/client-js",
     "test:cli": "lerna run test:ci --no-private --scope @web3api/cli",
     "version:apply": "npx lerna version $(cat VERSION) --exact --no-git-tag-version --yes",
