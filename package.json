@@ -36,6 +36,10 @@
     "lint:ci": "yarn lint",
     "test": "lerna run test --no-private --ignore @web3api/client-js --concurrency 1 && lerna run test --scope @web3api/client-js",
     "test:ci": "lerna run test:ci --no-private --ignore @web3api/client-js --concurrency 1 && lerna run test:ci --scope @web3api/client-js",
+    "test:core": "lerna run test:ci --no-private --ignore @web3api/*-plugin-js --ignore @web3api/cli* --ignore @web3api/client-js",
+    "test:plugins": "lerna run test:ci --no-private --scope @web3api/*-plugin-js",
+    "test:client": "lerna run test:ci --no-private --scope @web3api/client-js",
+    "test:cli": "lerna run test:ci --no-private --scope @web3api/cli",
     "version:apply": "npx lerna version $(cat VERSION) --exact --no-git-tag-version --yes",
     "postversion:apply": "git add . && git commit -m \"build(release): migrate to `cat ./VERSION`\"",
     "publish:npm": "lerna publish from-package --no-private --yes --registry https://registry.npmjs.org/ --no-verify-access"
