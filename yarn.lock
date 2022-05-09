@@ -3731,6 +3731,30 @@
     "@opentelemetry/semantic-conventions" "0.20.0"
     "@opentelemetry/tracing" "0.20.0"
 
+"@serial-as/core@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@serial-as/core/-/core-1.0.2.tgz#a3b21d6962fed7aaae978d63bc0551be65b36ea6"
+  integrity sha512-aJFMzEn5eztHI5ZcxCGYiRXuj8xVQt+JGTzCVHq/NMBHubAi4MC48/e3VVjqGoHo+FdPlnGropx08YPrc3ENCw==
+  dependencies:
+    "@serial-as/transform" "1.0.2"
+    as-bignum "^0.2.17"
+
+"@serial-as/json@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@serial-as/json/-/json-1.0.2.tgz#7854a37df7f1805f3b1ad4508d1177faba9d79a5"
+  integrity sha512-ZuMb8bUJmo7aJGoAWp3xHYh/5K/BbYcID+sZlcILHQEWAz/2RaW4dkOquMmtBha+4PaaJ1RzDuTDe3zHuWBsSQ==
+  dependencies:
+    "@serial-as/core" "1.0.2"
+    as-base64 "^0.2.0"
+    assemblyscript-json "^1.1.0"
+
+"@serial-as/transform@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/@serial-as/transform/-/transform-1.0.2.tgz#95ed7aa2879f13825ea4b404718ee1eca9ad71c7"
+  integrity sha512-1Uti3bxGYrkN1yhV0aVuAQ46dsEvWXUDVQ+2btC5nFo0N2UJ8860K3HVc6y3Xm2pEDMW/6IrmfZoapNV1E3jMw==
+  dependencies:
+    visitor-as "^0.7.0-1"
+
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
   resolved "https://registry.yarnpkg.com/@sindresorhus/is/-/is-0.14.0.tgz#9fb3a3cf3132328151f353de4632e01e52102bea"
@@ -5147,6 +5171,11 @@ asn1@~0.2.3:
   integrity sha512-ix/FxPn0MDjeyJ7i/yoHGFt/EX6LyNbxSEhPPXODPL+KB0VPk86UYfL0lMdy+KCnv+fmvIzySwaK5COwqVbWTQ==
   dependencies:
     safer-buffer "~2.1.0"
+
+assemblyscript-json@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/assemblyscript-json/-/assemblyscript-json-1.1.0.tgz#49d38bc21f1ac36f2887528a35de6cf7d59c17be"
+  integrity sha512-UbE8ts8csTWQgd5TnSPN7MRV9NveuHv1bVnKmDLoo/tzjqxkmsZb3lu59Uk8H7SGoqdkDSEE049alx/nHnSdFw==
 
 assemblyscript@0.19.1:
   version "0.19.1"
@@ -20577,6 +20606,14 @@ visitor-as@^0.6.0:
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/visitor-as/-/visitor-as-0.6.0.tgz#b0cca3c918bd9d396545faf08529d2b9ba968a40"
   integrity sha512-4WcnwCLXWjhNkwJj9gSqh46sdIv9CyIvnSuwr61OOfrGCtN2mKcW5KE828OeEr1rYjEy0Z/CIdPBJKJRLsUgDA==
+  dependencies:
+    lodash.clonedeep "^4.5.0"
+    ts-mixer "^5.4.1"
+
+visitor-as@^0.7.0-1:
+  version "0.7.0-2"
+  resolved "https://registry.yarnpkg.com/visitor-as/-/visitor-as-0.7.0-2.tgz#28f1c51801a677f14c4487c78a85ad541cfe382d"
+  integrity sha512-JDviqVnGn8i5qafLYuZUGlNeyc/8STIBnmNiXizvHO29xxJDaHNHxbr4Gh+9ksIJvMh9TNQKBeSyT2tldNbpJw==
   dependencies:
     lodash.clonedeep "^4.5.0"
     ts-mixer "^5.4.1"
