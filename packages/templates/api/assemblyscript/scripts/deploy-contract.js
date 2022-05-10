@@ -1,6 +1,11 @@
+const buildContract = require("./build-contract");
+
 const { EthereumPlugin } = require("@web3api/ethereum-plugin-js");
 const fs = require("fs");
-const buildContract = require("./build-contract");
+const axios = require("axios");
+const yaml = require("js-yaml");
+const { loadDeployManifest } = require("@web3api/cli/build/lib/manifest/web3api/load");
+
 
 async function main() {
   // Ensure the contract is built
@@ -42,6 +47,21 @@ async function main() {
   );
 
   console.log("✔️ Recipe Constants Updated");
+
+  const { data } = await axios.get("http://localhost:4040/deploy-ens");
+  const { __type, ...deployManifest } = await loadDeployManifest(`${__dirname}/../web3api.deploy.yaml`);
+
+  Object.entries(deployManifest.stages).forEach(([key, value]) => {
+    if (value.config && value.config.ensRegistryAddress) {
+      deployManifest.stages[key].config.ensRegistryAddress = data.ensAddress;
+    }
+  })
+
+  await fs.promises.writeFile(
+    `${__dirname}/../web3api.deploy.yaml`,
+    yaml.dump(deployManifest)
+  )
+  console.log("✔️ ENS Registry address updated")
 }
 
 if (require.main === module) {
