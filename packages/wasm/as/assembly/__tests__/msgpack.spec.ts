@@ -7,9 +7,9 @@ import {
   Write,
   WriteEncoder,
   WriteSizer,
+  JSON,
   BigInt,
   BigNumber,
-  JSON
 } from "../";
 
 class Sanity {
