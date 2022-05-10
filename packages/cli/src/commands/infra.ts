@@ -136,7 +136,7 @@ export default {
     print.info(
       `${intlMsg.commands_infra_modulesUsed_text()}: ${filteredModules
         .map((f) => `\n- ${f.name}`)
-        .join("")}`
+        .join("")}\n`
     );
 
     if (command === "up") {
