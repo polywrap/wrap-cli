@@ -3,12 +3,12 @@ import {
   Input_stringify,
   Pair
 } from "./w3";
-import { JSON } from "@web3api/wasm-as";
+import { JSON, decode, encode } from "@web3api/wasm-as";
 
-export function parse(input: Input_parse): Pair {
-  return JSON.parse<Pair>(input.str);
+export function decode(input: Input_parse): Pair {
+  return decode<Pair>(input.json);
 }
 
-export function stringify(input: Input_stringify): string {
-  return JSON.stringify(input.pair);
+export function encode(input: Input_stringify): JSON.Value {
+  return encode(input.pair);
 }

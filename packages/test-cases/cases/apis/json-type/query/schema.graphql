@@ -1,6 +1,6 @@
 type Query {
-  parse(str: String!): Pair!
-  stringify(pair: Pair!): String!
+  decode(json: JSON!): Pair!
+  encode(pair: Pair!): JSON!
 }
 
 type Pair {
