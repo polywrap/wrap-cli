@@ -5,7 +5,6 @@ import {
 } from "../InfraDependencyFetcher";
 
 import path from "path";
-import fs from "fs";
 
 export class NodeDependencyFetcher extends InfraDependencyFetcher {
   public async installPackages(packages: InfraPackageArg[]): Promise<void> {
@@ -32,12 +31,11 @@ export class NodeDependencyFetcher extends InfraDependencyFetcher {
       }, {} as Record<string, string>),
     };
 
-    if (!fs.existsSync(this.config.installationDirectory)) {
-      fs.mkdirSync(this.config.installationDirectory, { recursive: true });
-    }
-
-    fs.writeFileSync(
-      path.join(this.config.installationDirectory, "package.json"),
+    this.config.project.writeCacheFile(
+      path.relative(
+        this.config.project.getCacheDir(),
+        path.join(this.config.installationDirectory, "package.json")
+      ),
       JSON.stringify(packageJson)
     );
   }

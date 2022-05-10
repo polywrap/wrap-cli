@@ -113,7 +113,6 @@ export class Infra {
     }, [] as string[]);
 
     return Array.from(new Set(envVars));
-    // return `${variables.map((variable) => `\n- ${variable}`).join("")}`;
   }
 
   public getFilteredModules(): NamedModule[] {

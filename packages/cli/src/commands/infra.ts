@@ -1,10 +1,21 @@
 import { intlMsg } from "../lib/intl";
 import { Web3ApiProject } from "../lib/project";
 import { Infra } from "../lib/infra/Infra";
+import { loadInfraManifest } from "../lib";
 
 import { GluegunToolbox } from "gluegun";
 import chalk from "chalk";
 import path from "path";
+
+const TEST_INFRA_MANIFEST = path.join(
+  __dirname,
+  "..",
+  "lib",
+  "default-manifests",
+  "infra",
+  "dev",
+  "web3api.infra.yaml"
+);
 
 const optionsStr = intlMsg.commands_infra_options_options();
 const manStr = intlMsg.commands_infra_options_manifest();
@@ -31,6 +42,7 @@ ${intlMsg.commands_create_options_commands()}:
 
 ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
   -m, --modules [<${moduleNameStr}>]       ${intlMsg.commands_infra_options_m()}
+  -t, --test                         ${intlMsg.commands_infra_options_t()}
   -v, --verbose                      ${intlMsg.commands_infra_options_v()}
 `;
 
@@ -40,11 +52,12 @@ export default {
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { parameters, print, filesystem } = toolbox;
     const command = parameters.first;
-    const { p, v } = parameters.options;
-    let { modules, verbose } = parameters.options;
+    const { m, t, v } = parameters.options;
+    let { modules, test, verbose } = parameters.options;
     const manifestFile = parameters.second;
 
-    modules = modules || p;
+    modules = modules || m;
+    test = test || t;
     verbose = !!(verbose || v);
 
     if (modules) {
@@ -83,39 +96,48 @@ export default {
       quiet: verbose ? false : true,
     });
 
-    const infraManifest = await project.getInfraManifest();
+    let infra: Infra;
 
-    const infra = new Infra({
-      project,
-      modulesToUse: modules,
-      infraManifest,
-      quiet: !verbose,
-    });
+    if (test) {
+      const infraManifest = await loadInfraManifest(TEST_INFRA_MANIFEST, true);
 
-    const modulesDeclared = Object.keys(infraManifest.modules);
+      infra = new Infra({
+        project,
+        infraManifest,
+        quiet: !verbose,
+      });
+    } else {
+      const infraManifest = await project.getInfraManifest();
+
+      infra = new Infra({
+        project,
+        modulesToUse: modules,
+        infraManifest,
+        quiet: !verbose,
+      });
+    }
+
     const filteredModules = infra.getFilteredModules();
 
-    if (!infraManifest.dockerCompose && !modulesDeclared.length) {
-      throw new Error("No base docker-compose file or modules specified");
-    }
-
-    if (infraManifest.dockerCompose) {
-      print.info(
-        `Using ${infraManifest.dockerCompose} as base docker-compose file`
-      );
-    }
-
-    if (modulesDeclared) {
-      if (filteredModules.length) {
-        print.info(
-          `Using infra modules: ${filteredModules
-            .map((f) => `\n- ${f.name}`)
-            .join("")}`
-        );
-      } else {
-        print.warning(`"${modules}" did not match any module names`);
+    if (!filteredModules.length) {
+      if (modules) {
+        const errorMsg = intlMsg.commands_infra_error_noModulesMatch({
+          modules,
+        });
+        print.error(errorMsg);
+        return;
       }
+
+      const errorMsg = intlMsg.commands_infra_error_noModulesDeclared();
+      print.error(errorMsg);
+      return;
     }
+
+    print.info(
+      `${intlMsg.commands_infra_modulesUsed_text()}: ${filteredModules
+        .map((f) => `\n- ${f.name}`)
+        .join("")}`
+    );
 
     if (command === "up") {
       await infra.up();
