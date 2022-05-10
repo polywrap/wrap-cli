@@ -16,9 +16,10 @@
     "w3": "bin/w3"
   },
   "scripts": {
-    "build": "rimraf ./build && tsc --project tsconfig.build.json && yarn build:envs && yarn build:deployers",
+    "build": "rimraf ./build && tsc --project tsconfig.build.json && yarn build:envs && yarn build:deployers && yarn build:manifests",
     "build:envs": "copyfiles ./src/lib/build-envs/**/**/* ./build/lib/build-envs/ -u 3",
     "build:deployers": "copyfiles ./src/lib/deployers/**/web3api.deploy.ext.json ./build/lib/deployers -u 3",
+    "build:manifests": "copyfiles ./src/lib/default-manifests/**/**/* ./build/lib/default-manifests -u 3",
     "prebuild": "ts-node ./scripts/generateIntlTypes.ts",
     "lint": "eslint --color -c ../../.eslintrc.js .",
     "test": "cross-env TEST=true jest --passWithNoTests --runInBand --verbose",

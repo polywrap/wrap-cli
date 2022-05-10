@@ -184,7 +184,9 @@ export function correctBuildContextPathsFromCompose(
         serviceName,
         {
           ...value,
-          build: path.join(composeContextDir, value.build),
+          build: path.isAbsolute(value.build)
+            ? value.build
+            : path.join(composeContextDir, value.build),
         },
       ];
     } else {
@@ -194,7 +196,9 @@ export function correctBuildContextPathsFromCompose(
           ...value,
           build: {
             ...value.build,
-            context: path.join(composeContextDir, value.build.context),
+            context: path.isAbsolute(value.build.context)
+              ? value.build.context
+              : path.join(composeContextDir, value.build.context),
           },
         },
       ];
