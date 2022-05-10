@@ -26,6 +26,7 @@ Commands:
 
 Options:
   -m, --modules [<module-name>]       Use only specified modules
+  -t, --test                         Use default test environment configuration
   -v, --verbose                      Verbose output (default: false)
 
 `;
@@ -106,7 +107,8 @@ describe("e2e tests for infra command", () => {
   
       expect(code).toEqual(0);
       expect(error).toBe("");
-      expect(clearStyle(output)).toEqual(`No command given ${HELP}`);
+      expect(clearStyle(output)).toEqual(`No command given
+${HELP}`);
     });
   
     test("Should show help text", async () => {
@@ -158,16 +160,13 @@ describe("e2e tests for infra command", () => {
     });
   
     test("Sets environment up with all modules if no --modules are passed", async () => {
-      const {stderr, stdout} = await runCLI(
+      await runCLI(
         {
           args: ["infra", "up", "web3api.yaml"],
           cwd: getTestCaseDir(0),
           cli: w3Cli
         },
       );
-  
-      console.log(stderr)
-      console.log(stdout)
   
       await waitForPorts([
         { port: 3000, expected: true },
@@ -242,33 +241,26 @@ describe("e2e tests for infra command", () => {
       );
     });
   
-    // test("Should setup and use default test env if no 'env' in manifest is provided", async () => {
+    test("Should setup and use default test env if --test flag is passed", async () => {
+      await runCLI(
+        {
+          args: [
+            "infra",
+            "up",
+            "web3api.yaml",
+            "--test"
+          ],
+          cwd: getTestCaseDir(0),
+          cli: w3Cli
+        },
+      );
   
-    //   const envCachePath = path.join(__dirname, "..", "project", ".w3", "infra")
-  
-    //   if(fs.existsSync(envCachePath)) {
-    //     rimraf.sync(envCachePath)
-    //   }
-  
-    //   const { exitCode: code, stdout } = await runCLI(
-    //     {
-    //       args: [
-    //         "infra",
-    //         "config",
-    //         "web3api.yaml",
-    //       ],
-    //       cwd: getTestCaseDir(0),
-    //       cli: w3Cli
-    //     },
-    //   );
-  
-    //   const sanitizedOutput = clearStyle(stdout);
-  
-    //   expect(code).toEqual(0);
-    //   expect(sanitizedOutput).toContain("services:");
-    //   expect(sanitizedOutput).toContain("dev-server:");
-    //   expect(sanitizedOutput).toContain("ipfs:");
-    // })
+      await waitForPorts([
+        { port: 3000, expected: true },
+        { port: 5001, expected: true },
+        { port: 8545, expected: true }
+      ]);
+    })
   });
 
   describe("Duplicates", () => {

@@ -2,13 +2,13 @@ format: 0.0.1-prealpha.1
 env:
   IPFS_PORT: 5001
   DEV_SERVER_PORT: 3000
-  DEV_SERVER_ETH_TESTNET_PORT: 8545
+  ETHEREUM_PORT: 8545
 modules:
   ipfs:
     package: "@namestys/ipfs-infra"
     version: "0.0.1"
     registry: npm
   dev-server:
-    package: "@namestys/dev-server-infra"
-    version: "0.0.1"
+    package: "@web3api/client-test-env"
+    version: "0.0.1-prealpha.76"
     registry: npm
