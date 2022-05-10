@@ -10,7 +10,7 @@ modules:
     version: "0.0.1"
     registry: npm
   dev-server:
-    path: ../../../../../../infra/dev-server
+    path: ../local-packages/dev-server
   ipfs-duplicate:
     package: "@namestys/ipfs-infra"
     version: "0.0.1"

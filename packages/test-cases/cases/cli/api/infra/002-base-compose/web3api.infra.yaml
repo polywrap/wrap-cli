@@ -6,4 +6,4 @@ env:
   ETH_TESTNET_PORT: 8545
 modules:
   dev-server:
-    path: ../../../../../../infra/dev-server
+    path: ../local-packages/dev-server
