@@ -12,7 +12,6 @@ import {
 } from "@web3api/wasm-as";
 import * as Types from "../..";
 
-@serializable
 export class Input_importedMethod {
   str: string;
   optStr: string | null;
@@ -134,7 +133,6 @@ export function deserializeimportedMethodResult(buffer: ArrayBuffer): Types.Test
   return res;
 }
 
-@serializable
 export class Input_anotherMethod {
   arg: Array<string>;
 }

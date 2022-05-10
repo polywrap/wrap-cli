@@ -4,7 +4,9 @@ import {
   Nullable,
   BigInt,
   BigNumber,
-  JSON
+  JSON,
+  JSONSerializer,
+  JSONDeserializer,
 } from "@web3api/wasm-as";
 import {
   serializeCustomType,
@@ -68,5 +70,13 @@ export class CustomType {
 
   static read(reader: Read): CustomType {
     return readCustomType(reader);
+  }
+
+  static toJson(type: CustomType): JSON.Value {
+    return JSONSerializer.encode(type);
+  }
+
+  static fromJson(json: JSON.Value): CustomType {
+    return (new JSONDeserializer(json)).decode<CustomType>();
   }
 }

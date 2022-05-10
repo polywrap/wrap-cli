@@ -4,7 +4,9 @@ import {
   Nullable,
   BigInt,
   BigNumber,
-  JSON
+  JSON,
+  JSONSerializer,
+  JSONDeserializer,
 } from "@web3api/wasm-as";
 import {
   serializeMutationEnv,
@@ -34,5 +36,13 @@ export class MutationEnv {
 
   static read(reader: Read): MutationEnv {
     return readMutationEnv(reader);
+  }
+
+  static toJson(type: MutationEnv): JSON.Value {
+    return JSONSerializer.encode(type);
+  }
+
+  static fromJson(json: JSON.Value): MutationEnv {
+    return (new JSONDeserializer(json)).decode<MutationEnv>();
   }
 }

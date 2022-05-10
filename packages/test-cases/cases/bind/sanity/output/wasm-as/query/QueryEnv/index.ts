@@ -4,7 +4,9 @@ import {
   Nullable,
   BigInt,
   BigNumber,
-  JSON
+  JSON,
+  JSONSerializer,
+  JSONDeserializer,
 } from "@web3api/wasm-as";
 import {
   serializeQueryEnv,
@@ -35,5 +37,13 @@ export class QueryEnv {
 
   static read(reader: Read): QueryEnv {
     return readQueryEnv(reader);
+  }
+
+  static toJson(type: QueryEnv): JSON.Value {
+    return JSONSerializer.encode(type);
+  }
+
+  static fromJson(json: JSON.Value): QueryEnv {
+    return (new JSONDeserializer(json)).decode<QueryEnv>();
   }
 }

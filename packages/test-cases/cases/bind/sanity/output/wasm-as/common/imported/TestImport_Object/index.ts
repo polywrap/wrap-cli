@@ -4,7 +4,9 @@ import {
   Nullable,
   BigInt,
   BigNumber,
-  JSON
+  JSON,
+  JSONSerializer,
+  JSONDeserializer,
 } from "@web3api/wasm-as";
 import {
   serializeTestImport_Object,
@@ -42,5 +44,13 @@ export class TestImport_Object {
 
   static read(reader: Read): TestImport_Object {
     return readTestImport_Object(reader);
+  }
+
+  static toJson(type: TestImport_Object): JSON.Value {
+    return JSONSerializer.encode(type);
+  }
+
+  static fromJson(json: JSON.Value): TestImport_Object {
+    return (new JSONDeserializer(json)).decode<TestImport_Object>();
   }
 }

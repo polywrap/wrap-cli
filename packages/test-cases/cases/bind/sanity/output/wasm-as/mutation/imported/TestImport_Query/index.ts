@@ -17,7 +17,6 @@ import {
 } from "./serialization";
 import * as Types from "../..";
 
-@serializable
 export class TestImport_Query {
 
   public static uri: string = "testimport.uri.eth";
