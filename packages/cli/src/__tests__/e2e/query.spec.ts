@@ -26,45 +26,6 @@ Options:
 
 `;
 
-describe("sanity tests for query command", () => {
-  test("Should output help text", async () => {
-    const { exitCode, stdout, stderr } = await runCLI({
-      args: ["query", "--help"],
-      cli: w3Cli,
-    });
-
-    expect(exitCode).toEqual(0);
-    expect(stderr).toBe("");
-    expect(clearStyle(stdout)).toEqual(HELP);
-  });
-
-  test("Should throw error for missing recipe-string", async () => {
-    const { exitCode, stdout, stderr } = await runCLI({
-      args: ["query"],
-      cli: w3Cli,
-    });
-
-    expect(exitCode).toEqual(0);
-    expect(stderr).toBe("");
-    expect(clearStyle(stdout))
-      .toEqual(`Required argument <recipe-script> is missing
-${HELP}`);
-  });
-
-  test("Should throw error is --client-config doesn't contain arguments", async () => {
-    const { exitCode, stdout, stderr } = await runCLI({
-      args: ["query", "./recipes/e2e.json", "--client-config"],
-      cli: w3Cli,
-    });
-
-    expect(exitCode).toEqual(0);
-    expect(stderr).toBe("");
-    expect(clearStyle(stdout))
-      .toEqual(`--client-config option missing <config-path> argument
-${HELP}`);
-  });
-});
-
 describe("e2e tests for query command", () => {
   const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/query");
 
@@ -102,6 +63,43 @@ describe("e2e tests for query command", () => {
       cwd: testCaseRoot,
       cli: w3Cli,
     });
+  });
+
+  test("Should output help text", async () => {
+    const { exitCode, stdout, stderr } = await runCLI({
+      args: ["query", "--help"],
+      cli: w3Cli,
+    });
+
+    expect(exitCode).toEqual(0);
+    expect(stderr).toBe("");
+    expect(clearStyle(stdout)).toEqual(HELP);
+  });
+
+  test("Should throw error for missing recipe-string", async () => {
+    const { exitCode, stdout, stderr } = await runCLI({
+      args: ["query"],
+      cli: w3Cli,
+    });
+
+    expect(exitCode).toEqual(0);
+    expect(stderr).toBe("");
+    expect(clearStyle(stdout))
+      .toEqual(`Required argument <recipe-script> is missing
+${HELP}`);
+  });
+
+  test("Should throw error is --client-config doesn't contain arguments", async () => {
+    const { exitCode, stdout, stderr } = await runCLI({
+      args: ["query", "./recipes/e2e.json", "--client-config"],
+      cli: w3Cli,
+    });
+
+    expect(exitCode).toEqual(0);
+    expect(stderr).toBe("");
+    expect(clearStyle(stdout))
+      .toEqual(`--client-config option missing <config-path> argument
+${HELP}`);
   });
 
   test("Should successfully return response: using json recipes", async () => {
