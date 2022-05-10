@@ -113,7 +113,7 @@ describe("e2e tests for deploy command", () => {
         {
           args: ["build", "-v"],
           cwd: getTestCaseDir(i),
-         cli: w3Cli,
+          cli: w3Cli,
         },
       );
     }
