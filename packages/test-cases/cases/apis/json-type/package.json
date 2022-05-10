@@ -1,5 +1,5 @@
 {
-  "name": "test-case-new-json-type",
+  "name": "test-case-json-type",
   "private": true,
   "dependencies": {
     "@web3api/wasm-as": "0.0.1-prealpha.58",

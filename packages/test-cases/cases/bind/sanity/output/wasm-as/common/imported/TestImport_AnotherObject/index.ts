@@ -4,6 +4,7 @@ import {
   Nullable,
   BigInt,
   BigNumber,
+  JSON
 } from "@web3api/wasm-as";
 import {
   serializeTestImport_AnotherObject,

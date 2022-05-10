@@ -38,6 +38,8 @@ export interface CustomType {
   optBigint?: Types.BigInt | null;
   bignumber: Types.BigNumber;
   optBignumber?: Types.BigNumber | null;
+  json: Json;
+  optJson?: Json | null;
   bytes: Types.Bytes;
   optBytes?: Types.Bytes | null;
   boolean: Types.Boolean;

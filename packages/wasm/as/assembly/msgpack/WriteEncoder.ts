@@ -7,6 +7,7 @@ import { Write } from "./Write";
 import { throwArrayIndexOutOfRange } from "./utils";
 import { BigInt, BigNumber } from "../math";
 import { Context } from "../debug";
+import { JSON } from "../json";
 
 export class WriteEncoder extends Write {
   private readonly _context: Context;
@@ -146,6 +147,11 @@ export class WriteEncoder extends Write {
 
   writeBigNumber(value: BigNumber): void {
     const str = value.toString();
+    this.writeString(str);
+  }
+
+  writeJSON(value: JSON.Value): void {
+    const str = value.stringify();
     this.writeString(str);
   }
 
@@ -343,6 +349,15 @@ export class WriteEncoder extends Write {
     }
 
     this.writeBigNumber(value);
+  }
+
+  writeNullableJSON(value: JSON.Value | null): void {
+    if (value === null) {
+      this.writeNil();
+      return;
+    }
+
+    this.writeJSON(value);
   }
 
   writeNullableArray<T>(

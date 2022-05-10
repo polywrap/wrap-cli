@@ -120,6 +120,8 @@ type CustomType {
   optBigint: BigInt
   bignumber: BigNumber!
   optBignumber: BigNumber
+  json: JSON!
+  optJson: JSON
   bytes: Bytes!
   optBytes: Bytes
   boolean: Boolean!

@@ -64,10 +64,16 @@ const _toTypescript = (
     return toTypescriptMap(type, nullable);
   }
 
-  if (type.includes("Enum_")) {
-    type = `Types.${type.replace("Enum_", "")}`;
-  } else {
-    type = `Types.${type}`;
+  switch (type) {
+    case "JSON":
+      type = "Json";
+      break;
+    default:
+      if (type.includes("Enum_")) {
+        type = `Types.${type.replace("Enum_", "")}`;
+      } else {
+        type = `Types.${type}`;
+      }
   }
 
   return undefinable

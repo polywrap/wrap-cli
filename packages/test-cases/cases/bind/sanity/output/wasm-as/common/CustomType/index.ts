@@ -4,6 +4,7 @@ import {
   Nullable,
   BigInt,
   BigNumber,
+  JSON
 } from "@web3api/wasm-as";
 import {
   serializeCustomType,
@@ -30,6 +31,8 @@ export class CustomType {
   optBigint: BigInt | null;
   bignumber: BigNumber;
   optBignumber: BigNumber | null;
+  json: JSON.Value;
+  optJson: JSON.Value | null;
   bytes: ArrayBuffer;
   optBytes: ArrayBuffer | null;
   m_boolean: bool;

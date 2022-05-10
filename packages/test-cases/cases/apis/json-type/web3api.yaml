@@ -1,5 +1,5 @@
 format: 0.0.1-prealpha.7
-name: NewJsonType
+name: JsonType
 build: ./web3api.build.yaml
 language: wasm/assemblyscript
 modules:
