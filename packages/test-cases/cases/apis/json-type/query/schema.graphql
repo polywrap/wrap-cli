@@ -1,6 +1,6 @@
 type Query {
-  decode(json: JSON!): Pair!
-  encode(pair: Pair!): JSON!
+  fromJson(json: JSON!): Pair!
+  toJson(pair: Pair!): JSON!
 }
 
 type Pair {

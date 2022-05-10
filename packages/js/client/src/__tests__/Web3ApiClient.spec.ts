@@ -1449,9 +1449,9 @@ describe("Web3ApiClient", () => {
     const parse = await client.invoke<{ x: number; y: number }>({
       uri: ensUri,
       module: "query",
-      method: "parse",
+      method: "fromJson",
       input: {
-        str: JSON.stringify({ x: 1, y: 2 }),
+        json: JSON.stringify({ x: 1, y: 2 }),
       },
     });
 
@@ -1465,7 +1465,7 @@ describe("Web3ApiClient", () => {
     const stringify = await client.invoke<{ str: string }>({
       uri: ensUri,
       module: "query",
-      method: "stringify",
+      method: "toJson",
       input: {
         pair: {
           x: 1,

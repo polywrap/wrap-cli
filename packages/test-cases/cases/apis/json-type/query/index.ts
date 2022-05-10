@@ -1,14 +1,14 @@
 import {
-  Input_parse,
-  Input_stringify,
+  Input_fromJson,
+  Input_toJson,
   Pair
 } from "./w3";
-import { JSON, decode, encode } from "@web3api/wasm-as";
+import { JSON } from "@web3api/wasm-as";
 
-export function decode(input: Input_parse): Pair {
-  return decode<Pair>(input.json);
+export function fromJson(input: Input_fromJson): Pair {
+  return Pair.fromJson(input.json);
 }
 
-export function encode(input: Input_stringify): JSON.Value {
-  return encode(input.pair);
+export function toJson(input: Input_toJson): JSON.Value {
+  return Pair.toJson(input.pair);
 }

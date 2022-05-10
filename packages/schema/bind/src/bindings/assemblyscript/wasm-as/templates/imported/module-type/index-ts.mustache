@@ -23,7 +23,6 @@ import {
 import * as Types from "../..";
 
 {{^isInterface}}
-@serializable
 export class {{type}} {
 
   public static uri: string = "{{uri}}";
@@ -57,7 +56,6 @@ export class {{type}} {
 }
 {{/isInterface}}
 {{#isInterface}}
-@serializable
 export class {{type}} {
 
   public static interfaceUri: string = "{{uri}}";

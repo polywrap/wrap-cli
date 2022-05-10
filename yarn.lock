@@ -3739,15 +3739,6 @@
     "@serial-as/transform" "1.0.2"
     as-bignum "^0.2.17"
 
-"@serial-as/json@1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@serial-as/json/-/json-1.0.2.tgz#7854a37df7f1805f3b1ad4508d1177faba9d79a5"
-  integrity sha512-ZuMb8bUJmo7aJGoAWp3xHYh/5K/BbYcID+sZlcILHQEWAz/2RaW4dkOquMmtBha+4PaaJ1RzDuTDe3zHuWBsSQ==
-  dependencies:
-    "@serial-as/core" "1.0.2"
-    as-base64 "^0.2.0"
-    assemblyscript-json "^1.1.0"
-
 "@serial-as/transform@1.0.2":
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@serial-as/transform/-/transform-1.0.2.tgz#95ed7aa2879f13825ea4b404718ee1eca9ad71c7"
@@ -4455,6 +4446,15 @@
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/@web3api/assemblyscript-json/-/assemblyscript-json-1.2.0.tgz#f01f11f12a66cd1a319d43f12e476307d1ad3da8"
   integrity sha512-x+wchJpH1giJzXj3dYs8vh2SKMXepeqVXiaFV/YCtXg4X/KaUnxi0kp5JugbEAyEJurEScH1YuV6IvGhGui/fw==
+
+"@web3api/serial-as-json@1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@web3api/serial-as-json/-/serial-as-json-1.0.4.tgz#87724866b823182591ab6831c7c24b87f713a520"
+  integrity sha512-ip5VsRFIXIlqiPxAivNnS/UoyuMZiflKz2ljgjJABmeFhwbuuoMxUO/efHc85mqZ2AGbG1n4K8q+mcH8hqchcQ==
+  dependencies:
+    "@serial-as/core" "1.0.2"
+    "@web3api/assemblyscript-json" "1.2.0"
+    as-base64 "^0.2.0"
 
 "@webassemblyjs/ast@1.8.5":
   version "1.8.5"
@@ -5176,11 +5176,6 @@ asn1@~0.2.3:
   integrity sha512-ix/FxPn0MDjeyJ7i/yoHGFt/EX6LyNbxSEhPPXODPL+KB0VPk86UYfL0lMdy+KCnv+fmvIzySwaK5COwqVbWTQ==
   dependencies:
     safer-buffer "~2.1.0"
-
-assemblyscript-json@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/assemblyscript-json/-/assemblyscript-json-1.1.0.tgz#49d38bc21f1ac36f2887528a35de6cf7d59c17be"
-  integrity sha512-UbE8ts8csTWQgd5TnSPN7MRV9NveuHv1bVnKmDLoo/tzjqxkmsZb3lu59Uk8H7SGoqdkDSEE049alx/nHnSdFw==
 
 assemblyscript@0.19.1:
   version "0.19.1"
