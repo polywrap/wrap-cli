@@ -1,5 +1,5 @@
 export {
   ValueDeserializer as JSONDeserializer,
   ValueSerializer as JSONSerializer,
-  JSON
+  JSON,
 } from "@web3api/serial-as-json";
