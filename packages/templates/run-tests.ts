@@ -17,8 +17,8 @@ const languageTestCommands: Record<string, string[]> = {
     "yarn build"
   ],
   "assemblyscript": [
-    // "yarn build",
-    // "yarn test"
+    "yarn build",
+    "yarn test"
   ],
   "interface": [
     "yarn build"
@@ -66,12 +66,17 @@ for (const projectType of Object.keys(projectLanguages)) {
     // run all commands
     for (const command of commands) {
       console.log(`run-tests: ${projectType}/${language} > ${command}`);
-      const output = execSync(
-        command, {
-          cwd: path.join(rootDir, projectType, language)
-        }
-      ).toString();
-      console.log(output);
+      try {
+        const output = execSync(
+          command, {
+            cwd: path.join(rootDir, projectType, language)
+          }
+        ).toString();
+        console.log(output);
+      } catch (e) {
+        console.error(e);
+        throw e;
+      }
     }
   }
 }
