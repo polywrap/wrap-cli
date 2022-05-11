@@ -7,9 +7,30 @@ const rootDir = __dirname;
 // Mapping of all project types (app, plugin, etc) to all supported languages
 const projectLanguages: Record<string, string[]> = {};
 
+// Define the commands to run for each language
+const languageTestCommands: Record<string, string[]> = {
+  "typescript": [
+    "yarn build",
+    "yarn test"
+  ],
+  "typescript-react": [
+    "yarn build"
+  ],
+  "assemblyscript": [
+    // "yarn build",
+    // "yarn test"
+  ],
+  "interface": [
+    "yarn build"
+  ],
+};
+
+// Filter unnecessary directories
+const filter = ["node_modules"];
+
 // Populate all project types & languages by recursing 2 levels of directories
 fs.readdirSync(rootDir, { withFileTypes: true })
-  .filter(dirent => dirent.isDirectory())
+  .filter(dirent => dirent.isDirectory() && filter.indexOf(dirent.name) === -1)
   .map(dirent => dirent.name)
   .forEach(projectType =>
     projectLanguages[projectType] =
@@ -17,21 +38,6 @@ fs.readdirSync(rootDir, { withFileTypes: true })
         .filter(dirent => dirent.isDirectory())
         .map(dirent => dirent.name)
   );
-
-// Define the commands to run for each language
-const languageTestCommands: Record<string, string[]> = {
-  "typescript": [
-    "yarn build",
-    "yarn test"
-  ],
-  "assemblyscript": [
-    "yarn build",
-    "yarn test"
-  ],
-  "interface": [
-    "yarn build"
-  ],
-};
 
 // for each project + language
 for (const projectType of Object.keys(projectLanguages)) {
