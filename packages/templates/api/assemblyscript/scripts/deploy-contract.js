@@ -2,13 +2,6 @@ const buildContract = require("./build-contract");
 
 const { EthereumPlugin } = require("@web3api/ethereum-plugin-js");
 const fs = require("fs");
-const axios = require("axios");
-const yaml = require("js-yaml");
-const { loadDeployManifest } = require("@web3api/cli/build/lib/manifest/web3api/load");
-const { keccak256, namehash } = require("ethers/lib/utils");
-const { toUtf8Bytes } = require("@ethersproject/strings");
-
-const label = keccak256(toUtf8Bytes("simplestorage"))
 
 async function main() {
   // Ensure the contract is built
