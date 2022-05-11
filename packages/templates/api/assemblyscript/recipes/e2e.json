@@ -1,6 +1,6 @@
 [
   {
-    "api": "ens/testnet/simplestorage.eth",
+    "api": "w3://ipfs/QmcdfqEvpwaiyM4c6jn7kgz4Jh8EZ8YNJbsT9Yg6SH6Koh",
     "constants": "./constants.json"
   },
   {

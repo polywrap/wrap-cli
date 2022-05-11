@@ -50,50 +50,6 @@ async function main() {
   );
 
   console.log("✔️ Recipe Constants Updated");
-
-  const { data } = await axios.get("http://localhost:4040/deploy-ens");
-  const { __type, ...deployManifest } = await loadDeployManifest(`${__dirname}/../web3api.deploy.yaml`);
-
-  Object.entries(deployManifest.stages).forEach(([key, value]) => {
-    if (value.config && value.config.ensRegistryAddress) {
-      deployManifest.stages[key].config.ensRegistryAddress = data.ensAddress;
-    }
-  })
-
-  // TODO (cbrzn): Remove this once ENSRegistrar Deployed is implemented
-  const ensAddress = data.ensAddress
-  const resolverAddress = data.resolverAddress
-  const registrarAddress = data.registrarAddress
-
-  const signer = await eth.getModules().query.getSignerAddress({
-    connection: {
-      networkNameOrChainId: "testnet"
-    }
-  })
-
-  await eth.getModules().mutation.callContractMethodAndWait({
-    address: registrarAddress,
-    method: "function register(bytes32 label, address owner)",
-    args: [label, signer],
-    connection: {
-      networkNameOrChainId: "testnet"
-    }
-  })
-
-  await eth.getModules().mutation.callContractMethodAndWait({
-    address: ensAddress,
-    method: "function setResolver(bytes32 node, address owner)",
-    args: [namehash("simplestorage.eth"), resolverAddress],
-    connection: {
-      networkNameOrChainId: "testnet"
-    }
-  })
-
-  await fs.promises.writeFile(
-    `${__dirname}/../web3api.deploy.yaml`,
-    yaml.dump(deployManifest)
-  )
-  console.log("✔️ ENS Registry address updated")
 }
 
 if (require.main === module) {
