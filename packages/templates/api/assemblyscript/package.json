@@ -20,9 +20,9 @@
   "devDependencies": {
     "@types/jest": "27.0.3",
     "@types/node": "16.11.11",
-    "@web3api/cli": "0.0.1-prealpha.76",
-    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.76",
-    "@web3api/wasm-as": "0.0.1-prealpha.76",
+    "@web3api/cli": "0.0.1-prealpha.75",
+    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.75",
+    "@web3api/wasm-as": "0.0.1-prealpha.75",
     "assemblyscript": "0.19.1",
     "ethers": "5.0.7",
     "jest": "27.4.2",
