@@ -725,7 +725,7 @@ export class Web3ApiClient implements Client {
         }
       } else {
         throw Error(
-          `Uknown URI resolution error while resolving URI "${uri}"\nResolution Stack: ${JSON.stringify(
+          `Unknown URI resolution error while resolving URI "${uri}"\nResolution Stack: ${JSON.stringify(
             uriHistory,
             null,
             2
