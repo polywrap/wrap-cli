@@ -8,7 +8,7 @@ import { GetPathToTestApis } from "@web3api/test-cases";
 
 jest.setTimeout(200000);
 
-describe("bytes-type", () => {
+describe("enum-types", () => {
   let ipfsProvider: string;
   let ethProvider: string;
   let ensAddress: string;
@@ -69,16 +69,6 @@ describe("bytes-type", () => {
 
   it("sanity", async () => {
     const client = await getClient();
-
-    const api = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/enum-types`,
-      ipfsProvider,
-      ensRegistryAddress: ensAddress,
-      ethereumProvider: ethProvider,
-      ensRegistrarAddress,
-      ensResolverAddress,
-    });
-    const ensUri = `ens/testnet/${api.ensDomain}`;
 
     const method1a = await client.query<any>({
       uri: ensUri,

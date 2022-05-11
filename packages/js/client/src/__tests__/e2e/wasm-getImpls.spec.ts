@@ -8,7 +8,7 @@ import { GetPathToTestApis } from "@web3api/test-cases";
 
 jest.setTimeout(200000);
 
-describe("bytes-type", () => {
+describe("wasm-getImpls", () => {
   let ipfsProvider: string;
   let ethProvider: string;
   let ensAddress: string;
