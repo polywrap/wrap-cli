@@ -1,3 +1,9 @@
+# Web3API 0.0.1-prealpha.77
+## Features
+* [PR-846](https://github.com/polywrap/monorepo/pull/846) `@web3api/wasm-as`: Add support for automatic JSON serialization via the `@serial-as/transform` `asc` compiler transformation.
+* [PR-846](https://github.com/polywrap/monorepo/pull/846) `@web3api/schema-bind`: Assemblyscript object types now have `Type.toJson(type)` and `Type.fromJson(json)` static helper methods added to all class instances.
+* [PR-840](https://github.com/polywrap/monorepo/pull/840) `@web3api/cli`: Allow `async getClientConfig` functions within modules passed into the `w3 query` command's `--client-config` option.
+
 # Web3API 0.0.1-prealpha.76
 ## Bugs
 * [PR-836](https://github.com/polywrap/monorepo/pull/836) `@web3api/cli`: All commands properly handle the `--help` option.

@@ -2,7 +2,7 @@
   "name": "templates-api-interface",
   "description": "Web3API Interface Example",
   "private": true,
-  "version": "0.0.1-prealpha.76",
+  "version": "0.0.1-prealpha.77",
   "scripts": {
     "build": "npx w3 build",
     "test:env:up": "npx w3 test-env up",
@@ -11,6 +11,6 @@
     "test": "yarn test:env:up && yarn deploy && yarn test:env:down"
   },
   "devDependencies": {
-    "@web3api/cli": "0.0.1-prealpha.76"
+    "@web3api/cli": "0.0.1-prealpha.77"
   }
 }
