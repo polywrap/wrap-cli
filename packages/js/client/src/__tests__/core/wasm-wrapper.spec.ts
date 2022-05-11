@@ -3,7 +3,22 @@ import {
   initTestEnvironment,
   stopTestEnvironment,
 } from "@web3api/test-env-js";
-import { BuildManifest, createWeb3ApiClient, Plugin, deserializeBuildManifest, deserializeMetaManifest, MetaManifest, msgpackDecode, PluginModule, PluginModules, Subscription, Uri, Web3ApiClient, Web3ApiClientConfig, Web3ApiManifest, deserializeWeb3ApiManifest } from "../..";
+import {
+  Uri,
+  createWeb3ApiClient,
+  Web3ApiClientConfig,
+  Plugin,
+  PluginModule,
+  PluginModules,
+  Subscription,
+  Web3ApiManifest,
+  BuildManifest,
+  MetaManifest,
+  deserializeWeb3ApiManifest,
+  deserializeBuildManifest,
+  deserializeMetaManifest,
+  msgpackDecode
+} from "../..";
 import { GetPathToTestApis } from "@web3api/test-cases";
 import fs from "fs";
 
@@ -99,7 +114,7 @@ describe("wasm-wrapper", () => {
   };
 
   test("invoke with decode defaulted to true works as expected", async () => {
-    let client = new Web3ApiClient();
+    const client = await getClient();
     const result = await client.invoke<string>({
       uri: ensUri,
       module: "mutation",
@@ -118,7 +133,7 @@ describe("wasm-wrapper", () => {
   });
 
   test("invoke with decode set to false works as expected", async () => {
-    let client = new Web3ApiClient();
+    const client = await getClient();
     const result = await client.invoke({
       uri: ensUri,
       module: "mutation",
