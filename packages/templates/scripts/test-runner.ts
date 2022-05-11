@@ -10,7 +10,7 @@ const ROOT = __dirname + "/.."
 
 function readTemplateDirectories({ type, name, data }: OutputEntry) {
   const currentPath = this ?? ""
-  if (type === FileType.Directory && name !== "scripts" && name !== "node_modules" && name !== "interface") {
+  if (type === FileType.Directory && name !== "scripts" && name !== "node_modules") {
     (data as OutputEntry[]).forEach(readTemplateDirectories, currentPath + "/" + name )
   }
   if (type === FileType.File && name === "package.json") {
@@ -20,21 +20,21 @@ function readTemplateDirectories({ type, name, data }: OutputEntry) {
 
 const executeTest = (data: string, path: string) => {
     const templateJSON = JSON.parse(data)
-    let command = "yarn"
+    let command = "yarn test"
 
     if ("build" in templateJSON.scripts) {
-      command.concat(" && yarn build")
+      command = "yarn build && yarn test"
     }
 
-    if ("test" in templateJSON.scripts) {
-      command.concat(" && yarn test")
-    } else {
+    if (!("test" in templateJSON.scripts)) {
       throw new Error("Test script must be added in template: " + templateJSON.name)
     }
 
-    console.log(`Executing tests from template: ${path}`)
-    exec(command, { cwd: ROOT.concat(path) }, err => {
-      if (err) throw new Error(`Error in template ${path}: ${err.message}`)
+    exec(command, { cwd: ROOT.concat(path) }, (error, stdout, stderr) => {
+      console.log("////////")
+      console.log(stdout)
+      console.log(stderr)
+      if (error) throw new Error(`Error in template ${path}: ${error.message}`)
     })
 }
 
