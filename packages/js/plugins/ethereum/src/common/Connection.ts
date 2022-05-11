@@ -72,7 +72,7 @@ export class Connection {
     const provider = (ethers.providers.getDefaultProvider(
       ethers.providers.getNetwork(networkish),
       {
-        infura: "a817ee00c2714fe3a908c91d5713d302",
+        infura: "1xraqrFyjLg2yrVtsN543WdKqJC",
       }
     ) as unknown) as JsonRpcProvider;
 
@@ -95,7 +95,7 @@ export class Connection {
 
     if (typeof provider === "string") {
       this._client = (ethers.providers.getDefaultProvider(provider, {
-        infura: "a817ee00c2714fe3a908c91d5713d302",
+        infura: "1xraqrFyjLg2yrVtsN543WdKqJC",
       }) as unknown) as JsonRpcProvider | WebSocketProvider;
     } else {
       if ((provider as JsonRpcProvider).anyNetwork !== undefined) {

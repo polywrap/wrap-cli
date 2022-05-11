@@ -1434,8 +1434,6 @@ describe("Web3ApiClient", () => {
   });
 
   it("JSON-type", async () => {
-    type Json = string;
-
     const client = await getClient();
 
     const api = await buildAndDeployApi({
@@ -1448,78 +1446,42 @@ describe("Web3ApiClient", () => {
     });
     const ensUri = `ens/testnet/${api.ensDomain}`;
 
-    const value = { foo: "bar", bar: "baz" };
-    const parseResponse = await client.query<{
-      parse: Json;
-    }>({
+    const parse = await client.invoke<{ x: number; y: number }>({
       uri: ensUri,
-      query: `query {
-        parse(value: $value)
-      }`,
-      variables: {
-        value: JSON.stringify(value),
+      module: "query",
+      method: "fromJson",
+      input: {
+        json: JSON.stringify({ x: 1, y: 2 }),
       },
     });
 
-    expect(parseResponse.data?.parse).toEqual(JSON.stringify(value));
+    expect(parse.error).toBeFalsy();
+    expect(parse.data).toBeTruthy();
+    expect(parse.data).toMatchObject({
+      x: 1,
+      y: 2,
+    });
 
-    const values = [
-      JSON.stringify({ bar: "foo" }),
-      JSON.stringify({ baz: "fuz" }),
-    ];
-    const stringifyResponse = await client.query<{
-      stringify: Json;
-    }>({
+    const stringify = await client.invoke<{ str: string }>({
       uri: ensUri,
-      query: `query {
-        stringify(
-          values: $values
-        )
-      }`,
-      variables: {
-        values,
+      module: "query",
+      method: "toJson",
+      input: {
+        pair: {
+          x: 1,
+          y: 2,
+        },
       },
     });
 
-    expect(stringifyResponse.data?.stringify).toEqual(values.join(""));
-
-    const object = {
-      jsonA: JSON.stringify({ foo: "bar" }),
-      jsonB: JSON.stringify({ fuz: "baz" }),
-    };
-    const stringifyObjectResponse = await client.query<{
-      stringifyObject: string;
-    }>({
-      uri: ensUri,
-      query: `query {
-        stringifyObject(
-          object: $object
-        )
-      }`,
-      variables: {
-        object,
-      },
-    });
-
-    expect(stringifyObjectResponse.data?.stringifyObject).toEqual(
-      object.jsonA + object.jsonB
+    expect(stringify.error).toBeFalsy();
+    expect(stringify.data).toBeTruthy();
+    expect(stringify.data).toBe(
+      JSON.stringify({
+        x: 1,
+        y: 2,
+      })
     );
-
-    const methodJSONResponse = await client.query<{
-      methodJSON: Json;
-    }>({
-      uri: ensUri,
-      query: `query {
-        methodJSON(valueA: 5, valueB: "foo", valueC: true)
-      }`,
-    });
-
-    const methodJSONResult = JSON.stringify({
-      valueA: 5,
-      valueB: "foo",
-      valueC: true,
-    });
-    expect(methodJSONResponse.data?.methodJSON).toEqual(methodJSONResult);
   });
 
   it("bytes-type", async () => {
@@ -2180,7 +2142,7 @@ describe("Web3ApiClient", () => {
     const schema: string = await client.getSchema(
       "w3://ens/js-logger.web3api.eth"
     );
-    
+
     expect(schema).toStrictEqual(
       `### Web3API Header START ###
 scalar UInt
