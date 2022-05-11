@@ -76,7 +76,7 @@ async function up(quiet = false) {
 
   // Ganache
   success = await awaitResponse(
-    `http://localhost:${process.env.ETH_TESTNET_PORT}`,
+    `http://localhost:${process.env.ETHEREUM_PORT}`,
     '"jsonrpc":',
     'post',
     2000,
