@@ -74,7 +74,7 @@ export class Infra {
     const { quiet } = this._config;
     const { baseCommand } = await this._fetchModules();
 
-    await runCommand(`${baseCommand} down`, quiet);
+    await runCommand(`${baseCommand} down --remove-orphans`, quiet);
   }
 
   public async config(): Promise<{
