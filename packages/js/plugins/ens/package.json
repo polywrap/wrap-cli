@@ -1,7 +1,7 @@
 {
   "name": "@web3api/ens-plugin-js",
   "description": "Web3API ENS Javascript Plugin",
-  "version": "0.0.1-prealpha.76",
+  "version": "0.0.1-prealpha.77",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
   "dependencies": {
     "@ethersproject/address": "5.0.7",
     "@ethersproject/basex": "5.0.7",
-    "@web3api/core-js": "0.0.1-prealpha.76",
+    "@web3api/core-js": "0.0.1-prealpha.77",
     "ethers": "5.0.7"
   },
   "devDependencies": {
