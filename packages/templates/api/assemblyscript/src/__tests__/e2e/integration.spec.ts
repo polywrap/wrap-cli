@@ -25,6 +25,7 @@ describe("SimpleStorage", () => {
       resolverAddress,
       ipfs,
     } = await initTestEnvironment();
+
     // deploy api
     const apiPath: string = path.join(
       path.resolve(__dirname),
@@ -88,9 +89,14 @@ describe("SimpleStorage", () => {
     return response.data as string;
   }
 
-  test("sanity", async () => {
+  it("sanity", async () => {
+    console.log("HERERERE", ensUri);
     // Deploy contract
-    const deployContractResponse = await App.SimpleStorage_Mutation.deployContract({connection: CONNECTION}, client, ensUri);
+    const deployContractResponse = await App.SimpleStorage_Mutation.deployContract(
+      { connection: CONNECTION },
+      client,
+      ensUri
+    );
     expect(deployContractResponse).toBeTruthy();
     expect(deployContractResponse.error).toBeFalsy();
     expect(deployContractResponse.data).toBeTruthy();
