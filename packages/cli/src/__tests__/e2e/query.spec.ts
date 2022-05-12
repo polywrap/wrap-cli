@@ -21,7 +21,6 @@ w3 query [options] <recipe-script>
 
 Options:
   -h, --help                         Show usage information
-  -t, --test-ens                     Use the development server's ENS instance
   -c, --client-config <config-path>  Add custom configuration to the Web3ApiClient
   -o, --output-file                  Output file path for the query result
   -q, --quiet                        Suppress output
@@ -106,7 +105,7 @@ ${HELP}`);
 
   test("Should successfully return response: using json recipes", async () => {
     const { exitCode: code, stdout: output, stderr: queryErr } = await runCLI({
-      args: ["query", "./recipes/e2e.json", "--test-ens"],
+      args: ["query", "./recipes/e2e.json"],
       cwd: testCaseRoot,
       cli: w3Cli,
     });
@@ -122,7 +121,7 @@ ${HELP}`);
 
   test("Should successfully return response: using yaml recipes", async () => {
     const { exitCode: code, stdout: output, stderr: queryErr } = await runCLI({
-      args: ["query", "./recipes/e2e.yaml", "--test-ens"],
+      args: ["query", "./recipes/e2e.yaml"],
       cwd: testCaseRoot,
       cli: w3Cli,
     });
@@ -144,7 +143,7 @@ ${HELP}`);
 
   test("Should successfully return response: using mix of yaml & json recipes", async () => {
     const { exitCode: code, stdout: output, stderr: queryErr } = await runCLI({
-      args: ["query", "./recipes/e2e.json", "--test-ens"],
+      args: ["query", "./recipes/e2e.json"],
       cwd: testCaseRoot,
       cli: w3Cli,
     });
@@ -169,7 +168,6 @@ ${HELP}`);
       args: [
         "query",
         "./recipes/e2e.json",
-        "--test-ens",
         "--output-file",
         "./recipes/output.json",
       ],
@@ -201,7 +199,6 @@ ${HELP}`);
       args: [
         "query",
         "./recipes/e2e.yaml",
-        "--test-ens",
         "--output-file",
         "./recipes/output.yaml",
       ],
@@ -240,7 +237,6 @@ ${HELP}`);
       args: [
         "query",
         "./recipes/e2e.json",
-        "--test-ens",
         "--quiet",
       ],
       cwd: testCaseRoot,
@@ -260,7 +256,6 @@ ${HELP}`);
         args: [
           "query",
           "./recipes/e2e.json",
-          "--test-ens",
           "--client-config",
           config,
         ],
