@@ -4,7 +4,7 @@ import {
   Uri,
   Web3ApiClientConfig,
   Web3ApiClient,
-} from "..";
+} from "../..";
 import {
   buildAndDeployApi,
   initTestEnvironment,
@@ -16,7 +16,7 @@ import { ResolveUriErrorType, Client } from "@web3api/core-js";
 
 jest.setTimeout(200000);
 
-describe("Web3ApiClient - resolveUri", () => {
+describe("resolveUri", () => {
   let ipfsProvider: string;
   let ethProvider: string;
   let ensAddress: string;
