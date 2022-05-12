@@ -14,6 +14,8 @@ import {
   ISampleOutputOptions,
 } from "./query.spec.helper";
 
+jest.setTimeout(200000);
+
 const HELP = `
 w3 query [options] <recipe-script>
 
