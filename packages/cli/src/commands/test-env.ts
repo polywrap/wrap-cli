@@ -16,8 +16,8 @@ const HELP = `
 ${chalk.bold("w3 test-env")} ${intlMsg.commands_infra_options_command()}
 
 Commands:
-  ${chalk.bold("up")}    ${intlMsg.commands_testEnv_options_start()}
-  ${chalk.bold("down")}  ${intlMsg.commands_testEnv_options_stop()}
+  ${chalk.bold("up")}    ${intlMsg.commands_infra_options_start()}
+  ${chalk.bold("down")}  ${intlMsg.commands_infra_options_stop()}
 
 ${optionsString[0].toUpperCase() + optionsString.slice(1)}:
   -h, --help          ${intlMsg.commands_build_options_h()}

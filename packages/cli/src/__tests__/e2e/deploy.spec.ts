@@ -155,12 +155,6 @@ describe("e2e tests for deploy command", () => {
     expect(sanitizedOutput).toContain(
       "Successfully executed stage 'from_deploy'"
     );
-    expect(sanitizedOutput).toContain(
-      "Successfully executed stage 'from_deploy2'"
-    );
-    expect(sanitizedOutput).toContain(
-      "Successfully executed stage 'from_uri'"
-    );
   });
 
   test("Throws and stops chain if error is found", async () => {
