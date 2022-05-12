@@ -4,7 +4,9 @@ import {
   Nullable,
   BigInt,
   BigNumber,
-  JSON
+  JSON,
+  JSONSerializer,
+  JSONDeserializer,
 } from "@web3api/wasm-as";
 import {
   serializeAnotherType,
@@ -14,6 +16,7 @@ import {
 } from "./serialization";
 import * as Types from "..";
 
+@serializable
 export class AnotherType {
   prop: string | null;
   circular: Types.CustomType | null;
@@ -33,5 +36,13 @@ export class AnotherType {
 
   static read(reader: Read): AnotherType {
     return readAnotherType(reader);
+  }
+
+  static toJson(type: AnotherType): JSON.Value {
+    return JSONSerializer.encode(type);
+  }
+
+  static fromJson(json: JSON.Value): AnotherType {
+    return (new JSONDeserializer(json)).decode<AnotherType>();
   }
 }

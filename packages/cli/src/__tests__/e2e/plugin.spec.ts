@@ -43,14 +43,15 @@ describe("e2e tests for plugin command", () => {
     path.join(testCaseRoot, testCases[index]);
 
   test("Should show help text", async () => {
-    const { exitCode: code, stdout: output } = await runCLI(
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["plugin", "codegen", "--help"],
+        args: ["plugin", "--help"],
         cwd: getTestCaseDir(0),
       }
     );
 
     expect(code).toEqual(0);
+    expect(error).toBe("");
     expect(clearStyle(output)).toEqual(HELP);
   });
 

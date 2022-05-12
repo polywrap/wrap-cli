@@ -9,9 +9,23 @@ Commands:
   up    Startup the test env
   down  Shutdown the test env
 
+Options:
+  -h, --help          Show usage information
+
 `;
 
 describe("e2e tests for test-env command", () => {
+  test("Should print help message", async () => {
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+      args: ["test-env", "--help"],
+      cli: w3Cli,
+    });
+
+    expect(code).toEqual(0);
+    expect(error).toBe("");
+    expect(clearStyle(output)).toEqual(HELP);
+  });
+
   test("Should throw error for no command given", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["test-env"],
