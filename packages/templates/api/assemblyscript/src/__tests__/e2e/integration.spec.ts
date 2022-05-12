@@ -38,6 +38,8 @@ describe("SimpleStorage", () => {
     const config = getPlugins(testEnvEtherem, ipfs, ensAddress);
     client = new Web3ApiClient(config);
 
+    console.log("BEFORE")
+
     const api = await buildAndDeployApi({
       apiAbsPath: apiPath,
       ipfsProvider: ipfs,
@@ -46,7 +48,9 @@ describe("SimpleStorage", () => {
       ensResolverAddress: resolverAddress,
       ethereumProvider: testEnvEtherem,
     });
-    
+
+    console.log("AFTER", api.ensDomain)
+
     ensUri = `ens/testnet/${api.ensDomain}`;
   });
 
