@@ -12,7 +12,7 @@ import { getPlugins } from "../utils";
 jest.setTimeout(500000);
 
 describe("SimpleStorage", () => {
-  const CONNECTION = { node: "http://localhost:8545" };
+  const CONNECTION = { networkNameOrChainId: "testnet" };
 
   let client: Web3ApiClient;
   let ensUri: string;

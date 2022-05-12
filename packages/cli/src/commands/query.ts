@@ -28,7 +28,6 @@ ${chalk.bold("w3 query")} [${optionsString}] ${chalk.bold(`<${scriptStr}>`)}
 
 ${optionsString[0].toUpperCase() + optionsString.slice(1)}:
   -h, --help                         ${intlMsg.commands_build_options_h()}
-  -t, --test-ens                     ${intlMsg.commands_build_options_t()}
   -c, --client-config <${configPathStr}>  ${intlMsg.commands_query_options_config()}
   -o, --output-file                  ${intlMsg.commands_query_options_outputFile()}
   -q, --quiet                        ${intlMsg.commands_query_options_quiet()}
@@ -41,11 +40,10 @@ export default {
     const { filesystem, parameters, print } = toolbox;
 
     // Options
-    let { help, testEns, clientConfig, outputFile, quiet } = parameters.options;
-    const { h, t, c, o, q } = parameters.options;
+    let { help, clientConfig, outputFile, quiet } = parameters.options;
+    const { h, c, o, q } = parameters.options;
 
     help = help || h;
-    testEns = testEns || t;
     clientConfig = clientConfig || c;
     outputFile = outputFile || o;
     quiet = quiet || q;
@@ -59,8 +57,8 @@ export default {
           array: params.array,
         },
         {
-          t,
-          testEns,
+          h,
+          help,
         }
       );
     } catch (e) {
