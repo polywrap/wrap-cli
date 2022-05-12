@@ -74,7 +74,15 @@ for (const projectType of Object.keys(projectLanguages)) {
         ).toString();
         console.log(output);
       } catch (e) {
-        console.error(e);
+        if (e.stdout) {
+          e.stdout = e.stdout.toString();
+        }
+        if (e.stderr) {
+          e.stderr = e.stderr.toString();
+        }
+        console.error(`status: ${e.status}`);
+        console.error(`stdout: ${e.stdout}`);
+        console.error(`stderr: ${e.stderr}`);
         throw e;
       }
     }
