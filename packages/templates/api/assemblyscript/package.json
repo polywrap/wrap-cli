@@ -12,10 +12,10 @@
     "deploy": "yarn deploy:contract && yarn deploy:web3api",
     "deploy:web3api": "npx w3 deploy",
     "deploy:contract": "node ./scripts/deploy-contract.js",
-    "test": "yarn test:e2e && yarn test:env:up && yarn deploy:contract && yarn test:recipe && yarn test:env:down",
+    "test": "yarn test:e2e && yarn test:recipe",
     "test:e2e": "yarn build && yarn test:e2e:codegen && jest --passWithNoTests --runInBand --verbose",
     "test:e2e:codegen": "npx w3 app codegen -m ./src/__tests__/types/web3api.app.yaml -c ./src/__tests__/types/w3",
-    "test:recipe": "npx w3 query ./recipes/e2e.json"
+    "test:recipe": "yarn build && yarn test:env:up && yarn deploy:contract && npx w3 query ./recipes/e2e.json && yarn test:env:down"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",
