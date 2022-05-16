@@ -22,14 +22,91 @@ interface TestEnvironment {
 const monorepoCli = `${__dirname}/../../../cli/bin/w3`;
 const npmCli = `${__dirname}/../../cli/bin/w3`;
 
+async function awaitResponse(
+  url: string,
+  expectedRes: string,
+  getPost: "get" | "post",
+  timeout: number,
+  maxTimeout: number,
+  data?: string
+) {
+  let time = 0;
+
+  while (time < maxTimeout) {
+    const success = await axios[getPost](url, data)
+      .then(function (response) {
+        const responseData = JSON.stringify(response.data);
+        return responseData.indexOf(expectedRes) > -1;
+      })
+      .catch(function () {
+        return false;
+      });
+
+    if (success) {
+      return true;
+    }
+
+    await new Promise<void>(function (resolve) {
+      setTimeout(() => resolve(), timeout);
+    });
+
+    time += timeout;
+  }
+
+  return false;
+}
+
 export const initTestEnvironment = async (
   cli?: string
 ): Promise<TestEnvironment> => {
   // Start the test environment
   const { exitCode, stderr, stdout } = await runCLI({
-    args: ["test-env", "up"],
+    args: ["infra", "up", "--test", "--verbose"],
     cli,
   });
+
+  // Wait for all endpoints to become available
+  let success = false;
+
+  // IPFS
+  success = await awaitResponse(
+    `http://localhost:${process.env.IPFS_PORT}/api/v0/version`,
+    '"Version":',
+    "get",
+    2000,
+    20000
+  );
+
+  if (!success) {
+    throw Error("test-env: IPFS failed to start");
+  }
+
+  // Ganache
+  success = await awaitResponse(
+    `http://localhost:${process.env.ETHEREUM_PORT}`,
+    '"jsonrpc":',
+    "post",
+    2000,
+    20000,
+    '{"jsonrpc":"2.0","method":"eth_blockNumber","params":[],"id":83}'
+  );
+
+  if (!success) {
+    throw Error("test-env: Ganache failed to start");
+  }
+
+  // Dev Server
+  success = await awaitResponse(
+    `http://localhost:${process.env.DEV_SERVER_PORT}/status`,
+    '"running":true',
+    "get",
+    2000,
+    20000
+  );
+
+  if (!success) {
+    throw Error("test-env: DevServer failed to start");
+  }
 
   if (exitCode) {
     throw Error(
@@ -63,7 +140,7 @@ export const initTestEnvironment = async (
 export const stopTestEnvironment = async (cli?: string): Promise<void> => {
   // Stop the test environment
   const { exitCode, stderr } = await runCLI({
-    args: ["test-env", "down"],
+    args: ["infra", "down", "--test"],
     cli,
   });
 

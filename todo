@@ -1,18 +1,9 @@
 * rename "test-env" JS testingn package to "test-infra"
 * * Rename the functions "createTestEnv" to "createTestInfra"?
 
-* CLI infra command's interface, wording & dev-exp
-
-* Use intl strings for all cli/src/lib error messages
-
 * service link dependency checking (ensure links are satisfied)
 
 * Rename "dev-server" to "ens-eth-testnet-deployer"?
-
-* web3api.infra.yaml improvments
-* * Package name || path to docker-compose?
-* * overrides property (name, links, etc etc)
-* * don't require name? Use what's in the docker-compose?
 
 * Remove needless "providers" functionality from "dev-server". Since this is all ona project-by-project basis now, there's no need for it.
 * * Should we always have an "orchestrator" available where you query exposed ports for services?
