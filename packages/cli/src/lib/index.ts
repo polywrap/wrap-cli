@@ -1,5 +1,6 @@
 export * from "./helpers";
 export * from "./intl";
+export * from "./infra";
 export * from "./manifest";
 export * from "./project";
 export * from "./deploy";

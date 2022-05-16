@@ -1,10 +1,14 @@
 import { Web3ApiProject } from "../project";
 import { intlMsg } from "../intl";
 import { dependencyFetcherClassMap } from "./fetchers";
-import { runCommand } from "../system";
 import { correctBuildContextPathsFromCompose } from "../helpers/docker";
 
 import { InfraManifest } from "@web3api/core-js";
+import DockerCompose, {
+  TypedDockerComposeResult,
+  DockerComposeConfigResult,
+  IDockerComposeOptions,
+} from "docker-compose";
 import path from "path";
 import fs from "fs";
 import YAML from "js-yaml";
@@ -14,11 +18,6 @@ export interface InfraConfig {
   infraManifest: InfraManifest;
   modulesToUse?: string[];
   quiet?: boolean;
-}
-
-interface FetchedModulesData {
-  baseCommand: string;
-  modulesWithComposePaths: ModuleWithPath[];
 }
 
 interface ModuleWithPath {
@@ -38,7 +37,7 @@ const DEFAULT_BASE_COMPOSE = {
 
 export class Infra {
   private _baseDockerComposePath: string;
-  private _fetchedModulesData: FetchedModulesData | undefined;
+  private _fetchedModulesData: ModuleWithPath[] | undefined;
   private _defaultModuleComposePaths = [
     "./docker-compose.yml",
     "./docker-compose.yaml",
@@ -64,31 +63,43 @@ export class Infra {
   }
 
   public async up(): Promise<void> {
-    const { quiet } = this._config;
-    const { baseCommand } = await this._fetchModules();
+    const modulesWithPaths = await this._fetchModules();
 
-    await runCommand(`${baseCommand} up -d --build`, quiet);
+    await DockerCompose.upAll({
+      ...this._getDockerComposeDefaultConfig(),
+      config: modulesWithPaths.map((m) => m.path),
+      commandOptions: ["--build"],
+    });
   }
 
   public async down(): Promise<void> {
-    const { quiet } = this._config;
-    const { baseCommand } = await this._fetchModules();
+    const modulesWithPaths = await this._fetchModules();
 
-    await runCommand(`${baseCommand} down --remove-orphans`, quiet);
+    const { out, err } = await DockerCompose.down({
+      ...this._getDockerComposeDefaultConfig(),
+      config: modulesWithPaths.map((m) => m.path),
+      commandOptions: ["--remove-orphans"],
+    });
+
+    console.log(modulesWithPaths.map((m) => m.path));
+
+    console.log(out);
+    console.log(err);
   }
 
-  public async config(): Promise<{
-    stdout: string;
-    stderr: string;
-  }> {
-    const { quiet } = this._config;
-    const { baseCommand } = await this._fetchModules();
+  public async config(): Promise<
+    TypedDockerComposeResult<DockerComposeConfigResult>
+  > {
+    const modulesWithPaths = await this._fetchModules();
 
-    return await runCommand(`${baseCommand} config`, quiet);
+    return await DockerCompose.config({
+      ...this._getDockerComposeDefaultConfig(),
+      config: modulesWithPaths.map((m) => m.path),
+    });
   }
 
   public async getVars(): Promise<string[]> {
-    const { modulesWithComposePaths } = await this._fetchModules();
+    const modulesWithComposePaths = await this._fetchModules();
 
     const envVarRegex = /\${([^}]+)}/gm;
 
@@ -142,8 +153,6 @@ export class Infra {
         }
       });
 
-      console.log(unrecognizedModules);
-
       if (unrecognizedModules.length) {
         throw new Error(
           intlMsg.lib_infra_unrecognizedModule({
@@ -154,23 +163,16 @@ export class Infra {
     }
   }
 
-  private _generateBaseComposedCommand(
-    modulesWithComposePaths: ModuleWithPath[]
-  ): string {
-    const { infraManifest } = this._config;
-    const env = infraManifest.env || {};
-    const envKeys = Object.keys(env);
-
-    return `${envKeys
-      .map(
-        (key, i) =>
-          `export ${key}=${env[key]} ${i < envKeys.length ? "&& " : ""}`
-      )
-      .join("")} docker-compose -f ${
-      this._baseDockerComposePath
-    } ${modulesWithComposePaths
-      .map((module) => ` -f ${module.path}`)
-      .join("")}`;
+  private _getDockerComposeDefaultConfig(): Partial<IDockerComposeOptions> {
+    return {
+      cwd: path.dirname(this._baseDockerComposePath),
+      env: {
+        ...this._config.infraManifest.env,
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        PATH: process.env.PATH,
+      } as Record<string, string>,
+      log: !this._config.quiet,
+    };
   }
 
   private _writeFileToCacheFromAbsPath(
@@ -244,7 +246,7 @@ export class Infra {
     return modulesWithComposePaths;
   }
 
-  private async _fetchModules(): Promise<FetchedModulesData> {
+  private async _fetchModules(): Promise<ModuleWithPath[]> {
     if (this._fetchedModulesData) {
       return this._fetchedModulesData;
     }
@@ -287,15 +289,7 @@ export class Infra {
       this._writeFileToCacheFromAbsPath(m.path, newComposeFile);
     });
 
-    // generate base composed command
-    const command = this._generateBaseComposedCommand(modulesWithComposePaths);
-
-    this._fetchedModulesData = {
-      baseCommand: command,
-      modulesWithComposePaths,
-    };
-
-    return this._fetchedModulesData as FetchedModulesData;
+    return modulesWithComposePaths;
   }
 
   private async _fetchLocalModules(

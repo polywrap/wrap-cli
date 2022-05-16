@@ -1,7 +1,7 @@
 import { intlMsg } from "../lib/intl";
 import { Web3ApiProject } from "../lib/project";
 import { Infra } from "../lib/infra/Infra";
-import { loadInfraManifest } from "../lib";
+import { getDockerFileLock, loadInfraManifest } from "../lib";
 
 import { GluegunToolbox } from "gluegun";
 import chalk from "chalk";
@@ -139,19 +139,27 @@ export default {
         .join("")}\n`
     );
 
+    const dockerLock = getDockerFileLock();
+    await dockerLock.request();
+
     if (command === "up") {
       await infra.up();
+      await dockerLock.release();
     } else if (command === "down") {
       await infra.down();
+      await dockerLock.release();
     } else if (command === "vars") {
       const vars = await infra.getVars();
 
       print.info(vars);
+      await dockerLock.release();
     } else if (command === "config") {
-      const { stdout } = await infra.config();
+      const resultingConfig = await infra.config();
 
-      print.info(stdout);
+      print.info(resultingConfig);
+      await dockerLock.release();
     } else {
+      await dockerLock.release();
       throw Error(intlMsg.commands_infra_error_never());
     }
   },

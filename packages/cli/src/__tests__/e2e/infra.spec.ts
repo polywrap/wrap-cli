@@ -88,9 +88,17 @@ describe("e2e tests for infra command", () => {
           cli: w3Cli
         },
       );
+
+      await runCLI(
+        {
+          args: ["infra", "down", "web3api.yaml", "-v", "--test"],
+          cwd: getTestCaseDir(0),
+          cli: w3Cli
+        },
+      );
   
       await waitForPorts([
-        { port: 3000, expected: false },
+        { port: 4040, expected: false },
         { port: 5001, expected: false },
         { port: 8545, expected: false }
       ]);
@@ -169,7 +177,7 @@ ${HELP}`);
       );
   
       await waitForPorts([
-        { port: 3000, expected: true },
+        { port: 4040, expected: true },
         { port: 5001, expected: true },
         { port: 8545, expected: true }
       ]);
@@ -185,7 +193,7 @@ ${HELP}`);
       );
   
       await waitForPorts([
-        { port: 3000, expected: true },
+        { port: 4040, expected: true },
         { port: 5001, expected: true },
         { port: 8545, expected: true }
       ]);
@@ -199,7 +207,7 @@ ${HELP}`);
       );
   
       await waitForPorts([
-        { port: 3000, expected: false },
+        { port: 4040, expected: false },
         { port: 5001, expected: false },
         { port: 8545, expected: false },
       ]);
@@ -215,7 +223,7 @@ ${HELP}`);
       );
   
       await waitForPorts([
-        { port: 3000, expected: false },
+        { port: 4040, expected: false },
         { port: 5001, expected: true },
         { port: 8545, expected: false }
       ]);
@@ -248,7 +256,8 @@ ${HELP}`);
             "infra",
             "up",
             "web3api.yaml",
-            "--test"
+            "--test",
+            "--verbose"
           ],
           cwd: getTestCaseDir(0),
           cli: w3Cli
@@ -256,7 +265,7 @@ ${HELP}`);
       );
   
       await waitForPorts([
-        { port: 3000, expected: true },
+        { port: 4040, expected: true },
         { port: 5001, expected: true },
         { port: 8545, expected: true }
       ]);
@@ -264,23 +273,6 @@ ${HELP}`);
   });
 
   describe("Duplicates", () => {
-    afterEach(async () => {
-      await runCLI(
-        {
-          args: ["infra", "down", "web3api.yaml", "-v"],
-          cwd: getTestCaseDir(2),
-          cli: w3Cli
-        },
-      );
-  
-      await waitForPorts([
-        { port: 3000, expected: false },
-        { port: 5001, expected: false },
-        { port: 8545, expected: false },
-        { port: 8546, expected: false }
-      ]);
-    });
-  
     test("Should handle duplicate services", async () => {
       await runCLI(
         {
@@ -290,7 +282,7 @@ ${HELP}`);
             "web3api.yaml",
             "--modules=ganache,dev-server"
           ],
-          cwd: getTestCaseDir(2),
+          cwd: getTestCaseDir(1),
           cli: w3Cli
         },
       );
@@ -299,6 +291,14 @@ ${HELP}`);
         { port: 8546, expected: true },
         { port: 8545, expected: true }
       ]);
+
+      await runCLI(
+        {
+          args: ["infra", "down", "web3api.yaml", "--modules=ganache,dev-server"],
+          cwd: getTestCaseDir(1),
+          cli: w3Cli
+        },
+      );
     });
   
     test("Should correctly duplicate pkg in different module", async () => {
@@ -310,7 +310,7 @@ ${HELP}`);
             "web3api.yaml",
             "--modules=ipfs,ipfs-duplicate"
           ],
-          cwd: getTestCaseDir(2),
+          cwd: getTestCaseDir(1),
           cli: w3Cli
         },
       );
@@ -318,6 +318,14 @@ ${HELP}`);
       await waitForPorts([
         { port: 5001, expected: true },
       ]);
+
+      await runCLI(
+        {
+          args: ["infra", "down", "web3api.yaml", "--modules=ipfs,ipfs-duplicate"],
+          cwd: getTestCaseDir(1),
+          cli: w3Cli
+        },
+      );
     });
   
   });
