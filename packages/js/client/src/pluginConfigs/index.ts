@@ -1,5 +1,6 @@
 /// NOTE: This is an auto-generated file. See scripts/extractPluginConfigs.ts
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable prettier/prettier */
 
 import { IpfsPluginConfigs } from "./Ipfs";
 import { EthereumPluginConfigs } from "./Ethereum";

@@ -1,4 +1,4 @@
-import { Module, Input_addFile } from "./w3-man";
+import { Module, Input_addFile } from "./w3";
 import { IpfsConfig } from "../common/IpfsConfig";
 import { IpfsClient } from "../common/IpfsClient";
 

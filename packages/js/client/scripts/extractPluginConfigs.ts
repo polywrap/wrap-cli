@@ -77,7 +77,7 @@ const plugins: PluginConfigSource[] = [
     config: "EnsPluginConfigs",
     files: [
       {
-        name: "build/w3-man/plugin.d.ts",
+        name: "build/w3/plugin.d.ts",
         interfaces: ["EnsPluginConfigs"],
       },
       {
@@ -92,7 +92,8 @@ const plugins: PluginConfigSource[] = [
 function main(): void {
 
   const header = "/// NOTE: This is an auto-generated file. See scripts/extractPluginConfigs.ts\n" +
-    "/* eslint-disable @typescript-eslint/no-explicit-any */";
+    "/* eslint-disable @typescript-eslint/no-explicit-any */\n" +
+    "/* eslint-disable prettier/prettier */";
   const outputFiles: {
     fileName: string,
     content: string

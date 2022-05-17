@@ -27,7 +27,7 @@ export const toClassName: MustacheFn = () => {
 export const toFuncName: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     let rendered = render(value);
-    rendered = rendered.replace(/([^A-Za-z])+/g, ",");
+    rendered = rendered.replace(/([^A-Za-z0-9])+/g, ",");
     return rendered
       .split(",")
       .map((x, index) => {

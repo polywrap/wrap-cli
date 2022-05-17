@@ -6,17 +6,14 @@ import {
   Watcher,
   WatchEvent,
   watchEventName,
-  publishToIPFS,
   intlMsg,
   defaultWeb3ApiManifest,
   resolvePathIfExists,
-  getTestEnvProviders,
   isDockerInstalled,
   FileLock,
 } from "../lib";
 
 import chalk from "chalk";
-import axios from "axios";
 import path from "path";
 import readline from "readline";
 import { GluegunToolbox, GluegunPrint } from "gluegun";
@@ -24,10 +21,7 @@ import { GluegunToolbox, GluegunPrint } from "gluegun";
 const defaultManifestStr = defaultWeb3ApiManifest.join(" | ");
 const defaultOutputDirectory = "./build";
 const optionsStr = intlMsg.commands_build_options_options();
-const nodeStr = intlMsg.commands_build_options_i_node();
 const pathStr = intlMsg.commands_build_options_o_path();
-const addrStr = intlMsg.commands_build_options_e_address();
-const domStr = intlMsg.commands_build_options_e_domain();
 
 const HELP = `
 ${chalk.bold("w3 build")} [${optionsStr}]
@@ -37,9 +31,7 @@ ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
   -m, --manifest-file <${pathStr}>         ${intlMsg.commands_build_options_m({
   default: defaultManifestStr,
 })}
-  -i, --ipfs [<${nodeStr}>]                ${intlMsg.commands_build_options_i()}
   -o, --output-dir <${pathStr}>            ${intlMsg.commands_build_options_o()}
-  -e, --test-ens <[${addrStr},]${domStr}>  ${intlMsg.commands_build_options_e()}
   -w, --watch                        ${intlMsg.commands_build_options_w()}
   -v, --verbose                      ${intlMsg.commands_build_options_v()}
 `;
@@ -51,33 +43,17 @@ export default {
     const { filesystem, parameters, print } = toolbox;
 
     // Options
-    const { h, m, i, o, w, e, v } = parameters.options;
-    let {
-      help,
-      manifestFile,
-      ipfs,
-      outputDir,
-      watch,
-      testEns,
-      verbose,
-    } = parameters.options;
+    const { h, m, o, w, v } = parameters.options;
+    let { help, manifestFile, outputDir, watch, verbose } = parameters.options;
 
     help = help || h;
     manifestFile = manifestFile || m;
-    ipfs = ipfs || i;
     outputDir = outputDir || o;
     watch = watch || w;
-    testEns = testEns || e;
     verbose = verbose || v;
 
     // Validate Params
-    const paramsValid = validateBuildParams(
-      print,
-      manifestFile,
-      outputDir,
-      testEns,
-      ipfs
-    );
+    const paramsValid = validateBuildParams(print, manifestFile, outputDir);
 
     if (help || !paramsValid) {
       print.info(HELP);
@@ -112,46 +88,6 @@ export default {
       (outputDir && filesystem.resolve(outputDir)) ||
       filesystem.path(defaultOutputDirectory);
 
-    // Gather providers
-    let ipfsProvider: string | undefined;
-    let ethProvider: string | undefined;
-    let ensAddress: string | undefined;
-    let ensDomain: string | undefined;
-
-    if (typeof ipfs === "string") {
-      // Custom IPFS provider
-      ipfsProvider = ipfs;
-    } else if (ipfs) {
-      // Try to get the dev server's IPFS & ETH providers
-      const testEnvProviders = await getTestEnvProviders();
-      ipfsProvider = testEnvProviders.ipfsProvider;
-      ethProvider = testEnvProviders.ethProvider;
-    }
-
-    if (typeof testEns == "string") {
-      // Fetch the ENS domain, and optionally the address
-      if (testEns.indexOf(",") > -1) {
-        const [addr, dom] = testEns.split(",");
-        ensAddress = addr;
-        ensDomain = dom;
-      } else {
-        ensDomain = testEns;
-      }
-
-      // If not address was provided, fetch it from the server
-      // or deploy a new instance
-      if (!ensAddress) {
-        const getEns = await axios.get("http://localhost:4040/ens");
-
-        if (!getEns.data.ensAddress) {
-          const deployEns = await axios.get("http://localhost:4040/deploy-ens");
-          ensAddress = deployEns.data.ensAddress;
-        } else {
-          ensAddress = getEns.data.ensAddress;
-        }
-      }
-    }
-
     const project = new Web3ApiProject({
       rootCacheDir: path.dirname(manifestFile),
       web3apiManifestPath: manifestFile,
@@ -167,9 +103,6 @@ export default {
 
     const schemaComposer = new SchemaComposer({
       project,
-      ensAddress,
-      ethProvider,
-      ipfsProvider,
     });
 
     const compiler = new Compiler({
@@ -184,56 +117,6 @@ export default {
 
       if (!result) {
         return result;
-      }
-
-      const uris: string[][] = [];
-
-      // publish to IPFS
-      if (ipfsProvider) {
-        const cid = await publishToIPFS(outputDir, ipfsProvider);
-
-        print.success(`IPFS { ${cid} }`);
-        uris.push(["Web3API IPFS", `ipfs://${cid}`]);
-
-        if (testEns) {
-          if (!ensAddress) {
-            uris.push([
-              intlMsg.commands_build_ensRegistry(),
-              `${ethProvider}/${ensAddress}`,
-            ]);
-          }
-
-          // ask the dev server to publish the CID to ENS
-          const { data } = await axios.get(
-            "http://localhost:4040/register-ens",
-            {
-              params: {
-                domain: ensDomain,
-                cid,
-              },
-            }
-          );
-
-          if (data.success) {
-            uris.push(["Web3API ENS", `${testEns} => ${cid}`]);
-          } else {
-            print.error(
-              `${intlMsg.commands_build_error_resolution()} { ${testEns} => ${cid} }\n` +
-                `${intlMsg.commands_build_ethProvider()}: ${ethProvider}\n` +
-                `${intlMsg.commands_build_address()}: ${ensAddress}`
-            );
-          }
-
-          return data.success;
-        }
-
-        if (uris.length) {
-          print.success(`${intlMsg.commands_build_uriViewers()}:`);
-          print.table(uris);
-          return true;
-        } else {
-          return false;
-        }
       }
 
       return true;
@@ -312,9 +195,7 @@ export default {
 function validateBuildParams(
   print: GluegunPrint,
   manifestFile: unknown,
-  outputDir: unknown,
-  testEns: unknown,
-  ipfs: unknown
+  outputDir: unknown
 ): boolean {
   if (manifestFile === true) {
     const manifestPathMissingMessage = intlMsg.commands_build_error_manifestPathMissing(
@@ -335,28 +216,6 @@ function validateBuildParams(
       }
     );
     print.error(outputDirMissingPathMessage);
-    return false;
-  }
-
-  if (testEns === true) {
-    const testEnsAddressMissingMessage = intlMsg.commands_build_error_testEnsAddressMissing(
-      {
-        option: "--test-ens",
-        argument: `<[${addrStr},]${domStr}>`,
-      }
-    );
-    print.error(testEnsAddressMissingMessage);
-    return false;
-  }
-
-  if (testEns && !ipfs) {
-    const testEnsNodeMissingMessage = intlMsg.commands_build_error_testEnsNodeMissing(
-      {
-        option: "--test-ens",
-        required: `--ipfs [<${nodeStr}>]`,
-      }
-    );
-    print.error(testEnsNodeMissingMessage);
     return false;
   }
 

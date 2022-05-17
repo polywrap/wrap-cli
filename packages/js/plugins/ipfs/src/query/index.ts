@@ -9,7 +9,7 @@ import {
   ResolveResult,
   QueryEnv,
   UriResolver_MaybeUriOrManifest,
-} from "./w3-man";
+} from "./w3";
 import { IpfsConfig } from "../common/IpfsConfig";
 import { IpfsClient } from "../common/IpfsClient";
 import { execSimple, execFallbacks } from "../common/exec";

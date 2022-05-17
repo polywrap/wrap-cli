@@ -1,4 +1,4 @@
-import { Client, Module, Input_querySubgraph, HTTP_Query } from "./w3-man";
+import { Client, Module, Input_querySubgraph, HTTP_Query } from "./w3";
 import { RequestData, RequestError } from "./types";
 
 export interface QueryConfig extends Record<string, unknown> {

@@ -1,12 +1,12 @@
-name: Release-Publish
+name: Publish-Releases
 on:
   # When Pull Request is merged
   pull_request_target:
     types: [closed]
 
 jobs:
-  Release-Publish:
-    name: Publish
+  Publish-GitHub-Release:
+    name: GitHub Release
     if: |
       github.event.pull_request.user.login == 'web3-api-build-bot' &&
       github.event.pull_request.merged == true
@@ -19,14 +19,6 @@ jobs:
 
       - name: Read VERSION into env.RELEASE_VERSION
         run: echo RELEASE_VERSION=$(cat VERSION) >> $GITHUB_ENV
-
-      - name: Read .nvmrc into env.NVMRC
-        run: echo NVMRC=$(cat .nvmrc) >> $GITHUB_ENV
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v1
-        with:
-          node-version: '${{env.NVMRC}}'
 
       - name: Set Git Identity
         run: |
@@ -75,6 +67,41 @@ jobs:
           draft: false
           prerelease: false
 
+      - uses: actions/github-script@0.8.0
+        if: ${{env.TAG_EXISTS}} == 'false'
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '**[GitHub Release Published](https://github.com/${{ github.repository }}/releases/tag/${{ env.RELEASE_VERSION }}) `${{env.RELEASE_VERSION}}`** 🎉'
+            })
+
+  Publish-NPM-Release:
+    name: NPM Release
+    if: |
+      github.event.pull_request.user.login == 'web3-api-build-bot' &&
+      github.event.pull_request.merged == true
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
+
+      - name: Read VERSION into env.RELEASE_VERSION
+        run: echo RELEASE_VERSION=$(cat VERSION) >> $GITHUB_ENV
+
+      - name: Read .nvmrc into env.NVMRC
+        run: echo NVMRC=$(cat .nvmrc) >> $GITHUB_ENV
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: '${{env.NVMRC}}'
+
       - name: Auth into NPM
         if: ${{env.TAG_EXISTS}} == 'false'
         run: |
@@ -105,5 +132,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '**[Release Published](https://github.com/${{ github.repository }}/releases/tag/${{ env.RELEASE_VERSION }}) `${{env.RELEASE_VERSION}}`** 🎉'
+              body: '**[NPM Release Published](https://www.npmjs.com/search?q=%40web3api) `${{env.RELEASE_VERSION}}`** 🎉'
             })
