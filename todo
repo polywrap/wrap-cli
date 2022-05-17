@@ -1,9 +1,0 @@
-* rename "test-env" JS testingn package to "test-infra"
-* * Rename the functions "createTestEnv" to "createTestInfra"?
-
-* service link dependency checking (ensure links are satisfied)
-
-* Rename "dev-server" to "ens-eth-testnet-deployer"?
-
-* Remove needless "providers" functionality from "dev-server". Since this is all ona project-by-project basis now, there's no need for it.
-* * Should we always have an "orchestrator" available where you query exposed ports for services?

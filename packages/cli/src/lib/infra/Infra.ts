@@ -2,13 +2,9 @@ import { Web3ApiProject } from "../project";
 import { intlMsg } from "../intl";
 import { dependencyFetcherClassMap } from "./fetchers";
 import { correctBuildContextPathsFromCompose } from "../helpers/docker";
+import { DockerCompose } from "./dockerCompose";
 
 import { InfraManifest } from "@web3api/core-js";
-import DockerCompose, {
-  TypedDockerComposeResult,
-  DockerComposeConfigResult,
-  IDockerComposeOptions,
-} from "docker-compose";
 import path from "path";
 import fs from "fs";
 import YAML from "js-yaml";
@@ -43,6 +39,10 @@ export class Infra {
     "./docker-compose.yaml",
   ];
   private _config: InfraConfig;
+  private _dockerCompose = new DockerCompose();
+  private _defaultDockerOptions: ReturnType<
+    typeof DockerCompose.getDefaultConfig
+  >;
 
   constructor(config: InfraConfig & { baseDockerComposePath?: string }) {
     this._config = config;
@@ -56,17 +56,22 @@ export class Infra {
         "docker-compose.yml"
       );
 
-      this._generateDefaultBaseDockerCompose(this._baseDockerComposePath);
+      this._generateBaseDockerCompose(this._baseDockerComposePath);
     }
 
     this._sanitizeModules();
+    this._defaultDockerOptions = DockerCompose.getDefaultConfig(
+      this._baseDockerComposePath,
+      this._config.infraManifest,
+      this._config.quiet ?? true
+    );
   }
 
   public async up(): Promise<void> {
     const modulesWithPaths = await this._fetchModules();
 
-    await DockerCompose.upAll({
-      ...this._getDockerComposeDefaultConfig(),
+    await this._dockerCompose.commands.upAll({
+      ...this._defaultDockerOptions,
       config: modulesWithPaths.map((m) => m.path),
       commandOptions: ["--build"],
     });
@@ -75,27 +80,24 @@ export class Infra {
   public async down(): Promise<void> {
     const modulesWithPaths = await this._fetchModules();
 
-    const { out, err } = await DockerCompose.down({
-      ...this._getDockerComposeDefaultConfig(),
+    await this._dockerCompose.commands.down({
+      ...this._defaultDockerOptions,
       config: modulesWithPaths.map((m) => m.path),
       commandOptions: ["--remove-orphans"],
     });
-
-    console.log(modulesWithPaths.map((m) => m.path));
-
-    console.log(out);
-    console.log(err);
   }
 
   public async config(): Promise<
-    TypedDockerComposeResult<DockerComposeConfigResult>
+    ReturnType<DockerCompose["commands"]["config"]>
   > {
     const modulesWithPaths = await this._fetchModules();
 
-    return await DockerCompose.config({
-      ...this._getDockerComposeDefaultConfig(),
+    const s = await this._dockerCompose.commands.config({
+      ...this._defaultDockerOptions,
       config: modulesWithPaths.map((m) => m.path),
     });
+
+    return s;
   }
 
   public async getVars(): Promise<string[]> {
@@ -163,18 +165,6 @@ export class Infra {
     }
   }
 
-  private _getDockerComposeDefaultConfig(): Partial<IDockerComposeOptions> {
-    return {
-      cwd: path.dirname(this._baseDockerComposePath),
-      env: {
-        ...this._config.infraManifest.env,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        PATH: process.env.PATH,
-      } as Record<string, string>,
-      log: !this._config.quiet,
-    };
-  }
-
   private _writeFileToCacheFromAbsPath(
     absPath: string,
     data: unknown,
@@ -187,7 +177,7 @@ export class Infra {
     );
   }
 
-  private _generateDefaultBaseDockerCompose(composePath: string): void {
+  private _generateBaseDockerCompose(composePath: string): void {
     const fileContent = YAML.dump(DEFAULT_BASE_COMPOSE);
 
     this._writeFileToCacheFromAbsPath(composePath, fileContent);
