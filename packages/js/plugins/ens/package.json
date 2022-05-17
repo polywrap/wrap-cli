@@ -1,7 +1,7 @@
 {
   "name": "@web3api/ens-plugin-js",
   "description": "Web3API ENS Javascript Plugin",
-  "version": "0.0.1-prealpha.71",
+  "version": "0.0.1-prealpha.77",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -9,8 +9,7 @@
   },
   "main": "build/index.js",
   "files": [
-    "build",
-    "schema.graphql"
+    "build"
   ],
   "scripts": {
     "build": "rimraf ./build && yarn codegen && tsc --project tsconfig.build.json",
@@ -22,7 +21,8 @@
   },
   "dependencies": {
     "@ethersproject/address": "5.0.7",
-    "@web3api/core-js": "0.0.1-prealpha.71",
+    "@ethersproject/basex": "5.0.7",
+    "@web3api/core-js": "0.0.1-prealpha.77",
     "ethers": "5.0.7"
   },
   "devDependencies": {

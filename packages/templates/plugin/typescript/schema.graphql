@@ -1,7 +1,0 @@
-type Query {
-  sampleQuery(data: String!): String!
-}
-
-type Mutation {
-  sampleMutation(data: Bytes!): Boolean!
-}

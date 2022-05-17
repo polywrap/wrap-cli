@@ -17,8 +17,10 @@ export function getSimpleClient(config: SimpleClientConfig): Web3ApiClient {
     plugins.push({
       uri: "w3://ens/ens.web3api.eth",
       plugin: ensPlugin({
-        addresses: {
-          testnet: ensAddress,
+        query: {
+          addresses: {
+            testnet: ensAddress,
+          },
         },
       }),
     });
@@ -30,10 +32,6 @@ export function getSimpleClient(config: SimpleClientConfig): Web3ApiClient {
         networks: {
           testnet: {
             provider: ethProvider,
-          },
-          mainnet: {
-            provider:
-              "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
           },
         },
       }),

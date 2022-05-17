@@ -1,5 +1,5 @@
 import { httpPlugin } from "../..";
-import { Response } from "../../w3";
+import { Response } from "../../query/w3";
 
 import { Web3ApiClient, defaultIpfsProviders } from "@web3api/client-js"
 import { ensPlugin } from "@web3api/ens-plugin-js";
@@ -33,12 +33,15 @@ describe("e2e tests for HttpPlugin", () => {
       const { data } = await axios.get("http://localhost:4040/deploy-ens");
 
       ensAddress = data.ensAddress
+      
+      const registrarAddress = data.registrarAddress
+      const resolverAddress = data.resolverAddress
 
       client = new Web3ApiClient({
         plugins: [
           {
             uri: "w3://ens/http.web3api.eth",
-            plugin: httpPlugin(),
+            plugin: httpPlugin({ query: {} }),
           },
           {
             uri: "w3://ens/ethereum.web3api.eth",
@@ -61,19 +64,24 @@ describe("e2e tests for HttpPlugin", () => {
           {
             uri: "w3://ens/ens.web3api.eth",
             plugin: ensPlugin({
-              addresses: {
-                testnet: ensAddress
+              query: {
+                addresses: {
+                  testnet: ensAddress
+                }
               }
             })
           }
         ],
       });
 
-      const api = await buildAndDeployApi(
-        `${__dirname}/integration`,
-        ipfs,
-        ensAddress
-      );
+      const api = await buildAndDeployApi({
+        apiAbsPath: `${__dirname}/integration`,
+        ipfsProvider: ipfs,
+        ensRegistryAddress: ensAddress,
+        ensRegistrarAddress: registrarAddress,
+        ensResolverAddress: resolverAddress,
+        ethereumProvider: ethereum
+      });
 
       uri = `ens/testnet/${api.ensDomain}`;
     });

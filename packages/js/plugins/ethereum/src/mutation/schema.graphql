@@ -1,0 +1,47 @@
+#import * from "../common/schema.graphql"
+
+type Mutation {
+  callContractMethod(
+    address: String!
+    method: String!
+    args: [String!]
+    connection: Connection
+    txOverrides: TxOverrides
+  ): TxResponse!
+
+  callContractMethodAndWait(
+    address: String!
+    method: String!
+    args: [String!]
+    connection: Connection
+    txOverrides: TxOverrides
+  ): TxReceipt!
+
+  sendTransaction(
+    tx: TxRequest!
+    connection: Connection
+  ): TxResponse!
+
+  sendTransactionAndWait(
+    tx: TxRequest!
+    connection: Connection
+  ): TxReceipt!
+
+  deployContract(
+    abi: String!
+    bytecode: String!
+    args: [String!]
+    connection: Connection
+  ): String!
+
+  signMessage(
+    message: String!
+    connection: Connection
+  ): String!
+
+  sendRPC(
+    method: String!
+    params: [String!]!
+    connection: Connection
+  ): String
+}

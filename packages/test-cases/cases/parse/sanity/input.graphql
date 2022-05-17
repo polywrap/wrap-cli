@@ -129,7 +129,7 @@ type MutationClientEnv {
 }
 
 type Mutation {
-  sanitizeMutationEnv(env: MutationClientEnv!): MutationEnv!
+  sanitizeEnv(env: MutationClientEnv!): MutationEnv!
 }
 
 """
@@ -155,7 +155,7 @@ type Query implements Interface_Query @imports(
   uri: "testimport.uri.eth",
   namespace: "TestImport",
 ) {
-  sanitizeQueryEnv(env: QueryClientEnv!): QueryEnv!
+  sanitizeEnv(env: QueryClientEnv!): QueryEnv!
 """
 queryMethod comment
 """

@@ -1,0 +1,17 @@
+type MutationClientEnv {
+  foo: UInt32!
+}
+
+type MutationEnv {
+  mutationArg: String!
+}
+
+type Mutation {
+  sanitizeEnv(
+    env: MutationClientEnv!
+  ): MutationEnv!
+
+  method(
+    arg: UInt32!
+  ): String!
+}

@@ -10,12 +10,17 @@ import {
 import { GluegunToolbox, print } from "gluegun";
 import chalk from "chalk";
 
+const optionsString = intlMsg.commands_build_options_options();
+
 const HELP = `
 ${chalk.bold("w3 test-env")} ${intlMsg.commands_testEnv_options_command()}
 
 Commands:
   ${chalk.bold("up")}    ${intlMsg.commands_testEnv_options_start()}
   ${chalk.bold("down")}  ${intlMsg.commands_testEnv_options_stop()}
+
+${optionsString[0].toUpperCase() + optionsString.slice(1)}:
+  -h, --help          ${intlMsg.commands_build_options_h()}
 `;
 
 export default {
@@ -23,6 +28,15 @@ export default {
   description: intlMsg.commands_testEnv_description(),
   run: async (toolbox: GluegunToolbox): Promise<unknown> => {
     const { parameters } = toolbox;
+    const { h } = parameters.options;
+    let { help } = parameters.options;
+
+    help = help || h;
+
+    if (help) {
+      print.info(HELP);
+      return;
+    }
 
     // Command
     const command = parameters.first;
