@@ -1,0 +1,6 @@
+format: 0.0.1-prealpha.1
+modules:
+  preset:
+    package: "@namestys/infra-eth-ens-ipfs"
+    version: "0.0.2"
+    registry: npm

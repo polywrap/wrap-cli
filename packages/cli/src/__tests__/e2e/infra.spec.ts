@@ -26,7 +26,7 @@ Commands:
 
 Options:
   -m, --modules [<module-name>]       Use only specified modules
-  -t, --test                         Use default test environment configuration
+  -p, --preset <preset-name>          Use a preset infra environment
   -v, --verbose                      Verbose output (default: false)
 
 `;
@@ -91,7 +91,7 @@ describe("e2e tests for infra command", () => {
 
       await runCLI(
         {
-          args: ["infra", "down", "web3api.yaml", "-v", "--test"],
+          args: ["infra", "down", "web3api.yaml", "-v", "--preset=eth-ens-ipfs"],
           cwd: getTestCaseDir(0),
           cli: w3Cli
         },
@@ -249,14 +249,14 @@ ${HELP}`);
       );
     });
   
-    test("Should setup and use default test env if --test flag is passed", async () => {
+    test("Should setup and use a preset env if --preset arg is passed", async () => {
       await runCLI(
         {
           args: [
             "infra",
             "up",
             "web3api.yaml",
-            "--test",
+            "--preset=eth-ens-ipfs",
             "--verbose"
           ],
           cwd: getTestCaseDir(0),
@@ -269,6 +269,27 @@ ${HELP}`);
         { port: 5001, expected: true },
         { port: 8545, expected: true }
       ]);
+    })
+
+    test("Should throw error if unrecognized preset is passed", async () => {
+      const { exitCode: code, stdout } = await runCLI(
+        {
+          args: [
+            "infra",
+            "up",
+            "web3api.yaml",
+            "--preset=foo",
+            "--verbose"
+          ],
+          cwd: getTestCaseDir(0),
+          cli: w3Cli
+        },
+      );
+  
+      expect(code).toEqual(1);
+      expect(stdout).toContain(
+        `'foo' is not a supported preset`
+      );
     })
   });
 

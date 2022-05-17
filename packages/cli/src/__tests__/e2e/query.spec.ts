@@ -4,7 +4,7 @@ import yaml from "js-yaml";
 
 import { clearStyle, w3Cli } from "./utils";
 
-import { buildAndDeployApi, initTestEnvironment, runCLI } from "@web3api/test-env-js";
+import { buildAndDeployApi, initTestEnvironment, runCLI, stopTestEnvironment } from "@web3api/test-env-js";
 import { GetPathToCliTestFiles } from "@web3api/test-cases";
 import { normalizeLineEndings } from "@web3api/os-js";
 import {
@@ -58,11 +58,7 @@ describe("e2e tests for query command", () => {
   });
 
   afterAll(async () => {
-    await runCLI({
-      args: ["test-env", "down"],
-      cwd: testCaseRoot,
-      cli: w3Cli,
-    });
+    await stopTestEnvironment();
   });
 
   test("Should output help text", async () => {

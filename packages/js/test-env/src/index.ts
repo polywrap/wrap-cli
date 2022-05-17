@@ -33,7 +33,8 @@ async function awaitResponse(
   let time = 0;
 
   while (time < maxTimeout) {
-    const success = await axios[getPost](url, data)
+    const request = getPost === "get" ? axios.get(url) : axios.post(url, data);
+    const success = await request
       .then(function (response) {
         const responseData = JSON.stringify(response.data);
         return responseData.indexOf(expectedRes) > -1;
@@ -70,7 +71,7 @@ export const initTestEnvironment = async (
 
   // IPFS
   success = await awaitResponse(
-    `http://localhost:${process.env.IPFS_PORT}/api/v0/version`,
+    `http://localhost:5001/api/v0/version`,
     '"Version":',
     "get",
     2000,
@@ -83,7 +84,7 @@ export const initTestEnvironment = async (
 
   // Ganache
   success = await awaitResponse(
-    `http://localhost:${process.env.ETHEREUM_PORT}`,
+    `http://localhost:8545`,
     '"jsonrpc":',
     "post",
     2000,
@@ -97,7 +98,7 @@ export const initTestEnvironment = async (
 
   // Dev Server
   success = await awaitResponse(
-    `http://localhost:${process.env.DEV_SERVER_PORT}/status`,
+    `http://localhost:4040/status`,
     '"running":true',
     "get",
     2000,
@@ -116,17 +117,21 @@ export const initTestEnvironment = async (
 
   try {
     // fetch providers from dev server
-    const { data: providers } = await axios.get(
-      "http://localhost:4040/providers"
-    );
+    const { data: providers } = await axios.get<{
+      ipfs: string;
+      ethereum: string;
+    }>("http://localhost:4040/providers");
 
     const ipfs = providers.ipfs;
     const ethereum = providers.ethereum;
 
     // re-deploy ENS
-    const { data: ensAddresses } = await axios.get(
-      "http://localhost:4040/deploy-ens"
-    );
+    const { data: ensAddresses } = await axios.get<{
+      ensAddress: string;
+      registrarAddress: string;
+      reverseAddress: string;
+      resolverAddress: string;
+    }>("http://localhost:4040/deploy-ens");
     return {
       ipfs,
       ethereum,

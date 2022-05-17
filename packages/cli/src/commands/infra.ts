@@ -6,20 +6,20 @@ import { getDockerFileLock, loadInfraManifest } from "../lib";
 import { GluegunToolbox } from "gluegun";
 import chalk from "chalk";
 import path from "path";
+import { readdirSync } from "fs";
 
-const TEST_INFRA_MANIFEST = path.join(
+const INFRA_PRESETS = path.join(
   __dirname,
   "..",
   "lib",
   "default-manifests",
-  "infra",
-  "dev",
-  "web3api.infra.yaml"
+  "infra"
 );
 
 const optionsStr = intlMsg.commands_infra_options_options();
 const manStr = intlMsg.commands_infra_options_manifest();
 const moduleNameStr = intlMsg.commands_infra_moduleName();
+const presetNameStr = intlMsg.commands_infra_presetName();
 
 const cmdStr = intlMsg.commands_create_options_command();
 const upStr = intlMsg.commands_infra_command_up();
@@ -42,7 +42,7 @@ ${intlMsg.commands_create_options_commands()}:
 
 ${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
   -m, --modules [<${moduleNameStr}>]       ${intlMsg.commands_infra_options_m()}
-  -t, --test                         ${intlMsg.commands_infra_options_t()}
+  -p, --preset <${presetNameStr}>          ${intlMsg.commands_infra_options_p()}
   -v, --verbose                      ${intlMsg.commands_infra_options_v()}
 `;
 
@@ -52,12 +52,12 @@ export default {
   run: async (toolbox: GluegunToolbox): Promise<void> => {
     const { parameters, print, filesystem } = toolbox;
     const command = parameters.first;
-    const { m, t, v } = parameters.options;
-    let { modules, test, verbose } = parameters.options;
+    const { m, p, v } = parameters.options;
+    let { modules, preset, verbose } = parameters.options;
     const manifestFile = parameters.second;
 
     modules = modules || m;
-    test = test || t;
+    preset = preset || p;
     verbose = !!(verbose || v);
 
     if (modules) {
@@ -98,8 +98,28 @@ export default {
 
     let infra: Infra;
 
-    if (test) {
-      const infraManifest = await loadInfraManifest(TEST_INFRA_MANIFEST, true);
+    if (preset) {
+      if (typeof preset !== "string") {
+        process.exitCode = 1;
+        print.error("'preset' must be a string");
+        print.info(HELP);
+        return;
+      }
+
+      const presets = readdirSync(INFRA_PRESETS);
+
+      if (!presets.includes(preset)) {
+        process.exitCode = 1;
+        print.error(`'${preset}' is not a supported preset. Supported presets:
+        ${presets.map((pr) => `\n- ${pr}`).join("")}\n`);
+
+        return;
+      }
+
+      const infraManifest = await loadInfraManifest(
+        path.join(INFRA_PRESETS, preset, "web3api.infra.yaml"),
+        true
+      );
 
       infra = new Infra({
         project,
