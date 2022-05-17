@@ -25,6 +25,7 @@ export function isBaseType(type: string): type is BaseType {
 
 const builtInTypes = {
   BigInt: "BigInt",
+  BigNumber: "BigNumber",
   JSON: "JSON",
 };
 

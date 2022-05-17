@@ -45,6 +45,7 @@
     "@web3api/os-js": "0.0.1-prealpha.75",
     "@web3api/test-cases": "0.0.1-prealpha.75",
     "@web3api/test-env-js": "0.0.1-prealpha.75",
+    "bignumber.js": "9.0.2",
     "jest": "26.6.3",
     "rimraf": "3.0.2",
     "ts-jest": "26.5.4",

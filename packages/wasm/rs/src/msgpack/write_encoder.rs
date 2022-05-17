@@ -1,5 +1,5 @@
 use super::{error::EncodeError, Context, DataView, Format, Write};
-use crate::{BigInt, JSON};
+use crate::{BigInt, BigNumber, JSON};
 use byteorder::{BigEndian, WriteBytesExt};
 use core::hash::Hash;
 use std::{collections::BTreeMap, io::Write as StdioWrite};
@@ -202,6 +202,11 @@ impl Write for WriteEncoder {
             .map_err(|e| EncodeError::BigIntWriteError(e.to_string()))
     }
 
+    fn write_bignumber(&mut self, value: &BigNumber) -> Result<(), EncodeError> {
+        self.write_string(&value.to_string())
+            .map_err(|e| EncodeError::BigIntWriteError(e.to_string()))
+    }
+
     fn write_json(&mut self, value: &JSON::Value) -> Result<(), EncodeError> {
         let json_str = JSON::to_string(value)?;
         self.write_string(&json_str)
@@ -348,6 +353,13 @@ impl Write for WriteEncoder {
         match value {
             None => Write::write_nil(self),
             Some(bigint) => Write::write_bigint(self, bigint),
+        }
+    }
+
+    fn write_nullable_bignumber(&mut self, value: &Option<BigNumber>) -> Result<(), EncodeError> {
+        match value {
+            None => Write::write_nil(self),
+            Some(bignumber) => Write::write_bignumber(self, bignumber)
         }
     }
 

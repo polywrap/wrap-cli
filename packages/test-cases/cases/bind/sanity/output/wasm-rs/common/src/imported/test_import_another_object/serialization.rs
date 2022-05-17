@@ -1,6 +1,7 @@
 use std::convert::TryFrom;
 use polywrap_wasm_rs::{
     BigInt,
+    BigNumber,
     Context,
     DecodeError,
     EncodeError,

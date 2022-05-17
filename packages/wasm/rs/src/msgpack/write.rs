@@ -1,5 +1,5 @@
 use super::error::EncodeError;
-use crate::{BigInt, Context, JSON};
+use crate::{BigInt, BigNumber, Context, JSON};
 use core::hash::Hash;
 use std::collections::BTreeMap;
 
@@ -19,6 +19,7 @@ pub trait Write {
     fn write_bytes_length(&mut self, length: &u32) -> Result<(), EncodeError>;
     fn write_bytes(&mut self, buf: &[u8]) -> Result<(), EncodeError>;
     fn write_bigint(&mut self, value: &BigInt) -> Result<(), EncodeError>;
+    fn write_bignumber(&mut self, value: &BigNumber) -> Result<(), EncodeError>;
     fn write_json(&mut self, value: &JSON::Value) -> Result<(), EncodeError>;
     fn write_array_length(&mut self, length: &u32) -> Result<(), EncodeError>;
     fn write_array<T: Clone>(
@@ -47,6 +48,7 @@ pub trait Write {
     fn write_nullable_string(&mut self, value: &Option<String>) -> Result<(), EncodeError>;
     fn write_nullable_bytes(&mut self, value: &Option<Vec<u8>>) -> Result<(), EncodeError>;
     fn write_nullable_bigint(&mut self, value: &Option<BigInt>) -> Result<(), EncodeError>;
+    fn write_nullable_bignumber(&mut self, value: &Option<BigNumber>) -> Result<(), EncodeError>;
     fn write_nullable_json(&mut self, value: &Option<JSON::Value>) -> Result<(), EncodeError>;
     fn write_nullable_array<T: Clone>(
         &mut self,

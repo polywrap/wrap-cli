@@ -1,6 +1,7 @@
 use std::convert::TryFrom;
 use polywrap_wasm_rs::{
     BigInt,
+    BigNumber,
     Context,
     DecodeError,
     EncodeError,
@@ -28,7 +29,7 @@ pub fn serialize_custom_type(input: &CustomType) -> Result<Vec<u8>, EncodeError>
 }
 
 pub fn write_custom_type<W: Write>(input: &CustomType, writer: &mut W) -> Result<(), EncodeError> {
-    writer.write_map_length(&35)?;
+    writer.write_map_length(&37)?;
     writer.context().push("str", "String", "writing property");
     writer.write_string("str")?;
     writer.write_string(&input.str)?;
@@ -80,6 +81,14 @@ pub fn write_custom_type<W: Write>(input: &CustomType, writer: &mut W) -> Result
     writer.context().push("optBigint", "Option<BigInt>", "writing property");
     writer.write_string("optBigint")?;
     writer.write_nullable_bigint(&input.opt_bigint)?;
+    writer.context().pop();
+    writer.context().push("bignumber", "BigNumber", "writing property");
+    writer.write_string("bignumber")?;
+    writer.write_bignumber(&input.bignumber)?;
+    writer.context().pop();
+    writer.context().push("optBignumber", "Option<BigNumber>", "writing property");
+    writer.write_string("optBignumber")?;
+    writer.write_nullable_bignumber(&input.opt_bignumber)?;
     writer.context().pop();
     writer.context().push("json", "JSON::Value", "writing property");
     writer.write_string("json")?;
@@ -251,6 +260,9 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
     let mut _bigint: BigInt = BigInt::default();
     let mut _bigint_set = false;
     let mut _opt_bigint: Option<BigInt> = None;
+    let mut _bignumber: BigNumber = BigNumber::default();
+    let mut _bignumber_set = false;
+    let mut _opt_bignumber: Option<BigNumber> = None;
     let mut _json: JSON::Value = JSON::Value::Null;
     let mut _json_set = false;
     let mut _opt_json: Option<JSON::Value> = None;
@@ -363,6 +375,17 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
             "optBigint" => {
                 reader.context().push(&field, "Option<BigInt>", "type found, reading property");
                 _opt_bigint = reader.read_nullable_bigint()?;
+                reader.context().pop();
+            }
+            "bignumber" => {
+                reader.context().push(&field, "BigNumber", "type found, reading property");
+                _bignumber = reader.read_bignumber()?;
+                _bignumber_set = true;
+                reader.context().pop();
+            }
+            "optBignumber" => {
+                reader.context().push(&field, "Option<BigNumber>", "type found, reading property");
+                _opt_bignumber = reader.read_nullable_bignumber()?;
                 reader.context().pop();
             }
             "json" => {
@@ -607,6 +630,9 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
     if !_bigint_set {
         return Err(DecodeError::MissingField("bigint: BigInt.".to_string()));
     }
+    if !_bignumber_set {
+        return Err(DecodeError::MissingField("bignumber: BigNumber.".to_string()));
+    }
     if !_json_set {
         return Err(DecodeError::MissingField("json: JSON.".to_string()));
     }
@@ -655,6 +681,8 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
         i32: _i32,
         bigint: _bigint,
         opt_bigint: _opt_bigint,
+        bignumber: _bignumber,
+        opt_bignumber: _opt_bignumber,
         json: _json,
         opt_json: _opt_json,
         bytes: _bytes,

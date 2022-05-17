@@ -1,5 +1,5 @@
 use super::error::DecodeError;
-use crate::{BigInt, Context, JSON};
+use crate::{BigInt, BigNumber, Context, JSON};
 use core::hash::Hash;
 use std::collections::BTreeMap;
 
@@ -18,6 +18,7 @@ pub trait Read {
     fn read_bytes_length(&mut self) -> Result<u32, DecodeError>;
     fn read_bytes(&mut self) -> Result<Vec<u8>, DecodeError>;
     fn read_bigint(&mut self) -> Result<BigInt, DecodeError>;
+    fn read_bignumber(&mut self) -> Result<BigNumber, DecodeError>;
     fn read_json(&mut self) -> Result<JSON::Value, DecodeError>;
     fn read_array_length(&mut self) -> Result<u32, DecodeError>;
     fn read_array<T>(
@@ -44,6 +45,7 @@ pub trait Read {
     fn read_nullable_string(&mut self) -> Result<Option<String>, DecodeError>;
     fn read_nullable_bytes(&mut self) -> Result<Option<Vec<u8>>, DecodeError>;
     fn read_nullable_bigint(&mut self) -> Result<Option<BigInt>, DecodeError>;
+    fn read_nullable_bignumber(&mut self) -> Result<Option<BigNumber>, DecodeError>;
     fn read_nullable_json(&mut self) -> Result<Option<JSON::Value>, DecodeError>;
     fn read_nullable_array<T>(
         &mut self,

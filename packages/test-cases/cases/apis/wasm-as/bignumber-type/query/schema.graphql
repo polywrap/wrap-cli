@@ -3,7 +3,7 @@ type Query {
     arg1: BigNumber!
     arg2: BigNumber
     obj: BigNumberInput!
-  ): BigInt!
+  ): BigNumber!
 }
 
 type BigNumberInput {

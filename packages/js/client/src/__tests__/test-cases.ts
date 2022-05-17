@@ -1,4 +1,5 @@
 import { Web3ApiClient } from "../";
+import { BigNumber } from "bignumber.js";
 
 export const runAsyncifyTest = async (
   client: Web3ApiClient,
@@ -295,6 +296,67 @@ export const runBigIntTypeTest = async (
     expect(response.data).toBeTruthy();
     expect(response.data).toMatchObject({
       method: result.toString(),
+    });
+  }
+};
+
+export const runBigNumberTypeTest = async (
+  client: Web3ApiClient,
+  uri: string
+) => {
+  {
+    const response = await client.query<{
+      method: string;
+    }>({
+      uri,
+      query: `query {
+        method(
+          arg1: "1234.56789123456789"
+          obj: {
+            prop1: "98.7654321987654321"
+          }
+        )
+      }`,
+    });
+
+    const arg1 = new BigNumber("1234.56789123456789");
+    const prop1 = new BigNumber("98.7654321987654321")
+    const result = arg1.times(prop1);
+
+    expect(response.errors).toBeFalsy();
+    expect(response.data).toBeTruthy();
+    expect(response.data).toMatchObject({
+      method: result.toFixed(),
+    });
+  }
+
+  {
+    const response = await client.query<{
+      method: string;
+    }>({
+      uri,
+      query: `query {
+        method(
+          arg1: "1234567.89123456789"
+          arg2: "123456789123.456789123456789123456789"
+          obj: {
+            prop1: "987654.321987654321"
+            prop2: "987.654321987654321987654321987654321"
+          }
+        )
+      }`,
+    });
+
+    const arg1 = new BigNumber("1234567.89123456789");
+    const arg2 = new BigNumber("123456789123.456789123456789123456789");
+    const prop1 = new BigNumber("987654.321987654321")
+    const prop2 = new BigNumber("987.654321987654321987654321987654321")
+    const result = arg1.times(arg2).times(prop1).times(prop2);
+
+    expect(response.errors).toBeFalsy();
+    expect(response.data).toBeTruthy();
+    expect(response.data).toMatchObject({
+      method: result.toFixed(),
     });
   }
 };

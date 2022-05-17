@@ -126,7 +126,7 @@ export const toMsgPack: MustacheFunction = () => {
       case "BigInt":
         return modifier + "bigint";
       case "BigNumber":
-        return modifier + "bignum";
+        return modifier + "bignumber";
       case "JSON":
         return modifier + "json";
       default:
@@ -174,6 +174,8 @@ export const toWasmInit: MustacheFunction = () => {
         return nullableModifier("vec![]");
       case "BigInt":
         return nullableModifier("BigInt::default()");
+      case "BigNumber":
+        return nullableModifier("BigNumber::default()");
       case "JSON":
         return nullableModifier("JSON::Value::Null");
       default:
@@ -242,6 +244,9 @@ export const toWasm: MustacheFunction = () => {
         break;
       case "BigInt":
         type = "BigInt";
+        break;
+      case "BigNumber":
+        type = "BigNumber";
         break;
       case "JSON":
         type = "JSON::Value";

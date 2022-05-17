@@ -16,12 +16,16 @@ describe("wasm-rs test cases", () => {
   let ipfsProvider: string;
   let ethProvider: string;
   let ensAddress: string;
+  let ensRegistrarAddress: string;
+  let ensResolverAddress: string;
 
   beforeAll(async () => {
-    const { ipfs, ethereum, ensAddress: ens } = await initTestEnvironment();
-    ipfsProvider = ipfs;
-    ethProvider = ethereum;
-    ensAddress = ens;
+    const testEnv = await initTestEnvironment();
+    ipfsProvider = testEnv.ipfs;
+    ethProvider = testEnv.ethereum;
+    ensAddress = testEnv.ensAddress;
+    ensRegistrarAddress = testEnv.registrarAddress;
+    ensResolverAddress = testEnv.resolverAddress;
   });
 
   afterAll(async () => {
@@ -38,19 +42,27 @@ describe("wasm-rs test cases", () => {
         },
       },
       ipfs: { provider: ipfsProvider },
-      ens: {
+      ens: { query: {
         addresses: {
           testnet: ensAddress,
         },
-      },
+      } },
     }, config);
   }
 
-  it.only("asyncify", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/wasm-rs/asyncify`,
+  const deployApi = (apiAbsPath: string) =>
+    buildAndDeployApi({
+      apiAbsPath,
       ipfsProvider,
-      ensAddress
+      ensRegistryAddress: ensAddress,
+      ensRegistrarAddress,
+      ensResolverAddress,
+      ethereumProvider: ethProvider,
+    });
+
+  it("asyncify", async () => {
+    const api = await deployApi(
+      `${GetPathToTestApis()}/wasm-rs/asyncify`
     );
 
     await TestCases.runAsyncifyTest(
@@ -59,10 +71,8 @@ describe("wasm-rs test cases", () => {
   });
 
   it("bigint-type", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/wasm-rs/bigint-type`,
-      ipfsProvider,
-      ensAddress
+    const api = await deployApi(
+      `${GetPathToTestApis()}/wasm-rs/bigint-type`
     );
 
     await TestCases.runBigIntTypeTest(
@@ -70,11 +80,19 @@ describe("wasm-rs test cases", () => {
     );
   });
 
+  it("bignumber-type", async () => {
+    const api = await deployApi(
+      `${GetPathToTestApis()}/wasm-rs/bignumber-type`
+    );
+
+    await TestCases.runBigNumberTypeTest(
+      await getClient(), `ens/testnet/${api.ensDomain}`
+    );
+  });
+
   it("bytes-type", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/wasm-rs/bytes-type`,
-      ipfsProvider,
-      ensAddress
+    const api = await deployApi(
+      `${GetPathToTestApis()}/wasm-rs/bytes-type`
     );
 
     await TestCases.runBytesTypeTest(
@@ -83,10 +101,8 @@ describe("wasm-rs test cases", () => {
   });
 
   it("enum-types", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/wasm-rs/enum-types`,
-      ipfsProvider,
-      ensAddress
+    const api = await deployApi(
+      `${GetPathToTestApis()}/wasm-rs/enum-types`
     );
 
     await TestCases.runEnumTypesTest(
@@ -95,17 +111,13 @@ describe("wasm-rs test cases", () => {
   });
 
   it("implementations - e2e", async () => {
-    let interfaceApi = await buildAndDeployApi(
-      `${GetPathToTestApis()}/wasm-rs/implementations/test-interface`,
-      ipfsProvider,
-      ensAddress
+    let interfaceApi = await deployApi(
+      `${GetPathToTestApis()}/wasm-rs/implementations/test-interface`
     );
     const interfaceUri = `w3://ens/testnet/${interfaceApi.ensDomain}`;
 
-    const implementationApi = await buildAndDeployApi(
-      `${GetPathToTestApis()}/wasm-rs/implementations/test-api`,
-      ipfsProvider,
-      ensAddress
+    const implementationApi = await deployApi(
+      `${GetPathToTestApis()}/wasm-rs/implementations/test-api`
     );
     const implementationUri = `w3://ens/testnet/${implementationApi.ensDomain}`;
 
@@ -126,10 +138,8 @@ describe("wasm-rs test cases", () => {
   it("implementations - getImplementations", async () => {
     const interfaceUri = "w3://ens/interface.eth"
 
-    const implementationApi = await buildAndDeployApi(
-      `${GetPathToTestApis()}/wasm-rs/implementations/test-use-getImpl`,
-      ipfsProvider,
-      ensAddress
+    const implementationApi = await deployApi(
+      `${GetPathToTestApis()}/wasm-rs/implementations/test-use-getImpl`
     );
     const implementationUri = `w3://ens/testnet/${implementationApi.ensDomain}`;
 
@@ -148,10 +158,8 @@ describe("wasm-rs test cases", () => {
   });
 
   it("invalid type errors", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/wasm-rs/invalid-types`,
-      ipfsProvider,
-      ensAddress
+    const api = await deployApi(
+      `${GetPathToTestApis()}/wasm-rs/invalid-types`
     );
 
     await TestCases.runInvalidTypesTest(
@@ -160,10 +168,8 @@ describe("wasm-rs test cases", () => {
   });
 
   it("JSON-type", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/wasm-rs/json-type`,
-      ipfsProvider,
-      ensAddress
+    const api = await deployApi(
+      `${GetPathToTestApis()}/wasm-rs/json-type`
     );
 
     await TestCases.runJsonTypeTest(
@@ -172,10 +178,8 @@ describe("wasm-rs test cases", () => {
   });
 
   it("large-types", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/wasm-rs/large-types`,
-      ipfsProvider,
-      ensAddress
+    const api = await deployApi(
+      `${GetPathToTestApis()}/wasm-rs/large-types`
     );
 
     await TestCases.runLargeTypesTest(
@@ -184,10 +188,8 @@ describe("wasm-rs test cases", () => {
   });
 
   it("number-types under and overflows", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/wasm-rs/number-types`,
-      ipfsProvider,
-      ensAddress
+    const api = await deployApi(
+      `${GetPathToTestApis()}/wasm-rs/number-types`
     );
 
     await TestCases.runNumberTypesTest(
@@ -196,10 +198,8 @@ describe("wasm-rs test cases", () => {
   });
 
   it("object-types", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/wasm-rs/object-types`,
-      ipfsProvider,
-      ensAddress
+    const api = await deployApi(
+      `${GetPathToTestApis()}/wasm-rs/object-types`
     );
 
     await TestCases.runObjectTypesTest(
@@ -208,10 +208,8 @@ describe("wasm-rs test cases", () => {
   });
 
   it("simple-storage", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/wasm-rs/simple-storage`,
-      ipfsProvider,
-      ensAddress
+    const api = await deployApi(
+      `${GetPathToTestApis()}/wasm-rs/simple-storage`
     );
 
     await TestCases.runSimpleStorageTest(

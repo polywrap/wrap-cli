@@ -1,6 +1,7 @@
 use serde::{Serialize, Deserialize};
 use polywrap_wasm_rs::{
     BigInt,
+    BigNumber,
     Context,
     DecodeError,
     EncodeError,

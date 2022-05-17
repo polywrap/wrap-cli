@@ -2,7 +2,7 @@ use super::{
     error::{get_error_message, DecodeError},
     Context, DataView, Format, Read,
 };
-use crate::{BigInt, JSON};
+use crate::{BigInt, BigNumber, JSON};
 use byteorder::{BigEndian, ReadBytesExt};
 use core::hash::Hash;
 use std::{collections::BTreeMap, io::Read as StdioRead, str::FromStr};
@@ -351,6 +351,11 @@ impl Read for ReadDecoder {
         BigInt::from_str(&bigint_str).map_err(|e| DecodeError::ParseBigIntError(e.to_string()))
     }
 
+    fn read_bignumber(&mut self) -> Result<BigNumber, DecodeError> {
+        let bignumber_str = self.read_string()?;
+        BigNumber::from_str(&bignumber_str).map_err(|e| DecodeError::ParseBigNumberError(e.to_string()))
+    }
+
     fn read_json(&mut self) -> Result<JSON::Value, DecodeError> {
         let json_str = self.read_string()?;
         JSON::from_str(&json_str).map_err(|e| DecodeError::JSONReadError(e.to_string()))
@@ -561,6 +566,17 @@ impl Read for ReadDecoder {
             match self.read_bigint() {
                 Ok(bigint) => Ok(Some(bigint)),
                 Err(e) => Err(DecodeError::BigIntReadError(e.to_string())),
+            }
+        }
+    }
+
+    fn read_nullable_bignumber(&mut self) -> Result<Option<BigNumber>, DecodeError> {
+        if self.is_next_nil()? {
+            return Ok(None);
+        } else {
+            match self.read_bignumber() {
+                Ok(bignumber) => Ok(Some(bignumber)),
+                Err(e) => Err(DecodeError::BigNumberReadError(e.to_string())),
             }
         }
     }
