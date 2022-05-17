@@ -51,6 +51,39 @@ export const generateBinding: GenerateBindingFn = (
       schema: "N/A",
       outputDirAbs: options.commonDirAbs,
     });
+
+    if (result.common.output.entries.length) {
+      // Modify the common type directory to be a rust crate
+      const crateEntries: OutputEntry[] = [];
+      const srcEntries = result.common.output.entries;
+
+      crateEntries.push({
+        name: "src",
+        type: "Directory",
+        data: srcEntries
+      });
+      crateEntries.push({
+        name: "Cargo.toml",
+        type: "File",
+        data:
+`[package]
+name = "common"
+version = "0.0.1"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+polywrap-wasm-rs = { version = "0.0.1-prealpha.75" }
+serde = { version = "1.0", features = ["derive"] }
+`
+      });
+
+      result.common.output.entries = crateEntries;
+    } else {
+      result.common = undefined;
+    }
   }
 
   // Generate each module folder

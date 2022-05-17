@@ -33,6 +33,9 @@ write_encoder.rs:
 * all existing assemblyscript test cases are ported to rust
 
 # TODO
+## Common Types
+- removed support for it, can add back in the future...
+
 ## CI/CD
 - ensure the VERSION string is applied to the wasm-rs crate package
 - ensure CI + CD workflows are correct
@@ -44,5 +47,9 @@ write_encoder.rs:
 
 ## BigNumber Type Support
 - research bignum Rust type
+- add to wasm-rs runtime
 - add bindings
 - run tests
+
+## Map Type Support
+- research

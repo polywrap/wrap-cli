@@ -2,6 +2,7 @@ use serde::{Serialize, Deserialize};
 pub mod serialization;
 use polywrap_wasm_rs::{
     BigInt,
+    BigNumber,
     DecodeError,
     EncodeError,
     Read,
