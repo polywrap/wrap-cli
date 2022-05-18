@@ -19,7 +19,7 @@ services:
       - '8546:8545'
     command: -l 8000000 --deterministic --hostname=0.0.0.0 --chainId 1 --fork https://mainnet.infura.io/v3/d119148113c047ca90f0311ed729c466
   ipfs:
-    image: 'ipfs/go-ipfs:v0.4.23'
+    build: ./ipfs
     ports:
       - '${IPFS_PORT}:5001'
       - '8080:8080'
