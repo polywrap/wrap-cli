@@ -4,6 +4,11 @@ import path from "path";
 import spawn from "spawn-command";
 import axios from "axios";
 import fs from "fs";
+import { ethers } from "ethers";
+import yaml from "js-yaml";
+import { keccak256 } from "js-sha3";
+import { deserializeWeb3ApiManifest, Uri } from "@web3api/core-js";
+import { namehash } from "ethers/lib/utils";
 
 interface TestEnvironment {
   ipfs: string;
@@ -128,48 +133,168 @@ export const runCLI = async (options: {
   };
 };
 
-export async function buildAndDeployApi(
-  apiAbsPath: string,
-  ipfsProvider: string,
-  ensAddress: string
-): Promise<{
+export async function buildAndDeployApi({
+  apiAbsPath,
+  ipfsProvider,
+  ensRegistryAddress,
+  ensRegistrarAddress,
+  ensResolverAddress,
+  ethereumProvider,
+  ensName,
+}: {
+  apiAbsPath: string;
+  ipfsProvider: string;
+  ensRegistryAddress: string;
+  ensRegistrarAddress: string;
+  ensResolverAddress: string;
+  ethereumProvider: string;
+  ensName?: string;
+}): Promise<{
   ensDomain: string;
   ipfsCid: string;
 }> {
-  // create a new ENS domain
-  const apiEns = `${generateName()}.eth`;
+  const manifestPath = `${apiAbsPath}/web3api.yaml`;
+  const tempManifestFilename = `web3api-temp.yaml`;
+  const tempDeployManifestFilename = `web3api.deploy-temp.yaml`;
+  const tempManifestPath = path.join(apiAbsPath, tempManifestFilename);
+  const tempDeployManifestPath = path.join(
+    apiAbsPath,
+    tempDeployManifestFilename
+  );
 
-  // build & deploy the protocol
-  const { exitCode, stdout, stderr } = await runCLI({
+  // create a new ENS domain
+  const domainName = ensName ?? generateName();
+  const apiEns = `${domainName}.eth`;
+
+  // build API
+  const {
+    exitCode: buildExitCode,
+    stdout: buildStdout,
+    stderr: buildStderr,
+  } = await runCLI({
     args: [
       "build",
       "--manifest-file",
-      `${apiAbsPath}/web3api.yaml`,
+      manifestPath,
       "--output-dir",
       `${apiAbsPath}/build`,
-      "--ipfs",
-      ipfsProvider,
-      "--test-ens",
-      `${ensAddress},${apiEns}`,
     ],
   });
 
-  if (exitCode !== 0) {
-    console.error(`w3 exited with code: ${exitCode}`);
-    console.log(`stderr:\n${stderr}`);
-    console.log(`stdout:\n${stdout}`);
+  if (buildExitCode !== 0) {
+    console.error(`w3 exited with code: ${buildExitCode}`);
+    console.log(`stderr:\n${buildStderr}`);
+    console.log(`stdout:\n${buildStdout}`);
     throw Error("w3 CLI failed");
   }
 
-  // get the IPFS CID of the published package
-  const extractCID = /IPFS { (([A-Z]|[a-z]|[0-9])*) }/;
-  const result = stdout.match(extractCID);
+  // register ENS domain
+  const ethersProvider = new ethers.providers.JsonRpcProvider(ethereumProvider);
+  const signer = await ethersProvider.getSigner(0);
+  const owner = await signer.getAddress();
 
-  if (!result) {
-    throw Error(`W3 CLI output missing IPFS CID.\nOutput: ${stdout}`);
+  const label = "0x" + keccak256(domainName);
+
+  const ensRegistrarContract = new ethers.Contract(
+    ensRegistrarAddress,
+    ["function register(bytes32 label, address owner)"],
+    signer
+  );
+
+  const ensRegistryContract = new ethers.Contract(
+    ensRegistryAddress,
+    ["function setResolver(bytes32 node, address owner)"],
+    signer
+  );
+
+  const registerTx = await ensRegistrarContract.register(label, owner, {
+    value: null,
+    nonce: null,
+    gasPrice: "50",
+    gasLimit: "200000",
+  });
+
+  await registerTx.wait();
+
+  const setResolverTx = await ensRegistryContract.setResolver(
+    namehash(apiEns),
+    ensResolverAddress
+  );
+
+  await setResolverTx.wait();
+
+  // manually configure manifests
+
+  const { __type, ...web3apiManifest } = deserializeWeb3ApiManifest(
+    fs.readFileSync(manifestPath, "utf-8")
+  );
+
+  fs.writeFileSync(
+    tempManifestPath,
+    yaml.dump({
+      ...web3apiManifest,
+      format: "0.0.1-prealpha.8",
+      deploy: `./${tempDeployManifestFilename}`,
+    })
+  );
+
+  fs.writeFileSync(
+    tempDeployManifestPath,
+    yaml.dump({
+      format: "0.0.1-prealpha.1",
+      stages: {
+        ipfsDeploy: {
+          package: "ipfs",
+          uri: `fs/${apiAbsPath}/build`,
+          config: {
+            gatewayUri: ipfsProvider,
+          },
+        },
+        ensPublish: {
+          package: "ens",
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          depends_on: "ipfsDeploy",
+          config: {
+            domainName: apiEns,
+            provider: ethereumProvider,
+            ensRegistryAddress,
+          },
+        },
+      },
+    })
+  );
+
+  // deploy API
+
+  const {
+    exitCode: deployExitCode,
+    stdout: deployStdout,
+    stderr: deployStderr,
+  } = await runCLI({
+    args: ["deploy", "--manifest-file", tempManifestPath],
+  });
+
+  if (deployExitCode !== 0) {
+    console.error(`w3 exited with code: ${deployExitCode}`);
+    console.log(`stderr:\n${deployStderr}`);
+    console.log(`stdout:\n${deployStdout}`);
+    throw Error("w3 CLI failed");
   }
 
-  const apiCid = result[1];
+  // remove manually configured manifests
+
+  fs.unlinkSync(tempManifestPath);
+  fs.unlinkSync(tempDeployManifestPath);
+
+  // get the IPFS CID of the published package
+  const extractCID = /(w3:\/\/ipfs\/[A-Za-z0-9]+)/;
+  const result = deployStdout.match(extractCID);
+
+  if (!result) {
+    throw Error(`W3 CLI output missing IPFS CID.\nOutput: ${deployStdout}`);
+  }
+
+  const apiCid = new Uri(result[1]).path;
 
   return {
     ensDomain: apiEns,

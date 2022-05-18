@@ -1,0 +1,5 @@
+type Query {
+  method(
+    arg: String!
+  ): String!
+}

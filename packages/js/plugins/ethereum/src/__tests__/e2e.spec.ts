@@ -81,11 +81,14 @@ describe("Ethereum Plugin", () => {
       ],
     });
 
-    const api = await buildAndDeployApi(
-      `${__dirname}/integration`,
-      ipfs,
-      ensAddress
-    );
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${__dirname}/integration`,
+      ipfsProvider: ipfs,
+      ensRegistryAddress: ensAddress,
+      ensRegistrarAddress: registrarAddress,
+      ensResolverAddress: resolverAddress,
+      ethereumProvider: ethereum,
+    });
 
     uri = `ens/testnet/${api.ensDomain}`;
   });

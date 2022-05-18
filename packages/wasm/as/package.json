@@ -1,7 +1,7 @@
 {
   "name": "@web3api/wasm-as",
   "description": "Web3API Assemblyscript Runtime",
-  "version": "0.0.1-prealpha.74",
+  "version": "0.0.1-prealpha.77",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -21,7 +21,8 @@
     "test:ci": "asp --summary"
   },
   "dependencies": {
-    "@web3api/assemblyscript-json": "1.2.0",
+    "@serial-as/transform": "1.0.2",
+    "@web3api/serial-as-json": "1.0.4",
     "as-bigint": "0.5.3",
     "as-bignumber": "0.2.0",
     "as-container": "0.6.1"
