@@ -1,6 +1,5 @@
 format: 0.0.1-prealpha.3
 docker:
-  dockerfile: ./Dockerfile
   buildx:
     cache: true
     removeBuilder: true
@@ -12,4 +11,4 @@ config:
     - ./package.json
 linked_packages:
   - name: "@web3api/wasm-as"
-    path: ../../../../wasm/as
+    path: ../../../../../../wasm/as

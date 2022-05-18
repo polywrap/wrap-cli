@@ -125,36 +125,21 @@ ${HELP}`);
         if (expected.exitCode) {
           expect(exitCode).toEqual(expected.exitCode);
         }
+
+        if(testCaseName === "009-docker-buildx") {
+          const manifestPath = "build/web3api.json";
+          const sanitizedOutput = clearStyle(stdout);
+
+          expect(sanitizedOutput).toContain(manifestPath);
+          expect(sanitizedOutput).toContain("docker rmi polywrap-build-env-");
+          expect(sanitizedOutput).toContain("docker buildx rm polywrap-build-env-");
+      
+          const cacheDir = path.join(testCaseDir, ".w3", "web3api", "build", "cache");
+          expect(fs.existsSync(cacheDir)).toBeTruthy();
+          expect(fs.existsSync(path.join(cacheDir, "index.json"))).toBeTruthy();
+          expect(fs.readdirSync(path.join(cacheDir, "blobs", "sha256")).length).toBeGreaterThan(0);
+        }
       });
     }
-  });
-
-  test("Successfully builds project with buildx options", async () => {
-    const { exitCode: code, stdout: output } = await runCLI(
-      {
-        args: ["build", "-m", "web3api-buildx.yaml", "-v"],
-        cwd: projectRoot,
-        cli: w3Cli,
-      },
-    );
-
-    const manifestPath = "build/web3api.json";
-    const sanitizedOutput = clearStyle(output);
-
-    expect(code).toEqual(0);
-    expect(sanitizedOutput).toContain(
-      "Artifacts written to ./build from the image `polywrap-build-env-"
-    );
-    expect(sanitizedOutput).toContain(
-      "Manifest written to ./build/web3api.json"
-    );
-    expect(sanitizedOutput).toContain(manifestPath);
-    expect(sanitizedOutput).toContain("docker rmi polywrap-build-env-");
-    expect(sanitizedOutput).toContain("docker buildx rm polywrap-build-env-");
-
-    const cacheDir = path.join(projectRoot, ".w3", "web3api", "build", "cache");
-    expect(fs.existsSync(cacheDir)).toBeTruthy();
-    expect(fs.existsSync(path.join(cacheDir, "index.json"))).toBeTruthy();
-    expect(fs.readdirSync(path.join(cacheDir, "blobs", "sha256")).length).toBeGreaterThan(0);
   });
 });

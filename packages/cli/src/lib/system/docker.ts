@@ -129,16 +129,30 @@ export async function createBuildImage(
     useBuildx = useBuildx && (await isDockerBuildxInstalled());
 
     if (useBuildx) {
-      const cacheFrom = cacheDir
-        ? `--cache-from type=local,src=${cacheDir}`
-        : "";
+      const cacheFrom =
+        cacheDir && fs.existsSync(path.join(cacheDir, "index.json"))
+          ? `--cache-from type=local,src=${cacheDir}`
+          : "";
       const cacheTo = cacheDir ? `--cache-to type=local,dest=${cacheDir}` : "";
       const output = buildxOutput
         ? `--output=type=${buildxOutput}`
         : `--output=type=docker`;
 
       // Build the docker image
-      await runCommand(`docker buildx create --use --name ${imageName}`, quiet);
+      let buildxUseFailed = false;
+      try {
+        const { stderr } = await runCommand(`docker buildx use ${imageName}`);
+        buildxUseFailed = stderr ? true : false;
+      } catch (e) {
+        buildxUseFailed = true;
+      }
+
+      if (buildxUseFailed) {
+        await runCommand(
+          `docker buildx create --use --name ${imageName}`,
+          quiet
+        );
+      }
       await runCommand(
         `docker buildx build -f ${dockerfile} -t ${imageName} ${rootDir} ${cacheFrom} ${cacheTo} ${output}`,
         quiet
