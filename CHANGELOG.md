@@ -1,3 +1,7 @@
+# Web3API 0.0.1-prealpha.78
+## Bugs
+* Pinned `@types/prettier` to version `2.6.0` to fix [an issue](https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/60310) that was created by the latest release.
+
 # Web3API 0.0.1-prealpha.77
 ## Features
 * [PR-846](https://github.com/polywrap/monorepo/pull/846) `@web3api/wasm-as`: Add support for automatic JSON serialization via the `@serial-as/transform` `asc` compiler transformation.
