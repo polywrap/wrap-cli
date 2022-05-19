@@ -24,6 +24,7 @@
   },
   "devDependencies": {
     "@types/jest": "26.0.8",
+    "@types/prettier": "2.6.0",
     "@web3api/client-js": "0.0.1-prealpha.79",
     "@web3api/ens-plugin-js": "0.0.1-prealpha.79",
     "@web3api/ethereum-plugin-js": "0.0.1-prealpha.79",

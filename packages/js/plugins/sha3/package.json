@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "@types/jest": "26.0.8",
+    "@types/prettier": "2.6.0",
     "jest": "26.2.2",
     "rimraf": "3.0.2",
     "ts-jest": "26.1.4",
