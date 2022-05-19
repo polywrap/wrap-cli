@@ -40,6 +40,7 @@
   "devDependencies": {
     "@types/jest": "26.0.8",
     "@types/js-yaml": "3.11.1",
+    "@types/prettier": "2.6.0",
     "@types/uuid": "8.3.0",
     "@web3api/cli": "0.0.1-prealpha.79",
     "@web3api/os-js": "0.0.1-prealpha.79",
