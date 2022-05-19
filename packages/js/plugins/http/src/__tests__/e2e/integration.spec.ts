@@ -10,7 +10,6 @@ import {
   stopTestEnvironment,
   buildAndDeployApi
 } from "@web3api/test-env-js";
-import axios from "axios";
 import nock from "nock";
 
 jest.setTimeout(360000)
@@ -26,17 +25,9 @@ describe("e2e tests for HttpPlugin", () => {
 
     let client: Web3ApiClient;
     let uri: string;
-    let ensAddress: string;
 
     beforeAll(async () => {
-      const { ethereum, ipfs } = await initTestEnvironment();
-      const { data } = await axios.get("http://localhost:4040/deploy-ens");
-
-      ensAddress = data.ensAddress
-      
-      const registrarAddress = data.registrarAddress
-      const resolverAddress = data.resolverAddress
-
+      const { ethereum, ipfs, registrarAddress, resolverAddress, ensAddress } = await initTestEnvironment();
       client = new Web3ApiClient({
         plugins: [
           {

@@ -1,7 +1,4 @@
-import {
-  exec,
-  ExecException
-} from "child_process";
+import { exec, ExecException } from "child_process";
 
 export async function runCommand(
   command: string,

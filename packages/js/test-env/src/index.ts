@@ -62,7 +62,7 @@ export const initTestEnvironment = async (
 ): Promise<TestEnvironment> => {
   // Start the test environment
   const { exitCode, stderr, stdout } = await runCLI({
-    args: ["infra", "up", "--test", "--verbose"],
+    args: ["infra", "up", "--preset=eth-ens-ipfs", "--verbose"],
     cli,
   });
 
@@ -125,17 +125,13 @@ export const initTestEnvironment = async (
     const ipfs = providers.ipfs;
     const ethereum = providers.ethereum;
 
-    // re-deploy ENS
-    const { data: ensAddresses } = await axios.get<{
-      ensAddress: string;
-      registrarAddress: string;
-      reverseAddress: string;
-      resolverAddress: string;
-    }>("http://localhost:4040/deploy-ens");
     return {
       ipfs,
       ethereum,
-      ...ensAddresses,
+      ensAddress: "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab",
+      resolverAddress: "0x5b1869D9A4C187F2EAa108f3062412ecf0526b24",
+      registrarAddress: "0xD833215cBcc3f914bD1C9ece3EE7BF8B14f841bb",
+      reverseAddress: "0xe982E462b094850F12AF94d21D470e21bE9D0E9C",
     };
   } catch (e) {
     throw Error(`Dev server must be running at port 4040\n${e}`);

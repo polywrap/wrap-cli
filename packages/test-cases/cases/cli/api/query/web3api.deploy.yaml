@@ -9,18 +9,18 @@ stages:
     config:
       domainName: test1.eth
       provider: 'http://localhost:8545'
-      ensRegistryAddress: '0x9b1f7F645351AF3631a656421eD2e40f2802E6c0'
+      ensRegistryAddress: '0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab'
   from_deploy2:
     package: ens
     depends_on: ipfs_deploy
     config:
       domainName: test2.eth
       provider: 'http://localhost:8545'
-      ensRegistryAddress: '0x9b1f7F645351AF3631a656421eD2e40f2802E6c0'
+      ensRegistryAddress: '0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab'
   from_uri:
     package: ens
     uri: ipfs/QmVdDR6QtigTt38Xwpj2Ki73X1AyZn5WRCreBCJq1CEtpF
     config:
       domainName: test3.eth
       provider: 'http://localhost:8545'
-      ensRegistryAddress: '0x9b1f7F645351AF3631a656421eD2e40f2802E6c0'
+      ensRegistryAddress: '0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab'

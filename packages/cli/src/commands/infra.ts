@@ -159,7 +159,6 @@ export default {
         .join("")}\n`
     );
 
-
     if (command === "up") {
       await infra.up();
     } else if (command === "down") {

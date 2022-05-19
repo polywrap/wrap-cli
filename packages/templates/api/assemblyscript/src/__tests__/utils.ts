@@ -51,7 +51,7 @@ export async function getProviders(): Promise<TestEnvironment> {
   const {
     data: { ipfs, ethereum },
   } = await axios.get("http://localhost:4040/providers");
-  const { data } = await axios.get("http://localhost:4040/deploy-ens");
+  const { data } = await axios.get("http://localhost:4040/ens");
   const clientConfig = getPlugins(ethereum, ipfs, data.ensAddress);
   return { ipfs, ethereum, ensAddress: data.ensAddress, clientConfig };
 }

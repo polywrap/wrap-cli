@@ -38,12 +38,7 @@ describe("Ethereum Plugin", () => {
   const signer = "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1"
 
   beforeAll(async () => {
-    const { ethereum, ipfs } = await initTestEnvironment();
-    const { data } = await axios.get("http://localhost:4040/deploy-ens");
-
-    ensAddress = data.ensAddress
-    resolverAddress = data.resolverAddress
-    registrarAddress = data.registrarAddress
+    const { ethereum, ipfs, ensAddress, resolverAddress, registrarAddress } = await initTestEnvironment();
 
     client = new Web3ApiClient({
       plugins: [
