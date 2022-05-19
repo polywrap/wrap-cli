@@ -5,6 +5,8 @@ import path from "path";
 import rimraf from "rimraf";
 import copyfiles from "copyfiles";
 import { writeFileSync } from "@web3api/os-js";
+import { BindOutput } from "@web3api/schema-bind";
+import { ComposerOutput } from "@web3api/schema-compose";
 
 export interface ProjectConfig {
   rootCacheDir: string;
@@ -44,6 +46,8 @@ export abstract class Project<TManifest extends AnyManifest> {
 
   public abstract validate(): Promise<void>;
 
+  public abstract getName(): Promise<string>;
+
   public abstract getManifest(): Promise<TManifest>;
 
   public abstract getManifestDir(): string;
@@ -62,6 +66,11 @@ export abstract class Project<TManifest extends AnyManifest> {
       schema: string;
     }[]
   >;
+
+  public abstract generateSchemaBindings(
+    composerOutput: ComposerOutput,
+    outputDir?: string
+  ): Promise<BindOutput>;
 
   public get quiet(): boolean {
     return !!this._config.quiet;

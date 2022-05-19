@@ -1,105 +1,105 @@
 import { Command, Program } from "./types";
-
 import {
-    AppProject,
-    CodeGenerator,
-    SchemaComposer,
-    intlMsg,
-    resolvePathIfExistsRefactor,
-    defaultAppManifest,
-    getSimpleClient,
-    getTestEnvProviders,
+  AppProject,
+  CodeGenerator,
+  SchemaComposer,
+  intlMsg,
+  getSimpleClient,
+  getTestEnvProviders,
 } from "../lib";
+import {
+  parseAppManifestFileOption,
+  parseAppCodegenDirOption,
+  defaultAppCodegenDirOption,
+  defaultAppManifestFileOption,
+} from "../lib/parsers";
 
 import { Web3ApiClient } from "@web3api/client-js";
 import * as path from "path";
 
 const defaultOutputTypesDir = "./src/w3";
 
+type AppCommandOptions = {
+  manifestFile: string;
+  codegenDir: string;
+  ipfs?: string;
+  ens?: string;
+};
+
 export const app: Command = {
-    setup: (program: Program) => {
+  setup: (program: Program) => {
+    const appCommand = program
+      .command("app")
+      .alias("a")
+      .description(intlMsg.commands_app_description());
 
-        const appCommand = program
-            .command("app")
-            .alias("a")
-            .description(intlMsg.commands_app_description())
+    appCommand
+      .command("codegen")
+      .description(intlMsg.commands_app_codegen())
+      .option(
+        `-m, --manifest-file <${intlMsg.commands_codegen_options_o_path()}>`,
+        intlMsg.commands_app_options_codegen({
+          default: defaultOutputTypesDir,
+        }),
+        parseAppManifestFileOption,
+        defaultAppManifestFileOption()
+      )
+      .option(
+        `-c, --codegen-dir <${intlMsg.commands_codegen_options_o_path()}>`,
+        `${intlMsg.commands_app_options_codegen({
+          default: defaultOutputTypesDir,
+        })}`,
+        parseAppCodegenDirOption,
+        defaultAppCodegenDirOption()
+      )
+      .option(
+        `-i, --ipfs [<${intlMsg.commands_codegen_options_i_node()}>] `,
+        `${intlMsg.commands_codegen_options_i()}`
+      )
+      .option(
+        `-e, --ens [<${intlMsg.commands_codegen_options_e_address()}>]`,
+        `${intlMsg.commands_codegen_options_e()}`
+      )
+      .action(async (options: AppCommandOptions) => {
+        await run(options);
+      });
+  },
+};
 
-        appCommand
-            .command("codegen")
-            .description(intlMsg.commands_app_codegen())
-            .option(`-m, --manifest-file <${intlMsg.commands_codegen_options_o_path()}>`, intlMsg.commands_app_options_codegen(
-                {
-                    default: defaultOutputTypesDir,
-                }
-            ))
-            .option(`-c, --codegen-dir <${intlMsg.commands_codegen_options_o_path()}>`, `${intlMsg.commands_app_options_codegen(
-                {
-                    default: defaultOutputTypesDir,
-                }
-            )}`)
-            .option(`-i, --ipfs [<${intlMsg.commands_codegen_options_i_node()}>] `, `${intlMsg.commands_codegen_options_i()}`)
-            .option(`-e, --ens [<${intlMsg.commands_codegen_options_e_address()}>]`, `${intlMsg.commands_codegen_options_e()}`)
-            .action(async (options) => {
-                await run(options);
-            });
-    }
-}
+async function run(options: AppCommandOptions) {
+  const { manifestFile, codegenDir, ipfs, ens } = options;
 
-async function run(options: any) {
+  // Get providers and client
+  const { ipfsProvider, ethProvider } = await getTestEnvProviders(ipfs);
+  const ensAddress: string | undefined = ens;
+  const client: Web3ApiClient = getSimpleClient({
+    ensAddress,
+    ethProvider,
+    ipfsProvider,
+  });
 
-    let { manifestFile, codegenDir, ipfs, ens } = options;
+  // App project
+  const project = new AppProject({
+    rootCacheDir: path.dirname(manifestFile),
+    appManifestPath: manifestFile,
+    client,
+  });
+  await project.validate();
 
-    // Resolve manifest
-    const manifestPaths = manifestFile ? [manifestFile] : defaultAppManifest;
+  const schemaComposer = new SchemaComposer({
+    project,
+    client,
+  });
+  const codeGenerator = new CodeGenerator({
+    project,
+    schemaComposer,
+    outputDir: codegenDir,
+  });
 
-    manifestFile = resolvePathIfExistsRefactor(manifestPaths)
-
-    if (!manifestFile) {
-        console.error(
-            intlMsg.commands_app_error_manifestNotFound({
-                paths: manifestPaths.join(", "),
-            })
-        );
-        return;
-    }
-
-    // Get providers and client
-    const { ipfsProvider, ethProvider } = await getTestEnvProviders(ipfs);
-    const ensAddress: string | undefined = ens;
-    const client: Web3ApiClient = getSimpleClient({
-        ensAddress,
-        ethProvider,
-        ipfsProvider,
-    });
-
-    // App project
-    const project = new AppProject({
-        rootCacheDir: path.dirname(manifestFile),
-        appManifestPath: manifestFile,
-        client,
-    });
-    await project.validate();
-
-    if (codegenDir) {
-        codegenDir = path.resolve(codegenDir);
-      } else {
-        codegenDir = path.resolve(defaultOutputTypesDir);
-      }
-
-    const schemaComposer = new SchemaComposer({
-        project,
-        client,
-    });
-    const codeGenerator = new CodeGenerator({
-        project,
-        schemaComposer,
-        outputDir: codegenDir,
-    });
-
-    if (await codeGenerator.generate()) {
-        console.log(`🔥 ${intlMsg.commands_app_success()} 🔥`);
-        process.exitCode = 0;
-    } else {
-        process.exitCode = 1;
-    }
+  if (await codeGenerator.generate()) {
+    console.log(`🔥 ${intlMsg.commands_app_success()} 🔥`);
+    process.exitCode = 0;
+  } else {
+    process.exitCode = 1;
+  }
 }

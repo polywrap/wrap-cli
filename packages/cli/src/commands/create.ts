@@ -1,9 +1,5 @@
 import { Command, Program } from "./types";
-import {
-  generateProjectTemplate,
-  intlMsg
-} from "../lib";
-
+import { generateProjectTemplate, intlMsg } from "../lib";
 
 import { prompt, filesystem } from "gluegun";
 
@@ -15,55 +11,73 @@ const createAppStr = intlMsg.commands_create_options_createApp();
 const createPluginStr = intlMsg.commands_create_options_createPlugin();
 const pathStr = intlMsg.commands_create_options_o_path();
 
+const supportedLangs = {
+  api: ["assemblyscript", "interface"] as const,
+  app: ["typescript-node", "typescript-react"] as const,
+  plugin: ["typescript"] as const,
+};
 
-const supportedLangs: { [key: string]: string[] } = {
-  api: ["assemblyscript", "interface"],
-  app: ["typescript-node", "typescript-react"],
-  plugin: ["typescript"],
+export type ProjectType = keyof typeof supportedLangs;
+export type SupportedLangs = typeof supportedLangs[ProjectType][number];
+type CreateCommandOptions = {
+  outputDir?: string;
 };
 
 export const create: Command = {
   setup: (program: Program) => {
-
     const createCommand = program
       .command("create")
       .alias("c")
-      .description(intlMsg.commands_create_description())
+      .description(intlMsg.commands_create_description());
 
     createCommand
       .command(`api <${langStr}> <${nameStr}>`)
-      .description(`${createProjStr} ${langsStr}: ${supportedLangs.api.join(", ")}`)
-      .option(`-o, --output-dir <${pathStr}>`, `${intlMsg.commands_create_options_o()}`)
+      .description(
+        `${createProjStr} ${langsStr}: ${supportedLangs.api.join(", ")}`
+      )
+      .option(
+        `-o, --output-dir <${pathStr}>`,
+        `${intlMsg.commands_create_options_o()}`
+      )
       .action(async (langStr, nameStr, options) => {
         await run("api", langStr, nameStr, options);
       });
 
     createCommand
       .command(`app <${langStr}>`)
-      .description(`${createAppStr} ${langsStr}: ${supportedLangs.app.join(", ")}`)
-      .option(`-o, --output-dir <${pathStr}>`, `${intlMsg.commands_create_options_o()}`)
+      .description(
+        `${createAppStr} ${langsStr}: ${supportedLangs.app.join(", ")}`
+      )
+      .option(
+        `-o, --output-dir <${pathStr}>`,
+        `${intlMsg.commands_create_options_o()}`
+      )
       .action(async (langStr, nameStr, options) => {
         await run("app", langStr, nameStr, options);
       });
 
     createCommand
       .command(`plugin <${langStr}>`)
-      .description(`${createPluginStr} ${langsStr}: ${supportedLangs.plugin.join(", ")}`)
-      .option(`-o, --output-dir <${pathStr}>`, `${intlMsg.commands_create_options_o()}`)
+      .description(
+        `${createPluginStr} ${langsStr}: ${supportedLangs.plugin.join(", ")}`
+      )
+      .option(
+        `-o, --output-dir <${pathStr}>`,
+        `${intlMsg.commands_create_options_o()}`
+      )
       .action(async (langStr, nameStr, options) => {
         await run("plugin", langStr, nameStr, options);
       });
+  },
+};
 
-  }
-}
-
-async function run(command: "api" | "app" | "plugin", lang: any, name: any, options: any) {
-  let { outputDir } = options;
-
-  console.log(command, lang, options)
-  console.log(outputDir)
-  console.log(name);
-
+async function run(
+  command: ProjectType,
+  lang: SupportedLangs,
+  name: string,
+  options: CreateCommandOptions
+) {
+  const { outputDir } = options;
 
   const projectDir = outputDir ? `${outputDir}/${name}` : name;
 

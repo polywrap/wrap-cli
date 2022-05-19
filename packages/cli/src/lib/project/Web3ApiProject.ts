@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/naming-convention */
 
 import { ProjectConfig, Project } from ".";
@@ -12,12 +13,26 @@ import {
   isWeb3ApiManifestLanguage,
   outputManifest,
   intlMsg,
+  loadDeployManifest,
+  loadDeployManifestExt,
+  web3apiManifestLanguageToBindLanguage,
+  resetDir,
 } from "..";
+import { Deployer } from "../deploy";
 
-import { Web3ApiManifest, BuildManifest, MetaManifest } from "@web3api/core-js";
-import { normalizePath } from "@web3api/os-js";
+import {
+  Web3ApiManifest,
+  BuildManifest,
+  MetaManifest,
+  DeployManifest,
+} from "@web3api/core-js";
+import { getCommonPath, normalizePath } from "@web3api/os-js";
+import { bindSchema, BindOutput, BindOptions } from "@web3api/schema-bind";
+import { ComposerOutput } from "@web3api/schema-compose";
+import { TypeInfo } from "@web3api/schema-parse";
 import regexParser from "regex-parser";
 import path from "path";
+import { Schema as JsonSchema } from "jsonschema";
 import fs from "fs";
 import fsExtra from "fs-extra";
 
@@ -27,19 +42,24 @@ const cacheLayout = {
   buildEnvDir: "build/env/",
   buildUuidFile: "build/uuid",
   buildLinkedPackagesDir: "build/linked-packages/",
+  deployDir: "deploy/",
+  deployEnvDir: "deploy/env/",
 };
 
 export interface Web3ApiProjectConfig extends ProjectConfig {
   web3apiManifestPath: string;
   buildManifestPath?: string;
+  deployManifestPath?: string;
   metaManifestPath?: string;
 }
 
 export class Web3ApiProject extends Project<Web3ApiManifest> {
   private _web3apiManifest: Web3ApiManifest | undefined;
   private _buildManifest: BuildManifest | undefined;
+  private _deployManifest: DeployManifest | undefined;
   private _metaManifest: MetaManifest | undefined;
   private _defaultBuildManifestCached = false;
+  private _deploymentPackagesCached = false;
 
   constructor(protected _config: Web3ApiProjectConfig) {
     super(_config, cacheLayout.root);
@@ -51,8 +71,11 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     this._web3apiManifest = undefined;
     this._buildManifest = undefined;
     this._metaManifest = undefined;
+    this._deployManifest = undefined;
     this._defaultBuildManifestCached = false;
-    this.resetCache();
+    this._deploymentPackagesCached = false;
+    this.removeCacheDir(cacheLayout.buildEnvDir);
+    this.removeCacheDir(cacheLayout.buildLinkedPackagesDir);
   }
 
   public async validate(): Promise<void> {
@@ -60,6 +83,10 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
   }
 
   /// Manifest (web3api.yaml)
+
+  public async getName(): Promise<string> {
+    return (await this.getManifest()).name;
+  }
 
   public async getManifest(): Promise<Web3ApiManifest> {
     if (!this._web3apiManifest) {
@@ -92,7 +119,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     return language as Web3ApiManifestLanguage;
   }
 
-  /// ProjectWithSchema Base Methods
+  /// Schema
 
   public async getSchemaNamedPaths(): Promise<{
     [name: string]: string;
@@ -120,6 +147,76 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
   > {
     const manifest = await this.getManifest();
     return manifest.import_redirects || [];
+  }
+
+  public async generateSchemaBindings(
+    composerOutput: ComposerOutput
+  ): Promise<BindOutput> {
+    const manifest = await this.getManifest();
+    const queryModule = manifest.modules.query?.module as string;
+    const queryDirectory = manifest.modules.query
+      ? this._getGenerationDirectory(queryModule)
+      : undefined;
+    const mutationModule = manifest.modules.mutation?.module as string;
+    const mutationDirectory = manifest.modules.mutation
+      ? this._getGenerationDirectory(mutationModule)
+      : undefined;
+
+    if (
+      queryDirectory &&
+      mutationDirectory &&
+      queryDirectory === mutationDirectory
+    ) {
+      throw Error(
+        intlMsg.lib_compiler_dup_code_folder({ directory: queryDirectory })
+      );
+    }
+
+    // Clean the code generation
+    if (queryDirectory) {
+      resetDir(queryDirectory);
+    }
+
+    if (mutationDirectory) {
+      resetDir(mutationDirectory);
+    }
+
+    const bindLanguage = web3apiManifestLanguageToBindLanguage(
+      await this.getManifestLanguage()
+    );
+
+    const options: BindOptions = {
+      projectName: manifest.name,
+      modules: [],
+      bindLanguage,
+    };
+
+    if (manifest.modules.query) {
+      options.modules.push({
+        name: "query",
+        typeInfo: composerOutput.query?.typeInfo as TypeInfo,
+        schema: composerOutput.combined?.schema as string,
+        outputDirAbs: queryDirectory as string,
+      });
+    }
+
+    if (manifest.modules.mutation) {
+      options.modules.push({
+        name: "mutation",
+        typeInfo: composerOutput.mutation?.typeInfo as TypeInfo,
+        schema: composerOutput.combined?.schema as string,
+        outputDirAbs: mutationDirectory as string,
+      });
+    }
+
+    if (mutationDirectory && queryDirectory) {
+      options.commonDirAbs = path.join(
+        getCommonPath(queryDirectory, mutationDirectory),
+        "w3"
+      );
+    }
+
+    return bindSchema(options);
   }
 
   /// Web3API Build Manifest (web3api.build.yaml)
@@ -167,8 +264,9 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
       const cacheDir = this.getCachePath(cacheLayout.buildLinkedPackagesDir);
 
       // Add default env variables
+      const modules = await this._getWeb3ApiModules();
       const defaultConfig = {
-        web3api_modules: (await this.getWeb3ApiModules()).map(
+        web3api_modules: modules.modules.map(
           (module: { dir: string; name: string }) => {
             return {
               name: module.name,
@@ -176,6 +274,11 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
             };
           }
         ),
+        web3api_common_dir: () =>
+          modules.commonDir &&
+          fs.existsSync(path.join(this.getManifestDir(), modules.commonDir))
+            ? modules.commonDir
+            : undefined,
         web3api_manifests: (await this.getManifestPaths()).map(
           (path: string) => {
             return normalizePath(path);
@@ -200,38 +303,6 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     }
 
     return this._buildManifest;
-  }
-
-  public async getWeb3ApiModules(): Promise<
-    {
-      dir: string;
-      name: string;
-    }[]
-  > {
-    const web3apiManifest = await this.getManifest();
-    const web3apiModules: {
-      dir: string;
-      name: string;
-    }[] = [];
-
-    if (web3apiManifest.modules.mutation?.module) {
-      web3apiModules.push({
-        dir: path
-          .dirname(web3apiManifest.modules.mutation.module)
-          .replace("./", ""),
-        name: "mutation",
-      });
-    }
-    if (web3apiManifest.modules.query?.module) {
-      web3apiModules.push({
-        dir: path
-          .dirname(web3apiManifest.modules.query.module)
-          .replace("./", ""),
-        name: "query",
-      });
-    }
-
-    return web3apiModules;
   }
 
   public async getBuildUuid(): Promise<string> {
@@ -337,6 +408,93 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     }
   }
 
+  /// Web3API Deploy Manifest (web3api.deploy.yaml)
+
+  public async getDeployManifestPath(): Promise<string | undefined> {
+    const web3apiManifest = await this.getManifest();
+
+    // If a custom deploy manifest path is configured
+    if (this._config.deployManifestPath) {
+      return this._config.deployManifestPath;
+    }
+    // If the web3api.yaml manifest specifies a custom deploy manifest
+    else if (web3apiManifest.deploy) {
+      this._config.deployManifestPath = path.join(
+        this.getManifestDir(),
+        web3apiManifest.deploy
+      );
+      return this._config.deployManifestPath;
+    }
+    // No deploy manifest found
+    else {
+      return undefined;
+    }
+  }
+
+  public async getDeployManifestDir(): Promise<string | undefined> {
+    const manifestPath = await this.getDeployManifestPath();
+
+    if (manifestPath) {
+      return path.dirname(manifestPath);
+    } else {
+      return undefined;
+    }
+  }
+
+  public async getDeployManifest(): Promise<DeployManifest | undefined> {
+    if (!this._deployManifest) {
+      const manifestPath = await this.getDeployManifestPath();
+
+      if (manifestPath) {
+        this._deployManifest = await loadDeployManifest(
+          manifestPath,
+          this.quiet
+        );
+      }
+    }
+    return this._deployManifest;
+  }
+
+  public async getDeploymentPackage(
+    packageName: string
+  ): Promise<{ deployer: Deployer; manifestExt: JsonSchema | undefined }> {
+    if (!this._deploymentPackagesCached) {
+      throw new Error("Deployment packages have not been cached");
+    }
+
+    const cachePath = this.getCachePath(
+      `${cacheLayout.deployEnvDir}/${packageName}`
+    );
+
+    const manifestExtPath = path.join(cachePath, "web3api.deploy.ext.json");
+
+    const manifestExt = await loadDeployManifestExt(manifestExtPath);
+
+    return {
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      deployer: require(cachePath).default as Deployer,
+      manifestExt,
+    };
+  }
+
+  public async cacheDeploymentPackages(packages: string[]): Promise<void> {
+    if (this._deploymentPackagesCached) {
+      return;
+    }
+
+    this.removeCacheDir(cacheLayout.deployEnvDir);
+
+    for await (const deployPackage of packages) {
+      await this.copyIntoCache(
+        `${cacheLayout.deployEnvDir}/${deployPackage}`,
+        `${__dirname}/../deployers/${deployPackage}/*`,
+        { up: true }
+      );
+    }
+
+    this._deploymentPackagesCached = true;
+  }
+
   /// Web3API Meta Manifest (web3api.build.yaml)
 
   public async getMetaManifestPath(): Promise<string | undefined> {
@@ -400,6 +558,67 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
       );
     }
 
+    const deployManifestPath = await this.getDeployManifestPath();
+
+    if (deployManifestPath) {
+      paths.push(
+        absolute ? deployManifestPath : path.relative(root, deployManifestPath)
+      );
+    }
+
     return paths;
+  }
+
+  /// Private Helpers
+
+  private async _getWeb3ApiModules(): Promise<{
+    modules: {
+      dir: string;
+      name: string;
+    }[];
+    commonDir?: string;
+  }> {
+    const web3apiManifest = await this.getManifest();
+    const web3apiModules: {
+      dir: string;
+      name: string;
+    }[] = [];
+
+    if (web3apiManifest.modules.mutation?.module) {
+      web3apiModules.push({
+        dir: path
+          .dirname(web3apiManifest.modules.mutation.module)
+          .replace("./", ""),
+        name: "mutation",
+      });
+    }
+    if (web3apiManifest.modules.query?.module) {
+      web3apiModules.push({
+        dir: path
+          .dirname(web3apiManifest.modules.query.module)
+          .replace("./", ""),
+        name: "query",
+      });
+    }
+
+    let commonDir: string | undefined;
+
+    if (web3apiModules.length > 1) {
+      const module1 = web3apiModules[0];
+      const module2 = web3apiModules[1];
+      commonDir = getCommonPath(module1.dir, module2.dir) + "w3";
+    }
+
+    return {
+      modules: web3apiModules,
+      commonDir,
+    };
+  }
+
+  private _getGenerationDirectory(entryPoint: string): string {
+    const absolute = path.isAbsolute(entryPoint)
+      ? entryPoint
+      : path.join(this.getManifestDir(), entryPoint);
+    return `${path.dirname(absolute)}/w3`;
   }
 }

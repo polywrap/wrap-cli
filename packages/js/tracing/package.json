@@ -1,7 +1,7 @@
 {
   "name": "@web3api/tracing-js",
   "description": "Web3API Core Tracing",
-  "version": "0.0.1-prealpha.68",
+  "version": "0.0.1-prealpha.80",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -33,6 +33,7 @@
   },
   "devDependencies": {
     "@types/jest": "26.0.8",
+    "@types/prettier": "2.6.0",
     "@types/uuid": "3.4.3",
     "jest": "26.2.2",
     "json-schema-to-typescript": "10.1.3",

@@ -4,7 +4,7 @@ import {
   isDockerInstalled,
   getDockerFileLock,
   startupTestEnv,
-  shutdownTestEnv
+  shutdownTestEnv,
 } from "../lib";
 
 export const testEnv: Command = {
@@ -17,18 +17,18 @@ export const testEnv: Command = {
     testEnvCommand
       .command("up")
       .description(intlMsg.commands_testEnv_options_start())
-      .action(async (options) => {
+      .action(async () => {
         await run("start");
       });
 
     testEnvCommand
       .command("down")
       .description(intlMsg.commands_testEnv_options_stop())
-      .action(async (options) => {
+      .action(async () => {
         await run("stop");
       });
-  }
-}
+  },
+};
 
 async function run(startStop: "start" | "stop") {
   if (!isDockerInstalled()) {

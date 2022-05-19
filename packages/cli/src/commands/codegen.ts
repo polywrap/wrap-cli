@@ -7,8 +7,14 @@ import {
   intlMsg,
   defaultWeb3ApiManifest,
   getTestEnvProviders,
-  resolvePathIfExists,
 } from "../lib";
+import {
+  defaultCodegenDirOption,
+  defaultWasmManifestFileOption,
+  parseCodegenDirOption,
+  parseCodegenScriptOption,
+  parseWasmManifestFileOption,
+} from "../lib/parsers";
 
 import path from "path";
 import { filesystem } from "gluegun";
@@ -19,6 +25,13 @@ const pathStr = intlMsg.commands_codegen_options_o_path();
 const addrStr = intlMsg.commands_codegen_options_e_address();
 const defaultManifestStr = defaultWeb3ApiManifest.join(" | ");
 
+type CodegenCommandOptions = {
+  manifestFile: string;
+  codegenDir: string;
+  script?: string;
+  ipfs?: string;
+  ens?: string;
+};
 
 export const codegen: Command = {
   setup: (program: Program) => {
@@ -26,42 +39,46 @@ export const codegen: Command = {
       .command("codegen")
       .alias("g")
       .description(intlMsg.commands_codegen_description())
-      .option(`-m, --manifest-file <${pathStr}>`, `${intlMsg.commands_codegen_options_m(
-        {
+      .option(
+        `-m, --manifest-file <${pathStr}>`,
+        `${intlMsg.commands_codegen_options_m({
           default: defaultManifestStr,
-        }
-      )}`)
-      .option(`-c, --codegen-dir <${pathStr}>`, ` ${intlMsg.commands_codegen_options_codegen(
-        {
+        })}`,
+        parseWasmManifestFileOption,
+        defaultWasmManifestFileOption()
+      )
+      .option(
+        `-c, --codegen-dir <${pathStr}>`,
+        ` ${intlMsg.commands_codegen_options_codegen({
           default: defaultCodegenDir,
-        }
-      )}`)
-      .option(`-s, --script <${pathStr}>`, `${intlMsg.commands_codegen_options_s()}`)
-      .option(`-i, --ipfs [<${nodeStr}>]`, `${intlMsg.commands_codegen_options_i()}`)
-      .option(`-e, --ens [<${addrStr}>]`, `${intlMsg.commands_codegen_options_e()}`)
-      .action(async (options) => {
+        })}`,
+        parseCodegenDirOption,
+        defaultCodegenDirOption()
+      )
+      .option(
+        `-s, --script <${pathStr}>`,
+        `${intlMsg.commands_codegen_options_s()}`,
+        parseCodegenScriptOption,
+        defaultCodegenDirOption()
+      )
+      .option(
+        `-i, --ipfs [<${nodeStr}>]`,
+        `${intlMsg.commands_codegen_options_i()}`
+      )
+      .option(
+        `-e, --ens [<${addrStr}>]`,
+        `${intlMsg.commands_codegen_options_e()}`
+      )
+      .action(async (options: CodegenCommandOptions) => {
         await run(options);
       });
-  }
-}
+  },
+};
 
-async function run(options: any) {
-  let {
-    manifestFile,
-    codegenDir,
-    script,
-    ipfs,
-    ens,
-  } = options;
+async function run(options: CodegenCommandOptions) {
+  const { ipfs, ens, manifestFile, codegenDir, script } = options;
   const { ipfsProvider, ethProvider } = await getTestEnvProviders(ipfs);
   const ensAddress: string | undefined = ens;
-  manifestFile = resolvePathIfExists(
-    filesystem,
-    manifestFile ? [manifestFile] : defaultWeb3ApiManifest
-  );
-
-  codegenDir = codegenDir && filesystem.resolve(codegenDir);
-  script = script && filesystem.resolve(script);
 
   // Web3Api Project
   const project = new Web3ApiProject({

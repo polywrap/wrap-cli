@@ -1,121 +1,53 @@
 import { Command, Program } from "./types";
-import {
-  getTestEnvClientConfig,
-  importTypescriptModule,
-  validateClientConfig,
-  intlMsg,
-} from "../lib";
+import { intlMsg } from "../lib";
 
 import { Web3ApiClient, Web3ApiClientConfig } from "@web3api/client-js";
-import chalk from "chalk";
-import * as jetpack from "fs-jetpack";
-
 import gql from "graphql-tag";
 import path from "path";
 import yaml from "js-yaml";
+import fs from "fs";
+import { defaultClientConfigOption, parseClientConfigOption, parseRecipeOutputFilePathOption, parseRecipeScriptPathOption } from "../lib/parsers";
 
-const optionsString = intlMsg.commands_build_options_options();
-const scriptStr = intlMsg.commands_create_options_recipeScript();
-const configPathStr = intlMsg.commands_query_options_configPath();
-
-const HELP = `
-${chalk.bold("w3 query")} [${optionsString}] ${chalk.bold(`<${scriptStr}>`)}
-
-${optionsString[0].toUpperCase() + optionsString.slice(1)}:
-  -t, --test-ens  ${intlMsg.commands_build_options_t()}
-  -c, --client-config <${configPathStr}> ${intlMsg.commands_query_options_config()}
-`;
-
+type QueryCommandOptions = {
+  clientConfig: Partial<Web3ApiClientConfig>;
+  outputFile?: string;
+  testEns?: boolean;
+  quiet?: boolean;
+};
 
 export const query: Command = {
-  setup: (program: Program) => {
+  setup: async (program: Program) => {
     program
       .command("query")
       .alias("q")
       .description(intlMsg.commands_query_description())
+      .argument(
+        "<recipe>",
+        intlMsg.commands_query_options_recipeScript(),
+        parseRecipeScriptPathOption
+      )
+      .option(
+        `-c, --client-config <${intlMsg.commands_query_options_configPath}> `,
+        `${intlMsg.commands_query_options_config()}`,
+        parseClientConfigOption,
+        await defaultClientConfigOption()
+      )
+      .option(
+        `-o, --output-file <${intlMsg.commands_query_options_outputFilePath}>`,
+        `${intlMsg.commands_query_options_outputFile()}`,
+        parseRecipeOutputFilePathOption
+      )
       .option(`-t, --test-ens`, `${intlMsg.commands_build_options_t()}`)
-      .option(`-c, --client-config <${configPathStr}> `, `${intlMsg.commands_query_options_config()}`)
-      .action(async (options) => {
-        await run(options);
+      .option(`-q, --quiet`, `${intlMsg.commands_query_options_quiet()}`)
+      .action(async (recipe: string, options) => {
+        await run(recipe, options);
       });
-  }
-}
+  },
+};
 
-
-async function run(options: any) {
-  let { clientConfig } = options;
-
-  let recipePath;
-
-  if (!recipePath) {
-    const scriptMissingMessage = intlMsg.commands_query_error_missingScript({
-      script: `<${scriptStr}>`,
-    });
-    console.error(scriptMissingMessage);
-    console.info(HELP);
-    return;
-  }
-
-  if (clientConfig === true) {
-    const confgisMissingPathMessage = intlMsg.commands_query_error_clientConfigMissingPath(
-      {
-        option: "--client-config",
-        argument: `<${configPathStr}>`,
-      }
-    );
-    console.error(confgisMissingPathMessage);
-    console.info(HELP);
-    return;
-  }
-
-  let finalClientConfig: Partial<Web3ApiClientConfig>;
-
-  try {
-    finalClientConfig = await getTestEnvClientConfig();
-  } catch (e) {
-    console.error(intlMsg.commands_query_error_noTestEnvFound());
-    process.exitCode = 1;
-    return;
-  }
-
-  if (clientConfig) {
-    let configModule;
-    if (clientConfig.endsWith(".js")) {
-      configModule = await import(path.resolve(clientConfig));
-    } else if (clientConfig.endsWith(".ts")) {
-      configModule = await importTypescriptModule(
-        path.resolve(clientConfig)
-      );
-    } else {
-      const configsModuleMissingExportMessage = intlMsg.commands_query_error_clientConfigInvalidFileExt(
-        { module: clientConfig }
-      );
-      console.error(configsModuleMissingExportMessage);
-      process.exitCode = 1;
-      return;
-    }
-
-    if (!configModule || !configModule.getClientConfig) {
-      const configsModuleMissingExportMessage = intlMsg.commands_query_error_clientConfigModuleMissingExport(
-        { module: configModule }
-      );
-      console.error(configsModuleMissingExportMessage);
-      process.exitCode = 1;
-      return;
-    }
-
-    finalClientConfig = configModule.getClientConfig(finalClientConfig);
-
-    try {
-      validateClientConfig(finalClientConfig);
-    } catch (e) {
-      console.error(e.message);
-      process.exitCode = 1;
-      return;
-    }
-  }
-
-  const client = new Web3ApiClient(finalClientConfig);
+async function run(recipePath: string, options: QueryCommandOptions) {
+  const { clientConfig, outputFile, quiet } = options;
+  const client = new Web3ApiClient(clientConfig);
 
   function getParser(path: string) {
     return path.endsWith(".yaml") || path.endsWith(".yml")
@@ -123,9 +55,10 @@ async function run(options: any) {
       : JSON.parse;
   }
 
-  const recipe = getParser(recipePath)(jetpack.read(recipePath) as string);
+  const recipe = getParser(recipePath)(fs.readFileSync(recipePath).toString());
   const dir = path.dirname(recipePath);
   let uri = "";
+  const recipeOutput = [];
 
   let constants: Record<string, string> = {};
   for (const task of recipe) {
@@ -135,18 +68,19 @@ async function run(options: any) {
 
     if (task.constants) {
       constants = getParser(task.constants)(
-        jetpack.read(path.join(dir, task.constants)) as string
+        fs.readFileSync(path.join(dir, task.constants)).toString()
       );
     }
 
     if (task.query) {
-      const query = jetpack.read(path.join(dir, task.query));
+      const query = fs.readFileSync(path.join(dir, task.query)).toString();
 
       if (!query) {
         const readFailMessage = intlMsg.commands_query_error_readFail({
           query: query ?? "undefined",
         });
-        throw Error(readFailMessage);
+        console.error(readFailMessage);
+        process.exit(1);
       }
 
       let variables: Record<string, unknown> = {};
@@ -176,9 +110,7 @@ async function run(options: any) {
           } else if (Array.isArray(constant)) {
             return resolveArrayConstants(constant);
           } else if (typeof constant === "object") {
-            return resolveObjectConstants(
-              constant as Record<string, unknown>
-            );
+            return resolveObjectConstants(constant as Record<string, unknown>);
           } else {
             return constant;
           }
@@ -191,10 +123,12 @@ async function run(options: any) {
         throw Error(intlMsg.commands_query_error_noApi());
       }
 
-      console.log("-----------------------------------");
-      console.log(query);
-      console.log(JSON.stringify(variables, null, 2));
-      console.log("-----------------------------------");
+      if (!quiet) {
+        console.log("-----------------------------------");
+        console.log(query);
+        console.log(JSON.stringify(variables, null, 2));
+        console.log("-----------------------------------");
+      }
 
       const { data, errors } = await client.query({
         uri,
@@ -202,13 +136,24 @@ async function run(options: any) {
         variables,
       });
 
-      if (data && data !== {}) {
+      if (outputFile) {
+        recipeOutput.push({
+          query: task.query,
+          variables: task.variables,
+          output: {
+            data,
+            errors,
+          },
+        });
+      }
+
+      if (!quiet && data && data !== {}) {
         console.log("-----------------------------------");
         console.log(JSON.stringify(data, null, 2));
         console.log("-----------------------------------");
       }
 
-      if (errors) {
+      if (!quiet && errors) {
         for (const error of errors) {
           console.log("-----------------------------------");
           console.log(error.message);
@@ -216,6 +161,22 @@ async function run(options: any) {
           console.log("-----------------------------------");
         }
         process.exitCode = 1;
+      }
+    }
+
+    if (outputFile) {
+      const outputFileExt = path.extname(outputFile).substring(1);
+      if (!outputFileExt) throw new Error("Require output file extention");
+      switch (outputFileExt) {
+        case "yaml":
+        case "yml":
+          fs.writeFileSync(outputFile, yaml.dump(recipeOutput));
+          break;
+        case "json":
+          fs.writeFileSync(outputFile, JSON.stringify(recipeOutput));
+          break;
+        default:
+          throw new Error(`Unsupported outputFile extention: ${outputFileExt}`);
       }
     }
   }

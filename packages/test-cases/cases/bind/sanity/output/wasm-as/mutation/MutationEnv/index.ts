@@ -3,7 +3,10 @@ import {
   Write,
   Nullable,
   BigInt,
-  JSON
+  BigNumber,
+  JSON,
+  JSONSerializer,
+  JSONDeserializer,
 } from "@web3api/wasm-as";
 import {
   serializeMutationEnv,
@@ -13,6 +16,7 @@ import {
 } from "./serialization";
 import * as Types from "..";
 
+@serializable
 export class MutationEnv {
   mutProp: string;
   prop: string;
@@ -32,5 +36,13 @@ export class MutationEnv {
 
   static read(reader: Read): MutationEnv {
     return readMutationEnv(reader);
+  }
+
+  static toJson(type: MutationEnv): JSON.Value {
+    return JSONSerializer.encode(type);
+  }
+
+  static fromJson(json: JSON.Value): MutationEnv {
+    return (new JSONDeserializer(json)).decode<MutationEnv>();
   }
 }

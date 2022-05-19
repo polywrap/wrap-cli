@@ -1,7 +1,7 @@
 {
   "name": "@web3api/test-env-js",
   "description": "Web3API Test Helpers",
-  "version": "0.0.1-prealpha.68",
+  "version": "0.0.1-prealpha.80",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -16,7 +16,11 @@
     "lint": "eslint --color -c ../../../.eslintrc.js src/"
   },
   "dependencies": {
+    "@web3api/core-js": "0.0.1-prealpha.80",
     "axios": "0.21.2",
+    "ethers": "5.6.4",
+    "js-sha3": "0.8.0",
+    "js-yaml": "4.1.0",
     "spawn-command": "0.0.2-1"
   },
   "devDependencies": {

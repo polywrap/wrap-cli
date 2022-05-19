@@ -4,9 +4,13 @@ import {
   appManifestLanguages,
   isAppManifestLanguage,
   loadAppManifest,
+  appManifestLanguageToBindLanguage,
 } from "..";
 
 import { AppManifest, Client } from "@web3api/core-js";
+import { ComposerOutput } from "@web3api/schema-compose";
+import { bindSchema, BindOutput } from "@web3api/schema-bind";
+import { TypeInfo } from "@web3api/schema-parse";
 import path from "path";
 
 const cacheLayout = {
@@ -45,6 +49,10 @@ export class AppProject extends Project<AppManifest> {
 
   /// Manifest (web3api.app.yaml)
 
+  public async getName(): Promise<string> {
+    return (await this.getManifest()).name;
+  }
+
   public async getManifest(): Promise<AppManifest> {
     if (!this._appManifest) {
       this._appManifest = await loadAppManifest(
@@ -76,7 +84,7 @@ export class AppProject extends Project<AppManifest> {
     return language as AppManifestLanguage;
   }
 
-  /// ProjectWithSchema Base Methods
+  /// Schema
 
   public async getSchemaNamedPaths(): Promise<{
     [name: string]: string;
@@ -97,5 +105,25 @@ export class AppProject extends Project<AppManifest> {
   > {
     const manifest = await this.getManifest();
     return manifest.import_redirects || [];
+  }
+
+  public async generateSchemaBindings(
+    composerOutput: ComposerOutput,
+    outputDir?: string
+  ): Promise<BindOutput> {
+    return bindSchema({
+      projectName: await this.getName(),
+      modules: [
+        {
+          name: "combined",
+          typeInfo: composerOutput.combined?.typeInfo as TypeInfo,
+          schema: composerOutput.combined?.schema as string,
+          outputDirAbs: outputDir || path.join(this.getManifestDir(), "src/w3"),
+        },
+      ],
+      bindLanguage: appManifestLanguageToBindLanguage(
+        await this.getManifestLanguage()
+      ),
+    });
   }
 }

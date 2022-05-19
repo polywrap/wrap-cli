@@ -1,38 +1,21 @@
 import { TypeInfo } from "@web3api/schema-parse";
+import { OutputDirectory } from "@web3api/os-js";
 
 export type BindLanguage = "wasm-as" | "plugin-ts" | "app-ts";
 
-export type OutputEntry = FileEntry | DirectoryEntry | TemplateEntry;
-
-export interface FileEntry {
-  type: "File";
+export interface BindModuleOutput {
   name: string;
-  data: string;
-}
-
-export interface DirectoryEntry {
-  type: "Directory";
-  name: string;
-  data: OutputEntry[];
-}
-
-export interface TemplateEntry {
-  type: "Template";
-  name: string;
-  data: string;
-}
-
-export interface OutputDirectory {
-  entries: OutputEntry[];
+  output: OutputDirectory;
+  outputDirAbs: string;
 }
 
 export interface BindOutput {
-  combined?: OutputDirectory;
-  query?: OutputDirectory;
-  mutation?: OutputDirectory;
+  modules: BindModuleOutput[];
+  common?: BindModuleOutput;
 }
 
 export interface BindModuleOptions {
+  name: string;
   typeInfo: TypeInfo;
   schema: string;
   config?: Record<string, unknown>;
@@ -40,8 +23,8 @@ export interface BindModuleOptions {
 }
 
 export interface BindOptions {
+  modules: BindModuleOptions[];
+  projectName: string;
   bindLanguage: BindLanguage;
-  combined?: BindModuleOptions;
-  query?: BindModuleOptions;
-  mutation?: BindModuleOptions;
+  commonDirAbs?: string;
 }

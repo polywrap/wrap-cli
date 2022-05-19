@@ -1,3 +1,4 @@
+{{^__commonModule}}
 import {
   w3_invoke_args,
   w3_invoke,
@@ -67,13 +68,13 @@ export function _w3_load_env(env_size: u32): void {
 {{/envTypes.mutation.sanitized}}
 {{#envTypes.query.client}}
 export function _w3_sanitize_env(args_size: u32): void {
-  w3_sanitize_env(args_size, sanitizeQueryEnvWrapped);
+  w3_sanitize_env(args_size, sanitizeEnvWrapped);
 }
 
 {{/envTypes.query.client}}
 {{#envTypes.mutation.client}}
 export function _w3_sanitize_env(args_size: u32): void {
-  w3_sanitize_env(args_size, sanitizeMutationEnvWrapped)
+  w3_sanitize_env(args_size, sanitizeEnvWrapped)
 }
 
 {{/envTypes.mutation.client}}
@@ -90,3 +91,4 @@ export function w3Abort(
     column
   );
 }
+{{/__commonModule}}

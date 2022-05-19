@@ -1,16 +1,58 @@
-import path from "path";
 import { clearStyle, w3Cli } from "./utils";
 
 import { runCLI } from "@web3api/test-env-js";
 
+const HELP = `
+w3 test-env command
+
+Commands:
+  up    Startup the test env
+  down  Shutdown the test env
+
+Options:
+  -h, --help          Show usage information
+
+`;
 
 describe("e2e tests for test-env command", () => {
-  const projectRoot = path.resolve(__dirname, "../project/");
+  test("Should print help message", async () => {
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+      args: ["test-env", "--help"],
+      cli: w3Cli,
+    });
+
+    expect(code).toEqual(0);
+    expect(error).toBe("");
+    expect(clearStyle(output)).toEqual(HELP);
+  });
+
+  test("Should throw error for no command given", async () => {
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+      args: ["test-env"],
+      cli: w3Cli,
+    });
+
+    expect(code).toEqual(0);
+    expect(error).toBe("");
+    expect(clearStyle(output)).toEqual(`No command given
+${HELP}`);
+  });
+
+  test("Should throw error for unrecognized command", async () => {
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+      args: ["test-env", "unknown"],
+      cli: w3Cli,
+    });
+
+    expect(code).toEqual(0);
+    expect(error).toBe("");
+    expect(clearStyle(output)).toEqual(`Unrecognized command: unknown
+${HELP}`);
+  });
 
   test("Should successfully start test environment", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["test-env", "up"],
-      cwd: projectRoot,
       cli: w3Cli,
     });
 
@@ -20,7 +62,6 @@ describe("e2e tests for test-env command", () => {
 
     await runCLI({
       args: ["test-env", "down"],
-      cwd: projectRoot,
       cli: w3Cli,
     });
   }, 60000);
@@ -28,7 +69,6 @@ describe("e2e tests for test-env command", () => {
   test("Should successfully shut down test environment", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["test-env", "down"],
-      cwd: projectRoot,
       cli: w3Cli,
     });
 

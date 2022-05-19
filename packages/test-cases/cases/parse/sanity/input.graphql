@@ -8,7 +8,9 @@ scalar Int16
 scalar Int32
 scalar Bytes
 scalar BigInt
+scalar BigNumber
 scalar JSON
+scalar Map
 
 directive @imported(
   uri: String!
@@ -27,6 +29,9 @@ directive @capability(
 ) repeatable on OBJECT
 
 directive @enabled_interface on OBJECT
+
+directive @annotate(type: String!) on FIELD
+
 """
 CustomEnum comment
 """
@@ -59,6 +64,8 @@ optStr comment
   i32: Int32!
   bigint: BigInt!
   optBigint: BigInt
+  bignumber: BigNumber!
+  optBignumber: BigNumber
   json: JSON!
   optJson: JSON
   bytes: Bytes!
@@ -77,7 +84,8 @@ optStr comment
   optEnum: CustomEnum
   enum: CustomEnum!
   enumArray: [CustomEnum!]!,
-  optEnumArray: [CustomEnum]
+  optEnumArray: [CustomEnum],
+  map1: Map @annotate(type: "Map<String, Int>")
 }
 
 """
@@ -121,7 +129,7 @@ type MutationClientEnv {
 }
 
 type Mutation {
-  sanitizeMutationEnv(env: MutationClientEnv!): MutationEnv!
+  sanitizeEnv(env: MutationClientEnv!): MutationEnv!
 }
 
 """
@@ -147,7 +155,7 @@ type Query implements Interface_Query @imports(
   uri: "testimport.uri.eth",
   namespace: "TestImport",
 ) {
-  sanitizeQueryEnv(env: QueryClientEnv!): QueryEnv!
+  sanitizeEnv(env: QueryClientEnv!): QueryEnv!
 """
 queryMethod comment
 """
@@ -189,6 +197,10 @@ abstractMethod comment
   abstractMethod(
     arg: UInt8!
   ): String!
+
+  transformMap(
+    map: Map @annotate(type: "Map<String!, Int!>")
+  ): Map @annotate(type: "Map<String!, Int!>")
 }
 
 """

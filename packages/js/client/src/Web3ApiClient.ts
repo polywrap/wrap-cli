@@ -34,14 +34,16 @@ import {
   sanitizeUriRedirects,
   sanitizeEnvs,
   ClientConfig,
-  ResolveUriError,
-  UriResolutionHistory,
   resolveUri,
-  UriToApiResolver,
-  GetResolversOptions,
+  UriResolver,
+  GetUriResolversOptions,
   CacheResolver,
+  ExtendableUriResolver,
   Contextualized,
   ResolveUriOptions,
+  coreInterfaceUris,
+  ResolveUriErrorType,
+  ResolveUriResult,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
@@ -61,7 +63,7 @@ export class Web3ApiClient implements Client {
     plugins: [],
     interfaces: [],
     envs: [],
-    resolvers: [],
+    uriResolvers: [],
     tracingEnabled: false,
   };
 
@@ -89,7 +91,7 @@ export class Web3ApiClient implements Client {
           interfaces: config.interfaces
             ? sanitizeInterfaceImplementations(config.interfaces)
             : [],
-          resolvers: config.resolvers ?? [],
+          uriResolvers: config.uriResolvers ?? [],
           tracingEnabled: !!config.tracingEnabled,
         };
       }
@@ -99,6 +101,8 @@ export class Web3ApiClient implements Client {
       }
 
       this._validateConfig();
+
+      this._sanitizeConfig();
 
       Tracer.setAttribute("config", this._config);
     } catch (error) {
@@ -144,11 +148,11 @@ export class Web3ApiClient implements Client {
     return this._getConfig(options.contextId).envs;
   }
 
-  @Tracer.traceMethod("Web3ApiClient: getResolvers")
-  public getResolvers(
-    options: GetResolversOptions = {}
-  ): readonly UriToApiResolver[] {
-    return this._getConfig(options.contextId).resolvers;
+  @Tracer.traceMethod("Web3ApiClient: getUriResolvers")
+  public getUriResolvers(
+    options: GetUriResolversOptions = {}
+  ): readonly UriResolver[] {
+    return this._getConfig(options.contextId).uriResolvers;
   }
 
   @Tracer.traceMethod("Web3ApiClient: getEnvByUri")
@@ -362,9 +366,7 @@ export class Web3ApiClient implements Client {
     if (freq && (freq.ms || freq.sec || freq.min || freq.hours)) {
       frequency =
         (freq.ms ?? 0) +
-        ((freq.hours ?? 0) * 3600 +
-          (freq.min ?? 0) * 60 +
-          (freq.sec ?? 0)) *
+        ((freq.hours ?? 0) * 3600 + (freq.min ?? 0) * 60 + (freq.sec ?? 0)) *
           1000;
     } else {
       frequency = 60000;
@@ -435,12 +437,7 @@ export class Web3ApiClient implements Client {
   public async resolveUri<TUri extends Uri | string>(
     uri: TUri,
     options?: ResolveUriOptions<ClientConfig>
-  ): Promise<{
-    api?: Api;
-    uri?: Uri;
-    uriHistory: UriResolutionHistory;
-    error?: ResolveUriError;
-  }> {
+  ): Promise<ResolveUriResult> {
     options = options || {};
 
     const { contextId, shouldClearContext } = this._setContext(
@@ -454,15 +451,15 @@ export class Web3ApiClient implements Client {
 
     const client = contextualizeClient(this, contextId);
 
-    let resolvers = this.getResolvers({ contextId: contextId });
+    let uriResolvers = this.getUriResolvers({ contextId: contextId });
 
     if (!cacheRead) {
-      resolvers = resolvers.filter((x) => x.name !== CacheResolver.name);
+      uriResolvers = uriResolvers.filter((x) => x.name !== CacheResolver.name);
     }
 
     const { api, uri: resolvedUri, uriHistory, error } = await resolveUri(
       this._toUri(uri),
-      resolvers,
+      uriResolvers,
       client,
       this._apiCache
     );
@@ -486,6 +483,35 @@ export class Web3ApiClient implements Client {
     };
   }
 
+  @Tracer.traceMethod("Web3ApiClient: loadUriResolverWrappers")
+  public async loadUriResolvers(): Promise<{
+    success: boolean;
+    failedUriResolvers: string[];
+  }> {
+    const extendableUriResolver = this.getUriResolvers().find(
+      (x) => x.name === ExtendableUriResolver.name
+    ) as ExtendableUriResolver;
+
+    if (!extendableUriResolver) {
+      return {
+        success: true,
+        failedUriResolvers: [],
+      };
+    }
+
+    const uriResolverImpls = getImplementations(
+      coreInterfaceUris.uriResolver,
+      this.getInterfaces(),
+      this.getRedirects()
+    );
+
+    return extendableUriResolver.loadUriResolverWrappers(
+      this,
+      this._apiCache,
+      uriResolverImpls
+    );
+  }
+
   private _addDefaultConfig() {
     const defaultClientConfig = getDefaultClientConfig();
 
@@ -501,8 +527,8 @@ export class Web3ApiClient implements Client {
       this._config.interfaces.push(...defaultClientConfig.interfaces);
     }
 
-    if (defaultClientConfig.resolvers) {
-      this._config.resolvers.push(...defaultClientConfig.resolvers);
+    if (defaultClientConfig.uriResolvers) {
+      this._config.uriResolvers.push(...defaultClientConfig.uriResolvers);
     }
   }
 
@@ -523,6 +549,64 @@ export class Web3ApiClient implements Client {
     } else {
       return this._config;
     }
+  }
+
+  @Tracer.traceMethod("Web3ApiClient: sanitizeConfig")
+  private _sanitizeConfig(): void {
+    this._sanitizeInterfacesAndImplementations();
+  }
+
+  // Make sure interface URIs are unique and that all of their implementation URIs are unique
+  // If not, then merge them
+  @Tracer.traceMethod("Web3ApiClient: sanitizeInterfacesAndImplementations")
+  private _sanitizeInterfacesAndImplementations(): void {
+    const interfaces = this._config.interfaces;
+    // Interface hash map used to keep track of interfaces with same URI
+    // A set is used to keep track of unique implementation URIs
+    const addedInterfacesHashMap = new Map<string, Set<string>>();
+
+    for (const interfaceImplementations of interfaces) {
+      const interfaceUri = interfaceImplementations.interface.uri;
+
+      if (!addedInterfacesHashMap.has(interfaceUri)) {
+        // If the interface is not added yet then just add it along with its implementations
+        addedInterfacesHashMap.set(
+          interfaceUri,
+          new Set(interfaceImplementations.implementations.map((x) => x.uri))
+        );
+      } else {
+        const existingInterfaceImplementations = addedInterfacesHashMap.get(
+          interfaceUri
+        ) as Set<string>;
+
+        // Get implementations to add to existing set of implementations
+        const newImplementationUris = interfaceImplementations.implementations.map(
+          (x) => x.uri
+        );
+
+        // Add new implementations to existing set
+        newImplementationUris.forEach(
+          existingInterfaceImplementations.add,
+          existingInterfaceImplementations
+        );
+      }
+    }
+
+    // Collection of unique interfaces with implementations merged
+    const sanitizedInterfaces: InterfaceImplementations<Uri>[] = [];
+
+    // Go through the unique hash map of interfaces and implementations and add them to the sanitized interfaces
+    for (const [
+      interfaceUri,
+      implementationSet,
+    ] of addedInterfacesHashMap.entries()) {
+      sanitizedInterfaces.push({
+        interface: new Uri(interfaceUri),
+        implementations: [...implementationSet].map((x) => new Uri(x)),
+      });
+    }
+
+    this._config.interfaces = sanitizedInterfaces;
   }
 
   @Tracer.traceMethod("Web3ApiClient: validateConfig")
@@ -589,7 +673,7 @@ export class Web3ApiClient implements Client {
         ? sanitizeInterfaceImplementations(context.interfaces)
         : config.interfaces,
       envs: context?.envs ? sanitizeEnvs(context.envs) : config.envs,
-      resolvers: context?.resolvers ?? config.resolvers,
+      uriResolvers: context?.uriResolvers ?? config.uriResolvers,
       tracingEnabled: context?.tracingEnabled || config.tracingEnabled,
     });
 
@@ -613,20 +697,41 @@ export class Web3ApiClient implements Client {
     });
 
     if (!api) {
-      if (error && error === ResolveUriError.InfiniteLoop) {
+      if (error) {
+        const errorMessage = error.error?.message ?? "";
+
+        switch (error.type) {
+          case ResolveUriErrorType.InfiniteLoop:
+            throw Error(
+              `Infinite loop while resolving URI "${uri}".\nResolution Stack: ${JSON.stringify(
+                uriHistory,
+                null,
+                2
+              )}`
+            );
+            break;
+          case ResolveUriErrorType.InternalResolver:
+            throw Error(
+              `URI resolution error while resolving URI "${uri}".\n${errorMessage}\nResolution Stack: ${JSON.stringify(
+                uriHistory,
+                null,
+                2
+              )}`
+            );
+            break;
+          default:
+            throw Error(`Unsupported URI resolution error type occurred`);
+            break;
+        }
+      } else {
         throw Error(
-          `Infinite loop while resolving URI "${uri}".\nResolution Stack: ${JSON.stringify(
+          `Unknown URI resolution error while resolving URI "${uri}"\nResolution Stack: ${JSON.stringify(
             uriHistory,
             null,
             2
           )}`
         );
       }
-
-      throw Error(
-        `No Web3API found at URI: ${uri.uri}` +
-          `\nResolution history: ${JSON.stringify(uriHistory, null, 2)}`
-      );
     }
 
     return api;
@@ -674,8 +779,8 @@ const contextualizeClient = (
         getEnvs: (options: GetEnvsOptions = {}) => {
           return client.getEnvs({ ...options, contextId });
         },
-        getResolvers: (options: GetResolversOptions = {}) => {
-          return client.getResolvers({ ...options, contextId });
+        getUriResolvers: (options: GetUriResolversOptions = {}) => {
+          return client.getUriResolvers({ ...options, contextId });
         },
         getEnvByUri: <TUri extends Uri | string>(
           uri: TUri,
@@ -713,13 +818,14 @@ const contextualizeClient = (
         resolveUri: <TUri extends Uri | string>(
           uri: TUri,
           options?: ResolveUriOptions<ClientConfig>
-        ): Promise<{
-          api?: Api;
-          uri?: Uri;
-          uriHistory: UriResolutionHistory;
-          error?: ResolveUriError;
-        }> => {
+        ): Promise<ResolveUriResult> => {
           return client.resolveUri(uri, { ...options, contextId });
+        },
+        loadUriResolvers: (): Promise<{
+          success: boolean;
+          failedUriResolvers: string[];
+        }> => {
+          return client.loadUriResolvers();
         },
       }
     : client;

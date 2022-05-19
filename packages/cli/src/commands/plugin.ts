@@ -3,96 +3,88 @@ import {
   CodeGenerator,
   PluginProject,
   SchemaComposer,
-  resolvePathIfExists,
   defaultPluginManifest,
   outputManifest,
   intlMsg,
   getTestEnvProviders,
 } from "../lib";
+import {
+  defaultPluginCodegenDirOption,
+  defaultPluginManifestFileOption,
+  defaultPluginPublishDirOption,
+  parsePluginCodegenDirOption,
+  parsePluginManifestFileOption,
+  parsePluginPublishDirOption,
+} from "../lib/parsers";
 
 import { ComposerFilter } from "@web3api/schema-compose";
 import { writeFileSync } from "@web3api/os-js";
-import { filesystem } from "gluegun";
-import chalk from "chalk";
 import path from "path";
 import fs from "fs";
 
 const defaultPublishDir = "./build";
 const defaultCodegenDir = "./src/w3";
-const cmdStr = intlMsg.commands_plugin_options_command();
-const optionsStr = intlMsg.commands_options_options();
-const codegenStr = intlMsg.commands_plugin_commands_codegen();
 const pathStr = intlMsg.commands_plugin_options_path();
 const defaultManifestStr = defaultPluginManifest.join(" | ");
 const nodeStr = intlMsg.commands_plugin_options_i_node();
 const addrStr = intlMsg.commands_plugin_options_e_address();
 
-const HELP = `
-  ${chalk.bold("w3 plugin")} ${cmdStr} [${optionsStr}]
-  
-  Commands:
-    ${chalk.bold("codegen")}   ${codegenStr}
-  
-  Options:
-    -h, --help                       ${intlMsg.commands_plugin_options_h()}
-    -m, --manifest-file <${pathStr}>       ${intlMsg.commands_plugin_options_m({
-  default: defaultManifestStr,
-})}
-    -p, --publish-dir <${pathStr}>  ${intlMsg.commands_plugin_options_publish({
-  default: defaultPublishDir,
-})}
-    -c, --codegen-dir <${pathStr}>    ${intlMsg.commands_plugin_options_codegen({
-  default: defaultCodegenDir,
-})}
-    -i, --ipfs [<${nodeStr}>]              ${intlMsg.commands_plugin_options_i()}
-    -e, --ens [<${addrStr}>]            ${intlMsg.commands_plugin_options_e()}
-  `;
-
+type PluginCommandOptions = {
+  manifestFile: string;
+  publishDir: string;
+  codegenDir: string;
+  ipfs?: string;
+  ens?: string;
+};
 
 export const plugin: Command = {
   setup: (program: Program) => {
-    const pluginCommand = program
-      .command("plugin")
-      .alias("p")
+    const pluginCommand = program.command("plugin").alias("p");
 
     pluginCommand
       .command("codegen")
-      .option(`-m, --manifest-file <${pathStr}>`, `${intlMsg.commands_plugin_options_m({
-        default: defaultManifestStr,
-      })}`)
-      .option(`-p, --publish-dir <${pathStr}>`, `${intlMsg.commands_plugin_options_publish({
-        default: defaultPublishDir,
-      })}`)
-      .option(`-c, --codegen-dir <${pathStr}>`, `${intlMsg.commands_plugin_options_codegen({
-        default: defaultCodegenDir,
-      })}`)
-      .option(`-i, --ipfs [<${nodeStr}>]`, `${intlMsg.commands_plugin_options_i()}`)
-      .option(`-e, --ens [<${addrStr}>]`, `${intlMsg.commands_plugin_options_e()}`)
-      .action(async (options) => {
+      .option(
+        `-m, --manifest-file <${pathStr}>`,
+        `${intlMsg.commands_plugin_options_m({
+          default: defaultManifestStr,
+        })}`,
+        parsePluginManifestFileOption,
+        defaultPluginManifestFileOption()
+      )
+      .option(
+        `-p, --publish-dir <${pathStr}>`,
+        `${intlMsg.commands_plugin_options_publish({
+          default: defaultPublishDir,
+        })}`,
+        parsePluginPublishDirOption,
+        defaultPluginPublishDirOption()
+      )
+      .option(
+        `-c, --codegen-dir <${pathStr}>`,
+        `${intlMsg.commands_plugin_options_codegen({
+          default: defaultCodegenDir,
+        })}`,
+        parsePluginCodegenDirOption,
+        defaultPluginCodegenDirOption()
+      )
+      .option(
+        `-i, --ipfs [<${nodeStr}>]`,
+        `${intlMsg.commands_plugin_options_i()}`
+      )
+      .option(
+        `-e, --ens [<${addrStr}>]`,
+        `${intlMsg.commands_plugin_options_e()}`
+      )
+      .action(async (options: PluginCommandOptions) => {
         await run(options);
       });
-
-
-  }
-}
-async function run(options: any) {
-  let {
-    manifestFile,
-    publishDir,
-    codegenDir,
-    ipfs,
-    ens,
-  } = options;
+  },
+};
+async function run(options: PluginCommandOptions) {
+  const { ipfs, ens, manifestFile, codegenDir, publishDir } = options;
 
   const { ipfsProvider, ethProvider } = await getTestEnvProviders(ipfs);
   const ensAddress: string | undefined = ens;
-
-  manifestFile = resolvePathIfExists(
-    filesystem,
-    manifestFile ? [manifestFile] : defaultPluginManifest
-  );
-  publishDir = publishDir && filesystem.resolve(publishDir);
-  codegenDir = codegenDir && filesystem.resolve(codegenDir);
 
   // Plugin project
   const project = new PluginProject({
