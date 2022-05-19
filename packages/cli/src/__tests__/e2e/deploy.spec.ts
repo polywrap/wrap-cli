@@ -15,13 +15,15 @@ import yaml from "js-yaml";
 import path from "path";
 import fs from "fs";
 
-const HELP = `
-w3 deploy [options]
+const HELP = `Usage: w3 deploy|d [options]
+
+Deploys/Publishes a Web3API
 
 Options:
-  -h, --help                         Show usage information
-  -m, --manifest-file <path>         Path to the Web3API Deploy manifest file (default: web3api.yaml | web3api.yml)
-  -v, --verbose                      Verbose output (default: false)
+  -m, --manifest-file <path>  Path to the Web3API Plugin manifest file
+                              (default: web3api.yaml | web3api.yml)
+  -v, --verbose               Verbose output (default: false)
+  -h, --help                  display help for command
 `;
 
 const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/deploy");

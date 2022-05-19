@@ -2,6 +2,7 @@ import { Command, Program } from "./types";
 import { generateProjectTemplate, intlMsg } from "../lib";
 
 import { prompt, filesystem } from "gluegun";
+import { Argument } from "commander";
 
 const nameStr = intlMsg.commands_create_options_projectName();
 const langStr = intlMsg.commands_create_options_lang();
@@ -31,10 +32,16 @@ export const create: Command = {
       .description(intlMsg.commands_create_description());
 
     createCommand
-      .command(`api <${langStr}> <${nameStr}>`)
+      .command("api")
       .description(
         `${createProjStr} ${langsStr}: ${supportedLangs.api.join(", ")}`
       )
+      .addArgument(
+        new Argument("<language>", langStr)
+          .choices(supportedLangs.api)
+          .argRequired()
+      )
+      .addArgument(new Argument("<name>", nameStr).argRequired())
       .option(
         `-o, --output-dir <${pathStr}>`,
         `${intlMsg.commands_create_options_o()}`
@@ -44,9 +51,14 @@ export const create: Command = {
       });
 
     createCommand
-      .command(`app <${langStr}>`)
+      .command("app")
       .description(
         `${createAppStr} ${langsStr}: ${supportedLangs.app.join(", ")}`
+      )
+      .addArgument(
+        new Argument("<language>", langStr)
+          .choices(supportedLangs.app)
+          .argRequired()
       )
       .option(
         `-o, --output-dir <${pathStr}>`,
@@ -60,6 +72,11 @@ export const create: Command = {
       .command(`plugin <${langStr}>`)
       .description(
         `${createPluginStr} ${langsStr}: ${supportedLangs.plugin.join(", ")}`
+      )
+      .addArgument(
+        new Argument("<language>", langStr)
+          .choices(supportedLangs.plugin)
+          .argRequired()
       )
       .option(
         `-o, --output-dir <${pathStr}>`,

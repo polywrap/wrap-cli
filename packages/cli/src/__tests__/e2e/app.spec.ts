@@ -6,20 +6,16 @@ import path from "path";
 import fs from "fs";
 
 
-const HELP = `Usage: w3 app codegen [options]
+const HELP = `Usage: w3 app|a [options] [command]
 
-Generate code for the app
+Build/generate types for your app
 
 Options:
-  -m, --manifest-file <path>  Output directory for the generated code (default:
-                              ./src/w3)
-  -c, --codegen-dir <path>    Output directory for the generated code (default:
-                              ./src/w3)
-  -i, --ipfs [<node>]         IPFS node to load external schemas (default:
-                              ipfs.io & localhost)
-  -e, --ens [<address>]       ENS address to lookup external schemas (default:
-                              0x0000...2e1e)
-  -h, --help                  display help for command
+  -h, --help         display help for command
+
+Commands:
+  codegen [options]  Generate code for the app
+  help [command]     display help for command
 `
 
 const CODEGEN_SUCCESS = `- Manifest loaded from ./web3api.app.yaml

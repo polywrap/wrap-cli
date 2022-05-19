@@ -8,16 +8,15 @@ const HELP = `Usage: w3 create|c [options] [command]
 Create a new project with w3 CLI
 
 Options:
-  -h, --help                           display help for command
+  -h, --help                          display help for command
 
 Commands:
-  api [options] <lang> <project-name>  Create a Web3API project langs:
-                                       assemblyscript, interface
-  app [options] <lang>                 Create a Web3API application langs:
-                                       typescript-node, typescript-react
-  plugin [options] <lang>              Create a Web3API plugin langs:
-                                       typescript
-  help [command]                       display help for command
+  api [options] <language> <name>     Create a Web3API project langs:
+                                      assemblyscript, interface
+  app [options] <language>            Create a Web3API application langs:
+                                      typescript-node, typescript-react
+  plugin [options] <lang> <language>  Create a Web3API plugin langs: typescript
+  help [command]                      display help for command
 `;
 
 describe("e2e tests for create command", () => {
@@ -39,9 +38,8 @@ describe("e2e tests for create command", () => {
     });
 
     expect(code).toEqual(1);
-    expect(error).toBe("");
-    expect(clearStyle(output)).toEqual(`Please provide a command
-${HELP}`);
+    expect(error).toBe(HELP);
+    expect(output).toBe("");
   });
 
   test("Should throw error for missing parameter - lang", async () => {
@@ -51,9 +49,8 @@ ${HELP}`);
     });
 
     expect(code).toEqual(1);
-    expect(error).toBe("");
-    expect(clearStyle(output)).toEqual(`Please provide a language
-${HELP}`);
+    expect(error).toContain("error: unknown command 'type'");
+    expect(output).toBe("");
   });
 
   test("Should throw error for missing parameter - name", async () => {
@@ -63,9 +60,8 @@ ${HELP}`);
     });
 
     expect(code).toEqual(1);
-    expect(error).toBe("");
-    expect(clearStyle(output)).toEqual(`Please provide a project name
-${HELP}`);
+    expect(error).toContain("error: unknown command 'type'");
+    expect(output).toBe("");
   });
 
   test("Should throw error for invalid parameter - type", async () => {
@@ -75,9 +71,8 @@ ${HELP}`);
     });
 
     expect(code).toEqual(1);
-    expect(error).toBe("");
-    expect(clearStyle(output)).toEqual(`Unrecognized command "unknown"
-${HELP}`);
+    expect(error).toContain("error: unknown command 'unknown'");
+    expect(output).toBe("");
   });
 
   test("Should throw error for invalid parameter - lang", async () => {
@@ -87,9 +82,8 @@ ${HELP}`);
     });
 
     expect(code).toEqual(1);
-    expect(error).toBe("");
-    expect(clearStyle(output)).toEqual(`Unrecognized language "unknown"
-${HELP}`);
+    expect(error).toContain("error: command-argument value 'unknown' is invalid for argument 'language'. Allowed choices are assemblyscript, interface.");
+    expect(output).toBe("");
   });
 
   test("Should throw error for invalid parameter - output-dir", async () => {
@@ -99,10 +93,8 @@ ${HELP}`);
     });
 
     expect(code).toEqual(1);
-    expect(error).toBe("");
-    expect(clearStyle(output))
-      .toEqual(`--output-dir option missing <path> argument
-${HELP}`);
+    expect(error).toContain("error: option '-o, --output-dir <path>' argument missing");
+    expect(output).toBe("");
   });
 
   test("Should successfully generate project", async () => {

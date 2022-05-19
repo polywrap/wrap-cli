@@ -101,7 +101,7 @@ describe("e2e tests for codegen command", () => {
       cli: w3Cli,
     });
 
-    expect(code).toEqual(1);
+    expect(code).toEqual(0);
     expect(error).toBe("");
     expect(clearStyle(output)).toContain(
       `🔥 Types were generated successfully 🔥`

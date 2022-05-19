@@ -51,7 +51,7 @@ export const deploy: Command = {
   },
 };
 
-export async function run(options: DeployCommandOptions): Promise<void> {
+async function run(options: DeployCommandOptions): Promise<void> {
   const { manifestFile, verbose } = options;
 
   const project = new Web3ApiProject({

@@ -28,11 +28,11 @@ export const query: Command = {
       .description(intlMsg.commands_query_description())
       .argument("<recipe>", intlMsg.commands_query_options_recipeScript())
       .option(
-        `-c, --client-config <${intlMsg.commands_query_options_configPath}> `,
+        `-c, --client-config <${intlMsg.commands_query_options_configPath()}> `,
         `${intlMsg.commands_query_options_config()}`
       )
       .option(
-        `-o, --output-file <${intlMsg.commands_query_options_outputFilePath}>`,
+        `-o, --output-file <${intlMsg.commands_query_options_outputFilePath()}>`,
         `${intlMsg.commands_query_options_outputFile()}`
       )
       .option(`-t, --test-ens`, `${intlMsg.commands_build_options_t()}`)
@@ -44,10 +44,9 @@ export const query: Command = {
             options.clientConfig,
             undefined
           ),
-          outputFile: parseRecipeOutputFilePathOption(
-            options.outputFile,
-            undefined
-          ),
+          outputFile: options.outputFile
+            ? parseRecipeOutputFilePathOption(options.outputFile, undefined)
+            : undefined,
         });
       });
   },

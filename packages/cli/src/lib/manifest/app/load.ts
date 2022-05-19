@@ -10,11 +10,7 @@ export async function loadAppManifest(
   quiet = false
 ): Promise<AppManifest> {
   const run = (): Promise<AppManifest> => {
-    console.log("load: ", manifestPath);
     const manifest = fs.readFileSync(manifestPath, "utf-8");
-
-    console.log(manifest)
-
     if (!manifest) {
       const noLoadMessage = intlMsg.lib_helpers_manifest_unableToLoad({
         path: `${manifestPath}`,

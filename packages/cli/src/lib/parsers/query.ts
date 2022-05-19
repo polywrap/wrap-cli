@@ -14,7 +14,9 @@ export function parseRecipeScriptPathOption(
 ): string {
   const absPath = path.resolve(script);
   if (!fs.existsSync(absPath)) {
-    throw new Error(intlMsg.commands_query_error_noRecipeScriptFound({path: absPath}));
+    throw new Error(
+      intlMsg.commands_query_error_noRecipeScriptFound({ path: absPath })
+    );
   }
   return absPath;
 }
