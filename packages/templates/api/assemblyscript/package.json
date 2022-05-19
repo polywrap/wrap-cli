@@ -2,7 +2,7 @@
   "name": "templates-api-assemblyscript",
   "description": "Web3API Assemblyscript Template",
   "private": true,
-  "version": "0.0.1-prealpha.77",
+  "version": "0.0.1-prealpha.80",
   "scripts": {
     "build": "yarn build:contract && yarn build:web3api",
     "build:web3api": "npx w3 build",
@@ -20,9 +20,10 @@
   "devDependencies": {
     "@types/jest": "27.0.3",
     "@types/node": "16.11.11",
-    "@web3api/cli": "0.0.1-prealpha.77",
-    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.77",
-    "@web3api/wasm-as": "0.0.1-prealpha.77",
+    "@types/prettier": "2.6.0",
+    "@web3api/cli": "0.0.1-prealpha.80",
+    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.80",
+    "@web3api/wasm-as": "0.0.1-prealpha.80",
     "assemblyscript": "0.19.1",
     "ethers": "5.0.7",
     "jest": "27.4.2",
