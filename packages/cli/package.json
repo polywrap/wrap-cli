@@ -68,6 +68,7 @@
     "@types/fs-extra": "9.0.12",
     "@types/jest": "26.0.8",
     "@types/node": "12.12.26",
+    "@types/prettier": "2.6.0",
     "@types/rimraf": "3.0.0",
     "@web3api/test-env-js": "0.0.1-prealpha.79",
     "cross-env": "7.0.3",
