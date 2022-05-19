@@ -1,4 +1,5 @@
 import * as fs from "fs";
+import path from "path";
 
 export class FileLock {
   constructor(
@@ -33,6 +34,7 @@ export class FileLock {
     }
     // try to get the lock, and recurse if another process gets the lock first.
     try {
+      fs.mkdirSync(path.dirname(this._lockFilePath), { recursive: true });
       await fs.promises.writeFile(this._lockFilePath, `${process.pid}`, {
         flag: "wx",
       });

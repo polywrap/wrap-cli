@@ -7,9 +7,9 @@ import {
   WatchEvent,
   watchEventName,
   intlMsg,
-  getDockerFileLock,
-  isDockerInstalled,
   defaultWeb3ApiManifest,
+  isDockerInstalled,
+  FileLock,
 } from "../lib";
 import {
   parseWasmManifestFileOption,
@@ -18,6 +18,7 @@ import {
   // defaultBuildOutputDirOption,
 } from "../lib/parsers";
 
+import { print } from "gluegun";
 import path from "path";
 import readline from "readline";
 
@@ -71,17 +72,17 @@ async function run(options: BuildCommandOptions) {
     return;
   }
 
-  // Aquire a system-wide lock file for the docker service
-  const dockerLock = getDockerFileLock();
-
-  console.log(manifestFile);
-
   const project = new Web3ApiProject({
     rootCacheDir: path.dirname(manifestFile),
     web3apiManifestPath: manifestFile,
     quiet: verbose ? false : true,
   });
   await project.validate();
+
+  const dockerLock = new FileLock(
+    project.getCachePath("build/DOCKER_LOCK"),
+    print.error
+  );
 
   const schemaComposer = new SchemaComposer({
     project,
