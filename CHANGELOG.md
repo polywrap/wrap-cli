@@ -1,3 +1,7 @@
+# Web3API 0.0.1-prealpha.80
+## Bugs
+* [PR-855](https://github.com/polywrap/monorepo/pull/855) Pinned `@types/prettier` to version `2.6.0` to fix [an issue](https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/60310) that was created by the latest release.
+
 # Web3API 0.0.1-prealpha.79
 ## Bugs
 * [PR-852](https://github.com/polywrap/monorepo/pull/852) `@web3api/client-test-env`: The IPFS node's API endpoint now has CORS enabled via the following configuration properties:
