@@ -7,10 +7,10 @@ import {
   WatchEvent,
   watchEventName,
   intlMsg,
-  getDockerFileLock,
   defaultWeb3ApiManifest,
   resolvePathIfExists,
   isDockerInstalled,
+  FileLock,
 } from "../lib";
 
 import chalk from "chalk";
@@ -88,15 +88,18 @@ export default {
       (outputDir && filesystem.resolve(outputDir)) ||
       filesystem.path(defaultOutputDirectory);
 
-    // Aquire a system-wide lock file for the docker service
-    const dockerLock = getDockerFileLock();
-
     const project = new Web3ApiProject({
       rootCacheDir: path.dirname(manifestFile),
       web3apiManifestPath: manifestFile,
       quiet: verbose ? false : true,
     });
     await project.validate();
+
+    // Aquire a project specific lock file for the docker service
+    const dockerLock = new FileLock(
+      project.getCachePath("build/DOCKER_LOCK"),
+      print.error
+    );
 
     const schemaComposer = new SchemaComposer({
       project,
