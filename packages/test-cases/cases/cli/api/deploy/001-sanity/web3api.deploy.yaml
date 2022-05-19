@@ -4,9 +4,10 @@ stages:
     package: ipfs
     uri: fs/./build
   from_deploy:
-    package: ens
+    package: local-dev-ens
     depends_on: ipfs_deploy
     config:
       domainName: test1.eth
-      provider: 'http://localhost:8545'
-      ensRegistryAddress: '0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab'
+      ports:
+        devServer: 4040
+        ethereum: 8545

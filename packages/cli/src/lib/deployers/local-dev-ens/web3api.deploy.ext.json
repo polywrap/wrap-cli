@@ -1,0 +1,29 @@
+{
+  "id": "DeployManifest_LocalDevENS_WasmAsExt",
+  "type": "object",
+  "required": [
+    "domainName",
+    "ports"
+  ],
+  "properties": {
+    "domainName": {
+      "type": "string"
+    },
+    "domainOwnerAddressOrIndex": {
+      "type": ["string", "number"]
+    },
+    "ports": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["devServer", "ethereum"],
+      "properties": {
+        "devServer": {
+          "type": "number"
+        },
+        "ethereum": {
+          "type": "number"
+        }
+      }
+    }
+  }
+}
