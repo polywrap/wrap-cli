@@ -3,17 +3,20 @@ import { clearStyle, w3Cli } from "./utils";
 
 import { runCLI } from "@web3api/test-env-js";
 
-const HELP = `
-  w3             🔥 Web3API CLI 🔥                                      
-  help (h)       -                                                    
-  test-env (t)   Manage a test environment for Web3API                
-  query (q)      Query Web3APIs using recipe scripts                  
-  plugin (p)     Build/generate types for the plugin                  
-  create (c)     Create a new project with w3 CLI                     
-  codegen (g)    Auto-generate API Types                              
-  build (b)      Builds a Web3API and (optionally) uploads it to IPFS 
-  app (a)        Build/generate types for your app                    
-`;
+const HELP =  `Usage: w3 [options] [command]
+
+Options:
+  -h, --help         display help for command
+
+Commands:
+  app|a              Build/generate types for your app
+  build|b [options]  Builds a Web3API and (optionally) uploads it to IPFS
+  create|c           Create a new project with w3 CLI
+  query|q [options]  Query Web3APIs using recipe scripts
+  test-env|t         Manage a test environment for Web3API
+  help [command]     display help for command
+`
+
 
 describe("e2e tests for no help", () => {
   const projectRoot = path.resolve(__dirname, "../project/");

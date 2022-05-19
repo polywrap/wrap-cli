@@ -10,8 +10,8 @@ import {
 export const testEnv: Command = {
   setup: (program: Program) => {
     const testEnvCommand = program
-      .alias("t")
       .command("test-env")
+      .alias("t")
       .description(intlMsg.commands_testEnv_description());
 
     testEnvCommand
