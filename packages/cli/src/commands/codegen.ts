@@ -9,8 +9,8 @@ import {
   getTestEnvProviders,
 } from "../lib";
 import {
-  defaultCodegenDirOption,
-  defaultWasmManifestFileOption,
+  // defaultCodegenDirOption,
+  // defaultWasmManifestFileOption,
   parseCodegenDirOption,
   parseCodegenScriptOption,
   parseWasmManifestFileOption,
@@ -43,23 +43,17 @@ export const codegen: Command = {
         `-m, --manifest-file <${pathStr}>`,
         `${intlMsg.commands_codegen_options_m({
           default: defaultManifestStr,
-        })}`,
-        parseWasmManifestFileOption,
-        defaultWasmManifestFileOption()
+        })}`
       )
       .option(
         `-c, --codegen-dir <${pathStr}>`,
         ` ${intlMsg.commands_codegen_options_codegen({
           default: defaultCodegenDir,
-        })}`,
-        parseCodegenDirOption,
-        defaultCodegenDirOption()
+        })}`
       )
       .option(
         `-s, --script <${pathStr}>`,
-        `${intlMsg.commands_codegen_options_s()}`,
-        parseCodegenScriptOption,
-        defaultCodegenDirOption()
+        `${intlMsg.commands_codegen_options_s()}`
       )
       .option(
         `-i, --ipfs [<${nodeStr}>]`,
@@ -69,8 +63,16 @@ export const codegen: Command = {
         `-e, --ens [<${addrStr}>]`,
         `${intlMsg.commands_codegen_options_e()}`
       )
-      .action(async (options: CodegenCommandOptions) => {
-        await run(options);
+      .action(async (options) => {
+        await run({
+          ...options,
+          codegenDir: parseCodegenDirOption(options.codegenDir, undefined),
+          script: parseCodegenScriptOption(options.script, undefined),
+          manifestFile: parseWasmManifestFileOption(
+            options.manifestFile,
+            undefined
+          ),
+        });
       });
   },
 };

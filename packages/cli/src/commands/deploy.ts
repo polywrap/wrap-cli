@@ -6,7 +6,7 @@ import {
   DeployPackage,
 } from "../lib";
 import {
-  defaultWasmManifestFileOption,
+  // defaultWasmManifestFileOption,
   parseWasmManifestFileOption,
 } from "../lib/parsers";
 import { DeployerHandler } from "../lib/deploy/deployer";
@@ -36,13 +36,17 @@ export const deploy: Command = {
         `-m, --manifest-file <${pathStr}>`,
         `${intlMsg.commands_plugin_options_m({
           default: defaultManifestStr,
-        })}`,
-        parseWasmManifestFileOption,
-        defaultWasmManifestFileOption()
+        })}`
       )
       .option(`-v, --verbose`, `${intlMsg.commands_deploy_options_v()}`)
-      .action(async (options: DeployCommandOptions) => {
-        await run(options);
+      .action(async (options) => {
+        await run({
+          ...options,
+          manifestFile: parseWasmManifestFileOption(
+            options.manifestFile,
+            undefined
+          ),
+        });
       });
   },
 };

@@ -1,12 +1,17 @@
 import { Command, Program } from "./types";
 import { intlMsg } from "../lib";
+import {
+  // defaultClientConfigOption,
+  parseClientConfigOption,
+  parseRecipeOutputFilePathOption,
+  // parseRecipeScriptPathOption,
+} from "../lib/parsers";
 
 import { Web3ApiClient, Web3ApiClientConfig } from "@web3api/client-js";
 import gql from "graphql-tag";
 import path from "path";
 import yaml from "js-yaml";
 import fs from "fs";
-import { defaultClientConfigOption, parseClientConfigOption, parseRecipeOutputFilePathOption, parseRecipeScriptPathOption } from "../lib/parsers";
 
 type QueryCommandOptions = {
   clientConfig: Partial<Web3ApiClientConfig>;
@@ -16,31 +21,34 @@ type QueryCommandOptions = {
 };
 
 export const query: Command = {
-  setup: async (program: Program) => {
+  setup: (program: Program) => {
     program
       .command("query")
       .alias("q")
       .description(intlMsg.commands_query_description())
-      .argument(
-        "<recipe>",
-        intlMsg.commands_query_options_recipeScript(),
-        parseRecipeScriptPathOption
-      )
+      .argument("<recipe>", intlMsg.commands_query_options_recipeScript())
       .option(
         `-c, --client-config <${intlMsg.commands_query_options_configPath}> `,
-        `${intlMsg.commands_query_options_config()}`,
-        parseClientConfigOption,
-        await defaultClientConfigOption()
+        `${intlMsg.commands_query_options_config()}`
       )
       .option(
         `-o, --output-file <${intlMsg.commands_query_options_outputFilePath}>`,
-        `${intlMsg.commands_query_options_outputFile()}`,
-        parseRecipeOutputFilePathOption
+        `${intlMsg.commands_query_options_outputFile()}`
       )
       .option(`-t, --test-ens`, `${intlMsg.commands_build_options_t()}`)
       .option(`-q, --quiet`, `${intlMsg.commands_query_options_quiet()}`)
       .action(async (recipe: string, options) => {
-        await run(recipe, options);
+        await run(recipe, {
+          ...options,
+          clientConfig: parseClientConfigOption(
+            options.clientConfig,
+            undefined
+          ),
+          outputFile: parseRecipeOutputFilePathOption(
+            options.outputFile,
+            undefined
+          ),
+        });
       });
   },
 };

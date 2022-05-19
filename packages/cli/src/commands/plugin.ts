@@ -9,9 +9,6 @@ import {
   getTestEnvProviders,
 } from "../lib";
 import {
-  defaultPluginCodegenDirOption,
-  defaultPluginManifestFileOption,
-  defaultPluginPublishDirOption,
   parsePluginCodegenDirOption,
   parsePluginManifestFileOption,
   parsePluginPublishDirOption,
@@ -47,25 +44,19 @@ export const plugin: Command = {
         `-m, --manifest-file <${pathStr}>`,
         `${intlMsg.commands_plugin_options_m({
           default: defaultManifestStr,
-        })}`,
-        parsePluginManifestFileOption,
-        defaultPluginManifestFileOption()
+        })}`
       )
       .option(
         `-p, --publish-dir <${pathStr}>`,
         `${intlMsg.commands_plugin_options_publish({
           default: defaultPublishDir,
-        })}`,
-        parsePluginPublishDirOption,
-        defaultPluginPublishDirOption()
+        })}`
       )
       .option(
         `-c, --codegen-dir <${pathStr}>`,
         `${intlMsg.commands_plugin_options_codegen({
           default: defaultCodegenDir,
-        })}`,
-        parsePluginCodegenDirOption,
-        defaultPluginCodegenDirOption()
+        })}`
       )
       .option(
         `-i, --ipfs [<${nodeStr}>]`,
@@ -75,8 +66,22 @@ export const plugin: Command = {
         `-e, --ens [<${addrStr}>]`,
         `${intlMsg.commands_plugin_options_e()}`
       )
-      .action(async (options: PluginCommandOptions) => {
-        await run(options);
+      .action(async (options) => {
+        await run({
+          ...options,
+          manifestFile: parsePluginManifestFileOption(
+            options.manifestFile,
+            undefined
+          ),
+          publishDir: parsePluginPublishDirOption(
+            options.publishDir,
+            undefined
+          ),
+          codegenDir: parsePluginCodegenDirOption(
+            options.codegenDir,
+            undefined
+          ),
+        });
       });
   },
 };

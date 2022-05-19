@@ -10,8 +10,8 @@ import {
 import {
   parseAppManifestFileOption,
   parseAppCodegenDirOption,
-  defaultAppCodegenDirOption,
-  defaultAppManifestFileOption,
+  // defaultAppCodegenDirOption,
+  // defaultAppManifestFileOption,
 } from "../lib/parsers";
 
 import { Web3ApiClient } from "@web3api/client-js";
@@ -40,17 +40,13 @@ export const app: Command = {
         `-m, --manifest-file <${intlMsg.commands_codegen_options_o_path()}>`,
         intlMsg.commands_app_options_codegen({
           default: defaultOutputTypesDir,
-        }),
-        parseAppManifestFileOption,
-        defaultAppManifestFileOption()
+        })
       )
       .option(
         `-c, --codegen-dir <${intlMsg.commands_codegen_options_o_path()}>`,
         `${intlMsg.commands_app_options_codegen({
           default: defaultOutputTypesDir,
-        })}`,
-        parseAppCodegenDirOption,
-        defaultAppCodegenDirOption()
+        })}`
       )
       .option(
         `-i, --ipfs [<${intlMsg.commands_codegen_options_i_node()}>] `,
@@ -60,8 +56,15 @@ export const app: Command = {
         `-e, --ens [<${intlMsg.commands_codegen_options_e_address()}>]`,
         `${intlMsg.commands_codegen_options_e()}`
       )
-      .action(async (options: AppCommandOptions) => {
-        await run(options);
+      .action(async (options) => {
+        await run({
+          ...options,
+          manifestFile: parseAppManifestFileOption(
+            options.manifestFile,
+            undefined
+          ),
+          codegenDir: parseAppCodegenDirOption(options.codegenDir, undefined),
+        });
       });
   },
 };

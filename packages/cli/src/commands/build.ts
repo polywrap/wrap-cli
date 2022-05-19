@@ -13,9 +13,9 @@ import {
 } from "../lib";
 import {
   parseWasmManifestFileOption,
-  defaultWasmManifestFileOption,
+  // defaultWasmManifestFileOption,
   parseBuildOutputDirOption,
-  defaultBuildOutputDirOption,
+  // defaultBuildOutputDirOption,
 } from "../lib/parsers";
 
 import path from "path";
@@ -41,20 +41,23 @@ export const build: Command = {
         `-m, --manifest-file <${pathStr}>`,
         intlMsg.commands_build_options_m({
           default: defaultManifestStr,
-        }),
-        parseWasmManifestFileOption,
-        defaultWasmManifestFileOption()
+        })
       )
       .option(
         `-o, --output-dir <${pathStr}>`,
-        `${intlMsg.commands_build_options_o()}`,
-        parseBuildOutputDirOption,
-        defaultBuildOutputDirOption()
+        `${intlMsg.commands_build_options_o()}`
       )
       .option(`-w, --watch`, `${intlMsg.commands_build_options_w()}`)
       .option(`-v, --verbose`, `${intlMsg.commands_build_options_v()}`)
-      .action(async (options: BuildCommandOptions) => {
-        await run(options);
+      .action(async (options) => {
+        await run({
+          ...options,
+          manifestFile: parseWasmManifestFileOption(
+            options.manifestFile,
+            undefined
+          ),
+          outputDir: parseBuildOutputDirOption(options.outputDir, undefined),
+        });
       });
   },
 };
