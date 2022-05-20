@@ -54,10 +54,8 @@ describe("e2e tests for build command", () => {
     );
 
     expect(code).toEqual(1);
-    expect(error).toBe("");
-    expect(clearStyle(output))
-      .toEqual(`--output-dir option missing <path> argument
-${HELP}`);
+    expect(error).toContain("error: option '-o, --output-dir <path>' argument missing");
+    expect(output).toBe("")
   });
 
   test("Adds uuid-v4 suffix to build-env image if no build manifest specified", async () => {

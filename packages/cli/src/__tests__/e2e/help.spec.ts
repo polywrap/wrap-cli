@@ -12,7 +12,8 @@ Commands:
   build|b [options]           Builds a Web3API
   codegen|g [options]         Auto-generate API Types
   create|c                    Create a new project with w3 CLI
-  plugin|p
+  deploy|d [options]          Deploys/Publishes a Web3API
+  plugin|p                    Build/generate types for the plugin
   query|q [options] <recipe>  Query Web3APIs using recipe scripts
   test-env|t                  Manage a test environment for Web3API
   help [command]              display help for command

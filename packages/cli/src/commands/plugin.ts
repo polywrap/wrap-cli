@@ -36,7 +36,10 @@ type PluginCommandOptions = {
 
 export const plugin: Command = {
   setup: (program: Program) => {
-    const pluginCommand = program.command("plugin").alias("p");
+    const pluginCommand = program
+      .command("plugin")
+      .alias("p")
+      .description(intlMsg.commands_plugin_description());
 
     pluginCommand
       .command("codegen")
