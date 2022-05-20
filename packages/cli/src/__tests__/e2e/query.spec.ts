@@ -55,7 +55,7 @@ describe("e2e tests for query command", () => {
       ensRegistrarAddress: registrarAddress,
       ensResolverAddress: resolverAddress,
       ensRegistryAddress: ens,
-      ensName: "simplestorage",
+      ensName: "simplestorage.eth",
     })
   });
 
