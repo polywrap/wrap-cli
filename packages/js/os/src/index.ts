@@ -1,5 +1,5 @@
-export * from "./fs";
-
-export function isWin(): boolean {
-  return process.platform === "win32";
-}
+export * from "./file";
+export * from "./directory";
+export * from "./path";
+export * from "./platform";
+export * from "./sort";

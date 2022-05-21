@@ -14,6 +14,7 @@ type Query {
     optUnion: CustomUnion
     unionArray: [CustomUnion!]!
     optUnionArray: [CustomUnion]
+    map: Map! @annotate(type: "Map<String!, Int!>!")
   ): Int!
 
   objectMethod(
@@ -26,4 +27,5 @@ type Query {
 
 type QueryEnv {
   queryProp: String!
+  optMap: Map @annotate(type: "Map<String, Int>")
 }

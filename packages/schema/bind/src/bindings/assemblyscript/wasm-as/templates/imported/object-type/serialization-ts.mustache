@@ -1,4 +1,4 @@
-{{^__commonImport}}
+{{^__commonPath}}
 {{> serialization_imports}}
 import { {{type}} } from "./";
 import * as Types from "../..";
@@ -9,7 +9,7 @@ export function serialize{{type}}(type: {{type}}): ArrayBuffer {
   write{{type}}(sizer, type);
   const buffer = new ArrayBuffer(sizer.length);
   const encoderContext: Context = new Context("Serializing (encoding) import object-type: {{type}}");
-  const encoder = new WriteEncoder(buffer, encoderContext);
+  const encoder = new WriteEncoder(buffer, sizer, encoderContext);
   write{{type}}(encoder, type);
   return buffer;
 }
@@ -27,6 +27,13 @@ export function write{{type}}(writer: Write, type: {{type}}): void {
     {{> serialize_array}}
   });
   {{/array}}
+  {{#map}}
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{#handleKeywords}}{{name}}{{/handleKeywords}}, (writer: Write, key: {{#key}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/key}}) => {
+    writer.write{{#key}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/key}}(key);
+  }, (writer: Write, value: {{#value}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/value}}): void => {
+    {{> serialize_map_value}}
+  });
+  {{/map}}
   {{#object}}
   {{#required}}
   Types.{{type}}.write(writer, type.{{#handleKeywords}}{{name}}{{/handleKeywords}});
@@ -115,6 +122,13 @@ export function read{{type}}(reader: Read): {{type}} {
         {{> deserialize_array}}
       });
       {{/array}}
+      {{#map}}
+      _{{name}} = reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}((reader: Read): {{#key}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/key}} => {
+        return reader.read{{#key}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/key}}();
+      }, (reader: Read): {{#value}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/value}} => {
+        {{> deserialize_map_value}}
+      });
+      {{/map}}
       {{#enum}}
       {{> deserialize_enum}}
       _{{name}} = value;
@@ -160,4 +174,4 @@ export function read{{type}}(reader: Read): {{type}} {
     {{/properties}}
   };
 }
-{{/__commonImport}}
+{{/__commonPath}}

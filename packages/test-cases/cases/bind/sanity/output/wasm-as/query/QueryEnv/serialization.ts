@@ -6,6 +6,7 @@ import {
   WriteEncoder,
   Nullable,
   BigInt,
+  BigNumber,
   JSON,
   Context
 } from "@web3api/wasm-as";
@@ -18,16 +19,24 @@ export function serializeQueryEnv(type: QueryEnv): ArrayBuffer {
   writeQueryEnv(sizer, type);
   const buffer = new ArrayBuffer(sizer.length);
   const encoderContext: Context = new Context("Serializing (encoding) object-type: QueryEnv");
-  const encoder = new WriteEncoder(buffer, encoderContext);
+  const encoder = new WriteEncoder(buffer, sizer, encoderContext);
   writeQueryEnv(encoder, type);
   return buffer;
 }
 
 export function writeQueryEnv(writer: Write, type: QueryEnv): void {
-  writer.writeMapLength(3);
+  writer.writeMapLength(4);
   writer.context().push("queryProp", "string", "writing property");
   writer.writeString("queryProp");
   writer.writeString(type.queryProp);
+  writer.context().pop();
+  writer.context().push("optMap", "Map<string, Nullable<i32>> | null", "writing property");
+  writer.writeString("optMap");
+  writer.writeNullableExtGenericMap(type.optMap, (writer: Write, key: string) => {
+    writer.writeString(key);
+  }, (writer: Write, value: Nullable<i32>): void => {
+    writer.writeNullableInt32(value);
+  });
   writer.context().pop();
   writer.context().push("prop", "string", "writing property");
   writer.writeString("prop");
@@ -50,6 +59,7 @@ export function readQueryEnv(reader: Read): QueryEnv {
 
   let _queryProp: string = "";
   let _queryPropSet: bool = false;
+  let _optMap: Map<string, Nullable<i32>> | null = null;
   let _prop: string = "";
   let _propSet: bool = false;
   let _optProp: string | null = null;
@@ -63,6 +73,15 @@ export function readQueryEnv(reader: Read): QueryEnv {
       reader.context().push(field, "string", "type found, reading property");
       _queryProp = reader.readString();
       _queryPropSet = true;
+      reader.context().pop();
+    }
+    else if (field == "optMap") {
+      reader.context().push(field, "Map<string, Nullable<i32>> | null", "type found, reading property");
+      _optMap = reader.readNullableExtGenericMap((reader: Read): string => {
+        return reader.readString();
+      }, (reader: Read): Nullable<i32> => {
+        return reader.readNullableInt32();
+      });
       reader.context().pop();
     }
     else if (field == "prop") {
@@ -88,6 +107,7 @@ export function readQueryEnv(reader: Read): QueryEnv {
 
   return {
     queryProp: _queryProp,
+    optMap: _optMap,
     prop: _prop,
     optProp: _optProp
   };

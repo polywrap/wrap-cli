@@ -1,19 +1,30 @@
 import { DataView } from "./DataView";
+import { WriteSizer } from "./WriteSizer";
 import { Format } from "./Format";
+import { ExtensionType } from "./ExtensionType";
 import { Nullable } from "./Nullable";
 import { Write } from "./Write";
-import { BigInt } from "../math";
+import { throwArrayIndexOutOfRange } from "./utils";
+import { BigInt, BigNumber } from "../math";
 import { Context } from "../debug";
 import { JSON } from "../json";
 
 export class WriteEncoder extends Write {
   private readonly _context: Context;
   private _view: DataView;
+  private _sizer: WriteSizer;
+  private _extCtr: u32;
 
-  constructor(ua: ArrayBuffer, context: Context = new Context()) {
+  constructor(
+    ua: ArrayBuffer,
+    sizer: WriteSizer,
+    context: Context = new Context()
+  ) {
     super();
     this._context = context;
     this._view = new DataView(ua, 0, ua.byteLength, context);
+    this._sizer = sizer;
+    this._extCtr = 0;
   }
 
   context(): Context {
@@ -134,6 +145,11 @@ export class WriteEncoder extends Write {
     this.writeString(str);
   }
 
+  writeBigNumber(value: BigNumber): void {
+    const str = value.toString();
+    this.writeString(str);
+  }
+
   writeJSON(value: JSON.Value): void {
     const str = value.stringify();
     this.writeString(str);
@@ -183,6 +199,39 @@ export class WriteEncoder extends Write {
       key_fn(this, key);
       value_fn(this, value);
     }
+  }
+
+  writeExtGenericMap<K, V>(
+    m: Map<K, V>,
+    key_fn: (encoder: Write, key: K) => void,
+    value_fn: (encoder: Write, value: V) => void
+  ): void {
+    if (this._extCtr >= <u32>this._sizer.extByteLengths.length) {
+      throwArrayIndexOutOfRange(
+        this._context,
+        "writeExtGenericMap",
+        this._sizer.extByteLengths.length,
+        this._extCtr
+      );
+    }
+    const byteLength = this._sizer.extByteLengths[this._extCtr];
+    this._extCtr += 1;
+
+    // Encode the extension format + bytelength
+    if (byteLength <= <u32>u8.MAX_VALUE) {
+      this._view.setUint8(<u8>Format.EXT8);
+      this._view.setUint8(<u8>byteLength);
+    } else if (byteLength <= <u32>u16.MAX_VALUE) {
+      this._view.setUint8(<u8>Format.EXT16);
+      this._view.setUint16(<u16>byteLength);
+    } else {
+      this._view.setUint8(<u8>Format.EXT32);
+      this._view.setUint32(byteLength);
+    }
+    // Set the extension type
+    this._view.setUint8(<u8>ExtensionType.GENERIC_MAP);
+
+    this.writeMap(m, key_fn, value_fn);
   }
 
   writeNullableBool(value: Nullable<bool>): void {
@@ -293,6 +342,15 @@ export class WriteEncoder extends Write {
     this.writeBigInt(value);
   }
 
+  writeNullableBigNumber(value: BigNumber): void {
+    if (value === null) {
+      this.writeNil();
+      return;
+    }
+
+    this.writeBigNumber(value);
+  }
+
   writeNullableJSON(value: JSON.Value | null): void {
     if (value === null) {
       this.writeNil();
@@ -323,5 +381,17 @@ export class WriteEncoder extends Write {
       return;
     }
     this.writeMap(m, key_fn, value_fn);
+  }
+
+  writeNullableExtGenericMap<K, V>(
+    m: Map<K, V> | null,
+    key_fn: (encoder: Write, key: K) => void,
+    value_fn: (encoder: Write, value: V) => void
+  ): void {
+    if (m === null) {
+      this.writeNil();
+      return;
+    }
+    this.writeExtGenericMap(m, key_fn, value_fn);
   }
 }

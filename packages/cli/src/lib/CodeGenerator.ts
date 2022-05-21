@@ -16,24 +16,16 @@ import {
   AnyManifest,
   SchemaComposer,
   intlMsg,
+  resetDir,
 } from "./";
 
-import { TypeInfo } from "@web3api/schema-parse";
-import {
-  OutputDirectory,
-  writeDirectory,
-  bindSchema,
-  BindLanguage,
-  GenerateBindingFn,
-} from "@web3api/schema-bind";
+import { BindLanguage, GenerateBindingFn } from "@web3api/schema-bind";
+import { writeDirectorySync } from "@web3api/os-js";
 import path from "path";
-import fs, { readFileSync } from "fs";
+import { readFileSync } from "fs";
 import * as gluegun from "gluegun";
 import { Ora } from "ora";
 import Mustache from "mustache";
-import rimraf from "rimraf";
-
-export { OutputDirectory };
 
 export interface CodeGeneratorConfig {
   outputDir: string;
@@ -48,10 +40,10 @@ export class CodeGenerator {
 
   constructor(private _config: CodeGeneratorConfig) {}
 
-  public async generate(config?: Record<string, unknown>): Promise<boolean> {
+  public async generate(): Promise<boolean> {
     try {
       // Compile the API
-      await this._generateCode(config);
+      await this._generateCode();
 
       return true;
     } catch (e) {
@@ -60,7 +52,7 @@ export class CodeGenerator {
     }
   }
 
-  private async _generateCode(config?: Record<string, unknown>) {
+  private async _generateCode() {
     const { schemaComposer, project } = this._config;
 
     const run = async (spinner?: Ora) => {
@@ -89,7 +81,7 @@ export class CodeGenerator {
       }
 
       // Make sure the output dir is reset
-      this._resetDir(this._config.outputDir);
+      resetDir(this._config.outputDir);
 
       // Get the fully composed schema
       const composed = await schemaComposer.getComposedSchemas();
@@ -106,9 +98,6 @@ export class CodeGenerator {
       }
 
       if (this._config.customScript) {
-        const output: OutputDirectory = {
-          entries: [],
-        };
         const customScript = this._config.customScript;
 
         // Check the generation file if it has the proper run() method
@@ -129,31 +118,41 @@ export class CodeGenerator {
           throw Error(intlMsg.lib_codeGenerator_nogenerateBindingMethod());
         }
 
-        await generateBinding(
-          output,
-          typeInfo,
-          this._schema || "",
-          config || {}
-        );
-
-        writeDirectory(this._config.outputDir, output, (templatePath: string) =>
-          this._generateTemplate(templatePath, typeInfo, spinner)
-        );
-      } else {
-        const content = bindSchema({
-          combined: {
-            typeInfo: composed.combined?.typeInfo as TypeInfo,
-            schema: composed.combined?.schema as string,
-            config,
-            outputDirAbs: "",
-          },
+        const output = await generateBinding({
+          projectName: await project.getName(),
+          modules: [
+            {
+              name: "custom",
+              typeInfo,
+              schema: this._schema || "",
+              outputDirAbs: this._config.outputDir,
+            },
+          ],
           bindLanguage,
         });
 
-        writeDirectory(
-          this._config.outputDir,
-          content.combined as OutputDirectory
+        for (const module of output.modules) {
+          writeDirectorySync(
+            this._config.outputDir,
+            module.output,
+            (templatePath: string) =>
+              this._generateTemplate(templatePath, typeInfo, spinner)
+          );
+        }
+      } else {
+        const output = await project.generateSchemaBindings(
+          composed,
+          this._config.outputDir
         );
+
+        // Output the bindings
+        for (const module of output.modules) {
+          writeDirectorySync(module.outputDirAbs, module.output);
+        }
+
+        if (output.common) {
+          writeDirectorySync(output.common.outputDirAbs, output.common.output);
+        }
       }
     };
 
@@ -169,14 +168,6 @@ export class CodeGenerator {
         }
       );
     }
-  }
-
-  private _resetDir(dir: string) {
-    if (fs.existsSync(dir)) {
-      rimraf.sync(dir);
-    }
-
-    fs.mkdirSync(dir, { recursive: true });
   }
 
   private _generateTemplate(

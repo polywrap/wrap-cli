@@ -4,7 +4,7 @@ import {
   createImportedUnionDefinition,
   createObjectRef,
 } from "../typeInfo";
-import { extractImportedDefinition } from "./imported-types-utils";
+import { extractImportedDefinition } from "./utils/imported-types-utils";
 
 import { ASTVisitor, UnionTypeDefinitionNode } from "graphql";
 

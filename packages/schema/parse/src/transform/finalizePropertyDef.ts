@@ -39,6 +39,8 @@ export function populatePropertyType(
     propertyType = property.enum;
   } else if (property.union) {
     propertyType = property.union;
+  } else if (property.map) {
+    propertyType = property.map;
   } else {
     throw Error("Property type is undefined, this should never happen.");
   }
@@ -84,6 +86,8 @@ function populateArrayType(array: ArrayDefinition, typeInfo: TypeInfo) {
     array.item = array.enum;
   } else if (array.union) {
     array.item = array.union;
+  } else if (array.map) {
+    array.item = array.map;
   } else {
     array.item = array.object;
   }

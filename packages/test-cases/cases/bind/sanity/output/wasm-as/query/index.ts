@@ -33,5 +33,5 @@ export {
   TestImport_Union,
 } from "./imported/TestImport_Union";
 export { TestImport } from "./TestImport";
-export { env } from "./env";
+export { env, requireEnv } from "./env";
 export { QueryEnv } from "./QueryEnv";

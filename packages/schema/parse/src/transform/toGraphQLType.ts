@@ -5,6 +5,7 @@ import {
   ArrayDefinition,
   MethodDefinition,
   DefinitionKind,
+  MapDefinition,
 } from "../typeInfo";
 
 function applyRequired(type: string, required: boolean | null): string {
@@ -22,6 +23,8 @@ function anyToGraphQL(any: AnyDefinition, prefixed: boolean): string {
     return toGraphQL(any.enum, prefixed);
   } else if (any.union) {
     return toGraphQL(any.union, prefixed);
+  } else if (any.map) {
+    return toGraphQL(any.map, prefixed);
   } else {
     throw Error(
       `anyToGraphQL: Any type is invalid.\n${JSON.stringify(any, null, 2)}`
@@ -29,7 +32,7 @@ function anyToGraphQL(any: AnyDefinition, prefixed: boolean): string {
   }
 }
 
-function toGraphQL(def: GenericDefinition, prefixed = false): string {
+export function toGraphQL(def: GenericDefinition, prefixed = false): string {
   switch (def.kind) {
     case DefinitionKind.Object:
     case DefinitionKind.ObjectRef:
@@ -71,6 +74,31 @@ function toGraphQL(def: GenericDefinition, prefixed = false): string {
       return applyRequired(
         `[${toGraphQL(array.item, prefixed)}]`,
         array.required
+      );
+    }
+    case DefinitionKind.Map: {
+      const map = def as MapDefinition;
+      if (!map.key) {
+        throw Error(
+          `toGraphQL: MapDefinition's key type is undefined.\n${JSON.stringify(
+            map,
+            null,
+            2
+          )}`
+        );
+      }
+      if (!map.value) {
+        throw Error(
+          `toGraphQL: MapDefinition's value type is undefined.\n${JSON.stringify(
+            map,
+            null,
+            2
+          )}`
+        );
+      }
+      return applyRequired(
+        `Map<${toGraphQL(map.key, prefixed)}, ${anyToGraphQL(map, prefixed)}>`,
+        map.required
       );
     }
     case DefinitionKind.Method: {

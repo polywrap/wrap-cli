@@ -1,4 +1,5 @@
-format: 0.0.1-prealpha.5
+format: 0.0.1-prealpha.8
+name: EthereumIntegration
 build: ./web3api.build.yaml
 language: wasm/assemblyscript
 modules:

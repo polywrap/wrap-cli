@@ -1,1 +1,0 @@
-export { AnotherObject } from "../common";

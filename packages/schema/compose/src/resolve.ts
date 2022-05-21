@@ -529,12 +529,7 @@ function addModuleImportsDirective(
     return result.replace(typeCapture, replacementModuleStr);
   };
 
-  if (schemaKind === "plugin") {
-    result = modifySchema(false);
-    result = modifySchema(true);
-  } else {
-    result = modifySchema(schemaKind === "mutation");
-  }
+  result = modifySchema(schemaKind === "mutation");
 
   return result;
 }
@@ -1245,7 +1240,7 @@ export function resolveEnvTypes(
     return;
   }
 
-  const isMutationEnv = schemaKind === "mutation" || schemaKind === "plugin";
+  const isMutationEnv = schemaKind === "mutation";
 
   const moduleEnvDef = isMutationEnv
     ? typeInfo.envTypes.mutation

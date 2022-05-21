@@ -9,8 +9,8 @@ import {
   extractListType,
   extractNamedType,
   State,
-} from "./object-types-utils";
-import { extractImportedDefinition } from "./imported-types-utils";
+} from "./utils/object-types-utils";
+import { extractImportedDefinition } from "./utils/imported-types-utils";
 
 import {
   ObjectTypeDefinitionNode,

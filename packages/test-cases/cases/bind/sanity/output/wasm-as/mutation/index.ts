@@ -33,5 +33,5 @@ export {
 export {
   TestImport_Union,
 } from "./imported/TestImport_Union";
-export { env } from "./env";
+export { env, requireEnv } from "./env";
 export { MutationEnv } from "./MutationEnv";

@@ -25,6 +25,7 @@ import {
   InterfaceDefinition,
   EnvDefinition,
   WithKind,
+  MapDefinition,
 } from "../typeInfo";
 
 export * from "./finalizePropertyDef";
@@ -35,6 +36,7 @@ export * from "./methodParentPointers";
 export * from "./toGraphQLType";
 export * from "./moduleCapabilities";
 export * from "./addUnionNameToMemberTypes";
+export * from "./addAnnotations";
 
 export interface TypeInfoTransforms {
   enter?: TypeInfoTransformer;
@@ -73,6 +75,7 @@ export interface TypeInfoTransformer {
     def: InterfaceImplementedDefinition
   ) => InterfaceImplementedDefinition;
   EnvDefinition?: (def: EnvDefinition) => EnvDefinition;
+  MapDefinition?: (def: MapDefinition) => MapDefinition;
 }
 
 export function transformTypeInfo(
@@ -211,6 +214,10 @@ export function visitAnyDefinition(
 
   if (result.array) {
     result.array = visitArrayDefinition(result.array, transforms);
+  }
+
+  if (result.map) {
+    result.map = visitMapDefinition(result.map, transforms);
   }
 
   if (result.scalar) {
@@ -403,6 +410,28 @@ export function visitEnvDefinition(
   return transformType(result, transforms.leave);
 }
 
+export function visitMapDefinition(
+  def: MapDefinition,
+  transforms: TypeInfoTransforms
+): MapDefinition {
+  let result = Object.assign({}, def);
+  result = transformType(result, transforms.enter);
+
+  result = visitAnyDefinition(result, transforms) as any;
+
+  if (result.key) {
+    result.key = transformType(result.key, transforms.enter);
+    result.key = transformType(result.key, transforms.leave);
+  }
+
+  if (result.value) {
+    result.value = transformType(result.value, transforms.enter);
+    result.value = transformType(result.value, transforms.leave);
+  }
+
+  return transformType(result, transforms.leave);
+}
+
 export function transformType<TDefinition extends WithKind>(
   type: TDefinition,
   transform?: TypeInfoTransformer
@@ -433,6 +462,7 @@ export function transformType<TDefinition extends WithKind>(
     ImportedObjectDefinition,
     InterfaceImplementedDefinition,
     EnvDefinition,
+    MapDefinition,
   } = transform;
 
   if (GenericDefinition && isKind(result, DefinitionKind.Generic)) {
@@ -506,6 +536,9 @@ export function transformType<TDefinition extends WithKind>(
   }
   if (EnvDefinition && isKind(result, DefinitionKind.Env)) {
     result = Object.assign(result, EnvDefinition(result as any));
+  }
+  if (MapDefinition && isKind(result, DefinitionKind.Map)) {
+    result = Object.assign(result, MapDefinition(result as any));
   }
 
   return result;

@@ -8,7 +8,9 @@ scalar Int16
 scalar Int32
 scalar Bytes
 scalar BigInt
+scalar BigNumber
 scalar JSON
+scalar Map
 
 directive @imported(
   uri: String!
@@ -16,9 +18,7 @@ directive @imported(
   nativeType: String!
 ) on OBJECT | ENUM
 
-directive @imports(
-  types: [String!]!
-) on OBJECT
+directive @imports(types: [String!]!) on OBJECT
 
 type TestUnionA {
   prop: String!
@@ -40,6 +40,9 @@ directive @capability(
 ) repeatable on OBJECT
 
 directive @enabled_interface on OBJECT
+
+directive @annotate(type: String!) on FIELD
+
 """
 CustomEnum comment
 """
@@ -53,13 +56,13 @@ CustomType multi-line comment
 line 2
 """
 type CustomType {
-"""
-str comment
-"""
+  """
+  str comment
+  """
   str: String!
-"""
-optStr comment
-"""
+  """
+  optStr comment
+  """
   optStr: String
   u: UInt!
   optU: UInt
@@ -72,6 +75,8 @@ optStr comment
   i32: Int32!
   bigint: BigInt!
   optBigint: BigInt
+  bignumber: BigNumber!
+  optBignumber: BigNumber
   json: JSON!
   optJson: JSON
   bytes: Bytes!
@@ -89,11 +94,12 @@ optStr comment
   optNestedObject: UserObject
   optEnum: CustomEnum
   enum: CustomEnum!
-  enumArray: [CustomEnum!]!,
+  enumArray: [CustomEnum!]!
   optEnumArray: [CustomEnum]
+  map1: Map @annotate(type: "Map<String, Int>")
   optUnion: CustomUnion
   union: CustomUnion!
-  unionArray: [CustomUnion!]!,
+  unionArray: [CustomUnion!]!
   optUnionArray: [CustomUnion]
 }
 
@@ -101,9 +107,9 @@ optStr comment
 AnotherType comment
 """
 type AnotherType {
-"""
-prop comment
-"""
+  """
+  prop comment
+  """
   prop: String
 }
 
@@ -138,16 +144,16 @@ type MutationClientEnv {
 }
 
 type Mutation {
-  sanitizeMutationEnv(env: MutationClientEnv!): MutationEnv!
+  sanitizeEnv(env: MutationClientEnv!): MutationEnv!
 }
 
 """
 ImplementationObject comment
 """
 type ImplementationObject implements Interface_Object & Interface_Object2 {
-"""
-anotherProp comment
-"""
+  """
+  anotherProp comment
+  """
   anotherProp: String
   str: String!
   uint8: UInt8!
@@ -157,99 +163,98 @@ anotherProp comment
 """
 Query comment
 """
-type Query implements Interface_Query @imports(
-  types: [ "TestImport_Query", "Interface_Query" ]
-) @capability(
-  type: "getImplementations",
-  uri: "testimport.uri.eth",
-  namespace: "TestImport",
-) {
-  sanitizeQueryEnv(env: QueryClientEnv!): QueryEnv!
-"""
-queryMethod comment
-"""
+type Query implements Interface_Query
+  @imports(types: ["TestImport_Query", "Interface_Query"])
+  @capability(
+    type: "getImplementations"
+    uri: "testimport.uri.eth"
+    namespace: "TestImport"
+  ) {
+  sanitizeEnv(env: QueryClientEnv!): QueryEnv!
+  """
+  queryMethod comment
+  """
   queryMethod(
-"""
-arg comment
-"""
+    """
+    arg comment
+    """
     arg: String!
   ): [Int]!
-"""
-userObjectMethod comment
-"""
+  """
+  userObjectMethod comment
+  """
   userObjectMethod(
-"""
-userObject comment
-"""
+    """
+    userObject comment
+    """
     userObject: UserObject
-"""
-arrayObject comment
-"""
+    """
+    arrayObject comment
+    """
     arrayObject: [UserObject!]!
   ): UserObject!
-"""
-enumMethod comment
-"""
+  """
+  enumMethod comment
+  """
   enumMethod(
-"""
-enum comment
-"""
-    enum: CustomEnum,
-"""
-arrayEnum comment
-"""
+    """
+    enum comment
+    """
+    enum: CustomEnum
+    """
+    arrayEnum comment
+    """
     arrayEnum: [CustomEnum!]!
   ): CustomEnum!
-"""
-UnionMethod comment
-"""
+  """
+  UnionMethod comment
+  """
   unionMethod(
-"""
-Union comment
-"""
-    union: CustomUnion,
-"""
-arrayUnion comment
-"""
+    """
+    Union comment
+    """
+    union: CustomUnion
+    """
+    arrayUnion comment
+    """
     arrayUnion: [CustomUnion!]!
   ): CustomUnion!
-"""
-abstractMethod comment
-"""
-  abstractMethod(
-    arg: UInt8!
-  ): String!
+  """
+  abstractMethod comment
+  """
+  abstractMethod(arg: UInt8!): String!
+
+  transformMap(map: Map @annotate(type: "Map<String!, Int!>")): Map
+    @annotate(type: "Map<String!, Int!>")
 }
 
 """
 TestImport_Query comment
 """
-type TestImport_Query @imported(
-  uri: "testimport.uri.eth",
-  namespace: "TestImport",
-  nativeType: "Query"
-) @enabled_interface {
-"""
-importedMethod comment
-"""
+type TestImport_Query
+  @imported(
+    uri: "testimport.uri.eth"
+    namespace: "TestImport"
+    nativeType: "Query"
+  )
+  @enabled_interface {
+  """
+  importedMethod comment
+  """
   importedMethod(
     str: String!
     optStr: String
     u: UInt!
     optU: UInt
-"""
-uArrayArray comment
-"""
+    """
+    uArrayArray comment
+    """
     uArrayArray: [[UInt]]!
   ): String!
 
-  anotherMethod(
-    arg: [String!]!
-  ): [Int32]!
+  anotherMethod(arg: [String!]!): [Int32]!
 
-  importedObjectMethod(
-    importedObject: TestImport_Object!
-  ): TestImport_Object!
+  importedObjectMethod(importedObject: TestImport_Object!): TestImport_Object!
 
   importedEnumMethod(
     enum: TestImport_Enum!
@@ -265,18 +270,19 @@ uArrayArray comment
 """
 TestImport_Mutation comment
 """
-type TestImport_Mutation @imported(
-  uri: "testimport.uri.eth",
-  namespace: "TestImport",
-  nativeType: "Mutation"
-) {
-"""
-importedMethod comment
-"""
+type TestImport_Mutation
+  @imported(
+    uri: "testimport.uri.eth"
+    namespace: "TestImport"
+    nativeType: "Mutation"
+  ) {
+  """
+  importedMethod comment
+  """
   importedMethod(
-"""
-str comment
-"""
+    """
+    str comment
+    """
     str: String!
   ): String!
 }
@@ -284,32 +290,34 @@ str comment
 """
 TestImport_Object comment
 """
-type TestImport_Object @imported(
-  uri: "testimport.uri.eth",
-  namespace: "TestImport",
-  nativeType: "Object"
-) {
-"""
-prop comment
-"""
+type TestImport_Object
+  @imported(
+    uri: "testimport.uri.eth"
+    namespace: "TestImport"
+    nativeType: "Object"
+  ) {
+  """
+  prop comment
+  """
   prop: String!
-"""
-nested comment
-"""
+  """
+  nested comment
+  """
   nested: TestImport_NestedObject!
 }
 
 """
 TestImport_NestedObject comment
 """
-type TestImport_NestedObject @imported(
-  uri: "testimport.uri.eth",
-  namespace: "TestImport",
-  nativeType: "NestedObject"
-) {
-"""
-foo comment
-"""
+type TestImport_NestedObject
+  @imported(
+    uri: "testimport.uri.eth"
+    namespace: "TestImport"
+    nativeType: "NestedObject"
+  ) {
+  """
+  foo comment
+  """
   foo: [String!]!
   circular: TestImport_Object
 }
@@ -317,11 +325,12 @@ foo comment
 """
 TestImport_Enum comment
 """
-enum TestImport_Enum @imported(
-  namespace: "TestImport",
-  uri: "testimport.uri.eth",
-  nativeType: "Enum"
-) {
+enum TestImport_Enum
+  @imported(
+    namespace: "TestImport"
+    uri: "testimport.uri.eth"
+    nativeType: "Enum"
+  ) {
   TEXT
   BYTES
 }
@@ -329,36 +338,39 @@ enum TestImport_Enum @imported(
 """
 TestImport_Union comment
 """
-union TestImport_Union @imported(
-  namespace: "TestImport",
-  uri: "testimport.uri.eth",
-  nativeType: "Union"
-) = TestUnionA | TestUnionB
+union TestImport_Union
+  @imported(
+    namespace: "TestImport"
+    uri: "testimport.uri.eth"
+    nativeType: "Union"
+  ) =
+    TestUnionA
+  | TestUnionB
 
 """
 Interface_Query comment
 """
-type Interface_Query @imported(
-  uri: "interface.uri.eth",
-  namespace: "Interface",
-  nativeType: "Query"
-) {
-"""
-abstractMethod comment
-"""
-  abstractMethod(
-    arg: UInt8!
-  ): String!
+type Interface_Query
+  @imported(
+    uri: "interface.uri.eth"
+    namespace: "Interface"
+    nativeType: "Query"
+  ) {
+  """
+  abstractMethod comment
+  """
+  abstractMethod(arg: UInt8!): String!
 }
 
 """
 Interface_Object comment
 """
-type Interface_Object @imported(
-  uri: "interface.uri.eth",
-  namespace: "Interface",
-  nativeType: "Object"
-) {
+type Interface_Object
+  @imported(
+    uri: "interface.uri.eth"
+    namespace: "Interface"
+    nativeType: "Object"
+  ) {
   str: String!
   uint8: UInt8!
 }
@@ -366,10 +378,11 @@ type Interface_Object @imported(
 """
 Interface_Object2 comment
 """
-type Interface_Object2 @imported(
-  uri: "interface.uri.eth",
-  namespace: "Interface",
-  nativeType: "Object2"
-) {
+type Interface_Object2
+  @imported(
+    uri: "interface.uri.eth"
+    namespace: "Interface"
+    nativeType: "Object2"
+  ) {
   str2: String!
 }

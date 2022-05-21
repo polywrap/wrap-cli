@@ -1,7 +1,7 @@
 import {
   queryMethod,
   objectMethod
-} from "../../index";
+} from "../index";
 import {
   deserializequeryMethodArgs,
   serializequeryMethodResult,
@@ -21,7 +21,8 @@ export function queryMethodWrapped(argsBuf: ArrayBuffer): ArrayBuffer {
     union: args.union,
     optUnion: args.optUnion,
     unionArray: args.unionArray,
-    optUnionArray: args.optUnionArray
+    optUnionArray: args.optUnionArray,
+    map: args.map
   });
   return serializequeryMethodResult(result);
 }

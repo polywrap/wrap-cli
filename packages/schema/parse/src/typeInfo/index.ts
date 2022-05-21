@@ -20,6 +20,7 @@ export * from "./scalar";
 export * from "./operation";
 export * from "./module";
 export * from "./env";
+export * from "./map";
 
 export interface TypeInfo {
   objectTypes: ObjectDefinition[];

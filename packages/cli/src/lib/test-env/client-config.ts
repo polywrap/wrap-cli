@@ -35,10 +35,6 @@ export async function getTestEnvClientConfig(): Promise<
           testnet: {
             provider: ethProvider,
           },
-          mainnet: {
-            provider:
-              "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
-          },
         },
       }),
     },
@@ -52,8 +48,10 @@ export async function getTestEnvClientConfig(): Promise<
     {
       uri: "w3://ens/ens.web3api.eth",
       plugin: ensPlugin({
-        addresses: {
-          testnet: ensAddress,
+        query: {
+          addresses: {
+            testnet: ensAddress,
+          },
         },
       }),
     },

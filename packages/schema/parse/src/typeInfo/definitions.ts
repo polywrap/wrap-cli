@@ -1,6 +1,7 @@
 import { ScalarType, isScalarType } from "./scalar";
 import { OperationType, isOperationType } from "./operation";
 import { ModuleType, isModuleType } from "./module";
+import { isMapKeyType, MapKeyType } from "./map";
 
 export enum DefinitionKind {
   Generic = 0,
@@ -20,10 +21,12 @@ export enum DefinitionKind {
   UnresolvedObjectOrUnionOrEnumRef = 1 << 13,
   ObjectRef = 1 << 14,
   EnumRef = 1 << 15,
-  Union = 1 << 16,
-  UnionRef = 1 << 17,
-  Interface = 1 << 18,
-  Env = 1 << 19,
+  Interface = 1 << 16,
+  Env = 1 << 17,
+  MapKey = 1 << 18,
+  Map = (1 << 19) | DefinitionKind.Any,
+  Union = 1 << 20,
+  UnionRef = 1 << 21,
 }
 
 export function isKind(type: WithKind, kind: DefinitionKind): boolean {
@@ -92,6 +95,7 @@ export function createObjectRef(args: {
 export interface AnyDefinition extends GenericDefinition {
   array: ArrayDefinition | null;
   scalar: ScalarDefinition | null;
+  map: MapDefinition | null;
   object: ObjectRef | null;
   enum: EnumRef | null;
   union: UnionRef | null;
@@ -102,6 +106,7 @@ export function createAnyDefinition(args: {
   name?: string | null;
   required?: boolean;
   array?: ArrayDefinition;
+  map?: MapDefinition;
   scalar?: ScalarDefinition;
   object?: ObjectRef;
   enum?: EnumRef;
@@ -110,12 +115,33 @@ export function createAnyDefinition(args: {
   return {
     ...createGenericDefinition(args),
     array: args.array ? args.array : null,
+    map: args.map ? args.map : null,
     scalar: args.scalar ? args.scalar : null,
     object: args.object ? args.object : null,
     enum: args.enum ? args.enum : null,
     union: args.union ? args.union : null,
     unresolvedObjectOrUnionOrEnum: null,
     kind: DefinitionKind.Any,
+  };
+}
+
+export interface MapKeyDefinition extends GenericDefinition {
+  type: MapKeyType;
+}
+export function createMapKeyDefinition(args: {
+  type: string;
+  name?: string | null;
+  required?: boolean;
+}): MapKeyDefinition {
+  if (!isMapKeyType(args.type)) {
+    throw Error(
+      `createMapKeyDefinition: Unrecognized Map key type provided "${args.type}"`
+    );
+  }
+  return {
+    ...createGenericDefinition(args),
+    type: args.type,
+    kind: DefinitionKind.Scalar,
   };
 }
 
@@ -218,6 +244,47 @@ export function createUnresolvedObjectOrUnionOrEnumRef(args: {
   };
 }
 
+export interface MapDefinition extends AnyDefinition, WithComment {
+  key: MapKeyDefinition | null;
+  value: GenericDefinition | null;
+}
+export function createMapDefinition(args: {
+  type: string;
+  name?: string | null;
+  required?: boolean;
+  key?: MapKeyDefinition;
+  value?: GenericDefinition | null;
+}): MapDefinition {
+  return {
+    ...createAnyDefinition({
+      ...args,
+      array:
+        args.value && isKind(args.value, DefinitionKind.Array)
+          ? (args.value as ArrayDefinition)
+          : undefined,
+      map:
+        args.value && isKind(args.value, DefinitionKind.Map)
+          ? (args.value as MapDefinition)
+          : undefined,
+      scalar:
+        args.value && isKind(args.value, DefinitionKind.Scalar)
+          ? (args.value as ScalarDefinition)
+          : undefined,
+      object:
+        args.value && isKind(args.value, DefinitionKind.ObjectRef)
+          ? (args.value as ObjectRef)
+          : undefined,
+      enum:
+        args.value && isKind(args.value, DefinitionKind.EnumRef)
+          ? (args.value as EnumRef)
+          : undefined,
+    }),
+    key: args.key ? args.key : null,
+    value: args.value ? args.value : null,
+    kind: DefinitionKind.Map,
+  };
+}
+
 export interface ArrayDefinition extends AnyDefinition {
   item: GenericDefinition | null;
 }
@@ -233,6 +300,10 @@ export function createArrayDefinition(args: {
       array:
         args.item && isKind(args.item, DefinitionKind.Array)
           ? (args.item as ArrayDefinition)
+          : undefined,
+      map:
+        args.item && isKind(args.item, DefinitionKind.Map)
+          ? (args.item as MapDefinition)
           : undefined,
       scalar:
         args.item && isKind(args.item, DefinitionKind.Scalar)
@@ -262,6 +333,7 @@ export function createPropertyDefinition(args: {
   name?: string | null;
   required?: boolean;
   array?: ArrayDefinition;
+  map?: MapDefinition;
   scalar?: ScalarDefinition;
   object?: ObjectRef;
   union?: UnionRef;
@@ -281,6 +353,7 @@ export function createInterfaceImplementedDefinition(args: {
   name?: string | null;
   required?: boolean;
   array?: ArrayDefinition;
+  map?: MapDefinition;
   scalar?: ScalarDefinition;
   object?: ObjectDefinition;
   enum?: EnumDefinition;
@@ -302,6 +375,20 @@ export function createArrayPropertyDefinition(args: {
   return createPropertyDefinition({
     ...args,
     array: createArrayDefinition(args),
+  });
+}
+
+export function createMapPropertyDefinition(args: {
+  type: string;
+  name?: string | null;
+  required?: boolean;
+  key: MapKeyDefinition;
+  value?: GenericDefinition;
+  comment?: string;
+}): PropertyDefinition {
+  return createPropertyDefinition({
+    ...args,
+    map: createMapDefinition(args),
   });
 }
 

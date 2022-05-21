@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import {
   Read,
   Write,
@@ -46,3 +47,6 @@ export class TestImport_Object {
     return readTestImport_Object(reader);
   }
 }
+=======
+export { TestImport_Object } from "../../common";
+>>>>>>> prealpha-dev

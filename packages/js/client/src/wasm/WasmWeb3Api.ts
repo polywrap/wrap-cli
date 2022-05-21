@@ -18,10 +18,11 @@ import {
   ManifestArtifactType,
   combinePaths,
   Env,
-  UriResolver,
+  UriResolverInterface,
   GetFileOptions,
+  msgpackEncode,
+  msgpackDecode,
 } from "@web3api/core-js";
-import * as MsgPack from "@msgpack/msgpack";
 import { Tracer } from "@web3api/tracing-js";
 import { AsyncWasmInstance } from "@web3api/asyncify-js";
 
@@ -45,6 +46,11 @@ export interface State {
     error?: string;
   };
   subinvoke: {
+    result?: ArrayBuffer;
+    error?: string;
+    args: unknown[];
+  };
+  subinvokeImplementation: {
     result?: ArrayBuffer;
     error?: string;
     args: unknown[];
@@ -76,7 +82,7 @@ export class WasmWeb3Api extends Api {
   constructor(
     private _uri: Uri,
     private _manifest: Web3ApiManifest,
-    private _uriResolver: Uri,
+    private _uriResolver: string,
     private _clientEnv?: Env<Uri>
   ) {
     super();
@@ -141,11 +147,12 @@ export class WasmWeb3Api extends Api {
     client: Client
   ): Promise<ArrayBuffer | string> {
     const { path, encoding } = options;
-    const { data, error } = await UriResolver.Query.getFile(
+    const { data, error } = await UriResolverInterface.Query.getFile(
       <TData = unknown, TUri extends Uri | string = string>(
         options: InvokeApiOptions<TUri>
       ): Promise<InvokeApiResult<TData>> => client.invoke<TData, TUri>(options),
-      this._uriResolver,
+      // TODO: support all types of URI resolvers (cache, etc)
+      new Uri(this._uriResolver),
       combinePaths(this._uri.path, path)
     );
 
@@ -189,13 +196,13 @@ export class WasmWeb3Api extends Api {
         subinvoke: {
           args: [],
         },
+        subinvokeImplementation: {
+          args: [],
+        },
         invokeResult: {} as InvokeResult,
         method,
         sanitizeEnv: {},
-        args:
-          input instanceof ArrayBuffer
-            ? input
-            : MsgPack.encode(input, { ignoreUndefined: true }),
+        args: input instanceof ArrayBuffer ? input : msgpackEncode(input),
       };
 
       const abort = (message: string) => {
@@ -248,7 +255,7 @@ export class WasmWeb3Api extends Api {
 
           try {
             return {
-              data: MsgPack.decode(invokeResult.invokeResult as ArrayBuffer),
+              data: msgpackDecode(invokeResult.invokeResult as ArrayBuffer),
             } as InvokeApiResult<unknown>;
           } catch (err) {
             throw Error(
@@ -333,18 +340,13 @@ export class WasmWeb3Api extends Api {
         const clientEnv = this._getModuleClientEnv(module);
 
         if (hasExport("_w3_sanitize_env", exports)) {
-          state.sanitizeEnv.args = MsgPack.encode(
-            { env: clientEnv },
-            { ignoreUndefined: true }
-          );
+          state.sanitizeEnv.args = msgpackEncode({ env: clientEnv });
 
           await exports._w3_sanitize_env(state.sanitizeEnv.args.byteLength);
           state.env = state.sanitizeEnv.result as ArrayBuffer;
           this._sanitizedEnv[module] = state.env;
         } else {
-          state.env = MsgPack.encode(clientEnv, {
-            ignoreUndefined: true,
-          });
+          state.env = msgpackEncode(clientEnv);
           this._sanitizedEnv[module] = state.env;
         }
       }

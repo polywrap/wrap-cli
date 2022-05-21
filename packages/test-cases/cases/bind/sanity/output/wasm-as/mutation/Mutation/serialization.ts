@@ -6,6 +6,7 @@ import {
   WriteEncoder,
   Nullable,
   BigInt,
+  BigNumber,
   JSON,
   Context
 } from "@web3api/wasm-as";
@@ -206,7 +207,7 @@ export function serializemutationMethodResult(result: i32): ArrayBuffer {
   writemutationMethodResult(sizer, result);
   const buffer = new ArrayBuffer(sizer.length);
   const encoderContext: Context = new Context("Serializing (encoding) module-type: mutationMethod");
-  const encoder = new WriteEncoder(buffer, encoderContext);
+  const encoder = new WriteEncoder(buffer, sizer, encoderContext);
   writemutationMethodResult(encoder, result);
   return buffer;
 }
@@ -301,7 +302,7 @@ export function serializeobjectMethodResult(result: Types.AnotherType | null): A
   writeobjectMethodResult(sizer, result);
   const buffer = new ArrayBuffer(sizer.length);
   const encoderContext: Context = new Context("Serializing (encoding) module-type: objectMethod");
-  const encoder = new WriteEncoder(buffer, encoderContext);
+  const encoder = new WriteEncoder(buffer, sizer, encoderContext);
   writeobjectMethodResult(encoder, result);
   return buffer;
 }

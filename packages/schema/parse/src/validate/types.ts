@@ -62,7 +62,7 @@ export const getTypeDefinitionsValidator = (): SchemaValidator => {
         },
         // No New Scalars
         ScalarTypeDefinition: (node: ScalarTypeDefinitionNode) => {
-          if (!isScalarType(node.name.value)) {
+          if (node.name.value !== "Map" && !isScalarType(node.name.value)) {
             throw Error(
               `Custom scalar types are not supported. Found: "${node.name.value}". Supported scalars: ${scalarTypeNames}`
             );
@@ -131,10 +131,7 @@ export const getPropertyTypesValidator = (): SchemaValidator => {
           }
         },
         FieldDefinition: (node) => {
-          if (
-            node.name.value === "sanitizeMutationEnv" ||
-            node.name.value === "sanitizeQueryEnv"
-          ) {
+          if (node.name.value === "sanitizeEnv") {
             return;
           }
 
@@ -182,7 +179,8 @@ export const getPropertyTypesValidator = (): SchemaValidator => {
           !isScalarType(field.type) &&
           !objectTypes[field.type] &&
           !enumTypes[field.type] &&
-          !unionTypes[field.type]
+          !unionTypes[field.type] &&
+          field.type !== "Map"
         ) {
           throw Error(
             `Unknown property type found: type ${field.object} { ${field.field}: ${field.type} }`
