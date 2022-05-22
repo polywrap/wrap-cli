@@ -1,5 +1,0 @@
-type Mutation {
-  method(
-    arg: String!
-  ): String!
-}
