@@ -14,7 +14,7 @@ const languageTestCommands: Record<string, string[]> = {
     "yarn test"
   ],
   "typescript-react": [
-    "yarn build"
+    "CI=false yarn build"
   ],
   "assemblyscript": [
     "yarn build",
