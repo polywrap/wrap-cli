@@ -34,8 +34,10 @@ export type Boolean = boolean;
 /// Enums START ///
 /// Enums END ///
 
-/// Imported Objects START ///
+/// Unions START ///
+/// Unions END ///
 
+/// Imported Objects START ///
 /* URI: "ens/ethereum.web3api.eth" */
 export interface Ethereum_Connection {
   node?: Types.String | null;
@@ -124,6 +126,7 @@ export interface Ethereum_TxRequest {
   chainId?: Types.BigInt | null;
   type?: Types.UInt32 | null;
 }
+
 
 /// Imported Objects END ///
 

@@ -144,10 +144,6 @@ export function fetchTestCases(): TestCases {
       },
       output: ComposerFilter.All,
     });
-    // console.log({ composed })
-
-    // console.log({ resolvers: composed.resolvers })
-    // console.log({ typeInfo: composed.typeInfo })
 
     const modules: BindModuleOptions[] = [];
 

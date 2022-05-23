@@ -72,13 +72,6 @@ describe("union-types", () => {
   };
 
   it("sanity", async () => {
-    const api = await buildAndDeployApi(
-      `${GetPathToTestApis()}/union-types`,
-      ipfsProvider,
-      ensAddress
-    );
-    const ensUri = `ens/testnet/${api.ensDomain}`;
-
     const client = await getClient();
 
     const argUnionA = {

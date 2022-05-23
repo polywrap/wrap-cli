@@ -43,8 +43,10 @@ export interface Object {
 /// Enums START ///
 /// Enums END ///
 
-/// Imported Objects START ///
+/// Unions START ///
+/// Unions END ///
 
+/// Imported Objects START ///
 /* URI: "ens/ethereum.web3api.eth" */
 export interface Ethereum_Connection {
   node?: Types.String | null;
@@ -124,6 +126,7 @@ export interface Ethereum_Network {
   chainId: Types.BigInt;
   ensAddress?: Types.String | null;
 }
+
 
 /// Imported Objects END ///
 

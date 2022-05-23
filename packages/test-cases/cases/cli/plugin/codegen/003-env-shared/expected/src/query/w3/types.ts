@@ -37,6 +37,9 @@ export interface QueryEnv extends Record<string, unknown> {
 /// Enums START ///
 /// Enums END ///
 
+/// Unions START ///
+/// Unions END ///
+
 /// Imported Objects START ///
 
 /// Imported Objects END ///

@@ -117,7 +117,6 @@ export type CustomUnion =
 /// Unions END ///
 
 /// Imported Objects START ///
-
 /* URI: "testimport.uri.eth" */
 export interface TestImport_Object {
   object: Types.TestImport_AnotherObject;
@@ -161,7 +160,6 @@ export type TestImport_Enum = TestImport_EnumEnum | TestImport_EnumString;
 export type TestImport_Union =
   | TestImport_AnotherObject
   | TestImport_YetAnotherObject
-
 /// Imported Objects END ///
 
 /// Imported Queries START ///

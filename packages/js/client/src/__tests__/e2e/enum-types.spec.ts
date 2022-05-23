@@ -73,7 +73,6 @@ describe("enum-types", () => {
   };
 
   it("sanity", async () => {
-    console.log("sera?");
     const client = await getClient();
 
     const method1a = await client.query<any>({
