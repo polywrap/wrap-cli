@@ -312,10 +312,7 @@ export class Compiler {
     let buildxOutput: string | undefined;
     let removeBuilder = false;
 
-    if (
-      useBuildx &&
-      typeof dockerBuildxConfig !== "boolean"
-    ) {
+    if (dockerBuildxConfig && typeof dockerBuildxConfig !== "boolean") {
       const cache = dockerBuildxConfig.cache;
 
       if (cache == true) {
