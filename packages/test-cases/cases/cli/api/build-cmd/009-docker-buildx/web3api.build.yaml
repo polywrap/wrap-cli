@@ -1,0 +1,14 @@
+format: 0.0.1-prealpha.3
+docker:
+  buildx:
+    cache: true
+    removeBuilder: true
+  removeImage: true
+config:
+  node_version: "14.16.0"
+  include:
+    - ./src
+    - ./package.json
+linked_packages:
+  - name: "@web3api/wasm-as"
+    path: ../../../../../../wasm/as

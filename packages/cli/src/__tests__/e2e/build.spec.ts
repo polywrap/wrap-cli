@@ -21,6 +21,8 @@ Options:
   -h, --help                  display help for command
 `;
 
+jest.setTimeout(500000);
+
 describe("e2e tests for build command", () => {
   const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/build-cmd");
   const testCases =
@@ -123,6 +125,12 @@ describe("e2e tests for build command", () => {
 
         if (expected.exitCode) {
           expect(exitCode).toEqual(expected.exitCode);
+        }
+
+        if (expected.files) {
+          for (const file of expected.files) {
+            expect(fs.existsSync(path.join(testCaseDir, file))).toBeTruthy();
+          }
         }
       });
     }

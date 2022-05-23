@@ -1,0 +1,73 @@
+{
+  "id": "BuildManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format"],
+  "properties": {
+    "format": {
+      "type": "string",
+      "const": "0.0.1-prealpha.3"
+    },
+    "docker": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "type": "string",
+          "format": "dockerImageName"
+        },
+        "dockerfile": {
+          "type": "string",
+          "format": "dockerfileName"
+        },
+        "buildImageId": {
+          "type": "string",
+          "format": "dockerImageId"
+        },
+        "buildx": {
+          "type": ["object", "boolean"],
+          "additionalProperties": false,
+          "properties": {
+            "cache": {
+              "type": ["string", "boolean"],
+              "format": "directory"
+            },
+            "output": {
+              "type": ["string", "boolean"],
+              "format": "buildxOutput"
+            },
+            "removeBuilder": {
+              "type": "boolean"
+            }
+          }
+        },
+        "removeImage": {
+          "type": "boolean"
+        }
+      }
+    },
+    "config": {
+      "type": "object"
+    },
+    "linked_packages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          },
+          "filter": {
+            "type": "string",
+            "format": "regexString"
+          }
+        },
+        "required": ["name", "path"]
+      }
+    }
+  }
+}

@@ -291,7 +291,10 @@ export class Query extends Module<QueryConfig> {
     ]);
   }
 
-  async awaitTransaction(input: Input_awaitTransaction): Promise<TxReceipt> {
+  async awaitTransaction(
+    input: Input_awaitTransaction,
+    _client: Client
+  ): Promise<TxReceipt> {
     const connection = await this._getConnection(input.connection);
     const provider = connection.getProvider();
 
@@ -304,7 +307,7 @@ export class Query extends Module<QueryConfig> {
     return Mapping.toTxReceipt(res);
   }
 
-  async getNetwork(input: Input_getNetwork): Promise<Network> {
+  async getNetwork(input: Input_getNetwork, _client: Client): Promise<Network> {
     const connection = await this._getConnection(input.connection);
     const provider = connection.getProvider();
     const network = await provider.getNetwork();
@@ -318,6 +321,10 @@ export class Query extends Module<QueryConfig> {
   private async _getConnection(
     connection?: SchemaConnection | null
   ): Promise<Connection> {
-    return getConnection(this._connections, this._defaultNetwork, connection);
+    return getConnection(
+      this._connections,
+      this._defaultNetwork,
+      connection || this.env.connection
+    );
   }
 }

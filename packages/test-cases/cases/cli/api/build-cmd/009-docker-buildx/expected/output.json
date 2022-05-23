@@ -1,0 +1,14 @@
+{
+  "stdout": [
+    "Artifacts written to ./build from the image `polywrap-build-env-",
+    "Manifest written to ./build/web3api.json",
+    "build/web3api.json",
+    "docker rmi polywrap-build-env-",
+    "docker buildx rm polywrap-build-env-"
+  ],
+  "exitCode": 0,
+  "files": [
+    ".w3/web3api/build/cache/index.json",
+    ".w3/web3api/build/cache/blobs/sha256/"
+  ]
+}
