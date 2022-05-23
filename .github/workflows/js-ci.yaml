@@ -6,7 +6,6 @@ on:
       - master
       - prealpha
       - prealpha-dev
-      - feat/union-types
   pull_request:
 
 jobs:

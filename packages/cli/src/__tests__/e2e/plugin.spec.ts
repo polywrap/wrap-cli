@@ -133,7 +133,6 @@ ${HELP}`);
           `${testCaseDir}/expected/src`,
           { compareContent: true }
         );
-
         expect(expectedTypesResult.differences).toBe(0);
 
         const expectedBuildResult = compareSync(

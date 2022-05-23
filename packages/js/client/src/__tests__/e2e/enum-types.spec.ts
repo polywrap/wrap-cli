@@ -19,13 +19,7 @@ describe("enum-types", () => {
   let ipfsUri: string;
 
   beforeAll(async () => {
-    const {
-      ipfs,
-      ethereum,
-      ensAddress: ens,
-      resolverAddress,
-      registrarAddress,
-    } = await initTestEnvironment();
+    const { ipfs, ethereum, ensAddress: ens, resolverAddress, registrarAddress } = await initTestEnvironment();
     ipfsProvider = ipfs;
     ethProvider = ethereum;
     ensAddress = ens;
@@ -71,7 +65,6 @@ describe("enum-types", () => {
       config
     );
   };
-
   it("sanity", async () => {
     const client = await getClient();
 
