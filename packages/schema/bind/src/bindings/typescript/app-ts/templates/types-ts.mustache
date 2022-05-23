@@ -85,6 +85,12 @@ export type {{type}}String =
 
 export type {{type}} = {{type}}Enum | {{type}}String;
 {{/importedEnumTypes}}
+
+/// Imported Enums END ///
+{{/importedEnumTypes.length}}
+{{#importedUnionTypes.length}}
+
+/// Imported Unions START ///
 {{#importedUnionTypes}}
 
 /* URI: "{{uri}}" */
@@ -94,8 +100,8 @@ export type {{type}} =
 {{/memberTypes}}
 {{/importedUnionTypes}}
 
-/// Imported Enums END ///
-{{/importedEnumTypes.length}}
+/// Imported Unions END ///
+{{/importedUnionTypes.length}}
 {{#importedModuleTypes.length}}
 
 /// Imported Queries START ///

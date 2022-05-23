@@ -14,7 +14,7 @@
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json && yarn copy:templates",
     "lint": "eslint --color -c ../../../.eslintrc.js src/",
-    "test": "jest --passWithNoTests --runInBand --verbose --onlyChanged",
+    "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose --onlyChanged",
     "test:watch": "jest --watch --passWithNoTests --verbose",
     "copy:templates": "copyfiles -u 1 src/**/*.mustache build/"

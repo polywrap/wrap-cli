@@ -107,11 +107,15 @@ export type CustomEnumString =
 
 export type CustomEnum = CustomEnumEnum | CustomEnumString;
 
+/// Enums END ///
+
+/// Unions START ///
+
 export type CustomUnion =
-  | AnotherObject 
+  | AnotherObject
   | YetAnotherObject
 
-/// Enums END ///
+/// Unions END ///
 
 /// Imported Objects START ///
 
@@ -131,7 +135,6 @@ export interface TestImport_Object {
   optUnionArray?: Array<Types.TestImport_Union | null> | null;
 }
 
-
 /* URI: "testimport.uri.eth" */
 export interface TestImport_AnotherObject {
   prop: Types.String;
@@ -139,7 +142,7 @@ export interface TestImport_AnotherObject {
 
 /* URI: "testimport.uri.eth" */
 export interface TestImport_YetAnotherObject {
-  prop: Boolean;
+  prop: Types.Boolean;
 }
 
 /* URI: "testimport.uri.eth" */
@@ -148,12 +151,12 @@ export enum TestImport_EnumEnum {
   BYTES,
 }
 
-/* URI: "testimport.uri.eth" */
 export type TestImport_EnumString =
   | "STRING"
   | "BYTES"
 
 export type TestImport_Enum = TestImport_EnumEnum | TestImport_EnumString;
+
 
 /* URI: "testimport.uri.eth" */
 export type TestImport_Union =
@@ -179,6 +182,10 @@ interface TestImport_Query_Input_importedMethod extends Record<string, unknown> 
   optEnum?: Types.TestImport_Enum | null;
   enumArray: Array<Types.TestImport_Enum>;
   optEnumArray?: Array<Types.TestImport_Enum | null> | null;
+  union: Types.TestImport_Union;
+  optUnion?: Types.TestImport_Union | null;
+  unionArray: Array<Types.TestImport_Union>;
+  optUnionArray?: Array<Types.TestImport_Union | null> | null;
 }
 
 /* URI: "testimport.uri.eth" */

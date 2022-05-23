@@ -71,6 +71,8 @@ const _toTypescript = (
     default:
       if (type.includes("Enum_")) {
         type = `Types.${type.replace("Enum_", "")}`;
+      } else if (type.includes("Union_")) {
+        type = `Types.${type.replace("Union_", "")}`;
       } else {
         type = `Types.${type}`;
       }

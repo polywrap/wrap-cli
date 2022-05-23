@@ -14,7 +14,7 @@
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json",
     "lint": "eslint --color src/",
-    "test": "jest --passWithNoTests --runInBand --verbose --onlyChanged",
+    "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose --onlyChanged",
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },

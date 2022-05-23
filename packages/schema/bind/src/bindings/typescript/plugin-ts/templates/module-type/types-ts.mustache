@@ -89,18 +89,18 @@ export type {{type}}String =
 export type {{type}} = {{type}}Enum | {{type}}String;
 
 {{/enumTypes}}
-<<<<<<< HEAD:packages/schema/bind/src/bindings/typescript/plugin-ts/templates/types-ts.mustache
+/// Enums END ///
+
+/// Unions START ///
 {{#unionTypes}}
 
 export type {{type}} =
 {{#memberTypes}}
   | {{type}}
 {{/memberTypes}}
+
 {{/unionTypes}}
-{{#importedObjectTypes.length}}
-=======
-/// Enums END ///
->>>>>>> prealpha-dev:packages/schema/bind/src/bindings/typescript/plugin-ts/templates/module-type/types-ts.mustache
+/// Unions END ///
 
 /// Imported Objects START ///
 
@@ -127,8 +127,8 @@ export type {{type}}String =
   {{/constants}}
 
 export type {{type}} = {{type}}Enum | {{type}}String;
-<<<<<<< HEAD:packages/schema/bind/src/bindings/typescript/plugin-ts/templates/types-ts.mustache
 {{/importedEnumTypes}}
+
 {{#importedUnionTypes}}
 
 /* URI: "{{uri}}" */
@@ -137,10 +137,7 @@ export type {{type}} =
   | {{type}}
 {{/memberTypes}}
 {{/importedUnionTypes}}
-=======
->>>>>>> prealpha-dev:packages/schema/bind/src/bindings/typescript/plugin-ts/templates/module-type/types-ts.mustache
 
-{{/importedEnumTypes}}
 /// Imported Objects END ///
 
 /// Imported Queries START ///

@@ -202,7 +202,7 @@ function generateModuleBinding(module: BindModuleOptions): BindModuleOutput {
     output.entries.push({
       type: "Directory",
       name: unionType.type,
-      data: renderTemplates("./templates/union-type", unionType, subTemplates),
+      data: renderTemplates(templatePath("union-type"), unionType, subTemplates),
     });
   }
   // Generate env type folders

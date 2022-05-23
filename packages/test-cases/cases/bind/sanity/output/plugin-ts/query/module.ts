@@ -16,11 +16,14 @@ export interface Input_queryMethod extends Record<string, unknown> {
   optEnum?: Types.CustomEnum | null;
   enumArray: Array<Types.CustomEnum>;
   optEnumArray?: Array<Types.CustomEnum | null> | null;
+  union: Types.CustomUnion;
   optUnion?: Types.CustomUnion | null;
   unionArray: Array<Types.CustomUnion>;
   optUnionArray?: Array<Types.CustomUnion | null> | null;
   map: Map<Types.String, Types.Int>;
+}
 
+export interface Input_objectMethod extends Record<string, unknown> {
   object: Types.AnotherType;
   optObject?: Types.AnotherType | null;
   objectArray: Array<Types.AnotherType>;

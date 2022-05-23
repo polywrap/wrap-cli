@@ -40,6 +40,14 @@ export interface AnotherType {
   const?: Types.String | null;
 }
 
+export interface AnotherObject {
+  prop: Types.String;
+}
+
+export interface YetAnotherObject {
+  prop: Types.Boolean;
+}
+
 export interface CustomType {
   str: Types.String;
   optStr?: Types.String | null;
@@ -86,14 +94,7 @@ export interface CustomType {
 
 /// Objects END ///
 
-export interface AnotherObject {
-  prop: String;
-}
-
-export interface YetAnotherObject {
-  prop: Boolean;
-}
-
+/// Enums START ///
 export enum CustomEnumEnum {
   STRING,
   BYTES,
@@ -105,9 +106,15 @@ export type CustomEnumString =
 
 export type CustomEnum = CustomEnumEnum | CustomEnumString;
 
+/// Enums END ///
+
+/// Unions START ///
+
 export type CustomUnion =
-  | AnotherObject 
+  | AnotherObject
   | YetAnotherObject
+
+/// Unions END ///
 
 /// Imported Objects START ///
 
@@ -148,6 +155,7 @@ export type TestImport_EnumString =
   | "BYTES"
 
 export type TestImport_Enum = TestImport_EnumEnum | TestImport_EnumString;
+
 
 /* URI: "testimport.uri.eth" */
 export type TestImport_Union =

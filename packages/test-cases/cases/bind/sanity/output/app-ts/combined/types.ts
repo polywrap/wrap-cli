@@ -73,11 +73,11 @@ export interface AnotherType {
 }
 
 export interface AnotherObject {
-  prop: String;
+  prop: Types.String;
 }
 
 export interface YetAnotherObject {
-  prop: Boolean;
+  prop: Types.Boolean;
 }
 
 export enum CustomEnumEnum {
@@ -91,8 +91,8 @@ export type CustomEnumString =
 
 export type CustomEnum = CustomEnumEnum | CustomEnumString;
 
-export type CustomUnion = 
-  | AnotherObject 
+export type CustomUnion =
+  | AnotherObject
   | YetAnotherObject
 
 /// Imported Objects START ///
@@ -118,14 +118,14 @@ export interface TestImport_AnotherObject {
   prop: Types.String;
 }
 
+/* URI: "testimport.uri.eth" */
+export interface TestImport_YetAnotherObject {
+  prop: Types.Boolean;
+}
+
 /// Imported Objects END ///
 
 /// Imported Enums START ///
-
-/* URI: "testimport.uri.eth" */
-export interface TestImport_YetAnotherObject {
-  prop: Boolean;
-}
 
 /* URI: "testimport.uri.eth" */
 export enum TestImport_EnumEnum {
@@ -133,19 +133,22 @@ export enum TestImport_EnumEnum {
   BYTES,
 }
 
-/* URI: "testimport.uri.eth" */
 export type TestImport_EnumString =
   | "STRING"
   | "BYTES"
 
 export type TestImport_Enum = TestImport_EnumEnum | TestImport_EnumString;
 
+/// Imported Enums END ///
+
+/// Imported Unions START ///
+
 /* URI: "testimport.uri.eth" */
 export type TestImport_Union =
   | TestImport_AnotherObject
   | TestImport_YetAnotherObject
 
-/// Imported Objects END ///
+/// Imported Unions END ///
 
 /// Imported Queries START ///
 

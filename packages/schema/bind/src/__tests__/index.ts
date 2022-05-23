@@ -24,12 +24,7 @@ export type TestCase = {
   };
   outputLanguages: {
     language: string;
-    directories: {
-      moduleWise?: {
-        [name: string]: string
-      };
-      combined?: string;
-    };
+    directories: OutputTestDirectory;
   }[];
 };
 
@@ -37,6 +32,13 @@ export type TestCases = {
   name: string;
   promise: Promise<TestCase | undefined>;
 }[];
+
+interface OutputTestDirectory {
+  moduleWise?: {
+    [name: string]: string
+  };
+  combined?: string;
+}
 
 export function fetchTestCases(): TestCases {
   const cases: TestCases = [];
@@ -84,12 +86,7 @@ export function fetchTestCases(): TestCases {
       .filter((item: fs.Dirent) => item.isDirectory())
       .map((item: fs.Dirent) => {
         const outputLanguageDir = path.join(outputDir, item.name);
-        const outputDirectories: {
-          moduleWise?: {
-            [name: string]: string
-          };
-          combined?: string;
-        } = { };
+        const outputDirectories: OutputTestDirectory = { };
 
         fs.readdirSync(outputLanguageDir, { withFileTypes: true })
           .filter((item: fs.Dirent) => item.isDirectory())
@@ -132,9 +129,7 @@ export function fetchTestCases(): TestCases {
 
     // Compose the input schemas into TypeInfo structures
     const composed = await composeSchema({
-      schemas: {
-        ...schemas,
-      },
+      schemas,
       resolvers: {
         external: (uri: string): Promise<string> => {
           return Promise.resolve(
@@ -149,6 +144,10 @@ export function fetchTestCases(): TestCases {
       },
       output: ComposerFilter.All,
     });
+    // console.log({ composed })
+
+    // console.log({ resolvers: composed.resolvers })
+    // console.log({ typeInfo: composed.typeInfo })
 
     const modules: BindModuleOptions[] = [];
 
