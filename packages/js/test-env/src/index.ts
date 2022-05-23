@@ -163,8 +163,8 @@ export async function buildAndDeployApi({
   );
 
   // create a new ENS domain
-  const domainName = ensName ?? generateName();
-  const apiEns = `${domainName}.eth`;
+  const apiEns = ensName ?? `${generateName()}.eth`;
+  const domainName = apiEns.split(".").slice(0, -1).join(".");
 
   // build API
   const {

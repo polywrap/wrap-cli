@@ -1,0 +1,1 @@
+[{"api":"ens/testnet/simplestorage.eth"},{"constants":"./constants.json"},{"query":"./set.graphql","variables":{"address":"$SimpleStorageAddr","value":569,"network":"testnet"},"output":{"data":{},"errors":[{}]}}]
