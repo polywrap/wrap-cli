@@ -305,29 +305,30 @@ export class Compiler {
       );
     }
 
-    const useBuildx = buildManifest?.docker?.buildx ? true : false;
+    const dockerBuildxConfig = buildManifest?.docker?.buildx;
+    const useBuildx = dockerBuildxConfig ? true : false;
 
     let cacheDir: string | undefined;
     let buildxOutput: string | undefined;
     let removeBuilder = false;
 
     if (
-      buildManifest?.docker?.buildx &&
-      typeof buildManifest?.docker?.buildx !== "boolean"
+      useBuildx &&
+      typeof dockerBuildxConfig !== "boolean"
     ) {
-      const cache = buildManifest.docker.buildx.cache
-        ? buildManifest.docker.buildx.cache
-        : undefined;
+      const cache = dockerBuildxConfig.cache;
 
       if (cache == true) {
         cacheDir = project.getCachePath("build/cache");
-      } else if (cache && !path.isAbsolute(cache)) {
-        cacheDir = path.join(project.getManifestDir(), cache);
+      } else if (cache) {
+        if (!path.isAbsolute(cache)) {
+          cacheDir = path.join(project.getManifestDir(), cache);
+        } else {
+          cacheDir = cache;
+        }
       }
 
-      const output = buildManifest.docker.buildx.output
-        ? buildManifest.docker.buildx.output
-        : undefined;
+      const output = dockerBuildxConfig.output;
 
       if (output === true) {
         buildxOutput = "docker";
@@ -335,7 +336,7 @@ export class Compiler {
         buildxOutput = output;
       }
 
-      removeBuilder = buildManifest.docker.buildx.removeBuilder ? true : false;
+      removeBuilder = dockerBuildxConfig.removeBuilder ? true : false;
     }
 
     const removeImage = buildManifest?.docker?.removeImage ? true : false;
