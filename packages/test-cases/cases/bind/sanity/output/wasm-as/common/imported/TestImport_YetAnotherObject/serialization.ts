@@ -6,6 +6,7 @@ import {
   WriteEncoder,
   Nullable,
   BigInt,
+  BigNumber,
   JSON,
   Context
 } from "@web3api/wasm-as";
@@ -18,7 +19,7 @@ export function serializeTestImport_YetAnotherObject(type: TestImport_YetAnother
   writeTestImport_YetAnotherObject(sizer, type);
   const buffer = new ArrayBuffer(sizer.length);
   const encoderContext: Context = new Context("Serializing (encoding) import object-type: TestImport_YetAnotherObject");
-  const encoder = new WriteEncoder(buffer, encoderContext);
+  const encoder = new WriteEncoder(buffer, sizer, encoderContext);
   writeTestImport_YetAnotherObject(encoder, type);
   return buffer;
 }

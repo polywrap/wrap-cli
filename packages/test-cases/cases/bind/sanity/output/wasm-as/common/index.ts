@@ -1,9 +1,7 @@
 export { AnotherType } from "./AnotherType";
+export { AnotherObject } from "./AnotherObject";
+export { YetAnotherObject } from "./YetAnotherObject";
 export { CustomType } from "./CustomType";
-export { CustomUnion } from "./CustomUnion"
-export {
-  YetAnotherObject
-} from "./YetAnotherObject"
 export {
   CustomEnum,
   getCustomEnumKey,
@@ -19,7 +17,3 @@ export {
   getTestImport_EnumValue,
   sanitizeTestImport_EnumValue
 } from "./imported/TestImport_Enum";
-export { 
-  TestImport_Union
-} from "./imported/TestImport_Union"
-  

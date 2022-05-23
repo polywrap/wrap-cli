@@ -55,6 +55,10 @@ export class CustomType {
   optEnum: Nullable<Types.CustomEnum>;
   enumArray: Array<Types.CustomEnum>;
   optEnumArray: Array<Nullable<Types.CustomEnum>> | null;
+  union: Types.CustomUnion;
+  optUnion: Types.CustomUnion | null;
+  unionArray: Array<Types.CustomUnion>;
+  optUnionArray: Array<Types.CustomUnion | null> | null;
 
   static toBuffer(type: CustomType): ArrayBuffer {
     return serializeCustomType(type);

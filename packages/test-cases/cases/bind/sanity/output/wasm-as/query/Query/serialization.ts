@@ -169,7 +169,8 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
         }
         return union;
       });
-    }  
+      reader.context().pop();
+    }
     else if (field == "map") {
       reader.context().push(field, "Map<string, i32>", "type found, reading property");
       _map = reader.readExtGenericMap((reader: Read): string => {
@@ -178,10 +179,10 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
         return reader.readInt32();
       });
       _mapSet = true;
-    }
+      reader.context().pop();
     }
     reader.context().pop();
-  
+  }
 
   if (!_strSet) {
     throw new Error(reader.context().printWithContext("Missing required argument: 'str: String'"));
@@ -197,7 +198,6 @@ export function deserializequeryMethodArgs(argsBuf: ArrayBuffer): Input_queryMet
   }
   if (!_unionArraySet) {
     throw new Error(reader.context().printWithContext("Missing required argument: 'unionArray: [CustomUnion]'"));
-  
   }
   if (!_mapSet) {
     throw new Error(reader.context().printWithContext("Missing required argument: 'map: Map<String, Int>'"));

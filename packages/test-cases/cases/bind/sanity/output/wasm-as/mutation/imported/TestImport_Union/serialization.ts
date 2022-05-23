@@ -18,7 +18,7 @@ export function serializeTestImport_Union(type: TestImport_Union): ArrayBuffer {
   writeTestImport_Union(sizer, type);
   const buffer = new ArrayBuffer(sizer.length);
   const encoderContext: Context = new Context("Serializing (encoding) union-type: TestImport_Union");
-  const encoder = new WriteEncoder(buffer, encoderContext);
+  const encoder = new WriteEncoder(buffer, sizer, encoderContext);
   writeTestImport_Union(encoder, type);
   return buffer;
 }

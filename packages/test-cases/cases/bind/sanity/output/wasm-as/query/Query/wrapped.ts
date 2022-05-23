@@ -1,7 +1,7 @@
 import {
   queryMethod,
   objectMethod
-} from "../index";
+} from "../../index";
 import {
   deserializequeryMethodArgs,
   serializequeryMethodResult,

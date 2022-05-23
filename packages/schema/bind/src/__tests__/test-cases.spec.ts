@@ -34,7 +34,6 @@ describe("Web3API Binding Test Suite", () => {
         // Verify it binds correctly
         const { language, directories } = outputLanguage;
 
-        console.log("Testing in language: ", language)
         // Read the expected output directories
         let expectedModuleWiseOutput: BindOutput | undefined;
         let expectedCombinedOutput: BindOutput | undefined;

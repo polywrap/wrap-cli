@@ -3,7 +3,10 @@ import {
   Write,
   Nullable,
   BigInt,
-  JSON
+  BigNumber,
+  JSON,
+  JSONSerializer,
+  JSONDeserializer,
 } from "@web3api/wasm-as";
 import {
   serializeYetAnotherObject,
@@ -13,6 +16,7 @@ import {
 } from "./serialization";
 import * as Types from "..";
 
+@serializable
 export class YetAnotherObject {
   prop: bool;
 
@@ -30,5 +34,13 @@ export class YetAnotherObject {
 
   static read(reader: Read): YetAnotherObject {
     return readYetAnotherObject(reader);
+  }
+
+  static toJson(type: YetAnotherObject): JSON.Value {
+    return JSONSerializer.encode(type);
+  }
+
+  static fromJson(json: JSON.Value): YetAnotherObject {
+    return (new JSONDeserializer(json)).decode<YetAnotherObject>();
   }
 }

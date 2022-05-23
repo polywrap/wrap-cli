@@ -8,28 +8,24 @@ import {
   BigInt,
   BigNumber,
   JSON,
-  Context,
+  Context
 } from "@web3api/wasm-as";
 import { CustomType } from "./";
 import * as Types from "..";
 
 export function serializeCustomType(type: CustomType): ArrayBuffer {
-  const sizerContext: Context = new Context(
-    "Serializing (sizing) object-type: CustomType"
-  );
+  const sizerContext: Context = new Context("Serializing (sizing) object-type: CustomType");
   const sizer = new WriteSizer(sizerContext);
   writeCustomType(sizer, type);
   const buffer = new ArrayBuffer(sizer.length);
-  const encoderContext: Context = new Context(
-    "Serializing (encoding) object-type: CustomType"
-  );
+  const encoderContext: Context = new Context("Serializing (encoding) object-type: CustomType");
   const encoder = new WriteEncoder(buffer, sizer, encoderContext);
   writeCustomType(encoder, type);
   return buffer;
 }
 
 export function writeCustomType(writer: Write, type: CustomType): void {
-  writer.writeMapLength(37);
+  writer.writeMapLength(41);
   writer.context().push("str", "string", "writing property");
   writer.writeString("str");
   writer.writeString(type.str);
@@ -122,125 +118,65 @@ export function writeCustomType(writer: Write, type: CustomType): void {
   writer.context().pop();
   writer.context().push("uOptArray", "Array<u32> | null", "writing property");
   writer.writeString("uOptArray");
-  writer.writeNullableArray(
-    type.uOptArray,
-    (writer: Write, item: u32): void => {
-      writer.writeUInt32(item);
-    }
-  );
+  writer.writeNullableArray(type.uOptArray, (writer: Write, item: u32): void => {
+    writer.writeUInt32(item);
+  });
   writer.context().pop();
-  writer
-    .context()
-    .push("optUOptArray", "Array<Nullable<u32>> | null", "writing property");
+  writer.context().push("optUOptArray", "Array<Nullable<u32>> | null", "writing property");
   writer.writeString("optUOptArray");
-  writer.writeNullableArray(
-    type.optUOptArray,
-    (writer: Write, item: Nullable<u32>): void => {
-      writer.writeNullableUInt32(item);
-    }
-  );
+  writer.writeNullableArray(type.optUOptArray, (writer: Write, item: Nullable<u32>): void => {
+    writer.writeNullableUInt32(item);
+  });
   writer.context().pop();
-  writer
-    .context()
-    .push("optStrOptArray", "Array<string | null> | null", "writing property");
+  writer.context().push("optStrOptArray", "Array<string | null> | null", "writing property");
   writer.writeString("optStrOptArray");
-  writer.writeNullableArray(
-    type.optStrOptArray,
-    (writer: Write, item: string | null): void => {
-      writer.writeNullableString(item);
-    }
-  );
+  writer.writeNullableArray(type.optStrOptArray, (writer: Write, item: string | null): void => {
+    writer.writeNullableString(item);
+  });
   writer.context().pop();
   writer.context().push("uArrayArray", "Array<Array<u32>>", "writing property");
   writer.writeString("uArrayArray");
-  writer.writeArray(
-    type.uArrayArray,
-    (writer: Write, item: Array<u32>): void => {
+  writer.writeArray(type.uArrayArray, (writer: Write, item: Array<u32>): void => {
+    writer.writeArray(item, (writer: Write, item: u32): void => {
+      writer.writeUInt32(item);
+    });
+  });
+  writer.context().pop();
+  writer.context().push("uOptArrayOptArray", "Array<Array<Nullable<u32>> | null>", "writing property");
+  writer.writeString("uOptArrayOptArray");
+  writer.writeArray(type.uOptArrayOptArray, (writer: Write, item: Array<Nullable<u32>> | null): void => {
+    writer.writeNullableArray(item, (writer: Write, item: Nullable<u32>): void => {
+      writer.writeNullableUInt32(item);
+    });
+  });
+  writer.context().pop();
+  writer.context().push("uArrayOptArrayArray", "Array<Array<Array<u32>> | null>", "writing property");
+  writer.writeString("uArrayOptArrayArray");
+  writer.writeArray(type.uArrayOptArrayArray, (writer: Write, item: Array<Array<u32>> | null): void => {
+    writer.writeNullableArray(item, (writer: Write, item: Array<u32>): void => {
       writer.writeArray(item, (writer: Write, item: u32): void => {
         writer.writeUInt32(item);
       });
-    }
-  );
+    });
+  });
   writer.context().pop();
-  writer
-    .context()
-    .push(
-      "uOptArrayOptArray",
-      "Array<Array<Nullable<u32>> | null>",
-      "writing property"
-    );
-  writer.writeString("uOptArrayOptArray");
-  writer.writeArray(
-    type.uOptArrayOptArray,
-    (writer: Write, item: Array<Nullable<u32>> | null): void => {
-      writer.writeNullableArray(
-        item,
-        (writer: Write, item: Nullable<u32>): void => {
-          writer.writeNullableUInt32(item);
-        }
-      );
-    }
-  );
-  writer.context().pop();
-  writer
-    .context()
-    .push(
-      "uArrayOptArrayArray",
-      "Array<Array<Array<u32>> | null>",
-      "writing property"
-    );
-  writer.writeString("uArrayOptArrayArray");
-  writer.writeArray(
-    type.uArrayOptArrayArray,
-    (writer: Write, item: Array<Array<u32>> | null): void => {
-      writer.writeNullableArray(
-        item,
-        (writer: Write, item: Array<u32>): void => {
-          writer.writeArray(item, (writer: Write, item: u32): void => {
-            writer.writeUInt32(item);
-          });
-        }
-      );
-    }
-  );
-  writer.context().pop();
-  writer
-    .context()
-    .push(
-      "crazyArray",
-      "Array<Array<Array<Array<u32> | null>> | null> | null",
-      "writing property"
-    );
+  writer.context().push("crazyArray", "Array<Array<Array<Array<u32> | null>> | null> | null", "writing property");
   writer.writeString("crazyArray");
-  writer.writeNullableArray(
-    type.crazyArray,
-    (writer: Write, item: Array<Array<Array<u32> | null>> | null): void => {
-      writer.writeNullableArray(
-        item,
-        (writer: Write, item: Array<Array<u32> | null>): void => {
-          writer.writeArray(
-            item,
-            (writer: Write, item: Array<u32> | null): void => {
-              writer.writeNullableArray(
-                item,
-                (writer: Write, item: u32): void => {
-                  writer.writeUInt32(item);
-                }
-              );
-            }
-          );
-        }
-      );
-    }
-  );
+  writer.writeNullableArray(type.crazyArray, (writer: Write, item: Array<Array<Array<u32> | null>> | null): void => {
+    writer.writeNullableArray(item, (writer: Write, item: Array<Array<u32> | null>): void => {
+      writer.writeArray(item, (writer: Write, item: Array<u32> | null): void => {
+        writer.writeNullableArray(item, (writer: Write, item: u32): void => {
+          writer.writeUInt32(item);
+        });
+      });
+    });
+  });
   writer.context().pop();
   writer.context().push("object", "Types.AnotherType", "writing property");
   writer.writeString("object");
   Types.AnotherType.write(writer, type.object);
   writer.context().pop();
-  writer
-    .context()
-    .push("optObject", "Types.AnotherType | null", "writing property");
+  writer.context().push("optObject", "Types.AnotherType | null", "writing property");
   writer.writeString("optObject");
   if (type.optObject) {
     Types.AnotherType.write(writer, type.optObject as Types.AnotherType);
@@ -248,79 +184,47 @@ export function writeCustomType(writer: Write, type: CustomType): void {
     writer.writeNil();
   }
   writer.context().pop();
-  writer
-    .context()
-    .push("objectArray", "Array<Types.AnotherType>", "writing property");
+  writer.context().push("objectArray", "Array<Types.AnotherType>", "writing property");
   writer.writeString("objectArray");
-  writer.writeArray(
-    type.objectArray,
-    (writer: Write, item: Types.AnotherType): void => {
-      Types.AnotherType.write(writer, item);
-    }
-  );
+  writer.writeArray(type.objectArray, (writer: Write, item: Types.AnotherType): void => {
+    Types.AnotherType.write(writer, item);
+  });
   writer.context().pop();
-  writer
-    .context()
-    .push(
-      "optObjectArray",
-      "Array<Types.AnotherType | null> | null",
-      "writing property"
-    );
+  writer.context().push("optObjectArray", "Array<Types.AnotherType | null> | null", "writing property");
   writer.writeString("optObjectArray");
-  writer.writeNullableArray(
-    type.optObjectArray,
-    (writer: Write, item: Types.AnotherType | null): void => {
-      if (item) {
-        Types.AnotherType.write(writer, item as Types.AnotherType);
-      } else {
-        writer.writeNil();
-      }
+  writer.writeNullableArray(type.optObjectArray, (writer: Write, item: Types.AnotherType | null): void => {
+    if (item) {
+      Types.AnotherType.write(writer, item as Types.AnotherType);
+    } else {
+      writer.writeNil();
     }
-  );
+  });
   writer.context().pop();
   writer.context().push("en", "Types.CustomEnum", "writing property");
   writer.writeString("en");
   writer.writeInt32(type.en);
   writer.context().pop();
-  writer
-    .context()
-    .push("optEnum", "Nullable<Types.CustomEnum>", "writing property");
+  writer.context().push("optEnum", "Nullable<Types.CustomEnum>", "writing property");
   writer.writeString("optEnum");
   writer.writeNullableInt32(type.optEnum);
   writer.context().pop();
-  writer
-    .context()
-    .push("enumArray", "Array<Types.CustomEnum>", "writing property");
+  writer.context().push("enumArray", "Array<Types.CustomEnum>", "writing property");
   writer.writeString("enumArray");
-  writer.writeArray(
-    type.enumArray,
-    (writer: Write, item: Types.CustomEnum): void => {
-      writer.writeInt32(item);
-    }
-  );
+  writer.writeArray(type.enumArray, (writer: Write, item: Types.CustomEnum): void => {
+    writer.writeInt32(item);
+  });
   writer.context().pop();
-  writer
-    .context()
-    .push(
-      "optEnumArray",
-      "Array<Nullable<Types.CustomEnum>> | null",
-      "writing property"
-    );
+  writer.context().push("optEnumArray", "Array<Nullable<Types.CustomEnum>> | null", "writing property");
   writer.writeString("optEnumArray");
-  writer.writeNullableArray(
-    type.optEnumArray,
-    (writer: Write, item: Nullable<Types.CustomEnum>): void => {
-      writer.writeNullableInt32(item);
-    }
-  );
+  writer.writeNullableArray(type.optEnumArray, (writer: Write, item: Nullable<Types.CustomEnum>): void => {
+    writer.writeNullableInt32(item);
+  });
   writer.context().pop();
   writer.context().push("union", "Types.CustomUnion", "writing property");
   writer.writeString("union");
   Types.CustomUnion.write(writer, type.union);
   writer.context().pop();
-  writer
-    .context()
-    .push("optUnion", "Types.CustomUnion | null", "writing property");
+  writer.context().push("optUnion", "Types.CustomUnion | null", "writing property");
   writer.writeString("optUnion");
   if (type.optUnion) {
     Types.CustomUnion.write(writer, type.optUnion as Types.CustomUnion);
@@ -328,35 +232,21 @@ export function writeCustomType(writer: Write, type: CustomType): void {
     writer.writeNil();
   }
   writer.context().pop();
-  writer
-    .context()
-    .push("unionArray", "Array<Types.CustomUnion>", "writing property");
+  writer.context().push("unionArray", "Array<Types.CustomUnion>", "writing property");
   writer.writeString("unionArray");
-  writer.writeArray(
-    type.unionArray,
-    (writer: Write, item: Types.CustomUnion): void => {
-      Types.CustomUnion.write(writer, item);
-    }
-  );
+  writer.writeArray(type.unionArray, (writer: Write, item: Types.CustomUnion): void => {
+    Types.CustomUnion.write(writer, item);
+  });
   writer.context().pop();
-  writer
-    .context()
-    .push(
-      "optUnionArray",
-      "Array<Types.CustomUnion | null> | null",
-      "writing property"
-    );
+  writer.context().push("optUnionArray", "Array<Types.CustomUnion | null> | null", "writing property");
   writer.writeString("optUnionArray");
-  writer.writeNullableArray(
-    type.optUnionArray,
-    (writer: Write, item: Types.CustomUnion | null): void => {
-      if (item) {
-        Types.CustomUnion.write(writer, item as Types.CustomUnion);
-      } else {
-        writer.writeNil();
-      }
+  writer.writeNullableArray(type.optUnionArray, (writer: Write, item: Types.CustomUnion | null): void => {
+    if (item) {
+      Types.CustomUnion.write(writer, item as Types.CustomUnion);
+    } else {
+      writer.writeNil();
     }
-  );
+  });
   writer.context().pop();
 }
 
@@ -445,307 +335,232 @@ export function readCustomType(reader: Read): CustomType {
       _str = reader.readString();
       _strSet = true;
       reader.context().pop();
-    } else if (field == "optStr") {
-      reader
-        .context()
-        .push(field, "string | null", "type found, reading property");
+    }
+    else if (field == "optStr") {
+      reader.context().push(field, "string | null", "type found, reading property");
       _optStr = reader.readNullableString();
       reader.context().pop();
-    } else if (field == "u") {
+    }
+    else if (field == "u") {
       reader.context().push(field, "u32", "type found, reading property");
       _u = reader.readUInt32();
       _uSet = true;
       reader.context().pop();
-    } else if (field == "optU") {
-      reader
-        .context()
-        .push(field, "Nullable<u32>", "type found, reading property");
+    }
+    else if (field == "optU") {
+      reader.context().push(field, "Nullable<u32>", "type found, reading property");
       _optU = reader.readNullableUInt32();
       reader.context().pop();
-    } else if (field == "u8") {
+    }
+    else if (field == "u8") {
       reader.context().push(field, "u8", "type found, reading property");
       _u8 = reader.readUInt8();
       _u8Set = true;
       reader.context().pop();
-    } else if (field == "u16") {
+    }
+    else if (field == "u16") {
       reader.context().push(field, "u16", "type found, reading property");
       _u16 = reader.readUInt16();
       _u16Set = true;
       reader.context().pop();
-    } else if (field == "u32") {
+    }
+    else if (field == "u32") {
       reader.context().push(field, "u32", "type found, reading property");
       _u32 = reader.readUInt32();
       _u32Set = true;
       reader.context().pop();
-    } else if (field == "i") {
+    }
+    else if (field == "i") {
       reader.context().push(field, "i32", "type found, reading property");
       _i = reader.readInt32();
       _iSet = true;
       reader.context().pop();
-    } else if (field == "i8") {
+    }
+    else if (field == "i8") {
       reader.context().push(field, "i8", "type found, reading property");
       _i8 = reader.readInt8();
       _i8Set = true;
       reader.context().pop();
-    } else if (field == "i16") {
+    }
+    else if (field == "i16") {
       reader.context().push(field, "i16", "type found, reading property");
       _i16 = reader.readInt16();
       _i16Set = true;
       reader.context().pop();
-    } else if (field == "i32") {
+    }
+    else if (field == "i32") {
       reader.context().push(field, "i32", "type found, reading property");
       _i32 = reader.readInt32();
       _i32Set = true;
       reader.context().pop();
-    } else if (field == "bigint") {
+    }
+    else if (field == "bigint") {
       reader.context().push(field, "BigInt", "type found, reading property");
       _bigint = reader.readBigInt();
       _bigintSet = true;
       reader.context().pop();
-    } else if (field == "optBigint") {
-      reader
-        .context()
-        .push(field, "BigInt | null", "type found, reading property");
+    }
+    else if (field == "optBigint") {
+      reader.context().push(field, "BigInt | null", "type found, reading property");
       _optBigint = reader.readNullableBigInt();
       reader.context().pop();
-    } else if (field == "bignumber") {
+    }
+    else if (field == "bignumber") {
       reader.context().push(field, "BigNumber", "type found, reading property");
       _bignumber = reader.readBigNumber();
       _bignumberSet = true;
       reader.context().pop();
-    } else if (field == "optBignumber") {
-      reader
-        .context()
-        .push(field, "BigNumber | null", "type found, reading property");
+    }
+    else if (field == "optBignumber") {
+      reader.context().push(field, "BigNumber | null", "type found, reading property");
       _optBignumber = reader.readNullableBigNumber();
       reader.context().pop();
-    } else if (field == "json") {
-      reader
-        .context()
-        .push(field, "JSON.Value", "type found, reading property");
+    }
+    else if (field == "json") {
+      reader.context().push(field, "JSON.Value", "type found, reading property");
       _json = reader.readJSON();
       _jsonSet = true;
       reader.context().pop();
-    } else if (field == "optJson") {
-      reader
-        .context()
-        .push(field, "JSON.Value | null", "type found, reading property");
+    }
+    else if (field == "optJson") {
+      reader.context().push(field, "JSON.Value | null", "type found, reading property");
       _optJson = reader.readNullableJSON();
       reader.context().pop();
-    } else if (field == "bytes") {
-      reader
-        .context()
-        .push(field, "ArrayBuffer", "type found, reading property");
+    }
+    else if (field == "bytes") {
+      reader.context().push(field, "ArrayBuffer", "type found, reading property");
       _bytes = reader.readBytes();
       _bytesSet = true;
       reader.context().pop();
-    } else if (field == "optBytes") {
-      reader
-        .context()
-        .push(field, "ArrayBuffer | null", "type found, reading property");
+    }
+    else if (field == "optBytes") {
+      reader.context().push(field, "ArrayBuffer | null", "type found, reading property");
       _optBytes = reader.readNullableBytes();
       reader.context().pop();
-    } else if (field == "boolean") {
+    }
+    else if (field == "boolean") {
       reader.context().push(field, "bool", "type found, reading property");
       _boolean = reader.readBool();
       _booleanSet = true;
       reader.context().pop();
-    } else if (field == "optBoolean") {
-      reader
-        .context()
-        .push(field, "Nullable<bool>", "type found, reading property");
+    }
+    else if (field == "optBoolean") {
+      reader.context().push(field, "Nullable<bool>", "type found, reading property");
       _optBoolean = reader.readNullableBool();
       reader.context().pop();
-    } else if (field == "uArray") {
-      reader
-        .context()
-        .push(field, "Array<u32>", "type found, reading property");
-      _uArray = reader.readArray(
-        (reader: Read): u32 => {
-          return reader.readUInt32();
-        }
-      );
+    }
+    else if (field == "uArray") {
+      reader.context().push(field, "Array<u32>", "type found, reading property");
+      _uArray = reader.readArray((reader: Read): u32 => {
+        return reader.readUInt32();
+      });
       _uArraySet = true;
       reader.context().pop();
-    } else if (field == "uOptArray") {
-      reader
-        .context()
-        .push(field, "Array<u32> | null", "type found, reading property");
-      _uOptArray = reader.readNullableArray(
-        (reader: Read): u32 => {
-          return reader.readUInt32();
-        }
-      );
+    }
+    else if (field == "uOptArray") {
+      reader.context().push(field, "Array<u32> | null", "type found, reading property");
+      _uOptArray = reader.readNullableArray((reader: Read): u32 => {
+        return reader.readUInt32();
+      });
       reader.context().pop();
-    } else if (field == "optUOptArray") {
-      reader
-        .context()
-        .push(
-          field,
-          "Array<Nullable<u32>> | null",
-          "type found, reading property"
-        );
-      _optUOptArray = reader.readNullableArray(
-        (reader: Read): Nullable<u32> => {
-          return reader.readNullableUInt32();
-        }
-      );
+    }
+    else if (field == "optUOptArray") {
+      reader.context().push(field, "Array<Nullable<u32>> | null", "type found, reading property");
+      _optUOptArray = reader.readNullableArray((reader: Read): Nullable<u32> => {
+        return reader.readNullableUInt32();
+      });
       reader.context().pop();
-    } else if (field == "optStrOptArray") {
-      reader
-        .context()
-        .push(
-          field,
-          "Array<string | null> | null",
-          "type found, reading property"
-        );
-      _optStrOptArray = reader.readNullableArray((reader: Read):
-        | string
-        | null => {
+    }
+    else if (field == "optStrOptArray") {
+      reader.context().push(field, "Array<string | null> | null", "type found, reading property");
+      _optStrOptArray = reader.readNullableArray((reader: Read): string | null => {
         return reader.readNullableString();
       });
       reader.context().pop();
-    } else if (field == "uArrayArray") {
-      reader
-        .context()
-        .push(field, "Array<Array<u32>>", "type found, reading property");
-      _uArrayArray = reader.readArray(
-        (reader: Read): Array<u32> => {
-          return reader.readArray(
-            (reader: Read): u32 => {
-              return reader.readUInt32();
-            }
-          );
-        }
-      );
+    }
+    else if (field == "uArrayArray") {
+      reader.context().push(field, "Array<Array<u32>>", "type found, reading property");
+      _uArrayArray = reader.readArray((reader: Read): Array<u32> => {
+        return reader.readArray((reader: Read): u32 => {
+          return reader.readUInt32();
+        });
+      });
       _uArrayArraySet = true;
       reader.context().pop();
-    } else if (field == "uOptArrayOptArray") {
-      reader
-        .context()
-        .push(
-          field,
-          "Array<Array<Nullable<u32>> | null>",
-          "type found, reading property"
-        );
-      _uOptArrayOptArray = reader.readArray((reader: Read): Array<
-        Nullable<u32>
-      > | null => {
-        return reader.readNullableArray(
-          (reader: Read): Nullable<u32> => {
-            return reader.readNullableUInt32();
-          }
-        );
+    }
+    else if (field == "uOptArrayOptArray") {
+      reader.context().push(field, "Array<Array<Nullable<u32>> | null>", "type found, reading property");
+      _uOptArrayOptArray = reader.readArray((reader: Read): Array<Nullable<u32>> | null => {
+        return reader.readNullableArray((reader: Read): Nullable<u32> => {
+          return reader.readNullableUInt32();
+        });
       });
       _uOptArrayOptArraySet = true;
       reader.context().pop();
-    } else if (field == "uArrayOptArrayArray") {
-      reader
-        .context()
-        .push(
-          field,
-          "Array<Array<Array<u32>> | null>",
-          "type found, reading property"
-        );
-      _uArrayOptArrayArray = reader.readArray((reader: Read): Array<
-        Array<u32>
-      > | null => {
-        return reader.readNullableArray(
-          (reader: Read): Array<u32> => {
-            return reader.readArray(
-              (reader: Read): u32 => {
-                return reader.readUInt32();
-              }
-            );
-          }
-        );
+    }
+    else if (field == "uArrayOptArrayArray") {
+      reader.context().push(field, "Array<Array<Array<u32>> | null>", "type found, reading property");
+      _uArrayOptArrayArray = reader.readArray((reader: Read): Array<Array<u32>> | null => {
+        return reader.readNullableArray((reader: Read): Array<u32> => {
+          return reader.readArray((reader: Read): u32 => {
+            return reader.readUInt32();
+          });
+        });
       });
       _uArrayOptArrayArraySet = true;
       reader.context().pop();
-    } else if (field == "crazyArray") {
-      reader
-        .context()
-        .push(
-          field,
-          "Array<Array<Array<Array<u32> | null>> | null> | null",
-          "type found, reading property"
-        );
-      _crazyArray = reader.readNullableArray((reader: Read): Array<
-        Array<Array<u32> | null>
-      > | null => {
-        return reader.readNullableArray(
-          (reader: Read): Array<Array<u32> | null> => {
-            return reader.readArray((reader: Read): Array<u32> | null => {
-              return reader.readNullableArray(
-                (reader: Read): u32 => {
-                  return reader.readUInt32();
-                }
-              );
+    }
+    else if (field == "crazyArray") {
+      reader.context().push(field, "Array<Array<Array<Array<u32> | null>> | null> | null", "type found, reading property");
+      _crazyArray = reader.readNullableArray((reader: Read): Array<Array<Array<u32> | null>> | null => {
+        return reader.readNullableArray((reader: Read): Array<Array<u32> | null> => {
+          return reader.readArray((reader: Read): Array<u32> | null => {
+            return reader.readNullableArray((reader: Read): u32 => {
+              return reader.readUInt32();
             });
-          }
-        );
+          });
+        });
       });
       reader.context().pop();
-    } else if (field == "object") {
-      reader
-        .context()
-        .push(field, "Types.AnotherType", "type found, reading property");
+    }
+    else if (field == "object") {
+      reader.context().push(field, "Types.AnotherType", "type found, reading property");
       const object = Types.AnotherType.read(reader);
       _object = object;
       _objectSet = true;
       reader.context().pop();
-    } else if (field == "optObject") {
-      reader
-        .context()
-        .push(
-          field,
-          "Types.AnotherType | null",
-          "type found, reading property"
-        );
+    }
+    else if (field == "optObject") {
+      reader.context().push(field, "Types.AnotherType | null", "type found, reading property");
       let object: Types.AnotherType | null = null;
       if (!reader.isNextNil()) {
         object = Types.AnotherType.read(reader);
       }
       _optObject = object;
       reader.context().pop();
-    } else if (field == "objectArray") {
-      reader
-        .context()
-        .push(
-          field,
-          "Array<Types.AnotherType>",
-          "type found, reading property"
-        );
-      _objectArray = reader.readArray(
-        (reader: Read): Types.AnotherType => {
-          const object = Types.AnotherType.read(reader);
-          return object;
-        }
-      );
+    }
+    else if (field == "objectArray") {
+      reader.context().push(field, "Array<Types.AnotherType>", "type found, reading property");
+      _objectArray = reader.readArray((reader: Read): Types.AnotherType => {
+        const object = Types.AnotherType.read(reader);
+        return object;
+      });
       _objectArraySet = true;
       reader.context().pop();
-    } else if (field == "optObjectArray") {
-      reader
-        .context()
-        .push(
-          field,
-          "Array<Types.AnotherType | null> | null",
-          "type found, reading property"
-        );
-      _optObjectArray = reader.readNullableArray(
-        (reader: Read): Types.AnotherType | null => {
-          let object: Types.AnotherType | null = null;
-          if (!reader.isNextNil()) {
-            object = Types.AnotherType.read(reader);
-          }
-          return object;
+    }
+    else if (field == "optObjectArray") {
+      reader.context().push(field, "Array<Types.AnotherType | null> | null", "type found, reading property");
+      _optObjectArray = reader.readNullableArray((reader: Read): Types.AnotherType | null => {
+        let object: Types.AnotherType | null = null;
+        if (!reader.isNextNil()) {
+          object = Types.AnotherType.read(reader);
         }
-      );
+        return object;
+      });
       reader.context().pop();
-    } else if (field == "en") {
-      reader
-        .context()
-        .push(field, "Types.CustomEnum", "type found, reading property");
+    }
+    else if (field == "en") {
+      reader.context().push(field, "Types.CustomEnum", "type found, reading property");
       let value: Types.CustomEnum;
       if (reader.isNextString()) {
         value = Types.getCustomEnumValue(reader.readString());
@@ -756,14 +571,9 @@ export function readCustomType(reader: Read): CustomType {
       _en = value;
       _enSet = true;
       reader.context().pop();
-    } else if (field == "optEnum") {
-      reader
-        .context()
-        .push(
-          field,
-          "Nullable<Types.CustomEnum>",
-          "type found, reading property"
-        );
+    }
+    else if (field == "optEnum") {
+      reader.context().push(field, "Nullable<Types.CustomEnum>", "type found, reading property");
       let value: Nullable<Types.CustomEnum>;
       if (!reader.isNextNil()) {
         if (reader.isNextString()) {
@@ -771,7 +581,9 @@ export function readCustomType(reader: Read): CustomType {
             Types.getCustomEnumValue(reader.readString())
           );
         } else {
-          value = Nullable.fromValue(reader.readInt32());
+          value = Nullable.fromValue(
+            reader.readInt32()
+          );
           Types.sanitizeCustomEnumValue(value.value);
         }
       } else {
@@ -779,282 +591,154 @@ export function readCustomType(reader: Read): CustomType {
       }
       _optEnum = value;
       reader.context().pop();
-    } else if (field == "enumArray") {
-      reader
-        .context()
-        .push(field, "Array<Types.CustomEnum>", "type found, reading property");
-      _enumArray = reader.readArray(
-        (reader: Read): Types.CustomEnum => {
-          let value: Types.CustomEnum;
-          if (reader.isNextString()) {
-            value = Types.getCustomEnumValue(reader.readString());
-          } else {
-            value = reader.readInt32();
-            Types.sanitizeCustomEnumValue(value);
-          }
-          return value;
+    }
+    else if (field == "enumArray") {
+      reader.context().push(field, "Array<Types.CustomEnum>", "type found, reading property");
+      _enumArray = reader.readArray((reader: Read): Types.CustomEnum => {
+        let value: Types.CustomEnum;
+        if (reader.isNextString()) {
+          value = Types.getCustomEnumValue(reader.readString());
+        } else {
+          value = reader.readInt32();
+          Types.sanitizeCustomEnumValue(value);
         }
-      );
+        return value;
+      });
       _enumArraySet = true;
       reader.context().pop();
-    } else if (field == "optEnumArray") {
-      reader
-        .context()
-        .push(
-          field,
-          "Array<Nullable<Types.CustomEnum>> | null",
-          "type found, reading property"
-        );
-      _optEnumArray = reader.readNullableArray(
-        (reader: Read): Nullable<Types.CustomEnum> => {
-          let value: Nullable<Types.CustomEnum>;
-          if (!reader.isNextNil()) {
-            if (reader.isNextString()) {
-              value = Nullable.fromValue(
-                Types.getCustomEnumValue(reader.readString())
-              );
-            } else {
-              value = Nullable.fromValue(reader.readInt32());
-              Types.sanitizeCustomEnumValue(value.value);
-            }
+    }
+    else if (field == "optEnumArray") {
+      reader.context().push(field, "Array<Nullable<Types.CustomEnum>> | null", "type found, reading property");
+      _optEnumArray = reader.readNullableArray((reader: Read): Nullable<Types.CustomEnum> => {
+        let value: Nullable<Types.CustomEnum>;
+        if (!reader.isNextNil()) {
+          if (reader.isNextString()) {
+            value = Nullable.fromValue(
+              Types.getCustomEnumValue(reader.readString())
+            );
           } else {
-            value = Nullable.fromNull<Types.CustomEnum>();
+            value = Nullable.fromValue(
+              reader.readInt32()
+            );
+            Types.sanitizeCustomEnumValue(value.value);
           }
-          return value;
+        } else {
+          value = Nullable.fromNull<Types.CustomEnum>();
         }
-      );
+        return value;
+      });
       reader.context().pop();
-    } else if (field == "union") {
-      reader
-        .context()
-        .push(field, "Types.CustomUnion", "type found, reading property");
+    }
+    else if (field == "union") {
+      reader.context().push(field, "Types.CustomUnion", "type found, reading property");
       const union = Types.CustomUnion.read(reader);
       _union = union;
       _unionSet = true;
       reader.context().pop();
-    } else if (field == "optUnion") {
-      reader
-        .context()
-        .push(
-          field,
-          "Types.CustomUnion | null",
-          "type found, reading property"
-        );
+    }
+    else if (field == "optUnion") {
+      reader.context().push(field, "Types.CustomUnion | null", "type found, reading property");
       let union: Types.CustomUnion | null = null;
       if (!reader.isNextNil()) {
         union = Types.CustomUnion.read(reader);
       }
       _optUnion = union;
       reader.context().pop();
-    } else if (field == "unionArray") {
-      reader
-        .context()
-        .push(
-          field,
-          "Array<Types.CustomUnion>",
-          "type found, reading property"
-        );
-      _unionArray = reader.readArray(
-        (reader: Read): Types.CustomUnion => {
-          const union = Types.CustomUnion.read(reader);
-          return union;
-        }
-      );
+    }
+    else if (field == "unionArray") {
+      reader.context().push(field, "Array<Types.CustomUnion>", "type found, reading property");
+      _unionArray = reader.readArray((reader: Read): Types.CustomUnion => {
+        const union = Types.CustomUnion.read(reader);
+        return union;
+      });
       _unionArraySet = true;
       reader.context().pop();
-    } else if (field == "optUnionArray") {
-      reader
-        .context()
-        .push(
-          field,
-          "Array<Types.CustomUnion | null> | null",
-          "type found, reading property"
-        );
-      _optUnionArray = reader.readNullableArray(
-        (reader: Read): Types.CustomUnion | null => {
-          let union: Types.CustomUnion | null = null;
-          if (!reader.isNextNil()) {
-            union = Types.CustomUnion.read(reader);
-          }
-          return union;
+    }
+    else if (field == "optUnionArray") {
+      reader.context().push(field, "Array<Types.CustomUnion | null> | null", "type found, reading property");
+      _optUnionArray = reader.readNullableArray((reader: Read): Types.CustomUnion | null => {
+        let union: Types.CustomUnion | null = null;
+        if (!reader.isNextNil()) {
+          union = Types.CustomUnion.read(reader);
         }
-      );
+        return union;
+      });
       reader.context().pop();
     }
     reader.context().pop();
   }
 
   if (!_strSet) {
-    throw new Error(
-      reader
-        .context()
-        .printWithContext("Missing required property: 'str: String'")
-    );
+    throw new Error(reader.context().printWithContext("Missing required property: 'str: String'"));
   }
   if (!_uSet) {
-    throw new Error(
-      reader.context().printWithContext("Missing required property: 'u: UInt'")
-    );
+    throw new Error(reader.context().printWithContext("Missing required property: 'u: UInt'"));
   }
   if (!_u8Set) {
-    throw new Error(
-      reader
-        .context()
-        .printWithContext("Missing required property: 'u8: UInt8'")
-    );
+    throw new Error(reader.context().printWithContext("Missing required property: 'u8: UInt8'"));
   }
   if (!_u16Set) {
-    throw new Error(
-      reader
-        .context()
-        .printWithContext("Missing required property: 'u16: UInt16'")
-    );
+    throw new Error(reader.context().printWithContext("Missing required property: 'u16: UInt16'"));
   }
   if (!_u32Set) {
-    throw new Error(
-      reader
-        .context()
-        .printWithContext("Missing required property: 'u32: UInt32'")
-    );
+    throw new Error(reader.context().printWithContext("Missing required property: 'u32: UInt32'"));
   }
   if (!_iSet) {
-    throw new Error(
-      reader.context().printWithContext("Missing required property: 'i: Int'")
-    );
+    throw new Error(reader.context().printWithContext("Missing required property: 'i: Int'"));
   }
   if (!_i8Set) {
-    throw new Error(
-      reader.context().printWithContext("Missing required property: 'i8: Int8'")
-    );
+    throw new Error(reader.context().printWithContext("Missing required property: 'i8: Int8'"));
   }
   if (!_i16Set) {
-    throw new Error(
-      reader
-        .context()
-        .printWithContext("Missing required property: 'i16: Int16'")
-    );
+    throw new Error(reader.context().printWithContext("Missing required property: 'i16: Int16'"));
   }
   if (!_i32Set) {
-    throw new Error(
-      reader
-        .context()
-        .printWithContext("Missing required property: 'i32: Int32'")
-    );
+    throw new Error(reader.context().printWithContext("Missing required property: 'i32: Int32'"));
   }
   if (!_bigintSet) {
-    throw new Error(
-      reader
-        .context()
-        .printWithContext("Missing required property: 'bigint: BigInt'")
-    );
+    throw new Error(reader.context().printWithContext("Missing required property: 'bigint: BigInt'"));
   }
   if (!_bignumberSet) {
-    throw new Error(
-      reader
-        .context()
-        .printWithContext("Missing required property: 'bignumber: BigNumber'")
-    );
+    throw new Error(reader.context().printWithContext("Missing required property: 'bignumber: BigNumber'"));
   }
   if (!_jsonSet) {
-    throw new Error(
-      reader
-        .context()
-        .printWithContext("Missing required property: 'json: JSON'")
-    );
+    throw new Error(reader.context().printWithContext("Missing required property: 'json: JSON'"));
   }
   if (!_bytesSet) {
-    throw new Error(
-      reader
-        .context()
-        .printWithContext("Missing required property: 'bytes: Bytes'")
-    );
+    throw new Error(reader.context().printWithContext("Missing required property: 'bytes: Bytes'"));
   }
   if (!_booleanSet) {
-    throw new Error(
-      reader
-        .context()
-        .printWithContext("Missing required property: 'boolean: Boolean'")
-    );
+    throw new Error(reader.context().printWithContext("Missing required property: 'boolean: Boolean'"));
   }
   if (!_uArraySet) {
-    throw new Error(
-      reader
-        .context()
-        .printWithContext("Missing required property: 'uArray: [UInt]'")
-    );
+    throw new Error(reader.context().printWithContext("Missing required property: 'uArray: [UInt]'"));
   }
   if (!_uArrayArraySet) {
-    throw new Error(
-      reader
-        .context()
-        .printWithContext("Missing required property: 'uArrayArray: [[UInt]]'")
-    );
+    throw new Error(reader.context().printWithContext("Missing required property: 'uArrayArray: [[UInt]]'"));
   }
   if (!_uOptArrayOptArraySet) {
-    throw new Error(
-      reader
-        .context()
-        .printWithContext(
-          "Missing required property: 'uOptArrayOptArray: [[UInt32]]'"
-        )
-    );
+    throw new Error(reader.context().printWithContext("Missing required property: 'uOptArrayOptArray: [[UInt32]]'"));
   }
   if (!_uArrayOptArrayArraySet) {
-    throw new Error(
-      reader
-        .context()
-        .printWithContext(
-          "Missing required property: 'uArrayOptArrayArray: [[[UInt32]]]'"
-        )
-    );
+    throw new Error(reader.context().printWithContext("Missing required property: 'uArrayOptArrayArray: [[[UInt32]]]'"));
   }
   if (!_object || !_objectSet) {
-    throw new Error(
-      reader
-        .context()
-        .printWithContext("Missing required property: 'object: AnotherType'")
-    );
+    throw new Error(reader.context().printWithContext("Missing required property: 'object: AnotherType'"));
   }
   if (!_objectArraySet) {
-    throw new Error(
-      reader
-        .context()
-        .printWithContext(
-          "Missing required property: 'objectArray: [AnotherType]'"
-        )
-    );
+    throw new Error(reader.context().printWithContext("Missing required property: 'objectArray: [AnotherType]'"));
   }
   if (!_enSet) {
-    throw new Error(
-      reader
-        .context()
-        .printWithContext("Missing required property: 'en: CustomEnum'")
-    );
+    throw new Error(reader.context().printWithContext("Missing required property: 'en: CustomEnum'"));
   }
   if (!_enumArraySet) {
-    throw new Error(
-      reader
-        .context()
-        .printWithContext(
-          "Missing required property: 'enumArray: [CustomEnum]'"
-        )
-    );
+    throw new Error(reader.context().printWithContext("Missing required property: 'enumArray: [CustomEnum]'"));
   }
   if (!_union || !_unionSet) {
-    throw new Error(
-      reader
-        .context()
-        .printWithContext("Missing required property: 'union: CustomUnion'")
-    );
+    throw new Error(reader.context().printWithContext("Missing required property: 'union: CustomUnion'"));
   }
   if (!_unionArraySet) {
-    throw new Error(
-      reader
-        .context()
-        .printWithContext(
-          "Missing required property: 'unionArray: [CustomUnion]'"
-        )
-    );
+    throw new Error(reader.context().printWithContext("Missing required property: 'unionArray: [CustomUnion]'"));
   }
 
   return {
@@ -1098,6 +782,6 @@ export function readCustomType(reader: Read): CustomType {
     union: _union,
     optUnion: _optUnion,
     unionArray: _unionArray,
-    optUnionArray: _optUnionArray,
+    optUnionArray: _optUnionArray
   };
 }
