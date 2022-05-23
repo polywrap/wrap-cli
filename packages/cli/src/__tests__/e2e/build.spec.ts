@@ -126,18 +126,10 @@ ${HELP}`);
           expect(exitCode).toEqual(expected.exitCode);
         }
 
-        if(testCaseName === "009-docker-buildx") {
-          const manifestPath = "build/web3api.json";
-          const sanitizedOutput = clearStyle(stdout);
-
-          expect(sanitizedOutput).toContain(manifestPath);
-          expect(sanitizedOutput).toContain("docker rmi polywrap-build-env-");
-          expect(sanitizedOutput).toContain("docker buildx rm polywrap-build-env-");
-      
-          const cacheDir = path.join(testCaseDir, ".w3", "web3api", "build", "cache");
-          expect(fs.existsSync(cacheDir)).toBeTruthy();
-          expect(fs.existsSync(path.join(cacheDir, "index.json"))).toBeTruthy();
-          expect(fs.readdirSync(path.join(cacheDir, "blobs", "sha256")).length).toBeGreaterThan(0);
+        if (expected.files) {
+          for (const file of expected.files) {
+            expect(fs.existsSync(path.join(testCaseDir, file))).toBeTruthy();
+          }
         }
       });
     }
