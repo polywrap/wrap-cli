@@ -20,7 +20,7 @@ const HELP = `Usage: w3 deploy|d [options]
 Deploys/Publishes a Web3API
 
 Options:
-  -m, --manifest-file <path>  Path to the Web3API Plugin manifest file
+  -m, --manifest-file <path>  Path to the Web3API Deploy manifest file
                               (default: web3api.yaml | web3api.yml)
   -v, --verbose               Verbose output (default: false)
   -h, --help                  display help for command

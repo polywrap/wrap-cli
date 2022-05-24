@@ -8,6 +8,8 @@ import fs from "fs";
 
 const HELP = `Usage: w3 plugin|p [options] [command]
 
+Build/generate types for the plugin
+
 Options:
   -h, --help         display help for command
 

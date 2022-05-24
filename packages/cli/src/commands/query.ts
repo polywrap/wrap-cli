@@ -14,7 +14,6 @@ import fs from "fs";
 type QueryCommandOptions = {
   clientConfig: Partial<Web3ApiClientConfig>;
   outputFile?: string;
-  testEns?: boolean;
   quiet?: boolean;
 };
 
@@ -33,7 +32,6 @@ export const query: Command = {
         `-o, --output-file <${intlMsg.commands_query_options_outputFilePath()}>`,
         `${intlMsg.commands_query_options_outputFile()}`
       )
-      .option(`-t, --test-ens`, `${intlMsg.commands_build_options_t()}`)
       .option(`-q, --quiet`, `${intlMsg.commands_query_options_quiet()}`)
       .action(async (recipe: string, options) => {
         await run(recipe, {

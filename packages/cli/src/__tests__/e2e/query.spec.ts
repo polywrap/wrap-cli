@@ -28,11 +28,11 @@ Arguments:
   recipe                                Path to recipe script
 
 Options:
-  -h, --help                         Show usage information
-  -c, --client-config <config-path>  Add custom configuration to the Web3ApiClient
-  -o, --output-file                  Output file path for the query result
-  -q, --quiet                        Suppress output
-
+  -c, --client-config <config-path>     Add custom configuration to the
+                                        Web3ApiClient
+  -o, --output-file <output-file-path>  Output file path for the query result
+  -q, --quiet                           Suppress output
+  -h, --help                            display help for command
 `;
 
 describe("sanity tests for query command", () => {
@@ -115,12 +115,17 @@ describe("e2e tests for query command", () => {
     });
   });
 
+  test("hello", async () => {});
+
   test("Should successfully return response: using json recipes", async () => {
     const { exitCode: code, stdout: output, stderr: queryErr } = await runCLI({
       args: ["query", "./recipes/e2e.json"],
       cwd: testCaseRoot,
       cli: w3Cli,
     });
+
+    console.log(output)
+    console.log(queryErr)
 
     expect(code).toEqual(0);
     expect(queryErr).toBe("");
