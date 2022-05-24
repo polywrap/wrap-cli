@@ -13,9 +13,7 @@ import {
 } from "../lib";
 import {
   parseWasmManifestFileOption,
-  // defaultWasmManifestFileOption,
   parseBuildOutputDirOption,
-  // defaultBuildOutputDirOption,
 } from "../lib/parsers";
 
 import { print } from "gluegun";

@@ -9,8 +9,6 @@ import {
   getTestEnvProviders,
 } from "../lib";
 import {
-  // defaultCodegenDirOption,
-  // defaultWasmManifestFileOption,
   parseCodegenDirOption,
   parseCodegenScriptOption,
   parseWasmManifestFileOption,

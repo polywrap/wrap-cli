@@ -1,10 +1,8 @@
 import { Command, Program } from "./types";
 import { intlMsg } from "../lib";
 import {
-  // defaultClientConfigOption,
   parseClientConfigOption,
   parseRecipeOutputFilePathOption,
-  // parseRecipeScriptPathOption,
 } from "../lib/parsers";
 
 import { Web3ApiClient, Web3ApiClientConfig } from "@web3api/client-js";

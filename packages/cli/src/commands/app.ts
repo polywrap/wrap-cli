@@ -10,8 +10,6 @@ import {
 import {
   parseAppManifestFileOption,
   parseAppCodegenDirOption,
-  // defaultAppCodegenDirOption,
-  // defaultAppManifestFileOption,
 } from "../lib/parsers";
 
 import { Web3ApiClient } from "@web3api/client-js";

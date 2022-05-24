@@ -105,9 +105,6 @@ describe("e2e tests for app command", () => {
           },
         );
 
-        console.log(output);
-        console.log(error);
-
         expect(error).toBe("");
         expect(code).toEqual(0);
         expect(clearStyle(output)).toEqual(CODEGEN_SUCCESS);

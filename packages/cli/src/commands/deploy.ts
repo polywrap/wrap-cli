@@ -5,10 +5,7 @@ import {
   defaultWeb3ApiManifest,
   DeployPackage,
 } from "../lib";
-import {
-  // defaultWasmManifestFileOption,
-  parseWasmManifestFileOption,
-} from "../lib/parsers";
+import { parseWasmManifestFileOption } from "../lib/parsers";
 import { DeployerHandler } from "../lib/deploy/deployer";
 import { Command, Program } from "./types";
 
@@ -34,7 +31,7 @@ export const deploy: Command = {
       .description(intlMsg.commands_deploy_description())
       .option(
         `-m, --manifest-file <${pathStr}>`,
-        `${intlMsg.commands_plugin_options_m({
+        `${intlMsg.commands_deploy_options_m({
           default: defaultManifestStr,
         })}`
       )
