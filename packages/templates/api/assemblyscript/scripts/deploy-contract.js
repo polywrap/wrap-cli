@@ -1,6 +1,7 @@
+const buildContract = require("./build-contract");
+
 const { EthereumPlugin } = require("@web3api/ethereum-plugin-js");
 const fs = require("fs");
-const buildContract = require("./build-contract");
 
 async function main() {
   // Ensure the contract is built

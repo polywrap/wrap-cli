@@ -3,7 +3,7 @@ import {
   initTestEnvironment,
   stopTestEnvironment,
 } from "@web3api/test-env-js";
-import { createWeb3ApiClient, Web3ApiClientConfig } from "..";
+import { createWeb3ApiClient, Web3ApiClientConfig } from "../..";
 import { Client, Plugin, PluginModule, PluginModules } from "@web3api/core-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 

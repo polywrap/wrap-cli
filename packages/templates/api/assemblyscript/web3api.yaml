@@ -1,8 +1,9 @@
-format: 0.0.1-prealpha.7
+format: 0.0.1-prealpha.8
 name: simple-storage
 language: wasm/assemblyscript
 build: ./web3api.build.yaml
 meta: ./web3api.meta.yaml
+deploy: ./web3api.deploy.yaml
 modules:
   mutation:
     schema: ./src/mutation/schema.graphql

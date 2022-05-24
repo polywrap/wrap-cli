@@ -18,6 +18,8 @@ Options:
 
 `;
 
+jest.setTimeout(500000);
+
 describe("e2e tests for build command", () => {
   const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/build-cmd");
   const testCases =
@@ -122,6 +124,12 @@ ${HELP}`);
 
         if (expected.exitCode) {
           expect(exitCode).toEqual(expected.exitCode);
+        }
+
+        if (expected.files) {
+          for (const file of expected.files) {
+            expect(fs.existsSync(path.join(testCaseDir, file))).toBeTruthy();
+          }
         }
       });
     }
