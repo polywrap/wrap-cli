@@ -175,7 +175,7 @@
   "commands_query_error_missingScript": "Required argument {script} is missing",
   "commands_query_error_noApi": "API needs to be initialized",
   "commands_query_error_readFail": "Failed to read query {query}",
-  "commands_query_error_noTestEnvFound": "w3 test-env not found, please run 'w3 test-env up'",
+  "commands_query_error_noTestEnvFound": "w3 test-env not found, please run 'w3 infra up --preset=eth-ens-ipfs'",
   "commands_w3_error_notACommand": "is not a command",
   "commands_w3_helpPrompt": "Type {command} to view common commands",
   "lib_codeGenerator_genCodeError": "Failed to generate types",
