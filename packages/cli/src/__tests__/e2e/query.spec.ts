@@ -28,13 +28,11 @@ Arguments:
   recipe                                Path to recipe script
 
 Options:
-  -c, --client-config <config-path>     Add custom configuration to the
-                                        Web3ApiClient
-  -o, --output-file <output-file-path>  Output file path for the query result
-  -t, --test-ens                        Use the development server's ENS
-                                        instance
-  -q, --quiet                           Suppress output
-  -h, --help                            display help for command
+  -h, --help                         Show usage information
+  -c, --client-config <config-path>  Add custom configuration to the Web3ApiClient
+  -o, --output-file                  Output file path for the query result
+  -q, --quiet                        Suppress output
+
 `;
 
 describe("sanity tests for query command", () => {
@@ -119,7 +117,7 @@ describe("e2e tests for query command", () => {
 
   test("Should successfully return response: using json recipes", async () => {
     const { exitCode: code, stdout: output, stderr: queryErr } = await runCLI({
-      args: ["query", "./recipes/e2e.json", "--test-ens"],
+      args: ["query", "./recipes/e2e.json"],
       cwd: testCaseRoot,
       cli: w3Cli,
     });
@@ -135,7 +133,7 @@ describe("e2e tests for query command", () => {
 
   test("Should successfully return response: using yaml recipes", async () => {
     const { exitCode: code, stdout: output, stderr: queryErr } = await runCLI({
-      args: ["query", "./recipes/e2e.yaml", "--test-ens"],
+      args: ["query", "./recipes/e2e.yaml"],
       cwd: testCaseRoot,
       cli: w3Cli,
     });
@@ -157,7 +155,7 @@ describe("e2e tests for query command", () => {
 
   test("Should successfully return response: using mix of yaml & json recipes", async () => {
     const { exitCode: code, stdout: output, stderr: queryErr } = await runCLI({
-      args: ["query", "./recipes/e2e.json", "--test-ens"],
+      args: ["query", "./recipes/e2e.json"],
       cwd: testCaseRoot,
       cli: w3Cli,
     });
@@ -182,7 +180,6 @@ describe("e2e tests for query command", () => {
       args: [
         "query",
         "./recipes/e2e.json",
-        "--test-ens",
         "--output-file",
         "./recipes/output.json",
       ],
@@ -214,7 +211,6 @@ describe("e2e tests for query command", () => {
       args: [
         "query",
         "./recipes/e2e.yaml",
-        "--test-ens",
         "--output-file",
         "./recipes/output.yaml",
       ],
@@ -248,7 +244,11 @@ describe("e2e tests for query command", () => {
 
   test("Should suppress the ouput if --quiet option is specified", async () => {
     const { exitCode: code, stdout: output, stderr: queryErr } = await runCLI({
-      args: ["query", "./recipes/e2e.json", "--test-ens", "--quiet"],
+      args: [
+        "query",
+        "./recipes/e2e.json",
+        "--quiet",
+      ],
       cwd: testCaseRoot,
       cli: w3Cli,
     });
@@ -271,7 +271,6 @@ describe("e2e tests for query command", () => {
         args: [
           "query",
           "./recipes/e2e.json",
-          "--test-ens",
           "--client-config",
           config,
         ],
