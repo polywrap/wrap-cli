@@ -4,8 +4,8 @@
   "private": true,
   "version": "0.0.1-prealpha.80",
   "scripts": {
-    "start": "ts-node ./src/index.ts",
-    "prestart": "npx w3 app codegen"
+    "build": "npx w3 app codegen",
+    "test": "ts-node ./src/index.ts"
   },
   "dependencies": {
     "@web3api/client-js": "0.0.1-prealpha.80"

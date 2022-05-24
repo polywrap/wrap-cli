@@ -10,6 +10,6 @@
     "@web3api/wasm-as": "0.0.1-prealpha.72"
   },
   "devDependencies": {
-    "assemblyscript": "0.19.1"
+    "assemblyscript": "0.19.5"
   }
 }

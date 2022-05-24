@@ -44,7 +44,7 @@ async function main() {
   // Generate an Assemblyscript file containing the abi + bytecode
   fs.writeFileSync(
     `${__dirname}/../src/contracts/SimpleStorage.ts`,
-`/// NOTE: This file is auto-generate, see deploy-contract.js
+`/// NOTE: This file is auto-generate, see build-contract.js
 export const abi = \`${abi}\`;
 export const bytecode = "0x${bytecode}";
 `
