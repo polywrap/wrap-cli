@@ -2,6 +2,7 @@ use serde::{Serialize, Deserialize};
 use polywrap_wasm_rs::{
     BigInt,
     BigNumber,
+    Map,
     Context,
     DecodeError,
     EncodeError,
@@ -66,8 +67,8 @@ pub fn write_imported_method_args<W: Write>(input: &InputImportedMethod, writer:
     writer.write_string("uArrayArray")?;
     writer.write_array(&input.u_array_array, |writer, item| {
         writer.write_nullable_array(item, |writer, item| {
-            writer.write_nullable_u32(item)
-        })
+            writer.write_nullable_u32(item)?;
+        })?;
     })?;
     writer.context().pop();
     writer.context().push("object", "TestImportObject", "writing property");
@@ -156,7 +157,7 @@ pub fn write_another_method_args<W: Write>(input: &InputAnotherMethod, writer: &
     writer.context().push("arg", "Vec<String>", "writing property");
     writer.write_string("arg")?;
     writer.write_array(&input.arg, |writer, item| {
-        writer.write_string(item)
+        writer.write_string(item)?;
     })?;
     writer.context().pop();
     Ok(())

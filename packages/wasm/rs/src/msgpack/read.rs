@@ -33,6 +33,14 @@ pub trait Read {
     ) -> Result<BTreeMap<K, V>, DecodeError>
     where
         K: Eq + Hash + Ord;
+    fn read_ext_generic_map<K, V>(
+        &mut self,
+        key_reader: impl FnMut(&mut Self) -> Result<K, DecodeError>,
+        val_reader: impl FnMut(&mut Self) -> Result<V, DecodeError>,
+    ) -> Result<BTreeMap<K, V>, DecodeError>
+    where
+        K: Eq + Hash + Ord;
+
     fn read_nullable_bool(&mut self) -> Result<Option<bool>, DecodeError>;
     fn read_nullable_i8(&mut self) -> Result<Option<i8>, DecodeError>;
     fn read_nullable_i16(&mut self) -> Result<Option<i16>, DecodeError>;
@@ -58,7 +66,16 @@ pub trait Read {
     ) -> Result<Option<BTreeMap<K, V>>, DecodeError>
     where
         K: Eq + Hash + Ord;
+    fn read_nullable_ext_generic_map<K, V>(
+        &mut self,
+        key_reader: impl FnMut(&mut Self) -> Result<K, DecodeError>,
+        val_reader: impl FnMut(&mut Self) -> Result<V, DecodeError>,
+    ) -> Result<Option<BTreeMap<K, V>>, DecodeError>
+    where
+        K: Eq + Hash + Ord;
+
     fn is_next_nil(&mut self) -> Result<bool, DecodeError>;
     fn is_next_string(&mut self) -> Result<bool, DecodeError>;
+
     fn context(&mut self) -> &mut Context;
 }

@@ -1,4 +1,4 @@
-use super::{error::EncodeError, Context, DataView, Format, Write};
+use super::{error::EncodeError, Context, DataView, Format, Write, ExtensionType};
 use crate::{BigInt, BigNumber, JSON};
 use byteorder::{BigEndian, WriteBytesExt};
 use core::hash::Hash;
@@ -272,6 +272,42 @@ impl Write for WriteEncoder {
         Ok(())
     }
 
+    fn write_ext_generic_map<K, V: Clone>(
+        &mut self,
+        map: &BTreeMap<K, V>,
+        mut key_writer: impl FnMut(&mut Self, &K) -> Result<(), EncodeError>,
+        mut val_writer: impl FnMut(&mut Self, &V) -> Result<(), EncodeError>,
+    ) -> Result<(), EncodeError>
+    where
+        K: Clone + Eq + Hash + Ord,
+    {
+        let mut encoder = WriteEncoder::new(&[], self.context.clone());
+        encoder.write_map(map, key_writer, val_writer);
+
+        let buf = encoder.get_buffer();
+        let bytelength = buf.len();
+
+        // Encode the extension format + bytelength
+        if bytelength <= u8::MAX as usize {
+            Format::set_format(self, Format::Ext8)?;
+            WriteBytesExt::write_u8(self, bytelength.try_into().unwrap())?;
+        } else if bytelength <= u16::MAX as usize {
+            Format::set_format(self, Format::Ext16)?;
+            WriteBytesExt::write_u16::<BigEndian>(self, bytelength.try_into().unwrap())?;
+        } else {
+            Format::set_format(self, Format::Ext32)?;
+            WriteBytesExt::write_u32::<BigEndian>(self, bytelength.try_into().unwrap())?;
+        }
+
+        // Set the extension type
+        WriteBytesExt::write_u8(self, ExtensionType::GenericMap.to_u8())?;
+
+        // Copy the map's encoded buffer
+        self.view.buffer.write(&buf)?;
+
+        Ok(())
+    }
+
     fn write_nullable_bool(&mut self, value: &Option<bool>) -> Result<(), EncodeError> {
         match value {
             None => Write::write_nil(self),
@@ -393,6 +429,21 @@ impl Write for WriteEncoder {
         match opt_map {
             None => Write::write_nil(self),
             Some(map) => Write::write_map(self, map, key_writer, val_writer),
+        }
+    }
+
+    fn write_nullable_ext_generic_map<K, V: Clone>(
+        &mut self,
+        opt_map: &Option<BTreeMap<K, V>>,
+        key_writer: impl FnMut(&mut Self, &K) -> Result<(), EncodeError>,
+        val_writer: impl FnMut(&mut Self, &V) -> Result<(), EncodeError>,
+    ) -> Result<(), EncodeError>
+    where
+        K: Clone + Eq + Hash + Ord,
+    {
+        match opt_map {
+            None => Write::write_nil(self),
+            Some(map) => Write::write_ext_generic_map(self, map, key_writer, val_writer),
         }
     }
 

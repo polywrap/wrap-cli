@@ -27,10 +27,10 @@ write_encoder.rs:
 - ensure that we're using "printWithContext" in the same places in our rust run-time + codegen
 
 # After Tests Pass
-* merge prealpha-dev
-* handleKeywords in rust
-* error types for encoder / decoder
-* all existing assemblyscript test cases are ported to rust
+x merge prealpha-dev
+x handleKeywords in rust
+x error types for encoder / decoder
+x all existing assemblyscript test cases are ported to rust
 
 # TODO
 ## CI/CD
@@ -49,4 +49,9 @@ x add bindings
 x run tests
 
 ## Map Type Support
-- research
+x wasm-rs runtime
+x bindings
+x run tests
+
+## Client Tests
+- Fix the web3apiclient.spec.ts duplicate tests

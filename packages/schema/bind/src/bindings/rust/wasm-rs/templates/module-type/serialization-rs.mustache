@@ -3,6 +3,7 @@ use std::convert::TryFrom;
 use polywrap_wasm_rs::{
     BigInt,
     BigNumber,
+    Map,
     Context,
     DecodeError,
     EncodeError,
@@ -77,6 +78,15 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
                     {{> deserialize_array_nobox}}
                 })?;
                 {{/array}}
+                {{#map}}
+                _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {
+                    reader.read_{{#key}}{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}{{/key}}()?
+                }, |reader| {
+                    {{#value}}
+                    {{> deserialize_map_value_nobox}}
+                    {{/value}}
+                })?;
+                {{/map}}
                 {{#enum}}
                 {{> deserialize_enum}}
                 _{{#toLower}}{{name}}{{/toLower}} = value;
@@ -129,6 +139,15 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#return
         {{> serialize_array}}
     })?;
     {{/array}}
+    {{#map}}
+    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}, |writer, key| {
+        writer.write_{{#key}}{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}{{/key}}(key)?;
+    }, |writer, value| {
+        {{#value}}
+        {{> serialize_map_value}}
+        {{/value}}
+    })?;
+    {{/map}}
     {{#enum}}
     {{#required}}
     writer.write_i32(&(*result as i32))?;

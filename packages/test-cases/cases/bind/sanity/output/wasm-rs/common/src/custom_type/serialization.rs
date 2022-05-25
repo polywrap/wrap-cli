@@ -2,6 +2,7 @@ use std::convert::TryFrom;
 use polywrap_wasm_rs::{
     BigInt,
     BigNumber,
+    Map,
     Context,
     DecodeError,
     EncodeError,
@@ -117,41 +118,41 @@ pub fn write_custom_type<W: Write>(input: &CustomType, writer: &mut W) -> Result
     writer.context().push("uArray", "Vec<u32>", "writing property");
     writer.write_string("uArray")?;
     writer.write_array(&input.u_array, |writer, item| {
-        writer.write_u32(item)
+        writer.write_u32(item)?;
     })?;
     writer.context().pop();
     writer.context().push("uOptArray", "Option<Vec<u32>>", "writing property");
     writer.write_string("uOptArray")?;
     writer.write_nullable_array(&input.u_opt_array, |writer, item| {
-        writer.write_u32(item)
+        writer.write_u32(item)?;
     })?;
     writer.context().pop();
     writer.context().push("optUOptArray", "Option<Vec<Option<u32>>>", "writing property");
     writer.write_string("optUOptArray")?;
     writer.write_nullable_array(&input.opt_u_opt_array, |writer, item| {
-        writer.write_nullable_u32(item)
+        writer.write_nullable_u32(item)?;
     })?;
     writer.context().pop();
     writer.context().push("optStrOptArray", "Option<Vec<Option<String>>>", "writing property");
     writer.write_string("optStrOptArray")?;
     writer.write_nullable_array(&input.opt_str_opt_array, |writer, item| {
-        writer.write_nullable_string(item)
+        writer.write_nullable_string(item)?;
     })?;
     writer.context().pop();
     writer.context().push("uArrayArray", "Vec<Vec<u32>>", "writing property");
     writer.write_string("uArrayArray")?;
     writer.write_array(&input.u_array_array, |writer, item| {
         writer.write_array(item, |writer, item| {
-            writer.write_u32(item)
-        })
+            writer.write_u32(item)?;
+        })?;
     })?;
     writer.context().pop();
     writer.context().push("uOptArrayOptArray", "Vec<Option<Vec<Option<u32>>>>", "writing property");
     writer.write_string("uOptArrayOptArray")?;
     writer.write_array(&input.u_opt_array_opt_array, |writer, item| {
         writer.write_nullable_array(item, |writer, item| {
-            writer.write_nullable_u32(item)
-        })
+            writer.write_nullable_u32(item)?;
+        })?;
     })?;
     writer.context().pop();
     writer.context().push("uArrayOptArrayArray", "Vec<Option<Vec<Vec<u32>>>>", "writing property");
@@ -159,9 +160,9 @@ pub fn write_custom_type<W: Write>(input: &CustomType, writer: &mut W) -> Result
     writer.write_array(&input.u_array_opt_array_array, |writer, item| {
         writer.write_nullable_array(item, |writer, item| {
             writer.write_array(item, |writer, item| {
-                writer.write_u32(item)
-            })
-        })
+                writer.write_u32(item)?;
+            })?;
+        })?;
     })?;
     writer.context().pop();
     writer.context().push("crazyArray", "Option<Vec<Option<Vec<Vec<Option<Vec<u32>>>>>>>", "writing property");
@@ -170,10 +171,10 @@ pub fn write_custom_type<W: Write>(input: &CustomType, writer: &mut W) -> Result
         writer.write_nullable_array(item, |writer, item| {
             writer.write_array(item, |writer, item| {
                 writer.write_nullable_array(item, |writer, item| {
-                    writer.write_u32(item)
-                })
-            })
-        })
+                    writer.write_u32(item)?;
+                })?;
+            })?;
+        })?;
     })?;
     writer.context().pop();
     writer.context().push("object", "AnotherType", "writing property");
@@ -424,7 +425,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
             "uArray" => {
                 reader.context().push(&field, "Vec<u32>", "type found, reading property");
                 _u_array = reader.read_array(|reader| {
-                    reader.read_u32()
+                    reader.read_u32()?
                 })?;
                 _u_array_set = true;
                 reader.context().pop();
@@ -432,21 +433,21 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
             "uOptArray" => {
                 reader.context().push(&field, "Option<Vec<u32>>", "type found, reading property");
                 _u_opt_array = reader.read_nullable_array(|reader| {
-                    reader.read_u32()
+                    reader.read_u32()?
                 })?;
                 reader.context().pop();
             }
             "optUOptArray" => {
                 reader.context().push(&field, "Option<Vec<Option<u32>>>", "type found, reading property");
                 _opt_u_opt_array = reader.read_nullable_array(|reader| {
-                    reader.read_nullable_u32()
+                    reader.read_nullable_u32()?
                 })?;
                 reader.context().pop();
             }
             "optStrOptArray" => {
                 reader.context().push(&field, "Option<Vec<Option<String>>>", "type found, reading property");
                 _opt_str_opt_array = reader.read_nullable_array(|reader| {
-                    reader.read_nullable_string()
+                    reader.read_nullable_string()?
                 })?;
                 reader.context().pop();
             }
@@ -454,8 +455,8 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
                 reader.context().push(&field, "Vec<Vec<u32>>", "type found, reading property");
                 _u_array_array = reader.read_array(|reader| {
                     reader.read_array(|reader| {
-                        reader.read_u32()
-                    })
+                        reader.read_u32()?
+                    })?
                 })?;
                 _u_array_array_set = true;
                 reader.context().pop();
@@ -464,8 +465,8 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
                 reader.context().push(&field, "Vec<Option<Vec<Option<u32>>>>", "type found, reading property");
                 _u_opt_array_opt_array = reader.read_array(|reader| {
                     reader.read_nullable_array(|reader| {
-                        reader.read_nullable_u32()
-                    })
+                        reader.read_nullable_u32()?
+                    })?
                 })?;
                 _u_opt_array_opt_array_set = true;
                 reader.context().pop();
@@ -475,9 +476,9 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
                 _u_array_opt_array_array = reader.read_array(|reader| {
                     reader.read_nullable_array(|reader| {
                         reader.read_array(|reader| {
-                            reader.read_u32()
-                        })
-                    })
+                            reader.read_u32()?
+                        })?
+                    })?
                 })?;
                 _u_array_opt_array_array_set = true;
                 reader.context().pop();
@@ -488,10 +489,10 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
                     reader.read_nullable_array(|reader| {
                         reader.read_array(|reader| {
                             reader.read_nullable_array(|reader| {
-                                reader.read_u32()
-                            })
-                        })
-                    })
+                                reader.read_u32()?
+                            })?
+                        })?
+                    })?
                 })?;
                 reader.context().pop();
             }

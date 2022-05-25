@@ -116,6 +116,9 @@ pub enum DecodeError {
     MapReadError(String),
 
     #[error("{0}")]
+    ExtGenericMapReadError(String),
+
+    #[error("{0}")]
     StrReadError(String),
 
     #[error("{0}")]

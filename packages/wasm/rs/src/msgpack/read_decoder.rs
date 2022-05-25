@@ -1,6 +1,6 @@
 use super::{
     error::{get_error_message, DecodeError},
-    Context, DataView, Format, Read,
+    Context, DataView, Format, Read, ExtensionType,
 };
 use crate::{BigInt, BigNumber, JSON};
 use byteorder::{BigEndian, ReadBytesExt};
@@ -438,6 +438,66 @@ impl Read for ReadDecoder {
         Ok(map)
     }
 
+    fn read_ext_generic_map<K, V>(
+        &mut self,
+        mut key_reader: impl FnMut(&mut Self) -> Result<K, DecodeError>,
+        mut val_reader: impl FnMut(&mut Self) -> Result<V, DecodeError>,
+    ) -> Result<BTreeMap<K, V>, DecodeError>
+    where
+        K: Eq + Hash + Ord,
+    {
+        let mut consumed = false;
+        let byte_length = match Format::get_format(self)? {
+            Format::FixMap(format) => {
+                return self.read_map(key_reader, val_reader);
+            },
+            Format::Map16 => {
+                return self.read_map(key_reader, val_reader);
+            },
+            Format::FixExt1 => 1,
+            Format::FixExt2 => 2,
+            Format::FixExt4 => 4,
+            Format::FixExt8 => 8,
+            Format::FixExt16 => 16,
+            format @ Format::Ext8 => format.to_u8() as u32,
+            Format::Ext16 => {
+                consumed = true;
+                ReadBytesExt::read_u16::<BigEndian>(self)? as u32
+            },
+            Format::Ext32 => {
+                consumed = true;
+                ReadBytesExt::read_u32::<BigEndian>(self)?
+            },
+            err_f => {
+                let formatted_err = format!(
+                  "Property must be of type 'ext generic map'. {}",
+                  get_error_message(err_f)
+                );
+                let err_msg = self.context().print_with_context(&formatted_err);
+                return Err(DecodeError::WrongMsgPackFormat(err_msg))
+            }
+        };
+
+        // Consume the leadByte
+        if !consumed {
+            ReadBytesExt::read_u8(self)?;
+        }
+
+        // Get the extension type
+        let ext_type = ReadBytesExt::read_u8(self)?;
+
+        if ext_type != ExtensionType::GenericMap.to_u8() {
+            let formatted_err = format!(
+                "Extension must be of type 'ext generic map'. Found {}",
+                ext_type
+            );
+            let err_msg = self.context().print_with_context(&formatted_err);
+            return Err(DecodeError::WrongMsgPackFormat(err_msg))
+        }
+
+        self.read_map(key_reader, val_reader)
+    }
+
     fn read_nullable_bool(&mut self) -> Result<Option<bool>, DecodeError> {
         if self.is_next_nil()? {
             return Ok(None);
@@ -620,6 +680,24 @@ impl Read for ReadDecoder {
             match self.read_map(key_reader, val_reader) {
                 Ok(map) => Ok(Some(map)),
                 Err(e) => Err(DecodeError::MapReadError(e.to_string())),
+            }
+        }
+    }
+
+    fn read_nullable_ext_generic_map<K, V>(
+        &mut self,
+        key_reader: impl FnMut(&mut Self) -> Result<K, DecodeError>,
+        val_reader: impl FnMut(&mut Self) -> Result<V, DecodeError>,
+    ) -> Result<Option<BTreeMap<K, V>>, DecodeError>
+    where
+        K: Eq + Hash + Ord,
+    {
+        if self.is_next_nil()? {
+            return Ok(None);
+        } else {
+            match self.read_ext_generic_map(key_reader, val_reader) {
+                Ok(map) => Ok(Some(map)),
+                Err(e) => Err(DecodeError::ExtGenericMapReadError(e.to_string())),
             }
         }
     }

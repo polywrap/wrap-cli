@@ -2,6 +2,7 @@ use serde::{Serialize, Deserialize};
 use polywrap_wasm_rs::{
     BigInt,
     BigNumber,
+    Map,
     Context,
     DecodeError,
     EncodeError,
@@ -83,7 +84,7 @@ pub fn write_another_method_args<W: Write>(input: &InputAnotherMethod, writer: &
     writer.context().push("arg", "Vec<String>", "writing property");
     writer.write_string("arg")?;
     writer.write_array(&input.arg, |writer, item| {
-        writer.write_string(item)
+        writer.write_string(item)?;
     })?;
     writer.context().pop();
     Ok(())

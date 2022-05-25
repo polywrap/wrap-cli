@@ -3,6 +3,7 @@ pub mod serialization;
 use polywrap_wasm_rs::{
     BigInt,
     BigNumber,
+    Map,
     DecodeError,
     EncodeError,
     Read,

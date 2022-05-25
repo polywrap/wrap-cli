@@ -36,6 +36,15 @@ pub trait Write {
     ) -> Result<(), EncodeError>
     where
         K: Clone + Eq + Hash + Ord;
+    fn write_ext_generic_map<K, V: Clone>(
+        &mut self,
+        map: &BTreeMap<K, V>,
+        key_writer: impl FnMut(&mut Self, &K) -> Result<(), EncodeError>,
+        val_writer: impl FnMut(&mut Self, &V) -> Result<(), EncodeError>,
+    ) -> Result<(), EncodeError>
+    where
+        K: Clone + Eq + Hash + Ord;
+
     fn write_nullable_bool(&mut self, value: &Option<bool>) -> Result<(), EncodeError>;
     fn write_nullable_i8(&mut self, value: &Option<i8>) -> Result<(), EncodeError>;
     fn write_nullable_i16(&mut self, value: &Option<i16>) -> Result<(), EncodeError>;
@@ -63,5 +72,14 @@ pub trait Write {
     ) -> Result<(), EncodeError>
     where
         K: Clone + Eq + Hash + Ord;
+    fn write_nullable_ext_generic_map<K, V: Clone>(
+        &mut self,
+        opt_map: &Option<BTreeMap<K, V>>,
+        key_writer: impl FnMut(&mut Self, &K) -> Result<(), EncodeError>,
+        val_writer: impl FnMut(&mut Self, &V) -> Result<(), EncodeError>,
+    ) -> Result<(), EncodeError>
+    where
+        K: Clone + Eq + Hash + Ord;
+
     fn context(&mut self) -> &mut Context;
 }
