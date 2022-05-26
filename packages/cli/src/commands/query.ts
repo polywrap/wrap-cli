@@ -67,12 +67,14 @@ async function run(recipePath: string, options: QueryCommandOptions) {
   for (const task of recipe) {
     if (task.api) {
       uri = task.api;
+      recipeOutput.push({ api: task.api });
     }
 
     if (task.constants) {
       constants = getParser(task.constants)(
         fs.readFileSync(path.join(dir, task.constants)).toString()
       );
+      recipeOutput.push({ constants: task.constants });
     }
 
     if (task.query) {
