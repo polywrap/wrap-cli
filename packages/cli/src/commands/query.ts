@@ -36,7 +36,7 @@ export const query: Command = {
       .action(async (recipe: string, options) => {
         await run(recipe, {
           ...options,
-          clientConfig: parseClientConfigOption(
+          clientConfig: await parseClientConfigOption(
             options.clientConfig,
             undefined
           ),
