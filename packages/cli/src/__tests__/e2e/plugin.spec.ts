@@ -1,4 +1,3 @@
-import { defaultPluginManifest } from "../../lib";
 import { clearStyle } from "./utils";
 
 import { runCLI } from "@web3api/test-env-js";
@@ -7,22 +6,16 @@ import { compareSync } from "dir-compare";
 import path from "path";
 import fs from "fs";
 
-const HELP = `
-w3 plugin command [options]
+const HELP = `Usage: w3 plugin|p [options] [command]
 
-Commands:
-  codegen   Generate code for the plugin
+Build/generate types for the plugin
 
 Options:
-  -h, --help                       Show usage information
-  -m, --manifest-file <path>       Path to the Web3API Plugin manifest file (default: ${defaultPluginManifest.join(
-    " | "
-  )})
-  -p, --publish-dir <path>  Output path for the built schema and manifest (default: ./build)
-  -c, --codegen-dir <path>    Output directory for the generated types (default: ./src/w3)
-  -i, --ipfs [<node>]              IPFS node to load external schemas (default: dev-server's node)
-  -e, --ens [<address>]            ENS address to lookup external schemas (default: 0x0000...2e1e)
+  -h, --help         display help for command
 
+Commands:
+  codegen [options]
+  help [command]     display help for command
 `;
 
 const CODEGEN_SUCCESS = `- Manifest loaded from ./web3api.plugin.yaml
@@ -56,7 +49,7 @@ describe("e2e tests for plugin command", () => {
   });
 
   test("Should throw error for invalid params - no command", async () => {
-    const { exitCode: code, stdout: output } = await runCLI(
+    const { exitCode: code, stderr: error, stdout: output } = await runCLI(
       {
         args: ["plugin", "--codegen-dir"],
         cwd: getTestCaseDir(0),
@@ -64,7 +57,8 @@ describe("e2e tests for plugin command", () => {
     );
 
     expect(code).toEqual(1);
-    expect(clearStyle(output)).toEqual("Please provide a command\n" + HELP);
+    expect(error).toContain("error: unknown option '--codegen-dir'");
+    expect(output).toBe("");
   });
 
   test("Should throw error for invalid params - publish-dir", async () => {
@@ -76,9 +70,8 @@ describe("e2e tests for plugin command", () => {
     );
 
     expect(code).toEqual(1);
-    expect(error).toBe("");
-    expect(clearStyle(output))
-      .toEqual("--publish-dir option missing <path> argument\n" + HELP);
+    expect(error).toContain("error: option '-p, --publish-dir <path>' argument missing");
+    expect(output).toBe("");
   });
 
   test("Should throw error for invalid params - codegen-dir", async () => {
@@ -90,10 +83,8 @@ describe("e2e tests for plugin command", () => {
     );
 
     expect(code).toEqual(1);
-    expect(error).toBe("");
-    expect(clearStyle(output))
-      .toEqual(`--codegen-dir option missing <path> argument
-${HELP}`);
+    expect(error).toContain("error: option '-c, --codegen-dir <path>' argument missing");
+    expect(output).toBe("");
   });
 
   test("Should throw error for invalid params - ens", async () => {
@@ -105,10 +96,8 @@ ${HELP}`);
     );
 
     expect(code).toEqual(1);
-    expect(error).toBe("");
-    expect(clearStyle(output))
-      .toEqual(`--ens option missing [<address>] argument
-${HELP}`);
+    expect(error).toContain("error: option '-e, --ens [<address>]' argument missing");
+    expect(output).toBe("");
   });
 
   describe("test-cases", () => {

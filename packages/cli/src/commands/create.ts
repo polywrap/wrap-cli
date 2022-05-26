@@ -1,11 +1,10 @@
-import { generateProjectTemplate, fixParameters, intlMsg } from "../lib";
+import { Command, Program } from "./types";
+import { generateProjectTemplate, intlMsg } from "../lib";
 
-import chalk from "chalk";
-import { GluegunToolbox, GluegunPrint } from "gluegun";
+import { prompt, filesystem } from "gluegun";
+import { Argument } from "commander";
 
-const cmdStr = intlMsg.commands_create_options_command();
 const nameStr = intlMsg.commands_create_options_projectName();
-const optionsStr = intlMsg.commands_options_options();
 const langStr = intlMsg.commands_create_options_lang();
 const langsStr = intlMsg.commands_create_options_langs();
 const createProjStr = intlMsg.commands_create_options_createProject();
@@ -13,170 +12,132 @@ const createAppStr = intlMsg.commands_create_options_createApp();
 const createPluginStr = intlMsg.commands_create_options_createPlugin();
 const pathStr = intlMsg.commands_create_options_o_path();
 
-export const supportedLangs: { [key: string]: string[] } = {
-  api: ["assemblyscript", "interface"],
-  app: ["typescript-node", "typescript-react"],
-  plugin: ["typescript"],
+const supportedLangs = {
+  api: ["assemblyscript", "interface"] as const,
+  app: ["typescript-node", "typescript-react"] as const,
+  plugin: ["typescript"] as const,
 };
 
-const HELP = `
-${chalk.bold("w3 create")} ${cmdStr} <${nameStr}> [${optionsStr}]
+export type ProjectType = keyof typeof supportedLangs;
+export type SupportedLangs = typeof supportedLangs[ProjectType][number];
+type CreateCommandOptions = {
+  outputDir?: string;
+};
 
-${intlMsg.commands_create_options_commands()}:
-  ${chalk.bold("api")} <${langStr}>     ${createProjStr}
-    ${langsStr}: ${supportedLangs.api.join(", ")}
-  ${chalk.bold("app")} <${langStr}>     ${createAppStr}
-    ${langsStr}: ${supportedLangs.app.join(", ")}
-  ${chalk.bold("plugin")} <${langStr}>  ${createPluginStr}
-    ${langsStr}: ${supportedLangs.plugin.join(", ")}
+export const create: Command = {
+  setup: (program: Program) => {
+    const createCommand = program
+      .command("create")
+      .alias("c")
+      .description(intlMsg.commands_create_description());
 
-Options:
-  -h, --help               ${intlMsg.commands_create_options_h()}
-  -o, --output-dir <${pathStr}>  ${intlMsg.commands_create_options_o()}
-`;
-
-export default {
-  alias: ["c"],
-  description: intlMsg.commands_create_description(),
-  run: async (toolbox: GluegunToolbox): Promise<void> => {
-    const { parameters, print, prompt, filesystem } = toolbox;
-
-    // Options
-    let { help, outputDir } = parameters.options;
-    const { h, o } = parameters.options;
-
-    help = help || h;
-    outputDir = outputDir || o;
-
-    let type = "";
-    let lang = "";
-    let name = "";
-    try {
-      const params = parameters;
-      [type, lang, name] = fixParameters(
-        {
-          options: params.options,
-          array: params.array,
-        },
-        {
-          h,
-          help,
-        }
-      );
-      // eslint-disable-next-line no-empty
-    } catch (e) {}
-
-    if (help) {
-      print.info(HELP);
-      return;
-    }
-
-    // Validate Params
-    const paramsValid = validateCreateParams(
-      print,
-      type,
-      lang,
-      name,
-      outputDir
-    );
-
-    if (!paramsValid) {
-      print.info(HELP);
-      process.exitCode = 1;
-      return;
-    }
-
-    const projectDir = outputDir ? `${outputDir}/${name}` : name;
-
-    // check if project already exists
-    if (!filesystem.exists(projectDir)) {
-      print.newline();
-      print.info(intlMsg.commands_create_settingUp());
-    } else {
-      const directoryExistsMessage = intlMsg.commands_create_directoryExists({
-        dir: projectDir,
+    createCommand
+      .command("api")
+      .description(
+        `${createProjStr} ${langsStr}: ${supportedLangs.api.join(", ")}`
+      )
+      .addArgument(
+        new Argument("<language>", langStr)
+          .choices(supportedLangs.api)
+          .argRequired()
+      )
+      .addArgument(new Argument("<name>", nameStr).argRequired())
+      .option(
+        `-o, --output-dir <${pathStr}>`,
+        `${intlMsg.commands_create_options_o()}`
+      )
+      .action(async (langStr, nameStr, options) => {
+        await run("api", langStr, nameStr, options);
       });
-      print.info(directoryExistsMessage);
-      const overwrite = await prompt.confirm(
-        intlMsg.commands_create_overwritePrompt()
-      );
-      if (overwrite) {
-        const overwritingMessage = intlMsg.commands_create_overwriting({
-          dir: projectDir,
-        });
-        print.info(overwritingMessage);
-        filesystem.remove(projectDir);
-      } else {
-        process.exit(8);
-      }
-    }
 
-    generateProjectTemplate(type, lang, projectDir, filesystem)
-      .then(() => {
-        print.newline();
-        let readyMessage;
-        if (type === "api") {
-          readyMessage = intlMsg.commands_create_readyProtocol();
-        } else if (type === "app") {
-          readyMessage = intlMsg.commands_create_readyApp();
-        } else if (type === "plugin") {
-          readyMessage = intlMsg.commands_create_readyPlugin();
-        }
-        print.info(`🔥 ${readyMessage} 🔥`);
-      })
-      .catch((err) => {
-        const commandFailError = intlMsg.commands_create_error_commandFail({
-          error: err.command,
-        });
-        print.error(commandFailError);
+    createCommand
+      .command("app")
+      .description(
+        `${createAppStr} ${langsStr}: ${supportedLangs.app.join(", ")}`
+      )
+      .addArgument(
+        new Argument("<language>", langStr)
+          .choices(supportedLangs.app)
+          .argRequired()
+      )
+      .option(
+        `-o, --output-dir <${pathStr}>`,
+        `${intlMsg.commands_create_options_o()}`
+      )
+      .action(async (langStr, nameStr, options) => {
+        await run("app", langStr, nameStr, options);
+      });
+
+    createCommand
+      .command(`plugin <${langStr}>`)
+      .description(
+        `${createPluginStr} ${langsStr}: ${supportedLangs.plugin.join(", ")}`
+      )
+      .addArgument(
+        new Argument("<language>", langStr)
+          .choices(supportedLangs.plugin)
+          .argRequired()
+      )
+      .option(
+        `-o, --output-dir <${pathStr}>`,
+        `${intlMsg.commands_create_options_o()}`
+      )
+      .action(async (langStr, nameStr, options) => {
+        await run("plugin", langStr, nameStr, options);
       });
   },
 };
 
-function validateCreateParams(
-  print: GluegunPrint,
-  type: unknown,
-  lang: unknown,
-  name: unknown,
-  outputDir: unknown
-): boolean {
-  if (!type || typeof type !== "string") {
-    print.error(intlMsg.commands_create_error_noCommand());
-    return false;
-  }
+async function run(
+  command: ProjectType,
+  lang: SupportedLangs,
+  name: string,
+  options: CreateCommandOptions
+) {
+  const { outputDir } = options;
 
-  if (!lang || typeof lang !== "string") {
-    print.error(intlMsg.commands_create_error_noLang());
-    return false;
-  }
+  const projectDir = outputDir ? `${outputDir}/${name}` : name;
 
-  if (!name || typeof name !== "string") {
-    print.error(intlMsg.commands_create_error_noName());
-    return false;
-  }
-
-  if (!supportedLangs[type]) {
-    const unrecognizedCommand = intlMsg.commands_create_error_unrecognizedCommand();
-    print.error(`${unrecognizedCommand} "${type}"`);
-    return false;
-  }
-
-  if (supportedLangs[type].indexOf(lang) === -1) {
-    const unrecognizedLanguage = intlMsg.commands_create_error_unrecognizedLanguage();
-    print.error(`${unrecognizedLanguage} "${lang}"`);
-    return false;
-  }
-
-  if (outputDir === true) {
-    const outputDirMissingPathMessage = intlMsg.commands_create_error_outputDirMissingPath(
-      {
-        option: "--output-dir",
-        argument: `<${pathStr}>`,
-      }
+  // check if project already exists
+  if (!filesystem.exists(projectDir)) {
+    console.log();
+    console.info(intlMsg.commands_create_settingUp());
+  } else {
+    const directoryExistsMessage = intlMsg.commands_create_directoryExists({
+      dir: projectDir,
+    });
+    console.info(directoryExistsMessage);
+    const overwrite = await prompt.confirm(
+      intlMsg.commands_create_overwritePrompt()
     );
-    print.error(outputDirMissingPathMessage);
-    return false;
+    if (overwrite) {
+      const overwritingMessage = intlMsg.commands_create_overwriting({
+        dir: projectDir,
+      });
+      console.info(overwritingMessage);
+      filesystem.remove(projectDir);
+    } else {
+      process.exit(8);
+    }
   }
 
-  return true;
+  generateProjectTemplate(command, lang, projectDir, filesystem)
+    .then(() => {
+      console.log();
+      let readyMessage;
+      if (command === "api") {
+        readyMessage = intlMsg.commands_create_readyProtocol();
+      } else if (command === "app") {
+        readyMessage = intlMsg.commands_create_readyApp();
+      } else if (command === "plugin") {
+        readyMessage = intlMsg.commands_create_readyPlugin();
+      }
+      console.info(`🔥 ${readyMessage} 🔥`);
+    })
+    .catch((err) => {
+      const commandFailError = intlMsg.commands_create_error_commandFail({
+        error: err.command,
+      });
+      console.error(commandFailError);
+    });
 }
