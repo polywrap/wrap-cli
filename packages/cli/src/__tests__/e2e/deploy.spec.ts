@@ -108,7 +108,7 @@ const setup = async (domainNames: string[]) => {
 
 describe("e2e tests for deploy command", () => {
   beforeAll(async () => {
-    await setup(["test1", "test2", "test3"])
+    await setup(["test1.eth", "test2.eth", "test3.eth"])
 
     for (let i = 0; i < testCases.length; ++i) {
       await runCLI(
