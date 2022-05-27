@@ -32,4 +32,26 @@ describe("Web3API Manifest Validation", () => {
 
     expect(() => deserializeWeb3ApiManifest(manifest)).toThrowError(/instance.mutation.schema.file is not of a type\(s\) string/);
   });
+
+  it("Custom names modules should be backward compatible with older schema versions", async () => {
+    const manifestPath = __dirname + "/manifest/web3api/custom-name-modules/web3api.yml";
+    const manifestFile = fs.readFileSync(manifestPath, "utf-8");
+    const manifest = deserializeWeb3ApiManifest(manifestFile)
+
+    expect(Object.keys(manifest.modules)).toContain("storage")
+    expect(manifest.__type).toEqual("Web3ApiManifest")
+  })
+
+
+  it("Should not have problem with custom name modules", async () => {
+    const manifestPath = __dirname + "/manifest/web3api/accepted-format/web3api.yml";
+    const manifestFile = fs.readFileSync(manifestPath, "utf-8");
+    const manifest = deserializeWeb3ApiManifest(manifestFile)
+
+    console.log(manifest)
+    const modules = Object.keys(manifest.modules)
+    expect(modules).toContain("query")
+    expect(modules).toContain("mutation")
+    expect(manifest.__type).toEqual("Web3ApiManifest")
+  })
 });

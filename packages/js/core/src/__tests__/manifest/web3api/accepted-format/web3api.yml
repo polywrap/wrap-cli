@@ -1,0 +1,10 @@
+format: 0.0.1-prealpha.8
+name: simple-storage
+language: wasm/assemblyscript
+modules:
+  query:
+    schema: ./schema.graphql
+    module: ./src/index.ts
+  mutation:
+    schema: ./schema.graphql
+    module: ./src/index.ts

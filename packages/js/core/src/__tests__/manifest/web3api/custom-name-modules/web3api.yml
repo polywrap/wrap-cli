@@ -1,0 +1,7 @@
+format: 0.0.1-prealpha.9
+name: simple-storage
+language: wasm/assemblyscript
+modules:
+  storage:
+    schema: ./schema.graphql
+    module: ./src/index.ts

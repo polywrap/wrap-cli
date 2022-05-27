@@ -12,26 +12,29 @@ import {
 } from ".";
 
 import {
-  migrate as migrate_0_0_1_prealpha_1_to_0_0_1_prealpha_8
-} from "./migrators/0.0.1-prealpha.1_to_0.0.1-prealpha.8";
+  migrate as migrate_0_0_1_prealpha_1_to_0_0_1_prealpha_9
+} from "./migrators/0.0.1-prealpha.1_to_0.0.1-prealpha.9";
 import {
-  migrate as migrate_0_0_1_prealpha_2_to_0_0_1_prealpha_8
-} from "./migrators/0.0.1-prealpha.2_to_0.0.1-prealpha.8";
+  migrate as migrate_0_0_1_prealpha_2_to_0_0_1_prealpha_9
+} from "./migrators/0.0.1-prealpha.2_to_0.0.1-prealpha.9";
 import {
-  migrate as migrate_0_0_1_prealpha_3_to_0_0_1_prealpha_8
-} from "./migrators/0.0.1-prealpha.3_to_0.0.1-prealpha.8";
+  migrate as migrate_0_0_1_prealpha_3_to_0_0_1_prealpha_9
+} from "./migrators/0.0.1-prealpha.3_to_0.0.1-prealpha.9";
 import {
-  migrate as migrate_0_0_1_prealpha_4_to_0_0_1_prealpha_8
-} from "./migrators/0.0.1-prealpha.4_to_0.0.1-prealpha.8";
+  migrate as migrate_0_0_1_prealpha_4_to_0_0_1_prealpha_9
+} from "./migrators/0.0.1-prealpha.4_to_0.0.1-prealpha.9";
 import {
-  migrate as migrate_0_0_1_prealpha_5_to_0_0_1_prealpha_8
-} from "./migrators/0.0.1-prealpha.5_to_0.0.1-prealpha.8";
+  migrate as migrate_0_0_1_prealpha_5_to_0_0_1_prealpha_9
+} from "./migrators/0.0.1-prealpha.5_to_0.0.1-prealpha.9";
 import {
-  migrate as migrate_0_0_1_prealpha_6_to_0_0_1_prealpha_8
-} from "./migrators/0.0.1-prealpha.6_to_0.0.1-prealpha.8";
+  migrate as migrate_0_0_1_prealpha_6_to_0_0_1_prealpha_9
+} from "./migrators/0.0.1-prealpha.6_to_0.0.1-prealpha.9";
 import {
-  migrate as migrate_0_0_1_prealpha_7_to_0_0_1_prealpha_8
-} from "./migrators/0.0.1-prealpha.7_to_0.0.1-prealpha.8";
+  migrate as migrate_0_0_1_prealpha_7_to_0_0_1_prealpha_9
+} from "./migrators/0.0.1-prealpha.7_to_0.0.1-prealpha.9";
+import {
+  migrate as migrate_0_0_1_prealpha_8_to_0_0_1_prealpha_9
+} from "./migrators/0.0.1-prealpha.8_to_0.0.1-prealpha.9";
 
 import { Tracer } from "@web3api/tracing-js";
 
@@ -40,13 +43,14 @@ type Migrator = {
 };
 
 export const migrators: Migrator = {
-  "0.0.1-prealpha.1": migrate_0_0_1_prealpha_1_to_0_0_1_prealpha_8,
-  "0.0.1-prealpha.2": migrate_0_0_1_prealpha_2_to_0_0_1_prealpha_8,
-  "0.0.1-prealpha.3": migrate_0_0_1_prealpha_3_to_0_0_1_prealpha_8,
-  "0.0.1-prealpha.4": migrate_0_0_1_prealpha_4_to_0_0_1_prealpha_8,
-  "0.0.1-prealpha.5": migrate_0_0_1_prealpha_5_to_0_0_1_prealpha_8,
-  "0.0.1-prealpha.6": migrate_0_0_1_prealpha_6_to_0_0_1_prealpha_8,
-  "0.0.1-prealpha.7": migrate_0_0_1_prealpha_7_to_0_0_1_prealpha_8,
+  "0.0.1-prealpha.1": migrate_0_0_1_prealpha_1_to_0_0_1_prealpha_9,
+  "0.0.1-prealpha.2": migrate_0_0_1_prealpha_2_to_0_0_1_prealpha_9,
+  "0.0.1-prealpha.3": migrate_0_0_1_prealpha_3_to_0_0_1_prealpha_9,
+  "0.0.1-prealpha.4": migrate_0_0_1_prealpha_4_to_0_0_1_prealpha_9,
+  "0.0.1-prealpha.5": migrate_0_0_1_prealpha_5_to_0_0_1_prealpha_9,
+  "0.0.1-prealpha.6": migrate_0_0_1_prealpha_6_to_0_0_1_prealpha_9,
+  "0.0.1-prealpha.7": migrate_0_0_1_prealpha_7_to_0_0_1_prealpha_9,
+  "0.0.1-prealpha.8": migrate_0_0_1_prealpha_8_to_0_0_1_prealpha_9,
 };
 
 export const migrateWeb3ApiManifest = Tracer.traceFunc(
