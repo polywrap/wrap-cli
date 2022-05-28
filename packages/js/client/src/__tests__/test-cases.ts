@@ -540,8 +540,9 @@ export const runGetImplementationsTest = async (
   interfaceUri: string,
   implementationUri: string
 ) => {
-  expect(client.getImplementations(interfaceUri))
-    .toEqual([implementationUri]);
+  expect(client.getImplementations(interfaceUri)).toEqual([
+    implementationUri,
+  ]);
 
   const query = await client.query<{
     queryMethod: string;
@@ -550,15 +551,59 @@ export const runGetImplementationsTest = async (
     uri: implementationUri,
     query: `
       query {
-        queryImplementations
+        queryMethod(
+          arg: $argument1
+        )
+        abstractQueryMethod(
+          arg: $argument2
+        )
       }
     `,
-    variables: {},
+    variables: {
+      argument1: {
+        uint8: 1,
+        str: "Test String 1",
+      },
+      argument2: {
+        str: "Test String 2",
+      },
+    },
   });
 
   expect(query.errors).toBeFalsy();
   expect(query.data).toBeTruthy();
-  expect((query.data as any).queryImplementations).toEqual([implementationUri]);
+  expect(query.data?.queryMethod).toEqual({
+    uint8: 1,
+    str: "Test String 1",
+  });
+
+  expect(query.data?.abstractQueryMethod).toBe("Test String 2");
+
+  const mutation = await client.query<{
+    mutationMethod: string;
+    abstractMutationMethod: string;
+  }>({
+    uri: implementationUri,
+    query: `
+    mutation {
+        mutationMethod(
+          arg: $argument1
+        )
+        abstractMutationMethod(
+          arg: $argument2
+        )
+      }
+    `,
+    variables: {
+      argument1: 1,
+      argument2: 2,
+    },
+  });
+
+  expect(mutation.errors).toBeFalsy();
+  expect(mutation.data).toBeTruthy();
+  expect(mutation.data?.mutationMethod).toBe(1);
+  expect(mutation.data?.abstractMutationMethod).toBe(2);
 };
 
 export const runInvalidTypesTest = async (

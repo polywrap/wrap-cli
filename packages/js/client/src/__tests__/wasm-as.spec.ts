@@ -7,6 +7,7 @@ import {
   buildAndDeployApi,
   initTestEnvironment,
   stopTestEnvironment,
+  runCLI,
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 
@@ -120,6 +121,45 @@ describe("wasm-as test cases", () => {
     );
   });
 
+  it("reserved-words", async () => {
+    const client = await getClient();
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/reserved-words`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const ensUri = `ens/testnet/${api.ensDomain}`;
+
+    const query = await client.query<{
+      method1: {
+        const: string;
+      };
+    }>({
+      uri: ensUri,
+      query: `
+        query {
+          method1(
+            const: {
+              const: "successfully used reserved keyword"
+            }
+          )
+        }
+      `,
+    });
+
+    expect(query.errors).toBeFalsy();
+    expect(query.data).toBeTruthy();
+    expect(query.data).toMatchObject({
+      method1: {
+        const: "result: successfully used reserved keyword",
+      },
+    });
+  });
+
   it("implementations - e2e", async () => {
     let interfaceApi = await deployApi(
       `${GetPathToTestApis()}/wasm-as/implementations/test-interface`
@@ -165,6 +205,80 @@ describe("wasm-as test cases", () => {
     await TestCases.runGetImplementationsTest(
       client, interfaceUri, implementationUri
     );
+  });
+
+  it("e2e Interface invoke method", async () => {
+    const interfaceUri = "w3://ens/interface.eth";
+    // Build interface polywrapper
+    await runCLI({
+      args: ["build"],
+      cwd: `${GetPathToTestApis()}/wasm-as/interface-invoke/test-interface`,
+    });
+
+    const implementationApi = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/wasm-as/interface-invoke/test-implementation`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const implementationUri = `w3://ens/testnet/${implementationApi.ensDomain}`;
+
+    const client = await getClient({
+      interfaces: [
+        {
+          interface: interfaceUri,
+          implementations: [implementationUri],
+        },
+      ],
+    });
+
+    const api = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/wasm-as/interface-invoke/test-api`,
+      ipfsProvider,
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    const apiUri = `w3://ens/testnet/${api.ensDomain}`;
+
+    const query = await client.query<{
+      queryMethod: string;
+    }>({
+      uri: apiUri,
+      query: `query{
+        queryMethod(
+          arg: {
+            uint8: 1,
+            str: "Test String 1",
+          }
+        )
+      }`,
+    });
+
+    expect(query.errors).toBeFalsy();
+    expect(query.data).toBeTruthy();
+    expect(query.data?.queryMethod).toEqual({
+      uint8: 1,
+      str: "Test String 1",
+    });
+
+    const mutation = await client.query<{
+      mutationMethod: string;
+    }>({
+      uri: apiUri,
+      query: `mutation {
+        mutationMethod(
+          arg: 1
+        )
+      }`,
+    });
+
+    expect(mutation.errors).toBeFalsy();
+    expect(mutation.data).toBeTruthy();
+    expect(mutation.data?.mutationMethod).toBe(1);
   });
 
   it("invalid type errors", async () => {
