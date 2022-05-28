@@ -1,6 +1,6 @@
 pub mod w3;
 use query;
-use polywrap_wasm_rs::JSON;
+use web3api_wasm_rs::JSON;
 pub use w3::imported::ethereum_query;
 pub use w3::imported::ethereum_mutation;
 pub use w3::mutation;

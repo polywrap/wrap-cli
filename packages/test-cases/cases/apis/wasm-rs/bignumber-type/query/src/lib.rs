@@ -1,6 +1,6 @@
 use std::ops::Mul;
 
-use polywrap_wasm_rs::BigNumber;
+use web3api_wasm_rs::BigNumber;
 pub mod w3;
 pub use w3::*;
 

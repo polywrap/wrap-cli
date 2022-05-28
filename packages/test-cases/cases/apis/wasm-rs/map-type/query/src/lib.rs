@@ -1,6 +1,6 @@
 pub mod w3;
 pub use w3::*;
-use polywrap_wasm_rs::Map;
+use web3api_wasm_rs::Map;
 
 pub fn get_key(input: InputGetKey) -> i32 {
     *input.map.get(&input.key).unwrap()

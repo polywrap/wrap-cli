@@ -11,7 +11,7 @@ license = "MIT"
 edition = "2021"
 
 [dependencies]
-polywrap-wasm-rs = { path = "../../../../../../../wasm/rs"}
+web3api-wasm-rs = { path = "../../../../../../../wasm/rs"}
 query = { path = "../query", default-features = false }
 serde = { version = "1.0", default-features = false, features = ["derive"] }
 

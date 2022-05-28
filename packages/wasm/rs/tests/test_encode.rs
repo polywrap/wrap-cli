@@ -1,4 +1,4 @@
-use polywrap_wasm_rs::{BigInt, Context, Write, WriteEncoder, JSON};
+use web3api_wasm_rs::{BigInt, Context, Write, WriteEncoder, JSON};
 use std::collections::BTreeMap;
 
 #[test]
