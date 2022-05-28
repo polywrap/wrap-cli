@@ -48,7 +48,7 @@ pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, D
     let mut _enum_array: Vec<CustomEnum> = vec![];
     let mut _enum_array_set = false;
     let mut _opt_enum_array: Option<Vec<Option<CustomEnum>>> = None;
-    let mut _map: Map<String, i32> = Map<String, i32>::new();
+    let mut _map: Map<String, i32> = Map::<String, i32>::new();
     let mut _map_set = false;
 
     while num_of_fields > 0 {
@@ -132,9 +132,9 @@ pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, D
             "map" => {
                 reader.context().push(&field, "Map<String, i32>", "type found, reading argument");
                 _map = reader.read_ext_generic_map(|reader| {
-                    reader.read_string()?
+                    reader.read_string()
                 }, |reader| {
-                    reader.read_i32()?
+                    reader.read_i32()
                 })?;
                 _map_set = true;
                 reader.context().pop();
