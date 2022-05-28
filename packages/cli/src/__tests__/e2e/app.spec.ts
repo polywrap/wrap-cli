@@ -5,20 +5,18 @@ import { GetPathToCliTestFiles } from "@web3api/test-cases";
 import path from "path";
 import fs from "fs";
 
-const HELP = `
-w3 app command [options]
 
-Commands:
-  codegen   Generate code for the app
+const HELP = `Usage: w3 app|a [options] [command]
+
+Build/generate types for your app
 
 Options:
-  -h, --help                              Show usage information
-  -m, --manifest-file <path>              Path to the Web3API App manifest file (default: web3api.app.yaml | web3api.app.yml)
-  -c, --codegen-dir <path>                 Output directory for the generated code (default: ./src/w3)
-  -i, --ipfs [<node>]                     IPFS node to load external schemas (default: ipfs.io & localhost)
-  -e, --ens [<address>]                   ENS address to lookup external schemas (default: 0x0000...2e1e)
+  -h, --help         display help for command
 
-`;
+Commands:
+  codegen [options]  Generate code for the app
+  help [command]     display help for command
+`
 
 const CODEGEN_SUCCESS = `- Manifest loaded from ./web3api.app.yaml
 ✔ Manifest loaded from ./web3api.app.yaml
@@ -39,7 +37,7 @@ describe("e2e tests for app command", () => {
   test("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
-        args: ["app", "codegen", "--help"],
+        args: ["app", "--help"],
         cwd: getTestCaseDir(0),
         cli: w3Cli,
       },
@@ -60,9 +58,8 @@ describe("e2e tests for app command", () => {
     );
 
     expect(code).toEqual(1);
-    expect(error).toBe("");
-    expect(clearStyle(output)).toEqual(`Please provide a command
-${HELP}`);
+    expect(error).toBe("error: unknown option '--output-dir'\n");
+    expect(output).toEqual(``);
   });
 
   test("Should throw error for invalid params - codegen-dir", async () => {
@@ -75,10 +72,8 @@ ${HELP}`);
     );
 
     expect(code).toEqual(1);
-    expect(error).toBe("");
-    expect(clearStyle(output))
-      .toEqual(`--codegen-dir option missing <path> argument
-${HELP}`);
+    expect(error).toBe(`error: option '-c, --codegen-dir <path>' argument missing\n`);
+    expect(output).toEqual(``);
   });
 
   test("Should throw error for invalid params - ens", async () => {
@@ -91,10 +86,9 @@ ${HELP}`);
     );
 
     expect(code).toEqual(1);
-    expect(error).toBe("");
-    expect(clearStyle(output))
-      .toEqual(`--ens option missing [<address>] argument
-${HELP}`);
+    expect(error).toBe("error: option '-e, --ens [<address>]' argument missing\n");
+    expect(output)
+      .toEqual(``);
   });
 
   describe("test-cases", () => {

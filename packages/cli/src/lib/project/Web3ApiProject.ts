@@ -150,17 +150,16 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
   }
 
   public async generateSchemaBindings(
-    composerOutput: ComposerOutput,
-    generationSubPath = "w3"
+    composerOutput: ComposerOutput
   ): Promise<BindOutput> {
     const manifest = await this.getManifest();
     const queryModule = manifest.modules.query?.module as string;
     const queryDirectory = manifest.modules.query
-      ? this._getGenerationDirectory(queryModule, generationSubPath)
+      ? this._getGenerationDirectory(queryModule)
       : undefined;
     const mutationModule = manifest.modules.mutation?.module as string;
     const mutationDirectory = manifest.modules.mutation
-      ? this._getGenerationDirectory(mutationModule, generationSubPath)
+      ? this._getGenerationDirectory(mutationModule)
       : undefined;
 
     if (
@@ -616,13 +615,10 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     };
   }
 
-  private _getGenerationDirectory(
-    entryPoint: string,
-    generationSubPath: string
-  ): string {
+  private _getGenerationDirectory(entryPoint: string): string {
     const absolute = path.isAbsolute(entryPoint)
       ? entryPoint
       : path.join(this.getManifestDir(), entryPoint);
-    return path.join(path.dirname(absolute), generationSubPath);
+    return `${path.dirname(absolute)}/w3`;
   }
 }

@@ -1,11 +1,6 @@
 FROM node:{{node_version}}-alpine as base
 
-RUN apk --no-cache --virtual build-dependencies add \
-    bash \
-    git \
-    openssh \
-    make \
-    g++
+RUN apk --no-cache --virtual build-dependencies add bash
 
 {{#web3api_linked_packages.length}}
 WORKDIR /linked-packages
@@ -49,5 +44,6 @@ RUN ./node_modules/.bin/asc {{dir}}/w3/entry.ts \
     --use abort={{dir}}/w3/entry/w3Abort \
     --optimize --importMemory \
     --runtime stub \
-    --runPasses asyncify
+    --runPasses asyncify \
+    --transform @serial-as/transform
 {{/web3api_modules}}

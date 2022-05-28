@@ -27,6 +27,7 @@ jest.setTimeout(360000);
 
 describe("useWeb3ApiQuery hook", () => {
   let uri: string;
+  let envUri: string;
   let plugins: PluginRegistration<string>[];
   let WrapperProvider: RenderHookOptions<unknown>;
 
@@ -48,7 +49,17 @@ describe("useWeb3ApiQuery hook", () => {
       ensResolverAddress: resolverAddress,
     });
 
+    const { ensDomain: envEnsDomain } = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/wasm-as/simple-env-types`,
+      ipfsProvider: ipfs,
+      ethereumProvider: ethereum,
+      ensRegistrarAddress: registrarAddress,
+      ensRegistryAddress: ensAddress,
+      ensResolverAddress: resolverAddress,
+    });
+
     uri = `ens/testnet/${ensDomain}`;
+    envUri = `ens/testnet/${envEnsDomain}`;
     plugins = createPlugins(ensAddress, ethereum, ipfs);
     WrapperProvider = {
       wrapper: Web3ApiProvider,
@@ -93,6 +104,35 @@ describe("useWeb3ApiQuery hook", () => {
     cleanup();
     return result;
   }
+
+  it("Should support passing env to client", async () => {
+    const deployQuery: UseWeb3ApiQueryProps = {
+      uri: envUri,
+      query: `query {
+        getEnv(arg: "Alice")
+      }`,
+      config: {
+        envs: [{
+          uri: envUri,
+          common: {
+            str: "Hello World!",
+            requiredInt: 2,
+          }
+        }]
+      }
+    };
+
+    const { data, errors } = await sendQuery<{
+      getEnv: {
+        str: string;
+        requiredInt: number;
+      }
+    }>(deployQuery);
+
+    expect(errors).toBeFalsy();
+    expect(data?.getEnv.str).toBe("Hello World!");
+    expect(data?.getEnv.requiredInt).toBe(2);
+  });
 
   it("Should update storage data to five with hard coded value", async () => {
     const deployQuery: UseWeb3ApiQueryProps = {

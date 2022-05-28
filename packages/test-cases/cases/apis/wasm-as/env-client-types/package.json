@@ -3,6 +3,6 @@
   "private": true,
   "dependencies": {
     "@web3api/wasm-as": "0.0.1-prealpha.28",
-    "assemblyscript": "0.19.1"
+    "assemblyscript": "0.19.5"
   }
 }

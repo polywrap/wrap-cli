@@ -1,271 +1,171 @@
+import { Command, Program } from "./types";
+import { intlMsg } from "../lib";
 import {
-  getTestEnvClientConfig,
-  importTypescriptModule,
-  validateClientConfig,
-  fixParameters,
-  intlMsg,
-} from "../lib";
+  parseClientConfigOption,
+  parseRecipeOutputFilePathOption,
+} from "../lib/parsers";
 
 import { Web3ApiClient, Web3ApiClientConfig } from "@web3api/client-js";
-import chalk from "chalk";
-import { GluegunToolbox } from "gluegun";
 import gql from "graphql-tag";
 import path from "path";
 import yaml from "js-yaml";
 import fs from "fs";
 
-const optionsString = intlMsg.commands_build_options_options();
-const scriptStr = intlMsg.commands_create_options_recipeScript();
-const configPathStr = intlMsg.commands_query_options_configPath();
-const outputFileStr = intlMsg.commands_query_options_outputFile();
+type QueryCommandOptions = {
+  clientConfig: Partial<Web3ApiClientConfig>;
+  outputFile?: string;
+  quiet?: boolean;
+};
 
-const HELP = `
-${chalk.bold("w3 query")} [${optionsString}] ${chalk.bold(`<${scriptStr}>`)}
-
-${optionsString[0].toUpperCase() + optionsString.slice(1)}:
-  -t, --test-ens  ${intlMsg.commands_build_options_t()}
-  -c, --client-config <${configPathStr}> ${intlMsg.commands_query_options_config()}
-  -o, --output-file  ${intlMsg.commands_query_options_outputFile()}
-  -q, --quiet  ${intlMsg.commands_query_options_quiet()}
-`;
-
-export default {
-  alias: ["q"],
-  description: intlMsg.commands_query_description(),
-  run: async (toolbox: GluegunToolbox): Promise<void> => {
-    const { filesystem, parameters, print } = toolbox;
-
-    // Options
-    let { testEns, clientConfig, outputFile, quiet } = parameters.options;
-    const { t, c, o, q } = parameters.options;
-
-    testEns = testEns || t;
-    clientConfig = clientConfig || c;
-    outputFile = outputFile || o;
-    quiet = quiet || q;
-
-    let recipePath;
-    try {
-      const params = toolbox.parameters;
-      [recipePath] = fixParameters(
-        {
-          options: params.options,
-          array: params.array,
-        },
-        {
-          t,
-          testEns,
-        }
-      );
-    } catch (e) {
-      recipePath = null;
-      print.error(e.message);
-      process.exitCode = 1;
-      return;
-    }
-
-    if (!recipePath) {
-      const scriptMissingMessage = intlMsg.commands_query_error_missingScript({
-        script: `<${scriptStr}>`,
+export const query: Command = {
+  setup: (program: Program) => {
+    program
+      .command("query")
+      .alias("q")
+      .description(intlMsg.commands_query_description())
+      .argument("<recipe>", intlMsg.commands_query_options_recipeScript())
+      .option(
+        `-c, --client-config <${intlMsg.commands_query_options_configPath()}> `,
+        `${intlMsg.commands_query_options_config()}`
+      )
+      .option(
+        `-o, --output-file <${intlMsg.commands_query_options_outputFilePath()}>`,
+        `${intlMsg.commands_query_options_outputFile()}`
+      )
+      .option(`-q, --quiet`, `${intlMsg.commands_query_options_quiet()}`)
+      .action(async (recipe: string, options) => {
+        await run(recipe, {
+          ...options,
+          clientConfig: await parseClientConfigOption(
+            options.clientConfig,
+            undefined
+          ),
+          outputFile: options.outputFile
+            ? parseRecipeOutputFilePathOption(options.outputFile, undefined)
+            : undefined,
+        });
       });
-      print.error(scriptMissingMessage);
-      print.info(HELP);
-      return;
+  },
+};
+
+async function run(recipePath: string, options: QueryCommandOptions) {
+  const { clientConfig, outputFile, quiet } = options;
+  const client = new Web3ApiClient(clientConfig);
+
+  function getParser(path: string) {
+    return path.endsWith(".yaml") || path.endsWith(".yml")
+      ? yaml.load
+      : JSON.parse;
+  }
+
+  const recipe = getParser(recipePath)(fs.readFileSync(recipePath).toString());
+  const dir = path.dirname(recipePath);
+  let uri = "";
+  const recipeOutput = [];
+
+  let constants: Record<string, string> = {};
+  for (const task of recipe) {
+    if (task.api) {
+      uri = task.api;
+      recipeOutput.push({ api: task.api });
     }
 
-    if (outputFile === true) {
-      const outputFileMissingMessage = intlMsg.commands_query_error_outputFileMissing(
-        {
-          option: "--output-file",
-          argument: `<${outputFileStr}>`,
-        }
+    if (task.constants) {
+      constants = getParser(task.constants)(
+        fs.readFileSync(path.join(dir, task.constants)).toString()
       );
-      print.error(outputFileMissingMessage);
-      print.info(HELP);
-      return;
+      recipeOutput.push({ constants: task.constants });
     }
 
-    if (clientConfig === true) {
-      const configMissingPathMessage = intlMsg.commands_query_error_clientConfigMissingPath(
-        {
-          option: "--client-config",
-          argument: `<${configPathStr}>`,
-        }
-      );
-      print.error(configMissingPathMessage);
-      print.info(HELP);
-      return;
-    }
+    if (task.query) {
+      const query = fs.readFileSync(path.join(dir, task.query)).toString();
 
-    let finalClientConfig: Partial<Web3ApiClientConfig>;
-
-    try {
-      finalClientConfig = await getTestEnvClientConfig();
-    } catch (e) {
-      print.error(intlMsg.commands_query_error_noTestEnvFound());
-      process.exitCode = 1;
-      return;
-    }
-
-    if (clientConfig) {
-      let configModule;
-      if (clientConfig.endsWith(".js")) {
-        configModule = await import(filesystem.resolve(clientConfig));
-      } else if (clientConfig.endsWith(".ts")) {
-        configModule = await importTypescriptModule(
-          filesystem.resolve(clientConfig)
-        );
-      } else {
-        const configsModuleMissingExportMessage = intlMsg.commands_query_error_clientConfigInvalidFileExt(
-          { module: clientConfig }
-        );
-        print.error(configsModuleMissingExportMessage);
-        process.exitCode = 1;
-        return;
-      }
-
-      if (!configModule || !configModule.getClientConfig) {
-        const configsModuleMissingExportMessage = intlMsg.commands_query_error_clientConfigModuleMissingExport(
-          { module: configModule }
-        );
-        print.error(configsModuleMissingExportMessage);
-        process.exitCode = 1;
-        return;
-      }
-
-      finalClientConfig = configModule.getClientConfig(finalClientConfig);
-
-      try {
-        validateClientConfig(finalClientConfig);
-      } catch (e) {
-        print.error(e.message);
-        process.exitCode = 1;
-        return;
-      }
-    }
-
-    const client = new Web3ApiClient(finalClientConfig);
-
-    function getParser(path: string) {
-      return path.endsWith(".yaml") || path.endsWith(".yml")
-        ? yaml.load
-        : JSON.parse;
-    }
-
-    const recipe = getParser(recipePath)(filesystem.read(recipePath) as string);
-    const dir = path.dirname(recipePath);
-    let uri = "";
-    const recipeOutput = [];
-
-    let constants: Record<string, string> = {};
-    for (const task of recipe) {
-      if (task.api) {
-        uri = task.api;
-        recipeOutput.push({
-          api: task.api,
+      if (!query) {
+        const readFailMessage = intlMsg.commands_query_error_readFail({
+          query: query ?? "undefined",
         });
+        console.error(readFailMessage);
+        process.exit(1);
       }
 
-      if (task.constants) {
-        constants = getParser(task.constants)(
-          filesystem.read(path.join(dir, task.constants)) as string
-        );
-        recipeOutput.push({
-          constants: task.constants,
-        });
-      }
+      let variables: Record<string, unknown> = {};
 
-      if (task.query) {
-        const query = filesystem.read(path.join(dir, task.query));
+      if (task.variables) {
+        const resolveObjectConstants = (
+          constants: Record<string, unknown>
+        ): Record<string, unknown> => {
+          const output: Record<string, unknown> = {};
 
-        if (!query) {
-          const readFailMessage = intlMsg.commands_query_error_readFail({
-            query: query ?? "undefined",
+          Object.keys(constants).forEach((key: string) => {
+            output[key] = resolveConstant(constants[key]);
           });
-          throw Error(readFailMessage);
-        }
 
-        let variables: Record<string, unknown> = {};
+          return output;
+        };
 
-        if (task.variables) {
-          const resolveObjectConstants = (
-            constants: Record<string, unknown>
-          ): Record<string, unknown> => {
-            const output: Record<string, unknown> = {};
-
-            Object.keys(constants).forEach((key: string) => {
-              output[key] = resolveConstant(constants[key]);
-            });
-
-            return output;
-          };
-
-          const resolveArrayConstants = (arr: unknown[]): unknown[] => {
-            return arr.map((item) => {
-              return resolveConstant(item);
-            });
-          };
-
-          const resolveConstant = (constant: unknown): unknown => {
-            if (typeof constant === "string" && constant[0] === "$") {
-              return constants[constant.replace("$", "")];
-            } else if (Array.isArray(constant)) {
-              return resolveArrayConstants(constant);
-            } else if (typeof constant === "object") {
-              return resolveObjectConstants(
-                constant as Record<string, unknown>
-              );
-            } else {
-              return constant;
-            }
-          };
-
-          variables = resolveObjectConstants(task.variables);
-        }
-
-        if (!uri) {
-          throw Error(intlMsg.commands_query_error_noApi());
-        }
-
-        if (!quiet) {
-          print.warning("-----------------------------------");
-          print.fancy(query);
-          print.fancy(JSON.stringify(variables, null, 2));
-          print.warning("-----------------------------------");
-        }
-
-        const { data, errors } = await client.query({
-          uri,
-          query: gql(query),
-          variables,
-        });
-
-        if (outputFile) {
-          recipeOutput.push({
-            query: task.query,
-            variables: task.variables,
-            output: {
-              data,
-              errors,
-            },
+        const resolveArrayConstants = (arr: unknown[]): unknown[] => {
+          return arr.map((item) => {
+            return resolveConstant(item);
           });
-        }
+        };
 
-        if (!quiet && data && data !== {}) {
-          print.success("-----------------------------------");
-          print.fancy(JSON.stringify(data, null, 2));
-          print.success("-----------------------------------");
-        }
-
-        if (!quiet && errors) {
-          for (const error of errors) {
-            print.error("-----------------------------------");
-            print.fancy(error.message);
-            print.fancy(error.stack || "");
-            print.error("-----------------------------------");
+        const resolveConstant = (constant: unknown): unknown => {
+          if (typeof constant === "string" && constant[0] === "$") {
+            return constants[constant.replace("$", "")];
+          } else if (Array.isArray(constant)) {
+            return resolveArrayConstants(constant);
+          } else if (typeof constant === "object") {
+            return resolveObjectConstants(constant as Record<string, unknown>);
+          } else {
+            return constant;
           }
-          process.exitCode = 1;
+        };
+
+        variables = resolveObjectConstants(task.variables);
+      }
+
+      if (!uri) {
+        throw Error(intlMsg.commands_query_error_noApi());
+      }
+
+      if (!quiet) {
+        console.log("-----------------------------------");
+        console.log(query);
+        console.log(JSON.stringify(variables, null, 2));
+        console.log("-----------------------------------");
+      }
+
+      const { data, errors } = await client.query({
+        uri,
+        query: gql(query),
+        variables,
+      });
+
+      if (outputFile) {
+        recipeOutput.push({
+          query: task.query,
+          variables: task.variables,
+          output: {
+            data,
+            errors,
+          },
+        });
+      }
+
+      if (!quiet && data && data !== {}) {
+        console.log("-----------------------------------");
+        console.log(JSON.stringify(data, null, 2));
+        console.log("-----------------------------------");
+      }
+
+      if (!quiet && errors) {
+        for (const error of errors) {
+          console.log("-----------------------------------");
+          console.log(error.message);
+          console.log(error.stack || "");
+          console.log("-----------------------------------");
         }
+        process.exitCode = 1;
       }
     }
 
@@ -284,5 +184,5 @@ export default {
           throw new Error(`Unsupported outputFile extention: ${outputFileExt}`);
       }
     }
-  },
-};
+  }
+}

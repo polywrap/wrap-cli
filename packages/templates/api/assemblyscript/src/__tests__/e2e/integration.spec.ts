@@ -12,7 +12,7 @@ import { getPlugins } from "../utils";
 jest.setTimeout(500000);
 
 describe("SimpleStorage", () => {
-  const CONNECTION = { node: "http://localhost:8545" };
+  const CONNECTION = { networkNameOrChainId: "testnet" };
 
   let client: Web3ApiClient;
   let ensUri: string;
@@ -45,7 +45,6 @@ describe("SimpleStorage", () => {
       ensResolverAddress: resolverAddress,
       ethereumProvider: testEnvEtherem,
     });
-    
     ensUri = `ens/testnet/${api.ensDomain}`;
   });
 
@@ -88,9 +87,13 @@ describe("SimpleStorage", () => {
     return response.data as string;
   }
 
-  test("sanity", async () => {
+  it("sanity", async () => {
     // Deploy contract
-    const deployContractResponse = await App.SimpleStorage_Mutation.deployContract({connection: CONNECTION}, client, ensUri);
+    const deployContractResponse = await App.SimpleStorage_Mutation.deployContract(
+      { connection: CONNECTION },
+      client,
+      ensUri
+    );
     expect(deployContractResponse).toBeTruthy();
     expect(deployContractResponse.error).toBeFalsy();
     expect(deployContractResponse.data).toBeTruthy();

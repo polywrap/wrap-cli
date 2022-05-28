@@ -1,3 +1,43 @@
+# Web3API 0.0.1-prealpha.81
+## Features
+* [PR-864](https://github.com/polywrap/monorepo/pull/864) `@web3api/react`: `useWeb3ApiInvoke` and `useWeb3ApiQuery` hooks now support configuring the client's environment, along with all other configuration options.
+* [PR-808](https://github.com/polywrap/monorepo/pull/808) `@web3api/cli`: The `web3api.build.yaml` manifest now supports additional docker buildkit configuration options, including:
+  * local docker image layer cache
+  * custom image output location
+  * remove image after build
+  * remove builder instance after build
+* [PR-827](https://github.com/polywrap/monorepo/pull/827) `@web3api/ethereum-plugin-js`: The provider's connection can now be configured via the wrapper's environment.
+* [PR-807](https://github.com/polywrap/monorepo/pull/807) `@web3api/cli`: Make the CLI's Docker file-lock project specific, instead of global to the CLI installation.
+## Bugs
+* [PR-847](https://github.com/polywrap/monorepo/pull/847) `@web3api/templates`: The template projects used for the `w3 create ...` CLI command now have proper CI setup, and multiple bugs were fixed within them.
+* [PR-861](https://github.com/polywrap/monorepo/pull/861) `@web3api/test-env-js`: The `buildAndDeployApi` function's `ensName` no longer assumes the `.eth` TLD is ommitted, and requires the user to provide it along with the domain name. This was the original behavior, and was modified in release `0.0.1-prealpha.75`.
+## Breaking Changes
+* [PR-859](https://github.com/polywrap/monorepo/pull/859) `@web3api/cli`: The CLI is now built using the `commander` package. The CLI's help text formatting has changed in structure as a result.
+
+# Web3API 0.0.1-prealpha.80
+## Bugs
+* [PR-855](https://github.com/polywrap/monorepo/pull/855) Pinned `@types/prettier` to version `2.6.0` to fix [an issue](https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/60310) that was created by the latest release.
+
+# Web3API 0.0.1-prealpha.79
+## Bugs
+* [PR-852](https://github.com/polywrap/monorepo/pull/852) `@web3api/client-test-env`: The IPFS node's API endpoint now has CORS enabled via the following configuration properties:
+  * API.HTTPHeaders.Access-Control-Allow-Origin: `["*"]`
+  * API.HTTPHeaders.Access-Control-Allow-Methods: `["GET", "POST", "PUT", "DELETE"]`
+
+# Web3API 0.0.1-prealpha.78
+## Bugs
+* Pinned `@types/prettier` to version `2.6.0` to fix [an issue](https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/60310) that was created by the latest release.
+
+# Web3API 0.0.1-prealpha.77
+## Features
+* [PR-846](https://github.com/polywrap/monorepo/pull/846) `@web3api/wasm-as`: Add support for automatic JSON serialization via the `@serial-as/transform` `asc` compiler transformation.
+* [PR-846](https://github.com/polywrap/monorepo/pull/846) `@web3api/schema-bind`: Assemblyscript object types now have `Type.toJson(type)` and `Type.fromJson(json)` static helper methods added to all class instances.
+* [PR-840](https://github.com/polywrap/monorepo/pull/840) `@web3api/cli`: Allow `async getClientConfig` functions within modules passed into the `w3 query` command's `--client-config` option.
+
+# Web3API 0.0.1-prealpha.76
+## Bugs
+* [PR-836](https://github.com/polywrap/monorepo/pull/836) `@web3api/cli`: All commands properly handle the `--help` option.
+
 # Web3API 0.0.1-prealpha.75
 ## Features
 * [PR-814](https://github.com/polywrap/monorepo/pull/814) `@web3api/cli`: A modular deployment pipeline has been added to the CLI. It can be accessed via the `w3 deploy` command.
