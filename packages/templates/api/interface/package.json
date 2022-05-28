@@ -4,12 +4,11 @@
   "private": true,
   "version": "0.0.1-prealpha.80",
   "scripts": {
-    "build": "yarn build:web3api",
-    "build:web3api": "npx w3 build",
+    "build": "npx w3 build",
     "test:env:up": "npx w3 test-env up",
     "test:env:down": "npx w3 test-env down",
-    "deploy": "yarn deploy:web3api",
-    "deploy:web3api": "npx w3 build --ipfs http://localhost:5001"
+    "deploy": "npx w3 deploy",
+    "test": "yarn test:env:up && yarn deploy && yarn test:env:down"
   },
   "devDependencies": {
     "@web3api/cli": "0.0.1-prealpha.80"

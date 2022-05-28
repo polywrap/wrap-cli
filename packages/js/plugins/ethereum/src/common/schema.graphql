@@ -96,3 +96,7 @@ type Network {
   chainId: BigInt!
   ensAddress: String
 }
+
+type Env {
+  connection: Connection
+}

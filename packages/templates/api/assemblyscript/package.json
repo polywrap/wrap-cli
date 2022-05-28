@@ -10,12 +10,12 @@
     "test:env:up": "npx w3 test-env up",
     "test:env:down": "npx w3 test-env down",
     "deploy": "yarn deploy:contract && yarn deploy:web3api",
-    "deploy:web3api": "npx w3 build --ipfs http://localhost:5001 --test-ens simplestorage.eth",
+    "deploy:web3api": "npx w3 deploy",
     "deploy:contract": "node ./scripts/deploy-contract.js",
-    "test": "yarn test:e2e && yarn test:env:up && yarn deploy && yarn test:recipe && yarn test:env:down",
-    "test:e2e": "yarn build && yarn test:e2e:codegen && jest --passWithNoTests --runInBand --verbose",
+    "test": "yarn test:e2e && yarn test:recipe",
+    "test:e2e": "yarn build && yarn test:e2e:codegen && jest --passWithNoTests --runInBand --verbose --onlyChanged",
     "test:e2e:codegen": "npx w3 app codegen -m ./src/__tests__/types/web3api.app.yaml -c ./src/__tests__/types/w3",
-    "test:recipe": "npx w3 query ./recipes/e2e.json"
+    "test:recipe": "yarn build && yarn test:env:up && yarn deploy:contract && npx w3 query ./recipes/e2e.json && yarn test:env:down"
   },
   "devDependencies": {
     "@types/jest": "27.0.3",
@@ -26,10 +26,10 @@
     "@web3api/wasm-as": "0.0.1-prealpha.80",
     "assemblyscript": "0.19.1",
     "ethers": "5.0.7",
-    "jest": "27.4.2",
+    "jest": "26.6.3",
     "solc": "0.8.3",
-    "ts-jest": "27.0.7",
-    "ts-node": "10.4.0",
-    "typescript": "4.4.3"
+    "ts-jest": "26.5.4",
+    "ts-node": "8.10.2",
+    "typescript": "4.0.7"
   }
 }

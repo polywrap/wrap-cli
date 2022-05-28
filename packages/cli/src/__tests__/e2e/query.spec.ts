@@ -4,7 +4,11 @@ import yaml from "js-yaml";
 
 import { clearStyle, w3Cli } from "./utils";
 
-import { buildAndDeployApi, initTestEnvironment, runCLI } from "@web3api/test-env-js";
+import {
+  buildAndDeployApi,
+  initTestEnvironment,
+  runCLI,
+} from "@web3api/test-env-js";
 import { GetPathToCliTestFiles } from "@web3api/test-cases";
 import { normalizeLineEndings } from "@web3api/os-js";
 import {
@@ -16,17 +20,61 @@ import {
 
 jest.setTimeout(200000);
 
-const HELP = `
-w3 query [options] <recipe-script>
+const HELP = `Usage: w3 query|q [options] <recipe>
+
+Query Web3APIs using recipe scripts
+
+Arguments:
+  recipe                                Path to recipe script
 
 Options:
-  -h, --help                         Show usage information
-  -t, --test-ens                     Use the development server's ENS instance
-  -c, --client-config <config-path>  Add custom configuration to the Web3ApiClient
-  -o, --output-file                  Output file path for the query result
-  -q, --quiet                        Suppress output
-
+  -c, --client-config <config-path>     Add custom configuration to the
+                                        Web3ApiClient
+  -o, --output-file <output-file-path>  Output file path for the query result
+  -q, --quiet                           Suppress output
+  -h, --help                            display help for command
 `;
+
+describe("sanity tests for query command", () => {
+  const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/query");
+
+  test("Should show help text", async () => {
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+      args: ["query", "--help"],
+      cwd: testCaseRoot,
+    });
+
+    expect(code).toEqual(0);
+    expect(error).toBe("");
+    expect(clearStyle(output)).toEqual(HELP);
+  });
+
+  test("Should throw error for missing recipe-string", async () => {
+    const { exitCode, stdout, stderr } = await runCLI({
+      args: ["query"],
+      cwd: testCaseRoot,
+      cli: w3Cli,
+    });
+
+    expect(exitCode).toEqual(1);
+    expect(stderr).toContain("error: missing required argument 'recipe");
+    expect(stdout).toEqual(``);
+  });
+
+  test("Should throw error is --client-config doesn't contain arguments", async () => {
+    const { exitCode, stdout, stderr } = await runCLI({
+      args: ["query", "./recipes/e2e.json", "--client-config"],
+      cwd: testCaseRoot,
+      cli: w3Cli,
+    });
+
+    expect(exitCode).toEqual(1);
+    expect(stderr).toBe(
+      "error: option '-c, --client-config <config-path> ' argument missing\n"
+    );
+    expect(stdout).toEqual(``);
+  });
+});
 
 describe("e2e tests for query command", () => {
   const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/query");
@@ -37,7 +85,7 @@ describe("e2e tests for query command", () => {
       ethereum,
       ensAddress: ens,
       registrarAddress,
-      resolverAddress
+      resolverAddress,
     } = await initTestEnvironment();
 
     const { stderr: deployErr } = await runCLI({
@@ -55,7 +103,7 @@ describe("e2e tests for query command", () => {
       ensRegistrarAddress: registrarAddress,
       ensResolverAddress: resolverAddress,
       ensRegistryAddress: ens,
-      ensName: "simplestorage",
+      ensName: "simplestorage.eth",
     })
   });
 
@@ -67,46 +115,9 @@ describe("e2e tests for query command", () => {
     });
   });
 
-  test("Should output help text", async () => {
-    const { exitCode, stdout, stderr } = await runCLI({
-      args: ["query", "--help"],
-      cli: w3Cli,
-    });
-
-    expect(exitCode).toEqual(0);
-    expect(stderr).toBe("");
-    expect(clearStyle(stdout)).toEqual(HELP);
-  });
-
-  test("Should throw error for missing recipe-string", async () => {
-    const { exitCode, stdout, stderr } = await runCLI({
-      args: ["query"],
-      cli: w3Cli,
-    });
-
-    expect(exitCode).toEqual(0);
-    expect(stderr).toBe("");
-    expect(clearStyle(stdout))
-      .toEqual(`Required argument <recipe-script> is missing
-${HELP}`);
-  });
-
-  test("Should throw error is --client-config doesn't contain arguments", async () => {
-    const { exitCode, stdout, stderr } = await runCLI({
-      args: ["query", "./recipes/e2e.json", "--client-config"],
-      cli: w3Cli,
-    });
-
-    expect(exitCode).toEqual(0);
-    expect(stderr).toBe("");
-    expect(clearStyle(stdout))
-      .toEqual(`--client-config option missing <config-path> argument
-${HELP}`);
-  });
-
   test("Should successfully return response: using json recipes", async () => {
     const { exitCode: code, stdout: output, stderr: queryErr } = await runCLI({
-      args: ["query", "./recipes/e2e.json", "--test-ens"],
+      args: ["query", "./recipes/e2e.json"],
       cwd: testCaseRoot,
       cli: w3Cli,
     });
@@ -122,7 +133,7 @@ ${HELP}`);
 
   test("Should successfully return response: using yaml recipes", async () => {
     const { exitCode: code, stdout: output, stderr: queryErr } = await runCLI({
-      args: ["query", "./recipes/e2e.yaml", "--test-ens"],
+      args: ["query", "./recipes/e2e.yaml"],
       cwd: testCaseRoot,
       cli: w3Cli,
     });
@@ -144,7 +155,7 @@ ${HELP}`);
 
   test("Should successfully return response: using mix of yaml & json recipes", async () => {
     const { exitCode: code, stdout: output, stderr: queryErr } = await runCLI({
-      args: ["query", "./recipes/e2e.json", "--test-ens"],
+      args: ["query", "./recipes/e2e.json"],
       cwd: testCaseRoot,
       cli: w3Cli,
     });
@@ -169,7 +180,6 @@ ${HELP}`);
       args: [
         "query",
         "./recipes/e2e.json",
-        "--test-ens",
         "--output-file",
         "./recipes/output.json",
       ],
@@ -186,12 +196,12 @@ ${HELP}`);
     });
 
     expect(fs.existsSync(`${testCaseRoot}/recipes/output.json`)).toBeTruthy();
-    const arr: Array<unknown> = JSON.parse(fs.readFileSync(`${testCaseRoot}/recipes/output.json`, "utf8"))
+    const arr: Array<unknown> = JSON.parse(
+      fs.readFileSync(`${testCaseRoot}/recipes/output.json`, "utf8")
+    );
     expect(Array.isArray(arr)).toBeTruthy();
 
-    expect(
-      arr[2]
-    ).toMatchObject(getSampleObjectOutput());
+    expect(arr[2]).toMatchObject(getSampleObjectOutput());
 
     fs.unlinkSync(`${testCaseRoot}/recipes/output.json`);
   }, 48000);
@@ -201,7 +211,6 @@ ${HELP}`);
       args: [
         "query",
         "./recipes/e2e.yaml",
-        "--test-ens",
         "--output-file",
         "./recipes/output.yaml",
       ],
@@ -224,13 +233,11 @@ ${HELP}`);
     });
 
     expect(fs.existsSync(`${testCaseRoot}/recipes/output.yaml`)).toBeTruthy();
-    const arr: Array<unknown> = yaml.load(
+    const arr: Array<unknown> = (yaml.load(
       fs.readFileSync(`${testCaseRoot}/recipes/output.yaml`, "utf8")
-    ) as unknown as Array<unknown>;
+    ) as unknown) as Array<unknown>;
     expect(Array.isArray(arr)).toBeTruthy();
-    expect(
-      arr[2]
-    ).toMatchObject(getSampleObjectOutput());
+    expect(arr[2]).toMatchObject(getSampleObjectOutput());
 
     fs.unlinkSync(`${testCaseRoot}/recipes/output.yaml`);
   }, 48000);
@@ -240,7 +247,6 @@ ${HELP}`);
       args: [
         "query",
         "./recipes/e2e.json",
-        "--test-ens",
         "--quiet",
       ],
       cwd: testCaseRoot,
@@ -253,14 +259,18 @@ ${HELP}`);
   }, 48000);
 
   test("Should use custom config for client if specified", async () => {
-    const configs = ["./client-config.ts", "./client-config.js", "./client-async-config.ts", "./client-async-config.js"];
+    const configs = [
+      "./client-config.ts",
+      "./client-config.js",
+      "./client-async-config.ts",
+      "./client-async-config.js",
+    ];
 
     for (const config of configs) {
       const { exitCode, stdout, stderr } = await runCLI({
         args: [
           "query",
           "./recipes/e2e.json",
-          "--test-ens",
           "--client-config",
           config,
         ],
