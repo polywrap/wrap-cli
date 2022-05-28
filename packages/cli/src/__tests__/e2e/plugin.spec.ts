@@ -26,14 +26,6 @@ const CODEGEN_SUCCESS = `- Manifest loaded from ./web3api.plugin.yaml
 ✔ Manifest written to ./build/web3api.plugin.json
 `;
 
-const CODEGEN_SUCCESS = `- Manifest loaded from ./web3api.plugin.yaml
-✔ Manifest loaded from ./web3api.plugin.yaml
-- Generate types
-✔ Generate types
-- Manifest written to ./build/web3api.plugin.json
-✔ Manifest written to ./build/web3api.plugin.json
-`;
-
 describe("e2e tests for plugin command", () => {
   const testCaseRoot = path.join(GetPathToCliTestFiles(), "plugin/codegen");
   const testCases =
@@ -44,7 +36,7 @@ describe("e2e tests for plugin command", () => {
     path.join(testCaseRoot, testCases[index]);
 
   test("Should show help text", async () => {
-    const { exitCode: code, stdout: output } = await runCLI(
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
         args: ["plugin", "--help"],
         cwd: getTestCaseDir(0),
@@ -52,6 +44,7 @@ describe("e2e tests for plugin command", () => {
     );
 
     expect(code).toEqual(0);
+    expect(error).toBe("");
     expect(clearStyle(output)).toEqual(HELP);
   });
 

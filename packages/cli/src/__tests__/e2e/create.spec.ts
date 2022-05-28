@@ -26,9 +26,9 @@ describe("e2e tests for create command", () => {
       cli: w3Cli,
     });
 
-    expect(code).toEqual(1);
+    expect(code).toEqual(0);
     expect(error).toBe("");
-    expect(clearStyle(output)).toEqual("Please provide a command\n" + HELP);
+    expect(clearStyle(output)).toEqual(HELP);
   });
 
   test("Should throw error for missing parameter - type", async () => {
