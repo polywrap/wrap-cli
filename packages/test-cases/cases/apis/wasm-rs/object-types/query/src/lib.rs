@@ -50,7 +50,6 @@ pub fn method3(input: InputMethod3) -> Vec<Option<Output>> {
 
 pub fn method5(input: InputMethod5) -> Output {
     Output {
-        // prop: String::from_utf8(input.arg.prop).unwrap(),
         prop: match String::from_utf8(input.arg.prop) {
             Ok(v) => v,
             Err(e) => panic!("{}", e),
