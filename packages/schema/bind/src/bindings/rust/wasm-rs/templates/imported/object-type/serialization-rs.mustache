@@ -52,7 +52,7 @@ pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(input: &{{#toUpper}}{{ty
     {{/array}}
     {{#map}}
     writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}, |writer, key| {
-        writer.write_{{#key}}{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}{{/key}}(key)?;
+        writer.write_{{#key}}{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}{{/key}}(key)
     }, |writer, value| {
         {{#value}}
         {{> serialize_map_value}}

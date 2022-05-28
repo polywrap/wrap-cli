@@ -23,7 +23,7 @@ pub trait Read {
     fn read_array_length(&mut self) -> Result<u32, DecodeError>;
     fn read_array<T>(
         &mut self,
-        reader: impl FnMut(&mut Self) -> Result<T, DecodeError>,
+        item_reader: impl FnMut(&mut Self) -> Result<T, DecodeError>,
     ) -> Result<Vec<T>, DecodeError>;
     fn read_map_length(&mut self) -> Result<u32, DecodeError>;
     fn read_map<K, V>(
@@ -57,7 +57,7 @@ pub trait Read {
     fn read_nullable_json(&mut self) -> Result<Option<JSON::Value>, DecodeError>;
     fn read_nullable_array<T>(
         &mut self,
-        reader: impl FnMut(&mut Self) -> Result<T, DecodeError>,
+        item_reader: impl FnMut(&mut Self) -> Result<T, DecodeError>,
     ) -> Result<Option<Vec<T>>, DecodeError>;
     fn read_nullable_map<K, V>(
         &mut self,

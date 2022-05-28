@@ -61,7 +61,7 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_args<W: Write>(input: &Input{{#toU
     {{/array}}
     {{#map}}
     writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&input.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}, |writer, key| {
-        writer.write_{{#key}}{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}{{/key}}(key)?;
+        writer.write_{{#key}}{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}{{/key}}(key)
     }, |writer, value| {
         {{#value}}
         {{> serialize_map_value}}
@@ -110,7 +110,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_result(result: &[u8]) -> Res
     {{/array}}
     {{#map}}
     let res = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {
-        reader.read_{{#key}}{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}{{/key}}()?
+        reader.read_{{#key}}{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}{{/key}}()
     }, |reader| {
         {{#value}}
         {{> deserialize_map_value_nobox}}

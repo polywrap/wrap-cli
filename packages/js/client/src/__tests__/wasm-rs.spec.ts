@@ -110,6 +110,16 @@ describe("wasm-rs test cases", () => {
     );
   });
 
+  it("map-type", async () => {
+    const api = await deployApi(
+      `${GetPathToTestApis()}/wasm-rs/map-type`
+    );
+
+    await TestCases.runMapTypeTest(
+      await getClient(), `ens/testnet/${api.ensDomain}`
+    );
+  });
+
   it("implementations - e2e", async () => {
     let interfaceApi = await deployApi(
       `${GetPathToTestApis()}/wasm-rs/implementations/test-interface`

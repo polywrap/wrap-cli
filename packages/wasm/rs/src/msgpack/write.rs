@@ -25,7 +25,7 @@ pub trait Write {
     fn write_array<T: Clone>(
         &mut self,
         array: &[T],
-        arr_writer: impl FnMut(&mut Self, &T) -> Result<(), EncodeError>,
+        item_writer: impl FnMut(&mut Self, &T) -> Result<(), EncodeError>,
     ) -> Result<(), EncodeError>;
     fn write_map_length(&mut self, length: &u32) -> Result<(), EncodeError>;
     fn write_map<K, V: Clone>(
@@ -62,7 +62,7 @@ pub trait Write {
     fn write_nullable_array<T: Clone>(
         &mut self,
         opt_array: &Option<Vec<T>>,
-        arr_writer: impl FnMut(&mut Self, &T) -> Result<(), EncodeError>,
+        item_writer: impl FnMut(&mut Self, &T) -> Result<(), EncodeError>,
     ) -> Result<(), EncodeError>;
     fn write_nullable_map<K, V: Clone>(
         &mut self,

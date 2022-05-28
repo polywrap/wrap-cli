@@ -302,18 +302,16 @@ export class ReadDecoder extends Read {
     value_fn: (reader: Read) => V
   ): Map<K, V> {
     const leadByte = this._view.peekUint8();
-    let consumed = false;
     let byteLength: u32;
 
-    if (
-      isFixedMap(leadByte) ||
-      leadByte === Format.FIXMAP ||
-      leadByte === Format.MAP16
-    ) {
+    if (isFixedMap(leadByte)) {
       return this.readMap(key_fn, value_fn);
     }
 
     switch (leadByte) {
+      case Format.FIXMAP:
+      case Format.MAP16:
+        return this.readMap(key_fn, value_fn);
       case Format.FIXEXT1:
         byteLength = 1;
         break;
@@ -330,15 +328,13 @@ export class ReadDecoder extends Read {
         byteLength = 16;
         break;
       case Format.EXT8:
-        byteLength = <u32>leadByte;
+        byteLength = <u32>this._view.getUint8();
         break;
       case Format.EXT16:
         byteLength = <u32>this._view.getUint16();
-        consumed = true;
         break;
       case Format.EXT32:
         byteLength = this._view.getUint32();
-        consumed = true;
         break;
       default:
         throw new TypeError(
@@ -349,10 +345,8 @@ export class ReadDecoder extends Read {
         );
     }
 
-    // Consume the leadByte
-    if (!consumed) {
-      this._view.getUint8();
-    }
+    // Consule the leadByte
+    this._view.getUint8();
 
     // Get the extension type
     const extType = this._view.getUint8();

@@ -230,11 +230,11 @@ impl Write for WriteEncoder {
     fn write_array<T: Clone>(
         &mut self,
         array: &[T],
-        mut arr_writer: impl FnMut(&mut Self, &T) -> Result<(), EncodeError>,
+        mut item_writer: impl FnMut(&mut Self, &T) -> Result<(), EncodeError>,
     ) -> Result<(), EncodeError> {
         self.write_array_length(&(array.len() as u32))?;
         for element in array {
-            arr_writer(self, element)?;
+            item_writer(self, element)?;
         }
         Ok(())
     }
@@ -282,7 +282,7 @@ impl Write for WriteEncoder {
         K: Clone + Eq + Hash + Ord,
     {
         let mut encoder = WriteEncoder::new(&[], self.context.clone());
-        encoder.write_map(map, key_writer, val_writer);
+        encoder.write_map(map, key_writer, val_writer)?;
 
         let buf = encoder.get_buffer();
         let bytelength = buf.len();
@@ -409,11 +409,11 @@ impl Write for WriteEncoder {
     fn write_nullable_array<T: Clone>(
         &mut self,
         opt_array: &Option<Vec<T>>,
-        arr_writer: impl FnMut(&mut Self, &T) -> Result<(), EncodeError>,
+        item_writer: impl FnMut(&mut Self, &T) -> Result<(), EncodeError>,
     ) -> Result<(), EncodeError> {
         match opt_array {
             None => Write::write_nil(self),
-            Some(array) => Write::write_array(self, array, arr_writer),
+            Some(array) => Write::write_array(self, array, item_writer),
         }
     }
 

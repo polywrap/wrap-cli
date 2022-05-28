@@ -384,13 +384,13 @@ impl Read for ReadDecoder {
 
     fn read_array<T>(
         &mut self,
-        mut reader: impl FnMut(&mut Self) -> Result<T, DecodeError>,
+        mut item_reader: impl FnMut(&mut Self) -> Result<T, DecodeError>,
     ) -> Result<Vec<T>, DecodeError> {
         let arr_len = self.read_array_length()?;
         let mut array: Vec<T> = vec![];
         for i in 0..arr_len {
             self.context.push("array[", &i.to_string(), "]");
-            let item = reader(self)?;
+            let item = item_reader(self)?;
             array.push(item);
             self.context.pop();
         }
@@ -446,8 +446,11 @@ impl Read for ReadDecoder {
     where
         K: Eq + Hash + Ord,
     {
-        let mut consumed = false;
-        let byte_length = match Format::get_format(self)? {
+        let position = self.view.buffer.position();
+        let format = Format::get_format(self)?;
+        self.view.buffer.set_position(position);
+
+        let _byte_length = match format {
             Format::FixMap(format) => {
                 return self.read_map(key_reader, val_reader);
             },
@@ -459,13 +462,11 @@ impl Read for ReadDecoder {
             Format::FixExt4 => 4,
             Format::FixExt8 => 8,
             Format::FixExt16 => 16,
-            format @ Format::Ext8 => format.to_u8() as u32,
+            format @ Format::Ext8 => ReadBytesExt::read_u8(self)? as u32,
             Format::Ext16 => {
-                consumed = true;
                 ReadBytesExt::read_u16::<BigEndian>(self)? as u32
             },
             Format::Ext32 => {
-                consumed = true;
                 ReadBytesExt::read_u32::<BigEndian>(self)?
             },
             err_f => {
@@ -479,9 +480,7 @@ impl Read for ReadDecoder {
         };
 
         // Consume the leadByte
-        if !consumed {
-            ReadBytesExt::read_u8(self)?;
-        }
+        ReadBytesExt::read_u8(self)?;
 
         // Get the extension type
         let ext_type = ReadBytesExt::read_u8(self)?;
@@ -654,12 +653,12 @@ impl Read for ReadDecoder {
 
     fn read_nullable_array<T>(
         &mut self,
-        reader: impl FnMut(&mut Self) -> Result<T, DecodeError>,
+        item_reader: impl FnMut(&mut Self) -> Result<T, DecodeError>,
     ) -> Result<Option<Vec<T>>, DecodeError> {
         if self.is_next_nil()? {
             return Ok(None);
         } else {
-            match self.read_array(reader) {
+            match self.read_array(item_reader) {
                 Ok(array) => Ok(Some(array)),
                 Err(e) => Err(DecodeError::ArrayReadError(e.to_string())),
             }

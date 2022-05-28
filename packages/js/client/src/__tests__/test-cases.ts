@@ -1154,6 +1154,64 @@ export const runObjectTypesTest = async (
   });
 };
 
+export const runMapTypeTest = async (
+  client: Web3ApiClient,
+  uri: string
+) => {
+
+  const mapClass = new Map<string, number>().set("Hello", 1).set("Heyo", 50);
+  const mapRecord: Record<string, number> = {
+    Hello: 1,
+    Heyo: 50,
+  };
+
+  const returnMapResponse1 = await client.invoke<Map<string, number>>({
+    uri,
+    module: "query",
+    method: "returnMap",
+    input: {
+      map: mapClass,
+    },
+  });
+  expect(returnMapResponse1.error).toBeUndefined();
+  expect(returnMapResponse1.data).toEqual(mapClass);
+
+  const returnMapResponse2 = await client.invoke<Map<string, number>>({
+    uri,
+    module: "query",
+    method: "returnMap",
+    input: {
+      map: mapRecord,
+    },
+  });
+  expect(returnMapResponse2.error).toBeUndefined();
+  expect(returnMapResponse2.data).toEqual(mapClass);
+
+  const getKeyResponse1 = await client.invoke<number>({
+    uri,
+    module: "query",
+    method: "getKey",
+    input: {
+      map: mapClass,
+      key: "Hello",
+    },
+  });
+  expect(getKeyResponse1.error).toBeUndefined();
+  expect(getKeyResponse1.data).toEqual(mapClass.get("Hello"));
+
+  const getKeyResponse2 = await client.invoke<number>({
+    uri,
+    module: "query",
+    method: "getKey",
+    input: {
+      map: mapRecord,
+      key: "Heyo",
+    },
+  });
+  expect(getKeyResponse2.error).toBeUndefined();
+  expect(getKeyResponse2.data).toEqual(mapRecord.Heyo);
+};
+
 export const runSimpleStorageTest = async (
   client: Web3ApiClient,
   api: {
