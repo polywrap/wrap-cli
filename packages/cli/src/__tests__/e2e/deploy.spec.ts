@@ -224,4 +224,19 @@ describe("e2e tests for deploy command", () => {
       "Failed to execute stage 'from_deploy'"
     );
   });
+
+  test("Throws if environment variable is not loaded but defined in manifest", async () => {
+    const { exitCode: code, stderr } = await runCLI(
+      {
+        args: ["deploy"],
+        cwd: getTestCaseDir(4),
+        cli: w3Cli,
+      },
+    );
+
+    const sanitizedErr = clearStyle(stderr);
+    expect(code).toEqual(1);
+    expect(sanitizedErr).toContain(
+"Variable specified on manifest is not defined as environment variable: `NON_LOADED_VAR`");
+  });
 });

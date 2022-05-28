@@ -218,6 +218,7 @@
   "lib_project_invalid_manifest_language_pathed": "Unsupported manifest language `{language}`.Debug: No default manifest found at {defaultPath}. Please make contact with the Polywrap CLI development community.",
   "lib_project_language_not_found": "Manifest language not found. Please include the `language` property in the manifest file.",
   "lib_project_app_uri_support": "The app command supports only filesystem URIs for plugins. Examples:",
+  "lib_project_env_var_not_found": "Variable specified on manifest is not defined as environment variable: `{variableName}`",
   "lib_project_imported_plugin_manifest_not_found": "No manifest found for imported plugin namespace `{namespace}` at path `{path}`",
   "lib_project_invalid_uri": "Invalid URI Received:",
   "lib_typescript_notInstalled": "Your project uses typescript, but it's not installed",

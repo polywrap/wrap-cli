@@ -174,8 +174,10 @@ export abstract class Project<TManifest extends AnyManifest> {
           const currentKey = Object.keys(config)[index];
           config[currentKey] = process.env[importedVariable] as string;
         } else {
-          throw Error(
-            "Variable specified on manifest is not defined as environment variable"
+          throw new Error(
+            intlMsg.lib_project_env_var_not_found({
+              variableName: importedVariable,
+            })
           );
         }
       }
