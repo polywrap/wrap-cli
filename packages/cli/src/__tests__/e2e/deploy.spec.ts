@@ -57,10 +57,12 @@ const setup = async (domainNames: string[]) => {
     yaml.dump(deployManifest)
   )
 
+  const ethereumPluginUri = "w3://ens/ethereum.web3api.eth"
+
   const client = new Web3ApiClient({
     plugins: [
       {
-        uri: "w3://ens/ethereum.web3api.eth",
+        uri: ethereumPluginUri,
         plugin: ethereumPlugin({
           networks: {
             testnet: {
@@ -74,35 +76,28 @@ const setup = async (domainNames: string[]) => {
     ],
   });
 
+  const ensWrapperUri = `fs/${path.join(
+    path.dirname(require.resolve("@web3api/embedded-wrappers")),
+    "ens"
+  )}`;
+
   for await (const domainName of domainNames) {
-    await client.invoke({
-      uri: "w3://ens/rinkeby/ens.web3api.eth",
+    await client.invoke<{ hash: string }>({
+      uri: ensWrapperUri,
       module: "mutation",
-      method: "registerDomain",
+      method: "registerDomainAndSubdomainsRecursively",
       input: {
         domain: domainName,
         owner: signer.address,
         registrarAddress,
         registryAddress: ensAddress,
+        resolverAddress,
+        ttl: "0",
         connection: {
           networkNameOrChainId: "testnet",
         },
       },
     })
-
-    await client.invoke({
-      uri: `w3://ens/rinkeby/ens.web3api.eth`,
-      module: "mutation",
-      method: "setResolver",
-      input: {
-        domain: domainName,
-        resolverAddress,
-        registryAddress: ensAddress,
-        connection: {
-          networkNameOrChainId: "testnet",
-        },
-      },
-    });
   }
 }
 
@@ -165,7 +160,7 @@ describe("e2e tests for deploy command", () => {
     );
   });
 
-  test("Throws and stops chain if error is found", async () => {
+  test("Should show warning if no manifest ext is found in deploy package", async () => {
     const { exitCode: code, stdout: output } = await runCLI(
       {
         args: ["deploy"],

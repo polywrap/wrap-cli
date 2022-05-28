@@ -18,10 +18,11 @@
   "dependencies": {
     "@web3api/core-js": "0.0.1-prealpha.80",
     "axios": "0.21.2",
-    "ethers": "5.0.7",
-    "js-sha3": "0.8.0",
     "js-yaml": "4.1.0",
-    "spawn-command": "0.0.2-1"
+    "spawn-command": "0.0.2-1",
+    "@web3api/client-js": "0.0.1-prealpha.80",
+    "@web3api/embedded-wrappers": "0.0.1-prealpha.80",
+    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.80"
   },
   "devDependencies": {
     "rimraf": "3.0.2",

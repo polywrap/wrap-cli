@@ -18,7 +18,8 @@
       "./packages/templates/**",
       "./packages/test-cases",
       "./packages/test-env/**",
-      "./packages/wasm/**"
+      "./packages/wasm/**",
+      "./packages/wrappers/**"
     ]
   },
   "scripts": {
