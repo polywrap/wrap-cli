@@ -93,7 +93,7 @@ describe("resolveUri", () => {
         options: GetManifestOptions<TManifestType>
       ) => {
         const manifest = {
-          format: "0.0.1-prealpha.8",
+          format: "0.0.1-prealpha.9",
           language: "",
           modules: {},
           __type: "Web3ApiManifest",
@@ -125,7 +125,7 @@ describe("resolveUri", () => {
         client: Client
       ) => {
         const manifest = {
-          format: "0.0.1-prealpha.8",
+          format: "0.0.1-prealpha.9",
           language: "",
           modules: {},
           __type: "Web3ApiManifest",
@@ -154,7 +154,7 @@ describe("resolveUri", () => {
         client: Client
       ) => {
         const manifest = {
-          format: "0.0.1-prealpha.8",
+          format: "0.0.1-prealpha.9",
           language: "",
           modules: {},
           __type: "Web3ApiManifest",
@@ -285,7 +285,7 @@ describe("resolveUri", () => {
     expect(apiIdentity).toMatchObject({
       uri: new Uri("ipfs/QmHash"),
       manifest: {
-        format: "0.0.1-prealpha.8",
+        format: "0.0.1-prealpha.9",
       },
       uriResolver: "w3://ens/ipfs",
     });
@@ -309,7 +309,7 @@ describe("resolveUri", () => {
     expect(apiIdentity).toMatchObject({
       uri: new Uri("my/something-different"),
       manifest: {
-        format: "0.0.1-prealpha.8",
+        format: "0.0.1-prealpha.9",
       },
       uriResolver: "w3://ens/my-plugin",
     });
@@ -333,7 +333,7 @@ describe("resolveUri", () => {
     expect(apiIdentity).toMatchObject({
       uri: new Uri("ipfs/QmHash"),
       manifest: {
-        format: "0.0.1-prealpha.8",
+        format: "0.0.1-prealpha.9",
         dog: "cat",
       },
       uriResolver: "w3://ens/ipfs",
@@ -358,7 +358,7 @@ describe("resolveUri", () => {
     expect(apiIdentity).toMatchObject({
       uri: new Uri("my/something-different"),
       manifest: {
-        format: "0.0.1-prealpha.8",
+        format: "0.0.1-prealpha.9",
       },
       uriResolver: "w3://ens/my-plugin",
     });

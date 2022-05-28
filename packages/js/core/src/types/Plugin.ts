@@ -1,11 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import {
-  Uri,
-  Client,
-  InvokableModules,
-  MaybeAsync,
-  executeMaybeAsyncFunction,
-} from ".";
+import { Uri, Client, MaybeAsync, executeMaybeAsyncFunction } from ".";
 
 /**
  * Invocable plugin method.
@@ -95,7 +89,7 @@ export abstract class PluginModule<
 
 /** The plugin's query "modules" */
 export type PluginModules = {
-  [module in InvokableModules]?: PluginModule;
+  [module: string]: PluginModule;
 };
 
 /**

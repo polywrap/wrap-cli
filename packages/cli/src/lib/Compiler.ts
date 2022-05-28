@@ -15,12 +15,7 @@ import {
   resetDir,
 } from "./";
 
-import {
-  InvokableModules,
-  Web3ApiManifest,
-  BuildManifest,
-  MetaManifest,
-} from "@web3api/core-js";
+import { Web3ApiManifest, BuildManifest, MetaManifest } from "@web3api/core-js";
 import { WasmWeb3Api } from "@web3api/client-js";
 import { W3Imports } from "@web3api/client-js/build/wasm/types";
 import { AsyncWasmInstance } from "@web3api/asyncify-js";
@@ -30,7 +25,7 @@ import * as gluegun from "gluegun";
 import fs from "fs";
 import path from "path";
 
-type ModulesToBuild = Record<InvokableModules, boolean>;
+type ModulesToBuild = Record<string, boolean>;
 
 interface CompilerState {
   web3ApiManifest: Web3ApiManifest;
@@ -266,10 +261,8 @@ export class Compiler {
     // Validate the Wasm modules
     await Promise.all(
       Object.keys(modulesToBuild)
-        .filter((module: InvokableModules) => modulesToBuild[module])
-        .map((module: InvokableModules) =>
-          this._validateWasmModule(module, outputDir)
-        )
+        .filter((module: string) => modulesToBuild[module])
+        .map((module: string) => this._validateWasmModule(module, outputDir))
     );
 
     // Update the Web3ApiManifest
@@ -302,22 +295,18 @@ export class Compiler {
   }
 
   private _getModulesToBuild(manifest: Web3ApiManifest): ModulesToBuild {
-    const manifestMutation = manifest.modules.mutation;
-    const manifestQuery = manifest.modules.query;
-    const modulesToBuild: ModulesToBuild = {
-      mutation: false,
-      query: false,
+    const modules = Object.keys(manifest.modules);
+    const modulesToBuild: ModulesToBuild = {};
+
+    const getModulesToBuild = (
+      modulesToBuild: ModulesToBuild,
+      module: string
+    ): ModulesToBuild => {
+      modulesToBuild[module] = true;
+      return modulesToBuild;
     };
 
-    if (manifestMutation) {
-      modulesToBuild.mutation = true;
-    }
-
-    if (manifestQuery) {
-      modulesToBuild.query = true;
-    }
-
-    return modulesToBuild;
+    return modules.reduce(getModulesToBuild, modulesToBuild);
   }
 
   private async _buildSourcesInDocker(): Promise<string> {
@@ -501,42 +490,12 @@ export class Compiler {
       throw Error(missingSchemaMessage);
     };
 
-    if (
-      modulesToBuild.query &&
-      (!composerOutput.query || !composerOutput.query.schema)
-    ) {
-      throwMissingSchema("query");
-    }
-
-    if (
-      modulesToBuild.mutation &&
-      (!composerOutput.mutation || !composerOutput.mutation.schema)
-    ) {
-      throwMissingSchema("mutation");
-    }
-
     const throwMissingModule = (moduleName: string) => {
       const missingModuleMessage = intlMsg.lib_compiler_missingModule({
         name: `"${moduleName}"`,
       });
       throw Error(missingModuleMessage);
     };
-
-    if (
-      modulesToBuild.query &&
-      web3ApiManifest.language !== "interface" &&
-      !web3ApiManifest.modules.query?.module
-    ) {
-      throwMissingModule("query");
-    }
-
-    if (
-      modulesToBuild.mutation &&
-      web3ApiManifest.language !== "interface" &&
-      !web3ApiManifest.modules.mutation?.module
-    ) {
-      throwMissingModule("mutation");
-    }
 
     const throwNoInterfaceModule = (moduleName: string) => {
       const noInterfaceModule = intlMsg.lib_compiler_noInterfaceModule({
@@ -545,23 +504,29 @@ export class Compiler {
       throw Error(noInterfaceModule);
     };
 
-    if (
-      web3ApiManifest.language === "interface" &&
-      web3ApiManifest.modules.query?.module
-    ) {
-      throwNoInterfaceModule("query");
-    }
+    Object.keys(modulesToBuild).forEach((moduleName) => {
+      if (!composerOutput[moduleName] || !composerOutput[moduleName]?.schema) {
+        throwMissingSchema(moduleName);
+      }
 
-    if (
-      web3ApiManifest.language === "interface" &&
-      web3ApiManifest.modules.mutation?.module
-    ) {
-      throwNoInterfaceModule("mutation");
-    }
+      if (
+        web3ApiManifest.language !== "interface" &&
+        !web3ApiManifest.modules[moduleName]?.module
+      ) {
+        throwMissingModule(moduleName);
+      }
+
+      if (
+        web3ApiManifest.language === "interface" &&
+        web3ApiManifest.modules[moduleName]?.module
+      ) {
+        throwNoInterfaceModule(moduleName);
+      }
+    });
   }
 
   private async _validateWasmModule(
-    moduleName: InvokableModules,
+    moduleName: string,
     buildDir: string
   ): Promise<void> {
     const modulePath = path.join(buildDir, `${moduleName}.wasm`);

@@ -127,16 +127,16 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     const manifest = await this.getManifest();
     const dir = this.getManifestDir();
     const namedPaths: { [name: string]: string } = {};
+    const modules = Object.keys(manifest.modules);
 
-    if (manifest.modules.mutation) {
-      namedPaths["mutation"] = path.join(dir, manifest.modules.mutation.schema);
-    }
-
-    if (manifest.modules.query) {
-      namedPaths["query"] = path.join(dir, manifest.modules.query.schema);
-    }
-
-    return namedPaths;
+    const getModulesSchemaPath = (
+      modules: { [name: string]: string },
+      current: string
+    ) => {
+      modules[current] = path.join(dir, manifest.modules[current].schema);
+      return modules;
+    };
+    return modules.reduce(getModulesSchemaPath, namedPaths);
   }
 
   public async getImportRedirects(): Promise<
