@@ -1,5 +1,5 @@
 pub mod w3;
-use polywrap_wasm_rs::JSON;
+use web3api_wasm_rs::JSON;
 use w3::imported::ethereum_mutation;
 pub use w3::*;
 

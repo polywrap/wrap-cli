@@ -13,25 +13,7 @@
 //!
 //! ## Usage
 //!
-//! To use the `polywrap-wasm-rs`, add the following line to your `Cargo.toml`:
-//!
-//! ```toml
-//! [dependencies.polywrap-wasm-rs]
-//! polywrap-wasm-rs = "0.0.1-prealpha.57"
-//! ```
-//!
-//! Then, import the crate into your module/file with the `use` keyword:
-//!
-//! ```rust
-//! use polywrap_wasm_rs;
-//! ```
-//!
-//! ## Features
-//!
-//! - Pure Rust implementation of MessagePack
-//! - Clear error handling
-//! - Unambiguous foreign function interfaces
-//! - Robust and battle-tested
+//! https://docs.polywrap.io/
 
 #![deny(dead_code)]
 #![deny(unreachable_code)]
@@ -58,4 +40,6 @@ pub use msgpack::{
 };
 
 pub use num_bigint::BigInt;
+pub use bigdecimal::BigDecimal as BigNumber;
 pub use serde_json as JSON;
+pub use std::collections::BTreeMap as Map;

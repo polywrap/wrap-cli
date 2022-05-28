@@ -1,8 +1,10 @@
-import { getTestEnvClientConfig } from "../lib/helpers/test-env-client-config";
-import { importTs } from "../lib/helpers/import-ts";
-import { fixParameters } from "../lib/helpers/parameters";
-import { validateClientConfig } from "../lib/helpers/validate-client-config";
-import { intlMsg } from "../lib/intl";
+import {
+  getTestEnvClientConfig,
+  importTypescriptModule,
+  validateClientConfig,
+  fixParameters,
+  intlMsg,
+} from "../lib";
 
 import { Web3ApiClient, Web3ApiClientConfig } from "@web3api/client-js";
 import chalk from "chalk";
@@ -10,10 +12,12 @@ import { GluegunToolbox } from "gluegun";
 import gql from "graphql-tag";
 import path from "path";
 import yaml from "js-yaml";
+import fs from "fs";
 
 const optionsString = intlMsg.commands_build_options_options();
 const scriptStr = intlMsg.commands_create_options_recipeScript();
 const configPathStr = intlMsg.commands_query_options_configPath();
+const outputFileStr = intlMsg.commands_query_options_outputFile();
 
 const HELP = `
 ${chalk.bold("w3 query")} [${optionsString}] ${chalk.bold(`<${scriptStr}>`)}
@@ -21,18 +25,24 @@ ${chalk.bold("w3 query")} [${optionsString}] ${chalk.bold(`<${scriptStr}>`)}
 ${optionsString[0].toUpperCase() + optionsString.slice(1)}:
   -t, --test-ens  ${intlMsg.commands_build_options_t()}
   -c, --client-config <${configPathStr}> ${intlMsg.commands_query_options_config()}
+  -o, --output-file  ${intlMsg.commands_query_options_outputFile()}
+  -q, --quiet  ${intlMsg.commands_query_options_quiet()}
 `;
 
 export default {
   alias: ["q"],
   description: intlMsg.commands_query_description(),
   run: async (toolbox: GluegunToolbox): Promise<void> => {
-    const { filesystem, parameters, print, middleware } = toolbox;
-    // eslint-disable-next-line prefer-const
-    let { t, testEns, c, clientConfig } = parameters.options;
+    const { filesystem, parameters, print } = toolbox;
+
+    // Options
+    let { testEns, clientConfig, outputFile, quiet } = parameters.options;
+    const { t, c, o, q } = parameters.options;
 
     testEns = testEns || t;
     clientConfig = clientConfig || c;
+    outputFile = outputFile || o;
+    quiet = quiet || q;
 
     let recipePath;
     try {
@@ -63,14 +73,26 @@ export default {
       return;
     }
 
+    if (outputFile === true) {
+      const outputFileMissingMessage = intlMsg.commands_query_error_outputFileMissing(
+        {
+          option: "--output-file",
+          argument: `<${outputFileStr}>`,
+        }
+      );
+      print.error(outputFileMissingMessage);
+      print.info(HELP);
+      return;
+    }
+
     if (clientConfig === true) {
-      const confgisMissingPathMessage = intlMsg.commands_query_error_clientConfigMissingPath(
+      const configMissingPathMessage = intlMsg.commands_query_error_clientConfigMissingPath(
         {
           option: "--client-config",
           argument: `<${configPathStr}>`,
         }
       );
-      print.error(confgisMissingPathMessage);
+      print.error(configMissingPathMessage);
       print.info(HELP);
       return;
     }
@@ -90,7 +112,9 @@ export default {
       if (clientConfig.endsWith(".js")) {
         configModule = await import(filesystem.resolve(clientConfig));
       } else if (clientConfig.endsWith(".ts")) {
-        configModule = await importTs(filesystem.resolve(clientConfig));
+        configModule = await importTypescriptModule(
+          filesystem.resolve(clientConfig)
+        );
       } else {
         const configsModuleMissingExportMessage = intlMsg.commands_query_error_clientConfigInvalidFileExt(
           { module: clientConfig }
@@ -120,11 +144,6 @@ export default {
       }
     }
 
-    await middleware.run({
-      name: toolbox.command?.name,
-      options: { testEns, recipePath },
-    });
-
     const client = new Web3ApiClient(finalClientConfig);
 
     function getParser(path: string) {
@@ -136,17 +155,24 @@ export default {
     const recipe = getParser(recipePath)(filesystem.read(recipePath) as string);
     const dir = path.dirname(recipePath);
     let uri = "";
+    const recipeOutput = [];
 
     let constants: Record<string, string> = {};
     for (const task of recipe) {
       if (task.api) {
         uri = task.api;
+        recipeOutput.push({
+          api: task.api,
+        });
       }
 
       if (task.constants) {
         constants = getParser(task.constants)(
           filesystem.read(path.join(dir, task.constants)) as string
         );
+        recipeOutput.push({
+          constants: task.constants,
+        });
       }
 
       if (task.query) {
@@ -201,10 +227,12 @@ export default {
           throw Error(intlMsg.commands_query_error_noApi());
         }
 
-        print.warning("-----------------------------------");
-        print.fancy(query);
-        print.fancy(JSON.stringify(variables, null, 2));
-        print.warning("-----------------------------------");
+        if (!quiet) {
+          print.warning("-----------------------------------");
+          print.fancy(query);
+          print.fancy(JSON.stringify(variables, null, 2));
+          print.warning("-----------------------------------");
+        }
 
         const { data, errors } = await client.query({
           uri,
@@ -212,13 +240,24 @@ export default {
           variables,
         });
 
-        if (data && data !== {}) {
+        if (outputFile) {
+          recipeOutput.push({
+            query: task.query,
+            variables: task.variables,
+            output: {
+              data,
+              errors,
+            },
+          });
+        }
+
+        if (!quiet && data && data !== {}) {
           print.success("-----------------------------------");
           print.fancy(JSON.stringify(data, null, 2));
           print.success("-----------------------------------");
         }
 
-        if (errors) {
+        if (!quiet && errors) {
           for (const error of errors) {
             print.error("-----------------------------------");
             print.fancy(error.message);
@@ -227,6 +266,22 @@ export default {
           }
           process.exitCode = 1;
         }
+      }
+    }
+
+    if (outputFile) {
+      const outputFileExt = path.extname(outputFile).substring(1);
+      if (!outputFileExt) throw new Error("Require output file extention");
+      switch (outputFileExt) {
+        case "yaml":
+        case "yml":
+          fs.writeFileSync(outputFile, yaml.dump(recipeOutput));
+          break;
+        case "json":
+          fs.writeFileSync(outputFile, JSON.stringify(recipeOutput));
+          break;
+        default:
+          throw new Error(`Unsupported outputFile extention: ${outputFileExt}`);
       }
     }
   },

@@ -60,8 +60,10 @@ export function parseExternalImports(
 
     const importedTypes = importStatement[1]
       .split(",")
-      .map((str) => str.replace(/\s+/g, "")) // Trim all whitespace
-      .filter(Boolean); // Remove empty strings
+      // Trim all whitespace and brackets
+      .map((str) => str.replace(/(\s+|\{|\})/g, ""))
+      // Remove empty strings
+      .filter(Boolean);
 
     const importFromName = importStatement[3];
 
@@ -141,8 +143,10 @@ export function parseLocalImports(
 
     const importTypes = importStatement[1]
       .split(",")
-      .map((str) => str.replace(/\s+/g, "")) // Trim all whitespace
-      .filter(Boolean); // Remove empty strings
+      // Trim all whitespace and brackets
+      .map((str) => str.replace(/(\s+|\{|\})/g, ""))
+      // Remove empty strings
+      .filter(Boolean);
     const importPath = importStatement[2];
     const path = Path.join(Path.dirname(schemaPath), importPath);
 

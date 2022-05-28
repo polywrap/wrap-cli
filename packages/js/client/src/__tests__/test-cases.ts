@@ -1,4 +1,5 @@
 import { Web3ApiClient } from "../";
+import { BigNumber } from "bignumber.js";
 
 export const runAsyncifyTest = async (
   client: Web3ApiClient,
@@ -299,6 +300,67 @@ export const runBigIntTypeTest = async (
   }
 };
 
+export const runBigNumberTypeTest = async (
+  client: Web3ApiClient,
+  uri: string
+) => {
+  {
+    const response = await client.query<{
+      method: string;
+    }>({
+      uri,
+      query: `query {
+        method(
+          arg1: "1234.56789123456789"
+          obj: {
+            prop1: "98.7654321987654321"
+          }
+        )
+      }`,
+    });
+
+    const arg1 = new BigNumber("1234.56789123456789");
+    const prop1 = new BigNumber("98.7654321987654321")
+    const result = arg1.times(prop1);
+
+    expect(response.errors).toBeFalsy();
+    expect(response.data).toBeTruthy();
+    expect(response.data).toMatchObject({
+      method: result.toFixed(),
+    });
+  }
+
+  {
+    const response = await client.query<{
+      method: string;
+    }>({
+      uri,
+      query: `query {
+        method(
+          arg1: "1234567.89123456789"
+          arg2: "123456789123.456789123456789123456789"
+          obj: {
+            prop1: "987654.321987654321"
+            prop2: "987.654321987654321987654321987654321"
+          }
+        )
+      }`,
+    });
+
+    const arg1 = new BigNumber("1234567.89123456789");
+    const arg2 = new BigNumber("123456789123.456789123456789123456789");
+    const prop1 = new BigNumber("987654.321987654321")
+    const prop2 = new BigNumber("987.654321987654321987654321987654321")
+    const result = arg1.times(arg2).times(prop1).times(prop2);
+
+    expect(response.errors).toBeFalsy();
+    expect(response.data).toBeTruthy();
+    expect(response.data).toMatchObject({
+      method: result.toFixed(),
+    });
+  }
+};
+
 export const runBytesTypeTest = async (
   client: Web3ApiClient,
   uri: string
@@ -478,8 +540,9 @@ export const runGetImplementationsTest = async (
   interfaceUri: string,
   implementationUri: string
 ) => {
-  expect(client.getImplementations(interfaceUri))
-    .toEqual([implementationUri]);
+  expect(client.getImplementations(interfaceUri)).toEqual([
+    implementationUri,
+  ]);
 
   const query = await client.query<{
     queryMethod: string;
@@ -488,15 +551,59 @@ export const runGetImplementationsTest = async (
     uri: implementationUri,
     query: `
       query {
-        queryImplementations
+        queryMethod(
+          arg: $argument1
+        )
+        abstractQueryMethod(
+          arg: $argument2
+        )
       }
     `,
-    variables: {},
+    variables: {
+      argument1: {
+        uint8: 1,
+        str: "Test String 1",
+      },
+      argument2: {
+        str: "Test String 2",
+      },
+    },
   });
 
   expect(query.errors).toBeFalsy();
   expect(query.data).toBeTruthy();
-  expect((query.data as any).queryImplementations).toEqual([implementationUri]);
+  expect(query.data?.queryMethod).toEqual({
+    uint8: 1,
+    str: "Test String 1",
+  });
+
+  expect(query.data?.abstractQueryMethod).toBe("Test String 2");
+
+  const mutation = await client.query<{
+    mutationMethod: string;
+    abstractMutationMethod: string;
+  }>({
+    uri: implementationUri,
+    query: `
+    mutation {
+        mutationMethod(
+          arg: $argument1
+        )
+        abstractMutationMethod(
+          arg: $argument2
+        )
+      }
+    `,
+    variables: {
+      argument1: 1,
+      argument2: 2,
+    },
+  });
+
+  expect(mutation.errors).toBeFalsy();
+  expect(mutation.data).toBeTruthy();
+  expect(mutation.data?.mutationMethod).toBe(1);
+  expect(mutation.data?.abstractMutationMethod).toBe(2);
 };
 
 export const runInvalidTypesTest = async (
@@ -1090,6 +1197,64 @@ export const runObjectTypesTest = async (
       },
     },
   });
+};
+
+export const runMapTypeTest = async (
+  client: Web3ApiClient,
+  uri: string
+) => {
+
+  const mapClass = new Map<string, number>().set("Hello", 1).set("Heyo", 50);
+  const mapRecord: Record<string, number> = {
+    Hello: 1,
+    Heyo: 50,
+  };
+
+  const returnMapResponse1 = await client.invoke<Map<string, number>>({
+    uri,
+    module: "query",
+    method: "returnMap",
+    input: {
+      map: mapClass,
+    },
+  });
+  expect(returnMapResponse1.error).toBeUndefined();
+  expect(returnMapResponse1.data).toEqual(mapClass);
+
+  const returnMapResponse2 = await client.invoke<Map<string, number>>({
+    uri,
+    module: "query",
+    method: "returnMap",
+    input: {
+      map: mapRecord,
+    },
+  });
+  expect(returnMapResponse2.error).toBeUndefined();
+  expect(returnMapResponse2.data).toEqual(mapClass);
+
+  const getKeyResponse1 = await client.invoke<number>({
+    uri,
+    module: "query",
+    method: "getKey",
+    input: {
+      map: mapClass,
+      key: "Hello",
+    },
+  });
+  expect(getKeyResponse1.error).toBeUndefined();
+  expect(getKeyResponse1.data).toEqual(mapClass.get("Hello"));
+
+  const getKeyResponse2 = await client.invoke<number>({
+    uri,
+    module: "query",
+    method: "getKey",
+    input: {
+      map: mapRecord,
+      key: "Heyo",
+    },
+  });
+  expect(getKeyResponse2.error).toBeUndefined();
+  expect(getKeyResponse2.data).toEqual(mapRecord.Heyo);
 };
 
 export const runSimpleStorageTest = async (

@@ -3,6 +3,7 @@ import {
   Write,
   Nullable,
   BigInt,
+  BigNumber,
   JSON
 } from "@web3api/wasm-as";
 import {
@@ -15,6 +16,7 @@ import * as Types from "..";
 
 export class QueryEnv {
   queryProp: string;
+  optMap: Map<string, Nullable<i32>> | null;
   prop: string;
   optProp: string | null;
 

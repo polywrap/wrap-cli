@@ -1,5 +1,5 @@
 pub mod w3;
-use polywrap_wasm_rs::JSON;
+use web3api_wasm_rs::JSON;
 pub use w3::*;
 use std::string::String;
 
@@ -12,7 +12,7 @@ pub fn stringify(input: InputStringify) -> String {
     .map(|value| JSON::to_string(&value).unwrap())
     .collect();
 
-    polywrap_wasm_rs::w3_debug_log(&format!("{:?}", result_vec));
+    web3api_wasm_rs::w3_debug_log(&format!("{:?}", result_vec));
 
     result_vec.join("")
 }

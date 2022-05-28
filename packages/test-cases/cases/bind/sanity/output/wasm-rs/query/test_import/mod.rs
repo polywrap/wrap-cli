@@ -1,4 +1,4 @@
-use polywrap_wasm_rs::w3_get_implementations;
+use web3api_wasm_rs::w3_get_implementations;
 
 pub struct TestImport {}
 

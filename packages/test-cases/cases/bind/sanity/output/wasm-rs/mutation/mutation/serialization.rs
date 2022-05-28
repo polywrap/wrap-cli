@@ -1,7 +1,9 @@
 use serde::{Serialize, Deserialize};
 use std::convert::TryFrom;
-use polywrap_wasm_rs::{
+use web3api_wasm_rs::{
     BigInt,
+    BigNumber,
+    Map,
     Context,
     DecodeError,
     EncodeError,

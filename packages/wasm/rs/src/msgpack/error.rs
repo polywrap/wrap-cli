@@ -86,6 +86,9 @@ pub enum DecodeError {
     ParseBigIntError(String),
 
     #[error("{0}")]
+    ParseBigNumberError(String),
+
+    #[error("{0}")]
     IntReadError(String),
 
     #[error("{0}")]
@@ -98,6 +101,9 @@ pub enum DecodeError {
     BigIntReadError(String),
 
     #[error("{0}")]
+    BigNumberReadError(String),
+
+    #[error("{0}")]
     JSONReadError(String),
 
     #[error("{0}")]
@@ -108,6 +114,9 @@ pub enum DecodeError {
 
     #[error("{0}")]
     MapReadError(String),
+
+    #[error("{0}")]
+    ExtGenericMapReadError(String),
 
     #[error("{0}")]
     StrReadError(String),

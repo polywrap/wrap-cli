@@ -1,5 +1,4 @@
 import {
-  schemaKinds,
   SchemaKind,
   SchemaInfos,
   SchemaInfo,
@@ -12,6 +11,7 @@ import { renderSchema } from "./render";
 import { TypeInfo, combineTypeInfo } from "@web3api/schema-parse";
 
 export * from "./types";
+export { renderSchema };
 
 export type ComposerOutput = Partial<SchemaInfos> &
   Required<{ combined: SchemaInfos["combined"] }>;
@@ -38,7 +38,7 @@ export async function composeSchema(
     throw Error("No schema provided");
   }
 
-  for (const kind of schemaKinds) {
+  for (const kind of Object.keys(schemas)) {
     const schema = schemas[kind];
 
     if (schema === undefined) {
@@ -65,7 +65,7 @@ export async function composeSchema(
     typeInfo: includeTypeInfo ? typeInfo : undefined,
   });
 
-  for (const kind of schemaKinds) {
+  for (const kind of Object.keys(typeInfos)) {
     const typeInfo = typeInfos[kind];
     if (typeInfo) {
       output[kind] = createSchemaInfo(typeInfo);

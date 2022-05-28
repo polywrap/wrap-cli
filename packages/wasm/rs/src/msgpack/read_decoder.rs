@@ -1,8 +1,8 @@
 use super::{
     error::{get_error_message, DecodeError},
-    Context, DataView, Format, Read,
+    Context, DataView, Format, Read, ExtensionType,
 };
-use crate::{BigInt, JSON};
+use crate::{BigInt, BigNumber, JSON};
 use byteorder::{BigEndian, ReadBytesExt};
 use core::hash::Hash;
 use std::{collections::BTreeMap, io::Read as StdioRead, str::FromStr};
@@ -351,6 +351,11 @@ impl Read for ReadDecoder {
         BigInt::from_str(&bigint_str).map_err(|e| DecodeError::ParseBigIntError(e.to_string()))
     }
 
+    fn read_bignumber(&mut self) -> Result<BigNumber, DecodeError> {
+        let bignumber_str = self.read_string()?;
+        BigNumber::from_str(&bignumber_str).map_err(|e| DecodeError::ParseBigNumberError(e.to_string()))
+    }
+
     fn read_json(&mut self) -> Result<JSON::Value, DecodeError> {
         let json_str = self.read_string()?;
         JSON::from_str(&json_str).map_err(|e| DecodeError::JSONReadError(e.to_string()))
@@ -379,13 +384,13 @@ impl Read for ReadDecoder {
 
     fn read_array<T>(
         &mut self,
-        mut reader: impl FnMut(&mut Self) -> Result<T, DecodeError>,
+        mut item_reader: impl FnMut(&mut Self) -> Result<T, DecodeError>,
     ) -> Result<Vec<T>, DecodeError> {
         let arr_len = self.read_array_length()?;
         let mut array: Vec<T> = vec![];
         for i in 0..arr_len {
             self.context.push("array[", &i.to_string(), "]");
-            let item = reader(self)?;
+            let item = item_reader(self)?;
             array.push(item);
             self.context.pop();
         }
@@ -431,6 +436,65 @@ impl Read for ReadDecoder {
             self.context.pop();
         }
         Ok(map)
+    }
+
+    fn read_ext_generic_map<K, V>(
+        &mut self,
+        mut key_reader: impl FnMut(&mut Self) -> Result<K, DecodeError>,
+        mut val_reader: impl FnMut(&mut Self) -> Result<V, DecodeError>,
+    ) -> Result<BTreeMap<K, V>, DecodeError>
+    where
+        K: Eq + Hash + Ord,
+    {
+        let position = self.view.buffer.position();
+        let format = Format::get_format(self)?;
+        self.view.buffer.set_position(position);
+
+        let _byte_length = match format {
+            Format::FixMap(format) => {
+                return self.read_map(key_reader, val_reader);
+            },
+            Format::Map16 => {
+                return self.read_map(key_reader, val_reader);
+            },
+            Format::FixExt1 => 1,
+            Format::FixExt2 => 2,
+            Format::FixExt4 => 4,
+            Format::FixExt8 => 8,
+            Format::FixExt16 => 16,
+            format @ Format::Ext8 => ReadBytesExt::read_u8(self)? as u32,
+            Format::Ext16 => {
+                ReadBytesExt::read_u16::<BigEndian>(self)? as u32
+            },
+            Format::Ext32 => {
+                ReadBytesExt::read_u32::<BigEndian>(self)?
+            },
+            err_f => {
+                let formatted_err = format!(
+                  "Property must be of type 'ext generic map'. {}",
+                  get_error_message(err_f)
+                );
+                let err_msg = self.context().print_with_context(&formatted_err);
+                return Err(DecodeError::WrongMsgPackFormat(err_msg))
+            }
+        };
+
+        // Consume the leadByte
+        ReadBytesExt::read_u8(self)?;
+
+        // Get the extension type
+        let ext_type = ReadBytesExt::read_u8(self)?;
+
+        if ext_type != ExtensionType::GenericMap.to_u8() {
+            let formatted_err = format!(
+                "Extension must be of type 'ext generic map'. Found {}",
+                ext_type
+            );
+            let err_msg = self.context().print_with_context(&formatted_err);
+            return Err(DecodeError::WrongMsgPackFormat(err_msg))
+        }
+
+        self.read_map(key_reader, val_reader)
     }
 
     fn read_nullable_bool(&mut self) -> Result<Option<bool>, DecodeError> {
@@ -565,6 +629,17 @@ impl Read for ReadDecoder {
         }
     }
 
+    fn read_nullable_bignumber(&mut self) -> Result<Option<BigNumber>, DecodeError> {
+        if self.is_next_nil()? {
+            return Ok(None);
+        } else {
+            match self.read_bignumber() {
+                Ok(bignumber) => Ok(Some(bignumber)),
+                Err(e) => Err(DecodeError::BigNumberReadError(e.to_string())),
+            }
+        }
+    }
+
     fn read_nullable_json(&mut self) -> Result<Option<JSON::Value>, DecodeError> {
         if self.is_next_nil()? {
             return Ok(None);
@@ -578,12 +653,12 @@ impl Read for ReadDecoder {
 
     fn read_nullable_array<T>(
         &mut self,
-        reader: impl FnMut(&mut Self) -> Result<T, DecodeError>,
+        item_reader: impl FnMut(&mut Self) -> Result<T, DecodeError>,
     ) -> Result<Option<Vec<T>>, DecodeError> {
         if self.is_next_nil()? {
             return Ok(None);
         } else {
-            match self.read_array(reader) {
+            match self.read_array(item_reader) {
                 Ok(array) => Ok(Some(array)),
                 Err(e) => Err(DecodeError::ArrayReadError(e.to_string())),
             }
@@ -604,6 +679,24 @@ impl Read for ReadDecoder {
             match self.read_map(key_reader, val_reader) {
                 Ok(map) => Ok(Some(map)),
                 Err(e) => Err(DecodeError::MapReadError(e.to_string())),
+            }
+        }
+    }
+
+    fn read_nullable_ext_generic_map<K, V>(
+        &mut self,
+        key_reader: impl FnMut(&mut Self) -> Result<K, DecodeError>,
+        val_reader: impl FnMut(&mut Self) -> Result<V, DecodeError>,
+    ) -> Result<Option<BTreeMap<K, V>>, DecodeError>
+    where
+        K: Eq + Hash + Ord,
+    {
+        if self.is_next_nil()? {
+            return Ok(None);
+        } else {
+            match self.read_ext_generic_map(key_reader, val_reader) {
+                Ok(map) => Ok(Some(map)),
+                Err(e) => Err(DecodeError::ExtGenericMapReadError(e.to_string())),
             }
         }
     }

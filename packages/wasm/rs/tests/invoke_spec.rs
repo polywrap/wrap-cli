@@ -1,4 +1,4 @@
-use polywrap_wasm_rs::malloc::alloc;
+use web3api_wasm_rs::malloc::alloc;
 
 type InvokeFunction = fn(args_buf: &[u8]) -> Vec<u8>;
 

@@ -1,6 +1,7 @@
 pub mod w3;
-use polywrap_wasm_rs::JSON;
-pub use query::{self, imported::ethereum_query};
+use query;
+use web3api_wasm_rs::JSON;
+pub use w3::imported::ethereum_query;
 pub use w3::imported::ethereum_mutation;
 pub use w3::mutation;
 pub use w3::*;
@@ -131,7 +132,7 @@ pub fn subsequent_invokes(input: mutation::InputSubsequentInvokes) -> Vec<String
             tx_overrides: None,
         }) {
             Ok(_v) => {
-                match EthereumQuery::call_contract_view(&ethereum_query::InputCallContractView {
+                match EthereumQuery::call_contract_view(&ethereum_query::InputCallContractView{
                     address: input.address.clone(),
                     method: "function get() view returns (uint256)".to_string(),
                     args: None,

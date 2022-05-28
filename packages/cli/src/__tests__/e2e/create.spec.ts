@@ -1,4 +1,3 @@
-import path from "path";
 import { supportedLangs } from "../../commands/create";
 import { clearStyle, w3Cli } from "./utils";
 
@@ -23,28 +22,25 @@ Options:
 `;
 
 describe("e2e tests for create command", () => {
-  const projectRoot = path.resolve(__dirname, "../project");
-  
+
   test("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create", "--help"],
-      cwd: projectRoot,
       cli: w3Cli,
     });
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
-    expect(clearStyle(output)).toEqual(HELP);
+    expect(clearStyle(output)).toEqual("Please provide a command\n" + HELP);
   });
 
   test("Should throw error for missing parameter - type", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create"],
-      cwd: projectRoot,
       cli: w3Cli,
     });
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`Please provide a command
 ${HELP}`);
@@ -53,11 +49,10 @@ ${HELP}`);
   test("Should throw error for missing parameter - lang", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create", "type"],
-      cwd: projectRoot,
       cli: w3Cli,
     });
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`Please provide a language
 ${HELP}`);
@@ -66,11 +61,10 @@ ${HELP}`);
   test("Should throw error for missing parameter - name", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create", "type", "lang"],
-      cwd: projectRoot,
       cli: w3Cli,
     });
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`Please provide a project name
 ${HELP}`);
@@ -79,11 +73,10 @@ ${HELP}`);
   test("Should throw error for invalid parameter - type", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create", "unknown", "app", "name"],
-      cwd: projectRoot,
       cli: w3Cli,
     });
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`Unrecognized command "unknown"
 ${HELP}`);
@@ -92,11 +85,10 @@ ${HELP}`);
   test("Should throw error for invalid parameter - lang", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create", "api", "unknown", "name"],
-      cwd: projectRoot,
       cli: w3Cli,
     });
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output)).toEqual(`Unrecognized language "unknown"
 ${HELP}`);
@@ -105,11 +97,10 @@ ${HELP}`);
   test("Should throw error for invalid parameter - output-dir", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create", "api", "assemblyscript", "name", "-o"],
-      cwd: projectRoot,
       cli: w3Cli,
     });
 
-    expect(code).toEqual(0);
+    expect(code).toEqual(1);
     expect(error).toBe("");
     expect(clearStyle(output))
       .toEqual(`--output-dir option missing <path> argument
@@ -117,11 +108,11 @@ ${HELP}`);
   });
 
   test("Should successfully generate project", async () => {
-    rimraf.sync(`${projectRoot}/test`);
+    rimraf.sync(`${__dirname}/test`);
 
     const { exitCode: code, stdout: output } = await runCLI({
-      args: ["create", "api", "assemblyscript", "test", "-o", `${projectRoot}/test`],
-      cwd: projectRoot,
+      args: ["create", "api", "assemblyscript", "test", "-o", `${__dirname}/test`],
+      cwd: __dirname,
       cli: w3Cli,
     });
 
@@ -130,6 +121,6 @@ ${HELP}`);
       `🔥 You are ready to turn your protocol into a Web3API 🔥`
     );
 
-    rimraf.sync(`${projectRoot}/test`);
+    rimraf.sync(`${__dirname}/test`);
   }, 60000);
 });

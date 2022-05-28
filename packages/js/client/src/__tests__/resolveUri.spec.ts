@@ -1,4 +1,10 @@
-import { Client, Plugin, createWeb3ApiClient, Uri, Web3ApiClientConfig } from "..";
+import {
+  Plugin,
+  createWeb3ApiClient,
+  Uri,
+  Web3ApiClientConfig,
+  Web3ApiClient,
+} from "..";
 import {
   buildAndDeployApi,
   initTestEnvironment,
@@ -6,6 +12,7 @@ import {
   stopTestEnvironment,
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
+import { ResolveUriErrorType, Client } from "@web3api/core-js";
 
 jest.setTimeout(200000);
 
@@ -13,12 +20,16 @@ describe("Web3ApiClient - resolveUri", () => {
   let ipfsProvider: string;
   let ethProvider: string;
   let ensAddress: string;
+  let ensRegistrarAddress: string;
+  let ensResolverAddress: string;
 
   beforeAll(async () => {
-    const { ipfs, ethereum, ensAddress: ens } = await initTestEnvironment();
+    const { ipfs, ethereum, ensAddress: ens, registrarAddress, resolverAddress } = await initTestEnvironment();
     ipfsProvider = ipfs;
     ethProvider = ethereum;
     ensAddress = ens;
+    ensRegistrarAddress = registrarAddress;
+    ensResolverAddress = resolverAddress;
   });
 
   afterAll(async () => {
@@ -37,8 +48,10 @@ describe("Web3ApiClient - resolveUri", () => {
         },
         ipfs: { provider: ipfsProvider },
         ens: {
-          addresses: {
-            testnet: ensAddress,
+          query: {
+            addresses: {
+              testnet: ensAddress,
+            },
           },
         },
       },
@@ -48,7 +61,7 @@ describe("Web3ApiClient - resolveUri", () => {
 
   it("sanity", async () => {
     const uri = new Uri("ens/uri.eth");
-   
+
     const client = await getClient();
 
     const result = await client.resolveUri(uri);
@@ -57,59 +70,56 @@ describe("Web3ApiClient - resolveUri", () => {
     expect(result.api).toBeFalsy();
     expect(result.error).toBeFalsy();
 
-    expect(result.uriHistory.getResolutionPath().getResolvers())
-      .toEqual([]);
+    expect(result.uriHistory.getResolutionPath().getUriResolvers()).toEqual([]);
 
     expect(result.uriHistory.stack).toEqual([
       {
-        resolver: "RedirectsResolver",
-        sourceUri: uri,
-        result: {
-          uri: uri,
-          api: false
-        }
-      },
-      {
-        resolver: "PluginResolver",
-        sourceUri: uri,
-        result: {
-          uri: uri,
-          api: false
-        }
-      },
-      {
-        resolver: "CacheResolver",
-        sourceUri: uri,
-        result: {
-          uri: uri,
-          api: false
-        }
-      },
-      {
-        resolver: "ApiAggregatorResolver",
+        uriResolver: "RedirectsResolver",
         sourceUri: uri,
         result: {
           uri: uri,
           api: false,
-        }
+        },
+      },
+      {
+        uriResolver: "CacheResolver",
+        sourceUri: uri,
+        result: {
+          uri: uri,
+          api: false,
+        },
+      },
+      {
+        uriResolver: "PluginResolver",
+        sourceUri: uri,
+        result: {
+          uri: uri,
+          api: false,
+        },
+      },
+      {
+        uriResolver: "ExtendableUriResolver",
+        sourceUri: uri,
+        result: {
+          uri: uri,
+          api: false,
+        },
       },
     ]);
-    expect(result.uriHistory.getResolvers()).toEqual([
+    expect(result.uriHistory.getUriResolvers()).toEqual([
       "RedirectsResolver",
-      "PluginResolver",
       "CacheResolver",
-      "ApiAggregatorResolver",
+      "PluginResolver",
+      "ExtendableUriResolver",
     ]);
-    expect(result.uriHistory.getUris()).toMatchObject([
-      new Uri("ens/uri.eth")
-    ]);
+    expect(result.uriHistory.getUris()).toMatchObject([new Uri("ens/uri.eth")]);
   });
 
   it("can resolve redirects", async () => {
     const fromUri = new Uri("ens/from.eth");
     const toUri1 = new Uri("ens/to1.eth");
     const toUri2 = new Uri("ens/to2.eth");
-   
+
     const client = await getClient({
       redirects: [
         {
@@ -119,8 +129,8 @@ describe("Web3ApiClient - resolveUri", () => {
         {
           from: toUri1.uri,
           to: toUri2.uri,
-        }
-      ]
+        },
+      ],
     });
 
     const result = await client.resolveUri(fromUri);
@@ -129,103 +139,109 @@ describe("Web3ApiClient - resolveUri", () => {
     expect(result.api).toBeFalsy();
     expect(result.error).toBeFalsy();
 
-    expect(result.uriHistory.getResolutionPath().getResolvers())
-      .toEqual([
-        "RedirectsResolver",
-      ]);
+    expect(result.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
+      "RedirectsResolver",
+    ]);
 
     expect(result.uriHistory.stack).toEqual([
       {
-        resolver: "RedirectsResolver",
+        uriResolver: "RedirectsResolver",
         sourceUri: fromUri,
         result: {
           uri: toUri2,
-          api: false
-        }
+          api: false,
+        },
       },
       {
-        resolver: "RedirectsResolver",
-        sourceUri: toUri2,
-        result: {
-          uri: toUri2,
-          api: false
-        }
-      },
-      {
-        resolver: "PluginResolver",
-        sourceUri: toUri2,
-        result: {
-          uri: toUri2,
-          api: false
-        }
-      },
-      {
-        resolver: "CacheResolver",
-        sourceUri: toUri2,
-        result: {
-          uri: toUri2,
-          api: false
-        }
-      },
-      {
-        resolver: "ApiAggregatorResolver",
+        uriResolver: "RedirectsResolver",
         sourceUri: toUri2,
         result: {
           uri: toUri2,
           api: false,
-        }
+        },
+      },
+      {
+        uriResolver: "CacheResolver",
+        sourceUri: toUri2,
+        result: {
+          uri: toUri2,
+          api: false,
+        },
+      },
+      {
+        uriResolver: "PluginResolver",
+        sourceUri: toUri2,
+        result: {
+          uri: toUri2,
+          api: false,
+        },
+      },
+      {
+        uriResolver: "ExtendableUriResolver",
+        sourceUri: toUri2,
+        result: {
+          uri: toUri2,
+          api: false,
+        },
       },
     ]);
   });
 
   it("can resolve plugin", async () => {
     const pluginUri = new Uri("ens/plugin.eth");
-   
+
     const client = await getClient({
       plugins: [
         {
           uri: pluginUri.uri,
           plugin: {
             factory: () => {
-              return {
+              return ({
                 getModules: (client: Client) => {
                   return {};
-                }
-              } as unknown as Plugin;
+                },
+              } as unknown) as Plugin;
             },
             manifest: {
               schema: "",
-              implements: []
-            }
-          }
-        }
-      ]
+              implements: [],
+            },
+          },
+        },
+      ],
     });
 
     const result = await client.resolveUri(pluginUri);
- 
-    expect(result.uriHistory.getResolutionPath().getResolvers())
-      .toEqual([
-        "PluginResolver",
-      ]);
+
+    expect(result.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
+      "PluginResolver",
+    ]);
 
     expect(result.uriHistory.stack).toEqual([
       {
-        resolver: "RedirectsResolver",
+        uriResolver: "RedirectsResolver",
         sourceUri: pluginUri,
         result: {
           uri: pluginUri,
-          api: false
-        }
+          api: false,
+        },
       },
       {
-        resolver: "PluginResolver",
+        uriResolver: "CacheResolver",
         sourceUri: pluginUri,
         result: {
           uri: pluginUri,
-          api: true
-        }
-      }
+          api: false,
+        },
+      },
+      {
+        uriResolver: "PluginResolver",
+        sourceUri: pluginUri,
+        result: {
+          uri: pluginUri,
+          api: true,
+        },
+      },
     ]);
 
     expect(result.api).toBeTruthy();
@@ -234,15 +250,22 @@ describe("Web3ApiClient - resolveUri", () => {
   });
 
   it("can resolve api", async () => {
-    await runCLI({ args: ["build"], cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`});
+    await runCLI({
+      args: ["build"],
+      cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`,
+    });
 
     const client = await getClient();
 
-    const deployResult = await buildAndDeployApi(
-      `${GetPathToTestApis()}/interface-invoke/test-api`,
+    const deployResult = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/interface-invoke/test-api`,
       ipfsProvider,
-      ensAddress
-    );
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+
     const ensUri = new Uri(`ens/testnet/${deployResult.ensDomain}`);
     const ipfsUri = new Uri(`ipfs/${deployResult.ipfsCid}`);
 
@@ -252,92 +275,98 @@ describe("Web3ApiClient - resolveUri", () => {
     expect(result.uri).toEqual(ipfsUri);
     expect(result.error).toBeFalsy();
 
-    expect(result.uriHistory.getResolutionPath().getResolvers())
-      .toEqual([
-        "ApiAggregatorResolver",
-        "ApiAggregatorResolver",
-      ]);
+    expect(result.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
+      "ExtendableUriResolver",
+      "ExtendableUriResolver",
+    ]);
 
     expect(result.uriHistory.stack).toEqual([
       {
-        resolver: "RedirectsResolver",
+        uriResolver: "RedirectsResolver",
         sourceUri: ensUri,
         result: {
           uri: ensUri,
-          api: false
-        }
+          api: false,
+        },
       },
       {
-        resolver: "PluginResolver",
+        uriResolver: "CacheResolver",
         sourceUri: ensUri,
         result: {
           uri: ensUri,
-          api: false
-        }
+          api: false,
+        },
       },
       {
-        resolver: "CacheResolver",
+        uriResolver: "PluginResolver",
         sourceUri: ensUri,
         result: {
           uri: ensUri,
-          api: false
-        }
+          api: false,
+        },
       },
       {
-        resolver: "ApiAggregatorResolver",
+        uriResolver: "ExtendableUriResolver",
         sourceUri: ensUri,
         result: {
           uri: ipfsUri,
           api: false,
-          resolverUri: new Uri("w3://ens/ens.web3api.eth"),
-        }
+          implementationUri: new Uri("w3://ens/ens.web3api.eth"),
+        },
       },
       {
-        resolver: "RedirectsResolver",
+        uriResolver: "RedirectsResolver",
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: false
-        }
+          api: false,
+        },
       },
       {
-        resolver: "PluginResolver",
+        uriResolver: "CacheResolver",
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: false
-        }
+          api: false,
+        },
       },
       {
-        resolver: "CacheResolver",
+        uriResolver: "PluginResolver",
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: false
-        }
+          api: false,
+        },
       },
       {
-        resolver: "ApiAggregatorResolver",
+        uriResolver: "ExtendableUriResolver",
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
           api: true,
-          resolverUri: new Uri("w3://ens/ipfs.web3api.eth"),
-        }
-      }
+          implementationUri: new Uri("w3://ens/ipfs.web3api.eth"),
+        },
+      },
     ]);
   });
 
   it("can resolve cache", async () => {
-    await runCLI({ args: ["build"], cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`});
+    await runCLI({
+      args: ["build"],
+      cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`,
+    });
 
     const client = await getClient();
 
-    const deployResult = await buildAndDeployApi(
-      `${GetPathToTestApis()}/interface-invoke/test-api`,
+    const deployResult = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/interface-invoke/test-api`,
       ipfsProvider,
-      ensAddress
-    );
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+    
     const ensUri = new Uri(`ens/testnet/${deployResult.ensDomain}`);
     const ipfsUri = new Uri(`ipfs/${deployResult.ipfsCid}`);
 
@@ -347,45 +376,44 @@ describe("Web3ApiClient - resolveUri", () => {
     expect(result.uri).toEqual(ipfsUri);
     expect(result.error).toBeFalsy();
 
-    expect(result.uriHistory.getResolutionPath().getResolvers())
-      .toEqual([
-        "ApiAggregatorResolver",
-      ]);
+    expect(result.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
+      "ExtendableUriResolver",
+    ]);
 
     expect(result.uriHistory.stack).toEqual([
       {
-        resolver: "RedirectsResolver",
+        uriResolver: "RedirectsResolver",
         sourceUri: ipfsUri,
-        result: {
-          uri: ipfsUri,
-          api: false
-        }
-      },
-      {
-        resolver: "PluginResolver",
-        sourceUri: ipfsUri,
-        result: {
-          uri: ipfsUri,
-          api: false
-        }
-      },
-      {
-        sourceUri: ipfsUri,
-        resolver: "CacheResolver",
         result: {
           uri: ipfsUri,
           api: false,
-        }
+        },
       },
       {
-        resolver: "ApiAggregatorResolver",
+        sourceUri: ipfsUri,
+        uriResolver: "CacheResolver",
+        result: {
+          uri: ipfsUri,
+          api: false,
+        },
+      },
+      {
+        uriResolver: "PluginResolver",
+        sourceUri: ipfsUri,
+        result: {
+          uri: ipfsUri,
+          api: false,
+        },
+      },
+      {
+        uriResolver: "ExtendableUriResolver",
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
           api: true,
-          resolverUri: new Uri("w3://ens/ipfs.web3api.eth"),
-        }
-      }
+          implementationUri: new Uri("w3://ens/ipfs.web3api.eth"),
+        },
+      },
     ]);
 
     const result2 = await client.resolveUri(ensUri);
@@ -394,83 +422,81 @@ describe("Web3ApiClient - resolveUri", () => {
     expect(result2.uri).toEqual(ipfsUri);
     expect(result2.error).toBeFalsy();
 
-    expect(result2.uriHistory.getResolutionPath().getResolvers())
-      .toEqual([
-        "ApiAggregatorResolver",
-        "CacheResolver"
-      ]);
+    expect(result2.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
+      "ExtendableUriResolver",
+      "CacheResolver",
+    ]);
 
     expect(result2.uriHistory.stack).toEqual([
       {
-        resolver: "RedirectsResolver",
+        uriResolver: "RedirectsResolver",
         sourceUri: ensUri,
-        result: {
-          uri: ensUri,
-          api: false
-        }
-      },
-      {
-        resolver: "PluginResolver",
-        sourceUri: ensUri,
-        result: {
-          uri: ensUri,
-          api: false
-        }
-      },
-      {
-        sourceUri: ensUri,
-        resolver: "CacheResolver",
         result: {
           uri: ensUri,
           api: false,
-        }
+        },
       },
       {
-        resolver: "ApiAggregatorResolver",
+        sourceUri: ensUri,
+        uriResolver: "CacheResolver",
+        result: {
+          uri: ensUri,
+          api: false,
+        },
+      },
+      {
+        uriResolver: "PluginResolver",
+        sourceUri: ensUri,
+        result: {
+          uri: ensUri,
+          api: false,
+        },
+      },
+      {
+        uriResolver: "ExtendableUriResolver",
         sourceUri: ensUri,
         result: {
           uri: ipfsUri,
           api: false,
-          resolverUri: new Uri("w3://ens/ens.web3api.eth"),
-        }
+          implementationUri: new Uri("w3://ens/ens.web3api.eth"),
+        },
       },
       {
-        resolver: "RedirectsResolver",
+        uriResolver: "RedirectsResolver",
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: false
-        }
-      },
-      {
-        resolver: "PluginResolver",
-        sourceUri: ipfsUri,
-        result: {
-          uri: ipfsUri,
-          api: false
-        }
+          api: false,
+        },
       },
       {
         sourceUri: ipfsUri,
-        resolver: "CacheResolver",
+        uriResolver: "CacheResolver",
         result: {
           uri: ipfsUri,
           api: true,
-        }
-      }
+        },
+      },
     ]);
   });
 
   it("can resolve cache - noCacheRead", async () => {
-    await runCLI({ args: ["build"], cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`});
+    await runCLI({
+      args: ["build"],
+      cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`,
+    });
 
     const client = await getClient();
 
-    const deployResult = await buildAndDeployApi(
-      `${GetPathToTestApis()}/interface-invoke/test-api`,
+    const deployResult = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/interface-invoke/test-api`,
       ipfsProvider,
-      ensAddress
-    );
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+
     const ensUri = new Uri(`ens/testnet/${deployResult.ensDomain}`);
     const ipfsUri = new Uri(`ipfs/${deployResult.ipfsCid}`);
 
@@ -480,44 +506,43 @@ describe("Web3ApiClient - resolveUri", () => {
     expect(result.uri).toEqual(ipfsUri);
     expect(result.error).toBeFalsy();
 
-    expect(result.uriHistory.getResolutionPath().getResolvers())
-      .toEqual([
-        "ApiAggregatorResolver",
-      ]);
+    expect(result.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
+      "ExtendableUriResolver",
+    ]);
 
     expect(result.uriHistory.stack).toEqual([
       {
-        resolver: "RedirectsResolver",
+        uriResolver: "RedirectsResolver",
         sourceUri: ipfsUri,
-        result: {
-          uri: ipfsUri,
-          api: false
-        }
-      },
-      {
-        resolver: "PluginResolver",
-        sourceUri: ipfsUri,
-        result: {
-          uri: ipfsUri,
-          api: false
-        }
-      },
-      {
-        sourceUri: ipfsUri,
-        resolver: "CacheResolver",
         result: {
           uri: ipfsUri,
           api: false,
-        }
+        },
       },
       {
-        resolver: "ApiAggregatorResolver",
+        sourceUri: ipfsUri,
+        uriResolver: "CacheResolver",
+        result: {
+          uri: ipfsUri,
+          api: false,
+        },
+      },
+      {
+        uriResolver: "PluginResolver",
+        sourceUri: ipfsUri,
+        result: {
+          uri: ipfsUri,
+          api: false,
+        },
+      },
+      {
+        uriResolver: "ExtendableUriResolver",
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
           api: true,
-          resolverUri: new Uri("w3://ens/ipfs.web3api.eth"),
-        }
+          implementationUri: new Uri("w3://ens/ipfs.web3api.eth"),
+        },
       },
     ]);
 
@@ -527,76 +552,82 @@ describe("Web3ApiClient - resolveUri", () => {
     expect(result2.uri).toEqual(ipfsUri);
     expect(result2.error).toBeFalsy();
 
-    expect(result2.uriHistory.getResolutionPath().getResolvers())
-      .toEqual([
-        "ApiAggregatorResolver",
-        "ApiAggregatorResolver"
-      ]);
+    expect(result2.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
+      "ExtendableUriResolver",
+      "ExtendableUriResolver",
+    ]);
 
     expect(result2.uriHistory.stack).toEqual([
       {
-        resolver: "RedirectsResolver",
+        uriResolver: "RedirectsResolver",
         sourceUri: ensUri,
         result: {
           uri: ensUri,
-          api: false
-        }
+          api: false,
+        },
       },
       {
-        resolver: "PluginResolver",
+        uriResolver: "PluginResolver",
         sourceUri: ensUri,
         result: {
           uri: ensUri,
-          api: false
-        }
+          api: false,
+        },
       },
       {
-        resolver: "ApiAggregatorResolver",
+        uriResolver: "ExtendableUriResolver",
         sourceUri: ensUri,
         result: {
           uri: ipfsUri,
           api: false,
-          resolverUri: new Uri("w3://ens/ens.web3api.eth"),
-        }
+          implementationUri: new Uri("w3://ens/ens.web3api.eth"),
+        },
       },
       {
-        resolver: "RedirectsResolver",
+        uriResolver: "RedirectsResolver",
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: false
-        }
+          api: false,
+        },
       },
       {
-        resolver: "PluginResolver",
+        uriResolver: "PluginResolver",
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: false
-        }
+          api: false,
+        },
       },
       {
-        resolver: "ApiAggregatorResolver",
+        uriResolver: "ExtendableUriResolver",
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
           api: true,
-          resolverUri: new Uri("w3://ens/ipfs.web3api.eth"),
-        }
+          implementationUri: new Uri("w3://ens/ipfs.web3api.eth"),
+        },
       },
     ]);
   });
 
   it("can resolve cache - noCacheWrite", async () => {
-    await runCLI({ args: ["build"], cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`});
+    await runCLI({
+      args: ["build"],
+      cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`,
+    });
 
     const client = await getClient();
 
-    const deployResult = await buildAndDeployApi(
-      `${GetPathToTestApis()}/interface-invoke/test-api`,
+    const deployResult = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/interface-invoke/test-api`,
       ipfsProvider,
-      ensAddress
-    );
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
+
     const ensUri = new Uri(`ens/testnet/${deployResult.ensDomain}`);
     const ipfsUri = new Uri(`ipfs/${deployResult.ipfsCid}`);
 
@@ -606,44 +637,43 @@ describe("Web3ApiClient - resolveUri", () => {
     expect(result.uri).toEqual(ipfsUri);
     expect(result.error).toBeFalsy();
 
-    expect(result.uriHistory.getResolutionPath().getResolvers())
-      .toEqual([
-        "ApiAggregatorResolver",
-      ]);
+    expect(result.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
+      "ExtendableUriResolver",
+    ]);
 
     expect(result.uriHistory.stack).toEqual([
       {
-        resolver: "RedirectsResolver",
+        uriResolver: "RedirectsResolver",
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: false
-        }
+          api: false,
+        },
       },
       {
-        resolver: "PluginResolver",
+        uriResolver: "CacheResolver",
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: false
-        }
+          api: false,
+        },
       },
       {
-        resolver: "CacheResolver",
+        uriResolver: "PluginResolver",
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: false
-        }
+          api: false,
+        },
       },
       {
-        resolver: "ApiAggregatorResolver",
+        uriResolver: "ExtendableUriResolver",
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
           api: true,
-          resolverUri: new Uri("w3://ens/ipfs.web3api.eth"),
-        }
+          implementationUri: new Uri("w3://ens/ipfs.web3api.eth"),
+        },
       },
     ]);
 
@@ -653,90 +683,95 @@ describe("Web3ApiClient - resolveUri", () => {
     expect(result2.uri).toEqual(ipfsUri);
     expect(result2.error).toBeFalsy();
 
-    expect(result2.uriHistory.getResolutionPath().getResolvers())
-      .toEqual([
-        "ApiAggregatorResolver",
-        "ApiAggregatorResolver",
-      ]);
+    expect(result2.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
+      "ExtendableUriResolver",
+      "ExtendableUriResolver",
+    ]);
 
     expect(result2.uriHistory.stack).toEqual([
       {
-        resolver: "RedirectsResolver",
+        uriResolver: "RedirectsResolver",
         sourceUri: ensUri,
         result: {
           uri: ensUri,
-          api: false
-        }
+          api: false,
+        },
       },
       {
-        resolver: "PluginResolver",
+        uriResolver: "CacheResolver",
         sourceUri: ensUri,
         result: {
           uri: ensUri,
-          api: false
-        }
+          api: false,
+        },
       },
       {
-        resolver: "CacheResolver",
+        uriResolver: "PluginResolver",
         sourceUri: ensUri,
         result: {
           uri: ensUri,
-          api: false
-        }
+          api: false,
+        },
       },
       {
-        resolver: "ApiAggregatorResolver",
+        uriResolver: "ExtendableUriResolver",
         sourceUri: ensUri,
         result: {
           uri: ipfsUri,
           api: false,
-          resolverUri: new Uri("w3://ens/ens.web3api.eth"),
-        }
+          implementationUri: new Uri("w3://ens/ens.web3api.eth"),
+        },
       },
       {
-        resolver: "RedirectsResolver",
+        uriResolver: "RedirectsResolver",
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: false
-        }
+          api: false,
+        },
       },
       {
-        resolver: "PluginResolver",
+        uriResolver: "CacheResolver",
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: false
-        }
+          api: false,
+        },
       },
       {
-        resolver: "CacheResolver",
+        uriResolver: "PluginResolver",
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: false
-        }
+          api: false,
+        },
       },
       {
-        resolver: "ApiAggregatorResolver",
+        uriResolver: "ExtendableUriResolver",
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
           api: true,
-          resolverUri: new Uri("w3://ens/ipfs.web3api.eth"),
-        }
+          implementationUri: new Uri("w3://ens/ipfs.web3api.eth"),
+        },
       },
     ]);
   });
 
   it("can resolve api with redirects", async () => {
-    await runCLI({ args: ["build"], cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`});
+    await runCLI({
+      args: ["build"],
+      cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`,
+    });
 
-    const deployResult = await buildAndDeployApi(
-      `${GetPathToTestApis()}/interface-invoke/test-api`,
+    const deployResult = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/interface-invoke/test-api`,
       ipfsProvider,
-      ensAddress
-    );
+      ensRegistryAddress: ensAddress,
+      ethereumProvider: ethProvider,
+      ensRegistrarAddress,
+      ensResolverAddress,
+    });
 
     const ensUri = new Uri(`ens/testnet/${deployResult.ensDomain}`);
     const ipfsUri = new Uri(`ipfs/${deployResult.ipfsCid}`);
@@ -746,9 +781,9 @@ describe("Web3ApiClient - resolveUri", () => {
       redirects: [
         {
           from: ipfsUri.uri,
-          to: redirectUri.uri
-        }
-      ]
+          to: redirectUri.uri,
+        },
+      ],
     });
 
     const result = await client.resolveUri(ensUri);
@@ -756,86 +791,85 @@ describe("Web3ApiClient - resolveUri", () => {
     expect(result.api).toBeFalsy();
     expect(result.uri).toEqual(redirectUri);
     expect(result.error).toBeFalsy();
-    
-    expect(result.uriHistory.getResolutionPath().getResolvers())
-      .toEqual([
-        "ApiAggregatorResolver",
-        "RedirectsResolver",
-      ]);
+
+    expect(result.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
+      "ExtendableUriResolver",
+      "RedirectsResolver",
+    ]);
 
     expect(result.uriHistory.stack).toEqual([
       {
-        resolver: "RedirectsResolver",
+        uriResolver: "RedirectsResolver",
         sourceUri: ensUri,
         result: {
           uri: ensUri,
-          api: false
-        }
+          api: false,
+        },
       },
       {
-        resolver: "PluginResolver",
+        uriResolver: "CacheResolver",
         sourceUri: ensUri,
         result: {
           uri: ensUri,
-          api: false
-        }
+          api: false,
+        },
       },
       {
-        resolver: "CacheResolver",
+        uriResolver: "PluginResolver",
         sourceUri: ensUri,
         result: {
           uri: ensUri,
-          api: false
-        }
+          api: false,
+        },
       },
       {
-        resolver: "ApiAggregatorResolver",
+        uriResolver: "ExtendableUriResolver",
         sourceUri: ensUri,
         result: {
           uri: ipfsUri,
           api: false,
-          resolverUri: new Uri("w3://ens/ens.web3api.eth"),
-        }
+          implementationUri: new Uri("w3://ens/ens.web3api.eth"),
+        },
       },
       {
-        resolver: "RedirectsResolver",
+        uriResolver: "RedirectsResolver",
         sourceUri: ipfsUri,
         result: {
           uri: redirectUri,
-          api: false
-        }
+          api: false,
+        },
       },
       {
-        resolver: "RedirectsResolver",
-        sourceUri: redirectUri,
-        result: {
-          uri: redirectUri,
-          api: false
-        }
-      },
-      {
-        resolver: "PluginResolver",
-        sourceUri: redirectUri,
-        result: {
-          uri: redirectUri,
-          api: false
-        }
-      },
-      {
-        resolver: "CacheResolver",
-        sourceUri: redirectUri,
-        result: {
-          uri: redirectUri,
-          api: false
-        }
-      },
-      {
-        resolver: "ApiAggregatorResolver",
+        uriResolver: "RedirectsResolver",
         sourceUri: redirectUri,
         result: {
           uri: redirectUri,
           api: false,
-        }
+        },
+      },
+      {
+        uriResolver: "CacheResolver",
+        sourceUri: redirectUri,
+        result: {
+          uri: redirectUri,
+          api: false,
+        },
+      },
+      {
+        uriResolver: "PluginResolver",
+        sourceUri: redirectUri,
+        result: {
+          uri: redirectUri,
+          api: false,
+        },
+      },
+      {
+        uriResolver: "ExtendableUriResolver",
+        sourceUri: redirectUri,
+        result: {
+          uri: redirectUri,
+          api: false,
+        },
       },
     ]);
   });
@@ -844,8 +878,8 @@ describe("Web3ApiClient - resolveUri", () => {
     const ensUri = new Uri(`ens/test`);
     const redirectUri = new Uri(`ens/redirect.eth`);
 
-    const client = await getClient({
-      resolvers: [
+    const client = await new Web3ApiClient({
+      uriResolvers: [
         {
           name: "CustomResolver",
           resolveUri: async (uri: Uri) => {
@@ -858,9 +892,9 @@ describe("Web3ApiClient - resolveUri", () => {
             return {
               uri: uri,
             };
-          }
-        }
-      ]
+          },
+        },
+      ],
     });
 
     const result = await client.resolveUri(ensUri);
@@ -868,60 +902,59 @@ describe("Web3ApiClient - resolveUri", () => {
     expect(result.api).toBeFalsy();
     expect(result.uri).toEqual(redirectUri);
     expect(result.error).toBeFalsy();
-    
-    expect(result.uriHistory.getResolutionPath().getResolvers())
-      .toEqual([
-        "CustomResolver",
-      ]);
+
+    expect(result.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
+      "CustomResolver",
+    ]);
 
     expect(result.uriHistory.stack).toEqual([
       {
-        resolver: "CustomResolver",
+        uriResolver: "CustomResolver",
         sourceUri: ensUri,
         result: {
           uri: redirectUri,
-          api: false
-        }
+          api: false,
+        },
       },
       {
-        resolver: "CustomResolver",
-        sourceUri: redirectUri,
-        result: {
-          uri: redirectUri,
-          api: false
-        }
-      },
-      {
-        resolver: "RedirectsResolver",
-        sourceUri: redirectUri,
-        result: {
-          uri: redirectUri,
-          api: false
-        }
-      },
-      {
-        resolver: "PluginResolver",
-        sourceUri: redirectUri,
-        result: {
-          uri: redirectUri,
-          api: false
-        }
-      },
-      {
-        resolver: "CacheResolver",
-        sourceUri: redirectUri,
-        result: {
-          uri: redirectUri,
-          api: false
-        }
-      },
-      {
-        resolver: "ApiAggregatorResolver",
+        uriResolver: "CustomResolver",
         sourceUri: redirectUri,
         result: {
           uri: redirectUri,
           api: false,
-        }
+        },
+      },
+      {
+        uriResolver: "RedirectsResolver",
+        sourceUri: redirectUri,
+        result: {
+          uri: redirectUri,
+          api: false,
+        },
+      },
+      {
+        uriResolver: "CacheResolver",
+        sourceUri: redirectUri,
+        result: {
+          uri: redirectUri,
+          api: false,
+        },
+      },
+      {
+        uriResolver: "PluginResolver",
+        sourceUri: redirectUri,
+        result: {
+          uri: redirectUri,
+          api: false,
+        },
+      },
+      {
+        uriResolver: "ExtendableUriResolver",
+        sourceUri: redirectUri,
+        result: {
+          uri: redirectUri,
+          api: false,
+        },
       },
     ]);
   });
@@ -930,11 +963,11 @@ describe("Web3ApiClient - resolveUri", () => {
     const ensUri = new Uri(`ens/test`);
     const redirectUri = new Uri(`ens/redirect.eth`);
 
-    const client = await getClient();
+    const client = await new Web3ApiClient();
 
     const result = await client.resolveUri(ensUri, {
       config: {
-        resolvers: [
+        uriResolvers: [
           {
             name: "CustomResolver",
             resolveUri: async (uri: Uri) => {
@@ -943,42 +976,106 @@ describe("Web3ApiClient - resolveUri", () => {
                   uri: redirectUri,
                 };
               }
-  
+
               return {
                 uri: uri,
               };
-            }
-          }
-        ]
-      }
+            },
+          },
+        ],
+      },
     });
 
     expect(result.api).toBeFalsy();
     expect(result.uri).toEqual(redirectUri);
     expect(result.error).toBeFalsy();
-    
-    expect(result.uriHistory.getResolutionPath().getResolvers())
-      .toEqual([
-        "CustomResolver",
-      ]);
+
+    expect(result.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
+      "CustomResolver",
+    ]);
 
     expect(result.uriHistory.stack).toEqual([
       {
-        resolver: "CustomResolver",
+        uriResolver: "CustomResolver",
         sourceUri: ensUri,
         result: {
           uri: redirectUri,
-          api: false
-        }
+          api: false,
+        },
       },
       {
-        resolver: "CustomResolver",
+        uriResolver: "CustomResolver",
         sourceUri: redirectUri,
         result: {
           uri: redirectUri,
-          api: false
-        }
-      }
+          api: false,
+        },
+      },
     ]);
+  });
+
+  it("custom wrapper resolver does not cause infinite recursion when resolved at runtime", async () => {
+    const client = await new Web3ApiClient({
+      interfaces: [
+        {
+          interface: "ens/uri-resolver.core.web3api.eth",
+          implementations: ["ens/test-resolver.eth"],
+        },
+      ],
+    });
+
+    const { error } = await client.resolveUri("ens/test.eth");
+
+    expect(error).toBeTruthy();
+    if (!error) {
+      throw Error();
+    }
+
+    expect(error.type).toEqual(ResolveUriErrorType.InternalResolver);
+    expect(error.error?.message).toEqual(
+      "Could not load the following URI Resolver implementations: w3://ens/test-resolver.eth"
+    );
+  });
+
+  it("unresolvable custom wrapper resolver is found when preloaded", async () => {
+    const client = await new Web3ApiClient({
+      interfaces: [
+        {
+          interface: "ens/uri-resolver.core.web3api.eth",
+          implementations: ["ens/test-resolver.eth"],
+        },
+      ],
+    });
+
+    const { success, failedUriResolvers } = await client.loadUriResolvers();
+    expect(success).toBeFalsy();
+    expect(failedUriResolvers).toEqual(["w3://ens/test-resolver.eth"]);
+
+    const { error } = await client.resolveUri("ens/test.eth");
+    expect(error).toBeTruthy();
+
+    if (!error) {
+      throw Error();
+    }
+
+    expect(error.type).toEqual(ResolveUriErrorType.InternalResolver);
+    expect(error.error?.message).toEqual(
+      "Could not load the following URI Resolver implementations: w3://ens/test-resolver.eth"
+    );
+  });
+
+  it("can preload API resolvers", async () => {
+    const client = await new Web3ApiClient();
+
+    const { success, failedUriResolvers } = await client.loadUriResolvers();
+
+    expect(success).toBeTruthy();
+    expect(failedUriResolvers.length).toEqual(0);
+
+    const { error, uri, api } = await client.resolveUri("ens/test.eth");
+
+    expect(error).toBeFalsy();
+    expect(api).toBeFalsy();
+    expect(uri?.uri).toEqual("w3://ens/test.eth");
   });
 });

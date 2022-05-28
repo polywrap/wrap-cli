@@ -1,16 +1,18 @@
 import { Write } from "./Write";
 import { Nullable } from "./Nullable";
-import { BigInt } from "../math";
+import { BigInt, BigNumber } from "../math";
 import { Context } from "../debug";
 import { JSON } from "../json";
 
 export class WriteSizer extends Write {
   length: i32;
+  extByteLengths: Array<u32>;
   private readonly _context: Context;
 
   constructor(context: Context = new Context()) {
     super();
     this._context = context;
+    this.extByteLengths = new Array<u32>();
   }
 
   context(): Context {
@@ -115,6 +117,11 @@ export class WriteSizer extends Write {
     this.writeString(str);
   }
 
+  writeBigNumber(value: BigNumber): void {
+    const str = value.toString();
+    this.writeString(str);
+  }
+
   writeJSON(value: JSON.Value): void {
     const str = value.stringify();
     this.writeString(str);
@@ -160,6 +167,31 @@ export class WriteSizer extends Write {
       key_fn(this, key);
       value_fn(this, value);
     }
+  }
+
+  writeExtGenericMap<K, V>(
+    m: Map<K, V>,
+    key_fn: (encoder: Write, key: K) => void,
+    value_fn: (encoder: Write, value: V) => void
+  ): void {
+    // type = GENERIC_MAP
+    this.length++;
+
+    const startingLength = this.length;
+
+    this.writeMap(m, key_fn, value_fn);
+
+    const byteLength: u32 = this.length - startingLength;
+
+    if (byteLength <= <u32>u8.MAX_VALUE) {
+      this.length += 2;
+    } else if (byteLength <= <u32>u16.MAX_VALUE) {
+      this.length += 3;
+    } else {
+      this.length += 5;
+    }
+
+    this.extByteLengths.push(byteLength);
   }
 
   writeNullableBool(value: Nullable<bool>): void {
@@ -270,6 +302,15 @@ export class WriteSizer extends Write {
     this.writeBigInt(value);
   }
 
+  writeNullableBigNumber(value: BigNumber): void {
+    if (value === null) {
+      this.writeNil();
+      return;
+    }
+
+    this.writeBigNumber(value);
+  }
+
   writeNullableJSON(value: JSON.Value | null): void {
     if (value === null) {
       this.writeNil();
@@ -287,6 +328,7 @@ export class WriteSizer extends Write {
       this.writeNil();
       return;
     }
+
     this.writeArray(a, fn);
   }
 
@@ -299,6 +341,19 @@ export class WriteSizer extends Write {
       this.writeNil();
       return;
     }
+
     this.writeMap(m, key_fn, value_fn);
+  }
+
+  writeNullableExtGenericMap<K, V>(
+    m: Map<K, V> | null,
+    key_fn: (sizer: Write, key: K) => void,
+    value_fn: (sizer: Write, value: V) => void
+  ): void {
+    if (m === null) {
+      this.writeNil();
+      return;
+    }
+    this.writeExtGenericMap(m, key_fn, value_fn);
   }
 }

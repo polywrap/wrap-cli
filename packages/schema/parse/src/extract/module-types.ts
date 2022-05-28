@@ -11,13 +11,15 @@ import {
   createInterfaceDefinition,
   InterfaceDefinition,
   capabilityTypes,
+  MapDefinition,
 } from "../typeInfo";
 import {
   extractInputValueDefinition,
   extractListType,
   extractNamedType,
   State,
-} from "./module-types-utils";
+} from "./utils/module-types-utils";
+import { extractAnnotateDirective } from "./utils/object-types-utils";
 
 import {
   ObjectTypeDefinitionNode,
@@ -63,9 +65,17 @@ const visitorEnter = (moduleTypes: ModuleDefinition[], state: State) => ({
       return;
     }
 
+    const name = node.name.value;
+
+    const { type, def } = extractAnnotateDirective(node, name);
+
     const returnType = createPropertyDefinition({
-      type: "N/A",
+      type: type ? type : "N/A",
       name: node.name.value,
+      map: def
+        ? ({ ...def, name: node.name.value } as MapDefinition)
+        : undefined,
+      required: def && def.required ? true : false,
     });
 
     const method = createMethodDefinition({

@@ -1,7 +1,9 @@
 use serde::{Serialize, Deserialize};
 use std::convert::TryFrom;
-use polywrap_wasm_rs::{
+use web3api_wasm_rs::{
     BigInt,
+    BigNumber,
+    Map,
     Context,
     DecodeError,
     EncodeError,
@@ -27,6 +29,7 @@ pub struct InputQueryMethod {
     pub opt_enum: Option<CustomEnum>,
     pub enum_array: Vec<CustomEnum>,
     pub opt_enum_array: Option<Vec<Option<CustomEnum>>>,
+    pub map: Map<String, i32>,
 }
 
 pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, DecodeError> {
@@ -45,6 +48,8 @@ pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, D
     let mut _enum_array: Vec<CustomEnum> = vec![];
     let mut _enum_array_set = false;
     let mut _opt_enum_array: Option<Vec<Option<CustomEnum>>> = None;
+    let mut _map: Map<String, i32> = Map::<String, i32>::new();
+    let mut _map_set = false;
 
     while num_of_fields > 0 {
         num_of_fields -= 1;
@@ -124,6 +129,16 @@ pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, D
                 })?;
                 reader.context().pop();
             }
+            "map" => {
+                reader.context().push(&field, "Map<String, i32>", "type found, reading argument");
+                _map = reader.read_ext_generic_map(|reader| {
+                    reader.read_string()
+                }, |reader| {
+                    reader.read_i32()
+                })?;
+                _map_set = true;
+                reader.context().pop();
+            }
             err => return Err(DecodeError::UnknownFieldName(err.to_string())),
         }
     }
@@ -136,6 +151,9 @@ pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, D
     if !_enum_array_set {
         return Err(DecodeError::MissingField("enumArray: [CustomEnum].".to_string()));
     }
+    if !_map_set {
+        return Err(DecodeError::MissingField("map: Map<String, Int>.".to_string()));
+    }
 
     Ok(InputQueryMethod {
         str: _str,
@@ -144,6 +162,7 @@ pub fn deserialize_query_method_args(input: &[u8]) -> Result<InputQueryMethod, D
         opt_enum: _opt_enum,
         enum_array: _enum_array,
         opt_enum_array: _opt_enum_array,
+        map: _map,
     })
 }
 

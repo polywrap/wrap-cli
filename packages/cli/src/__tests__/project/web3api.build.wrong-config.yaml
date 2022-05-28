@@ -1,5 +1,0 @@
-format: 0.0.1-prealpha.1
-config:
-  node_version: "14.16.0"
-  includee:
-    - foo
