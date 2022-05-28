@@ -4,6 +4,7 @@ import fs from "fs";
 import path from "path";
 import rimraf from "rimraf";
 import copyfiles from "copyfiles";
+import { config as loadEnvVars } from "dotenv";
 import { writeFileSync } from "@web3api/os-js";
 import { BindOutput } from "@web3api/schema-bind";
 import { ComposerOutput } from "@web3api/schema-compose";
@@ -145,5 +146,47 @@ export abstract class Project<TManifest extends AnyManifest> {
         }
       });
     });
+  }
+
+  public loadEnvironmentVariables(
+    config: Record<string, string>
+  ): Record<string, string> {
+    const isEnvVar = (c: string) => c.startsWith && c.startsWith("$");
+    const values = Object.values(config);
+    const shouldLoad = values.some(isEnvVar);
+
+    /**
+     * Modifies current config with loaded environment variables if needed
+     * @param config current config, is the object that is going to be modified
+     * @param currentValue value that can starts with $, if so, it is modified
+     * @param index current index of object
+     */
+    const replaceValue = (
+      config: Record<string, string>,
+      currentValue: string,
+      index: number
+    ) => {
+      if (isEnvVar(currentValue)) {
+        // Remove $ from the string
+        const importedVariable = currentValue.substring(1);
+        if (process.env[importedVariable]) {
+          // Access current object key with index, so we can modify it
+          const currentKey = Object.keys(config)[index];
+          config[currentKey] = process.env[importedVariable] as string;
+        } else {
+          throw Error(
+            "Variable specified on manifest is not defined as environment variable"
+          );
+        }
+      }
+      return config;
+    };
+
+    if (shouldLoad) {
+      loadEnvVars();
+      return values.reduce(replaceValue, config);
+    }
+
+    return config;
   }
 }

@@ -22,7 +22,7 @@
     "prebuild": "ts-node ./scripts/generateIntlTypes.ts",
     "build:fast": "rimraf ./build && tsc --project tsconfig.build.json && yarn build:envs",
     "lint": "eslint --color -c ../../.eslintrc.js .",
-    "test": "cross-env TEST=true jest --passWithNoTests --runInBand --verbose",
+    "test": "cross-env TEST=true DOMAIN_NAME=test1.eth jest --passWithNoTests --runInBand --verbose",
     "test:ci": "cross-env TEST=true jest --passWithNoTests --runInBand --verbose",
     "test:watch": "cross-env TEST=true jest --watch --passWithNoTests --verbose"
   },
@@ -50,6 +50,7 @@
     "commander": "9.2.0",
     "content-hash": "2.5.2",
     "copyfiles": "2.4.1",
+    "dotenv": "10.0.0",
     "ethers": "5.0.7",
     "fs-extra": "9.0.1",
     "gluegun": "4.6.1",

@@ -82,6 +82,13 @@ async function run(options: DeployCommandOptions): Promise<void> {
 
   Object.entries(deployManifest.stages).forEach(([stageName, stageValue]) => {
     stageToPackageMap[stageName] = packageMap[stageValue.package];
+    if (stageValue.config) {
+      deployManifest.stages[
+        stageName
+      ].config = project.loadEnvironmentVariables(
+        stageValue.config as Record<string, string>
+      );
+    }
   });
 
   validateManifestWithExts(deployManifest, stageToPackageMap);
