@@ -187,10 +187,7 @@ export async function buildAndDeployApi({
   }
 
   // register ENS domain
-  const ensWrapperUri = `fs/${path.join(
-    path.dirname(require.resolve("@web3api/embedded-wrappers")),
-    "ens"
-  )}`;
+  const ensWrapperUri = `fs/${__dirname}/wrappers/ens`;
 
   const ethereumPluginUri = "w3://ens/ethereum.web3api.eth";
 

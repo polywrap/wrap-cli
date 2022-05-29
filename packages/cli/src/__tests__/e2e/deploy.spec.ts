@@ -77,8 +77,8 @@ const setup = async (domainNames: string[]) => {
   });
 
   const ensWrapperUri = `fs/${path.join(
-    path.dirname(require.resolve("@web3api/embedded-wrappers")),
-    "ens"
+    path.dirname(require.resolve("@web3api/test-env-js")),
+    "wrappers", "ens"
   )}`;
 
   for await (const domainName of domainNames) {
