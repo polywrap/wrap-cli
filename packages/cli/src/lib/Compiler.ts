@@ -266,32 +266,27 @@ export class Compiler {
     );
 
     // Update the Web3ApiManifest
-    if (modulesToBuild.query && web3ApiManifest.modules.query) {
-      web3ApiManifest.modules.query = {
-        module: "./query.wasm",
-        schema: "./schema.graphql",
-      };
-    }
-
-    if (modulesToBuild.mutation && web3ApiManifest.modules.mutation) {
-      web3ApiManifest.modules.mutation = {
-        module: "./mutation.wasm",
-        schema: "./schema.graphql",
-      };
-    }
+    web3ApiManifest.modules = Object.keys(modulesToBuild).reduce(
+      (modules, current) => {
+        modules[current] = {
+          module: `./${current}.wasm`,
+          schema: "./schema.graphql",
+        };
+        return modules;
+      },
+      {} as Record<string, { module: string; schema: string }>
+    );
 
     web3ApiManifest.build = "./web3api.build.json";
 
     // Create the BuildManifest
-    const buildManifest: BuildManifest = {
+    return {
       format: "0.0.1-prealpha.3",
       __type: "BuildManifest",
       docker: {
         buildImageId: dockerImageId,
       },
     };
-
-    return buildManifest;
   }
 
   private _getModulesToBuild(manifest: Web3ApiManifest): ModulesToBuild {
@@ -364,7 +359,7 @@ export class Compiler {
       removeBuilder = dockerBuildxConfig.removeBuilder ? true : false;
     }
 
-    const removeImage = buildManifest?.docker?.removeImage ? true : false;
+    const removeImage = buildManifest?.docker?.removeImage;
 
     // If the dockerfile path contains ".mustache", generate
     if (dockerfile.indexOf(".mustache") > -1) {
@@ -382,16 +377,11 @@ export class Compiler {
       project.quiet
     );
 
-    // Determine what build artifacts to expext
+    // Determine what build artifacts to expect
     const web3apiManifest = await project.getManifest();
-    const web3apiArtifacts = [];
-
-    if (web3apiManifest.modules.mutation) {
-      web3apiArtifacts.push("mutation.wasm");
-    }
-    if (web3apiManifest.modules.query) {
-      web3apiArtifacts.push("query.wasm");
-    }
+    const web3apiArtifacts = Object.keys(web3apiManifest.modules).map(
+      (module) => `${module}.wasm`
+    );
 
     await copyArtifactsFromBuildImage(
       outputDir,
@@ -415,23 +405,23 @@ export class Compiler {
       "utf-8"
     );
 
-    // Update the Web3ApiManifest schema paths
-    if (state.modulesToBuild.query && state.web3ApiManifest.modules.query) {
-      state.web3ApiManifest.modules.query = {
+    const updateSchemaPaths = (
+      modules: { [key: string]: { schema: string; module: string } },
+      current: string
+    ) => {
+      modules[current] = {
         schema: "./schema.graphql",
-        module: state.web3ApiManifest.modules.query.module,
+        module: modules[current].module,
       };
-    }
+      return modules;
+    };
 
-    if (
-      state.modulesToBuild.mutation &&
-      state.web3ApiManifest.modules.mutation
-    ) {
-      state.web3ApiManifest.modules.mutation = {
-        schema: "./schema.graphql",
-        module: state.web3ApiManifest.modules.mutation.module,
-      };
-    }
+    const modules = Object.keys(state.modulesToBuild);
+    // Update the Web3ApiManifest schema paths
+    state.web3ApiManifest.modules = modules.reduce(
+      updateSchemaPaths,
+      state.web3ApiManifest.modules
+    );
   }
 
   private async _outputManifests(
