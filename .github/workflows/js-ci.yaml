@@ -187,7 +187,7 @@ jobs:
         run: yarn build
 
       - name: Set environment variables for testing purposes
-        run: echo "DOMAIN_NAME=test1.eth;STAGE_NAME=stage;PACKAGE_NAME=package;RANDOM_NAME=name" >> $GITHUB_ENV
+        run: echo "DOMAIN_NAME=test1.eth STAGE_NAME=stage PACKAGE_NAME=package RANDOM_NAME=name" >> $GITHUB_ENV
 
       - name: Test
         run: yarn test:cli
