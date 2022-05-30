@@ -1,4 +1,0 @@
-# TODO
-## CI/CD
-- ensure the VERSION string is applied to the wasm-rs crate package
-- ensure CI + CD workflows are correct

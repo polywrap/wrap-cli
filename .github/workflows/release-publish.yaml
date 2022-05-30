@@ -109,10 +109,6 @@ jobs:
           npm config set //registry.npmjs.org/:_authToken=${{secrets.WEB3_API_BUILD_BOT_NPM_PAT}}
           echo $(npm whoami --registry https://registry.npmjs.org/)
 
-      - name: Auth into Crates.io
-        if: ${{env.TAG_EXISTS}} == 'false'
-        run: cargo login ${{secrets.WEB3_API_BUILD_BOT_CRATES_PAT}}
-
       - name: Install JS dependencies
         if: ${{env.TAG_EXISTS}} == 'false'
         run: yarn install --nonInteractive --frozen-lockfile
@@ -120,14 +116,6 @@ jobs:
       - name: Build JS packages
         if: ${{env.TAG_EXISTS}} == 'false'
         run: yarn build
-
-      - name: Build RS crates
-        working-directory: ./packages/wasm/rs
-        run: cargo build --release
-
-      - name: Verify & Generate RS Documentation
-        working-directory: ./packages/wasm/rs
-        run: cargo doc --no-deps
 
       - name: Publish Node Packages To NPM
         if: ${{env.TAG_EXISTS}} == 'false'
@@ -159,6 +147,18 @@ jobs:
         with:
           toolchain: nightly
           override: true
+
+      - name: Auth into Crates.io
+        if: ${{env.TAG_EXISTS}} == 'false'
+        run: cargo login ${{secrets.WEB3_API_BUILD_BOT_CRATES_PAT}}
+
+      - name: Build RS crates
+        working-directory: ./packages/wasm/rs
+        run: cargo build --release
+
+      - name: Verify & Generate RS Documentation
+        working-directory: ./packages/wasm/rs
+        run: cargo doc --no-deps
 
       - name: Upload Rust Crates To Crates.io
         working-directory: ./packages/wasm/rs
