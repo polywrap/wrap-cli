@@ -107,12 +107,9 @@ export class AsyncWasmInstance {
     instance._wrappedImports = instance._wrapImports(config.imports);
 
     // Create Wasm module instance
-    const module = await WebAssembly.compile(config.module);
-    const resp = await WebAssembly.instantiate(
-      module,
-      instance._wrappedImports
-    );
-    instance._instance = resp;
+    instance._instance = (
+      await WebAssembly.instantiate(config.module, instance._wrappedImports)
+    ).instance;
 
     // Ensure all required exports exist on Wasm module
     const exportKeys = Object.keys(instance._instance.exports);
