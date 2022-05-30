@@ -4,5 +4,5 @@ type Query {
   getData(
     address: String!
     connection: Ethereum_Connection
-  ): Int!
+  ): UInt32!
 }

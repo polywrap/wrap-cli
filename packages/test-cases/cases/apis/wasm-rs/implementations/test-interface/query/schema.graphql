@@ -1,5 +1,7 @@
 type Query {
-  abstractQueryMethod(arg: Argument!): String!
+  abstractQueryMethod(
+    arg: Argument!
+  ): String!
 }
 
 type Argument {
