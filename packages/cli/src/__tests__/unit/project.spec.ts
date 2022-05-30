@@ -56,10 +56,10 @@ describe("Unit tests for Project", () => {
         }
       },
       another_from_deploy: {
-        package: "cool package",
-        depends_on: [ "ipfs_deploy", "from_deploy", "cool stage" ],
+        package: "package",
+        depends_on: [ "ipfs_deploy", "from_deploy", "stage" ],
         config: {
-          randomValues: [ { user: "cool user", pass: "pass" } ]
+          randomValues: [ { user: "name", pass: "pass" } ]
         }
       },
     })

@@ -73,9 +73,7 @@ export abstract class Project<TManifest extends AnyManifest> {
       object: Record<string, unknown>,
       [key, value]: [string, unknown]
     ) => {
-      // Check if current value is an object
       if (isObject(value)) {
-        // If it's an array, we check if there's an object inside it
         if (Array.isArray(value)) {
           object[key] = value.map((v) => {
             if (isObject(v)) {

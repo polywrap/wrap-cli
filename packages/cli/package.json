@@ -22,7 +22,7 @@
     "prebuild": "ts-node ./scripts/generateIntlTypes.ts",
     "build:fast": "rimraf ./build && tsc --project tsconfig.build.json && yarn build:envs",
     "lint": "eslint --color -c ../../.eslintrc.js .",
-    "test": "cross-env TEST=true DOMAIN_NAME=test1.eth jest --passWithNoTests --runInBand --verbose",
+    "test": "cross-env TEST=true DOMAIN_NAME=test1.eth STAGE_NAME=stage PACKAGE_NAME=package RANDOM_NAME=name jest --passWithNoTests --runInBand --verbose",
     "test:ci": "cross-env TEST=true jest --passWithNoTests --runInBand --verbose",
     "test:watch": "cross-env TEST=true jest --watch --passWithNoTests --verbose"
   },
