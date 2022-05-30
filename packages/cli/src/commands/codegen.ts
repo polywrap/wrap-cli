@@ -101,7 +101,6 @@ async function run(options: CodegenCommandOptions) {
       customScript: script,
       outputDir: codegenDir,
     });
-    await project.validate();
 
     result = await codeGenerator.generate();
   } else {
