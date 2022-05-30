@@ -51,8 +51,7 @@ export class Query extends Module<QueryConfig> {
 
   async getFile(input: Input_getFile, _client: Client): Promise<Bytes | null> {
     try {
-      const res = fs.readFileSync(input.path);
-      return res;
+      return await fs.promises.readFile(input.path);
     } catch (e) {
       return null;
     }
