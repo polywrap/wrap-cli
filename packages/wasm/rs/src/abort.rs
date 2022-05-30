@@ -19,10 +19,10 @@ pub fn w3_abort_setup() {
         let message = match payload
             .downcast_ref::<String>()
             .map(String::as_str)
-            .or(payload.downcast_ref::<&'static str>().copied())
+            .or_else(|| payload.downcast_ref::<&'static str>().copied())
         {
-            Some(msg) => format!("{}", &msg),
-            None => format!("unknown error"),
+            Some(msg) => msg.to_string(),
+            None => "unknown error".to_string(),
         };
         let msg_len = message.len() as u32;
         let location = panic_info.location();

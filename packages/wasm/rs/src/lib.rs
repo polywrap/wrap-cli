@@ -13,7 +13,7 @@
 //!
 //! ## Usage
 //!
-//! https://docs.polywrap.io/
+//! <https://docs.polywrap.io/>
 
 #![deny(dead_code)]
 #![deny(unreachable_code)]

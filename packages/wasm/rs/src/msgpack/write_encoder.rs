@@ -189,7 +189,7 @@ impl Write for WriteEncoder {
     }
 
     fn write_bytes(&mut self, buf: &[u8]) -> Result<(), EncodeError> {
-        if buf.len() == 0 {
+        if buf.is_empty() {
             return self.write_nil();
         }
         self.write_bytes_length(&(buf.len() as u32))?;
@@ -267,7 +267,7 @@ impl Write for WriteEncoder {
         for key in keys {
             let value = &map[key];
             key_writer(self, key)?;
-            val_writer(self, &value)?;
+            val_writer(self, value)?;
         }
         Ok(())
     }
@@ -303,7 +303,7 @@ impl Write for WriteEncoder {
         WriteBytesExt::write_u8(self, ExtensionType::GenericMap.to_u8())?;
 
         // Copy the map's encoded buffer
-        self.view.buffer.write(&buf)?;
+        self.view.buffer.write_all(&buf)?;
 
         Ok(())
     }

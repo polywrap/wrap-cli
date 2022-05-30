@@ -34,9 +34,9 @@ impl ReadDecoder {
         let f = Format::get_format(self)?;
         let prefix = f.to_u8();
         if Format::is_positive_fixed_int(prefix) {
-            return Ok(prefix as i64);
+            Ok(prefix as i64)
         } else if Format::is_negative_fixed_int(prefix) {
-          return Ok((prefix as i8) as i64);
+          Ok((prefix as i8) as i64)
         } else {
             match f {
                 Format::Int8 => Ok(ReadBytesExt::read_i8(self)? as i64),
@@ -52,7 +52,7 @@ impl ReadDecoder {
                   if v <= i64::MAX as u64 {
                     Ok(v as i64)
                   } else {
-                    let formatted_err = format!("integer overflow: value = {}; bits = 64", v.to_string());
+                    let formatted_err = format!("integer overflow: value = {}; bits = 64", v);
                     let err_msg = self.context().print_with_context(&formatted_err);
                     Err(DecodeError::IntRangeError(err_msg))
                   }
@@ -102,7 +102,7 @@ impl ReadDecoder {
               );
               let err_msg = self.context().print_with_context(&formatted_err);
   
-              return Err(DecodeError::IntRangeError(err_msg))
+              Err(DecodeError::IntRangeError(err_msg))
             },
             Format::Int16 => {
               let int16 = ReadBytesExt::read_i16::<BigEndian>(self)?;
@@ -117,7 +117,7 @@ impl ReadDecoder {
               );
               let err_msg = self.context().print_with_context(&formatted_err);
   
-              return Err(DecodeError::IntRangeError(err_msg))
+              Err(DecodeError::IntRangeError(err_msg))
             },
             Format::Int32 => {
               let int32 = ReadBytesExt::read_i32::<BigEndian>(self)?;
@@ -132,7 +132,7 @@ impl ReadDecoder {
               );
               let err_msg = self.context().print_with_context(&formatted_err);
   
-              return Err(DecodeError::IntRangeError(err_msg))
+              Err(DecodeError::IntRangeError(err_msg))
             },
             Format::Int64 => {
               let int64 = ReadBytesExt::read_i64::<BigEndian>(self)?;
@@ -147,7 +147,7 @@ impl ReadDecoder {
               );
               let err_msg = self.context().print_with_context(&formatted_err);
   
-              return Err(DecodeError::IntRangeError(err_msg))
+              Err(DecodeError::IntRangeError(err_msg))
             },
 
             err_f => {
@@ -165,7 +165,7 @@ impl ReadDecoder {
 
 impl StdioRead for ReadDecoder {
     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
-        self.view.buffer.read(&mut buf[..])
+        self.view.buffer.read(&mut *buf)
     }
 }
 
@@ -191,7 +191,7 @@ impl Read for ReadDecoder {
         if v <= i8::MAX as i64 && v >= i8::MIN as i64 {
             Ok(v as i8)
         } else {
-            let formatted_err = format!("integer overflow: value = {}; bits = 8", v.to_string());
+            let formatted_err = format!("integer overflow: value = {}; bits = 8", v);
             let err_msg = self.context().print_with_context(&formatted_err);
             Err(DecodeError::IntRangeError(err_msg))
         }
@@ -203,7 +203,7 @@ impl Read for ReadDecoder {
         if v <= i16::MAX as i64 && v >= i16::MIN as i64 {
             Ok(v as i16)
         } else {
-            let formatted_err = format!("integer overflow: value = {}; bits = 16", v.to_string());
+            let formatted_err = format!("integer overflow: value = {}; bits = 16", v);
             let err_msg = self.context().print_with_context(&formatted_err);
             Err(DecodeError::IntRangeError(err_msg))
         }
@@ -215,7 +215,7 @@ impl Read for ReadDecoder {
         if v <= i32::MAX as i64 && v >= i32::MIN as i64 {
             Ok(v as i32)
         } else {
-            let formatted_err = format!("integer overflow: value = {}; bits = 32", v.to_string());
+            let formatted_err = format!("integer overflow: value = {}; bits = 32", v);
             let err_msg = self.context().print_with_context(&formatted_err);
             Err(DecodeError::IntRangeError(err_msg))
         }
@@ -227,7 +227,7 @@ impl Read for ReadDecoder {
         if v <= u8::MAX as u64 && v >= u8::MIN as u64 {
             Ok(v as u8)
         } else {
-            let formatted_err = format!("unsigned integer overflow: value = {}; bits = 8", v.to_string());
+            let formatted_err = format!("unsigned integer overflow: value = {}; bits = 8", v);
             let err_msg = self.context().print_with_context(&formatted_err);
             Err(DecodeError::IntRangeError(err_msg))
         }
@@ -239,7 +239,7 @@ impl Read for ReadDecoder {
         if v <= u16::MAX as u64 && v >= u16::MIN as u64 {
             Ok(v as u16)
         } else {
-            let formatted_err = format!("unsigned integer overflow: value = {}; bits = 16", v.to_string());
+            let formatted_err = format!("unsigned integer overflow: value = {}; bits = 16", v);
             let err_msg = self.context().print_with_context(&formatted_err);
             Err(DecodeError::IntRangeError(err_msg))
         }
@@ -251,7 +251,7 @@ impl Read for ReadDecoder {
         if v <= u32::MAX as u64 && v >= u32::MIN as u64 {
             Ok(v as u32)
         } else {
-            let formatted_err = format!("unsigned integer overflow: value = {}; bits = 32", v.to_string());
+            let formatted_err = format!("unsigned integer overflow: value = {}; bits = 32", v);
             let err_msg = self.context().print_with_context(&formatted_err);
             Err(DecodeError::IntRangeError(err_msg))
         }
@@ -451,7 +451,7 @@ impl Read for ReadDecoder {
         self.view.buffer.set_position(position);
 
         let _byte_length = match format {
-            Format::FixMap(format) => {
+            Format::FixMap(_) => {
                 return self.read_map(key_reader, val_reader);
             },
             Format::Map16 => {
@@ -462,7 +462,7 @@ impl Read for ReadDecoder {
             Format::FixExt4 => 4,
             Format::FixExt8 => 8,
             Format::FixExt16 => 16,
-            format @ Format::Ext8 => ReadBytesExt::read_u8(self)? as u32,
+            Format::Ext8 => ReadBytesExt::read_u8(self)? as u32,
             Format::Ext16 => {
                 ReadBytesExt::read_u16::<BigEndian>(self)? as u32
             },
@@ -499,7 +499,7 @@ impl Read for ReadDecoder {
 
     fn read_nullable_bool(&mut self) -> Result<Option<bool>, DecodeError> {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
         } else {
             match self.read_bool() {
                 Ok(v) => Ok(Some(v)),
@@ -510,7 +510,7 @@ impl Read for ReadDecoder {
 
     fn read_nullable_i8(&mut self) -> Result<Option<i8>, DecodeError> {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
         } else {
             match Read::read_i8(self) {
                 Ok(v) => Ok(Some(v)),
@@ -521,7 +521,7 @@ impl Read for ReadDecoder {
 
     fn read_nullable_i16(&mut self) -> Result<Option<i16>, DecodeError> {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
         } else {
             match Read::read_i16(self) {
                 Ok(v) => Ok(Some(v)),
@@ -532,7 +532,7 @@ impl Read for ReadDecoder {
 
     fn read_nullable_i32(&mut self) -> Result<Option<i32>, DecodeError> {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
         } else {
             match Read::read_i32(self) {
                 Ok(v) => Ok(Some(v)),
@@ -543,7 +543,7 @@ impl Read for ReadDecoder {
 
     fn read_nullable_u8(&mut self) -> Result<Option<u8>, DecodeError> {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
         } else {
             match Read::read_u8(self) {
                 Ok(v) => Ok(Some(v)),
@@ -554,7 +554,7 @@ impl Read for ReadDecoder {
 
     fn read_nullable_u16(&mut self) -> Result<Option<u16>, DecodeError> {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
         } else {
             match Read::read_u16(self) {
                 Ok(v) => Ok(Some(v)),
@@ -565,7 +565,7 @@ impl Read for ReadDecoder {
 
     fn read_nullable_u32(&mut self) -> Result<Option<u32>, DecodeError> {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
         } else {
             match Read::read_u32(self) {
                 Ok(v) => Ok(Some(v)),
@@ -576,7 +576,7 @@ impl Read for ReadDecoder {
 
     fn read_nullable_f32(&mut self) -> Result<Option<f32>, DecodeError> {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
         } else {
             match Read::read_f32(self) {
                 Ok(v) => Ok(Some(v)),
@@ -587,7 +587,7 @@ impl Read for ReadDecoder {
 
     fn read_nullable_f64(&mut self) -> Result<Option<f64>, DecodeError> {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
         } else {
             match Read::read_f64(self) {
                 Ok(v) => Ok(Some(v)),
@@ -598,7 +598,7 @@ impl Read for ReadDecoder {
 
     fn read_nullable_string(&mut self) -> Result<Option<String>, DecodeError> {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
         } else {
             match self.read_string() {
                 Ok(s) => Ok(Some(s)),
@@ -609,7 +609,7 @@ impl Read for ReadDecoder {
 
     fn read_nullable_bytes(&mut self) -> Result<Option<Vec<u8>>, DecodeError> {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
         } else {
             match self.read_bytes() {
                 Ok(bytes) => Ok(Some(bytes)),
@@ -620,7 +620,7 @@ impl Read for ReadDecoder {
 
     fn read_nullable_bigint(&mut self) -> Result<Option<BigInt>, DecodeError> {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
         } else {
             match self.read_bigint() {
                 Ok(bigint) => Ok(Some(bigint)),
@@ -631,7 +631,7 @@ impl Read for ReadDecoder {
 
     fn read_nullable_bignumber(&mut self) -> Result<Option<BigNumber>, DecodeError> {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
         } else {
             match self.read_bignumber() {
                 Ok(bignumber) => Ok(Some(bignumber)),
@@ -642,7 +642,7 @@ impl Read for ReadDecoder {
 
     fn read_nullable_json(&mut self) -> Result<Option<JSON::Value>, DecodeError> {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
         } else {
             match self.read_json() {
                 Ok(value) => Ok(Some(value)),
@@ -656,7 +656,7 @@ impl Read for ReadDecoder {
         item_reader: impl FnMut(&mut Self) -> Result<T, DecodeError>,
     ) -> Result<Option<Vec<T>>, DecodeError> {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
         } else {
             match self.read_array(item_reader) {
                 Ok(array) => Ok(Some(array)),
@@ -674,7 +674,7 @@ impl Read for ReadDecoder {
         K: Eq + Hash + Ord,
     {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
         } else {
             match self.read_map(key_reader, val_reader) {
                 Ok(map) => Ok(Some(map)),
@@ -692,7 +692,7 @@ impl Read for ReadDecoder {
         K: Eq + Hash + Ord,
     {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
         } else {
             match self.read_ext_generic_map(key_reader, val_reader) {
                 Ok(map) => Ok(Some(map)),
