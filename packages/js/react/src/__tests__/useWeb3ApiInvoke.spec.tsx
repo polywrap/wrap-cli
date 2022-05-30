@@ -39,7 +39,7 @@ describe("useWeb3ApiInvoke hook", () => {
     } = await initTestEnvironment();
 
     const { ensDomain } = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/simple-storage`,
+      apiAbsPath: `${GetPathToTestApis()}/wasm-as/simple-storage`,
       ipfsProvider: ipfs,
       ethereumProvider: ethereum,
       ensRegistrarAddress: registrarAddress,

@@ -125,7 +125,7 @@ describe("wasm-as test cases", () => {
     const client = await getClient();
 
     const api = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/reserved-words`,
+      apiAbsPath: `${GetPathToTestApis()}/wasm-as/reserved-words`,
       ipfsProvider,
       ensRegistryAddress: ensAddress,
       ethereumProvider: ethProvider,
