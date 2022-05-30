@@ -1,12 +1,12 @@
 pub mod w3;
-use web3api_wasm_rs::JSON;
 pub use w3::*;
-use std::string::String;
+use web3api_wasm_rs::JSON;
+use serde_json::*;
 
 pub fn from_json(input: InputFromJson) -> Pair {
-    Pair::deserialize(&input.json)
+    serde_json::from_value::<Pair>(input.json).unwrap()
 }
 
 pub fn to_json(input: InputToJson) -> JSON::Value {
-    JSON::to_value(&input.pair)
+    JSON::to_value(&input.pair).unwrap()
 }

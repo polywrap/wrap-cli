@@ -3,11 +3,11 @@ import {
   Input_method2,
   Input_method3,
   Input_method5,
-  Result,
+  Output,
   Arg2
 } from "./w3";
 
-export function method1(input: Input_method1): Result[] {
+export function method1(input: Input_method1): Output[] {
   return [
     {
       prop: input.arg1.prop,
@@ -24,7 +24,7 @@ export function method1(input: Input_method1): Result[] {
   ];
 }
 
-export function method2(input: Input_method2): Result | null {
+export function method2(input: Input_method2): Output | null {
   if (input.arg.prop == "null") {
     return null;
   }
@@ -37,7 +37,7 @@ export function method2(input: Input_method2): Result | null {
   };
 }
 
-export function method3(input: Input_method3): (Result | null)[] {
+export function method3(input: Input_method3): (Output | null)[] {
   return [
     null,
     {
@@ -49,7 +49,7 @@ export function method3(input: Input_method3): (Result | null)[] {
   ]
 }
 
-export function method5(input: Input_method5): Result {
+export function method5(input: Input_method5): Output {
   return {
     prop: String.UTF8.decode(input.arg.prop),
     nested: {

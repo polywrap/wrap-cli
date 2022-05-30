@@ -2,19 +2,19 @@ type Query {
   method1(
     arg1: Arg1!
     arg2: Arg2
-  ): [Result!]!
+  ): [Output!]!
 
   method2(
     arg: Arg1!
-  ): Result
+  ): Output
 
   method3(
     arg: Arg1!
-  ): [Result]!
+  ): [Output]!
 
   method5(
     arg: Arg3!
-  ): Result!
+  ): Output!
 }
 
 type Arg1 {
@@ -31,7 +31,7 @@ type Arg3 {
   prop: Bytes!
 }
 
-type Result {
+type Output {
   prop: String!
   nested: Nested!
 }
