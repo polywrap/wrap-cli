@@ -94,6 +94,8 @@ export class CodeGenerator {
         throw Error(intlMsg.lib_codeGenerator_typeInfoMissing());
       }
 
+      resetDir(codegenDirAbs);
+
       if (this._config.customScript) {
         const customScript = this._config.customScript;
 
@@ -114,8 +116,6 @@ export class CodeGenerator {
         if (!generateBinding) {
           throw Error(intlMsg.lib_codeGenerator_nogenerateBindingMethod());
         }
-
-        resetDir(codegenDirAbs);
 
         const output = await generateBinding({
           projectName: await project.getName(),
