@@ -60,13 +60,12 @@ export const generateBinding: GenerateBindingFn = (
       crateEntries.push({
         name: "src",
         type: "Directory",
-        data: srcEntries
+        data: srcEntries,
       });
       crateEntries.push({
         name: "Cargo.toml",
         type: "File",
-        data:
-`[package]
+        data: `[package]
 name = "common"
 version = "0.0.1"
 edition = "2021"
@@ -77,7 +76,7 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 web3api-wasm-rs = { version = "0.0.1-prealpha.75" }
 serde = { version = "1.0", features = ["derive"] }
-`
+`,
       });
 
       result.common.output.entries = crateEntries;

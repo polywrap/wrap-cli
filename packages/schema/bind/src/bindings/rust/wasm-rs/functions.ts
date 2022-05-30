@@ -97,7 +97,7 @@ export const toMsgPack: MustacheFunction = () => {
       return modifier + "array";
     }
     if (type.startsWith("Map<")) {
-      return modifier + "ext_generic_map"
+      return modifier + "ext_generic_map";
     }
 
     switch (type) {
@@ -327,7 +327,7 @@ const toWasmMap = (type: string, nullable: boolean): string => {
   const valType = toWasm()(keyValTypes[1], (str) => str);
 
   return applyNullable(`Map<${keyType}, ${valType}>`, nullable);
-}
+};
 
 const applyNullable = (type: string, nullable: boolean): string => {
   if (nullable) {
