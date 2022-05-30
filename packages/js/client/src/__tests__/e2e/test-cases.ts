@@ -551,59 +551,17 @@ export const runGetImplementationsTest = async (
     uri: implementationUri,
     query: `
       query {
-        queryMethod(
-          arg: $argument1
-        )
-        abstractQueryMethod(
-          arg: $argument2
-        )
+        queryImplementations
       }
     `,
-    variables: {
-      argument1: {
-        uint8: 1,
-        str: "Test String 1",
-      },
-      argument2: {
-        str: "Test String 2",
-      },
-    },
+    variables: {},
   });
 
   expect(query.errors).toBeFalsy();
   expect(query.data).toBeTruthy();
-  expect(query.data?.queryMethod).toEqual({
-    uint8: 1,
-    str: "Test String 1",
-  });
-
-  expect(query.data?.abstractQueryMethod).toBe("Test String 2");
-
-  const mutation = await client.query<{
-    mutationMethod: string;
-    abstractMutationMethod: string;
-  }>({
-    uri: implementationUri,
-    query: `
-    mutation {
-        mutationMethod(
-          arg: $argument1
-        )
-        abstractMutationMethod(
-          arg: $argument2
-        )
-      }
-    `,
-    variables: {
-      argument1: 1,
-      argument2: 2,
-    },
-  });
-
-  expect(mutation.errors).toBeFalsy();
-  expect(mutation.data).toBeTruthy();
-  expect(mutation.data?.mutationMethod).toBe(1);
-  expect(mutation.data?.abstractMutationMethod).toBe(2);
+  expect((query.data as any).queryImplementations).toEqual([
+    implementationUri,
+  ]);
 };
 
 export const runInvalidTypesTest = async (
@@ -707,80 +665,42 @@ export const runJsonTypeTest = async (
   client: Web3ApiClient,
   uri: string
 ) => {
-  type Json = string;
-
-  const value = { foo: "bar", bar: "baz" };
-  const parseResponse = await client.query<{
-    parse: Json;
-  }>({
+  const fromJson = await client.invoke<{ x: number; y: number }>({
     uri,
-    query: `query {
-      parse(value: $value)
-    }`,
-    variables: {
-      value: JSON.stringify(value),
+    module: "query",
+    method: "fromJson",
+    input: {
+      json: JSON.stringify({ x: 1, y: 2 }),
     },
   });
 
-  expect(parseResponse.data?.parse).toEqual(JSON.stringify(value));
+  expect(fromJson.error).toBeFalsy();
+  expect(fromJson.data).toBeTruthy();
+  expect(fromJson.data).toMatchObject({
+    x: 1,
+    y: 2,
+  });
 
-  const values = [
-    JSON.stringify({ bar: "foo" }),
-    JSON.stringify({ baz: "fuz" })
-  ]
-  const stringifyResponse = await client.query<{
-    stringify: Json;
-  }>({
+  const toJson = await client.invoke<{ str: string }>({
     uri,
-    query: `query {
-      stringify(
-        values: $values
-      )
-    }`,
-    variables: {
-      values,
+    module: "query",
+    method: "toJson",
+    input: {
+      pair: {
+        x: 1,
+        y: 2,
+      },
     },
   });
 
-  expect(stringifyResponse.data?.stringify).toEqual(values.join(""));
-
-  const object = {
-    jsonA: JSON.stringify({ foo: "bar" }),
-    jsonB: JSON.stringify({ fuz: "baz" }),
-  };
-  const stringifyObjectResponse = await client.query<{
-    stringifyObject: string;
-  }>({
-    uri,
-    query: `query {
-      stringifyObject(
-        object: $object
-      )
-    }`,
-    variables: {
-      object,
-    },
-  });
-
-  expect(stringifyObjectResponse.data?.stringifyObject).toEqual(
-    object.jsonA + object.jsonB
+  expect(toJson.error).toBeFalsy();
+  expect(toJson.data).toBeTruthy();
+  expect(toJson.data).toBe(
+    JSON.stringify({
+      x: 1,
+      y: 2,
+    })
   );
-
-  const methodJSONResponse = await client.query<{
-    methodJSON: Json;
-  }>({
-    uri,
-    query: `query {
-      methodJSON(valueA: 5, valueB: "foo", valueC: true)
-    }`,
-  });
-
-  const methodJSONResult = JSON.stringify({
-    valueA: 5,
-    valueB: "foo",
-    valueC: true,
-  });
-  expect(methodJSONResponse.data?.methodJSON).toEqual(methodJSONResult);
 };
 
 export const runLargeTypesTest = async (
