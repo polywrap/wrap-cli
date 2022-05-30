@@ -1,4 +1,4 @@
-import { Web3ApiClient } from "../";
+import { Web3ApiClient } from "../../";
 import { BigNumber } from "bignumber.js";
 
 export const runAsyncifyTest = async (
