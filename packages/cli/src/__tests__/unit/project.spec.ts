@@ -63,5 +63,37 @@ describe("Unit tests for Project", () => {
         }
       },
     })
+
+    const complexRandomObject = {
+      complexArray: [
+        "$PACKAGE_NAME",
+        [ "first", "second", "$DOMAIN_NAME"],
+        {
+          stage: "$STAGE_NAME",
+          name: "$RANDOM_NAME"
+        }
+      ],
+      complexObject: {
+        coolArray: [ "$RANDOM_NAME" ],
+        coolObject: {
+          name: "$RANDOM_NAME",
+          stages: ["$STAGE_NAME", "test"]
+        }
+      }
+    }
+
+    loadedScheme = Project.loadEnvironmentVariables(complexRandomObject)
+    const updatedArray = [ "package", [ "first", "second", "test1.eth" ], { stage: "stage", name: "name"}]
+    const updatedObject = {
+      coolArray: [ "name" ],
+      coolObject: {
+        name: "name",
+        stages: ["stage", "test"]
+      }
+    }
+    expect(loadedScheme).toEqual({
+      complexArray: updatedArray,
+      complexObject: updatedObject
+    })
   });
 });

@@ -58,7 +58,22 @@ export abstract class Project<TManifest extends AnyManifest> {
       if (val === null) {
         return false;
       }
-      return typeof val === "function" || typeof val === "object";
+      return typeof val === "object";
+    };
+
+    const iterateArray = (value: unknown[]): unknown => {
+      return value.map((v) => {
+        if (Array.isArray(v)) return iterateArray(v);
+
+        if (isObject(v)) {
+          return Object.entries(v as Record<string, unknown>).reduce(
+            replaceValue,
+            v
+          );
+        }
+
+        return loadVar(v);
+      });
     };
 
     /**
@@ -73,20 +88,15 @@ export abstract class Project<TManifest extends AnyManifest> {
       object: Record<string, unknown>,
       [key, value]: [string, unknown]
     ) => {
+      if (Array.isArray(value)) {
+        object[key] = iterateArray(value);
+        return object;
+      }
+
       if (isObject(value)) {
-        if (Array.isArray(value)) {
-          object[key] = value.map((v) => {
-            if (isObject(v)) {
-              return Object.entries(v).reduce(replaceValue, v);
-            }
-            return loadVar(v);
-          });
-          return object;
-        } else {
-          const newValues = Object.entries(value as Record<string, unknown>);
-          object[key] = newValues.reduce(replaceValue, value);
-          return object;
-        }
+        const newValues = Object.entries(value as Record<string, unknown>);
+        object[key] = newValues.reduce(replaceValue, value);
+        return object;
       }
 
       object[key] = loadVar(value);
