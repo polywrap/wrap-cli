@@ -19,7 +19,7 @@ const HELP = `Usage: w3 infra|i <action> [options]
 Manage infrastructure for your Web3API
 
 Arguments:
-  action
+  action                                   
     Infra allows you to execute the following commands:
     up      Start Web3API infrastructure
     down    Stop Web3API infrastructure
