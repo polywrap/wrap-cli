@@ -1,18 +1,13 @@
-FROM rust:{{rust_version}} as base
-
-# Install nightly rust
-RUN rustup toolchain install nightly
-
-# Update all installed rust toolchains
-RUN rustup update
-
-# Set the nightly channel as the default
-RUN rustup override set nightly
+FROM rustlang/rust:nightly-slim as base
 
 # Install the wasm32 rust build target
 RUN rustup target add wasm32-unknown-unknown
 
 WORKDIR /build-deps
+
+# Install curl
+RUN apt-get update
+RUN apt-get -y install curl
 
 # Install wasm-opt
 RUN curl -L https://github.com/WebAssembly/binaryen/releases/download/version_101/binaryen-version_101-x86_64-linux.tar.gz | tar -xz \
