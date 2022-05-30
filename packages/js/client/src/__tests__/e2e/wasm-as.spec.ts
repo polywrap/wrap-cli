@@ -1,7 +1,7 @@
 import {
   Web3ApiClientConfig,
   createWeb3ApiClient,
-} from "../";
+} from "../../";
 import * as TestCases from "./test-cases";
 import {
   buildAndDeployApi,
