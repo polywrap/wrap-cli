@@ -114,7 +114,7 @@ async function run(options: PluginCommandOptions) {
   const codeGenerator = new CodeGenerator({
     project,
     schemaComposer,
-    generationSubPath: codegenDir,
+    codegenDirAbs: codegenDir,
   });
 
   result = await codeGenerator.generate();

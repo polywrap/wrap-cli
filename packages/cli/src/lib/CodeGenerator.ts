@@ -28,7 +28,7 @@ import { Ora } from "ora";
 import Mustache from "mustache";
 
 export interface CodeGeneratorConfig {
-  generationSubPath: string;
+  codegenDirAbs: string;
   project: Project<AnyManifest>;
   schemaComposer: SchemaComposer;
   customScript?: string;
@@ -53,7 +53,7 @@ export class CodeGenerator {
   }
 
   private async _generateCode() {
-    const { schemaComposer, project } = this._config;
+    const { schemaComposer, project, codegenDirAbs } = this._config;
 
     const run = async (spinner?: Ora) => {
       const language = await project.getManifestLanguage();
@@ -115,9 +115,7 @@ export class CodeGenerator {
           throw Error(intlMsg.lib_codeGenerator_nogenerateBindingMethod());
         }
 
-        const outputDirAbs = path.join(project.getManifestDir(), this._config.generationSubPath);
-
-        resetDir(outputDirAbs);
+        resetDir(codegenDirAbs);
 
         const output = await generateBinding({
           projectName: await project.getName(),
@@ -126,7 +124,7 @@ export class CodeGenerator {
               name: "custom",
               typeInfo,
               schema: this._schema || "",
-              outputDirAbs,
+              outputDirAbs: codegenDirAbs,
             },
           ],
           bindLanguage,
@@ -134,7 +132,7 @@ export class CodeGenerator {
 
         for (const module of output.modules) {
           writeDirectorySync(
-            outputDirAbs,
+            codegenDirAbs,
             module.output,
             (templatePath: string) =>
               this._generateTemplate(templatePath, typeInfo, spinner)
@@ -143,7 +141,7 @@ export class CodeGenerator {
       } else {
         const output = await project.generateSchemaBindings(
           composed,
-          this._config.generationSubPath
+          path.relative(project.getManifestDir(), codegenDirAbs)
         );
 
         // Output the bindings
