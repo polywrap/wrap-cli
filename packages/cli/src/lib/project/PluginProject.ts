@@ -193,7 +193,7 @@ export class PluginProject extends Project<PluginManifest> {
 
   private _getGenerationDirectory(
     entryPoint: string,
-    generationSubPath: string = "w3"
+    generationSubPath = "w3"
   ): string {
     const absolute = path.isAbsolute(entryPoint)
       ? entryPoint

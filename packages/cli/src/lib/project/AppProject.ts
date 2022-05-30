@@ -118,7 +118,7 @@ export class AppProject extends Project<AppManifest> {
           name: "combined",
           typeInfo: composerOutput.combined?.typeInfo as TypeInfo,
           schema: composerOutput.combined?.schema as string,
-          outputDirAbs: this._getGenerationDirectory(generationSubPath)
+          outputDirAbs: this._getGenerationDirectory(generationSubPath),
         },
       ],
       bindLanguage: appManifestLanguageToBindLanguage(
@@ -127,9 +127,7 @@ export class AppProject extends Project<AppManifest> {
     });
   }
 
-  private _getGenerationDirectory(
-    generationSubPath: string = "src/w3"
-  ): string {
+  private _getGenerationDirectory(generationSubPath = "src/w3"): string {
     return path.join(this.getManifestDir(), generationSubPath);
   }
 }

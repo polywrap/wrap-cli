@@ -618,7 +618,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
 
   private _getGenerationDirectory(
     entryPoint: string,
-    generationSubPath: string = "w3"
+    generationSubPath = "w3"
   ): string {
     const absolute = path.isAbsolute(entryPoint)
       ? entryPoint
