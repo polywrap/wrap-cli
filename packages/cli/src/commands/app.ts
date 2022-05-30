@@ -94,7 +94,7 @@ async function run(options: AppCommandOptions) {
   const codeGenerator = new CodeGenerator({
     project,
     schemaComposer,
-    outputDir: codegenDir,
+    generationSubPath: codegenDir,
   });
 
   if (await codeGenerator.generate()) {

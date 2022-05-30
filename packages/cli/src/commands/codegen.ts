@@ -99,7 +99,7 @@ async function run(options: CodegenCommandOptions) {
       project,
       schemaComposer,
       customScript: script,
-      outputDir: codegenDir,
+      generationSubPath: codegenDir,
     });
 
     result = await codeGenerator.generate();

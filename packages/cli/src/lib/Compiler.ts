@@ -225,11 +225,14 @@ export class Compiler {
   }
 
   private async _generateCode(state: CompilerState): Promise<string[]> {
-    const { composerOutput } = state;
+    const { composerOutput, compilerOverrides } = state;
     const { project } = this._config;
 
     // Generate the bindings
-    const output = await project.generateSchemaBindings(composerOutput);
+    const output = await project.generateSchemaBindings(
+      composerOutput,
+      compilerOverrides?.generationSubPath
+    );
 
     // Output the bindings
     const filesWritten: string[] = [];
