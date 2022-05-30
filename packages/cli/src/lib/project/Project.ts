@@ -41,6 +41,64 @@ export abstract class Project<TManifest extends AnyManifest> {
     }
   }
 
+  public static loadEnvironmentVariables(
+    obj: Record<string, unknown>
+  ): Record<string, unknown> {
+    const entries = Object.entries(obj);
+    const isEnvVar = (c: string) => c.startsWith && c.startsWith("$");
+
+    const loadVar = (value: unknown) => {
+      if (typeof value === "string" && isEnvVar(value)) {
+        return Project.getEnvironmentVariable(value);
+      }
+      return value;
+    };
+
+    const isObject = (val: unknown): boolean => {
+      if (val === null) {
+        return false;
+      }
+      return typeof val === "function" || typeof val === "object";
+    };
+
+    /**
+     * Modifies current config with loaded environment variables if needed
+     * @param object can be any object that we would like to update environment variables
+     * @param key key of current object. this will allow to update it
+     * @param value value of current object, we check if it is object or array,
+     * if so, we need to iterate again, otherwise just check if it is an
+     * env var and update if is true
+     */
+    const replaceValue = (
+      object: Record<string, unknown>,
+      [key, value]: [string, unknown]
+    ) => {
+      // Check if current value is an object
+      if (isObject(value)) {
+        // If it's an array, we check if there's an object inside it
+        if (Array.isArray(value)) {
+          object[key] = value.map((v) => {
+            if (isObject(v)) {
+              return Object.entries(v).reduce(replaceValue, v);
+            }
+            return loadVar(v);
+          });
+          return object;
+        } else {
+          const newValues = Object.entries(value as Record<string, unknown>);
+          object[key] = newValues.reduce(replaceValue, value);
+          return object;
+        }
+      }
+
+      object[key] = loadVar(value);
+      return object;
+    };
+
+    loadEnvVars();
+    return entries.reduce(replaceValue, obj);
+  }
+
   /// Abstract Interface
 
   public abstract reset(): void;
@@ -148,47 +206,16 @@ export abstract class Project<TManifest extends AnyManifest> {
     });
   }
 
-  public loadEnvironmentVariables(
-    config: Record<string, string>
-  ): Record<string, string> {
-    const isEnvVar = (c: string) => c.startsWith && c.startsWith("$");
-    const values = Object.values(config);
-    const shouldLoad = values.some(isEnvVar);
-
-    /**
-     * Modifies current config with loaded environment variables if needed
-     * @param config current config, is the object that is going to be modified
-     * @param currentValue value that can starts with $, if so, it is modified
-     * @param index current index of object
-     */
-    const replaceValue = (
-      config: Record<string, string>,
-      currentValue: string,
-      index: number
-    ) => {
-      if (isEnvVar(currentValue)) {
-        // Remove $ from the string
-        const importedVariable = currentValue.substring(1);
-        if (process.env[importedVariable]) {
-          // Access current object key with index, so we can modify it
-          const currentKey = Object.keys(config)[index];
-          config[currentKey] = process.env[importedVariable] as string;
-        } else {
-          throw new Error(
-            intlMsg.lib_project_env_var_not_found({
-              variableName: importedVariable,
-            })
-          );
-        }
-      }
-      return config;
-    };
-
-    if (shouldLoad) {
-      loadEnvVars();
-      return values.reduce(replaceValue, config);
+  private static getEnvironmentVariable(value: string): string {
+    const importedVariable = value.substring(1);
+    if (process.env[importedVariable]) {
+      return process.env[importedVariable] as string;
+    } else {
+      throw new Error(
+        intlMsg.lib_project_env_var_not_found({
+          variableName: importedVariable,
+        })
+      );
     }
-
-    return config;
   }
 }
