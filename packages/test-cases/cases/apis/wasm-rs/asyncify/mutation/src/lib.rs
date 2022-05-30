@@ -123,7 +123,7 @@ pub fn global_var_method(input: mutation::InputGlobalVarMethod) -> bool {
 pub fn subsequent_invokes(input: mutation::InputSubsequentInvokes) -> Vec<String> {
     let mut result: Vec<String> = vec![];
 
-    for i in 0..input.number_of_times as usize {
+    for i in 0..input.number_of_times {
         match EthereumMutation::call_contract_method(&ethereum_mutation::InputCallContractMethod {
             address: input.address.clone(),
             method: "function set(uint256 value)".to_string(),
