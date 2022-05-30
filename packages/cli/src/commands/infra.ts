@@ -1,12 +1,11 @@
-import { intlMsg } from "../lib/intl";
-import { Web3ApiProject } from "../lib/project";
-import { Infra } from "../lib/infra/Infra";
-import { loadInfraManifest } from "../lib";
+import { intlMsg, Web3ApiProject, Infra, loadInfraManifest } from "../lib";
+import { Command, Program } from "./types";
 
-import { GluegunToolbox } from "gluegun";
-import chalk from "chalk";
+import { print } from "gluegun";
 import path from "path";
 import { readdirSync } from "fs";
+import { Argument } from "commander";
+import chalk from "chalk";
 
 const INFRA_PRESETS = path.join(
   __dirname,
@@ -16,163 +15,155 @@ const INFRA_PRESETS = path.join(
   "infra"
 );
 
-const optionsStr = intlMsg.commands_infra_options_options();
-const manStr = intlMsg.commands_infra_options_manifest();
+type InfraCommandOptions = {
+  modules?: string;
+  preset?: string;
+  verbose?: boolean;
+  manifest: string;
+};
+
+enum InfraActions {
+  UP = "up",
+  DOWN = "down",
+  VARS = "vars",
+  CONFIG = "config",
+}
+
 const moduleNameStr = intlMsg.commands_infra_moduleName();
 const presetNameStr = intlMsg.commands_infra_presetName();
+const manifestNameStr = intlMsg.commands_infra_options_manifest();
 
-const cmdStr = intlMsg.commands_create_options_command();
-const upStr = intlMsg.commands_infra_command_up();
-const downStr = intlMsg.commands_infra_command_down();
-const varsStr = intlMsg.commands_infra_command_vars();
-const configStr = intlMsg.commands_infra_command_config();
-const helpStr = intlMsg.commands_infra_options_h();
-
-const COMMANDS = ["config", "down", "help", "up", "vars"];
-
-const HELP = `
-${chalk.bold("w3 infra")} <${cmdStr}> <web3api-${manStr}> [${optionsStr}]
-
-${intlMsg.commands_create_options_commands()}:
-  ${chalk.bold("config")}  ${configStr}
-  ${chalk.bold("down")}     ${downStr}
-  ${chalk.bold("help")}     ${helpStr}
-  ${chalk.bold("up")}     ${upStr}
-  ${chalk.bold("vars")}  ${varsStr}
-
-${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
-  -m, --modules [<${moduleNameStr}>]       ${intlMsg.commands_infra_options_m()}
-  -p, --preset <${presetNameStr}>          ${intlMsg.commands_infra_options_p()}
-  -v, --verbose                      ${intlMsg.commands_infra_options_v()}
+const argumentsDescription = `
+  ${intlMsg.commands_infra_actions_subtitle()}
+  ${chalk.bold(InfraActions.UP)}      ${intlMsg.commands_infra_command_up()}
+  ${chalk.bold(InfraActions.DOWN)}    ${intlMsg.commands_infra_command_down()}
+  ${chalk.bold(
+    InfraActions.CONFIG
+  )}   ${intlMsg.commands_infra_command_config()}
+  ${chalk.bold(InfraActions.VARS)}     ${intlMsg.commands_infra_command_vars()}
 `;
 
-export default {
-  alias: ["i"],
-  description: intlMsg.commands_infra_description(),
-  run: async (toolbox: GluegunToolbox): Promise<void> => {
-    const { parameters, print, filesystem } = toolbox;
-    const command = parameters.first;
-    const { m, p, v } = parameters.options;
-    let { modules, preset, verbose } = parameters.options;
-    const manifestFile = parameters.second;
+export const infra: Command = {
+  setup: (program: Program) => {
+    program
+      .command("infra")
+      .alias("i")
+      .description(intlMsg.commands_infra_description())
+      .usage("<action> [options]")
+      .addArgument(
+        new Argument("<action>", argumentsDescription).choices([
+          InfraActions.UP,
+          InfraActions.DOWN,
+          InfraActions.VARS,
+          InfraActions.CONFIG,
+        ])
+      )
+      .showHelpAfterError(true)
+      .option(
+        `--manifest  <${manifestNameStr}>`,
+        intlMsg.commands_infra_manifestPathDescription(),
+        "web3api.yaml"
+      )
+      .option(
+        `-m, --modules <${moduleNameStr},${moduleNameStr}>`,
+        intlMsg.commands_infra_options_m()
+      )
+      .option(
+        `-p, --preset <${presetNameStr}>`,
+        intlMsg.commands_infra_options_p()
+      )
+      .option("-v, --verbose", intlMsg.commands_infra_options_v())
+      .action(async (action, options) => {
+        await run(action, options);
+      });
+  },
+};
 
-    modules = modules || m;
-    preset = preset || p;
-    verbose = !!(verbose || v);
+async function run(
+  action: InfraActions,
+  options: InfraCommandOptions
+): Promise<void> {
+  const { modules, preset, verbose, manifest } = options;
+  // eslint-disable-next-line prefer-const
+  let modulesArray: string[] = [];
+  if (modules) {
+    modulesArray = modules.split(",").map((m: string) => m.trim());
+  }
 
-    if (modules) {
-      modules = modules.split(",").map((m: string) => m.trim());
-    }
+  const manifestPath = path.resolve(manifest);
+  const project = new Web3ApiProject({
+    rootCacheDir: path.dirname(manifestPath),
+    web3apiManifestPath: manifestPath,
+    quiet: !verbose,
+  });
 
-    if (command === "help") {
-      print.info(HELP);
-      return;
-    }
+  let infra: Infra;
 
-    if (!command) {
-      print.error(intlMsg.commands_infra_error_noCommand());
-      print.info(HELP);
-      return;
-    }
+  if (preset) {
+    const presets = readdirSync(INFRA_PRESETS);
 
-    const manifestPath =
-      (manifestFile && filesystem.resolve(manifestFile)) ||
-      filesystem.resolve("web3api.yaml");
-
-    if (!COMMANDS.includes(command)) {
-      const unrecognizedCommandMessage = intlMsg.commands_infra_error_unrecognizedCommand(
-        {
-          command: command,
-        }
-      );
-      print.error(unrecognizedCommandMessage);
-      print.info(HELP);
-      return;
-    }
-
-    const project = new Web3ApiProject({
-      rootCacheDir: path.dirname(manifestPath),
-      web3apiManifestPath: manifestPath,
-      quiet: verbose ? false : true,
-    });
-
-    let infra: Infra;
-
-    if (preset) {
-      if (typeof preset !== "string") {
-        process.exitCode = 1;
-        print.error("'preset' must be a string");
-        print.info(HELP);
-        return;
-      }
-
-      const presets = readdirSync(INFRA_PRESETS);
-
-      if (!presets.includes(preset)) {
-        process.exitCode = 1;
-        print.error(`'${preset}' is not a supported preset. Supported presets:
+    if (!presets.includes(preset)) {
+      process.exitCode = 1;
+      print.error(`'${preset}' is not a supported preset. Supported presets:
         ${presets.map((pr) => `\n- ${pr}`).join("")}\n`);
 
-        return;
-      }
-
-      const infraManifest = await loadInfraManifest(
-        path.join(INFRA_PRESETS, preset, "web3api.infra.yaml"),
-        true
-      );
-
-      infra = new Infra({
-        project,
-        infraManifest,
-        quiet: !verbose,
-      });
-    } else {
-      const infraManifest = await project.getInfraManifest();
-
-      infra = new Infra({
-        project,
-        modulesToUse: modules,
-        infraManifest,
-        quiet: !verbose,
-      });
+      return;
     }
 
-    const filteredModules = infra.getFilteredModules();
+    const infraManifest = await loadInfraManifest(
+      path.join(INFRA_PRESETS, preset, "web3api.infra.yaml"),
+      true
+    );
 
-    if (!filteredModules.length) {
-      if (modules) {
-        const errorMsg = intlMsg.commands_infra_error_noModulesMatch({
-          modules,
-        });
-        print.error(errorMsg);
-        return;
-      }
+    infra = new Infra({
+      project,
+      infraManifest,
+      quiet: !verbose,
+    });
+  } else {
+    const infraManifest = await project.getInfraManifest();
+    infra = new Infra({
+      project,
+      modulesToUse: modulesArray,
+      infraManifest,
+      quiet: !verbose,
+    });
+  }
+  const filteredModules = infra.getFilteredModules();
 
-      const errorMsg = intlMsg.commands_infra_error_noModulesDeclared();
+  if (!filteredModules.length) {
+    if (modules) {
+      const errorMsg = intlMsg.commands_infra_error_noModulesMatch({
+        modules,
+      });
       print.error(errorMsg);
       return;
     }
 
-    print.info(
-      `${intlMsg.commands_infra_modulesUsed_text()}: ${filteredModules
-        .map((f) => `\n- ${f.name}`)
-        .join("")}\n`
-    );
+    const errorMsg = intlMsg.commands_infra_error_noModulesDeclared();
+    print.error(errorMsg);
+    return;
+  }
 
-    if (command === "up") {
-      await infra.up();
-    } else if (command === "down") {
-      await infra.down();
-    } else if (command === "vars") {
-      const vars = await infra.getVars();
+  print.info(
+    `${intlMsg.commands_infra_modulesUsed_text()}: ${filteredModules
+      .map((f) => `\n- ${f.name}`)
+      .join("")}\n`
+  );
 
-      print.info(vars);
-    } else if (command === "config") {
-      const resultingConfig = await infra.config();
+  if (action === InfraActions.UP) {
+    await infra.up();
+  } else if (action === InfraActions.DOWN) {
+    await infra.down();
+  } else if (action === InfraActions.VARS) {
+    const vars = await infra.getVars();
 
-      print.info(resultingConfig);
-    } else {
-      throw Error(intlMsg.commands_infra_error_never());
-    }
-  },
-};
+    print.info(vars);
+  } else if (InfraActions.CONFIG) {
+    const resultingConfig = await infra.config();
+
+    print.info(resultingConfig);
+  } else {
+    throw Error(intlMsg.commands_infra_error_never());
+  }
+}

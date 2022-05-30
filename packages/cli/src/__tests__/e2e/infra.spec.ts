@@ -14,21 +14,25 @@ const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/infra");
   const getTestCaseDir = (index: number) =>
     path.join(testCaseRoot, testCases[index]);
 
-const HELP = `
-w3 infra <command> <web3api-manifest> [options]
+const HELP = `Usage: w3 infra|i <action> [options]
 
-Commands:
-  config  Validate and display Web3API infrastructure's bundled docker-compose manifest
-  down     Stop Web3API infrastructure
-  help     Show usage information
-  up     Start Web3API infrastructure
-  vars  Show Web3API infrastructure's required .env variables
+Manage infrastructure for your Web3API
+
+Arguments:
+  action
+    Infra allows you to execute the following commands:
+    up      Start Web3API infrastructure
+    down    Stop Web3API infrastructure
+    config   Validate and display Web3API infrastructure's bundled docker-compose manifest
+    vars     Show Web3API infrastructure's required .env variables
+   (choices: "up", "down", "vars", "config")
 
 Options:
-  -m, --modules [<module-name>]       Use only specified modules
-  -p, --preset <preset-name>          Use a preset infra environment
-  -v, --verbose                      Verbose output (default: false)
-
+  --manifest  <manifest>                   Web3API Manifest path (default: "web3api.yaml")
+  -m, --modules <module-name,module-name>  Use only specified modules
+  -p, --preset <preset-name>               Use a preset infra environment
+  -v, --verbose                            Verbose output (default: false)
+  -h, --help                               display help for command
 `;
 
 const portInUse = (port: number) => {
@@ -62,7 +66,7 @@ const waitForPorts = (ports: { port: number; expected: boolean }[]) => {
         })
       );
 
-      if (!results.some((r) => r === false)) {
+      if (!results.some((r) => !r)) {
         resolve(true);
       } else {
         if (tries > 10) {
@@ -83,7 +87,7 @@ describe("e2e tests for infra command", () => {
     afterEach(async () => {
       await runCLI(
         {
-          args: ["infra", "down", "web3api.yaml", "-v"],
+          args: ["infra", "down", "-v"],
           cwd: getTestCaseDir(0),
           cli: w3Cli
         },
@@ -91,7 +95,7 @@ describe("e2e tests for infra command", () => {
 
       await runCLI(
         {
-          args: ["infra", "down", "web3api.yaml", "-v", "--preset=eth-ens-ipfs"],
+          args: ["infra", "down", "-v", "--preset=eth-ens-ipfs"],
           cwd: getTestCaseDir(0),
           cli: w3Cli
         },
@@ -105,7 +109,7 @@ describe("e2e tests for infra command", () => {
     });
   
     test("Should throw error for no command given", async () => {
-      const { exitCode: code, stdout: output, stderr: error } = await runCLI(
+      const { exitCode: code, stderr: error } = await runCLI(
         {
           args: ["infra"],
           cwd: getTestCaseDir(0),
@@ -113,16 +117,14 @@ describe("e2e tests for infra command", () => {
         },
       );
   
-      expect(code).toEqual(0);
-      expect(error).toBe("");
-      expect(clearStyle(output)).toEqual(`No command given
-${HELP}`);
+      expect(code).toEqual(1);
+      expect(error).toContain(`error: missing required argument 'action'`);
     });
   
     test("Should show help text", async () => {
       const { exitCode: code, stdout: output, stderr: error } = await runCLI(
         {
-          args: ["infra", "help"],
+          args: ["infra", "--help"],
           cwd: getTestCaseDir(0),
           cli: w3Cli
         },
@@ -136,7 +138,7 @@ ${HELP}`);
     test("Extracts composed docker manifest's environment variable list", async () => {
       const { exitCode: code, stdout: output } = await runCLI(
         {
-          args: ["infra", "vars", "web3api.yaml"],
+          args: ["infra", "vars"],
           cwd: getTestCaseDir(0),
           cli: w3Cli
         },
@@ -153,7 +155,7 @@ ${HELP}`);
     test("Validates and displays composed docker manifest", async () => {
       const { exitCode: code, stdout: output } = await runCLI(
         {
-          args: ["infra", "config", "web3api.yaml"],
+          args: ["infra", "config"],
           cwd: getTestCaseDir(0),
           cli: w3Cli
         },
@@ -170,7 +172,7 @@ ${HELP}`);
     test("Sets environment up with all modules if no --modules are passed", async () => {
       await runCLI(
         {
-          args: ["infra", "up", "web3api.yaml"],
+          args: ["infra", "up", "--manifest=./web3api.yaml"],
           cwd: getTestCaseDir(0),
           cli: w3Cli
         },
@@ -186,7 +188,7 @@ ${HELP}`);
     test("Tears down environment", async () => {
       await runCLI(
         {
-          args: ["infra", "up", "web3api.yaml"],
+          args: ["infra", "up"],
           cwd: getTestCaseDir(0),
           cli: w3Cli
         },
@@ -200,7 +202,7 @@ ${HELP}`);
   
       await runCLI(
         {
-          args: ["infra", "down", "web3api.yaml"],
+          args: ["infra", "down"],
           cwd: getTestCaseDir(0),
           cli: w3Cli
         },
@@ -216,7 +218,7 @@ ${HELP}`);
     test("Sets environment up with only selected modules", async () => {
       await runCLI(
         {
-          args: ["infra", "up", "web3api.yaml", "--modules=ipfs"],
+          args: ["infra", "up", "--modules=ipfs"],
           cwd: getTestCaseDir(0),
           cli: w3Cli
         },
@@ -235,7 +237,6 @@ ${HELP}`);
           args: [
             "infra",
             "config",
-            "web3api.yaml",
             "--modules=notExistingModule,alsoNotExisting",
           ],
           cwd: getTestCaseDir(0),
@@ -255,7 +256,6 @@ ${HELP}`);
           args: [
             "infra",
             "up",
-            "web3api.yaml",
             "--preset=eth-ens-ipfs",
             "--verbose"
           ],
@@ -277,7 +277,6 @@ ${HELP}`);
           args: [
             "infra",
             "up",
-            "web3api.yaml",
             "--preset=foo",
             "--verbose"
           ],
@@ -300,7 +299,6 @@ ${HELP}`);
           args: [
             "infra",
             "up",
-            "web3api.yaml",
             "--modules=ganache,dev-server"
           ],
           cwd: getTestCaseDir(1),
@@ -315,7 +313,7 @@ ${HELP}`);
 
       await runCLI(
         {
-          args: ["infra", "down", "web3api.yaml", "--modules=ganache,dev-server"],
+          args: ["infra", "down", "--modules=ganache,dev-server"],
           cwd: getTestCaseDir(1),
           cli: w3Cli
         },
@@ -328,7 +326,6 @@ ${HELP}`);
           args: [
             "infra",
             "up",
-            "web3api.yaml",
             "--modules=ipfs,ipfs-duplicate"
           ],
           cwd: getTestCaseDir(1),
@@ -342,7 +339,7 @@ ${HELP}`);
 
       await runCLI(
         {
-          args: ["infra", "down", "web3api.yaml", "--modules=ipfs,ipfs-duplicate"],
+          args: ["infra", "down", "--modules=ipfs,ipfs-duplicate"],
           cwd: getTestCaseDir(1),
           cli: w3Cli
         },
