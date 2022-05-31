@@ -48,7 +48,6 @@ describe("Web3API Manifest Validation", () => {
     const manifestFile = fs.readFileSync(manifestPath, "utf-8");
     const manifest = deserializeWeb3ApiManifest(manifestFile)
 
-    console.log(manifest)
     const modules = Object.keys(manifest.modules)
     expect(modules).toContain("query")
     expect(modules).toContain("mutation")
