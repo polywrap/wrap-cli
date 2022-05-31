@@ -1,5 +1,5 @@
 import {
-  buildAndDeployApi,
+  buildApi,
   initTestEnvironment,
   stopTestEnvironment,
 } from "@web3api/test-env-js";
@@ -12,29 +12,17 @@ describe("json-type", () => {
   let ipfsProvider: string;
   let ethProvider: string;
   let ensAddress: string;
-  let ensRegistrarAddress: string;
-  let ensResolverAddress: string;
 
-  let ensUri: string;
+  const apiPath = `${GetPathToTestApis()}/json-type`
+  const apiUri = `fs/${apiPath}/build`;
 
   beforeAll(async () => {
-    const { ipfs, ethereum, ensAddress: ens, resolverAddress, registrarAddress } = await initTestEnvironment();
+    const { ipfs, ethereum, ensAddress: ens } = await initTestEnvironment();
     ipfsProvider = ipfs;
     ethProvider = ethereum;
     ensAddress = ens;
-    ensRegistrarAddress = registrarAddress;
-    ensResolverAddress = resolverAddress;
 
-    const api = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/json-type`,
-      ipfsProvider,
-      ensRegistryAddress: ensAddress,
-      ethereumProvider: ethProvider,
-      ensRegistrarAddress,
-      ensResolverAddress,
-    });
-
-    ensUri = `ens/testnet/${api.ensDomain}`;
+    await buildApi(apiPath);
   });
 
   afterAll(async () => {
@@ -68,7 +56,7 @@ describe("json-type", () => {
     const client = await getClient();
 
     const parse = await client.invoke<{ x: number; y: number }>({
-      uri: ensUri,
+      uri: apiUri,
       module: "query",
       method: "fromJson",
       input: {
@@ -88,7 +76,7 @@ describe("json-type", () => {
     const client = await getClient();
 
     const stringify = await client.invoke<{ str: string }>({
-      uri: ensUri,
+      uri: apiUri,
       module: "query",
       method: "toJson",
       input: {

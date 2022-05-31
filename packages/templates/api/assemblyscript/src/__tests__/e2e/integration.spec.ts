@@ -1,6 +1,6 @@
 import { Web3ApiClient } from "@web3api/client-js";
 import {
-  buildAndDeployApi,
+  buildApi,
   initTestEnvironment,
   stopTestEnvironment,
 } from "@web3api/test-env-js";
@@ -15,39 +15,31 @@ describe("SimpleStorage", () => {
   const CONNECTION = { networkNameOrChainId: "testnet" };
 
   let client: Web3ApiClient;
-  let ensUri: string;
+
+  const apiPath: string = path.join(
+    path.resolve(__dirname),
+    "..",
+    "..",
+    ".."
+  );
+
+  const apiUri = `fs/${apiPath}/build`
 
   beforeAll(async () => {
     const {
       ethereum: testEnvEtherem,
       ensAddress,
-      registrarAddress,
-      resolverAddress,
       ipfs,
     } = await initTestEnvironment();
 
     // deploy api
-    const apiPath: string = path.join(
-      path.resolve(__dirname),
-      "..",
-      "..",
-      ".."
-    );
+    
 
     // get client
     const config = getPlugins(testEnvEtherem, ipfs, ensAddress);
     client = new Web3ApiClient(config);
 
-    const api = await buildAndDeployApi({
-      apiAbsPath: apiPath,
-      ipfsProvider: ipfs,
-      ensRegistryAddress: ensAddress,
-      ensRegistrarAddress: registrarAddress,
-      ensResolverAddress: resolverAddress,
-      ethereumProvider: testEnvEtherem,
-    });
-
-    ensUri = `ens/testnet/${api.ensDomain}`;
+    await buildApi(apiPath);
   });
 
   afterAll(async () => {
@@ -61,7 +53,7 @@ describe("SimpleStorage", () => {
         connection: CONNECTION,
       },
       client,
-      ensUri
+      apiUri
     );
 
     expect(response).toBeTruthy();
@@ -79,7 +71,7 @@ describe("SimpleStorage", () => {
         value: value,
       },
       client,
-      ensUri
+      apiUri
     );
 
     expect(response).toBeTruthy();
@@ -94,7 +86,7 @@ describe("SimpleStorage", () => {
     const deployContractResponse = await App.SimpleStorage_Mutation.deployContract(
       { connection: CONNECTION },
       client,
-      ensUri
+      apiUri
     );
     expect(deployContractResponse).toBeTruthy();
     expect(deployContractResponse.error).toBeFalsy();

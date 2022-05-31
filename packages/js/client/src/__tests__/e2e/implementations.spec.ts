@@ -1,5 +1,5 @@
 import {
-  buildAndDeployApi,
+  buildApi,
   initTestEnvironment,
   stopTestEnvironment,
 } from "@web3api/test-env-js";
@@ -12,45 +12,25 @@ describe("implementations", () => {
   let ipfsProvider: string;
   let ethProvider: string;
   let ensAddress: string;
-  let ensRegistrarAddress: string;
-  let ensResolverAddress: string;
 
-  let interfaceUri: string;
-  let implementationUri: string;
+  const interfacePath = `${GetPathToTestApis()}/implementations/test-interface`
+  const interfaceUri = `fs/${interfacePath}/build`
+
+  const implementationPath = `${GetPathToTestApis()}/implementations/test-api`
+  const implementationUri = `fs/${implementationPath}/build`
 
   beforeAll(async () => {
     const {
       ipfs,
       ethereum,
       ensAddress: ens,
-      resolverAddress,
-      registrarAddress,
     } = await initTestEnvironment();
     ipfsProvider = ipfs;
     ethProvider = ethereum;
     ensAddress = ens;
-    ensRegistrarAddress = registrarAddress;
-    ensResolverAddress = resolverAddress;
 
-    let interfaceApi = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/implementations/test-interface`,
-      ipfsProvider,
-      ensRegistryAddress: ensAddress,
-      ethereumProvider: ethProvider,
-      ensRegistrarAddress,
-      ensResolverAddress,
-    });
-    interfaceUri = `w3://ens/testnet/${interfaceApi.ensDomain}`;
-
-    const implementationApi = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/implementations/test-api`,
-      ipfsProvider,
-      ensRegistryAddress: ensAddress,
-      ethereumProvider: ethProvider,
-      ensRegistrarAddress,
-      ensResolverAddress,
-    });
-    implementationUri = `w3://ens/testnet/${implementationApi.ensDomain}`;
+    await buildApi(interfacePath);
+    await buildApi(implementationPath);
   });
 
   afterAll(async () => {

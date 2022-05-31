@@ -1,5 +1,5 @@
 import {
-  buildAndDeployApi,
+  buildApi,
   initTestEnvironment,
   stopTestEnvironment,
 } from "@web3api/test-env-js";
@@ -18,22 +18,19 @@ describe("map-type", () => {
   let ipfsProvider: string;
   let ethProvider: string;
   let ensAddress: string;
-  let ensRegistrarAddress: string;
-  let ensResolverAddress: string;
+
+  const apiPath = `${GetPathToTestApis()}/map-type`
+  const apiUri = `fs/${apiPath}/build`
 
   beforeAll(async () => {
     const {
       ipfs,
       ethereum,
       ensAddress: ens,
-      resolverAddress,
-      registrarAddress,
     } = await initTestEnvironment();
     ipfsProvider = ipfs;
     ethProvider = ethereum;
     ensAddress = ens;
-    ensRegistrarAddress = registrarAddress;
-    ensResolverAddress = resolverAddress;
   });
 
   afterAll(async () => {
@@ -108,15 +105,7 @@ describe("map-type", () => {
 
   test("WASM Map type", async () => {
     const client = await getClient();
-    const api = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/map-type`,
-      ipfsProvider,
-      ensRegistryAddress: ensAddress,
-      ethereumProvider: ethProvider,
-      ensRegistrarAddress,
-      ensResolverAddress,
-    });
-    const ensUri = `ens/testnet/${api.ensDomain}`;
+    await buildApi(apiPath);
 
     const mapClass = new Map<string, number>().set("Hello", 1).set("Heyo", 50);
     const mapRecord: Record<string, number> = {
@@ -125,7 +114,7 @@ describe("map-type", () => {
     };
 
     const returnMapResponse1 = await client.invoke<Map<string, number>>({
-      uri: ensUri,
+      uri: apiUri,
       module: "query",
       method: "returnMap",
       input: {
@@ -136,7 +125,7 @@ describe("map-type", () => {
     expect(returnMapResponse1.data).toEqual(mapClass);
 
     const returnMapResponse2 = await client.invoke<Map<string, number>>({
-      uri: ensUri,
+      uri: apiUri,
       module: "query",
       method: "returnMap",
       input: {
@@ -147,7 +136,7 @@ describe("map-type", () => {
     expect(returnMapResponse2.data).toEqual(mapClass);
 
     const getKeyResponse1 = await client.invoke<number>({
-      uri: ensUri,
+      uri: apiUri,
       module: "query",
       method: "getKey",
       input: {
@@ -159,7 +148,7 @@ describe("map-type", () => {
     expect(getKeyResponse1.data).toEqual(mapClass.get("Hello"));
 
     const getKeyResponse2 = await client.invoke<number>({
-      uri: ensUri,
+      uri: apiUri,
       module: "query",
       method: "getKey",
       input: {

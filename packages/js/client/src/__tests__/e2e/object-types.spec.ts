@@ -1,5 +1,5 @@
 import {
-  buildAndDeployApi,
+  buildApi,
   initTestEnvironment,
   stopTestEnvironment,
 } from "@web3api/test-env-js";
@@ -12,31 +12,17 @@ describe("object-types", () => {
   let ipfsProvider: string;
   let ethProvider: string;
   let ensAddress: string;
-  let ensRegistrarAddress: string;
-  let ensResolverAddress: string;
 
-  let ensUri: string;
-  let ipfsUri: string;
+  const apiPath = `${GetPathToTestApis()}/object-types`
+  const apiUri = `fs/${apiPath}/build`
 
   beforeAll(async () => {
-    const { ipfs, ethereum, ensAddress: ens, resolverAddress, registrarAddress } = await initTestEnvironment();
+    const { ipfs, ethereum, ensAddress: ens } = await initTestEnvironment();
     ipfsProvider = ipfs;
     ethProvider = ethereum;
     ensAddress = ens;
-    ensRegistrarAddress = registrarAddress;
-    ensResolverAddress = resolverAddress;
 
-    const api = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/object-types`,
-      ipfsProvider,
-      ensRegistryAddress: ensAddress,
-      ethereumProvider: ethProvider,
-      ensRegistrarAddress,
-      ensResolverAddress,
-    });
-
-    ensUri = `ens/testnet/${api.ensDomain}`;
-    ipfsUri = `ipfs/${api.ipfsCid}`;
+    await buildApi(apiPath);
   });
 
   afterAll(async () => {
@@ -76,7 +62,7 @@ describe("object-types", () => {
         };
       }[];
     }>({
-      uri: ensUri,
+      uri: apiUri,
       query: `
         query {
           method1(
@@ -118,7 +104,7 @@ describe("object-types", () => {
         };
       }[];
     }>({
-      uri: ensUri,
+      uri: apiUri,
       query: `
         query {
           method1(
@@ -166,7 +152,7 @@ describe("object-types", () => {
         };
       } | null;
     }>({
-      uri: ensUri,
+      uri: apiUri,
       query: `
         query {
           method2(
@@ -200,7 +186,7 @@ describe("object-types", () => {
         };
       } | null;
     }>({
-      uri: ensUri,
+      uri: apiUri,
       query: `
         query {
           method2(
@@ -229,7 +215,7 @@ describe("object-types", () => {
         };
       } | null)[];
     }>({
-      uri: ensUri,
+      uri: apiUri,
       query: `
         query {
           method3(
@@ -266,7 +252,7 @@ describe("object-types", () => {
         };
       };
     }>({
-      uri: ensUri,
+      uri: apiUri,
       query: `
         query {
           method5(

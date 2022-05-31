@@ -1,7 +1,6 @@
 import {
-  buildAndDeployApi,
+  buildApi,
   initTestEnvironment,
-  runCLI,
   stopTestEnvironment,
 } from "@web3api/test-env-js";
 import { createWeb3ApiClient, Web3ApiClientConfig } from "../..";
@@ -13,47 +12,25 @@ describe("interface-invoke", () => {
   let ipfsProvider: string;
   let ethProvider: string;
   let ensAddress: string;
-  let ensRegistrarAddress: string;
-  let ensResolverAddress: string;
 
-  let interfaceUri: string;
-  let implementationUri: string;
-  let apiUri: string;
+  const interfacePath = `${GetPathToTestApis()}/interface-invoke/test-interface`
+  const interfaceUri = `fs/${interfacePath}/build`;
+
+  const implementationPath = `${GetPathToTestApis()}/interface-invoke/test-implementation`
+  const implementationUri = `fs/${implementationPath}/build`;
+
+  const apiPath = `${GetPathToTestApis()}/interface-invoke/test-api`
+  const apiUri = `fs/${apiPath}/build`;
 
   beforeAll(async () => {
-    const { ipfs, ethereum, ensAddress: ens, resolverAddress, registrarAddress } = await initTestEnvironment();
+    const { ipfs, ethereum, ensAddress: ens } = await initTestEnvironment();
     ipfsProvider = ipfs;
     ethProvider = ethereum;
     ensAddress = ens;
-    ensRegistrarAddress = registrarAddress;
-    ensResolverAddress = resolverAddress;
 
-    interfaceUri = "w3://ens/interface.eth";
-    // Build interface polywrapper
-    await runCLI({
-      args: ["build"],
-      cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`,
-    });
-
-    const implementationApi = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/interface-invoke/test-implementation`,
-      ipfsProvider,
-      ensRegistryAddress: ensAddress,
-      ethereumProvider: ethProvider,
-      ensRegistrarAddress,
-      ensResolverAddress,
-    });
-    implementationUri = `w3://ens/testnet/${implementationApi.ensDomain}`;
-
-    const api = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/interface-invoke/test-api`,
-      ipfsProvider,
-      ensRegistryAddress: ensAddress,
-      ethereumProvider: ethProvider,
-      ensRegistrarAddress,
-      ensResolverAddress,
-    });
-    apiUri = `w3://ens/testnet/${api.ensDomain}`;
+    await buildApi(interfacePath)
+    await buildApi(implementationPath);
+    await buildApi(apiPath);
   });
 
   afterAll(async () => {

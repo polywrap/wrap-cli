@@ -1,5 +1,5 @@
 import {
-  buildAndDeployApi,
+  buildApi,
   initTestEnvironment,
   stopTestEnvironment,
 } from "@web3api/test-env-js";
@@ -12,29 +12,17 @@ describe("number-types", () => {
   let ipfsProvider: string;
   let ethProvider: string;
   let ensAddress: string;
-  let ensRegistrarAddress: string;
-  let ensResolverAddress: string;
 
-  let ensUri: string;
+  const apiPath = `${GetPathToTestApis()}/number-types`
+  const apiUri = `fs/${apiPath}/build`
 
   beforeAll(async () => {
-    const { ipfs, ethereum, ensAddress: ens, resolverAddress, registrarAddress } = await initTestEnvironment();
+    const { ipfs, ethereum, ensAddress: ens } = await initTestEnvironment();
     ipfsProvider = ipfs;
     ethProvider = ethereum;
     ensAddress = ens;
-    ensRegistrarAddress = registrarAddress;
-    ensResolverAddress = resolverAddress;
 
-    const api = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/number-types`,
-      ipfsProvider,
-      ensRegistryAddress: ensAddress,
-      ethereumProvider: ethProvider,
-      ensRegistrarAddress,
-      ensResolverAddress,
-    });
-
-    ensUri = `ens/testnet/${api.ensDomain}`;
+    await buildApi(apiPath);
   });
 
   afterAll(async () => {
@@ -70,7 +58,7 @@ describe("number-types", () => {
     const i8Underflow = await client.query<{
       i8Method: number;
     }>({
-      uri: ensUri,
+      uri: apiUri,
       query: `
       query {
         i8Method(
@@ -97,7 +85,7 @@ describe("number-types", () => {
     const u8Overflow = await client.query<{
       u8Method: number;
     }>({
-      uri: ensUri,
+      uri: apiUri,
       query: `
         query {
           u8Method(
@@ -124,7 +112,7 @@ describe("number-types", () => {
     const i16Underflow = await client.query<{
       i16Method: number;
     }>({
-      uri: ensUri,
+      uri: apiUri,
       query: `
       query {
         i16Method(
@@ -150,7 +138,7 @@ describe("number-types", () => {
     const u16Overflow = await client.query<{
       u16Method: number;
     }>({
-      uri: ensUri,
+      uri: apiUri,
       query: `
         query {
           u16Method(
@@ -176,7 +164,7 @@ describe("number-types", () => {
     const i32Underflow = await client.query<{
       i32Method: number;
     }>({
-      uri: ensUri,
+      uri: apiUri,
       query: `
       query {
         i32Method(
@@ -202,7 +190,7 @@ describe("number-types", () => {
     const u32Overflow = await client.query<{
       u32Method: number;
     }>({
-      uri: ensUri,
+      uri: apiUri,
       query: `
         query {
           u32Method(

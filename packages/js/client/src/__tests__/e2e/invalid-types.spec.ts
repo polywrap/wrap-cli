@@ -1,5 +1,5 @@
 import {
-  buildAndDeployApi,
+  buildApi,
   initTestEnvironment,
   stopTestEnvironment,
 } from "@web3api/test-env-js";
@@ -12,29 +12,16 @@ describe("invalid-types", () => {
   let ipfsProvider: string;
   let ethProvider: string;
   let ensAddress: string;
-  let ensRegistrarAddress: string;
-  let ensResolverAddress: string;
-
-  let ensUri: string;
+  const apiPath = `${GetPathToTestApis()}/invalid-types`
+  const apiUri = `fs/${apiPath}/build`
 
   beforeAll(async () => {
-    const { ipfs, ethereum, ensAddress: ens, resolverAddress, registrarAddress } = await initTestEnvironment();
+    const { ipfs, ethereum, ensAddress: ens } = await initTestEnvironment();
     ipfsProvider = ipfs;
     ethProvider = ethereum;
     ensAddress = ens;
-    ensRegistrarAddress = registrarAddress;
-    ensResolverAddress = resolverAddress;
 
-    const api = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/invalid-types`,
-      ipfsProvider,
-      ensRegistryAddress: ensAddress,
-      ethereumProvider: ethProvider,
-      ensRegistrarAddress,
-      ensResolverAddress,
-    });
-
-    ensUri = `ens/testnet/${api.ensDomain}`;
+    await buildApi(apiPath);
   });
 
   afterAll(async () => {
@@ -70,7 +57,7 @@ describe("invalid-types", () => {
     const client = await getClient();
 
     const invalidBoolIntSent = await client.query({
-      uri: ensUri,
+      uri: apiUri,
       query: `
         query {
           boolMethod(
@@ -92,7 +79,7 @@ describe("invalid-types", () => {
     const client = await getClient();
 
     const invalidIntBoolSent = await client.query({
-      uri: ensUri,
+      uri: apiUri,
       query: `
       query {
         intMethod(
@@ -114,7 +101,7 @@ describe("invalid-types", () => {
     const client = await getClient();
 
     const invalidUIntArraySent = await client.query({
-      uri: ensUri,
+      uri: apiUri,
       query: `
       query {
         uIntMethod(
@@ -136,7 +123,7 @@ describe("invalid-types", () => {
     const client = await getClient();
 
     const invalidBytesFloatSent = await client.query({
-      uri: ensUri,
+      uri: apiUri,
       query: `
       query {
         bytesMethod(
@@ -158,7 +145,7 @@ describe("invalid-types", () => {
     const client = await getClient();
 
     const invalidArrayMapSent = await client.query({
-      uri: ensUri,
+      uri: apiUri,
       query: `
       query {
         arrayMethod(

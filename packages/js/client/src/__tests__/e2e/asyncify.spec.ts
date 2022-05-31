@@ -1,5 +1,5 @@
 import {
-  buildAndDeployApi,
+  buildApi,
   initTestEnvironment,
   stopTestEnvironment,
 } from "@web3api/test-env-js";
@@ -12,31 +12,17 @@ describe("asyncify", () => {
   let ipfsProvider: string;
   let ethProvider: string;
   let ensAddress: string;
-  let ensRegistrarAddress: string;
-  let ensResolverAddress: string;
 
-  let ensUri: string;
-  let ipfsUri: string;
+  let apiPath = `${GetPathToTestApis()}/asyncify`
+  let apiUri = `fs/${apiPath}/build`
 
   beforeAll(async () => {
-    const { ipfs, ethereum, ensAddress: ens, resolverAddress, registrarAddress } = await initTestEnvironment();
+    const { ipfs, ethereum, ensAddress: ens } = await initTestEnvironment();
     ipfsProvider = ipfs;
     ethProvider = ethereum;
     ensAddress = ens;
-    ensRegistrarAddress = registrarAddress;
-    ensResolverAddress = resolverAddress;
 
-    const api = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/asyncify`,
-      ipfsProvider,
-      ensRegistryAddress: ensAddress,
-      ethereumProvider: ethProvider,
-      ensRegistrarAddress,
-      ensResolverAddress,
-    });
-
-    ensUri = `ens/testnet/${api.ensDomain}`;
-    ipfsUri = `ipfs/${api.ipfsCid}`;
+    await buildApi(apiPath);
   });
 
   afterAll(async () => {
@@ -71,7 +57,7 @@ describe("asyncify", () => {
     const deploy = await client.query<{
       deployContract: string;
     }>({
-      uri: ensUri,
+      uri: apiUri,
       query: `
         mutation {
           deployContract(
@@ -96,7 +82,7 @@ describe("asyncify", () => {
     const subsequentInvokes = await client.query<{
       subsequentInvokes: string;
     }>({
-      uri: ipfsUri,
+      uri: apiUri,
       query: `
         mutation {
           subsequentInvokes(
@@ -119,7 +105,7 @@ describe("asyncify", () => {
     const localVarMethod = await client.query<{
       localVarMethod: boolean;
     }>({
-      uri: ipfsUri,
+      uri: apiUri,
       query: `
         mutation {
           localVarMethod(
@@ -139,7 +125,7 @@ describe("asyncify", () => {
     const globalVarMethod = await client.query<{
       globalVarMethod: boolean;
     }>({
-      uri: ipfsUri,
+      uri: apiUri,
       query: `
         mutation {
           globalVarMethod(
@@ -161,7 +147,7 @@ describe("asyncify", () => {
     const setDataWithLargeArgs = await client.query<{
       setDataWithLargeArgs: string;
     }>({
-      uri: ipfsUri,
+      uri: apiUri,
       query: `
         mutation {
           setDataWithLargeArgs(
@@ -185,7 +171,7 @@ describe("asyncify", () => {
     const setDataWithManyArgs = await client.query<{
       setDataWithManyArgs: string;
     }>({
-      uri: ipfsUri,
+      uri: apiUri,
       query: `
         mutation {
           setDataWithManyArgs(
@@ -250,7 +236,7 @@ describe("asyncify", () => {
     const setDataWithManyStructuredArgs = await client.query<{
       setDataWithManyStructuredArgs: string;
     }>({
-      uri: ipfsUri,
+      uri: apiUri,
       query: `
         mutation {
           setDataWithManyStructuredArgs(

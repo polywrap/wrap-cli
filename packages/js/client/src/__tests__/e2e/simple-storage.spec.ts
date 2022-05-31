@@ -1,5 +1,5 @@
 import {
-  buildAndDeployApi,
+  buildApi,
   initTestEnvironment,
   stopTestEnvironment,
 } from "@web3api/test-env-js";
@@ -12,31 +12,17 @@ describe("simple-storage", () => {
   let ipfsProvider: string;
   let ethProvider: string;
   let ensAddress: string;
-  let ensRegistrarAddress: string;
-  let ensResolverAddress: string;
 
-  let ensUri: string;
-  let ipfsUri: string;
+  const apiPath = `${GetPathToTestApis()}/simple-storage`
+  const apiUri = `fs/${apiPath}/build`
 
   beforeAll(async () => {
-    const { ipfs, ethereum, ensAddress: ens, resolverAddress, registrarAddress } = await initTestEnvironment();
+    const { ipfs, ethereum, ensAddress: ens, } = await initTestEnvironment();
     ipfsProvider = ipfs;
     ethProvider = ethereum;
     ensAddress = ens;
-    ensRegistrarAddress = registrarAddress;
-    ensResolverAddress = resolverAddress;
 
-    const api = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/simple-storage`,
-      ipfsProvider,
-      ensRegistryAddress: ensAddress,
-      ethereumProvider: ethProvider,
-      ensRegistrarAddress,
-      ensResolverAddress,
-    });
-
-    ensUri = `ens/testnet/${api.ensDomain}`;
-    ipfsUri = `ipfs/${api.ipfsCid}`;
+    await buildApi(apiPath);
   });
 
   afterAll(async () => {
@@ -72,7 +58,7 @@ describe("simple-storage", () => {
     const deploy = await client.query<{
       deployContract: string;
     }>({
-      uri: ensUri,
+      uri: apiUri,
       query: `
         mutation {
           deployContract(
@@ -95,7 +81,7 @@ describe("simple-storage", () => {
     const set = await client.query<{
       setData: string;
     }>({
-      uri: ipfsUri,
+      uri: apiUri,
       query: `
         mutation {
           setData(
@@ -121,7 +107,7 @@ describe("simple-storage", () => {
       secondGetData: number;
       thirdGetData: number;
     }>({
-      uri: ensUri,
+      uri: apiUri,
       query: `
         query {
           getData(
@@ -157,7 +143,7 @@ describe("simple-storage", () => {
       secondGetData: number;
       thirdGetData: number;
     }>({
-      uri: ensUri,
+      uri: apiUri,
       query: `
         query {
           getData(
@@ -191,7 +177,7 @@ describe("simple-storage", () => {
     const tryGet = await client.query<{
       tryGetData: string;
     }>({
-      uri: ensUri,
+      uri: apiUri,
       query: `
         query {
           tryGetData(
@@ -213,7 +199,7 @@ describe("simple-storage", () => {
     const throwGet = await client.query<{
       throwGetData: string;
     }>({
-      uri: ensUri,
+      uri: apiUri,
       query: `
         query {
           throwGetData(
