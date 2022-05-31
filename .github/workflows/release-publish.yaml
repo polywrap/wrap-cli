@@ -148,18 +148,17 @@ jobs:
           toolchain: nightly
           override: true
 
-      - name: Auth into Crates.io
-        if: ${{env.TAG_EXISTS}} == 'false'
-        run: cargo login ${{secrets.WEB3_API_BUILD_BOT_CRATES_PAT}}
-
       - name: Build RS crates
+        if: ${{env.TAG_EXISTS}} == 'false'
         working-directory: ./packages/wasm/rs
         run: cargo build --release
 
       - name: Verify & Generate RS Documentation
+        if: ${{env.TAG_EXISTS}} == 'false'
         working-directory: ./packages/wasm/rs
         run: cargo doc --no-deps
 
       - name: Upload Rust Crates To Crates.io
+        if: ${{env.TAG_EXISTS}} == 'false'
         working-directory: ./packages/wasm/rs
-        run: cargo publish
+        run: cargo publish --token ${{secrets.WEB3_API_BUILD_BOT_CRATES_PAT}}

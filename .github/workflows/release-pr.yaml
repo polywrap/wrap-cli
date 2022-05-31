@@ -128,8 +128,8 @@ jobs:
       - name: Apply Rust Version & Commit
         working-directory: ./packages/wasm/rs
         run: |
-          cargo install cargo-release
-          cargo release $(cat ../../../VERSION) --execute --no-confirm
+          cargo install cargo-edit
+          cargo set-version $(cat ../../../VERSION)
 
       - name: Apply Node Version & Commit
         run: |
