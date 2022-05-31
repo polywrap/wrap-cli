@@ -1,10 +1,7 @@
 node_modules
 build
-<<<<<<< HEAD
 !**/default-manifests/build
-=======
 .idea
->>>>>>> prealpha-dev
 yarn-error.log
 coverage
 .vscode
