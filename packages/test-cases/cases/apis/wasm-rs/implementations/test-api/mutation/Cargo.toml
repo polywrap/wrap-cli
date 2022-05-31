@@ -1,0 +1,24 @@
+[package]
+name = "mutation"
+version = "0.1.0"
+description = "Mutation module of test-api implementation"
+authors = [
+  "Kobby Pentangeli <kobbypentangeli@gmail.com>",
+  "Jordan Ellis <jelli@dorg.tech>"
+]
+repository = "https://github.com/polywrap/monorepo"
+license = "MIT"
+edition = "2021"
+
+[dependencies]
+web3api-wasm-rs = { path = "../../../../../../../wasm/rs"}
+query = { path = "../query", default-features = false }
+serde = { version = "1.0", default-features = false, features = ["derive"] }
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+opt-level = 's'
+lto = true
+panic = 'abort'

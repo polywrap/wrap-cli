@@ -112,6 +112,12 @@ jobs:
         with:
           node-version: '${{env.NVMRC}}'
 
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          override: true
+
       - name: Set Git Identity
         run: |
           git config --global user.name '${{env.BOT}}'
@@ -119,8 +125,17 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.WEB3_API_BUILD_BOT_PAT }}
 
-      - name: Apply Version & Commit
-        run: yarn run version:apply --yes
+      - name: Apply Rust Version & Commit
+        working-directory: ./packages/wasm/rs
+        run: |
+          cargo install cargo-release
+          cargo release $(cat ../../../VERSION) --execute --no-confirm
+
+      - name: Apply Node Version & Commit
+        run: |
+          yarn run version:apply --yes
+          cargo install cargo-release
+          cargo release $(cat VERSION)
 
       - name: Create Pull Request
         id: cpr
