@@ -94,8 +94,6 @@ export class CodeGenerator {
         throw Error(intlMsg.lib_codeGenerator_typeInfoMissing());
       }
 
-      resetDir(codegenDirAbs);
-
       if (this._config.customScript) {
         const customScript = this._config.customScript;
 
@@ -131,6 +129,7 @@ export class CodeGenerator {
         });
 
         for (const module of output.modules) {
+          resetDir(codegenDirAbs);
           writeDirectorySync(
             codegenDirAbs,
             module.output,
@@ -146,10 +145,12 @@ export class CodeGenerator {
 
         // Output the bindings
         for (const module of output.modules) {
+          resetDir(module.outputDirAbs);
           writeDirectorySync(module.outputDirAbs, module.output);
         }
 
         if (output.common) {
+          resetDir(output.common.outputDirAbs);
           writeDirectorySync(output.common.outputDirAbs, output.common.output);
         }
       }
