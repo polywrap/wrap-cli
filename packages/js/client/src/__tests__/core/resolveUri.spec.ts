@@ -252,13 +252,13 @@ describe("resolveUri", () => {
   it("can resolve api", async () => {
     await runCLI({
       args: ["build"],
-      cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`,
+      cwd: `${GetPathToTestApis()}/wasm-as/interface-invoke/test-interface`,
     });
 
     const client = await getClient();
 
     const deployResult = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/interface-invoke/test-api`,
+      apiAbsPath: `${GetPathToTestApis()}/wasm-as/interface-invoke/test-api`,
       ipfsProvider,
       ensRegistryAddress: ensAddress,
       ethereumProvider: ethProvider,
@@ -353,13 +353,13 @@ describe("resolveUri", () => {
   it("can resolve cache", async () => {
     await runCLI({
       args: ["build"],
-      cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`,
+      cwd: `${GetPathToTestApis()}/wasm-as/interface-invoke/test-interface`,
     });
 
     const client = await getClient();
 
     const deployResult = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/interface-invoke/test-api`,
+      apiAbsPath: `${GetPathToTestApis()}/wasm-as/interface-invoke/test-api`,
       ipfsProvider,
       ensRegistryAddress: ensAddress,
       ethereumProvider: ethProvider,
@@ -483,13 +483,13 @@ describe("resolveUri", () => {
   it("can resolve cache - noCacheRead", async () => {
     await runCLI({
       args: ["build"],
-      cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`,
+      cwd: `${GetPathToTestApis()}/wasm-as/interface-invoke/test-interface`,
     });
 
     const client = await getClient();
 
     const deployResult = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/interface-invoke/test-api`,
+      apiAbsPath: `${GetPathToTestApis()}/wasm-as/interface-invoke/test-api`,
       ipfsProvider,
       ensRegistryAddress: ensAddress,
       ethereumProvider: ethProvider,
@@ -614,13 +614,13 @@ describe("resolveUri", () => {
   it("can resolve cache - noCacheWrite", async () => {
     await runCLI({
       args: ["build"],
-      cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`,
+      cwd: `${GetPathToTestApis()}/wasm-as/interface-invoke/test-interface`,
     });
 
     const client = await getClient();
 
     const deployResult = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/interface-invoke/test-api`,
+      apiAbsPath: `${GetPathToTestApis()}/wasm-as/interface-invoke/test-api`,
       ipfsProvider,
       ensRegistryAddress: ensAddress,
       ethereumProvider: ethProvider,
@@ -761,11 +761,11 @@ describe("resolveUri", () => {
   it("can resolve api with redirects", async () => {
     await runCLI({
       args: ["build"],
-      cwd: `${GetPathToTestApis()}/interface-invoke/test-interface`,
+      cwd: `${GetPathToTestApis()}/wasm-as/interface-invoke/test-interface`,
     });
 
     const deployResult = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/interface-invoke/test-api`,
+      apiAbsPath: `${GetPathToTestApis()}/wasm-as/interface-invoke/test-api`,
       ipfsProvider,
       ensRegistryAddress: ensAddress,
       ethereumProvider: ethProvider,

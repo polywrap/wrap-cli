@@ -20,7 +20,7 @@ import path from "path";
 import fs from "fs";
 
 const defaultPublishDir = "./build";
-const defaultCodegenDir = "./src/w3";
+const defaultCodegenDir = "./w3";
 const pathStr = intlMsg.commands_plugin_options_path();
 const defaultManifestStr = defaultPluginManifest.join(" | ");
 const nodeStr = intlMsg.commands_plugin_options_i_node();
@@ -114,7 +114,7 @@ async function run(options: PluginCommandOptions) {
   const codeGenerator = new CodeGenerator({
     project,
     schemaComposer,
-    outputDir: codegenDir,
+    codegenDirAbs: codegenDir,
   });
 
   result = await codeGenerator.generate();
