@@ -134,8 +134,6 @@ jobs:
       - name: Apply Node Version & Commit
         run: |
           yarn run version:apply --yes
-          cargo install cargo-release
-          cargo release $(cat VERSION)
 
       - name: Create Pull Request
         id: cpr
