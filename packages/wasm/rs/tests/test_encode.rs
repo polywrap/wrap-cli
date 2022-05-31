@@ -129,8 +129,8 @@ fn test_write_i8() {
 #[test]
 fn test_write_i16() {
     let mut writer = WriteEncoder::new(&[], Context::new());
-    writer.write_i16(&(-123)).unwrap();
-    assert_eq!([208, 133], writer.get_buffer().as_slice());
+    writer.write_i16(&(-3262)).unwrap();
+    assert_eq!([209, 243, 66], writer.get_buffer().as_slice());
 }
 
 #[test]
