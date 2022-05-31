@@ -13,16 +13,12 @@ describe("env", () => {
   let ipfsProvider: string;
   let ethProvider: string;
   let ensAddress: string;
-  let ensRegistrarAddress: string;
-  let ensResolverAddress: string;
 
   beforeAll(async () => {
-    const { ipfs, ethereum, ensAddress: ens, resolverAddress, registrarAddress } = await initTestEnvironment();
+    const { ipfs, ethereum, ensAddress: ens } = await initTestEnvironment();
     ipfsProvider = ipfs;
     ethProvider = ethereum;
     ensAddress = ens;
-    ensRegistrarAddress = registrarAddress;
-    ensResolverAddress = resolverAddress;
   });
 
   afterAll(async () => {
@@ -273,7 +269,7 @@ describe("env", () => {
     const apiUri = `fs/${apiPath}/build`
 
     beforeAll(async () => {
-      await buildApi(apiUri);
+      await buildApi(apiPath);
 
       client = await getClient({
         envs: [
@@ -454,7 +450,7 @@ describe("env", () => {
     let client: Client;
 
     beforeAll(async () => {
-      await buildApi(apiUri);
+      await buildApi(apiPath);
 
       client = await getClient({
         envs: [
@@ -514,7 +510,7 @@ describe("env", () => {
     const apiPath = `${GetPathToTestApis()}/enum-types`
     const apiUri = `fs/${apiPath}/build`;
 
-    await buildApi(apiUri);
+    await buildApi(apiPath);
 
     const client = await getClient({
       envs: [

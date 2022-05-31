@@ -14,10 +14,10 @@ describe("implementations", () => {
   let ensAddress: string;
 
   const interfacePath = `${GetPathToTestApis()}/implementations/test-interface`
-  const interfaceUri = `fs/${interfacePath}/build`
+  const interfaceUri = `w3://fs/${interfacePath}/build`
 
   const implementationPath = `${GetPathToTestApis()}/implementations/test-api`
-  const implementationUri = `fs/${implementationPath}/build`
+  const implementationUri = `w3://fs/${implementationPath}/build`
 
   beforeAll(async () => {
     const {

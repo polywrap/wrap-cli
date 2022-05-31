@@ -15,7 +15,7 @@ describe("wasm-getImpls", () => {
 
   const interfaceUri = "w3://ens/interface.eth"
   const implementationPath = `${GetPathToTestApis()}/implementations/test-use-getImpl`
-  const implementationUri = `fs/${implementationPath}/build`
+  const implementationUri = `w3://fs/${implementationPath}/build`
 
   beforeAll(async () => {
     const { ipfs, ethereum, ensAddress: ens } = await initTestEnvironment();
