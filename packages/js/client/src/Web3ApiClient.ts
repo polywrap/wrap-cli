@@ -5,45 +5,51 @@ import {
   Api,
   ApiCache,
   Client,
-  InvokeApiOptions,
-  InvokeApiResult,
-  QueryApiOptions,
-  QueryApiResult,
-  Uri,
-  UriRedirect,
-  InterfaceImplementations,
-  PluginRegistration,
+  ClientConfig,
   Env,
-  Subscription,
-  SubscribeOptions,
-  parseQuery,
-  AnyManifestArtifact,
-  ManifestArtifactType,
-  GetRedirectsOptions,
-  GetPluginsOptions,
-  GetInterfacesOptions,
   GetEnvsOptions,
-  GetSchemaOptions,
-  GetManifestOptions,
   GetFileOptions,
   GetImplementationsOptions,
+  GetInterfacesOptions,
+  GetManifestOptions,
+  GetPluginsOptions,
+  GetRedirectsOptions,
+  GetSchemaOptions,
+  InterfaceImplementations,
+  InvokeApiOptions,
+  InvokeApiResult,
+  PluginRegistration,
+  QueryApiOptions,
+  QueryApiResult,
+  SubscribeOptions,
+  Subscription,
+  Uri,
+  UriRedirect,
   createQueryDocument,
   getImplementations,
+  parseQuery,
+  ManifestArtifactType,
+  AnyManifestArtifact,
+  ResolveUriOptions,
+  ResolveUriResult,
+  UriResolver,
+  GetUriResolversOptions,
+  resolveUri,
+  sanitizeEnvs,
   sanitizeInterfaceImplementations,
   sanitizePluginRegistrations,
   sanitizeUriRedirects,
-  sanitizeEnvs,
-  ClientConfig,
-  resolveUri,
-  UriResolver,
-  GetUriResolversOptions,
+  CookRecipesOptions,
   CacheResolver,
   ExtendableUriResolver,
-  Contextualized,
-  ResolveUriOptions,
   coreInterfaceUris,
+  Recipe,
+  Contextualized,
   ResolveUriErrorType,
-  ResolveUriResult,
+  resolveConstants,
+  parseRecipeQuery,
+  resolveRecipeQuery,
+  NamespacedRecipes,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
@@ -120,6 +126,46 @@ export class Web3ApiClient implements Client {
       Tracer.disableTracing();
     }
     this._config.tracingEnabled = enable;
+  }
+
+  @Tracer.traceMethod("Web3ApiClient: cookRecipes")
+  public async cookRecipes<
+    TData extends Record<string, unknown> = Record<string, unknown>
+  >(options: CookRecipesOptions<TData>): Promise<void> {
+    const { api, recipes } = await this._prepareRecipeQueries<TData>(options);
+    await Promise.all(
+      recipes.map(async (r) => {
+        const opts = {
+          uri: api.uri,
+          query: r.query,
+          variables: r.variables,
+          config: options.config,
+        };
+        const res = await this.query<TData>(opts);
+        if (options && options.onExecution) {
+          options.onExecution(opts, res.data, res.errors);
+        }
+      })
+    );
+  }
+
+  @Tracer.traceMethod("Web3ApiClient: cookRecipesSync")
+  public async cookRecipesSync<
+    TData extends Record<string, unknown> = Record<string, unknown>
+  >(options: CookRecipesOptions<TData>): Promise<void> {
+    const { api, recipes } = await this._prepareRecipeQueries<TData>(options);
+    for (const recipe of recipes) {
+      const opts: QueryApiOptions = {
+        uri: api.uri,
+        query: recipe.query,
+        variables: recipe.variables,
+        config: options.config,
+      };
+      const { data, errors } = await this.query<TData>(opts);
+      if (options && options.onExecution) {
+        options.onExecution(opts, data, errors);
+      }
+    }
   }
 
   @Tracer.traceMethod("Web3ApiClient: getRedirects")
@@ -609,6 +655,42 @@ export class Web3ApiClient implements Client {
     this._config.interfaces = sanitizedInterfaces;
   }
 
+  @Tracer.traceMethod("Web3ApiClient: prepareRecipeQueries")
+  private async _prepareRecipeQueries<
+    TData extends Record<string, unknown> = Record<string, unknown>
+  >(
+    options: CookRecipesOptions<TData>
+  ): Promise<{ api: Uri; recipes: Recipe[] }> {
+    const { api, recipes, constants, menus } = options.cookbook;
+
+    if (!api) throw new Error("Cookbook is missing an API");
+    if (menus && Object.keys(menus).some((k) => k in recipes))
+      throw new Error(
+        `Namespace collision: menus cannot have the same name as recipes (${Object.keys(
+          menus
+        ).filter((k) => k in recipes)})`
+      );
+    if (
+      !options.query ||
+      (Array.isArray(options.query) && options.query.length === 0)
+    )
+      options.query = Object.keys(recipes);
+
+    const cookbook = Object.assign(
+      resolveConstants(
+        recipes,
+        constants ? constants : {}
+      ) as NamespacedRecipes,
+      menus
+    );
+    return {
+      api: this._toUri(api),
+      recipes: parseRecipeQuery(options.query).flatMap((q) =>
+        resolveRecipeQuery(cookbook, q)
+      ),
+    };
+  }
+
   @Tracer.traceMethod("Web3ApiClient: validateConfig")
   private _validateConfig(): void {
     // Require plugins to use non-interface URIs
@@ -826,6 +908,20 @@ const contextualizeClient = (
           failedUriResolvers: string[];
         }> => {
           return client.loadUriResolvers();
+        },
+        cookRecipes: <
+          TData extends Record<string, unknown> = Record<string, unknown>
+        >(
+          options: CookRecipesOptions<TData>
+        ): Promise<void> => {
+          return client.cookRecipes({ ...options, contextId });
+        },
+        cookRecipesSync: <
+          TData extends Record<string, unknown> = Record<string, unknown>
+        >(
+          options: CookRecipesOptions<TData>
+        ): Promise<void> => {
+          return client.cookRecipesSync({ ...options, contextId });
         },
       }
     : client;

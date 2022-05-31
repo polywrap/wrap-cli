@@ -7,11 +7,11 @@ import {
   PluginRegistration,
   InterfaceImplementations,
   Env,
-  ResolveUriOptions,
+  RecipeHandler,
 } from "./";
 import { AnyManifestArtifact, ManifestArtifactType } from "../manifest";
 import { UriResolver } from "../uri-resolution/core";
-import { ResolveUriResult } from "../uri-resolution/core/types/ResolveUriResult";
+import { UriResolverHandler } from "./UriResolver";
 
 export interface ClientConfig<TUri extends Uri | string = string> {
   redirects: UriRedirect<TUri>[];
@@ -55,7 +55,9 @@ export interface GetImplementationsOptions extends Contextualized {
 export interface Client
   extends QueryHandler,
     SubscriptionHandler,
-    InvokeHandler {
+    InvokeHandler,
+    RecipeHandler,
+    UriResolverHandler {
   getRedirects(options: GetRedirectsOptions): readonly UriRedirect<Uri>[];
 
   getPlugins(options: GetPluginsOptions): readonly PluginRegistration<Uri>[];
@@ -95,14 +97,4 @@ export interface Client
     uri: TUri,
     options: GetImplementationsOptions
   ): TUri[];
-
-  resolveUri<TUri extends Uri | string>(
-    uri: TUri,
-    options?: ResolveUriOptions<ClientConfig>
-  ): Promise<ResolveUriResult>;
-
-  loadUriResolvers(): Promise<{
-    success: boolean;
-    failedUriResolvers: string[];
-  }>;
 }
