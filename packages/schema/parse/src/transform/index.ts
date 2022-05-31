@@ -32,6 +32,7 @@ export * from "./interfaceUris";
 export * from "./methodParentPointers";
 export * from "./toGraphQLType";
 export * from "./moduleCapabilities";
+export * from "./hasImports";
 export * from "./addAnnotations";
 
 export interface TypeInfoTransforms {

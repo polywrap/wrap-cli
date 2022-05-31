@@ -1,12 +1,12 @@
 const buildContract = require("./build-contract");
-
+const { initTestEnvironment, stopTestEnvironment } = require("@web3api/test-env-js");
 const { EthereumPlugin } = require("@web3api/ethereum-plugin-js");
 const fs = require("fs");
 
 async function main() {
   // Ensure the contract is built
   await buildContract.main();
-
+  const { ethereum } = await initTestEnvironment()
   // Fetch the contract's ABI
   const contractAbi = JSON.parse(
     fs.readFileSync(
@@ -18,7 +18,7 @@ async function main() {
   const eth = new EthereumPlugin({
     networks: {
       testnet: {
-        provider: "http://localhost:8545"
+        provider: ethereum
       },
     },
   });
@@ -48,7 +48,8 @@ async function main() {
 if (require.main === module) {
   main()
     .then(() => process.exit(0))
-    .catch((error) => {
+    .catch(async (error) => {
+      await stopTestEnvironment()
       console.error(error);
       process.exit(1);
     });

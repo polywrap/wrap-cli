@@ -43,7 +43,7 @@ describe("wasm-wrapper", () => {
     ensResolverAddress = resolverAddress;
 
     const api = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/simple-storage`,
+      apiAbsPath: `${GetPathToTestApis()}/wasm-as/simple-storage`,
       ipfsProvider,
       ensRegistryAddress: ensAddress,
       ethereumProvider: ethProvider,
@@ -269,7 +269,7 @@ describe("wasm-wrapper", () => {
     const client = await getClient();
 
     const actualManifestStr: string = fs.readFileSync(
-      `${GetPathToTestApis()}/simple-storage/build/web3api.json`,
+      `${GetPathToTestApis()}/wasm-as/simple-storage/build/web3api.json`,
       "utf8"
     );
     const actualManifest: Web3ApiManifest = deserializeWeb3ApiManifest(
@@ -281,7 +281,7 @@ describe("wasm-wrapper", () => {
     expect(manifest).toStrictEqual(actualManifest);
 
     const actualBuildManifestStr: string = fs.readFileSync(
-      `${GetPathToTestApis()}/simple-storage/build/web3api.build.json`,
+      `${GetPathToTestApis()}/wasm-as/simple-storage/build/web3api.build.json`,
       "utf8"
     );
     const actualBuildManifest: BuildManifest = deserializeBuildManifest(
@@ -293,7 +293,7 @@ describe("wasm-wrapper", () => {
     expect(buildManifest).toStrictEqual(actualBuildManifest);
 
     const actualMetaManifestStr: string = fs.readFileSync(
-      `${GetPathToTestApis()}/simple-storage/build/web3api.meta.json`,
+      `${GetPathToTestApis()}/wasm-as/simple-storage/build/web3api.meta.json`,
       "utf8"
     );
     const actualMetaManifest: MetaManifest = deserializeMetaManifest(

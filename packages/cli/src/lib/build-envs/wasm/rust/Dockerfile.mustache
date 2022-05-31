@@ -1,0 +1,110 @@
+FROM rustlang/rust:nightly-slim as base
+
+# Install the wasm32 rust build target
+RUN rustup target add wasm32-unknown-unknown
+
+WORKDIR /build-deps
+
+# Install curl
+RUN apt-get update
+RUN apt-get -y install curl
+
+# Install wasm-opt
+RUN curl -L https://github.com/WebAssembly/binaryen/releases/download/version_101/binaryen-version_101-x86_64-linux.tar.gz | tar -xz \
+    && chmod +x binaryen-version_101/bin/wasm-opt \
+    && cp binaryen-version_101/bin/wasm-opt /usr/local/bin/ \
+    && rm -rf binary-version_101
+
+{{#web3api_linked_packages.length}}
+WORKDIR /linked-packages
+{{/web3api_linked_packages.length}}
+
+{{#web3api_linked_packages.length}}
+# Install the toml-cli
+RUN cargo install toml-cli
+{{/web3api_linked_packages.length}}
+
+{{#web3api_linked_packages}}
+COPY {{dir}} ./{{name}}
+{{/web3api_linked_packages}}
+
+WORKDIR /project
+
+# Copy all manifest files
+{{#web3api_manifests}}
+COPY {{.}} .
+{{/web3api_manifests}}
+
+# Copy all source files
+{{#include}}
+COPY {{.}} {{.}}
+{{/include}}
+{{#web3api_modules}}
+COPY {{dir}} {{dir}}
+{{/web3api_modules}}
+{{#web3api_common_dir}}
+COPY {{.}} {{.}}
+{{/web3api_common_dir}}
+
+{{#web3api_linked_packages.length}}
+# Link any local packages
+{{#web3api_linked_packages}}
+RUN PACKAGE_NAME={{name}}; \
+    {{#web3api_modules}}
+    toml set ./{{dir}}/Cargo.toml dependencies.$PACKAGE_NAME.path /linked-packages/$PACKAGE_NAME > ./{{dir}}/Cargo-local.toml && \
+    rm -rf ./{{dir}}/Cargo.toml && \
+    mv ./{{dir}}/Cargo-local.toml ./{{dir}}/Cargo.toml && \
+    {{/web3api_modules}}
+    {{#web3api_common_dir}}
+    toml set ./{{.}}/Cargo.toml dependencies.$PACKAGE_NAME.path /linked-packages/$PACKAGE_NAME > ./{{.}}/Cargo-local.toml && \
+    rm -rf ./{{.}}/Cargo.toml && \
+    mv ./{{.}}/Cargo-local.toml ./{{.}}/Cargo.toml && \
+    {{/web3api_common_dir}}
+    true
+{{/web3api_linked_packages}}
+{{/web3api_linked_packages.length}}
+
+# Remove any Cargo.lock files
+{{#web3api_modules}}
+RUN rm -rf {{dir}}/Cargo.lock
+{{/web3api_modules}}
+
+{{#web3api_modules.length}}
+# Ensure the Wasm module is configured to use imported memory
+ENV RUSTFLAGS="-C link-arg=-z -C link-arg=stack-size=65536 -C link-arg=--import-memory"
+{{/web3api_modules.length}}
+
+{{#web3api_modules}}
+# Enable the w3-invoke feature for the {{dir}} module
+RUN toml set ./{{dir}}/Cargo.toml features.w3-invoke [] > ./{{dir}}/Cargo-local.toml && \
+    rm -rf ./{{dir}}/Cargo.toml && \
+    mv ./{{dir}}/Cargo-local.toml ./{{dir}}/Cargo.toml && \
+    true
+
+# Cleanup an artifact left by the toml CLI program ("[]" -> [])
+RUN sed -i 's/"\[\]"/\[\]/g' ./{{dir}}/Cargo.toml
+
+# Ensure the module at {{dir}} has the crate-type = ["cdylib"]
+RUN toml set ./{{dir}}/Cargo.toml lib.crate-type ["cdylib","rlib"] > ./{{dir}}/Cargo-local.toml && \
+    rm -rf ./{{dir}}/Cargo.toml && \
+    mv ./{{dir}}/Cargo-local.toml ./{{dir}}/Cargo.toml && \
+    true
+
+# Clean up artifacts left by the toml CLI program ("["cdylib", "rlib"]" -> ["cdylib", "rlib"])
+RUN sed -i 's/"\[cdylib,rlib\]"/\["cdylib","rlib"\]/g' ./{{dir}}/Cargo.toml
+
+{{/web3api_modules}}
+{{#web3api_modules}}
+# Build the module at {{dir}}
+RUN cargo +nightly build --manifest-path ./{{dir}}/Cargo.toml \
+    --target wasm32-unknown-unknown --release --features "w3-invoke"
+
+{{/web3api_modules}}
+
+# Make the build directory
+RUN mkdir ./build
+
+# Use wasm-opt to perform the "asyncify" post-processing step over all modules
+{{#web3api_modules}}
+RUN wasm-opt --asyncify -O2 ./{{dir}}/target/wasm32-unknown-unknown/release/{{name}}.wasm -o ./build/{{name}}.wasm
+{{/web3api_modules}}

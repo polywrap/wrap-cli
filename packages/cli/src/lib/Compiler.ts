@@ -36,6 +36,12 @@ interface CompilerState {
   web3ApiManifest: Web3ApiManifest;
   composerOutput: ComposerOutput;
   modulesToBuild: ModulesToBuild;
+  compilerOverrides?: CompilerOverrides;
+}
+
+export interface CompilerOverrides {
+  validateManifest: (manifest: Web3ApiManifest) => void;
+  generationSubPath: string;
 }
 
 export interface CompilerConfig {
@@ -45,6 +51,8 @@ export interface CompilerConfig {
 }
 
 export class Compiler {
+  private _state: CompilerState | undefined;
+
   constructor(private _config: CompilerConfig) {}
 
   public async codegen(): Promise<boolean> {
@@ -145,9 +153,14 @@ export class Compiler {
   public reset(): void {
     this._config.project.reset();
     this._config.schemaComposer.reset();
+    this._state = undefined;
   }
 
   private async _getCompilerState(): Promise<CompilerState> {
+    if (this._state) {
+      return this._state;
+    }
+
     const { project } = this._config;
 
     // Get the Web3ApiManifest
@@ -159,15 +172,38 @@ export class Compiler {
     // Compose the schema
     const composerOutput = await this._composeSchema();
 
+    // Allow the build-env to validate the manifest & override functionality
+    const buildEnvDir = `${__dirname}/build-envs/${web3ApiManifest.language}`;
+    const buildEnvEntryFile = path.join(buildEnvDir, "index.ts");
+    let compilerOverrides: CompilerOverrides | undefined;
+
+    if (fs.existsSync(buildEnvEntryFile)) {
+      const module = await import(buildEnvDir);
+
+      // Get any compiler overrides for the given build-env
+      if (module.getCompilerOverrides) {
+        compilerOverrides = module.getCompilerOverrides() as CompilerOverrides;
+      }
+
+      if (compilerOverrides) {
+        // Validate the manifest for the given build-env
+        if (compilerOverrides.validateManifest) {
+          compilerOverrides.validateManifest(web3ApiManifest);
+        }
+      }
+    }
+
     const state: CompilerState = {
       web3ApiManifest: Object.assign({}, web3ApiManifest),
       composerOutput,
       modulesToBuild,
+      compilerOverrides,
     };
 
     this._validateState(state);
 
-    return state;
+    this._state = state;
+    return this._state;
   }
 
   private async _isInterface(): Promise<boolean> {
@@ -189,11 +225,14 @@ export class Compiler {
   }
 
   private async _generateCode(state: CompilerState): Promise<string[]> {
-    const { composerOutput } = state;
+    const { composerOutput, compilerOverrides } = state;
     const { project } = this._config;
 
     // Generate the bindings
-    const output = await project.generateSchemaBindings(composerOutput);
+    const output = await project.generateSchemaBindings(
+      composerOutput,
+      compilerOverrides?.generationSubPath
+    );
 
     // Output the bindings
     const filesWritten: string[] = [];

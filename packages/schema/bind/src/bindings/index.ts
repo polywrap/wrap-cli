@@ -1,10 +1,11 @@
 import { GenerateBindingFn } from "./types";
 import * as WasmAs from "./assemblyscript/wasm-as";
+import * as WasmRs from "./rust/wasm-rs";
 import * as PluginTs from "./typescript/plugin-ts";
 import * as AppTs from "./typescript/app-ts";
 import { BindLanguage } from "../";
 
-export { WasmAs, PluginTs, AppTs };
+export { WasmAs, WasmRs, PluginTs, AppTs };
 export * from "./types";
 
 export function getGenerateBindingFn(
@@ -13,6 +14,8 @@ export function getGenerateBindingFn(
   switch (bindLanguage) {
     case "wasm-as":
       return WasmAs.generateBinding;
+    case "wasm-rs":
+      return WasmRs.generateBinding;
     case "plugin-ts":
       return PluginTs.generateBinding;
     case "app-ts":
