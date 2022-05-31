@@ -2,10 +2,6 @@ import {
   coreInterfaceUris,
 } from "@web3api/core-js";
 import {
-  initTestEnvironment,
-  stopTestEnvironment,
-} from "@web3api/test-env-js";
-import {
   Plugin,
   Uri,
   Web3ApiClient,
@@ -14,30 +10,6 @@ import {
 jest.setTimeout(200000);
 
 describe("sanity", () => {
-  let ipfsProvider: string;
-  let ethProvider: string;
-  let ensAddress: string;
-  let ensRegistrarAddress: string;
-  let ensResolverAddress: string;
-
-  beforeAll(async () => {
-    const {
-      ipfs,
-      ethereum,
-      ensAddress: ens,
-      registrarAddress,
-      resolverAddress,
-    } = await initTestEnvironment();
-    ipfsProvider = ipfs;
-    ethProvider = ethereum;
-    ensAddress = ens;
-    ensRegistrarAddress = registrarAddress;
-    ensResolverAddress = resolverAddress;
-  });
-
-  afterAll(async () => {
-    await stopTestEnvironment();
-  });
 
   test("default client config", () => {
     const client = new Web3ApiClient();

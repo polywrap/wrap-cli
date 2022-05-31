@@ -1,0 +1,12 @@
+type Query {
+  method(
+    largeCollection: LargeCollection!
+  ): LargeCollection!
+}
+
+type LargeCollection {
+  largeStr: String!
+  largeBytes: Bytes!
+  largeStrArray: [String!]!
+  largeBytesArray: [Bytes!]!
+}
