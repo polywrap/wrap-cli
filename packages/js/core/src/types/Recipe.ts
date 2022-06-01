@@ -11,10 +11,10 @@ export interface Recipe {
 }
 
 export interface Cookbook<TUri extends Uri | string = string> {
-  api?: TUri;
-  constants?: Record<string, string>;
-  menus?: Record<string, string[]>;
+  api: TUri;
   recipes: NamespacedRecipes;
+  constants?: Record<string, unknown>;
+  menus?: Record<string, string[]>;
 }
 
 export interface CookRecipesOptions<
@@ -23,8 +23,7 @@ export interface CookRecipesOptions<
   TClientConfig extends ClientConfig = ClientConfig
 > {
   cookbook: Cookbook<TUri>;
-  query?: string[];
-  wrapperUri?: TUri;
+  dishes?: string[];
   config?: Partial<TClientConfig>;
   contextId?: string;
 

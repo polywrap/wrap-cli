@@ -7,12 +7,12 @@ import { NamespacedRecipes, Recipe } from "../types";
  * @returns {string[][]}
  */
 export function parseRecipeQuery(
-  query: string | string[],
-  delimiter = " "
+  dishes: string[],
+  menus: Record<string, string[]>
 ): string[][] {
-  return (Array.isArray(query) ? query : query.split(delimiter)).map((q) =>
-    q.split(".")
-  );
+  return dishes
+    .map((dish) => (dish in menus ? menus[dish] : [dish]))
+    .flatMap((dishes) => dishes.map((dish) => dish.split(".")));
 }
 
 /**
@@ -23,12 +23,12 @@ export function parseRecipeQuery(
  */
 export function resolveConstants(
   variables: Record<string, unknown>,
-  constants: Record<string, string>
+  constants: Record<string, unknown>
 ): Record<string, unknown> {
   function resolveConstant(val: unknown): unknown {
     if (typeof val === "string" && val.startsWith("$")) {
-      val = constants[val.slice(1)];
-      if (val) return val;
+      const resolvedVal = constants[val.slice(1)];
+      if (resolvedVal !== undefined) return resolvedVal;
       throw new ReferenceError(
         `${val} refers to a constant that isn't defined`
       );
@@ -46,28 +46,31 @@ export function resolveConstants(
 
 /**
  *
- * @param {NamespacedRecipes | (NamespacedRecipes & {[p: string]: string[]})} cookbook
- * @param {string[]} query
+ * @param {NamespacedRecipes | (NamespacedRecipes & {[p: string]: string[]})} recipes
+ * @param {string[]} dish
  * @returns {Recipe[]}
  */
 export function resolveRecipeQuery(
-  cookbook:
+  recipes:
     | NamespacedRecipes
     | (NamespacedRecipes & { [menu: string]: string[] }),
-  query: string[]
+  dish: string[]
 ): Recipe[] {
-  const val = query.reduce((acc, cur) => (acc as any)?.[cur], cookbook);
-  if (val == null)
+  const val = dish.reduce((acc, cur) => {
+    return (acc as Record<string, unknown>)?.[cur];
+  }, recipes);
+  if (!val)
     throw new Error(
-      `Failed to resolve recipe query: could not find ${query.join(".")}`
+      `Failed to resolve recipe query: could not find ${dish.join(".")}`
     );
 
   if (Array.isArray(val)) {
-    if (typeof val[0] === "string")
-      return parseRecipeQuery(val).flatMap((q) =>
-        resolveRecipeQuery(cookbook, q)
-      );
-    else return val as Recipe[];
+    // TODO: research is this possible?
+    // if (typeof val[0] === "string")
+    //   return parseRecipeQuery(val).flatMap((q) =>
+    //     resolveRecipeQuery(cookbook, q)
+    //   );
+    return val as Recipe[];
   } else
     return Object.entries(
       val as Record<string, NamespacedRecipes>

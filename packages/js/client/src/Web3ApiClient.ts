@@ -671,21 +671,18 @@ export class Web3ApiClient implements Client {
         ).filter((k) => k in recipes)})`
       );
     if (
-      !options.query ||
-      (Array.isArray(options.query) && options.query.length === 0)
+      !options.dishes ||
+      (Array.isArray(options.dishes) && options.dishes.length === 0)
     )
-      options.query = Object.keys(recipes);
+      options.dishes = Object.keys(recipes);
 
     const cookbook = Object.assign(
-      resolveConstants(
-        recipes,
-        constants ? constants : {}
-      ) as NamespacedRecipes,
+      resolveConstants(recipes, constants || {}) as NamespacedRecipes,
       menus
     );
     return {
       api: this._toUri(api),
-      recipes: parseRecipeQuery(options.query).flatMap((q) =>
+      recipes: parseRecipeQuery(options.dishes, menus || {}).flatMap((q) =>
         resolveRecipeQuery(cookbook, q)
       ),
     };
