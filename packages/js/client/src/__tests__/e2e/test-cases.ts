@@ -3,18 +3,12 @@ import { BigNumber } from "bignumber.js";
 
 export const runAsyncifyTest = async (
   client: Web3ApiClient,
-  api: {
-    ensDomain: string,
-    ipfsCid: string,
-  }
+  apiUri: string
 ) => {
-    const ensUri = `ens/testnet/${api.ensDomain}`;
-    const ipfsUri = `ipfs/${api.ipfsCid}`;
-
     const deploy = await client.query<{
       deployContract: string;
     }>({
-      uri: ensUri,
+      uri: apiUri,
       query: `
         mutation {
           deployContract(
@@ -39,7 +33,7 @@ export const runAsyncifyTest = async (
     const subsequentInvokes = await client.query<{
       subsequentInvokes: string;
     }>({
-      uri: ipfsUri,
+      uri: apiUri,
       query: `
         mutation {
           subsequentInvokes(
@@ -62,7 +56,7 @@ export const runAsyncifyTest = async (
     const localVarMethod = await client.query<{
       localVarMethod: boolean;
     }>({
-      uri: ipfsUri,
+      uri: apiUri,
       query: `
         mutation {
           localVarMethod(
@@ -82,7 +76,7 @@ export const runAsyncifyTest = async (
     const globalVarMethod = await client.query<{
       globalVarMethod: boolean;
     }>({
-      uri: ipfsUri,
+      uri: apiUri,
       query: `
         mutation {
           globalVarMethod(
@@ -104,7 +98,7 @@ export const runAsyncifyTest = async (
     const setDataWithLargeArgs = await client.query<{
       setDataWithLargeArgs: string;
     }>({
-      uri: ipfsUri,
+      uri: apiUri,
       query: `
         mutation {
           setDataWithLargeArgs(
@@ -128,7 +122,7 @@ export const runAsyncifyTest = async (
     const setDataWithManyArgs = await client.query<{
       setDataWithManyArgs: string;
     }>({
-      uri: ipfsUri,
+      uri: apiUri,
       query: `
         mutation {
           setDataWithManyArgs(
@@ -193,7 +187,7 @@ export const runAsyncifyTest = async (
     const setDataWithManyStructuredArgs = await client.query<{
       setDataWithManyStructuredArgs: string;
     }>({
-      uri: ipfsUri,
+      uri: apiUri,
       query: `
         mutation {
           setDataWithManyStructuredArgs(
@@ -1179,18 +1173,12 @@ export const runMapTypeTest = async (
 
 export const runSimpleStorageTest = async (
   client: Web3ApiClient,
-  api: {
-    ensDomain: string,
-    ipfsCid: string,
-  }
+  apiUri: string
 ) => {
-    const ensUri = `ens/testnet/${api.ensDomain}`;
-    const ipfsUri = `ipfs/${api.ipfsCid}`;
-
     const deploy = await client.query<{
       deployContract: string;
     }>({
-      uri: ensUri,
+      uri: apiUri,
       query: `
         mutation {
           deployContract(
@@ -1214,7 +1202,7 @@ export const runSimpleStorageTest = async (
     const set = await client.query<{
       setData: string;
     }>({
-      uri: ipfsUri,
+      uri: apiUri,
       query: `
         mutation {
           setData(
@@ -1240,7 +1228,7 @@ export const runSimpleStorageTest = async (
       secondGetData: number;
       thirdGetData: number;
     }>({
-      uri: ensUri,
+      uri: apiUri,
       query: `
         query {
           getData(
@@ -1276,7 +1264,7 @@ export const runSimpleStorageTest = async (
       secondGetData: number;
       thirdGetData: number;
     }>({
-      uri: ensUri,
+      uri: apiUri,
       query: `
         query {
           getData(

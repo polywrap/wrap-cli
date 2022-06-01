@@ -1,5 +1,5 @@
 import {
-  buildAndDeployApi,
+  buildApi,
   initTestEnvironment,
   stopTestEnvironment,
 } from "@web3api/test-env-js";
@@ -13,16 +13,12 @@ describe("env", () => {
   let ipfsProvider: string;
   let ethProvider: string;
   let ensAddress: string;
-  let ensRegistrarAddress: string;
-  let ensResolverAddress: string;
 
   beforeAll(async () => {
-    const { ipfs, ethereum, ensAddress: ens, resolverAddress, registrarAddress } = await initTestEnvironment();
+    const { ipfs, ethereum, ensAddress: ens } = await initTestEnvironment();
     ipfsProvider = ipfs;
     ethProvider = ethereum;
     ensAddress = ens;
-    ensRegistrarAddress = registrarAddress;
-    ensResolverAddress = resolverAddress;
   });
 
   afterAll(async () => {
@@ -101,24 +97,17 @@ describe("env", () => {
 
   describe("simple env types", () => {
     let client: Client;
-    let ensUri: string;
+    
+    const apiPath = `${GetPathToTestApis()}/wasm-as/simple-env-types`
+    const apiUri = `fs/${apiPath}/build`
 
     beforeAll(async () => {
-      const api = await buildAndDeployApi({
-        apiAbsPath: `${GetPathToTestApis()}/wasm-as/simple-env-types`,
-        ipfsProvider,
-        ensRegistryAddress: ensAddress,
-        ethereumProvider: ethProvider,
-        ensRegistrarAddress,
-        ensResolverAddress,
-      });
-
-      ensUri = `ens/testnet/${api.ensDomain}`;
+      await buildApi(apiPath);
 
       client = await getClient({
         envs: [
           {
-            uri: ensUri,
+            uri: apiUri,
             mutation: {
               str: "mutation string",
               requiredInt: 0,
@@ -134,7 +123,7 @@ describe("env", () => {
 
     test("query: getEnv - when set", async () => {
       const queryEnv = await client.query({
-        uri: ensUri,
+        uri: apiUri,
         query: `
       query {
         getEnv(
@@ -152,7 +141,7 @@ describe("env", () => {
 
     test("query: getEnv - when not set", async () => {
       const queryEnv = await client.query({
-        uri: ensUri,
+        uri: apiUri,
         query: `
       query {
         getEnv(
@@ -174,7 +163,7 @@ describe("env", () => {
 
     test("query: getEnv - when set incorrectly", async () => {
       const queryEnv = await client.query({
-        uri: ensUri,
+        uri: apiUri,
         query: `
       query {
         getEnv(
@@ -185,7 +174,7 @@ describe("env", () => {
         config: {
           envs: [
             {
-              uri: ensUri,
+              uri: apiUri,
               common: {
                 str: "string",
                 requiredInt: "99",
@@ -205,7 +194,7 @@ describe("env", () => {
 
     test("mutation: getEnv - when set", async () => {
       const mutationEnv = await client.query({
-        uri: ensUri,
+        uri: apiUri,
         query: `
       mutation {
         getEnv(
@@ -223,7 +212,7 @@ describe("env", () => {
 
     test("mutation: getEnv - when not set", async () => {
       const mutationEnv = await client.query({
-        uri: ensUri,
+        uri: apiUri,
         query: `
       mutation {
         getEnv(
@@ -245,7 +234,7 @@ describe("env", () => {
 
     test("mutation: getEnv - when set incorrectly", async () => {
       const mutationEnv = await client.query({
-        uri: ensUri,
+        uri: apiUri,
         query: `
       mutation {
         getEnv(
@@ -256,7 +245,7 @@ describe("env", () => {
         config: {
           envs: [
             {
-              uri: ensUri,
+              uri: apiUri,
               common: {
                 str: 1,
                 requiredInt: 9,
@@ -277,24 +266,17 @@ describe("env", () => {
 
   describe("complex env types", () => {
     let client: Client;
-    let ensUri: string;
+    
+    const apiPath = `${GetPathToTestApis()}/wasm-as/complex-env-types`
+    const apiUri = `fs/${apiPath}/build`
 
     beforeAll(async () => {
-      const api = await buildAndDeployApi({
-        apiAbsPath: `${GetPathToTestApis()}/wasm-as/complex-env-types`,
-        ipfsProvider,
-        ensRegistryAddress: ensAddress,
-        ethereumProvider: ethProvider,
-        ensRegistrarAddress,
-        ensResolverAddress,
-      });
-
-      ensUri = `ens/testnet/${api.ensDomain}`;
+      await buildApi(apiPath);
 
       client = await getClient({
         envs: [
           {
-            uri: ensUri,
+            uri: apiUri,
             common: {
               object: {
                 prop: "object string",
@@ -319,7 +301,7 @@ describe("env", () => {
 
     test("queryEnv", async () => {
       const queryEnv = await client.query({
-        uri: ensUri,
+        uri: apiUri,
         query: `
           query {
             queryEnv(
@@ -350,7 +332,7 @@ describe("env", () => {
 
     test("mutationEnv", async () => {
       const mutationEnv = await client.query({
-        uri: ensUri,
+        uri: apiUri,
         query: `
           mutation {
             mutationEnv(
@@ -381,7 +363,7 @@ describe("env", () => {
 
     test("query time env types", async () => {
       const queryEnv = await client.query({
-        uri: ensUri,
+        uri: apiUri,
         query: `
           query {
             queryEnv(
@@ -410,7 +392,7 @@ describe("env", () => {
       });
 
       const queryUpdatedEnv = await client.query({
-        uri: ensUri,
+        uri: apiUri,
         query: `
           query {
             queryEnv(
@@ -421,7 +403,7 @@ describe("env", () => {
         config: {
           envs: [
             {
-              uri: ensUri,
+              uri: apiUri,
               common: {
                 object: {
                   prop: "object another string",
@@ -465,24 +447,18 @@ describe("env", () => {
   });
 
   describe("env client types", () => {
-    let ensUri: string;
     let client: Client;
 
-    beforeAll(async () => {
-      const api = await buildAndDeployApi({
-        apiAbsPath: `${GetPathToTestApis()}/wasm-as/env-client-types`,
-        ipfsProvider,
-        ensRegistryAddress: ensAddress,
-        ethereumProvider: ethProvider,
-        ensRegistrarAddress,
-        ensResolverAddress,
-      });
+    const apiPath = `${GetPathToTestApis()}/wasm-as/env-client-types`
+    const apiUri = `fs/${apiPath}/build`
 
-      ensUri = `ens/testnet/${api.ensDomain}`;
+    beforeAll(async () => {
+      await buildApi(apiPath);
+
       client = await getClient({
         envs: [
           {
-            uri: ensUri,
+            uri: apiUri,
             mutation: {
               str: "string",
             },
@@ -496,7 +472,7 @@ describe("env", () => {
 
     test("query", async () => {
       const queryEnv = await client.query({
-        uri: ensUri,
+        uri: apiUri,
         query: `
           query {
             environment(
@@ -515,7 +491,7 @@ describe("env", () => {
 
     test("mutation", async () => {
       const mutationEnv = await client.query({
-        uri: ensUri,
+        uri: apiUri,
         query: `
         mutation {
           mutEnvironment(
@@ -534,20 +510,15 @@ describe("env", () => {
   });
 
   test("set env when not required", async () => {
-    const api = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/wasm-as/enum-types`,
-      ipfsProvider,
-      ensRegistryAddress: ensAddress,
-      ethereumProvider: ethProvider,
-      ensRegistrarAddress,
-      ensResolverAddress,
-    });
+    const apiPath = `${GetPathToTestApis()}/wasm-as/enum-types`
+    const apiUri = `fs/${apiPath}/build`
+    
+    await buildApi(apiPath);
 
-    const ensUri = `ens/testnet/${api.ensDomain}`;
     const client = await getClient({
       envs: [
         {
-          uri: ensUri,
+          uri: apiUri,
           mutation: {
             str: "string",
           },
@@ -559,7 +530,7 @@ describe("env", () => {
     });
 
     const queryEnv = await client.query({
-      uri: ensUri,
+      uri: apiUri,
       query: `
         query {
           method1(en: 0) 
@@ -568,7 +539,7 @@ describe("env", () => {
       config: {
         envs: [
           {
-            uri: ensUri,
+            uri: apiUri,
             common: {
               str: "string",
             },

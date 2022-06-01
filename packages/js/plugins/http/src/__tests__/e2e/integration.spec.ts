@@ -8,7 +8,7 @@ import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
-  buildAndDeployApi
+  buildApi
 } from "@web3api/test-env-js";
 import axios from "axios";
 import nock from "nock";
@@ -25,17 +25,16 @@ describe("e2e tests for HttpPlugin", () => {
   describe("integration", () => {
 
     let client: Web3ApiClient;
-    let uri: string;
     let ensAddress: string;
+
+    const apiPath = `${__dirname}/integration/build`
+    const uri = `fs/${apiPath}/build`
 
     beforeAll(async () => {
       const { ethereum, ipfs } = await initTestEnvironment();
       const { data } = await axios.get("http://localhost:4040/deploy-ens");
 
       ensAddress = data.ensAddress
-      
-      const registrarAddress = data.registrarAddress
-      const resolverAddress = data.resolverAddress
 
       client = new Web3ApiClient({
         plugins: [
@@ -74,16 +73,7 @@ describe("e2e tests for HttpPlugin", () => {
         ],
       });
 
-      const api = await buildAndDeployApi({
-        apiAbsPath: `${__dirname}/integration`,
-        ipfsProvider: ipfs,
-        ensRegistryAddress: ensAddress,
-        ensRegistrarAddress: registrarAddress,
-        ensResolverAddress: resolverAddress,
-        ethereumProvider: ethereum
-      });
-
-      uri = `ens/testnet/${api.ensDomain}`;
+      await buildApi(apiPath);
     });
 
     afterAll(async () => {

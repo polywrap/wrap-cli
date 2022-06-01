@@ -1,6 +1,6 @@
 import { filesystemPlugin } from "../index";
 import {
-  buildAndDeployApi,
+  buildApi,
   initTestEnvironment,
   stopTestEnvironment,
 } from "@web3api/test-env-js";
@@ -83,14 +83,8 @@ describe("Filesystem plugin", () => {
     const apiPath = path.resolve(
       `${GetPathToTestApis()}/wasm-as/simple-storage`
     );
-    await buildAndDeployApi({
-      apiAbsPath: apiPath,
-      ipfsProvider,
-      ensRegistryAddress: ensAddress,
-      ensRegistrarAddress,
-      ensResolverAddress,
-      ethereumProvider,
-    });
+    await buildApi(apiPath);
+
     const fsPath = `${apiPath}/build`;
     const fsUri = `fs/${fsPath}`;
 
