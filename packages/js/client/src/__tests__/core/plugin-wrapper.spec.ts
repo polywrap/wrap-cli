@@ -1,41 +1,24 @@
-import {
-  initTestEnvironment,
-  stopTestEnvironment,
-} from "@web3api/test-env-js";
-import {
-  Web3ApiClientConfig,
-  Plugin,
-  Web3ApiClient,
-} from "../..";
+import { Web3ApiClientConfig, Plugin, Web3ApiClient } from "../..";
 import { createWeb3ApiClient } from "../../createWeb3ApiClient";
 
 jest.setTimeout(200000);
+
+const defaultPlugins = [
+  "w3://ens/ipfs.web3api.eth",
+  "w3://ens/ens.web3api.eth",
+  "w3://ens/ethereum.web3api.eth",
+  "w3://ens/http.web3api.eth",
+  "w3://ens/js-logger.web3api.eth",
+  "w3://ens/uts46.web3api.eth",
+  "w3://ens/sha3.web3api.eth",
+  "w3://ens/graph-node.web3api.eth",
+  "w3://ens/fs.web3api.eth",
+];
 
 describe("plugin-wrapper", () => {
   let ipfsProvider: string;
   let ethProvider: string;
   let ensAddress: string;
-  let ensRegistrarAddress: string;
-  let ensResolverAddress: string;
-
-  beforeAll(async () => {
-    const {
-      ipfs,
-      ethereum,
-      ensAddress: ens,
-      registrarAddress,
-      resolverAddress,
-    } = await initTestEnvironment();
-    ipfsProvider = ipfs;
-    ethProvider = ethereum;
-    ensAddress = ens;
-    ensRegistrarAddress = registrarAddress;
-    ensResolverAddress = resolverAddress;
-  });
-
-  afterAll(async () => {
-    await stopTestEnvironment();
-  });
 
   const getClient = async (config?: Partial<Web3ApiClientConfig>) => {
     const client = await createWeb3ApiClient(
@@ -64,17 +47,6 @@ describe("plugin-wrapper", () => {
 
   test("plugin registration - with default plugins", () => {
     const implementationUri = "w3://ens/some-implementation.eth";
-    const defaultPlugins = [
-      "w3://ens/ipfs.web3api.eth",
-      "w3://ens/ens.web3api.eth",
-      "w3://ens/ethereum.web3api.eth",
-      "w3://ens/http.web3api.eth",
-      "w3://ens/js-logger.web3api.eth",
-      "w3://ens/uts46.web3api.eth",
-      "w3://ens/sha3.web3api.eth",
-      "w3://ens/graph-node.web3api.eth",
-      "w3://ens/fs.web3api.eth",
-    ];
 
     const client = new Web3ApiClient({
       plugins: [
@@ -101,7 +73,7 @@ describe("plugin-wrapper", () => {
     const schema: string = await client.getSchema(
       "w3://ens/js-logger.web3api.eth"
     );
-    
+
     expect(schema).toStrictEqual(
       `### Web3API Header START ###
 scalar UInt
@@ -183,5 +155,79 @@ enum Logger_LogLevel @imported(
 ### Imported Objects END ###
 `
     );
+  });
+
+  test("plugin registration - with plugin override", async () => {
+    const pluginUriToOverride = defaultPlugins[0];
+
+    const pluginPackage = {
+      factory: () => ({} as Plugin),
+      manifest: {
+        schema: "",
+        implements: [],
+      },
+    };
+
+    const client = new Web3ApiClient({
+      plugins: [
+        {
+          uri: pluginUriToOverride,
+          plugin: pluginPackage,
+        },
+      ],
+    });
+
+    const pluginUris = client.getPlugins().map((x) => x.uri.uri);
+
+    expect(pluginUris).toEqual(defaultPlugins);
+
+    const registeredPlugin = client
+      .getPlugins()
+      .find((x) => x.uri.uri === pluginUriToOverride);
+
+    expect(registeredPlugin?.plugin).toEqual(pluginPackage);
+  });
+
+  test("plugin registration - with multiple plugin overrides", async () => {
+    const pluginUriToOverride = defaultPlugins[0];
+
+    const pluginPackage1 = {
+      factory: () => ({} as Plugin),
+      manifest: {
+        schema: "",
+        implements: [],
+      },
+    };
+
+    const pluginPackage2 = {
+      factory: () => ({} as Plugin),
+      manifest: {
+        schema: "",
+        implements: [],
+      },
+    };
+
+    const client = new Web3ApiClient({
+      plugins: [
+        {
+          uri: pluginUriToOverride,
+          plugin: pluginPackage1,
+        },
+        {
+          uri: pluginUriToOverride,
+          plugin: pluginPackage2,
+        },
+      ],
+    });
+
+    const pluginUris = client.getPlugins().map((x) => x.uri.uri);
+
+    expect(pluginUris).toEqual(defaultPlugins);
+
+    const registeredPlugin = client
+      .getPlugins()
+      .find((x) => x.uri.uri === pluginUriToOverride);
+
+    expect(registeredPlugin?.plugin).toEqual(pluginPackage1);
   });
 });
