@@ -1,16 +1,10 @@
 import { httpPlugin } from "../..";
 import { Response } from "../../query/w3";
 
-import { Web3ApiClient, defaultIpfsProviders } from "@web3api/client-js"
-import { ensPlugin } from "@web3api/ens-plugin-js";
-import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
-import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
+import { Web3ApiClient } from "@web3api/client-js"
 import {
-  initTestEnvironment,
-  stopTestEnvironment,
   buildApi
 } from "@web3api/test-env-js";
-import axios from "axios";
 import nock from "nock";
 
 jest.setTimeout(360000)
@@ -25,59 +19,21 @@ describe("e2e tests for HttpPlugin", () => {
   describe("integration", () => {
 
     let client: Web3ApiClient;
-    let ensAddress: string;
 
-    const apiPath = `${__dirname}/integration/build`
+    const apiPath = `${__dirname}/integration`
     const uri = `fs/${apiPath}/build`
 
     beforeAll(async () => {
-      const { ethereum, ipfs } = await initTestEnvironment();
-      const { data } = await axios.get("http://localhost:4040/deploy-ens");
-
-      ensAddress = data.ensAddress
-
       client = new Web3ApiClient({
         plugins: [
           {
             uri: "w3://ens/http.web3api.eth",
             plugin: httpPlugin({ query: {} }),
           },
-          {
-            uri: "w3://ens/ethereum.web3api.eth",
-            plugin: ethereumPlugin({
-              networks: {
-                testnet: {
-                  provider: ethereum
-                }
-              },
-              defaultNetwork: "testnet"
-            }),
-          },
-          {
-            uri: "w3://ens/ipfs.web3api.eth",
-            plugin: ipfsPlugin({
-              provider: ipfs,
-              fallbackProviders: defaultIpfsProviders,
-            })
-          },
-          {
-            uri: "w3://ens/ens.web3api.eth",
-            plugin: ensPlugin({
-              query: {
-                addresses: {
-                  testnet: ensAddress
-                }
-              }
-            })
-          }
         ],
       });
 
       await buildApi(apiPath);
-    });
-
-    afterAll(async () => {
-      await stopTestEnvironment();
     });
 
     it("get", async () => {
