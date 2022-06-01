@@ -128,7 +128,7 @@ describe("cookbook", () => {
     });
 
     it("should cook recipes", async () => {
-      await client.cookRecipesSync({
+      await client.cook({
         cookbook,
         dishes: ["simpleStorage.deployment"],
 
@@ -138,7 +138,7 @@ describe("cookbook", () => {
 
           cookbook.constants!.address = data!.deployContract as string;
 
-          await client.cookRecipesSync({
+          await client.cook({
             cookbook,
             dishes: ["simpleStorage.cases"],
     

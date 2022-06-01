@@ -50,6 +50,7 @@ import {
   parseRecipeQuery,
   resolveRecipeQuery,
   NamespacedRecipes,
+  executeMaybeAsyncFunction,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
@@ -128,29 +129,8 @@ export class Web3ApiClient implements Client {
     this._config.tracingEnabled = enable;
   }
 
-  @Tracer.traceMethod("Web3ApiClient: cookRecipes")
-  public async cookRecipes<
-    TData extends Record<string, unknown> = Record<string, unknown>
-  >(options: CookRecipesOptions<TData>): Promise<void> {
-    const { api, recipes } = await this._prepareRecipeQueries<TData>(options);
-    await Promise.all(
-      recipes.map(async (r) => {
-        const opts = {
-          uri: api.uri,
-          query: r.query,
-          variables: r.variables,
-          config: options.config,
-        };
-        const res = await this.query<TData>(opts);
-        if (options && options.onExecution) {
-          options.onExecution(opts, res.data, res.errors);
-        }
-      })
-    );
-  }
-
-  @Tracer.traceMethod("Web3ApiClient: cookRecipesSync")
-  public async cookRecipesSync<
+  @Tracer.traceMethod("Web3ApiClient: cook")
+  public async cook<
     TData extends Record<string, unknown> = Record<string, unknown>
   >(options: CookRecipesOptions<TData>): Promise<void> {
     const { api, recipes } = await this._prepareRecipeQueries<TData>(options);
@@ -163,7 +143,11 @@ export class Web3ApiClient implements Client {
       };
       const { data, errors } = await this.query<TData>(opts);
       if (options && options.onExecution) {
-        options.onExecution(opts, data, errors);
+        await executeMaybeAsyncFunction(options.onExecution, [
+          opts,
+          data,
+          errors,
+        ]);
       }
     }
   }
@@ -906,19 +890,10 @@ const contextualizeClient = (
         }> => {
           return client.loadUriResolvers();
         },
-        cookRecipes: <
-          TData extends Record<string, unknown> = Record<string, unknown>
-        >(
+        cook: <TData extends Record<string, unknown> = Record<string, unknown>>(
           options: CookRecipesOptions<TData>
         ): Promise<void> => {
-          return client.cookRecipes({ ...options, contextId });
-        },
-        cookRecipesSync: <
-          TData extends Record<string, unknown> = Record<string, unknown>
-        >(
-          options: CookRecipesOptions<TData>
-        ): Promise<void> => {
-          return client.cookRecipesSync({ ...options, contextId });
+          return client.cook({ ...options, contextId });
         },
       }
     : client;

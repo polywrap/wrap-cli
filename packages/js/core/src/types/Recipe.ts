@@ -35,13 +35,7 @@ export interface CookRecipesOptions<
 }
 
 export interface RecipeHandler {
-  cookRecipes<TData extends Record<string, unknown> = Record<string, unknown>>(
-    options: CookRecipesOptions<TData>
-  ): Promise<void>;
-
-  cookRecipesSync<
-    TData extends Record<string, unknown> = Record<string, unknown>
-  >(
+  cook<TData extends Record<string, unknown> = Record<string, unknown>>(
     options: CookRecipesOptions<TData>
   ): Promise<void>;
 }
