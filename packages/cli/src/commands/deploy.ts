@@ -56,7 +56,6 @@ async function run(options: DeployCommandOptions): Promise<void> {
     web3apiManifestPath: manifestFile,
     quiet: verbose ? false : true,
   });
-
   await project.validate();
 
   const deployManifest = await project.getDeployManifest();

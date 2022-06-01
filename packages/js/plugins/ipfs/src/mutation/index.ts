@@ -18,7 +18,7 @@ export class Mutation extends Module<MutationConfig> {
   }
 
   public async addFile(input: Input_addFile): Promise<string> {
-    const result = await this._ipfs.add(input.data);
+    const result = await this._ipfs.add(new Uint8Array(input.data));
 
     if (result.length === 0) {
       throw Error(

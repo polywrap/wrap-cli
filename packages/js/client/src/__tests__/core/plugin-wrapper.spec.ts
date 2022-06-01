@@ -1,5 +1,11 @@
-import { Web3ApiClientConfig, Plugin, Web3ApiClient } from "../..";
-import { createWeb3ApiClient } from "../../createWeb3ApiClient";
+import {
+  Web3ApiClientConfig,
+  Plugin,
+  Web3ApiClient,
+  createWeb3ApiClient,
+  PluginModule,
+  PluginModules,
+} from "../..";
 
 jest.setTimeout(200000);
 
@@ -43,6 +49,49 @@ describe("plugin-wrapper", () => {
     );
 
     return client;
+  };
+
+  const mockMapPlugin = () => {
+    interface Config extends Record<string, unknown> {
+      map: Map<string, number>;
+    }
+
+    class Query extends PluginModule<Config> {
+      async getMap(_: unknown) {
+        return this.config.map;
+      }
+    }
+
+    class Mutation extends PluginModule<Config> {
+      updateMap(input: { map: Map<string, number> }): Map<string, number> {
+        for (const key of input.map.keys()) {
+          this.config.map.set(
+            key,
+            (this.config.map.get(key) || 0) + (input.map.get(key) || 0)
+          );
+        }
+        return this.config.map;
+      }
+    }
+
+    class MockMapPlugin implements Plugin {
+      private map = new Map().set("a", 1).set("b", 2);
+
+      getModules(): PluginModules {
+        return {
+          query: new Query({ map: this.map }),
+          mutation: new Mutation({ map: this.map }),
+        };
+      }
+    }
+
+    return {
+      factory: () => new MockMapPlugin(),
+      manifest: {
+        schema: ``,
+        implements: [],
+      },
+    };
   };
 
   test("plugin registration - with default plugins", () => {
@@ -154,6 +203,52 @@ enum Logger_LogLevel @imported(
 
 ### Imported Objects END ###
 `
+    );
+  });
+
+  it("plugin map types", async () => {
+    const implementationUri = "w3://ens/some-implementation.eth";
+    const mockPlugin = mockMapPlugin();
+    const client = await getClient({
+      plugins: [
+        {
+          uri: implementationUri,
+          plugin: mockPlugin,
+        },
+      ],
+    });
+
+    const queryEnv = await client.query({
+      uri: implementationUri,
+      query: `
+      query {
+        getMap
+      }
+    `,
+    });
+
+    expect(queryEnv.errors).toBeFalsy();
+    expect(queryEnv.data).toBeTruthy();
+    expect(queryEnv.data?.getMap).toMatchObject(
+      new Map<string, number>().set("a", 1).set("b", 2)
+    );
+
+    const mutationEnv = await client.query({
+      uri: implementationUri,
+      query: `
+      mutation {
+        updateMap(map: $map)
+      }
+      `,
+      variables: {
+        map: new Map<string, number>().set("b", 1).set("c", 5),
+      },
+    });
+
+    expect(mutationEnv.errors).toBeFalsy();
+    expect(mutationEnv.data).toBeTruthy();
+    expect(mutationEnv.data?.updateMap).toMatchObject(
+      new Map<string, number>().set("a", 1).set("b", 3).set("c", 5)
     );
   });
 

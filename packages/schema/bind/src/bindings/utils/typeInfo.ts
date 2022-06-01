@@ -21,7 +21,7 @@ export function extractCommonTypeInfo(
   const firstDefinition: Record<string, GenericDefinition> = {};
   const commonTypeInfo: TypeInfo = createTypeInfo();
 
-  const trackCommonTypes = (commonProps: unknown) => (
+  const trackCommonTypes = (commonProps: Record<string, unknown>) => (
     def: GenericDefinition
   ) => {
     if (!counts[def.type]) {
@@ -35,23 +35,30 @@ export function extractCommonTypeInfo(
       // If this is the first duplicate being tracked
       // Mark both the first definition & current definition as "common"
       if (firstDefinition[def.type]) {
+        const defCopy = Object.assign({}, def);
+
+        // Ensure the common properties are unset
+        for (const key of Object.keys(commonProps)) {
+          ((defCopy as unknown) as Record<string, unknown>)[key] = undefined;
+        }
+
         // Add the definition to the common TypeInfo
         switch (def.kind) {
           case DefinitionKind.Enum:
-            commonTypeInfo.enumTypes.push({ ...def } as EnumDefinition);
+            commonTypeInfo.enumTypes.push(defCopy as EnumDefinition);
             break;
           case DefinitionKind.Object:
-            commonTypeInfo.objectTypes.push({ ...def } as ObjectDefinition);
+            commonTypeInfo.objectTypes.push(defCopy as ObjectDefinition);
             break;
           case DefinitionKind.ImportedEnum:
-            commonTypeInfo.importedEnumTypes.push({
-              ...def,
-            } as ImportedEnumDefinition);
+            commonTypeInfo.importedEnumTypes.push(
+              defCopy as ImportedEnumDefinition
+            );
             break;
           case DefinitionKind.ImportedObject:
-            commonTypeInfo.importedObjectTypes.push({
-              ...def,
-            } as ImportedObjectDefinition);
+            commonTypeInfo.importedObjectTypes.push(
+              defCopy as ImportedObjectDefinition
+            );
             break;
           default:
             throw Error(

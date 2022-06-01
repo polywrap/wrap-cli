@@ -1,7 +1,7 @@
 {
   "name": "@web3api/schema-compose",
   "description": "Web3API Schema Composition",
-  "version": "0.0.1-prealpha.80",
+  "version": "0.0.1-prealpha.82",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -19,7 +19,7 @@
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@web3api/schema-parse": "0.0.1-prealpha.80",
+    "@web3api/schema-parse": "0.0.1-prealpha.82",
     "graphql": "15.5.0",
     "mustache": "4.0.1"
   },
@@ -27,7 +27,7 @@
     "@types/jest": "26.0.8",
     "@types/mustache": "4.0.1",
     "@types/prettier": "2.6.0",
-    "@web3api/test-cases": "0.0.1-prealpha.80",
+    "@web3api/test-cases": "0.0.1-prealpha.82",
     "jest": "26.6.3",
     "rimraf": "3.0.2",
     "ts-jest": "26.5.4",

@@ -49,9 +49,9 @@ export class Query extends Module<QueryConfig> {
     }
   }
 
-  async getFile(_input: Input_getFile, _client: Client): Promise<Bytes | null> {
+  async getFile(input: Input_getFile, _client: Client): Promise<Bytes | null> {
     try {
-      return await fs.promises.readFile(_input.path);
+      return await fs.promises.readFile(input.path);
     } catch (e) {
       return null;
     }
