@@ -534,15 +534,16 @@ export const runGetImplementationsTest = async (
   interfaceUri: string,
   implementationUri: string
 ) => {
+  let implUri = new Uri(implementationUri);;
   expect(client.getImplementations(interfaceUri)).toEqual([
-    implementationUri,
+    implUri.uri,
   ]);
 
   const query = await client.query<{
     queryMethod: string;
     abstractQueryMethod: string;
   }>({
-    uri: implementationUri,
+    uri: implUri.uri,
     query: `
       query {
         queryImplementations
@@ -554,7 +555,7 @@ export const runGetImplementationsTest = async (
   expect(query.errors).toBeFalsy();
   expect(query.data).toBeTruthy();
   expect((query.data as any).queryImplementations).toEqual([
-    implementationUri,
+    implUri.uri,
   ]);
 };
 
