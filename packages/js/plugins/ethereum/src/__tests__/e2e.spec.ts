@@ -36,7 +36,7 @@ describe("Ethereum Plugin", () => {
   let registrarAddress: string;
   const signer = "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1";
 
-  const apiPath = `${__dirname}/integration/build`
+  const apiPath = `${__dirname}/integration`
   const uri = `fs/${apiPath}/build`
 
   beforeAll(async () => {
