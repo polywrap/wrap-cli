@@ -18,8 +18,7 @@ const languageTestCommands: Record<string, string[]> = {
   ],
   "assemblyscript": [
     "yarn build",
-    "yarn test:e2e",
-    "yarn test:recipe"
+    "yarn test:e2e"
   ],
   "interface": [
     "yarn build"
