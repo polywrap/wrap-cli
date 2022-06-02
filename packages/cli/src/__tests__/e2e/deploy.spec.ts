@@ -32,26 +32,20 @@ const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/deploy");
     path.join(testCaseRoot, testCases[index]);
 
 const setup = async (domainNames: string[]) => {
-  const { ethereum, ensAddress, resolverAddress, registrarAddress } = await initTestEnvironment();
+  const { ethereum, ...data } = await initTestEnvironment();
+
+  const ensAddress = data.ensAddress
+  const resolverAddress = data.resolverAddress
+  const registrarAddress = data.registrarAddress
   const signer = new Wallet("0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d");
 
-// <<<<<<< HEAD
-// =======
-//   const { __type, ...deployManifest } = await loadDeployManifest(`${projectRoot}/web3api.deploy.yaml`);
-//
-//   Object.entries(deployManifest.stages).forEach(([key, value]) => {
-//     if (value.config && value.config.ensRegistryAddress) {
-//       deployManifest.stages[key].config!.ensRegistryAddress = ensAddress;
-//     }
-//   })
-//
-//   await fs.promises.writeFile(
-//     `${projectRoot}/web3api.deploy.yaml`,
-//     yaml.dump(deployManifest)
-//   )
-//
-//
-// >>>>>>> prealpha-dev
+  // Setup environment variables
+  process.env = {
+    ...process.env,
+    DOMAIN_NAME: "test1.eth",
+    ENS_REG_ADDR: ensAddress
+  };
+
   const ethereumPluginUri = "w3://ens/ethereum.web3api.eth"
   const client = new Web3ApiClient({
     plugins: [
@@ -134,6 +128,7 @@ describe("e2e tests for deploy command", () => {
         args: ["deploy"],
         cwd: getTestCaseDir(0),
         cli: w3Cli,
+        env: process.env as Record<string, string>
       },
     );
 
@@ -206,5 +201,19 @@ describe("e2e tests for deploy command", () => {
     expect(sanitizedErr).toContain(
       "Failed to execute stage 'from_deploy'"
     );
+  });
+
+  test("Throws if environment variable is not loaded but defined in manifest", async () => {
+    const { exitCode: code, stderr } = await runCLI(
+      {
+        args: ["deploy"],
+        cwd: getTestCaseDir(4),
+        cli: w3Cli,
+      },
+    );
+
+    const sanitizedErr = clearStyle(stderr);
+    expect(code).toEqual(1);
+    expect(sanitizedErr).toContain("Environment variable not found: `NON_LOADED_VAR`");
   });
 });

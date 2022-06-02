@@ -44,6 +44,7 @@ import {
   coreInterfaceUris,
   ResolveUriErrorType,
   ResolveUriResult,
+  PluginPackage,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
@@ -553,7 +554,42 @@ export class Web3ApiClient implements Client {
 
   @Tracer.traceMethod("Web3ApiClient: sanitizeConfig")
   private _sanitizeConfig(): void {
+    this._sanitizePlugins();
     this._sanitizeInterfacesAndImplementations();
+  }
+
+  // Make sure plugin URIs are unique
+  // If not, use the first occurrence of the plugin
+  @Tracer.traceMethod("Web3ApiClient: sanitizePlugins")
+  private _sanitizePlugins(): void {
+    const plugins = this._config.plugins;
+    // Plugin map used to keep track of plugins with same URI
+    const addedPluginsMap = new Map<string, PluginPackage>();
+
+    for (const plugin of plugins) {
+      const pluginUri = plugin.uri.uri;
+
+      if (!addedPluginsMap.has(pluginUri)) {
+        // If the plugin is not added yet then add it
+        addedPluginsMap.set(pluginUri, plugin.plugin);
+      }
+      // If the plugin with the same URI is already added, then ignore it
+      // This means that if the developer defines a plugin with the same URI as a default plugin
+      // we will ignore the default one and use the developer's plugin
+    }
+
+    // Collection of unique plugins
+    const sanitizedPlugins: PluginRegistration<Uri>[] = [];
+
+    // Go through the unique map of plugins and add them to the sanitized plugins
+    for (const [uri, plugin] of addedPluginsMap) {
+      sanitizedPlugins.push({
+        uri: new Uri(uri),
+        plugin: plugin,
+      });
+    }
+
+    this._config.plugins = sanitizedPlugins;
   }
 
   // Make sure interface URIs are unique and that all of their implementation URIs are unique
