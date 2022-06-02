@@ -20,19 +20,9 @@ jest.setTimeout(360000);
 
 describe("Filesystem plugin", () => {
   let client: Web3ApiClient;
-  let ipfsProvider: string;
-  let ensAddress: string;
-  let ethereumProvider: string;
-  let ensRegistrarAddress: string;
-  let ensResolverAddress: string;
 
   beforeAll(async () => {
-    const { ipfs, ethereum, ensAddress: ens, registrarAddress, resolverAddress } = await initTestEnvironment();
-    ipfsProvider = ipfs;
-    ensAddress = ens;
-    ethereumProvider = ethereum;
-    ensRegistrarAddress = registrarAddress;
-    ensResolverAddress = resolverAddress;
+    const { ipfs, ethereum, ensAddress: ens } = await initTestEnvironment();
 
     const config: Partial<Web3ApiClientConfig> = {
       plugins: [
