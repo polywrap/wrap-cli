@@ -1,4 +1,4 @@
-import { Web3ApiClient } from "../../";
+import { Web3ApiClient, Uri } from "../../";
 import { BigNumber } from "bignumber.js";
 
 export const runAsyncifyTest = async (
@@ -465,7 +465,7 @@ export const runImplementationsTest = async (
   implementationUri: string
 ) => {
   expect(client.getImplementations(interfaceUri))
-    .toEqual([implementationUri]);
+    .toEqual([new Uri(implementationUri).uri]);
 
   const query = await client.query<{
     queryMethod: string;
