@@ -7,7 +7,7 @@ import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
-  buildAndDeployApi,
+  buildApi,
 } from "@web3api/test-env-js";
 import { Wallet } from "ethers";
 
@@ -31,11 +31,13 @@ jest.setTimeout(360000);
 
 describe("Ethereum Plugin", () => {
   let client: Web3ApiClient;
-  let uri: string;
   let ensAddress: string;
   let resolverAddress: string;
   let registrarAddress: string;
   const signer = "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1";
+
+  const apiPath = `${__dirname}/integration`
+  const uri = `fs/${apiPath}/build`
 
   beforeAll(async () => {
     const { ethereum, ipfs } = await initTestEnvironment();
@@ -81,16 +83,7 @@ describe("Ethereum Plugin", () => {
       ],
     });
 
-    const api = await buildAndDeployApi({
-      apiAbsPath: `${__dirname}/integration`,
-      ipfsProvider: ipfs,
-      ensRegistryAddress: ensAddress,
-      ensRegistrarAddress: registrarAddress,
-      ensResolverAddress: resolverAddress,
-      ethereumProvider: ethereum,
-    });
-
-    uri = `ens/testnet/${api.ensDomain}`;
+    await buildApi(apiPath);
   });
 
   afterAll(async () => {
