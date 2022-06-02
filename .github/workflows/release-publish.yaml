@@ -109,11 +109,11 @@ jobs:
           npm config set //registry.npmjs.org/:_authToken=${{secrets.WEB3_API_BUILD_BOT_NPM_PAT}}
           echo $(npm whoami --registry https://registry.npmjs.org/)
 
-      - name: Install dependencies
+      - name: Install JS dependencies
         if: ${{env.TAG_EXISTS}} == 'false'
         run: yarn install --nonInteractive --frozen-lockfile
 
-      - name: Build packages
+      - name: Build JS packages
         if: ${{env.TAG_EXISTS}} == 'false'
         run: yarn build
 
@@ -133,4 +133,52 @@ jobs:
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: '**[NPM Release Published](https://www.npmjs.com/search?q=%40web3api) `${{env.RELEASE_VERSION}}`** 🎉'
+            })
+
+  Publish-Crates-dot-io-Release:
+    name: crates.io Release
+    if: |
+      github.event.pull_request.user.login == 'web3-api-build-bot' &&
+      github.event.pull_request.merged == true
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
+
+      - name: Read VERSION into env.RELEASE_VERSION
+        run: echo RELEASE_VERSION=$(cat VERSION) >> $GITHUB_ENV
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          override: true
+
+      - name: Build RS crates
+        if: ${{env.TAG_EXISTS}} == 'false'
+        working-directory: ./packages/wasm/rs
+        run: cargo build --release
+
+      - name: Verify & Generate RS Documentation
+        if: ${{env.TAG_EXISTS}} == 'false'
+        working-directory: ./packages/wasm/rs
+        run: cargo doc --no-deps
+
+      - name: Upload Rust Crates To Crates.io
+        if: ${{env.TAG_EXISTS}} == 'false'
+        working-directory: ./packages/wasm/rs
+        run: cargo publish --token ${{secrets.WEB3_API_BUILD_BOT_CRATES_PAT}}
+
+      - uses: actions/github-script@0.8.0
+        if: ${{env.TAG_EXISTS}} == 'false'
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '**[Crates.io Release Published](https://crates.io/search?q=web3api) `${{env.RELEASE_VERSION}}`** 🎉'
             })

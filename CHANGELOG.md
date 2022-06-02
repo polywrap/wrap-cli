@@ -1,3 +1,10 @@
+# Web3API 0.0.1-prealpha.82
+## Features
+* [PR-699](https://github.com/polywrap/monorepo/pull/699) `@web3api/cli`: Support for Rust based WebAssembly wrappers has been added.
+
+## Breaking Changes
+* [PR-872](https://github.com/polywrap/monorepo/pull/872) `@web3api/schema-bind`: TypeScript bindings for both app & plugin projects now use `ArrayBuffer` to represent the schema's `Bytes` type, instead of the previous `Uint8Array`.
+
 # Web3API 0.0.1-prealpha.81
 ## Features
 * [PR-864](https://github.com/polywrap/monorepo/pull/864) `@web3api/react`: `useWeb3ApiInvoke` and `useWeb3ApiQuery` hooks now support configuring the client's environment, along with all other configuration options.

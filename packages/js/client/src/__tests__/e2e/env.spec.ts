@@ -105,7 +105,7 @@ describe("env", () => {
 
     beforeAll(async () => {
       const api = await buildAndDeployApi({
-        apiAbsPath: `${GetPathToTestApis()}/simple-env-types`,
+        apiAbsPath: `${GetPathToTestApis()}/wasm-as/simple-env-types`,
         ipfsProvider,
         ensRegistryAddress: ensAddress,
         ethereumProvider: ethProvider,
@@ -281,7 +281,7 @@ describe("env", () => {
 
     beforeAll(async () => {
       const api = await buildAndDeployApi({
-        apiAbsPath: `${GetPathToTestApis()}/complex-env-types`,
+        apiAbsPath: `${GetPathToTestApis()}/wasm-as/complex-env-types`,
         ipfsProvider,
         ensRegistryAddress: ensAddress,
         ethereumProvider: ethProvider,
@@ -470,7 +470,7 @@ describe("env", () => {
 
     beforeAll(async () => {
       const api = await buildAndDeployApi({
-        apiAbsPath: `${GetPathToTestApis()}/env-client-types`,
+        apiAbsPath: `${GetPathToTestApis()}/wasm-as/env-client-types`,
         ipfsProvider,
         ensRegistryAddress: ensAddress,
         ethereumProvider: ethProvider,
@@ -535,7 +535,7 @@ describe("env", () => {
 
   test("set env when not required", async () => {
     const api = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/enum-types`,
+      apiAbsPath: `${GetPathToTestApis()}/wasm-as/enum-types`,
       ipfsProvider,
       ensRegistryAddress: ensAddress,
       ethereumProvider: ethProvider,

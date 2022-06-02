@@ -1,7 +1,7 @@
 import { TypeInfo } from "@web3api/schema-parse";
 import { OutputDirectory } from "@web3api/os-js";
 
-export type BindLanguage = "wasm-as" | "plugin-ts" | "app-ts";
+export type BindLanguage = "wasm-as" | "wasm-rs" | "plugin-ts" | "app-ts";
 
 export interface BindModuleOutput {
   name: string;

@@ -25,7 +25,6 @@ describe("SimpleStorage", () => {
       resolverAddress,
       ipfs,
     } = await initTestEnvironment();
-
     // deploy api
     const apiPath: string = path.join(
       path.resolve(__dirname),
@@ -46,7 +45,6 @@ describe("SimpleStorage", () => {
       ensResolverAddress: resolverAddress,
       ethereumProvider: testEnvEtherem,
     });
-
     ensUri = `ens/testnet/${api.ensDomain}`;
   });
 

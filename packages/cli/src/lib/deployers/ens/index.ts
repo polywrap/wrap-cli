@@ -49,6 +49,10 @@ class ENSPublisher implements Deployer {
     const ensName = ens.name(config.domainName);
     const resolver = await ensName.getResolver();
 
+    if (resolver === "0x0000000000000000000000000000000000000000") {
+      throw new Error(`Resolver not set for '${config.domainName}'`);
+    }
+
     const contract = new ethers.Contract(
       resolver,
       [
