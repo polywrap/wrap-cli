@@ -223,7 +223,6 @@ describe("e2e tests for deploy command", () => {
 
     const sanitizedErr = clearStyle(stderr);
     expect(code).toEqual(1);
-    expect(sanitizedErr).toContain(
-"Variable specified on manifest is not defined as environment variable: `NON_LOADED_VAR`");
+    expect(sanitizedErr).toContain("Environment variable not found: `NON_LOADED_VAR`");
   });
 });
