@@ -146,6 +146,7 @@ describe("e2e tests for deploy command", () => {
         args: ["deploy"],
         cwd: getTestCaseDir(0),
         cli: w3Cli,
+        env: process.env as Record<string, string>
       },
     );
 
