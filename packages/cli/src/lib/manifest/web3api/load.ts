@@ -1,4 +1,10 @@
-import { displayPath, withSpinner, intlMsg, searchOptional } from "../../";
+import {
+  displayPath,
+  withSpinner,
+  intlMsg,
+  searchOptional,
+  loadEnvironmentVariables,
+} from "../../";
 
 import {
   Web3ApiManifest,
@@ -131,7 +137,10 @@ export async function loadDeployManifest(
     }
 
     try {
-      const result = deserializeDeployManifest(manifest);
+      let result = deserializeDeployManifest(manifest);
+      result = (loadEnvironmentVariables(
+        (result as unknown) as Record<string, unknown>
+      ) as unknown) as DeployManifest;
       return Promise.resolve(result);
     } catch (e) {
       return Promise.reject(e);
