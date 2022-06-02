@@ -1,8 +1,8 @@
 use super::{
     error::{get_error_message, DecodeError},
-    Context, DataView, Format, Read, ExtensionType,
+    DataView, Format, Read, ExtensionType,
 };
-use crate::{BigInt, BigNumber, JSON};
+use crate::{BigInt, BigNumber, JSON, Context};
 use byteorder::{BigEndian, ReadBytesExt};
 use core::hash::Hash;
 use std::{collections::BTreeMap, io::Read as StdioRead, str::FromStr};
