@@ -7,7 +7,7 @@ stages:
     package: ens
     depends_on: ipfs_deploy
     config:
-      domainName: $DOMAIN_NAME
+      domainName: test1.eth
       provider: 'http://localhost:8545'
       ensRegistryAddress: '0x9b1f7F645351AF3631a656421eD2e40f2802E6c0'
   from_deploy2:

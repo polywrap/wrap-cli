@@ -3,7 +3,7 @@ import {
   withSpinner,
   intlMsg,
   searchOptional,
-  loadEnvironmentVariables
+  loadEnvironmentVariables,
 } from "../../";
 
 import {
@@ -138,9 +138,9 @@ export async function loadDeployManifest(
 
     try {
       let result = deserializeDeployManifest(manifest);
-      result = loadEnvironmentVariables(
-        result as unknown as Record<string, unknown>
-      ) as unknown as DeployManifest;
+      result = (loadEnvironmentVariables(
+        (result as unknown) as Record<string, unknown>
+      ) as unknown) as DeployManifest;
       return Promise.resolve(result);
     } catch (e) {
       return Promise.reject(e);

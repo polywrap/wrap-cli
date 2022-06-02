@@ -4,8 +4,7 @@ export function loadEnvironmentVariables(
   obj: Record<string, unknown>,
   env: Record<string, unknown> = process.env
 ): Record<string, unknown> {
-  const isEnvVar = (x: unknown) =>
-    typeof x === "string" && x[0] === '$';
+  const isEnvVar = (x: unknown) => typeof x === "string" && x[0] === "$";
 
   const isObject = (val: unknown): boolean => {
     if (val === null) {
