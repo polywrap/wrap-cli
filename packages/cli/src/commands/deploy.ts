@@ -79,10 +79,6 @@ async function run(options: DeployCommandOptions): Promise<void> {
     packageMap[packageName] = await project.getDeploymentPackage(packageName);
   }
 
-  deployManifest.stages = Web3ApiProject.loadEnvironmentVariables(
-    deployManifest.stages
-  ) as DeployManifest["stages"];
-
   Object.entries(deployManifest.stages).forEach(([stageName, stageValue]) => {
     stageToPackageMap[stageName] = packageMap[stageValue.package];
   });

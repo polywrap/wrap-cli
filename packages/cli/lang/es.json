@@ -1,3 +1,4 @@
+
 {
   "commands_build_description": "Builds a Web3API",
   "commands_build_error_manifestPathMissing": "{option} option missing {argument} argument",
@@ -213,12 +214,12 @@
   "lib_helpers_parameters_unexpectedValue": "Unexpected value provided for one or more of {options}. See --help for more information.",
   "lib_language_unsupportedManifestLanguage": "The manifest's language {language} is not supported. Please use one of the supported lanauges: {supported}",
   "lib_language_noInterfaceCodegen": "Code generation cannot be run for Web3API Interface projects",
+  "lib_system_env_var_not_found": "Environment variable not found: `{variableName}`",
   "lib_publishers_ipfsPublisher_urlMalformed": "IPFS URL Malformed",
   "lib_project_invalid_manifest_language": "Unrecognized manifest language `{language}`. Fix: Please modify your web3api.yaml file to include a valid language field. Supported Manifest Languages: {validTypes}",
   "lib_project_invalid_manifest_language_pathed": "Unsupported manifest language `{language}`.Debug: No default manifest found at {defaultPath}. Please make contact with the Polywrap CLI development community.",
   "lib_project_language_not_found": "Manifest language not found. Please include the `language` property in the manifest file.",
   "lib_project_app_uri_support": "The app command supports only filesystem URIs for plugins. Examples:",
-  "lib_project_env_var_not_found": "Variable specified on manifest is not defined as environment variable: `{variableName}`",
   "lib_project_imported_plugin_manifest_not_found": "No manifest found for imported plugin namespace `{namespace}` at path `{path}`",
   "lib_project_invalid_uri": "Invalid URI Received:",
   "lib_typescript_notInstalled": "Your project uses typescript, but it's not installed",

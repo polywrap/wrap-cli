@@ -40,71 +40,6 @@ export abstract class Project<TManifest extends AnyManifest> {
     }
   }
 
-  public static loadEnvironmentVariables(
-    obj: Record<string, unknown>
-  ): Record<string, unknown> {
-    const entries = Object.entries(obj);
-    const isEnvVar = (c: string) => c.startsWith && c.startsWith("$");
-
-    const loadVar = (value: unknown) => {
-      if (typeof value === "string" && isEnvVar(value)) {
-        return Project.getEnvironmentVariable(value);
-      }
-      return value;
-    };
-
-    const isObject = (val: unknown): boolean => {
-      if (val === null) {
-        return false;
-      }
-      return typeof val === "object";
-    };
-
-    const iterateArray = (value: unknown[]): unknown => {
-      return value.map((v) => {
-        if (Array.isArray(v)) return iterateArray(v);
-
-        if (isObject(v)) {
-          return Object.entries(v as Record<string, unknown>).reduce(
-            replaceValue,
-            v
-          );
-        }
-
-        return loadVar(v);
-      });
-    };
-
-    /**
-     * Modifies current config with loaded environment variables if needed
-     * @param object can be any object that we would like to update environment variables
-     * @param key key of current object. this will allow to update it
-     * @param value value of current object, we check if it is object or array,
-     * if so, we need to iterate again, otherwise just check if it is an
-     * env var and update if is true
-     */
-    const replaceValue = (
-      object: Record<string, unknown>,
-      [key, value]: [string, unknown]
-    ) => {
-      if (Array.isArray(value)) {
-        object[key] = iterateArray(value);
-        return object;
-      }
-
-      if (isObject(value)) {
-        const newValues = Object.entries(value as Record<string, unknown>);
-        object[key] = newValues.reduce(replaceValue, value);
-        return object;
-      }
-
-      object[key] = loadVar(value);
-      return object;
-    };
-
-    return entries.reduce(replaceValue, obj);
-  }
-
   /// Abstract Interface
 
   public abstract reset(): void;
@@ -210,18 +145,5 @@ export abstract class Project<TManifest extends AnyManifest> {
         }
       });
     });
-  }
-
-  private static getEnvironmentVariable(value: string): string {
-    const importedVariable = value.substring(1);
-    if (process.env[importedVariable]) {
-      return process.env[importedVariable] as string;
-    } else {
-      throw new Error(
-        intlMsg.lib_project_env_var_not_found({
-          variableName: importedVariable,
-        })
-      );
-    }
   }
 }

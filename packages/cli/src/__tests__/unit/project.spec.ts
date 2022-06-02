@@ -1,4 +1,4 @@
-import {Project} from "../../lib";
+import { loadEnvironmentVariables } from "../../lib";
 
 describe("Unit tests for Project", () => {
   beforeAll(() => {
@@ -26,7 +26,7 @@ describe("Unit tests for Project", () => {
         }
       }
     }
-    let loadedScheme =  Project.loadEnvironmentVariables(simpleDeploySchema)
+    let loadedScheme =  loadEnvironmentVariables(simpleDeploySchema)
     expect(loadedScheme).toEqual({
       ...simpleDeploySchema,
       from_deploy: {
@@ -57,7 +57,7 @@ describe("Unit tests for Project", () => {
         }
       }
     }
-    loadedScheme = Project.loadEnvironmentVariables(complexDeploySchema)
+    loadedScheme = loadEnvironmentVariables(complexDeploySchema)
     expect(loadedScheme).toEqual({
       ...complexDeploySchema,
       from_deploy: {
@@ -93,7 +93,7 @@ describe("Unit tests for Project", () => {
       }
     }
 
-    loadedScheme = Project.loadEnvironmentVariables(complexRandomObject)
+    loadedScheme = loadEnvironmentVariables(complexRandomObject)
     const updatedArray = [ "package", [ "first", "second", "test1.eth" ], { stage: "stage", name: "name"}]
     const updatedObject = {
       coolArray: [ "name" ],
