@@ -67,8 +67,9 @@ describe("Web3API React Integration", () => {
     await waitFor(() => screen.getByText("5"), { timeout: 30000 });
     expect(screen.getByText("5")).toBeTruthy();
 
-    // check for provider redirects
-    expect(screen.getByText("Provider plugin counts are correct")).toBeTruthy();
+    // check for both clients (custom & default)
+    expect(screen.getByText("Client1 Found")).toBeTruthy();
+    expect(screen.getByText("Client2 Found")).toBeTruthy();
   });
 
   it("Should throw error because two providers with same key has been rendered ", () => {
