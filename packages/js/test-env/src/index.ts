@@ -79,6 +79,7 @@ export const runCLI = async (options: {
   args: string[];
   cwd?: string;
   cli?: string;
+  env?: Record<string, string>;
 }): Promise<{
   exitCode: number;
   stdout: string;
@@ -103,7 +104,7 @@ export const runCLI = async (options: {
     }
 
     const command = `node ${options.cli} ${options.args.join(" ")}`;
-    const child = spawn(command, { cwd: options.cwd });
+    const child = spawn(command, { cwd: options.cwd, env: options.env });
 
     let stdout = "";
     let stderr = "";

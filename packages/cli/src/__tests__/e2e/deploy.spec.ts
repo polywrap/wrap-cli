@@ -44,6 +44,12 @@ const setup = async (domainNames: string[]) => {
   const registrarAddress = data.registrarAddress
   const signer = new Wallet("0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d");
 
+  // Setup environment variables
+  process.env = {
+    ...process.env,
+    DOMAIN_NAME: "test1.eth"
+  };
+
   const { __type, ...deployManifest } = await loadDeployManifest(`${projectRoot}/web3api.deploy.yaml`);
 
   Object.entries(deployManifest.stages).forEach(([key, value]) => {

@@ -4,7 +4,6 @@ import fs from "fs";
 import path from "path";
 import rimraf from "rimraf";
 import copyfiles from "copyfiles";
-import { config as loadEnvVars } from "dotenv";
 import { writeFileSync } from "@web3api/os-js";
 import { BindOutput } from "@web3api/schema-bind";
 import { ComposerOutput } from "@web3api/schema-compose";
@@ -103,7 +102,6 @@ export abstract class Project<TManifest extends AnyManifest> {
       return object;
     };
 
-    loadEnvVars();
     return entries.reduce(replaceValue, obj);
   }
 

@@ -188,11 +188,6 @@ jobs:
 
       - name: Test
         run: yarn test:cli
-        env: 
-          DOMAIN_NAME: test1.eth
-          STAGE_NAME: stage
-          PACKAGE_NAME: package
-          RANDOM_NAME: name
 
 # NOTE: Mac & Windows CI is not currently possible, since GitHub Actions does not
 # use "Docker Enterprise". Docker Enterprise is required when running linux based

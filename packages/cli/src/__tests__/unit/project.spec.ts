@@ -1,6 +1,17 @@
 import {Project} from "../../lib";
 
 describe("Unit tests for Project", () => {
+  beforeAll(() => {
+    // Setup process environment variables
+    process.env = {
+      ...process.env,
+      DOMAIN_NAME: "test1.eth",
+      STAGE_NAME: "stage",
+      PACKAGE_NAME: "package",
+      RANDOM_NAME: "name"
+    };
+  });
+
   test("Update object as expected if has environment variables", async () => {
     const simpleDeploySchema = {
       "ipfs_deploy": {
