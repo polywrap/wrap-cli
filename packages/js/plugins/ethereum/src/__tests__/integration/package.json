@@ -2,7 +2,7 @@
   "name": "ethereum-js-plugin-integration-test",
   "description": "Ethereum JS Plugin Integration Test",
   "private": true,
-  "version": "0.0.1-prealpha.82",
+  "version": "0.0.1-prealpha.83",
   "scripts": {
     "build": "yarn build:web3api",
     "build:web3api": "npx w3 build",
@@ -11,9 +11,9 @@
     "deploy": "npx w3 deploy"
   },
   "dependencies": {
-    "@web3api/wasm-as": "0.0.1-prealpha.82"
+    "@web3api/wasm-as": "0.0.1-prealpha.83"
   },
   "devDependencies": {
-    "@web3api/cli": "0.0.1-prealpha.82"
+    "@web3api/cli": "0.0.1-prealpha.83"
   }
 }
