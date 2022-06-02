@@ -4,7 +4,7 @@ stages:
     package: ipfs
     uri: fs/./build
   from_deploy:
-    package: local-dev-ens
+    package: ens
     depends_on: ipfs_deploy
     config:
       domainName: $DOMAIN_NAME
