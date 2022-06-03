@@ -211,6 +211,30 @@ export const runCLI = async (options: {
   };
 };
 
+export async function buildApi(apiAbsPath: string): Promise<void> {
+  const manifestPath = `${apiAbsPath}/web3api.yaml`;
+  const {
+    exitCode: buildExitCode,
+    stdout: buildStdout,
+    stderr: buildStderr,
+  } = await runCLI({
+    args: [
+      "build",
+      "--manifest-file",
+      manifestPath,
+      "--output-dir",
+      `${apiAbsPath}/build`,
+    ],
+  });
+
+  if (buildExitCode !== 0) {
+    console.error(`w3 exited with code: ${buildExitCode}`);
+    console.log(`stderr:\n${buildStderr}`);
+    console.log(`stdout:\n${buildStdout}`);
+    throw Error("w3 CLI failed");
+  }
+}
+
 export async function buildAndDeployApi({
   apiAbsPath,
   ipfsProvider,
@@ -243,27 +267,7 @@ export async function buildAndDeployApi({
   // create a new ENS domain
   const apiEns = ensName ?? `${generateName()}.eth`;
 
-  // build API
-  const {
-    exitCode: buildExitCode,
-    stdout: buildStdout,
-    stderr: buildStderr,
-  } = await runCLI({
-    args: [
-      "build",
-      "--manifest-file",
-      manifestPath,
-      "--output-dir",
-      `${apiAbsPath}/build`,
-    ],
-  });
-
-  if (buildExitCode !== 0) {
-    console.error(`w3 exited with code: ${buildExitCode}`);
-    console.log(`stderr:\n${buildStderr}`);
-    console.log(`stdout:\n${buildStdout}`);
-    throw Error("w3 CLI failed");
-  }
+  await buildApi(apiAbsPath);
 
   // register ENS domain
   const ensWrapperUri = `fs/${__dirname}/wrappers/ens`;

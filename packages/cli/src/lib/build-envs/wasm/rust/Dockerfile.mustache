@@ -15,13 +15,14 @@ RUN curl -L https://github.com/WebAssembly/binaryen/releases/download/version_10
     && cp binaryen-version_101/bin/wasm-opt /usr/local/bin/ \
     && rm -rf binary-version_101
 
-{{#web3api_linked_packages.length}}
-WORKDIR /linked-packages
-{{/web3api_linked_packages.length}}
-
-{{#web3api_linked_packages.length}}
 # Install the toml-cli
 RUN cargo install toml-cli
+
+# Install wasm-snip
+RUN cargo install wasm-snip
+
+{{#web3api_linked_packages.length}}
+WORKDIR /linked-packages
 {{/web3api_linked_packages.length}}
 
 {{#web3api_linked_packages}}
@@ -106,5 +107,8 @@ RUN mkdir ./build
 
 # Use wasm-opt to perform the "asyncify" post-processing step over all modules
 {{#web3api_modules}}
-RUN wasm-opt --asyncify -O2 ./{{dir}}/target/wasm32-unknown-unknown/release/{{name}}.wasm -o ./build/{{name}}.wasm
+RUN WASM_MODULE=$(ls ./{{dir}}/target/wasm32-unknown-unknown/release/*.wasm); \
+    wasm-snip $WASM_MODULE -o ./build/snipped_{{name}}.wasm && \
+    wasm-opt --asyncify -Os ./build/snipped_{{name}}.wasm -o ./build/{{name}}.wasm && \
+    rm -rf ./build/snipped_{{name}}.wasm
 {{/web3api_modules}}
