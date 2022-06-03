@@ -1,6 +1,6 @@
 import { ScalarType, isScalarType } from "./scalar";
 import { OperationType, isOperationType } from "./operation";
-import { ModuleType, isModuleType } from "./module";
+import { isModuleType } from "./module";
 import { isMapKeyType, MapKeyType } from "./map";
 
 export enum DefinitionKind {
@@ -413,27 +413,21 @@ export function createMethodDefinition(args: {
 }
 
 export interface ModuleDefinition extends GenericDefinition, WithComment {
-  type: ModuleType;
   methods: MethodDefinition[];
   imports: { type: string }[];
   interfaces: InterfaceImplementedDefinition[];
 }
 export function createModuleDefinition(args: {
-  type: string;
   imports?: { type: string }[];
   interfaces?: InterfaceImplementedDefinition[];
   required?: boolean;
   comment?: string;
 }): ModuleDefinition {
-  if (!isModuleType(args.type)) {
-    throw Error(
-      `createModuleDefinition: Unrecognized module type provided "${args.type}"`
-    );
-  }
-
   return {
-    ...createGenericDefinition(args),
-    type: args.type,
+    ...createGenericDefinition({
+      ...args,
+      type: "Module",
+    }),
     methods: [],
     imports: args.imports ? args.imports : [],
     interfaces: args.interfaces ? args.interfaces : [],
@@ -474,20 +468,16 @@ export function createImportedEnumDefinition(args: {
 
 export const capabilityTypes = ["getImplementations"] as const;
 export type CapabilityType = typeof capabilityTypes[number];
-export type InvokableModules = "query" | "mutation";
 export interface Capability {
   enabled: boolean;
-  modules: InvokableModules[];
 }
 export function createCapability(args: {
   type: CapabilityType;
   enabled: boolean;
-  modules: InvokableModules[];
 }): CapabilityDefinition {
   return {
     [args.type]: {
       enabled: args.enabled,
-      modules: args.modules,
     },
   };
 }
@@ -524,7 +514,6 @@ export interface ImportedModuleDefinition
   isInterface?: boolean;
 }
 export function createImportedModuleDefinition(args: {
-  type: string;
   required?: boolean;
   uri: string;
   namespace: string;
@@ -540,7 +529,7 @@ export function createImportedModuleDefinition(args: {
   }
 
   return {
-    ...createGenericDefinition(args),
+    ...createGenericDefinition({ ...args, type: "Module" }),
     methods: [],
     uri: args.uri,
     namespace: args.namespace,

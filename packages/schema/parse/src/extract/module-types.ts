@@ -1,12 +1,10 @@
 import {
   TypeInfo,
-  ModuleDefinition,
   createModuleDefinition,
   createMethodDefinition,
   createPropertyDefinition,
   createInterfaceImplementedDefinition,
   CapabilityType,
-  InvokableModules,
   createCapability,
   createInterfaceDefinition,
   InterfaceDefinition,
@@ -34,11 +32,11 @@ import {
   ASTVisitor,
 } from "graphql";
 
-const visitorEnter = (moduleTypes: ModuleDefinition[], state: State) => ({
+const visitorEnter = (state: State) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     const nodeName = node.name.value;
 
-    if (nodeName !== "Query" && nodeName !== "Mutation") {
+    if (nodeName !== "Module") {
       return;
     }
 
@@ -48,14 +46,13 @@ const visitorEnter = (moduleTypes: ModuleDefinition[], state: State) => ({
     state.currentInterfaces = interfaces;
 
     const module = createModuleDefinition({
-      type: nodeName,
       imports,
       interfaces: node.interfaces?.map((x) =>
         createInterfaceImplementedDefinition({ type: x.name.value })
       ),
       comment: node.description?.value,
     });
-    moduleTypes.push(module);
+
     state.currentModule = module;
   },
   FieldDefinition: (node: FieldDefinitionNode) => {
@@ -200,21 +197,8 @@ const parseCapabilitiesDirective = (
         capabilities: createCapability({
           type: capabilityType,
           enabled: true,
-          modules: [node.name.value.toLowerCase() as InvokableModules],
         }),
       });
-    } else {
-      const interfaceType = interfacesByNamespace[namespace];
-      if (
-        interfaceType.capabilities[capabilityType] &&
-        !interfaceType.capabilities[capabilityType].modules.includes(
-          node.name.value.toLowerCase() as InvokableModules
-        )
-      ) {
-        interfaceType.capabilities[capabilityType].modules.push(
-          node.name.value.toLowerCase() as InvokableModules
-        );
-      }
     }
   }
 

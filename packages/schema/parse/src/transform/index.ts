@@ -98,12 +98,7 @@ export function transformTypeInfo(
     );
   }
 
-  for (let i = 0; i < result.moduleTypes.length; ++i) {
-    result.moduleTypes[i] = visitModuleDefinition(
-      result.moduleTypes[i],
-      transforms
-    );
-  }
+  result.moduleType = visitModuleDefinition(result.moduleType, transforms);
 
   for (let i = 0; i < result.importedObjectTypes.length; ++i) {
     result.importedObjectTypes[i] = visitImportedObjectDefinition(
@@ -126,12 +121,7 @@ export function transformTypeInfo(
     );
   }
 
-  result.envTypes.query = visitEnvDefinition(result.envTypes.query, transforms);
-
-  result.envTypes.mutation = visitEnvDefinition(
-    result.envTypes.mutation,
-    transforms
-  );
+  result.envType = visitEnvDefinition(result.envType, transforms);
 
   if (transforms.leave && transforms.leave.TypeInfo) {
     result = transforms.leave.TypeInfo(result);
