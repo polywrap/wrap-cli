@@ -44,17 +44,17 @@ const portInUse = (port: number) => {
 
     server.listen(port, "127.0.0.1");
     server.on("error", function () {
-      resolve(true);
+      server.close(() => resolve(true));
     });
     server.on("listening", function () {
-      server.close();
-      resolve(false);
+      server.close(() => resolve(false));
     });
   });
 };
 
 const waitForPorts = (ports: { port: number; expected: boolean }[]) => {
   let tries = 0;
+  const maxTries = 10;
 
   return new Promise<boolean>((resolve, reject) => {
     const checkPorts = async () => {
@@ -69,7 +69,7 @@ const waitForPorts = (ports: { port: number; expected: boolean }[]) => {
       if (!results.some((r) => !r)) {
         resolve(true);
       } else {
-        if (tries > 10) {
+        if (tries > maxTries) {
           reject("Waiting for ports timed out");
         } else {
           tries++;
@@ -100,14 +100,14 @@ describe("e2e tests for infra command", () => {
           cli: w3Cli
         },
       );
-  
+
       await waitForPorts([
         { port: 4040, expected: false },
         { port: 5001, expected: false },
         { port: 8545, expected: false }
       ]);
     });
-  
+
     test("Should throw error for no command given", async () => {
       const { exitCode: code, stderr: error } = await runCLI(
         {
@@ -116,11 +116,11 @@ describe("e2e tests for infra command", () => {
           cli: w3Cli
         },
       );
-  
+
       expect(code).toEqual(1);
       expect(error).toContain(`error: missing required argument 'action'`);
     });
-  
+
     test("Should show help text", async () => {
       const { exitCode: code, stdout: output, stderr: error } = await runCLI(
         {
@@ -129,12 +129,12 @@ describe("e2e tests for infra command", () => {
           cli: w3Cli
         },
       );
-  
+
       expect(code).toEqual(0);
       expect(error).toBe("");
       expect(clearStyle(output)).toEqual(HELP);
     });
-  
+
     test("Extracts composed docker manifest's environment variable list", async () => {
       const { exitCode: code, stdout: output } = await runCLI(
         {
@@ -143,15 +143,15 @@ describe("e2e tests for infra command", () => {
           cli: w3Cli
         },
       );
-  
+
       const sanitizedOutput = clearStyle(output);
-  
+
       expect(code).toEqual(0);
       expect(sanitizedOutput).toContain("IPFS_PORT");
       expect(sanitizedOutput).toContain("DEV_SERVER_PORT");
       expect(sanitizedOutput).toContain("DEV_SERVER_ETH_TESTNET_PORT");
     });
-  
+
     test("Validates and displays composed docker manifest", async () => {
       const { exitCode: code, stdout: output } = await runCLI(
         {
@@ -160,16 +160,22 @@ describe("e2e tests for infra command", () => {
           cli: w3Cli
         },
       );
-  
+
       const sanitizedOutput = clearStyle(output);
-  
+
       expect(code).toEqual(0);
       expect(sanitizedOutput).toContain("services:");
       expect(sanitizedOutput).toContain("dev-server:");
       expect(sanitizedOutput).toContain("ipfs:");
     });
-  
+
     test("Sets environment up with all modules if no --modules are passed", async () => {
+      await waitForPorts([
+        { port: 4040, expected: false },
+        { port: 5001, expected: false },
+        { port: 8545, expected: false }
+      ]);
+
       await runCLI(
         {
           args: ["infra", "up", "--manifest=./web3api.yaml"],
@@ -177,14 +183,14 @@ describe("e2e tests for infra command", () => {
           cli: w3Cli
         },
       );
-  
+
       await waitForPorts([
         { port: 4040, expected: true },
         { port: 5001, expected: true },
         { port: 8545, expected: true }
       ]);
     });
-  
+
     test("Tears down environment", async () => {
       await runCLI(
         {
@@ -193,13 +199,13 @@ describe("e2e tests for infra command", () => {
           cli: w3Cli
         },
       );
-  
+
       await waitForPorts([
         { port: 4040, expected: true },
         { port: 5001, expected: true },
         { port: 8545, expected: true }
       ]);
-  
+
       await runCLI(
         {
           args: ["infra", "down"],
@@ -207,14 +213,14 @@ describe("e2e tests for infra command", () => {
           cli: w3Cli
         },
       );
-  
+
       await waitForPorts([
         { port: 4040, expected: false },
         { port: 5001, expected: false },
         { port: 8545, expected: false },
       ]);
     });
-  
+
     test("Sets environment up with only selected modules", async () => {
       await runCLI(
         {
@@ -223,14 +229,26 @@ describe("e2e tests for infra command", () => {
           cli: w3Cli
         },
       );
-  
+
       await waitForPorts([
         { port: 4040, expected: false },
         { port: 5001, expected: true },
         { port: 8545, expected: false }
       ]);
+
+      await runCLI(
+        {
+          args: ["infra", "down", "--modules=ipfs"],
+          cwd: getTestCaseDir(0),
+          cli: w3Cli
+        },
+      );
+
+      await waitForPorts([
+        { port: 5001, expected: false }
+      ]);
     });
-  
+
     test("Should throw error for --modules that don't exist in infra manifest", async () => {
       const { exitCode: code, stderr } = await runCLI(
         {
@@ -243,13 +261,13 @@ describe("e2e tests for infra command", () => {
           cli: w3Cli
         },
       );
-  
+
       expect(code).toEqual(1);
       expect(stderr).toContain(
         `Unrecognized modules: notExistingModule, alsoNotExisting`
       );
     });
-  
+
     test("Should setup and use a preset env if --preset arg is passed", async () => {
       await runCLI(
         {
@@ -263,7 +281,7 @@ describe("e2e tests for infra command", () => {
           cli: w3Cli
         },
       );
-  
+
       await waitForPorts([
         { port: 4040, expected: true },
         { port: 5001, expected: true },
@@ -284,7 +302,7 @@ describe("e2e tests for infra command", () => {
           cli: w3Cli
         },
       );
-  
+
       expect(code).toEqual(1);
       expect(stdout).toContain(
         `'foo' is not a supported preset`
@@ -305,7 +323,7 @@ describe("e2e tests for infra command", () => {
           cli: w3Cli
         },
       );
-  
+
       await waitForPorts([
         { port: 8546, expected: true },
         { port: 8545, expected: true }
@@ -319,7 +337,7 @@ describe("e2e tests for infra command", () => {
         },
       );
     });
-  
+
     test("Should correctly duplicate pkg in different module", async () => {
       await runCLI(
         {
@@ -345,10 +363,5 @@ describe("e2e tests for infra command", () => {
         },
       );
     });
-  
   });
 })
-
-
-
-

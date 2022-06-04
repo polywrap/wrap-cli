@@ -16,10 +16,6 @@ import { ComposerOutput } from "@web3api/schema-compose";
 import { TypeInfo } from "@web3api/schema-parse";
 import path from "path";
 
-const cacheLayout = {
-  root: "plugin",
-};
-
 export interface PluginProjectConfig extends ProjectConfig {
   pluginManifestPath: string;
 }
@@ -27,8 +23,12 @@ export interface PluginProjectConfig extends ProjectConfig {
 export class PluginProject extends Project<PluginManifest> {
   private _pluginManifest: PluginManifest | undefined;
 
+  public static cacheLayout = {
+    root: "plugin",
+  };
+
   constructor(protected _config: PluginProjectConfig) {
-    super(_config, cacheLayout.root);
+    super(_config, PluginProject.cacheLayout.root);
   }
 
   /// Project Base Methods

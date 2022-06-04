@@ -6,11 +6,9 @@ import {
   intlMsg,
   getSimpleClient,
   getTestEnvProviders,
-} from "../lib";
-import {
   parseAppManifestFileOption,
   parseAppCodegenDirOption,
-} from "../lib/parsers";
+} from "../lib";
 
 import { Web3ApiClient } from "@web3api/client-js";
 import * as path from "path";

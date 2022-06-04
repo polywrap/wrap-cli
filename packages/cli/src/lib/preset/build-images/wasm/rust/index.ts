@@ -1,5 +1,5 @@
-import { CompilerOverrides } from "../../../Compiler";
-import { intlMsg } from "../../../intl";
+import { CompilerOverrides } from "../../../../Compiler";
+import { intlMsg } from "../../../../intl";
 
 import { Web3ApiManifest } from "@web3api/core-js";
 

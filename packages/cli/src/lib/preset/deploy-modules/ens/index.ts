@@ -1,32 +1,22 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { Deployer } from "../../deploy/deployer";
+import { Deployer } from "../../../deploy/deployer";
 
 import { ethers } from "ethers";
 import { namehash } from "ethers/lib/utils";
 import { Uri } from "@web3api/core-js";
-import axios from "axios";
 
 const contentHash = require("content-hash");
 const ENS = require("@ensdomains/ensjs");
 
-interface Providers {
-  ensAddress: string;
-  resolverAddress: string;
-  registrarAddress: string;
-  reverseAddress: string;
-}
-
-class LocalDevENSPublisher implements Deployer {
+class ENSPublisher implements Deployer {
   async execute(
     uri: Uri,
     config: {
       domainName: string;
-      domainOwnerAddressOrIndex?: string | number;
-      ports: {
-        devServer: number;
-        ethereum: number;
-      };
+      provider: string;
+      privateKey?: string;
+      ensRegistryAddress: string;
     }
   ): Promise<Uri> {
     if (uri.authority !== "ipfs") {
@@ -38,20 +28,22 @@ class LocalDevENSPublisher implements Deployer {
     const cid = uri.path;
 
     const connectionProvider = new ethers.providers.JsonRpcProvider(
-      `http://localhost:${config.ports.ethereum}`
+      config.provider as string
     );
 
-    const signer = connectionProvider.getSigner(
-      config.domainOwnerAddressOrIndex
-    );
+    let signer: ethers.Signer;
 
-    const { data: ensAddresses } = await axios.get<Providers>(
-      `http://localhost:${config.ports.devServer}/ens`
-    );
+    if (config.privateKey) {
+      signer = new ethers.Wallet(config.privateKey as string).connect(
+        connectionProvider
+      );
+    } else {
+      signer = connectionProvider.getSigner(0);
+    }
 
     const ens = new ENS.default({
       provider: connectionProvider,
-      ensAddress: ensAddresses.ensAddress,
+      ensAddress: config.ensRegistryAddress,
     });
 
     const ensName = ens.name(config.domainName);
@@ -84,4 +76,4 @@ class LocalDevENSPublisher implements Deployer {
   }
 }
 
-export default new LocalDevENSPublisher();
+export default new ENSPublisher();

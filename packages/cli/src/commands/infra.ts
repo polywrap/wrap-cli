@@ -11,8 +11,8 @@ const INFRA_PRESETS = path.join(
   __dirname,
   "..",
   "lib",
-  "default-manifests",
-  "infra"
+  "preset",
+  "infra-presets"
 );
 
 type InfraCommandOptions = {
@@ -122,6 +122,11 @@ async function run(
     });
   } else {
     const infraManifest = await project.getInfraManifest();
+
+    if (!infraManifest) {
+      throw new Error("No infra manifest found.");
+    }
+
     infra = new Infra({
       project,
       modulesToUse: modulesArray,

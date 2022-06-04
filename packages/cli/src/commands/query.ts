@@ -1,9 +1,9 @@
 import { Command, Program } from "./types";
-import { intlMsg } from "../lib";
 import {
+  intlMsg,
   parseClientConfigOption,
   parseRecipeOutputFilePathOption,
-} from "../lib/parsers";
+} from "../lib";
 
 import { Web3ApiClient, Web3ApiClientConfig } from "@web3api/client-js";
 import gql from "graphql-tag";

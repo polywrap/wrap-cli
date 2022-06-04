@@ -7,12 +7,10 @@ import {
   intlMsg,
   defaultWeb3ApiManifest,
   getTestEnvProviders,
-} from "../lib";
-import {
   parseCodegenDirOption,
   parseCodegenScriptOption,
   parseWasmManifestFileOption,
-} from "../lib/parsers";
+} from "../lib";
 
 import path from "path";
 import { filesystem } from "gluegun";

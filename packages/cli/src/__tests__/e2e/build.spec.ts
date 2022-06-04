@@ -60,14 +60,14 @@ describe("e2e tests for build command", () => {
     expect(output).toBe("")
   });
 
-  test("Adds uuid-v4 suffix to build-env image if no build manifest specified", async () => {
+  test("Adds uuid-v4 suffix to build image if no build manifest specified", async () => {
     const projectRoot = getTestCaseDir(0);
     const project = new Web3ApiProject({
       rootCacheDir: projectRoot,
       web3apiManifestPath: path.join(projectRoot, "web3api.yaml")
     });
 
-    await project.cacheDefaultBuildManifestFiles();
+    await project.cachePresetBuildImage();
 
     const cacheBuildEnvPath = path.join(projectRoot, ".w3/web3api/build/env")
     const cachedBuildManifest = await loadBuildManifest(

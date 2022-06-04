@@ -1,4 +1,4 @@
-import { Deployer } from "../../deploy/deployer";
+import { Deployer } from "../../../deploy/deployer";
 
 import { Uri } from "@web3api/core-js";
 

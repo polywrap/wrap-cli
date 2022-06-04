@@ -10,11 +10,9 @@ import {
   defaultWeb3ApiManifest,
   isDockerInstalled,
   FileLock,
-} from "../lib";
-import {
   parseWasmManifestFileOption,
   parseBuildOutputDirOption,
-} from "../lib/parsers";
+} from "../lib";
 
 import { print } from "gluegun";
 import path from "path";
