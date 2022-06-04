@@ -2,12 +2,14 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { Deployer } from "../../../deploy/deployer";
 
-import { ethers } from "ethers";
-import { namehash } from "ethers/lib/utils";
+import { Wallet } from "@ethersproject/wallet";
+import { JsonRpcProvider } from "@ethersproject/providers";
 import { Uri } from "@web3api/core-js";
+import { Web3ApiClient } from "@web3api/client-js";
+import path from "path";
+import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 
 const contentHash = require("content-hash");
-const ENS = require("@ensdomains/ensjs");
 
 class ENSPublisher implements Deployer {
   async execute(
@@ -27,50 +29,90 @@ class ENSPublisher implements Deployer {
 
     const cid = uri.path;
 
-    const connectionProvider = new ethers.providers.JsonRpcProvider(
-      config.provider as string
-    );
+    const connectionProvider = new JsonRpcProvider(config.provider as string);
 
-    let signer: ethers.Signer;
+    const signer = config.privateKey
+      ? new Wallet(config.privateKey as string).connect(connectionProvider)
+      : connectionProvider.getSigner(0);
 
-    if (config.privateKey) {
-      signer = new ethers.Wallet(config.privateKey as string).connect(
-        connectionProvider
-      );
-    } else {
-      signer = connectionProvider.getSigner(0);
-    }
+    const ethereumPluginUri = "w3://ens/ethereum.web3api.eth";
+    const ensWrapperUri = `fs/${path.join(
+      path.dirname(require.resolve("@web3api/test-env-js")),
+      "wrappers",
+      "ens"
+    )}`;
 
-    const ens = new ENS.default({
-      provider: connectionProvider,
-      ensAddress: config.ensRegistryAddress,
+    const client = new Web3ApiClient({
+      plugins: [
+        {
+          uri: ethereumPluginUri,
+          plugin: ethereumPlugin({
+            networks: {
+              custom: {
+                provider: connectionProvider,
+                signer,
+              },
+            },
+            defaultNetwork: "custom",
+          }),
+        },
+      ],
     });
 
-    const ensName = ens.name(config.domainName);
-    const resolver = await ensName.getResolver();
+    const { data: resolver } = await client.invoke<string>({
+      method: "getResolver",
+      module: "query",
+      uri: ensWrapperUri,
+      input: {
+        registryAddress: config.ensRegistryAddress,
+        domain: config.domainName,
+        connection: {
+          networkNameOrChainId: "custom",
+        },
+      },
+    });
+
+    if (!resolver) {
+      throw new Error(`Could not get resolver for '${config.domainName}'`);
+    }
 
     if (resolver === "0x0000000000000000000000000000000000000000") {
       throw new Error(`Resolver not set for '${config.domainName}'`);
     }
 
-    const contract = new ethers.Contract(
-      resolver,
-      [
-        "function contenthash(bytes32 node) external view returns (bytes memory)",
-        "function setContenthash(bytes32 node, bytes calldata hash) external",
-        "event ContenthashChanged(bytes32 indexed node, bytes hash)",
-      ],
-      signer
-    );
+    const hash = "0x" + contentHash.fromIpfs(cid);
 
-    const hash: string = "0x" + contentHash.fromIpfs(cid);
+    const { data: setContenthashData } = await client.invoke<{ hash: string }>({
+      method: "setContentHash",
+      module: "mutation",
+      uri: ensWrapperUri,
+      input: {
+        domain: config.domainName,
+        cid: hash,
+        resolverAddress: resolver,
+        connection: {
+          networkNameOrChainId: "custom",
+        },
+      },
+    });
 
-    const tx = await contract.setContenthash(
-      namehash(config.domainName as string),
-      hash
-    );
+    if (!setContenthashData) {
+      throw new Error(`Could not set contentHash for '${config.domainName}'`);
+    }
 
-    await tx.wait();
+    await client.invoke({
+      method: "awaitTransaction",
+      module: "query",
+      uri: ethereumPluginUri,
+      input: {
+        txHash: setContenthashData.hash,
+        confirmations: 1,
+        timeout: 15000,
+        connection: {
+          networkNameOrChainId: "custom",
+        },
+      },
+    });
 
     return new Uri(`ens/${config.domainName}`);
   }
