@@ -1,5 +1,9 @@
 import { httpPlugin } from "../..";
 import { Response } from "../../query/w3";
+import {
+  initTestEnvironment,
+  stopTestEnvironment,
+} from "@web3api/test-env-js";
 
 import { Web3ApiClient } from "@web3api/client-js"
 import nock from "nock";
@@ -14,7 +18,9 @@ const defaultReplyHeaders = {
 describe("e2e tests for HttpPlugin", () => {
   let web3ApiClient: Web3ApiClient;
 
-  beforeEach(() => {
+  beforeAll(async () => {
+    await initTestEnvironment();
+
     web3ApiClient = new Web3ApiClient({
       plugins: [
         {
@@ -23,6 +29,10 @@ describe("e2e tests for HttpPlugin", () => {
         },
       ]
     });
+  })
+
+  afterAll(async () => {
+    await stopTestEnvironment();
   });
 
   describe("get method", () => {
@@ -306,5 +316,48 @@ describe("e2e tests for HttpPlugin", () => {
       expect(response.errors).toBeDefined()
     });
 
+  });
+
+  it.only("queries simple-storage api on local drive", async () => {
+    const apiUrl = `https://dawn-leaf-2772.on.fleek.co`
+    const apiUri = `http/${apiUrl}`;
+
+    // query api from filesystem
+    const deploy = await web3ApiClient.query<{
+      deployContract: string;
+    }>({
+      uri: apiUri,
+      query: `
+        mutation {
+          deployContract(
+            connection: {
+              networkNameOrChainId: "testnet"
+            }
+          )
+        }
+      `,
+    });
+
+    expect(deploy.errors).toBeFalsy();
+    expect(deploy.data).toBeTruthy();
+    expect(deploy.data?.deployContract.indexOf("0x")).toBeGreaterThan(-1);
+
+    // // get the schema
+    // const schema = await web3ApiClient.getSchema(apiUri);
+    // const expectedSchema = await fs.promises.readFile(`${fsPath}/schema.graphql`, "utf-8");
+
+    // expect(schema).toBe(expectedSchema);
+
+    // // get the manifest
+    // const manifest = await web3ApiClient.getManifest(apiUri, { type: "web3api" });
+
+    // expect(manifest).toBeTruthy();
+    // expect(manifest.language).toBe("wasm/assemblyscript");
+
+    // // get a file
+    // const file = await web3ApiClient.getFile(apiUri, { path: "web3api.json", encoding: "utf-8" });
+    // const expectedFile = await fs.promises.readFile(`${fsPath}/web3api.json`, "utf-8");
+
+    // expect(file).toBe(expectedFile);
   });
 });
