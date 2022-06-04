@@ -2,13 +2,13 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { Deployer } from "../../../deploy/deployer";
 
-import { ethers } from "ethers";
-import { namehash } from "ethers/lib/utils";
 import { Uri } from "@web3api/core-js";
 import axios from "axios";
+import path from "path";
+import { Web3ApiClient } from "@web3api/client-js";
+import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 
 const contentHash = require("content-hash");
-const ENS = require("@ensdomains/ensjs");
 
 interface Providers {
   ensAddress: string;
@@ -37,48 +37,117 @@ class LocalDevENSPublisher implements Deployer {
 
     const cid = uri.path;
 
-    const connectionProvider = new ethers.providers.JsonRpcProvider(
-      `http://localhost:${config.ports.ethereum}`
-    );
-
-    const signer = connectionProvider.getSigner(
-      config.domainOwnerAddressOrIndex
-    );
-
     const { data: ensAddresses } = await axios.get<Providers>(
       `http://localhost:${config.ports.devServer}/ens`
     );
 
-    const ens = new ENS.default({
-      provider: connectionProvider,
-      ensAddress: ensAddresses.ensAddress,
+    const ethereumPluginUri = "w3://ens/ethereum.web3api.eth";
+
+    const client = new Web3ApiClient({
+      plugins: [
+        {
+          uri: ethereumPluginUri,
+          plugin: ethereumPlugin({
+            networks: {
+              testnet: {
+                provider: `http://localhost:${config.ports.ethereum}`,
+              },
+            },
+            defaultNetwork: "testnet",
+          }),
+        },
+      ],
     });
 
-    const ensName = ens.name(config.domainName);
-    const resolver = await ensName.getResolver();
+    const { data: signer } = await client.invoke<string>({
+      method: "getSignerAddress",
+      module: "query",
+      uri: ethereumPluginUri,
+      input: {
+        connection: {
+          networkNameOrChainId: "testnet",
+        },
+      },
+    });
 
-    if (resolver === "0x0000000000000000000000000000000000000000") {
-      throw new Error(`Resolver not set for '${config.domainName}'`);
+    if (!signer) {
+      throw new Error("Could not get signer");
     }
 
-    const contract = new ethers.Contract(
-      resolver,
-      [
-        "function contenthash(bytes32 node) external view returns (bytes memory)",
-        "function setContenthash(bytes32 node, bytes calldata hash) external",
-        "event ContenthashChanged(bytes32 indexed node, bytes hash)",
-      ],
-      signer
-    );
+    const ensWrapperUri = `fs/${path.join(
+      path.dirname(require.resolve("@web3api/test-env-js")),
+      "wrappers",
+      "ens"
+    )}`;
 
-    const hash: string = "0x" + contentHash.fromIpfs(cid);
+    const { data: registerData } = await client.invoke<{ hash: string }>({
+      method: "registerDomainAndSubdomainsRecursively",
+      module: "mutation",
+      uri: ensWrapperUri,
+      input: {
+        domain: config.domainName,
+        owner: signer,
+        resolverAddress: ensAddresses.resolverAddress,
+        ttl: "0",
+        registrarAddress: ensAddresses.registrarAddress,
+        registryAddress: ensAddresses.ensAddress,
+        connection: {
+          networkNameOrChainId: "testnet",
+        },
+      },
+    });
 
-    const tx = await contract.setContenthash(
-      namehash(config.domainName as string),
-      hash
-    );
+    if (!registerData) {
+      throw new Error(`Could not register domain '${config.domainName}'`);
+    }
 
-    await tx.wait();
+    await client.invoke({
+      method: "awaitTransaction",
+      module: "query",
+      uri: ethereumPluginUri,
+      input: {
+        txHash: registerData.hash,
+        confirmations: 1,
+        timeout: 15000,
+        connection: {
+          networkNameOrChainId: "testnet",
+        },
+      },
+    });
+
+    const hash = "0x" + contentHash.fromIpfs(cid);
+
+    const { data: setContenthashData } = await client.invoke<{ hash: string }>({
+      method: "setContentHash",
+      module: "mutation",
+      uri: ensWrapperUri,
+      input: {
+        domain: config.domainName,
+        cid: hash,
+        resolverAddress: ensAddresses.resolverAddress,
+        connection: {
+          networkNameOrChainId: "testnet",
+        },
+      },
+    });
+
+    if (!setContenthashData) {
+      throw new Error(`Could not set contentHash for '${config.domainName}'`);
+    }
+
+    await client.invoke({
+      method: "awaitTransaction",
+      module: "query",
+      uri: ethereumPluginUri,
+      input: {
+        txHash: setContenthashData.hash,
+        confirmations: 1,
+        timeout: 15000,
+        connection: {
+          networkNameOrChainId: "testnet",
+        },
+      },
+    });
 
     return new Uri(`ens/${config.domainName}`);
   }
