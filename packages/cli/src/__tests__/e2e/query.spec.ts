@@ -107,7 +107,7 @@ describe("e2e tests for query command", () => {
     await stopTestEnvironment();
   });
 
-  test.only("Should successfully return response: using json recipes", async () => {
+  test("Should successfully return response: using json recipes", async () => {
     const { exitCode: code, stdout: output, stderr: queryErr } = await runCLI({
       args: ["query", "./recipes/e2e.json"],
       cwd: testCaseRoot,
