@@ -360,7 +360,9 @@ export class Compiler {
       const cache = dockerBuildxConfig.cache;
 
       if (cache == true) {
-        cacheDir = project.getCachePath(Web3ApiProject.cacheLayout.buildImageCacheDir);
+        cacheDir = project.getCachePath(
+          Web3ApiProject.cacheLayout.buildImageCacheDir
+        );
       } else if (cache) {
         if (!path.isAbsolute(cache)) {
           cacheDir = path.join(project.getManifestDir(), cache);

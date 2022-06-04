@@ -65,7 +65,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     deployDir: "deploy/",
     deployModulesDir: "deploy/modules/",
     infraDir: "infra",
-    infraModulesDir: "infra/modules"
+    infraModulesDir: "infra/modules",
   };
 
   constructor(protected _config: Web3ApiProjectConfig) {
@@ -272,7 +272,9 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
       );
 
       const root = this.getManifestDir();
-      const cacheDir = this.getCachePath(Web3ApiProject.cacheLayout.buildLinkedPackagesDir);
+      const cacheDir = this.getCachePath(
+        Web3ApiProject.cacheLayout.buildLinkedPackagesDir
+      );
 
       // Add default config variables
       const modules = await this._getWeb3ApiModules();
@@ -323,7 +325,11 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     // If none was present, generate one
     if (!uuid) {
       uuid = createUUID();
-      this.writeCacheFile(Web3ApiProject.cacheLayout.buildUuidFile, uuid, "utf-8");
+      this.writeCacheFile(
+        Web3ApiProject.cacheLayout.buildUuidFile,
+        uuid,
+        "utf-8"
+      );
     }
 
     return uuid;
@@ -338,7 +344,9 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
 
     const presetBuildManifestFilename = "web3api.build.yaml";
     const presetPath = `${__dirname}/../preset/build-images/${language}/${presetBuildManifestFilename}`;
-    const buildImageCachePath = this.getCachePath(Web3ApiProject.cacheLayout.buildImageDir);
+    const buildImageCachePath = this.getCachePath(
+      Web3ApiProject.cacheLayout.buildImageDir
+    );
 
     if (!fs.existsSync(presetPath)) {
       throw Error(
@@ -545,10 +553,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
       const manifestPath = await this.getInfraManifestPath();
 
       if (manifestPath) {
-        this._infraManifest = await loadInfraManifest(
-          manifestPath,
-          this.quiet
-        );
+        this._infraManifest = await loadInfraManifest(manifestPath, this.quiet);
       }
     }
     return this._infraManifest;
