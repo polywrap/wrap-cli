@@ -8,7 +8,7 @@ import {
 import { GetPathToCliTestFiles } from "@web3api/test-cases";
 import { Web3ApiClient } from "@web3api/client-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
-import { Wallet } from "ethers";
+import { Wallet } from "@ethersproject/wallet";
 import path from "path";
 import fs from "fs";
 
