@@ -29,11 +29,17 @@ class ENSPublisher implements Deployer {
 
     const cid = uri.path;
 
-    const connectionProvider = new JsonRpcProvider(config.provider as string);
+    const connectionProvider = new JsonRpcProvider(config.provider);
+    const {
+      chainId: chainIdNum,
+      name: networkName,
+    } = await connectionProvider.getNetwork();
+
+    const network = chainIdNum === 1337 ? "testnet" : networkName;
 
     const signer = config.privateKey
-      ? new Wallet(config.privateKey as string).connect(connectionProvider)
-      : connectionProvider.getSigner(0);
+      ? new Wallet(config.privateKey).connect(connectionProvider)
+      : undefined;
 
     const ethereumPluginUri = "w3://ens/ethereum.web3api.eth";
     const ensWrapperUri = `fs/${path.join(
@@ -48,12 +54,12 @@ class ENSPublisher implements Deployer {
           uri: ethereumPluginUri,
           plugin: ethereumPlugin({
             networks: {
-              custom: {
-                provider: connectionProvider,
+              [network]: {
+                provider: config.provider,
                 signer,
               },
             },
-            defaultNetwork: "custom",
+            defaultNetwork: network,
           }),
         },
       ],
@@ -67,7 +73,7 @@ class ENSPublisher implements Deployer {
         registryAddress: config.ensRegistryAddress,
         domain: config.domainName,
         connection: {
-          networkNameOrChainId: "custom",
+          networkNameOrChainId: network,
         },
       },
     });
@@ -91,7 +97,7 @@ class ENSPublisher implements Deployer {
         cid: hash,
         resolverAddress: resolver,
         connection: {
-          networkNameOrChainId: "custom",
+          networkNameOrChainId: network,
         },
       },
     });
@@ -109,7 +115,7 @@ class ENSPublisher implements Deployer {
         confirmations: 1,
         timeout: 15000,
         connection: {
-          networkNameOrChainId: "custom",
+          networkNameOrChainId: network,
         },
       },
     });
