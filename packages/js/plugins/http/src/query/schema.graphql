@@ -1,3 +1,5 @@
+#import { Query, MaybeUriOrManifest } into UriResolver from "ens/uri-resolver.core.web3api.eth"
+
 type Header {
   key: String!
   value: String!
@@ -27,7 +29,7 @@ enum ResponseType {
   BINARY
 }
 
-type Query {
+type Query implements UriResolver_Query {
   get(url: String!, request: Request): Response
   post(url: String!, request: Request): Response
 }
