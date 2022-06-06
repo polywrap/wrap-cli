@@ -85,16 +85,10 @@ export class AppProject extends Project<AppManifest> {
   }
 
   /// Schema
-
-  public async getSchemaNamedPaths(): Promise<{
-    [name: string]: string;
-  }> {
+  public async getSchemaNamedPath(): Promise<string> {
     const manifest = await this.getManifest();
     const dir = this.getManifestDir();
-    const namedPaths: { [name: string]: string } = {};
-
-    namedPaths["combined"] = path.join(dir, manifest.schema);
-    return namedPaths;
+    return path.join(dir, manifest.schema);
   }
 
   public async getImportRedirects(): Promise<

@@ -21,7 +21,6 @@ import path from "path";
 import fs from "fs";
 
 export const defaultWeb3ApiManifest = ["web3api.yaml", "web3api.yml"];
-export const defaultBuildPath = "./build";
 
 export async function loadWeb3ApiManifest(
   manifestPath: string,

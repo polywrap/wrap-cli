@@ -5,7 +5,6 @@ import {
   pluginManifestLanguages,
   isPluginManifestLanguage,
   pluginManifestLanguageToBindLanguage,
-  intlMsg,
   resetDir,
 } from "..";
 
@@ -88,22 +87,11 @@ export class PluginProject extends Project<PluginManifest> {
 
   /// Schema
 
-  public async getSchemaNamedPaths(): Promise<{
-    [name: string]: string;
-  }> {
-    const manifest = await this.getManifest();
-    const dir = this.getManifestDir();
-    const namedPaths: { [name: string]: string } = {};
-
-    if (manifest.modules.mutation) {
-      namedPaths["mutation"] = path.join(dir, manifest.modules.mutation.schema);
-    }
-
-    if (manifest.modules.query) {
-      namedPaths["query"] = path.join(dir, manifest.modules.query.schema);
-    }
-
-    return namedPaths;
+  public async getSchemaNamedPath(): Promise<string> {
+    // const manifest = await this.getManifest();
+    // const dir = this.getManifestDir();
+    // return path.join(dir, manifest.schema)
+    return "";
   }
 
   public async getImportRedirects(): Promise<
@@ -135,9 +123,7 @@ export class PluginProject extends Project<PluginManifest> {
       mutationDirectory &&
       queryDirectory === mutationDirectory
     ) {
-      throw Error(
-        intlMsg.lib_compiler_dup_code_folder({ directory: queryDirectory })
-      );
+      throw Error();
     }
 
     // Clean the code generation

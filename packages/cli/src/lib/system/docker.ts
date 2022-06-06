@@ -24,7 +24,7 @@ export async function isDockerBuildxInstalled(): Promise<boolean> {
 
 export async function copyArtifactsFromBuildImage(
   outputDir: string,
-  buildArtifacts: string[],
+  buildArtifact: string,
   imageName: string,
   removeBuilder = false,
   removeImage = false,
@@ -68,23 +68,19 @@ export async function copyArtifactsFromBuildImage(
       quiet
     ).catch(() => ({ stdout: "" }));
 
-    for (const buildArtifact of buildArtifacts) {
-      if (buildLsOutput.indexOf(buildArtifact) === -1) {
-        throw Error(
-          intlMsg.lib_helpers_docker_projectBuildFolderMissing({
-            image: imageName,
-            artifact: buildArtifact,
-          })
-        );
-      }
-    }
-
-    for (const buildArtifact of buildArtifacts) {
-      await runCommand(
-        `docker cp root-${imageName}:/project/build/${buildArtifact} ${outputDir}`,
-        quiet
+    if (buildLsOutput.indexOf(buildArtifact) === -1) {
+      throw Error(
+        intlMsg.lib_helpers_docker_projectBuildFolderMissing({
+          image: imageName,
+          artifact: buildArtifact,
+        })
       );
     }
+
+    await runCommand(
+      `docker cp root-${imageName}:/project/build/${buildArtifact} ${outputDir}`,
+      quiet
+    );
 
     await runCommand(`docker rm -f root-${imageName}`, quiet);
 
@@ -139,10 +135,10 @@ export async function createBuildImage(
         : `--output=type=docker`;
 
       // Build the docker image
-      let buildxUseFailed = false;
+      let buildxUseFailed: boolean;
       try {
         const { stderr } = await runCommand(`docker buildx use ${imageName}`);
-        buildxUseFailed = stderr ? true : false;
+        buildxUseFailed = !!stderr;
       } catch (e) {
         buildxUseFailed = true;
       }
