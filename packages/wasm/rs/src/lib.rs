@@ -21,6 +21,7 @@
 
 pub mod abort;
 pub mod debug;
+pub mod debug_log;
 pub mod env;
 pub mod get_implementations;
 pub mod invoke;
@@ -30,13 +31,14 @@ pub mod subinvoke;
 
 pub use abort::*;
 pub use debug::*;
+pub use debug_log::*;
 pub use env::*;
 pub use get_implementations::*;
 pub use invoke::*;
 pub use subinvoke::*;
 
 pub use msgpack::{
-    Context, DecodeError, EncodeError, EnumTypeError, Read, ReadDecoder, Write, WriteEncoder,
+    DecodeError, EncodeError, EnumTypeError, Read, ReadDecoder, Write, WriteEncoder,
 };
 
 pub use num_bigint::BigInt;

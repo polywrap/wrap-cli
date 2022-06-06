@@ -4,11 +4,10 @@ import path from "path";
 import spawn from "spawn-command";
 import axios from "axios";
 import fs from "fs";
-import { ethers } from "ethers";
 import yaml from "js-yaml";
-import { keccak256 } from "js-sha3";
 import { deserializeWeb3ApiManifest, Uri } from "@web3api/core-js";
-import { namehash } from "ethers/lib/utils";
+import { Web3ApiClient } from "@web3api/client-js";
+import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 
 interface TestEnvironment {
   ipfs: string;
@@ -80,6 +79,7 @@ export const runCLI = async (options: {
   args: string[];
   cwd?: string;
   cli?: string;
+  env?: Record<string, string>;
 }): Promise<{
   exitCode: number;
   stdout: string;
@@ -104,7 +104,7 @@ export const runCLI = async (options: {
     }
 
     const command = `node ${options.cli} ${options.args.join(" ")}`;
-    const child = spawn(command, { cwd: options.cwd });
+    const child = spawn(command, { cwd: options.cwd, env: options.env });
 
     let stdout = "";
     let stderr = "";
@@ -132,6 +132,30 @@ export const runCLI = async (options: {
     stderr,
   };
 };
+
+export async function buildApi(apiAbsPath: string): Promise<void> {
+  const manifestPath = `${apiAbsPath}/web3api.yaml`;
+  const {
+    exitCode: buildExitCode,
+    stdout: buildStdout,
+    stderr: buildStderr,
+  } = await runCLI({
+    args: [
+      "build",
+      "--manifest-file",
+      manifestPath,
+      "--output-dir",
+      `${apiAbsPath}/build`,
+    ],
+  });
+
+  if (buildExitCode !== 0) {
+    console.error(`w3 exited with code: ${buildExitCode}`);
+    console.log(`stderr:\n${buildStderr}`);
+    console.log(`stdout:\n${buildStdout}`);
+    throw Error("w3 CLI failed");
+  }
+}
 
 export async function buildAndDeployApi({
   apiAbsPath,
@@ -164,64 +188,79 @@ export async function buildAndDeployApi({
 
   // create a new ENS domain
   const apiEns = ensName ?? `${generateName()}.eth`;
-  const domainName = apiEns.split(".").slice(0, -1).join(".");
 
-  // build API
-  const {
-    exitCode: buildExitCode,
-    stdout: buildStdout,
-    stderr: buildStderr,
-  } = await runCLI({
-    args: [
-      "build",
-      "--manifest-file",
-      manifestPath,
-      "--output-dir",
-      `${apiAbsPath}/build`,
+  await buildApi(apiAbsPath);
+
+  // register ENS domain
+  const ensWrapperUri = `fs/${__dirname}/wrappers/ens`;
+
+  const ethereumPluginUri = "w3://ens/ethereum.web3api.eth";
+
+  const client = new Web3ApiClient({
+    plugins: [
+      {
+        uri: ethereumPluginUri,
+        plugin: ethereumPlugin({
+          networks: {
+            testnet: {
+              provider: ethereumProvider,
+            },
+          },
+          defaultNetwork: "testnet",
+        }),
+      },
     ],
   });
 
-  if (buildExitCode !== 0) {
-    console.error(`w3 exited with code: ${buildExitCode}`);
-    console.log(`stderr:\n${buildStderr}`);
-    console.log(`stdout:\n${buildStdout}`);
-    throw Error("w3 CLI failed");
-  }
-
-  // register ENS domain
-  const ethersProvider = new ethers.providers.JsonRpcProvider(ethereumProvider);
-  const signer = await ethersProvider.getSigner(0);
-  const owner = await signer.getAddress();
-
-  const label = "0x" + keccak256(domainName);
-
-  const ensRegistrarContract = new ethers.Contract(
-    ensRegistrarAddress,
-    ["function register(bytes32 label, address owner)"],
-    signer
-  );
-
-  const ensRegistryContract = new ethers.Contract(
-    ensRegistryAddress,
-    ["function setResolver(bytes32 node, address owner)"],
-    signer
-  );
-
-  const registerTx = await ensRegistrarContract.register(label, owner, {
-    value: null,
-    nonce: null,
-    gasPrice: "50",
-    gasLimit: "200000",
+  const { data: signerAddress } = await client.invoke<string>({
+    method: "getSignerAddress",
+    module: "query",
+    uri: ethereumPluginUri,
+    input: {
+      connection: {
+        networkNameOrChainId: "testnet",
+      },
+    },
   });
 
-  await registerTx.wait();
+  if (!signerAddress) {
+    throw new Error("Could not get signer");
+  }
 
-  const setResolverTx = await ensRegistryContract.setResolver(
-    namehash(apiEns),
-    ensResolverAddress
-  );
+  const { data: registerData } = await client.invoke<{ hash: string }>({
+    method: "registerDomainAndSubdomainsRecursively",
+    module: "mutation",
+    uri: ensWrapperUri,
+    input: {
+      domain: apiEns,
+      owner: signerAddress,
+      resolverAddress: ensResolverAddress,
+      ttl: "0",
+      registrarAddress: ensRegistrarAddress,
+      registryAddress: ensRegistryAddress,
+      connection: {
+        networkNameOrChainId: "testnet",
+      },
+    },
+  });
 
-  await setResolverTx.wait();
+  if (!registerData) {
+    throw new Error(`Could not register domain '${apiEns}'`);
+  }
+
+  await client.invoke({
+    method: "awaitTransaction",
+    module: "query",
+    uri: ethereumPluginUri,
+    input: {
+      txHash: registerData.hash,
+      confirmations: 1,
+      timeout: 15000,
+      connection: {
+        networkNameOrChainId: "testnet",
+      },
+    },
+  });
 
   // manually configure manifests
 

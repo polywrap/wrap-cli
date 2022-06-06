@@ -1,7 +1,7 @@
 {
   "name": "@web3api/tracing-js",
   "description": "Web3API Core Tracing",
-  "version": "0.0.1-prealpha.82",
+  "version": "0.0.1-prealpha.83",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -14,8 +14,8 @@
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json",
     "lint": "eslint --color -c ../../../.eslintrc.js src/",
-    "test": "jest --passWithNoTests --runInBand --verbose --onlyChanged",
-    "test:ci": "jest --passWithNoTests --runInBand --verbose --onlyChanged",
+    "test": "jest --passWithNoTests --runInBand --verbose",
+    "test:ci": "jest --passWithNoTests --runInBand --verbose",
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {

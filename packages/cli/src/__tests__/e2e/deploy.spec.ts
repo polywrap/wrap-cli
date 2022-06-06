@@ -1,5 +1,4 @@
 import { clearStyle, w3Cli } from "./utils";
-import { loadDeployManifest } from "../../lib";
 
 import { 
   initTestEnvironment,
@@ -11,7 +10,6 @@ import axios from "axios";
 import { Web3ApiClient } from "@web3api/client-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { Wallet } from "ethers";
-import yaml from "js-yaml";
 import path from "path";
 import fs from "fs";
 
@@ -35,7 +33,6 @@ const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/deploy");
     path.join(testCaseRoot, testCases[index]);
 
 const setup = async (domainNames: string[]) => {
-  const projectRoot = getTestCaseDir(0);
   const { ethereum } = await initTestEnvironment();
   const { data } = await axios.get("http://localhost:4040/deploy-ens");
 
@@ -44,23 +41,19 @@ const setup = async (domainNames: string[]) => {
   const registrarAddress = data.registrarAddress
   const signer = new Wallet("0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d");
 
-  const { __type, ...deployManifest } = await loadDeployManifest(`${projectRoot}/web3api.deploy.yaml`);
+  // Setup environment variables
+  process.env = {
+    ...process.env,
+    DOMAIN_NAME: "test1.eth",
+    ENS_REG_ADDR: ensAddress
+  };
 
-  Object.entries(deployManifest.stages).forEach(([key, value]) => {
-    if (value.config && value.config.ensRegistryAddress) {
-      deployManifest.stages[key].config!.ensRegistryAddress = ensAddress;
-    }
-  })
-
-  await fs.promises.writeFile(
-    `${projectRoot}/web3api.deploy.yaml`,
-    yaml.dump(deployManifest)
-  )
+  const ethereumPluginUri = "w3://ens/ethereum.web3api.eth"
 
   const client = new Web3ApiClient({
     plugins: [
       {
-        uri: "w3://ens/ethereum.web3api.eth",
+        uri: ethereumPluginUri,
         plugin: ethereumPlugin({
           networks: {
             testnet: {
@@ -74,41 +67,34 @@ const setup = async (domainNames: string[]) => {
     ],
   });
 
+  const ensWrapperUri = `fs/${path.join(
+    path.dirname(require.resolve("@web3api/test-env-js")),
+    "wrappers", "ens"
+  )}`;
+
   for await (const domainName of domainNames) {
-    await client.invoke({
-      uri: "w3://ens/rinkeby/ens.web3api.eth",
+    await client.invoke<{ hash: string }>({
+      uri: ensWrapperUri,
       module: "mutation",
-      method: "registerDomain",
+      method: "registerDomainAndSubdomainsRecursively",
       input: {
         domain: domainName,
         owner: signer.address,
         registrarAddress,
         registryAddress: ensAddress,
+        resolverAddress,
+        ttl: "0",
         connection: {
           networkNameOrChainId: "testnet",
         },
       },
     })
-
-    await client.invoke({
-      uri: `w3://ens/rinkeby/ens.web3api.eth`,
-      module: "mutation",
-      method: "setResolver",
-      input: {
-        domain: domainName,
-        resolverAddress,
-        registryAddress: ensAddress,
-        connection: {
-          networkNameOrChainId: "testnet",
-        },
-      },
-    });
   }
 }
 
 describe("e2e tests for deploy command", () => {
   beforeAll(async () => {
-    await setup(["test1", "test2", "test3"])
+    await setup(["test1.eth", "test2.eth", "test3.eth"])
 
     for (let i = 0; i < testCases.length; ++i) {
       await runCLI(
@@ -145,6 +131,7 @@ describe("e2e tests for deploy command", () => {
         args: ["deploy"],
         cwd: getTestCaseDir(0),
         cli: w3Cli,
+        env: process.env as Record<string, string>
       },
     );
 
@@ -165,7 +152,7 @@ describe("e2e tests for deploy command", () => {
     );
   });
 
-  test("Throws and stops chain if error is found", async () => {
+  test("Should show warning if no manifest ext is found in deploy package", async () => {
     const { exitCode: code, stdout: output } = await runCLI(
       {
         args: ["deploy"],
@@ -223,5 +210,19 @@ describe("e2e tests for deploy command", () => {
     expect(sanitizedErr).toContain(
       "Failed to execute stage 'from_deploy'"
     );
+  });
+
+  test("Throws if environment variable is not loaded but defined in manifest", async () => {
+    const { exitCode: code, stderr } = await runCLI(
+      {
+        args: ["deploy"],
+        cwd: getTestCaseDir(4),
+        cli: w3Cli,
+      },
+    );
+
+    const sanitizedErr = clearStyle(stderr);
+    expect(code).toEqual(1);
+    expect(sanitizedErr).toContain("Environment variable not found: `NON_LOADED_VAR`");
   });
 });

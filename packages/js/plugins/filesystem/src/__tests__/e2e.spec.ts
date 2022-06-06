@@ -1,6 +1,6 @@
 import { filesystemPlugin } from "../index";
 import {
-  buildAndDeployApi,
+  buildApi,
   initTestEnvironment,
   stopTestEnvironment,
 } from "@web3api/test-env-js";
@@ -20,19 +20,9 @@ jest.setTimeout(360000);
 
 describe("Filesystem plugin", () => {
   let client: Web3ApiClient;
-  let ipfsProvider: string;
-  let ensAddress: string;
-  let ethereumProvider: string;
-  let ensRegistrarAddress: string;
-  let ensResolverAddress: string;
 
   beforeAll(async () => {
-    const { ipfs, ethereum, ensAddress: ens, registrarAddress, resolverAddress } = await initTestEnvironment();
-    ipfsProvider = ipfs;
-    ensAddress = ens;
-    ethereumProvider = ethereum;
-    ensRegistrarAddress = registrarAddress;
-    ensResolverAddress = resolverAddress;
+    const { ipfs, ethereum, ensAddress: ens } = await initTestEnvironment();
 
     const config: Partial<Web3ApiClientConfig> = {
       plugins: [
@@ -83,14 +73,8 @@ describe("Filesystem plugin", () => {
     const apiPath = path.resolve(
       `${GetPathToTestApis()}/wasm-as/simple-storage`
     );
-    await buildAndDeployApi({
-      apiAbsPath: apiPath,
-      ipfsProvider,
-      ensRegistryAddress: ensAddress,
-      ensRegistrarAddress,
-      ensResolverAddress,
-      ethereumProvider,
-    });
+    await buildApi(apiPath);
+
     const fsPath = `${apiPath}/build`;
     const fsUri = `fs/${fsPath}`;
 

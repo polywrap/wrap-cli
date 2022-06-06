@@ -1,5 +1,5 @@
-use super::{error::EncodeError, Context, DataView, Format, Write, ExtensionType};
-use crate::{BigInt, BigNumber, JSON};
+use super::{error::EncodeError, DataView, Format, Write, ExtensionType};
+use crate::{BigInt, BigNumber, JSON, Context};
 use byteorder::{BigEndian, WriteBytesExt};
 use core::hash::Hash;
 use std::{collections::BTreeMap, io::Write as StdioWrite};

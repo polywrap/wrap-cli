@@ -1,3 +1,12 @@
+# Web3API 0.0.1-prealpha.83
+## Features
+* [PR-870](https://github.com/polywrap/monorepo/pull/870) `@web3api/cli`: The `web3api.deploy.yaml` manifest file now supports the use of environment variables.
+* [PR-866](https://github.com/polywrap/monorepo/pull/866) `@web3api/test-env-js`: The `buildAndDeployApi` test utility now supports recursive ENS subdomain registration.
+
+## Bugs
+* [PR-884](https://github.com/polywrap/monorepo/pull/884) `@web3api/client-js`: Plugin registrations are now properly sanitized, and overridden plugins will be removed from the plugins array.
+* [PR-892](https://github.com/polywrap/monorepo/pull/892) `@web3api/cli`: Some minor fixes have been made to the `wasm/rust` build image's default Dockerfile.
+
 # Web3API 0.0.1-prealpha.82
 ## Features
 * [PR-699](https://github.com/polywrap/monorepo/pull/699) `@web3api/cli`: Support for Rust based WebAssembly wrappers has been added.
