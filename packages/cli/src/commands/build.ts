@@ -73,7 +73,7 @@ async function run(options: BuildCommandOptions) {
   const project = new Web3ApiProject({
     rootCacheDir: path.dirname(manifestFile),
     web3apiManifestPath: manifestFile,
-    quiet: verbose ? false : true,
+    quiet: !verbose,
   });
   await project.validate();
 

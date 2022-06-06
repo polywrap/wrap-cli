@@ -18,6 +18,7 @@ import schema_0_0_1_prealpha_5 from "@web3api/manifest-schemas/formats/web3api/0
 import schema_0_0_1_prealpha_6 from "@web3api/manifest-schemas/formats/web3api/0.0.1-prealpha.6.json";
 import schema_0_0_1_prealpha_7 from "@web3api/manifest-schemas/formats/web3api/0.0.1-prealpha.7.json";
 import schema_0_0_1_prealpha_8 from "@web3api/manifest-schemas/formats/web3api/0.0.1-prealpha.8.json";
+import schema_0_0_1_prealpha_9 from "@web3api/manifest-schemas/formats/web3api/0.0.1-prealpha.9.json";
 import { Tracer } from "@web3api/tracing-js"
 
 import {
@@ -40,6 +41,7 @@ const schemas: Web3ApiManifestSchemas = {
   "0.0.1-prealpha.6": schema_0_0_1_prealpha_6,
   "0.0.1-prealpha.7": schema_0_0_1_prealpha_7,
   "0.0.1-prealpha.8": schema_0_0_1_prealpha_8,
+  "0.0.1-prealpha.9": schema_0_0_1_prealpha_9,
 };
 
 const validator = new Validator();
