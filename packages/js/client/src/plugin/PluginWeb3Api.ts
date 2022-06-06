@@ -179,9 +179,9 @@ export class PluginWeb3Api extends Api {
 
   @Tracer.traceMethod("PluginWeb3Api: _getModuleClientEnv")
   private _getModuleClientEnv(): Record<string, unknown> {
-    if (!this._clientEnv?.main) {
+    if (!this._clientEnv?.module) {
       return {};
     }
-    return this._clientEnv.main;
+    return this._clientEnv.module;
   }
 }

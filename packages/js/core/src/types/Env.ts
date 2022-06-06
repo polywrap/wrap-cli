@@ -7,7 +7,7 @@ export interface Env<TUri = string> {
   uri: TUri;
 
   /** Env variables shared by both mutation and query */
-  main?: Record<string, unknown>;
+  module?: Record<string, unknown>;
 }
 
 export const sanitizeEnvs = Tracer.traceFunc(

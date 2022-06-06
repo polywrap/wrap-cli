@@ -255,7 +255,7 @@ export class Compiler {
     await this._validateWasmModule(outputDir);
 
     // Update the Web3ApiManifest
-    web3ApiManifest.main = "./main.wasm";
+    web3ApiManifest.main = "./module.wasm";
     web3ApiManifest.schema = "./schema.graphql";
     web3ApiManifest.build = "./web3api.build.json";
 
@@ -344,7 +344,7 @@ export class Compiler {
 
     await copyArtifactsFromBuildImage(
       outputDir,
-      "main.wasm",
+      "module.wasm",
       imageName,
       removeBuilder,
       removeImage,
@@ -437,7 +437,7 @@ export class Compiler {
   }
 
   private async _validateWasmModule(buildDir: string): Promise<void> {
-    const modulePath = path.join(buildDir, `main.wasm`);
+    const modulePath = path.join(buildDir, `module.wasm`);
     const wasmSource = fs.readFileSync(modulePath);
     const w3Imports: Record<keyof W3Imports, () => void> = {
       __w3_subinvoke: () => {},
