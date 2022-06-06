@@ -69,7 +69,7 @@ describe("e2e tests for build command", () => {
 
     await project.cachePresetBuildImage();
 
-    const cacheBuildEnvPath = path.join(projectRoot, ".w3/web3api/build/env")
+    const cacheBuildEnvPath = path.join(projectRoot, ".w3/web3api/build/image")
     const cachedBuildManifest = await loadBuildManifest(
       path.join(cacheBuildEnvPath, "web3api.build.yaml")
     );

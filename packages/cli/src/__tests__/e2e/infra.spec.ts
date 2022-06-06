@@ -70,7 +70,13 @@ const waitForPorts = (ports: { port: number; expected: boolean }[]) => {
         resolve(true);
       } else {
         if (tries > maxTries) {
-          reject("Waiting for ports timed out");
+          const failed = results.map(
+            (value, index) => value ? index : -1
+          ).filter((x) => x > -1);
+          reject(
+            `Waiting for ports timed out: \n` +
+            JSON.stringify(failed.map((index) => ports[index]))
+          );
         } else {
           tries++;
           setTimeout(checkPorts, 2000);

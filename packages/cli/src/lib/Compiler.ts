@@ -173,7 +173,7 @@ export class Compiler {
     const composerOutput = await this._composeSchema();
 
     // Allow the build-image to validate the manifest & override functionality
-    const buildImageDir = `${__dirname}/default/build-images/${web3ApiManifest.language}`;
+    const buildImageDir = `${__dirname}/preset/build-images/${web3ApiManifest.language}`;
     const buildImageEntryFile = path.join(buildImageDir, "index.ts");
     let compilerOverrides: CompilerOverrides | undefined;
 
