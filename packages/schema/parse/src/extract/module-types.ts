@@ -291,7 +291,7 @@ export const getmoduleTypesVisitor = (typeInfo: TypeInfo): ASTVisitor => {
   const state: State = {};
 
   return {
-    enter: visitorEnter(typeInfo.moduleTypes, state),
+    enter: visitorEnter(state),
     leave: visitorLeave(typeInfo, state),
   };
 };

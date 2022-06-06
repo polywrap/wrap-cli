@@ -1,9 +1,4 @@
-import {
-  isScalarType,
-  scalarTypeNames,
-  isModuleType,
-  ModuleTypeNames,
-} from "../typeInfo";
+import { isScalarType, scalarTypeNames, isModuleType } from "../typeInfo";
 import { SchemaValidator } from "./";
 
 import {
@@ -156,9 +151,7 @@ export const getPropertyTypesValidator = (): SchemaValidator => {
           if (typeName && !isModuleType(typeName)) {
             // Arguments not supported on non-module types
             throw Error(
-              `Methods can only be defined on module types (${ModuleTypeNames.join(
-                ", "
-              )}).\n` +
+              `Methods can only be defined on module types ("Module")}).\n` +
                 `Found: type ${typeName} { ${currentField}(${node.name.value}) }`
             );
           }

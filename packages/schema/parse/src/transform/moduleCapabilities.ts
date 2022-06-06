@@ -36,7 +36,7 @@ export function moduleCapabilities(): TypeInfoTransforms {
     leave: {
       TypeInfo: (info: TypeInfo) => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (moduleDef as any).capabilities = capabilities;
+        (info.moduleType as any).capabilities = capabilities;
 
         for (const importedModuleDef of info.importedModuleTypes) {
           if (enabledInterfaces.has(importedModuleDef.type)) {

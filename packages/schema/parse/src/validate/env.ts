@@ -1,21 +1,21 @@
 import { ObjectDefinition, TypeInfo } from "../typeInfo";
 
 export function validateEnv(info: TypeInfo): void {
-  if (info.envTypes.query.client) {
+  if (info.envType.client) {
     validateClientEnvironment(
       info,
       "Query",
-      info.envTypes.query.client,
-      info.envTypes.query.sanitized
+      info.envType.client,
+      info.envType.sanitized
     );
   }
 
-  if (info.envTypes.mutation.client) {
+  if (info.envType.client) {
     validateClientEnvironment(
       info,
       "Mutation",
-      info.envTypes.mutation.client,
-      info.envTypes.mutation.sanitized
+      info.envType.client,
+      info.envType.sanitized
     );
   }
 }
@@ -32,12 +32,7 @@ export function validateClientEnvironment(
     );
   }
 
-  const moduleObject = info.moduleTypes.find((type) => type.type === module);
-  if (!moduleObject) {
-    throw new Error(
-      `validateClientEnvironment: Cannot find the specified module type by name '${module}' while trying to validate '${client.type}'`
-    );
-  }
+  const moduleObject = info.moduleType;
 
   const sanitizeEnvMethod = moduleObject.methods.find(
     (method) => method.name === "sanitizeEnv"
