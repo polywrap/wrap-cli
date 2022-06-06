@@ -9,7 +9,6 @@ import {
 } from "..";
 
 import { PluginManifest } from "@web3api/core-js";
-import { getCommonPath } from "@web3api/os-js";
 import { bindSchema, BindOutput, BindOptions } from "@web3api/schema-bind";
 import { ComposerOutput } from "@web3api/schema-compose";
 import { TypeInfo } from "@web3api/schema-parse";
@@ -88,10 +87,9 @@ export class PluginProject extends Project<PluginManifest> {
   /// Schema
 
   public async getSchemaNamedPath(): Promise<string> {
-    // const manifest = await this.getManifest();
-    // const dir = this.getManifestDir();
-    // return path.join(dir, manifest.schema)
-    return "";
+    const manifest = await this.getManifest();
+    const dir = this.getManifestDir();
+    return path.join(dir, manifest.schema);
   }
 
   public async getImportRedirects(): Promise<
@@ -109,70 +107,30 @@ export class PluginProject extends Project<PluginManifest> {
     generationSubPath?: string
   ): Promise<BindOutput> {
     const manifest = await this.getManifest();
-    const queryModule = manifest.modules.query?.module as string;
-    const queryDirectory = manifest.modules.query
-      ? this._getGenerationDirectory(queryModule, generationSubPath)
-      : undefined;
-    const mutationModule = manifest.modules.mutation?.module as string;
-    const mutationDirectory = manifest.modules.mutation
-      ? this._getGenerationDirectory(mutationModule, generationSubPath)
-      : undefined;
-
-    if (
-      queryDirectory &&
-      mutationDirectory &&
-      queryDirectory === mutationDirectory
-    ) {
-      throw Error();
-    }
+    const module = manifest.main as string;
+    const moduleDirectory = this._getGenerationDirectory(
+      module,
+      generationSubPath
+    );
 
     // Clean the code generation
-    if (queryDirectory) {
-      resetDir(queryDirectory);
-    }
-
-    if (mutationDirectory) {
-      resetDir(mutationDirectory);
-    }
-
+    resetDir(moduleDirectory);
     const bindLanguage = pluginManifestLanguageToBindLanguage(
       await this.getManifestLanguage()
     );
 
     const options: BindOptions = {
       projectName: manifest.name,
-      modules: [],
+      modules: [
+        {
+          name: "main",
+          typeInfo: composerOutput.main?.typeInfo as TypeInfo,
+          schema: composerOutput.combined?.schema as string,
+          outputDirAbs: moduleDirectory,
+        },
+      ],
       bindLanguage,
     };
-
-    if (manifest.modules.query) {
-      options.modules.push({
-        name: "query",
-        typeInfo: composerOutput.query?.typeInfo as TypeInfo,
-        schema: composerOutput.combined?.schema as string,
-        outputDirAbs: queryDirectory as string,
-      });
-    }
-
-    if (manifest.modules.mutation) {
-      options.modules.push({
-        name: "mutation",
-        typeInfo: composerOutput.mutation?.typeInfo as TypeInfo,
-        schema: composerOutput.combined?.schema as string,
-        outputDirAbs: mutationDirectory as string,
-      });
-    }
-
-    if (mutationDirectory && queryDirectory) {
-      options.commonDirAbs = path.join(
-        getCommonPath(queryDirectory, mutationDirectory),
-        "w3"
-      );
-    } else if (mutationDirectory || queryDirectory) {
-      options.commonDirAbs = path.resolve(
-        path.join(mutationDirectory || queryDirectory || "", "../../w3")
-      );
-    }
 
     return bindSchema(options);
   }

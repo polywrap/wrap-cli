@@ -19,7 +19,6 @@ export const Query = {
     ): Promise<InvokeApiResult<MaybeUriOrManifest>> => {
       return invoke<MaybeUriOrManifest>({
         uri: api.uri,
-        module: "query",
         method: `tryResolveUri`,
         input: {
           authority: uri.authority,
@@ -37,7 +36,6 @@ export const Query = {
     ): Promise<InvokeApiResult<ArrayBuffer>> => {
       return invoke<ArrayBuffer>({
         uri: api.uri,
-        module: "query",
         method: "getFile",
         input: {
           path,

@@ -1,7 +1,5 @@
 import { ClientConfig, Uri } from ".";
 
-export type InvokableModules = "query" | "mutation";
-
 /** Options required for an API invocation. */
 export interface InvokeApiOptions<
   TUri extends Uri | string = string,
@@ -9,9 +7,6 @@ export interface InvokeApiOptions<
 > {
   /** The API's URI */
   uri: TUri;
-
-  /** Module to be called into. */
-  module: InvokableModules;
 
   /** Method to be executed. */
   method: string;
