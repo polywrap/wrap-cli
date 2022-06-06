@@ -7,7 +7,7 @@ import {
   PluginRegistration,
   InterfaceImplementations,
   Env,
-  RecipeHandler,
+  WorkflowHandler,
 } from "./";
 import { AnyManifestArtifact, ManifestArtifactType } from "../manifest";
 import { UriResolver } from "../uri-resolution/core";
@@ -56,7 +56,7 @@ export interface Client
   extends QueryHandler,
     SubscriptionHandler,
     InvokeHandler,
-    RecipeHandler,
+    WorkflowHandler,
     UriResolverHandler {
   getRedirects(options: GetRedirectsOptions): readonly UriRedirect<Uri>[];
 

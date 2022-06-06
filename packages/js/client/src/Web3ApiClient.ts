@@ -39,25 +39,36 @@ import {
   sanitizeInterfaceImplementations,
   sanitizePluginRegistrations,
   sanitizeUriRedirects,
-  CookRecipesOptions,
   CacheResolver,
   ExtendableUriResolver,
   coreInterfaceUris,
-  Recipe,
   Contextualized,
   ResolveUriErrorType,
-  resolveConstants,
-  parseRecipeQuery,
-  resolveRecipeQuery,
-  NamespacedRecipes,
   executeMaybeAsyncFunction,
   PluginPackage,
+  RunOptions,
+  MaybeAsync,
+  Job,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
 export interface Web3ApiClientConfig<TUri extends Uri | string = string>
   extends ClientConfig<TUri> {
   tracingEnabled: boolean;
+}
+
+export interface JobOptions<
+  TData extends Record<string, unknown> = Record<string, unknown>,
+  TUri extends Uri | string = string
+> {
+  id: string;
+  jobs: Job<TUri>;
+
+  onExecution?(
+    id: string,
+    data?: InvokeApiResult<TData>["data"],
+    error?: InvokeApiResult<TData>["error"]
+  ): MaybeAsync<void>;
 }
 
 export class Web3ApiClient implements Client {
@@ -128,29 +139,6 @@ export class Web3ApiClient implements Client {
       Tracer.disableTracing();
     }
     this._config.tracingEnabled = enable;
-  }
-
-  @Tracer.traceMethod("Web3ApiClient: cook")
-  public async cook<
-    TData extends Record<string, unknown> = Record<string, unknown>
-  >(options: CookRecipesOptions<TData>): Promise<void> {
-    const { api, recipes } = await this._prepareRecipeQueries<TData>(options);
-    for (const recipe of recipes) {
-      const opts: QueryApiOptions = {
-        uri: api.uri,
-        query: recipe.query,
-        variables: recipe.variables,
-        config: options.config,
-      };
-      const { data, errors } = await this.query<TData>(opts);
-      if (options && options.onExecution) {
-        await executeMaybeAsyncFunction(options.onExecution, [
-          opts,
-          data,
-          errors,
-        ]);
-      }
-    }
   }
 
   @Tracer.traceMethod("Web3ApiClient: getRedirects")
@@ -367,6 +355,23 @@ export class Web3ApiClient implements Client {
       this._clearContext(contextId);
     }
     return result;
+  }
+
+  @Tracer.traceMethod("Web3ApiClient: run")
+  public async run<
+    TData extends Record<string, unknown> = Record<string, unknown>,
+    TUri extends Uri | string = string
+  >(options: RunOptions<TData, TUri>): Promise<void> {
+    const { workflow, onExecution } = options;
+    const ids = options.ids ? options.ids : Object.keys(workflow.jobs);
+
+    for (const id of ids) {
+      await this._runJob<TData, TUri>({
+        id,
+        jobs: workflow.jobs,
+        onExecution,
+      });
+    }
   }
 
   @Tracer.traceMethod("Web3ApiClient: subscribe")
@@ -675,39 +680,6 @@ export class Web3ApiClient implements Client {
     this._config.interfaces = sanitizedInterfaces;
   }
 
-  @Tracer.traceMethod("Web3ApiClient: prepareRecipeQueries")
-  private async _prepareRecipeQueries<
-    TData extends Record<string, unknown> = Record<string, unknown>
-  >(
-    options: CookRecipesOptions<TData>
-  ): Promise<{ api: Uri; recipes: Recipe[] }> {
-    const { api, recipes, constants, menus } = options.cookbook;
-
-    if (!api) throw new Error("Cookbook is missing an API");
-    if (menus && Object.keys(menus).some((k) => k in recipes))
-      throw new Error(
-        `Namespace collision: menus cannot have the same name as recipes (${Object.keys(
-          menus
-        ).filter((k) => k in recipes)})`
-      );
-    if (
-      !options.dishes ||
-      (Array.isArray(options.dishes) && options.dishes.length === 0)
-    )
-      options.dishes = Object.keys(recipes);
-
-    const cookbook = Object.assign(
-      resolveConstants(recipes, constants || {}) as NamespacedRecipes,
-      menus
-    );
-    return {
-      api: this._toUri(api),
-      recipes: parseRecipeQuery(options.dishes, menus || {}).flatMap((q) =>
-        resolveRecipeQuery(cookbook, q)
-      ),
-    };
-  }
-
   @Tracer.traceMethod("Web3ApiClient: validateConfig")
   private _validateConfig(): void {
     // Require plugins to use non-interface URIs
@@ -835,6 +807,62 @@ export class Web3ApiClient implements Client {
 
     return api;
   }
+
+  @Tracer.traceMethod("Web3ApiClient: runJob")
+  private async _runJob<
+    TData extends Record<string, unknown> = Record<string, unknown>,
+    TUri extends Uri | string = string
+  >(opts: JobOptions<TData, TUri>): Promise<void> {
+    const { id, jobs, onExecution } = opts;
+
+    if (id) {
+      let index = id.indexOf(".");
+      index = index === -1 ? id.length : index;
+
+      const jobId = id.substring(0, index);
+      if (jobId === "") return;
+
+      const steps = jobs[jobId].steps;
+      if (steps) {
+        for (let i = 0; i < steps.length; i++) {
+          const step = steps[i];
+          const { data, error } = await this.invoke<TData, TUri>({
+            uri: step.uri,
+            module: step.module,
+            method: step.method,
+            config: step.config,
+            input: step.input,
+          });
+
+          if (onExecution) {
+            await executeMaybeAsyncFunction(
+              onExecution,
+              `${jobId}.${i}`,
+              data,
+              error
+            );
+          }
+        }
+      }
+      const subJobs = jobs[jobId].jobs;
+      if (subJobs) {
+        await this._runJob<TData, TUri>({
+          id: id.substring(index + 1),
+          jobs: subJobs,
+          onExecution,
+        });
+      }
+    } else {
+      const ids = Object.keys(jobs);
+      for (const id of ids) {
+        await this._runJob<TData, TUri>({
+          id,
+          jobs: jobs,
+          onExecution,
+        });
+      }
+    }
+  }
 }
 
 const contextualizeClient = (
@@ -926,10 +954,10 @@ const contextualizeClient = (
         }> => {
           return client.loadUriResolvers();
         },
-        cook: <TData extends Record<string, unknown> = Record<string, unknown>>(
-          options: CookRecipesOptions<TData>
+        run: <TData extends Record<string, unknown> = Record<string, unknown>>(
+          options: RunOptions<TData>
         ): Promise<void> => {
-          return client.cook({ ...options, contextId });
+          return client.run({ ...options, contextId });
         },
       }
     : client;
