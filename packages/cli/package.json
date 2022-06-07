@@ -16,10 +16,10 @@
     "w3": "bin/w3"
   },
   "scripts": {
-    "build": "rimraf ./build && tsc --project tsconfig.build.json && yarn build:build-images && yarn build:deploy-modules && yarn build:infra-presets",
-    "build:build-images": "copyfiles ./src/lib/preset/build-images/**/**/* ./build/lib/preset/build-images/ -u 4",
-    "build:deploy-modules": "copyfiles ./src/lib/preset/deploy-modules/**/web3api.deploy.ext.json ./build/lib/preset/deploy-modules -u 4",
-    "build:infra-presets": "copyfiles ./src/lib/preset/infra-presets/**/* ./build/lib/preset/infra-presets -u 4",
+    "build": "rimraf ./build && tsc --project tsconfig.build.json && yarn build:build-images && yarn build:deploy-modules && yarn build:infra-modules",
+    "build:build-images": "copyfiles ./src/lib/defaults/build-images/**/**/* ./build/lib/defaults/build-images/ -u 4",
+    "build:deploy-modules": "copyfiles ./src/lib/defaults/deploy-modules/**/web3api.deploy.ext.json ./build/lib/defaults/deploy-modules -u 4",
+    "build:infra-modules": "ts-node ./copyfiles ./src/lib/defaults/infra-modules ./build/lib/defaults/infra-modules",
     "prebuild": "ts-node ./scripts/generateIntlTypes.ts",
     "build:fast": "rimraf ./build && tsc --project tsconfig.build.json",
     "lint": "eslint --color -c ../../.eslintrc.js .",
