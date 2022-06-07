@@ -94,7 +94,7 @@ async function run(options: PluginCommandOptions) {
 
   // Plugin project
   const project = new PluginProject({
-    rootCacheDir: path.dirname(manifestFile),
+    rootDir: path.dirname(manifestFile),
     pluginManifestPath: manifestFile,
   });
   await project.validate();

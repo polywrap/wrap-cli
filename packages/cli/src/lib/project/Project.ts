@@ -1,23 +1,24 @@
-import { intlMsg, AnyManifest, AnyManifestLanguage } from "../";
+import {
+  intlMsg,
+  AnyManifest,
+  AnyManifestLanguage,
+  CacheDirectory,
+  CacheDirectoryConfig
+} from "../";
 
-import fs from "fs";
-import path from "path";
-import rimraf from "rimraf";
-import copyfiles from "copyfiles";
-import { writeFileSync } from "@web3api/os-js";
 import { BindOutput } from "@web3api/schema-bind";
 import { ComposerOutput } from "@web3api/schema-compose";
 
-export interface ProjectConfig {
-  rootCacheDir: string;
+export interface ProjectConfig extends CacheDirectoryConfig {
   quiet?: boolean;
 }
 
-export abstract class Project<TManifest extends AnyManifest> {
+export abstract class Project<TManifest extends AnyManifest> extends CacheDirectory {
   constructor(
     protected _config: ProjectConfig,
-    protected _projectCacheSubDir: string
-  ) {}
+  ) {
+    super(_config);
+  }
 
   /// Validation
 
@@ -74,76 +75,5 @@ export abstract class Project<TManifest extends AnyManifest> {
 
   public get quiet(): boolean {
     return !!this._config.quiet;
-  }
-
-  /// Cache (.w3 folder)
-
-  public getCacheDir(): string {
-    return path.join(
-      this._config.rootCacheDir,
-      ".w3",
-      this._projectCacheSubDir
-    );
-  }
-
-  public resetCache(): void {
-    rimraf.sync(this.getCacheDir());
-  }
-
-  public removeCacheDir(subfolder: string): void {
-    const folderPath = path.join(this.getCacheDir(), subfolder);
-    rimraf.sync(folderPath);
-  }
-
-  public getCachePath(subpath: string): string {
-    return path.join(this.getCacheDir(), subpath);
-  }
-
-  public readCacheFile(file: string): string | undefined {
-    const filePath = this.getCachePath(file);
-
-    if (!fs.existsSync(filePath)) {
-      return undefined;
-    }
-
-    return fs.readFileSync(filePath, "utf-8");
-  }
-
-  public writeCacheFile(
-    subPath: string,
-    data: unknown,
-    options?: fs.WriteFileOptions
-  ): void {
-    const filePath = this.getCachePath(subPath);
-    const folderPath = path.dirname(filePath);
-
-    // Create folders if they don't exist
-    if (!fs.existsSync(folderPath)) {
-      fs.mkdirSync(folderPath, { recursive: true });
-    }
-
-    writeFileSync(filePath, data, options);
-  }
-
-  public async copyIntoCache(
-    destSubfolder: string,
-    sourceFolder: string,
-    options: copyfiles.Options = {}
-  ): Promise<void> {
-    const dest = this.getCachePath(destSubfolder);
-
-    if (!fs.existsSync(dest)) {
-      fs.mkdirSync(dest, { recursive: true });
-    }
-
-    await new Promise<void>((resolve, reject) => {
-      copyfiles([sourceFolder, dest], options, (error) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve();
-        }
-      });
-    });
   }
 }

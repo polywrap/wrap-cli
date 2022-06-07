@@ -93,7 +93,7 @@ async function run(
 
   const manifestPath = path.resolve(manifest);
   const project = new Web3ApiProject({
-    rootCacheDir: path.dirname(manifestPath),
+    rootDir: path.dirname(manifestPath),
     web3apiManifestPath: manifestPath,
     quiet: !verbose,
   });

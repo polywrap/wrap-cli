@@ -1,5 +1,6 @@
 export * from "./child-process";
 export * from "./docker";
+export * from "./DockerCompose";
 export * from "./env";
 export * from "./file-lock";
 export * from "./file-watcher";

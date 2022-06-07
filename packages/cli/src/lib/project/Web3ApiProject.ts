@@ -47,6 +47,7 @@ export interface Web3ApiProjectConfig extends ProjectConfig {
 }
 
 export class Web3ApiProject extends Project<Web3ApiManifest> {
+  protected _config: Web3ApiProjectConfig;
   private _web3apiManifest: Web3ApiManifest | undefined;
   private _buildManifest: BuildManifest | undefined;
   private _deployManifest: DeployManifest | undefined;
@@ -68,8 +69,11 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     infraModulesDir: "infra/modules",
   };
 
-  constructor(protected _config: Web3ApiProjectConfig) {
-    super(_config, Web3ApiProject.cacheLayout.root);
+  constructor(config: Omit<Web3ApiProjectConfig, "subDir">) {
+    super({
+      ...config,
+      subDir: Web3ApiProject.cacheLayout.root
+    });
   }
 
   /// Project Base Methods

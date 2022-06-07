@@ -79,7 +79,7 @@ async function run(options: AppCommandOptions) {
 
   // App project
   const project = new AppProject({
-    rootCacheDir: path.dirname(manifestFile),
+    rootDir: path.dirname(manifestFile),
     appManifestPath: manifestFile,
     client,
   });

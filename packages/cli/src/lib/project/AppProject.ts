@@ -19,14 +19,18 @@ export interface AppProjectConfig extends ProjectConfig {
 }
 
 export class AppProject extends Project<AppManifest> {
+  protected _config: AppProjectConfig
   private _appManifest: AppManifest | undefined;
 
   public static cacheLayout = {
     root: "app",
   };
 
-  constructor(protected _config: AppProjectConfig) {
-    super(_config, AppProject.cacheLayout.root);
+  constructor(config: Omit<AppProjectConfig, "subDir">) {
+    super({
+      ...config,
+      subDir: AppProject.cacheLayout.root
+    });
   }
 
   /// Project Based Methods

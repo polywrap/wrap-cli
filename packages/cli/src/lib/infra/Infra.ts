@@ -2,7 +2,7 @@ import { Web3ApiProject } from "../project";
 import { intlMsg } from "../intl";
 import { dependencyFetcherClassMap } from "./fetchers";
 import { correctBuildContextPathsFromCompose } from "../helpers/docker";
-import { DockerCompose } from "./dockerCompose";
+import { DockerCompose } from "../system/DockerCompose";
 
 import { InfraManifest } from "@web3api/core-js";
 import path from "path";

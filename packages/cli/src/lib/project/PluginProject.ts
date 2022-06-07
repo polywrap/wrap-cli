@@ -21,14 +21,18 @@ export interface PluginProjectConfig extends ProjectConfig {
 }
 
 export class PluginProject extends Project<PluginManifest> {
+  protected _config: PluginProjectConfig
   private _pluginManifest: PluginManifest | undefined;
 
   public static cacheLayout = {
     root: "plugin",
   };
 
-  constructor(protected _config: PluginProjectConfig) {
-    super(_config, PluginProject.cacheLayout.root);
+  constructor(config: Omit<PluginProjectConfig, "subDir">) {
+    super({
+      ...config,
+      subDir: PluginProject.cacheLayout.root
+    });
   }
 
   /// Project Base Methods
