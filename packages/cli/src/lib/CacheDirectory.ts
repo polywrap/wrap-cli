@@ -13,7 +13,7 @@ export class CacheDirectory {
   constructor(
     protected _config: CacheDirectoryConfig,
     protected _cacheDirName: string = ".w3"
-  ) { }
+  ) {}
 
   public getCacheDir(): string {
     return path.join(
