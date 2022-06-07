@@ -10,7 +10,7 @@
   "workspaces": {
     "packages": [
       "./packages/apis/**",
-      "./packages/cli/**",
+      "./packages/cli",
       "./packages/core-interfaces/**",
       "./packages/js/**",
       "./packages/manifest-schemas/**",
