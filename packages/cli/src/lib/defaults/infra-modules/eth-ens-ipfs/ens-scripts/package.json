@@ -1,6 +1,4 @@
 {
-  "name": "@web3api/infra-ens-scripts",
-  "version": "0.0.1",
   "private": true,
   "main": "build/index.js",
   "scripts": {

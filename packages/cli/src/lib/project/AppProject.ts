@@ -28,7 +28,7 @@ export class AppProject extends Project<AppManifest> {
   constructor(protected _config: AppProjectConfig) {
     super(_config, {
       rootDir: _config.rootDir,
-      subDir: AppProject.cacheLayout.root
+      subDir: AppProject.cacheLayout.root,
     });
   }
 

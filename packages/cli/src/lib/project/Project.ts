@@ -3,7 +3,7 @@ import {
   AnyManifest,
   AnyManifestLanguage,
   CacheDirectory,
-  CacheDirectoryConfig
+  CacheDirectoryConfig,
 } from "../";
 
 import { BindOutput } from "@web3api/schema-bind";
@@ -17,10 +17,7 @@ export interface ProjectConfig {
 export abstract class Project<TManifest extends AnyManifest> {
   protected _cache: CacheDirectory;
 
-  constructor(
-    protected _config: ProjectConfig,
-    _cache: CacheDirectoryConfig
-  ) {
+  constructor(protected _config: ProjectConfig, _cache: CacheDirectoryConfig) {
     this._cache = new CacheDirectory(_cache);
   }
 

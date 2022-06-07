@@ -16,7 +16,7 @@ import {
   loadDeployManifest,
   loadDeployManifestExt,
   web3apiManifestLanguageToBindLanguage,
-  resetDir
+  resetDir,
 } from "..";
 import { Deployer } from "../deploy";
 
@@ -65,7 +65,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
   constructor(protected _config: Web3ApiProjectConfig) {
     super(_config, {
       rootDir: _config.rootDir,
-      subDir: Web3ApiProject.cacheLayout.root
+      subDir: Web3ApiProject.cacheLayout.root,
     });
   }
 
@@ -83,7 +83,9 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     this._presetBuildImageCached = false;
     this._presetDeployModulesCached = false;
     this._cache.removeCacheDir(Web3ApiProject.cacheLayout.buildImageDir);
-    this._cache.removeCacheDir(Web3ApiProject.cacheLayout.buildLinkedPackagesDir);
+    this._cache.removeCacheDir(
+      Web3ApiProject.cacheLayout.buildLinkedPackagesDir
+    );
     this._cache.removeCacheDir(Web3ApiProject.cacheLayout.deployDir);
   }
 
@@ -319,7 +321,9 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
 
   public async getBuildUuid(): Promise<string> {
     // Load the cached build UUID
-    let uuid = this._cache.readCacheFile(Web3ApiProject.cacheLayout.buildUuidFile);
+    let uuid = this._cache.readCacheFile(
+      Web3ApiProject.cacheLayout.buildUuidFile
+    );
 
     // If none was present, generate one
     if (!uuid) {

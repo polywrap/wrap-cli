@@ -15,7 +15,7 @@ export function loadEnvironmentVariables(
 
   const loadEnvVar = (value: string): string => {
     // Allow the use of double '$' to "escape" the loading of an env variable
-    if (value.length > 2 && value[0] === '$' && value[1] === '$') {
+    if (value.length > 2 && value[0] === "$" && value[1] === "$") {
       return value.substr(1);
     }
 
@@ -23,7 +23,9 @@ export function loadEnvironmentVariables(
     const result = value.match(/\$\{([a-zA-Z0-9_]+)\}|\$([a-zA-Z0-9_]+)/);
 
     if (!result || result.length !== 3) {
-      throw Error(`Unable to load env var: ${value} ${result} ${result?.length}`);
+      throw Error(
+        `Unable to load env var: ${value} ${result} ${result?.length}`
+      );
     }
 
     const importedVariable = result[1] || result[2];

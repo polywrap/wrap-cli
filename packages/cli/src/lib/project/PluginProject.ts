@@ -30,7 +30,7 @@ export class PluginProject extends Project<PluginManifest> {
   constructor(protected _config: PluginProjectConfig) {
     super(_config, {
       rootDir: _config.rootDir,
-      subDir: PluginProject.cacheLayout.root
+      subDir: PluginProject.cacheLayout.root,
     });
   }
 
