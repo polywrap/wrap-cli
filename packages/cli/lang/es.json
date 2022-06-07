@@ -180,7 +180,7 @@
   "commands_query_error_noApi": "API needs to be initialized",
   "commands_query_error_readFail": "Failed to read query {query}",
   "commands_query_error_noRecipeScriptFound": "Recipe script not found at path: {path}",
-  "commands_query_error_noTestEnvFound": "w3 test-env not found, please run 'w3 infra up --preset=eth-ens-ipfs'",
+  "commands_query_error_noTestEnvFound": "w3 test-env not found, please run 'w3 infra up --modules=eth-ens-ipfs'",
   "commands_testEnv_description": "Manage a test environment for Web3API",
   "commands_testEnv_error_never": "This should never happen...",
   "commands_testEnv_error_noCommand": "No command given",

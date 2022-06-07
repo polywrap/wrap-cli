@@ -64,7 +64,7 @@ export const initTestEnvironment = async (
 ): Promise<TestEnvironment> => {
   // Start the test environment
   const { exitCode, stderr, stdout } = await runCLI({
-    args: ["infra", "up", "--preset=eth-ens-ipfs", "--verbose"],
+    args: ["infra", "up", "--modules=eth-ens-ipfs", "--verbose"],
     cli,
   });
 
@@ -139,7 +139,7 @@ export const initTestEnvironment = async (
 export const stopTestEnvironment = async (cli?: string): Promise<void> => {
   // Stop the test environment
   const { exitCode, stderr } = await runCLI({
-    args: ["infra", "down", "--preset=eth-ens-ipfs"],
+    args: ["infra", "down", "--modules=eth-ens-ipfs"],
     cli,
   });
 

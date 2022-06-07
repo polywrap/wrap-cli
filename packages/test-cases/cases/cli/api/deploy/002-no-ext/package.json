@@ -6,8 +6,8 @@
   "scripts": {
     "build": "w3 build",
     "deploy": "w3 deploy",
-    "test:env:up": "w3 infra up --preset=eth-ens-ipfs",
-    "test:env:down": "w3 infra down --preset=eth-ens-ipfs"
+    "test:env:up": "w3 infra up --modules=eth-ens-ipfs",
+    "test:env:down": "w3 infra down --modules=eth-ens-ipfs"
   },
   "dependencies": {
     "@web3api/wasm-as": "0.0.1-prealpha.72"
