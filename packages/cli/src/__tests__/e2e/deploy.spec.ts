@@ -4,6 +4,8 @@ import {
   initTestEnvironment,
   runCLI,
   stopTestEnvironment,
+  ensAddresses,
+  providers
 } from "@web3api/test-env-js";
 import { GetPathToCliTestFiles } from "@web3api/test-cases";
 import { Web3ApiClient } from "@web3api/client-js";
@@ -32,11 +34,11 @@ const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/deploy");
     path.join(testCaseRoot, testCases[index]);
 
 const setup = async (domainNames: string[]) => {
-  const { ethereum, ...data } = await initTestEnvironment();
+  await initTestEnvironment();
 
-  const ensAddress = data.ensAddress
-  const resolverAddress = data.resolverAddress
-  const registrarAddress = data.registrarAddress
+  const ensAddress = ensAddresses.ensAddress
+  const resolverAddress = ensAddresses.resolverAddress
+  const registrarAddress = ensAddresses.registrarAddress
   const signer = new Wallet("0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d");
 
   // Setup environment variables
@@ -54,7 +56,7 @@ const setup = async (domainNames: string[]) => {
         plugin: ethereumPlugin({
           networks: {
             testnet: {
-              provider: ethereum,
+              provider: providers.ethereum,
               signer
             }
           },

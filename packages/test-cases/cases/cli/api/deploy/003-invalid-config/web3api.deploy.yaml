@@ -9,5 +9,4 @@ stages:
     config:
       domainName: true
       ports:
-        devServer: 4040
         ethereum: 8545

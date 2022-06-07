@@ -5,8 +5,10 @@ import {
 import * as TestCases from "./test-cases";
 import {
   buildApi,
+  ensAddresses,
   initTestEnvironment,
   stopTestEnvironment,
+  providers
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 
@@ -18,10 +20,10 @@ describe("wasm-rs test cases", () => {
   let ensAddress: string;
 
   beforeAll(async () => {
-    const testEnv = await initTestEnvironment();
-    ipfsProvider = testEnv.ipfs;
-    ethProvider = testEnv.ethereum;
-    ensAddress = testEnv.ensAddress;
+    await initTestEnvironment();
+    ipfsProvider = providers.ipfs;
+    ethProvider = providers.ethereum;
+    ensAddress = ensAddresses.ensAddress;
   });
 
   afterAll(async () => {

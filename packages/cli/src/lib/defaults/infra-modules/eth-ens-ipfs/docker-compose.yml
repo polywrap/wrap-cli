@@ -5,7 +5,7 @@ services:
     links:
       - ganache
     environment:
-      ETHEREUM_PORT: '${ETHEREUM_PORT}'
+      ETHEREUM_PORT: '${ETHEREUM_PORT:-8545}'
       ganache: 'ganache:8545'
     depends_on:
       - "ganache"
@@ -13,11 +13,11 @@ services:
   ganache:
     image: 'trufflesuite/ganache-cli:v6.12.2'
     ports:
-      - '${ETHEREUM_PORT}:8545'
+      - '${ETHEREUM_PORT:-8545}:8545'
     command: -l 8000000 --networkId 1576478390085 --deterministic --hostname=0.0.0.0
   ipfs:
     image: 'ipfs/go-ipfs:v0.4.23'
     ports:
-      - '${IPFS_PORT}:5001'
+      - '${IPFS_PORT:-5001}:5001'
       - '8080:8080'
       - '4001:4001'

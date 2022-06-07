@@ -8,6 +8,8 @@ import {
   initTestEnvironment,
   stopTestEnvironment,
   buildApi,
+  ensAddresses,
+  providers
 } from "@web3api/test-env-js";
 import { Wallet } from "ethers";
 
@@ -39,7 +41,7 @@ describe("Ethereum Plugin", () => {
   const uri = `fs/${apiPath}/build`
 
   beforeAll(async () => {
-    const { ethereum, ipfs, ...ensAddresses } = await initTestEnvironment();
+    await initTestEnvironment();
 
     ensAddress = ensAddresses.ensAddress;
     resolverAddress = ensAddresses.resolverAddress;
@@ -52,7 +54,7 @@ describe("Ethereum Plugin", () => {
           plugin: ethereumPlugin({
             networks: {
               testnet: {
-                provider: ethereum,
+                provider: providers.ethereum,
                 signer: new Wallet(
                   "0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d"
                 ),
@@ -64,7 +66,7 @@ describe("Ethereum Plugin", () => {
         {
           uri: "w3://ens/ipfs.web3api.eth",
           plugin: ipfsPlugin({
-            provider: ipfs,
+            provider: providers.ipfs,
             fallbackProviders: defaultIpfsProviders,
           }),
         },

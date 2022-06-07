@@ -4,7 +4,7 @@ import yaml from "js-yaml";
 
 import { clearStyle, w3Cli } from "./utils";
 
-import { buildAndDeployApi, initTestEnvironment, runCLI, stopTestEnvironment } from "@web3api/test-env-js";
+import { buildAndDeployApi, providers, initTestEnvironment, runCLI, stopTestEnvironment } from "@web3api/test-env-js";
 import { GetPathToCliTestFiles } from "@web3api/test-cases";
 import { normalizeLineEndings } from "@web3api/os-js";
 import {
@@ -76,10 +76,7 @@ describe("e2e tests for query command", () => {
   const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/query");
 
   beforeAll(async () => {
-    const {
-      ipfs,
-      ethereum,
-    } = await initTestEnvironment();
+    await initTestEnvironment();
 
     const { stderr: deployErr } = await runCLI({
       args: ["./deploy-contracts.js"],
@@ -91,8 +88,8 @@ describe("e2e tests for query command", () => {
 
     await buildAndDeployApi({
       apiAbsPath: testCaseRoot,
-      ipfsProvider: ipfs,
-      ethereumProvider: ethereum,
+      ipfsProvider: providers.ipfs,
+      ethereumProvider: providers.ethereum,
       ensName: "simplestorage.eth",
     })
   });

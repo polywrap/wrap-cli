@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { generateName } from "./generate-name";
 
 import path from "path";
@@ -16,10 +17,10 @@ export const ensAddresses = {
   reverseAddress: "0xe982E462b094850F12AF94d21D470e21bE9D0E9C",
 } as const;
 
-interface TestEnvironment {
-  ipfs: string;
-  ethereum: string;
-}
+export const providers = {
+  ipfs: "http://localhost:5001",
+  ethereum: "http://localhost:8545",
+};
 
 const monorepoCli = `${__dirname}/../../../cli/bin/w3`;
 const npmCli = `${__dirname}/../../cli/bin/w3`;
@@ -59,9 +60,7 @@ async function awaitResponse(
   return false;
 }
 
-export const initTestEnvironment = async (
-  cli?: string
-): Promise<TestEnvironment> => {
+export const initTestEnvironment = async (cli?: string): Promise<void> => {
   // Start the test environment
   const { exitCode, stderr, stdout } = await runCLI({
     args: ["infra", "up", "--modules=eth-ens-ipfs", "--verbose"],
@@ -98,41 +97,10 @@ export const initTestEnvironment = async (
     throw Error("test-env: Ganache failed to start");
   }
 
-  // Dev Server
-  success = await awaitResponse(
-    `http://localhost:4040/status`,
-    '"running":true',
-    "get",
-    2000,
-    20000
-  );
-
-  if (!success) {
-    throw Error("test-env: DevServer failed to start");
-  }
-
   if (exitCode) {
     throw Error(
       `initTestEnvironment failed to start test environment.\nExit Code: ${exitCode}\nStdErr: ${stderr}\nStdOut: ${stdout}`
     );
-  }
-
-  try {
-    // fetch providers from dev server
-    const { data: providers } = await axios.get<{
-      ipfs: string;
-      ethereum: string;
-    }>("http://localhost:4040/providers");
-
-    const ipfs = providers.ipfs;
-    const ethereum = providers.ethereum;
-
-    return {
-      ipfs,
-      ethereum,
-    };
-  } catch (e) {
-    throw Error(`Dev server must be running at port 4040\n${e}`);
   }
 };
 

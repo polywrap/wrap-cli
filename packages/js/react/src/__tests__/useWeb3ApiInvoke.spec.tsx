@@ -12,6 +12,7 @@ import {
   stopTestEnvironment,
   buildAndDeployApi,
   ensAddresses,
+  providers
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 
@@ -31,26 +32,23 @@ describe("useWeb3ApiInvoke hook", () => {
   let WrapperProvider: RenderHookOptions<unknown>;
 
   beforeAll(async () => {
-    const {
-      ipfs,
-      ethereum,
-    } = await initTestEnvironment();
+    await initTestEnvironment();
 
     const { ensDomain } = await buildAndDeployApi({
       apiAbsPath: `${GetPathToTestApis()}/wasm-as/simple-storage`,
-      ipfsProvider: ipfs,
-      ethereumProvider: ethereum,
+      ipfsProvider: providers.ipfs,
+      ethereumProvider: providers.ethereum,
     });
 
     const { ensDomain: envEnsDomain } = await buildAndDeployApi({
       apiAbsPath: `${GetPathToTestApis()}/wasm-as/simple-env-types`,
-      ipfsProvider: ipfs,
-      ethereumProvider: ethereum,
+      ipfsProvider: providers.ipfs,
+      ethereumProvider: providers.ethereum,
     });
 
     uri = `ens/testnet/${ensDomain}`;
     envUri = `ens/testnet/${envEnsDomain}`;
-    plugins = createPlugins(ensAddresses.ensAddress, ethereum, ipfs);
+    plugins = createPlugins(ensAddresses.ensAddress, providers.ethereum, providers.ipfs);
     WrapperProvider = {
       wrapper: Web3ApiProvider,
       initialProps: {

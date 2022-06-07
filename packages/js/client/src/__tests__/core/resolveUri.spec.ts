@@ -10,7 +10,8 @@ import {
   initTestEnvironment,
   runCLI,
   stopTestEnvironment,
-  ensAddresses
+  ensAddresses,
+  providers
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 import { ResolveUriErrorType, Client } from "@web3api/core-js";
@@ -22,9 +23,9 @@ describe("resolveUri", () => {
   let ethProvider: string;
 
   beforeAll(async () => {
-    const { ipfs, ethereum } = await initTestEnvironment();
-    ipfsProvider = ipfs;
-    ethProvider = ethereum;
+    await initTestEnvironment();
+    ipfsProvider = providers.ipfs;
+    ethProvider = providers.ethereum;
   });
 
   afterAll(async () => {
