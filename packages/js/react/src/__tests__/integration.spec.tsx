@@ -5,7 +5,8 @@ import { createPlugins } from "./plugins";
 import {
   initTestEnvironment,
   stopTestEnvironment,
-  buildAndDeployApi
+  buildAndDeployApi,
+  ensAddresses
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 import { PluginRegistration } from "@web3api/core-js";
@@ -27,20 +28,14 @@ describe("Web3API React Integration", () => {
     const {
       ipfs,
       ethereum,
-      ensAddress,
-      registrarAddress,
-      resolverAddress
     } = await initTestEnvironment();
 
-    plugins = createPlugins(ensAddress, ethereum, ipfs);
+    plugins = createPlugins(ensAddresses.ensAddress, ethereum, ipfs);
 
     api = await buildAndDeployApi({
       apiAbsPath: `${GetPathToTestApis()}/wasm-as/simple-storage`,
       ipfsProvider: ipfs,
       ethereumProvider: ethereum,
-      ensRegistrarAddress: registrarAddress,
-      ensRegistryAddress: ensAddress,
-      ensResolverAddress: resolverAddress,
     });
 
     ensUri = `ens/testnet/${api.ensDomain}`;

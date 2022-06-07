@@ -9,13 +9,16 @@ import { deserializeWeb3ApiManifest, Uri } from "@web3api/core-js";
 import { Web3ApiClient } from "@web3api/client-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 
+export const ensAddresses = {
+  ensAddress: "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab",
+  resolverAddress: "0x5b1869D9A4C187F2EAa108f3062412ecf0526b24",
+  registrarAddress: "0xD833215cBcc3f914bD1C9ece3EE7BF8B14f841bb",
+  reverseAddress: "0xe982E462b094850F12AF94d21D470e21bE9D0E9C",
+} as const;
+
 interface TestEnvironment {
   ipfs: string;
   ethereum: string;
-  ensAddress: string;
-  registrarAddress: string;
-  reverseAddress: string;
-  resolverAddress: string;
 }
 
 const monorepoCli = `${__dirname}/../../../cli/bin/w3`;
@@ -127,10 +130,6 @@ export const initTestEnvironment = async (
     return {
       ipfs,
       ethereum,
-      ensAddress: "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab",
-      resolverAddress: "0x5b1869D9A4C187F2EAa108f3062412ecf0526b24",
-      registrarAddress: "0xD833215cBcc3f914bD1C9ece3EE7BF8B14f841bb",
-      reverseAddress: "0xe982E462b094850F12AF94d21D470e21bE9D0E9C",
     };
   } catch (e) {
     throw Error(`Dev server must be running at port 4040\n${e}`);
@@ -238,17 +237,11 @@ export async function buildApi(apiAbsPath: string): Promise<void> {
 export async function buildAndDeployApi({
   apiAbsPath,
   ipfsProvider,
-  ensRegistryAddress,
-  ensRegistrarAddress,
-  ensResolverAddress,
   ethereumProvider,
   ensName,
 }: {
   apiAbsPath: string;
   ipfsProvider: string;
-  ensRegistryAddress: string;
-  ensRegistrarAddress: string;
-  ensResolverAddress: string;
   ethereumProvider: string;
   ensName?: string;
 }): Promise<{
@@ -312,10 +305,10 @@ export async function buildAndDeployApi({
     input: {
       domain: apiEns,
       owner: signerAddress,
-      resolverAddress: ensResolverAddress,
+      resolverAddress: ensAddresses.resolverAddress,
       ttl: "0",
-      registrarAddress: ensRegistrarAddress,
-      registryAddress: ensRegistryAddress,
+      registrarAddress: ensAddresses.registrarAddress,
+      registryAddress: ensAddresses.ensAddress,
       connection: {
         networkNameOrChainId: "testnet",
       },
@@ -374,7 +367,7 @@ export async function buildAndDeployApi({
           config: {
             domainName: apiEns,
             provider: ethereumProvider,
-            ensRegistryAddress,
+            ensRegistryAddress: ensAddresses.ensAddress,
           },
         },
       },

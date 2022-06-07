@@ -79,9 +79,6 @@ describe("e2e tests for query command", () => {
     const {
       ipfs,
       ethereum,
-      ensAddress: ens,
-      registrarAddress,
-      resolverAddress,
     } = await initTestEnvironment();
 
     const { stderr: deployErr } = await runCLI({
@@ -96,9 +93,6 @@ describe("e2e tests for query command", () => {
       apiAbsPath: testCaseRoot,
       ipfsProvider: ipfs,
       ethereumProvider: ethereum,
-      ensRegistrarAddress: registrarAddress,
-      ensResolverAddress: resolverAddress,
-      ensRegistryAddress: ens,
       ensName: "simplestorage.eth",
     })
   });
