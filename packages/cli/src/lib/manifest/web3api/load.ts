@@ -258,7 +258,10 @@ export async function loadInfraManifest(
     }
 
     try {
-      const result = deserializeInfraManifest(manifest);
+      let result = deserializeInfraManifest(manifest);
+      result = (loadEnvironmentVariables(
+        (result as unknown) as Record<string, unknown>
+      ) as unknown) as InfraManifest;
       return Promise.resolve(result);
     } catch (e) {
       return Promise.reject(e);

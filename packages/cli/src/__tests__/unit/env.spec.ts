@@ -22,7 +22,7 @@ describe("Unit tests for Project", () => {
         package: "ens",
         depends_on: "ipfs_deploy",
         config: {
-          domainName: "$DOMAIN_NAME"
+          domainName: "${DOMAIN_NAME}"
         }
       }
     }
@@ -87,7 +87,7 @@ describe("Unit tests for Project", () => {
       complexObject: {
         coolArray: [ "$RANDOM_NAME" ],
         coolObject: {
-          name: "$RANDOM_NAME",
+          name: "$$RANDOM_NAME",
           stages: ["$STAGE_NAME", "test"]
         }
       }
@@ -98,7 +98,7 @@ describe("Unit tests for Project", () => {
     const updatedObject = {
       coolArray: [ "name" ],
       coolObject: {
-        name: "name",
+        name: "$RANDOM_NAME",
         stages: ["stage", "test"]
       }
     }

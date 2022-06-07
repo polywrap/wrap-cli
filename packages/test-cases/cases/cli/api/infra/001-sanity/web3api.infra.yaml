@@ -1,6 +1,6 @@
 format: 0.0.1-prealpha.1
 env:
-  IPFS_PORT: 5001
+  IPFS_PORT: $ENV_IPFS_PORT
   DEV_SERVER_PORT: 4040
   DEV_SERVER_ETH_TESTNET_PORT: 8545
 modules:

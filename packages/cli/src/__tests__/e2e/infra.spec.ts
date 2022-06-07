@@ -88,23 +88,32 @@ const waitForPorts = (ports: { port: number; expected: boolean }[]) => {
   });
 };
 
+const runW3CLI = (args: string[], cwd: string) =>
+  runCLI({
+    args,
+    cwd,
+    cli: w3Cli,
+    env: process.env as Record<string, string>
+  });
+
 describe("e2e tests for infra command", () => {
+  beforeAll(() => {
+    process.env = {
+      ...process.env,
+      ENV_IPFS_PORT: "5001"
+    };
+  });
+
   describe("Sanity", () => {
     afterEach(async () => {
-      await runCLI(
-        {
-          args: ["infra", "down", "-v"],
-          cwd: getTestCaseDir(0),
-          cli: w3Cli
-        },
+      await runW3CLI(
+          ["infra", "down", "-v"],
+          getTestCaseDir(0),
       );
 
-      await runCLI(
-        {
-          args: ["infra", "down", "-v", "--preset=eth-ens-ipfs"],
-          cwd: getTestCaseDir(0),
-          cli: w3Cli
-        },
+      await runW3CLI(
+        ["infra", "down", "-v", "--preset=eth-ens-ipfs"],
+        getTestCaseDir(0),
       );
 
       await waitForPorts([
@@ -115,12 +124,9 @@ describe("e2e tests for infra command", () => {
     });
 
     test("Should throw error for no command given", async () => {
-      const { exitCode: code, stderr: error } = await runCLI(
-        {
-          args: ["infra"],
-          cwd: getTestCaseDir(0),
-          cli: w3Cli
-        },
+      const { exitCode: code, stderr: error } = await runW3CLI(
+        ["infra"],
+        getTestCaseDir(0),
       );
 
       expect(code).toEqual(1);
@@ -128,12 +134,9 @@ describe("e2e tests for infra command", () => {
     });
 
     test("Should show help text", async () => {
-      const { exitCode: code, stdout: output, stderr: error } = await runCLI(
-        {
-          args: ["infra", "--help"],
-          cwd: getTestCaseDir(0),
-          cli: w3Cli
-        },
+      const { exitCode: code, stdout: output, stderr: error } = await runW3CLI(
+        ["infra", "--help"],
+        getTestCaseDir(0),
       );
 
       expect(code).toEqual(0);
@@ -142,12 +145,9 @@ describe("e2e tests for infra command", () => {
     });
 
     test("Extracts composed docker manifest's environment variable list", async () => {
-      const { exitCode: code, stdout: output } = await runCLI(
-        {
-          args: ["infra", "vars"],
-          cwd: getTestCaseDir(0),
-          cli: w3Cli
-        },
+      const { exitCode: code, stdout: output } = await runW3CLI(
+        ["infra", "vars"],
+        getTestCaseDir(0),
       );
 
       const sanitizedOutput = clearStyle(output);
@@ -159,12 +159,9 @@ describe("e2e tests for infra command", () => {
     });
 
     test("Validates and displays composed docker manifest", async () => {
-      const { exitCode: code, stdout: output } = await runCLI(
-        {
-          args: ["infra", "config"],
-          cwd: getTestCaseDir(0),
-          cli: w3Cli
-        },
+      const { exitCode: code, stdout: output } = await runW3CLI(
+        ["infra", "config"],
+        getTestCaseDir(0),
       );
 
       const sanitizedOutput = clearStyle(output);
@@ -182,12 +179,9 @@ describe("e2e tests for infra command", () => {
         { port: 8545, expected: false }
       ]);
 
-      await runCLI(
-        {
-          args: ["infra", "up", "--manifest=./web3api.yaml"],
-          cwd: getTestCaseDir(0),
-          cli: w3Cli
-        },
+      await runW3CLI(
+        ["infra", "up", "--manifest=./web3api.yaml"],
+        getTestCaseDir(0),
       );
 
       await waitForPorts([
@@ -198,12 +192,9 @@ describe("e2e tests for infra command", () => {
     });
 
     test("Tears down environment", async () => {
-      await runCLI(
-        {
-          args: ["infra", "up"],
-          cwd: getTestCaseDir(0),
-          cli: w3Cli
-        },
+      await runW3CLI(
+        ["infra", "up"],
+        getTestCaseDir(0),
       );
 
       await waitForPorts([
@@ -212,12 +203,9 @@ describe("e2e tests for infra command", () => {
         { port: 8545, expected: true }
       ]);
 
-      await runCLI(
-        {
-          args: ["infra", "down"],
-          cwd: getTestCaseDir(0),
-          cli: w3Cli
-        },
+      await runW3CLI(
+        ["infra", "down"],
+        getTestCaseDir(0),
       );
 
       await waitForPorts([
@@ -228,12 +216,9 @@ describe("e2e tests for infra command", () => {
     });
 
     test("Sets environment up with only selected modules", async () => {
-      await runCLI(
-        {
-          args: ["infra", "up", "--modules=ipfs"],
-          cwd: getTestCaseDir(0),
-          cli: w3Cli
-        },
+      await runW3CLI(
+        ["infra", "up", "--modules=ipfs"],
+        getTestCaseDir(0),
       );
 
       await waitForPorts([
@@ -242,12 +227,9 @@ describe("e2e tests for infra command", () => {
         { port: 8545, expected: false }
       ]);
 
-      await runCLI(
-        {
-          args: ["infra", "down", "--modules=ipfs"],
-          cwd: getTestCaseDir(0),
-          cli: w3Cli
-        },
+      await runW3CLI(
+        ["infra", "down", "--modules=ipfs"],
+        getTestCaseDir(0),
       );
 
       await waitForPorts([
@@ -256,16 +238,13 @@ describe("e2e tests for infra command", () => {
     });
 
     test("Should throw error for --modules that don't exist in infra manifest", async () => {
-      const { exitCode: code, stderr } = await runCLI(
-        {
-          args: [
-            "infra",
-            "config",
-            "--modules=notExistingModule,alsoNotExisting",
-          ],
-          cwd: getTestCaseDir(0),
-          cli: w3Cli
-        },
+      const { exitCode: code, stderr } = await runW3CLI(
+        [
+          "infra",
+          "config",
+          "--modules=notExistingModule,alsoNotExisting",
+        ],
+        getTestCaseDir(0),
       );
 
       expect(code).toEqual(1);
@@ -275,17 +254,14 @@ describe("e2e tests for infra command", () => {
     });
 
     test("Should setup and use a preset env if --preset arg is passed", async () => {
-      await runCLI(
-        {
-          args: [
-            "infra",
-            "up",
-            "--preset=eth-ens-ipfs",
-            "--verbose"
-          ],
-          cwd: getTestCaseDir(0),
-          cli: w3Cli
-        },
+      await runW3CLI(
+        [
+          "infra",
+          "up",
+          "--preset=eth-ens-ipfs",
+          "--verbose"
+        ],
+        getTestCaseDir(0),
       );
 
       await waitForPorts([
@@ -296,17 +272,14 @@ describe("e2e tests for infra command", () => {
     })
 
     test("Should throw error if unrecognized preset is passed", async () => {
-      const { exitCode: code, stdout } = await runCLI(
-        {
-          args: [
-            "infra",
-            "up",
-            "--preset=foo",
-            "--verbose"
-          ],
-          cwd: getTestCaseDir(0),
-          cli: w3Cli
-        },
+      const { exitCode: code, stdout } = await runW3CLI(
+        [
+          "infra",
+          "up",
+          "--preset=foo",
+          "--verbose"
+        ],
+        getTestCaseDir(0),
       );
 
       expect(code).toEqual(1);
@@ -318,16 +291,13 @@ describe("e2e tests for infra command", () => {
 
   describe("Duplicates", () => {
     test("Should handle duplicate services", async () => {
-      await runCLI(
-        {
-          args: [
-            "infra",
-            "up",
-            "--modules=ganache,dev-server"
-          ],
-          cwd: getTestCaseDir(1),
-          cli: w3Cli
-        },
+      await runW3CLI(
+        [
+          "infra",
+          "up",
+          "--modules=ganache,dev-server"
+        ],
+        getTestCaseDir(1),
       );
 
       await waitForPorts([
@@ -335,38 +305,29 @@ describe("e2e tests for infra command", () => {
         { port: 8545, expected: true }
       ]);
 
-      await runCLI(
-        {
-          args: ["infra", "down", "--modules=ganache,dev-server"],
-          cwd: getTestCaseDir(1),
-          cli: w3Cli
-        },
+      await runW3CLI(
+        ["infra", "down", "--modules=ganache,dev-server"],
+        getTestCaseDir(1),
       );
     });
 
     test("Should correctly duplicate pkg in different module", async () => {
-      await runCLI(
-        {
-          args: [
-            "infra",
-            "up",
-            "--modules=ipfs,ipfs-duplicate"
-          ],
-          cwd: getTestCaseDir(1),
-          cli: w3Cli
-        },
+      await runW3CLI(
+        [
+          "infra",
+          "up",
+          "--modules=ipfs,ipfs-duplicate"
+        ],
+        getTestCaseDir(1),
       );
   
       await waitForPorts([
         { port: 5001, expected: true },
       ]);
 
-      await runCLI(
-        {
-          args: ["infra", "down", "--modules=ipfs,ipfs-duplicate"],
-          cwd: getTestCaseDir(1),
-          cli: w3Cli
-        },
+      await runW3CLI(
+        ["infra", "down", "--modules=ipfs,ipfs-duplicate"],
+        getTestCaseDir(1),
       );
     });
   });
