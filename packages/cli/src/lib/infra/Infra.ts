@@ -6,12 +6,13 @@ import { DockerCompose } from "./dockerCompose";
 
 import { InfraManifest } from "@web3api/core-js";
 import path from "path";
-import fs from "fs";
+import fs, { readdirSync } from "fs";
 import YAML from "js-yaml";
 
 export interface InfraConfig {
   project: Web3ApiProject;
-  infraManifest: InfraManifest;
+  defaultInfraModulesPath: string;
+  infraManifest?: InfraManifest;
   modulesToUse?: string[];
   quiet?: boolean;
 }
@@ -38,6 +39,7 @@ export class Infra {
     "./docker-compose.yml",
     "./docker-compose.yaml",
   ];
+
   private _config: InfraConfig;
   private _dockerCompose = new DockerCompose();
   private _defaultDockerOptions: ReturnType<
@@ -55,11 +57,10 @@ export class Infra {
 
     this._generateBaseDockerCompose(this._baseDockerComposePath);
 
-    this._sanitizeModules();
     this._defaultDockerOptions = DockerCompose.getDefaultConfig(
       this._baseDockerComposePath,
-      this._config.infraManifest,
-      this._config.quiet ?? true
+      this._config.quiet ?? true,
+      this._config.infraManifest
     );
   }
 
@@ -125,40 +126,68 @@ export class Infra {
   }
 
   public getFilteredModules(): NamedModule[] {
-    const { modulesToUse, infraManifest } = this._config;
+    const {
+      modulesToUse,
+      defaultInfraModulesPath,
+      infraManifest,
+    } = this._config;
 
-    if (!modulesToUse || !modulesToUse.length) {
-      return Object.entries(infraManifest.modules).map(([name, value]) => ({
+    const manifestModules = Object.entries(infraManifest?.modules ?? {}).map(
+      ([name, value]) => ({
         name,
         ...value,
-      }));
+      })
+    );
+
+    if (!modulesToUse || !modulesToUse.length) {
+      return manifestModules;
     }
 
-    return Object.entries(infraManifest.modules)
-      .filter(([name]) => modulesToUse.includes(name))
-      .map(([name, value]) => ({ name, ...value }));
-  }
+    const modulesInManifestNames = manifestModules.map((m) => m.name);
 
-  private _sanitizeModules(): void {
-    const { modulesToUse, infraManifest } = this._config;
+    const defaultInfraModules = readdirSync(defaultInfraModulesPath).map(
+      (moduleName) => ({
+        name: moduleName,
+        path: path.join(defaultInfraModulesPath, moduleName),
+      })
+    );
 
-    if (modulesToUse) {
-      const manifestModuleNames = Object.keys(infraManifest.modules);
-      const unrecognizedModules: string[] = [];
-      modulesToUse.forEach((p: string) => {
-        if (!manifestModuleNames.includes(p)) {
-          unrecognizedModules.push(p);
+    const manifestAndDefaultModules = defaultInfraModules.reduce(
+      (prev, current) => {
+        // If a module in the manifest has the same name as a default one,
+        // the manifest one takes precedence
+        if (!modulesInManifestNames.includes(current.name)) {
+          return [...prev, current];
         }
-      });
 
-      if (unrecognizedModules.length) {
-        throw new Error(
-          intlMsg.lib_infra_unrecognizedModule({
-            modules: unrecognizedModules.join(", "),
-          })
-        );
+        return prev;
+      },
+      manifestModules
+    );
+
+    const manifestAndDefaultModulesNames = manifestAndDefaultModules.map(
+      (m) => m.name
+    );
+
+    const unrecognizedModules = modulesToUse.reduce((prev, current) => {
+      if (!manifestAndDefaultModulesNames.includes(current)) {
+        return [...prev, current];
       }
+
+      return prev;
+    }, []);
+
+    if (unrecognizedModules.length) {
+      throw new Error(
+        intlMsg.lib_infra_unrecognizedModule({
+          modules: unrecognizedModules.join(", "),
+        })
+      );
     }
+
+    return manifestAndDefaultModules.filter((m) =>
+      modulesToUse.includes(m.name)
+    );
   }
 
   private _writeFileToCacheFromAbsPath(

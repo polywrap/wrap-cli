@@ -20,16 +20,24 @@ export class DockerCompose {
 
   static getDefaultConfig(
     baseDockerComposePath: string,
-    infraManifest: InfraManifest,
-    quiet: boolean
+    quiet: boolean,
+    infraManifest?: InfraManifest
   ): Partial<IDockerComposeOptions> {
+    const env =
+      infraManifest && infraManifest.env
+        ? {
+            ...process.env,
+            ...Object.fromEntries(
+              Object.entries(infraManifest.env).map(([key, value]) => [
+                key,
+                value.toString(),
+              ])
+            ),
+          }
+        : process.env;
     return {
       cwd: path.dirname(baseDockerComposePath),
-      env: {
-        ...infraManifest.env,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        PATH: process.env.PATH,
-      } as Record<string, string>,
+      env,
       log: !quiet,
     };
   }
