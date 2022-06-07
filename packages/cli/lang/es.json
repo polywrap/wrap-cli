@@ -23,7 +23,6 @@
   "commands_infra_options_h": "Show usage information",
   "commands_infra_options_m": "Use only specified modules",
   "commands_infra_options_v": "Verbose output (default: false)",
-  "commands_infra_options_p": "Use a preset infra environment",
   "commands_infra_options_d": "Run in detached mode",
   "commands_infra_moduleName": "module-name",
   "commands_infra_manifestPath": "manifest-path",

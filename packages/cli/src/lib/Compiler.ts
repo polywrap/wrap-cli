@@ -173,7 +173,7 @@ export class Compiler {
     const composerOutput = await this._composeSchema();
 
     // Allow the build-image to validate the manifest & override functionality
-    const buildImageDir = `${__dirname}/preset/build-images/${web3ApiManifest.language}`;
+    const buildImageDir = `${__dirname}/defaults/build-images/${web3ApiManifest.language}`;
     const buildImageEntryFile = path.join(buildImageDir, "index.ts");
     let compilerOverrides: CompilerOverrides | undefined;
 
@@ -336,7 +336,7 @@ export class Compiler {
     // If the dockerfile path isn't provided, generate it
     if (!buildManifest?.docker?.dockerfile) {
       // Make sure the default template is in the cached .w3/web3api/build/image folder
-      await project.cachePresetBuildImage();
+      await project.cacheDefaultBuildImage();
 
       dockerfile = generateDockerfile(
         project.getCachePath(

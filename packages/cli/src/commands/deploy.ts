@@ -134,7 +134,7 @@ function sanitizePackages(packages: string[]) {
   const unrecognizedPackages: string[] = [];
 
   const availableDeployers = fs.readdirSync(
-    nodePath.join(__dirname, "..", "lib", "preset", "deploy-modules")
+    nodePath.join(__dirname, "..", "lib", "defaults", "deploy-modules")
   );
 
   packages.forEach((p) => {
