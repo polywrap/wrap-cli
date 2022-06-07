@@ -1,20 +1,15 @@
-import { intlMsg, Web3ApiProject, Infra, loadInfraManifest } from "../lib";
+import {
+  intlMsg,
+  Infra,
+  loadInfraManifest,
+} from "../lib";
 import { Command, Program } from "./types";
 
 import { print } from "gluegun";
 import path from "path";
-import { readdirSync } from "fs";
 import { Argument } from "commander";
 import chalk from "chalk";
 import yaml from "js-yaml";
-
-const INFRA_PRESETS = path.join(
-  __dirname,
-  "..",
-  "lib",
-  "preset",
-  "infra-presets"
-);
 
 type InfraCommandOptions = {
   modules?: string;
@@ -63,7 +58,7 @@ export const infra: Command = {
       .option(
         `--manifest  <${manifestNameStr}>`,
         intlMsg.commands_infra_manifestPathDescription(),
-        "web3api.yaml"
+        "web3api.infra.yaml"
       )
       .option(
         `-m, --modules <${moduleNameStr},${moduleNameStr}>`,
@@ -84,7 +79,7 @@ async function run(
   action: InfraActions,
   options: InfraCommandOptions
 ): Promise<void> {
-  const { modules, preset, verbose, manifest } = options;
+  const { modules, verbose, manifest } = options;
   // eslint-disable-next-line prefer-const
   let modulesArray: string[] = [];
   if (modules) {
@@ -92,49 +87,18 @@ async function run(
   }
 
   const manifestPath = path.resolve(manifest);
-  const project = new Web3ApiProject({
+  const infraManifest = await loadInfraManifest(
+    manifestPath,
+    !verbose
+  );
+
+  const infra = new Infra({
     rootDir: path.dirname(manifestPath),
-    web3apiManifestPath: manifestPath,
+    modulesToUse: modulesArray,
+    infraManifest,
     quiet: !verbose,
   });
 
-  let infra: Infra;
-
-  if (preset) {
-    const presets = readdirSync(INFRA_PRESETS);
-
-    if (!presets.includes(preset)) {
-      process.exitCode = 1;
-      print.error(`'${preset}' is not a supported preset. Supported presets:
-        ${presets.map((pr) => `\n- ${pr}`).join("")}\n`);
-
-      return;
-    }
-
-    const infraManifest = await loadInfraManifest(
-      path.join(INFRA_PRESETS, preset, "web3api.infra.yaml"),
-      true
-    );
-
-    infra = new Infra({
-      project,
-      infraManifest,
-      quiet: !verbose,
-    });
-  } else {
-    const infraManifest = await project.getInfraManifest();
-
-    if (!infraManifest) {
-      throw new Error("No infra manifest found.");
-    }
-
-    infra = new Infra({
-      project,
-      modulesToUse: modulesArray,
-      infraManifest,
-      quiet: !verbose,
-    });
-  }
   const filteredModules = infra.getFilteredModules();
 
   if (!filteredModules.length) {

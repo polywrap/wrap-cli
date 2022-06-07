@@ -19,16 +19,15 @@ export interface AppProjectConfig extends ProjectConfig {
 }
 
 export class AppProject extends Project<AppManifest> {
-  protected _config: AppProjectConfig
   private _appManifest: AppManifest | undefined;
 
   public static cacheLayout = {
     root: "app",
   };
 
-  constructor(config: Omit<AppProjectConfig, "subDir">) {
-    super({
-      ...config,
+  constructor(protected _config: AppProjectConfig) {
+    super(_config, {
+      rootDir: _config.rootDir,
       subDir: AppProject.cacheLayout.root
     });
   }
@@ -37,7 +36,7 @@ export class AppProject extends Project<AppManifest> {
 
   public reset(): void {
     this._appManifest = undefined;
-    this.resetCache();
+    this._cache.resetCache();
   }
 
   public async validate(): Promise<void> {

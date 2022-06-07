@@ -31,9 +31,9 @@ export class NodeDependencyFetcher extends InfraDependencyFetcher {
       }, {} as Record<string, string>),
     };
 
-    this.config.project.writeCacheFile(
+    this.config.cache.writeCacheFile(
       path.relative(
-        this.config.project.getCacheDir(),
+        this.config.cache.getCacheDir(),
         path.join(this.config.installationDirectory, "package.json")
       ),
       JSON.stringify(packageJson)

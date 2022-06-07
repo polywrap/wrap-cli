@@ -9,15 +9,19 @@ import {
 import { BindOutput } from "@web3api/schema-bind";
 import { ComposerOutput } from "@web3api/schema-compose";
 
-export interface ProjectConfig extends CacheDirectoryConfig {
+export interface ProjectConfig {
+  rootDir: string;
   quiet?: boolean;
 }
 
-export abstract class Project<TManifest extends AnyManifest> extends CacheDirectory {
+export abstract class Project<TManifest extends AnyManifest> {
+  protected _cache: CacheDirectory;
+
   constructor(
     protected _config: ProjectConfig,
+    _cache: CacheDirectoryConfig
   ) {
-    super(_config);
+    this._cache = new CacheDirectory(_cache);
   }
 
   /// Validation

@@ -21,16 +21,15 @@ export interface PluginProjectConfig extends ProjectConfig {
 }
 
 export class PluginProject extends Project<PluginManifest> {
-  protected _config: PluginProjectConfig
   private _pluginManifest: PluginManifest | undefined;
 
   public static cacheLayout = {
     root: "plugin",
   };
 
-  constructor(config: Omit<PluginProjectConfig, "subDir">) {
-    super({
-      ...config,
+  constructor(protected _config: PluginProjectConfig) {
+    super(_config, {
+      rootDir: _config.rootDir,
       subDir: PluginProject.cacheLayout.root
     });
   }
@@ -39,7 +38,7 @@ export class PluginProject extends Project<PluginManifest> {
 
   public reset(): void {
     this._pluginManifest = undefined;
-    this.resetCache();
+    this._cache.resetCache();
   }
 
   public async validate(): Promise<void> {
