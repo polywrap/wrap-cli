@@ -62,7 +62,7 @@ export const infra: Command = {
       .option(
         `--manifest  <${manifestNameStr}>`,
         intlMsg.commands_infra_manifestPathDescription(),
-        "web3api.yaml"
+        "web3api.infra.yaml"
       )
       .option(
         `-m, --modules <${moduleNameStr},${moduleNameStr}>`,
@@ -87,9 +87,15 @@ async function run(
   }
 
   const manifestPath = path.resolve(manifest);
-  const project = new Web3ApiProject({
-    rootCacheDir: path.dirname(manifestPath),
-    web3apiManifestPath: manifestPath,
+  const infraManifest = await loadInfraManifest(
+    manifestPath,
+    !verbose
+  );
+
+  const infra = new Infra({
+    rootDir: path.dirname(manifestPath),
+    modulesToUse: modulesArray,
+    infraManifest,
     quiet: !verbose,
   });
 

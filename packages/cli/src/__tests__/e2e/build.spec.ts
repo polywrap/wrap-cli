@@ -63,7 +63,7 @@ describe("e2e tests for build command", () => {
   test("Adds uuid-v4 suffix to build image if no build manifest specified", async () => {
     const projectRoot = getTestCaseDir(0);
     const project = new Web3ApiProject({
-      rootCacheDir: projectRoot,
+      rootDir: projectRoot,
       web3apiManifestPath: path.join(projectRoot, "web3api.yaml")
     });
 

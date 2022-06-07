@@ -27,7 +27,7 @@
   "commands_infra_options_d": "Run in detached mode",
   "commands_infra_moduleName": "module-name",
   "commands_infra_manifestPath": "manifest-path",
-  "commands_infra_manifestPathDescription": "Web3API Manifest path",
+  "commands_infra_manifestPathDescription": "Infra Manifest path",
   "commands_infra_command_up": "Start Web3API infrastructure",
   "commands_infra_command_down": "Stop Web3API infrastructure",
   "commands_infra_command_vars": "Show Web3API infrastructure's required .env variables",

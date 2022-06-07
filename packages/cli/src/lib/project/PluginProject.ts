@@ -28,14 +28,17 @@ export class PluginProject extends Project<PluginManifest> {
   };
 
   constructor(protected _config: PluginProjectConfig) {
-    super(_config, PluginProject.cacheLayout.root);
+    super(_config, {
+      rootDir: _config.rootDir,
+      subDir: PluginProject.cacheLayout.root
+    });
   }
 
   /// Project Base Methods
 
   public reset(): void {
     this._pluginManifest = undefined;
-    this.resetCache();
+    this._cache.resetCache();
   }
 
   public async validate(): Promise<void> {

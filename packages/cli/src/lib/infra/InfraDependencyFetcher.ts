@@ -1,4 +1,4 @@
-import { Web3ApiProject } from "../project";
+import { CacheDirectory } from "../CacheDirectory";
 
 import path from "path";
 
@@ -8,7 +8,7 @@ export interface InfraPackageArg {
 }
 
 export interface InfraDependencyFetcherConfig {
-  project: Web3ApiProject;
+  cache: CacheDirectory;
   installationDirectory: string;
   name: string;
 }

@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { getDockerFileLock } from "../system";
+import { getDockerFileLock } from "./docker";
 
 import path from "path";
 import Commands, { IDockerComposeOptions } from "docker-compose";

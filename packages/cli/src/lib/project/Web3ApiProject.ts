@@ -5,7 +5,6 @@ import { ProjectConfig, Project } from ".";
 import {
   loadWeb3ApiManifest,
   loadBuildManifest,
-  loadInfraManifest,
   loadMetaManifest,
   generateDockerImageName,
   createUUID,
@@ -17,7 +16,7 @@ import {
   loadDeployManifest,
   loadDeployManifestExt,
   web3apiManifestLanguageToBindLanguage,
-  resetDir,
+  resetDir
 } from "..";
 import { Deployer } from "../deploy";
 
@@ -26,7 +25,6 @@ import {
   Web3ApiManifest,
   MetaManifest,
   DeployManifest,
-  InfraManifest,
 } from "@web3api/core-js";
 import { getCommonPath, normalizePath } from "@web3api/os-js";
 import { bindSchema, BindOutput, BindOptions } from "@web3api/schema-bind";
@@ -42,7 +40,6 @@ export interface Web3ApiProjectConfig extends ProjectConfig {
   web3apiManifestPath: string;
   buildManifestPath?: string;
   deployManifestPath?: string;
-  infraManifestPath?: string;
   metaManifestPath?: string;
 }
 
@@ -50,7 +47,6 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
   private _web3apiManifest: Web3ApiManifest | undefined;
   private _buildManifest: BuildManifest | undefined;
   private _deployManifest: DeployManifest | undefined;
-  private _infraManifest: InfraManifest | undefined;
   private _metaManifest: MetaManifest | undefined;
   private _presetBuildImageCached = false;
   private _presetDeployModulesCached = false;
@@ -64,12 +60,17 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     buildLinkedPackagesDir: "build/linked-packages/",
     deployDir: "deploy/",
     deployModulesDir: "deploy/modules/",
-    infraDir: "infra",
-    infraModulesDir: "infra/modules",
   };
 
   constructor(protected _config: Web3ApiProjectConfig) {
-    super(_config, Web3ApiProject.cacheLayout.root);
+    super(_config, {
+      rootDir: _config.rootDir,
+      subDir: Web3ApiProject.cacheLayout.root
+    });
+  }
+
+  public getCachePath(subpath: string): string {
+    return this._cache.getCachePath(subpath);
   }
 
   /// Project Base Methods
@@ -79,13 +80,11 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     this._buildManifest = undefined;
     this._metaManifest = undefined;
     this._deployManifest = undefined;
-    this._infraManifest = undefined;
     this._presetBuildImageCached = false;
     this._presetDeployModulesCached = false;
-    this.removeCacheDir(Web3ApiProject.cacheLayout.buildImageDir);
-    this.removeCacheDir(Web3ApiProject.cacheLayout.buildLinkedPackagesDir);
-    this.removeCacheDir(Web3ApiProject.cacheLayout.deployDir);
-    this.removeCacheDir(Web3ApiProject.cacheLayout.infraDir);
+    this._cache.removeCacheDir(Web3ApiProject.cacheLayout.buildImageDir);
+    this._cache.removeCacheDir(Web3ApiProject.cacheLayout.buildLinkedPackagesDir);
+    this._cache.removeCacheDir(Web3ApiProject.cacheLayout.deployDir);
   }
 
   public async validate(): Promise<void> {
@@ -253,7 +252,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
 
       // Return the cached manifest
       this._config.buildManifestPath = path.join(
-        this.getCachePath(Web3ApiProject.cacheLayout.buildImageDir),
+        this._cache.getCachePath(Web3ApiProject.cacheLayout.buildImageDir),
         "web3api.build.yaml"
       );
       return this._config.buildManifestPath;
@@ -272,7 +271,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
       );
 
       const root = this.getManifestDir();
-      const cacheDir = this.getCachePath(
+      const cacheDir = this._cache.getCachePath(
         Web3ApiProject.cacheLayout.buildLinkedPackagesDir
       );
 
@@ -320,12 +319,12 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
 
   public async getBuildUuid(): Promise<string> {
     // Load the cached build UUID
-    let uuid = this.readCacheFile(Web3ApiProject.cacheLayout.buildUuidFile);
+    let uuid = this._cache.readCacheFile(Web3ApiProject.cacheLayout.buildUuidFile);
 
     // If none was present, generate one
     if (!uuid) {
       uuid = createUUID();
-      this.writeCacheFile(
+      this._cache.writeCacheFile(
         Web3ApiProject.cacheLayout.buildUuidFile,
         uuid,
         "utf-8"
@@ -344,7 +343,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
 
     const presetBuildManifestFilename = "web3api.build.yaml";
     const presetPath = `${__dirname}/../preset/build-images/${language}/${presetBuildManifestFilename}`;
-    const buildImageCachePath = this.getCachePath(
+    const buildImageCachePath = this._cache.getCachePath(
       Web3ApiProject.cacheLayout.buildImageDir
     );
 
@@ -358,10 +357,10 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     }
 
     // Clean the directory
-    this.removeCacheDir(Web3ApiProject.cacheLayout.buildImageDir);
+    this._cache.removeCacheDir(Web3ApiProject.cacheLayout.buildImageDir);
 
     // Copy default build image files into cache
-    await this.copyIntoCache(
+    await this._cache.copyIntoCache(
       Web3ApiProject.cacheLayout.buildImageDir,
       `${__dirname}/../preset/build-images/${language}/*`,
       { up: true }
@@ -391,7 +390,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
 
     if (buildManifest.linked_packages) {
       const rootDir = this.getManifestDir();
-      const cacheSubPath = this.getCachePath(
+      const cacheSubPath = this._cache.getCachePath(
         Web3ApiProject.cacheLayout.buildLinkedPackagesDir
       );
 
@@ -401,7 +400,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
           const destinationDir = path.join(cacheSubPath, linkedPackage.name);
 
           // Update the cache
-          this.removeCacheDir(destinationDir);
+          this._cache.removeCacheDir(destinationDir);
           fsExtra.copySync(sourceDir, destinationDir, {
             overwrite: true,
             dereference: true,
@@ -481,7 +480,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
       throw new Error("Deploy modules have not been cached");
     }
 
-    const cachePath = this.getCachePath(
+    const cachePath = this._cache.getCachePath(
       `${Web3ApiProject.cacheLayout.deployModulesDir}/${moduleName}`
     );
 
@@ -501,10 +500,10 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
       return;
     }
 
-    this.removeCacheDir(Web3ApiProject.cacheLayout.deployModulesDir);
+    this._cache.removeCacheDir(Web3ApiProject.cacheLayout.deployModulesDir);
 
     for await (const deployModule of modules) {
-      await this.copyIntoCache(
+      await this._cache.copyIntoCache(
         `${Web3ApiProject.cacheLayout.deployModulesDir}/${deployModule}`,
         `${__dirname}/../preset/deploy-modules/${deployModule}/*`,
         { up: true }
@@ -512,55 +511,6 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     }
 
     this._presetDeployModulesCached = true;
-  }
-
-  /// Web3API Infra Manifest (web3api.infra.yaml)
-
-  public async getInfraManifestPath(): Promise<string | undefined> {
-    const web3apiManifest = await this.getManifest();
-
-    // If a custom infra manifest path is configured
-    if (this._config.infraManifestPath) {
-      return this._config.infraManifestPath;
-    }
-    // If the web3api.yaml manifest specifies a custom infra manifest
-    else if (web3apiManifest.infra) {
-      this._config.infraManifestPath = path.join(
-        this.getManifestDir(),
-        web3apiManifest.infra
-      );
-
-      return this._config.infraManifestPath;
-    }
-    // No infra manifest found
-    else {
-      return undefined;
-    }
-  }
-
-  public async getInfraManifestDir(): Promise<string | undefined> {
-    const manifestPath = await this.getInfraManifestPath();
-
-    if (manifestPath) {
-      return path.dirname(manifestPath);
-    } else {
-      return undefined;
-    }
-  }
-
-  public async getInfraManifest(): Promise<InfraManifest | undefined> {
-    if (!this._infraManifest) {
-      const manifestPath = await this.getInfraManifestPath();
-
-      if (manifestPath) {
-        this._infraManifest = await loadInfraManifest(manifestPath, this.quiet);
-      }
-    }
-    return this._infraManifest;
-  }
-
-  public getInfraCacheModulesPath(): string {
-    return this.getCachePath(Web3ApiProject.cacheLayout.infraModulesDir);
   }
 
   /// Web3API Meta Manifest (web3api.build.yaml)
@@ -631,14 +581,6 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     if (deployManifestPath) {
       paths.push(
         absolute ? deployManifestPath : path.relative(root, deployManifestPath)
-      );
-    }
-
-    const infraManifestPath = await this.getInfraManifestPath();
-
-    if (infraManifestPath) {
-      paths.push(
-        absolute ? infraManifestPath : path.relative(root, infraManifestPath)
       );
     }
 

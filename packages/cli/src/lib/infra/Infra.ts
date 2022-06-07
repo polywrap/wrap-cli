@@ -1,8 +1,10 @@
-import { Web3ApiProject } from "../project";
-import { intlMsg } from "../intl";
-import { dependencyFetcherClassMap } from "./fetchers";
-import { correctBuildContextPathsFromCompose } from "../helpers/docker";
-import { DockerCompose } from "./dockerCompose";
+import {
+  intlMsg,
+  dependencyFetcherClassMap,
+  correctBuildContextPathsFromCompose,
+  DockerCompose,
+  CacheDirectory,
+} from "../"
 
 import { InfraManifest } from "@web3api/core-js";
 import path from "path";
@@ -33,6 +35,7 @@ const DEFAULT_BASE_COMPOSE = {
 };
 
 export class Infra {
+  private _cache: CacheDirectory;
   private _baseDockerComposePath: string;
   private _fetchedModulesData: ModuleWithPath[] | undefined;
   private _defaultModuleComposePaths = [
@@ -46,12 +49,20 @@ export class Infra {
     typeof DockerCompose.getDefaultConfig
   >;
 
-  constructor(config: InfraConfig) {
-    this._config = config;
+  public static cacheLayout = {
+    root: "infra/",
+    modulesDir: "modules",
+  };
+
+  constructor(protected _config: InfraConfig) {
+    this._cache = new CacheDirectory({
+      rootDir: _config.rootDir,
+      subDir: Infra.cacheLayout.root
+    });
 
     // If user did not specify a base compose, generate a default one
     this._baseDockerComposePath = path.join(
-      config.project.getInfraCacheModulesPath(),
+      this.getCacheModulesPath(),
       "base-docker-compose.yml"
     );
 
@@ -196,8 +207,8 @@ export class Infra {
     data: unknown,
     options?: fs.WriteFileOptions
   ) {
-    this._config.project.writeCacheFile(
-      path.relative(this._config.project.getCacheDir(), absPath),
+    this._cache.writeCacheFile(
+      path.relative(this._cache.getCacheDir(), absPath),
       data,
       options
     );
@@ -232,7 +243,7 @@ export class Infra {
       const dependencyFetcher = new dependencyFetcherClassMap[
         registry as Registry
       ]({
-        project: this._config.project,
+        cache: this._cache,
         installationDirectory: installationDir,
         name: registry,
       });
@@ -279,7 +290,7 @@ export class Infra {
     const localModules = modules.filter((m): m is NamedLocalModule =>
       this._isLocalModule(m)
     );
-    const installationDir = this._config.project.getInfraCacheModulesPath();
+    const installationDir = this.getCacheModulesPath();
 
     const remoteModulesWithComposePaths = await this._fetchRemoteModules(
       remoteModules,
@@ -313,15 +324,15 @@ export class Infra {
   ): Promise<ModuleWithPath[]> {
     const modulesWithComposePaths: ModuleWithPath[] = [];
     const basePath = path.join(
-      this._config.project.getInfraCacheModulesPath(),
+      this.getCacheModulesPath(),
       "local"
     );
 
     for await (const module of modules) {
       const modulePath = path.join(basePath, module.name);
 
-      await this._config.project.copyIntoCache(
-        path.relative(this._config.project.getCacheDir(), modulePath),
+      await this._cache.copyIntoCache(
+        path.relative(this._cache.getCacheDir(), modulePath),
         path.join(module.path, "*"),
         { up: true }
       );

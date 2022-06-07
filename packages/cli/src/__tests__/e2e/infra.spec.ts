@@ -6,7 +6,7 @@ import { clearStyle, w3Cli } from "./utils";
 import { GetPathToCliTestFiles } from "@web3api/test-cases";
 import { runCLI } from "@web3api/test-env-js";
 
-const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/infra");
+const testCaseRoot = path.join(GetPathToCliTestFiles(), "infra");
   const testCases =
     fs.readdirSync(testCaseRoot, { withFileTypes: true })
       .filter((dirent) => dirent.isDirectory())
@@ -28,7 +28,7 @@ Arguments:
    (choices: "up", "down", "vars", "config")
 
 Options:
-  --manifest  <manifest>                   Web3API Manifest path (default: "web3api.yaml")
+  --manifest  <manifest>                   Infra Manifest path (default: "web3api.infra.yaml")
   -m, --modules <module-name,module-name>  Use only specified modules
   -v, --verbose                            Verbose output (default: false)
   -h, --help                               display help for command
@@ -179,7 +179,7 @@ describe("e2e tests for infra command", () => {
       ]);
 
       await runW3CLI(
-        ["infra", "up", "--manifest=./web3api.yaml"],
+        ["infra", "up", "--manifest=./web3api.infra.yaml"],
         getTestCaseDir(0),
       );
 

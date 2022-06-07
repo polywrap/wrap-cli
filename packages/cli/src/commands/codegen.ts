@@ -80,7 +80,7 @@ async function run(options: CodegenCommandOptions) {
 
   // Web3Api Project
   const project = new Web3ApiProject({
-    rootCacheDir: path.dirname(manifestFile),
+    rootDir: path.dirname(manifestFile),
     web3apiManifestPath: manifestFile,
   });
   await project.validate();

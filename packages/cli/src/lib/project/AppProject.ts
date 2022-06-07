@@ -26,14 +26,17 @@ export class AppProject extends Project<AppManifest> {
   };
 
   constructor(protected _config: AppProjectConfig) {
-    super(_config, AppProject.cacheLayout.root);
+    super(_config, {
+      rootDir: _config.rootDir,
+      subDir: AppProject.cacheLayout.root
+    });
   }
 
   /// Project Based Methods
 
   public reset(): void {
     this._appManifest = undefined;
-    this.resetCache();
+    this._cache.resetCache();
   }
 
   public async validate(): Promise<void> {
