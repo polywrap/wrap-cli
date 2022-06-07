@@ -23,6 +23,6 @@ const ignore = [
 
 fse.copySync(source, dest, {
   filter: function (path) {
-    return ignore.some((ignorePath) => path.includes(ignorePath));
+    return !ignore.some((ignorePath) => path.includes(ignorePath));
   },
 });
