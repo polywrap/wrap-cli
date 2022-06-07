@@ -6,6 +6,7 @@ import path from "path";
 import { readdirSync } from "fs";
 import { Argument } from "commander";
 import chalk from "chalk";
+import yaml from "js-yaml";
 
 const INFRA_PRESETS = path.join(
   __dirname,
@@ -156,19 +157,27 @@ async function run(
       .join("")}\n`
   );
 
-  if (action === InfraActions.UP) {
-    await infra.up();
-  } else if (action === InfraActions.DOWN) {
-    await infra.down();
-  } else if (action === InfraActions.VARS) {
-    const vars = await infra.getVars();
-
-    print.info(vars);
-  } else if (InfraActions.CONFIG) {
-    const resultingConfig = await infra.config();
-
-    print.info(resultingConfig);
-  } else {
-    throw Error(intlMsg.commands_infra_error_never());
+  switch (action) {
+    case InfraActions.UP:
+      await infra.up();
+      break;
+    case InfraActions.DOWN:
+      await infra.down();
+      break;
+    case InfraActions.VARS:
+      const vars = await infra.getVars();
+      print.info(vars);
+      break;
+    case InfraActions.CONFIG:
+      const resultingConfig = await infra.config();
+      print.info(
+        yaml.safeDump(
+          resultingConfig.data.config,
+          { indent: 2 }
+        )
+      );
+      break;
+    default:
+      throw Error(intlMsg.commands_infra_error_never());
   }
 }
