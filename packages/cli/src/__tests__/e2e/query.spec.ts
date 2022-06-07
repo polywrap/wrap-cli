@@ -105,8 +105,8 @@ describe("e2e tests for query command", () => {
       cli: w3Cli,
     });
 
-    expect(code).toEqual(0);
     expect(queryErr).toBe("");
+    expect(code).toEqual(0);
 
     const constants = require(`${testCaseRoot}/recipes/constants.json`);
     checkSampleQueryOutput(output, {

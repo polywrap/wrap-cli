@@ -67,7 +67,7 @@ class LocalDevENSPublisher implements Deployer {
       "ens"
     )}`;
 
-    const { data: registerData } = await client.invoke<{ hash: string }>({
+    const { data: registerData, error } = await client.invoke<{ hash: string }>({
       method: "registerDomainAndSubdomainsRecursively",
       module: "mutation",
       uri: ensWrapperUri,
@@ -85,7 +85,10 @@ class LocalDevENSPublisher implements Deployer {
     });
 
     if (!registerData) {
-      throw new Error(`Could not register domain '${config.domainName}'`);
+      throw new Error(
+        `Could not register domain '${config.domainName}'` +
+        (error ? `\nError: ${error.message}` : "")
+      );
     }
 
     await client.invoke({
