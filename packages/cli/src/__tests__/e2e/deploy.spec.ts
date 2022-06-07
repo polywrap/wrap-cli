@@ -34,6 +34,7 @@ const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/deploy");
     path.join(testCaseRoot, testCases[index]);
 
 const setup = async (domainNames: string[]) => {
+  await stopTestEnvironment();
   await initTestEnvironment();
 
   const ensAddress = ensAddresses.ensAddress
@@ -72,7 +73,7 @@ const setup = async (domainNames: string[]) => {
   )}`;
 
   for await (const domainName of domainNames) {
-    await client.invoke<{ hash: string }>({
+    const result = await client.invoke({
       uri: ensWrapperUri,
       module: "mutation",
       method: "registerDomainAndSubdomainsRecursively",
@@ -88,6 +89,12 @@ const setup = async (domainNames: string[]) => {
         },
       },
     });
+
+    if (result.error) {
+      throw Error(
+        `Failed to register ${domainName}: ${result.error.message}`
+      );
+    }
   }
 }
 

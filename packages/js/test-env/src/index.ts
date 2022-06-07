@@ -102,6 +102,9 @@ export const initTestEnvironment = async (cli?: string): Promise<void> => {
       `initTestEnvironment failed to start test environment.\nExit Code: ${exitCode}\nStdErr: ${stderr}\nStdOut: ${stdout}`
     );
   }
+
+  // Wait an extra couple of seconds for the ens deployment to finish
+  await new Promise((resolve) => setTimeout(resolve, 3000));
 };
 
 export const stopTestEnvironment = async (cli?: string): Promise<void> => {
