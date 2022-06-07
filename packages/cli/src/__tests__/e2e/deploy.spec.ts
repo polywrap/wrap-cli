@@ -87,7 +87,7 @@ const setup = async (domainNames: string[]) => {
           networkNameOrChainId: "testnet",
         },
       },
-    })
+    });
   }
 }
 
@@ -104,11 +104,13 @@ describe("e2e tests for deploy command", () => {
         },
       );
     }
+
+    await new Promise((resolve) => setTimeout(resolve, 5000));
   });
 
   afterAll(async () => {
     await stopTestEnvironment();
-  })
+  });
 
   test("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
