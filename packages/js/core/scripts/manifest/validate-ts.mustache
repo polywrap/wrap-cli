@@ -8,8 +8,7 @@ import {
   Any{{#latest}}{{type}}{{/latest}},
   {{#latest}}{{type}}{{/latest}}Formats
 } from ".";
-import * as Validators from "../../validators";
-
+{{#validators.length}}import * as Validators from "../../validators";{{/validators.length}}
 {{#formats}}
 import schema_{{tsVersion}} from "@web3api/manifest-schemas/formats/{{dir}}/{{version}}.json";
 {{/formats}}

@@ -6,8 +6,8 @@
   "scripts": {
     "build": "w3 build",
     "contracts:deploy": "node ./deploy-contracts.js",
-    "test:env:up": "w3 test-env up && yarn contracts:deploy",
-    "test:env:down": "w3 test-env down"
+    "test:env:up": "w3 infra up --modules=eth-ens-ipfs && yarn contracts:deploy",
+    "test:env:down": "w3 infra down --modules=eth-ens-ipfs"
   },
   "dependencies": {
     "@web3api/ethereum-plugin-js": "0.0.1-prealpha.72",

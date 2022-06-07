@@ -8,7 +8,7 @@
   ],
   "exitCode": 0,
   "files": [
-    ".w3/web3api/build/cache/index.json",
-    ".w3/web3api/build/cache/blobs/sha256/"
+    ".w3/web3api/build/image/cache/index.json",
+    ".w3/web3api/build/image/cache/blobs/sha256/"
   ]
 }

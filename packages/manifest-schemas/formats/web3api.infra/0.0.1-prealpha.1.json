@@ -1,0 +1,64 @@
+{
+  "id": "InfraManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format", "modules"],
+  "properties": {
+    "format": {
+      "type": "string",
+      "const": "0.0.1-prealpha.1"
+    },
+    "dockerCompose": {
+      "type": "string"
+    },
+    "env": {
+      "patternProperties": {
+        "^.*$": {
+          "type": ["string", "number"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "modules": {
+      "patternProperties": {
+        "^.*$": {
+          "oneOf": [
+            {"$ref": "#/definitions/remoteModule"},
+            {"$ref": "#/definitions/localModule"}
+          ]
+        }
+      }
+    }
+  },
+  "definitions": {
+    "remoteModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "package": {
+          "type": "string"
+        },
+        "registry": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "dockerComposePath": {
+          "type": "string"
+        }
+      },
+      "required": ["package", "version", "registry"]
+    },
+    "localModule": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "type": "string"
+        }
+      },
+      "required": ["path"]
+    }
+  }
+}
