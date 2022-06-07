@@ -62,6 +62,7 @@ export interface JobOptions<
   TUri extends Uri | string = string
 > {
   id: string;
+  parentId: string;
   jobs: Job<TUri>;
 
   onExecution?(
@@ -368,6 +369,7 @@ export class Web3ApiClient implements Client {
     for (const id of ids) {
       await this._runJob<TData, TUri>({
         id,
+        parentId: "",
         jobs: workflow.jobs,
         onExecution,
       });
@@ -813,7 +815,7 @@ export class Web3ApiClient implements Client {
     TData extends Record<string, unknown> = Record<string, unknown>,
     TUri extends Uri | string = string
   >(opts: JobOptions<TData, TUri>): Promise<void> {
-    const { id, jobs, onExecution } = opts;
+    const { id, parentId, jobs, onExecution } = opts;
 
     if (id) {
       let index = id.indexOf(".");
@@ -837,7 +839,7 @@ export class Web3ApiClient implements Client {
           if (onExecution) {
             await executeMaybeAsyncFunction(
               onExecution,
-              `${jobId}.${i}`,
+              parentId ? `${parentId}.${jobId}.${i}` : `${jobId}.${i}`,
               data,
               error
             );
@@ -848,6 +850,7 @@ export class Web3ApiClient implements Client {
       if (subJobs) {
         await this._runJob<TData, TUri>({
           id: id.substring(index + 1),
+          parentId: parentId ? `${parentId}.${jobId}` : jobId,
           jobs: subJobs,
           onExecution,
         });
@@ -857,6 +860,7 @@ export class Web3ApiClient implements Client {
       for (const id of ids) {
         await this._runJob<TData, TUri>({
           id,
+          parentId,
           jobs: jobs,
           onExecution,
         });

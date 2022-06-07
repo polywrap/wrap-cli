@@ -128,14 +128,14 @@ describe("workflow", () => {
         expect(data).toBeTruthy();
         expect(data).toBe("0xA57B8a5584442B467b4689F1144D269d096A3daF");
       },
-      "case1.0": async (data: unknown, error: unknown) => {
+      "cases.case1.0": async (data: unknown, error: unknown) => {
         expect(error).toBeFalsy();
         expect(data).toBeTruthy();
         expect(data).toBe(
           "0xa6ec6a2db5dc39d27d60ff4a7f76faf80893bfcfe0adb1207fc2b2a0aae3d180"
         );
       },
-      "case1.1": async (data: unknown, error: unknown) => {
+      "cases.case1.1": async (data: unknown, error: unknown) => {
         expect(error).toBeFalsy();
         expect(data).toBeTruthy();
         expect(data).toBe(100);
@@ -146,6 +146,7 @@ describe("workflow", () => {
       await client.run({
         workflow,
         onExecution: async (id: string, data: unknown, error: unknown) => {
+          console.log(id);
           await tests[id](data, error);
         },
       });
