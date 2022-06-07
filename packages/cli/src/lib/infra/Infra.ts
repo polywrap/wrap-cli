@@ -10,6 +10,7 @@ import { InfraManifest } from "@web3api/core-js";
 import path from "path";
 import fs, { readdirSync } from "fs";
 import YAML from "js-yaml";
+import { copySync } from "fs-extra";
 
 export interface InfraConfig {
   rootDir: string;
@@ -328,14 +329,10 @@ export class Infra {
     const modulesWithComposePaths: ModuleWithPath[] = [];
     const basePath = path.join(this.getCacheModulesPath(), "local");
 
-    for await (const module of modules) {
+    for (const module of modules) {
       const modulePath = path.join(basePath, module.name);
 
-      await this._cache.copyIntoCache(
-        path.relative(this._cache.getCacheDir(), modulePath),
-        path.join(module.path, "*"),
-        { up: true }
-      );
+      copySync(module.path, modulePath);
 
       const composePath = this.tryResolveComposeFile(
         modulePath,

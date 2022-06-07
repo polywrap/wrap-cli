@@ -99,7 +99,11 @@ describe("e2e tests for infra command", () => {
   beforeAll(() => {
     process.env = {
       ...process.env,
-      ENV_IPFS_PORT: "5001"
+      ENV_IPFS_PORT: "5001",
+      IPFS_PORT: "5001",
+      ETHEREUM_PORT: "8545",
+      DEV_SERVER_ETH_TESTNET_PORT: "8646",
+      DEV_SERVER_PORT: "4040"
     };
   });
 
@@ -236,7 +240,7 @@ describe("e2e tests for infra command", () => {
       ]);
     });
 
-    test("Should throw error for --modules that don't exist in infra manifest", async () => {
+    test("Should throw error for --modules that don't exist in infra manifest and are not default modules", async () => {
       const { exitCode: code, stderr } = await runW3CLI(
         [
           "infra",
@@ -252,7 +256,7 @@ describe("e2e tests for infra command", () => {
       );
     });
 
-    test("Should setup and use a default module if --modules arg is passed and no manifest present", async () => {
+    test("Should setup and use a default module if --modules arg is passed and the module does not exist in the manifest", async () => {
       await runW3CLI(
         [
           "infra",
@@ -270,21 +274,83 @@ describe("e2e tests for infra command", () => {
       ]);
     })
 
-    test("Should throw error if unrecognized module is passed", async () => {
-      const { exitCode: code, stderr } = await runW3CLI(
+    test("If a module declared in manifest has the same name of a default module, the manifest's should take precedence", async () => {
+      const { stdout: withManifestModOutput } = await runW3CLI(
         [
           "infra",
-          "up",
-          "--modules=foo",
+          "config",
+          "--modules=eth-ens-ipfs",
+          "--verbose"
+        ],
+        getTestCaseDir(2),
+      );
+
+      const withManifestModSanitizedOutput = clearStyle(withManifestModOutput);
+
+      expect(withManifestModSanitizedOutput).toContain("dev-server:")
+
+      const { stdout: withoutManifestModOutput } = await runW3CLI(
+        [
+          "infra",
+          "config",
+          "--modules=eth-ens-ipfs",
           "--verbose"
         ],
         getTestCaseDir(0),
       );
 
-      expect(code).toEqual(1);
-      expect(stderr).toContain(
-        `Unrecognized modules: foo. Default modules: eth-ens-ipfs`
+      const withoutManifestModSanitizedOutput = clearStyle(withoutManifestModOutput);
+
+      expect(withoutManifestModSanitizedOutput).not.toContain("dev-server:")
+    })
+
+    test("Should set up a default environment if no manifest is present, but --modules option is passed", async () => {
+      
+      await runW3CLI(
+        [
+          "infra",
+          "up",
+          "--modules=eth-ens-ipfs",
+          "--verbose"
+        ],
+        getTestCaseDir(3),
       );
+
+      await waitForPorts([
+        { port: 5001, expected: true },
+        { port: 8545, expected: true }
+      ]);
+    })
+
+    test("Should not include default modules if no --modules option is passed and manifest exists", async () => {
+      
+      const { stdout } = await runW3CLI(
+        [
+          "infra",
+          "config",
+          "--verbose"
+        ],
+        getTestCaseDir(0),
+      );
+
+      const output = clearStyle(stdout);
+
+      expect(output).not.toContain("ens-scripts")
+    })
+
+    test("Should fail if no manifest is present and no --modules option is passed", async () => {
+      
+      const { exitCode, stderr } = await runW3CLI(
+        [
+          "infra",
+          "config",
+          "--verbose"
+        ],
+        getTestCaseDir(3),
+      );
+
+      expect(exitCode).toBe(1)
+      expect(stderr).toContain("If no infra manifest is specified, a default module should be specified using the '--modules' option")
     })
   });
 
