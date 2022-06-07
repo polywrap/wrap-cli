@@ -176,6 +176,11 @@ describe("e2e tests for infra command", () => {
     });
 
     test("Sets environment up with all modules if no --modules are passed", async () => {
+      await runW3CLI(
+        ["infra", "down", "--manifest=./web3api.infra.yaml"],
+        getTestCaseDir(0),
+      );
+
       await waitForPorts([
         { port: 4040, expected: false },
         { port: 5001, expected: false },

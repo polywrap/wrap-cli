@@ -95,13 +95,16 @@ async function run(
   } catch (e) {
     if (!modulesArray.length) {
       throw new Error(
-        `If no infra manifest is specified, a default module should be specified using the '--modules' option.
-        Example: 'w3 infra up --modules=eth-ens-ipfs'.
-        
-        Available default modules: \n${readdirSync(DEFAULT_MODULES_PATH)
-          .map((m) => `\n- ${m}`)
-          .join("")}`
-      );
+        `${e.message}
+
+Tip: If no infra manifest is specified, a default module should be specified using the '--modules' option.
+
+Default Modules: \n${readdirSync(DEFAULT_MODULES_PATH)
+  .map((m) => `\n- ${m}`)
+  .join("")}
+
+Example: 'w3 infra up --modules=eth-ens-ipfs'.`
+);
     }
   }
 
