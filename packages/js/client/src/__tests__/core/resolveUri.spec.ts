@@ -10,6 +10,7 @@ import {
   initTestEnvironment,
   runCLI,
   stopTestEnvironment,
+  ensAddresses
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 import { ResolveUriErrorType, Client } from "@web3api/core-js";
@@ -19,17 +20,11 @@ jest.setTimeout(200000);
 describe("resolveUri", () => {
   let ipfsProvider: string;
   let ethProvider: string;
-  let ensAddress: string;
-  let ensRegistrarAddress: string;
-  let ensResolverAddress: string;
 
   beforeAll(async () => {
-    const { ipfs, ethereum, ensAddress: ens, registrarAddress, resolverAddress } = await initTestEnvironment();
+    const { ipfs, ethereum } = await initTestEnvironment();
     ipfsProvider = ipfs;
     ethProvider = ethereum;
-    ensAddress = ens;
-    ensRegistrarAddress = registrarAddress;
-    ensResolverAddress = resolverAddress;
   });
 
   afterAll(async () => {
@@ -50,7 +45,7 @@ describe("resolveUri", () => {
         ens: {
           query: {
             addresses: {
-              testnet: ensAddress,
+              testnet: ensAddresses.ensAddress,
             },
           },
         },
@@ -260,10 +255,7 @@ describe("resolveUri", () => {
     const deployResult = await buildAndDeployApi({
       apiAbsPath: `${GetPathToTestApis()}/wasm-as/interface-invoke/test-api`,
       ipfsProvider,
-      ensRegistryAddress: ensAddress,
       ethereumProvider: ethProvider,
-      ensRegistrarAddress,
-      ensResolverAddress,
     });
 
     const ensUri = new Uri(`ens/testnet/${deployResult.ensDomain}`);
@@ -361,10 +353,7 @@ describe("resolveUri", () => {
     const deployResult = await buildAndDeployApi({
       apiAbsPath: `${GetPathToTestApis()}/wasm-as/interface-invoke/test-api`,
       ipfsProvider,
-      ensRegistryAddress: ensAddress,
       ethereumProvider: ethProvider,
-      ensRegistrarAddress,
-      ensResolverAddress,
     });
     
     const ensUri = new Uri(`ens/testnet/${deployResult.ensDomain}`);
@@ -491,10 +480,7 @@ describe("resolveUri", () => {
     const deployResult = await buildAndDeployApi({
       apiAbsPath: `${GetPathToTestApis()}/wasm-as/interface-invoke/test-api`,
       ipfsProvider,
-      ensRegistryAddress: ensAddress,
       ethereumProvider: ethProvider,
-      ensRegistrarAddress,
-      ensResolverAddress,
     });
 
     const ensUri = new Uri(`ens/testnet/${deployResult.ensDomain}`);
@@ -622,10 +608,7 @@ describe("resolveUri", () => {
     const deployResult = await buildAndDeployApi({
       apiAbsPath: `${GetPathToTestApis()}/wasm-as/interface-invoke/test-api`,
       ipfsProvider,
-      ensRegistryAddress: ensAddress,
       ethereumProvider: ethProvider,
-      ensRegistrarAddress,
-      ensResolverAddress,
     });
 
     const ensUri = new Uri(`ens/testnet/${deployResult.ensDomain}`);
@@ -767,10 +750,7 @@ describe("resolveUri", () => {
     const deployResult = await buildAndDeployApi({
       apiAbsPath: `${GetPathToTestApis()}/wasm-as/interface-invoke/test-api`,
       ipfsProvider,
-      ensRegistryAddress: ensAddress,
       ethereumProvider: ethProvider,
-      ensRegistrarAddress,
-      ensResolverAddress,
     });
 
     const ensUri = new Uri(`ens/testnet/${deployResult.ensDomain}`);

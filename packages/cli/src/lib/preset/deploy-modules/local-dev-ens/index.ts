@@ -3,19 +3,12 @@
 import { Deployer } from "../../../deploy/deployer";
 
 import { Uri } from "@web3api/core-js";
-import axios from "axios";
+import { ensAddresses } from "@web3api/test-env-js";
 import path from "path";
 import { Web3ApiClient } from "@web3api/client-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 
 const contentHash = require("content-hash");
-
-interface Providers {
-  ensAddress: string;
-  resolverAddress: string;
-  registrarAddress: string;
-  reverseAddress: string;
-}
 
 class LocalDevENSPublisher implements Deployer {
   async execute(
@@ -24,7 +17,6 @@ class LocalDevENSPublisher implements Deployer {
       domainName: string;
       domainOwnerAddressOrIndex?: string | number;
       ports: {
-        devServer: number;
         ethereum: number;
       };
     }
@@ -36,11 +28,6 @@ class LocalDevENSPublisher implements Deployer {
     }
 
     const cid = uri.path;
-
-    const { data: ensAddresses } = await axios.get<Providers>(
-      `http://localhost:${config.ports.devServer}/ens`
-    );
-
     const ethereumPluginUri = "w3://ens/ethereum.web3api.eth";
 
     const client = new Web3ApiClient({

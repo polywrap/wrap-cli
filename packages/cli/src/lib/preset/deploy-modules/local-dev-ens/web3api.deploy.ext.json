@@ -15,11 +15,8 @@
     "ports": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["devServer", "ethereum"],
+      "required": ["ethereum"],
       "properties": {
-        "devServer": {
-          "type": "number"
-        },
         "ethereum": {
           "type": "number"
         }
