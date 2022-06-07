@@ -4,7 +4,7 @@ import {
   correctBuildContextPathsFromCompose,
   DockerCompose,
   CacheDirectory,
-} from "../"
+} from "../";
 
 import { InfraManifest } from "@web3api/core-js";
 import path from "path";
@@ -12,7 +12,7 @@ import fs, { readdirSync } from "fs";
 import YAML from "js-yaml";
 
 export interface InfraConfig {
-  project: Web3ApiProject;
+  rootDir: string;
   defaultInfraModulesPath: string;
   infraManifest?: InfraManifest;
   modulesToUse?: string[];
@@ -43,7 +43,6 @@ export class Infra {
     "./docker-compose.yaml",
   ];
 
-  private _config: InfraConfig;
   private _dockerCompose = new DockerCompose();
   private _defaultDockerOptions: ReturnType<
     typeof DockerCompose.getDefaultConfig
@@ -57,7 +56,7 @@ export class Infra {
   constructor(protected _config: InfraConfig) {
     this._cache = new CacheDirectory({
       rootDir: _config.rootDir,
-      subDir: Infra.cacheLayout.root
+      subDir: Infra.cacheLayout.root,
     });
 
     // If user did not specify a base compose, generate a default one
@@ -134,6 +133,10 @@ export class Infra {
     }, [] as string[]);
 
     return Array.from(new Set(envVars));
+  }
+
+  public getCacheModulesPath(): string {
+    return this._cache.getCachePath(Infra.cacheLayout.modulesDir);
   }
 
   public getFilteredModules(): NamedModule[] {
@@ -323,10 +326,7 @@ export class Infra {
     modules: NamedLocalModule[]
   ): Promise<ModuleWithPath[]> {
     const modulesWithComposePaths: ModuleWithPath[] = [];
-    const basePath = path.join(
-      this.getCacheModulesPath(),
-      "local"
-    );
+    const basePath = path.join(this.getCacheModulesPath(), "local");
 
     for await (const module of modules) {
       const modulePath = path.join(basePath, module.name);

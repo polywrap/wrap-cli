@@ -1,4 +1,4 @@
-import { intlMsg, Web3ApiProject, Infra } from "../lib";
+import { intlMsg, Infra, loadInfraManifest } from "../lib";
 import { Command, Program } from "./types";
 
 import { print } from "gluegun";
@@ -7,10 +7,10 @@ import { Argument } from "commander";
 import chalk from "chalk";
 import yaml from "js-yaml";
 import { readdirSync } from "fs";
+import { InfraManifest } from "@web3api/core-js";
 
 type InfraCommandOptions = {
   modules?: string;
-  preset?: string;
   verbose?: boolean;
   manifest: string;
 };
@@ -87,38 +87,32 @@ async function run(
   }
 
   const manifestPath = path.resolve(manifest);
-  const infraManifest = await loadInfraManifest(
-    manifestPath,
-    !verbose
-  );
+
+  let infraManifest: InfraManifest | undefined;
+
+  try {
+    infraManifest = await loadInfraManifest(manifestPath, !verbose);
+  } catch (e) {
+    if (!modulesArray.length) {
+      throw new Error(
+        `If no infra manifest is specified, a default module should be specified using the '--modules' option.
+        Example: 'w3 infra up --modules=eth-ens-ipfs'.
+        
+        Available default modules: \n${readdirSync(DEFAULT_MODULES_PATH)
+          .map((m) => `\n- ${m}`)
+          .join("")}`
+      );
+    }
+  }
 
   const infra = new Infra({
     rootDir: path.dirname(manifestPath),
     modulesToUse: modulesArray,
     infraManifest,
-    quiet: !verbose,
-  });
-
-  const infraManifest = await project.getInfraManifest();
-
-  if (!infraManifest && !modulesArray.length) {
-    throw new Error(
-      `If no infra manifest is specified, a default module should be specified using the '--modules' option.
-      Example: 'w3 infra up --modules=eth-ens-ipfs'.
-      
-      Available default modules: \n${readdirSync(DEFAULT_MODULES_PATH)
-        .map((m) => `\n- ${m}`)
-        .join("")}`
-    );
-  }
-
-  const infra = new Infra({
-    project,
     defaultInfraModulesPath: DEFAULT_MODULES_PATH,
-    modulesToUse: modulesArray,
-    infraManifest,
     quiet: !verbose,
   });
+
   const filteredModules = infra.getFilteredModules();
 
   if (!filteredModules.length) {
