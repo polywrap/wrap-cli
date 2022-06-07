@@ -25,6 +25,7 @@ enum InfraActions {
 const DEFAULT_MODULES_PATH = path.join(
   __dirname,
   "..",
+  "lib",
   "defaults",
   "infra-modules"
 );

@@ -181,6 +181,7 @@ export class Infra {
       throw new Error(
         intlMsg.lib_infra_unrecognizedModule({
           modules: unrecognizedModules.join(", "),
+          defaultModules: defaultInfraModules.map((m) => m.name).join(", "),
         })
       );
     }

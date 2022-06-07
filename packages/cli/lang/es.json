@@ -267,5 +267,5 @@
   "lib_wasm_rust_invalidModule": "Module paths must point to Cargo.toml files. Found: {path}",
   "lib_docker_invalidImageId": "Invalid docker image ID returned: {imageId}",
   "lib_docker_noInstall": "Docker executable not found in PATH",
-  "lib_infra_unrecognizedModule": "Unrecognized modules: {modules}"
+  "lib_infra_unrecognizedModule": "Unrecognized modules: {modules}. Default modules: {defaultModules}"
 }

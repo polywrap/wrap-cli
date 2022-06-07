@@ -30,7 +30,6 @@ Arguments:
 Options:
   --manifest  <manifest>                   Web3API Manifest path (default: "web3api.yaml")
   -m, --modules <module-name,module-name>  Use only specified modules
-  -p, --preset <preset-name>               Use a preset infra environment
   -v, --verbose                            Verbose output (default: false)
   -h, --help                               display help for command
 `;
@@ -112,7 +111,7 @@ describe("e2e tests for infra command", () => {
       );
 
       await runW3CLI(
-        ["infra", "down", "-v", "--preset=eth-ens-ipfs"],
+        ["infra", "down", "-v", "--modules=eth-ens-ipfs"],
         getTestCaseDir(0),
       );
 
@@ -253,12 +252,12 @@ describe("e2e tests for infra command", () => {
       );
     });
 
-    test("Should setup and use a preset env if --preset arg is passed", async () => {
+    test("Should setup and use a default module if --modules arg is passed and no manifest present", async () => {
       await runW3CLI(
         [
           "infra",
           "up",
-          "--preset=eth-ens-ipfs",
+          "--modules=eth-ens-ipfs",
           "--verbose"
         ],
         getTestCaseDir(0),
@@ -271,20 +270,20 @@ describe("e2e tests for infra command", () => {
       ]);
     })
 
-    test("Should throw error if unrecognized preset is passed", async () => {
-      const { exitCode: code, stdout } = await runW3CLI(
+    test("Should throw error if unrecognized module is passed", async () => {
+      const { exitCode: code, stderr } = await runW3CLI(
         [
           "infra",
           "up",
-          "--preset=foo",
+          "--modules=foo",
           "--verbose"
         ],
         getTestCaseDir(0),
       );
 
       expect(code).toEqual(1);
-      expect(stdout).toContain(
-        `'foo' is not a supported preset`
+      expect(stderr).toContain(
+        `Unrecognized modules: foo. Default modules: eth-ens-ipfs`
       );
     })
   });
