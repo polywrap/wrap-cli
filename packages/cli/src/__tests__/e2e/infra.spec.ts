@@ -268,7 +268,6 @@ describe("e2e tests for infra command", () => {
       );
 
       await waitForPorts([
-        { port: 4040, expected: true },
         { port: 5001, expected: true },
         { port: 8545, expected: true }
       ]);
