@@ -44,7 +44,7 @@ import {
   coreInterfaceUris,
   Contextualized,
   ResolveUriErrorType,
-  executeMaybeAsyncFunction,
+  JobRunner,
   PluginPackage,
   RunOptions,
   MaybeAsync,
@@ -365,15 +365,13 @@ export class Web3ApiClient implements Client {
   >(options: RunOptions<TData, TUri>): Promise<void> {
     const { workflow, onExecution } = options;
     const ids = options.ids ? options.ids : Object.keys(workflow.jobs);
+    const jobRunner = new JobRunner<TData, TUri>(this, onExecution);
 
-    for (const id of ids) {
-      await this._runJob<TData, TUri>({
-        id,
-        parentId: "",
-        jobs: workflow.jobs,
-        onExecution,
-      });
-    }
+    await Promise.all(
+      ids.map((id) =>
+        jobRunner.run({ relativeId: id, parentId: "", jobs: workflow.jobs })
+      )
+    );
   }
 
   @Tracer.traceMethod("Web3ApiClient: subscribe")
@@ -808,64 +806,6 @@ export class Web3ApiClient implements Client {
     }
 
     return api;
-  }
-
-  @Tracer.traceMethod("Web3ApiClient: runJob")
-  private async _runJob<
-    TData extends Record<string, unknown> = Record<string, unknown>,
-    TUri extends Uri | string = string
-  >(opts: JobOptions<TData, TUri>): Promise<void> {
-    const { id, parentId, jobs, onExecution } = opts;
-
-    if (id) {
-      let index = id.indexOf(".");
-      index = index === -1 ? id.length : index;
-
-      const jobId = id.substring(0, index);
-      if (jobId === "") return;
-
-      const steps = jobs[jobId].steps;
-      if (steps) {
-        for (let i = 0; i < steps.length; i++) {
-          const step = steps[i];
-          const { data, error } = await this.invoke<TData, TUri>({
-            uri: step.uri,
-            module: step.module,
-            method: step.method,
-            config: step.config,
-            input: step.input,
-          });
-
-          if (onExecution) {
-            await executeMaybeAsyncFunction(
-              onExecution,
-              parentId ? `${parentId}.${jobId}.${i}` : `${jobId}.${i}`,
-              data,
-              error
-            );
-          }
-        }
-      }
-      const subJobs = jobs[jobId].jobs;
-      if (subJobs) {
-        await this._runJob<TData, TUri>({
-          id: id.substring(index + 1),
-          parentId: parentId ? `${parentId}.${jobId}` : jobId,
-          jobs: subJobs,
-          onExecution,
-        });
-      }
-    } else {
-      const ids = Object.keys(jobs);
-      for (const id of ids) {
-        await this._runJob<TData, TUri>({
-          id,
-          parentId,
-          jobs: jobs,
-          onExecution,
-        });
-      }
-    }
   }
 }
 

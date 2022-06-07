@@ -1,4 +1,3 @@
-import { Workflow } from "@web3api/core-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 import {
   buildAndDeployApi,
@@ -6,49 +5,7 @@ import {
   stopTestEnvironment,
 } from "@web3api/test-env-js";
 import { createWeb3ApiClient, Web3ApiClient, Web3ApiClientConfig } from "../..";
-
-const workflow: Workflow = {
-  name: "simple-storage",
-  jobs: {
-    cases: {
-      steps: [
-        {
-          uri: "ens/testnet/simple-storage.eth",
-          module: "mutation",
-          method: "deployContract",
-          input: {
-            connection: null,
-          },
-        },
-      ],
-      jobs: {
-        case1: {
-          steps: [
-            {
-              uri: "ens/testnet/simple-storage.eth",
-              module: "mutation",
-              method: "setData",
-              input: {
-                address: "0xA57B8a5584442B467b4689F1144D269d096A3daF",
-                value: 100,
-                connection: null,
-              },
-            },
-            {
-              uri: "ens/testnet/simple-storage.eth",
-              module: "query",
-              method: "getData",
-              input: {
-                address: "0xA57B8a5584442B467b4689F1144D269d096A3daF",
-                connection: null,
-              },
-            },
-          ],
-        },
-      },
-    },
-  },
-};
+import { outPropWorkflow, sanityWorkflow } from "./workflow-test-cases";
 
 jest.setTimeout(200000);
 
@@ -126,13 +83,13 @@ describe("workflow", () => {
       "cases.0": async (data: unknown, error: unknown) => {
         expect(error).toBeFalsy();
         expect(data).toBeTruthy();
-        expect(data).toBe("0xA57B8a5584442B467b4689F1144D269d096A3daF");
+        expect(data).toContain("0x");
       },
       "cases.case1.0": async (data: unknown, error: unknown) => {
         expect(error).toBeFalsy();
         expect(data).toBeTruthy();
-        expect(data).toBe(
-          "0xa6ec6a2db5dc39d27d60ff4a7f76faf80893bfcfe0adb1207fc2b2a0aae3d180"
+        expect(data).toContain(
+          "0x"
         );
       },
       "cases.case1.1": async (data: unknown, error: unknown) => {
@@ -142,11 +99,19 @@ describe("workflow", () => {
       },
     };
 
-    it("should cook recipes", async () => {
+    test("sanity workflow", async () => {
       await client.run({
-        workflow,
+        workflow: sanityWorkflow,
         onExecution: async (id: string, data: unknown, error: unknown) => {
-          console.log(id);
+          await tests[id](data, error);
+        },
+      });
+    });
+
+    test("workflow with output propagation", async () => {
+      await client.run({
+        workflow: outPropWorkflow,
+        onExecution: async (id: string, data: unknown, error: unknown) => {
           await tests[id](data, error);
         },
       });
