@@ -2,10 +2,6 @@ import { execSync } from "child_process";
 import dns from "dns";
 import url from "url";
 
-// TODO!!!!
-// make a single "exec" interface
-// use it for all "runCommand" and "exec" and "execSync" operations
-
 export function shouldUseYarn(): boolean {
   try {
     execSync("yarnpkg --version", { stdio: "ignore" });

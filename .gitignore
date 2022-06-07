@@ -1,6 +1,5 @@
 node_modules
 build
-!**/default-manifests/build
 .idea
 yarn-error.log
 coverage

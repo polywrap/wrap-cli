@@ -21,10 +21,6 @@
       "type": "string",
       "format": "manifestFile"
     },
-    "infra": {
-      "type": "string",
-      "format": "manifestFile"
-    },
     "meta": {
       "type": "string",
       "format": "manifestFile"
