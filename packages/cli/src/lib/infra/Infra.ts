@@ -44,20 +44,16 @@ export class Infra {
     typeof DockerCompose.getDefaultConfig
   >;
 
-  constructor(config: InfraConfig & { baseDockerComposePath?: string }) {
+  constructor(config: InfraConfig) {
     this._config = config;
 
-    if (config.baseDockerComposePath) {
-      this._baseDockerComposePath = config.baseDockerComposePath;
-    } else {
-      // If user did not specify a base compose, generate a default one
-      this._baseDockerComposePath = path.join(
-        config.project.getInfraCacheModulesPath(),
-        "docker-compose.yml"
-      );
+    // If user did not specify a base compose, generate a default one
+    this._baseDockerComposePath = path.join(
+      config.project.getInfraCacheModulesPath(),
+      "base-docker-compose.yml"
+    );
 
-      this._generateBaseDockerCompose(this._baseDockerComposePath);
-    }
+    this._generateBaseDockerCompose(this._baseDockerComposePath);
 
     this._sanitizeModules();
     this._defaultDockerOptions = DockerCompose.getDefaultConfig(
