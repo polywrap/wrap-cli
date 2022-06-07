@@ -67,27 +67,29 @@ class LocalDevENSPublisher implements Deployer {
       "ens"
     )}`;
 
-    const { data: registerData, error } = await client.invoke<{ hash: string }>({
-      method: "registerDomainAndSubdomainsRecursively",
-      module: "mutation",
-      uri: ensWrapperUri,
-      input: {
-        domain: config.domainName,
-        owner: signer,
-        resolverAddress: ensAddresses.resolverAddress,
-        ttl: "0",
-        registrarAddress: ensAddresses.registrarAddress,
-        registryAddress: ensAddresses.ensAddress,
-        connection: {
-          networkNameOrChainId: "testnet",
+    const { data: registerData, error } = await client.invoke<{ hash: string }>(
+      {
+        method: "registerDomainAndSubdomainsRecursively",
+        module: "mutation",
+        uri: ensWrapperUri,
+        input: {
+          domain: config.domainName,
+          owner: signer,
+          resolverAddress: ensAddresses.resolverAddress,
+          ttl: "0",
+          registrarAddress: ensAddresses.registrarAddress,
+          registryAddress: ensAddresses.ensAddress,
+          connection: {
+            networkNameOrChainId: "testnet",
+          },
         },
-      },
-    });
+      }
+    );
 
     if (!registerData) {
       throw new Error(
         `Could not register domain '${config.domainName}'` +
-        (error ? `\nError: ${error.message}` : "")
+          (error ? `\nError: ${error.message}` : "")
       );
     }
 

@@ -100,11 +100,11 @@ async function run(
 Tip: If no infra manifest is specified, a default module should be specified using the '--modules' option.
 
 Default Modules: \n${readdirSync(DEFAULT_MODULES_PATH)
-  .map((m) => `\n- ${m}`)
-  .join("")}
+          .map((m) => `\n- ${m}`)
+          .join("")}
 
 Example: 'w3 infra up --modules=eth-ens-ipfs'.`
-);
+      );
     }
   }
 
