@@ -1,3 +1,12 @@
+# Web3API 0.0.1-prealpha.84
+## Features
+* [PR-328](https://github.com/polywrap/monorepo/pull/328) `@web3api/infra`: A modular infrastructure pipeline has been added to the CLI, available via the `w3 infra ...` command. This command allows for custom infra modules to be defined and combined, able to support any 3rd party services your development requires. This command supersedes the old `w3 test-env ...` command.
+* [PR-898](https://github.com/polywrap/monorepo/pull/898) `@web3api/cli`: The `wasm/rust` default build image has been updated to include the `wasm-snip` utility, which helps remove dead code from the wasm modules in a post-processing step. This has reduce the average Rust-based wasm module's size by ~85%.
+* [PR-885](https://github.com/polywrap/monorepo/pull/885) `@web3api/test-env-js`: A `buildApi` helper function has been added.
+
+## Breaking Changes
+* [PR-328](https://github.com/polywrap/monorepo/pull/328) `@web3api/cli`: The `w3 test-env ...` command has been removed and replaced by the `w3 infra ...` command.
+
 # Web3API 0.0.1-prealpha.83
 ## Features
 * [PR-870](https://github.com/polywrap/monorepo/pull/870) `@web3api/cli`: The `web3api.deploy.yaml` manifest file now supports the use of environment variables.
