@@ -2,10 +2,10 @@
   "name": "@web3api/test-cases",
   "description": "Reusable Web3API Test Cases",
   "private": true,
-  "version": "0.0.1-prealpha.83",
+  "version": "0.0.1-prealpha.84",
   "license": "MIT",
   "main": "index.ts",
   "dependencies": {
-    "@web3api/os-js": "0.0.1-prealpha.83"
+    "@web3api/os-js": "0.0.1-prealpha.84"
   }
 }
