@@ -356,7 +356,7 @@ describe("resolveUri", () => {
       ipfsProvider,
       ethereumProvider: ethProvider,
     });
-    
+
     const ensUri = new Uri(`ens/testnet/${deployResult.ensDomain}`);
     const ipfsUri = new Uri(`ipfs/${deployResult.ipfsCid}`);
 

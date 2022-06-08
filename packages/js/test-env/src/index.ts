@@ -269,7 +269,7 @@ export async function buildAndDeployApi({
     throw new Error("Could not get signer");
   }
 
-  const { data: registerData } = await client.invoke<{ hash: string }>({
+  const { data: registerData, error } = await client.invoke<{ hash: string }>({
     method: "registerDomainAndSubdomainsRecursively",
     module: "mutation",
     uri: ensWrapperUri,
@@ -287,7 +287,10 @@ export async function buildAndDeployApi({
   });
 
   if (!registerData) {
-    throw new Error(`Could not register domain '${apiEns}'`);
+    throw new Error(
+      `Could not register domain '${apiEns}'` +
+        (error ? `\nError: ${error.message}` : "")
+    );
   }
 
   await client.invoke({
