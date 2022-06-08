@@ -82,10 +82,7 @@ describe("Web3API Schema TypeInfo Transformations", () => {
       transforms: [addFirstLast],
     });
     const expected: TypeInfo = {
-      envTypes: {
-        query: createEnvDefinition({}),
-        mutation: createEnvDefinition({}),
-      },
+      envType: createEnvDefinition({}),
       enumTypes: [],
       importedEnumTypes: [],
       interfaceTypes: [],
@@ -132,9 +129,9 @@ describe("Web3API Schema TypeInfo Transformations", () => {
           last: true,
         } as ObjectDefinition,
       ],
-      moduleTypes: [
+      moduleType: 
         {
-          ...createModuleDefinition({ type: "Query" }),
+          ...createModuleDefinition({ }),
           methods: [
             {
               ...createMethodDefinition({
@@ -214,16 +211,7 @@ describe("Web3API Schema TypeInfo Transformations", () => {
                   required: false
                 })
               }),
-              first: null,
-              last: true
             } as MethodDefinition,
-          ],
-          first: true,
-          last: null
-        } as ModuleDefinition,
-        {
-          ...createModuleDefinition({ type: "Mutation" }),
-          methods: [
             {
               ...createMethodDefinition({
                 type: "mutation",
@@ -259,14 +247,11 @@ describe("Web3API Schema TypeInfo Transformations", () => {
                   required: true
                 })
               }),
-              first: true,
+              first: null,
               last: true
-            } as MethodDefinition,
+            }
           ],
-          first: null,
-          last: true
         } as ModuleDefinition,
-      ],
       importedObjectTypes: [],
       importedModuleTypes: [
         {
@@ -345,10 +330,7 @@ describe("Web3API Schema TypeInfo Transformations", () => {
       ],
     });
     const expected: TypeInfo = {
-      envTypes: {
-        query: createEnvDefinition({}),
-        mutation: createEnvDefinition({}),
-      },
+      envType: createEnvDefinition({}),
       enumTypes: [],
       interfaceTypes: [],
       importedEnumTypes: [],
@@ -390,7 +372,7 @@ describe("Web3API Schema TypeInfo Transformations", () => {
           foo: "bar",
         } as ObjectDefinition,
       ],
-      moduleTypes: [],
+      moduleType: createModuleDefinition({}),
       importedObjectTypes: [],
       importedModuleTypes: [],
     };

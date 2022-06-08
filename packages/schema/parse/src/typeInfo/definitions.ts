@@ -1,6 +1,6 @@
 import { ScalarType, isScalarType } from "./scalar";
 import { OperationType, isOperationType } from "./operation";
-import { isModuleType } from "./module";
+import { isModuleType, MODULE_NAME } from "./module";
 import { isMapKeyType, MapKeyType } from "./map";
 
 export enum DefinitionKind {
@@ -529,7 +529,7 @@ export function createImportedModuleDefinition(args: {
   }
 
   return {
-    ...createGenericDefinition({ ...args, type: "Module" }),
+    ...createGenericDefinition({ ...args, type: MODULE_NAME }),
     methods: [],
     uri: args.uri,
     namespace: args.namespace,

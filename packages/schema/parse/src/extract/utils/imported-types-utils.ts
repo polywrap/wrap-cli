@@ -21,25 +21,11 @@ export function extractImportedDefinition(
 
   const typeName = node.name.value;
 
-  const queryIdentifier = "_Query";
-  const mutationIdentifier = "_Mutation";
-
-  if (moduleTypes) {
-    // Ignore everything that isn't a query type
-    if (
-      !typeName.endsWith(queryIdentifier) &&
-      !typeName.endsWith(mutationIdentifier)
-    ) {
-      return undefined;
-    }
-  } else {
-    // Ignore query types
-    if (
-      typeName.endsWith(queryIdentifier) ||
-      typeName.endsWith(mutationIdentifier)
-    ) {
-      return undefined;
-    }
+  if (
+    (moduleTypes && typeName !== "Module") ||
+    (!moduleTypes && typeName === "Module")
+  ) {
+    return undefined;
   }
 
   const importedDir = node.directives[importedIndex];
