@@ -8,14 +8,14 @@ import fs from "fs";
 import { Web3ApiClientConfig } from "@web3api/client-js";
 import { executeMaybeAsyncFunction } from "@web3api/core-js";
 
-export function parseRecipeScriptPathOption(
+export function parseWorkflowScriptPathOption(
   script: string,
   _: unknown
 ): string {
   const absPath = path.resolve(script);
   if (!fs.existsSync(absPath)) {
     throw new Error(
-      intlMsg.commands_query_error_noRecipeScriptFound({ path: absPath })
+      intlMsg.commands_run_error_noWorkflowScriptFound({ path: absPath })
     );
   }
   return absPath;
@@ -30,7 +30,7 @@ export async function parseClientConfigOption(
   try {
     finalClientConfig = await getTestEnvClientConfig();
   } catch (e) {
-    console.error(intlMsg.commands_query_error_noTestEnvFound());
+    console.error(intlMsg.commands_run_error_noTestEnvFound());
     process.exit(1);
   }
 
@@ -43,7 +43,7 @@ export async function parseClientConfigOption(
     } else if (configPath.endsWith(".ts")) {
       configModule = await importTypescriptModule(path.resolve(configPath));
     } else {
-      const configsModuleMissingExportMessage = intlMsg.commands_query_error_clientConfigInvalidFileExt(
+      const configsModuleMissingExportMessage = intlMsg.commands_run_error_clientConfigInvalidFileExt(
         { module: configPath }
       );
       console.error(configsModuleMissingExportMessage);
@@ -51,7 +51,7 @@ export async function parseClientConfigOption(
     }
 
     if (!configModule || !configModule.getClientConfig) {
-      const configsModuleMissingExportMessage = intlMsg.commands_query_error_clientConfigModuleMissingExport(
+      const configsModuleMissingExportMessage = intlMsg.commands_run_error_clientConfigModuleMissingExport(
         { module: configModule }
       );
       console.error(configsModuleMissingExportMessage);
@@ -80,7 +80,7 @@ export async function defaultClientConfigOption(): Promise<
   return await parseClientConfigOption(undefined, undefined);
 }
 
-export function parseRecipeOutputFilePathOption(
+export function parseWorkflowOutputFilePathOption(
   outputFile: string,
   _: unknown
 ): string {
