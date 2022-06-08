@@ -2,6 +2,7 @@ module.exports = {
   root: true,
   ignorePatterns: [
     "**/w3/**/*.*",
+    "**/infra-modules/**/*.*",
     "**/build/**/*.*",
     "**/__tests__/**/*.*",
     "**/node_modules/**/*.*",

@@ -16,8 +16,6 @@ export async function runCommand(
       stderr: string
     ) => {
       if (err) {
-        console.error(stdout);
-        console.error(stderr);
         reject(err);
       } else {
         if (!quiet) {

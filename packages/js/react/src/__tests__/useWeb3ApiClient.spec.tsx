@@ -8,6 +8,8 @@ import { createPlugins } from "./plugins";
 
 import { PluginRegistration } from "@web3api/core-js";
 import {
+  ensAddresses,
+  providers,
   initTestEnvironment,
   stopTestEnvironment
 } from "@web3api/test-env-js";
@@ -25,13 +27,9 @@ describe("useWeb3ApiClient hook", () => {
   let WrapperProvider: RenderHookOptions<unknown>;
 
   beforeAll(async () => {
-    const {
-      ethereum,
-      ipfs,
-      ensAddress
-    } = await initTestEnvironment();
+    await initTestEnvironment();
 
-    plugins = createPlugins(ensAddress, ethereum, ipfs);
+    plugins = createPlugins(ensAddresses.ensAddress, providers.ethereum, providers.ipfs);
 
     WrapperProvider = {
       wrapper: Web3ApiProvider,

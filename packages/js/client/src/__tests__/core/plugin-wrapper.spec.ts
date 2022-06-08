@@ -22,29 +22,9 @@ const defaultPlugins = [
 ];
 
 describe("plugin-wrapper", () => {
-  let ipfsProvider: string;
-  let ethProvider: string;
-  let ensAddress: string;
-
   const getClient = async (config?: Partial<Web3ApiClientConfig>) => {
     const client = await createWeb3ApiClient(
-      {
-        ethereum: {
-          networks: {
-            testnet: {
-              provider: ethProvider,
-            },
-          },
-        },
-        ipfs: { provider: ipfsProvider },
-        ens: {
-          query: {
-            addresses: {
-              testnet: ensAddress,
-            },
-          },
-        },
-      },
+      {},
       config
     );
 

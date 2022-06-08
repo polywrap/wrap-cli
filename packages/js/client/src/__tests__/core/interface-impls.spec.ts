@@ -1,4 +1,3 @@
-import { initTestEnvironment, stopTestEnvironment } from "@web3api/test-env-js";
 import {
   coreInterfaceUris,
   createWeb3ApiClient,
@@ -12,44 +11,9 @@ import {
 jest.setTimeout(200000);
 
 describe("interface-impls", () => {
-  let ipfsProvider: string;
-  let ethProvider: string;
-  let ensAddress: string;
-
-  beforeAll(async () => {
-    const {
-      ipfs,
-      ethereum,
-      ensAddress: ens,
-    } = await initTestEnvironment();
-    ipfsProvider = ipfs;
-    ethProvider = ethereum;
-    ensAddress = ens;
-  });
-
-  afterAll(async () => {
-    await stopTestEnvironment();
-  });
-
   const getClient = async (config?: Partial<Web3ApiClientConfig>) => {
     const client = await createWeb3ApiClient(
-      {
-        ethereum: {
-          networks: {
-            testnet: {
-              provider: ethProvider,
-            },
-          },
-        },
-        ipfs: { provider: ipfsProvider },
-        ens: {
-          query: {
-            addresses: {
-              testnet: ensAddress,
-            },
-          },
-        },
-      },
+      {},
       config
     );
 

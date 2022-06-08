@@ -6,11 +6,9 @@ import {
   intlMsg,
   getSimpleClient,
   getTestEnvProviders,
-} from "../lib";
-import {
   parseAppManifestFileOption,
   parseAppCodegenDirOption,
-} from "../lib/parsers";
+} from "../lib";
 
 import { Web3ApiClient } from "@web3api/client-js";
 import * as path from "path";
@@ -81,7 +79,7 @@ async function run(options: AppCommandOptions) {
 
   // App project
   const project = new AppProject({
-    rootCacheDir: path.dirname(manifestFile),
+    rootDir: path.dirname(manifestFile),
     appManifestPath: manifestFile,
     client,
   });

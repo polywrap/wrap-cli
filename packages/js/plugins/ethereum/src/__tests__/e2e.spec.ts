@@ -7,13 +7,14 @@ import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
-  buildAndDeployApi,
+  buildApi,
+  ensAddresses,
+  providers
 } from "@web3api/test-env-js";
 import { Wallet } from "ethers";
 
 import { ethers } from "ethers";
 import { keccak256 } from "js-sha3";
-import axios from "axios";
 
 const { hash: namehash } = require("eth-ens-namehash");
 const contracts = {
@@ -31,19 +32,20 @@ jest.setTimeout(360000);
 
 describe("Ethereum Plugin", () => {
   let client: Web3ApiClient;
-  let uri: string;
   let ensAddress: string;
   let resolverAddress: string;
   let registrarAddress: string;
   const signer = "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1";
 
-  beforeAll(async () => {
-    const { ethereum, ipfs } = await initTestEnvironment();
-    const { data } = await axios.get("http://localhost:4040/deploy-ens");
+  const apiPath = `${__dirname}/integration`
+  const uri = `fs/${apiPath}/build`
 
-    ensAddress = data.ensAddress;
-    resolverAddress = data.resolverAddress;
-    registrarAddress = data.registrarAddress;
+  beforeAll(async () => {
+    await initTestEnvironment();
+
+    ensAddress = ensAddresses.ensAddress;
+    resolverAddress = ensAddresses.resolverAddress;
+    registrarAddress = ensAddresses.registrarAddress
 
     client = new Web3ApiClient({
       plugins: [
@@ -52,7 +54,7 @@ describe("Ethereum Plugin", () => {
           plugin: ethereumPlugin({
             networks: {
               testnet: {
-                provider: ethereum,
+                provider: providers.ethereum,
                 signer: new Wallet(
                   "0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d"
                 ),
@@ -64,7 +66,7 @@ describe("Ethereum Plugin", () => {
         {
           uri: "w3://ens/ipfs.web3api.eth",
           plugin: ipfsPlugin({
-            provider: ipfs,
+            provider: providers.ipfs,
             fallbackProviders: defaultIpfsProviders,
           }),
         },
@@ -81,16 +83,7 @@ describe("Ethereum Plugin", () => {
       ],
     });
 
-    const api = await buildAndDeployApi({
-      apiAbsPath: `${__dirname}/integration`,
-      ipfsProvider: ipfs,
-      ensRegistryAddress: ensAddress,
-      ensRegistrarAddress: registrarAddress,
-      ensResolverAddress: resolverAddress,
-      ethereumProvider: ethereum,
-    });
-
-    uri = `ens/testnet/${api.ensDomain}`;
+    await buildApi(apiPath);
   });
 
   afterAll(async () => {
