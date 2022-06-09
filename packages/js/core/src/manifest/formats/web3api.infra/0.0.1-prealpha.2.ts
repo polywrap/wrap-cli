@@ -9,7 +9,7 @@
 export type DefaultModule = "default";
 
 export interface InfraManifest {
-  format: "0.0.1-prealpha.1";
+  format: "0.0.1-prealpha.2";
   dockerCompose?: string;
   env?: {
     /**
