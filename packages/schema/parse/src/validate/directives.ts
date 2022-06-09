@@ -44,7 +44,7 @@ export const getImportsDirectiveValidator = (): SchemaValidator => {
     isInsideObjectTypeDefinition = true;
     const badUsageLocations: string[] = [];
 
-    const importsAllowedObjectTypes = ["Query", "Mutation"];
+    const importsAllowedObjectTypes = ["Module"];
     const directives =
       node.directives &&
       node.directives.map((directive) => directive.name.value);
@@ -59,7 +59,7 @@ export const getImportsDirectiveValidator = (): SchemaValidator => {
 
     if (badUsageLocations.length) {
       throw new Error(
-        `@imports directive should only be used on QUERY or MUTATION type definitions, ` +
+        `@imports directive should only be used on Module type definitions, ` +
           `but it is being used on the following ObjectTypeDefinitions:${badUsageLocations.map(
             (b) => `\n${b}`
           )}`
@@ -79,7 +79,7 @@ export const getImportsDirectiveValidator = (): SchemaValidator => {
 
     if (!isInsideObjectTypeDefinition) {
       throw new Error(
-        `@imports directive should only be used on QUERY or MUTATION type definitions, ` +
+        `@imports directive should only be used on Module type definitions, ` +
           `but it is being used in the following location: ${path.join(" -> ")}`
       );
     }
