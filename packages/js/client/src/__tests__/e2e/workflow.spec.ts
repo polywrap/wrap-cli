@@ -3,6 +3,8 @@ import {
   buildAndDeployApi,
   initTestEnvironment,
   stopTestEnvironment,
+  ensAddresses,
+  providers
 } from "@web3api/test-env-js";
 import { createWeb3ApiClient, Web3ApiClient, Web3ApiClientConfig } from "../..";
 import { outPropWorkflow, sanityWorkflow } from "./workflow-test-cases";
@@ -17,18 +19,12 @@ describe("workflow", () => {
   let ensResolverAddress: string;
 
   beforeAll(async () => {
-    const {
-      ipfs,
-      ethereum,
-      ensAddress: ens,
-      resolverAddress,
-      registrarAddress,
-    } = await initTestEnvironment();
-    ipfsProvider = ipfs;
-    ethProvider = ethereum;
-    ensAddress = ens;
-    ensRegistrarAddress = registrarAddress;
-    ensResolverAddress = resolverAddress;
+    await initTestEnvironment();
+    ipfsProvider = providers.ipfs;
+    ethProvider = providers.ethereum;
+    ensAddress = ensAddresses.ensAddress;
+    ensRegistrarAddress = ensAddresses.registrarAddress;
+    ensResolverAddress = ensAddresses.resolverAddress;
   });
 
   const getClient = async (config?: Partial<Web3ApiClientConfig>) => {
@@ -66,10 +62,7 @@ describe("workflow", () => {
       await buildAndDeployApi({
         apiAbsPath: `${GetPathToTestApis()}/wasm-as/simple-storage`,
         ipfsProvider,
-        ensRegistryAddress: ensAddress,
         ethereumProvider: ethProvider,
-        ensRegistrarAddress,
-        ensResolverAddress,
         ensName: "simple-storage.eth",
       });
 
