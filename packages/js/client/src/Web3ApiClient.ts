@@ -57,21 +57,6 @@ export interface Web3ApiClientConfig<TUri extends Uri | string = string>
   tracingEnabled: boolean;
 }
 
-export interface JobOptions<
-  TData extends Record<string, unknown> = Record<string, unknown>,
-  TUri extends Uri | string = string
-> {
-  id: string;
-  parentId: string;
-  jobs: Job<TUri>;
-
-  onExecution?(
-    id: string,
-    data?: InvokeApiResult<TData>["data"],
-    error?: InvokeApiResult<TData>["error"]
-  ): MaybeAsync<void>;
-}
-
 export class Web3ApiClient implements Client {
   // TODO: the API cache needs to be more like a routing table.
   // It should help us keep track of what URI's map to what APIs,
