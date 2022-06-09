@@ -13,10 +13,6 @@ import { bindSchema, BindOutput } from "@web3api/schema-bind";
 import { TypeInfo } from "@web3api/schema-parse";
 import path from "path";
 
-const cacheLayout = {
-  root: "app",
-};
-
 export interface AppProjectConfig extends ProjectConfig {
   appManifestPath: string;
   client: Client;
@@ -25,15 +21,22 @@ export interface AppProjectConfig extends ProjectConfig {
 export class AppProject extends Project<AppManifest> {
   private _appManifest: AppManifest | undefined;
 
+  public static cacheLayout = {
+    root: "app",
+  };
+
   constructor(protected _config: AppProjectConfig) {
-    super(_config, cacheLayout.root);
+    super(_config, {
+      rootDir: _config.rootDir,
+      subDir: AppProject.cacheLayout.root,
+    });
   }
 
   /// Project Based Methods
 
   public reset(): void {
     this._appManifest = undefined;
-    this.resetCache();
+    this._cache.resetCache();
   }
 
   public async validate(): Promise<void> {

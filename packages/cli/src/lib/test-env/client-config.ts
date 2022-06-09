@@ -8,7 +8,7 @@ import {
 import { ensPlugin } from "@web3api/ens-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
-import axios from "axios";
+import { ensAddresses } from "@web3api/test-env-js";
 
 export async function getTestEnvClientConfig(): Promise<
   Partial<Web3ApiClientConfig>
@@ -21,9 +21,7 @@ export async function getTestEnvClientConfig(): Promise<
     throw Error("Test environment not found.");
   }
 
-  const {
-    data: { ensAddress },
-  } = await axios.get("http://localhost:4040/ens");
+  const ensAddress = ensAddresses.ensAddress;
 
   // TODO: move this into its own package, since it's being used everywhere?
   // maybe have it exported from test-env.

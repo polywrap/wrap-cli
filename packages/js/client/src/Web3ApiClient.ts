@@ -47,8 +47,6 @@ import {
   JobRunner,
   PluginPackage,
   RunOptions,
-  MaybeAsync,
-  Job,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
