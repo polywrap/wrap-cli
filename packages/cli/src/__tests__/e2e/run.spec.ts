@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import yaml from "js-yaml";
 
-import { parseOutput, w3Cli } from "./utils";
+import { clearStyle, parseOutput, w3Cli } from "./utils";
 
 import {
   buildAndDeployApi,
@@ -42,7 +42,7 @@ describe("sanity tests for workflow command", () => {
 
     expect(code).toEqual(0);
     expect(error).toBe("");
-    expect(output).toEqual(HELP);
+    expect(clearStyle(output)).toEqual(HELP);
   });
 
   test("Should throw error for missing workflow-string", async () => {
