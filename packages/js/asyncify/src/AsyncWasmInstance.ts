@@ -156,28 +156,40 @@ export class AsyncWasmInstance {
   }
 
   private _wrapImports(imports: WasmImports): WasmImports {
-    return proxyGet(imports, (moduleImports: WasmModuleImports | undefined, name: string) => {
-      if (!moduleImports) {
-        throw Error(
-          `Unsupported wasm import namespace requested: ${name}; Supported wasm import namespaces: ${Object.keys(imports).join(", ")}`
-        );
+    return proxyGet(
+      imports,
+      (moduleImports: WasmModuleImports | undefined, name: string) => {
+        if (!moduleImports) {
+          throw Error(
+            `Unsupported wasm import namespace requested: "${name}"; ` +
+              `Supported wasm import namespaces: ${Object.keys(imports)
+                .map((x) => `"${x}"`)
+                .join(", ")}`
+          );
+        }
+        this._wrapModuleImports(moduleImports);
       }
-      this._wrapModuleImports(moduleImports)
-    });
+    );
   }
 
   private _wrapModuleImports(imports: WasmModuleImports) {
-    return proxyGet(imports, (importValue: WasmImportValue | undefined, name: string) => {
-      if (!importValue) {
-        throw Error(
-          `Unsupported wasm import requested: ${name}; Supported wasm imports: ${Object.keys(imports).join(", ")}`
-        );
+    return proxyGet(
+      imports,
+      (importValue: WasmImportValue | undefined, name: string) => {
+        if (!importValue) {
+          throw Error(
+            `Unsupported wasm import requested: "${name}"; ` +
+              `Supported wasm imports: ${Object.keys(imports)
+                .map((x) => `"${x}"`)
+                .join(", ")}`
+          );
+        }
+        if (typeof importValue === "function") {
+          return this._wrapImportFn(importValue);
+        }
+        return importValue;
       }
-      if (typeof importValue === "function") {
-        return this._wrapImportFn(importValue);
-      }
-      return importValue;
-    });
+    );
   }
 
   private _wrapImportFn(fn: Function) {
