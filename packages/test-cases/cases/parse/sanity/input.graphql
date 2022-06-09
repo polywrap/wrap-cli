@@ -112,24 +112,14 @@ type UserObjectFromInterface implements UserObject {
   fieldC: UInt32!
 }
 
-type QueryEnv {
+type Env {
   prop: String!
+  propM: Int!
 }
 
-type QueryClientEnv {
+type ClientEnv {
   prop: String!
-}
-
-type MutationEnv {
-  prop: Int!
-}
-
-type MutationClientEnv {
-  prop: String
-}
-
-type Mutation {
-  sanitizeEnv(env: MutationClientEnv!): MutationEnv!
+  propM: String
 }
 
 """
@@ -148,14 +138,14 @@ anotherProp comment
 """
 Query comment
 """
-type Query implements Interface_Query @imports(
-  types: [ "TestImport_Query", "Interface_Query" ]
+type Module implements Interface_Module @imports(
+  types: [ "TestImport_Module", "Interface_Module" ]
 ) @capability(
   type: "getImplementations",
   uri: "testimport.uri.eth",
   namespace: "TestImport",
 ) {
-  sanitizeEnv(env: QueryClientEnv!): QueryEnv!
+  sanitizeEnv(env: ClientEnv!): Env!
 """
 queryMethod comment
 """
@@ -204,12 +194,12 @@ abstractMethod comment
 }
 
 """
-TestImport_Query comment
+TestImport_Module comment
 """
-type TestImport_Query @imported(
+type TestImport_Module @imported(
   uri: "testimport.uri.eth",
   namespace: "TestImport",
-  nativeType: "Query"
+  nativeType: "Module"
 ) @enabled_interface {
 """
 importedMethod comment
@@ -240,12 +230,12 @@ uArrayArray comment
 }
 
 """
-TestImport_Mutation comment
+TestImport_Module comment
 """
-type TestImport_Mutation @imported(
+type TestImport_Module @imported(
   uri: "testimport.uri.eth",
   namespace: "TestImport",
-  nativeType: "Mutation"
+  nativeType: "Module"
 ) {
 """
 importedMethod comment
@@ -304,12 +294,12 @@ enum TestImport_Enum @imported(
 }
 
 """
-Interface_Query comment
+Interface_Module comment
 """
-type Interface_Query @imported(
+type Interface_Module @imported(
   uri: "interface.uri.eth",
   namespace: "Interface",
-  nativeType: "Query"
+  nativeType: "Module"
 ) {
 """
 abstractMethod comment

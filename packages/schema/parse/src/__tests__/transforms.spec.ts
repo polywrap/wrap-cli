@@ -131,11 +131,12 @@ describe("Web3API Schema TypeInfo Transformations", () => {
       ],
       moduleType: 
         {
-          ...createModuleDefinition({ }),
+          ...createModuleDefinition({
+            type: "Module"
+          }),
           methods: [
             {
               ...createMethodDefinition({
-                type: "query",
                 name: "method1",
                 arguments: [
                   {
@@ -172,7 +173,6 @@ describe("Web3API Schema TypeInfo Transformations", () => {
               last: null
             } as MethodDefinition,
             createMethodDefinition({
-              type: "query",
               name: "method2",
               arguments: [
                 {
@@ -192,7 +192,6 @@ describe("Web3API Schema TypeInfo Transformations", () => {
             }),
             {
               ...createMethodDefinition({
-                type: "query",
                 name: "method3",
                 arguments: [
                   {
@@ -214,8 +213,7 @@ describe("Web3API Schema TypeInfo Transformations", () => {
             } as MethodDefinition,
             {
               ...createMethodDefinition({
-                type: "mutation",
-                name: "method1",
+                name: "method3",
                 arguments: [
                   {
                     ...createScalarPropertyDefinition({
@@ -258,14 +256,13 @@ describe("Web3API Schema TypeInfo Transformations", () => {
           ...createImportedModuleDefinition({
             uri: "testimport.uri.eth",
             namespace: "TestImport",
-            nativeType: "Query",
+            nativeType: "Module",
             isInterface: false,
-            type: "TestImport_Query"
+            type: "TestImport_Module"
           }),
           methods: [
             {
               ...createMethodDefinition({
-                type: "query",
                 name: "importedMethod",
                 arguments: [
                   {
@@ -289,7 +286,6 @@ describe("Web3API Schema TypeInfo Transformations", () => {
             } as MethodDefinition,
             {
               ...createMethodDefinition({
-                type: "query",
                 name: "anotherMethod",
                 arguments: [
                   {
@@ -372,7 +368,9 @@ describe("Web3API Schema TypeInfo Transformations", () => {
           foo: "bar",
         } as ObjectDefinition,
       ],
-      moduleType: createModuleDefinition({}),
+      moduleType: createModuleDefinition({
+        type: "Module"
+      }),
       importedObjectTypes: [],
       importedModuleTypes: [],
     };
