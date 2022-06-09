@@ -1,0 +1,5 @@
+format: 0.0.1-prealpha.2
+modules:
+  eth-ens-ipfs: default
+  mainnet-fork:
+    path: ./mainnet-fork
