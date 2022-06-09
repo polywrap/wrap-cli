@@ -156,13 +156,23 @@ export class AsyncWasmInstance {
   }
 
   private _wrapImports(imports: WasmImports): WasmImports {
-    return proxyGet(imports, (moduleImports: WasmModuleImports) =>
+    return proxyGet(imports, (moduleImports: WasmModuleImports | undefined, name: string) => {
+      if (!moduleImports) {
+        throw Error(
+          `Unsupported import namespace requested: ${name}; Supported import namespaces: ${Object.keys(imports).join(", ")}`
+        );
+      }
       this._wrapModuleImports(moduleImports)
-    );
+    });
   }
 
   private _wrapModuleImports(imports: WasmModuleImports) {
-    return proxyGet(imports, (importValue: WasmImportValue) => {
+    return proxyGet(imports, (importValue: WasmImportValue | undefined, name: string) => {
+      if (!importValue) {
+        throw Error(
+          `Unsupported import requested: ${name}; Supported imports: ${Object.keys(imports).join(", ")}`
+        );
+      }
       if (typeof importValue === "function") {
         return this._wrapImportFn(importValue);
       }
