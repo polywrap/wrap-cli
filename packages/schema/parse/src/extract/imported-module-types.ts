@@ -43,6 +43,7 @@ const visitorEnter = (
     const isInterface = dir ? true : false;
 
     const importedType = createImportedModuleDefinition({
+      type: node.name.value,
       uri: imported.uri,
       namespace: imported.namespace,
       nativeType: imported.nativeType,
@@ -76,7 +77,6 @@ const visitorEnter = (
     });
 
     const method = createMethodDefinition({
-      type: importDef.nativeType,
       name: node.name.value,
       return: returnType,
       comment: node.description?.value,

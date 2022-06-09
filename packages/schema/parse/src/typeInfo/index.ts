@@ -16,7 +16,6 @@ import {
 
 export * from "./definitions";
 export * from "./scalar";
-export * from "./operation";
 export * from "./module";
 export * from "./env";
 export * from "./map";
@@ -36,7 +35,9 @@ export function createTypeInfo(): TypeInfo {
   return {
     objectTypes: [],
     enumTypes: [],
-    moduleType: createModuleDefinition({}),
+    moduleType: createModuleDefinition({
+      type: "",
+    }),
     interfaceTypes: [],
     importedObjectTypes: [],
     importedModuleTypes: [],
@@ -50,7 +51,9 @@ type ImportedDefinition = ImportedObjectDefinition | ImportedModuleDefinition;
 export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
   const combined: TypeInfo = {
     objectTypes: [],
-    moduleType: createModuleDefinition({}),
+    moduleType: createModuleDefinition({
+      type: "",
+    }),
     enumTypes: [],
     interfaceTypes: [],
     importedObjectTypes: [],

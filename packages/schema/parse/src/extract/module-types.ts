@@ -46,6 +46,7 @@ const visitorEnter = (state: State) => ({
     state.currentInterfaces = interfaces;
 
     const module = createModuleDefinition({
+      type: nodeName,
       imports,
       interfaces: node.interfaces?.map((x) =>
         createInterfaceImplementedDefinition({ type: x.name.value })
@@ -76,7 +77,6 @@ const visitorEnter = (state: State) => ({
     });
 
     const method = createMethodDefinition({
-      type: module.type,
       name: node.name.value,
       return: returnType,
       comment: node.description?.value,

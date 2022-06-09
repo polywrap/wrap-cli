@@ -1,4 +1,4 @@
-import { ImportedDefinition } from "../../typeInfo";
+import { ImportedDefinition, MODULE_NAME } from "../../typeInfo";
 
 import { DirectiveNode, TypeDefinitionNode } from "graphql";
 
@@ -22,8 +22,8 @@ export function extractImportedDefinition(
   const typeName = node.name.value;
 
   if (
-    (moduleTypes && typeName !== "Module") ||
-    (!moduleTypes && typeName === "Module")
+    (moduleTypes && typeName !== MODULE_NAME) ||
+    (!moduleTypes && typeName === MODULE_NAME)
   ) {
     return undefined;
   }
