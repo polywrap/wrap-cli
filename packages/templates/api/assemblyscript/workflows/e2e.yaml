@@ -14,9 +14,8 @@ jobs:
           module: mutation
           method: setData
           input:
-            options:
-              address: "$cases.0.data"
-              value: 100
+            address: "$cases.0.data"
+            value: 100
             connection: null
         - uri: fs/build
           module: query
