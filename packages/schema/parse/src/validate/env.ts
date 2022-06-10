@@ -4,16 +4,6 @@ export function validateEnv(info: TypeInfo): void {
   if (info.envType.client) {
     validateClientEnvironment(
       info,
-      "Query",
-      info.envType.client,
-      info.envType.sanitized
-    );
-  }
-
-  if (info.envType.client) {
-    validateClientEnvironment(
-      info,
-      "Mutation",
       info.envType.client,
       info.envType.sanitized
     );
@@ -22,7 +12,6 @@ export function validateEnv(info: TypeInfo): void {
 
 export function validateClientEnvironment(
   info: TypeInfo,
-  module: "Mutation" | "Query",
   client: ObjectDefinition,
   sanitized?: ObjectDefinition
 ): void {
@@ -32,11 +21,12 @@ export function validateClientEnvironment(
     );
   }
 
-  const moduleObject = info.moduleType;
+  console.log(info.moduleType);
 
-  const sanitizeEnvMethod = moduleObject.methods.find(
+  const sanitizeEnvMethod = info.moduleType.methods.find(
     (method) => method.name === "sanitizeEnv"
   );
+
   if (!sanitizeEnvMethod) {
     throw new Error(
       `Must have 'sanitizeEnv' method inside module methods when using '${client.type}'`

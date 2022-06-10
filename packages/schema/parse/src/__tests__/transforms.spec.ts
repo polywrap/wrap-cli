@@ -26,7 +26,7 @@ type AnotherType {
   prop: String!
 }
 
-type Query {
+type Module {
   method1(
     arg1: String!
     arg2: String
@@ -42,18 +42,10 @@ type Query {
   ): Boolean
 }
 
-type Mutation {
-  method1(
-    arg1: String!
-    arg2: String
-    arg3: Boolean
-  ): String!
-}
-
-type TestImport_Query @imported(
+type TestImport_Module @imported(
   uri: "testimport.uri.eth",
   namespace: "TestImport",
-  nativeType: "Query"
+  nativeType: "Module"
 ) {
   importedMethod(
     str: String!

@@ -115,7 +115,7 @@ const visitorLeave = (state: State) => ({
   },
 });
 
-export const getimportedModuleTypesVisitor = (
+export const getImportedModuleTypesVisitor = (
   typeInfo: TypeInfo
 ): ASTVisitor => {
   const state: State = {};

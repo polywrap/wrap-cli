@@ -20,10 +20,11 @@ export function extractImportedDefinition(
   }
 
   const typeName = node.name.value;
+  const moduleIdentifier = `_${MODULE_NAME}`;
 
   if (
-    (moduleTypes && typeName !== MODULE_NAME) ||
-    (!moduleTypes && typeName === MODULE_NAME)
+    (moduleTypes && !typeName.endsWith(moduleIdentifier)) ||
+    (!moduleTypes && typeName.endsWith(moduleIdentifier))
   ) {
     return undefined;
   }

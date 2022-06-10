@@ -298,7 +298,7 @@ describe("Web3API Schema Type Validation", () => {
     );
 
     expect(exec(propertyTypes7)).toThrow(
-      /Methods can only be defined on module types \(Module\)\.\nFound: type Queryy { method\(prop\) }/gm
+      /Methods can only be defined on module types \(Module\)\.\nFound: type Modul { method\(prop\) }/gm
     );
   })
 

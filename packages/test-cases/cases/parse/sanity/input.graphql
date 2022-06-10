@@ -230,25 +230,6 @@ uArrayArray comment
 }
 
 """
-TestImport_Module comment
-"""
-type TestImport_Module @imported(
-  uri: "testimport.uri.eth",
-  namespace: "TestImport",
-  nativeType: "Module"
-) {
-"""
-importedMethod comment
-"""
-  importedMethod(
-"""
-str comment
-"""
-    str: String!
-  ): String!
-}
-
-"""
 TestImport_Object comment
 """
 type TestImport_Object @imported(
