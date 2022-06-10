@@ -35,20 +35,7 @@ directive @annotate(type: String!) on FIELD
 
 ### Web3API Header END ###
 
-type Query {
-  method1(
-    str: String!
-    optStr: String
-    u: UInt!
-    uArrayArray: [[UInt]]!
-  ): String!
-
-  method2(
-    arg: [String!]!
-  ): [Int32!]!
-}
-
-type Mutation {
+type Module {
   method1(
     str: String!
     optStr: String
@@ -94,26 +81,6 @@ type NestedType {
 
 type ArrayObject {
   prop: String!
-}
-
-type CustomMutationType {
-  str: String!
-  optStr: String
-  u: UInt!
-  optU: UInt
-  u8: UInt8!
-  i: Int!
-  i8: Int8!
-  bytes: Bytes!
-  uArray: [UInt!]!
-  uOptArray: [UInt!]
-  optStrOptArray: [String]
-  crazyArray: [[[[UInt32!]]!]]
-  commonType: CommonType!
-}
-
-type AnotherMutationType {
-  prop: String
 }
 
 enum CommonEnum {

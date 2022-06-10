@@ -35,14 +35,8 @@ describe("Web3API Schema Composer Test Cases", () => {
       const result = await composeSchema(testCase.input);
       removeFunctionProps(result);
 
-      if (testCase.output.query) {
-        expect(result.query).toMatchObject(testCase.output.query);
-      }
-      if (testCase.output.mutation) {
-        expect(result.mutation).toEqual(testCase.output.mutation);
-      }
-      if (testCase.output.combined) {
-        expect(result.combined).toEqual(testCase.output.combined);
+      if (testCase.output.module) {
+        expect(result.module).toMatchObject(testCase.output.module);
       }
     });
   }

@@ -139,9 +139,8 @@ export const typeInfo: TypeInfo = {
       ]
     }
   ],
-  moduleTypes: [
-    {
-      ...createModuleDefinition({ type: "Query" }),
+  moduleType: {
+      ...createModuleDefinition({ type: "Module" }),
       methods: [
         {
           ...createMethodDefinition({
@@ -213,8 +212,7 @@ export const typeInfo: TypeInfo = {
           ]
         }
       ]
-    }
-  ],
+    },
   enumTypes: [
     createEnumDefinition({
       type: "CommonEnum",

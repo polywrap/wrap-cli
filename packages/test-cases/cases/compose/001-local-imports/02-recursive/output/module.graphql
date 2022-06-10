@@ -35,11 +35,7 @@ directive @annotate(type: String!) on FIELD
 
 ### Web3API Header END ###
 
-type Query {
-  method: TypeA
-}
-
-type Mutation {
+type Module {
   method: TypeA
 }
 
@@ -47,8 +43,12 @@ type TypeA {
   prop: TypeB
 }
 
-type TypeB {
+type TypeC {
   prop: String
+}
+
+type TypeB {
+  prop: TypeC
 }
 
 ### Imported Queries START ###

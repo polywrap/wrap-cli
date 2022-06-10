@@ -24,7 +24,7 @@ export const typeInfo: TypeInfo = {
     },
     {
       ...createObjectDefinition({
-        type: "TypeC",
+        type: "TypeB",
       }),
       properties: [
         createScalarPropertyDefinition({
@@ -33,21 +33,10 @@ export const typeInfo: TypeInfo = {
         }),
       ],
     },
-    {
-      ...createObjectDefinition({
-        type: "TypeB",
-      }),
-      properties: [
-        createObjectPropertyDefinition({
-          name: "prop",
-          type: "TypeC",
-        }),
-      ],
-    },
   ],
-  moduleTypes: [
+  moduleType:
     {
-      ...createModuleDefinition(),
+      ...createModuleDefinition({ type: "Module" }),
       imports: [],
       interfaces: [],
       methods: [
@@ -64,5 +53,4 @@ export const typeInfo: TypeInfo = {
         },
       ],
     },
-  ],
 };

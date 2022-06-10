@@ -70,16 +70,11 @@ async function importCase(
   name: string,
 ): Promise<TestCase | undefined> {
   // Fetch the input schemas
-  const queryInput = readFileIfExists("input/query.graphql", directory);
-  const mutationInput = readFileIfExists("input/mutation.graphql", directory);
+  const moduleInput = readFileIfExists("input/module.graphql", directory);
 
   // Fetch the output schemas
-  const querySchema = readFileIfExists("output/query.graphql", directory);
-  const ModuleTypeInfo = await readNamedExportIfExists<TypeInfo>("typeInfo", "output/query.ts", directory);
-  const mutationSchema = readFileIfExists("output/mutation.graphql", directory);
-  const mutationTypeInfo = await readNamedExportIfExists<TypeInfo>("typeInfo", "output/mutation.ts", directory);
-  const schemaSchema = readFileIfExists("output/schema.graphql", directory);
-  const schemaTypeInfo = await readNamedExportIfExists<TypeInfo>("typeInfo", "output/schema.ts", directory);
+  const moduleSchema = readFileIfExists("output/module.graphql", directory);
+  const ModuleTypeInfo = await readNamedExportIfExists<TypeInfo>("typeInfo", "output/module.ts", directory);
 
   const resolveExternal = (uri: string): Promise<string> => {
     return Promise.resolve(readFileIfExists(`imports-ext/${uri}/schema.graphql`, directory) || "");
@@ -98,22 +93,12 @@ async function importCase(
     output: ComposerFilter.All
   };
 
-  if (queryInput) {
-    input.schemas.query = {
-      schema: queryInput,
+  if (moduleInput) {
+    input.schemas.module = {
+      schema: moduleInput,
       absolutePath: path.join(
         directory,
-        "input/query.graphql"
-      ),
-    };
-  }
-
-  if (mutationInput) {
-    input.schemas.mutation = {
-      schema: mutationInput,
-      absolutePath: path.join(
-        directory,
-        "input/mutation.graphql"
+        "input/module.graphql"
       ),
     };
   }
@@ -122,26 +107,15 @@ async function importCase(
     combined: {}
   };
 
-  if (querySchema && ModuleTypeInfo) {
-    output.query = {
-      schema: querySchema,
+  if (moduleSchema && ModuleTypeInfo) {
+    output.module = {
+      schema: moduleSchema,
       typeInfo: ModuleTypeInfo
     };
   }
 
-  if (mutationSchema && mutationTypeInfo) {
-    output.mutation = {
-      schema: mutationSchema,
-      typeInfo: mutationTypeInfo
-    };
-  }
-
-  if (schemaSchema && schemaTypeInfo) {
-    output.combined = {
-      schema: schemaSchema,
-      typeInfo: schemaTypeInfo
-    };
-  }
+  console.log(input);
+  console.log(output)
 
   return {
     name,

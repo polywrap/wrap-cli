@@ -51,7 +51,7 @@ export async function composeSchema(
       kind,
       resolvers
     );
-    resolveEnvTypes(typeInfos[kind] as TypeInfo, kind);
+    resolveEnvTypes(typeInfos[kind] as TypeInfo);
   }
 
   // Forming our output structure for the caller
