@@ -136,7 +136,7 @@ anotherProp comment
 }
 
 """
-Query comment
+Module comment
 """
 type Module implements Interface_Module @imports(
   types: [ "TestImport_Module", "Interface_Module" ]

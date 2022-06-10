@@ -140,11 +140,15 @@ describe("Web3API Schema TypeInfo Transformations", () => {
                     first: true,
                     last: null
                   } as PropertyDefinition,
-                  createScalarPropertyDefinition({
-                    type: "String",
-                    name: "arg2",
-                    required: false,
-                  }),
+                  {
+                    ...createScalarPropertyDefinition({
+                      type: "String",
+                      name: "arg2",
+                      required: false,
+                    }),
+                    first: null,
+                    last: null
+                  } as PropertyDefinition,
                   {
                     ...createScalarPropertyDefinition({
                       type: "Boolean",
@@ -164,24 +168,28 @@ describe("Web3API Schema TypeInfo Transformations", () => {
               first: true,
               last: null
             } as MethodDefinition,
-            createMethodDefinition({
-              name: "method2",
-              arguments: [
-                {
-                  ...createScalarPropertyDefinition({
-                    type: "String",
-                    name: "arg1",
-                    required: true,
-                  }),
-                  first: true,
-                  last: true
-                } as PropertyDefinition,
-              ],
-              return: createScalarPropertyDefinition({
-                type: "String",
-                name: "method2"
-              })
-            }),
+            {
+              ...createMethodDefinition({
+                name: "method2",
+                arguments: [
+                  {
+                    ...createScalarPropertyDefinition({
+                      type: "String",
+                      name: "arg1",
+                      required: true,
+                    }),
+                    first: true,
+                    last: true
+                  } as PropertyDefinition,
+                ],
+                return: createScalarPropertyDefinition({
+                  type: "String",
+                  name: "method2"
+                })
+              }),
+              first: null,
+              last: null
+            },
             {
               ...createMethodDefinition({
                 name: "method3",
@@ -202,44 +210,9 @@ describe("Web3API Schema TypeInfo Transformations", () => {
                   required: false
                 })
               }),
-            } as MethodDefinition,
-            {
-              ...createMethodDefinition({
-                name: "method3",
-                arguments: [
-                  {
-                    ...createScalarPropertyDefinition({
-                      type: "String",
-                      name: "arg1",
-                      required: true,
-                    }),
-                    first: true,
-                    last: null
-                  } as PropertyDefinition,
-                  createScalarPropertyDefinition({
-                    type: "String",
-                    name: "arg2",
-                    required: false,
-                  }),
-                  {
-                    ...createScalarPropertyDefinition({
-                      type: "Boolean",
-                      name: "arg3",
-                      required: false,
-                    }),
-                    first: null,
-                    last: true
-                  } as PropertyDefinition,
-                ],
-                return: createScalarPropertyDefinition({
-                  type: "String",
-                  name: "method1",
-                  required: true
-                })
-              }),
               first: null,
               last: true
-            }
+            } as MethodDefinition,
           ],
         } as ModuleDefinition,
       importedObjectTypes: [],
