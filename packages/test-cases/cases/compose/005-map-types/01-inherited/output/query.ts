@@ -99,7 +99,6 @@ export const typeInfo: TypeInfo = {
       methods: [
         {
           ...createMethodDefinition({
-            type: "query",
             name: "method",
             return: createMapPropertyDefinition({
               name: "method",

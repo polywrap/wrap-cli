@@ -24,7 +24,6 @@ export const typeInfo: TypeInfo = {
       methods: [
         {
           ...createMethodDefinition({
-            type: "mutation",
             name: "updateMap",
             return: createMapPropertyDefinition({
               name: "updateMap",
@@ -75,7 +74,6 @@ export const typeInfo: TypeInfo = {
       methods: [
         {
           ...createMethodDefinition({
-            type: "mutation",
             name: "updateMap",
             return: createMapPropertyDefinition({
               name: "updateMap",

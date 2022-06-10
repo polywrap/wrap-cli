@@ -123,9 +123,7 @@ describe("Web3API Schema TypeInfo Transformations", () => {
       ],
       moduleType: 
         {
-          ...createModuleDefinition({
-            type: "Module"
-          }),
+          ...createModuleDefinition(),
           methods: [
             {
               ...createMethodDefinition({
@@ -333,9 +331,7 @@ describe("Web3API Schema TypeInfo Transformations", () => {
           foo: "bar",
         } as ObjectDefinition,
       ],
-      moduleType: createModuleDefinition({
-        type: "Module"
-      }),
+      moduleType: createModuleDefinition(),
       importedObjectTypes: [],
       importedModuleTypes: [],
     };

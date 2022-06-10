@@ -450,7 +450,6 @@ export const typeInfo: TypeInfo = {
   moduleType: 
     {
       ...createModuleDefinition({
-        type: "Module",
         imports: [{ type: "TestImport_Module" }, { type: "Interface_Module" }],
         interfaces: [
           createInterfaceImplementedDefinition({ type: "Interface_Module" }),

@@ -394,9 +394,8 @@ export function createMethodDefinition(args: {
 }): MethodDefinition {
   return {
     ...createGenericDefinition({
-      // TODO: check this
       ...args,
-      type: "query",
+      type: "Method",
     }),
     required: true,
     arguments: args.arguments ? args.arguments : [],
@@ -412,14 +411,16 @@ export interface ModuleDefinition extends GenericDefinition, WithComment {
   interfaces: InterfaceImplementedDefinition[];
 }
 export function createModuleDefinition(args: {
-  type: string;
   imports?: { type: string }[];
   interfaces?: InterfaceImplementedDefinition[];
   required?: boolean;
   comment?: string;
 }): ModuleDefinition {
   return {
-    ...createGenericDefinition(args),
+    ...createGenericDefinition({
+      ...args,
+      type: "Module",
+    }),
     methods: [],
     imports: args.imports ? args.imports : [],
     interfaces: args.interfaces ? args.interfaces : [],
@@ -506,7 +507,6 @@ export interface ImportedModuleDefinition
   isInterface?: boolean;
 }
 export function createImportedModuleDefinition(args: {
-  type: string;
   required?: boolean;
   uri: string;
   namespace: string;
@@ -522,7 +522,10 @@ export function createImportedModuleDefinition(args: {
   }
 
   return {
-    ...createGenericDefinition(args),
+    ...createGenericDefinition({
+      ...args,
+      type: "ImportedModule",
+    }),
     methods: [],
     uri: args.uri,
     namespace: args.namespace,

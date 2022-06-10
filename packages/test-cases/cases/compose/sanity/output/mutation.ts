@@ -68,7 +68,6 @@ export const typeInfo: TypeInfo = {
       methods: [
         {
           ...createMethodDefinition({
-            type: "mutation",
             name: "method1",
             return: createScalarPropertyDefinition({
               name: "method1",
@@ -121,7 +120,6 @@ export const typeInfo: TypeInfo = {
         },
         {
           ...createMethodDefinition({
-            type: "mutation",
             name: "method2",
             return: createArrayPropertyDefinition({
               name: "method2",
@@ -149,7 +147,6 @@ export const typeInfo: TypeInfo = {
         },
         {
           ...createMethodDefinition({
-            type: "mutation",
             name: "abstractMutationMethod",
             return: createScalarPropertyDefinition({
               name: "abstractMutationMethod",
@@ -338,7 +335,6 @@ export const typeInfo: TypeInfo = {
       methods: [
         {
           ...createMethodDefinition({
-            type: "query",
             name: "method1",
             return: createScalarPropertyDefinition({
               name: "method1",
@@ -386,7 +382,6 @@ export const typeInfo: TypeInfo = {
         },
         {
           ...createMethodDefinition({
-            type: "query",
             name: "method2",
             comment: "method2 comment",
             return: createArrayPropertyDefinition({
@@ -428,7 +423,6 @@ export const typeInfo: TypeInfo = {
       methods: [
         {
           ...createMethodDefinition({
-            type: "mutation",
             name: "method1",
             return: createScalarPropertyDefinition({
               name: "method1",
@@ -476,7 +470,6 @@ export const typeInfo: TypeInfo = {
         },
         {
           ...createMethodDefinition({
-            type: "mutation",
             name: "method2",
             return: createArrayPropertyDefinition({
               name: "method2",
@@ -504,7 +497,6 @@ export const typeInfo: TypeInfo = {
         },
         {
           ...createMethodDefinition({
-            type: "mutation",
             name: "localObjects",
             return: createObjectPropertyDefinition({
               name: "localObjects",
@@ -532,7 +524,6 @@ export const typeInfo: TypeInfo = {
         },
         {
           ...createMethodDefinition({
-            type: "mutation",
             name: "importedObjects",
             return: createObjectPropertyDefinition({
               name: "importedObjects",
@@ -571,7 +562,6 @@ export const typeInfo: TypeInfo = {
       methods: [
         {
           ...createMethodDefinition({
-            type: "mutation",
             name: "method",
             return: createArrayPropertyDefinition({
               name: "method",
@@ -611,7 +601,6 @@ export const typeInfo: TypeInfo = {
       methods: [
         {
           ...createMethodDefinition({
-            type: "mutation",
             name: "abstractMutationMethod",
             return: createScalarPropertyDefinition({
               name: "abstractMutationMethod",

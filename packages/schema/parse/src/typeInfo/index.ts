@@ -35,9 +35,7 @@ export function createTypeInfo(): TypeInfo {
   return {
     objectTypes: [],
     enumTypes: [],
-    moduleType: createModuleDefinition({
-      type: "Module",
-    }),
+    moduleType: createModuleDefinition(),
     interfaceTypes: [],
     importedObjectTypes: [],
     importedModuleTypes: [],
@@ -51,9 +49,7 @@ type ImportedDefinition = ImportedObjectDefinition | ImportedModuleDefinition;
 export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
   const combined: TypeInfo = {
     objectTypes: [],
-    moduleType: createModuleDefinition({
-      type: "Module",
-    }),
+    moduleType: createModuleDefinition(),
     enumTypes: [],
     interfaceTypes: [],
     importedObjectTypes: [],

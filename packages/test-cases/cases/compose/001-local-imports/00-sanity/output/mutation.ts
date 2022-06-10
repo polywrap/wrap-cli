@@ -22,7 +22,6 @@ export const typeInfo: TypeInfo = {
       methods: [
         {
           ...createMethodDefinition({
-            type: "mutation",
             name: "method1",
             return: createScalarPropertyDefinition({
               name: "method1",
@@ -65,7 +64,6 @@ export const typeInfo: TypeInfo = {
         },
         {
           ...createMethodDefinition({
-            type: "mutation",
             name: "method2",
             return: createArrayPropertyDefinition({
               name: "method2",
