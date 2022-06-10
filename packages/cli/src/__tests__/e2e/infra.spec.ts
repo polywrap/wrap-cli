@@ -243,6 +243,24 @@ describe("e2e tests for infra command", () => {
       );
     });
 
+    test("Should correctly fetch different local modules when they are declared as folder or file", async () => {
+      await runW3CLI(
+        ["infra", "up"],
+        getTestCaseDir(4),
+      );
+
+      await waitForPorts([
+        { port: 5001, expected: true },
+        { port: 8546, expected: true },
+        { port: 8547, expected: true },
+      ]);
+
+      await runW3CLI(
+        ["infra", "down"],
+        getTestCaseDir(4),
+      );
+    });
+
     test("Tears down environment", async () => {
       await runW3CLI(
         ["infra", "up"],

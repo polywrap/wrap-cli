@@ -8,7 +8,7 @@ import {
 
 import { InfraManifest } from "@web3api/core-js";
 import path from "path";
-import fs, { readdirSync } from "fs";
+import fs, { lstatSync, readdirSync } from "fs";
 import YAML from "js-yaml";
 import { copySync } from "fs-extra";
 
@@ -336,10 +336,12 @@ export class Infra {
     const basePath = path.join(this.getCacheModulesPath(), "local");
 
     for (const module of modules) {
-      const modulePath = path.join(basePath, module.name);
-
+      const isFile = lstatSync(module.path).isFile();
+      const modulePath = path.join(
+        basePath,
+        isFile ? module.path : module.name
+      );
       copySync(module.path, modulePath);
-
       const composePath = this.tryResolveComposeFile(
         modulePath,
         this._defaultModuleComposePaths
@@ -384,7 +386,9 @@ export class Infra {
       );
     }
 
-    const pathToTry = path.join(moduleDir, pathsToTry[0]);
+    const pathToTry = lstatSync(moduleDir).isFile()
+      ? moduleDir
+      : path.join(moduleDir, pathsToTry[0]);
 
     if (fs.existsSync(pathToTry)) {
       return pathToTry;
