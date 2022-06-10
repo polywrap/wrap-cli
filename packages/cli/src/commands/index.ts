@@ -5,4 +5,4 @@ export * from "./create";
 export * from "./deploy";
 export * from "./plugin";
 export * from "./query";
-export * from "./test-env";
+export * from "./infra";

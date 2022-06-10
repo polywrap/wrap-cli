@@ -4,7 +4,6 @@ import {
   Web3ApiClient,
   createWeb3ApiClient,
   PluginModule,
-  PluginModules,
 } from "../..";
 
 jest.setTimeout(200000);
@@ -22,33 +21,11 @@ const defaultPlugins = [
 ];
 
 describe("plugin-wrapper", () => {
-  let ipfsProvider: string;
-  let ethProvider: string;
-  let ensAddress: string;
-
   const getClient = async (config?: Partial<Web3ApiClientConfig>) => {
-    const client = await createWeb3ApiClient(
-      {
-        ethereum: {
-          networks: {
-            testnet: {
-              provider: ethProvider,
-            },
-          },
-        },
-        ipfs: { provider: ipfsProvider },
-        ens: {
-          query: {
-            addresses: {
-              testnet: ensAddress,
-            },
-          },
-        },
-      },
+    return await createWeb3ApiClient(
+      {},
       config
     );
-
-    return client;
   };
 
   const mockMapPlugin = () => {
@@ -56,13 +33,11 @@ describe("plugin-wrapper", () => {
       map: Map<string, number>;
     }
 
-    class Query extends PluginModule<Config> {
+    class Main extends PluginModule<Config> {
       async getMap(_: unknown) {
         return this.config.map;
       }
-    }
 
-    class Mutation extends PluginModule<Config> {
       updateMap(input: { map: Map<string, number> }): Map<string, number> {
         for (const key of input.map.keys()) {
           this.config.map.set(
@@ -77,11 +52,8 @@ describe("plugin-wrapper", () => {
     class MockMapPlugin implements Plugin {
       private map = new Map().set("a", 1).set("b", 2);
 
-      getModules(): PluginModules {
-        return {
-          query: new Query({ map: this.map }),
-          mutation: new Mutation({ map: this.map }),
-        };
+      getModule(): PluginModule {
+        return new Main({ map: this.map});
       }
     }
 

@@ -1,0 +1,52 @@
+{
+  "id": "PluginManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "name",
+    "language",
+    "schema"
+  ],
+  "properties": {
+    "format": {
+      "type": "string",
+      "const": "0.0.1-prealpha.3"
+    },
+    "name": {
+      "type": "string",
+      "format": "packageName"
+    },
+    "language": {
+      "type": "string",
+      "format": "pluginLanguage"
+    },
+    "main": {
+      "type": "string",
+      "format": "file"
+    },
+    "schema": {
+      "type": "string",
+      "format": "graphqlFile"
+    },
+    "import_redirects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "uri": {
+            "type": "string"
+          },
+          "schema": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "uri",
+          "schema"
+        ]
+      }
+    }
+  }
+}

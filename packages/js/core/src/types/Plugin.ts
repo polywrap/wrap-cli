@@ -1,11 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import {
-  Uri,
-  Client,
-  InvokableModules,
-  MaybeAsync,
-  executeMaybeAsyncFunction,
-} from ".";
+import { Uri, Client, MaybeAsync, executeMaybeAsyncFunction } from ".";
 
 /**
  * Invocable plugin method.
@@ -20,7 +14,7 @@ export type PluginMethod<
   TResult = unknown
 > = (input: TInput, client: Client) => MaybeAsync<TResult>;
 
-export abstract class PluginModule<
+export class PluginModule<
   TConfig extends Record<string, unknown> = Record<string, unknown>,
   TEnv extends Record<string, unknown> = Record<string, unknown>,
   TClientEnv extends Record<string, unknown> = TEnv
@@ -93,11 +87,6 @@ export abstract class PluginModule<
   }
 }
 
-/** The plugin's query "modules" */
-export type PluginModules = {
-  [module in InvokableModules]?: PluginModule;
-};
-
 /**
  * The plugin instance.
  */
@@ -108,7 +97,7 @@ export interface Plugin {
    * @param client The client instance requesting the modules.
    * This client will be used for any sub-queries that occur.
    */
-  getModules(): PluginModules;
+  getModule(): PluginModule;
 }
 
 /** The plugin package's manifest */
