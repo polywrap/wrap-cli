@@ -1,7 +1,9 @@
 import {
   buildApi,
+  ensAddresses,
   initTestEnvironment,
   stopTestEnvironment,
+  providers
 } from "@web3api/test-env-js";
 import {
   Uri,
@@ -32,10 +34,10 @@ describe("wasm-wrapper", () => {
   const apiUri = `fs/${apiPath}/build`
 
   beforeAll(async () => {
-    const { ipfs, ethereum, ensAddress: ens } = await initTestEnvironment();
-    ipfsProvider = ipfs;
-    ethProvider = ethereum;
-    ensAddress = ens;
+    await initTestEnvironment();
+    ipfsProvider = providers.ipfs;
+    ethProvider = providers.ethereum;
+    ensAddress = ensAddresses.ensAddress;
 
     await buildApi(apiPath);
   });

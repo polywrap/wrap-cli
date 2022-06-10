@@ -7,12 +7,10 @@ import {
   outputManifest,
   intlMsg,
   getTestEnvProviders,
-} from "../lib";
-import {
   parsePluginCodegenDirOption,
   parsePluginManifestFileOption,
   parsePluginPublishDirOption,
-} from "../lib/parsers";
+} from "../lib";
 
 import { ComposerFilter } from "@web3api/schema-compose";
 import { writeFileSync } from "@web3api/os-js";
@@ -96,7 +94,7 @@ async function run(options: PluginCommandOptions) {
 
   // Plugin project
   const project = new PluginProject({
-    rootCacheDir: path.dirname(manifestFile),
+    rootDir: path.dirname(manifestFile),
     pluginManifestPath: manifestFile,
   });
   await project.validate();

@@ -3,6 +3,8 @@ import {
   buildApi,
   initTestEnvironment,
   stopTestEnvironment,
+  providers,
+  ensAddresses
 } from "@web3api/test-env-js";
 import * as App from "../types/w3";
 import path from "path";
@@ -25,13 +27,9 @@ describe("SimpleStorage", () => {
   const apiUri = `fs/${apiPath}/build`;
 
   beforeAll(async () => {
-    const {
-      ethereum: testEnvEtherem,
-      ensAddress,
-      ipfs,
-    } = await initTestEnvironment();
+    await initTestEnvironment();
 
-    const config = getPlugins(testEnvEtherem, ipfs, ensAddress);
+    const config = getPlugins(providers.ethereum, providers.ipfs, ensAddresses.ensAddress);
     client = new Web3ApiClient(config);
 
     await buildApi(apiPath);

@@ -6,6 +6,7 @@ import { withSpinner, intlMsg } from "../";
 import { isWin, writeFileSync } from "@web3api/os-js";
 import { system, print } from "gluegun";
 import Mustache from "mustache";
+import YAML from "js-yaml";
 import path from "path";
 import fs from "fs";
 
@@ -211,4 +212,64 @@ export function generateDockerfile(
 
 export function generateDockerImageName(uuid: string): string {
   return `polywrap-build-env-${uuid}`;
+}
+
+interface DockerCompose {
+  services: {
+    [key: string]: {
+      build?:
+        | string
+        | {
+            context: string;
+          };
+    };
+  };
+}
+
+export function correctBuildContextPathsFromCompose(
+  dockerComposePath: string
+): DockerCompose {
+  const dockerComposeFile = YAML.safeLoad(
+    fs.readFileSync(dockerComposePath, "utf-8")
+  ) as DockerCompose;
+
+  const composeContextDir = path.dirname(path.resolve(dockerComposePath));
+
+  const correctedServiceEntries = Object.entries(
+    dockerComposeFile.services || {}
+  ).map(([serviceName, value]) => {
+    if (!value.build) {
+      return [serviceName, value];
+    }
+
+    if (typeof value.build === "string") {
+      return [
+        serviceName,
+        {
+          ...value,
+          build: path.isAbsolute(value.build)
+            ? value.build
+            : path.join(composeContextDir, value.build),
+        },
+      ];
+    } else {
+      return [
+        serviceName,
+        {
+          ...value,
+          build: {
+            ...value.build,
+            context: path.isAbsolute(value.build.context)
+              ? value.build.context
+              : path.join(composeContextDir, value.build.context),
+          },
+        },
+      ];
+    }
+  });
+
+  return {
+    ...dockerComposeFile,
+    services: Object.fromEntries(correctedServiceEntries),
+  };
 }

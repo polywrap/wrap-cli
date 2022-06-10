@@ -10,7 +10,9 @@ import { PluginRegistration } from "@web3api/core-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
-  buildAndDeployApi
+  buildAndDeployApi,
+  ensAddresses,
+  providers
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 
@@ -30,35 +32,23 @@ describe("useWeb3ApiInvoke hook", () => {
   let WrapperProvider: RenderHookOptions<unknown>;
 
   beforeAll(async () => {
-    const {
-      ipfs,
-      ethereum,
-      ensAddress,
-      registrarAddress,
-      resolverAddress
-    } = await initTestEnvironment();
+    await initTestEnvironment();
 
     const { ensDomain } = await buildAndDeployApi({
       apiAbsPath: `${GetPathToTestApis()}/wasm-as/simple-storage`,
-      ipfsProvider: ipfs,
-      ethereumProvider: ethereum,
-      ensRegistrarAddress: registrarAddress,
-      ensRegistryAddress: ensAddress,
-      ensResolverAddress: resolverAddress,
+      ipfsProvider: providers.ipfs,
+      ethereumProvider: providers.ethereum,
     });
 
     const { ensDomain: envEnsDomain } = await buildAndDeployApi({
       apiAbsPath: `${GetPathToTestApis()}/wasm-as/simple-env-types`,
-      ipfsProvider: ipfs,
-      ethereumProvider: ethereum,
-      ensRegistrarAddress: registrarAddress,
-      ensRegistryAddress: ensAddress,
-      ensResolverAddress: resolverAddress,
+      ipfsProvider: providers.ipfs,
+      ethereumProvider: providers.ethereum,
     });
 
     uri = `ens/testnet/${ensDomain}`;
     envUri = `ens/testnet/${envEnsDomain}`;
-    plugins = createPlugins(ensAddress, ethereum, ipfs);
+    plugins = createPlugins(ensAddresses.ensAddress, providers.ethereum, providers.ipfs);
     WrapperProvider = {
       wrapper: Web3ApiProvider,
       initialProps: {
