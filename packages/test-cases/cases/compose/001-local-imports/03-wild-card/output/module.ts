@@ -140,7 +140,7 @@ export const typeInfo: TypeInfo = {
     }
   ],
   moduleType: {
-      ...createModuleDefinition({ type: "Module" }),
+      ...createModuleDefinition({}),
       methods: [
         {
           ...createMethodDefinition({

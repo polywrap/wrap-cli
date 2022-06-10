@@ -1,9 +1,9 @@
 import {
   createMethodDefinition,
   createModuleDefinition,
-  createScalarPropertyDefinition,
   createObjectDefinition,
   createObjectPropertyDefinition,
+  createInterfaceImplementedDefinition,
   createTypeInfo,
   TypeInfo,
 } from "@web3api/schema-parse";
@@ -13,39 +13,25 @@ export const typeInfo: TypeInfo = {
   objectTypes: [
     {
       ...createObjectDefinition({
-        type: "TypeA",
+        type: "BaseType",
       }),
       properties: [
-        createObjectPropertyDefinition({
-          name: "prop",
-          type: "TypeB",
-        }),
       ],
     },
     {
       ...createObjectDefinition({
-        type: "TypeC",
+        type: "DerivedType",
       }),
-      properties: [
-        createScalarPropertyDefinition({
-          name: "prop",
-          type: "String",
-        }),
+      interfaces: [
+        createInterfaceImplementedDefinition({
+          type: "BaseType"
+        })
       ],
-    },
-    {
-      ...createObjectDefinition({
-        type: "TypeB",
-      }),
       properties: [
-        createObjectPropertyDefinition({
-          name: "prop",
-          type: "TypeC",
-        }),
       ],
     },
   ],
-  moduleType: 
+  moduleType:
     {
       ...createModuleDefinition({}),
       imports: [],
@@ -56,7 +42,7 @@ export const typeInfo: TypeInfo = {
             name: "method",
             return: createObjectPropertyDefinition({
               name: "method",
-              type: "TypeA",
+              type: "DerivedType",
             }),
           }),
           arguments: [

@@ -18,7 +18,7 @@ export const typeInfo: TypeInfo = {
   ...createTypeInfo(),
   moduleType:
     {
-      ...createModuleDefinition({ type: "Module" }),
+      ...createModuleDefinition({}),
       methods: [
         {
           ...createMethodDefinition({

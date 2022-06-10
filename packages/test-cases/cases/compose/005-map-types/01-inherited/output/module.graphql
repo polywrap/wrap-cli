@@ -36,8 +36,25 @@ directive @annotate(type: String!) on FIELD
 ### Web3API Header END ###
 
 type Module {
-  getMap: Map! @annotate(type: "Map<String, Int>!")
-  updateMap(
-    map: Map! @annotate(type: "Map<String, Int>!")
-  ): Map! @annotate(type: "Map<String, Int>!")
+  method(
+    map: Map! @annotate(type: "Map<String!, Int!>!")
+    other: InheritedType!
+  ): Map! @annotate(type: "Map<String!, Int!>!")
 }
+
+type BaseType {
+  requiredMap: Map! @annotate(type: "Map<String!, Int!>!")
+}
+
+type InheritedType implements BaseType {
+  mapOfValueArr: Map! @annotate(type: "Map<String!, [Int!]!>!")
+  requiredMap: Map! @annotate(type: "Map<String!, Int!>!")
+}
+
+### Imported Queries START ###
+
+### Imported Queries END ###
+
+### Imported Objects START ###
+
+### Imported Objects END ###

@@ -114,9 +114,6 @@ async function importCase(
     };
   }
 
-  console.log(input);
-  console.log(output)
-
   return {
     name,
     input,
