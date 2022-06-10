@@ -1,119 +1,141 @@
 import { filesystemPlugin } from "../index";
-import {
-  buildApi,
-  initTestEnvironment,
-  stopTestEnvironment,
-} from "@web3api/test-env-js";
-import {
-  Web3ApiClient,
-  Web3ApiClientConfig,
-  defaultIpfsProviders,
-} from "@web3api/client-js";
-import { GetPathToTestApis } from "@web3api/test-cases";
-import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
-import { ensPlugin } from "@web3api/ens-plugin-js";
-import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
+import { Web3ApiClient, Web3ApiClientConfig } from "@web3api/client-js";
+import { Filesystem_Query } from "../query/w3";
+import { Filesystem_Mutation } from "../mutation/w3";
 import fs from "fs";
 import path from "path";
 
 jest.setTimeout(360000);
 
 describe("Filesystem plugin", () => {
+  const sampleFilePath = path.resolve(__dirname, "samples/sample.txt");
+  const tempFilePath = path.resolve(__dirname, "samples/tempfile.dat");
+  const tempFolderPath = path.resolve(__dirname, "samples/tempfolder");
+
   let client: Web3ApiClient;
 
   beforeAll(async () => {
-    const { ipfs, ethereum, ensAddress: ens } = await initTestEnvironment();
-
     const config: Partial<Web3ApiClientConfig> = {
       plugins: [
         {
           uri: "w3://ens/fs.web3api.eth",
-          plugin: filesystemPlugin({ query: {} }),
-        },
-        // IPFS is required for downloading Web3API packages
-        {
-          uri: "w3://ens/ipfs.web3api.eth",
-          plugin: ipfsPlugin({
-            provider: ipfs,
-            fallbackProviders: defaultIpfsProviders,
-          }),
-        },
-        // ENS is required for resolving domain to IPFS hashes
-        {
-          uri: "w3://ens/ens.web3api.eth",
-          plugin: ensPlugin({
-            query: {
-              addresses: {
-                testnet: ens,
-              },
-            }
-          }),
-        },
-        {
-          uri: "w3://ens/ethereum.web3api.eth",
-          plugin: ethereumPlugin({
-            networks: {
-              testnet: {
-                provider: ethereum,
-              },
-            },
-            defaultNetwork: "testnet",
-          }),
+          plugin: filesystemPlugin({ query: {}, mutation: {} }),
         },
       ],
     };
     client = new Web3ApiClient(config);
   });
 
-  afterAll(async () => {
-    await stopTestEnvironment();
+  afterEach(async () => {
+    // Clean up temp files/folders in case test failed
+    if (fs.existsSync(tempFilePath)) {
+      fs.rmSync(tempFilePath);
+    }
+
+    if (fs.existsSync(tempFolderPath)) {
+      fs.rmdirSync(tempFolderPath);
+    }
   });
 
-  it("queries simple-storage api on local drive", async () => {
-    const apiPath = path.resolve(
-      `${GetPathToTestApis()}/wasm-as/simple-storage`
+  it("should read a file", async () => {
+    const expectedContents = fs.readFileSync(sampleFilePath);
+
+    const fsReadFileResult = await Filesystem_Query.readFile(
+      { path: sampleFilePath },
+      client
     );
-    await buildApi(apiPath);
 
-    const fsPath = `${apiPath}/build`;
-    const fsUri = `fs/${fsPath}`;
+    expect(fsReadFileResult.error).toBeFalsy();
+    expect(fsReadFileResult.data).toEqual(expectedContents);
+  });
 
-    // query api from filesystem
-    const deploy = await client.query<{
-      deployContract: string;
-    }>({
-      uri: fsUri,
-      query: `
-        mutation {
-          deployContract(
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-        }
-      `,
+  it("should read an UTF-8 encoded file as a string", async () => {
+    const encoding = "utf-8";
+
+    const expectedContents = fs.readFileSync(sampleFilePath, {
+      encoding: encoding,
     });
 
-    expect(deploy.errors).toBeFalsy();
-    expect(deploy.data).toBeTruthy();
-    expect(deploy.data?.deployContract.indexOf("0x")).toBeGreaterThan(-1);
+    const fsReadFileAsStringResult = await Filesystem_Query.readFileAsString(
+      { path: sampleFilePath, encoding: encoding },
+      client
+    );
 
-    // get the schema
-    const schema = await client.getSchema(fsUri);
-    const expectedSchema = await fs.promises.readFile(`${fsPath}/schema.graphql`, "utf-8");
+    expect(fsReadFileAsStringResult.error).toBeFalsy();
+    expect(fsReadFileAsStringResult.data).toBe(expectedContents);
+  });
 
-    expect(schema).toBe(expectedSchema);
+  it("should return whether a file exists or not", async () => {
+    const fsExistsResult_fileExists = await Filesystem_Query.exists(
+      { path: sampleFilePath },
+      client
+    );
 
-    // get the manifest
-    const manifest = await client.getManifest(fsUri, { type: "web3api" });
+    expect(fsExistsResult_fileExists.error).toBeFalsy();
+    expect(fsExistsResult_fileExists.data).toBe(true);
 
-    expect(manifest).toBeTruthy();
-    expect(manifest.language).toBe("wasm/assemblyscript");
+    const nonExistentFilePath = path.resolve(
+      __dirname,
+      "samples/this-file-should-not-exist.txt"
+    );
 
-    // get a file
-    const file = await client.getFile(fsUri, { path: "web3api.json", encoding: "utf-8" });
-    const expectedFile = await fs.promises.readFile(`${fsPath}/web3api.json`, "utf-8");
+    const fsExistsResult_fileMissing = await Filesystem_Query.exists(
+      { path: nonExistentFilePath },
+      client
+    );
 
-    expect(file).toBe(expectedFile);
+    expect(fsExistsResult_fileMissing.error).toBeFalsy();
+    expect(fsExistsResult_fileMissing.data).toBe(false);
+  });
+
+  it("should write data to a file and succesfully remove it", async () => {
+    const bytes = new Uint8Array([0, 1, 2, 3]);
+
+    const fsWriteFileResult = await Filesystem_Mutation.writeFile(
+      { data: bytes, path: tempFilePath },
+      client
+    );
+
+    const expectedFileContents = new Uint8Array(fs.readFileSync(tempFilePath));
+
+    expect(fsWriteFileResult.error).toBeFalsy();
+    expect(fsWriteFileResult.data).toBe(true);
+    expect(expectedFileContents).toEqual(bytes);
+
+    const fsRmResult = await Filesystem_Mutation.rm(
+      { path: tempFilePath },
+      client
+    );
+
+    expect(fsRmResult.error).toBeFalsy();
+    expect(fsRmResult.data).toBe(true);
+
+    const fileExists = fs.existsSync(tempFilePath);
+
+    expect(fileExists).toBe(false);
+  });
+
+  it("should create a folder and successfully remove it", async () => {
+    const fsMkdirResult = await Filesystem_Mutation.mkdir(
+      { path: tempFolderPath },
+      client
+    );
+
+    expect(fsMkdirResult.data).toBe(true);
+
+    let directoryExists = fs.existsSync(tempFolderPath);
+
+    expect(directoryExists).toBe(true);
+
+    const fsRmdirResult = await Filesystem_Mutation.rmdir(
+      { path: tempFolderPath },
+      client
+    );
+
+    expect(fsRmdirResult.data).toBe(true);
+
+    directoryExists = fs.existsSync(tempFolderPath);
+
+    expect(directoryExists).toBe(false);
   });
 });

@@ -25,6 +25,7 @@ describe("sanity", () => {
       new Uri("w3://ens/sha3.web3api.eth"),
       new Uri("w3://ens/graph-node.web3api.eth"),
       new Uri("w3://ens/fs.web3api.eth"),
+      new Uri("w3://ens/fs-resolver.web3api.eth"),
     ]);
     expect(client.getInterfaces()).toStrictEqual([
       {
@@ -32,7 +33,7 @@ describe("sanity", () => {
         implementations: [
           new Uri("w3://ens/ipfs.web3api.eth"),
           new Uri("w3://ens/ens.web3api.eth"),
-          new Uri("w3://ens/fs.web3api.eth"),
+          new Uri("w3://ens/fs-resolver.web3api.eth"),
         ],
       },
       {

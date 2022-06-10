@@ -1,0 +1,6 @@
+type Query {
+  readFile(path: String!): Bytes!
+  readFileAsString(path: String!, encoding: String!): String!
+
+  exists(path: String!): Boolean!
+}

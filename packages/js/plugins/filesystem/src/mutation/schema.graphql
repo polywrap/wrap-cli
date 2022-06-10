@@ -1,0 +1,3 @@
+#import { Mutation } into Filesystem from "ens/fs.web3api.eth"
+
+type Mutation implements Filesystem_Mutation { }

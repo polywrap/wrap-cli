@@ -1,0 +1,9 @@
+format: 0.0.1-prealpha.8
+name: Filesystem
+language: interface
+deploy: ./web3api.deploy.yaml
+modules:
+  query:
+    schema: ./src/query.graphql
+  mutation:
+    schema: ./src/mutation.graphql
