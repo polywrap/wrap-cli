@@ -35,19 +35,7 @@ directive @annotate(type: String!) on FIELD
 
 ### Web3API Header END ###
 
-type Mutation {
-  importedMethod(
-    str: String!
-    object: Object!
-    objectArray: [Object!]!
-  ): Object
-
-  anotherMethod(
-    arg: [String!]!
-  ): Int32!
-}
-
-type Query {
+type Module {
   importedMethod(
     str: String!
     optStr: String

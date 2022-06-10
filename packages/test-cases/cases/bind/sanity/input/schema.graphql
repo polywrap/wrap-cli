@@ -1,0 +1,28 @@
+#import { CustomType, CustomEnum, AnotherType } from "../imports-local/common.graphql"
+#import { Module, Object, AnotherObject, Enum } into TestImport from "testimport.uri.eth"
+#use { getImplementations } for TestImport
+
+type Module {
+  moduleMethod(
+    str: String!
+    optStr: String
+    en: CustomEnum!
+    optEnum: CustomEnum
+    enumArray: [CustomEnum!]!
+    optEnumArray: [CustomEnum]
+    map: Map! @annotate(type: "Map<String!, Int!>!")
+  ): Int!
+
+  objectMethod(
+    object: AnotherType!
+    optObject: AnotherType
+    objectArray: [AnotherType!]!
+    optObjectArray: [AnotherType]
+  ): AnotherType
+}
+
+type Env {
+  prop: String!
+  optProp: String
+  optMap: Map @annotate(type: "Map<String, Int>")
+}

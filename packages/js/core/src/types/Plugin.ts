@@ -87,19 +87,6 @@ export class PluginModule<
   }
 }
 
-/**
- * The plugin instance.
- */
-export interface Plugin {
-  /**
-   * Get an instance of this plugin's modules.
-   *
-   * @param client The client instance requesting the modules.
-   * This client will be used for any sub-queries that occur.
-   */
-  getModule(): PluginModule;
-}
-
 /** The plugin package's manifest */
 export interface PluginPackageManifest {
   /** The API's schema */
@@ -110,7 +97,7 @@ export interface PluginPackageManifest {
 }
 
 export type PluginPackage = {
-  factory: () => Plugin;
+  factory: () => PluginModule;
   manifest: PluginPackageManifest;
 };
 
