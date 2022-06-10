@@ -1,8 +1,10 @@
 import { filesystemPlugin } from "../index";
 import {
   buildApi,
+  ensAddresses,
   initTestEnvironment,
   stopTestEnvironment,
+  providers
 } from "@web3api/test-env-js";
 import {
   Web3ApiClient,
@@ -22,7 +24,7 @@ describe("Filesystem plugin", () => {
   let client: Web3ApiClient;
 
   beforeAll(async () => {
-    const { ipfs, ethereum, ensAddress: ens } = await initTestEnvironment();
+    await initTestEnvironment();
 
     const config: Partial<Web3ApiClientConfig> = {
       plugins: [
@@ -34,7 +36,7 @@ describe("Filesystem plugin", () => {
         {
           uri: "w3://ens/ipfs.web3api.eth",
           plugin: ipfsPlugin({
-            provider: ipfs,
+            provider: providers.ipfs,
             fallbackProviders: defaultIpfsProviders,
           }),
         },
@@ -44,7 +46,7 @@ describe("Filesystem plugin", () => {
           plugin: ensPlugin({
             query: {
               addresses: {
-                testnet: ens,
+                testnet: ensAddresses.ensAddress,
               },
             }
           }),
@@ -54,7 +56,7 @@ describe("Filesystem plugin", () => {
           plugin: ethereumPlugin({
             networks: {
               testnet: {
-                provider: ethereum,
+                provider: providers.ethereum,
               },
             },
             defaultNetwork: "testnet",

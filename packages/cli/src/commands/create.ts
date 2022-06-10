@@ -60,6 +60,7 @@ export const create: Command = {
           .choices(supportedLangs.app)
           .argRequired()
       )
+      .addArgument(new Argument("<name>", nameStr).argRequired())
       .option(
         `-o, --output-dir <${pathStr}>`,
         `${intlMsg.commands_create_options_o()}`
@@ -69,7 +70,7 @@ export const create: Command = {
       });
 
     createCommand
-      .command(`plugin <${langStr}>`)
+      .command(`plugin`)
       .description(
         `${createPluginStr} ${langsStr}: ${supportedLangs.plugin.join(", ")}`
       )
@@ -78,6 +79,7 @@ export const create: Command = {
           .choices(supportedLangs.plugin)
           .argRequired()
       )
+      .addArgument(new Argument("<name>", nameStr).argRequired())
       .option(
         `-o, --output-dir <${pathStr}>`,
         `${intlMsg.commands_create_options_o()}`

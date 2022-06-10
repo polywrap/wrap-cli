@@ -10,11 +10,9 @@ import {
   defaultWeb3ApiManifest,
   isDockerInstalled,
   FileLock,
-} from "../lib";
-import {
   parseWasmManifestFileOption,
   parseBuildOutputDirOption,
-} from "../lib/parsers";
+} from "../lib";
 
 import { print } from "gluegun";
 import path from "path";
@@ -71,7 +69,7 @@ async function run(options: BuildCommandOptions) {
   }
 
   const project = new Web3ApiProject({
-    rootCacheDir: path.dirname(manifestFile),
+    rootDir: path.dirname(manifestFile),
     web3apiManifestPath: manifestFile,
     quiet: verbose ? false : true,
   });

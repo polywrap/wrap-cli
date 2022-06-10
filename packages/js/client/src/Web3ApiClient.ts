@@ -47,29 +47,12 @@ import {
   JobRunner,
   PluginPackage,
   RunOptions,
-  MaybeAsync,
-  Job,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
 export interface Web3ApiClientConfig<TUri extends Uri | string = string>
   extends ClientConfig<TUri> {
   tracingEnabled: boolean;
-}
-
-export interface JobOptions<
-  TData extends Record<string, unknown> = Record<string, unknown>,
-  TUri extends Uri | string = string
-> {
-  id: string;
-  parentId: string;
-  jobs: Job<TUri>;
-
-  onExecution?(
-    id: string,
-    data?: InvokeApiResult<TData>["data"],
-    error?: InvokeApiResult<TData>["error"]
-  ): MaybeAsync<void>;
 }
 
 export class Web3ApiClient implements Client {

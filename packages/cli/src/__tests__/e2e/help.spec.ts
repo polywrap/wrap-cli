@@ -2,6 +2,7 @@ import { clearStyle, w3Cli } from "./utils";
 
 import { runCLI } from "@web3api/test-env-js";
 
+
 const HELP = `Usage: w3 [options] [command]
 
 Options:
@@ -15,7 +16,7 @@ Commands:
   deploy|d [options]          Deploys/Publishes a Web3API
   plugin|p                    Build/generate types for the plugin
   query|q [options] <recipe>  Query Web3APIs using recipe scripts
-  test-env|t                  Manage a test environment for Web3API
+  infra|i [options] <action>  Manage infrastructure for your Web3API
   help [command]              display help for command
 `;
 
