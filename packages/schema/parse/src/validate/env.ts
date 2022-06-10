@@ -21,8 +21,6 @@ export function validateClientEnvironment(
     );
   }
 
-  console.log(info.moduleType);
-
   const sanitizeEnvMethod = info.moduleType.methods.find(
     (method) => method.name === "sanitizeEnv"
   );

@@ -843,37 +843,6 @@ export const typeInfo: TypeInfo = {
     },
     {
       ...createImportedModuleDefinition({
-        uri: "testimport.uri.eth",
-        namespace: "TestImport",
-        type: "TestImport_Module",
-        nativeType: "Module",
-        isInterface: false,
-        comment: "TestImport_Module comment",
-      }),
-      methods: [
-        {
-          ...createMethodDefinition({
-            name: "importedMethod",
-            return: createScalarPropertyDefinition({
-              name: "importedMethod",
-              type: "String",
-              required: true,
-            }),
-            comment: "importedMethod comment",
-          }),
-          arguments: [
-            createScalarPropertyDefinition({
-              name: "str",
-              type: "String",
-              required: true,
-              comment: "str comment",
-            }),
-          ],
-        },
-      ],
-    },
-    {
-      ...createImportedModuleDefinition({
         uri: "interface.uri.eth",
         namespace: "Interface",
         type: "Interface_Module",

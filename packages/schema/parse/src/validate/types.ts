@@ -151,7 +151,7 @@ export const getPropertyTypesValidator = (): SchemaValidator => {
           if (typeName && !isModuleType(typeName)) {
             // Arguments not supported on non-module types
             throw Error(
-              `Methods can only be defined on module types (Module)}).\n` +
+              `Methods can only be defined on module types (Module).\n` +
                 `Found: type ${typeName} { ${currentField}(${node.name.value}) }`
             );
           }
