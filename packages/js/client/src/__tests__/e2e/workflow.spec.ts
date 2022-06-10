@@ -15,16 +15,12 @@ describe("workflow", () => {
   let ipfsProvider: string;
   let ethProvider: string;
   let ensAddress: string;
-  let ensRegistrarAddress: string;
-  let ensResolverAddress: string;
 
   beforeAll(async () => {
     await initTestEnvironment();
     ipfsProvider = providers.ipfs;
     ethProvider = providers.ethereum;
     ensAddress = ensAddresses.ensAddress;
-    ensRegistrarAddress = ensAddresses.registrarAddress;
-    ensResolverAddress = ensAddresses.resolverAddress;
   });
 
   const getClient = async (config?: Partial<Web3ApiClientConfig>) => {

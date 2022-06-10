@@ -1,16 +1,17 @@
 {
-  "name": "filesystem-interface",
+  "name": "@webapi3/filesystem-interface",
   "description": "Web3API Filesystem Interface",
   "private": true,
   "version": "0.0.1-prealpha.84",
   "scripts": {
-    "build": "npx w3 build",
+    "build": "rimraf ./build && node ../../../dependencies/node_modules/@web3api/cli/bin/w3 build",
     "lint": "eslint --color -c ../../../.eslintrc.js .",
     "test:env:up": "npx w3 test-env up",
     "test:env:down": "npx w3 test-env down",
     "deploy": "npx w3 build --ipfs http://localhost:5001"
   },
   "devDependencies": {
-    "@web3api/cli": "0.0.1-prealpha.84"
+    "@web3api/client-js": "0.0.1-prealpha.84",
+    "rimraf": "3.0.2"
   }
 }
