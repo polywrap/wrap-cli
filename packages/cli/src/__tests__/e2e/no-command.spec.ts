@@ -15,8 +15,8 @@ Commands:
   create|c                    Create a new project with w3 CLI
   deploy|d [options]          Deploys/Publishes a Web3API
   plugin|p                    Build/generate types for the plugin
-  query|q [options] <recipe>  Query Web3APIs using recipe scripts
   infra|i [options] <action>  Manage infrastructure for your Web3API
+  run|r [options] <workflow>  Runs workflow script
   help [command]              display help for command
 `;
 
