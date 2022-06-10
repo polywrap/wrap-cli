@@ -5,46 +5,48 @@ import {
   Api,
   ApiCache,
   Client,
-  InvokeApiOptions,
-  InvokeApiResult,
-  QueryApiOptions,
-  QueryApiResult,
-  Uri,
-  UriRedirect,
-  InterfaceImplementations,
-  PluginRegistration,
+  ClientConfig,
   Env,
-  Subscription,
-  SubscribeOptions,
-  parseQuery,
-  AnyManifestArtifact,
-  ManifestArtifactType,
-  GetRedirectsOptions,
-  GetPluginsOptions,
-  GetInterfacesOptions,
   GetEnvsOptions,
-  GetSchemaOptions,
-  GetManifestOptions,
   GetFileOptions,
   GetImplementationsOptions,
+  GetInterfacesOptions,
+  GetManifestOptions,
+  GetPluginsOptions,
+  GetRedirectsOptions,
+  GetSchemaOptions,
+  InterfaceImplementations,
+  InvokeApiOptions,
+  InvokeApiResult,
+  PluginRegistration,
+  QueryApiOptions,
+  QueryApiResult,
+  SubscribeOptions,
+  Subscription,
+  Uri,
+  UriRedirect,
   createQueryDocument,
   getImplementations,
+  parseQuery,
+  ManifestArtifactType,
+  AnyManifestArtifact,
+  ResolveUriOptions,
+  ResolveUriResult,
+  UriResolver,
+  GetUriResolversOptions,
+  resolveUri,
+  sanitizeEnvs,
   sanitizeInterfaceImplementations,
   sanitizePluginRegistrations,
   sanitizeUriRedirects,
-  sanitizeEnvs,
-  ClientConfig,
-  resolveUri,
-  UriResolver,
-  GetUriResolversOptions,
   CacheResolver,
   ExtendableUriResolver,
-  Contextualized,
-  ResolveUriOptions,
   coreInterfaceUris,
+  Contextualized,
   ResolveUriErrorType,
-  ResolveUriResult,
+  JobRunner,
   PluginPackage,
+  RunOptions,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
@@ -337,6 +339,22 @@ export class Web3ApiClient implements Client {
       this._clearContext(contextId);
     }
     return result;
+  }
+
+  @Tracer.traceMethod("Web3ApiClient: run")
+  public async run<
+    TData extends Record<string, unknown> = Record<string, unknown>,
+    TUri extends Uri | string = string
+  >(options: RunOptions<TData, TUri>): Promise<void> {
+    const { workflow, onExecution } = options;
+    const ids = options.ids ? options.ids : Object.keys(workflow.jobs);
+    const jobRunner = new JobRunner<TData, TUri>(this, onExecution);
+
+    await Promise.all(
+      ids.map((id) =>
+        jobRunner.run({ relativeId: id, parentId: "", jobs: workflow.jobs })
+      )
+    );
   }
 
   @Tracer.traceMethod("Web3ApiClient: subscribe")
@@ -862,6 +880,11 @@ const contextualizeClient = (
           failedUriResolvers: string[];
         }> => {
           return client.loadUriResolvers();
+        },
+        run: <TData extends Record<string, unknown> = Record<string, unknown>>(
+          options: RunOptions<TData>
+        ): Promise<void> => {
+          return client.run({ ...options, contextId });
         },
       }
     : client;

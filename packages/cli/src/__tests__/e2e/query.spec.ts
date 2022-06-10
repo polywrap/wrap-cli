@@ -4,11 +4,7 @@ import yaml from "js-yaml";
 
 import { clearStyle, w3Cli } from "./utils";
 
-import {
-  buildAndDeployApi,
-  initTestEnvironment,
-  runCLI,
-} from "@web3api/test-env-js";
+import { buildAndDeployApi, providers, initTestEnvironment, runCLI, stopTestEnvironment } from "@web3api/test-env-js";
 import { GetPathToCliTestFiles } from "@web3api/test-cases";
 import { normalizeLineEndings } from "@web3api/os-js";
 import {
@@ -80,13 +76,7 @@ describe("e2e tests for query command", () => {
   const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/query");
 
   beforeAll(async () => {
-    const {
-      ipfs,
-      ethereum,
-      ensAddress: ens,
-      registrarAddress,
-      resolverAddress,
-    } = await initTestEnvironment();
+    await initTestEnvironment();
 
     const { stderr: deployErr } = await runCLI({
       args: ["./deploy-contracts.js"],
@@ -98,21 +88,14 @@ describe("e2e tests for query command", () => {
 
     await buildAndDeployApi({
       apiAbsPath: testCaseRoot,
-      ipfsProvider: ipfs,
-      ethereumProvider: ethereum,
-      ensRegistrarAddress: registrarAddress,
-      ensResolverAddress: resolverAddress,
-      ensRegistryAddress: ens,
+      ipfsProvider: providers.ipfs,
+      ethereumProvider: providers.ethereum,
       ensName: "simplestorage.eth",
     })
   });
 
   afterAll(async () => {
-    await runCLI({
-      args: ["test-env", "down"],
-      cwd: testCaseRoot,
-      cli: w3Cli,
-    });
+    await stopTestEnvironment();
   });
 
   test("Should successfully return response: using json recipes", async () => {
@@ -122,8 +105,8 @@ describe("e2e tests for query command", () => {
       cli: w3Cli,
     });
 
-    expect(code).toEqual(0);
     expect(queryErr).toBe("");
+    expect(code).toEqual(0);
 
     const constants = require(`${testCaseRoot}/recipes/constants.json`);
     checkSampleQueryOutput(output, {

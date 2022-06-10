@@ -4,8 +4,8 @@ import {
   Web3ApiProject,
   defaultWeb3ApiManifest,
   DeployPackage,
+  parseWasmManifestFileOption,
 } from "../lib";
-import { parseWasmManifestFileOption } from "../lib/parsers";
 import { DeployerHandler } from "../lib/deploy/deployer";
 import { Command, Program } from "./types";
 
@@ -52,7 +52,7 @@ async function run(options: DeployCommandOptions): Promise<void> {
   const { manifestFile, verbose } = options;
 
   const project = new Web3ApiProject({
-    rootCacheDir: nodePath.dirname(manifestFile),
+    rootDir: nodePath.dirname(manifestFile),
     web3apiManifestPath: manifestFile,
     quiet: verbose ? false : true,
   });
@@ -70,13 +70,13 @@ async function run(options: DeployCommandOptions): Promise<void> {
 
   sanitizePackages(packageNames);
 
-  await project.cacheDeploymentPackages(packageNames);
+  await project.cacheDeployModules(packageNames);
 
   const packageMap: Record<string, DeployPackage> = {};
   const stageToPackageMap: Record<string, DeployPackage> = {};
 
   for await (const packageName of packageNames) {
-    packageMap[packageName] = await project.getDeploymentPackage(packageName);
+    packageMap[packageName] = await project.getDeployModule(packageName);
   }
 
   Object.entries(deployManifest.stages).forEach(([stageName, stageValue]) => {
@@ -134,7 +134,7 @@ function sanitizePackages(packages: string[]) {
   const unrecognizedPackages: string[] = [];
 
   const availableDeployers = fs.readdirSync(
-    nodePath.join(__dirname, "..", "lib", "deployers")
+    nodePath.join(__dirname, "..", "lib", "defaults", "deploy-modules")
   );
 
   packages.forEach((p) => {

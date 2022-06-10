@@ -191,7 +191,7 @@ jobs:
 
 # NOTE: Mac & Windows CI is not currently possible, since GitHub Actions does not
 # use "Docker Enterprise". Docker Enterprise is required when running linux based
-# containers, which is what we run within our toolchain for test-envs and build-envs.
+# containers, which is what we run within our toolchain for infra and build-images.
 # In order to enable this, we can move to Circle CI, which supports Docker Enterprise.
 
 #  JS-CI-Mac:

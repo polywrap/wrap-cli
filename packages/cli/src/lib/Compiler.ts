@@ -172,21 +172,21 @@ export class Compiler {
     // Compose the schema
     const composerOutput = await this._composeSchema();
 
-    // Allow the build-env to validate the manifest & override functionality
-    const buildEnvDir = `${__dirname}/build-envs/${web3ApiManifest.language}`;
-    const buildEnvEntryFile = path.join(buildEnvDir, "index.ts");
+    // Allow the build-image to validate the manifest & override functionality
+    const buildImageDir = `${__dirname}/defaults/build-images/${web3ApiManifest.language}`;
+    const buildImageEntryFile = path.join(buildImageDir, "index.ts");
     let compilerOverrides: CompilerOverrides | undefined;
 
-    if (fs.existsSync(buildEnvEntryFile)) {
-      const module = await import(buildEnvDir);
+    if (fs.existsSync(buildImageEntryFile)) {
+      const module = await import(buildImageDir);
 
-      // Get any compiler overrides for the given build-env
+      // Get any compiler overrides for the given build-image
       if (module.getCompilerOverrides) {
         compilerOverrides = module.getCompilerOverrides() as CompilerOverrides;
       }
 
       if (compilerOverrides) {
-        // Validate the manifest for the given build-env
+        // Validate the manifest for the given build-image
         if (compilerOverrides.validateManifest) {
           compilerOverrides.validateManifest(web3ApiManifest);
         }
@@ -335,11 +335,16 @@ export class Compiler {
 
     // If the dockerfile path isn't provided, generate it
     if (!buildManifest?.docker?.dockerfile) {
-      // Make sure the default template is in the cached .w3/web3api/build/env folder
-      await project.cacheDefaultBuildManifestFiles();
+      // Make sure the default template is in the cached .w3/web3api/build/image folder
+      await project.cacheDefaultBuildImage();
 
       dockerfile = generateDockerfile(
-        project.getCachePath("build/env/Dockerfile.mustache"),
+        project.getCachePath(
+          path.join(
+            Web3ApiProject.cacheLayout.buildImageDir,
+            "Dockerfile.mustache"
+          )
+        ),
         buildManifest.config || {}
       );
     }
@@ -355,7 +360,9 @@ export class Compiler {
       const cache = dockerBuildxConfig.cache;
 
       if (cache == true) {
-        cacheDir = project.getCachePath("build/cache");
+        cacheDir = project.getCachePath(
+          Web3ApiProject.cacheLayout.buildImageCacheDir
+        );
       } else if (cache) {
         if (!path.isAbsolute(cache)) {
           cacheDir = path.join(project.getManifestDir(), cache);

@@ -4,12 +4,13 @@ import {
   initTestEnvironment,
   runCLI,
   stopTestEnvironment,
+  ensAddresses,
+  providers
 } from "@web3api/test-env-js";
 import { GetPathToCliTestFiles } from "@web3api/test-cases";
-import axios from "axios";
 import { Web3ApiClient } from "@web3api/client-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
-import { Wallet } from "ethers";
+import { Wallet } from "@ethersproject/wallet";
 import path from "path";
 import fs from "fs";
 
@@ -33,12 +34,12 @@ const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/deploy");
     path.join(testCaseRoot, testCases[index]);
 
 const setup = async (domainNames: string[]) => {
-  const { ethereum } = await initTestEnvironment();
-  const { data } = await axios.get("http://localhost:4040/deploy-ens");
+  await stopTestEnvironment();
+  await initTestEnvironment();
 
-  const ensAddress = data.ensAddress
-  const resolverAddress = data.resolverAddress
-  const registrarAddress = data.registrarAddress
+  const ensAddress = ensAddresses.ensAddress
+  const resolverAddress = ensAddresses.resolverAddress
+  const registrarAddress = ensAddresses.registrarAddress
   const signer = new Wallet("0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d");
 
   // Setup environment variables
@@ -49,7 +50,6 @@ const setup = async (domainNames: string[]) => {
   };
 
   const ethereumPluginUri = "w3://ens/ethereum.web3api.eth"
-
   const client = new Web3ApiClient({
     plugins: [
       {
@@ -57,7 +57,7 @@ const setup = async (domainNames: string[]) => {
         plugin: ethereumPlugin({
           networks: {
             testnet: {
-              provider: ethereum,
+              provider: providers.ethereum,
               signer
             }
           },
@@ -73,7 +73,7 @@ const setup = async (domainNames: string[]) => {
   )}`;
 
   for await (const domainName of domainNames) {
-    await client.invoke<{ hash: string }>({
+    const result = await client.invoke({
       uri: ensWrapperUri,
       module: "mutation",
       method: "registerDomainAndSubdomainsRecursively",
@@ -88,7 +88,13 @@ const setup = async (domainNames: string[]) => {
           networkNameOrChainId: "testnet",
         },
       },
-    })
+    });
+
+    if (result.error) {
+      throw Error(
+        `Failed to register ${domainName}: ${result.error.message}`
+      );
+    }
   }
 }
 
@@ -105,11 +111,13 @@ describe("e2e tests for deploy command", () => {
         },
       );
     }
+
+    await new Promise((resolve) => setTimeout(resolve, 5000));
   });
 
   afterAll(async () => {
     await stopTestEnvironment();
-  })
+  });
 
   test("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
@@ -126,7 +134,7 @@ describe("e2e tests for deploy command", () => {
   });
 
   test("Successfully deploys the project", async () => {
-    const { exitCode: code, stdout: output } = await runCLI(
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
         args: ["deploy"],
         cwd: getTestCaseDir(0),
@@ -137,18 +145,13 @@ describe("e2e tests for deploy command", () => {
 
     const sanitizedOutput = clearStyle(output);
 
+    expect(error).toBeFalsy();
     expect(code).toEqual(0);
     expect(sanitizedOutput).toContain(
       "Successfully executed stage 'ipfs_deploy'"
     );
     expect(sanitizedOutput).toContain(
       "Successfully executed stage 'from_deploy'"
-    );
-    expect(sanitizedOutput).toContain(
-      "Successfully executed stage 'from_deploy2'"
-    );
-    expect(sanitizedOutput).toContain(
-      "Successfully executed stage 'from_uri'"
     );
   });
 

@@ -9,7 +9,6 @@ import {
   MetaManifestFormats
 } from ".";
 import * as Validators from "../../validators";
-
 import schema_0_0_1_prealpha_1 from "@web3api/manifest-schemas/formats/web3api.meta/0.0.1-prealpha.1.json";
 import schema_0_0_1_prealpha_2 from "@web3api/manifest-schemas/formats/web3api.meta/0.0.1-prealpha.2.json";
 import schema_0_0_1_prealpha_3 from "@web3api/manifest-schemas/formats/web3api.meta/0.0.1-prealpha.3.json";
