@@ -86,3 +86,18 @@ export function parseWorkflowOutputFilePathOption(
 ): string {
   return path.resolve(outputFile);
 }
+
+export function parseValidateScriptOption(cueFile: string, _: unknown): string {
+  const cueFilepath = path.resolve(cueFile);
+
+  if (!fs.existsSync(cueFilepath)) {
+    console.error(
+      intlMsg.commands_run_error_validatorNotFound({
+        path: cueFilepath,
+      })
+    );
+    process.exit(1);
+  }
+
+  return cueFilepath;
+}

@@ -23,6 +23,8 @@ Arguments:
 Options:
   -c, --client-config <config-path>     Add custom configuration to the
                                         Web3ApiClient
+  -v, --validate <cue-file>             Validate the output of the workflow
+                                        jobs
   -o, --output-file <output-file-path>  Output file path for the workflow
                                         result
   -j, --jobs <jobs...>                  Specify ids of jobs that you want to
@@ -34,7 +36,7 @@ Options:
 describe("sanity tests for workflow command", () => {
   const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/run");
 
-  test("Should show help text", async () => {
+  it("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["run", "--help"],
       cwd: testCaseRoot,
@@ -45,7 +47,7 @@ describe("sanity tests for workflow command", () => {
     expect(clearStyle(output)).toEqual(HELP);
   });
 
-  test("Should throw error for missing workflow-string", async () => {
+  it("Should throw error for missing workflow-string", async () => {
     const { exitCode, stdout, stderr } = await runCLI({
       args: ["run"],
       cwd: testCaseRoot,
@@ -57,7 +59,7 @@ describe("sanity tests for workflow command", () => {
     expect(stdout).toEqual(``);
   });
 
-  test("Should throw error is --client-config doesn't contain arguments", async () => {
+  it("Should throw error is --client-config doesn't contain arguments", async () => {
     const { exitCode, stdout, stderr } = await runCLI({
       args: ["run", "./recipes/e2e.json", "--client-config"],
       cwd: testCaseRoot,
@@ -76,21 +78,12 @@ describe("e2e tests for run command", () => {
   const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/run");
 
   beforeAll(async () => {
-    const {
-      ipfs,
-      ethereum,
-      ensAddress: ens,
-      registrarAddress,
-      resolverAddress,
-    } = await initTestEnvironment();
+    await initTestEnvironment();
 
     await buildAndDeployApi({
       apiAbsPath: testCaseRoot,
-      ipfsProvider: ipfs,
-      ethereumProvider: ethereum,
-      ensRegistrarAddress: registrarAddress,
-      ensResolverAddress: resolverAddress,
-      ensRegistryAddress: ens,
+      ipfsProvider: "http://localhost:5001",
+      ethereumProvider: "http://localhost:8545",
       ensName: "simple-storage.eth",
     });
   });
@@ -103,7 +96,7 @@ describe("e2e tests for run command", () => {
     });
   });
 
-  test("Should successfully return response: using json workflow", async () => {
+  it("Should successfully return response: using json workflow", async () => {
     const { exitCode: code, stdout, stderr } = await runCLI({
       args: ["run", "./workflows/e2e.json", "-c", "./workflows/config.ts"],
       cwd: testCaseRoot,
@@ -120,7 +113,7 @@ describe("e2e tests for run command", () => {
     expect(output).toHaveLength(3);
   }, 480000);
 
-  test("Should successfully return response: using yaml workflow", async () => {
+  it("Should successfully return response: using yaml workflow", async () => {
     const { exitCode: code, stdout, stderr } = await runCLI({
       args: ["run", "./workflows/e2e.yaml", "-c", "./workflows/config.ts"],
       cwd: testCaseRoot,
@@ -138,7 +131,7 @@ describe("e2e tests for run command", () => {
     expect(output).toHaveLength(3);
   }, 480000);
 
-  test("Should successfully create json output file if specified", async () => {
+  it("Should successfully create json output file if specified", async () => {
     const { exitCode: code, stdout, stderr } = await runCLI({
       args: [
         "run",
@@ -166,7 +159,7 @@ describe("e2e tests for run command", () => {
     fs.unlinkSync(`${testCaseRoot}/workflows/output.json`);
   }, 48000);
 
-  test("Should successfully create yaml output file if specified", async () => {
+  it("Should successfully create yaml output file if specified", async () => {
     const { exitCode: code, stdout, stderr } = await runCLI({
       args: [
         "run",
@@ -198,7 +191,7 @@ describe("e2e tests for run command", () => {
     fs.unlinkSync(`${testCaseRoot}/workflows/output.yaml`);
   }, 48000);
 
-  test("Should suppress the ouput if --quiet option is specified", async () => {
+  it("Should suppress the ouput if --quiet option is specified", async () => {
     const { exitCode: code, stdout, stderr } = await runCLI({
       args: [
         "run",
@@ -214,5 +207,43 @@ describe("e2e tests for run command", () => {
     expect(code).toEqual(0);
     expect(stderr).toBe("");
     expect(stdout).toBeFalsy();
+  }, 48000);
+
+  it("Should validate output if validate script given", async () => {
+    const { exitCode: code, stdout, stderr } = await runCLI({
+      args: [
+        "run",
+        "./workflows/e2e.json",
+        "-c",
+        "./workflows/config.ts",
+        "-v",
+        "./workflows/validator.cue",
+        "-q",
+      ],
+      cwd: testCaseRoot,
+      cli: w3Cli,
+    });
+
+    expect(code).toEqual(0);
+    expect(stderr).toBe("");
+    expect(stdout).toBe("");
+
+  }, 48000);
+
+  it("Should print error on stderr if validation fails", async () => {
+    const { exitCode: code, stderr } = await runCLI({
+      args: [
+        "run",
+        "./workflows/e2e.json",
+        "-v",
+        "./workflows/validator.cue",
+        "-q",
+      ],
+      cwd: testCaseRoot,
+      cli: w3Cli,
+    });
+
+    expect(code).toEqual(1);
+    expect(stderr).toContain("explicit error (_|_ literal) in source:");
   }, 48000);
 });

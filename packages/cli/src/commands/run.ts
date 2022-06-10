@@ -2,7 +2,9 @@ import { Command, Program } from "./types";
 import {
   intlMsg,
   parseClientConfigOption,
+  parseValidateScriptOption,
   parseWorkflowOutputFilePathOption,
+  validateOutput,
 } from "../lib";
 
 import { InvokeApiResult, Workflow } from "@web3api/core-js";
@@ -14,6 +16,7 @@ import fs from "fs";
 type WorkflowCommandOptions = {
   clientConfig: Partial<Web3ApiClientConfig>;
   jobs?: string[];
+  validateScript?: string;
   outputFile?: string;
   quiet?: boolean;
 };
@@ -24,16 +27,26 @@ export const run: Command = {
       .command("run")
       .alias("r")
       .description(intlMsg.commands_run_description())
-      .argument("<workflow>", intlMsg.commands_run_options_workflowScript())
+      .argument(
+        `<${intlMsg.commands_run_options_workflow()}>`,
+        intlMsg.commands_run_options_workflowScript()
+      )
       .option(
         `-c, --client-config <${intlMsg.commands_run_options_configPath()}> `,
         `${intlMsg.commands_run_options_config()}`
       )
       .option(
+        `-v, --validate-script <${intlMsg.commands_run_options_validate()}>`,
+        `${intlMsg.commands_run_options_validateScript()}`
+      )
+      .option(
         `-o, --output-file <${intlMsg.commands_run_options_outputFilePath()}>`,
         `${intlMsg.commands_run_options_outputFile()}`
       )
-      .option(`-j, --jobs <jobs...>`, intlMsg.commands_run_options_jobs())
+      .option(
+        `-j, --jobs <${intlMsg.commands_run_options_jobIds()}...>`,
+        intlMsg.commands_run_options_jobs()
+      )
       .option(`-q, --quiet`, `${intlMsg.commands_run_options_quiet()}`)
       .action(async (workflow: string, options) => {
         await _run(workflow, {
@@ -45,13 +58,16 @@ export const run: Command = {
           outputFile: options.outputFile
             ? parseWorkflowOutputFilePathOption(options.outputFile, undefined)
             : undefined,
+          validateScript: options.validateScript
+            ? parseValidateScriptOption(options.validateScript, undefined)
+            : undefined,
         });
       });
   },
 };
 
 const _run = async (workflowPath: string, options: WorkflowCommandOptions) => {
-  const { clientConfig, outputFile, quiet, jobs } = options;
+  const { clientConfig, outputFile, validateScript, quiet, jobs } = options;
   const client = new Web3ApiClient(clientConfig);
 
   function getParser(path: string) {
@@ -69,7 +85,7 @@ const _run = async (workflowPath: string, options: WorkflowCommandOptions) => {
     workflow,
     config: clientConfig,
     ids: jobs,
-    onExecution: (id, data, error) => {
+    onExecution: async (id, data, error) => {
       if (!quiet) {
         console.log("-----------------------------------");
         console.log(`ID: ${id}`);
@@ -85,6 +101,10 @@ const _run = async (workflowPath: string, options: WorkflowCommandOptions) => {
         console.log(error.stack || "");
         console.log("-----------------------------------");
         process.exitCode = 1;
+      }
+
+      if (validateScript) {
+        await validateOutput(id, { data, error }, validateScript);
       }
 
       workflowOutput.push({ id, data, error });

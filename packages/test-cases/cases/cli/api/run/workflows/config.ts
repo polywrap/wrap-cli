@@ -3,28 +3,28 @@ import { ClientConfig, coreInterfaceUris } from "@web3api/client-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
-import axios from "axios";
 
 interface TestEnvironment {
   ipfs: string;
   ethereum: string;
   ensAddress: string;
-  registrarAddress: string;
-  reverseAddress: string;
-  resolverAddress: string;
+  registrarAddress?: string;
+  reverseAddress?: string;
+  resolverAddress?: string;
+  clientConfig: Partial<ClientConfig>;
 }
 
 async function getProviders(): Promise<TestEnvironment> {
-  const {
-    data: { ipfs, ethereum },
-  } = await axios.get("http://localhost:4040/providers");
-  const { data } = await axios.get("http://localhost:4040/deploy-ens");
+  const ipfs = "http://localhost:5001";
+  const ethereum = "http://localhost:8545";
+  const ensAddress = "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab";
+
   const clientConfig: Partial<ClientConfig> = getPlugins(
     ethereum,
     ipfs,
-    data.ensAddress
+    "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab"
   );
-  return { ipfs, ethereum, ...data, clientConfig };
+  return { ipfs, ethereum, ensAddress, clientConfig };
 }
 
 function getPlugins(
