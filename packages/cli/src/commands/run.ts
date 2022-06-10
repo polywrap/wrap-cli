@@ -1,9 +1,9 @@
 import { Command, Program } from "./types";
-import { intlMsg } from "../lib";
 import {
+  intlMsg,
   parseClientConfigOption,
   parseWorkflowOutputFilePathOption,
-} from "../lib/parsers";
+} from "../lib";
 
 import { InvokeApiResult, Workflow } from "@web3api/core-js";
 import { Web3ApiClient, Web3ApiClientConfig } from "@web3api/client-js";
