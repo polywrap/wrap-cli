@@ -46,7 +46,6 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
     state.currentInterfaces = interfaces;
 
     const module = createModuleDefinition({
-      type: nodeName,
       imports,
       interfaces: node.interfaces?.map((x) =>
         createInterfaceImplementedDefinition({ type: x.name.value })

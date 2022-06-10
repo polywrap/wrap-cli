@@ -695,7 +695,6 @@ export const typeInfo: TypeInfo = {
       ...createImportedModuleDefinition({
         uri: "testimport.uri.eth",
         namespace: "TestImport",
-        type: "TestImport_Module",
         isInterface: true,
         nativeType: "Module",
         comment: "TestImport_Module comment",
@@ -844,7 +843,6 @@ export const typeInfo: TypeInfo = {
       ...createImportedModuleDefinition({
         uri: "interface.uri.eth",
         namespace: "Interface",
-        type: "Interface_Module",
         isInterface: false,
         nativeType: "Module",
         comment: "Interface_Module comment",

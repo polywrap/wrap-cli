@@ -123,7 +123,7 @@ describe("Web3API Schema TypeInfo Transformations", () => {
       ],
       moduleType: 
         {
-          ...createModuleDefinition(),
+          ...createModuleDefinition({}),
           methods: [
             {
               ...createMethodDefinition({
@@ -221,7 +221,6 @@ describe("Web3API Schema TypeInfo Transformations", () => {
             namespace: "TestImport",
             nativeType: "Module",
             isInterface: false,
-            type: "TestImport_Module"
           }),
           methods: [
             {
@@ -331,7 +330,7 @@ describe("Web3API Schema TypeInfo Transformations", () => {
           foo: "bar",
         } as ObjectDefinition,
       ],
-      moduleType: createModuleDefinition(),
+      moduleType: createModuleDefinition({}),
       importedObjectTypes: [],
       importedModuleTypes: [],
     };
