@@ -22,7 +22,6 @@ export const addFirstLast: TypeInfoTransforms = {
     TypeInfo: (typeInfo: TypeInfo): TypeInfo => ({
       ...typeInfo,
       objectTypes: setFirstLast(typeInfo.objectTypes),
-      moduleTypes: setFirstLast(typeInfo.moduleTypes),
       importedObjectTypes: setFirstLast(typeInfo.importedObjectTypes),
       importedModuleTypes: setFirstLast(typeInfo.importedModuleTypes),
     }),

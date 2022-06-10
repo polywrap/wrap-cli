@@ -82,7 +82,7 @@ type Bar {
 `;
 
 const propertyTypes5 = `
-type Query {
+type Module {
   method(
     prop: Bar!
     other: Barr!
@@ -95,7 +95,7 @@ type Bar {
 `;
 
 const propertyTypes6 = `
-type Query {
+type Module {
   method(
     prop: Bar!
   ): Barr!
@@ -107,7 +107,7 @@ type Bar {
 `;
 
 const propertyTypes7 = `
-type Queryy {
+type Modul {
   method(
     prop: Bar!
   ): String!
@@ -164,7 +164,7 @@ type D {
 `
 
 const circularTypes4 = `
-type Mutation {
+type Module {
   method1(
     arg1: String!
     arg2: String
@@ -172,10 +172,10 @@ type Mutation {
   ): String!
 }
 
-type TestImport_Query @imported(
+type TestImport_Module @imported(
   uri: "testimport.uri.eth",
   namespace: "TestImport",
-  nativeType: "Query"
+  nativeType: "Module"
 ) {
   importedMethod(
     str: String!
@@ -290,15 +290,15 @@ describe("Web3API Schema Type Validation", () => {
     );
 
     expect(exec(propertyTypes5)).toThrow(
-      /Unknown property type found: type Query { method: Barr }/gm
+      /Unknown property type found: type Module { method: Barr }/gm
     );
 
     expect(exec(propertyTypes6)).toThrow(
-      /Unknown property type found: type Query { method: Barr }/gm
+      /Unknown property type found: type Module { method: Barr }/gm
     );
 
     expect(exec(propertyTypes7)).toThrow(
-      /Methods can only be defined on module types \(Mutation, Query\)\.\nFound: type Queryy { method\(prop\) }/gm
+      /Methods can only be defined on module types \(Module\)\.\nFound: type Modul { method\(prop\) }/gm
     );
   })
 

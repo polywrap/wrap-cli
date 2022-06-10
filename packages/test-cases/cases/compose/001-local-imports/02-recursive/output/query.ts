@@ -47,13 +47,12 @@ export const typeInfo: TypeInfo = {
   ],
   moduleTypes: [
     {
-      ...createModuleDefinition({ type: "Query" }),
+      ...createModuleDefinition(),
       imports: [],
       interfaces: [],
       methods: [
         {
           ...createMethodDefinition({
-            type: "query",
             name: "method",
             return: createObjectPropertyDefinition({
               name: "method",

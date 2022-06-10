@@ -151,7 +151,6 @@ export const typeInfo: TypeInfo = {
       methods: [
         {
           ...createMethodDefinition({
-            type: "query",
             name: "requiredMapArgs",
             return: createMapPropertyDefinition({
               name: "requiredMapArgs",
@@ -191,7 +190,6 @@ export const typeInfo: TypeInfo = {
         },
         {
           ...createMethodDefinition({
-            type: "query",
             name: "optionalMapArgs",
             return: createMapPropertyDefinition({
               name: "optionalMapArgs",
@@ -229,7 +227,6 @@ export const typeInfo: TypeInfo = {
         },
         {
           ...createMethodDefinition({
-            type: "query",
             name: "optionalValueArgs",
             return: createMapPropertyDefinition({
               name: "optionalValueArgs",

@@ -11,42 +11,36 @@ import {
   CapabilityDefinition,
   EnvDefinition,
   createEnvDefinition,
+  createModuleDefinition,
 } from "./definitions";
 
 export * from "./definitions";
 export * from "./scalar";
-export * from "./operation";
 export * from "./module";
 export * from "./env";
 export * from "./map";
 
 export interface TypeInfo {
   objectTypes: ObjectDefinition[];
-  moduleTypes: ModuleDefinition[];
+  moduleType: ModuleDefinition;
   enumTypes: EnumDefinition[];
   interfaceTypes: InterfaceDefinition[];
   importedObjectTypes: ImportedObjectDefinition[];
   importedModuleTypes: ImportedModuleDefinition[];
   importedEnumTypes: ImportedEnumDefinition[];
-  envTypes: {
-    query: EnvDefinition;
-    mutation: EnvDefinition;
-  };
+  envType: EnvDefinition;
 }
 
 export function createTypeInfo(): TypeInfo {
   return {
     objectTypes: [],
     enumTypes: [],
-    moduleTypes: [],
+    moduleType: createModuleDefinition({}),
     interfaceTypes: [],
     importedObjectTypes: [],
     importedModuleTypes: [],
     importedEnumTypes: [],
-    envTypes: {
-      query: createEnvDefinition({}),
-      mutation: createEnvDefinition({}),
-    },
+    envType: createEnvDefinition({}),
   };
 }
 
@@ -55,16 +49,13 @@ type ImportedDefinition = ImportedObjectDefinition | ImportedModuleDefinition;
 export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
   const combined: TypeInfo = {
     objectTypes: [],
-    moduleTypes: [],
+    moduleType: createModuleDefinition({}),
     enumTypes: [],
     interfaceTypes: [],
     importedObjectTypes: [],
     importedModuleTypes: [],
     importedEnumTypes: [],
-    envTypes: {
-      query: createEnvDefinition({}),
-      mutation: createEnvDefinition({}),
-    },
+    envType: createEnvDefinition({}),
   };
 
   const compareImportedType = (
@@ -83,9 +74,7 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
       tryInsert(combined.objectTypes, objectType);
     }
 
-    for (const ModuleType of typeInfo.moduleTypes) {
-      tryInsert(combined.moduleTypes, ModuleType);
-    }
+    combined.moduleType = typeInfo.moduleType;
 
     for (const interfaceType of typeInfo.interfaceTypes) {
       tryInsert(
@@ -105,15 +94,8 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
           ) as CapabilityType[];
           for (const capability of combinedCapabilityTypes) {
             if (b.capabilities[capability] && a.capabilities[capability]) {
-              const combinedModules = Array.from(
-                new Set([
-                  ...a.capabilities[capability].modules,
-                  ...b.capabilities[capability].modules,
-                ])
-              );
               combinedCapabilities[capability] = {
                 enabled: true,
-                modules: combinedModules,
               };
             } else if (a.capabilities[capability]) {
               combinedCapabilities[capability] = a.capabilities[capability];
@@ -149,21 +131,12 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
       tryInsert(combined.importedEnumTypes, importedEnumType);
     }
 
-    if (typeInfo.envTypes.query.client) {
-      combined.envTypes.query.client = typeInfo.envTypes.query.client;
+    if (typeInfo.envType.client) {
+      combined.envType.client = typeInfo.envType.client;
     }
 
-    if (typeInfo.envTypes.query.sanitized) {
-      combined.envTypes.query.sanitized = typeInfo.envTypes.query.sanitized;
-    }
-
-    if (typeInfo.envTypes.mutation.client) {
-      combined.envTypes.mutation.client = typeInfo.envTypes.mutation.client;
-    }
-
-    if (typeInfo.envTypes.mutation.sanitized) {
-      combined.envTypes.mutation.sanitized =
-        typeInfo.envTypes.mutation.sanitized;
+    if (typeInfo.envType.sanitized) {
+      combined.envType.sanitized = typeInfo.envType.sanitized;
     }
   }
 

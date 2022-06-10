@@ -21,22 +21,12 @@ import {
   ASTVisitor,
 } from "graphql";
 
-const visitorEnter = (
-  envTypes: {
-    query: EnvDefinition;
-    mutation: EnvDefinition;
-  },
-  state: State
-) => ({
+const visitorEnter = (envType: EnvDefinition, state: State) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     const typeName = node.name.value;
 
     if (isEnvType(typeName)) {
       const type = createObjectDefinition({ type: typeName });
-      const envType = typeName.includes("Query")
-        ? envTypes.query
-        : envTypes.mutation;
-
       if (isClientEnvType(typeName)) {
         envType.client = type;
       } else {
@@ -76,7 +66,7 @@ export function getEnvVisitor(typeInfo: TypeInfo): ASTVisitor {
   const state: State = {};
 
   return {
-    enter: visitorEnter(typeInfo.envTypes, state),
+    enter: visitorEnter(typeInfo.envType, state),
     leave: visitorLeave(state),
   };
 }

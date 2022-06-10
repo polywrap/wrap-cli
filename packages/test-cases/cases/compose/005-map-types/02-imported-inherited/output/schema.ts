@@ -174,7 +174,6 @@ export const typeInfo: TypeInfo = {
       methods: [
         {
           ...createMethodDefinition({
-            type: "query",
             name: "method",
             return: createMapPropertyDefinition({
               name: "method",
@@ -218,7 +217,6 @@ export const typeInfo: TypeInfo = {
       methods: [
         {
           ...createMethodDefinition({
-            type: "mutation",
             name: "method",
             return: createMapPropertyDefinition({
               name: "method",

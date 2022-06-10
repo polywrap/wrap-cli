@@ -145,7 +145,6 @@ export const typeInfo: TypeInfo = {
       methods: [
         {
           ...createMethodDefinition({
-            type: "query",
             name: "method1",
             return: createScalarPropertyDefinition({
               name: "method1",
@@ -188,7 +187,6 @@ export const typeInfo: TypeInfo = {
         },
         {
           ...createMethodDefinition({
-            type: "query",
             name: "method2",
             return: createArrayPropertyDefinition({
               name: "method2",

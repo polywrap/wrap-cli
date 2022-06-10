@@ -24,7 +24,6 @@ export const typeInfo: TypeInfo = {
       methods: [
         {
           ...createMethodDefinition({
-            type: "query",
             name: "getMap",
             return: createMapPropertyDefinition({
               name: "getMap",
@@ -58,7 +57,6 @@ export const typeInfo: TypeInfo = {
       methods: [
         {
           ...createMethodDefinition({
-            type: "mutation",
             name: "updateMap",
             return: createMapPropertyDefinition({
               name: "updateMap",
@@ -109,7 +107,6 @@ export const typeInfo: TypeInfo = {
       methods: [
         {
           ...createMethodDefinition({
-            type: "query",
             name: "getMap",
             return: createMapPropertyDefinition({
               name: "getMap",
@@ -143,7 +140,6 @@ export const typeInfo: TypeInfo = {
       methods: [
         {
           ...createMethodDefinition({
-            type: "mutation",
             name: "updateMap",
             return: createMapPropertyDefinition({
               name: "updateMap",

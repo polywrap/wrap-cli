@@ -33,57 +33,42 @@ export const typeInfo: TypeInfo = {
         ...createCapability({
           type: "getImplementations",
           enabled: true,
-          modules: ["query"],
         }),
       },
     }),
   ],
-  envTypes: {
-    query: createEnvDefinition({
+  envType: createEnvDefinition({
       sanitized: {
-        ...createObjectDefinition({ type: "QueryEnv" }),
+        ...createObjectDefinition({ type: "Env" }),
         properties: [
           createScalarPropertyDefinition({
             name: "prop",
             type: "String",
             required: true,
           }),
-        ],
-      },
-      client: {
-        ...createObjectDefinition({ type: "QueryClientEnv" }),
-        properties: [
           createScalarPropertyDefinition({
-            name: "prop",
-            type: "String",
-            required: true,
-          }),
-        ],
-      },
-    }),
-    mutation: createEnvDefinition({
-      sanitized: {
-        ...createObjectDefinition({ type: "MutationEnv" }),
-        properties: [
-          createScalarPropertyDefinition({
-            name: "prop",
+            name: "propM",
             type: "Int",
             required: true,
-          }),
+          })
         ],
       },
       client: {
-        ...createObjectDefinition({ type: "MutationClientEnv" }),
+        ...createObjectDefinition({ type: "ClientEnv" }),
         properties: [
           createScalarPropertyDefinition({
             name: "prop",
+            type: "String",
+            required: true,
+          }),
+          createScalarPropertyDefinition({
+            name: "propM",
             type: "String",
             required: false,
           }),
         ],
       },
     }),
-  },
   objectTypes: [
     {
       ...createObjectDefinition({
@@ -462,41 +447,25 @@ export const typeInfo: TypeInfo = {
       comment: "TestImport_Enum comment",
     }),
   ],
-  moduleTypes: [
-    {
-      ...createModuleDefinition({ type: "Mutation" }),
-      methods: [
-        {
-          ...createMethodDefinition({
-            type: "mutation",
-            name: "sanitizeEnv",
-            return: createObjectPropertyDefinition({ name: "sanitizeEnv", type: "MutationEnv", required: true }),
-            arguments: [createObjectPropertyDefinition({ name: "env", type: "MutationClientEnv", required: true })],
-          })
-        },
-      ],
-    },
+  moduleType: 
     {
       ...createModuleDefinition({
-        type: "Query",
-        imports: [{ type: "TestImport_Query" }, { type: "Interface_Query" }],
+        imports: [{ type: "TestImport_Module" }, { type: "Interface_Module" }],
         interfaces: [
-          createInterfaceImplementedDefinition({ type: "Interface_Query" }),
+          createInterfaceImplementedDefinition({ type: "Interface_Module" }),
         ],
-        comment: "Query comment",
+        comment: "Module comment",
       }),
       methods: [
         {
           ...createMethodDefinition({
-            type: "query",
             name: "sanitizeEnv",
-            return: createObjectPropertyDefinition({ name: "sanitizeEnv", type: "QueryEnv", required: true }),
-            arguments: [createObjectPropertyDefinition({ name: "env", type: "QueryClientEnv", required: true })],
+            return: createObjectPropertyDefinition({ name: "sanitizeEnv", type: "Env", required: true }),
+            arguments: [createObjectPropertyDefinition({ name: "env", type: "ClientEnv", required: true })],
           })
         },
         {
           ...createMethodDefinition({
-            type: "query",
             name: "queryMethod",
             return: createArrayPropertyDefinition({
               name: "queryMethod",
@@ -521,7 +490,6 @@ export const typeInfo: TypeInfo = {
         },
         {
           ...createMethodDefinition({
-            type: "query",
             name: "userObjectMethod",
             return: createObjectPropertyDefinition({
               name: "userObjectMethod",
@@ -551,7 +519,6 @@ export const typeInfo: TypeInfo = {
         },
         {
           ...createMethodDefinition({
-            type: "query",
             name: "enumMethod",
             return: createEnumPropertyDefinition({
               name: "enumMethod",
@@ -581,7 +548,6 @@ export const typeInfo: TypeInfo = {
         },
         {
           ...createMethodDefinition({
-            type: "query",
             name: "abstractMethod",
             return: createScalarPropertyDefinition({
               name: "abstractMethod",
@@ -600,7 +566,6 @@ export const typeInfo: TypeInfo = {
         },
         {
           ...createMethodDefinition({
-            type: "query",
             name: "transformMap",
             return: createMapPropertyDefinition({
               name: "transformMap",
@@ -636,7 +601,6 @@ export const typeInfo: TypeInfo = {
         },
       ],
     },
-  ],
   importedObjectTypes: [
     {
       ...createImportedObjectDefinition({
@@ -731,15 +695,13 @@ export const typeInfo: TypeInfo = {
       ...createImportedModuleDefinition({
         uri: "testimport.uri.eth",
         namespace: "TestImport",
-        type: "TestImport_Query",
         isInterface: true,
-        nativeType: "Query",
-        comment: "TestImport_Query comment",
+        nativeType: "Module",
+        comment: "TestImport_Module comment",
       }),
       methods: [
         {
           ...createMethodDefinition({
-            type: "query",
             name: "importedMethod",
             return: createScalarPropertyDefinition({
               name: "importedMethod",
@@ -789,7 +751,6 @@ export const typeInfo: TypeInfo = {
         },
         {
           ...createMethodDefinition({
-            type: "query",
             name: "anotherMethod",
             return: createArrayPropertyDefinition({
               name: "anotherMethod",
@@ -817,7 +778,6 @@ export const typeInfo: TypeInfo = {
         },
         {
           ...createMethodDefinition({
-            type: "query",
             name: "importedObjectMethod",
             return: {
               ...createObjectPropertyDefinition({
@@ -853,7 +813,6 @@ export const typeInfo: TypeInfo = {
         },
         {
           ...createMethodDefinition({
-            type: "query",
             name: "importedEnumMethod",
             return: createEnumPropertyDefinition({
               name: "importedEnumMethod",
@@ -882,49 +841,15 @@ export const typeInfo: TypeInfo = {
     },
     {
       ...createImportedModuleDefinition({
-        uri: "testimport.uri.eth",
-        namespace: "TestImport",
-        type: "TestImport_Mutation",
-        nativeType: "Mutation",
-        isInterface: false,
-        comment: "TestImport_Mutation comment",
-      }),
-      methods: [
-        {
-          ...createMethodDefinition({
-            type: "mutation",
-            name: "importedMethod",
-            return: createScalarPropertyDefinition({
-              name: "importedMethod",
-              type: "String",
-              required: true,
-            }),
-            comment: "importedMethod comment",
-          }),
-          arguments: [
-            createScalarPropertyDefinition({
-              name: "str",
-              type: "String",
-              required: true,
-              comment: "str comment",
-            }),
-          ],
-        },
-      ],
-    },
-    {
-      ...createImportedModuleDefinition({
         uri: "interface.uri.eth",
         namespace: "Interface",
-        type: "Interface_Query",
         isInterface: false,
-        nativeType: "Query",
-        comment: "Interface_Query comment",
+        nativeType: "Module",
+        comment: "Interface_Module comment",
       }),
       methods: [
         {
           ...createMethodDefinition({
-            type: "query",
             name: "abstractMethod",
             return: createScalarPropertyDefinition({
               name: "abstractMethod",

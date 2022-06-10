@@ -222,7 +222,6 @@ export const typeInfo: TypeInfo = {
       methods: [
         {
           ...createMethodDefinition({
-            type: "query",
             name: "method1",
             return: createScalarPropertyDefinition({
               name: "method1",
@@ -283,7 +282,6 @@ export const typeInfo: TypeInfo = {
         },
         {
           ...createMethodDefinition({
-            type: "query",
             name: "method2",
             comment: "method2 comment",
             return: createArrayPropertyDefinition({
@@ -312,7 +310,6 @@ export const typeInfo: TypeInfo = {
         },
         {
           ...createMethodDefinition({
-            type: "query",
             name: "abstractQueryMethod",
             return: createObjectPropertyDefinition({
               name: "abstractQueryMethod",
@@ -624,7 +621,6 @@ export const typeInfo: TypeInfo = {
       methods: [
         {
           ...createMethodDefinition({
-            type: "query",
             name: "method1",
             return: createScalarPropertyDefinition({
               name: "method1",
@@ -672,7 +668,6 @@ export const typeInfo: TypeInfo = {
         },
         {
           ...createMethodDefinition({
-            type: "query",
             name: "method2",
             comment: "method2 comment",
             return: createArrayPropertyDefinition({
@@ -714,7 +709,6 @@ export const typeInfo: TypeInfo = {
       methods: [
         {
           ...createMethodDefinition({
-            type: "query",
             name: "abstractQueryMethod",
             comment: "abstractQueryMethod comment",
             return: createObjectPropertyDefinition({

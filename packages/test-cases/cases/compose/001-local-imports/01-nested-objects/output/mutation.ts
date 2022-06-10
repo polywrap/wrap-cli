@@ -42,7 +42,6 @@ export const typeInfo: TypeInfo = {
       methods: [
         {
           ...createMethodDefinition({
-            type: "mutation",
             name: "method",
             return: createObjectPropertyDefinition({
               name: "method",

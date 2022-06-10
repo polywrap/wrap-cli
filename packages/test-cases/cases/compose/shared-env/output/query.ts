@@ -34,7 +34,6 @@ export const typeInfo: TypeInfo = {
       methods: [
         {
           ...createMethodDefinition({
-            type: "query",
             name: "method",
             return: createScalarPropertyDefinition({
               name: "method",
