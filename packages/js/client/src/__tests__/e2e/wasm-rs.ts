@@ -4,9 +4,11 @@ import {
 } from "../../";
 import * as TestCases from "./test-cases";
 import {
-  buildAndDeployApi,
+  buildApi,
+  ensAddresses,
   initTestEnvironment,
   stopTestEnvironment,
+  providers
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 
@@ -16,16 +18,12 @@ describe("wasm-rs test cases", () => {
   let ipfsProvider: string;
   let ethProvider: string;
   let ensAddress: string;
-  let ensRegistrarAddress: string;
-  let ensResolverAddress: string;
 
   beforeAll(async () => {
-    const testEnv = await initTestEnvironment();
-    ipfsProvider = testEnv.ipfs;
-    ethProvider = testEnv.ethereum;
-    ensAddress = testEnv.ensAddress;
-    ensRegistrarAddress = testEnv.registrarAddress;
-    ensResolverAddress = testEnv.resolverAddress;
+    await initTestEnvironment();
+    ipfsProvider = providers.ipfs;
+    ethProvider = providers.ethereum;
+    ensAddress = ensAddresses.ensAddress;
   });
 
   afterAll(async () => {
@@ -50,86 +48,94 @@ describe("wasm-rs test cases", () => {
     }, config);
   }
 
-  const deployApi = (apiAbsPath: string) =>
-    buildAndDeployApi({
-      apiAbsPath,
-      ipfsProvider,
-      ensRegistryAddress: ensAddress,
-      ensRegistrarAddress,
-      ensResolverAddress,
-      ethereumProvider: ethProvider,
-    });
-
   it("asyncify", async () => {
-    const api = await deployApi(
-      `${GetPathToTestApis()}/wasm-rs/asyncify`
-    );
+    const apiPath = `${GetPathToTestApis()}/wasm-rs/asyncify`
+    const apiUri = `fs/${apiPath}/build`
+
+    await buildApi(apiPath);
 
     await TestCases.runAsyncifyTest(
-      await getClient(), api
+      await getClient(), apiUri
     );
   });
 
   it("bigint-type", async () => {
-    const api = await deployApi(
-      `${GetPathToTestApis()}/wasm-rs/bigint-type`
-    );
+    const apiPath = `${GetPathToTestApis()}/wasm-rs/bigint-type`
+    const apiUri = `fs/${apiPath}/build`
+    
+    await buildApi(apiPath);
 
     await TestCases.runBigIntTypeTest(
-      await getClient(), `ens/testnet/${api.ensDomain}`
+      await getClient(), apiUri
     );
   });
 
   it("bignumber-type", async () => {
-    const api = await deployApi(
-      `${GetPathToTestApis()}/wasm-rs/bignumber-type`
+    const apiPath = `${GetPathToTestApis()}/wasm-rs/bignumber-type`
+    const apiUri = `fs/${apiPath}/build`
+    
+    await buildApi(
+      apiPath
     );
 
     await TestCases.runBigNumberTypeTest(
-      await getClient(), `ens/testnet/${api.ensDomain}`
+      await getClient(), apiUri
     );
   });
 
   it("bytes-type", async () => {
-    const api = await deployApi(
-      `${GetPathToTestApis()}/wasm-rs/bytes-type`
+    const apiPath = `${GetPathToTestApis()}/wasm-rs/bytes-type`
+    const apiUri = `fs/${apiPath}/build`
+    
+    await buildApi(
+      apiPath
     );
 
     await TestCases.runBytesTypeTest(
-      await getClient(), `ens/testnet/${api.ensDomain}`
+      await getClient(), apiUri
     );
   });
 
   it("enum-types", async () => {
-    const api = await deployApi(
-      `${GetPathToTestApis()}/wasm-rs/enum-types`
+    const apiPath = `${GetPathToTestApis()}/wasm-rs/enum-types`
+    const apiUri = `fs/${apiPath}/build`
+    
+    await buildApi(
+      apiPath
     );
 
     await TestCases.runEnumTypesTest(
-      await getClient(), `ens/testnet/${api.ensDomain}`
+      await getClient(), apiUri
     );
   });
 
   it("map-type", async () => {
-    const api = await deployApi(
-      `${GetPathToTestApis()}/wasm-rs/map-type`
+    const apiPath = `${GetPathToTestApis()}/wasm-rs/map-type`
+    const apiUri = `fs/${apiPath}/build`
+    
+    await buildApi(
+      apiPath
     );
 
     await TestCases.runMapTypeTest(
-      await getClient(), `ens/testnet/${api.ensDomain}`
+      await getClient(), apiUri
     );
   });
 
   it("implementations - e2e", async () => {
-    let interfaceApi = await deployApi(
-      `${GetPathToTestApis()}/wasm-rs/implementations/test-interface`
-    );
-    const interfaceUri = `w3://ens/testnet/${interfaceApi.ensDomain}`;
+    const interfacePath = `${GetPathToTestApis()}/wasm-rs/implementations/test-interface`
+    const interfaceUri = `fs/${interfacePath}/build`;
 
-    const implementationApi = await deployApi(
-      `${GetPathToTestApis()}/wasm-rs/implementations/test-api`
+    const implementationPath = `${GetPathToTestApis()}/wasm-rs/implementations/test-api`
+    const implementationUri = `fs/${implementationPath}/build`;
+
+    await buildApi(
+      interfacePath
     );
-    const implementationUri = `w3://ens/testnet/${implementationApi.ensDomain}`;
+
+    await buildApi(
+      implementationPath
+    );
 
     const client = await getClient({
       interfaces: [
@@ -148,15 +154,18 @@ describe("wasm-rs test cases", () => {
   it("implementations - getImplementations", async () => {
     const interfaceUri = "w3://ens/interface.eth"
 
-    const implementationApi = await deployApi(
-      `${GetPathToTestApis()}/wasm-rs/implementations/test-use-getImpl`
+    const implementationPath = `${GetPathToTestApis()}/wasm-rs/implementations/test-use-getImpl`
+
+    await buildApi(
+      implementationPath
     );
-    const implementationUri = `w3://ens/testnet/${implementationApi.ensDomain}`;
+
+    const implementationUri = `fs/${implementationPath}/build`;
 
     const client = await getClient({
       interfaces: [
         {
-          interface: "w3://ens/interface.eth",
+          interface: interfaceUri,
           implementations: [implementationUri],
         }
       ],
@@ -168,62 +177,80 @@ describe("wasm-rs test cases", () => {
   });
 
   it("invalid type errors", async () => {
-    const api = await deployApi(
-      `${GetPathToTestApis()}/wasm-rs/invalid-types`
+    const apiPath = `${GetPathToTestApis()}/wasm-rs/invalid-types`
+    const apiUri = `fs/${apiPath}/build`
+    
+    await buildApi(
+      apiPath
     );
 
     await TestCases.runInvalidTypesTest(
-      await getClient(), `ens/testnet/${api.ensDomain}`
+      await getClient(), apiUri
     );
   });
 
   it("JSON-type", async () => {
-    const api = await deployApi(
-      `${GetPathToTestApis()}/wasm-rs/json-type`
+    const apiPath = `${GetPathToTestApis()}/wasm-rs/json-type`
+    const apiUri = `fs/${apiPath}/build`
+    
+    await buildApi(
+      apiPath
     );
 
     await TestCases.runJsonTypeTest(
-      await getClient(), `ens/testnet/${api.ensDomain}`
+      await getClient(), apiUri
     );
   });
 
   it("large-types", async () => {
-    const api = await deployApi(
-      `${GetPathToTestApis()}/wasm-rs/large-types`
+    const apiPath = `${GetPathToTestApis()}/wasm-rs/large-types`
+    const apiUri = `fs/${apiPath}/build`
+    
+    await buildApi(
+      apiPath
     );
 
     await TestCases.runLargeTypesTest(
-      await getClient(), `ens/testnet/${api.ensDomain}`
+      await getClient(), apiUri
     );
   });
 
   it("number-types under and overflows", async () => {
-    const api = await deployApi(
-      `${GetPathToTestApis()}/wasm-rs/number-types`
+    const apiPath = `${GetPathToTestApis()}/wasm-rs/number-types`
+    const apiUri = `fs/${apiPath}/build`
+    
+    await buildApi(
+      apiPath
     );
 
     await TestCases.runNumberTypesTest(
-      await getClient(), `ens/testnet/${api.ensDomain}`
+      await getClient(), apiUri
     );
   });
 
   it("object-types", async () => {
-    const api = await deployApi(
-      `${GetPathToTestApis()}/wasm-rs/object-types`
+    const apiPath = `${GetPathToTestApis()}/wasm-rs/object-types`
+    const apiUri = `fs/${apiPath}/build`
+    
+    await buildApi(
+      apiPath
     );
 
     await TestCases.runObjectTypesTest(
-      await getClient(), `ens/testnet/${api.ensDomain}`
+      await getClient(), apiUri
     );
   });
 
   it("simple-storage", async () => {
-    const api = await deployApi(
-      `${GetPathToTestApis()}/wasm-rs/simple-storage`
+    const apiPath = `${GetPathToTestApis()}/wasm-rs/simple-storage`
+    const apiUri = `fs/${apiPath}/build`
+    
+    await buildApi(
+      apiPath
     );
 
     await TestCases.runSimpleStorageTest(
-      await getClient(), api
+      await getClient(), apiUri
     );
   });
 });

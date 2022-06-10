@@ -1,6 +1,6 @@
 [package]
 name = "web3api-wasm-rs"
-version = "0.0.1-prealpha.82"
+version = "0.0.1-prealpha.84"
 license = "MIT"
 description = "Web3API's Rust-Wasm Runtime"
 homepage = "https://polywrap.io"

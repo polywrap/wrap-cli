@@ -23,7 +23,7 @@ describe("e2e tests for docker", () => {
           cli: w3Cli
         }).then((result: { exitCode: number; stdout: string; stderr: string }) => {
           const { exitCode, stderr } = result;
-          expect(stderr.indexOf("Conflict. The container name \"/root-build-env\" is already in use")).toBeLessThan(0);
+          expect(stderr.indexOf("Conflict. The container name \"/root-build-image\" is already in use")).toBeLessThan(0);
           expect(exitCode).toEqual(0);
         })
       );

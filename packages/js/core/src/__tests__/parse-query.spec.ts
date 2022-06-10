@@ -39,7 +39,6 @@ describe("parseQuery", () => {
     const expected: QueryApiInvocations<Uri> = {
       someMethod: {
         uri: dummy,
-        module: "mutation",
         method: "someMethod",
         input: {
           arg1: "hey",
@@ -145,7 +144,6 @@ describe("parseQuery", () => {
     const method1: QueryApiInvocations<Uri> = {
       someMethod: {
         uri: dummy,
-        module: "query",
         method: "someMethod",
         input: {
           arg1: 4,
@@ -170,7 +168,6 @@ describe("parseQuery", () => {
     const method2: QueryApiInvocations<Uri> = {
       anotherMethod: {
         uri: dummy,
-        module: "query",
         method: "anotherMethod",
         input: {
           arg: "hey",
@@ -188,14 +185,8 @@ describe("parseQuery", () => {
     const expected: QueryApiInvocations<Uri> = {
       ...method1,
       ...method2,
-      mutationSomeMethod: {
-        ...method1.someMethod,
-        module: "mutation"
-      },
-      mutationAnotherMethod: {
-        ...method2.anotherMethod,
-        module: "mutation"
-      },
+      mutationSomeMethod: method1.someMethod,
+      mutationAnotherMethod: method2.anotherMethod,
     };
 
     expect(result).toMatchObject(expected);
@@ -214,13 +205,6 @@ describe("parseQuery", () => {
     const doc = createQueryDocument("fragment Something on Type { something }");
     expect(() => parseQuery(dummy, doc)).toThrowError(
       /Unrecognized root level definition type/
-    );
-  });
-
-  it("fails when given a subscription operation type, which is currently unsupported", () => {
-    const doc = createQueryDocument("subscription { something }");
-    expect(() => parseQuery(dummy, doc)).toThrowError(
-      /Subscription queries are not yet supported/
     );
   });
 

@@ -7,12 +7,10 @@ import {
   intlMsg,
   defaultWeb3ApiManifest,
   getTestEnvProviders,
-} from "../lib";
-import {
   parseCodegenDirOption,
   parseCodegenScriptOption,
   parseWasmManifestFileOption,
-} from "../lib/parsers";
+} from "../lib";
 
 import path from "path";
 import { filesystem } from "gluegun";
@@ -82,7 +80,7 @@ async function run(options: CodegenCommandOptions) {
 
   // Web3Api Project
   const project = new Web3ApiProject({
-    rootCacheDir: path.dirname(manifestFile),
+    rootDir: path.dirname(manifestFile),
     web3apiManifestPath: manifestFile,
   });
   await project.validate();

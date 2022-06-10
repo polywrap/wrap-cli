@@ -43,7 +43,7 @@ export class SchemaComposer {
 
     const { project } = this._config;
 
-    const schemaNamedPaths = await project.getSchemaNamedPaths();
+    const schemaNamedPath = await project.getSchemaNamedPath();
     const import_redirects = await project.getImportRedirects();
 
     const getSchemaFile = (schemaPath?: string): SchemaFile | undefined =>
@@ -64,16 +64,12 @@ export class SchemaComposer {
       output,
     };
 
-    for (const name of Object.keys(schemaNamedPaths)) {
-      const schemaPath = schemaNamedPaths[name];
-      const schemaFile = getSchemaFile(schemaPath);
-
-      if (!schemaFile) {
-        throw Error(`Schema "${name}" cannot be loaded at path: ${schemaPath}`);
-      }
-
-      options.schemas[name] = schemaFile;
+    const schemaFile = getSchemaFile(schemaNamedPath);
+    if (!schemaFile) {
+      throw Error(`Schema cannot be loaded at path: ${schemaNamedPath}`);
     }
+
+    options.schemas["main"] = schemaFile;
 
     this._composerOutput = await composeSchema(options);
 

@@ -1,6 +1,6 @@
-import { Command as Program } from "commander";
+import { Command as Program, Argument } from "commander";
 
-export { Program };
+export { Program, Argument };
 
 export interface Command {
   setup: (program: Program) => void;

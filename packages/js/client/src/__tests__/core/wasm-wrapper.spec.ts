@@ -1,7 +1,9 @@
 import {
-  buildAndDeployApi,
+  buildApi,
+  ensAddresses,
   initTestEnvironment,
   stopTestEnvironment,
+  providers
 } from "@web3api/test-env-js";
 import {
   Uri,
@@ -9,7 +11,6 @@ import {
   Web3ApiClientConfig,
   Plugin,
   PluginModule,
-  PluginModules,
   Subscription,
   Web3ApiManifest,
   BuildManifest,
@@ -28,31 +29,17 @@ describe("wasm-wrapper", () => {
   let ipfsProvider: string;
   let ethProvider: string;
   let ensAddress: string;
-  let ensRegistrarAddress: string;
-  let ensResolverAddress: string;
 
-  let ensUri: string;
-  let ipfsUri: string;
+  const apiPath = `${GetPathToTestApis()}/wasm-as/simple-storage`
+  const apiUri = `fs/${apiPath}/build`
 
   beforeAll(async () => {
-    const { ipfs, ethereum, ensAddress: ens, resolverAddress, registrarAddress } = await initTestEnvironment();
-    ipfsProvider = ipfs;
-    ethProvider = ethereum;
-    ensAddress = ens;
-    ensRegistrarAddress = registrarAddress;
-    ensResolverAddress = resolverAddress;
+    await initTestEnvironment();
+    ipfsProvider = providers.ipfs;
+    ethProvider = providers.ethereum;
+    ensAddress = ensAddresses.ensAddress;
 
-    const api = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/wasm-as/simple-storage`,
-      ipfsProvider,
-      ensRegistryAddress: ensAddress,
-      ethereumProvider: ethProvider,
-      ensRegistrarAddress,
-      ensResolverAddress,
-    });
-
-    ensUri = `ens/testnet/${api.ensDomain}`;
-    ipfsUri = `ipfs/${api.ipfsCid}`;
+    await buildApi(apiPath);
   });
 
   afterAll(async () => {
@@ -83,24 +70,18 @@ describe("wasm-wrapper", () => {
   };
 
   const mockPlugin = () => {
-    class Query extends PluginModule {
+    class Main extends PluginModule {
       getData(_: unknown) {
         return 100;
       }
-    }
-
-    class Mutation extends PluginModule {
       deployContract(_: unknown): string {
         return "0x100";
       }
     }
 
     class MockPlugin implements Plugin {
-      getModules(): PluginModules {
-        return {
-          query: new Query({}),
-          mutation: new Mutation({}),
-        };
+      getModule(): PluginModule {
+        return new Main({})
       }
     }
 
@@ -116,8 +97,7 @@ describe("wasm-wrapper", () => {
   test("invoke with decode defaulted to true works as expected", async () => {
     const client = await getClient();
     const result = await client.invoke<string>({
-      uri: ensUri,
-      module: "mutation",
+      uri: apiUri,
       method: "deployContract",
       input: {
         connection: {
@@ -135,8 +115,7 @@ describe("wasm-wrapper", () => {
   test("invoke with decode set to false works as expected", async () => {
     const client = await getClient();
     const result = await client.invoke({
-      uri: ensUri,
-      module: "mutation",
+      uri: apiUri,
       method: "deployContract",
       input: {
         connection: {
@@ -164,14 +143,13 @@ describe("wasm-wrapper", () => {
 
     const redirects = [
       {
-        from: ensUri,
+        from: apiUri,
         to: "w3://ens/mock.web3api.eth",
       },
     ];
 
     const result = await client.invoke({
-      uri: ensUri,
-      module: "mutation",
+      uri: apiUri,
       method: "deployContract",
       input: {},
       config: {
@@ -195,7 +173,7 @@ describe("wasm-wrapper", () => {
 
     const redirects = [
       {
-        from: ensUri,
+        from: apiUri,
         to: "w3://ens/mock.web3api.eth",
       },
     ];
@@ -203,7 +181,7 @@ describe("wasm-wrapper", () => {
     const deploy = await client.query<{
       deployContract: string;
     }>({
-      uri: ensUri,
+      uri: apiUri,
       query: `
         mutation {
           deployContract(
@@ -225,7 +203,7 @@ describe("wasm-wrapper", () => {
     const get = await client.query<{
       getData: number;
     }>({
-      uri: ensUri,
+      uri: apiUri,
       query: `
         query {
           getData(
@@ -248,7 +226,7 @@ describe("wasm-wrapper", () => {
     const getFail = await client.query<{
       getData: number;
     }>({
-      uri: ensUri,
+      uri: apiUri,
       query: `
         query {
           getData(
@@ -275,7 +253,7 @@ describe("wasm-wrapper", () => {
     const actualManifest: Web3ApiManifest = deserializeWeb3ApiManifest(
       actualManifestStr
     );
-    const manifest: Web3ApiManifest = await client.getManifest(ensUri, {
+    const manifest: Web3ApiManifest = await client.getManifest(apiUri, {
       type: "web3api",
     });
     expect(manifest).toStrictEqual(actualManifest);
@@ -287,7 +265,7 @@ describe("wasm-wrapper", () => {
     const actualBuildManifest: BuildManifest = deserializeBuildManifest(
       actualBuildManifestStr
     );
-    const buildManifest: BuildManifest = await client.getManifest(ensUri, {
+    const buildManifest: BuildManifest = await client.getManifest(apiUri, {
       type: "build",
     });
     expect(buildManifest).toStrictEqual(actualBuildManifest);
@@ -299,7 +277,7 @@ describe("wasm-wrapper", () => {
     const actualMetaManifest: MetaManifest = deserializeMetaManifest(
       actualMetaManifestStr
     );
-    const metaManifest: MetaManifest = await client.getManifest(ensUri, {
+    const metaManifest: MetaManifest = await client.getManifest(apiUri, {
       type: "meta",
     });
     expect(metaManifest).toStrictEqual(actualMetaManifest);
@@ -308,12 +286,12 @@ describe("wasm-wrapper", () => {
   test("getFile -- simple-storage web3api", async () => {
     const client = await getClient();
 
-    const manifest: Web3ApiManifest = await client.getManifest(ensUri, {
+    const manifest: Web3ApiManifest = await client.getManifest(apiUri, {
       type: "web3api",
     });
 
-    const fileStr: string = (await client.getFile(ensUri, {
-      path: manifest.modules.query?.schema as string,
+    const fileStr: string = (await client.getFile(apiUri, {
+      path: manifest.schema as string,
       encoding: "utf8",
     })) as string;
     expect(fileStr).toContain(`getData(
@@ -322,8 +300,8 @@ describe("wasm-wrapper", () => {
   ): Int!
 `);
 
-    const fileBuffer: ArrayBuffer = (await client.getFile(ensUri, {
-      path: manifest.modules.query?.schema!,
+    const fileBuffer: ArrayBuffer = (await client.getFile(apiUri, {
+      path: manifest.schema!,
     })) as ArrayBuffer;
     const decoder = new TextDecoder("utf8");
     const text = decoder.decode(fileBuffer);
@@ -353,7 +331,7 @@ describe("wasm-wrapper", () => {
     const deploy = await client.query<{
       deployContract: string;
     }>({
-      uri: ensUri,
+      uri: apiUri,
       query: `
         mutation {
           deployContract(
@@ -379,7 +357,7 @@ describe("wasm-wrapper", () => {
       await client.query<{
         setData: string;
       }>({
-        uri: ipfsUri,
+        uri: apiUri,
         query: `
         mutation {
           setData(
@@ -403,7 +381,7 @@ describe("wasm-wrapper", () => {
     }> = client.subscribe<{
       getData: number;
     }>({
-      uri: ensUri,
+      uri: apiUri,
       query: `
         query {
           getData(
@@ -441,7 +419,7 @@ describe("wasm-wrapper", () => {
     const deploy = await client.query<{
       deployContract: string;
     }>({
-      uri: ensUri,
+      uri: apiUri,
       query: `
         mutation {
           deployContract(
@@ -467,7 +445,7 @@ describe("wasm-wrapper", () => {
       await client.query<{
         setData: string;
       }>({
-        uri: ipfsUri,
+        uri: apiUri,
         query: `
           mutation {
             setData(
@@ -491,7 +469,7 @@ describe("wasm-wrapper", () => {
     }> = client.subscribe<{
       getData: number;
     }>({
-      uri: ensUri,
+      uri: apiUri,
       query: `
           query {
             getData(
