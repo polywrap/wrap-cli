@@ -36,8 +36,19 @@ directive @annotate(type: String!) on FIELD
 ### Web3API Header END ###
 
 type Module {
-  getMap: Map! @annotate(type: "Map<String, Int>!")
-  updateMap(
-    map: Map! @annotate(type: "Map<String, Int>!")
-  ): Map! @annotate(type: "Map<String, Int>!")
+  method(
+    str: String!
+  ): String!
 }
+
+type ModuleEnv {
+  prop: String!
+}
+
+### Imported Queries START ###
+
+### Imported Queries END ###
+
+### Imported Objects START ###
+
+### Imported Objects END ###

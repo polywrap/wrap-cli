@@ -98,7 +98,9 @@ export function transformTypeInfo(
     );
   }
 
-  result.moduleType = visitModuleDefinition(result.moduleType, transforms);
+  if (result.moduleType) {
+    result.moduleType = visitModuleDefinition(result.moduleType, transforms);
+  }
 
   for (let i = 0; i < result.importedObjectTypes.length; ++i) {
     result.importedObjectTypes[i] = visitImportedObjectDefinition(

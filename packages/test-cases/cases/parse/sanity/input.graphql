@@ -135,6 +135,10 @@ anotherProp comment
   str2: String!
 }
 
+type ModuleObjectType {
+  prop: String!
+}
+
 """
 Module comment
 """

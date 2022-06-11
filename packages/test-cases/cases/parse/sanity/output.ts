@@ -429,6 +429,18 @@ export const typeInfo: TypeInfo = {
         }),
       ],
     },
+    {
+      ...createObjectDefinition({
+        type: "ModuleObjectType",
+      }),
+      properties: [
+        createScalarPropertyDefinition({
+          name: "prop",
+          type: "String",
+          required: true,
+        }),
+      ],
+    }
   ],
   enumTypes: [
     createEnumDefinition({

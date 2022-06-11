@@ -1,4 +1,0 @@
-#import { Query } into Namespace from "external.eth"
-
-type Module implements Namespace_Query {
-}

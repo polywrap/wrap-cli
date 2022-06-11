@@ -35,9 +35,22 @@ directive @annotate(type: String!) on FIELD
 
 ### Web3API Header END ###
 
-type Module {
-  getMap: Map! @annotate(type: "Map<String, Int>!")
-  updateMap(
-    map: Map! @annotate(type: "Map<String, Int>!")
-  ): Map! @annotate(type: "Map<String, Int>!")
-}
+type Module implements Namespace_Module @imports(
+  types: [
+    "Namespace_Module"
+  ]
+)
+
+### Imported Queries START ###
+
+type Namespace_Module @imported(
+  uri: "external.eth",
+  namespace: "Namespace",
+  nativeType: "Module"
+)
+
+### Imported Queries END ###
+
+### Imported Objects START ###
+
+### Imported Objects END ###

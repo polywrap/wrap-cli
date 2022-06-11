@@ -3,6 +3,7 @@ import {
   InterfaceDefinition,
   CapabilityDefinition,
   TypeInfo,
+  createModuleDefinition,
 } from "../typeInfo";
 
 export interface ModuleCapability {
@@ -35,6 +36,10 @@ export function moduleCapabilities(): TypeInfoTransforms {
     },
     leave: {
       TypeInfo: (info: TypeInfo) => {
+        if (!info.moduleType) {
+          info.moduleType = createModuleDefinition({});
+        }
+
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (info.moduleType as any).capabilities = capabilities;
 
