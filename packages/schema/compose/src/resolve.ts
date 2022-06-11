@@ -45,9 +45,9 @@ import {
   createCapability,
   ModuleCapability,
   createEnvDefinition,
-  createModuleDefinition,
   envTypes,
   createObjectDefinition,
+  createModuleDefinition,
 } from "@web3api/schema-parse";
 
 type ImplementationWithInterfaces = {
@@ -159,7 +159,6 @@ export async function resolveImportsAndParseSchemas(
 
   const subTypeInfo: TypeInfo = {
     objectTypes: [],
-    moduleType: createModuleDefinition({}),
     enumTypes: [],
     interfaceTypes: [],
     importedEnumTypes: [],
@@ -643,6 +642,10 @@ async function resolveExternalImports(
 
       // If it's a module type
       if (importedType === "Module") {
+        if (!extTypeInfo.moduleType) {
+          extTypeInfo.moduleType = createModuleDefinition({});
+        }
+
         extTypes = [extTypeInfo.moduleType as ModuleDefinition];
         visitorFunc = visitModuleDefinition;
         const type = extTypeInfo.moduleType as ModuleDefinition;
