@@ -13,27 +13,22 @@ import {
   createImportedEnumDefinition,
   createInterfaceImplementedDefinition,
   createObjectRef,
-  createInterfaceDefinition,
-  createCapability,
-  createTypeInfo,
   createEnvDefinition,
-  TypeInfo,
+  createTypeInfo,
   AnyDefinition,
-  createMapPropertyDefinition,
-  createMapKeyDefinition,
+  TypeInfo,
 } from "@web3api/schema-parse";
 
 export const typeInfo: TypeInfo = {
   ...createTypeInfo(),
-  envTypes: {
-    query: createEnvDefinition({
+  envType: createEnvDefinition({
       sanitized: {
-        ...createObjectDefinition({ type: "QueryEnv" }),
+        ...createObjectDefinition({ type: "ModuleEnv" }),
         properties: [
           {
-            ...createScalarPropertyDefinition({ name: "bar", type: "Bytes", required: false }),
+            ...createScalarPropertyDefinition({ name: "bar", type: "Int", required: false }),
             first: true,
-            last: null
+            last: null,
           } as AnyDefinition,
           {
             ...createScalarPropertyDefinition({ name: "foo", type: "String", required: true }),
@@ -41,173 +36,14 @@ export const typeInfo: TypeInfo = {
             last: true,
           } as AnyDefinition,
         ],
-      },
+      }
     }),
-    mutation: createEnvDefinition({
-      sanitized: {
-        ...createObjectDefinition({ type: "MutationEnv" }),
-        properties: [
-          {
-            ...createScalarPropertyDefinition({ name: "bar", type: "Int", required: false }),
-            first: true,
-            last: null
-          } as AnyDefinition,
-          {
-            ...createScalarPropertyDefinition({ name: "foo", type: "String", required: true }),
-            first: null,
-            last: true,
-          } as AnyDefinition,
-        ]
-      },
-    })
-  },
-  interfaceTypes: [
-    createInterfaceDefinition({
-      type: "Namespace",
-      uri: "test.eth",
-      namespace: "Namespace",
-      capabilities: createCapability({
-        type: "getImplementations",
-        enabled: true,
-        modules: ["query"],
-      }),
-    })
-  ],
-  moduleTypes: [
+  enumTypes: [],
+  moduleType:
     {
-      ...createModuleDefinition({ type: "Query", comment: "Query comment" }),
+      ...createModuleDefinition({ comment: "Module comment" }),
       imports: [
-        { type: "Namespace_Query" },
-        { type: "Namespace_CustomType" },
-        { type: "Namespace_ObjectType" },
-        { type: "Namespace_NestedObjectType" },
-        { type: "Namespace_Imported_NestedObjectType" },
-        { type: "Namespace_Imported_ObjectType" },
-        { type: "Namespace_CustomEnum" },
-        { type: "Namespace_Imported_Enum" },
-        { type: "Interface_Query" },
-        { type: "Interface_QueryInterfaceArgument" },
-        { type: "Interface_NestedQueryInterfaceArgument" },
-        { type: "Interface_InterfaceObject2" },
-        { type: "Interface_Object" },
-        { type: "Interface_NestedInterfaceObject" },
-      ],
-      interfaces: [
-        createInterfaceImplementedDefinition({ type: "Interface_Query" })
-      ],
-      methods: [
-        {
-          ...createMethodDefinition({
-            name: "method1",
-            comment: "method1 comment",
-            return: createScalarPropertyDefinition({
-              name: "method1",
-              type: "String",
-              required: true
-            })
-          }),
-          arguments: [
-            createScalarPropertyDefinition({
-              name: "str",
-              required: true,
-              type: "String"
-            }),
-            createScalarPropertyDefinition({
-              name: "optStr",
-              required: false,
-              type: "String"
-            }),
-            createScalarPropertyDefinition({
-              name: "u",
-              required: true,
-              type: "UInt"
-            }),
-            createArrayPropertyDefinition({
-              name: "uArrayArray",
-              required: true,
-              type: "[[UInt]]",
-              comment: "uArrayArray comment",
-              item: createArrayDefinition({
-                name: "uArrayArray",
-                required: false,
-                type: "[UInt]",
-                item: createScalarDefinition({
-                  name: "uArrayArray",
-                  required: false,
-                  type: "UInt"
-                })
-              })
-            }),
-            createMapPropertyDefinition({
-              name: "map",
-              required: true,
-              type: "Map<String, Int>",
-              comment: "Map<String!, Int!> comment",
-              key: createMapKeyDefinition({
-                name: "map",
-                type: "String",
-                required: true
-              }),
-              value: createScalarDefinition({
-                name: "map",
-                type: "Int",
-                required: true
-              })
-            })
-          ]
-        },
-        {
-          ...createMethodDefinition({
-            name: "method2",
-            comment: "method2 comment",
-            return: createArrayPropertyDefinition({
-              name: "method2",
-              type: "[Int32]",
-              required: true,
-              item: createScalarDefinition({
-                name: "method2",
-                required: true,
-                type: "Int32"
-              })
-            })
-          }),
-          arguments: [
-            createArrayPropertyDefinition({
-              name: "arg",
-              required: true,
-              type: "[String]",
-              item: createScalarDefinition({
-                name: "arg",
-                required: true,
-                type: "String"
-              })
-            })
-          ]
-        },
-        {
-          ...createMethodDefinition({
-            name: "abstractQueryMethod",
-            return: createObjectPropertyDefinition({
-              name: "abstractQueryMethod",
-              type: "Interface_InterfaceObject2",
-              required: true
-            })
-          }),
-          arguments: [
-            createObjectPropertyDefinition({
-              name: "arg",
-              required: true,
-              type: "Interface_QueryInterfaceArgument"
-            })
-          ]
-        }
-      ]
-    },
-    {
-      ...createModuleDefinition({ type: "Mutation", comment: "Mutation comment" }),
-      imports: [
-        { type: "Namespace_Query" },
-        { type: "Namespace_Mutation" },
+        { type: "Namespace_Module" },
         { type: "Namespace_NestedObjectType" },
         { type: "Namespace_ObjectType" },
         { type: "Namespace_Imported_NestedObjectType" },
@@ -215,23 +51,26 @@ export const typeInfo: TypeInfo = {
         { type: "Namespace_CustomType" },
         { type: "Namespace_CustomEnum" },
         { type: "Namespace_Imported_Enum" },
-        { type: "JustMutation_Mutation" },
+        { type: "JustModule_Module" },
         { type: "Interface_InterfaceObject1" },
         { type: "Interface_InterfaceObject2" },
         { type: "Interface_Object" },
         { type: "Interface_NestedInterfaceObject" },
-        { type: "Interface_Mutation" },
+        { type: "Interface_Module" },
+      ],
+      interfaces: [
+        createInterfaceImplementedDefinition({type: "Interface_Module"})
       ],
       methods: [
         {
           ...createMethodDefinition({
             name: "method1",
-            comment: "method1 comment",
             return: createScalarPropertyDefinition({
               name: "method1",
               type: "String",
               required: true
-            })
+            }),
+            comment: "method1 comment"
           }),
           arguments: [
             createScalarPropertyDefinition({
@@ -255,7 +94,6 @@ export const typeInfo: TypeInfo = {
               name: "uArrayArray",
               required: true,
               type: "[[UInt]]",
-              comment: "uArrayArray comment",
               item: createArrayDefinition({
                 name: "uArrayArray",
                 required: false,
@@ -265,7 +103,8 @@ export const typeInfo: TypeInfo = {
                   required: false,
                   type: "UInt"
                 })
-              })
+              }),
+              comment: "uArrayArray comment"
             }),
             createObjectPropertyDefinition({
               name: "implObject",
@@ -304,9 +143,9 @@ export const typeInfo: TypeInfo = {
         },
         {
           ...createMethodDefinition({
-            name: "abstractMutationMethod",
+            name: "abstractModuleMethod",
             return: createScalarPropertyDefinition({
-              name: "abstractMutationMethod",
+              name: "abstractModuleMethod",
               type: "String",
               required: true
             })
@@ -319,153 +158,11 @@ export const typeInfo: TypeInfo = {
             })
           ]
         },
-      ],
-      interfaces: [
-        createInterfaceImplementedDefinition({ type: "Interface_Mutation" })
       ]
-    }
-  ],
+    },
   objectTypes: [
     {
-      ...createObjectDefinition({ type: "CustomModuleType", comment: "CustomModuleType comment" }),
-      properties: [
-        createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
-        createScalarPropertyDefinition({ name: "optStr", type: "String", required: false }),
-        createScalarPropertyDefinition({ name: "u", type: "UInt", required: true }),
-        createScalarPropertyDefinition({ name: "optU", type: "UInt", required: false }),
-        createScalarPropertyDefinition({ name: "u8", type: "UInt8", required: true }),
-        createScalarPropertyDefinition({ name: "i", type: "Int", required: true }),
-        createScalarPropertyDefinition({ name: "i8", type: "Int8", required: true }),
-        createScalarPropertyDefinition({ name: "bytes", type: "Bytes", required: true }),
-        createArrayPropertyDefinition({
-          name: "uArray",
-          type: "[UInt]",
-          required: true,
-          item: createScalarDefinition({ name: "uArray", type: "UInt", required: true })
-        }),
-        createArrayPropertyDefinition({
-          name: "uOptArray",
-          type: "[UInt]",
-          required: false,
-          item: createScalarDefinition({ name: "uOptArray", type: "UInt", required: true })
-        }),
-        createArrayPropertyDefinition({
-          name: "optStrOptArray",
-          type: "[String]",
-          required: false,
-          item: createScalarDefinition({ name: "optStrOptArray", type: "String", required: false })
-        }),
-        createArrayPropertyDefinition({
-          name: "crazyArray",
-          type: "[[[[UInt32]]]]",
-          required: false,
-          item: createArrayDefinition({
-            name: "crazyArray",
-            type: "[[[UInt32]]]",
-            required: false,
-            item: createArrayDefinition({
-              name: "crazyArray",
-              type: "[[UInt32]]",
-              required: true,
-              item: createArrayDefinition({
-                name: "crazyArray",
-                type: "[UInt32]",
-                required: false,
-                item: createScalarDefinition({ name: "crazyArray", type: "UInt32", required: true })
-              })
-            })
-          })
-        }),
-        createObjectPropertyDefinition({
-          name: "commonType",
-          type: "CommonType",
-          required: true
-        }),
-        createMapPropertyDefinition({
-          name: "optMap",
-          type: "Map<String, Int>",
-          required: false,
-          key: createMapKeyDefinition({
-            name: "optMap",
-            type: "String",
-            required: true
-          }),
-          value: createScalarDefinition({ name: "optMap", type: "Int" })
-        }),
-        createObjectPropertyDefinition({
-          name: "customType",
-          type: "Namespace_CustomType",
-          required: true,
-          comment: "customType comment"
-        })
-      ],
-    },
-    {
-      ...createObjectDefinition({ type: "AnotherModuleType" }),
-      properties: [createScalarPropertyDefinition({ name: "prop", type: "String" })],
-    },
-    {
-      ...createObjectDefinition({ type: "TypeFromInterface" }),
-      interfaces: [
-        createInterfaceImplementedDefinition({ type: "AnotherModuleType" }),
-      ],
-      properties: [
-        createScalarPropertyDefinition({ name: "prop2", type: "UInt32", required: true }),
-        createScalarPropertyDefinition({ name: "prop", type: "String" }),
-      ]
-    },
-    {
-      ...createObjectDefinition({ type: "CommonType", comment: "CommonType comment" }),
-      properties: [
-        createScalarPropertyDefinition({ name: "prop", type: "UInt8", required: true }),
-        createObjectPropertyDefinition({ name: "nestedObject", type: "NestedType", required: true }),
-        createArrayPropertyDefinition({
-          name: "objectArray",
-          type: "[[ArrayObject]]",
-          required: true,
-          comment: "objectArray comment",
-          item: createArrayDefinition({
-            name: "objectArray",
-            type: "[ArrayObject]",
-            required: false,
-            item: createObjectRef({
-              name: "objectArray",
-              type: "ArrayObject",
-              required: false
-            })
-          })
-        }),
-        createObjectPropertyDefinition({ name: "anotherLocal", type: "AnotherLocal", required: true }),
-      ],
-    },
-    {
-      ...createObjectDefinition({
-        type: "NestedType",
-        comment: "NestedType comment"
-      }),
-      properties: [
-        createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),
-      ],
-    },
-    {
-      ...createObjectDefinition({
-        type: "ArrayObject",
-        comment: "ArrayObject comment"
-      }),
-      properties: [
-        createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),
-      ],
-    },
-    {
-      ...createObjectDefinition({
-        type: "AnotherLocal",
-      }),
-      properties: [
-        createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),
-      ],
-    },
-    {
-      ...createObjectDefinition({ type: "CustomMutationType", comment: "CustomMutationType multi-line comment\nline 2" }),
+      ...createObjectDefinition({ type: "CustomModuleType", comment: "CustomModuleType multi-line comment\nline 2" }),
       properties: [
         createScalarPropertyDefinition({ name: "str", type: "String", required: true, comment: "str comment" }),
         createScalarPropertyDefinition({ name: "optStr", type: "String", required: false, comment: "optStr comment" }),
@@ -529,7 +226,7 @@ export const typeInfo: TypeInfo = {
       ],
     },
     {
-      ...createObjectDefinition({ type: "AnotherMutationType" }),
+      ...createObjectDefinition({ type: "AnotherModuleType" }),
       properties: [createScalarPropertyDefinition({ name: "prop", type: "String" })],
     },
     {
@@ -569,16 +266,65 @@ export const typeInfo: TypeInfo = {
         createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
       ]
     },
+    {
+      ...createObjectDefinition({ type: "CommonType", comment: "CommonType comment" }),
+      properties: [
+        createScalarPropertyDefinition({ name: "prop", type: "UInt8", required: true }),
+        createObjectPropertyDefinition({ name: "nestedObject", type: "NestedType", required: true }),
+        createArrayPropertyDefinition({
+          name: "objectArray",
+          type: "[[ArrayObject]]",
+          required: true,
+          comment: "objectArray comment",
+          item: createArrayDefinition({
+            name: "objectArray",
+            type: "[ArrayObject]",
+            required: false,
+            item: createObjectRef({
+              name: "objectArray",
+              type: "ArrayObject",
+              required: false
+            })
+          })
+        }),
+        createObjectPropertyDefinition({ name: "anotherLocal", type: "AnotherLocal", required: true }),
+      ],
+    },
+    {
+      ...createObjectDefinition({
+        type: "NestedType",
+        comment: "NestedType comment"
+      }),
+      properties: [
+        createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),
+      ],
+    },
+    {
+      ...createObjectDefinition({
+        type: "ArrayObject",
+        comment: "ArrayObject comment"
+      }),
+      properties: [
+        createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),
+      ],
+    },
+    {
+      ...createObjectDefinition({
+        type: "AnotherLocal",
+      }),
+      properties: [
+        createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),
+      ],
+    },
   ],
   importedModuleTypes: [
     {
       ...createImportedModuleDefinition({
         uri: "test.eth",
         namespace: "Namespace",
-        nativeType: "Query",
-        isInterface: true,
-        type: "Namespace_Query",
-        comment: "Query comment",
+        nativeType: "Module",
+        isInterface: false,
+        comment: "Module comment",
       }),
       methods: [
         {
@@ -661,43 +407,11 @@ export const typeInfo: TypeInfo = {
     },
     {
       ...createImportedModuleDefinition({
-        uri: "test-interface.eth",
-        namespace: "Interface",
-        nativeType: "Query",
-        isInterface: false,
-        type: "Interface_Query",
-        comment: "Query comment",
-      }),
-      methods: [
-        {
-          ...createMethodDefinition({
-            name: "abstractQueryMethod",
-            comment: "abstractQueryMethod comment",
-            return: createObjectPropertyDefinition({
-              name: "abstractQueryMethod",
-              type: "Interface_InterfaceObject2",
-              required: true
-            })
-          }),
-          arguments: [
-            createObjectPropertyDefinition({
-              name: "arg",
-              required: true,
-              type: "Interface_QueryInterfaceArgument",
-              comment: "arg comment"
-            }),
-          ]
-        },
-      ]
-    },
-    {
-      ...createImportedModuleDefinition({
         uri: "test.eth",
         namespace: "Namespace",
-        nativeType: "Mutation",
+        nativeType: "Module",
         isInterface: false,
-        type: "Namespace_Mutation",
-        comment: "Mutation comment",
+        comment: "Module comment",
       }),
       methods: [
         {
@@ -832,11 +546,10 @@ export const typeInfo: TypeInfo = {
     },
     {
       ...createImportedModuleDefinition({
-        uri: "just.mutation.eth",
-        namespace: "JustMutation",
-        nativeType: "Mutation",
+        uri: "just.module.eth",
+        namespace: "JustModule",
         isInterface: false,
-        type: "JustMutation_Mutation",
+        nativeType: "Module",
       }),
       methods: [
         {
@@ -872,17 +585,16 @@ export const typeInfo: TypeInfo = {
       ...createImportedModuleDefinition({
         uri: "test-interface.eth",
         namespace: "Interface",
-        nativeType: "Mutation",
-        type: "Interface_Mutation",
+        nativeType: "Module",
         isInterface: false,
-        comment: "Mutation comment",
+        comment: "Module comment",
       }),
       methods: [
         {
           ...createMethodDefinition({
-            name: "abstractMutationMethod",
+            name: "abstractModuleMethod",
             return: createScalarPropertyDefinition({
-              name: "abstractMutationMethod",
+              name: "abstractModuleMethod",
               type: "String",
               required: true
             })
@@ -899,6 +611,43 @@ export const typeInfo: TypeInfo = {
     },
   ],
   importedObjectTypes: [
+    {
+      ...createImportedObjectDefinition({
+        uri: "test.eth",
+        namespace: "Namespace",
+        nativeType: "NestedObjectType",
+        type: "Namespace_NestedObjectType"
+      }),
+      properties: [createObjectPropertyDefinition({ name: "nestedObject", type: "Namespace_ObjectType", required: true })],
+    },
+    {
+      ...createImportedObjectDefinition({
+        uri: "test.eth",
+        namespace: "Namespace",
+        nativeType: "ObjectType",
+        type: "Namespace_ObjectType"
+      }),
+      properties: [createScalarPropertyDefinition({ name: "prop", type: "String", required: true })],
+    },
+    {
+      ...createImportedObjectDefinition({
+        uri: "test.eth",
+        namespace: "Namespace",
+        nativeType: "Imported_NestedObjectType",
+        type: "Namespace_Imported_NestedObjectType",
+        comment: "Imported_NestedObjectType comment"
+      }),
+      properties: [createObjectPropertyDefinition({ name: "nestedObject", type: "Namespace_Imported_ObjectType", required: true })],
+    },
+    {
+      ...createImportedObjectDefinition({
+        uri: "test.eth",
+        namespace: "Namespace",
+        nativeType: "Imported_ObjectType",
+        type: "Namespace_Imported_ObjectType"
+      }),
+      properties: [createScalarPropertyDefinition({ name: "prop", type: "String", required: true })],
+    },
     {
       ...createImportedObjectDefinition({
         uri: "test.eth",
@@ -1073,67 +822,15 @@ export const typeInfo: TypeInfo = {
     },
     {
       ...createImportedObjectDefinition({
-        uri: "test.eth",
-        namespace: "Namespace",
-        nativeType: "ObjectType",
-        type: "Namespace_ObjectType"
-      }),
-      properties: [createScalarPropertyDefinition({ name: "prop", type: "String", required: true })],
-    },
-    {
-      ...createImportedObjectDefinition({
-        uri: "test.eth",
-        namespace: "Namespace",
-        nativeType: "NestedObjectType",
-        type: "Namespace_NestedObjectType"
-      }),
-      properties: [createObjectPropertyDefinition({ name: "nestedObject", type: "Namespace_ObjectType", required: true })],
-    },
-    {
-      ...createImportedObjectDefinition({
-        uri: "test.eth",
-        namespace: "Namespace",
-        nativeType: "Imported_NestedObjectType",
-        type: "Namespace_Imported_NestedObjectType",
-        comment: "Imported_NestedObjectType comment"
-      }),
-      properties: [createObjectPropertyDefinition({ name: "nestedObject", type: "Namespace_Imported_ObjectType", required: true })],
-    },
-    {
-      ...createImportedObjectDefinition({
-        uri: "test.eth",
-        namespace: "Namespace",
-        nativeType: "Imported_ObjectType",
-        type: "Namespace_Imported_ObjectType"
-      }),
-      properties: [createScalarPropertyDefinition({ name: "prop", type: "String", required: true })],
-    },
-    {
-      ...createImportedObjectDefinition({
         uri: "test-interface.eth",
         namespace: "Interface",
-        nativeType: "QueryInterfaceArgument",
-        type: "Interface_QueryInterfaceArgument",
-        comment: "QueryInterfaceArgument comment"
+        nativeType: "InterfaceObject1",
+        type: "Interface_InterfaceObject1",
+        comment: "InterfaceObject1 comment"
       }),
-      interfaces: [
-        createInterfaceImplementedDefinition({ type: "Interface_NestedQueryInterfaceArgument" })
-      ],
       properties: [
         createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
-        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true , comment: "uint8 comment"}),
-      ]
-    },
-    {
-      ...createImportedObjectDefinition({
-        uri: "test-interface.eth",
-        namespace: "Interface",
-        nativeType: "NestedQueryInterfaceArgument",
-        type: "Interface_NestedQueryInterfaceArgument",
-        comment: "NestedQueryInterfaceArgument comment"
-      }),
-      properties: [
-        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true }),
+        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true, comment: "InterfaceObject1_uint8 comment" }),
       ]
     },
     {
@@ -1174,19 +871,6 @@ export const typeInfo: TypeInfo = {
       }),
       properties: [
         createObjectPropertyDefinition({ name: "object", type: "Interface_Object", required: false, comment: "object comment" }),
-      ]
-    },
-    {
-      ...createImportedObjectDefinition({
-        uri: "test-interface.eth",
-        namespace: "Interface",
-        nativeType: "InterfaceObject1",
-        type: "Interface_InterfaceObject1",
-        comment: "InterfaceObject1 comment"
-      }),
-      properties: [
-        createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
-        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true, comment: "InterfaceObject1_uint8 comment"}),
       ]
     },
   ],

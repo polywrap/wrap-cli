@@ -1,12 +1,18 @@
-#import { Query, Mutation, CustomType } into Namespace from "test.eth"
-#import { Mutation } into JustMutation from "just.mutation.eth"
-#import { InterfaceObject1, InterfaceObject2, Mutation } into Interface from "test-interface.eth"
+#import { Module, CustomType } into Namespace from "test.eth"
+#import { Module } into JustModule from "just.module.eth"
+#import { InterfaceObject1, InterfaceObject2, Module } into Interface from "test-interface.eth"
 #import { CommonType, Env } from "../imports-local/common.graphql"
+#use { getImplementations } for Namespace
 
 """
-Mutation comment
+Module comment
 """
-type Mutation implements Interface_Mutation {
+type Module implements Interface_Module {
+
+#Testing normal comment with keyword characters: 
+#type Module {}
+#These comments should be ignored
+
 """
 method1 comment
 """
@@ -28,6 +34,10 @@ uArrayArray comment
 implObject comment
 """
     implObject: LocalImplementationObject!
+"""
+Map<String!, Int!> comment
+"""
+    map: Map! @annotate(type: "Map<String!, Int!>!")
   ): String!
 
   method2(
@@ -35,15 +45,15 @@ implObject comment
   ): [Int32!]!
 }
 
-type MutationEnv {
+type ModuleEnv {
   bar: Int
 }
 
 """
-CustomMutationType multi-line comment
+CustomModuleType multi-line comment
 line 2
 """
-type CustomMutationType {
+type CustomModuleType {
 """
 str comment
 """
@@ -66,14 +76,19 @@ crazyArray comment
 """
   crazyArray: [[[[UInt32!]]!]]
   commonType: CommonType!
+  optMap: Map @annotate(type: "Map<String, Int>")
 """
 customType comment
 """
   customType: Namespace_CustomType!
 }
 
-type AnotherMutationType {
+type AnotherModuleType {
   prop: String
+}
+
+type TypeFromInterface implements AnotherModuleType {
+  prop2: UInt32!
 }
 
 """

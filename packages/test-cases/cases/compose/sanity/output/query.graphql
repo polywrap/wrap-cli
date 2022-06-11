@@ -40,17 +40,6 @@ Query comment
 """
 type Query implements Interface_Query @imports(
   types: [
-    "Namespace_Query",
-    "Namespace_CustomType",
-    "Namespace_ObjectType",
-    "Namespace_NestedObjectType",
-    "Namespace_Imported_NestedObjectType",
-    "Namespace_Imported_ObjectType",
-    "Namespace_CustomEnum",
-    "Namespace_Imported_Enum",
-    "Interface_Query",
-    "Interface_QueryInterfaceArgument",
-    "Interface_NestedQueryInterfaceArgument",
     "Interface_InterfaceObject2",
     "Interface_Object",
     "Interface_NestedInterfaceObject"

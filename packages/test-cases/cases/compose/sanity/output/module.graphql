@@ -36,26 +36,30 @@ directive @annotate(type: String!) on FIELD
 ### Web3API Header END ###
 
 """
-Mutation comment
+Module comment
 """
-type Mutation implements Interface_Mutation @imports(
+type Module implements Interface_Module @imports(
   types: [
-    "Namespace_Query",
-    "Namespace_Mutation",
+    "Namespace_Module",
     "Namespace_NestedObjectType",
     "Namespace_ObjectType",
     "Namespace_Imported_NestedObjectType",
     "Namespace_Imported_ObjectType",
     "Namespace_CustomType",
     "Namespace_CustomEnum",
+    "Interface_Module",
     "Namespace_Imported_Enum",
-    "JustMutation_Mutation",
+    "JustModule_Module",
     "Interface_InterfaceObject1",
     "Interface_InterfaceObject2",
     "Interface_Object",
     "Interface_NestedInterfaceObject",
-    "Interface_Mutation"
+    "Interface_Module"
   ]
+) @capability(
+  type: "getImplementations",
+  uri: "test.eth",
+  namespace: "Namespace"
 ) {
   """
   method1 comment
@@ -80,25 +84,28 @@ type Mutation implements Interface_Mutation @imports(
     implObject: LocalImplementationObject!
   ): String!
 
+  """
+  method2 comment
+  """
   method2(
     arg: [String!]!
   ): [Int32!]!
 
-  abstractMutationMethod(
+  abstractModuleMethod(
     arg: UInt8!
   ): String!
 }
 
-type MutationEnv {
+type ModuleEnv {
   bar: Int
   foo: String!
 }
 
 """
-CustomMutationType multi-line comment
+CustomModuleType multi-line comment
 line 2
 """
-type CustomMutationType {
+type CustomModuleType {
   """
   str comment
   """
@@ -121,13 +128,14 @@ type CustomMutationType {
   """
   crazyArray: [[[[UInt32!]]!]]
   commonType: CommonType!
+  optMap: Map @annotate(type: "Map<String!, Int>")
   """
   customType comment
   """
   customType: Namespace_CustomType!
 }
 
-type AnotherMutationType {
+type AnotherModuleType {
   prop: String
 }
 
@@ -152,6 +160,11 @@ type LocalImplementationObject implements LocalInterfaceObject {
 
 type LocalInterfaceObject {
   str: String!
+}
+
+type TypeFromInterface implements AnotherModuleType {
+  prop2: UInt32!
+  prop: String
 }
 
 """
@@ -188,12 +201,12 @@ type AnotherLocal {
 ### Imported Queries START ###
 
 """
-Query comment
+Module comment
 """
-type Namespace_Query @imported(
+type Namespace_Module @imported(
   uri: "test.eth",
   namespace: "Namespace",
-  nativeType: "Query"
+  nativeType: "Module"
 ) {
   method1(
     str: String!
@@ -212,27 +225,6 @@ type Namespace_Query @imported(
     """
     arg: [String!]!
   ): [Int32!]!
-}
-
-"""
-Mutation comment
-"""
-type Namespace_Mutation @imported(
-  uri: "test.eth",
-  namespace: "Namespace",
-  nativeType: "Mutation"
-) {
-  method1(
-    str: String!
-    optStr: String
-    u: UInt!
-    optU: UInt
-    uArrayArray: [[UInt]]!
-  ): String!
-
-  method2(
-    arg: [String!]!
-  ): [Int32!]!
 
   localObjects(
     nestedLocalObject: Namespace_NestedObjectType
@@ -245,27 +237,33 @@ type Namespace_Mutation @imported(
   ): Namespace_Imported_NestedObjectType
 }
 
-type JustMutation_Mutation @imported(
-  uri: "just.mutation.eth",
-  namespace: "JustMutation",
-  nativeType: "Mutation"
+"""
+Module comment
+"""
+type Interface_Module @imported(
+  uri: "test-interface.eth",
+  namespace: "Interface",
+  nativeType: "Module"
+) {
+  """
+  abstractModuleMethod comment
+  """
+  abstractModuleMethod(
+    """
+    arg comment
+    """
+    arg: Interface_ModuleInterfaceArgument!
+  ): Interface_InterfaceObject2!
+}
+
+type JustModule_Module @imported(
+  uri: "just.module.eth",
+  namespace: "JustModule",
+  nativeType: "Module"
 ) {
   method(
     arg: [String!]!
   ): [Int32!]!
-}
-
-"""
-Mutation comment
-"""
-type Interface_Mutation @imported(
-  uri: "test-interface.eth",
-  namespace: "Interface",
-  nativeType: "Mutation"
-) {
-  abstractMutationMethod(
-    arg: UInt8!
-  ): String!
 }
 
 ### Imported Queries END ###

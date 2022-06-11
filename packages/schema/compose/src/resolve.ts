@@ -45,9 +45,9 @@ import {
   createCapability,
   ModuleCapability,
   createEnvDefinition,
-  createObjectDefinition,
-  envTypes,
   createModuleDefinition,
+  envTypes,
+  createObjectDefinition,
 } from "@web3api/schema-parse";
 
 type ImplementationWithInterfaces = {
@@ -619,7 +619,7 @@ async function resolveExternalImports(
     if (extTypesToImport.indexOf("*") > -1) {
       extTypesToImport = [
         ...extTypeInfo.objectTypes.map((x) => x.type),
-        ...extTypeInfo.enumTypes.map((x) => x.type)
+        ...extTypeInfo.enumTypes.map((x) => x.type),
       ];
 
       if (extTypeInfo.moduleType) {
@@ -904,14 +904,40 @@ async function resolveLocalImports(
         (type) => type.type === importedType
       );
 
+      const enumIdx =
+        objectIdx === -1 &&
+        localTypeInfo.enumTypes.findIndex((type) => type.type === importedType);
+
+      const isEnv =
+        objectIdx === -1 &&
+        localTypeInfo.envType.sanitized?.type === importedType;
+
       if (objectIdx > -1) {
         visitorFunc = visitObjectDefinition;
         type = localTypeInfo.objectTypes[objectIdx];
-      } else {
+      } else if (enumIdx > -1) {
         visitorFunc = visitEnumDefinition;
         type = localTypeInfo.enumTypes.find(
           (type) => type.type === importedType
         );
+      } else if (isEnv) {
+        visitorFunc = visitObjectDefinition;
+
+        if (!typeInfo.envType.sanitized) {
+          typeInfo.envType.sanitized = createObjectDefinition({
+            type: envTypes.Env,
+          });
+        }
+
+        const sharedEnv = localTypeInfo.envType.sanitized as ObjectDefinition;
+
+        checkDuplicateEnvProperties(
+          typeInfo.envType.sanitized,
+          sharedEnv.properties
+        );
+        typeInfo.envType.sanitized.properties.push(...sharedEnv.properties);
+
+        type = sharedEnv;
       }
 
       if (!type) {
@@ -1035,28 +1061,6 @@ async function resolveLocalImports(
       }
     }
   }
-}
-
-export function resolveEnvTypes(typeInfo: TypeInfo): void {
-  const sharedEnvDef = typeInfo.objectTypes.find((type) => type.type === "Env");
-  if (!sharedEnvDef) {
-    return;
-  }
-
-  const moduleEnvDef = typeInfo.envType;
-
-  if (!moduleEnvDef.sanitized) {
-    moduleEnvDef.sanitized = createObjectDefinition({
-      type: envTypes.Env,
-    });
-  }
-
-  typeInfo.objectTypes = typeInfo.objectTypes.filter((type) => {
-    return type.type !== sharedEnvDef.type;
-  });
-
-  checkDuplicateEnvProperties(moduleEnvDef.sanitized, sharedEnvDef.properties);
-  moduleEnvDef.sanitized.properties.push(...sharedEnvDef.properties);
 }
 
 export function checkDuplicateEnvProperties(
