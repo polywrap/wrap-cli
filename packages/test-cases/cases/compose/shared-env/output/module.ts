@@ -11,11 +11,10 @@ import {
 
 export const typeInfo: TypeInfo = {
   ...createTypeInfo(),
-  envTypes: {
-    query: createEnvDefinition({
+  envType: createEnvDefinition({
       sanitized: {
         ...createObjectDefinition({
-          type: "QueryEnv"
+          type: "ModuleEnv"
         }),
         properties: [
           {
@@ -26,46 +25,9 @@ export const typeInfo: TypeInfo = {
         ],
       },
     }),
-    mutation: createEnvDefinition({
-      sanitized: {
-        ...createObjectDefinition({
-          type: "MutationEnv"
-        }),
-        properties: [
-          {
-            ...createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),
-            first: true,
-            last: true,
-          } as AnyDefinition,
-        ],
-      },
-    }),
-  },
-  moduleTypes: [
+  moduleType:
     {
-      ...createModuleDefinition({ type: "Query" }),
-      methods: [
-        {
-          ...createMethodDefinition({
-            name: "method",
-            return: createScalarPropertyDefinition({
-              name: "method",
-              type: "String",
-              required: true
-            })
-          }),
-          arguments: [
-            createScalarPropertyDefinition({
-              name: "str",
-              required: true,
-              type: "String"
-            }),
-          ]
-        },
-      ]
-    },
-    {
-      ...createModuleDefinition({ type: "Mutation" }),
+      ...createModuleDefinition({}),
       methods: [
         {
           ...createMethodDefinition({
@@ -86,5 +48,4 @@ export const typeInfo: TypeInfo = {
         },
       ]
     }
-  ],
 }
