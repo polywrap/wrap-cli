@@ -35,9 +35,9 @@ directive @annotate(type: String!) on FIELD
 
 ### Web3API Header END ###
 
-type Query implements Namespace_Query @imports(
+type Module implements Namespace_Module @imports(
   types: [
-    "Namespace_Query"
+    "Namespace_Module"
   ]
 ) {
   getMap: Map! @annotate(type: "Map<String!, Int>!")
@@ -45,10 +45,10 @@ type Query implements Namespace_Query @imports(
 
 ### Imported Queries START ###
 
-type Namespace_Query @imported(
+type Namespace_Module @imported(
   uri: "external.eth",
   namespace: "Namespace",
-  nativeType: "Query"
+  nativeType: "Module"
 ) {
   getMap: Map! @annotate(type: "Map<String!, Int>!")
 }

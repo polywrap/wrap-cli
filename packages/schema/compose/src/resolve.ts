@@ -449,7 +449,7 @@ function addModuleImportsDirective(
       .map((type) => `\"${type}\"`)
       .join(",\n    ")}`;
 
-    const replacementModuleStr = `type "Module" $1@imports(
+    const replacementModuleStr = `type Module $1@imports(
     types: [
       ${importedTypes}
     ]

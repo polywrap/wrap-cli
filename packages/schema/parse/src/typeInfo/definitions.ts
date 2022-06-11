@@ -524,7 +524,7 @@ export function createImportedModuleDefinition(args: {
   return {
     ...createGenericDefinition({
       ...args,
-      type: "ImportedModule",
+      type: "Imported_Module",
     }),
     methods: [],
     uri: args.uri,
