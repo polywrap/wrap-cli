@@ -1,4 +1,4 @@
-type Query {
+type Module {
   bytesMethod(
     arg: Args!
   ): Bytes!

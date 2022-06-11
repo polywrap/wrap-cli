@@ -1,21 +1,11 @@
-#import { Mutation, Connection, Query } into Ethereum from "w3://ens/ethereum.web3api.eth"
+#import { Module, Connection } into Ethereum from "w3://ens/ethereum.web3api.eth"
 
-type BigObj {
-  propA: String!
-  propB: String!
-  propC: String!
-  propD: String!
-  propE: String!
-  propF: String!
-  propG: String!
-  propH: String!
-  propI: String!
-  propJ: String!
-  propK: String!
-  propL: String!
-}
+type Module {
+  getData(
+    address: String!
+    connection: Ethereum_Connection
+  ): UInt32!
 
-type Mutation {
   setDataWithLargeArgs(
     address: String!
     value: String!
@@ -75,4 +65,19 @@ type Mutation {
     numberOfTimes: Int!
     connection: Ethereum_Connection
   ): [String!]!
+}
+
+type BigObj {
+  propA: String!
+  propB: String!
+  propC: String!
+  propD: String!
+  propE: String!
+  propF: String!
+  propG: String!
+  propH: String!
+  propI: String!
+  propJ: String!
+  propK: String!
+  propL: String!
 }

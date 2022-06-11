@@ -2,14 +2,14 @@ import {
   env,
   Input_environment,
   Input_sanitizeEnv,
-  QueryEnv
+  Env
 } from "./w3";
 
-export function environment(input: Input_environment): QueryEnv {
-  return env as QueryEnv;
+export function environment(input: Input_environment): Env {
+  return env;
 }
 
-export function sanitizeEnv(input: Input_sanitizeEnv): QueryEnv {
+export function sanitizeEnv(input: Input_sanitizeEnv): Env {
   return {
     str: input.env.str,
     optStr: input.env.optStr,

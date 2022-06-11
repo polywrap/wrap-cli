@@ -1,9 +1,0 @@
-#import { Env } from "../common/schema.graphql"
-
-type Mutation {
-  mutationEnv(arg: String!): MutationEnv
-}
-
-type MutationEnv {
-  mutStr: String!
-}

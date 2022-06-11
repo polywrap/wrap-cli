@@ -1,4 +1,4 @@
-type Query {
+type Module {
   method1(
     en: SanityEnum!
     optEnum: SanityEnum
