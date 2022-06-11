@@ -118,15 +118,17 @@ export const generateBinding: GenerateBindingFn = (
   }
 
   // Generate module type folders
-  output.entries.push({
-    type: "Directory",
-    name: toLower(typeInfo.moduleType.type),
-    data: renderTemplates(
-      templatePath("module-type"),
-      typeInfo.moduleType,
-      subTemplates
-    ),
-  });
+  if (typeInfo.moduleType) {
+    output.entries.push({
+      type: "Directory",
+      name: toLower(typeInfo.moduleType.type),
+      data: renderTemplates(
+        templatePath("module-type"),
+        typeInfo.moduleType,
+        subTemplates
+      ),
+    });
+  }
 
   // Generate enum type folders
   for (const enumType of typeInfo.enumTypes) {
