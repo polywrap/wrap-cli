@@ -1,4 +1,3 @@
-{{^__commonModule}}
 import {
   w3_invoke_args,
   w3_invoke,
@@ -8,7 +7,7 @@ import {
   InvokeArgs
 } from "@web3api/wasm-as";
 
-{{#moduleTypes}}
+{{#moduleType}}
 {{#methods.length}}
 import {
   {{#methods}}
@@ -16,23 +15,15 @@ import {
   {{/methods}}
 } from "./{{type}}/wrapped";
 {{/methods.length}}
-{{/moduleTypes}}
-{{#envTypes.query.sanitized}}
+{{/moduleType}}
+{{#envType.sanitized}}
 import {
   env
 } from "./env";
 import {
-  QueryEnv
-} from "./QueryEnv";
-{{/envTypes.query.sanitized}}
-{{#envTypes.mutation.sanitized}}
-import {
-  env
-} from "./env";
-import {
-  MutationEnv
-} from "./MutationEnv";
-{{/envTypes.mutation.sanitized}}
+  Env
+} from "./Env";
+{{/envType.sanitized}}
 
 export function _w3_invoke(method_size: u32, args_size: u32): bool {
   const args: InvokeArgs = w3_invoke_args(
@@ -40,44 +31,31 @@ export function _w3_invoke(method_size: u32, args_size: u32): bool {
     args_size
   );
 
-  {{#moduleTypes}}
+  {{#moduleType}}
   {{#methods}}
   {{^first}}else {{/first}}if (args.method == "{{name}}") {
     return w3_invoke(args, {{name}}Wrapped);
   }
   {{/methods}}
-  {{/moduleTypes}}
+  {{/moduleType}}
   else {
     return w3_invoke(args, null);
   }
 }
 
-{{#envTypes.query.sanitized}}
+{{#envType.sanitized}}
 export function _w3_load_env(env_size: u32): void {
   const envBuf = w3_load_env(env_size);
-  env = QueryEnv.fromBuffer(envBuf);
+  env = Env.fromBuffer(envBuf);
 }
 
-{{/envTypes.query.sanitized}}
-{{#envTypes.mutation.sanitized}}
-export function _w3_load_env(env_size: u32): void {
-  const envBuf = w3_load_env(env_size);
-  env = MutationEnv.fromBuffer(envBuf);
-}
-
-{{/envTypes.mutation.sanitized}}
-{{#envTypes.query.client}}
+{{/envType.sanitized}}
+{{#envType.client}}
 export function _w3_sanitize_env(args_size: u32): void {
   w3_sanitize_env(args_size, sanitizeEnvWrapped);
 }
 
-{{/envTypes.query.client}}
-{{#envTypes.mutation.client}}
-export function _w3_sanitize_env(args_size: u32): void {
-  w3_sanitize_env(args_size, sanitizeEnvWrapped)
-}
-
-{{/envTypes.mutation.client}}
+{{/envType.client}}
 export function w3Abort(
   msg: string | null,
   file: string | null,
@@ -91,4 +69,3 @@ export function w3Abort(
     column
   );
 }
-{{/__commonModule}}

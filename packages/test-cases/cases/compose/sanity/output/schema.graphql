@@ -84,7 +84,7 @@ type Query implements Interface_Query @imports(
     arg: [String!]!
   ): [Int32!]!
 
-  abstractQueryMethod(
+  abstractModuleMethod(
     arg: Interface_QueryInterfaceArgument!
   ): Interface_InterfaceObject2!
 }
@@ -315,9 +315,9 @@ type Interface_Query @imported(
   nativeType: "Query"
 ) {
   """
-  abstractQueryMethod comment
+  abstractModuleMethod comment
   """
-  abstractQueryMethod(
+  abstractModuleMethod(
     """
     arg comment
     """

@@ -3,7 +3,7 @@
 
 type Query implements Interface_Query {
   queryImplementations: [String!]!
-  queryMethod(
+  moduleMethod(
     arg: ImplementationType!
   ): ImplementationType!
 }

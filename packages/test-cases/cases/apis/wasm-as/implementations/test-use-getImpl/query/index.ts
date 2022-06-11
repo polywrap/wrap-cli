@@ -1,13 +1,13 @@
-import { Input_queryMethod, Input_abstractQueryMethod, ImplementationType, Interface } from "./w3";
+import { Input_moduleMethod, Input_abstractModuleMethod, ImplementationType, Interface } from "./w3";
 
 export function queryImplementations(): string[] {
   return Interface.getImplementations();
 }
 
-export function queryMethod(input: Input_queryMethod): ImplementationType {
+export function moduleMethod(input: Input_moduleMethod): ImplementationType {
   return input.arg;
 }
 
-export function abstractQueryMethod(input: Input_abstractQueryMethod): String {
+export function abstractModuleMethod(input: Input_abstractModuleMethod): String {
   return input.arg.str;
 }

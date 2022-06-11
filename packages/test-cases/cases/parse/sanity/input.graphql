@@ -147,9 +147,9 @@ type Module implements Interface_Module @imports(
 ) {
   sanitizeEnv(env: ClientEnv!): Env!
 """
-queryMethod comment
+moduleMethod comment
 """
-  queryMethod(
+  moduleMethod(
 """
 arg comment
 """

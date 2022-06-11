@@ -49,9 +49,9 @@ Query comment
 """
 type Query {
 """
-abstractQueryMethod comment
+abstractModuleMethod comment
 """
-  abstractQueryMethod(
+  abstractModuleMethod(
 """
 arg comment
 """
