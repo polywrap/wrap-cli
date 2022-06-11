@@ -35,7 +35,7 @@ directive @annotate(type: String!) on FIELD
 
 ### Web3API Header END ###
 
-type Query {
+type Module {
   requiredMapArgs(
     map: Map! @annotate(type: "Map<String!, Int!>!")
   ): Map! @annotate(type: "Map<String!, Int!>!")

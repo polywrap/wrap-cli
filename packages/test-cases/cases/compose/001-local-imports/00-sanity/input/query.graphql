@@ -1,6 +1,6 @@
 #import { CommonType } from "../imports-local/common.graphql"
 
-type Query {
+type Module {
   method1(
     str: String!
     optStr: String

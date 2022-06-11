@@ -25,6 +25,6 @@ directive @imports(
 
 ### Web3API Header END ###
 
-type Query
+type Module
 
 type Mutation

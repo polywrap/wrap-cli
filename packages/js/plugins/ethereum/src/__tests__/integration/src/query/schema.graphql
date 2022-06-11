@@ -1,6 +1,6 @@
 #import { Query, Connection, Network, EventNotification, StaticTxResult, TxOverrides, TxRequest, TxReceipt } into Ethereum from "w3://ens/ethereum.web3api.eth"
 
-type Query {
+type Module {
   callContractView(
     address: String!
     method: String!

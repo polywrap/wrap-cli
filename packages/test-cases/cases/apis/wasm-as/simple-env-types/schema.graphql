@@ -1,0 +1,8 @@
+type Module {
+  getEnv(arg: String!): Env!
+}
+
+type Env {
+  str: String
+  requiredInt: Int!
+}

@@ -8,7 +8,7 @@ type DerivedType implements BaseType {
   mapOfValueArr: Map! @annotate(type: "Map<String!, Array<Int!>!>!")
 }
 
-type Query {
+type Module {
   method(
     args: DerivedType!
     importedArgs: ImportedDerivedType!

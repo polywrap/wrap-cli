@@ -1,6 +1,6 @@
 #import { Query, InterfaceType } into Interface from "w3://ens/interface.eth"
 
-type Query implements Interface_Query {
+type Module implements Interface_Query {
   moduleMethod(
     arg: ImplementationType!
   ): ImplementationType!

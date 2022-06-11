@@ -1,6 +1,6 @@
 import { Input_moduleMethod, Input_abstractModuleMethod, ImplementationType, Interface } from "./w3";
 
-export function queryImplementations(): string[] {
+export function moduleImplementations(): string[] {
   return Interface.getImplementations();
 }
 

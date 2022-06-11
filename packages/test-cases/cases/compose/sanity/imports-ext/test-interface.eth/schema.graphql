@@ -47,7 +47,7 @@ type Mutation {
 """
 Query comment
 """
-type Query {
+type Module {
 """
 abstractModuleMethod comment
 """

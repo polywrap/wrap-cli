@@ -1,6 +1,6 @@
 #import { Env } from "../imports-local/common.graphql"
 
-type Query {
+type Module {
   method(
     str: String!
   ): String!

@@ -38,7 +38,7 @@ directive @annotate(type: String!) on FIELD
 
 ### Web3API Header END ###
 
-type Query {
+type Module {
   sanitizeEnv(
     env: QueryClientEnv!
   ): QueryEnv!

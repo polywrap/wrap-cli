@@ -43,7 +43,7 @@ enum CustomEnum {
 """
 Query comment
 """
-type Query {
+type Module {
   method1(
     str: String!
     optStr: String

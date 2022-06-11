@@ -38,7 +38,7 @@ directive @annotate(type: String!) on FIELD
 """
 Query comment
 """
-type Query implements Interface_Query @imports(
+type Module implements Interface_Query @imports(
   types: [
     "Namespace_Query",
     "Namespace_CustomType",

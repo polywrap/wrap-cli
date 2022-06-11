@@ -6,10 +6,10 @@
 """
 Query comment
 """
-type Query implements Interface_Query {
+type Module implements Interface_Query {
 
 #Testing normal comment with keyword characters: 
-#type Query {}
+#type Module {}
 #These comments should be ignored
 
 """

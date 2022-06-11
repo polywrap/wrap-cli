@@ -1,4 +1,4 @@
-type Query {
+type Module {
   method1: DerivedType1
   method2: DerivedType2
 }

@@ -35,7 +35,7 @@ directive @annotate(type: String!) on FIELD
 
 ### Web3API Header END ###
 
-type Query {
+type Module {
   method(
     str: String!
   ): String!
