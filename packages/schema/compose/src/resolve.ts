@@ -619,9 +619,12 @@ async function resolveExternalImports(
     if (extTypesToImport.indexOf("*") > -1) {
       extTypesToImport = [
         ...extTypeInfo.objectTypes.map((x) => x.type),
-        ...extTypeInfo.enumTypes.map((x) => x.type),
-        extTypeInfo.moduleType.type,
+        ...extTypeInfo.enumTypes.map((x) => x.type)
       ];
+
+      if (extTypeInfo.moduleType) {
+        extTypesToImport.push(extTypeInfo.moduleType.type);
+      }
     }
 
     // For each imported type to resolve
@@ -640,9 +643,9 @@ async function resolveExternalImports(
 
       // If it's a module type
       if (importedType === "Module") {
-        extTypes = [extTypeInfo.moduleType];
+        extTypes = [extTypeInfo.moduleType as ModuleDefinition];
         visitorFunc = visitModuleDefinition;
-        const type = extTypeInfo.moduleType;
+        const type = extTypeInfo.moduleType as ModuleDefinition;
         trueType = {
           ...createImportedModuleDefinition({
             ...type,
@@ -877,8 +880,11 @@ async function resolveLocalImports(
       extTypesToImport = [
         ...localTypeInfo.objectTypes.map((x) => x.type),
         ...localTypeInfo.enumTypes.map((x) => x.type),
-        localTypeInfo.moduleType.type,
       ];
+
+      if (localTypeInfo.moduleType) {
+        extTypesToImport.push(localTypeInfo.moduleType.type);
+      }
     }
 
     // Keep track of all imported type names

@@ -36,7 +36,7 @@ describe("Web3API Schema Composer Test Cases", () => {
       removeFunctionProps(result);
 
       if (testCase.output.module) {
-        expect(result.module).toMatchObject(testCase.output.module);
+        expect(result.module).toMatchObject(testCase.output.combined);
       }
     });
   }
