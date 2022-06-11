@@ -8,7 +8,7 @@ import {
   PluginModule,
   MaybeAsync
 } from "@web3api/core-js";
-{{#moduleTypes}}
+{{#moduleType}}
 {{#methods}}
 
 export interface Input_{{name}} extends Record<string, unknown> {
@@ -17,18 +17,16 @@ export interface Input_{{name}} extends Record<string, unknown> {
   {{/arguments}}
 }
 {{/methods}}
-{{/moduleTypes}}
+{{/moduleType}}
 
 export abstract class Module<
   TConfig extends Record<string, unknown>
 > extends PluginModule<
-  TConfig{{#envTypes.query.sanitized}},
-  Types.QueryEnv{{#envTypes.query.client}},
-  Types.QueryClientEnv{{/envTypes.query.client}}{{/envTypes.query.sanitized}}{{#envTypes.mutation.sanitized}},
-  Types.MutationEnv{{#envTypes.mutation.client}},
-  Types.MutationClientEnv{{/envTypes.mutation.client}}{{/envTypes.mutation.sanitized}}
+  TConfig{{#envType.sanitized}},
+  Types.Env{{#envType.client}},
+  Types.ClientEnv{{/envType.client}}{{/envType.sanitized}}
 > {
-  {{#moduleTypes}}
+  {{#moduleType}}
   {{#methods}}
 
   abstract {{name}}(
@@ -36,5 +34,5 @@ export abstract class Module<
     client: Client
   ): MaybeAsync<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>;
   {{/methods}}
-  {{/moduleTypes}}
+  {{/moduleType}}
 }

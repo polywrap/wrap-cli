@@ -1,7 +1,3 @@
-{{#__commonPath}}
-pub use super::super::common::{{#toUpper}}{{type}}{{/toUpper}};
-{{/__commonPath}}
-{{^__commonPath}}
 use serde::{Serialize, Deserialize};
 pub mod serialization;
 use web3api_wasm_rs::{
@@ -61,4 +57,3 @@ impl {{#toUpper}}{{type}}{{/toUpper}} {
         read_{{#toLower}}{{type}}{{/toLower}}(reader).map_err(|e| DecodeError::TypeReadError(e.to_string()))
     }
 }
-{{/__commonPath}}

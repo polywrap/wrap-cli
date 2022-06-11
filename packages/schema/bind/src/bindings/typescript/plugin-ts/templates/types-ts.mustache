@@ -26,8 +26,7 @@ export type String = string;
 export type Boolean = boolean;
 
 /// Envs START ///
-{{#envTypes}}
-{{#query}}
+{{#envType}}
 {{#client}}
 export interface {{type}} extends Record<string, unknown> {
   {{#properties}}
@@ -42,24 +41,7 @@ export interface {{type}} extends Record<string, unknown> {
   {{/properties}}
 }
 {{/sanitized}}
-{{/query}}
-{{#mutation}}
-{{#client}}
-export interface {{type}} extends Record<string, unknown> {
-  {{#properties}}
-  {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
-  {{/properties}}
-}
-{{/client}}
-{{#sanitized}}
-export interface {{type}} extends Record<string, unknown> {
-  {{#properties}}
-  {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
-  {{/properties}}
-}
-{{/sanitized}}
-{{/mutation}}
-{{/envTypes}}
+{{/envType}}
 /// Envs END ///
 
 /// Objects START ///
@@ -120,7 +102,7 @@ export type {{type}} = {{type}}Enum | {{type}}String;
 {{/importedEnumTypes}}
 /// Imported Objects END ///
 
-/// Imported Queries START ///
+/// Imported Modules START ///
 
 {{#importedModuleTypes}}
 {{#methods}}
@@ -142,7 +124,6 @@ export const {{type}} = {
   ): Promise<InvokeApiResult<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>> => {
     return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>({
       uri: "{{parent.uri}}",
-      module: "{{type}}",
       method: "{{name}}",
       input
     });
@@ -168,7 +149,6 @@ export class {{type}} {
   ): Promise<InvokeApiResult<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>> {
     return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>({
       uri: this.uri,
-      module: "{{type}}",
       method: "{{name}}",
       input
     });
@@ -181,7 +161,7 @@ export class {{type}} {
 
 {{/isInterface}}
 {{/importedModuleTypes}}
-/// Imported Queries END ///
+/// Imported Modules END ///
 {{#interfaceTypes.length}}
 {{#interfaceTypes}}
 

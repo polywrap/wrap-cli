@@ -1,6 +1,6 @@
 const template = `
 {{#typeInfo}}
-{{#moduleTypes}}{{#comment}}
+{{#moduleType}}{{#comment}}
 """
 {{comment}}
 """
@@ -36,7 +36,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
   {{/methods}}
 }{{/methods.length}}
 
-{{/moduleTypes}}
+{{/moduleType}}
 {{#envTypes.query.client}}{{#comment}}
 """
 {{comment}}
