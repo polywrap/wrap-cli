@@ -1,8 +1,4 @@
 format: 0.0.1-prealpha.7
 name: TestInterface
 language: interface
-modules:
-  mutation:
-    schema: ./mutation/schema.graphql
-  query:
-    schema: ./query/schema.graphql
+schema: ./schema.graphql

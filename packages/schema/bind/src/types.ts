@@ -3,28 +3,16 @@ import { OutputDirectory } from "@web3api/os-js";
 
 export type BindLanguage = "wasm-as" | "wasm-rs" | "plugin-ts" | "app-ts";
 
-export interface BindModuleOutput {
-  name: string;
+export interface BindOutput {
   output: OutputDirectory;
   outputDirAbs: string;
 }
 
-export interface BindOutput {
-  modules: BindModuleOutput[];
-  common?: BindModuleOutput;
-}
-
-export interface BindModuleOptions {
-  name: string;
+export interface BindOptions {
+  projectName: string;
+  bindLanguage: BindLanguage;
   typeInfo: TypeInfo;
   schema: string;
   config?: Record<string, unknown>;
   outputDirAbs: string;
-}
-
-export interface BindOptions {
-  modules: BindModuleOptions[];
-  projectName: string;
-  bindLanguage: BindLanguage;
-  commonDirAbs?: string;
 }

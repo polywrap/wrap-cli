@@ -1,5 +1,5 @@
-import { env, QueryEnv, Input_getEnv } from "./w3";
+import { env, Env, Input_getEnv } from "./w3";
 
-export function getEnv(input: Input_getEnv): QueryEnv {
-  return env as QueryEnv;
+export function getEnv(input: Input_getEnv): Env {
+  return env;
 }

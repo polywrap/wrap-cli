@@ -1,7 +1,3 @@
-{{^__commonModule}}
-{{#__commonPath}}
-pub mod common;
-{{/__commonPath}}
 pub mod entry;
 {{#objectTypes}}
 pub mod {{#toLower}}{{type}}{{/toLower}};
@@ -37,7 +33,7 @@ pub use imported::{{#toLower}}{{type}}{{/toLower}}::{{#toUpper}}{{type}}{{/toUpp
 pub mod {{#toLower}}{{namespace}}{{/toLower}};
 pub use {{#toLower}}{{namespace}}{{/toLower}}::{{#toUpper}}{{namespace}}{{/toUpper}};
 {{/interfaceTypes}}
-{{#moduleTypes}}
+{{#moduleType}}
 pub mod {{#toLower}}{{type}}{{/toLower}};
 pub use {{#toLower}}{{type}}{{/toLower}}::{
     {{#methods}}
@@ -47,5 +43,4 @@ pub use {{#toLower}}{{type}}{{/toLower}}::{
     Input{{#toUpper}}{{name}}{{/toUpper}}{{^last}},{{/last}}
     {{/methods}}
 };
-{{/moduleTypes}}
-{{/__commonModule}}
+{{/moduleType}}

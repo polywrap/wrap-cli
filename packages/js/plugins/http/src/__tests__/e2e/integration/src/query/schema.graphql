@@ -1,6 +1,6 @@
 #import { Query, Request, Response } into HTTP from "w3://ens/http.web3api.eth"
 
-type Query {
+type Module {
   get(
     url: String!
     request: HTTP_Request

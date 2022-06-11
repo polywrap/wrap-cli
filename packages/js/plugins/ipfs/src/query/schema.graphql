@@ -7,7 +7,7 @@ type QueryEnv {
   disableParallelRequests: Boolean
 }
 
-type Query implements UriResolver_Query {
+type Module implements UriResolver_Query {
   catFile(
     cid: String!
     options: Options

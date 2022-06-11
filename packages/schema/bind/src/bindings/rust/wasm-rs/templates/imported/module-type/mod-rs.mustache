@@ -1,7 +1,3 @@
-{{#__commonPath}}
-pub use super::super::common::{{#toUpper}}{{type}}{{/toUpper}};
-{{/__commonPath}}
-{{^__commonPath}}
 use serde::{Serialize, Deserialize};
 use web3api_wasm_rs::{
     BigInt,
@@ -45,7 +41,6 @@ impl {{#toUpper}}{{type}}{{/toUpper}} {
         let args = serialize_{{#toLower}}{{name}}{{/toLower}}_args(input).map_err(|e| e.to_string())?;
         let result = subinvoke::w3_subinvoke(
             uri,
-            "{{#toLower}}{{type}}{{/toLower}}",
             "{{name}}",
             args,
         )?;
@@ -56,4 +51,3 @@ impl {{#toUpper}}{{type}}{{/toUpper}} {
     {{/last}}
     {{/methods}}
 }
-{{/__commonPath}}

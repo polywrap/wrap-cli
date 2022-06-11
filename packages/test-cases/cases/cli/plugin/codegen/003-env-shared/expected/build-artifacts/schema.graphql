@@ -41,7 +41,7 @@ type Mutation {
   ): String!
 }
 
-type Query {
+type Module {
   method(
     str: String!
   ): String!
