@@ -35,7 +35,7 @@ directive @annotate(type: String!) on FIELD
 
 ### Web3API Header END ###
 
-type Query implements Namespace_Query @imports(
+type Module implements Namespace_Query @imports(
   types: [
     "Namespace_Query"
   ]

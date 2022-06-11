@@ -38,7 +38,7 @@ directive @annotate(type: String!) on FIELD
 
 ### Web3API Header END ###
 
-type Query @imports(
+type Module @imports(
   types: [
     "Ethereum_Query",
     "Ethereum_Connection",

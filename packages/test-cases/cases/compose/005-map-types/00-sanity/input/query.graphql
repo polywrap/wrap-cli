@@ -10,7 +10,7 @@ type RecursiveType {
   mapOfMap: Map! @annotate(type: "Map<String!, Map<String!, Int!>!>!")
 }
 
-type Query {
+type Module {
   requiredMapArgs(
     map: Map! @annotate(type: "Map<String!, Int!>!")
   ): Map! @annotate(type: "Map<String!, Int!>!")

@@ -27,7 +27,7 @@ enum ResponseType {
   BINARY
 }
 
-type Query {
+type Module {
   get(url: String!, request: Request): Response
   post(url: String!, request: Request): Response
 }

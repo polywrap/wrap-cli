@@ -6,7 +6,7 @@ type InheritedType implements BaseType {
   mapOfValueArr: Map! @annotate(type: "Map<String!, Array<Int!>!>!")
 }
 
-type Query {
+type Module {
   method(
     map: Map! @annotate(type: "Map<String!, Int!>!")
     other: InheritedType!

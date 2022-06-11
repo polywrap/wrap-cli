@@ -1,6 +1,6 @@
 #import * from "../common/schema.graphql"
 
-type Query {
+type Module {
   callContractView(
     address: String!
     method: String!

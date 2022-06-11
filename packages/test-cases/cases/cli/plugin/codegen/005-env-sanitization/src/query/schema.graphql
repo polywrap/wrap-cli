@@ -6,7 +6,7 @@ type QueryEnv {
   queryArg: String!
 }
 
-type Query {
+type Module {
   sanitizeEnv(
     env: QueryClientEnv!
   ): QueryEnv!

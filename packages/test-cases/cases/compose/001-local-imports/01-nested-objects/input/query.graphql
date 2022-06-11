@@ -1,5 +1,5 @@
 #import { TypeA } from "../imports-local/local.graphql"
 
-type Query {
+type Module {
   method: TypeA
 }
