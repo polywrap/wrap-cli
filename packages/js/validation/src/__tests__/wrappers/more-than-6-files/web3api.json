@@ -1,0 +1,13 @@
+{
+  "format": "0.0.1-prealpha.7",
+  "name": "Unnamed",
+  "language": "wasm/assemblyscript",
+  "modules": {
+    "query": {
+      "module": "./query.wasm",
+      "schema": "./schema.graphql"
+    }
+  },
+  "build": "./web3api.build.json",
+  "meta": "./web3api.meta.json"
+}

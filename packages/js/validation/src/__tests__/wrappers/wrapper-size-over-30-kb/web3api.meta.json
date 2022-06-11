@@ -1,0 +1,11 @@
+{
+  "format": "0.0.1-prealpha.3",
+  "displayName": "Example display name",
+  "subtext": "Example subtext",
+  "description": "Example description",
+  "repository": "https://github.com/polywrap/monorepo",
+  "icon": "./meta/icon/icon.png",
+  "tags": ["some", "tag"],
+  "links": [],
+  "queries": []
+}

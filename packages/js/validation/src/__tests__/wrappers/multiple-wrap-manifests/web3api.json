@@ -1,0 +1,11 @@
+{
+  "format": "0.0.1-prealpha.7",
+  "name": "Unnamed",
+  "language": "wasm/assemblyscript",
+  "modules": {
+    "query": {
+      "module": "./query.wasm",
+      "schema": "./schema.graphql"
+    }
+  }
+}
