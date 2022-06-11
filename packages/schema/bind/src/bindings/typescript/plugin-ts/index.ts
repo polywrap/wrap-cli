@@ -41,8 +41,8 @@ export const generateBinding: GenerateBindingFn = (
 
   output.entries = renderTemplates(
     templatePath(""),
-    typeInfo,
-    {}
+    { ...typeInfo, schema: options.schema },
+    { }
   );
 
   return result;

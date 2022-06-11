@@ -144,8 +144,6 @@ export const generateBinding: GenerateBindingFn = (
   };
   generateEnvTypeFolder(typeInfo.envType.client);
   generateEnvTypeFolder(typeInfo.envType.sanitized);
-  generateEnvTypeFolder(typeInfo.envType.client);
-  generateEnvTypeFolder(typeInfo.envType.sanitized);
 
   // Generate root entry file
   output.entries.push(

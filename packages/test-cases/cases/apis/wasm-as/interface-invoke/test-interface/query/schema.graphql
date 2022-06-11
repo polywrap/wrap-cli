@@ -1,5 +1,5 @@
 type Query {
-  abstractQueryMethod(
+  abstractModuleMethod(
     arg: Argument!
   ): String!
 }

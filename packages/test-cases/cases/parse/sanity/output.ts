@@ -466,18 +466,18 @@ export const typeInfo: TypeInfo = {
         },
         {
           ...createMethodDefinition({
-            name: "queryMethod",
+            name: "moduleMethod",
             return: createArrayPropertyDefinition({
-              name: "queryMethod",
+              name: "moduleMethod",
               type: "[Int]",
               required: true,
               item: createScalarDefinition({
-                name: "queryMethod",
+                name: "moduleMethod",
                 type: "Int",
                 required: false,
               }),
             }),
-            comment: "queryMethod comment",
+            comment: "moduleMethod comment",
           }),
           arguments: [
             createScalarPropertyDefinition({

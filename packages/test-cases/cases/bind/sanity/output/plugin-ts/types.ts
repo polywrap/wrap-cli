@@ -25,13 +25,13 @@ export type Json = string;
 export type String = string;
 export type Boolean = boolean;
 
-/// Env START ///
+/// Envs START ///
 export interface Env extends Record<string, unknown> {
   prop: Types.String;
   optProp?: Types.String | null;
   optMap?: Map<Types.String, Types.Int | undefined> | null;
 }
-/// Env END ///
+/// Envs END ///
 
 /// Objects START ///
 export interface CustomType {

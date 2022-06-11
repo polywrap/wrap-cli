@@ -1,9 +1,9 @@
-import { Input_queryMethod, Input_abstractQueryMethod, ImplementationType } from "./w3";
+import { Input_moduleMethod, Input_abstractModuleMethod, ImplementationType } from "./w3";
 
-export function queryMethod(input: Input_queryMethod): ImplementationType {
+export function moduleMethod(input: Input_moduleMethod): ImplementationType {
   return input.arg;
 }
 
-export function abstractQueryMethod(input: Input_abstractQueryMethod): String {
+export function abstractModuleMethod(input: Input_abstractModuleMethod): String {
   return input.arg.str;
 }

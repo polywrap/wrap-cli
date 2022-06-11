@@ -21,7 +21,7 @@ pub fn module_method_wrapped(input: &[u8]) -> Vec<u8> {
                 opt_enum_array: args.opt_enum_array,
                 map: args.map,
             });
-            serialize_query_method_result(&result).unwrap()
+            serialize_module_method_result(&result).unwrap()
         }
         Err(e) => {
             panic!("{}", e.to_string())

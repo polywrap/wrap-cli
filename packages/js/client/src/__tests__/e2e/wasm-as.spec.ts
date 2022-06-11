@@ -229,11 +229,11 @@ describe("wasm-as test cases", () => {
     await buildApi(apiPath);
 
     const query = await client.query<{
-      queryMethod: string;
+      moduleMethod: string;
     }>({
       uri: apiUri,
       query: `query{
-        queryMethod(
+        moduleMethod(
           arg: {
             uint8: 1,
             str: "Test String 1",
@@ -244,7 +244,7 @@ describe("wasm-as test cases", () => {
 
     expect(query.errors).toBeFalsy();
     expect(query.data).toBeTruthy();
-    expect(query.data?.queryMethod).toEqual({
+    expect(query.data?.moduleMethod).toEqual({
       uint8: 1,
       str: "Test String 1",
     });

@@ -310,9 +310,9 @@ export const typeInfo: TypeInfo = {
         },
         {
           ...createMethodDefinition({
-            name: "abstractQueryMethod",
+            name: "abstractModuleMethod",
             return: createObjectPropertyDefinition({
-              name: "abstractQueryMethod",
+              name: "abstractModuleMethod",
               type: "Interface_InterfaceObject2",
               required: true
             })
@@ -709,10 +709,10 @@ export const typeInfo: TypeInfo = {
       methods: [
         {
           ...createMethodDefinition({
-            name: "abstractQueryMethod",
-            comment: "abstractQueryMethod comment",
+            name: "abstractModuleMethod",
+            comment: "abstractModuleMethod comment",
             return: createObjectPropertyDefinition({
-              name: "abstractQueryMethod",
+              name: "abstractModuleMethod",
               type: "Interface_InterfaceObject2",
               required: true
             })

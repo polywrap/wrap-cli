@@ -24,7 +24,7 @@ export function _w3_invoke(method_size: u32, args_size: u32): bool {
     args_size
   );
 
-  if (args.method == "queryMethod") {
+  if (args.method == "moduleMethod") {
     return w3_invoke(args, moduleMethodWrapped);
   }
   else if (args.method == "objectMethod") {

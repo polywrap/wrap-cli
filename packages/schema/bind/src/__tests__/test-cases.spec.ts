@@ -31,10 +31,6 @@ describe("Web3API Binding Test Suite", () => {
         // Verify it binds correctly
         const { language, directory } = outputLanguage;
 
-        if (language !== "wasm-as") {
-          continue;
-        }
-
         // Read the expected output directories
         let expectedOutput: BindOutput = {
           output: readDirectorySync(directory),

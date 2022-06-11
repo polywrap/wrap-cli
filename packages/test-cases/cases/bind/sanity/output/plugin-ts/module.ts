@@ -8,7 +8,6 @@ import {
   PluginModule,
   MaybeAsync
 } from "@web3api/core-js";
-import { manifest } from "./manifest";
 
 export interface Input_moduleMethod extends Record<string, unknown> {
   str: Types.String;
@@ -33,6 +32,7 @@ export abstract class Module<
   TConfig,
   Types.Env
 > {
+
   abstract moduleMethod(
     input: Input_moduleMethod,
     client: Client

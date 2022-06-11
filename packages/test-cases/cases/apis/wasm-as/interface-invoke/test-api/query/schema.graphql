@@ -2,7 +2,7 @@
 #use { getImplementations } for Interface
 
 type Query {
-  queryMethod(
+  moduleMethod(
     arg: ImplementationType!
   ): ImplementationType!
 }
