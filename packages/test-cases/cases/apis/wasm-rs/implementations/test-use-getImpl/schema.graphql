@@ -1,8 +1,8 @@
-#import { Query, InterfaceType } into Interface from "w3://ens/interface.eth"
+#import { Module, InterfaceType } into Interface from "w3://ens/interface.eth"
 #use { getImplementations } for Interface
 
-type Module implements Interface_Query {
-  queryImplementations: [String!]!
+type Module implements Interface_Module {
+  moduleImplementations: [String!]!
   moduleMethod(
     arg: ImplementationType!
   ): ImplementationType!
