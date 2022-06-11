@@ -22,7 +22,7 @@ export * from "./map";
 
 export interface TypeInfo {
   objectTypes: ObjectDefinition[];
-  moduleType: ModuleDefinition;
+  moduleType?: ModuleDefinition;
   enumTypes: EnumDefinition[];
   interfaceTypes: InterfaceDefinition[];
   importedObjectTypes: ImportedObjectDefinition[];
@@ -35,7 +35,6 @@ export function createTypeInfo(): TypeInfo {
   return {
     objectTypes: [],
     enumTypes: [],
-    moduleType: createModuleDefinition({}),
     interfaceTypes: [],
     importedObjectTypes: [],
     importedModuleTypes: [],

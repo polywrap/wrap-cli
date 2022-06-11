@@ -1,4 +1,4 @@
-import { ObjectDefinition, TypeInfo } from "../typeInfo";
+import { MODULE_NAME, ObjectDefinition, TypeInfo } from "../typeInfo";
 
 export function validateEnv(info: TypeInfo): void {
   if (info.envType.client) {
@@ -18,6 +18,12 @@ export function validateClientEnvironment(
   if (!sanitized) {
     throw new Error(
       `Client environment type '${client.type}' should have matching sanitized environment type`
+    );
+  }
+
+  if (!info.moduleType) {
+    throw new Error(
+      `validateClientEnvironment: Cannot find the specified module type by name '${MODULE_NAME}' while trying to validate '${client.type}'`
     );
   }
 
