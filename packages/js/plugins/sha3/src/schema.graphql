@@ -1,4 +1,4 @@
-type Query {
+type Module {
   sha3_512(message: String!): String!
   sha3_384(message: String!): String!
   sha3_256(message: String!): String!

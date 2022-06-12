@@ -1,4 +1,4 @@
-type Query {
+type Module {
   toAscii(value: String!): String!
   toUnicode(value: String!): String!
   convert(value: String!): ConvertResult!
