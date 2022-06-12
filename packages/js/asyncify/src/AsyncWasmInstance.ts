@@ -159,7 +159,7 @@ export class AsyncWasmInstance {
     return proxyGet(
       imports,
       (moduleImports: WasmModuleImports | undefined, name: string) => {
-        if (!moduleImports) {
+        if (moduleImports === undefined) {
           throw Error(
             `Unsupported wasm import namespace requested: "${name}"; ` +
               `Supported wasm import namespaces: ${Object.keys(imports)
@@ -167,7 +167,7 @@ export class AsyncWasmInstance {
                 .join(", ")}`
           );
         }
-        this._wrapModuleImports(moduleImports);
+        return this._wrapModuleImports(moduleImports);
       }
     );
   }
@@ -176,7 +176,7 @@ export class AsyncWasmInstance {
     return proxyGet(
       imports,
       (importValue: WasmImportValue | undefined, name: string) => {
-        if (!importValue) {
+        if (importValue === undefined) {
           throw Error(
             `Unsupported wasm import requested: "${name}"; ` +
               `Supported wasm imports: ${Object.keys(imports)
