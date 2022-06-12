@@ -38,7 +38,7 @@ directive @annotate(type: String!) on FIELD
 
 ### Web3API Header END ###
 
-type Query {
+type Module {
   callContractView(
     address: String!
     method: String!
@@ -146,9 +146,7 @@ type Query {
   getNetwork(
     connection: Connection
   ): Network!
-}
 
-type Mutation {
   callContractMethod(
     address: String!
     method: String!
@@ -194,11 +192,7 @@ type Mutation {
   ): String
 }
 
-type QueryEnv {
-  connection: Connection
-}
-
-type MutationEnv {
+type Env {
   connection: Connection
 }
 
@@ -301,9 +295,9 @@ type Network {
   ensAddress: String
 }
 
-### Imported Queries START ###
+### Imported Modules START ###
 
-### Imported Queries END ###
+### Imported Modules END ###
 
 ### Imported Objects START ###
 

@@ -63,7 +63,7 @@ type Module implements UriResolver_Module @imports(
   ): Bytes
 }
 
-### Imported Queries START ###
+### Imported Modules START ###
 
 type UriResolver_Module @imported(
   uri: "ens/uri-resolver.core.web3api.eth",
@@ -194,7 +194,7 @@ type Ethereum_Module @imported(
   ): Ethereum_Network!
 }
 
-### Imported Queries END ###
+### Imported Modules END ###
 
 ### Imported Objects START ###
 

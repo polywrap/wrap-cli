@@ -1,7 +1,7 @@
 format: 0.0.1-prealpha.3
 language: plugin/typescript
 name: Ens
-main: ./src/index.ts
+module: ./src/index.ts
 schema: ./src/schema.graphql
 import_redirects:
   - uri: "ens/uri-resolver.core.web3api.eth"

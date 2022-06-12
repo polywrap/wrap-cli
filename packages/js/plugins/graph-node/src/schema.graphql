@@ -1,6 +1,6 @@
-#import { Query } into HTTP from "ens/http.web3api.eth"
+#import { Module } into HTTP from "ens/http.web3api.eth"
 
-type Query {
+type Module {
   querySubgraph(
     subgraphAuthor: String!
     subgraphName: String!
