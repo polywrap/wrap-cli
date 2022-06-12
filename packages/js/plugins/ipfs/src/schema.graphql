@@ -1,13 +1,13 @@
-#import { Query, MaybeUriOrManifest } into UriResolver from "ens/uri-resolver.core.web3api.eth"
+#import { Module, MaybeUriOrManifest } into UriResolver from "ens/uri-resolver.core.web3api.eth"
 
-type QueryEnv {
+type Env {
   """
   Disable querying providers in parallel when resolving URIs
   """
   disableParallelRequests: Boolean
 }
 
-type Query implements UriResolver_Query {
+type Module implements UriResolver_Module {
   catFile(
     cid: String!
     options: Options
@@ -17,6 +17,8 @@ type Query implements UriResolver_Query {
     cid: String!
     options: Options
   ): ResolveResult
+
+  addFile(data: Bytes!): String!
 }
 
 type ResolveResult {

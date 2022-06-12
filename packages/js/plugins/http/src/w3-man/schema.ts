@@ -41,7 +41,7 @@ directive @annotate(type: String!) on FIELD
 type Module {
   get(
     url: String!
-    request: Request
+    requewst: Request
   ): Response
 
   post(
