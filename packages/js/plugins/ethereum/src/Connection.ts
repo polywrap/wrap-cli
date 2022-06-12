@@ -1,4 +1,4 @@
-import { Connection as SchemaConnection } from "../query/w3";
+import { Connection as SchemaConnection } from "./w3-man";
 
 import { Signer, ethers } from "ethers";
 import {
