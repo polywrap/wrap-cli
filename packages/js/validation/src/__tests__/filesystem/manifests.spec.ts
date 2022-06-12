@@ -72,20 +72,6 @@ describe("manfiests", () => {
     );
   });
 
-  it("fails validating an invalid deploy manifest", async () => {
-    const pathToInvalidWrapper = path.join(
-      testWrappersPath,
-      "invalid-deploy-manifest"
-    );
-
-    const result = validator.validate(pathToInvalidWrapper);
-
-    expect(result.valid).toBeFalsy();
-    expect(result.failReason).toEqual(
-      ValidationFailReason.InvalidDeployManifest
-    );
-  });
-
   it("fails validating an invalid meta manifest", async () => {
     const pathToInvalidWrapper = path.join(
       testWrappersPath,

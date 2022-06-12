@@ -1,7 +1,6 @@
 import {
   deserializeWeb3ApiManifest,
   deserializeBuildManifest,
-  deserializeDeployManifest,
   deserializeMetaManifest,
   Web3ApiManifest,
 } from "@web3api/core-js";
@@ -31,13 +30,13 @@ export enum ValidationFailReason {
   MultipleWrapManifests,
   WrapManifestNotFound,
   InvalidBuildManifest,
-  InvalidDeployManifest,
   InvalidMetaManifest,
   InvalidModuleExtension,
   FileTooLarge,
   WrapperTooLarge,
   ModuleTooLarge,
   InvalidSchema,
+  SchemaNotFound,
   TooManyFiles,
 }
 
@@ -46,7 +45,7 @@ export type ValidationResult = {
   failReason?: ValidationFailReason;
 };
 
-const VALID_MODULE_EXTENSIONS = ["wasm"];
+const VALID_MODULE_EXTENSIONS = [".wasm"];
 const VALID_WRAP_MANIFEST_NAMES = [
   "web3api.json",
   "web3api.yaml",
@@ -60,6 +59,16 @@ export class WrapperValidator {
     let result = this.validateManifests();
     if (!result.valid) {
       return result;
+    }
+
+    // Validate schema
+    if (!this.config.exists("./schema.graphql")) {
+      return this.fail(ValidationFailReason.SchemaNotFound);
+    }
+    try {
+      parseSchema(this.config.readFileAsString("./schema.graphql"));
+    } catch {
+      return this.fail(ValidationFailReason.InvalidSchema);
     }
 
     result = this.validateStructure();
@@ -175,15 +184,21 @@ export class WrapperValidator {
     const queryModule = manifest.modules.query;
     const mutationModule = manifest.modules.mutation;
 
-    queryModule && this.validateModule(queryModule);
-    mutationModule && this.validateModule(mutationModule);
-
-    let manifestValidationResult = this.validateBuildManifest(manifest);
-    if (!manifestValidationResult.valid) {
-      return manifestValidationResult;
+    if (queryModule) {
+      const moduleResult = this.validateModule(queryModule);
+      if (!moduleResult.valid) {
+        return moduleResult;
+      }
     }
 
-    manifestValidationResult = this.validateDeployManifest(manifest);
+    if (mutationModule) {
+      const moduleResult = this.validateModule(mutationModule);
+      if (!moduleResult.valid) {
+        return moduleResult;
+      }
+    }
+
+    let manifestValidationResult = this.validateBuildManifest(manifest);
     if (!manifestValidationResult.valid) {
       return manifestValidationResult;
     }
@@ -201,20 +216,14 @@ export class WrapperValidator {
     schema: string;
     module?: string;
   }): ValidationResult {
-    // Validate schema
-    // TODO: module mentions separate schemas
-    try {
-      parseSchema(moduleType.schema);
-    } catch {
-      return this.fail(ValidationFailReason.InvalidSchema);
-    }
-
     if (moduleType && moduleType.module) {
+      const a = path.extname(moduleType.module);
       if (!VALID_MODULE_EXTENSIONS.includes(path.extname(moduleType.module))) {
         return this.fail(ValidationFailReason.InvalidModuleExtension);
       }
 
       const moduleSize = this.config.getStats(moduleType.module).size;
+
       if (moduleSize > this.config.maxModuleSize) {
         return this.fail(ValidationFailReason.ModuleTooLarge);
       }
@@ -234,26 +243,6 @@ export class WrapperValidator {
         deserializeBuildManifest(buildManifestFile);
       } catch {
         return this.fail(ValidationFailReason.InvalidBuildManifest);
-      }
-    }
-
-    return this.success();
-  }
-
-  private validateDeployManifest(
-    web3ApiManifest: Web3ApiManifest
-  ): ValidationResult {
-    const deployManifestPath = web3ApiManifest.deploy;
-
-    if (deployManifestPath) {
-      const deployManifestFile = this.config.readFileAsString(
-        deployManifestPath
-      );
-
-      try {
-        deserializeDeployManifest(deployManifestFile);
-      } catch {
-        return this.fail(ValidationFailReason.InvalidDeployManifest);
       }
     }
 
