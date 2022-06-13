@@ -35,7 +35,6 @@ pub fn w3_subinvoke(
     input: Vec<u8>,
 ) -> Result<Vec<u8>, String> {
     let uri_buf = uri.as_bytes();
-    let module_buf = module.as_bytes();
     let method_buf = method.as_bytes();
 
     let success = unsafe {

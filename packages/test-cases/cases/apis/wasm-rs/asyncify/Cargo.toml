@@ -1,5 +1,5 @@
 [package]
-name = "query"
+name = "module"
 version = "0.1.0"
 description = "Query module of asycify api"
 authors = [
@@ -13,7 +13,6 @@ edition = "2021"
 [dependencies]
 web3api-wasm-rs = { path = "../../../../../../wasm/rs" }
 serde = { version = "1.0", features = ["derive"] }
-common = { path = "../w3" }
 
 [lib]
 crate-type = ["cdylib", "rlib"]

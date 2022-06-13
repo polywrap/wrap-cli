@@ -12,7 +12,6 @@ edition = "2021"
 
 [dependencies]
 web3api-wasm-rs = { path = "../../../../../../wasm/rs" }
-common = { path = "../w3" }
 serde = { version = "1.0", features = ["derive"] }
 
 [lib]
