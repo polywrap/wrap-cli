@@ -151,5 +151,5 @@ type Module {
         method: String!
         params: [String!]!
         connection: Ethereum_Connection
-    ): String!
+    ): String
 }
