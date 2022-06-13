@@ -16,25 +16,30 @@ export class Mutation extends Module<MutationConfig> {
     input: Input_writeFile,
     _client: Client
   ): Promise<boolean | null> {
-    fs.writeFileSync(input.path, Buffer.from(input.data));
+    await fs.promises.writeFile(input.path, Buffer.from(input.data));
 
     return true;
   }
 
   async mkdir(input: Input_mkdir, _client: Client): Promise<boolean | null> {
-    fs.mkdirSync(input.path);
+    await fs.promises.mkdir(input.path, {
+      recursive: input.recursive ?? false,
+    });
 
     return true;
   }
 
   async rm(input: Input_rm, _client: Client): Promise<boolean | null> {
-    fs.rmSync(input.path);
+    await fs.promises.rm(input.path, {
+      recursive: input.recursive ?? false,
+      force: input.force ?? false,
+    });
 
     return true;
   }
 
   async rmdir(input: Input_rmdir, _client: Client): Promise<boolean | null> {
-    fs.rmdirSync(input.path);
+    await fs.promises.rmdir(input.path);
 
     return true;
   }

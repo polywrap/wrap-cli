@@ -1,9 +1,10 @@
 import { filesystemPlugin } from "../index";
 import { Web3ApiClient, Web3ApiClientConfig } from "@web3api/client-js";
-import { Filesystem_Query } from "../query/w3";
+import { Filesystem_EncodingEnum, Filesystem_Query } from "../query/w3";
 import { Filesystem_Mutation } from "../mutation/w3";
 import fs from "fs";
 import path from "path";
+import { filesystemEncodingToBufferEncoding } from "../utils/encodingUtils";
 
 jest.setTimeout(360000);
 
@@ -29,112 +30,199 @@ describe("Filesystem plugin", () => {
   afterEach(async () => {
     // Clean up temp files/folders in case test failed
     if (fs.existsSync(tempFilePath)) {
-      fs.rmSync(tempFilePath);
+      await fs.promises.rm(tempFilePath, { force: true, recursive: true });
     }
 
     if (fs.existsSync(tempFolderPath)) {
-      fs.rmdirSync(tempFolderPath);
+      await fs.promises.rm(tempFolderPath, { force: true, recursive: true });
     }
   });
 
   it("should read a file", async () => {
-    const expectedContents = fs.readFileSync(sampleFilePath);
+    const expectedContents = await fs.promises.readFile(sampleFilePath);
 
-    const fsReadFileResult = await Filesystem_Query.readFile(
+    const result = await Filesystem_Query.readFile(
       { path: sampleFilePath },
       client
     );
 
-    expect(fsReadFileResult.error).toBeFalsy();
-    expect(fsReadFileResult.data).toEqual(expectedContents);
+    expect(result.error).toBeFalsy();
+    expect(result.data).toEqual(expectedContents);
   });
 
-  it("should read an UTF-8 encoded file as a string", async () => {
-    const encoding = "utf-8";
+  it("should fail reading a nonexistent file", async () => {
+    const nonExistentFilePath = `${sampleFilePath}nonexistent`;
 
-    const expectedContents = fs.readFileSync(sampleFilePath, {
-      encoding: encoding,
-    });
-
-    const fsReadFileAsStringResult = await Filesystem_Query.readFileAsString(
-      { path: sampleFilePath, encoding: encoding },
+    const result = await Filesystem_Query.readFile(
+      { path: nonExistentFilePath },
       client
     );
 
-    expect(fsReadFileAsStringResult.error).toBeFalsy();
-    expect(fsReadFileAsStringResult.data).toBe(expectedContents);
+    expect(result.data).toBeFalsy();
+    expect(result.error).toBeTruthy();
+  });
+
+  it("should read a UTF8-encoded file as a string", async () => {
+    let encoding = Filesystem_EncodingEnum.UTF8;
+
+    const expectedContents = await fs.promises.readFile(sampleFilePath, {
+      encoding: filesystemEncodingToBufferEncoding(encoding),
+    });
+
+    const result = await Filesystem_Query.readFileAsString(
+      { path: sampleFilePath, encoding: Filesystem_EncodingEnum.UTF8 },
+      client
+    );
+
+    expect(result.error).toBeFalsy();
+    expect(result.data).toBe(expectedContents);
+  });
+
+  it("should read a file using supported encodings as a string", async () => {
+    let supportedEncodings = [
+      Filesystem_EncodingEnum.ASCII,
+      Filesystem_EncodingEnum.BASE64,
+      Filesystem_EncodingEnum.BASE64URL,
+      Filesystem_EncodingEnum.BINARY,
+      Filesystem_EncodingEnum.HEX,
+      Filesystem_EncodingEnum.LATIN1,
+      Filesystem_EncodingEnum.UCS2,
+      Filesystem_EncodingEnum.UTF16LE,
+      Filesystem_EncodingEnum.UTF8,
+    ];
+
+    for (const encoding of supportedEncodings) {
+      const result = await Filesystem_Query.readFileAsString(
+        { path: sampleFilePath, encoding: encoding },
+        client
+      );
+
+      expect(result.error).toBeFalsy();
+
+      const expectedContents = await fs.promises.readFile(sampleFilePath, {
+        encoding: filesystemEncodingToBufferEncoding(encoding),
+      });
+
+      expect(result.data).toBe(expectedContents);
+    }
   });
 
   it("should return whether a file exists or not", async () => {
-    const fsExistsResult_fileExists = await Filesystem_Query.exists(
+    const result_fileExists = await Filesystem_Query.exists(
       { path: sampleFilePath },
       client
     );
 
-    expect(fsExistsResult_fileExists.error).toBeFalsy();
-    expect(fsExistsResult_fileExists.data).toBe(true);
+    expect(result_fileExists.error).toBeFalsy();
+    expect(result_fileExists.data).toBe(true);
 
     const nonExistentFilePath = path.resolve(
       __dirname,
       "samples/this-file-should-not-exist.txt"
     );
 
-    const fsExistsResult_fileMissing = await Filesystem_Query.exists(
+    const result_fileMissing = await Filesystem_Query.exists(
       { path: nonExistentFilePath },
       client
     );
 
-    expect(fsExistsResult_fileMissing.error).toBeFalsy();
-    expect(fsExistsResult_fileMissing.data).toBe(false);
+    expect(result_fileMissing.error).toBeFalsy();
+    expect(result_fileMissing.data).toBe(false);
   });
 
-  it("should write data to a file and succesfully remove it", async () => {
+  it("should write byte data to a file", async () => {
     const bytes = new Uint8Array([0, 1, 2, 3]);
 
-    const fsWriteFileResult = await Filesystem_Mutation.writeFile(
+    const result = await Filesystem_Mutation.writeFile(
       { data: bytes, path: tempFilePath },
       client
     );
 
-    const expectedFileContents = new Uint8Array(fs.readFileSync(tempFilePath));
-
-    expect(fsWriteFileResult.error).toBeFalsy();
-    expect(fsWriteFileResult.data).toBe(true);
-    expect(expectedFileContents).toEqual(bytes);
-
-    const fsRmResult = await Filesystem_Mutation.rm(
-      { path: tempFilePath },
-      client
+    const expectedFileContents = new Uint8Array(
+      await fs.promises.readFile(tempFilePath)
     );
 
-    expect(fsRmResult.error).toBeFalsy();
-    expect(fsRmResult.data).toBe(true);
+    expect(result.error).toBeFalsy();
+    expect(result.data).toBe(true);
+    expect(expectedFileContents).toEqual(bytes);
+  });
+
+  it("should remove a file", async () => {
+    await fs.promises.writeFile(tempFilePath, "test file contents", {
+      encoding: "utf-8",
+    });
+
+    const result = await Filesystem_Mutation.rm({ path: tempFilePath }, client);
+
+    expect(result.error).toBeFalsy();
+    expect(result.data).toBe(true);
 
     const fileExists = fs.existsSync(tempFilePath);
 
     expect(fileExists).toBe(false);
   });
 
-  it("should create a folder and successfully remove it", async () => {
-    const fsMkdirResult = await Filesystem_Mutation.mkdir(
+  it("should remove a file recursively", async () => {
+    const fileInFolderPath = path.resolve(tempFolderPath, "inner.txt");
+
+    await fs.promises.mkdir(tempFolderPath);
+
+    await fs.promises.writeFile(fileInFolderPath, "test file contents", {
+      encoding: "utf-8",
+    });
+
+    const result = await Filesystem_Mutation.rm(
+      { path: tempFolderPath, recursive: true },
+      client
+    );
+
+    expect(result.error).toBeFalsy();
+    expect(result.data).toBe(true);
+
+    const fileExists = fs.existsSync(fileInFolderPath);
+
+    expect(fileExists).toBe(false);
+  });
+
+  it("should create a folder", async () => {
+    const result = await Filesystem_Mutation.mkdir(
       { path: tempFolderPath },
       client
     );
 
-    expect(fsMkdirResult.data).toBe(true);
+    expect(result.data).toBe(true);
 
     let directoryExists = fs.existsSync(tempFolderPath);
 
     expect(directoryExists).toBe(true);
+  });
 
-    const fsRmdirResult = await Filesystem_Mutation.rmdir(
+  it("should create a folder recursively", async () => {
+    const folderInFolderPath = path.resolve(tempFolderPath, "inner");
+
+    const result = await Filesystem_Mutation.mkdir(
+      { path: folderInFolderPath, recursive: true },
+      client
+    );
+
+    expect(result.data).toBe(true);
+
+    let directoryExists = fs.existsSync(folderInFolderPath);
+
+    expect(directoryExists).toBe(true);
+  });
+
+  it("should remove a folder", async () => {
+    await fs.promises.mkdir(tempFolderPath);
+
+    const result = await Filesystem_Mutation.rmdir(
       { path: tempFolderPath },
       client
     );
 
-    expect(fsRmdirResult.data).toBe(true);
+    expect(result.data).toBe(true);
 
-    directoryExists = fs.existsSync(tempFolderPath);
+    const directoryExists = fs.existsSync(tempFolderPath);
 
     expect(directoryExists).toBe(false);
   });

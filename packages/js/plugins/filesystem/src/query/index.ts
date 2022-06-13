@@ -5,6 +5,7 @@ import {
   Input_readFileAsString,
   Input_exists,
 } from "./w3";
+import { filesystemEncodingToBufferEncoding } from "../utils/encodingUtils";
 
 import fs from "fs";
 
@@ -19,10 +20,8 @@ export class Query extends Module<QueryConfig> {
     input: Input_readFileAsString,
     _client: Client
   ): Promise<string> {
-    // TODO: Maybe check if input.encoding is within supported encodings?
-
     return fs.promises.readFile(input.path, {
-      encoding: input.encoding as BufferEncoding,
+      encoding: filesystemEncodingToBufferEncoding(input.encoding),
     });
   }
 

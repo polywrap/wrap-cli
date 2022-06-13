@@ -1,6 +1,18 @@
 type Query {
   readFile(path: String!): Bytes!
-  readFileAsString(path: String!, encoding: String!): String!
+  readFileAsString(path: String!, encoding: Encoding): String!
 
   exists(path: String!): Boolean!
+}
+
+enum Encoding {
+  ASCII
+  UTF8
+  UTF16LE
+  UCS2
+  BASE64
+  BASE64URL
+  LATIN1
+  BINARY
+  HEX
 }
