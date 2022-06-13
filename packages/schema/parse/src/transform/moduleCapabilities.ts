@@ -35,13 +35,10 @@ export function moduleCapabilities(): TypeInfoTransforms {
     },
     leave: {
       TypeInfo: (info: TypeInfo) => {
-        // If no moduleType exists, terminate
-        if (!info.moduleType) {
-          return info;
+        if (info.moduleType) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (info.moduleType as any).capabilities = capabilities;
         }
-
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (info.moduleType as any).capabilities = capabilities;
 
         for (const importedModuleDef of info.importedModuleTypes) {
           if (enabledInterfaces.has(importedModuleDef.type)) {
