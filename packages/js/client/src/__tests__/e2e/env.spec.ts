@@ -2,7 +2,7 @@ import {
   buildApi,
 } from "@web3api/test-env-js";
 import { createWeb3ApiClient, Web3ApiClientConfig } from "../..";
-import { Client, Plugin, PluginModule, PluginModules } from "@web3api/core-js";
+import { Client, PluginModule } from "@web3api/core-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 
 jest.setTimeout(200000);
@@ -24,37 +24,18 @@ describe("env", () => {
       arg1: string;
     }
 
-    class Query extends PluginModule<{}, Env, ClientEnv> {
-      sanitizeEnv(env: ClientEnv): Env {
-        return { arg1: parseInt(env.arg1) };
-      }
-
-      queryEnv(): Env {
-        return this.env;
-      }
-    }
-
-    class Mutation extends PluginModule<{}, ClientEnv, Env> {
+    class MockEnvPlugin extends PluginModule<{}, ClientEnv, Env> {
       sanitizeEnv(env: Env): ClientEnv {
         return { arg1: env.arg1.toString() };
       }
 
-      mutationEnv(): ClientEnv {
+      mockEnv(): ClientEnv {
         return this.env;
       }
     }
 
-    class MockEnvPlugin implements Plugin {
-      getModules(): PluginModules {
-        return {
-          query: new Query({}),
-          mutation: new Mutation({}),
-        };
-      }
-    }
-
     return {
-      factory: () => new MockEnvPlugin(),
+      factory: () => new MockEnvPlugin({}),
       manifest: {
         schema: ``,
         implements: [],
