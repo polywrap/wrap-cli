@@ -3,12 +3,9 @@
 /* eslint-disable prettier/prettier */
 
 /// Types generated from @web3api/ipfs-plugin-js build files:
-/// build/index.d.ts, build/common/IpfsConfig.d.ts
+/// build/index.d.ts
 
-export interface IpfsPluginConfigs extends IpfsConfig, Record<string, unknown> {
-}
-
-export interface IpfsConfig {
+export interface IpfsPluginConfig extends Record<string, unknown> {
   provider: string;
   fallbackProviders?: string[];
 }

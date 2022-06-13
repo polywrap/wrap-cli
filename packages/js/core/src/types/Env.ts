@@ -6,8 +6,8 @@ export interface Env<TUri = string> {
   /** Uri of Web3Api */
   uri: TUri;
 
-  /** Env variables shared by both mutation and query */
-  module?: Record<string, unknown>;
+  /** Env variables use by the module */
+  env: Record<string, unknown>;
 }
 
 export const sanitizeEnvs = Tracer.traceFunc(

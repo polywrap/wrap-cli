@@ -110,7 +110,7 @@ export class PluginProject extends Project<PluginManifest> {
     generationSubPath?: string
   ): Promise<BindOutput> {
     const manifest = await this.getManifest();
-    const module = manifest.main as string;
+    const module = manifest.module as string;
     const moduleDirectory = this._getGenerationDirectory(
       module,
       generationSubPath
@@ -124,14 +124,9 @@ export class PluginProject extends Project<PluginManifest> {
 
     const options: BindOptions = {
       projectName: manifest.name,
-      modules: [
-        {
-          name: "main",
-          typeInfo: composerOutput.main?.typeInfo as TypeInfo,
-          schema: composerOutput.combined?.schema as string,
-          outputDirAbs: moduleDirectory,
-        },
-      ],
+      typeInfo: composerOutput.main?.typeInfo as TypeInfo,
+      schema: composerOutput.combined?.schema as string,
+      outputDirAbs: moduleDirectory,
       bindLanguage,
     };
 

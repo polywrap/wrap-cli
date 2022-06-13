@@ -10,7 +10,7 @@ export interface PluginManifest {
   format: "0.0.1-prealpha.3";
   name: string;
   language: string;
-  main?: string;
+  module?: string;
   schema: string;
   import_redirects?: {
     uri: string;

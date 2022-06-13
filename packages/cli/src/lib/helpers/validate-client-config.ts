@@ -157,7 +157,7 @@ export function validateEnvs<TUri extends Uri | string = string>(
           index: i.toString(),
         })
       );
-    } else if (!env.module && typeof env.module !== "object") {
+    } else if (!env.env && typeof env.env !== "object") {
       throw new Error(
         intlMsg.commands_query_error_envsItemModuleNotObject({
           index: i.toString(),

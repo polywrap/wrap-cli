@@ -5,12 +5,14 @@ import {
   Input_getFile,
   UriResolver_MaybeUriOrManifest,
   Bytes,
-  Ethereum_Query,
-} from "./w3";
+  Ethereum_Module,
+  manifest,
+} from "./w3-man";
 
 import { ethers } from "ethers";
 import { Base58 } from "@ethersproject/basex";
 import { getAddress } from "@ethersproject/address";
+import { PluginFactory } from "@web3api/core-js";
 
 export type Address = string;
 
@@ -18,15 +20,14 @@ export interface Addresses {
   [network: string]: Address;
 }
 
-export interface QueryConfig extends Record<string, unknown> {
+export interface EnsPluginConfig extends Record<string, unknown> {
   addresses?: Addresses;
 }
 
-export class Query extends Module<QueryConfig> {
-  public static defaultEnsAddress =
-    "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
+export class EnsPlugin extends Module<EnsPluginConfig> {
+  public static defaultAddress = "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
 
-  constructor(config: QueryConfig) {
+  constructor(config: EnsPluginConfig) {
     super(config);
 
     // Sanitize address
@@ -77,7 +78,7 @@ export class Query extends Module<QueryConfig> {
       content: "function content(bytes32 nodehash) view returns (bytes32)",
     };
 
-    let ensAddress = Query.defaultEnsAddress;
+    let ensAddress = EnsPlugin.defaultAddress;
 
     // Remove the ENS URI scheme & authority
     domain = domain.replace("w3://", "");
@@ -110,15 +111,15 @@ export class Query extends Module<QueryConfig> {
       args: string[],
       networkNameOrChainId?: string
     ): Promise<string> => {
-      const { data, error } = await Ethereum_Query.callContractView(
+      const { data, error } = await Ethereum_Module.callContractView(
         {
           address,
           method,
           args,
           connection: networkNameOrChainId
             ? {
-              networkNameOrChainId,
-            }
+                networkNameOrChainId,
+              }
             : undefined,
         },
         client
@@ -197,3 +198,14 @@ export class Query extends Module<QueryConfig> {
     }
   }
 }
+
+export const ensPlugin: PluginFactory<EnsPluginConfig> = (
+  opts: EnsPluginConfig
+) => {
+  return {
+    factory: () => new EnsPlugin(opts),
+    manifest,
+  };
+};
+
+export const plugin = ensPlugin;

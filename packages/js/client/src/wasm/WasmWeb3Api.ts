@@ -320,7 +320,7 @@ export class WasmWeb3Api extends Api {
       if (this._sanitizedEnv !== undefined) {
         state.env = this._sanitizedEnv as ArrayBuffer;
       } else {
-        const clientEnv = this._getModuleClientEnv();
+        const clientEnv = this._getClientEnv();
 
         if (hasExport("_w3_sanitize_env", exports)) {
           state.sanitizeEnv.args = msgpackEncode({ env: clientEnv });
@@ -338,12 +338,12 @@ export class WasmWeb3Api extends Api {
     }
   }
 
-  @Tracer.traceMethod("WasmWeb3Api: _getModuleClientEnv")
-  private _getModuleClientEnv(): Record<string, unknown> {
-    if (!this._clientEnv?.module) {
+  @Tracer.traceMethod("WasmWeb3Api: _getClientEnv")
+  private _getClientEnv(): Record<string, unknown> {
+    if (!this._clientEnv?.env) {
       return {};
     }
-    return this._clientEnv.module;
+    return this._clientEnv.env;
   }
 
   @Tracer.traceMethod("WasmWeb3Api: getWasmModule")
@@ -352,7 +352,7 @@ export class WasmWeb3Api extends Api {
       return this._wasm as ArrayBuffer;
     }
 
-    const moduleManifest = this._manifest.main;
+    const moduleManifest = this._manifest.module;
 
     if (!moduleManifest) {
       throw Error(`Package manifest does not contain a definition for module`);

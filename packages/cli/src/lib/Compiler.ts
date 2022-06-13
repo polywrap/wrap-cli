@@ -217,27 +217,13 @@ export class Compiler {
     const { project } = this._config;
 
     // Generate the bindings
-    const output = await project.generateSchemaBindings(
+    const binding = await project.generateSchemaBindings(
       composerOutput,
       compilerOverrides?.generationSubPath
     );
 
     // Output the bindings
-    const filesWritten: string[] = [];
-
-    for (const module of output.modules) {
-      filesWritten.push(
-        ...writeDirectorySync(module.outputDirAbs, module.output)
-      );
-    }
-
-    if (output.common) {
-      filesWritten.push(
-        ...writeDirectorySync(output.common.outputDirAbs, output.common.output)
-      );
-    }
-
-    return filesWritten;
+    return writeDirectorySync(binding.outputDirAbs, binding.output);
   }
 
   private async _buildModules(state: CompilerState): Promise<BuildManifest> {
@@ -255,7 +241,7 @@ export class Compiler {
     await this._validateWasmModule(outputDir);
 
     // Update the Web3ApiManifest
-    web3ApiManifest.main = "./module.wasm";
+    web3ApiManifest.module = "./module.wasm";
     web3ApiManifest.schema = "./schema.graphql";
     web3ApiManifest.build = "./web3api.build.json";
 
@@ -432,12 +418,12 @@ export class Compiler {
       throw Error(missingSchemaMessage);
     }
 
-    if (web3ApiManifest.language !== "interface" && !web3ApiManifest.main) {
+    if (web3ApiManifest.language !== "interface" && !web3ApiManifest.module) {
       const missingModuleMessage = intlMsg.lib_compiler_missingModule();
       throw Error(missingModuleMessage);
     }
 
-    if (web3ApiManifest.language === "interface" && web3ApiManifest.main) {
+    if (web3ApiManifest.language === "interface" && web3ApiManifest.module) {
       const noInterfaceModule = intlMsg.lib_compiler_noInterfaceModule();
       throw Error(noInterfaceModule);
     }

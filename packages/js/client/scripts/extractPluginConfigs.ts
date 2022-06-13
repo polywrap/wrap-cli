@@ -23,15 +23,11 @@ const plugins: PluginConfigSource[] = [
     name: "Ipfs",
     module: "@web3api/ipfs-plugin-js",
     uri: "w3://ens/ipfs.web3api.eth",
-    config: "IpfsPluginConfigs",
+    config: "IpfsPluginConfig",
     files: [
       {
         name: "build/index.d.ts",
-        interfaces: ["IpfsPluginConfigs"]
-      },
-      {
-        name: "build/common/IpfsConfig.d.ts",
-        interfaces: ["IpfsConfig"],
+        interfaces: ["IpfsPluginConfig"]
       }
     ],
   },
@@ -39,18 +35,14 @@ const plugins: PluginConfigSource[] = [
     name: "Ethereum",
     module: "@web3api/ethereum-plugin-js",
     uri: "w3://ens/ethereum.web3api.eth",
-    config: "EthereumPluginConfigs",
+    config: "EthereumPluginConfig",
     files: [
       {
         name: "build/index.d.ts",
-        interfaces: ["EthereumPluginConfigs"],
+        interfaces: ["EthereumPluginConfig"],
       },
       {
-        name: "build/common/EthereumConfig.d.ts",
-        interfaces: ["EthereumConfig"],
-      },
-      {
-        name: "build/common/Connection.d.ts",
+        name: "build/Connection.d.ts",
         interfaces: ["ConnectionConfig", "ConnectionConfigs"],
         types: ["EthereumProvider", "EthereumSigner", "AccountIndex", "Address"],
       },
@@ -74,17 +66,13 @@ const plugins: PluginConfigSource[] = [
     name: "Ens",
     module: "@web3api/ens-plugin-js",
     uri: "w3://ens/ens.web3api.eth",
-    config: "EnsPluginConfigs",
+    config: "EnsPluginConfig",
     files: [
       {
-        name: "build/w3/plugin.d.ts",
-        interfaces: ["EnsPluginConfigs"],
-      },
-      {
-        name: "build/query/index.d.ts",
-        interfaces: ["QueryConfig", "Addresses"],
+        name: "build/index.d.ts",
+        interfaces: ["EnsPluginConfig", "Addresses"],
         types: ["Address"],
-      },
+      }
     ]
   }
 ];

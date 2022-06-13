@@ -3,13 +3,9 @@
 /* eslint-disable prettier/prettier */
 
 /// Types generated from @web3api/ens-plugin-js build files:
-/// build/w3/plugin.d.ts, build/query/index.d.ts
+/// build/index.d.ts
 
-export interface EnsPluginConfigs {
-  query: QueryConfig;
-}
-
-export interface QueryConfig extends Record<string, unknown> {
+export interface EnsPluginConfig extends Record<string, unknown> {
   addresses?: Addresses;
 }
 

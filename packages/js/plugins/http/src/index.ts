@@ -1,3 +1,50 @@
-// TIP: All user-defined code lives in the module folders (./query, ./mutation)
+import {
+  Client,
+  Module,
+  Input_get,
+  Input_post,
+  Response,
+  manifest,
+} from "./w3-man";
+import { fromAxiosResponse, toAxiosRequestConfig } from "./util";
 
-export * from "./w3";
+import axios from "axios";
+import { PluginFactory } from "@web3api/core-js";
+
+export type HttpPluginConfig = Record<string, unknown>;
+
+export class HttpPlugin extends Module<HttpPluginConfig> {
+  public async get(
+    input: Input_get,
+    _client: Client
+  ): Promise<Response | null> {
+    const response = await axios.get<string>(
+      input.url,
+      input.request ? toAxiosRequestConfig(input.request) : undefined
+    );
+    return fromAxiosResponse(response);
+  }
+
+  public async post(
+    input: Input_post,
+    _client: Client
+  ): Promise<Response | null> {
+    const response = await axios.post(
+      input.url,
+      input.request ? input.request.body : undefined,
+      input.request ? toAxiosRequestConfig(input.request) : undefined
+    );
+    return fromAxiosResponse(response);
+  }
+}
+
+export const httpPlugin: PluginFactory<HttpPluginConfig> = (
+  opts: HttpPluginConfig
+) => {
+  return {
+    factory: () => new HttpPlugin(opts),
+    manifest,
+  };
+};
+
+export const plugin = httpPlugin;

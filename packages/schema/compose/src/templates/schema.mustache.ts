@@ -37,7 +37,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
 }{{/methods.length}}
 
 {{/moduleType}}
-{{#envTypes.query.client}}{{#comment}}
+{{#envType.client}}{{#comment}}
 """
 {{comment}}
 """
@@ -52,8 +52,8 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
   {{/properties}}
 }{{/properties.length}}
 
-{{/envTypes.query.client}}
-{{#envTypes.query.sanitized}}{{#comment}}
+{{/envType.client}}
+{{#envType.sanitized}}{{#comment}}
 """
 {{comment}}
 """
@@ -68,39 +68,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
   {{/properties}}
 }{{/properties.length}}
 
-{{/envTypes.query.sanitized}}
-{{#envTypes.mutation.client}}{{#comment}}
-"""
-{{comment}}
-"""
-{{/comment}}
-type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}}{{#properties.length}} {
-  {{#properties}}{{#comment}}
-  """
-  {{comment}}
-  """
-  {{/comment}}
-  {{name}}: {{toGraphQLType}}
-  {{/properties}}
-}{{/properties.length}}
-
-{{/envTypes.mutation.client}}
-{{#envTypes.mutation.sanitized}}{{#comment}}
-"""
-{{comment}}
-"""
-{{/comment}}
-type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}}{{#properties.length}} {
-  {{#properties}}{{#comment}}
-  """
-  {{comment}}
-  """
-  {{/comment}}
-  {{name}}: {{toGraphQLType}}
-  {{/properties}}
-}{{/properties.length}}
-
-{{/envTypes.mutation.sanitized}}
+{{/envType.sanitized}}
 {{#objectTypes}}{{#comment}}
 """
 {{comment}}

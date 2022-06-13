@@ -21,7 +21,7 @@
       "type": "string",
       "format": "pluginLanguage"
     },
-    "main": {
+    "module": {
       "type": "string",
       "format": "file"
     },
