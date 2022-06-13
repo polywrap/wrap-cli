@@ -3,6 +3,8 @@ import { runCommand } from "../system";
 import fs from "fs";
 import { InvokeApiResult } from "@web3api/core-js";
 
+const TMPDIR = process.env.TMPDIR || "/tmp";
+
 export async function cueExists(): Promise<boolean> {
   try {
     const { stdout } = await runCommand("cue version");
@@ -22,7 +24,7 @@ export async function validateOutput(
   const stepId = id.substring(index + 1);
 
   const selector = `${jobId}.\\$${stepId}`;
-  const jsonOutput = `${process.env.TMPDIR}/${id}.json`;
+  const jsonOutput = `${TMPDIR}/${id}.json`;
 
   await fs.promises.writeFile(jsonOutput, JSON.stringify(result, null, 2));
 
