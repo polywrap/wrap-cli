@@ -248,7 +248,7 @@ describe("Web3API Schema Type Validation", () => {
     });
 
     expect(exec(typeDefinitions1)).toThrow(
-      /Subscriptions are not yet supported./gm
+      /OperationType names \(Mutation, Subscription, Query\) are not allowed./gm
     );
 
     expect(exec(typeDefinitions2)).toThrow(

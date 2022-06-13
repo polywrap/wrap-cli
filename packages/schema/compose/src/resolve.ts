@@ -23,6 +23,7 @@ import {
   TypeInfoTransforms,
   visitObjectDefinition,
   visitModuleDefinition,
+  visitEnvDefinition,
   ImportedModuleDefinition,
   DefinitionKind,
   visitImportedModuleDefinition,
@@ -49,6 +50,7 @@ import {
   createObjectDefinition,
   createModuleDefinition,
 } from "@web3api/schema-parse";
+import { isEnvType } from "@web3api/schema-parse";
 
 type ImplementationWithInterfaces = {
   typeName: string;
@@ -924,7 +926,7 @@ async function resolveLocalImports(
           (type) => type.type === importedType
         );
       } else if (isEnv) {
-        visitorFunc = visitObjectDefinition;
+        visitorFunc = visitEnvDefinition;
 
         if (!typeInfo.envType.sanitized) {
           typeInfo.envType.sanitized = createObjectDefinition({
@@ -1037,7 +1039,8 @@ async function resolveLocalImports(
       } else if (isKind(typesToImport[importType], DefinitionKind.Object)) {
         if (
           typeInfo.objectTypes.findIndex((def) => def.type === importType) ===
-          -1
+            -1 &&
+          !isEnvType(importType)
         ) {
           typeInfo.objectTypes.push(
             typesToImport[importType] as ObjectDefinition
