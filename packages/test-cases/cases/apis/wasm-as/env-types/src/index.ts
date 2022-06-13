@@ -5,5 +5,5 @@ import {
 } from "./w3";
 
 export function moduleEnv(input: Input_moduleEnv): Env {
-  return env;
+  return env as Env;
 }
