@@ -2,7 +2,6 @@ import {
   coreInterfaceUris,
 } from "@web3api/core-js";
 import {
-  Plugin,
   Uri,
   Web3ApiClient,
 } from "../..";

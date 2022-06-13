@@ -9,7 +9,6 @@ import {
   Uri,
   createWeb3ApiClient,
   Web3ApiClientConfig,
-  Plugin,
   PluginModule,
   Subscription,
   Web3ApiManifest,
@@ -70,7 +69,7 @@ describe("wasm-wrapper", () => {
   };
 
   const mockPlugin = () => {
-    class Main extends PluginModule {
+    class MockPlugin extends PluginModule {
       getData(_: unknown) {
         return 100;
       }
@@ -79,14 +78,8 @@ describe("wasm-wrapper", () => {
       }
     }
 
-    class MockPlugin implements Plugin {
-      getModule(): PluginModule {
-        return new Main({})
-      }
-    }
-
     return {
-      factory: () => new MockPlugin(),
+      factory: () => new MockPlugin({}),
       manifest: {
         schema: ``,
         implements: [],

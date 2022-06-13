@@ -1,6 +1,5 @@
 import {
   Web3ApiClientConfig,
-  Plugin,
   Web3ApiClient,
   createWeb3ApiClient,
   PluginModule,
@@ -33,7 +32,7 @@ describe("plugin-wrapper", () => {
       map: Map<string, number>;
     }
 
-    class Main extends PluginModule<Config> {
+    class MockMapPlugin extends PluginModule<Config> {
       async getMap(_: unknown) {
         return this.config.map;
       }
@@ -49,16 +48,10 @@ describe("plugin-wrapper", () => {
       }
     }
 
-    class MockMapPlugin implements Plugin {
-      private map = new Map().set("a", 1).set("b", 2);
-
-      getModule(): PluginModule {
-        return new Main({ map: this.map});
-      }
-    }
-
     return {
-      factory: () => new MockMapPlugin(),
+      factory: () => new MockMapPlugin({
+        map: new Map().set("a", 1).set("b", 2)
+      }),
       manifest: {
         schema: ``,
         implements: [],
@@ -74,7 +67,7 @@ describe("plugin-wrapper", () => {
         {
           uri: implementationUri,
           plugin: {
-            factory: () => ({} as Plugin),
+            factory: () => ({} as PluginModule),
             manifest: {
               schema: "",
               implements: [],
@@ -133,9 +126,9 @@ directive @annotate(type: String!) on FIELD
 
 ### Web3API Header END ###
 
-type Module implements Logger_Query @imports(
+type Module implements Logger_Module @imports(
   types: [
-    "Logger_Query",
+    "Logger_Module",
     "Logger_LogLevel"
   ]
 ) {
@@ -145,12 +138,12 @@ type Module implements Logger_Query @imports(
   ): Boolean!
 }
 
-### Imported Queries START ###
+### Imported Modules START ###
 
-type Logger_Query @imported(
+type Logger_Module @imported(
   uri: "ens/logger.core.web3api.eth",
   namespace: "Logger",
-  nativeType: "Query"
+  nativeType: "Module"
 ) {
   log(
     level: Logger_LogLevel!
@@ -158,7 +151,7 @@ type Logger_Query @imported(
   ): Boolean!
 }
 
-### Imported Queries END ###
+### Imported Modules END ###
 
 ### Imported Objects START ###
 
@@ -228,7 +221,7 @@ enum Logger_LogLevel @imported(
     const pluginUriToOverride = defaultPlugins[0];
 
     const pluginPackage = {
-      factory: () => ({} as Plugin),
+      factory: () => ({} as PluginModule),
       manifest: {
         schema: "",
         implements: [],
@@ -259,7 +252,7 @@ enum Logger_LogLevel @imported(
     const pluginUriToOverride = defaultPlugins[0];
 
     const pluginPackage1 = {
-      factory: () => ({} as Plugin),
+      factory: () => ({} as PluginModule),
       manifest: {
         schema: "",
         implements: [],
@@ -267,7 +260,7 @@ enum Logger_LogLevel @imported(
     };
 
     const pluginPackage2 = {
-      factory: () => ({} as Plugin),
+      factory: () => ({} as PluginModule),
       manifest: {
         schema: "",
         implements: [],
