@@ -1,5 +1,5 @@
 import {
-  Ethereum_Query,
+  Ethereum_Module,
   Ethereum_EventNotification,
   Ethereum_StaticTxResult,
   Ethereum_TxReceipt,
@@ -22,14 +22,23 @@ import {
   Input_toEth,
   Input_awaitTransaction,
   Input_waitForEvent,
-  Input_getNetwork, Input_getBalance,
+  Input_getNetwork,
+  Input_getBalance,
+  Ethereum_TxResponse,
+  Input_callContractMethod,
+  Input_callContractMethodAndWait,
+  Input_deployContract,
+  Input_sendRPC,
+  Input_sendTransaction,
+  Input_sendTransactionAndWait,
+  Input_signMessage
 } from "./w3";
 import { BigInt } from "@web3api/wasm-as";
 
 export function callContractView(
   input: Input_callContractView
 ): string {
-  return Ethereum_Query.callContractView({
+  return Ethereum_Module.callContractView({
     address: input.address,
     method: input.method,
     args: input.args,
@@ -40,7 +49,7 @@ export function callContractView(
 export function callContractStatic(
   input: Input_callContractStatic
 ): Ethereum_StaticTxResult {
-  return Ethereum_Query.callContractStatic({
+  return Ethereum_Module.callContractStatic({
     address: input.address,
     method: input.method,
     args: input.args,
@@ -52,7 +61,7 @@ export function callContractStatic(
 export function getBalance(
   input: Input_getBalance
 ): BigInt {
-  return Ethereum_Query.getBalance({
+  return Ethereum_Module.getBalance({
     address: input.address,
     blockTag: input.blockTag,
     connection: input.connection
@@ -62,7 +71,7 @@ export function getBalance(
 export function encodeParams(
   input: Input_encodeParams
 ): string {
-  return Ethereum_Query.encodeParams({
+  return Ethereum_Module.encodeParams({
     types: input.types,
     values: input.values
   }).unwrap();
@@ -71,7 +80,7 @@ export function encodeParams(
 export function encodeFunction(
   input: Input_encodeFunction
 ): string {
-  return Ethereum_Query.encodeFunction({
+  return Ethereum_Module.encodeFunction({
     method: input.method,
     args: input.args
   }).unwrap();
@@ -80,7 +89,7 @@ export function encodeFunction(
 export function solidityPack(
   input: Input_solidityPack
 ): string {
-  return Ethereum_Query.solidityPack({
+  return Ethereum_Module.solidityPack({
     types: input.types,
     values: input.values
   }).unwrap();
@@ -89,7 +98,7 @@ export function solidityPack(
 export function solidityKeccak256(
   input: Input_solidityKeccak256
 ): string {
-  return Ethereum_Query.solidityKeccak256({
+  return Ethereum_Module.solidityKeccak256({
     types: input.types,
     values: input.values
   }).unwrap();
@@ -98,7 +107,7 @@ export function solidityKeccak256(
 export function soliditySha256(
   input: Input_soliditySha256
 ): string {
-  return Ethereum_Query.soliditySha256({
+  return Ethereum_Module.soliditySha256({
     types: input.types,
     values: input.values
   }).unwrap();
@@ -107,7 +116,7 @@ export function soliditySha256(
 export function getSignerAddress(
   input: Input_getSignerAddress
 ): string {
-  return Ethereum_Query.getSignerAddress({
+  return Ethereum_Module.getSignerAddress({
     connection: input.connection
   }).unwrap();
 }
@@ -115,7 +124,7 @@ export function getSignerAddress(
 export function getSignerBalance(
   input: Input_getSignerBalance
 ): BigInt {
-  return Ethereum_Query.getSignerBalance({
+  return Ethereum_Module.getSignerBalance({
     blockTag: input.blockTag,
     connection: input.connection
   }).unwrap();
@@ -124,7 +133,7 @@ export function getSignerBalance(
 export function getSignerTransactionCount(
   input: Input_getSignerTransactionCount
 ): BigInt {
-  return Ethereum_Query.getSignerTransactionCount({
+  return Ethereum_Module.getSignerTransactionCount({
     blockTag: input.blockTag,
     connection: input.connection
   }).unwrap();
@@ -133,7 +142,7 @@ export function getSignerTransactionCount(
 export function getGasPrice(
   input: Input_getGasPrice
 ): BigInt {
-  return Ethereum_Query.getGasPrice({
+  return Ethereum_Module.getGasPrice({
     connection: input.connection
   }).unwrap();
 }
@@ -141,7 +150,7 @@ export function getGasPrice(
 export function estimateTransactionGas(
   input: Input_estimateTransactionGas
 ): BigInt {
-  return Ethereum_Query.estimateTransactionGas({
+  return Ethereum_Module.estimateTransactionGas({
     tx: input.tx,
     connection: input.connection
   }).unwrap();
@@ -150,7 +159,7 @@ export function estimateTransactionGas(
 export function estimateContractCallGas(
   input: Input_estimateContractCallGas
 ): BigInt {
-  return Ethereum_Query.estimateContractCallGas({
+  return Ethereum_Module.estimateContractCallGas({
     address: input.address,
     method: input.method,
     args: input.args,
@@ -162,7 +171,7 @@ export function estimateContractCallGas(
 export function checkAddress(
   input: Input_checkAddress
 ): bool {
-  return Ethereum_Query.checkAddress({
+  return Ethereum_Module.checkAddress({
     address: input.address
   }).unwrap();
 }
@@ -170,7 +179,7 @@ export function checkAddress(
 export function toWei(
   input: Input_toWei
 ): BigInt {
-  return Ethereum_Query.toWei({
+  return Ethereum_Module.toWei({
     eth: input.eth
   }).unwrap();
 }
@@ -178,7 +187,7 @@ export function toWei(
 export function toEth(
   input: Input_toEth
 ): String {
-  return Ethereum_Query.toEth({
+  return Ethereum_Module.toEth({
     wei: input.wei
   }).unwrap();
 }
@@ -186,7 +195,7 @@ export function toEth(
 export function awaitTransaction(
   input: Input_awaitTransaction
 ): Ethereum_TxReceipt {
-  return Ethereum_Query.awaitTransaction({
+  return Ethereum_Module.awaitTransaction({
     txHash: input.txHash,
     confirmations: input.confirmations,
     timeout: input.timeout,
@@ -197,7 +206,7 @@ export function awaitTransaction(
 export function waitForEvent(
   input: Input_waitForEvent
 ): Ethereum_EventNotification {
-  return Ethereum_Query.waitForEvent({
+  return Ethereum_Module.waitForEvent({
     address: input.address,
     event: input.event,
     args: input.args,
@@ -209,7 +218,79 @@ export function waitForEvent(
 export function getNetwork(
   input: Input_getNetwork
 ): Ethereum_Network {
-  return Ethereum_Query.getNetwork({
+  return Ethereum_Module.getNetwork({
+    connection: input.connection
+  }).unwrap();
+}
+
+export function callContractMethod(
+  input: Input_callContractMethod
+): Ethereum_TxResponse {
+  return Ethereum_Module.callContractMethod({
+    address: input.address,
+    method: input.method,
+    args: input.args,
+    connection: input.connection,
+    txOverrides: input.txOverrides
+  }).unwrap();
+}
+
+export function callContractMethodAndWait(
+  input: Input_callContractMethodAndWait
+): Ethereum_TxReceipt {
+  return Ethereum_Module.callContractMethodAndWait({
+    address: input.address,
+    method: input.method,
+    args: input.args,
+    connection: input.connection,
+    txOverrides: input.txOverrides
+  }).unwrap();
+}
+
+export function sendTransaction(
+  input: Input_sendTransaction
+): Ethereum_TxResponse {
+  return Ethereum_Module.sendTransaction({
+    tx: input.tx,
+    connection: input.connection
+  }).unwrap();
+}
+
+export function sendTransactionAndWait(
+  input: Input_sendTransactionAndWait
+): Ethereum_TxReceipt {
+  return Ethereum_Module.sendTransactionAndWait({
+    tx: input.tx,
+    connection: input.connection
+  }).unwrap();
+}
+
+export function deployContract(
+  input: Input_deployContract
+): string {
+  return Ethereum_Module.deployContract({
+    abi: input.abi,
+    bytecode: input.bytecode,
+    args: input.args,
+    connection: input.connection
+  }).unwrap();
+}
+
+export function signMessage(
+  input: Input_signMessage
+): string {
+  return Ethereum_Module.signMessage({
+    message: input.message,
+    connection: input.connection
+  }).unwrap();
+}
+
+export function sendRPC(
+  input: Input_sendRPC
+): string | null {
+  return Ethereum_Module.sendRPC({
+    method: input.method,
+    params: input.params,
     connection: input.connection
   }).unwrap();
 }
