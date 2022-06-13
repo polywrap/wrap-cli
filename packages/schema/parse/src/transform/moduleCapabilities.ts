@@ -41,7 +41,7 @@ export function moduleCapabilities(): TypeInfoTransforms {
         }
 
         for (const importedModuleDef of info.importedModuleTypes) {
-          if (enabledInterfaces.has(importedModuleDef.type)) {
+          if (enabledInterfaces.has(importedModuleDef.namespace)) {
             importedModuleDef.isInterface = true;
           }
         }
