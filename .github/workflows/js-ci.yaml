@@ -175,6 +175,9 @@ jobs:
 
       - name: Install cue lang
         run: go install cuelang.org/go/cmd/cue@latest
+      
+      - name: Check if cue is installed
+        run: cue version
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
