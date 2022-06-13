@@ -79,7 +79,7 @@ describe("Web3API Schema Directives Validation", () => {
     );
   });
 
-  it("importsDirective: Query Object Only", () => {
+  it("importsDirective: Module Object Only", () => {
     expect(() => parseSchema(importsDirectiveSchema1, {
       validators: [
         directiveValidators.getImportsDirectiveValidator

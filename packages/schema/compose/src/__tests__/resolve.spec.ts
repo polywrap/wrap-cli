@@ -6,7 +6,7 @@ describe("Check duplicate environment properties", () => {
     try {
       checkDuplicateEnvProperties(
         createObjectDefinition({
-          type: "QueryEnv",
+          type: "ModuleEnv",
           properties: [
             createPropertyDefinition({
               type: "String",
@@ -25,7 +25,7 @@ describe("Check duplicate environment properties", () => {
       fail("Error not thrown");
     } catch (error) {
       expect(error.message).toEqual(
-        "Type 'QueryEnv' contains duplicate property 'prop' of type 'Env'"
+        "Type 'ModuleEnv' contains duplicate property 'prop' of type 'Env'"
       )
     }
   });
@@ -33,7 +33,7 @@ describe("Check duplicate environment properties", () => {
   it("should do nothing if no duplicate properties found", () => {
     checkDuplicateEnvProperties(
       createObjectDefinition({
-        type: "QueryEnv",
+        type: "ModuleEnv",
         properties: [
           createPropertyDefinition({
             type: "String",
