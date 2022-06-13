@@ -1,6 +1,7 @@
 import {
   Bytes,
   Client,
+  Filesystem_EncodingEnum,
   Filesystem_Query,
   Input_getFile,
   Input_tryResolveUri,
@@ -39,7 +40,7 @@ export class Query extends Module<QueryConfig> {
       if (manifestExistsResult.data) {
         try {
           const manifestResult = await Filesystem_Query.readFileAsString(
-            { path: manifestPath, encoding: "utf-8" },
+            { path: manifestPath, encoding: Filesystem_EncodingEnum.UTF8 },
             _client
           );
           if (manifestResult.error) {
