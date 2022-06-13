@@ -9,6 +9,7 @@ scalar Int16
 scalar Int32
 scalar Bytes
 scalar BigInt
+scalar BigNumber
 scalar JSON
 scalar Map
 
@@ -36,7 +37,7 @@ directive @annotate(type: String!) on FIELD
 
 type Module @imports(
   types: [
-    "Ethereum_Query",
+    "Ethereum_Module",
     "Ethereum_Connection",
     "Ethereum_TxOverrides",
     "Ethereum_StaticTxResult",
@@ -45,9 +46,11 @@ type Module @imports(
     "Ethereum_Log",
     "Ethereum_EventNotification",
     "Ethereum_Network",
-    "UTS46_Query",
+    "Ethereum_TxResponse",
+    "Ethereum_Access",
+    "UTS46_Module",
     "UTS46_ConvertResult",
-    "SHA3_Query"
+    "SHA3_Module"
   ]
 ) {
   getResolver(
@@ -122,23 +125,7 @@ type Module @imports(
     key: String!
     connection: Ethereum_Connection
   ): String!
-}
 
-type Mutation @imports(
-  types: [
-    "Ethereum_Mutation",
-    "Ethereum_Connection",
-    "Ethereum_TxOverrides",
-    "Ethereum_TxResponse",
-    "Ethereum_Access",
-    "Ethereum_TxReceipt",
-    "Ethereum_Log",
-    "Ethereum_TxRequest",
-    "UTS46_Query",
-    "UTS46_ConvertResult",
-    "SHA3_Query"
-  ]
-) {
   setResolver(
     domain: String!
     resolverAddress: String!
@@ -349,10 +336,10 @@ type TxOverrides {
 
 ### Imported Queries START ###
 
-type Ethereum_Query @imported(
+type Ethereum_Module @imported(
   uri: "w3://ens/ethereum.web3api.eth",
   namespace: "Ethereum",
-  nativeType: "Query"
+  nativeType: "Module"
 ) {
   callContractView(
     address: String!
@@ -461,12 +448,56 @@ type Ethereum_Query @imported(
   getNetwork(
     connection: Ethereum_Connection
   ): Ethereum_Network!
+
+  callContractMethod(
+    address: String!
+    method: String!
+    args: [String!]
+    connection: Ethereum_Connection
+    txOverrides: Ethereum_TxOverrides
+  ): Ethereum_TxResponse!
+
+  callContractMethodAndWait(
+    address: String!
+    method: String!
+    args: [String!]
+    connection: Ethereum_Connection
+    txOverrides: Ethereum_TxOverrides
+  ): Ethereum_TxReceipt!
+
+  sendTransaction(
+    tx: Ethereum_TxRequest!
+    connection: Ethereum_Connection
+  ): Ethereum_TxResponse!
+
+  sendTransactionAndWait(
+    tx: Ethereum_TxRequest!
+    connection: Ethereum_Connection
+  ): Ethereum_TxReceipt!
+
+  deployContract(
+    abi: String!
+    bytecode: String!
+    args: [String!]
+    connection: Ethereum_Connection
+  ): String!
+
+  signMessage(
+    message: String!
+    connection: Ethereum_Connection
+  ): String!
+
+  sendRPC(
+    method: String!
+    params: [String!]!
+    connection: Ethereum_Connection
+  ): String
 }
 
-type UTS46_Query @imported(
+type UTS46_Module @imported(
   uri: "w3://ens/uts46.web3api.eth",
   namespace: "UTS46",
-  nativeType: "Query"
+  nativeType: "Module"
 ) {
   toAscii(
     value: String!
@@ -481,10 +512,10 @@ type UTS46_Query @imported(
   ): UTS46_ConvertResult!
 }
 
-type SHA3_Query @imported(
+type SHA3_Module @imported(
   uri: "w3://ens/sha3.web3api.eth",
   namespace: "SHA3",
-  nativeType: "Query"
+  nativeType: "Module"
 ) {
   sha3_512(
     message: String!
@@ -535,56 +566,6 @@ type SHA3_Query @imported(
     message: String!
     outputBits: Int!
   ): String!
-}
-
-type Ethereum_Mutation @imported(
-  uri: "w3://ens/ethereum.web3api.eth",
-  namespace: "Ethereum",
-  nativeType: "Mutation"
-) {
-  callContractMethod(
-    address: String!
-    method: String!
-    args: [String!]
-    connection: Ethereum_Connection
-    txOverrides: Ethereum_TxOverrides
-  ): Ethereum_TxResponse!
-
-  callContractMethodAndWait(
-    address: String!
-    method: String!
-    args: [String!]
-    connection: Ethereum_Connection
-    txOverrides: Ethereum_TxOverrides
-  ): Ethereum_TxReceipt!
-
-  sendTransaction(
-    tx: Ethereum_TxRequest!
-    connection: Ethereum_Connection
-  ): Ethereum_TxResponse!
-
-  sendTransactionAndWait(
-    tx: Ethereum_TxRequest!
-    connection: Ethereum_Connection
-  ): Ethereum_TxReceipt!
-
-  deployContract(
-    abi: String!
-    bytecode: String!
-    args: [String!]
-    connection: Ethereum_Connection
-  ): String!
-
-  signMessage(
-    message: String!
-    connection: Ethereum_Connection
-  ): String!
-
-  sendRPC(
-    method: String!
-    params: [String!]!
-    connection: Ethereum_Connection
-  ): String
 }
 
 ### Imported Queries END ###
@@ -695,15 +676,6 @@ type Ethereum_Network @imported(
   ensAddress: String
 }
 
-type UTS46_ConvertResult @imported(
-  uri: "w3://ens/uts46.web3api.eth",
-  namespace: "UTS46",
-  nativeType: "ConvertResult"
-) {
-  IDN: String!
-  PC: String!
-}
-
 type Ethereum_TxResponse @imported(
   uri: "w3://ens/ethereum.web3api.eth",
   namespace: "Ethereum",
@@ -737,6 +709,15 @@ type Ethereum_Access @imported(
 ) {
   address: String!
   storageKeys: [String!]!
+}
+
+type UTS46_ConvertResult @imported(
+  uri: "w3://ens/uts46.web3api.eth",
+  namespace: "UTS46",
+  nativeType: "ConvertResult"
+) {
+  IDN: String!
+  PC: String!
 }
 
 ### Imported Objects END ###

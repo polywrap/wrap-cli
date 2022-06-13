@@ -256,7 +256,6 @@ export async function buildAndDeployApi({
 
   const { data: signerAddress } = await client.invoke<string>({
     method: "getSignerAddress",
-    module: "query",
     uri: ethereumPluginUri,
     input: {
       connection: {
@@ -271,7 +270,6 @@ export async function buildAndDeployApi({
 
   const { data: registerData, error } = await client.invoke<{ hash: string }>({
     method: "registerDomainAndSubdomainsRecursively",
-    module: "mutation",
     uri: ensWrapperUri,
     input: {
       domain: apiEns,
@@ -295,7 +293,6 @@ export async function buildAndDeployApi({
 
   await client.invoke({
     method: "awaitTransaction",
-    module: "query",
     uri: ethereumPluginUri,
     input: {
       txHash: registerData.hash,

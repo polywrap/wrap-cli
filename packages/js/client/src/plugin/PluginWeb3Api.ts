@@ -75,8 +75,6 @@ export class PluginWeb3Api extends Api {
       }
 
       // Sanitize & load the module's environment
-      console.log(module);
-      console.log(client);
       await this._sanitizeAndLoadEnv(client, module);
 
       let jsInput: Record<string, unknown>;
@@ -168,7 +166,6 @@ export class PluginWeb3Api extends Api {
   ): Promise<void> {
     if (this._sanitizedEnv === undefined) {
       const clientEnv = this._getClientEnv();
-      console.log({ clientEnv });
       this._sanitizedEnv = await pluginModule._w3_sanitize_env(
         clientEnv,
         client
