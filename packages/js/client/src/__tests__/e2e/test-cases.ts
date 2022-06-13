@@ -499,34 +499,7 @@ export const runImplementationsTest = async (
     uint8: 1,
     str: "Test String 1",
   });
-
   expect(query.data?.abstractModuleMethod).toBe("Test String 2");
-
-  const mutation = await client.query<{
-    mutationMethod: string;
-    abstractMutationMethod: string;
-  }>({
-    uri: implementationUri,
-    query: `
-    mutation {
-        mutationMethod(
-          arg: $argument1
-        )
-        abstractMutationMethod(
-          arg: $argument2
-        )
-      }
-    `,
-    variables: {
-      argument1: 1,
-      argument2: 2,
-    },
-  });
-
-  expect(mutation.errors).toBeFalsy();
-  expect(mutation.data).toBeTruthy();
-  expect(mutation.data?.mutationMethod).toBe(1);
-  expect(mutation.data?.abstractMutationMethod).toBe(2);
 };
 
 export const runGetImplementationsTest = async (
@@ -540,13 +513,12 @@ export const runGetImplementationsTest = async (
   ]);
 
   const query = await client.query<{
-    moduleMethod: string;
-    abstractModuleMethod: string;
+    moduleImplementations: string[];
   }>({
     uri: implUri.uri,
     query: `
       query {
-        queryImplementations
+        moduleImplementations
       }
     `,
     variables: {},
@@ -554,7 +526,7 @@ export const runGetImplementationsTest = async (
 
   expect(query.errors).toBeFalsy();
   expect(query.data).toBeTruthy();
-  expect((query.data as any).queryImplementations).toEqual([
+  expect(query.data?.moduleImplementations).toEqual([
     implUri.uri,
   ]);
 };

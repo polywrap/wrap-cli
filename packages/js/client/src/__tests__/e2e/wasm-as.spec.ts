@@ -156,11 +156,8 @@ describe("wasm-as test cases", () => {
 
     const implementationPath = `${GetPathToTestApis()}/wasm-as/implementations/test-api`
     const implementationUri = `w3://fs/${implementationPath}/build`
-    
-    await buildApi(
-      interfacePath
-    );
-    
+
+    await buildApi(interfacePath);
     await buildApi(implementationPath);
 
     const client = await getClient({
@@ -212,7 +209,6 @@ describe("wasm-as test cases", () => {
     });
 
     await buildApi(implementationPath);
-    
 
     const client = await getClient({
       interfaces: [
@@ -248,27 +244,12 @@ describe("wasm-as test cases", () => {
       uint8: 1,
       str: "Test String 1",
     });
-
-    const mutation = await client.query<{
-      mutationMethod: string;
-    }>({
-      uri: apiUri,
-      query: `mutation {
-        mutationMethod(
-          arg: 1
-        )
-      }`,
-    });
-
-    expect(mutation.errors).toBeFalsy();
-    expect(mutation.data).toBeTruthy();
-    expect(mutation.data?.mutationMethod).toBe(1);
   });
 
   it("invalid type errors", async () => {
     const apiPath = `${GetPathToTestApis()}/wasm-as/invalid-types`
     const apiUri = `fs/${apiPath}/build`
-    
+
     await buildApi(apiPath);
 
     await TestCases.runInvalidTypesTest(
