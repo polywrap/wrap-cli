@@ -1,6 +1,8 @@
 /// NOTE: This is an auto-generated file.
 ///       All modifications will be overwritten.
 
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import * as Types from "./types";
 
 import { Client, PluginModule, MaybeAsync } from "@web3api/core-js";

@@ -1,6 +1,8 @@
 /// NOTE: This is an auto-generated file.
 ///       All modifications will be overwritten.
 
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import * as Types from "./types";
 
 import { Client, PluginModule, MaybeAsync } from "@web3api/core-js";
@@ -122,7 +124,8 @@ export interface Input_callContractMethod extends Record<string, unknown> {
   txOverrides?: Types.TxOverrides | null;
 }
 
-export interface Input_callContractMethodAndWait extends Record<string, unknown> {
+export interface Input_callContractMethodAndWait
+  extends Record<string, unknown> {
   address: Types.String;
   method: Types.String;
   args?: Array<Types.String> | null;

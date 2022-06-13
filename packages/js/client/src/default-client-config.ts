@@ -56,19 +56,19 @@ export const getDefaultClientConfig = Tracer.traceFunc(
         },
         {
           uri: new Uri("w3://ens/http.web3api.eth"),
-          plugin: httpPlugin({ }),
+          plugin: httpPlugin({}),
         },
         {
           uri: new Uri("w3://ens/js-logger.web3api.eth"),
-          plugin: loggerPlugin({ }),
+          plugin: loggerPlugin({}),
         },
         {
           uri: new Uri("w3://ens/uts46.web3api.eth"),
-          plugin: uts46Plugin({ }),
+          plugin: uts46Plugin({}),
         },
         {
           uri: new Uri("w3://ens/sha3.web3api.eth"),
-          plugin: sha3Plugin({ }),
+          plugin: sha3Plugin({}),
         },
         {
           uri: new Uri("w3://ens/graph-node.web3api.eth"),
@@ -78,7 +78,7 @@ export const getDefaultClientConfig = Tracer.traceFunc(
         },
         {
           uri: new Uri("w3://ens/fs.web3api.eth"),
-          plugin: filesystemPlugin({ }),
+          plugin: filesystemPlugin({}),
         },
       ],
       interfaces: [

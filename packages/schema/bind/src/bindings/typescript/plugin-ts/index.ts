@@ -2,10 +2,7 @@
 import * as Functions from "../functions";
 import { GenerateBindingFn } from "../..";
 import { renderTemplates } from "../../utils/templates";
-import {
-  BindOptions,
-  BindOutput,
-} from "../../..";
+import { BindOptions, BindOutput } from "../../..";
 
 import {
   TypeInfo,
@@ -26,7 +23,6 @@ const templatePath = (subpath: string) =>
 export const generateBinding: GenerateBindingFn = (
   options: BindOptions
 ): BindOutput => {
-
   // Apply TypeInfo transforms
   const typeInfo = applyTransforms(options.typeInfo);
 
@@ -42,7 +38,7 @@ export const generateBinding: GenerateBindingFn = (
   output.entries = renderTemplates(
     templatePath(""),
     { ...typeInfo, schema: options.schema },
-    { }
+    {}
   );
 
   return result;

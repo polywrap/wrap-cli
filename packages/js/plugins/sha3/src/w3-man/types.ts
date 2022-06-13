@@ -1,12 +1,6 @@
 /// NOTE: This is an auto-generated file.
 ///       All modifications will be overwritten.
 
-// @ts-ignore
-import * as Types from "./";
-
-// @ts-ignore
-import { Client, InvokeApiResult } from "@web3api/core-js";
-
 export type UInt = number;
 export type UInt8 = number;
 export type UInt16 = number;

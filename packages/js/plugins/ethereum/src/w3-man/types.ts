@@ -1,11 +1,9 @@
 /// NOTE: This is an auto-generated file.
 ///       All modifications will be overwritten.
 
-// @ts-ignore
-import * as Types from "./";
+/* eslint-disable @typescript-eslint/naming-convention */
 
-// @ts-ignore
-import { Client, InvokeApiResult } from "@web3api/core-js";
+import * as Types from "./";
 
 export type UInt = number;
 export type UInt8 = number;

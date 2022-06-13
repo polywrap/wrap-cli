@@ -2,10 +2,7 @@ import * as Functions from "./functions";
 import * as Transforms from "./transforms";
 import { GenerateBindingFn } from "../../";
 import { renderTemplates, loadSubTemplates } from "../../utils/templates";
-import {
-  BindOptions,
-  BindOutput,
-} from "../../..";
+import { BindOptions, BindOutput } from "../../..";
 
 import {
   TypeInfo,
