@@ -199,6 +199,68 @@ describe("e2e tests for infra command", () => {
       ]);
     });
 
+    test("Should correctly fetch default & local module", async () => {
+      await runW3CLI(
+        ["infra", "up"],
+        getTestCaseDir(4),
+      );
+
+      await waitForPorts([
+        { port: 5001, expected: true },
+        { port: 8546, expected: true },
+      ]);
+
+      await runW3CLI(
+        ["infra", "down"],
+        getTestCaseDir(4),
+      );
+    });
+
+    test("Should correctly open one process for default module because modules flag overwrites it", async () => {
+      await runW3CLI(
+        ["infra", "up", "--modules=eth-ens-ipfs"],
+        getTestCaseDir(4),
+      );
+
+      await waitForPorts([
+        { port: 5001, expected: true },
+      ]);
+
+      await runW3CLI(
+        ["infra", "down", "--modules=eth-ens-ipfs"],
+        getTestCaseDir(4),
+      );
+    });
+
+    test("Should throw because default module declared in manifest is not recognized", async () => {
+      const { stderr } = await runW3CLI(
+        ["infra", "up", "--manifest=./web3api.infra.wrong.yaml"],
+        getTestCaseDir(4),
+      );
+
+      expect(stderr).toContain(
+        `Module random-module not found as default\nDefault Modules available: `
+      );
+    });
+
+    test("Should correctly fetch different local modules when they are declared as folder or file", async () => {
+      await runW3CLI(
+        ["infra", "up"],
+        getTestCaseDir(4),
+      );
+
+      await waitForPorts([
+        { port: 5001, expected: true },
+        { port: 8546, expected: true },
+        { port: 8547, expected: true },
+      ]);
+
+      await runW3CLI(
+        ["infra", "down"],
+        getTestCaseDir(4),
+      );
+    });
+
     test("Tears down environment", async () => {
       await runW3CLI(
         ["infra", "up"],

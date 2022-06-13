@@ -8,7 +8,7 @@ import {
 
 import { InfraManifest } from "@web3api/core-js";
 import path from "path";
-import fs, { readdirSync } from "fs";
+import fs, { lstatSync, readdirSync } from "fs";
 import YAML from "js-yaml";
 import { copySync } from "fs-extra";
 
@@ -100,12 +100,10 @@ export class Infra {
   > {
     const modulesWithPaths = await this._fetchModules();
 
-    const s = await this._dockerCompose.commands.config({
+    return await this._dockerCompose.commands.config({
       ...this._defaultDockerOptions,
       config: modulesWithPaths.map((m) => m.path),
     });
-
-    return s;
   }
 
   public async getVars(): Promise<string[]> {
@@ -147,12 +145,20 @@ export class Infra {
       infraManifest,
     } = this._config;
 
-    const manifestModules = Object.entries(infraManifest?.modules ?? {}).map(
-      ([name, value]) => ({
+    const manifestModules: NamedModule[] = Object.entries(
+      infraManifest?.modules ?? {}
+    ).map(([name, value]) => {
+      if (value === "default") {
+        return {
+          name,
+          path: this._fetchPathForDefaultModule(name),
+        };
+      }
+      return {
         name,
         ...value,
-      })
-    );
+      };
+    });
 
     if (!modulesToUse || !modulesToUse.length) {
       return manifestModules;
@@ -282,7 +288,7 @@ export class Infra {
       return this._fetchedModulesData;
     }
 
-    const modules = await this.getFilteredModules();
+    const modules = this.getFilteredModules();
 
     if (!modules.length) {
       throw new Error("No modules to fetch");
@@ -330,10 +336,12 @@ export class Infra {
     const basePath = path.join(this.getCacheModulesPath(), "local");
 
     for (const module of modules) {
-      const modulePath = path.join(basePath, module.name);
-
+      const isFile = lstatSync(module.path).isFile();
+      const modulePath = path.join(
+        basePath,
+        isFile ? module.path : module.name
+      );
       copySync(module.path, modulePath);
-
       const composePath = this.tryResolveComposeFile(
         modulePath,
         this._defaultModuleComposePaths
@@ -352,6 +360,21 @@ export class Infra {
     return Object.prototype.hasOwnProperty.call(object, "path");
   }
 
+  private _fetchPathForDefaultModule(module: string): string {
+    const defaultModules = readdirSync(this._config.defaultInfraModulesPath);
+    const defaultModulePath = defaultModules.find(
+      (defaultModules) => defaultModules === module
+    );
+    if (!defaultModulePath) {
+      throw new Error(
+        `Module ${module} not found as default\nDefault Modules available: ${defaultModules
+          .map((m) => `\n- ${m}`)
+          .join("")}`
+      );
+    }
+    return path.join(this._config.defaultInfraModulesPath, defaultModulePath);
+  }
+
   private tryResolveComposeFile(
     moduleDir: string,
     pathsToTry: string[],
@@ -363,7 +386,9 @@ export class Infra {
       );
     }
 
-    const pathToTry = path.join(moduleDir, pathsToTry[0]);
+    const pathToTry = lstatSync(moduleDir).isFile()
+      ? moduleDir
+      : path.join(moduleDir, pathsToTry[0]);
 
     if (fs.existsSync(pathToTry)) {
       return pathToTry;
