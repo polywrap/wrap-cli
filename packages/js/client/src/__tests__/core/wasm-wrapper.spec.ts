@@ -57,10 +57,8 @@ describe("wasm-wrapper", () => {
         },
         ipfs: { provider: ipfsProvider },
         ens: {
-          query: {
-           addresses: {
-              testnet: ensAddress,
-            },
+          addresses: {
+            testnet: ensAddress,
           },
         },
       },

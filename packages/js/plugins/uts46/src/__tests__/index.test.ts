@@ -12,7 +12,7 @@ describe("IDNA UTS #46", () => {
       plugins: [
         {
           uri: "w3://ens/uts46.web3api.eth",
-          plugin: uts46Plugin({ query: {} }),
+          plugin: uts46Plugin({ }),
         },
       ],
     });

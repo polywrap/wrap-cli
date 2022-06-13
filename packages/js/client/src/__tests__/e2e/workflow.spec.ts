@@ -15,16 +15,12 @@ describe("workflow", () => {
   let ipfsProvider: string;
   let ethProvider: string;
   let ensAddress: string;
-  let ensRegistrarAddress: string;
-  let ensResolverAddress: string;
 
   beforeAll(async () => {
     await initTestEnvironment();
     ipfsProvider = providers.ipfs;
     ethProvider = providers.ethereum;
     ensAddress = ensAddresses.ensAddress;
-    ensRegistrarAddress = ensAddresses.registrarAddress;
-    ensResolverAddress = ensAddresses.resolverAddress;
   });
 
   const getClient = async (config?: Partial<Web3ApiClientConfig>) => {
@@ -40,10 +36,8 @@ describe("workflow", () => {
         },
         ipfs: { provider: ipfsProvider },
         ens: {
-          query: {
-            addresses: {
-              testnet: ensAddress,
-            },
+          addresses: {
+            testnet: ensAddress,
           },
         },
       },
@@ -59,12 +53,14 @@ describe("workflow", () => {
     let client: Web3ApiClient;
 
     beforeAll(async () => {
-      await buildAndDeployApi({
+      const result = await buildAndDeployApi({
         apiAbsPath: `${GetPathToTestApis()}/wasm-as/simple-storage`,
         ipfsProvider,
         ethereumProvider: ethProvider,
         ensName: "simple-storage.eth",
       });
+
+      console.log(result)
 
       client = await getClient();
     });

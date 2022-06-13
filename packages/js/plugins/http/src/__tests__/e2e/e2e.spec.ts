@@ -19,7 +19,7 @@ describe("e2e tests for HttpPlugin", () => {
       plugins: [
         {
           uri: "w3://ens/http.web3api.eth",
-          plugin: httpPlugin({ query: {} }),
+          plugin: httpPlugin({ }),
         },
       ]
     });

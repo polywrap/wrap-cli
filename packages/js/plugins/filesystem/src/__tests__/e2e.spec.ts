@@ -30,7 +30,7 @@ describe("Filesystem plugin", () => {
       plugins: [
         {
           uri: "w3://ens/fs.web3api.eth",
-          plugin: filesystemPlugin({ query: {} }),
+          plugin: filesystemPlugin({ }),
         },
         // IPFS is required for downloading Web3API packages
         {
@@ -44,11 +44,9 @@ describe("Filesystem plugin", () => {
         {
           uri: "w3://ens/ens.web3api.eth",
           plugin: ensPlugin({
-            query: {
-              addresses: {
-                testnet: ensAddresses.ensAddress,
-              },
-            }
+            addresses: {
+              testnet: ensAddresses.ensAddress,
+            },
           }),
         },
         {
