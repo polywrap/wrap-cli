@@ -21,7 +21,7 @@ describe("schema", () => {
   it("fails validating wrapper with missing schema", async () => {
     const pathToInvalidWrapper = path.join(testWrappersPath, "missing-schema");
 
-    const result = validator.validate(pathToInvalidWrapper);
+    const result = await validator.validate(pathToInvalidWrapper);
 
     expect(result.valid).toBeFalsy();
     expect(result.failReason).toEqual(ValidationFailReason.SchemaNotFound);
@@ -30,7 +30,7 @@ describe("schema", () => {
   it("fails validating invalid schema file", async () => {
     const pathToInvalidWrapper = path.join(testWrappersPath, "invalid-schema");
 
-    const result = validator.validate(pathToInvalidWrapper);
+    const result = await validator.validate(pathToInvalidWrapper);
 
     expect(result.valid).toBeFalsy();
     expect(result.failReason).toEqual(ValidationFailReason.InvalidSchema);

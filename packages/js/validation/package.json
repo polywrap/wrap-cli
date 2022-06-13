@@ -1,8 +1,6 @@
 {
-  "name": "validation",
+  "name": "@web3api/core-validation",
   "version": "1.0.0",
-  "description": "> TODO: description",
-  "author": "Jure Bogunovic <bogunovij@gmail.com>",
   "homepage": "https://github.com/Web3-API/monorepo#readme",
   "license": "ISC",
   "repository": {

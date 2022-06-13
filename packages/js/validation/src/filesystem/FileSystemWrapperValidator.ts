@@ -8,26 +8,19 @@ import {
 import path from "path";
 import fs from "fs";
 
-export type FileSystemValidatorConfig = {
-  maxSize: number;
-  maxFileSize: number;
-  maxModuleSize: number;
-  maxNumberOfFiles: number;
-};
-
 const getOpsFromPath = (wrapperPath: string): WrapperReadOperations => {
   return {
     readFileAsString: (filePath: string) => {
-      return fs.readFileSync(path.join(wrapperPath, filePath), "utf8");
+      return fs.promises.readFile(path.join(wrapperPath, filePath), "utf8");
     },
     readFile: (filePath: string) => {
-      return fs.readFileSync(path.join(wrapperPath, filePath));
+      return fs.promises.readFile(path.join(wrapperPath, filePath));
     },
     exists: (itemPath: string) => {
-      return fs.existsSync(path.join(wrapperPath, itemPath));
+      return Promise.resolve(fs.existsSync(path.join(wrapperPath, itemPath)));
     },
-    getStats: (itemPath: string) => {
-      const stat = fs.lstatSync(path.join(wrapperPath, itemPath));
+    getStats: async (itemPath: string) => {
+      const stat = await fs.promises.lstat(path.join(wrapperPath, itemPath));
       return {
         isFile: stat.isFile(),
         isDir: stat.isDirectory(),
@@ -35,7 +28,7 @@ const getOpsFromPath = (wrapperPath: string): WrapperReadOperations => {
       };
     },
     readDir: (dirPath: string) => {
-      return fs.readdirSync(path.join(wrapperPath, dirPath));
+      return fs.promises.readdir(path.join(wrapperPath, dirPath));
     },
   };
 };
@@ -47,7 +40,7 @@ export class FileSystemWrapperValidator {
     this.baseValidator = new WrapperValidator(constraints);
   }
 
-  validate(wrapperPath: string): ValidationResult {
+  async validate(wrapperPath: string): Promise<ValidationResult> {
     return this.baseValidator.validate(getOpsFromPath(wrapperPath));
   }
 }

@@ -16,7 +16,7 @@ describe("sanity", () => {
       maxNumberOfFiles: 1000,
     });
 
-    const result = fsValidator.validate(pathToValidWrapper);
+    const result = await fsValidator.validate(pathToValidWrapper);
 
     expect(result.valid).toBeTruthy();
     expect(result.failReason).toEqual(undefined);

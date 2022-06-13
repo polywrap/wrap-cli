@@ -6,7 +6,7 @@ jest.setTimeout(200000);
 
 const testWrappersPath = path.join(__dirname, "../wrappers");
 
-const assertValidWrapper = (wrapperPath: string) => {
+const assertValidWrapper = async (wrapperPath: string) => {
   const validator = new FileSystemWrapperValidator({
     maxSize: 1_000_000,
     maxFileSize: 100_000,
@@ -14,7 +14,7 @@ const assertValidWrapper = (wrapperPath: string) => {
     maxNumberOfFiles: 1000,
   });
 
-  const result = validator.validate(wrapperPath);
+  const result = await validator.validate(wrapperPath);
 
   expect(result.valid).toBeTruthy();
   expect(result.failReason).toEqual(undefined);
@@ -22,9 +22,15 @@ const assertValidWrapper = (wrapperPath: string) => {
 
 describe("manfiests", () => {
   it("sanity", async () => {
-    assertValidWrapper(path.join(testWrappersPath, "wrapper-size-over-30-kb"));
-    assertValidWrapper(path.join(testWrappersPath, "file-size-over-30-kb"));
-    assertValidWrapper(path.join(testWrappersPath, "module-size-over-30-kb"));
+    await assertValidWrapper(
+      path.join(testWrappersPath, "wrapper-size-over-30-kb")
+    );
+    await assertValidWrapper(
+      path.join(testWrappersPath, "file-size-over-30-kb")
+    );
+    await assertValidWrapper(
+      path.join(testWrappersPath, "module-size-over-30-kb")
+    );
   });
 
   it("fails validating a large wrapper", async () => {
@@ -40,7 +46,7 @@ describe("manfiests", () => {
       maxNumberOfFiles: 1000,
     });
 
-    const result = validator.validate(pathToInvalidWrapper);
+    const result = await validator.validate(pathToInvalidWrapper);
 
     expect(result.valid).toBeFalsy();
     expect(result.failReason).toEqual(ValidationFailReason.WrapperTooLarge);
@@ -59,7 +65,7 @@ describe("manfiests", () => {
       maxNumberOfFiles: 1000,
     });
 
-    const result = validator.validate(pathToInvalidWrapper);
+    const result = await validator.validate(pathToInvalidWrapper);
 
     expect(result.valid).toBeFalsy();
     expect(result.failReason).toEqual(ValidationFailReason.FileTooLarge);
@@ -78,7 +84,7 @@ describe("manfiests", () => {
       maxNumberOfFiles: 1000,
     });
 
-    const result = validator.validate(pathToInvalidWrapper);
+    const result = await validator.validate(pathToInvalidWrapper);
 
     expect(result.valid).toBeFalsy();
     expect(result.failReason).toEqual(ValidationFailReason.ModuleTooLarge);

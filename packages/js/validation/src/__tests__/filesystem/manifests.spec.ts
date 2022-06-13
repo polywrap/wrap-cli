@@ -24,7 +24,7 @@ describe("manfiests", () => {
       "invalid-wrap-manifest"
     );
 
-    const result = validator.validate(pathToInvalidWrapper);
+    const result = await validator.validate(pathToInvalidWrapper);
 
     expect(result.valid).toBeFalsy();
     expect(result.failReason).toEqual(ValidationFailReason.InvalidWrapManifest);
@@ -36,7 +36,7 @@ describe("manfiests", () => {
       "multiple-wrap-manifests"
     );
 
-    const result = validator.validate(pathToInvalidWrapper);
+    const result = await validator.validate(pathToInvalidWrapper);
 
     expect(result.valid).toBeFalsy();
     expect(result.failReason).toEqual(
@@ -50,7 +50,7 @@ describe("manfiests", () => {
       "missing-wrap-manifest"
     );
 
-    const result = validator.validate(pathToInvalidWrapper);
+    const result = await validator.validate(pathToInvalidWrapper);
 
     expect(result.valid).toBeFalsy();
     expect(result.failReason).toEqual(
@@ -64,7 +64,7 @@ describe("manfiests", () => {
       "invalid-build-manifest"
     );
 
-    const result = validator.validate(pathToInvalidWrapper);
+    const result = await validator.validate(pathToInvalidWrapper);
 
     expect(result.valid).toBeFalsy();
     expect(result.failReason).toEqual(
@@ -78,7 +78,7 @@ describe("manfiests", () => {
       "invalid-meta-manifest"
     );
 
-    const result = validator.validate(pathToInvalidWrapper);
+    const result = await validator.validate(pathToInvalidWrapper);
 
     expect(result.valid).toBeFalsy();
     expect(result.failReason).toEqual(ValidationFailReason.InvalidMetaManifest);

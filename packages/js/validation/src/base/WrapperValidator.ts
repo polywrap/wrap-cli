@@ -19,23 +19,23 @@ import path from "path";
 export class WrapperValidator {
   constructor(private constraints: WrapperContraints) {}
 
-  validate(ops: WrapperReadOperations): ValidationResult {
-    let result = this.validateManifests(ops);
+  async validate(ops: WrapperReadOperations): Promise<ValidationResult> {
+    let result = await this.validateManifests(ops);
     if (!result.valid) {
       return result;
     }
 
     // Validate schema
-    if (!ops.exists("./schema.graphql")) {
+    if (!(await ops.exists("./schema.graphql"))) {
       return this.fail(ValidationFailReason.SchemaNotFound);
     }
     try {
-      parseSchema(ops.readFileAsString("./schema.graphql"));
+      parseSchema(await ops.readFileAsString("./schema.graphql"));
     } catch {
       return this.fail(ValidationFailReason.InvalidSchema);
     }
 
-    result = this.validateStructure(ops);
+    result = await this.validateStructure(ops);
     if (!result.valid) {
       return result;
     }
@@ -43,8 +43,10 @@ export class WrapperValidator {
     return this.success();
   }
 
-  private validateStructure(ops: WrapperReadOperations): ValidationResult {
-    const { result: pathResult } = this.validatePath(ops, "./", 0, 0);
+  private async validateStructure(
+    ops: WrapperReadOperations
+  ): Promise<ValidationResult> {
+    const { result: pathResult } = await this.validatePath(ops, "./", 0, 0);
 
     if (!pathResult.valid) {
       return pathResult;
@@ -53,18 +55,19 @@ export class WrapperValidator {
     return this.success();
   }
 
-  private validatePath(
+  private async validatePath(
     ops: WrapperReadOperations,
     basePath: string,
     currentSize: number,
     currentFileCnt: number
-  ): {
+  ): Promise<{
     result: ValidationResult;
     currentSize: number;
     currentFileCnt: number;
-  } {
-    for (const itemPath of ops.readDir(basePath)) {
-      const stats = ops.getStats(path.join(basePath, itemPath));
+  }> {
+    const items = await ops.readDir(basePath);
+    for (const itemPath of items) {
+      const stats = await ops.getStats(path.join(basePath, itemPath));
 
       currentSize += stats.size;
       if (currentSize > this.constraints.maxSize) {
@@ -97,7 +100,7 @@ export class WrapperValidator {
           result,
           currentSize: newSize,
           currentFileCnt: newFileCnt,
-        } = this.validatePath(
+        } = await this.validatePath(
           ops,
           path.join(basePath, itemPath),
           currentSize,
@@ -123,19 +126,21 @@ export class WrapperValidator {
     };
   }
 
-  private validateManifests(ops: WrapperReadOperations): ValidationResult {
+  private async validateManifests(
+    ops: WrapperReadOperations
+  ): Promise<ValidationResult> {
     let manifest: Web3ApiManifest | undefined;
     // Go through manifest names, if more than one wrap manifest exists, fail
     // If no wrap manifest exists or is invalid, also fail
     for (const manifestName of VALID_WRAP_MANIFEST_NAMES) {
-      if (!ops.exists(manifestName)) {
+      if (!(await ops.exists(manifestName))) {
         continue;
       }
 
       if (manifest) {
         return this.fail(ValidationFailReason.MultipleWrapManifests);
       }
-      const manifestFile = ops.readFileAsString(manifestName);
+      const manifestFile = await ops.readFileAsString(manifestName);
       try {
         manifest = deserializeWeb3ApiManifest(manifestFile);
       } catch {
@@ -151,25 +156,28 @@ export class WrapperValidator {
     const mutationModule = manifest.modules.mutation;
 
     if (queryModule) {
-      const moduleResult = this.validateModule(ops, queryModule);
+      const moduleResult = await this.validateModule(ops, queryModule);
       if (!moduleResult.valid) {
         return moduleResult;
       }
     }
 
     if (mutationModule) {
-      const moduleResult = this.validateModule(ops, mutationModule);
+      const moduleResult = await this.validateModule(ops, mutationModule);
       if (!moduleResult.valid) {
         return moduleResult;
       }
     }
 
-    let manifestValidationResult = this.validateBuildManifest(ops, manifest);
+    let manifestValidationResult = await this.validateBuildManifest(
+      ops,
+      manifest
+    );
     if (!manifestValidationResult.valid) {
       return manifestValidationResult;
     }
 
-    manifestValidationResult = this.validateMetaManifest(ops, manifest);
+    manifestValidationResult = await this.validateMetaManifest(ops, manifest);
     if (!manifestValidationResult.valid) {
       return manifestValidationResult;
     }
@@ -178,19 +186,19 @@ export class WrapperValidator {
   }
 
   // Checking schema, extension and size
-  private validateModule(
+  private async validateModule(
     ops: WrapperReadOperations,
     moduleType: {
       schema: string;
       module?: string;
     }
-  ): ValidationResult {
+  ): Promise<ValidationResult> {
     if (moduleType && moduleType.module) {
       if (!VALID_MODULE_EXTENSIONS.includes(path.extname(moduleType.module))) {
         return this.fail(ValidationFailReason.InvalidModuleExtension);
       }
 
-      const moduleSize = ops.getStats(moduleType.module).size;
+      const moduleSize = (await ops.getStats(moduleType.module)).size;
 
       if (moduleSize > this.constraints.maxModuleSize) {
         return this.fail(ValidationFailReason.ModuleTooLarge);
@@ -200,14 +208,14 @@ export class WrapperValidator {
     return this.success();
   }
 
-  private validateBuildManifest(
+  private async validateBuildManifest(
     ops: WrapperReadOperations,
     web3ApiManifest: Web3ApiManifest
-  ): ValidationResult {
+  ): Promise<ValidationResult> {
     const buildManifestPath = web3ApiManifest.build;
 
     if (buildManifestPath) {
-      const buildManifestFile = ops.readFileAsString(buildManifestPath);
+      const buildManifestFile = await ops.readFileAsString(buildManifestPath);
       try {
         deserializeBuildManifest(buildManifestFile);
       } catch {
@@ -218,14 +226,14 @@ export class WrapperValidator {
     return this.success();
   }
 
-  private validateMetaManifest(
+  private async validateMetaManifest(
     ops: WrapperReadOperations,
     web3ApiManifest: Web3ApiManifest
-  ): ValidationResult {
+  ): Promise<ValidationResult> {
     const metaManifestPath = web3ApiManifest.meta;
 
     if (metaManifestPath) {
-      const metaManifestFile = ops.readFileAsString(metaManifestPath);
+      const metaManifestFile = await ops.readFileAsString(metaManifestPath);
 
       try {
         deserializeMetaManifest(metaManifestFile);
