@@ -35,6 +35,7 @@ import {
   TxReceipt,
   Network,
   Connection as SchemaConnection,
+  manifest,
 } from "./w3-man";
 import {
   Connections,
@@ -47,17 +48,18 @@ import { parseArgs } from "./utils/parsing";
 
 import { ethers } from "ethers";
 import { defaultAbiCoder } from "ethers/lib/utils";
+import { PluginFactory } from "@web3api/core-js";
 
-export interface Config extends Record<string, unknown> {
+export interface EthereumPluginConfig extends Record<string, unknown> {
   networks: ConnectionConfigs;
   defaultNetwork?: string;
 }
 
-export class Ethereum extends Module<Config> {
+export class EthereumPlugin extends Module<EthereumPluginConfig> {
   private _connections: Connections;
   private _defaultNetwork: string;
 
-  constructor(config: Config) {
+  constructor(config: EthereumPluginConfig) {
     super(config);
     this._connections = Connection.fromConfigs(config.networks);
 
@@ -429,3 +431,14 @@ export class Ethereum extends Module<Config> {
     return getConnection(this._connections, this._defaultNetwork, connection);
   }
 }
+
+export const ethereumPlugin: PluginFactory<EthereumPluginConfig> = (
+  opts: EthereumPluginConfig
+) => {
+  return {
+    factory: () => new EthereumPlugin(opts),
+    manifest,
+  };
+};
+
+export const plugin = ethereumPlugin;

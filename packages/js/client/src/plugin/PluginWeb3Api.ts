@@ -5,7 +5,6 @@ import {
   GetManifestOptions,
   InvokeApiOptions,
   InvokeApiResult,
-  Plugin,
   PluginModule,
   PluginPackage,
   Uri,
@@ -19,7 +18,7 @@ import {
 import { Tracer } from "@web3api/tracing-js";
 
 export class PluginWeb3Api extends Api {
-  private _instance: Plugin | undefined;
+  private _instance: PluginModule | undefined;
 
   private _sanitizedEnv: Record<string, unknown> | undefined = undefined;
 
@@ -65,7 +64,7 @@ export class PluginWeb3Api extends Api {
     try {
       const { method, resultFilter } = options;
       const input = options.input || {};
-      const module = this._getInstance().getModule();
+      const module = this._getInstance();
 
       if (!module) {
         throw new Error(`PluginWeb3Api: module "${module}" not found.`);
@@ -155,7 +154,7 @@ export class PluginWeb3Api extends Api {
     }
   }
 
-  private _getInstance(): Plugin {
+  private _getInstance(): PluginModule {
     this._instance ||= this._plugin.factory();
     return this._instance;
   }
@@ -166,7 +165,7 @@ export class PluginWeb3Api extends Api {
     pluginModule: PluginModule
   ): Promise<void> {
     if (this._sanitizedEnv === undefined) {
-      const clientEnv = this._getModuleClientEnv();
+      const clientEnv = this._getClientEnv();
 
       this._sanitizedEnv = await pluginModule._w3_sanitize_env(
         clientEnv,
@@ -177,11 +176,11 @@ export class PluginWeb3Api extends Api {
     pluginModule._w3_load_env(this._sanitizedEnv || {});
   }
 
-  @Tracer.traceMethod("PluginWeb3Api: _getModuleClientEnv")
-  private _getModuleClientEnv(): Record<string, unknown> {
-    if (!this._clientEnv?.module) {
+  @Tracer.traceMethod("PluginWeb3Api: _getClientEnv")
+  private _getClientEnv(): Record<string, unknown> {
+    if (!this._clientEnv) {
       return {};
     }
-    return this._clientEnv.module;
+    return this._clientEnv;
   }
 }

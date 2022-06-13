@@ -16,6 +16,7 @@ import {
   Input_buffer_keccak_256,
   Input_shake_128,
   Input_shake_256,
+  manifest,
 } from "./w3-man";
 
 import {
@@ -30,10 +31,11 @@ import {
   shake_128,
   shake_256,
 } from "js-sha3";
+import { PluginFactory } from "@web3api/core-js";
 
-export interface Config extends Record<string, unknown> {}
+export interface Sha3PluginConfig extends Record<string, unknown> {}
 
-export class Sha3 extends Module<Config> {
+export class Sha3Plugin extends Module<Sha3PluginConfig> {
   public sha3_512(input: Input_sha3_512): string {
     return sha3_512(input.message);
   }
@@ -110,3 +112,14 @@ export class Sha3 extends Module<Config> {
     return shake_256(input.message, input.outputBits);
   }
 }
+
+export const sha3Plugin: PluginFactory<Sha3PluginConfig> = (
+  opts: Sha3PluginConfig
+) => {
+  return {
+    factory: () => new Sha3Plugin(opts),
+    manifest,
+  };
+};
+
+export const plugin = sha3Plugin;

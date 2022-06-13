@@ -10,10 +10,12 @@ import {
   ResolveResult,
   Env,
   UriResolver_MaybeUriOrManifest,
+  manifest,
 } from "./w3-man";
-import { IpfsConfig } from "./utils/IpfsConfig";
 import { IpfsClient } from "./utils/IpfsClient";
 import { execSimple, execFallbacks } from "./utils/exec";
+
+import { PluginFactory } from "@web3api/core-js";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const isIPFS = require("is-ipfs");
@@ -33,14 +35,17 @@ const getOptions = (input: Options | undefined | null, env: Env): Options => {
   return options;
 };
 
-export interface Config extends IpfsConfig, Record<string, unknown> {}
+export interface IpfsPluginConfig extends Record<string, unknown> {
+  provider: string;
+  fallbackProviders?: string[];
+}
 
-export class Ipfs extends Module<Config> {
+export class IpfsPlugin extends Module<IpfsPluginConfig> {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore: initialized within setProvider
   private _ipfs: IpfsClient;
 
-  constructor(config: Config) {
+  constructor(config: IpfsPluginConfig) {
     super(config);
     this._ipfs = createIpfsClient(this.config.provider);
   }
@@ -92,7 +97,7 @@ export class Ipfs extends Module<Config> {
       return null;
     }
 
-    if (!Ipfs.isCID(input.path)) {
+    if (!IpfsPlugin.isCID(input.path)) {
       // Not a valid CID
       return { manifest: null, uri: null };
     }
@@ -213,3 +218,14 @@ export class Ipfs extends Module<Config> {
     );
   }
 }
+
+export const ipfsPlugin: PluginFactory<IpfsPluginConfig> = (
+  opts: IpfsPluginConfig
+) => {
+  return {
+    factory: () => new IpfsPlugin(opts),
+    manifest,
+  };
+};
+
+export const plugin = ipfsPlugin;

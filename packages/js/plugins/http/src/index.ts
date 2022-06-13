@@ -1,11 +1,19 @@
-import { Client, Module, Input_get, Input_post, Response } from "./w3-man";
+import {
+  Client,
+  Module,
+  Input_get,
+  Input_post,
+  Response,
+  manifest,
+} from "./w3-man";
 import { fromAxiosResponse, toAxiosRequestConfig } from "./util";
 
 import axios from "axios";
+import { PluginFactory } from "@web3api/core-js";
 
-export type Config = Record<string, unknown>;
+export type HttpPluginConfig = Record<string, unknown>;
 
-export class Http extends Module<Config> {
+export class HttpPlugin extends Module<HttpPluginConfig> {
   public async get(
     input: Input_get,
     _client: Client
@@ -29,3 +37,14 @@ export class Http extends Module<Config> {
     return fromAxiosResponse(response);
   }
 }
+
+export const httpPlugin: PluginFactory<HttpPluginConfig> = (
+  opts: HttpPluginConfig
+) => {
+  return {
+    factory: () => new HttpPlugin(opts),
+    manifest,
+  };
+};
+
+export const plugin = httpPlugin;

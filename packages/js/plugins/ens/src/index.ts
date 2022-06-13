@@ -6,11 +6,13 @@ import {
   UriResolver_MaybeUriOrManifest,
   Bytes,
   Ethereum_Module,
+  manifest,
 } from "./w3-man";
 
 import { ethers } from "ethers";
 import { Base58 } from "@ethersproject/basex";
 import { getAddress } from "@ethersproject/address";
+import { PluginFactory } from "@web3api/core-js";
 
 export type Address = string;
 
@@ -18,14 +20,14 @@ export interface Addresses {
   [network: string]: Address;
 }
 
-export interface Config extends Record<string, unknown> {
+export interface EnsPluginConfig extends Record<string, unknown> {
   addresses?: Addresses;
 }
 
-export class Ens extends Module<Config> {
+export class EnsPlugin extends Module<EnsPluginConfig> {
   public static defaultAddress = "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
 
-  constructor(config: Config) {
+  constructor(config: EnsPluginConfig) {
     super(config);
 
     // Sanitize address
@@ -76,7 +78,7 @@ export class Ens extends Module<Config> {
       content: "function content(bytes32 nodehash) view returns (bytes32)",
     };
 
-    let ensAddress = Ens.defaultAddress;
+    let ensAddress = EnsPlugin.defaultAddress;
 
     // Remove the ENS URI scheme & authority
     domain = domain.replace("w3://", "");
@@ -196,3 +198,14 @@ export class Ens extends Module<Config> {
     }
   }
 }
+
+export const ensPlugin: PluginFactory<EnsPluginConfig> = (
+  opts: EnsPluginConfig
+) => {
+  return {
+    factory: () => new EnsPlugin(opts),
+    manifest,
+  };
+};
+
+export const plugin = ensPlugin;

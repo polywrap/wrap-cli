@@ -1,4 +1,12 @@
-import { Client, Module, Input_querySubgraph, HTTP_Module } from "./w3-man";
+import {
+  Client,
+  Module,
+  Input_querySubgraph,
+  HTTP_Module,
+  manifest,
+} from "./w3-man";
+
+import { PluginFactory } from "@web3api/core-js";
 
 export interface RequestError {
   errors: {
@@ -11,12 +19,12 @@ export interface RequestData {
   data: Record<string, unknown>;
 }
 
-export interface Config extends Record<string, unknown> {
+export interface GraphNodePluginConfig extends Record<string, unknown> {
   provider: string;
 }
 
-export class GraphNode extends Module<Config> {
-  constructor(config: Config) {
+export class GraphNodePlugin extends Module<GraphNodePluginConfig> {
+  constructor(config: GraphNodePluginConfig) {
     super(config);
   }
   public async querySubgraph(
@@ -70,3 +78,14 @@ export class GraphNode extends Module<Config> {
     return JSON.stringify(responseJson);
   }
 }
+
+export const graphNodePlugin: PluginFactory<GraphNodePluginConfig> = (
+  opts: GraphNodePluginConfig
+) => {
+  return {
+    factory: () => new GraphNodePlugin(opts),
+    manifest,
+  };
+};
+
+export const plugin = graphNodePlugin;

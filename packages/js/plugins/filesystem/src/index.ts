@@ -5,14 +5,16 @@ import {
   Input_getFile,
   UriResolver_MaybeUriOrManifest,
   Bytes,
+  manifest,
 } from "./w3-man";
 
 import path from "path";
 import fs from "fs";
+import { PluginFactory } from "@web3api/core-js";
 
-export type Config = Record<string, unknown>;
+export type FilesystemPluginConfig = Record<string, unknown>;
 
-export class Filesystem extends Module<Config> {
+export class FilesystemPlugin extends Module<FilesystemPluginConfig> {
   async tryResolveUri(
     input: Input_tryResolveUri,
     _client: Client
@@ -57,3 +59,13 @@ export class Filesystem extends Module<Config> {
     }
   }
 }
+export const filesystemPlugin: PluginFactory<FilesystemPluginConfig> = (
+  opts: FilesystemPluginConfig
+) => {
+  return {
+    factory: () => new FilesystemPlugin(opts),
+    manifest,
+  };
+};
+
+export const plugin = filesystemPlugin;

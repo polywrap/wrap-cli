@@ -3,15 +3,18 @@ import {
   Input_log,
   Logger_LogLevel,
   Logger_LogLevelEnum,
+  manifest,
 } from "./w3-man";
+
+import { PluginFactory } from "@web3api/core-js";
 
 export type LogFunc = (level: Logger_LogLevel, message: string) => boolean;
 
-export interface Config extends Record<string, unknown> {
+export interface LoggerPluginConfig extends Record<string, unknown> {
   logFunc?: LogFunc;
 }
 
-export class Logger extends Module<Config> {
+export class LoggerPlugin extends Module<LoggerPluginConfig> {
   public log(input: Input_log): boolean {
     if (this.config.logFunc) {
       return this.config.logFunc(input.level, input.message);
@@ -41,3 +44,14 @@ export class Logger extends Module<Config> {
     return true;
   }
 }
+
+export const loggerPlugin: PluginFactory<LoggerPluginConfig> = (
+  opts: LoggerPluginConfig
+) => {
+  return {
+    factory: () => new LoggerPlugin(opts),
+    manifest,
+  };
+};
+
+export const plugin = loggerPlugin;

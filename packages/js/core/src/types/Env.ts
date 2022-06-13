@@ -2,12 +2,9 @@ import { Uri } from ".";
 
 import { Tracer } from "@web3api/tracing-js";
 
-export interface Env<TUri = string> {
+export interface Env<TUri = string> extends Record<string, unknown> {
   /** Uri of Web3Api */
   uri: TUri;
-
-  /** Env variables shared by both mutation and query */
-  module?: Record<string, unknown>;
 }
 
 export const sanitizeEnvs = Tracer.traceFunc(

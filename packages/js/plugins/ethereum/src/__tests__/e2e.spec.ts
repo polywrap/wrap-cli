@@ -1,5 +1,5 @@
 import { ethereumPlugin } from "..";
-import * as Schema from "../query/w3";
+import * as Schema from "../w3-man";
 
 import { Web3ApiClient, defaultIpfsProviders } from "@web3api/client-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
@@ -176,13 +176,11 @@ describe("Ethereum Plugin", () => {
     it("getBalance", async () => {
       const signerAddressQuery = await client.invoke<string>({
         uri,
-        module: "query",
         method: "getSignerAddress",
       });
 
       const response = await client.invoke<string>({
         uri,
-        module: "query",
         method: "getBalance",
         input: {
           address: signerAddressQuery.data,
@@ -289,7 +287,6 @@ describe("Ethereum Plugin", () => {
       ];
       const result = await client.invoke<string>({
         uri: uri,
-        module: "query",
         method: "solidityPack",
         input: {
           types,
@@ -321,7 +318,6 @@ describe("Ethereum Plugin", () => {
       ];
       const result = await client.invoke<string>({
         uri: uri,
-        module: "query",
         method: "solidityKeccak256",
         input: {
           types,
@@ -353,7 +349,6 @@ describe("Ethereum Plugin", () => {
       ];
       const result = await client.invoke<string>({
         uri: uri,
-        module: "query",
         method: "soliditySha256",
         input: {
           types,
@@ -757,10 +752,8 @@ describe("Ethereum Plugin", () => {
           envs: [
             {
               uri: "w3://ens/ethereum.web3api.eth",
-              common: {
-                connection: {
-                  networkNameOrChainId: "mainnet",
-                },
+              connection: {
+                networkNameOrChainId: "mainnet",
               },
             },
           ],
