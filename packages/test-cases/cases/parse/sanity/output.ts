@@ -352,6 +352,17 @@ export const typeInfo: TypeInfo = {
           key: createMapKeyDefinition({ name: "map1", type: "String", required: true }),
           value: createScalarDefinition({ name: "map1", type: "Int" }),
         }),
+        createMapPropertyDefinition({
+          name: "mapOfArr",
+          type: "Map<String, [Int]>",
+          key: createMapKeyDefinition({ name: "mapOfArr", type: "String", required: true }),
+          value: createArrayDefinition({
+            name: "mapOfArr",
+            type: "[Int]",
+            item: createScalarDefinition({ name: "mapOfArr", type: "Int", required: true }),
+          }),
+          required: true
+        })
       ],
     },
     {
