@@ -54,7 +54,7 @@ const exec = (schema: string) => () => parseSchema(
 });
 
 describe("Web3API Schema Environment Validation", () => {
-  it("throws error if query client env exists and sanitized env not defined", () => {
+  it("throws error if client env exists and sanitized env not defined", () => {
     expect(exec(missingSanitizedEnv)).toThrow(
       /Client environment type 'ClientEnv' should have matching sanitized environment type/gm
     );

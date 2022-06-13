@@ -16,6 +16,8 @@ import {
 } from "graphql";
 import { getSchemaCycles } from "@dorgjelli/graphql-schema-cycles";
 
+const operationTypeNames = ["Mutation", "Subscription", "Query"];
+
 export const getTypeDefinitionsValidator = (): SchemaValidator => {
   const objectTypes: Record<string, boolean> = {};
 
@@ -39,10 +41,12 @@ export const getTypeDefinitionsValidator = (): SchemaValidator => {
           );
         },
         ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
-          // No Subscriptions
-          if (node.name.value === "Subscription") {
+          // No Operation types
+          if (operationTypeNames.includes(node.name.value)) {
             throw Error(
-              "Subscriptions are not yet supported. Please use Query or Mutation."
+              `OperationType names (${operationTypeNames.join(
+                ", "
+              )}) are not allowed.`
             );
           }
 
@@ -201,7 +205,6 @@ export const getPropertyTypesValidator = (): SchemaValidator => {
 
 export function getCircularDefinitionsValidator(): SchemaValidator {
   const operationTypes: string[] = [];
-  const operationTypeNames = ["Mutation", "Subscription", "Query"];
 
   return {
     visitor: {
