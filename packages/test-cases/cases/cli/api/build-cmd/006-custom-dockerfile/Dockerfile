@@ -27,19 +27,11 @@ COPY web3api.build.yaml .
 COPY ./src ./src
 COPY ./package.json ./package.json
 
-# Build the module at src/mutation
-RUN ./node_modules/.bin/asc src/mutation/w3/entry.ts \
+# Build the module at src
+RUN ./node_modules/.bin/asc src/w3/entry.ts \
     --path ./node_modules \
-    --outFile ./build/mutation.wasm \
-    --use abort=src/mutation/w3/entry/w3Abort \
-    --optimize --debug --importMemory \
-    --runtime stub \
-    --runPasses asyncify
-# Build the module at src/query
-RUN ./node_modules/.bin/asc src/query/w3/entry.ts \
-    --path ./node_modules \
-    --outFile ./build/query.wasm \
-    --use abort=src/query/w3/entry/w3Abort \
+    --outFile ./build/module.wasm \
+    --use abort=src/w3/entry/w3Abort \
     --optimize --debug --importMemory \
     --runtime stub \
     --runPasses asyncify
