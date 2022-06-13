@@ -53,14 +53,12 @@ describe("workflow", () => {
     let client: Web3ApiClient;
 
     beforeAll(async () => {
-      const result = await buildAndDeployApi({
+      await buildAndDeployApi({
         apiAbsPath: `${GetPathToTestApis()}/wasm-as/simple-storage`,
         ipfsProvider,
         ethereumProvider: ethProvider,
         ensName: "simple-storage.eth",
       });
-
-      console.log(result)
 
       client = await getClient();
     });
