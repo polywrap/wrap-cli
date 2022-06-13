@@ -13,7 +13,7 @@ async function main() {
     },
   });
 
-  const address = await eth.getModules().mutation.deployContract({
+  const address = await eth.deployContract({
     abi: contractAbi.abi,
     bytecode: `0x${contractAbi.bytecode.object}`,
     params: [],
