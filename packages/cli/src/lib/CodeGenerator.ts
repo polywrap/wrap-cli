@@ -115,44 +115,30 @@ export class CodeGenerator {
           throw Error(intlMsg.lib_codeGenerator_nogenerateBindingMethod());
         }
 
-        const output = await generateBinding({
+        const binding = await generateBinding({
           projectName: await project.getName(),
-          modules: [
-            {
-              name: "custom",
-              typeInfo,
-              schema: this._schema || "",
-              outputDirAbs: codegenDirAbs,
-            },
-          ],
+          typeInfo,
+          schema: this._schema || "",
+          outputDirAbs: codegenDirAbs,
           bindLanguage,
         });
 
-        for (const module of output.modules) {
-          resetDir(codegenDirAbs);
-          writeDirectorySync(
-            codegenDirAbs,
-            module.output,
-            (templatePath: string) =>
-              this._generateTemplate(templatePath, typeInfo, spinner)
-          );
-        }
+        resetDir(codegenDirAbs);
+        writeDirectorySync(
+          codegenDirAbs,
+          binding.output,
+          (templatePath: string) =>
+            this._generateTemplate(templatePath, typeInfo, spinner)
+        );
       } else {
-        const output = await project.generateSchemaBindings(
+        const binding = await project.generateSchemaBindings(
           composed,
           path.relative(project.getManifestDir(), codegenDirAbs)
         );
 
         // Output the bindings
-        for (const module of output.modules) {
-          resetDir(module.outputDirAbs);
-          writeDirectorySync(module.outputDirAbs, module.output);
-        }
-
-        if (output.common) {
-          resetDir(output.common.outputDirAbs);
-          writeDirectorySync(output.common.outputDirAbs, output.common.output);
-        }
+        resetDir(binding.outputDirAbs);
+        writeDirectorySync(binding.outputDirAbs, binding.output);
       }
     };
 

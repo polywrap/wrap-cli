@@ -153,7 +153,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     generationSubPath?: string
   ): Promise<BindOutput> {
     const manifest = await this.getManifest();
-    const module = manifest.main as string;
+    const module = manifest.module as string;
     const moduleDirectory = this._getGenerationDirectory(
       module,
       generationSubPath
@@ -168,15 +168,9 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
 
     const options: BindOptions = {
       projectName: manifest.name,
-      // TODO(cbrzn): Move to object instead of array once BindOptions has been updated
-      modules: [
-        {
-          name: "main",
-          typeInfo: composerOutput.main?.typeInfo as TypeInfo,
-          schema: composerOutput.combined?.schema as string,
-          outputDirAbs: moduleDirectory,
-        },
-      ],
+      typeInfo: composerOutput.main?.typeInfo as TypeInfo,
+      schema: composerOutput.combined?.schema as string,
+      outputDirAbs: moduleDirectory,
       bindLanguage,
     };
 
@@ -243,7 +237,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
             name: linkedPackage.name,
           })
         ),
-      }
+      };
       if (module) {
         // TODO(cbrzn): Remove the "s" from modules and make it an object instead of array
         defaultConfig["web3api_modules"] = [
@@ -544,8 +538,8 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
   private async _getModule(): Promise<string | undefined> {
     const manifest = await this.getManifest();
 
-    if (manifest.main) {
-      return path.dirname(manifest.main).replace("./", "");
+    if (manifest.module) {
+      return path.dirname(manifest.module).replace("./", "");
     }
 
     return undefined;
