@@ -41,11 +41,11 @@ describe("wasm-as test cases", () => {
         },
       },
       ipfs: { provider: ipfsProvider },
-      ens: { query: {
+      ens: {
         addresses: {
           testnet: ensAddress,
         },
-      } },
+      },
     }, config);
   }
 

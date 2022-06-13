@@ -5,7 +5,6 @@ import {
   InvokeApiOptions,
   InvokeApiResult,
   Web3ApiManifest,
-  Plugin,
   PluginModule,
   PluginPackage,
   QueryApiOptions,
@@ -153,7 +152,7 @@ describe("resolveUri", () => {
         options: GetManifestOptions<TManifestType>,
         client: Client
       ) => {
-        const manifest = {
+        const manifest: unknown = {
           format: "0.0.1-prealpha.9",
           language: "",
           main: "",

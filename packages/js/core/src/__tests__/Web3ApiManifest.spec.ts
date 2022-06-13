@@ -30,6 +30,6 @@ describe("Web3API Manifest Validation", () => {
     const manifestPath = __dirname + "/manifest/web3api/wrong-type/web3api.yaml";
     const manifest = fs.readFileSync(manifestPath, "utf-8");
 
-    expect(() => deserializeWeb3ApiManifest(manifest)).toThrowError(/instance.main is not of a type\(s\) string/);
+    expect(() => deserializeWeb3ApiManifest(manifest)).toThrowError(/instance.module is not of a type\(s\) string/);
   });
 });

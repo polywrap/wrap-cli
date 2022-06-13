@@ -662,7 +662,6 @@ export const runJsonTypeTest = async (
 ) => {
   const fromJson = await client.invoke<{ x: number; y: number }>({
     uri,
-    module: "query",
     method: "fromJson",
     input: {
       json: JSON.stringify({ x: 1, y: 2 }),
@@ -678,7 +677,6 @@ export const runJsonTypeTest = async (
 
   const toJson = await client.invoke<{ str: string }>({
     uri,
-    module: "query",
     method: "toJson",
     input: {
       pair: {
@@ -1127,7 +1125,6 @@ export const runMapTypeTest = async (
 
   const returnMapResponse1 = await client.invoke<Map<string, number>>({
     uri,
-    module: "query",
     method: "returnMap",
     input: {
       map: mapClass,
@@ -1138,7 +1135,6 @@ export const runMapTypeTest = async (
 
   const returnMapResponse2 = await client.invoke<Map<string, number>>({
     uri,
-    module: "query",
     method: "returnMap",
     input: {
       map: mapRecord,
@@ -1149,7 +1145,6 @@ export const runMapTypeTest = async (
 
   const getKeyResponse1 = await client.invoke<number>({
     uri,
-    module: "query",
     method: "getKey",
     input: {
       map: mapClass,
@@ -1161,7 +1156,6 @@ export const runMapTypeTest = async (
 
   const getKeyResponse2 = await client.invoke<number>({
     uri,
-    module: "query",
     method: "getKey",
     input: {
       map: mapRecord,

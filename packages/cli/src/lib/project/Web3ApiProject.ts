@@ -239,13 +239,10 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
         ),
       };
       if (module) {
-        // TODO(cbrzn): Remove the "s" from modules and make it an object instead of array
-        defaultConfig["web3api_modules"] = [
-          {
-            name: "main",
-            dir: normalizePath(module),
-          },
-        ];
+        defaultConfig["web3api_module"] = {
+          name: "module",
+          dir: normalizePath(module),
+        };
       }
 
       if (!this._buildManifest.config) {

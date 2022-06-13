@@ -1,6 +1,5 @@
 import {
   Client,
-  Plugin,
   PluginModule,
   PluginPackageManifest,
   Uri,
