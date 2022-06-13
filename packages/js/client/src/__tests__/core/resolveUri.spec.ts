@@ -1,9 +1,9 @@
 import {
-  Plugin,
   createWeb3ApiClient,
   Uri,
   Web3ApiClientConfig,
   Web3ApiClient,
+  PluginModule,
 } from "../..";
 import {
   buildAndDeployApi,
@@ -14,7 +14,7 @@ import {
   providers
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
-import { ResolveUriErrorType, Client } from "@web3api/core-js";
+import { ResolveUriErrorType } from "@web3api/core-js";
 
 jest.setTimeout(200000);
 
@@ -44,10 +44,8 @@ describe("resolveUri", () => {
         },
         ipfs: { provider: ipfsProvider },
         ens: {
-          query: {
-            addresses: {
-              testnet: ensAddresses.ensAddress,
-            },
+          addresses: {
+            testnet: ensAddresses.ensAddress,
           },
         },
       },
@@ -192,11 +190,7 @@ describe("resolveUri", () => {
           uri: pluginUri.uri,
           plugin: {
             factory: () => {
-              return ({
-                getModules: (client: Client) => {
-                  return {};
-                },
-              } as unknown) as Plugin;
+              return ({} as unknown) as PluginModule;
             },
             manifest: {
               schema: "",
