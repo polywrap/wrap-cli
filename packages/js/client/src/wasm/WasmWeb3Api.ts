@@ -340,10 +340,10 @@ export class WasmWeb3Api extends Api {
 
   @Tracer.traceMethod("WasmWeb3Api: _getClientEnv")
   private _getClientEnv(): Record<string, unknown> {
-    if (!this._clientEnv) {
+    if (!this._clientEnv?.env) {
       return {};
     }
-    return this._clientEnv;
+    return this._clientEnv.env;
   }
 
   @Tracer.traceMethod("WasmWeb3Api: getWasmModule")

@@ -75,12 +75,8 @@ describe("env", () => {
         envs: [
           {
             uri: apiUri,
-            mutation: {
-              str: "mutation string",
-              requiredInt: 0,
-            },
-            query: {
-              str: "query string",
+            env: {
+              str: "module string",
               requiredInt: 1,
             },
           },
@@ -142,7 +138,7 @@ describe("env", () => {
           envs: [
             {
               uri: apiUri,
-              common: {
+              env: {
                 str: "string",
                 requiredInt: "99",
               },
@@ -213,7 +209,7 @@ describe("env", () => {
           envs: [
             {
               uri: apiUri,
-              common: {
+              env: {
                 str: 1,
                 requiredInt: 9,
               },
@@ -244,7 +240,7 @@ describe("env", () => {
         envs: [
           {
             uri: apiUri,
-            common: {
+            env: {
               object: {
                 prop: "object string",
               },
@@ -254,12 +250,6 @@ describe("env", () => {
               bool: true,
               en: "FIRST",
               array: [32, 23],
-            },
-            mutation: {
-              mutStr: "mutation string",
-            },
-            query: {
-              queryStr: "query string",
             },
           },
         ],
@@ -371,7 +361,7 @@ describe("env", () => {
           envs: [
             {
               uri: apiUri,
-              common: {
+              env: {
                 object: {
                   prop: "object another string",
                 },
@@ -381,12 +371,6 @@ describe("env", () => {
                 bool: true,
                 en: "FIRST",
                 array: [32, 23],
-              },
-              mutation: {
-                mutStr: "mutation string",
-              },
-              query: {
-                queryStr: "query string",
               },
             },
           ],
@@ -426,10 +410,7 @@ describe("env", () => {
         envs: [
           {
             uri: apiUri,
-            mutation: {
-              str: "string",
-            },
-            query: {
+            env: {
               str: "string",
             },
           },
@@ -486,10 +467,7 @@ describe("env", () => {
       envs: [
         {
           uri: apiUri,
-          mutation: {
-            str: "string",
-          },
-          query: {
+          env: {
             str: "string",
           },
         },
@@ -507,7 +485,7 @@ describe("env", () => {
         envs: [
           {
             uri: apiUri,
-            common: {
+            env: {
               str: "string",
             },
           },
@@ -532,11 +510,8 @@ describe("env", () => {
       envs: [
         {
           uri: implementationUri,
-          query: {
+          env: {
             arg1: "10",
-          },
-          mutation: {
-            arg1: 11,
           },
         },
       ],

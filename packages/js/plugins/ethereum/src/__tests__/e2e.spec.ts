@@ -752,8 +752,10 @@ describe("Ethereum Plugin", () => {
           envs: [
             {
               uri: "w3://ens/ethereum.web3api.eth",
-              connection: {
-                networkNameOrChainId: "mainnet",
+              env: {
+                connection: {
+                  networkNameOrChainId: "mainnet",
+                },
               },
             },
           ],
@@ -783,7 +785,7 @@ describe("Ethereum Plugin", () => {
           envs: [
             {
               uri: "w3://ens/ethereum.web3api.eth",
-              common: {
+              env: {
                 connection: {
                   node: "https://polygon-rpc.com",
                 },
