@@ -11,7 +11,6 @@ interface TestEnvironment {
   registrarAddress?: string;
   reverseAddress?: string;
   resolverAddress?: string;
-  clientConfig: Partial<ClientConfig>;
 }
 
 async function getProviders(): Promise<TestEnvironment> {
@@ -19,12 +18,7 @@ async function getProviders(): Promise<TestEnvironment> {
   const ethereum = "http://localhost:8545";
   const ensAddress = "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab";
 
-  const clientConfig: Partial<ClientConfig> = getPlugins(
-    ethereum,
-    ipfs,
-    "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab"
-  );
-  return { ipfs, ethereum, ensAddress, clientConfig };
+  return { ipfs, ethereum, ensAddress };
 }
 
 function getPlugins(
@@ -78,5 +72,6 @@ export async function getClientConfig(
   _: Partial<Web3ApiClientConfig>
 ): Promise<Partial<Web3ApiClientConfig>> {
   const { ipfs, ethereum, ensAddress } = await getProviders();
+
   return getPlugins(ethereum, ipfs, ensAddress);
 }

@@ -4,7 +4,8 @@ import {
   initTestEnvironment,
   stopTestEnvironment,
   providers,
-  ensAddresses
+  ensAddresses,
+  runCLI
 } from "@web3api/test-env-js";
 import * as App from "../types/w3";
 import path from "path";
@@ -99,4 +100,19 @@ describe("SimpleStorage", () => {
     data = await getData(contractAddress);
     expect(data).toBe(10);
   });
+
+  test("e2e sanity", async () => {
+    const {stderr, stdout} = await runCLI({
+      args: [
+        "run",
+        "./workflows/e2e.yaml",
+        "-c",
+        "./workflows/config.ts",
+      ],
+      cwd: path.resolve(__dirname, "..", "..", ".."),
+    });
+
+    console.log(stderr);
+    console.log(stdout);
+  })
 });
