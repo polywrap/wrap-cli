@@ -20,8 +20,6 @@ export const createImports = (config: {
       __w3_subinvoke: async (
         uriPtr: u32,
         uriLen: u32,
-        modulePtr: u32,
-        moduleLen: u32,
         methodPtr: u32,
         methodLen: u32,
         inputPtr: u32,
@@ -94,8 +92,6 @@ export const createImports = (config: {
         interfaceUriLen: u32,
         implUriPtr: u32,
         implUriLen: u32,
-        modulePtr: u32,
-        moduleLen: u32,
         methodPtr: u32,
         methodLen: u32,
         inputPtr: u32,

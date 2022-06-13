@@ -60,11 +60,11 @@ export class PluginModule<
     const fn = this.getMethod<TInput, TResult>(method);
 
     if (!fn) {
-      throw Error("TODO: missing function");
+      throw Error(`Plugin missing method "${method}"`);
     }
 
     if (typeof fn !== "function") {
-      throw Error("TODO: ${method} must be a function");
+      throw Error(`Plugin method "${method}" must be of type 'function'`);
     }
 
     return await executeMaybeAsyncFunction<TResult>(
