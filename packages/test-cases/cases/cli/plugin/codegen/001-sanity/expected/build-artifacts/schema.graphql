@@ -52,7 +52,7 @@ type Mutation @imports(
   ): String!
 }
 
-type Query @imports(
+type Module @imports(
   types: [
     "Ethereum_Query",
     "Ethereum_Connection",

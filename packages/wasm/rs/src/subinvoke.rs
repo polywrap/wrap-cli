@@ -7,8 +7,6 @@ extern "C" {
     pub fn __w3_subinvoke(
         uri_ptr: u32,
         uri_len: u32,
-        module_ptr: u32,
-        module_len: u32,
         method_ptr: u32,
         method_len: u32,
         input_ptr: u32,
@@ -33,7 +31,6 @@ extern "C" {
 /// Subinvoke API Helper
 pub fn w3_subinvoke(
     uri: &str,
-    module: &str,
     method: &str,
     input: Vec<u8>,
 ) -> Result<Vec<u8>, String> {
@@ -45,8 +42,6 @@ pub fn w3_subinvoke(
         __w3_subinvoke(
             uri_buf.as_ptr() as u32,
             uri_buf.len() as u32,
-            module_buf.as_ptr() as u32,
-            module_buf.len() as u32,
             method_buf.as_ptr() as u32,
             method_buf.len() as u32,
             input.as_ptr() as u32,

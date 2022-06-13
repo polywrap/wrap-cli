@@ -5,7 +5,7 @@ enum LogLevel {
   ERROR
 }
 
-type Query {
+type Module {
   log(
     level: LogLevel!
     message: String!

@@ -468,16 +468,16 @@ export const runImplementationsTest = async (
     .toEqual([new Uri(implementationUri).uri]);
 
   const query = await client.query<{
-    queryMethod: string;
-    abstractQueryMethod: string;
+    moduleMethod: string;
+    abstractModuleMethod: string;
   }>({
     uri: implementationUri,
     query: `
       query {
-        queryMethod(
+        moduleMethod(
           arg: $argument1
         )
-        abstractQueryMethod(
+        abstractModuleMethod(
           arg: $argument2
         )
       }
@@ -495,12 +495,12 @@ export const runImplementationsTest = async (
 
   expect(query.errors).toBeFalsy();
   expect(query.data).toBeTruthy();
-  expect(query.data?.queryMethod).toEqual({
+  expect(query.data?.moduleMethod).toEqual({
     uint8: 1,
     str: "Test String 1",
   });
 
-  expect(query.data?.abstractQueryMethod).toBe("Test String 2");
+  expect(query.data?.abstractModuleMethod).toBe("Test String 2");
 
   const mutation = await client.query<{
     mutationMethod: string;
@@ -540,8 +540,8 @@ export const runGetImplementationsTest = async (
   ]);
 
   const query = await client.query<{
-    queryMethod: string;
-    abstractQueryMethod: string;
+    moduleMethod: string;
+    abstractModuleMethod: string;
   }>({
     uri: implUri.uri,
     query: `

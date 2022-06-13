@@ -1,0 +1,23 @@
+type SimpleType {
+  requiredMap: Map! @annotate(type: "Map<String!, Int!>!")
+  optionalMap: Map @annotate(type: "Map<String!, Int!>")
+  optionalValueMap: Map @annotate(type: "Map<String!, Int>")
+  optionalKeyMap: Map! @annotate(type: "Map<String, Int!>!") # should be converted to Map<String!, Int!>!
+}
+
+type RecursiveType {
+  mapOfValueArr: Map! @annotate(type: "Map<String!, Array<Int!>!>!")
+  mapOfMap: Map! @annotate(type: "Map<String!, Map<String!, Int!>!>!")
+}
+
+type Module {
+  requiredMapArgs(
+    map: Map! @annotate(type: "Map<String!, Int!>!")
+  ): Map! @annotate(type: "Map<String!, Int!>!")
+  optionalMapArgs(
+    map: Map @annotate(type: "Map<String!, Int!>")
+  ): Map @annotate(type: "Map<String!, Int!>")
+  optionalValueArgs(
+    map: Map! @annotate(type: "Map<String!, Int>!")
+  ): Map! @annotate(type: "Map<String!, Int>!")
+}

@@ -69,7 +69,7 @@ describe("parseQuery", () => {
   });
 
   it("works with multiple queries", () => {
-    const queryMethods = `
+    const moduleMethods = `
       someMethod(
         arg1: 4
         arg2: ["hey", "there", [5.5]]
@@ -132,7 +132,7 @@ describe("parseQuery", () => {
         ${mutationMethods}
       }
       query {
-        ${queryMethods}
+        ${moduleMethods}
       }
     `);
 

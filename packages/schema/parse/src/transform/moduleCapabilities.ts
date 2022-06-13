@@ -2,8 +2,8 @@ import { TypeInfoTransforms } from ".";
 import {
   InterfaceDefinition,
   CapabilityDefinition,
-  InvokableModules,
   TypeInfo,
+  createModuleDefinition,
 } from "../typeInfo";
 
 export interface ModuleCapability {
@@ -12,15 +12,8 @@ export interface ModuleCapability {
   namespace: string;
 }
 
-export type ModuleCapabilityMap = Record<InvokableModules, ModuleCapability[]>;
-
-const capitalize = (str: string) => str.replace(/^\w/, (c) => c.toUpperCase());
-
 export function moduleCapabilities(): TypeInfoTransforms {
-  const moduleCapabilities: ModuleCapabilityMap = {
-    query: [],
-    mutation: [],
-  };
+  const capabilities: ModuleCapability[] = [];
 
   const enabledInterfaces: Set<string> = new Set();
 
@@ -30,14 +23,12 @@ export function moduleCapabilities(): TypeInfoTransforms {
         for (const type in def.capabilities) {
           const info = def.capabilities[type as keyof CapabilityDefinition];
           if (info.enabled) {
-            for (const module of info.modules) {
-              moduleCapabilities[module as InvokableModules].push({
-                uri: def.uri,
-                namespace: def.namespace,
-                type,
-              });
-              enabledInterfaces.add(`${def.namespace}_${capitalize(module)}`);
-            }
+            capabilities.push({
+              uri: def.uri,
+              namespace: def.namespace,
+              type,
+            });
+            enabledInterfaces.add(def.namespace);
           }
         }
         return def;
@@ -45,12 +36,12 @@ export function moduleCapabilities(): TypeInfoTransforms {
     },
     leave: {
       TypeInfo: (info: TypeInfo) => {
-        for (const moduleDef of info.moduleTypes) {
-          const module = moduleDef.type.toLowerCase() as InvokableModules;
-          const capabilities = moduleCapabilities[module];
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (moduleDef as any).capabilities = capabilities;
+        if (!info.moduleType) {
+          info.moduleType = createModuleDefinition({});
         }
+
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (info.moduleType as any).capabilities = capabilities;
 
         for (const importedModuleDef of info.importedModuleTypes) {
           if (enabledInterfaces.has(importedModuleDef.type)) {

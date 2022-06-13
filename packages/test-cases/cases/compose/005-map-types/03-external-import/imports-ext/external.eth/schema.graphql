@@ -35,11 +35,8 @@ directive @annotate(type: String!) on FIELD
 
 ### Web3API Header END ###
 
-type Query {
+type Module {
   getMap: Map! @annotate(type: "Map<String, Int>!")
-}
-
-type Mutation {
   updateMap(
     map: Map! @annotate(type: "Map<String, Int>!")
   ): Map! @annotate(type: "Map<String, Int>!")

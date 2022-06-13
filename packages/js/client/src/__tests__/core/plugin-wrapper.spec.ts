@@ -133,7 +133,7 @@ directive @annotate(type: String!) on FIELD
 
 ### Web3API Header END ###
 
-type Query implements Logger_Query @imports(
+type Module implements Logger_Query @imports(
   types: [
     "Logger_Query",
     "Logger_LogLevel"

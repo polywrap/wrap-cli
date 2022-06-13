@@ -13,7 +13,7 @@ export interface Web3ApiManifest {
   meta?: string;
   deploy?: string;
   language: string;
-  main?: string;
+  module?: string;
   schema: string;
   import_redirects?: {
     uri: string;

@@ -1,4 +1,8 @@
-/* eslint-disable @typescript-eslint/naming-convention */
+import Mustache from "mustache";
+
+// Remove mustache's built-in HTML escaping
+Mustache.escape = (value) => value;
+
 import { BindOptions, BindOutput } from "./types";
 import { getGenerateBindingFn } from "./bindings";
 

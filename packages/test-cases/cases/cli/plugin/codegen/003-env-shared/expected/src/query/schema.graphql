@@ -2,7 +2,7 @@ type Env {
   arg1: String!
 }
 
-type Query {
+type Module {
   method(
     str: String!
   ): String!

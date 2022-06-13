@@ -33,7 +33,7 @@
       "type": "string",
       "format": "wasmLanguage"
     },
-    "main": {
+    "module": {
       "type": "string",
       "format": "file"
     },

@@ -1,28 +1,17 @@
-import { ObjectDefinition, TypeInfo } from "../typeInfo";
+import { MODULE_NAME, ObjectDefinition, TypeInfo } from "../typeInfo";
 
 export function validateEnv(info: TypeInfo): void {
-  if (info.envTypes.query.client) {
+  if (info.envType.client) {
     validateClientEnvironment(
       info,
-      "Query",
-      info.envTypes.query.client,
-      info.envTypes.query.sanitized
-    );
-  }
-
-  if (info.envTypes.mutation.client) {
-    validateClientEnvironment(
-      info,
-      "Mutation",
-      info.envTypes.mutation.client,
-      info.envTypes.mutation.sanitized
+      info.envType.client,
+      info.envType.sanitized
     );
   }
 }
 
 export function validateClientEnvironment(
   info: TypeInfo,
-  module: "Mutation" | "Query",
   client: ObjectDefinition,
   sanitized?: ObjectDefinition
 ): void {
@@ -32,16 +21,16 @@ export function validateClientEnvironment(
     );
   }
 
-  const moduleObject = info.moduleTypes.find((type) => type.type === module);
-  if (!moduleObject) {
+  if (!info.moduleType) {
     throw new Error(
-      `validateClientEnvironment: Cannot find the specified module type by name '${module}' while trying to validate '${client.type}'`
+      `validateClientEnvironment: Cannot find the specified module type by name '${MODULE_NAME}' while trying to validate '${client.type}'`
     );
   }
 
-  const sanitizeEnvMethod = moduleObject.methods.find(
+  const sanitizeEnvMethod = info.moduleType.methods.find(
     (method) => method.name === "sanitizeEnv"
   );
+
   if (!sanitizeEnvMethod) {
     throw new Error(
       `Must have 'sanitizeEnv' method inside module methods when using '${client.type}'`

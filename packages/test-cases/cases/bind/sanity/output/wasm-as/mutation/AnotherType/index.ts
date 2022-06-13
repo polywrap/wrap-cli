@@ -1,1 +1,0 @@
-export { AnotherType } from "../common";
