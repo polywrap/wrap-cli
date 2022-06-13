@@ -1,6 +1,6 @@
 import path from "path";
-import { FileSystemWrapperValidator } from "../../FileSystemWrapperValidator";
-import { ValidationFailReason } from "../../WrapperValidator";
+import { FileSystemWrapperValidator } from "../../filesystem/FileSystemWrapperValidator";
+import { ValidationFailReason } from "../../base";
 
 jest.setTimeout(200000);
 

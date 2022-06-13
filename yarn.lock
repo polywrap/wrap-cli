@@ -3982,7 +3982,7 @@
     jsonschema "1.4.0"
     semver "7.3.5"
 
-"@web3api/core-js@^0.0.1-prealpha.84":
+"@web3api/core-js@0.0.1-prealpha.84":
   version "0.0.1-prealpha.84"
   resolved "https://registry.yarnpkg.com/@web3api/core-js/-/core-js-0.0.1-prealpha.84.tgz#80d643ffa89ea7e2147e6f7db3f6358aa45d8ea1"
   integrity sha512-t3KrOBYg6br5cZDtX/GYlJ+k3CU9lBUGrUHJXjiTDO/k4vrnFi7PsMFd0Tn6UfpN2CMrVjwW/VA0A5JLntv3CA==
@@ -4075,6 +4075,14 @@
   version "0.0.1-prealpha.80"
   resolved "https://registry.yarnpkg.com/@web3api/schema-parse/-/schema-parse-0.0.1-prealpha.80.tgz#dafdb7380bf61f63c54d4bc9cdd50bbd5911aaaf"
   integrity sha512-J22ziFRMCETlCT+I3m31d9MqUOZYNrwJ/JCyo6fsSWI4tJz3+7EjVy70Ok2xYsc0CS9EnfAShERmklbaZ9ZdsA==
+  dependencies:
+    "@dorgjelli/graphql-schema-cycles" "1.1.4"
+    graphql "15.5.0"
+
+"@web3api/schema-parse@0.0.1-prealpha.84":
+  version "0.0.1-prealpha.84"
+  resolved "https://registry.yarnpkg.com/@web3api/schema-parse/-/schema-parse-0.0.1-prealpha.84.tgz#4189d925e0b78022dd8f3ba1271b80afa1847ad6"
+  integrity sha512-GUUz2Utr85jjnnZmnuKSKXQ5F7u6apF3LNmez+wkeo8Mb/81l8Pt2Ex4yw+Qo8yrWpMUPMB6q2msahbnkP/7zg==
   dependencies:
     "@dorgjelli/graphql-schema-cycles" "1.1.4"
     graphql "15.5.0"

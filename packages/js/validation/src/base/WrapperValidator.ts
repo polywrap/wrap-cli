@@ -1,77 +1,41 @@
 import {
+  WrapperContraints,
+  WrapperReadOperations,
+  ValidationResult,
+  ValidationFailReason,
+  VALID_WRAP_MANIFEST_NAMES,
+  VALID_MODULE_EXTENSIONS,
+} from ".";
+
+import { parseSchema } from "@web3api/schema-parse";
+import {
   deserializeWeb3ApiManifest,
   deserializeBuildManifest,
   deserializeMetaManifest,
   Web3ApiManifest,
 } from "@web3api/core-js";
-import { parseSchema } from "@web3api/schema-parse";
 import path from "path";
 
-export type Stats = {
-  isFile: boolean;
-  isDir: boolean;
-  size: number;
-};
-
-export type ValidatorConfig = {
-  maxSize: number;
-  maxFileSize: number;
-  maxModuleSize: number;
-  maxNumberOfFiles: number;
-  readFileAsString: (path: string) => string;
-  readFile: (path: string) => Buffer;
-  exists: (path: string) => boolean;
-  getStats: (path: string) => Stats;
-  readDir: (path: string) => Iterable<string>;
-};
-
-export enum ValidationFailReason {
-  InvalidWrapManifest,
-  MultipleWrapManifests,
-  WrapManifestNotFound,
-  InvalidBuildManifest,
-  InvalidMetaManifest,
-  InvalidModuleExtension,
-  FileTooLarge,
-  WrapperTooLarge,
-  ModuleTooLarge,
-  InvalidSchema,
-  SchemaNotFound,
-  TooManyFiles,
-}
-
-export type ValidationResult = {
-  valid: boolean;
-  failReason?: ValidationFailReason;
-};
-
-const VALID_MODULE_EXTENSIONS = [".wasm"];
-const VALID_WRAP_MANIFEST_NAMES = [
-  "web3api.json",
-  "web3api.yaml",
-  "web3api.yml",
-];
-
 export class WrapperValidator {
-  constructor(private config: ValidatorConfig) {}
+  constructor(private constraints: WrapperContraints) {}
 
-  validate(): ValidationResult {
-    let result = this.validateManifests();
+  validate(ops: WrapperReadOperations): ValidationResult {
+    let result = this.validateManifests(ops);
     if (!result.valid) {
       return result;
     }
 
     // Validate schema
-    if (!this.config.exists("./schema.graphql")) {
+    if (!ops.exists("./schema.graphql")) {
       return this.fail(ValidationFailReason.SchemaNotFound);
     }
     try {
-      parseSchema(this.config.readFileAsString("./schema.graphql"));
+      parseSchema(ops.readFileAsString("./schema.graphql"));
     } catch {
       return this.fail(ValidationFailReason.InvalidSchema);
     }
 
-    result = this.validateStructure();
+    result = this.validateStructure(ops);
     if (!result.valid) {
       return result;
     }
@@ -79,8 +43,8 @@ export class WrapperValidator {
     return this.success();
   }
 
-  private validateStructure(): ValidationResult {
-    const { result: pathResult } = this.validatePath("./", 0, 0);
+  private validateStructure(ops: WrapperReadOperations): ValidationResult {
+    const { result: pathResult } = this.validatePath(ops, "./", 0, 0);
 
     if (!pathResult.valid) {
       return pathResult;
@@ -90,6 +54,7 @@ export class WrapperValidator {
   }
 
   private validatePath(
+    ops: WrapperReadOperations,
     basePath: string,
     currentSize: number,
     currentFileCnt: number
@@ -98,11 +63,11 @@ export class WrapperValidator {
     currentSize: number;
     currentFileCnt: number;
   } {
-    for (const itemPath of this.config.readDir(basePath)) {
-      const stats = this.config.getStats(path.join(basePath, itemPath));
+    for (const itemPath of ops.readDir(basePath)) {
+      const stats = ops.getStats(path.join(basePath, itemPath));
 
       currentSize += stats.size;
-      if (currentSize > this.config.maxSize) {
+      if (currentSize > this.constraints.maxSize) {
         return {
           result: this.fail(ValidationFailReason.WrapperTooLarge),
           currentSize,
@@ -111,7 +76,7 @@ export class WrapperValidator {
       }
 
       currentFileCnt++;
-      if (currentFileCnt > this.config.maxNumberOfFiles) {
+      if (currentFileCnt > this.constraints.maxNumberOfFiles) {
         return {
           result: this.fail(ValidationFailReason.TooManyFiles),
           currentSize,
@@ -120,7 +85,7 @@ export class WrapperValidator {
       }
 
       if (stats.isFile) {
-        if (stats.size > this.config.maxFileSize) {
+        if (stats.size > this.constraints.maxFileSize) {
           return {
             result: this.fail(ValidationFailReason.FileTooLarge),
             currentSize,
@@ -133,6 +98,7 @@ export class WrapperValidator {
           currentSize: newSize,
           currentFileCnt: newFileCnt,
         } = this.validatePath(
+          ops,
           path.join(basePath, itemPath),
           currentSize,
           currentFileCnt
@@ -157,19 +123,19 @@ export class WrapperValidator {
     };
   }
 
-  private validateManifests(): ValidationResult {
+  private validateManifests(ops: WrapperReadOperations): ValidationResult {
     let manifest: Web3ApiManifest | undefined;
     // Go through manifest names, if more than one wrap manifest exists, fail
     // If no wrap manifest exists or is invalid, also fail
     for (const manifestName of VALID_WRAP_MANIFEST_NAMES) {
-      if (!this.config.exists(manifestName)) {
+      if (!ops.exists(manifestName)) {
         continue;
       }
 
       if (manifest) {
         return this.fail(ValidationFailReason.MultipleWrapManifests);
       }
-      const manifestFile = this.config.readFileAsString(manifestName);
+      const manifestFile = ops.readFileAsString(manifestName);
       try {
         manifest = deserializeWeb3ApiManifest(manifestFile);
       } catch {
@@ -185,25 +151,25 @@ export class WrapperValidator {
     const mutationModule = manifest.modules.mutation;
 
     if (queryModule) {
-      const moduleResult = this.validateModule(queryModule);
+      const moduleResult = this.validateModule(ops, queryModule);
       if (!moduleResult.valid) {
         return moduleResult;
       }
     }
 
     if (mutationModule) {
-      const moduleResult = this.validateModule(mutationModule);
+      const moduleResult = this.validateModule(ops, mutationModule);
       if (!moduleResult.valid) {
         return moduleResult;
       }
     }
 
-    let manifestValidationResult = this.validateBuildManifest(manifest);
+    let manifestValidationResult = this.validateBuildManifest(ops, manifest);
     if (!manifestValidationResult.valid) {
       return manifestValidationResult;
     }
 
-    manifestValidationResult = this.validateMetaManifest(manifest);
+    manifestValidationResult = this.validateMetaManifest(ops, manifest);
     if (!manifestValidationResult.valid) {
       return manifestValidationResult;
     }
@@ -212,19 +178,21 @@ export class WrapperValidator {
   }
 
   // Checking schema, extension and size
-  private validateModule(moduleType: {
-    schema: string;
-    module?: string;
-  }): ValidationResult {
+  private validateModule(
+    ops: WrapperReadOperations,
+    moduleType: {
+      schema: string;
+      module?: string;
+    }
+  ): ValidationResult {
     if (moduleType && moduleType.module) {
-      const a = path.extname(moduleType.module);
       if (!VALID_MODULE_EXTENSIONS.includes(path.extname(moduleType.module))) {
         return this.fail(ValidationFailReason.InvalidModuleExtension);
       }
 
-      const moduleSize = this.config.getStats(moduleType.module).size;
+      const moduleSize = ops.getStats(moduleType.module).size;
 
-      if (moduleSize > this.config.maxModuleSize) {
+      if (moduleSize > this.constraints.maxModuleSize) {
         return this.fail(ValidationFailReason.ModuleTooLarge);
       }
     }
@@ -233,12 +201,13 @@ export class WrapperValidator {
   }
 
   private validateBuildManifest(
+    ops: WrapperReadOperations,
     web3ApiManifest: Web3ApiManifest
   ): ValidationResult {
     const buildManifestPath = web3ApiManifest.build;
 
     if (buildManifestPath) {
-      const buildManifestFile = this.config.readFileAsString(buildManifestPath);
+      const buildManifestFile = ops.readFileAsString(buildManifestPath);
       try {
         deserializeBuildManifest(buildManifestFile);
       } catch {
@@ -250,12 +219,13 @@ export class WrapperValidator {
   }
 
   private validateMetaManifest(
+    ops: WrapperReadOperations,
     web3ApiManifest: Web3ApiManifest
   ): ValidationResult {
     const metaManifestPath = web3ApiManifest.meta;
 
     if (metaManifestPath) {
-      const metaManifestFile = this.config.readFileAsString(metaManifestPath);
+      const metaManifestFile = ops.readFileAsString(metaManifestPath);
 
       try {
         deserializeMetaManifest(metaManifestFile);

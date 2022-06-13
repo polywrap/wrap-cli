@@ -1,5 +1,5 @@
 import path from "path";
-import { FileSystemWrapperValidator } from "../../FileSystemWrapperValidator";
+import { FileSystemWrapperValidator } from "../../filesystem/FileSystemWrapperValidator";
 
 jest.setTimeout(200000);
 
