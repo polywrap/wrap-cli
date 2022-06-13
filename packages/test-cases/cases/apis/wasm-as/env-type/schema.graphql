@@ -1,5 +1,0 @@
-#import { Env } from "./common/schema.graphql"
-
-type Module {
-  moduleEnv(arg: String!): Env
-}
