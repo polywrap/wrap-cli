@@ -893,7 +893,7 @@ async function resolveLocalImports(
     }
 
     // Keep track of all imported type names
-    const typesToImport: Record<string, GenericDefinition> = {};
+    const typesToImport: Record<string, ObjectDefinition | EnumDefinition> = {};
 
     for (const importedType of extTypesToImport) {
       if (importedType === "Module") {
@@ -902,47 +902,32 @@ async function resolveLocalImports(
         );
       }
 
-      let type: GenericDefinition | undefined;
+      let type: ObjectDefinition | EnumDefinition | undefined;
       let visitorFunc: Function;
 
-      const objectIdx = localTypeInfo.objectTypes.findIndex(
-        (type) => type.type === importedType
-      );
-
-      const enumIdx =
-        objectIdx === -1 &&
-        localTypeInfo.enumTypes.findIndex((type) => type.type === importedType);
-
-      const isEnv =
-        objectIdx === -1 &&
-        localTypeInfo.envType.sanitized?.type === importedType;
-
-      if (objectIdx > -1) {
-        visitorFunc = visitObjectDefinition;
-        type = localTypeInfo.objectTypes[objectIdx];
-      } else if (enumIdx > -1) {
-        visitorFunc = visitEnumDefinition;
-        type = localTypeInfo.enumTypes.find(
+      if (isEnvType(importedType)) {
+        visitorFunc = visitEnvDefinition;
+        type = localTypeInfo.envType.sanitized;
+      } else {
+        const objectIdx = localTypeInfo.objectTypes.findIndex(
           (type) => type.type === importedType
         );
-      } else if (isEnv) {
-        visitorFunc = visitEnvDefinition;
 
-        if (!typeInfo.envType.sanitized) {
-          typeInfo.envType.sanitized = createObjectDefinition({
-            type: envTypes.Env,
-          });
+        const enumIdx =
+          objectIdx === -1 &&
+          localTypeInfo.enumTypes.findIndex(
+            (type) => type.type === importedType
+          );
+
+        if (objectIdx > -1) {
+          visitorFunc = visitObjectDefinition;
+          type = localTypeInfo.objectTypes[objectIdx];
+        } else if (enumIdx > -1) {
+          visitorFunc = visitEnumDefinition;
+          type = localTypeInfo.enumTypes.find(
+            (type) => type.type === importedType
+          );
         }
-
-        const sharedEnv = localTypeInfo.envType.sanitized as ObjectDefinition;
-
-        checkDuplicateEnvProperties(
-          typeInfo.envType.sanitized,
-          sharedEnv.properties
-        );
-        typeInfo.envType.sanitized.properties.push(...sharedEnv.properties);
-
-        type = sharedEnv;
       }
 
       if (!type) {
@@ -1026,7 +1011,24 @@ async function resolveLocalImports(
 
     // Add all imported types into the aggregate TypeInfo
     for (const importType of Object.keys(typesToImport)) {
-      if (isKind(typesToImport[importType], DefinitionKind.ImportedObject)) {
+      if (isEnvType(importType)) {
+        if (!typeInfo.envType.sanitized) {
+          typeInfo.envType.sanitized = createObjectDefinition({
+            type: envTypes.Env,
+          });
+        }
+
+        const sharedEnv = localTypeInfo.envType.sanitized as ObjectDefinition;
+
+        checkDuplicateEnvProperties(
+          typeInfo.envType.sanitized,
+          sharedEnv.properties
+        );
+
+        typeInfo.envType.sanitized.properties.push(...sharedEnv.properties);
+      } else if (
+        isKind(typesToImport[importType], DefinitionKind.ImportedObject)
+      ) {
         if (
           typeInfo.importedObjectTypes.findIndex(
             (def) => def.type === importType
@@ -1039,8 +1041,7 @@ async function resolveLocalImports(
       } else if (isKind(typesToImport[importType], DefinitionKind.Object)) {
         if (
           typeInfo.objectTypes.findIndex((def) => def.type === importType) ===
-            -1 &&
-          !isEnvType(importType)
+          -1
         ) {
           typeInfo.objectTypes.push(
             typesToImport[importType] as ObjectDefinition
