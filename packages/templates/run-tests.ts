@@ -13,8 +13,14 @@ const languageTestCommands: Record<string, string[]> = {
     "yarn build",
     "yarn test"
   ],
+  "typescript-node": [
+    // Add this back once new toolchain version is released
+    /*"yarn build",
+    "yarn test"*/
+  ],
   "typescript-react": [
-    "CI=false yarn build"
+    // Add this back once new toolchain version is released
+    // "CI=false yarn build"
   ],
   "assemblyscript": [
     // Add this back once new toolchain version is released
