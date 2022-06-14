@@ -2,7 +2,7 @@ import {
   ValidationResult,
   WrapperValidator,
   WrapperReadOperations,
-  WrapperContraints,
+  WrapperConstraints,
 } from "../base";
 
 import path from "path";
@@ -36,7 +36,7 @@ const getOpsFromPath = (wrapperPath: string): WrapperReadOperations => {
 export class FileSystemWrapperValidator {
   baseValidator: WrapperValidator;
 
-  constructor(constraints: WrapperContraints) {
+  constructor(constraints: WrapperConstraints) {
     this.baseValidator = new WrapperValidator(constraints);
   }
 

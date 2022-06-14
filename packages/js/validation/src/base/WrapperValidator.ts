@@ -1,5 +1,5 @@
 import {
-  WrapperContraints,
+  WrapperConstraints,
   WrapperReadOperations,
   ValidationResult,
   ValidationFailReason,
@@ -18,7 +18,7 @@ import {
 import path from "path";
 
 export class WrapperValidator {
-  constructor(private constraints: WrapperContraints) {}
+  constructor(private constraints: WrapperConstraints) {}
 
   async validate(ops: WrapperReadOperations): Promise<ValidationResult> {
     let result = await this.validateManifests(ops);

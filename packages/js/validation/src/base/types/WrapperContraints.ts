@@ -1,4 +1,4 @@
-export type WrapperContraints = {
+export type WrapperConstraints = {
   maxSize: number;
   maxFileSize: number;
   maxModuleSize: number;
