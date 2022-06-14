@@ -40,7 +40,7 @@ directive @annotate(type: String!) on FIELD
 
 type Module @imports(
   types: [
-    "Ethereum_Query",
+    "Ethereum_Module",
     "Ethereum_Connection",
     "Ethereum_TxOverrides",
     "Ethereum_StaticTxResult",
@@ -48,33 +48,22 @@ type Module @imports(
     "Ethereum_TxReceipt",
     "Ethereum_Log",
     "Ethereum_EventNotification",
-    "Ethereum_Network"
+    "Ethereum_Network",
+    "Ethereum_TxResponse",
+    "Ethereum_Access"
   ]
 ) {
-  method(
+  methodOne(
     str: String!
     optStr: String
   ): Object!
-}
 
-type Mutation @imports(
-  types: [
-    "Ethereum_Mutation",
-    "Ethereum_Connection",
-    "Ethereum_TxOverrides",
-    "Ethereum_TxResponse",
-    "Ethereum_Access",
-    "Ethereum_TxReceipt",
-    "Ethereum_Log",
-    "Ethereum_TxRequest"
-  ]
-) {
-  method(
+  methodTwo(
     arg: UInt32!
   ): String!
 }
 
-type QueryEnv {
+type Env {
   arg1: String!
 }
 
@@ -86,10 +75,10 @@ type Object {
 
 ### Imported Queries START ###
 
-type Ethereum_Query @imported(
+type Ethereum_Module @imported(
   uri: "ens/ethereum.web3api.eth",
   namespace: "Ethereum",
-  nativeType: "Query"
+  nativeType: "Module"
 ) {
   callContractView(
     address: String!
@@ -198,13 +187,7 @@ type Ethereum_Query @imported(
   getNetwork(
     connection: Ethereum_Connection
   ): Ethereum_Network!
-}
 
-type Ethereum_Mutation @imported(
-  uri: "ens/ethereum.web3api.eth",
-  namespace: "Ethereum",
-  nativeType: "Mutation"
-) {
   callContractMethod(
     address: String!
     method: String!
