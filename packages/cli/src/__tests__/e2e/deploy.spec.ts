@@ -75,7 +75,6 @@ const setup = async (domainNames: string[]) => {
   for await (const domainName of domainNames) {
     const result = await client.invoke({
       uri: ensWrapperUri,
-      module: "mutation",
       method: "registerDomainAndSubdomainsRecursively",
       input: {
         domain: domainName,
