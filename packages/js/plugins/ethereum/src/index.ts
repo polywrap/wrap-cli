@@ -428,7 +428,11 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
   private async _getConnection(
     connection?: SchemaConnection | null
   ): Promise<Connection> {
-    return getConnection(this._connections, this._defaultNetwork, connection);
+    return getConnection(
+      this._connections,
+      this._defaultNetwork,
+      connection || this.env.connection
+    );
   }
 }
 
