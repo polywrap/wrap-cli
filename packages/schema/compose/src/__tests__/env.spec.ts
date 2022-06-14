@@ -1,5 +1,5 @@
 import { createObjectDefinition, createPropertyDefinition } from "@web3api/schema-parse";
-import { checkDuplicateEnvProperties } from "../resolve";
+import { checkDuplicateEnvProperties } from "../env";
 
 describe("Check duplicate environment properties", () => {
   it("should throw error if duplicate property found", () => {

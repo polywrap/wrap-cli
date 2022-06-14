@@ -41,7 +41,7 @@ type Module {
   ): String!
 }
 
-type ModuleEnv {
+type Env {
   prop: String!
 }
 
