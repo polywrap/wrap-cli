@@ -43,7 +43,7 @@ type Module implements Namespace_Module @imports(
   getMap: Map! @annotate(type: "Map<String!, Int>!")
 }
 
-### Imported Queries START ###
+### Imported Modules START ###
 
 type Namespace_Module @imported(
   uri: "external.eth",
@@ -53,7 +53,7 @@ type Namespace_Module @imported(
   getMap: Map! @annotate(type: "Map<String!, Int>!")
 }
 
-### Imported Queries END ###
+### Imported Modules END ###
 
 ### Imported Objects START ###
 

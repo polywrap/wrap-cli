@@ -56,9 +56,9 @@ type Env {
   queryArg: String!
 }
 
-### Imported Queries START ###
+### Imported Modules START ###
 
-### Imported Queries END ###
+### Imported Modules END ###
 
 ### Imported Objects START ###
 

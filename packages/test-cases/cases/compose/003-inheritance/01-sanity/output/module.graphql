@@ -60,9 +60,9 @@ type DerivedType2 implements BaseType1 & BaseType2 {
   uint: UInt
 }
 
-### Imported Queries START ###
+### Imported Modules START ###
 
-### Imported Queries END ###
+### Imported Modules END ###
 
 ### Imported Objects START ###
 

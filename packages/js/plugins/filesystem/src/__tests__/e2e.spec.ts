@@ -69,7 +69,7 @@ describe("Filesystem plugin", () => {
     await stopTestEnvironment();
   });
 
-  it("queries simple-storage api on local drive", async () => {
+  it("invokes simple-storage api on local drive", async () => {
     const apiPath = path.resolve(
       `${GetPathToTestApis()}/wasm-as/simple-storage`
     );

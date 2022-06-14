@@ -7,7 +7,7 @@ import { Uri, Client, MaybeAsync, executeMaybeAsyncFunction } from ".";
  * @param input Input arguments for the method, structured as
  * a map, removing the chance of incorrectly ordering arguments.
  * @param client The client instance requesting this invocation.
- * This client will be used for any sub-queries that occur.
+ * This client will be used for any sub-invokes that occur.
  */
 export type PluginMethod<
   TInput extends Record<string, unknown> = Record<string, unknown>,

@@ -155,7 +155,7 @@ describe("resolveUri", () => {
         const manifest: unknown = {
           format: "0.0.1-prealpha.9",
           language: "",
-          main: "",
+          module: "",
           schema: "",
           __type: "Web3ApiManifest",
         };

@@ -97,7 +97,7 @@ enum {{type}} {
 }
 
 {{/enumTypes}}
-### Imported Queries START ###
+### Imported Modules START ###
 
 {{#importedModuleTypes}}{{#comment}}
 """
@@ -130,7 +130,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
 }{{/methods.length}}
 
 {{/importedModuleTypes}}
-### Imported Queries END ###
+### Imported Modules END ###
 
 ### Imported Objects START ###
 

@@ -61,9 +61,9 @@ type RecursiveType {
   mapOfMap: Map! @annotate(type: "Map<String!, Map<String!, Int!>!>!")
 }
 
-### Imported Queries START ###
+### Imported Modules START ###
 
-### Imported Queries END ###
+### Imported Modules END ###
 
 ### Imported Objects START ###
 

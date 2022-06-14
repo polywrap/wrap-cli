@@ -69,7 +69,7 @@ type Object {
   bytes: Bytes
 }
 
-### Imported Queries START ###
+### Imported Modules START ###
 
 type Ethereum_Module @imported(
   uri: "ens/ethereum.web3api.eth",
@@ -229,7 +229,7 @@ type Ethereum_Module @imported(
   ): String
 }
 
-### Imported Queries END ###
+### Imported Modules END ###
 
 ### Imported Objects START ###
 

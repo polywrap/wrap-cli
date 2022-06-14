@@ -198,7 +198,7 @@ type AnotherLocal {
   prop: String!
 }
 
-### Imported Queries START ###
+### Imported Modules START ###
 
 """
 Module comment
@@ -266,7 +266,7 @@ type JustModule_Module @imported(
   ): [Int32!]!
 }
 
-### Imported Queries END ###
+### Imported Modules END ###
 
 ### Imported Objects START ###
 

@@ -379,7 +379,7 @@ export class Web3ApiClient implements Client {
     };
     const { uri, query, variables, frequency: freq } = typedOptions;
 
-    // calculate interval between queries, in milliseconds, 1 min default value
+    // calculate interval between invokes, in milliseconds, 1 min default value
     /* eslint-disable prettier/prettier */
     let frequency: number;
     if (freq && (freq.ms || freq.sec || freq.min || freq.hours)) {

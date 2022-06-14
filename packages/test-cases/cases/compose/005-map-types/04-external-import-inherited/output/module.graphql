@@ -51,9 +51,9 @@ type CustomType implements Base_ImportedBaseType {
   requiredMap: Map! @annotate(type: "Map<String!, Int!>!")
 }
 
-### Imported Queries START ###
+### Imported Modules START ###
 
-### Imported Queries END ###
+### Imported Modules END ###
 
 ### Imported Objects START ###
 
