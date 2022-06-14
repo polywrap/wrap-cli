@@ -5,6 +5,7 @@ import {
   ValidationFailReason,
   VALID_WRAP_MANIFEST_NAMES,
   VALID_MODULE_EXTENSIONS,
+  SCHEMA_FILE_NAME,
 } from ".";
 
 import { parseSchema } from "@web3api/schema-parse";
@@ -25,14 +26,13 @@ export class WrapperValidator {
       return result;
     }
 
-    // Validate schema
-    if (!(await ops.exists("./schema.graphql"))) {
+    if (!(await ops.exists(SCHEMA_FILE_NAME))) {
       return this.fail(ValidationFailReason.SchemaNotFound);
     }
     try {
-      parseSchema(await ops.readFileAsString("./schema.graphql"));
-    } catch {
-      return this.fail(ValidationFailReason.InvalidSchema);
+      parseSchema(await ops.readFileAsString(SCHEMA_FILE_NAME));
+    } catch (err) {
+      return this.fail(ValidationFailReason.InvalidSchema, err);
     }
 
     result = await this.validateStructure(ops);
@@ -143,8 +143,8 @@ export class WrapperValidator {
       const manifestFile = await ops.readFileAsString(manifestName);
       try {
         manifest = deserializeWeb3ApiManifest(manifestFile);
-      } catch {
-        return this.fail(ValidationFailReason.InvalidWrapManifest);
+      } catch (err) {
+        return this.fail(ValidationFailReason.InvalidWrapManifest, err);
       }
     }
 
@@ -212,14 +212,18 @@ export class WrapperValidator {
     ops: WrapperReadOperations,
     web3ApiManifest: Web3ApiManifest
   ): Promise<ValidationResult> {
-    const buildManifestPath = web3ApiManifest.build;
+    const manifestPath = web3ApiManifest.build;
 
-    if (buildManifestPath) {
-      const buildManifestFile = await ops.readFileAsString(buildManifestPath);
+    if (manifestPath) {
+      // Manifests get built as a `.json` file so we need to change the extension
+      const fileName = path.parse(manifestPath).name;
+      const fullManifestName = `${fileName}.json`;
+
+      const buildManifestFile = await ops.readFileAsString(fullManifestName);
       try {
         deserializeBuildManifest(buildManifestFile);
-      } catch {
-        return this.fail(ValidationFailReason.InvalidBuildManifest);
+      } catch (err) {
+        return this.fail(ValidationFailReason.InvalidBuildManifest, err);
       }
     }
 
@@ -230,15 +234,19 @@ export class WrapperValidator {
     ops: WrapperReadOperations,
     web3ApiManifest: Web3ApiManifest
   ): Promise<ValidationResult> {
-    const metaManifestPath = web3ApiManifest.meta;
+    const manifestPath = web3ApiManifest.meta;
 
-    if (metaManifestPath) {
-      const metaManifestFile = await ops.readFileAsString(metaManifestPath);
+    if (manifestPath) {
+      // Manifests get built as a `.json` file so we need to change the extension
+      const fileName = path.parse(manifestPath).name;
+      const fullManifestName = `${fileName}.json`;
+
+      const metaManifestFile = await ops.readFileAsString(fullManifestName);
 
       try {
         deserializeMetaManifest(metaManifestFile);
-      } catch {
-        return this.fail(ValidationFailReason.InvalidMetaManifest);
+      } catch (err) {
+        return this.fail(ValidationFailReason.InvalidMetaManifest, err);
       }
     }
 
@@ -252,14 +260,13 @@ export class WrapperValidator {
   }
 
   private fail(
-    reason: ValidationFailReason
-  ): {
-    valid: boolean;
-    failReason: ValidationFailReason;
-  } {
+    reason: ValidationFailReason,
+    error: Error | undefined = undefined
+  ): ValidationResult {
     return {
       valid: false,
       failReason: reason,
+      failError: error,
     };
   }
 }
