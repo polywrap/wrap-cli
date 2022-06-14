@@ -1,7 +1,4 @@
 import {
-  SchemaKind,
-  SchemaInfos,
-  SchemaInfo,
   SchemaFile,
   SchemaResolvers,
 } from "./types";
@@ -14,8 +11,10 @@ import { TypeInfo, combineTypeInfo } from "@web3api/schema-parse";
 export * from "./types";
 export { renderSchema };
 
-export type ComposerOutput = Partial<SchemaInfos> &
-  Required<{ combined: SchemaInfos["combined"] }>;
+export interface ComposerOutput {
+  schema?: string;
+  typeInfo?: TypeInfo;
+}
 
 export enum ComposerFilter {
   Schema = 1 << 0,
@@ -24,7 +23,7 @@ export enum ComposerFilter {
 }
 
 export interface ComposerOptions {
-  schemas: Partial<Record<SchemaKind, SchemaFile>>;
+  schemas: SchemaFile[];
   resolvers: SchemaResolvers;
   output: ComposerFilter;
 }
@@ -32,65 +31,48 @@ export interface ComposerOptions {
 export async function composeSchema(
   options: ComposerOptions
 ): Promise<ComposerOutput> {
-  const { schemas, resolvers } = options;
-  const typeInfos: Partial<Record<SchemaKind, TypeInfo>> = {};
 
-  if (Object.keys(schemas).length === 0) {
+  const typeInfos = await resolveImports(
+    options.schemas,
+    options.resolvers
+  );
+
+  const typeInfo =
+    typeInfos.length === 1 ?
+    typeInfos[0] :
+    combineTypeInfo(typeInfos);
+
+  await validateEnv(typeInfo);
+
+  // Forming our output structure for the caller
+  const includeSchema = options.output & ComposerFilter.Schema;
+  const includeTypeInfo = options.output & ComposerFilter.TypeInfo;
+
+  return {
+    schema: includeSchema ? renderSchema(typeInfo, true) : undefined,
+    typeInfo: includeTypeInfo ? typeInfo : undefined,
+  }
+}
+
+export async function resolveImports(
+  schemas: SchemaFile[],
+  resolvers: SchemaResolvers
+): Promise<TypeInfo[]> {
+  const typeInfos: TypeInfo[] = [];
+
+  if (schemas.length === 0) {
     throw Error("No schema provided");
   }
 
-  for (const kind of Object.keys(schemas)) {
-    const schema = schemas[kind];
-
-    if (schema === undefined) {
-      continue;
-    }
-
-    typeInfos[kind] = await resolveImportsAndParseSchemas(
-      schema.schema,
-      schema.absolutePath,
-      kind,
-      resolvers
+  for (const schema of schemas) {
+    typeInfos.push(
+      await resolveImportsAndParseSchemas(
+        schema.schema,
+        schema.absolutePath,
+        resolvers
+      )
     );
   }
 
-  // Forming our output structure for the caller
-  const output: ComposerOutput = {
-    combined: {},
-  };
-  const includeSchema = options.output & ComposerFilter.Schema;
-  const includeTypeInfo = options.output & ComposerFilter.TypeInfo;
-  const createSchemaInfo = (typeInfo: TypeInfo): SchemaInfo => ({
-    schema: includeSchema ? renderSchema(typeInfo, true) : undefined,
-    typeInfo: includeTypeInfo ? typeInfo : undefined,
-  });
-
-  for (const kind of Object.keys(typeInfos)) {
-    const typeInfo = typeInfos[kind];
-    if (typeInfo) {
-      output[kind] = createSchemaInfo(typeInfo);
-    }
-  }
-
-  const typeInfoKeys = Object.keys(typeInfos);
-
-  if (typeInfoKeys.length > 1) {
-    const combinedTypeInfo = combineTypeInfo(
-      Object.values(typeInfos).filter((x) => x !== undefined) as TypeInfo[]
-    );
-
-    await validateEnv(combinedTypeInfo);
-
-    output.combined = createSchemaInfo(combinedTypeInfo);
-  } else if (typeInfoKeys.length > 0) {
-    const combinedTypeInfo = output[
-      typeInfoKeys[0] as SchemaKind
-    ] as SchemaInfo;
-
-    await validateEnv(combinedTypeInfo.typeInfo as TypeInfo);
-
-    output.combined = combinedTypeInfo;
-  }
-
-  return output;
+  return typeInfos;
 }

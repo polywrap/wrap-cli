@@ -124,8 +124,8 @@ export class PluginProject extends Project<PluginManifest> {
 
     const options: BindOptions = {
       projectName: manifest.name,
-      typeInfo: composerOutput.main?.typeInfo as TypeInfo,
-      schema: composerOutput.combined?.schema as string,
+      typeInfo: composerOutput.typeInfo as TypeInfo,
+      schema: composerOutput.schema as string,
       outputDirAbs: moduleDirectory,
       bindLanguage,
     };

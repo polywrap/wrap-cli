@@ -83,12 +83,12 @@ export class CodeGenerator {
       // Get the fully composed schema
       const composed = await schemaComposer.getComposedSchemas();
 
-      if (!composed.combined) {
+      if (!composed) {
         throw Error(intlMsg.lib_codeGenerator_noComposedSchema());
       }
 
-      const typeInfo = composed.combined.typeInfo;
-      this._schema = composed.combined.schema;
+      const typeInfo = composed.typeInfo;
+      this._schema = composed.schema;
 
       if (!typeInfo) {
         throw Error(intlMsg.lib_codeGenerator_typeInfoMissing());

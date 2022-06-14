@@ -1,18 +1,9 @@
-import { CapabilityType, TypeInfo } from "@web3api/schema-parse";
+import { CapabilityType } from "@web3api/schema-parse";
 
 export interface SchemaFile {
   schema: string;
   absolutePath: string;
 }
-
-export type SchemaKind = "combined" | string;
-
-export interface SchemaInfo {
-  schema?: string;
-  typeInfo?: TypeInfo;
-}
-
-export type SchemaInfos = Record<SchemaKind, SchemaInfo>;
 
 export type SchemaResolver = (uriOrPath: string) => Promise<string>;
 

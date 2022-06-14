@@ -55,7 +55,7 @@ export class SchemaComposer {
         : undefined;
 
     const options: ComposerOptions = {
-      schemas: {},
+      schemas: [],
       resolvers: {
         external: (uri: string) =>
           this._fetchExternalSchema(uri, import_redirects),
@@ -69,7 +69,7 @@ export class SchemaComposer {
       throw Error(`Schema cannot be loaded at path: ${schemaNamedPath}`);
     }
 
-    options.schemas["main"] = schemaFile;
+    options.schemas.push(schemaFile);
 
     this._composerOutput = await composeSchema(options);
 

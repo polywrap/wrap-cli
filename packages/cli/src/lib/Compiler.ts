@@ -205,7 +205,7 @@ export class Compiler {
     // Get the fully composed schema
     const composerOutput = await schemaComposer.getComposedSchemas();
 
-    if (!composerOutput.combined) {
+    if (!composerOutput) {
       throw Error(intlMsg.lib_compiler_failedSchemaReturn());
     }
 
@@ -353,7 +353,7 @@ export class Compiler {
 
     writeFileSync(
       `${outputDir}/schema.graphql`,
-      state.composerOutput.combined.schema,
+      state.composerOutput.schema,
       "utf-8"
     );
 
@@ -413,7 +413,7 @@ export class Compiler {
   private _validateState(state: CompilerState) {
     const { composerOutput, web3ApiManifest } = state;
 
-    if (!composerOutput.main || !composerOutput.main.schema) {
+    if (!composerOutput.schema) {
       const missingSchemaMessage = intlMsg.lib_compiler_missingSchema();
       throw Error(missingSchemaMessage);
     }

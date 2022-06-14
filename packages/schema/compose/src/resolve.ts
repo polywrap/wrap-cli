@@ -5,7 +5,6 @@
 import {
   ExternalImport,
   LocalImport,
-  SchemaKind,
   SchemaResolver,
   SchemaResolvers,
   SYNTAX_REFERENCE,
@@ -122,8 +121,8 @@ export async function resolveUseStatements(
 export async function resolveImportsAndParseSchemas(
   schema: string,
   schemaPath: string,
-  schemaKind: SchemaKind,
-  resolvers: SchemaResolvers
+  resolvers: SchemaResolvers,
+  noValidate: boolean = false
 ): Promise<TypeInfo> {
   const importKeywordCapture = /^#+["{3}]*import\s/gm;
   const externalImportCapture = /#+["{3}]*import\s*(?:({[^}]+}|\*))\s*into\s*(\w+?)\s*from\s*[\"'`]([^\"'`\s]+)[\"'`]/g;
@@ -180,7 +179,6 @@ export async function resolveImportsAndParseSchemas(
     localImportsToResolve,
     resolvers.local,
     subTypeInfo,
-    schemaKind,
     resolvers
   );
 
@@ -217,7 +215,10 @@ export async function resolveImportsAndParseSchemas(
   );
 
   // Parse the newly formed schema
-  const typeInfo = parseSchema(newSchema);
+  const typeInfo = parseSchema(
+    newSchema,
+    { noValidate }
+  );
 
   return typeInfo;
 }
@@ -852,7 +853,6 @@ async function resolveLocalImports(
   importsToResolve: LocalImport[],
   resolveSchema: SchemaResolver,
   typeInfo: TypeInfo,
-  schemaKind: SchemaKind,
   resolvers: SchemaResolvers
 ): Promise<void> {
   for (const importToResolve of importsToResolve) {
@@ -874,8 +874,8 @@ async function resolveLocalImports(
     const localTypeInfo = await resolveImportsAndParseSchemas(
       schema,
       path,
-      schemaKind,
-      resolvers
+      resolvers,
+      true
     );
 
     let extTypesToImport = importedTypes;

@@ -110,8 +110,8 @@ export class AppProject extends Project<AppManifest> {
   ): Promise<BindOutput> {
     return bindSchema({
       projectName: await this.getName(),
-      typeInfo: composerOutput.combined?.typeInfo as TypeInfo,
-      schema: composerOutput.combined?.schema as string,
+      typeInfo: composerOutput.typeInfo as TypeInfo,
+      schema: composerOutput.schema as string,
       outputDirAbs: this._getGenerationDirectory(generationSubPath),
       bindLanguage: appManifestLanguageToBindLanguage(
         await this.getManifestLanguage()
