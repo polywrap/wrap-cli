@@ -4,5 +4,5 @@ type Module {
   method(
     str: String!
   ): String!
-  sanitizeEnv(env: ClientEnv!): Env!
+  sanitizeEnv(env: ClientEnv!): String!
 }
