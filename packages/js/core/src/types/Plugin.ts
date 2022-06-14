@@ -14,7 +14,7 @@ export type PluginMethod<
   TResult = unknown
 > = (input: TInput, client: Client) => MaybeAsync<TResult>;
 
-export class PluginModule<
+export abstract class PluginModule<
   TConfig extends Record<string, unknown> = Record<string, unknown>,
   TEnv extends Record<string, unknown> = Record<string, unknown>,
   TClientEnv extends Record<string, unknown> = TEnv

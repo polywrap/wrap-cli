@@ -6,7 +6,7 @@ export interface Env<TUri = string> {
   /** Uri of Web3Api */
   uri: TUri;
 
-  /** Env variables use by the module */
+  /** Env variables used by the module */
   env: Record<string, unknown>;
 }
 
