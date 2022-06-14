@@ -36,6 +36,12 @@ interface CompilerState {
   web3ApiManifest: Web3ApiManifest;
   composerOutput: ComposerOutput;
   modulesToBuild: ModulesToBuild;
+  compilerOverrides?: CompilerOverrides;
+}
+
+export interface CompilerOverrides {
+  validateManifest: (manifest: Web3ApiManifest) => void;
+  generationSubPath: string;
 }
 
 export interface CompilerConfig {
@@ -45,6 +51,8 @@ export interface CompilerConfig {
 }
 
 export class Compiler {
+  private _state: CompilerState | undefined;
+
   constructor(private _config: CompilerConfig) {}
 
   public async codegen(): Promise<boolean> {
@@ -145,9 +153,14 @@ export class Compiler {
   public reset(): void {
     this._config.project.reset();
     this._config.schemaComposer.reset();
+    this._state = undefined;
   }
 
   private async _getCompilerState(): Promise<CompilerState> {
+    if (this._state) {
+      return this._state;
+    }
+
     const { project } = this._config;
 
     // Get the Web3ApiManifest
@@ -159,15 +172,38 @@ export class Compiler {
     // Compose the schema
     const composerOutput = await this._composeSchema();
 
+    // Allow the build-image to validate the manifest & override functionality
+    const buildImageDir = `${__dirname}/defaults/build-images/${web3ApiManifest.language}`;
+    const buildImageEntryFile = path.join(buildImageDir, "index.ts");
+    let compilerOverrides: CompilerOverrides | undefined;
+
+    if (fs.existsSync(buildImageEntryFile)) {
+      const module = await import(buildImageDir);
+
+      // Get any compiler overrides for the given build-image
+      if (module.getCompilerOverrides) {
+        compilerOverrides = module.getCompilerOverrides() as CompilerOverrides;
+      }
+
+      if (compilerOverrides) {
+        // Validate the manifest for the given build-image
+        if (compilerOverrides.validateManifest) {
+          compilerOverrides.validateManifest(web3ApiManifest);
+        }
+      }
+    }
+
     const state: CompilerState = {
       web3ApiManifest: Object.assign({}, web3ApiManifest),
       composerOutput,
       modulesToBuild,
+      compilerOverrides,
     };
 
     this._validateState(state);
 
-    return state;
+    this._state = state;
+    return this._state;
   }
 
   private async _isInterface(): Promise<boolean> {
@@ -189,11 +225,14 @@ export class Compiler {
   }
 
   private async _generateCode(state: CompilerState): Promise<string[]> {
-    const { composerOutput } = state;
+    const { composerOutput, compilerOverrides } = state;
     const { project } = this._config;
 
     // Generate the bindings
-    const output = await project.generateSchemaBindings(composerOutput);
+    const output = await project.generateSchemaBindings(
+      composerOutput,
+      compilerOverrides?.generationSubPath
+    );
 
     // Output the bindings
     const filesWritten: string[] = [];
@@ -252,7 +291,7 @@ export class Compiler {
 
     // Create the BuildManifest
     const buildManifest: BuildManifest = {
-      format: "0.0.1-prealpha.2",
+      format: "0.0.1-prealpha.3",
       __type: "BuildManifest",
       docker: {
         buildImageId: dockerImageId,
@@ -296,14 +335,54 @@ export class Compiler {
 
     // If the dockerfile path isn't provided, generate it
     if (!buildManifest?.docker?.dockerfile) {
-      // Make sure the default template is in the cached .w3/web3api/build/env folder
-      await project.cacheDefaultBuildManifestFiles();
+      // Make sure the default template is in the cached .w3/web3api/build/image folder
+      await project.cacheDefaultBuildImage();
 
       dockerfile = generateDockerfile(
-        project.getCachePath("build/env/Dockerfile.mustache"),
+        project.getCachePath(
+          path.join(
+            Web3ApiProject.cacheLayout.buildImageDir,
+            "Dockerfile.mustache"
+          )
+        ),
         buildManifest.config || {}
       );
     }
+
+    const dockerBuildxConfig = buildManifest?.docker?.buildx;
+    const useBuildx = dockerBuildxConfig ? true : false;
+
+    let cacheDir: string | undefined;
+    let buildxOutput: string | undefined;
+    let removeBuilder = false;
+
+    if (dockerBuildxConfig && typeof dockerBuildxConfig !== "boolean") {
+      const cache = dockerBuildxConfig.cache;
+
+      if (cache == true) {
+        cacheDir = project.getCachePath(
+          Web3ApiProject.cacheLayout.buildImageCacheDir
+        );
+      } else if (cache) {
+        if (!path.isAbsolute(cache)) {
+          cacheDir = path.join(project.getManifestDir(), cache);
+        } else {
+          cacheDir = cache;
+        }
+      }
+
+      const output = dockerBuildxConfig.output;
+
+      if (output === true) {
+        buildxOutput = "docker";
+      } else if (typeof output === "string") {
+        buildxOutput = output;
+      }
+
+      removeBuilder = dockerBuildxConfig.removeBuilder ? true : false;
+    }
+
+    const removeImage = buildManifest?.docker?.removeImage ? true : false;
 
     // If the dockerfile path contains ".mustache", generate
     if (dockerfile.indexOf(".mustache") > -1) {
@@ -315,6 +394,9 @@ export class Compiler {
       project.getManifestDir(),
       imageName,
       dockerfile,
+      cacheDir,
+      buildxOutput,
+      useBuildx,
       project.quiet
     );
 
@@ -333,6 +415,9 @@ export class Compiler {
       outputDir,
       web3apiArtifacts,
       imageName,
+      removeBuilder,
+      removeImage,
+      useBuildx,
       project.quiet
     );
 

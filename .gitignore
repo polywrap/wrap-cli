@@ -1,5 +1,6 @@
 node_modules
 build
+.idea
 yarn-error.log
 coverage
 .vscode
@@ -8,3 +9,10 @@ w3
 .w3
 .DS_Store
 report.*
+target
+**/*.rs.bk
+Cargo.lock
+bin
+pkg
+wasm-pack.log
+.env

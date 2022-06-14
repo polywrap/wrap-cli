@@ -12,7 +12,9 @@ import { PluginRegistration } from "@web3api/core-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
-  buildAndDeployApi
+  buildAndDeployApi,
+  ensAddresses,
+  providers
 } from "@web3api/test-env-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 
@@ -27,29 +29,28 @@ jest.setTimeout(360000);
 
 describe("useWeb3ApiQuery hook", () => {
   let uri: string;
+  let envUri: string;
   let plugins: PluginRegistration<string>[];
   let WrapperProvider: RenderHookOptions<unknown>;
 
   beforeAll(async () => {
-    const {
-      ipfs,
-      ethereum,
-      ensAddress,
-      registrarAddress,
-      resolverAddress
-    } = await initTestEnvironment();
+    await initTestEnvironment();
 
     const { ensDomain } = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/simple-storage`,
-      ipfsProvider: ipfs,
-      ethereumProvider: ethereum,
-      ensRegistrarAddress: registrarAddress,
-      ensRegistryAddress: ensAddress,
-      ensResolverAddress: resolverAddress,
+      apiAbsPath: `${GetPathToTestApis()}/wasm-as/simple-storage`,
+      ipfsProvider: providers.ipfs,
+      ethereumProvider: providers.ethereum,
+    });
+
+    const { ensDomain: envEnsDomain } = await buildAndDeployApi({
+      apiAbsPath: `${GetPathToTestApis()}/wasm-as/simple-env-types`,
+      ipfsProvider: providers.ipfs,
+      ethereumProvider: providers.ethereum,
     });
 
     uri = `ens/testnet/${ensDomain}`;
-    plugins = createPlugins(ensAddress, ethereum, ipfs);
+    envUri = `ens/testnet/${envEnsDomain}`;
+    plugins = createPlugins(ensAddresses.ensAddress, providers.ethereum, providers.ipfs);
     WrapperProvider = {
       wrapper: Web3ApiProvider,
       initialProps: {
@@ -93,6 +94,35 @@ describe("useWeb3ApiQuery hook", () => {
     cleanup();
     return result;
   }
+
+  it("Should support passing env to client", async () => {
+    const deployQuery: UseWeb3ApiQueryProps = {
+      uri: envUri,
+      query: `query {
+        getEnv(arg: "Alice")
+      }`,
+      config: {
+        envs: [{
+          uri: envUri,
+          common: {
+            str: "Hello World!",
+            requiredInt: 2,
+          }
+        }]
+      }
+    };
+
+    const { data, errors } = await sendQuery<{
+      getEnv: {
+        str: string;
+        requiredInt: number;
+      }
+    }>(deployQuery);
+
+    expect(errors).toBeFalsy();
+    expect(data?.getEnv.str).toBe("Hello World!");
+    expect(data?.getEnv.requiredInt).toBe(2);
+  });
 
   it("Should update storage data to five with hard coded value", async () => {
     const deployQuery: UseWeb3ApiQueryProps = {

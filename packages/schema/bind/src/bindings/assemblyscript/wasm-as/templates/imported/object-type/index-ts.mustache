@@ -8,7 +8,9 @@ import {
   Nullable,
   BigInt,
   BigNumber,
-  JSON
+  JSON,
+  JSONSerializer,
+  JSONDeserializer,
 } from "@web3api/wasm-as";
 import {
   serialize{{type}},
@@ -18,6 +20,7 @@ import {
 } from "./serialization";
 import * as Types from "../..";
 
+@serializable
 export class {{type}} {
 
   public static uri: string = "{{uri}}";
@@ -41,5 +44,7 @@ export class {{type}} {
   static read(reader: Read): {{type}} {
     return read{{type}}(reader);
   }
+
+  {{> json_methods}}
 }
 {{/__commonPath}}

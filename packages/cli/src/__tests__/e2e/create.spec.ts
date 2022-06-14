@@ -1,28 +1,25 @@
-import { supportedLangs } from "../../commands/create";
 import { clearStyle, w3Cli } from "./utils";
 
 import { runCLI } from "@web3api/test-env-js";
 import rimraf from "rimraf";
 
-const HELP = `
-w3 create command <project-name> [options]
+const HELP = `Usage: w3 create|c [options] [command]
 
-Commands:
-  api <lang>     Create a Web3API project
-    langs: ${supportedLangs.api.join(", ")}
-  app <lang>     Create a Web3API application
-    langs: ${supportedLangs.app.join(", ")}
-  plugin <lang>  Create a Web3API plugin
-    langs: ${supportedLangs.plugin.join(", ")}
+Create a new project with w3 CLI
 
 Options:
-  -h, --help               Show usage information
-  -o, --output-dir <path>  Output directory for the new project
+  -h, --help                          display help for command
 
+Commands:
+  api [options] <language> <name>     Create a Web3API project langs:
+                                      assemblyscript, interface
+  app [options] <language> <name>     Create a Web3API application langs:
+                                      typescript-node, typescript-react
+  plugin [options] <language> <name>  Create a Web3API plugin langs: typescript
+  help [command]                      display help for command
 `;
 
 describe("e2e tests for create command", () => {
-
   test("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create", "--help"],
@@ -41,9 +38,8 @@ describe("e2e tests for create command", () => {
     });
 
     expect(code).toEqual(1);
-    expect(error).toBe("");
-    expect(clearStyle(output)).toEqual(`Please provide a command
-${HELP}`);
+    expect(error).toBe(HELP);
+    expect(output).toBe("");
   });
 
   test("Should throw error for missing parameter - lang", async () => {
@@ -53,9 +49,8 @@ ${HELP}`);
     });
 
     expect(code).toEqual(1);
-    expect(error).toBe("");
-    expect(clearStyle(output)).toEqual(`Please provide a language
-${HELP}`);
+    expect(error).toContain("error: unknown command 'type'");
+    expect(output).toBe("");
   });
 
   test("Should throw error for missing parameter - name", async () => {
@@ -65,9 +60,8 @@ ${HELP}`);
     });
 
     expect(code).toEqual(1);
-    expect(error).toBe("");
-    expect(clearStyle(output)).toEqual(`Please provide a project name
-${HELP}`);
+    expect(error).toContain("error: unknown command 'type'");
+    expect(output).toBe("");
   });
 
   test("Should throw error for invalid parameter - type", async () => {
@@ -77,9 +71,8 @@ ${HELP}`);
     });
 
     expect(code).toEqual(1);
-    expect(error).toBe("");
-    expect(clearStyle(output)).toEqual(`Unrecognized command "unknown"
-${HELP}`);
+    expect(error).toContain("error: unknown command 'unknown'");
+    expect(output).toBe("");
   });
 
   test("Should throw error for invalid parameter - lang", async () => {
@@ -89,9 +82,8 @@ ${HELP}`);
     });
 
     expect(code).toEqual(1);
-    expect(error).toBe("");
-    expect(clearStyle(output)).toEqual(`Unrecognized language "unknown"
-${HELP}`);
+    expect(error).toContain("error: command-argument value 'unknown' is invalid for argument 'language'. Allowed choices are assemblyscript, interface.");
+    expect(output).toBe("");
   });
 
   test("Should throw error for invalid parameter - output-dir", async () => {
@@ -101,17 +93,22 @@ ${HELP}`);
     });
 
     expect(code).toEqual(1);
-    expect(error).toBe("");
-    expect(clearStyle(output))
-      .toEqual(`--output-dir option missing <path> argument
-${HELP}`);
+    expect(error).toContain("error: option '-o, --output-dir <path>' argument missing");
+    expect(output).toBe("");
   });
 
   test("Should successfully generate project", async () => {
     rimraf.sync(`${__dirname}/test`);
 
     const { exitCode: code, stdout: output } = await runCLI({
-      args: ["create", "api", "assemblyscript", "test", "-o", `${__dirname}/test`],
+      args: [
+        "create",
+        "api",
+        "assemblyscript",
+        "test",
+        "-o",
+        `${__dirname}/test`,
+      ],
       cwd: __dirname,
       cli: w3Cli,
     });

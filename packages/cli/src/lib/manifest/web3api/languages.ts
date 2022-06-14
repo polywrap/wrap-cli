@@ -4,6 +4,7 @@ import { BindLanguage } from "@web3api/schema-bind";
 
 export const web3apiManifestLanguages = {
   "wasm/assemblyscript": "wasm/assemblyscript",
+  "wasm/rust": "wasm/rust",
   interface: "interface",
 };
 
@@ -23,6 +24,8 @@ export function web3apiManifestLanguageToBindLanguage(
   switch (manifestLanguage) {
     case "wasm/assemblyscript":
       return "wasm-as";
+    case "wasm/rust":
+      return "wasm-rs";
     case "interface":
       throw Error(intlMsg.lib_language_noInterfaceCodegen());
     default:

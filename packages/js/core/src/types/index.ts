@@ -10,4 +10,5 @@ export * from "./UriRedirect";
 export * from "./Env";
 export * from "./InterfaceImplementations";
 export * from "./PluginRegistration";
-export * from "./ResolveUriOptions";
+export * from "./UriResolver";
+export * from "./Workflow";
