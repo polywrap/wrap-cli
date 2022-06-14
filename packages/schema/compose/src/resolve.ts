@@ -122,7 +122,7 @@ export async function resolveImportsAndParseSchemas(
   schema: string,
   schemaPath: string,
   resolvers: SchemaResolvers,
-  noValidate: boolean = false
+  noValidate = false
 ): Promise<TypeInfo> {
   const importKeywordCapture = /^#+["{3}]*import\s/gm;
   const externalImportCapture = /#+["{3}]*import\s*(?:({[^}]+}|\*))\s*into\s*(\w+?)\s*from\s*[\"'`]([^\"'`\s]+)[\"'`]/g;
@@ -215,10 +215,7 @@ export async function resolveImportsAndParseSchemas(
   );
 
   // Parse the newly formed schema
-  const typeInfo = parseSchema(
-    newSchema,
-    { noValidate }
-  );
+  const typeInfo = parseSchema(newSchema, { noValidate });
 
   return typeInfo;
 }

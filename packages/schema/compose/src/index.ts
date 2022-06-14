@@ -1,7 +1,4 @@
-import {
-  SchemaFile,
-  SchemaResolvers,
-} from "./types";
+import { SchemaFile, SchemaResolvers } from "./types";
 import { resolveImportsAndParseSchemas } from "./resolve";
 import { renderSchema } from "./render";
 import { validateEnv } from "./env";
@@ -31,16 +28,10 @@ export interface ComposerOptions {
 export async function composeSchema(
   options: ComposerOptions
 ): Promise<ComposerOutput> {
-
-  const typeInfos = await resolveImports(
-    options.schemas,
-    options.resolvers
-  );
+  const typeInfos = await resolveImports(options.schemas, options.resolvers);
 
   const typeInfo =
-    typeInfos.length === 1 ?
-    typeInfos[0] :
-    combineTypeInfo(typeInfos);
+    typeInfos.length === 1 ? typeInfos[0] : combineTypeInfo(typeInfos);
 
   await validateEnv(typeInfo);
 
@@ -51,7 +42,7 @@ export async function composeSchema(
   return {
     schema: includeSchema ? renderSchema(typeInfo, true) : undefined,
     typeInfo: includeTypeInfo ? typeInfo : undefined,
-  }
+  };
 }
 
 export async function resolveImports(
