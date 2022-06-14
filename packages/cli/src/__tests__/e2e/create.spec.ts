@@ -13,9 +13,9 @@ Options:
 Commands:
   api [options] <language> <name>     Create a Web3API project langs:
                                       assemblyscript, interface
-  app [options] <language>            Create a Web3API application langs:
+  app [options] <language> <name>     Create a Web3API application langs:
                                       typescript-node, typescript-react
-  plugin [options] <lang> <language>  Create a Web3API plugin langs: typescript
+  plugin [options] <language> <name>  Create a Web3API plugin langs: typescript
   help [command]                      display help for command
 `;
 
