@@ -1,4 +1,4 @@
-#import { Query, Request, Response } into HTTP from "w3://ens/http.web3api.eth"
+#import { Module, Request, Response } into HTTP from "w3://ens/http.web3api.eth"
 
 type Module {
   get(
