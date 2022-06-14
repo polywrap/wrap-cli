@@ -1,3 +1,0 @@
-type Module {
-  sampleQuery(data: String!): String!
-}
