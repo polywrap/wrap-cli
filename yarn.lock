@@ -3950,6 +3950,17 @@
     "@web3api/assemblyscript-json" "1.2.0"
     as-base64 "^0.2.0"
 
+"@web3api/wasm-as@0.0.1-prealpha.84":
+  version "0.0.1-prealpha.84"
+  resolved "https://registry.yarnpkg.com/@web3api/wasm-as/-/wasm-as-0.0.1-prealpha.84.tgz#db7fe81d857d6605adec3e632f16e3ddb2d6a873"
+  integrity sha512-xKRqrMVFVeU68qpsDFJ6rNZHJxHNB0Tm6F4fIxEvW2/cL2uvWJmG6Nf0A1vUm1BERrdMKlF6PL/ZZxj6FlTZag==
+  dependencies:
+    "@serial-as/transform" "1.0.2"
+    "@web3api/serial-as-json" "1.0.4"
+    as-bigint "0.5.3"
+    as-bignumber "0.2.0"
+    as-container "0.6.1"
+
 "@webassemblyjs/ast@1.8.5":
   version "1.8.5"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.8.5.tgz#51b1c5fe6576a34953bf4b253df9f0d490d9e359"
@@ -7320,9 +7331,9 @@ electron-fetch@^1.7.2:
     encoding "^0.1.13"
 
 electron-to-chromium@^1.3.378, electron-to-chromium@^1.4.147:
-  version "1.4.153"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.153.tgz#7ed324c039745629041169221ba8dec653146f37"
-  integrity sha512-57AV9DNW1R52HjOqnGOCCTLHMHItLTGu/WjB1KYIa4BQ7p0u8J0j8N78akPcOBStKE801xcMjTpmbAylflfIYQ==
+  version "1.4.154"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.154.tgz#d69c60499fc467a6c59591d29183e520afbc78a1"
+  integrity sha512-GbV9djOkrnj6xmW+YYVVEI3VCQnJ0pnSTu7TW2JyjKd5cakoiSaG5R4RbEtfaD92GsY10DzbU3GYRe+IOA9kqA==
 
 elliptic@6.5.4, elliptic@^6.5.3:
   version "6.5.4"
