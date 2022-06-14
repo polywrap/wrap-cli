@@ -1,6 +1,5 @@
 const { EthereumPlugin } = require("@web3api/ethereum-plugin-js");
 const fs = require("fs");
-const YAML = require("js-yaml");
 
 async function main() {
   const contractAbi = require(`${__dirname}/src/contracts/SimpleStorage.json`);

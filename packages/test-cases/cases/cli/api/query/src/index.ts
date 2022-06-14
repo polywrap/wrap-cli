@@ -22,7 +22,8 @@ export function setData(input: Input_setData): SetDataResult {
     address: input.options.address,
     method: "function set(uint256 value)",
     args: [input.options.value.toString()],
-    connection: input.connection
+    connection: input.connection,
+    txOverrides: null
   }).unwrap();
 
   return {
