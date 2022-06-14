@@ -33,10 +33,6 @@ export function getSimpleClient(config: SimpleClientConfig): Web3ApiClient {
           testnet: {
             provider: ethProvider,
           },
-          mainnet: {
-            provider:
-              "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
-          },
         },
       }),
     });

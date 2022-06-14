@@ -6,17 +6,22 @@ import { GetPathToCliTestFiles } from "@web3api/test-cases";
 import fs from "fs";
 import path from "path";
 
-const HELP = `
-w3 build [options]
+const HELP = `Usage: w3 build|b [options]
+
+Builds a Web3API
 
 Options:
-  -h, --help                         Show usage information
-  -m, --manifest-file <path>         Path to the Web3API Build manifest file (default: web3api.yaml | web3api.yml)
-  -o, --output-dir <path>            Output directory for build results (default: build/)
-  -w, --watch                        Automatically rebuild when changes are made (default: false)
-  -v, --verbose                      Verbose output (default: false)
-
+  -m, --manifest-file <path>  Path to the Web3API Build manifest file (default:
+                              web3api.yaml | web3api.yml)
+  -o, --output-dir <path>     Output directory for build results (default:
+                              build/)
+  -w, --watch                 Automatically rebuild when changes are made
+                              (default: false)
+  -v, --verbose               Verbose output (default: false)
+  -h, --help                  display help for command
 `;
+
+jest.setTimeout(500000);
 
 describe("e2e tests for build command", () => {
   const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/build-cmd");
@@ -51,22 +56,20 @@ describe("e2e tests for build command", () => {
     );
 
     expect(code).toEqual(1);
-    expect(error).toBe("");
-    expect(clearStyle(output))
-      .toEqual(`--output-dir option missing <path> argument
-${HELP}`);
+    expect(error).toContain("error: option '-o, --output-dir <path>' argument missing");
+    expect(output).toBe("")
   });
 
-  test("Adds uuid-v4 suffix to build-env image if no build manifest specified", async () => {
+  test("Adds uuid-v4 suffix to build image if no build manifest specified", async () => {
     const projectRoot = getTestCaseDir(0);
     const project = new Web3ApiProject({
-      rootCacheDir: projectRoot,
+      rootDir: projectRoot,
       web3apiManifestPath: path.join(projectRoot, "web3api.yaml")
     });
 
-    await project.cacheDefaultBuildManifestFiles();
+    await project.cacheDefaultBuildImage();
 
-    const cacheBuildEnvPath = path.join(projectRoot, ".w3/web3api/build/env")
+    const cacheBuildEnvPath = path.join(projectRoot, ".w3/web3api/build/image")
     const cachedBuildManifest = await loadBuildManifest(
       path.join(cacheBuildEnvPath, "web3api.build.yaml")
     );
@@ -122,6 +125,12 @@ ${HELP}`);
 
         if (expected.exitCode) {
           expect(exitCode).toEqual(expected.exitCode);
+        }
+
+        if (expected.files) {
+          for (const file of expected.files) {
+            expect(fs.existsSync(path.join(testCaseDir, file))).toBeTruthy();
+          }
         }
       });
     }

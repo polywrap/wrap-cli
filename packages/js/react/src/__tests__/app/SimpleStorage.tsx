@@ -64,13 +64,8 @@ const SimpleStorage = ({ uri }: { uri: string }) => {
           <button onClick={updateStorageData}>Set the storage to 5!</button>
           <button onClick={() => getStorageData()}>Check storage</button>
           <div>{currentStorage?.getData} </div>
-          <div>
-            {
-              client1.getPlugins().length > client2.getPlugins().length 
-                ? 'Provider plugin counts are correct' 
-                : 'Provider plugin counts are not correct'
-            }
-          </div>
+          <div>{client1 ? "Client1 Found" : ""}</div>
+          <div>{client2 ? "Client2 Found" : ""}</div>
         </>
       )}
     </>

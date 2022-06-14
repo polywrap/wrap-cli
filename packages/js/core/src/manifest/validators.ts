@@ -127,3 +127,32 @@ export function web3apiUri(uri: unknown): boolean {
 export function schemaFile(filePath: unknown): boolean {
   return typeof filePath === "string" && file(filePath);
 }
+
+export function directory(path: unknown): boolean {
+  if (typeof path === "boolean") {
+    return true;
+  }
+  if (typeof path !== "string") {
+    return false;
+  }
+
+  const validDirRegex = /^\/?[\w\-/]+$/;
+
+  return !!validDirRegex.test(path);
+}
+
+export function buildxOutput(output: unknown): boolean {
+  if (typeof output === "boolean") {
+    return true;
+  }
+  if (typeof output !== "string") {
+    return false;
+  }
+  switch (output) {
+    case "docker":
+    case "registry":
+      return true;
+    default:
+      return false;
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "name": "@web3api/dev-server-infra",
+  "version": "0.0.1-prealpha.44",
+  "files": [
+    "docker-compose.yaml",
+    "Dockerfile",
+    "tsconfig.json",
+    "src/**/*"
+  ]
+}

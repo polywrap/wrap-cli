@@ -28,7 +28,7 @@ import { Ora } from "ora";
 import Mustache from "mustache";
 
 export interface CodeGeneratorConfig {
-  outputDir: string;
+  codegenDirAbs: string;
   project: Project<AnyManifest>;
   schemaComposer: SchemaComposer;
   customScript?: string;
@@ -54,7 +54,7 @@ export class CodeGenerator {
   }
 
   private async _generateCode() {
-    const { schemaComposer, project } = this._config;
+    const { schemaComposer, project, codegenDirAbs } = this._config;
 
     const run = async (spinner?: Ora) => {
       const language = await project.getManifestLanguage();
@@ -80,9 +80,6 @@ export class CodeGenerator {
           })
         );
       }
-
-      // Make sure the output dir is reset
-      resetDir(this._config.outputDir);
 
       // Get the fully composed schema
       const composed = await schemaComposer.getComposedSchemas();
@@ -126,15 +123,16 @@ export class CodeGenerator {
               name: "custom",
               typeInfo,
               schema: this._schema || "",
-              outputDirAbs: this._config.outputDir,
+              outputDirAbs: codegenDirAbs,
             },
           ],
           bindLanguage,
         });
 
         for (const module of output.modules) {
+          resetDir(codegenDirAbs);
           writeDirectorySync(
-            this._config.outputDir,
+            codegenDirAbs,
             module.output,
             (templatePath: string) =>
               this._generateTemplate(templatePath, typeInfo, spinner)
@@ -143,15 +141,17 @@ export class CodeGenerator {
       } else {
         const output = await project.generateSchemaBindings(
           composed,
-          this._config.outputDir
+          path.relative(project.getManifestDir(), codegenDirAbs)
         );
 
         // Output the bindings
         for (const module of output.modules) {
+          resetDir(module.outputDirAbs);
           writeDirectorySync(module.outputDirAbs, module.output);
         }
 
         if (output.common) {
+          resetDir(output.common.outputDirAbs);
           writeDirectorySync(output.common.outputDirAbs, output.common.output);
         }
       }

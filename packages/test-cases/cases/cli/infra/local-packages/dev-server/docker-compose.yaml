@@ -1,0 +1,16 @@
+version: '3'
+services:
+  ganache:
+    image: 'trufflesuite/ganache-cli:v6.12.2'
+    ports:
+      - '${DEV_SERVER_ETH_TESTNET_PORT}:8545'
+    command: -l 8000000 --networkId 1576478390085 --deterministic --hostname=0.0.0.0
+  dev-server:
+    build: ./
+    ports:
+      - '${DEV_SERVER_PORT}:${DEV_SERVER_PORT}'
+    links:
+      - ganache
+    environment:
+      ganache: 'ganache:${DEV_SERVER_ETH_TESTNET_PORT}'
+      DEV_SERVER_PORT: '${DEV_SERVER_PORT}'

@@ -1,3 +1,73 @@
+# Web3API 0.0.1-prealpha.85
+## Features
+* [PR-910](https://github.com/polywrap/monorepo/pull/910) `@web3api/cli`: `web3api.infra.yaml` manifests now support the concept of "default" modules.
+* [PR-878](https://github.com/polywrap/monorepo/pull/878) `@web3api/client-js`: `Workflows` can now be run using the `client.run(...)` method. Integration into the Polywrap CLI will be released in the near future.
+
+## Bugs
+* [PR-908](https://github.com/polywrap/monorepo/pull/908) `@web3api/asyncify-js`: Improved WebAssembly import sanitization has been added, resolving an ambiguous error that was found when extraneous imports were added to a built module.
+* [PR-902](https://github.com/polywrap/monorepo/pull/902) `@web3api/cli`: `w3 create plugin ...` & `w3 create app ...` now properly parse their expected `language` and `name` arguments.
+
+# Web3API 0.0.1-prealpha.84
+## Features
+* [PR-328](https://github.com/polywrap/monorepo/pull/328) `@web3api/infra`: A modular infrastructure pipeline has been added to the CLI, available via the `w3 infra ...` command. This command allows for custom infra modules to be defined and combined, able to support any 3rd party services your development requires. This command supersedes the old `w3 test-env ...` command.
+* [PR-898](https://github.com/polywrap/monorepo/pull/898) `@web3api/cli`: The `wasm/rust` default build image has been updated to include the `wasm-snip` utility, which helps remove dead code from the wasm modules in a post-processing step. This has reduce the average Rust-based wasm module's size by ~85%.
+* [PR-885](https://github.com/polywrap/monorepo/pull/885) `@web3api/test-env-js`: A `buildApi` helper function has been added.
+
+## Breaking Changes
+* [PR-328](https://github.com/polywrap/monorepo/pull/328) `@web3api/cli`: The `w3 test-env ...` command has been removed and replaced by the `w3 infra ...` command.
+
+# Web3API 0.0.1-prealpha.83
+## Features
+* [PR-870](https://github.com/polywrap/monorepo/pull/870) `@web3api/cli`: The `web3api.deploy.yaml` manifest file now supports the use of environment variables.
+* [PR-866](https://github.com/polywrap/monorepo/pull/866) `@web3api/test-env-js`: The `buildAndDeployApi` test utility now supports recursive ENS subdomain registration.
+
+## Bugs
+* [PR-884](https://github.com/polywrap/monorepo/pull/884) `@web3api/client-js`: Plugin registrations are now properly sanitized, and overridden plugins will be removed from the plugins array.
+* [PR-892](https://github.com/polywrap/monorepo/pull/892) `@web3api/cli`: Some minor fixes have been made to the `wasm/rust` build image's default Dockerfile.
+
+# Web3API 0.0.1-prealpha.82
+## Features
+* [PR-699](https://github.com/polywrap/monorepo/pull/699) `@web3api/cli`: Support for Rust based WebAssembly wrappers has been added.
+
+## Breaking Changes
+* [PR-872](https://github.com/polywrap/monorepo/pull/872) `@web3api/schema-bind`: TypeScript bindings for both app & plugin projects now use `ArrayBuffer` to represent the schema's `Bytes` type, instead of the previous `Uint8Array`.
+
+# Web3API 0.0.1-prealpha.81
+## Features
+* [PR-864](https://github.com/polywrap/monorepo/pull/864) `@web3api/react`: `useWeb3ApiInvoke` and `useWeb3ApiQuery` hooks now support configuring the client's environment, along with all other configuration options.
+* [PR-808](https://github.com/polywrap/monorepo/pull/808) `@web3api/cli`: The `web3api.build.yaml` manifest now supports additional docker buildkit configuration options, including:
+  * local docker image layer cache
+  * custom image output location
+  * remove image after build
+  * remove builder instance after build
+* [PR-827](https://github.com/polywrap/monorepo/pull/827) `@web3api/ethereum-plugin-js`: The provider's connection can now be configured via the wrapper's environment.
+* [PR-807](https://github.com/polywrap/monorepo/pull/807) `@web3api/cli`: Make the CLI's Docker file-lock project specific, instead of global to the CLI installation.
+## Bugs
+* [PR-847](https://github.com/polywrap/monorepo/pull/847) `@web3api/templates`: The template projects used for the `w3 create ...` CLI command now have proper CI setup, and multiple bugs were fixed within them.
+* [PR-861](https://github.com/polywrap/monorepo/pull/861) `@web3api/test-env-js`: The `buildAndDeployApi` function's `ensName` no longer assumes the `.eth` TLD is ommitted, and requires the user to provide it along with the domain name. This was the original behavior, and was modified in release `0.0.1-prealpha.75`.
+## Breaking Changes
+* [PR-859](https://github.com/polywrap/monorepo/pull/859) `@web3api/cli`: The CLI is now built using the `commander` package. The CLI's help text formatting has changed in structure as a result.
+
+# Web3API 0.0.1-prealpha.80
+## Bugs
+* [PR-855](https://github.com/polywrap/monorepo/pull/855) Pinned `@types/prettier` to version `2.6.0` to fix [an issue](https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/60310) that was created by the latest release.
+
+# Web3API 0.0.1-prealpha.79
+## Bugs
+* [PR-852](https://github.com/polywrap/monorepo/pull/852) `@web3api/client-test-env`: The IPFS node's API endpoint now has CORS enabled via the following configuration properties:
+  * API.HTTPHeaders.Access-Control-Allow-Origin: `["*"]`
+  * API.HTTPHeaders.Access-Control-Allow-Methods: `["GET", "POST", "PUT", "DELETE"]`
+
+# Web3API 0.0.1-prealpha.78
+## Bugs
+* Pinned `@types/prettier` to version `2.6.0` to fix [an issue](https://github.com/DefinitelyTyped/DefinitelyTyped/discussions/60310) that was created by the latest release.
+
+# Web3API 0.0.1-prealpha.77
+## Features
+* [PR-846](https://github.com/polywrap/monorepo/pull/846) `@web3api/wasm-as`: Add support for automatic JSON serialization via the `@serial-as/transform` `asc` compiler transformation.
+* [PR-846](https://github.com/polywrap/monorepo/pull/846) `@web3api/schema-bind`: Assemblyscript object types now have `Type.toJson(type)` and `Type.fromJson(json)` static helper methods added to all class instances.
+* [PR-840](https://github.com/polywrap/monorepo/pull/840) `@web3api/cli`: Allow `async getClientConfig` functions within modules passed into the `w3 query` command's `--client-config` option.
+
 # Web3API 0.0.1-prealpha.76
 ## Bugs
 * [PR-836](https://github.com/polywrap/monorepo/pull/836) `@web3api/cli`: All commands properly handle the `--help` option.

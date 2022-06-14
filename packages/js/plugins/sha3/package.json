@@ -1,7 +1,7 @@
 {
   "name": "@web3api/sha3-plugin-js",
   "description": "Web3API SHA3 Javascript Plugin",
-  "version": "0.0.1-prealpha.76",
+  "version": "0.0.1-prealpha.85",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -20,16 +20,17 @@
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@web3api/core-js": "0.0.1-prealpha.76",
+    "@web3api/core-js": "0.0.1-prealpha.85",
     "js-sha3": "0.8.0"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",
+    "@types/prettier": "2.6.0",
     "jest": "26.2.2",
     "rimraf": "3.0.2",
     "ts-jest": "26.1.4",
     "ts-node": "8.10.2",
-    "typescript": "3.9.7"
+    "typescript": "4.0.7"
   },
   "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
   "publishConfig": {

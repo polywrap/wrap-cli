@@ -1,8 +1,10 @@
 import { filesystemPlugin } from "../index";
 import {
-  buildAndDeployApi,
+  buildApi,
+  ensAddresses,
   initTestEnvironment,
   stopTestEnvironment,
+  providers
 } from "@web3api/test-env-js";
 import {
   Web3ApiClient,
@@ -20,19 +22,9 @@ jest.setTimeout(360000);
 
 describe("Filesystem plugin", () => {
   let client: Web3ApiClient;
-  let ipfsProvider: string;
-  let ensAddress: string;
-  let ethereumProvider: string;
-  let ensRegistrarAddress: string;
-  let ensResolverAddress: string;
 
   beforeAll(async () => {
-    const { ipfs, ethereum, ensAddress: ens, registrarAddress, resolverAddress } = await initTestEnvironment();
-    ipfsProvider = ipfs;
-    ensAddress = ens;
-    ethereumProvider = ethereum;
-    ensRegistrarAddress = registrarAddress;
-    ensResolverAddress = resolverAddress;
+    await initTestEnvironment();
 
     const config: Partial<Web3ApiClientConfig> = {
       plugins: [
@@ -44,7 +36,7 @@ describe("Filesystem plugin", () => {
         {
           uri: "w3://ens/ipfs.web3api.eth",
           plugin: ipfsPlugin({
-            provider: ipfs,
+            provider: providers.ipfs,
             fallbackProviders: defaultIpfsProviders,
           }),
         },
@@ -54,7 +46,7 @@ describe("Filesystem plugin", () => {
           plugin: ensPlugin({
             query: {
               addresses: {
-                testnet: ens,
+                testnet: ensAddresses.ensAddress,
               },
             }
           }),
@@ -64,7 +56,7 @@ describe("Filesystem plugin", () => {
           plugin: ethereumPlugin({
             networks: {
               testnet: {
-                provider: ethereum,
+                provider: providers.ethereum,
               },
             },
             defaultNetwork: "testnet",
@@ -81,16 +73,10 @@ describe("Filesystem plugin", () => {
 
   it("queries simple-storage api on local drive", async () => {
     const apiPath = path.resolve(
-      `${GetPathToTestApis()}/simple-storage`
+      `${GetPathToTestApis()}/wasm-as/simple-storage`
     );
-    await buildAndDeployApi({
-      apiAbsPath: apiPath,
-      ipfsProvider,
-      ensRegistryAddress: ensAddress,
-      ensRegistrarAddress,
-      ensResolverAddress,
-      ethereumProvider,
-    });
+    await buildApi(apiPath);
+
     const fsPath = `${apiPath}/build`;
     const fsUri = `fs/${fsPath}`;
 

@@ -16,10 +16,6 @@ import { ComposerOutput } from "@web3api/schema-compose";
 import { TypeInfo } from "@web3api/schema-parse";
 import path from "path";
 
-const cacheLayout = {
-  root: "plugin",
-};
-
 export interface PluginProjectConfig extends ProjectConfig {
   pluginManifestPath: string;
 }
@@ -27,15 +23,22 @@ export interface PluginProjectConfig extends ProjectConfig {
 export class PluginProject extends Project<PluginManifest> {
   private _pluginManifest: PluginManifest | undefined;
 
+  public static cacheLayout = {
+    root: "plugin",
+  };
+
   constructor(protected _config: PluginProjectConfig) {
-    super(_config, cacheLayout.root);
+    super(_config, {
+      rootDir: _config.rootDir,
+      subDir: PluginProject.cacheLayout.root,
+    });
   }
 
   /// Project Base Methods
 
   public reset(): void {
     this._pluginManifest = undefined;
-    this.resetCache();
+    this._cache.resetCache();
   }
 
   public async validate(): Promise<void> {
@@ -117,16 +120,17 @@ export class PluginProject extends Project<PluginManifest> {
   }
 
   public async generateSchemaBindings(
-    composerOutput: ComposerOutput
+    composerOutput: ComposerOutput,
+    generationSubPath?: string
   ): Promise<BindOutput> {
     const manifest = await this.getManifest();
     const queryModule = manifest.modules.query?.module as string;
     const queryDirectory = manifest.modules.query
-      ? this._getGenerationDirectory(queryModule)
+      ? this._getGenerationDirectory(queryModule, generationSubPath)
       : undefined;
     const mutationModule = manifest.modules.mutation?.module as string;
     const mutationDirectory = manifest.modules.mutation
-      ? this._getGenerationDirectory(mutationModule)
+      ? this._getGenerationDirectory(mutationModule, generationSubPath)
       : undefined;
 
     if (
@@ -190,10 +194,13 @@ export class PluginProject extends Project<PluginManifest> {
     return bindSchema(options);
   }
 
-  private _getGenerationDirectory(entryPoint: string): string {
+  private _getGenerationDirectory(
+    entryPoint: string,
+    generationSubPath = "w3"
+  ): string {
     const absolute = path.isAbsolute(entryPoint)
       ? entryPoint
       : path.join(this.getManifestDir(), entryPoint);
-    return `${path.dirname(absolute)}/w3`;
+    return path.join(path.dirname(absolute), generationSubPath);
   }
 }

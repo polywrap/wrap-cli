@@ -146,7 +146,7 @@ describe("Graph Node Plugin", () => {
       }, client)
     ).rejects.toThrowError(
       new RegExp(
-        "deployment `ens/ens` does not exist",
+        "`ens/ens` does not exist",
         "g"
       )
     );
@@ -174,7 +174,7 @@ describe("Graph Node Plugin", () => {
       }, client)
     ).rejects.toThrowError(
       new RegExp(
-        "deployment `ensdomains/foo` does not exist",
+        "`ensdomains/foo` does not exist",
         "g"
       )
     );
