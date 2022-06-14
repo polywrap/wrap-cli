@@ -1,3 +1,12 @@
+# Web3API 0.0.1-prealpha.85
+## Features
+* [PR-910](https://github.com/polywrap/monorepo/pull/910) `@web3api/cli`: `web3api.infra.yaml` manifests now support the concept of "default" modules.
+* [PR-878](https://github.com/polywrap/monorepo/pull/878) `@web3api/client-js`: `Workflows` can now be run using the `client.run(...)` method. Integration into the Polywrap CLI will be released in the near future.
+
+## Bugs
+* [PR-908](https://github.com/polywrap/monorepo/pull/908) `@web3api/asyncify-js`: Improved WebAssembly import sanitization has been added, resolving an ambiguous error that was found when extraneous imports were added to a built module.
+* [PR-902](https://github.com/polywrap/monorepo/pull/902) `@web3api/cli`: `w3 create plugin ...` & `w3 create app ...` now properly parse their expected `language` and `name` arguments.
+
 # Web3API 0.0.1-prealpha.84
 ## Features
 * [PR-328](https://github.com/polywrap/monorepo/pull/328) `@web3api/infra`: A modular infrastructure pipeline has been added to the CLI, available via the `w3 infra ...` command. This command allows for custom infra modules to be defined and combined, able to support any 3rd party services your development requires. This command supersedes the old `w3 test-env ...` command.
