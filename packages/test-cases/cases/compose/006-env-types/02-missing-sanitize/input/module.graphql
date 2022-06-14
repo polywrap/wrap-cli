@@ -1,0 +1,11 @@
+#import { ClientEnv } from "../imports-local/common.graphql"
+
+type Module {
+  method(
+    str: String!
+  ): String!
+}
+
+type Env {
+  after: String!
+}

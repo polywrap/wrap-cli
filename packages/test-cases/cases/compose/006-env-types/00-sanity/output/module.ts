@@ -14,7 +14,7 @@ export const typeInfo: TypeInfo = {
   envType: createEnvDefinition({
       sanitized: {
         ...createObjectDefinition({
-          type: "ModuleEnv"
+          type: "Env"
         }),
         properties: [
           {

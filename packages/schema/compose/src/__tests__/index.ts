@@ -15,7 +15,8 @@ const root = GetPathToComposeTestFiles();
 export interface TestCase {
   name: string;
   input: ComposerOptions;
-  output: ComposerOutput;
+  output?: ComposerOutput;
+  error?: string;
 }
 
 type TestCases = {
@@ -76,6 +77,9 @@ async function importCase(
   const moduleSchema = readFileIfExists("output/module.graphql", directory);
   const ModuleTypeInfo = await readNamedExportIfExists<TypeInfo>("typeInfo", "output/module.ts", directory);
 
+  // Fetch the error if exists
+  const outputJson = readFileIfExists("output/output.json", directory)
+
   const resolveExternal = (uri: string): Promise<string> => {
     return Promise.resolve(readFileIfExists(`imports-ext/${uri}/schema.graphql`, directory) || "");
   };
@@ -106,6 +110,18 @@ async function importCase(
   const output: ComposerOutput = {
     combined: {}
   };
+
+  if (outputJson) {
+    const parsedOutput = JSON.parse(outputJson);
+
+    if (parsedOutput.error) {
+      return {
+        name,
+        input,
+        error: parsedOutput.error,
+      }
+    }
+  }
 
   if (moduleSchema && ModuleTypeInfo) {
     output.module = {

@@ -32,11 +32,19 @@ describe("Web3API Schema Composer Test Cases", () => {
         return;
       }
 
-      const result = await composeSchema(testCase.input);
-      removeFunctionProps(result);
+      try {
+        const result = await composeSchema(testCase.input);
+        removeFunctionProps(result);
 
-      if (testCase.output.module) {
-        expect(result.module).toMatchObject(testCase.output.combined);
+        if (testCase.output && testCase.output.module) {
+          expect(result.module).toMatchObject(testCase.output.combined);
+        }
+      } catch (e) {
+        if (testCase.error) {
+          expect(e.toString()).toContain(testCase.error);
+        } else {
+          throw e
+        }
       }
     });
   }

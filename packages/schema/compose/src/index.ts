@@ -7,6 +7,7 @@ import {
 } from "./types";
 import { resolveImportsAndParseSchemas } from "./resolve";
 import { renderSchema } from "./render";
+import { validateEnv } from "./env";
 
 import { TypeInfo, combineTypeInfo } from "@web3api/schema-parse";
 
@@ -78,9 +79,17 @@ export async function composeSchema(
       Object.values(typeInfos).filter((x) => x !== undefined) as TypeInfo[]
     );
 
+    await validateEnv(combinedTypeInfo);
+
     output.combined = createSchemaInfo(combinedTypeInfo);
   } else if (typeInfoKeys.length > 0) {
-    output.combined = output[typeInfoKeys[0] as SchemaKind] as SchemaInfo;
+    const combinedTypeInfo = output[
+      typeInfoKeys[0] as SchemaKind
+    ] as SchemaInfo;
+
+    await validateEnv(combinedTypeInfo.typeInfo as TypeInfo);
+
+    output.combined = combinedTypeInfo;
   }
 
   return output;
