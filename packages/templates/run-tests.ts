@@ -17,9 +17,9 @@ const languageTestCommands: Record<string, string[]> = {
     "CI=false yarn build"
   ],
   "assemblyscript": [
-    "yarn build",
-    "yarn test:e2e",
-    "yarn test:recipe"
+    // "yarn build",
+    // "yarn test:e2e",
+    // "yarn test:recipe"
   ],
   "interface": [
     "yarn build"
