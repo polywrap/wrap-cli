@@ -37,6 +37,9 @@ const setup = async (domainNames: string[]) => {
   await stopTestEnvironment();
   await initTestEnvironment();
 
+  // Wait a little longer just in case
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+
   const ensAddress = ensAddresses.ensAddress
   const resolverAddress = ensAddresses.resolverAddress
   const registrarAddress = ensAddresses.registrarAddress
