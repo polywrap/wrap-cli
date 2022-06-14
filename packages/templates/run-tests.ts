@@ -17,9 +17,10 @@ const languageTestCommands: Record<string, string[]> = {
     "CI=false yarn build"
   ],
   "assemblyscript": [
-    "yarn build",
+    // Add this back once new toolchain version is released
+    /*"yarn build",
     "yarn test:e2e",
-    "yarn test:recipe"
+    "yarn test:recipe"*/
   ],
   "interface": [
     "yarn build"
