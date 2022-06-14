@@ -8,18 +8,19 @@ import {
   getSimpleClient,
   getTestEnvProviders,
   Project,
-  resolvePathIfExists,
   SchemaComposer,
   Web3ApiProject,
   intlMsg,
-  fixParameters,
   generateProjectTemplate,
   PluginProject,
-  defaultPluginManifest,
 } from "../lib";
+import { Command, Program } from "./types";
+import {
+  parseDocgenDirOption,
+  parseDocgenManifestFileOption,
+} from "../lib/option-parsers/docgen";
 
-import { GluegunToolbox, GluegunPrint } from "gluegun";
-import chalk from "chalk";
+import { filesystem } from "gluegun";
 import path from "path";
 import { Web3ApiClient } from "@web3api/client-js";
 
@@ -31,255 +32,187 @@ const commandToPathMap: Record<string, string> = {
   jsdoc: "@web3api/schema-bind/build/bindings/documentation/jsdoc/index.js",
 };
 
+export type DocType = keyof typeof commandToPathMap;
+
 const defaultManifest = defaultWeb3ApiManifest.concat(defaultAppManifest);
-const manifestPathStr = intlMsg.commands_docgen_options_m({
-  default: defaultManifest.join(" | "),
-});
-const defaultOutputDir = "./w3";
-const outputDirStr = `${intlMsg.commands_docgen_options_c({
-  default: `${defaultOutputDir}`,
-})}`;
-const cmdStr = intlMsg.commands_app_options_command();
-const optionsStr = intlMsg.commands_options_options();
+const defaultDocgenDir = "./w3";
 const nodeStr = intlMsg.commands_codegen_options_i_node();
 const pathStr = intlMsg.commands_codegen_options_o_path();
 const addrStr = intlMsg.commands_codegen_options_e_address();
-const schemaDescription = intlMsg.commands_docgen_options_schema();
-const reactAppDescription = intlMsg.commands_docgen_options_react();
-const docusaurusDescription = intlMsg.commands_docgen_options_markdown({
-  framework: "Docusaurus",
-});
-const jsdocDescription = intlMsg.commands_docgen_options_markdown({
-  framework: "JSDoc",
-});
 
-const HELP = `
-${chalk.bold("w3 docgen")} ${cmdStr} [${optionsStr}]
+type DocgenCommandOptions = {
+  manifestFile: string;
+  codegenDir: string;
+  ipfs?: string;
+  ens?: string;
+};
 
-${intlMsg.commands_create_options_commands()}:
-  ${chalk.bold("schema")}       ${schemaDescription}
-  ${chalk.bold("react")}        ${reactAppDescription}
-  ${chalk.bold("docusaurus")}   ${docusaurusDescription}
-  ${chalk.bold("jsdoc")}        ${jsdocDescription}
-
-${optionsStr[0].toUpperCase() + optionsStr.slice(1)}:
-  -h, --help                              ${intlMsg.commands_codegen_options_h()}
-  -m, --manifest-file <${pathStr}>              ${manifestPathStr}
-  -c, --codegen-dir <${pathStr}>                ${outputDirStr}
-  -i, --ipfs [<${nodeStr}>]                     ${intlMsg.commands_codegen_options_i()}
-  -e, --ens [<${addrStr}>]                   ${intlMsg.commands_codegen_options_e()}
-`;
-
-export default {
-  alias: ["d"],
-  description: intlMsg.commands_docgen_description(),
-  run: async (toolbox: GluegunToolbox): Promise<void> => {
-    const { filesystem, parameters, print } = toolbox;
-
-    const { h, m, i, o: c, e } = parameters.options;
-    let { help, manifestFile, ipfs, codegenDir, ens } = parameters.options;
-
-    help = help || h;
-    manifestFile = manifestFile || m;
-    ipfs = ipfs || i;
-    codegenDir = codegenDir || c;
-    ens = ens || e;
-
-    let command = "";
-    try {
-      const params = parameters;
-      [command] = fixParameters(
-        {
-          options: params.options,
-          array: params.array,
-        },
-        {
-          h,
-          help,
-        }
-      );
-    } catch (e) {
-      print.error(e.message);
-      process.exitCode = 1;
-      return;
-    }
-
-    // Validate Params
-    const paramsValid = validateDocgenParams(
-      print,
-      command,
-      codegenDir,
-      ipfs,
-      ens
-    );
-
-    if (help || !paramsValid) {
-      print.info(HELP);
-      if (!paramsValid) {
-        process.exitCode = 1;
-      }
-      return;
-    }
-
-    // Resolve manifest
-    let manifestPaths = manifestFile
-      ? [manifestFile]
-      : defaultWeb3ApiManifest
-          .concat(defaultAppManifest)
-          .concat(defaultPluginManifest);
-    manifestFile = resolvePathIfExists(filesystem, manifestPaths);
-
-    if (!manifestFile) {
-      print.error(
-        intlMsg.commands_app_error_manifestNotFound({
-          paths: manifestPaths.join(", "),
+export const docgen: Command = {
+  setup: (program: Program) => {
+    const docgenCommand = program
+      .command("docgen")
+      .alias("d")
+      .description(intlMsg.commands_docgen_description())
+      .option(
+        `-m, --manifest-file <${pathStr}>`,
+        intlMsg.commands_docgen_options_m({
+          default: defaultManifest.join(" | "),
         })
+      )
+      .option(
+        `-c, --codegen-dir <${pathStr}>`,
+        intlMsg.commands_docgen_options_c({
+          default: `${defaultDocgenDir}`,
+        })
+      )
+      .option(
+        `-i, --ipfs [<${nodeStr}>]`,
+        `${intlMsg.commands_codegen_options_i()}`
+      )
+      .option(
+        `-e, --ens [<${addrStr}>]`,
+        `${intlMsg.commands_codegen_options_e()}`
       );
-      return;
-    }
 
-    const isAppManifest: boolean =
-      (<string>manifestFile).toLowerCase().endsWith("web3api.app.yaml") ||
-      (<string>manifestFile).toLowerCase().endsWith("web3api.app.yml");
-    const isPluginManifest: boolean =
-      (<string>manifestFile).toLowerCase().endsWith("web3api.plugin.yaml") ||
-      (<string>manifestFile).toLowerCase().endsWith("web3api.plugin.yml");
-
-    // Resolve custom script
-    const customScript = require.resolve(commandToPathMap[command]);
-
-    // Get providers
-    const { ipfsProvider, ethProvider } = await getTestEnvProviders(ipfs);
-    const ensAddress: string | undefined = ens;
-
-    // App or Web3Api project
-    let project: Project<AnyManifest>;
-    if (isAppManifest) {
-      const client: Web3ApiClient = getSimpleClient({
-        ensAddress,
-        ethProvider,
-        ipfsProvider,
+    docgenCommand
+      .command("schema")
+      .description(intlMsg.commands_docgen_options_schema())
+      .action(async (options) => {
+        await run("schema", options);
       });
-      project = new AppProject({
-        rootCacheDir: path.dirname(manifestFile),
-        appManifestPath: manifestFile,
-        client,
-        quiet: true,
-      });
-    } else if (isPluginManifest) {
-      project = new PluginProject({
-        rootCacheDir: path.dirname(manifestFile),
-        pluginManifestPath: manifestFile,
-        quiet: true,
-      });
-    } else {
-      project = new Web3ApiProject({
-        rootCacheDir: path.dirname(manifestFile),
-        web3apiManifestPath: manifestFile,
-        quiet: true,
-      });
-    }
-    await project.validate();
 
-    // Resolve output directory
-    if (codegenDir) {
-      codegenDir = filesystem.resolve(codegenDir);
-    } else {
-      codegenDir = filesystem.resolve(defaultOutputDir);
-    }
-
-    const schemaComposer = new SchemaComposer({
-      project,
-      ipfsProvider,
-      ethProvider,
-      ensAddress,
-    });
-
-    if (command === "react") {
-      // copy react template and adjust output dir
-      const projectDir = path.join(codegenDir, "docusaurus-react-app");
-      try {
-        await generateProjectTemplate(
-          "app",
-          "docusaurus",
-          projectDir,
-          filesystem
-        );
-      } catch (err) {
-        const commandFailError = intlMsg.commands_create_error_commandFail({
-          error: err.command,
+    docgenCommand
+      .command("docusaurus")
+      .description(
+        intlMsg.commands_docgen_options_markdown({
+          framework: "Docusaurus",
+        })
+      )
+      .action(async (options) => {
+        await run("docusaurus", {
+          ...options,
+          manifestFile: parseDocgenManifestFileOption(
+            options.manifestFile,
+            undefined
+          ),
+          codegenDir: parseDocgenDirOption(options.codegenDir, undefined),
         });
-        print.error(commandFailError);
-        process.exitCode = 1;
-        return;
-      }
-      codegenDir = path.join(projectDir, "docs/polywrap");
-    }
+      });
 
-    const codeGenerator = new CodeGenerator({
-      project,
-      schemaComposer,
-      customScript,
-      outputDir: codegenDir,
-      omitHeader: true,
-    });
+    docgenCommand
+      .command("jsdoc")
+      .description(
+        intlMsg.commands_docgen_options_markdown({
+          framework: "JSDoc",
+        })
+      )
+      .action(async (options) => {
+        await run("jsdoc", options);
+      });
 
-    if (await codeGenerator.generate()) {
-      print.success(`🔥 ${intlMsg.commands_codegen_success()} 🔥`);
-      process.exitCode = 0;
-    } else {
-      process.exitCode = 1;
-    }
+    docgenCommand
+      .command("react")
+      .description(intlMsg.commands_docgen_options_react())
+      .action(async (options) => {
+        await run("react", options);
+      });
   },
 };
 
-function validateDocgenParams(
-  print: GluegunPrint,
-  command: unknown,
-  codegenDir: unknown,
-  ipfs: unknown,
-  ens: unknown
-): boolean {
-  if (!command || typeof command !== "string") {
-    print.error(intlMsg.commands_plugin_error_noCommand());
-    return false;
-  } else if (Object.keys(commandToPathMap).indexOf(command) === -1) {
-    print.error(intlMsg.commands_app_error_unknownCommand({ command }));
-    return false;
+async function run(command: DocType, options: DocgenCommandOptions) {
+  const { ipfs, ens, manifestFile, codegenDir } = options;
+
+  const isAppManifest: boolean =
+    (<string>manifestFile).toLowerCase().endsWith("web3api.app.yaml") ||
+    (<string>manifestFile).toLowerCase().endsWith("web3api.app.yml");
+  const isPluginManifest: boolean =
+    (<string>manifestFile).toLowerCase().endsWith("web3api.plugin.yaml") ||
+    (<string>manifestFile).toLowerCase().endsWith("web3api.plugin.yml");
+
+  // Resolve custom script
+  const customScript = require.resolve(commandToPathMap[command]);
+
+  // Get providers
+  const { ipfsProvider, ethProvider } = await getTestEnvProviders(ipfs);
+  const ensAddress: string | undefined = ens;
+
+  // App or Web3Api project
+  let project: Project<AnyManifest>;
+  if (isAppManifest) {
+    const client: Web3ApiClient = getSimpleClient({
+      ensAddress,
+      ethProvider,
+      ipfsProvider,
+    });
+    project = new AppProject({
+      rootDir: path.dirname(manifestFile),
+      appManifestPath: manifestFile,
+      client,
+      quiet: true,
+    });
+  } else if (isPluginManifest) {
+    project = new PluginProject({
+      rootDir: path.dirname(manifestFile),
+      pluginManifestPath: manifestFile,
+      quiet: true,
+    });
+  } else {
+    project = new Web3ApiProject({
+      rootDir: path.dirname(manifestFile),
+      web3apiManifestPath: manifestFile,
+      quiet: true,
+    });
+  }
+  await project.validate();
+
+  // Resolve output directory
+  let codegenDirAbs: string;
+  if (codegenDir) {
+    codegenDirAbs = path.resolve(codegenDir);
+  } else {
+    codegenDirAbs = path.resolve(defaultDocgenDir);
   }
 
-  if (codegenDir === true) {
-    const codegenDirMissingPathMessage = intlMsg.commands_app_error_optionMissingArgument(
-      {
-        option: "--codegen-dir",
-        argument: `<${pathStr}>`,
-      }
-    );
-    print.error(codegenDirMissingPathMessage);
-    return false;
+  const schemaComposer = new SchemaComposer({
+    project,
+    ipfsProvider,
+    ethProvider,
+    ensAddress,
+  });
+
+  if (command === "react") {
+    // copy react template and adjust output dir
+    const projectDir = path.join(codegenDirAbs, "docusaurus-react-app");
+    try {
+      await generateProjectTemplate(
+        "app",
+        "docusaurus",
+        projectDir,
+        filesystem
+      );
+    } catch (err) {
+      const commandFailError = intlMsg.commands_create_error_commandFail({
+        error: err.command,
+      });
+      console.error(commandFailError);
+      process.exitCode = 1;
+      return;
+    }
+    codegenDirAbs = path.join(projectDir, "docs/polywrap");
   }
 
-  if (ipfs === true) {
-    const ipfsMissingMessage = intlMsg.commands_app_error_optionMissingArgument(
-      {
-        option: "--ipfs",
-        argument: `[<${nodeStr}>]`,
-      }
-    );
-    print.error(ipfsMissingMessage);
-    return false;
-  }
+  const codeGenerator = new CodeGenerator({
+    project,
+    schemaComposer,
+    customScript,
+    codegenDirAbs: codegenDirAbs,
+    omitHeader: true,
+  });
 
-  if (ens === true) {
-    const ensAddressMissingMessage = intlMsg.commands_app_error_optionMissingArgument(
-      {
-        option: "--ens",
-        argument: `[<${addrStr}>]`,
-      }
-    );
-    print.error(ensAddressMissingMessage);
-    return false;
+  if (await codeGenerator.generate()) {
+    console.log(`🔥 ${intlMsg.commands_codegen_success()} 🔥`);
+    process.exitCode = 0;
+  } else {
+    process.exitCode = 1;
   }
-
-  return true;
 }
