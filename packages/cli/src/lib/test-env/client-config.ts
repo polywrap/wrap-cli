@@ -27,7 +27,7 @@ export async function getTestEnvClientConfig(): Promise<
   // maybe have it exported from test-env.
   const plugins: PluginRegistration[] = [
     {
-      uri: "w3://ens/ethereum.web3api.eth",
+      uri: "wrap://ens/ethereum.web3api.eth",
       plugin: ethereumPlugin({
         networks: {
           testnet: {
@@ -37,14 +37,14 @@ export async function getTestEnvClientConfig(): Promise<
       }),
     },
     {
-      uri: "w3://ens/ipfs.web3api.eth",
+      uri: "wrap://ens/ipfs.web3api.eth",
       plugin: ipfsPlugin({
         provider: ipfsProvider,
         fallbackProviders: defaultIpfsProviders,
       }),
     },
     {
-      uri: "w3://ens/ens.web3api.eth",
+      uri: "wrap://ens/ens.web3api.eth",
       plugin: ensPlugin({
         addresses: {
           testnet: ensAddress,

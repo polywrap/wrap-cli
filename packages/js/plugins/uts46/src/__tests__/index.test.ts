@@ -11,7 +11,7 @@ describe("IDNA UTS #46", () => {
     client = new Web3ApiClient({
       plugins: [
         {
-          uri: "w3://ens/uts46.web3api.eth",
+          uri: "wrap://ens/uts46.web3api.eth",
           plugin: uts46Plugin({ }),
         },
       ],
@@ -22,7 +22,7 @@ describe("IDNA UTS #46", () => {
     it("ToAscii matches", async () => {
       const expected = uts46.toAscii(textToConvert);
       const response = await client.query<{ toAscii: string }>({
-        uri: "w3://ens/uts46.web3api.eth",
+        uri: "wrap://ens/uts46.web3api.eth",
         query: `
           query {
             toAscii(value: "${textToConvert}")
@@ -49,7 +49,7 @@ describe("IDNA UTS #46", () => {
     it("ToUnicode matches", async () => {
       const expected = uts46.toUnicode(textToConvert);
       const response = await client.query<{ toUnicode: string }>({
-        uri: "w3://ens/uts46.web3api.eth",
+        uri: "wrap://ens/uts46.web3api.eth",
         query: `
           query {
             toUnicode(value: "${textToConvert}")
@@ -65,7 +65,7 @@ describe("IDNA UTS #46", () => {
     it("Convert matches", async () => {
       const expected = uts46.convert(textToConvert);
       const response = await client.query<{ convert: string }>({
-        uri: "w3://ens/uts46.web3api.eth",
+        uri: "wrap://ens/uts46.web3api.eth",
         query: `
           query {
             convert(value: "${textToConvert}")

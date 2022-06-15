@@ -152,7 +152,7 @@ describe("wasm-rs test cases", () => {
   });
 
   it("implementations - getImplementations", async () => {
-    const interfaceUri = "w3://ens/interface.eth"
+    const interfaceUri = "wrap://ens/interface.eth"
 
     const implementationPath = `${GetPathToTestApis()}/wasm-rs/implementations/test-use-getImpl`
 

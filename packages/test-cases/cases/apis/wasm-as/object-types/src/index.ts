@@ -5,7 +5,7 @@ import {
   Input_method5,
   Output,
   Arg2
-} from "./w3";
+} from "./polywrap";
 
 export function method1(input: Input_method1): Output[] {
   return [

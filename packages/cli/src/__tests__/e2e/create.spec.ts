@@ -1,11 +1,11 @@
-import { clearStyle, w3Cli } from "./utils";
+import { clearStyle, polywrapCli } from "./utils";
 
 import { runCLI } from "@polywrap/test-env-js";
 import rimraf from "rimraf";
 
-const HELP = `Usage: w3 create|c [options] [command]
+const HELP = `Usage: polywrap create|c [options] [command]
 
-Create a new project with w3 CLI
+Create a new project with polywrap CLI
 
 Options:
   -h, --help                          display help for command
@@ -23,7 +23,7 @@ describe("e2e tests for create command", () => {
   test("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create", "--help"],
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(code).toEqual(0);
@@ -34,7 +34,7 @@ describe("e2e tests for create command", () => {
   test("Should throw error for missing parameter - type", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create"],
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(code).toEqual(1);
@@ -45,7 +45,7 @@ describe("e2e tests for create command", () => {
   test("Should throw error for missing parameter - lang", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create", "type"],
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(code).toEqual(1);
@@ -56,7 +56,7 @@ describe("e2e tests for create command", () => {
   test("Should throw error for missing parameter - name", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create", "type", "lang"],
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(code).toEqual(1);
@@ -67,7 +67,7 @@ describe("e2e tests for create command", () => {
   test("Should throw error for invalid parameter - type", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create", "unknown", "app", "name"],
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(code).toEqual(1);
@@ -78,7 +78,7 @@ describe("e2e tests for create command", () => {
   test("Should throw error for invalid parameter - lang", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create", "api", "unknown", "name"],
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(code).toEqual(1);
@@ -89,7 +89,7 @@ describe("e2e tests for create command", () => {
   test("Should throw error for invalid parameter - output-dir", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create", "api", "assemblyscript", "name", "-o"],
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(code).toEqual(1);
@@ -110,7 +110,7 @@ describe("e2e tests for create command", () => {
         `${__dirname}/test`,
       ],
       cwd: __dirname,
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(code).toEqual(0);

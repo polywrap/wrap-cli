@@ -6,7 +6,7 @@ import {
   providers,
   ensAddresses
 } from "@polywrap/test-env-js";
-import * as App from "../types/w3";
+import * as App from "../types/polywrap";
 import path from "path";
 
 import { getPlugins } from "../utils";

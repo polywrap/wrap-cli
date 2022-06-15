@@ -1,4 +1,4 @@
-#import { Module, Connection } into Ethereum from "w3://ens/ethereum.web3api.eth"
+#import { Module, Connection } into Ethereum from "wrap://ens/ethereum.web3api.eth"
 
 type Module {
   getData(

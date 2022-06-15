@@ -226,9 +226,9 @@ describe("resolveUri", () => {
   ];
 
   const apis: Record<string, PluginModule> = {
-    "w3://ens/ens": ensApi as unknown as PluginModule,
-    "w3://ens/ipfs": ipfsApi as unknown as PluginModule,
-    "w3://ens/my-plugin": pluginApi as unknown as PluginModule,
+    "wrap://ens/ens": ensApi as unknown as PluginModule,
+    "wrap://ens/ipfs": ipfsApi as unknown as PluginModule,
+    "wrap://ens/my-plugin": pluginApi as unknown as PluginModule,
   };
 
   const uriResolvers: UriResolver[] = [
@@ -251,11 +251,11 @@ describe("resolveUri", () => {
   ];
 
   it("sanity", () => {
-    const api = new Uri("w3://ens/ens");
-    const file = new Uri("w3/some-file");
-    const path = "w3/some-path";
+    const api = new Uri("wrap://ens/ens");
+    const file = new Uri("wrap/some-file");
+    const path = "wrap/some-path";
     const query = UriResolverInterface.Query;
-    const uri = new Uri("w3/some-uri");
+    const uri = new Uri("wrap/some-uri");
 
     expect(query.tryResolveUri(client(apis).invoke, api, uri)).toBeDefined();
     expect(query.getFile(client(apis).invoke, file, path)).toBeDefined();
@@ -281,7 +281,7 @@ describe("resolveUri", () => {
       manifest: {
         format: "0.0.1-prealpha.9",
       },
-      uriResolver: "w3://ens/ipfs",
+      uriResolver: "wrap://ens/ipfs",
     });
   });
 
@@ -305,7 +305,7 @@ describe("resolveUri", () => {
       manifest: {
         format: "0.0.1-prealpha.9",
       },
-      uriResolver: "w3://ens/my-plugin",
+      uriResolver: "wrap://ens/my-plugin",
     });
   });
 
@@ -330,7 +330,7 @@ describe("resolveUri", () => {
         format: "0.0.1-prealpha.9",
         dog: "cat",
       },
-      uriResolver: "w3://ens/ipfs",
+      uriResolver: "wrap://ens/ipfs",
     });
   });
 
@@ -354,7 +354,7 @@ describe("resolveUri", () => {
       manifest: {
         format: "0.0.1-prealpha.9",
       },
-      uriResolver: "w3://ens/my-plugin",
+      uriResolver: "wrap://ens/my-plugin",
     });
   });
 
@@ -403,7 +403,7 @@ describe("resolveUri", () => {
       new Map<string, Api>(),
     ).catch((e: Error) =>
       expect(e.message).toMatch(
-        "Redirect missing the from property.\nEncountered while resolving w3://some/api"
+        "Redirect missing the from property.\nEncountered while resolving wrap://some/api"
       )
     );
   });
@@ -460,7 +460,7 @@ describe("resolveUri", () => {
       client(
         {
           ...apis,
-          "w3://ens/ipfs": faultyIpfsApi as unknown as PluginModule
+          "wrap://ens/ipfs": faultyIpfsApi as unknown as PluginModule
         }, 
         plugins, 
         interfaces

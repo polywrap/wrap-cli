@@ -1,7 +1,7 @@
 import { createQueryDocument, parseQuery, QueryApiInvocations, Uri } from "../";
 
 describe("parseQuery", () => {
-  const dummy = new Uri("w3://dumb/dummy");
+  const dummy = new Uri("wrap://dumb/dummy");
 
   it("works in the typical case", () => {
     const doc = createQueryDocument(`

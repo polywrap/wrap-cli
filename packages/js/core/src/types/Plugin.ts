@@ -34,16 +34,16 @@ export abstract class PluginModule<
     return this._config;
   }
 
-  public _w3_load_env(env: TEnv): void {
+  public _wrap_load_env(env: TEnv): void {
     this._env = env;
   }
 
-  public async _w3_sanitize_env(
+  public async _wrap_sanitize_env(
     clientEnv: TClientEnv,
     client: Client
   ): Promise<TEnv> {
     if (this.getMethod("sanitizeEnv")) {
-      return this._w3_invoke<TClientEnv, TEnv>(
+      return this._wrap_invoke<TClientEnv, TEnv>(
         "sanitizeEnv",
         clientEnv,
         client
@@ -53,7 +53,7 @@ export abstract class PluginModule<
     }
   }
 
-  public async _w3_invoke<
+  public async _wrap_invoke<
     TInput extends Record<string, unknown> = Record<string, unknown>,
     TResult = unknown
   >(method: string, input: TInput, client: Client): Promise<TResult> {

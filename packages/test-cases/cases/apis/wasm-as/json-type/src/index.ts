@@ -2,7 +2,7 @@ import {
   Input_fromJson,
   Input_toJson,
   Pair
-} from "./w3";
+} from "./polywrap";
 import { JSON } from "@polywrap/wasm-as";
 
 export function fromJson(input: Input_fromJson): Pair {

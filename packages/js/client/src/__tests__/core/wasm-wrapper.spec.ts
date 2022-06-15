@@ -126,7 +126,7 @@ describe("wasm-wrapper", () => {
     const client = await getClient({
       plugins: [
         {
-          uri: "w3://ens/mock.web3api.eth",
+          uri: "wrap://ens/mock.web3api.eth",
           plugin: mockPlugin(),
         },
       ],
@@ -135,7 +135,7 @@ describe("wasm-wrapper", () => {
     const redirects = [
       {
         from: apiUri,
-        to: "w3://ens/mock.web3api.eth",
+        to: "wrap://ens/mock.web3api.eth",
       },
     ];
 
@@ -156,7 +156,7 @@ describe("wasm-wrapper", () => {
     const client = await getClient({
       plugins: [
         {
-          uri: "w3://ens/mock.web3api.eth",
+          uri: "wrap://ens/mock.web3api.eth",
           plugin: mockPlugin(),
         },
       ],
@@ -165,7 +165,7 @@ describe("wasm-wrapper", () => {
     const redirects = [
       {
         from: apiUri,
-        to: "w3://ens/mock.web3api.eth",
+        to: "wrap://ens/mock.web3api.eth",
       },
     ];
 
@@ -303,14 +303,14 @@ describe("wasm-wrapper", () => {
 `);
 
     await expect(() =>
-      client.getManifest(new Uri("w3://ens/ipfs.web3api.eth"), {
+      client.getManifest(new Uri("wrap://ens/ipfs.web3api.eth"), {
         type: "web3api",
       })
     ).rejects.toThrow(
       "client.getManifest(...) is not implemented for Plugins."
     );
     await expect(() =>
-      client.getFile(new Uri("w3://ens/ipfs.web3api.eth"), {
+      client.getFile(new Uri("wrap://ens/ipfs.web3api.eth"), {
         path: "./index.js",
       })
     ).rejects.toThrow("client.getFile(...) is not implemented for Plugins.");

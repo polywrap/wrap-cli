@@ -25,21 +25,21 @@ const mockPlugin = () => {
 async function getClientConfig(defaultConfigs) {
   if (defaultConfigs.plugins) {
     defaultConfigs.plugins.push({
-      uri: "w3://ens/mock.eth",
+      uri: "wrap://ens/mock.eth",
       plugin: mockPlugin(),
     });
   } else {
     defaultConfigs.plugins = [
       {
-        uri: "w3://ens/mock.eth",
+        uri: "wrap://ens/mock.eth",
         plugin: mockPlugin(),
       },
     ];
   }
   defaultConfigs.redirects = [
     {
-      from: "w3://ens/testnet/simplestorage.eth",
-      to: "w3://ens/mock.eth",
+      from: "wrap://ens/testnet/simplestorage.eth",
+      to: "wrap://ens/mock.eth",
     },
   ];
   return defaultConfigs;

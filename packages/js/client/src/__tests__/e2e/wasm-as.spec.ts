@@ -155,7 +155,7 @@ describe("wasm-as test cases", () => {
     const interfaceUri = `fs/${interfacePath}/build`;
 
     const implementationPath = `${GetPathToTestApis()}/wasm-as/implementations/test-api`
-    const implementationUri = `w3://fs/${implementationPath}/build`
+    const implementationUri = `wrap://fs/${implementationPath}/build`
 
     await buildApi(interfacePath);
     await buildApi(implementationPath);
@@ -175,10 +175,10 @@ describe("wasm-as test cases", () => {
   });
 
   it("implementations - getImplementations", async () => {
-    const interfaceUri = "w3://ens/interface.eth"
+    const interfaceUri = "wrap://ens/interface.eth"
 
     const implementationPath = `${GetPathToTestApis()}/wasm-as/implementations/test-use-getImpl`
-    const implementationUri = `w3://fs/${implementationPath}/build`;
+    const implementationUri = `wrap://fs/${implementationPath}/build`;
 
     await buildApi(implementationPath);
 
@@ -197,7 +197,7 @@ describe("wasm-as test cases", () => {
   });
 
   it("e2e Interface invoke method", async () => {
-    const interfaceUri = "w3://ens/interface.eth";
+    const interfaceUri = "wrap://ens/interface.eth";
 
     const implementationPath = `${GetPathToTestApis()}/wasm-as/interface-invoke/test-implementation`
     const implementationUri = `fs/${implementationPath}/build`;

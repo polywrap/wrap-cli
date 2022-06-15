@@ -1,5 +1,5 @@
-pub mod w3;
-pub use w3::*;
+pub mod polywrap;
+pub use polywrap::*;
 
 pub fn module_implementations() -> Vec<String> {
   Interface::get_implementations()

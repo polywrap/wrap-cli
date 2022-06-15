@@ -3,7 +3,7 @@ import {
   Interface_Module,
   Input_moduleMethod,
   ImplementationType
-} from "./w3";
+} from "./polywrap";
 
 export function moduleMethod(input: Input_moduleMethod): ImplementationType {
   const uris = Interface.getImplementations();

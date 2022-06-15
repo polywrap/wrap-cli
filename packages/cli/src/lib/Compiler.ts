@@ -17,7 +17,7 @@ import {
 
 import { Web3ApiManifest, BuildManifest, MetaManifest } from "@polywrap/core-js";
 import { WasmWeb3Api } from "@polywrap/client-js";
-import { W3Imports } from "@polywrap/client-js/build/wasm/types";
+import { WrapImports } from "@polywrap/client-js/build/wasm/types";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 import { ComposerOutput } from "@polywrap/schema-compose";
 import { writeFileSync, writeDirectorySync } from "@polywrap/os-js";
@@ -270,7 +270,7 @@ export class Compiler {
 
     // If the dockerfile path isn't provided, generate it
     if (!buildManifest?.docker?.dockerfile) {
-      // Make sure the default template is in the cached .w3/web3api/build/image folder
+      // Make sure the default template is in the cached .polywrap/web3api/build/image folder
       await project.cacheDefaultBuildImage();
 
       dockerfile = generateDockerfile(
@@ -432,28 +432,28 @@ export class Compiler {
   private async _validateWasmModule(buildDir: string): Promise<void> {
     const modulePath = path.join(buildDir, `module.wasm`);
     const wasmSource = fs.readFileSync(modulePath);
-    const w3Imports: Record<keyof W3Imports, () => void> = {
-      __w3_subinvoke: () => {},
-      __w3_subinvoke_result_len: () => {},
-      __w3_subinvoke_result: () => {},
-      __w3_subinvoke_error_len: () => {},
-      __w3_subinvoke_error: () => {},
-      __w3_subinvokeImplementation: () => {},
-      __w3_subinvokeImplementation_result_len: () => {},
-      __w3_subinvokeImplementation_result: () => {},
-      __w3_subinvokeImplementation_error_len: () => {},
-      __w3_subinvokeImplementation_error: () => {},
-      __w3_invoke_args: () => {},
-      __w3_invoke_result: () => {},
-      __w3_invoke_error: () => {},
-      __w3_getImplementations: () => {},
-      __w3_getImplementations_result_len: () => {},
-      __w3_getImplementations_result: () => {},
-      __w3_abort: () => {},
-      __w3_debug_log: () => {},
-      __w3_load_env: () => {},
-      __w3_sanitize_env_args: () => {},
-      __w3_sanitize_env_result: () => {},
+    const wrapImports: Record<keyof WrapImports, () => void> = {
+      __wrap_subinvoke: () => {},
+      __wrap_subinvoke_result_len: () => {},
+      __wrap_subinvoke_result: () => {},
+      __wrap_subinvoke_error_len: () => {},
+      __wrap_subinvoke_error: () => {},
+      __wrap_subinvokeImplementation: () => {},
+      __wrap_subinvokeImplementation_result_len: () => {},
+      __wrap_subinvokeImplementation_result: () => {},
+      __wrap_subinvokeImplementation_error_len: () => {},
+      __wrap_subinvokeImplementation_error: () => {},
+      __wrap_invoke_args: () => {},
+      __wrap_invoke_result: () => {},
+      __wrap_invoke_error: () => {},
+      __wrap_getImplementations: () => {},
+      __wrap_getImplementations_result_len: () => {},
+      __wrap_getImplementations_result: () => {},
+      __wrap_abort: () => {},
+      __wrap_debug_log: () => {},
+      __wrap_load_env: () => {},
+      __wrap_sanitize_env_args: () => {},
+      __wrap_sanitize_env_result: () => {},
     };
 
     try {
@@ -464,7 +464,7 @@ export class Compiler {
           env: {
             memory,
           },
-          w3: w3Imports,
+          wrap: wrapImports,
         },
         requiredExports: WasmWeb3Api.requiredExports,
       });

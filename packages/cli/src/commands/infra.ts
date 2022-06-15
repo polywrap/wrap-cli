@@ -103,7 +103,7 @@ Default Modules: \n${readdirSync(DEFAULT_MODULES_PATH)
           .map((m) => `\n- ${m}`)
           .join("")}
 
-Example: 'w3 infra up --modules=eth-ens-ipfs'.`
+Example: 'polywrap infra up --modules=eth-ens-ipfs'.`
       );
     }
   }

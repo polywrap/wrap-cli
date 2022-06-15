@@ -230,7 +230,7 @@ export class Infra {
     this._writeFileToCacheFromAbsPath(composePath, fileContent);
   }
 
-  // Compose package.json under .w3 folder and install deps
+  // Compose package.json under .polywrap folder and install deps
   private async _fetchRemoteModules(
     modules: NamedRemoteModule[],
     installationDir: string

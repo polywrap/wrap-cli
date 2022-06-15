@@ -7,7 +7,7 @@ import {
   Bytes,
   Ethereum_Module,
   manifest,
-} from "./w3-man";
+} from "./polywrap-man";
 
 import { ethers } from "ethers";
 import { Base58 } from "@ethersproject/basex";
@@ -81,7 +81,7 @@ export class EnsPlugin extends Module<EnsPluginConfig> {
     let ensAddress = EnsPlugin.defaultAddress;
 
     // Remove the ENS URI scheme & authority
-    domain = domain.replace("w3://", "");
+    domain = domain.replace("wrap://", "");
     domain = domain.replace("ens/", "");
 
     // Check for non-default network

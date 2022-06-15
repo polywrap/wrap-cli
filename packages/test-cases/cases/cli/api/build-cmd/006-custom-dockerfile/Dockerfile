@@ -9,7 +9,7 @@ RUN apk --no-cache --virtual build-dependencies add \
 
 WORKDIR /linked-packages
 
-COPY .w3/web3api/build/linked-packages/@polywrap/wasm-as ./@polywrap/wasm-as
+COPY .polywrap/web3api/build/linked-packages/@polywrap/wasm-as ./@polywrap/wasm-as
 
 WORKDIR /project
 
@@ -28,10 +28,10 @@ COPY ./src ./src
 COPY ./package.json ./package.json
 
 # Build the module at src
-RUN ./node_modules/.bin/asc src/w3/entry.ts \
+RUN ./node_modules/.bin/asc src/polywrap/entry.ts \
     --path ./node_modules \
     --outFile ./build/module.wasm \
-    --use abort=src/w3/entry/w3Abort \
+    --use abort=src/polywrap/entry/wrapAbort \
     --optimize --debug --importMemory \
     --runtime stub \
     --runPasses asyncify

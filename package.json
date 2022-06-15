@@ -23,7 +23,7 @@
   },
   "scripts": {
     "reset": "yarn clean && yarn && yarn build",
-    "clean": "npx rimraf ./**/node_modules ./**/yarn.lock ./**/build ./**/coverage ./**/.w3",
+    "clean": "npx rimraf ./**/node_modules ./**/yarn.lock ./**/build ./**/coverage ./**/.polywrap",
     "dependencies:install": "cd dependencies && yarn",
     "build": "yarn build:core && yarn build:plugins && yarn build:client && yarn build:test-env && yarn build:cli && yarn build:plugins:patch",
     "build:core": "lerna run build --no-private --ignore @polywrap/*-plugin-js --ignore polywrap --ignore @polywrap/clie* --ignore @polywrap/react --ignore @polywrap/test-env-js",

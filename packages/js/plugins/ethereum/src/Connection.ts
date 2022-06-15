@@ -1,4 +1,4 @@
-import { Connection as SchemaConnection } from "./w3-man";
+import { Connection as SchemaConnection } from "./polywrap-man";
 
 import { Signer, ethers } from "ethers";
 import {

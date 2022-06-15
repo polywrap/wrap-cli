@@ -1,10 +1,10 @@
-import { Ethereum_Module } from "./w3/imported";
+import { Ethereum_Module } from "./polywrap/imported";
 import {
   Input_getData,
   Input_setData,
   Input_deployContract,
   SetDataResult
-} from "./w3";
+} from "./polywrap";
 
 export function getData(input: Input_getData): u32 {
   const res = Ethereum_Module.callContractView({

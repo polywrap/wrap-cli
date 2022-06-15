@@ -2,5 +2,5 @@ format: 0.0.1-prealpha.1
 language: app/typescript
 schema: ./schema.graphql
 import_redirects:
-  - uri: "w3://ens/simple-storage.eth"
+  - uri: "wrap://ens/simple-storage.eth"
     schema: "../../../build/schema.graphql"

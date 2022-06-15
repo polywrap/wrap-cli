@@ -32,7 +32,7 @@ import {
   Input_sendTransaction,
   Input_sendTransactionAndWait,
   Input_signMessage
-} from "./w3";
+} from "./polywrap";
 import { BigInt } from "@polywrap/wasm-as";
 
 export function callContractView(

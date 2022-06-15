@@ -4,10 +4,10 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build": "w3 build",
+    "build": "polywrap build",
     "contracts:deploy": "node ./deploy-contracts.js",
-    "test:env:up": "w3 infra up --modules=eth-ens-ipfs && yarn contracts:deploy",
-    "test:env:down": "w3 infra down --modules=eth-ens-ipfs"
+    "test:env:up": "polywrap infra up --modules=eth-ens-ipfs && yarn contracts:deploy",
+    "test:env:down": "polywrap infra down --modules=eth-ens-ipfs"
   },
   "dependencies": {
     "@polywrap/ethereum-plugin-js": "0.0.1-prealpha.72",

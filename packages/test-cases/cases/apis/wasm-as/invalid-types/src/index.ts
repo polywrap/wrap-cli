@@ -4,7 +4,7 @@ import {
   Input_arrayMethod,
   Input_intMethod,
   Input_uIntMethod
-} from "./w3";
+} from "./polywrap";
 
 export function boolMethod(input: Input_boolMethod): bool {
   return input.arg;

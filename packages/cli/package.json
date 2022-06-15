@@ -13,7 +13,7 @@
     "lang"
   ],
   "bin": {
-    "w3": "bin/w3"
+    "polywrap": "bin/polywrap"
   },
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json && yarn build:build-images && yarn build:deploy-modules && yarn build:infra-modules",

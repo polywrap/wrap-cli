@@ -1,5 +1,5 @@
 import { ethereumPlugin } from "..";
-import * as Schema from "../w3-man";
+import * as Schema from "../polywrap-man";
 
 import { Web3ApiClient, defaultIpfsProviders } from "@polywrap/client-js";
 import { ensPlugin } from "@polywrap/ens-plugin-js";
@@ -50,7 +50,7 @@ describe("Ethereum Plugin", () => {
     client = new Web3ApiClient({
       plugins: [
         {
-          uri: "w3://ens/ethereum.web3api.eth",
+          uri: "wrap://ens/ethereum.web3api.eth",
           plugin: ethereumPlugin({
             networks: {
               testnet: {
@@ -64,14 +64,14 @@ describe("Ethereum Plugin", () => {
           }),
         },
         {
-          uri: "w3://ens/ipfs.web3api.eth",
+          uri: "wrap://ens/ipfs.web3api.eth",
           plugin: ipfsPlugin({
             provider: providers.ipfs,
             fallbackProviders: defaultIpfsProviders,
           }),
         },
         {
-          uri: "w3://ens/ens.web3api.eth",
+          uri: "wrap://ens/ens.web3api.eth",
           plugin: ensPlugin({
             query: {
               addresses: {
@@ -751,7 +751,7 @@ describe("Ethereum Plugin", () => {
         config: {
           envs: [
             {
-              uri: "w3://ens/ethereum.web3api.eth",
+              uri: "wrap://ens/ethereum.web3api.eth",
               env: {
                 connection: {
                   networkNameOrChainId: "mainnet",
@@ -784,7 +784,7 @@ describe("Ethereum Plugin", () => {
         config: {
           envs: [
             {
-              uri: "w3://ens/ethereum.web3api.eth",
+              uri: "wrap://ens/ethereum.web3api.eth",
               env: {
                 connection: {
                   node: "https://polygon-rpc.com",

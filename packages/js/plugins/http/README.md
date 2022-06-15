@@ -14,7 +14,7 @@ Below is sample invocation of the `GET` request with custom request headers and 
 
 ```ts
 const response = await web3ApiClient.query<{ get: Response }>({
-uri: new Uri("w3://ens/http.web3api.eth"),
+uri: new Uri("wrap://ens/http.web3api.eth"),
   query: `
     query {
       get(
@@ -36,7 +36,7 @@ Below is sample invocation of the `POST` request with custom request headers and
 
 ```ts
 const response = await web3ApiClient.query<{ get: Response }>({
-  uri: new Uri("w3://ens/http.web3api.eth"),
+  uri: new Uri("wrap://ens/http.web3api.eth"),
   query: `
     query {
       post(

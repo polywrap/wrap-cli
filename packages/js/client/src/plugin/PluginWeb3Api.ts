@@ -98,7 +98,7 @@ export class PluginWeb3Api extends Api {
 
       // Invoke the function
       try {
-        const result = (await module._w3_invoke(
+        const result = (await module._wrap_invoke(
           method,
           jsInput,
           client
@@ -166,13 +166,13 @@ export class PluginWeb3Api extends Api {
   ): Promise<void> {
     if (this._sanitizedEnv === undefined) {
       const clientEnv = this._getClientEnv();
-      this._sanitizedEnv = await pluginModule._w3_sanitize_env(
+      this._sanitizedEnv = await pluginModule._wrap_sanitize_env(
         clientEnv,
         client
       );
     }
 
-    pluginModule._w3_load_env(this._sanitizedEnv || {});
+    pluginModule._wrap_load_env(this._sanitizedEnv || {});
   }
 
   @Tracer.traceMethod("PluginWeb3Api: _getClientEnv")

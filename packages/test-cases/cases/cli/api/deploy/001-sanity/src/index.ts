@@ -1,4 +1,4 @@
-import { Input_get } from "./w3";
+import { Input_get } from "./polywrap";
 
 export function get(input: Input_get): string {
   return "foo";

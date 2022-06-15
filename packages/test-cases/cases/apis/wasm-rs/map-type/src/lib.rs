@@ -1,5 +1,5 @@
-pub mod w3;
-pub use w3::*;
+pub mod polywrap;
+pub use polywrap::*;
 use web3api_wasm_rs::Map;
 
 pub fn get_key(input: InputGetKey) -> i32 {

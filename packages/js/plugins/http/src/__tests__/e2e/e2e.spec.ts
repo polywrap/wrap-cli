@@ -1,5 +1,5 @@
 import { httpPlugin } from "../..";
-import { Response } from "../../w3-man";
+import { Response } from "../../polywrap-man";
 
 import { Web3ApiClient } from "@polywrap/client-js"
 import nock from "nock";
@@ -18,7 +18,7 @@ describe("e2e tests for HttpPlugin", () => {
     web3ApiClient = new Web3ApiClient({
       plugins: [
         {
-          uri: "w3://ens/http.web3api.eth",
+          uri: "wrap://ens/http.web3api.eth",
           plugin: httpPlugin({ }),
         },
       ]
@@ -34,7 +34,7 @@ describe("e2e tests for HttpPlugin", () => {
         .reply(200, '{data: "test-response"}')
 
       const response = await web3ApiClient.query<{ get: Response }>({
-        uri: "w3://ens/http.web3api.eth",
+        uri: "wrap://ens/http.web3api.eth",
         query: `
           query {
             get(
@@ -62,7 +62,7 @@ describe("e2e tests for HttpPlugin", () => {
         .reply(200, '{data: "test-response"}')
 
       const response = await web3ApiClient.query<{ get: Response }>({
-        uri: "w3://ens/http.web3api.eth",
+        uri: "wrap://ens/http.web3api.eth",
         query: `
           query {
             get(
@@ -91,7 +91,7 @@ describe("e2e tests for HttpPlugin", () => {
         .reply(200, '{data: "test-response"}', { 'X-Response-Header': "resp-foo" })
 
       const response = await web3ApiClient.query<{ get: Response }>({
-        uri: "w3://ens/http.web3api.eth",
+        uri: "wrap://ens/http.web3api.eth",
         query: `
           query {
             get(
@@ -125,7 +125,7 @@ describe("e2e tests for HttpPlugin", () => {
         .reply(404)
 
       const response = await web3ApiClient.query<{ get: Response }>({
-        uri: "w3://ens/http.web3api.eth",
+        uri: "wrap://ens/http.web3api.eth",
         query: `
           query {
             get(
@@ -163,7 +163,7 @@ describe("e2e tests for HttpPlugin", () => {
           .reply(200, resPayloadStringfified)
 
       const response = await web3ApiClient.query<{ post: Response }>({
-        uri: "w3://ens/http.web3api.eth",
+        uri: "wrap://ens/http.web3api.eth",
         query: `
           query {
             post(
@@ -195,7 +195,7 @@ describe("e2e tests for HttpPlugin", () => {
         .reply(200, '{data: "test-response"}')
 
       const response = await web3ApiClient.query<{ post: Response }>({
-        uri: "w3://ens/http.web3api.eth",
+        uri: "wrap://ens/http.web3api.eth",
         query: `
           query {
             post(
@@ -224,7 +224,7 @@ describe("e2e tests for HttpPlugin", () => {
         .reply(200, '{data: "test-response"}')
 
       const response = await web3ApiClient.query<{ post: Response }>({
-        uri: "w3://ens/http.web3api.eth",
+        uri: "wrap://ens/http.web3api.eth",
         query: `
           query {
             post(
@@ -254,7 +254,7 @@ describe("e2e tests for HttpPlugin", () => {
         .reply(200, '{data: "test-response"}', { 'X-Response-Header': "resp-foo" })
 
       const response = await web3ApiClient.query<{ post: Response }>({
-        uri: "w3://ens/http.web3api.eth",
+        uri: "wrap://ens/http.web3api.eth",
         query: `
           query {
             post(
@@ -289,7 +289,7 @@ describe("e2e tests for HttpPlugin", () => {
         .reply(404)
 
       const response = await web3ApiClient.query<{ get: Response }>({
-        uri: "w3://ens/http.web3api.eth",
+        uri: "wrap://ens/http.web3api.eth",
         query: `
           query {
             post(

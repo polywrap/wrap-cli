@@ -6,7 +6,7 @@ import {
   UriResolver_MaybeUriOrManifest,
   Bytes,
   manifest,
-} from "./w3-man";
+} from "./polywrap-man";
 
 import path from "path";
 import fs from "fs";

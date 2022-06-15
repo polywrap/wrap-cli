@@ -6,7 +6,7 @@ import { compareSync } from "dir-compare";
 import path from "path";
 import fs from "fs";
 
-const HELP = `Usage: w3 plugin|p [options] [command]
+const HELP = `Usage: polywrap plugin|p [options] [command]
 
 Build/generate types for the plugin
 
@@ -118,8 +118,8 @@ describe("e2e tests for plugin command", () => {
         expect(clearStyle(output)).toEqual(CODEGEN_SUCCESS);
 
         const expectedTypesResult = compareSync(
-          `${testCaseDir}/src/w3`,
-          `${testCaseDir}/expected/src/w3`,
+          `${testCaseDir}/src/polywrap`,
+          `${testCaseDir}/expected/src/polywrap`,
           { compareContent: true }
         );
         expect(expectedTypesResult.differences).toBe(0);

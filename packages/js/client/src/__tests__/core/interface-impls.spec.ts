@@ -20,9 +20,9 @@ describe("interface-impls", () => {
     return client;
   };
   it("should register interface implementations successfully", () => {
-    const interfaceUri = "w3://ens/some-interface1.eth";
-    const implementation1Uri = "w3://ens/some-implementation1.eth";
-    const implementation2Uri = "w3://ens/some-implementation2.eth";
+    const interfaceUri = "wrap://ens/some-interface1.eth";
+    const implementation1Uri = "wrap://ens/some-implementation1.eth";
+    const implementation2Uri = "wrap://ens/some-implementation2.eth";
 
     const client = new Web3ApiClient({
       interfaces: [
@@ -55,14 +55,14 @@ describe("interface-impls", () => {
   });
 
   it("should get all implementations of interface", async () => {
-    const interface1Uri = "w3://ens/some-interface1.eth";
-    const interface2Uri = "w3://ens/some-interface2.eth";
-    const interface3Uri = "w3://ens/some-interface3.eth";
+    const interface1Uri = "wrap://ens/some-interface1.eth";
+    const interface2Uri = "wrap://ens/some-interface2.eth";
+    const interface3Uri = "wrap://ens/some-interface3.eth";
 
-    const implementation1Uri = "w3://ens/some-implementation.eth";
-    const implementation2Uri = "w3://ens/some-implementation2.eth";
-    const implementation3Uri = "w3://ens/some-implementation3.eth";
-    const implementation4Uri = "w3://ens/some-implementation4.eth";
+    const implementation1Uri = "wrap://ens/some-implementation.eth";
+    const implementation2Uri = "wrap://ens/some-implementation2.eth";
+    const implementation3Uri = "wrap://ens/some-implementation3.eth";
+    const implementation4Uri = "wrap://ens/some-implementation4.eth";
 
     const client = await getClient({
       redirects: [
@@ -133,11 +133,11 @@ describe("interface-impls", () => {
   });
 
   it("should not register plugins with an interface uri (without default plugins)", () => {
-    const interface1Uri = "w3://ens/some-interface1.eth";
-    const interface2Uri = "w3://ens/some-interface2.eth";
-    const interface3Uri = "w3://ens/some-interface3.eth";
+    const interface1Uri = "wrap://ens/some-interface1.eth";
+    const interface2Uri = "wrap://ens/some-interface2.eth";
+    const interface3Uri = "wrap://ens/some-interface3.eth";
 
-    const implementationUri = "w3://ens/some-implementation.eth";
+    const implementationUri = "wrap://ens/some-implementation.eth";
 
     expect(() => {
       new Web3ApiClient({
@@ -187,9 +187,9 @@ describe("interface-impls", () => {
   });
 
   it("should not register plugins with an interface uri (with default plugins)", async () => {
-    const interfaceUri = "w3://ens/some-interface.eth";
+    const interfaceUri = "wrap://ens/some-interface.eth";
 
-    const implementationUri = "w3://ens/some-implementation.eth";
+    const implementationUri = "wrap://ens/some-implementation.eth";
 
     await expect(async () => {
       await getClient({
@@ -220,9 +220,9 @@ describe("interface-impls", () => {
   });
 
   it("should merge user-defined interface implementations with each other", async () => {
-    const interfaceUri = "w3://ens/interface.eth";
-    const implementationUri1 = "w3://ens/implementation1.eth";
-    const implementationUri2 = "w3://ens/implementation2.eth";
+    const interfaceUri = "wrap://ens/interface.eth";
+    const implementationUri1 = "wrap://ens/implementation1.eth";
+    const implementationUri2 = "wrap://ens/implementation2.eth";
 
     const client = new Web3ApiClient({
       interfaces: [
@@ -252,8 +252,8 @@ describe("interface-impls", () => {
 
   it("should merge user-defined interface implementations with defaults", async () => {
     const interfaceUri = coreInterfaceUris.uriResolver.uri;
-    const implementationUri1 = "w3://ens/implementation1.eth";
-    const implementationUri2 = "w3://ens/implementation2.eth";
+    const implementationUri1 = "wrap://ens/implementation1.eth";
+    const implementationUri2 = "wrap://ens/implementation2.eth";
 
     const client = new Web3ApiClient({
       interfaces: [
@@ -285,10 +285,10 @@ describe("interface-impls", () => {
   });
 
   test("get implementations - do not return plugins that are not explicitly registered", () => {
-    const interfaceUri = "w3://ens/some-interface.eth";
+    const interfaceUri = "wrap://ens/some-interface.eth";
 
-    const implementation1Uri = "w3://ens/some-implementation1.eth";
-    const implementation2Uri = "w3://ens/some-implementation2.eth";
+    const implementation1Uri = "wrap://ens/some-implementation1.eth";
+    const implementation2Uri = "wrap://ens/some-implementation2.eth";
 
     const client = new Web3ApiClient({
       plugins: [
@@ -320,10 +320,10 @@ describe("interface-impls", () => {
   });
 
   test("get implementations - return implementations for plugins which don't have interface stated in manifest", () => {
-    const interfaceUri = "w3://ens/some-interface.eth";
+    const interfaceUri = "wrap://ens/some-interface.eth";
 
-    const implementation1Uri = "w3://ens/some-implementation1.eth";
-    const implementation2Uri = "w3://ens/some-implementation2.eth";
+    const implementation1Uri = "wrap://ens/some-implementation1.eth";
+    const implementation2Uri = "wrap://ens/some-implementation2.eth";
 
     const client = new Web3ApiClient({
       plugins: [
@@ -361,8 +361,8 @@ describe("interface-impls", () => {
     const oldInterfaceUri = "ens/old.eth";
     const newInterfaceUri = "ens/new.eth";
 
-    const implementation1Uri = "w3://ens/some-implementation1.eth";
-    const implementation2Uri = "w3://ens/some-implementation2.eth";
+    const implementation1Uri = "wrap://ens/some-implementation1.eth";
+    const implementation2Uri = "wrap://ens/some-implementation2.eth";
 
     const client = new Web3ApiClient({
       redirects: [

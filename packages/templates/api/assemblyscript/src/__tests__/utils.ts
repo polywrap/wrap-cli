@@ -12,15 +12,15 @@ export function getPlugins(
     redirects: [],
     plugins: [
       {
-        uri: "w3://ens/ipfs.web3api.eth",
+        uri: "wrap://ens/ipfs.web3api.eth",
         plugin: ipfsPlugin({ provider: ipfs }),
       },
       {
-        uri: "w3://ens/ens.web3api.eth",
+        uri: "wrap://ens/ens.web3api.eth",
         plugin: ensPlugin({ addresses: { testnet: ensAddress } }),
       },
       {
-        uri: "w3://ens/ethereum.web3api.eth",
+        uri: "wrap://ens/ethereum.web3api.eth",
         plugin: ethereumPlugin({
           networks: {
             testnet: {

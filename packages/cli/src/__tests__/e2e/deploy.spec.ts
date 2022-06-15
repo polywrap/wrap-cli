@@ -1,4 +1,4 @@
-import { clearStyle, w3Cli } from "./utils";
+import { clearStyle, polywrapCli } from "./utils";
 
 import { 
   initTestEnvironment,
@@ -14,7 +14,7 @@ import { Wallet } from "@ethersproject/wallet";
 import path from "path";
 import fs from "fs";
 
-const HELP = `Usage: w3 deploy|d [options]
+const HELP = `Usage: polywrap deploy|d [options]
 
 Deploys/Publishes a Web3API
 
@@ -52,7 +52,7 @@ const setup = async (domainNames: string[]) => {
     ENS_REG_ADDR: ensAddress
   };
 
-  const ethereumPluginUri = "w3://ens/ethereum.web3api.eth"
+  const ethereumPluginUri = "wrap://ens/ethereum.web3api.eth"
   const client = new Web3ApiClient({
     plugins: [
       {
@@ -109,7 +109,7 @@ describe("e2e tests for deploy command", () => {
         {
           args: ["build", "-v"],
           cwd: getTestCaseDir(i),
-          cli: w3Cli,
+          cli: polywrapCli,
         },
       );
     }
@@ -126,7 +126,7 @@ describe("e2e tests for deploy command", () => {
       {
         args: ["deploy", "--help"],
         cwd: getTestCaseDir(0),
-        cli: w3Cli,
+        cli: polywrapCli,
       },
     );
 
@@ -140,7 +140,7 @@ describe("e2e tests for deploy command", () => {
       {
         args: ["deploy"],
         cwd: getTestCaseDir(0),
-        cli: w3Cli,
+        cli: polywrapCli,
         env: process.env as Record<string, string>
       },
     );
@@ -162,7 +162,7 @@ describe("e2e tests for deploy command", () => {
       {
         args: ["deploy"],
         cwd: getTestCaseDir(1),
-        cli: w3Cli,
+        cli: polywrapCli,
       },
     );
 
@@ -182,7 +182,7 @@ describe("e2e tests for deploy command", () => {
       {
         args: ["deploy"],
         cwd: getTestCaseDir(2),
-        cli: w3Cli,
+        cli: polywrapCli,
       },
     );
 
@@ -197,7 +197,7 @@ describe("e2e tests for deploy command", () => {
       {
         args: ["deploy"],
         cwd: getTestCaseDir(3),
-        cli: w3Cli,
+        cli: polywrapCli,
       },
     );
 
@@ -222,7 +222,7 @@ describe("e2e tests for deploy command", () => {
       {
         args: ["deploy"],
         cwd: getTestCaseDir(4),
-        cli: w3Cli,
+        cli: polywrapCli,
       },
     );
 

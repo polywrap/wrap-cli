@@ -1,9 +1,9 @@
 import {
-  w3_invoke_args,
-  w3_invoke,
-  w3_load_env,
-  w3_sanitize_env,
-  w3_abort,
+  wrap_invoke_args,
+  wrap_invoke,
+  wrap_load_env,
+  wrap_sanitize_env,
+  wrap_abort,
   InvokeArgs
 } from "@polywrap/wasm-as";
 
@@ -25,8 +25,8 @@ import {
 } from "./Env";
 {{/envType.sanitized}}
 
-export function _w3_invoke(method_size: u32, args_size: u32): bool {
-  const args: InvokeArgs = w3_invoke_args(
+export function _wrap_invoke(method_size: u32, args_size: u32): bool {
+  const args: InvokeArgs = wrap_invoke_args(
     method_size,
     args_size
   );
@@ -34,35 +34,35 @@ export function _w3_invoke(method_size: u32, args_size: u32): bool {
   {{#moduleType}}
   {{#methods}}
   {{^first}}else {{/first}}if (args.method == "{{name}}") {
-    return w3_invoke(args, {{name}}Wrapped);
+    return wrap_invoke(args, {{name}}Wrapped);
   }
   {{/methods}}
   {{/moduleType}}
   else {
-    return w3_invoke(args, null);
+    return wrap_invoke(args, null);
   }
 }
 
 {{#envType.sanitized}}
-export function _w3_load_env(env_size: u32): void {
-  const envBuf = w3_load_env(env_size);
+export function _wrap_load_env(env_size: u32): void {
+  const envBuf = wrap_load_env(env_size);
   env = Env.fromBuffer(envBuf);
 }
 
 {{/envType.sanitized}}
 {{#envType.client}}
-export function _w3_sanitize_env(args_size: u32): void {
-  w3_sanitize_env(args_size, sanitizeEnvWrapped);
+export function _wrap_sanitize_env(args_size: u32): void {
+  wrap_sanitize_env(args_size, sanitizeEnvWrapped);
 }
 
 {{/envType.client}}
-export function w3Abort(
+export function wrapAbort(
   msg: string | null,
   file: string | null,
   line: u32,
   column: u32
 ): void {
-  w3_abort(
+  wrap_abort(
     msg ? msg : "",
     file ? file : "",
     line,

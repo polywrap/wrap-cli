@@ -13,7 +13,7 @@ import {
 import { Web3ApiClient } from "@polywrap/client-js";
 import * as path from "path";
 
-const defaultOutputTypesDir = "./src/w3";
+const defaultOutputTypesDir = "./src/polywrap";
 
 type AppCommandOptions = {
   manifestFile: string;

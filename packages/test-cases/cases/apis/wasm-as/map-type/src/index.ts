@@ -1,7 +1,7 @@
 import {
   Input_getKey,
   Input_returnMap
-} from "./w3";
+} from "./polywrap";
 
 export function getKey(input: Input_getKey): i32 {
   let result = input.map.get(input.key);

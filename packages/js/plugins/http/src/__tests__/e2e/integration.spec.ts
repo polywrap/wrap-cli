@@ -1,5 +1,5 @@
 import { httpPlugin } from "../..";
-import { Response } from "../../w3";
+import { Response } from "../../polywrap";
 
 import { Web3ApiClient } from "@polywrap/client-js"
 import {
@@ -27,7 +27,7 @@ describe("e2e tests for HttpPlugin", () => {
       client = new Web3ApiClient({
         plugins: [
           {
-            uri: "w3://ens/http.web3api.eth",
+            uri: "wrap://ens/http.web3api.eth",
             plugin: httpPlugin({ }),
           },
         ],

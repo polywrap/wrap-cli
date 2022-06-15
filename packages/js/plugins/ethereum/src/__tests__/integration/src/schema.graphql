@@ -1,4 +1,4 @@
-#import { Module, Connection, Network, EventNotification, StaticTxResult, TxOverrides, TxRequest, TxReceipt, TxResponse } into Ethereum from "w3://ens/ethereum.web3api.eth"
+#import { Module, Connection, Network, EventNotification, StaticTxResult, TxOverrides, TxRequest, TxReceipt, TxResponse } into Ethereum from "wrap://ens/ethereum.web3api.eth"
 
 type Module {
     callContractView(

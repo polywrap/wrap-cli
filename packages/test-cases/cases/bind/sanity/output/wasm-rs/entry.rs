@@ -8,17 +8,17 @@ use web3api_wasm_rs::{
     InvokeArgs,
 };
 
-#[cfg(feature = "w3-invoke")]
+#[cfg(feature = "wrap-invoke")]
 #[no_mangle]
-pub extern "C" fn _w3_invoke(method_size: u32, args_size: u32) -> bool {
+pub extern "C" fn _wrap_invoke(method_size: u32, args_size: u32) -> bool {
     // Ensure the abort handler is properly setup
-    abort::w3_abort_setup();
+    abort::wrap_abort_setup();
 
-    let args: InvokeArgs = invoke::w3_invoke_args(method_size, args_size);
+    let args: InvokeArgs = invoke::wrap_invoke_args(method_size, args_size);
 
     match args.method.as_str() {
-        "moduleMethod" => invoke::w3_invoke(args, Some(module_method_wrapped)),
-        "objectMethod" => invoke::w3_invoke(args, Some(object_method_wrapped)),
-        _ => invoke::w3_invoke(args, None),
+        "moduleMethod" => invoke::wrap_invoke(args, Some(module_method_wrapped)),
+        "objectMethod" => invoke::wrap_invoke(args, Some(object_method_wrapped)),
+        _ => invoke::wrap_invoke(args, None),
     }
 }

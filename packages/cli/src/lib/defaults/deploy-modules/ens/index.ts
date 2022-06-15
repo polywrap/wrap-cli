@@ -41,7 +41,7 @@ class ENSPublisher implements Deployer {
       ? new Wallet(config.privateKey).connect(connectionProvider)
       : undefined;
 
-    const ethereumPluginUri = "w3://ens/ethereum.web3api.eth";
+    const ethereumPluginUri = "wrap://ens/ethereum.web3api.eth";
     const ensWrapperUri = `fs/${path.join(
       path.dirname(require.resolve("@polywrap/test-env-js")),
       "wrappers",

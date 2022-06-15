@@ -1,6 +1,6 @@
 import {
   Input_bytesMethod
-} from "./w3";
+} from "./polywrap";
 
 export function bytesMethod(input: Input_bytesMethod): ArrayBuffer {
   const argStr = String.UTF8.decode(input.arg.prop);

@@ -1,7 +1,7 @@
-pub mod w3;
+pub mod polywrap;
 use web3api_wasm_rs::JSON;
-use w3::imported::ethereum_module;
-pub use w3::*;
+use polywrap::imported::ethereum_module;
+pub use polywrap::*;
 
 pub fn get_data(input: InputGetData) -> i32 {
     match EthereumModule::call_contract_view(&ethereum_module::InputCallContractView {

@@ -1,8 +1,8 @@
 use std::ops::Mul;
 
 use web3api_wasm_rs::BigInt;
-pub mod w3;
-pub use w3::*;
+pub mod polywrap;
+pub use polywrap::*;
 
 pub fn method(input: InputMethod) -> BigInt {
     let mut result = input.arg1.mul(input.obj.prop1);

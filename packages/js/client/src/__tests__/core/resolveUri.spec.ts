@@ -298,7 +298,7 @@ describe("resolveUri", () => {
         result: {
           uri: ipfsUri,
           api: false,
-          implementationUri: new Uri("w3://ens/ens.web3api.eth"),
+          implementationUri: new Uri("wrap://ens/ens.web3api.eth"),
         },
       },
       {
@@ -331,7 +331,7 @@ describe("resolveUri", () => {
         result: {
           uri: ipfsUri,
           api: true,
-          implementationUri: new Uri("w3://ens/ipfs.web3api.eth"),
+          implementationUri: new Uri("wrap://ens/ipfs.web3api.eth"),
         },
       },
     ]);
@@ -395,7 +395,7 @@ describe("resolveUri", () => {
         result: {
           uri: ipfsUri,
           api: true,
-          implementationUri: new Uri("w3://ens/ipfs.web3api.eth"),
+          implementationUri: new Uri("wrap://ens/ipfs.web3api.eth"),
         },
       },
     ]);
@@ -442,7 +442,7 @@ describe("resolveUri", () => {
         result: {
           uri: ipfsUri,
           api: false,
-          implementationUri: new Uri("w3://ens/ens.web3api.eth"),
+          implementationUri: new Uri("wrap://ens/ens.web3api.eth"),
         },
       },
       {
@@ -522,7 +522,7 @@ describe("resolveUri", () => {
         result: {
           uri: ipfsUri,
           api: true,
-          implementationUri: new Uri("w3://ens/ipfs.web3api.eth"),
+          implementationUri: new Uri("wrap://ens/ipfs.web3api.eth"),
         },
       },
     ]);
@@ -561,7 +561,7 @@ describe("resolveUri", () => {
         result: {
           uri: ipfsUri,
           api: false,
-          implementationUri: new Uri("w3://ens/ens.web3api.eth"),
+          implementationUri: new Uri("wrap://ens/ens.web3api.eth"),
         },
       },
       {
@@ -586,7 +586,7 @@ describe("resolveUri", () => {
         result: {
           uri: ipfsUri,
           api: true,
-          implementationUri: new Uri("w3://ens/ipfs.web3api.eth"),
+          implementationUri: new Uri("wrap://ens/ipfs.web3api.eth"),
         },
       },
     ]);
@@ -650,7 +650,7 @@ describe("resolveUri", () => {
         result: {
           uri: ipfsUri,
           api: true,
-          implementationUri: new Uri("w3://ens/ipfs.web3api.eth"),
+          implementationUri: new Uri("wrap://ens/ipfs.web3api.eth"),
         },
       },
     ]);
@@ -697,7 +697,7 @@ describe("resolveUri", () => {
         result: {
           uri: ipfsUri,
           api: false,
-          implementationUri: new Uri("w3://ens/ens.web3api.eth"),
+          implementationUri: new Uri("wrap://ens/ens.web3api.eth"),
         },
       },
       {
@@ -730,7 +730,7 @@ describe("resolveUri", () => {
         result: {
           uri: ipfsUri,
           api: true,
-          implementationUri: new Uri("w3://ens/ipfs.web3api.eth"),
+          implementationUri: new Uri("wrap://ens/ipfs.web3api.eth"),
         },
       },
     ]);
@@ -803,7 +803,7 @@ describe("resolveUri", () => {
         result: {
           uri: ipfsUri,
           api: false,
-          implementationUri: new Uri("w3://ens/ens.web3api.eth"),
+          implementationUri: new Uri("wrap://ens/ens.web3api.eth"),
         },
       },
       {
@@ -1008,7 +1008,7 @@ describe("resolveUri", () => {
 
     expect(error.type).toEqual(ResolveUriErrorType.InternalResolver);
     expect(error.error?.message).toEqual(
-      "Could not load the following URI Resolver implementations: w3://ens/test-resolver.eth"
+      "Could not load the following URI Resolver implementations: wrap://ens/test-resolver.eth"
     );
   });
 
@@ -1024,7 +1024,7 @@ describe("resolveUri", () => {
 
     const { success, failedUriResolvers } = await client.loadUriResolvers();
     expect(success).toBeFalsy();
-    expect(failedUriResolvers).toEqual(["w3://ens/test-resolver.eth"]);
+    expect(failedUriResolvers).toEqual(["wrap://ens/test-resolver.eth"]);
 
     const { error } = await client.resolveUri("ens/test.eth");
     expect(error).toBeTruthy();
@@ -1035,7 +1035,7 @@ describe("resolveUri", () => {
 
     expect(error.type).toEqual(ResolveUriErrorType.InternalResolver);
     expect(error.error?.message).toEqual(
-      "Could not load the following URI Resolver implementations: w3://ens/test-resolver.eth"
+      "Could not load the following URI Resolver implementations: wrap://ens/test-resolver.eth"
     );
   });
 
@@ -1051,6 +1051,6 @@ describe("resolveUri", () => {
 
     expect(error).toBeFalsy();
     expect(api).toBeFalsy();
-    expect(uri?.uri).toEqual("w3://ens/test.eth");
+    expect(uri?.uri).toEqual("wrap://ens/test.eth");
   });
 });

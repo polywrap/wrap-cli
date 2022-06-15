@@ -2,7 +2,7 @@ import {
   SanityEnum,
   Input_method1,
   Input_method2,
-} from "./w3";
+} from "./polywrap";
 
 export function method1(input: Input_method1): SanityEnum {
   return input.en;

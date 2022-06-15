@@ -2,7 +2,7 @@ import {
   env,
   Env,
   Input_moduleEnv,
-} from "./w3";
+} from "./polywrap";
 
 export function moduleEnv(input: Input_moduleEnv): Env {
   return env as Env;

@@ -12,6 +12,6 @@ export function getCompilerOverrides(): CompilerOverrides {
         throw Error(intlMsg.lib_wasm_rust_invalidModule({ path: module }));
       }
     },
-    generationSubPath: "src/w3",
+    generationSubPath: "src/polywrap",
   };
 }

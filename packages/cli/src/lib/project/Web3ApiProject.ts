@@ -544,7 +544,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
 
   private _getGenerationDirectory(
     entryPoint: string,
-    generationSubPath = "w3"
+    generationSubPath = "polywrap"
   ): string {
     const absolute = path.isAbsolute(entryPoint)
       ? entryPoint

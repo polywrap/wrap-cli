@@ -3,7 +3,7 @@ import {
   HTTP_Response,
   Input_get,
   Input_post,
-} from "./w3";
+} from "./polywrap";
 
 export function get(input: Input_get): HTTP_Response | null {
   return HTTP_Module.get({

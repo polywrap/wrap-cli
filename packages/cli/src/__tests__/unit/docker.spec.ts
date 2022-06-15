@@ -1,4 +1,4 @@
-import { w3Cli } from "../e2e/utils";
+import { polywrapCli } from "../e2e/utils";
 
 import { initTestEnvironment, runCLI, stopTestEnvironment } from "@polywrap/test-env-js";
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
@@ -20,7 +20,7 @@ describe("e2e tests for docker", () => {
         runCLI({
           args: ["build", "-v"],
           cwd: path.join(GetPathToCliTestFiles(), "api/build-cmd/001-sanity"),
-          cli: w3Cli
+          cli: polywrapCli
         }).then((result: { exitCode: number; stdout: string; stderr: string }) => {
           const { exitCode, stderr } = result;
           expect(stderr.indexOf("Conflict. The container name \"/root-build-image\" is already in use")).toBeLessThan(0);

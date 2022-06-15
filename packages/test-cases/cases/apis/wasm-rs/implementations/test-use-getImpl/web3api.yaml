@@ -5,5 +5,5 @@ language: wasm/rust
 schema: ./schema.graphql
 module: ./Cargo.toml
 import_redirects:
-  - uri: w3://ens/interface.eth
+  - uri: wrap://ens/interface.eth
     schema: ../test-interface/build/schema.graphql

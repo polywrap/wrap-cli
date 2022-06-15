@@ -6,7 +6,7 @@ describe("log method", () => {
     const web3ApiClient = new Web3ApiClient()
 
     const response = await web3ApiClient.query<{ log: boolean }>({
-      uri: "w3://ens/js-logger.web3api.eth",
+      uri: "wrap://ens/js-logger.web3api.eth",
       query: `
         query {
           log(

@@ -135,7 +135,7 @@ export class PluginProject extends Project<PluginManifest> {
 
   private _getGenerationDirectory(
     entryPoint: string,
-    generationSubPath = "w3"
+    generationSubPath = "polywrap"
   ): string {
     const absolute = path.isAbsolute(entryPoint)
       ? entryPoint

@@ -119,7 +119,7 @@ export class AppProject extends Project<AppManifest> {
     });
   }
 
-  private _getGenerationDirectory(generationSubPath = "src/w3"): string {
+  private _getGenerationDirectory(generationSubPath = "src/polywrap"): string {
     return path.join(this.getManifestDir(), generationSubPath);
   }
 }

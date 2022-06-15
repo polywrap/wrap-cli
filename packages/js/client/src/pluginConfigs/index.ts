@@ -19,9 +19,9 @@ const modules: Record<string, string> = {
 };
 
 const uris: Record<string, string> = {
-  ipfs: "w3://ens/ipfs.web3api.eth",
-  ethereum: "w3://ens/ethereum.web3api.eth",
-  ens: "w3://ens/ens.web3api.eth",
+  ipfs: "wrap://ens/ipfs.web3api.eth",
+  ethereum: "wrap://ens/ethereum.web3api.eth",
+  ens: "wrap://ens/ens.web3api.eth",
 };
 
 export { PluginConfigs, modules, uris };

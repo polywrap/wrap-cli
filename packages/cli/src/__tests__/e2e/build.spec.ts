@@ -1,12 +1,12 @@
 import { Web3ApiProject, loadBuildManifest } from "../../lib";
-import { clearStyle, w3Cli } from "./utils";
+import { clearStyle, polywrapCli } from "./utils";
 
 import { runCLI } from "@polywrap/test-env-js";
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import fs from "fs";
 import path from "path";
 
-const HELP = `Usage: w3 build|b [options]
+const HELP = `Usage: polywrap build|b [options]
 
 Builds a Web3API
 
@@ -37,7 +37,7 @@ describe("e2e tests for build command", () => {
       {
         args: ["build", "--help"],
         cwd: getTestCaseDir(0),
-        cli: w3Cli,
+        cli: polywrapCli,
       },
     );
 
@@ -51,7 +51,7 @@ describe("e2e tests for build command", () => {
       {
         args: ["build", "--output-dir"],
         cwd: getTestCaseDir(0),
-        cli: w3Cli,
+        cli: polywrapCli,
       },
     );
 
@@ -69,7 +69,7 @@ describe("e2e tests for build command", () => {
 
     await project.cacheDefaultBuildImage();
 
-    const cacheBuildEnvPath = path.join(projectRoot, ".w3/web3api/build/image")
+    const cacheBuildEnvPath = path.join(projectRoot, ".polywrap/web3api/build/image")
     const cachedBuildManifest = await loadBuildManifest(
       path.join(cacheBuildEnvPath, "web3api.build.yaml")
     );
@@ -90,7 +90,7 @@ describe("e2e tests for build command", () => {
           {
             args: ["build", "-v"],
             cwd: testCaseDir,
-           cli: w3Cli,
+           cli: polywrapCli,
           },
         );
 

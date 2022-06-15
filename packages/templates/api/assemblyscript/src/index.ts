@@ -3,7 +3,7 @@ import {
   Input_deployContract,
   Input_setData,
   Input_getData,
-} from "./w3";
+} from "./polywrap";
 import { abi, bytecode } from "./contracts/SimpleStorage";
 
 export function getData(input: Input_getData): u32 {

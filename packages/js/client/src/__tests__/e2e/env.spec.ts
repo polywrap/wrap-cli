@@ -355,7 +355,7 @@ describe("env", () => {
   });
 
   test("plugin env types", async () => {
-    const implementationUri = "w3://ens/some-implementation.eth";
+    const implementationUri = "wrap://ens/some-implementation.eth";
     const envPlugin = mockEnvPlugin();
     const client = await getClient({
       plugins: [

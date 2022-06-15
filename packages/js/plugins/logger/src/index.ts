@@ -4,7 +4,7 @@ import {
   Logger_LogLevel,
   Logger_LogLevelEnum,
   manifest,
-} from "./w3-man";
+} from "./polywrap-man";
 
 import { PluginFactory } from "@polywrap/core-js";
 

@@ -4,7 +4,7 @@
   "private": true,
   "version": "0.0.1-prealpha.85",
   "scripts": {
-    "build": "npx w3 app codegen",
+    "build": "npx polywrap app codegen",
     "test": "ts-node ./src/index.ts"
   },
   "dependencies": {

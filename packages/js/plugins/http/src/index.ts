@@ -5,7 +5,7 @@ import {
   Input_post,
   Response,
   manifest,
-} from "./w3-man";
+} from "./polywrap-man";
 import { fromAxiosResponse, toAxiosRequestConfig } from "./util";
 
 import axios from "axios";

@@ -29,12 +29,12 @@ describe("Filesystem plugin", () => {
     const config: Partial<Web3ApiClientConfig> = {
       plugins: [
         {
-          uri: "w3://ens/fs.web3api.eth",
+          uri: "wrap://ens/fs.web3api.eth",
           plugin: filesystemPlugin({ }),
         },
         // IPFS is required for downloading Web3API packages
         {
-          uri: "w3://ens/ipfs.web3api.eth",
+          uri: "wrap://ens/ipfs.web3api.eth",
           plugin: ipfsPlugin({
             provider: providers.ipfs,
             fallbackProviders: defaultIpfsProviders,
@@ -42,7 +42,7 @@ describe("Filesystem plugin", () => {
         },
         // ENS is required for resolving domain to IPFS hashes
         {
-          uri: "w3://ens/ens.web3api.eth",
+          uri: "wrap://ens/ens.web3api.eth",
           plugin: ensPlugin({
             addresses: {
               testnet: ensAddresses.ensAddress,
@@ -50,7 +50,7 @@ describe("Filesystem plugin", () => {
           }),
         },
         {
-          uri: "w3://ens/ethereum.web3api.eth",
+          uri: "wrap://ens/ethereum.web3api.eth",
           plugin: ethereumPlugin({
             networks: {
               testnet: {

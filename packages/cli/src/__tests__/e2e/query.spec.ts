@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import yaml from "js-yaml";
 
-import { clearStyle, w3Cli } from "./utils";
+import { clearStyle, polywrapCli } from "./utils";
 
 import { buildAndDeployApi, providers, initTestEnvironment, runCLI, stopTestEnvironment } from "@polywrap/test-env-js";
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
@@ -16,7 +16,7 @@ import {
 
 jest.setTimeout(200000);
 
-const HELP = `Usage: w3 query|q [options] <recipe>
+const HELP = `Usage: polywrap query|q [options] <recipe>
 
 Query Web3APIs using recipe scripts
 
@@ -49,7 +49,7 @@ describe("sanity tests for query command", () => {
     const { exitCode, stdout, stderr } = await runCLI({
       args: ["query"],
       cwd: testCaseRoot,
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(exitCode).toEqual(1);
@@ -61,7 +61,7 @@ describe("sanity tests for query command", () => {
     const { exitCode, stdout, stderr } = await runCLI({
       args: ["query", "./recipes/e2e.json", "--client-config"],
       cwd: testCaseRoot,
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(exitCode).toEqual(1);
@@ -102,7 +102,7 @@ describe("e2e tests for query command", () => {
     const { exitCode: code, stdout: output, stderr: queryErr } = await runCLI({
       args: ["query", "./recipes/e2e.json"],
       cwd: testCaseRoot,
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(queryErr).toBe("");
@@ -118,7 +118,7 @@ describe("e2e tests for query command", () => {
     const { exitCode: code, stdout: output, stderr: queryErr } = await runCLI({
       args: ["query", "./recipes/e2e.yaml"],
       cwd: testCaseRoot,
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(code).toEqual(0);
@@ -140,7 +140,7 @@ describe("e2e tests for query command", () => {
     const { exitCode: code, stdout: output, stderr: queryErr } = await runCLI({
       args: ["query", "./recipes/e2e.json"],
       cwd: testCaseRoot,
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(code).toEqual(0);
@@ -167,7 +167,7 @@ describe("e2e tests for query command", () => {
         "./recipes/output.json",
       ],
       cwd: testCaseRoot,
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(code).toEqual(0);
@@ -198,7 +198,7 @@ describe("e2e tests for query command", () => {
         "./recipes/output.yaml",
       ],
       cwd: testCaseRoot,
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(code).toEqual(0);
@@ -233,7 +233,7 @@ describe("e2e tests for query command", () => {
         "--quiet",
       ],
       cwd: testCaseRoot,
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(code).toEqual(0);
@@ -258,7 +258,7 @@ describe("e2e tests for query command", () => {
           config,
         ],
         cwd: testCaseRoot,
-        cli: w3Cli,
+        cli: polywrapCli,
       });
 
       expect(stderr).toBeFalsy();

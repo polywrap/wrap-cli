@@ -1,4 +1,4 @@
-import { Input_moduleMethod, Input_abstractModuleMethod, ImplementationType, Interface } from "./w3";
+import { Input_moduleMethod, Input_abstractModuleMethod, ImplementationType, Interface } from "./polywrap";
 
 export function moduleImplementations(): string[] {
   return Interface.getImplementations();

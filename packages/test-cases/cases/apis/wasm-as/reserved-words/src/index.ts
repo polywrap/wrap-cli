@@ -1,7 +1,7 @@
 import {
   Input_method1,
   Result,
-} from "./w3";
+} from "./polywrap";
 
 export function method1(input: Input_method1): Result {
   return {

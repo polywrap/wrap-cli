@@ -2,7 +2,7 @@
 {{#getImplementations}}
 {{#enabled}}
 import {
-  w3_getImplementations
+  wrap_getImplementations
 } from "@polywrap/wasm-as";
 {{/enabled}}
 {{/getImplementations}}
@@ -15,7 +15,7 @@ export class {{namespace}} {
   {{#getImplementations}}
   {{#enabled}}
   public static getImplementations(): string[] {
-    return w3_getImplementations(this.uri);
+    return wrap_getImplementations(this.uri);
   }
   {{/enabled}}
   {{/getImplementations}}

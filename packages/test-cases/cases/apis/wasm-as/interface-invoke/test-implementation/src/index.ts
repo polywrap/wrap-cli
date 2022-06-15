@@ -1,4 +1,4 @@
-import { Input_moduleMethod, Input_abstractModuleMethod, ImplementationType } from "./w3";
+import { Input_moduleMethod, Input_abstractModuleMethod, ImplementationType } from "./polywrap";
 
 export function moduleMethod(input: Input_moduleMethod): ImplementationType {
   return input.arg;

@@ -1,6 +1,6 @@
 [
   {
-    "api": "w3://fs/./build",
+    "api": "wrap://fs/./build",
     "constants": "./constants.json"
   },
   {

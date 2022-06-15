@@ -15,7 +15,7 @@ import {
 import path from "path";
 import { filesystem } from "gluegun";
 
-const defaultCodegenDir = "./w3";
+const defaultCodegenDir = "./polywrap";
 const nodeStr = intlMsg.commands_codegen_options_i_node();
 const pathStr = intlMsg.commands_codegen_options_o_path();
 const addrStr = intlMsg.commands_codegen_options_e_address();

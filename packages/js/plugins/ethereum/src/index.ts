@@ -36,7 +36,7 @@ import {
   Network,
   Connection as SchemaConnection,
   manifest,
-} from "./w3-man";
+} from "./polywrap-man";
 import {
   Connections,
   Connection,

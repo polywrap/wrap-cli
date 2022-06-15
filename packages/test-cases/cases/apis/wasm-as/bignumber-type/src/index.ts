@@ -1,6 +1,6 @@
 import {
   Input_method
-} from "./w3";
+} from "./polywrap";
 import { BigNumber } from "@polywrap/wasm-as";
 
 export function method(input: Input_method): BigNumber {

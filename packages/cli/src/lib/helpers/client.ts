@@ -15,7 +15,7 @@ export function getSimpleClient(config: SimpleClientConfig): Web3ApiClient {
   const plugins: PluginRegistration[] = [];
   if (ensAddress) {
     plugins.push({
-      uri: "w3://ens/ens.web3api.eth",
+      uri: "wrap://ens/ens.web3api.eth",
       plugin: ensPlugin({
         addresses: {
           testnet: ensAddress,
@@ -25,7 +25,7 @@ export function getSimpleClient(config: SimpleClientConfig): Web3ApiClient {
   }
   if (ethProvider) {
     plugins.push({
-      uri: "w3://ens/ethereum.web3api.eth",
+      uri: "wrap://ens/ethereum.web3api.eth",
       plugin: ethereumPlugin({
         networks: {
           testnet: {
@@ -37,7 +37,7 @@ export function getSimpleClient(config: SimpleClientConfig): Web3ApiClient {
   }
   if (ipfsProvider) {
     plugins.push({
-      uri: "w3://ens/ipfs.web3api.eth",
+      uri: "wrap://ens/ipfs.web3api.eth",
       plugin: ipfsPlugin({
         provider: ipfsProvider,
         fallbackProviders: defaultIpfsProviders,

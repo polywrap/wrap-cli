@@ -1,4 +1,4 @@
-import { HelloWorld_Module, Ethereum_Module } from "./w3";
+import { HelloWorld_Module, Ethereum_Module } from "./polywrap";
 
 import { Web3ApiClient } from "@polywrap/client-js";
 

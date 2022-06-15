@@ -148,7 +148,7 @@ async function run(options: BuildCommandOptions) {
     const watcher = new Watcher();
 
     watcher.start(project.getManifestDir(), {
-      ignored: [outputDir + "/**", project.getManifestDir() + "/**/w3/**"],
+      ignored: [outputDir + "/**", project.getManifestDir() + "/**/polywrap/**"],
       ignoreInitial: true,
       execute: async (events: WatchEvent[]) => {
         // Log all of the events encountered

@@ -5,7 +5,7 @@ import {
   Input_u16Method,
   Input_i32Method,
   Input_u32Method,
-} from "./w3";
+} from "./polywrap";
 
 export function i8Method(input: Input_i8Method): i8 {
   const firstInt = input.first;

@@ -18,7 +18,7 @@ import path from "path";
 import fs from "fs";
 
 const defaultPublishDir = "./build";
-const defaultCodegenDir = "./w3";
+const defaultCodegenDir = "./polywrap";
 const pathStr = intlMsg.commands_plugin_options_path();
 const defaultManifestStr = defaultPluginManifest.join(" | ");
 const nodeStr = intlMsg.commands_plugin_options_i_node();

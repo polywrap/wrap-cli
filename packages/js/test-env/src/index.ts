@@ -22,8 +22,8 @@ export const providers = {
   ethereum: "http://localhost:8545",
 };
 
-const monorepoCli = `${__dirname}/../../../cli/bin/w3`;
-const npmCli = `${__dirname}/../../cli/bin/w3`;
+const monorepoCli = `${__dirname}/../../../cli/bin/polywrap`;
+const npmCli = `${__dirname}/../../cli/bin/polywrap`;
 
 async function awaitResponse(
   url: string,
@@ -198,10 +198,10 @@ export async function buildApi(apiAbsPath: string): Promise<void> {
   });
 
   if (buildExitCode !== 0) {
-    console.error(`w3 exited with code: ${buildExitCode}`);
+    console.error(`polywrap exited with code: ${buildExitCode}`);
     console.log(`stderr:\n${buildStderr}`);
     console.log(`stdout:\n${buildStdout}`);
-    throw Error("w3 CLI failed");
+    throw Error("polywrap CLI failed");
   }
 }
 
@@ -236,7 +236,7 @@ export async function buildAndDeployApi({
   // register ENS domain
   const ensWrapperUri = `fs/${__dirname}/wrappers/ens`;
 
-  const ethereumPluginUri = "w3://ens/ethereum.web3api.eth";
+  const ethereumPluginUri = "wrap://ens/ethereum.web3api.eth";
 
   const client = new Web3ApiClient({
     plugins: [
@@ -355,10 +355,10 @@ export async function buildAndDeployApi({
   });
 
   if (deployExitCode !== 0) {
-    console.error(`w3 exited with code: ${deployExitCode}`);
+    console.error(`polywrap exited with code: ${deployExitCode}`);
     console.log(`stderr:\n${deployStderr}`);
     console.log(`stdout:\n${deployStdout}`);
-    throw Error("w3 CLI failed");
+    throw Error("polywrap CLI failed");
   }
 
   // remove manually configured manifests
@@ -367,11 +367,11 @@ export async function buildAndDeployApi({
   fs.unlinkSync(tempDeployManifestPath);
 
   // get the IPFS CID of the published package
-  const extractCID = /(w3:\/\/ipfs\/[A-Za-z0-9]+)/;
+  const extractCID = /(wrap:\/\/ipfs\/[A-Za-z0-9]+)/;
   const result = deployStdout.match(extractCID);
 
   if (!result) {
-    throw Error(`W3 CLI output missing IPFS CID.\nOutput: ${deployStdout}`);
+    throw Error(`polywrap CLI output missing IPFS CID.\nOutput: ${deployStdout}`);
   }
 
   const apiCid = new Uri(result[1]).path;

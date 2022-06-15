@@ -3,7 +3,7 @@ import {
   Input_environment,
   Input_sanitizeEnv,
   Env
-} from "./w3";
+} from "./polywrap";
 
 export function environment(input: Input_environment): Env {
   return env as Env;

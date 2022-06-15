@@ -11,7 +11,7 @@ import {
   Env,
   UriResolver_MaybeUriOrManifest,
   manifest,
-} from "./w3-man";
+} from "./polywrap-man";
 import { IpfsClient } from "./utils/IpfsClient";
 import { execSimple, execFallbacks } from "./utils/exec";
 

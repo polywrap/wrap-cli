@@ -1,2 +1,2 @@
-#import * into Ethereum from "w3://ens/ethereum.web3api.eth"
-#import * into Console from "w3://ipfs/QmVGwj3FtvhiErJ1wWbmRuHpvEQ3t1BPNESvEiMJM57p2y"
+#import * into Ethereum from "wrap://ens/ethereum.web3api.eth"
+#import * into Console from "wrap://ipfs/QmVGwj3FtvhiErJ1wWbmRuHpvEQ3t1BPNESvEiMJM57p2y"

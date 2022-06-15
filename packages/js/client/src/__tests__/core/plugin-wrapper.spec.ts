@@ -8,15 +8,15 @@ import {
 jest.setTimeout(200000);
 
 const defaultPlugins = [
-  "w3://ens/ipfs.web3api.eth",
-  "w3://ens/ens.web3api.eth",
-  "w3://ens/ethereum.web3api.eth",
-  "w3://ens/http.web3api.eth",
-  "w3://ens/js-logger.web3api.eth",
-  "w3://ens/uts46.web3api.eth",
-  "w3://ens/sha3.web3api.eth",
-  "w3://ens/graph-node.web3api.eth",
-  "w3://ens/fs.web3api.eth",
+  "wrap://ens/ipfs.web3api.eth",
+  "wrap://ens/ens.web3api.eth",
+  "wrap://ens/ethereum.web3api.eth",
+  "wrap://ens/http.web3api.eth",
+  "wrap://ens/js-logger.web3api.eth",
+  "wrap://ens/uts46.web3api.eth",
+  "wrap://ens/sha3.web3api.eth",
+  "wrap://ens/graph-node.web3api.eth",
+  "wrap://ens/fs.web3api.eth",
 ];
 
 describe("plugin-wrapper", () => {
@@ -60,7 +60,7 @@ describe("plugin-wrapper", () => {
   };
 
   test("plugin registration - with default plugins", () => {
-    const implementationUri = "w3://ens/some-implementation.eth";
+    const implementationUri = "wrap://ens/some-implementation.eth";
 
     const client = new Web3ApiClient({
       plugins: [
@@ -85,7 +85,7 @@ describe("plugin-wrapper", () => {
   test("getSchema -- plugin schema", async () => {
     const client = await getClient();
     const schema: string = await client.getSchema(
-      "w3://ens/js-logger.web3api.eth"
+      "wrap://ens/js-logger.web3api.eth"
     );
 
     expect(schema).toStrictEqual(
@@ -172,7 +172,7 @@ enum Logger_LogLevel @imported(
   });
 
   it("plugin map types", async () => {
-    const implementationUri = "w3://ens/some-implementation.eth";
+    const implementationUri = "wrap://ens/some-implementation.eth";
     const mockPlugin = mockMapPlugin();
     const client = await getClient({
       plugins: [

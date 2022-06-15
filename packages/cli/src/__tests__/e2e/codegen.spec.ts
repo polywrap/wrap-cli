@@ -1,5 +1,5 @@
 import { defaultWeb3ApiManifest } from "../../lib";
-import { clearStyle, w3Cli } from "./utils";
+import { clearStyle, polywrapCli } from "./utils";
 
 import { runCLI } from "@polywrap/test-env-js";
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
@@ -7,7 +7,7 @@ import path from "path";
 import fs from "fs";
 import rimraf from "rimraf";
 
-const HELP = `Usage: w3 codegen|g [options]
+const HELP = `Usage: polywrap codegen|g [options]
 
 Auto-generate API Types
 
@@ -15,7 +15,7 @@ Options:
   -m, --manifest-file <path>  Path to the Web3API manifest file (default:
                               ${defaultWeb3ApiManifest.join(" | ")})
   -c, --codegen-dir <path>     Output directory for the generated code
-                              (default: ./w3)
+                              (default: ./polywrap)
   -s, --script <path>         Path to a custom generation script (JavaScript |
                               TypeScript)
   -i, --ipfs [<node>]         IPFS node to load external schemas (default:
@@ -38,7 +38,7 @@ describe("e2e tests for codegen command", () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["codegen", "--help"],
       cwd: getTestCaseDir(0),
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(code).toEqual(0);
@@ -50,7 +50,7 @@ describe("e2e tests for codegen command", () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["codegen", "--ens"],
       cwd: getTestCaseDir(0),
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(code).toEqual(1);
@@ -64,7 +64,7 @@ describe("e2e tests for codegen command", () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["codegen", "--script", `web3api-invalid.gen.js`],
       cwd: getTestCaseDir(0),
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     const genFile = path.normalize(
@@ -82,7 +82,7 @@ describe("e2e tests for codegen command", () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["codegen", "--script", `web3api-norun.gen.js`],
       cwd: getTestCaseDir(0),
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(code).toEqual(1);
@@ -98,7 +98,7 @@ describe("e2e tests for codegen command", () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["codegen"],
       cwd: getTestCaseDir(0),
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(code).toEqual(0);
@@ -127,7 +127,7 @@ describe("e2e tests for codegen command", () => {
         let { exitCode, stdout, stderr } = await runCLI({
           args: ["codegen", ...cmdArgs],
           cwd: testCaseDir,
-          cli: w3Cli,
+          cli: polywrapCli,
         });
 
         stdout = clearStyle(stdout);

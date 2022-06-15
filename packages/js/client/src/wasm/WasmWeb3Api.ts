@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { W3Exports } from "./types";
+import { WrapExports } from "./types";
 import { createImports } from "./imports";
 
 import {
@@ -64,7 +64,7 @@ export interface State {
 }
 
 export class WasmWeb3Api extends Api {
-  public static requiredExports: readonly string[] = ["_w3_invoke"];
+  public static requiredExports: readonly string[] = ["_wrap_invoke"];
 
   private _schema?: string;
   private _wasm: ArrayBuffer | undefined = undefined;
@@ -216,11 +216,11 @@ export class WasmWeb3Api extends Api {
         requiredExports: WasmWeb3Api.requiredExports,
       });
 
-      const exports = instance.exports as W3Exports;
+      const exports = instance.exports as WrapExports;
 
       await this._sanitizeAndLoadEnv(state, exports);
 
-      const result = await exports._w3_invoke(
+      const result = await exports._wrap_invoke(
         state.method.length,
         state.args.byteLength
       );
@@ -314,18 +314,18 @@ export class WasmWeb3Api extends Api {
   @Tracer.traceMethod("WasmWeb3Api: _sanitizeAndLoadEnv")
   private async _sanitizeAndLoadEnv(
     state: State,
-    exports: W3Exports
+    exports: WrapExports
   ): Promise<void> {
-    if (hasExport("_w3_load_env", exports)) {
+    if (hasExport("_wrap_load_env", exports)) {
       if (this._sanitizedEnv !== undefined) {
         state.env = this._sanitizedEnv as ArrayBuffer;
       } else {
         const clientEnv = this._getClientEnv();
 
-        if (hasExport("_w3_sanitize_env", exports)) {
+        if (hasExport("_wrap_sanitize_env", exports)) {
           state.sanitizeEnv.args = msgpackEncode({ env: clientEnv });
 
-          await exports._w3_sanitize_env(state.sanitizeEnv.args.byteLength);
+          await exports._wrap_sanitize_env(state.sanitizeEnv.args.byteLength);
           state.env = state.sanitizeEnv.result as ArrayBuffer;
           this._sanitizedEnv = state.env;
         } else {
@@ -334,7 +334,7 @@ export class WasmWeb3Api extends Api {
         }
       }
 
-      await exports._w3_load_env(state.env.byteLength);
+      await exports._wrap_load_env(state.env.byteLength);
     }
   }
 

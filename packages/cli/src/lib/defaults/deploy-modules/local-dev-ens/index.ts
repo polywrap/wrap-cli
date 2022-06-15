@@ -28,7 +28,7 @@ class LocalDevENSPublisher implements Deployer {
     }
 
     const cid = uri.path;
-    const ethereumPluginUri = "w3://ens/ethereum.web3api.eth";
+    const ethereumPluginUri = "wrap://ens/ethereum.web3api.eth";
 
     const client = new Web3ApiClient({
       plugins: [
