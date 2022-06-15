@@ -1,5 +1,6 @@
 import {
   coreInterfaceUris,
+  PluginModule
 } from "@polywrap/core-js";
 import {
   Uri,
@@ -87,7 +88,7 @@ describe("sanity", () => {
         {
           uri: implementationUri,
           plugin: {
-            factory: () => ({} as Plugin),
+            factory: () => ({} as PluginModule),
             manifest: {
               schema: schemaStr,
               implements: [],
