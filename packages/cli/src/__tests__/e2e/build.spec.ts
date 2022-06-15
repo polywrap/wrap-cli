@@ -1,8 +1,8 @@
 import { Web3ApiProject, loadBuildManifest } from "../../lib";
 import { clearStyle, w3Cli } from "./utils";
 
-import { runCLI } from "@web3api/test-env-js";
-import { GetPathToCliTestFiles } from "@web3api/test-cases";
+import { runCLI } from "@polywrap/test-env-js";
+import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import fs from "fs";
 import path from "path";
 

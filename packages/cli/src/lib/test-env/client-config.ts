@@ -4,11 +4,11 @@ import {
   PluginRegistration,
   Web3ApiClientConfig,
   defaultIpfsProviders,
-} from "@web3api/client-js";
-import { ensPlugin } from "@web3api/ens-plugin-js";
-import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
-import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
-import { ensAddresses } from "@web3api/test-env-js";
+} from "@polywrap/client-js";
+import { ensPlugin } from "@polywrap/ens-plugin-js";
+import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
+import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
+import { ensAddresses } from "@polywrap/test-env-js";
 
 export async function getTestEnvClientConfig(): Promise<
   Partial<Web3ApiClientConfig>

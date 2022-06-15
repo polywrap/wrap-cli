@@ -6,8 +6,8 @@ import {
   CacheDirectoryConfig,
 } from "../";
 
-import { BindOutput } from "@web3api/schema-bind";
-import { ComposerOutput } from "@web3api/schema-compose";
+import { BindOutput } from "@polywrap/schema-bind";
+import { ComposerOutput } from "@polywrap/schema-compose";
 
 export interface ProjectConfig {
   rootDir: string;

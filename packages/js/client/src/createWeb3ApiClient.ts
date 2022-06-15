@@ -4,8 +4,8 @@
 import { Web3ApiClient, Web3ApiClientConfig } from "./Web3ApiClient";
 import { PluginConfigs, modules, uris } from "./pluginConfigs";
 
-import { PluginRegistration } from "@web3api/core-js";
-import { Tracer } from "@web3api/tracing-js";
+import { PluginRegistration } from "@polywrap/core-js";
+import { Tracer } from "@polywrap/tracing-js";
 
 export { PluginConfigs };
 

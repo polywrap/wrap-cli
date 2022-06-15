@@ -1,5 +1,5 @@
 {
-  "name": "@web3api/test-project",
+  "name": "@polywrap/test-project",
   "version": "0.0.1-prealpha.72",
   "license": "MIT",
   "private": true,
@@ -7,7 +7,7 @@
     "build": "w3 build"
   },
   "dependencies": {
-    "@web3api/wasm-as": "0.0.1-prealpha.72"
+    "@polywrap/wasm-as": "0.0.1-prealpha.72"
   },
   "devDependencies": {
     "assemblyscript": "0.19.1"

@@ -4,5 +4,5 @@ config:
   include:
     - ./src
 linked_packages:
-  - name: "@web3api/wasm-as"
+  - name: "@polywrap/wasm-as"
     path: ../../../../../wasm/as

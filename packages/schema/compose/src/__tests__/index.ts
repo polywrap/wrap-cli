@@ -3,12 +3,12 @@ import { ComposerOutput, ComposerOptions, ComposerFilter } from "..";
 import path from "path";
 import { readdirSync, Dirent } from "fs";
 
-import { TypeInfo } from "@web3api/schema-parse";
+import { TypeInfo } from "@polywrap/schema-parse";
 import {
   GetPathToComposeTestFiles,
   readFileIfExists,
   readNamedExportIfExists,
-} from "@web3api/test-cases"
+} from "@polywrap/test-cases"
 
 const root = GetPathToComposeTestFiles();
 

@@ -1,7 +1,7 @@
 import { CompilerOverrides } from "../../../../Compiler";
 import { intlMsg } from "../../../../intl";
 
-import { Web3ApiManifest } from "@web3api/core-js";
+import { Web3ApiManifest } from "@polywrap/core-js";
 
 export function getCompilerOverrides(): CompilerOverrides {
   return {

@@ -12,7 +12,7 @@ import {
 import { CreateApiFunc } from "./types/CreateApiFunc";
 import { getEnvFromUriOrResolutionStack } from "../getEnvFromUriOrResolutionStack";
 
-import { Tracer } from "@web3api/tracing-js";
+import { Tracer } from "@polywrap/tracing-js";
 
 export class UriResolverWrapper implements UriResolver {
   constructor(

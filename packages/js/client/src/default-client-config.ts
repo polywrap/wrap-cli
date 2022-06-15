@@ -11,17 +11,17 @@ import {
   CacheResolver,
   PluginResolver,
   RedirectsResolver,
-} from "@web3api/core-js";
-import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
-import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
-import { ensPlugin } from "@web3api/ens-plugin-js";
-import { graphNodePlugin } from "@web3api/graph-node-plugin-js";
-import { httpPlugin } from "@web3api/http-plugin-js";
-import { filesystemPlugin } from "@web3api/fs-plugin-js";
-import { uts46Plugin } from "@web3api/uts46-plugin-js";
-import { sha3Plugin } from "@web3api/sha3-plugin-js";
-import { loggerPlugin } from "@web3api/logger-plugin-js";
-import { Tracer } from "@web3api/tracing-js";
+} from "@polywrap/core-js";
+import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
+import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
+import { ensPlugin } from "@polywrap/ens-plugin-js";
+import { graphNodePlugin } from "@polywrap/graph-node-plugin-js";
+import { httpPlugin } from "@polywrap/http-plugin-js";
+import { filesystemPlugin } from "@polywrap/fs-plugin-js";
+import { uts46Plugin } from "@polywrap/uts46-plugin-js";
+import { sha3Plugin } from "@polywrap/sha3-plugin-js";
+import { loggerPlugin } from "@polywrap/logger-plugin-js";
+import { Tracer } from "@polywrap/tracing-js";
 
 export const getDefaultClientConfig = Tracer.traceFunc(
   "client-js: getDefaultClientConfig",

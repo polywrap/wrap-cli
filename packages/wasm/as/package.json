@@ -1,5 +1,5 @@
 {
-  "name": "@web3api/wasm-as",
+  "name": "@polywrap/wasm-as",
   "description": "Web3API Assemblyscript Runtime",
   "version": "0.0.1-prealpha.85",
   "license": "MIT",

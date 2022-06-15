@@ -16,7 +16,7 @@ import { DeserializeManifestOptions } from "../../";
 
 import { compare } from "semver";
 import YAML from "js-yaml";
-import { Tracer } from "@web3api/tracing-js";
+import { Tracer } from "@polywrap/tracing-js";
 
 export const deserializeMetaManifest = Tracer.traceFunc(
   "core: deserializeMetaManifest",

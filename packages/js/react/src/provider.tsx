@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import React from "react";
-import { Web3ApiClient, Web3ApiClientConfig } from "@web3api/client-js";
+import { Web3ApiClient, Web3ApiClientConfig } from "@polywrap/client-js";
 
 type ClientContext = React.Context<Web3ApiClient>
 

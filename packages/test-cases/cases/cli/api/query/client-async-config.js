@@ -1,4 +1,4 @@
-const { PluginModule } = require("@web3api/core-js");
+const { PluginModule } = require("@polywrap/core-js");
 
 const mockPlugin = () => {
 

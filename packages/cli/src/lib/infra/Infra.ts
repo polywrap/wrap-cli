@@ -6,7 +6,7 @@ import {
   CacheDirectory,
 } from "../";
 
-import { InfraManifest } from "@web3api/core-js";
+import { InfraManifest } from "@polywrap/core-js";
 import path from "path";
 import fs, { lstatSync, readdirSync } from "fs";
 import YAML from "js-yaml";

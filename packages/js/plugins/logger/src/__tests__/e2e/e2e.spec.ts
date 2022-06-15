@@ -1,4 +1,4 @@
-import { Web3ApiClient } from "@web3api/client-js";
+import { Web3ApiClient } from "@polywrap/client-js";
 
 describe("log method", () => {
 

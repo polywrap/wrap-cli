@@ -36,7 +36,7 @@ import {
   migrate as migrate_0_0_1_prealpha_8_to_0_0_1_prealpha_9
 } from "./migrators/0.0.1-prealpha.8_to_0.0.1-prealpha.9";
 
-import { Tracer } from "@web3api/tracing-js";
+import { Tracer } from "@polywrap/tracing-js";
 
 type Migrator = {
   [key in Web3ApiManifestFormats]?: (m: AnyWeb3ApiManifest) => Web3ApiManifest;

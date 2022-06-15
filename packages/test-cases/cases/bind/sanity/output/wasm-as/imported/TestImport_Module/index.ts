@@ -6,7 +6,7 @@ import {
   BigNumber,
   JSON,
   Result
-} from "@web3api/wasm-as";
+} from "@polywrap/wasm-as";
 import {
   serializeimportedMethodArgs,
   deserializeimportedMethodResult,

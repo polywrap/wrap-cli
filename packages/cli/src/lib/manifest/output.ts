@@ -5,8 +5,8 @@ import {
   Web3ApiManifest,
   MetaManifest,
   PluginManifest,
-} from "@web3api/core-js";
-import { writeFileSync, normalizePath } from "@web3api/os-js";
+} from "@polywrap/core-js";
+import { writeFileSync, normalizePath } from "@polywrap/os-js";
 import YAML from "js-yaml";
 import path from "path";
 import fs from "fs";

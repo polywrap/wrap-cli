@@ -13,9 +13,9 @@ interface PluginConfigs {
 }
 
 const modules: Record<string, string> = {
-  ipfs: "@web3api/ipfs-plugin-js",
-  ethereum: "@web3api/ethereum-plugin-js",
-  ens: "@web3api/ens-plugin-js",
+  ipfs: "@polywrap/ipfs-plugin-js",
+  ethereum: "@polywrap/ethereum-plugin-js",
+  ens: "@polywrap/ens-plugin-js",
 };
 
 const uris: Record<string, string> = {

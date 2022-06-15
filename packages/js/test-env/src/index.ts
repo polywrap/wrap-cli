@@ -6,9 +6,9 @@ import spawn from "spawn-command";
 import axios from "axios";
 import fs from "fs";
 import yaml from "js-yaml";
-import { deserializeWeb3ApiManifest, Uri } from "@web3api/core-js";
-import { Web3ApiClient } from "@web3api/client-js";
-import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
+import { deserializeWeb3ApiManifest, Uri } from "@polywrap/core-js";
+import { Web3ApiClient } from "@polywrap/client-js";
+import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
 
 export const ensAddresses = {
   ensAddress: "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab",

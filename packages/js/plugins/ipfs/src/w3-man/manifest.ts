@@ -3,7 +3,7 @@
 
 import { schema } from "./";
 
-import { PluginPackageManifest } from "@web3api/core-js";
+import { PluginPackageManifest } from "@polywrap/core-js";
 
 export const manifest: PluginPackageManifest = {
   schema,

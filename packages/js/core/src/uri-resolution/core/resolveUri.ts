@@ -6,7 +6,7 @@ import { UriResolver } from "./types/UriResolver";
 import { ResolveUriErrorType, ResolveUriResult } from "./types";
 import { InternalResolverError } from "./types/InternalResolverError";
 
-import { Tracer } from "@web3api/tracing-js";
+import { Tracer } from "@polywrap/tracing-js";
 
 export const resolveUri = async (
   uri: Uri,

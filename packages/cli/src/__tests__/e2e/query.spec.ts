@@ -4,9 +4,9 @@ import yaml from "js-yaml";
 
 import { clearStyle, w3Cli } from "./utils";
 
-import { buildAndDeployApi, providers, initTestEnvironment, runCLI, stopTestEnvironment } from "@web3api/test-env-js";
-import { GetPathToCliTestFiles } from "@web3api/test-cases";
-import { normalizeLineEndings } from "@web3api/os-js";
+import { buildAndDeployApi, providers, initTestEnvironment, runCLI, stopTestEnvironment } from "@polywrap/test-env-js";
+import { GetPathToCliTestFiles } from "@polywrap/test-cases";
+import { normalizeLineEndings } from "@polywrap/os-js";
 import {
   checkSampleQueryOutput,
   getSampleObjectOutput,

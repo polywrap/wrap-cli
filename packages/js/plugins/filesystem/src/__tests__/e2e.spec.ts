@@ -5,16 +5,16 @@ import {
   initTestEnvironment,
   stopTestEnvironment,
   providers
-} from "@web3api/test-env-js";
+} from "@polywrap/test-env-js";
 import {
   Web3ApiClient,
   Web3ApiClientConfig,
   defaultIpfsProviders,
-} from "@web3api/client-js";
-import { GetPathToTestApis } from "@web3api/test-cases";
-import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
-import { ensPlugin } from "@web3api/ens-plugin-js";
-import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
+} from "@polywrap/client-js";
+import { GetPathToTestApis } from "@polywrap/test-cases";
+import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
+import { ensPlugin } from "@polywrap/ens-plugin-js";
+import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
 import fs from "fs";
 import path from "path";
 

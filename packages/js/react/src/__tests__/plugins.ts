@@ -1,8 +1,8 @@
-import { PluginRegistration } from "@web3api/core-js";
-import { defaultIpfsProviders } from "@web3api/client-js";
-import { plugin as ensPlugin } from "@web3api/ens-plugin-js";
-import { plugin as ethereumPlugin } from "@web3api/ethereum-plugin-js";
-import { plugin as ipfsPlugin } from "@web3api/ipfs-plugin-js";
+import { PluginRegistration } from "@polywrap/core-js";
+import { defaultIpfsProviders } from "@polywrap/client-js";
+import { plugin as ensPlugin } from "@polywrap/ens-plugin-js";
+import { plugin as ethereumPlugin } from "@polywrap/ethereum-plugin-js";
+import { plugin as ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 
 export function createPlugins(
   ensAddress: string,

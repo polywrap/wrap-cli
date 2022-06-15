@@ -5,7 +5,7 @@
 
 import * as Types from "./types";
 
-import { Client, PluginModule, MaybeAsync } from "@web3api/core-js";
+import { Client, PluginModule, MaybeAsync } from "@polywrap/core-js";
 
 export interface Input_log extends Record<string, unknown> {
   level: Types.Logger_LogLevel;

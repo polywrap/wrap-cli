@@ -19,8 +19,8 @@ import {
   resetDir,
 } from "./";
 
-import { BindLanguage, GenerateBindingFn } from "@web3api/schema-bind";
-import { writeDirectorySync } from "@web3api/os-js";
+import { BindLanguage, GenerateBindingFn } from "@polywrap/schema-bind";
+import { writeDirectorySync } from "@polywrap/os-js";
 import path from "path";
 import { readFileSync } from "fs";
 import * as gluegun from "gluegun";

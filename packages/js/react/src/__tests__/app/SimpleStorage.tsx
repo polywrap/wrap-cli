@@ -1,5 +1,5 @@
-import { useWeb3ApiQuery, Web3ApiProvider, useWeb3ApiClient, createWeb3ApiProvider } from "@web3api/react";
-import { PluginRegistration } from "@web3api/client-js";
+import { useWeb3ApiQuery, Web3ApiProvider, useWeb3ApiClient, createWeb3ApiProvider } from "@polywrap/react";
+import { PluginRegistration } from "@polywrap/client-js";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import React from "react";
 

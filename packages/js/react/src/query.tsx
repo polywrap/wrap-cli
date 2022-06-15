@@ -1,7 +1,7 @@
 import { useWeb3ApiClient } from "./client";
 import { useStateReducer } from "./state";
 
-import { QueryApiResult, QueryApiOptions } from "@web3api/core-js";
+import { QueryApiResult, QueryApiOptions } from "@polywrap/core-js";
 
 export interface UseWeb3ApiQueryState<
   TData extends Record<string, unknown> = Record<string, unknown>

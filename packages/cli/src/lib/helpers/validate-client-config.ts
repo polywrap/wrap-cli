@@ -8,7 +8,7 @@ import {
   Uri,
   UriRedirect,
   Web3ApiClientConfig,
-} from "@web3api/client-js";
+} from "@polywrap/client-js";
 
 export function validateRedirects<TUri extends PluginPackage | Uri | string>(
   redirects: UriRedirect<TUri>[]

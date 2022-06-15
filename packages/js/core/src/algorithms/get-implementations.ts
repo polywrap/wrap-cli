@@ -1,7 +1,7 @@
 import { Uri, UriRedirect, InterfaceImplementations } from "../types";
 import { applyRedirects } from "./apply-redirects";
 
-import { Tracer } from "@web3api/tracing-js";
+import { Tracer } from "@polywrap/tracing-js";
 
 export const getImplementations = Tracer.traceFunc(
   "core: getImplementations",

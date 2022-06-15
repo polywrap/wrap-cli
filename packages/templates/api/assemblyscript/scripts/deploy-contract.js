@@ -1,6 +1,6 @@
 const buildContract = require("./build-contract");
-const { initTestEnvironment, stopTestEnvironment, providers } = require("@web3api/test-env-js");
-const { EthereumPlugin } = require("@web3api/ethereum-plugin-js");
+const { initTestEnvironment, stopTestEnvironment, providers } = require("@polywrap/test-env-js");
+const { EthereumPlugin } = require("@polywrap/ethereum-plugin-js");
 const fs = require("fs");
 
 async function main() {

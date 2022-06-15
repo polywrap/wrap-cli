@@ -1,9 +1,9 @@
 import {
   buildApi,
-} from "@web3api/test-env-js";
+} from "@polywrap/test-env-js";
 import { createWeb3ApiClient, Web3ApiClientConfig } from "../..";
-import { Client, PluginModule } from "@web3api/core-js";
-import { GetPathToTestApis } from "@web3api/test-cases";
+import { Client, PluginModule } from "@polywrap/core-js";
+import { GetPathToTestApis } from "@polywrap/test-cases";
 
 jest.setTimeout(200000);
 

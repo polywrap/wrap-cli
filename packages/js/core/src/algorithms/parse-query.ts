@@ -1,7 +1,7 @@
 import { QueryApiInvocations, QueryDocument, Uri } from "../types";
 
 import { SelectionSetNode, ValueNode } from "graphql";
-import { Tracer } from "@web3api/tracing-js";
+import { Tracer } from "@polywrap/tracing-js";
 
 export const parseQuery = Tracer.traceFunc(
   "core: parseQuery",

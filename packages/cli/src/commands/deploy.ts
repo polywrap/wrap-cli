@@ -12,7 +12,7 @@ import { Command, Program } from "./types";
 import fs from "fs";
 import nodePath from "path";
 import { print } from "gluegun";
-import { Uri, DeployManifest } from "@web3api/core-js";
+import { Uri, DeployManifest } from "@polywrap/core-js";
 import { validate } from "jsonschema";
 
 const defaultManifestStr = defaultWeb3ApiManifest.join(" | ");

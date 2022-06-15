@@ -8,9 +8,9 @@ import {
   buildAndDeployApi,
   ensAddresses,
   providers
-} from "@web3api/test-env-js";
-import { GetPathToTestApis } from "@web3api/test-cases";
-import { PluginRegistration } from "@web3api/core-js";
+} from "@polywrap/test-env-js";
+import { GetPathToTestApis } from "@polywrap/test-cases";
+import { PluginRegistration } from "@polywrap/core-js";
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import React from "react";

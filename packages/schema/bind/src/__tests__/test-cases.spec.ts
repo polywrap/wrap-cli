@@ -10,7 +10,7 @@ import {
   writeFileSync,
   alphabeticalNamedSort,
   OutputEntry
-} from "@web3api/os-js";
+} from "@polywrap/os-js";
 
 import fs from "fs";
 import path from "path";

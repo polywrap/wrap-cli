@@ -1,6 +1,6 @@
 import { clearStyle, w3Cli } from "./utils";
 
-import { runCLI } from "@web3api/test-env-js";
+import { runCLI } from "@polywrap/test-env-js";
 
 
 const HELP = `Usage: w3 [options] [command]

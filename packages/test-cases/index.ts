@@ -1,7 +1,7 @@
 import path from "path";
 import { readFileSync, existsSync } from "fs";
 
-import { normalizeLineEndings } from "@web3api/os-js";
+import { normalizeLineEndings } from "@polywrap/os-js";
 
 export const GetPathToBindTestFiles = () => `${__dirname}/cases/bind`
 export const GetPathToComposeTestFiles = () => `${__dirname}/cases/compose`

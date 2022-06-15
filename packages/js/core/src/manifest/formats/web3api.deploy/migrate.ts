@@ -12,7 +12,7 @@ import {
 } from ".";
 
 
-import { Tracer } from "@web3api/tracing-js";
+import { Tracer } from "@polywrap/tracing-js";
 
 type Migrator = {
   [key in DeployManifestFormats]?: (m: AnyDeployManifest) => DeployManifest;

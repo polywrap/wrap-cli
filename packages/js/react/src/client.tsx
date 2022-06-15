@@ -2,7 +2,7 @@ import { PROVIDERS, PRIMARY_PROVIDER } from "./provider";
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import React from "react";
-import { Web3ApiClient } from "@web3api/client-js";
+import { Web3ApiClient } from "@polywrap/client-js";
 
 export interface UseWeb3ApiClientProps {
   provider?: string;

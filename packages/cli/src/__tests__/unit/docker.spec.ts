@@ -1,7 +1,7 @@
 import { w3Cli } from "../e2e/utils";
 
-import { initTestEnvironment, runCLI, stopTestEnvironment } from "@web3api/test-env-js";
-import { GetPathToCliTestFiles } from "@web3api/test-cases";
+import { initTestEnvironment, runCLI, stopTestEnvironment } from "@polywrap/test-env-js";
+import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import path from "path";
 
 describe("e2e tests for docker", () => {

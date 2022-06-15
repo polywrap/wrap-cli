@@ -14,8 +14,8 @@ import {
   Env,
   msgpackEncode,
   msgpackDecode,
-} from "@web3api/core-js";
-import { Tracer } from "@web3api/tracing-js";
+} from "@polywrap/core-js";
+import { Tracer } from "@polywrap/tracing-js";
 
 export class PluginWeb3Api extends Api {
   private _instance: PluginModule | undefined;

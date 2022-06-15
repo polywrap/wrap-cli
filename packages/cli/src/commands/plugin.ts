@@ -12,8 +12,8 @@ import {
   parsePluginPublishDirOption,
 } from "../lib";
 
-import { ComposerFilter } from "@web3api/schema-compose";
-import { writeFileSync } from "@web3api/os-js";
+import { ComposerFilter } from "@polywrap/schema-compose";
+import { writeFileSync } from "@polywrap/os-js";
 import path from "path";
 import fs from "fs";
 

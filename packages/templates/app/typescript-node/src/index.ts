@@ -1,6 +1,6 @@
 import { HelloWorld_Module, Ethereum_Module } from "./w3";
 
-import { Web3ApiClient } from "@web3api/client-js";
+import { Web3ApiClient } from "@polywrap/client-js";
 
 const client = new Web3ApiClient();
 

@@ -1,4 +1,4 @@
-const { EthereumPlugin } = require("@web3api/ethereum-plugin-js");
+const { EthereumPlugin } = require("@polywrap/ethereum-plugin-js");
 const fs = require("fs");
 
 async function main() {

@@ -15,12 +15,12 @@ import {
   resetDir,
 } from "./";
 
-import { Web3ApiManifest, BuildManifest, MetaManifest } from "@web3api/core-js";
-import { WasmWeb3Api } from "@web3api/client-js";
-import { W3Imports } from "@web3api/client-js/build/wasm/types";
-import { AsyncWasmInstance } from "@web3api/asyncify-js";
-import { ComposerOutput } from "@web3api/schema-compose";
-import { writeFileSync, writeDirectorySync } from "@web3api/os-js";
+import { Web3ApiManifest, BuildManifest, MetaManifest } from "@polywrap/core-js";
+import { WasmWeb3Api } from "@polywrap/client-js";
+import { W3Imports } from "@polywrap/client-js/build/wasm/types";
+import { AsyncWasmInstance } from "@polywrap/asyncify-js";
+import { ComposerOutput } from "@polywrap/schema-compose";
+import { writeFileSync, writeDirectorySync } from "@polywrap/os-js";
 import * as gluegun from "gluegun";
 import fs from "fs";
 import path from "path";

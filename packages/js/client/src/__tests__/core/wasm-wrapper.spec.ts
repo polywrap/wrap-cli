@@ -4,7 +4,7 @@ import {
   initTestEnvironment,
   stopTestEnvironment,
   providers
-} from "@web3api/test-env-js";
+} from "@polywrap/test-env-js";
 import {
   Uri,
   createWeb3ApiClient,
@@ -19,7 +19,7 @@ import {
   deserializeMetaManifest,
   msgpackDecode
 } from "../..";
-import { GetPathToTestApis } from "@web3api/test-cases";
+import { GetPathToTestApis } from "@polywrap/test-cases";
 import fs from "fs";
 
 jest.setTimeout(200000);

@@ -1,5 +1,5 @@
 {
-  "name": "@web3api/ens-plugin-js",
+  "name": "@polywrap/ens-plugin-js",
   "description": "Web3API ENS Javascript Plugin",
   "version": "0.0.1-prealpha.85",
   "license": "MIT",
@@ -13,8 +13,8 @@
   ],
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json",
-    "codegen": "node ../../../../dependencies/node_modules/@web3api/cli/bin/w3 plugin codegen",
-    "codegen:patch": "node ../../../cli/bin/w3 plugin codegen",
+    "codegen": "node ../../../../dependencies/node_modules/polywrap/bin/w3 plugin codegen",
+    "codegen:patch": "node ../../../cli/bin/w3 plugin codegen && rimraf ./src/w3",
     "lint": "eslint --color -c ../../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",
@@ -23,7 +23,7 @@
   "dependencies": {
     "@ethersproject/address": "5.0.7",
     "@ethersproject/basex": "5.0.7",
-    "@web3api/core-js": "0.0.1-prealpha.85",
+    "@polywrap/core-js": "0.0.1-prealpha.85",
     "ethers": "5.0.7"
   },
   "devDependencies": {

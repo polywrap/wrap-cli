@@ -7,7 +7,7 @@ import {
   Client,
   PluginModule,
   MaybeAsync
-} from "@web3api/core-js";
+} from "@polywrap/core-js";
 
 export interface Input_method extends Record<string, unknown> {
   str: Types.String;

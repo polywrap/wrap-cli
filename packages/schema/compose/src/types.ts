@@ -1,4 +1,4 @@
-import { CapabilityType } from "@web3api/schema-parse";
+import { CapabilityType } from "@polywrap/schema-parse";
 
 export interface SchemaFile {
   schema: string;

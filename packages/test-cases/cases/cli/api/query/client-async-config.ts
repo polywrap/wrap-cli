@@ -1,5 +1,5 @@
-import { Web3ApiClientConfig } from "@web3api/client-js";
-import { PluginModule } from "@web3api/core-js";
+import { Web3ApiClientConfig } from "@polywrap/client-js";
+import { PluginModule } from "@polywrap/core-js";
 
 interface Config extends Record<string, unknown> {
   val: number;

@@ -11,6 +11,6 @@
     "test": "yarn test:env:up && yarn deploy && yarn test:env:down"
   },
   "devDependencies": {
-    "@web3api/cli": "0.0.1-prealpha.85"
+    "polywrap": "0.0.1-prealpha.85"
   }
 }

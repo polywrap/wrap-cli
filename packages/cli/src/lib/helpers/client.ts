@@ -1,8 +1,8 @@
-import { PluginRegistration } from "@web3api/core-js";
-import { ensPlugin } from "@web3api/ens-plugin-js";
-import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
-import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
-import { Web3ApiClient, defaultIpfsProviders } from "@web3api/client-js";
+import { PluginRegistration } from "@polywrap/core-js";
+import { ensPlugin } from "@polywrap/ens-plugin-js";
+import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
+import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
+import { Web3ApiClient, defaultIpfsProviders } from "@polywrap/client-js";
 
 interface SimpleClientConfig {
   ensAddress?: string;

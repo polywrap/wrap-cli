@@ -6,13 +6,13 @@ import {
 } from "..";
 import { createPlugins } from "./plugins";
 
-import { PluginRegistration } from "@web3api/core-js";
+import { PluginRegistration } from "@polywrap/core-js";
 import {
   ensAddresses,
   providers,
   initTestEnvironment,
   stopTestEnvironment
-} from "@web3api/test-env-js";
+} from "@polywrap/test-env-js";
 
 import {
   renderHook,

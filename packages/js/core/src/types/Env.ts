@@ -1,6 +1,6 @@
 import { Uri } from ".";
 
-import { Tracer } from "@web3api/tracing-js";
+import { Tracer } from "@polywrap/tracing-js";
 
 export interface Env<TUri = string> {
   /** Uri of Web3Api */

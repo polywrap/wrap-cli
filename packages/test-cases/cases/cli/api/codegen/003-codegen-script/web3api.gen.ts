@@ -1,5 +1,5 @@
-import { GenerateBindingFn, BindOptions, BindOutput } from "@web3api/schema-bind";
-import { OutputDirectory } from "@web3api/os-js";
+import { GenerateBindingFn, BindOptions, BindOutput } from "@polywrap/schema-bind";
+import { OutputDirectory } from "@polywrap/os-js";
 import Mustache from "mustache";
 import path from "path";
 import fs from "fs";

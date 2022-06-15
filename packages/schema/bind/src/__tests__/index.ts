@@ -2,9 +2,9 @@ import { BindOptions, BindLanguage } from "../";
 
 import fs from "fs";
 import path from "path";
-import { parseSchema } from "@web3api/schema-parse";
-import { GetPathToBindTestFiles } from "@web3api/test-cases";
-import { normalizeLineEndings } from "@web3api/os-js";
+import { parseSchema } from "@polywrap/schema-parse";
+import { GetPathToBindTestFiles } from "@polywrap/test-cases";
+import { normalizeLineEndings } from "@polywrap/os-js";
 
 const root = GetPathToBindTestFiles();
 

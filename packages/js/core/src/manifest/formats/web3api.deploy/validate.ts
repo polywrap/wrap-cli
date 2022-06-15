@@ -9,8 +9,8 @@ import {
   DeployManifestFormats
 } from ".";
 import * as Validators from "../../validators";
-import schema_0_0_1_prealpha_1 from "@web3api/manifest-schemas/formats/web3api.deploy/0.0.1-prealpha.1.json";
-import { Tracer } from "@web3api/tracing-js"
+import schema_0_0_1_prealpha_1 from "@polywrap/manifest-schemas/formats/web3api.deploy/0.0.1-prealpha.1.json";
+import { Tracer } from "@polywrap/tracing-js"
 
 import {
   Schema,

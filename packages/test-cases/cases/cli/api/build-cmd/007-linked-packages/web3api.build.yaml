@@ -5,9 +5,9 @@ config:
     - ./src
     - ./package.json
 linked_packages:
-  - name: "@web3api/wasm-as"
+  - name: "@polywrap/wasm-as"
     path: ../../../../../../wasm/as
     filter: /\.(test|spec)\.(js|ts)$/gm
-  - name: "@web3api/ethereum-plugin-js"
+  - name: "@polywrap/ethereum-plugin-js"
     path: ../../../../../../js/plugins/ethereum
     filter: /\.(test|spec)\.(js|ts)$/gm

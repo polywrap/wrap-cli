@@ -17,7 +17,7 @@ import {
   deserializeDeployManifest,
   InfraManifest,
   deserializeInfraManifest,
-} from "@web3api/core-js";
+} from "@polywrap/core-js";
 import { Schema as JsonSchema } from "jsonschema";
 import path from "path";
 import fs from "fs";

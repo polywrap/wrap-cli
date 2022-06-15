@@ -1,11 +1,11 @@
-import { GetPathToTestApis } from "@web3api/test-cases";
+import { GetPathToTestApis } from "@polywrap/test-cases";
 import {
   buildAndDeployApi,
   initTestEnvironment,
   stopTestEnvironment,
   ensAddresses,
   providers
-} from "@web3api/test-env-js";
+} from "@polywrap/test-env-js";
 import { createWeb3ApiClient, Web3ApiClient, Web3ApiClientConfig } from "../..";
 import { outPropWorkflow, sanityWorkflow } from "./workflow-test-cases";
 

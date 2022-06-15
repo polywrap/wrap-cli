@@ -5,7 +5,7 @@
 
 import * as Types from "./";
 
-import { Client, InvokeApiResult } from "@web3api/core-js";
+import { Client, InvokeApiResult } from "@polywrap/core-js";
 
 export type UInt = number;
 export type UInt8 = number;

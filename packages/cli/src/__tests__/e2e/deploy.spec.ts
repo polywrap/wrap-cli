@@ -6,10 +6,10 @@ import {
   stopTestEnvironment,
   ensAddresses,
   providers
-} from "@web3api/test-env-js";
-import { GetPathToCliTestFiles } from "@web3api/test-cases";
-import { Web3ApiClient } from "@web3api/client-js";
-import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
+} from "@polywrap/test-env-js";
+import { GetPathToCliTestFiles } from "@polywrap/test-cases";
+import { Web3ApiClient } from "@polywrap/client-js";
+import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
 import { Wallet } from "@ethersproject/wallet";
 import path from "path";
 import fs from "fs";
@@ -71,7 +71,7 @@ const setup = async (domainNames: string[]) => {
   });
 
   const ensWrapperUri = `fs/${path.join(
-    path.dirname(require.resolve("@web3api/test-env-js")),
+    path.dirname(require.resolve("@polywrap/test-env-js")),
     "wrappers", "ens"
   )}`;
 

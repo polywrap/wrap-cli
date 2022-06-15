@@ -50,7 +50,7 @@ import {
   createObjectDefinition,
   createModuleDefinition,
   isClientEnvType,
-} from "@web3api/schema-parse";
+} from "@polywrap/schema-parse";
 
 type ImplementationWithInterfaces = {
   typeName: string;

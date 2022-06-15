@@ -7,7 +7,7 @@ import { Argument } from "commander";
 import chalk from "chalk";
 import yaml from "js-yaml";
 import { readdirSync } from "fs";
-import { InfraManifest } from "@web3api/core-js";
+import { InfraManifest } from "@polywrap/core-js";
 
 type InfraCommandOptions = {
   modules?: string;

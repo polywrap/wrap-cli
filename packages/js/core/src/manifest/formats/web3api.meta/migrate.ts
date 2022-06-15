@@ -18,7 +18,7 @@ import {
   migrate as migrate_0_0_1_prealpha_2_to_0_0_1_prealpha_3
 } from "./migrators/0.0.1-prealpha.2_to_0.0.1-prealpha.3";
 
-import { Tracer } from "@web3api/tracing-js";
+import { Tracer } from "@polywrap/tracing-js";
 
 type Migrator = {
   [key in MetaManifestFormats]?: (m: AnyMetaManifest) => MetaManifest;

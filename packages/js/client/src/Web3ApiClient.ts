@@ -47,8 +47,8 @@ import {
   JobRunner,
   PluginPackage,
   RunOptions,
-} from "@web3api/core-js";
-import { Tracer } from "@web3api/tracing-js";
+} from "@polywrap/core-js";
+import { Tracer } from "@polywrap/tracing-js";
 
 export interface Web3ApiClientConfig<TUri extends Uri | string = string>
   extends ClientConfig<TUri> {

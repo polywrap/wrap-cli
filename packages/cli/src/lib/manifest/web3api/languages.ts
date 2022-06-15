@@ -1,6 +1,6 @@
 import { intlMsg } from "../../intl";
 
-import { BindLanguage } from "@web3api/schema-bind";
+import { BindLanguage } from "@polywrap/schema-bind";
 
 export const web3apiManifestLanguages = {
   "wasm/assemblyscript": "wasm/assemblyscript",

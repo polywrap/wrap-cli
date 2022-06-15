@@ -1,10 +1,10 @@
 import { httpPlugin } from "../..";
 import { Response } from "../../w3";
 
-import { Web3ApiClient } from "@web3api/client-js"
+import { Web3ApiClient } from "@polywrap/client-js"
 import {
   buildApi
-} from "@web3api/test-env-js";
+} from "@polywrap/test-env-js";
 import nock from "nock";
 
 jest.setTimeout(360000)

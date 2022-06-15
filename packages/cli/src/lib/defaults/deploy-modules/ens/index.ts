@@ -4,10 +4,10 @@ import { Deployer } from "../../../deploy/deployer";
 
 import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
-import { Uri } from "@web3api/core-js";
-import { Web3ApiClient } from "@web3api/client-js";
+import { Uri } from "@polywrap/core-js";
+import { Web3ApiClient } from "@polywrap/client-js";
 import path from "path";
-import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
+import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
 
 const contentHash = require("content-hash");
 
@@ -43,7 +43,7 @@ class ENSPublisher implements Deployer {
 
     const ethereumPluginUri = "w3://ens/ethereum.web3api.eth";
     const ensWrapperUri = `fs/${path.join(
-      path.dirname(require.resolve("@web3api/test-env-js")),
+      path.dirname(require.resolve("@polywrap/test-env-js")),
       "wrappers",
       "ens"
     )}`;

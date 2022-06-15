@@ -10,7 +10,7 @@ import {
   parseAppCodegenDirOption,
 } from "../lib";
 
-import { Web3ApiClient } from "@web3api/client-js";
+import { Web3ApiClient } from "@polywrap/client-js";
 import * as path from "path";
 
 const defaultOutputTypesDir = "./src/w3";

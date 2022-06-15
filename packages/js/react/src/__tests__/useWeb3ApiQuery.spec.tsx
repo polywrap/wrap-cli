@@ -8,15 +8,15 @@ import {
 } from "../query"
 import { createPlugins } from "./plugins";
 
-import { PluginRegistration } from "@web3api/core-js";
+import { PluginRegistration } from "@polywrap/core-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
   buildAndDeployApi,
   ensAddresses,
   providers
-} from "@web3api/test-env-js";
-import { GetPathToTestApis } from "@web3api/test-cases";
+} from "@polywrap/test-env-js";
+import { GetPathToTestApis } from "@polywrap/test-cases";
 
 import {
   renderHook,

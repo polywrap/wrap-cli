@@ -3,7 +3,7 @@ import { resolveImportsAndParseSchemas } from "./resolve";
 import { renderSchema } from "./render";
 import { validateEnv } from "./env";
 
-import { TypeInfo, combineTypeInfo } from "@web3api/schema-parse";
+import { TypeInfo, combineTypeInfo } from "@polywrap/schema-parse";
 
 export * from "./types";
 export { renderSchema };

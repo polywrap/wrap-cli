@@ -1,5 +1,5 @@
 {
-  "name": "@web3api/manifest-schemas",
+  "name": "@polywrap/manifest-schemas",
   "description": "Web3API Manifest Schemas",
   "version": "0.0.1-prealpha.85",
   "license": "MIT",

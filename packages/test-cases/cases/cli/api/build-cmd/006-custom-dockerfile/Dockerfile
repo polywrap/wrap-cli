@@ -9,14 +9,14 @@ RUN apk --no-cache --virtual build-dependencies add \
 
 WORKDIR /linked-packages
 
-COPY .w3/web3api/build/linked-packages/@web3api/wasm-as ./@web3api/wasm-as
+COPY .w3/web3api/build/linked-packages/@polywrap/wasm-as ./@polywrap/wasm-as
 
 WORKDIR /project
 
 # Install deps in its own step, making rebuilds faster
 # when just the Web3API schema & implementation files change
 COPY package.json .
-RUN npx json -I -f package.json -e "this.dependencies['@web3api/wasm-as']='../linked-packages/@web3api/wasm-as'"
+RUN npx json -I -f package.json -e "this.dependencies['@polywrap/wasm-as']='../linked-packages/@polywrap/wasm-as'"
 RUN yarn
 
 # Copy all manifest files

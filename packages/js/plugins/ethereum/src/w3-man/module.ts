@@ -5,7 +5,7 @@
 
 import * as Types from "./types";
 
-import { Client, PluginModule, MaybeAsync } from "@web3api/core-js";
+import { Client, PluginModule, MaybeAsync } from "@polywrap/core-js";
 
 export interface Input_callContractView extends Record<string, unknown> {
   address: Types.String;

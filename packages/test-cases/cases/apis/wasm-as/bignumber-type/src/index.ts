@@ -1,7 +1,7 @@
 import {
   Input_method
 } from "./w3";
-import { BigNumber } from "@web3api/wasm-as";
+import { BigNumber } from "@polywrap/wasm-as";
 
 export function method(input: Input_method): BigNumber {
   let result = input.arg1.mul(input.obj.prop1);

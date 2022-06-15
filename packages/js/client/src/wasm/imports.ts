@@ -5,7 +5,7 @@ import { readBytes, readString, writeBytes, writeString } from "./buffer";
 import { Client } from "..";
 import { State } from "./WasmWeb3Api";
 
-import { msgpackEncode } from "@web3api/core-js";
+import { msgpackEncode } from "@polywrap/core-js";
 
 export const createImports = (config: {
   client: Client;

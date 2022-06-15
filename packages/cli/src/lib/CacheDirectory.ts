@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import rimraf from "rimraf";
 import copyfiles from "copyfiles";
-import { writeFileSync } from "@web3api/os-js";
+import { writeFileSync } from "@polywrap/os-js";
 
 export interface CacheDirectoryConfig {
   rootDir: string;

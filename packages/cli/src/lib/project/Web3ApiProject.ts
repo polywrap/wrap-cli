@@ -25,11 +25,11 @@ import {
   Web3ApiManifest,
   MetaManifest,
   DeployManifest,
-} from "@web3api/core-js";
-import { normalizePath } from "@web3api/os-js";
-import { bindSchema, BindOutput, BindOptions } from "@web3api/schema-bind";
-import { ComposerOutput } from "@web3api/schema-compose";
-import { TypeInfo } from "@web3api/schema-parse";
+} from "@polywrap/core-js";
+import { normalizePath } from "@polywrap/os-js";
+import { bindSchema, BindOutput, BindOptions } from "@polywrap/schema-bind";
+import { ComposerOutput } from "@polywrap/schema-compose";
+import { TypeInfo } from "@polywrap/schema-parse";
 import regexParser from "regex-parser";
 import path from "path";
 import { Schema as JsonSchema } from "jsonschema";

@@ -1,6 +1,6 @@
 import { displayPath, withSpinner, intlMsg } from "../../";
 
-import { PluginManifest, deserializePluginManifest } from "@web3api/core-js";
+import { PluginManifest, deserializePluginManifest } from "@polywrap/core-js";
 import fs from "fs";
 
 export const defaultPluginManifest = [

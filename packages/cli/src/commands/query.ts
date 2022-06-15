@@ -5,7 +5,7 @@ import {
   parseRecipeOutputFilePathOption,
 } from "../lib";
 
-import { Web3ApiClient, Web3ApiClientConfig } from "@web3api/client-js";
+import { Web3ApiClient, Web3ApiClientConfig } from "@polywrap/client-js";
 import gql from "graphql-tag";
 import path from "path";
 import yaml from "js-yaml";

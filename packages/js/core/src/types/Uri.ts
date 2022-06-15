@@ -1,4 +1,4 @@
-import { Tracer } from "@web3api/tracing-js";
+import { Tracer } from "@polywrap/tracing-js";
 
 /** URI configuration */
 export interface UriConfig {

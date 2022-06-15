@@ -5,8 +5,8 @@ import { validateClientConfig } from "../helpers";
 
 import path from "path";
 import fs from "fs";
-import { Web3ApiClientConfig } from "@web3api/client-js";
-import { executeMaybeAsyncFunction } from "@web3api/core-js";
+import { Web3ApiClientConfig } from "@polywrap/client-js";
+import { executeMaybeAsyncFunction } from "@polywrap/core-js";
 
 export function parseRecipeScriptPathOption(
   script: string,

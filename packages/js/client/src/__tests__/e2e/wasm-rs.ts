@@ -9,8 +9,8 @@ import {
   initTestEnvironment,
   stopTestEnvironment,
   providers
-} from "@web3api/test-env-js";
-import { GetPathToTestApis } from "@web3api/test-cases";
+} from "@polywrap/test-env-js";
+import { GetPathToTestApis } from "@polywrap/test-cases";
 
 jest.setTimeout(1200000);
 

@@ -1,11 +1,11 @@
-import { Web3ApiClient } from "@web3api/client-js";
+import { Web3ApiClient } from "@polywrap/client-js";
 import {
   buildApi,
   initTestEnvironment,
   stopTestEnvironment,
   providers,
   ensAddresses
-} from "@web3api/test-env-js";
+} from "@polywrap/test-env-js";
 import * as App from "../types/w3";
 import path from "path";
 

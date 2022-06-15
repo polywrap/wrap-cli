@@ -1,5 +1,5 @@
 import { GraphNodePlugin, plugin } from "..";
-import { Web3ApiClient } from "@web3api/client-js";
+import { Web3ApiClient } from "@polywrap/client-js";
 
 const uri = "ens/graph-node.web3api.eth";
 const provider = "https://api.thegraph.com";

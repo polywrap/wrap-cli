@@ -12,7 +12,7 @@ Console Logger plugin implements the `w3://ens/logger.core.web3api.eth` core Web
 ## Example
 
 ```ts
-import { loggerPlugin, LogLevel } from "@web3api/logger-plugin-js";
+import { loggerPlugin, LogLevel } from "@polywrap/logger-plugin-js";
 
 const client = new Web3ApiClient({
   plugins: [{

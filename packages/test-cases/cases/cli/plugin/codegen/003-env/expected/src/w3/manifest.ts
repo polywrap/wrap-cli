@@ -6,7 +6,7 @@
 import { schema } from "./";
 
 // @ts-ignore
-import { PluginPackageManifest, Uri } from "@web3api/core-js";
+import { PluginPackageManifest, Uri } from "@polywrap/core-js";
 
 export const manifest: PluginPackageManifest = {
   schema,

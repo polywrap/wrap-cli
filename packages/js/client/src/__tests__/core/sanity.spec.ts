@@ -1,6 +1,6 @@
 import {
   coreInterfaceUris,
-} from "@web3api/core-js";
+} from "@polywrap/core-js";
 import {
   Uri,
   Web3ApiClient,

@@ -1,4 +1,4 @@
-import { TypeInfoTransforms, AnyDefinition } from "@web3api/schema-parse";
+import { TypeInfoTransforms, AnyDefinition } from "@polywrap/schema-parse";
 
 export function byRef(): TypeInfoTransforms {
   return {

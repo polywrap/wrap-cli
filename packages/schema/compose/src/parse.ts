@@ -2,7 +2,7 @@ import { ExternalImport, LocalImport, SYNTAX_REFERENCE, Use } from "./types";
 import { getDuplicates } from "./utils";
 
 import Path from "path";
-import { CapabilityType } from "@web3api/schema-parse";
+import { CapabilityType } from "@polywrap/schema-parse";
 
 export function parseUse(useStatements: RegExpMatchArray[]): Use[] {
   const uses: Use[] = [];

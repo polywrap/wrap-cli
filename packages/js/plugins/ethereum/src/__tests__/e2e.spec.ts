@@ -1,16 +1,16 @@
 import { ethereumPlugin } from "..";
 import * as Schema from "../w3-man";
 
-import { Web3ApiClient, defaultIpfsProviders } from "@web3api/client-js";
-import { ensPlugin } from "@web3api/ens-plugin-js";
-import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
+import { Web3ApiClient, defaultIpfsProviders } from "@polywrap/client-js";
+import { ensPlugin } from "@polywrap/ens-plugin-js";
+import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
   buildApi,
   ensAddresses,
   providers
-} from "@web3api/test-env-js";
+} from "@polywrap/test-env-js";
 import { Wallet } from "ethers";
 
 import { ethers } from "ethers";

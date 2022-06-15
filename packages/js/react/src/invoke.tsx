@@ -1,7 +1,7 @@
 import { useWeb3ApiClient } from "./client";
 import { useStateReducer } from "./state";
 
-import { InvokeApiOptions, InvokeApiResult } from "@web3api/core-js";
+import { InvokeApiOptions, InvokeApiResult } from "@polywrap/core-js";
 
 export interface UseWeb3ApiInvokeState<
   TData = unknown

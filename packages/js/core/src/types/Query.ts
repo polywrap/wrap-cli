@@ -1,6 +1,6 @@
 import { Uri, InvokeApiOptions, ClientConfig } from "./";
 
-import { Tracer } from "@web3api/tracing-js";
+import { Tracer } from "@polywrap/tracing-js";
 import { DocumentNode } from "graphql";
 import gql from "graphql-tag";
 

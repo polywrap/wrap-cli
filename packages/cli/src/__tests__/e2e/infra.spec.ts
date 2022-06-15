@@ -3,8 +3,8 @@ import path from "path";
 import net from "net";
 import { clearStyle, w3Cli } from "./utils";
 
-import { GetPathToCliTestFiles } from "@web3api/test-cases";
-import { runCLI } from "@web3api/test-env-js";
+import { GetPathToCliTestFiles } from "@polywrap/test-cases";
+import { runCLI } from "@polywrap/test-env-js";
 
 const testCaseRoot = path.join(GetPathToCliTestFiles(), "infra");
   const testCases =

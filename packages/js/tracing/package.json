@@ -1,5 +1,5 @@
 {
-  "name": "@web3api/tracing-js",
+  "name": "@polywrap/tracing-js",
   "description": "Web3API Core Tracing",
   "version": "0.0.1-prealpha.85",
   "license": "MIT",

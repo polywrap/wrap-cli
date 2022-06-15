@@ -1,5 +1,5 @@
 import React from 'react';
-import { Web3ApiProvider } from '@web3api/react';
+import { Web3ApiProvider } from '@polywrap/react';
 import { HelloWorld } from './HelloWorld';
 import { Header } from './Header';
 import Logo from './logo.png';

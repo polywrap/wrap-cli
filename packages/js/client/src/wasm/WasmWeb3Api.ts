@@ -21,9 +21,9 @@ import {
   GetFileOptions,
   msgpackEncode,
   msgpackDecode,
-} from "@web3api/core-js";
-import { Tracer } from "@web3api/tracing-js";
-import { AsyncWasmInstance } from "@web3api/asyncify-js";
+} from "@polywrap/core-js";
+import { Tracer } from "@polywrap/tracing-js";
+import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 
 type InvokeResult =
   | { type: "InvokeResult"; invokeResult: ArrayBuffer }

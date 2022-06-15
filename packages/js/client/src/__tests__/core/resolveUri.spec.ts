@@ -12,9 +12,9 @@ import {
   stopTestEnvironment,
   ensAddresses,
   providers
-} from "@web3api/test-env-js";
-import { GetPathToTestApis } from "@web3api/test-cases";
-import { ResolveUriErrorType } from "@web3api/core-js";
+} from "@polywrap/test-env-js";
+import { GetPathToTestApis } from "@polywrap/test-cases";
+import { ResolveUriErrorType } from "@polywrap/core-js";
 
 jest.setTimeout(200000);
 

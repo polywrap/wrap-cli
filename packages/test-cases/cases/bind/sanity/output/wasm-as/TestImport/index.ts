@@ -1,6 +1,6 @@
 import {
   w3_getImplementations
-} from "@web3api/wasm-as";
+} from "@polywrap/wasm-as";
 
 export class TestImport {
   static uri: string = "testimport.uri.eth"

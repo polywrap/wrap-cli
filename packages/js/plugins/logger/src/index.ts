@@ -6,7 +6,7 @@ import {
   manifest,
 } from "./w3-man";
 
-import { PluginFactory } from "@web3api/core-js";
+import { PluginFactory } from "@polywrap/core-js";
 
 export type LogFunc = (level: Logger_LogLevel, message: string) => boolean;
 

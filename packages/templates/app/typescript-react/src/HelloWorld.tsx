@@ -1,6 +1,6 @@
 import { HelloWorld_Query } from './w3';
 import React from 'react';
-import { useWeb3ApiClient } from '@web3api/react';
+import { useWeb3ApiClient } from '@polywrap/react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 

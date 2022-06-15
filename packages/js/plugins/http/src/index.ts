@@ -9,7 +9,7 @@ import {
 import { fromAxiosResponse, toAxiosRequestConfig } from "./util";
 
 import axios from "axios";
-import { PluginFactory } from "@web3api/core-js";
+import { PluginFactory } from "@polywrap/core-js";
 
 export type HttpPluginConfig = Record<string, unknown>;
 

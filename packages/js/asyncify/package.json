@@ -1,5 +1,5 @@
 {
-  "name": "@web3api/asyncify-js",
+  "name": "@polywrap/asyncify-js",
   "description": "Async Wasm Imports Support Using Asyncify",
   "version": "0.0.1-prealpha.85",
   "license": "MIT",

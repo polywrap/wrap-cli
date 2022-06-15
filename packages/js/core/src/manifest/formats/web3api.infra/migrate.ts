@@ -15,7 +15,7 @@ import {
   migrate as migrate_0_0_1_prealpha_1_to_0_0_1_prealpha_2
 } from "./migrators/0.0.1-prealpha.1_to_0.0.1-prealpha.2";
 
-import { Tracer } from "@web3api/tracing-js";
+import { Tracer } from "@polywrap/tracing-js";
 
 type Migrator = {
   [key in InfraManifestFormats]?: (m: AnyInfraManifest) => InfraManifest;
