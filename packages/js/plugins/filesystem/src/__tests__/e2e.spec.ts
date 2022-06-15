@@ -7,7 +7,7 @@ import {
   providers
 } from "@polywrap/test-env-js";
 import {
-  Web3ApiClient,
+  PolywrapClient,
   Web3ApiClientConfig,
   defaultIpfsProviders,
 } from "@polywrap/client-js";
@@ -21,7 +21,7 @@ import path from "path";
 jest.setTimeout(360000);
 
 describe("Filesystem plugin", () => {
-  let client: Web3ApiClient;
+  let client: PolywrapClient;
 
   beforeAll(async () => {
     await initTestEnvironment();
@@ -62,7 +62,7 @@ describe("Filesystem plugin", () => {
         },
       ],
     };
-    client = new Web3ApiClient(config);
+    client = new PolywrapClient(config);
   });
 
   afterAll(async () => {

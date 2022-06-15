@@ -4,7 +4,7 @@ import {
   getDefaultClientConfig,
   Uri,
   PluginModule,
-  Web3ApiClient,
+  PolywrapClient,
   Web3ApiClientConfig,
 } from "../..";
 
@@ -24,7 +24,7 @@ describe("interface-impls", () => {
     const implementation1Uri = "wrap://ens/some-implementation1.eth";
     const implementation2Uri = "wrap://ens/some-implementation2.eth";
 
-    const client = new Web3ApiClient({
+    const client = new PolywrapClient({
       interfaces: [
         {
           interface: interfaceUri,
@@ -140,7 +140,7 @@ describe("interface-impls", () => {
     const implementationUri = "wrap://ens/some-implementation.eth";
 
     expect(() => {
-      new Web3ApiClient({
+      new PolywrapClient({
         plugins: [
           {
             uri: interface1Uri,
@@ -224,7 +224,7 @@ describe("interface-impls", () => {
     const implementationUri1 = "wrap://ens/implementation1.eth";
     const implementationUri2 = "wrap://ens/implementation2.eth";
 
-    const client = new Web3ApiClient({
+    const client = new PolywrapClient({
       interfaces: [
         {
           interface: interfaceUri,
@@ -255,7 +255,7 @@ describe("interface-impls", () => {
     const implementationUri1 = "wrap://ens/implementation1.eth";
     const implementationUri2 = "wrap://ens/implementation2.eth";
 
-    const client = new Web3ApiClient({
+    const client = new PolywrapClient({
       interfaces: [
         {
           interface: interfaceUri,
@@ -290,7 +290,7 @@ describe("interface-impls", () => {
     const implementation1Uri = "wrap://ens/some-implementation1.eth";
     const implementation2Uri = "wrap://ens/some-implementation2.eth";
 
-    const client = new Web3ApiClient({
+    const client = new PolywrapClient({
       plugins: [
         {
           uri: implementation1Uri,
@@ -325,7 +325,7 @@ describe("interface-impls", () => {
     const implementation1Uri = "wrap://ens/some-implementation1.eth";
     const implementation2Uri = "wrap://ens/some-implementation2.eth";
 
-    const client = new Web3ApiClient({
+    const client = new PolywrapClient({
       plugins: [
         {
           uri: implementation1Uri,
@@ -364,7 +364,7 @@ describe("interface-impls", () => {
     const implementation1Uri = "wrap://ens/some-implementation1.eth";
     const implementation2Uri = "wrap://ens/some-implementation2.eth";
 
-    const client = new Web3ApiClient({
+    const client = new PolywrapClient({
       redirects: [
         {
           from: oldInterfaceUri,

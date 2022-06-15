@@ -5,7 +5,7 @@ import { Deployer } from "../../../deploy/deployer";
 import { Uri } from "@polywrap/core-js";
 import { ensAddresses } from "@polywrap/test-env-js";
 import path from "path";
-import { Web3ApiClient } from "@polywrap/client-js";
+import { PolywrapClient } from "@polywrap/client-js";
 import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
 
 const contentHash = require("content-hash");
@@ -30,7 +30,7 @@ class LocalDevENSPublisher implements Deployer {
     const cid = uri.path;
     const ethereumPluginUri = "wrap://ens/ethereum.web3api.eth";
 
-    const client = new Web3ApiClient({
+    const client = new PolywrapClient({
       plugins: [
         {
           uri: ethereumPluginUri,

@@ -1,6 +1,6 @@
 import {
   Web3ApiClientConfig,
-  Web3ApiClient,
+  PolywrapClient,
   createWeb3ApiClient,
   PluginModule,
 } from "../..";
@@ -62,7 +62,7 @@ describe("plugin-wrapper", () => {
   test("plugin registration - with default plugins", () => {
     const implementationUri = "wrap://ens/some-implementation.eth";
 
-    const client = new Web3ApiClient({
+    const client = new PolywrapClient({
       plugins: [
         {
           uri: implementationUri,
@@ -228,7 +228,7 @@ enum Logger_LogLevel @imported(
       },
     };
 
-    const client = new Web3ApiClient({
+    const client = new PolywrapClient({
       plugins: [
         {
           uri: pluginUriToOverride,
@@ -267,7 +267,7 @@ enum Logger_LogLevel @imported(
       },
     };
 
-    const client = new Web3ApiClient({
+    const client = new PolywrapClient({
       plugins: [
         {
           uri: pluginUriToOverride,

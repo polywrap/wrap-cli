@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable prefer-const */
 
-import { Web3ApiClient, Web3ApiClientConfig } from "./Web3ApiClient";
+import { PolywrapClient, Web3ApiClientConfig } from "./PolywrapClient";
 import { PluginConfigs, modules, uris } from "./pluginConfigs";
 
 import { PluginRegistration } from "@polywrap/core-js";
@@ -14,7 +14,7 @@ export const createWeb3ApiClient = Tracer.traceFunc(
   async (
     pluginConfigs: PluginConfigs,
     config?: Partial<Web3ApiClientConfig>
-  ): Promise<Web3ApiClient> => {
+  ): Promise<PolywrapClient> => {
     const plugins: PluginRegistration[] = [];
 
     for (const plugin of Object.keys(pluginConfigs)) {
@@ -71,12 +71,12 @@ export const createWeb3ApiClient = Tracer.traceFunc(
     }
 
     if (config) {
-      return new Web3ApiClient({
+      return new PolywrapClient({
         ...config,
         plugins: [...plugins, ...(config.plugins ? config.plugins : [])],
       });
     } else {
-      return new Web3ApiClient({ plugins });
+      return new PolywrapClient({ plugins });
     }
   }
 );

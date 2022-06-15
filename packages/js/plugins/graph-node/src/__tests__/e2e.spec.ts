@@ -1,5 +1,5 @@
 import { GraphNodePlugin, plugin } from "..";
-import { Web3ApiClient } from "@polywrap/client-js";
+import { PolywrapClient } from "@polywrap/client-js";
 
 const uri = "ens/graph-node.web3api.eth";
 const provider = "https://api.thegraph.com";
@@ -7,7 +7,7 @@ const provider = "https://api.thegraph.com";
 jest.setTimeout(30000);
 
 describe("Graph Node Plugin", () => {
-  const client = new Web3ApiClient({
+  const client = new PolywrapClient({
     plugins: [{
       uri,
       plugin: plugin({

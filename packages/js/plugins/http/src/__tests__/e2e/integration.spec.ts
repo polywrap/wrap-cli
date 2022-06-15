@@ -1,7 +1,7 @@
 import { httpPlugin } from "../..";
 import { Response } from "../../polywrap";
 
-import { Web3ApiClient } from "@polywrap/client-js"
+import { PolywrapClient } from "@polywrap/client-js"
 import {
   buildApi
 } from "@polywrap/test-env-js";
@@ -18,13 +18,13 @@ describe("e2e tests for HttpPlugin", () => {
 
   describe("integration", () => {
 
-    let client: Web3ApiClient;
+    let client: PolywrapClient;
 
     const apiPath = `${__dirname}/integration`
     const uri = `fs/${apiPath}/build`
 
     beforeAll(async () => {
-      client = new Web3ApiClient({
+      client = new PolywrapClient({
         plugins: [
           {
             uri: "wrap://ens/http.web3api.eth",

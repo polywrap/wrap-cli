@@ -1,8 +1,8 @@
-import { Web3ApiClient, Uri } from "../../";
+import { PolywrapClient, Uri } from "../../";
 import { BigNumber } from "bignumber.js";
 
 export const runAsyncifyTest = async (
-  client: Web3ApiClient,
+  client: PolywrapClient,
   apiUri: string
 ) => {
     const deploy = await client.query<{
@@ -235,7 +235,7 @@ export const runAsyncifyTest = async (
 
 
 export const runBigIntTypeTest = async (
-  client: Web3ApiClient,
+  client: PolywrapClient,
   uri: string
 ) => {
   {
@@ -295,7 +295,7 @@ export const runBigIntTypeTest = async (
 };
 
 export const runBigNumberTypeTest = async (
-  client: Web3ApiClient,
+  client: PolywrapClient,
   uri: string
 ) => {
   {
@@ -356,7 +356,7 @@ export const runBigNumberTypeTest = async (
 };
 
 export const runBytesTypeTest = async (
-  client: Web3ApiClient,
+  client: PolywrapClient,
   uri: string
 ) => {
 
@@ -386,7 +386,7 @@ export const runBytesTypeTest = async (
 };
 
 export const runEnumTypesTest = async (
-  client: Web3ApiClient,
+  client: PolywrapClient,
   uri: string
 ) => {
   const method1a = await client.query<any>({
@@ -460,7 +460,7 @@ export const runEnumTypesTest = async (
 };
 
 export const runImplementationsTest = async (
-  client: Web3ApiClient,
+  client: PolywrapClient,
   interfaceUri: string,
   implementationUri: string
 ) => {
@@ -503,7 +503,7 @@ export const runImplementationsTest = async (
 };
 
 export const runGetImplementationsTest = async (
-  client: Web3ApiClient,
+  client: PolywrapClient,
   interfaceUri: string,
   implementationUri: string
 ) => {
@@ -532,7 +532,7 @@ export const runGetImplementationsTest = async (
 };
 
 export const runInvalidTypesTest = async (
-  client: Web3ApiClient,
+  client: PolywrapClient,
   uri: string
 ) => {
   const invalidBoolIntSent = await client.query({
@@ -629,7 +629,7 @@ export const runInvalidTypesTest = async (
 };
 
 export const runJsonTypeTest = async (
-  client: Web3ApiClient,
+  client: PolywrapClient,
   uri: string
 ) => {
   const fromJson = await client.invoke<{ x: number; y: number }>({
@@ -669,7 +669,7 @@ export const runJsonTypeTest = async (
 };
 
 export const runLargeTypesTest = async (
-  client: Web3ApiClient,
+  client: PolywrapClient,
   uri: string
 ) => {
   const largeStr = new Array(5000).join("web3api ");
@@ -716,7 +716,7 @@ export const runLargeTypesTest = async (
 };
 
 export const runNumberTypesTest = async (
-  client: Web3ApiClient,
+  client: PolywrapClient,
   uri: string
 ) => {
   const i8Underflow = await client.query<{
@@ -859,7 +859,7 @@ export const runNumberTypesTest = async (
 };
 
 export const runObjectTypesTest = async (
-  client: Web3ApiClient,
+  client: PolywrapClient,
   uri: string
 ) => {
   const method1a = await client.query<{
@@ -1085,7 +1085,7 @@ export const runObjectTypesTest = async (
 };
 
 export const runMapTypeTest = async (
-  client: Web3ApiClient,
+  client: PolywrapClient,
   uri: string
 ) => {
 
@@ -1139,7 +1139,7 @@ export const runMapTypeTest = async (
 };
 
 export const runSimpleStorageTest = async (
-  client: Web3ApiClient,
+  client: PolywrapClient,
   apiUri: string
 ) => {
     const deploy = await client.query<{

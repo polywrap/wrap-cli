@@ -1,14 +1,14 @@
-import { Web3ApiClient } from "@polywrap/client-js";
+import { PolywrapClient } from "@polywrap/client-js";
 import { uts46Plugin } from "..";
 const uts46 = require("idna-uts46-hx/uts46bundle.js");
 
 const textToConvert = "xn-bb-eka.at";
 
 describe("IDNA UTS #46", () => {
-  let client: Web3ApiClient;
+  let client: PolywrapClient;
 
   beforeAll(() => {
-    client = new Web3ApiClient({
+    client = new PolywrapClient({
       plugins: [
         {
           uri: "wrap://ens/uts46.web3api.eth",

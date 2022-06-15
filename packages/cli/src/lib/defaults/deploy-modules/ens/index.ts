@@ -5,7 +5,7 @@ import { Deployer } from "../../../deploy/deployer";
 import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
 import { Uri } from "@polywrap/core-js";
-import { Web3ApiClient } from "@polywrap/client-js";
+import { PolywrapClient } from "@polywrap/client-js";
 import path from "path";
 import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
 
@@ -48,7 +48,7 @@ class ENSPublisher implements Deployer {
       "ens"
     )}`;
 
-    const client = new Web3ApiClient({
+    const client = new PolywrapClient({
       plugins: [
         {
           uri: ethereumPluginUri,

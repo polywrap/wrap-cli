@@ -55,7 +55,7 @@ export interface Web3ApiClientConfig<TUri extends Uri | string = string>
   tracingEnabled: boolean;
 }
 
-export class Web3ApiClient implements Client {
+export class PolywrapClient implements Client {
   // TODO: the API cache needs to be more like a routing table.
   // It should help us keep track of what URI's map to what APIs,
   // and handle cases where the are multiple jumps. For example, if
@@ -80,7 +80,7 @@ export class Web3ApiClient implements Client {
     try {
       this.setTracingEnabled(!!config?.tracingEnabled);
 
-      Tracer.startSpan("Web3ApiClient: constructor");
+      Tracer.startSpan("PolywrapClient: constructor");
 
       if (config) {
         this._config = {
@@ -118,47 +118,47 @@ export class Web3ApiClient implements Client {
 
   public setTracingEnabled(enable: boolean): void {
     if (enable) {
-      Tracer.enableTracing("Web3ApiClient");
+      Tracer.enableTracing("PolywrapClient");
     } else {
       Tracer.disableTracing();
     }
     this._config.tracingEnabled = enable;
   }
 
-  @Tracer.traceMethod("Web3ApiClient: getRedirects")
+  @Tracer.traceMethod("PolywrapClient: getRedirects")
   public getRedirects(
     options: GetRedirectsOptions = {}
   ): readonly UriRedirect<Uri>[] {
     return this._getConfig(options.contextId).redirects;
   }
 
-  @Tracer.traceMethod("Web3ApiClient: getPlugins")
+  @Tracer.traceMethod("PolywrapClient: getPlugins")
   public getPlugins(
     options: GetPluginsOptions = {}
   ): readonly PluginRegistration<Uri>[] {
     return this._getConfig(options.contextId).plugins;
   }
 
-  @Tracer.traceMethod("Web3ApiClient: getInterfaces")
+  @Tracer.traceMethod("PolywrapClient: getInterfaces")
   public getInterfaces(
     options: GetInterfacesOptions = {}
   ): readonly InterfaceImplementations<Uri>[] {
     return this._getConfig(options.contextId).interfaces;
   }
 
-  @Tracer.traceMethod("Web3ApiClient: getEnvs")
+  @Tracer.traceMethod("PolywrapClient: getEnvs")
   public getEnvs(options: GetEnvsOptions = {}): readonly Env<Uri>[] {
     return this._getConfig(options.contextId).envs;
   }
 
-  @Tracer.traceMethod("Web3ApiClient: getUriResolvers")
+  @Tracer.traceMethod("PolywrapClient: getUriResolvers")
   public getUriResolvers(
     options: GetUriResolversOptions = {}
   ): readonly UriResolver[] {
     return this._getConfig(options.contextId).uriResolvers;
   }
 
-  @Tracer.traceMethod("Web3ApiClient: getEnvByUri")
+  @Tracer.traceMethod("PolywrapClient: getEnvByUri")
   public getEnvByUri<TUri extends Uri | string>(
     uri: TUri,
     options: GetEnvsOptions
@@ -170,7 +170,7 @@ export class Web3ApiClient implements Client {
     );
   }
 
-  @Tracer.traceMethod("Web3ApiClient: getSchema")
+  @Tracer.traceMethod("PolywrapClient: getSchema")
   public async getSchema<TUri extends Uri | string>(
     uri: TUri,
     options: GetSchemaOptions = {}
@@ -180,7 +180,7 @@ export class Web3ApiClient implements Client {
     return await api.getSchema(client);
   }
 
-  @Tracer.traceMethod("Web3ApiClient: getManifest")
+  @Tracer.traceMethod("PolywrapClient: getManifest")
   public async getManifest<
     TUri extends Uri | string,
     TManifestArtifactType extends ManifestArtifactType
@@ -193,7 +193,7 @@ export class Web3ApiClient implements Client {
     return await api.getManifest(options, client);
   }
 
-  @Tracer.traceMethod("Web3ApiClient: getFile")
+  @Tracer.traceMethod("PolywrapClient: getFile")
   public async getFile<TUri extends Uri | string>(
     uri: TUri,
     options: GetFileOptions
@@ -203,7 +203,7 @@ export class Web3ApiClient implements Client {
     return await api.getFile(options, client);
   }
 
-  @Tracer.traceMethod("Web3ApiClient: getImplementations")
+  @Tracer.traceMethod("PolywrapClient: getImplementations")
   public getImplementations<TUri extends Uri | string>(
     uri: TUri,
     options: GetImplementationsOptions = {}
@@ -224,7 +224,7 @@ export class Web3ApiClient implements Client {
         ) as TUri[]);
   }
 
-  @Tracer.traceMethod("Web3ApiClient: query")
+  @Tracer.traceMethod("PolywrapClient: query")
   public async query<
     TData extends Record<string, unknown> = Record<string, unknown>,
     TVariables extends Record<string, unknown> = Record<string, unknown>,
@@ -307,7 +307,7 @@ export class Web3ApiClient implements Client {
     return result;
   }
 
-  @Tracer.traceMethod("Web3ApiClient: invoke")
+  @Tracer.traceMethod("PolywrapClient: invoke")
   public async invoke<TData = unknown, TUri extends Uri | string = string>(
     options: InvokeApiOptions<TUri, Web3ApiClientConfig>
   ): Promise<InvokeApiResult<TData>> {
@@ -341,7 +341,7 @@ export class Web3ApiClient implements Client {
     return result;
   }
 
-  @Tracer.traceMethod("Web3ApiClient: run")
+  @Tracer.traceMethod("PolywrapClient: run")
   public async run<
     TData extends Record<string, unknown> = Record<string, unknown>,
     TUri extends Uri | string = string
@@ -357,7 +357,7 @@ export class Web3ApiClient implements Client {
     );
   }
 
-  @Tracer.traceMethod("Web3ApiClient: subscribe")
+  @Tracer.traceMethod("PolywrapClient: subscribe")
   public subscribe<
     TData extends Record<string, unknown> = Record<string, unknown>,
     TVariables extends Record<string, unknown> = Record<string, unknown>,
@@ -370,7 +370,7 @@ export class Web3ApiClient implements Client {
       options.config
     );
     // eslint-disable-next-line @typescript-eslint/no-this-alias
-    const thisClient: Web3ApiClient = this;
+    const thisClient: PolywrapClient = this;
     const client = contextualizeClient(this, contextId);
 
     const typedOptions: SubscribeOptions<TVariables, Uri> = {
@@ -452,7 +452,7 @@ export class Web3ApiClient implements Client {
     return subscription;
   }
 
-  @Tracer.traceMethod("Web3ApiClient: resolveUri")
+  @Tracer.traceMethod("PolywrapClient: resolveUri")
   public async resolveUri<TUri extends Uri | string>(
     uri: TUri,
     options?: ResolveUriOptions<ClientConfig>
@@ -502,7 +502,7 @@ export class Web3ApiClient implements Client {
     };
   }
 
-  @Tracer.traceMethod("Web3ApiClient: loadUriResolverWrappers")
+  @Tracer.traceMethod("PolywrapClient: loadUriResolverWrappers")
   public async loadUriResolvers(): Promise<{
     success: boolean;
     failedUriResolvers: string[];
@@ -551,12 +551,12 @@ export class Web3ApiClient implements Client {
     }
   }
 
-  @Tracer.traceMethod("Web3ApiClient: isContextualized")
+  @Tracer.traceMethod("PolywrapClient: isContextualized")
   private _isContextualized(contextId: string | undefined): boolean {
     return !!contextId && this._contexts.has(contextId);
   }
 
-  @Tracer.traceMethod("Web3ApiClient: getConfig")
+  @Tracer.traceMethod("PolywrapClient: getConfig")
   private _getConfig(contextId?: string): Readonly<Web3ApiClientConfig<Uri>> {
     if (contextId) {
       const context = this._contexts.get(contextId);
@@ -570,7 +570,7 @@ export class Web3ApiClient implements Client {
     }
   }
 
-  @Tracer.traceMethod("Web3ApiClient: sanitizeConfig")
+  @Tracer.traceMethod("PolywrapClient: sanitizeConfig")
   private _sanitizeConfig(): void {
     this._sanitizePlugins();
     this._sanitizeInterfacesAndImplementations();
@@ -578,7 +578,7 @@ export class Web3ApiClient implements Client {
 
   // Make sure plugin URIs are unique
   // If not, use the first occurrence of the plugin
-  @Tracer.traceMethod("Web3ApiClient: sanitizePlugins")
+  @Tracer.traceMethod("PolywrapClient: sanitizePlugins")
   private _sanitizePlugins(): void {
     const plugins = this._config.plugins;
     // Plugin map used to keep track of plugins with same URI
@@ -612,7 +612,7 @@ export class Web3ApiClient implements Client {
 
   // Make sure interface URIs are unique and that all of their implementation URIs are unique
   // If not, then merge them
-  @Tracer.traceMethod("Web3ApiClient: sanitizeInterfacesAndImplementations")
+  @Tracer.traceMethod("PolywrapClient: sanitizeInterfacesAndImplementations")
   private _sanitizeInterfacesAndImplementations(): void {
     const interfaces = this._config.interfaces;
     // Interface hash map used to keep track of interfaces with same URI
@@ -663,7 +663,7 @@ export class Web3ApiClient implements Client {
     this._config.interfaces = sanitizedInterfaces;
   }
 
-  @Tracer.traceMethod("Web3ApiClient: validateConfig")
+  @Tracer.traceMethod("PolywrapClient: validateConfig")
   private _validateConfig(): void {
     // Require plugins to use non-interface URIs
     const pluginUris = this.getPlugins().map((x) => x.uri.uri);
@@ -680,7 +680,7 @@ export class Web3ApiClient implements Client {
     }
   }
 
-  @Tracer.traceMethod("Web3ApiClient: toUri")
+  @Tracer.traceMethod("PolywrapClient: toUri")
   private _toUri(uri: Uri | string): Uri {
     if (typeof uri === "string") {
       return new Uri(uri);
@@ -698,7 +698,7 @@ export class Web3ApiClient implements Client {
    *  3. !parentId && context   -> create context ID, default config as "base", cache context
    *  4. parentId && context    -> create context ID, parent config as "base", cache context
    */
-  @Tracer.traceMethod("Web3ApiClient: setContext")
+  @Tracer.traceMethod("PolywrapClient: setContext")
   private _setContext(
     parentId: string | undefined,
     context: Partial<Web3ApiClientConfig> | undefined
@@ -737,14 +737,14 @@ export class Web3ApiClient implements Client {
     };
   }
 
-  @Tracer.traceMethod("Web3ApiClient: clearContext")
+  @Tracer.traceMethod("PolywrapClient: clearContext")
   private _clearContext(contextId: string | undefined): void {
     if (contextId) {
       this._contexts.delete(contextId);
     }
   }
 
-  @Tracer.traceMethod("Web3ApiClient: _loadWeb3Api")
+  @Tracer.traceMethod("PolywrapClient: _loadWeb3Api")
   private async _loadWeb3Api(uri: Uri, options?: Contextualized): Promise<Api> {
     const { api, uriHistory, error } = await this.resolveUri(uri, {
       contextId: options?.contextId,
@@ -793,7 +793,7 @@ export class Web3ApiClient implements Client {
 }
 
 const contextualizeClient = (
-  client: Web3ApiClient,
+  client: PolywrapClient,
   contextId: string | undefined
 ): Client =>
   contextId

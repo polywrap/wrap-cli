@@ -1,7 +1,7 @@
 import { httpPlugin } from "../..";
 import { Response } from "../../polywrap-man";
 
-import { Web3ApiClient } from "@polywrap/client-js"
+import { PolywrapClient } from "@polywrap/client-js"
 import nock from "nock";
 
 jest.setTimeout(360000)
@@ -12,10 +12,10 @@ const defaultReplyHeaders = {
 }
 
 describe("e2e tests for HttpPlugin", () => {
-  let web3ApiClient: Web3ApiClient;
+  let web3ApiClient: PolywrapClient;
 
   beforeEach(() => {
-    web3ApiClient = new Web3ApiClient({
+    web3ApiClient = new PolywrapClient({
       plugins: [
         {
           uri: "wrap://ens/http.web3api.eth",

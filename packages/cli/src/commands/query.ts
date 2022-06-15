@@ -5,7 +5,7 @@ import {
   parseRecipeOutputFilePathOption,
 } from "../lib";
 
-import { Web3ApiClient, Web3ApiClientConfig } from "@polywrap/client-js";
+import { PolywrapClient, Web3ApiClientConfig } from "@polywrap/client-js";
 import gql from "graphql-tag";
 import path from "path";
 import yaml from "js-yaml";
@@ -50,7 +50,7 @@ export const query: Command = {
 
 async function run(recipePath: string, options: QueryCommandOptions) {
   const { clientConfig, outputFile, quiet } = options;
-  const client = new Web3ApiClient(clientConfig);
+  const client = new PolywrapClient(clientConfig);
 
   function getParser(path: string) {
     return path.endsWith(".yaml") || path.endsWith(".yml")

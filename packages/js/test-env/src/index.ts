@@ -7,7 +7,7 @@ import axios from "axios";
 import fs from "fs";
 import yaml from "js-yaml";
 import { deserializeWeb3ApiManifest, Uri } from "@polywrap/core-js";
-import { Web3ApiClient } from "@polywrap/client-js";
+import { PolywrapClient } from "@polywrap/client-js";
 import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
 
 export const ensAddresses = {
@@ -238,7 +238,7 @@ export async function buildAndDeployApi({
 
   const ethereumPluginUri = "wrap://ens/ethereum.web3api.eth";
 
-  const client = new Web3ApiClient({
+  const client = new PolywrapClient({
     plugins: [
       {
         uri: ethereumPluginUri,

@@ -1,4 +1,4 @@
-import { Web3ApiClient } from "@polywrap/client-js"
+import { PolywrapClient } from "@polywrap/client-js"
 import {
   sha3_512,
   sha3_384,
@@ -16,10 +16,10 @@ import { sha3Plugin } from "..";
 const testMessage = "test message to hash"
 
 describe("js-sha3 algorithms returned values match the plugin's", () => {
-  let client: Web3ApiClient
+  let client: PolywrapClient
 
   beforeAll(() => {
-    client = new Web3ApiClient({
+    client = new PolywrapClient({
       plugins: [
         {
           uri: "wrap://ens/sha3.web3api.eth",

@@ -2,7 +2,7 @@ import {
   createWeb3ApiClient,
   Uri,
   Web3ApiClientConfig,
-  Web3ApiClient,
+  PolywrapClient,
   PluginModule,
 } from "../..";
 import {
@@ -853,7 +853,7 @@ describe("resolveUri", () => {
     const ensUri = new Uri(`ens/test`);
     const redirectUri = new Uri(`ens/redirect.eth`);
 
-    const client = await new Web3ApiClient({
+    const client = await new PolywrapClient({
       uriResolvers: [
         {
           name: "CustomResolver",
@@ -938,7 +938,7 @@ describe("resolveUri", () => {
     const ensUri = new Uri(`ens/test`);
     const redirectUri = new Uri(`ens/redirect.eth`);
 
-    const client = await new Web3ApiClient();
+    const client = await new PolywrapClient();
 
     const result = await client.resolveUri(ensUri, {
       config: {
@@ -990,7 +990,7 @@ describe("resolveUri", () => {
   });
 
   it("custom wrapper resolver does not cause infinite recursion when resolved at runtime", async () => {
-    const client = await new Web3ApiClient({
+    const client = await new PolywrapClient({
       interfaces: [
         {
           interface: "ens/uri-resolver.core.web3api.eth",
@@ -1013,7 +1013,7 @@ describe("resolveUri", () => {
   });
 
   it("unresolvable custom wrapper resolver is found when preloaded", async () => {
-    const client = await new Web3ApiClient({
+    const client = await new PolywrapClient({
       interfaces: [
         {
           interface: "ens/uri-resolver.core.web3api.eth",
@@ -1040,7 +1040,7 @@ describe("resolveUri", () => {
   });
 
   it("can preload API resolvers", async () => {
-    const client = await new Web3ApiClient();
+    const client = await new PolywrapClient();
 
     const { success, failedUriResolvers } = await client.loadUriResolvers();
 

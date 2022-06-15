@@ -1,12 +1,12 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import React from "react";
-import { Web3ApiClient, Web3ApiClientConfig } from "@polywrap/client-js";
+import { PolywrapClient, Web3ApiClientConfig } from "@polywrap/client-js";
 
-type ClientContext = React.Context<Web3ApiClient>
+type ClientContext = React.Context<PolywrapClient>
 
 interface Web3ApiProviderState {
   ClientContext: ClientContext;
-  client?: Web3ApiClient;
+  client?: PolywrapClient;
 }
 
 interface Web3ApiProviderMap {
@@ -30,7 +30,7 @@ export function createWeb3ApiProvider(
 
   // Reserve the provider slot
   PROVIDERS[name] = {
-    ClientContext: React.createContext({} as Web3ApiClient)
+    ClientContext: React.createContext({} as PolywrapClient)
   };
 
   return ({ envs, redirects, plugins, interfaces, children }) => {
@@ -47,7 +47,7 @@ export function createWeb3ApiProvider(
       }
 
       // Instantiate the client
-      PROVIDERS[name].client = new Web3ApiClient({ redirects, plugins, interfaces, envs });
+      PROVIDERS[name].client = new PolywrapClient({ redirects, plugins, interfaces, envs });
 
       setClientCreated(true);
 
@@ -62,7 +62,7 @@ export function createWeb3ApiProvider(
     const ClientProvider = PROVIDERS[name].ClientContext.Provider;
 
     return clientCreated ? (
-      <ClientProvider value={PROVIDERS[name].client as Web3ApiClient}>
+      <ClientProvider value={PROVIDERS[name].client as PolywrapClient}>
         {children}
       </ClientProvider>
     ) : null;

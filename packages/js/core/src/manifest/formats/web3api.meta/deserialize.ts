@@ -51,7 +51,7 @@ export const deserializeMetaManifest = Tracer.traceFunc(
     } else if (versionCompare === 1) {
       // Downgrade
       throw Error(
-        `Cannot downgrade Web3API version ${anyMetaManifest.format}, please upgrade your Web3ApiClient package.`
+        `Cannot downgrade Web3API version ${anyMetaManifest.format}, please upgrade your PolywrapClient package.`
       );
     } else {
       // Latest

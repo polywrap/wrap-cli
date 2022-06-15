@@ -1,4 +1,4 @@
-import { Web3ApiClient } from "@polywrap/client-js";
+import { PolywrapClient } from "@polywrap/client-js";
 import {
   buildApi,
   initTestEnvironment,
@@ -16,7 +16,7 @@ jest.setTimeout(500000);
 describe("SimpleStorage", () => {
   const CONNECTION = { networkNameOrChainId: "testnet" };
 
-  let client: Web3ApiClient;
+  let client: PolywrapClient;
 
   const apiPath: string = path.join(
     path.resolve(__dirname),
@@ -30,7 +30,7 @@ describe("SimpleStorage", () => {
     await initTestEnvironment();
 
     const config = getPlugins(providers.ethereum, providers.ipfs, ensAddresses.ensAddress);
-    client = new Web3ApiClient(config);
+    client = new PolywrapClient(config);
 
     await buildApi(apiPath);
   });

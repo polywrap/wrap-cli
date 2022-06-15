@@ -8,7 +8,7 @@ import {
   providers
 } from "@polywrap/test-env-js";
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
-import { Web3ApiClient } from "@polywrap/client-js";
+import { PolywrapClient } from "@polywrap/client-js";
 import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
 import { Wallet } from "@ethersproject/wallet";
 import path from "path";
@@ -53,7 +53,7 @@ const setup = async (domainNames: string[]) => {
   };
 
   const ethereumPluginUri = "wrap://ens/ethereum.web3api.eth"
-  const client = new Web3ApiClient({
+  const client = new PolywrapClient({
     plugins: [
       {
         uri: ethereumPluginUri,

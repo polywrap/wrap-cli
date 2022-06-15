@@ -142,7 +142,7 @@
   "commands_plugin_options_codegen": "Output directory for the generated types (default: {default})",
   "commands_query_options_configPath": "config-path",
   "commands_query_options_outputFilePath": "output-file-path",
-  "commands_query_options_config": "Add custom configuration to the Web3ApiClient",
+  "commands_query_options_config": "Add custom configuration to the PolywrapClient",
   "commands_query_options_outputFile": "Output file path for the query result",
   "commands_query_options_quiet": "Suppress output",
   "commands_query_error_outputFileMissing": "{option} option missing {argument} argument",

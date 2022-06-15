@@ -25,7 +25,7 @@ Arguments:
 
 Options:
   -c, --client-config <config-path>     Add custom configuration to the
-                                        Web3ApiClient
+                                        PolywrapClient
   -o, --output-file <output-file-path>  Output file path for the query result
   -q, --quiet                           Suppress output
   -h, --help                            display help for command

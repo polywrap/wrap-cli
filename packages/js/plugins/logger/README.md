@@ -14,7 +14,7 @@ Console Logger plugin implements the `wrap://ens/logger.core.web3api.eth` core W
 ```ts
 import { loggerPlugin, LogLevel } from "@polywrap/logger-plugin-js";
 
-const client = new Web3ApiClient({
+const client = new PolywrapClient({
   plugins: [{
     from: "wrap://ens/js-logger.web3api.eth",
     to: loggerPlugin()

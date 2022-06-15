@@ -1,7 +1,7 @@
 import { ethereumPlugin } from "..";
 import * as Schema from "../polywrap-man";
 
-import { Web3ApiClient, defaultIpfsProviders } from "@polywrap/client-js";
+import { PolywrapClient, defaultIpfsProviders } from "@polywrap/client-js";
 import { ensPlugin } from "@polywrap/ens-plugin-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import {
@@ -31,7 +31,7 @@ const contracts = {
 jest.setTimeout(360000);
 
 describe("Ethereum Plugin", () => {
-  let client: Web3ApiClient;
+  let client: PolywrapClient;
   let ensAddress: string;
   let resolverAddress: string;
   let registrarAddress: string;
@@ -47,7 +47,7 @@ describe("Ethereum Plugin", () => {
     resolverAddress = ensAddresses.resolverAddress;
     registrarAddress = ensAddresses.registrarAddress
 
-    client = new Web3ApiClient({
+    client = new PolywrapClient({
       plugins: [
         {
           uri: "wrap://ens/ethereum.web3api.eth",

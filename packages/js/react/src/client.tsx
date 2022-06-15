@@ -2,13 +2,13 @@ import { PROVIDERS, PRIMARY_PROVIDER } from "./provider";
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import React from "react";
-import { Web3ApiClient } from "@polywrap/client-js";
+import { PolywrapClient } from "@polywrap/client-js";
 
 export interface UseWeb3ApiClientProps {
   provider?: string;
 }
 
-export function useWeb3ApiClient(props?: UseWeb3ApiClientProps): Web3ApiClient {
+export function useWeb3ApiClient(props?: UseWeb3ApiClientProps): PolywrapClient {
   const provider = props?.provider ?? PRIMARY_PROVIDER;
 
   if (!PROVIDERS[provider]) {
@@ -17,14 +17,14 @@ export function useWeb3ApiClient(props?: UseWeb3ApiClientProps): Web3ApiClient {
     );
   }
 
-  // Get the Web3ApiClient from the provider in our DOM hierarchy
+  // Get the PolywrapClient from the provider in our DOM hierarchy
   const client = React.useContext(
     PROVIDERS[provider].ClientContext
   );
 
   if (!client || Object.keys(client).length === 0) {
     throw new Error(
-      `The requested Web3APIProvider \"${provider}\" was not found within the DOM hierarchy. We could not get the Web3ApiClient through the provider context.`
+      `The requested Web3APIProvider \"${provider}\" was not found within the DOM hierarchy. We could not get the PolywrapClient through the provider context.`
     )
   }
 

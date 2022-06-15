@@ -6,7 +6,7 @@ import {
   ensAddresses,
   providers
 } from "@polywrap/test-env-js";
-import { createWeb3ApiClient, Web3ApiClient, Web3ApiClientConfig } from "../..";
+import { createWeb3ApiClient, PolywrapClient, Web3ApiClientConfig } from "../..";
 import { outPropWorkflow, sanityWorkflow } from "./workflow-test-cases";
 
 jest.setTimeout(200000);
@@ -50,7 +50,7 @@ describe("workflow", () => {
   });
 
   describe("simple-storage", () => {
-    let client: Web3ApiClient;
+    let client: PolywrapClient;
 
     beforeAll(async () => {
       await buildAndDeployApi({

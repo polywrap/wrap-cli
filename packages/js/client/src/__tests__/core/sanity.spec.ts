@@ -3,7 +3,7 @@ import {
 } from "@polywrap/core-js";
 import {
   Uri,
-  Web3ApiClient,
+  PolywrapClient,
 } from "../..";
 
 jest.setTimeout(200000);
@@ -11,7 +11,7 @@ jest.setTimeout(200000);
 describe("sanity", () => {
 
   test("default client config", () => {
-    const client = new Web3ApiClient();
+    const client = new PolywrapClient();
 
     expect(client.getRedirects()).toStrictEqual([]);
     expect(client.getPlugins().map((x) => x.uri)).toStrictEqual([
@@ -42,16 +42,16 @@ describe("sanity", () => {
   });
 
   test("client noDefaults flag works as expected", async () => {
-    let client = new Web3ApiClient();
+    let client = new PolywrapClient();
     expect(client.getPlugins().length !== 0).toBeTruthy();
 
-    client = new Web3ApiClient({}, {});
+    client = new PolywrapClient({}, {});
     expect(client.getPlugins().length !== 0).toBeTruthy();
 
-    client = new Web3ApiClient({}, { noDefaults: false });
+    client = new PolywrapClient({}, { noDefaults: false });
     expect(client.getPlugins().length !== 0).toBeTruthy();
 
-    client = new Web3ApiClient({}, { noDefaults: true });
+    client = new PolywrapClient({}, { noDefaults: true });
     expect(client.getPlugins().length === 0).toBeTruthy();
   });
 
@@ -59,7 +59,7 @@ describe("sanity", () => {
     const implementation1Uri = "wrap://ens/some-implementation1.eth";
     const implementation2Uri = "wrap://ens/some-implementation2.eth";
 
-    const client = new Web3ApiClient({
+    const client = new PolywrapClient({
       redirects: [
         {
           from: implementation1Uri,
@@ -82,7 +82,7 @@ describe("sanity", () => {
     const implementationUri = "wrap://ens/some-implementation.eth";
     const schemaStr = "test-schema";
 
-    const client = new Web3ApiClient({
+    const client = new PolywrapClient({
       plugins: [
         {
           uri: implementationUri,

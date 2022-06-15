@@ -2,7 +2,7 @@ import { PluginRegistration } from "@polywrap/core-js";
 import { ensPlugin } from "@polywrap/ens-plugin-js";
 import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
-import { Web3ApiClient, defaultIpfsProviders } from "@polywrap/client-js";
+import { PolywrapClient, defaultIpfsProviders } from "@polywrap/client-js";
 
 interface SimpleClientConfig {
   ensAddress?: string;
@@ -10,7 +10,7 @@ interface SimpleClientConfig {
   ipfsProvider?: string;
 }
 
-export function getSimpleClient(config: SimpleClientConfig): Web3ApiClient {
+export function getSimpleClient(config: SimpleClientConfig): PolywrapClient {
   const { ensAddress, ethProvider, ipfsProvider } = config;
   const plugins: PluginRegistration[] = [];
   if (ensAddress) {
@@ -44,5 +44,5 @@ export function getSimpleClient(config: SimpleClientConfig): Web3ApiClient {
       }),
     });
   }
-  return new Web3ApiClient({ plugins });
+  return new PolywrapClient({ plugins });
 }
