@@ -41,7 +41,7 @@ export const getDefaultClientConfig = Tracer.traceFunc(
         // ENS is required for resolving domain to IPFS hashes
         {
           uri: new Uri("w3://ens/ens.web3api.eth"),
-          plugin: ensPlugin({ query: {} }),
+          plugin: ensPlugin({}),
         },
         {
           uri: new Uri("w3://ens/ethereum.web3api.eth"),
@@ -56,31 +56,29 @@ export const getDefaultClientConfig = Tracer.traceFunc(
         },
         {
           uri: new Uri("w3://ens/http.web3api.eth"),
-          plugin: httpPlugin({ query: {} }),
+          plugin: httpPlugin({}),
         },
         {
           uri: new Uri("w3://ens/js-logger.web3api.eth"),
-          plugin: loggerPlugin({ query: {} }),
+          plugin: loggerPlugin({}),
         },
         {
           uri: new Uri("w3://ens/uts46.web3api.eth"),
-          plugin: uts46Plugin({ query: {} }),
+          plugin: uts46Plugin({}),
         },
         {
           uri: new Uri("w3://ens/sha3.web3api.eth"),
-          plugin: sha3Plugin({ query: {} }),
+          plugin: sha3Plugin({}),
         },
         {
           uri: new Uri("w3://ens/graph-node.web3api.eth"),
           plugin: graphNodePlugin({
-            query: {
-              provider: "https://api.thegraph.com",
-            },
+            provider: "https://api.thegraph.com",
           }),
         },
         {
           uri: new Uri("w3://ens/fs.web3api.eth"),
-          plugin: filesystemPlugin({ query: {} }),
+          plugin: filesystemPlugin({}),
         },
       ],
       interfaces: [

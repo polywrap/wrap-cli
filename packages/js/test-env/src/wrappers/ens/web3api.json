@@ -1,17 +1,8 @@
 {
-  "format": "0.0.1-prealpha.7",
+  "format": "0.0.1-prealpha.9",
+  "name": "ENS",
   "language": "wasm/assemblyscript",
   "build": "./web3api.build.json",
-  "meta": "./web3api.meta.yaml",
-  "modules": {
-    "mutation": {
-      "module": "./mutation.wasm",
-      "schema": "./schema.graphql"
-    },
-    "query": {
-      "module": "./query.wasm",
-      "schema": "./schema.graphql"
-    }
-  },
-  "name": "Unnamed"
+  "schema": "./schema.graphql",
+  "module": "./module.wasm"
 }

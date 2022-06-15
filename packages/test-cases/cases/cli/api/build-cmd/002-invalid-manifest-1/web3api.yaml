@@ -1,15 +1,5 @@
-format: 0.0.1-prealpha.1
-description: Invalid Manifest
-repository: https://github.com
-mutation:
-  schema:
-    file: ./src/wrong/schema.graphql
-  module:
-    language: wasm/assemblyscript
-    file: ./src/wrong/index.ts
-query:
-  schema:
-    file: ./src/wrong/schema.graphql
-  module:
-    language: wasm/assemblyscript
-    file: ./src/wrong/index.ts
+format: 0.0.1-prealpha.9
+name: invalid-manifest
+language: wasm/assemblyscript
+schema: ./src/wrong/schema.graphql
+module: ./src/wrong/index.ts

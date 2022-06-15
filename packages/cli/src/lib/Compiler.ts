@@ -15,12 +15,7 @@ import {
   resetDir,
 } from "./";
 
-import {
-  InvokableModules,
-  Web3ApiManifest,
-  BuildManifest,
-  MetaManifest,
-} from "@web3api/core-js";
+import { Web3ApiManifest, BuildManifest, MetaManifest } from "@web3api/core-js";
 import { WasmWeb3Api } from "@web3api/client-js";
 import { W3Imports } from "@web3api/client-js/build/wasm/types";
 import { AsyncWasmInstance } from "@web3api/asyncify-js";
@@ -30,12 +25,9 @@ import * as gluegun from "gluegun";
 import fs from "fs";
 import path from "path";
 
-type ModulesToBuild = Record<InvokableModules, boolean>;
-
 interface CompilerState {
   web3ApiManifest: Web3ApiManifest;
   composerOutput: ComposerOutput;
-  modulesToBuild: ModulesToBuild;
   compilerOverrides?: CompilerOverrides;
 }
 
@@ -166,9 +158,6 @@ export class Compiler {
     // Get the Web3ApiManifest
     const web3ApiManifest = await project.getManifest();
 
-    // Determine what modules to build
-    const modulesToBuild = this._getModulesToBuild(web3ApiManifest);
-
     // Compose the schema
     const composerOutput = await this._composeSchema();
 
@@ -196,7 +185,6 @@ export class Compiler {
     const state: CompilerState = {
       web3ApiManifest: Object.assign({}, web3ApiManifest),
       composerOutput,
-      modulesToBuild,
       compilerOverrides,
     };
 
@@ -217,7 +205,7 @@ export class Compiler {
     // Get the fully composed schema
     const composerOutput = await schemaComposer.getComposedSchemas();
 
-    if (!composerOutput.combined) {
+    if (!composerOutput) {
       throw Error(intlMsg.lib_compiler_failedSchemaReturn());
     }
 
@@ -229,32 +217,18 @@ export class Compiler {
     const { project } = this._config;
 
     // Generate the bindings
-    const output = await project.generateSchemaBindings(
+    const binding = await project.generateSchemaBindings(
       composerOutput,
       compilerOverrides?.generationSubPath
     );
 
     // Output the bindings
-    const filesWritten: string[] = [];
-
-    for (const module of output.modules) {
-      filesWritten.push(
-        ...writeDirectorySync(module.outputDirAbs, module.output)
-      );
-    }
-
-    if (output.common) {
-      filesWritten.push(
-        ...writeDirectorySync(output.common.outputDirAbs, output.common.output)
-      );
-    }
-
-    return filesWritten;
+    return writeDirectorySync(binding.outputDirAbs, binding.output);
   }
 
   private async _buildModules(state: CompilerState): Promise<BuildManifest> {
     const { outputDir } = this._config;
-    const { web3ApiManifest, modulesToBuild } = state;
+    const { web3ApiManifest } = state;
 
     if (await this._isInterface()) {
       throw Error(intlMsg.lib_compiler_cannotBuildInterfaceModules());
@@ -263,61 +237,22 @@ export class Compiler {
     // Build the sources
     const dockerImageId = await this._buildSourcesInDocker();
 
-    // Validate the Wasm modules
-    await Promise.all(
-      Object.keys(modulesToBuild)
-        .filter((module: InvokableModules) => modulesToBuild[module])
-        .map((module: InvokableModules) =>
-          this._validateWasmModule(module, outputDir)
-        )
-    );
+    // Validate the Wasm module
+    await this._validateWasmModule(outputDir);
 
     // Update the Web3ApiManifest
-    if (modulesToBuild.query && web3ApiManifest.modules.query) {
-      web3ApiManifest.modules.query = {
-        module: "./query.wasm",
-        schema: "./schema.graphql",
-      };
-    }
-
-    if (modulesToBuild.mutation && web3ApiManifest.modules.mutation) {
-      web3ApiManifest.modules.mutation = {
-        module: "./mutation.wasm",
-        schema: "./schema.graphql",
-      };
-    }
-
+    web3ApiManifest.module = "./module.wasm";
+    web3ApiManifest.schema = "./schema.graphql";
     web3ApiManifest.build = "./web3api.build.json";
 
     // Create the BuildManifest
-    const buildManifest: BuildManifest = {
+    return {
       format: "0.0.1-prealpha.3",
       __type: "BuildManifest",
       docker: {
         buildImageId: dockerImageId,
       },
     };
-
-    return buildManifest;
-  }
-
-  private _getModulesToBuild(manifest: Web3ApiManifest): ModulesToBuild {
-    const manifestMutation = manifest.modules.mutation;
-    const manifestQuery = manifest.modules.query;
-    const modulesToBuild: ModulesToBuild = {
-      mutation: false,
-      query: false,
-    };
-
-    if (manifestMutation) {
-      modulesToBuild.mutation = true;
-    }
-
-    if (manifestQuery) {
-      modulesToBuild.query = true;
-    }
-
-    return modulesToBuild;
   }
 
   private async _buildSourcesInDocker(): Promise<string> {
@@ -350,7 +285,7 @@ export class Compiler {
     }
 
     const dockerBuildxConfig = buildManifest?.docker?.buildx;
-    const useBuildx = dockerBuildxConfig ? true : false;
+    const useBuildx = !!dockerBuildxConfig;
 
     let cacheDir: string | undefined;
     let buildxOutput: string | undefined;
@@ -379,10 +314,10 @@ export class Compiler {
         buildxOutput = output;
       }
 
-      removeBuilder = dockerBuildxConfig.removeBuilder ? true : false;
+      removeBuilder = !!dockerBuildxConfig.removeBuilder;
     }
 
-    const removeImage = buildManifest?.docker?.removeImage ? true : false;
+    const removeImage = !!buildManifest?.docker?.removeImage;
 
     // If the dockerfile path contains ".mustache", generate
     if (dockerfile.indexOf(".mustache") > -1) {
@@ -400,20 +335,9 @@ export class Compiler {
       project.quiet
     );
 
-    // Determine what build artifacts to expext
-    const web3apiManifest = await project.getManifest();
-    const web3apiArtifacts = [];
-
-    if (web3apiManifest.modules.mutation) {
-      web3apiArtifacts.push("mutation.wasm");
-    }
-    if (web3apiManifest.modules.query) {
-      web3apiArtifacts.push("query.wasm");
-    }
-
     await copyArtifactsFromBuildImage(
       outputDir,
-      web3apiArtifacts,
+      "module.wasm",
       imageName,
       removeBuilder,
       removeImage,
@@ -429,27 +353,15 @@ export class Compiler {
 
     writeFileSync(
       `${outputDir}/schema.graphql`,
-      state.composerOutput.combined.schema,
+      state.composerOutput.schema,
       "utf-8"
     );
 
     // Update the Web3ApiManifest schema paths
-    if (state.modulesToBuild.query && state.web3ApiManifest.modules.query) {
-      state.web3ApiManifest.modules.query = {
-        schema: "./schema.graphql",
-        module: state.web3ApiManifest.modules.query.module,
-      };
-    }
-
-    if (
-      state.modulesToBuild.mutation &&
-      state.web3ApiManifest.modules.mutation
-    ) {
-      state.web3ApiManifest.modules.mutation = {
-        schema: "./schema.graphql",
-        module: state.web3ApiManifest.modules.mutation.module,
-      };
-    }
+    state.web3ApiManifest = {
+      ...state.web3ApiManifest,
+      schema: "./schema.graphql",
+    };
   }
 
   private async _outputManifests(
@@ -499,79 +411,26 @@ export class Compiler {
   }
 
   private _validateState(state: CompilerState) {
-    const { composerOutput, modulesToBuild, web3ApiManifest } = state;
+    const { composerOutput, web3ApiManifest } = state;
 
-    const throwMissingSchema = (moduleName: string) => {
-      const missingSchemaMessage = intlMsg.lib_compiler_missingSchema({
-        name: `"${moduleName}"`,
-      });
+    if (!composerOutput.schema) {
+      const missingSchemaMessage = intlMsg.lib_compiler_missingSchema();
       throw Error(missingSchemaMessage);
-    };
-
-    if (
-      modulesToBuild.query &&
-      (!composerOutput.query || !composerOutput.query.schema)
-    ) {
-      throwMissingSchema("query");
     }
 
-    if (
-      modulesToBuild.mutation &&
-      (!composerOutput.mutation || !composerOutput.mutation.schema)
-    ) {
-      throwMissingSchema("mutation");
-    }
-
-    const throwMissingModule = (moduleName: string) => {
-      const missingModuleMessage = intlMsg.lib_compiler_missingModule({
-        name: `"${moduleName}"`,
-      });
+    if (web3ApiManifest.language !== "interface" && !web3ApiManifest.module) {
+      const missingModuleMessage = intlMsg.lib_compiler_missingModule();
       throw Error(missingModuleMessage);
-    };
-
-    if (
-      modulesToBuild.query &&
-      web3ApiManifest.language !== "interface" &&
-      !web3ApiManifest.modules.query?.module
-    ) {
-      throwMissingModule("query");
     }
 
-    if (
-      modulesToBuild.mutation &&
-      web3ApiManifest.language !== "interface" &&
-      !web3ApiManifest.modules.mutation?.module
-    ) {
-      throwMissingModule("mutation");
-    }
-
-    const throwNoInterfaceModule = (moduleName: string) => {
-      const noInterfaceModule = intlMsg.lib_compiler_noInterfaceModule({
-        name: `"${moduleName}"`,
-      });
+    if (web3ApiManifest.language === "interface" && web3ApiManifest.module) {
+      const noInterfaceModule = intlMsg.lib_compiler_noInterfaceModule();
       throw Error(noInterfaceModule);
-    };
-
-    if (
-      web3ApiManifest.language === "interface" &&
-      web3ApiManifest.modules.query?.module
-    ) {
-      throwNoInterfaceModule("query");
-    }
-
-    if (
-      web3ApiManifest.language === "interface" &&
-      web3ApiManifest.modules.mutation?.module
-    ) {
-      throwNoInterfaceModule("mutation");
     }
   }
 
-  private async _validateWasmModule(
-    moduleName: InvokableModules,
-    buildDir: string
-  ): Promise<void> {
-    const modulePath = path.join(buildDir, `${moduleName}.wasm`);
+  private async _validateWasmModule(buildDir: string): Promise<void> {
+    const modulePath = path.join(buildDir, `module.wasm`);
     const wasmSource = fs.readFileSync(modulePath);
     const w3Imports: Record<keyof W3Imports, () => void> = {
       __w3_subinvoke: () => {},
@@ -613,7 +472,6 @@ export class Compiler {
       throw Error(
         intlMsg.lib_compiler_invalid_module({
           modulePath,
-          moduleName,
           error,
         })
       );

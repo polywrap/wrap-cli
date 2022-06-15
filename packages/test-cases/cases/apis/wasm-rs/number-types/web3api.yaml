@@ -1,7 +1,6 @@
-format: 0.0.1-prealpha.5
+format: 0.0.1-prealpha.9
+name: NumberTypes
 language: wasm/rust
 build: ./web3api.build.yaml
-modules:
-  query:
-    schema: ./query/schema.graphql
-    module: ./query/Cargo.toml
+schema: ./schema.graphql
+module: ./Cargo.toml

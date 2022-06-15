@@ -1,5 +1,5 @@
 import { httpPlugin } from "../..";
-import { Response } from "../../query/w3";
+import { Response } from "../../w3";
 
 import { Web3ApiClient } from "@web3api/client-js"
 import {
@@ -28,7 +28,7 @@ describe("e2e tests for HttpPlugin", () => {
         plugins: [
           {
             uri: "w3://ens/http.web3api.eth",
-            plugin: httpPlugin({ query: {} }),
+            plugin: httpPlugin({ }),
           },
         ],
       });

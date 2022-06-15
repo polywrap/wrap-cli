@@ -2,13 +2,7 @@ import * as Functions from "./functions";
 import * as Transforms from "./transforms";
 import { GenerateBindingFn } from "../../";
 import { renderTemplates, loadSubTemplates } from "../../utils/templates";
-import { extractCommonTypeInfo } from "../../utils/typeInfo";
-import {
-  BindOptions,
-  BindOutput,
-  BindModuleOutput,
-  BindModuleOptions,
-} from "../../..";
+import { BindOptions, BindOutput } from "../../..";
 
 import {
   TypeInfo,
@@ -33,93 +27,13 @@ export const generateBinding: GenerateBindingFn = (
   options: BindOptions
 ): BindOutput => {
   const result: BindOutput = {
-    modules: [],
-  };
-
-  // If there's more than one module provided
-  if (options.modules.length > 1 && options.commonDirAbs) {
-    // Extract the common types
-    const commonTypeInfo = extractCommonTypeInfo(
-      options.modules,
-      options.commonDirAbs
-    );
-
-    // Generate the common type folder
-    result.common = generateModuleBinding({
-      name: "common",
-      typeInfo: commonTypeInfo,
-      schema: "N/A",
-      outputDirAbs: options.commonDirAbs,
-    });
-
-    if (result.common.output.entries.length) {
-      // Modify the common type directory to be a rust crate
-      const crateEntries: OutputEntry[] = [];
-      const srcEntries = result.common.output.entries;
-
-      crateEntries.push({
-        name: "src",
-        type: "Directory",
-        data: srcEntries,
-      });
-      crateEntries.push({
-        name: "Cargo.toml",
-        type: "File",
-        data: `[package]
-name = "common"
-version = "0.0.1"
-edition = "2021"
-
-[lib]
-crate-type = ["cdylib", "rlib"]
-
-[dependencies]
-web3api-wasm-rs = { version = "0.0.1-prealpha.81" }
-serde = { version = "1.0", features = ["derive"] }
-`,
-      });
-
-      result.common.output.entries = crateEntries;
-    } else {
-      result.common = undefined;
-    }
-  }
-
-  // Generate each module folder
-  for (const module of options.modules) {
-    result.modules.push(generateModuleBinding(module));
-  }
-
-  return result;
-};
-
-function applyTransforms(typeInfo: TypeInfo): TypeInfo {
-  const transforms = [
-    extendType(Functions),
-    addFirstLast,
-    toPrefixedGraphQLType,
-    hasImports,
-    methodParentPointers(),
-    Transforms.propertyDeps(),
-    Transforms.byRef(),
-  ];
-
-  for (const transform of transforms) {
-    typeInfo = transformTypeInfo(typeInfo, transform);
-  }
-  return typeInfo;
-}
-
-function generateModuleBinding(module: BindModuleOptions): BindModuleOutput {
-  const result: BindModuleOutput = {
-    name: module.name,
     output: {
       entries: [],
     },
-    outputDirAbs: module.outputDirAbs,
+    outputDirAbs: options.outputDirAbs,
   };
   const output = result.output;
-  const typeInfo = applyTransforms(module.typeInfo);
+  const typeInfo = applyTransforms(options.typeInfo);
 
   // Generate object type folders
   for (const objectType of typeInfo.objectTypes) {
@@ -201,13 +115,13 @@ function generateModuleBinding(module: BindModuleOptions): BindModuleOutput {
   }
 
   // Generate module type folders
-  for (const moduleType of typeInfo.moduleTypes) {
+  if (typeInfo.moduleType) {
     output.entries.push({
       type: "Directory",
-      name: toLower(moduleType.type),
+      name: toLower(typeInfo.moduleType.type),
       data: renderTemplates(
         templatePath("module-type"),
-        moduleType,
+        typeInfo.moduleType,
         subTemplates
       ),
     });
@@ -228,4 +142,21 @@ function generateModuleBinding(module: BindModuleOptions): BindModuleOutput {
   );
 
   return result;
+};
+
+function applyTransforms(typeInfo: TypeInfo): TypeInfo {
+  const transforms = [
+    extendType(Functions),
+    addFirstLast,
+    toPrefixedGraphQLType,
+    hasImports,
+    methodParentPointers(),
+    Transforms.propertyDeps(),
+    Transforms.byRef(),
+  ];
+
+  for (const transform of transforms) {
+    typeInfo = transformTypeInfo(typeInfo, transform);
+  }
+  return typeInfo;
 }

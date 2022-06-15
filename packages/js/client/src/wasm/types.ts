@@ -14,8 +14,6 @@ export interface W3Imports extends WebAssembly.Imports {
     __w3_subinvoke: (
       uriPtr: u32,
       uriLen: u32,
-      modulePtr: u32,
-      moduleLen: u32,
       methodPtr: u32,
       methodLen: u32,
       inputPtr: u32,
@@ -30,8 +28,6 @@ export interface W3Imports extends WebAssembly.Imports {
       interfaceUriLen: u32,
       implUriPtr: u32,
       implUriLen: u32,
-      modulePtr: u32,
-      moduleLen: u32,
       methodPtr: u32,
       methodLen: u32,
       inputPtr: u32,

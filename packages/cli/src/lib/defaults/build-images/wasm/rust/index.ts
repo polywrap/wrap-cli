@@ -6,17 +6,10 @@ import { Web3ApiManifest } from "@web3api/core-js";
 export function getCompilerOverrides(): CompilerOverrides {
   return {
     validateManifest: (manifest: Web3ApiManifest) => {
-      const queryModule = manifest.modules.query?.module;
-      const mutationModule = manifest.modules.mutation?.module;
+      const module = manifest.module;
 
-      if (queryModule && queryModule.indexOf("Cargo.toml") === -1) {
-        throw Error(intlMsg.lib_wasm_rust_invalidModule({ path: queryModule }));
-      }
-
-      if (mutationModule && mutationModule.indexOf("Cargo.toml") === -1) {
-        throw Error(
-          intlMsg.lib_wasm_rust_invalidModule({ path: mutationModule })
-        );
+      if (module && module.indexOf("Cargo.toml") === -1) {
+        throw Error(intlMsg.lib_wasm_rust_invalidModule({ path: module }));
       }
     },
     generationSubPath: "src/w3",

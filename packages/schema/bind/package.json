@@ -21,7 +21,6 @@
   },
   "dependencies": {
     "@web3api/os-js": "0.0.1-prealpha.85",
-    "@web3api/schema-compose": "0.0.1-prealpha.85",
     "@web3api/schema-parse": "0.0.1-prealpha.85",
     "mustache": "4.0.1"
   },

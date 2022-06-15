@@ -38,9 +38,9 @@ directive @annotate(type: String!) on FIELD
 
 ### Web3API Header END ###
 
-type Query @imports(
+type Module @imports(
   types: [
-    "Ethereum_Query",
+    "Ethereum_Module",
     "Ethereum_Connection",
     "Ethereum_TxOverrides",
     "Ethereum_StaticTxResult",
@@ -48,7 +48,9 @@ type Query @imports(
     "Ethereum_TxReceipt",
     "Ethereum_Log",
     "Ethereum_EventNotification",
-    "Ethereum_Network"
+    "Ethereum_Network",
+    "Ethereum_TxResponse",
+    "Ethereum_Access"
   ]
 ) {
   method(
@@ -57,7 +59,7 @@ type Query @imports(
   ): Object!
 }
 
-type QueryEnv {
+type Env {
   arg1: String!
 }
 
@@ -67,12 +69,12 @@ type Object {
   bytes: Bytes
 }
 
-### Imported Queries START ###
+### Imported Modules START ###
 
-type Ethereum_Query @imported(
+type Ethereum_Module @imported(
   uri: "ens/ethereum.web3api.eth",
   namespace: "Ethereum",
-  nativeType: "Query"
+  nativeType: "Module"
 ) {
   callContractView(
     address: String!
@@ -181,9 +183,53 @@ type Ethereum_Query @imported(
   getNetwork(
     connection: Ethereum_Connection
   ): Ethereum_Network!
+
+  callContractMethod(
+    address: String!
+    method: String!
+    args: [String!]
+    connection: Ethereum_Connection
+    txOverrides: Ethereum_TxOverrides
+  ): Ethereum_TxResponse!
+
+  callContractMethodAndWait(
+    address: String!
+    method: String!
+    args: [String!]
+    connection: Ethereum_Connection
+    txOverrides: Ethereum_TxOverrides
+  ): Ethereum_TxReceipt!
+
+  sendTransaction(
+    tx: Ethereum_TxRequest!
+    connection: Ethereum_Connection
+  ): Ethereum_TxResponse!
+
+  sendTransactionAndWait(
+    tx: Ethereum_TxRequest!
+    connection: Ethereum_Connection
+  ): Ethereum_TxReceipt!
+
+  deployContract(
+    abi: String!
+    bytecode: String!
+    args: [String!]
+    connection: Ethereum_Connection
+  ): String!
+
+  signMessage(
+    message: String!
+    connection: Ethereum_Connection
+  ): String!
+
+  sendRPC(
+    method: String!
+    params: [String!]!
+    connection: Ethereum_Connection
+  ): String
 }
 
-### Imported Queries END ###
+### Imported Modules END ###
 
 ### Imported Objects START ###
 
@@ -289,6 +335,41 @@ type Ethereum_Network @imported(
   name: String!
   chainId: BigInt!
   ensAddress: String
+}
+
+type Ethereum_TxResponse @imported(
+  uri: "ens/ethereum.web3api.eth",
+  namespace: "Ethereum",
+  nativeType: "TxResponse"
+) {
+  hash: String!
+  to: String
+  from: String!
+  nonce: UInt32!
+  gasLimit: BigInt!
+  gasPrice: BigInt
+  data: String!
+  value: BigInt!
+  chainId: BigInt!
+  blockNumber: BigInt
+  blockHash: String
+  timestamp: UInt32
+  confirmations: UInt32!
+  raw: String
+  r: String
+  s: String
+  v: UInt32
+  type: UInt32
+  accessList: [Ethereum_Access!]
+}
+
+type Ethereum_Access @imported(
+  uri: "ens/ethereum.web3api.eth",
+  namespace: "Ethereum",
+  nativeType: "Access"
+) {
+  address: String!
+  storageKeys: [String!]!
 }
 
 ### Imported Objects END ###

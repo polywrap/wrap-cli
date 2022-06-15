@@ -36,33 +36,24 @@ directive @annotate(type: String!) on FIELD
 ### Web3API Header END ###
 
 """
-Mutation comment
+Module comment
 """
-type Mutation {
-  abstractMutationMethod(
-    arg: UInt8!
-  ): String!
-}
-
+type Module {
 """
-Query comment
+abstractModuleMethod comment
 """
-type Query {
-"""
-abstractQueryMethod comment
-"""
-  abstractQueryMethod(
+  abstractModuleMethod(
 """
 arg comment
 """
-    arg: QueryInterfaceArgument!
+    arg: ModuleInterfaceArgument!
   ): InterfaceObject2!
 }
 
 """
-QueryInterfaceArgument comment
+ModuleInterfaceArgument comment
 """
-type QueryInterfaceArgument implements NestedQueryInterfaceArgument {
+type ModuleInterfaceArgument implements NestedModuleInterfaceArgument {
   str: String!
 """
 uint8 comment
@@ -71,9 +62,9 @@ uint8 comment
 }
 
 """
-NestedQueryInterfaceArgument comment
+NestedModuleInterfaceArgument comment
 """
-type NestedQueryInterfaceArgument {
+type NestedModuleInterfaceArgument {
   uint8: UInt8!
 }
 

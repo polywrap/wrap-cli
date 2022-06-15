@@ -9,9 +9,7 @@ import {
   Uri,
   createWeb3ApiClient,
   Web3ApiClientConfig,
-  Plugin,
   PluginModule,
-  PluginModules,
   Subscription,
   Web3ApiManifest,
   BuildManifest,
@@ -59,10 +57,8 @@ describe("wasm-wrapper", () => {
         },
         ipfs: { provider: ipfsProvider },
         ens: {
-          query: {
-           addresses: {
-              testnet: ensAddress,
-            },
+          addresses: {
+            testnet: ensAddress,
           },
         },
       },
@@ -71,29 +67,17 @@ describe("wasm-wrapper", () => {
   };
 
   const mockPlugin = () => {
-    class Query extends PluginModule {
+    class MockPlugin extends PluginModule {
       getData(_: unknown) {
         return 100;
       }
-    }
-
-    class Mutation extends PluginModule {
       deployContract(_: unknown): string {
         return "0x100";
       }
     }
 
-    class MockPlugin implements Plugin {
-      getModules(): PluginModules {
-        return {
-          query: new Query({}),
-          mutation: new Mutation({}),
-        };
-      }
-    }
-
     return {
-      factory: () => new MockPlugin(),
+      factory: () => new MockPlugin({}),
       manifest: {
         schema: ``,
         implements: [],
@@ -105,7 +89,6 @@ describe("wasm-wrapper", () => {
     const client = await getClient();
     const result = await client.invoke<string>({
       uri: apiUri,
-      module: "mutation",
       method: "deployContract",
       input: {
         connection: {
@@ -124,7 +107,6 @@ describe("wasm-wrapper", () => {
     const client = await getClient();
     const result = await client.invoke({
       uri: apiUri,
-      module: "mutation",
       method: "deployContract",
       input: {
         connection: {
@@ -159,7 +141,6 @@ describe("wasm-wrapper", () => {
 
     const result = await client.invoke({
       uri: apiUri,
-      module: "mutation",
       method: "deployContract",
       input: {},
       config: {
@@ -301,7 +282,7 @@ describe("wasm-wrapper", () => {
     });
 
     const fileStr: string = (await client.getFile(apiUri, {
-      path: manifest.modules.query?.schema as string,
+      path: manifest.schema as string,
       encoding: "utf8",
     })) as string;
     expect(fileStr).toContain(`getData(
@@ -311,7 +292,7 @@ describe("wasm-wrapper", () => {
 `);
 
     const fileBuffer: ArrayBuffer = (await client.getFile(apiUri, {
-      path: manifest.modules.query?.schema!,
+      path: manifest.schema!,
     })) as ArrayBuffer;
     const decoder = new TextDecoder("utf8");
     const text = decoder.decode(fileBuffer);

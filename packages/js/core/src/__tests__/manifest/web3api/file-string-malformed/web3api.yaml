@@ -1,13 +1,5 @@
-format: "0.0.1-prealpha.1"
-mutation:
-  schema:
-    file: .9-../schema.graphql
-  module:
-    language: wasm/assemblyscript
-    file: ../query.ts
-query:
-  schema:
-    file: ../schema.graphql
-  module:
-    language: wasm/assemblyscript
-    file: ./NOT_EXISTANT_FILE
+format: 0.0.1-prealpha.9
+name: "File string malformed"
+language: wasm/assemblyscript
+main: ../index.ts
+schema: .9-../schema.graphql

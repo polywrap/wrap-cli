@@ -13,21 +13,17 @@ describe("e2e", () => {
         {
           uri: uri,
           plugin: samplePlugin({
-            query: {
-              defaultValue: "foo bar"
-            },
-            mutation: { }
+            defaultValue: "foo bar"
           })
         }
       ]
     });
   });
 
-  it("sampleQuery", async () => {
+  it("sampleMethod", async () => {
     const result = await client.invoke({
       uri,
-      module: "query",
-      method: "sampleQuery",
+      method: "sampleMethod",
       input: {
         data: "fuz baz "
       },
@@ -36,25 +32,5 @@ describe("e2e", () => {
     expect(result.error).toBeFalsy();
     expect(result.data).toBeTruthy();
     expect(result.data).toBe("fuz baz foo bar");
-  });
-
-  it("sampleMutation", async () => {
-    const result = await client.query<{
-      sampleMutation: boolean
-    }>({
-      uri,
-      query: `mutation {
-        sampleMutation(
-          data: $data
-        )
-      }`,
-      variables: {
-        data: new Uint8Array([1, 2, 3, 4, 5])
-      }
-    });
-
-    expect(result.errors).toBeFalsy();
-    expect(result.data).toBeTruthy();
-    expect(result.data?.sampleMutation).toBe(true);
   });
 });

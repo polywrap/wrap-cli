@@ -40,7 +40,7 @@ describe("SimpleStorage", () => {
   });
 
   const getData = async (contractAddr: string): Promise<number> => {
-    const response = await App.SimpleStorage_Query.getData(
+    const response = await App.SimpleStorage_Module.getData(
       {
         address: contractAddr,
         connection: CONNECTION,
@@ -57,7 +57,7 @@ describe("SimpleStorage", () => {
   }
 
   const setData = async (contractAddr: string, value: number): Promise<string> => {
-    const response = await App.SimpleStorage_Mutation.setData(
+    const response = await App.SimpleStorage_Module.setData(
       {
         address: contractAddr,
         connection: CONNECTION,
@@ -76,7 +76,7 @@ describe("SimpleStorage", () => {
 
   it("sanity", async () => {
     // Deploy contract
-    const deployContractResponse = await App.SimpleStorage_Mutation.deployContract(
+    const deployContractResponse = await App.SimpleStorage_Module.deployContract(
       { connection: CONNECTION },
       client,
       apiUri

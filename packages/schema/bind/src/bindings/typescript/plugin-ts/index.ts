@@ -2,12 +2,7 @@
 import * as Functions from "../functions";
 import { GenerateBindingFn } from "../..";
 import { renderTemplates } from "../../utils/templates";
-import {
-  BindOptions,
-  BindOutput,
-  BindModuleOptions,
-  BindModuleOutput,
-} from "../../..";
+import { BindOptions, BindOutput } from "../../..";
 
 import {
   TypeInfo,
@@ -17,9 +12,7 @@ import {
   toPrefixedGraphQLType,
   methodParentPointers,
   interfaceUris,
-  combineTypeInfo,
 } from "@web3api/schema-parse";
-import { renderSchema } from "@web3api/schema-compose";
 import path from "path";
 
 export { Functions };
@@ -30,48 +23,23 @@ const templatePath = (subpath: string) =>
 export const generateBinding: GenerateBindingFn = (
   options: BindOptions
 ): BindOutput => {
-  const result: BindOutput = {
-    modules: [],
-  };
-
-  // Require a common directory
-  if (!options.commonDirAbs) {
-    throw new Error("plugin-ts schema binding requires a common directory.");
-  }
-
-  // Aggregate the schemas (will be removed once user-defined modules are supported)
-  const schema = renderSchema(
-    combineTypeInfo(options.modules.map((m) => m.typeInfo)),
-    true
-  );
-
   // Apply TypeInfo transforms
-  options.modules = options.modules.map((m) => ({
-    ...m,
-    typeInfo: applyTransforms(m.typeInfo),
-  }));
+  const typeInfo = applyTransforms(options.typeInfo);
 
-  // Generate root entry point files
-  result.common = {
-    name: "common",
+  // Generate Bindings
+  const result: BindOutput = {
     output: {
-      entries: renderTemplates(
-        templatePath(""),
-        {
-          ...options,
-          ...Functions,
-          schema,
-        },
-        {}
-      ),
+      entries: [],
     },
-    outputDirAbs: options.commonDirAbs,
+    outputDirAbs: options.outputDirAbs,
   };
+  const output = result.output;
 
-  // Generate each module
-  for (const module of options.modules) {
-    result.modules.push(generateModuleBindings(module));
-  }
+  output.entries = renderTemplates(
+    templatePath(""),
+    { ...typeInfo, schema: options.schema },
+    {}
+  );
 
   return result;
 };
@@ -89,23 +57,4 @@ function applyTransforms(typeInfo: TypeInfo): TypeInfo {
     typeInfo = transformTypeInfo(typeInfo, transform);
   }
   return typeInfo;
-}
-
-function generateModuleBindings(module: BindModuleOptions): BindModuleOutput {
-  const result: BindModuleOutput = {
-    name: module.name,
-    output: {
-      entries: [],
-    },
-    outputDirAbs: module.outputDirAbs,
-  };
-  const output = result.output;
-
-  output.entries = renderTemplates(
-    templatePath("module-type"),
-    module.typeInfo,
-    {}
-  );
-
-  return result;
 }

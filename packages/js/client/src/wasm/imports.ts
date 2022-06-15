@@ -2,7 +2,7 @@
 
 import { u32, W3Imports } from "./types";
 import { readBytes, readString, writeBytes, writeString } from "./buffer";
-import { Client, InvokableModules } from "..";
+import { Client } from "..";
 import { State } from "./WasmWeb3Api";
 
 import { msgpackEncode } from "@web3api/core-js";
@@ -20,8 +20,6 @@ export const createImports = (config: {
       __w3_subinvoke: async (
         uriPtr: u32,
         uriLen: u32,
-        modulePtr: u32,
-        moduleLen: u32,
         methodPtr: u32,
         methodLen: u32,
         inputPtr: u32,
@@ -32,13 +30,11 @@ export const createImports = (config: {
         state.subinvoke.error = undefined;
 
         const uri = readString(memory.buffer, uriPtr, uriLen);
-        const moduleToInvoke = readString(memory.buffer, modulePtr, moduleLen);
         const method = readString(memory.buffer, methodPtr, methodLen);
         const input = readBytes(memory.buffer, inputPtr, inputLen);
 
         const { data, error } = await client.invoke<unknown | ArrayBuffer>({
           uri: uri,
-          module: moduleToInvoke as InvokableModules,
           method: method,
           input: input,
           noDecode: true,
@@ -96,8 +92,6 @@ export const createImports = (config: {
         interfaceUriLen: u32,
         implUriPtr: u32,
         implUriLen: u32,
-        modulePtr: u32,
-        moduleLen: u32,
         methodPtr: u32,
         methodLen: u32,
         inputPtr: u32,
@@ -106,26 +100,14 @@ export const createImports = (config: {
         state.subinvokeImplementation.result = undefined;
         state.subinvokeImplementation.error = undefined;
 
-        // const interfaceUri = readString(
-        //   memory.buffer,
-        //   interfaceUriPtr,
-        //   interfaceUriLen
-        // );
         const implUri = readString(memory.buffer, implUriPtr, implUriLen);
-        const moduleToInvoke = readString(memory.buffer, modulePtr, moduleLen);
         const method = readString(memory.buffer, methodPtr, methodLen);
         const input = readBytes(memory.buffer, inputPtr, inputLen);
 
-        state.subinvokeImplementation.args = [
-          implUri,
-          moduleToInvoke as InvokableModules,
-          method,
-          input,
-        ];
+        state.subinvokeImplementation.args = [implUri, method, input];
 
         const { data, error } = await client.invoke<unknown | ArrayBuffer>({
           uri: implUri,
-          module: moduleToInvoke as InvokableModules,
           method: method,
           input: input,
           noDecode: true,

@@ -5,8 +5,7 @@ import {
   InvokeApiOptions,
   InvokeApiResult,
   Web3ApiManifest,
-  Plugin,
-  PluginModules,
+  PluginModule,
   PluginPackage,
   QueryApiOptions,
   QueryApiResult,
@@ -32,7 +31,7 @@ import {
 
 describe("resolveUri", () => {
   const client = (
-    apis: Record<string, PluginModules>,
+    apis: Record<string, PluginModule>,
     plugins: PluginRegistration<Uri>[] = [],
     interfaces: InterfaceImplementations<Uri>[] = [],
     redirects: UriRedirect<Uri>[] = []
@@ -62,11 +61,13 @@ describe("resolveUri", () => {
           uri = uri.uri;
         }
         return Promise.resolve({
-          data: apis[uri]?.[options.module]?.[options.method](
+          // @ts-ignore
+          data: apis[uri]?.[options.method](
             options.input as Record<string, unknown>,
             {} as Client
-          ) as TData,
+          ) as TData
         });
+
       },
       subscribe: <
         TData extends Record<string, unknown> = Record<string, unknown>
@@ -95,7 +96,6 @@ describe("resolveUri", () => {
         const manifest = {
           format: "0.0.1-prealpha.8",
           language: "",
-          modules: {},
           __type: "Web3ApiManifest",
         };
         return Promise.resolve(manifest as AnyManifestArtifact<TManifestType>);
@@ -125,10 +125,9 @@ describe("resolveUri", () => {
         client: Client
       ) => {
         const manifest = {
-          format: "0.0.1-prealpha.8",
+          format: "0.0.1-prealpha.9",
           language: "",
-          modules: {},
-          __type: "Web3ApiManifest",
+          __type: "PluginManifest",
         };
         return Promise.resolve(manifest as AnyManifestArtifact<TManifestType>);
       },
@@ -153,10 +152,11 @@ describe("resolveUri", () => {
         options: GetManifestOptions<TManifestType>,
         client: Client
       ) => {
-        const manifest = {
-          format: "0.0.1-prealpha.8",
+        const manifest: unknown = {
+          format: "0.0.1-prealpha.9",
           language: "",
-          modules: {},
+          module: "",
+          schema: "",
           __type: "Web3ApiManifest",
         };
         return Promise.resolve(manifest as AnyManifestArtifact<TManifestType>);
@@ -164,21 +164,18 @@ describe("resolveUri", () => {
     };
   };
 
-  const ensApi: PluginModules = {
-    query: {
-      tryResolveUri: (
-        input: { authority: string; path: string },
-        _client: Client
-      ) => {
-        return {
-          uri: input.authority === "ens" ? "ipfs/QmHash" : undefined,
-        };
-      },
+  const ensApi = {
+    tryResolveUri: (
+      input: { authority: string; path: string },
+      _client: Client
+    ) => {
+      return {
+        uri: input.authority === "ens" ? "ipfs/QmHash" : undefined,
+      };
     },
   };
 
-  const ipfsApi: PluginModules = {
-    query: {
+  const ipfsApi = {
       tryResolveUri: (
         input: { authority: string; path: string },
         _client: Client
@@ -186,24 +183,21 @@ describe("resolveUri", () => {
         return {
           manifest:
             input.authority === "ipfs"
-              ? "format: 0.0.1-prealpha.5\ndog: cat"
+              ? "format: 0.0.1-prealpha.9\ndog: cat"
               : undefined,
         };
-      },
-    },
+      }
   };
 
-  const pluginApi: PluginModules = {
-    query: {
-      tryResolveUri: (
-        input: { authority: string; path: string },
-        _client: Client
-      ) => {
-        return {
-          manifest:
-            input.authority === "my" ? "format: 0.0.1-prealpha.5" : undefined,
-        };
-      },
+  const pluginApi = {
+    tryResolveUri: (
+      input: { authority: string; path: string },
+      _client: Client
+    ) => {
+      return {
+        manifest:
+          input.authority === "my" ? "format: 0.0.1-prealpha.9" : undefined,
+      };
     },
   };
 
@@ -231,10 +225,10 @@ describe("resolveUri", () => {
     },
   ];
 
-  const apis: Record<string, PluginModules> = {
-    "w3://ens/ens": ensApi,
-    "w3://ens/ipfs": ipfsApi,
-    "w3://ens/my-plugin": pluginApi,
+  const apis: Record<string, PluginModule> = {
+    "w3://ens/ens": ensApi as unknown as PluginModule,
+    "w3://ens/ipfs": ipfsApi as unknown as PluginModule,
+    "w3://ens/my-plugin": pluginApi as unknown as PluginModule,
   };
 
   const uriResolvers: UriResolver[] = [
@@ -285,7 +279,7 @@ describe("resolveUri", () => {
     expect(apiIdentity).toMatchObject({
       uri: new Uri("ipfs/QmHash"),
       manifest: {
-        format: "0.0.1-prealpha.8",
+        format: "0.0.1-prealpha.9",
       },
       uriResolver: "w3://ens/ipfs",
     });
@@ -309,7 +303,7 @@ describe("resolveUri", () => {
     expect(apiIdentity).toMatchObject({
       uri: new Uri("my/something-different"),
       manifest: {
-        format: "0.0.1-prealpha.8",
+        format: "0.0.1-prealpha.9",
       },
       uriResolver: "w3://ens/my-plugin",
     });
@@ -333,7 +327,7 @@ describe("resolveUri", () => {
     expect(apiIdentity).toMatchObject({
       uri: new Uri("ipfs/QmHash"),
       manifest: {
-        format: "0.0.1-prealpha.8",
+        format: "0.0.1-prealpha.9",
         dog: "cat",
       },
       uriResolver: "w3://ens/ipfs",
@@ -358,7 +352,7 @@ describe("resolveUri", () => {
     expect(apiIdentity).toMatchObject({
       uri: new Uri("my/something-different"),
       manifest: {
-        format: "0.0.1-prealpha.8",
+        format: "0.0.1-prealpha.9",
       },
       uriResolver: "w3://ens/my-plugin",
     });
@@ -447,16 +441,14 @@ describe("resolveUri", () => {
   });
 
   it("returns URI when it does not resolve to an API", async () => {
-    const faultyIpfsApi: PluginModules = {
-      query: {
-        tryResolveUri: (
-          input: { authority: string; path: string },
-          _client: Client
-        ) => {
-          return {
-            manifest: null,
-          };
-        },
+    const faultyIpfsApi = {
+      tryResolveUri: (
+        input: { authority: string; path: string },
+        _client: Client
+      ) => {
+        return {
+          manifest: null,
+        };
       },
     };
 
@@ -468,7 +460,7 @@ describe("resolveUri", () => {
       client(
         {
           ...apis,
-          "w3://ens/ipfs": faultyIpfsApi
+          "w3://ens/ipfs": faultyIpfsApi as unknown as PluginModule
         }, 
         plugins, 
         interfaces

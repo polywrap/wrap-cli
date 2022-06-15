@@ -1,4 +1,4 @@
-{{#moduleTypes}}
+{{#moduleType}}
 {{#methods.length}}
 import {
   {{#methods}}
@@ -6,8 +6,8 @@ import {
   {{/methods}}
 } from "./{{type}}";
 {{/methods.length}}
-{{/moduleTypes}}
-{{#moduleTypes}}
+{{/moduleType}}
+{{#moduleType}}
 {{#methods.length}}
 export {
   {{#methods}}
@@ -15,7 +15,7 @@ export {
   {{/methods}}
 };
 {{/methods.length}}
-{{/moduleTypes}}
+{{/moduleType}}
 {{#objectTypes}}
 export { {{type}} } from "./{{type}}";
 {{/objectTypes}}
@@ -44,17 +44,10 @@ export {
 {{#interfaceTypes}}
 export { {{namespace}} } from "./{{namespace}}";
 {{/interfaceTypes}}
-{{#envTypes.query.sanitized}}
+{{#envType.sanitized}}
 export { env, requireEnv } from "./env";
-export { QueryEnv } from "./QueryEnv";
-{{#envTypes.query.client}}
-export { QueryClientEnv } from "./QueryClientEnv";
-{{/envTypes.query.client}}
-{{/envTypes.query.sanitized}}
-{{#envTypes.mutation.sanitized}}
-export { env, requireEnv } from "./env";
-export { MutationEnv } from "./MutationEnv";
-{{#envTypes.mutation.client}}
-export { MutationClientEnv } from "./MutationClientEnv";
-{{/envTypes.mutation.client}}
-{{/envTypes.mutation.sanitized}}
+export { Env } from "./Env";
+{{#envType.client}}
+export { ClientEnv } from "./ClientEnv";
+{{/envType.client}}
+{{/envType.sanitized}}

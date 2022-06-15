@@ -1,4 +1,3 @@
-{{^__commonPath}}
 {{#methods.length}}
 use serde::{Serialize, Deserialize};
 use web3api_wasm_rs::{
@@ -40,7 +39,7 @@ pub struct Input{{#toUpper}}{{name}}{{/toUpper}} {
 
 pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &Input{{#toUpper}}{{name}}{{/toUpper}}) -> Result<Vec<u8>, EncodeError> {
     let mut encoder_context = Context::new();
-    encoder_context.description = "Serializing (encoding) imported query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
+    encoder_context.description = "Serializing (encoding) imported module-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
     write_{{#toLower}}{{name}}{{/toLower}}_args(input, &mut encoder)?;
     Ok(encoder.get_buffer())
@@ -95,7 +94,7 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_args<W: Write>(input: &Input{{#toU
 
 pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_result(result: &[u8]) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, DecodeError> {
     let mut context = Context::new();
-    context.description = "Deserializing imported query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
+    context.description = "Deserializing imported module-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
     let mut reader = ReadDecoder::new(result, context);
 
     {{#return}}
@@ -134,4 +133,3 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_result(result: &[u8]) -> Res
 {{/last}}
 {{/methods}}
 {{/methods.length}}
-{{/__commonPath}}

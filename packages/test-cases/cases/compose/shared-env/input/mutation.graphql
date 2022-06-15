@@ -1,7 +1,0 @@
-#import { Env } from "../imports-local/common.graphql"
-
-type Mutation {
-  method(
-    str: String!
-  ): String!
-}

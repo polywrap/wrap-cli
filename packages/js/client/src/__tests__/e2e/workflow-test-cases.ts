@@ -7,7 +7,6 @@ export const sanityWorkflow: Workflow = {
       steps: [
         {
           uri: "ens/testnet/simple-storage.eth",
-          module: "mutation",
           method: "deployContract",
           input: {
             connection: null,
@@ -19,7 +18,6 @@ export const sanityWorkflow: Workflow = {
           steps: [
             {
               uri: "ens/testnet/simple-storage.eth",
-              module: "mutation",
               method: "setData",
               input: {
                 address: "0xA57B8a5584442B467b4689F1144D269d096A3daF",
@@ -29,7 +27,6 @@ export const sanityWorkflow: Workflow = {
             },
             {
               uri: "ens/testnet/simple-storage.eth",
-              module: "query",
               method: "getData",
               input: {
                 address: "0xA57B8a5584442B467b4689F1144D269d096A3daF",
@@ -50,7 +47,6 @@ export const outPropWorkflow: Workflow = {
       steps: [
         {
           uri: "ens/testnet/simple-storage.eth",
-          module: "mutation",
           method: "deployContract",
           input: {
             connection: null,
@@ -62,7 +58,6 @@ export const outPropWorkflow: Workflow = {
           steps: [
             {
               uri: "ens/testnet/simple-storage.eth",
-              module: "mutation",
               method: "setData",
               input: {
                 address: "$cases.0.data",
@@ -72,7 +67,6 @@ export const outPropWorkflow: Workflow = {
             },
             {
               uri: "ens/testnet/simple-storage.eth",
-              module: "query",
               method: "getData",
               input: {
                 address: "$cases.0.data",
