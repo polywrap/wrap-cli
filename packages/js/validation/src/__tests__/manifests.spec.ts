@@ -1,16 +1,16 @@
 import path from "path";
-import { FileSystemWrapperValidator } from "../../filesystem/FileSystemWrapperValidator";
-import { ValidationFailReason } from "../../base";
+import { ValidationFailReason } from "../types";
+import { FileSystemPackageReader, WrapperValidator } from "..";
 
 jest.setTimeout(200000);
 
-const testWrappersPath = path.join(__dirname, "../wrappers");
+const testWrappersPath = path.join(__dirname, "./wrappers");
 
 describe("manfiests", () => {
-  let validator: FileSystemWrapperValidator;
+  let validator: WrapperValidator;
 
   beforeAll(async () => {
-    validator = new FileSystemWrapperValidator({
+    validator = new WrapperValidator({
       maxSize: 1_000_000,
       maxFileSize: 100_000,
       maxModuleSize: 100_000,
@@ -19,24 +19,22 @@ describe("manfiests", () => {
   });
 
   it("fails validating an invalid wrap manifest", async () => {
-    const pathToInvalidWrapper = path.join(
-      testWrappersPath,
-      "invalid-wrap-manifest"
+    const reader = new FileSystemPackageReader(
+      path.join(testWrappersPath, "invalid-wrap-manifest")
     );
 
-    const result = await validator.validate(pathToInvalidWrapper);
+    const result = await validator.validate(reader);
 
     expect(result.valid).toBeFalsy();
     expect(result.failReason).toEqual(ValidationFailReason.InvalidWrapManifest);
   });
 
   it("fails validating when multiple wrap manifests", async () => {
-    const pathToInvalidWrapper = path.join(
-      testWrappersPath,
-      "multiple-wrap-manifests"
+    const reader = new FileSystemPackageReader(
+      path.join(testWrappersPath, "multiple-wrap-manifests")
     );
 
-    const result = await validator.validate(pathToInvalidWrapper);
+    const result = await validator.validate(reader);
 
     expect(result.valid).toBeFalsy();
     expect(result.failReason).toEqual(
@@ -45,12 +43,11 @@ describe("manfiests", () => {
   });
 
   it("fails validating when wrap manifest not found", async () => {
-    const pathToInvalidWrapper = path.join(
-      testWrappersPath,
-      "missing-wrap-manifest"
+    const reader = new FileSystemPackageReader(
+      path.join(testWrappersPath, "missing-wrap-manifest")
     );
 
-    const result = await validator.validate(pathToInvalidWrapper);
+    const result = await validator.validate(reader);
 
     expect(result.valid).toBeFalsy();
     expect(result.failReason).toEqual(
@@ -59,12 +56,11 @@ describe("manfiests", () => {
   });
 
   it("fails validating an invalid build manifest", async () => {
-    const pathToInvalidWrapper = path.join(
-      testWrappersPath,
-      "invalid-build-manifest"
+    const reader = new FileSystemPackageReader(
+      path.join(testWrappersPath, "invalid-build-manifest")
     );
 
-    const result = await validator.validate(pathToInvalidWrapper);
+    const result = await validator.validate(reader);
 
     expect(result.valid).toBeFalsy();
     expect(result.failReason).toEqual(
@@ -73,12 +69,11 @@ describe("manfiests", () => {
   });
 
   it("fails validating an invalid meta manifest", async () => {
-    const pathToInvalidWrapper = path.join(
-      testWrappersPath,
-      "invalid-meta-manifest"
+    const reader = new FileSystemPackageReader(
+      path.join(testWrappersPath, "invalid-meta-manifest")
     );
 
-    const result = await validator.validate(pathToInvalidWrapper);
+    const result = await validator.validate(reader);
 
     expect(result.valid).toBeFalsy();
     expect(result.failReason).toEqual(ValidationFailReason.InvalidMetaManifest);

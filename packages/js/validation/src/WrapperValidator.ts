@@ -1,12 +1,14 @@
 import {
-  WrapperConstraints,
-  WrapperReadOperations,
-  ValidationResult,
-  ValidationFailReason,
   VALID_WRAP_MANIFEST_NAMES,
   VALID_MODULE_EXTENSIONS,
   SCHEMA_FILE_NAME,
 } from ".";
+import {
+  WrapperConstraints,
+  PackageReader,
+  ValidationResult,
+  ValidationFailReason,
+} from "./types";
 
 import { parseSchema } from "@web3api/schema-parse";
 import {
@@ -20,22 +22,22 @@ import path from "path";
 export class WrapperValidator {
   constructor(private constraints: WrapperConstraints) {}
 
-  async validate(ops: WrapperReadOperations): Promise<ValidationResult> {
-    let result = await this.validateManifests(ops);
+  async validate(reader: PackageReader): Promise<ValidationResult> {
+    let result = await this.validateManifests(reader);
     if (!result.valid) {
       return result;
     }
 
-    if (!(await ops.exists(SCHEMA_FILE_NAME))) {
+    if (!(await reader.exists(SCHEMA_FILE_NAME))) {
       return this.fail(ValidationFailReason.SchemaNotFound);
     }
     try {
-      parseSchema(await ops.readFileAsString(SCHEMA_FILE_NAME));
+      parseSchema(await reader.readFileAsString(SCHEMA_FILE_NAME));
     } catch (err) {
       return this.fail(ValidationFailReason.InvalidSchema, err);
     }
 
-    result = await this.validateStructure(ops);
+    result = await this.validateStructure(reader);
     if (!result.valid) {
       return result;
     }
@@ -44,9 +46,9 @@ export class WrapperValidator {
   }
 
   private async validateStructure(
-    ops: WrapperReadOperations
+    reader: PackageReader
   ): Promise<ValidationResult> {
-    const { result: pathResult } = await this.validatePath(ops, "./", 0, 0);
+    const { result: pathResult } = await this.validatePath(reader, "./", 0, 0);
 
     if (!pathResult.valid) {
       return pathResult;
@@ -56,7 +58,7 @@ export class WrapperValidator {
   }
 
   private async validatePath(
-    ops: WrapperReadOperations,
+    reader: PackageReader,
     basePath: string,
     currentSize: number,
     currentFileCnt: number
@@ -65,9 +67,9 @@ export class WrapperValidator {
     currentSize: number;
     currentFileCnt: number;
   }> {
-    const items = await ops.readDir(basePath);
+    const items = await reader.readDir(basePath);
     for (const itemPath of items) {
-      const stats = await ops.getStats(path.join(basePath, itemPath));
+      const stats = await reader.getStats(path.join(basePath, itemPath));
 
       currentSize += stats.size;
       if (currentSize > this.constraints.maxSize) {
@@ -101,7 +103,7 @@ export class WrapperValidator {
           currentSize: newSize,
           currentFileCnt: newFileCnt,
         } = await this.validatePath(
-          ops,
+          reader,
           path.join(basePath, itemPath),
           currentSize,
           currentFileCnt
@@ -127,20 +129,20 @@ export class WrapperValidator {
   }
 
   private async validateManifests(
-    ops: WrapperReadOperations
+    reader: PackageReader
   ): Promise<ValidationResult> {
     let manifest: Web3ApiManifest | undefined;
     // Go through manifest names, if more than one wrap manifest exists, fail
     // If no wrap manifest exists or is invalid, also fail
     for (const manifestName of VALID_WRAP_MANIFEST_NAMES) {
-      if (!(await ops.exists(manifestName))) {
+      if (!(await reader.exists(manifestName))) {
         continue;
       }
 
       if (manifest) {
         return this.fail(ValidationFailReason.MultipleWrapManifests);
       }
-      const manifestFile = await ops.readFileAsString(manifestName);
+      const manifestFile = await reader.readFileAsString(manifestName);
       try {
         manifest = deserializeWeb3ApiManifest(manifestFile);
       } catch (err) {
@@ -156,28 +158,31 @@ export class WrapperValidator {
     const mutationModule = manifest.modules.mutation;
 
     if (queryModule) {
-      const moduleResult = await this.validateModule(ops, queryModule);
+      const moduleResult = await this.validateModule(reader, queryModule);
       if (!moduleResult.valid) {
         return moduleResult;
       }
     }
 
     if (mutationModule) {
-      const moduleResult = await this.validateModule(ops, mutationModule);
+      const moduleResult = await this.validateModule(reader, mutationModule);
       if (!moduleResult.valid) {
         return moduleResult;
       }
     }
 
     let manifestValidationResult = await this.validateBuildManifest(
-      ops,
+      reader,
       manifest
     );
     if (!manifestValidationResult.valid) {
       return manifestValidationResult;
     }
 
-    manifestValidationResult = await this.validateMetaManifest(ops, manifest);
+    manifestValidationResult = await this.validateMetaManifest(
+      reader,
+      manifest
+    );
     if (!manifestValidationResult.valid) {
       return manifestValidationResult;
     }
@@ -187,7 +192,7 @@ export class WrapperValidator {
 
   // Checking schema, extension and size
   private async validateModule(
-    ops: WrapperReadOperations,
+    reader: PackageReader,
     moduleType: {
       schema: string;
       module?: string;
@@ -198,7 +203,7 @@ export class WrapperValidator {
         return this.fail(ValidationFailReason.InvalidModuleExtension);
       }
 
-      const moduleSize = (await ops.getStats(moduleType.module)).size;
+      const moduleSize = (await reader.getStats(moduleType.module)).size;
 
       if (moduleSize > this.constraints.maxModuleSize) {
         return this.fail(ValidationFailReason.ModuleTooLarge);
@@ -209,7 +214,7 @@ export class WrapperValidator {
   }
 
   private async validateBuildManifest(
-    ops: WrapperReadOperations,
+    reader: PackageReader,
     web3ApiManifest: Web3ApiManifest
   ): Promise<ValidationResult> {
     const manifestPath = web3ApiManifest.build;
@@ -219,7 +224,7 @@ export class WrapperValidator {
       const fileName = path.parse(manifestPath).name;
       const fullManifestName = `${fileName}.json`;
 
-      const buildManifestFile = await ops.readFileAsString(fullManifestName);
+      const buildManifestFile = await reader.readFileAsString(fullManifestName);
       try {
         deserializeBuildManifest(buildManifestFile);
       } catch (err) {
@@ -231,7 +236,7 @@ export class WrapperValidator {
   }
 
   private async validateMetaManifest(
-    ops: WrapperReadOperations,
+    reader: PackageReader,
     web3ApiManifest: Web3ApiManifest
   ): Promise<ValidationResult> {
     const manifestPath = web3ApiManifest.meta;
@@ -241,7 +246,7 @@ export class WrapperValidator {
       const fileName = path.parse(manifestPath).name;
       const fullManifestName = `${fileName}.json`;
 
-      const metaManifestFile = await ops.readFileAsString(fullManifestName);
+      const metaManifestFile = await reader.readFileAsString(fullManifestName);
 
       try {
         deserializeMetaManifest(metaManifestFile);

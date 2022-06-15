@@ -1,16 +1,19 @@
 import path from "path";
-import { FileSystemWrapperValidator } from "../../filesystem/FileSystemWrapperValidator";
-import { ValidationFailReason } from "../../base";
+import {
+  FileSystemPackageReader,
+  ValidationFailReason,
+  WrapperValidator,
+} from "..";
 
 jest.setTimeout(200000);
 
-const testWrappersPath = path.join(__dirname, "../wrappers");
+const testWrappersPath = path.join(__dirname, "./wrappers");
 
 describe("schema", () => {
-  let validator: FileSystemWrapperValidator;
+  let validator: WrapperValidator;
 
   beforeAll(async () => {
-    validator = new FileSystemWrapperValidator({
+    validator = new WrapperValidator({
       maxSize: 1_000_000,
       maxFileSize: 100_000,
       maxModuleSize: 100_000,
@@ -19,18 +22,22 @@ describe("schema", () => {
   });
 
   it("fails validating wrapper with missing schema", async () => {
-    const pathToInvalidWrapper = path.join(testWrappersPath, "missing-schema");
+    const reader = new FileSystemPackageReader(
+      path.join(testWrappersPath, "missing-schema")
+    );
 
-    const result = await validator.validate(pathToInvalidWrapper);
+    const result = await validator.validate(reader);
 
     expect(result.valid).toBeFalsy();
     expect(result.failReason).toEqual(ValidationFailReason.SchemaNotFound);
   });
 
   it("fails validating invalid schema file", async () => {
-    const pathToInvalidWrapper = path.join(testWrappersPath, "invalid-schema");
+    const reader = new FileSystemPackageReader(
+      path.join(testWrappersPath, "invalid-schema")
+    );
 
-    const result = await validator.validate(pathToInvalidWrapper);
+    const result = await validator.validate(reader);
 
     expect(result.valid).toBeFalsy();
     expect(result.failReason).toEqual(ValidationFailReason.InvalidSchema);
