@@ -36,7 +36,7 @@ directive @annotate(type: String!) on FIELD
 ### Web3API Header END ###
 
 """
-Query comment
+Module comment
 """
 type Module {
 """

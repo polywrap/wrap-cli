@@ -5,7 +5,6 @@ import {
   createObjectDefinition,
   createTypeInfo,
   createEnvDefinition,
-  AnyDefinition,
   TypeInfo,
   createObjectPropertyDefinition,
 } from "@web3api/schema-parse";
@@ -18,11 +17,7 @@ export const typeInfo: TypeInfo = {
           type: "Env"
         }),
         properties: [
-          {
-            ...createScalarPropertyDefinition({ name: "after", type: "String", required: true }),
-            first: true,
-            last: true,
-          } as AnyDefinition,
+          createScalarPropertyDefinition({ name: "after", type: "String", required: true }),
         ],
       },
       client: {
@@ -30,11 +25,7 @@ export const typeInfo: TypeInfo = {
           type: "ClientEnv"
         }),
         properties: [
-          {
-            ...createScalarPropertyDefinition({ name: "before", type: "UInt32", required: true }),
-            first: true,
-            last: true,
-          } as AnyDefinition,
+          createScalarPropertyDefinition({ name: "before", type: "UInt32", required: true }),
         ],
       }
     }),

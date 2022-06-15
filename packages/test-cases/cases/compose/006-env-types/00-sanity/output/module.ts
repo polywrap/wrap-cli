@@ -5,7 +5,6 @@ import {
   createObjectDefinition,
   createTypeInfo,
   createEnvDefinition,
-  AnyDefinition,
   TypeInfo,
 } from "@web3api/schema-parse";
 
@@ -17,11 +16,7 @@ export const typeInfo: TypeInfo = {
           type: "Env"
         }),
         properties: [
-          {
-            ...createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),
-            first: true,
-            last: true,
-          } as AnyDefinition,
+          createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),
         ],
       },
     }),

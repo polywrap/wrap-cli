@@ -41,6 +41,10 @@ type Module implements Namespace_Module @imports(
   ]
 ) {
   getMap: Map! @annotate(type: "Map<String!, Int>!")
+
+  updateMap(
+    map: Map! @annotate(type: "Map<String!, Int>!")
+  ): Map! @annotate(type: "Map<String!, Int>!")
 }
 
 ### Imported Modules START ###
@@ -51,6 +55,10 @@ type Namespace_Module @imported(
   nativeType: "Module"
 ) {
   getMap: Map! @annotate(type: "Map<String!, Int>!")
+
+  updateMap(
+    map: Map! @annotate(type: "Map<String!, Int>!")
+  ): Map! @annotate(type: "Map<String!, Int>!")
 }
 
 ### Imported Modules END ###

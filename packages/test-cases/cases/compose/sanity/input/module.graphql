@@ -37,16 +37,15 @@ implObject comment
 """
 Map<String!, Int!> comment
 """
-    map: Map! @annotate(type: "Map<String!, Int!>!")
+  map: Map! @annotate(type: "Map<String!, Int!>!")
   ): String!
 
+  """
+  method2 comment
+  """
   method2(
     arg: [String!]!
   ): [Int32!]!
-}
-
-type ModuleEnv {
-  bar: Int
 }
 
 """

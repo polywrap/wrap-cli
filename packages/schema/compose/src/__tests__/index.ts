@@ -89,7 +89,7 @@ async function importCase(
   };
 
   const input: ComposerOptions = {
-    schemas: { },
+    schemas: [],
     resolvers: {
       external: resolveExternal,
       local: resolveLocal,
@@ -98,18 +98,16 @@ async function importCase(
   };
 
   if (moduleInput) {
-    input.schemas.module = {
+    input.schemas.push({
       schema: moduleInput,
       absolutePath: path.join(
         directory,
         "input/module.graphql"
       ),
-    };
+    });
   }
 
-  const output: ComposerOutput = {
-    combined: {}
-  };
+  let output: ComposerOutput = { };
 
   if (outputJson) {
     const parsedOutput = JSON.parse(outputJson);
@@ -124,7 +122,7 @@ async function importCase(
   }
 
   if (moduleSchema && ModuleTypeInfo) {
-    output.module = {
+    output = {
       schema: moduleSchema,
       typeInfo: ModuleTypeInfo
     };

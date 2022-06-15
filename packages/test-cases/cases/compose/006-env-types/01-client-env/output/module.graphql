@@ -39,15 +39,18 @@ type Module {
   method(
     str: String!
   ): String!
-  sanitizeEnv(env: ClientEnv!): Env!
-}
 
-type Env {
-  after: String!
+  sanitizeEnv(
+    env: ClientEnv!
+  ): Env!
 }
 
 type ClientEnv {
   before: UInt32!
+}
+
+type Env {
+  after: String!
 }
 
 ### Imported Modules START ###

@@ -38,6 +38,6 @@ directive @annotate(type: String!) on FIELD
 type Module {
   getMap: Map! @annotate(type: "Map<String, Int>!")
   updateMap(
-    map: Map! @annotate(type: "Map<String, Int>!")
-  ): Map! @annotate(type: "Map<String, Int>!")
+    map: Map! @annotate(type: "Map<String!, Int>!")
+  ): Map! @annotate(type: "Map<String!, Int>!")
 }
