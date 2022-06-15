@@ -26,17 +26,12 @@ COPY {{.}} .
 {{/web3api_manifests}}
 
 # Copy all source files
-{{#web3api_common_dir}}
-COPY {{.}} {{.}}
-{{/web3api_common_dir}}
 {{#include}}
 COPY {{.}} {{.}}
 {{/include}}
-{{#web3api_modules}}
+{{#web3api_module}}
 COPY {{dir}} {{dir}}
-{{/web3api_modules}}
 
-{{#web3api_modules}}
 # Build the module at {{dir}}
 RUN ./node_modules/.bin/asc {{dir}}/w3/entry.ts \
     --path ./node_modules \
@@ -46,4 +41,4 @@ RUN ./node_modules/.bin/asc {{dir}}/w3/entry.ts \
     --runtime stub \
     --runPasses asyncify \
     --transform @serial-as/transform
-{{/web3api_modules}}
+{{/web3api_module}}

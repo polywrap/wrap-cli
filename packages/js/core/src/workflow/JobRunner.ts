@@ -52,7 +52,6 @@ export class JobRunner<
           const input = this.resolveInput(absoluteId, step.input);
           const result = await this.client.invoke<TData, TUri>({
             uri: step.uri,
-            module: step.module,
             method: step.method,
             config: step.config,
             input: input,

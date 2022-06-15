@@ -109,7 +109,7 @@ describe("useWeb3ApiInvoke hook", () => {
       config: {
         envs: [{
           uri: envUri,
-          common: {
+          env: {
             str: "Hello World!",
             requiredInt: 2,
           }

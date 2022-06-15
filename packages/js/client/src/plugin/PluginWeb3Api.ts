@@ -5,7 +5,6 @@ import {
   GetManifestOptions,
   InvokeApiOptions,
   InvokeApiResult,
-  Plugin,
   PluginModule,
   PluginPackage,
   Uri,
@@ -13,22 +12,15 @@ import {
   ManifestArtifactType,
   GetFileOptions,
   Env,
-  InvokableModules,
   msgpackEncode,
   msgpackDecode,
 } from "@web3api/core-js";
 import { Tracer } from "@web3api/tracing-js";
 
 export class PluginWeb3Api extends Api {
-  private _instance: Plugin | undefined;
+  private _instance: PluginModule | undefined;
 
-  private _sanitizedEnv: Record<
-    InvokableModules,
-    Record<string, unknown> | undefined
-  > = {
-    query: undefined,
-    mutation: undefined,
-  };
+  private _sanitizedEnv: Record<string, unknown> | undefined = undefined;
 
   constructor(
     private _uri: Uri,
@@ -70,21 +62,20 @@ export class PluginWeb3Api extends Api {
     client: Client
   ): Promise<InvokeApiResult<TData>> {
     try {
-      const { module, method, resultFilter } = options;
+      const { method, resultFilter } = options;
       const input = options.input || {};
-      const modules = this._getInstance().getModules();
-      const pluginModule = modules[module];
+      const module = this._getInstance();
 
-      if (!pluginModule) {
+      if (!module) {
         throw new Error(`PluginWeb3Api: module "${module}" not found.`);
       }
 
-      if (!pluginModule.getMethod(method)) {
+      if (!module.getMethod(method)) {
         throw new Error(`PluginWeb3Api: method "${method}" not found.`);
       }
 
       // Sanitize & load the module's environment
-      await this._sanitizeAndLoadEnv(client, module, pluginModule);
+      await this._sanitizeAndLoadEnv(client, module);
 
       let jsInput: Record<string, unknown>;
 
@@ -107,7 +98,7 @@ export class PluginWeb3Api extends Api {
 
       // Invoke the function
       try {
-        const result = (await pluginModule._w3_invoke(
+        const result = (await module._w3_invoke(
           method,
           jsInput,
           client
@@ -153,7 +144,6 @@ export class PluginWeb3Api extends Api {
             `uri: ${this._uri.uri}\nmodule: ${module}\n` +
             `method: ${method}\nresultFilter: ${resultFilter}\n` +
             `input: ${JSON.stringify(jsInput, null, 2)}\n` +
-            `modules: ${JSON.stringify(modules, null, 2)}\n` +
             `exception: ${e.message}`
         );
       }
@@ -164,7 +154,7 @@ export class PluginWeb3Api extends Api {
     }
   }
 
-  private _getInstance(): Plugin {
+  private _getInstance(): PluginModule {
     this._instance ||= this._plugin.factory();
     return this._instance;
   }
@@ -172,38 +162,24 @@ export class PluginWeb3Api extends Api {
   @Tracer.traceMethod("PluginWeb3Api: _sanitizeAndLoadEnv")
   private async _sanitizeAndLoadEnv(
     client: Client,
-    module: InvokableModules,
     pluginModule: PluginModule
   ): Promise<void> {
-    if (this._sanitizedEnv[module] === undefined) {
-      const clientEnv = this._getModuleClientEnv(module);
-
-      const env = await pluginModule._w3_sanitize_env(clientEnv, client);
-
-      this._sanitizedEnv[module] = env;
+    if (this._sanitizedEnv === undefined) {
+      const clientEnv = this._getClientEnv();
+      this._sanitizedEnv = await pluginModule._w3_sanitize_env(
+        clientEnv,
+        client
+      );
     }
 
-    pluginModule._w3_load_env(this._sanitizedEnv[module] || {});
+    pluginModule._w3_load_env(this._sanitizedEnv || {});
   }
 
-  @Tracer.traceMethod("PluginWeb3Api: _getModuleClientEnv")
-  private _getModuleClientEnv(
-    module: InvokableModules
-  ): Record<string, unknown> {
-    if (!this._clientEnv) {
+  @Tracer.traceMethod("PluginWeb3Api: _getClientEnv")
+  private _getClientEnv(): Record<string, unknown> {
+    if (!this._clientEnv?.env) {
       return {};
     }
-
-    if (module === "query") {
-      return {
-        ...this._clientEnv.common,
-        ...this._clientEnv.query,
-      };
-    } else {
-      return {
-        ...this._clientEnv.common,
-        ...this._clientEnv.mutation,
-      };
-    }
+    return this._clientEnv.env;
   }
 }

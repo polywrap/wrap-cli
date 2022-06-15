@@ -1,15 +1,13 @@
 import { Web3ApiClientConfig } from "@web3api/client-js";
-import { Plugin, PluginModule, PluginModules } from "@web3api/core-js";
+import { PluginModule } from "@web3api/core-js";
 
 interface Config extends Record<string, unknown> {
   val: number;
 }
 
-class Query extends PluginModule<Config> {
+class MockPlugin extends PluginModule<Config> {
   getData(_: unknown): number { return this.config.val; }
-}
 
-class Mutation extends PluginModule<Config> {
   setData(input: { options: { value: number } }) {
     this.config.val = +input.options.value;
     return { txReceipt: "0xdone", value: this.config.val };
@@ -18,22 +16,9 @@ class Mutation extends PluginModule<Config> {
   deployContract(): string { return "0x100"; }
 }
 
-class MockPlugin implements Plugin {
-  private _config: Config = {
-    val: 0,
-  };
-
-  getModules(): PluginModules {
-    return {
-      query: new Query(this._config),
-      mutation: new Mutation(this._config),
-    };
-  }
-}
-
 const mockPlugin = () => {
   return {
-    factory: () => new MockPlugin(),
+    factory: () => new MockPlugin({ val: 0 }),
     manifest: {
       schema: ``,
       implements: [],

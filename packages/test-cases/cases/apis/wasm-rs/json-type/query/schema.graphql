@@ -1,9 +1,0 @@
-type Query {
-  fromJson(json: JSON!): Pair!
-  toJson(pair: Pair!): JSON!
-}
-
-type Pair {
-  x: Int!
-  y: Int!
-}

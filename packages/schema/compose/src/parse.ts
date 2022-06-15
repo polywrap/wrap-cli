@@ -1,10 +1,4 @@
-import {
-  SchemaKind,
-  ExternalImport,
-  LocalImport,
-  SYNTAX_REFERENCE,
-  Use,
-} from "./types";
+import { ExternalImport, LocalImport, SYNTAX_REFERENCE, Use } from "./types";
 import { getDuplicates } from "./utils";
 
 import Path from "path";
@@ -45,8 +39,7 @@ export function parseUse(useStatements: RegExpMatchArray[]): Use[] {
 }
 
 export function parseExternalImports(
-  imports: RegExpMatchArray[],
-  schemaKind: SchemaKind
+  imports: RegExpMatchArray[]
 ): ExternalImport[] {
   const externalImports: ExternalImport[] = [];
 
@@ -85,12 +78,6 @@ export function parseExternalImports(
 
     const namespace = importStatement[2];
     const uri = importStatement[3];
-
-    if (schemaKind === "query" && importedTypes.indexOf("Mutation") > -1) {
-      throw Error(
-        `Query modules cannot import Mutations, write operations are prohibited.\nSee import statement for namespace "${namespace}" at uri "${uri}"`
-      );
-    }
 
     externalImports.push({
       importedTypes,

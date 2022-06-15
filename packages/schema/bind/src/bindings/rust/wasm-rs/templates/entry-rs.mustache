@@ -1,5 +1,4 @@
-{{^__commonModule}}
-{{#moduleTypes}}
+{{#moduleType}}
 {{#methods.length}}
 use crate::{
     {{#methods}}
@@ -7,7 +6,7 @@ use crate::{
     {{/methods}}
 };
 {{/methods.length}}
-{{/moduleTypes}}
+{{/moduleType}}
 use web3api_wasm_rs::{
     abort,
     invoke,
@@ -23,12 +22,11 @@ pub extern "C" fn _w3_invoke(method_size: u32, args_size: u32) -> bool {
     let args: InvokeArgs = invoke::w3_invoke_args(method_size, args_size);
 
     match args.method.as_str() {
-        {{#moduleTypes}}
+        {{#moduleType}}
         {{#methods}}
         "{{name}}" => invoke::w3_invoke(args, Some({{#toLower}}{{name}}{{/toLower}}_wrapped)),
         {{/methods}}
-        {{/moduleTypes}}
+        {{/moduleType}}
         _ => invoke::w3_invoke(args, None),
     }
 }
-{{/__commonModule}}

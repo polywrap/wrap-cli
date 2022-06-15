@@ -24,13 +24,6 @@ export const parseQuery = Tracer.traceFunc(
         );
       }
 
-      // Get the module name (query or mutation)
-      const module = def.operation;
-
-      if (module === "subscription") {
-        throw Error("Subscription queries are not yet supported.");
-      }
-
       // Get the method name
       const selectionSet = def.selectionSet;
       const selections = selectionSet.selections;
@@ -84,7 +77,6 @@ export const parseQuery = Tracer.traceFunc(
 
         queryInvocations[invocationName] = {
           uri,
-          module,
           method,
           input,
           resultFilter,

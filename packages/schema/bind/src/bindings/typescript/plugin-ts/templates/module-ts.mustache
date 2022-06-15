@@ -1,0 +1,38 @@
+/// NOTE: This is an auto-generated file.
+///       All modifications will be overwritten.
+
+import * as Types from "./types";
+
+import {
+  Client,
+  PluginModule,
+  MaybeAsync
+} from "@web3api/core-js";
+{{#moduleType}}
+{{#methods}}
+
+export interface Input_{{name}} extends Record<string, unknown> {
+  {{#arguments}}
+  {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
+  {{/arguments}}
+}
+{{/methods}}
+{{/moduleType}}
+
+export abstract class Module<
+  TConfig extends Record<string, unknown>
+> extends PluginModule<
+  TConfig{{#envType.sanitized}},
+  Types.Env{{#envType.client}},
+  Types.ClientEnv{{/envType.client}}{{/envType.sanitized}}
+> {
+  {{#moduleType}}
+  {{#methods}}
+
+  abstract {{name}}(
+    input: Input_{{name}},
+    client: Client
+  ): MaybeAsync<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>;
+  {{/methods}}
+  {{/moduleType}}
+}

@@ -37,6 +37,9 @@ const setup = async (domainNames: string[]) => {
   await stopTestEnvironment();
   await initTestEnvironment();
 
+  // Wait a little longer just in case
+  await new Promise((resolve) => setTimeout(resolve, 3000));
+
   const ensAddress = ensAddresses.ensAddress
   const resolverAddress = ensAddresses.resolverAddress
   const registrarAddress = ensAddresses.registrarAddress
@@ -75,7 +78,6 @@ const setup = async (domainNames: string[]) => {
   for await (const domainName of domainNames) {
     const result = await client.invoke({
       uri: ensWrapperUri,
-      module: "mutation",
       method: "registerDomainAndSubdomainsRecursively",
       input: {
         domain: domainName,

@@ -1,8 +1,6 @@
-format: 0.0.1-prealpha.7
+format: 0.0.1-prealpha.9
 name: EnumTypes
 build: ./web3api.build.yaml
 language: wasm/assemblyscript
-modules:
-  query:
-    schema: ./query/schema.graphql
-    module: ./query/index.ts
+schema: ./schema.graphql
+module: ./src/index.ts

@@ -134,6 +134,6 @@ async function run(options: PluginCommandOptions) {
     fs.mkdirSync(publishDir);
   }
 
-  writeFileSync(publishSchemaPath, schemas.combined.schema);
+  writeFileSync(publishSchemaPath, schemas.schema);
   await outputManifest(manifest, publishManifestPath);
 }

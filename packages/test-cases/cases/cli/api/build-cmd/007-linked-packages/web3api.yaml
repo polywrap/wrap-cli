@@ -1,11 +1,6 @@
-format: 0.0.1-prealpha.2
-repository: https://github.com
+format: 0.0.1-prealpha.9
+name: linked-packages
 language: wasm/assemblyscript
 build: ./web3api.build.yaml
-modules:
-  mutation:
-    schema: ./src/mutation/schema.graphql
-    module: ./src/mutation/index.ts
-  query:
-    schema: ./src/query/schema.graphql
-    module: ./src/query/index.ts
+schema: ./src/schema.graphql
+module: ./src/index.ts

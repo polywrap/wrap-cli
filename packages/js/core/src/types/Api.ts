@@ -20,7 +20,7 @@ export abstract class Api {
    *
    * @param options Options for this invocation.
    * @param client The client instance requesting this invocation.
-   * This client will be used for any sub-queries that occur.
+   * This client will be used for any sub-invokes that occur.
    */
   public abstract invoke(
     options: InvokeApiOptions<Uri>,

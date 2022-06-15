@@ -58,9 +58,7 @@ export abstract class Project<TManifest extends AnyManifest> {
 
   public abstract getManifestLanguage(): Promise<AnyManifestLanguage>;
 
-  public abstract getSchemaNamedPaths(): Promise<{
-    [name: string]: string;
-  }>;
+  public abstract getSchemaNamedPath(): Promise<string>;
 
   public abstract getImportRedirects(): Promise<
     {

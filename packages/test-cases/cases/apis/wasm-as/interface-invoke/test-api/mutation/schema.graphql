@@ -1,8 +1,0 @@
-#import { Mutation } into Interface from "w3://ens/interface.eth"
-#use { getImplementations } for Interface
-
-type Mutation {
-  mutationMethod(
-    arg: UInt8!
-  ): UInt8!
-}

@@ -1,13 +1,9 @@
-format: 0.0.1-prealpha.5
+format: 0.0.1-prealpha.9
+name: TestUseGetImpl
 build: ./web3api.build.yaml
 language: wasm/rust
-modules:
-  mutation:
-    schema: ./mutation/schema.graphql
-    module: ./mutation/Cargo.toml
-  query:
-    schema: ./query/schema.graphql
-    module: ./query/Cargo.toml
+schema: ./schema.graphql
+module: ./Cargo.toml
 import_redirects:
   - uri: w3://ens/interface.eth
     schema: ../test-interface/build/schema.graphql

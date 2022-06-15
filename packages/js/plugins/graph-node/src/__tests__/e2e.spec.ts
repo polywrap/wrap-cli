@@ -1,5 +1,4 @@
-import { plugin } from "..";
-import { Query } from "../query";
+import { GraphNodePlugin, plugin } from "..";
 import { Web3ApiClient } from "@web3api/client-js";
 
 const uri = "ens/graph-node.web3api.eth";
@@ -12,14 +11,12 @@ describe("Graph Node Plugin", () => {
     plugins: [{
       uri,
       plugin: plugin({
-        query: {
-          provider
-        }
+        provider
       })
     }]
   });
 
-  const graphNode = new Query({
+  const graphNode = new GraphNodePlugin({
     provider
   });
 

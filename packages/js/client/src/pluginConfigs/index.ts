@@ -2,14 +2,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable prettier/prettier */
 
-import { IpfsPluginConfigs } from "./Ipfs";
-import { EthereumPluginConfigs } from "./Ethereum";
-import { EnsPluginConfigs } from "./Ens";
+import { IpfsPluginConfig } from "./Ipfs";
+import { EthereumPluginConfig } from "./Ethereum";
+import { EnsPluginConfig } from "./Ens";
 
 interface PluginConfigs {
-  ipfs?: IpfsPluginConfigs;
-  ethereum?: EthereumPluginConfigs;
-  ens?: EnsPluginConfigs;
+  ipfs?: IpfsPluginConfig;
+  ethereum?: EthereumPluginConfig;
+  ens?: EnsPluginConfig;
 }
 
 const modules: Record<string, string> = {

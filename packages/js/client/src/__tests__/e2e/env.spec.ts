@@ -2,7 +2,7 @@ import {
   buildApi,
 } from "@web3api/test-env-js";
 import { createWeb3ApiClient, Web3ApiClientConfig } from "../..";
-import { Client, Plugin, PluginModule, PluginModules } from "@web3api/core-js";
+import { Client, PluginModule } from "@web3api/core-js";
 import { GetPathToTestApis } from "@web3api/test-cases";
 
 jest.setTimeout(200000);
@@ -24,37 +24,18 @@ describe("env", () => {
       arg1: string;
     }
 
-    class Query extends PluginModule<{}, Env, ClientEnv> {
-      sanitizeEnv(env: ClientEnv): Env {
-        return { arg1: parseInt(env.arg1) };
-      }
-
-      queryEnv(): Env {
-        return this.env;
-      }
-    }
-
-    class Mutation extends PluginModule<{}, ClientEnv, Env> {
+    class MockEnvPlugin extends PluginModule<{}, ClientEnv, Env> {
       sanitizeEnv(env: Env): ClientEnv {
         return { arg1: env.arg1.toString() };
       }
 
-      mutationEnv(): ClientEnv {
+      mockEnv(): ClientEnv {
         return this.env;
       }
     }
 
-    class MockEnvPlugin implements Plugin {
-      getModules(): PluginModules {
-        return {
-          query: new Query({}),
-          mutation: new Mutation({}),
-        };
-      }
-    }
-
     return {
-      factory: () => new MockEnvPlugin(),
+      factory: () => new MockEnvPlugin({}),
       manifest: {
         schema: ``,
         implements: [],
@@ -64,7 +45,7 @@ describe("env", () => {
 
   describe("simple env types", () => {
     let client: Client;
-    
+
     const apiPath = `${GetPathToTestApis()}/wasm-as/simple-env-types`
     const apiUri = `fs/${apiPath}/build`
 
@@ -75,12 +56,8 @@ describe("env", () => {
         envs: [
           {
             uri: apiUri,
-            mutation: {
-              str: "mutation string",
-              requiredInt: 0,
-            },
-            query: {
-              str: "query string",
+            env: {
+              str: "module string",
               requiredInt: 1,
             },
           },
@@ -88,7 +65,7 @@ describe("env", () => {
       });
     });
 
-    test("query: getEnv - when set", async () => {
+    test("module: getEnv - when set", async () => {
       const queryEnv = await client.query({
         uri: apiUri,
         query: `
@@ -101,12 +78,12 @@ describe("env", () => {
       });
       expect(queryEnv.errors).toBeFalsy();
       expect(queryEnv.data?.getEnv).toEqual({
-        str: "query string",
+        str: "module string",
         requiredInt: 1,
       });
     });
 
-    test("query: getEnv - when not set", async () => {
+    test("module: getEnv - when not set", async () => {
       const queryEnv = await client.query({
         uri: apiUri,
         query: `
@@ -128,7 +105,7 @@ describe("env", () => {
       );
     });
 
-    test("query: getEnv - when set incorrectly", async () => {
+    test("module: getEnv - when set incorrectly", async () => {
       const queryEnv = await client.query({
         uri: apiUri,
         query: `
@@ -142,7 +119,7 @@ describe("env", () => {
           envs: [
             {
               uri: apiUri,
-              common: {
+              env: {
                 str: "string",
                 requiredInt: "99",
               },
@@ -158,83 +135,12 @@ describe("env", () => {
         "Property must be of type 'int'. Found 'string'."
       );
     });
-
-    test("mutation: getEnv - when set", async () => {
-      const mutationEnv = await client.query({
-        uri: apiUri,
-        query: `
-      mutation {
-        getEnv(
-          arg: "string",
-        )
-      }
-    `,
-      });
-      expect(mutationEnv.errors).toBeFalsy();
-      expect(mutationEnv.data?.getEnv).toEqual({
-        str: "mutation string",
-        requiredInt: 0,
-      });
-    });
-
-    test("mutation: getEnv - when not set", async () => {
-      const mutationEnv = await client.query({
-        uri: apiUri,
-        query: `
-      mutation {
-        getEnv(
-          arg: "not set"
-        )
-      }
-    `,
-        config: {
-          envs: [],
-        },
-      });
-      expect(mutationEnv.data?.getEnv).toBeUndefined();
-      expect(mutationEnv.errors).toBeTruthy();
-      expect(mutationEnv.errors?.length).toBe(1);
-      expect(mutationEnv.errors?.[0].message).toContain(
-        "Missing required property: 'requiredInt: Int'"
-      );
-    });
-
-    test("mutation: getEnv - when set incorrectly", async () => {
-      const mutationEnv = await client.query({
-        uri: apiUri,
-        query: `
-      mutation {
-        getEnv(
-          arg: "not set"
-        )
-      }
-    `,
-        config: {
-          envs: [
-            {
-              uri: apiUri,
-              common: {
-                str: 1,
-                requiredInt: 9,
-              },
-            },
-          ],
-        },
-      });
-
-      expect(mutationEnv.data?.getEnv).toBeUndefined();
-      expect(mutationEnv.errors).toBeTruthy();
-      expect(mutationEnv.errors?.length).toBe(1);
-      expect(mutationEnv.errors?.[0].message).toContain(
-        "Property must be of type 'string'. Found 'int'."
-      );
-    });
-  });
+  })
 
   describe("complex env types", () => {
     let client: Client;
     
-    const apiPath = `${GetPathToTestApis()}/wasm-as/complex-env-types`
+    const apiPath = `${GetPathToTestApis()}/wasm-as/env-types`
     const apiUri = `fs/${apiPath}/build`
 
     beforeAll(async () => {
@@ -244,7 +150,7 @@ describe("env", () => {
         envs: [
           {
             uri: apiUri,
-            common: {
+            env: {
               object: {
                 prop: "object string",
               },
@@ -255,30 +161,24 @@ describe("env", () => {
               en: "FIRST",
               array: [32, 23],
             },
-            mutation: {
-              mutStr: "mutation string",
-            },
-            query: {
-              queryStr: "query string",
-            },
           },
         ],
       });
     });
 
-    test("queryEnv", async () => {
-      const queryEnv = await client.query({
+    test("mockEnv", async () => {
+      const moduleEnv = await client.query({
         uri: apiUri,
         query: `
           query {
-            queryEnv(
+            moduleEnv(
               arg: "string"
             )
           }
         `,
       });
-      expect(queryEnv.errors).toBeFalsy();
-      expect(queryEnv.data?.queryEnv).toEqual({
+      expect(moduleEnv.errors).toBeFalsy();
+      expect(moduleEnv.data?.moduleEnv).toEqual({
         str: "string",
         optFilledStr: "optional string",
         optStr: null,
@@ -292,55 +192,23 @@ describe("env", () => {
         optObject: null,
         en: 0,
         optEnum: null,
-        queryStr: "query string",
         array: [32, 23],
       });
     });
 
-    test("mutationEnv", async () => {
-      const mutationEnv = await client.query({
-        uri: apiUri,
-        query: `
-          mutation {
-            mutationEnv(
-              arg: "string"
-            )
-          }
-        `,
-      });
-      expect(mutationEnv.errors).toBeFalsy();
-      expect(mutationEnv.data?.mutationEnv).toEqual({
-        str: "string",
-        optFilledStr: "optional string",
-        optStr: null,
-        number: 10,
-        optNumber: null,
-        bool: true,
-        optBool: null,
-        object: {
-          prop: "object string",
-        },
-        en: 0,
-        optEnum: null,
-        optObject: null,
-        mutStr: "mutation string",
-        array: [32, 23],
-      });
-    });
-
-    test("query time env types", async () => {
-      const queryEnv = await client.query({
+    test("module time env types", async () => {
+      const moduleEnv = await client.query({
         uri: apiUri,
         query: `
           query {
-            queryEnv(
+            moduleEnv(
               arg: "string"
             )
           }
         `,
       });
-      expect(queryEnv.errors).toBeFalsy();
-      expect(queryEnv.data?.queryEnv).toEqual({
+      expect(moduleEnv.errors).toBeFalsy();
+      expect(moduleEnv.data?.moduleEnv).toEqual({
         str: "string",
         optFilledStr: "optional string",
         optStr: null,
@@ -354,15 +222,14 @@ describe("env", () => {
         optObject: null,
         en: 0,
         optEnum: null,
-        queryStr: "query string",
         array: [32, 23],
       });
 
-      const queryUpdatedEnv = await client.query({
+      const mockUpdatedEnv = await client.query({
         uri: apiUri,
         query: `
           query {
-            queryEnv(
+            moduleEnv(
               arg: "string"
             )
           }
@@ -371,7 +238,7 @@ describe("env", () => {
           envs: [
             {
               uri: apiUri,
-              common: {
+              env: {
                 object: {
                   prop: "object another string",
                 },
@@ -382,18 +249,12 @@ describe("env", () => {
                 en: "FIRST",
                 array: [32, 23],
               },
-              mutation: {
-                mutStr: "mutation string",
-              },
-              query: {
-                queryStr: "query string",
-              },
             },
           ],
         },
       });
-      expect(queryUpdatedEnv.errors).toBeFalsy();
-      expect(queryUpdatedEnv.data?.queryEnv).toEqual({
+      expect(mockUpdatedEnv.errors).toBeFalsy();
+      expect(mockUpdatedEnv.data?.moduleEnv).toEqual({
         str: "another string",
         optFilledStr: "optional string",
         optStr: null,
@@ -407,7 +268,6 @@ describe("env", () => {
         optObject: null,
         en: 0,
         optEnum: null,
-        queryStr: "query string",
         array: [32, 23],
       });
     });
@@ -426,10 +286,7 @@ describe("env", () => {
         envs: [
           {
             uri: apiUri,
-            mutation: {
-              str: "string",
-            },
-            query: {
+            env: {
               str: "string",
             },
           },
@@ -437,8 +294,8 @@ describe("env", () => {
       });
     });
 
-    test("query", async () => {
-      const queryEnv = await client.query({
+    test("module", async () => {
+      const mockEnd = await client.query({
         uri: apiUri,
         query: `
           query {
@@ -448,30 +305,11 @@ describe("env", () => {
           }
         `,
       });
-      expect(queryEnv.errors).toBeFalsy();
-      expect(queryEnv.data?.environment).toEqual({
+      expect(mockEnd.errors).toBeFalsy();
+      expect(mockEnd.data?.environment).toEqual({
         str: "string",
         optStr: null,
         defStr: "default string",
-      });
-    });
-
-    test("mutation", async () => {
-      const mutationEnv = await client.query({
-        uri: apiUri,
-        query: `
-        mutation {
-          mutEnvironment(
-            arg: "string"
-          )
-        }
-      `,
-      });
-      expect(mutationEnv.errors).toBeFalsy();
-      expect(mutationEnv.data?.mutEnvironment).toEqual({
-        str: "string",
-        optStr: null,
-        defMutStr: "default mutation string",
       });
     });
   });
@@ -486,17 +324,14 @@ describe("env", () => {
       envs: [
         {
           uri: apiUri,
-          mutation: {
-            str: "string",
-          },
-          query: {
+          env: {
             str: "string",
           },
         },
       ],
     });
 
-    const queryEnv = await client.query({
+    const mockEnv = await client.query({
       uri: apiUri,
       query: `
         query {
@@ -507,7 +342,7 @@ describe("env", () => {
         envs: [
           {
             uri: apiUri,
-            common: {
+            env: {
               str: "string",
             },
           },
@@ -515,8 +350,8 @@ describe("env", () => {
       },
     });
 
-    expect(queryEnv.errors).toBeFalsy();
-    expect(queryEnv.data?.method1).toEqual(0);
+    expect(mockEnv.errors).toBeFalsy();
+    expect(mockEnv.data?.method1).toEqual(0);
   });
 
   test("plugin env types", async () => {
@@ -532,31 +367,24 @@ describe("env", () => {
       envs: [
         {
           uri: implementationUri,
-          query: {
+          env: {
             arg1: "10",
-          },
-          mutation: {
-            arg1: 11,
           },
         },
       ],
     });
 
-    const queryEnv = await client.query({
+    const mockEnv = await client.query({
       uri: implementationUri,
       query: `
         query {
-          queryEnv
-        }
-        mutation {
-          mutationEnv
+          mockEnv
         }
       `,
     });
 
-    expect(queryEnv.errors).toBeFalsy();
-    expect(queryEnv.data).toBeTruthy();
-    expect(queryEnv.data?.queryEnv).toMatchObject({ arg1: 10 });
-    expect(queryEnv.data?.mutationEnv).toMatchObject({ arg1: "11" });
+    expect(mockEnv.errors).toBeFalsy();
+    expect(mockEnv.data).toBeTruthy();
+    expect(mockEnv.data?.mockEnv).toMatchObject({ arg1: "10" });
   });
 });
