@@ -3,4 +3,7 @@
 
 export * from "./schema";
 export * from "./manifest";
-export * from "./plugin";
+export * from "./module";
+export * from "./types";
+
+export { Client } from "@web3api/core-js";

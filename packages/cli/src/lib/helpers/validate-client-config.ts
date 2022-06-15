@@ -157,21 +157,9 @@ export function validateEnvs<TUri extends Uri | string = string>(
           index: i.toString(),
         })
       );
-    } else if (!env.common && typeof env.common !== "object") {
+    } else if (!env.env && typeof env.env !== "object") {
       throw new Error(
-        intlMsg.commands_run_error_envsItemCommonNotObject({
-          index: i.toString(),
-        })
-      );
-    } else if (!env.mutation && typeof env.mutation !== "object") {
-      throw new Error(
-        intlMsg.commands_run_error_envsItemMutationNotObject({
-          index: i.toString(),
-        })
-      );
-    } else if (!env.query && typeof env.query !== "object") {
-      throw new Error(
-        intlMsg.commands_run_error_envsItemQueryNotObject({
+        intlMsg.commands_run_error_envsItemModuleNotObject({
           index: i.toString(),
         })
       );

@@ -104,7 +104,7 @@ describe("useWeb3ApiQuery hook", () => {
       config: {
         envs: [{
           uri: envUri,
-          common: {
+          env: {
             str: "Hello World!",
             requiredInt: 2,
           }

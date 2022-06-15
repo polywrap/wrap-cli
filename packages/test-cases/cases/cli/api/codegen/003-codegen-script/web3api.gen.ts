@@ -7,7 +7,7 @@ import fs from "fs";
 export const generateBinding: GenerateBindingFn = (
   options: BindOptions
 ): BindOutput => {
-  const schema = options.modules[0].schema;
+  const schema = options.schema;
   const output: OutputDirectory = {
     entries: []
   };
@@ -41,10 +41,7 @@ export const generateBinding: GenerateBindingFn = (
   });
 
   return {
-    modules: [{
-      name: "custom",
-      outputDirAbs: __dirname,
-      output,
-    }]
+    outputDirAbs: __dirname,
+    output,
   };
 };

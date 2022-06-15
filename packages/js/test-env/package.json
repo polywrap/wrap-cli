@@ -1,7 +1,7 @@
 {
   "name": "@web3api/test-env-js",
   "description": "Web3API Test Helpers",
-  "version": "0.0.1-prealpha.84",
+  "version": "0.0.1-prealpha.85",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -17,9 +17,9 @@
     "copy:wrappers": "copyfiles ./src/wrappers/**/**/* ./build/wrappers/ -u 2"
   },
   "dependencies": {
-    "@web3api/client-js": "0.0.1-prealpha.80",
-    "@web3api/core-js": "0.0.1-prealpha.84",
-    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.80",
+    "@web3api/core-js": "0.0.1-prealpha.85",
+    "@web3api/client-js": "0.0.1-prealpha.85",
+    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.85",
     "axios": "0.21.2",
     "js-yaml": "4.1.0",
     "spawn-command": "0.0.2-1"

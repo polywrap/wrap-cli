@@ -468,16 +468,16 @@ export const runImplementationsTest = async (
     .toEqual([new Uri(implementationUri).uri]);
 
   const query = await client.query<{
-    queryMethod: string;
-    abstractQueryMethod: string;
+    moduleMethod: string;
+    abstractModuleMethod: string;
   }>({
     uri: implementationUri,
     query: `
       query {
-        queryMethod(
+        moduleMethod(
           arg: $argument1
         )
-        abstractQueryMethod(
+        abstractModuleMethod(
           arg: $argument2
         )
       }
@@ -495,38 +495,11 @@ export const runImplementationsTest = async (
 
   expect(query.errors).toBeFalsy();
   expect(query.data).toBeTruthy();
-  expect(query.data?.queryMethod).toEqual({
+  expect(query.data?.moduleMethod).toEqual({
     uint8: 1,
     str: "Test String 1",
   });
-
-  expect(query.data?.abstractQueryMethod).toBe("Test String 2");
-
-  const mutation = await client.query<{
-    mutationMethod: string;
-    abstractMutationMethod: string;
-  }>({
-    uri: implementationUri,
-    query: `
-    mutation {
-        mutationMethod(
-          arg: $argument1
-        )
-        abstractMutationMethod(
-          arg: $argument2
-        )
-      }
-    `,
-    variables: {
-      argument1: 1,
-      argument2: 2,
-    },
-  });
-
-  expect(mutation.errors).toBeFalsy();
-  expect(mutation.data).toBeTruthy();
-  expect(mutation.data?.mutationMethod).toBe(1);
-  expect(mutation.data?.abstractMutationMethod).toBe(2);
+  expect(query.data?.abstractModuleMethod).toBe("Test String 2");
 };
 
 export const runGetImplementationsTest = async (
@@ -540,13 +513,12 @@ export const runGetImplementationsTest = async (
   ]);
 
   const query = await client.query<{
-    queryMethod: string;
-    abstractQueryMethod: string;
+    moduleImplementations: string[];
   }>({
     uri: implUri.uri,
     query: `
       query {
-        queryImplementations
+        moduleImplementations
       }
     `,
     variables: {},
@@ -554,7 +526,7 @@ export const runGetImplementationsTest = async (
 
   expect(query.errors).toBeFalsy();
   expect(query.data).toBeTruthy();
-  expect((query.data as any).queryImplementations).toEqual([
+  expect(query.data?.moduleImplementations).toEqual([
     implUri.uri,
   ]);
 };
@@ -662,7 +634,6 @@ export const runJsonTypeTest = async (
 ) => {
   const fromJson = await client.invoke<{ x: number; y: number }>({
     uri,
-    module: "query",
     method: "fromJson",
     input: {
       json: JSON.stringify({ x: 1, y: 2 }),
@@ -678,7 +649,6 @@ export const runJsonTypeTest = async (
 
   const toJson = await client.invoke<{ str: string }>({
     uri,
-    module: "query",
     method: "toJson",
     input: {
       pair: {
@@ -1127,7 +1097,6 @@ export const runMapTypeTest = async (
 
   const returnMapResponse1 = await client.invoke<Map<string, number>>({
     uri,
-    module: "query",
     method: "returnMap",
     input: {
       map: mapClass,
@@ -1138,7 +1107,6 @@ export const runMapTypeTest = async (
 
   const returnMapResponse2 = await client.invoke<Map<string, number>>({
     uri,
-    module: "query",
     method: "returnMap",
     input: {
       map: mapRecord,
@@ -1149,7 +1117,6 @@ export const runMapTypeTest = async (
 
   const getKeyResponse1 = await client.invoke<number>({
     uri,
-    module: "query",
     method: "getKey",
     input: {
       map: mapClass,
@@ -1161,7 +1128,6 @@ export const runMapTypeTest = async (
 
   const getKeyResponse2 = await client.invoke<number>({
     uri,
-    module: "query",
     method: "getKey",
     input: {
       map: mapRecord,

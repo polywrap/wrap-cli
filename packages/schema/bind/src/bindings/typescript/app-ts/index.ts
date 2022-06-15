@@ -2,12 +2,7 @@
 import * as Functions from "../functions";
 import { GenerateBindingFn } from "../..";
 import { renderTemplates } from "../../utils/templates";
-import {
-  BindOptions,
-  BindOutput,
-  BindModuleOptions,
-  BindModuleOutput,
-} from "../../..";
+import { BindOptions, BindOutput } from "../../..";
 
 import {
   transformTypeInfo,
@@ -25,12 +20,20 @@ export const generateBinding: GenerateBindingFn = (
   options: BindOptions
 ): BindOutput => {
   const result: BindOutput = {
-    modules: [],
+    output: {
+      entries: [],
+    },
+    outputDirAbs: options.outputDirAbs,
   };
+  const output = result.output;
+  const schema = options.schema;
+  const typeInfo = applyTransforms(options.typeInfo);
 
-  for (const module of options.modules) {
-    result.modules.push(generateModuleBindings(module));
-  }
+  output.entries = renderTemplates(
+    path.join(__dirname, "./templates"),
+    { ...typeInfo, schema },
+    {}
+  );
 
   return result;
 };
@@ -47,25 +50,4 @@ function applyTransforms(typeInfo: TypeInfo): TypeInfo {
     typeInfo = transformTypeInfo(typeInfo, transform);
   }
   return typeInfo;
-}
-
-function generateModuleBindings(module: BindModuleOptions): BindModuleOutput {
-  const result: BindModuleOutput = {
-    name: module.name,
-    output: {
-      entries: [],
-    },
-    outputDirAbs: module.outputDirAbs,
-  };
-  const output = result.output;
-  const schema = module.schema;
-  const typeInfo = applyTransforms(module.typeInfo);
-
-  output.entries = renderTemplates(
-    path.join(__dirname, "./templates"),
-    { ...typeInfo, schema },
-    {}
-  );
-
-  return result;
 }

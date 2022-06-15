@@ -26,7 +26,7 @@ import {
   MetaManifest,
   DeployManifest,
 } from "@web3api/core-js";
-import { getCommonPath, normalizePath } from "@web3api/os-js";
+import { normalizePath } from "@web3api/os-js";
 import { bindSchema, BindOutput, BindOptions } from "@web3api/schema-bind";
 import { ComposerOutput } from "@web3api/schema-compose";
 import { TypeInfo } from "@web3api/schema-parse";
@@ -132,22 +132,10 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
 
   /// Schema
 
-  public async getSchemaNamedPaths(): Promise<{
-    [name: string]: string;
-  }> {
+  public async getSchemaNamedPath(): Promise<string> {
     const manifest = await this.getManifest();
     const dir = this.getManifestDir();
-    const namedPaths: { [name: string]: string } = {};
-
-    if (manifest.modules.mutation) {
-      namedPaths["mutation"] = path.join(dir, manifest.modules.mutation.schema);
-    }
-
-    if (manifest.modules.query) {
-      namedPaths["query"] = path.join(dir, manifest.modules.query.schema);
-    }
-
-    return namedPaths;
+    return path.join(dir, manifest.schema);
   }
 
   public async getImportRedirects(): Promise<
@@ -165,33 +153,14 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     generationSubPath?: string
   ): Promise<BindOutput> {
     const manifest = await this.getManifest();
-    const queryModule = manifest.modules.query?.module as string;
-    const queryDirectory = manifest.modules.query
-      ? this._getGenerationDirectory(queryModule, generationSubPath)
-      : undefined;
-    const mutationModule = manifest.modules.mutation?.module as string;
-    const mutationDirectory = manifest.modules.mutation
-      ? this._getGenerationDirectory(mutationModule, generationSubPath)
-      : undefined;
-
-    if (
-      queryDirectory &&
-      mutationDirectory &&
-      queryDirectory === mutationDirectory
-    ) {
-      throw Error(
-        intlMsg.lib_compiler_dup_code_folder({ directory: queryDirectory })
-      );
-    }
+    const module = manifest.module as string;
+    const moduleDirectory = this._getGenerationDirectory(
+      module,
+      generationSubPath
+    );
 
     // Clean the code generation
-    if (queryDirectory) {
-      resetDir(queryDirectory);
-    }
-
-    if (mutationDirectory) {
-      resetDir(mutationDirectory);
-    }
+    resetDir(moduleDirectory);
 
     const bindLanguage = web3apiManifestLanguageToBindLanguage(
       await this.getManifestLanguage()
@@ -199,34 +168,11 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
 
     const options: BindOptions = {
       projectName: manifest.name,
-      modules: [],
+      typeInfo: composerOutput.typeInfo as TypeInfo,
+      schema: composerOutput.schema as string,
+      outputDirAbs: moduleDirectory,
       bindLanguage,
     };
-
-    if (manifest.modules.query) {
-      options.modules.push({
-        name: "query",
-        typeInfo: composerOutput.query?.typeInfo as TypeInfo,
-        schema: composerOutput.combined?.schema as string,
-        outputDirAbs: queryDirectory as string,
-      });
-    }
-
-    if (manifest.modules.mutation) {
-      options.modules.push({
-        name: "mutation",
-        typeInfo: composerOutput.mutation?.typeInfo as TypeInfo,
-        schema: composerOutput.combined?.schema as string,
-        outputDirAbs: mutationDirectory as string,
-      });
-    }
-
-    if (mutationDirectory && queryDirectory) {
-      options.commonDirAbs = path.join(
-        getCommonPath(queryDirectory, mutationDirectory),
-        "w3"
-      );
-    }
 
     return bindSchema(options);
   }
@@ -278,21 +224,8 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
       );
 
       // Add default config variables
-      const modules = await this._getWeb3ApiModules();
-      const defaultConfig = {
-        web3api_modules: modules.modules.map(
-          (module: { dir: string; name: string }) => {
-            return {
-              name: module.name,
-              dir: normalizePath(module.dir),
-            };
-          }
-        ),
-        web3api_common_dir: () =>
-          modules.commonDir &&
-          fs.existsSync(path.join(this.getManifestDir(), modules.commonDir))
-            ? modules.commonDir
-            : undefined,
+      const module = await this._getModule();
+      const defaultConfig: Record<string, unknown> = {
         web3api_manifests: (await this.getManifestPaths()).map(
           (path: string) => {
             return normalizePath(path);
@@ -305,6 +238,12 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
           })
         ),
       };
+      if (module) {
+        defaultConfig["web3api_module"] = {
+          name: "module",
+          dir: normalizePath(module),
+        };
+      }
 
       if (!this._buildManifest.config) {
         this._buildManifest.config = defaultConfig;
@@ -593,48 +532,14 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
 
   /// Private Helpers
 
-  private async _getWeb3ApiModules(): Promise<{
-    modules: {
-      dir: string;
-      name: string;
-    }[];
-    commonDir?: string;
-  }> {
-    const web3apiManifest = await this.getManifest();
-    const web3apiModules: {
-      dir: string;
-      name: string;
-    }[] = [];
+  private async _getModule(): Promise<string | undefined> {
+    const manifest = await this.getManifest();
 
-    if (web3apiManifest.modules.mutation?.module) {
-      web3apiModules.push({
-        dir: path
-          .dirname(web3apiManifest.modules.mutation.module)
-          .replace("./", ""),
-        name: "mutation",
-      });
-    }
-    if (web3apiManifest.modules.query?.module) {
-      web3apiModules.push({
-        dir: path
-          .dirname(web3apiManifest.modules.query.module)
-          .replace("./", ""),
-        name: "query",
-      });
+    if (manifest.module) {
+      return path.dirname(manifest.module).replace("./", "");
     }
 
-    let commonDir: string | undefined;
-
-    if (web3apiModules.length > 1) {
-      const module1 = web3apiModules[0];
-      const module2 = web3apiModules[1];
-      commonDir = getCommonPath(module1.dir, module2.dir) + "w3";
-    }
-
-    return {
-      modules: web3apiModules,
-      commonDir,
-    };
+    return undefined;
   }
 
   private _getGenerationDirectory(

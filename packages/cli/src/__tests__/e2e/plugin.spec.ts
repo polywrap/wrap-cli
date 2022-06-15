@@ -118,8 +118,8 @@ describe("e2e tests for plugin command", () => {
         expect(clearStyle(output)).toEqual(CODEGEN_SUCCESS);
 
         const expectedTypesResult = compareSync(
-          `${testCaseDir}/src`,
-          `${testCaseDir}/expected/src`,
+          `${testCaseDir}/src/w3`,
+          `${testCaseDir}/expected/src/w3`,
           { compareContent: true }
         );
         expect(expectedTypesResult.differences).toBe(0);

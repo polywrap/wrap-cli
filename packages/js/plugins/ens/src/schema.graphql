@@ -1,0 +1,4 @@
+#import { Module, MaybeUriOrManifest } into UriResolver from "ens/uri-resolver.core.web3api.eth"
+#import { Module } into Ethereum from "ens/ethereum.web3api.eth"
+
+type Module implements UriResolver_Module { }

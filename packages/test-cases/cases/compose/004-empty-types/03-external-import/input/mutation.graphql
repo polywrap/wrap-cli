@@ -1,4 +1,0 @@
-#import { Mutation } into Namespace from "external.eth"
-
-type Mutation implements Namespace_Mutation {
-}
