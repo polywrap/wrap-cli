@@ -2,7 +2,7 @@ import { Command, Program } from "./types";
 import {
   CodeGenerator,
   Compiler,
-  WasmProject,
+  PolywrapProject,
   SchemaComposer,
   intlMsg,
   defaultPolywrapManifest,
@@ -79,7 +79,7 @@ async function run(options: CodegenCommandOptions) {
   const ensAddress: string | undefined = ens;
 
   // Polywrap Project
-  const project = new WasmProject({
+  const project = new PolywrapProject({
     rootDir: path.dirname(manifestFile),
     polywrapManifestPath: manifestFile,
   });

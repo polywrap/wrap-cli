@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import {
-  WasmProject,
+  PolywrapProject,
   SchemaComposer,
   withSpinner,
   outputManifest,
@@ -38,7 +38,7 @@ export interface CompilerOverrides {
 
 export interface CompilerConfig {
   outputDir: string;
-  project: WasmProject;
+  project: PolywrapProject;
   schemaComposer: SchemaComposer;
 }
 
@@ -276,7 +276,7 @@ export class Compiler {
       dockerfile = generateDockerfile(
         project.getCachePath(
           path.join(
-            WasmProject.cacheLayout.buildImageDir,
+            PolywrapProject.cacheLayout.buildImageDir,
             "Dockerfile.mustache"
           )
         ),
@@ -296,7 +296,7 @@ export class Compiler {
 
       if (cache == true) {
         cacheDir = project.getCachePath(
-          WasmProject.cacheLayout.buildImageCacheDir
+          PolywrapProject.cacheLayout.buildImageCacheDir
         );
       } else if (cache) {
         if (!path.isAbsolute(cache)) {

@@ -1,7 +1,7 @@
 import { Command, Program } from "./types";
 import {
   Compiler,
-  WasmProject,
+  PolywrapProject,
   SchemaComposer,
   Watcher,
   WatchEvent,
@@ -68,7 +68,7 @@ async function run(options: BuildCommandOptions) {
     return;
   }
 
-  const project = new WasmProject({
+  const project = new PolywrapProject({
     rootDir: path.dirname(manifestFile),
     polywrapManifestPath: manifestFile,
     quiet: !verbose,

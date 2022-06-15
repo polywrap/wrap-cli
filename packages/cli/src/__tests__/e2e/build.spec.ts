@@ -1,4 +1,4 @@
-import { WasmProject, loadBuildManifest } from "../../lib";
+import { PolywrapProject, loadBuildManifest } from "../../lib";
 import { clearStyle, polywrapCli } from "./utils";
 
 import { runCLI } from "@polywrap/test-env-js";
@@ -62,7 +62,7 @@ describe("e2e tests for build command", () => {
 
   test("Adds uuid-v4 suffix to build image if no build manifest specified", async () => {
     const projectRoot = getTestCaseDir(0);
-    const project = new WasmProject({
+    const project = new PolywrapProject({
       rootDir: projectRoot,
       polywrapManifestPath: path.join(projectRoot, "polywrap.yaml")
     });

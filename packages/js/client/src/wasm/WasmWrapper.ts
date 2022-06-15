@@ -25,7 +25,7 @@ import {
 import { Tracer } from "@polywrap/tracing-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 
-type InvokeResult =
+type InvokeResultOrError =
   | { type: "InvokeResult"; invokeResult: ArrayBuffer }
   | { type: "InvokeError"; invokeError: string };
 
@@ -289,7 +289,7 @@ export class WasmWrapper extends Wrapper {
     state: State,
     result: boolean,
     abort: (message: string) => never
-  ): InvokeResult {
+  ): InvokeResultOrError {
     if (result) {
       if (!state.invoke.result) {
         abort("Invoke result is missing.");

@@ -1,7 +1,7 @@
 /* eslint-disable prefer-const */
 import {
   intlMsg,
-  WasmProject,
+  PolywrapProject,
   defaultPolywrapManifest,
   DeployPackage,
   parseWasmManifestFileOption,
@@ -51,7 +51,7 @@ export const deploy: Command = {
 async function run(options: DeployCommandOptions): Promise<void> {
   const { manifestFile, verbose } = options;
 
-  const project = new WasmProject({
+  const project = new PolywrapProject({
     rootDir: nodePath.dirname(manifestFile),
     polywrapManifestPath: manifestFile,
     quiet: verbose ? false : true,
