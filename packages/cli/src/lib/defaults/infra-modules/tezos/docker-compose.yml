@@ -1,0 +1,16 @@
+version: "3.9"
+
+services:
+  tezos-node:
+    build: .
+    container_name: TEZOS_POLYWRAP_SANDBOX
+    platform: '${TEZOS_POLYWRAP_PLATFORM}'
+    ports:
+      - '${TEZOS_POLYWRAP_PORT}:20000'
+    environment:
+      - TEZOS_POLYWRAP_BLOCK_TIME=${TEZOS_POLYWRAP_BLOCK_TIME}
+    networks:
+      - tezos-node-test-env
+
+networks:
+  tezos-node-test-env:

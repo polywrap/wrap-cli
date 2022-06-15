@@ -462,4 +462,73 @@ describe("e2e tests for infra command", () => {
       );
     });
   });
+
+  describe("Default modules", () => {
+
+    test("Tezos", async () => {
+      process.env = {
+        ...process.env,
+        TEZOS_POLYWRAP_PORT: "2000",
+        TEZOS_POLYWRAP_BLOCK_TIME: "5",
+        TEZOS_POLYWRAP_PROTOCOL: "hangzhou"
+      };
+
+      await runW3CLI(
+        [
+          "infra",
+          "up",
+          "--modules=tezos",
+          "--verbose"
+        ],
+        getTestCaseDir(3),
+      );
+  
+      await waitForPorts([
+        { port: 2000, expected: true }
+      ]);
+
+      await runW3CLI(
+        [
+          "infra",
+          "down",
+          "--modules=tezos",
+          "--verbose"
+        ],
+        getTestCaseDir(3),
+      );
+    })
+
+    test("Ethereum, Ens, IPFS", async () => {
+      process.env = {
+        ...process.env,
+        IPFS_PORT: "5001",
+        ETHEREUM_PORT: "8545",
+      };
+      
+      await runW3CLI(
+        [
+          "infra",
+          "up",
+          "--modules=eth-ens-ipfs",
+          "--verbose"
+        ],
+        getTestCaseDir(3),
+      );
+
+      await waitForPorts([
+        { port: 5001, expected: true },
+        { port: 8545, expected: true }
+      ]);
+
+      await runW3CLI(
+        [
+          "infra",
+          "down",
+          "--modules=eth-ens-ipfs",
+          "--verbose"
+        ],
+        getTestCaseDir(3),
+      );
+    })
+  })
 })
