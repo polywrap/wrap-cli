@@ -1,7 +1,7 @@
 import { Command, Program } from "./types";
 import {
   Compiler,
-  Web3ApiProject,
+  WasmProject,
   SchemaComposer,
   Watcher,
   WatchEvent,
@@ -68,7 +68,7 @@ async function run(options: BuildCommandOptions) {
     return;
   }
 
-  const project = new Web3ApiProject({
+  const project = new WasmProject({
     rootDir: path.dirname(manifestFile),
     web3apiManifestPath: manifestFile,
     quiet: !verbose,

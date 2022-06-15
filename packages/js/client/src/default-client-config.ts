@@ -1,5 +1,5 @@
-import { ClientConfig, WasmWeb3Api } from ".";
-import { PluginWeb3Api } from "./plugin/PluginWeb3Api";
+import { ClientConfig, WasmWrapper } from ".";
+import { PluginWrapper } from "./plugin/PluginWrapper";
 
 import {
   Uri,
@@ -103,7 +103,7 @@ export const getDefaultClientConfig = Tracer.traceFunc(
             uri: Uri,
             plugin: PluginPackage,
             environment: Env<Uri> | undefined
-          ) => new PluginWeb3Api(uri, plugin, environment)
+          ) => new PluginWrapper(uri, plugin, environment)
         ),
         new ExtendableUriResolver(
           (
@@ -112,7 +112,7 @@ export const getDefaultClientConfig = Tracer.traceFunc(
             uriResolver: string,
             environment: Env<Uri> | undefined
           ) => {
-            return new WasmWeb3Api(uri, manifest, uriResolver, environment);
+            return new WasmWrapper(uri, manifest, uriResolver, environment);
           }
         ),
       ],

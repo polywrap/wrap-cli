@@ -2,7 +2,7 @@ import { Command, Program } from "./types";
 import {
   CodeGenerator,
   Compiler,
-  Web3ApiProject,
+  WasmProject,
   SchemaComposer,
   intlMsg,
   defaultWeb3ApiManifest,
@@ -79,7 +79,7 @@ async function run(options: CodegenCommandOptions) {
   const ensAddress: string | undefined = ens;
 
   // Web3Api Project
-  const project = new Web3ApiProject({
+  const project = new WasmProject({
     rootDir: path.dirname(manifestFile),
     web3apiManifestPath: manifestFile,
   });

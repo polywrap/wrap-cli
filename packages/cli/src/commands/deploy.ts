@@ -1,7 +1,7 @@
 /* eslint-disable prefer-const */
 import {
   intlMsg,
-  Web3ApiProject,
+  WasmProject,
   defaultWeb3ApiManifest,
   DeployPackage,
   parseWasmManifestFileOption,
@@ -51,7 +51,7 @@ export const deploy: Command = {
 async function run(options: DeployCommandOptions): Promise<void> {
   const { manifestFile, verbose } = options;
 
-  const project = new Web3ApiProject({
+  const project = new WasmProject({
     rootDir: nodePath.dirname(manifestFile),
     web3apiManifestPath: manifestFile,
     quiet: verbose ? false : true,

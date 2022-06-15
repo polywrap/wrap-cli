@@ -17,7 +17,7 @@ import {
 } from "@polywrap/core-js";
 import { Tracer } from "@polywrap/tracing-js";
 
-export class PluginWeb3Api extends Api {
+export class PluginWrapper extends Api {
   private _instance: PluginModule | undefined;
 
   private _sanitizedEnv: Record<string, unknown> | undefined = undefined;
@@ -29,7 +29,7 @@ export class PluginWeb3Api extends Api {
   ) {
     super();
 
-    Tracer.startSpan("PluginWeb3Api: constructor");
+    Tracer.startSpan("PluginWrapper: constructor");
     Tracer.setAttribute("input", {
       uri: this._uri,
       plugin: this._plugin,
@@ -56,7 +56,7 @@ export class PluginWeb3Api extends Api {
     throw Error("client.getFile(...) is not implemented for Plugins.");
   }
 
-  @Tracer.traceMethod("PluginWeb3Api: invoke")
+  @Tracer.traceMethod("PluginWrapper: invoke")
   public async invoke<TData = unknown>(
     options: InvokeApiOptions<Uri>,
     client: Client
@@ -67,11 +67,11 @@ export class PluginWeb3Api extends Api {
       const module = this._getInstance();
 
       if (!module) {
-        throw new Error(`PluginWeb3Api: module "${module}" not found.`);
+        throw new Error(`PluginWrapper: module "${module}" not found.`);
       }
 
       if (!module.getMethod(method)) {
-        throw new Error(`PluginWeb3Api: method "${method}" not found.`);
+        throw new Error(`PluginWrapper: method "${method}" not found.`);
       }
 
       // Sanitize & load the module's environment
@@ -87,7 +87,7 @@ export class PluginWeb3Api extends Api {
 
         if (typeof result !== "object") {
           throw new Error(
-            `PluginWeb3Api: decoded MsgPack input did not result in an object.\nResult: ${result}`
+            `PluginWrapper: decoded MsgPack input did not result in an object.\nResult: ${result}`
           );
         }
 
@@ -140,7 +140,7 @@ export class PluginWeb3Api extends Api {
         }
       } catch (e) {
         throw Error(
-          `PluginWeb3Api: invocation exception encountered.\n` +
+          `PluginWrapper: invocation exception encountered.\n` +
             `uri: ${this._uri.uri}\nmodule: ${module}\n` +
             `method: ${method}\nresultFilter: ${resultFilter}\n` +
             `input: ${JSON.stringify(jsInput, null, 2)}\n` +
@@ -159,7 +159,7 @@ export class PluginWeb3Api extends Api {
     return this._instance;
   }
 
-  @Tracer.traceMethod("PluginWeb3Api: _sanitizeAndLoadEnv")
+  @Tracer.traceMethod("PluginWrapper: _sanitizeAndLoadEnv")
   private async _sanitizeAndLoadEnv(
     client: Client,
     pluginModule: PluginModule
@@ -175,7 +175,7 @@ export class PluginWeb3Api extends Api {
     pluginModule._wrap_load_env(this._sanitizedEnv || {});
   }
 
-  @Tracer.traceMethod("PluginWeb3Api: _getClientEnv")
+  @Tracer.traceMethod("PluginWrapper: _getClientEnv")
   private _getClientEnv(): Record<string, unknown> {
     if (!this._clientEnv?.env) {
       return {};

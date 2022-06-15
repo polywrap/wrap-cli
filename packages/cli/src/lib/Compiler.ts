@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import {
-  Web3ApiProject,
+  WasmProject,
   SchemaComposer,
   withSpinner,
   outputManifest,
@@ -16,7 +16,7 @@ import {
 } from "./";
 
 import { Web3ApiManifest, BuildManifest, MetaManifest } from "@polywrap/core-js";
-import { WasmWeb3Api } from "@polywrap/client-js";
+import { WasmWrapper } from "@polywrap/client-js";
 import { WrapImports } from "@polywrap/client-js/build/wasm/types";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 import { ComposerOutput } from "@polywrap/schema-compose";
@@ -38,7 +38,7 @@ export interface CompilerOverrides {
 
 export interface CompilerConfig {
   outputDir: string;
-  project: Web3ApiProject;
+  project: WasmProject;
   schemaComposer: SchemaComposer;
 }
 
@@ -276,7 +276,7 @@ export class Compiler {
       dockerfile = generateDockerfile(
         project.getCachePath(
           path.join(
-            Web3ApiProject.cacheLayout.buildImageDir,
+            WasmProject.cacheLayout.buildImageDir,
             "Dockerfile.mustache"
           )
         ),
@@ -296,7 +296,7 @@ export class Compiler {
 
       if (cache == true) {
         cacheDir = project.getCachePath(
-          Web3ApiProject.cacheLayout.buildImageCacheDir
+          WasmProject.cacheLayout.buildImageCacheDir
         );
       } else if (cache) {
         if (!path.isAbsolute(cache)) {
@@ -466,7 +466,7 @@ export class Compiler {
           },
           wrap: wrapImports,
         },
-        requiredExports: WasmWeb3Api.requiredExports,
+        requiredExports: WasmWrapper.requiredExports,
       });
     } catch (error) {
       throw Error(

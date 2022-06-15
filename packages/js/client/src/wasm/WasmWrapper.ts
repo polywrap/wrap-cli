@@ -63,7 +63,7 @@ export interface State {
   env?: ArrayBuffer;
 }
 
-export class WasmWeb3Api extends Api {
+export class WasmWrapper extends Api {
   public static requiredExports: readonly string[] = ["_wrap_invoke"];
 
   private _schema?: string;
@@ -78,7 +78,7 @@ export class WasmWeb3Api extends Api {
   ) {
     super();
 
-    Tracer.startSpan("WasmWeb3Api: constructor");
+    Tracer.startSpan("WasmWrapper: constructor");
     Tracer.setAttribute("input", {
       uri: this._uri,
       manifest: this._manifest,
@@ -88,7 +88,7 @@ export class WasmWeb3Api extends Api {
     Tracer.endSpan();
   }
 
-  @Tracer.traceMethod("WasmWeb3Api: getManifest")
+  @Tracer.traceMethod("WasmWrapper: getManifest")
   public async getManifest<TManifestArtifact extends ManifestArtifactType>(
     options: GetManifestOptions<TManifestArtifact>,
     client: Client
@@ -114,7 +114,7 @@ export class WasmWeb3Api extends Api {
       }
     }
     if (!manifest) {
-      throw new Error("WasmWeb3Api: Manifest was not found.");
+      throw new Error("WasmWrapper: Manifest was not found.");
     }
     switch (options.type) {
       case "build":
@@ -132,7 +132,7 @@ export class WasmWeb3Api extends Api {
     }
   }
 
-  @Tracer.traceMethod("WasmWeb3Api: getFile")
+  @Tracer.traceMethod("WasmWrapper: getFile")
   public async getFile(
     options: GetFileOptions,
     client: Client
@@ -154,7 +154,7 @@ export class WasmWeb3Api extends Api {
     // If nothing is returned, the file was not found
     if (!data) {
       throw Error(
-        `WasmWeb3Api: File was not found.\nURI: ${this._uri}\nSubpath: ${path}`
+        `WasmWrapper: File was not found.\nURI: ${this._uri}\nSubpath: ${path}`
       );
     }
 
@@ -164,7 +164,7 @@ export class WasmWeb3Api extends Api {
 
       if (!text) {
         throw Error(
-          `WasmWeb3Api: Decoding the file's bytes array failed.\nBytes: ${data}`
+          `WasmWrapper: Decoding the file's bytes array failed.\nBytes: ${data}`
         );
       }
       return text;
@@ -172,7 +172,7 @@ export class WasmWeb3Api extends Api {
     return data;
   }
 
-  @Tracer.traceMethod("WasmWeb3Api: invoke")
+  @Tracer.traceMethod("WasmWrapper: invoke")
   public async invoke(
     options: InvokeApiOptions<Uri>,
     client: Client
@@ -198,7 +198,7 @@ export class WasmWeb3Api extends Api {
 
       const abort = (message: string) => {
         throw new Error(
-          `WasmWeb3Api: Wasm module aborted execution.\nURI: ${this._uri.uri}\n` +
+          `WasmWrapper: Wasm module aborted execution.\nURI: ${this._uri.uri}\n` +
             `Method: ${method}\n` +
             `Input: ${JSON.stringify(input, null, 2)}\nMessage: ${message}.\n`
         );
@@ -213,7 +213,7 @@ export class WasmWeb3Api extends Api {
           memory,
           abort,
         }),
-        requiredExports: WasmWeb3Api.requiredExports,
+        requiredExports: WasmWrapper.requiredExports,
       });
 
       const exports = instance.exports as WrapExports;
@@ -230,7 +230,7 @@ export class WasmWeb3Api extends Api {
       switch (invokeResult.type) {
         case "InvokeError": {
           throw Error(
-            `WasmWeb3Api: invocation exception encountered.\n` +
+            `WasmWrapper: invocation exception encountered.\n` +
               `uri: ${this._uri.uri}\n` +
               `method: ${method}\n` +
               `input: ${JSON.stringify(input, null, 2)}\n` +
@@ -250,14 +250,14 @@ export class WasmWeb3Api extends Api {
             } as InvokeApiResult<unknown>;
           } catch (err) {
             throw Error(
-              `WasmWeb3Api: Failed to decode query result.\nResult: ${JSON.stringify(
+              `WasmWrapper: Failed to decode query result.\nResult: ${JSON.stringify(
                 invokeResult.invokeResult
               )}\nError: ${err}`
             );
           }
         }
         default: {
-          throw Error(`WasmWeb3Api: Unknown state "${state}"`);
+          throw Error(`WasmWrapper: Unknown state "${state}"`);
         }
       }
     } catch (error) {
@@ -267,7 +267,7 @@ export class WasmWeb3Api extends Api {
     }
   }
 
-  @Tracer.traceMethod("WasmWeb3Api: getSchema")
+  @Tracer.traceMethod("WasmWrapper: getSchema")
   public async getSchema(client: Client): Promise<string> {
     if (this._schema) {
       return this._schema;
@@ -284,7 +284,7 @@ export class WasmWeb3Api extends Api {
     return this._schema;
   }
 
-  @Tracer.traceMethod("WasmWeb3Api: _processInvokeResult")
+  @Tracer.traceMethod("WasmWrapper: _processInvokeResult")
   private _processInvokeResult(
     state: State,
     result: boolean,
@@ -311,7 +311,7 @@ export class WasmWeb3Api extends Api {
     }
   }
 
-  @Tracer.traceMethod("WasmWeb3Api: _sanitizeAndLoadEnv")
+  @Tracer.traceMethod("WasmWrapper: _sanitizeAndLoadEnv")
   private async _sanitizeAndLoadEnv(
     state: State,
     exports: WrapExports
@@ -338,7 +338,7 @@ export class WasmWeb3Api extends Api {
     }
   }
 
-  @Tracer.traceMethod("WasmWeb3Api: _getClientEnv")
+  @Tracer.traceMethod("WasmWrapper: _getClientEnv")
   private _getClientEnv(): Record<string, unknown> {
     if (!this._clientEnv?.env) {
       return {};
@@ -346,7 +346,7 @@ export class WasmWeb3Api extends Api {
     return this._clientEnv.env;
   }
 
-  @Tracer.traceMethod("WasmWeb3Api: getWasmModule")
+  @Tracer.traceMethod("WasmWrapper: getWasmModule")
   private async _getWasmModule(client: Client): Promise<ArrayBuffer> {
     if (this._wasm !== undefined) {
       return this._wasm as ArrayBuffer;

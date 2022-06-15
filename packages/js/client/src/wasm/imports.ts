@@ -3,7 +3,7 @@
 import { u32, WrapImports } from "./types";
 import { readBytes, readString, writeBytes, writeString } from "./buffer";
 import { Client } from "..";
-import { State } from "./WasmWeb3Api";
+import { State } from "./WasmWrapper";
 
 import { msgpackEncode } from "@polywrap/core-js";
 

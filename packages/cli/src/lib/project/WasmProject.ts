@@ -43,7 +43,7 @@ export interface Web3ApiProjectConfig extends ProjectConfig {
   metaManifestPath?: string;
 }
 
-export class Web3ApiProject extends Project<Web3ApiManifest> {
+export class WasmProject extends Project<Web3ApiManifest> {
   private _web3apiManifest: Web3ApiManifest | undefined;
   private _buildManifest: BuildManifest | undefined;
   private _deployManifest: DeployManifest | undefined;
@@ -65,7 +65,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
   constructor(protected _config: Web3ApiProjectConfig) {
     super(_config, {
       rootDir: _config.rootDir,
-      subDir: Web3ApiProject.cacheLayout.root,
+      subDir: WasmProject.cacheLayout.root,
     });
   }
 
@@ -82,11 +82,11 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     this._deployManifest = undefined;
     this._defaultBuildImageCached = false;
     this._defaultDeployModulesCached = false;
-    this._cache.removeCacheDir(Web3ApiProject.cacheLayout.buildImageDir);
+    this._cache.removeCacheDir(WasmProject.cacheLayout.buildImageDir);
     this._cache.removeCacheDir(
-      Web3ApiProject.cacheLayout.buildLinkedPackagesDir
+      WasmProject.cacheLayout.buildLinkedPackagesDir
     );
-    this._cache.removeCacheDir(Web3ApiProject.cacheLayout.deployDir);
+    this._cache.removeCacheDir(WasmProject.cacheLayout.deployDir);
   }
 
   public async validate(): Promise<void> {
@@ -200,7 +200,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
 
       // Return the cached manifest
       this._config.buildManifestPath = path.join(
-        this._cache.getCachePath(Web3ApiProject.cacheLayout.buildImageDir),
+        this._cache.getCachePath(WasmProject.cacheLayout.buildImageDir),
         "web3api.build.yaml"
       );
       return this._config.buildManifestPath;
@@ -220,7 +220,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
 
       const root = this.getManifestDir();
       const cacheDir = this._cache.getCachePath(
-        Web3ApiProject.cacheLayout.buildLinkedPackagesDir
+        WasmProject.cacheLayout.buildLinkedPackagesDir
       );
 
       // Add default config variables
@@ -261,14 +261,14 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
   public async getBuildUuid(): Promise<string> {
     // Load the cached build UUID
     let uuid = this._cache.readCacheFile(
-      Web3ApiProject.cacheLayout.buildUuidFile
+      WasmProject.cacheLayout.buildUuidFile
     );
 
     // If none was present, generate one
     if (!uuid) {
       uuid = createUUID();
       this._cache.writeCacheFile(
-        Web3ApiProject.cacheLayout.buildUuidFile,
+        WasmProject.cacheLayout.buildUuidFile,
         uuid,
         "utf-8"
       );
@@ -287,7 +287,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     const defaultBuildManifestFilename = "web3api.build.yaml";
     const defaultPath = `${__dirname}/../defaults/build-images/${language}/${defaultBuildManifestFilename}`;
     const buildImageCachePath = this._cache.getCachePath(
-      Web3ApiProject.cacheLayout.buildImageDir
+      WasmProject.cacheLayout.buildImageDir
     );
 
     if (!fs.existsSync(defaultPath)) {
@@ -300,11 +300,11 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     }
 
     // Clean the directory
-    this._cache.removeCacheDir(Web3ApiProject.cacheLayout.buildImageDir);
+    this._cache.removeCacheDir(WasmProject.cacheLayout.buildImageDir);
 
     // Copy default build image files into cache
     await this._cache.copyIntoCache(
-      Web3ApiProject.cacheLayout.buildImageDir,
+      WasmProject.cacheLayout.buildImageDir,
       `${__dirname}/../defaults/build-images/${language}/*`,
       { up: true }
     );
@@ -334,7 +334,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     if (buildManifest.linked_packages) {
       const rootDir = this.getManifestDir();
       const cacheSubPath = this._cache.getCachePath(
-        Web3ApiProject.cacheLayout.buildLinkedPackagesDir
+        WasmProject.cacheLayout.buildLinkedPackagesDir
       );
 
       buildManifest.linked_packages.map(
@@ -424,7 +424,7 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
     }
 
     const cachePath = this._cache.getCachePath(
-      `${Web3ApiProject.cacheLayout.deployModulesDir}/${moduleName}`
+      `${WasmProject.cacheLayout.deployModulesDir}/${moduleName}`
     );
 
     const manifestExtPath = path.join(cachePath, "web3api.deploy.ext.json");
@@ -443,11 +443,11 @@ export class Web3ApiProject extends Project<Web3ApiManifest> {
       return;
     }
 
-    this._cache.removeCacheDir(Web3ApiProject.cacheLayout.deployModulesDir);
+    this._cache.removeCacheDir(WasmProject.cacheLayout.deployModulesDir);
 
     for await (const deployModule of modules) {
       await this._cache.copyIntoCache(
-        `${Web3ApiProject.cacheLayout.deployModulesDir}/${deployModule}`,
+        `${WasmProject.cacheLayout.deployModulesDir}/${deployModule}`,
         `${__dirname}/../defaults/deploy-modules/${deployModule}/*`,
         { up: true }
       );
