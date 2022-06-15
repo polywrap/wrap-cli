@@ -1,10 +1,10 @@
 import {
-  Api,
+  Wrapper,
   Client,
   filterResults,
   GetManifestOptions,
-  InvokeApiOptions,
-  InvokeApiResult,
+  InvokeOptions,
+  InvokeResult,
   PluginModule,
   PluginPackage,
   Uri,
@@ -17,7 +17,7 @@ import {
 } from "@polywrap/core-js";
 import { Tracer } from "@polywrap/tracing-js";
 
-export class PluginWrapper extends Api {
+export class PluginWrapper extends Wrapper {
   private _instance: PluginModule | undefined;
 
   private _sanitizedEnv: Record<string, unknown> | undefined = undefined;
@@ -58,9 +58,9 @@ export class PluginWrapper extends Api {
 
   @Tracer.traceMethod("PluginWrapper: invoke")
   public async invoke<TData = unknown>(
-    options: InvokeApiOptions<Uri>,
+    options: InvokeOptions<Uri>,
     client: Client
-  ): Promise<InvokeApiResult<TData>> {
+  ): Promise<InvokeResult<TData>> {
     try {
       const { method, resultFilter } = options;
       const input = options.input || {};

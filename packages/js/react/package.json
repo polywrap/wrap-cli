@@ -1,11 +1,11 @@
 {
   "name": "@polywrap/react",
-  "description": "Web3API React Integration",
+  "description": "Polywrap React Integration",
   "version": "0.0.1-prealpha.85",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/web3-api/monorepo.git"
+    "url": "https://github.com/polywrap/monorepo.git"
   },
   "main": "build/index.js",
   "files": [

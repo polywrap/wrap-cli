@@ -1,31 +1,31 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import React from "react";
-import { PolywrapClient, Web3ApiClientConfig } from "@polywrap/client-js";
+import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 
 type ClientContext = React.Context<PolywrapClient>
 
-interface Web3ApiProviderState {
+interface PolywrapProviderState {
   ClientContext: ClientContext;
   client?: PolywrapClient;
 }
 
-interface Web3ApiProviderMap {
-  [name: string]: Web3ApiProviderState;
+interface PolywrapProviderMap {
+  [name: string]: PolywrapProviderState;
 }
 
-export const PROVIDERS: Web3ApiProviderMap = {};
+export const PROVIDERS: PolywrapProviderMap = {};
 
-interface Web3ApiProviderProps extends Partial<Web3ApiClientConfig> { }
+interface PolywrapProviderProps extends Partial<PolywrapClientConfig> { }
 
-export type Web3ApiProviderFC = React.FC<Web3ApiProviderProps>;
+export type PolywrapProviderFC = React.FC<PolywrapProviderProps>;
 
-export function createWeb3ApiProvider(
+export function createPolywrapProvider(
   name: string
-): Web3ApiProviderFC {
+): PolywrapProviderFC {
 
   // Make sure the provider isn't already set
   if (!!PROVIDERS[name]) {
-    throw new Error(`A Web3Api provider already exists with the name "${name}"`);
+    throw new Error(`A Polywrap provider already exists with the name "${name}"`);
   }
 
   // Reserve the provider slot
@@ -42,7 +42,7 @@ export function createWeb3ApiProvider(
       // If the client has already been set for this provider
       if (PROVIDERS[name].client) {
         throw Error( 
-          `Duplicate Web3ApiProvider detected. Please use "createWeb3ApiProvider("provider-name")".`
+          `Duplicate PolywrapProvider detected. Please use "createPolywrapProvider("provider-name")".`
         );
       }
 
@@ -71,4 +71,4 @@ export function createWeb3ApiProvider(
 
 export const PRIMARY_PROVIDER = "PRIMARY_PROVIDER";
 
-export const Web3ApiProvider = createWeb3ApiProvider(PRIMARY_PROVIDER);
+export const PolywrapProvider = createPolywrapProvider(PRIMARY_PROVIDER);

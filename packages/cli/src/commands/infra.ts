@@ -62,7 +62,7 @@ export const infra: Command = {
       .option(
         `--manifest  <${manifestNameStr}>`,
         intlMsg.commands_infra_manifestPathDescription(),
-        "web3api.infra.yaml"
+        "polywrap.infra.yaml"
       )
       .option(
         `-m, --modules <${moduleNameStr},${moduleNameStr}>`,

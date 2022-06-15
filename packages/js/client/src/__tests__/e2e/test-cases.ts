@@ -3,12 +3,12 @@ import { BigNumber } from "bignumber.js";
 
 export const runAsyncifyTest = async (
   client: PolywrapClient,
-  apiUri: string
+  wrapperUri: string
 ) => {
     const deploy = await client.query<{
       deployContract: string;
     }>({
-      uri: apiUri,
+      uri: wrapperUri,
       query: `
         mutation {
           deployContract(
@@ -33,7 +33,7 @@ export const runAsyncifyTest = async (
     const subsequentInvokes = await client.query<{
       subsequentInvokes: string;
     }>({
-      uri: apiUri,
+      uri: wrapperUri,
       query: `
         mutation {
           subsequentInvokes(
@@ -56,7 +56,7 @@ export const runAsyncifyTest = async (
     const localVarMethod = await client.query<{
       localVarMethod: boolean;
     }>({
-      uri: apiUri,
+      uri: wrapperUri,
       query: `
         mutation {
           localVarMethod(
@@ -76,7 +76,7 @@ export const runAsyncifyTest = async (
     const globalVarMethod = await client.query<{
       globalVarMethod: boolean;
     }>({
-      uri: apiUri,
+      uri: wrapperUri,
       query: `
         mutation {
           globalVarMethod(
@@ -93,12 +93,12 @@ export const runAsyncifyTest = async (
     expect(globalVarMethod.data).toBeTruthy();
     expect(globalVarMethod.data?.globalVarMethod).toEqual(true);
 
-    const largeStr = new Array(10000).join("web3api ");
+    const largeStr = new Array(10000).join("polywrap ");
 
     const setDataWithLargeArgs = await client.query<{
       setDataWithLargeArgs: string;
     }>({
-      uri: apiUri,
+      uri: wrapperUri,
       query: `
         mutation {
           setDataWithLargeArgs(
@@ -122,7 +122,7 @@ export const runAsyncifyTest = async (
     const setDataWithManyArgs = await client.query<{
       setDataWithManyArgs: string;
     }>({
-      uri: apiUri,
+      uri: wrapperUri,
       query: `
         mutation {
           setDataWithManyArgs(
@@ -146,25 +146,25 @@ export const runAsyncifyTest = async (
         }
       `,
       variables: {
-        valueA: "web3api a",
-        valueB: "web3api b",
-        valueC: "web3api c",
-        valueD: "web3api d",
-        valueE: "web3api e",
-        valueF: "web3api f",
-        valueG: "web3api g",
-        valueH: "web3api h",
-        valueI: "web3api i",
-        valueJ: "web3api j",
-        valueK: "web3api k",
-        valueL: "web3api l",
+        valueA: "polywrap a",
+        valueB: "polywrap b",
+        valueC: "polywrap c",
+        valueD: "polywrap d",
+        valueE: "polywrap e",
+        valueF: "polywrap f",
+        valueG: "polywrap g",
+        valueH: "polywrap h",
+        valueI: "polywrap i",
+        valueJ: "polywrap j",
+        valueK: "polywrap k",
+        valueL: "polywrap l",
       },
     });
 
     expect(setDataWithManyArgs.errors).toBeFalsy();
     expect(setDataWithManyArgs.data).toBeTruthy();
     expect(setDataWithManyArgs.data?.setDataWithManyArgs).toEqual(
-      "web3api aweb3api bweb3api cweb3api dweb3api eweb3api fweb3api gweb3api hweb3api iweb3api jweb3api kweb3api l"
+      "polywrap apolywrap bpolywrap cpolywrap dpolywrap epolywrap fpolywrap gpolywrap hpolywrap ipolywrap jpolywrap kpolywrap l"
     );
 
     const createObj = (i: number) => {
@@ -187,7 +187,7 @@ export const runAsyncifyTest = async (
     const setDataWithManyStructuredArgs = await client.query<{
       setDataWithManyStructuredArgs: string;
     }>({
-      uri: apiUri,
+      uri: wrapperUri,
       query: `
         mutation {
           setDataWithManyStructuredArgs(
@@ -672,7 +672,7 @@ export const runLargeTypesTest = async (
   client: PolywrapClient,
   uri: string
 ) => {
-  const largeStr = new Array(5000).join("web3api ");
+  const largeStr = new Array(5000).join("polywrap ");
   const largeBytes = new Uint8Array(Buffer.from(largeStr));
   const largeStrArray = [];
   const largeBytesArray = [];
@@ -1140,12 +1140,12 @@ export const runMapTypeTest = async (
 
 export const runSimpleStorageTest = async (
   client: PolywrapClient,
-  apiUri: string
+  wrapperUri: string
 ) => {
     const deploy = await client.query<{
       deployContract: string;
     }>({
-      uri: apiUri,
+      uri: wrapperUri,
       query: `
         mutation {
           deployContract(
@@ -1169,7 +1169,7 @@ export const runSimpleStorageTest = async (
     const set = await client.query<{
       setData: string;
     }>({
-      uri: apiUri,
+      uri: wrapperUri,
       query: `
         mutation {
           setData(
@@ -1195,7 +1195,7 @@ export const runSimpleStorageTest = async (
       secondGetData: number;
       thirdGetData: number;
     }>({
-      uri: apiUri,
+      uri: wrapperUri,
       query: `
         query {
           getData(
@@ -1231,7 +1231,7 @@ export const runSimpleStorageTest = async (
       secondGetData: number;
       thirdGetData: number;
     }>({
-      uri: apiUri,
+      uri: wrapperUri,
       query: `
         query {
           getData(

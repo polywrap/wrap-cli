@@ -120,7 +120,7 @@ export function regexString(regex: unknown): boolean {
   return isValid;
 }
 
-export function web3apiUri(uri: unknown): boolean {
+export function polywrapUri(uri: unknown): boolean {
   return typeof uri === "string" && Uri.isValidUri(uri);
 }
 

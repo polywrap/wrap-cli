@@ -7,7 +7,7 @@ import {
   Bytes,
   Ethereum_Module,
   manifest,
-} from "./polywrap-man";
+} from "./wrap-man";
 
 import { ethers } from "ethers";
 import { Base58 } from "@ethersproject/basex";
@@ -56,7 +56,7 @@ export class EnsPlugin extends Module<EnsPluginConfig> {
         manifest: null,
       };
     } catch (e) {
-      // TODO: logging https://github.com/web3-api/monorepo/issues/33
+      // TODO: logging https://github.com/polywrap/monorepo/issues/33
     }
 
     // Nothing found

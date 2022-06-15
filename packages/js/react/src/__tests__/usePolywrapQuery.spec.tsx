@@ -1,10 +1,10 @@
 import {
-  useWeb3ApiQuery,
-  Web3ApiProvider,
-  createWeb3ApiProvider
+  usePolywrapQuery,
+  PolywrapProvider,
+  createPolywrapProvider
 } from "..";
 import {
-  UseWeb3ApiQueryProps
+  UsePolywrapQueryProps
 } from "../query"
 import { createPlugins } from "./plugins";
 
@@ -12,11 +12,11 @@ import { PluginRegistration } from "@polywrap/core-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
-  buildAndDeployApi,
+  buildAndDeployWrapper,
   ensAddresses,
   providers
 } from "@polywrap/test-env-js";
-import { GetPathToTestApis } from "@polywrap/test-cases";
+import { GetPathToTestWrappers } from "@polywrap/test-cases";
 
 import {
   renderHook,
@@ -27,7 +27,7 @@ import {
 
 jest.setTimeout(360000);
 
-describe("useWeb3ApiQuery hook", () => {
+describe("usePolywrapQuery hook", () => {
   let uri: string;
   let envUri: string;
   let plugins: PluginRegistration<string>[];
@@ -36,14 +36,14 @@ describe("useWeb3ApiQuery hook", () => {
   beforeAll(async () => {
     await initTestEnvironment();
 
-    const { ensDomain } = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/wasm-as/simple-storage`,
+    const { ensDomain } = await buildAndDeployWrapper({
+      wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/simple-storage`,
       ipfsProvider: providers.ipfs,
       ethereumProvider: providers.ethereum,
     });
 
-    const { ensDomain: envEnsDomain } = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/wasm-as/simple-env-types`,
+    const { ensDomain: envEnsDomain } = await buildAndDeployWrapper({
+      wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/simple-env-types`,
       ipfsProvider: providers.ipfs,
       ethereumProvider: providers.ethereum,
     });
@@ -52,7 +52,7 @@ describe("useWeb3ApiQuery hook", () => {
     envUri = `ens/testnet/${envEnsDomain}`;
     plugins = createPlugins(ensAddresses.ensAddress, providers.ethereum, providers.ipfs);
     WrapperProvider = {
-      wrapper: Web3ApiProvider,
+      wrapper: PolywrapProvider,
       initialProps: {
         plugins,
       },
@@ -64,9 +64,9 @@ describe("useWeb3ApiQuery hook", () => {
   });
 
   async function sendQuery<TData extends Record<string, unknown>>(
-    options: UseWeb3ApiQueryProps
+    options: UsePolywrapQueryProps
   ) {
-    const hook = () => useWeb3ApiQuery<TData>(options);
+    const hook = () => usePolywrapQuery<TData>(options);
 
     const { result: hookResult } = renderHook(hook, WrapperProvider);
 
@@ -80,9 +80,9 @@ describe("useWeb3ApiQuery hook", () => {
   }
 
   async function sendQueryWithExecVariables<TData extends Record<string, unknown>>(
-    options: UseWeb3ApiQueryProps
+    options: UsePolywrapQueryProps
   ) {
-    const hook = () => useWeb3ApiQuery<TData>({ uri: options.uri, query: options.query, provider: options.provider});
+    const hook = () => usePolywrapQuery<TData>({ uri: options.uri, query: options.query, provider: options.provider});
 
     const { result: hookResult } = renderHook(hook, WrapperProvider);
 
@@ -96,7 +96,7 @@ describe("useWeb3ApiQuery hook", () => {
   }
 
   it("Should support passing env to client", async () => {
-    const deployQuery: UseWeb3ApiQueryProps = {
+    const deployQuery: UsePolywrapQueryProps = {
       uri: envUri,
       query: `query {
         getEnv(arg: "Alice")
@@ -125,7 +125,7 @@ describe("useWeb3ApiQuery hook", () => {
   });
 
   it("Should update storage data to five with hard coded value", async () => {
-    const deployQuery: UseWeb3ApiQueryProps = {
+    const deployQuery: UsePolywrapQueryProps = {
       uri,
       query: `mutation {
         deployContract (
@@ -140,7 +140,7 @@ describe("useWeb3ApiQuery hook", () => {
       deployContract: string
     }>(deployQuery);
 
-    const setStorageDataQuery: UseWeb3ApiQueryProps = {
+    const setStorageDataQuery: UsePolywrapQueryProps = {
       uri,
       query: `
         mutation {
@@ -159,7 +159,7 @@ describe("useWeb3ApiQuery hook", () => {
     expect(result.errors).toBeFalsy();
     expect(result.data?.setData).toMatch(/0x/);
 
-    const getStorageDataQuery: UseWeb3ApiQueryProps = {
+    const getStorageDataQuery: UsePolywrapQueryProps = {
       uri,
       query: `
         query {
@@ -180,7 +180,7 @@ describe("useWeb3ApiQuery hook", () => {
   });
 
   it("Should update storage data to five by setting value through variables", async () => {
-    const deployQuery: UseWeb3ApiQueryProps = {
+    const deployQuery: UsePolywrapQueryProps = {
       uri,
       query: `mutation {
         deployContract(
@@ -195,7 +195,7 @@ describe("useWeb3ApiQuery hook", () => {
       deployContract: string
     }>(deployQuery);
 
-    const setStorageDataQuery: UseWeb3ApiQueryProps = {
+    const setStorageDataQuery: UsePolywrapQueryProps = {
       uri,
       query: `
         mutation {
@@ -217,7 +217,7 @@ describe("useWeb3ApiQuery hook", () => {
     expect(result.errors).toBeFalsy();
     expect(result.data?.setData).toMatch(/0x/);
 
-    const getStorageDataQuery: UseWeb3ApiQueryProps = {
+    const getStorageDataQuery: UsePolywrapQueryProps = {
       uri,
       query: `
         query {
@@ -236,8 +236,8 @@ describe("useWeb3ApiQuery hook", () => {
   });
 
   it("Should throw error because there's no provider with expected key ", async () => {
-    const getStorageDataQuery: UseWeb3ApiQueryProps = {
-      provider: "Non existent Web3API Provider",
+    const getStorageDataQuery: UsePolywrapQueryProps = {
+      provider: "Non existent Polywrap Provider",
       uri,
       query: `query {
         getData(
@@ -246,18 +246,18 @@ describe("useWeb3ApiQuery hook", () => {
       }`,
     };
 
-    const getDataStorageHook = () => useWeb3ApiQuery(getStorageDataQuery);
+    const getDataStorageHook = () => usePolywrapQuery(getStorageDataQuery);
     const { result } = renderHook(getDataStorageHook);
 
     expect(result.error?.message).toMatch(
-      /You are trying to use useWeb3ApiClient with provider \"Non existent Web3API Provider\"/
+      /You are trying to use usePolywrapClient with provider \"Non existent Polywrap Provider\"/
     );
   });
 
   it("Should throw error if provider is not within the DOM hierarchy", async () => {
-    createWeb3ApiProvider("other");
+    createPolywrapProvider("other");
 
-    const getStorageDataQuery: UseWeb3ApiQueryProps = {
+    const getStorageDataQuery: UsePolywrapQueryProps = {
       provider: "other",
       uri,
       query: `query {
@@ -267,16 +267,16 @@ describe("useWeb3ApiQuery hook", () => {
       }`,
     };
 
-    const getDataStorageHook = () => useWeb3ApiQuery(getStorageDataQuery);
+    const getDataStorageHook = () => usePolywrapQuery(getStorageDataQuery);
     const { result } = renderHook(getDataStorageHook, WrapperProvider);
 
     expect(result.error?.message).toMatch(
-      /The requested Web3APIProvider \"other\" was not found within the DOM hierarchy/
+      /The requested PolywrapProvider \"other\" was not found within the DOM hierarchy/
     );
   });
 
   it("Should update storage data to three by setting value through variables passed to exec", async () => {
-    const deployQuery: UseWeb3ApiQueryProps = {
+    const deployQuery: UsePolywrapQueryProps = {
       uri,
       query: `mutation {
         deployContract(
@@ -291,7 +291,7 @@ describe("useWeb3ApiQuery hook", () => {
       deployContract: string
     }>(deployQuery);
 
-    const setStorageDataQuery: UseWeb3ApiQueryProps = {
+    const setStorageDataQuery: UsePolywrapQueryProps = {
       uri,
       query: `
         mutation {
@@ -313,7 +313,7 @@ describe("useWeb3ApiQuery hook", () => {
     expect(result.errors).toBeFalsy();
     expect(result.data?.setData).toMatch(/0x/);
 
-    const getStorageDataQuery: UseWeb3ApiQueryProps = {
+    const getStorageDataQuery: UsePolywrapQueryProps = {
       uri,
       query: `
         query {

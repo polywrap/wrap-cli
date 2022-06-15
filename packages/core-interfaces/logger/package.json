@@ -1,6 +1,6 @@
 {
   "name": "logger-interface",
-  "description": "Web3API Logger Interface",
+  "description": "Polywrap Logger Interface",
   "private": true,
   "version": "0.0.1-prealpha.85",
   "scripts": {

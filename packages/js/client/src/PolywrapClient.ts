@@ -2,8 +2,8 @@ import { getDefaultClientConfig } from "./default-client-config";
 
 import { v4 as uuid } from "uuid";
 import {
-  Api,
-  ApiCache,
+  Wrapper,
+  WrapperCache,
   Client,
   ClientConfig,
   Env,
@@ -16,11 +16,11 @@ import {
   GetRedirectsOptions,
   GetSchemaOptions,
   InterfaceImplementations,
-  InvokeApiOptions,
-  InvokeApiResult,
+  InvokeOptions,
+  InvokeResult,
   PluginRegistration,
-  QueryApiOptions,
-  QueryApiResult,
+  QueryOptions,
+  QueryResult,
   SubscribeOptions,
   Subscription,
   Uri,
@@ -50,18 +50,18 @@ import {
 } from "@polywrap/core-js";
 import { Tracer } from "@polywrap/tracing-js";
 
-export interface Web3ApiClientConfig<TUri extends Uri | string = string>
+export interface PolywrapClientConfig<TUri extends Uri | string = string>
   extends ClientConfig<TUri> {
   tracingEnabled: boolean;
 }
 
 export class PolywrapClient implements Client {
-  // TODO: the API cache needs to be more like a routing table.
-  // It should help us keep track of what URI's map to what APIs,
+  // TODO: the Wrapper cache needs to be more like a routing table.
+  // It should help us keep track of what URI's map to what Wrappers,
   // and handle cases where the are multiple jumps. For example, if
   // A => B => C, then the cache should have A => C, and B => C.
-  private _apiCache: ApiCache = new Map<string, Api>();
-  private _config: Web3ApiClientConfig<Uri> = {
+  private _wrapperCache: WrapperCache = new Map<string, Wrapper>();
+  private _config: PolywrapClientConfig<Uri> = {
     redirects: [],
     plugins: [],
     interfaces: [],
@@ -71,10 +71,10 @@ export class PolywrapClient implements Client {
   };
 
   // Invoke specific contexts
-  private _contexts: Map<string, Web3ApiClientConfig<Uri>> = new Map();
+  private _contexts: Map<string, PolywrapClientConfig<Uri>> = new Map();
 
   constructor(
-    config?: Partial<Web3ApiClientConfig>,
+    config?: Partial<PolywrapClientConfig>,
     options?: { noDefaults?: boolean }
   ) {
     try {
@@ -175,9 +175,9 @@ export class PolywrapClient implements Client {
     uri: TUri,
     options: GetSchemaOptions = {}
   ): Promise<string> {
-    const api = await this._loadWeb3Api(this._toUri(uri), options);
+    const wrapper = await this._loadWrapper(this._toUri(uri), options);
     const client = contextualizeClient(this, options.contextId);
-    return await api.getSchema(client);
+    return await wrapper.getSchema(client);
   }
 
   @Tracer.traceMethod("PolywrapClient: getManifest")
@@ -188,9 +188,9 @@ export class PolywrapClient implements Client {
     uri: TUri,
     options: GetManifestOptions<TManifestArtifactType>
   ): Promise<AnyManifestArtifact<TManifestArtifactType>> {
-    const api = await this._loadWeb3Api(this._toUri(uri), options);
+    const wrapper = await this._loadWrapper(this._toUri(uri), options);
     const client = contextualizeClient(this, options.contextId);
-    return await api.getManifest(options, client);
+    return await wrapper.getManifest(options, client);
   }
 
   @Tracer.traceMethod("PolywrapClient: getFile")
@@ -198,9 +198,9 @@ export class PolywrapClient implements Client {
     uri: TUri,
     options: GetFileOptions
   ): Promise<string | ArrayBuffer> {
-    const api = await this._loadWeb3Api(this._toUri(uri), options);
+    const wrapper = await this._loadWrapper(this._toUri(uri), options);
     const client = contextualizeClient(this, options.contextId);
-    return await api.getFile(options, client);
+    return await wrapper.getFile(options, client);
   }
 
   @Tracer.traceMethod("PolywrapClient: getImplementations")
@@ -230,17 +230,17 @@ export class PolywrapClient implements Client {
     TVariables extends Record<string, unknown> = Record<string, unknown>,
     TUri extends Uri | string = string
   >(
-    options: QueryApiOptions<TVariables, TUri, Web3ApiClientConfig>
-  ): Promise<QueryApiResult<TData>> {
+    options: QueryOptions<TVariables, TUri, PolywrapClientConfig>
+  ): Promise<QueryResult<TData>> {
     const { contextId, shouldClearContext } = this._setContext(
       options.contextId,
       options.config
     );
 
-    let result: QueryApiResult<TData>;
+    let result: QueryResult<TData>;
 
     try {
-      const typedOptions: QueryApiOptions<TVariables, Uri> = {
+      const typedOptions: QueryOptions<TVariables, Uri> = {
         ...options,
         uri: this._toUri(options.uri),
       };
@@ -257,7 +257,7 @@ export class PolywrapClient implements Client {
       // Execute all invocations in parallel
       const parallelInvocations: Promise<{
         name: string;
-        result: InvokeApiResult<unknown>;
+        result: InvokeResult<unknown>;
       }>[] = [];
 
       for (const invocationName of Object.keys(queryInvocations)) {
@@ -309,25 +309,25 @@ export class PolywrapClient implements Client {
 
   @Tracer.traceMethod("PolywrapClient: invoke")
   public async invoke<TData = unknown, TUri extends Uri | string = string>(
-    options: InvokeApiOptions<TUri, Web3ApiClientConfig>
-  ): Promise<InvokeApiResult<TData>> {
+    options: InvokeOptions<TUri, PolywrapClientConfig>
+  ): Promise<InvokeResult<TData>> {
     const { contextId, shouldClearContext } = this._setContext(
       options.contextId,
       options.config
     );
 
-    let result: InvokeApiResult<TData>;
+    let result: InvokeResult<TData>;
 
     try {
-      const typedOptions: InvokeApiOptions<Uri> = {
+      const typedOptions: InvokeOptions<Uri> = {
         ...options,
         contextId: contextId,
         uri: this._toUri(options.uri),
       };
 
-      const api = await this._loadWeb3Api(typedOptions.uri, { contextId });
+      const wrapper = await this._loadWrapper(typedOptions.uri, { contextId });
 
-      result = (await api.invoke(
+      result = (await wrapper.invoke(
         typedOptions,
         contextualizeClient(this, contextId)
       )) as TData;
@@ -363,7 +363,7 @@ export class PolywrapClient implements Client {
     TVariables extends Record<string, unknown> = Record<string, unknown>,
     TUri extends Uri | string = string
   >(
-    options: SubscribeOptions<TVariables, TUri, Web3ApiClientConfig>
+    options: SubscribeOptions<TVariables, TUri, PolywrapClientConfig>
   ): Subscription<TData> {
     const { contextId, shouldClearContext } = this._setContext(
       options.contextId,
@@ -401,7 +401,7 @@ export class PolywrapClient implements Client {
         }
         subscription.isActive = false;
       },
-      async *[Symbol.asyncIterator](): AsyncGenerator<QueryApiResult<TData>> {
+      async *[Symbol.asyncIterator](): AsyncGenerator<QueryResult<TData>> {
         let timeout: NodeJS.Timeout | undefined = undefined;
         subscription.isActive = true;
 
@@ -427,7 +427,7 @@ export class PolywrapClient implements Client {
                 break;
               }
 
-              const result: QueryApiResult<TData> = await client.query({
+              const result: QueryResult<TData> = await client.query({
                 uri: uri,
                 query: query,
                 variables: variables,
@@ -476,17 +476,17 @@ export class PolywrapClient implements Client {
       uriResolvers = uriResolvers.filter((x) => x.name !== CacheResolver.name);
     }
 
-    const { api, uri: resolvedUri, uriHistory, error } = await resolveUri(
+    const { wrapper, uri: resolvedUri, uriHistory, error } = await resolveUri(
       this._toUri(uri),
       uriResolvers,
       client,
-      this._apiCache
+      this._wrapperCache
     );
 
     // Update cache for all URIs in the chain
-    if (cacheWrite && api) {
+    if (cacheWrite && wrapper) {
       for (const item of uriHistory.getResolutionPath().stack) {
-        this._apiCache.set(item.sourceUri.uri, api);
+        this._wrapperCache.set(item.sourceUri.uri, wrapper);
       }
     }
 
@@ -495,7 +495,7 @@ export class PolywrapClient implements Client {
     }
 
     return {
-      api,
+      wrapper,
       uri: resolvedUri,
       uriHistory,
       error,
@@ -526,7 +526,7 @@ export class PolywrapClient implements Client {
 
     return extendableUriResolver.loadUriResolverWrappers(
       this,
-      this._apiCache,
+      this._wrapperCache,
       uriResolverImpls
     );
   }
@@ -557,7 +557,7 @@ export class PolywrapClient implements Client {
   }
 
   @Tracer.traceMethod("PolywrapClient: getConfig")
-  private _getConfig(contextId?: string): Readonly<Web3ApiClientConfig<Uri>> {
+  private _getConfig(contextId?: string): Readonly<PolywrapClientConfig<Uri>> {
     if (contextId) {
       const context = this._contexts.get(contextId);
       if (!context) {
@@ -701,7 +701,7 @@ export class PolywrapClient implements Client {
   @Tracer.traceMethod("PolywrapClient: setContext")
   private _setContext(
     parentId: string | undefined,
-    context: Partial<Web3ApiClientConfig> | undefined
+    context: Partial<PolywrapClientConfig> | undefined
   ): {
     contextId: string | undefined;
     shouldClearContext: boolean;
@@ -744,13 +744,13 @@ export class PolywrapClient implements Client {
     }
   }
 
-  @Tracer.traceMethod("PolywrapClient: _loadWeb3Api")
-  private async _loadWeb3Api(uri: Uri, options?: Contextualized): Promise<Api> {
-    const { api, uriHistory, error } = await this.resolveUri(uri, {
+  @Tracer.traceMethod("PolywrapClient: _loadWrapper")
+  private async _loadWrapper(uri: Uri, options?: Contextualized): Promise<Wrapper> {
+    const { wrapper, uriHistory, error } = await this.resolveUri(uri, {
       contextId: options?.contextId,
     });
 
-    if (!api) {
+    if (!wrapper) {
       if (error) {
         const errorMessage = error.error?.message ?? "";
 
@@ -788,7 +788,7 @@ export class PolywrapClient implements Client {
       }
     }
 
-    return api;
+    return wrapper;
   }
 }
 
@@ -803,13 +803,13 @@ const contextualizeClient = (
           TVariables extends Record<string, unknown> = Record<string, unknown>,
           TUri extends Uri | string = string
         >(
-          options: QueryApiOptions<TVariables, TUri>
-        ): Promise<QueryApiResult<TData>> => {
+          options: QueryOptions<TVariables, TUri>
+        ): Promise<QueryResult<TData>> => {
           return client.query({ ...options, contextId });
         },
         invoke: <TData = unknown, TUri extends Uri | string = string>(
-          options: InvokeApiOptions<TUri>
-        ): Promise<InvokeApiResult<TData>> => {
+          options: InvokeOptions<TUri>
+        ): Promise<InvokeResult<TData>> => {
           return client.invoke({ ...options, contextId });
         },
         subscribe: <

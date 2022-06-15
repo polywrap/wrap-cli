@@ -11,7 +11,7 @@ import {
   Env,
   UriResolver_MaybeUriOrManifest,
   manifest,
-} from "./polywrap-man";
+} from "./wrap-man";
 import { IpfsClient } from "./utils/IpfsClient";
 import { execSimple, execFallbacks } from "./utils/exec";
 
@@ -89,7 +89,7 @@ export class IpfsPlugin extends Module<IpfsPluginConfig> {
     );
   }
 
-  // uri-resolver.core.web3api.eth
+  // uri-resolver.core.polywrap.eth
   public async tryResolveUri(
     input: Input_tryResolveUri
   ): Promise<UriResolver_MaybeUriOrManifest | null> {
@@ -103,9 +103,9 @@ export class IpfsPlugin extends Module<IpfsPluginConfig> {
     }
 
     const manifestSearchPatterns = [
-      "web3api.json",
-      "web3api.yaml",
-      "web3api.yml",
+      "polywrap.json",
+      "polywrap.yaml",
+      "polywrap.yml",
     ];
 
     let manifest: string | undefined;
@@ -121,7 +121,7 @@ export class IpfsPlugin extends Module<IpfsPluginConfig> {
         );
       } catch (e) {
         // TODO: logging
-        // https://github.com/web3-api/monorepo/issues/33
+        // https://github.com/polywrap/monorepo/issues/33
       }
     }
 

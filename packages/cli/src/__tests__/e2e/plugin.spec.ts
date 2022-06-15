@@ -18,12 +18,12 @@ Commands:
   help [command]     display help for command
 `;
 
-const CODEGEN_SUCCESS = `- Manifest loaded from ./web3api.plugin.yaml
-✔ Manifest loaded from ./web3api.plugin.yaml
+const CODEGEN_SUCCESS = `- Manifest loaded from ./polywrap.plugin.yaml
+✔ Manifest loaded from ./polywrap.plugin.yaml
 - Generate types
 ✔ Generate types
-- Manifest written to ./build/web3api.plugin.json
-✔ Manifest written to ./build/web3api.plugin.json
+- Manifest written to ./build/polywrap.plugin.json
+✔ Manifest written to ./build/polywrap.plugin.json
 `;
 
 describe("e2e tests for plugin command", () => {
@@ -118,8 +118,8 @@ describe("e2e tests for plugin command", () => {
         expect(clearStyle(output)).toEqual(CODEGEN_SUCCESS);
 
         const expectedTypesResult = compareSync(
-          `${testCaseDir}/src/polywrap`,
-          `${testCaseDir}/expected/src/polywrap`,
+          `${testCaseDir}/src/wrap`,
+          `${testCaseDir}/expected/src/wrap`,
           { compareContent: true }
         );
         expect(expectedTypesResult.differences).toBe(0);

@@ -4,7 +4,7 @@ import yaml from "js-yaml";
 
 import { clearStyle, polywrapCli } from "./utils";
 
-import { buildAndDeployApi, providers, initTestEnvironment, runCLI, stopTestEnvironment } from "@polywrap/test-env-js";
+import { buildAndDeployWrapper, providers, initTestEnvironment, runCLI, stopTestEnvironment } from "@polywrap/test-env-js";
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import { normalizeLineEndings } from "@polywrap/os-js";
 import {
@@ -18,7 +18,7 @@ jest.setTimeout(200000);
 
 const HELP = `Usage: polywrap query|q [options] <recipe>
 
-Query Web3APIs using recipe scripts
+Query Polywraps using recipe scripts
 
 Arguments:
   recipe                                Path to recipe script
@@ -32,7 +32,7 @@ Options:
 `;
 
 describe("sanity tests for query command", () => {
-  const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/query");
+  const testCaseRoot = path.join(GetPathToCliTestFiles(), "wasm/query");
 
   test("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
@@ -73,7 +73,7 @@ describe("sanity tests for query command", () => {
 });
 
 describe("e2e tests for query command", () => {
-  const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/query");
+  const testCaseRoot = path.join(GetPathToCliTestFiles(), "wasm/query");
 
   beforeAll(async () => {
     await initTestEnvironment();
@@ -86,8 +86,8 @@ describe("e2e tests for query command", () => {
 
     expect(deployErr).toBe("");
 
-    await buildAndDeployApi({
-      apiAbsPath: testCaseRoot,
+    await buildAndDeployWrapper({
+      wrapperAbsPath: testCaseRoot,
       ipfsProvider: providers.ipfs,
       ethereumProvider: providers.ethereum,
       ensName: "simplestorage.eth",

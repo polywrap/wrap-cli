@@ -1,15 +1,15 @@
 import {
-  buildApi,
+  buildWrapper,
 } from "@polywrap/test-env-js";
-import { createWeb3ApiClient, Web3ApiClientConfig } from "../..";
+import { createPolywrapClient, PolywrapClientConfig } from "../..";
 import { Client, PluginModule } from "@polywrap/core-js";
-import { GetPathToTestApis } from "@polywrap/test-cases";
+import { GetPathToTestWrappers } from "@polywrap/test-cases";
 
 jest.setTimeout(200000);
 
 describe("env", () => {
-  const getClient = async (config?: Partial<Web3ApiClientConfig>) => {
-    return createWeb3ApiClient(
+  const getClient = async (config?: Partial<PolywrapClientConfig>) => {
+    return createPolywrapClient(
       {},
       config
     );
@@ -46,16 +46,16 @@ describe("env", () => {
   describe("simple env types", () => {
     let client: Client;
 
-    const apiPath = `${GetPathToTestApis()}/wasm-as/simple-env-types`
-    const apiUri = `fs/${apiPath}/build`
+    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-env-types`
+    const wrapperUri = `fs/${wrapperPath}/build`
 
     beforeAll(async () => {
-      await buildApi(apiPath);
+      await buildWrapper(wrapperPath);
 
       client = await getClient({
         envs: [
           {
-            uri: apiUri,
+            uri: wrapperUri,
             env: {
               str: "module string",
               requiredInt: 1,
@@ -67,7 +67,7 @@ describe("env", () => {
 
     test("module: getEnv - when set", async () => {
       const queryEnv = await client.query({
-        uri: apiUri,
+        uri: wrapperUri,
         query: `
       query {
         getEnv(
@@ -85,7 +85,7 @@ describe("env", () => {
 
     test("module: getEnv - when not set", async () => {
       const queryEnv = await client.query({
-        uri: apiUri,
+        uri: wrapperUri,
         query: `
       query {
         getEnv(
@@ -107,7 +107,7 @@ describe("env", () => {
 
     test("module: getEnv - when set incorrectly", async () => {
       const queryEnv = await client.query({
-        uri: apiUri,
+        uri: wrapperUri,
         query: `
       query {
         getEnv(
@@ -118,7 +118,7 @@ describe("env", () => {
         config: {
           envs: [
             {
-              uri: apiUri,
+              uri: wrapperUri,
               env: {
                 str: "string",
                 requiredInt: "99",
@@ -140,16 +140,16 @@ describe("env", () => {
   describe("complex env types", () => {
     let client: Client;
     
-    const apiPath = `${GetPathToTestApis()}/wasm-as/env-types`
-    const apiUri = `fs/${apiPath}/build`
+    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/env-types`
+    const wrapperUri = `fs/${wrapperPath}/build`
 
     beforeAll(async () => {
-      await buildApi(apiPath);
+      await buildWrapper(wrapperPath);
 
       client = await getClient({
         envs: [
           {
-            uri: apiUri,
+            uri: wrapperUri,
             env: {
               object: {
                 prop: "object string",
@@ -168,7 +168,7 @@ describe("env", () => {
 
     test("mockEnv", async () => {
       const moduleEnv = await client.query({
-        uri: apiUri,
+        uri: wrapperUri,
         query: `
           query {
             moduleEnv(
@@ -198,7 +198,7 @@ describe("env", () => {
 
     test("module time env types", async () => {
       const moduleEnv = await client.query({
-        uri: apiUri,
+        uri: wrapperUri,
         query: `
           query {
             moduleEnv(
@@ -226,7 +226,7 @@ describe("env", () => {
       });
 
       const mockUpdatedEnv = await client.query({
-        uri: apiUri,
+        uri: wrapperUri,
         query: `
           query {
             moduleEnv(
@@ -237,7 +237,7 @@ describe("env", () => {
         config: {
           envs: [
             {
-              uri: apiUri,
+              uri: wrapperUri,
               env: {
                 object: {
                   prop: "object another string",
@@ -276,16 +276,16 @@ describe("env", () => {
   describe("env client types", () => {
     let client: Client;
 
-    const apiPath = `${GetPathToTestApis()}/wasm-as/env-client-types`
-    const apiUri = `fs/${apiPath}/build`
+    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/env-client-types`
+    const wrapperUri = `fs/${wrapperPath}/build`
 
     beforeAll(async () => {
-      await buildApi(apiPath);
+      await buildWrapper(wrapperPath);
 
       client = await getClient({
         envs: [
           {
-            uri: apiUri,
+            uri: wrapperUri,
             env: {
               str: "string",
             },
@@ -296,7 +296,7 @@ describe("env", () => {
 
     test("module", async () => {
       const mockEnd = await client.query({
-        uri: apiUri,
+        uri: wrapperUri,
         query: `
           query {
             environment(
@@ -315,15 +315,15 @@ describe("env", () => {
   });
 
   test("set env when not required", async () => {
-    const apiPath = `${GetPathToTestApis()}/wasm-as/enum-types`
-    const apiUri = `fs/${apiPath}/build`
+    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/enum-types`
+    const wrapperUri = `fs/${wrapperPath}/build`
     
-    await buildApi(apiPath);
+    await buildWrapper(wrapperPath);
 
     const client = await getClient({
       envs: [
         {
-          uri: apiUri,
+          uri: wrapperUri,
           env: {
             str: "string",
           },
@@ -332,7 +332,7 @@ describe("env", () => {
     });
 
     const mockEnv = await client.query({
-      uri: apiUri,
+      uri: wrapperUri,
       query: `
         query {
           method1(en: 0) 
@@ -341,7 +341,7 @@ describe("env", () => {
       config: {
         envs: [
           {
-            uri: apiUri,
+            uri: wrapperUri,
             env: {
               str: "string",
             },

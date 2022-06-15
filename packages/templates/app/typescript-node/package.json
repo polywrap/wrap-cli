@@ -1,6 +1,6 @@
 {
   "name": "templates-app-typescript-node",
-  "description": "Web3API App TypeScript Node Template",
+  "description": "Polywrap App TypeScript Node Template",
   "private": true,
   "version": "0.0.1-prealpha.85",
   "scripts": {

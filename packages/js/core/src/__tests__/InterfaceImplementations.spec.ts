@@ -12,14 +12,14 @@ describe("sanitizeInterfaceImplementations", () => {
     const interfaces = sanitizeInterfaceImplementations([
       {
         interface: "wrap://polywrap/interface",
-        implementations: ["wrap://polywrap/api1", "wrap://polywrap/api2"]
+        implementations: ["wrap://polywrap/wrapper1", "wrap://polywrap/wrapper2"]
       }
     ]);
 
     expect(interfaces).toEqual([
       {
         interface: new Uri("wrap://polywrap/interface"),
-        implementations: [new Uri("wrap://polywrap/api1"), new Uri("wrap://polywrap/api2")]
+        implementations: [new Uri("wrap://polywrap/wrapper1"), new Uri("wrap://polywrap/wrapper2")]
       }
     ]);
   });

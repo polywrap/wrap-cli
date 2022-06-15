@@ -18,7 +18,7 @@ import path from "path";
 import fs from "fs";
 
 const defaultPublishDir = "./build";
-const defaultCodegenDir = "./polywrap";
+const defaultCodegenDir = "./wrap";
 const pathStr = intlMsg.commands_plugin_options_path();
 const defaultManifestStr = defaultPluginManifest.join(" | ");
 const nodeStr = intlMsg.commands_plugin_options_i_node();
@@ -128,7 +128,7 @@ async function run(options: PluginCommandOptions) {
     ComposerFilter.Schema
   );
   const publishSchemaPath = path.join(publishDir, "schema.graphql");
-  const publishManifestPath = path.join(publishDir, "web3api.plugin.json");
+  const publishManifestPath = path.join(publishDir, "polywrap.plugin.json");
 
   if (!fs.existsSync(publishDir)) {
     fs.mkdirSync(publishDir);

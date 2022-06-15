@@ -2,7 +2,7 @@ use crate::{
     module_method_wrapped,
     object_method_wrapped
 };
-use web3api_wasm_rs::{
+use polywrap_wasm_rs::{
     abort,
     invoke,
     InvokeArgs,

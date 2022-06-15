@@ -11,15 +11,15 @@ describe("sanitizeUriRedirects", () => {
   it("Returns uri redirects from uri redirect definitions", () => {
     const redirects = sanitizeUriRedirects([
       {
-        from: "wrap://polywrap/api",
-        to: "wrap://polywrap/api"
+        from: "wrap://polywrap/wrapper",
+        to: "wrap://polywrap/wrapper"
       }
     ]);
 
     expect(redirects).toEqual([
       {
-        from: new Uri("wrap://polywrap/api"),
-        to: new Uri("wrap://polywrap/api")
+        from: new Uri("wrap://polywrap/wrapper"),
+        to: new Uri("wrap://polywrap/wrapper")
       }
     ]);
   });

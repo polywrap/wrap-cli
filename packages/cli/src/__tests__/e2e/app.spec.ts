@@ -18,8 +18,8 @@ Commands:
   help [command]     display help for command
 `
 
-const CODEGEN_SUCCESS = `- Manifest loaded from ./web3api.app.yaml
-✔ Manifest loaded from ./web3api.app.yaml
+const CODEGEN_SUCCESS = `- Manifest loaded from ./polywrap.app.yaml
+✔ Manifest loaded from ./polywrap.app.yaml
 - Generate types
 ✔ Generate types
 🔥 Code was generated successfully 🔥

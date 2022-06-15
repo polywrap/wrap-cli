@@ -1,18 +1,18 @@
 import {
   coreInterfaceUris,
-  createWeb3ApiClient,
+  createPolywrapClient,
   getDefaultClientConfig,
   Uri,
   PluginModule,
   PolywrapClient,
-  Web3ApiClientConfig,
+  PolywrapClientConfig,
 } from "../..";
 
 jest.setTimeout(200000);
 
 describe("interface-impls", () => {
-  const getClient = async (config?: Partial<Web3ApiClientConfig>) => {
-    const client = await createWeb3ApiClient(
+  const getClient = async (config?: Partial<PolywrapClientConfig>) => {
+    const client = await createPolywrapClient(
       {},
       config
     );

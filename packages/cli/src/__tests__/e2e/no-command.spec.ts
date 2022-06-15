@@ -10,13 +10,13 @@ Options:
 
 Commands:
   app|a                       Build/generate types for your app
-  build|b [options]           Builds a Web3API
-  codegen|g [options]         Auto-generate API Types
+  build|b [options]           Builds a Polywrap
+  codegen|g [options]         Auto-generate Wrapper Types
   create|c                    Create a new project with polywrap CLI
-  deploy|d [options]          Deploys/Publishes a Web3API
+  deploy|d [options]          Deploys/Publishes a Polywrap
   plugin|p                    Build/generate types for the plugin
-  query|q [options] <recipe>  Query Web3APIs using recipe scripts
-  infra|i [options] <action>  Manage infrastructure for your Web3API
+  query|q [options] <recipe>  Query Polywraps using recipe scripts
+  infra|i [options] <action>  Manage infrastructure for your Polywrap
   help [command]              display help for command
 `;
 

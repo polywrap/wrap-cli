@@ -1,4 +1,4 @@
-import { Api, ApiCache, Client, Uri } from "../../types";
+import { Wrapper, WrapperCache, Client, Uri } from "../../types";
 import { UriResolutionHistory } from "./types/UriResolutionHistory";
 import { UriResolutionStack } from "./types/UriResolutionStack";
 import { UriResolutionResult } from "./types/UriResolutionResult";
@@ -12,14 +12,14 @@ export const resolveUri = async (
   uri: Uri,
   uriResolvers: readonly UriResolver[],
   client: Client,
-  cache: ApiCache
+  cache: WrapperCache
 ): Promise<ResolveUriResult> => {
   // Keep track of past URIs to avoid infinite loops
   const visitedUriMap: Map<string, boolean> = new Map<string, boolean>();
   const uriResolutionStack: UriResolutionStack = [];
 
   let currentUri: Uri = uri;
-  let api: Api | undefined;
+  let wrapper: Wrapper | undefined;
 
   let runAgain = true;
 
@@ -35,7 +35,7 @@ export const resolveUri = async (
       if (infiniteLoopDetected) {
         return {
           uri: currentUri,
-          api,
+          wrapper,
           uriHistory: new UriResolutionHistory(uriResolutionStack),
           error: infiniteLoopDetected
             ? {
@@ -54,12 +54,12 @@ export const resolveUri = async (
 
       trackUriHistory(currentUri, resolver, result, uriResolutionStack);
 
-      if (result.api) {
-        api = result.api;
+      if (result.wrapper) {
+        wrapper = result.wrapper;
 
         Tracer.addEvent("uri-resolver-redirect", {
           from: currentUri.uri,
-          to: "api",
+          to: "wrapper",
         });
 
         break;
@@ -84,7 +84,7 @@ export const resolveUri = async (
 
   return {
     uri: currentUri,
-    api,
+    wrapper,
     uriHistory: new UriResolutionHistory(uriResolutionStack),
   };
 };
@@ -114,7 +114,7 @@ const trackUriHistory = (
     sourceUri,
     result: {
       ...result,
-      api: !!result.api,
+      wrapper: !!result.wrapper,
     },
   });
 };

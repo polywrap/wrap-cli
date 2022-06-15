@@ -3,7 +3,7 @@ import { displayPath, withSpinner, intlMsg } from "../../";
 import { AppManifest, deserializeAppManifest } from "@polywrap/core-js";
 import fs from "fs";
 
-export const defaultAppManifest = ["web3api.app.yaml", "web3api.app.yml"];
+export const defaultAppManifest = ["polywrap.app.yaml", "polywrap.app.yml"];
 
 export async function loadAppManifest(
   manifestPath: string,

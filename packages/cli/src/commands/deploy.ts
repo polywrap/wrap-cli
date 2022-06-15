@@ -2,7 +2,7 @@
 import {
   intlMsg,
   WasmProject,
-  defaultWeb3ApiManifest,
+  defaultPolywrapManifest,
   DeployPackage,
   parseWasmManifestFileOption,
 } from "../lib";
@@ -15,7 +15,7 @@ import { print } from "gluegun";
 import { Uri, DeployManifest } from "@polywrap/core-js";
 import { validate } from "jsonschema";
 
-const defaultManifestStr = defaultWeb3ApiManifest.join(" | ");
+const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 const pathStr = intlMsg.commands_deploy_options_o_path();
 
 type DeployCommandOptions = {
@@ -53,7 +53,7 @@ async function run(options: DeployCommandOptions): Promise<void> {
 
   const project = new WasmProject({
     rootDir: nodePath.dirname(manifestFile),
-    web3apiManifestPath: manifestFile,
+    polywrapManifestPath: manifestFile,
     quiet: verbose ? false : true,
   });
   await project.validate();

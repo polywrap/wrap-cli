@@ -1,11 +1,11 @@
 {
   "name": "@polywrap/ens-plugin-js",
-  "description": "Web3API ENS Javascript Plugin",
+  "description": "Polywrap ENS Javascript Plugin",
   "version": "0.0.1-prealpha.85",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/web3-api/monorepo.git"
+    "url": "https://github.com/polywrap/monorepo.git"
   },
   "main": "build/index.js",
   "files": [
@@ -14,7 +14,7 @@
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json",
     "codegen": "node ../../../../dependencies/node_modules/polywrap/bin/polywrap plugin codegen",
-    "codegen:patch": "node ../../../cli/bin/polywrap plugin codegen && rimraf ./src/polywrap",
+    "codegen:patch": "node ../../../cli/bin/polywrap plugin codegen && rimraf ./src/wrap",
     "lint": "eslint --color -c ../../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",

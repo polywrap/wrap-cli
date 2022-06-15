@@ -2,7 +2,7 @@ use crate::malloc::alloc;
 
 #[link(wasm_import_module = "wrap")]
 extern "C" {
-    /// Subinvoke API
+    /// Subinvoke Interface
     #[link_name = "__wrap_subinvoke"]
     pub fn __wrap_subinvoke(
         uri_ptr: u32,
@@ -28,7 +28,7 @@ extern "C" {
     pub fn __wrap_subinvoke_error(ptr: u32);
 }
 
-/// Subinvoke API Helper
+/// Subinvoke Interface Helper
 pub fn wrap_subinvoke(
     uri: &str,
     method: &str,

@@ -3,14 +3,14 @@ import { WrapExports } from "./types";
 import { createImports } from "./imports";
 
 import {
-  InvokeApiOptions,
-  InvokeApiResult,
-  Api,
-  Web3ApiManifest,
+  InvokeOptions,
+  InvokeResult,
+  Wrapper,
+  PolywrapManifest,
   Uri,
   Client,
   GetManifestOptions,
-  deserializeWeb3ApiManifest,
+  deserializePolywrapManifest,
   deserializeBuildManifest,
   deserializeMetaManifest,
   AnyManifestArtifact,
@@ -63,7 +63,7 @@ export interface State {
   env?: ArrayBuffer;
 }
 
-export class WasmWrapper extends Api {
+export class WasmWrapper extends Wrapper {
   public static requiredExports: readonly string[] = ["_wrap_invoke"];
 
   private _schema?: string;
@@ -72,7 +72,7 @@ export class WasmWrapper extends Api {
 
   constructor(
     private _uri: Uri,
-    private _manifest: Web3ApiManifest,
+    private _manifest: PolywrapManifest,
     private _uriResolver: string,
     private _clientEnv?: Env<Uri>
   ) {
@@ -98,7 +98,7 @@ export class WasmWrapper extends Api {
     }
     let manifest: string | undefined;
     const fileTitle: string =
-      options.type === "web3api" ? "web3api" : "web3api." + options.type;
+      options.type === "polywrap" ? "polywrap" : "polywrap." + options.type;
 
     const manifestExts = ["json", "yaml", "yml"];
     for (const ext of manifestExts) {
@@ -126,7 +126,7 @@ export class WasmWrapper extends Api {
           manifest
         ) as AnyManifestArtifact<TManifestArtifact>;
       default:
-        return deserializeWeb3ApiManifest(
+        return deserializePolywrapManifest(
           manifest
         ) as AnyManifestArtifact<TManifestArtifact>;
     }
@@ -140,8 +140,8 @@ export class WasmWrapper extends Api {
     const { path, encoding } = options;
     const { data, error } = await UriResolverInterface.Query.getFile(
       <TData = unknown, TUri extends Uri | string = string>(
-        options: InvokeApiOptions<TUri>
-      ): Promise<InvokeApiResult<TData>> => client.invoke<TData, TUri>(options),
+        options: InvokeOptions<TUri>
+      ): Promise<InvokeResult<TData>> => client.invoke<TData, TUri>(options),
       // TODO: support all types of URI resolvers (cache, etc)
       new Uri(this._uriResolver),
       combinePaths(this._uri.path, path)
@@ -174,9 +174,9 @@ export class WasmWrapper extends Api {
 
   @Tracer.traceMethod("WasmWrapper: invoke")
   public async invoke(
-    options: InvokeApiOptions<Uri>,
+    options: InvokeOptions<Uri>,
     client: Client
-  ): Promise<InvokeApiResult<unknown | ArrayBuffer>> {
+  ): Promise<InvokeResult<unknown | ArrayBuffer>> {
     try {
       const { method, noDecode } = options;
       const input = options.input || {};
@@ -241,13 +241,13 @@ export class WasmWrapper extends Api {
           if (noDecode) {
             return {
               data: invokeResult.invokeResult,
-            } as InvokeApiResult<ArrayBuffer>;
+            } as InvokeResult<ArrayBuffer>;
           }
 
           try {
             return {
               data: msgpackDecode(invokeResult.invokeResult as ArrayBuffer),
-            } as InvokeApiResult<unknown>;
+            } as InvokeResult<unknown>;
           } catch (err) {
             throw Error(
               `WasmWrapper: Failed to decode query result.\nResult: ${JSON.stringify(

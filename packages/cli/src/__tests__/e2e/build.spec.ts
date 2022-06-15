@@ -8,11 +8,11 @@ import path from "path";
 
 const HELP = `Usage: polywrap build|b [options]
 
-Builds a Web3API
+Builds a Polywrap
 
 Options:
-  -m, --manifest-file <path>  Path to the Web3API Build manifest file (default:
-                              web3api.yaml | web3api.yml)
+  -m, --manifest-file <path>  Path to the Polywrap Build manifest file (default:
+                              polywrap.yaml | polywrap.yml)
   -o, --output-dir <path>     Output directory for build results (default:
                               build/)
   -w, --watch                 Automatically rebuild when changes are made
@@ -24,7 +24,7 @@ Options:
 jest.setTimeout(500000);
 
 describe("e2e tests for build command", () => {
-  const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/build-cmd");
+  const testCaseRoot = path.join(GetPathToCliTestFiles(), "wasm/build-cmd");
   const testCases =
     fs.readdirSync(testCaseRoot, { withFileTypes: true })
       .filter((dirent) => dirent.isDirectory())
@@ -64,14 +64,14 @@ describe("e2e tests for build command", () => {
     const projectRoot = getTestCaseDir(0);
     const project = new WasmProject({
       rootDir: projectRoot,
-      web3apiManifestPath: path.join(projectRoot, "web3api.yaml")
+      polywrapManifestPath: path.join(projectRoot, "polywrap.yaml")
     });
 
     await project.cacheDefaultBuildImage();
 
-    const cacheBuildEnvPath = path.join(projectRoot, ".polywrap/web3api/build/image")
+    const cacheBuildEnvPath = path.join(projectRoot, ".polywrap/wasm/build/image")
     const cachedBuildManifest = await loadBuildManifest(
-      path.join(cacheBuildEnvPath, "web3api.build.yaml")
+      path.join(cacheBuildEnvPath, "polywrap.build.yaml")
     );
 
     const buildImageName = cachedBuildManifest.docker?.name

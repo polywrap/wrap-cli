@@ -50,7 +50,7 @@ export class AppProject extends Project<AppManifest> {
     );
   }
 
-  /// Manifest (web3api.app.yaml)
+  /// Manifest (polywrap.app.yaml)
 
   public async getName(): Promise<string> {
     return (await this.getManifest()).name;
@@ -119,7 +119,7 @@ export class AppProject extends Project<AppManifest> {
     });
   }
 
-  private _getGenerationDirectory(generationSubPath = "src/polywrap"): string {
+  private _getGenerationDirectory(generationSubPath = "src/wrap"): string {
     return path.join(this.getManifestDir(), generationSubPath);
   }
 }

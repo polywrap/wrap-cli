@@ -11,7 +11,7 @@ export function createPlugins(
 ): PluginRegistration[] {
   return [
     {
-      uri: "wrap://ens/ethereum.web3api.eth",
+      uri: "wrap://ens/ethereum.polywrap.eth",
       plugin: ethereumPlugin({
         networks: {
           testnet: {
@@ -21,14 +21,14 @@ export function createPlugins(
       }),
     },
     {
-      uri: "wrap://ens/ipfs.web3api.eth",
+      uri: "wrap://ens/ipfs.polywrap.eth",
       plugin: ipfsPlugin({
         provider: ipfsProvider,
         fallbackProviders: defaultIpfsProviders,
       }),
     },
     {
-      uri: "wrap://ens/ens.web3api.eth",
+      uri: "wrap://ens/ens.polywrap.eth",
       plugin: ensPlugin({
         addresses: {
           testnet: ensAddress,

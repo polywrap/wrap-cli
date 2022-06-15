@@ -32,7 +32,7 @@ module.exports = {
             format: ["camelCase"],
             leadingUnderscore: "allow"
           },
-          //web3 api host methods doesn"t satisfy neither camel or snake
+          //wrapper host methods doesn"t satisfy neither camel or snake
           {selector: ["objectLiteralMethod", "typeMethod"], filter: {regex: "^_wrap_.*", match: true}, format: null},
           //variable must be in camel or upper case
           {selector: "variable", format: ["camelCase", "PascalCase", "UPPER_CASE"], leadingUnderscore: "allow"},

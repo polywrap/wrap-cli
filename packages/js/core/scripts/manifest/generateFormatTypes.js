@@ -11,7 +11,7 @@ async function generateFormatTypes() {
     "formats"
   );
 
-  // Get all format types (web3api, web3api.build, etc)
+  // Get all format types (polywrap, polywrap.build, etc)
   const formatTypes = fs.readdirSync(
     formatsDir, { withFileTypes: true }
   ).filter((dirent) => dirent.isDirectory);

@@ -15,7 +15,7 @@ import {
 import fs from "fs";
 import path from "path";
 
-describe("Web3API Binding Test Suite", () => {
+describe("Polywrap Binding Test Suite", () => {
   const cases = fetchTestCases();
 
   for (const test of cases) {

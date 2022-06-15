@@ -1,9 +1,0 @@
-format: 0.0.1-prealpha.9
-name: TestUseGetImpl
-build: ./web3api.build.yaml
-language: wasm/assemblyscript
-schema: ./schema.graphql
-module: ./src/index.ts
-import_redirects:
-  - uri: wrap://ens/interface.eth
-    schema: ../test-interface/build/schema.graphql

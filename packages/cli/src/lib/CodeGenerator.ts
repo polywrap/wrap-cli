@@ -3,9 +3,9 @@ import {
   withSpinner,
   isTypescriptFile,
   importTypescriptModule,
-  web3apiManifestLanguages,
-  isWeb3ApiManifestLanguage,
-  web3apiManifestLanguageToBindLanguage,
+  polywrapManifestLanguages,
+  isPolywrapManifestLanguage,
+  polywrapManifestLanguageToBindLanguage,
   pluginManifestLanguages,
   isPluginManifestLanguage,
   pluginManifestLanguageToBindLanguage,
@@ -42,7 +42,7 @@ export class CodeGenerator {
 
   public async generate(): Promise<boolean> {
     try {
-      // Compile the API
+      // Compile the Wrapper
       await this._generateCode();
 
       return true;
@@ -59,8 +59,8 @@ export class CodeGenerator {
       const language = await project.getManifestLanguage();
       let bindLanguage: BindLanguage | undefined;
 
-      if (isWeb3ApiManifestLanguage(language)) {
-        bindLanguage = web3apiManifestLanguageToBindLanguage(language);
+      if (isPolywrapManifestLanguage(language)) {
+        bindLanguage = polywrapManifestLanguageToBindLanguage(language);
       } else if (isPluginManifestLanguage(language)) {
         bindLanguage = pluginManifestLanguageToBindLanguage(language);
       } else if (isAppManifestLanguage(language)) {
@@ -72,7 +72,7 @@ export class CodeGenerator {
           intlMsg.lib_language_unsupportedManifestLanguage({
             language: language,
             supported: [
-              ...Object.keys(web3apiManifestLanguages),
+              ...Object.keys(polywrapManifestLanguages),
               ...Object.keys(pluginManifestLanguages),
               ...Object.keys(appManifestLanguages),
             ].join(", "),

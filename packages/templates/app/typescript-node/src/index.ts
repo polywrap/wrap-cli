@@ -1,4 +1,4 @@
-import { HelloWorld_Module, Ethereum_Module } from "./polywrap";
+import { HelloWorld_Module, Ethereum_Module } from "./wrap";
 
 import { PolywrapClient } from "@polywrap/client-js";
 

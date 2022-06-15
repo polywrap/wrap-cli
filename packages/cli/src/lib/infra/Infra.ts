@@ -321,7 +321,7 @@ export class Infra {
         m.path
       );
 
-      // Write new docker-compose manifests with corrected build path and 'web3api' prefix
+      // Write new docker-compose manifests with corrected build path and 'polywrap' prefix
       const newComposeFile = YAML.dump(composeFileWithCorrectPaths);
       this._writeFileToCacheFromAbsPath(m.path, newComposeFile);
     });

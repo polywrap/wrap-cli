@@ -22,7 +22,7 @@ const plugins: PluginConfigSource[] = [
   {
     name: "Ipfs",
     module: "@polywrap/ipfs-plugin-js",
-    uri: "wrap://ens/ipfs.web3api.eth",
+    uri: "wrap://ens/ipfs.polywrap.eth",
     config: "IpfsPluginConfig",
     files: [
       {
@@ -34,7 +34,7 @@ const plugins: PluginConfigSource[] = [
   {
     name: "Ethereum",
     module: "@polywrap/ethereum-plugin-js",
-    uri: "wrap://ens/ethereum.web3api.eth",
+    uri: "wrap://ens/ethereum.polywrap.eth",
     config: "EthereumPluginConfig",
     files: [
       {
@@ -65,7 +65,7 @@ const plugins: PluginConfigSource[] = [
   {
     name: "Ens",
     module: "@polywrap/ens-plugin-js",
-    uri: "wrap://ens/ens.web3api.eth",
+    uri: "wrap://ens/ens.polywrap.eth",
     config: "EnsPluginConfig",
     files: [
       {

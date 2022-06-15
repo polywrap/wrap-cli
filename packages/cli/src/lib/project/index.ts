@@ -1,4 +1,4 @@
 export * from "./Project";
-export * from "./WasmProject";
+export * from "./PolywrapProject";
 export * from "./PluginProject";
 export * from "./AppProject";

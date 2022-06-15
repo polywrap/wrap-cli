@@ -5,7 +5,7 @@ import {
   Uri,
   coreInterfaceUris,
   PluginPackage,
-  Web3ApiManifest,
+  PolywrapManifest,
   Env,
   ExtendableUriResolver,
   CacheResolver,
@@ -30,9 +30,9 @@ export const getDefaultClientConfig = Tracer.traceFunc(
       envs: [],
       redirects: [],
       plugins: [
-        // IPFS is required for downloading Web3API packages
+        // IPFS is required for downloading Polywrap packages
         {
-          uri: new Uri("wrap://ens/ipfs.web3api.eth"),
+          uri: new Uri("wrap://ens/ipfs.polywrap.eth"),
           plugin: ipfsPlugin({
             provider: defaultIpfsProviders[0],
             fallbackProviders: defaultIpfsProviders.slice(1),
@@ -40,11 +40,11 @@ export const getDefaultClientConfig = Tracer.traceFunc(
         },
         // ENS is required for resolving domain to IPFS hashes
         {
-          uri: new Uri("wrap://ens/ens.web3api.eth"),
+          uri: new Uri("wrap://ens/ens.polywrap.eth"),
           plugin: ensPlugin({}),
         },
         {
-          uri: new Uri("wrap://ens/ethereum.web3api.eth"),
+          uri: new Uri("wrap://ens/ethereum.polywrap.eth"),
           plugin: ethereumPlugin({
             networks: {
               mainnet: {
@@ -55,29 +55,29 @@ export const getDefaultClientConfig = Tracer.traceFunc(
           }),
         },
         {
-          uri: new Uri("wrap://ens/http.web3api.eth"),
+          uri: new Uri("wrap://ens/http.polywrap.eth"),
           plugin: httpPlugin({}),
         },
         {
-          uri: new Uri("wrap://ens/js-logger.web3api.eth"),
+          uri: new Uri("wrap://ens/js-logger.polywrap.eth"),
           plugin: loggerPlugin({}),
         },
         {
-          uri: new Uri("wrap://ens/uts46.web3api.eth"),
+          uri: new Uri("wrap://ens/uts46.polywrap.eth"),
           plugin: uts46Plugin({}),
         },
         {
-          uri: new Uri("wrap://ens/sha3.web3api.eth"),
+          uri: new Uri("wrap://ens/sha3.polywrap.eth"),
           plugin: sha3Plugin({}),
         },
         {
-          uri: new Uri("wrap://ens/graph-node.web3api.eth"),
+          uri: new Uri("wrap://ens/graph-node.polywrap.eth"),
           plugin: graphNodePlugin({
             provider: "https://api.thegraph.com",
           }),
         },
         {
-          uri: new Uri("wrap://ens/fs.web3api.eth"),
+          uri: new Uri("wrap://ens/fs.polywrap.eth"),
           plugin: filesystemPlugin({}),
         },
       ],
@@ -85,14 +85,14 @@ export const getDefaultClientConfig = Tracer.traceFunc(
         {
           interface: coreInterfaceUris.uriResolver,
           implementations: [
-            new Uri("wrap://ens/ipfs.web3api.eth"),
-            new Uri("wrap://ens/ens.web3api.eth"),
-            new Uri("wrap://ens/fs.web3api.eth"),
+            new Uri("wrap://ens/ipfs.polywrap.eth"),
+            new Uri("wrap://ens/ens.polywrap.eth"),
+            new Uri("wrap://ens/fs.polywrap.eth"),
           ],
         },
         {
           interface: coreInterfaceUris.logger,
-          implementations: [new Uri("wrap://ens/js-logger.web3api.eth")],
+          implementations: [new Uri("wrap://ens/js-logger.polywrap.eth")],
         },
       ],
       uriResolvers: [
@@ -108,7 +108,7 @@ export const getDefaultClientConfig = Tracer.traceFunc(
         new ExtendableUriResolver(
           (
             uri: Uri,
-            manifest: Web3ApiManifest,
+            manifest: PolywrapManifest,
             uriResolver: string,
             environment: Env<Uri> | undefined
           ) => {

@@ -2,7 +2,7 @@ import { getTestEnvProviders } from "./providers";
 
 import {
   PluginRegistration,
-  Web3ApiClientConfig,
+  PolywrapClientConfig,
   defaultIpfsProviders,
 } from "@polywrap/client-js";
 import { ensPlugin } from "@polywrap/ens-plugin-js";
@@ -11,7 +11,7 @@ import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ensAddresses } from "@polywrap/test-env-js";
 
 export async function getTestEnvClientConfig(): Promise<
-  Partial<Web3ApiClientConfig>
+  Partial<PolywrapClientConfig>
 > {
   const providers = await getTestEnvProviders();
   const ipfsProvider = providers.ipfsProvider;
@@ -27,7 +27,7 @@ export async function getTestEnvClientConfig(): Promise<
   // maybe have it exported from test-env.
   const plugins: PluginRegistration[] = [
     {
-      uri: "wrap://ens/ethereum.web3api.eth",
+      uri: "wrap://ens/ethereum.polywrap.eth",
       plugin: ethereumPlugin({
         networks: {
           testnet: {
@@ -37,14 +37,14 @@ export async function getTestEnvClientConfig(): Promise<
       }),
     },
     {
-      uri: "wrap://ens/ipfs.web3api.eth",
+      uri: "wrap://ens/ipfs.polywrap.eth",
       plugin: ipfsPlugin({
         provider: ipfsProvider,
         fallbackProviders: defaultIpfsProviders,
       }),
     },
     {
-      uri: "wrap://ens/ens.web3api.eth",
+      uri: "wrap://ens/ens.polywrap.eth",
       plugin: ensPlugin({
         addresses: {
           testnet: ensAddress,

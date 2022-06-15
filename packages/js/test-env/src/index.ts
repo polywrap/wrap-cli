@@ -6,7 +6,7 @@ import spawn from "spawn-command";
 import axios from "axios";
 import fs from "fs";
 import yaml from "js-yaml";
-import { deserializeWeb3ApiManifest, Uri } from "@polywrap/core-js";
+import { deserializePolywrapManifest, Uri } from "@polywrap/core-js";
 import { PolywrapClient } from "@polywrap/client-js";
 import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
 
@@ -181,8 +181,8 @@ export const runCLI = async (options: {
   };
 };
 
-export async function buildApi(apiAbsPath: string): Promise<void> {
-  const manifestPath = `${apiAbsPath}/web3api.yaml`;
+export async function buildWrapper(wrapperAbsPath: string): Promise<void> {
+  const manifestPath = `${wrapperAbsPath}/polywrap.yaml`;
   const {
     exitCode: buildExitCode,
     stdout: buildStdout,
@@ -193,7 +193,7 @@ export async function buildApi(apiAbsPath: string): Promise<void> {
       "--manifest-file",
       manifestPath,
       "--output-dir",
-      `${apiAbsPath}/build`,
+      `${wrapperAbsPath}/build`,
     ],
   });
 
@@ -205,13 +205,13 @@ export async function buildApi(apiAbsPath: string): Promise<void> {
   }
 }
 
-export async function buildAndDeployApi({
-  apiAbsPath,
+export async function buildAndDeployWrapper({
+  wrapperAbsPath,
   ipfsProvider,
   ethereumProvider,
   ensName,
 }: {
-  apiAbsPath: string;
+  wrapperAbsPath: string;
   ipfsProvider: string;
   ethereumProvider: string;
   ensName?: string;
@@ -219,24 +219,24 @@ export async function buildAndDeployApi({
   ensDomain: string;
   ipfsCid: string;
 }> {
-  const manifestPath = `${apiAbsPath}/web3api.yaml`;
-  const tempManifestFilename = `web3api-temp.yaml`;
-  const tempDeployManifestFilename = `web3api.deploy-temp.yaml`;
-  const tempManifestPath = path.join(apiAbsPath, tempManifestFilename);
+  const manifestPath = `${wrapperAbsPath}/polywrap.yaml`;
+  const tempManifestFilename = `polywrap-temp.yaml`;
+  const tempDeployManifestFilename = `polywrap.deploy-temp.yaml`;
+  const tempManifestPath = path.join(wrapperAbsPath, tempManifestFilename);
   const tempDeployManifestPath = path.join(
-    apiAbsPath,
+    wrapperAbsPath,
     tempDeployManifestFilename
   );
 
   // create a new ENS domain
-  const apiEns = ensName ?? `${generateName()}.eth`;
+  const wrapperEns = ensName ?? `${generateName()}.eth`;
 
-  await buildApi(apiAbsPath);
+  await buildWrapper(wrapperAbsPath);
 
   // register ENS domain
   const ensWrapperUri = `fs/${__dirname}/wrappers/ens`;
 
-  const ethereumPluginUri = "wrap://ens/ethereum.web3api.eth";
+  const ethereumPluginUri = "wrap://ens/ethereum.polywrap.eth";
 
   const client = new PolywrapClient({
     plugins: [
@@ -272,7 +272,7 @@ export async function buildAndDeployApi({
     method: "registerDomainAndSubdomainsRecursively",
     uri: ensWrapperUri,
     input: {
-      domain: apiEns,
+      domain: wrapperEns,
       owner: signerAddress,
       resolverAddress: ensAddresses.resolverAddress,
       ttl: "0",
@@ -286,7 +286,7 @@ export async function buildAndDeployApi({
 
   if (!registerData) {
     throw new Error(
-      `Could not register domain '${apiEns}'` +
+      `Could not register domain '${wrapperEns}'` +
         (error ? `\nError: ${error.message}` : "")
     );
   }
@@ -306,14 +306,14 @@ export async function buildAndDeployApi({
 
   // manually configure manifests
 
-  const { __type, ...web3apiManifest } = deserializeWeb3ApiManifest(
+  const { __type, ...polywrapManifest } = deserializePolywrapManifest(
     fs.readFileSync(manifestPath, "utf-8")
   );
 
   fs.writeFileSync(
     tempManifestPath,
     yaml.dump({
-      ...web3apiManifest,
+      ...polywrapManifest,
       deploy: `./${tempDeployManifestFilename}`,
     })
   );
@@ -325,7 +325,7 @@ export async function buildAndDeployApi({
       stages: {
         ipfsDeploy: {
           package: "ipfs",
-          uri: `fs/${apiAbsPath}/build`,
+          uri: `fs/${wrapperAbsPath}/build`,
           config: {
             gatewayUri: ipfsProvider,
           },
@@ -335,7 +335,7 @@ export async function buildAndDeployApi({
           // eslint-disable-next-line @typescript-eslint/naming-convention
           depends_on: "ipfsDeploy",
           config: {
-            domainName: apiEns,
+            domainName: wrapperEns,
             provider: ethereumProvider,
             ensRegistryAddress: ensAddresses.ensAddress,
           },
@@ -344,7 +344,7 @@ export async function buildAndDeployApi({
     })
   );
 
-  // deploy API
+  // deploy Wrapper
 
   const {
     exitCode: deployExitCode,
@@ -374,10 +374,10 @@ export async function buildAndDeployApi({
     throw Error(`polywrap CLI output missing IPFS CID.\nOutput: ${deployStdout}`);
   }
 
-  const apiCid = new Uri(result[1]).path;
+  const wrapperCid = new Uri(result[1]).path;
 
   return {
-    ensDomain: apiEns,
-    ipfsCid: apiCid,
+    ensDomain: wrapperEns,
+    ipfsCid: wrapperCid,
   };
 }

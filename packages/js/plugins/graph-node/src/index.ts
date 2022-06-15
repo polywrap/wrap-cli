@@ -4,7 +4,7 @@ import {
   Input_querySubgraph,
   HTTP_Module,
   manifest,
-} from "./polywrap-man";
+} from "./wrap-man";
 
 import { PluginFactory } from "@polywrap/core-js";
 

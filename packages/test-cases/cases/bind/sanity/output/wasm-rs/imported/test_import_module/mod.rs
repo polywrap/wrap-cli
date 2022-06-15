@@ -1,5 +1,5 @@
 use serde::{Serialize, Deserialize};
-use web3api_wasm_rs::{
+use polywrap_wasm_rs::{
     BigInt,
     BigNumber,
     Map,

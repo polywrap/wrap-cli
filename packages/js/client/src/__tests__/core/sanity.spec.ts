@@ -15,28 +15,28 @@ describe("sanity", () => {
 
     expect(client.getRedirects()).toStrictEqual([]);
     expect(client.getPlugins().map((x) => x.uri)).toStrictEqual([
-      new Uri("wrap://ens/ipfs.web3api.eth"),
-      new Uri("wrap://ens/ens.web3api.eth"),
-      new Uri("wrap://ens/ethereum.web3api.eth"),
-      new Uri("wrap://ens/http.web3api.eth"),
-      new Uri("wrap://ens/js-logger.web3api.eth"),
-      new Uri("wrap://ens/uts46.web3api.eth"),
-      new Uri("wrap://ens/sha3.web3api.eth"),
-      new Uri("wrap://ens/graph-node.web3api.eth"),
-      new Uri("wrap://ens/fs.web3api.eth"),
+      new Uri("wrap://ens/ipfs.polywrap.eth"),
+      new Uri("wrap://ens/ens.polywrap.eth"),
+      new Uri("wrap://ens/ethereum.polywrap.eth"),
+      new Uri("wrap://ens/http.polywrap.eth"),
+      new Uri("wrap://ens/js-logger.polywrap.eth"),
+      new Uri("wrap://ens/uts46.polywrap.eth"),
+      new Uri("wrap://ens/sha3.polywrap.eth"),
+      new Uri("wrap://ens/graph-node.polywrap.eth"),
+      new Uri("wrap://ens/fs.polywrap.eth"),
     ]);
     expect(client.getInterfaces()).toStrictEqual([
       {
         interface: coreInterfaceUris.uriResolver,
         implementations: [
-          new Uri("wrap://ens/ipfs.web3api.eth"),
-          new Uri("wrap://ens/ens.web3api.eth"),
-          new Uri("wrap://ens/fs.web3api.eth"),
+          new Uri("wrap://ens/ipfs.polywrap.eth"),
+          new Uri("wrap://ens/ens.polywrap.eth"),
+          new Uri("wrap://ens/fs.polywrap.eth"),
         ],
       },
       {
         interface: coreInterfaceUris.logger,
-        implementations: [new Uri("wrap://ens/js-logger.web3api.eth")],
+        implementations: [new Uri("wrap://ens/js-logger.polywrap.eth")],
       },
     ]);
   });
@@ -78,7 +78,7 @@ describe("sanity", () => {
     ]);
   });
 
-  test("loadWeb3Api - pass string or Uri", async () => {
+  test("loadPolywrap - pass string or Uri", async () => {
     const implementationUri = "wrap://ens/some-implementation.eth";
     const schemaStr = "test-schema";
 

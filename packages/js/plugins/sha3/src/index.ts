@@ -17,7 +17,7 @@ import {
   Input_shake_128,
   Input_shake_256,
   manifest,
-} from "./polywrap-man";
+} from "./wrap-man";
 
 import {
   sha3_512,

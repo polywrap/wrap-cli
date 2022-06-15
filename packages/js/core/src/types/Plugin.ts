@@ -89,7 +89,7 @@ export abstract class PluginModule<
 
 /** The plugin package's manifest */
 export interface PluginPackageManifest {
-  /** The API's schema */
+  /** The Wrapper's schema */
   schema: string;
 
   /** All interface schemas implemented by this plugin. */

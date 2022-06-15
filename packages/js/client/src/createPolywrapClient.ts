@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable prefer-const */
 
-import { PolywrapClient, Web3ApiClientConfig } from "./PolywrapClient";
+import { PolywrapClient, PolywrapClientConfig } from "./PolywrapClient";
 import { PluginConfigs, modules, uris } from "./pluginConfigs";
 
 import { PluginRegistration } from "@polywrap/core-js";
@@ -9,11 +9,11 @@ import { Tracer } from "@polywrap/tracing-js";
 
 export { PluginConfigs };
 
-export const createWeb3ApiClient = Tracer.traceFunc(
-  "createWeb3ApiClient",
+export const createPolywrapClient = Tracer.traceFunc(
+  "createPolywrapClient",
   async (
     pluginConfigs: PluginConfigs,
-    config?: Partial<Web3ApiClientConfig>
+    config?: Partial<PolywrapClientConfig>
   ): Promise<PolywrapClient> => {
     const plugins: PluginRegistration[] = [];
 
@@ -22,7 +22,7 @@ export const createWeb3ApiClient = Tracer.traceFunc(
 
       if (!modules[plugin]) {
         throw Error(
-          `Requested plugin "${plugin}" is not a supported createWeb3ApiClient plugin.`
+          `Requested plugin "${plugin}" is not a supported createPolywrapClient plugin.`
         );
       }
 

@@ -1,45 +1,45 @@
-import { useWeb3ApiClient } from "./client";
+import { usePolywrapClient } from "./client";
 import { useStateReducer } from "./state";
 
-import { InvokeApiOptions, InvokeApiResult } from "@polywrap/core-js";
+import { InvokeOptions, InvokeResult } from "@polywrap/core-js";
 
-export interface UseWeb3ApiInvokeState<
+export interface UsePolywrapInvokeState<
   TData = unknown
-> extends InvokeApiResult<TData> {
+> extends InvokeResult<TData> {
   loading: boolean;
 }
 
-export const INITIAL_QUERY_STATE: UseWeb3ApiInvokeState = {
+export const INITIAL_QUERY_STATE: UsePolywrapInvokeState = {
   data: undefined,
   error: undefined,
   loading: false,
 };
 
-export interface UseWeb3ApiInvokeProps extends InvokeApiOptions<string> {
+export interface UsePolywrapInvokeProps extends InvokeOptions<string> {
   provider?: string;
 }
 
 /*
-Note that the initial values passed into the useWeb3ApiInvoke hook will be
+Note that the initial values passed into the usePolywrapInvoke hook will be
 ignored when an ArrayBuffer is passed into execute(...).
 */
-export interface UseWeb3ApiInvoke<
+export interface UsePolywrapInvoke<
   TData = unknown
-> extends UseWeb3ApiInvokeState<TData> {
+> extends UsePolywrapInvokeState<TData> {
   execute: (
     input?: Record<string, unknown> | ArrayBuffer
-  ) => Promise<InvokeApiResult<TData>>;
+  ) => Promise<InvokeResult<TData>>;
 }
 
-export function useWeb3ApiInvoke<
+export function usePolywrapInvoke<
   TData = unknown
->(props: UseWeb3ApiInvokeProps | InvokeApiOptions<string>): UseWeb3ApiInvoke<TData> {
+>(props: UsePolywrapInvokeProps | InvokeOptions<string>): UsePolywrapInvoke<TData> {
   const provider = "provider" in props ? props.provider : undefined;
-  const client = useWeb3ApiClient({ provider });
+  const client = usePolywrapClient({ provider });
 
-  // Initialize the UseWeb3ApiQueryState
-  const { state, dispatch } = useStateReducer<UseWeb3ApiInvokeState<TData>>(
-    INITIAL_QUERY_STATE as UseWeb3ApiInvokeState<TData>
+  // Initialize the UsePolywrapQueryState
+  const { state, dispatch } = useStateReducer<UsePolywrapInvokeState<TData>>(
+    INITIAL_QUERY_STATE as UsePolywrapInvokeState<TData>
   );
 
   const execute = async (input?: Record<string, unknown> | ArrayBuffer) => {

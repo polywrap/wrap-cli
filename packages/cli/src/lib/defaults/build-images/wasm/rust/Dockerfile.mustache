@@ -21,44 +21,44 @@ RUN cargo install toml-cli
 # Install wasm-snip
 RUN cargo install wasm-snip
 
-{{#web3api_linked_packages.length}}
+{{#polywrap_linked_packages.length}}
 WORKDIR /linked-packages
-{{/web3api_linked_packages.length}}
+{{/polywrap_linked_packages.length}}
 
-{{#web3api_linked_packages}}
+{{#polywrap_linked_packages}}
 COPY {{dir}} ./{{name}}
-{{/web3api_linked_packages}}
+{{/polywrap_linked_packages}}
 
 WORKDIR /project
 
 # Copy all manifest files
-{{#web3api_manifests}}
+{{#polywrap_manifests}}
 COPY {{.}} .
-{{/web3api_manifests}}
+{{/polywrap_manifests}}
 
 # Copy all source files
 {{#include}}
 COPY {{.}} {{.}}
 {{/include}}
-{{#web3api_module}}
+{{#polywrap_module}}
 COPY {{dir}} {{dir}}
-{{/web3api_module}}
+{{/polywrap_module}}
 
-{{#web3api_linked_packages.length}}
+{{#polywrap_linked_packages.length}}
 # Link any local packages
-{{#web3api_linked_packages}}
+{{#polywrap_linked_packages}}
 RUN PACKAGE_NAME={{name}}; \
-    {{#web3api_module}}
+    {{#polywrap_module}}
     toml set ./{{dir}}/Cargo.toml dependencies.$PACKAGE_NAME.path /linked-packages/$PACKAGE_NAME > ./{{dir}}/Cargo-local.toml && \
     rm -rf ./{{dir}}/Cargo.toml && \
     mv ./{{dir}}/Cargo-local.toml ./{{dir}}/Cargo.toml && \
-    {{/web3api_module}}
+    {{/polywrap_module}}
     true
-{{/web3api_linked_packages}}
-{{/web3api_linked_packages.length}}
+{{/polywrap_linked_packages}}
+{{/polywrap_linked_packages.length}}
 
 # Remove any Cargo.lock files
-{{#web3api_module}}
+{{#polywrap_module}}
 RUN rm -rf {{dir}}/Cargo.lock
 
 # Ensure the Wasm module is configured to use imported memory
@@ -95,4 +95,4 @@ RUN WASM_MODULE=$(ls ./{{dir}}/target/wasm32-unknown-unknown/release/*.wasm); \
     wasm-snip $WASM_MODULE -o ./build/snipped_{{name}}.wasm && \
     wasm-opt --asyncify -Os ./build/snipped_{{name}}.wasm -o ./build/{{name}}.wasm && \
     rm -rf ./build/snipped_{{name}}.wasm
-{{/web3api_module}}
+{{/polywrap_module}}

@@ -11,11 +11,11 @@ Options:
   -h, --help                          display help for command
 
 Commands:
-  api [options] <language> <name>     Create a Web3API project langs:
+  wasm [options] <language> <name>    Create a Polywrap project langs:
                                       assemblyscript, interface
-  app [options] <language> <name>     Create a Web3API application langs:
+  app [options] <language> <name>     Create a Polywrap application langs:
                                       typescript-node, typescript-react
-  plugin [options] <language> <name>  Create a Web3API plugin langs: typescript
+  plugin [options] <language> <name>  Create a Polywrap plugin langs: typescript
   help [command]                      display help for command
 `;
 
@@ -77,7 +77,7 @@ describe("e2e tests for create command", () => {
 
   test("Should throw error for invalid parameter - lang", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: ["create", "api", "unknown", "name"],
+      args: ["create", "wasm", "unknown", "name"],
       cli: polywrapCli,
     });
 
@@ -88,7 +88,7 @@ describe("e2e tests for create command", () => {
 
   test("Should throw error for invalid parameter - output-dir", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: ["create", "api", "assemblyscript", "name", "-o"],
+      args: ["create", "wasm", "assemblyscript", "name", "-o"],
       cli: polywrapCli,
     });
 
@@ -103,7 +103,7 @@ describe("e2e tests for create command", () => {
     const { exitCode: code, stdout: output } = await runCLI({
       args: [
         "create",
-        "api",
+        "wasm",
         "assemblyscript",
         "test",
         "-o",
@@ -115,7 +115,7 @@ describe("e2e tests for create command", () => {
 
     expect(code).toEqual(0);
     expect(clearStyle(output)).toContain(
-      `🔥 You are ready to turn your protocol into a Web3API 🔥`
+      `🔥 You are ready to turn your protocol into a Polywrap 🔥`
     );
 
     rimraf.sync(`${__dirname}/test`);

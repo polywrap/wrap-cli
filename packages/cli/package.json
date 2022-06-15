@@ -1,11 +1,11 @@
 {
   "name": "polywrap",
-  "description": "Web3API CLI",
+  "description": "Polywrap CLI",
   "version": "0.0.1-prealpha.85",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/web3-api/monorepo.git"
+    "url": "https://github.com/polywrap/monorepo.git"
   },
   "files": [
     "build",
@@ -18,7 +18,7 @@
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json && yarn build:build-images && yarn build:deploy-modules && yarn build:infra-modules",
     "build:build-images": "copyfiles ./src/lib/defaults/build-images/**/**/* ./build/lib/defaults/build-images/ -u 4",
-    "build:deploy-modules": "copyfiles ./src/lib/defaults/deploy-modules/**/web3api.deploy.ext.json ./build/lib/defaults/deploy-modules -u 4",
+    "build:deploy-modules": "copyfiles ./src/lib/defaults/deploy-modules/**/polywrap.deploy.ext.json ./build/lib/defaults/deploy-modules -u 4",
     "build:infra-modules": "ts-node ./copyfiles ./src/lib/defaults/infra-modules ./build/lib/defaults/infra-modules",
     "prebuild": "ts-node ./scripts/generateIntlTypes.ts",
     "build:fast": "rimraf ./build && tsc --project tsconfig.build.json",

@@ -1,19 +1,19 @@
 import {
-  createWeb3ApiClient,
+  createPolywrapClient,
   Uri,
-  Web3ApiClientConfig,
+  PolywrapClientConfig,
   PolywrapClient,
   PluginModule,
 } from "../..";
 import {
-  buildAndDeployApi,
+  buildAndDeployWrapper,
   initTestEnvironment,
   runCLI,
   stopTestEnvironment,
   ensAddresses,
   providers
 } from "@polywrap/test-env-js";
-import { GetPathToTestApis } from "@polywrap/test-cases";
+import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { ResolveUriErrorType } from "@polywrap/core-js";
 
 jest.setTimeout(200000);
@@ -32,8 +32,8 @@ describe("resolveUri", () => {
     await stopTestEnvironment();
   });
 
-  const getClient = async (config?: Partial<Web3ApiClientConfig>) => {
-    return createWeb3ApiClient(
+  const getClient = async (config?: Partial<PolywrapClientConfig>) => {
+    return createPolywrapClient(
       {
         ethereum: {
           networks: {
@@ -61,7 +61,7 @@ describe("resolveUri", () => {
     const result = await client.resolveUri(uri);
 
     expect(result.uri).toEqual(uri);
-    expect(result.api).toBeFalsy();
+    expect(result.wrapper).toBeFalsy();
     expect(result.error).toBeFalsy();
 
     expect(result.uriHistory.getResolutionPath().getUriResolvers()).toEqual([]);
@@ -72,7 +72,7 @@ describe("resolveUri", () => {
         sourceUri: uri,
         result: {
           uri: uri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -80,7 +80,7 @@ describe("resolveUri", () => {
         sourceUri: uri,
         result: {
           uri: uri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -88,7 +88,7 @@ describe("resolveUri", () => {
         sourceUri: uri,
         result: {
           uri: uri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -96,7 +96,7 @@ describe("resolveUri", () => {
         sourceUri: uri,
         result: {
           uri: uri,
-          api: false,
+          wrapper: false,
         },
       },
     ]);
@@ -130,7 +130,7 @@ describe("resolveUri", () => {
     const result = await client.resolveUri(fromUri);
 
     expect(result.uri).toEqual(toUri2);
-    expect(result.api).toBeFalsy();
+    expect(result.wrapper).toBeFalsy();
     expect(result.error).toBeFalsy();
 
     expect(result.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
@@ -143,7 +143,7 @@ describe("resolveUri", () => {
         sourceUri: fromUri,
         result: {
           uri: toUri2,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -151,7 +151,7 @@ describe("resolveUri", () => {
         sourceUri: toUri2,
         result: {
           uri: toUri2,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -159,7 +159,7 @@ describe("resolveUri", () => {
         sourceUri: toUri2,
         result: {
           uri: toUri2,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -167,7 +167,7 @@ describe("resolveUri", () => {
         sourceUri: toUri2,
         result: {
           uri: toUri2,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -175,7 +175,7 @@ describe("resolveUri", () => {
         sourceUri: toUri2,
         result: {
           uri: toUri2,
-          api: false,
+          wrapper: false,
         },
       },
     ]);
@@ -213,7 +213,7 @@ describe("resolveUri", () => {
         sourceUri: pluginUri,
         result: {
           uri: pluginUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -221,7 +221,7 @@ describe("resolveUri", () => {
         sourceUri: pluginUri,
         result: {
           uri: pluginUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -229,26 +229,26 @@ describe("resolveUri", () => {
         sourceUri: pluginUri,
         result: {
           uri: pluginUri,
-          api: true,
+          wrapper: true,
         },
       },
     ]);
 
-    expect(result.api).toBeTruthy();
+    expect(result.wrapper).toBeTruthy();
     expect(result.uri).toEqual(pluginUri);
     expect(result.error).toBeFalsy();
   });
 
-  it("can resolve api", async () => {
+  it("can resolve wrapper", async () => {
     await runCLI({
       args: ["build"],
-      cwd: `${GetPathToTestApis()}/wasm-as/interface-invoke/test-interface`,
+      cwd: `${GetPathToTestWrappers()}/wasm-as/interface-invoke/test-interface`,
     });
 
     const client = await getClient();
 
-    const deployResult = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/wasm-as/interface-invoke/test-api`,
+    const deployResult = await buildAndDeployWrapper({
+      wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/interface-invoke/test-wrapper`,
       ipfsProvider,
       ethereumProvider: ethProvider,
     });
@@ -258,7 +258,7 @@ describe("resolveUri", () => {
 
     const result = await client.resolveUri(ensUri);
 
-    expect(result.api).toBeTruthy();
+    expect(result.wrapper).toBeTruthy();
     expect(result.uri).toEqual(ipfsUri);
     expect(result.error).toBeFalsy();
 
@@ -273,7 +273,7 @@ describe("resolveUri", () => {
         sourceUri: ensUri,
         result: {
           uri: ensUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -281,7 +281,7 @@ describe("resolveUri", () => {
         sourceUri: ensUri,
         result: {
           uri: ensUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -289,7 +289,7 @@ describe("resolveUri", () => {
         sourceUri: ensUri,
         result: {
           uri: ensUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -297,8 +297,8 @@ describe("resolveUri", () => {
         sourceUri: ensUri,
         result: {
           uri: ipfsUri,
-          api: false,
-          implementationUri: new Uri("wrap://ens/ens.web3api.eth"),
+          wrapper: false,
+          implementationUri: new Uri("wrap://ens/ens.polywrap.eth"),
         },
       },
       {
@@ -306,7 +306,7 @@ describe("resolveUri", () => {
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -314,7 +314,7 @@ describe("resolveUri", () => {
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -322,7 +322,7 @@ describe("resolveUri", () => {
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -330,8 +330,8 @@ describe("resolveUri", () => {
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: true,
-          implementationUri: new Uri("wrap://ens/ipfs.web3api.eth"),
+          wrapper: true,
+          implementationUri: new Uri("wrap://ens/ipfs.polywrap.eth"),
         },
       },
     ]);
@@ -340,13 +340,13 @@ describe("resolveUri", () => {
   it("can resolve cache", async () => {
     await runCLI({
       args: ["build"],
-      cwd: `${GetPathToTestApis()}/wasm-as/interface-invoke/test-interface`,
+      cwd: `${GetPathToTestWrappers()}/wasm-as/interface-invoke/test-interface`,
     });
 
     const client = await getClient();
 
-    const deployResult = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/wasm-as/interface-invoke/test-api`,
+    const deployResult = await buildAndDeployWrapper({
+      wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/interface-invoke/test-wrapper`,
       ipfsProvider,
       ethereumProvider: ethProvider,
     });
@@ -356,7 +356,7 @@ describe("resolveUri", () => {
 
     const result = await client.resolveUri(ipfsUri);
 
-    expect(result.api).toBeTruthy();
+    expect(result.wrapper).toBeTruthy();
     expect(result.uri).toEqual(ipfsUri);
     expect(result.error).toBeFalsy();
 
@@ -370,7 +370,7 @@ describe("resolveUri", () => {
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -378,7 +378,7 @@ describe("resolveUri", () => {
         uriResolver: "CacheResolver",
         result: {
           uri: ipfsUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -386,7 +386,7 @@ describe("resolveUri", () => {
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -394,15 +394,15 @@ describe("resolveUri", () => {
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: true,
-          implementationUri: new Uri("wrap://ens/ipfs.web3api.eth"),
+          wrapper: true,
+          implementationUri: new Uri("wrap://ens/ipfs.polywrap.eth"),
         },
       },
     ]);
 
     const result2 = await client.resolveUri(ensUri);
 
-    expect(result2.api).toBeTruthy();
+    expect(result2.wrapper).toBeTruthy();
     expect(result2.uri).toEqual(ipfsUri);
     expect(result2.error).toBeFalsy();
 
@@ -417,7 +417,7 @@ describe("resolveUri", () => {
         sourceUri: ensUri,
         result: {
           uri: ensUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -425,7 +425,7 @@ describe("resolveUri", () => {
         uriResolver: "CacheResolver",
         result: {
           uri: ensUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -433,7 +433,7 @@ describe("resolveUri", () => {
         sourceUri: ensUri,
         result: {
           uri: ensUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -441,8 +441,8 @@ describe("resolveUri", () => {
         sourceUri: ensUri,
         result: {
           uri: ipfsUri,
-          api: false,
-          implementationUri: new Uri("wrap://ens/ens.web3api.eth"),
+          wrapper: false,
+          implementationUri: new Uri("wrap://ens/ens.polywrap.eth"),
         },
       },
       {
@@ -450,7 +450,7 @@ describe("resolveUri", () => {
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -458,7 +458,7 @@ describe("resolveUri", () => {
         uriResolver: "CacheResolver",
         result: {
           uri: ipfsUri,
-          api: true,
+          wrapper: true,
         },
       },
     ]);
@@ -467,13 +467,13 @@ describe("resolveUri", () => {
   it("can resolve cache - noCacheRead", async () => {
     await runCLI({
       args: ["build"],
-      cwd: `${GetPathToTestApis()}/wasm-as/interface-invoke/test-interface`,
+      cwd: `${GetPathToTestWrappers()}/wasm-as/interface-invoke/test-interface`,
     });
 
     const client = await getClient();
 
-    const deployResult = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/wasm-as/interface-invoke/test-api`,
+    const deployResult = await buildAndDeployWrapper({
+      wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/interface-invoke/test-wrapper`,
       ipfsProvider,
       ethereumProvider: ethProvider,
     });
@@ -483,7 +483,7 @@ describe("resolveUri", () => {
 
     const result = await client.resolveUri(ipfsUri);
 
-    expect(result.api).toBeTruthy();
+    expect(result.wrapper).toBeTruthy();
     expect(result.uri).toEqual(ipfsUri);
     expect(result.error).toBeFalsy();
 
@@ -497,7 +497,7 @@ describe("resolveUri", () => {
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -505,7 +505,7 @@ describe("resolveUri", () => {
         uriResolver: "CacheResolver",
         result: {
           uri: ipfsUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -513,7 +513,7 @@ describe("resolveUri", () => {
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -521,15 +521,15 @@ describe("resolveUri", () => {
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: true,
-          implementationUri: new Uri("wrap://ens/ipfs.web3api.eth"),
+          wrapper: true,
+          implementationUri: new Uri("wrap://ens/ipfs.polywrap.eth"),
         },
       },
     ]);
 
     const result2 = await client.resolveUri(ensUri, { noCacheRead: true });
 
-    expect(result2.api).toBeTruthy();
+    expect(result2.wrapper).toBeTruthy();
     expect(result2.uri).toEqual(ipfsUri);
     expect(result2.error).toBeFalsy();
 
@@ -544,7 +544,7 @@ describe("resolveUri", () => {
         sourceUri: ensUri,
         result: {
           uri: ensUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -552,7 +552,7 @@ describe("resolveUri", () => {
         sourceUri: ensUri,
         result: {
           uri: ensUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -560,8 +560,8 @@ describe("resolveUri", () => {
         sourceUri: ensUri,
         result: {
           uri: ipfsUri,
-          api: false,
-          implementationUri: new Uri("wrap://ens/ens.web3api.eth"),
+          wrapper: false,
+          implementationUri: new Uri("wrap://ens/ens.polywrap.eth"),
         },
       },
       {
@@ -569,7 +569,7 @@ describe("resolveUri", () => {
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -577,7 +577,7 @@ describe("resolveUri", () => {
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -585,8 +585,8 @@ describe("resolveUri", () => {
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: true,
-          implementationUri: new Uri("wrap://ens/ipfs.web3api.eth"),
+          wrapper: true,
+          implementationUri: new Uri("wrap://ens/ipfs.polywrap.eth"),
         },
       },
     ]);
@@ -595,13 +595,13 @@ describe("resolveUri", () => {
   it("can resolve cache - noCacheWrite", async () => {
     await runCLI({
       args: ["build"],
-      cwd: `${GetPathToTestApis()}/wasm-as/interface-invoke/test-interface`,
+      cwd: `${GetPathToTestWrappers()}/wasm-as/interface-invoke/test-interface`,
     });
 
     const client = await getClient();
 
-    const deployResult = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/wasm-as/interface-invoke/test-api`,
+    const deployResult = await buildAndDeployWrapper({
+      wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/interface-invoke/test-wrapper`,
       ipfsProvider,
       ethereumProvider: ethProvider,
     });
@@ -611,7 +611,7 @@ describe("resolveUri", () => {
 
     const result = await client.resolveUri(ipfsUri, { noCacheWrite: true });
 
-    expect(result.api).toBeTruthy();
+    expect(result.wrapper).toBeTruthy();
     expect(result.uri).toEqual(ipfsUri);
     expect(result.error).toBeFalsy();
 
@@ -625,7 +625,7 @@ describe("resolveUri", () => {
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -633,7 +633,7 @@ describe("resolveUri", () => {
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -641,7 +641,7 @@ describe("resolveUri", () => {
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -649,15 +649,15 @@ describe("resolveUri", () => {
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: true,
-          implementationUri: new Uri("wrap://ens/ipfs.web3api.eth"),
+          wrapper: true,
+          implementationUri: new Uri("wrap://ens/ipfs.polywrap.eth"),
         },
       },
     ]);
 
     const result2 = await client.resolveUri(ensUri);
 
-    expect(result2.api).toBeTruthy();
+    expect(result2.wrapper).toBeTruthy();
     expect(result2.uri).toEqual(ipfsUri);
     expect(result2.error).toBeFalsy();
 
@@ -672,7 +672,7 @@ describe("resolveUri", () => {
         sourceUri: ensUri,
         result: {
           uri: ensUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -680,7 +680,7 @@ describe("resolveUri", () => {
         sourceUri: ensUri,
         result: {
           uri: ensUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -688,7 +688,7 @@ describe("resolveUri", () => {
         sourceUri: ensUri,
         result: {
           uri: ensUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -696,8 +696,8 @@ describe("resolveUri", () => {
         sourceUri: ensUri,
         result: {
           uri: ipfsUri,
-          api: false,
-          implementationUri: new Uri("wrap://ens/ens.web3api.eth"),
+          wrapper: false,
+          implementationUri: new Uri("wrap://ens/ens.polywrap.eth"),
         },
       },
       {
@@ -705,7 +705,7 @@ describe("resolveUri", () => {
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -713,7 +713,7 @@ describe("resolveUri", () => {
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -721,7 +721,7 @@ describe("resolveUri", () => {
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -729,21 +729,21 @@ describe("resolveUri", () => {
         sourceUri: ipfsUri,
         result: {
           uri: ipfsUri,
-          api: true,
-          implementationUri: new Uri("wrap://ens/ipfs.web3api.eth"),
+          wrapper: true,
+          implementationUri: new Uri("wrap://ens/ipfs.polywrap.eth"),
         },
       },
     ]);
   });
 
-  it("can resolve api with redirects", async () => {
+  it("can resolve wrapper with redirects", async () => {
     await runCLI({
       args: ["build"],
-      cwd: `${GetPathToTestApis()}/wasm-as/interface-invoke/test-interface`,
+      cwd: `${GetPathToTestWrappers()}/wasm-as/interface-invoke/test-interface`,
     });
 
-    const deployResult = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/wasm-as/interface-invoke/test-api`,
+    const deployResult = await buildAndDeployWrapper({
+      wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/interface-invoke/test-wrapper`,
       ipfsProvider,
       ethereumProvider: ethProvider,
     });
@@ -763,7 +763,7 @@ describe("resolveUri", () => {
 
     const result = await client.resolveUri(ensUri);
 
-    expect(result.api).toBeFalsy();
+    expect(result.wrapper).toBeFalsy();
     expect(result.uri).toEqual(redirectUri);
     expect(result.error).toBeFalsy();
 
@@ -778,7 +778,7 @@ describe("resolveUri", () => {
         sourceUri: ensUri,
         result: {
           uri: ensUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -786,7 +786,7 @@ describe("resolveUri", () => {
         sourceUri: ensUri,
         result: {
           uri: ensUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -794,7 +794,7 @@ describe("resolveUri", () => {
         sourceUri: ensUri,
         result: {
           uri: ensUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -802,8 +802,8 @@ describe("resolveUri", () => {
         sourceUri: ensUri,
         result: {
           uri: ipfsUri,
-          api: false,
-          implementationUri: new Uri("wrap://ens/ens.web3api.eth"),
+          wrapper: false,
+          implementationUri: new Uri("wrap://ens/ens.polywrap.eth"),
         },
       },
       {
@@ -811,7 +811,7 @@ describe("resolveUri", () => {
         sourceUri: ipfsUri,
         result: {
           uri: redirectUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -819,7 +819,7 @@ describe("resolveUri", () => {
         sourceUri: redirectUri,
         result: {
           uri: redirectUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -827,7 +827,7 @@ describe("resolveUri", () => {
         sourceUri: redirectUri,
         result: {
           uri: redirectUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -835,7 +835,7 @@ describe("resolveUri", () => {
         sourceUri: redirectUri,
         result: {
           uri: redirectUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -843,7 +843,7 @@ describe("resolveUri", () => {
         sourceUri: redirectUri,
         result: {
           uri: redirectUri,
-          api: false,
+          wrapper: false,
         },
       },
     ]);
@@ -874,7 +874,7 @@ describe("resolveUri", () => {
 
     const result = await client.resolveUri(ensUri);
 
-    expect(result.api).toBeFalsy();
+    expect(result.wrapper).toBeFalsy();
     expect(result.uri).toEqual(redirectUri);
     expect(result.error).toBeFalsy();
 
@@ -888,7 +888,7 @@ describe("resolveUri", () => {
         sourceUri: ensUri,
         result: {
           uri: redirectUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -896,7 +896,7 @@ describe("resolveUri", () => {
         sourceUri: redirectUri,
         result: {
           uri: redirectUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -904,7 +904,7 @@ describe("resolveUri", () => {
         sourceUri: redirectUri,
         result: {
           uri: redirectUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -912,7 +912,7 @@ describe("resolveUri", () => {
         sourceUri: redirectUri,
         result: {
           uri: redirectUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -920,7 +920,7 @@ describe("resolveUri", () => {
         sourceUri: redirectUri,
         result: {
           uri: redirectUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -928,7 +928,7 @@ describe("resolveUri", () => {
         sourceUri: redirectUri,
         result: {
           uri: redirectUri,
-          api: false,
+          wrapper: false,
         },
       },
     ]);
@@ -961,7 +961,7 @@ describe("resolveUri", () => {
       },
     });
 
-    expect(result.api).toBeFalsy();
+    expect(result.wrapper).toBeFalsy();
     expect(result.uri).toEqual(redirectUri);
     expect(result.error).toBeFalsy();
 
@@ -975,7 +975,7 @@ describe("resolveUri", () => {
         sourceUri: ensUri,
         result: {
           uri: redirectUri,
-          api: false,
+          wrapper: false,
         },
       },
       {
@@ -983,7 +983,7 @@ describe("resolveUri", () => {
         sourceUri: redirectUri,
         result: {
           uri: redirectUri,
-          api: false,
+          wrapper: false,
         },
       },
     ]);
@@ -993,7 +993,7 @@ describe("resolveUri", () => {
     const client = await new PolywrapClient({
       interfaces: [
         {
-          interface: "ens/uri-resolver.core.web3api.eth",
+          interface: "ens/uri-resolver.core.polywrap.eth",
           implementations: ["ens/test-resolver.eth"],
         },
       ],
@@ -1016,7 +1016,7 @@ describe("resolveUri", () => {
     const client = await new PolywrapClient({
       interfaces: [
         {
-          interface: "ens/uri-resolver.core.web3api.eth",
+          interface: "ens/uri-resolver.core.polywrap.eth",
           implementations: ["ens/test-resolver.eth"],
         },
       ],
@@ -1039,7 +1039,7 @@ describe("resolveUri", () => {
     );
   });
 
-  it("can preload API resolvers", async () => {
+  it("can preload wrapper resolvers", async () => {
     const client = await new PolywrapClient();
 
     const { success, failedUriResolvers } = await client.loadUriResolvers();
@@ -1047,10 +1047,10 @@ describe("resolveUri", () => {
     expect(success).toBeTruthy();
     expect(failedUriResolvers.length).toEqual(0);
 
-    const { error, uri, api } = await client.resolveUri("ens/test.eth");
+    const { error, uri, wrapper } = await client.resolveUri("ens/test.eth");
 
     expect(error).toBeFalsy();
-    expect(api).toBeFalsy();
+    expect(wrapper).toBeFalsy();
     expect(uri?.uri).toEqual("wrap://ens/test.eth");
   });
 });

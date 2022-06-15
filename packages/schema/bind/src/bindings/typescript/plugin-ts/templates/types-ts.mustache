@@ -7,7 +7,7 @@ import * as Types from "./";
 // @ts-ignore
 import {
   Client,
-  InvokeApiResult
+  InvokeResult
 } from "@polywrap/core-js";
 
 export type UInt = number;
@@ -121,7 +121,7 @@ export const {{type}} = {
   {{name}}: async (
     input: {{parent.type}}_Input_{{name}},
     client: Client
-  ): Promise<InvokeApiResult<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>> => {
+  ): Promise<InvokeResult<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>> => {
     return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>({
       uri: "{{parent.uri}}",
       method: "{{name}}",
@@ -146,7 +146,7 @@ export class {{type}} {
   public async {{name}} (
     input: {{parent.type}}_Input_{{name}},
     client: Client
-  ): Promise<InvokeApiResult<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>> {
+  ): Promise<InvokeResult<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>> {
     return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>({
       uri: this.uri,
       method: "{{name}}",

@@ -15,7 +15,7 @@ import {
   resetDir,
 } from "./";
 
-import { Web3ApiManifest, BuildManifest, MetaManifest } from "@polywrap/core-js";
+import { PolywrapManifest, BuildManifest, MetaManifest } from "@polywrap/core-js";
 import { WasmWrapper } from "@polywrap/client-js";
 import { WrapImports } from "@polywrap/client-js/build/wasm/types";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
@@ -26,13 +26,13 @@ import fs from "fs";
 import path from "path";
 
 interface CompilerState {
-  web3ApiManifest: Web3ApiManifest;
+  polywrapManifest: PolywrapManifest;
   composerOutput: ComposerOutput;
   compilerOverrides?: CompilerOverrides;
 }
 
 export interface CompilerOverrides {
-  validateManifest: (manifest: Web3ApiManifest) => void;
+  validateManifest: (manifest: PolywrapManifest) => void;
   generationSubPath: string;
 }
 
@@ -102,7 +102,7 @@ export class Compiler {
         // Generate the bindings
         await this._generateCode(state);
 
-        // Compile the API
+        // Compile the Wrapper
         buildManifest = await this._buildModules(state);
       }
 
@@ -110,7 +110,7 @@ export class Compiler {
       const metaManifest = await this._outputMetadata();
 
       await this._outputManifests(
-        state.web3ApiManifest,
+        state.polywrapManifest,
         buildManifest,
         metaManifest
       );
@@ -155,14 +155,14 @@ export class Compiler {
 
     const { project } = this._config;
 
-    // Get the Web3ApiManifest
-    const web3ApiManifest = await project.getManifest();
+    // Get the PolywrapManifest
+    const polywrapManifest = await project.getManifest();
 
     // Compose the schema
     const composerOutput = await this._composeSchema();
 
     // Allow the build-image to validate the manifest & override functionality
-    const buildImageDir = `${__dirname}/defaults/build-images/${web3ApiManifest.language}`;
+    const buildImageDir = `${__dirname}/defaults/build-images/${polywrapManifest.language}`;
     const buildImageEntryFile = path.join(buildImageDir, "index.ts");
     let compilerOverrides: CompilerOverrides | undefined;
 
@@ -177,13 +177,13 @@ export class Compiler {
       if (compilerOverrides) {
         // Validate the manifest for the given build-image
         if (compilerOverrides.validateManifest) {
-          compilerOverrides.validateManifest(web3ApiManifest);
+          compilerOverrides.validateManifest(polywrapManifest);
         }
       }
     }
 
     const state: CompilerState = {
-      web3ApiManifest: Object.assign({}, web3ApiManifest),
+      polywrapManifest: Object.assign({}, polywrapManifest),
       composerOutput,
       compilerOverrides,
     };
@@ -196,7 +196,7 @@ export class Compiler {
 
   private async _isInterface(): Promise<boolean> {
     const state = await this._getCompilerState();
-    return state.web3ApiManifest.language === "interface";
+    return state.polywrapManifest.language === "interface";
   }
 
   private async _composeSchema(): Promise<ComposerOutput> {
@@ -228,7 +228,7 @@ export class Compiler {
 
   private async _buildModules(state: CompilerState): Promise<BuildManifest> {
     const { outputDir } = this._config;
-    const { web3ApiManifest } = state;
+    const { polywrapManifest } = state;
 
     if (await this._isInterface()) {
       throw Error(intlMsg.lib_compiler_cannotBuildInterfaceModules());
@@ -240,10 +240,10 @@ export class Compiler {
     // Validate the Wasm module
     await this._validateWasmModule(outputDir);
 
-    // Update the Web3ApiManifest
-    web3ApiManifest.module = "./module.wasm";
-    web3ApiManifest.schema = "./schema.graphql";
-    web3ApiManifest.build = "./web3api.build.json";
+    // Update the PolywrapManifest
+    polywrapManifest.module = "./module.wasm";
+    polywrapManifest.schema = "./schema.graphql";
+    polywrapManifest.build = "./polywrap.build.json";
 
     // Create the BuildManifest
     return {
@@ -270,7 +270,7 @@ export class Compiler {
 
     // If the dockerfile path isn't provided, generate it
     if (!buildManifest?.docker?.dockerfile) {
-      // Make sure the default template is in the cached .polywrap/web3api/build/image folder
+      // Make sure the default template is in the cached .polywrap/wasm/build/image folder
       await project.cacheDefaultBuildImage();
 
       dockerfile = generateDockerfile(
@@ -357,30 +357,30 @@ export class Compiler {
       "utf-8"
     );
 
-    // Update the Web3ApiManifest schema paths
-    state.web3ApiManifest = {
-      ...state.web3ApiManifest,
+    // Update the PolywrapManifest schema paths
+    state.polywrapManifest = {
+      ...state.polywrapManifest,
       schema: "./schema.graphql",
     };
   }
 
   private async _outputManifests(
-    web3ApiManifest: Web3ApiManifest,
+    polywrapManifest: PolywrapManifest,
     buildManifest?: BuildManifest,
     metaManifest?: MetaManifest
   ): Promise<void> {
     const { outputDir, project } = this._config;
 
     await outputManifest(
-      web3ApiManifest,
-      path.join(outputDir, "web3api.json"),
+      polywrapManifest,
+      path.join(outputDir, "polywrap.json"),
       project.quiet
     );
 
     if (buildManifest) {
       await outputManifest(
         buildManifest,
-        path.join(outputDir, "web3api.build.json"),
+        path.join(outputDir, "polywrap.build.json"),
         project.quiet
       );
     }
@@ -388,7 +388,7 @@ export class Compiler {
     if (metaManifest) {
       await outputManifest(
         metaManifest,
-        path.join(outputDir, "web3api.meta.json"),
+        path.join(outputDir, "polywrap.meta.json"),
         project.quiet
       );
     }
@@ -411,19 +411,19 @@ export class Compiler {
   }
 
   private _validateState(state: CompilerState) {
-    const { composerOutput, web3ApiManifest } = state;
+    const { composerOutput, polywrapManifest } = state;
 
     if (!composerOutput.schema) {
       const missingSchemaMessage = intlMsg.lib_compiler_missingSchema();
       throw Error(missingSchemaMessage);
     }
 
-    if (web3ApiManifest.language !== "interface" && !web3ApiManifest.module) {
+    if (polywrapManifest.language !== "interface" && !polywrapManifest.module) {
       const missingModuleMessage = intlMsg.lib_compiler_missingModule();
       throw Error(missingModuleMessage);
     }
 
-    if (web3ApiManifest.language === "interface" && web3ApiManifest.module) {
+    if (polywrapManifest.language === "interface" && polywrapManifest.module) {
       const noInterfaceModule = intlMsg.lib_compiler_noInterfaceModule();
       throw Error(noInterfaceModule);
     }

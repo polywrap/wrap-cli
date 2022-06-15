@@ -5,14 +5,14 @@ import {
   parseRecipeOutputFilePathOption,
 } from "../lib";
 
-import { PolywrapClient, Web3ApiClientConfig } from "@polywrap/client-js";
+import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import gql from "graphql-tag";
 import path from "path";
 import yaml from "js-yaml";
 import fs from "fs";
 
 type QueryCommandOptions = {
-  clientConfig: Partial<Web3ApiClientConfig>;
+  clientConfig: Partial<PolywrapClientConfig>;
   outputFile?: string;
   quiet?: boolean;
 };
@@ -65,9 +65,9 @@ async function run(recipePath: string, options: QueryCommandOptions) {
 
   let constants: Record<string, string> = {};
   for (const task of recipe) {
-    if (task.api) {
-      uri = task.api;
-      recipeOutput.push({ api: task.api });
+    if (task.wrapper) {
+      uri = task.wrapper;
+      recipeOutput.push({ wrapper: task.wrapper });
     }
 
     if (task.constants) {
@@ -125,7 +125,7 @@ async function run(recipePath: string, options: QueryCommandOptions) {
       }
 
       if (!uri) {
-        throw Error(intlMsg.commands_query_error_noApi());
+        throw Error(intlMsg.commands_query_error_noWrapper());
       }
 
       if (!quiet) {

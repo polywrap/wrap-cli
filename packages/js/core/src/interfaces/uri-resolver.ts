@@ -1,5 +1,5 @@
-// TODO: https://github.com/web3-api/monorepo/issues/101
-import { Uri, InvokeHandler, InvokeApiResult } from "../";
+// TODO: https://github.com/polywrap/monorepo/issues/101
+import { Uri, InvokeHandler, InvokeResult } from "../";
 
 import { Tracer } from "@polywrap/tracing-js";
 
@@ -14,11 +14,11 @@ export const Query = {
     "core: uri-resolver: tryResolveUri",
     async (
       invoke: InvokeHandler["invoke"],
-      api: Uri,
+      wrapper: Uri,
       uri: Uri
-    ): Promise<InvokeApiResult<MaybeUriOrManifest>> => {
+    ): Promise<InvokeResult<MaybeUriOrManifest>> => {
       return invoke<MaybeUriOrManifest>({
-        uri: api.uri,
+        uri: wrapper.uri,
         method: `tryResolveUri`,
         input: {
           authority: uri.authority,
@@ -31,11 +31,11 @@ export const Query = {
     "core: uri-resolver: getFile",
     async (
       invoke: InvokeHandler["invoke"],
-      api: Uri,
+      wrapper: Uri,
       path: string
-    ): Promise<InvokeApiResult<ArrayBuffer>> => {
+    ): Promise<InvokeResult<ArrayBuffer>> => {
       return invoke<ArrayBuffer>({
-        uri: api.uri,
+        uri: wrapper.uri,
         method: "getFile",
         input: {
           path,

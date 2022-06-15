@@ -1,7 +1,7 @@
 /* eslint-disable */
 import { Result } from "./containers";
 
-// Subinvoke API
+// Subinvoke Interface
 
 @external("wrap", "__wrap_subinvoke")
 export declare function __wrap_subinvoke(
@@ -22,7 +22,7 @@ export declare function __wrap_subinvoke_error_len(): u32;
 @external("wrap", "__wrap_subinvoke_error")
 export declare function __wrap_subinvoke_error(ptr: u32): void;
 
-// Subinvoke API Helper
+// Subinvoke Interface Helper
 export function wrap_subinvoke(
   uri: string,
   method: string,

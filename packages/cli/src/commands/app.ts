@@ -13,7 +13,7 @@ import {
 import { PolywrapClient } from "@polywrap/client-js";
 import * as path from "path";
 
-const defaultOutputTypesDir = "./src/polywrap";
+const defaultOutputTypesDir = "./src/wrap";
 
 type AppCommandOptions = {
   manifestFile: string;

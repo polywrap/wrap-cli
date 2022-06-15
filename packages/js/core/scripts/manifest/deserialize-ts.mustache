@@ -51,7 +51,7 @@ export const deserialize{{type}} = Tracer.traceFunc(
     } else if (versionCompare === 1) {
       // Downgrade
       throw Error(
-        `Cannot downgrade Web3API version ${any{{type}}.format}, please upgrade your PolywrapClient package.`
+        `Cannot downgrade Polywrap version ${any{{type}}.format}, please upgrade your PolywrapClient package.`
       );
     } else {
       // Latest

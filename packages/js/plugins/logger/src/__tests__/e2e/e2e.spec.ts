@@ -3,10 +3,10 @@ import { PolywrapClient } from "@polywrap/client-js";
 describe("log method", () => {
 
   it("logs to console appropriate level", async () => {
-    const web3ApiClient = new PolywrapClient()
+    const polywrapClient = new PolywrapClient()
 
-    const response = await web3ApiClient.query<{ log: boolean }>({
-      uri: "wrap://ens/js-logger.web3api.eth",
+    const response = await polywrapClient.query<{ log: boolean }>({
+      uri: "wrap://ens/js-logger.polywrap.eth",
       query: `
         query {
           log(

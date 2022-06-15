@@ -1,6 +1,6 @@
 {
   "name": "@polywrap/test-cases",
-  "description": "Reusable Web3API Test Cases",
+  "description": "Reusable Polywrap Test Cases",
   "private": true,
   "version": "0.0.1-prealpha.85",
   "license": "MIT",

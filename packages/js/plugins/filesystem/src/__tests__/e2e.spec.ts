@@ -1,6 +1,6 @@
 import { filesystemPlugin } from "../index";
 import {
-  buildApi,
+  buildWrapper,
   ensAddresses,
   initTestEnvironment,
   stopTestEnvironment,
@@ -8,10 +8,10 @@ import {
 } from "@polywrap/test-env-js";
 import {
   PolywrapClient,
-  Web3ApiClientConfig,
+  PolywrapClientConfig,
   defaultIpfsProviders,
 } from "@polywrap/client-js";
-import { GetPathToTestApis } from "@polywrap/test-cases";
+import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ensPlugin } from "@polywrap/ens-plugin-js";
 import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
@@ -26,15 +26,15 @@ describe("Filesystem plugin", () => {
   beforeAll(async () => {
     await initTestEnvironment();
 
-    const config: Partial<Web3ApiClientConfig> = {
+    const config: Partial<PolywrapClientConfig> = {
       plugins: [
         {
-          uri: "wrap://ens/fs.web3api.eth",
+          uri: "wrap://ens/fs.polywrap.eth",
           plugin: filesystemPlugin({ }),
         },
-        // IPFS is required for downloading Web3API packages
+        // IPFS is required for downloading Polywrap packages
         {
-          uri: "wrap://ens/ipfs.web3api.eth",
+          uri: "wrap://ens/ipfs.polywrap.eth",
           plugin: ipfsPlugin({
             provider: providers.ipfs,
             fallbackProviders: defaultIpfsProviders,
@@ -42,7 +42,7 @@ describe("Filesystem plugin", () => {
         },
         // ENS is required for resolving domain to IPFS hashes
         {
-          uri: "wrap://ens/ens.web3api.eth",
+          uri: "wrap://ens/ens.polywrap.eth",
           plugin: ensPlugin({
             addresses: {
               testnet: ensAddresses.ensAddress,
@@ -50,7 +50,7 @@ describe("Filesystem plugin", () => {
           }),
         },
         {
-          uri: "wrap://ens/ethereum.web3api.eth",
+          uri: "wrap://ens/ethereum.polywrap.eth",
           plugin: ethereumPlugin({
             networks: {
               testnet: {
@@ -69,16 +69,16 @@ describe("Filesystem plugin", () => {
     await stopTestEnvironment();
   });
 
-  it("invokes simple-storage api on local drive", async () => {
-    const apiPath = path.resolve(
-      `${GetPathToTestApis()}/wasm-as/simple-storage`
+  it("invokes simple-storage wrapper on local drive", async () => {
+    const wrapperPath = path.resolve(
+      `${GetPathToTestWrappers()}/wasm-as/simple-storage`
     );
-    await buildApi(apiPath);
+    await buildWrapper(wrapperPath);
 
-    const fsPath = `${apiPath}/build`;
+    const fsPath = `${wrapperPath}/build`;
     const fsUri = `fs/${fsPath}`;
 
-    // query api from filesystem
+    // query wrapper from filesystem
     const deploy = await client.query<{
       deployContract: string;
     }>({
@@ -105,14 +105,14 @@ describe("Filesystem plugin", () => {
     expect(schema).toBe(expectedSchema);
 
     // get the manifest
-    const manifest = await client.getManifest(fsUri, { type: "web3api" });
+    const manifest = await client.getManifest(fsUri, { type: "polywrap" });
 
     expect(manifest).toBeTruthy();
     expect(manifest.language).toBe("wasm/assemblyscript");
 
     // get a file
-    const file = await client.getFile(fsUri, { path: "web3api.json", encoding: "utf-8" });
-    const expectedFile = await fs.promises.readFile(`${fsPath}/web3api.json`, "utf-8");
+    const file = await client.getFile(fsUri, { path: "polywrap.json", encoding: "utf-8" });
+    const expectedFile = await fs.promises.readFile(`${fsPath}/polywrap.json`, "utf-8");
 
     expect(file).toBe(expectedFile);
   });

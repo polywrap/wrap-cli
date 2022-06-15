@@ -2,7 +2,7 @@ import { displayPath, withSpinner, intlMsg } from "../";
 
 import {
   BuildManifest,
-  Web3ApiManifest,
+  PolywrapManifest,
   MetaManifest,
   PluginManifest,
 } from "@polywrap/core-js";
@@ -12,7 +12,7 @@ import path from "path";
 import fs from "fs";
 
 export async function outputManifest(
-  manifest: Web3ApiManifest | BuildManifest | MetaManifest | PluginManifest,
+  manifest: PolywrapManifest | BuildManifest | MetaManifest | PluginManifest,
   manifestPath: string,
   quiet = false
 ): Promise<unknown> {

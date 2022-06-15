@@ -16,16 +16,16 @@ import fs from "fs";
 
 const HELP = `Usage: polywrap deploy|d [options]
 
-Deploys/Publishes a Web3API
+Deploys/Publishes a Polywrap
 
 Options:
-  -m, --manifest-file <path>  Path to the Web3API Deploy manifest file
-                              (default: web3api.yaml | web3api.yml)
+  -m, --manifest-file <path>  Path to the Polywrap Deploy manifest file
+                              (default: polywrap.yaml | polywrap.yml)
   -v, --verbose               Verbose output (default: false)
   -h, --help                  display help for command
 `;
 
-const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/deploy");
+const testCaseRoot = path.join(GetPathToCliTestFiles(), "wasm/deploy");
   const testCases =
     fs.readdirSync(testCaseRoot, { withFileTypes: true })
       .filter((dirent) => dirent.isDirectory())
@@ -52,7 +52,7 @@ const setup = async (domainNames: string[]) => {
     ENS_REG_ADDR: ensAddress
   };
 
-  const ethereumPluginUri = "wrap://ens/ethereum.web3api.eth"
+  const ethereumPluginUri = "wrap://ens/ethereum.polywrap.eth"
   const client = new PolywrapClient({
     plugins: [
       {

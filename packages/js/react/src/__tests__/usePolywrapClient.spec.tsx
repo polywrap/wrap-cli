@@ -1,8 +1,8 @@
-import { UseWeb3ApiClientProps } from '../client';
+import { UsePolywrapClientProps } from '../client';
 import {
-  Web3ApiProvider,
-  createWeb3ApiProvider,
-  useWeb3ApiClient
+  PolywrapProvider,
+  createPolywrapProvider,
+  usePolywrapClient
 } from "..";
 import { createPlugins } from "./plugins";
 
@@ -22,7 +22,7 @@ import {
 
 jest.setTimeout(360000);
 
-describe("useWeb3ApiClient hook", () => {
+describe("usePolywrapClient hook", () => {
   let plugins: PluginRegistration<string>[];
   let WrapperProvider: RenderHookOptions<unknown>;
 
@@ -32,7 +32,7 @@ describe("useWeb3ApiClient hook", () => {
     plugins = createPlugins(ensAddresses.ensAddress, providers.ethereum, providers.ipfs);
 
     WrapperProvider = {
-      wrapper: Web3ApiProvider,
+      wrapper: PolywrapProvider,
       initialProps: {
         plugins,
       },
@@ -44,9 +44,9 @@ describe("useWeb3ApiClient hook", () => {
   });
 
   function getClient(
-    options?: UseWeb3ApiClientProps
+    options?: UsePolywrapClientProps
   ) {
-    const hook = () => useWeb3ApiClient(options);
+    const hook = () => usePolywrapClient(options);
 
     const { result: hookResult } = renderHook(hook, WrapperProvider);
 
@@ -63,32 +63,32 @@ describe("useWeb3ApiClient hook", () => {
   });
 
   it("Should throw error because there's no provider with expected key ", async () => {
-    const props: UseWeb3ApiClientProps = {
-      provider: "Non existent Web3API Provider",
+    const props: UsePolywrapClientProps = {
+      provider: "Non existent Polywrap Provider",
     };
 
-    const hook = () => useWeb3ApiClient(props);
+    const hook = () => usePolywrapClient(props);
 
     const { result } = renderHook(hook, WrapperProvider);
 
     expect(result.error?.message).toMatch(
-      /You are trying to use useWeb3ApiClient with provider \"Non existent Web3API Provider\"/
+      /You are trying to use usePolywrapClient with provider \"Non existent Polywrap Provider\"/
     );
   });
 
   it("Should throw error if provider is not within the DOM hierarchy", async () => {
-    createWeb3ApiProvider("other");
+    createPolywrapProvider("other");
 
-    const props: UseWeb3ApiClientProps = {
+    const props: UsePolywrapClientProps = {
       provider: "other"
     };
    
-    const hook = () => useWeb3ApiClient(props);
+    const hook = () => usePolywrapClient(props);
 
     const { result } = renderHook(hook, WrapperProvider);
 
     expect(result.error?.message).toMatch(
-      /The requested Web3APIProvider \"other\" was not found within the DOM hierarchy/
+      /The requested PolywrapProvider \"other\" was not found within the DOM hierarchy/
     );
   });
 });

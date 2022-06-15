@@ -1,4 +1,4 @@
-import { Module, Input_sampleMethod, manifest } from "./polywrap";
+import { Module, Input_sampleMethod, manifest } from "./wrap";
 
 import { PluginFactory } from "@polywrap/core-js";
 

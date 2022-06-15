@@ -1,3 +1,3 @@
-#import { Module, MaybeUriOrManifest } into UriResolver from "ens/uri-resolver.core.web3api.eth"
+#import { Module, MaybeUriOrManifest } into UriResolver from "ens/uri-resolver.core.polywrap.eth"
 
 type Module implements UriResolver_Module { }

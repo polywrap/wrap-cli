@@ -1,7 +1,7 @@
 module.exports = {
   root: true,
   ignorePatterns: [
-    "**/polywrap/**/*.*",
+    "**/wrap/**/*.*",
     "**/infra-modules/**/*.*",
     "**/build/**/*.*",
     "**/__tests__/**/*.*",

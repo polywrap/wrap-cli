@@ -16,19 +16,19 @@ const testCaseRoot = path.join(GetPathToCliTestFiles(), "infra");
 
 const HELP = `Usage: polywrap infra|i <action> [options]
 
-Manage infrastructure for your Web3API
+Manage infrastructure for your Polywrap
 
 Arguments:
   action                                   
     Infra allows you to execute the following commands:
-    up      Start Web3API infrastructure
-    down    Stop Web3API infrastructure
-    config   Validate and display Web3API infrastructure's bundled docker-compose manifest
-    vars     Show Web3API infrastructure's required .env variables
+    up      Start Polywrap infrastructure
+    down    Stop Polywrap infrastructure
+    config   Validate and display Polywrap infrastructure's bundled docker-compose manifest
+    vars     Show Polywrap infrastructure's required .env variables
    (choices: "up", "down", "vars", "config")
 
 Options:
-  --manifest  <manifest>                   Infra Manifest path (default: "web3api.infra.yaml")
+  --manifest  <manifest>                   Infra Manifest path (default: "polywrap.infra.yaml")
   -m, --modules <module-name,module-name>  Use only specified modules
   -v, --verbose                            Verbose output (default: false)
   -h, --help                               display help for command
@@ -177,7 +177,7 @@ describe("e2e tests for infra command", () => {
 
     test("Sets environment up with all modules if no --modules are passed", async () => {
       await runPolywrapCli(
-        ["infra", "down", "--manifest=./web3api.infra.yaml"],
+        ["infra", "down", "--manifest=./polywrap.infra.yaml"],
         getTestCaseDir(0),
       );
 
@@ -188,7 +188,7 @@ describe("e2e tests for infra command", () => {
       ]);
 
       await runPolywrapCli(
-        ["infra", "up", "--manifest=./web3api.infra.yaml"],
+        ["infra", "up", "--manifest=./polywrap.infra.yaml"],
         getTestCaseDir(0),
       );
 
@@ -234,7 +234,7 @@ describe("e2e tests for infra command", () => {
 
     test("Should throw because default module declared in manifest is not recognized", async () => {
       const { stderr } = await runPolywrapCli(
-        ["infra", "up", "--manifest=./web3api.infra.wrong.yaml"],
+        ["infra", "up", "--manifest=./polywrap.infra.wrong.yaml"],
         getTestCaseDir(4),
       );
 

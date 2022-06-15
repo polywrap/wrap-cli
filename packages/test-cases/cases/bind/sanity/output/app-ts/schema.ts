@@ -1,4 +1,4 @@
-export const schema: string = `### Web3API Header START ###
+export const schema: string = `### Polywrap Header START ###
 scalar UInt
 scalar UInt8
 scalar UInt16
@@ -33,7 +33,7 @@ directive @enabled_interface on OBJECT
 
 directive @annotate(type: String!) on FIELD
 
-### Web3API Header END ###
+### Polywrap Header END ###
 
 type Module @imports(
   types: [

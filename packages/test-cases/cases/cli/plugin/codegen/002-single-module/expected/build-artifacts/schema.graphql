@@ -1,4 +1,4 @@
-### Web3API Header START ###
+### Polywrap Header START ###
 scalar UInt
 scalar UInt8
 scalar UInt16
@@ -33,7 +33,7 @@ directive @enabled_interface on OBJECT
 
 directive @annotate(type: String!) on FIELD
 
-### Web3API Header END ###
+### Polywrap Header END ###
 
 type Module @imports(
   types: [
@@ -69,7 +69,7 @@ type Object {
 ### Imported Modules START ###
 
 type Ethereum_Module @imported(
-  uri: "ens/ethereum.web3api.eth",
+  uri: "ens/ethereum.polywrap.eth",
   namespace: "Ethereum",
   nativeType: "Module"
 ) {
@@ -231,7 +231,7 @@ type Ethereum_Module @imported(
 ### Imported Objects START ###
 
 type Ethereum_Connection @imported(
-  uri: "ens/ethereum.web3api.eth",
+  uri: "ens/ethereum.polywrap.eth",
   namespace: "Ethereum",
   nativeType: "Connection"
 ) {
@@ -240,7 +240,7 @@ type Ethereum_Connection @imported(
 }
 
 type Ethereum_TxOverrides @imported(
-  uri: "ens/ethereum.web3api.eth",
+  uri: "ens/ethereum.polywrap.eth",
   namespace: "Ethereum",
   nativeType: "TxOverrides"
 ) {
@@ -250,7 +250,7 @@ type Ethereum_TxOverrides @imported(
 }
 
 type Ethereum_StaticTxResult @imported(
-  uri: "ens/ethereum.web3api.eth",
+  uri: "ens/ethereum.polywrap.eth",
   namespace: "Ethereum",
   nativeType: "StaticTxResult"
 ) {
@@ -259,7 +259,7 @@ type Ethereum_StaticTxResult @imported(
 }
 
 type Ethereum_TxRequest @imported(
-  uri: "ens/ethereum.web3api.eth",
+  uri: "ens/ethereum.polywrap.eth",
   namespace: "Ethereum",
   nativeType: "TxRequest"
 ) {
@@ -275,7 +275,7 @@ type Ethereum_TxRequest @imported(
 }
 
 type Ethereum_TxReceipt @imported(
-  uri: "ens/ethereum.web3api.eth",
+  uri: "ens/ethereum.polywrap.eth",
   namespace: "Ethereum",
   nativeType: "TxReceipt"
 ) {
@@ -299,7 +299,7 @@ type Ethereum_TxReceipt @imported(
 }
 
 type Ethereum_Log @imported(
-  uri: "ens/ethereum.web3api.eth",
+  uri: "ens/ethereum.polywrap.eth",
   namespace: "Ethereum",
   nativeType: "Log"
 ) {
@@ -315,7 +315,7 @@ type Ethereum_Log @imported(
 }
 
 type Ethereum_EventNotification @imported(
-  uri: "ens/ethereum.web3api.eth",
+  uri: "ens/ethereum.polywrap.eth",
   namespace: "Ethereum",
   nativeType: "EventNotification"
 ) {
@@ -325,7 +325,7 @@ type Ethereum_EventNotification @imported(
 }
 
 type Ethereum_Network @imported(
-  uri: "ens/ethereum.web3api.eth",
+  uri: "ens/ethereum.polywrap.eth",
   namespace: "Ethereum",
   nativeType: "Network"
 ) {
@@ -335,7 +335,7 @@ type Ethereum_Network @imported(
 }
 
 type Ethereum_TxResponse @imported(
-  uri: "ens/ethereum.web3api.eth",
+  uri: "ens/ethereum.polywrap.eth",
   namespace: "Ethereum",
   nativeType: "TxResponse"
 ) {
@@ -361,7 +361,7 @@ type Ethereum_TxResponse @imported(
 }
 
 type Ethereum_Access @imported(
-  uri: "ens/ethereum.web3api.eth",
+  uri: "ens/ethereum.polywrap.eth",
   namespace: "Ethereum",
   nativeType: "Access"
 ) {

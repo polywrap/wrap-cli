@@ -141,7 +141,7 @@ export function parseLocalImports(
     const index = importTypes.findIndex((str) => str.indexOf("_") > -1);
     if (index > -1) {
       throw Error(
-        `User defined types with '_' in their name are forbidden. This is used for Web3API import namespacing.`
+        `User defined types with '_' in their name are forbidden. This is used for Polywrap import namespacing.`
       );
     }
 

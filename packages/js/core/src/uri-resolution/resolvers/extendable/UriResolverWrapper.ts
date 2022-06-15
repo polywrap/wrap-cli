@@ -1,15 +1,15 @@
 import { UriResolverInterface } from "../../../interfaces";
 import {
   DeserializeManifestOptions,
-  deserializeWeb3ApiManifest,
+  deserializePolywrapManifest,
 } from "../../../manifest";
-import { Uri, ApiCache, Client, InvokeHandler } from "../../../types";
+import { Uri, WrapperCache, Client, InvokeHandler } from "../../../types";
 import {
   UriResolver,
   UriResolutionStack,
   UriResolutionResult,
 } from "../../core";
-import { CreateApiFunc } from "./types/CreateApiFunc";
+import { CreateWrapperFunc } from "./types/CreateWrapperFunc";
 import { getEnvFromUriOrResolutionStack } from "../getEnvFromUriOrResolutionStack";
 
 import { Tracer } from "@polywrap/tracing-js";
@@ -17,7 +17,7 @@ import { Tracer } from "@polywrap/tracing-js";
 export class UriResolverWrapper implements UriResolver {
   constructor(
     public readonly implementationUri: Uri,
-    private readonly createApi: CreateApiFunc,
+    private readonly createWrapper: CreateWrapperFunc,
     private readonly deserializeOptions?: DeserializeManifestOptions
   ) {}
 
@@ -28,7 +28,7 @@ export class UriResolverWrapper implements UriResolver {
   async resolveUri(
     uri: Uri,
     client: Client,
-    cache: ApiCache,
+    cache: WrapperCache,
     resolutionPath: UriResolutionStack
   ): Promise<UriResolutionResult> {
     const result = await tryResolveUriWithImplementation(
@@ -49,8 +49,8 @@ export class UriResolverWrapper implements UriResolver {
       };
     } else if (result.manifest) {
       // We've found our manifest at the current implementation,
-      // meaning the URI resolver can also be used as an API resolver
-      const manifest = deserializeWeb3ApiManifest(
+      // meaning the URI resolver can also be used as an Wrapper resolver
+      const manifest = deserializePolywrapManifest(
         result.manifest,
         this.deserializeOptions
       );
@@ -60,7 +60,7 @@ export class UriResolverWrapper implements UriResolver {
         resolutionPath,
         client
       );
-      const api = this.createApi(
+      const wrapper = this.createWrapper(
         uri,
         manifest,
         this.implementationUri.uri,
@@ -69,7 +69,7 @@ export class UriResolverWrapper implements UriResolver {
 
       return {
         uri,
-        api,
+        wrapper,
       };
     }
 

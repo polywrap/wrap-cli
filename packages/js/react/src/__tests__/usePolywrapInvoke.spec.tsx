@@ -1,20 +1,20 @@
 import {
-  useWeb3ApiInvoke,
-  Web3ApiProvider,
-  createWeb3ApiProvider,
+  usePolywrapInvoke,
+  PolywrapProvider,
+  createPolywrapProvider,
 } from "..";
-import { UseWeb3ApiInvokeProps } from "../invoke";
+import { UsePolywrapInvokeProps } from "../invoke";
 import { createPlugins } from "./plugins";
 
 import { PluginRegistration } from "@polywrap/core-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
-  buildAndDeployApi,
+  buildAndDeployWrapper,
   ensAddresses,
   providers
 } from "@polywrap/test-env-js";
-import { GetPathToTestApis } from "@polywrap/test-cases";
+import { GetPathToTestWrappers } from "@polywrap/test-cases";
 
 import {
   renderHook,
@@ -25,7 +25,7 @@ import {
 
 jest.setTimeout(360000);
 
-describe("useWeb3ApiInvoke hook", () => {
+describe("usePolywrapInvoke hook", () => {
   let uri: string;
   let envUri: string;
   let plugins: PluginRegistration<string>[];
@@ -34,14 +34,14 @@ describe("useWeb3ApiInvoke hook", () => {
   beforeAll(async () => {
     await initTestEnvironment();
 
-    const { ensDomain } = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/wasm-as/simple-storage`,
+    const { ensDomain } = await buildAndDeployWrapper({
+      wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/simple-storage`,
       ipfsProvider: providers.ipfs,
       ethereumProvider: providers.ethereum,
     });
 
-    const { ensDomain: envEnsDomain } = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/wasm-as/simple-env-types`,
+    const { ensDomain: envEnsDomain } = await buildAndDeployWrapper({
+      wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/simple-env-types`,
       ipfsProvider: providers.ipfs,
       ethereumProvider: providers.ethereum,
     });
@@ -50,7 +50,7 @@ describe("useWeb3ApiInvoke hook", () => {
     envUri = `ens/testnet/${envEnsDomain}`;
     plugins = createPlugins(ensAddresses.ensAddress, providers.ethereum, providers.ipfs);
     WrapperProvider = {
-      wrapper: Web3ApiProvider,
+      wrapper: PolywrapProvider,
       initialProps: {
         plugins,
       },
@@ -62,9 +62,9 @@ describe("useWeb3ApiInvoke hook", () => {
   });
 
   async function sendQuery<TData>(
-    options: UseWeb3ApiInvokeProps
+    options: UsePolywrapInvokeProps
   ) {
-    const hook = () => useWeb3ApiInvoke<TData>(options);
+    const hook = () => usePolywrapInvoke<TData>(options);
 
     const { result: hookResult } = renderHook(hook, WrapperProvider);
 
@@ -78,9 +78,9 @@ describe("useWeb3ApiInvoke hook", () => {
   }
 
   async function sendQueryWithExecVariables<TData>(
-    options: UseWeb3ApiInvokeProps
+    options: UsePolywrapInvokeProps
   ) {
-    const hook = () => useWeb3ApiInvoke<TData>({
+    const hook = () => usePolywrapInvoke<TData>({
       uri: options.uri,
       module: options.module,
       method: options.method,
@@ -99,7 +99,7 @@ describe("useWeb3ApiInvoke hook", () => {
   }
 
   it("Should support passing env to client", async () => {
-    const deployQuery: UseWeb3ApiInvokeProps = {
+    const deployQuery: UsePolywrapInvokeProps = {
       uri: envUri,
       module: "query",
       method: "getEnv",
@@ -128,7 +128,7 @@ describe("useWeb3ApiInvoke hook", () => {
   });
 
   it("Should update storage data to five", async () => {
-    const deployInvoke: UseWeb3ApiInvokeProps = {
+    const deployInvoke: UsePolywrapInvokeProps = {
       uri,
       module: "mutation",
       method: "deployContract",
@@ -141,7 +141,7 @@ describe("useWeb3ApiInvoke hook", () => {
 
     const { data: address } = await sendQuery<string>(deployInvoke);
 
-    const setStorageInvocation: UseWeb3ApiInvokeProps = {
+    const setStorageInvocation: UsePolywrapInvokeProps = {
       uri,
       module: "mutation",
       method: "setData",
@@ -158,7 +158,7 @@ describe("useWeb3ApiInvoke hook", () => {
     expect(result.error).toBeFalsy();
     expect(result.data).toMatch(/0x/);
 
-    const getStorageDataInvocation: UseWeb3ApiInvokeProps = {
+    const getStorageDataInvocation: UsePolywrapInvokeProps = {
       uri,
       module: "query",
       method: "getData",
@@ -175,8 +175,8 @@ describe("useWeb3ApiInvoke hook", () => {
   });
 
   it("Should throw error because there's no provider with expected key ", async () => {
-    const getStorageDataInvocation: UseWeb3ApiInvokeProps = {
-      provider: "Non existent Web3API Provider",
+    const getStorageDataInvocation: UsePolywrapInvokeProps = {
+      provider: "Non existent Polywrap Provider",
       uri,
       module: "query",
       method: "getData",
@@ -185,18 +185,18 @@ describe("useWeb3ApiInvoke hook", () => {
       },
     };
 
-    const getDataStorageHook = () => useWeb3ApiInvoke(getStorageDataInvocation);
+    const getDataStorageHook = () => usePolywrapInvoke(getStorageDataInvocation);
     const { result } = renderHook(getDataStorageHook);
 
     expect(result.error?.message).toMatch(
-      /You are trying to use useWeb3ApiClient with provider \"Non existent Web3API Provider\"/
+      /You are trying to use usePolywrapClient with provider \"Non existent Polywrap Provider\"/
     );
   });
 
   it("Should throw error if provider is not within the DOM hierarchy", async () => {
-    createWeb3ApiProvider("other");
+    createPolywrapProvider("other");
 
-    const getStorageDataInvocation: UseWeb3ApiInvokeProps = {
+    const getStorageDataInvocation: UsePolywrapInvokeProps = {
       provider: "other",
       uri,
       module: "query",
@@ -206,16 +206,16 @@ describe("useWeb3ApiInvoke hook", () => {
       },
     };
 
-    const getDataStorageHook = () => useWeb3ApiInvoke(getStorageDataInvocation);
+    const getDataStorageHook = () => usePolywrapInvoke(getStorageDataInvocation);
     const { result } = renderHook(getDataStorageHook, WrapperProvider);
 
     expect(result.error?.message).toMatch(
-      /The requested Web3APIProvider \"other\" was not found within the DOM hierarchy/
+      /The requested PolywrapProvider \"other\" was not found within the DOM hierarchy/
     );
   });
 
   it("Should update storage data to three by setting value through variables passed to exec", async () => {
-    const deployInvoke: UseWeb3ApiInvokeProps = {
+    const deployInvoke: UsePolywrapInvokeProps = {
       uri,
       module: "mutation",
       method: "deployContract",
@@ -228,7 +228,7 @@ describe("useWeb3ApiInvoke hook", () => {
 
     const { data: address } = await sendQueryWithExecVariables<string>(deployInvoke);
 
-    const setStorageInvocation: UseWeb3ApiInvokeProps = {
+    const setStorageInvocation: UsePolywrapInvokeProps = {
       uri,
       module: "mutation",
       method: "setData",
@@ -245,7 +245,7 @@ describe("useWeb3ApiInvoke hook", () => {
     expect(result.error).toBeFalsy();
     expect(result.data).toMatch(/0x/);
 
-    const getStorageDataInvocation: UseWeb3ApiInvokeProps = {
+    const getStorageDataInvocation: UsePolywrapInvokeProps = {
       uri,
       module: "query",
       method: "getData",

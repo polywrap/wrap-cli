@@ -1,6 +1,6 @@
-import { createWeb3ApiClient, PluginConfigs } from "../../createPolywrapClient";
+import { createPolywrapClient, PluginConfigs } from "../../createPolywrapClient";
 
-describe("createWeb3ApiClient", () => {
+describe("createPolywrapClient", () => {
   it("Should throw because the plugin requested it's not installed ", async () => {
     const clientParams = {
       nonExistantPlugin: {
@@ -8,8 +8,8 @@ describe("createWeb3ApiClient", () => {
       },
     } as PluginConfigs;
   
-    await expect(createWeb3ApiClient(clientParams)).rejects.toThrow(
-      "Requested plugin \"nonExistantPlugin\" is not a supported createWeb3ApiClient plugin."
+    await expect(createPolywrapClient(clientParams)).rejects.toThrow(
+      "Requested plugin \"nonExistantPlugin\" is not a supported createPolywrapClient plugin."
     );
   });
 });

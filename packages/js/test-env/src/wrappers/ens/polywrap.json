@@ -1,0 +1,8 @@
+{
+  "format": "0.0.1-prealpha.9",
+  "name": "ENS",
+  "language": "wasm/assemblyscript",
+  "build": "./polywrap.build.json",
+  "schema": "./schema.graphql",
+  "module": "./module.wasm"
+}

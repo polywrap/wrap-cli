@@ -50,7 +50,7 @@ export class PluginProject extends Project<PluginManifest> {
     );
   }
 
-  /// Manifest (web3api.plugin.yaml)
+  /// Manifest (polywrap.plugin.yaml)
 
   public async getName(): Promise<string> {
     return (await this.getManifest()).name;
@@ -135,7 +135,7 @@ export class PluginProject extends Project<PluginManifest> {
 
   private _getGenerationDirectory(
     entryPoint: string,
-    generationSubPath = "polywrap"
+    generationSubPath = "wrap"
   ): string {
     const absolute = path.isAbsolute(entryPoint)
       ? entryPoint

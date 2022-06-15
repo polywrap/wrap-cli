@@ -1,1 +1,1 @@
-#import * into Ethereum from "wrap://ens/ethereum.web3api.eth"
+#import * into Ethereum from "wrap://ens/ethereum.polywrap.eth"
