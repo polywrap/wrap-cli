@@ -745,7 +745,10 @@ export class PolywrapClient implements Client {
   }
 
   @Tracer.traceMethod("PolywrapClient: _loadWrapper")
-  private async _loadWrapper(uri: Uri, options?: Contextualized): Promise<Wrapper> {
+  private async _loadWrapper(
+    uri: Uri,
+    options?: Contextualized
+  ): Promise<Wrapper> {
     const { wrapper, uriHistory, error } = await this.resolveUri(uri, {
       contextId: options?.contextId,
     });

@@ -15,7 +15,11 @@ import {
   resetDir,
 } from "./";
 
-import { PolywrapManifest, BuildManifest, MetaManifest } from "@polywrap/core-js";
+import {
+  PolywrapManifest,
+  BuildManifest,
+  MetaManifest,
+} from "@polywrap/core-js";
 import { WasmWrapper } from "@polywrap/client-js";
 import { WrapImports } from "@polywrap/client-js/build/wasm/types";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";

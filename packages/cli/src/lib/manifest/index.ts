@@ -4,6 +4,10 @@ export * from "./polywrap";
 export * from "./language";
 export * from "./output";
 
-import { PolywrapManifest, PluginManifest, AppManifest } from "@polywrap/core-js";
+import {
+  PolywrapManifest,
+  PluginManifest,
+  AppManifest,
+} from "@polywrap/core-js";
 
 export type AnyManifest = PolywrapManifest | PluginManifest | AppManifest;

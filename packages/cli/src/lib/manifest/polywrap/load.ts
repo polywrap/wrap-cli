@@ -61,7 +61,10 @@ export async function loadPolywrapManifest(
   }
 }
 
-export const defaultBuildManifest = ["polywrap.build.yaml", "polywrap.build.yml"];
+export const defaultBuildManifest = [
+  "polywrap.build.yaml",
+  "polywrap.build.yml",
+];
 
 export async function loadBuildManifest(
   manifestPath: string,

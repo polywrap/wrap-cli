@@ -371,7 +371,9 @@ export async function buildAndDeployWrapper({
   const result = deployStdout.match(extractCID);
 
   if (!result) {
-    throw Error(`polywrap CLI output missing IPFS CID.\nOutput: ${deployStdout}`);
+    throw Error(
+      `polywrap CLI output missing IPFS CID.\nOutput: ${deployStdout}`
+    );
   }
 
   const wrapperCid = new Uri(result[1]).path;

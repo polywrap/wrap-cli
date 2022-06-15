@@ -4,7 +4,14 @@ import {
   UriResolutionResult,
   UriResolutionStack,
 } from "../../core";
-import { Wrapper, WrapperCache, Client, Env, PluginPackage, Uri } from "../../../types";
+import {
+  Wrapper,
+  WrapperCache,
+  Client,
+  Env,
+  PluginPackage,
+  Uri,
+} from "../../../types";
 import { findPluginPackage } from "../../../algorithms";
 
 export class PluginResolver implements UriResolver {
