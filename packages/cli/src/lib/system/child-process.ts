@@ -18,17 +18,11 @@ export async function runCommand(
       if (err) {
         reject(err);
       } else {
-        if (!quiet) {
-          // the *entire* stdout and stderr (buffered)
-          console.log(stdout);
-          console.error(stderr);
-        }
-
         resolve({ stdout, stderr });
       }
     };
 
-    exec(
+    const childObj = exec(
       command,
       {
         cwd: __dirname,
@@ -39,5 +33,15 @@ export async function runCommand(
       },
       callback
     );
+
+    if (!quiet) {
+      childObj.stdout?.on("data", (data) => {
+        console.log(data.toString());
+      });
+
+      childObj.stderr?.on("data", (data) => {
+        console.log(data.toString());
+      });
+    }
   });
 }
