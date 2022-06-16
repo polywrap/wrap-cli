@@ -9,5 +9,5 @@
 ## Start Test Environment
 `yarn test:env:up`  
 
-## Build & Deploy Polywrap
+## Build & Deploy Wrapper
 `yarn deploy` 

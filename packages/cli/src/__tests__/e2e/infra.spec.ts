@@ -16,7 +16,7 @@ const testCaseRoot = path.join(GetPathToCliTestFiles(), "infra");
 
 const HELP = `Usage: polywrap infra|i <action> [options]
 
-Manage infrastructure for your Polywrap
+Manage infrastructure for your wrapper
 
 Arguments:
   action                                   

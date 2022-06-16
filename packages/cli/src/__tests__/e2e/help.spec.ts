@@ -10,13 +10,13 @@ Options:
 
 Commands:
   app|a                       Build/generate types for your app
-  build|b [options]           Builds a Polywrap
+  build|b [options]           Builds a wrapper
   codegen|g [options]         Auto-generate Wrapper Types
   create|c                    Create a new project with polywrap CLI
   deploy|d [options]          Deploys/Publishes a Polywrap
   plugin|p                    Build/generate types for the plugin
-  query|q [options] <recipe>  Query Polywraps using recipe scripts
-  infra|i [options] <action>  Manage infrastructure for your Polywrap
+  query|q [options] <recipe>  Query wrappers using recipe scripts
+  infra|i [options] <action>  Manage infrastructure for your wrapper
   help [command]              display help for command
 `;
 

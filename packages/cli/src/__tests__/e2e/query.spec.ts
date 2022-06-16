@@ -18,7 +18,7 @@ jest.setTimeout(200000);
 
 const HELP = `Usage: polywrap query|q [options] <recipe>
 
-Query Polywraps using recipe scripts
+Query wrappers using recipe scripts
 
 Arguments:
   recipe                                Path to recipe script

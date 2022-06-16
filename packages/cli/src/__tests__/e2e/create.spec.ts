@@ -11,7 +11,7 @@ Options:
   -h, --help                          display help for command
 
 Commands:
-  wasm [options] <language> <name>    Create a Polywrap project langs:
+  wasm [options] <language> <name>    Create a Polywrap wasm wrapper langs:
                                       assemblyscript, interface
   app [options] <language> <name>     Create a Polywrap application langs:
                                       typescript-node, typescript-react

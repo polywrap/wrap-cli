@@ -8,7 +8,7 @@ import path from "path";
 
 const HELP = `Usage: polywrap build|b [options]
 
-Builds a Polywrap
+Builds a wrapper
 
 Options:
   -m, --manifest-file <path>  Path to the Polywrap Build manifest file
