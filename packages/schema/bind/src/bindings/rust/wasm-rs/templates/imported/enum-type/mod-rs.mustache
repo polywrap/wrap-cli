@@ -1,4 +1,4 @@
-use web3api_wasm_rs::EnumTypeError;
+use polywrap_wasm_rs::EnumTypeError;
 use serde::{Serialize, Deserialize};
 use std::convert::TryFrom;
 

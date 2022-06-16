@@ -1,11 +1,11 @@
 {
-  "name": "@web3api/manifest-schemas",
-  "description": "Web3API Manifest Schemas",
+  "name": "@polywrap/manifest-schemas",
+  "description": "Polywrap Manifest Schemas",
   "version": "0.0.1-prealpha.85",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/web3-api/monorepo.git"
+    "url": "https://github.com/polywrap/monorepo.git"
   },
   "main": "./package.json",
   "scripts": {

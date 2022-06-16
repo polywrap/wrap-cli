@@ -3,7 +3,7 @@ import {
   MODULE_NAME,
   AnyDefinition,
   TypeInfo,
-} from "@web3api/schema-parse";
+} from "@polywrap/schema-parse";
 
 export function validateEnv(info: TypeInfo): void {
   if (info.envType.client) {

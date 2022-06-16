@@ -2,10 +2,10 @@ import { Uri } from "../";
 import { UriConfig } from "../types/Uri";
 
 describe("Uri", () => {
-  it("Inserts a w3:// scheme when one is not present", () => {
+  it("Inserts a wrap:// scheme when one is not present", () => {
     const uri = new Uri("/authority-v2/path.to.thing.root/sub/path");
 
-    expect(uri.uri).toEqual("w3://authority-v2/path.to.thing.root/sub/path");
+    expect(uri.uri).toEqual("wrap://authority-v2/path.to.thing.root/sub/path");
     expect(uri.authority).toEqual("authority-v2");
     expect(uri.path).toEqual("path.to.thing.root/sub/path");
   });
@@ -15,16 +15,16 @@ describe("Uri", () => {
   });
 
   it("Fails if an authority is not present", () => {
-    expect(() => new Uri("w3://path")).toThrowError(/URI is malformed,/);
+    expect(() => new Uri("wrap://path")).toThrowError(/URI is malformed,/);
   });
 
   it("Fails if a path is not present", () => {
-    expect(() => new Uri("w3://authority/")).toThrowError(/URI is malformed,/);
+    expect(() => new Uri("wrap://authority/")).toThrowError(/URI is malformed,/);
   });
 
   it("Fails if scheme is not at the beginning", () => {
-    expect(() => new Uri("path/w3://something")).toThrowError(
-      /The w3:\/\/ scheme must/
+    expect(() => new Uri("path/wrap://something")).toThrowError(
+      /The wrap:\/\/ scheme must/
     );
   });
 
@@ -33,19 +33,19 @@ describe("Uri", () => {
   });
 
   it("Returns true if URI is valid", () => {
-    expect(Uri.isValidUri("w3://valid/uri")).toBeTruthy();
+    expect(Uri.isValidUri("wrap://valid/uri")).toBeTruthy();
   });
 
   it("Returns false if URI is invalid", () => {
-    expect(Uri.isValidUri("w3://.....")).toBeFalsy();
+    expect(Uri.isValidUri("wrap://.....")).toBeFalsy();
   });
 
   it("Returns a parsed URI configuration from isValidUri", () => {
     const config: UriConfig = {} as UriConfig;
 
-    expect(Uri.isValidUri("w3://valid/uri", config)).toBeTruthy();
+    expect(Uri.isValidUri("wrap://valid/uri", config)).toBeTruthy();
     expect(config).toMatchObject({
-      uri: "w3://valid/uri",
+      uri: "wrap://valid/uri",
       authority: "valid",
       path: "uri",
     });

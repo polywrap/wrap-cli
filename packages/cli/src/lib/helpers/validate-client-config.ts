@@ -7,8 +7,8 @@ import {
   PluginRegistration,
   Uri,
   UriRedirect,
-  Web3ApiClientConfig,
-} from "@web3api/client-js";
+  PolywrapClientConfig,
+} from "@polywrap/client-js";
 
 export function validateRedirects<TUri extends PluginPackage | Uri | string>(
   redirects: UriRedirect<TUri>[]
@@ -168,7 +168,7 @@ export function validateEnvs<TUri extends Uri | string = string>(
 }
 
 export function validateClientConfig(
-  config: Partial<Web3ApiClientConfig>
+  config: Partial<PolywrapClientConfig>
 ): void {
   if (!config || typeof config !== "object") {
     throw new Error(intlMsg.commands_query_error_clientConfigNotObject());

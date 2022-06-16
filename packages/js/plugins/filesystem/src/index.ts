@@ -6,11 +6,11 @@ import {
   UriResolver_MaybeUriOrManifest,
   Bytes,
   manifest,
-} from "./w3-man";
+} from "./wrap-man";
 
 import path from "path";
 import fs from "fs";
-import { PluginFactory } from "@web3api/core-js";
+import { PluginFactory } from "@polywrap/core-js";
 
 export type FilesystemPluginConfig = Record<string, unknown>;
 
@@ -24,9 +24,9 @@ export class FilesystemPlugin extends Module<FilesystemPluginConfig> {
     }
 
     const manifestSearchPatterns = [
-      "web3api.json",
-      "web3api.yaml",
-      "web3api.yml",
+      "polywrap.json",
+      "polywrap.yaml",
+      "polywrap.yml",
     ];
 
     let manifest: string | undefined;

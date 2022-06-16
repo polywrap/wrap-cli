@@ -1,26 +1,26 @@
-import { createWeb3ApiProvider } from "..";
+import { createPolywrapProvider } from "..";
 import { SimpleStorageContainer } from "./app/SimpleStorage";
 import { createPlugins } from "./plugins";
 
 import {
   initTestEnvironment,
   stopTestEnvironment,
-  buildAndDeployApi,
+  buildAndDeployWrapper,
   ensAddresses,
   providers
-} from "@web3api/test-env-js";
-import { GetPathToTestApis } from "@web3api/test-cases";
-import { PluginRegistration } from "@web3api/core-js";
+} from "@polywrap/test-env-js";
+import { GetPathToTestWrappers } from "@polywrap/test-cases";
+import { PluginRegistration } from "@polywrap/core-js";
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import React from "react";
 import { render, fireEvent, screen, waitFor } from "@testing-library/react";
 jest.setTimeout(360000);
 
-describe("Web3API React Integration", () => {
+describe("Polywrap React Integration", () => {
   let plugins: PluginRegistration[];
   let ensUri: string;
-  let api: {
+  let wrapper: {
     ensDomain: string;
     ipfsCid: string;
   };
@@ -30,13 +30,13 @@ describe("Web3API React Integration", () => {
 
     plugins = createPlugins(ensAddresses.ensAddress, providers.ethereum, providers.ipfs);
 
-    api = await buildAndDeployApi({
-      apiAbsPath: `${GetPathToTestApis()}/wasm-as/simple-storage`,
+    wrapper = await buildAndDeployWrapper({
+      wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/simple-storage`,
       ipfsProvider: providers.ipfs,
       ethereumProvider: providers.ethereum,
     });
 
-    ensUri = `ens/testnet/${api.ensDomain}`;
+    ensUri = `ens/testnet/${wrapper.ensDomain}`;
   });
 
   afterAll(async () => {
@@ -67,10 +67,10 @@ describe("Web3API React Integration", () => {
 
   it("Should throw error because two providers with same key has been rendered ", () => {
     // @ts-ignore
-    const CustomWeb3ApiProvider = createWeb3ApiProvider("test");
+    const CustomPolywrapProvider = createPolywrapProvider("test");
 
-    expect(() => createWeb3ApiProvider("test")).toThrowError(
-      /A Web3Api provider already exists with the name \"test\"/
+    expect(() => createPolywrapProvider("test")).toThrowError(
+      /A Polywrap provider already exists with the name \"test\"/
     );
   });
 });

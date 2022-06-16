@@ -1,6 +1,0 @@
-format: 0.0.1-prealpha.2
-docker:
-  name: bigint-type-wasm-rs
-linked_packages:
-  - name: web3api-wasm-rs
-    path: ../../../../../wasm/rs

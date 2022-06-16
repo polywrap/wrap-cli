@@ -1,10 +1,10 @@
 import {
-  Web3ApiManifestLanguage,
+  PolywrapManifestLanguage,
   PluginManifestLanguage,
   AppManifestLanguage,
 } from "./";
 
 export type AnyManifestLanguage =
-  | Web3ApiManifestLanguage
+  | PolywrapManifestLanguage
   | PluginManifestLanguage
   | AppManifestLanguage;

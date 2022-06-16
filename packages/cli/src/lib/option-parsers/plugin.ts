@@ -5,7 +5,7 @@ import { resolvePathIfExists } from "../system";
 import path from "path";
 
 const defaultPluginPublishDir = "./build";
-const defaultPluginCodegenDir = "./w3";
+const defaultPluginCodegenDir = "./wrap";
 
 export function parsePluginManifestFileOption(
   manifestFile: string | undefined,

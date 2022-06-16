@@ -97,7 +97,7 @@ export const generateProjectTemplate = (
     const isOnline = checkIfOnline(useYarn);
 
     const root = path.resolve(projectName);
-    const dependencies: string[] = ["@web3api/templates"];
+    const dependencies: string[] = ["@polywrap/templates"];
 
     fs.write(
       `${root}/package.json`,
@@ -147,7 +147,7 @@ export const generateProjectTemplate = (
     executeCommand(command, args, root)
       .then(() => {
         copyAsync(
-          `${root}/node_modules/@web3api/templates/${type}/${lang}`,
+          `${root}/node_modules/@polywrap/templates/${type}/${lang}`,
           `${root}`,
           {
             overwrite: true,
@@ -158,7 +158,7 @@ export const generateProjectTemplate = (
           })
           .catch(() => {
             reject({
-              command: `copy ${root}/node_modules/@web3api/templates/${type}/${lang} ${root}`,
+              command: `copy ${root}/node_modules/@polywrap/templates/${type}/${lang} ${root}`,
             });
           });
       })

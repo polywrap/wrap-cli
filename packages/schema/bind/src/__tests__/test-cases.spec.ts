@@ -10,12 +10,12 @@ import {
   writeFileSync,
   alphabeticalNamedSort,
   OutputEntry
-} from "@web3api/os-js";
+} from "@polywrap/os-js";
 
 import fs from "fs";
 import path from "path";
 
-describe("Web3API Binding Test Suite", () => {
+describe("Polywrap Binding Test Suite", () => {
   const cases = fetchTestCases();
 
   for (const test of cases) {

@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 pub mod serialization;
-use web3api_wasm_rs::{
+use polywrap_wasm_rs::{
     BigInt,
     BigNumber,
     Map,
