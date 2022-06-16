@@ -4,9 +4,9 @@ import {
   Input_querySubgraph,
   HTTP_Module,
   manifest,
-} from "./w3-man";
+} from "./wrap-man";
 
-import { PluginFactory } from "@web3api/core-js";
+import { PluginFactory } from "@polywrap/core-js";
 
 export interface RequestError {
   errors: {

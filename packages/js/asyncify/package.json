@@ -1,11 +1,11 @@
 {
-  "name": "@web3api/asyncify-js",
+  "name": "@polywrap/asyncify-js",
   "description": "Async Wasm Imports Support Using Asyncify",
   "version": "0.0.1-prealpha.85",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/web3-api/monorepo.git"
+    "url": "https://github.com/polywrap/monorepo.git"
   },
   "main": "build/index.js",
   "files": [

@@ -1,10 +1,10 @@
 /* eslint-disable */
 import { Result } from "./containers";
 
-// Implementation Subinvoke API
+// Implementation Subinvoke Interface
 
-@external("w3", "__w3_subinvokeImplementation")
-export declare function __w3_subinvokeImplementation(
+@external("wrap", "__wrap_subinvokeImplementation")
+export declare function __wrap_subinvokeImplementation(
   interface_uri_ptr: u32, interface_uri_len: u32,
   impl_uri_ptr: u32, impl_uri_len: u32,
   method_ptr: u32, method_len: u32,
@@ -12,19 +12,19 @@ export declare function __w3_subinvokeImplementation(
 ): bool;
 
 // Implementation Subinvoke Result
-@external("w3", "__w3_subinvokeImplementation_result_len")
-export declare function __w3_subinvokeImplementation_result_len(): u32;
-@external("w3", "__w3_subinvokeImplementation_result")
-export declare function __w3_subinvokeImplementation_result(ptr: u32): void;
+@external("wrap", "__wrap_subinvokeImplementation_result_len")
+export declare function __wrap_subinvokeImplementation_result_len(): u32;
+@external("wrap", "__wrap_subinvokeImplementation_result")
+export declare function __wrap_subinvokeImplementation_result(ptr: u32): void;
 
 // Subinvoke Error
-@external("w3", "__w3_subinvokeImplementation_error_len")
-export declare function __w3_subinvokeImplementation_error_len(): u32;
-@external("w3", "__w3_subinvokeImplementation_error")
-export declare function __w3_subinvokeImplementation_error(ptr: u32): void;
+@external("wrap", "__wrap_subinvokeImplementation_error_len")
+export declare function __wrap_subinvokeImplementation_error_len(): u32;
+@external("wrap", "__wrap_subinvokeImplementation_error")
+export declare function __wrap_subinvokeImplementation_error(ptr: u32): void;
 
-// Implementation Subinvoke API Helper
-export function w3_subinvokeImplementation(
+// Implementation Subinvoke Interface Helper
+export function wrap_subinvokeImplementation(
   interfaceUri: string,
   implUri: string,
   method: string,
@@ -34,7 +34,7 @@ export function w3_subinvokeImplementation(
   const implUriBuf = String.UTF8.encode(implUri);
   const methodBuf = String.UTF8.encode(method);
   
-  const success = __w3_subinvokeImplementation(
+  const success = __wrap_subinvokeImplementation(
     changetype<u32>(interfaceUriBuf), interfaceUriBuf.byteLength,
     changetype<u32>(implUriBuf), implUriBuf.byteLength,
     changetype<u32>(methodBuf), methodBuf.byteLength,
@@ -42,16 +42,16 @@ export function w3_subinvokeImplementation(
   );
 
   if (!success) {
-    const errorLen = __w3_subinvokeImplementation_error_len();
+    const errorLen = __wrap_subinvokeImplementation_error_len();
     const messageBuf = new ArrayBuffer(errorLen);
-    __w3_subinvokeImplementation_error(changetype<u32>(messageBuf));
+    __wrap_subinvokeImplementation_error(changetype<u32>(messageBuf));
     const message = String.UTF8.decode(messageBuf);
     return Result.Err<ArrayBuffer, string>(message);
   }
 
-  const resultLen = __w3_subinvokeImplementation_result_len();
+  const resultLen = __wrap_subinvokeImplementation_result_len();
   const resultBuffer = new ArrayBuffer(resultLen);
-  __w3_subinvokeImplementation_result(changetype<u32>(resultBuffer));
+  __wrap_subinvokeImplementation_result(changetype<u32>(resultBuffer));
 
   return Result.Ok<ArrayBuffer, string>(resultBuffer);
 }

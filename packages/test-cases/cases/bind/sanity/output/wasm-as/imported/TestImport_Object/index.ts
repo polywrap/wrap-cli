@@ -7,7 +7,7 @@ import {
   JSON,
   JSONSerializer,
   JSONDeserializer,
-} from "@web3api/wasm-as";
+} from "@polywrap/wasm-as";
 import {
   serializeTestImport_Object,
   deserializeTestImport_Object,

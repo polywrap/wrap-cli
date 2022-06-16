@@ -12,7 +12,7 @@ import {
   createEnumPropertyDefinition,
   createObjectRef,
   createTypeInfo
-} from "@web3api/schema-parse";
+} from "@polywrap/schema-parse";
 
 export const typeInfo: TypeInfo = {
   ...createTypeInfo(),

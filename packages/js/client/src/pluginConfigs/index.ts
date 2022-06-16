@@ -13,15 +13,15 @@ interface PluginConfigs {
 }
 
 const modules: Record<string, string> = {
-  ipfs: "@web3api/ipfs-plugin-js",
-  ethereum: "@web3api/ethereum-plugin-js",
-  ens: "@web3api/ens-plugin-js",
+  ipfs: "@polywrap/ipfs-plugin-js",
+  ethereum: "@polywrap/ethereum-plugin-js",
+  ens: "@polywrap/ens-plugin-js",
 };
 
 const uris: Record<string, string> = {
-  ipfs: "w3://ens/ipfs.web3api.eth",
-  ethereum: "w3://ens/ethereum.web3api.eth",
-  ens: "w3://ens/ens.web3api.eth",
+  ipfs: "wrap://ens/ipfs.polywrap.eth",
+  ethereum: "wrap://ens/ethereum.polywrap.eth",
+  ens: "wrap://ens/ens.polywrap.eth",
 };
 
 export { PluginConfigs, modules, uris };

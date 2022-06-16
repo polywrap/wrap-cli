@@ -1,19 +1,19 @@
-export * from "./web3api";
-export * from "./web3api.build";
-export * from "./web3api.infra";
-export * from "./web3api.deploy";
-export * from "./web3api.meta";
-export * from "./web3api.plugin";
-export * from "./web3api.app";
+export * from "./polywrap";
+export * from "./polywrap.build";
+export * from "./polywrap.infra";
+export * from "./polywrap.deploy";
+export * from "./polywrap.meta";
+export * from "./polywrap.plugin";
+export * from "./polywrap.app";
 
-import { Web3ApiManifest } from "./web3api";
-import { BuildManifest } from "./web3api.build";
-import { InfraManifest } from "./web3api.infra";
-import { DeployManifest } from "./web3api.deploy";
-import { MetaManifest } from "./web3api.meta";
+import { PolywrapManifest } from "./polywrap";
+import { BuildManifest } from "./polywrap.build";
+import { InfraManifest } from "./polywrap.infra";
+import { DeployManifest } from "./polywrap.deploy";
+import { MetaManifest } from "./polywrap.meta";
 
 export type ManifestArtifactType =
-  | "web3api"
+  | "polywrap"
   | "meta"
   | "build"
   | "deploy"
@@ -21,8 +21,8 @@ export type ManifestArtifactType =
 
 export type AnyManifestArtifact<
   TManifestType extends ManifestArtifactType
-> = TManifestType extends "web3api"
-  ? Web3ApiManifest
+> = TManifestType extends "polywrap"
+  ? PolywrapManifest
   : TManifestType extends "build"
   ? BuildManifest
   : TManifestType extends "infra"

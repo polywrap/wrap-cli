@@ -7,7 +7,7 @@ import {
   GetPathToParseTestFiles,
   readFileIfExists,
   readNamedExportIfExists
-} from "@web3api/test-cases"
+} from "@polywrap/test-cases"
 
 const root = GetPathToParseTestFiles();
 

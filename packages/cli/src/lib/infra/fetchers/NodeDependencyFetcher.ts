@@ -22,7 +22,7 @@ export class NodeDependencyFetcher extends InfraDependencyFetcher {
 
   protected composePackageJson(packages: InfraPackageArg[]): void {
     const packageJson = {
-      name: "web3api-infra",
+      name: "polywrap-infra",
       version: "1.0.0",
       private: true,
       dependencies: packages.reduce((acc, current) => {

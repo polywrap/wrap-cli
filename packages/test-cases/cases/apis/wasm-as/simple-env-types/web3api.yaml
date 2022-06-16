@@ -1,6 +1,0 @@
-format: 0.0.1-prealpha.9
-name: SimpleEnvTypes
-language: wasm/assemblyscript
-build: ./web3api.build.yaml
-schema: ./src/schema.graphql
-module: ./src/index.ts

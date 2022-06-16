@@ -68,7 +68,7 @@ type AnotherType {
 }
 `;
 
-describe("Web3API Schema TypeInfo Transformations", () => {
+describe("Polywrap Schema TypeInfo Transformations", () => {
   it("addFirstLast", () => {
     const typeInfo = parseSchema(schema1, {
       transforms: [addFirstLast],

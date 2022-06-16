@@ -9,7 +9,7 @@ import {
   BigNumber,
   JSON,
   Context
-} from "@web3api/wasm-as";
+} from "@polywrap/wasm-as";
 import { Env } from "./";
 import * as Types from "..";
 

@@ -1,6 +1,0 @@
-format: 0.0.1-prealpha.9
-name: HTTP-Integration
-build: ./web3api.build.yaml
-language: wasm/assemblyscript
-schema: ./schema.graphql
-module: ./src/index.ts

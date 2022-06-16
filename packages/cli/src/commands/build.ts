@@ -1,13 +1,13 @@
 import { Command, Program } from "./types";
 import {
   Compiler,
-  Web3ApiProject,
+  PolywrapProject,
   SchemaComposer,
   Watcher,
   WatchEvent,
   watchEventName,
   intlMsg,
-  defaultWeb3ApiManifest,
+  defaultPolywrapManifest,
   isDockerInstalled,
   FileLock,
   parseWasmManifestFileOption,
@@ -18,7 +18,7 @@ import { print } from "gluegun";
 import path from "path";
 import readline from "readline";
 
-const defaultManifestStr = defaultWeb3ApiManifest.join(" | ");
+const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 const pathStr = intlMsg.commands_build_options_o_path();
 
 type BuildCommandOptions = {
@@ -68,9 +68,9 @@ async function run(options: BuildCommandOptions) {
     return;
   }
 
-  const project = new Web3ApiProject({
+  const project = new PolywrapProject({
     rootDir: path.dirname(manifestFile),
-    web3apiManifestPath: manifestFile,
+    polywrapManifestPath: manifestFile,
     quiet: !verbose,
   });
   await project.validate();
@@ -148,7 +148,7 @@ async function run(options: BuildCommandOptions) {
     const watcher = new Watcher();
 
     watcher.start(project.getManifestDir(), {
-      ignored: [outputDir + "/**", project.getManifestDir() + "/**/w3/**"],
+      ignored: [outputDir + "/**", project.getManifestDir() + "/**/wrap/**"],
       ignoreInitial: true,
       execute: async (events: WatchEvent[]) => {
         // Log all of the events encountered

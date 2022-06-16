@@ -12,7 +12,7 @@ import {
   toPrefixedGraphQLType,
   methodParentPointers,
   interfaceUris,
-} from "@web3api/schema-parse";
+} from "@polywrap/schema-parse";
 import path from "path";
 
 export { Functions };

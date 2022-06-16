@@ -1,4 +1,4 @@
-import { Access, TxReceipt, TxResponse, TxRequest, Log } from "../w3-man";
+import { Access, TxReceipt, TxResponse, TxRequest, Log } from "../wrap-man";
 
 import { ethers } from "ethers";
 

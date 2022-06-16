@@ -1,4 +1,4 @@
-import { Workflow } from "@web3api/core-js";
+import { Workflow } from "@polywrap/core-js";
 
 export const sanityWorkflow: Workflow = {
   name: "simple-storage",

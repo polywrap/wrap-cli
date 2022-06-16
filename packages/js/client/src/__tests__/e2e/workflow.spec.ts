@@ -1,12 +1,12 @@
-import { GetPathToTestApis } from "@web3api/test-cases";
+import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import {
-  buildAndDeployApi,
+  buildAndDeployWrapper,
   initTestEnvironment,
   stopTestEnvironment,
   ensAddresses,
   providers
-} from "@web3api/test-env-js";
-import { createWeb3ApiClient, Web3ApiClient, Web3ApiClientConfig } from "../..";
+} from "@polywrap/test-env-js";
+import { createPolywrapClient, PolywrapClient, PolywrapClientConfig } from "../..";
 import { outPropWorkflow, sanityWorkflow } from "./workflow-test-cases";
 
 jest.setTimeout(200000);
@@ -23,8 +23,8 @@ describe("workflow", () => {
     ensAddress = ensAddresses.ensAddress;
   });
 
-  const getClient = async (config?: Partial<Web3ApiClientConfig>) => {
-    return createWeb3ApiClient(
+  const getClient = async (config?: Partial<PolywrapClientConfig>) => {
+    return createPolywrapClient(
       {
         ethereum: {
           networks: {
@@ -50,11 +50,11 @@ describe("workflow", () => {
   });
 
   describe("simple-storage", () => {
-    let client: Web3ApiClient;
+    let client: PolywrapClient;
 
     beforeAll(async () => {
-      await buildAndDeployApi({
-        apiAbsPath: `${GetPathToTestApis()}/wasm-as/simple-storage`,
+      await buildAndDeployWrapper({
+        wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/simple-storage`,
         ipfsProvider,
         ethereumProvider: ethProvider,
         ensName: "simple-storage.eth",

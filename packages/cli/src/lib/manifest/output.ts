@@ -2,17 +2,17 @@ import { displayPath, withSpinner, intlMsg } from "../";
 
 import {
   BuildManifest,
-  Web3ApiManifest,
+  PolywrapManifest,
   MetaManifest,
   PluginManifest,
-} from "@web3api/core-js";
-import { writeFileSync, normalizePath } from "@web3api/os-js";
+} from "@polywrap/core-js";
+import { writeFileSync, normalizePath } from "@polywrap/os-js";
 import YAML from "js-yaml";
 import path from "path";
 import fs from "fs";
 
 export async function outputManifest(
-  manifest: Web3ApiManifest | BuildManifest | MetaManifest | PluginManifest,
+  manifest: PolywrapManifest | BuildManifest | MetaManifest | PluginManifest,
   manifestPath: string,
   quiet = false
 ): Promise<unknown> {
