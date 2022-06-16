@@ -12,9 +12,7 @@
     "deploy:polywrap": "npx polywrap build --ipfs http://localhost:5001 --test-ens simplestorage.eth"
   },
   "dependencies": {
-    "@polywrap/wasm-as": "0.0.1-prealpha.85"
-  },
-  "devDependencies": {
-    "polywrap": "0.0.1-prealpha.85"
+    "@polywrap/wasm-as": "0.0.1-prealpha.85",
+    "assemblyscript": "0.19.5"
   }
 }
