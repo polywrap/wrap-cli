@@ -20,6 +20,7 @@ pub fn module_method_wrapped(input: &[u8]) -> Vec<u8> {
                 enum_array: args.enum_array,
                 opt_enum_array: args.opt_enum_array,
                 map: args.map,
+                map_of_arr: args.map_of_arr,
             });
             serialize_module_method_result(&result).unwrap()
         }

@@ -20,6 +20,7 @@ export class Input_moduleMethod {
   enumArray: Array<Types.CustomEnum>;
   optEnumArray: Array<Nullable<Types.CustomEnum>> | null;
   map: Map<string, i32>;
+  mapOfArr: Map<string, Array<i32>>;
 }
 
 export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Input_moduleMethod {
@@ -38,6 +39,8 @@ export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Input_moduleM
   let _optEnumArray: Array<Nullable<Types.CustomEnum>> | null = null;
   let _map: Map<string, i32> = new Map<string, i32>();
   let _mapSet: bool = false;
+  let _mapOfArr: Map<string, Array<i32>> = new Map<string, Array<i32>>();
+  let _mapOfArrSet: bool = false;
 
   while (numFields > 0) {
     numFields--;
@@ -135,6 +138,18 @@ export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Input_moduleM
       _mapSet = true;
       reader.context().pop();
     }
+    else if (field == "mapOfArr") {
+      reader.context().push(field, "Map<string, Array<i32>>", "type found, reading property");
+      _mapOfArr = reader.readExtGenericMap((reader: Read): string => {
+        return reader.readString();
+      }, (reader: Read): Array<i32> => {
+        return reader.readArray((reader: Read): i32 => {
+          return reader.readInt32();
+        });
+      });
+      _mapOfArrSet = true;
+      reader.context().pop();
+    }
     reader.context().pop();
   }
 
@@ -150,6 +165,9 @@ export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Input_moduleM
   if (!_mapSet) {
     throw new Error(reader.context().printWithContext("Missing required argument: 'map: Map<String, Int>'"));
   }
+  if (!_mapOfArrSet) {
+    throw new Error(reader.context().printWithContext("Missing required argument: 'mapOfArr: Map<String, [Int]>'"));
+  }
 
   return {
     str: _str,
@@ -158,7 +176,8 @@ export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Input_moduleM
     optEnum: _optEnum,
     enumArray: _enumArray,
     optEnumArray: _optEnumArray,
-    map: _map
+    map: _map,
+    mapOfArr: _mapOfArr
   };
 }
 

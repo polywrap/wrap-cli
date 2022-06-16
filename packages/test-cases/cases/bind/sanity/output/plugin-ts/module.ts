@@ -17,6 +17,7 @@ export interface Input_moduleMethod extends Record<string, unknown> {
   enumArray: Array<Types.CustomEnum>;
   optEnumArray?: Array<Types.CustomEnum | null> | null;
   map: Map<Types.String, Types.Int>;
+  mapOfArr: Map<Types.String, Array<Types.Int>>;
 }
 
 export interface Input_objectMethod extends Record<string, unknown> {

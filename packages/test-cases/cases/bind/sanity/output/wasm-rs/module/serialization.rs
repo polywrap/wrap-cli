@@ -30,6 +30,7 @@ pub struct InputModuleMethod {
     pub enum_array: Vec<CustomEnum>,
     pub opt_enum_array: Option<Vec<Option<CustomEnum>>>,
     pub map: Map<String, i32>,
+    pub map_of_arr: Map<String, Vec<i32>>,
 }
 
 pub fn deserialize_module_method_args(input: &[u8]) -> Result<InputModuleMethod, DecodeError> {
@@ -50,6 +51,8 @@ pub fn deserialize_module_method_args(input: &[u8]) -> Result<InputModuleMethod,
     let mut _opt_enum_array: Option<Vec<Option<CustomEnum>>> = None;
     let mut _map: Map<String, i32> = Map::<String, i32>::new();
     let mut _map_set = false;
+    let mut _map_of_arr: Map<String, Vec<i32>> = Map::<String, Vec<i32>>::new();
+    let mut _map_of_arr_set = false;
 
     while num_of_fields > 0 {
         num_of_fields -= 1;
@@ -139,6 +142,18 @@ pub fn deserialize_module_method_args(input: &[u8]) -> Result<InputModuleMethod,
                 _map_set = true;
                 reader.context().pop();
             }
+            "mapOfArr" => {
+                reader.context().push(&field, "Map<String, Vec<i32>>", "type found, reading argument");
+                _map_of_arr = reader.read_ext_generic_map(|reader| {
+                    reader.read_string()
+                }, |reader| {
+                    reader.read_array(|reader| {
+                        reader.read_i32()
+                    })
+                })?;
+                _map_of_arr_set = true;
+                reader.context().pop();
+            }
             err => return Err(DecodeError::UnknownFieldName(err.to_string())),
         }
     }
@@ -154,6 +169,9 @@ pub fn deserialize_module_method_args(input: &[u8]) -> Result<InputModuleMethod,
     if !_map_set {
         return Err(DecodeError::MissingField("map: Map<String, Int>.".to_string()));
     }
+    if !_map_of_arr_set {
+        return Err(DecodeError::MissingField("mapOfArr: Map<String, [Int]>.".to_string()));
+    }
 
     Ok(InputModuleMethod {
         str: _str,
@@ -163,6 +181,7 @@ pub fn deserialize_module_method_args(input: &[u8]) -> Result<InputModuleMethod,
         enum_array: _enum_array,
         opt_enum_array: _opt_enum_array,
         map: _map,
+        map_of_arr: _map_of_arr,
     })
 }
 

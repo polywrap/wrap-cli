@@ -18,7 +18,8 @@ export function moduleMethodWrapped(argsBuf: ArrayBuffer): ArrayBuffer {
     optEnum: args.optEnum,
     enumArray: args.enumArray,
     optEnumArray: args.optEnumArray,
-    map: args.map
+    map: args.map,
+    mapOfArr: args.mapOfArr
   });
   return serializemoduleMethodResult(result);
 }

@@ -55,6 +55,7 @@ type Module @imports(
     enumArray: [CustomEnum!]!
     optEnumArray: [CustomEnum]
     map: Map! @annotate(type: "Map<String!, Int!>!")
+    mapOfArr: Map! @annotate(type: "Map<String!, [Int!]!>!")
   ): Int!
 
   objectMethod(
