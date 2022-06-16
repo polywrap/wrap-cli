@@ -1,7 +1,7 @@
 {{#capabilities}}
 {{#getImplementations}}
 {{#enabled}}
-use web3api_wasm_rs::w3_get_implementations;
+use polywrap_wasm_rs::wrap_get_implementations;
 {{/enabled}}
 {{/getImplementations}}
 {{/capabilities}}
@@ -15,7 +15,7 @@ impl {{#toUpper}}{{namespace}}{{/toUpper}} {
   {{#getImplementations}}
   {{#enabled}}
   pub fn get_implementations() -> Vec<String> {
-    w3_get_implementations(Self::uri)
+    wrap_get_implementations(Self::uri)
   }
   {{/enabled}}
   {{/getImplementations}}

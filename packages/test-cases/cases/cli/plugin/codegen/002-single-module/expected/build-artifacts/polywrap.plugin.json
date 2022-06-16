@@ -1,0 +1,7 @@
+{
+  "format": "0.0.1-prealpha.3",
+  "name": "Test",
+  "language": "plugin/typescript",
+  "schema": "./schema.graphql",
+  "module": "./src/index.ts"
+}

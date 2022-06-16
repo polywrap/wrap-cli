@@ -1,5 +1,5 @@
 import { Project as TsProject } from "ts-morph";
-import { writeFileSync } from "@web3api/os-js";
+import { writeFileSync } from "@polywrap/os-js";
 import path from "path";
 
 interface PluginConfigSource {
@@ -21,36 +21,28 @@ interface PluginConfigSource {
 const plugins: PluginConfigSource[] = [
   {
     name: "Ipfs",
-    module: "@web3api/ipfs-plugin-js",
-    uri: "w3://ens/ipfs.web3api.eth",
-    config: "IpfsPluginConfigs",
+    module: "@polywrap/ipfs-plugin-js",
+    uri: "wrap://ens/ipfs.polywrap.eth",
+    config: "IpfsPluginConfig",
     files: [
       {
         name: "build/index.d.ts",
-        interfaces: ["IpfsPluginConfigs"]
-      },
-      {
-        name: "build/common/IpfsConfig.d.ts",
-        interfaces: ["IpfsConfig"],
+        interfaces: ["IpfsPluginConfig"]
       }
     ],
   },
   {
     name: "Ethereum",
-    module: "@web3api/ethereum-plugin-js",
-    uri: "w3://ens/ethereum.web3api.eth",
-    config: "EthereumPluginConfigs",
+    module: "@polywrap/ethereum-plugin-js",
+    uri: "wrap://ens/ethereum.polywrap.eth",
+    config: "EthereumPluginConfig",
     files: [
       {
         name: "build/index.d.ts",
-        interfaces: ["EthereumPluginConfigs"],
+        interfaces: ["EthereumPluginConfig"],
       },
       {
-        name: "build/common/EthereumConfig.d.ts",
-        interfaces: ["EthereumConfig"],
-      },
-      {
-        name: "build/common/Connection.d.ts",
+        name: "build/Connection.d.ts",
         interfaces: ["ConnectionConfig", "ConnectionConfigs"],
         types: ["EthereumProvider", "EthereumSigner", "AccountIndex", "Address"],
       },
@@ -72,19 +64,15 @@ const plugins: PluginConfigSource[] = [
   },
   {
     name: "Ens",
-    module: "@web3api/ens-plugin-js",
-    uri: "w3://ens/ens.web3api.eth",
-    config: "EnsPluginConfigs",
+    module: "@polywrap/ens-plugin-js",
+    uri: "wrap://ens/ens.polywrap.eth",
+    config: "EnsPluginConfig",
     files: [
       {
-        name: "build/w3/plugin.d.ts",
-        interfaces: ["EnsPluginConfigs"],
-      },
-      {
-        name: "build/query/index.d.ts",
-        interfaces: ["QueryConfig", "Addresses"],
+        name: "build/index.d.ts",
+        interfaces: ["EnsPluginConfig", "Addresses"],
         types: ["Address"],
-      },
+      }
     ]
   }
 ];

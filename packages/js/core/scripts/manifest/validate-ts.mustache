@@ -10,9 +10,9 @@ import {
 } from ".";
 {{#validators.length}}import * as Validators from "../../validators";{{/validators.length}}
 {{#formats}}
-import schema_{{tsVersion}} from "@web3api/manifest-schemas/formats/{{dir}}/{{version}}.json";
+import schema_{{tsVersion}} from "@polywrap/manifest-schemas/formats/{{dir}}/{{version}}.json";
 {{/formats}}
-import { Tracer } from "@web3api/tracing-js"
+import { Tracer } from "@polywrap/tracing-js"
 
 import {
   Schema,

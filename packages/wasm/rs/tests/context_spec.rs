@@ -1,4 +1,4 @@
-use web3api_wasm_rs::Context;
+use polywrap_wasm_rs::Context;
 
 #[test]
 fn push_and_pop_values() {

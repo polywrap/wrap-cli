@@ -17,7 +17,7 @@ import {
 } from "./migrators/{{version}}_to_{{#latest}}{{version}}{{/latest}}";
 {{/prevFormats}}
 
-import { Tracer } from "@web3api/tracing-js";
+import { Tracer } from "@polywrap/tracing-js";
 
 type Migrator = {
   [key in {{#latest}}{{type}}{{/latest}}Formats]?: (m: Any{{#latest}}{{type}}{{/latest}}) => {{#latest}}{{type}}{{/latest}};

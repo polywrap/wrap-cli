@@ -1,10 +1,10 @@
-import { useWeb3ApiQuery, Web3ApiProvider, useWeb3ApiClient, createWeb3ApiProvider } from "@web3api/react";
-import { PluginRegistration } from "@web3api/client-js";
+import { usePolywrapQuery, PolywrapProvider, usePolywrapClient, createPolywrapProvider } from "@polywrap/react";
+import { PluginRegistration } from "@polywrap/client-js";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import React from "react";
 
 const SimpleStorage = ({ uri }: { uri: string }) => {
-  const { execute: deployContract, data: deployData } = useWeb3ApiQuery<{
+  const { execute: deployContract, data: deployData } = usePolywrapQuery<{
     deployContract: string
   }>({
     uri,
@@ -17,7 +17,7 @@ const SimpleStorage = ({ uri }: { uri: string }) => {
     }`,
   });
 
-  const { execute: setData } = useWeb3ApiQuery({
+  const { execute: setData } = usePolywrapQuery({
     uri,
     query: `mutation {
       setData(
@@ -34,7 +34,7 @@ const SimpleStorage = ({ uri }: { uri: string }) => {
     }
   });
 
-  const { execute: getStorageData, data: currentStorage } = useWeb3ApiQuery({
+  const { execute: getStorageData, data: currentStorage } = usePolywrapQuery({
     uri,
     query: `query {
       getData(
@@ -46,8 +46,8 @@ const SimpleStorage = ({ uri }: { uri: string }) => {
     }`,
   });
 
-  const client1 = useWeb3ApiClient();
-  const client2 = useWeb3ApiClient({ provider: "custom" });
+  const client1 = usePolywrapClient();
+  const client2 = usePolywrapClient({ provider: "custom" });
 
   const updateStorageData = async () => {
     await setData();
@@ -72,7 +72,7 @@ const SimpleStorage = ({ uri }: { uri: string }) => {
   );
 };
 
-const CustomProvider = createWeb3ApiProvider("custom");
+const CustomProvider = createPolywrapProvider("custom");
 
 export const SimpleStorageContainer = ({
   plugins,
@@ -82,8 +82,8 @@ export const SimpleStorageContainer = ({
   ensUri: string;
 }) => (
   <CustomProvider>
-    <Web3ApiProvider plugins={plugins}>
+    <PolywrapProvider plugins={plugins}>
       <SimpleStorage uri={ensUri} />
-    </Web3ApiProvider>
+    </PolywrapProvider>
   </CustomProvider>
 );

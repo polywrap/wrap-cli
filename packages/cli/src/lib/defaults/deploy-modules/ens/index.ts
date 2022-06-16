@@ -4,10 +4,10 @@ import { Deployer } from "../../../deploy/deployer";
 
 import { Wallet } from "@ethersproject/wallet";
 import { JsonRpcProvider } from "@ethersproject/providers";
-import { Uri } from "@web3api/core-js";
-import { Web3ApiClient } from "@web3api/client-js";
+import { Uri } from "@polywrap/core-js";
+import { PolywrapClient } from "@polywrap/client-js";
 import path from "path";
-import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
+import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
 
 const contentHash = require("content-hash");
 
@@ -41,14 +41,14 @@ class ENSPublisher implements Deployer {
       ? new Wallet(config.privateKey).connect(connectionProvider)
       : undefined;
 
-    const ethereumPluginUri = "w3://ens/ethereum.web3api.eth";
+    const ethereumPluginUri = "wrap://ens/ethereum.polywrap.eth";
     const ensWrapperUri = `fs/${path.join(
-      path.dirname(require.resolve("@web3api/test-env-js")),
+      path.dirname(require.resolve("@polywrap/test-env-js")),
       "wrappers",
       "ens"
     )}`;
 
-    const client = new Web3ApiClient({
+    const client = new PolywrapClient({
       plugins: [
         {
           uri: ethereumPluginUri,
@@ -67,7 +67,6 @@ class ENSPublisher implements Deployer {
 
     const { data: resolver } = await client.invoke<string>({
       method: "getResolver",
-      module: "query",
       uri: ensWrapperUri,
       input: {
         registryAddress: config.ensRegistryAddress,
@@ -90,7 +89,6 @@ class ENSPublisher implements Deployer {
 
     const { data: setContenthashData } = await client.invoke<{ hash: string }>({
       method: "setContentHash",
-      module: "mutation",
       uri: ensWrapperUri,
       input: {
         domain: config.domainName,
@@ -108,7 +106,6 @@ class ENSPublisher implements Deployer {
 
     await client.invoke({
       method: "awaitTransaction",
-      module: "query",
       uri: ethereumPluginUri,
       input: {
         txHash: setContenthashData.hash,

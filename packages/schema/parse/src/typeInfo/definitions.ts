@@ -1,6 +1,5 @@
 import { ScalarType, isScalarType } from "./scalar";
-import { OperationType, isOperationType } from "./operation";
-import { ModuleType, isModuleType } from "./module";
+import { isModuleType } from "./module";
 import { isMapKeyType, MapKeyType } from "./map";
 
 export enum DefinitionKind {
@@ -384,26 +383,20 @@ export function createObjectPropertyDefinition(args: {
 }
 
 export interface MethodDefinition extends GenericDefinition, WithComment {
-  type: OperationType;
   arguments: PropertyDefinition[];
   return: PropertyDefinition;
 }
 export function createMethodDefinition(args: {
-  type: string;
   name: string;
   arguments?: PropertyDefinition[];
   return: PropertyDefinition;
   comment?: string;
 }): MethodDefinition {
-  const lowercase = args.type.toLowerCase();
-  if (!isOperationType(lowercase)) {
-    throw Error(
-      `createMethodDefinition: Unrecognized operation type provided "${args.type}"`
-    );
-  }
   return {
-    ...createGenericDefinition(args),
-    type: lowercase,
+    ...createGenericDefinition({
+      ...args,
+      type: "Method",
+    }),
     required: true,
     arguments: args.arguments ? args.arguments : [],
     return: args.return,
@@ -413,27 +406,21 @@ export function createMethodDefinition(args: {
 }
 
 export interface ModuleDefinition extends GenericDefinition, WithComment {
-  type: ModuleType;
   methods: MethodDefinition[];
   imports: { type: string }[];
   interfaces: InterfaceImplementedDefinition[];
 }
 export function createModuleDefinition(args: {
-  type: string;
   imports?: { type: string }[];
   interfaces?: InterfaceImplementedDefinition[];
   required?: boolean;
   comment?: string;
 }): ModuleDefinition {
-  if (!isModuleType(args.type)) {
-    throw Error(
-      `createModuleDefinition: Unrecognized module type provided "${args.type}"`
-    );
-  }
-
   return {
-    ...createGenericDefinition(args),
-    type: args.type,
+    ...createGenericDefinition({
+      ...args,
+      type: "Module",
+    }),
     methods: [],
     imports: args.imports ? args.imports : [],
     interfaces: args.interfaces ? args.interfaces : [],
@@ -474,20 +461,16 @@ export function createImportedEnumDefinition(args: {
 
 export const capabilityTypes = ["getImplementations"] as const;
 export type CapabilityType = typeof capabilityTypes[number];
-export type InvokableModules = "query" | "mutation";
 export interface Capability {
   enabled: boolean;
-  modules: InvokableModules[];
 }
 export function createCapability(args: {
   type: CapabilityType;
   enabled: boolean;
-  modules: InvokableModules[];
 }): CapabilityDefinition {
   return {
     [args.type]: {
       enabled: args.enabled,
-      modules: args.modules,
     },
   };
 }
@@ -524,7 +507,6 @@ export interface ImportedModuleDefinition
   isInterface?: boolean;
 }
 export function createImportedModuleDefinition(args: {
-  type: string;
   required?: boolean;
   uri: string;
   namespace: string;
@@ -540,7 +522,10 @@ export function createImportedModuleDefinition(args: {
   }
 
   return {
-    ...createGenericDefinition(args),
+    ...createGenericDefinition({
+      ...args,
+      type: `${args.namespace}_${args.nativeType}`,
+    }),
     methods: [],
     uri: args.uri,
     namespace: args.namespace,

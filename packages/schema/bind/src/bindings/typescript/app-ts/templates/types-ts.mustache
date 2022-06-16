@@ -4,8 +4,8 @@ import * as Types from "./";
 // @ts-ignore
 import {
   Client,
-  InvokeApiResult
-} from "@web3api/core-js";
+  InvokeResult
+} from "@polywrap/core-js";
 
 export type UInt = number;
 export type UInt8 = number;
@@ -83,7 +83,7 @@ export type {{type}} = {{type}}Enum | {{type}}String;
 {{/importedEnumTypes.length}}
 {{#importedModuleTypes.length}}
 
-/// Imported Queries START ///
+/// Imported Modules START ///
 {{#importedModuleTypes}}
 {{#methods}}
 
@@ -102,10 +102,9 @@ export const {{type}} = {
     input: {{parent.type}}_Input_{{name}},
     client: Client,
     uri: string = "{{parent.uri}}"
-  ): Promise<InvokeApiResult<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>> => {
+  ): Promise<InvokeResult<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>> => {
     return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>({
       uri,
-      module: "{{type}}",
       method: "{{name}}",
       input
     });
@@ -117,5 +116,5 @@ export const {{type}} = {
 }
 {{/importedModuleTypes}}
 
-/// Imported Queries END ///
+/// Imported Modules END ///
 {{/importedModuleTypes.length}}

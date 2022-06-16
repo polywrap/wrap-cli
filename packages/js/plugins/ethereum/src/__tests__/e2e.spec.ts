@@ -1,16 +1,16 @@
 import { ethereumPlugin } from "..";
-import * as Schema from "../query/w3";
+import * as Schema from "../wrap-man";
 
-import { Web3ApiClient, defaultIpfsProviders } from "@web3api/client-js";
-import { ensPlugin } from "@web3api/ens-plugin-js";
-import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
+import { PolywrapClient, defaultIpfsProviders } from "@polywrap/client-js";
+import { ensPlugin } from "@polywrap/ens-plugin-js";
+import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
-  buildApi,
+  buildWrapper,
   ensAddresses,
   providers
-} from "@web3api/test-env-js";
+} from "@polywrap/test-env-js";
 import { Wallet } from "ethers";
 
 import { ethers } from "ethers";
@@ -31,14 +31,14 @@ const contracts = {
 jest.setTimeout(360000);
 
 describe("Ethereum Plugin", () => {
-  let client: Web3ApiClient;
+  let client: PolywrapClient;
   let ensAddress: string;
   let resolverAddress: string;
   let registrarAddress: string;
   const signer = "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1";
 
-  const apiPath = `${__dirname}/integration`
-  const uri = `fs/${apiPath}/build`
+  const wrapperPath = `${__dirname}/integration`
+  const uri = `fs/${wrapperPath}/build`
 
   beforeAll(async () => {
     await initTestEnvironment();
@@ -47,10 +47,10 @@ describe("Ethereum Plugin", () => {
     resolverAddress = ensAddresses.resolverAddress;
     registrarAddress = ensAddresses.registrarAddress
 
-    client = new Web3ApiClient({
+    client = new PolywrapClient({
       plugins: [
         {
-          uri: "w3://ens/ethereum.web3api.eth",
+          uri: "wrap://ens/ethereum.polywrap.eth",
           plugin: ethereumPlugin({
             networks: {
               testnet: {
@@ -64,14 +64,14 @@ describe("Ethereum Plugin", () => {
           }),
         },
         {
-          uri: "w3://ens/ipfs.web3api.eth",
+          uri: "wrap://ens/ipfs.polywrap.eth",
           plugin: ipfsPlugin({
             provider: providers.ipfs,
             fallbackProviders: defaultIpfsProviders,
           }),
         },
         {
-          uri: "w3://ens/ens.web3api.eth",
+          uri: "wrap://ens/ens.polywrap.eth",
           plugin: ensPlugin({
             query: {
               addresses: {
@@ -83,7 +83,7 @@ describe("Ethereum Plugin", () => {
       ],
     });
 
-    await buildApi(apiPath);
+    await buildWrapper(wrapperPath);
   });
 
   afterAll(async () => {
@@ -176,13 +176,11 @@ describe("Ethereum Plugin", () => {
     it("getBalance", async () => {
       const signerAddressQuery = await client.invoke<string>({
         uri,
-        module: "query",
         method: "getSignerAddress",
       });
 
       const response = await client.invoke<string>({
         uri,
-        module: "query",
         method: "getBalance",
         input: {
           address: signerAddressQuery.data,
@@ -289,7 +287,6 @@ describe("Ethereum Plugin", () => {
       ];
       const result = await client.invoke<string>({
         uri: uri,
-        module: "query",
         method: "solidityPack",
         input: {
           types,
@@ -321,7 +318,6 @@ describe("Ethereum Plugin", () => {
       ];
       const result = await client.invoke<string>({
         uri: uri,
-        module: "query",
         method: "solidityKeccak256",
         input: {
           types,
@@ -353,7 +349,6 @@ describe("Ethereum Plugin", () => {
       ];
       const result = await client.invoke<string>({
         uri: uri,
-        module: "query",
         method: "soliditySha256",
         input: {
           types,
@@ -756,8 +751,8 @@ describe("Ethereum Plugin", () => {
         config: {
           envs: [
             {
-              uri: "w3://ens/ethereum.web3api.eth",
-              common: {
+              uri: "wrap://ens/ethereum.polywrap.eth",
+              env: {
                 connection: {
                   networkNameOrChainId: "mainnet",
                 },
@@ -789,8 +784,8 @@ describe("Ethereum Plugin", () => {
         config: {
           envs: [
             {
-              uri: "w3://ens/ethereum.web3api.eth",
-              common: {
+              uri: "wrap://ens/ethereum.polywrap.eth",
+              env: {
                 connection: {
                   node: "https://polygon-rpc.com",
                 },

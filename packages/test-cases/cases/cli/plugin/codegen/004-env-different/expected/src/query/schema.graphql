@@ -1,9 +1,0 @@
-type Env {
-  queryArg: String!
-}
-
-type Query {
-  method(
-    str: String!
-  ): String!
-}

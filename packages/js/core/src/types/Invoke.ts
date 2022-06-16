@@ -1,17 +1,12 @@
 import { ClientConfig, Uri } from ".";
 
-export type InvokableModules = "query" | "mutation";
-
-/** Options required for an API invocation. */
-export interface InvokeApiOptions<
+/** Options required for an Wrapper invocation. */
+export interface InvokeOptions<
   TUri extends Uri | string = string,
   TClientConfig extends ClientConfig = ClientConfig
 > {
-  /** The API's URI */
+  /** The Wrapper's URI */
   uri: TUri;
-
-  /** Module to be called into. */
-  module: InvokableModules;
 
   /** Method to be executed. */
   method: string;
@@ -23,7 +18,7 @@ export interface InvokeApiOptions<
   input?: Record<string, unknown> | ArrayBuffer;
 
   /**
-   * Filters the [[InvokeApiResult]] data properties. The key
+   * Filters the [[InvokeResult]] data properties. The key
    * of this map is the property's name, while the value is
    * either true (meaning select this prop), or a nested named map,
    * allowing for the filtering of nested objects.
@@ -48,11 +43,11 @@ export interface InvokeApiOptions<
 }
 
 /**
- * Result of an API invocation.
+ * Result of an Wrapper invocation.
  *
  * @template TData Type of the invoke result data.
  */
-export interface InvokeApiResult<TData = unknown> {
+export interface InvokeResult<TData = unknown> {
   /**
    * Invoke result data. The type of this value is the return type
    * of the method. If undefined, it means something went wrong.
@@ -67,6 +62,6 @@ export interface InvokeApiResult<TData = unknown> {
 
 export interface InvokeHandler {
   invoke<TData = unknown, TUri extends Uri | string = string>(
-    options: InvokeApiOptions<TUri>
-  ): Promise<InvokeApiResult<TData>>;
+    options: InvokeOptions<TUri>
+  ): Promise<InvokeResult<TData>>;
 }

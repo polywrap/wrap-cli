@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 use std::convert::TryFrom;
-use web3api_wasm_rs::{
+use polywrap_wasm_rs::{
     BigInt,
     BigNumber,
     Map,
@@ -39,7 +39,7 @@ pub struct Input{{#toUpper}}{{name}}{{/toUpper}} {
 
 pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result<Input{{#toUpper}}{{name}}{{/toUpper}}, DecodeError> {
     let mut context = Context::new();
-    context.description = "Deserializing query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
+    context.description = "Deserializing module-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
 
     {{#arguments.length}}
     let mut reader = ReadDecoder::new(input, context);
@@ -122,7 +122,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
 
 pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_result(result: {{#return}}&{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}) -> Result<Vec<u8>, EncodeError> {
     let mut encoder_context = Context::new();
-    encoder_context.description = "Serializing (encoding) query-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
+    encoder_context.description = "Serializing (encoding) module-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
     write_{{#toLower}}{{name}}{{/toLower}}_result(result, &mut encoder)?;
     Ok(encoder.get_buffer())

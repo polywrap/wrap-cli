@@ -10,10 +10,10 @@ import {
   parseAppCodegenDirOption,
 } from "../lib";
 
-import { Web3ApiClient } from "@web3api/client-js";
+import { PolywrapClient } from "@polywrap/client-js";
 import * as path from "path";
 
-const defaultOutputTypesDir = "./src/w3";
+const defaultOutputTypesDir = "./src/wrap";
 
 type AppCommandOptions = {
   manifestFile: string;
@@ -71,7 +71,7 @@ async function run(options: AppCommandOptions) {
   // Get providers and client
   const { ipfsProvider, ethProvider } = await getTestEnvProviders(ipfs);
   const ensAddress: string | undefined = ens;
-  const client: Web3ApiClient = getSimpleClient({
+  const client: PolywrapClient = getSimpleClient({
     ensAddress,
     ethProvider,
     ipfsProvider,

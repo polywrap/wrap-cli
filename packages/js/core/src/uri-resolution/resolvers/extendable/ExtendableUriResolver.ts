@@ -1,12 +1,12 @@
 import {
   Uri,
   Client,
-  ApiCache,
+  WrapperCache,
   getImplementations,
   coreInterfaceUris,
   DeserializeManifestOptions,
 } from "../../..";
-import { CreateApiFunc } from "./types/CreateApiFunc";
+import { CreateWrapperFunc } from "./types/CreateWrapperFunc";
 import { UriResolutionResult } from "../../core/types/UriResolutionResult";
 import { UriResolver, UriResolutionStack } from "../../core";
 import { UriResolverWrapper } from "./UriResolverWrapper";
@@ -20,7 +20,7 @@ export class ExtendableUriResolver implements UriResolver {
   private _hasLoadedUriResolvers: boolean;
 
   constructor(
-    private readonly _createApi: CreateApiFunc,
+    private readonly _createWrapper: CreateWrapperFunc,
     private _deserializeOptions?: DeserializeManifestOptions,
     disablePreload?: boolean
   ) {
@@ -36,7 +36,7 @@ export class ExtendableUriResolver implements UriResolver {
   async resolveUri(
     uri: Uri,
     client: Client,
-    cache: ApiCache,
+    cache: WrapperCache,
     resolutionPath: UriResolutionStack
   ): Promise<ExtendableUriResolverResult> {
     const uriResolverImpls = getImplementations(
@@ -75,10 +75,10 @@ export class ExtendableUriResolver implements UriResolver {
         resolutionPath
       );
 
-      if (result.api || (result.uri && uri.uri !== result.uri.uri)) {
+      if (result.wrapper || (result.uri && uri.uri !== result.uri.uri)) {
         return {
           uri: result.uri,
-          api: result.api,
+          wrapper: result.wrapper,
           implementationUri: resolver.implementationUri,
         };
       }
@@ -91,7 +91,7 @@ export class ExtendableUriResolver implements UriResolver {
 
   async loadUriResolverWrappers(
     client: Client,
-    cache: ApiCache,
+    cache: WrapperCache,
     implementationUris: Uri[]
   ): Promise<{
     success: boolean;
@@ -115,13 +115,13 @@ export class ExtendableUriResolver implements UriResolver {
     while ((implementationUri = implementationsToLoad.dequeue())) {
       // Use only the bootstrap resolvers to resolve the resolverUri
       // If successful, it is automatically cached
-      const { api } = await client.resolveUri(implementationUri, {
+      const { wrapper } = await client.resolveUri(implementationUri, {
         config: {
           uriResolvers: bootstrapUriResolvers,
         },
       });
 
-      if (!api) {
+      if (!wrapper) {
         // If not successful, add the resolver to the end of the queue
         implementationsToLoad.enqueue(implementationUri);
         failedAttempts++;
@@ -156,7 +156,7 @@ export class ExtendableUriResolver implements UriResolver {
     for (const implementationUri of implementationUris) {
       const uriResolverImpl = new UriResolverWrapper(
         implementationUri,
-        this._createApi,
+        this._createWrapper,
         this._deserializeOptions
       );
 

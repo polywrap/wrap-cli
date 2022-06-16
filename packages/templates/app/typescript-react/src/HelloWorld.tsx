@@ -1,12 +1,12 @@
-import { HelloWorld_Query } from './w3';
+import { HelloWorld_Query } from './wrap';
 import React from 'react';
-import { useWeb3ApiClient } from '@web3api/react';
+import { usePolywrapClient } from '@polywrap/react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export const HelloWorld: React.FC = () => {
   const [message, setMessage] = React.useState('');
-  const client = useWeb3ApiClient();
+  const client = usePolywrapClient();
 
   const notify = () => toast('Take a look at your console!');
 

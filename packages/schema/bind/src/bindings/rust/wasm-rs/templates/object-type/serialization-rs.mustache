@@ -1,6 +1,5 @@
-{{^__commonPath}}
 use std::convert::TryFrom;
-use web3api_wasm_rs::{
+use polywrap_wasm_rs::{
     BigInt,
     BigNumber,
     Map,
@@ -167,4 +166,3 @@ pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<
         {{/properties}}
     })
 }
-{{/__commonPath}}

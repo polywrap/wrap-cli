@@ -1,11 +1,11 @@
 {
-  "name": "@web3api/test-env-js",
-  "description": "Web3API Test Helpers",
+  "name": "@polywrap/test-env-js",
+  "description": "Polywrap Test Helpers",
   "version": "0.0.1-prealpha.85",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/web3-api/monorepo.git"
+    "url": "https://github.com/polywrap/monorepo.git"
   },
   "main": "build/index.js",
   "files": [
@@ -17,9 +17,9 @@
     "copy:wrappers": "copyfiles ./src/wrappers/**/**/* ./build/wrappers/ -u 2"
   },
   "dependencies": {
-    "@web3api/client-js": "0.0.1-prealpha.80",
-    "@web3api/core-js": "0.0.1-prealpha.85",
-    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.80",
+    "@polywrap/core-js": "0.0.1-prealpha.85",
+    "@polywrap/client-js": "0.0.1-prealpha.85",
+    "@polywrap/ethereum-plugin-js": "0.0.1-prealpha.85",
     "axios": "0.21.2",
     "js-yaml": "4.1.0",
     "spawn-command": "0.0.2-1"

@@ -1,10 +1,10 @@
-# Web3API Binding
+# Polywrap Binding
 
-Generates Web3API schema bindings for supported guest languages.
+Generates Polywrap schema bindings for supported guest languages.
 
 ## Details
 
-Web3API uses MessagePack as a common data interchange format between languages. This allows Web3API WASM modules, authored in different languages, to be run within a single host language (JS, Rust, Python, Go, C#, C++).
+Polywrap uses MessagePack as a common data interchange format between languages. This allows Polywrap WASM modules, authored in different languages, to be run within a single host language (JS, Rust, Python, Go, C#, C++).
 
 MessagePack encoded data is sent between module boundaries. Decoding of the message will happen in the destination environment, using generated binding code, created by this package.
 

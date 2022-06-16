@@ -1,27 +1,25 @@
 import {
-  buildApi,
+  buildWrapper,
   ensAddresses,
   initTestEnvironment,
   stopTestEnvironment,
   providers
-} from "@web3api/test-env-js";
+} from "@polywrap/test-env-js";
 import {
   Uri,
-  createWeb3ApiClient,
-  Web3ApiClientConfig,
-  Plugin,
+  createPolywrapClient,
+  PolywrapClientConfig,
   PluginModule,
-  PluginModules,
   Subscription,
-  Web3ApiManifest,
+  PolywrapManifest,
   BuildManifest,
   MetaManifest,
-  deserializeWeb3ApiManifest,
+  deserializePolywrapManifest,
   deserializeBuildManifest,
   deserializeMetaManifest,
   msgpackDecode
 } from "../..";
-import { GetPathToTestApis } from "@web3api/test-cases";
+import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import fs from "fs";
 
 jest.setTimeout(200000);
@@ -31,8 +29,8 @@ describe("wasm-wrapper", () => {
   let ethProvider: string;
   let ensAddress: string;
 
-  const apiPath = `${GetPathToTestApis()}/wasm-as/simple-storage`
-  const apiUri = `fs/${apiPath}/build`
+  const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-storage`
+  const wrapperUri = `fs/${wrapperPath}/build`
 
   beforeAll(async () => {
     await initTestEnvironment();
@@ -40,15 +38,15 @@ describe("wasm-wrapper", () => {
     ethProvider = providers.ethereum;
     ensAddress = ensAddresses.ensAddress;
 
-    await buildApi(apiPath);
+    await buildWrapper(wrapperPath);
   });
 
   afterAll(async () => {
     await stopTestEnvironment();
   });
 
-  const getClient = async (config?: Partial<Web3ApiClientConfig>) => {
-    return createWeb3ApiClient(
+  const getClient = async (config?: Partial<PolywrapClientConfig>) => {
+    return createPolywrapClient(
       {
         ethereum: {
           networks: {
@@ -59,10 +57,8 @@ describe("wasm-wrapper", () => {
         },
         ipfs: { provider: ipfsProvider },
         ens: {
-          query: {
-           addresses: {
-              testnet: ensAddress,
-            },
+          addresses: {
+            testnet: ensAddress,
           },
         },
       },
@@ -71,29 +67,17 @@ describe("wasm-wrapper", () => {
   };
 
   const mockPlugin = () => {
-    class Query extends PluginModule {
+    class MockPlugin extends PluginModule {
       getData(_: unknown) {
         return 100;
       }
-    }
-
-    class Mutation extends PluginModule {
       deployContract(_: unknown): string {
         return "0x100";
       }
     }
 
-    class MockPlugin implements Plugin {
-      getModules(): PluginModules {
-        return {
-          query: new Query({}),
-          mutation: new Mutation({}),
-        };
-      }
-    }
-
     return {
-      factory: () => new MockPlugin(),
+      factory: () => new MockPlugin({}),
       manifest: {
         schema: ``,
         implements: [],
@@ -104,8 +88,7 @@ describe("wasm-wrapper", () => {
   test("invoke with decode defaulted to true works as expected", async () => {
     const client = await getClient();
     const result = await client.invoke<string>({
-      uri: apiUri,
-      module: "mutation",
+      uri: wrapperUri,
       method: "deployContract",
       input: {
         connection: {
@@ -123,8 +106,7 @@ describe("wasm-wrapper", () => {
   test("invoke with decode set to false works as expected", async () => {
     const client = await getClient();
     const result = await client.invoke({
-      uri: apiUri,
-      module: "mutation",
+      uri: wrapperUri,
       method: "deployContract",
       input: {
         connection: {
@@ -144,7 +126,7 @@ describe("wasm-wrapper", () => {
     const client = await getClient({
       plugins: [
         {
-          uri: "w3://ens/mock.web3api.eth",
+          uri: "wrap://ens/mock.polywrap.eth",
           plugin: mockPlugin(),
         },
       ],
@@ -152,14 +134,13 @@ describe("wasm-wrapper", () => {
 
     const redirects = [
       {
-        from: apiUri,
-        to: "w3://ens/mock.web3api.eth",
+        from: wrapperUri,
+        to: "wrap://ens/mock.polywrap.eth",
       },
     ];
 
     const result = await client.invoke({
-      uri: apiUri,
-      module: "mutation",
+      uri: wrapperUri,
       method: "deployContract",
       input: {},
       config: {
@@ -175,7 +156,7 @@ describe("wasm-wrapper", () => {
     const client = await getClient({
       plugins: [
         {
-          uri: "w3://ens/mock.web3api.eth",
+          uri: "wrap://ens/mock.polywrap.eth",
           plugin: mockPlugin(),
         },
       ],
@@ -183,15 +164,15 @@ describe("wasm-wrapper", () => {
 
     const redirects = [
       {
-        from: apiUri,
-        to: "w3://ens/mock.web3api.eth",
+        from: wrapperUri,
+        to: "wrap://ens/mock.polywrap.eth",
       },
     ];
 
     const deploy = await client.query<{
       deployContract: string;
     }>({
-      uri: apiUri,
+      uri: wrapperUri,
       query: `
         mutation {
           deployContract(
@@ -213,7 +194,7 @@ describe("wasm-wrapper", () => {
     const get = await client.query<{
       getData: number;
     }>({
-      uri: apiUri,
+      uri: wrapperUri,
       query: `
         query {
           getData(
@@ -236,7 +217,7 @@ describe("wasm-wrapper", () => {
     const getFail = await client.query<{
       getData: number;
     }>({
-      uri: apiUri,
+      uri: wrapperUri,
       query: `
         query {
           getData(
@@ -253,55 +234,55 @@ describe("wasm-wrapper", () => {
     expect(getFail.data?.getData).toBeFalsy();
   });
 
-  test("getManifest -- web3api manifest, build manifest, meta manifest", async () => {
+  test("getManifest -- polywrap manifest, build manifest, meta manifest", async () => {
     const client = await getClient();
 
     const actualManifestStr: string = fs.readFileSync(
-      `${GetPathToTestApis()}/wasm-as/simple-storage/build/web3api.json`,
+      `${GetPathToTestWrappers()}/wasm-as/simple-storage/build/polywrap.json`,
       "utf8"
     );
-    const actualManifest: Web3ApiManifest = deserializeWeb3ApiManifest(
+    const actualManifest: PolywrapManifest = deserializePolywrapManifest(
       actualManifestStr
     );
-    const manifest: Web3ApiManifest = await client.getManifest(apiUri, {
-      type: "web3api",
+    const manifest: PolywrapManifest = await client.getManifest(wrapperUri, {
+      type: "polywrap",
     });
     expect(manifest).toStrictEqual(actualManifest);
 
     const actualBuildManifestStr: string = fs.readFileSync(
-      `${GetPathToTestApis()}/wasm-as/simple-storage/build/web3api.build.json`,
+      `${GetPathToTestWrappers()}/wasm-as/simple-storage/build/polywrap.build.json`,
       "utf8"
     );
     const actualBuildManifest: BuildManifest = deserializeBuildManifest(
       actualBuildManifestStr
     );
-    const buildManifest: BuildManifest = await client.getManifest(apiUri, {
+    const buildManifest: BuildManifest = await client.getManifest(wrapperUri, {
       type: "build",
     });
     expect(buildManifest).toStrictEqual(actualBuildManifest);
 
     const actualMetaManifestStr: string = fs.readFileSync(
-      `${GetPathToTestApis()}/wasm-as/simple-storage/build/web3api.meta.json`,
+      `${GetPathToTestWrappers()}/wasm-as/simple-storage/build/polywrap.meta.json`,
       "utf8"
     );
     const actualMetaManifest: MetaManifest = deserializeMetaManifest(
       actualMetaManifestStr
     );
-    const metaManifest: MetaManifest = await client.getManifest(apiUri, {
+    const metaManifest: MetaManifest = await client.getManifest(wrapperUri, {
       type: "meta",
     });
     expect(metaManifest).toStrictEqual(actualMetaManifest);
   });
 
-  test("getFile -- simple-storage web3api", async () => {
+  test("getFile -- simple-storage polywrap", async () => {
     const client = await getClient();
 
-    const manifest: Web3ApiManifest = await client.getManifest(apiUri, {
-      type: "web3api",
+    const manifest: PolywrapManifest = await client.getManifest(wrapperUri, {
+      type: "polywrap",
     });
 
-    const fileStr: string = (await client.getFile(apiUri, {
-      path: manifest.modules.query?.schema as string,
+    const fileStr: string = (await client.getFile(wrapperUri, {
+      path: manifest.schema as string,
       encoding: "utf8",
     })) as string;
     expect(fileStr).toContain(`getData(
@@ -310,8 +291,8 @@ describe("wasm-wrapper", () => {
   ): Int!
 `);
 
-    const fileBuffer: ArrayBuffer = (await client.getFile(apiUri, {
-      path: manifest.modules.query?.schema!,
+    const fileBuffer: ArrayBuffer = (await client.getFile(wrapperUri, {
+      path: manifest.schema!,
     })) as ArrayBuffer;
     const decoder = new TextDecoder("utf8");
     const text = decoder.decode(fileBuffer);
@@ -322,14 +303,14 @@ describe("wasm-wrapper", () => {
 `);
 
     await expect(() =>
-      client.getManifest(new Uri("w3://ens/ipfs.web3api.eth"), {
-        type: "web3api",
+      client.getManifest(new Uri("wrap://ens/ipfs.polywrap.eth"), {
+        type: "polywrap",
       })
     ).rejects.toThrow(
       "client.getManifest(...) is not implemented for Plugins."
     );
     await expect(() =>
-      client.getFile(new Uri("w3://ens/ipfs.web3api.eth"), {
+      client.getFile(new Uri("wrap://ens/ipfs.polywrap.eth"), {
         path: "./index.js",
       })
     ).rejects.toThrow("client.getFile(...) is not implemented for Plugins.");
@@ -341,7 +322,7 @@ describe("wasm-wrapper", () => {
     const deploy = await client.query<{
       deployContract: string;
     }>({
-      uri: apiUri,
+      uri: wrapperUri,
       query: `
         mutation {
           deployContract(
@@ -367,7 +348,7 @@ describe("wasm-wrapper", () => {
       await client.query<{
         setData: string;
       }>({
-        uri: apiUri,
+        uri: wrapperUri,
         query: `
         mutation {
           setData(
@@ -391,7 +372,7 @@ describe("wasm-wrapper", () => {
     }> = client.subscribe<{
       getData: number;
     }>({
-      uri: apiUri,
+      uri: wrapperUri,
       query: `
         query {
           getData(
@@ -429,7 +410,7 @@ describe("wasm-wrapper", () => {
     const deploy = await client.query<{
       deployContract: string;
     }>({
-      uri: apiUri,
+      uri: wrapperUri,
       query: `
         mutation {
           deployContract(
@@ -455,7 +436,7 @@ describe("wasm-wrapper", () => {
       await client.query<{
         setData: string;
       }>({
-        uri: apiUri,
+        uri: wrapperUri,
         query: `
           mutation {
             setData(
@@ -479,7 +460,7 @@ describe("wasm-wrapper", () => {
     }> = client.subscribe<{
       getData: number;
     }>({
-      uri: apiUri,
+      uri: wrapperUri,
       query: `
           query {
             getData(

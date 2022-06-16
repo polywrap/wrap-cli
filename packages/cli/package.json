@@ -1,11 +1,11 @@
 {
-  "name": "@web3api/cli",
-  "description": "Web3API CLI",
+  "name": "polywrap",
+  "description": "Polywrap CLI",
   "version": "0.0.1-prealpha.85",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/web3-api/monorepo.git"
+    "url": "https://github.com/polywrap/monorepo.git"
   },
   "files": [
     "build",
@@ -13,12 +13,12 @@
     "lang"
   ],
   "bin": {
-    "w3": "bin/w3"
+    "polywrap": "bin/polywrap"
   },
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json && yarn build:build-images && yarn build:deploy-modules && yarn build:infra-modules",
     "build:build-images": "copyfiles ./src/lib/defaults/build-images/**/**/* ./build/lib/defaults/build-images/ -u 4",
-    "build:deploy-modules": "copyfiles ./src/lib/defaults/deploy-modules/**/web3api.deploy.ext.json ./build/lib/defaults/deploy-modules -u 4",
+    "build:deploy-modules": "copyfiles ./src/lib/defaults/deploy-modules/**/polywrap.deploy.ext.json ./build/lib/defaults/deploy-modules -u 4",
     "build:infra-modules": "ts-node ./copyfiles ./src/lib/defaults/infra-modules ./build/lib/defaults/infra-modules",
     "prebuild": "ts-node ./scripts/generateIntlTypes.ts",
     "build:fast": "rimraf ./build && tsc --project tsconfig.build.json",
@@ -34,17 +34,17 @@
     "@ethersproject/providers": "5.6.8",
     "@ethersproject/wallet": "5.6.2",
     "@formatjs/intl": "1.8.2",
-    "@web3api/asyncify-js": "0.0.1-prealpha.85",
-    "@web3api/client-js": "0.0.1-prealpha.85",
-    "@web3api/core-js": "0.0.1-prealpha.85",
-    "@web3api/ens-plugin-js": "0.0.1-prealpha.85",
-    "@web3api/ethereum-plugin-js": "0.0.1-prealpha.85",
-    "@web3api/ipfs-plugin-js": "0.0.1-prealpha.85",
-    "@web3api/os-js": "0.0.1-prealpha.85",
-    "@web3api/schema-bind": "0.0.1-prealpha.85",
-    "@web3api/schema-compose": "0.0.1-prealpha.85",
-    "@web3api/schema-parse": "0.0.1-prealpha.85",
-    "@web3api/test-env-js": "0.0.1-prealpha.85",
+    "@polywrap/asyncify-js": "0.0.1-prealpha.85",
+    "@polywrap/client-js": "0.0.1-prealpha.85",
+    "@polywrap/core-js": "0.0.1-prealpha.85",
+    "@polywrap/ens-plugin-js": "0.0.1-prealpha.85",
+    "@polywrap/ethereum-plugin-js": "0.0.1-prealpha.85",
+    "@polywrap/ipfs-plugin-js": "0.0.1-prealpha.85",
+    "@polywrap/os-js": "0.0.1-prealpha.85",
+    "@polywrap/schema-bind": "0.0.1-prealpha.85",
+    "@polywrap/schema-compose": "0.0.1-prealpha.85",
+    "@polywrap/schema-parse": "0.0.1-prealpha.85",
+    "@polywrap/test-env-js": "0.0.1-prealpha.85",
     "assemblyscript": "0.19.1",
     "axios": "0.21.2",
     "chalk": "4.1.0",

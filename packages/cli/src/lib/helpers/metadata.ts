@@ -1,8 +1,8 @@
 import { withSpinner } from "./";
 import { displayPath, intlMsg } from "../";
 
-import { normalizePath } from "@web3api/os-js";
-import { MetaManifest } from "@web3api/core-js";
+import { normalizePath } from "@polywrap/os-js";
+import { MetaManifest } from "@polywrap/core-js";
 import { Ora } from "ora";
 import fs from "fs";
 import path from "path";

@@ -16,7 +16,7 @@ import { DeserializeManifestOptions } from "../../";
 
 import { compare } from "semver";
 import YAML from "js-yaml";
-import { Tracer } from "@web3api/tracing-js";
+import { Tracer } from "@polywrap/tracing-js";
 
 export const deserialize{{type}} = Tracer.traceFunc(
   "core: deserialize{{type}}",
@@ -51,7 +51,7 @@ export const deserialize{{type}} = Tracer.traceFunc(
     } else if (versionCompare === 1) {
       // Downgrade
       throw Error(
-        `Cannot downgrade Web3API version ${any{{type}}.format}, please upgrade your Web3ApiClient package.`
+        `Cannot downgrade Polywrap version ${any{{type}}.format}, please upgrade your PolywrapClient package.`
       );
     } else {
       // Latest

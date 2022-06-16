@@ -1,5 +1,5 @@
-import { Query } from "../../query";
-import { ResponseTypeEnum, Client } from "../../query/w3";
+import { HttpPlugin } from "../..";
+import { ResponseTypeEnum, Client } from "../../wrap-man";
 
 import axios, { AxiosResponse, AxiosRequestConfig } from "axios";
 
@@ -17,7 +17,7 @@ describe("test http plugin", () => {
   });
 
   describe("get method", () => {
-    const plugin = new Query({});
+    const plugin = new HttpPlugin({});
 
     test("valid request: text response type", async () => {
       mockedAxios.get.mockResolvedValueOnce({
@@ -104,7 +104,7 @@ describe("test http plugin", () => {
   });
 
   describe("post method", () => {
-    const plugin = new Query({});
+    const plugin = new HttpPlugin({});
 
     test("valid request with headers", async () => {
       mockedAxios.post.mockResolvedValueOnce({

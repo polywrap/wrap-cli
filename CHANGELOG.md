@@ -1,3 +1,12 @@
+# Polywrap 0.0.1-prealpha.86
+## Features
+* [PR-923](https://github.com/polywrap/monorepo/pull/923) The Polywrap brand has been applied to the codebase.
+* [PR-906](https://github.com/polywrap/monorepo/pull/906) The concept of `Mutation` and `Query` modules has been deprecated. Now all wrapper methods are defined within a single `Module`.
+
+## Breaking Changes
+* [PR-923](https://github.com/polywrap/monorepo/pull/923) All prior integrations using the "Web3API" packages must upgrade to the new "Polywrap" equivalents.
+* [PR-906](https://github.com/polywrap/monorepo/pull/906) All wrappers created prior to this change are incompatible.
+
 # Web3API 0.0.1-prealpha.85
 ## Features
 * [PR-910](https://github.com/polywrap/monorepo/pull/910) `@web3api/cli`: `web3api.infra.yaml` manifests now support the concept of "default" modules.
