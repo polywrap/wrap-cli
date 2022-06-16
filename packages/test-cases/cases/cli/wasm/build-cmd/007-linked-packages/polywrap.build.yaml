@@ -8,6 +8,3 @@ linked_packages:
   - name: "@polywrap/wasm-as"
     path: ../../../../../../wasm/as
     filter: /\.(test|spec)\.(js|ts)$/gm
-  - name: "@polywrap/ethereum-plugin-js"
-    path: ../../../../../../js/plugins/ethereum
-    filter: /\.(test|spec)\.(js|ts)$/gm
