@@ -16,7 +16,7 @@ export async function runCommand(
       stderr: string
     ) => {
       if (err) {
-        reject(err);
+        reject(stderr);
       } else {
         resolve({ stdout, stderr });
       }
