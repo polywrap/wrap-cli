@@ -11,9 +11,7 @@
     "deploy": "npx polywrap deploy"
   },
   "dependencies": {
-    "@polywrap/wasm-as": "0.0.1-prealpha.85"
-  },
-  "devDependencies": {
-    "polywrap": "0.0.1-prealpha.85"
+    "@polywrap/wasm-as": "0.0.1-prealpha.85",
+    "assemblyscript": "0.19.5"
   }
 }
