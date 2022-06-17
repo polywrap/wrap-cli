@@ -7,6 +7,9 @@
  */
 
 export interface PolywrapManifest {
+  /**
+   * Polywrap manifest format version.
+   */
   format: "0.0.1-prealpha.3";
   /**
    * Reference to the repository holding source code.
@@ -20,6 +23,9 @@ export interface PolywrapManifest {
    * Language in which the source code is written.
    */
   language?: string;
+  /**
+   * Wrapper has no Wasm implementation, only the schema.
+   */
   interface?: boolean;
   /**
    * Modules of Polywrap schema and implementation.

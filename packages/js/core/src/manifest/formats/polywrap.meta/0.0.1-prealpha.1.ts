@@ -65,7 +65,7 @@ export interface MetaManifest {
      */
     query: string;
     /**
-     * Query variables
+     * Query parameters.
      */
     vars?: string;
   }[];

@@ -7,6 +7,9 @@
  */
 
 export interface PolywrapManifest {
+  /**
+   * Polywrap manifest format version
+   */
   format: "0.0.1-prealpha.2";
   /**
    * Reference to the repository holding source code.
