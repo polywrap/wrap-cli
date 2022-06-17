@@ -1,10 +1,4 @@
-import {
-  TypeInfo,
-  createObjectDefinition,
-  EnvDefinition,
-  isEnvType,
-  isClientEnvType,
-} from "../typeInfo";
+import { TypeInfo, isEnvType, createEnvDefinition } from "../typeInfo";
 import {
   extractFieldDefinition,
   extractListType,
@@ -21,19 +15,13 @@ import {
   ASTVisitor,
 } from "graphql";
 
-const visitorEnter = (envType: EnvDefinition, state: State) => ({
+const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     const typeName = node.name.value;
 
     if (isEnvType(typeName)) {
-      const type = createObjectDefinition({ type: typeName });
-      if (isClientEnvType(typeName)) {
-        envType.client = type;
-      } else {
-        envType.sanitized = type;
-      }
-
-      state.currentType = type;
+      typeInfo.envType = createEnvDefinition({});
+      state.currentType = typeInfo.envType;
     }
   },
   NonNullType: (_node: NonNullTypeNode) => {
@@ -66,7 +54,7 @@ export function getEnvVisitor(typeInfo: TypeInfo): ASTVisitor {
   const state: State = {};
 
   return {
-    enter: visitorEnter(typeInfo.envType, state),
+    enter: visitorEnter(typeInfo, state),
     leave: visitorLeave(state),
   };
 }

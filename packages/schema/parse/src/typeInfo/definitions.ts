@@ -560,17 +560,17 @@ export function createImportedObjectDefinition(args: {
   };
 }
 
-export interface EnvDefinition extends WithKind {
-  sanitized?: ObjectDefinition;
-  client?: ObjectDefinition;
-}
+export type EnvDefinition = ObjectDefinition;
+
 export function createEnvDefinition(args: {
-  sanitized?: ObjectDefinition;
-  client?: ObjectDefinition;
+  name?: string | null;
+  required?: boolean;
+  properties?: PropertyDefinition[];
+  interfaces?: InterfaceImplementedDefinition[];
+  comment?: string;
 }): EnvDefinition {
   return {
+    ...createObjectDefinition({ ...args, type: "Env" }),
     kind: DefinitionKind.Env,
-    sanitized: args.sanitized,
-    client: args.client,
   };
 }

@@ -10,7 +10,6 @@ import {
   CapabilityType,
   CapabilityDefinition,
   EnvDefinition,
-  createEnvDefinition,
   createModuleDefinition,
 } from "./definitions";
 
@@ -28,7 +27,7 @@ export interface TypeInfo {
   importedObjectTypes: ImportedObjectDefinition[];
   importedModuleTypes: ImportedModuleDefinition[];
   importedEnumTypes: ImportedEnumDefinition[];
-  envType: EnvDefinition;
+  envType?: EnvDefinition;
 }
 
 export function createTypeInfo(): TypeInfo {
@@ -39,7 +38,6 @@ export function createTypeInfo(): TypeInfo {
     importedObjectTypes: [],
     importedModuleTypes: [],
     importedEnumTypes: [],
-    envType: createEnvDefinition({}),
   };
 }
 
@@ -54,7 +52,6 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
     importedObjectTypes: [],
     importedModuleTypes: [],
     importedEnumTypes: [],
-    envType: createEnvDefinition({}),
   };
 
   const compareImportedType = (
@@ -130,12 +127,8 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
       tryInsert(combined.importedEnumTypes, importedEnumType);
     }
 
-    if (typeInfo.envType.client) {
-      combined.envType.client = typeInfo.envType.client;
-    }
-
-    if (typeInfo.envType.sanitized) {
-      combined.envType.sanitized = typeInfo.envType.sanitized;
+    if (typeInfo.envType) {
+      combined.envType = typeInfo.envType;
     }
   }
 

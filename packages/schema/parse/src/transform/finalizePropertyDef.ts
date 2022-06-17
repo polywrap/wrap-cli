@@ -117,10 +117,8 @@ function resolveObjectOrEnumKind(
   const envType = typeInfo.envType;
   customType = customType
     ? customType
-    : envType.client?.type === unresolved.type
-    ? envType.client
-    : envType.sanitized?.type === unresolved.type
-    ? envType.sanitized
+    : envType?.type === unresolved.type
+    ? envType
     : undefined;
 
   if (!customType) {

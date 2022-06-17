@@ -38,37 +38,19 @@ export const typeInfo: TypeInfo = {
     }),
   ],
   envType: createEnvDefinition({
-      sanitized: {
-        ...createObjectDefinition({ type: "Env" }),
-        properties: [
-          createScalarPropertyDefinition({
-            name: "prop",
-            type: "String",
-            required: true,
-          }),
-          createScalarPropertyDefinition({
-            name: "propM",
-            type: "Int",
-            required: true,
-          })
-        ],
-      },
-      client: {
-        ...createObjectDefinition({ type: "ClientEnv" }),
-        properties: [
-          createScalarPropertyDefinition({
-            name: "prop",
-            type: "String",
-            required: true,
-          }),
-          createScalarPropertyDefinition({
-            name: "propM",
-            type: "String",
-            required: false,
-          }),
-        ],
-      },
-    }),
+    properties: [
+      createScalarPropertyDefinition({
+        name: "prop",
+        type: "String",
+        required: true,
+      }),
+      createScalarPropertyDefinition({
+        name: "propM",
+        type: "Int",
+        required: true,
+      })
+    ],
+  }),
   objectTypes: [
     {
       ...createObjectDefinition({
@@ -469,13 +451,6 @@ export const typeInfo: TypeInfo = {
         comment: "Module comment",
       }),
       methods: [
-        {
-          ...createMethodDefinition({
-            name: "sanitizeEnv",
-            return: createObjectPropertyDefinition({ name: "sanitizeEnv", type: "Env", required: true }),
-            arguments: [createObjectPropertyDefinition({ name: "env", type: "ClientEnv", required: true })],
-          })
-        },
         {
           ...createMethodDefinition({
             name: "moduleMethod",

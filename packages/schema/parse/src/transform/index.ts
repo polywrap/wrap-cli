@@ -123,7 +123,9 @@ export function transformTypeInfo(
     );
   }
 
-  result.envType = visitEnvDefinition(result.envType, transforms);
+  if (result.envType) {
+    result.envType = visitEnvDefinition(result.envType, transforms);
+  }
 
   if (transforms.leave && transforms.leave.TypeInfo) {
     result = transforms.leave.TypeInfo(result);
@@ -340,14 +342,7 @@ export function visitEnvDefinition(
 ): EnvDefinition {
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
-
-  if (result.sanitized) {
-    result.sanitized = visitObjectDefinition(result.sanitized, transforms);
-  }
-
-  if (result.client) {
-    result.client = visitObjectDefinition(result.client, transforms);
-  }
+  result = visitObjectDefinition(result, transforms);
 
   return transformType(result, transforms.leave);
 }
