@@ -39,9 +39,9 @@ export class IpfsResolverPlugin extends Module<IpfsResolverPluginConfig> {
     }
 
     const manifestSearchPatterns = [
-      "web3api.json",
-      "web3api.yaml",
-      "web3api.yml",
+      "polywrap.json",
+      "polywrap.yaml",
+      "polywrap.yml",
     ];
 
     let manifest: string | undefined;
