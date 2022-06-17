@@ -224,11 +224,6 @@ describe("e2e tests for run command", () => {
       cli: w3Cli,
     });
 
-    console.log("STDOUT")
-    console.log(stdout)
-    console.log("STDERR")
-    console.log(stderr)
-
     expect(code).toEqual(0);
     expect(stderr).toBe("");
     expect(stdout).toBe("");
@@ -247,9 +242,6 @@ describe("e2e tests for run command", () => {
       cwd: testCaseRoot,
       cli: w3Cli,
     });
-
-    console.log("STDERR")
-    console.log(stderr)
 
     expect(code).toEqual(1);
     expect(stderr).toContain("explicit error (_|_ literal) in source:");
