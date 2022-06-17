@@ -331,7 +331,7 @@ describe("resolveUri", () => {
         result: {
           uri: ipfsUri,
           api: true,
-          implementationUri: new Uri("w3://ens/ipfs.web3api.eth"),
+          implementationUri: new Uri("w3://ens/ipfs-resolver.web3api.eth"),
         },
       },
     ]);
@@ -395,7 +395,7 @@ describe("resolveUri", () => {
         result: {
           uri: ipfsUri,
           api: true,
-          implementationUri: new Uri("w3://ens/ipfs.web3api.eth"),
+          implementationUri: new Uri("w3://ens/ipfs-resolver.web3api.eth"),
         },
       },
     ]);
@@ -522,7 +522,7 @@ describe("resolveUri", () => {
         result: {
           uri: ipfsUri,
           api: true,
-          implementationUri: new Uri("w3://ens/ipfs.web3api.eth"),
+          implementationUri: new Uri("w3://ens/ipfs-resolver.web3api.eth"),
         },
       },
     ]);
@@ -586,7 +586,7 @@ describe("resolveUri", () => {
         result: {
           uri: ipfsUri,
           api: true,
-          implementationUri: new Uri("w3://ens/ipfs.web3api.eth"),
+          implementationUri: new Uri("w3://ens/ipfs-resolver.web3api.eth"),
         },
       },
     ]);
@@ -650,7 +650,7 @@ describe("resolveUri", () => {
         result: {
           uri: ipfsUri,
           api: true,
-          implementationUri: new Uri("w3://ens/ipfs.web3api.eth"),
+          implementationUri: new Uri("w3://ens/ipfs-resolver.web3api.eth"),
         },
       },
     ]);
@@ -730,7 +730,7 @@ describe("resolveUri", () => {
         result: {
           uri: ipfsUri,
           api: true,
-          implementationUri: new Uri("w3://ens/ipfs.web3api.eth"),
+          implementationUri: new Uri("w3://ens/ipfs-resolver.web3api.eth"),
         },
       },
     ]);

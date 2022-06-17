@@ -17,6 +17,7 @@ const defaultPlugins = [
   "w3://ens/sha3.web3api.eth",
   "w3://ens/graph-node.web3api.eth",
   "w3://ens/fs.web3api.eth",
+  "w3://ens/ipfs-resolver.web3api.eth",
 ];
 
 describe("plugin-wrapper", () => {

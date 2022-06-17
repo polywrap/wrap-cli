@@ -1,6 +1,4 @@
-import {
-  coreInterfaceUris,
-} from "@web3api/core-js";
+import { coreInterfaceUris, PluginModule } from "@web3api/core-js";
 import {
   Uri,
   Web3ApiClient,
@@ -24,12 +22,13 @@ describe("sanity", () => {
       new Uri("w3://ens/sha3.web3api.eth"),
       new Uri("w3://ens/graph-node.web3api.eth"),
       new Uri("w3://ens/fs.web3api.eth"),
+      new Uri("w3://ens/ipfs-resolver.web3api.eth"),
     ]);
     expect(client.getInterfaces()).toStrictEqual([
       {
         interface: coreInterfaceUris.uriResolver,
         implementations: [
-          new Uri("w3://ens/ipfs.web3api.eth"),
+          new Uri("w3://ens/ipfs-resolver.web3api.eth"),
           new Uri("w3://ens/ens.web3api.eth"),
           new Uri("w3://ens/fs.web3api.eth"),
         ],
@@ -87,7 +86,7 @@ describe("sanity", () => {
         {
           uri: implementationUri,
           plugin: {
-            factory: () => ({} as Plugin),
+            factory: () => ({} as PluginModule),
             manifest: {
               schema: schemaStr,
               implements: [],

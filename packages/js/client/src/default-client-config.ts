@@ -13,6 +13,7 @@ import {
   RedirectsResolver,
 } from "@web3api/core-js";
 import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
+import { ipfsResolverPlugin } from "@web3api/ipfs-resolver-plugin-js";
 import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
 import { ensPlugin } from "@web3api/ens-plugin-js";
 import { graphNodePlugin } from "@web3api/graph-node-plugin-js";
@@ -80,12 +81,19 @@ export const getDefaultClientConfig = Tracer.traceFunc(
           uri: new Uri("w3://ens/fs.web3api.eth"),
           plugin: filesystemPlugin({}),
         },
+        {
+          uri: new Uri("w3://ens/ipfs-resolver.web3api.eth"),
+          plugin: ipfsResolverPlugin({
+            provider: defaultIpfsProviders[0],
+            fallbackProviders: defaultIpfsProviders.slice(1),
+          }),
+        },
       ],
       interfaces: [
         {
           interface: coreInterfaceUris.uriResolver,
           implementations: [
-            new Uri("w3://ens/ipfs.web3api.eth"),
+            new Uri("w3://ens/ipfs-resolver.web3api.eth"),
             new Uri("w3://ens/ens.web3api.eth"),
             new Uri("w3://ens/fs.web3api.eth"),
           ],
