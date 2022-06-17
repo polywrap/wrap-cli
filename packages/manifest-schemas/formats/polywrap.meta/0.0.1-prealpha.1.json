@@ -83,7 +83,7 @@
             "format": "graphqlFile"
           },
           "vars": {
-            "description": "Query variables",
+            "description": "Query parameters.",
             "type": "string",
             "format": "jsonFile"
           }

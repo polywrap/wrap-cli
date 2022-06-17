@@ -17,20 +17,21 @@
       "type": "string"
     },
     "build": {
-      "description" : "Path to the customized build manifest file.",
+      "description": "Path to the customized build manifest file.",
       "type": "string",
       "format": "file"
     },
     "language": {
-      "description" : "Language in which the source code is written.",
+      "description": "Language in which the source code is written.",
       "type": "string",
       "format": "wasmLanguage"
     },
     "interface": {
+      "description": "Wrapper has no Wasm implementation, only the schema.",
       "type": "boolean"
     },
     "modules": {
-      "description" : "Modules of Polywrap schema and implementation.",
+      "description": "Modules of Polywrap schema and implementation.",
       "type": "object",
       "additionalProperties": false,
       "properties": {

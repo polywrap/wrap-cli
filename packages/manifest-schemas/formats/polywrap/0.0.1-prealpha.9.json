@@ -10,47 +10,58 @@
   ],
   "properties": {
     "format": {
+      "description": "Polywrap manifest format version.",
       "type": "string",
       "const": "0.0.1-prealpha.9"
     },
     "name": {
+      "description": "Name of this wrapper package.",
       "type": "string",
       "format": "packageName"
     },
     "build": {
+      "description": "Path to the customized build manifest file.",
       "type": "string",
       "format": "manifestFile"
     },
     "meta": {
+      "description": "Path to wrapper metadata manifest file.",
       "type": "string",
       "format": "manifestFile"
     },
     "deploy": {
+      "description": "Path to wrapper deploy manifest file.",
       "type": "string",
       "format": "manifestFile"
     },
     "language": {
+      "description": "Language in which the source code is written.",
       "type": "string",
       "format": "wasmLanguage"
     },
     "module": {
+      "description": "Path to Polywrap implementation.",
       "type": "string",
       "format": "file"
     },
     "schema": {
+      "description": "Path to graphql schema.",
       "type": "string",
       "format": "graphqlFile"
     },
     "import_redirects": {
+      "description": "Redirects enabling the import of plugins.",
       "type": "array",
       "items": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
           "uri": {
+            "description": "URI resolving to the plugin schema.",
             "type": "string"
           },
           "schema": {
+            "description": "Graphql schema for imported plugin.",
             "type": "string"
           }
         },

@@ -45,7 +45,7 @@
           "additionalProperties": false,
           "properties": {
             "language": {
-              "description" : "Language in which the source code is written.",
+              "description": "Language in which the source code is written.",
               "type": "string"
             },
             "file": {
@@ -91,7 +91,7 @@
           "additionalProperties": false,
           "properties": {
             "language": {
-              "description" : "Language in which the source code is written.",
+              "description": "Language in which the source code is written.",
               "type": "string"
             },
             "file": {
