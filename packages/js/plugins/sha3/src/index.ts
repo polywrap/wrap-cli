@@ -17,7 +17,7 @@ import {
   Input_shake_128,
   Input_shake_256,
   manifest,
-} from "./w3-man";
+} from "./wrap-man";
 
 import {
   sha3_512,
@@ -31,7 +31,7 @@ import {
   shake_128,
   shake_256,
 } from "js-sha3";
-import { PluginFactory } from "@web3api/core-js";
+import { PluginFactory } from "@polywrap/core-js";
 
 export interface Sha3PluginConfig extends Record<string, unknown> {}
 

@@ -1,4 +1,4 @@
-export * from "./Api";
+export * from "./Wrapper";
 export * from "./Client";
 export * from "./Invoke";
 export * from "./MaybeAsync";

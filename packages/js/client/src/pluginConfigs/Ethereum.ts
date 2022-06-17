@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable prettier/prettier */
 
-/// Types generated from @web3api/ethereum-plugin-js build files:
+/// Types generated from @polywrap/ethereum-plugin-js build files:
 /// build/index.d.ts, build/Connection.d.ts
 
 export interface EthereumPluginConfig extends Record<string, unknown> {

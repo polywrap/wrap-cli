@@ -38,7 +38,7 @@ class Sanity {
   map: Map<string, Array<i32>> = new Map<string, Array<i32>>();
 
   init(): void {
-    const largeString = new Array<string>(10000).join("web3api ");
+    const largeString = new Array<string>(10000).join("polywrap ");
     const largeBytes = String.UTF8.encode(largeString);
 
     this.nil = null;
@@ -57,7 +57,7 @@ class Sanity {
     this.bigint = BigInt.fromString("3124124512598273468017578125");
     this.bignumber = BigNumber.fromString("3124124512.598273468017578125");
     this.json = JSON.parse(`{"foo": "bar", "bar": "baz"}`);
-    this.largeStr = new Array<string>(10).join("web3api ");
+    this.largeStr = new Array<string>(10).join("polywrap ");
     this.bytes = new ArrayBuffer(12);
     this.largeBytes = largeBytes;
     this.array = [10, 20, 30];

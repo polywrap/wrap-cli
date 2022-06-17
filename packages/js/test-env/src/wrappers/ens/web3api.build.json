@@ -1,6 +1,0 @@
-{
-  "format": "0.0.1-prealpha.3",
-  "docker": {
-    "buildImageId": "sha256:8116d16c4e0b42f1c27becb3e952d266d6a8b8045f4dc2ebaba8ddfbd93d52be\n"
-  }
-}

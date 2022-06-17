@@ -1,8 +1,0 @@
-format: 0.0.1-prealpha.3
-name: Logger
-language: plugin/typescript
-module: ./src/index.ts
-schema: ./src/schema.graphql
-import_redirects:
-  - uri: "ens/logger.core.web3api.eth"
-    schema: ../../../core-interfaces/logger/src/query.graphql

@@ -1,8 +1,0 @@
-format: 0.0.1-prealpha.3
-name: Ipfs
-language: plugin/typescript
-module: ./src/index.ts
-schema: ./src/schema.graphql
-import_redirects:
-  - uri: "ens/ipfs.web3api.eth"
-    schema: ../../../core-interfaces/ipfs/build/schema.graphql

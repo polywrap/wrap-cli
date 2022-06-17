@@ -1,7 +1,10 @@
-import { coreInterfaceUris, PluginModule } from "@web3api/core-js";
+import {
+  coreInterfaceUris,
+  PluginModule
+} from "@polywrap/core-js";
 import {
   Uri,
-  Web3ApiClient,
+  PolywrapClient,
 } from "../..";
 
 jest.setTimeout(200000);
@@ -9,56 +12,56 @@ jest.setTimeout(200000);
 describe("sanity", () => {
 
   test("default client config", () => {
-    const client = new Web3ApiClient();
+    const client = new PolywrapClient();
 
     expect(client.getRedirects()).toStrictEqual([]);
     expect(client.getPlugins().map((x) => x.uri)).toStrictEqual([
-      new Uri("w3://ens/ipfs.web3api.eth"),
-      new Uri("w3://ens/ens.web3api.eth"),
-      new Uri("w3://ens/ethereum.web3api.eth"),
-      new Uri("w3://ens/http.web3api.eth"),
-      new Uri("w3://ens/js-logger.web3api.eth"),
-      new Uri("w3://ens/uts46.web3api.eth"),
-      new Uri("w3://ens/sha3.web3api.eth"),
-      new Uri("w3://ens/graph-node.web3api.eth"),
-      new Uri("w3://ens/fs.web3api.eth"),
-      new Uri("w3://ens/ipfs-resolver.web3api.eth"),
+      new Uri("wrap://ens/ipfs.polywrap.eth"),
+      new Uri("wrap://ens/ens.polywrap.eth"),
+      new Uri("wrap://ens/ethereum.polywrap.eth"),
+      new Uri("wrap://ens/http.polywrap.eth"),
+      new Uri("wrap://ens/js-logger.polywrap.eth"),
+      new Uri("wrap://ens/uts46.polywrap.eth"),
+      new Uri("wrap://ens/sha3.polywrap.eth"),
+      new Uri("wrap://ens/graph-node.polywrap.eth"),
+      new Uri("wrap://ens/fs.polywrap.eth"),
+      new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
     ]);
     expect(client.getInterfaces()).toStrictEqual([
       {
         interface: coreInterfaceUris.uriResolver,
         implementations: [
-          new Uri("w3://ens/ipfs-resolver.web3api.eth"),
-          new Uri("w3://ens/ens.web3api.eth"),
-          new Uri("w3://ens/fs.web3api.eth"),
+          new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
+          new Uri("wrap://ens/ens.polywrap.eth"),
+          new Uri("wrap://ens/fs.polywrap.eth"),
         ],
       },
       {
         interface: coreInterfaceUris.logger,
-        implementations: [new Uri("w3://ens/js-logger.web3api.eth")],
+        implementations: [new Uri("wrap://ens/js-logger.polywrap.eth")],
       },
     ]);
   });
 
   test("client noDefaults flag works as expected", async () => {
-    let client = new Web3ApiClient();
+    let client = new PolywrapClient();
     expect(client.getPlugins().length !== 0).toBeTruthy();
 
-    client = new Web3ApiClient({}, {});
+    client = new PolywrapClient({}, {});
     expect(client.getPlugins().length !== 0).toBeTruthy();
 
-    client = new Web3ApiClient({}, { noDefaults: false });
+    client = new PolywrapClient({}, { noDefaults: false });
     expect(client.getPlugins().length !== 0).toBeTruthy();
 
-    client = new Web3ApiClient({}, { noDefaults: true });
+    client = new PolywrapClient({}, { noDefaults: true });
     expect(client.getPlugins().length === 0).toBeTruthy();
   });
 
   test("redirect registration", () => {
-    const implementation1Uri = "w3://ens/some-implementation1.eth";
-    const implementation2Uri = "w3://ens/some-implementation2.eth";
+    const implementation1Uri = "wrap://ens/some-implementation1.eth";
+    const implementation2Uri = "wrap://ens/some-implementation2.eth";
 
-    const client = new Web3ApiClient({
+    const client = new PolywrapClient({
       redirects: [
         {
           from: implementation1Uri,
@@ -77,11 +80,11 @@ describe("sanity", () => {
     ]);
   });
 
-  test("loadWeb3Api - pass string or Uri", async () => {
-    const implementationUri = "w3://ens/some-implementation.eth";
+  test("loadPolywrap - pass string or Uri", async () => {
+    const implementationUri = "wrap://ens/some-implementation.eth";
     const schemaStr = "test-schema";
 
-    const client = new Web3ApiClient({
+    const client = new PolywrapClient({
       plugins: [
         {
           uri: implementationUri,

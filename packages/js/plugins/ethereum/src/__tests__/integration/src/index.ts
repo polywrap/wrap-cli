@@ -32,8 +32,8 @@ import {
   Input_sendTransaction,
   Input_sendTransactionAndWait,
   Input_signMessage
-} from "./w3";
-import { BigInt } from "@web3api/wasm-as";
+} from "./wrap";
+import { BigInt } from "@polywrap/wasm-as";
 
 export function callContractView(
   input: Input_callContractView

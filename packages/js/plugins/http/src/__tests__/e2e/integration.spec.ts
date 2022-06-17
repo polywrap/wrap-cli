@@ -1,10 +1,10 @@
 import { httpPlugin } from "../..";
-import { Response } from "../../w3";
+import { Response } from "../../wrap-man";
 
-import { Web3ApiClient } from "@web3api/client-js"
+import { PolywrapClient } from "@polywrap/client-js"
 import {
-  buildApi
-} from "@web3api/test-env-js";
+  buildWrapper
+} from "@polywrap/test-env-js";
 import nock from "nock";
 
 jest.setTimeout(360000)
@@ -18,22 +18,22 @@ describe("e2e tests for HttpPlugin", () => {
 
   describe("integration", () => {
 
-    let client: Web3ApiClient;
+    let client: PolywrapClient;
 
-    const apiPath = `${__dirname}/integration`
-    const uri = `fs/${apiPath}/build`
+    const wrapperPath = `${__dirname}/integration`
+    const uri = `fs/${wrapperPath}/build`
 
     beforeAll(async () => {
-      client = new Web3ApiClient({
+      client = new PolywrapClient({
         plugins: [
           {
-            uri: "w3://ens/http.web3api.eth",
+            uri: "wrap://ens/http.polywrap.eth",
             plugin: httpPlugin({ }),
           },
         ],
       });
 
-      await buildApi(apiPath);
+      await buildWrapper(wrapperPath);
     });
 
     it("get", async () => {

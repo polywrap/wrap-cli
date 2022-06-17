@@ -1,7 +1,0 @@
-format: 0.0.1-prealpha.9
-name: test-project
-build: ./web3api.build.yaml
-deploy: ./web3api.deploy.invalid-config.yaml
-language: wasm/assemblyscript
-schema: ./schema.graphql
-module: ./src/index.ts

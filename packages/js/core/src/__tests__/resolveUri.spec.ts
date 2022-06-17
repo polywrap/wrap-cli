@@ -2,13 +2,13 @@ import {
   UriResolverInterface,
   coreInterfaceUris,
   Client,
-  InvokeApiOptions,
-  InvokeApiResult,
-  Web3ApiManifest,
+  InvokeOptions,
+  InvokeResult,
+  PolywrapManifest,
   PluginModule,
   PluginPackage,
-  QueryApiOptions,
-  QueryApiResult,
+  QueryOptions,
+  QueryResult,
   Uri,
   UriRedirect,
   AnyManifestArtifact,
@@ -18,7 +18,7 @@ import {
   RedirectsResolver,
   ExtendableUriResolver,
   PluginResolver,
-  Api,
+  Wrapper,
   Env,
   GetFileOptions,
   GetImplementationsOptions,
@@ -31,7 +31,7 @@ import {
 
 describe("resolveUri", () => {
   const client = (
-    apis: Record<string, PluginModule>,
+    wrappers: Record<string, PluginModule>,
     plugins: PluginRegistration<Uri>[] = [],
     interfaces: InterfaceImplementations<Uri>[] = [],
     redirects: UriRedirect<Uri>[] = []
@@ -45,8 +45,8 @@ describe("resolveUri", () => {
         TData extends Record<string, unknown> = Record<string, unknown>,
         TVariables extends Record<string, unknown> = Record<string, unknown>
       >(
-        _options: QueryApiOptions<TVariables, string | Uri>
-      ): Promise<QueryApiResult<TData>> => {
+        _options: QueryOptions<TVariables, string | Uri>
+      ): Promise<QueryResult<TData>> => {
         return Promise.resolve({
           data: ({
             foo: "foo",
@@ -54,15 +54,15 @@ describe("resolveUri", () => {
         });
       },
       invoke: <TData = unknown>(
-        options: InvokeApiOptions<string | Uri>
-      ): Promise<InvokeApiResult<TData>> => {
+        options: InvokeOptions<string | Uri>
+      ): Promise<InvokeResult<TData>> => {
         let uri = options.uri;
         if (Uri.isUri(uri)) {
           uri = uri.uri;
         }
         return Promise.resolve({
           // @ts-ignore
-          data: apis[uri]?.[options.method](
+          data: wrappers[uri]?.[options.method](
             options.input as Record<string, unknown>,
             {} as Client
           ) as TData
@@ -79,7 +79,7 @@ describe("resolveUri", () => {
           isActive: false,
           stop: () => {},
           async *[Symbol.asyncIterator](): AsyncGenerator<
-            QueryApiResult<TData>
+            QueryResult<TData>
           > {},
         };
       },
@@ -96,7 +96,7 @@ describe("resolveUri", () => {
         const manifest = {
           format: "0.0.1-prealpha.8",
           language: "",
-          __type: "Web3ApiManifest",
+          __type: "PolywrapManifest",
         };
         return Promise.resolve(manifest as AnyManifestArtifact<TManifestType>);
       },
@@ -111,13 +111,13 @@ describe("resolveUri", () => {
       },
     } as unknown) as Client);
 
-  const createPluginApi = (uri: Uri, plugin: PluginPackage): Api => {
+  const createPluginWrapper = (uri: Uri, plugin: PluginPackage): Wrapper => {
     return {
       invoke: () =>
         Promise.resolve({
           uri,
           plugin,
-        } as InvokeApiResult),
+        } as InvokeResult),
       getSchema: (_client: Client): Promise<string> => Promise.resolve(""),
       getFile: (options: GetFileOptions, client: Client) => Promise.resolve(""),
       getManifest: <TManifestType extends ManifestArtifactType>(
@@ -134,18 +134,18 @@ describe("resolveUri", () => {
     };
   };
 
-  const createApi = (
+  const createWrapper = (
     uri: Uri,
-    manifest: Web3ApiManifest,
+    manifest: PolywrapManifest,
     uriResolver: string
-  ): Api => {
+  ): Wrapper => {
     return {
       invoke: () =>
         Promise.resolve({
           uri,
           manifest,
           uriResolver,
-        } as InvokeApiResult),
+        } as InvokeResult),
       getSchema: (_client: Client): Promise<string> => Promise.resolve(""),
       getFile: (options: GetFileOptions, client: Client) => Promise.resolve(""),
       getManifest: <TManifestType extends ManifestArtifactType>(
@@ -157,14 +157,14 @@ describe("resolveUri", () => {
           language: "",
           module: "",
           schema: "",
-          __type: "Web3ApiManifest",
+          __type: "PolywrapManifest",
         };
         return Promise.resolve(manifest as AnyManifestArtifact<TManifestType>);
       },
     };
   };
 
-  const ensApi = {
+  const ensWrapper = {
     tryResolveUri: (
       input: { authority: string; path: string },
       _client: Client
@@ -175,7 +175,7 @@ describe("resolveUri", () => {
     },
   };
 
-  const ipfsApi = {
+  const ipfsWrapper = {
       tryResolveUri: (
         input: { authority: string; path: string },
         _client: Client
@@ -189,7 +189,7 @@ describe("resolveUri", () => {
       }
   };
 
-  const pluginApi = {
+  const pluginWrapper = {
     tryResolveUri: (
       input: { authority: string; path: string },
       _client: Client
@@ -225,25 +225,25 @@ describe("resolveUri", () => {
     },
   ];
 
-  const apis: Record<string, PluginModule> = {
-    "w3://ens/ens": ensApi as unknown as PluginModule,
-    "w3://ens/ipfs": ipfsApi as unknown as PluginModule,
-    "w3://ens/my-plugin": pluginApi as unknown as PluginModule,
+  const wrappers: Record<string, PluginModule> = {
+    "wrap://ens/ens": ensWrapper as unknown as PluginModule,
+    "wrap://ens/ipfs": ipfsWrapper as unknown as PluginModule,
+    "wrap://ens/my-plugin": pluginWrapper as unknown as PluginModule,
   };
 
   const uriResolvers: UriResolver[] = [
     new RedirectsResolver(),
     new PluginResolver((uri: Uri, plugin: PluginPackage) =>
-      createPluginApi(uri, plugin)
+      createPluginWrapper(uri, plugin)
     ),
     new ExtendableUriResolver(
       (
         uri: Uri,
-        manifest: Web3ApiManifest,
+        manifest: PolywrapManifest,
         uriResolver: string,
         environment: Env<Uri> | undefined
       ) => {
-        return createApi(uri, manifest, uriResolver);
+        return createWrapper(uri, manifest, uriResolver);
       },
       { noValidate: true },
       true
@@ -251,37 +251,37 @@ describe("resolveUri", () => {
   ];
 
   it("sanity", () => {
-    const api = new Uri("w3://ens/ens");
-    const file = new Uri("w3/some-file");
-    const path = "w3/some-path";
+    const wrapper = new Uri("wrap://ens/ens");
+    const file = new Uri("wrap/some-file");
+    const path = "wrap/some-path";
     const query = UriResolverInterface.Query;
-    const uri = new Uri("w3/some-uri");
+    const uri = new Uri("wrap/some-uri");
 
-    expect(query.tryResolveUri(client(apis).invoke, api, uri)).toBeDefined();
-    expect(query.getFile(client(apis).invoke, file, path)).toBeDefined();
+    expect(query.tryResolveUri(client(wrappers).invoke, wrapper, uri)).toBeDefined();
+    expect(query.getFile(client(wrappers).invoke, file, path)).toBeDefined();
   });
 
   it("works in the typical case", async () => {
     const result = await resolveUri(
       new Uri("ens/test.eth"),
       uriResolvers,
-      client(apis, plugins, interfaces),
-      new Map<string, Api>(),
+      client(wrappers, plugins, interfaces),
+      new Map<string, Wrapper>(),
     );
 
-    expect(result.api).toBeTruthy();
+    expect(result.wrapper).toBeTruthy();
     
-    const apiIdentity = await result.api!.invoke(
-      {} as InvokeApiOptions<Uri>,
+    const wrapperIdentity = await result.wrapper!.invoke(
+      {} as InvokeOptions<Uri>,
       {} as Client
     );
 
-    expect(apiIdentity).toMatchObject({
+    expect(wrapperIdentity).toMatchObject({
       uri: new Uri("ipfs/QmHash"),
       manifest: {
         format: "0.0.1-prealpha.9",
       },
-      uriResolver: "w3://ens/ipfs",
+      uriResolver: "wrap://ens/ipfs",
     });
   });
 
@@ -289,94 +289,94 @@ describe("resolveUri", () => {
     const result = await resolveUri(
       new Uri("my/something-different"),
       uriResolvers,
-      client(apis, plugins, interfaces),
-      new Map<string, Api>(),
+      client(wrappers, plugins, interfaces),
+      new Map<string, Wrapper>(),
     );
 
-    expect(result.api).toBeTruthy();
+    expect(result.wrapper).toBeTruthy();
     
-    const apiIdentity = await result.api!.invoke(
-      {} as InvokeApiOptions<Uri>,
+    const wrapperIdentity = await result.wrapper!.invoke(
+      {} as InvokeOptions<Uri>,
       {} as Client
     );
 
-    expect(apiIdentity).toMatchObject({
+    expect(wrapperIdentity).toMatchObject({
       uri: new Uri("my/something-different"),
       manifest: {
         format: "0.0.1-prealpha.9",
       },
-      uriResolver: "w3://ens/my-plugin",
+      uriResolver: "wrap://ens/my-plugin",
     });
   });
 
-  it("works when direct query a Web3API that implements the uri-resolver", async () => {
+  it("works when direct query a Polywrap that implements the uri-resolver", async () => {
     const result = await resolveUri(
       new Uri("ens/ens"),
       uriResolvers,
-      client(apis, plugins, interfaces),
-      new Map<string, Api>(),
+      client(wrappers, plugins, interfaces),
+      new Map<string, Wrapper>(),
     );
 
-    expect(result.api).toBeTruthy();
+    expect(result.wrapper).toBeTruthy();
     
-    const apiIdentity = await result.api!.invoke(
-      {} as InvokeApiOptions<Uri>,
+    const wrapperIdentity = await result.wrapper!.invoke(
+      {} as InvokeOptions<Uri>,
       {} as Client
     );
 
-    expect(apiIdentity).toMatchObject({
+    expect(wrapperIdentity).toMatchObject({
       uri: new Uri("ipfs/QmHash"),
       manifest: {
         format: "0.0.1-prealpha.9",
         dog: "cat",
       },
-      uriResolver: "w3://ens/ipfs",
+      uriResolver: "wrap://ens/ipfs",
     });
   });
 
-  it("works when direct query a plugin Web3API that implements the uri-resolver", async () => {
+  it("works when direct query a plugin Polywrap that implements the uri-resolver", async () => {
     const result = await resolveUri(
       new Uri("my/something-different"),
       uriResolvers,
-      client(apis, plugins, interfaces),
-      new Map<string, Api>(),
+      client(wrappers, plugins, interfaces),
+      new Map<string, Wrapper>(),
     );
 
-    expect(result.api).toBeTruthy();
+    expect(result.wrapper).toBeTruthy();
     
-    const apiIdentity = await result.api!.invoke(
-      {} as InvokeApiOptions<Uri>,
+    const wrapperIdentity = await result.wrapper!.invoke(
+      {} as InvokeOptions<Uri>,
       {} as Client
     );
 
-    expect(apiIdentity).toMatchObject({
+    expect(wrapperIdentity).toMatchObject({
       uri: new Uri("my/something-different"),
       manifest: {
         format: "0.0.1-prealpha.9",
       },
-      uriResolver: "w3://ens/my-plugin",
+      uriResolver: "wrap://ens/my-plugin",
     });
   });
 
   it("returns an error when circular redirect loops are found", async () => {
     const circular: UriRedirect<Uri>[] = [
       {
-        from: new Uri("some/api"),
-        to: new Uri("ens/api"),
+        from: new Uri("some/wrapper"),
+        to: new Uri("ens/wrapper"),
       },
       {
-        from: new Uri("ens/api"),
-        to: new Uri("some/api"),
+        from: new Uri("ens/wrapper"),
+        to: new Uri("some/wrapper"),
       },
     ];
 
     expect.assertions(1);
 
     return resolveUri(
-      new Uri("some/api"),
+      new Uri("some/wrapper"),
       uriResolvers,
-      client(apis, plugins, interfaces, circular),
-      new Map<string, Api>(),
+      client(wrappers, plugins, interfaces, circular),
+      new Map<string, Wrapper>(),
     ).catch((e: Error) =>
       expect(e.message).toMatch(/Infinite loop while resolving URI/)
     );
@@ -385,34 +385,34 @@ describe("resolveUri", () => {
   it("throws when redirect missing the from property", async () => {
     const missingFromProperty: UriRedirect<Uri>[] = [
       {
-        from: new Uri("some/api"),
-        to: new Uri("ens/api"),
+        from: new Uri("some/wrapper"),
+        to: new Uri("ens/wrapper"),
       },
       {
         from: null as any,
-        to: new Uri("another/api"),
+        to: new Uri("another/wrapper"),
       },
     ];
 
     expect.assertions(1);
 
     return resolveUri(
-      new Uri("some/api"),
+      new Uri("some/wrapper"),
       uriResolvers,
-      client(apis, plugins, interfaces, missingFromProperty),
-      new Map<string, Api>(),
+      client(wrappers, plugins, interfaces, missingFromProperty),
+      new Map<string, Wrapper>(),
     ).catch((e: Error) =>
       expect(e.message).toMatch(
-        "Redirect missing the from property.\nEncountered while resolving w3://some/api"
+        "Redirect missing the from property.\nEncountered while resolving wrap://some/wrapper"
       )
     );
   });
 
-  it("works when a Web3API registers a Plugin", async () => {
+  it("works when a Polywrap registers a Plugin", async () => {
     const pluginRegistrations: PluginRegistration<Uri>[] = [
       ...plugins,
       {
-        uri: new Uri("some/api"),
+        uri: new Uri("some/wrapper"),
         plugin: {
           factory: () => ({} as Plugin),
           manifest: {
@@ -424,24 +424,24 @@ describe("resolveUri", () => {
     ];
 
     const result = await resolveUri(
-      new Uri("some/api"),
+      new Uri("some/wrapper"),
       uriResolvers,
-      client(apis, pluginRegistrations, interfaces),
-      new Map<string, Api>(),
+      client(wrappers, pluginRegistrations, interfaces),
+      new Map<string, Wrapper>(),
     );
 
-    expect(result.api).toBeTruthy();
+    expect(result.wrapper).toBeTruthy();
     
-    const apiIdentity = await result.api!.invoke(
-      {} as InvokeApiOptions<Uri>,
+    const wrapperIdentity = await result.wrapper!.invoke(
+      {} as InvokeOptions<Uri>,
       {} as Client
     );
 
-    expect(apiIdentity.error).toBeUndefined();
+    expect(wrapperIdentity.error).toBeUndefined();
   });
 
-  it("returns URI when it does not resolve to an API", async () => {
-    const faultyIpfsApi = {
+  it("returns URI when it does not resolve to an Wrapper", async () => {
+    const faultyIpfsWrapper = {
       tryResolveUri: (
         input: { authority: string; path: string },
         _client: Client
@@ -452,24 +452,24 @@ describe("resolveUri", () => {
       },
     };
 
-    const uri = new Uri("some/api");
+    const uri = new Uri("some/wrapper");
 
-    const { uri: resolvedUri, api, error } = await resolveUri(
+    const { uri: resolvedUri, wrapper, error } = await resolveUri(
       uri,
       uriResolvers,
       client(
         {
-          ...apis,
-          "w3://ens/ipfs": faultyIpfsApi as unknown as PluginModule
+          ...wrappers,
+          "wrap://ens/ipfs": faultyIpfsWrapper as unknown as PluginModule
         }, 
         plugins, 
         interfaces
       ),
-      new Map<string, Api>(),
+      new Map<string, Wrapper>(),
     );
 
     expect(resolvedUri).toEqual(uri);
-    expect(api).toBeFalsy();
+    expect(wrapper).toBeFalsy();
     expect(error).toBeFalsy();
   });
 });

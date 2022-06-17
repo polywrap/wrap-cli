@@ -7,12 +7,12 @@ import {
   Bytes,
   Ethereum_Module,
   manifest,
-} from "./w3-man";
+} from "./wrap-man";
 
 import { ethers } from "ethers";
 import { Base58 } from "@ethersproject/basex";
 import { getAddress } from "@ethersproject/address";
-import { PluginFactory } from "@web3api/core-js";
+import { PluginFactory } from "@polywrap/core-js";
 
 export type Address = string;
 
@@ -56,7 +56,7 @@ export class EnsPlugin extends Module<EnsPluginConfig> {
         manifest: null,
       };
     } catch (e) {
-      // TODO: logging https://github.com/web3-api/monorepo/issues/33
+      // TODO: logging https://github.com/polywrap/monorepo/issues/33
     }
 
     // Nothing found
@@ -81,7 +81,7 @@ export class EnsPlugin extends Module<EnsPluginConfig> {
     let ensAddress = EnsPlugin.defaultAddress;
 
     // Remove the ENS URI scheme & authority
-    domain = domain.replace("w3://", "");
+    domain = domain.replace("wrap://", "");
     domain = domain.replace("ens/", "");
 
     // Check for non-default network

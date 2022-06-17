@@ -1,4 +1,4 @@
-#import { Module } into Ipfs from "ens/ipfs.web3api.eth"
+#import { Module } into Ipfs from "ens/ipfs.polywrap.eth"
 
 type Env {
   """

@@ -2,7 +2,7 @@ import { ExternalImport, LocalImport, SYNTAX_REFERENCE, Use } from "./types";
 import { getDuplicates } from "./utils";
 
 import Path from "path";
-import { CapabilityType } from "@web3api/schema-parse";
+import { CapabilityType } from "@polywrap/schema-parse";
 
 export function parseUse(useStatements: RegExpMatchArray[]): Use[] {
   const uses: Use[] = [];
@@ -141,7 +141,7 @@ export function parseLocalImports(
     const index = importTypes.findIndex((str) => str.indexOf("_") > -1);
     if (index > -1) {
       throw Error(
-        `User defined types with '_' in their name are forbidden. This is used for Web3API import namespacing.`
+        `User defined types with '_' in their name are forbidden. This is used for Polywrap import namespacing.`
       );
     }
 

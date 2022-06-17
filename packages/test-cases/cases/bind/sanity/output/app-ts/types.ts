@@ -4,8 +4,8 @@ import * as Types from "./";
 // @ts-ignore
 import {
   Client,
-  InvokeApiResult
-} from "@web3api/core-js";
+  InvokeResult
+} from "@polywrap/core-js";
 
 export type UInt = number;
 export type UInt8 = number;
@@ -146,7 +146,7 @@ export const TestImport_Module = {
     input: TestImport_Module_Input_importedMethod,
     client: Client,
     uri: string = "testimport.uri.eth"
-  ): Promise<InvokeApiResult<Types.TestImport_Object | null>> => {
+  ): Promise<InvokeResult<Types.TestImport_Object | null>> => {
     return client.invoke<Types.TestImport_Object | null>({
       uri,
       method: "importedMethod",
@@ -158,7 +158,7 @@ export const TestImport_Module = {
     input: TestImport_Module_Input_anotherMethod,
     client: Client,
     uri: string = "testimport.uri.eth"
-  ): Promise<InvokeApiResult<Types.Int32>> => {
+  ): Promise<InvokeResult<Types.Int32>> => {
     return client.invoke<Types.Int32>({
       uri,
       method: "anotherMethod",

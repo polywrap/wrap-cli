@@ -1,8 +1,8 @@
-import { PluginRegistration } from "@web3api/core-js";
-import { ensPlugin } from "@web3api/ens-plugin-js";
-import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
-import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
-import { Web3ApiClient, defaultIpfsProviders } from "@web3api/client-js";
+import { PluginRegistration } from "@polywrap/core-js";
+import { ensPlugin } from "@polywrap/ens-plugin-js";
+import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
+import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
+import { PolywrapClient, defaultIpfsProviders } from "@polywrap/client-js";
 
 interface SimpleClientConfig {
   ensAddress?: string;
@@ -10,12 +10,12 @@ interface SimpleClientConfig {
   ipfsProvider?: string;
 }
 
-export function getSimpleClient(config: SimpleClientConfig): Web3ApiClient {
+export function getSimpleClient(config: SimpleClientConfig): PolywrapClient {
   const { ensAddress, ethProvider, ipfsProvider } = config;
   const plugins: PluginRegistration[] = [];
   if (ensAddress) {
     plugins.push({
-      uri: "w3://ens/ens.web3api.eth",
+      uri: "wrap://ens/ens.polywrap.eth",
       plugin: ensPlugin({
         addresses: {
           testnet: ensAddress,
@@ -25,7 +25,7 @@ export function getSimpleClient(config: SimpleClientConfig): Web3ApiClient {
   }
   if (ethProvider) {
     plugins.push({
-      uri: "w3://ens/ethereum.web3api.eth",
+      uri: "wrap://ens/ethereum.polywrap.eth",
       plugin: ethereumPlugin({
         networks: {
           testnet: {
@@ -37,12 +37,12 @@ export function getSimpleClient(config: SimpleClientConfig): Web3ApiClient {
   }
   if (ipfsProvider) {
     plugins.push({
-      uri: "w3://ens/ipfs.web3api.eth",
+      uri: "wrap://ens/ipfs.polywrap.eth",
       plugin: ipfsPlugin({
         provider: ipfsProvider,
         fallbackProviders: defaultIpfsProviders,
       }),
     });
   }
-  return new Web3ApiClient({ plugins });
+  return new PolywrapClient({ plugins });
 }

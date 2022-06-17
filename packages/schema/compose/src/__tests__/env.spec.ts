@@ -1,4 +1,4 @@
-import { createObjectDefinition, createPropertyDefinition } from "@web3api/schema-parse";
+import { createObjectDefinition, createPropertyDefinition } from "@polywrap/schema-parse";
 import { checkDuplicateEnvProperties } from "../env";
 
 describe("Check duplicate environment properties", () => {

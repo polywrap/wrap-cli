@@ -1,12 +1,12 @@
 import { clearStyle } from "./utils";
 
-import { runCLI } from "@web3api/test-env-js";
-import { GetPathToCliTestFiles } from "@web3api/test-cases";
+import { runCLI } from "@polywrap/test-env-js";
+import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import { compareSync } from "dir-compare";
 import path from "path";
 import fs from "fs";
 
-const HELP = `Usage: w3 plugin|p [options] [command]
+const HELP = `Usage: polywrap plugin|p [options] [command]
 
 Build/generate types for the plugin
 
@@ -18,12 +18,12 @@ Commands:
   help [command]     display help for command
 `;
 
-const CODEGEN_SUCCESS = `- Manifest loaded from ./web3api.plugin.yaml
-✔ Manifest loaded from ./web3api.plugin.yaml
+const CODEGEN_SUCCESS = `- Manifest loaded from ./polywrap.plugin.yaml
+✔ Manifest loaded from ./polywrap.plugin.yaml
 - Generate types
 ✔ Generate types
-- Manifest written to ./build/web3api.plugin.json
-✔ Manifest written to ./build/web3api.plugin.json
+- Manifest written to ./build/polywrap.plugin.json
+✔ Manifest written to ./build/polywrap.plugin.json
 `;
 
 describe("e2e tests for plugin command", () => {
@@ -118,8 +118,8 @@ describe("e2e tests for plugin command", () => {
         expect(clearStyle(output)).toEqual(CODEGEN_SUCCESS);
 
         const expectedTypesResult = compareSync(
-          `${testCaseDir}/src/w3`,
-          `${testCaseDir}/expected/src/w3`,
+          `${testCaseDir}/src/wrap`,
+          `${testCaseDir}/expected/src/wrap`,
           { compareContent: true }
         );
         expect(expectedTypesResult.differences).toBe(0);

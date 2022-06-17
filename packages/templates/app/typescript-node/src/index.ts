@@ -1,8 +1,8 @@
-import { HelloWorld_Module, Ethereum_Module } from "./w3";
+import { HelloWorld_Module, Ethereum_Module } from "./wrap";
 
-import { Web3ApiClient } from "@web3api/client-js";
+import { PolywrapClient } from "@polywrap/client-js";
 
-const client = new Web3ApiClient();
+const client = new PolywrapClient();
 
 async function main() {
   console.log("Invoking: logMessage");

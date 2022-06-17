@@ -1,7 +1,7 @@
 const Environment = require("jest-environment-jsdom");
 
 /**
- * A custom environment to set the TextEncoder that is required by ../client/src/wasm/WasmWeb3Api.ts.
+ * A custom environment to set the TextEncoder that is required by ../client/src/wasm/WasmWrapper.ts.
  */
 module.exports = class CustomTestEnvironment extends Environment {
   async setup() {

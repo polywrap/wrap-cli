@@ -36,7 +36,7 @@ import {
   Network,
   Connection as SchemaConnection,
   manifest,
-} from "./w3-man";
+} from "./wrap-man";
 import {
   Connections,
   Connection,
@@ -48,7 +48,7 @@ import { parseArgs } from "./utils/parsing";
 
 import { ethers } from "ethers";
 import { defaultAbiCoder } from "ethers/lib/utils";
-import { PluginFactory } from "@web3api/core-js";
+import { PluginFactory } from "@polywrap/core-js";
 
 export interface EthereumPluginConfig extends Record<string, unknown> {
   networks: ConnectionConfigs;

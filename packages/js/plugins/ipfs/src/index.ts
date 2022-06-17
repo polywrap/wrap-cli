@@ -10,11 +10,11 @@ import {
   manifest,
   Input_catToString,
   Input_cat,
-} from "./w3";
+} from "./wrap";
 import { IpfsClient } from "./utils/IpfsClient";
 import { execSimple, execFallbacks } from "./utils/exec";
 
-import { Client, PluginFactory } from "@web3api/core-js";
+import { Client, PluginFactory } from "@polywrap/core-js";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const isIPFS = require("is-ipfs");
