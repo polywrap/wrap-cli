@@ -50,7 +50,7 @@ import {
   createObjectDefinition,
   createModuleDefinition,
   isClientEnvType,
-} from "@web3api/schema-parse";
+} from "@polywrap/schema-parse";
 
 type ImplementationWithInterfaces = {
   typeName: string;
@@ -862,8 +862,8 @@ async function resolveLocalImports(
       throw Error(`Unable to resolve schema at "${path}"`);
     }
 
-    // Make sure the schema has the Web3API header
-    if (schema.indexOf("### Web3API Header START ###") === -1) {
+    // Make sure the schema has the Polywrap header
+    if (schema.indexOf("### Polywrap Header START ###") === -1) {
       schema = addHeader(schema);
     }
 

@@ -8,13 +8,13 @@ import { InterfaceImplementations } from "../types";
 describe("getImplementations", () => {
 
   it("works with complex redirects", () => {
-    const interface1Uri = "w3://ens/some-interface1.eth";
-    const interface2Uri = "w3://ens/some-interface2.eth";
-    const interface3Uri = "w3://ens/some-interface3.eth";
+    const interface1Uri = "wrap://ens/some-interface1.eth";
+    const interface2Uri = "wrap://ens/some-interface2.eth";
+    const interface3Uri = "wrap://ens/some-interface3.eth";
 
-    const implementation1Uri = "w3://ens/some-implementation.eth";
-    const implementation2Uri = "w3://ens/some-implementation2.eth";
-    const implementation3Uri = "w3://ens/some-implementation3.eth";
+    const implementation1Uri = "wrap://ens/some-implementation.eth";
+    const implementation2Uri = "wrap://ens/some-implementation2.eth";
+    const implementation3Uri = "wrap://ens/some-implementation3.eth";
 
     const redirects: UriRedirect<Uri>[] = [
       {
@@ -87,10 +87,10 @@ describe("getImplementations", () => {
   });
 
   it("interface implementations are not redirected", () => {
-    const interface1Uri = "w3://ens/some-interface1.eth";
+    const interface1Uri = "wrap://ens/some-interface1.eth";
 
-    const implementation1Uri = "w3://ens/some-implementation.eth";
-    const implementation2Uri = "w3://ens/some-implementation2.eth";
+    const implementation1Uri = "wrap://ens/some-implementation.eth";
+    const implementation2Uri = "wrap://ens/some-implementation2.eth";
 
     const redirects: UriRedirect<Uri>[] = [
       {

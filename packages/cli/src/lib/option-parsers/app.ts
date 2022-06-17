@@ -4,7 +4,7 @@ import { resolvePathIfExists } from "../system";
 
 import path from "path";
 
-const defaultAppCodegenDir = "./src/w3";
+const defaultAppCodegenDir = "./src/wrap";
 
 export function parseAppManifestFileOption(
   manifestFile: string | undefined,

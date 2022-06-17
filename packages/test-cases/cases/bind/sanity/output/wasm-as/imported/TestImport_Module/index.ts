@@ -1,12 +1,12 @@
 import {
-  w3_subinvoke,
-  w3_subinvokeImplementation,
+  wrap_subinvoke,
+  wrap_subinvokeImplementation,
   Nullable,
   BigInt,
   BigNumber,
   JSON,
   Result
-} from "@web3api/wasm-as";
+} from "@polywrap/wasm-as";
 import {
   serializeimportedMethodArgs,
   deserializeimportedMethodResult,
@@ -31,7 +31,7 @@ export class TestImport_Module {
     input: Input_importedMethod
   ): Result<Types.TestImport_Object | null, string> {
     const args = serializeimportedMethodArgs(input);
-    const result = w3_subinvokeImplementation(
+    const result = wrap_subinvokeImplementation(
       "testimport.uri.eth",
       this.uri,
       "importedMethod",
@@ -53,7 +53,7 @@ export class TestImport_Module {
     input: Input_anotherMethod
   ): Result<i32, string> {
     const args = serializeanotherMethodArgs(input);
-    const result = w3_subinvokeImplementation(
+    const result = wrap_subinvokeImplementation(
       "testimport.uri.eth",
       this.uri,
       "anotherMethod",

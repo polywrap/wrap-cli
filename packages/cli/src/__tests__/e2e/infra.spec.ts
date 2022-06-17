@@ -1,10 +1,10 @@
 import fs from 'fs';
 import path from "path";
 import net from "net";
-import { clearStyle, w3Cli } from "./utils";
+import { clearStyle, polywrapCli } from "./utils";
 
-import { GetPathToCliTestFiles } from "@web3api/test-cases";
-import { runCLI } from "@web3api/test-env-js";
+import { GetPathToCliTestFiles } from "@polywrap/test-cases";
+import { runCLI } from "@polywrap/test-env-js";
 
 const testCaseRoot = path.join(GetPathToCliTestFiles(), "infra");
   const testCases =
@@ -14,21 +14,21 @@ const testCaseRoot = path.join(GetPathToCliTestFiles(), "infra");
   const getTestCaseDir = (index: number) =>
     path.join(testCaseRoot, testCases[index]);
 
-const HELP = `Usage: w3 infra|i <action> [options]
+const HELP = `Usage: polywrap infra|i <action> [options]
 
-Manage infrastructure for your Web3API
+Manage infrastructure for your wrapper
 
 Arguments:
   action                                   
     Infra allows you to execute the following commands:
-    up      Start Web3API infrastructure
-    down    Stop Web3API infrastructure
-    config   Validate and display Web3API infrastructure's bundled docker-compose manifest
-    vars     Show Web3API infrastructure's required .env variables
+    up      Start Polywrap infrastructure
+    down    Stop Polywrap infrastructure
+    config   Validate and display Polywrap infrastructure's bundled docker-compose manifest
+    vars     Show Polywrap infrastructure's required .env variables
    (choices: "up", "down", "vars", "config")
 
 Options:
-  --manifest  <manifest>                   Infra Manifest path (default: "web3api.infra.yaml")
+  --manifest  <manifest>                   Infra Manifest path (default: "polywrap.infra.yaml")
   -m, --modules <module-name,module-name>  Use only specified modules
   -v, --verbose                            Verbose output (default: false)
   -h, --help                               display help for command
@@ -87,11 +87,11 @@ const waitForPorts = (ports: { port: number; expected: boolean }[]) => {
   });
 };
 
-const runW3CLI = (args: string[], cwd: string) =>
+const runPolywrapCli = (args: string[], cwd: string) =>
   runCLI({
     args,
     cwd,
-    cli: w3Cli,
+    cli: polywrapCli,
     env: process.env as Record<string, string>
   });
 
@@ -109,12 +109,12 @@ describe("e2e tests for infra command", () => {
 
   describe("Sanity", () => {
     afterEach(async () => {
-      await runW3CLI(
+      await runPolywrapCli(
           ["infra", "down", "-v"],
           getTestCaseDir(0),
       );
 
-      await runW3CLI(
+      await runPolywrapCli(
         ["infra", "down", "-v", "--modules=eth-ens-ipfs"],
         getTestCaseDir(0),
       );
@@ -127,7 +127,7 @@ describe("e2e tests for infra command", () => {
     });
 
     test("Should throw error for no command given", async () => {
-      const { exitCode: code, stderr: error } = await runW3CLI(
+      const { exitCode: code, stderr: error } = await runPolywrapCli(
         ["infra"],
         getTestCaseDir(0),
       );
@@ -137,7 +137,7 @@ describe("e2e tests for infra command", () => {
     });
 
     test("Should show help text", async () => {
-      const { exitCode: code, stdout: output, stderr: error } = await runW3CLI(
+      const { exitCode: code, stdout: output, stderr: error } = await runPolywrapCli(
         ["infra", "--help"],
         getTestCaseDir(0),
       );
@@ -148,7 +148,7 @@ describe("e2e tests for infra command", () => {
     });
 
     test("Extracts composed docker manifest's environment variable list", async () => {
-      const { exitCode: code, stdout: output } = await runW3CLI(
+      const { exitCode: code, stdout: output } = await runPolywrapCli(
         ["infra", "vars"],
         getTestCaseDir(0),
       );
@@ -162,7 +162,7 @@ describe("e2e tests for infra command", () => {
     });
 
     test("Validates and displays composed docker manifest", async () => {
-      const { exitCode: code, stdout: output } = await runW3CLI(
+      const { exitCode: code, stdout: output } = await runPolywrapCli(
         ["infra", "config"],
         getTestCaseDir(0),
       );
@@ -176,8 +176,8 @@ describe("e2e tests for infra command", () => {
     });
 
     test("Sets environment up with all modules if no --modules are passed", async () => {
-      await runW3CLI(
-        ["infra", "down", "--manifest=./web3api.infra.yaml"],
+      await runPolywrapCli(
+        ["infra", "down", "--manifest=./polywrap.infra.yaml"],
         getTestCaseDir(0),
       );
 
@@ -187,8 +187,8 @@ describe("e2e tests for infra command", () => {
         { port: 8545, expected: false }
       ]);
 
-      await runW3CLI(
-        ["infra", "up", "--manifest=./web3api.infra.yaml"],
+      await runPolywrapCli(
+        ["infra", "up", "--manifest=./polywrap.infra.yaml"],
         getTestCaseDir(0),
       );
 
@@ -200,7 +200,7 @@ describe("e2e tests for infra command", () => {
     });
 
     test("Should correctly fetch default & local module", async () => {
-      await runW3CLI(
+      await runPolywrapCli(
         ["infra", "up"],
         getTestCaseDir(4),
       );
@@ -210,14 +210,14 @@ describe("e2e tests for infra command", () => {
         { port: 8546, expected: true },
       ]);
 
-      await runW3CLI(
+      await runPolywrapCli(
         ["infra", "down"],
         getTestCaseDir(4),
       );
     });
 
     test("Should correctly open one process for default module because modules flag overwrites it", async () => {
-      await runW3CLI(
+      await runPolywrapCli(
         ["infra", "up", "--modules=eth-ens-ipfs"],
         getTestCaseDir(4),
       );
@@ -226,15 +226,15 @@ describe("e2e tests for infra command", () => {
         { port: 5001, expected: true },
       ]);
 
-      await runW3CLI(
+      await runPolywrapCli(
         ["infra", "down", "--modules=eth-ens-ipfs"],
         getTestCaseDir(4),
       );
     });
 
     test("Should throw because default module declared in manifest is not recognized", async () => {
-      const { stderr } = await runW3CLI(
-        ["infra", "up", "--manifest=./web3api.infra.wrong.yaml"],
+      const { stderr } = await runPolywrapCli(
+        ["infra", "up", "--manifest=./polywrap.infra.wrong.yaml"],
         getTestCaseDir(4),
       );
 
@@ -244,7 +244,7 @@ describe("e2e tests for infra command", () => {
     });
 
     test("Should correctly fetch different local modules when they are declared as folder or file", async () => {
-      await runW3CLI(
+      await runPolywrapCli(
         ["infra", "up"],
         getTestCaseDir(4),
       );
@@ -255,14 +255,14 @@ describe("e2e tests for infra command", () => {
         { port: 8547, expected: true },
       ]);
 
-      await runW3CLI(
+      await runPolywrapCli(
         ["infra", "down"],
         getTestCaseDir(4),
       );
     });
 
     test("Tears down environment", async () => {
-      await runW3CLI(
+      await runPolywrapCli(
         ["infra", "up"],
         getTestCaseDir(0),
       );
@@ -273,7 +273,7 @@ describe("e2e tests for infra command", () => {
         { port: 8545, expected: true }
       ]);
 
-      await runW3CLI(
+      await runPolywrapCli(
         ["infra", "down"],
         getTestCaseDir(0),
       );
@@ -286,7 +286,7 @@ describe("e2e tests for infra command", () => {
     });
 
     test("Sets environment up with only selected modules", async () => {
-      await runW3CLI(
+      await runPolywrapCli(
         ["infra", "up", "--modules=ipfs"],
         getTestCaseDir(0),
       );
@@ -297,7 +297,7 @@ describe("e2e tests for infra command", () => {
         { port: 8545, expected: false }
       ]);
 
-      await runW3CLI(
+      await runPolywrapCli(
         ["infra", "down", "--modules=ipfs"],
         getTestCaseDir(0),
       );
@@ -308,7 +308,7 @@ describe("e2e tests for infra command", () => {
     });
 
     test("Should throw error for --modules that don't exist in infra manifest and are not default modules", async () => {
-      const { exitCode: code, stderr } = await runW3CLI(
+      const { exitCode: code, stderr } = await runPolywrapCli(
         [
           "infra",
           "config",
@@ -324,7 +324,7 @@ describe("e2e tests for infra command", () => {
     });
 
     test("Should setup and use a default module if --modules arg is passed and the module does not exist in the manifest", async () => {
-      await runW3CLI(
+      await runPolywrapCli(
         [
           "infra",
           "up",
@@ -341,7 +341,7 @@ describe("e2e tests for infra command", () => {
     })
 
     test("If a module declared in manifest has the same name of a default module, the manifest's should take precedence", async () => {
-      const { stdout: withManifestModOutput } = await runW3CLI(
+      const { stdout: withManifestModOutput } = await runPolywrapCli(
         [
           "infra",
           "config",
@@ -355,7 +355,7 @@ describe("e2e tests for infra command", () => {
 
       expect(withManifestModSanitizedOutput).toContain("dev-server:")
 
-      const { stdout: withoutManifestModOutput } = await runW3CLI(
+      const { stdout: withoutManifestModOutput } = await runPolywrapCli(
         [
           "infra",
           "config",
@@ -372,7 +372,7 @@ describe("e2e tests for infra command", () => {
 
     test("Should set up a default environment if no manifest is present, but --modules option is passed", async () => {
       
-      await runW3CLI(
+      await runPolywrapCli(
         [
           "infra",
           "up",
@@ -390,7 +390,7 @@ describe("e2e tests for infra command", () => {
 
     test("Should not include default modules if no --modules option is passed and manifest exists", async () => {
       
-      const { stdout } = await runW3CLI(
+      const { stdout } = await runPolywrapCli(
         [
           "infra",
           "config",
@@ -406,7 +406,7 @@ describe("e2e tests for infra command", () => {
 
     test("Should fail if no manifest is present and no --modules option is passed", async () => {
       
-      const { exitCode, stderr } = await runW3CLI(
+      const { exitCode, stderr } = await runPolywrapCli(
         [
           "infra",
           "config",
@@ -422,7 +422,7 @@ describe("e2e tests for infra command", () => {
 
   describe("Duplicates", () => {
     test("Should handle duplicate services", async () => {
-      await runW3CLI(
+      await runPolywrapCli(
         [
           "infra",
           "up",
@@ -436,14 +436,14 @@ describe("e2e tests for infra command", () => {
         { port: 8545, expected: true }
       ]);
 
-      await runW3CLI(
+      await runPolywrapCli(
         ["infra", "down", "--modules=ganache,dev-server"],
         getTestCaseDir(1),
       );
     });
 
     test("Should correctly duplicate pkg in different module", async () => {
-      await runW3CLI(
+      await runPolywrapCli(
         [
           "infra",
           "up",
@@ -456,7 +456,7 @@ describe("e2e tests for infra command", () => {
         { port: 5001, expected: true },
       ]);
 
-      await runW3CLI(
+      await runPolywrapCli(
         ["infra", "down", "--modules=ipfs,ipfs-duplicate"],
         getTestCaseDir(1),
       );

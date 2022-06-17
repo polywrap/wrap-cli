@@ -2,29 +2,29 @@ import { PROVIDERS, PRIMARY_PROVIDER } from "./provider";
 
 // eslint-disable-next-line import/no-extraneous-dependencies
 import React from "react";
-import { Web3ApiClient } from "@web3api/client-js";
+import { PolywrapClient } from "@polywrap/client-js";
 
-export interface UseWeb3ApiClientProps {
+export interface UsePolywrapClientProps {
   provider?: string;
 }
 
-export function useWeb3ApiClient(props?: UseWeb3ApiClientProps): Web3ApiClient {
+export function usePolywrapClient(props?: UsePolywrapClientProps): PolywrapClient {
   const provider = props?.provider ?? PRIMARY_PROVIDER;
 
   if (!PROVIDERS[provider]) {
     throw new Error(
-      `You are trying to use useWeb3ApiClient with provider "${provider}" and it doesn't exists. To create a new provider, use createWeb3ApiProvider`
+      `You are trying to use usePolywrapClient with provider "${provider}" and it doesn't exists. To create a new provider, use createPolywrapProvider`
     );
   }
 
-  // Get the Web3ApiClient from the provider in our DOM hierarchy
+  // Get the PolywrapClient from the provider in our DOM hierarchy
   const client = React.useContext(
     PROVIDERS[provider].ClientContext
   );
 
   if (!client || Object.keys(client).length === 0) {
     throw new Error(
-      `The requested Web3APIProvider \"${provider}\" was not found within the DOM hierarchy. We could not get the Web3ApiClient through the provider context.`
+      `The requested PolywrapProvider \"${provider}\" was not found within the DOM hierarchy. We could not get the PolywrapClient through the provider context.`
     )
   }
 

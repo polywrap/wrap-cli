@@ -1,8 +1,0 @@
-format: 0.0.1-prealpha.1
-language: app/typescript
-schema: ./schema.graphql
-import_redirects:
-    - uri: "w3://ens/ethereum.web3api.eth"
-      schema: "./../../../../../../js/plugins/ethereum/build/schema.graphql"
-    - uri: "w3://ipfs/QmVGwj3FtvhiErJ1wWbmRuHpvEQ3t1BPNESvEiMJM57p2y"
-      schema: "./../../../../../../js/plugins/logger/build/schema.graphql"

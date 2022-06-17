@@ -1,7 +1,7 @@
-import { createQueryDocument, parseQuery, QueryApiInvocations, Uri } from "../";
+import { createQueryDocument, parseQuery, QueryInvocations, Uri } from "../";
 
 describe("parseQuery", () => {
-  const dummy = new Uri("w3://dumb/dummy");
+  const dummy = new Uri("wrap://dumb/dummy");
 
   it("works in the typical case", () => {
     const doc = createQueryDocument(`
@@ -36,7 +36,7 @@ describe("parseQuery", () => {
       varTwo: 55,
     });
 
-    const expected: QueryApiInvocations<Uri> = {
+    const expected: QueryInvocations<Uri> = {
       someMethod: {
         uri: dummy,
         method: "someMethod",
@@ -141,7 +141,7 @@ describe("parseQuery", () => {
       varTwo: 55,
     });
 
-    const method1: QueryApiInvocations<Uri> = {
+    const method1: QueryInvocations<Uri> = {
       someMethod: {
         uri: dummy,
         method: "someMethod",
@@ -165,7 +165,7 @@ describe("parseQuery", () => {
         }
       }
     };
-    const method2: QueryApiInvocations<Uri> = {
+    const method2: QueryInvocations<Uri> = {
       anotherMethod: {
         uri: dummy,
         method: "anotherMethod",
@@ -182,7 +182,7 @@ describe("parseQuery", () => {
       }
     };
 
-    const expected: QueryApiInvocations<Uri> = {
+    const expected: QueryInvocations<Uri> = {
       ...method1,
       ...method2,
       mutationSomeMethod: method1.someMethod,

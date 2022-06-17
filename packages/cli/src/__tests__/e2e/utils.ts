@@ -25,4 +25,4 @@ export const parseOutput = (
   });
 };
 
-export const w3Cli = `${__dirname}/../../../bin/w3`;
+export const polywrapCli = `${__dirname}/../../../bin/polywrap`;

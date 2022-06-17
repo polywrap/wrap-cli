@@ -1,4 +1,4 @@
-# Web3API Logger Interface
+# Polywrap Logger Interface
 
 # How To Run
 
@@ -9,5 +9,5 @@
 ## Start Test Environment
 `yarn test:env:up`  
 
-## Build & Deploy Web3API
+## Build & Deploy Wrapper
 `yarn deploy` 

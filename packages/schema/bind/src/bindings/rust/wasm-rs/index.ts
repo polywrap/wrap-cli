@@ -12,8 +12,8 @@ import {
   toPrefixedGraphQLType,
   hasImports,
   methodParentPointers,
-} from "@web3api/schema-parse";
-import { OutputEntry, readDirectorySync } from "@web3api/os-js";
+} from "@polywrap/schema-parse";
+import { OutputEntry, readDirectorySync } from "@polywrap/os-js";
 import path from "path";
 
 const templatesDir = readDirectorySync(path.join(__dirname, "./templates"));

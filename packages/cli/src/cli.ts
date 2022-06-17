@@ -3,7 +3,7 @@
 import * as Commands from "./commands";
 import { Command } from "./commands/types";
 
-import { executeMaybeAsyncFunction } from "@web3api/core-js";
+import { executeMaybeAsyncFunction } from "@polywrap/core-js";
 import { program } from "commander";
 
 export const run = async (argv: string[]): Promise<void> => {

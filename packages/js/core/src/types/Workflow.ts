@@ -1,5 +1,5 @@
 import { ClientConfig, Uri } from ".";
-import { InvokeApiResult } from "./Invoke";
+import { InvokeResult } from "./Invoke";
 import { MaybeAsync } from "./MaybeAsync";
 
 export type Step<TUri extends Uri | string = string> = {
@@ -34,8 +34,8 @@ export interface RunOptions<
 
   onExecution?(
     id: string,
-    data?: InvokeApiResult<TData>["data"],
-    error?: InvokeApiResult<TData>["error"]
+    data?: InvokeResult<TData>["data"],
+    error?: InvokeResult<TData>["error"]
   ): MaybeAsync<void>;
 }
 

@@ -1,4 +1,4 @@
-import { header } from "@web3api/schema-parse";
+import { header } from "@polywrap/schema-parse";
 import Mustache from "mustache";
 
 // Remove mustache's built-in HTML escaping

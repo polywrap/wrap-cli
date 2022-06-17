@@ -68,7 +68,7 @@ type Namespace_Object {
 `;
 
 
-describe("Web3API Schema Directives Validation", () => {
+describe("Polywrap Schema Directives Validation", () => {
   it("supportedDirectives", () => {
     expect(() => parseSchema(supportedDirectivesSchema, {
       validators: [

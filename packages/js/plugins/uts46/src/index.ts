@@ -6,9 +6,9 @@ import {
   Input_convert,
   ConvertResult,
   manifest,
-} from "./w3-man";
+} from "./wrap-man";
 
-import { PluginFactory } from "@web3api/core-js";
+import { PluginFactory } from "@polywrap/core-js";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires
 const uts46 = require("idna-uts46-hx/uts46bundle.js");

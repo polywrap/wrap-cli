@@ -241,7 +241,7 @@ type A {
 }
 `
 
-describe("Web3API Schema Type Validation", () => {
+describe("Polywrap Schema Type Validation", () => {
   it("typeDefinitions", () => {
     const exec = (schema: string) => () => parseSchema(schema, {
       validators: [typeValidators.getTypeDefinitionsValidator]

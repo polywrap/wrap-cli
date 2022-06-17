@@ -3,14 +3,14 @@
 
 import { Project, AnyManifest, getSimpleClient } from "./";
 
-import { Uri, Web3ApiClient } from "@web3api/client-js";
+import { Uri, PolywrapClient } from "@polywrap/client-js";
 import {
   composeSchema,
   ComposerOutput,
   ComposerFilter,
   ComposerOptions,
   SchemaFile,
-} from "@web3api/schema-compose";
+} from "@polywrap/schema-compose";
 import fs from "fs";
 import path from "path";
 import * as gluegun from "gluegun";
@@ -23,11 +23,11 @@ export interface SchemaComposerConfig {
   ensAddress?: string;
   ethProvider?: string;
   ipfsProvider?: string;
-  client?: Web3ApiClient;
+  client?: PolywrapClient;
 }
 
 export class SchemaComposer {
-  private _client: Web3ApiClient;
+  private _client: PolywrapClient;
   private _composerOutput: ComposerOutput | undefined;
 
   constructor(private _config: SchemaComposerConfig) {

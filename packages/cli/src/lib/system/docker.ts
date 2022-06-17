@@ -3,7 +3,7 @@
 import { displayPath, runCommand, FileLock } from "./";
 import { withSpinner, intlMsg } from "../";
 
-import { isWin, writeFileSync } from "@web3api/os-js";
+import { isWin, writeFileSync } from "@polywrap/os-js";
 import { system, print } from "gluegun";
 import Mustache from "mustache";
 import YAML from "js-yaml";

@@ -1,4 +1,4 @@
-import { Tracer } from "@web3api/tracing-js";
+import { Tracer } from "@polywrap/tracing-js";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export const filterResults = Tracer.traceFunc(

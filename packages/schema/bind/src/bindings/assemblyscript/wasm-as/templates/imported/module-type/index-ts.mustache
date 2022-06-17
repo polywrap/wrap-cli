@@ -1,12 +1,12 @@
 import {
-  w3_subinvoke,
-  w3_subinvokeImplementation,
+  wrap_subinvoke,
+  wrap_subinvokeImplementation,
   Nullable,
   BigInt,
   BigNumber,
   JSON,
   Result
-} from "@web3api/wasm-as";
+} from "@polywrap/wasm-as";
 {{#methods.length}}
 import {
   {{#methods}}
@@ -28,7 +28,7 @@ export class {{type}} {
     input: Input_{{name}}
   ): Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string> {
     const args = serialize{{name}}Args(input);
-    const result = w3_subinvoke(
+    const result = wrap_subinvoke(
       "{{uri}}",
       "{{name}}",
       args
@@ -66,7 +66,7 @@ export class {{type}} {
     input: Input_{{name}}
   ): Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string> {
     const args = serialize{{name}}Args(input);
-    const result = w3_subinvokeImplementation(
+    const result = wrap_subinvokeImplementation(
       "{{uri}}",
       this.uri,
       "{{name}}",

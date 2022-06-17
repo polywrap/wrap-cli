@@ -1,4 +1,4 @@
-#import { Module } into HTTP from "ens/http.web3api.eth"
+#import { Module } into HTTP from "ens/http.polywrap.eth"
 
 type Module {
   querySubgraph(

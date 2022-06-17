@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import {
-  Web3ApiProject,
+  PolywrapProject,
   SchemaComposer,
   withSpinner,
   outputManifest,
@@ -15,30 +15,34 @@ import {
   resetDir,
 } from "./";
 
-import { Web3ApiManifest, BuildManifest, MetaManifest } from "@web3api/core-js";
-import { WasmWeb3Api } from "@web3api/client-js";
-import { W3Imports } from "@web3api/client-js/build/wasm/types";
-import { AsyncWasmInstance } from "@web3api/asyncify-js";
-import { ComposerOutput } from "@web3api/schema-compose";
-import { writeFileSync, writeDirectorySync } from "@web3api/os-js";
+import {
+  PolywrapManifest,
+  BuildManifest,
+  MetaManifest,
+} from "@polywrap/core-js";
+import { WasmWrapper } from "@polywrap/client-js";
+import { WrapImports } from "@polywrap/client-js/build/wasm/types";
+import { AsyncWasmInstance } from "@polywrap/asyncify-js";
+import { ComposerOutput } from "@polywrap/schema-compose";
+import { writeFileSync, writeDirectorySync } from "@polywrap/os-js";
 import * as gluegun from "gluegun";
 import fs from "fs";
 import path from "path";
 
 interface CompilerState {
-  web3ApiManifest: Web3ApiManifest;
+  polywrapManifest: PolywrapManifest;
   composerOutput: ComposerOutput;
   compilerOverrides?: CompilerOverrides;
 }
 
 export interface CompilerOverrides {
-  validateManifest: (manifest: Web3ApiManifest) => void;
+  validateManifest: (manifest: PolywrapManifest) => void;
   generationSubPath: string;
 }
 
 export interface CompilerConfig {
   outputDir: string;
-  project: Web3ApiProject;
+  project: PolywrapProject;
   schemaComposer: SchemaComposer;
 }
 
@@ -102,7 +106,7 @@ export class Compiler {
         // Generate the bindings
         await this._generateCode(state);
 
-        // Compile the API
+        // Compile the Wrapper
         buildManifest = await this._buildModules(state);
       }
 
@@ -110,7 +114,7 @@ export class Compiler {
       const metaManifest = await this._outputMetadata();
 
       await this._outputManifests(
-        state.web3ApiManifest,
+        state.polywrapManifest,
         buildManifest,
         metaManifest
       );
@@ -155,14 +159,14 @@ export class Compiler {
 
     const { project } = this._config;
 
-    // Get the Web3ApiManifest
-    const web3ApiManifest = await project.getManifest();
+    // Get the PolywrapManifest
+    const polywrapManifest = await project.getManifest();
 
     // Compose the schema
     const composerOutput = await this._composeSchema();
 
     // Allow the build-image to validate the manifest & override functionality
-    const buildImageDir = `${__dirname}/defaults/build-images/${web3ApiManifest.language}`;
+    const buildImageDir = `${__dirname}/defaults/build-images/${polywrapManifest.language}`;
     const buildImageEntryFile = path.join(buildImageDir, "index.ts");
     let compilerOverrides: CompilerOverrides | undefined;
 
@@ -177,13 +181,13 @@ export class Compiler {
       if (compilerOverrides) {
         // Validate the manifest for the given build-image
         if (compilerOverrides.validateManifest) {
-          compilerOverrides.validateManifest(web3ApiManifest);
+          compilerOverrides.validateManifest(polywrapManifest);
         }
       }
     }
 
     const state: CompilerState = {
-      web3ApiManifest: Object.assign({}, web3ApiManifest),
+      polywrapManifest: Object.assign({}, polywrapManifest),
       composerOutput,
       compilerOverrides,
     };
@@ -196,7 +200,7 @@ export class Compiler {
 
   private async _isInterface(): Promise<boolean> {
     const state = await this._getCompilerState();
-    return state.web3ApiManifest.language === "interface";
+    return state.polywrapManifest.language === "interface";
   }
 
   private async _composeSchema(): Promise<ComposerOutput> {
@@ -228,7 +232,7 @@ export class Compiler {
 
   private async _buildModules(state: CompilerState): Promise<BuildManifest> {
     const { outputDir } = this._config;
-    const { web3ApiManifest } = state;
+    const { polywrapManifest } = state;
 
     if (await this._isInterface()) {
       throw Error(intlMsg.lib_compiler_cannotBuildInterfaceModules());
@@ -240,10 +244,10 @@ export class Compiler {
     // Validate the Wasm module
     await this._validateWasmModule(outputDir);
 
-    // Update the Web3ApiManifest
-    web3ApiManifest.module = "./module.wasm";
-    web3ApiManifest.schema = "./schema.graphql";
-    web3ApiManifest.build = "./web3api.build.json";
+    // Update the PolywrapManifest
+    polywrapManifest.module = "./module.wasm";
+    polywrapManifest.schema = "./schema.graphql";
+    polywrapManifest.build = "./polywrap.build.json";
 
     // Create the BuildManifest
     return {
@@ -270,13 +274,13 @@ export class Compiler {
 
     // If the dockerfile path isn't provided, generate it
     if (!buildManifest?.docker?.dockerfile) {
-      // Make sure the default template is in the cached .w3/web3api/build/image folder
+      // Make sure the default template is in the cached .polywrap/wasm/build/image folder
       await project.cacheDefaultBuildImage();
 
       dockerfile = generateDockerfile(
         project.getCachePath(
           path.join(
-            Web3ApiProject.cacheLayout.buildImageDir,
+            PolywrapProject.cacheLayout.buildImageDir,
             "Dockerfile.mustache"
           )
         ),
@@ -296,7 +300,7 @@ export class Compiler {
 
       if (cache == true) {
         cacheDir = project.getCachePath(
-          Web3ApiProject.cacheLayout.buildImageCacheDir
+          PolywrapProject.cacheLayout.buildImageCacheDir
         );
       } else if (cache) {
         if (!path.isAbsolute(cache)) {
@@ -357,30 +361,30 @@ export class Compiler {
       "utf-8"
     );
 
-    // Update the Web3ApiManifest schema paths
-    state.web3ApiManifest = {
-      ...state.web3ApiManifest,
+    // Update the PolywrapManifest schema paths
+    state.polywrapManifest = {
+      ...state.polywrapManifest,
       schema: "./schema.graphql",
     };
   }
 
   private async _outputManifests(
-    web3ApiManifest: Web3ApiManifest,
+    polywrapManifest: PolywrapManifest,
     buildManifest?: BuildManifest,
     metaManifest?: MetaManifest
   ): Promise<void> {
     const { outputDir, project } = this._config;
 
     await outputManifest(
-      web3ApiManifest,
-      path.join(outputDir, "web3api.json"),
+      polywrapManifest,
+      path.join(outputDir, "polywrap.json"),
       project.quiet
     );
 
     if (buildManifest) {
       await outputManifest(
         buildManifest,
-        path.join(outputDir, "web3api.build.json"),
+        path.join(outputDir, "polywrap.build.json"),
         project.quiet
       );
     }
@@ -388,7 +392,7 @@ export class Compiler {
     if (metaManifest) {
       await outputManifest(
         metaManifest,
-        path.join(outputDir, "web3api.meta.json"),
+        path.join(outputDir, "polywrap.meta.json"),
         project.quiet
       );
     }
@@ -411,19 +415,19 @@ export class Compiler {
   }
 
   private _validateState(state: CompilerState) {
-    const { composerOutput, web3ApiManifest } = state;
+    const { composerOutput, polywrapManifest } = state;
 
     if (!composerOutput.schema) {
       const missingSchemaMessage = intlMsg.lib_compiler_missingSchema();
       throw Error(missingSchemaMessage);
     }
 
-    if (web3ApiManifest.language !== "interface" && !web3ApiManifest.module) {
+    if (polywrapManifest.language !== "interface" && !polywrapManifest.module) {
       const missingModuleMessage = intlMsg.lib_compiler_missingModule();
       throw Error(missingModuleMessage);
     }
 
-    if (web3ApiManifest.language === "interface" && web3ApiManifest.module) {
+    if (polywrapManifest.language === "interface" && polywrapManifest.module) {
       const noInterfaceModule = intlMsg.lib_compiler_noInterfaceModule();
       throw Error(noInterfaceModule);
     }
@@ -432,28 +436,28 @@ export class Compiler {
   private async _validateWasmModule(buildDir: string): Promise<void> {
     const modulePath = path.join(buildDir, `module.wasm`);
     const wasmSource = fs.readFileSync(modulePath);
-    const w3Imports: Record<keyof W3Imports, () => void> = {
-      __w3_subinvoke: () => {},
-      __w3_subinvoke_result_len: () => {},
-      __w3_subinvoke_result: () => {},
-      __w3_subinvoke_error_len: () => {},
-      __w3_subinvoke_error: () => {},
-      __w3_subinvokeImplementation: () => {},
-      __w3_subinvokeImplementation_result_len: () => {},
-      __w3_subinvokeImplementation_result: () => {},
-      __w3_subinvokeImplementation_error_len: () => {},
-      __w3_subinvokeImplementation_error: () => {},
-      __w3_invoke_args: () => {},
-      __w3_invoke_result: () => {},
-      __w3_invoke_error: () => {},
-      __w3_getImplementations: () => {},
-      __w3_getImplementations_result_len: () => {},
-      __w3_getImplementations_result: () => {},
-      __w3_abort: () => {},
-      __w3_debug_log: () => {},
-      __w3_load_env: () => {},
-      __w3_sanitize_env_args: () => {},
-      __w3_sanitize_env_result: () => {},
+    const wrapImports: Record<keyof WrapImports, () => void> = {
+      __wrap_subinvoke: () => {},
+      __wrap_subinvoke_result_len: () => {},
+      __wrap_subinvoke_result: () => {},
+      __wrap_subinvoke_error_len: () => {},
+      __wrap_subinvoke_error: () => {},
+      __wrap_subinvokeImplementation: () => {},
+      __wrap_subinvokeImplementation_result_len: () => {},
+      __wrap_subinvokeImplementation_result: () => {},
+      __wrap_subinvokeImplementation_error_len: () => {},
+      __wrap_subinvokeImplementation_error: () => {},
+      __wrap_invoke_args: () => {},
+      __wrap_invoke_result: () => {},
+      __wrap_invoke_error: () => {},
+      __wrap_getImplementations: () => {},
+      __wrap_getImplementations_result_len: () => {},
+      __wrap_getImplementations_result: () => {},
+      __wrap_abort: () => {},
+      __wrap_debug_log: () => {},
+      __wrap_load_env: () => {},
+      __wrap_sanitize_env_args: () => {},
+      __wrap_sanitize_env_result: () => {},
     };
 
     try {
@@ -464,9 +468,9 @@ export class Compiler {
           env: {
             memory,
           },
-          w3: w3Imports,
+          wrap: wrapImports,
         },
-        requiredExports: WasmWeb3Api.requiredExports,
+        requiredExports: WasmWrapper.requiredExports,
       });
     } catch (error) {
       throw Error(

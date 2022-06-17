@@ -1,8 +1,0 @@
-{
-  "format": "0.0.1-prealpha.9",
-  "name": "ENS",
-  "language": "wasm/assemblyscript",
-  "build": "./web3api.build.json",
-  "schema": "./schema.graphql",
-  "module": "./module.wasm"
-}

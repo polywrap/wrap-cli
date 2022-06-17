@@ -9,7 +9,7 @@ const ignore = [
   ".idea",
   ".log",
   ".vscode",
-  ".w3",
+  ".polywrap",
   ".rs.bk",
   ".lock",
 ];

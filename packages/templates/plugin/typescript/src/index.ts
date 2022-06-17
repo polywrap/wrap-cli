@@ -1,6 +1,6 @@
-import { Module, Input_sampleMethod, manifest } from "./w3";
+import { Module, Input_sampleMethod, manifest } from "./wrap";
 
-import { PluginFactory } from "@web3api/core-js";
+import { PluginFactory } from "@polywrap/core-js";
 
 export interface SamplePluginConfig extends Record<string, unknown> {
   defaultValue: string;
