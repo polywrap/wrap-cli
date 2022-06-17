@@ -1,0 +1,5 @@
+1. remove sanitize env
+2. eager load environment
+3. env must be defined in method arguments
+4. don't allow users to name arguments "env" w/o `type Env`
+5. make sure path for lazy loading exists (it should)
