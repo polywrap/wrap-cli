@@ -7,9 +7,9 @@ import {
   manifest,
   Ipfs_Module,
   Client,
-} from "./w3";
+} from "./wrap";
 
-import { PluginFactory } from "@web3api/core-js";
+import { PluginFactory } from "@polywrap/core-js";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const isIPFS = require("is-ipfs");
