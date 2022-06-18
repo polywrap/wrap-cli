@@ -132,7 +132,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '**[NPM Release Published](https://www.npmjs.com/search?q=%40polywrap) `${{env.RELEASE_VERSION}}`** 🎉'
+              body: '**[NPM Release Published](https://www.npmjs.com/search?q=polywrap) `${{env.RELEASE_VERSION}}`** 🎉'
             })
 
   Publish-Crates-dot-io-Release:

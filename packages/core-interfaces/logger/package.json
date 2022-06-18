@@ -2,7 +2,7 @@
   "name": "logger-interface",
   "description": "Polywrap Logger Interface",
   "private": true,
-  "version": "0.0.1-prealpha.85",
+  "version": "0.0.1-prealpha.86",
   "scripts": {
     "build": "npx polywrap build",
     "lint": "eslint --color -c ../../../.eslintrc.js .",
@@ -11,6 +11,6 @@
     "deploy": "npx polywrap build --ipfs http://localhost:5001"
   },
   "devDependencies": {
-    "polywrap": "0.0.1-prealpha.85"
+    "polywrap": "0.0.1-prealpha.86"
   }
 }
