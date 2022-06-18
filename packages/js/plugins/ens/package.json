@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/ens-plugin-js",
   "description": "Polywrap ENS Javascript Plugin",
-  "version": "0.0.1-prealpha.85",
+  "version": "0.0.1-prealpha.86",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -23,7 +23,7 @@
   "dependencies": {
     "@ethersproject/address": "5.0.7",
     "@ethersproject/basex": "5.0.7",
-    "@polywrap/core-js": "0.0.1-prealpha.85",
+    "@polywrap/core-js": "0.0.1-prealpha.86",
     "ethers": "5.0.7"
   },
   "devDependencies": {
