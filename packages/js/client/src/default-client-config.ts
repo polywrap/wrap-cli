@@ -82,7 +82,7 @@ export const getDefaultClientConfig = Tracer.traceFunc(
           plugin: filesystemPlugin({}),
         },
         {
-          uri: new Uri("wrap://ens/ipfs-resolver.web3api.eth"),
+          uri: new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
           plugin: ipfsResolverPlugin({
             provider: defaultIpfsProviders[0],
             fallbackProviders: defaultIpfsProviders.slice(1),
