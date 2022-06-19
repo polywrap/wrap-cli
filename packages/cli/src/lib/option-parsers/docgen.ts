@@ -3,7 +3,7 @@ import { resolvePathIfExists } from "../system";
 import {
   defaultAppManifest,
   defaultPluginManifest,
-  defaultWeb3ApiManifest,
+  defaultPolywrapManifest,
 } from "../manifest";
 
 import path from "path";
@@ -16,7 +16,7 @@ export function parseDocgenManifestFileOption(
 ): string {
   const manifestPaths = manifestFile
     ? [manifestFile]
-    : defaultWeb3ApiManifest
+    : defaultPolywrapManifest
         .concat(defaultAppManifest)
         .concat(defaultPluginManifest);
   manifestFile = resolvePathIfExists(manifestPaths);

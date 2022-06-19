@@ -4,12 +4,12 @@ import {
   AppProject,
   CodeGenerator,
   defaultAppManifest,
-  defaultWeb3ApiManifest,
+  defaultPolywrapManifest,
   getSimpleClient,
   getTestEnvProviders,
   Project,
   SchemaComposer,
-  Web3ApiProject,
+  PolywrapProject,
   intlMsg,
   generateProjectTemplate,
   PluginProject,
@@ -22,7 +22,7 @@ import {
 
 import { filesystem } from "gluegun";
 import path from "path";
-import { Web3ApiClient } from "@web3api/client-js";
+import { PolywrapClient } from "@polywrap/client-js";
 
 const commandToPathMap: Record<string, string> = {
   schema: "@web3api/schema-bind/build/bindings/documentation/schema/index.js",
@@ -34,7 +34,7 @@ const commandToPathMap: Record<string, string> = {
 
 export type DocType = keyof typeof commandToPathMap;
 
-const defaultManifest = defaultWeb3ApiManifest.concat(defaultAppManifest);
+const defaultManifest = defaultPolywrapManifest.concat(defaultAppManifest);
 const defaultDocgenDir = "./w3";
 const nodeStr = intlMsg.commands_codegen_options_i_node();
 const pathStr = intlMsg.commands_codegen_options_o_path();
@@ -139,7 +139,7 @@ async function run(command: DocType, options: DocgenCommandOptions) {
   // App or Web3Api project
   let project: Project<AnyManifest>;
   if (isAppManifest) {
-    const client: Web3ApiClient = getSimpleClient({
+    const client: PolywrapClient = getSimpleClient({
       ensAddress,
       ethProvider,
       ipfsProvider,
@@ -157,9 +157,9 @@ async function run(command: DocType, options: DocgenCommandOptions) {
       quiet: true,
     });
   } else {
-    project = new Web3ApiProject({
+    project = new PolywrapProject({
       rootDir: path.dirname(manifestFile),
-      web3apiManifestPath: manifestFile,
+      polywrapManifestPath: manifestFile,
       quiet: true,
     });
   }
