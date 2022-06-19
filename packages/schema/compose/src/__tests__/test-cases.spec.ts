@@ -21,7 +21,7 @@ function removeFunctionProps(obj: unknown) {
   return obj;
 }
 
-describe("Polywrap Schema Composer Test Cases", () => {
+describe("Web3API Schema Composer Test Cases", () => {
   let cases = fetchTestCases();
 
   for (const test of cases) {
@@ -32,19 +32,11 @@ describe("Polywrap Schema Composer Test Cases", () => {
         return;
       }
 
-      try {
-        const result = await composeSchema(testCase.input);
-        removeFunctionProps(result);
+      const result = await composeSchema(testCase.input);
+      removeFunctionProps(result);
 
-        if (testCase.output && testCase.output) {
-          expect(result).toMatchObject(testCase.output);
-        }
-      } catch (e) {
-        if (testCase.error) {
-          expect(e.toString()).toContain(testCase.error);
-        } else {
-          throw e
-        }
+      if (testCase.output) {
+        expect(result).toMatchObject(testCase.output);
       }
     });
   }
