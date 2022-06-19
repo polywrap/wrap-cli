@@ -46,10 +46,8 @@ import {
   createCapability,
   ModuleCapability,
   createEnvDefinition,
-  envTypes,
-  createObjectDefinition,
   createModuleDefinition,
-  isClientEnvType,
+  EnvDefinition,
 } from "@polywrap/schema-parse";
 
 type ImplementationWithInterfaces = {
@@ -905,9 +903,7 @@ async function resolveLocalImports(
 
       if (isEnvType(importedType)) {
         visitorFunc = visitEnvDefinition;
-        type = isClientEnvType(importedType)
-          ? localTypeInfo.envType.client
-          : localTypeInfo.envType.sanitized;
+        type = localTypeInfo.envType;
       } else {
         const objectIdx = localTypeInfo.objectTypes.findIndex(
           (type) => type.type === importedType
@@ -1012,37 +1008,15 @@ async function resolveLocalImports(
     // Add all imported types into the aggregate TypeInfo
     for (const importType of Object.keys(typesToImport)) {
       if (isEnvType(importType)) {
-        if (isClientEnvType(importType)) {
-          if (!typeInfo.envType.client) {
-            typeInfo.envType.client = createObjectDefinition({
-              type: envTypes.ClientEnv,
-            });
-          }
-
-          const sharedEnv = localTypeInfo.envType.client as ObjectDefinition;
-
-          checkDuplicateEnvProperties(
-            typeInfo.envType.client,
-            sharedEnv.properties
-          );
-
-          typeInfo.envType.client.properties.push(...sharedEnv.properties);
-        } else {
-          if (!typeInfo.envType.sanitized) {
-            typeInfo.envType.sanitized = createObjectDefinition({
-              type: envTypes.Env,
-            });
-          }
-
-          const sharedEnv = localTypeInfo.envType.sanitized as ObjectDefinition;
-
-          checkDuplicateEnvProperties(
-            typeInfo.envType.sanitized,
-            sharedEnv.properties
-          );
-
-          typeInfo.envType.sanitized.properties.push(...sharedEnv.properties);
+        if (!typeInfo.envType) {
+          typeInfo.envType = createEnvDefinition({});
         }
+
+        const sharedEnv = localTypeInfo.envType as EnvDefinition;
+
+        checkDuplicateEnvProperties(typeInfo.envType, sharedEnv.properties);
+
+        typeInfo.envType.properties.push(...sharedEnv.properties);
       } else if (
         isKind(typesToImport[importType], DefinitionKind.ImportedObject)
       ) {
