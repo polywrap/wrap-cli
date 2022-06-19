@@ -6,7 +6,7 @@ import {
   UriResolver_MaybeUriOrManifest,
   Bytes,
   manifest,
-} from "./wrap-man";
+} from "./wrap";
 
 import path from "path";
 import fs from "fs";
