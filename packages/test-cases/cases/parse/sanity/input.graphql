@@ -189,6 +189,16 @@ abstractMethod comment
   transformMap(
     map: Map @annotate(type: "Map<String!, Int!>")
   ): Map @annotate(type: "Map<String!, Int!>")
+
+  methodRequireEnv(
+    arg: String!
+    env: Env!
+  ): Env!
+
+  methodOptionalEnv(
+    arg: String!
+    env: Env
+  ): Env
 }
 
 """
