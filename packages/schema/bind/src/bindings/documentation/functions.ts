@@ -48,7 +48,6 @@ export const toLower: MustacheFn = () => {
   };
 };
 
-// todo: remove
 export const moduleToLower: MustacheFn = () => {
   return (text: string, render: (template: string) => string): string => {
     const rendered: string = render(text);

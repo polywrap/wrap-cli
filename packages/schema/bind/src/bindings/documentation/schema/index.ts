@@ -1,11 +1,5 @@
 import { GenerateBindingFn } from "../..";
-import { extractCommonTypeInfo } from "../../utils/typeInfo";
-import {
-  BindOptions,
-  BindOutput,
-  BindModuleOutput,
-  BindModuleOptions,
-} from "../../..";
+import { BindOptions, BindOutput } from "../../..";
 
 import Mustache from "mustache";
 import path from "path";
@@ -15,42 +9,10 @@ export const generateBinding: GenerateBindingFn = (
   options: BindOptions
 ): BindOutput => {
   const result: BindOutput = {
-    modules: [],
-  };
-
-  if (options.bindLanguage === "wasm-as") {
-    // If there's more than one module provided
-    if (options.modules.length > 1 && options.commonDirAbs) {
-      // Extract the common types
-      const commonTypeInfo = extractCommonTypeInfo(
-        options.modules,
-        options.commonDirAbs
-      );
-
-      // Generate the common type folder
-      result.common = generateModuleBindings({
-        name: "common",
-        typeInfo: commonTypeInfo,
-        schema: "N/A",
-        outputDirAbs: options.commonDirAbs,
-      });
-    }
-  }
-
-  for (const module of options.modules) {
-    result.modules.push(generateModuleBindings(module));
-  }
-
-  return result;
-};
-
-function generateModuleBindings(module: BindModuleOptions): BindModuleOutput {
-  const result: BindModuleOutput = {
-    name: module.name,
     output: {
       entries: [],
     },
-    outputDirAbs: module.outputDirAbs,
+    outputDirAbs: options.outputDirAbs,
   };
   const output = result.output;
 
@@ -71,9 +33,9 @@ function generateModuleBindings(module: BindModuleOptions): BindModuleOutput {
 
   // generate schema
   const schemaContext = {
-    schema: module.schema,
+    schema: options.schema,
   };
-  const namespace = module.typeInfo.importedModuleTypes?.[0].namespace;
+  const namespace = options.typeInfo.importedModuleTypes?.[0].namespace;
   renderTemplate(
     "./templates/schema.mustache",
     schemaContext,
@@ -81,4 +43,4 @@ function generateModuleBindings(module: BindModuleOptions): BindModuleOutput {
   );
 
   return result;
-}
+};

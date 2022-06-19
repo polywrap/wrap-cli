@@ -1,11 +1,5 @@
 import { GenerateBindingFn } from "../..";
-import { extractCommonTypeInfo } from "../../utils/typeInfo";
-import {
-  BindOptions,
-  BindOutput,
-  BindModuleOutput,
-  BindModuleOptions,
-} from "../../..";
+import { BindOptions, BindOutput } from "../../..";
 import * as Functions from "./../functions";
 import * as TypeScriptFunctions from "./../../typescript/functions";
 import { sortMethodsInPlaceByName, sortObjectsInPlaceByType } from "../utils";
@@ -18,7 +12,8 @@ import {
   extendType,
   methodParentPointers,
   ImportedDefinition,
-} from "@web3api/schema-parse";
+  ModuleDefinition,
+} from "@polywrap/schema-parse";
 import Mustache from "mustache";
 import path from "path";
 import { readFileSync } from "fs";
@@ -27,58 +22,13 @@ export const generateBinding: GenerateBindingFn = (
   options: BindOptions
 ): BindOutput => {
   const result: BindOutput = {
-    modules: [],
-  };
-
-  // If there's more than one module provided
-  if (options.modules.length > 1 && options.commonDirAbs) {
-    // Extract the common types
-    const commonTypeInfo = extractCommonTypeInfo(
-      options.modules,
-      options.commonDirAbs
-    );
-
-    // Generate the common type folder
-    result.common = generateModuleBindings({
-      name: "common",
-      typeInfo: commonTypeInfo,
-      schema: "N/A",
-      outputDirAbs: options.commonDirAbs,
-    });
-  }
-
-  for (const module of options.modules) {
-    result.modules.push(generateModuleBindings(module));
-  }
-
-  return result;
-};
-
-function applyTransforms(typeInfo: TypeInfo): TypeInfo {
-  const transforms = [
-    extendType(Functions),
-    extendType(TypeScriptFunctions),
-    addFirstLast,
-    toPrefixedGraphQLType,
-    methodParentPointers(),
-  ];
-
-  for (const transform of transforms) {
-    typeInfo = transformTypeInfo(typeInfo, transform);
-  }
-  return typeInfo;
-}
-
-function generateModuleBindings(module: BindModuleOptions): BindModuleOutput {
-  const result: BindModuleOutput = {
-    name: module.name,
     output: {
       entries: [],
     },
-    outputDirAbs: module.outputDirAbs,
+    outputDirAbs: options.outputDirAbs,
   };
   const output = result.output;
-  const typeInfo = applyTransforms(module.typeInfo);
+  const typeInfo = applyTransforms(options.typeInfo);
   sortObjectsInPlaceByType(typeInfo);
   sortMethodsInPlaceByName(typeInfo);
 
@@ -98,7 +48,8 @@ function generateModuleBindings(module: BindModuleOptions): BindModuleOutput {
   };
 
   // generate modules
-  for (const module of typeInfo.moduleTypes) {
+  if (typeInfo.moduleType) {
+    const module: ModuleDefinition = typeInfo.moduleType;
     renderTemplate(
       "./templates/jsdoc-module.mustache",
       module,
@@ -163,6 +114,21 @@ function generateModuleBindings(module: BindModuleOptions): BindModuleOutput {
   }
 
   return result;
+};
+
+function applyTransforms(typeInfo: TypeInfo): TypeInfo {
+  const transforms = [
+    extendType(Functions),
+    extendType(TypeScriptFunctions),
+    addFirstLast,
+    toPrefixedGraphQLType,
+    methodParentPointers(),
+  ];
+
+  for (const transform of transforms) {
+    typeInfo = transformTypeInfo(typeInfo, transform);
+  }
+  return typeInfo;
 }
 
 function sortByNamespace<T extends ImportedDefinition>(

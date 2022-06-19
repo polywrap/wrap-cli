@@ -1,7 +1,7 @@
 // indicates what "sections" are imported--i.e. moduleTypes, objectTypes, enumTypes
 import { LOCAL_NAMESPACE } from "../docusaurus";
 
-import { TypeInfo } from "@web3api/schema-parse";
+import { TypeInfo } from "@polywrap/schema-parse";
 
 interface NamespaceSection {
   namespace: string;
@@ -16,13 +16,13 @@ export function createNamespaceSections(typeInfo: TypeInfo): NamespaceSections {
   const nsMap: Map<string, string[]> = new Map<string, string[]>();
 
   if (
-    typeInfo.moduleTypes.length > 0 ||
+    typeInfo.moduleType ||
     typeInfo.objectTypes.length > 0 ||
     typeInfo.enumTypes.length > 0
   ) {
     nsMap.set(LOCAL_NAMESPACE, []);
-    for (const module of typeInfo.moduleTypes) {
-      nsMap.get(LOCAL_NAMESPACE)?.push(module.type.toLowerCase());
+    if (typeInfo.moduleType) {
+      nsMap.get(LOCAL_NAMESPACE)?.push(typeInfo.moduleType.type.toLowerCase());
     }
     if (typeInfo.objectTypes.length > 0) {
       nsMap.get(LOCAL_NAMESPACE)?.push("objects");

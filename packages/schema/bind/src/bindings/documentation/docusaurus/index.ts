@@ -1,11 +1,5 @@
 import { GenerateBindingFn } from "../..";
-import { extractCommonTypeInfo } from "../../utils/typeInfo";
-import {
-  BindOptions,
-  BindOutput,
-  BindModuleOutput,
-  BindModuleOptions,
-} from "../../..";
+import { BindOptions, BindOutput } from "../../..";
 import * as Functions from "./../functions";
 import * as TypeScriptFunctions from "./../../typescript/functions";
 import {
@@ -21,7 +15,8 @@ import {
   toPrefixedGraphQLType,
   extendType,
   methodParentPointers,
-} from "@web3api/schema-parse";
+  ModuleDefinition,
+} from "@polywrap/schema-parse";
 import Mustache from "mustache";
 import path from "path";
 import { readFileSync } from "fs";
@@ -31,34 +26,7 @@ export const LOCAL_NAMESPACE = "Local";
 export const generateBinding: GenerateBindingFn = (
   options: BindOptions
 ): BindOutput => {
-  const result: BindOutput = {
-    modules: [],
-  };
-
-  if (options.bindLanguage === "wasm-as") {
-    // If there's more than one module provided
-    if (options.modules.length > 1 && options.commonDirAbs) {
-      // Extract the common types
-      const commonTypeInfo = extractCommonTypeInfo(
-        options.modules,
-        options.commonDirAbs
-      );
-
-      // Generate the common type folder
-      result.common = generateDocusaurusModuleBindings({
-        name: "common",
-        typeInfo: commonTypeInfo,
-        schema: "N/A",
-        outputDirAbs: options.commonDirAbs,
-      });
-    }
-  }
-
-  for (const module of options.modules) {
-    result.modules.push(generateDocusaurusModuleBindings(module));
-  }
-
-  return result;
+  return generateDocusaurusBindings(options);
 };
 
 function applyTransforms(typeInfo: TypeInfo): TypeInfo {
@@ -76,19 +44,18 @@ function applyTransforms(typeInfo: TypeInfo): TypeInfo {
   return typeInfo;
 }
 
-export function generateDocusaurusModuleBindings(
-  module: BindModuleOptions,
+export function generateDocusaurusBindings(
+  options: BindOptions,
   _typeInfo?: TypeInfo
-): BindModuleOutput {
-  const result: BindModuleOutput = {
-    name: module.name,
+): BindOutput {
+  const result: BindOutput = {
     output: {
       entries: [],
     },
-    outputDirAbs: module.outputDirAbs,
+    outputDirAbs: options.outputDirAbs,
   };
   const output = result.output;
-  const typeInfo = _typeInfo ?? applyTransforms(module.typeInfo);
+  const typeInfo = _typeInfo ?? applyTransforms(options.typeInfo);
   sortObjectsInPlaceByType(typeInfo);
   sortMethodsInPlaceByName(typeInfo);
 
@@ -108,7 +75,8 @@ export function generateDocusaurusModuleBindings(
   };
 
   // generate modules
-  for (const module of typeInfo.moduleTypes) {
+  if (typeInfo.moduleType) {
+    const module: ModuleDefinition = typeInfo.moduleType;
     const moduleContext = {
       ...module,
       namespace: LOCAL_NAMESPACE,

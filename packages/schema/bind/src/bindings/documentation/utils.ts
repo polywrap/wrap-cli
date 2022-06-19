@@ -2,7 +2,7 @@ import {
   ImportedDefinition,
   MethodDefinition,
   TypeInfo,
-} from "@web3api/schema-parse";
+} from "@polywrap/schema-parse";
 
 export function arrangeByNamespace<T extends ImportedDefinition>(
   definitions: Array<T>
@@ -33,8 +33,8 @@ export function sortObjectsInPlaceByType(typeInfo: TypeInfo): void {
 
 export function sortMethodsInPlaceByName(typeInfo: TypeInfo): void {
   const methodsToSort: MethodDefinition[][] = [];
-  for (const moduleType of typeInfo.moduleTypes) {
-    methodsToSort.push(moduleType.methods);
+  if (typeInfo.moduleType) {
+    methodsToSort.push(typeInfo.moduleType.methods);
   }
   for (const moduleType of typeInfo.importedModuleTypes) {
     methodsToSort.push(moduleType.methods);
