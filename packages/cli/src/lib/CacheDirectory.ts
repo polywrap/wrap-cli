@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import rimraf from "rimraf";
 import copyfiles from "copyfiles";
-import { writeFileSync } from "@web3api/os-js";
+import { writeFileSync } from "@polywrap/os-js";
 
 export interface CacheDirectoryConfig {
   rootDir: string;
@@ -12,7 +12,7 @@ export interface CacheDirectoryConfig {
 export class CacheDirectory {
   constructor(
     protected _config: CacheDirectoryConfig,
-    protected _cacheDirName: string = ".w3"
+    protected _cacheDirName: string = ".polywrap"
   ) {}
 
   public getCacheDir(): string {

@@ -1,0 +1,6 @@
+format: 0.0.1-prealpha.9
+name: invalid-manifest-2
+language: wasm/assemblyscript
+wrong: foo
+schema: ./src/schema.graphql
+module: ./src/index.ts

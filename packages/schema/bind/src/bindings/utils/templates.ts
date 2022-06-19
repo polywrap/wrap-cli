@@ -1,4 +1,4 @@
-import { OutputEntry, readDirectorySync } from "@web3api/os-js";
+import { OutputEntry, readDirectorySync } from "@polywrap/os-js";
 import Mustache from "mustache";
 import path from "path";
 

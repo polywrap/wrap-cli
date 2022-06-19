@@ -1,7 +1,7 @@
-import { createQueryDocument, parseQuery, QueryApiInvocations, Uri } from "../";
+import { createQueryDocument, parseQuery, QueryInvocations, Uri } from "../";
 
 describe("parseQuery", () => {
-  const dummy = new Uri("w3://dumb/dummy");
+  const dummy = new Uri("wrap://dumb/dummy");
 
   it("works in the typical case", () => {
     const doc = createQueryDocument(`
@@ -36,10 +36,9 @@ describe("parseQuery", () => {
       varTwo: 55,
     });
 
-    const expected: QueryApiInvocations<Uri> = {
+    const expected: QueryInvocations<Uri> = {
       someMethod: {
         uri: dummy,
-        module: "mutation",
         method: "someMethod",
         input: {
           arg1: "hey",
@@ -70,7 +69,7 @@ describe("parseQuery", () => {
   });
 
   it("works with multiple queries", () => {
-    const queryMethods = `
+    const moduleMethods = `
       someMethod(
         arg1: 4
         arg2: ["hey", "there", [5.5]]
@@ -133,7 +132,7 @@ describe("parseQuery", () => {
         ${mutationMethods}
       }
       query {
-        ${queryMethods}
+        ${moduleMethods}
       }
     `);
 
@@ -142,10 +141,9 @@ describe("parseQuery", () => {
       varTwo: 55,
     });
 
-    const method1: QueryApiInvocations<Uri> = {
+    const method1: QueryInvocations<Uri> = {
       someMethod: {
         uri: dummy,
-        module: "query",
         method: "someMethod",
         input: {
           arg1: 4,
@@ -167,10 +165,9 @@ describe("parseQuery", () => {
         }
       }
     };
-    const method2: QueryApiInvocations<Uri> = {
+    const method2: QueryInvocations<Uri> = {
       anotherMethod: {
         uri: dummy,
-        module: "query",
         method: "anotherMethod",
         input: {
           arg: "hey",
@@ -185,17 +182,11 @@ describe("parseQuery", () => {
       }
     };
 
-    const expected: QueryApiInvocations<Uri> = {
+    const expected: QueryInvocations<Uri> = {
       ...method1,
       ...method2,
-      mutationSomeMethod: {
-        ...method1.someMethod,
-        module: "mutation"
-      },
-      mutationAnotherMethod: {
-        ...method2.anotherMethod,
-        module: "mutation"
-      },
+      mutationSomeMethod: method1.someMethod,
+      mutationAnotherMethod: method2.anotherMethod,
     };
 
     expect(result).toMatchObject(expected);
@@ -214,13 +205,6 @@ describe("parseQuery", () => {
     const doc = createQueryDocument("fragment Something on Type { something }");
     expect(() => parseQuery(dummy, doc)).toThrowError(
       /Unrecognized root level definition type/
-    );
-  });
-
-  it("fails when given a subscription operation type, which is currently unsupported", () => {
-    const doc = createQueryDocument("subscription { something }");
-    expect(() => parseQuery(dummy, doc)).toThrowError(
-      /Subscription queries are not yet supported/
     );
   });
 

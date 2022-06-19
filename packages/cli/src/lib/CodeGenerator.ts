@@ -3,9 +3,9 @@ import {
   withSpinner,
   isTypescriptFile,
   importTypescriptModule,
-  web3apiManifestLanguages,
-  isWeb3ApiManifestLanguage,
-  web3apiManifestLanguageToBindLanguage,
+  polywrapManifestLanguages,
+  isPolywrapManifestLanguage,
+  polywrapManifestLanguageToBindLanguage,
   pluginManifestLanguages,
   isPluginManifestLanguage,
   pluginManifestLanguageToBindLanguage,
@@ -19,8 +19,8 @@ import {
   resetDir,
 } from "./";
 
-import { BindLanguage, GenerateBindingFn } from "@web3api/schema-bind";
-import { writeDirectorySync } from "@web3api/os-js";
+import { BindLanguage, GenerateBindingFn } from "@polywrap/schema-bind";
+import { writeDirectorySync } from "@polywrap/os-js";
 import path from "path";
 import { readFileSync } from "fs";
 import * as gluegun from "gluegun";
@@ -43,7 +43,7 @@ export class CodeGenerator {
 
   public async generate(): Promise<boolean> {
     try {
-      // Compile the API
+      // Compile the Wrapper
       await this._generateCode();
 
       return true;
@@ -60,8 +60,8 @@ export class CodeGenerator {
       const language = await project.getManifestLanguage();
       let bindLanguage: BindLanguage | undefined;
 
-      if (isWeb3ApiManifestLanguage(language)) {
-        bindLanguage = web3apiManifestLanguageToBindLanguage(language);
+      if (isPolywrapManifestLanguage(language)) {
+        bindLanguage = polywrapManifestLanguageToBindLanguage(language);
       } else if (isPluginManifestLanguage(language)) {
         bindLanguage = pluginManifestLanguageToBindLanguage(language);
       } else if (isAppManifestLanguage(language)) {
@@ -73,7 +73,7 @@ export class CodeGenerator {
           intlMsg.lib_language_unsupportedManifestLanguage({
             language: language,
             supported: [
-              ...Object.keys(web3apiManifestLanguages),
+              ...Object.keys(polywrapManifestLanguages),
               ...Object.keys(pluginManifestLanguages),
               ...Object.keys(appManifestLanguages),
             ].join(", "),
@@ -84,12 +84,12 @@ export class CodeGenerator {
       // Get the fully composed schema
       const composed = await schemaComposer.getComposedSchemas();
 
-      if (!composed.combined) {
+      if (!composed) {
         throw Error(intlMsg.lib_codeGenerator_noComposedSchema());
       }
 
-      const typeInfo = composed.combined.typeInfo;
-      this._schema = composed.combined.schema;
+      const typeInfo = composed.typeInfo;
+      this._schema = composed.schema;
 
       if (!typeInfo) {
         throw Error(intlMsg.lib_codeGenerator_typeInfoMissing());
@@ -116,44 +116,30 @@ export class CodeGenerator {
           throw Error(intlMsg.lib_codeGenerator_nogenerateBindingMethod());
         }
 
-        const output = await generateBinding({
+        const binding = await generateBinding({
           projectName: await project.getName(),
-          modules: [
-            {
-              name: "custom",
-              typeInfo,
-              schema: this._schema || "",
-              outputDirAbs: codegenDirAbs,
-            },
-          ],
+          typeInfo,
+          schema: this._schema || "",
+          outputDirAbs: codegenDirAbs,
           bindLanguage,
         });
 
-        for (const module of output.modules) {
-          resetDir(codegenDirAbs);
-          writeDirectorySync(
-            codegenDirAbs,
-            module.output,
-            (templatePath: string) =>
-              this._generateTemplate(templatePath, typeInfo, spinner)
-          );
-        }
+        resetDir(codegenDirAbs);
+        writeDirectorySync(
+          codegenDirAbs,
+          binding.output,
+          (templatePath: string) =>
+            this._generateTemplate(templatePath, typeInfo, spinner)
+        );
       } else {
-        const output = await project.generateSchemaBindings(
+        const binding = await project.generateSchemaBindings(
           composed,
           path.relative(project.getManifestDir(), codegenDirAbs)
         );
 
         // Output the bindings
-        for (const module of output.modules) {
-          resetDir(module.outputDirAbs);
-          writeDirectorySync(module.outputDirAbs, module.output);
-        }
-
-        if (output.common) {
-          resetDir(output.common.outputDirAbs);
-          writeDirectorySync(output.common.outputDirAbs, output.common.output);
-        }
+        resetDir(binding.outputDirAbs);
+        writeDirectorySync(binding.outputDirAbs, binding.output);
       }
     };
 

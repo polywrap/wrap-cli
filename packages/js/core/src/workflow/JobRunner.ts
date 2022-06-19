@@ -1,7 +1,7 @@
 import {
   Client,
   executeMaybeAsyncFunction,
-  InvokeApiResult,
+  InvokeResult,
   Job,
   MaybeAsync,
   Uri,
@@ -19,14 +19,14 @@ export class JobRunner<
   TData extends unknown = unknown,
   TUri extends Uri | string = string
 > {
-  private jobOutput: Map<string, InvokeApiResult<TData>>;
+  private jobOutput: Map<string, InvokeResult<TData>>;
 
   constructor(
     private client: Client,
     private onExecution?: (
       id: string,
-      data?: InvokeApiResult<TData>["data"],
-      error?: InvokeApiResult<TData>["error"]
+      data?: InvokeResult<TData>["data"],
+      error?: InvokeResult<TData>["error"]
     ) => MaybeAsync<void>
   ) {
     this.jobOutput = new Map();
@@ -52,7 +52,6 @@ export class JobRunner<
           const input = this.resolveInput(absoluteId, step.input);
           const result = await this.client.invoke<TData, TUri>({
             uri: step.uri,
-            module: step.module,
             method: step.method,
             config: step.config,
             input: input,

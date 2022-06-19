@@ -8,7 +8,7 @@ jobs:
   Publish-GitHub-Release:
     name: GitHub Release
     if: |
-      github.event.pull_request.user.login == 'web3-api-build-bot' &&
+      github.event.pull_request.user.login == 'polywrap-build-bot' &&
       github.event.pull_request.merged == true
     runs-on: ubuntu-18.04
     steps:
@@ -82,7 +82,7 @@ jobs:
   Publish-NPM-Release:
     name: NPM Release
     if: |
-      github.event.pull_request.user.login == 'web3-api-build-bot' &&
+      github.event.pull_request.user.login == 'polywrap-build-bot' &&
       github.event.pull_request.merged == true
     runs-on: ubuntu-18.04
     steps:
@@ -106,7 +106,7 @@ jobs:
         if: ${{env.TAG_EXISTS}} == 'false'
         run: |
           npm config set registry https://registry.npmjs.org/
-          npm config set //registry.npmjs.org/:_authToken=${{secrets.WEB3_API_BUILD_BOT_NPM_PAT}}
+          npm config set //registry.npmjs.org/:_authToken=${{secrets.POLYWRAP_BUILD_BOT_NPM_PAT}}
           echo $(npm whoami --registry https://registry.npmjs.org/)
 
       - name: Install JS dependencies
@@ -121,7 +121,7 @@ jobs:
         if: ${{env.TAG_EXISTS}} == 'false'
         run: yarn publish:npm
         env:
-          NPM_AUTH_TOKEN: ${{secrets.WEB3_API_BUILD_BOT_NPM_PAT}}
+          NPM_AUTH_TOKEN: ${{secrets.POLYWRAP_BUILD_BOT_NPM_PAT}}
 
       - uses: actions/github-script@0.8.0
         if: ${{env.TAG_EXISTS}} == 'false'
@@ -132,13 +132,13 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '**[NPM Release Published](https://www.npmjs.com/search?q=%40web3api) `${{env.RELEASE_VERSION}}`** 🎉'
+              body: '**[NPM Release Published](https://www.npmjs.com/search?q=polywrap) `${{env.RELEASE_VERSION}}`** 🎉'
             })
 
   Publish-Crates-dot-io-Release:
     name: crates.io Release
     if: |
-      github.event.pull_request.user.login == 'web3-api-build-bot' &&
+      github.event.pull_request.user.login == 'polywrap-build-bot' &&
       github.event.pull_request.merged == true
     runs-on: ubuntu-18.04
     steps:
@@ -169,7 +169,7 @@ jobs:
       - name: Upload Rust Crates To Crates.io
         if: ${{env.TAG_EXISTS}} == 'false'
         working-directory: ./packages/wasm/rs
-        run: cargo publish --token ${{secrets.WEB3_API_BUILD_BOT_CRATES_PAT}}
+        run: cargo publish --token ${{secrets.POLYWRAP_BUILD_BOT_CRATES_PAT}}
 
       - uses: actions/github-script@0.8.0
         if: ${{env.TAG_EXISTS}} == 'false'
@@ -180,5 +180,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: '**[Crates.io Release Published](https://crates.io/search?q=web3api) `${{env.RELEASE_VERSION}}`** 🎉'
+              body: '**[Crates.io Release Published](https://crates.io/search?q=polywrap) `${{env.RELEASE_VERSION}}`** 🎉'
             })

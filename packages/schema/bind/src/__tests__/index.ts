@@ -1,35 +1,20 @@
-import { BindModuleOptions } from "../";
+import { BindOptions, BindLanguage } from "../";
 
 import fs from "fs";
 import path from "path";
-import { TypeInfo } from "@web3api/schema-parse";
-import {
-  composeSchema,
-  SchemaFile,
-  ComposerFilter,
-  SchemaKind,
-} from "@web3api/schema-compose";
-import { GetPathToBindTestFiles } from "@web3api/test-cases";
-import { normalizeLineEndings } from "@web3api/os-js";
+import { parseSchema } from "@polywrap/schema-parse";
+import { GetPathToBindTestFiles } from "@polywrap/test-cases";
+import { normalizeLineEndings } from "@polywrap/os-js";
 
 const root = GetPathToBindTestFiles();
 
 export type TestCase = {
   name: string;
   directory: string;
-  input: {
-    modules: BindModuleOptions[];
-    combined: BindModuleOptions;
-    commonDirAbs: string;
-  };
+  input: BindOptions;
   outputLanguages: {
     language: string;
-    directories: {
-      moduleWise?: {
-        [name: string]: string
-      };
-      combined?: string;
-    };
+    directory: string;
   }[];
 };
 
@@ -60,22 +45,19 @@ export function fetchTestCases(): TestCases {
       return Promise.resolve(undefined);
     }
 
-    // Fetch the input schemas
-    const querySchemaFile = path.join(
+    // Fetch the input schema
+    const schemaFile = path.join(
       root,
       dirent.name,
       "input",
-      "query.graphql"
-    );
-    const mutationSchemaFile = path.join(
-      root,
-      dirent.name,
-      "input",
-      "mutation.graphql"
+      "schema.graphql"
     );
 
-    const querySchema = fetchIfExists(querySchemaFile);
-    const mutationSchema = fetchIfExists(mutationSchemaFile);
+    const schema = fetchIfExists(schemaFile);
+
+    if (!schema) {
+      throw Error(`Expected input schema at ${schemaFile}`)
+    }
 
     // Fetch each language's expected output
     const outputDir = path.join(root, dirent.name, "output");
@@ -83,97 +65,20 @@ export function fetchTestCases(): TestCases {
       .readdirSync(outputDir, { withFileTypes: true })
       .filter((item: fs.Dirent) => item.isDirectory())
       .map((item: fs.Dirent) => {
-        const outputLanguageDir = path.join(outputDir, item.name);
-        const outputDirectories: {
-          moduleWise?: {
-            [name: string]: string
-          };
-          combined?: string;
-        } = { };
-
-        fs.readdirSync(outputLanguageDir, { withFileTypes: true })
-          .filter((item: fs.Dirent) => item.isDirectory())
-          .map((item: fs.Dirent) => {
-            if (item.name === "combined") {
-              outputDirectories.combined = path.join(
-                outputLanguageDir, item.name
-              );
-            } else {
-              if (!outputDirectories.moduleWise) {
-                outputDirectories.moduleWise = { };
-              }
-              outputDirectories.moduleWise[item.name] = path.join(
-                outputLanguageDir, item.name
-              );
-            }
-          })
-
         return {
           language: item.name,
-          directories: outputDirectories
+          directory: path.join(outputDir, item.name)
         };
       });
 
-    let schemas: Partial<Record<SchemaKind, SchemaFile>> = {};
+    // Parse the input schema into the TypeInfo structure
+    const typeInfo = parseSchema(schema);
 
-    if (querySchema) {
-      schemas["query"] = {
-        schema: querySchema,
-        absolutePath: querySchemaFile,
-      };
-    }
-
-    if (mutationSchema) {
-      schemas["mutation"] = {
-        schema: mutationSchema,
-        absolutePath: mutationSchemaFile,
-      };
-    }
-
-    // Compose the input schemas into TypeInfo structures
-    const composed = await composeSchema({
-      schemas: {
-        ...schemas,
-      },
-      resolvers: {
-        external: (uri: string): Promise<string> => {
-          return Promise.resolve(
-            fetchIfExists(
-              path.join(root, dirent.name, `imports-ext/${uri}/schema.graphql`)
-            ) || ""
-          );
-        },
-        local: (path: string): Promise<string> => {
-          return Promise.resolve(fetchIfExists(path) || "");
-        },
-      },
-      output: ComposerFilter.All,
-    });
-
-    const modules: BindModuleOptions[] = [];
-
-    if (querySchema) {
-      modules.push({
-        name: "query",
-        typeInfo: composed.query?.typeInfo as TypeInfo,
-        schema: composed.query?.schema as string,
-        outputDirAbs: path.join(root, "query")
-      });
-    }
-
-    if (mutationSchema) {
-      modules.push({
-        name: "mutation",
-        typeInfo: composed.mutation?.typeInfo as TypeInfo,
-        schema: composed.mutation?.schema as string,
-        outputDirAbs: path.join(root, "mutation")
-      });
-    }
-
-    const combined: BindModuleOptions = {
-      name: "combined",
-      typeInfo: composed.combined.typeInfo as TypeInfo,
-      schema: composed.combined.schema as string,
+    const input: BindOptions = {
+      projectName: "Test",
+      bindLanguage: "TBD" as BindLanguage,
+      typeInfo,
+      schema,
       outputDirAbs: path.join(root, "combined")
     };
 
@@ -181,11 +86,7 @@ export function fetchTestCases(): TestCases {
     return {
       name: dirent.name,
       directory: outputDir,
-      input: {
-        modules,
-        combined,
-        commonDirAbs: path.join(root, "common"),
-      },
+      input,
       outputLanguages,
     };
   };

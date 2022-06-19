@@ -1,8 +1,6 @@
 export const envTypes = {
-  QueryClientEnv: "QueryClientEnv",
-  QueryEnv: "QueryEnv",
-  MutationClientEnv: "MutationClientEnv",
-  MutationEnv: "MutationEnv",
+  ClientEnv: "ClientEnv",
+  Env: "Env",
 };
 
 export type EnvTypes = typeof envTypes;
@@ -14,7 +12,7 @@ export function isEnvType(type: string): type is EnvType {
 }
 
 export function isClientEnvType(type: EnvType): boolean {
-  return type.includes("ClientEnv");
+  return type === "ClientEnv";
 }
 
 export const envTypeNames = Object.keys(envTypes);

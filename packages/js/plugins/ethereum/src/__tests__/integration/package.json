@@ -2,18 +2,16 @@
   "name": "ethereum-js-plugin-integration-test",
   "description": "Ethereum JS Plugin Integration Test",
   "private": true,
-  "version": "0.0.1-prealpha.85",
+  "version": "0.0.1-prealpha.86",
   "scripts": {
-    "build": "yarn build:web3api",
-    "build:web3api": "npx w3 build",
-    "test:env:up": "npx w3 infra up --modules=eth-ens-ipfs",
-    "test:env:down": "npx w3 infra down --modules=eth-ens-ipfs",
-    "deploy": "npx w3 deploy"
+    "build": "yarn build:polywrap",
+    "build:polywrap": "npx polywrap build",
+    "test:env:up": "npx polywrap infra up --modules=eth-ens-ipfs",
+    "test:env:down": "npx polywrap infra down --modules=eth-ens-ipfs",
+    "deploy": "npx polywrap deploy"
   },
   "dependencies": {
-    "@web3api/wasm-as": "0.0.1-prealpha.85"
-  },
-  "devDependencies": {
-    "@web3api/cli": "0.0.1-prealpha.85"
+    "@polywrap/wasm-as": "0.0.1-prealpha.86",
+    "assemblyscript": "0.19.5"
   }
 }

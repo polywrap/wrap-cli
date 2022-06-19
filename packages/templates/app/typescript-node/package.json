@@ -1,18 +1,18 @@
 {
   "name": "templates-app-typescript-node",
-  "description": "Web3API App TypeScript Node Template",
+  "description": "Polywrap App TypeScript Node Template",
   "private": true,
-  "version": "0.0.1-prealpha.85",
+  "version": "0.0.1-prealpha.86",
   "scripts": {
-    "build": "npx w3 app codegen",
+    "build": "npx polywrap app codegen",
     "test": "ts-node ./src/index.ts"
   },
   "dependencies": {
-    "@web3api/client-js": "0.0.1-prealpha.85"
+    "@polywrap/client-js": "0.0.1-prealpha.86"
   },
   "devDependencies": {
     "@types/node": "12.12.26",
-    "@web3api/cli": "0.0.1-prealpha.85",
+    "polywrap": "0.0.1-prealpha.86",
     "ts-node": "10.7.0",
     "typescript": "4.0.7"
   }

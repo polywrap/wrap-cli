@@ -1,6 +1,6 @@
 import { Deployer } from "../../../deploy/deployer";
 
-import { Uri } from "@web3api/core-js";
+import { Uri } from "@polywrap/core-js";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires,@typescript-eslint/naming-convention
 const IPFSClient = require("ipfs-http-client");

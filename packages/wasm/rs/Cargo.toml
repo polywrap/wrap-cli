@@ -1,8 +1,8 @@
 [package]
-name = "web3api-wasm-rs"
-version = "0.0.1-prealpha.85"
+name = "polywrap-wasm-rs"
+version = "0.0.1-prealpha.86"
 license = "MIT"
-description = "Web3API's Rust-Wasm Runtime"
+description = "Polywrap's Rust-Wasm Runtime"
 homepage = "https://polywrap.io"
 documentation = "https://docs.polywrap.io"
 repository = "https://github.com/polywrap/monorepo"
@@ -11,7 +11,7 @@ authors = [
   "Jordan Ellis <jelli@dorg.tech>",
   "Nestor Amesty <nestor@dorg.tech>"
 ]
-keywords = ["web3api", "wasm", "webassembly"]
+keywords = ["polywrap", "wasm", "webassembly"]
 categories = ["wasm"]
 edition = "2021"
 

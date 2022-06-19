@@ -1,7 +1,7 @@
-import { w3Cli } from "../e2e/utils";
+import { polywrapCli } from "../e2e/utils";
 
-import { initTestEnvironment, runCLI, stopTestEnvironment } from "@web3api/test-env-js";
-import { GetPathToCliTestFiles } from "@web3api/test-cases";
+import { initTestEnvironment, runCLI, stopTestEnvironment } from "@polywrap/test-env-js";
+import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import path from "path";
 
 describe("e2e tests for docker", () => {
@@ -19,8 +19,8 @@ describe("e2e tests for docker", () => {
       promises.push(
         runCLI({
           args: ["build", "-v"],
-          cwd: path.join(GetPathToCliTestFiles(), "api/build-cmd/001-sanity"),
-          cli: w3Cli
+          cwd: path.join(GetPathToCliTestFiles(), "wasm/build-cmd/001-sanity"),
+          cli: polywrapCli
         }).then((result: { exitCode: number; stdout: string; stderr: string }) => {
           const { exitCode, stderr } = result;
           expect(stderr.indexOf("Conflict. The container name \"/root-build-image\" is already in use")).toBeLessThan(0);

@@ -1,0 +1,12 @@
+type Module {
+  method(
+    arg1: BigNumber!
+    arg2: BigNumber
+    obj: BigNumberInput!
+  ): BigNumber!
+}
+
+type BigNumberInput {
+  prop1: BigNumber!
+  prop2: BigNumber
+}

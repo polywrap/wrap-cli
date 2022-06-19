@@ -1,11 +1,11 @@
 import { displayPath, withSpinner, intlMsg } from "../../";
 
-import { PluginManifest, deserializePluginManifest } from "@web3api/core-js";
+import { PluginManifest, deserializePluginManifest } from "@polywrap/core-js";
 import fs from "fs";
 
 export const defaultPluginManifest = [
-  "web3api.plugin.yaml",
-  "web3api.plugin.yml",
+  "polywrap.plugin.yaml",
+  "polywrap.plugin.yml",
 ];
 
 export async function loadPluginManifest(

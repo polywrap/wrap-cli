@@ -1,4 +1,4 @@
-use web3api_wasm_rs::{Context, DecodeError, EncodeError, Read, ReadDecoder, Write, WriteEncoder};
+use polywrap_wasm_rs::{Context, DecodeError, EncodeError, Read, ReadDecoder, Write, WriteEncoder};
 // use std::collections::BTreeMap;
 
 #[derive(Debug, Clone, Default)]

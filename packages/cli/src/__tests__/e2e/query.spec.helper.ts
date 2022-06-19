@@ -1,4 +1,4 @@
-import { normalizeLineEndings } from "@web3api/os-js";
+import { normalizeLineEndings } from "@polywrap/os-js";
 import { clearStyle } from "./utils";
 
 export interface ISampleOutputOptions {

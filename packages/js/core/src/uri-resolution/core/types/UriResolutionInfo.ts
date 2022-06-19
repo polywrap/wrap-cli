@@ -5,6 +5,6 @@ export interface UriResolutionInfo {
   sourceUri: Uri;
   result: {
     uri: Uri;
-    api: boolean;
+    wrapper: boolean;
   };
 }

@@ -1,4 +1,4 @@
-import { ApiCache, Client, Uri } from "../../../types";
+import { WrapperCache, Client, Uri } from "../../../types";
 import { UriResolutionResult, UriResolutionStack } from ".";
 
 export abstract class UriResolver {
@@ -7,7 +7,7 @@ export abstract class UriResolver {
   public abstract resolveUri(
     uri: Uri,
     client: Client,
-    cache: ApiCache,
+    cache: WrapperCache,
     resolutionPath: UriResolutionStack
   ): Promise<UriResolutionResult>;
 }

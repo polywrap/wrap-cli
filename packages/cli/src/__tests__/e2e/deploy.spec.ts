@@ -1,4 +1,4 @@
-import { clearStyle, w3Cli } from "./utils";
+import { clearStyle, polywrapCli } from "./utils";
 
 import { 
   initTestEnvironment,
@@ -6,26 +6,26 @@ import {
   stopTestEnvironment,
   ensAddresses,
   providers
-} from "@web3api/test-env-js";
-import { GetPathToCliTestFiles } from "@web3api/test-cases";
-import { Web3ApiClient } from "@web3api/client-js";
-import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
+} from "@polywrap/test-env-js";
+import { GetPathToCliTestFiles } from "@polywrap/test-cases";
+import { PolywrapClient } from "@polywrap/client-js";
+import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
 import { Wallet } from "@ethersproject/wallet";
 import path from "path";
 import fs from "fs";
 
-const HELP = `Usage: w3 deploy|d [options]
+const HELP = `Usage: polywrap deploy|d [options]
 
-Deploys/Publishes a Web3API
+Deploys/Publishes a Polywrap
 
 Options:
-  -m, --manifest-file <path>  Path to the Web3API Deploy manifest file
-                              (default: web3api.yaml | web3api.yml)
+  -m, --manifest-file <path>  Path to the Polywrap Deploy manifest file
+                              (default: polywrap.yaml | polywrap.yml)
   -v, --verbose               Verbose output (default: false)
   -h, --help                  display help for command
 `;
 
-const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/deploy");
+const testCaseRoot = path.join(GetPathToCliTestFiles(), "wasm/deploy");
   const testCases =
     fs.readdirSync(testCaseRoot, { withFileTypes: true })
       .filter((dirent) => dirent.isDirectory())
@@ -36,6 +36,9 @@ const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/deploy");
 const setup = async (domainNames: string[]) => {
   await stopTestEnvironment();
   await initTestEnvironment();
+
+  // Wait a little longer just in case
+  await new Promise((resolve) => setTimeout(resolve, 3000));
 
   const ensAddress = ensAddresses.ensAddress
   const resolverAddress = ensAddresses.resolverAddress
@@ -49,8 +52,8 @@ const setup = async (domainNames: string[]) => {
     ENS_REG_ADDR: ensAddress
   };
 
-  const ethereumPluginUri = "w3://ens/ethereum.web3api.eth"
-  const client = new Web3ApiClient({
+  const ethereumPluginUri = "wrap://ens/ethereum.polywrap.eth"
+  const client = new PolywrapClient({
     plugins: [
       {
         uri: ethereumPluginUri,
@@ -68,14 +71,13 @@ const setup = async (domainNames: string[]) => {
   });
 
   const ensWrapperUri = `fs/${path.join(
-    path.dirname(require.resolve("@web3api/test-env-js")),
+    path.dirname(require.resolve("@polywrap/test-env-js")),
     "wrappers", "ens"
   )}`;
 
   for await (const domainName of domainNames) {
     const result = await client.invoke({
       uri: ensWrapperUri,
-      module: "mutation",
       method: "registerDomainAndSubdomainsRecursively",
       input: {
         domain: domainName,
@@ -107,7 +109,7 @@ describe("e2e tests for deploy command", () => {
         {
           args: ["build", "-v"],
           cwd: getTestCaseDir(i),
-          cli: w3Cli,
+          cli: polywrapCli,
         },
       );
     }
@@ -124,7 +126,7 @@ describe("e2e tests for deploy command", () => {
       {
         args: ["deploy", "--help"],
         cwd: getTestCaseDir(0),
-        cli: w3Cli,
+        cli: polywrapCli,
       },
     );
 
@@ -138,7 +140,7 @@ describe("e2e tests for deploy command", () => {
       {
         args: ["deploy"],
         cwd: getTestCaseDir(0),
-        cli: w3Cli,
+        cli: polywrapCli,
         env: process.env as Record<string, string>
       },
     );
@@ -160,7 +162,7 @@ describe("e2e tests for deploy command", () => {
       {
         args: ["deploy"],
         cwd: getTestCaseDir(1),
-        cli: w3Cli,
+        cli: polywrapCli,
       },
     );
 
@@ -180,7 +182,7 @@ describe("e2e tests for deploy command", () => {
       {
         args: ["deploy"],
         cwd: getTestCaseDir(2),
-        cli: w3Cli,
+        cli: polywrapCli,
       },
     );
 
@@ -195,7 +197,7 @@ describe("e2e tests for deploy command", () => {
       {
         args: ["deploy"],
         cwd: getTestCaseDir(3),
-        cli: w3Cli,
+        cli: polywrapCli,
       },
     );
 
@@ -220,7 +222,7 @@ describe("e2e tests for deploy command", () => {
       {
         args: ["deploy"],
         cwd: getTestCaseDir(4),
-        cli: w3Cli,
+        cli: polywrapCli,
       },
     );
 

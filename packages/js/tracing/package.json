@@ -1,11 +1,11 @@
 {
-  "name": "@web3api/tracing-js",
-  "description": "Web3API Core Tracing",
-  "version": "0.0.1-prealpha.85",
+  "name": "@polywrap/tracing-js",
+  "description": "Polywrap Core Tracing",
+  "version": "0.0.1-prealpha.86",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/web3-api/monorepo.git"
+    "url": "https://github.com/polywrap/monorepo.git"
   },
   "main": "build/index.js",
   "files": [

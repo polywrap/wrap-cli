@@ -1,14 +1,13 @@
-{{^__commonModule}}
 import {
-  w3_invoke_args,
-  w3_invoke,
-  w3_load_env,
-  w3_sanitize_env,
-  w3_abort,
+  wrap_invoke_args,
+  wrap_invoke,
+  wrap_load_env,
+  wrap_sanitize_env,
+  wrap_abort,
   InvokeArgs
-} from "@web3api/wasm-as";
+} from "@polywrap/wasm-as";
 
-{{#moduleTypes}}
+{{#moduleType}}
 {{#methods.length}}
 import {
   {{#methods}}
@@ -16,79 +15,57 @@ import {
   {{/methods}}
 } from "./{{type}}/wrapped";
 {{/methods.length}}
-{{/moduleTypes}}
-{{#envTypes.query.sanitized}}
+{{/moduleType}}
+{{#envType.sanitized}}
 import {
   env
 } from "./env";
 import {
-  QueryEnv
-} from "./QueryEnv";
-{{/envTypes.query.sanitized}}
-{{#envTypes.mutation.sanitized}}
-import {
-  env
-} from "./env";
-import {
-  MutationEnv
-} from "./MutationEnv";
-{{/envTypes.mutation.sanitized}}
+  Env
+} from "./Env";
+{{/envType.sanitized}}
 
-export function _w3_invoke(method_size: u32, args_size: u32): bool {
-  const args: InvokeArgs = w3_invoke_args(
+export function _wrap_invoke(method_size: u32, args_size: u32): bool {
+  const args: InvokeArgs = wrap_invoke_args(
     method_size,
     args_size
   );
 
-  {{#moduleTypes}}
+  {{#moduleType}}
   {{#methods}}
   {{^first}}else {{/first}}if (args.method == "{{name}}") {
-    return w3_invoke(args, {{name}}Wrapped);
+    return wrap_invoke(args, {{name}}Wrapped);
   }
   {{/methods}}
-  {{/moduleTypes}}
+  {{/moduleType}}
   else {
-    return w3_invoke(args, null);
+    return wrap_invoke(args, null);
   }
 }
 
-{{#envTypes.query.sanitized}}
-export function _w3_load_env(env_size: u32): void {
-  const envBuf = w3_load_env(env_size);
-  env = QueryEnv.fromBuffer(envBuf);
+{{#envType.sanitized}}
+export function _wrap_load_env(env_size: u32): void {
+  const envBuf = wrap_load_env(env_size);
+  env = Env.fromBuffer(envBuf);
 }
 
-{{/envTypes.query.sanitized}}
-{{#envTypes.mutation.sanitized}}
-export function _w3_load_env(env_size: u32): void {
-  const envBuf = w3_load_env(env_size);
-  env = MutationEnv.fromBuffer(envBuf);
+{{/envType.sanitized}}
+{{#envType.client}}
+export function _wrap_sanitize_env(args_size: u32): void {
+  wrap_sanitize_env(args_size, sanitizeEnvWrapped);
 }
 
-{{/envTypes.mutation.sanitized}}
-{{#envTypes.query.client}}
-export function _w3_sanitize_env(args_size: u32): void {
-  w3_sanitize_env(args_size, sanitizeEnvWrapped);
-}
-
-{{/envTypes.query.client}}
-{{#envTypes.mutation.client}}
-export function _w3_sanitize_env(args_size: u32): void {
-  w3_sanitize_env(args_size, sanitizeEnvWrapped)
-}
-
-{{/envTypes.mutation.client}}
-export function w3Abort(
+{{/envType.client}}
+export function wrapAbort(
   msg: string | null,
   file: string | null,
   line: u32,
   column: u32
 ): void {
-  w3_abort(
+  wrap_abort(
     msg ? msg : "",
     file ? file : "",
     line,
     column
   );
 }
-{{/__commonModule}}

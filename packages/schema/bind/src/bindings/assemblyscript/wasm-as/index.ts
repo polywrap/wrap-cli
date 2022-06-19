@@ -1,13 +1,7 @@
 import * as Functions from "./functions";
 import { GenerateBindingFn } from "../..";
-import { extractCommonTypeInfo } from "../../utils/typeInfo";
 import { renderTemplates, loadSubTemplates } from "../../utils/templates";
-import {
-  BindOptions,
-  BindOutput,
-  BindModuleOutput,
-  BindModuleOptions,
-} from "../../..";
+import { BindOptions, BindOutput } from "../../..";
 
 import {
   TypeInfo,
@@ -16,8 +10,8 @@ import {
   addFirstLast,
   extendType,
   toPrefixedGraphQLType,
-} from "@web3api/schema-parse";
-import { OutputEntry, readDirectorySync } from "@web3api/os-js";
+} from "@polywrap/schema-parse";
+import { OutputEntry, readDirectorySync } from "@polywrap/os-js";
 import path from "path";
 
 const templatesDir = readDirectorySync(path.join(__dirname, "./templates"));
@@ -29,57 +23,13 @@ export const generateBinding: GenerateBindingFn = (
   options: BindOptions
 ): BindOutput => {
   const result: BindOutput = {
-    modules: [],
-  };
-
-  // If there's more than one module provided
-  if (options.modules.length > 1 && options.commonDirAbs) {
-    // Extract the common types
-    const commonTypeInfo = extractCommonTypeInfo(
-      options.modules,
-      options.commonDirAbs
-    );
-
-    // Generate the common type folder
-    result.common = generateModuleBinding({
-      name: "common",
-      typeInfo: commonTypeInfo,
-      schema: "N/A",
-      outputDirAbs: options.commonDirAbs,
-    });
-  }
-
-  // Generate each module folder
-  for (const module of options.modules) {
-    result.modules.push(generateModuleBinding(module));
-  }
-
-  return result;
-};
-
-function applyTransforms(typeInfo: TypeInfo): TypeInfo {
-  const transforms = [
-    extendType(Functions),
-    addFirstLast,
-    toPrefixedGraphQLType,
-  ];
-
-  for (const transform of transforms) {
-    typeInfo = transformTypeInfo(typeInfo, transform);
-  }
-  return typeInfo;
-}
-
-function generateModuleBinding(module: BindModuleOptions): BindModuleOutput {
-  const result: BindModuleOutput = {
-    name: module.name,
     output: {
       entries: [],
     },
-    outputDirAbs: module.outputDirAbs,
+    outputDirAbs: options.outputDirAbs,
   };
   const output = result.output;
-  const typeInfo = applyTransforms(module.typeInfo);
+  const typeInfo = applyTransforms(options.typeInfo);
 
   // Generate object type folders
   for (const objectType of typeInfo.objectTypes) {
@@ -161,13 +111,13 @@ function generateModuleBinding(module: BindModuleOptions): BindModuleOutput {
   }
 
   // Generate module type folders
-  for (const moduleType of typeInfo.moduleTypes) {
+  if (typeInfo.moduleType) {
     output.entries.push({
       type: "Directory",
-      name: moduleType.type,
+      name: typeInfo.moduleType.type,
       data: renderTemplates(
         templatePath("module-type"),
-        moduleType,
+        typeInfo.moduleType,
         subTemplates
       ),
     });
@@ -191,10 +141,8 @@ function generateModuleBinding(module: BindModuleOptions): BindModuleOutput {
         data: renderTemplates(templatePath("object-type"), def, subTemplates),
       });
   };
-  generateEnvTypeFolder(typeInfo.envTypes.query.client);
-  generateEnvTypeFolder(typeInfo.envTypes.query.sanitized);
-  generateEnvTypeFolder(typeInfo.envTypes.mutation.client);
-  generateEnvTypeFolder(typeInfo.envTypes.mutation.sanitized);
+  generateEnvTypeFolder(typeInfo.envType.client);
+  generateEnvTypeFolder(typeInfo.envType.sanitized);
 
   // Generate root entry file
   output.entries.push(
@@ -202,4 +150,17 @@ function generateModuleBinding(module: BindModuleOptions): BindModuleOutput {
   );
 
   return result;
+};
+
+function applyTransforms(typeInfo: TypeInfo): TypeInfo {
+  const transforms = [
+    extendType(Functions),
+    addFirstLast,
+    toPrefixedGraphQLType,
+  ];
+
+  for (const transform of transforms) {
+    typeInfo = transformTypeInfo(typeInfo, transform);
+  }
+  return typeInfo;
 }

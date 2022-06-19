@@ -1,9 +1,5 @@
-{{#__commonPath}}
-pub use super::super::common::{{#toUpper}}{{type}}{{/toUpper}};
-{{/__commonPath}}
-{{^__commonPath}}
 use serde::{Serialize, Deserialize};
-use web3api_wasm_rs::{
+use polywrap_wasm_rs::{
     BigInt,
     BigNumber,
     Map,
@@ -43,9 +39,8 @@ impl {{#toUpper}}{{type}}{{/toUpper}} {
     pub fn {{#toLower}}{{name}}{{/toLower}}(input: &Input{{#toUpper}}{{name}}{{/toUpper}}) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, String> {
         let uri = {{#parent}}{{#toUpper}}{{type}}{{/toUpper}}{{/parent}}::URI;
         let args = serialize_{{#toLower}}{{name}}{{/toLower}}_args(input).map_err(|e| e.to_string())?;
-        let result = subinvoke::w3_subinvoke(
+        let result = subinvoke::wrap_subinvoke(
             uri,
-            "{{#toLower}}{{type}}{{/toLower}}",
             "{{name}}",
             args,
         )?;
@@ -56,4 +51,3 @@ impl {{#toUpper}}{{type}}{{/toUpper}} {
     {{/last}}
     {{/methods}}
 }
-{{/__commonPath}}

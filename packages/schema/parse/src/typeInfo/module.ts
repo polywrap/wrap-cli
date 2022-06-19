@@ -1,14 +1,5 @@
-export const moduleTypes = {
-  Mutation: "Mutation",
-  Query: "Query",
-};
+export const MODULE_NAME = "Module";
 
-export type ModuleTypes = typeof moduleTypes;
-
-export type ModuleType = keyof ModuleTypes;
-
-export function isModuleType(type: string): type is ModuleType {
-  return type in moduleTypes;
+export function isModuleType(type: string): boolean {
+  return type === MODULE_NAME;
 }
-
-export const ModuleTypeNames = Object.keys(moduleTypes);

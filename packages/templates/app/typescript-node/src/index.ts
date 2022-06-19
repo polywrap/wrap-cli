@@ -1,30 +1,30 @@
-import { HelloWorld_Query, Ethereum_Query } from "./w3";
+import { HelloWorld_Module, Ethereum_Module } from "./wrap";
 
-import { Web3ApiClient } from "@web3api/client-js";
+import { PolywrapClient } from "@polywrap/client-js";
 
-const client = new Web3ApiClient();
+const client = new PolywrapClient();
 
 async function main() {
   console.log("Invoking: logMessage");
 
-  await HelloWorld_Query.logMessage({
+  await HelloWorld_Module.logMessage({
     message: "Hello there"
   }, client);
 
-  await HelloWorld_Query.logMessage({
+  await HelloWorld_Module.logMessage({
     message: "Hello again"
   }, client);
 
-  await HelloWorld_Query.logMessage({
+  await HelloWorld_Module.logMessage({
     message: "One last time..."
   }, client);
 
-  const result = await Ethereum_Query.encodeParams({
+  const result = await Ethereum_Module.encodeParams({
     types: ["address", "uint256"],
     values: ["0xB1B7586656116D546033e3bAFF69BFcD6592225E", "500"]
   }, client);
 
-  console.log(`Ethereum_Query.encodeParams:\n${result.data}`);
+  console.log(`Ethereum_Module.encodeParams:\n${result.data}`);
 }
 
 main()
