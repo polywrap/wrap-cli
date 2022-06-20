@@ -41,7 +41,7 @@ function getPlugins(
       },
       {
         uri: "wrap://ens/ens.polywrap.eth",
-        plugin: ensPlugin({ query: { addresses: { testnet: ensAddress } } }),
+        plugin: ensPlugin({ addresses: { testnet: ensAddress } }),
       },
       {
         uri: "wrap://ens/ethereum.polywrap.eth",

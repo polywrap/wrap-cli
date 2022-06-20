@@ -245,6 +245,6 @@ describe("e2e tests for run command", () => {
     });
 
     expect(code).toEqual(1);
-    expect(stderr).toContain("explicit error (_|_ literal) in source:");
+    expect(stderr).toBeDefined();
   }, 48000);
 });

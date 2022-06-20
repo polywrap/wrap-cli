@@ -5,7 +5,6 @@
       "steps": [
         {
           "uri": "fs/build",
-          "module": "mutation",
           "method": "deployContract",
           "input": { "connection": null }
         }
@@ -15,7 +14,6 @@
           "steps": [
             {
               "uri": "fs/build",
-              "module": "mutation",
               "method": "setData",
               "input": {
                 "options": {
@@ -27,7 +25,6 @@
             },
             {
               "uri": "fs/build",
-              "module": "query",
               "method": "getData",
               "input": { "address": "$cases.0.data", "connection": null }
             }
