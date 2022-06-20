@@ -22,7 +22,7 @@ Arguments:
 
 Options:
   -c, --client-config <config-path>     Add custom configuration to the
-                                        Web3ApiClient
+                                        PolywrapClient
   -v, --validate-script <cue-file>      Validate the output of the workflow
                                         jobs
   -o, --output-file <output-file-path>  Output file path for the workflow
