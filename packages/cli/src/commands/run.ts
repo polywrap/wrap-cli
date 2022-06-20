@@ -7,14 +7,14 @@ import {
   validateOutput,
 } from "../lib";
 
-import { InvokeApiResult, Workflow } from "@web3api/core-js";
-import { Web3ApiClient, Web3ApiClientConfig } from "@web3api/client-js";
+import { InvokeResult, Workflow } from "@web3api/core-js";
+import { PolywrapClient, PolywrapClientConfig } from "@web3api/client-js";
 import path from "path";
 import yaml from "js-yaml";
 import fs from "fs";
 
 type WorkflowCommandOptions = {
-  clientConfig: Partial<Web3ApiClientConfig>;
+  clientConfig: Partial<PolywrapClientConfig>;
   jobs?: string[];
   validateScript?: string;
   outputFile?: string;
@@ -68,7 +68,7 @@ export const run: Command = {
 
 const _run = async (workflowPath: string, options: WorkflowCommandOptions) => {
   const { clientConfig, outputFile, validateScript, quiet, jobs } = options;
-  const client = new Web3ApiClient(clientConfig);
+  const client = new PolywrapClient(clientConfig);
 
   function getParser(path: string) {
     return path.endsWith(".yaml") || path.endsWith(".yml")
@@ -79,7 +79,7 @@ const _run = async (workflowPath: string, options: WorkflowCommandOptions) => {
   const workflow: Workflow = getParser(workflowPath)(
     fs.readFileSync(workflowPath).toString()
   );
-  const workflowOutput: (InvokeApiResult & { id: string })[] = [];
+  const workflowOutput: (InvokeResult & { id: string })[] = [];
 
   await client.run({
     workflow,

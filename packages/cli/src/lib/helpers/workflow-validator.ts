@@ -1,7 +1,7 @@
 import { runCommand } from "../system";
 
 import fs from "fs";
-import { InvokeApiResult } from "@web3api/core-js";
+import { InvokeResult } from "@web3api/core-js";
 
 const TMPDIR = process.env.TMPDIR || "/tmp";
 
@@ -16,7 +16,7 @@ export async function cueExists(): Promise<boolean> {
 
 export async function validateOutput(
   id: string,
-  result: InvokeApiResult,
+  result: InvokeResult,
   validateScriptPath: string
 ): Promise<void> {
   const index = id.lastIndexOf(".");

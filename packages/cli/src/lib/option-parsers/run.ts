@@ -5,7 +5,7 @@ import { validateClientConfig } from "../helpers";
 
 import path from "path";
 import fs from "fs";
-import { Web3ApiClientConfig } from "@web3api/client-js";
+import { PolywrapClientConfig } from "@web3api/client-js";
 import { executeMaybeAsyncFunction } from "@web3api/core-js";
 
 export function parseWorkflowScriptPathOption(
@@ -24,8 +24,8 @@ export function parseWorkflowScriptPathOption(
 export async function parseClientConfigOption(
   _clientConfig: string | undefined,
   _: unknown
-): Promise<Partial<Web3ApiClientConfig>> {
-  let finalClientConfig: Partial<Web3ApiClientConfig>;
+): Promise<Partial<PolywrapClientConfig>> {
+  let finalClientConfig: Partial<PolywrapClientConfig>;
 
   try {
     finalClientConfig = await getTestEnvClientConfig();
@@ -75,7 +75,7 @@ export async function parseClientConfigOption(
 }
 
 export async function defaultClientConfigOption(): Promise<
-  Partial<Web3ApiClientConfig>
+  Partial<PolywrapClientConfig>
 > {
   return await parseClientConfigOption(undefined, undefined);
 }
