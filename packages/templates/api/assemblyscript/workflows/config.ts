@@ -1,8 +1,8 @@
-import { Web3ApiClientConfig } from "@web3api/client-js";
-import { ClientConfig, coreInterfaceUris } from "@web3api/client-js";
-import { ensPlugin } from "@web3api/ens-plugin-js";
-import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
-import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
+import { PolywrapClientConfig } from "@polywrap/client-js";
+import { ClientConfig, coreInterfaceUris } from "@polywrap/client-js";
+import { ensPlugin } from "@polywrap/ens-plugin-js";
+import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
+import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 
 interface TestEnvironment {
   ipfs: string;
@@ -30,15 +30,15 @@ function getPlugins(
     redirects: [],
     plugins: [
       {
-        uri: "w3://ens/ipfs.web3api.eth",
+        uri: "wrap://ens/ipfs.polywrap.eth",
         plugin: ipfsPlugin({ provider: ipfs }),
       },
       {
-        uri: "w3://ens/ens.web3api.eth",
+        uri: "wrap://ens/ens.polywrap.eth",
         plugin: ensPlugin({ query: { addresses: { testnet: ensAddress } } }),
       },
       {
-        uri: "w3://ens/ethereum.web3api.eth",
+        uri: "wrap://ens/ethereum.polywrap.eth",
         plugin: ethereumPlugin({
           networks: {
             testnet: {
@@ -56,21 +56,21 @@ function getPlugins(
       {
         interface: coreInterfaceUris.uriResolver.uri,
         implementations: [
-          "w3://ens/ipfs.web3api.eth",
-          "w3://ens/ens.web3api.eth",
+          "wrap://ens/ipfs.polywrap.eth",
+          "wrap://ens/ens.polywrap.eth",
         ],
       },
       {
         interface: coreInterfaceUris.logger.uri,
-        implementations: ["w3://ens/js-logger.web3api.eth"],
+        implementations: ["wrap://ens/js-logger.polywrap.eth"],
       },
     ],
   };
 }
 
 export async function getClientConfig(
-  _: Partial<Web3ApiClientConfig>
-): Promise<Partial<Web3ApiClientConfig>> {
+  _: Partial<PolywrapClientConfig>
+): Promise<Partial<PolywrapClientConfig>> {
   const { ipfs, ethereum, ensAddress } = await getProviders();
 
   return getPlugins(ethereum, ipfs, ensAddress);

@@ -2,18 +2,18 @@ import fs from "fs";
 import path from "path";
 import yaml from "js-yaml";
 
-import { clearStyle, parseOutput, w3Cli } from "./utils";
+import { clearStyle, parseOutput, polywrapCli } from "./utils";
 
 import {
-  buildAndDeployApi,
+  buildAndDeployWrapper,
   initTestEnvironment,
   runCLI,
-} from "@web3api/test-env-js";
-import { GetPathToCliTestFiles } from "@web3api/test-cases";
+} from "@polywrap/test-env-js";
+import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 
 jest.setTimeout(200000);
 
-const HELP = `Usage: w3 run|r [options] <workflow>
+const HELP = `Usage: polywrap run|r [options] <workflow>
 
 Runs workflow script
 
@@ -34,7 +34,7 @@ Options:
 `;
 
 describe("sanity tests for workflow command", () => {
-  const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/run");
+  const testCaseRoot = path.join(GetPathToCliTestFiles(), "wasm/run");
 
   it("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
@@ -51,7 +51,7 @@ describe("sanity tests for workflow command", () => {
     const { exitCode, stdout, stderr } = await runCLI({
       args: ["run"],
       cwd: testCaseRoot,
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(exitCode).toEqual(1);
@@ -63,7 +63,7 @@ describe("sanity tests for workflow command", () => {
     const { exitCode, stdout, stderr } = await runCLI({
       args: ["run", "./recipes/e2e.json", "--client-config"],
       cwd: testCaseRoot,
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(exitCode).toEqual(1);
@@ -75,13 +75,13 @@ describe("sanity tests for workflow command", () => {
 });
 
 describe("e2e tests for run command", () => {
-  const testCaseRoot = path.join(GetPathToCliTestFiles(), "api/run");
+  const testCaseRoot = path.join(GetPathToCliTestFiles(), "wasm/run");
 
   beforeAll(async () => {
     await initTestEnvironment();
 
-    await buildAndDeployApi({
-      apiAbsPath: testCaseRoot,
+    await buildAndDeployWrapper({
+      wrapperAbsPath: testCaseRoot,
       ipfsProvider: "http://localhost:5001",
       ethereumProvider: "http://localhost:8545",
       ensName: "simple-storage.eth",
@@ -92,7 +92,7 @@ describe("e2e tests for run command", () => {
     await runCLI({
       args: ["test-env", "down"],
       cwd: testCaseRoot,
-      cli: w3Cli,
+      cli: polywrapCli,
     });
   });
 
@@ -100,8 +100,9 @@ describe("e2e tests for run command", () => {
     const { exitCode: code, stdout, stderr } = await runCLI({
       args: ["run", "./workflows/e2e.json", "-c", "./workflows/config.ts"],
       cwd: testCaseRoot,
-      cli: w3Cli,
+      cli: polywrapCli,
     });
+
     expect(code).toEqual(0);
     expect(stderr).toBe("");
 
@@ -117,7 +118,7 @@ describe("e2e tests for run command", () => {
     const { exitCode: code, stdout, stderr } = await runCLI({
       args: ["run", "./workflows/e2e.yaml", "-c", "./workflows/config.ts"],
       cwd: testCaseRoot,
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(code).toEqual(0);
@@ -142,7 +143,7 @@ describe("e2e tests for run command", () => {
         "./workflows/output.json",
       ],
       cwd: testCaseRoot,
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(code).toEqual(0);
@@ -170,7 +171,7 @@ describe("e2e tests for run command", () => {
         "./workflows/output.yaml",
       ],
       cwd: testCaseRoot,
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(code).toEqual(0);
@@ -201,7 +202,7 @@ describe("e2e tests for run command", () => {
         "--quiet",
       ],
       cwd: testCaseRoot,
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(code).toEqual(0);
@@ -221,7 +222,7 @@ describe("e2e tests for run command", () => {
         "-q",
       ],
       cwd: testCaseRoot,
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(code).toEqual(0);
@@ -240,7 +241,7 @@ describe("e2e tests for run command", () => {
         "-q",
       ],
       cwd: testCaseRoot,
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(code).toEqual(1);
