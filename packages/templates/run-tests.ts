@@ -25,8 +25,7 @@ const languageTestCommands: Record<string, string[]> = {
   "assemblyscript": [
     // Add this back once new toolchain version is released
     /*"yarn build",
-    "yarn test:e2e",
-    "yarn test:recipe"*/
+    "yarn test"*/
   ],
   "interface": [
     "yarn build"
