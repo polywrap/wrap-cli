@@ -2,18 +2,18 @@ import fs from "fs";
 import path from "path";
 import yaml from "js-yaml";
 
-import { clearStyle, parseOutput, w3Cli } from "./utils";
+import { clearStyle, parseOutput, polywrapCli } from "./utils";
 
 import {
-  buildAndDeployApi,
+  buildAndDeployWrapper,
   initTestEnvironment,
   runCLI,
-} from "@web3api/test-env-js";
-import { GetPathToCliTestFiles } from "@web3api/test-cases";
+} from "@polywrap/test-env-js";
+import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 
 jest.setTimeout(200000);
 
-const HELP = `Usage: w3 run|r [options] <workflow>
+const HELP = `Usage: polywrap run|r [options] <workflow>
 
 Runs workflow script
 
@@ -22,7 +22,7 @@ Arguments:
 
 Options:
   -c, --client-config <config-path>     Add custom configuration to the
-                                        Web3ApiClient
+                                        PolywrapClient
   -v, --validate-script <cue-file>      Validate the output of the workflow
                                         jobs
   -o, --output-file <output-file-path>  Output file path for the workflow
@@ -51,7 +51,7 @@ describe("sanity tests for workflow command", () => {
     const { exitCode, stdout, stderr } = await runCLI({
       args: ["run"],
       cwd: testCaseRoot,
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(exitCode).toEqual(1);
@@ -63,7 +63,7 @@ describe("sanity tests for workflow command", () => {
     const { exitCode, stdout, stderr } = await runCLI({
       args: ["run", "./recipes/e2e.json", "--client-config"],
       cwd: testCaseRoot,
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(exitCode).toEqual(1);
@@ -80,8 +80,8 @@ describe("e2e tests for run command", () => {
   beforeAll(async () => {
     await initTestEnvironment();
 
-    await buildAndDeployApi({
-      apiAbsPath: testCaseRoot,
+    await buildAndDeployWrapper({
+      wrapperAbsPath: testCaseRoot,
       ipfsProvider: "http://localhost:5001",
       ethereumProvider: "http://localhost:8545",
       ensName: "simple-storage.eth",
@@ -92,7 +92,7 @@ describe("e2e tests for run command", () => {
     await runCLI({
       args: ["test-env", "down"],
       cwd: testCaseRoot,
-      cli: w3Cli,
+      cli: polywrapCli,
     });
   });
 
@@ -100,7 +100,7 @@ describe("e2e tests for run command", () => {
     const { exitCode: code, stdout, stderr } = await runCLI({
       args: ["run", "./workflows/e2e.json", "-c", "./workflows/config.ts"],
       cwd: testCaseRoot,
-      cli: w3Cli,
+      cli: polywrapCli,
     });
     expect(code).toEqual(0);
     expect(stderr).toBe("");
@@ -117,7 +117,7 @@ describe("e2e tests for run command", () => {
     const { exitCode: code, stdout, stderr } = await runCLI({
       args: ["run", "./workflows/e2e.yaml", "-c", "./workflows/config.ts"],
       cwd: testCaseRoot,
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(code).toEqual(0);
@@ -142,7 +142,7 @@ describe("e2e tests for run command", () => {
         "./workflows/output.json",
       ],
       cwd: testCaseRoot,
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(code).toEqual(0);
@@ -170,7 +170,7 @@ describe("e2e tests for run command", () => {
         "./workflows/output.yaml",
       ],
       cwd: testCaseRoot,
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(code).toEqual(0);
@@ -201,7 +201,7 @@ describe("e2e tests for run command", () => {
         "--quiet",
       ],
       cwd: testCaseRoot,
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(code).toEqual(0);
@@ -221,7 +221,7 @@ describe("e2e tests for run command", () => {
         "-q",
       ],
       cwd: testCaseRoot,
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(code).toEqual(0);
@@ -240,7 +240,7 @@ describe("e2e tests for run command", () => {
         "-q",
       ],
       cwd: testCaseRoot,
-      cli: w3Cli,
+      cli: polywrapCli,
     });
 
     expect(code).toEqual(1);
