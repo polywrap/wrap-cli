@@ -232,7 +232,7 @@ export class WrapperValidator {
     const manifestPath = web3ApiManifest.meta;
 
     if (manifestPath) {
-      // Manifests get built as a `.json` file so we need to change the extension
+      // Manifests get built as `.json` files so we need to change the extension
       const fileName = path.parse(manifestPath).name;
       const fullManifestName = `${fileName}.json`;
 
