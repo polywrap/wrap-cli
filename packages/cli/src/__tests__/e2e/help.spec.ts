@@ -15,7 +15,7 @@ Commands:
   create|c                    Create a new project with polywrap CLI
   deploy|d [options]          Deploys/Publishes a Polywrap
   plugin|p                    Build/generate types for the plugin
-  infra|i [options] <action>  Manage infrastructure for your Web3API
+  infra|i [options] <action>  Manage infrastructure for your wrapper
   run|r [options] <workflow>  Runs workflow script
   help [command]              display help for command
 `;
