@@ -1,6 +1,6 @@
 import { Deployer } from "../../../deploy/deployer";
 
-import { Uri } from "@web3api/core-js";
+import { Uri } from "@polywrap/core-js";
 
 class IPFSDeployer implements Deployer {
   // eslint-disable-next-line @typescript-eslint/naming-convention

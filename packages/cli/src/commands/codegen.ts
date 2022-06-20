@@ -2,10 +2,10 @@ import { Command, Program } from "./types";
 import {
   CodeGenerator,
   Compiler,
-  Web3ApiProject,
+  PolywrapProject,
   SchemaComposer,
   intlMsg,
-  defaultWeb3ApiManifest,
+  defaultPolywrapManifest,
   getTestEnvProviders,
   parseCodegenDirOption,
   parseCodegenScriptOption,
@@ -15,11 +15,11 @@ import {
 import path from "path";
 import { filesystem } from "gluegun";
 
-const defaultCodegenDir = "./w3";
+const defaultCodegenDir = "./wrap";
 const nodeStr = intlMsg.commands_codegen_options_i_node();
 const pathStr = intlMsg.commands_codegen_options_o_path();
 const addrStr = intlMsg.commands_codegen_options_e_address();
-const defaultManifestStr = defaultWeb3ApiManifest.join(" | ");
+const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 
 type CodegenCommandOptions = {
   manifestFile: string;
@@ -78,10 +78,10 @@ async function run(options: CodegenCommandOptions) {
   const { ipfsProvider, ethProvider } = await getTestEnvProviders(ipfs);
   const ensAddress: string | undefined = ens;
 
-  // Web3Api Project
-  const project = new Web3ApiProject({
+  // Polywrap Project
+  const project = new PolywrapProject({
     rootDir: path.dirname(manifestFile),
-    web3apiManifestPath: manifestFile,
+    polywrapManifestPath: manifestFile,
   });
   await project.validate();
   const schemaComposer = new SchemaComposer({

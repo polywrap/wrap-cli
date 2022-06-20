@@ -2,11 +2,11 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 import { Deployer } from "../../../deploy/deployer";
 
-import { Uri } from "@web3api/core-js";
-import { ensAddresses } from "@web3api/test-env-js";
+import { Uri } from "@polywrap/core-js";
+import { ensAddresses } from "@polywrap/test-env-js";
 import path from "path";
-import { Web3ApiClient } from "@web3api/client-js";
-import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
+import { PolywrapClient } from "@polywrap/client-js";
+import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
 
 const contentHash = require("content-hash");
 
@@ -28,9 +28,9 @@ class LocalDevENSPublisher implements Deployer {
     }
 
     const cid = uri.path;
-    const ethereumPluginUri = "w3://ens/ethereum.web3api.eth";
+    const ethereumPluginUri = "wrap://ens/ethereum.polywrap.eth";
 
-    const client = new Web3ApiClient({
+    const client = new PolywrapClient({
       plugins: [
         {
           uri: ethereumPluginUri,
@@ -61,7 +61,7 @@ class LocalDevENSPublisher implements Deployer {
     }
 
     const ensWrapperUri = `fs/${path.join(
-      path.dirname(require.resolve("@web3api/test-env-js")),
+      path.dirname(require.resolve("@polywrap/test-env-js")),
       "wrappers",
       "ens"
     )}`;

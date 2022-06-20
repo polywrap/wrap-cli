@@ -7,7 +7,7 @@ import {
   createEnvDefinition,
   TypeInfo,
   createObjectPropertyDefinition,
-} from "@web3api/schema-parse";
+} from "@polywrap/schema-parse";
 
 export const typeInfo: TypeInfo = {
   ...createTypeInfo(),

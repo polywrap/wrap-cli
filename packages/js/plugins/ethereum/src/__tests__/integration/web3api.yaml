@@ -1,7 +1,0 @@
-format: 0.0.1-prealpha.9
-name: EthereumIntegration
-build: ./web3api.build.yaml
-language: wasm/assemblyscript
-module: ./src/index.ts
-schema: ./src/schema.graphql
-

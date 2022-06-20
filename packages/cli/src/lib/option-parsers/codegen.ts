@@ -1,6 +1,6 @@
 import path from "path";
 
-const defaultCodegenDir = "./w3";
+const defaultCodegenDir = "./wrap";
 
 export function parseCodegenDirOption(
   codegenDir: string | undefined,

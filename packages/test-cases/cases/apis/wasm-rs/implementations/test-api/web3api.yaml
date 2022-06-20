@@ -1,9 +1,0 @@
-format: 0.0.1-prealpha.9
-name: TestApi
-language: wasm/rust
-build: ./web3api.build.yaml
-schema: ./schema.graphql
-module: ./Cargo.toml
-import_redirects:
-  - uri: w3://ens/interface.eth
-    schema: ../test-interface/build/schema.graphql

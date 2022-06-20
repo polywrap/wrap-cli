@@ -1,11 +1,11 @@
 import {
-  w3_getImplementations
-} from "@web3api/wasm-as";
+  wrap_getImplementations
+} from "@polywrap/wasm-as";
 
 export class TestImport {
   static uri: string = "testimport.uri.eth"
 
   public static getImplementations(): string[] {
-    return w3_getImplementations(this.uri);
+    return wrap_getImplementations(this.uri);
   }
 }

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports */
 import { AsciiTree } from "./asciiTree";
 
-import { Uri } from "@web3api/core-js";
+import { Uri } from "@polywrap/core-js";
 import { GluegunPrint } from "gluegun";
 
 export interface Deployer {

@@ -7,10 +7,10 @@ import {
   appManifestLanguageToBindLanguage,
 } from "..";
 
-import { AppManifest, Client } from "@web3api/core-js";
-import { ComposerOutput } from "@web3api/schema-compose";
-import { bindSchema, BindOutput } from "@web3api/schema-bind";
-import { TypeInfo } from "@web3api/schema-parse";
+import { AppManifest, Client } from "@polywrap/core-js";
+import { ComposerOutput } from "@polywrap/schema-compose";
+import { bindSchema, BindOutput } from "@polywrap/schema-bind";
+import { TypeInfo } from "@polywrap/schema-parse";
 import path from "path";
 
 export interface AppProjectConfig extends ProjectConfig {
@@ -50,7 +50,7 @@ export class AppProject extends Project<AppManifest> {
     );
   }
 
-  /// Manifest (web3api.app.yaml)
+  /// Manifest (polywrap.app.yaml)
 
   public async getName(): Promise<string> {
     return (await this.getManifest()).name;
@@ -119,7 +119,7 @@ export class AppProject extends Project<AppManifest> {
     });
   }
 
-  private _getGenerationDirectory(generationSubPath = "src/w3"): string {
+  private _getGenerationDirectory(generationSubPath = "src/wrap"): string {
     return path.join(this.getManifestDir(), generationSubPath);
   }
 }

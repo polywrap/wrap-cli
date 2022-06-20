@@ -5,14 +5,14 @@ export const Header: React.FC = () => {
     <div className="header">
       <a
         className="header__link"
-        href="https://github.com/Web3-API/demos/tree/main/hello-world/web3api"
+        href="https://github.com/polywrap/demos/tree/main/hello-world"
         target="_blank"
       >
         Source Code
       </a>
       <a
         className="header__link"
-        href="https://app.ens.domains/name/helloworld.web3api.eth"
+        href="https://app.ens.domains/name/helloworld.polywrap.eth"
         target="_blank"
       >
         ENS Domain

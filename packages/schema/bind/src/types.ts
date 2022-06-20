@@ -1,5 +1,5 @@
-import { TypeInfo } from "@web3api/schema-parse";
-import { OutputDirectory } from "@web3api/os-js";
+import { TypeInfo } from "@polywrap/schema-parse";
+import { OutputDirectory } from "@polywrap/os-js";
 
 export type BindLanguage = "wasm-as" | "wasm-rs" | "plugin-ts" | "app-ts";
 

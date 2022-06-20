@@ -19,11 +19,11 @@ export class UriResolutionHistory {
     );
   }
 
-  // Resolution path includes the list of resolvers that redirected to another URI or returned the API
+  // Resolution path includes the list of resolvers that redirected to another URI or returned the Wrapper
   getResolutionPath(): UriResolutionHistory {
     const path: UriResolutionHistory = new UriResolutionHistory(
       this.stack.filter(
-        (x) => x.sourceUri.uri !== x.result.uri.uri || x.result.api
+        (x) => x.sourceUri.uri !== x.result.uri.uri || x.result.wrapper
       )
     );
 

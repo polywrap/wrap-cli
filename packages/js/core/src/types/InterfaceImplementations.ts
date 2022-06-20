@@ -1,6 +1,6 @@
 import { Uri } from ".";
 
-import { Tracer } from "@web3api/tracing-js";
+import { Tracer } from "@polywrap/tracing-js";
 
 export interface InterfaceImplementations<TUri = string> {
   interface: TUri;

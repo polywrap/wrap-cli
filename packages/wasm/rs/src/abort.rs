@@ -1,8 +1,8 @@
-#[link(wasm_import_module = "w3")]
+#[link(wasm_import_module = "wrap")]
 extern "C" {
     /// Get Abort Arguments
-    #[link_name = "__w3_abort"]
-    pub fn __w3_abort(
+    #[link_name = "__wrap_abort"]
+    pub fn __wrap_abort(
         msg_ptr: u32,
         msg_len: u32,
         file_ptr: u32,
@@ -13,7 +13,7 @@ extern "C" {
 }
 
 /// Helper for aborting
-pub fn w3_abort_setup() {
+pub fn wrap_abort_setup() {
     std::panic::set_hook(Box::new(|panic_info| {
         let payload = panic_info.payload();
         let message = match payload
@@ -40,7 +40,7 @@ pub fn w3_abort_setup() {
             None => 0,
         };
         unsafe {
-            __w3_abort(
+            __wrap_abort(
                 message.as_ptr() as u32,
                 msg_len,
                 file.as_ptr() as u32,

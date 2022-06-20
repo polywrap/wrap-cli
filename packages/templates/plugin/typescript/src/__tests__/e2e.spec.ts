@@ -1,14 +1,14 @@
-import { Web3ApiClient } from "@web3api/client-js";
+import { PolywrapClient } from "@polywrap/client-js";
 import { samplePlugin } from "../";
 
 describe("e2e", () => {
 
-  let client: Web3ApiClient;
+  let client: PolywrapClient;
   const uri = "ens/sampleplugin.eth";
 
   beforeAll(() => {
-    // Add the samplePlugin to the Web3ApiClient
-    client = new Web3ApiClient({
+    // Add the samplePlugin to the PolywrapClient
+    client = new PolywrapClient({
       plugins: [
         {
           uri: uri,

@@ -1,4 +1,4 @@
-# Web3API CLI
+# Polywrap CLI
 TODO:
   - introduce high level usages (create, build, test, publish)
   - type --help for full usage

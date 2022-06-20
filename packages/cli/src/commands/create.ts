@@ -13,7 +13,7 @@ const createPluginStr = intlMsg.commands_create_options_createPlugin();
 const pathStr = intlMsg.commands_create_options_o_path();
 
 const supportedLangs = {
-  api: ["assemblyscript", "interface"] as const,
+  wasm: ["assemblyscript", "interface"] as const,
   app: ["typescript-node", "typescript-react"] as const,
   plugin: ["typescript"] as const,
 };
@@ -32,13 +32,13 @@ export const create: Command = {
       .description(intlMsg.commands_create_description());
 
     createCommand
-      .command("api")
+      .command("wasm")
       .description(
-        `${createProjStr} ${langsStr}: ${supportedLangs.api.join(", ")}`
+        `${createProjStr} ${langsStr}: ${supportedLangs.wasm.join(", ")}`
       )
       .addArgument(
         new Argument("<language>", langStr)
-          .choices(supportedLangs.api)
+          .choices(supportedLangs.wasm)
           .argRequired()
       )
       .addArgument(new Argument("<name>", nameStr).argRequired())
@@ -47,7 +47,7 @@ export const create: Command = {
         `${intlMsg.commands_create_options_o()}`
       )
       .action(async (langStr, nameStr, options) => {
-        await run("api", langStr, nameStr, options);
+        await run("wasm", langStr, nameStr, options);
       });
 
     createCommand
@@ -127,7 +127,7 @@ async function run(
     .then(() => {
       console.log();
       let readyMessage;
-      if (command === "api") {
+      if (command === "wasm") {
         readyMessage = intlMsg.commands_create_readyProtocol();
       } else if (command === "app") {
         readyMessage = intlMsg.commands_create_readyApp();

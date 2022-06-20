@@ -3950,17 +3950,6 @@
     "@web3api/assemblyscript-json" "1.2.0"
     as-base64 "^0.2.0"
 
-"@web3api/wasm-as@0.0.1-prealpha.84":
-  version "0.0.1-prealpha.84"
-  resolved "https://registry.yarnpkg.com/@web3api/wasm-as/-/wasm-as-0.0.1-prealpha.84.tgz#db7fe81d857d6605adec3e632f16e3ddb2d6a873"
-  integrity sha512-xKRqrMVFVeU68qpsDFJ6rNZHJxHNB0Tm6F4fIxEvW2/cL2uvWJmG6Nf0A1vUm1BERrdMKlF6PL/ZZxj6FlTZag==
-  dependencies:
-    "@serial-as/transform" "1.0.2"
-    "@web3api/serial-as-json" "1.0.4"
-    as-bigint "0.5.3"
-    as-bignumber "0.2.0"
-    as-container "0.6.1"
-
 "@webassemblyjs/ast@1.8.5":
   version "1.8.5"
   resolved "https://registry.yarnpkg.com/@webassemblyjs/ast/-/ast-1.8.5.tgz#51b1c5fe6576a34953bf4b253df9f0d490d9e359"
