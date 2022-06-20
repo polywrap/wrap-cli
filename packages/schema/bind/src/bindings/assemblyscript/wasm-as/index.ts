@@ -141,8 +141,7 @@ export const generateBinding: GenerateBindingFn = (
         data: renderTemplates(templatePath("object-type"), def, subTemplates),
       });
   };
-  generateEnvTypeFolder(typeInfo.envType.client);
-  generateEnvTypeFolder(typeInfo.envType.sanitized);
+  generateEnvTypeFolder(typeInfo.envType);
 
   // Generate root entry file
   output.entries.push(

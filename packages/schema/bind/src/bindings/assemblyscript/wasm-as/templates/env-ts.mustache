@@ -1,4 +1,4 @@
-{{#envType.sanitized}}
+{{#envType}}
 import {
   Env
 } from "./Env";
@@ -9,4 +9,4 @@ export function requireEnv(): Env {
   if (env == null) throw new Error("Undefined env");
   return env as Env;
 }
-{{/envType.sanitized}}
+{{/envType}}

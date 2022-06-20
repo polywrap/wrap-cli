@@ -25,24 +25,15 @@ export type Json = string;
 export type String = string;
 export type Boolean = boolean;
 
-/// Envs START ///
+/// Env START ///
 {{#envType}}
-{{#client}}
 export interface {{type}} extends Record<string, unknown> {
   {{#properties}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/properties}}
 }
-{{/client}}
-{{#sanitized}}
-export interface {{type}} extends Record<string, unknown> {
-  {{#properties}}
-  {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
-  {{/properties}}
-}
-{{/sanitized}}
 {{/envType}}
-/// Envs END ///
+/// Env END ///
 
 /// Objects START ///
 {{#objectTypes}}
