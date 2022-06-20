@@ -13,11 +13,11 @@ Commands:
   build|b [options]           Builds a wrapper
   codegen|g [options]         Auto-generate Wrapper Types
   create|c                    Create a new project with polywrap CLI
-  docgen (d)     Build/generate documentation for your app
   deploy|d [options]          Deploys/Publishes a Polywrap
   plugin|p                    Build/generate types for the plugin
   query|q [options] <recipe>  Query wrappers using recipe scripts
   infra|i [options] <action>  Manage infrastructure for your wrapper
+  docgen|o [options]          Build/generate documentation for your app
   help [command]              display help for command
 `;
 

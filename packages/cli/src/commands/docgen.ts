@@ -51,7 +51,7 @@ export const docgen: Command = {
   setup: (program: Program) => {
     const docgenCommand = program
       .command("docgen")
-      .alias("d")
+      .alias("o")
       .description(intlMsg.commands_docgen_description())
       .option(
         `-m, --manifest-file <${pathStr}>`,
