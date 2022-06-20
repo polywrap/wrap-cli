@@ -1,4 +1,4 @@
-import { Nullable } from "./Nullable";
+import { Option } from "as-container";
 import { BigInt, BigNumber } from "../math";
 import { Context } from "../debug";
 import { JSON } from "../json";
@@ -38,31 +38,31 @@ export abstract class Write {
     value_fn: (writer: Write, value: V) => void
   ): void;
 
-  abstract writeNullableBool(value: Nullable<bool>): void;
-  abstract writeNullableInt8(value: Nullable<i8>): void;
-  abstract writeNullableInt16(value: Nullable<i16>): void;
-  abstract writeNullableInt32(value: Nullable<i32>): void;
-  abstract writeNullableUInt8(value: Nullable<u8>): void;
-  abstract writeNullableUInt16(value: Nullable<u16>): void;
-  abstract writeNullableUInt32(value: Nullable<u32>): void;
-  abstract writeNullableFloat32(value: Nullable<f32>): void;
-  abstract writeNullableFloat64(value: Nullable<f64>): void;
-  abstract writeNullableString(value: string | null): void;
-  abstract writeNullableBytes(value: ArrayBuffer | null): void;
-  abstract writeNullableBigInt(value: BigInt | null): void;
-  abstract writeNullableBigNumber(value: BigNumber | null): void;
-  abstract writeNullableJSON(value: JSON.Value | null): void;
+  abstract writeNullableBool(value: Option<bool>): void;
+  abstract writeNullableInt8(value: Option<i8>): void;
+  abstract writeNullableInt16(value: Option<i16>): void;
+  abstract writeNullableInt32(value: Option<i32>): void;
+  abstract writeNullableUInt8(value: Option<u8>): void;
+  abstract writeNullableUInt16(value: Option<u16>): void;
+  abstract writeNullableUInt32(value: Option<u32>): void;
+  abstract writeNullableFloat32(value: Option<f32>): void;
+  abstract writeNullableFloat64(value: Option<f64>): void;
+  abstract writeNullableString(value: Option<string>): void;
+  abstract writeNullableBytes(value: Option<ArrayBuffer>): void;
+  abstract writeNullableBigInt(value: Option<BigInt>): void;
+  abstract writeNullableBigNumber(value: Option<BigNumber>): void;
+  abstract writeNullableJSON(value: Option<JSON.Value>): void;
   abstract writeNullableArray<T>(
-    a: Array<T> | null,
+    a: Option<Array<T>>,
     fn: (writer: Write, item: T) => void
   ): void;
   abstract writeNullableMap<K, V>(
-    m: Map<K, V> | null,
+    m: Option<Map<K, V>>,
     key_fn: (writer: Write, key: K) => void,
     value_fn: (writer: Write, value: V) => void
   ): void;
   abstract writeNullableExtGenericMap<K, V>(
-    m: Map<K, V>,
+    m: Option<Map<K, V>>,
     key_fn: (writer: Write, key: K) => void,
     value_fn: (writer: Write, value: V) => void
   ): void;

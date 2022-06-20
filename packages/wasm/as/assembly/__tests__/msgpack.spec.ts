@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-inferrable-types */
 
 import {
-  Nullable,
   Read,
   ReadDecoder,
   Write,
@@ -12,8 +11,10 @@ import {
   BigNumber,
 } from "../";
 
+import { Option } from "as-container";
+
 class Sanity {
-  nil: string | null = "null";
+  nil: Option<string> = Option.None<string>();
   int8: i8;
   int16: i16;
   int32: i32;
@@ -21,8 +22,8 @@ class Sanity {
   uint16: u16;
   uint32: u32;
   boolean: bool;
-  optUint32: Nullable<u32> = new Nullable<u32>();
-  optBool: Nullable<bool> = new Nullable<bool>();
+  optUint32: Option<u32> = new Option<u32>();
+  optBool: Option<bool> = new Option<bool>();
   float32: f32;
   float64: f64;
   str: string = "";
@@ -41,7 +42,7 @@ class Sanity {
     const largeString = new Array<string>(10000).join("polywrap ");
     const largeBytes = String.UTF8.encode(largeString);
 
-    this.nil = null;
+    this.nil = Option.None<string>();
     this.int8 = -128;
     this.int16 = -32768;
     this.int32 = -2147483648;
@@ -49,8 +50,8 @@ class Sanity {
     this.uint16 = 65535;
     this.uint32 = 4294967295;
     this.boolean = true;
-    this.optUint32 = Nullable.fromValue<u32>(234234234);
-    this.optBool = Nullable.fromValue<bool>(true);
+    this.optUint32 = Option.Some<u32>(234234234);
+    this.optBool = Option.Some<bool>(true);
     this.float32 = 3.40282344818115234375;
     this.float64 = 3124124512.598273468017578125;
     this.str = "Hello, world!";

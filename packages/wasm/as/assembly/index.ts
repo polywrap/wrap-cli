@@ -1,10 +1,10 @@
+export { Option } from "as-container";
 export {
   Read,
   ReadDecoder,
   Write,
   WriteEncoder,
   WriteSizer,
-  Nullable,
 } from "./msgpack";
 export * from "./json";
 export * from "./math";

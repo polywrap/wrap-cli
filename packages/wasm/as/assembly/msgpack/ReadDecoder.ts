@@ -1,3 +1,4 @@
+import { Option } from "as-container";
 import { DataView } from "./DataView";
 import {
   Format,
@@ -9,7 +10,6 @@ import {
   isFixedArray,
   isFixedString,
 } from "./Format";
-import { Nullable } from "./Nullable";
 import { Read } from "./Read";
 import { BigInt, BigNumber } from "../math";
 import { Context } from "../debug";
@@ -363,130 +363,129 @@ export class ReadDecoder extends Read {
     return this.readMap(key_fn, value_fn);
   }
 
-  readNullableBool(): Nullable<bool> {
+  readNullableBool(): Option<bool> {
     if (this.isNextNil()) {
-      return Nullable.fromNull<bool>();
+      return Option.None<bool>();
     }
-    return Nullable.fromValue<bool>(this.readBool());
+    return Option.Some<bool>(this.readBool());
   }
 
-  readNullableInt8(): Nullable<i8> {
+  readNullableInt8(): Option<i8> {
     if (this.isNextNil()) {
-      return Nullable.fromNull<i8>();
+      return Option.None<i8>();
     }
-    return Nullable.fromValue<i8>(this.readInt8());
+    return Option.Some<i8>(this.readInt8());
   }
 
-  readNullableInt16(): Nullable<i16> {
+  readNullableInt16(): Option<i16> {
     if (this.isNextNil()) {
-      return Nullable.fromNull<i16>();
+      return Option.None<i16>();
     }
-    return Nullable.fromValue<i16>(this.readInt16());
+    return Option.Some<i16>(this.readInt16());
   }
 
-  readNullableInt32(): Nullable<i32> {
+  readNullableInt32(): Option<i32> {
     if (this.isNextNil()) {
-      return Nullable.fromNull<i32>();
+      return Option.None<i32>();
     }
-    return Nullable.fromValue<i32>(this.readInt32());
+    return Option.Some<i32>(this.readInt32());
   }
 
-  readNullableUInt8(): Nullable<u8> {
+  readNullableUInt8(): Option<u8> {
     if (this.isNextNil()) {
-      return Nullable.fromNull<u8>();
+      return Option.None<u8>();
     }
-    return Nullable.fromValue<u8>(this.readUInt8());
+    return Option.Some<u8>(this.readUInt8());
   }
 
-  readNullableUInt16(): Nullable<u16> {
+  readNullableUInt16(): Option<u16> {
     if (this.isNextNil()) {
-      return Nullable.fromNull<u16>();
+      return Option.None<u16>();
     }
-    return Nullable.fromValue<u16>(this.readUInt16());
+    return Option.Some<u16>(this.readUInt16());
   }
 
-  readNullableUInt32(): Nullable<u32> {
+  readNullableUInt32(): Option<u32> {
     if (this.isNextNil()) {
-      return Nullable.fromNull<u32>();
+      return Option.None<u32>();
     }
-    return Nullable.fromValue<u32>(this.readUInt32());
+    return Option.Some<u32>(this.readUInt32());
   }
 
-  readNullableFloat32(): Nullable<f32> {
+  readNullableFloat32(): Option<f32> {
     if (this.isNextNil()) {
-      return Nullable.fromNull<f32>();
+      return Option.None<f32>();
     }
-    return Nullable.fromValue<f32>(this.readFloat32());
+    return Option.Some<f32>(this.readFloat32());
   }
 
-  readNullableFloat64(): Nullable<f64> {
+  readNullableFloat64(): Option<f64> {
     if (this.isNextNil()) {
-      return Nullable.fromNull<f64>();
+      return Option.None<f64>();
     }
-    return Nullable.fromValue<f64>(this.readFloat64());
+    return Option.Some<f64>(this.readFloat64());
   }
 
-  readNullableString(): string | null {
+  readNullableString(): Option<string> {
     if (this.isNextNil()) {
-      return null;
+      return Option.None<string>();
     }
-    return this.readString();
+    return Option.Some<string>(this.readString());
   }
 
-  readNullableBytes(): ArrayBuffer | null {
+  readNullableBytes(): Option<ArrayBuffer> {
     if (this.isNextNil()) {
-      return null;
+      return Option.None<ArrayBuffer>();
     }
-    return this.readBytes();
+    return Option.Some<ArrayBuffer>(this.readBytes());
   }
 
-  readNullableBigInt(): BigInt | null {
+  readNullableBigInt(): Option<BigInt> {
     if (this.isNextNil()) {
-      return null;
+      return Option.None<BigInt>();
     }
-    return this.readBigInt();
+    return Option.Some<BigInt>(this.readBigInt());
   }
 
-  readNullableBigNumber(): BigNumber | null {
+  readNullableBigNumber(): Option<BigNumber> {
     if (this.isNextNil()) {
-      return null;
+      return Option.None<BigNumber>();
     }
-    return this.readBigNumber();
+    return Option.Some<BigNumber>(this.readBigNumber());
   }
 
-  readNullableJSON(): JSON.Value | null {
+  readNullableJSON(): Option<JSON.Value>{
     if (this.isNextNil()) {
-      return null;
+      return Option.None<JSON.Value>();
     }
-
-    return this.readJSON();
+    return Option.Some<JSON.Value>(this.readJSON());
   }
 
-  readNullableArray<T>(fn: (decoder: Read) => T): Array<T> | null {
+  readNullableArray<T>(fn: (decoder: Read) => T): Option<Array<T>> {
     if (this.isNextNil()) {
-      return null;
+      return Option.None<Array<T>>();
     }
-    return this.readArray(fn);
+    return Option.Some<Array<T>>(this.readArray(fn));
   }
 
   readNullableMap<K, V>(
     key_fn: (decoder: Read) => K,
     value_fn: (decoder: Read) => V
-  ): Map<K, V> | null {
+  ): Option<Map<K, V>> {
     if (this.isNextNil()) {
-      return null;
+      return Option.None<Map<K, V>>();
     }
-    return this.readMap(key_fn, value_fn);
+    return Option.Some<Map<K, V>>(this.readMap(key_fn, value_fn));
   }
 
   readNullableExtGenericMap<K, V>(
     key_fn: (decoder: Read) => K,
     value_fn: (decoder: Read) => V
-  ): Map<K, V> | null {
+  ): Option<Map<K, V>> {
     if (this.isNextNil()) {
-      return null;
+      return Option.None<Map<K, V>>();
     }
-    return this.readExtGenericMap(key_fn, value_fn);
+    return Option.Some<Map<K, V>>(this.readExtGenericMap(key_fn, value_fn));
   }
 
   isNextNil(): bool {
