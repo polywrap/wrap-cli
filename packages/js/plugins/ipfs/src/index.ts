@@ -1,9 +1,7 @@
 import {
   Module,
-  Input_catFile,
   Input_resolve,
   Input_addFile,
-  Bytes,
   Ipfs_Options,
   Ipfs_ResolveResult,
   Env,
@@ -72,12 +70,6 @@ export class IpfsPlugin extends Module<IpfsPluginConfig> {
   ): Promise<string> {
     const buffer = await this.cat(input, _client);
     return buffer.toString("utf-8");
-  }
-
-  public async catFile(input: Input_catFile, client: Client): Promise<Bytes> {
-    // TODO: Pull env into options?
-    // const options = getOptions(input.options, this.env);
-    return await this.cat(input, client);
   }
 
   public async resolve(

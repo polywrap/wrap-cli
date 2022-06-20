@@ -4,19 +4,14 @@ import {
   providers,
   stopTestEnvironment,
 } from "@polywrap/test-env-js";
-import CID from "cids";
+
 import { ipfsPlugin } from "..";
-import { IpfsClient } from "../utils/IpfsClient";
+import { IpfsClient, IpfsFileInfo } from "../utils/IpfsClient";
 import { Ipfs_Module } from "../wrap";
 
 const createIpfsClient = require("@dorgjelli-test/ipfs-http-client-lite");
 
 jest.setTimeout(30000);
-
-type IpfsFileInfo = {
-  name: string;
-  hash: CID;
-};
 
 describe("IPFS Plugin", () => {
   let client: PolywrapClient;
@@ -47,19 +42,6 @@ describe("IPFS Plugin", () => {
 
   afterAll(async () => {
     await stopTestEnvironment();
-  });
-
-  it("Should cat a sample file successfully", async () => {
-    expect(sampleFileIpfsInfo).toBeDefined();
-
-    let result = await Ipfs_Module.cat(
-      { cid: sampleFileIpfsInfo.hash.toString() },
-      client
-    );
-
-    expect(result.error).toBeFalsy();
-
-    expect(result.data).toEqual(sampleFileBuffer);
   });
 
   it("Should cat a file to string successfully", async () => {

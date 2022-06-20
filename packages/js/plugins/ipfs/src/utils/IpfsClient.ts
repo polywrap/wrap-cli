@@ -1,15 +1,7 @@
 import CID from "cids";
 
 export interface IpfsClient {
-  add(
-    data: Uint8Array,
-    options?: unknown
-  ): Promise<
-    {
-      name: string;
-      hash: CID;
-    }[]
-  >;
+  add(data: Uint8Array, options?: unknown): Promise<IpfsFileInfo[]>;
 
   cat(cid: string, options?: unknown): Promise<Buffer>;
 
@@ -20,3 +12,8 @@ export interface IpfsClient {
     path: string;
   }>;
 }
+
+export type IpfsFileInfo = {
+  name: string;
+  hash: CID;
+};
