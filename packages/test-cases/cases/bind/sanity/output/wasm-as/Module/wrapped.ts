@@ -1,7 +1,8 @@
 import {
   moduleMethod,
-  objectMethod
+  objectMethod,
 } from "../../index";
+import { Env } from "../Env";
 import {
   deserializemoduleMethodArgs,
   serializemoduleMethodResult,
@@ -9,8 +10,8 @@ import {
   serializeobjectMethodResult
 } from "./serialization";
 
-export function moduleMethodWrapped(argsBuf: ArrayBuffer): ArrayBuffer {
-  const args = deserializemoduleMethodArgs(argsBuf);
+export function moduleMethodWrapped(args_buf: ArrayBuffer, env_size: u32): ArrayBuffer {
+  const args = deserializemoduleMethodArgs(args_buf);
   const result = moduleMethod({
     str: args.str,
     optStr: args.optStr,
@@ -23,13 +24,35 @@ export function moduleMethodWrapped(argsBuf: ArrayBuffer): ArrayBuffer {
   return serializemoduleMethodResult(result);
 }
 
-export function objectMethodWrapped(argsBuf: ArrayBuffer): ArrayBuffer {
-  const args = deserializeobjectMethodArgs(argsBuf);
+export function objectMethodWrapped(args_buf: ArrayBuffer, env_size: u32): ArrayBuffer {
+  const envBuf = w3_load_env(env_size);
+  const env = Env.fromBuffer(envBuf);
+
+  const args = deserializeobjectMethodArgs(args_buf, env);
   const result = objectMethod({
     object: args.object,
     optObject: args.optObject,
     objectArray: args.objectArray,
-    optObjectArray: args.optObjectArray
+    optObjectArray: args.optObjectArray,
+    env: args.env
   });
   return serializeobjectMethodResult(result);
+}
+
+export function optionalEnvMethodWrapped(args_buf: ArrayBuffer, env_size: u32): ArrayBuffer {
+  let env: Env | null = null;
+  if (env_size > 0) {
+    const envBuf = w3_load_env(env_size);
+    env = Env.fromBuffer(envBuf);
+  }
+
+  const args = deserializeoptionalEnvMethodArgs(args_buf, env);
+  const result = optionalEnvMethod({
+    object: args.object,
+    optObject: args.optObject,
+    objectArray: args.objectArray,
+    optObjectArray: args.optObjectArray,
+    env: args.env
+  });
+  return serializeoptionalEnvMethodResult(result);
 }

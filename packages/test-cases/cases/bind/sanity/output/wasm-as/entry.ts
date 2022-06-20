@@ -2,7 +2,6 @@ import {
   wrap_invoke_args,
   wrap_invoke,
   wrap_load_env,
-  wrap_sanitize_env,
   wrap_abort,
   InvokeArgs
 } from "@polywrap/wasm-as";
@@ -18,10 +17,11 @@ import {
   Env
 } from "./Env";
 
-export function _wrap_invoke(method_size: u32, args_size: u32): bool {
+export function _wrap_invoke(method_size: u32, args_size: u32, env_size: u32): bool {
   const args: InvokeArgs = wrap_invoke_args(
     method_size,
-    args_size
+    args_size,
+    env_size
   );
 
   if (args.method == "moduleMethod") {

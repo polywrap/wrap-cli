@@ -184,9 +184,10 @@ export class Input_objectMethod {
   optObject: Types.AnotherType | null;
   objectArray: Array<Types.AnotherType>;
   optObjectArray: Array<Types.AnotherType | null> | null;
+  env: Types.Env;
 }
 
-export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectMethod {
+export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer, env: Types.Env): Input_objectMethod {
   const context: Context =  new Context("Deserializing module-type: objectMethod");
   const reader = new ReadDecoder(argsBuf, context);
   let numFields = reader.readMapLength();
@@ -253,7 +254,8 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectM
     object: _object,
     optObject: _optObject,
     objectArray: _objectArray,
-    optObjectArray: _optObjectArray
+    optObjectArray: _optObjectArray,
+    env: env
   };
 }
 
