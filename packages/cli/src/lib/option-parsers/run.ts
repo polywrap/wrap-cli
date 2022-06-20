@@ -5,8 +5,8 @@ import { validateClientConfig } from "../helpers";
 
 import path from "path";
 import fs from "fs";
-import { PolywrapClientConfig } from "@web3api/client-js";
-import { executeMaybeAsyncFunction } from "@web3api/core-js";
+import { PolywrapClientConfig } from "@polywrap/client-js";
+import { executeMaybeAsyncFunction } from "@polywrap/core-js";
 
 export function parseWorkflowScriptPathOption(
   script: string,
