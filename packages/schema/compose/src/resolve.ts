@@ -164,7 +164,6 @@ export async function resolveImportsAndParseSchemas(
     importedEnumTypes: [],
     importedObjectTypes: [],
     importedModuleTypes: [],
-    envType: createEnvDefinition({}),
   };
 
   const externalImports = await resolveExternalImports(
