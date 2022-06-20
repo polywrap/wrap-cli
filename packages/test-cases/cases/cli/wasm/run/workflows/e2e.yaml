@@ -3,7 +3,6 @@ jobs:
   cases:
     steps:
     - uri: fs/build
-      module: mutation
       method: deployContract
       input:
         connection: null
@@ -11,7 +10,6 @@ jobs:
       case1:
         steps:
         - uri: fs/build
-          module: mutation
           method: setData
           input:
             options:
@@ -19,7 +17,6 @@ jobs:
               value: 100
             connection: null
         - uri: fs/build
-          module: query
           method: getData
           input:
             address: "$cases.0.data"

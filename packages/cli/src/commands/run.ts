@@ -123,7 +123,7 @@ const _run = async (workflowPath: string, options: WorkflowCommandOptions) => {
         fs.writeFileSync(outputFile, JSON.stringify(workflowOutput, null, 2));
         break;
       default:
-        throw new Error(`Unsupported outputFile extention: ${outputFileExt}`);
+        throw new Error(intlMsg.commands_run_error_unsupportedOutputFileExt({ outputFileExt }));
     }
   }
 };
