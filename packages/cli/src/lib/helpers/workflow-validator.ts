@@ -1,7 +1,7 @@
 import { runCommand } from "../system";
 
 import fs from "fs";
-import { InvokeResult } from "@web3api/core-js";
+import { InvokeResult } from "@polywrap/core-js";
 
 const TMPDIR = process.env.TMPDIR || "/tmp";
 
