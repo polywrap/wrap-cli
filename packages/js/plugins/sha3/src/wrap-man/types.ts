@@ -16,8 +16,8 @@ export type Json = string;
 export type String = string;
 export type Boolean = boolean;
 
-/// Envs START ///
-/// Envs END ///
+/// Env START ///
+/// Env END ///
 
 /// Objects START ///
 /// Objects END ///

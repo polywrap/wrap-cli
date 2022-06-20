@@ -117,11 +117,6 @@ type Env {
   propM: Int!
 }
 
-type ClientEnv {
-  prop: String!
-  propM: String
-}
-
 """
 ImplementationObject comment
 """
@@ -149,7 +144,6 @@ type Module implements Interface_Module @imports(
   uri: "testimport.uri.eth",
   namespace: "TestImport",
 ) {
-  sanitizeEnv(env: ClientEnv!): Env!
 """
 moduleMethod comment
 """
@@ -195,6 +189,16 @@ abstractMethod comment
   transformMap(
     map: Map @annotate(type: "Map<String!, Int!>")
   ): Map @annotate(type: "Map<String!, Int!>")
+
+  methodRequireEnv(
+    arg: String!
+    env: Env!
+  ): Env!
+
+  methodOptionalEnv(
+    arg: String!
+    env: Env
+  ): Env
 }
 
 """

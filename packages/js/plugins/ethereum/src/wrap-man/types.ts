@@ -20,11 +20,11 @@ export type Json = string;
 export type String = string;
 export type Boolean = boolean;
 
-/// Envs START ///
+/// Env START ///
 export interface Env extends Record<string, unknown> {
   connection?: Types.Connection | null;
 }
-/// Envs END ///
+/// Env END ///
 
 /// Objects START ///
 export interface TxReceipt {

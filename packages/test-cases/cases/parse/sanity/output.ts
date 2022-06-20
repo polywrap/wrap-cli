@@ -38,37 +38,19 @@ export const typeInfo: TypeInfo = {
     }),
   ],
   envType: createEnvDefinition({
-      sanitized: {
-        ...createObjectDefinition({ type: "Env" }),
-        properties: [
-          createScalarPropertyDefinition({
-            name: "prop",
-            type: "String",
-            required: true,
-          }),
-          createScalarPropertyDefinition({
-            name: "propM",
-            type: "Int",
-            required: true,
-          })
-        ],
-      },
-      client: {
-        ...createObjectDefinition({ type: "ClientEnv" }),
-        properties: [
-          createScalarPropertyDefinition({
-            name: "prop",
-            type: "String",
-            required: true,
-          }),
-          createScalarPropertyDefinition({
-            name: "propM",
-            type: "String",
-            required: false,
-          }),
-        ],
-      },
-    }),
+    properties: [
+      createScalarPropertyDefinition({
+        name: "prop",
+        type: "String",
+        required: true,
+      }),
+      createScalarPropertyDefinition({
+        name: "propM",
+        type: "Int",
+        required: true,
+      })
+    ],
+  }),
   objectTypes: [
     {
       ...createObjectDefinition({
@@ -471,13 +453,6 @@ export const typeInfo: TypeInfo = {
       methods: [
         {
           ...createMethodDefinition({
-            name: "sanitizeEnv",
-            return: createObjectPropertyDefinition({ name: "sanitizeEnv", type: "Env", required: true }),
-            arguments: [createObjectPropertyDefinition({ name: "env", type: "ClientEnv", required: true })],
-          })
-        },
-        {
-          ...createMethodDefinition({
             name: "moduleMethod",
             return: createArrayPropertyDefinition({
               name: "moduleMethod",
@@ -610,6 +585,50 @@ export const typeInfo: TypeInfo = {
               }),
             }),
           ],
+        },
+        {
+          ...createMethodDefinition({
+            name: "methodRequireEnv",
+            return: createObjectPropertyDefinition({
+              name: "methodRequireEnv",
+              type: "Env",
+              required: true
+            }),
+            arguments: [
+              createScalarPropertyDefinition({
+                name: "arg",
+                type: "String",
+                required: true,
+              }),
+              createObjectPropertyDefinition({
+                name: "env",
+                type: "Env",
+                required: true
+              }),
+            ],
+          }),
+          
+        },
+        {
+          ...createMethodDefinition({
+            name: "methodOptionalEnv",
+            return: createObjectPropertyDefinition({
+              name: "methodOptionalEnv",
+              type: "Env",
+            }),
+            arguments: [
+              createScalarPropertyDefinition({
+                name: "arg",
+                type: "String",
+                required: true,
+              }),
+              createObjectPropertyDefinition({
+                name: "env",
+                type: "Env",
+              }),
+            ],
+          }),
+          
         },
       ],
     },

@@ -13,7 +13,6 @@ import {
   MethodDefinition,
   createImportedModuleDefinition,
   ImportedModuleDefinition,
-  createEnvDefinition
 } from "../typeInfo";
 
 const schema1 = `
@@ -74,7 +73,6 @@ describe("Polywrap Schema TypeInfo Transformations", () => {
       transforms: [addFirstLast],
     });
     const expected: TypeInfo = {
-      envType: createEnvDefinition({}),
       enumTypes: [],
       importedEnumTypes: [],
       interfaceTypes: [],
@@ -288,7 +286,6 @@ describe("Polywrap Schema TypeInfo Transformations", () => {
       ],
     });
     const expected: TypeInfo = {
-      envType: createEnvDefinition({}),
       enumTypes: [],
       interfaceTypes: [],
       importedEnumTypes: [],

@@ -1,8 +1,0 @@
-#import { ClientEnv } from "../imports-local/common.graphql"
-
-type Module {
-  method(
-    str: String!
-  ): String!
-  sanitizeEnv(env: ClientEnv!): String!
-}

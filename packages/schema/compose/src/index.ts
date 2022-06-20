@@ -1,7 +1,6 @@
 import { SchemaFile, SchemaResolvers } from "./types";
 import { resolveImportsAndParseSchemas } from "./resolve";
 import { renderSchema } from "./render";
-import { validateEnv } from "./env";
 
 import { TypeInfo, combineTypeInfo } from "@polywrap/schema-parse";
 
@@ -32,8 +31,6 @@ export async function composeSchema(
 
   const typeInfo =
     typeInfos.length === 1 ? typeInfos[0] : combineTypeInfo(typeInfos);
-
-  await validateEnv(typeInfo);
 
   // Forming our output structure for the caller
   const includeSchema = options.output & ComposerFilter.Schema;

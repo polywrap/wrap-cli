@@ -16,14 +16,14 @@ import {
 } from "./{{type}}/wrapped";
 {{/methods.length}}
 {{/moduleType}}
-{{#envType.sanitized}}
+{{#envType}}
 import {
   env
 } from "./env";
 import {
   Env
 } from "./Env";
-{{/envType.sanitized}}
+{{/envType}}
 
 export function _wrap_invoke(method_size: u32, args_size: u32): bool {
   const args: InvokeArgs = wrap_invoke_args(
@@ -43,19 +43,13 @@ export function _wrap_invoke(method_size: u32, args_size: u32): bool {
   }
 }
 
-{{#envType.sanitized}}
+{{#envType}}
 export function _wrap_load_env(env_size: u32): void {
   const envBuf = wrap_load_env(env_size);
   env = Env.fromBuffer(envBuf);
 }
+{{/envType}}
 
-{{/envType.sanitized}}
-{{#envType.client}}
-export function _wrap_sanitize_env(args_size: u32): void {
-  wrap_sanitize_env(args_size, sanitizeEnvWrapped);
-}
-
-{{/envType.client}}
 export function wrapAbort(
   msg: string | null,
   file: string | null,

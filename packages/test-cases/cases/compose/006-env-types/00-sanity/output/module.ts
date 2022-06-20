@@ -2,7 +2,6 @@ import {
   createMethodDefinition,
   createModuleDefinition,
   createScalarPropertyDefinition,
-  createObjectDefinition,
   createTypeInfo,
   createEnvDefinition,
   TypeInfo,
@@ -11,15 +10,10 @@ import {
 export const typeInfo: TypeInfo = {
   ...createTypeInfo(),
   envType: createEnvDefinition({
-      sanitized: {
-        ...createObjectDefinition({
-          type: "Env"
-        }),
-        properties: [
-          createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),
-        ],
-      },
-    }),
+    properties: [
+      createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),
+    ],
+  }),
   moduleType:
     {
       ...createModuleDefinition({}),

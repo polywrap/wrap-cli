@@ -44,10 +44,7 @@ export {
 {{#interfaceTypes}}
 export { {{namespace}} } from "./{{namespace}}";
 {{/interfaceTypes}}
-{{#envType.sanitized}}
+{{#envType}}
 export { env, requireEnv } from "./env";
 export { Env } from "./Env";
-{{#envType.client}}
-export { ClientEnv } from "./ClientEnv";
-{{/envType.client}}
-{{/envType.sanitized}}
+{{/envType}}

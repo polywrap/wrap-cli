@@ -37,7 +37,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
 }{{/methods.length}}
 
 {{/moduleType}}
-{{#envType.client}}{{#comment}}
+{{#envType}}{{#comment}}
 """
 {{comment}}
 """
@@ -52,23 +52,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
   {{/properties}}
 }{{/properties.length}}
 
-{{/envType.client}}
-{{#envType.sanitized}}{{#comment}}
-"""
-{{comment}}
-"""
-{{/comment}}
-type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}}{{#properties.length}} {
-  {{#properties}}{{#comment}}
-  """
-  {{comment}}
-  """
-  {{/comment}}
-  {{name}}: {{toGraphQLType}}
-  {{/properties}}
-}{{/properties.length}}
-
-{{/envType.sanitized}}
+{{/envType}}
 {{#objectTypes}}{{#comment}}
 """
 {{comment}}
