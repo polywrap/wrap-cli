@@ -1,7 +1,7 @@
 import {
   wrap_subinvoke,
   wrap_subinvokeImplementation,
-  Nullable,
+  Option,
   BigInt,
   BigNumber,
   JSON,
@@ -29,7 +29,7 @@ export class TestImport_Module {
 
   public importedMethod(
     input: Input_importedMethod
-  ): Result<Types.TestImport_Object | null, string> {
+  ): Result<Option<Types.TestImport_Object>, string> {
     const args = serializeimportedMethodArgs(input);
     const result = wrap_subinvokeImplementation(
       "testimport.uri.eth",
@@ -39,12 +39,12 @@ export class TestImport_Module {
     );
 
     if (result.isErr) {
-      return Result.Err<Types.TestImport_Object | null, string>(
+      return Result.Err<Option<Types.TestImport_Object>, string>(
         result.unwrapErr()
       );
     }
 
-    return Result.Ok<Types.TestImport_Object | null, string>(
+    return Result.Ok<Option<Types.TestImport_Object>, string>(
       deserializeimportedMethodResult(result.unwrap())
     );
   }

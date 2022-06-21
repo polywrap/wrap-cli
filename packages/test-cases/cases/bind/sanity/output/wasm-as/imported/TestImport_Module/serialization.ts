@@ -4,7 +4,7 @@ import {
   Write,
   WriteSizer,
   WriteEncoder,
-  Nullable,
+  Option,
   BigInt,
   BigNumber,
   JSON,
@@ -14,18 +14,18 @@ import * as Types from "../..";
 
 export class Input_importedMethod {
   str: string;
-  optStr: string | null;
+  optStr: Option<string>;
   u: u32;
-  optU: Nullable<u32>;
-  uArrayArray: Array<Array<Nullable<u32>> | null>;
+  optU: Option<u32>;
+  uArrayArray: Array<Option<Array<Option<u32>>>>;
   object: Types.TestImport_Object;
-  optObject: Types.TestImport_Object | null;
+  optObject: Option<Types.TestImport_Object>;
   objectArray: Array<Types.TestImport_Object>;
-  optObjectArray: Array<Types.TestImport_Object | null> | null;
+  optObjectArray: Option<Array<Option<Types.TestImport_Object>>>;
   en: Types.TestImport_Enum;
-  optEnum: Nullable<Types.TestImport_Enum>;
+  optEnum: Option<Types.TestImport_Enum>;
   enumArray: Array<Types.TestImport_Enum>;
-  optEnumArray: Array<Nullable<Types.TestImport_Enum>> | null;
+  optEnumArray: Option<Array<Option<Types.TestImport_Enum>>>;
 }
 
 export function serializeimportedMethodArgs(input: Input_importedMethod): ArrayBuffer {
@@ -48,7 +48,7 @@ export function writeimportedMethodArgs(
   writer.writeString("str");
   writer.writeString(input.str);
   writer.context().pop();
-  writer.context().push("optStr", "string | null", "writing property");
+  writer.context().push("optStr", "Option<string>", "writing property");
   writer.writeString("optStr");
   writer.writeNullableString(input.optStr);
   writer.context().pop();
@@ -56,14 +56,14 @@ export function writeimportedMethodArgs(
   writer.writeString("u");
   writer.writeUInt32(input.u);
   writer.context().pop();
-  writer.context().push("optU", "Nullable<u32>", "writing property");
+  writer.context().push("optU", "Option<u32>", "writing property");
   writer.writeString("optU");
   writer.writeNullableUInt32(input.optU);
   writer.context().pop();
-  writer.context().push("uArrayArray", "Array<Array<Nullable<u32>> | null>", "writing property");
+  writer.context().push("uArrayArray", "Array<Option<Array<Option<u32>>>>", "writing property");
   writer.writeString("uArrayArray");
-  writer.writeArray(input.uArrayArray, (writer: Write, item: Array<Nullable<u32>> | null): void => {
-    writer.writeNullableArray(item, (writer: Write, item: Nullable<u32>): void => {
+  writer.writeArray(input.uArrayArray, (writer: Write, item: Option<Array<Option<u32>>>): void => {
+    writer.writeNullableArray(item, (writer: Write, item: Option<u32>): void => {
       writer.writeNullableUInt32(item);
     });
   });
@@ -72,7 +72,7 @@ export function writeimportedMethodArgs(
   writer.writeString("object");
   Types.TestImport_Object.write(writer, input.object);
   writer.context().pop();
-  writer.context().push("optObject", "Types.TestImport_Object | null", "writing property");
+  writer.context().push("optObject", "Option<Types.TestImport_Object>", "writing property");
   writer.writeString("optObject");
   if (input.optObject) {
     Types.TestImport_Object.write(writer, input.optObject as Types.TestImport_Object);
@@ -86,9 +86,9 @@ export function writeimportedMethodArgs(
     Types.TestImport_Object.write(writer, item);
   });
   writer.context().pop();
-  writer.context().push("optObjectArray", "Array<Types.TestImport_Object | null> | null", "writing property");
+  writer.context().push("optObjectArray", "Option<Array<Option<Types.TestImport_Object>>>", "writing property");
   writer.writeString("optObjectArray");
-  writer.writeNullableArray(input.optObjectArray, (writer: Write, item: Types.TestImport_Object | null): void => {
+  writer.writeNullableArray(input.optObjectArray, (writer: Write, item: Option<Types.TestImport_Object>): void => {
     if (item) {
       Types.TestImport_Object.write(writer, item as Types.TestImport_Object);
     } else {
@@ -100,7 +100,7 @@ export function writeimportedMethodArgs(
   writer.writeString("en");
   writer.writeInt32(input.en);
   writer.context().pop();
-  writer.context().push("optEnum", "Nullable<Types.TestImport_Enum>", "writing property");
+  writer.context().push("optEnum", "Option<Types.TestImport_Enum>", "writing property");
   writer.writeString("optEnum");
   writer.writeNullableInt32(input.optEnum);
   writer.context().pop();
@@ -110,24 +110,24 @@ export function writeimportedMethodArgs(
     writer.writeInt32(item);
   });
   writer.context().pop();
-  writer.context().push("optEnumArray", "Array<Nullable<Types.TestImport_Enum>> | null", "writing property");
+  writer.context().push("optEnumArray", "Option<Array<Option<Types.TestImport_Enum>>>", "writing property");
   writer.writeString("optEnumArray");
-  writer.writeNullableArray(input.optEnumArray, (writer: Write, item: Nullable<Types.TestImport_Enum>): void => {
+  writer.writeNullableArray(input.optEnumArray, (writer: Write, item: Option<Types.TestImport_Enum>): void => {
     writer.writeNullableInt32(item);
   });
   writer.context().pop();
 }
 
-export function deserializeimportedMethodResult(buffer: ArrayBuffer): Types.TestImport_Object | null {
+export function deserializeimportedMethodResult(buffer: ArrayBuffer): Option<Types.TestImport_Object> {
   const context: Context =  new Context("Deserializing imported module-type: importedMethod");
   const reader = new ReadDecoder(buffer, context);
 
-  reader.context().push("importedMethod", "Types.TestImport_Object | null", "reading function output");
-  let object: Types.TestImport_Object | null = null;
+  reader.context().push("importedMethod", "Option<Types.TestImport_Object>", "reading function output");
+  let object: Option<Types.TestImport_Object> = Option.None<Types.TestImport_Object>();
   if (!reader.isNextNil()) {
     object = Types.TestImport_Object.read(reader);
   }
-  const res: Types.TestImport_Object | null =  object;
+  const res: Option<Types.TestImport_Object> =  object;
   reader.context().pop();
 
   return res;

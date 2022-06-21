@@ -4,7 +4,7 @@ import {
   Write,
   WriteSizer,
   WriteEncoder,
-  Nullable,
+  Option,
   BigInt,
   BigNumber,
   JSON,
@@ -26,11 +26,11 @@ export function serializeAnotherType(type: AnotherType): ArrayBuffer {
 
 export function writeAnotherType(writer: Write, type: AnotherType): void {
   writer.writeMapLength(3);
-  writer.context().push("prop", "string | null", "writing property");
+  writer.context().push("prop", "Option<string>", "writing property");
   writer.writeString("prop");
   writer.writeNullableString(type.prop);
   writer.context().pop();
-  writer.context().push("circular", "Types.CustomType | null", "writing property");
+  writer.context().push("circular", "Option<Types.CustomType>", "writing property");
   writer.writeString("circular");
   if (type.circular) {
     Types.CustomType.write(writer, type.circular as Types.CustomType);
@@ -38,7 +38,7 @@ export function writeAnotherType(writer: Write, type: AnotherType): void {
     writer.writeNil();
   }
   writer.context().pop();
-  writer.context().push("const", "string | null", "writing property");
+  writer.context().push("const", "Option<string>", "writing property");
   writer.writeString("const");
   writer.writeNullableString(type.m_const);
   writer.context().pop();
@@ -53,9 +53,9 @@ export function deserializeAnotherType(buffer: ArrayBuffer): AnotherType {
 export function readAnotherType(reader: Read): AnotherType {
   let numFields = reader.readMapLength();
 
-  let _prop: string | null = null;
-  let _circular: Types.CustomType | null = null;
-  let _const: string | null = null;
+  let _prop: Option<string> = Option.None<string>();
+  let _circular: Option<Types.CustomType> = Option.None<Types.CustomType>();
+  let _const: Option<string> = Option.None<string>();
 
   while (numFields > 0) {
     numFields--;
@@ -63,13 +63,13 @@ export function readAnotherType(reader: Read): AnotherType {
 
     reader.context().push(field, "unknown", "searching for property type");
     if (field == "prop") {
-      reader.context().push(field, "string | null", "type found, reading property");
+      reader.context().push(field, "Option<string>", "type found, reading property");
       _prop = reader.readNullableString();
       reader.context().pop();
     }
     else if (field == "circular") {
-      reader.context().push(field, "Types.CustomType | null", "type found, reading property");
-      let object: Types.CustomType | null = null;
+      reader.context().push(field, "Option<Types.CustomType>", "type found, reading property");
+      let object: Option<Types.CustomType> = Option.None<Types.CustomType>();
       if (!reader.isNextNil()) {
         object = Types.CustomType.read(reader);
       }
@@ -77,7 +77,7 @@ export function readAnotherType(reader: Read): AnotherType {
       reader.context().pop();
     }
     else if (field == "const") {
-      reader.context().push(field, "string | null", "type found, reading property");
+      reader.context().push(field, "Option<string>", "type found, reading property");
       _const = reader.readNullableString();
       reader.context().pop();
     }

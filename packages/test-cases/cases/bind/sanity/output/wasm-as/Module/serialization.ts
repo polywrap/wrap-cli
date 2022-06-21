@@ -4,7 +4,7 @@ import {
   Write,
   WriteSizer,
   WriteEncoder,
-  Nullable,
+  Option,
   BigInt,
   BigNumber,
   JSON,
@@ -14,11 +14,11 @@ import * as Types from "..";
 
 export class Input_moduleMethod {
   str: string;
-  optStr: string | null;
+  optStr: Option<string>;
   en: Types.CustomEnum;
-  optEnum: Nullable<Types.CustomEnum>;
+  optEnum: Option<Types.CustomEnum>;
   enumArray: Array<Types.CustomEnum>;
-  optEnumArray: Array<Nullable<Types.CustomEnum>> | null;
+  optEnumArray: Option<Array<Option<Types.CustomEnum>>>;
   map: Map<string, i32>;
 }
 
@@ -29,13 +29,13 @@ export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Input_moduleM
 
   let _str: string = "";
   let _strSet: bool = false;
-  let _optStr: string | null = null;
+  let _optStr: Option<string> = Option.None<string>();
   let _en: Types.CustomEnum = 0;
   let _enSet: bool = false;
-  let _optEnum: Nullable<Types.CustomEnum> = new Nullable<Types.CustomEnum>();
+  let _optEnum: Option<Types.CustomEnum> = Option.None<Types.CustomEnum>();
   let _enumArray: Array<Types.CustomEnum> = [];
   let _enumArraySet: bool = false;
-  let _optEnumArray: Array<Nullable<Types.CustomEnum>> | null = null;
+  let _optEnumArray: Option<Array<Option<Types.CustomEnum>>> = Option.None<Array<Option<Types.CustomEnum>>>();
   let _map: Map<string, i32> = new Map<string, i32>();
   let _mapSet: bool = false;
 
@@ -51,7 +51,7 @@ export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Input_moduleM
       reader.context().pop();
     }
     else if (field == "optStr") {
-      reader.context().push(field, "string | null", "type found, reading property");
+      reader.context().push(field, "Option<string>", "type found, reading property");
       _optStr = reader.readNullableString();
       reader.context().pop();
     }
@@ -69,21 +69,21 @@ export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Input_moduleM
       reader.context().pop();
     }
     else if (field == "optEnum") {
-      reader.context().push(field, "Nullable<Types.CustomEnum>", "type found, reading property");
-      let value: Nullable<Types.CustomEnum>;
+      reader.context().push(field, "Option<Types.CustomEnum>", "type found, reading property");
+      let value: Option<Types.CustomEnum>;
       if (!reader.isNextNil()) {
         if (reader.isNextString()) {
-          value = Nullable.fromValue(
+          value = Option.Some(
             Types.getCustomEnumValue(reader.readString())
           );
         } else {
-          value = Nullable.fromValue(
+          value = Option.Some(
             reader.readInt32()
           );
           Types.sanitizeCustomEnumValue(value.value);
         }
       } else {
-        value = Nullable.fromNull<Types.CustomEnum>();
+        value = Option.None<Types.CustomEnum>();
       }
       _optEnum = value;
       reader.context().pop();
@@ -104,22 +104,22 @@ export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Input_moduleM
       reader.context().pop();
     }
     else if (field == "optEnumArray") {
-      reader.context().push(field, "Array<Nullable<Types.CustomEnum>> | null", "type found, reading property");
-      _optEnumArray = reader.readNullableArray((reader: Read): Nullable<Types.CustomEnum> => {
-        let value: Nullable<Types.CustomEnum>;
+      reader.context().push(field, "Option<Array<Option<Types.CustomEnum>>>", "type found, reading property");
+      _optEnumArray = reader.readNullableArray((reader: Read): Option<Types.CustomEnum> => {
+        let value: Option<Types.CustomEnum>;
         if (!reader.isNextNil()) {
           if (reader.isNextString()) {
-            value = Nullable.fromValue(
+            value = Option.Some(
               Types.getCustomEnumValue(reader.readString())
             );
           } else {
-            value = Nullable.fromValue(
+            value = Option.Some(
               reader.readInt32()
             );
             Types.sanitizeCustomEnumValue(value.value);
           }
         } else {
-          value = Nullable.fromNull<Types.CustomEnum>();
+          value = Option.None<Types.CustomEnum>();
         }
         return value;
       });
@@ -181,9 +181,9 @@ export function writemoduleMethodResult(writer: Write, result: i32): void {
 
 export class Input_objectMethod {
   object: Types.AnotherType;
-  optObject: Types.AnotherType | null;
+  optObject: Option<Types.AnotherType>;
   objectArray: Array<Types.AnotherType>;
-  optObjectArray: Array<Types.AnotherType | null> | null;
+  optObjectArray: Option<Array<Option<Types.AnotherType>>>;
 }
 
 export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectMethod {
@@ -191,12 +191,12 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectM
   const reader = new ReadDecoder(argsBuf, context);
   let numFields = reader.readMapLength();
 
-  let _object: Types.AnotherType | null = null;
+  let _object: Option<Types.AnotherType> = Option.None<Types.AnotherType>();
   let _objectSet: bool = false;
-  let _optObject: Types.AnotherType | null = null;
+  let _optObject: Option<Types.AnotherType> = Option.None<Types.AnotherType>();
   let _objectArray: Array<Types.AnotherType> = [];
   let _objectArraySet: bool = false;
-  let _optObjectArray: Array<Types.AnotherType | null> | null = null;
+  let _optObjectArray: Option<Array<Option<Types.AnotherType>>> = Option.None<Array<Option<Types.AnotherType>>>();
 
   while (numFields > 0) {
     numFields--;
@@ -211,8 +211,8 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectM
       reader.context().pop();
     }
     else if (field == "optObject") {
-      reader.context().push(field, "Types.AnotherType | null", "type found, reading property");
-      let object: Types.AnotherType | null = null;
+      reader.context().push(field, "Option<Types.AnotherType>", "type found, reading property");
+      let object: Option<Types.AnotherType> = Option.None<Types.AnotherType>();
       if (!reader.isNextNil()) {
         object = Types.AnotherType.read(reader);
       }
@@ -229,9 +229,9 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectM
       reader.context().pop();
     }
     else if (field == "optObjectArray") {
-      reader.context().push(field, "Array<Types.AnotherType | null> | null", "type found, reading property");
-      _optObjectArray = reader.readNullableArray((reader: Read): Types.AnotherType | null => {
-        let object: Types.AnotherType | null = null;
+      reader.context().push(field, "Option<Array<Option<Types.AnotherType>>>", "type found, reading property");
+      _optObjectArray = reader.readNullableArray((reader: Read): Option<Types.AnotherType> => {
+        let object: Option<Types.AnotherType> = Option.None<Types.AnotherType>();
         if (!reader.isNextNil()) {
           object = Types.AnotherType.read(reader);
         }
@@ -257,7 +257,7 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectM
   };
 }
 
-export function serializeobjectMethodResult(result: Types.AnotherType | null): ArrayBuffer {
+export function serializeobjectMethodResult(result: Option<Types.AnotherType>): ArrayBuffer {
   const sizerContext: Context = new Context("Serializing (sizing) module-type: objectMethod");
   const sizer = new WriteSizer(sizerContext);
   writeobjectMethodResult(sizer, result);
@@ -268,8 +268,8 @@ export function serializeobjectMethodResult(result: Types.AnotherType | null): A
   return buffer;
 }
 
-export function writeobjectMethodResult(writer: Write, result: Types.AnotherType | null): void {
-  writer.context().push("objectMethod", "Types.AnotherType | null", "writing property");
+export function writeobjectMethodResult(writer: Write, result: Option<Types.AnotherType>): void {
+  writer.context().push("objectMethod", "Option<Types.AnotherType>", "writing property");
   if (result) {
     Types.AnotherType.write(writer, result as Types.AnotherType);
   } else {

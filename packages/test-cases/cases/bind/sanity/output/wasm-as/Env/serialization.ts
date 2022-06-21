@@ -4,7 +4,7 @@ import {
   Write,
   WriteSizer,
   WriteEncoder,
-  Nullable,
+  Option,
   BigInt,
   BigNumber,
   JSON,
@@ -30,15 +30,15 @@ export function writeEnv(writer: Write, type: Env): void {
   writer.writeString("prop");
   writer.writeString(type.prop);
   writer.context().pop();
-  writer.context().push("optProp", "string | null", "writing property");
+  writer.context().push("optProp", "Option<string>", "writing property");
   writer.writeString("optProp");
   writer.writeNullableString(type.optProp);
   writer.context().pop();
-  writer.context().push("optMap", "Map<string, Nullable<i32>> | null", "writing property");
+  writer.context().push("optMap", "Option<Map<string, Option<i32>>>", "writing property");
   writer.writeString("optMap");
   writer.writeNullableExtGenericMap(type.optMap, (writer: Write, key: string) => {
     writer.writeString(key);
-  }, (writer: Write, value: Nullable<i32>): void => {
+  }, (writer: Write, value: Option<i32>): void => {
     writer.writeNullableInt32(value);
   });
   writer.context().pop();
@@ -55,8 +55,8 @@ export function readEnv(reader: Read): Env {
 
   let _prop: string = "";
   let _propSet: bool = false;
-  let _optProp: string | null = null;
-  let _optMap: Map<string, Nullable<i32>> | null = null;
+  let _optProp: Option<string> = Option.None<string>();
+  let _optMap: Option<Map<string, Option<i32>>> = Option.None<Map<string, Option<i32>>>();
 
   while (numFields > 0) {
     numFields--;
@@ -70,15 +70,15 @@ export function readEnv(reader: Read): Env {
       reader.context().pop();
     }
     else if (field == "optProp") {
-      reader.context().push(field, "string | null", "type found, reading property");
+      reader.context().push(field, "Option<string>", "type found, reading property");
       _optProp = reader.readNullableString();
       reader.context().pop();
     }
     else if (field == "optMap") {
-      reader.context().push(field, "Map<string, Nullable<i32>> | null", "type found, reading property");
+      reader.context().push(field, "Option<Map<string, Option<i32>>>", "type found, reading property");
       _optMap = reader.readNullableExtGenericMap((reader: Read): string => {
         return reader.readString();
-      }, (reader: Read): Nullable<i32> => {
+      }, (reader: Read): Option<i32> => {
         return reader.readNullableInt32();
       });
       reader.context().pop();

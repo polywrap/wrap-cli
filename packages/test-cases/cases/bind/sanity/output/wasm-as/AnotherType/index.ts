@@ -1,7 +1,7 @@
 import {
   Read,
   Write,
-  Nullable,
+  Option,
   BigInt,
   BigNumber,
   JSON,
@@ -18,9 +18,9 @@ import * as Types from "..";
 
 @serializable
 export class AnotherType {
-  prop: string | null;
-  circular: Types.CustomType | null;
-  m_const: string | null;
+  prop: Option<string>;
+  circular: Option<Types.CustomType>;
+  m_const: Option<string>;
 
   static toBuffer(type: AnotherType): ArrayBuffer {
     return serializeAnotherType(type);

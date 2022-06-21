@@ -1,7 +1,7 @@
 import {
   Read,
   Write,
-  Nullable,
+  Option,
   BigInt,
   BigNumber,
   JSON,
@@ -19,8 +19,8 @@ import * as Types from "..";
 @serializable
 export class Env {
   prop: string;
-  optProp: string | null;
-  optMap: Map<string, Nullable<i32>> | null;
+  optProp: Option<string>;
+  optMap: Option<Map<string, Option<i32>>>;
 
   static toBuffer(type: Env): ArrayBuffer {
     return serializeEnv(type);
