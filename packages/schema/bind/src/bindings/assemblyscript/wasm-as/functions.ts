@@ -1,4 +1,3 @@
-import { isBaseType } from "./baseTypes";
 import { reservedWordsAS } from "./reservedWords";
 import { MustacheFn } from "../../types";
 
@@ -50,14 +49,8 @@ export const toWasmInit: MustacheFn = () => {
       type = type.substring(0, type.length - 1);
     } else {
       const nullType = toWasm()(value, render);
-      const nullable = "Nullable";
-      const nullOptional = "| null";
-
-      if (nullType.endsWith(nullOptional)) {
-        return "null";
-      } else if (nullType.startsWith(nullable)) {
-        return `new ${nullType}()`;
-      }
+      type = nullType.substring(6);
+      return `Option.None${type}()`;
     }
 
     if (type[0] === "[") {
@@ -220,15 +213,7 @@ const applyNullable = (
   isEnum: boolean
 ): string => {
   if (nullable) {
-    if (
-      type.indexOf("Array") === 0 ||
-      type.indexOf("string") === 0 ||
-      (!isEnum && !isBaseType(type))
-    ) {
-      return `${type} | null`;
-    } else {
-      return `Nullable<${type}>`;
-    }
+    return `Option<${type}>`;
   } else {
     return type;
   }

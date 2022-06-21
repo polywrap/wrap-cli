@@ -20,7 +20,7 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
   {{/object}}
   {{#object}}
   {{#required}}
-  let _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} | null = null;
+  let _{{name}}: Option<{{#toWasm}}{{toGraphQLType}}{{/toWasm}}> = Option.None<{{#toWasm}}{{toGraphQLType}}{{/toWasm}}>();
   {{/required}}
   {{^required}}
   let _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};

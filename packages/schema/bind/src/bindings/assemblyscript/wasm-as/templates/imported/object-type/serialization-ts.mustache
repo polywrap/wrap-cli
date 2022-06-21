@@ -74,7 +74,7 @@ export function read{{type}}(reader: Read): {{type}} {
   {{/object}}
   {{#object}}
   {{#required}}
-  let _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} | null = null;
+  let _{{name}}: Option<{{#toWasm}}{{toGraphQLType}}{{/toWasm}}> = Option.None<{{#toWasm}}{{toGraphQLType}}{{/toWasm}}>();
   {{/required}}
   {{^required}}
   let _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};

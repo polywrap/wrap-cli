@@ -56,7 +56,7 @@ export function write{{type}}(writer: Write, type: {{type}}): void {
   {{/required}}
   {{/enum}}
   writer.context().pop();
-  {{/properties}}
+{{/properties}}
 }
 
 export function deserialize{{type}}(buffer: ArrayBuffer): {{type}} {
@@ -74,7 +74,7 @@ export function read{{type}}(reader: Read): {{type}} {
   {{/object}}
   {{#object}}
   {{#required}}
-  let _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} | null = null;
+  let _{{name}}: Option<{{#toWasm}}{{toGraphQLType}}{{/toWasm}}> = Option.None<{{#toWasm}}{{toGraphQLType}}{{/toWasm}}>();
   {{/required}}
   {{^required}}
   let _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
