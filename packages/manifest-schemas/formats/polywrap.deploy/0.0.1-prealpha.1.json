@@ -8,26 +8,32 @@
   ],
   "properties": {
     "format": {
+      "description": "Polywrap deployment manifest format version.",
       "type": "string",
       "const": "0.0.1-prealpha.1"
     },
     "stages": {
       "patternProperties": {
         "^.*$": {
+          "description": "Deployment stage.",
           "type": "object",
           "additionalProperties": false,
           "required": ["package"],
           "properties": {
             "package": {
+              "description": "Name of the publisher plugin.",
               "type": "string"
             },
             "config": {
+              "description": "Custom configuration.",
               "type": "object"
             },
             "depends_on": {
+              "description": "Name of the required stage.",
               "type": "string"
             },
             "uri": {
+              "description": "URI resolving to the publisher plugin.",
               "type": "string",
               "format": "polywrapUri"
             }

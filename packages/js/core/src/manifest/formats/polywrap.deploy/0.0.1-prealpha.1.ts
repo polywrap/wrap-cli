@@ -7,18 +7,35 @@
  */
 
 export interface DeployManifest {
+  /**
+   * Polywrap deployment manifest format version.
+   */
   format: "0.0.1-prealpha.1";
   stages: {
     /**
+     * Deployment stage.
+     *
      * This interface was referenced by `undefined`'s JSON-Schema definition
      * via the `patternProperty` "^.*$".
      */
     [k: string]: {
+      /**
+       * Name of the publisher plugin.
+       */
       package: string;
+      /**
+       * Custom configuration.
+       */
       config?: {
         [k: string]: unknown;
       };
+      /**
+       * Name of the required stage.
+       */
       depends_on?: string;
+      /**
+       * URI resolving to the publisher plugin.
+       */
       uri?: string;
     };
   };
