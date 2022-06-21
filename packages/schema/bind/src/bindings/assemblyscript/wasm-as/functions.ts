@@ -179,7 +179,7 @@ const toWasmArray = (type: string, nullable: boolean): string => {
   }
 
   const wasmType = toWasm()(result[2], (str) => str);
-  return applyNullable("Array<" + wasmType + ">", nullable, false);
+  return applyNullable("Array<" + wasmType + ">", nullable);
 };
 
 const toWasmMap = (type: string, nullable: boolean): string => {
@@ -202,7 +202,7 @@ const toWasmMap = (type: string, nullable: boolean): string => {
   const keyType = toWasm()(keyValTypes[0], (str) => str);
   const valType = toWasm()(keyValTypes[1], (str) => str);
 
-  return applyNullable(`Map<${keyType}, ${valType}>`, nullable, false);
+  return applyNullable(`Map<${keyType}, ${valType}>`, nullable);
 };
 
 const applyNullable = (type: string, nullable: boolean): string => {
