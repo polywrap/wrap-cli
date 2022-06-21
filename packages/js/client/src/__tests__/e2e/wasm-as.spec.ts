@@ -1,17 +1,17 @@
 import {
-  Web3ApiClientConfig,
-  createWeb3ApiClient,
+  PolywrapClientConfig,
+  createPolywrapClient,
 } from "../../";
 import * as TestCases from "./test-cases";
 import {
-  buildApi,
+  buildWrapper,
   initTestEnvironment,
   stopTestEnvironment,
   runCLI,
   ensAddresses,
   providers
-} from "@web3api/test-env-js";
-import { GetPathToTestApis } from "@web3api/test-cases";
+} from "@polywrap/test-env-js";
+import { GetPathToTestWrappers } from "@polywrap/test-cases";
 
 jest.setTimeout(200000);
 
@@ -31,8 +31,8 @@ describe("wasm-as test cases", () => {
     await stopTestEnvironment();
   });
 
-  const getClient = async (config?: Partial<Web3ApiClientConfig>) => {
-    return createWeb3ApiClient({
+  const getClient = async (config?: Partial<PolywrapClientConfig>) => {
+    return createPolywrapClient({
       ethereum: {
         networks: {
           testnet: {
@@ -41,88 +41,88 @@ describe("wasm-as test cases", () => {
         },
       },
       ipfs: { provider: ipfsProvider },
-      ens: { query: {
+      ens: {
         addresses: {
           testnet: ensAddress,
         },
-      } },
+      },
     }, config);
   }
 
   it("asyncify", async () => {
-    const apiPath = `${GetPathToTestApis()}/wasm-as/asyncify`
-    const apiUri = `fs/${apiPath}/build`
+    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/asyncify`
+    const wrapperUri = `fs/${wrapperPath}/build`
 
-    await buildApi(apiPath);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runAsyncifyTest(
-      await getClient(), apiUri
+      await getClient(), wrapperUri
     );
   });
 
   it("bigint-type", async () => {
-    const apiPath = `${GetPathToTestApis()}/wasm-as/bigint-type`
-    const apiUri = `fs/${apiPath}/build`
+    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/bigint-type`
+    const wrapperUri = `fs/${wrapperPath}/build`
     
-    await buildApi(apiPath);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runBigIntTypeTest(
-      await getClient(), apiUri
+      await getClient(), wrapperUri
     );
   });
 
   it("bignumber-type", async () => {
-    const apiPath = `${GetPathToTestApis()}/wasm-as/bignumber-type`
-    const apiUri = `fs/${apiPath}/build`
+    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/bignumber-type`
+    const wrapperUri = `fs/${wrapperPath}/build`
     
-    await buildApi(apiPath);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runBigNumberTypeTest(
-      await getClient(), apiUri
+      await getClient(), wrapperUri
     );
   });
 
   it("bytes-type", async () => {
-    const apiPath = `${GetPathToTestApis()}/wasm-as/bytes-type`
-    const apiUri = `fs/${apiPath}/build`
+    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/bytes-type`
+    const wrapperUri = `fs/${wrapperPath}/build`
     
-    await buildApi(apiPath);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runBytesTypeTest(
-      await getClient(), apiUri
+      await getClient(), wrapperUri
     );
   });
 
   it("enum-types", async () => {
-    const apiPath = `${GetPathToTestApis()}/wasm-as/enum-types`
-    const apiUri = `fs/${apiPath}/build`
+    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/enum-types`
+    const wrapperUri = `fs/${wrapperPath}/build`
     
-    await buildApi(apiPath);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runEnumTypesTest(
-      await getClient(), apiUri
+      await getClient(), wrapperUri
     );
   });
 
   it("map-type", async () => {
-    const apiPath = `${GetPathToTestApis()}/wasm-as/map-type`
-    const apiUri = `fs/${apiPath}/build`
+    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/map-type`
+    const wrapperUri = `fs/${wrapperPath}/build`
     
-    await buildApi(apiPath);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runMapTypeTest(
-      await getClient(), apiUri
+      await getClient(), wrapperUri
     );
   });
 
   it("reserved-words", async () => {
     const client = await getClient();
 
-    const apiPath = `${GetPathToTestApis()}/wasm-as/reserved-words`
-    const apiUri = `fs/${apiPath}/build`
+    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/reserved-words`
+    const wrapperUri = `fs/${wrapperPath}/build`
     
-    await buildApi(apiPath);
-    const ensUri = apiUri;
+    await buildWrapper(wrapperPath);
+    const ensUri = wrapperUri;
 
     const query = await client.query<{
       method1: {
@@ -151,17 +151,14 @@ describe("wasm-as test cases", () => {
   });
 
   it("implementations - e2e", async () => {
-    const interfacePath = `${GetPathToTestApis()}/wasm-as/implementations/test-interface`
+    const interfacePath = `${GetPathToTestWrappers()}/wasm-as/implementations/test-interface`
     const interfaceUri = `fs/${interfacePath}/build`;
 
-    const implementationPath = `${GetPathToTestApis()}/wasm-as/implementations/test-api`
-    const implementationUri = `w3://fs/${implementationPath}/build`
-    
-    await buildApi(
-      interfacePath
-    );
-    
-    await buildApi(implementationPath);
+    const implementationPath = `${GetPathToTestWrappers()}/wasm-as/implementations/test-wrapper`
+    const implementationUri = `wrap://fs/${implementationPath}/build`
+
+    await buildWrapper(interfacePath);
+    await buildWrapper(implementationPath);
 
     const client = await getClient({
       interfaces: [
@@ -178,12 +175,12 @@ describe("wasm-as test cases", () => {
   });
 
   it("implementations - getImplementations", async () => {
-    const interfaceUri = "w3://ens/interface.eth"
+    const interfaceUri = "wrap://ens/interface.eth"
 
-    const implementationPath = `${GetPathToTestApis()}/wasm-as/implementations/test-use-getImpl`
-    const implementationUri = `w3://fs/${implementationPath}/build`;
+    const implementationPath = `${GetPathToTestWrappers()}/wasm-as/implementations/test-use-getImpl`
+    const implementationUri = `wrap://fs/${implementationPath}/build`;
 
-    await buildApi(implementationPath);
+    await buildWrapper(implementationPath);
 
     const client = await getClient({
       interfaces: [
@@ -200,19 +197,18 @@ describe("wasm-as test cases", () => {
   });
 
   it("e2e Interface invoke method", async () => {
-    const interfaceUri = "w3://ens/interface.eth";
+    const interfaceUri = "wrap://ens/interface.eth";
 
-    const implementationPath = `${GetPathToTestApis()}/wasm-as/interface-invoke/test-implementation`
+    const implementationPath = `${GetPathToTestWrappers()}/wasm-as/interface-invoke/test-implementation`
     const implementationUri = `fs/${implementationPath}/build`;
 
     // Build interface polywrapper
     await runCLI({
       args: ["build"],
-      cwd: `${GetPathToTestApis()}/wasm-as/interface-invoke/test-interface`,
+      cwd: `${GetPathToTestWrappers()}/wasm-as/interface-invoke/test-interface`,
     });
 
-    await buildApi(implementationPath);
-    
+    await buildWrapper(implementationPath);
 
     const client = await getClient({
       interfaces: [
@@ -223,17 +219,17 @@ describe("wasm-as test cases", () => {
       ],
     });
 
-    const apiPath = `${GetPathToTestApis()}/wasm-as/interface-invoke/test-api`
-    const apiUri = `fs/${apiPath}/build`
+    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/interface-invoke/test-wrapper`
+    const wrapperUri = `fs/${wrapperPath}/build`
     
-    await buildApi(apiPath);
+    await buildWrapper(wrapperPath);
 
     const query = await client.query<{
-      queryMethod: string;
+      moduleMethod: string;
     }>({
-      uri: apiUri,
+      uri: wrapperUri,
       query: `query{
-        queryMethod(
+        moduleMethod(
           arg: {
             uint8: 1,
             str: "Test String 1",
@@ -244,90 +240,75 @@ describe("wasm-as test cases", () => {
 
     expect(query.errors).toBeFalsy();
     expect(query.data).toBeTruthy();
-    expect(query.data?.queryMethod).toEqual({
+    expect(query.data?.moduleMethod).toEqual({
       uint8: 1,
       str: "Test String 1",
     });
-
-    const mutation = await client.query<{
-      mutationMethod: string;
-    }>({
-      uri: apiUri,
-      query: `mutation {
-        mutationMethod(
-          arg: 1
-        )
-      }`,
-    });
-
-    expect(mutation.errors).toBeFalsy();
-    expect(mutation.data).toBeTruthy();
-    expect(mutation.data?.mutationMethod).toBe(1);
   });
 
   it("invalid type errors", async () => {
-    const apiPath = `${GetPathToTestApis()}/wasm-as/invalid-types`
-    const apiUri = `fs/${apiPath}/build`
-    
-    await buildApi(apiPath);
+    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/invalid-types`
+    const wrapperUri = `fs/${wrapperPath}/build`
+
+    await buildWrapper(wrapperPath);
 
     await TestCases.runInvalidTypesTest(
-      await getClient(), apiUri
+      await getClient(), wrapperUri
     );
   });
 
   it("JSON-type", async () => {
-    const apiPath = `${GetPathToTestApis()}/wasm-as/json-type`
-    const apiUri = `fs/${apiPath}/build`
+    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/json-type`
+    const wrapperUri = `fs/${wrapperPath}/build`
     
-    await buildApi(apiPath);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runJsonTypeTest(
-      await getClient(), apiUri
+      await getClient(), wrapperUri
     );
   });
 
   it("large-types", async () => {
-    const apiPath = `${GetPathToTestApis()}/wasm-as/large-types`
-    const apiUri = `fs/${apiPath}/build`
+    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/large-types`
+    const wrapperUri = `fs/${wrapperPath}/build`
     
-    await buildApi(apiPath);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runLargeTypesTest(
-      await getClient(), apiUri
+      await getClient(), wrapperUri
     );
   });
 
   it("number-types under and overflows", async () => {
-    const apiPath = `${GetPathToTestApis()}/wasm-as/number-types`
-    const apiUri = `fs/${apiPath}/build`
+    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/number-types`
+    const wrapperUri = `fs/${wrapperPath}/build`
     
-    await buildApi(apiPath);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runNumberTypesTest(
-      await getClient(), apiUri
+      await getClient(), wrapperUri
     );
   });
 
   it("object-types", async () => {
-    const apiPath = `${GetPathToTestApis()}/wasm-as/object-types`
-    const apiUri = `fs/${apiPath}/build`
+    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/object-types`
+    const wrapperUri = `fs/${wrapperPath}/build`
     
-    await buildApi(apiPath);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runObjectTypesTest(
-      await getClient(), apiUri
+      await getClient(), wrapperUri
     );
   });
 
   it("simple-storage", async () => {
-    const apiPath = `${GetPathToTestApis()}/wasm-as/simple-storage`
-    const apiUri = `fs/${apiPath}/build`
+    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-storage`
+    const wrapperUri = `fs/${wrapperPath}/build`
     
-    await buildApi(apiPath);
+    await buildWrapper(wrapperPath);
 
     await TestCases.runSimpleStorageTest(
-      await getClient(), apiUri
+      await getClient(), wrapperUri
     );
   });
 });

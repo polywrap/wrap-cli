@@ -1,12 +1,12 @@
-import { clearStyle, w3Cli } from "./utils";
+import { clearStyle, polywrapCli } from "./utils";
 
-import { runCLI } from "@web3api/test-env-js";
-import { GetPathToCliTestFiles } from "@web3api/test-cases";
+import { runCLI } from "@polywrap/test-env-js";
+import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import path from "path";
 import fs from "fs";
 
 
-const HELP = `Usage: w3 app|a [options] [command]
+const HELP = `Usage: polywrap app|a [options] [command]
 
 Build/generate types for your app
 
@@ -18,8 +18,8 @@ Commands:
   help [command]     display help for command
 `
 
-const CODEGEN_SUCCESS = `- Manifest loaded from ./web3api.app.yaml
-✔ Manifest loaded from ./web3api.app.yaml
+const CODEGEN_SUCCESS = `- Manifest loaded from ./polywrap.app.yaml
+✔ Manifest loaded from ./polywrap.app.yaml
 - Generate types
 ✔ Generate types
 🔥 Code was generated successfully 🔥
@@ -39,7 +39,7 @@ describe("e2e tests for app command", () => {
       {
         args: ["app", "--help"],
         cwd: getTestCaseDir(0),
-        cli: w3Cli,
+        cli: polywrapCli,
       },
     );
 
@@ -53,7 +53,7 @@ describe("e2e tests for app command", () => {
       {
         args: ["app", "--output-dir"],
         cwd: getTestCaseDir(0),
-        cli: w3Cli,
+        cli: polywrapCli,
       },
     );
 
@@ -67,7 +67,7 @@ describe("e2e tests for app command", () => {
       {
         args: ["app", "codegen", "--codegen-dir"],
         cwd: getTestCaseDir(0),
-        cli: w3Cli,
+        cli: polywrapCli,
       },
     );
 
@@ -81,7 +81,7 @@ describe("e2e tests for app command", () => {
       {
         args: ["app", "codegen", "--ens"],
         cwd: getTestCaseDir(0),
-        cli: w3Cli,
+        cli: polywrapCli,
       },
     );
 
@@ -101,7 +101,7 @@ describe("e2e tests for app command", () => {
           {
             args: ["app", "codegen"],
             cwd: testCaseDir,
-            cli: w3Cli,
+            cli: polywrapCli,
           },
         );
 

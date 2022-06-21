@@ -1,5 +1,5 @@
 import { intlMsg } from "../intl";
-import { defaultWeb3ApiManifest } from "../manifest";
+import { defaultPolywrapManifest } from "../manifest";
 import { resolvePathIfExists } from "../system";
 
 export function parseWasmManifestFileOption(
@@ -8,7 +8,7 @@ export function parseWasmManifestFileOption(
 ): string {
   const manifestPaths = manifestFile
     ? [manifestFile as string]
-    : defaultWeb3ApiManifest;
+    : defaultPolywrapManifest;
 
   manifestFile = resolvePathIfExists(manifestPaths);
 

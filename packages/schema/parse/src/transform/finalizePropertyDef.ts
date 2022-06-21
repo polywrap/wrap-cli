@@ -114,17 +114,13 @@ function resolveObjectOrEnumKind(
         (type) => type.type === unresolved.type
       );
 
-  const envTypes = typeInfo.envTypes;
+  const envType = typeInfo.envType;
   customType = customType
     ? customType
-    : envTypes.mutation.client?.type === unresolved.type
-    ? envTypes.mutation.client
-    : envTypes.query.client?.type === unresolved.type
-    ? envTypes.query.client
-    : envTypes.mutation.sanitized?.type === unresolved.type
-    ? envTypes.mutation.sanitized
-    : envTypes.query.sanitized?.type === unresolved.type
-    ? envTypes.query.sanitized
+    : envType.client?.type === unresolved.type
+    ? envType.client
+    : envType.sanitized?.type === unresolved.type
+    ? envType.sanitized
     : undefined;
 
   if (!customType) {

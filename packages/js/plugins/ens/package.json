@@ -1,19 +1,20 @@
 {
-  "name": "@web3api/ens-plugin-js",
-  "description": "Web3API ENS Javascript Plugin",
-  "version": "0.0.1-prealpha.85",
+  "name": "@polywrap/ens-plugin-js",
+  "description": "Polywrap ENS Javascript Plugin",
+  "version": "0.0.1-prealpha.86",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/web3-api/monorepo.git"
+    "url": "https://github.com/polywrap/monorepo.git"
   },
   "main": "build/index.js",
   "files": [
     "build"
   ],
   "scripts": {
-    "build": "rimraf ./build && yarn codegen && tsc --project tsconfig.build.json",
-    "codegen": "node ../../../../dependencies/node_modules/@web3api/cli/bin/w3 plugin codegen",
+    "build": "rimraf ./build && tsc --project tsconfig.build.json",
+    "codegen": "node ../../../../dependencies/node_modules/polywrap/bin/polywrap plugin codegen",
+    "codegen:patch": "node ../../../cli/bin/polywrap plugin codegen && rimraf ./src/wrap",
     "lint": "eslint --color -c ../../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",
@@ -22,7 +23,7 @@
   "dependencies": {
     "@ethersproject/address": "5.0.7",
     "@ethersproject/basex": "5.0.7",
-    "@web3api/core-js": "0.0.1-prealpha.85",
+    "@polywrap/core-js": "0.0.1-prealpha.86",
     "ethers": "5.0.7"
   },
   "devDependencies": {

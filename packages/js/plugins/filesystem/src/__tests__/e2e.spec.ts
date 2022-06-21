@@ -19,12 +19,12 @@ describe("Filesystem plugin", () => {
     const config: Partial<Web3ApiClientConfig> = {
       plugins: [
         {
-          uri: "w3://ens/fs.web3api.eth",
+          uri: "w3://ens/fs.polywrap.eth",
           plugin: filesystemPlugin({ query: {}, mutation: {} }),
         },
       ],
     };
-    client = new Web3ApiClient(config);
+    client = new PolywrapClient(config);
   });
 
   afterEach(async () => {

@@ -8,7 +8,7 @@ import {
   AnyDefinition,
   ModuleDefinition,
   TypeInfoTransforms,
-} from "@web3api/schema-parse";
+} from "@polywrap/schema-parse";
 
 interface PropertyDep {
   crate: string;

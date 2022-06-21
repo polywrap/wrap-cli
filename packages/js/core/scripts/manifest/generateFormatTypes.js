@@ -1,17 +1,17 @@
 const SchemaToTypescript = require("json-schema-to-typescript");
-const os = require("@web3api/os-js");
+const os = require("@polywrap/os-js");
 const fs = require("fs");
 const path = require("path");
 const Mustache = require("mustache");
 
 async function generateFormatTypes() {
-  // Fetch all schemas within the @web3api/manifest-schemas/formats directory
+  // Fetch all schemas within the @polywrap/manifest-schemas/formats directory
   const formatsDir = path.join(
-    path.dirname(require.resolve("@web3api/manifest-schemas")),
+    path.dirname(require.resolve("@polywrap/manifest-schemas")),
     "formats"
   );
 
-  // Get all format types (web3api, web3api.build, etc)
+  // Get all format types (polywrap, polywrap.build, etc)
   const formatTypes = fs.readdirSync(
     formatsDir, { withFileTypes: true }
   ).filter((dirent) => dirent.isDirectory);

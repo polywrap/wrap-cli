@@ -1,8 +1,8 @@
 /* eslint-disable prefer-const */
 import {
   intlMsg,
-  Web3ApiProject,
-  defaultWeb3ApiManifest,
+  PolywrapProject,
+  defaultPolywrapManifest,
   DeployPackage,
   parseWasmManifestFileOption,
 } from "../lib";
@@ -12,10 +12,10 @@ import { Command, Program } from "./types";
 import fs from "fs";
 import nodePath from "path";
 import { print } from "gluegun";
-import { Uri, DeployManifest } from "@web3api/core-js";
+import { Uri, DeployManifest } from "@polywrap/core-js";
 import { validate } from "jsonschema";
 
-const defaultManifestStr = defaultWeb3ApiManifest.join(" | ");
+const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 const pathStr = intlMsg.commands_deploy_options_o_path();
 
 type DeployCommandOptions = {
@@ -51,9 +51,9 @@ export const deploy: Command = {
 async function run(options: DeployCommandOptions): Promise<void> {
   const { manifestFile, verbose } = options;
 
-  const project = new Web3ApiProject({
+  const project = new PolywrapProject({
     rootDir: nodePath.dirname(manifestFile),
-    web3apiManifestPath: manifestFile,
+    polywrapManifestPath: manifestFile,
     quiet: verbose ? false : true,
   });
   await project.validate();

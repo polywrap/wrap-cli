@@ -1,7 +1,7 @@
-import { QueryApiInvocations, QueryDocument, Uri } from "../types";
+import { QueryInvocations, QueryDocument, Uri } from "../types";
 
 import { SelectionSetNode, ValueNode } from "graphql";
-import { Tracer } from "@web3api/tracing-js";
+import { Tracer } from "@polywrap/tracing-js";
 
 export const parseQuery = Tracer.traceFunc(
   "core: parseQuery",
@@ -9,12 +9,12 @@ export const parseQuery = Tracer.traceFunc(
     uri: Uri,
     doc: QueryDocument,
     variables?: Record<string, unknown>
-  ): QueryApiInvocations<Uri> => {
+  ): QueryInvocations<Uri> => {
     if (doc.definitions.length === 0) {
       throw Error("Empty query document found.");
     }
 
-    const queryInvocations: QueryApiInvocations<Uri> = {};
+    const queryInvocations: QueryInvocations<Uri> = {};
 
     for (const def of doc.definitions) {
       if (def.kind !== "OperationDefinition") {
@@ -22,13 +22,6 @@ export const parseQuery = Tracer.traceFunc(
           `Unrecognized root level definition type: ${def.kind}\n` +
             "Please use a 'query' or 'mutation' operations."
         );
-      }
-
-      // Get the module name (query or mutation)
-      const module = def.operation;
-
-      if (module === "subscription") {
-        throw Error("Subscription queries are not yet supported.");
       }
 
       // Get the method name
@@ -84,7 +77,6 @@ export const parseQuery = Tracer.traceFunc(
 
         queryInvocations[invocationName] = {
           uri,
-          module,
           method,
           input,
           resultFilter,

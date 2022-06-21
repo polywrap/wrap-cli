@@ -1,5 +1,0 @@
-type Query {
-}
-
-type CustomType {
-}

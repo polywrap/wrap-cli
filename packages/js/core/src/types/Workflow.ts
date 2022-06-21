@@ -1,10 +1,9 @@
 import { ClientConfig, Uri } from ".";
-import { InvokableModules, InvokeApiResult } from "./Invoke";
+import { InvokeResult } from "./Invoke";
 import { MaybeAsync } from "./MaybeAsync";
 
 export type Step<TUri extends Uri | string = string> = {
   uri: TUri;
-  module: InvokableModules;
   method: string;
   input: Record<string, unknown>;
   config?: Partial<ClientConfig>;
@@ -35,8 +34,8 @@ export interface RunOptions<
 
   onExecution?(
     id: string,
-    data?: InvokeApiResult<TData>["data"],
-    error?: InvokeApiResult<TData>["error"]
+    data?: InvokeResult<TData>["data"],
+    error?: InvokeResult<TData>["error"]
   ): MaybeAsync<void>;
 }
 

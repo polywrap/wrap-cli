@@ -1,11 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import {
-  Uri,
-  Client,
-  InvokableModules,
-  MaybeAsync,
-  executeMaybeAsyncFunction,
-} from ".";
+import { Uri, Client, MaybeAsync, executeMaybeAsyncFunction } from ".";
 
 /**
  * Invocable plugin method.
@@ -13,7 +7,7 @@ import {
  * @param input Input arguments for the method, structured as
  * a map, removing the chance of incorrectly ordering arguments.
  * @param client The client instance requesting this invocation.
- * This client will be used for any sub-queries that occur.
+ * This client will be used for any sub-invokes that occur.
  */
 export type PluginMethod<
   TInput extends Record<string, unknown> = Record<string, unknown>,
@@ -40,16 +34,16 @@ export abstract class PluginModule<
     return this._config;
   }
 
-  public _w3_load_env(env: TEnv): void {
+  public _wrap_load_env(env: TEnv): void {
     this._env = env;
   }
 
-  public async _w3_sanitize_env(
+  public async _wrap_sanitize_env(
     clientEnv: TClientEnv,
     client: Client
   ): Promise<TEnv> {
     if (this.getMethod("sanitizeEnv")) {
-      return this._w3_invoke<TClientEnv, TEnv>(
+      return this._wrap_invoke<TClientEnv, TEnv>(
         "sanitizeEnv",
         clientEnv,
         client
@@ -59,18 +53,18 @@ export abstract class PluginModule<
     }
   }
 
-  public async _w3_invoke<
+  public async _wrap_invoke<
     TInput extends Record<string, unknown> = Record<string, unknown>,
     TResult = unknown
   >(method: string, input: TInput, client: Client): Promise<TResult> {
     const fn = this.getMethod<TInput, TResult>(method);
 
     if (!fn) {
-      throw Error("TODO: missing function");
+      throw Error(`Plugin missing method "${method}"`);
     }
 
     if (typeof fn !== "function") {
-      throw Error("TODO: ${method} must be a function");
+      throw Error(`Plugin method "${method}" must be of type 'function'`);
     }
 
     return await executeMaybeAsyncFunction<TResult>(
@@ -93,27 +87,9 @@ export abstract class PluginModule<
   }
 }
 
-/** The plugin's query "modules" */
-export type PluginModules = {
-  [module in InvokableModules]?: PluginModule;
-};
-
-/**
- * The plugin instance.
- */
-export interface Plugin {
-  /**
-   * Get an instance of this plugin's modules.
-   *
-   * @param client The client instance requesting the modules.
-   * This client will be used for any sub-queries that occur.
-   */
-  getModules(): PluginModules;
-}
-
 /** The plugin package's manifest */
 export interface PluginPackageManifest {
-  /** The API's schema */
+  /** The Wrapper's schema */
   schema: string;
 
   /** All interface schemas implemented by this plugin. */
@@ -121,7 +97,7 @@ export interface PluginPackageManifest {
 }
 
 export type PluginPackage = {
-  factory: () => Plugin;
+  factory: () => PluginModule;
   manifest: PluginPackageManifest;
 };
 

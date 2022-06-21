@@ -1,35 +1,31 @@
 import {
-  Web3ApiClientConfig,
-  Plugin,
-  Web3ApiClient,
-  createWeb3ApiClient,
+  PolywrapClientConfig,
+  PolywrapClient,
+  createPolywrapClient,
   PluginModule,
-  PluginModules,
 } from "../..";
 
 jest.setTimeout(200000);
 
 const defaultPlugins = [
-  "w3://ens/ipfs.web3api.eth",
-  "w3://ens/ens.web3api.eth",
-  "w3://ens/ethereum.web3api.eth",
-  "w3://ens/http.web3api.eth",
-  "w3://ens/js-logger.web3api.eth",
-  "w3://ens/uts46.web3api.eth",
-  "w3://ens/sha3.web3api.eth",
-  "w3://ens/graph-node.web3api.eth",
-  "w3://ens/fs.web3api.eth",
-  "w3://ens/fs-resolver.web3api.eth",
+  "wrap://ens/ipfs.polywrap.eth",
+  "wrap://ens/ens.polywrap.eth",
+  "wrap://ens/ethereum.polywrap.eth",
+  "wrap://ens/http.polywrap.eth",
+  "wrap://ens/js-logger.polywrap.eth",
+  "wrap://ens/uts46.polywrap.eth",
+  "wrap://ens/sha3.polywrap.eth",
+  "wrap://ens/graph-node.polywrap.eth",
+  "wrap://ens/fs.polywrap.eth",
+  "w3://ens/fs-resolver.polywrap.eth",
 ];
 
 describe("plugin-wrapper", () => {
-  const getClient = async (config?: Partial<Web3ApiClientConfig>) => {
-    const client = await createWeb3ApiClient(
+  const getClient = async (config?: Partial<PolywrapClientConfig>) => {
+    return await createPolywrapClient(
       {},
       config
     );
-
-    return client;
   };
 
   const mockMapPlugin = () => {
@@ -37,13 +33,11 @@ describe("plugin-wrapper", () => {
       map: Map<string, number>;
     }
 
-    class Query extends PluginModule<Config> {
+    class MockMapPlugin extends PluginModule<Config> {
       async getMap(_: unknown) {
         return this.config.map;
       }
-    }
 
-    class Mutation extends PluginModule<Config> {
       updateMap(input: { map: Map<string, number> }): Map<string, number> {
         for (const key of input.map.keys()) {
           this.config.map.set(
@@ -55,19 +49,10 @@ describe("plugin-wrapper", () => {
       }
     }
 
-    class MockMapPlugin implements Plugin {
-      private map = new Map().set("a", 1).set("b", 2);
-
-      getModules(): PluginModules {
-        return {
-          query: new Query({ map: this.map }),
-          mutation: new Mutation({ map: this.map }),
-        };
-      }
-    }
-
     return {
-      factory: () => new MockMapPlugin(),
+      factory: () => new MockMapPlugin({
+        map: new Map().set("a", 1).set("b", 2)
+      }),
       manifest: {
         schema: ``,
         implements: [],
@@ -76,14 +61,14 @@ describe("plugin-wrapper", () => {
   };
 
   test("plugin registration - with default plugins", () => {
-    const implementationUri = "w3://ens/some-implementation.eth";
+    const implementationUri = "wrap://ens/some-implementation.eth";
 
-    const client = new Web3ApiClient({
+    const client = new PolywrapClient({
       plugins: [
         {
           uri: implementationUri,
           plugin: {
-            factory: () => ({} as Plugin),
+            factory: () => ({} as PluginModule),
             manifest: {
               schema: "",
               implements: [],
@@ -101,11 +86,11 @@ describe("plugin-wrapper", () => {
   test("getSchema -- plugin schema", async () => {
     const client = await getClient();
     const schema: string = await client.getSchema(
-      "w3://ens/js-logger.web3api.eth"
+      "wrap://ens/js-logger.polywrap.eth"
     );
 
     expect(schema).toStrictEqual(
-      `### Web3API Header START ###
+      `### Polywrap Header START ###
 scalar UInt
 scalar UInt8
 scalar UInt16
@@ -140,11 +125,11 @@ directive @enabled_interface on OBJECT
 
 directive @annotate(type: String!) on FIELD
 
-### Web3API Header END ###
+### Polywrap Header END ###
 
-type Query implements Logger_Query @imports(
+type Module implements Logger_Module @imports(
   types: [
-    "Logger_Query",
+    "Logger_Module",
     "Logger_LogLevel"
   ]
 ) {
@@ -154,12 +139,12 @@ type Query implements Logger_Query @imports(
   ): Boolean!
 }
 
-### Imported Queries START ###
+### Imported Modules START ###
 
-type Logger_Query @imported(
-  uri: "ens/logger.core.web3api.eth",
+type Logger_Module @imported(
+  uri: "ens/logger.core.polywrap.eth",
   namespace: "Logger",
-  nativeType: "Query"
+  nativeType: "Module"
 ) {
   log(
     level: Logger_LogLevel!
@@ -167,12 +152,12 @@ type Logger_Query @imported(
   ): Boolean!
 }
 
-### Imported Queries END ###
+### Imported Modules END ###
 
 ### Imported Objects START ###
 
 enum Logger_LogLevel @imported(
-  uri: "ens/logger.core.web3api.eth",
+  uri: "ens/logger.core.polywrap.eth",
   namespace: "Logger",
   nativeType: "LogLevel"
 ) {
@@ -188,7 +173,7 @@ enum Logger_LogLevel @imported(
   });
 
   it("plugin map types", async () => {
-    const implementationUri = "w3://ens/some-implementation.eth";
+    const implementationUri = "wrap://ens/some-implementation.eth";
     const mockPlugin = mockMapPlugin();
     const client = await getClient({
       plugins: [
@@ -237,14 +222,14 @@ enum Logger_LogLevel @imported(
     const pluginUriToOverride = defaultPlugins[0];
 
     const pluginPackage = {
-      factory: () => ({} as Plugin),
+      factory: () => ({} as PluginModule),
       manifest: {
         schema: "",
         implements: [],
       },
     };
 
-    const client = new Web3ApiClient({
+    const client = new PolywrapClient({
       plugins: [
         {
           uri: pluginUriToOverride,
@@ -268,7 +253,7 @@ enum Logger_LogLevel @imported(
     const pluginUriToOverride = defaultPlugins[0];
 
     const pluginPackage1 = {
-      factory: () => ({} as Plugin),
+      factory: () => ({} as PluginModule),
       manifest: {
         schema: "",
         implements: [],
@@ -276,14 +261,14 @@ enum Logger_LogLevel @imported(
     };
 
     const pluginPackage2 = {
-      factory: () => ({} as Plugin),
+      factory: () => ({} as PluginModule),
       manifest: {
         schema: "",
         implements: [],
       },
     };
 
-    const client = new Web3ApiClient({
+    const client = new PolywrapClient({
       plugins: [
         {
           uri: pluginUriToOverride,

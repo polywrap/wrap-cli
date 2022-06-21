@@ -1,4 +1,4 @@
-export const header = `### Web3API Header START ###
+export const header = `### Polywrap Header START ###
 scalar UInt
 scalar UInt8
 scalar UInt16
@@ -33,5 +33,5 @@ directive @enabled_interface on OBJECT
 
 directive @annotate(type: String!) on FIELD
 
-### Web3API Header END ###
+### Polywrap Header END ###
 `;

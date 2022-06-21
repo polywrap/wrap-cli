@@ -1,4 +1,4 @@
-use web3api_wasm_rs::{BigInt, Context, Read, ReadDecoder, JSON};
+use polywrap_wasm_rs::{BigInt, Context, Read, ReadDecoder, JSON};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, PartialEq, Serialize)]

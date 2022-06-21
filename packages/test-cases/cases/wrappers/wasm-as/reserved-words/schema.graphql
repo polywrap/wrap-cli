@@ -1,0 +1,13 @@
+type Module {
+  method1(
+    const: Arg1!
+  ): Result!
+}
+
+type Arg1 {
+  const: String!
+}
+
+type Result {
+  const: String!
+}

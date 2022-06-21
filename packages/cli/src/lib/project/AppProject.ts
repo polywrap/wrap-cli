@@ -7,10 +7,10 @@ import {
   appManifestLanguageToBindLanguage,
 } from "..";
 
-import { AppManifest, Client } from "@web3api/core-js";
-import { ComposerOutput } from "@web3api/schema-compose";
-import { bindSchema, BindOutput } from "@web3api/schema-bind";
-import { TypeInfo } from "@web3api/schema-parse";
+import { AppManifest, Client } from "@polywrap/core-js";
+import { ComposerOutput } from "@polywrap/schema-compose";
+import { bindSchema, BindOutput } from "@polywrap/schema-bind";
+import { TypeInfo } from "@polywrap/schema-parse";
 import path from "path";
 
 export interface AppProjectConfig extends ProjectConfig {
@@ -50,7 +50,7 @@ export class AppProject extends Project<AppManifest> {
     );
   }
 
-  /// Manifest (web3api.app.yaml)
+  /// Manifest (polywrap.app.yaml)
 
   public async getName(): Promise<string> {
     return (await this.getManifest()).name;
@@ -88,16 +88,10 @@ export class AppProject extends Project<AppManifest> {
   }
 
   /// Schema
-
-  public async getSchemaNamedPaths(): Promise<{
-    [name: string]: string;
-  }> {
+  public async getSchemaNamedPath(): Promise<string> {
     const manifest = await this.getManifest();
     const dir = this.getManifestDir();
-    const namedPaths: { [name: string]: string } = {};
-
-    namedPaths["combined"] = path.join(dir, manifest.schema);
-    return namedPaths;
+    return path.join(dir, manifest.schema);
   }
 
   public async getImportRedirects(): Promise<
@@ -116,21 +110,16 @@ export class AppProject extends Project<AppManifest> {
   ): Promise<BindOutput> {
     return bindSchema({
       projectName: await this.getName(),
-      modules: [
-        {
-          name: "combined",
-          typeInfo: composerOutput.combined?.typeInfo as TypeInfo,
-          schema: composerOutput.combined?.schema as string,
-          outputDirAbs: this._getGenerationDirectory(generationSubPath),
-        },
-      ],
+      typeInfo: composerOutput.typeInfo as TypeInfo,
+      schema: composerOutput.schema as string,
+      outputDirAbs: this._getGenerationDirectory(generationSubPath),
       bindLanguage: appManifestLanguageToBindLanguage(
         await this.getManifestLanguage()
       ),
     });
   }
 
-  private _getGenerationDirectory(generationSubPath = "src/w3"): string {
+  private _getGenerationDirectory(generationSubPath = "src/wrap"): string {
     return path.join(this.getManifestDir(), generationSubPath);
   }
 }

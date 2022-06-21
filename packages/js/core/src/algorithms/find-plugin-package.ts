@@ -1,6 +1,6 @@
 import { Uri, PluginPackage, PluginRegistration } from "../types";
 
-import { Tracer } from "@web3api/tracing-js";
+import { Tracer } from "@polywrap/tracing-js";
 
 export const findPluginPackage = Tracer.traceFunc(
   "core: findPluginPackage",
