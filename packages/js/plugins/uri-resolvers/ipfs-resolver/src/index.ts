@@ -53,7 +53,6 @@ export class IpfsResolverPlugin extends Module<IpfsResolverPluginConfig> {
             cid: `${input.path}/${manifestSearchPattern}`,
             options: {
               timeout: 5000,
-              disableParallelRequests: this.env.disableParallelRequests,
             },
           },
           _client
@@ -88,7 +87,6 @@ export class IpfsResolverPlugin extends Module<IpfsResolverPluginConfig> {
           cid: input.path,
           options: {
             timeout: 5000,
-            disableParallelRequests: this.env.disableParallelRequests,
           },
         },
         client

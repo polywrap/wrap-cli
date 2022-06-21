@@ -1,12 +1,5 @@
 #import { Module, MaybeUriOrManifest } into UriResolver from "ens/uri-resolver.core.polywrap.eth"
 #import { Module } into Ipfs from "ens/ipfs.polywrap.eth"
 
-type Env {
-  """
-  Disable querying providers in parallel when resolving URIs
-  """
-  disableParallelRequests: Boolean
-}
-
 type Module implements UriResolver_Module {
 }

@@ -35,7 +35,7 @@ describe("IPFS Plugin", () => {
     });
 
     wrapperIpfsCid = ipfsCid;
-    console.log("wrapperIpfsCid", wrapperIpfsCid);
+
     client = new PolywrapClient({
       plugins: [
         {
@@ -58,7 +58,7 @@ describe("IPFS Plugin", () => {
     await stopTestEnvironment();
   });
 
-  it("Should successfully resolve a deployed wrapper", async () => {
+  it("Should successfully resolve a deployed wrapper - e2e", async () => {
     const wrapperUri = `ipfs/${wrapperIpfsCid}`;
 
     const resolution = await client.resolveUri(wrapperUri);
@@ -69,6 +69,8 @@ describe("IPFS Plugin", () => {
       await ipfs.cat(`${wrapperIpfsCid}/schema.graphql`)
     ).toString("utf-8");
 
-    expect(await resolution.wrapper?.getSchema(client)).toEqual(expectedSchema);
+    const schema = await resolution.wrapper?.getSchema(client);
+
+    expect(schema).toEqual(expectedSchema);
   });
 });
