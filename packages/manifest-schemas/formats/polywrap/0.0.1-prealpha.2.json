@@ -77,18 +77,18 @@
       }
     },
     "import_redirects": {
-      "description": "Redirects enabling the import of plugins.",
+      "description": "Redirects for the schema's imports.",
       "type": "array",
       "items": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
           "uri": {
-            "description": "URI resolving to the plugin schema.",
+            "description": "Import URI to be redirected.",
             "type": "string"
           },
           "schema": {
-            "description": "Graphql schema for imported plugin.",
+            "description": "Path to a graphql schema to be used for the import.",
             "type": "string"
           }
         },

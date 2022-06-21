@@ -20,7 +20,7 @@
       "format": "packageName"
     },
     "build": {
-      "description": "Path to the customized build manifest file.",
+      "description": "Path to the wrapper build manifest file.",
       "type": "string",
       "format": "manifestFile"
     },
@@ -40,29 +40,31 @@
       "format": "wasmLanguage"
     },
     "module": {
-      "description": "Path to Polywrap implementation.",
+      "description": "Path to the module's entry point.",
       "type": "string",
       "format": "file"
     },
     "schema": {
-      "description": "Path to graphql schema.",
+      "description": "Path to the module's graphql schema.",
       "type": "string",
       "format": "graphqlFile"
     },
     "import_redirects": {
-      "description": "Redirects enabling the import of plugins.",
+      "description": "Redirects for the schema's imports.",
       "type": "array",
       "items": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
           "uri": {
-            "description": "URI resolving to the plugin schema.",
-            "type": "string"
+            "description": "Import URI to be redirected.",
+            "type": "string",
+            "format": "polywrapUri"
           },
           "schema": {
-            "description": "Graphql schema for imported plugin.",
-            "type": "string"
+            "description": "Path to a graphql schema to be used for the import.",
+            "type": "string",
+            "format": "schemaFile"
           }
         },
         "required": [

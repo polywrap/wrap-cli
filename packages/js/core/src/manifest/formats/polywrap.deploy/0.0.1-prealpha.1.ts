@@ -20,7 +20,7 @@ export interface DeployManifest {
      */
     [k: string]: {
       /**
-       * Name of the publisher plugin.
+       * Name of the deploy stage.
        */
       package: string;
       /**
@@ -30,11 +30,11 @@ export interface DeployManifest {
         [k: string]: unknown;
       };
       /**
-       * Name of the required stage.
+       * Name of dependent stages.
        */
       depends_on?: string;
       /**
-       * URI resolving to the publisher plugin.
+       * URI to pass into the deploy stage.
        */
       uri?: string;
     };

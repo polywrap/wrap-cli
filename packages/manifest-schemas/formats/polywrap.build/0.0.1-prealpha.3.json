@@ -44,7 +44,7 @@
               "format": "buildxOutput"
             },
             "removeBuilder": {
-              "description": "Remove a builder instance.",
+              "description": "Remove the builder instance.",
               "type": "boolean"
             }
           }
@@ -56,7 +56,7 @@
       }
     },
     "config": {
-      "description": "Custom configuration.",
+      "description": "Custom build image configurations.",
       "type": "object"
     },
     "linked_packages": {

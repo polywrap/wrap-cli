@@ -21,7 +21,7 @@
           "required": ["package"],
           "properties": {
             "package": {
-              "description": "Name of the publisher plugin.",
+              "description": "Name of the deploy stage.",
               "type": "string"
             },
             "config": {
@@ -29,11 +29,11 @@
               "type": "object"
             },
             "depends_on": {
-              "description": "Name of the required stage.",
+              "description": "Name of dependent stages.",
               "type": "string"
             },
             "uri": {
-              "description": "URI resolving to the publisher plugin.",
+              "description": "URI to pass into the deploy stage.",
               "type": "string",
               "format": "polywrapUri"
             }

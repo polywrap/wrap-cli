@@ -38,7 +38,7 @@ export interface BuildManifest {
            */
           output?: string | boolean;
           /**
-           * Remove a builder instance.
+           * Remove the builder instance.
            */
           removeBuilder?: boolean;
         }
@@ -49,7 +49,7 @@ export interface BuildManifest {
     removeImage?: boolean;
   };
   /**
-   * Custom configuration.
+   * Custom build image configurations.
    */
   config?: {
     [k: string]: unknown;

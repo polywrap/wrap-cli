@@ -59,15 +59,15 @@ export interface PolywrapManifest {
     };
   };
   /**
-   * Redirects enabling the import of plugins.
+   * Redirects for the schema's imports.
    */
   import_redirects?: {
     /**
-     * URI resolving to the plugin schema.
+     * Import URI to be redirected.
      */
     uri: string;
     /**
-     * Graphql schema for imported plugin.
+     * Path to a graphql schema to be used for the import.
      */
     schema: string;
   }[];

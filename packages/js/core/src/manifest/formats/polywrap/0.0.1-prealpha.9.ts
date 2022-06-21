@@ -16,7 +16,7 @@ export interface PolywrapManifest {
    */
   name: string;
   /**
-   * Path to the customized build manifest file.
+   * Path to the wrapper build manifest file.
    */
   build?: string;
   /**
@@ -32,23 +32,23 @@ export interface PolywrapManifest {
    */
   language: string;
   /**
-   * Path to Polywrap implementation.
+   * Path to the module's entry point.
    */
   module?: string;
   /**
-   * Path to graphql schema.
+   * Path to the module's graphql schema.
    */
   schema: string;
   /**
-   * Redirects enabling the import of plugins.
+   * Redirects for the schema's imports.
    */
   import_redirects?: {
     /**
-     * URI resolving to the plugin schema.
+     * Import URI to be redirected.
      */
     uri: string;
     /**
-     * Graphql schema for imported plugin.
+     * Path to a graphql schema to be used for the import.
      */
     schema: string;
   }[];
