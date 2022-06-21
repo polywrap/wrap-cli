@@ -1,11 +1,16 @@
 {
   "name": "@polywrap/package-validation",
+  "description": "Polywrap Package Validator",
   "version": "0.0.1-prealpha.87",
   "license": "MIT",
   "repository": {
     "type": "git",
     "url": "https://github.com/polywrap/monorepo.git"
   },
+  "main": "build/index.js",
+  "files": [
+    "build"
+  ],
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json",
     "lint": "eslint --color -c ../../../.eslintrc.js src/",
