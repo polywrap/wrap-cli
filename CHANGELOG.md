@@ -1,3 +1,12 @@
+# Polywrap 0.0.1-prealpha.87
+## Features
+* [PR-928](https://github.com/polywrap/monorepo/pull/928) Inline documentation has been added to manifest JSON-schemas.
+* [PR-933](https://github.com/polywrap/monorepo/pull/933) A validation package has been implemented to validate WASM wrapper packages.
+
+## Bugs
+* [PR-932](https://github.com/polywrap/monorepo/pull/932) Minor fix for JSON type schema bindings
+* [PR-935](https://github.com/polywrap/monorepo/pull/935) Path fix for `npmCLI` test utility in `@polywrap/test-env-js` 
+
 # Polywrap 0.0.1-prealpha.86
 ## Features
 * [PR-923](https://github.com/polywrap/monorepo/pull/923) The Polywrap brand has been applied to the codebase.
