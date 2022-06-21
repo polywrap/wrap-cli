@@ -4,9 +4,7 @@ import {
   Nullable,
   BigInt,
   BigNumber,
-  JSON,
-  JSONSerializer,
-  JSONDeserializer,
+  JSON
 } from "@polywrap/wasm-as";
 import {
   serializeCustomType,
@@ -16,7 +14,6 @@ import {
 } from "./serialization";
 import * as Types from "..";
 
-@serializable
 export class CustomType {
   str: string;
   optStr: string | null;
@@ -70,13 +67,5 @@ export class CustomType {
 
   static read(reader: Read): CustomType {
     return readCustomType(reader);
-  }
-
-  static toJson(type: CustomType): JSON.Value {
-    return JSONSerializer.encode(type);
-  }
-
-  static fromJson(json: JSON.Value): CustomType {
-    return (new JSONDeserializer(json)).decode<CustomType>();
   }
 }
