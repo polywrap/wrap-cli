@@ -1,3 +1,7 @@
+# Polywrap 0.0.1-prealpha.88
+## Bugs
+* Various CI/CD fixes.
+
 # Polywrap 0.0.1-prealpha.87
 ## Features
 * [PR-928](https://github.com/polywrap/monorepo/pull/928) `@polywrap/manifest-schemas`: Inline documentation has been added to manifest JSON-schemas.
