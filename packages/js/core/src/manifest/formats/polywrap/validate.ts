@@ -51,6 +51,8 @@ Validator.prototype.customFormats.yamlFile = Validators.yamlFile;
 Validator.prototype.customFormats.graphqlFile = Validators.graphqlFile;
 Validator.prototype.customFormats.manifestFile = Validators.manifestFile;
 Validator.prototype.customFormats.packageName = Validators.packageName;
+Validator.prototype.customFormats.polywrapUri = Validators.polywrapUri;
+Validator.prototype.customFormats.schemaFile = Validators.schemaFile;
 
 export const validatePolywrapManifest = Tracer.traceFunc(
   "core: validatePolywrapManifest",

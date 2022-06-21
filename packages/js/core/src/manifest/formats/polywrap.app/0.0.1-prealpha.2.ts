@@ -7,12 +7,33 @@
  */
 
 export interface AppManifest {
+  /**
+   * Polywrap app manifest format version.
+   */
   format: "0.0.1-prealpha.2";
+  /**
+   * Name of this wrapper package.
+   */
   name: string;
+  /**
+   * Language in which the source code is written.
+   */
   language: string;
+  /**
+   * Path to graphql schema.
+   */
   schema: string;
+  /**
+   * Redirects for the schema's imports.
+   */
   import_redirects?: {
+    /**
+     * Import URI to be redirected.
+     */
     uri: string;
+    /**
+     * Path to a graphql schema to be used for the import.
+     */
     schema: string;
   }[];
   __type: "AppManifest";
