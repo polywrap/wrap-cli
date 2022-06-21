@@ -1,4 +1,3 @@
-import { Option } from "as-container";
 import { DataView } from "./DataView";
 import {
   Format,
@@ -15,6 +14,8 @@ import { BigInt, BigNumber } from "../math";
 import { Context } from "../debug";
 import { JSON } from "../json";
 import { ExtensionType } from "./ExtensionType";
+
+import { Option } from "as-container";
 
 export class ReadDecoder extends Read {
   private readonly _context: Context;
@@ -454,7 +455,7 @@ export class ReadDecoder extends Read {
     return Option.Some<BigNumber>(this.readBigNumber());
   }
 
-  readNullableJSON(): Option<JSON.Value>{
+  readNullableJSON(): Option<JSON.Value> {
     if (this.isNextNil()) {
       return Option.None<JSON.Value>();
     }

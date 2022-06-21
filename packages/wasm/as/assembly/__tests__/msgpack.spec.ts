@@ -68,7 +68,7 @@ class Sanity {
 
     this.largeStrArray = [];
     this.largeBytesArray = [];
-    for (let i=0; i<100; i++) {
+    for (let i = 0; i < 100; i++) {
       this.largeStrArray.push(largeString);
       this.largeBytesArray.push(largeBytes);
     }

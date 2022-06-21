@@ -1,4 +1,3 @@
-import { Option } from "as-container";
 import { DataView } from "./DataView";
 import { WriteSizer } from "./WriteSizer";
 import { Format } from "./Format";
@@ -8,6 +7,8 @@ import { throwArrayIndexOutOfRange } from "./utils";
 import { BigInt, BigNumber } from "../math";
 import { Context } from "../debug";
 import { JSON } from "../json";
+
+import { Option } from "as-container";
 
 export class WriteEncoder extends Write {
   private readonly _context: Context;

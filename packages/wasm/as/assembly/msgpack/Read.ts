@@ -1,7 +1,8 @@
-import { Option } from "as-container";
 import { BigInt, BigNumber } from "../math";
 import { Context } from "../debug";
 import { JSON } from "../json";
+
+import { Option } from "as-container";
 
 export abstract class Read {
   abstract readBool(): bool;

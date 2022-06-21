@@ -102,7 +102,6 @@ export const toWasmInit: MustacheFn = () => {
 export const toWasm: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
-    let isEnum = false;
 
     let nullable = false;
     if (type[type.length - 1] === "!") {
@@ -163,13 +162,12 @@ export const toWasm: MustacheFn = () => {
       default:
         if (type.includes("Enum_")) {
           type = `Types.${type.replace("Enum_", "")}`;
-          isEnum = true;
         } else {
           type = `Types.${type}`;
         }
     }
 
-    return applyNullable(type, nullable, isEnum);
+    return applyNullable(type, nullable);
   };
 };
 
@@ -207,11 +205,7 @@ const toWasmMap = (type: string, nullable: boolean): string => {
   return applyNullable(`Map<${keyType}, ${valType}>`, nullable, false);
 };
 
-const applyNullable = (
-  type: string,
-  nullable: boolean,
-  isEnum: boolean
-): string => {
+const applyNullable = (type: string, nullable: boolean): string => {
   if (nullable) {
     return `Option<${type}>`;
   } else {
