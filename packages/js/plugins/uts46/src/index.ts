@@ -6,7 +6,7 @@ import {
   Input_convert,
   ConvertResult,
   manifest,
-} from "./wrap-man";
+} from "./wrap";
 
 import { PluginFactory } from "@polywrap/core-js";
 
