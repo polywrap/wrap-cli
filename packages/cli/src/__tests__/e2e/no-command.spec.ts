@@ -17,6 +17,7 @@ Commands:
   plugin|p                    Build/generate types for the plugin
   query|q [options] <recipe>  Query wrappers using recipe scripts
   infra|i [options] <action>  Manage infrastructure for your wrapper
+  docgen|o [options]          Build/generate documentation for your app
   help [command]              display help for command
 `;
 
