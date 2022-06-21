@@ -11,7 +11,7 @@ pub fn stringify(input: InputStringify) -> String {
     new_string
 }
 
-pub fn parse(input: InputParse) -> JSON::Value { JSON::to_value(&input.value).unwrap() }
+pub fn parse(input: InputParse) -> JSON::Value { JSON::from_str(&input.value).unwrap() }
 
 pub fn stringify_object(input: InputStringifyObject) -> String {
     let mut new_string = String::from(&input.object.json_a.to_string());
