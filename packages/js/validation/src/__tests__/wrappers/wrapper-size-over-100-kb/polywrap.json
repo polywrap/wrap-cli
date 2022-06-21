@@ -1,0 +1,9 @@
+{
+  "format": "0.0.1-prealpha.9",
+  "name": "Valid Wrapper",
+  "language": "wasm/assemblyscript",
+  "build": "./polywrap.build.json",
+  "meta": "./polywrap.meta.json",
+  "schema": "./schema.graphql",
+  "module": "./module.wasm"
+}

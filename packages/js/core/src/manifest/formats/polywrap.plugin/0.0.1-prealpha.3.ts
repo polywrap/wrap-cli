@@ -7,13 +7,37 @@
  */
 
 export interface PluginManifest {
+  /**
+   * Polywrap plugin manifest format version.
+   */
   format: "0.0.1-prealpha.3";
+  /**
+   * Plugin name.
+   */
   name: string;
+  /**
+   * Plugin language.
+   */
   language: string;
+  /**
+   * Path to Polywrap implementation.
+   */
   module?: string;
+  /**
+   * Path to graphql schema.
+   */
   schema: string;
+  /**
+   * Redirects source URI to local wrapper or plugin.
+   */
   import_redirects?: {
+    /**
+     * Source URI that needs to be redirected.
+     */
     uri: string;
+    /**
+     * Path to GraphQL schema of the module to which URI will be redirected.
+     */
     schema: string;
   }[];
   __type: "PluginManifest";
