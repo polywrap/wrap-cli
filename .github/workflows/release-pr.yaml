@@ -133,7 +133,8 @@ jobs:
 
       - name: Apply Node Version & Commit
         run: |
-          yarn run version:apply --yes
+          yarn
+          yarn run version:apply
 
       - name: Create Pull Request
         id: cpr
