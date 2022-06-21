@@ -2,7 +2,7 @@ import path from "path";
 import {
   FileSystemPackageReader,
   ValidationFailReason,
-  WrapperValidator,
+  WasmPackageValidator,
 } from "..";
 
 jest.setTimeout(200000);
@@ -10,10 +10,10 @@ jest.setTimeout(200000);
 const testWrappersPath = path.join(__dirname, "./wrappers");
 
 describe("schema", () => {
-  let validator: WrapperValidator;
+  let validator: WasmPackageValidator;
 
   beforeAll(async () => {
-    validator = new WrapperValidator({
+    validator = new WasmPackageValidator({
       maxSize: 1_000_000,
       maxFileSize: 1_000_000,
       maxModuleSize: 1_000_000,

@@ -1,5 +1,5 @@
 import path from "path";
-import { WrapperValidator, FileSystemPackageReader } from "..";
+import { WasmPackageValidator, FileSystemPackageReader } from "..";
 
 jest.setTimeout(200000);
 
@@ -10,7 +10,7 @@ describe("sanity", () => {
     const pathToValidWrapper = path.join(testWrappersPath, "valid");
     const reader = new FileSystemPackageReader(pathToValidWrapper);
 
-    const validator = new WrapperValidator({
+    const validator = new WasmPackageValidator({
       maxSize: 1_000_000,
       maxFileSize: 1_000_000,
       maxModuleSize: 1_000_000,
@@ -27,7 +27,7 @@ describe("sanity", () => {
     const pathToValidWrapper = path.join(testWrappersPath, "valid-interface");
     const reader = new FileSystemPackageReader(pathToValidWrapper);
 
-    const validator = new WrapperValidator({
+    const validator = new WasmPackageValidator({
       maxSize: 1_000_000,
       maxFileSize: 1_000_000,
       maxModuleSize: 1_000_000,

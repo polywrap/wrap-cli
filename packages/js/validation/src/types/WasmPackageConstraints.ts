@@ -1,4 +1,4 @@
-export type WrapperConstraints = {
+export type WasmPackageConstraints = {
   maxSize: number;
   maxFileSize: number;
   maxModuleSize: number;

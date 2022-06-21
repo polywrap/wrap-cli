@@ -2,7 +2,7 @@ import path from "path";
 import {
   FileSystemPackageReader,
   ValidationFailReason,
-  WrapperValidator,
+  WasmPackageValidator,
 } from "..";
 
 jest.setTimeout(200000);
@@ -12,7 +12,7 @@ const testWrappersPath = path.join(__dirname, "./wrappers");
 const assertValidWrapper = async (wrapperPath: string) => {
   const reader = new FileSystemPackageReader(wrapperPath);
 
-  const validator = new WrapperValidator({
+  const validator = new WasmPackageValidator({
     maxSize: 1_000_000,
     maxFileSize: 1_000_000,
     maxModuleSize: 1_000_000,
@@ -43,7 +43,7 @@ describe("manfiests", () => {
       path.join(testWrappersPath, "wrapper-size-over-100-kb")
     );
 
-    const validator = new WrapperValidator({
+    const validator = new WasmPackageValidator({
       maxSize: 100_000,
       maxFileSize: 1_000_000,
       maxModuleSize: 1_000_000,
@@ -61,7 +61,7 @@ describe("manfiests", () => {
       path.join(testWrappersPath, "module-size-over-100-kb")
     );
 
-    const validator = new WrapperValidator({
+    const validator = new WasmPackageValidator({
       maxSize: 1_000_000,
       maxFileSize: 100_000,
       maxModuleSize: 1_000_000,
@@ -79,7 +79,7 @@ describe("manfiests", () => {
       path.join(testWrappersPath, "module-size-over-100-kb")
     );
 
-    const validator = new WrapperValidator({
+    const validator = new WasmPackageValidator({
       maxSize: 1_000_000,
       maxFileSize: 1_000_000,
       maxModuleSize: 100_000,

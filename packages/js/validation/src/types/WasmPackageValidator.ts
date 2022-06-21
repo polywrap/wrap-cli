@@ -1,6 +1,6 @@
 import { VALID_WRAP_MANIFEST_NAMES } from "..";
 import {
-  WrapperConstraints,
+  WasmPackageConstraints,
   PackageReader,
   ValidationResult,
   ValidationFailReason,
@@ -15,8 +15,8 @@ import {
 } from "@polywrap/core-js";
 import path from "path";
 
-export class WrapperValidator {
-  constructor(private constraints: WrapperConstraints) {}
+export class WasmPackageValidator {
+  constructor(private constraints: WasmPackageConstraints) {}
 
   async validate(reader: PackageReader): Promise<ValidationResult> {
     let result = await this.validateManifests(reader);
