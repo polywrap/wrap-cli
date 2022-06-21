@@ -205,9 +205,9 @@ export class WrapperValidator {
 
   private async validateBuildManifest(
     reader: PackageReader,
-    web3ApiManifest: PolywrapManifest
+    polywrapManifest: PolywrapManifest
   ): Promise<ValidationResult> {
-    const manifestPath = web3ApiManifest.build;
+    const manifestPath = polywrapManifest.build;
 
     if (manifestPath) {
       // Manifests get built as a `.json` file so we need to change the extension
@@ -227,9 +227,9 @@ export class WrapperValidator {
 
   private async validateMetaManifest(
     reader: PackageReader,
-    web3ApiManifest: PolywrapManifest
+    polywrapManifest: PolywrapManifest
   ): Promise<ValidationResult> {
-    const manifestPath = web3ApiManifest.meta;
+    const manifestPath = polywrapManifest.meta;
 
     if (manifestPath) {
       // Manifests get built as `.json` files so we need to change the extension
