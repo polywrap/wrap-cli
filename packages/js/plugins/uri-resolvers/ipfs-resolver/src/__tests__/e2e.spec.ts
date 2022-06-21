@@ -14,7 +14,7 @@ import { IpfsClient } from "../../../../ipfs/src/utils/IpfsClient";
 
 const createIpfsClient = require("@dorgjelli-test/ipfs-http-client-lite");
 
-jest.setTimeout(30000);
+jest.setTimeout(300000);
 
 describe("IPFS Plugin", () => {
   let client: PolywrapClient;
