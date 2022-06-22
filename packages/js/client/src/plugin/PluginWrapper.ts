@@ -80,7 +80,19 @@ export class PluginWrapper extends Wrapper {
       let jsInput: Record<string, unknown>;
 
       // If the input is a msgpack buffer, deserialize it
-      if (input instanceof ArrayBuffer) {
+      if (input instanceof Uint8Array) {
+        const result = msgpackDecode(input.buffer);
+
+        Tracer.addEvent("msgpack-decoded", result);
+
+        if (typeof result !== "object") {
+          throw new Error(
+            `PluginWrapper: decoded MsgPack input did not result in an object.\nResult: ${result}`
+          );
+        }
+
+        jsInput = result as Record<string, unknown>;
+      } else if (input instanceof ArrayBuffer) {
         const result = msgpackDecode(input);
 
         Tracer.addEvent("msgpack-decoded", result);

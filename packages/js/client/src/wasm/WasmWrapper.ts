@@ -193,7 +193,10 @@ export class WasmWrapper extends Wrapper {
         invokeResult: {} as InvokeResult,
         method,
         sanitizeEnv: {},
-        args: input instanceof ArrayBuffer ? input : msgpackEncode(input),
+        args:
+          input instanceof ArrayBuffer || input instanceof Uint8Array
+            ? input
+            : msgpackEncode(input),
       };
 
       const abort = (message: string) => {
