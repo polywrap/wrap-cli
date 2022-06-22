@@ -1,8 +1,0 @@
-type Mutation {
-  writeFile(path: String!, data: Bytes!): Boolean
-
-  mkdir(path: String!, recursive: Boolean): Boolean
-
-  rm(path: String!, recursive: Boolean, force: Boolean): Boolean
-  rmdir(path: String!): Boolean
-}

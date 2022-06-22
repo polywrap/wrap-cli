@@ -78,11 +78,11 @@ export const getDefaultClientConfig = Tracer.traceFunc(
           }),
         },
         {
-          uri: new Uri("w3://ens/fs.polywrap.eth"),
+          uri: new Uri("wrap://ens/fs.polywrap.eth"),
           plugin: filesystemPlugin({ query: {}, mutation: {} }),
         },
         {
-          uri: new Uri("w3://ens/fs-resolver.polywrap.eth"),
+          uri: new Uri("wrap://ens/fs-resolver.polywrap.eth"),
           plugin: filesystemResolverPlugin({ query: {} }),
         },
       ],
@@ -90,9 +90,9 @@ export const getDefaultClientConfig = Tracer.traceFunc(
         {
           interface: coreInterfaceUris.uriResolver,
           implementations: [
-            new Uri("w3://ens/ipfs.polywrap.eth"),
-            new Uri("w3://ens/ens.polywrap.eth"),
-            new Uri("w3://ens/fs-resolver.polywrap.eth"),
+            new Uri("wrap://ens/ipfs.polywrap.eth"),
+            new Uri("wrap://ens/ens.polywrap.eth"),
+            new Uri("wrap://ens/fs-resolver.polywrap.eth"),
           ],
         },
         {

@@ -1,4 +1,4 @@
-import { Filesystem_Encoding, Filesystem_EncodingEnum } from "../query/w3";
+import { Filesystem_Encoding, Filesystem_EncodingEnum } from "../wrap";
 
 export const filesystemEncodingToBufferEncoding = (
   encoding: Filesystem_Encoding | null | undefined

@@ -25,15 +25,15 @@ describe("sanity", () => {
       new Uri("wrap://ens/sha3.polywrap.eth"),
       new Uri("wrap://ens/graph-node.polywrap.eth"),
       new Uri("wrap://ens/fs.polywrap.eth"),
-      new Uri("w3://ens/fs-resolver.polywrap.eth"),
+      new Uri("wrap://ens/fs-resolver.polywrap.eth"),
     ]);
     expect(client.getInterfaces()).toStrictEqual([
       {
         interface: coreInterfaceUris.uriResolver,
         implementations: [
-          new Uri("w3://ens/ipfs.polywrap.eth"),
-          new Uri("w3://ens/ens.polywrap.eth"),
-          new Uri("w3://ens/fs-resolver.polywrap.eth"),
+          new Uri("wrap://ens/ipfs.polywrap.eth"),
+          new Uri("wrap://ens/ens.polywrap.eth"),
+          new Uri("wrap://ens/fs-resolver.polywrap.eth"),
         ],
       },
       {

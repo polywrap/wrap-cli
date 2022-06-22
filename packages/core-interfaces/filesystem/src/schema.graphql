@@ -1,8 +1,15 @@
-type Query {
+type Module {
   readFile(path: String!): Bytes!
   readFileAsString(path: String!, encoding: Encoding): String!
 
   exists(path: String!): Boolean!
+
+  writeFile(path: String!, data: Bytes!): Boolean
+
+  mkdir(path: String!, recursive: Boolean): Boolean
+
+  rm(path: String!, recursive: Boolean, force: Boolean): Boolean
+  rmdir(path: String!): Boolean
 }
 
 enum Encoding {

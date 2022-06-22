@@ -1,7 +1,6 @@
 import { filesystemPlugin } from "../index";
-import { Web3ApiClient, Web3ApiClientConfig } from "@web3api/client-js";
-import { Filesystem_EncodingEnum, Filesystem_Query } from "../query/w3";
-import { Filesystem_Mutation } from "../mutation/w3";
+import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
+import { Filesystem_Module, Filesystem_EncodingEnum } from "../wrap";
 import fs from "fs";
 import path from "path";
 import { filesystemEncodingToBufferEncoding } from "../utils/encodingUtils";
@@ -13,13 +12,13 @@ describe("Filesystem plugin", () => {
   const tempFilePath = path.resolve(__dirname, "samples/tempfile.dat");
   const tempFolderPath = path.resolve(__dirname, "samples/tempfolder");
 
-  let client: Web3ApiClient;
+  let client: PolywrapClient;
 
   beforeAll(async () => {
-    const config: Partial<Web3ApiClientConfig> = {
+    const config: Partial<PolywrapClientConfig> = {
       plugins: [
         {
-          uri: "w3://ens/fs.polywrap.eth",
+          uri: "wrap://ens/fs.polywrap.eth",
           plugin: filesystemPlugin({ query: {}, mutation: {} }),
         },
       ],
@@ -41,7 +40,7 @@ describe("Filesystem plugin", () => {
   it("should read a file", async () => {
     const expectedContents = await fs.promises.readFile(sampleFilePath);
 
-    const result = await Filesystem_Query.readFile(
+    const result = await Filesystem_Module.readFile(
       { path: sampleFilePath },
       client
     );
@@ -53,7 +52,7 @@ describe("Filesystem plugin", () => {
   it("should fail reading a nonexistent file", async () => {
     const nonExistentFilePath = `${sampleFilePath}nonexistent`;
 
-    const result = await Filesystem_Query.readFile(
+    const result = await Filesystem_Module.readFile(
       { path: nonExistentFilePath },
       client
     );
@@ -69,7 +68,7 @@ describe("Filesystem plugin", () => {
       encoding: filesystemEncodingToBufferEncoding(encoding),
     });
 
-    const result = await Filesystem_Query.readFileAsString(
+    const result = await Filesystem_Module.readFileAsString(
       { path: sampleFilePath, encoding: Filesystem_EncodingEnum.UTF8 },
       client
     );
@@ -92,7 +91,7 @@ describe("Filesystem plugin", () => {
     ];
 
     for (const encoding of supportedEncodings) {
-      const result = await Filesystem_Query.readFileAsString(
+      const result = await Filesystem_Module.readFileAsString(
         { path: sampleFilePath, encoding: encoding },
         client
       );
@@ -108,7 +107,7 @@ describe("Filesystem plugin", () => {
   });
 
   it("should return whether a file exists or not", async () => {
-    const result_fileExists = await Filesystem_Query.exists(
+    const result_fileExists = await Filesystem_Module.exists(
       { path: sampleFilePath },
       client
     );
@@ -121,7 +120,7 @@ describe("Filesystem plugin", () => {
       "samples/this-file-should-not-exist.txt"
     );
 
-    const result_fileMissing = await Filesystem_Query.exists(
+    const result_fileMissing = await Filesystem_Module.exists(
       { path: nonExistentFilePath },
       client
     );
@@ -133,7 +132,7 @@ describe("Filesystem plugin", () => {
   it("should write byte data to a file", async () => {
     const bytes = new Uint8Array([0, 1, 2, 3]);
 
-    const result = await Filesystem_Mutation.writeFile(
+    const result = await Filesystem_Module.writeFile(
       { data: bytes, path: tempFilePath },
       client
     );
@@ -152,7 +151,7 @@ describe("Filesystem plugin", () => {
       encoding: "utf-8",
     });
 
-    const result = await Filesystem_Mutation.rm({ path: tempFilePath }, client);
+    const result = await Filesystem_Module.rm({ path: tempFilePath }, client);
 
     expect(result.error).toBeFalsy();
     expect(result.data).toBe(true);
@@ -171,7 +170,7 @@ describe("Filesystem plugin", () => {
       encoding: "utf-8",
     });
 
-    const result = await Filesystem_Mutation.rm(
+    const result = await Filesystem_Module.rm(
       { path: tempFolderPath, recursive: true },
       client
     );
@@ -185,7 +184,7 @@ describe("Filesystem plugin", () => {
   });
 
   it("should create a folder", async () => {
-    const result = await Filesystem_Mutation.mkdir(
+    const result = await Filesystem_Module.mkdir(
       { path: tempFolderPath },
       client
     );
@@ -200,7 +199,7 @@ describe("Filesystem plugin", () => {
   it("should create a folder recursively", async () => {
     const folderInFolderPath = path.resolve(tempFolderPath, "inner");
 
-    const result = await Filesystem_Mutation.mkdir(
+    const result = await Filesystem_Module.mkdir(
       { path: folderInFolderPath, recursive: true },
       client
     );
@@ -215,7 +214,7 @@ describe("Filesystem plugin", () => {
   it("should remove a folder", async () => {
     await fs.promises.mkdir(tempFolderPath);
 
-    const result = await Filesystem_Mutation.rmdir(
+    const result = await Filesystem_Module.rmdir(
       { path: tempFolderPath },
       client
     );

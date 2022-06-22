@@ -1,17 +1,16 @@
 {
-  "name": "@webapi3/filesystem-interface",
-  "description": "Web3API Filesystem Interface",
+  "name": "@polywrap/filesystem-interface",
+  "description": "Polywrap Filesystem Interface",
   "private": true,
-  "version": "0.0.1-prealpha.85",
+  "version": "0.0.1-prealpha.86",
   "scripts": {
-    "build": "rimraf ./build && node ../../../dependencies/node_modules/@web3api/cli/bin/w3 build",
+    "build": "node ../../../dependencies/node_modules/polywrap/bin/polywrap build",
     "lint": "eslint --color -c ../../../.eslintrc.js .",
-    "test:env:up": "npx w3 test-env up",
-    "test:env:down": "npx w3 test-env down",
-    "deploy": "npx w3 deploy"
+    "test:env:up": "npx polywrap infra up --modules=eth-ens-ipfs",
+    "test:env:down": "npx polywrap infra down --modules=eth-ens-ipfs",
+    "deploy": "npx polywrap build --ipfs http://localhost:5001"
   },
   "devDependencies": {
-    "@web3api/client-js": "0.0.1-prealpha.85",
-    "rimraf": "3.0.2"
+    "polywrap": "0.0.1-prealpha.86"
   }
 }
