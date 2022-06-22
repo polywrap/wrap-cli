@@ -187,3 +187,15 @@ enum TestImport_Enum @imported(
 }
 
 ### Imported Objects END ###
+
+### Imported Envs START ###
+
+type TestImport_Env @imported(
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
+  nativeType: "Env"
+) {
+  enviroProp: String!
+}
+
+### Imported Envs END ###
