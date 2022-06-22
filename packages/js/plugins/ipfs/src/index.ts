@@ -6,7 +6,6 @@ import {
   Ipfs_ResolveResult,
   Env,
   manifest,
-  Input_catToString,
   Input_cat,
 } from "./wrap";
 import { IpfsClient } from "./utils/IpfsClient";
@@ -62,14 +61,6 @@ export class IpfsPlugin extends Module<IpfsPluginConfig> {
       },
       input.options ?? undefined
     );
-  }
-
-  public async catToString(
-    input: Input_catToString,
-    _client: Client
-  ): Promise<string> {
-    const buffer = await this.cat(input, _client);
-    return buffer.toString("utf-8");
   }
 
   public async resolve(

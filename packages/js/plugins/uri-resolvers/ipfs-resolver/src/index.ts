@@ -48,7 +48,7 @@ export class IpfsResolverPlugin extends Module<IpfsResolverPluginConfig> {
 
     for (const manifestSearchPattern of manifestSearchPatterns) {
       try {
-        const manifestResult = await Ipfs_Module.catToString(
+        const manifestResult = await Ipfs_Module.cat(
           {
             cid: `${input.path}/${manifestSearchPattern}`,
             options: {
@@ -59,7 +59,7 @@ export class IpfsResolverPlugin extends Module<IpfsResolverPluginConfig> {
         );
 
         if (manifestResult.data) {
-          manifest = manifestResult.data;
+          manifest = Buffer.from(manifestResult.data).toString("utf-8");
         } else {
           throw manifestResult.error;
         }

@@ -44,20 +44,7 @@ describe("IPFS Plugin", () => {
     await stopTestEnvironment();
   });
 
-  it("Should cat a file to string successfully", async () => {
-    expect(sampleFileIpfsInfo).toBeDefined();
-
-    let result = await Ipfs_Module.catToString(
-      { cid: sampleFileIpfsInfo.hash.toString() },
-      client
-    );
-
-    expect(result.error).toBeFalsy();
-
-    expect(result.data).toEqual(sampleFileTextContents);
-  });
-
-  it("Should cat a file to buffer successfully", async () => {
+  it("Should cat a file successfully", async () => {
     expect(sampleFileIpfsInfo).toBeDefined();
 
     let result = await Ipfs_Module.cat(

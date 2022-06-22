@@ -1,8 +1,6 @@
 type Module {
   cat(cid: String!, options: Options): Bytes!
 
-  catToString(cid: String!, options: Options): String!
-
   resolve(cid: String!, options: Options): ResolveResult
 
   addFile(data: Bytes!): String!
