@@ -24,6 +24,7 @@ export const addFirstLast: TypeInfoTransforms = {
       objectTypes: setFirstLast(typeInfo.objectTypes),
       importedObjectTypes: setFirstLast(typeInfo.importedObjectTypes),
       importedModuleTypes: setFirstLast(typeInfo.importedModuleTypes),
+      importedEnvTypes: setFirstLast(typeInfo.importedEnvTypes),
     }),
   },
 };

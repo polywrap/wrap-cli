@@ -76,6 +76,7 @@ describe("Polywrap Schema TypeInfo Transformations", () => {
       enumTypes: [],
       importedEnumTypes: [],
       interfaceTypes: [],
+      importedEnvTypes: [],
       objectTypes: [
         {
           ...createObjectDefinition({ type: "MyType" }),
@@ -289,6 +290,7 @@ describe("Polywrap Schema TypeInfo Transformations", () => {
       enumTypes: [],
       interfaceTypes: [],
       importedEnumTypes: [],
+      importedEnvTypes: [],
       objectTypes: [
         {
           ...createObjectDefinition({ type: "MyType" }),

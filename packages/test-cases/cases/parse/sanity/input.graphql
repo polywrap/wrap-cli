@@ -283,6 +283,17 @@ enum TestImport_Enum @imported(
 }
 
 """
+TestImport_Env comment
+"""
+type TestImport_Env @imported(
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
+  nativeType: "Env"
+) {
+  envProp: UInt8!
+}
+
+"""
 Interface_Module comment
 """
 type Interface_Module @imported(

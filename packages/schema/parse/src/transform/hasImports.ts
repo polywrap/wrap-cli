@@ -9,7 +9,8 @@ export const hasImports: TypeInfoTransforms = {
         return (
           typeInfo.importedEnumTypes.length ||
           typeInfo.importedObjectTypes.length ||
-          typeInfo.importedModuleTypes.length
+          typeInfo.importedModuleTypes.length ||
+          typeInfo.importedEnvTypes.length
         );
       },
     }),

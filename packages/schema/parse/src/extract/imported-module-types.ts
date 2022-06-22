@@ -31,7 +31,7 @@ const visitorEnter = (
   state: State
 ) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
-    const imported = extractImportedDefinition(node, true);
+    const imported = extractImportedDefinition(node, "module");
 
     if (!imported) {
       return;

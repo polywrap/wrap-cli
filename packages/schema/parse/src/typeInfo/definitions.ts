@@ -23,6 +23,7 @@ export enum DefinitionKind {
   Env = 1 << 16,
   MapKey = 1 << 17,
   Map = (1 << 18) | DefinitionKind.Any,
+  ImportedEnv = 1 << 19,
 }
 
 export function isKind(type: WithKind, kind: DefinitionKind): boolean {
@@ -572,5 +573,27 @@ export function createEnvDefinition(args: {
   return {
     ...createObjectDefinition({ ...args, type: "Env" }),
     kind: DefinitionKind.Env,
+  };
+}
+
+export type ImportedEnvDefinition = ImportedObjectDefinition;
+
+export function createImportedEnvDefinition(args: {
+  type: string;
+  name?: string;
+  required?: boolean;
+  uri: string;
+  namespace: string;
+  nativeType: string;
+  interfaces?: InterfaceImplementedDefinition[];
+  comment?: string;
+}): ImportedEnvDefinition {
+  return {
+    ...createObjectDefinition({ ...args, type: "Env" }),
+    uri: args.uri,
+    namespace: args.namespace,
+    nativeType: args.nativeType,
+    comment: args.comment,
+    kind: DefinitionKind.ImportedEnv,
   };
 }

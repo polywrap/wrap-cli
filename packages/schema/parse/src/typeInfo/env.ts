@@ -10,3 +10,7 @@ export function isEnvType(type: string): boolean {
 export function isEnvInputField(name: string): boolean {
   return name === envTypeNames.inputField;
 }
+
+export function isImportedEnvType(type: string): boolean {
+  return type.endsWith(`_${envTypeNames.objectType}`);
+}

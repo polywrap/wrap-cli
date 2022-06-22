@@ -7,6 +7,7 @@ import {
   createEnumRef,
   createEnvDefinition,
   createImportedEnumDefinition,
+  createImportedEnvDefinition,
   createImportedModuleDefinition,
   createImportedObjectDefinition,
   createInterfaceDefinition,
@@ -900,4 +901,22 @@ export const typeInfo: TypeInfo = {
       ],
     },
   ],
+  importedEnvTypes: [
+    {
+      ...createImportedEnvDefinition({
+        uri: "testimport.uri.eth",
+        namespace: "TestImport",
+        type: "TestImport_Env",
+        nativeType: "Env",
+        comment: "TestImport_Env comment",
+      }),
+      properties: [
+        createScalarPropertyDefinition({
+          name: "envProp",
+          type: "UInt8",
+          required: true,
+        }),
+      ],
+    },
+  ]
 };

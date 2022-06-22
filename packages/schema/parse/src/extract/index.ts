@@ -6,6 +6,7 @@ import { getImportedObjectTypesVisitor } from "./imported-object-types";
 import { getImportedModuleTypesVisitor } from "./imported-module-types";
 import { getImportedEnumTypesVisitor } from "./imported-enum-types";
 import { getEnvVisitor } from "./env-types";
+import { getImportedEnvTypesVisitor } from "./imported-env-types";
 
 import { ASTVisitor } from "graphql";
 
@@ -19,4 +20,5 @@ export const extractors: SchemaExtractorBuilder[] = [
   getModuleTypesVisitor,
   getImportedModuleTypesVisitor,
   getEnvVisitor,
+  getImportedEnvTypesVisitor,
 ];

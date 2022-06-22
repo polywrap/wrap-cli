@@ -23,6 +23,7 @@ import {
   EnvDefinition,
   WithKind,
   MapDefinition,
+  ImportedEnvDefinition,
 } from "../typeInfo";
 
 export * from "./finalizePropertyDef";
@@ -60,6 +61,7 @@ export interface TypeInfoTransformer {
   ImportedModuleDefinition?: (
     def: ImportedModuleDefinition
   ) => ImportedModuleDefinition;
+  ImportedEnvDefinition?: (def: ImportedEnvDefinition) => ImportedEnvDefinition;
   ImportedObjectDefinition?: (
     def: ImportedObjectDefinition
   ) => ImportedObjectDefinition;
@@ -102,6 +104,10 @@ export function transformTypeInfo(
     result.moduleType = visitModuleDefinition(result.moduleType, transforms);
   }
 
+  if (result.envType) {
+    result.envType = visitEnvDefinition(result.envType, transforms);
+  }
+
   for (let i = 0; i < result.importedObjectTypes.length; ++i) {
     result.importedObjectTypes[i] = visitImportedObjectDefinition(
       result.importedObjectTypes[i],
@@ -123,8 +129,11 @@ export function transformTypeInfo(
     );
   }
 
-  if (result.envType) {
-    result.envType = visitEnvDefinition(result.envType, transforms);
+  for (let i = 0; i < result.importedEnvTypes.length; ++i) {
+    result.importedEnvTypes[i] = visitImportedEnvDefinition(
+      result.importedEnvTypes[i],
+      transforms
+    );
   }
 
   if (transforms.leave && transforms.leave.TypeInfo) {
@@ -336,15 +345,18 @@ export function visitImportedEnumDefinition(
   return visitEnumDefinition(def, transforms) as ImportedEnumDefinition;
 }
 
+export function visitImportedEnvDefinition(
+  def: ImportedEnvDefinition,
+  transforms: TypeInfoTransforms
+): ImportedEnvDefinition {
+  return visitEnvDefinition(def, transforms) as ImportedEnvDefinition;
+}
+
 export function visitEnvDefinition(
   def: EnvDefinition,
   transforms: TypeInfoTransforms
 ): EnvDefinition {
-  let result = Object.assign({}, def);
-  result = transformType(result, transforms.enter);
-  result = visitObjectDefinition(result, transforms);
-
-  return transformType(result, transforms.leave);
+  return visitObjectDefinition(def, transforms);
 }
 
 export function visitMapDefinition(
@@ -397,6 +409,7 @@ export function transformType<TDefinition extends WithKind>(
     InterfaceImplementedDefinition,
     EnvDefinition,
     MapDefinition,
+    ImportedEnvDefinition,
   } = transform;
 
   if (GenericDefinition && isKind(result, DefinitionKind.Generic)) {
@@ -461,6 +474,9 @@ export function transformType<TDefinition extends WithKind>(
   }
   if (EnvDefinition && isKind(result, DefinitionKind.Env)) {
     result = Object.assign(result, EnvDefinition(result as any));
+  }
+  if (ImportedEnvDefinition && isKind(result, DefinitionKind.ImportedEnv)) {
+    result = Object.assign(result, ImportedEnvDefinition(result as any));
   }
   if (MapDefinition && isKind(result, DefinitionKind.Map)) {
     result = Object.assign(result, MapDefinition(result as any));
