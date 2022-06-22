@@ -4,7 +4,7 @@ import { PolywrapClient } from "../..";
 describe("plugin-subinvoke", () => {
   const mockPlugin = () => {
     class MockPlugin extends PluginModule<Record<string, unknown>> {
-      public async call(input: {input: ArrayBuffer | Uint8Array}, client: Client): Promise<ArrayBuffer> {
+      public async call(input: {input: Uint8Array}, client: Client): Promise<ArrayBuffer> {
         const res = await client.invoke({
           uri: "ens/http.polywrap.eth",
           method: "get",
