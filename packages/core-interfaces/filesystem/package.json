@@ -2,7 +2,7 @@
   "name": "@polywrap/filesystem-interface",
   "description": "Polywrap Filesystem Interface",
   "private": true,
-  "version": "0.0.1-prealpha.86",
+  "version": "0.0.1-prealpha.88",
   "scripts": {
     "build": "node ../../../dependencies/node_modules/polywrap/bin/polywrap build",
     "lint": "eslint --color -c ../../../.eslintrc.js .",
@@ -11,6 +11,6 @@
     "deploy": "npx polywrap build --ipfs http://localhost:5001"
   },
   "devDependencies": {
-    "polywrap": "0.0.1-prealpha.86"
+    "polywrap": "0.0.1-prealpha.88"
   }
 }
