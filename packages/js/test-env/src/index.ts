@@ -23,7 +23,7 @@ export const providers = {
 };
 
 const monorepoCli = `${__dirname}/../../../cli/bin/polywrap`;
-const npmCli = `${__dirname}/../../polywrap/bin/polywrap`;
+const npmCli = `${__dirname}/../../../polywrap/bin/polywrap`;
 
 async function awaitResponse(
   url: string,
