@@ -28,3 +28,7 @@ directive @imports(
 type ExternalType {
   str: String
 }
+
+type Env {
+  externalProp: ExternalType
+}

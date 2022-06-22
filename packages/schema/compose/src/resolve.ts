@@ -48,6 +48,11 @@ import {
   createEnvDefinition,
   createModuleDefinition,
   EnvDefinition,
+  createImportedEnvDefinition,
+  ImportedEnvDefinition,
+  visitImportedEnvDefinition,
+  isImportedEnvType,
+  isImportedModuleType,
 } from "@polywrap/schema-parse";
 
 type ImplementationWithInterfaces = {
@@ -164,6 +169,7 @@ export async function resolveImportsAndParseSchemas(
     importedEnumTypes: [],
     importedObjectTypes: [],
     importedModuleTypes: [],
+    importedEnvTypes: [],
   };
 
   const externalImports = await resolveExternalImports(
@@ -622,6 +628,10 @@ async function resolveExternalImports(
       if (extTypeInfo.moduleType) {
         extTypesToImport.push(extTypeInfo.moduleType.type);
       }
+
+      if (extTypeInfo.envType) {
+        extTypesToImport.push(extTypeInfo.envType.type);
+      }
     }
 
     // For each imported type to resolve
@@ -657,9 +667,36 @@ async function resolveExternalImports(
           }),
           methods: type.methods,
         };
-      } else if (importedType.endsWith("_Module")) {
+      } else if (isImportedModuleType(importedType)) {
         throw Error(
           `Cannot import an import's imported module type. Tried to import ${importedType} from ${uri}.`
+        );
+      } else if (isEnvType(importedType)) {
+        if (!extTypeInfo.envType) {
+          throw new Error(
+            `Tried to import env type from ${uri} but it doesn't exist.`
+          );
+        }
+
+        extTypes = [extTypeInfo.envType];
+        visitorFunc = visitEnvDefinition;
+        const type = extTypeInfo.envType;
+        console.log(appendNamespace(namespace, importedType));
+        trueType = {
+          ...createImportedEnvDefinition({
+            ...type,
+            name: undefined,
+            required: undefined,
+            uri,
+            nativeType: type.type,
+            namespace,
+          }),
+          properties: type.properties,
+        };
+        console.log(trueType);
+      } else if (isImportedEnvType(importedType)) {
+        throw Error(
+          `Cannot import an import's imported env type. Tried to import ${importedType} from ${uri}.`
         );
       } else {
         const objIdx = extTypeInfo.objectTypes.findIndex(
@@ -783,10 +820,20 @@ async function resolveExternalImports(
       let destArray:
         | ImportedObjectDefinition[]
         | ImportedModuleDefinition[]
-        | ImportedEnumDefinition[];
+        | ImportedEnumDefinition[]
+        | ImportedEnvDefinition[];
       let append;
 
-      if (importType.kind === DefinitionKind.ImportedObject) {
+      if (importType.kind === DefinitionKind.ImportedEnv) {
+        destArray = typeInfo.importedEnvTypes;
+        append = () => {
+          const importDef = importType as ImportedEnvDefinition;
+          // Namespace all object types
+          typeInfo.importedEnvTypes.push(
+            visitImportedEnvDefinition(importDef, namespaceTypes(namespace))
+          );
+        };
+      } else if (importType.kind === DefinitionKind.ImportedObject) {
         destArray = typeInfo.importedObjectTypes;
         append = () => {
           const importDef = importType as ImportedObjectDefinition;
@@ -1006,7 +1053,7 @@ async function resolveLocalImports(
 
     // Add all imported types into the aggregate TypeInfo
     for (const importType of Object.keys(typesToImport)) {
-      if (isEnvType(importType)) {
+      if (isKind(typesToImport[importType], DefinitionKind.Env)) {
         if (!typeInfo.envType) {
           typeInfo.envType = createEnvDefinition({});
         }

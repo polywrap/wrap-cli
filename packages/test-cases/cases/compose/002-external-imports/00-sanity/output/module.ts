@@ -7,6 +7,7 @@ import {
   createTypeInfo,
   TypeInfo,
 } from "@polywrap/schema-parse";
+import { createImportedEnvDefinition } from "@polywrap/schema-parse/src/typeInfo";
 
 export const typeInfo: TypeInfo = {
   ...createTypeInfo(),
@@ -15,7 +16,8 @@ export const typeInfo: TypeInfo = {
   moduleType: {
       ...createModuleDefinition({}),
       imports: [
-        { type: "Namespace_ExternalType" }
+        { type: "Namespace_ExternalType" },
+        { type: "Namespace_Env" }
       ],
       interfaces: [],
       methods: [
@@ -49,4 +51,20 @@ export const typeInfo: TypeInfo = {
       ],
     },
   ],
+  importedEnvTypes: [
+    {
+      ...createImportedEnvDefinition({
+        uri: "external.eth",
+        namespace: "Namespace",
+        nativeType: "Env",
+        type: "Namespace_Env"
+      }),
+      properties: [
+        createObjectPropertyDefinition({
+          name: "externalProp",
+          type: "Namespace_ExternalType"
+        })
+      ],
+    },
+  ]
 };

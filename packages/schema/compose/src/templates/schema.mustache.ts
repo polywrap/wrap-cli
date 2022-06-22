@@ -155,6 +155,30 @@ enum {{type}} @imported(
 }
 
 {{/importedEnumTypes}}
-### Imported Objects END ###{{/typeInfo}}`;
+### Imported Objects END ###
+
+### Imported Envs START ###
+
+{{#importedEnvTypes}}{{#comment}}
+"""
+{{comment}}
+"""
+{{/comment}}
+type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}} @imported(
+  uri: "{{uri}}",
+  namespace: "{{namespace}}",
+  nativeType: "{{nativeType}}"
+){{#properties.length}} {
+  {{#properties}}{{#comment}}
+  """
+  {{comment}}
+  """
+  {{/comment}}
+  {{name}}: {{toGraphQLType}}
+  {{/properties}}
+}{{/properties.length}}
+
+{{/importedEnvTypes}}
+### Imported Envs END ###{{/typeInfo}}`;
 
 export { template };

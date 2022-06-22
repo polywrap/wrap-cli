@@ -37,7 +37,8 @@ directive @annotate(type: String!) on FIELD
 
 type Module @imports(
   types: [
-    "Namespace_ExternalType"
+    "Namespace_ExternalType",
+    "Namespace_Env"
   ]
 ) {
   method: Namespace_ExternalType
@@ -58,3 +59,15 @@ type Namespace_ExternalType @imported(
 }
 
 ### Imported Objects END ###
+
+### Imported Envs START ###
+
+type Namespace_Env @imported(
+  uri: "external.eth",
+  namespace: "Namespace",
+  nativeType: "Env"
+) {
+  externalProp: Namespace_ExternalType
+}
+
+### Imported Envs END ###

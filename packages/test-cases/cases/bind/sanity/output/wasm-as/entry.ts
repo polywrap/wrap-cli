@@ -1,22 +1,15 @@
 import {
   wrap_invoke_args,
   wrap_invoke,
-  wrap_load_env,
-  wrap_sanitize_env,
   wrap_abort,
   InvokeArgs
 } from "@polywrap/wasm-as";
 
 import {
   moduleMethodWrapped,
-  objectMethodWrapped
+  objectMethodWrapped,
+  optionalEnvMethodWrapped
 } from "./Module/wrapped";
-import {
-  env
-} from "./env";
-import {
-  Env
-} from "./Env";
 
 export function _wrap_invoke(method_size: u32, args_size: u32): bool {
   const args: InvokeArgs = wrap_invoke_args(
@@ -30,14 +23,12 @@ export function _wrap_invoke(method_size: u32, args_size: u32): bool {
   else if (args.method == "objectMethod") {
     return wrap_invoke(args, objectMethodWrapped);
   }
+  else if (args.method == "optionalEnvMethod") {
+    return wrap_invoke(args, optionalEnvMethodWrapped);
+  }
   else {
     return wrap_invoke(args, null);
   }
-}
-
-export function _wrap_load_env(env_size: u32): void {
-  const envBuf = wrap_load_env(env_size);
-  env = Env.fromBuffer(envBuf);
 }
 
 export function wrapAbort(

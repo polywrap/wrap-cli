@@ -589,7 +589,10 @@ export function createImportedEnvDefinition(args: {
   comment?: string;
 }): ImportedEnvDefinition {
   return {
-    ...createObjectDefinition({ ...args, type: "Env" }),
+    ...createObjectDefinition({
+      ...args,
+      type: `${args.namespace}_Env`,
+    }),
     uri: args.uri,
     namespace: args.namespace,
     nativeType: args.nativeType,
