@@ -1,3 +1,0 @@
-#import { Module } into Logger from "ens/logger.core.polywrap.eth"
-
-type Module implements Logger_Module { }

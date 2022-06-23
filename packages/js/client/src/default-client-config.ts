@@ -20,7 +20,6 @@ import { httpPlugin } from "@polywrap/http-plugin-js";
 import { filesystemPlugin } from "@polywrap/fs-plugin-js";
 import { uts46Plugin } from "@polywrap/uts46-plugin-js";
 import { sha3Plugin } from "@polywrap/sha3-plugin-js";
-import { loggerPlugin } from "@polywrap/logger-plugin-js";
 import { Tracer } from "@polywrap/tracing-js";
 
 export const getDefaultClientConfig = Tracer.traceFunc(
@@ -59,10 +58,6 @@ export const getDefaultClientConfig = Tracer.traceFunc(
           plugin: httpPlugin({}),
         },
         {
-          uri: new Uri("wrap://ens/js-logger.polywrap.eth"),
-          plugin: loggerPlugin({}),
-        },
-        {
           uri: new Uri("wrap://ens/uts46.polywrap.eth"),
           plugin: uts46Plugin({}),
         },
@@ -89,10 +84,6 @@ export const getDefaultClientConfig = Tracer.traceFunc(
             new Uri("wrap://ens/ens.polywrap.eth"),
             new Uri("wrap://ens/fs.polywrap.eth"),
           ],
-        },
-        {
-          interface: coreInterfaceUris.logger,
-          implementations: [new Uri("wrap://ens/js-logger.polywrap.eth")],
         },
       ],
       uriResolvers: [
