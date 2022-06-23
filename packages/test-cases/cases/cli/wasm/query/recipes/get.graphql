@@ -1,8 +1,0 @@
-query {
-  getData(
-    address: $address
-    connection: {
-      networkNameOrChainId: $network
-    }
-  )
-}
