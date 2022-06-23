@@ -9,10 +9,8 @@ import {
 
 import { ipfsResolverPlugin } from "..";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
-
-import { IpfsClient } from "../utils/IpfsClient";
-
-const createIpfsClient = require("@dorgjelli-test/ipfs-http-client-lite");
+import { IpfsClient } from "./helpers/IpfsClient";
+import { createIpfsClient } from "./helpers/createIpfsClient";
 
 jest.setTimeout(300000);
 
