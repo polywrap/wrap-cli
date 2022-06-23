@@ -9,7 +9,7 @@ import {
   transformTypeInfo,
   moduleCapabilities,
   addAnnotations,
-} from "@web3api/schema-parse";
+} from "@polywrap/schema-parse";
 
 // Remove mustache's built-in HTML escaping
 Mustache.escape = (value) => value;

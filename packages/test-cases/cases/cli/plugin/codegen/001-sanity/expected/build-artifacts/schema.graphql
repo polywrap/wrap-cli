@@ -1,4 +1,4 @@
-### Web3API Header START ###
+### Polywrap Header START ###
 scalar UInt
 scalar UInt8
 scalar UInt16
@@ -33,28 +33,11 @@ directive @enabled_interface on OBJECT
 
 directive @annotate(type: String!) on FIELD
 
-### Web3API Header END ###
+### Polywrap Header END ###
 
-type Mutation @imports(
+type Module @imports(
   types: [
-    "Ethereum_Mutation",
-    "Ethereum_Connection",
-    "Ethereum_TxOverrides",
-    "Ethereum_TxResponse",
-    "Ethereum_Access",
-    "Ethereum_TxReceipt",
-    "Ethereum_Log",
-    "Ethereum_TxRequest"
-  ]
-) {
-  method(
-    arg: UInt32!
-  ): String!
-}
-
-type Query @imports(
-  types: [
-    "Ethereum_Query",
+    "Ethereum_Module",
     "Ethereum_Connection",
     "Ethereum_TxOverrides",
     "Ethereum_StaticTxResult",
@@ -62,16 +45,22 @@ type Query @imports(
     "Ethereum_TxReceipt",
     "Ethereum_Log",
     "Ethereum_EventNotification",
-    "Ethereum_Network"
+    "Ethereum_Network",
+    "Ethereum_TxResponse",
+    "Ethereum_Access"
   ]
 ) {
-  method(
+  methodOne(
     str: String!
     optStr: String
   ): Object!
+
+  methodTwo(
+    arg: UInt32!
+  ): String!
 }
 
-type QueryEnv {
+type Env {
   arg1: String!
 }
 
@@ -81,62 +70,12 @@ type Object {
   bytes: Bytes
 }
 
-### Imported Queries START ###
+### Imported Modules START ###
 
-type Ethereum_Mutation @imported(
-  uri: "ens/ethereum.web3api.eth",
+type Ethereum_Module @imported(
+  uri: "ens/ethereum.polywrap.eth",
   namespace: "Ethereum",
-  nativeType: "Mutation"
-) {
-  callContractMethod(
-    address: String!
-    method: String!
-    args: [String!]
-    connection: Ethereum_Connection
-    txOverrides: Ethereum_TxOverrides
-  ): Ethereum_TxResponse!
-
-  callContractMethodAndWait(
-    address: String!
-    method: String!
-    args: [String!]
-    connection: Ethereum_Connection
-    txOverrides: Ethereum_TxOverrides
-  ): Ethereum_TxReceipt!
-
-  sendTransaction(
-    tx: Ethereum_TxRequest!
-    connection: Ethereum_Connection
-  ): Ethereum_TxResponse!
-
-  sendTransactionAndWait(
-    tx: Ethereum_TxRequest!
-    connection: Ethereum_Connection
-  ): Ethereum_TxReceipt!
-
-  deployContract(
-    abi: String!
-    bytecode: String!
-    args: [String!]
-    connection: Ethereum_Connection
-  ): String!
-
-  signMessage(
-    message: String!
-    connection: Ethereum_Connection
-  ): String!
-
-  sendRPC(
-    method: String!
-    params: [String!]!
-    connection: Ethereum_Connection
-  ): String
-}
-
-type Ethereum_Query @imported(
-  uri: "ens/ethereum.web3api.eth",
-  namespace: "Ethereum",
-  nativeType: "Query"
+  nativeType: "Module"
 ) {
   callContractView(
     address: String!
@@ -245,14 +184,58 @@ type Ethereum_Query @imported(
   getNetwork(
     connection: Ethereum_Connection
   ): Ethereum_Network!
+
+  callContractMethod(
+    address: String!
+    method: String!
+    args: [String!]
+    connection: Ethereum_Connection
+    txOverrides: Ethereum_TxOverrides
+  ): Ethereum_TxResponse!
+
+  callContractMethodAndWait(
+    address: String!
+    method: String!
+    args: [String!]
+    connection: Ethereum_Connection
+    txOverrides: Ethereum_TxOverrides
+  ): Ethereum_TxReceipt!
+
+  sendTransaction(
+    tx: Ethereum_TxRequest!
+    connection: Ethereum_Connection
+  ): Ethereum_TxResponse!
+
+  sendTransactionAndWait(
+    tx: Ethereum_TxRequest!
+    connection: Ethereum_Connection
+  ): Ethereum_TxReceipt!
+
+  deployContract(
+    abi: String!
+    bytecode: String!
+    args: [String!]
+    connection: Ethereum_Connection
+  ): String!
+
+  signMessage(
+    message: String!
+    connection: Ethereum_Connection
+  ): String!
+
+  sendRPC(
+    method: String!
+    params: [String!]!
+    connection: Ethereum_Connection
+  ): String
 }
 
-### Imported Queries END ###
+### Imported Modules END ###
 
 ### Imported Objects START ###
 
 type Ethereum_Connection @imported(
-  uri: "ens/ethereum.web3api.eth",
+  uri: "ens/ethereum.polywrap.eth",
   namespace: "Ethereum",
   nativeType: "Connection"
 ) {
@@ -261,7 +244,7 @@ type Ethereum_Connection @imported(
 }
 
 type Ethereum_TxOverrides @imported(
-  uri: "ens/ethereum.web3api.eth",
+  uri: "ens/ethereum.polywrap.eth",
   namespace: "Ethereum",
   nativeType: "TxOverrides"
 ) {
@@ -270,8 +253,93 @@ type Ethereum_TxOverrides @imported(
   value: BigInt
 }
 
+type Ethereum_StaticTxResult @imported(
+  uri: "ens/ethereum.polywrap.eth",
+  namespace: "Ethereum",
+  nativeType: "StaticTxResult"
+) {
+  result: String!
+  error: Boolean!
+}
+
+type Ethereum_TxRequest @imported(
+  uri: "ens/ethereum.polywrap.eth",
+  namespace: "Ethereum",
+  nativeType: "TxRequest"
+) {
+  to: String
+  from: String
+  nonce: UInt32
+  gasLimit: BigInt
+  gasPrice: BigInt
+  data: String
+  value: BigInt
+  chainId: BigInt
+  type: UInt32
+}
+
+type Ethereum_TxReceipt @imported(
+  uri: "ens/ethereum.polywrap.eth",
+  namespace: "Ethereum",
+  nativeType: "TxReceipt"
+) {
+  to: String!
+  from: String!
+  contractAddress: String!
+  transactionIndex: UInt32!
+  root: String
+  gasUsed: BigInt!
+  logsBloom: String!
+  transactionHash: String!
+  logs: [Ethereum_Log!]!
+  blockNumber: BigInt!
+  blockHash: String!
+  confirmations: UInt32!
+  cumulativeGasUsed: BigInt!
+  effectiveGasPrice: BigInt!
+  byzantium: Boolean!
+  type: UInt32!
+  status: UInt32
+}
+
+type Ethereum_Log @imported(
+  uri: "ens/ethereum.polywrap.eth",
+  namespace: "Ethereum",
+  nativeType: "Log"
+) {
+  blockNumber: BigInt!
+  blockHash: String!
+  transactionIndex: UInt32!
+  removed: Boolean!
+  address: String!
+  data: String!
+  topics: [String!]!
+  transactionHash: String!
+  logIndex: UInt32!
+}
+
+type Ethereum_EventNotification @imported(
+  uri: "ens/ethereum.polywrap.eth",
+  namespace: "Ethereum",
+  nativeType: "EventNotification"
+) {
+  data: String!
+  address: String!
+  log: Ethereum_Log!
+}
+
+type Ethereum_Network @imported(
+  uri: "ens/ethereum.polywrap.eth",
+  namespace: "Ethereum",
+  nativeType: "Network"
+) {
+  name: String!
+  chainId: BigInt!
+  ensAddress: String
+}
+
 type Ethereum_TxResponse @imported(
-  uri: "ens/ethereum.web3api.eth",
+  uri: "ens/ethereum.polywrap.eth",
   namespace: "Ethereum",
   nativeType: "TxResponse"
 ) {
@@ -297,97 +365,12 @@ type Ethereum_TxResponse @imported(
 }
 
 type Ethereum_Access @imported(
-  uri: "ens/ethereum.web3api.eth",
+  uri: "ens/ethereum.polywrap.eth",
   namespace: "Ethereum",
   nativeType: "Access"
 ) {
   address: String!
   storageKeys: [String!]!
-}
-
-type Ethereum_TxReceipt @imported(
-  uri: "ens/ethereum.web3api.eth",
-  namespace: "Ethereum",
-  nativeType: "TxReceipt"
-) {
-  to: String!
-  from: String!
-  contractAddress: String!
-  transactionIndex: UInt32!
-  root: String
-  gasUsed: BigInt!
-  logsBloom: String!
-  transactionHash: String!
-  logs: [Ethereum_Log!]!
-  blockNumber: BigInt!
-  blockHash: String!
-  confirmations: UInt32!
-  cumulativeGasUsed: BigInt!
-  effectiveGasPrice: BigInt!
-  byzantium: Boolean!
-  type: UInt32!
-  status: UInt32
-}
-
-type Ethereum_Log @imported(
-  uri: "ens/ethereum.web3api.eth",
-  namespace: "Ethereum",
-  nativeType: "Log"
-) {
-  blockNumber: BigInt!
-  blockHash: String!
-  transactionIndex: UInt32!
-  removed: Boolean!
-  address: String!
-  data: String!
-  topics: [String!]!
-  transactionHash: String!
-  logIndex: UInt32!
-}
-
-type Ethereum_TxRequest @imported(
-  uri: "ens/ethereum.web3api.eth",
-  namespace: "Ethereum",
-  nativeType: "TxRequest"
-) {
-  to: String
-  from: String
-  nonce: UInt32
-  gasLimit: BigInt
-  gasPrice: BigInt
-  data: String
-  value: BigInt
-  chainId: BigInt
-  type: UInt32
-}
-
-type Ethereum_StaticTxResult @imported(
-  uri: "ens/ethereum.web3api.eth",
-  namespace: "Ethereum",
-  nativeType: "StaticTxResult"
-) {
-  result: String!
-  error: Boolean!
-}
-
-type Ethereum_EventNotification @imported(
-  uri: "ens/ethereum.web3api.eth",
-  namespace: "Ethereum",
-  nativeType: "EventNotification"
-) {
-  data: String!
-  address: String!
-  log: Ethereum_Log!
-}
-
-type Ethereum_Network @imported(
-  uri: "ens/ethereum.web3api.eth",
-  namespace: "Ethereum",
-  nativeType: "Network"
-) {
-  name: String!
-  chainId: BigInt!
-  ensAddress: String
 }
 
 ### Imported Objects END ###

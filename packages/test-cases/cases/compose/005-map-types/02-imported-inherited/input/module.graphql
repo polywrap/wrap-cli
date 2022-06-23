@@ -1,0 +1,16 @@
+#import { ImportedDerivedType } from "../imports-local/local-schema.graphql"
+
+type BaseType {
+  requiredMap: Map! @annotate(type: "Map<String!, Int!>!")
+}
+
+type DerivedType implements BaseType {
+  mapOfValueArr: Map! @annotate(type: "Map<String!, Array<Int!>!>!")
+}
+
+type Module {
+  method(
+    args: DerivedType!
+    importedArgs: ImportedDerivedType!
+  ): Map! @annotate(type: "Map<String!, Int!>!")
+}

@@ -1,4 +1,4 @@
-import { ImportedDefinition } from "../../typeInfo";
+import { ImportedDefinition, MODULE_NAME } from "../../typeInfo";
 
 import { DirectiveNode, TypeDefinitionNode } from "graphql";
 
@@ -20,26 +20,13 @@ export function extractImportedDefinition(
   }
 
   const typeName = node.name.value;
+  const moduleIdentifier = `_${MODULE_NAME}`;
 
-  const queryIdentifier = "_Query";
-  const mutationIdentifier = "_Mutation";
-
-  if (moduleTypes) {
-    // Ignore everything that isn't a query type
-    if (
-      !typeName.endsWith(queryIdentifier) &&
-      !typeName.endsWith(mutationIdentifier)
-    ) {
-      return undefined;
-    }
-  } else {
-    // Ignore query types
-    if (
-      typeName.endsWith(queryIdentifier) ||
-      typeName.endsWith(mutationIdentifier)
-    ) {
-      return undefined;
-    }
+  if (
+    (moduleTypes && !typeName.endsWith(moduleIdentifier)) ||
+    (!moduleTypes && typeName.endsWith(moduleIdentifier))
+  ) {
+    return undefined;
   }
 
   const importedDir = node.directives[importedIndex];

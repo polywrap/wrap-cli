@@ -2,48 +2,42 @@ FROM node:{{node_version}}-alpine as base
 
 RUN apk --no-cache --virtual build-dependencies add bash
 
-{{#web3api_linked_packages.length}}
+{{#polywrap_linked_packages.length}}
 WORKDIR /linked-packages
-{{/web3api_linked_packages.length}}
+{{/polywrap_linked_packages.length}}
 
-{{#web3api_linked_packages}}
+{{#polywrap_linked_packages}}
 COPY {{dir}} ./{{name}}
-{{/web3api_linked_packages}}
+{{/polywrap_linked_packages}}
 
 WORKDIR /project
 
 # Install deps in its own step, making rebuilds faster
-# when just the Web3API schema & implementation files change
+# when just the Polywrap schema & implementation files change
 COPY package.json .
-{{#web3api_linked_packages}}
+{{#polywrap_linked_packages}}
 RUN npx json -I -f package.json -e "this.dependencies['{{name}}']='../linked-packages/{{name}}'"
-{{/web3api_linked_packages}}
+{{/polywrap_linked_packages}}
 RUN yarn
 
 # Copy all manifest files
-{{#web3api_manifests}}
+{{#polywrap_manifests}}
 COPY {{.}} .
-{{/web3api_manifests}}
+{{/polywrap_manifests}}
 
 # Copy all source files
-{{#web3api_common_dir}}
-COPY {{.}} {{.}}
-{{/web3api_common_dir}}
 {{#include}}
 COPY {{.}} {{.}}
 {{/include}}
-{{#web3api_modules}}
+{{#polywrap_module}}
 COPY {{dir}} {{dir}}
-{{/web3api_modules}}
 
-{{#web3api_modules}}
 # Build the module at {{dir}}
-RUN ./node_modules/.bin/asc {{dir}}/w3/entry.ts \
+RUN ./node_modules/.bin/asc {{dir}}/wrap/entry.ts \
     --path ./node_modules \
     --outFile ./build/{{name}}.wasm \
-    --use abort={{dir}}/w3/entry/w3Abort \
+    --use abort={{dir}}/wrap/entry/wrapAbort \
     --optimize --importMemory \
     --runtime stub \
-    --runPasses asyncify \
-    --transform @serial-as/transform
-{{/web3api_modules}}
+    --runPasses asyncify
+{{/polywrap_module}}

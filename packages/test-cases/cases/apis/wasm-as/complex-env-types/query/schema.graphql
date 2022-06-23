@@ -1,9 +1,0 @@
-#import { Env } from "../common/schema.graphql"
-
-type Query {
-  queryEnv(arg: String!): QueryEnv
-}
-
-type QueryEnv {
-  queryStr: String
-}

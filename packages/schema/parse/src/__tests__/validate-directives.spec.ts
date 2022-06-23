@@ -2,7 +2,7 @@ import { parseSchema } from "..";
 import { directiveValidators } from "../validate";
 
 const supportedDirectivesSchema = `
-type Query @imports(
+type Module @imports(
   types: ["Hey"]
 ) {
   func(
@@ -40,7 +40,7 @@ type Object {
 `;
 
 const importsDirectiveSchema3 = `
-type Query @imports(
+type Module @imports(
   typees: ["Hey"]
 ) {
   prop: String!
@@ -68,7 +68,7 @@ type Namespace_Object {
 `;
 
 
-describe("Web3API Schema Directives Validation", () => {
+describe("Polywrap Schema Directives Validation", () => {
   it("supportedDirectives", () => {
     expect(() => parseSchema(supportedDirectivesSchema, {
       validators: [
@@ -79,13 +79,13 @@ describe("Web3API Schema Directives Validation", () => {
     );
   });
 
-  it("importsDirective: Query Object Only", () => {
+  it("importsDirective: Module Object Only", () => {
     expect(() => parseSchema(importsDirectiveSchema1, {
       validators: [
         directiveValidators.getImportsDirectiveValidator
       ]
     })).toThrow(
-      /@imports directive should only be used on QUERY or MUTATION type definitions, but it is being used on the following ObjectTypeDefinitions:\nObject/gm
+      /@imports directive should only be used on Module type definitions, but it is being used on the following ObjectTypeDefinitions:\nObject/gm
     );
   });
 
@@ -95,7 +95,7 @@ describe("Web3API Schema Directives Validation", () => {
         directiveValidators.getImportsDirectiveValidator
       ]
     })).toThrow(
-      /@imports directive should only be used on QUERY or MUTATION type definitions, but it is being used in the following location: definitions -> 0 -> fields -> 0 -> directives -> 0/gm
+      /@imports directive should only be used on Module type definitions, but it is being used in the following location: definitions -> 0 -> fields -> 0 -> directives -> 0/gm
     );
   });
 

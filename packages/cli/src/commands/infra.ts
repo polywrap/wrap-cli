@@ -7,7 +7,7 @@ import { Argument } from "commander";
 import chalk from "chalk";
 import yaml from "js-yaml";
 import { readdirSync } from "fs";
-import { InfraManifest } from "@web3api/core-js";
+import { InfraManifest } from "@polywrap/core-js";
 
 type InfraCommandOptions = {
   modules?: string;
@@ -62,7 +62,7 @@ export const infra: Command = {
       .option(
         `--manifest  <${manifestNameStr}>`,
         intlMsg.commands_infra_manifestPathDescription(),
-        "web3api.infra.yaml"
+        "polywrap.infra.yaml"
       )
       .option(
         `-m, --modules <${moduleNameStr},${moduleNameStr}>`,
@@ -103,7 +103,7 @@ Default Modules: \n${readdirSync(DEFAULT_MODULES_PATH)
           .map((m) => `\n- ${m}`)
           .join("")}
 
-Example: 'w3 infra up --modules=eth-ens-ipfs'.`
+Example: 'polywrap infra up --modules=eth-ens-ipfs'.`
       );
     }
   }

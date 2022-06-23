@@ -12,13 +12,13 @@ import {
   parsePluginPublishDirOption,
 } from "../lib";
 
-import { ComposerFilter } from "@web3api/schema-compose";
-import { writeFileSync } from "@web3api/os-js";
+import { ComposerFilter } from "@polywrap/schema-compose";
+import { writeFileSync } from "@polywrap/os-js";
 import path from "path";
 import fs from "fs";
 
 const defaultPublishDir = "./build";
-const defaultCodegenDir = "./w3";
+const defaultCodegenDir = "./wrap";
 const pathStr = intlMsg.commands_plugin_options_path();
 const defaultManifestStr = defaultPluginManifest.join(" | ");
 const nodeStr = intlMsg.commands_plugin_options_i_node();
@@ -128,12 +128,12 @@ async function run(options: PluginCommandOptions) {
     ComposerFilter.Schema
   );
   const publishSchemaPath = path.join(publishDir, "schema.graphql");
-  const publishManifestPath = path.join(publishDir, "web3api.plugin.json");
+  const publishManifestPath = path.join(publishDir, "polywrap.plugin.json");
 
   if (!fs.existsSync(publishDir)) {
     fs.mkdirSync(publishDir);
   }
 
-  writeFileSync(publishSchemaPath, schemas.combined.schema);
+  writeFileSync(publishSchemaPath, schemas.schema);
   await outputManifest(manifest, publishManifestPath);
 }

@@ -1,8 +1,0 @@
-type Query {
-  getEnv(arg: String!): QueryEnv!
-}
-
-type QueryEnv {
-  str: String
-  requiredInt: Int!
-}

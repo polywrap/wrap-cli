@@ -15,7 +15,7 @@ pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped(input: &[u8]) -> Vec<u8> {
     match deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input) {
         Ok(args) => {
     {{/arguments.length}}
-            let result = {{#toLower}}{{name}}{{/toLower}}({{#arguments.length}} Input{{#toUpper}}{{name}}{{/toUpper}} {
+            let result = {{#toLower}}{{name}}{{/toLower}}({{#arguments.length}}Input{{#toUpper}}{{name}}{{/toUpper}} {
                 {{#arguments}}
                 {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: args.{{#toLower}}{{name}}{{/toLower}},
                 {{/arguments}}

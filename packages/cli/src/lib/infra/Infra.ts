@@ -6,7 +6,7 @@ import {
   CacheDirectory,
 } from "../";
 
-import { InfraManifest } from "@web3api/core-js";
+import { InfraManifest } from "@polywrap/core-js";
 import path from "path";
 import fs, { lstatSync, readdirSync } from "fs";
 import YAML from "js-yaml";
@@ -230,7 +230,7 @@ export class Infra {
     this._writeFileToCacheFromAbsPath(composePath, fileContent);
   }
 
-  // Compose package.json under .w3 folder and install deps
+  // Compose package.json under .polywrap folder and install deps
   private async _fetchRemoteModules(
     modules: NamedRemoteModule[],
     installationDir: string
@@ -321,7 +321,7 @@ export class Infra {
         m.path
       );
 
-      // Write new docker-compose manifests with corrected build path and 'web3api' prefix
+      // Write new docker-compose manifests with corrected build path and 'polywrap' prefix
       const newComposeFile = YAML.dump(composeFileWithCorrectPaths);
       this._writeFileToCacheFromAbsPath(m.path, newComposeFile);
     });

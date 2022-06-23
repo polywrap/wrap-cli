@@ -1,4 +1,4 @@
-import { providers } from "@web3api/test-env-js";
+import { providers } from "@polywrap/test-env-js";
 
 export async function getTestEnvProviders(
   ipfsProvider?: string,

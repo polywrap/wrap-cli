@@ -1,17 +1,11 @@
-{{#__commonPath}}
-export { {{type}} } from "../../common";
-{{/__commonPath}}
-{{^__commonPath}}
 import {
   Read,
   Write,
   Nullable,
   BigInt,
   BigNumber,
-  JSON,
-  JSONSerializer,
-  JSONDeserializer,
-} from "@web3api/wasm-as";
+  JSON
+} from "@polywrap/wasm-as";
 import {
   serialize{{type}},
   deserialize{{type}},
@@ -20,7 +14,6 @@ import {
 } from "./serialization";
 import * as Types from "../..";
 
-@serializable
 export class {{type}} {
 
   public static uri: string = "{{uri}}";
@@ -44,7 +37,4 @@ export class {{type}} {
   static read(reader: Read): {{type}} {
     return read{{type}}(reader);
   }
-
-  {{> json_methods}}
 }
-{{/__commonPath}}

@@ -7,8 +7,8 @@ import {
   PluginRegistration,
   Uri,
   UriRedirect,
-  Web3ApiClientConfig,
-} from "@web3api/client-js";
+  PolywrapClientConfig,
+} from "@polywrap/client-js";
 
 export function validateRedirects<TUri extends PluginPackage | Uri | string>(
   redirects: UriRedirect<TUri>[]
@@ -157,21 +157,9 @@ export function validateEnvs<TUri extends Uri | string = string>(
           index: i.toString(),
         })
       );
-    } else if (!env.common && typeof env.common !== "object") {
+    } else if (!env.env && typeof env.env !== "object") {
       throw new Error(
-        intlMsg.commands_query_error_envsItemCommonNotObject({
-          index: i.toString(),
-        })
-      );
-    } else if (!env.mutation && typeof env.mutation !== "object") {
-      throw new Error(
-        intlMsg.commands_query_error_envsItemMutationNotObject({
-          index: i.toString(),
-        })
-      );
-    } else if (!env.query && typeof env.query !== "object") {
-      throw new Error(
-        intlMsg.commands_query_error_envsItemQueryNotObject({
+        intlMsg.commands_query_error_envsItemModuleNotObject({
           index: i.toString(),
         })
       );
@@ -180,7 +168,7 @@ export function validateEnvs<TUri extends Uri | string = string>(
 }
 
 export function validateClientConfig(
-  config: Partial<Web3ApiClientConfig>
+  config: Partial<PolywrapClientConfig>
 ): void {
   if (!config || typeof config !== "object") {
     throw new Error(intlMsg.commands_query_error_clientConfigNotObject());

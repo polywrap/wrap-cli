@@ -9,5 +9,5 @@
 ## Start Test Environment
 `yarn test:env:up`  
 
-## Build & Deploy Web3API
+## Build & Deploy Polywrap
 `yarn deploy` 
