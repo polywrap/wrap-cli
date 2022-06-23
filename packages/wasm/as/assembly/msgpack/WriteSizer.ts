@@ -1,8 +1,9 @@
 import { Write } from "./Write";
-import { Nullable } from "./Nullable";
 import { BigInt, BigNumber } from "../math";
 import { Context } from "../debug";
 import { JSON } from "../json";
+
+import { Option } from "as-container";
 
 export class WriteSizer extends Write {
   length: i32;
@@ -194,85 +195,85 @@ export class WriteSizer extends Write {
     this.extByteLengths.push(byteLength);
   }
 
-  writeNullableBool(value: Nullable<bool>): void {
-    if (value.isNull) {
+  writeNullableBool(value: Option<bool>): void {
+    if (value.isNone) {
       this.writeNil();
       return;
     }
 
-    this.writeBool(value.value);
+    this.writeBool(value.unwrap());
   }
 
-  writeNullableInt8(value: Nullable<i8>): void {
-    if (value.isNull) {
+  writeNullableInt8(value: Option<i8>): void {
+    if (value.isNone) {
       this.writeNil();
       return;
     }
 
-    this.writeInt8(value.value);
+    this.writeInt8(value.unwrap());
   }
 
-  writeNullableInt16(value: Nullable<i16>): void {
-    if (value.isNull) {
+  writeNullableInt16(value: Option<i16>): void {
+    if (value.isNone) {
       this.writeNil();
       return;
     }
 
-    this.writeInt16(value.value);
+    this.writeInt16(value.unwrap());
   }
 
-  writeNullableInt32(value: Nullable<i32>): void {
-    if (value.isNull) {
+  writeNullableInt32(value: Option<i32>): void {
+    if (value.isNone) {
       this.writeNil();
       return;
     }
 
-    this.writeInt32(value.value);
+    this.writeInt32(value.unwrap());
   }
 
-  writeNullableUInt8(value: Nullable<u8>): void {
-    if (value.isNull) {
+  writeNullableUInt8(value: Option<u8>): void {
+    if (value.isNone) {
       this.writeNil();
       return;
     }
 
-    this.writeUInt8(value.value);
+    this.writeUInt8(value.unwrap());
   }
 
-  writeNullableUInt16(value: Nullable<u16>): void {
-    if (value.isNull) {
+  writeNullableUInt16(value: Option<u16>): void {
+    if (value.isNone) {
       this.writeNil();
       return;
     }
 
-    this.writeUInt16(value.value);
+    this.writeUInt16(value.unwrap());
   }
 
-  writeNullableUInt32(value: Nullable<u32>): void {
-    if (value.isNull) {
+  writeNullableUInt32(value: Option<u32>): void {
+    if (value.isNone) {
       this.writeNil();
       return;
     }
 
-    this.writeUInt32(value.value);
+    this.writeUInt32(value.unwrap());
   }
 
-  writeNullableFloat32(value: Nullable<f32>): void {
-    if (value.isNull) {
+  writeNullableFloat32(value: Option<f32>): void {
+    if (value.isNone) {
       this.writeNil();
       return;
     }
 
-    this.writeFloat32(value.value);
+    this.writeFloat32(value.unwrap());
   }
 
-  writeNullableFloat64(value: Nullable<f64>): void {
-    if (value.isNull) {
+  writeNullableFloat64(value: Option<f64>): void {
+    if (value.isNone) {
       this.writeNil();
       return;
     }
 
-    this.writeFloat64(value.value);
+    this.writeFloat64(value.unwrap());
   }
 
   writeNullableString(value: string | null): void {

@@ -50,13 +50,14 @@ export const toWasmInit: MustacheFn = () => {
       type = type.substring(0, type.length - 1);
     } else {
       const nullType = toWasm()(value, render);
-      const nullable = "Nullable";
+      const nullable = "Option";
       const nullOptional = "| null";
 
       if (nullType.endsWith(nullOptional)) {
         return "null";
       } else if (nullType.startsWith(nullable)) {
-        return `new ${nullType}()`;
+        type = nullType.substring(6);
+        return `Option.None${type}()`;
       }
     }
 
@@ -227,7 +228,7 @@ const applyNullable = (
     ) {
       return `${type} | null`;
     } else {
-      return `Nullable<${type}>`;
+      return `Option<${type}>`;
     }
   } else {
     return type;
