@@ -61,12 +61,7 @@ export class IpfsResolverPlugin extends Module<IpfsResolverPluginConfig> {
       }
     }
 
-    if (manifest) {
-      return { uri: null, manifest };
-    } else {
-      // Nothing found
-      return { uri: null, manifest: null };
-    }
+    return { uri: null, manifest: manifest ?? null };
   }
 
   public async getFile(
@@ -102,11 +97,7 @@ export class IpfsResolverPlugin extends Module<IpfsResolverPluginConfig> {
         client
       );
 
-      if (catResult.data) {
-        return catResult.data;
-      } else {
-        return null;
-      }
+      return catResult.data ?? null;
     } catch (e) {
       return null;
     }
