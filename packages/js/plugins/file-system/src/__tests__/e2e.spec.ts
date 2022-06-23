@@ -1,13 +1,13 @@
-import { filesystemPlugin } from "../index";
+import { fileSystemPlugin } from "../index";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
-import { Filesystem_Module, Filesystem_EncodingEnum } from "../wrap";
+import { FileSystem_Module, FileSystem_EncodingEnum } from "../wrap";
 import fs from "fs";
 import path from "path";
-import filesystemEncodingToBufferEncoding from "../utils/filesystemEncodingToBufferEncoding";
+import fileSystemEncodingToBufferEncoding from "../utils/fileSystemEncodingToBufferEncoding";
 
 jest.setTimeout(360000);
 
-describe("Filesystem plugin", () => {
+describe("FileSystem plugin", () => {
   const sampleFilePath = path.resolve(__dirname, "samples/sample.txt");
   const tempFilePath = path.resolve(__dirname, "samples/tempfile.dat");
   const tempDirPath = path.resolve(__dirname, "samples/tempdir");
@@ -29,10 +29,11 @@ describe("Filesystem plugin", () => {
       plugins: [
         {
           uri: "wrap://ens/fs.polywrap.eth",
-          plugin: filesystemPlugin({ query: {}, mutation: {} }),
+          plugin: fileSystemPlugin({ query: {}, mutation: {} }),
         },
       ],
     };
+
     client = new PolywrapClient(config);
   });
 
@@ -43,7 +44,7 @@ describe("Filesystem plugin", () => {
   it("can read a file", async () => {
     const expectedContents = await fs.promises.readFile(sampleFilePath);
 
-    const result = await Filesystem_Module.readFile(
+    const result = await FileSystem_Module.readFile(
       { path: sampleFilePath },
       client
     );
@@ -55,7 +56,7 @@ describe("Filesystem plugin", () => {
   it("should fail reading a nonexistent file", async () => {
     const nonExistentFilePath = path.resolve(__dirname, "nonexistent.txt");
 
-    const result = await Filesystem_Module.readFile(
+    const result = await FileSystem_Module.readFile(
       { path: nonExistentFilePath },
       client
     );
@@ -65,14 +66,14 @@ describe("Filesystem plugin", () => {
   });
 
   it("should read a UTF8-encoded file as a string", async () => {
-    let encoding = Filesystem_EncodingEnum.UTF8;
+    let encoding = FileSystem_EncodingEnum.UTF8;
 
     const expectedContents = await fs.promises.readFile(sampleFilePath, {
-      encoding: filesystemEncodingToBufferEncoding(encoding),
+      encoding: fileSystemEncodingToBufferEncoding(encoding),
     });
 
-    const result = await Filesystem_Module.readFileAsString(
-      { path: sampleFilePath, encoding: Filesystem_EncodingEnum.UTF8 },
+    const result = await FileSystem_Module.readFileAsString(
+      { path: sampleFilePath, encoding: FileSystem_EncodingEnum.UTF8 },
       client
     );
 
@@ -82,19 +83,19 @@ describe("Filesystem plugin", () => {
 
   it("should read a file using supported encodings as a string", async () => {
     let supportedEncodings = [
-      Filesystem_EncodingEnum.ASCII,
-      Filesystem_EncodingEnum.BASE64,
-      Filesystem_EncodingEnum.BASE64URL,
-      Filesystem_EncodingEnum.BINARY,
-      Filesystem_EncodingEnum.HEX,
-      Filesystem_EncodingEnum.LATIN1,
-      Filesystem_EncodingEnum.UCS2,
-      Filesystem_EncodingEnum.UTF16LE,
-      Filesystem_EncodingEnum.UTF8,
+      FileSystem_EncodingEnum.ASCII,
+      FileSystem_EncodingEnum.BASE64,
+      FileSystem_EncodingEnum.BASE64URL,
+      FileSystem_EncodingEnum.BINARY,
+      FileSystem_EncodingEnum.HEX,
+      FileSystem_EncodingEnum.LATIN1,
+      FileSystem_EncodingEnum.UCS2,
+      FileSystem_EncodingEnum.UTF16LE,
+      FileSystem_EncodingEnum.UTF8,
     ];
 
     for (const encoding of supportedEncodings) {
-      const result = await Filesystem_Module.readFileAsString(
+      const result = await FileSystem_Module.readFileAsString(
         { path: sampleFilePath, encoding: encoding },
         client
       );
@@ -102,7 +103,7 @@ describe("Filesystem plugin", () => {
       expect(result.error).toBeFalsy();
 
       const expectedContents = await fs.promises.readFile(sampleFilePath, {
-        encoding: filesystemEncodingToBufferEncoding(encoding),
+        encoding: fileSystemEncodingToBufferEncoding(encoding),
       });
 
       expect(result.data).toBe(expectedContents);
@@ -110,7 +111,7 @@ describe("Filesystem plugin", () => {
   });
 
   it("should return whether a file exists or not", async () => {
-    const result_fileExists = await Filesystem_Module.exists(
+    const result_fileExists = await FileSystem_Module.exists(
       { path: sampleFilePath },
       client
     );
@@ -123,7 +124,7 @@ describe("Filesystem plugin", () => {
       "samples/this-file-should-not-exist.txt"
     );
 
-    const result_fileMissing = await Filesystem_Module.exists(
+    const result_fileMissing = await FileSystem_Module.exists(
       { path: nonExistentFilePath },
       client
     );
@@ -135,7 +136,7 @@ describe("Filesystem plugin", () => {
   it("should write byte data to a file", async () => {
     const bytes = new Uint8Array([0, 1, 2, 3]);
 
-    const result = await Filesystem_Module.writeFile(
+    const result = await FileSystem_Module.writeFile(
       { data: bytes, path: tempFilePath },
       client
     );
@@ -154,7 +155,7 @@ describe("Filesystem plugin", () => {
       encoding: "utf-8",
     });
 
-    const result = await Filesystem_Module.rm({ path: tempFilePath }, client);
+    const result = await FileSystem_Module.rm({ path: tempFilePath }, client);
 
     expect(result.error).toBeFalsy();
     expect(result.data).toBe(true);
@@ -173,7 +174,7 @@ describe("Filesystem plugin", () => {
       encoding: "utf-8",
     });
 
-    const result = await Filesystem_Module.rm(
+    const result = await FileSystem_Module.rm(
       { path: tempDirPath, recursive: true },
       client
     );
@@ -187,7 +188,7 @@ describe("Filesystem plugin", () => {
   });
 
   it("should create a directory", async () => {
-    const result = await Filesystem_Module.mkdir({ path: tempDirPath }, client);
+    const result = await FileSystem_Module.mkdir({ path: tempDirPath }, client);
 
     expect(result.data).toBe(true);
 
@@ -199,7 +200,7 @@ describe("Filesystem plugin", () => {
   it("should create a directory recursively", async () => {
     const dirInDirPath = path.resolve(tempDirPath, "inner");
 
-    const result = await Filesystem_Module.mkdir(
+    const result = await FileSystem_Module.mkdir(
       { path: dirInDirPath, recursive: true },
       client
     );
@@ -214,7 +215,7 @@ describe("Filesystem plugin", () => {
   it("should remove a directory", async () => {
     await fs.promises.mkdir(tempDirPath);
 
-    const result = await Filesystem_Module.rmdir({ path: tempDirPath }, client);
+    const result = await FileSystem_Module.rmdir({ path: tempDirPath }, client);
 
     expect(result.data).toBe(true);
 

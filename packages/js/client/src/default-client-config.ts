@@ -17,12 +17,12 @@ import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
 import { ensPlugin } from "@polywrap/ens-plugin-js";
 import { graphNodePlugin } from "@polywrap/graph-node-plugin-js";
 import { httpPlugin } from "@polywrap/http-plugin-js";
-import { filesystemPlugin } from "@polywrap/fs-plugin-js";
+import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { uts46Plugin } from "@polywrap/uts46-plugin-js";
 import { sha3Plugin } from "@polywrap/sha3-plugin-js";
 import { loggerPlugin } from "@polywrap/logger-plugin-js";
 import { Tracer } from "@polywrap/tracing-js";
-import { filesystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
+import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 
 export const getDefaultClientConfig = Tracer.traceFunc(
   "client-js: getDefaultClientConfig",
@@ -79,11 +79,11 @@ export const getDefaultClientConfig = Tracer.traceFunc(
         },
         {
           uri: new Uri("wrap://ens/fs.polywrap.eth"),
-          plugin: filesystemPlugin({ query: {}, mutation: {} }),
+          plugin: fileSystemPlugin({ query: {}, mutation: {} }),
         },
         {
           uri: new Uri("wrap://ens/fs-resolver.polywrap.eth"),
-          plugin: filesystemResolverPlugin({ query: {} }),
+          plugin: fileSystemResolverPlugin({ query: {} }),
         },
       ],
       interfaces: [

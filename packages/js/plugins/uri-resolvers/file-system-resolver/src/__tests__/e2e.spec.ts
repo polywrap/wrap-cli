@@ -1,4 +1,4 @@
-import { filesystemResolverPlugin } from "../index";
+import { fileSystemResolverPlugin } from "../index";
 import {
   buildWrapper,
   initTestEnvironment,
@@ -30,7 +30,7 @@ describe("Filesystem plugin", () => {
       plugins: [
         {
           uri: "wrap://ens/fs-resolver.polywrap.eth",
-          plugin: filesystemResolverPlugin({ query: {} }),
+          plugin: fileSystemResolverPlugin({ query: {} }),
         },
         {
           uri: "wrap://ens/ipfs.polywrap.eth",

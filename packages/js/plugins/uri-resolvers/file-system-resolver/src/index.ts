@@ -1,8 +1,8 @@
 import {
   Bytes,
   Client,
-  Filesystem_EncodingEnum,
-  Filesystem_Module,
+  FileSystem_EncodingEnum,
+  FileSystem_Module,
   Input_getFile,
   Input_tryResolveUri,
   Module,
@@ -15,7 +15,7 @@ import path from "path";
 
 export type ModuleConfig = Record<string, unknown>;
 
-export class FilesystemResolverPlugin extends Module<ModuleConfig> {
+export class FileSystemResolverPlugin extends Module<ModuleConfig> {
   async tryResolveUri(
     input: Input_tryResolveUri,
     _client: Client
@@ -30,15 +30,15 @@ export class FilesystemResolverPlugin extends Module<ModuleConfig> {
 
     for (const manifestSearchPattern of manifestSearchPatterns) {
       const manifestPath = path.resolve(input.path, manifestSearchPattern);
-      const manifestExistsResult = await Filesystem_Module.exists(
+      const manifestExistsResult = await FileSystem_Module.exists(
         { path: manifestPath },
         _client
       );
 
       if (manifestExistsResult.data) {
         try {
-          const manifestResult = await Filesystem_Module.readFileAsString(
-            { path: manifestPath, encoding: Filesystem_EncodingEnum.UTF8 },
+          const manifestResult = await FileSystem_Module.readFileAsString(
+            { path: manifestPath, encoding: FileSystem_EncodingEnum.UTF8 },
             _client
           );
           if (manifestResult.error) {
@@ -61,7 +61,7 @@ export class FilesystemResolverPlugin extends Module<ModuleConfig> {
 
   async getFile(input: Input_getFile, _client: Client): Promise<Bytes | null> {
     try {
-      const fileResult = await Filesystem_Module.readFile(
+      const fileResult = await FileSystem_Module.readFile(
         { path: input.path },
         _client
       );
@@ -76,11 +76,11 @@ export class FilesystemResolverPlugin extends Module<ModuleConfig> {
     }
   }
 }
-export const filesystemResolverPlugin: PluginFactory<ModuleConfig> = (
+export const fileSystemResolverPlugin: PluginFactory<ModuleConfig> = (
   opts: ModuleConfig
 ) => {
   return {
-    factory: () => new FilesystemResolverPlugin(opts),
+    factory: () => new FileSystemResolverPlugin(opts),
     manifest,
   };
 };

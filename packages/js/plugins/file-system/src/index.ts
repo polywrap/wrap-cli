@@ -10,14 +10,14 @@ import {
   Input_rm,
   Input_rmdir,
 } from "./wrap";
-import filesystemEncodingToBufferEncoding from "./utils/filesystemEncodingToBufferEncoding";
+import fileSystemEncodingToBufferEncoding from "./utils/fileSystemEncodingToBufferEncoding";
 
 import fs from "fs";
 import { PluginFactory } from "@polywrap/core-js";
 
-export type FilesystemPluginConfig = Record<string, unknown>;
+export type FileSystemPluginConfig = Record<string, unknown>;
 
-export class FilesystemPlugin extends Module<FilesystemPluginConfig> {
+export class FileSystemPlugin extends Module<FileSystemPluginConfig> {
   async readFile(input: Input_readFile, _client: Client): Promise<ArrayBuffer> {
     return fs.promises.readFile(input.path);
   }
@@ -27,7 +27,7 @@ export class FilesystemPlugin extends Module<FilesystemPluginConfig> {
     _client: Client
   ): Promise<string> {
     return fs.promises.readFile(input.path, {
-      encoding: filesystemEncodingToBufferEncoding(input.encoding),
+      encoding: fileSystemEncodingToBufferEncoding(input.encoding),
     });
   }
 
@@ -67,13 +67,13 @@ export class FilesystemPlugin extends Module<FilesystemPluginConfig> {
     return true;
   }
 }
-export const filesystemPlugin: PluginFactory<FilesystemPluginConfig> = (
-  opts: FilesystemPluginConfig
+export const fileSystemPlugin: PluginFactory<FileSystemPluginConfig> = (
+  opts: FileSystemPluginConfig
 ) => {
   return {
-    factory: () => new FilesystemPlugin(opts),
+    factory: () => new FileSystemPlugin(opts),
     manifest,
   };
 };
 
-export const plugin = filesystemPlugin;
+export const plugin = fileSystemPlugin;

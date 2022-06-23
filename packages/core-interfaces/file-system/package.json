@@ -1,5 +1,5 @@
 {
-  "name": "@polywrap/filesystem-interface",
+  "name": "@polywrap/file-system-interface",
   "description": "Polywrap Filesystem Interface",
   "private": true,
   "version": "0.0.1-prealpha.88",

@@ -1,3 +1,0 @@
-#import { Module } into Filesystem from "ens/fs.polywrap.eth"
-
-type Module implements Filesystem_Module { }
