@@ -74,10 +74,17 @@ describe("IPFS Plugin", () => {
   });
 
   it("Should add a file successfully", async () => {
-    let result = await Ipfs_Module.addFile({ data: sampleFileBuffer }, client);
+    const expectedContents = "A new sample file";
+    const contentsBuffer = Buffer.from(expectedContents, "utf-8");
+
+    let result = await Ipfs_Module.addFile({ data: contentsBuffer }, client);
 
     expect(result.error).toBeFalsy();
 
-    expect(result.data).toEqual(sampleFileIpfsInfo.hash.toString());
+    expect(result.data).toBeTruthy();
+
+    const addedFileBuffer = await ipfs.cat(result.data as string);
+
+    expect(contentsBuffer).toEqual(addedFileBuffer);
   });
 });

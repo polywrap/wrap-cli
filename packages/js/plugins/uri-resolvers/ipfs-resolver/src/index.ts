@@ -20,10 +20,6 @@ export interface IpfsResolverPluginConfig extends Record<string, unknown> {
 }
 
 export class IpfsResolverPlugin extends Module<IpfsResolverPluginConfig> {
-  public static isCID(cid: string): boolean {
-    return isIPFS.cid(cid) || isIPFS.cidPath(cid) || isIPFS.ipfsPath(cid);
-  }
-
   // uri-resolver.core.web3api.eth
   public async tryResolveUri(
     input: Input_tryResolveUri,
@@ -38,11 +34,7 @@ export class IpfsResolverPlugin extends Module<IpfsResolverPluginConfig> {
       return { manifest: null, uri: null };
     }
 
-    const manifestSearchPatterns = [
-      "polywrap.json",
-      "polywrap.yaml",
-      "polywrap.yml",
-    ];
+    const manifestSearchPatterns = ["polywrap.json"];
 
     let manifest: string | undefined;
 
@@ -118,6 +110,10 @@ export class IpfsResolverPlugin extends Module<IpfsResolverPluginConfig> {
     } catch (e) {
       return null;
     }
+  }
+
+  private static isCID(cid: string): boolean {
+    return isIPFS.cid(cid) || isIPFS.cidPath(cid) || isIPFS.ipfsPath(cid);
   }
 }
 

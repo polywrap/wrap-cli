@@ -10,7 +10,7 @@ import {
 import { ipfsResolverPlugin } from "..";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 
-import { IpfsClient } from "../../../../ipfs/src/utils/IpfsClient";
+import { IpfsClient } from "../utils/IpfsClient";
 
 const createIpfsClient = require("@dorgjelli-test/ipfs-http-client-lite");
 

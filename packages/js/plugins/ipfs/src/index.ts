@@ -13,8 +13,6 @@ import { execSimple, execFallbacks } from "./utils/exec";
 
 import { Client, PluginFactory } from "@polywrap/core-js";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
-const isIPFS = require("is-ipfs");
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention
 const createIpfsClient = require("@dorgjelli-test/ipfs-http-client-lite");
 
@@ -47,10 +45,6 @@ export class IpfsPlugin extends Module<IpfsPluginConfig> {
   constructor(config: IpfsPluginConfig) {
     super(config);
     this._ipfs = createIpfsClient(this.config.provider);
-  }
-
-  public static isCID(cid: string): boolean {
-    return isIPFS.cid(cid) || isIPFS.cidPath(cid) || isIPFS.ipfsPath(cid);
   }
 
   public async cat(input: Input_cat, _client: Client): Promise<Buffer> {
