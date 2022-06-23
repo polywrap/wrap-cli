@@ -632,40 +632,68 @@ export const runJsonTypeTest = async (
   client: PolywrapClient,
   uri: string
 ) => {
-  const fromJson = await client.invoke<{ x: number; y: number }>({
+  type Json = string;
+  const value = JSON.stringify({ foo: "bar", bar: "bar" })
+  const parseResponse = await client.invoke<{ parse: Json }>({
     uri,
-    method: "fromJson",
+    method: "parse",
     input: {
-      json: JSON.stringify({ x: 1, y: 2 }),
+      value
+    }
+  })
+
+  expect(parseResponse.data).toEqual(value);
+
+  const values = [
+    JSON.stringify({ bar: "foo" }),
+    JSON.stringify({ baz: "fuz" }),
+  ];
+
+  const stringifyResponse = await client.invoke<{ stringify: Json}>({
+    uri,
+    method: "stringify",
+    input: {
+      values
+    }
+  })
+
+  expect(stringifyResponse.data).toEqual(values.join(""));
+
+  const object = {
+    jsonA: JSON.stringify({ foo: "bar" }),
+    jsonB: JSON.stringify({ fuz: "baz" }),
+  };
+
+  const stringifyObjectResponse = await client.invoke<{
+    stringifyObject: string;
+  }>({
+    uri,
+    method: "stringifyObject",
+    input: {
+      object,
     },
   });
 
-  expect(fromJson.error).toBeFalsy();
-  expect(fromJson.data).toBeTruthy();
-  expect(fromJson.data).toMatchObject({
-    x: 1,
-    y: 2,
-  });
-
-  const toJson = await client.invoke<{ str: string }>({
-    uri,
-    method: "toJson",
-    input: {
-      pair: {
-        x: 1,
-        y: 2,
-      },
-    },
-  });
-
-  expect(toJson.error).toBeFalsy();
-  expect(toJson.data).toBeTruthy();
-  expect(toJson.data).toBe(
-    JSON.stringify({
-      x: 1,
-      y: 2,
-    })
+  expect(stringifyObjectResponse.data).toEqual(
+    object.jsonA + object.jsonB
   );
+
+  const json = {
+    valueA: 5,
+    valueB: "foo",
+    valueC: true
+  }
+
+  const methodJSONResponse = await client.invoke<{
+    methodJSON: Json;
+  }>({
+    uri,
+    method: "methodJSON",
+    input: json
+  });
+
+  const methodJSONResult = JSON.stringify(json);
+  expect(methodJSONResponse.data).toEqual(methodJSONResult);
 };
 
 export const runLargeTypesTest = async (

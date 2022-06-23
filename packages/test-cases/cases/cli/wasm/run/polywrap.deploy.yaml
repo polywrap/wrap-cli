@@ -4,23 +4,23 @@ stages:
     package: ipfs
     uri: fs/./build
   from_deploy:
-    package: local-dev-ens
+    package: ens
     depends_on: ipfs_deploy
     config:
-      domainName: test1.eth
-      ports:
-        ethereum: 8545
+      domainName: $DOMAIN_NAME
+      provider: 'http://localhost:8545'
+      ensRegistryAddress: $ENS_REG_ADDR
   from_deploy2:
-    package: local-dev-ens
+    package: ens
     depends_on: ipfs_deploy
     config:
       domainName: test2.eth
-      ports:
-        ethereum: 8545
+      provider: 'http://localhost:8545'
+      ensRegistryAddress: $ENS_REG_ADDR
   from_uri:
-    package: local-dev-ens
+    package: ens
     uri: ipfs/QmVdDR6QtigTt38Xwpj2Ki73X1AyZn5WRCreBCJq1CEtpF
     config:
       domainName: test3.eth
-      ports:
-        ethereum: 8545
+      provider: 'http://localhost:8545'
+      ensRegistryAddress: $ENS_REG_ADDR

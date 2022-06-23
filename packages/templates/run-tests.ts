@@ -14,19 +14,17 @@ const languageTestCommands: Record<string, string[]> = {
     "yarn test"
   ],
   "typescript-node": [
-    // Add this back once new toolchain version is released
-    /*"yarn build",
-    "yarn test"*/
+    // Uncomment when the helloworld wrapper has been deployed to polywrap.eth
+    // "yarn build",
+    // "yarn test"
   ],
   "typescript-react": [
-    // Add this back once new toolchain version is released
+    // Uncomment when the helloworld wrapper has been deployed to polywrap.eth
     // "CI=false yarn build"
   ],
   "assemblyscript": [
-    // Add this back once new toolchain version is released
-    /*"yarn build",
-    "yarn test:e2e",
-    "yarn test:recipe"*/
+    "yarn build",
+    "yarn test"
   ],
   "interface": [
     "yarn build"

@@ -98,8 +98,7 @@ describe("e2e tests for create command", () => {
     expect(output).toBe("");
   });
 
-  // TODO: re-enable this post-polywrap init release
-  test.skip("Should successfully generate project", async () => {
+  test("Should successfully generate project", async () => {
     rimraf.sync(`${__dirname}/test`);
 
     const { exitCode: code, stdout: output } = await runCLI({
