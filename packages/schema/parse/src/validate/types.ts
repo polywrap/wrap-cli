@@ -5,6 +5,7 @@ import {
   isEnvInputField,
   isEnvType,
   envTypeNames,
+  isImportedEnvType,
 } from "../typeInfo";
 import { SchemaValidator } from "./";
 
@@ -154,7 +155,8 @@ export const getPropertyTypesValidator = (): SchemaValidator => {
             if (
               currentInputField &&
               isEnvInputField(currentInputField) &&
-              !isEnvType(namedType)
+              !isEnvType(namedType) &&
+              !isImportedEnvType(namedType)
             ) {
               throw new Error(
                 `Argument '${envTypeNames.inputField}' in method '${currentField}' must be of type '${envTypeNames.objectType}'`

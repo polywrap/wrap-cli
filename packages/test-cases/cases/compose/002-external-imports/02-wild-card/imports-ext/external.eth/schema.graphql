@@ -31,3 +31,12 @@ type ExternalType {
 type ExternalType2 {
   foo: UInt32
 }
+
+type Env {
+  externalProp: ExternalType
+}
+
+type Module {
+  envMethod(env: Env!): Env!
+  optEnvMethod(env: Env): Env
+}

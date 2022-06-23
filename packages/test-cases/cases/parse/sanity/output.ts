@@ -869,6 +869,50 @@ export const typeInfo: TypeInfo = {
             },
           ],
         },
+        {
+          ...createMethodDefinition({
+            name: "envMethod",
+            return: createObjectPropertyDefinition({
+              name: "envMethod",
+              type: "TestImport_Env",
+              required: true,
+            }),
+          }),
+          arguments: [
+            createScalarPropertyDefinition({
+              name: "arg",
+              type: "String",
+              required: true,
+            }),
+            createObjectPropertyDefinition({
+              name: "env",
+              type: "TestImport_Env",
+              required: true,
+            }),
+          ],
+        },
+        {
+          ...createMethodDefinition({
+            name: "optEnvMethod",
+            return: createObjectPropertyDefinition({
+              name: "optEnvMethod",
+              type: "TestImport_Env",
+              required: false,
+            }),
+          }),
+          arguments: [
+            createScalarPropertyDefinition({
+              name: "arg",
+              type: "String",
+              required: true,
+            }),
+            createObjectPropertyDefinition({
+              name: "env",
+              type: "TestImport_Env",
+              required: false,
+            }),
+          ],
+        },
       ],
     },
     {

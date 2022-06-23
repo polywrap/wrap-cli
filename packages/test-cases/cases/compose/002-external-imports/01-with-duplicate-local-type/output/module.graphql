@@ -64,3 +64,7 @@ type Namespace_ExternalType @imported(
 }
 
 ### Imported Objects END ###
+
+### Imported Envs START ###
+
+### Imported Envs END ###

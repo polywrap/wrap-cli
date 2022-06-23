@@ -235,6 +235,16 @@ uArrayArray comment
     enum: TestImport_Enum!
     optEnum: TestImport_Enum
   ): TestImport_Enum!
+
+  envMethod(
+    arg: String!
+    env: TestImport_Env!
+  ): TestImport_Env!
+
+  optEnvMethod(
+    arg: String!
+    env: TestImport_Env
+  ): TestImport_Env
 }
 
 """

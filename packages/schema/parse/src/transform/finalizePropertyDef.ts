@@ -121,6 +121,10 @@ function resolveObjectOrEnumKind(
     ? envType
     : undefined;
 
+  customType = customType
+    ? customType
+    : typeInfo.importedEnvTypes.find((type) => type.type === unresolved.type);
+
   if (!customType) {
     customType = typeInfo.enumTypes.find(
       (type) => type.type === unresolved.type

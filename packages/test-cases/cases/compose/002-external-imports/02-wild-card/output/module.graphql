@@ -38,13 +38,29 @@ directive @annotate(type: String!) on FIELD
 type Module @imports(
   types: [
     "Namespace_ExternalType",
-    "Namespace_ExternalType2"
+    "Namespace_ExternalType2",
+    "Namespace_Module",
+    "Namespace_Env"
   ]
 ) {
   method: Namespace_ExternalType
 }
 
 ### Imported Modules START ###
+
+type Namespace_Module @imported(
+  uri: "external.eth",
+  namespace: "Namespace",
+  nativeType: "Module"
+) {
+  envMethod(
+    env: Namespace_Env!
+  ): Namespace_Env!
+
+  optEnvMethod(
+    env: Namespace_Env
+  ): Namespace_Env
+}
 
 ### Imported Modules END ###
 
@@ -67,3 +83,15 @@ type Namespace_ExternalType2 @imported(
 }
 
 ### Imported Objects END ###
+
+### Imported Envs START ###
+
+type Namespace_Env @imported(
+  uri: "external.eth",
+  namespace: "Namespace",
+  nativeType: "Env"
+) {
+  externalProp: Namespace_ExternalType
+}
+
+### Imported Envs END ###

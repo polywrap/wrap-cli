@@ -6,6 +6,7 @@ import {
   createScalarPropertyDefinition,
   createTypeInfo,
   TypeInfo,
+  createImportedModuleDefinition,
 } from "@polywrap/schema-parse";
 import { createImportedEnvDefinition } from "@polywrap/schema-parse/src/typeInfo";
 
@@ -17,7 +18,8 @@ export const typeInfo: TypeInfo = {
       ...createModuleDefinition({}),
       imports: [
         { type: "Namespace_ExternalType" },
-        { type: "Namespace_Env" }
+        { type: "Namespace_Env" },
+        { type: "Namespace_Module" }
       ],
       interfaces: [],
       methods: [
@@ -35,6 +37,52 @@ export const typeInfo: TypeInfo = {
       ],
     },
   enumTypes: [],
+  importedModuleTypes: [
+    {
+      ...createImportedModuleDefinition({
+        uri: "external.eth",
+        namespace: "Namespace",
+        isInterface: false,
+        nativeType: "Module",
+      }),
+      methods: [
+        {
+          ...createMethodDefinition({
+            name: "envMethod",
+            return: createObjectPropertyDefinition({
+              name: "envMethod",
+              type: "Namespace_Env",
+              required: true,
+            }),
+          }),
+          arguments: [
+            createObjectPropertyDefinition({
+              name: "env",
+              type: "Namespace_Env",
+              required: true,
+            }),
+          ],
+        },
+        {
+          ...createMethodDefinition({
+            name: "optEnvMethod",
+            return: createObjectPropertyDefinition({
+              name: "optEnvMethod",
+              type: "Namespace_Env",
+              required: false,
+            }),
+          }),
+          arguments: [
+            createObjectPropertyDefinition({
+              name: "env",
+              type: "Namespace_Env",
+              required: false,
+            }),
+          ],
+        },
+      ],
+    }
+  ],
   importedObjectTypes: [
     {
       ...createImportedObjectDefinition({

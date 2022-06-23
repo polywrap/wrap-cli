@@ -237,8 +237,11 @@ type ImportMap = Record<
     Namespaced
 >;
 
-type EnumOrObject = ObjectDefinition | EnumDefinition;
-type ImportedEnumOrObject = ImportedObjectDefinition | ImportedEnumDefinition;
+type EnumOrObjectOrEnv = ObjectDefinition | EnumDefinition | EnvDefinition;
+type ImportedEnumOrObjectOrEnv =
+  | ImportedObjectDefinition
+  | ImportedEnumDefinition
+  | ImportedEnvDefinition;
 
 // A transformation that converts all object definitions into
 // imported object definitions
@@ -251,10 +254,10 @@ const extractObjectImportDependencies = (
   const findImport = (
     type: string,
     namespaceType: string,
-    rootTypes: EnumOrObject[],
-    importedTypes: ImportedEnumOrObject[],
+    rootTypes: EnumOrObjectOrEnv[],
+    importedTypes: ImportedEnumOrObjectOrEnv[],
     kind: DefinitionKind
-  ): ImportedEnumOrObject & Namespaced => {
+  ): ImportedEnumOrObjectOrEnv & Namespaced => {
     // Find this type's ObjectDefinition in the root type info
     let idx = rootTypes.findIndex((obj) => obj.type === type);
     let obj = undefined;
@@ -266,6 +269,7 @@ const extractObjectImportDependencies = (
     }
 
     if (idx === -1) {
+      console.log(rootTypeInfo);
       throw Error(
         `extractObjectImportDependencies: Cannot find the dependent type within the root type info.\n` +
           `Type: ${type}\nTypeInfo: ${JSON.stringify(
@@ -302,27 +306,49 @@ const extractObjectImportDependencies = (
         const namespaceType = appendNamespace(namespace, type);
 
         if (!importsFound[namespaceType]) {
-          // Find the import
-          const importFound = findImport(
-            type,
-            namespaceType,
-            rootTypeInfo.objectTypes,
-            rootTypeInfo.importedObjectTypes,
-            DefinitionKind.ImportedObject
-          ) as ImportedObjectDefinition;
+          if (isEnvType(type)) {
+            const importFound = findImport(
+              type,
+              namespaceType,
+              rootTypeInfo.envType ? [rootTypeInfo.envType] : [],
+              rootTypeInfo.importedEnvTypes,
+              DefinitionKind.ImportedObject
+            ) as ImportedEnvDefinition;
 
-          // Keep track of it
-          importsFound[importFound.type] = importFound;
+            // Keep track of it
+            importsFound[importFound.type] = importFound;
 
-          // Traverse this newly added object
-          visitObjectDefinition(importFound, {
-            ...extractObjectImportDependencies(
-              importsFound,
-              rootTypeInfo,
-              namespace,
-              uri
-            ),
-          });
+            // Traverse this newly added object
+            visitEnvDefinition(importFound, {
+              ...extractObjectImportDependencies(
+                importsFound,
+                rootTypeInfo,
+                namespace,
+                uri
+              ),
+            });
+          } else {
+            const importFound = findImport(
+              type,
+              namespaceType,
+              rootTypeInfo.objectTypes,
+              rootTypeInfo.importedObjectTypes,
+              DefinitionKind.ImportedObject
+            ) as ImportedObjectDefinition;
+
+            // Keep track of it
+            importsFound[importFound.type] = importFound;
+
+            // Traverse this newly added object
+            visitObjectDefinition(importFound, {
+              ...extractObjectImportDependencies(
+                importsFound,
+                rootTypeInfo,
+                namespace,
+                uri
+              ),
+            });
+          }
         }
 
         return def;
@@ -339,27 +365,49 @@ const extractObjectImportDependencies = (
         const namespaceType = appendNamespace(namespace, type);
 
         if (!importsFound[namespaceType]) {
-          // Find the import
-          const importFound = findImport(
-            type,
-            namespaceType,
-            rootTypeInfo.objectTypes,
-            rootTypeInfo.importedObjectTypes,
-            DefinitionKind.ImportedObject
-          ) as ImportedObjectDefinition;
+          if (isEnvType(type)) {
+            const importFound = findImport(
+              type,
+              namespaceType,
+              rootTypeInfo.envType ? [rootTypeInfo.envType] : [],
+              rootTypeInfo.importedEnvTypes,
+              DefinitionKind.ImportedObject
+            ) as ImportedEnvDefinition;
 
-          // Keep track of it
-          importsFound[importFound.type] = importFound;
+            // Keep track of it
+            importsFound[importFound.type] = importFound;
 
-          // Traverse this newly added object
-          visitObjectDefinition(importFound, {
-            ...extractObjectImportDependencies(
-              importsFound,
-              rootTypeInfo,
-              namespace,
-              uri
-            ),
-          });
+            // Traverse this newly added object
+            visitEnvDefinition(importFound, {
+              ...extractObjectImportDependencies(
+                importsFound,
+                rootTypeInfo,
+                namespace,
+                uri
+              ),
+            });
+          } else {
+            const importFound = findImport(
+              type,
+              namespaceType,
+              rootTypeInfo.objectTypes,
+              rootTypeInfo.importedObjectTypes,
+              DefinitionKind.ImportedObject
+            ) as ImportedObjectDefinition;
+
+            // Keep track of it
+            importsFound[importFound.type] = importFound;
+
+            // Traverse this newly added object
+            visitObjectDefinition(importFound, {
+              ...extractObjectImportDependencies(
+                importsFound,
+                rootTypeInfo,
+                namespace,
+                uri
+              ),
+            });
+          }
         }
 
         return def;
@@ -681,7 +729,6 @@ async function resolveExternalImports(
         extTypes = [extTypeInfo.envType];
         visitorFunc = visitEnvDefinition;
         const type = extTypeInfo.envType;
-        console.log(appendNamespace(namespace, importedType));
         trueType = {
           ...createImportedEnvDefinition({
             ...type,
@@ -693,7 +740,6 @@ async function resolveExternalImports(
           }),
           properties: type.properties,
         };
-        console.log(trueType);
       } else if (isImportedEnvType(importedType)) {
         throw Error(
           `Cannot import an import's imported env type. Tried to import ${importedType} from ${uri}.`
@@ -984,7 +1030,7 @@ async function resolveLocalImports(
 
       const findImport = (
         def: GenericDefinition,
-        rootTypes: EnumOrObject[]
+        rootTypes: EnumOrObjectOrEnv[]
       ) => {
         // Skip objects that we've already processed
         if (typesToImport[def.type]) {

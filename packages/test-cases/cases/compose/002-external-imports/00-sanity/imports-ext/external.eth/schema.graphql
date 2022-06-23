@@ -32,3 +32,8 @@ type ExternalType {
 type Env {
   externalProp: ExternalType
 }
+
+type Module {
+  envMethod(env: Env!): Env!
+  optEnvMethod(env: Env): Env
+}

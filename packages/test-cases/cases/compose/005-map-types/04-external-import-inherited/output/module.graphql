@@ -83,3 +83,7 @@ type Derived_ImportedBaseType @imported(
 }
 
 ### Imported Objects END ###
+
+### Imported Envs START ###
+
+### Imported Envs END ###
