@@ -1,4 +1,4 @@
-import CID from "cids";
+import { CID } from "multiformats";
 
 export interface IpfsClient {
   add(data: Uint8Array, options?: unknown): Promise<IpfsFileInfo[]>;
