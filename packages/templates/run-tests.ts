@@ -23,8 +23,8 @@ const languageTestCommands: Record<string, string[]> = {
     // "CI=false yarn build"
   ],
   "assemblyscript": [
-    "yarn build",
-    "yarn test"
+    // "yarn build",
+    // "yarn test"
   ],
   "interface": [
     "yarn build"
