@@ -70,7 +70,7 @@ export function write{{name}}Args(
 }
 
 export function deserialize{{name}}Result(buffer: ArrayBuffer): {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {
-  const context: Context =  new Context("Deserializing imported module-type: {{name}}");
+  const context: Context = new Context("Deserializing imported module-type: {{name}}");
   const reader = new ReadDecoder(buffer, context);
 
   {{#return}}
