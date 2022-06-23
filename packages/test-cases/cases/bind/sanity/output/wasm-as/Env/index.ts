@@ -4,9 +4,7 @@ import {
   Nullable,
   BigInt,
   BigNumber,
-  JSON,
-  JSONSerializer,
-  JSONDeserializer,
+  JSON
 } from "@polywrap/wasm-as";
 import {
   serializeEnv,
@@ -16,7 +14,6 @@ import {
 } from "./serialization";
 import * as Types from "..";
 
-@serializable
 export class Env {
   prop: string;
   optProp: string | null;
@@ -36,13 +33,5 @@ export class Env {
 
   static read(reader: Read): Env {
     return readEnv(reader);
-  }
-
-  static toJson(type: Env): JSON.Value {
-    return JSONSerializer.encode(type);
-  }
-
-  static fromJson(json: JSON.Value): Env {
-    return (new JSONDeserializer(json)).decode<Env>();
   }
 }
