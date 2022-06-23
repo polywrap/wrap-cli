@@ -40,7 +40,7 @@
     "test:plugins": "lerna run test:ci --no-private --scope @polywrap/*-plugin-js --concurrency 1",
     "test:client": "lerna run test:ci --no-private --scope @polywrap/client-js --concurrency 1",
     "test:cli": "lerna run test:ci --no-private --scope polywrap --concurrency 1",
-    "version:apply": "npx lerna version $(cat VERSION) --exact --no-git-tag-version --yes",
+    "version:apply": "lerna version $(cat VERSION) --exact --no-git-tag-version --yes",
     "postversion:apply": "git add . && git commit -m \"build(release): migrate to `cat ./VERSION`\"",
     "publish:npm": "lerna publish from-package --no-private --yes --registry https://registry.npmjs.org/ --no-verify-access"
   },
