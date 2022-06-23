@@ -20,15 +20,11 @@ export class FilesystemResolverPlugin extends Module<ModuleConfig> {
     input: Input_tryResolveUri,
     _client: Client
   ): Promise<UriResolver_MaybeUriOrManifest | null> {
-    if (input.authority !== "fs") {
+    if (input.authority !== "fs" && input.authority !== "file") {
       return null;
     }
 
-    const manifestSearchPatterns = [
-      "polywrap.json",
-      "polywrap.yaml",
-      "polywrap.yml",
-    ];
+    const manifestSearchPatterns = ["polywrap.json"];
 
     let manifest: string | undefined;
 

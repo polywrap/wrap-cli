@@ -3,18 +3,28 @@ import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import { Filesystem_Module, Filesystem_EncodingEnum } from "../wrap";
 import fs from "fs";
 import path from "path";
-import { filesystemEncodingToBufferEncoding } from "../utils/encodingUtils";
+import filesystemEncodingToBufferEncoding from "../utils/filesystemEncodingToBufferEncoding";
 
 jest.setTimeout(360000);
 
 describe("Filesystem plugin", () => {
   const sampleFilePath = path.resolve(__dirname, "samples/sample.txt");
   const tempFilePath = path.resolve(__dirname, "samples/tempfile.dat");
-  const tempFolderPath = path.resolve(__dirname, "samples/tempfolder");
+  const tempDirPath = path.resolve(__dirname, "samples/tempdir");
 
   let client: PolywrapClient;
+  const cleanUpTempFiles = async () => {
+    if (fs.existsSync(tempFilePath)) {
+      await fs.promises.rm(tempFilePath, { force: true });
+    }
 
+    if (fs.existsSync(tempDirPath)) {
+      await fs.promises.rm(tempDirPath, { force: true, recursive: true });
+    }
+  };
   beforeAll(async () => {
+    await cleanUpTempFiles();
+
     const config: Partial<PolywrapClientConfig> = {
       plugins: [
         {
@@ -27,17 +37,10 @@ describe("Filesystem plugin", () => {
   });
 
   afterEach(async () => {
-    // Clean up temp files/folders in case test failed
-    if (fs.existsSync(tempFilePath)) {
-      await fs.promises.rm(tempFilePath, { force: true, recursive: true });
-    }
-
-    if (fs.existsSync(tempFolderPath)) {
-      await fs.promises.rm(tempFolderPath, { force: true, recursive: true });
-    }
+    await cleanUpTempFiles();
   });
 
-  it("should read a file", async () => {
+  it("can read a file", async () => {
     const expectedContents = await fs.promises.readFile(sampleFilePath);
 
     const result = await Filesystem_Module.readFile(
@@ -50,7 +53,7 @@ describe("Filesystem plugin", () => {
   });
 
   it("should fail reading a nonexistent file", async () => {
-    const nonExistentFilePath = `${sampleFilePath}nonexistent`;
+    const nonExistentFilePath = path.resolve(__dirname, "nonexistent.txt");
 
     const result = await Filesystem_Module.readFile(
       { path: nonExistentFilePath },
@@ -161,67 +164,61 @@ describe("Filesystem plugin", () => {
     expect(fileExists).toBe(false);
   });
 
-  it("should remove a file recursively", async () => {
-    const fileInFolderPath = path.resolve(tempFolderPath, "inner.txt");
+  it("should remove a directory with files recursively", async () => {
+    const fileInDirPath = path.resolve(tempDirPath, "inner.txt");
 
-    await fs.promises.mkdir(tempFolderPath);
+    await fs.promises.mkdir(tempDirPath);
 
-    await fs.promises.writeFile(fileInFolderPath, "test file contents", {
+    await fs.promises.writeFile(fileInDirPath, "test file contents", {
       encoding: "utf-8",
     });
 
     const result = await Filesystem_Module.rm(
-      { path: tempFolderPath, recursive: true },
+      { path: tempDirPath, recursive: true },
       client
     );
 
     expect(result.error).toBeFalsy();
     expect(result.data).toBe(true);
 
-    const fileExists = fs.existsSync(fileInFolderPath);
+    const fileExists = fs.existsSync(fileInDirPath);
 
     expect(fileExists).toBe(false);
   });
 
-  it("should create a folder", async () => {
-    const result = await Filesystem_Module.mkdir(
-      { path: tempFolderPath },
-      client
-    );
+  it("should create a directory", async () => {
+    const result = await Filesystem_Module.mkdir({ path: tempDirPath }, client);
 
     expect(result.data).toBe(true);
 
-    let directoryExists = fs.existsSync(tempFolderPath);
+    let directoryExists = fs.existsSync(tempDirPath);
 
     expect(directoryExists).toBe(true);
   });
 
-  it("should create a folder recursively", async () => {
-    const folderInFolderPath = path.resolve(tempFolderPath, "inner");
+  it("should create a directory recursively", async () => {
+    const dirInDirPath = path.resolve(tempDirPath, "inner");
 
     const result = await Filesystem_Module.mkdir(
-      { path: folderInFolderPath, recursive: true },
+      { path: dirInDirPath, recursive: true },
       client
     );
 
     expect(result.data).toBe(true);
 
-    let directoryExists = fs.existsSync(folderInFolderPath);
+    let directoryExists = fs.existsSync(dirInDirPath);
 
     expect(directoryExists).toBe(true);
   });
 
-  it("should remove a folder", async () => {
-    await fs.promises.mkdir(tempFolderPath);
+  it("should remove a directory", async () => {
+    await fs.promises.mkdir(tempDirPath);
 
-    const result = await Filesystem_Module.rmdir(
-      { path: tempFolderPath },
-      client
-    );
+    const result = await Filesystem_Module.rmdir({ path: tempDirPath }, client);
 
     expect(result.data).toBe(true);
 
-    const directoryExists = fs.existsSync(tempFolderPath);
+    const directoryExists = fs.existsSync(tempDirPath);
 
     expect(directoryExists).toBe(false);
   });

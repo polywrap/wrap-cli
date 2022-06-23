@@ -10,7 +10,7 @@ import {
   Input_rm,
   Input_rmdir,
 } from "./wrap";
-import { filesystemEncodingToBufferEncoding } from "./utils/encodingUtils";
+import filesystemEncodingToBufferEncoding from "./utils/filesystemEncodingToBufferEncoding";
 
 import fs from "fs";
 import { PluginFactory } from "@polywrap/core-js";

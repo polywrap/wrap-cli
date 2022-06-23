@@ -32,7 +32,6 @@ describe("Filesystem plugin", () => {
           uri: "wrap://ens/fs-resolver.polywrap.eth",
           plugin: filesystemResolverPlugin({ query: {} }),
         },
-        // IPFS is required for downloading Web3API packages
         {
           uri: "wrap://ens/ipfs.polywrap.eth",
           plugin: ipfsPlugin({
@@ -40,7 +39,6 @@ describe("Filesystem plugin", () => {
             fallbackProviders: defaultIpfsProviders,
           }),
         },
-        // ENS is required for resolving domain to IPFS hashes
         {
           uri: "wrap://ens/ens.polywrap.eth",
           plugin: ensPlugin({

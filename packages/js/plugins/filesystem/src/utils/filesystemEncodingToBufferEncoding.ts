@@ -1,6 +1,6 @@
 import { Filesystem_Encoding, Filesystem_EncodingEnum } from "../wrap";
 
-export const filesystemEncodingToBufferEncoding = (
+const filesystemEncodingToBufferEncoding = (
   encoding: Filesystem_Encoding | null | undefined
 ): BufferEncoding => {
   switch (encoding) {
@@ -44,3 +44,5 @@ export const filesystemEncodingToBufferEncoding = (
       return "utf8";
   }
 };
+
+export default filesystemEncodingToBufferEncoding;
