@@ -3,6 +3,7 @@ import {
   moduleMethod,
   objectMethod,
   optionalEnvMethod,
+  Env
 } from "../../index";
 import {
   deserializemoduleMethodArgs,
@@ -13,7 +14,7 @@ import {
   serializeoptionalEnvMethodResult
 } from "./serialization";
 
-export function moduleMethodWrapped(argsBuf: ArrayBuffer): ArrayBuffer {
+export function moduleMethodWrapped(argsBuf: ArrayBuffer, env_size: u32): ArrayBuffer {
   const args = deserializemoduleMethodArgs(argsBuf);
   const result = moduleMethod({
     str: args.str,
@@ -40,7 +41,8 @@ export function objectMethodWrapped(args_buf: ArrayBuffer, env_size: u32): Array
     object: args.object,
     optObject: args.optObject,
     objectArray: args.objectArray,
-    optObjectArray: args.optObjectArray
+    optObjectArray: args.optObjectArray,
+    env
   });
   return serializeobjectMethodResult(result);
 }
