@@ -7,16 +7,49 @@
  */
 
 export interface PolywrapManifest {
+  /**
+   * Polywrap manifest format version.
+   */
   format: "0.0.1-prealpha.9";
+  /**
+   * Name of this wrapper package.
+   */
   name: string;
+  /**
+   * Path to the wrapper build manifest file.
+   */
   build?: string;
+  /**
+   * Path to wrapper metadata manifest file.
+   */
   meta?: string;
+  /**
+   * Path to wrapper deploy manifest file.
+   */
   deploy?: string;
+  /**
+   * Language in which the source code is written.
+   */
   language: string;
+  /**
+   * Path to the module's entry point.
+   */
   module?: string;
+  /**
+   * Path to the module's graphql schema.
+   */
   schema: string;
+  /**
+   * Redirects for the schema's imports.
+   */
   import_redirects?: {
+    /**
+     * Import URI to be redirected.
+     */
     uri: string;
+    /**
+     * Path to a graphql schema to be used for the import.
+     */
     schema: string;
   }[];
   __type: "PolywrapManifest";

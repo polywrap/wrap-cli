@@ -66,7 +66,7 @@ const _toTypescript = (
 
   switch (type) {
     case "JSON":
-      type = "Json";
+      type = "Types.Json";
       break;
     default:
       if (type.includes("Enum_")) {

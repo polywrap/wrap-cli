@@ -1,7 +1,7 @@
 import {
   wrap_subinvoke,
   wrap_subinvokeImplementation,
-  Nullable,
+  Option,
   BigInt,
   BigNumber,
   JSON,
