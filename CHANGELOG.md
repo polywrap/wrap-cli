@@ -1,3 +1,18 @@
+# Polywrap 0.0.1-prealpha.89
+## Features
+* [PR-903](https://github.com/polywrap/monorepo/pull/903) `polywrap`: Recipes have been re-worked into composable workflows, and they can be run using CLI commands.
+* [PR-951](https://github.com/polywrap/monorepo/pull/951) `polywrap`: Docker Buildx output option has been removed.
+* [PR-944](https://github.com/polywrap/monorepo/pull/944) `@polywrap/schema-bind`, `@polywrap/wasm-as`: `Nullable` type has been replaced with `Option` in the Assemblyscript schema bindings.
+* [PR-938](https://github.com/polywrap/monorepo/pull/938) `@polywrap/schema-bind`, `@polywrap/wasm-as`: Rollback of JSON serialization in the Assemblyscript schema bindings.
+
+## Bugs
+* [PR-946](https://github.com/polywrap/monorepo/pull/946) `@polywrap/test-env-js`: Path fix for `npmCLI` test utility.
+
+## Breaking Changes
+* [PR-903](https://github.com/polywrap/monorepo/pull/903) Recipes have been deprecated in favor of workflows.
+* [PR-944](https://github.com/polywrap/monorepo/pull/944) `Nullable` type has been removed in favor of `Option` which also has a different interface.
+* [PR-938](https://github.com/polywrap/monorepo/pull/938) `JSON` serializer and deserializer, and related methods `fromJson` and `toJson` have been removed in favor of `parse` and `stringify`.
+
 # Polywrap 0.0.1-prealpha.88
 ## Bugs
 * Various CI/CD fixes.

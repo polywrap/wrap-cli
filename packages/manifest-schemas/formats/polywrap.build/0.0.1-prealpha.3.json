@@ -38,11 +38,6 @@
               "type": ["string", "boolean"],
               "format": "directory"
             },
-            "output": {
-              "description": "Path to cache directory, set to true or false for default value.",
-              "type": ["string", "boolean"],
-              "format": "buildxOutput"
-            },
             "removeBuilder": {
               "description": "Remove the builder instance.",
               "type": "boolean"
