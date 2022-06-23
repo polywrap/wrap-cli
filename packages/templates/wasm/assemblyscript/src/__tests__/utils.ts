@@ -1,12 +1,12 @@
 import { ClientConfig } from "@polywrap/client-js";
-import { ensPlugin } from "@polywrap/ens-plugin-js";
+import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 
 export function getPlugins(
   ethereum: string,
   ipfs: string,
-  ensAddress: string,
+  ensAddress: string
 ): Partial<ClientConfig> {
   return {
     redirects: [],
@@ -16,8 +16,8 @@ export function getPlugins(
         plugin: ipfsPlugin({ provider: ipfs }),
       },
       {
-        uri: "wrap://ens/ens.polywrap.eth",
-        plugin: ensPlugin({ addresses: { testnet: ensAddress } }),
+        uri: "wrap://ens/ens-resolver.polywrap.eth",
+        plugin: ensResolverPlugin({ addresses: { testnet: ensAddress } }),
       },
       {
         uri: "wrap://ens/ethereum.polywrap.eth",

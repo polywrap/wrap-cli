@@ -20,14 +20,14 @@ export interface Addresses {
   [network: string]: Address;
 }
 
-export interface EnsPluginConfig extends Record<string, unknown> {
+export interface EnsResolverPluginConfig extends Record<string, unknown> {
   addresses?: Addresses;
 }
 
-export class EnsPlugin extends Module<EnsPluginConfig> {
+export class EnsResolverPlugin extends Module<EnsResolverPluginConfig> {
   public static defaultAddress = "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
 
-  constructor(config: EnsPluginConfig) {
+  constructor(config: EnsResolverPluginConfig) {
     super(config);
 
     // Sanitize address
@@ -78,7 +78,7 @@ export class EnsPlugin extends Module<EnsPluginConfig> {
       content: "function content(bytes32 nodehash) view returns (bytes32)",
     };
 
-    let ensAddress = EnsPlugin.defaultAddress;
+    let ensAddress = EnsResolverPlugin.defaultAddress;
 
     // Remove the ENS URI scheme & authority
     domain = domain.replace("wrap://", "");
@@ -199,13 +199,13 @@ export class EnsPlugin extends Module<EnsPluginConfig> {
   }
 }
 
-export const ensPlugin: PluginFactory<EnsPluginConfig> = (
-  opts: EnsPluginConfig
+export const ensResolverPlugin: PluginFactory<EnsResolverPluginConfig> = (
+  opts: EnsResolverPluginConfig
 ) => {
   return {
-    factory: () => new EnsPlugin(opts),
+    factory: () => new EnsResolverPlugin(opts),
     manifest,
   };
 };
 
-export const plugin = ensPlugin;
+export const plugin = ensResolverPlugin;

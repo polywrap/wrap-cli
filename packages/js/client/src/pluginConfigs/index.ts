@@ -4,24 +4,24 @@
 
 import { IpfsPluginConfig } from "./Ipfs";
 import { EthereumPluginConfig } from "./Ethereum";
-import { EnsPluginConfig } from "./Ens";
+import { EnsResolverPluginConfig } from "./Ens";
 
 interface PluginConfigs {
   ipfs?: IpfsPluginConfig;
   ethereum?: EthereumPluginConfig;
-  ens?: EnsPluginConfig;
+  ens?: EnsResolverPluginConfig;
 }
 
 const modules: Record<string, string> = {
   ipfs: "@polywrap/ipfs-plugin-js",
   ethereum: "@polywrap/ethereum-plugin-js",
-  ens: "@polywrap/ens-plugin-js",
+  ens: "@polywrap/ens-resolver-plugin-js",
 };
 
 const uris: Record<string, string> = {
   ipfs: "wrap://ens/ipfs.polywrap.eth",
   ethereum: "wrap://ens/ethereum.polywrap.eth",
-  ens: "wrap://ens/ens.polywrap.eth",
+  ens: "wrap://ens/ens-resolver.polywrap.eth",
 };
 
 export { PluginConfigs, modules, uris };

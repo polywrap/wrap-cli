@@ -13,7 +13,7 @@ import {
 } from "@polywrap/client-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
-import { ensPlugin } from "@polywrap/ens-plugin-js";
+import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
 import fs from "fs";
 import path from "path";
@@ -30,7 +30,7 @@ describe("Filesystem plugin", () => {
       plugins: [
         {
           uri: "wrap://ens/fs.polywrap.eth",
-          plugin: filesystemPlugin({ }),
+          plugin: filesystemPlugin({}),
         },
         // IPFS is required for downloading Polywrap packages
         {
@@ -42,8 +42,8 @@ describe("Filesystem plugin", () => {
         },
         // ENS is required for resolving domain to IPFS hashes
         {
-          uri: "wrap://ens/ens.polywrap.eth",
-          plugin: ensPlugin({
+          uri: "wrap://ens/ens-resolver.polywrap.eth",
+          plugin: ensResolverPlugin({
             addresses: {
               testnet: ensAddresses.ensAddress,
             },
@@ -100,7 +100,10 @@ describe("Filesystem plugin", () => {
 
     // get the schema
     const schema = await client.getSchema(fsUri);
-    const expectedSchema = await fs.promises.readFile(`${fsPath}/schema.graphql`, "utf-8");
+    const expectedSchema = await fs.promises.readFile(
+      `${fsPath}/schema.graphql`,
+      "utf-8"
+    );
 
     expect(schema).toBe(expectedSchema);
 
@@ -111,8 +114,14 @@ describe("Filesystem plugin", () => {
     expect(manifest.language).toBe("wasm/assemblyscript");
 
     // get a file
-    const file = await client.getFile(fsUri, { path: "polywrap.json", encoding: "utf-8" });
-    const expectedFile = await fs.promises.readFile(`${fsPath}/polywrap.json`, "utf-8");
+    const file = await client.getFile(fsUri, {
+      path: "polywrap.json",
+      encoding: "utf-8",
+    });
+    const expectedFile = await fs.promises.readFile(
+      `${fsPath}/polywrap.json`,
+      "utf-8"
+    );
 
     expect(file).toBe(expectedFile);
   });

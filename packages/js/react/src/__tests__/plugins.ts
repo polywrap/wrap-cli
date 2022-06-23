@@ -1,6 +1,6 @@
 import { PluginRegistration } from "@polywrap/core-js";
 import { defaultIpfsProviders } from "@polywrap/client-js";
-import { plugin as ensPlugin } from "@polywrap/ens-plugin-js";
+import { plugin as ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import { plugin as ethereumPlugin } from "@polywrap/ethereum-plugin-js";
 import { plugin as ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 
@@ -28,8 +28,8 @@ export function createPlugins(
       }),
     },
     {
-      uri: "wrap://ens/ens.polywrap.eth",
-      plugin: ensPlugin({
+      uri: "wrap://ens/ens-resolver.polywrap.eth",
+      plugin: ensResolverPlugin({
         addresses: {
           testnet: ensAddress,
         },
