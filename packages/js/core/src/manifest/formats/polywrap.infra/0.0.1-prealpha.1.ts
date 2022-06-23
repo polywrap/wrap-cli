@@ -7,7 +7,13 @@
  */
 
 export interface InfraManifest {
+  /**
+   * Polywrap infra manifest format version.
+   */
   format: "0.0.1-prealpha.1";
+  /**
+   * Path to docker compose manifest.
+   */
   dockerCompose?: string;
   env?: {
     /**
@@ -25,12 +31,30 @@ export interface InfraManifest {
   };
   __type: "InfraManifest";
 }
+/**
+ * A remote docker-compose package.
+ */
 export interface RemoteModule {
+  /**
+   * Package name.
+   */
   package: string;
+  /**
+   * Package registry name.
+   */
   registry: string;
+  /**
+   * Package version.
+   */
   version: string;
+  /**
+   * Path to docker-compose file in the package directory.
+   */
   dockerComposePath?: string;
 }
 export interface LocalModule {
+  /**
+   * Path to the package.
+   */
   path: string;
 }

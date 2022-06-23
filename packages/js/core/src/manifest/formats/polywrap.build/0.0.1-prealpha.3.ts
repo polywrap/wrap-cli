@@ -7,26 +7,64 @@
  */
 
 export interface BuildManifest {
+  /**
+   * Polywrap build manifest format version.
+   */
   format: "0.0.1-prealpha.3";
   docker?: {
+    /**
+     * Docker image name.
+     */
     name?: string;
+    /**
+     * Docker image file name.
+     */
     dockerfile?: string;
+    /**
+     * Id of the docker image.
+     */
     buildImageId?: string;
+    /**
+     * Configuration options for Docker Buildx, set to true for default value.
+     */
     buildx?:
       | {
+          /**
+           * Path to cache directory, set to true for default value, set to false to disable caching.
+           */
           cache?: string | boolean;
-          output?: string | boolean;
+          /**
+           * Remove the builder instance.
+           */
           removeBuilder?: boolean;
         }
       | boolean;
+    /**
+     * Remove the image.
+     */
     removeImage?: boolean;
   };
+  /**
+   * Custom build image configurations.
+   */
   config?: {
     [k: string]: unknown;
   };
+  /**
+   * Locally linked packages into docker build image.
+   */
   linked_packages?: {
+    /**
+     * Package name.
+     */
     name: string;
+    /**
+     * Path to linked package directory.
+     */
     path: string;
+    /**
+     * Ignore files matching this regex in linked package directory.
+     */
     filter?: string;
   }[];
   __type: "BuildManifest";
