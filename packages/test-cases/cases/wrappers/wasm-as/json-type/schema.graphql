@@ -1,9 +1,24 @@
 type Module {
-  fromJson(json: JSON!): Pair!
-  toJson(pair: Pair!): JSON!
+  parse(
+    value: String!
+  ): JSON!
+
+  stringify(
+    values: [JSON!]!
+  ): String!
+
+  stringifyObject(
+    object: Object!
+  ): String!
+
+  methodJSON(
+    valueA: Int!
+    valueB: String!
+    valueC: Boolean!
+  ): JSON!
 }
 
-type Pair {
-  x: Int!
-  y: Int!
+type Object {
+  jsonA: JSON!
+  jsonB: JSON!
 }

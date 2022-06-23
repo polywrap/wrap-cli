@@ -4,7 +4,7 @@ import {
   Write,
   WriteSizer,
   WriteEncoder,
-  Nullable,
+  Option,
   BigInt,
   BigNumber,
   JSON,
@@ -58,7 +58,7 @@ export function writeTestImport_Object(writer: Write, type: TestImport_Object): 
   writer.writeString("en");
   writer.writeInt32(type.en);
   writer.context().pop();
-  writer.context().push("optEnum", "Nullable<Types.TestImport_Enum>", "writing property");
+  writer.context().push("optEnum", "Option<Types.TestImport_Enum>", "writing property");
   writer.writeString("optEnum");
   writer.writeNullableInt32(type.optEnum);
   writer.context().pop();
@@ -68,9 +68,9 @@ export function writeTestImport_Object(writer: Write, type: TestImport_Object): 
     writer.writeInt32(item);
   });
   writer.context().pop();
-  writer.context().push("optEnumArray", "Array<Nullable<Types.TestImport_Enum>> | null", "writing property");
+  writer.context().push("optEnumArray", "Array<Option<Types.TestImport_Enum>> | null", "writing property");
   writer.writeString("optEnumArray");
-  writer.writeNullableArray(type.optEnumArray, (writer: Write, item: Nullable<Types.TestImport_Enum>): void => {
+  writer.writeNullableArray(type.optEnumArray, (writer: Write, item: Option<Types.TestImport_Enum>): void => {
     writer.writeNullableInt32(item);
   });
   writer.context().pop();
@@ -93,10 +93,10 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
   let _optObjectArray: Array<Types.TestImport_AnotherObject | null> | null = null;
   let _en: Types.TestImport_Enum = 0;
   let _enSet: bool = false;
-  let _optEnum: Nullable<Types.TestImport_Enum> = new Nullable<Types.TestImport_Enum>();
+  let _optEnum: Option<Types.TestImport_Enum> = Option.None<Types.TestImport_Enum>();
   let _enumArray: Array<Types.TestImport_Enum> = [];
   let _enumArraySet: bool = false;
-  let _optEnumArray: Array<Nullable<Types.TestImport_Enum>> | null = null;
+  let _optEnumArray: Array<Option<Types.TestImport_Enum>> | null = null;
 
   while (numFields > 0) {
     numFields--;
@@ -153,21 +153,21 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
       reader.context().pop();
     }
     else if (field == "optEnum") {
-      reader.context().push(field, "Nullable<Types.TestImport_Enum>", "type found, reading property");
-      let value: Nullable<Types.TestImport_Enum>;
+      reader.context().push(field, "Option<Types.TestImport_Enum>", "type found, reading property");
+      let value: Option<Types.TestImport_Enum>;
       if (!reader.isNextNil()) {
         if (reader.isNextString()) {
-          value = Nullable.fromValue(
+          value = Option.Some(
             Types.getTestImport_EnumValue(reader.readString())
           );
         } else {
-          value = Nullable.fromValue(
+          value = Option.Some(
             reader.readInt32()
           );
-          Types.sanitizeTestImport_EnumValue(value.value);
+          Types.sanitizeTestImport_EnumValue(value.unwrap());
         }
       } else {
-        value = Nullable.fromNull<Types.TestImport_Enum>();
+        value = Option.None<Types.TestImport_Enum>();
       }
       _optEnum = value;
       reader.context().pop();
@@ -188,22 +188,22 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
       reader.context().pop();
     }
     else if (field == "optEnumArray") {
-      reader.context().push(field, "Array<Nullable<Types.TestImport_Enum>> | null", "type found, reading property");
-      _optEnumArray = reader.readNullableArray((reader: Read): Nullable<Types.TestImport_Enum> => {
-        let value: Nullable<Types.TestImport_Enum>;
+      reader.context().push(field, "Array<Option<Types.TestImport_Enum>> | null", "type found, reading property");
+      _optEnumArray = reader.readNullableArray((reader: Read): Option<Types.TestImport_Enum> => {
+        let value: Option<Types.TestImport_Enum>;
         if (!reader.isNextNil()) {
           if (reader.isNextString()) {
-            value = Nullable.fromValue(
+            value = Option.Some(
               Types.getTestImport_EnumValue(reader.readString())
             );
           } else {
-            value = Nullable.fromValue(
+            value = Option.Some(
               reader.readInt32()
             );
-            Types.sanitizeTestImport_EnumValue(value.value);
+            Types.sanitizeTestImport_EnumValue(value.unwrap());
           }
         } else {
-          value = Nullable.fromNull<Types.TestImport_Enum>();
+          value = Option.None<Types.TestImport_Enum>();
         }
         return value;
       });
