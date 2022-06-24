@@ -15,7 +15,7 @@ const testPluginManifest: PluginPackageManifest = {
   implements: [new Uri("host2/path2")],
 };
 
-class TestPluginModule extends PluginModule {
+class TestPluginModule extends PluginModule<{}> {
   testQuery(_input: unknown, _client: Client): number {
     return 5;
   }
@@ -24,20 +24,12 @@ class TestPluginModule extends PluginModule {
   }
 }
 
-class TestPlugin implements Plugin {
-  public getModule(): PluginModule {
-    return new TestPluginModule({})
-  }
-}
-
 describe("Plugin", () => {
-  const plugin = new TestPlugin();
+  const plugin = new TestPluginModule({});
 
   it("sanity", () => {
-    const module = plugin.getModule();
-
     expect(testPluginManifest.implements.length).toBe(1);
-    expect(module).toBeTruthy();
-    expect(module.getMethod("testMutation")).toBeTruthy();
+    expect(plugin).toBeTruthy();
+    expect(plugin.getMethod("testMutation")).toBeTruthy();
   });
 });

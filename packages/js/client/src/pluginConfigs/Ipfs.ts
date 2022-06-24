@@ -5,7 +5,7 @@
 /// Types generated from @polywrap/ipfs-plugin-js build files:
 /// build/index.d.ts
 
-export interface IpfsPluginConfig extends Record<string, unknown> {
+export interface IpfsPluginConfig {
   provider: string;
   fallbackProviders?: string[];
 }

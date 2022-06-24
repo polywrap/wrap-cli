@@ -67,7 +67,7 @@ describe("wasm-wrapper", () => {
   };
 
   const mockPlugin = () => {
-    class MockPlugin extends PluginModule {
+    class MockPlugin extends PluginModule<{}> {
       getData(_: unknown) {
         return 100;
       }

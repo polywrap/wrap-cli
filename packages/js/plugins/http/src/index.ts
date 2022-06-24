@@ -11,9 +11,9 @@ import { fromAxiosResponse, toAxiosRequestConfig } from "./util";
 import axios from "axios";
 import { PluginFactory } from "@polywrap/core-js";
 
-export type HttpPluginConfig = Record<string, unknown>;
+type NoConfig = Record<string, never>;
 
-export class HttpPlugin extends Module<HttpPluginConfig> {
+export class HttpPlugin extends Module<NoConfig> {
   public async get(
     input: Input_get,
     _client: Client
@@ -38,11 +38,9 @@ export class HttpPlugin extends Module<HttpPluginConfig> {
   }
 }
 
-export const httpPlugin: PluginFactory<HttpPluginConfig> = (
-  opts: HttpPluginConfig
-) => {
+export const httpPlugin: PluginFactory<NoConfig> = () => {
   return {
-    factory: () => new HttpPlugin(opts),
+    factory: () => new HttpPlugin({}),
     manifest,
   };
 };

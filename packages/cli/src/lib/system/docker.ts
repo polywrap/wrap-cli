@@ -147,7 +147,7 @@ export async function createBuildImage(
         );
       }
       await runCommand(
-        `docker buildx build -f ${dockerfile} -t ${imageName} ${rootDir} ${cacheFrom} ${cacheTo} --output=type=image`,
+        `docker buildx build -f ${dockerfile} -t ${imageName} ${rootDir} ${cacheFrom} ${cacheTo} --output=type=docker`,
         quiet
       );
     } else {
