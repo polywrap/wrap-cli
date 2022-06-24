@@ -130,7 +130,7 @@ export function write{{name}}Result(writer: Write, result: {{#return}}{{#toWasm}
   writer.writeInt32(result);
   {{/required}}
   {{^required}}
-  writer.writeNullableInt32(result);
+  writer.writeOptionalInt32(result);
   {{/required}}
   {{/enum}}
   {{#object}}

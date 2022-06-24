@@ -51,7 +51,7 @@ pub fn write_test_import_object<W: Write>(input: &TestImportObject, writer: &mut
     writer.context().pop();
     writer.context().push("optObjectArray", "Option<Vec<Option<TestImportAnotherObject>>>", "writing property");
     writer.write_string("optObjectArray")?;
-    writer.write_nullable_array(&input.opt_object_array, |writer, item| {
+    writer.write_optional_array(&input.opt_object_array, |writer, item| {
         if item.is_some() {
             TestImportAnotherObject::write(item.as_ref().as_ref().unwrap(), writer)
         } else {
@@ -65,7 +65,7 @@ pub fn write_test_import_object<W: Write>(input: &TestImportObject, writer: &mut
     writer.context().pop();
     writer.context().push("optEnum", "Option<TestImportEnum>", "writing property");
     writer.write_string("optEnum")?;
-    writer.write_nullable_i32(&input.opt_enum.map(|f| f as i32))?;
+    writer.write_optional_i32(&input.opt_enum.map(|f| f as i32))?;
     writer.context().pop();
     writer.context().push("enumArray", "Vec<TestImportEnum>", "writing property");
     writer.write_string("enumArray")?;
@@ -75,8 +75,8 @@ pub fn write_test_import_object<W: Write>(input: &TestImportObject, writer: &mut
     writer.context().pop();
     writer.context().push("optEnumArray", "Option<Vec<Option<TestImportEnum>>>", "writing property");
     writer.write_string("optEnumArray")?;
-    writer.write_nullable_array(&input.opt_enum_array, |writer, item| {
-        writer.write_nullable_i32(&item.map(|f| f as i32))
+    writer.write_optional_array(&input.opt_enum_array, |writer, item| {
+        writer.write_optional_i32(&item.map(|f| f as i32))
     })?;
     writer.context().pop();
     Ok(())
@@ -139,7 +139,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
             }
             "optObjectArray" => {
                 reader.context().push(&field, "Option<Vec<Option<TestImportAnotherObject>>>", "type found, reading property");
-                _opt_object_array = reader.read_nullable_array(|reader| {
+                _opt_object_array = reader.read_optional_array(|reader| {
                     let mut object: Option<TestImportAnotherObject> = None;
                     if !reader.is_next_nil()? {
                         object = Some(TestImportAnotherObject::read(reader)?);
@@ -196,7 +196,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
             }
             "optEnumArray" => {
                 reader.context().push(&field, "Option<Vec<Option<TestImportEnum>>>", "type found, reading property");
-                _opt_enum_array = reader.read_nullable_array(|reader| {
+                _opt_enum_array = reader.read_optional_array(|reader| {
                     let mut value: Option<TestImportEnum> = None;
                     if !reader.is_next_nil()? {
                         if reader.is_next_string()? {

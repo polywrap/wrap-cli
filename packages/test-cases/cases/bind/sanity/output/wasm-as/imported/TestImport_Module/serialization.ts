@@ -50,7 +50,7 @@ export function writeimportedMethodArgs(
   writer.context().pop();
   writer.context().push("optStr", "string | null", "writing property");
   writer.writeString("optStr");
-  writer.writeNullableString(input.optStr);
+  writer.writeOptionalString(input.optStr);
   writer.context().pop();
   writer.context().push("u", "u32", "writing property");
   writer.writeString("u");
@@ -58,13 +58,13 @@ export function writeimportedMethodArgs(
   writer.context().pop();
   writer.context().push("optU", "Option<u32>", "writing property");
   writer.writeString("optU");
-  writer.writeNullableUInt32(input.optU);
+  writer.writeOptionalUInt32(input.optU);
   writer.context().pop();
   writer.context().push("uArrayArray", "Array<Array<Option<u32>> | null>", "writing property");
   writer.writeString("uArrayArray");
   writer.writeArray(input.uArrayArray, (writer: Write, item: Array<Option<u32>> | null): void => {
-    writer.writeNullableArray(item, (writer: Write, item: Option<u32>): void => {
-      writer.writeNullableUInt32(item);
+    writer.writeOptionalArray(item, (writer: Write, item: Option<u32>): void => {
+      writer.writeOptionalUInt32(item);
     });
   });
   writer.context().pop();
@@ -88,7 +88,7 @@ export function writeimportedMethodArgs(
   writer.context().pop();
   writer.context().push("optObjectArray", "Array<Types.TestImport_Object | null> | null", "writing property");
   writer.writeString("optObjectArray");
-  writer.writeNullableArray(input.optObjectArray, (writer: Write, item: Types.TestImport_Object | null): void => {
+  writer.writeOptionalArray(input.optObjectArray, (writer: Write, item: Types.TestImport_Object | null): void => {
     if (item) {
       Types.TestImport_Object.write(writer, item as Types.TestImport_Object);
     } else {
@@ -102,7 +102,7 @@ export function writeimportedMethodArgs(
   writer.context().pop();
   writer.context().push("optEnum", "Option<Types.TestImport_Enum>", "writing property");
   writer.writeString("optEnum");
-  writer.writeNullableInt32(input.optEnum);
+  writer.writeOptionalInt32(input.optEnum);
   writer.context().pop();
   writer.context().push("enumArray", "Array<Types.TestImport_Enum>", "writing property");
   writer.writeString("enumArray");
@@ -112,8 +112,8 @@ export function writeimportedMethodArgs(
   writer.context().pop();
   writer.context().push("optEnumArray", "Array<Option<Types.TestImport_Enum>> | null", "writing property");
   writer.writeString("optEnumArray");
-  writer.writeNullableArray(input.optEnumArray, (writer: Write, item: Option<Types.TestImport_Enum>): void => {
-    writer.writeNullableInt32(item);
+  writer.writeOptionalArray(input.optEnumArray, (writer: Write, item: Option<Types.TestImport_Enum>): void => {
+    writer.writeOptionalInt32(item);
   });
   writer.context().pop();
 }
