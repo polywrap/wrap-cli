@@ -1,4 +1,5 @@
 {{#methods.length}}
+import { wrap_load_env } from "@polywrap/wasm-as";
 import {
   {{#methods}}
   {{name}}{{^last}},{{/last}}
@@ -11,15 +12,36 @@ import {
   {{/methods}}
 } from "./serialization";
 {{/methods.length}}
+import * as Types from "..";
 
 {{#methods}}
-export function {{name}}Wrapped(argsBuf: ArrayBuffer): ArrayBuffer {
+export function {{name}}Wrapped(argsBuf: ArrayBuffer{{#hasEnv}}, env_size: u32{{/hasEnv}}): ArrayBuffer {
+  {{#arguments}}
+  {{#isEnv}}
+  {{#required}}
+  if (env_size == 0) {
+    throw new Error("Environment is not set, and it is required by method 'objectMethod'")
+  }
+  
+  const envBuf = wrap_load_env(env_size);
+  const env = Types.Env.fromBuffer(envBuf);
+  {{/required}}
+  {{^required}}
+  let env: Types.Env | null = null;
+  if (env_size > 0) {
+    const envBuf = wrap_load_env(env_size);
+    env = Types.Env.fromBuffer(envBuf);
+  }
+  {{/required}}
+  {{/isEnv}}
+  {{/arguments}}
   {{#arguments.length}}
   const args = deserialize{{name}}Args(argsBuf);
   {{/arguments.length}}
+
   const result = {{name}}({{#arguments.length}}{
     {{#arguments}}
-    {{#handleKeywords}}{{name}}{{/handleKeywords}}: args.{{#handleKeywords}}{{name}}{{/handleKeywords}}{{^last}},{{/last}}
+    {{^isEnv}}{{#handleKeywords}}{{name}}{{/handleKeywords}}: args.{{#handleKeywords}}{{name}}{{/handleKeywords}}{{^last}},{{/last}}{{/isEnv}}{{#isEnv}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{^last}},{{/last}}{{/isEnv}}
     {{/arguments}}
   }{{/arguments.length}});
   return serialize{{name}}Result(result);

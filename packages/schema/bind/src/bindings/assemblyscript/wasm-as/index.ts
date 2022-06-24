@@ -10,6 +10,8 @@ import {
   addFirstLast,
   extendType,
   toPrefixedGraphQLType,
+  methodHasEnv,
+  methodArgIsEnv,
 } from "@polywrap/schema-parse";
 import { OutputEntry, readDirectorySync } from "@polywrap/os-js";
 import path from "path";
@@ -55,6 +57,19 @@ export const generateBinding: GenerateBindingFn = (
       data: renderTemplates(
         templatePath("imported/module-type"),
         importedModuleType,
+        subTemplates
+      ),
+    });
+  }
+
+  // Generate imported env type folders
+  for (const importedEnvType of typeInfo.importedEnvTypes) {
+    importEntries.push({
+      type: "Directory",
+      name: importedEnvType.type,
+      data: renderTemplates(
+        templatePath("imported/env-type"),
+        importedEnvType,
         subTemplates
       ),
     });
@@ -156,6 +171,8 @@ function applyTransforms(typeInfo: TypeInfo): TypeInfo {
     extendType(Functions),
     addFirstLast,
     toPrefixedGraphQLType,
+    methodHasEnv,
+    methodArgIsEnv,
   ];
 
   for (const transform of transforms) {

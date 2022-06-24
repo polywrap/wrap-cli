@@ -29,14 +29,6 @@ type InvokeResultOrError =
   | { type: "InvokeResult"; invokeResult: ArrayBuffer }
   | { type: "InvokeError"; invokeError: string };
 
-const hasExport = (name: string, exports: Record<string, unknown>): boolean => {
-  if (!exports[name]) {
-    return false;
-  }
-
-  return true;
-};
-
 export interface State {
   method: string;
   args: ArrayBuffer;
@@ -56,11 +48,7 @@ export interface State {
   };
   invokeResult: InvokeResult;
   getImplementationsResult?: ArrayBuffer;
-  sanitizeEnv: {
-    args?: ArrayBuffer;
-    result?: ArrayBuffer;
-  };
-  env?: ArrayBuffer;
+  env: ArrayBuffer;
 }
 
 export class WasmWrapper extends Wrapper {
@@ -68,7 +56,6 @@ export class WasmWrapper extends Wrapper {
 
   private _schema?: string;
   private _wasm: ArrayBuffer | undefined = undefined;
-  private _sanitizedEnv: ArrayBuffer | undefined = undefined;
 
   constructor(
     private _uri: Uri,
@@ -192,8 +179,8 @@ export class WasmWrapper extends Wrapper {
         },
         invokeResult: {} as InvokeResult,
         method,
-        sanitizeEnv: {},
         args: input instanceof ArrayBuffer ? input : msgpackEncode(input),
+        env: msgpackEncode(this._getClientEnv()),
       };
 
       const abort = (message: string) => {
@@ -218,11 +205,10 @@ export class WasmWrapper extends Wrapper {
 
       const exports = instance.exports as WrapExports;
 
-      await this._sanitizeAndLoadEnv(state, exports);
-
       const result = await exports._wrap_invoke(
         state.method.length,
-        state.args.byteLength
+        state.args.byteLength,
+        state.env.byteLength
       );
 
       const invokeResult = this._processInvokeResult(state, result, abort);
@@ -308,33 +294,6 @@ export class WasmWrapper extends Wrapper {
         type: "InvokeError",
         invokeError: state.invoke.error,
       };
-    }
-  }
-
-  @Tracer.traceMethod("WasmWrapper: _sanitizeAndLoadEnv")
-  private async _sanitizeAndLoadEnv(
-    state: State,
-    exports: WrapExports
-  ): Promise<void> {
-    if (hasExport("_wrap_load_env", exports)) {
-      if (this._sanitizedEnv !== undefined) {
-        state.env = this._sanitizedEnv as ArrayBuffer;
-      } else {
-        const clientEnv = this._getClientEnv();
-
-        if (hasExport("_wrap_sanitize_env", exports)) {
-          state.sanitizeEnv.args = msgpackEncode({ env: clientEnv });
-
-          await exports._wrap_sanitize_env(state.sanitizeEnv.args.byteLength);
-          state.env = state.sanitizeEnv.result as ArrayBuffer;
-          this._sanitizedEnv = state.env;
-        } else {
-          state.env = msgpackEncode(clientEnv);
-          this._sanitizedEnv = state.env;
-        }
-      }
-
-      await exports._wrap_load_env(state.env.byteLength);
     }
   }
 

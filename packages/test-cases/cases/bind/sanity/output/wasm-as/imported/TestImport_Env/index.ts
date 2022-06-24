@@ -9,31 +9,34 @@ import {
   JSONDeserializer,
 } from "@polywrap/wasm-as";
 import {
-  serializeEnv,
-  deserializeEnv,
-  writeEnv,
-  readEnv
+  serializeTestImport_Env,
+  deserializeTestImport_Env,
+  writeTestImport_Env,
+  readTestImport_Env
 } from "./serialization";
-import * as Types from "..";
+import * as Types from "../..";
 
 @serializable
 export class TestImport_Env {
+
+  public static uri: string = "testimport.uri.eth";
+
   enviroProp: string;
 
   static toBuffer(type: TestImport_Env): ArrayBuffer {
-    return serializeEnv(type);
+    return serializeTestImport_Env(type);
   }
 
   static fromBuffer(buffer: ArrayBuffer): TestImport_Env {
-    return deserializeEnv(buffer);
+    return deserializeTestImport_Env(buffer);
   }
 
   static write(writer: Write, type: TestImport_Env): void {
-    writeEnv(writer, type);
+    writeTestImport_Env(writer, type);
   }
 
   static read(reader: Read): TestImport_Env {
-    return readEnv(reader);
+    return readTestImport_Env(reader);
   }
 
   static toJson(type: TestImport_Env): JSON.Value {

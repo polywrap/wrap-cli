@@ -18,7 +18,7 @@ export function _wrap_invoke(method_size: u32, args_size: u32, env_size: u32): b
   );
 
   if (args.method == "moduleMethod") {
-    return wrap_invoke(args, (argsBuf: ArrayBuffer) => moduleMethodWrapped(argsBuf, env_size));
+    return wrap_invoke(args, moduleMethodWrapped);
   }
   else if (args.method == "objectMethod") {
     return wrap_invoke(args, (argsBuf: ArrayBuffer) => objectMethodWrapped(argsBuf, env_size));

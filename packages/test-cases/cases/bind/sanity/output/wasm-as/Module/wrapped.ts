@@ -2,8 +2,7 @@ import { wrap_load_env } from "@polywrap/wasm-as";
 import {
   moduleMethod,
   objectMethod,
-  optionalEnvMethod,
-  Env
+  optionalEnvMethod
 } from "../../index";
 import {
   deserializemoduleMethodArgs,
@@ -13,9 +12,11 @@ import {
   deserializeoptionalEnvMethodArgs,
   serializeoptionalEnvMethodResult
 } from "./serialization";
+import * as Types from "..";
 
-export function moduleMethodWrapped(argsBuf: ArrayBuffer, env_size: u32): ArrayBuffer {
+export function moduleMethodWrapped(argsBuf: ArrayBuffer): ArrayBuffer {
   const args = deserializemoduleMethodArgs(argsBuf);
+
   const result = moduleMethod({
     str: args.str,
     optStr: args.optStr,
@@ -28,15 +29,15 @@ export function moduleMethodWrapped(argsBuf: ArrayBuffer, env_size: u32): ArrayB
   return serializemoduleMethodResult(result);
 }
 
-export function objectMethodWrapped(args_buf: ArrayBuffer, env_size: u32): ArrayBuffer {
+export function objectMethodWrapped(argsBuf: ArrayBuffer, env_size: u32): ArrayBuffer {
   if (env_size == 0) {
     throw new Error("Environment is not set, and it is required by method 'objectMethod'")
   }
   
   const envBuf = wrap_load_env(env_size);
-  const env = Env.fromBuffer(envBuf);
+  const env = Types.Env.fromBuffer(envBuf);
+  const args = deserializeobjectMethodArgs(argsBuf);
 
-  const args = deserializeobjectMethodArgs(args_buf);
   const result = objectMethod({
     object: args.object,
     optObject: args.optObject,
@@ -47,14 +48,14 @@ export function objectMethodWrapped(args_buf: ArrayBuffer, env_size: u32): Array
   return serializeobjectMethodResult(result);
 }
 
-export function optionalEnvMethodWrapped(args_buf: ArrayBuffer, env_size: u32): ArrayBuffer {
-  let env: Env | null = null;
+export function optionalEnvMethodWrapped(argsBuf: ArrayBuffer, env_size: u32): ArrayBuffer {
+  let env: Types.Env | null = null;
   if (env_size > 0) {
     const envBuf = wrap_load_env(env_size);
-    env = Env.fromBuffer(envBuf);
+    env = Types.Env.fromBuffer(envBuf);
   }
+  const args = deserializeoptionalEnvMethodArgs(argsBuf);
 
-  const args = deserializeoptionalEnvMethodArgs(args_buf);
   const result = optionalEnvMethod({
     object: args.object,
     optObject: args.optObject,

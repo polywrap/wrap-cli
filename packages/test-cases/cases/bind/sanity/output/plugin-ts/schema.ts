@@ -65,6 +65,15 @@ type Module @imports(
     optObject: AnotherType
     objectArray: [AnotherType!]!
     optObjectArray: [AnotherType]
+    env: Env!
+  ): AnotherType
+
+  optionalEnvMethod(
+    object: AnotherType!
+    optObject: AnotherType
+    objectArray: [AnotherType!]!
+    optObjectArray: [AnotherType]
+    env: Env
   ): AnotherType
 }
 
