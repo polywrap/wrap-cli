@@ -31,5 +31,9 @@ pub use module::{
     deserialize_object_method_args,
     serialize_object_method_result,
     object_method_wrapped,
-    InputObjectMethod
+    InputObjectMethod,
+    deserialize_optional_env_method_args,
+    serialize_optional_env_method_result,
+    optional_env_method_wrapped,
+    InputOptionalEnvMethod
 };

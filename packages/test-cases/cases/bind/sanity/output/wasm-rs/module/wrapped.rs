@@ -6,7 +6,11 @@ use crate::{
     object_method,
     InputObjectMethod,
     deserialize_object_method_args,
-    serialize_object_method_result
+    serialize_object_method_result,
+    optional_env_method,
+    InputOptionalEnvMethod,
+    deserialize_optional_env_method_args,
+    serialize_optional_env_method_result
 };
 
 pub fn module_method_wrapped(input: &[u8]) -> Vec<u8> {
@@ -37,8 +41,27 @@ pub fn object_method_wrapped(input: &[u8]) -> Vec<u8> {
                 opt_object: args.opt_object,
                 object_array: args.object_array,
                 opt_object_array: args.opt_object_array,
+                env: args.env,
             });
             serialize_object_method_result(&result).unwrap()
+        }
+        Err(e) => {
+            panic!("{}", e.to_string())
+        }
+    }
+}
+
+pub fn optional_env_method_wrapped(input: &[u8]) -> Vec<u8> {
+    match deserialize_optional_env_method_args(input) {
+        Ok(args) => {
+            let result = optional_env_method(InputOptionalEnvMethod {
+                object: args.object,
+                opt_object: args.opt_object,
+                object_array: args.object_array,
+                opt_object_array: args.opt_object_array,
+                env: args.env,
+            });
+            serialize_optional_env_method_result(&result).unwrap()
         }
         Err(e) => {
             panic!("{}", e.to_string())

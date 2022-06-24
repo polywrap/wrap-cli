@@ -1,6 +1,7 @@
 use crate::{
     module_method_wrapped,
-    object_method_wrapped
+    object_method_wrapped,
+    optional_env_method_wrapped
 };
 use polywrap_wasm_rs::{
     abort,
@@ -19,6 +20,7 @@ pub extern "C" fn _wrap_invoke(method_size: u32, args_size: u32) -> bool {
     match args.method.as_str() {
         "moduleMethod" => invoke::wrap_invoke(args, Some(module_method_wrapped)),
         "objectMethod" => invoke::wrap_invoke(args, Some(object_method_wrapped)),
+        "optionalEnvMethod" => invoke::wrap_invoke(args, Some(optional_env_method_wrapped)),
         _ => invoke::wrap_invoke(args, None),
     }
 }

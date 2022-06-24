@@ -20,6 +20,7 @@ use crate::{
     sanitize_custom_enum_value
 };
 use crate::AnotherType;
+use crate::Env;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct InputModuleMethod {
@@ -187,6 +188,7 @@ pub struct InputObjectMethod {
     pub opt_object: Option<AnotherType>,
     pub object_array: Vec<AnotherType>,
     pub opt_object_array: Option<Vec<Option<AnotherType>>>,
+    pub env: Env,
 }
 
 pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod, DecodeError> {
@@ -202,6 +204,8 @@ pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod,
     let mut _object_array: Vec<AnotherType> = vec![];
     let mut _object_array_set = false;
     let mut _opt_object_array: Option<Vec<Option<AnotherType>>> = None;
+    let mut _env: Env = Env::new();
+    let mut _env_set = false;
 
     while num_of_fields > 0 {
         num_of_fields -= 1;
@@ -248,6 +252,13 @@ pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod,
                 })?;
                 reader.context().pop();
             }
+            "env" => {
+                reader.context().push(&field, "Env", "type found, reading argument");
+                let object = Env::read(&mut reader)?;
+                _env = object;
+                _env_set = true;
+                reader.context().pop();
+            }
             err => return Err(DecodeError::UnknownFieldName(err.to_string())),
         }
     }
@@ -257,12 +268,16 @@ pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod,
     if !_object_array_set {
         return Err(DecodeError::MissingField("objectArray: [AnotherType].".to_string()));
     }
+    if !_env_set {
+        return Err(DecodeError::MissingField("env: Env.".to_string()));
+    }
 
     Ok(InputObjectMethod {
         object: _object,
         opt_object: _opt_object,
         object_array: _object_array,
         opt_object_array: _opt_object_array,
+        env: _env,
     })
 }
 
@@ -276,6 +291,124 @@ pub fn serialize_object_method_result(result: &Option<AnotherType>) -> Result<Ve
 
 pub fn write_object_method_result<W: Write>(result: &Option<AnotherType>, writer: &mut W) -> Result<(), EncodeError> {
     writer.context().push("objectMethod", "Option<AnotherType>", "writing result");
+    if result.is_some() {
+        AnotherType::write(result.as_ref().unwrap(), writer)?;
+    } else {
+        writer.write_nil()?;
+    }
+    writer.context().pop();
+    Ok(())
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct InputOptionalEnvMethod {
+    pub object: AnotherType,
+    pub opt_object: Option<AnotherType>,
+    pub object_array: Vec<AnotherType>,
+    pub opt_object_array: Option<Vec<Option<AnotherType>>>,
+    pub env: Option<Env>,
+}
+
+pub fn deserialize_optional_env_method_args(input: &[u8]) -> Result<InputOptionalEnvMethod, DecodeError> {
+    let mut context = Context::new();
+    context.description = "Deserializing module-type: optional_env_method".to_string();
+
+    let mut reader = ReadDecoder::new(input, context);
+    let mut num_of_fields = reader.read_map_length()?;
+
+    let mut _object: AnotherType = AnotherType::new();
+    let mut _object_set = false;
+    let mut _opt_object: Option<AnotherType> = None;
+    let mut _object_array: Vec<AnotherType> = vec![];
+    let mut _object_array_set = false;
+    let mut _opt_object_array: Option<Vec<Option<AnotherType>>> = None;
+    let mut _env: Option<Env> = None;
+
+    while num_of_fields > 0 {
+        num_of_fields -= 1;
+        let field = reader.read_string()?;
+
+        match field.as_str() {
+            "object" => {
+                reader.context().push(&field, "AnotherType", "type found, reading argument");
+                let object = AnotherType::read(&mut reader)?;
+                _object = object;
+                _object_set = true;
+                reader.context().pop();
+            }
+            "optObject" => {
+                reader.context().push(&field, "Option<AnotherType>", "type found, reading argument");
+                let mut object: Option<AnotherType> = None;
+                if !reader.is_next_nil()? {
+                    object = Some(AnotherType::read(&mut reader)?);
+                } else {
+                    object = None;
+                }
+                _opt_object = object;
+                reader.context().pop();
+            }
+            "objectArray" => {
+                reader.context().push(&field, "Vec<AnotherType>", "type found, reading argument");
+                _object_array = reader.read_array(|reader| {
+                    let object = AnotherType::read(reader)?;
+                    Ok(object)
+                })?;
+                _object_array_set = true;
+                reader.context().pop();
+            }
+            "optObjectArray" => {
+                reader.context().push(&field, "Option<Vec<Option<AnotherType>>>", "type found, reading argument");
+                _opt_object_array = reader.read_nullable_array(|reader| {
+                    let mut object: Option<AnotherType> = None;
+                    if !reader.is_next_nil()? {
+                        object = Some(AnotherType::read(reader)?);
+                    } else {
+                        object = None;
+                    }
+                    Ok(object)
+                })?;
+                reader.context().pop();
+            }
+            "env" => {
+                reader.context().push(&field, "Option<Env>", "type found, reading argument");
+                let mut object: Option<Env> = None;
+                if !reader.is_next_nil()? {
+                    object = Some(Env::read(&mut reader)?);
+                } else {
+                    object = None;
+                }
+                _env = object;
+                reader.context().pop();
+            }
+            err => return Err(DecodeError::UnknownFieldName(err.to_string())),
+        }
+    }
+    if !_object_set {
+        return Err(DecodeError::MissingField("object: AnotherType.".to_string()));
+    }
+    if !_object_array_set {
+        return Err(DecodeError::MissingField("objectArray: [AnotherType].".to_string()));
+    }
+
+    Ok(InputOptionalEnvMethod {
+        object: _object,
+        opt_object: _opt_object,
+        object_array: _object_array,
+        opt_object_array: _opt_object_array,
+        env: _env,
+    })
+}
+
+pub fn serialize_optional_env_method_result(result: &Option<AnotherType>) -> Result<Vec<u8>, EncodeError> {
+    let mut encoder_context = Context::new();
+    encoder_context.description = "Serializing (encoding) module-type: optional_env_method".to_string();
+    let mut encoder = WriteEncoder::new(&[], encoder_context);
+    write_optional_env_method_result(result, &mut encoder)?;
+    Ok(encoder.get_buffer())
+}
+
+pub fn write_optional_env_method_result<W: Write>(result: &Option<AnotherType>, writer: &mut W) -> Result<(), EncodeError> {
+    writer.context().push("optionalEnvMethod", "Option<AnotherType>", "writing result");
     if result.is_some() {
         AnotherType::write(result.as_ref().unwrap(), writer)?;
     } else {
