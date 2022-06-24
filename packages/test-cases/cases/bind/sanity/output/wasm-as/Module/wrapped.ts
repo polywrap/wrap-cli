@@ -14,7 +14,7 @@ import {
 } from "./serialization";
 import * as Types from "..";
 
-export function moduleMethodWrapped(argsBuf: ArrayBuffer): ArrayBuffer {
+export function moduleMethodWrapped(argsBuf: ArrayBuffer, env_size: u32): ArrayBuffer {
   const args = deserializemoduleMethodArgs(argsBuf);
 
   const result = moduleMethod({

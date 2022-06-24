@@ -15,7 +15,7 @@ import {
 import * as Types from "..";
 
 {{#methods}}
-export function {{name}}Wrapped(argsBuf: ArrayBuffer{{#hasEnv}}, env_size: u32{{/hasEnv}}): ArrayBuffer {
+export function {{name}}Wrapped(argsBuf: ArrayBuffer, env_size: u32): ArrayBuffer {
   {{#hasEnv}}
   {{#isEnvRequired}}
   if (env_size == 0) {

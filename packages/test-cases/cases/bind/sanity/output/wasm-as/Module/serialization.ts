@@ -264,7 +264,7 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer, env: Types.Env
     optObject: _optObject,
     objectArray: _objectArray,
     optObjectArray: _optObjectArray,
-    env: _env ?? env
+    env: _env ? _env : env
   };
 }
 
@@ -375,7 +375,7 @@ export function deserializeoptionalEnvMethodArgs(argsBuf: ArrayBuffer, env: Type
     optObject: _optObject,
     objectArray: _objectArray,
     optObjectArray: _optObjectArray,
-    env: _env ?? env
+    env: _env ? _env : env
   };
 }
 

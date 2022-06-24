@@ -91,7 +91,7 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer{{#hasEnv}}, env: Ty
 
   return {
     {{#arguments}}
-    {{#handleKeywords}}{{name}}{{/handleKeywords}}: _{{name}}{{#isEnv}} ?? env{{/isEnv}}{{^last}},{{/last}}
+    {{#handleKeywords}}{{name}}{{/handleKeywords}}: _{{name}}{{#isEnv}} ? _{{name}} : env{{/isEnv}}{{^last}},{{/last}}
     {{/arguments}}
   };
 }

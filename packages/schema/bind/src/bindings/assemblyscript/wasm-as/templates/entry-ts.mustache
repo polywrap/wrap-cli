@@ -24,12 +24,12 @@ export function _wrap_invoke(method_size: u32, args_size: u32, env_size: u32): b
   {{#moduleType}}
   {{#methods}}
   {{^first}}else {{/first}}if (args.method == "{{name}}") {
-    {{#hasEnv}}return wrap_invoke(args, (argsBuf: ArrayBuffer) => {{name}}Wrapped(argsBuf, env_size));{{/hasEnv}}{{^hasEnv}}return wrap_invoke(args, {{name}}Wrapped);{{/hasEnv}}
+    return wrap_invoke(args, env_size, {{name}}Wrapped);
   }
   {{/methods}}
   {{/moduleType}}
   else {
-    return wrap_invoke(args, null);
+    return wrap_invoke(args, env_size, null);
   }
 }
 
