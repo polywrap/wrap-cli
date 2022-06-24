@@ -12,10 +12,10 @@
     "deploy": "yarn deploy:contract && yarn deploy:polywrap",
     "deploy:polywrap": "npx polywrap deploy",
     "deploy:contract": "node ./scripts/deploy-contract.js",
-    "test": "yarn test:e2e && yarn test:recipe",
+    "test": "yarn test:e2e && yarn test:workflow",
     "test:e2e": "yarn build && yarn test:e2e:codegen && jest --passWithNoTests --runInBand --verbose",
     "test:e2e:codegen": "npx polywrap app codegen -m ./src/__tests__/types/polywrap.app.yaml -c ./src/__tests__/types/wrap",
-    "test:recipe": "yarn build && yarn test:env:up && yarn deploy:contract && npx polywrap query ./recipes/e2e.json && yarn test:env:down"
+    "test:workflow": "yarn build && yarn test:env:up && yarn deploy:contract && npx polywrap run ./workflows/e2e.yaml -c config.ts && yarn test:env:down"
   },
   "devDependencies": {
     "@polywrap/ethereum-plugin-js": "0.0.1-prealpha.88",
