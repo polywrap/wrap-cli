@@ -73,10 +73,8 @@ describe("Ethereum Plugin", () => {
         {
           uri: "wrap://ens/ens.polywrap.eth",
           plugin: ensPlugin({
-            query: {
-              addresses: {
-                testnet: ensAddress,
-              },
+            addresses: {
+              testnet: ensAddress,
             },
           }),
         },
