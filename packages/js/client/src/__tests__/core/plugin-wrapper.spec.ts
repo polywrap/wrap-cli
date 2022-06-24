@@ -67,7 +67,7 @@ describe("plugin-wrapper", () => {
         {
           uri: implementationUri,
           plugin: {
-            factory: () => ({} as PluginModule),
+            factory: () => ({} as PluginModule<{}>),
             manifest: {
               schema: "",
               implements: [],
@@ -221,7 +221,7 @@ enum Logger_LogLevel @imported(
     const pluginUriToOverride = defaultPlugins[0];
 
     const pluginPackage = {
-      factory: () => ({} as PluginModule),
+      factory: () => ({} as PluginModule<{}>),
       manifest: {
         schema: "",
         implements: [],
@@ -252,7 +252,7 @@ enum Logger_LogLevel @imported(
     const pluginUriToOverride = defaultPlugins[0];
 
     const pluginPackage1 = {
-      factory: () => ({} as PluginModule),
+      factory: () => ({} as PluginModule<{}>),
       manifest: {
         schema: "",
         implements: [],
@@ -260,7 +260,7 @@ enum Logger_LogLevel @imported(
     };
 
     const pluginPackage2 = {
-      factory: () => ({} as PluginModule),
+      factory: () => ({} as PluginModule<{}>),
       manifest: {
         schema: "",
         implements: [],
