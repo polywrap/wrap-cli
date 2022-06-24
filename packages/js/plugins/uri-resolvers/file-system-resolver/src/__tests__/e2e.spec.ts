@@ -67,34 +67,29 @@ describe("Filesystem plugin", () => {
     await stopTestEnvironment();
   });
 
-  it("queries simple-storage api on local drive", async () => {
-    const apiPath = path.resolve(
+  it("invokes simple-storage wrapper on local drive", async () => {
+    const wrapperPath = path.resolve(
       `${GetPathToTestWrappers()}/wasm-as/simple-storage`
     );
-    await buildWrapper(apiPath);
+    await buildWrapper(wrapperPath);
 
-    const fsPath = `${apiPath}/build`;
+    const fsPath = `${wrapperPath}/build`;
     const fsUri = `fs/${fsPath}`;
 
-    // query api from filesystem
-    const deploy = await client.query<{
-      deployContract: string;
-    }>({
+    // invoke wrapper from filesystem
+    const deploy = await client.invoke<string>({
       uri: fsUri,
-      query: `
-        mutation {
-          deployContract(
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
+      method: "deployContract",
+      input: {
+        connection: {
+          networkNameOrChainId: "testnet"
         }
-      `,
+      },
     });
 
-    expect(deploy.errors).toBeFalsy();
+    expect(deploy.error).toBeFalsy();
     expect(deploy.data).toBeTruthy();
-    expect(deploy.data?.deployContract.indexOf("0x")).toBeGreaterThan(-1);
+    expect(deploy.data?.indexOf("0x")).toBeGreaterThan(-1);
 
     // get the schema
     const schema = await client.getSchema(fsUri);
