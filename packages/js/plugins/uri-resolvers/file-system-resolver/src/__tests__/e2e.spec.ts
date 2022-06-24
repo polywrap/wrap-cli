@@ -30,7 +30,7 @@ describe("Filesystem plugin", () => {
       plugins: [
         {
           uri: "wrap://ens/fs-resolver.polywrap.eth",
-          plugin: fileSystemResolverPlugin({ query: {} }),
+          plugin: fileSystemResolverPlugin({ }),
         },
         {
           uri: "wrap://ens/ipfs.polywrap.eth",
@@ -42,10 +42,8 @@ describe("Filesystem plugin", () => {
         {
           uri: "wrap://ens/ens.polywrap.eth",
           plugin: ensPlugin({
-            query: {
-              addresses: {
-                testnet: ensAddresses.ensAddress,
-              },
+            addresses: {
+              testnet: ensAddresses.ensAddress,
             },
           }),
         },
