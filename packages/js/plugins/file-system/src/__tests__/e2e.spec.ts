@@ -29,7 +29,7 @@ describe("FileSystem plugin", () => {
       plugins: [
         {
           uri: "wrap://ens/fs.polywrap.eth",
-          plugin: fileSystemPlugin({ query: {}, mutation: {} }),
+          plugin: fileSystemPlugin({ }),
         },
       ],
     };
