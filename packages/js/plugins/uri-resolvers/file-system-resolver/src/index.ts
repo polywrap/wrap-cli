@@ -13,9 +13,9 @@ import {
 import { PluginFactory } from "@polywrap/core-js";
 import path from "path";
 
-export type ModuleConfig = Record<string, unknown>;
+type NoConfig = Record<string, never>;
 
-export class FileSystemResolverPlugin extends Module<ModuleConfig> {
+export class FileSystemResolverPlugin extends Module<NoConfig> {
   async tryResolveUri(
     input: Input_tryResolveUri,
     _client: Client
@@ -76,11 +76,9 @@ export class FileSystemResolverPlugin extends Module<ModuleConfig> {
     }
   }
 }
-export const fileSystemResolverPlugin: PluginFactory<ModuleConfig> = (
-  opts: ModuleConfig
-) => {
+export const fileSystemResolverPlugin: PluginFactory<NoConfig> = () => {
   return {
-    factory: () => new FileSystemResolverPlugin(opts),
+    factory: () => new FileSystemResolverPlugin({}),
     manifest,
   };
 };

@@ -79,11 +79,11 @@ export const getDefaultClientConfig = Tracer.traceFunc(
         },
         {
           uri: new Uri("wrap://ens/fs.polywrap.eth"),
-          plugin: fileSystemPlugin({ query: {}, mutation: {} }),
+          plugin: fileSystemPlugin({}),
         },
         {
           uri: new Uri("wrap://ens/fs-resolver.polywrap.eth"),
-          plugin: fileSystemResolverPlugin({ query: {} }),
+          plugin: fileSystemResolverPlugin({}),
         },
       ],
       interfaces: [
