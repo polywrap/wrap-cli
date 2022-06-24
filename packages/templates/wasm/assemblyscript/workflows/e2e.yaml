@@ -5,7 +5,8 @@ jobs:
     - uri: fs/build
       method: deployContract
       input:
-        connection: null
+        connection:
+          networkNameOrChainId: testnet
     jobs:
       case1:
         steps:
@@ -14,9 +15,11 @@ jobs:
           input:
             address: "$cases.0.data"
             value: 100
-            connection: null
+            connection:
+              networkNameOrChainId: testnet
         - uri: fs/build
           method: getData
           input:
             address: "$cases.0.data"
-            connection: null
+            connection:
+              networkNameOrChainId: testnet
