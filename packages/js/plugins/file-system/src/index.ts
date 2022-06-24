@@ -15,9 +15,9 @@ import fileSystemEncodingToBufferEncoding from "./utils/fileSystemEncodingToBuff
 import fs from "fs";
 import { PluginFactory } from "@polywrap/core-js";
 
-export type FileSystemPluginConfig = Record<string, unknown>;
+type NoConfig = Record<string, never>;
 
-export class FileSystemPlugin extends Module<FileSystemPluginConfig> {
+export class FileSystemPlugin extends Module<NoConfig> {
   async readFile(input: Input_readFile, _client: Client): Promise<ArrayBuffer> {
     return fs.promises.readFile(input.path);
   }
@@ -67,11 +67,9 @@ export class FileSystemPlugin extends Module<FileSystemPluginConfig> {
     return true;
   }
 }
-export const fileSystemPlugin: PluginFactory<FileSystemPluginConfig> = (
-  opts: FileSystemPluginConfig
-) => {
+export const fileSystemPlugin: PluginFactory<NoConfig> = () => {
   return {
-    factory: () => new FileSystemPlugin(opts),
+    factory: () => new FileSystemPlugin({}),
     manifest,
   };
 };
