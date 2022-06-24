@@ -1,3 +1,31 @@
+# Polywrap 0.0.1-prealpha.89
+## Features
+* [PR-903](https://github.com/polywrap/monorepo/pull/903) `polywrap` CLI: Recipes have been re-worked into composable workflows, and they can be run using CLI commands.
+* [PR-951](https://github.com/polywrap/monorepo/pull/951) `polywrap` CLI: Docker Buildx output option has been removed.
+* [PR-944](https://github.com/polywrap/monorepo/pull/944) `@polywrap/schema-bind`, `@polywrap/wasm-as`: `Nullable` type has been replaced with `Option` in the Assemblyscript schema bindings.
+* [PR-938](https://github.com/polywrap/monorepo/pull/938) `@polywrap/schema-bind`, `@polywrap/wasm-as`: Rollback of JSON serialization in the Assemblyscript schema bindings.
+
+## Bugs
+* [PR-946](https://github.com/polywrap/monorepo/pull/946) `@polywrap/test-env-js`: Path fix for `npmCLI` test utility.
+
+## Breaking Changes
+* [PR-903](https://github.com/polywrap/monorepo/pull/903) `polywrap` CLI: Running recipes via the `polywrap query ...` command has been deprecated in favor of a new workflows system, accessible via the `polywrap run ...` command.
+* [PR-944](https://github.com/polywrap/monorepo/pull/944) `wasm/assemblyscript` Wrappers: `Nullable` type has been removed in favor of `Option` which also has a different interface.
+* [PR-938](https://github.com/polywrap/monorepo/pull/938) `wasm/assemblyscript` Wrappers: `JSON` serializer and deserializer, and related methods `fromJson` and `toJson` have been removed in favor of `parse` and `stringify`.
+
+# Polywrap 0.0.1-prealpha.88
+## Bugs
+* Various CI/CD fixes.
+
+# Polywrap 0.0.1-prealpha.87
+## Features
+* [PR-928](https://github.com/polywrap/monorepo/pull/928) `@polywrap/manifest-schemas`: Inline documentation has been added to manifest JSON-schemas.
+* [PR-933](https://github.com/polywrap/monorepo/pull/933) Validation package `@polywrap/package-validation` has been implemented to validate WASM wrapper packages.
+
+## Bugs
+* [PR-932](https://github.com/polywrap/monorepo/pull/932) `@polywrap/schema-bind`: Minor fix for JSON type schema bindings
+* [PR-935](https://github.com/polywrap/monorepo/pull/935) `@polywrap/test-env-js`: Path fix for `npmCLI` test utility 
+
 # Polywrap 0.0.1-prealpha.86
 ## Features
 * [PR-923](https://github.com/polywrap/monorepo/pull/923) The Polywrap brand has been applied to the codebase.

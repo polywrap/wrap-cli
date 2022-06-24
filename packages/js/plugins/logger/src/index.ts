@@ -4,13 +4,13 @@ import {
   Logger_LogLevel,
   Logger_LogLevelEnum,
   manifest,
-} from "./wrap-man";
+} from "./wrap";
 
 import { PluginFactory } from "@polywrap/core-js";
 
 export type LogFunc = (level: Logger_LogLevel, message: string) => boolean;
 
-export interface LoggerPluginConfig extends Record<string, unknown> {
+export interface LoggerPluginConfig {
   logFunc?: LogFunc;
 }
 
@@ -46,10 +46,10 @@ export class LoggerPlugin extends Module<LoggerPluginConfig> {
 }
 
 export const loggerPlugin: PluginFactory<LoggerPluginConfig> = (
-  opts: LoggerPluginConfig
+  config: LoggerPluginConfig
 ) => {
   return {
-    factory: () => new LoggerPlugin(opts),
+    factory: () => new LoggerPlugin(config),
     manifest,
   };
 };

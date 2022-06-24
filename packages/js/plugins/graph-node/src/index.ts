@@ -4,7 +4,7 @@ import {
   Input_querySubgraph,
   HTTP_Module,
   manifest,
-} from "./wrap-man";
+} from "./wrap";
 
 import { PluginFactory } from "@polywrap/core-js";
 
@@ -19,7 +19,7 @@ export interface RequestData {
   data: Record<string, unknown>;
 }
 
-export interface GraphNodePluginConfig extends Record<string, unknown> {
+export interface GraphNodePluginConfig {
   provider: string;
 }
 
@@ -80,10 +80,10 @@ export class GraphNodePlugin extends Module<GraphNodePluginConfig> {
 }
 
 export const graphNodePlugin: PluginFactory<GraphNodePluginConfig> = (
-  opts: GraphNodePluginConfig
+  config: GraphNodePluginConfig
 ) => {
   return {
-    factory: () => new GraphNodePlugin(opts),
+    factory: () => new GraphNodePlugin(config),
     manifest,
   };
 };

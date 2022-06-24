@@ -36,7 +36,7 @@ export interface Input_optionalEnvMethod extends Record<string, unknown> {
 }
 
 export abstract class Module<
-  TConfig extends Record<string, unknown>
+  TConfig
 > extends PluginModule<
   TConfig,
   Types.Env

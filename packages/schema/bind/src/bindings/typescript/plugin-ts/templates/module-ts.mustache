@@ -20,7 +20,7 @@ export interface Input_{{name}} extends Record<string, unknown> {
 {{/moduleType}}
 
 export abstract class Module<
-  TConfig extends Record<string, unknown>
+  TConfig
 > extends PluginModule<
   TConfig{{#envType}},
   Types.Env{{/envType}}

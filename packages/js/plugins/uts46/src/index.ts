@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-empty-interface */
 import {
   Module,
   Input_toAscii,
@@ -6,16 +5,16 @@ import {
   Input_convert,
   ConvertResult,
   manifest,
-} from "./wrap-man";
+} from "./wrap";
 
 import { PluginFactory } from "@polywrap/core-js";
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires
 const uts46 = require("idna-uts46-hx/uts46bundle.js");
 
-export interface Uts46PluginConfig extends Record<string, unknown> {}
+type NoConfig = Record<string, never>;
 
-export class Uts46Plugin extends Module<Uts46PluginConfig> {
+export class Uts46Plugin extends Module<NoConfig> {
   public toAscii(input: Input_toAscii): string {
     return uts46.toAscii(input.value);
   }
@@ -29,11 +28,9 @@ export class Uts46Plugin extends Module<Uts46PluginConfig> {
   }
 }
 
-export const uts46Plugin: PluginFactory<Uts46PluginConfig> = (
-  opts: Uts46PluginConfig
-) => {
+export const uts46Plugin: PluginFactory<NoConfig> = () => {
   return {
-    factory: () => new Uts46Plugin(opts),
+    factory: () => new Uts46Plugin({}),
     manifest,
   };
 };

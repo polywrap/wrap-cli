@@ -1,5 +1,5 @@
 import { ethereumPlugin } from "..";
-import * as Schema from "../wrap-man";
+import * as Schema from "../wrap";
 
 import { PolywrapClient, defaultIpfsProviders } from "@polywrap/client-js";
 import { ensPlugin } from "@polywrap/ens-plugin-js";
@@ -73,10 +73,8 @@ describe("Ethereum Plugin", () => {
         {
           uri: "wrap://ens/ens.polywrap.eth",
           plugin: ensPlugin({
-            query: {
-              addresses: {
-                testnet: ensAddress,
-              },
+            addresses: {
+              testnet: ensAddress,
             },
           }),
         },

@@ -118,7 +118,6 @@ export async function createBuildImage(
   imageName: string,
   dockerfile: string,
   cacheDir?: string,
-  buildxOutput?: string,
   useBuildx = false,
   quiet = true
 ): Promise<string> {
@@ -131,9 +130,6 @@ export async function createBuildImage(
           ? `--cache-from type=local,src=${cacheDir}`
           : "";
       const cacheTo = cacheDir ? `--cache-to type=local,dest=${cacheDir}` : "";
-      const output = buildxOutput
-        ? `--output=type=${buildxOutput}`
-        : `--output=type=docker`;
 
       // Build the docker image
       let buildxUseFailed: boolean;
@@ -151,7 +147,7 @@ export async function createBuildImage(
         );
       }
       await runCommand(
-        `docker buildx build -f ${dockerfile} -t ${imageName} ${rootDir} ${cacheFrom} ${cacheTo} ${output}`,
+        `docker buildx build -f ${dockerfile} -t ${imageName} ${rootDir} ${cacheFrom} ${cacheTo} --output=type=docker`,
         quiet
       );
     } else {

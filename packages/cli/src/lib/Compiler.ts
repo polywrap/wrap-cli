@@ -292,7 +292,6 @@ export class Compiler {
     const useBuildx = !!dockerBuildxConfig;
 
     let cacheDir: string | undefined;
-    let buildxOutput: string | undefined;
     let removeBuilder = false;
 
     if (dockerBuildxConfig && typeof dockerBuildxConfig !== "boolean") {
@@ -308,14 +307,6 @@ export class Compiler {
         } else {
           cacheDir = cache;
         }
-      }
-
-      const output = dockerBuildxConfig.output;
-
-      if (output === true) {
-        buildxOutput = "docker";
-      } else if (typeof output === "string") {
-        buildxOutput = output;
       }
 
       removeBuilder = !!dockerBuildxConfig.removeBuilder;
@@ -334,7 +325,6 @@ export class Compiler {
       imageName,
       dockerfile,
       cacheDir,
-      buildxOutput,
       useBuildx,
       project.quiet
     );
