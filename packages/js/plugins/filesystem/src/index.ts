@@ -12,9 +12,9 @@ import path from "path";
 import fs from "fs";
 import { PluginFactory } from "@polywrap/core-js";
 
-export interface FilesystemPluginConfig { }
+type NoConfig = Record<string, unknown>;
 
-export class FilesystemPlugin extends Module<FilesystemPluginConfig> {
+export class FilesystemPlugin extends Module<NoConfig> {
   async tryResolveUri(
     input: Input_tryResolveUri,
     _client: Client
@@ -59,11 +59,10 @@ export class FilesystemPlugin extends Module<FilesystemPluginConfig> {
     }
   }
 }
-export const filesystemPlugin: PluginFactory<FilesystemPluginConfig> = (
-  config: FilesystemPluginConfig
-) => {
+
+export const filesystemPlugin: PluginFactory<NoConfig> = () => {
   return {
-    factory: () => new FilesystemPlugin(config),
+    factory: () => new FilesystemPlugin({}),
     manifest,
   };
 };

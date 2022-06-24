@@ -101,5 +101,6 @@ export type PluginPackage<TConfig> = {
   manifest: PluginPackageManifest;
 };
 
-export type PluginFactory<TConfig> =
-  (config: TConfig) => PluginPackage<TConfig>;
+export type PluginFactory<TConfig> = (
+  config: TConfig
+) => PluginPackage<TConfig>;

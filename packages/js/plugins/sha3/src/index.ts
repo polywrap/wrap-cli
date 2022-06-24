@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/naming-convention */
-/* eslint-disable @typescript-eslint/no-empty-interface */
 
 import {
   Module,
@@ -33,9 +32,9 @@ import {
 } from "js-sha3";
 import { PluginFactory } from "@polywrap/core-js";
 
-export interface Sha3PluginConfig {}
+type NoConfig = Record<string, never>;
 
-export class Sha3Plugin extends Module<Sha3PluginConfig> {
+export class Sha3Plugin extends Module<NoConfig> {
   public sha3_512(input: Input_sha3_512): string {
     return sha3_512(input.message);
   }
@@ -113,11 +112,9 @@ export class Sha3Plugin extends Module<Sha3PluginConfig> {
   }
 }
 
-export const sha3Plugin: PluginFactory<Sha3PluginConfig> = (
-  config: Sha3PluginConfig
-) => {
+export const sha3Plugin: PluginFactory<NoConfig> = () => {
   return {
-    factory: () => new Sha3Plugin(config),
+    factory: () => new Sha3Plugin({}),
     manifest,
   };
 };
