@@ -18,13 +18,13 @@ import {
 import { Tracer } from "@polywrap/tracing-js";
 
 export class PluginWrapper extends Wrapper {
-  private _instance: PluginModule | undefined;
+  private _instance: PluginModule<unknown> | undefined;
 
   private _sanitizedEnv: Record<string, unknown> | undefined = undefined;
 
   constructor(
     private _uri: Uri,
-    private _plugin: PluginPackage,
+    private _plugin: PluginPackage<unknown>,
     private _clientEnv?: Env<Uri>
   ) {
     super();
@@ -154,7 +154,7 @@ export class PluginWrapper extends Wrapper {
     }
   }
 
-  private _getInstance(): PluginModule {
+  private _getInstance(): PluginModule<unknown> {
     this._instance ||= this._plugin.factory();
     return this._instance;
   }
@@ -162,7 +162,7 @@ export class PluginWrapper extends Wrapper {
   @Tracer.traceMethod("PluginWrapper: _sanitizeAndLoadEnv")
   private async _sanitizeAndLoadEnv(
     client: Client,
-    pluginModule: PluginModule
+    pluginModule: PluginModule<unknown>
   ): Promise<void> {
     if (this._sanitizedEnv === undefined) {
       const clientEnv = this._getClientEnv();

@@ -106,7 +106,7 @@ export const getDefaultClientConfig = Tracer.traceFunc(
         new PluginResolver(
           (
             uri: Uri,
-            plugin: PluginPackage,
+            plugin: PluginPackage<unknown>,
             environment: Env<Uri> | undefined
           ) => new PluginWrapper(uri, plugin, environment)
         ),

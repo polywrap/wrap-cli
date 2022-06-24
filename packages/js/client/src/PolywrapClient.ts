@@ -582,7 +582,7 @@ export class PolywrapClient implements Client {
   private _sanitizePlugins(): void {
     const plugins = this._config.plugins;
     // Plugin map used to keep track of plugins with same URI
-    const addedPluginsMap = new Map<string, PluginPackage>();
+    const addedPluginsMap = new Map<string, PluginPackage<unknown>>();
 
     for (const plugin of plugins) {
       const pluginUri = plugin.uri.uri;
