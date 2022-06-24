@@ -13,7 +13,7 @@ import { PluginFactory } from "@polywrap/core-js";
 // eslint-disable-next-line @typescript-eslint/no-require-imports,@typescript-eslint/no-var-requires
 const uts46 = require("idna-uts46-hx/uts46bundle.js");
 
-export interface Uts46PluginConfig extends Record<string, unknown> {}
+export interface Uts46PluginConfig {}
 
 export class Uts46Plugin extends Module<Uts46PluginConfig> {
   public toAscii(input: Input_toAscii): string {
@@ -30,10 +30,10 @@ export class Uts46Plugin extends Module<Uts46PluginConfig> {
 }
 
 export const uts46Plugin: PluginFactory<Uts46PluginConfig> = (
-  opts: Uts46PluginConfig
+  config: Uts46PluginConfig
 ) => {
   return {
-    factory: () => new Uts46Plugin(opts),
+    factory: () => new Uts46Plugin(config),
     manifest,
   };
 };

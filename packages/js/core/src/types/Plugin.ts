@@ -15,7 +15,7 @@ export type PluginMethod<
 > = (input: TInput, client: Client) => MaybeAsync<TResult>;
 
 export abstract class PluginModule<
-  TConfig extends Record<string, unknown> = Record<string, unknown>,
+  TConfig,
   TEnv extends Record<string, unknown> = Record<string, unknown>,
   TClientEnv extends Record<string, unknown> = TEnv
 > {
@@ -96,9 +96,10 @@ export interface PluginPackageManifest {
   implements: Uri[];
 }
 
-export type PluginPackage = {
-  factory: () => PluginModule;
+export type PluginPackage<TConfig> = {
+  factory: () => PluginModule<TConfig>;
   manifest: PluginPackageManifest;
 };
 
-export type PluginFactory<TOpts> = (opts: TOpts) => PluginPackage;
+export type PluginFactory<TConfig> =
+  (config: TConfig) => PluginPackage<TConfig>;

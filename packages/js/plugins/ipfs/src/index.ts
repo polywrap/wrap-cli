@@ -35,7 +35,7 @@ const getOptions = (input: Options | undefined | null, env: Env): Options => {
   return options;
 };
 
-export interface IpfsPluginConfig extends Record<string, unknown> {
+export interface IpfsPluginConfig {
   provider: string;
   fallbackProviders?: string[];
 }
@@ -220,10 +220,10 @@ export class IpfsPlugin extends Module<IpfsPluginConfig> {
 }
 
 export const ipfsPlugin: PluginFactory<IpfsPluginConfig> = (
-  opts: IpfsPluginConfig
+  config: IpfsPluginConfig
 ) => {
   return {
-    factory: () => new IpfsPlugin(opts),
+    factory: () => new IpfsPlugin(config),
     manifest,
   };
 };

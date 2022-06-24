@@ -20,7 +20,7 @@ export interface Addresses {
   [network: string]: Address;
 }
 
-export interface EnsPluginConfig extends Record<string, unknown> {
+export interface EnsPluginConfig {
   addresses?: Addresses;
 }
 
@@ -200,10 +200,10 @@ export class EnsPlugin extends Module<EnsPluginConfig> {
 }
 
 export const ensPlugin: PluginFactory<EnsPluginConfig> = (
-  opts: EnsPluginConfig
+  config: EnsPluginConfig
 ) => {
   return {
-    factory: () => new EnsPlugin(opts),
+    factory: () => new EnsPlugin(config),
     manifest,
   };
 };

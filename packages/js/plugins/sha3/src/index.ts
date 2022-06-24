@@ -33,7 +33,7 @@ import {
 } from "js-sha3";
 import { PluginFactory } from "@polywrap/core-js";
 
-export interface Sha3PluginConfig extends Record<string, unknown> {}
+export interface Sha3PluginConfig {}
 
 export class Sha3Plugin extends Module<Sha3PluginConfig> {
   public sha3_512(input: Input_sha3_512): string {
@@ -114,10 +114,10 @@ export class Sha3Plugin extends Module<Sha3PluginConfig> {
 }
 
 export const sha3Plugin: PluginFactory<Sha3PluginConfig> = (
-  opts: Sha3PluginConfig
+  config: Sha3PluginConfig
 ) => {
   return {
-    factory: () => new Sha3Plugin(opts),
+    factory: () => new Sha3Plugin(config),
     manifest,
   };
 };
