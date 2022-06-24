@@ -63,6 +63,5 @@
   "resolutions": {
     "@types/react": "16.9.0",
     "@types/react-dom": "16.9.0"
-  },
-  "version": "0.0.1-prealpha.87"
+  }
 }
