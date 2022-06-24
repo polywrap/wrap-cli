@@ -16,27 +16,25 @@ import * as Types from "..";
 
 {{#methods}}
 export function {{name}}Wrapped(argsBuf: ArrayBuffer{{#hasEnv}}, env_size: u32{{/hasEnv}}): ArrayBuffer {
-  {{#arguments}}
-  {{#isEnv}}
-  {{#required}}
+  {{#hasEnv}}
+  {{#isEnvRequired}}
   if (env_size == 0) {
     throw new Error("Environment is not set, and it is required by method 'objectMethod'")
   }
   
   const envBuf = wrap_load_env(env_size);
   const env = Types.Env.fromBuffer(envBuf);
-  {{/required}}
-  {{^required}}
+  {{/isEnvRequired}}
+  {{^isEnvRequired}}
   let env: Types.Env | null = null;
   if (env_size > 0) {
     const envBuf = wrap_load_env(env_size);
     env = Types.Env.fromBuffer(envBuf);
   }
-  {{/required}}
-  {{/isEnv}}
-  {{/arguments}}
+  {{/isEnvRequired}}
+  {{/hasEnv}}
   {{#arguments.length}}
-  const args = deserialize{{name}}Args(argsBuf);
+  const args = deserialize{{name}}Args(argsBuf{{#hasEnv}}, env{{/hasEnv}});
   {{/arguments.length}}
 
   const result = {{name}}({{#arguments.length}}{

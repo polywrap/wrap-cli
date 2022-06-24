@@ -6,6 +6,9 @@ export const methodHasEnv: TypeInfoTransforms = {
     MethodDefinition: (method: MethodDefinition) => ({
       ...method,
       hasEnv: method.arguments.some(({ name }) => isEnvInputField(name ?? "")),
+      isEnvRequired:
+        method.arguments.find(({ name }) => isEnvInputField(name ?? ""))
+          ?.required ?? false,
     }),
   },
 };
