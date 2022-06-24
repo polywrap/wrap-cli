@@ -18,7 +18,7 @@ import { PluginFactory } from "@polywrap/core-js";
 type NoConfig = Record<string, never>;
 
 export class FileSystemPlugin extends Module<NoConfig> {
-  async readFile(input: Input_readFile, _client: Client): Promise<ArrayBuffer> {
+  async readFile(input: Input_readFile, _client: Client): Promise<Uint8Array> {
     return fs.promises.readFile(input.path);
   }
 

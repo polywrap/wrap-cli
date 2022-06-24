@@ -1,4 +1,4 @@
-import { fileSystemPlugin } from "../index";
+import { fileSystemPlugin } from "..";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import { FileSystem_Module, FileSystem_EncodingEnum } from "../wrap";
 import fs from "fs";
