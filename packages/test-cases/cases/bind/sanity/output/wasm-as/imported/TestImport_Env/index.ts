@@ -38,12 +38,4 @@ export class TestImport_Env {
   static read(reader: Read): TestImport_Env {
     return readTestImport_Env(reader);
   }
-
-  static toJson(type: TestImport_Env): JSON.Value {
-    return JSONSerializer.encode(type);
-  }
-
-  static fromJson(json: JSON.Value): TestImport_Env {
-    return (new JSONDeserializer(json)).decode<TestImport_Env>();
-  }
 }

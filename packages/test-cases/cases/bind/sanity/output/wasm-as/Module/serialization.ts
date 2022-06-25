@@ -188,7 +188,7 @@ export class Input_objectMethod {
 }
 
 export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer, env: Types.Env): Input_objectMethod {
-  const context: Context =  new Context("Deserializing module-type: objectMethod");
+  const context: Context = new Context("Deserializing module-type: objectMethod");
   const reader = new ReadDecoder(argsBuf, context);
   let numFields = reader.readMapLength();
 
@@ -298,7 +298,7 @@ export class Input_optionalEnvMethod {
 }
 
 export function deserializeoptionalEnvMethodArgs(argsBuf: ArrayBuffer, env: Types.Env | null): Input_optionalEnvMethod {
-  const context: Context =  new Context("Deserializing module-type: optionalEnvMethod");
+  const context: Context = new Context("Deserializing module-type: optionalEnvMethod");
   const reader = new ReadDecoder(argsBuf, context);
   let numFields = reader.readMapLength();
 

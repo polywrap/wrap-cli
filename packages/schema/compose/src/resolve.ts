@@ -319,7 +319,7 @@ const extractObjectImportDependencies = (
             importsFound[importFound.type] = importFound;
 
             // Traverse this newly added object
-            visitEnvDefinition(importFound, {
+            visitImportedEnvDefinition(importFound, {
               ...extractObjectImportDependencies(
                 importsFound,
                 rootTypeInfo,
