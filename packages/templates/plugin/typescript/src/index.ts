@@ -2,7 +2,7 @@ import { Module, Input_sampleMethod, manifest } from "./wrap";
 
 import { PluginFactory } from "@polywrap/core-js";
 
-export interface SamplePluginConfig extends Record<string, unknown> {
+export interface SamplePluginConfig {
   defaultValue: string;
 }
 
@@ -16,10 +16,10 @@ export class SamplePlugin extends Module<SamplePluginConfig> {
 }
 
 export const samplePlugin: PluginFactory<SamplePluginConfig> = (
-  opts: SamplePluginConfig
+  config: SamplePluginConfig
 ) => {
   return {
-    factory: () => new SamplePlugin(opts),
+    factory: () => new SamplePlugin(config),
     manifest,
   };
 };

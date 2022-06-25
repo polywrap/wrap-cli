@@ -1,10 +1,10 @@
-import { filesystemPlugin } from "../index";
+import { fileSystemResolverPlugin } from "../index";
 import {
   buildWrapper,
-  ensAddresses,
   initTestEnvironment,
   stopTestEnvironment,
-  providers
+  providers,
+  ensAddresses,
 } from "@polywrap/test-env-js";
 import {
   PolywrapClient,
@@ -29,10 +29,9 @@ describe("Filesystem plugin", () => {
     const config: Partial<PolywrapClientConfig> = {
       plugins: [
         {
-          uri: "wrap://ens/fs.polywrap.eth",
-          plugin: filesystemPlugin({ }),
+          uri: "wrap://ens/fs-resolver.polywrap.eth",
+          plugin: fileSystemResolverPlugin({ }),
         },
-        // IPFS is required for downloading Polywrap packages
         {
           uri: "wrap://ens/ipfs.polywrap.eth",
           plugin: ipfsPlugin({
@@ -40,7 +39,6 @@ describe("Filesystem plugin", () => {
             fallbackProviders: defaultIpfsProviders,
           }),
         },
-        // ENS is required for resolving domain to IPFS hashes
         {
           uri: "wrap://ens/ens.polywrap.eth",
           plugin: ensPlugin({
@@ -78,29 +76,27 @@ describe("Filesystem plugin", () => {
     const fsPath = `${wrapperPath}/build`;
     const fsUri = `fs/${fsPath}`;
 
-    // query wrapper from filesystem
-    const deploy = await client.query<{
-      deployContract: string;
-    }>({
+    // invoke wrapper from filesystem
+    const deploy = await client.invoke<string>({
       uri: fsUri,
-      query: `
-        mutation {
-          deployContract(
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
+      method: "deployContract",
+      input: {
+        connection: {
+          networkNameOrChainId: "testnet"
         }
-      `,
+      },
     });
 
-    expect(deploy.errors).toBeFalsy();
+    expect(deploy.error).toBeFalsy();
     expect(deploy.data).toBeTruthy();
-    expect(deploy.data?.deployContract.indexOf("0x")).toBeGreaterThan(-1);
+    expect(deploy.data?.indexOf("0x")).toBeGreaterThan(-1);
 
     // get the schema
     const schema = await client.getSchema(fsUri);
-    const expectedSchema = await fs.promises.readFile(`${fsPath}/schema.graphql`, "utf-8");
+    const expectedSchema = await fs.promises.readFile(
+      `${fsPath}/schema.graphql`,
+      "utf-8"
+    );
 
     expect(schema).toBe(expectedSchema);
 
@@ -111,8 +107,14 @@ describe("Filesystem plugin", () => {
     expect(manifest.language).toBe("wasm/assemblyscript");
 
     // get a file
-    const file = await client.getFile(fsUri, { path: "polywrap.json", encoding: "utf-8" });
-    const expectedFile = await fs.promises.readFile(`${fsPath}/polywrap.json`, "utf-8");
+    const file = await client.getFile(fsUri, {
+      path: "polywrap.json",
+      encoding: "utf-8",
+    });
+    const expectedFile = await fs.promises.readFile(
+      `${fsPath}/polywrap.json`,
+      "utf-8"
+    );
 
     expect(file).toBe(expectedFile);
   });

@@ -10,9 +10,9 @@ import {
   PolywrapClientConfig,
 } from "@polywrap/client-js";
 
-export function validateRedirects<TUri extends PluginPackage | Uri | string>(
-  redirects: UriRedirect<TUri>[]
-): void {
+export function validateRedirects<
+  TUri extends PluginPackage<unknown> | Uri | string
+>(redirects: UriRedirect<TUri>[]): void {
   if (!Array.isArray(redirects)) {
     throw new Error(intlMsg.commands_run_error_redirectsExportNotArray());
   }

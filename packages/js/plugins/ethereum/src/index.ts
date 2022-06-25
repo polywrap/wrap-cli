@@ -50,7 +50,7 @@ import { ethers } from "ethers";
 import { defaultAbiCoder } from "ethers/lib/utils";
 import { PluginFactory } from "@polywrap/core-js";
 
-export interface EthereumPluginConfig extends Record<string, unknown> {
+export interface EthereumPluginConfig {
   networks: ConnectionConfigs;
   defaultNetwork?: string;
 }
@@ -437,10 +437,10 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
 }
 
 export const ethereumPlugin: PluginFactory<EthereumPluginConfig> = (
-  opts: EthereumPluginConfig
+  config: EthereumPluginConfig
 ) => {
   return {
-    factory: () => new EthereumPlugin(opts),
+    factory: () => new EthereumPlugin(config),
     manifest,
   };
 };

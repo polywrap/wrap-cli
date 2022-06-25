@@ -5,7 +5,7 @@
 /// Types generated from @polywrap/ens-plugin-js build files:
 /// build/index.d.ts
 
-export interface EnsPluginConfig extends Record<string, unknown> {
+export interface EnsPluginConfig {
   addresses?: Addresses;
 }
 
