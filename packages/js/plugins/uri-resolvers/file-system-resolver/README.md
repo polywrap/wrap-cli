@@ -13,10 +13,11 @@ import {
   stopTestEnvironment,
   buildAndDeployWrapper,
 } from "@polywrap/test-env-js";
+import { filesystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 import { filesystemPlugin } from "@polywrap/fs-plugin-js";
 import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
-import { ensPlugin } from "@polywrap/ens-plugin-js";
+import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 
 // query a local wrapper
 export async function foo({
@@ -46,22 +47,22 @@ export async function foo({
         }),
       },
       {
-        uri: "wrap://ens/ens.polywrap.eth",
-        plugin: ensPlugin({
-          addresses: {
-            testnet: ensAddresses.ensAddress,
-          },
-        }),
+        uri: "wrap://ens/fs-resolver.polywrap.eth",
+        plugin: fileSystemResolverPlugin({}),
       },
       {
         uri: "wrap://ens/fs.polywrap.eth",
         plugin: filesystemPlugin({}),
       },
+      {
+        uri: "wrap://ens/fs-resolver.polywrap.eth",
+        plugin: fileSystemResolverPlugin({}),
+      },
     ],
   });
 
   // get filesystem path
-  const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-storage`;
+  const wrapperPath = `/path/to/simple-storage`;
 
   // build locally
   await buildWrapper(wrapperPath);

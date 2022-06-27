@@ -5,7 +5,7 @@ Graph Node Plugin allows the Polywrap JS Client to send queries to the [Graph No
 # Usage
 
 ``` typescript
-import { GraphNodePlugin, plugin } from "@polywrap/graph-node-plugin-js";
+import { graphNodePlugin } from "@polywrap/graph-node-plugin-js";
 import { PolywrapClient } from "@polywrap/client-js";
 
 export async function foo({
@@ -17,7 +17,7 @@ export async function foo({
   const client = new PolywrapClient({
     plugins: [{
       uri,
-      plugin: plugin({
+      plugin: graphNodePlugin({
         provider
       })
     }]
@@ -54,12 +54,12 @@ export async function foo({
   });
 
   // or instantiate the plugin
-  const graphNodePlugin = new GraphNodePlugin({
+  const plugin = graphNodePlugin({
     provider
   });
 
   // and send queries to the subgraph
-  const response' = await graphNodePlugin.querySubgraph({
+  const response' = await plugin.querySubgraph({
     subgraphAuthor: "ensdomains",
     subgraphName: "ens",
     query: `{

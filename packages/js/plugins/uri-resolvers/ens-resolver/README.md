@@ -55,7 +55,7 @@ export async function foo({
   });
 
   // get filesystem path
-  const wrapperAbsPath = `${GetPathToTestWrappers()}/wasm-as/simple-storage`;
+  const wrapperAbsPath = `/path/to/simple-storage`;
 
   // deploy a wrapper to IPFS
   let { ensDomain } = await buildAndDeployWrapper({

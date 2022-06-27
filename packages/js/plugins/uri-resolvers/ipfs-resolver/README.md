@@ -13,6 +13,7 @@ import {
   buildAndDeployWrapper,
 } from "@polywrap/test-env-js";
 
+import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ipfsResolverPlugin } from "@polywrap/ipfs-plugin-js";
 
 const createIpfsClient = require("@dorgjelli-test/ipfs-http-client-lite");
@@ -26,7 +27,7 @@ export async function foo({
 
   // deploy wrapper to IPFS
   let { ipfsCid } = await buildAndDeployWrapper({
-    wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/simple-storage`,
+    wrapperAbsPath: `/path/to/simple-storage`,
     ipfsProvider: providers.ipfs,
     ethereumProvider: providers.ethereum,
     ensName: "simple-storage.eth",
@@ -38,12 +39,18 @@ export async function foo({
   // get wrapper IPFS URI
   const wrapperUri = `ipfs/${wrapperIpfsCid}`;
 
-  // initialize client with the ipfs plugin
+  // initialize client with the ipfs and resolver plugins
   client = new PolywrapClient({
     plugins: [
       {
         uri: "wrap://ens/ipfs.polywrap.eth",
         plugin: ipfsPlugin({
+          provider: providers.ipfs,
+        }),
+      },
+      {
+        uri: "wrap://ens/ipfs-uri-resolver.polywrap.eth",
+        plugin: ipfsResolverPlugin({
           provider: providers.ipfs,
         }),
       },
