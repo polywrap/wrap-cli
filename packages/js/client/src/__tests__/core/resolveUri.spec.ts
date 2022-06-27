@@ -566,7 +566,6 @@ describe("resolveUri", () => {
     expect(result2.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
       "ExtendableUriResolver",
     ]);
-    console.log(result2.uriHistory.stack, "stack");
 
     expect(result2.uriHistory.stack).toEqual([
       {
