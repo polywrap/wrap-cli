@@ -9,8 +9,8 @@ extern "C" {
         uri_len: u32,
         method_ptr: u32,
         method_len: u32,
-        input_ptr: u32,
-        input_len: u32,
+        args_ptr: u32,
+        args_len: u32,
     ) -> bool;
 
     /// Subinvoke Result
@@ -32,7 +32,7 @@ extern "C" {
 pub fn wrap_subinvoke(
     uri: &str,
     method: &str,
-    input: Vec<u8>,
+    args: Vec<u8>,
 ) -> Result<Vec<u8>, String> {
     let uri_buf = uri.as_bytes();
     let method_buf = method.as_bytes();
@@ -43,8 +43,8 @@ pub fn wrap_subinvoke(
             uri_buf.len() as u32,
             method_buf.as_ptr() as u32,
             method_buf.len() as u32,
-            input.as_ptr() as u32,
-            input.len() as u32,
+            args.as_ptr() as u32,
+            args.len() as u32,
         )
     };
     if !success {

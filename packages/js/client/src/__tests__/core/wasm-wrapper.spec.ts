@@ -67,7 +67,7 @@ describe("wasm-wrapper", () => {
   };
 
   const mockPlugin = () => {
-    class MockPlugin extends PluginModule {
+    class MockPlugin extends PluginModule<{}> {
       getData(_: unknown) {
         return 100;
       }
@@ -90,7 +90,7 @@ describe("wasm-wrapper", () => {
     const result = await client.invoke<string>({
       uri: wrapperUri,
       method: "deployContract",
-      input: {
+      args: {
         connection: {
           networkNameOrChainId: "testnet",
         },
@@ -108,7 +108,7 @@ describe("wasm-wrapper", () => {
     const result = await client.invoke({
       uri: wrapperUri,
       method: "deployContract",
-      input: {
+      args: {
         connection: {
           networkNameOrChainId: "testnet",
         },
@@ -142,7 +142,7 @@ describe("wasm-wrapper", () => {
     const result = await client.invoke({
       uri: wrapperUri,
       method: "deployContract",
-      input: {},
+      args: {},
       config: {
         redirects,
       },

@@ -1,8 +1,8 @@
 import {
   Client,
   Module,
-  Input_tryResolveUri,
-  Input_getFile,
+  Args_tryResolveUri,
+  Args_getFile,
   UriResolver_MaybeUriOrManifest,
   Bytes,
   Ethereum_Module,
@@ -20,7 +20,7 @@ export interface Addresses {
   [network: string]: Address;
 }
 
-export interface EnsResolverPluginConfig extends Record<string, unknown> {
+export interface EnsResolverPluginConfig {
   addresses?: Addresses;
 }
 
@@ -37,15 +37,15 @@ export class EnsResolverPlugin extends Module<EnsResolverPluginConfig> {
   }
 
   async tryResolveUri(
-    input: Input_tryResolveUri,
+    args: Args_tryResolveUri,
     client: Client
   ): Promise<UriResolver_MaybeUriOrManifest | null> {
-    if (input.authority !== "ens") {
+    if (args.authority !== "ens") {
       return null;
     }
 
     try {
-      const cid = await this.ensToCID(input.path, client);
+      const cid = await this.ensToCID(args.path, client);
 
       if (!cid) {
         return null;
@@ -63,7 +63,7 @@ export class EnsResolverPlugin extends Module<EnsResolverPluginConfig> {
     return { uri: null, manifest: null };
   }
 
-  getFile(_input: Input_getFile, _client: Client): Bytes | null {
+  getFile(_args: Args_getFile, _client: Client): Bytes | null {
     return null;
   }
 
@@ -200,10 +200,10 @@ export class EnsResolverPlugin extends Module<EnsResolverPluginConfig> {
 }
 
 export const ensResolverPlugin: PluginFactory<EnsResolverPluginConfig> = (
-  opts: EnsResolverPluginConfig
+  config: EnsResolverPluginConfig
 ) => {
   return {
-    factory: () => new EnsResolverPlugin(opts),
+    factory: () => new EnsResolverPlugin(config),
     manifest,
   };
 };

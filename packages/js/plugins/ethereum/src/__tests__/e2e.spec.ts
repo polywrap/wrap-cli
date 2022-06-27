@@ -73,10 +73,8 @@ describe("Ethereum Plugin", () => {
         {
           uri: "wrap://ens/ens-resolver.polywrap.eth",
           plugin: ensResolverPlugin({
-            query: {
-              addresses: {
-                testnet: ensAddress,
-              },
+            addresses: {
+              testnet: ensAddress,
             },
           }),
         },
@@ -182,7 +180,7 @@ describe("Ethereum Plugin", () => {
       const response = await client.invoke<string>({
         uri,
         method: "getBalance",
-        input: {
+        args: {
           address: signerAddressQuery.data,
         },
       });
@@ -288,7 +286,7 @@ describe("Ethereum Plugin", () => {
       const result = await client.invoke<string>({
         uri: uri,
         method: "solidityPack",
-        input: {
+        args: {
           types,
           values,
         },
@@ -319,7 +317,7 @@ describe("Ethereum Plugin", () => {
       const result = await client.invoke<string>({
         uri: uri,
         method: "solidityKeccak256",
-        input: {
+        args: {
           types,
           values,
         },
@@ -350,7 +348,7 @@ describe("Ethereum Plugin", () => {
       const result = await client.invoke<string>({
         uri: uri,
         method: "soliditySha256",
-        input: {
+        args: {
           types,
           values,
         },

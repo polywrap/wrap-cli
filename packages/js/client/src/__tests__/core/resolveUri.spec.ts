@@ -331,7 +331,7 @@ describe("resolveUri", () => {
         result: {
           uri: ipfsUri,
           wrapper: true,
-          implementationUri: new Uri("wrap://ens/ipfs.polywrap.eth"),
+          implementationUri: new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
         },
       },
     ]);
@@ -395,7 +395,7 @@ describe("resolveUri", () => {
         result: {
           uri: ipfsUri,
           wrapper: true,
-          implementationUri: new Uri("wrap://ens/ipfs.polywrap.eth"),
+          implementationUri: new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
         },
       },
     ]);
@@ -522,7 +522,7 @@ describe("resolveUri", () => {
         result: {
           uri: ipfsUri,
           wrapper: true,
-          implementationUri: new Uri("wrap://ens/ipfs.polywrap.eth"),
+          implementationUri: new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
         },
       },
     ]);
@@ -586,7 +586,7 @@ describe("resolveUri", () => {
         result: {
           uri: ipfsUri,
           wrapper: true,
-          implementationUri: new Uri("wrap://ens/ipfs.polywrap.eth"),
+          implementationUri: new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
         },
       },
     ]);
@@ -650,7 +650,7 @@ describe("resolveUri", () => {
         result: {
           uri: ipfsUri,
           wrapper: true,
-          implementationUri: new Uri("wrap://ens/ipfs.polywrap.eth"),
+          implementationUri: new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
         },
       },
     ]);
@@ -730,7 +730,7 @@ describe("resolveUri", () => {
         result: {
           uri: ipfsUri,
           wrapper: true,
-          implementationUri: new Uri("wrap://ens/ipfs.polywrap.eth"),
+          implementationUri: new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
         },
       },
     ]);

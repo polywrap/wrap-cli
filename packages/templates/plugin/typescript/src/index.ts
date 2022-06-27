@@ -1,8 +1,8 @@
-import { Module, Input_sampleMethod, manifest } from "./wrap";
+import { Module, Args_sampleMethod, manifest } from "./wrap";
 
 import { PluginFactory } from "@polywrap/core-js";
 
-export interface SamplePluginConfig extends Record<string, unknown> {
+export interface SamplePluginConfig {
   defaultValue: string;
 }
 
@@ -10,16 +10,16 @@ export class SamplePlugin extends Module<SamplePluginConfig> {
   constructor(config: SamplePluginConfig) {
     super(config);
   }
-  public sampleMethod(input: Input_sampleMethod): string {
-    return input.data + this.config.defaultValue;
+  public sampleMethod(args: Args_sampleMethod): string {
+    return args.data + this.config.defaultValue;
   }
 }
 
 export const samplePlugin: PluginFactory<SamplePluginConfig> = (
-  opts: SamplePluginConfig
+  config: SamplePluginConfig
 ) => {
   return {
-    factory: () => new SamplePlugin(opts),
+    factory: () => new SamplePlugin(config),
     manifest,
   };
 };

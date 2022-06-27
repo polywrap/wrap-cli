@@ -159,7 +159,7 @@ export interface Ethereum_Access {
 /// Imported Modules START ///
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Input_callContractView extends Record<string, unknown> {
+interface Ethereum_Module_Args_callContractView extends Record<string, unknown> {
   address: Types.String;
   method: Types.String;
   args?: Array<Types.String> | null;
@@ -167,7 +167,7 @@ interface Ethereum_Module_Input_callContractView extends Record<string, unknown>
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Input_callContractStatic extends Record<string, unknown> {
+interface Ethereum_Module_Args_callContractStatic extends Record<string, unknown> {
   address: Types.String;
   method: Types.String;
   args?: Array<Types.String> | null;
@@ -176,72 +176,72 @@ interface Ethereum_Module_Input_callContractStatic extends Record<string, unknow
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Input_getBalance extends Record<string, unknown> {
+interface Ethereum_Module_Args_getBalance extends Record<string, unknown> {
   address: Types.String;
   blockTag?: Types.BigInt | null;
   connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Input_encodeParams extends Record<string, unknown> {
+interface Ethereum_Module_Args_encodeParams extends Record<string, unknown> {
   types: Array<Types.String>;
   values: Array<Types.String>;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Input_encodeFunction extends Record<string, unknown> {
+interface Ethereum_Module_Args_encodeFunction extends Record<string, unknown> {
   method: Types.String;
   args?: Array<Types.String> | null;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Input_solidityPack extends Record<string, unknown> {
+interface Ethereum_Module_Args_solidityPack extends Record<string, unknown> {
   types: Array<Types.String>;
   values: Array<Types.String>;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Input_solidityKeccak256 extends Record<string, unknown> {
+interface Ethereum_Module_Args_solidityKeccak256 extends Record<string, unknown> {
   types: Array<Types.String>;
   values: Array<Types.String>;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Input_soliditySha256 extends Record<string, unknown> {
+interface Ethereum_Module_Args_soliditySha256 extends Record<string, unknown> {
   types: Array<Types.String>;
   values: Array<Types.String>;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Input_getSignerAddress extends Record<string, unknown> {
+interface Ethereum_Module_Args_getSignerAddress extends Record<string, unknown> {
   connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Input_getSignerBalance extends Record<string, unknown> {
+interface Ethereum_Module_Args_getSignerBalance extends Record<string, unknown> {
   blockTag?: Types.BigInt | null;
   connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Input_getSignerTransactionCount extends Record<string, unknown> {
+interface Ethereum_Module_Args_getSignerTransactionCount extends Record<string, unknown> {
   blockTag?: Types.BigInt | null;
   connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Input_getGasPrice extends Record<string, unknown> {
+interface Ethereum_Module_Args_getGasPrice extends Record<string, unknown> {
   connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Input_estimateTransactionGas extends Record<string, unknown> {
+interface Ethereum_Module_Args_estimateTransactionGas extends Record<string, unknown> {
   tx: Types.Ethereum_TxRequest;
   connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Input_estimateContractCallGas extends Record<string, unknown> {
+interface Ethereum_Module_Args_estimateContractCallGas extends Record<string, unknown> {
   address: Types.String;
   method: Types.String;
   args?: Array<Types.String> | null;
@@ -250,22 +250,22 @@ interface Ethereum_Module_Input_estimateContractCallGas extends Record<string, u
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Input_checkAddress extends Record<string, unknown> {
+interface Ethereum_Module_Args_checkAddress extends Record<string, unknown> {
   address: Types.String;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Input_toWei extends Record<string, unknown> {
+interface Ethereum_Module_Args_toWei extends Record<string, unknown> {
   eth: Types.String;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Input_toEth extends Record<string, unknown> {
+interface Ethereum_Module_Args_toEth extends Record<string, unknown> {
   wei: Types.BigInt;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Input_awaitTransaction extends Record<string, unknown> {
+interface Ethereum_Module_Args_awaitTransaction extends Record<string, unknown> {
   txHash: Types.String;
   confirmations: Types.UInt32;
   timeout: Types.UInt32;
@@ -273,7 +273,7 @@ interface Ethereum_Module_Input_awaitTransaction extends Record<string, unknown>
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Input_waitForEvent extends Record<string, unknown> {
+interface Ethereum_Module_Args_waitForEvent extends Record<string, unknown> {
   address: Types.String;
   event: Types.String;
   args?: Array<Types.String> | null;
@@ -282,12 +282,12 @@ interface Ethereum_Module_Input_waitForEvent extends Record<string, unknown> {
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Input_getNetwork extends Record<string, unknown> {
+interface Ethereum_Module_Args_getNetwork extends Record<string, unknown> {
   connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Input_callContractMethod extends Record<string, unknown> {
+interface Ethereum_Module_Args_callContractMethod extends Record<string, unknown> {
   address: Types.String;
   method: Types.String;
   args?: Array<Types.String> | null;
@@ -296,7 +296,7 @@ interface Ethereum_Module_Input_callContractMethod extends Record<string, unknow
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Input_callContractMethodAndWait extends Record<string, unknown> {
+interface Ethereum_Module_Args_callContractMethodAndWait extends Record<string, unknown> {
   address: Types.String;
   method: Types.String;
   args?: Array<Types.String> | null;
@@ -305,19 +305,19 @@ interface Ethereum_Module_Input_callContractMethodAndWait extends Record<string,
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Input_sendTransaction extends Record<string, unknown> {
+interface Ethereum_Module_Args_sendTransaction extends Record<string, unknown> {
   tx: Types.Ethereum_TxRequest;
   connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Input_sendTransactionAndWait extends Record<string, unknown> {
+interface Ethereum_Module_Args_sendTransactionAndWait extends Record<string, unknown> {
   tx: Types.Ethereum_TxRequest;
   connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Input_deployContract extends Record<string, unknown> {
+interface Ethereum_Module_Args_deployContract extends Record<string, unknown> {
   abi: Types.String;
   bytecode: Types.String;
   args?: Array<Types.String> | null;
@@ -325,13 +325,13 @@ interface Ethereum_Module_Input_deployContract extends Record<string, unknown> {
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Input_signMessage extends Record<string, unknown> {
+interface Ethereum_Module_Args_signMessage extends Record<string, unknown> {
   message: Types.String;
   connection?: Types.Ethereum_Connection | null;
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
-interface Ethereum_Module_Input_sendRPC extends Record<string, unknown> {
+interface Ethereum_Module_Args_sendRPC extends Record<string, unknown> {
   method: Types.String;
   params: Array<Types.String>;
   connection?: Types.Ethereum_Connection | null;
@@ -340,299 +340,299 @@ interface Ethereum_Module_Input_sendRPC extends Record<string, unknown> {
 /* URI: "ens/ethereum.polywrap.eth" */
 export const Ethereum_Module = {
   callContractView: async (
-    input: Ethereum_Module_Input_callContractView,
+    args: Ethereum_Module_Args_callContractView,
     client: Client
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
       uri: "ens/ethereum.polywrap.eth",
       method: "callContractView",
-      input
+      args
     });
   },
 
   callContractStatic: async (
-    input: Ethereum_Module_Input_callContractStatic,
+    args: Ethereum_Module_Args_callContractStatic,
     client: Client
   ): Promise<InvokeResult<Types.Ethereum_StaticTxResult>> => {
     return client.invoke<Types.Ethereum_StaticTxResult>({
       uri: "ens/ethereum.polywrap.eth",
       method: "callContractStatic",
-      input
+      args
     });
   },
 
   getBalance: async (
-    input: Ethereum_Module_Input_getBalance,
+    args: Ethereum_Module_Args_getBalance,
     client: Client
   ): Promise<InvokeResult<Types.BigInt>> => {
     return client.invoke<Types.BigInt>({
       uri: "ens/ethereum.polywrap.eth",
       method: "getBalance",
-      input
+      args
     });
   },
 
   encodeParams: async (
-    input: Ethereum_Module_Input_encodeParams,
+    args: Ethereum_Module_Args_encodeParams,
     client: Client
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
       uri: "ens/ethereum.polywrap.eth",
       method: "encodeParams",
-      input
+      args
     });
   },
 
   encodeFunction: async (
-    input: Ethereum_Module_Input_encodeFunction,
+    args: Ethereum_Module_Args_encodeFunction,
     client: Client
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
       uri: "ens/ethereum.polywrap.eth",
       method: "encodeFunction",
-      input
+      args
     });
   },
 
   solidityPack: async (
-    input: Ethereum_Module_Input_solidityPack,
+    args: Ethereum_Module_Args_solidityPack,
     client: Client
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
       uri: "ens/ethereum.polywrap.eth",
       method: "solidityPack",
-      input
+      args
     });
   },
 
   solidityKeccak256: async (
-    input: Ethereum_Module_Input_solidityKeccak256,
+    args: Ethereum_Module_Args_solidityKeccak256,
     client: Client
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
       uri: "ens/ethereum.polywrap.eth",
       method: "solidityKeccak256",
-      input
+      args
     });
   },
 
   soliditySha256: async (
-    input: Ethereum_Module_Input_soliditySha256,
+    args: Ethereum_Module_Args_soliditySha256,
     client: Client
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
       uri: "ens/ethereum.polywrap.eth",
       method: "soliditySha256",
-      input
+      args
     });
   },
 
   getSignerAddress: async (
-    input: Ethereum_Module_Input_getSignerAddress,
+    args: Ethereum_Module_Args_getSignerAddress,
     client: Client
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
       uri: "ens/ethereum.polywrap.eth",
       method: "getSignerAddress",
-      input
+      args
     });
   },
 
   getSignerBalance: async (
-    input: Ethereum_Module_Input_getSignerBalance,
+    args: Ethereum_Module_Args_getSignerBalance,
     client: Client
   ): Promise<InvokeResult<Types.BigInt>> => {
     return client.invoke<Types.BigInt>({
       uri: "ens/ethereum.polywrap.eth",
       method: "getSignerBalance",
-      input
+      args
     });
   },
 
   getSignerTransactionCount: async (
-    input: Ethereum_Module_Input_getSignerTransactionCount,
+    args: Ethereum_Module_Args_getSignerTransactionCount,
     client: Client
   ): Promise<InvokeResult<Types.BigInt>> => {
     return client.invoke<Types.BigInt>({
       uri: "ens/ethereum.polywrap.eth",
       method: "getSignerTransactionCount",
-      input
+      args
     });
   },
 
   getGasPrice: async (
-    input: Ethereum_Module_Input_getGasPrice,
+    args: Ethereum_Module_Args_getGasPrice,
     client: Client
   ): Promise<InvokeResult<Types.BigInt>> => {
     return client.invoke<Types.BigInt>({
       uri: "ens/ethereum.polywrap.eth",
       method: "getGasPrice",
-      input
+      args
     });
   },
 
   estimateTransactionGas: async (
-    input: Ethereum_Module_Input_estimateTransactionGas,
+    args: Ethereum_Module_Args_estimateTransactionGas,
     client: Client
   ): Promise<InvokeResult<Types.BigInt>> => {
     return client.invoke<Types.BigInt>({
       uri: "ens/ethereum.polywrap.eth",
       method: "estimateTransactionGas",
-      input
+      args
     });
   },
 
   estimateContractCallGas: async (
-    input: Ethereum_Module_Input_estimateContractCallGas,
+    args: Ethereum_Module_Args_estimateContractCallGas,
     client: Client
   ): Promise<InvokeResult<Types.BigInt>> => {
     return client.invoke<Types.BigInt>({
       uri: "ens/ethereum.polywrap.eth",
       method: "estimateContractCallGas",
-      input
+      args
     });
   },
 
   checkAddress: async (
-    input: Ethereum_Module_Input_checkAddress,
+    args: Ethereum_Module_Args_checkAddress,
     client: Client
   ): Promise<InvokeResult<Types.Boolean>> => {
     return client.invoke<Types.Boolean>({
       uri: "ens/ethereum.polywrap.eth",
       method: "checkAddress",
-      input
+      args
     });
   },
 
   toWei: async (
-    input: Ethereum_Module_Input_toWei,
+    args: Ethereum_Module_Args_toWei,
     client: Client
   ): Promise<InvokeResult<Types.BigInt>> => {
     return client.invoke<Types.BigInt>({
       uri: "ens/ethereum.polywrap.eth",
       method: "toWei",
-      input
+      args
     });
   },
 
   toEth: async (
-    input: Ethereum_Module_Input_toEth,
+    args: Ethereum_Module_Args_toEth,
     client: Client
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
       uri: "ens/ethereum.polywrap.eth",
       method: "toEth",
-      input
+      args
     });
   },
 
   awaitTransaction: async (
-    input: Ethereum_Module_Input_awaitTransaction,
+    args: Ethereum_Module_Args_awaitTransaction,
     client: Client
   ): Promise<InvokeResult<Types.Ethereum_TxReceipt>> => {
     return client.invoke<Types.Ethereum_TxReceipt>({
       uri: "ens/ethereum.polywrap.eth",
       method: "awaitTransaction",
-      input
+      args
     });
   },
 
   waitForEvent: async (
-    input: Ethereum_Module_Input_waitForEvent,
+    args: Ethereum_Module_Args_waitForEvent,
     client: Client
   ): Promise<InvokeResult<Types.Ethereum_EventNotification>> => {
     return client.invoke<Types.Ethereum_EventNotification>({
       uri: "ens/ethereum.polywrap.eth",
       method: "waitForEvent",
-      input
+      args
     });
   },
 
   getNetwork: async (
-    input: Ethereum_Module_Input_getNetwork,
+    args: Ethereum_Module_Args_getNetwork,
     client: Client
   ): Promise<InvokeResult<Types.Ethereum_Network>> => {
     return client.invoke<Types.Ethereum_Network>({
       uri: "ens/ethereum.polywrap.eth",
       method: "getNetwork",
-      input
+      args
     });
   },
 
   callContractMethod: async (
-    input: Ethereum_Module_Input_callContractMethod,
+    args: Ethereum_Module_Args_callContractMethod,
     client: Client
   ): Promise<InvokeResult<Types.Ethereum_TxResponse>> => {
     return client.invoke<Types.Ethereum_TxResponse>({
       uri: "ens/ethereum.polywrap.eth",
       method: "callContractMethod",
-      input
+      args
     });
   },
 
   callContractMethodAndWait: async (
-    input: Ethereum_Module_Input_callContractMethodAndWait,
+    args: Ethereum_Module_Args_callContractMethodAndWait,
     client: Client
   ): Promise<InvokeResult<Types.Ethereum_TxReceipt>> => {
     return client.invoke<Types.Ethereum_TxReceipt>({
       uri: "ens/ethereum.polywrap.eth",
       method: "callContractMethodAndWait",
-      input
+      args
     });
   },
 
   sendTransaction: async (
-    input: Ethereum_Module_Input_sendTransaction,
+    args: Ethereum_Module_Args_sendTransaction,
     client: Client
   ): Promise<InvokeResult<Types.Ethereum_TxResponse>> => {
     return client.invoke<Types.Ethereum_TxResponse>({
       uri: "ens/ethereum.polywrap.eth",
       method: "sendTransaction",
-      input
+      args
     });
   },
 
   sendTransactionAndWait: async (
-    input: Ethereum_Module_Input_sendTransactionAndWait,
+    args: Ethereum_Module_Args_sendTransactionAndWait,
     client: Client
   ): Promise<InvokeResult<Types.Ethereum_TxReceipt>> => {
     return client.invoke<Types.Ethereum_TxReceipt>({
       uri: "ens/ethereum.polywrap.eth",
       method: "sendTransactionAndWait",
-      input
+      args
     });
   },
 
   deployContract: async (
-    input: Ethereum_Module_Input_deployContract,
+    args: Ethereum_Module_Args_deployContract,
     client: Client
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
       uri: "ens/ethereum.polywrap.eth",
       method: "deployContract",
-      input
+      args
     });
   },
 
   signMessage: async (
-    input: Ethereum_Module_Input_signMessage,
+    args: Ethereum_Module_Args_signMessage,
     client: Client
   ): Promise<InvokeResult<Types.String>> => {
     return client.invoke<Types.String>({
       uri: "ens/ethereum.polywrap.eth",
       method: "signMessage",
-      input
+      args
     });
   },
 
   sendRPC: async (
-    input: Ethereum_Module_Input_sendRPC,
+    args: Ethereum_Module_Args_sendRPC,
     client: Client
   ): Promise<InvokeResult<Types.String | null>> => {
     return client.invoke<Types.String | null>({
       uri: "ens/ethereum.polywrap.eth",
       method: "sendRPC",
-      input
+      args
     });
   }
 }

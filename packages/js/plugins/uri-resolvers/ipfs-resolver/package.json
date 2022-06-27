@@ -1,0 +1,44 @@
+{
+  "name": "@polywrap/ipfs-resolver-plugin-js",
+  "description": "Polywrap IPFS Javascript Plugin",
+  "version": "0.0.1-prealpha.89",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/web3-api/monorepo.git"
+  },
+  "main": "build/index.js",
+  "files": [
+    "build"
+  ],
+  "scripts": {
+    "build": "rimraf ./build && yarn codegen && tsc --project tsconfig.build.json",
+    "codegen": "node ../../../../../dependencies/node_modules/polywrap/bin/polywrap plugin codegen",
+    "codegen:patch": "node ../../../../cli/bin/polywrap plugin codegen && rimraf ./src/wrap",
+    "lint": "eslint --color -c ../../../../../.eslintrc.js src/",
+    "test": "jest --passWithNoTests --runInBand --verbose",
+    "test:ci": "yarn codegen && yarn test",
+    "test:watch": "jest --watch --passWithNoTests --verbose"
+  },
+  "dependencies": {
+    "@dorgjelli-test/ipfs-http-client-lite": "0.3.1",
+    "@polywrap/core-js": "0.0.1-prealpha.89",
+    "abort-controller": "3.0.0",
+    "is-ipfs": "1.0.3"
+  },
+  "devDependencies": {
+    "@types/jest": "26.0.8",
+    "@types/prettier": "2.6.0",
+    "abort-controller": "3.0.0",
+    "jest": "26.6.3",
+    "rimraf": "3.0.2",
+    "ts-jest": "26.5.4",
+    "ts-node": "8.10.2",
+    "typescript": "4.0.7",
+    "multiformats": "9.7.0"
+  },
+  "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
+  "publishConfig": {
+    "access": "public"
+  }
+}

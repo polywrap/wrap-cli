@@ -5,7 +5,7 @@ import { MaybeAsync } from "./MaybeAsync";
 export type Step<TUri extends Uri | string = string> = {
   uri: TUri;
   method: string;
-  input: Record<string, unknown>;
+  args: Record<string, unknown>;
   config?: Partial<ClientConfig>;
 };
 

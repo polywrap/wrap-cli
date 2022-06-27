@@ -12,10 +12,10 @@ pub mod serialization;
 pub use serialization::{
     deserialize_imported_method_result,
     serialize_imported_method_args,
-    InputImportedMethod,
+    ArgsImportedMethod,
     deserialize_another_method_result,
     serialize_another_method_args,
-    InputAnotherMethod
+    ArgsAnotherMethod
 };
 
 use crate::TestImportObject;
@@ -31,9 +31,9 @@ impl TestImportModule {
         TestImportModule {}
     }
 
-    pub fn imported_method(input: &InputImportedMethod) -> Result<Option<TestImportObject>, String> {
+    pub fn imported_method(args: &ArgsImportedMethod) -> Result<Option<TestImportObject>, String> {
         let uri = TestImportModule::URI;
-        let args = serialize_imported_method_args(input).map_err(|e| e.to_string())?;
+        let args = serialize_imported_method_args(args).map_err(|e| e.to_string())?;
         let result = subinvoke::wrap_subinvoke(
             uri,
             "importedMethod",
@@ -42,9 +42,9 @@ impl TestImportModule {
         deserialize_imported_method_result(result.as_slice()).map_err(|e| e.to_string())
     }
 
-    pub fn another_method(input: &InputAnotherMethod) -> Result<i32, String> {
+    pub fn another_method(args: &ArgsAnotherMethod) -> Result<i32, String> {
         let uri = TestImportModule::URI;
-        let args = serialize_another_method_args(input).map_err(|e| e.to_string())?;
+        let args = serialize_another_method_args(args).map_err(|e| e.to_string())?;
         let result = subinvoke::wrap_subinvoke(
             uri,
             "anotherMethod",
