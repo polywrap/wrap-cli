@@ -4,16 +4,18 @@ jobs:
     steps:
     - uri: fs/build
       method: deployContract
-      input:
+      args:
+        connection:
+          networkNameOrChainId: testnet
     jobs:
       case1:
         steps:
         - uri: fs/build
           method: setData
-          input:
+          args:
             address: "$cases.0.data"
             value: 100
         - uri: fs/build
           method: getData
-          input:
+          args:
             address: "$cases.0.data"

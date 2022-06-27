@@ -12,7 +12,7 @@ import {
   {{#methods}}
   serialize{{name}}Args,
   deserialize{{name}}Result,
-  Input_{{name}}{{^last}},{{/last}}
+  Args_{{name}}{{^last}},{{/last}}
   {{/methods}}
 } from "./serialization";
 {{/methods.length}}
@@ -25,13 +25,13 @@ export class {{type}} {
 
   {{#methods}}
   public static {{name}}(
-    input: Input_{{name}}
+    args: Args_{{name}}
   ): Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string> {
-    const args = serialize{{name}}Args(input);
+    const argsBuf = serialize{{name}}Args(args);
     const result = wrap_subinvoke(
       "{{uri}}",
       "{{name}}",
-      args
+      argsBuf
     );
 
     if (result.isErr) {
@@ -63,14 +63,14 @@ export class {{type}} {
 
   {{#methods}}
   public {{name}}(
-    input: Input_{{name}}
+    args: Args_{{name}}
   ): Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string> {
-    const args = serialize{{name}}Args(input);
+    const argsBuf = serialize{{name}}Args(args);
     const result = wrap_subinvokeImplementation(
       "{{uri}}",
       this.uri,
       "{{name}}",
-      args
+      argsBuf
     );
 
     if (result.isErr) {

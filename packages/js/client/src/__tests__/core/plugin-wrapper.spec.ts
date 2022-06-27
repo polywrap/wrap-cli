@@ -38,11 +38,11 @@ describe("plugin-wrapper", () => {
         return this.config.map;
       }
 
-      updateMap(input: { map: Map<string, number> }): Map<string, number> {
-        for (const key of input.map.keys()) {
+      updateMap(args: { map: Map<string, number> }): Map<string, number> {
+        for (const key of args.map.keys()) {
           this.config.map.set(
             key,
-            (this.config.map.get(key) || 0) + (input.map.get(key) || 0)
+            (this.config.map.get(key) || 0) + (args.map.get(key) || 0)
           );
         }
         return this.config.map;

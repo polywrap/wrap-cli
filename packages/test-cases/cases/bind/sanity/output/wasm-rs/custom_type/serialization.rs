@@ -21,127 +21,127 @@ use crate::{
     sanitize_custom_enum_value
 };
 
-pub fn serialize_custom_type(input: &CustomType) -> Result<Vec<u8>, EncodeError> {
+pub fn serialize_custom_type(args: &CustomType) -> Result<Vec<u8>, EncodeError> {
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) object-type: CustomType".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
-    write_custom_type(input, &mut encoder)?;
+    write_custom_type(args, &mut encoder)?;
     Ok(encoder.get_buffer())
 }
 
-pub fn write_custom_type<W: Write>(input: &CustomType, writer: &mut W) -> Result<(), EncodeError> {
+pub fn write_custom_type<W: Write>(args: &CustomType, writer: &mut W) -> Result<(), EncodeError> {
     writer.write_map_length(&37)?;
     writer.context().push("str", "String", "writing property");
     writer.write_string("str")?;
-    writer.write_string(&input.str)?;
+    writer.write_string(&args.str)?;
     writer.context().pop();
     writer.context().push("optStr", "Option<String>", "writing property");
     writer.write_string("optStr")?;
-    writer.write_nullable_string(&input.opt_str)?;
+    writer.write_optional_string(&args.opt_str)?;
     writer.context().pop();
     writer.context().push("u", "u32", "writing property");
     writer.write_string("u")?;
-    writer.write_u32(&input.u)?;
+    writer.write_u32(&args.u)?;
     writer.context().pop();
     writer.context().push("optU", "Option<u32>", "writing property");
     writer.write_string("optU")?;
-    writer.write_nullable_u32(&input.opt_u)?;
+    writer.write_optional_u32(&args.opt_u)?;
     writer.context().pop();
     writer.context().push("u8", "u8", "writing property");
     writer.write_string("u8")?;
-    writer.write_u8(&input.u8)?;
+    writer.write_u8(&args.u8)?;
     writer.context().pop();
     writer.context().push("u16", "u16", "writing property");
     writer.write_string("u16")?;
-    writer.write_u16(&input.u16)?;
+    writer.write_u16(&args.u16)?;
     writer.context().pop();
     writer.context().push("u32", "u32", "writing property");
     writer.write_string("u32")?;
-    writer.write_u32(&input.u32)?;
+    writer.write_u32(&args.u32)?;
     writer.context().pop();
     writer.context().push("i", "i32", "writing property");
     writer.write_string("i")?;
-    writer.write_i32(&input.i)?;
+    writer.write_i32(&args.i)?;
     writer.context().pop();
     writer.context().push("i8", "i8", "writing property");
     writer.write_string("i8")?;
-    writer.write_i8(&input.i8)?;
+    writer.write_i8(&args.i8)?;
     writer.context().pop();
     writer.context().push("i16", "i16", "writing property");
     writer.write_string("i16")?;
-    writer.write_i16(&input.i16)?;
+    writer.write_i16(&args.i16)?;
     writer.context().pop();
     writer.context().push("i32", "i32", "writing property");
     writer.write_string("i32")?;
-    writer.write_i32(&input.i32)?;
+    writer.write_i32(&args.i32)?;
     writer.context().pop();
     writer.context().push("bigint", "BigInt", "writing property");
     writer.write_string("bigint")?;
-    writer.write_bigint(&input.bigint)?;
+    writer.write_bigint(&args.bigint)?;
     writer.context().pop();
     writer.context().push("optBigint", "Option<BigInt>", "writing property");
     writer.write_string("optBigint")?;
-    writer.write_nullable_bigint(&input.opt_bigint)?;
+    writer.write_optional_bigint(&args.opt_bigint)?;
     writer.context().pop();
     writer.context().push("bignumber", "BigNumber", "writing property");
     writer.write_string("bignumber")?;
-    writer.write_bignumber(&input.bignumber)?;
+    writer.write_bignumber(&args.bignumber)?;
     writer.context().pop();
     writer.context().push("optBignumber", "Option<BigNumber>", "writing property");
     writer.write_string("optBignumber")?;
-    writer.write_nullable_bignumber(&input.opt_bignumber)?;
+    writer.write_optional_bignumber(&args.opt_bignumber)?;
     writer.context().pop();
     writer.context().push("json", "JSON::Value", "writing property");
     writer.write_string("json")?;
-    writer.write_json(&input.json)?;
+    writer.write_json(&args.json)?;
     writer.context().pop();
     writer.context().push("optJson", "Option<JSON::Value>", "writing property");
     writer.write_string("optJson")?;
-    writer.write_nullable_json(&input.opt_json)?;
+    writer.write_optional_json(&args.opt_json)?;
     writer.context().pop();
     writer.context().push("bytes", "Vec<u8>", "writing property");
     writer.write_string("bytes")?;
-    writer.write_bytes(&input.bytes)?;
+    writer.write_bytes(&args.bytes)?;
     writer.context().pop();
     writer.context().push("optBytes", "Option<Vec<u8>>", "writing property");
     writer.write_string("optBytes")?;
-    writer.write_nullable_bytes(&input.opt_bytes)?;
+    writer.write_optional_bytes(&args.opt_bytes)?;
     writer.context().pop();
     writer.context().push("boolean", "bool", "writing property");
     writer.write_string("boolean")?;
-    writer.write_bool(&input.boolean)?;
+    writer.write_bool(&args.boolean)?;
     writer.context().pop();
     writer.context().push("optBoolean", "Option<bool>", "writing property");
     writer.write_string("optBoolean")?;
-    writer.write_nullable_bool(&input.opt_boolean)?;
+    writer.write_optional_bool(&args.opt_boolean)?;
     writer.context().pop();
     writer.context().push("uArray", "Vec<u32>", "writing property");
     writer.write_string("uArray")?;
-    writer.write_array(&input.u_array, |writer, item| {
+    writer.write_array(&args.u_array, |writer, item| {
         writer.write_u32(item)
     })?;
     writer.context().pop();
     writer.context().push("uOptArray", "Option<Vec<u32>>", "writing property");
     writer.write_string("uOptArray")?;
-    writer.write_nullable_array(&input.u_opt_array, |writer, item| {
+    writer.write_optional_array(&args.u_opt_array, |writer, item| {
         writer.write_u32(item)
     })?;
     writer.context().pop();
     writer.context().push("optUOptArray", "Option<Vec<Option<u32>>>", "writing property");
     writer.write_string("optUOptArray")?;
-    writer.write_nullable_array(&input.opt_u_opt_array, |writer, item| {
-        writer.write_nullable_u32(item)
+    writer.write_optional_array(&args.opt_u_opt_array, |writer, item| {
+        writer.write_optional_u32(item)
     })?;
     writer.context().pop();
     writer.context().push("optStrOptArray", "Option<Vec<Option<String>>>", "writing property");
     writer.write_string("optStrOptArray")?;
-    writer.write_nullable_array(&input.opt_str_opt_array, |writer, item| {
-        writer.write_nullable_string(item)
+    writer.write_optional_array(&args.opt_str_opt_array, |writer, item| {
+        writer.write_optional_string(item)
     })?;
     writer.context().pop();
     writer.context().push("uArrayArray", "Vec<Vec<u32>>", "writing property");
     writer.write_string("uArrayArray")?;
-    writer.write_array(&input.u_array_array, |writer, item| {
+    writer.write_array(&args.u_array_array, |writer, item| {
         writer.write_array(item, |writer, item| {
             writer.write_u32(item)
         })
@@ -149,16 +149,16 @@ pub fn write_custom_type<W: Write>(input: &CustomType, writer: &mut W) -> Result
     writer.context().pop();
     writer.context().push("uOptArrayOptArray", "Vec<Option<Vec<Option<u32>>>>", "writing property");
     writer.write_string("uOptArrayOptArray")?;
-    writer.write_array(&input.u_opt_array_opt_array, |writer, item| {
-        writer.write_nullable_array(item, |writer, item| {
-            writer.write_nullable_u32(item)
+    writer.write_array(&args.u_opt_array_opt_array, |writer, item| {
+        writer.write_optional_array(item, |writer, item| {
+            writer.write_optional_u32(item)
         })
     })?;
     writer.context().pop();
     writer.context().push("uArrayOptArrayArray", "Vec<Option<Vec<Vec<u32>>>>", "writing property");
     writer.write_string("uArrayOptArrayArray")?;
-    writer.write_array(&input.u_array_opt_array_array, |writer, item| {
-        writer.write_nullable_array(item, |writer, item| {
+    writer.write_array(&args.u_array_opt_array_array, |writer, item| {
+        writer.write_optional_array(item, |writer, item| {
             writer.write_array(item, |writer, item| {
                 writer.write_u32(item)
             })
@@ -167,10 +167,10 @@ pub fn write_custom_type<W: Write>(input: &CustomType, writer: &mut W) -> Result
     writer.context().pop();
     writer.context().push("crazyArray", "Option<Vec<Option<Vec<Vec<Option<Vec<u32>>>>>>>", "writing property");
     writer.write_string("crazyArray")?;
-    writer.write_nullable_array(&input.crazy_array, |writer, item| {
-        writer.write_nullable_array(item, |writer, item| {
+    writer.write_optional_array(&args.crazy_array, |writer, item| {
+        writer.write_optional_array(item, |writer, item| {
             writer.write_array(item, |writer, item| {
-                writer.write_nullable_array(item, |writer, item| {
+                writer.write_optional_array(item, |writer, item| {
                     writer.write_u32(item)
                 })
             })
@@ -179,25 +179,25 @@ pub fn write_custom_type<W: Write>(input: &CustomType, writer: &mut W) -> Result
     writer.context().pop();
     writer.context().push("object", "AnotherType", "writing property");
     writer.write_string("object")?;
-    AnotherType::write(&input.object, writer)?;
+    AnotherType::write(&args.object, writer)?;
     writer.context().pop();
     writer.context().push("optObject", "Option<AnotherType>", "writing property");
     writer.write_string("optObject")?;
-    if input.opt_object.is_some() {
-        AnotherType::write(input.opt_object.as_ref().as_ref().unwrap(), writer)?;
+    if args.opt_object.is_some() {
+        AnotherType::write(args.opt_object.as_ref().as_ref().unwrap(), writer)?;
     } else {
         writer.write_nil()?;
     }
     writer.context().pop();
     writer.context().push("objectArray", "Vec<AnotherType>", "writing property");
     writer.write_string("objectArray")?;
-    writer.write_array(&input.object_array, |writer, item| {
+    writer.write_array(&args.object_array, |writer, item| {
         AnotherType::write(item, writer)
     })?;
     writer.context().pop();
     writer.context().push("optObjectArray", "Option<Vec<Option<AnotherType>>>", "writing property");
     writer.write_string("optObjectArray")?;
-    writer.write_nullable_array(&input.opt_object_array, |writer, item| {
+    writer.write_optional_array(&args.opt_object_array, |writer, item| {
         if item.is_some() {
             AnotherType::write(item.as_ref().as_ref().unwrap(), writer)
         } else {
@@ -207,31 +207,31 @@ pub fn write_custom_type<W: Write>(input: &CustomType, writer: &mut W) -> Result
     writer.context().pop();
     writer.context().push("en", "CustomEnum", "writing property");
     writer.write_string("en")?;
-    writer.write_i32(&(input.en as i32))?;
+    writer.write_i32(&(args.en as i32))?;
     writer.context().pop();
     writer.context().push("optEnum", "Option<CustomEnum>", "writing property");
     writer.write_string("optEnum")?;
-    writer.write_nullable_i32(&input.opt_enum.map(|f| f as i32))?;
+    writer.write_optional_i32(&args.opt_enum.map(|f| f as i32))?;
     writer.context().pop();
     writer.context().push("enumArray", "Vec<CustomEnum>", "writing property");
     writer.write_string("enumArray")?;
-    writer.write_array(&input.enum_array, |writer, item| {
+    writer.write_array(&args.enum_array, |writer, item| {
         writer.write_i32(&(*item as i32))
     })?;
     writer.context().pop();
     writer.context().push("optEnumArray", "Option<Vec<Option<CustomEnum>>>", "writing property");
     writer.write_string("optEnumArray")?;
-    writer.write_nullable_array(&input.opt_enum_array, |writer, item| {
-        writer.write_nullable_i32(&item.map(|f| f as i32))
+    writer.write_optional_array(&args.opt_enum_array, |writer, item| {
+        writer.write_optional_i32(&item.map(|f| f as i32))
     })?;
     writer.context().pop();
     Ok(())
 }
 
-pub fn deserialize_custom_type(input: &[u8]) -> Result<CustomType, DecodeError> {
+pub fn deserialize_custom_type(args: &[u8]) -> Result<CustomType, DecodeError> {
     let mut context = Context::new();
     context.description = "Deserializing object-type: CustomType".to_string();
-    let mut reader = ReadDecoder::new(input, context);
+    let mut reader = ReadDecoder::new(args, context);
     read_custom_type(&mut reader)
 }
 
@@ -311,7 +311,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
             }
             "optStr" => {
                 reader.context().push(&field, "Option<String>", "type found, reading property");
-                _opt_str = reader.read_nullable_string()?;
+                _opt_str = reader.read_optional_string()?;
                 reader.context().pop();
             }
             "u" => {
@@ -322,7 +322,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
             }
             "optU" => {
                 reader.context().push(&field, "Option<u32>", "type found, reading property");
-                _opt_u = reader.read_nullable_u32()?;
+                _opt_u = reader.read_optional_u32()?;
                 reader.context().pop();
             }
             "u8" => {
@@ -375,7 +375,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
             }
             "optBigint" => {
                 reader.context().push(&field, "Option<BigInt>", "type found, reading property");
-                _opt_bigint = reader.read_nullable_bigint()?;
+                _opt_bigint = reader.read_optional_bigint()?;
                 reader.context().pop();
             }
             "bignumber" => {
@@ -386,7 +386,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
             }
             "optBignumber" => {
                 reader.context().push(&field, "Option<BigNumber>", "type found, reading property");
-                _opt_bignumber = reader.read_nullable_bignumber()?;
+                _opt_bignumber = reader.read_optional_bignumber()?;
                 reader.context().pop();
             }
             "json" => {
@@ -397,7 +397,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
             }
             "optJson" => {
                 reader.context().push(&field, "Option<JSON::Value>", "type found, reading property");
-                _opt_json = reader.read_nullable_json()?;
+                _opt_json = reader.read_optional_json()?;
                 reader.context().pop();
             }
             "bytes" => {
@@ -408,7 +408,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
             }
             "optBytes" => {
                 reader.context().push(&field, "Option<Vec<u8>>", "type found, reading property");
-                _opt_bytes = reader.read_nullable_bytes()?;
+                _opt_bytes = reader.read_optional_bytes()?;
                 reader.context().pop();
             }
             "boolean" => {
@@ -419,7 +419,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
             }
             "optBoolean" => {
                 reader.context().push(&field, "Option<bool>", "type found, reading property");
-                _opt_boolean = reader.read_nullable_bool()?;
+                _opt_boolean = reader.read_optional_bool()?;
                 reader.context().pop();
             }
             "uArray" => {
@@ -432,22 +432,22 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
             }
             "uOptArray" => {
                 reader.context().push(&field, "Option<Vec<u32>>", "type found, reading property");
-                _u_opt_array = reader.read_nullable_array(|reader| {
+                _u_opt_array = reader.read_optional_array(|reader| {
                     reader.read_u32()
                 })?;
                 reader.context().pop();
             }
             "optUOptArray" => {
                 reader.context().push(&field, "Option<Vec<Option<u32>>>", "type found, reading property");
-                _opt_u_opt_array = reader.read_nullable_array(|reader| {
-                    reader.read_nullable_u32()
+                _opt_u_opt_array = reader.read_optional_array(|reader| {
+                    reader.read_optional_u32()
                 })?;
                 reader.context().pop();
             }
             "optStrOptArray" => {
                 reader.context().push(&field, "Option<Vec<Option<String>>>", "type found, reading property");
-                _opt_str_opt_array = reader.read_nullable_array(|reader| {
-                    reader.read_nullable_string()
+                _opt_str_opt_array = reader.read_optional_array(|reader| {
+                    reader.read_optional_string()
                 })?;
                 reader.context().pop();
             }
@@ -464,8 +464,8 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
             "uOptArrayOptArray" => {
                 reader.context().push(&field, "Vec<Option<Vec<Option<u32>>>>", "type found, reading property");
                 _u_opt_array_opt_array = reader.read_array(|reader| {
-                    reader.read_nullable_array(|reader| {
-                        reader.read_nullable_u32()
+                    reader.read_optional_array(|reader| {
+                        reader.read_optional_u32()
                     })
                 })?;
                 _u_opt_array_opt_array_set = true;
@@ -474,7 +474,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
             "uArrayOptArrayArray" => {
                 reader.context().push(&field, "Vec<Option<Vec<Vec<u32>>>>", "type found, reading property");
                 _u_array_opt_array_array = reader.read_array(|reader| {
-                    reader.read_nullable_array(|reader| {
+                    reader.read_optional_array(|reader| {
                         reader.read_array(|reader| {
                             reader.read_u32()
                         })
@@ -485,10 +485,10 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
             }
             "crazyArray" => {
                 reader.context().push(&field, "Option<Vec<Option<Vec<Vec<Option<Vec<u32>>>>>>>", "type found, reading property");
-                _crazy_array = reader.read_nullable_array(|reader| {
-                    reader.read_nullable_array(|reader| {
+                _crazy_array = reader.read_optional_array(|reader| {
+                    reader.read_optional_array(|reader| {
                         reader.read_array(|reader| {
-                            reader.read_nullable_array(|reader| {
+                            reader.read_optional_array(|reader| {
                                 reader.read_u32()
                             })
                         })
@@ -525,7 +525,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
             }
             "optObjectArray" => {
                 reader.context().push(&field, "Option<Vec<Option<AnotherType>>>", "type found, reading property");
-                _opt_object_array = reader.read_nullable_array(|reader| {
+                _opt_object_array = reader.read_optional_array(|reader| {
                     let mut object: Option<AnotherType> = None;
                     if !reader.is_next_nil()? {
                         object = Some(AnotherType::read(reader)?);
@@ -582,7 +582,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
             }
             "optEnumArray" => {
                 reader.context().push(&field, "Option<Vec<Option<CustomEnum>>>", "type found, reading property");
-                _opt_enum_array = reader.read_nullable_array(|reader| {
+                _opt_enum_array = reader.read_optional_array(|reader| {
                     let mut value: Option<CustomEnum> = None;
                     if !reader.is_next_nil()? {
                         if reader.is_next_string()? {

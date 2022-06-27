@@ -637,7 +637,7 @@ export const runJsonTypeTest = async (
   const parseResponse = await client.invoke<{ parse: Json }>({
     uri,
     method: "parse",
-    input: {
+    args: {
       value
     }
   })
@@ -652,7 +652,7 @@ export const runJsonTypeTest = async (
   const stringifyResponse = await client.invoke<{ stringify: Json}>({
     uri,
     method: "stringify",
-    input: {
+    args: {
       values
     }
   })
@@ -669,7 +669,7 @@ export const runJsonTypeTest = async (
   }>({
     uri,
     method: "stringifyObject",
-    input: {
+    args: {
       object,
     },
   });
@@ -689,7 +689,7 @@ export const runJsonTypeTest = async (
   }>({
     uri,
     method: "methodJSON",
-    input: json
+    args: json
   });
 
   const methodJSONResult = JSON.stringify(json);
@@ -1126,7 +1126,7 @@ export const runMapTypeTest = async (
   const returnMapResponse1 = await client.invoke<Map<string, number>>({
     uri,
     method: "returnMap",
-    input: {
+    args: {
       map: mapClass,
     },
   });
@@ -1136,7 +1136,7 @@ export const runMapTypeTest = async (
   const returnMapResponse2 = await client.invoke<Map<string, number>>({
     uri,
     method: "returnMap",
-    input: {
+    args: {
       map: mapRecord,
     },
   });
@@ -1146,7 +1146,7 @@ export const runMapTypeTest = async (
   const getKeyResponse1 = await client.invoke<number>({
     uri,
     method: "getKey",
-    input: {
+    args: {
       map: mapClass,
       key: "Hello",
     },
@@ -1157,7 +1157,7 @@ export const runMapTypeTest = async (
   const getKeyResponse2 = await client.invoke<number>({
     uri,
     method: "getKey",
-    input: {
+    args: {
       map: mapRecord,
       key: "Heyo",
     },

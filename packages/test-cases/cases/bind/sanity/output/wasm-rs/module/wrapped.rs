@@ -1,18 +1,18 @@
 use crate::{
     module_method,
-    InputModuleMethod,
+    ArgsModuleMethod,
     deserialize_module_method_args,
     serialize_module_method_result,
     object_method,
-    InputObjectMethod,
+    ArgsObjectMethod,
     deserialize_object_method_args,
     serialize_object_method_result
 };
 
-pub fn module_method_wrapped(input: &[u8]) -> Vec<u8> {
-    match deserialize_module_method_args(input) {
+pub fn module_method_wrapped(args: &[u8]) -> Vec<u8> {
+    match deserialize_module_method_args(args) {
         Ok(args) => {
-            let result = module_method(InputModuleMethod {
+            let result = module_method(ArgsModuleMethod {
                 str: args.str,
                 opt_str: args.opt_str,
                 en: args.en,
@@ -29,10 +29,10 @@ pub fn module_method_wrapped(input: &[u8]) -> Vec<u8> {
     }
 }
 
-pub fn object_method_wrapped(input: &[u8]) -> Vec<u8> {
-    match deserialize_object_method_args(input) {
+pub fn object_method_wrapped(args: &[u8]) -> Vec<u8> {
+    match deserialize_object_method_args(args) {
         Ok(args) => {
-            let result = object_method(InputObjectMethod {
+            let result = object_method(ArgsObjectMethod {
                 object: args.object,
                 opt_object: args.opt_object,
                 object_array: args.object_array,

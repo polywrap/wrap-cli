@@ -40,7 +40,7 @@ describe("parseQuery", () => {
       someMethod: {
         uri: dummy,
         method: "someMethod",
-        input: {
+        args: {
           arg1: "hey",
           arg2: 4,
           arg3: true,
@@ -145,7 +145,7 @@ describe("parseQuery", () => {
       someMethod: {
         uri: dummy,
         method: "someMethod",
-        input: {
+        args: {
           arg1: 4,
           arg2: ["hey", "there", [5.5]],
           arg3: {
@@ -169,7 +169,7 @@ describe("parseQuery", () => {
       anotherMethod: {
         uri: dummy,
         method: "anotherMethod",
-        input: {
+        args: {
           arg: "hey",
           var: "var 1",
         },
@@ -285,7 +285,7 @@ describe("parseQuery", () => {
     ).not.toThrowError(/Missing variable/);
   });
 
-  it("fails when duplicate input arguments are provided", () => {
+  it("fails when duplicate args arguments are provided", () => {
     const doc = createQueryDocument(`
       mutation {
         someMethod(
@@ -296,7 +296,7 @@ describe("parseQuery", () => {
     `);
 
     expect(() => parseQuery(dummy, doc)).toThrowError(
-      /Duplicate input argument found/
+      /Duplicate arguments found/
     );
   });
 
