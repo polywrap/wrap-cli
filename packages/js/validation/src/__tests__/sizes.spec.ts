@@ -25,7 +25,7 @@ const assertValidWrapper = async (wrapperPath: string) => {
   expect(result.failReason).toEqual(undefined);
 };
 
-describe("manfiests", () => {
+describe("manifests", () => {
   it("sanity", async () => {
     await assertValidWrapper(
       path.join(testWrappersPath, "wrapper-size-over-100-kb")
