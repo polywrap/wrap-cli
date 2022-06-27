@@ -107,7 +107,7 @@ export type {{type}} = {{type}}Enum | {{type}}String;
 {{#importedModuleTypes}}
 {{#methods}}
 /* URI: "{{parent.uri}}" */
-interface {{parent.type}}_Input_{{name}} extends Record<string, unknown> {
+interface {{parent.type}}_Args_{{name}} extends Record<string, unknown> {
   {{#arguments}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/arguments}}
@@ -119,13 +119,13 @@ interface {{parent.type}}_Input_{{name}} extends Record<string, unknown> {
 export const {{type}} = {
   {{#methods}}
   {{name}}: async (
-    input: {{parent.type}}_Input_{{name}},
+    args: {{parent.type}}_Args_{{name}},
     client: Client
   ): Promise<InvokeResult<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>> => {
     return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>({
       uri: "{{parent.uri}}",
       method: "{{name}}",
-      input
+      args
     });
   }{{^last}},{{/last}}
   {{^last}}
@@ -144,13 +144,13 @@ export class {{type}} {
 
   {{#methods}}
   public async {{name}} (
-    input: {{parent.type}}_Input_{{name}},
+    args: {{parent.type}}_Args_{{name}},
     client: Client
   ): Promise<InvokeResult<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>> {
     return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>({
       uri: this.uri,
       method: "{{name}}",
-      input
+      args
     });
   }
   {{^last}}

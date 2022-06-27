@@ -22,8 +22,8 @@ export const createImports = (config: {
         uriLen: u32,
         methodPtr: u32,
         methodLen: u32,
-        inputPtr: u32,
-        inputLen: u32
+        argsPtr: u32,
+        argsLen: u32
       ): Promise<boolean> => {
         // Reset our state
         state.subinvoke.result = undefined;
@@ -31,12 +31,12 @@ export const createImports = (config: {
 
         const uri = readString(memory.buffer, uriPtr, uriLen);
         const method = readString(memory.buffer, methodPtr, methodLen);
-        const input = readBytes(memory.buffer, inputPtr, inputLen);
+        const args = readBytes(memory.buffer, argsPtr, argsLen);
 
         const { data, error } = await client.invoke<unknown | ArrayBuffer>({
           uri: uri,
           method: method,
-          input: input,
+          args: args,
           noDecode: true,
         });
 
@@ -94,22 +94,22 @@ export const createImports = (config: {
         implUriLen: u32,
         methodPtr: u32,
         methodLen: u32,
-        inputPtr: u32,
-        inputLen: u32
+        argsPtr: u32,
+        argsLen: u32
       ): Promise<boolean> => {
         state.subinvokeImplementation.result = undefined;
         state.subinvokeImplementation.error = undefined;
 
         const implUri = readString(memory.buffer, implUriPtr, implUriLen);
         const method = readString(memory.buffer, methodPtr, methodLen);
-        const input = readBytes(memory.buffer, inputPtr, inputLen);
+        const args = readBytes(memory.buffer, argsPtr, argsLen);
 
-        state.subinvokeImplementation.args = [implUri, method, input];
+        state.subinvokeImplementation.args = [implUri, method, args];
 
         const { data, error } = await client.invoke<unknown | ArrayBuffer>({
           uri: implUri,
           method: method,
-          input: input,
+          args: args,
           noDecode: true,
         });
 

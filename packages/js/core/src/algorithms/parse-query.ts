@@ -51,19 +51,19 @@ export const parseQuery = Tracer.traceFunc(
           );
         }
 
-        // Get all input arguments
+        // Get all arguments
         const selectionArgs = selection.arguments;
-        const input: Record<string, unknown> = {};
+        const args: Record<string, unknown> = {};
 
         if (selectionArgs) {
           for (const arg of selectionArgs) {
             const name = arg.name.value;
 
-            if (input[name]) {
-              throw Error(`Duplicate input argument found: ${name}`);
+            if (args[name]) {
+              throw Error(`Duplicate arguments found: ${name}`);
             }
 
-            input[name] = extractValue(arg.value, variables);
+            args[name] = extractValue(arg.value, variables);
           }
         }
 
@@ -78,7 +78,7 @@ export const parseQuery = Tracer.traceFunc(
         queryInvocations[invocationName] = {
           uri,
           method,
-          input,
+          args,
           resultFilter,
         };
       }

@@ -6,7 +6,7 @@
         {
           "uri": "fs/build",
           "method": "deployContract",
-          "input": { "connection": null }
+          "args": { "connection": null }
         }
       ],
       "jobs": {
@@ -15,7 +15,7 @@
             {
               "uri": "fs/build",
               "method": "setData",
-              "input": {
+              "args": {
                 "options": {
                   "address": "$cases.0.data",
                   "value": 100
@@ -26,7 +26,7 @@
             {
               "uri": "fs/build",
               "method": "getData",
-              "input": { "address": "$cases.0.data", "connection": null }
+              "args": { "address": "$cases.0.data", "connection": null }
             }
           ]
         }

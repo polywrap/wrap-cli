@@ -10,7 +10,7 @@ describe("sanity", () => {
     expect(client.getRedirects()).toStrictEqual([]);
     expect(client.getPlugins().map((x) => x.uri)).toStrictEqual([
       new Uri("wrap://ens/ipfs.polywrap.eth"),
-      new Uri("wrap://ens/ens.polywrap.eth"),
+      new Uri("wrap://ens/ens-resolver.polywrap.eth"),
       new Uri("wrap://ens/ethereum.polywrap.eth"),
       new Uri("wrap://ens/http.polywrap.eth"),
       new Uri("wrap://ens/js-logger.polywrap.eth"),
@@ -19,13 +19,14 @@ describe("sanity", () => {
       new Uri("wrap://ens/graph-node.polywrap.eth"),
       new Uri("wrap://ens/fs.polywrap.eth"),
       new Uri("wrap://ens/fs-resolver.polywrap.eth"),
+      new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
     ]);
     expect(client.getInterfaces()).toStrictEqual([
       {
         interface: coreInterfaceUris.uriResolver,
         implementations: [
-          new Uri("wrap://ens/ipfs.polywrap.eth"),
-          new Uri("wrap://ens/ens.polywrap.eth"),
+          new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
+          new Uri("wrap://ens/ens-resolver.polywrap.eth"),
           new Uri("wrap://ens/fs-resolver.polywrap.eth"),
         ],
       },

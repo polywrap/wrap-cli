@@ -34,7 +34,9 @@
     "@polywrap/sha3-plugin-js": "0.0.1-prealpha.89",
     "@polywrap/tracing-js": "0.0.1-prealpha.89",
     "@polywrap/uts46-plugin-js": "0.0.1-prealpha.89",
+    "@polywrap/ens-resolver-plugin-js": "0.0.1-prealpha.89",
     "@polywrap/fs-resolver-plugin-js": "0.0.1-prealpha.89",
+    "@polywrap/ipfs-resolver-plugin-js": "0.0.1-prealpha.89",
     "graphql": "15.5.0",
     "js-yaml": "3.14.0",
     "uuid": "8.3.2"

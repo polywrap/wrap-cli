@@ -27,7 +27,7 @@
   },
   "devDependencies": {
     "@polywrap/client-js": "0.0.1-prealpha.89",
-    "@polywrap/ens-plugin-js": "0.0.1-prealpha.89",
+    "@polywrap/ens-resolver-plugin-js": "0.0.1-prealpha.89",
     "@polywrap/ipfs-plugin-js": "0.0.1-prealpha.89",
     "@polywrap/test-env-js": "0.0.1-prealpha.89",
     "@types/jest": "26.0.8",

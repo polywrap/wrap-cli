@@ -1,8 +1,8 @@
 import {
   Client,
   Module,
-  Input_get,
-  Input_post,
+  Args_get,
+  Args_post,
   Response,
   manifest,
 } from "./wrap";
@@ -14,25 +14,22 @@ import { PluginFactory } from "@polywrap/core-js";
 type NoConfig = Record<string, never>;
 
 export class HttpPlugin extends Module<NoConfig> {
-  public async get(
-    input: Input_get,
-    _client: Client
-  ): Promise<Response | null> {
+  public async get(args: Args_get, _client: Client): Promise<Response | null> {
     const response = await axios.get<string>(
-      input.url,
-      input.request ? toAxiosRequestConfig(input.request) : undefined
+      args.url,
+      args.request ? toAxiosRequestConfig(args.request) : undefined
     );
     return fromAxiosResponse(response);
   }
 
   public async post(
-    input: Input_post,
+    args: Args_post,
     _client: Client
   ): Promise<Response | null> {
     const response = await axios.post(
-      input.url,
-      input.request ? input.request.body : undefined,
-      input.request ? toAxiosRequestConfig(input.request) : undefined
+      args.url,
+      args.request ? args.request.body : undefined,
+      args.request ? toAxiosRequestConfig(args.request) : undefined
     );
     return fromAxiosResponse(response);
   }

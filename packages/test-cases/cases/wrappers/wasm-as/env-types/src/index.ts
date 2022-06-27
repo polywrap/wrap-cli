@@ -1,9 +1,9 @@
 import {
   env,
   Env,
-  Input_moduleEnv,
+  Args_moduleEnv,
 } from "./wrap";
 
-export function moduleEnv(input: Input_moduleEnv): Env {
+export function moduleEnv(args: Args_moduleEnv): Env {
   return env as Env;
 }

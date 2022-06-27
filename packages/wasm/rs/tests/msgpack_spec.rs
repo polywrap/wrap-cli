@@ -91,9 +91,9 @@ fn serialize_sanity<W: Write>(writer: &mut W, sanity: &mut Sanity) -> Result<(),
     writer.write_string("boolean")?;
     writer.write_bool(&sanity.boolean)?;
     // writer.write_string("opt_uint32")?;
-    // writer.write_nullable_u32(&sanity.opt_uint32)?;
+    // writer.write_optional_u32(&sanity.opt_uint32)?;
     // writer.write_string("opt_bool")?;
-    // writer.write_nullable_bool(&sanity.opt_bool)?;
+    // writer.write_optional_bool(&sanity.opt_bool)?;
     // writer.write_string("float32")?;
     // writer.write_f32(sanity.float32)?;
     // writer.write_string("float64")?;
@@ -143,7 +143,7 @@ fn deserialize_sanity<R: Read>(reader: &mut R, sanity: &mut Sanity) -> Result<Sa
 
         match field.as_str() {
             "nil" => {
-                sanity.nil = reader.read_nullable_string()?;
+                sanity.nil = reader.read_optional_string()?;
             }
             "int8" => {
                 sanity.int8 = reader.read_i8()?;
@@ -167,10 +167,10 @@ fn deserialize_sanity<R: Read>(reader: &mut R, sanity: &mut Sanity) -> Result<Sa
                 sanity.boolean = reader.read_bool()?;
             }
             // 		"opt_uint32" => {
-            // 			sanity.opt_uint32 = reader.read_nullable_u32()?;
+            // 			sanity.opt_uint32 = reader.read_optional_u32()?;
             // 		},
             // 		"opt_bool" => {
-            // 			sanity.opt_bool = reader.read_nullable_bool()?;
+            // 			sanity.opt_bool = reader.read_optional_bool()?;
             // 		},
             // 		"float32" => {
             // 			sanity.float32 = reader.read_f32()?;
@@ -228,7 +228,7 @@ fn deserialize_with_overflow<R: Read>(
 
         match field.as_str() {
             "nil" => {
-                sanity.nil = reader.read_nullable_string()?;
+                sanity.nil = reader.read_optional_string()?;
             }
             "int8" => {
                 sanity.int8 = reader.read_i16()? as i8;
@@ -252,10 +252,10 @@ fn deserialize_with_overflow<R: Read>(
                 sanity.boolean = reader.read_bool()?;
             }
             // 		"opt_uint32" => {
-            // 			sanity.opt_uint32 = reader.read_nullable_u32()?;
+            // 			sanity.opt_uint32 = reader.read_optional_u32()?;
             // 		},
             // 		"opt_bool" => {
-            // 			sanity.opt_bool = reader.read_nullable_bool()?;
+            // 			sanity.opt_bool = reader.read_optional_bool()?;
             // 		},
             // 		"float32" => {
             // 			sanity.float32 = reader.read_f64()? as f32;
@@ -299,7 +299,7 @@ fn deserialize_with_invalid_types<R: Read>(
 
         match field.as_str() {
             "nil" => {
-                sanity.nil = reader.read_nullable_string()?;
+                sanity.nil = reader.read_optional_string()?;
             }
             "int8" => {
                 sanity.int8 = reader.read_i8()?;
@@ -323,10 +323,10 @@ fn deserialize_with_invalid_types<R: Read>(
                 sanity.boolean = reader.read_bool()?;
             }
             // 		"opt_uint32" => {
-            // 			sanity.opt_uint32 = reader.read_nullable_u32()?;
+            // 			sanity.opt_uint32 = reader.read_optional_u32()?;
             // 		},
             // 		"opt_bool" => {
-            // 			sanity.opt_bool = reader.read_nullable_bool()?;
+            // 			sanity.opt_bool = reader.read_optional_bool()?;
             // 		},
             // 		"float32" => {
             // 			sanity.float32 = reader.read_f32()?;

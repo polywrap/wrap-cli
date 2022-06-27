@@ -1,8 +1,8 @@
 import {
   Client,
   Module,
-  Input_tryResolveUri,
-  Input_getFile,
+  Args_tryResolveUri,
+  Args_getFile,
   UriResolver_MaybeUriOrManifest,
   Bytes,
   Ethereum_Module,
@@ -20,14 +20,14 @@ export interface Addresses {
   [network: string]: Address;
 }
 
-export interface EnsPluginConfig {
+export interface EnsResolverPluginConfig {
   addresses?: Addresses;
 }
 
-export class EnsPlugin extends Module<EnsPluginConfig> {
+export class EnsResolverPlugin extends Module<EnsResolverPluginConfig> {
   public static defaultAddress = "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e";
 
-  constructor(config: EnsPluginConfig) {
+  constructor(config: EnsResolverPluginConfig) {
     super(config);
 
     // Sanitize address
@@ -37,15 +37,15 @@ export class EnsPlugin extends Module<EnsPluginConfig> {
   }
 
   async tryResolveUri(
-    input: Input_tryResolveUri,
+    args: Args_tryResolveUri,
     client: Client
   ): Promise<UriResolver_MaybeUriOrManifest | null> {
-    if (input.authority !== "ens") {
+    if (args.authority !== "ens") {
       return null;
     }
 
     try {
-      const cid = await this.ensToCID(input.path, client);
+      const cid = await this.ensToCID(args.path, client);
 
       if (!cid) {
         return null;
@@ -63,7 +63,7 @@ export class EnsPlugin extends Module<EnsPluginConfig> {
     return { uri: null, manifest: null };
   }
 
-  getFile(_input: Input_getFile, _client: Client): Bytes | null {
+  getFile(_args: Args_getFile, _client: Client): Bytes | null {
     return null;
   }
 
@@ -78,7 +78,7 @@ export class EnsPlugin extends Module<EnsPluginConfig> {
       content: "function content(bytes32 nodehash) view returns (bytes32)",
     };
 
-    let ensAddress = EnsPlugin.defaultAddress;
+    let ensAddress = EnsResolverPlugin.defaultAddress;
 
     // Remove the ENS URI scheme & authority
     domain = domain.replace("wrap://", "");
@@ -199,13 +199,13 @@ export class EnsPlugin extends Module<EnsPluginConfig> {
   }
 }
 
-export const ensPlugin: PluginFactory<EnsPluginConfig> = (
-  config: EnsPluginConfig
+export const ensResolverPlugin: PluginFactory<EnsResolverPluginConfig> = (
+  config: EnsResolverPluginConfig
 ) => {
   return {
-    factory: () => new EnsPlugin(config),
+    factory: () => new EnsResolverPlugin(config),
     manifest,
   };
 };
 
-export const plugin = ensPlugin;
+export const plugin = ensResolverPlugin;

@@ -89,7 +89,7 @@ describe("wasm-wrapper", () => {
     const result = await client.invoke<string>({
       uri: simpleWrapperUri.uri,
       method: "simpleMethod",
-      input: {
+      args: {
         arg: "test",
       },
     });
@@ -105,7 +105,7 @@ describe("wasm-wrapper", () => {
     const result = await client.invoke({
       uri: simpleWrapperUri,
       method: "simpleMethod",
-      input: {
+      args: {
         arg: "test",
       },
       noDecode: true,
@@ -136,7 +136,7 @@ describe("wasm-wrapper", () => {
     const result = await client.invoke({
       uri: simpleWrapperUri,
       method: "simpleMethod",
-      input: {
+      args: {},
         arg: "test",
       },
     });

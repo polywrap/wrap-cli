@@ -89,7 +89,7 @@ describe("usePolywrapInvoke hook", () => {
     const { result: hookResult } = renderHook(hook, WrapperProvider);
 
     await act(async () => {
-      await hookResult.current.execute(options.input);
+      await hookResult.current.execute(options.args);
     });
 
     const result = hookResult.current;
@@ -101,7 +101,7 @@ describe("usePolywrapInvoke hook", () => {
     const deployQuery: UsePolywrapInvokeProps = {
       uri: envUri,
       method: "getEnv",
-      input: {
+      args: {
         arg: "Alice"
       },
       config: {
@@ -129,7 +129,7 @@ describe("usePolywrapInvoke hook", () => {
     const deployInvoke: UsePolywrapInvokeProps = {
       uri,
       method: "deployContract",
-      input: {
+      args: {
         connection: {
           networkNameOrChainId: "testnet",
         },
@@ -141,7 +141,7 @@ describe("usePolywrapInvoke hook", () => {
     const setStorageInvocation: UsePolywrapInvokeProps = {
       uri,
       method: "setData",
-      input: {
+      args: {
         address: address,
         value: 5,
         connection: {
@@ -157,7 +157,7 @@ describe("usePolywrapInvoke hook", () => {
     const getStorageDataInvocation: UsePolywrapInvokeProps = {
       uri,
       method: "getData",
-      input: {
+      args: {
         address: address,
         connection: {
           networkNameOrChainId: "testnet",
@@ -174,7 +174,7 @@ describe("usePolywrapInvoke hook", () => {
       provider: "Non existent Polywrap Provider",
       uri,
       method: "getData",
-      input: {
+      args: {
         address: "foo",
       },
     };
@@ -194,7 +194,7 @@ describe("usePolywrapInvoke hook", () => {
       provider: "other",
       uri,
       method: "getData",
-      input: {
+      args: {
         address: "foo",
       },
     };
@@ -211,7 +211,7 @@ describe("usePolywrapInvoke hook", () => {
     const deployInvoke: UsePolywrapInvokeProps = {
       uri,
       method: "deployContract",
-      input: {
+      args: {
         connection: {
           networkNameOrChainId: "testnet",
         },
@@ -223,7 +223,7 @@ describe("usePolywrapInvoke hook", () => {
     const setStorageInvocation: UsePolywrapInvokeProps = {
       uri,
       method: "setData",
-      input: {
+      args: {
         address: address,
         value: 3,
         connection: {
@@ -239,7 +239,7 @@ describe("usePolywrapInvoke hook", () => {
     const getStorageDataInvocation: UsePolywrapInvokeProps = {
       uri,
       method: "getData",
-      input: {
+      args: {
         address: address,
         connection: {
           networkNameOrChainId: "testnet",

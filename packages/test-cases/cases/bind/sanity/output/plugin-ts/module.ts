@@ -9,7 +9,7 @@ import {
   MaybeAsync
 } from "@polywrap/core-js";
 
-export interface Input_moduleMethod extends Record<string, unknown> {
+export interface Args_moduleMethod extends Record<string, unknown> {
   str: Types.String;
   optStr?: Types.String | null;
   en: Types.CustomEnum;
@@ -19,7 +19,7 @@ export interface Input_moduleMethod extends Record<string, unknown> {
   map: Map<Types.String, Types.Int>;
 }
 
-export interface Input_objectMethod extends Record<string, unknown> {
+export interface Args_objectMethod extends Record<string, unknown> {
   object: Types.AnotherType;
   optObject?: Types.AnotherType | null;
   objectArray: Array<Types.AnotherType>;
@@ -34,12 +34,12 @@ export abstract class Module<
 > {
 
   abstract moduleMethod(
-    input: Input_moduleMethod,
+    args: Args_moduleMethod,
     client: Client
   ): MaybeAsync<Types.Int>;
 
   abstract objectMethod(
-    input: Input_objectMethod,
+    args: Args_objectMethod,
     client: Client
   ): MaybeAsync<Types.AnotherType | null>;
 }

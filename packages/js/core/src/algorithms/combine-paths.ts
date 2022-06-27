@@ -1,14 +1,14 @@
 export const combinePaths = (a: string, b: string): string => {
-  // Normalize all path seperators
+  // Normalize all path separators
   a = a.replace(/\\/g, "/");
   b = b.replace(/\\/g, "/");
 
-  // Append a seperator if one doesn't exist
+  // Append a separator if one doesn't exist
   if (a[a.length - 1] !== "/") {
     a += "/";
   }
 
-  // Remove any leading seperators from
+  // Remove any leading separators from
   while (b[0] === "/" || b[0] === ".") {
     b = b.substring(1);
   }

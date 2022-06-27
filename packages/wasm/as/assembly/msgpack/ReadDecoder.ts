@@ -346,7 +346,7 @@ export class ReadDecoder extends Read {
         );
     }
 
-    // Consule the leadByte
+    // Consume the leadByte
     this._view.getUint8();
 
     // Get the extension type
@@ -364,98 +364,98 @@ export class ReadDecoder extends Read {
     return this.readMap(key_fn, value_fn);
   }
 
-  readNullableBool(): Option<bool> {
+  readOptionalBool(): Option<bool> {
     if (this.isNextNil()) {
       return Option.None<bool>();
     }
     return Option.Some<bool>(this.readBool());
   }
 
-  readNullableInt8(): Option<i8> {
+  readOptionalInt8(): Option<i8> {
     if (this.isNextNil()) {
       return Option.None<i8>();
     }
     return Option.Some<i8>(this.readInt8());
   }
 
-  readNullableInt16(): Option<i16> {
+  readOptionalInt16(): Option<i16> {
     if (this.isNextNil()) {
       return Option.None<i16>();
     }
     return Option.Some<i16>(this.readInt16());
   }
 
-  readNullableInt32(): Option<i32> {
+  readOptionalInt32(): Option<i32> {
     if (this.isNextNil()) {
       return Option.None<i32>();
     }
     return Option.Some<i32>(this.readInt32());
   }
 
-  readNullableUInt8(): Option<u8> {
+  readOptionalUInt8(): Option<u8> {
     if (this.isNextNil()) {
       return Option.None<u8>();
     }
     return Option.Some<u8>(this.readUInt8());
   }
 
-  readNullableUInt16(): Option<u16> {
+  readOptionalUInt16(): Option<u16> {
     if (this.isNextNil()) {
       return Option.None<u16>();
     }
     return Option.Some<u16>(this.readUInt16());
   }
 
-  readNullableUInt32(): Option<u32> {
+  readOptionalUInt32(): Option<u32> {
     if (this.isNextNil()) {
       return Option.None<u32>();
     }
     return Option.Some<u32>(this.readUInt32());
   }
 
-  readNullableFloat32(): Option<f32> {
+  readOptionalFloat32(): Option<f32> {
     if (this.isNextNil()) {
       return Option.None<f32>();
     }
     return Option.Some<f32>(this.readFloat32());
   }
 
-  readNullableFloat64(): Option<f64> {
+  readOptionalFloat64(): Option<f64> {
     if (this.isNextNil()) {
       return Option.None<f64>();
     }
     return Option.Some<f64>(this.readFloat64());
   }
 
-  readNullableString(): string | null {
+  readOptionalString(): string | null {
     if (this.isNextNil()) {
       return null;
     }
     return this.readString();
   }
 
-  readNullableBytes(): ArrayBuffer | null {
+  readOptionalBytes(): ArrayBuffer | null {
     if (this.isNextNil()) {
       return null;
     }
     return this.readBytes();
   }
 
-  readNullableBigInt(): BigInt | null {
+  readOptionalBigInt(): BigInt | null {
     if (this.isNextNil()) {
       return null;
     }
     return this.readBigInt();
   }
 
-  readNullableBigNumber(): BigNumber | null {
+  readOptionalBigNumber(): BigNumber | null {
     if (this.isNextNil()) {
       return null;
     }
     return this.readBigNumber();
   }
 
-  readNullableJSON(): JSON.Value | null {
+  readOptionalJSON(): JSON.Value | null {
     if (this.isNextNil()) {
       return null;
     }
@@ -463,14 +463,14 @@ export class ReadDecoder extends Read {
     return this.readJSON();
   }
 
-  readNullableArray<T>(fn: (decoder: Read) => T): Array<T> | null {
+  readOptionalArray<T>(fn: (decoder: Read) => T): Array<T> | null {
     if (this.isNextNil()) {
       return null;
     }
     return this.readArray(fn);
   }
 
-  readNullableMap<K, V>(
+  readOptionalMap<K, V>(
     key_fn: (decoder: Read) => K,
     value_fn: (decoder: Read) => V
   ): Map<K, V> | null {
@@ -480,7 +480,7 @@ export class ReadDecoder extends Read {
     return this.readMap(key_fn, value_fn);
   }
 
-  readNullableExtGenericMap<K, V>(
+  readOptionalExtGenericMap<K, V>(
     key_fn: (decoder: Read) => K,
     value_fn: (decoder: Read) => V
   ): Map<K, V> | null {

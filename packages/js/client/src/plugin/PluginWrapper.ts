@@ -30,7 +30,7 @@ export class PluginWrapper extends Wrapper {
     super();
 
     Tracer.startSpan("PluginWrapper: constructor");
-    Tracer.setAttribute("input", {
+    Tracer.setAttribute("args", {
       uri: this._uri,
       plugin: this._plugin,
       clientEnv: this._clientEnv,
@@ -63,7 +63,7 @@ export class PluginWrapper extends Wrapper {
   ): Promise<InvokeResult<TData>> {
     try {
       const { method, resultFilter } = options;
-      const input = options.input || {};
+      const args = options.args || {};
       const module = this._getInstance();
 
       if (!module) {
@@ -77,30 +77,30 @@ export class PluginWrapper extends Wrapper {
       // Sanitize & load the module's environment
       await this._sanitizeAndLoadEnv(client, module);
 
-      let jsInput: Record<string, unknown>;
+      let jsArgs: Record<string, unknown>;
 
-      // If the input is a msgpack buffer, deserialize it
-      if (input instanceof ArrayBuffer) {
-        const result = msgpackDecode(input);
+      // If the args are a msgpack buffer, deserialize it
+      if (args instanceof ArrayBuffer) {
+        const result = msgpackDecode(args);
 
         Tracer.addEvent("msgpack-decoded", result);
 
         if (typeof result !== "object") {
           throw new Error(
-            `PluginWrapper: decoded MsgPack input did not result in an object.\nResult: ${result}`
+            `PluginWrapper: decoded MsgPack args did not result in an object.\nResult: ${result}`
           );
         }
 
-        jsInput = result as Record<string, unknown>;
+        jsArgs = result as Record<string, unknown>;
       } else {
-        jsInput = input;
+        jsArgs = args;
       }
 
       // Invoke the function
       try {
         const result = (await module._wrap_invoke(
           method,
-          jsInput,
+          jsArgs,
           client
         )) as TData;
 
@@ -119,7 +119,7 @@ export class PluginWrapper extends Wrapper {
                 `TEST_PLUGIN msgpack encode failure.` +
                   `uri: ${this._uri.uri}\nmodule: ${module}\n` +
                   `method: ${method}\n` +
-                  `input: ${JSON.stringify(jsInput, null, 2)}\n` +
+                  `args: ${JSON.stringify(jsArgs, null, 2)}\n` +
                   `result: ${JSON.stringify(data, null, 2)}\n` +
                   `exception: ${e}`
               );
@@ -143,7 +143,7 @@ export class PluginWrapper extends Wrapper {
           `PluginWrapper: invocation exception encountered.\n` +
             `uri: ${this._uri.uri}\nmodule: ${module}\n` +
             `method: ${method}\nresultFilter: ${resultFilter}\n` +
-            `input: ${JSON.stringify(jsInput, null, 2)}\n` +
+            `args: ${JSON.stringify(jsArgs, null, 2)}\n` +
             `exception: ${e.message}`
         );
       }

@@ -1,10 +1,10 @@
 import {
-  Input_moduleMethod,
-  Input_objectMethod
+  Args_moduleMethod,
+  Args_objectMethod
 } from "./Module";
 export {
-  Input_moduleMethod,
-  Input_objectMethod
+  Args_moduleMethod,
+  Args_objectMethod
 };
 export { CustomType } from "./CustomType";
 export { AnotherType } from "./AnotherType";
