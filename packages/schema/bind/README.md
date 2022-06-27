@@ -1,4 +1,4 @@
-# Polywrap Binding
+# Polywrap Schema Binding (@polywrap/schema-bind)
 
 Generates Polywrap schema bindings for supported guest languages.
 
@@ -32,4 +32,23 @@ MessagePack encoded data is sent between module boundaries. Decoding of the mess
 
 ## Usage
 
-TODO
+``` typescript
+import { BindOptions, BindLanguage, BindOutput, bindSchema } from "@polywrap/schema-bind";
+
+// Fetch GraphQL schema
+const schema = fetch("schema.graphql");
+
+// Parse the input schema into the TypeInfo structure
+const typeInfo = parseSchema(schema);
+
+// Build configuration
+const input: BindOptions = {
+  projectName: "Test",
+  bindLanguage: "TBD" as BindLanguage,
+  typeInfo,
+  schema,
+  outputDirAbs: "output"
+};
+
+const output: BindOutput = bindSchema(input);
+```
