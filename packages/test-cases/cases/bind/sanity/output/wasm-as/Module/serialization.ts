@@ -52,7 +52,7 @@ export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Input_moduleM
     }
     else if (field == "optStr") {
       reader.context().push(field, "string | null", "type found, reading property");
-      _optStr = reader.readNullableString();
+      _optStr = reader.readOptionalString();
       reader.context().pop();
     }
     else if (field == "en") {
@@ -105,7 +105,7 @@ export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Input_moduleM
     }
     else if (field == "optEnumArray") {
       reader.context().push(field, "Array<Option<Types.CustomEnum>> | null", "type found, reading property");
-      _optEnumArray = reader.readNullableArray((reader: Read): Option<Types.CustomEnum> => {
+      _optEnumArray = reader.readOptionalArray((reader: Read): Option<Types.CustomEnum> => {
         let value: Option<Types.CustomEnum>;
         if (!reader.isNextNil()) {
           if (reader.isNextString()) {
@@ -230,7 +230,7 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectM
     }
     else if (field == "optObjectArray") {
       reader.context().push(field, "Array<Types.AnotherType | null> | null", "type found, reading property");
-      _optObjectArray = reader.readNullableArray((reader: Read): Types.AnotherType | null => {
+      _optObjectArray = reader.readOptionalArray((reader: Read): Types.AnotherType | null => {
         let object: Types.AnotherType | null = null;
         if (!reader.isNextNil()) {
           object = Types.AnotherType.read(reader);

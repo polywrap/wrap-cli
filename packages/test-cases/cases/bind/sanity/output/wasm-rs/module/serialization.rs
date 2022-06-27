@@ -64,7 +64,7 @@ pub fn deserialize_module_method_args(input: &[u8]) -> Result<InputModuleMethod,
             }
             "optStr" => {
                 reader.context().push(&field, "Option<String>", "type found, reading argument");
-                _opt_str = reader.read_nullable_string()?;
+                _opt_str = reader.read_optional_string()?;
                 reader.context().pop();
             }
             "en" => {
@@ -113,7 +113,7 @@ pub fn deserialize_module_method_args(input: &[u8]) -> Result<InputModuleMethod,
             }
             "optEnumArray" => {
                 reader.context().push(&field, "Option<Vec<Option<CustomEnum>>>", "type found, reading argument");
-                _opt_enum_array = reader.read_nullable_array(|reader| {
+                _opt_enum_array = reader.read_optional_array(|reader| {
                     let mut value: Option<CustomEnum> = None;
                     if !reader.is_next_nil()? {
                         if reader.is_next_string()? {
@@ -237,7 +237,7 @@ pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod,
             }
             "optObjectArray" => {
                 reader.context().push(&field, "Option<Vec<Option<AnotherType>>>", "type found, reading argument");
-                _opt_object_array = reader.read_nullable_array(|reader| {
+                _opt_object_array = reader.read_optional_array(|reader| {
                     let mut object: Option<AnotherType> = None;
                     if !reader.is_next_nil()? {
                         object = Some(AnotherType::read(reader)?);
