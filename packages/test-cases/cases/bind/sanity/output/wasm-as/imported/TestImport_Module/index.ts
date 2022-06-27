@@ -10,10 +10,10 @@ import {
 import {
   serializeimportedMethodArgs,
   deserializeimportedMethodResult,
-  Input_importedMethod,
+  Args_importedMethod,
   serializeanotherMethodArgs,
   deserializeanotherMethodResult,
-  Input_anotherMethod
+  Args_anotherMethod
 } from "./serialization";
 import * as Types from "../..";
 
@@ -28,9 +28,9 @@ export class TestImport_Module {
   }
 
   public importedMethod(
-    input: Input_importedMethod
+    args: Args_importedMethod
   ): Result<Types.TestImport_Object | null, string> {
-    const args = serializeimportedMethodArgs(input);
+    const args = serializeimportedMethodArgs(args);
     const result = wrap_subinvokeImplementation(
       "testimport.uri.eth",
       this.uri,
@@ -50,9 +50,9 @@ export class TestImport_Module {
   }
 
   public anotherMethod(
-    input: Input_anotherMethod
+    args: Args_anotherMethod
   ): Result<i32, string> {
-    const args = serializeanotherMethodArgs(input);
+    const args = serializeanotherMethodArgs(args);
     const result = wrap_subinvokeImplementation(
       "testimport.uri.eth",
       this.uri,

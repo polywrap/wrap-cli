@@ -1,18 +1,18 @@
 import {
   env,
-  Input_environment,
-  Input_sanitizeEnv,
+  Args_environment,
+  Args_sanitizeEnv,
   Env
 } from "./wrap";
 
-export function environment(input: Input_environment): Env {
+export function environment(args: Args_environment): Env {
   return env as Env;
 }
 
-export function sanitizeEnv(input: Input_sanitizeEnv): Env {
+export function sanitizeEnv(args: Args_sanitizeEnv): Env {
   return {
-    str: input.env.str,
-    optStr: input.env.optStr,
+    str: args.env.str,
+    optStr: args.env.optStr,
     defStr: "default string",
   }
 }

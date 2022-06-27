@@ -1,5 +1,5 @@
-import { Input_get } from "./wrap";
+import { Args_get } from "./wrap";
 
-export function get(input: Input_get): string {
+export function get(args: Args_get): string {
   return "foo";
 }

@@ -104,16 +104,16 @@ impl CustomType {
         }
     }
 
-    pub fn to_buffer(input: &CustomType) -> Result<Vec<u8>, EncodeError> {
-        serialize_custom_type(input).map_err(|e| EncodeError::TypeWriteError(e.to_string()))
+    pub fn to_buffer(args: &CustomType) -> Result<Vec<u8>, EncodeError> {
+        serialize_custom_type(args).map_err(|e| EncodeError::TypeWriteError(e.to_string()))
     }
 
-    pub fn from_buffer(input: &[u8]) -> Result<CustomType, DecodeError> {
-        deserialize_custom_type(input).map_err(|e| DecodeError::TypeReadError(e.to_string()))
+    pub fn from_buffer(args: &[u8]) -> Result<CustomType, DecodeError> {
+        deserialize_custom_type(args).map_err(|e| DecodeError::TypeReadError(e.to_string()))
     }
 
-    pub fn write<W: Write>(input: &CustomType, writer: &mut W) -> Result<(), EncodeError> {
-        write_custom_type(input, writer).map_err(|e| EncodeError::TypeWriteError(e.to_string()))
+    pub fn write<W: Write>(args: &CustomType, writer: &mut W) -> Result<(), EncodeError> {
+        write_custom_type(args, writer).map_err(|e| EncodeError::TypeWriteError(e.to_string()))
     }
 
     pub fn read<R: Read>(reader: &mut R) -> Result<CustomType, DecodeError> {

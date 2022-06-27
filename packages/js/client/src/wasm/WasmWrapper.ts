@@ -79,7 +79,7 @@ export class WasmWrapper extends Wrapper {
     super();
 
     Tracer.startSpan("WasmWrapper: constructor");
-    Tracer.setAttribute("input", {
+    Tracer.setAttribute("args", {
       uri: this._uri,
       manifest: this._manifest,
       clientEnv: this._clientEnv,
@@ -179,7 +179,7 @@ export class WasmWrapper extends Wrapper {
   ): Promise<InvokeResult<unknown | ArrayBuffer>> {
     try {
       const { method, noDecode } = options;
-      const input = options.input || {};
+      const args = options.args || {};
       const wasm = await this._getWasmModule(client);
 
       const state: State = {
@@ -193,14 +193,14 @@ export class WasmWrapper extends Wrapper {
         invokeResult: {} as InvokeResult,
         method,
         sanitizeEnv: {},
-        args: input instanceof ArrayBuffer ? input : msgpackEncode(input),
+        args: args instanceof ArrayBuffer ? args : msgpackEncode(args),
       };
 
       const abort = (message: string) => {
         throw new Error(
           `WasmWrapper: Wasm module aborted execution.\nURI: ${this._uri.uri}\n` +
             `Method: ${method}\n` +
-            `Input: ${JSON.stringify(input, null, 2)}\nMessage: ${message}.\n`
+            `Args: ${JSON.stringify(args, null, 2)}\nMessage: ${message}.\n`
         );
       };
 
@@ -233,7 +233,7 @@ export class WasmWrapper extends Wrapper {
             `WasmWrapper: invocation exception encountered.\n` +
               `uri: ${this._uri.uri}\n` +
               `method: ${method}\n` +
-              `input: ${JSON.stringify(input, null, 2)}\n` +
+              `args: ${JSON.stringify(args, null, 2)}\n` +
               `exception: ${invokeResult.invokeError}`
           );
         }

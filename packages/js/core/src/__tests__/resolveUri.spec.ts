@@ -63,7 +63,7 @@ describe("resolveUri", () => {
         return Promise.resolve({
           // @ts-ignore
           data: wrappers[uri]?.[options.method](
-            options.input as Record<string, unknown>,
+            options.args as Record<string, unknown>,
             {} as Client
           ) as TData
         });
@@ -166,23 +166,23 @@ describe("resolveUri", () => {
 
   const ensWrapper = {
     tryResolveUri: (
-      input: { authority: string; path: string },
+      args: { authority: string; path: string },
       _client: Client
     ) => {
       return {
-        uri: input.authority === "ens" ? "ipfs/QmHash" : undefined,
+        uri: args.authority === "ens" ? "ipfs/QmHash" : undefined,
       };
     },
   };
 
   const ipfsWrapper = {
       tryResolveUri: (
-        input: { authority: string; path: string },
+        args: { authority: string; path: string },
         _client: Client
       ) => {
         return {
           manifest:
-            input.authority === "ipfs"
+            args.authority === "ipfs"
               ? "format: 0.0.1-prealpha.9\ndog: cat"
               : undefined,
         };
@@ -191,12 +191,12 @@ describe("resolveUri", () => {
 
   const pluginWrapper = {
     tryResolveUri: (
-      input: { authority: string; path: string },
+      args: { authority: string; path: string },
       _client: Client
     ) => {
       return {
         manifest:
-          input.authority === "my" ? "format: 0.0.1-prealpha.9" : undefined,
+          args.authority === "my" ? "format: 0.0.1-prealpha.9" : undefined,
       };
     },
   };
@@ -443,7 +443,7 @@ describe("resolveUri", () => {
   it("returns URI when it does not resolve to an Wrapper", async () => {
     const faultyIpfsWrapper = {
       tryResolveUri: (
-        input: { authority: string; path: string },
+        args: { authority: string; path: string },
         _client: Client
       ) => {
         return {
