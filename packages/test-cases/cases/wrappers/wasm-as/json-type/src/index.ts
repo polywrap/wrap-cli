@@ -1,36 +1,36 @@
 import {
-  Input_parse,
-  Input_stringify,
-  Input_stringifyObject,
-  Input_methodJSON
+  Args_parse,
+  Args_stringify,
+  Args_stringifyObject,
+  Args_methodJSON
 } from "./wrap";
 import { JSON } from "@polywrap/wasm-as";
 
-export function parse(input: Input_parse): JSON.Value {
-  return JSON.parse(input.value);
+export function parse(args: Args_parse): JSON.Value {
+  return JSON.parse(args.value);
 }
 
-export function stringify(input: Input_stringify): string {
+export function stringify(args: Args_stringify): string {
   let str = "";
-  for (let i = 0; i < input.values.length; ++i) {
-    const value = input.values[i];
+  for (let i = 0; i < args.values.length; ++i) {
+    const value = args.values[i];
     str += value.stringify();
   }
   return str;
 }
 
-export function stringifyObject(input: Input_stringifyObject): string {
+export function stringifyObject(args: Args_stringifyObject): string {
   let str = "";
-  str += input.object.jsonA.stringify();
-  str += input.object.jsonB.stringify();
+  str += args.object.jsonA.stringify();
+  str += args.object.jsonB.stringify();
   return str;
 }
 
-export function methodJSON(input: Input_methodJSON): JSON.Value {
+export function methodJSON(args: Args_methodJSON): JSON.Value {
   const result = JSON.Value.Object();
-  result.set("valueA", JSON.from(input.valueA));
-  result.set("valueB", JSON.from(input.valueB));
-  result.set("valueC", JSON.from(input.valueC));
+  result.set("valueA", JSON.from(args.valueA));
+  result.set("valueB", JSON.from(args.valueB));
+  result.set("valueC", JSON.from(args.valueC));
 
   return result;
 }

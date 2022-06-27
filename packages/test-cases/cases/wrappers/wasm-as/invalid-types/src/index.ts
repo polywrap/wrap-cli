@@ -1,27 +1,27 @@
 import {
-  Input_boolMethod,
-  Input_bytesMethod,
-  Input_arrayMethod,
-  Input_intMethod,
-  Input_uIntMethod
+  Args_boolMethod,
+  Args_bytesMethod,
+  Args_arrayMethod,
+  Args_intMethod,
+  Args_uIntMethod
 } from "./wrap";
 
-export function boolMethod(input: Input_boolMethod): bool {
-  return input.arg;
+export function boolMethod(args: Args_boolMethod): bool {
+  return args.arg;
 }
 
-export function intMethod(input: Input_intMethod): i32 {
-  return input.arg;
+export function intMethod(args: Args_intMethod): i32 {
+  return args.arg;
 }
 
-export function uIntMethod(input: Input_uIntMethod): u32 {
-  return input.arg;
+export function uIntMethod(args: Args_uIntMethod): u32 {
+  return args.arg;
 }
 
-export function bytesMethod(input: Input_bytesMethod): ArrayBuffer {
-  return input.arg;
+export function bytesMethod(args: Args_bytesMethod): ArrayBuffer {
+  return args.arg;
 }
 
-export function arrayMethod(input: Input_arrayMethod): string[] {
-  return input.arg;
+export function arrayMethod(args: Args_arrayMethod): string[] {
+  return args.arg;
 }

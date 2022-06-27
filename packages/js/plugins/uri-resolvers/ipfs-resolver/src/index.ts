@@ -1,7 +1,7 @@
 import {
   Module,
-  Input_tryResolveUri,
-  Input_getFile,
+  Args_tryResolveUri,
+  Args_getFile,
   Bytes,
   UriResolver_MaybeUriOrManifest,
   manifest,
@@ -22,14 +22,14 @@ export interface IpfsResolverPluginConfig extends Record<string, unknown> {
 export class IpfsResolverPlugin extends Module<IpfsResolverPluginConfig> {
   // uri-resolver.core.web3api.eth
   public async tryResolveUri(
-    input: Input_tryResolveUri,
+    args: Args_tryResolveUri,
     _client: Client
   ): Promise<UriResolver_MaybeUriOrManifest | null> {
-    if (input.authority !== "ipfs") {
+    if (args.authority !== "ipfs") {
       return null;
     }
 
-    if (!IpfsResolverPlugin.isCID(input.path)) {
+    if (!IpfsResolverPlugin.isCID(args.path)) {
       // Not a valid CID
       return { manifest: null, uri: null };
     }
@@ -42,7 +42,7 @@ export class IpfsResolverPlugin extends Module<IpfsResolverPluginConfig> {
       try {
         const manifestResult = await Ipfs_Module.cat(
           {
-            cid: `${input.path}/${manifestSearchPattern}`,
+            cid: `${args.path}/${manifestSearchPattern}`,
             options: {
               timeout: 5000,
             },
@@ -65,13 +65,13 @@ export class IpfsResolverPlugin extends Module<IpfsResolverPluginConfig> {
   }
 
   public async getFile(
-    input: Input_getFile,
+    args: Args_getFile,
     client: Client
   ): Promise<Bytes | null> {
     try {
       const resolveResult = await Ipfs_Module.resolve(
         {
-          cid: input.path,
+          cid: args.path,
           options: {
             timeout: 5000,
           },

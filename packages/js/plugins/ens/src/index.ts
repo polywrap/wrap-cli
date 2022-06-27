@@ -1,8 +1,8 @@
 import {
   Client,
   Module,
-  Input_tryResolveUri,
-  Input_getFile,
+  Args_tryResolveUri,
+  Args_getFile,
   UriResolver_MaybeUriOrManifest,
   Bytes,
   Ethereum_Module,
@@ -37,15 +37,15 @@ export class EnsPlugin extends Module<EnsPluginConfig> {
   }
 
   async tryResolveUri(
-    input: Input_tryResolveUri,
+    args: Args_tryResolveUri,
     client: Client
   ): Promise<UriResolver_MaybeUriOrManifest | null> {
-    if (input.authority !== "ens") {
+    if (args.authority !== "ens") {
       return null;
     }
 
     try {
-      const cid = await this.ensToCID(input.path, client);
+      const cid = await this.ensToCID(args.path, client);
 
       if (!cid) {
         return null;
@@ -63,7 +63,7 @@ export class EnsPlugin extends Module<EnsPluginConfig> {
     return { uri: null, manifest: null };
   }
 
-  getFile(_input: Input_getFile, _client: Client): Bytes | null {
+  getFile(_args: Args_getFile, _client: Client): Bytes | null {
     return null;
   }
 

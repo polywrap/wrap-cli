@@ -14,7 +14,7 @@ pub use serialization::{
     {{#methods}}
     deserialize_{{#toLower}}{{name}}{{/toLower}}_result,
     serialize_{{#toLower}}{{name}}{{/toLower}}_args,
-    Input{{#toUpper}}{{name}}{{/toUpper}}{{^last}},{{/last}}
+    Args{{#toUpper}}{{name}}{{/toUpper}}{{^last}},{{/last}}
     {{/methods}}
 };
 {{/methods.length}}
@@ -36,9 +36,9 @@ impl {{#toUpper}}{{type}}{{/toUpper}} {
     }
 
     {{#methods}}
-    pub fn {{#toLower}}{{name}}{{/toLower}}(input: &Input{{#toUpper}}{{name}}{{/toUpper}}) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, String> {
+    pub fn {{#toLower}}{{name}}{{/toLower}}(args: &Args{{#toUpper}}{{name}}{{/toUpper}}) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, String> {
         let uri = {{#parent}}{{#toUpper}}{{type}}{{/toUpper}}{{/parent}}::URI;
-        let args = serialize_{{#toLower}}{{name}}{{/toLower}}_args(input).map_err(|e| e.to_string())?;
+        let args = serialize_{{#toLower}}{{name}}{{/toLower}}_args(args).map_err(|e| e.to_string())?;
         let result = subinvoke::wrap_subinvoke(
             uri,
             "{{name}}",

@@ -1,7 +1,7 @@
 import {
   Client,
   Module,
-  Input_querySubgraph,
+  Args_querySubgraph,
   HTTP_Module,
   manifest,
 } from "./wrap";
@@ -27,11 +27,12 @@ export class GraphNodePlugin extends Module<GraphNodePluginConfig> {
   constructor(config: GraphNodePluginConfig) {
     super(config);
   }
+
   public async querySubgraph(
-    input: Input_querySubgraph,
+    args: Args_querySubgraph,
     client: Client
   ): Promise<string> {
-    const { subgraphAuthor, subgraphName, query } = input;
+    const { subgraphAuthor, subgraphName, query } = args;
     const { data, error } = await HTTP_Module.post(
       {
         url: `${this.config.provider}/subgraphs/name/${subgraphAuthor}/${subgraphName}`,

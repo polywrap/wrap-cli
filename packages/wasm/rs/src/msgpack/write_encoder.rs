@@ -308,105 +308,105 @@ impl Write for WriteEncoder {
         Ok(())
     }
 
-    fn write_nullable_bool(&mut self, value: &Option<bool>) -> Result<(), EncodeError> {
+    fn write_optional_bool(&mut self, value: &Option<bool>) -> Result<(), EncodeError> {
         match value {
             None => Write::write_nil(self),
             Some(v) => Write::write_bool(self, v),
         }
     }
 
-    fn write_nullable_i8(&mut self, value: &Option<i8>) -> Result<(), EncodeError> {
+    fn write_optional_i8(&mut self, value: &Option<i8>) -> Result<(), EncodeError> {
         match value {
             None => Write::write_nil(self),
             Some(v) => Write::write_i8(self, v),
         }
     }
 
-    fn write_nullable_i16(&mut self, value: &Option<i16>) -> Result<(), EncodeError> {
+    fn write_optional_i16(&mut self, value: &Option<i16>) -> Result<(), EncodeError> {
         match value {
             None => Write::write_nil(self),
             Some(v) => Write::write_i16(self, v),
         }
     }
 
-    fn write_nullable_i32(&mut self, value: &Option<i32>) -> Result<(), EncodeError> {
+    fn write_optional_i32(&mut self, value: &Option<i32>) -> Result<(), EncodeError> {
         match value {
             None => Write::write_nil(self),
             Some(v) => Write::write_i32(self, v),
         }
     }
 
-    fn write_nullable_u8(&mut self, value: &Option<u8>) -> Result<(), EncodeError> {
+    fn write_optional_u8(&mut self, value: &Option<u8>) -> Result<(), EncodeError> {
         match value {
             None => Write::write_nil(self),
             Some(v) => Write::write_u8(self, v),
         }
     }
 
-    fn write_nullable_u16(&mut self, value: &Option<u16>) -> Result<(), EncodeError> {
+    fn write_optional_u16(&mut self, value: &Option<u16>) -> Result<(), EncodeError> {
         match value {
             None => Write::write_nil(self),
             Some(v) => Write::write_u16(self, v),
         }
     }
 
-    fn write_nullable_u32(&mut self, value: &Option<u32>) -> Result<(), EncodeError> {
+    fn write_optional_u32(&mut self, value: &Option<u32>) -> Result<(), EncodeError> {
         match value {
             None => Write::write_nil(self),
             Some(v) => Write::write_u32(self, v),
         }
     }
 
-    fn write_nullable_f32(&mut self, value: &Option<f32>) -> Result<(), EncodeError> {
+    fn write_optional_f32(&mut self, value: &Option<f32>) -> Result<(), EncodeError> {
         match value {
             None => Write::write_nil(self),
             Some(v) => Write::write_f32(self, v),
         }
     }
 
-    fn write_nullable_f64(&mut self, value: &Option<f64>) -> Result<(), EncodeError> {
+    fn write_optional_f64(&mut self, value: &Option<f64>) -> Result<(), EncodeError> {
         match value {
             None => Write::write_nil(self),
             Some(v) => Write::write_f64(self, v),
         }
     }
 
-    fn write_nullable_string(&mut self, value: &Option<String>) -> Result<(), EncodeError> {
+    fn write_optional_string(&mut self, value: &Option<String>) -> Result<(), EncodeError> {
         match value {
             None => Write::write_nil(self),
             Some(s) => Write::write_string(self, s),
         }
     }
 
-    fn write_nullable_bytes(&mut self, value: &Option<Vec<u8>>) -> Result<(), EncodeError> {
+    fn write_optional_bytes(&mut self, value: &Option<Vec<u8>>) -> Result<(), EncodeError> {
         match value {
             None => Write::write_nil(self),
             Some(bytes) => Write::write_bytes(self, bytes),
         }
     }
 
-    fn write_nullable_bigint(&mut self, value: &Option<BigInt>) -> Result<(), EncodeError> {
+    fn write_optional_bigint(&mut self, value: &Option<BigInt>) -> Result<(), EncodeError> {
         match value {
             None => Write::write_nil(self),
             Some(bigint) => Write::write_bigint(self, bigint),
         }
     }
 
-    fn write_nullable_bignumber(&mut self, value: &Option<BigNumber>) -> Result<(), EncodeError> {
+    fn write_optional_bignumber(&mut self, value: &Option<BigNumber>) -> Result<(), EncodeError> {
         match value {
             None => Write::write_nil(self),
             Some(bignumber) => Write::write_bignumber(self, bignumber)
         }
     }
 
-    fn write_nullable_json(&mut self, value: &Option<JSON::Value>) -> Result<(), EncodeError> {
+    fn write_optional_json(&mut self, value: &Option<JSON::Value>) -> Result<(), EncodeError> {
         match value {
             None => Write::write_nil(self),
             Some(json) => Write::write_json(self, json),
         }
     }
 
-    fn write_nullable_array<T: Clone>(
+    fn write_optional_array<T: Clone>(
         &mut self,
         opt_array: &Option<Vec<T>>,
         item_writer: impl FnMut(&mut Self, &T) -> Result<(), EncodeError>,
@@ -417,7 +417,7 @@ impl Write for WriteEncoder {
         }
     }
 
-    fn write_nullable_map<K, V: Clone>(
+    fn write_optional_map<K, V: Clone>(
         &mut self,
         opt_map: &Option<BTreeMap<K, V>>,
         key_writer: impl FnMut(&mut Self, &K) -> Result<(), EncodeError>,
@@ -432,7 +432,7 @@ impl Write for WriteEncoder {
         }
     }
 
-    fn write_nullable_ext_generic_map<K, V: Clone>(
+    fn write_optional_ext_generic_map<K, V: Clone>(
         &mut self,
         opt_map: &Option<BTreeMap<K, V>>,
         key_writer: impl FnMut(&mut Self, &K) -> Result<(), EncodeError>,

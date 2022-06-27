@@ -79,7 +79,7 @@ const setup = async (domainNames: string[]) => {
     const result = await client.invoke({
       uri: ensWrapperUri,
       method: "registerDomainAndSubdomainsRecursively",
-      input: {
+      args: {
         domain: domainName,
         owner: signer.address,
         registrarAddress,

@@ -1,21 +1,21 @@
 pub mod wrap;
 pub use wrap::*;
 
-pub fn method1(input: InputMethod1) -> Vec<Output> {
+pub fn method1(args: ArgsMethod1) -> Vec<Output> {
     vec![
         Output {
-            prop: input.arg1.prop,
+            prop: args.arg1.prop,
             nested: Nested {
-                prop: input.arg1.nested.prop,
+                prop: args.arg1.nested.prop,
             },
         },
         Output {
-            prop: match input.arg2 {
+            prop: match args.arg2 {
                 Some(ref v) => v.prop.clone(),
                 None => "".to_string(),
             },
             nested: Nested {
-                prop: match input.arg2 {
+                prop: match args.arg2 {
                     Some(ref v) => v.circular.prop.clone(),
                     None => "".to_string(),
                 }
@@ -24,33 +24,33 @@ pub fn method1(input: InputMethod1) -> Vec<Output> {
     ]
 }
 
-pub fn method2(input: InputMethod2) -> Option<Output> {
-    if input.arg.prop == "null".to_string() {
+pub fn method2(args: ArgsMethod2) -> Option<Output> {
+    if args.arg.prop == "null".to_string() {
         return None;
     }
     Some(Output {
-        prop: input.arg.prop,
+        prop: args.arg.prop,
         nested: Nested {
-            prop: input.arg.nested.prop,
+            prop: args.arg.nested.prop,
         },
     })
 }
 
-pub fn method3(input: InputMethod3) -> Vec<Option<Output>> {
+pub fn method3(args: ArgsMethod3) -> Vec<Option<Output>> {
     vec![
         None,
         Some(Output {
-            prop: input.arg.prop,
+            prop: args.arg.prop,
             nested: Nested {
-                prop: input.arg.nested.prop,
+                prop: args.arg.nested.prop,
             },
         }),
     ]
 }
 
-pub fn method5(input: InputMethod5) -> Output {
+pub fn method5(args: ArgsMethod5) -> Output {
     Output {
-        prop: match String::from_utf8(input.arg.prop) {
+        prop: match String::from_utf8(args.arg.prop) {
             Ok(v) => v,
             Err(e) => panic!("{}", e),
         },

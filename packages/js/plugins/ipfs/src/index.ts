@@ -1,12 +1,12 @@
 import {
   Module,
-  Input_resolve,
-  Input_addFile,
+  Args_resolve,
+  Args_addFile,
+  Args_cat,
   Ipfs_Options,
   Ipfs_ResolveResult,
   Env,
   manifest,
-  Input_cat,
 } from "./wrap";
 import { IpfsClient } from "./utils/IpfsClient";
 import { execSimple, execFallbacks } from "./utils/exec";
@@ -17,10 +17,10 @@ import { Client, PluginFactory } from "@polywrap/core-js";
 const createIpfsClient = require("@dorgjelli-test/ipfs-http-client-lite");
 
 const getOptions = (
-  input: Ipfs_Options | undefined | null,
+  args: Ipfs_Options | undefined | null,
   env: Env
 ): Ipfs_Options => {
-  const options = input || {};
+  const options = args || {};
 
   if (
     options.disableParallelRequests === undefined ||
@@ -47,25 +47,25 @@ export class IpfsPlugin extends Module<IpfsPluginConfig> {
     this._ipfs = createIpfsClient(this.config.provider);
   }
 
-  public async cat(input: Input_cat, _client: Client): Promise<Buffer> {
+  public async cat(args: Args_cat, _client: Client): Promise<Buffer> {
     return await this._execWithOptions(
       "cat",
       (ipfs: IpfsClient, _provider: string, options: unknown) => {
-        return ipfs.cat(input.cid, options);
+        return ipfs.cat(args.cid, options);
       },
-      input.options ?? undefined
+      args.options ?? undefined
     );
   }
 
   public async resolve(
-    input: Input_resolve,
+    args: Args_resolve,
     _client: Client
   ): Promise<Ipfs_ResolveResult | null> {
-    const options = getOptions(input.options, this.env);
+    const options = getOptions(args.options, this.env);
     return await this._execWithOptions(
       "resolve",
       async (ipfs: IpfsClient, provider: string, options: unknown) => {
-        const { path } = await ipfs.resolve(input.cid, options);
+        const { path } = await ipfs.resolve(args.cid, options);
         return {
           cid: path,
           provider,
@@ -75,8 +75,8 @@ export class IpfsPlugin extends Module<IpfsPluginConfig> {
     );
   }
 
-  public async addFile(input: Input_addFile): Promise<string> {
-    const result = await this._ipfs.add(new Uint8Array(input.data));
+  public async addFile(args: Args_addFile): Promise<string> {
+    const result = await this._ipfs.add(new Uint8Array(args.data));
 
     if (result.length === 0) {
       throw Error(

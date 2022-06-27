@@ -132,7 +132,7 @@ export type TestImport_Enum = TestImport_EnumEnum | TestImport_EnumString;
 /// Imported Modules START ///
 
 /* URI: "testimport.uri.eth" */
-interface TestImport_Module_Input_importedMethod extends Record<string, unknown> {
+interface TestImport_Module_Args_importedMethod extends Record<string, unknown> {
   str: Types.String;
   optStr?: Types.String | null;
   u: Types.UInt;
@@ -149,7 +149,7 @@ interface TestImport_Module_Input_importedMethod extends Record<string, unknown>
 }
 
 /* URI: "testimport.uri.eth" */
-interface TestImport_Module_Input_anotherMethod extends Record<string, unknown> {
+interface TestImport_Module_Args_anotherMethod extends Record<string, unknown> {
   arg: Array<Types.String>;
 }
 
@@ -161,24 +161,24 @@ export class TestImport_Module {
   }
 
   public async importedMethod (
-    input: TestImport_Module_Input_importedMethod,
+    args: TestImport_Module_Args_importedMethod,
     client: Client
   ): Promise<InvokeResult<Types.TestImport_Object | null>> {
     return client.invoke<Types.TestImport_Object | null>({
       uri: this.uri,
       method: "importedMethod",
-      input
+      args
     });
   }
 
   public async anotherMethod (
-    input: TestImport_Module_Input_anotherMethod,
+    args: TestImport_Module_Args_anotherMethod,
     client: Client
   ): Promise<InvokeResult<Types.Int32>> {
     return client.invoke<Types.Int32>({
       uri: this.uri,
       method: "anotherMethod",
-      input
+      args
     });
   }
 }

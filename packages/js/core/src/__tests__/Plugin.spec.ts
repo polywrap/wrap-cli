@@ -16,10 +16,10 @@ const testPluginManifest: PluginPackageManifest = {
 };
 
 class TestPluginModule extends PluginModule<{}> {
-  testQuery(_input: unknown, _client: Client): number {
+  testQuery(_args: unknown, _client: Client): number {
     return 5;
   }
-  testMutation(_input: unknown, _client: Client): Promise<boolean> {
+  testMutation(_args: unknown, _client: Client): Promise<boolean> {
     return Promise.resolve(true);
   }
 }

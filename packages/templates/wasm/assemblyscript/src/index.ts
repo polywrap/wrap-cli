@@ -1,39 +1,39 @@
 import {
   Ethereum_Module,
-  Input_deployContract,
-  Input_setData,
-  Input_getData,
+  Args_deployContract,
+  Args_setData,
+  Args_getData,
 } from "./wrap";
 import { abi, bytecode } from "./contracts/SimpleStorage";
 
-export function getData(input: Input_getData): u32 {
+export function getData(args: Args_getData): u32 {
   const res = Ethereum_Module.callContractView({
-    address: input.address,
+    address: args.address,
     method: "function get() view returns (uint256)",
     args: null,
-    connection: input.connection,
+    connection: args.connection,
   }).unwrap();
 
   return U32.parseInt(res);
 }
 
-export function setData(input: Input_setData): string {
+export function setData(args: Args_setData): string {
   const res = Ethereum_Module.callContractMethod({
-    address: input.address,
+    address: args.address,
     method: "function set(uint256 value)",
-    args: [input.value.toString()],
-    connection: input.connection,
+    args: [args.value.toString()],
+    connection: args.connection,
     txOverrides: null,
   }).unwrap();
 
   return res.hash;
 }
 
-export function deployContract(input: Input_deployContract): string {
+export function deployContract(args: Args_deployContract): string {
   return Ethereum_Module.deployContract({
     abi,
     bytecode,
     args: null,
-    connection: input.connection,
+    connection: args.connection,
   }).unwrap();
 }

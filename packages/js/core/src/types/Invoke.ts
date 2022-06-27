@@ -12,10 +12,10 @@ export interface InvokeOptions<
   method: string;
 
   /**
-   * Input arguments for the method, structured as a map,
+   * Arguments for the method, structured as a map,
    * removing the chance of incorrectly ordering arguments.
    */
-  input?: Record<string, unknown> | ArrayBuffer;
+  args?: Record<string, unknown> | ArrayBuffer;
 
   /**
    * Filters the [[InvokeResult]] data properties. The key

@@ -20,7 +20,7 @@ export const Query = {
       return invoke<MaybeUriOrManifest>({
         uri: wrapper.uri,
         method: `tryResolveUri`,
-        input: {
+        args: {
           authority: uri.authority,
           path: uri.path,
         },
@@ -37,7 +37,7 @@ export const Query = {
       return invoke<ArrayBuffer>({
         uri: wrapper.uri,
         method: "getFile",
-        input: {
+        args: {
           path,
         },
       });
