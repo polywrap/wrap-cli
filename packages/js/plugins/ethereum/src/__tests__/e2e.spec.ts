@@ -2,14 +2,14 @@ import { ethereumPlugin } from "..";
 import * as Schema from "../wrap";
 
 import { PolywrapClient, defaultIpfsProviders } from "@polywrap/client-js";
-import { ensPlugin } from "@polywrap/ens-plugin-js";
+import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import {
   initTestEnvironment,
   stopTestEnvironment,
   buildWrapper,
   ensAddresses,
-  providers
+  providers,
 } from "@polywrap/test-env-js";
 import { Wallet } from "ethers";
 
@@ -37,15 +37,15 @@ describe("Ethereum Plugin", () => {
   let registrarAddress: string;
   const signer = "0x90F8bf6A479f320ead074411a4B0e7944Ea8c9C1";
 
-  const wrapperPath = `${__dirname}/integration`
-  const uri = `fs/${wrapperPath}/build`
+  const wrapperPath = `${__dirname}/integration`;
+  const uri = `fs/${wrapperPath}/build`;
 
   beforeAll(async () => {
     await initTestEnvironment();
 
     ensAddress = ensAddresses.ensAddress;
     resolverAddress = ensAddresses.resolverAddress;
-    registrarAddress = ensAddresses.registrarAddress
+    registrarAddress = ensAddresses.registrarAddress;
 
     client = new PolywrapClient({
       plugins: [
@@ -71,8 +71,8 @@ describe("Ethereum Plugin", () => {
           }),
         },
         {
-          uri: "wrap://ens/ens.polywrap.eth",
-          plugin: ensPlugin({
+          uri: "wrap://ens/ens-resolver.polywrap.eth",
+          plugin: ensResolverPlugin({
             addresses: {
               testnet: ensAddress,
             },

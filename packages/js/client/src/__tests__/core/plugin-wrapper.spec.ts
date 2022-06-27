@@ -9,7 +9,7 @@ jest.setTimeout(200000);
 
 const defaultPlugins = [
   "wrap://ens/ipfs.polywrap.eth",
-  "wrap://ens/ens.polywrap.eth",
+  "wrap://ens/ens-resolver.polywrap.eth",
   "wrap://ens/ethereum.polywrap.eth",
   "wrap://ens/http.polywrap.eth",
   "wrap://ens/js-logger.polywrap.eth",
