@@ -206,21 +206,6 @@ describe("parseQuery", () => {
     );
   });
 
-  it("fails when a fragment spread is used on result values", () => {
-    const doc = createQueryDocument(`
-      query {
-        something(
-          arg: 5
-        ) {
-          ...NamedFragment
-        }
-      }
-    `);
-    expect(() => parseQuery(dummy, doc)).toThrowError(
-      /Unsupported result selection type found: FragmentSpread/
-    );
-  });
-
   it("fails when variables were not specified", () => {
     const doc = createQueryDocument(`
       mutation {
@@ -279,23 +264,6 @@ describe("parseQuery", () => {
 
     expect(() => parseQuery(dummy, doc)).toThrowError(
       /Duplicate arguments found/
-    );
-  });
-
-  it("fails when duplicate result selections found", () => {
-    const doc = createQueryDocument(`
-      mutation {
-        someMethod(
-          arg1: 5
-        ) {
-          prop1
-          prop1
-        }
-      }
-    `);
-
-    expect(() => parseQuery(dummy, doc)).toThrowError(
-      /Duplicate result selections found/
     );
   });
 
