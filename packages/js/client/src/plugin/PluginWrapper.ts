@@ -104,7 +104,7 @@ export class PluginWrapper extends Wrapper {
         )) as TData;
 
         if (result !== undefined) {
-          let data = result as unknown;
+          const data = result as unknown;
 
           if (process.env.TEST_PLUGIN) {
             // try to encode the returned result,
