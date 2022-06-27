@@ -9,7 +9,7 @@ import {
   Input_mkdir,
   Input_rm,
   Input_rmdir,
-} from "./wrap";
+}  from "./wrap-man";
 import fileSystemEncodingToBufferEncoding from "./utils/fileSystemEncodingToBufferEncoding";
 
 import fs from "fs";

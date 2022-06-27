@@ -5,7 +5,7 @@
   "version": "0.0.1-prealpha.89",
   "main": "build/index.js",
   "scripts": {
-    "build": "rimraf ./build && yarn codegen && tsc --project tsconfig.json",
+    "build": "rimraf ./build && tsc --project tsconfig.json",
     "codegen": "npx polywrap plugin codegen",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",

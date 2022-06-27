@@ -5,7 +5,7 @@ import {
   Input_post,
   Response,
   manifest,
-} from "./wrap";
+}  from "./wrap-man";
 import { fromAxiosResponse, toAxiosRequestConfig } from "./util";
 
 import axios from "axios";
