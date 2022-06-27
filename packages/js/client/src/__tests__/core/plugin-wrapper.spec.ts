@@ -18,6 +18,7 @@ const defaultPlugins = [
   "wrap://ens/graph-node.polywrap.eth",
   "wrap://ens/fs.polywrap.eth",
   "wrap://ens/fs-resolver.polywrap.eth",
+  "wrap://ens/ipfs-resolver.polywrap.eth",
 ];
 
 describe("plugin-wrapper", () => {
