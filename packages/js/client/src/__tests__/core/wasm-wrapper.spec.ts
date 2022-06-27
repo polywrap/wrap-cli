@@ -24,21 +24,23 @@ import fs from "fs";
 
 jest.setTimeout(200000);
 
+const simpleWrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple`;
+const simpleWrapperUri = new Uri(`fs/${simpleWrapperPath}/build`);
+
+const simpleStorageWrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-storage`;
+const simpleStorageWrapperUri = new Uri(`fs/${simpleStorageWrapperPath}/build`);
+
 describe("wasm-wrapper", () => {
   let ipfsProvider: string;
   let ethProvider: string;
   let ensAddress: string;
-
-  const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-storage`
-  const wrapperUri = `fs/${wrapperPath}/build`
 
   beforeAll(async () => {
     await initTestEnvironment();
     ipfsProvider = providers.ipfs;
     ethProvider = providers.ethereum;
     ensAddress = ensAddresses.ensAddress;
-
-    await buildWrapper(wrapperPath);
+    await buildWrapper(simpleWrapperPath);
   });
 
   afterAll(async () => {
@@ -68,11 +70,8 @@ describe("wasm-wrapper", () => {
 
   const mockPlugin = () => {
     class MockPlugin extends PluginModule<{}> {
-      getData(_: unknown) {
-        return 100;
-      }
-      deployContract(_: unknown): string {
-        return "0x100";
+      simpleMethod(_: unknown): string {
+        return "plugin response";
       }
     }
 
@@ -88,30 +87,26 @@ describe("wasm-wrapper", () => {
   test("invoke with decode defaulted to true works as expected", async () => {
     const client = await getClient();
     const result = await client.invoke<string>({
-      uri: wrapperUri,
-      method: "deployContract",
+      uri: simpleWrapperUri.uri,
+      method: "simpleMethod",
       input: {
-        connection: {
-          networkNameOrChainId: "testnet",
-        },
+        arg: "test",
       },
     });
 
     expect(result.error).toBeFalsy();
     expect(result.data).toBeTruthy();
     expect(typeof result.data).toBe("string");
-    expect(result.data).toContain("0x");
+    expect(result.data).toEqual("test");
   });
 
   test("invoke with decode set to false works as expected", async () => {
     const client = await getClient();
     const result = await client.invoke({
-      uri: wrapperUri,
-      method: "deployContract",
+      uri: simpleWrapperUri,
+      method: "simpleMethod",
       input: {
-        connection: {
-          networkNameOrChainId: "testnet",
-        },
+        arg: "test",
       },
       noDecode: true,
     });
@@ -119,11 +114,17 @@ describe("wasm-wrapper", () => {
     expect(result.error).toBeFalsy();
     expect(result.data).toBeTruthy();
     expect(result.data instanceof ArrayBuffer).toBeTruthy();
-    expect(msgpackDecode(result.data as ArrayBuffer)).toContain("0x");
+    expect(msgpackDecode(result.data as ArrayBuffer)).toEqual("test");
   });
 
   it("should invoke wrapper with custom redirects", async () => {
     const client = await getClient({
+      redirects: [
+        {
+          from: simpleWrapperUri.uri,
+          to: "wrap://ens/mock.polywrap.eth",
+        },
+      ],
       plugins: [
         {
           uri: "wrap://ens/mock.polywrap.eth",
@@ -132,24 +133,16 @@ describe("wasm-wrapper", () => {
       ],
     });
 
-    const redirects = [
-      {
-        from: wrapperUri,
-        to: "wrap://ens/mock.polywrap.eth",
-      },
-    ];
-
     const result = await client.invoke({
-      uri: wrapperUri,
-      method: "deployContract",
-      input: {},
-      config: {
-        redirects,
+      uri: simpleWrapperUri,
+      method: "simpleMethod",
+      input: {
+        arg: "test",
       },
     });
 
     expect(result.data).toBeTruthy();
-    expect(result.data).toBe("0x100");
+    expect(result.data).toEqual("plugin response");
   });
 
   it("should allow query time redirects", async () => {
@@ -164,143 +157,102 @@ describe("wasm-wrapper", () => {
 
     const redirects = [
       {
-        from: wrapperUri,
+        from: simpleWrapperUri.uri,
         to: "wrap://ens/mock.polywrap.eth",
       },
     ];
 
-    const deploy = await client.query<{
-      deployContract: string;
-    }>({
-      uri: wrapperUri,
-      query: `
-        mutation {
-          deployContract(
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-        }
-      `,
+    const result = await client.invoke({
+      uri: simpleWrapperUri.uri,
+      method: "simpleMethod",
+      input: {
+        arg: "test",
+      },
       config: {
         redirects,
       },
     });
 
-    expect(deploy.errors).toBeFalsy();
-    expect(deploy.data).toBeTruthy();
-    expect(deploy.data?.deployContract).toBe("0x100");
-
-    const get = await client.query<{
-      getData: number;
-    }>({
-      uri: wrapperUri,
-      query: `
-        query {
-          getData(
-            address: "0x10"
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-        }
-      `,
-      config: {
-        redirects,
-      },
-    });
-
-    expect(get.errors).toBeFalsy();
-    expect(get.data).toBeTruthy();
-    expect(get.data?.getData).toBe(100);
-
-    const getFail = await client.query<{
-      getData: number;
-    }>({
-      uri: wrapperUri,
-      query: `
-        query {
-          getData(
-            address: "0x10"
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-        }
-      `,
-    });
-
-    expect(getFail.errors).toBeTruthy();
-    expect(getFail.data?.getData).toBeFalsy();
+    expect(result.data).toBeTruthy();
+    expect(result.data).toEqual("plugin response");
   });
 
   test("getManifest -- polywrap manifest, build manifest, meta manifest", async () => {
     const client = await getClient();
 
     const actualManifestStr: string = fs.readFileSync(
-      `${GetPathToTestWrappers()}/wasm-as/simple-storage/build/polywrap.json`,
+      `${simpleWrapperPath}/build/polywrap.json`,
       "utf8"
     );
     const actualManifest: PolywrapManifest = deserializePolywrapManifest(
       actualManifestStr
     );
-    const manifest: PolywrapManifest = await client.getManifest(wrapperUri, {
-      type: "polywrap",
-    });
+    const manifest: PolywrapManifest = await client.getManifest(
+      simpleWrapperUri,
+      {
+        type: "polywrap",
+      }
+    );
     expect(manifest).toStrictEqual(actualManifest);
 
     const actualBuildManifestStr: string = fs.readFileSync(
-      `${GetPathToTestWrappers()}/wasm-as/simple-storage/build/polywrap.build.json`,
+      `${simpleWrapperPath}/build/polywrap.build.json`,
       "utf8"
     );
     const actualBuildManifest: BuildManifest = deserializeBuildManifest(
       actualBuildManifestStr
     );
-    const buildManifest: BuildManifest = await client.getManifest(wrapperUri, {
-      type: "build",
-    });
+    const buildManifest: BuildManifest = await client.getManifest(
+      simpleWrapperUri,
+      {
+        type: "build",
+      }
+    );
     expect(buildManifest).toStrictEqual(actualBuildManifest);
 
     const actualMetaManifestStr: string = fs.readFileSync(
-      `${GetPathToTestWrappers()}/wasm-as/simple-storage/build/polywrap.meta.json`,
+      `${simpleWrapperPath}/build/polywrap.meta.json`,
       "utf8"
     );
     const actualMetaManifest: MetaManifest = deserializeMetaManifest(
       actualMetaManifestStr
     );
-    const metaManifest: MetaManifest = await client.getManifest(wrapperUri, {
-      type: "meta",
-    });
+    const metaManifest: MetaManifest = await client.getManifest(
+      simpleWrapperUri,
+      {
+        type: "meta",
+      }
+    );
     expect(metaManifest).toStrictEqual(actualMetaManifest);
   });
 
-  test("getFile -- simple-storage polywrap", async () => {
+  test("get file from wrapper", async () => {
     const client = await getClient();
 
-    const manifest: PolywrapManifest = await client.getManifest(wrapperUri, {
-      type: "polywrap",
-    });
+    const schemaStr: string = fs.readFileSync(
+      `${simpleWrapperPath}/build/schema.graphql`,
+      "utf8"
+    );
 
-    const fileStr: string = (await client.getFile(wrapperUri, {
+    const manifest: PolywrapManifest = await client.getManifest(
+      simpleWrapperUri,
+      {
+        type: "polywrap",
+      }
+    );
+
+    const fileStr: string = (await client.getFile(simpleWrapperUri, {
       path: manifest.schema as string,
       encoding: "utf8",
     })) as string;
-    expect(fileStr).toContain(`getData(
-    address: String!
-    connection: Ethereum_Connection
-  ): Int!
-`);
+    expect(fileStr).toEqual(schemaStr);
 
-    const fileBuffer: ArrayBuffer = (await client.getFile(wrapperUri, {
+    const fileBuffer: ArrayBuffer = (await client.getFile(simpleWrapperUri, {
       path: manifest.schema!,
     })) as ArrayBuffer;
     const decoder = new TextDecoder("utf8");
     const text = decoder.decode(fileBuffer);
-    expect(text).toContain(`getData(
-    address: String!
-    connection: Ethereum_Connection
-  ): Int!
-`);
+    expect(text).toEqual(schemaStr);
 
     await expect(() =>
       client.getManifest(new Uri("wrap://ens/ipfs.polywrap.eth"), {
@@ -322,7 +274,7 @@ describe("wasm-wrapper", () => {
     const deploy = await client.query<{
       deployContract: string;
     }>({
-      uri: wrapperUri,
+      uri: simpleStorageWrapperUri.uri,
       query: `
         mutation {
           deployContract(
@@ -348,7 +300,7 @@ describe("wasm-wrapper", () => {
       await client.query<{
         setData: string;
       }>({
-        uri: wrapperUri,
+        uri: simpleStorageWrapperUri.uri,
         query: `
         mutation {
           setData(
@@ -372,7 +324,7 @@ describe("wasm-wrapper", () => {
     }> = client.subscribe<{
       getData: number;
     }>({
-      uri: wrapperUri,
+      uri: simpleStorageWrapperUri.uri,
       query: `
         query {
           getData(
@@ -410,7 +362,7 @@ describe("wasm-wrapper", () => {
     const deploy = await client.query<{
       deployContract: string;
     }>({
-      uri: wrapperUri,
+      uri: simpleStorageWrapperUri.uri,
       query: `
         mutation {
           deployContract(
@@ -436,7 +388,7 @@ describe("wasm-wrapper", () => {
       await client.query<{
         setData: string;
       }>({
-        uri: wrapperUri,
+        uri: simpleStorageWrapperUri.uri,
         query: `
           mutation {
             setData(
@@ -460,7 +412,7 @@ describe("wasm-wrapper", () => {
     }> = client.subscribe<{
       getData: number;
     }>({
-      uri: wrapperUri,
+      uri: simpleStorageWrapperUri.uri,
       query: `
           query {
             getData(

@@ -7,6 +7,9 @@ import { GetPathToTestWrappers } from "@polywrap/test-cases";
 
 jest.setTimeout(200000);
 
+const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-env-types`
+const wrapperUri = `fs/${wrapperPath}/build`
+
 describe("env", () => {
   const getClient = async (config?: Partial<PolywrapClientConfig>) => {
     return createPolywrapClient(
@@ -45,9 +48,6 @@ describe("env", () => {
 
   describe("simple env types", () => {
     let client: Client;
-
-    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-env-types`
-    const wrapperUri = `fs/${wrapperPath}/build`
 
     beforeAll(async () => {
       await buildWrapper(wrapperPath);
