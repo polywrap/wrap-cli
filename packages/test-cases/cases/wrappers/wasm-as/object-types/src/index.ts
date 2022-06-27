@@ -1,57 +1,57 @@
 import {
-  Input_method1,
-  Input_method2,
-  Input_method3,
-  Input_method5,
+  Args_method1,
+  Args_method2,
+  Args_method3,
+  Args_method5,
   Output,
   Arg2
 } from "./wrap";
 
-export function method1(input: Input_method1): Output[] {
+export function method1(args: Args_method1): Output[] {
   return [
     {
-      prop: input.arg1.prop,
+      prop: args.arg1.prop,
       nested: {
-        prop: input.arg1.nested.prop
+        prop: args.arg1.nested.prop
       }
     },
     {
-      prop: input.arg2 ? (input.arg2 as Arg2).prop : "",
+      prop: args.arg2 ? (args.arg2 as Arg2).prop : "",
       nested: {
-        prop: input.arg2 ? (input.arg2 as Arg2).circular.prop : ""
+        prop: args.arg2 ? (args.arg2 as Arg2).circular.prop : ""
       }
     }
   ];
 }
 
-export function method2(input: Input_method2): Output | null {
-  if (input.arg.prop == "null") {
+export function method2(args: Args_method2): Output | null {
+  if (args.arg.prop == "null") {
     return null;
   }
 
   return {
-    prop: input.arg.prop,
+    prop: args.arg.prop,
     nested: {
-      prop: input.arg.nested.prop
+      prop: args.arg.nested.prop
     }
   };
 }
 
-export function method3(input: Input_method3): (Output | null)[] {
+export function method3(args: Args_method3): (Output | null)[] {
   return [
     null,
     {
-      prop: input.arg.prop,
+      prop: args.arg.prop,
       nested: {
-        prop: input.arg.nested.prop
+        prop: args.arg.nested.prop
       }
     }
   ]
 }
 
-export function method5(input: Input_method5): Output {
+export function method5(args: Args_method5): Output {
   return {
-    prop: String.UTF8.decode(input.arg.prop),
+    prop: String.UTF8.decode(args.arg.prop),
     nested: {
       prop: "nested prop"
     }

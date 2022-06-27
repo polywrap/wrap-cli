@@ -1,19 +1,19 @@
 import {
   Interface,
   Interface_Module,
-  Input_moduleMethod,
+  Args_moduleMethod,
   ImplementationType
 } from "./wrap";
 
-export function moduleMethod(input: Input_moduleMethod): ImplementationType {
+export function moduleMethod(args: Args_moduleMethod): ImplementationType {
   const uris = Interface.getImplementations();
   const result = new Interface_Module(uris[0]).abstractModuleMethod({
     arg: {
-      str: input.arg.str
+      str: args.arg.str
     }
   }).unwrap();
   return {
     str: result,
-    uint8: input.arg.uint8,
+    uint8: args.arg.uint8,
   };
 }

@@ -12,7 +12,7 @@ import {
 } from "@polywrap/wasm-as";
 import * as Types from "..";
 
-export class Input_moduleMethod {
+export class Args_moduleMethod {
   str: string;
   optStr: string | null;
   en: Types.CustomEnum;
@@ -22,7 +22,7 @@ export class Input_moduleMethod {
   map: Map<string, i32>;
 }
 
-export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Input_moduleMethod {
+export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Args_moduleMethod {
   const context: Context = new Context("Deserializing module-type: moduleMethod");
   const reader = new ReadDecoder(argsBuf, context);
   let numFields = reader.readMapLength();
@@ -179,14 +179,14 @@ export function writemoduleMethodResult(writer: Write, result: i32): void {
   writer.context().pop();
 }
 
-export class Input_objectMethod {
+export class Args_objectMethod {
   object: Types.AnotherType;
   optObject: Types.AnotherType | null;
   objectArray: Array<Types.AnotherType>;
   optObjectArray: Array<Types.AnotherType | null> | null;
 }
 
-export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectMethod {
+export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Args_objectMethod {
   const context: Context = new Context("Deserializing module-type: objectMethod");
   const reader = new ReadDecoder(argsBuf, context);
   let numFields = reader.readMapLength();

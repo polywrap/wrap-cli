@@ -48,16 +48,16 @@ impl TestImportObject {
         }
     }
 
-    pub fn to_buffer(input: &TestImportObject) -> Result<Vec<u8>, EncodeError> {
-        serialize_test_import_object(input).map_err(|e| EncodeError::TypeWriteError(e.to_string()))
+    pub fn to_buffer(args: &TestImportObject) -> Result<Vec<u8>, EncodeError> {
+        serialize_test_import_object(args).map_err(|e| EncodeError::TypeWriteError(e.to_string()))
     }
 
-    pub fn from_buffer(input: &[u8]) -> Result<TestImportObject, DecodeError> {
-        deserialize_test_import_object(input).map_err(|e| DecodeError::TypeReadError(e.to_string()))
+    pub fn from_buffer(args: &[u8]) -> Result<TestImportObject, DecodeError> {
+        deserialize_test_import_object(args).map_err(|e| DecodeError::TypeReadError(e.to_string()))
     }
 
-    pub fn write<W: Write>(input: &TestImportObject, writer: &mut W) -> Result<(), EncodeError> {
-        write_test_import_object(input, writer).map_err(|e| EncodeError::TypeWriteError(e.to_string()))
+    pub fn write<W: Write>(args: &TestImportObject, writer: &mut W) -> Result<(), EncodeError> {
+        write_test_import_object(args, writer).map_err(|e| EncodeError::TypeWriteError(e.to_string()))
     }
 
     pub fn read<R: Read>(reader: &mut R) -> Result<TestImportObject, DecodeError> {

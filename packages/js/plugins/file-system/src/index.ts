@@ -2,13 +2,13 @@ import {
   Client,
   Module,
   manifest,
-  Input_readFile,
-  Input_readFileAsString,
-  Input_exists,
-  Input_writeFile,
-  Input_mkdir,
-  Input_rm,
-  Input_rmdir,
+  Args_readFile,
+  Args_readFileAsString,
+  Args_exists,
+  Args_writeFile,
+  Args_mkdir,
+  Args_rm,
+  Args_rmdir,
 } from "./wrap";
 import fileSystemEncodingToBufferEncoding from "./utils/fileSystemEncodingToBufferEncoding";
 
@@ -18,51 +18,51 @@ import { PluginFactory } from "@polywrap/core-js";
 type NoConfig = Record<string, never>;
 
 export class FileSystemPlugin extends Module<NoConfig> {
-  async readFile(input: Input_readFile, _client: Client): Promise<ArrayBuffer> {
-    return fs.promises.readFile(input.path);
+  async readFile(args: Args_readFile, _client: Client): Promise<ArrayBuffer> {
+    return fs.promises.readFile(args.path);
   }
 
   async readFileAsString(
-    input: Input_readFileAsString,
+    args: Args_readFileAsString,
     _client: Client
   ): Promise<string> {
-    return fs.promises.readFile(input.path, {
-      encoding: fileSystemEncodingToBufferEncoding(input.encoding),
+    return fs.promises.readFile(args.path, {
+      encoding: fileSystemEncodingToBufferEncoding(args.encoding),
     });
   }
 
-  async exists(input: Input_exists, _client: Client): Promise<boolean> {
-    return fs.existsSync(input.path);
+  async exists(args: Args_exists, _client: Client): Promise<boolean> {
+    return fs.existsSync(args.path);
   }
 
   async writeFile(
-    input: Input_writeFile,
+    args: Args_writeFile,
     _client: Client
   ): Promise<boolean | null> {
-    await fs.promises.writeFile(input.path, Buffer.from(input.data));
+    await fs.promises.writeFile(args.path, Buffer.from(args.data));
 
     return true;
   }
 
-  async mkdir(input: Input_mkdir, _client: Client): Promise<boolean | null> {
-    await fs.promises.mkdir(input.path, {
-      recursive: input.recursive ?? false,
+  async mkdir(args: Args_mkdir, _client: Client): Promise<boolean | null> {
+    await fs.promises.mkdir(args.path, {
+      recursive: args.recursive ?? false,
     });
 
     return true;
   }
 
-  async rm(input: Input_rm, _client: Client): Promise<boolean | null> {
-    await fs.promises.rm(input.path, {
-      recursive: input.recursive ?? false,
-      force: input.force ?? false,
+  async rm(args: Args_rm, _client: Client): Promise<boolean | null> {
+    await fs.promises.rm(args.path, {
+      recursive: args.recursive ?? false,
+      force: args.force ?? false,
     });
 
     return true;
   }
 
-  async rmdir(input: Input_rmdir, _client: Client): Promise<boolean | null> {
-    await fs.promises.rmdir(input.path);
+  async rmdir(args: Args_rmdir, _client: Client): Promise<boolean | null> {
+    await fs.promises.rmdir(args.path);
 
     return true;
   }

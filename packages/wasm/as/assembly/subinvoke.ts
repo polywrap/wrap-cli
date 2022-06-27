@@ -7,7 +7,7 @@ import { Result } from "./containers";
 export declare function __wrap_subinvoke(
   uri_ptr: u32, uri_len: u32,
   method_ptr: u32, method_len: u32,
-  input_ptr: u32, input_len: u32
+  args_ptr: u32, args_len: u32
 ): bool;
 
 // Subinvoke Result
@@ -26,7 +26,7 @@ export declare function __wrap_subinvoke_error(ptr: u32): void;
 export function wrap_subinvoke(
   uri: string,
   method: string,
-  input: ArrayBuffer
+  args: ArrayBuffer
 ): Result<ArrayBuffer, string> {
   const uriBuf = String.UTF8.encode(uri);
   const methodBuf = String.UTF8.encode(method);
@@ -34,7 +34,7 @@ export function wrap_subinvoke(
   const success = __wrap_subinvoke(
     changetype<u32>(uriBuf), uriBuf.byteLength,
     changetype<u32>(methodBuf), methodBuf.byteLength,
-    changetype<u32>(input), input.byteLength
+    changetype<u32>(args), args.byteLength
   );
 
   if (!success) {

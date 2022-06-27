@@ -1,8 +1,8 @@
 import {
   Module,
-  Input_toAscii,
-  Input_toUnicode,
-  Input_convert,
+  Args_toAscii,
+  Args_toUnicode,
+  Args_convert,
   ConvertResult,
   manifest,
 } from "./wrap";
@@ -15,16 +15,16 @@ const uts46 = require("idna-uts46-hx/uts46bundle.js");
 type NoConfig = Record<string, never>;
 
 export class Uts46Plugin extends Module<NoConfig> {
-  public toAscii(input: Input_toAscii): string {
-    return uts46.toAscii(input.value);
+  public toAscii(args: Args_toAscii): string {
+    return uts46.toAscii(args.value);
   }
 
-  public toUnicode(input: Input_toUnicode): string {
-    return uts46.toUnicode(input.value);
+  public toUnicode(args: Args_toUnicode): string {
+    return uts46.toUnicode(args.value);
   }
 
-  public convert(input: Input_convert): ConvertResult {
-    return uts46.convert(input.value);
+  public convert(args: Args_convert): ConvertResult {
+    return uts46.convert(args.value);
   }
 }
 

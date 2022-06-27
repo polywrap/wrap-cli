@@ -7,8 +7,8 @@ pub mod serialization;
 pub use serialization::{
     deserialize_module_method_args,
     serialize_module_method_result,
-    InputModuleMethod,
+    ArgsModuleMethod,
     deserialize_object_method_args,
     serialize_object_method_result,
-    InputObjectMethod
+    ArgsObjectMethod
 };

@@ -49,12 +49,12 @@ export class JobRunner<
           const absoluteId = parentId
             ? `${parentId}.${jobId}.${i}`
             : `${jobId}.${i}`;
-          const input = this.resolveInput(absoluteId, step.input);
+          const args = this.resolveArgs(absoluteId, step.args);
           const result = await this.client.invoke<TData, TUri>({
             uri: step.uri,
             method: step.method,
             config: step.config,
-            input: input,
+            args: args,
           });
 
           this.jobOutput.set(absoluteId, result);
@@ -92,9 +92,9 @@ export class JobRunner<
     }
   }
 
-  resolveInput(
+  resolveArgs(
     absCurStepId: string,
-    input: Record<string, unknown>
+    args: Record<string, unknown>
   ): Record<string, unknown> {
     const index = absCurStepId.lastIndexOf(".");
     const curStepId = +absCurStepId.substring(index + 1);
@@ -130,7 +130,7 @@ export class JobRunner<
         }
 
         throw new Error(
-          `Could not resolve input for step with stepId: ${absCurJobId}.${curStepId}`
+          `Could not resolve arguments for step with stepId: ${absCurJobId}.${curStepId}`
         );
       } else if (Array.isArray(value)) return value.map(resolveValue);
       else if (typeof value === "object" && value !== null) {
@@ -141,6 +141,6 @@ export class JobRunner<
       } else return value;
     }
 
-    return resolveValue(input) as Record<string, unknown>;
+    return resolveValue(args) as Record<string, unknown>;
   }
 }

@@ -80,7 +80,7 @@ describe("Filesystem plugin", () => {
     const deploy = await client.invoke<string>({
       uri: fsUri,
       method: "deployContract",
-      input: {
+      args: {
         connection: {
           networkNameOrChainId: "testnet"
         }

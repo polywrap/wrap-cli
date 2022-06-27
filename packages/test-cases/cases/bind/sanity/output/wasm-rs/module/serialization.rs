@@ -22,7 +22,7 @@ use crate::{
 use crate::AnotherType;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct InputModuleMethod {
+pub struct ArgsModuleMethod {
     pub str: String,
     pub opt_str: Option<String>,
     pub en: CustomEnum,
@@ -32,11 +32,11 @@ pub struct InputModuleMethod {
     pub map: Map<String, i32>,
 }
 
-pub fn deserialize_module_method_args(input: &[u8]) -> Result<InputModuleMethod, DecodeError> {
+pub fn deserialize_module_method_args(args: &[u8]) -> Result<ArgsModuleMethod, DecodeError> {
     let mut context = Context::new();
     context.description = "Deserializing module-type: module_method".to_string();
 
-    let mut reader = ReadDecoder::new(input, context);
+    let mut reader = ReadDecoder::new(args, context);
     let mut num_of_fields = reader.read_map_length()?;
 
     let mut _str: String = String::new();
@@ -155,7 +155,7 @@ pub fn deserialize_module_method_args(input: &[u8]) -> Result<InputModuleMethod,
         return Err(DecodeError::MissingField("map: Map<String, Int>.".to_string()));
     }
 
-    Ok(InputModuleMethod {
+    Ok(ArgsModuleMethod {
         str: _str,
         opt_str: _opt_str,
         en: _en,
@@ -182,18 +182,18 @@ pub fn write_module_method_result<W: Write>(result: &i32, writer: &mut W) -> Res
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct InputObjectMethod {
+pub struct ArgsObjectMethod {
     pub object: AnotherType,
     pub opt_object: Option<AnotherType>,
     pub object_array: Vec<AnotherType>,
     pub opt_object_array: Option<Vec<Option<AnotherType>>>,
 }
 
-pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod, DecodeError> {
+pub fn deserialize_object_method_args(args: &[u8]) -> Result<ArgsObjectMethod, DecodeError> {
     let mut context = Context::new();
     context.description = "Deserializing module-type: object_method".to_string();
 
-    let mut reader = ReadDecoder::new(input, context);
+    let mut reader = ReadDecoder::new(args, context);
     let mut num_of_fields = reader.read_map_length()?;
 
     let mut _object: AnotherType = AnotherType::new();
@@ -258,7 +258,7 @@ pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod,
         return Err(DecodeError::MissingField("objectArray: [AnotherType].".to_string()));
     }
 
-    Ok(InputObjectMethod {
+    Ok(ArgsObjectMethod {
         object: _object,
         opt_object: _opt_object,
         object_array: _object_array,

@@ -4,15 +4,15 @@ import { Uri, Client, MaybeAsync, executeMaybeAsyncFunction } from ".";
 /**
  * Invocable plugin method.
  *
- * @param input Input arguments for the method, structured as
+ * @param args Arguments for the method, structured as
  * a map, removing the chance of incorrectly ordering arguments.
  * @param client The client instance requesting this invocation.
  * This client will be used for any sub-invokes that occur.
  */
 export type PluginMethod<
-  TInput extends Record<string, unknown> = Record<string, unknown>,
+  TArgs extends Record<string, unknown> = Record<string, unknown>,
   TResult = unknown
-> = (input: TInput, client: Client) => MaybeAsync<TResult>;
+> = (args: TArgs, client: Client) => MaybeAsync<TResult>;
 
 export abstract class PluginModule<
   TConfig,
@@ -54,10 +54,10 @@ export abstract class PluginModule<
   }
 
   public async _wrap_invoke<
-    TInput extends Record<string, unknown> = Record<string, unknown>,
+    TArgs extends Record<string, unknown> = Record<string, unknown>,
     TResult = unknown
-  >(method: string, input: TInput, client: Client): Promise<TResult> {
-    const fn = this.getMethod<TInput, TResult>(method);
+  >(method: string, args: TArgs, client: Client): Promise<TResult> {
+    const fn = this.getMethod<TArgs, TResult>(method);
 
     if (!fn) {
       throw Error(`Plugin missing method "${method}"`);
@@ -68,19 +68,19 @@ export abstract class PluginModule<
     }
 
     return await executeMaybeAsyncFunction<TResult>(
-      fn.bind(this, input, client)
+      fn.bind(this, args, client)
     );
   }
 
   public getMethod<
-    TInput extends Record<string, unknown> = Record<string, unknown>,
+    TArgs extends Record<string, unknown> = Record<string, unknown>,
     TResult = unknown
-  >(method: string): PluginMethod<TInput, TResult> | undefined {
+  >(method: string): PluginMethod<TArgs, TResult> | undefined {
     const fn:
-      | PluginMethod<TInput, TResult>
+      | PluginMethod<TArgs, TResult>
       | undefined = ((this as unknown) as Record<
       string,
-      PluginMethod<TInput, TResult>
+      PluginMethod<TArgs, TResult>
     >)[method];
 
     return fn;
