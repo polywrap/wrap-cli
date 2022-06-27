@@ -114,8 +114,6 @@ export function writeimportedMethodArgs(
   writer.writeString("optEnumArray");
   writer.writeOptionalArray(args.optEnumArray, (writer: Write, item: Option<Types.TestImport_Enum>): void => {
     writer.writeOptionalInt32(item);
-  writer.writeOptionalArray(args.optEnumArray, (writer: Write, item: Option<Types.TestImport_Enum>): void => {
-    writer.writeOptionalInt32(item);
   });
   writer.context().pop();
 }
