@@ -51,7 +51,7 @@ export const parseQuery = Tracer.traceFunc(
           );
         }
 
-        // Get al arguments
+        // Get all arguments
         const selectionArgs = selection.arguments;
         const args: Record<string, unknown> = {};
 
