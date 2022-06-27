@@ -30,12 +30,12 @@ export class TestImport_Module {
   public importedMethod(
     args: Args_importedMethod
   ): Result<Types.TestImport_Object | null, string> {
-    const args = serializeimportedMethodArgs(args);
+    const argsBuf = serializeimportedMethodArgs(args);
     const result = wrap_subinvokeImplementation(
       "testimport.uri.eth",
       this.uri,
       "importedMethod",
-      args
+      argsBuf
     );
 
     if (result.isErr) {
@@ -52,12 +52,12 @@ export class TestImport_Module {
   public anotherMethod(
     args: Args_anotherMethod
   ): Result<i32, string> {
-    const args = serializeanotherMethodArgs(args);
+    const argsBuf = serializeanotherMethodArgs(args);
     const result = wrap_subinvokeImplementation(
       "testimport.uri.eth",
       this.uri,
       "anotherMethod",
-      args
+      argsBuf
     );
 
     if (result.isErr) {
