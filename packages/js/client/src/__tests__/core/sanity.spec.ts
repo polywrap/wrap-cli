@@ -1,16 +1,9 @@
-import {
-  coreInterfaceUris,
-  PluginModule
-} from "@polywrap/core-js";
-import {
-  Uri,
-  PolywrapClient,
-} from "../..";
+import { coreInterfaceUris, PluginModule } from "@polywrap/core-js";
+import { Uri, PolywrapClient } from "../..";
 
 jest.setTimeout(200000);
 
 describe("sanity", () => {
-
   test("default client config", () => {
     const client = new PolywrapClient();
 
@@ -89,7 +82,7 @@ describe("sanity", () => {
         {
           uri: implementationUri,
           plugin: {
-            factory: () => ({} as PluginModule),
+            factory: () => ({} as PluginModule<void>),
             manifest: {
               schema: schemaStr,
               implements: [],
