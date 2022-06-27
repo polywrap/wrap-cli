@@ -52,19 +52,6 @@ function getPlugins(
         }),
       },
     ],
-    interfaces: [
-      {
-        interface: coreInterfaceUris.uriResolver.uri,
-        implementations: [
-          "wrap://ens/ipfs.polywrap.eth",
-          "wrap://ens/ens.polywrap.eth",
-        ],
-      },
-      {
-        interface: coreInterfaceUris.logger.uri,
-        implementations: ["wrap://ens/js-logger.polywrap.eth"],
-      },
-    ],
   };
 }
 
