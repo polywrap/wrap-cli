@@ -235,7 +235,7 @@ export class WriteEncoder extends Write {
     this.writeMap(m, key_fn, value_fn);
   }
 
-  writeNullableBool(value: Option<bool>): void {
+  writeOptionalBool(value: Option<bool>): void {
     if (value.isNone) {
       this.writeNil();
       return;
@@ -244,7 +244,7 @@ export class WriteEncoder extends Write {
     this.writeBool(value.unwrap());
   }
 
-  writeNullableInt8(value: Option<i8>): void {
+  writeOptionalInt8(value: Option<i8>): void {
     if (value.isNone) {
       this.writeNil();
       return;
@@ -253,7 +253,7 @@ export class WriteEncoder extends Write {
     this.writeInt8(value.unwrap());
   }
 
-  writeNullableInt16(value: Option<i16>): void {
+  writeOptionalInt16(value: Option<i16>): void {
     if (value.isNone) {
       this.writeNil();
       return;
@@ -262,7 +262,7 @@ export class WriteEncoder extends Write {
     this.writeInt16(value.unwrap());
   }
 
-  writeNullableInt32(value: Option<i32>): void {
+  writeOptionalInt32(value: Option<i32>): void {
     if (value.isNone) {
       this.writeNil();
       return;
@@ -271,7 +271,7 @@ export class WriteEncoder extends Write {
     this.writeInt32(value.unwrap());
   }
 
-  writeNullableUInt8(value: Option<u8>): void {
+  writeOptionalUInt8(value: Option<u8>): void {
     if (value.isNone) {
       this.writeNil();
       return;
@@ -280,7 +280,7 @@ export class WriteEncoder extends Write {
     this.writeUInt8(value.unwrap());
   }
 
-  writeNullableUInt16(value: Option<u16>): void {
+  writeOptionalUInt16(value: Option<u16>): void {
     if (value.isNone) {
       this.writeNil();
       return;
@@ -289,7 +289,7 @@ export class WriteEncoder extends Write {
     this.writeUInt16(value.unwrap());
   }
 
-  writeNullableUInt32(value: Option<u32>): void {
+  writeOptionalUInt32(value: Option<u32>): void {
     if (value.isNone) {
       this.writeNil();
       return;
@@ -298,7 +298,7 @@ export class WriteEncoder extends Write {
     this.writeUInt32(value.unwrap());
   }
 
-  writeNullableFloat32(value: Option<f32>): void {
+  writeOptionalFloat32(value: Option<f32>): void {
     if (value.isNone) {
       this.writeNil();
       return;
@@ -307,7 +307,7 @@ export class WriteEncoder extends Write {
     this.writeFloat32(value.unwrap());
   }
 
-  writeNullableFloat64(value: Option<f64>): void {
+  writeOptionalFloat64(value: Option<f64>): void {
     if (value.isNone) {
       this.writeNil();
       return;
@@ -316,7 +316,7 @@ export class WriteEncoder extends Write {
     this.writeFloat64(value.unwrap());
   }
 
-  writeNullableString(value: string | null): void {
+  writeOptionalString(value: string | null): void {
     if (value === null) {
       this.writeNil();
       return;
@@ -325,7 +325,7 @@ export class WriteEncoder extends Write {
     this.writeString(value);
   }
 
-  writeNullableBytes(value: ArrayBuffer | null): void {
+  writeOptionalBytes(value: ArrayBuffer | null): void {
     if (value === null) {
       this.writeNil();
       return;
@@ -334,7 +334,7 @@ export class WriteEncoder extends Write {
     this.writeBytes(value);
   }
 
-  writeNullableBigInt(value: BigInt | null): void {
+  writeOptionalBigInt(value: BigInt | null): void {
     if (value === null) {
       this.writeNil();
       return;
@@ -343,7 +343,7 @@ export class WriteEncoder extends Write {
     this.writeBigInt(value);
   }
 
-  writeNullableBigNumber(value: BigNumber): void {
+  writeOptionalBigNumber(value: BigNumber): void {
     if (value === null) {
       this.writeNil();
       return;
@@ -352,7 +352,7 @@ export class WriteEncoder extends Write {
     this.writeBigNumber(value);
   }
 
-  writeNullableJSON(value: JSON.Value | null): void {
+  writeOptionalJSON(value: JSON.Value | null): void {
     if (value === null) {
       this.writeNil();
       return;
@@ -361,7 +361,7 @@ export class WriteEncoder extends Write {
     this.writeJSON(value);
   }
 
-  writeNullableArray<T>(
+  writeOptionalArray<T>(
     a: Array<T> | null,
     fn: (encoder: Write, item: T) => void
   ): void {
@@ -372,7 +372,7 @@ export class WriteEncoder extends Write {
     this.writeArray(a, fn);
   }
 
-  writeNullableMap<K, V>(
+  writeOptionalMap<K, V>(
     m: Map<K, V> | null,
     key_fn: (encoder: Write, key: K) => void,
     value_fn: (encoder: Write, value: V) => void
@@ -384,7 +384,7 @@ export class WriteEncoder extends Write {
     this.writeMap(m, key_fn, value_fn);
   }
 
-  writeNullableExtGenericMap<K, V>(
+  writeOptionalExtGenericMap<K, V>(
     m: Map<K, V> | null,
     key_fn: (encoder: Write, key: K) => void,
     value_fn: (encoder: Write, value: V) => void

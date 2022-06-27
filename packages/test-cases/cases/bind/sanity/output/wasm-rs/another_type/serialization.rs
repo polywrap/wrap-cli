@@ -28,7 +28,7 @@ pub fn write_another_type<W: Write>(args: &AnotherType, writer: &mut W) -> Resul
     writer.write_map_length(&3)?;
     writer.context().push("prop", "Option<String>", "writing property");
     writer.write_string("prop")?;
-    writer.write_nullable_string(&args.prop)?;
+    writer.write_optional_string(&args.prop)?;
     writer.context().pop();
     writer.context().push("circular", "Option<CustomType>", "writing property");
     writer.write_string("circular")?;
@@ -40,7 +40,7 @@ pub fn write_another_type<W: Write>(args: &AnotherType, writer: &mut W) -> Resul
     writer.context().pop();
     writer.context().push("const", "Option<String>", "writing property");
     writer.write_string("const")?;
-    writer.write_nullable_string(&args.m_const)?;
+    writer.write_optional_string(&args.m_const)?;
     writer.context().pop();
     Ok(())
 }
@@ -66,7 +66,7 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> Result<AnotherType, DecodeE
         match field.as_str() {
             "prop" => {
                 reader.context().push(&field, "Option<String>", "type found, reading property");
-                _prop = reader.read_nullable_string()?;
+                _prop = reader.read_optional_string()?;
                 reader.context().pop();
             }
             "circular" => {
@@ -82,7 +82,7 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> Result<AnotherType, DecodeE
             }
             "const" => {
                 reader.context().push(&field, "Option<String>", "type found, reading property");
-                _const = reader.read_nullable_string()?;
+                _const = reader.read_optional_string()?;
                 reader.context().pop();
             }
             err => return Err(DecodeError::UnknownFieldName(err.to_string())),

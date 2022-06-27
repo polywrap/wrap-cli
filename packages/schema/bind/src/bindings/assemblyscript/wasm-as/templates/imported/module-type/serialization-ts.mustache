@@ -50,7 +50,7 @@ export function write{{name}}Args(
   writer.writeInt32(args.{{#handleKeywords}}{{name}}{{/handleKeywords}});
   {{/required}}
   {{^required}}
-  writer.writeNullableInt32(args.{{#handleKeywords}}{{name}}{{/handleKeywords}});
+  writer.writeOptionalInt32(args.{{#handleKeywords}}{{name}}{{/handleKeywords}});
   {{/required}}
   {{/enum}}
   {{#object}}
