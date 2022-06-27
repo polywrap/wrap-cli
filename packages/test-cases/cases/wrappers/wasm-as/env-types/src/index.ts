@@ -10,9 +10,9 @@ function createEnv(env: Env): Env {
     str: env.str,
     optStr: env.optStr,
     optFilledStr: env.optFilledStr,
-    number: env.number,
+    m_number: env.m_number,
     optNumber: env.optNumber,
-    bool: env.bool,
+    m_bool: env.m_bool,
     optBool: env.optBool,
     en: env.en,
     optEnum: env.optEnum,
@@ -31,9 +31,5 @@ export function methodRequireEnv(input: Input_methodRequireEnv): Env {
 }
 
 export function methodOptionalEnv(input: Input_methodOptionalEnv): Env | null {
-  if (input.env) {
-    return createEnv(input.env);
-  } else {
-    return null;
-  }
+  return input.env ? createEnv(input.env as Env) : null;
 }

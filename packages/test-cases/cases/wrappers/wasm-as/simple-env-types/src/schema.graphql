@@ -1,5 +1,5 @@
 type Module {
-  getEnv(arg: String!): Env!
+  getEnv(arg: String!, env: Env): Env
 }
 
 type Env {
