@@ -1,45 +1,15 @@
-import {
-  PolywrapClientConfig,
-  createPolywrapClient,
-  PluginConfigs,
-} from "../../";
 import * as TestCases from "./test-cases";
 import {
   buildWrapper,
   initTestEnvironment,
   stopTestEnvironment,
   runCLI,
-  providers,
-  ensAddresses,
 } from "@polywrap/test-env-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
+import { getClientWithEnsAndIpfs } from "../utils/getClientWithEnsAndIpfs";
+import { getClient } from "../utils/getClient";
 
 jest.setTimeout(200000);
-
-const getClient = async (
-  pluginConfigs?: PluginConfigs,
-  config?: Partial<PolywrapClientConfig>
-) => {
-  return createPolywrapClient(pluginConfigs ?? {}, config);
-};
-
-const getClientWithEnsAndIpfs = async () => {
-  return await getClient({
-    ethereum: {
-      networks: {
-        testnet: {
-          provider: providers.ethereum,
-        },
-      },
-    },
-    ipfs: { provider: providers.ipfs },
-    ens: {
-      addresses: {
-        testnet: ensAddresses.ensAddress,
-      },
-    },
-  });
-};
 
 describe("wasm-as test cases", () => {
   beforeAll(async () => {
@@ -152,7 +122,7 @@ describe("wasm-as test cases", () => {
     await buildWrapper(interfacePath);
     await buildWrapper(implementationPath);
 
-    const client = await getClient(undefined, {
+    const client = await getClient({
       interfaces: [
         {
           interface: interfaceUri,
@@ -176,7 +146,7 @@ describe("wasm-as test cases", () => {
 
     await buildWrapper(implementationPath);
 
-    const client = await getClient(undefined, {
+    const client = await getClient({
       interfaces: [
         {
           interface: interfaceUri,
@@ -206,7 +176,7 @@ describe("wasm-as test cases", () => {
 
     await buildWrapper(implementationPath);
 
-    const client = await getClient(undefined, {
+    const client = await getClient({
       interfaces: [
         {
           interface: interfaceUri,

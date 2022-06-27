@@ -197,7 +197,7 @@ describe("interface-impls", () => {
           {
             uri: interfaceUri,
             plugin: {
-              factory: () => ({} as PluginModule),
+              factory: () => ({} as PluginModule<void>),
               manifest: {
                 schema: "",
                 implements: [],
