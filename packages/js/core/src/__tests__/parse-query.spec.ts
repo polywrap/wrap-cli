@@ -56,12 +56,6 @@ describe("parseQuery", () => {
           var1: "var 1",
           var2: 55,
         },
-        resultFilter: {
-          someResult: {
-            prop1: true,
-            prop2: true,
-          },
-        },
       }
     };
 
@@ -157,12 +151,6 @@ describe("parseQuery", () => {
           var1: "var 1",
           var2: 55,
         },
-        resultFilter: {
-          someResult: {
-            prop1: true,
-            prop2: true,
-          },
-        }
       }
     };
     const method2: QueryInvocations<Uri> = {
@@ -173,12 +161,6 @@ describe("parseQuery", () => {
           arg: "hey",
           var: "var 1",
         },
-        resultFilter: {
-          resultOne: true,
-          resultTwo: {
-            prop: true,
-          },
-        }
       }
     };
 
@@ -221,21 +203,6 @@ describe("parseQuery", () => {
     const doc = createQueryDocument(`query { ...NamedFragment }`);
     expect(() => parseQuery(dummy, doc)).toThrowError(
       /Unsupported selection type found: FragmentSpread/
-    );
-  });
-
-  it("fails when a fragment spread is used on result values", () => {
-    const doc = createQueryDocument(`
-      query {
-        something(
-          arg: 5
-        ) {
-          ...NamedFragment
-        }
-      }
-    `);
-    expect(() => parseQuery(dummy, doc)).toThrowError(
-      /Unsupported result selection type found: FragmentSpread/
     );
   });
 
@@ -297,23 +264,6 @@ describe("parseQuery", () => {
 
     expect(() => parseQuery(dummy, doc)).toThrowError(
       /Duplicate arguments found/
-    );
-  });
-
-  it("fails when duplicate result selections found", () => {
-    const doc = createQueryDocument(`
-      mutation {
-        someMethod(
-          arg1: 5
-        ) {
-          prop1
-          prop1
-        }
-      }
-    `);
-
-    expect(() => parseQuery(dummy, doc)).toThrowError(
-      /Duplicate result selections found/
     );
   });
 
