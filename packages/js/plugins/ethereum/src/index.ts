@@ -83,11 +83,7 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
     _client: Client
   ): Promise<string> {
     const connection = await this._getConnection(args.connection);
-    const contract = connection.getContract(
-      args.address,
-      [args.method],
-      false
-    );
+    const contract = connection.getContract(args.address, [args.method], false);
     const funcs = Object.keys(contract.interface.functions);
     const res = await contract[funcs[0]](...parseArgs(args.args));
     return res.toString();
@@ -102,18 +98,15 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
     const funcs = Object.keys(contract.interface.functions);
 
     try {
-      const res = await contract.callStatic[funcs[0]](
-        ...parseArgs(args.args),
-        {
-          gasPrice: args.gasPrice
-            ? ethers.BigNumber.from(args.gasPrice)
-            : undefined,
-          gasLimit: args.gasLimit
-            ? ethers.BigNumber.from(args.gasLimit)
-            : undefined,
-          value: args.value ? ethers.BigNumber.from(args.value) : undefined,
-        }
-      );
+      const res = await contract.callStatic[funcs[0]](...parseArgs(args.args), {
+        gasPrice: args.gasPrice
+          ? ethers.BigNumber.from(args.gasPrice)
+          : undefined,
+        gasLimit: args.gasLimit
+          ? ethers.BigNumber.from(args.gasLimit)
+          : undefined,
+        value: args.value ? ethers.BigNumber.from(args.value) : undefined,
+      });
       return {
         result: res.toString(),
         error: false,
@@ -204,10 +197,7 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
     ).toString();
   }
 
-  async getGasPrice(
-    args: Args_getGasPrice,
-    _client: Client
-  ): Promise<string> {
+  async getGasPrice(args: Args_getGasPrice, _client: Client): Promise<string> {
     const connection = await this._getConnection(args.connection);
     return (await connection.getSigner().getGasPrice()).toString();
   }
@@ -381,11 +371,7 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
   ): Promise<string> {
     const connection = await this._getConnection(args.connection);
     const signer = connection.getSigner();
-    const factory = new ethers.ContractFactory(
-      args.abi,
-      args.bytecode,
-      signer
-    );
+    const factory = new ethers.ContractFactory(args.abi, args.bytecode, signer);
     const contract = await factory.deploy(...parseArgs(args.args));
 
     await contract.deployTransaction.wait();
