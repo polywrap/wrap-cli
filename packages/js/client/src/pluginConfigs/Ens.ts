@@ -5,7 +5,7 @@
 /// Types generated from @polywrap/ens-resolver-plugin-js build files:
 /// build/index.d.ts
 
-export interface EnsPluginConfig {
+export interface EnsResolverPluginConfig {
   addresses?: Addresses;
 }
 
