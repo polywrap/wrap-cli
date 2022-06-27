@@ -1,5 +1,5 @@
-import { Input_simpleMethod } from "./wrap";
+import { Args_simpleMethod } from "./wrap";
 
-export function simpleMethod(input: Input_simpleMethod): string {
-  return input.arg;
+export function simpleMethod(args: Args_simpleMethod): string {
+  return args.arg;
 }
