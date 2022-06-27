@@ -346,7 +346,7 @@ export class ReadDecoder extends Read {
         );
     }
 
-    // Consule the leadByte
+    // Consume the leadByte
     this._view.getUint8();
 
     // Get the extension type
