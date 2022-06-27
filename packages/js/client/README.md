@@ -40,3 +40,6 @@ const result = await client.query({
   },
 });
 ```
+# Workflows
+
+The client provides a "run" method which takes a Workflow object and performs a chain of actions with multiple wrappers. For detailed examples see `src/__tests__/e2e/workflow.spec.ts`.
