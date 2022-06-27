@@ -27,11 +27,11 @@ export class {{type}} {
   public static {{name}}(
     args: Args_{{name}}
   ): Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string> {
-    const args = serialize{{name}}Args(args);
+    const argsBuf = serialize{{name}}Args(args);
     const result = wrap_subinvoke(
       "{{uri}}",
       "{{name}}",
-      args
+      argsBuf
     );
 
     if (result.isErr) {
@@ -65,12 +65,12 @@ export class {{type}} {
   public {{name}}(
     args: Args_{{name}}
   ): Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string> {
-    const args = serialize{{name}}Args(args);
+    const argsBuf = serialize{{name}}Args(args);
     const result = wrap_subinvokeImplementation(
       "{{uri}}",
       this.uri,
       "{{name}}",
-      args
+      argsBuf
     );
 
     if (result.isErr) {
