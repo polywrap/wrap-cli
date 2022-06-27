@@ -56,12 +56,6 @@ describe("parseQuery", () => {
           var1: "var 1",
           var2: 55,
         },
-        resultFilter: {
-          someResult: {
-            prop1: true,
-            prop2: true,
-          },
-        },
       }
     };
 
@@ -157,12 +151,6 @@ describe("parseQuery", () => {
           var1: "var 1",
           var2: 55,
         },
-        resultFilter: {
-          someResult: {
-            prop1: true,
-            prop2: true,
-          },
-        }
       }
     };
     const method2: QueryInvocations<Uri> = {
@@ -173,12 +161,6 @@ describe("parseQuery", () => {
           arg: "hey",
           var: "var 1",
         },
-        resultFilter: {
-          resultOne: true,
-          resultTwo: {
-            prop: true,
-          },
-        }
       }
     };
 
