@@ -1,56 +1,20 @@
-import {
-  createPolywrapClient,
-  Uri,
-  PolywrapClientConfig,
-  PolywrapClient,
-  PluginModule,
-  PluginConfigs,
-} from "../..";
+import { Uri, PolywrapClient, PluginModule } from "../..";
 import {
   buildAndDeployWrapper,
   initTestEnvironment,
   buildWrapper,
   stopTestEnvironment,
-  ensAddresses,
   providers,
 } from "@polywrap/test-env-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { ResolveUriErrorType } from "@polywrap/core-js";
+import { getClient } from "../utils/getClient";
+import { getClientWithEnsAndIpfs } from "../utils/getClientWithEnsAndIpfs";
 
 jest.setTimeout(200000);
 
 const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple`;
 const wrapperUri = new Uri(`wrap://file/${wrapperPath}/build`);
-
-const getClient = async (
-  pluginConfigs?: PluginConfigs,
-  config?: Partial<PolywrapClientConfig>
-) => {
-  return createPolywrapClient(pluginConfigs ?? {}, config);
-};
-
-const getClientWithEnsAndIpfs = async (
-  config?: Partial<PolywrapClientConfig>
-) => {
-  return await getClient(
-    {
-      ethereum: {
-        networks: {
-          testnet: {
-            provider: providers.ethereum,
-          },
-        },
-      },
-      ipfs: { provider: providers.ipfs },
-      ens: {
-        addresses: {
-          testnet: ensAddresses.ensAddress,
-        },
-      },
-    },
-    config
-  );
-};
 
 describe("resolveUri", () => {
   beforeAll(async () => {
@@ -123,7 +87,7 @@ describe("resolveUri", () => {
     const toUri1 = new Uri("ens/to1.eth");
     const toUri2 = new Uri("ens/to2.eth");
 
-    const client = await getClient(undefined, {
+    const client = await getClient({
       redirects: [
         {
           from: fromUri.uri,
@@ -193,7 +157,7 @@ describe("resolveUri", () => {
   it("can resolve plugin", async () => {
     const pluginUri = new Uri("ens/plugin.eth");
 
-    const client = await getClient(undefined, {
+    const client = await getClient({
       plugins: [
         {
           uri: pluginUri.uri,
@@ -302,7 +266,7 @@ describe("resolveUri", () => {
         result: {
           uri: ipfsUri,
           wrapper: false,
-          implementationUri: new Uri("wrap://ens/ens.polywrap.eth"),
+          implementationUri: new Uri("wrap://ens/ens-resolver.polywrap.eth"),
         },
       },
       {
@@ -335,7 +299,7 @@ describe("resolveUri", () => {
         result: {
           uri: ipfsUri,
           wrapper: true,
-          implementationUri: new Uri("wrap://ens/ipfs.polywrap.eth"),
+          implementationUri: new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
         },
       },
     ]);
@@ -656,7 +620,7 @@ describe("resolveUri", () => {
         result: {
           uri: ipfsUri,
           wrapper: true,
-          implementationUri: new Uri("wrap://ens/ipfs.polywrap.eth"),
+          implementationUri: new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
         },
       },
     ]);
@@ -703,7 +667,7 @@ describe("resolveUri", () => {
         result: {
           uri: ipfsUri,
           wrapper: false,
-          implementationUri: new Uri("wrap://ens/ens.polywrap.eth"),
+          implementationUri: new Uri("wrap://ens/ens-resolver.polywrap.eth"),
         },
       },
       {
@@ -787,7 +751,7 @@ describe("resolveUri", () => {
         result: {
           uri: ipfsUri,
           wrapper: false,
-          implementationUri: new Uri("wrap://ens/ens.polywrap.eth"),
+          implementationUri: new Uri("wrap://ens/ens-resolver.polywrap.eth"),
         },
       },
       {
