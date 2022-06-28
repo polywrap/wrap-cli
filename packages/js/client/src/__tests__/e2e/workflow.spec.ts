@@ -3,47 +3,18 @@ import {
   buildAndDeployWrapper,
   initTestEnvironment,
   stopTestEnvironment,
-  ensAddresses,
-  providers
+  providers,
 } from "@polywrap/test-env-js";
-import { createPolywrapClient, PolywrapClient, PolywrapClientConfig } from "../..";
+import { PolywrapClient } from "../..";
+import { getClientWithEnsAndIpfs } from "../utils/getClientWithEnsAndIpfs";
 import { outPropWorkflow, sanityWorkflow } from "./workflow-test-cases";
 
 jest.setTimeout(200000);
 
 describe("workflow", () => {
-  let ipfsProvider: string;
-  let ethProvider: string;
-  let ensAddress: string;
-
   beforeAll(async () => {
     await initTestEnvironment();
-    ipfsProvider = providers.ipfs;
-    ethProvider = providers.ethereum;
-    ensAddress = ensAddresses.ensAddress;
   });
-
-  const getClient = async (config?: Partial<PolywrapClientConfig>) => {
-    return createPolywrapClient(
-      {
-        ethereum: {
-          networks: {
-            testnet: {
-              provider: ethProvider,
-            },
-          },
-          defaultNetwork: "testnet",
-        },
-        ipfs: { provider: ipfsProvider },
-        ens: {
-          addresses: {
-            testnet: ensAddress,
-          },
-        },
-      },
-      config
-    );
-  };
 
   afterAll(async () => {
     await stopTestEnvironment();
@@ -55,12 +26,12 @@ describe("workflow", () => {
     beforeAll(async () => {
       await buildAndDeployWrapper({
         wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/simple-storage`,
-        ipfsProvider,
-        ethereumProvider: ethProvider,
+        ipfsProvider: providers.ipfs,
+        ethereumProvider: providers.ethereum,
         ensName: "simple-storage.eth",
       });
 
-      client = await getClient();
+      client = await getClientWithEnsAndIpfs();
     });
 
     const tests: Record<
@@ -75,9 +46,7 @@ describe("workflow", () => {
       "cases.case1.0": async (data: unknown, error: unknown) => {
         expect(error).toBeFalsy();
         expect(data).toBeTruthy();
-        expect(data).toContain(
-          "0x"
-        );
+        expect(data).toContain("0x");
       },
       "cases.case1.1": async (data: unknown, error: unknown) => {
         expect(error).toBeFalsy();

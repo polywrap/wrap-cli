@@ -12,6 +12,7 @@ export const getClientWithEnsAndIpfs = async (
             provider: providers.ethereum,
           },
         },
+        defaultNetwork: "testnet",
       },
       ipfs: { provider: providers.ipfs },
       ens: {

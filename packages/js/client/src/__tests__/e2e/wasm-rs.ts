@@ -1,44 +1,14 @@
-import {
-  PolywrapClientConfig,
-  createPolywrapClient,
-  PluginConfigs,
-} from "../..";
 import * as TestCases from "./test-cases";
 import {
   buildWrapper,
-  ensAddresses,
   initTestEnvironment,
   stopTestEnvironment,
-  providers,
 } from "@polywrap/test-env-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
+import { getClient } from "../utils/getClient";
+import { getClientWithEnsAndIpfs } from "../utils/getClientWithEnsAndIpfs";
 
 jest.setTimeout(1200000);
-
-const getClient = async (
-  pluginConfigs?: PluginConfigs,
-  config?: Partial<PolywrapClientConfig>
-) => {
-  return createPolywrapClient(pluginConfigs ?? {}, config);
-};
-
-const getClientWithEnsAndIpfs = async () => {
-  return await getClient({
-    ethereum: {
-      networks: {
-        testnet: {
-          provider: providers.ethereum,
-        },
-      },
-    },
-    ipfs: { provider: providers.ipfs },
-    ens: {
-      addresses: {
-        testnet: ensAddresses.ensAddress,
-      },
-    },
-  });
-};
 
 describe("wasm-rs test cases", () => {
   beforeAll(async () => {
