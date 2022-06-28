@@ -110,9 +110,7 @@ function resolveObjectOrEnumKind(
 
   customType = customType
     ? customType
-    : abi.importedObjectTypes.find(
-        (type) => type.type === unresolved.type
-      );
+    : abi.importedObjectTypes.find((type) => type.type === unresolved.type);
 
   const envType = abi.envType;
   customType = customType
@@ -124,15 +122,11 @@ function resolveObjectOrEnumKind(
     : undefined;
 
   if (!customType) {
-    customType = abi.enumTypes.find(
-      (type) => type.type === unresolved.type
-    );
+    customType = abi.enumTypes.find((type) => type.type === unresolved.type);
 
     customType = customType
       ? customType
-      : abi.importedEnumTypes.find(
-          (type) => type.type === unresolved.type
-        );
+      : abi.importedEnumTypes.find((type) => type.type === unresolved.type);
 
     if (!customType) {
       throw new Error(`Unsupported type ${unresolved.type}`);

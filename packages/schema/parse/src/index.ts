@@ -18,10 +18,7 @@ interface ParserOptions {
   noValidate?: boolean;
 }
 
-export function parseSchema(
-  schema: string,
-  options: ParserOptions = {}
-): Abi {
+export function parseSchema(schema: string, options: ParserOptions = {}): Abi {
   const astNode = parse(schema);
 
   // Validate GraphQL Schema

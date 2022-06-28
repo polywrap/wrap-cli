@@ -1,9 +1,5 @@
 import { AbiTransforms } from ".";
-import {
-  InterfaceDefinition,
-  CapabilityDefinition,
-  Abi,
-} from "../abi";
+import { InterfaceDefinition, CapabilityDefinition, Abi } from "../abi";
 
 export interface ModuleCapability {
   type: string;

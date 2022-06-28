@@ -71,9 +71,7 @@ const visitorLeave = (state: State) => ({
   },
 });
 
-export const getImportedObjectTypesVisitor = (
-  abi: Abi
-): ASTVisitor => {
+export const getImportedObjectTypesVisitor = (abi: Abi): ASTVisitor => {
   const state: State = {};
 
   return {

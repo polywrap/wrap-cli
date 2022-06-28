@@ -137,9 +137,7 @@ export const generateBinding: GenerateBindingFn = (
   }
 
   // Generate root entry file
-  output.entries.push(
-    ...renderTemplates(templatePath(""), abi, subTemplates)
-  );
+  output.entries.push(...renderTemplates(templatePath(""), abi, subTemplates));
 
   return result;
 };

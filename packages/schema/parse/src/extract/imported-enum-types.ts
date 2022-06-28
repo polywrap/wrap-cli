@@ -34,8 +34,6 @@ const visitorEnter = (importedEnumTypes: ImportedEnumDefinition[]) => ({
   },
 });
 
-export const getImportedEnumTypesVisitor = (
-  abi: Abi
-): ASTVisitor => ({
+export const getImportedEnumTypesVisitor = (abi: Abi): ASTVisitor => ({
   enter: visitorEnter(abi.importedEnumTypes),
 });

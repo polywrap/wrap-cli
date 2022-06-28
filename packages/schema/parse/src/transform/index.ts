@@ -70,10 +70,7 @@ export interface AbiTransformer {
   MapDefinition?: (def: MapDefinition) => MapDefinition;
 }
 
-export function transformAbi(
-  abi: Abi,
-  transforms: AbiTransforms
-): Abi {
+export function transformAbi(abi: Abi, transforms: AbiTransforms): Abi {
   let result = Object.assign({}, abi);
 
   if (transforms.enter && transforms.enter.Abi) {
@@ -224,10 +221,7 @@ export function visitEnumDefinition(
   return transformType(result, transforms.leave);
 }
 
-export function visitEnumRef(
-  def: EnumRef,
-  transforms: AbiTransforms
-): EnumRef {
+export function visitEnumRef(def: EnumRef, transforms: AbiTransforms): EnumRef {
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
   return transformType(result, transforms.leave);

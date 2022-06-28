@@ -145,9 +145,7 @@ export const generateBinding: GenerateBindingFn = (
   generateEnvTypeFolder(abi.envType.sanitized);
 
   // Generate root entry file
-  output.entries.push(
-    ...renderTemplates(templatePath(""), abi, subTemplates)
-  );
+  output.entries.push(...renderTemplates(templatePath(""), abi, subTemplates));
 
   return result;
 };

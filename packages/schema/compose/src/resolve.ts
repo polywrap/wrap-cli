@@ -771,12 +771,7 @@ async function resolveExternalImports(
       // Extract all object dependencies
       visitorFunc(
         trueType,
-        extractObjectImportDependencies(
-          typesToImport,
-          extAbi,
-          namespace,
-          uri
-        )
+        extractObjectImportDependencies(typesToImport, extAbi, namespace, uri)
       );
     }
 
@@ -915,18 +910,14 @@ async function resolveLocalImports(
 
         const enumIdx =
           objectIdx === -1 &&
-          localAbi.enumTypes.findIndex(
-            (type) => type.type === importedType
-          );
+          localAbi.enumTypes.findIndex((type) => type.type === importedType);
 
         if (objectIdx > -1) {
           visitorFunc = visitObjectDefinition;
           type = localAbi.objectTypes[objectIdx];
         } else if (enumIdx > -1) {
           visitorFunc = visitEnumDefinition;
-          type = localAbi.enumTypes.find(
-            (type) => type.type === importedType
-          );
+          type = localAbi.enumTypes.find((type) => type.type === importedType);
         }
       }
 
@@ -1021,10 +1012,7 @@ async function resolveLocalImports(
 
           const sharedEnv = localAbi.envType.client as ObjectDefinition;
 
-          checkDuplicateEnvProperties(
-            abi.envType.client,
-            sharedEnv.properties
-          );
+          checkDuplicateEnvProperties(abi.envType.client, sharedEnv.properties);
 
           abi.envType.client.properties.push(...sharedEnv.properties);
         } else {
@@ -1057,29 +1045,23 @@ async function resolveLocalImports(
         }
       } else if (isKind(typesToImport[importType], DefinitionKind.Object)) {
         if (
-          abi.objectTypes.findIndex((def) => def.type === importType) ===
-          -1
+          abi.objectTypes.findIndex((def) => def.type === importType) === -1
         ) {
-          abi.objectTypes.push(
-            typesToImport[importType] as ObjectDefinition
-          );
+          abi.objectTypes.push(typesToImport[importType] as ObjectDefinition);
         }
       } else if (
         isKind(typesToImport[importType], DefinitionKind.ImportedEnum)
       ) {
         if (
-          abi.importedEnumTypes.findIndex(
-            (def) => def.type === importType
-          ) === -1
+          abi.importedEnumTypes.findIndex((def) => def.type === importType) ===
+          -1
         ) {
           abi.importedEnumTypes.push(
             typesToImport[importType] as ImportedEnumDefinition
           );
         }
       } else if (isKind(typesToImport[importType], DefinitionKind.Enum)) {
-        if (
-          abi.enumTypes.findIndex((def) => def.type === importType) === -1
-        ) {
+        if (abi.enumTypes.findIndex((def) => def.type === importType) === -1) {
           abi.enumTypes.push(typesToImport[importType] as EnumDefinition);
         }
       }

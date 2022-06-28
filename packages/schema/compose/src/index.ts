@@ -30,8 +30,7 @@ export async function composeSchema(
 ): Promise<ComposerOutput> {
   const abis = await resolveImports(options.schemas, options.resolvers);
 
-  const abi =
-    abis.length === 1 ? abis[0] : combineAbi(abis);
+  const abi = abis.length === 1 ? abis[0] : combineAbi(abis);
 
   await validateEnv(abi);
 
@@ -43,7 +42,7 @@ export async function composeSchema(
     schema: includeSchema ? renderSchema(abi, true) : undefined,
     abi: includeAbi ? abi : undefined,
     // TODO: remove this post-release, this is needed to resolve the CLI<>plugin circular dependency
-    typeInfo: includeAbi ? abi : undefined
+    typeInfo: includeAbi ? abi : undefined,
   } as ComposerOutput;
 }
 

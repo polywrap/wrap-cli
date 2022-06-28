@@ -266,10 +266,7 @@ const parseImportsDirective = (
 const visitorLeave = (abi: Abi, state: State) => ({
   ObjectTypeDefinition: (_node: ObjectTypeDefinitionNode) => {
     if (state.currentInterfaces) {
-      abi.interfaceTypes = [
-        ...abi.interfaceTypes,
-        ...state.currentInterfaces,
-      ];
+      abi.interfaceTypes = [...abi.interfaceTypes, ...state.currentInterfaces];
     }
 
     state.currentInterfaces = undefined;
