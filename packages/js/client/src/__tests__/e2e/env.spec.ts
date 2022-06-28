@@ -1,23 +1,14 @@
-import {
-  buildWrapper,
-} from "@polywrap/test-env-js";
-import { createPolywrapClient, PolywrapClientConfig } from "../..";
+import { buildWrapper } from "@polywrap/test-env-js";
 import { Client, PluginModule } from "@polywrap/core-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
+import { getClient } from "../utils/getClient";
 
 jest.setTimeout(200000);
 
-const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-env-types`
-const wrapperUri = `fs/${wrapperPath}/build`
+const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-env-types`;
+const wrapperUri = `fs/${wrapperPath}/build`;
 
 describe("env", () => {
-  const getClient = async (config?: Partial<PolywrapClientConfig>) => {
-    return createPolywrapClient(
-      {},
-      config
-    );
-  };
-
   const mockEnvPlugin = () => {
     interface Env extends Record<string, unknown> {
       arg1: number;
@@ -135,13 +126,13 @@ describe("env", () => {
         "Property must be of type 'int'. Found 'string'."
       );
     });
-  })
+  });
 
   describe("complex env types", () => {
     let client: Client;
-    
-    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/env-types`
-    const wrapperUri = `fs/${wrapperPath}/build`
+
+    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/env-types`;
+    const wrapperUri = `fs/${wrapperPath}/build`;
 
     beforeAll(async () => {
       await buildWrapper(wrapperPath);
@@ -276,8 +267,8 @@ describe("env", () => {
   describe("env client types", () => {
     let client: Client;
 
-    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/env-client-types`
-    const wrapperUri = `fs/${wrapperPath}/build`
+    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/env-client-types`;
+    const wrapperUri = `fs/${wrapperPath}/build`;
 
     beforeAll(async () => {
       await buildWrapper(wrapperPath);
@@ -315,9 +306,9 @@ describe("env", () => {
   });
 
   test("set env when not required", async () => {
-    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/enum-types`
-    const wrapperUri = `fs/${wrapperPath}/build`
-    
+    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/enum-types`;
+    const wrapperUri = `fs/${wrapperPath}/build`;
+
     await buildWrapper(wrapperPath);
 
     const client = await getClient({

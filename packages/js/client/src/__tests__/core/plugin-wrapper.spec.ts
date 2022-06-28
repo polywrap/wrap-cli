@@ -1,9 +1,5 @@
-import {
-  PolywrapClientConfig,
-  PolywrapClient,
-  createPolywrapClient,
-  PluginModule,
-} from "../..";
+import { PolywrapClient, PluginModule } from "../..";
+import { getClient } from "../utils/getClient";
 
 jest.setTimeout(200000);
 
@@ -22,13 +18,6 @@ const defaultPlugins = [
 ];
 
 describe("plugin-wrapper", () => {
-  const getClient = async (config?: Partial<PolywrapClientConfig>) => {
-    return await createPolywrapClient(
-      {},
-      config
-    );
-  };
-
   const mockMapPlugin = () => {
     interface Config extends Record<string, unknown> {
       map: Map<string, number>;
@@ -51,9 +40,10 @@ describe("plugin-wrapper", () => {
     }
 
     return {
-      factory: () => new MockMapPlugin({
-        map: new Map().set("a", 1).set("b", 2)
-      }),
+      factory: () =>
+        new MockMapPlugin({
+          map: new Map().set("a", 1).set("b", 2),
+        }),
       manifest: {
         schema: ``,
         implements: [],
