@@ -4,14 +4,14 @@ use polywrap_wasm_rs::BigNumber;
 pub mod wrap;
 pub use wrap::*;
 
-pub fn method(input: InputMethod) -> BigNumber {
-    let mut result = input.arg1.mul(input.obj.prop1);
+pub fn method(args: ArgsMethod) -> BigNumber {
+    let mut result = args.arg1.mul(args.obj.prop1);
 
-    if input.arg2.is_some() {
-        result = result.mul(input.arg2.unwrap());
+    if args.arg2.is_some() {
+        result = result.mul(args.arg2.unwrap());
     }
-    if input.obj.prop2.is_some() {
-        result = result.mul(input.obj.prop2.unwrap());
+    if args.obj.prop2.is_some() {
+        result = result.mul(args.obj.prop2.unwrap());
     }
 
     result

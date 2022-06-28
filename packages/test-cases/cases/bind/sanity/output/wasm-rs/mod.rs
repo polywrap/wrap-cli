@@ -27,9 +27,9 @@ pub use module::{
     deserialize_module_method_args,
     serialize_module_method_result,
     module_method_wrapped,
-    InputModuleMethod,
+    ArgsModuleMethod,
     deserialize_object_method_args,
     serialize_object_method_result,
     object_method_wrapped,
-    InputObjectMethod
+    ArgsObjectMethod
 };

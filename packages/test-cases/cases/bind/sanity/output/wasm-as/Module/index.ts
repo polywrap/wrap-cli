@@ -1,9 +1,9 @@
 import {
-  Input_moduleMethod,
-  Input_objectMethod
+  Args_moduleMethod,
+  Args_objectMethod
 } from "./serialization";
 
 export {
-  Input_moduleMethod,
-  Input_objectMethod
+  Args_moduleMethod,
+  Args_objectMethod
 };

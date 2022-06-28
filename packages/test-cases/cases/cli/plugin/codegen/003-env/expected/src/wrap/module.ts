@@ -9,19 +9,19 @@ import {
   MaybeAsync
 } from "@polywrap/core-js";
 
-export interface Input_method extends Record<string, unknown> {
+export interface Args_method extends Record<string, unknown> {
   str: Types.String;
 }
 
 export abstract class Module<
-  TConfig extends Record<string, unknown>
+  TConfig
 > extends PluginModule<
   TConfig,
   Types.Env
 > {
 
   abstract method(
-    input: Input_method,
+    args: Args_method,
     client: Client
   ): MaybeAsync<Types.String>;
 }

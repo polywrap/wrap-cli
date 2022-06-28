@@ -268,7 +268,7 @@ export async function buildAndDeployWrapper({
   const { data: signerAddress } = await client.invoke<string>({
     method: "getSignerAddress",
     uri: ethereumPluginUri,
-    input: {
+    args: {
       connection: {
         networkNameOrChainId: "testnet",
       },
@@ -282,7 +282,7 @@ export async function buildAndDeployWrapper({
   const { data: registerData, error } = await client.invoke<{ hash: string }>({
     method: "registerDomainAndSubdomainsRecursively",
     uri: ensWrapperUri,
-    input: {
+    args: {
       domain: wrapperEns,
       owner: signerAddress,
       resolverAddress: ensAddresses.resolverAddress,
@@ -305,7 +305,7 @@ export async function buildAndDeployWrapper({
   await client.invoke({
     method: "awaitTransaction",
     uri: ethereumPluginUri,
-    input: {
+    args: {
       txHash: registerData.hash,
       confirmations: 1,
       timeout: 15000,

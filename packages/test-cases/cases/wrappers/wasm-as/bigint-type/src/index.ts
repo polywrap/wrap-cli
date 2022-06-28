@@ -1,16 +1,16 @@
 import {
-  Input_method
+  Args_method
 } from "./wrap";
 import { BigInt } from "@polywrap/wasm-as";
 
-export function method(input: Input_method): BigInt {
-  let result = input.arg1.mul(input.obj.prop1);
+export function method(args: Args_method): BigInt {
+  let result = args.arg1.mul(args.obj.prop1);
 
-  if (input.arg2) {
-    result = result.mul(input.arg2 as BigInt);
+  if (args.arg2) {
+    result = result.mul(args.arg2 as BigInt);
   }
-  if (input.obj.prop2) {
-    result = result.mul(input.obj.prop2 as BigInt);
+  if (args.obj.prop2) {
+    result = result.mul(args.obj.prop2 as BigInt);
   }
 
   return result;

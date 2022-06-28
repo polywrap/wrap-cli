@@ -5,7 +5,7 @@
 /// Types generated from @polywrap/ethereum-plugin-js build files:
 /// build/index.d.ts, build/Connection.d.ts
 
-export interface EthereumPluginConfig extends Record<string, unknown> {
+export interface EthereumPluginConfig {
   networks: ConnectionConfigs;
   defaultNetwork?: string;
 }

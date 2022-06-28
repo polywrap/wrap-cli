@@ -27,7 +27,7 @@ export interface UsePolywrapInvoke<
   TData = unknown
 > extends UsePolywrapInvokeState<TData> {
   execute: (
-    input?: Record<string, unknown> | ArrayBuffer
+    args?: Record<string, unknown> | ArrayBuffer
   ) => Promise<InvokeResult<TData>>;
 }
 
@@ -42,13 +42,13 @@ export function usePolywrapInvoke<
     INITIAL_QUERY_STATE as UsePolywrapInvokeState<TData>
   );
 
-  const execute = async (input?: Record<string, unknown> | ArrayBuffer) => {
+  const execute = async (args?: Record<string, unknown> | ArrayBuffer) => {
     dispatch({ loading: true });
     const { data, error } = await client.invoke<TData>({
       ...props,
-      input: input instanceof ArrayBuffer ? input : {
-        ...props.input,
-        ...input,
+      args: args instanceof ArrayBuffer ? args : {
+        ...props.args,
+        ...args,
       },
     });
     dispatch({ data, error, loading: false });
