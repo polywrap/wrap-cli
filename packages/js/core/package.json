@@ -13,7 +13,7 @@
   ],
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json",
-    "build:manifest": "node ./scripts/manifest/generateFormatTypes.js",
+    "build:wrap-manifests": "ts-node ./scripts/generateWrapManifestTypes.ts",
     "lint": "eslint --color -c ../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",
@@ -21,7 +21,6 @@
   },
   "dependencies": {
     "@msgpack/msgpack": "2.7.2",
-    "@polywrap/manifest-schemas": "0.0.1-prealpha.90",
     "@polywrap/tracing-js": "0.0.1-prealpha.90",
     "graphql": "15.5.0",
     "graphql-tag": "2.10.4",
@@ -31,6 +30,7 @@
   },
   "devDependencies": {
     "@polywrap/os-js": "0.0.1-prealpha.90",
+    "@polywrap/polywrap-manifest-schemas": "0.0.1-prealpha.90",
     "@types/jest": "26.0.8",
     "@types/prettier": "2.6.0",
     "@types/semver": "7.3.8",

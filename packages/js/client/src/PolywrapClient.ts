@@ -11,7 +11,6 @@ import {
   GetFileOptions,
   GetImplementationsOptions,
   GetInterfacesOptions,
-  GetManifestOptions,
   GetPluginsOptions,
   GetRedirectsOptions,
   GetSchemaOptions,
@@ -28,8 +27,6 @@ import {
   createQueryDocument,
   getImplementations,
   parseQuery,
-  ManifestArtifactType,
-  AnyManifestArtifact,
   ResolveUriOptions,
   ResolveUriResult,
   UriResolver,
@@ -178,19 +175,6 @@ export class PolywrapClient implements Client {
     const wrapper = await this._loadWrapper(this._toUri(uri), options);
     const client = contextualizeClient(this, options.contextId);
     return await wrapper.getSchema(client);
-  }
-
-  @Tracer.traceMethod("PolywrapClient: getManifest")
-  public async getManifest<
-    TUri extends Uri | string,
-    TManifestArtifactType extends ManifestArtifactType
-  >(
-    uri: TUri,
-    options: GetManifestOptions<TManifestArtifactType>
-  ): Promise<AnyManifestArtifact<TManifestArtifactType>> {
-    const wrapper = await this._loadWrapper(this._toUri(uri), options);
-    const client = contextualizeClient(this, options.contextId);
-    return await wrapper.getManifest(options, client);
   }
 
   @Tracer.traceMethod("PolywrapClient: getFile")
@@ -850,15 +834,6 @@ const contextualizeClient = (
           options: GetSchemaOptions = {}
         ) => {
           return client.getSchema(uri, { ...options, contextId });
-        },
-        getManifest: <
-          TUri extends Uri | string,
-          TManifestArtifactType extends ManifestArtifactType
-        >(
-          uri: TUri,
-          options: GetManifestOptions<TManifestArtifactType>
-        ) => {
-          return client.getManifest(uri, { ...options, contextId });
         },
         getFile: <TUri extends Uri | string>(
           uri: TUri,

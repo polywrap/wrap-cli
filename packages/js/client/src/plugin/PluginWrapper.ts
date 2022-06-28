@@ -1,14 +1,11 @@
 import {
   Wrapper,
   Client,
-  GetManifestOptions,
   InvokeOptions,
   InvokeResult,
   PluginModule,
   PluginPackage,
   Uri,
-  AnyManifestArtifact,
-  ManifestArtifactType,
   GetFileOptions,
   Env,
   msgpackEncode,
@@ -39,13 +36,6 @@ export class PluginWrapper extends Wrapper {
 
   public async getSchema(_client: Client): Promise<string> {
     return Promise.resolve(this._plugin.manifest.schema);
-  }
-
-  public async getManifest<T extends ManifestArtifactType>(
-    _options: GetManifestOptions<T>,
-    _client: Client
-  ): Promise<AnyManifestArtifact<T>> {
-    throw Error("client.getManifest(...) is not implemented for Plugins.");
   }
 
   public async getFile(

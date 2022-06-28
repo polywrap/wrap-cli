@@ -12,5 +12,8 @@
   },
   "devDependencies": {
     "polywrap": "0.0.1-prealpha.90"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

@@ -4,6 +4,7 @@ import {
   PolywrapProject,
   defaultPolywrapManifest,
   DeployPackage,
+  DeployManifest,
   parseWasmManifestFileOption,
 } from "../lib";
 import { DeployerHandler } from "../lib/deploy/deployer";
@@ -12,7 +13,7 @@ import { Command, Program } from "./types";
 import fs from "fs";
 import nodePath from "path";
 import { print } from "gluegun";
-import { Uri, DeployManifest } from "@polywrap/core-js";
+import { Uri } from "@polywrap/core-js";
 import { validate } from "jsonschema";
 
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");

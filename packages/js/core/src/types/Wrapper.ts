@@ -2,11 +2,9 @@ import {
   Uri,
   Client,
   GetFileOptions,
-  GetManifestOptions,
   InvokeOptions,
   InvokeResult,
 } from ".";
-import { AnyManifestArtifact, ManifestArtifactType } from "../manifest";
 
 /**
  * The Wrapper definition, which can be used to spawn
@@ -33,19 +31,6 @@ export abstract class Wrapper {
    * @param client The client instance the schema.
    */
   public abstract getSchema(client: Client): Promise<string>;
-
-  /**
-   * Get the Wrapper's manifest
-   *
-   * @param options Configuration options for manifest retrieval
-   * @param client The client instance requesting the manifest.
-   */
-  public abstract getManifest<
-    TManifestArtifactType extends ManifestArtifactType
-  >(
-    options: GetManifestOptions<TManifestArtifactType>,
-    client: Client
-  ): Promise<AnyManifestArtifact<TManifestArtifactType>>;
 
   /**
    * Get a file from the Wrapper package.

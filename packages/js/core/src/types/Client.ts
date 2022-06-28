@@ -9,7 +9,6 @@ import {
   Env,
   WorkflowHandler,
 } from "./";
-import { AnyManifestArtifact, ManifestArtifactType } from "../manifest";
 import { UriResolver } from "../uri-resolution/core";
 import { UriResolverHandler } from "./UriResolver";
 
@@ -36,12 +35,6 @@ export type GetSchemaOptions = Contextualized;
 export type GetEnvsOptions = Contextualized;
 
 export type GetUriResolversOptions = Contextualized;
-
-export interface GetManifestOptions<
-  TManifestArtifactType extends ManifestArtifactType
-> extends Contextualized {
-  type: TManifestArtifactType;
-}
 
 export interface GetFileOptions extends Contextualized {
   path: string;
@@ -79,14 +72,6 @@ export interface Client
     uri: TUri,
     options: GetSchemaOptions
   ): Promise<string>;
-
-  getManifest<
-    TUri extends Uri | string,
-    TManifestArtifactType extends ManifestArtifactType
-  >(
-    uri: TUri,
-    options: GetManifestOptions<TManifestArtifactType>
-  ): Promise<AnyManifestArtifact<TManifestArtifactType>>;
 
   getFile<TUri extends Uri | string>(
     uri: TUri,

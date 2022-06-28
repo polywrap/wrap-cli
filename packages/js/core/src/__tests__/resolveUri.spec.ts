@@ -4,15 +4,13 @@ import {
   Client,
   InvokeOptions,
   InvokeResult,
-  PolywrapManifest,
+  WrapManifest,
   PluginModule,
   PluginPackage,
   QueryOptions,
   QueryResult,
   Uri,
   UriRedirect,
-  AnyManifestArtifact,
-  ManifestArtifactType,
   UriResolver,
   resolveUri,
   RedirectsResolver,
@@ -22,7 +20,6 @@ import {
   Env,
   GetFileOptions,
   GetImplementationsOptions,
-  GetManifestOptions,
   InterfaceImplementations,
   PluginRegistration,
   SubscribeOptions,
@@ -86,20 +83,6 @@ describe("resolveUri", () => {
       getSchema: (uri: Uri | string): Promise<string> => {
         return Promise.resolve("");
       },
-      getManifest: <
-        TUri extends Uri | string,
-        TManifestType extends ManifestArtifactType
-      >(
-        uri: TUri,
-        options: GetManifestOptions<TManifestType>
-      ) => {
-        const manifest = {
-          format: "0.0.1-prealpha.8",
-          language: "",
-          __type: "PolywrapManifest",
-        };
-        return Promise.resolve(manifest as AnyManifestArtifact<TManifestType>);
-      },
       getFile: () => {
         return Promise.resolve("");
       },
@@ -120,23 +103,12 @@ describe("resolveUri", () => {
         } as InvokeResult),
       getSchema: (_client: Client): Promise<string> => Promise.resolve(""),
       getFile: (options: GetFileOptions, client: Client) => Promise.resolve(""),
-      getManifest: <TManifestType extends ManifestArtifactType>(
-        options: GetManifestOptions<TManifestType>,
-        client: Client
-      ) => {
-        const manifest = {
-          format: "0.0.1-prealpha.9",
-          language: "",
-          __type: "PluginManifest",
-        };
-        return Promise.resolve(manifest as AnyManifestArtifact<TManifestType>);
-      },
     };
   };
 
   const createWrapper = (
     uri: Uri,
-    manifest: PolywrapManifest,
+    manifest: WrapManifest,
     uriResolver: string
   ): Wrapper => {
     return {
@@ -148,19 +120,6 @@ describe("resolveUri", () => {
         } as InvokeResult),
       getSchema: (_client: Client): Promise<string> => Promise.resolve(""),
       getFile: (options: GetFileOptions, client: Client) => Promise.resolve(""),
-      getManifest: <TManifestType extends ManifestArtifactType>(
-        options: GetManifestOptions<TManifestType>,
-        client: Client
-      ) => {
-        const manifest: unknown = {
-          format: "0.0.1-prealpha.9",
-          language: "",
-          module: "",
-          schema: "",
-          __type: "PolywrapManifest",
-        };
-        return Promise.resolve(manifest as AnyManifestArtifact<TManifestType>);
-      },
     };
   };
 

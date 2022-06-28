@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { InfraManifest } from "../"
 import { getDockerFileLock } from "./docker";
 
 import path from "path";
 import Commands, { IDockerComposeOptions } from "docker-compose";
-import { InfraManifest } from "@polywrap/core-js";
 
 export class DockerCompose {
   private _dockerLock = getDockerFileLock();

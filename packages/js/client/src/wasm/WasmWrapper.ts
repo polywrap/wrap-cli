@@ -6,15 +6,9 @@ import {
   InvokeOptions,
   InvokeResult,
   Wrapper,
-  PolywrapManifest,
+  WrapManifest,
   Uri,
   Client,
-  GetManifestOptions,
-  deserializePolywrapManifest,
-  deserializeBuildManifest,
-  deserializeMetaManifest,
-  AnyManifestArtifact,
-  ManifestArtifactType,
   combinePaths,
   Env,
   UriResolverInterface,
@@ -72,7 +66,7 @@ export class WasmWrapper extends Wrapper {
 
   constructor(
     private _uri: Uri,
-    private _manifest: PolywrapManifest,
+    private _manifest: WrapManifest,
     private _uriResolver: string,
     private _clientEnv?: Env<Uri>
   ) {
@@ -86,50 +80,6 @@ export class WasmWrapper extends Wrapper {
       uriResolver: this._uriResolver,
     });
     Tracer.endSpan();
-  }
-
-  @Tracer.traceMethod("WasmWrapper: getManifest")
-  public async getManifest<TManifestArtifact extends ManifestArtifactType>(
-    options: GetManifestOptions<TManifestArtifact>,
-    client: Client
-  ): Promise<AnyManifestArtifact<TManifestArtifact>> {
-    if (!options?.type) {
-      return this._manifest as AnyManifestArtifact<TManifestArtifact>;
-    }
-    let manifest: string | undefined;
-    const fileTitle: string =
-      options.type === "polywrap" ? "polywrap" : "polywrap." + options.type;
-
-    const manifestExts = ["json", "yaml", "yml"];
-    for (const ext of manifestExts) {
-      const path = `${fileTitle}.${ext}`;
-      try {
-        manifest = (await this.getFile(
-          { path, encoding: "utf8" },
-          client
-        )) as string;
-        break;
-      } catch (error) {
-        continue;
-      }
-    }
-    if (!manifest) {
-      throw new Error("WasmWrapper: Manifest was not found.");
-    }
-    switch (options.type) {
-      case "build":
-        return deserializeBuildManifest(
-          manifest
-        ) as AnyManifestArtifact<TManifestArtifact>;
-      case "meta":
-        return deserializeMetaManifest(
-          manifest
-        ) as AnyManifestArtifact<TManifestArtifact>;
-      default:
-        return deserializePolywrapManifest(
-          manifest
-        ) as AnyManifestArtifact<TManifestArtifact>;
-    }
   }
 
   @Tracer.traceMethod("WasmWrapper: getFile")

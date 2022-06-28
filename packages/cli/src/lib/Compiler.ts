@@ -2,6 +2,8 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import {
+  PolywrapManifest,
+  MetaManifest,
   PolywrapProject,
   SchemaComposer,
   withSpinner,
@@ -15,12 +17,7 @@ import {
   resetDir,
 } from "./";
 
-import {
-  PolywrapManifest,
-  WrapManifest,
-  MetaManifest,
-  msgpackEncode,
-} from "@polywrap/core-js";
+import { msgpackEncode, WrapManifest } from "@polywrap/core-js";
 import { WasmWrapper } from "@polywrap/client-js";
 import { WrapImports } from "@polywrap/client-js/build/wasm/types";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";

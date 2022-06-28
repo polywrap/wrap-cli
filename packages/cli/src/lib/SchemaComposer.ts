@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-empty-function */
 
-import { Project, AnyManifest, getSimpleClient } from "./";
+import { Project, AnyProjectManifest, getSimpleClient } from "./";
 
 import { Uri, PolywrapClient } from "@polywrap/client-js";
 import {
@@ -16,7 +16,7 @@ import path from "path";
 import * as gluegun from "gluegun";
 
 export interface SchemaComposerConfig {
-  project: Project<AnyManifest>;
+  project: Project<AnyProjectManifest>;
 
   // TODO: add this to the project configuration
   //       and make it configurable
