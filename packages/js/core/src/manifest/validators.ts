@@ -140,3 +140,7 @@ export function directory(path: unknown): boolean {
 
   return !!validDirRegex.test(path);
 }
+
+export function validType(type: unknown): boolean {
+  return typeof type === "string" && (type === "wasm" || type === "interface");
+}

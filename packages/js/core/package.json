@@ -12,7 +12,7 @@
     "build"
   ],
   "scripts": {
-    "build": "rimraf ./build && yarn build:manifest && tsc --project tsconfig.build.json",
+    "build": "rimraf ./build && tsc --project tsconfig.build.json",
     "build:manifest": "node ./scripts/manifest/generateFormatTypes.js",
     "lint": "eslint --color -c ../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",

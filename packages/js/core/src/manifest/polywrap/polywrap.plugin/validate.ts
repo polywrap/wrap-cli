@@ -5,13 +5,13 @@
  * and run node ./scripts/manifest/generateFormatTypes.js to regenerate this file.
  */
 import {
-  AnyMetaManifest,
-  MetaManifestFormats
+  AnyPluginManifest,
+  PluginManifestFormats
 } from ".";
 import * as Validators from "../../validators";
-import schema_0_0_1_prealpha_1 from "@polywrap/manifest-schemas/formats/polywrap.meta/0.0.1-prealpha.1.json";
-import schema_0_0_1_prealpha_2 from "@polywrap/manifest-schemas/formats/polywrap.meta/0.0.1-prealpha.2.json";
-import schema_0_0_1_prealpha_3 from "@polywrap/manifest-schemas/formats/polywrap.meta/0.0.1-prealpha.3.json";
+import schema_0_0_1_prealpha_1 from "@polywrap/manifest-schemas/polywrap/polywrap.plugin/0.0.1-prealpha.1.json";
+import schema_0_0_1_prealpha_2 from "@polywrap/manifest-schemas/polywrap/polywrap.plugin/0.0.1-prealpha.2.json";
+import schema_0_0_1_prealpha_3 from "@polywrap/manifest-schemas/polywrap/polywrap.plugin/0.0.1-prealpha.3.json";
 import { Tracer } from "@polywrap/tracing-js"
 
 import {
@@ -21,11 +21,11 @@ import {
   ValidatorResult
 } from "jsonschema";
 
-type MetaManifestSchemas = {
-  [key in MetaManifestFormats]: Schema | undefined
+type PluginManifestSchemas = {
+  [key in PluginManifestFormats]: Schema | undefined
 };
 
-const schemas: MetaManifestSchemas = {
+const schemas: PluginManifestSchemas = {
   "0.0.1-prealpha.1": schema_0_0_1_prealpha_1,
   "0.0.1-prealpha.2": schema_0_0_1_prealpha_2,
   "0.0.1-prealpha.3": schema_0_0_1_prealpha_3,
@@ -33,28 +33,27 @@ const schemas: MetaManifestSchemas = {
 
 const validator = new Validator();
 
-Validator.prototype.customFormats.websiteUrl = Validators.websiteUrl;
-Validator.prototype.customFormats.imageFile = Validators.imageFile;
+Validator.prototype.customFormats.pluginLanguage = Validators.pluginLanguage;
+Validator.prototype.customFormats.file = Validators.file;
+Validator.prototype.customFormats.packageName = Validators.packageName;
 Validator.prototype.customFormats.graphqlFile = Validators.graphqlFile;
-Validator.prototype.customFormats.jsonFile = Validators.jsonFile;
-Validator.prototype.customFormats.packageTag = Validators.packageTag;
 
-export const validateMetaManifest = Tracer.traceFunc(
-  "core: validateMetaManifest",
+export const validatePluginManifest = Tracer.traceFunc(
+  "core: validatePluginManifest",
   (
-    manifest: AnyMetaManifest,
+    manifest: AnyPluginManifest,
     extSchema: Schema | undefined = undefined
   ): void => {
-    const schema = schemas[manifest.format as MetaManifestFormats];
+    const schema = schemas[manifest.format as PluginManifestFormats];
 
     if (!schema) {
-      throw Error(`Unrecognized MetaManifest schema format "${manifest.format}"\nmanifest: ${JSON.stringify(manifest, null, 2)}`);
+      throw Error(`Unrecognized PluginManifest schema format "${manifest.format}"\nmanifest: ${JSON.stringify(manifest, null, 2)}`);
     }
 
     const throwIfErrors = (result: ValidatorResult) => {
       if (result.errors.length) {
         throw new Error([
-          `Validation errors encountered while sanitizing MetaManifest format ${manifest.format}`,
+          `Validation errors encountered while sanitizing PluginManifest format ${manifest.format}`,
           ...result.errors.map((error: ValidationError) => error.toString())
         ].join("\n"));
       }

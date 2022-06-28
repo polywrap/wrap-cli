@@ -5,12 +5,11 @@
  * and run node ./scripts/manifest/generateFormatTypes.js to regenerate this file.
  */
 import {
-  AnyAppManifest,
-  AppManifestFormats
+  AnyDeployManifest,
+  DeployManifestFormats
 } from ".";
 import * as Validators from "../../validators";
-import schema_0_0_1_prealpha_1 from "@polywrap/manifest-schemas/formats/polywrap.app/0.0.1-prealpha.1.json";
-import schema_0_0_1_prealpha_2 from "@polywrap/manifest-schemas/formats/polywrap.app/0.0.1-prealpha.2.json";
+import schema_0_0_1_prealpha_1 from "@polywrap/manifest-schemas/polywrap/polywrap.deploy/0.0.1-prealpha.1.json";
 import { Tracer } from "@polywrap/tracing-js"
 
 import {
@@ -20,39 +19,34 @@ import {
   ValidatorResult
 } from "jsonschema";
 
-type AppManifestSchemas = {
-  [key in AppManifestFormats]: Schema | undefined
+type DeployManifestSchemas = {
+  [key in DeployManifestFormats]: Schema | undefined
 };
 
-const schemas: AppManifestSchemas = {
+const schemas: DeployManifestSchemas = {
   "0.0.1-prealpha.1": schema_0_0_1_prealpha_1,
-  "0.0.1-prealpha.2": schema_0_0_1_prealpha_2,
 };
 
 const validator = new Validator();
 
-Validator.prototype.customFormats.appLanguage = Validators.appLanguage;
-Validator.prototype.customFormats.file = Validators.file;
 Validator.prototype.customFormats.polywrapUri = Validators.polywrapUri;
-Validator.prototype.customFormats.schemaFile = Validators.schemaFile;
-Validator.prototype.customFormats.packageName = Validators.packageName;
 
-export const validateAppManifest = Tracer.traceFunc(
-  "core: validateAppManifest",
+export const validateDeployManifest = Tracer.traceFunc(
+  "core: validateDeployManifest",
   (
-    manifest: AnyAppManifest,
+    manifest: AnyDeployManifest,
     extSchema: Schema | undefined = undefined
   ): void => {
-    const schema = schemas[manifest.format as AppManifestFormats];
+    const schema = schemas[manifest.format as DeployManifestFormats];
 
     if (!schema) {
-      throw Error(`Unrecognized AppManifest schema format "${manifest.format}"\nmanifest: ${JSON.stringify(manifest, null, 2)}`);
+      throw Error(`Unrecognized DeployManifest schema format "${manifest.format}"\nmanifest: ${JSON.stringify(manifest, null, 2)}`);
     }
 
     const throwIfErrors = (result: ValidatorResult) => {
       if (result.errors.length) {
         throw new Error([
-          `Validation errors encountered while sanitizing AppManifest format ${manifest.format}`,
+          `Validation errors encountered while sanitizing DeployManifest format ${manifest.format}`,
           ...result.errors.map((error: ValidationError) => error.toString())
         ].join("\n"));
       }

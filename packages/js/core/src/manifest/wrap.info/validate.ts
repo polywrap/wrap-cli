@@ -5,11 +5,11 @@
  * and run node ./scripts/manifest/generateFormatTypes.js to regenerate this file.
  */
 import {
-  AnyDeployManifest,
-  DeployManifestFormats
+  AnyWrapManifest,
+  WrapManifestVersions
 } from ".";
-import * as Validators from "../../validators";
-import schema_0_0_1_prealpha_1 from "@polywrap/manifest-schemas/formats/polywrap.deploy/0.0.1-prealpha.1.json";
+import * as Validators from "../validators";
+import schema_0_0_1 from "@polywrap/manifest-schemas/wrap.info/0.0.1.json";
 import { Tracer } from "@polywrap/tracing-js"
 
 import {
@@ -19,34 +19,34 @@ import {
   ValidatorResult
 } from "jsonschema";
 
-type DeployManifestSchemas = {
-  [key in DeployManifestFormats]: Schema | undefined
+type WrapManifestSchemas = {
+  [key in WrapManifestVersions]: Schema | undefined
 };
 
-const schemas: DeployManifestSchemas = {
-  "0.0.1-prealpha.1": schema_0_0_1_prealpha_1,
+const schemas: WrapManifestSchemas = {
+  "0.0.1": schema_0_0_1,
 };
 
 const validator = new Validator();
 
-Validator.prototype.customFormats.polywrapUri = Validators.polywrapUri;
+Validator.prototype.customFormats.validType = Validators.validType;
 
-export const validateDeployManifest = Tracer.traceFunc(
-  "core: validateDeployManifest",
+export const validateWrapManifest = Tracer.traceFunc(
+  "core: validateWrapManifest",
   (
-    manifest: AnyDeployManifest,
+    manifest: AnyWrapManifest,
     extSchema: Schema | undefined = undefined
   ): void => {
-    const schema = schemas[manifest.format as DeployManifestFormats];
+    const schema = schemas[manifest.version as WrapManifestVersions];
 
     if (!schema) {
-      throw Error(`Unrecognized DeployManifest schema format "${manifest.format}"\nmanifest: ${JSON.stringify(manifest, null, 2)}`);
+      throw Error(`Unrecognized WrapManifest schema format "${manifest.version}"\nmanifest: ${JSON.stringify(manifest, null, 2)}`);
     }
 
     const throwIfErrors = (result: ValidatorResult) => {
       if (result.errors.length) {
         throw new Error([
-          `Validation errors encountered while sanitizing DeployManifest format ${manifest.format}`,
+          `Validation errors encountered while sanitizing WrapManifest version ${manifest.version}`,
           ...result.errors.map((error: ValidationError) => error.toString())
         ].join("\n"));
       }
