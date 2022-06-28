@@ -33,7 +33,8 @@ export async function validateOutput(
       `cue vet -d ${selector} ${validateScriptPath} ${jsonOutput}`
     );
   } catch (e) {
-    console.error(e.message);
+    console.error(e);
+    console.log(e);
     console.log("-----------------------------------");
     process.exitCode = 1;
   }

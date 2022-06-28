@@ -3,10 +3,10 @@ import { addHeader } from "./templates/header.mustache";
 
 import Mustache from "mustache";
 import {
-  TypeInfo,
+  Abi,
   addFirstLast,
   toGraphQLType,
-  transformTypeInfo,
+  transformAbi,
   moduleCapabilities,
   addAnnotations,
 } from "@polywrap/schema-parse";
@@ -14,15 +14,15 @@ import {
 // Remove mustache's built-in HTML escaping
 Mustache.escape = (value) => value;
 
-export function renderSchema(typeInfo: TypeInfo, header: boolean): string {
-  // Prepare the TypeInfo for the renderer
-  typeInfo = transformTypeInfo(typeInfo, addFirstLast);
-  typeInfo = transformTypeInfo(typeInfo, toGraphQLType);
-  typeInfo = transformTypeInfo(typeInfo, moduleCapabilities());
-  typeInfo = transformTypeInfo(typeInfo, addAnnotations);
+export function renderSchema(abi: Abi, header: boolean): string {
+  // Prepare the Abi for the renderer
+  abi = transformAbi(abi, addFirstLast);
+  abi = transformAbi(abi, toGraphQLType);
+  abi = transformAbi(abi, moduleCapabilities());
+  abi = transformAbi(abi, addAnnotations);
 
   let schema = Mustache.render(schemaTemplate, {
-    typeInfo,
+    abi,
   });
 
   if (header) {

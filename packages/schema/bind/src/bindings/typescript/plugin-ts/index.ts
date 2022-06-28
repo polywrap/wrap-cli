@@ -5,8 +5,8 @@ import { renderTemplates } from "../../utils/templates";
 import { BindOptions, BindOutput } from "../../..";
 
 import {
-  TypeInfo,
-  transformTypeInfo,
+  Abi,
+  transformAbi,
   extendType,
   addFirstLast,
   toPrefixedGraphQLType,
@@ -23,8 +23,8 @@ const templatePath = (subpath: string) =>
 export const generateBinding: GenerateBindingFn = (
   options: BindOptions
 ): BindOutput => {
-  // Apply TypeInfo transforms
-  const typeInfo = applyTransforms(options.typeInfo);
+  // Apply Abi transforms
+  const abi = applyTransforms(options.abi);
 
   // Generate Bindings
   const result: BindOutput = {
@@ -37,14 +37,14 @@ export const generateBinding: GenerateBindingFn = (
 
   output.entries = renderTemplates(
     templatePath(""),
-    { ...typeInfo, schema: options.schema },
+    { ...abi, schema: options.schema },
     {}
   );
 
   return result;
 };
 
-function applyTransforms(typeInfo: TypeInfo): TypeInfo {
+function applyTransforms(abi: Abi): Abi {
   const transforms = [
     extendType(Functions),
     addFirstLast,
@@ -54,7 +54,7 @@ function applyTransforms(typeInfo: TypeInfo): TypeInfo {
   ];
 
   for (const transform of transforms) {
-    typeInfo = transformTypeInfo(typeInfo, transform);
+    abi = transformAbi(abi, transform);
   }
-  return typeInfo;
+  return abi;
 }

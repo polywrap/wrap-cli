@@ -3,13 +3,13 @@ import {
   createModuleDefinition,
   createScalarPropertyDefinition,
   createObjectDefinition,
-  createTypeInfo,
+  createAbi,
   createEnvDefinition,
-  TypeInfo,
+  Abi,
 } from "@polywrap/schema-parse";
 
-export const typeInfo: TypeInfo = {
-  ...createTypeInfo(),
+export const abi: Abi = {
+  ...createAbi(),
   envType: createEnvDefinition({
       sanitized: {
         ...createObjectDefinition({

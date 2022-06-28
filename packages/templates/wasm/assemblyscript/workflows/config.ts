@@ -1,6 +1,7 @@
 import { PolywrapClientConfig } from "@polywrap/client-js";
 import { ClientConfig, coreInterfaceUris } from "@polywrap/client-js";
-import { ensPlugin } from "@polywrap/ens-plugin-js";
+import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
+import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 
@@ -34,8 +35,14 @@ function getPlugins(
         plugin: ipfsPlugin({ provider: ipfs }),
       },
       {
-        uri: "wrap://ens/ens.polywrap.eth",
-        plugin: ensPlugin({ addresses: { testnet: ensAddress } }),
+        uri: "wrap://ens/ipfs-resolver.polywrap.eth",
+        plugin: ipfsResolverPlugin({
+          provider: ipfs,
+        }),
+      },
+      {
+        uri: "wrap://ens/ens-resolver.polywrap.eth",
+        plugin: ensResolverPlugin({ addresses: { testnet: ensAddress } }),
       },
       {
         uri: "wrap://ens/ethereum.polywrap.eth",
@@ -56,8 +63,8 @@ function getPlugins(
       {
         interface: coreInterfaceUris.uriResolver.uri,
         implementations: [
-          "wrap://ens/ipfs.polywrap.eth",
-          "wrap://ens/ens.polywrap.eth",
+          "wrap://ens/ipfs-resolver.polywrap.eth",
+          "wrap://ens/ens-resolver.polywrap.eth",
         ],
       },
       {
