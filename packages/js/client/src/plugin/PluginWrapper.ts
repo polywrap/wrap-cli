@@ -77,7 +77,7 @@ export class PluginWrapper extends Wrapper {
       await this._sanitizeAndLoadEnv(client, module);
 
       let jsArgs: Record<string, unknown>;
-      if (args instanceof ArrayBuffer || args instanceof Uint8Array) {
+      if (args instanceof ArrayBuffer || ArrayBuffer.isView(args)) {
         const result = msgpackDecode(args);
 
         Tracer.addEvent("msgpack-decoded", result);

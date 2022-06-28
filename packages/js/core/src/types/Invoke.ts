@@ -15,7 +15,7 @@ export interface InvokeOptions<
    * Arguments for the method, structured as a map,
    * removing the chance of incorrectly ordering arguments.
    */
-  args?: Record<string, unknown> | Uint8Array | ArrayBuffer;
+  args?: Record<string, unknown> | ArrayBufferView | ArrayBuffer;
 
   /**
    * If set to true, the invoke function will not decode the msgpack results
