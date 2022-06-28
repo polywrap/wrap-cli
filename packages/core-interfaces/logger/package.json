@@ -1,5 +1,5 @@
 {
-  "name": "logger-interface",
+  "name": "@polywrap/logger-interface",
   "description": "Polywrap Logger Interface",
   "private": true,
   "version": "0.0.1-prealpha.90",
