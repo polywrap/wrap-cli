@@ -23,7 +23,6 @@
   "dependencies": {
     "@polywrap/asyncify-js": "0.0.1-prealpha.90",
     "@polywrap/core-js": "0.0.1-prealpha.90",
-    "@polywrap/ens-plugin-js": "0.0.1-prealpha.89",
     "@polywrap/ens-resolver-plugin-js": "0.0.1-prealpha.90",
     "@polywrap/ethereum-plugin-js": "0.0.1-prealpha.90",
     "@polywrap/fs-plugin-js": "0.0.1-prealpha.90",
