@@ -8,7 +8,7 @@ async function generateFormatTypes() {
   // Fetch all schemas within the @polywrap/wrap-manifest-schemas/formats directory
   const formatsDir = path.join(
     path.dirname(require.resolve("@polywrap/wrap-manifest-schemas")),
-    "formats"
+    "formats/wrap.info"
   );
 
   const formatOutputDir = path.join(__dirname, `/../src/wrap-manifests/formats`);

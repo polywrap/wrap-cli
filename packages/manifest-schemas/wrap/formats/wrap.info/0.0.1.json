@@ -10,21 +10,22 @@
   ],
   "properties": {
     "version": {
-      "description": "Wrap manifest format version",
+      "description": "WRAP Standard Version",
       "type": "string",
       "const": "0.0.1"
     },
     "type": {
-      "description" : "Wrap language",
+      "description" : "Wrapper Package Type",
       "type": "string",
-      "format": "validType"
+      "enum": ["wasm", "interface"]
     },
     "name": {
-      "description": "Wrapper name",
-      "type": "string"
+      "description": "Wrapper Name",
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9\\-\\_]+$"
     },
     "abi": {
-      "description": "Type info of wrapper",
+      "description": "Wrapper ABI",
       "type": "object"
     }
   }

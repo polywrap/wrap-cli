@@ -10,7 +10,7 @@ import {
 } from ".";
 {{#validators.length}}import * as Validators from "../validators";{{/validators.length}}
 {{#formats}}
-import schema_{{tsVersion}} from "@polywrap/wrap-manifest-schemas/formats/{{version}}.json";
+import schema_{{tsVersion}} from "@polywrap/wrap-manifest-schemas/formats/wrap.info/{{version}}.json";
 {{/formats}}
 import { Tracer } from "@polywrap/tracing-js"
 
@@ -34,7 +34,7 @@ const schemas: {{#latest}}WrapManifest{{/latest}}Schemas = {
 const validator = new Validator();
 
 {{#validators}}
-Validator.prototype.customVersions.{{.}} = Validators.{{.}};
+Validator.prototype.{{.}} = Validators.{{.}};
 {{/validators}}
 
 export const validate{{#latest}}WrapManifest{{/latest}} = Tracer.traceFunc(

@@ -1,16 +1,17 @@
-import { UriResolverInterface } from "../../../interfaces";
 import {
-  DeserializeManifestOptions,
-  deserializePolywrapManifest,
-} from "../../../manifest";
-import { Uri, WrapperCache, Client, InvokeHandler } from "../../../types";
-import {
+  Uri,
+  Client,
+  InvokeHandler,
+  WrapperCache,
   UriResolver,
   UriResolutionStack,
   UriResolutionResult,
-} from "../../core";
-import { CreateWrapperFunc } from "./types/CreateWrapperFunc";
-import { getEnvFromUriOrResolutionStack } from "../getEnvFromUriOrResolutionStack";
+  CreateWrapperFunc,
+  getEnvFromUriOrResolutionStack,
+  UriResolverInterface,
+  DeserializeManifestOptions,
+  deserializeWrapManifest
+} from "../../..";
 
 import { Tracer } from "@polywrap/tracing-js";
 
@@ -50,7 +51,7 @@ export class UriResolverWrapper implements UriResolver {
     } else if (result.manifest) {
       // We've found our manifest at the current implementation,
       // meaning the URI resolver can also be used as an Wrapper resolver
-      const manifest = deserializePolywrapManifest(
+      const manifest = deserializeWrapManifest(
         result.manifest,
         this.deserializeOptions
       );

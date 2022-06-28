@@ -8,8 +8,8 @@ import {
   AnyWrapManifest,
   WrapManifestVersions
 } from ".";
-import * as Validators from "../validators";
-import schema_0_0_1 from "@polywrap/wrap-manifest-schemas/formats/0.0.1.json";
+
+import schema_0_0_1 from "@polywrap/wrap-manifest-schemas/formats/wrap.info/0.0.1.json";
 import { Tracer } from "@polywrap/tracing-js"
 
 import {
@@ -29,7 +29,6 @@ const schemas: WrapManifestSchemas = {
 
 const validator = new Validator();
 
-Validator.prototype.customVersions.validType = Validators.validType;
 
 export const validateWrapManifest = Tracer.traceFunc(
   "core: validateWrapManifest",

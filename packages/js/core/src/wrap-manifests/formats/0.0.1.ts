@@ -8,19 +8,19 @@
 
 export interface WrapManifest {
   /**
-   * Wrap manifest format version
+   * WRAP Standard Version
    */
   version: "0.0.1";
   /**
-   * Wrap language
+   * Wrapper Package Type
    */
-  type: string;
+  type: "wasm" | "interface";
   /**
-   * Wrapper name
+   * Wrapper Name
    */
   name: string;
   /**
-   * Type info of wrapper
+   * Wrapper ABI
    */
   abi: {
     [k: string]: unknown;

@@ -1,8 +1,8 @@
-import { Uri, Wrapper, PolywrapManifest, Env } from "../../../..";
+import { Uri, Wrapper, WrapManifest, Env } from "../../../..";
 
 export type CreateWrapperFunc = (
   uri: Uri,
-  manifest: PolywrapManifest,
+  manifest: WrapManifest,
   uriResolver: string, // name or URI
   environment: Env<Uri> | undefined
 ) => Wrapper;
