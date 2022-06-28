@@ -1,8 +1,8 @@
 {
-  "name": "uri-resolver-interface",
+  "name": "@polywrap/uri-resolver-interface",
   "description": "URI Resolver Interface",
   "private": true,
-  "version": "0.0.1-prealpha.89",
+  "version": "0.0.1-prealpha.90",
   "scripts": {
     "build": "node ../../../dependencies/node_modules/polywrap/bin/polywrap build",
     "lint": "eslint --color -c ../../../.eslintrc.js .",
@@ -11,6 +11,6 @@
     "deploy": "npx polywrap deploy"
   },
   "devDependencies": {
-    "polywrap": "0.0.1-prealpha.89"
+    "polywrap": "0.0.1-prealpha.90"
   }
 }

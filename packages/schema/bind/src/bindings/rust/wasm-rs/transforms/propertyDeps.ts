@@ -7,7 +7,7 @@ import {
   ObjectDefinition,
   AnyDefinition,
   ModuleDefinition,
-  TypeInfoTransforms,
+  AbiTransforms,
 } from "@polywrap/schema-parse";
 
 interface PropertyDep {
@@ -23,7 +23,7 @@ interface PropertyDepsState {
   propertyDeps?: PropertyDep[];
 }
 
-export function propertyDeps(): TypeInfoTransforms {
+export function propertyDeps(): AbiTransforms {
   const state: PropertyDepsState = {};
 
   return {

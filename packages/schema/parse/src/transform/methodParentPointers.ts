@@ -1,11 +1,11 @@
-import { TypeInfoTransforms } from ".";
+import { AbiTransforms } from ".";
 import {
   ModuleDefinition,
   ImportedModuleDefinition,
   MethodDefinition,
-} from "../typeInfo";
+} from "../abi";
 
-export function methodParentPointers(): TypeInfoTransforms {
+export function methodParentPointers(): AbiTransforms {
   const visitorStack: (ModuleDefinition | ImportedModuleDefinition)[] = [];
 
   return {

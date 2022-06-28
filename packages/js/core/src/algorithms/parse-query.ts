@@ -67,19 +67,10 @@ export const parseQuery = Tracer.traceFunc(
           }
         }
 
-        // Get the results the query is asking for
-        const selectionResults = selection.selectionSet;
-        let resultFilter: Record<string, unknown> | undefined = undefined;
-
-        if (selectionResults) {
-          resultFilter = extractSelections(selectionResults);
-        }
-
         queryInvocations[invocationName] = {
           uri,
           method,
           args,
-          resultFilter,
         };
       }
     }

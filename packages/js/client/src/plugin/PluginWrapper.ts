@@ -1,7 +1,6 @@
 import {
   Wrapper,
   Client,
-  filterResults,
   GetManifestOptions,
   InvokeOptions,
   InvokeResult,
@@ -62,7 +61,7 @@ export class PluginWrapper extends Wrapper {
     client: Client
   ): Promise<InvokeResult<TData>> {
     try {
-      const { method, resultFilter } = options;
+      const { method } = options;
       const args = options.args || {};
       const module = this._getInstance();
 
@@ -104,10 +103,8 @@ export class PluginWrapper extends Wrapper {
           client
         )) as TData;
 
-        Tracer.addEvent("unfiltered-result", result);
-
         if (result !== undefined) {
-          let data = result as unknown;
+          const data = result as unknown;
 
           if (process.env.TEST_PLUGIN) {
             // try to encode the returned result,
@@ -126,11 +123,7 @@ export class PluginWrapper extends Wrapper {
             }
           }
 
-          if (resultFilter) {
-            data = filterResults(result, resultFilter);
-          }
-
-          Tracer.addEvent("Filtered result", data);
+          Tracer.addEvent("Result", data);
 
           return {
             data: data as TData,
@@ -142,7 +135,7 @@ export class PluginWrapper extends Wrapper {
         throw Error(
           `PluginWrapper: invocation exception encountered.\n` +
             `uri: ${this._uri.uri}\nmodule: ${module}\n` +
-            `method: ${method}\nresultFilter: ${resultFilter}\n` +
+            `method: ${method}\n` +
             `args: ${JSON.stringify(jsArgs, null, 2)}\n` +
             `exception: ${e.message}`
         );
