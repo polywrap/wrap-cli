@@ -4,59 +4,6 @@ const fs = require("fs");
 const path = require("path");
 const Mustache = require("mustache");
 
-const readFileFromDirectory = (typeDirectory, fileName) => {
-  const version = fileName.replace(".json", "");
-  const dirPath = path.join(typeDirectory, fileName);
-  try {
-    // Parse the JSON schema
-    const schema = JSON.parse(
-      fs.readFileSync(dirPath, { encoding: "utf-8" })
-    );
-
-    // Insert the __type property for introspection
-    schema.properties["__type"] = {
-      type: "string",
-      const: schema.id
-    };
-    schema.required = [
-      ...schema.required,
-      "__type"
-    ];
-
-    return {
-      schema,
-      interface: schema.id,
-      version,
-      dir: typeDirectory
-    }
-  } catch (error) {
-    console.error(`Error generating the Manifest file ${fileName}: `, error);
-    throw error;
-  }
-}
-
-const generateTs = async (schema, dir, fileName) => {
-  const version = fileName.replace(".json", "");
-  let directoryPath = `/../../src/manifest/polywrap/${dir}/${version}.ts`
-
-  // if (dir === "wrap.info") {
-  //   directoryPath = `/../../src/manifest/${dir}/${version}.ts`
-  // }
-
-  const tsOutputPath = path.join(__dirname, directoryPath);
-
-  // Convert it to a TypeScript interface
-  const tsFile = await SchemaToTypescript.compile(
-    schema,
-    schema.id
-  );
-
-  fs.mkdirSync(path.dirname(tsOutputPath), { recursive: true });
-  os.writeFileSync(tsOutputPath,
-    `/* eslint-disable @typescript-eslint/naming-convention */\n${tsFile}`
-  );
-}
-
 async function generateFormatTypes() {
   // Fetch all schemas within the @polywrap/manifest-schemas/formats directory
   const formatsDir = path.join(
@@ -74,20 +21,60 @@ async function generateFormatTypes() {
     const formatTypeName = formatTypes[i].name;
     const formatTypeDir = path.join(formatsDir, formatTypeName);
     const formatModules = [];
+
     // Get all JSON schemas for this format type (v1, v2, etc)
     const formatSchemaFiles = fs.readdirSync(formatTypeDir);
     const formatSchemas = [];
-    const fetchFiles = formatSchemaFiles.map(async file => {
-      const schema = readFileFromDirectory(formatTypeDir, file)
-      await generateTs(schema.schema, formatTypeName, file)
-      formatSchemas.push(schema)
-      formatModules.push({
-        interface: schema.interface,
-        version: schema.version,
-        dir: schema.dir
-      })
-    })
-    await Promise.all(fetchFiles)
+
+    for (let k = 0; k < formatSchemaFiles.length; ++k) {
+      const formatSchemaName = formatSchemaFiles[k];
+      const formatVersion = formatSchemaName.replace(".json", "");
+      const formatSchemaPath = path.join(formatTypeDir, formatSchemaName);
+
+      try {
+        // Parse the JSON schema
+        const formatSchema = JSON.parse(
+          fs.readFileSync(formatSchemaPath, { encoding: "utf-8" })
+        );
+
+        // Insert the __type property for introspection
+        formatSchema.properties["__type"] = {
+          type: "string",
+          const: formatSchema.id
+        };
+        formatSchema.required = [
+          ...formatSchema.required,
+          "__type"
+        ];
+
+        formatSchemas.push(formatSchema);
+
+        console.log({ formatSchema })
+        // Convert it to a TypeScript interface
+        const tsFile = await SchemaToTypescript.compile(
+          formatSchema,
+          formatSchema.id
+        );
+
+        // Emit the result
+        const tsOutputPath = path.join(__dirname, `/../../src/manifest/polywrap/${formatTypeName}/${formatVersion}.ts`);
+        fs.mkdirSync(path.dirname(tsOutputPath), { recursive: true });
+        os.writeFileSync(
+          tsOutputPath,
+          `/* eslint-disable @typescript-eslint/naming-convention */\n${tsFile}`
+        );
+
+        // Add metadata for the root index.ts file to use
+        formatModules.push({
+          interface: formatSchema.id,
+          version: formatVersion
+        });
+      } catch (error) {
+        console.error(`Error generating the Manifest file ${formatSchemaPath}: `, error);
+        throw error;
+      }
+    }
+
     const renderTemplate = (name, context) => {
       const tsTemplate = fs.readFileSync(
         __dirname + `/polywrap/${name}-ts.mustache`, { encoding: "utf-8" }
@@ -108,7 +95,6 @@ async function generateFormatTypes() {
 
     // Generate an index.ts file that exports root types that aggregate all versions
     const indexContext = { };
-
     indexContext.formats = formatModules.map((module) => {
       return {
         type: module.interface,
@@ -117,6 +103,7 @@ async function generateFormatTypes() {
       }
     });
     indexContext.latest = lastItem(indexContext.formats);
+
     renderTemplate("index", indexContext);
 
     // Generate a migrate.ts file that exports a migration function from all version to the latest version

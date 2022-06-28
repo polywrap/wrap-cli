@@ -333,7 +333,7 @@ export class Compiler {
     const info: WrapManifest = {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
-      abi: state.composerOutput.typeInfo as unknown,
+      abi: state.composerOutput.abi as unknown,
       name: state.polywrapManifest.name,
       type: state.polywrapManifest.module ? "wasm" : "interface",
       version: "0.0.1",
