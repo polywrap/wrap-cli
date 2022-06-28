@@ -225,9 +225,9 @@ describe("e2e tests for run command", () => {
       cli: polywrapCli,
     });
 
-    expect(code).toEqual(0);
-    expect(stderr).toBe("");
     expect(stdout).toBe("");
+    expect(stderr).toBe("");
+    expect(code).toEqual(0);
 
   }, 48000);
 

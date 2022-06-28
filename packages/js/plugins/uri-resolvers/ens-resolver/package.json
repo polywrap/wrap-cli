@@ -1,7 +1,7 @@
 {
-  "name": "@polywrap/ens-plugin-js",
+  "name": "@polywrap/ens-resolver-plugin-js",
   "description": "Polywrap ENS Javascript Plugin",
-  "version": "0.0.1-prealpha.89",
+  "version": "0.0.1-prealpha.90",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -13,8 +13,8 @@
   ],
   "scripts": {
     "build": "rimraf ./build && yarn codegen && tsc --project tsconfig.build.json",
-    "codegen": "node ../../../../dependencies/node_modules/polywrap/bin/polywrap plugin codegen",
-    "lint": "eslint --color -c ../../../../.eslintrc.js src/",
+    "codegen": "node ../../../../../dependencies/node_modules/polywrap/bin/polywrap plugin codegen",
+    "lint": "eslint --color -c ../../../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",
     "test:watch": "jest --watch --passWithNoTests --verbose"
@@ -22,7 +22,7 @@
   "dependencies": {
     "@ethersproject/address": "5.0.7",
     "@ethersproject/basex": "5.0.7",
-    "@polywrap/core-js": "0.0.1-prealpha.89",
+    "@polywrap/core-js": "0.0.1-prealpha.90",
     "ethers": "5.0.7"
   },
   "devDependencies": {

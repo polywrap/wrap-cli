@@ -1,5 +1,5 @@
 import { PluginRegistration } from "@polywrap/core-js";
-import { ensPlugin } from "@polywrap/ens-plugin-js";
+import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { PolywrapClient, defaultIpfsProviders } from "@polywrap/client-js";
@@ -15,8 +15,8 @@ export function getSimpleClient(config: SimpleClientConfig): PolywrapClient {
   const plugins: PluginRegistration[] = [];
   if (ensAddress) {
     plugins.push({
-      uri: "wrap://ens/ens.polywrap.eth",
-      plugin: ensPlugin({
+      uri: "wrap://ens/ens-resolver.polywrap.eth",
+      plugin: ensResolverPlugin({
         addresses: {
           testnet: ensAddress,
         },

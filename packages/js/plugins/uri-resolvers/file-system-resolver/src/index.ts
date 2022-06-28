@@ -54,7 +54,7 @@ export class FileSystemResolverPlugin extends Module<NoConfig> {
     if (manifest) {
       return { uri: null, manifest };
     } else {
-      // Noting found
+      // Nothing found
       return { uri: null, manifest: null };
     }
   }

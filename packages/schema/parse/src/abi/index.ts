@@ -20,7 +20,7 @@ export * from "./module";
 export * from "./env";
 export * from "./map";
 
-export interface TypeInfo {
+export interface Abi {
   objectTypes: ObjectDefinition[];
   moduleType?: ModuleDefinition;
   enumTypes: EnumDefinition[];
@@ -31,7 +31,7 @@ export interface TypeInfo {
   envType: EnvDefinition;
 }
 
-export function createTypeInfo(): TypeInfo {
+export function createAbi(): Abi {
   return {
     objectTypes: [],
     enumTypes: [],
@@ -45,8 +45,8 @@ export function createTypeInfo(): TypeInfo {
 
 type ImportedDefinition = ImportedObjectDefinition | ImportedModuleDefinition;
 
-export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
-  const combined: TypeInfo = {
+export function combineAbi(abis: Abi[]): Abi {
+  const combined: Abi = {
     objectTypes: [],
     moduleType: createModuleDefinition({}),
     enumTypes: [],
@@ -64,18 +64,18 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
     return a.uri === b.uri && a.nativeType === b.nativeType;
   };
 
-  for (const typeInfo of typeInfos) {
-    for (const enumType of typeInfo.enumTypes) {
+  for (const abi of abis) {
+    for (const enumType of abi.enumTypes) {
       tryInsert(combined.enumTypes, enumType);
     }
 
-    for (const objectType of typeInfo.objectTypes) {
+    for (const objectType of abi.objectTypes) {
       tryInsert(combined.objectTypes, objectType);
     }
 
-    combined.moduleType = typeInfo.moduleType;
+    combined.moduleType = abi.moduleType;
 
-    for (const interfaceType of typeInfo.interfaceTypes) {
+    for (const interfaceType of abi.interfaceTypes) {
       tryInsert(
         combined.interfaceTypes,
         interfaceType,
@@ -107,7 +107,7 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
       );
     }
 
-    for (const importedObjectType of typeInfo.importedObjectTypes) {
+    for (const importedObjectType of abi.importedObjectTypes) {
       tryInsert(
         combined.importedObjectTypes,
         importedObjectType,
@@ -115,7 +115,7 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
       );
     }
 
-    for (const importedModuleType of typeInfo.importedModuleTypes) {
+    for (const importedModuleType of abi.importedModuleTypes) {
       tryInsert(
         combined.importedModuleTypes,
         importedModuleType,
@@ -126,16 +126,16 @@ export function combineTypeInfo(typeInfos: TypeInfo[]): TypeInfo {
       );
     }
 
-    for (const importedEnumType of typeInfo.importedEnumTypes) {
+    for (const importedEnumType of abi.importedEnumTypes) {
       tryInsert(combined.importedEnumTypes, importedEnumType);
     }
 
-    if (typeInfo.envType.client) {
-      combined.envType.client = typeInfo.envType.client;
+    if (abi.envType.client) {
+      combined.envType.client = abi.envType.client;
     }
 
-    if (typeInfo.envType.sanitized) {
-      combined.envType.sanitized = typeInfo.envType.sanitized;
+    if (abi.envType.sanitized) {
+      combined.envType.sanitized = abi.envType.sanitized;
     }
   }
 
@@ -166,7 +166,7 @@ const tryInsert = (
     const valueType = JSON.stringify(value);
     if (destType !== valueType) {
       throw Error(
-        `combineTypeInfo found two types by the same type that are not equivalent.\n` +
+        `combineAbi found two types by the same type that are not equivalent.\n` +
           `Type: "${value.type}"\nObject A: ${destType}\nObject B: ${valueType}`
       );
     }

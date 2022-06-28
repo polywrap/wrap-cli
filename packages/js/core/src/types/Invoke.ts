@@ -18,14 +18,6 @@ export interface InvokeOptions<
   args?: Record<string, unknown> | Uint8Array | ArrayBuffer;
 
   /**
-   * Filters the [[InvokeResult]] data properties. The key
-   * of this map is the property's name, while the value is
-   * either true (meaning select this prop), or a nested named map,
-   * allowing for the filtering of nested objects.
-   */
-  resultFilter?: Record<string, unknown>;
-
-  /**
    * If set to true, the invoke function will not decode the msgpack results
    * into JavaScript objects, and instead return the raw ArrayBuffer.
    */

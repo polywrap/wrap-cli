@@ -13,7 +13,7 @@ import {
 } from "@polywrap/client-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
-import { ensPlugin } from "@polywrap/ens-plugin-js";
+import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
 import fs from "fs";
 import path from "path";
@@ -40,8 +40,8 @@ describe("Filesystem plugin", () => {
           }),
         },
         {
-          uri: "wrap://ens/ens.polywrap.eth",
-          plugin: ensPlugin({
+          uri: "wrap://ens/ens-resolver.polywrap.eth",
+          plugin: ensResolverPlugin({
             addresses: {
               testnet: ensAddresses.ensAddress,
             },

@@ -1,4 +1,4 @@
-import { TypeInfo } from "../typeInfo";
+import { Abi } from "../abi";
 import { getEnumTypesVisitor } from "./enum-types";
 import { getObjectTypesVisitor } from "./object-types";
 import { getModuleTypesVisitor } from "./module-types";
@@ -9,7 +9,7 @@ import { getEnvVisitor } from "./env-types";
 
 import { ASTVisitor } from "graphql";
 
-export type SchemaExtractorBuilder = (typeInfo: TypeInfo) => ASTVisitor;
+export type SchemaExtractorBuilder = (abi: Abi) => ASTVisitor;
 
 export const extractors: SchemaExtractorBuilder[] = [
   getEnumTypesVisitor,

@@ -1,3 +1,20 @@
+# Polywrap 0.0.1-prealpha.90
+## Features
+* [PR-912](https://github.com/polywrap/monorepo/pull/912) [PR-930](https://github.com/polywrap/monorepo/pull/930) [PR-958](https://github.com/polywrap/monorepo/pull/958) All URI resolver extensions have been decoupled and moved into their own plugin packages:
+  * `@polywrap/fs-resolver-plugin-js`
+  * `@polywrap/ipfs-resolver-plugin-js`
+  * `@polywrap/ens-resolver-plugin-js`
+* [PR-912](https://github.com/polywrap/monorepo/pull/912) `@polywrap/file-system-interface` has been created to help standardize FileSystem wrapper implementations.
+* [PR-930](https://github.com/polywrap/monorepo/pull/930) `@polywrap/ipfs-interface` has been created to help standardize IPFS wrapper implementations.
+
+## Bugs
+* [PR-957](https://github.com/polywrap/monorepo/pull/957) `@polywrap/schema-bind`: `plugin/typescript` module config type interfaces no longer inherit from `Record<string, unknown>`, making them more type-safe and less generic.
+
+## Breaking Changes
+* [PR-937](https://github.com/polywrap/monorepo/issues/937) [PR-960](https://github.com/polywrap/monorepo/pull/960) The term `Nullable` has been changed to `Optional` within the `wasm` wrapper codegen. Additionally in `wasm/assemblyscript` the `Nullable<T>` type has been changed to a rust-style `Optional<T>` type.
+* [PR-972](https://github.com/polywrap/monorepo/pull/972) The term `input` in the context of invocations has been renamed to `args`.
+* [PR-976](https://github.com/polywrap/monorepo/pull/976) The invocation `resultFilter` option has been deprecated, as it is a needless & unused feature.
+
 # Polywrap 0.0.1-prealpha.89
 ## Features
 * [PR-903](https://github.com/polywrap/monorepo/pull/903) `polywrap` CLI: Recipes have been re-worked into composable workflows, and they can be run using CLI commands.

@@ -1,10 +1,10 @@
 import {
-  TypeInfo,
+  Abi,
   createObjectDefinition,
   EnvDefinition,
   isEnvType,
   isClientEnvType,
-} from "../typeInfo";
+} from "../abi";
 import {
   extractFieldDefinition,
   extractListType,
@@ -62,11 +62,11 @@ const visitorLeave = (state: State) => ({
   },
 });
 
-export function getEnvVisitor(typeInfo: TypeInfo): ASTVisitor {
+export function getEnvVisitor(abi: Abi): ASTVisitor {
   const state: State = {};
 
   return {
-    enter: visitorEnter(typeInfo.envType, state),
+    enter: visitorEnter(abi.envType, state),
     leave: visitorLeave(state),
   };
 }

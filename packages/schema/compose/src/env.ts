@@ -2,10 +2,10 @@ import {
   ObjectDefinition,
   MODULE_NAME,
   AnyDefinition,
-  TypeInfo,
+  Abi,
 } from "@polywrap/schema-parse";
 
-export function validateEnv(info: TypeInfo): void {
+export function validateEnv(info: Abi): void {
   if (info.envType.client) {
     validateClientEnvironment(
       info,
@@ -16,7 +16,7 @@ export function validateEnv(info: TypeInfo): void {
 }
 
 export function validateClientEnvironment(
-  info: TypeInfo,
+  info: Abi,
   client: ObjectDefinition,
   sanitized?: ObjectDefinition
 ): void {
