@@ -155,6 +155,7 @@ type TestImport_Module @imported(
     optEnum: TestImport_Enum
     enumArray: [TestImport_Enum!]!
     optEnumArray: [TestImport_Enum]
+    env: TestImport_Env!
   ): TestImport_Object
 
   anotherMethod(

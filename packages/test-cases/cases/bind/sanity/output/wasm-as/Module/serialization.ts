@@ -187,7 +187,14 @@ export class Input_objectMethod {
   env: Types.Env;
 }
 
-export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer, env: Types.Env): Input_objectMethod {
+class Input_objectMethodWithoutEnv {
+  object: Types.AnotherType;
+  optObject: Types.AnotherType | null;
+  objectArray: Array<Types.AnotherType>;
+  optObjectArray: Array<Types.AnotherType | null> | null;
+}
+
+export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectMethodWithoutEnv {
   const context: Context = new Context("Deserializing module-type: objectMethod");
   const reader = new ReadDecoder(argsBuf, context);
   let numFields = reader.readMapLength();
@@ -198,8 +205,6 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer, env: Types.Env
   let _objectArray: Array<Types.AnotherType> = [];
   let _objectArraySet: bool = false;
   let _optObjectArray: Array<Types.AnotherType | null> | null = null;
-  let _env: Types.Env | null = null;
-  let _envSet: bool = false;
 
   while (numFields > 0) {
     numFields--;
@@ -242,13 +247,6 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer, env: Types.Env
       });
       reader.context().pop();
     }
-    else if (field == "env") {
-      reader.context().push(field, "Types.Env", "type found, reading property");
-      const object = Types.Env.read(reader);
-      _env = object;
-      _envSet = true;
-      reader.context().pop();
-    }
     reader.context().pop();
   }
 
@@ -264,7 +262,6 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer, env: Types.Env
     optObject: _optObject,
     objectArray: _objectArray,
     optObjectArray: _optObjectArray,
-    env: _env ? _env : env
   };
 }
 
@@ -297,7 +294,14 @@ export class Input_optionalEnvMethod {
   env: Types.Env | null;
 }
 
-export function deserializeoptionalEnvMethodArgs(argsBuf: ArrayBuffer, env: Types.Env | null): Input_optionalEnvMethod {
+class Input_optionalEnvMethodWithoutEnv {
+  object: Types.AnotherType;
+  optObject: Types.AnotherType | null;
+  objectArray: Array<Types.AnotherType>;
+  optObjectArray: Array<Types.AnotherType | null> | null;
+}
+
+export function deserializeoptionalEnvMethodArgs(argsBuf: ArrayBuffer): Input_optionalEnvMethodWithoutEnv {
   const context: Context = new Context("Deserializing module-type: optionalEnvMethod");
   const reader = new ReadDecoder(argsBuf, context);
   let numFields = reader.readMapLength();
@@ -308,7 +312,6 @@ export function deserializeoptionalEnvMethodArgs(argsBuf: ArrayBuffer, env: Type
   let _objectArray: Array<Types.AnotherType> = [];
   let _objectArraySet: bool = false;
   let _optObjectArray: Array<Types.AnotherType | null> | null = null;
-  let _env: Types.Env | null = null;
 
   while (numFields > 0) {
     numFields--;
@@ -351,15 +354,6 @@ export function deserializeoptionalEnvMethodArgs(argsBuf: ArrayBuffer, env: Type
       });
       reader.context().pop();
     }
-    else if (field == "env") {
-      reader.context().push(field, "Types.Env | null", "type found, reading property");
-      let object: Types.Env | null = null;
-      if (!reader.isNextNil()) {
-        object = Types.Env.read(reader);
-      }
-      _env = object;
-      reader.context().pop();
-    }
     reader.context().pop();
   }
 
@@ -375,7 +369,6 @@ export function deserializeoptionalEnvMethodArgs(argsBuf: ArrayBuffer, env: Type
     optObject: _optObject,
     objectArray: _objectArray,
     optObjectArray: _optObjectArray,
-    env: _env ? _env : env
   };
 }
 

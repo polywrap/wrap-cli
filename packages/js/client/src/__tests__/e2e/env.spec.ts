@@ -140,10 +140,14 @@ describe("env", () => {
   describe("complex env types", () => {
     let client: Client;
     
-    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/env-types`
+    const baseWrapperEnvPaths = `${GetPathToTestWrappers()}/wasm-as/env-types`
+    const wrapperPath = `${baseWrapperEnvPaths}/main`
+    const externalWrapperPath = `${baseWrapperEnvPaths}/external`
     const wrapperUri = `fs/${wrapperPath}/build`
+    const externalWrapperUri = `fs/${externalWrapperPath}/build`
 
     beforeAll(async () => {
+      await buildWrapper(externalWrapperPath);
       await buildWrapper(wrapperPath);
 
       client = await getClient({
@@ -162,23 +166,36 @@ describe("env", () => {
               array: [32, 23],
             },
           },
+          {
+            uri: externalWrapperUri,
+            env: {
+              externalArray: [1, 2, 3],
+              externalString: "iamexternal"
+            },
+          },
         ],
+        redirects: [
+          {
+            from: "ens/externalenv.polywrap.eth",
+            to: externalWrapperUri
+          }
+        ]
       });
     });
 
     test("mockEnv", async () => {
-      const moduleEnv = await client.query({
+      const methodRequireEnv = await client.query({
         uri: wrapperUri,
         query: `
           query {
-            moduleEnv(
+            methodRequireEnv(
               arg: "string"
             )
           }
         `,
       });
-      expect(moduleEnv.errors).toBeFalsy();
-      expect(moduleEnv.data?.moduleEnv).toEqual({
+      expect(methodRequireEnv.errors).toBeFalsy();
+      expect(methodRequireEnv.data?.methodRequireEnv).toEqual({
         str: "string",
         optFilledStr: "optional string",
         optStr: null,
@@ -196,19 +213,55 @@ describe("env", () => {
       });
     });
 
-    test("module time env types", async () => {
-      const moduleEnv = await client.query({
+    test("Subinvoke env", async () => {
+      const subinvokeEnvMethod = await client.query({
         uri: wrapperUri,
         query: `
           query {
-            moduleEnv(
+            subinvokeEnvMethod(
               arg: "string"
             )
           }
         `,
       });
-      expect(moduleEnv.errors).toBeFalsy();
-      expect(moduleEnv.data?.moduleEnv).toEqual({
+      expect(subinvokeEnvMethod.errors).toBeFalsy();
+      expect(subinvokeEnvMethod.data?.subinvokeEnvMethod).toEqual({
+        local: {
+          str: "string",
+          optFilledStr: "optional string",
+          optStr: null,
+          number: 10,
+          optNumber: null,
+          bool: true,
+          optBool: null,
+          object: {
+            prop: "object string",
+          },
+          optObject: null,
+          en: 0,
+          optEnum: null,
+          array: [32, 23],
+        },
+        external: {
+          externalArray: [1, 2, 3],
+          externalString: "iamexternal"
+        }
+      });
+    });
+
+    test("module time env types", async () => {
+      const methodRequireEnv = await client.query({
+        uri: wrapperUri,
+        query: `
+          query {
+            methodRequireEnv(
+              arg: "string"
+            )
+          }
+        `,
+      });
+      expect(methodRequireEnv.errors).toBeFalsy();
+      expect(methodRequireEnv.data?.methodRequireEnv).toEqual({
         str: "string",
         optFilledStr: "optional string",
         optStr: null,
@@ -229,7 +282,7 @@ describe("env", () => {
         uri: wrapperUri,
         query: `
           query {
-            moduleEnv(
+            methodRequireEnv(
               arg: "string"
             )
           }
@@ -254,7 +307,7 @@ describe("env", () => {
         },
       });
       expect(mockUpdatedEnv.errors).toBeFalsy();
-      expect(mockUpdatedEnv.data?.moduleEnv).toEqual({
+      expect(mockUpdatedEnv.data?.methodRequireEnv).toEqual({
         str: "another string",
         optFilledStr: "optional string",
         optStr: null,
@@ -273,118 +326,39 @@ describe("env", () => {
     });
   });
 
-  describe("env client types", () => {
-    let client: Client;
-
-    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/env-client-types`
-    const wrapperUri = `fs/${wrapperPath}/build`
-
-    beforeAll(async () => {
-      await buildWrapper(wrapperPath);
-
-      client = await getClient({
+  describe.skip("env client types", () => {
+    test("plugin env types", async () => {
+      const implementationUri = "wrap://ens/some-implementation.eth";
+      const envPlugin = mockEnvPlugin();
+      const client = await getClient({
+        plugins: [
+          {
+            uri: implementationUri,
+            plugin: envPlugin,
+          },
+        ],
         envs: [
           {
-            uri: wrapperUri,
+            uri: implementationUri,
             env: {
-              str: "string",
+              arg1: "10",
             },
           },
         ],
       });
-    });
 
-    test("module", async () => {
-      const mockEnd = await client.query({
-        uri: wrapperUri,
+      const mockEnv = await client.query({
+        uri: implementationUri,
         query: `
           query {
-            environment(
-              arg: "string"
-            )
+            mockEnv
           }
         `,
       });
-      expect(mockEnd.errors).toBeFalsy();
-      expect(mockEnd.data?.environment).toEqual({
-        str: "string",
-        optStr: null,
-        defStr: "default string",
-      });
+
+      expect(mockEnv.errors).toBeFalsy();
+      expect(mockEnv.data).toBeTruthy();
+      expect(mockEnv.data?.mockEnv).toMatchObject({ arg1: "10" });
     });
-  });
-
-  test("set env when not required", async () => {
-    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/enum-types`
-    const wrapperUri = `fs/${wrapperPath}/build`
-    
-    await buildWrapper(wrapperPath);
-
-    const client = await getClient({
-      envs: [
-        {
-          uri: wrapperUri,
-          env: {
-            str: "string",
-          },
-        },
-      ],
-    });
-
-    const mockEnv = await client.query({
-      uri: wrapperUri,
-      query: `
-        query {
-          method1(en: 0) 
-        }
-      `,
-      config: {
-        envs: [
-          {
-            uri: wrapperUri,
-            env: {
-              str: "string",
-            },
-          },
-        ],
-      },
-    });
-
-    expect(mockEnv.errors).toBeFalsy();
-    expect(mockEnv.data?.method1).toEqual(0);
-  });
-
-  test("plugin env types", async () => {
-    const implementationUri = "wrap://ens/some-implementation.eth";
-    const envPlugin = mockEnvPlugin();
-    const client = await getClient({
-      plugins: [
-        {
-          uri: implementationUri,
-          plugin: envPlugin,
-        },
-      ],
-      envs: [
-        {
-          uri: implementationUri,
-          env: {
-            arg1: "10",
-          },
-        },
-      ],
-    });
-
-    const mockEnv = await client.query({
-      uri: implementationUri,
-      query: `
-        query {
-          mockEnv
-        }
-      `,
-    });
-
-    expect(mockEnv.errors).toBeFalsy();
-    expect(mockEnv.data).toBeTruthy();
-    expect(mockEnv.data?.mockEnv).toMatchObject({ arg1: "10" });
-  });
+  })
 });

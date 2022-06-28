@@ -5,7 +5,9 @@ import * as Types from "../..";
 {{#methods}}
 export class Input_{{name}} {
   {{#arguments}}
+  {{^isEnv}}
   {{#handleKeywords}}{{name}}{{/handleKeywords}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
+  {{/isEnv}}
   {{/arguments}}
 }
 
@@ -24,8 +26,9 @@ export function write{{name}}Args(
   writer: Write,
   input: Input_{{name}}
 ): void {
-  writer.writeMapLength({{arguments.length}});
+  writer.writeMapLength({{#hasEnv}}{{arguments.length}} - 1{{/hasEnv}}{{^hasEnv}}{{arguments.length}}{{/hasEnv}});
   {{#arguments}}
+  {{^isEnv}}
   writer.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
   writer.writeString("{{name}}");
   {{#scalar}}
@@ -66,6 +69,7 @@ export function write{{name}}Args(
   {{/required}}
   {{/object}}
   writer.context().pop();
+  {{/isEnv}}
   {{/arguments}}
 }
 

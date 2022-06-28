@@ -206,7 +206,7 @@ export const createImports = (config: {
         writeBytes(state.getImplementationsResult, memory.buffer, ptr);
       },
       __wrap_load_env: (ptr: u32): void => {
-        writeBytes(state.env as ArrayBuffer, memory.buffer, ptr);
+        writeBytes(state.env, memory.buffer, ptr);
       },
       __wrap_abort: (
         msgPtr: u32,

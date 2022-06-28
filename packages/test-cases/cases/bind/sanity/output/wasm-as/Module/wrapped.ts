@@ -36,7 +36,7 @@ export function objectMethodWrapped(argsBuf: ArrayBuffer, env_size: u32): ArrayB
   
   const envBuf = wrap_load_env(env_size);
   const env = Types.Env.fromBuffer(envBuf);
-  const args = deserializeobjectMethodArgs(argsBuf, env);
+  const args = deserializeobjectMethodArgs(argsBuf);
 
   const result = objectMethod({
     object: args.object,
@@ -54,7 +54,7 @@ export function optionalEnvMethodWrapped(argsBuf: ArrayBuffer, env_size: u32): A
     const envBuf = wrap_load_env(env_size);
     env = Types.Env.fromBuffer(envBuf);
   }
-  const args = deserializeoptionalEnvMethodArgs(argsBuf, env);
+  const args = deserializeoptionalEnvMethodArgs(argsBuf);
 
   const result = optionalEnvMethod({
     object: args.object,

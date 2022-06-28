@@ -34,12 +34,12 @@ export function {{name}}Wrapped(argsBuf: ArrayBuffer, env_size: u32): ArrayBuffe
   {{/isEnvRequired}}
   {{/hasEnv}}
   {{#arguments.length}}
-  const args = deserialize{{name}}Args(argsBuf{{#hasEnv}}, env{{/hasEnv}});
+  const args = deserialize{{name}}Args(argsBuf);
   {{/arguments.length}}
 
   const result = {{name}}({{#arguments.length}}{
     {{#arguments}}
-    {{^isEnv}}{{#handleKeywords}}{{name}}{{/handleKeywords}}: args.{{#handleKeywords}}{{name}}{{/handleKeywords}}{{^last}},{{/last}}{{/isEnv}}{{#isEnv}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{^last}},{{/last}}{{/isEnv}}
+    {{^isEnv}}{{#handleKeywords}}{{name}}{{/handleKeywords}}: args.{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/isEnv}}{{#isEnv}}env{{/isEnv}}{{^last}},{{/last}}
     {{/arguments}}
   }{{/arguments.length}});
   return serialize{{name}}Result(result);

@@ -874,7 +874,6 @@ async function resolveExternalImports(
         destArray = typeInfo.importedEnvTypes;
         append = () => {
           const importDef = importType as ImportedEnvDefinition;
-          // Namespace all object types
           typeInfo.importedEnvTypes.push(
             visitImportedEnvDefinition(importDef, namespaceTypes(namespace))
           );
@@ -883,7 +882,6 @@ async function resolveExternalImports(
         destArray = typeInfo.importedObjectTypes;
         append = () => {
           const importDef = importType as ImportedObjectDefinition;
-          // Namespace all object types
           typeInfo.importedObjectTypes.push(
             visitImportedObjectDefinition(importDef, namespaceTypes(namespace))
           );
@@ -892,7 +890,6 @@ async function resolveExternalImports(
         destArray = typeInfo.importedModuleTypes;
         append = () => {
           const importDef = importType as ImportedModuleDefinition;
-          // Namespace all object types
           typeInfo.importedModuleTypes.push(
             visitImportedModuleDefinition(importDef, namespaceTypes(namespace))
           );

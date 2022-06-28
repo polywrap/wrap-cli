@@ -1,8 +1,11 @@
 import {
   Env,
+  ExternalEnvApi_Module,
+  ExternalEnvApi_Env,
   Input_methodNoEnv,
   Input_methodRequireEnv,
   Input_methodOptionalEnv,
+  CompoundEnv,
 } from "./wrap";
 
 function createEnv(env: Env): Env {
@@ -32,4 +35,13 @@ export function methodRequireEnv(input: Input_methodRequireEnv): Env {
 
 export function methodOptionalEnv(input: Input_methodOptionalEnv): Env | null {
   return input.env ? createEnv(input.env as Env) : null;
+}
+
+export function subinvokeEnvMethod(input: Input_methodRequireEnv): CompoundEnv {
+  const externalEnv = ExternalEnvApi_Module.externalEnvMethod({}).unwrap()
+  
+  return {
+    local: input.env,
+    external: externalEnv
+  };
 }

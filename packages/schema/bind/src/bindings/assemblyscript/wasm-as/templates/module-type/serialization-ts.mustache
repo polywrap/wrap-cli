@@ -7,14 +7,25 @@ export class Input_{{name}} {
   {{#handleKeywords}}{{name}}{{/handleKeywords}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
   {{/arguments}}
 }
+{{#hasEnv}}
 
-export function deserialize{{name}}Args(argsBuf: ArrayBuffer{{#hasEnv}}, env: Types.Env{{^isEnvRequired}} | null{{/isEnvRequired}}{{/hasEnv}}): Input_{{name}} {
+class Input_{{name}}WithoutEnv {
+  {{#arguments}}
+  {{^isEnv}}
+  {{#handleKeywords}}{{name}}{{/handleKeywords}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
+  {{/isEnv}}
+  {{/arguments}}
+}
+{{/hasEnv}}
+
+export function deserialize{{name}}Args(argsBuf: ArrayBuffer): {{#hasEnv}}Input_{{name}}WithoutEnv{{/hasEnv}}{{^hasEnv}}Input_{{name}}{{/hasEnv}} {
   const context: Context = new Context("Deserializing module-type: {{name}}");
   {{#arguments.length}}
   const reader = new ReadDecoder(argsBuf, context);
   let numFields = reader.readMapLength();
 
   {{#arguments}}
+  {{^isEnv}}
   {{^object}}
   let _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
   {{/object}}
@@ -29,6 +40,7 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer{{#hasEnv}}, env: Ty
   {{#required}}
   let _{{name}}Set: bool = false;
   {{/required}}
+  {{/isEnv}}
   {{/arguments}}
 
   while (numFields > 0) {
@@ -37,6 +49,7 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer{{#hasEnv}}, env: Ty
 
     reader.context().push(field, "unknown", "searching for property type");
     {{#arguments}}
+    {{^isEnv}}
     {{^first}}else {{/first}}if (field == "{{name}}") {
       reader.context().push(field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading property");
       {{#scalar}}
@@ -69,6 +82,7 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer{{#hasEnv}}, env: Ty
       {{/required}}
       reader.context().pop();
     }
+    {{/isEnv}}
     {{/arguments}}
     reader.context().pop();
   }
@@ -91,7 +105,9 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer{{#hasEnv}}, env: Ty
 
   return {
     {{#arguments}}
-    {{#handleKeywords}}{{name}}{{/handleKeywords}}: _{{name}}{{#isEnv}} ? _{{name}} : env{{/isEnv}}{{^last}},{{/last}}
+    {{^isEnv}}
+    {{#handleKeywords}}{{name}}{{/handleKeywords}}: _{{name}}{{^last}},{{/last}}
+    {{/isEnv}}
     {{/arguments}}
   };
 }
