@@ -1,5 +1,5 @@
 import {
-  TypeInfo,
+  Abi,
   createModuleDefinition,
   createMethodDefinition,
   createPropertyDefinition,
@@ -10,7 +10,7 @@ import {
   InterfaceDefinition,
   capabilityTypes,
   MapDefinition,
-} from "../typeInfo";
+} from "../abi";
 import {
   extractInputValueDefinition,
   extractListType,
@@ -32,7 +32,7 @@ import {
   ASTVisitor,
 } from "graphql";
 
-const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
+const visitorEnter = (abi: Abi, state: State) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     const nodeName = node.name.value;
 
@@ -53,7 +53,7 @@ const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
       comment: node.description?.value,
     });
 
-    typeInfo.moduleType = module;
+    abi.moduleType = module;
     state.currentModule = module;
   },
   FieldDefinition: (node: FieldDefinitionNode) => {
@@ -263,11 +263,11 @@ const parseImportsDirective = (
   return imports;
 };
 
-const visitorLeave = (typeInfo: TypeInfo, state: State) => ({
+const visitorLeave = (abi: Abi, state: State) => ({
   ObjectTypeDefinition: (_node: ObjectTypeDefinitionNode) => {
     if (state.currentInterfaces) {
-      typeInfo.interfaceTypes = [
-        ...typeInfo.interfaceTypes,
+      abi.interfaceTypes = [
+        ...abi.interfaceTypes,
         ...state.currentInterfaces,
       ];
     }
@@ -287,11 +287,11 @@ const visitorLeave = (typeInfo: TypeInfo, state: State) => ({
   },
 });
 
-export const getModuleTypesVisitor = (typeInfo: TypeInfo): ASTVisitor => {
+export const getModuleTypesVisitor = (abi: Abi): ASTVisitor => {
   const state: State = {};
 
   return {
-    enter: visitorEnter(typeInfo, state),
-    leave: visitorLeave(typeInfo, state),
+    enter: visitorEnter(abi, state),
+    leave: visitorLeave(abi, state),
   };
 };

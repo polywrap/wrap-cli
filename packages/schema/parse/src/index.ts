@@ -1,19 +1,19 @@
-import { TypeInfo, createTypeInfo } from "./typeInfo";
+import { Abi, createAbi } from "./abi";
 import { extractors, SchemaExtractorBuilder } from "./extract";
-import { TypeInfoTransforms, transformTypeInfo } from "./transform";
+import { AbiTransforms, transformAbi } from "./transform";
 import { finalizePropertyDef } from "./transform/finalizePropertyDef";
 import { validators } from "./validate";
 import { SchemaValidatorBuilder } from "./validate";
 
 import { DocumentNode, parse, visit, visitInParallel } from "graphql";
 
-export * from "./typeInfo";
+export * from "./abi";
 export * from "./transform";
 export * from "./header";
 
 interface ParserOptions {
   extractors?: SchemaExtractorBuilder[];
-  transforms?: TypeInfoTransforms[];
+  transforms?: AbiTransforms[];
   validators?: SchemaValidatorBuilder[];
   noValidate?: boolean;
 }
@@ -21,7 +21,7 @@ interface ParserOptions {
 export function parseSchema(
   schema: string,
   options: ParserOptions = {}
-): TypeInfo {
+): Abi {
   const astNode = parse(schema);
 
   // Validate GraphQL Schema
@@ -30,18 +30,18 @@ export function parseSchema(
     validate(astNode, validates);
   }
 
-  // Extract & Build TypeInfo
-  let info = createTypeInfo();
+  // Extract & Build Abi
+  let info = createAbi();
 
   const extracts = options.extractors || extractors;
   extract(astNode, info, extracts);
 
-  // Finalize & Transform TypeInfo
-  info = transformTypeInfo(info, finalizePropertyDef(info));
+  // Finalize & Transform Abi
+  info = transformAbi(info, finalizePropertyDef(info));
 
   if (options && options.transforms) {
     for (const transform of options.transforms) {
-      info = transformTypeInfo(info, transform);
+      info = transformAbi(info, transform);
     }
   }
 
@@ -67,10 +67,10 @@ const validate = (
 
 const extract = (
   astNode: DocumentNode,
-  typeInfo: TypeInfo,
+  abi: Abi,
   extractors: SchemaExtractorBuilder[]
 ) => {
-  const allVisitors = extractors.map((getVisitor) => getVisitor(typeInfo));
+  const allVisitors = extractors.map((getVisitor) => getVisitor(abi));
 
   visit(astNode, visitInParallel(allVisitors));
 };

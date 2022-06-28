@@ -1,9 +1,9 @@
-import { TypeInfoTransforms } from ".";
+import { AbiTransforms } from ".";
 import {
   InterfaceDefinition,
   CapabilityDefinition,
-  TypeInfo,
-} from "../typeInfo";
+  Abi,
+} from "../abi";
 
 export interface ModuleCapability {
   type: string;
@@ -11,7 +11,7 @@ export interface ModuleCapability {
   namespace: string;
 }
 
-export function moduleCapabilities(): TypeInfoTransforms {
+export function moduleCapabilities(): AbiTransforms {
   const capabilities: ModuleCapability[] = [];
 
   const enabledInterfaces: Set<string> = new Set();
@@ -34,7 +34,7 @@ export function moduleCapabilities(): TypeInfoTransforms {
       },
     },
     leave: {
-      TypeInfo: (info: TypeInfo) => {
+      Abi: (info: Abi) => {
         if (info.moduleType) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (info.moduleType as any).capabilities = capabilities;

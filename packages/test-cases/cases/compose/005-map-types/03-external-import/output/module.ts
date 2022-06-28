@@ -2,16 +2,16 @@ import {
   createModuleDefinition,
   createInterfaceImplementedDefinition,
   createImportedModuleDefinition,
-  createTypeInfo,
-  TypeInfo,
+  createAbi,
+  Abi,
   createMethodDefinition,
   createMapPropertyDefinition,
   createMapKeyDefinition,
   createScalarDefinition,
 } from "@polywrap/schema-parse";
 
-export const typeInfo: TypeInfo = {
-  ...createTypeInfo(),
+export const abi: Abi = {
+  ...createAbi(),
   moduleType:
     {
       ...createModuleDefinition({}),

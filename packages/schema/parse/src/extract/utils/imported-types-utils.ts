@@ -1,4 +1,4 @@
-import { ImportedDefinition, MODULE_NAME } from "../../typeInfo";
+import { ImportedDefinition, MODULE_NAME } from "../../abi";
 
 import { DirectiveNode, TypeDefinitionNode } from "graphql";
 

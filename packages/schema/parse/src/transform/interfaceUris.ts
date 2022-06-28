@@ -1,7 +1,7 @@
-import { TypeInfoTransforms } from ".";
-import { TypeInfo, ModuleDefinition, ObjectDefinition } from "../typeInfo";
+import { AbiTransforms } from ".";
+import { Abi, ModuleDefinition, ObjectDefinition } from "../abi";
 
-export function interfaceUris(): TypeInfoTransforms {
+export function interfaceUris(): AbiTransforms {
   const uniqueInterfaceUris: Record<string, boolean> = {};
   const uniqueModuleInterfaceTypes: Record<string, boolean> = {};
   const uniqueObjectInterfaceTypes: Record<string, boolean> = {};
@@ -22,9 +22,9 @@ export function interfaceUris(): TypeInfoTransforms {
       },
     },
     leave: {
-      TypeInfo: (typeInfo: TypeInfo) => {
+      Abi: (abi: Abi) => {
         for (const interfaceType of Object.keys(uniqueModuleInterfaceTypes)) {
-          const importedInterface = typeInfo.importedModuleTypes.find(
+          const importedInterface = abi.importedModuleTypes.find(
             (importedModule) => importedModule.type === interfaceType
           );
 
@@ -34,7 +34,7 @@ export function interfaceUris(): TypeInfoTransforms {
         }
 
         for (const interfaceType of Object.keys(uniqueObjectInterfaceTypes)) {
-          const importedInterface = typeInfo.importedObjectTypes.find(
+          const importedInterface = abi.importedObjectTypes.find(
             (importedObject) => importedObject.type === interfaceType
           );
 
@@ -44,7 +44,7 @@ export function interfaceUris(): TypeInfoTransforms {
         }
 
         return {
-          ...typeInfo,
+          ...abi,
           interfaceUris: Object.keys(uniqueInterfaceUris),
         };
       },

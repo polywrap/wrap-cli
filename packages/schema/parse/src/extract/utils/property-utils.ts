@@ -4,7 +4,7 @@ import {
   createUnresolvedObjectOrEnumRef,
   isScalarType,
   PropertyDefinition,
-} from "../../typeInfo";
+} from "../../abi";
 
 const toBoolean = (val: unknown) => (val ? true : false);
 
