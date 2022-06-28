@@ -8,7 +8,6 @@ use polywrap_wasm_rs::{
     InvokeArgs,
 };
 
-#[cfg(feature = "wrap-invoke")]
 #[no_mangle]
 pub extern "C" fn _wrap_invoke(method_size: u32, args_size: u32) -> bool {
     // Ensure the abort handler is properly setup

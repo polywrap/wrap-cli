@@ -64,12 +64,6 @@ RUN rm -rf {{dir}}/Cargo.lock
 # Ensure the Wasm module is configured to use imported memory
 ENV RUSTFLAGS="-C link-arg=-z -C link-arg=stack-size=65536 -C link-arg=--import-memory"
 
-# Enable the wrap-invoke feature for the {{dir}} module
-RUN toml set ./{{dir}}/Cargo.toml features.wrap-invoke [] > ./{{dir}}/Cargo-local.toml && \
-    rm -rf ./{{dir}}/Cargo.toml && \
-    mv ./{{dir}}/Cargo-local.toml ./{{dir}}/Cargo.toml && \
-    true
-
 # Cleanup an artifact left by the toml CLI program ("[]" -> [])
 RUN sed -i 's/"\[\]"/\[\]/g' ./{{dir}}/Cargo.toml
 
@@ -84,7 +78,7 @@ RUN sed -i 's/"\[cdylib,rlib\]"/\["cdylib","rlib"\]/g' ./{{dir}}/Cargo.toml
 
 # Build the module at {{dir}}
 RUN cargo +nightly build --manifest-path ./{{dir}}/Cargo.toml \
-    --target wasm32-unknown-unknown --release --features "wrap-invoke"
+    --target wasm32-unknown-unknown --release
 
 # Make the build directory
 RUN rm -rf ./build
