@@ -1,14 +1,10 @@
 import {
   buildWrapper,
-  ensAddresses,
   initTestEnvironment,
   stopTestEnvironment,
-  providers
 } from "@polywrap/test-env-js";
 import {
   Uri,
-  createPolywrapClient,
-  PolywrapClientConfig,
   PluginModule,
   Subscription,
   PolywrapManifest,
@@ -17,10 +13,12 @@ import {
   deserializePolywrapManifest,
   deserializeBuildManifest,
   deserializeMetaManifest,
-  msgpackDecode
+  msgpackDecode,
 } from "../..";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import fs from "fs";
+import { getClient } from "../utils/getClient";
+import { getClientWithEnsAndIpfs } from "../utils/getClientWithEnsAndIpfs";
 
 jest.setTimeout(200000);
 
@@ -31,42 +29,14 @@ const simpleStorageWrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-stor
 const simpleStorageWrapperUri = new Uri(`fs/${simpleStorageWrapperPath}/build`);
 
 describe("wasm-wrapper", () => {
-  let ipfsProvider: string;
-  let ethProvider: string;
-  let ensAddress: string;
-
   beforeAll(async () => {
     await initTestEnvironment();
-    ipfsProvider = providers.ipfs;
-    ethProvider = providers.ethereum;
-    ensAddress = ensAddresses.ensAddress;
     await buildWrapper(simpleWrapperPath);
   });
 
   afterAll(async () => {
     await stopTestEnvironment();
   });
-
-  const getClient = async (config?: Partial<PolywrapClientConfig>) => {
-    return createPolywrapClient(
-      {
-        ethereum: {
-          networks: {
-            testnet: {
-              provider: ethProvider,
-            },
-          },
-        },
-        ipfs: { provider: ipfsProvider },
-        ens: {
-          addresses: {
-            testnet: ensAddress,
-          },
-        },
-      },
-      config
-    );
-  };
 
   const mockPlugin = () => {
     class MockPlugin extends PluginModule<{}> {
@@ -136,7 +106,7 @@ describe("wasm-wrapper", () => {
     const result = await client.invoke({
       uri: simpleWrapperUri,
       method: "simpleMethod",
-      args: {},
+      args: {
         arg: "test",
       },
     });
@@ -165,7 +135,7 @@ describe("wasm-wrapper", () => {
     const result = await client.invoke({
       uri: simpleWrapperUri.uri,
       method: "simpleMethod",
-      input: {
+      args: {
         arg: "test",
       },
       config: {
@@ -269,52 +239,38 @@ describe("wasm-wrapper", () => {
   });
 
   test("subscribe", async () => {
-    const client = await getClient();
+    const client = await getClientWithEnsAndIpfs();
 
-    const deploy = await client.query<{
-      deployContract: string;
-    }>({
+    const deploy = await client.invoke<string>({
       uri: simpleStorageWrapperUri.uri,
-      query: `
-        mutation {
-          deployContract(
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-        }
-      `,
+      method: "deployContract",
+      args: {
+        connection: {
+          networkNameOrChainId: "testnet",
+        },
+      },
     });
 
-    expect(deploy.errors).toBeFalsy();
+    expect(deploy.error).toBeFalsy();
     expect(deploy.data).toBeTruthy();
-    expect(deploy.data?.deployContract.indexOf("0x")).toBeGreaterThan(-1);
+    expect(deploy.data?.indexOf("0x")).toBeGreaterThan(-1);
 
-    const address = deploy.data?.deployContract;
+    const address = deploy.data;
 
     // test subscription
     let results: number[] = [];
     let value = 0;
 
     const setter = setInterval(async () => {
-      await client.query<{
-        setData: string;
-      }>({
+      await client.invoke({
         uri: simpleStorageWrapperUri.uri,
-        query: `
-        mutation {
-          setData(
-            address: $address
-            value: $value
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-        }
-      `,
-        variables: {
-          address: address,
+        method: "setData",
+        args: {
+          address,
           value: value++,
+          connection: {
+            networkNameOrChainId: "testnet",
+          },
         },
       });
     }, 4000);
@@ -357,52 +313,38 @@ describe("wasm-wrapper", () => {
   });
 
   test("subscription early stop", async () => {
-    const client = await getClient();
+    const client = await getClientWithEnsAndIpfs();
 
-    const deploy = await client.query<{
-      deployContract: string;
-    }>({
+    const deploy = await client.invoke<string>({
       uri: simpleStorageWrapperUri.uri,
-      query: `
-        mutation {
-          deployContract(
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-        }
-      `,
+      method: "deployContract",
+      args: {
+        connection: {
+          networkNameOrChainId: "testnet",
+        },
+      },
     });
 
-    expect(deploy.errors).toBeFalsy();
+    expect(deploy.error).toBeFalsy();
     expect(deploy.data).toBeTruthy();
-    expect(deploy.data?.deployContract.indexOf("0x")).toBeGreaterThan(-1);
+    expect(deploy.data?.indexOf("0x")).toBeGreaterThan(-1);
 
-    const address = deploy.data?.deployContract;
+    const address = deploy.data;
 
     // test subscription
     let results: number[] = [];
     let value = 0;
 
     const setter = setInterval(async () => {
-      await client.query<{
-        setData: string;
-      }>({
+      await client.invoke({
         uri: simpleStorageWrapperUri.uri,
-        query: `
-          mutation {
-            setData(
-              address: $address
-              value: $value
-              connection: {
-                networkNameOrChainId: "testnet"
-              }
-            )
-          }
-        `,
-        variables: {
-          address: address,
+        method: "setData",
+        args: {
+          address,
           value: value++,
+          connection: {
+            networkNameOrChainId: "testnet",
+          },
         },
       });
     }, 4000);
