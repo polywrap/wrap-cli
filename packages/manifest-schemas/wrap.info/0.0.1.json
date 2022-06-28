@@ -1,0 +1,31 @@
+{
+  "id": "WrapManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "name",
+    "type",
+    "abi"
+  ],
+  "properties": {
+    "version": {
+      "description": "Wrap manifest format version",
+      "type": "string",
+      "const": "0.0.1"
+    },
+    "type": {
+      "description" : "Wrap language",
+      "type": "string",
+      "format": "validType"
+    },
+    "name": {
+      "description": "Wrapper name",
+      "type": "string"
+    },
+    "abi": {
+      "description": "Type info of wrapper",
+      "type": "object"
+    }
+  }
+}
