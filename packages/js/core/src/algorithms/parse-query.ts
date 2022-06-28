@@ -51,35 +51,26 @@ export const parseQuery = Tracer.traceFunc(
           );
         }
 
-        // Get all input arguments
+        // Get all arguments
         const selectionArgs = selection.arguments;
-        const input: Record<string, unknown> = {};
+        const args: Record<string, unknown> = {};
 
         if (selectionArgs) {
           for (const arg of selectionArgs) {
             const name = arg.name.value;
 
-            if (input[name]) {
-              throw Error(`Duplicate input argument found: ${name}`);
+            if (args[name]) {
+              throw Error(`Duplicate arguments found: ${name}`);
             }
 
-            input[name] = extractValue(arg.value, variables);
+            args[name] = extractValue(arg.value, variables);
           }
-        }
-
-        // Get the results the query is asking for
-        const selectionResults = selection.selectionSet;
-        let resultFilter: Record<string, unknown> | undefined = undefined;
-
-        if (selectionResults) {
-          resultFilter = extractSelections(selectionResults);
         }
 
         queryInvocations[invocationName] = {
           uri,
           method,
-          input,
-          resultFilter,
+          args,
         };
       }
     }

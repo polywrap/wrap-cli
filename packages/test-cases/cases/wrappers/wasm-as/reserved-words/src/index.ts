@@ -1,10 +1,10 @@
 import {
-  Input_method1,
+  Args_method1,
   Result,
 } from "./wrap";
 
-export function method1(input: Input_method1): Result {
+export function method1(args: Args_method1): Result {
   return {
-    "const": "result: " + input.const.const,
+    "const": "result: " + args.const.const,
   };
 }

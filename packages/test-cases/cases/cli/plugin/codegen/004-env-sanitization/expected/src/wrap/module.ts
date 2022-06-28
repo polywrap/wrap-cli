@@ -9,16 +9,16 @@ import {
   MaybeAsync
 } from "@polywrap/core-js";
 
-export interface Input_sanitizeEnv extends Record<string, unknown> {
+export interface Args_sanitizeEnv extends Record<string, unknown> {
   env: Types.ClientEnv;
 }
 
-export interface Input_method extends Record<string, unknown> {
+export interface Args_method extends Record<string, unknown> {
   str: Types.String;
 }
 
 export abstract class Module<
-  TConfig extends Record<string, unknown>
+  TConfig
 > extends PluginModule<
   TConfig,
   Types.Env,
@@ -26,12 +26,12 @@ export abstract class Module<
 > {
 
   abstract sanitizeEnv(
-    input: Input_sanitizeEnv,
+    args: Args_sanitizeEnv,
     client: Client
   ): MaybeAsync<Types.Env>;
 
   abstract method(
-    input: Input_method,
+    args: Args_method,
     client: Client
   ): MaybeAsync<Types.String>;
 }

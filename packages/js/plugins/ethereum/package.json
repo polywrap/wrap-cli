@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/ethereum-plugin-js",
   "description": "Polywrap Ethereum Javascript Plugin",
-  "version": "0.0.1-prealpha.88",
+  "version": "0.0.1-prealpha.90",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -22,14 +22,14 @@
   "dependencies": {
     "@ethersproject/address": "5.0.7",
     "@ethersproject/providers": "5.0.7",
-    "@polywrap/core-js": "0.0.1-prealpha.88",
+    "@polywrap/core-js": "0.0.1-prealpha.90",
     "ethers": "5.0.7"
   },
   "devDependencies": {
-    "@polywrap/client-js": "0.0.1-prealpha.88",
-    "@polywrap/ens-plugin-js": "0.0.1-prealpha.88",
-    "@polywrap/ipfs-plugin-js": "0.0.1-prealpha.88",
-    "@polywrap/test-env-js": "0.0.1-prealpha.88",
+    "@polywrap/client-js": "0.0.1-prealpha.90",
+    "@polywrap/ens-resolver-plugin-js": "0.0.1-prealpha.90",
+    "@polywrap/ipfs-plugin-js": "0.0.1-prealpha.90",
+    "@polywrap/test-env-js": "0.0.1-prealpha.90",
     "@types/jest": "26.0.8",
     "@types/prettier": "2.6.0",
     "eth-ens-namehash": "2.0.8",

@@ -4,5 +4,5 @@ export * from "./codegen";
 export * from "./create";
 export * from "./deploy";
 export * from "./plugin";
-export * from "./query";
 export * from "./infra";
+export * from "./run";

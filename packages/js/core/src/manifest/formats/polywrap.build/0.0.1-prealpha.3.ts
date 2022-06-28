@@ -34,10 +34,6 @@ export interface BuildManifest {
            */
           cache?: string | boolean;
           /**
-           * Path to cache directory, set to true or false for default value.
-           */
-          output?: string | boolean;
-          /**
            * Remove the builder instance.
            */
           removeBuilder?: boolean;

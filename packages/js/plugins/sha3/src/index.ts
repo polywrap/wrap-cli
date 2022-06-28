@@ -1,21 +1,20 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/naming-convention */
-/* eslint-disable @typescript-eslint/no-empty-interface */
 
 import {
   Module,
-  Input_sha3_512,
-  Input_sha3_384,
-  Input_sha3_256,
-  Input_sha3_224,
-  Input_keccak_512,
-  Input_keccak_384,
-  Input_keccak_256,
-  Input_keccak_224,
-  Input_hex_keccak_256,
-  Input_buffer_keccak_256,
-  Input_shake_128,
-  Input_shake_256,
+  Args_sha3_512,
+  Args_sha3_384,
+  Args_sha3_256,
+  Args_sha3_224,
+  Args_keccak_512,
+  Args_keccak_384,
+  Args_keccak_256,
+  Args_keccak_224,
+  Args_hex_keccak_256,
+  Args_buffer_keccak_256,
+  Args_shake_128,
+  Args_shake_256,
   manifest,
 } from "./wrap";
 
@@ -33,40 +32,40 @@ import {
 } from "js-sha3";
 import { PluginFactory } from "@polywrap/core-js";
 
-export interface Sha3PluginConfig extends Record<string, unknown> {}
+type NoConfig = Record<string, never>;
 
-export class Sha3Plugin extends Module<Sha3PluginConfig> {
-  public sha3_512(input: Input_sha3_512): string {
-    return sha3_512(input.message);
+export class Sha3Plugin extends Module<NoConfig> {
+  public sha3_512(args: Args_sha3_512): string {
+    return sha3_512(args.message);
   }
 
-  public sha3_384(input: Input_sha3_384): string {
-    return sha3_384(input.message);
+  public sha3_384(args: Args_sha3_384): string {
+    return sha3_384(args.message);
   }
 
-  public sha3_256(input: Input_sha3_256): string {
-    return sha3_256(input.message);
+  public sha3_256(args: Args_sha3_256): string {
+    return sha3_256(args.message);
   }
 
-  public sha3_224(input: Input_sha3_224): string {
-    return sha3_224(input.message);
+  public sha3_224(args: Args_sha3_224): string {
+    return sha3_224(args.message);
   }
 
-  public keccak_512(input: Input_keccak_512): string {
-    return keccak_512(input.message);
+  public keccak_512(args: Args_keccak_512): string {
+    return keccak_512(args.message);
   }
 
-  public keccak_384(input: Input_keccak_384): string {
-    return keccak_384(input.message);
+  public keccak_384(args: Args_keccak_384): string {
+    return keccak_384(args.message);
   }
 
-  public keccak_256(input: Input_keccak_256): string {
-    return keccak_256(input.message);
+  public keccak_256(args: Args_keccak_256): string {
+    return keccak_256(args.message);
   }
 
-  public hex_keccak_256(input: Input_hex_keccak_256): string {
+  public hex_keccak_256(args: Args_hex_keccak_256): string {
     // remove the leading 0x
-    const hexString = input.message.replace(/^0x/, "");
+    const hexString = args.message.replace(/^0x/, "");
 
     // ensure even number of characters
     if (hexString.length % 2 != 0) {
@@ -96,28 +95,26 @@ export class Sha3Plugin extends Module<Sha3PluginConfig> {
     return keccak_256(new Uint8Array(integers));
   }
 
-  public buffer_keccak_256(input: Input_buffer_keccak_256): string {
-    return keccak_256(input.message);
+  public buffer_keccak_256(args: Args_buffer_keccak_256): string {
+    return keccak_256(args.message);
   }
 
-  public keccak_224(input: Input_keccak_224): string {
-    return keccak_224(input.message);
+  public keccak_224(args: Args_keccak_224): string {
+    return keccak_224(args.message);
   }
 
-  public shake_128(input: Input_shake_128): string {
-    return shake_128(input.message, input.outputBits);
+  public shake_128(args: Args_shake_128): string {
+    return shake_128(args.message, args.outputBits);
   }
 
-  public shake_256(input: Input_shake_256): string {
-    return shake_256(input.message, input.outputBits);
+  public shake_256(args: Args_shake_256): string {
+    return shake_256(args.message, args.outputBits);
   }
 }
 
-export const sha3Plugin: PluginFactory<Sha3PluginConfig> = (
-  opts: Sha3PluginConfig
-) => {
+export const sha3Plugin: PluginFactory<NoConfig> = () => {
   return {
-    factory: () => new Sha3Plugin(opts),
+    factory: () => new Sha3Plugin({}),
     manifest,
   };
 };

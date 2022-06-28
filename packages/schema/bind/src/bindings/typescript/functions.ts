@@ -49,19 +49,19 @@ const _toTypescript = (
 ) => {
   let type = render(value);
 
-  let nullable = false;
+  let optional = false;
   if (type[type.length - 1] === "!") {
     type = type.substring(0, type.length - 1);
   } else {
-    nullable = true;
+    optional = true;
   }
 
   if (type[0] === "[") {
-    return toTypescriptArray(type, nullable);
+    return toTypescriptArray(type, optional);
   }
 
   if (type.startsWith("Map<")) {
-    return toTypescriptMap(type, nullable);
+    return toTypescriptMap(type, optional);
   }
 
   switch (type) {
@@ -77,11 +77,11 @@ const _toTypescript = (
   }
 
   return undefinable
-    ? applyUndefinable(type, nullable)
-    : applyNullable(type, nullable);
+    ? applyUndefinable(type, optional)
+    : applyOptional(type, optional);
 };
 
-const toTypescriptArray = (type: string, nullable: boolean): string => {
+const toTypescriptArray = (type: string, optional: boolean): string => {
   const result = type.match(/(\[)([[\]A-Za-z0-9_.!]+)(\])/);
 
   if (!result || result.length !== 4) {
@@ -89,10 +89,10 @@ const toTypescriptArray = (type: string, nullable: boolean): string => {
   }
 
   const tsType = _toTypescript(result[2], (str) => str);
-  return applyNullable("Array<" + tsType + ">", nullable);
+  return applyOptional("Array<" + tsType + ">", optional);
 };
 
-const toTypescriptMap = (type: string, nullable: boolean): string => {
+const toTypescriptMap = (type: string, optional: boolean): string => {
   const openAngleBracketIdx = type.indexOf("<");
   const closeAngleBracketIdx = type.lastIndexOf(">");
 
@@ -104,11 +104,11 @@ const toTypescriptMap = (type: string, nullable: boolean): string => {
   const tsKeyType = _toTypescript(keyType, (str) => str);
   const tsValType = _toTypescript(valtype, (str) => str, true);
 
-  return applyNullable(`Map<${tsKeyType}, ${tsValType}>`, nullable);
+  return applyOptional(`Map<${tsKeyType}, ${tsValType}>`, optional);
 };
 
-const applyNullable = (type: string, nullable: boolean): string => {
-  if (nullable) {
+const applyOptional = (type: string, optional: boolean): string => {
+  if (optional) {
     return `${type} | null`;
   } else {
     return type;

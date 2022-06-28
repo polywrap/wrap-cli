@@ -140,19 +140,3 @@ export function directory(path: unknown): boolean {
 
   return !!validDirRegex.test(path);
 }
-
-export function buildxOutput(output: unknown): boolean {
-  if (typeof output === "boolean") {
-    return true;
-  }
-  if (typeof output !== "string") {
-    return false;
-  }
-  switch (output) {
-    case "docker":
-    case "registry":
-      return true;
-    default:
-      return false;
-  }
-}

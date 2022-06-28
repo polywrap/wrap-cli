@@ -1,7 +1,7 @@
-import { TypeInfoTransforms } from ".";
-import { TypeInfo, GenericDefinition } from "../typeInfo";
+import { AbiTransforms } from ".";
+import { Abi, GenericDefinition } from "../abi";
 
-export const addFirstLast: TypeInfoTransforms = {
+export const addFirstLast: AbiTransforms = {
   enter: {
     GenericDefinition: (def: GenericDefinition): GenericDefinition => {
       const arrays: Record<string, unknown[]> = {};
@@ -19,11 +19,11 @@ export const addFirstLast: TypeInfoTransforms = {
         ...arrays,
       };
     },
-    TypeInfo: (typeInfo: TypeInfo): TypeInfo => ({
-      ...typeInfo,
-      objectTypes: setFirstLast(typeInfo.objectTypes),
-      importedObjectTypes: setFirstLast(typeInfo.importedObjectTypes),
-      importedModuleTypes: setFirstLast(typeInfo.importedModuleTypes),
+    Abi: (abi: Abi): Abi => ({
+      ...abi,
+      objectTypes: setFirstLast(abi.objectTypes),
+      importedObjectTypes: setFirstLast(abi.importedObjectTypes),
+      importedModuleTypes: setFirstLast(abi.importedModuleTypes),
     }),
   },
 };

@@ -1,6 +1,6 @@
-import { TypeInfoTransforms, AnyDefinition } from "@polywrap/schema-parse";
+import { AbiTransforms, AnyDefinition } from "@polywrap/schema-parse";
 
-export function byRef(): TypeInfoTransforms {
+export function byRef(): AbiTransforms {
   return {
     enter: {
       // eslint-disable-next-line @typescript-eslint/naming-convention

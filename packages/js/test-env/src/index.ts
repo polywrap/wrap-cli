@@ -67,6 +67,12 @@ export const initTestEnvironment = async (cli?: string): Promise<void> => {
     cli,
   });
 
+  if (exitCode) {
+    throw Error(
+      `initTestEnvironment failed to start test environment.\nExit Code: ${exitCode}\nStdErr: ${stderr}\nStdOut: ${stdout}`
+    );
+  }
+
   // Wait for all endpoints to become available
   let success = false;
 
@@ -97,14 +103,19 @@ export const initTestEnvironment = async (cli?: string): Promise<void> => {
     throw Error("test-env: Ganache failed to start");
   }
 
-  if (exitCode) {
-    throw Error(
-      `initTestEnvironment failed to start test environment.\nExit Code: ${exitCode}\nStdErr: ${stderr}\nStdOut: ${stdout}`
-    );
-  }
+  // ENS
+  success = await awaitResponse(
+    "http://localhost:8545",
+    '"result":"0x',
+    "post",
+    2000,
+    20000,
+    `{"jsonrpc":"2.0","method":"eth_getCode","params":["${ensAddresses.ensAddress}", "0x2"],"id":1}`
+  );
 
-  // Wait an extra couple of seconds for the ens deployment to finish
-  await new Promise((resolve) => setTimeout(resolve, 3000));
+  if (!success) {
+    throw Error("test-env: ENS failed to deploy");
+  }
 };
 
 export const stopTestEnvironment = async (cli?: string): Promise<void> => {
@@ -257,7 +268,7 @@ export async function buildAndDeployWrapper({
   const { data: signerAddress } = await client.invoke<string>({
     method: "getSignerAddress",
     uri: ethereumPluginUri,
-    input: {
+    args: {
       connection: {
         networkNameOrChainId: "testnet",
       },
@@ -271,7 +282,7 @@ export async function buildAndDeployWrapper({
   const { data: registerData, error } = await client.invoke<{ hash: string }>({
     method: "registerDomainAndSubdomainsRecursively",
     uri: ensWrapperUri,
-    input: {
+    args: {
       domain: wrapperEns,
       owner: signerAddress,
       resolverAddress: ensAddresses.resolverAddress,
@@ -294,7 +305,7 @@ export async function buildAndDeployWrapper({
   await client.invoke({
     method: "awaitTransaction",
     uri: ethereumPluginUri,
-    input: {
+    args: {
       txHash: registerData.hash,
       confirmations: 1,
       timeout: 15000,

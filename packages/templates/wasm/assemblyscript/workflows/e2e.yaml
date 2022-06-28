@@ -1,0 +1,25 @@
+name: simple-storage
+jobs:
+  cases:
+    steps:
+    - uri: fs/build
+      method: deployContract
+      args:
+        connection:
+          networkNameOrChainId: testnet
+    jobs:
+      case1:
+        steps:
+        - uri: fs/build
+          method: setData
+          args:
+            address: "$cases.0.data"
+            value: 100
+            connection:
+              networkNameOrChainId: testnet
+        - uri: fs/build
+          method: getData
+          args:
+            address: "$cases.0.data"
+            connection:
+              networkNameOrChainId: testnet

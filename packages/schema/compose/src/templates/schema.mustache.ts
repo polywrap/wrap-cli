@@ -1,5 +1,5 @@
 const template = `
-{{#typeInfo}}
+{{#abi}}
 {{#moduleType}}{{#comment}}
 """
 {{comment}}
@@ -171,6 +171,6 @@ enum {{type}} @imported(
 }
 
 {{/importedEnumTypes}}
-### Imported Objects END ###{{/typeInfo}}`;
+### Imported Objects END ###{{/abi}}`;
 
 export { template };

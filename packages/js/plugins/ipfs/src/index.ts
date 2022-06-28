@@ -1,29 +1,26 @@
 import {
   Module,
-  Input_catFile,
-  Input_resolve,
-  Input_tryResolveUri,
-  Input_getFile,
-  Input_addFile,
-  Bytes,
-  Options,
-  ResolveResult,
+  Args_resolve,
+  Args_addFile,
+  Args_cat,
+  Ipfs_Options,
+  Ipfs_ResolveResult,
   Env,
-  UriResolver_MaybeUriOrManifest,
   manifest,
 } from "./wrap";
 import { IpfsClient } from "./utils/IpfsClient";
 import { execSimple, execFallbacks } from "./utils/exec";
 
-import { PluginFactory } from "@polywrap/core-js";
+import { Client, PluginFactory } from "@polywrap/core-js";
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
-const isIPFS = require("is-ipfs");
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention
 const createIpfsClient = require("@dorgjelli-test/ipfs-http-client-lite");
 
-const getOptions = (input: Options | undefined | null, env: Env): Options => {
-  const options = input || {};
+const getOptions = (
+  args: Ipfs_Options | undefined | null,
+  env: Env
+): Ipfs_Options => {
+  const options = args || {};
 
   if (
     options.disableParallelRequests === undefined ||
@@ -35,7 +32,7 @@ const getOptions = (input: Options | undefined | null, env: Env): Options => {
   return options;
 };
 
-export interface IpfsPluginConfig extends Record<string, unknown> {
+export interface IpfsPluginConfig {
   provider: string;
   fallbackProviders?: string[];
 }
@@ -50,36 +47,25 @@ export class IpfsPlugin extends Module<IpfsPluginConfig> {
     this._ipfs = createIpfsClient(this.config.provider);
   }
 
-  public static isCID(cid: string): boolean {
-    return isIPFS.cid(cid) || isIPFS.cidPath(cid) || isIPFS.ipfsPath(cid);
-  }
-
-  public async cat(cid: string, options?: Options): Promise<Buffer> {
+  public async cat(args: Args_cat, _client: Client): Promise<Buffer> {
     return await this._execWithOptions(
       "cat",
       (ipfs: IpfsClient, _provider: string, options: unknown) => {
-        return ipfs.cat(cid, options);
+        return ipfs.cat(args.cid, options);
       },
-      options
+      args.options ?? undefined
     );
   }
 
-  public async catToString(cid: string, options?: Options): Promise<string> {
-    const buffer = await this.cat(cid, options);
-    return buffer.toString("utf-8");
-  }
-
-  public async catFile(input: Input_catFile): Promise<Bytes> {
-    const options = getOptions(input.options, this.env);
-    return await this.cat(input.cid, options);
-  }
-
-  public async resolve(input: Input_resolve): Promise<ResolveResult | null> {
-    const options = getOptions(input.options, this.env);
+  public async resolve(
+    args: Args_resolve,
+    _client: Client
+  ): Promise<Ipfs_ResolveResult | null> {
+    const options = getOptions(args.options, this.env);
     return await this._execWithOptions(
       "resolve",
       async (ipfs: IpfsClient, provider: string, options: unknown) => {
-        const { path } = await ipfs.resolve(input.cid, options);
+        const { path } = await ipfs.resolve(args.cid, options);
         return {
           cid: path,
           provider,
@@ -89,76 +75,8 @@ export class IpfsPlugin extends Module<IpfsPluginConfig> {
     );
   }
 
-  // uri-resolver.core.polywrap.eth
-  public async tryResolveUri(
-    input: Input_tryResolveUri
-  ): Promise<UriResolver_MaybeUriOrManifest | null> {
-    if (input.authority !== "ipfs") {
-      return null;
-    }
-
-    if (!IpfsPlugin.isCID(input.path)) {
-      // Not a valid CID
-      return { manifest: null, uri: null };
-    }
-
-    const manifestSearchPatterns = [
-      "polywrap.json",
-      "polywrap.yaml",
-      "polywrap.yml",
-    ];
-
-    let manifest: string | undefined;
-
-    for (const manifestSearchPattern of manifestSearchPatterns) {
-      try {
-        manifest = await this.catToString(
-          `${input.path}/${manifestSearchPattern}`,
-          {
-            timeout: 5000,
-            disableParallelRequests: this.env.disableParallelRequests,
-          }
-        );
-      } catch (e) {
-        // TODO: logging
-        // https://github.com/polywrap/monorepo/issues/33
-      }
-    }
-
-    if (manifest) {
-      return { uri: null, manifest };
-    } else {
-      // Nothing found
-      return { uri: null, manifest: null };
-    }
-  }
-
-  public async getFile(input: Input_getFile): Promise<Bytes | null> {
-    try {
-      const result = await this.resolve({
-        cid: input.path,
-        options: {
-          timeout: 5000,
-          disableParallelRequests: this.env.disableParallelRequests,
-        },
-      });
-
-      if (!result) {
-        return null;
-      }
-
-      return await this.cat(result.cid, {
-        provider: result.provider,
-        timeout: 20000,
-        disableParallelRequests: true,
-      });
-    } catch (e) {
-      return null;
-    }
-  }
-
-  public async addFile(input: Input_addFile): Promise<string> {
-    const result = await this._ipfs.add(new Uint8Array(input.data));
+  public async addFile(args: Args_addFile): Promise<string> {
+    const result = await this._ipfs.add(new Uint8Array(args.data));
 
     if (result.length === 0) {
       throw Error(
@@ -176,7 +94,7 @@ export class IpfsPlugin extends Module<IpfsPluginConfig> {
       provider: string,
       options: unknown
     ) => Promise<TReturn>,
-    options?: Options
+    options?: Ipfs_Options
   ): Promise<TReturn> {
     if (!options) {
       // Default behavior if no options are provided
@@ -220,10 +138,10 @@ export class IpfsPlugin extends Module<IpfsPluginConfig> {
 }
 
 export const ipfsPlugin: PluginFactory<IpfsPluginConfig> = (
-  opts: IpfsPluginConfig
+  config: IpfsPluginConfig
 ) => {
   return {
-    factory: () => new IpfsPlugin(opts),
+    factory: () => new IpfsPlugin(config),
     manifest,
   };
 };

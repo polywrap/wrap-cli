@@ -4,7 +4,7 @@ import {
   Write,
   WriteSizer,
   WriteEncoder,
-  Nullable,
+  Option,
   BigInt,
   BigNumber,
   JSON,
@@ -32,14 +32,14 @@ export function writeEnv(writer: Write, type: Env): void {
   writer.context().pop();
   writer.context().push("optProp", "string | null", "writing property");
   writer.writeString("optProp");
-  writer.writeNullableString(type.optProp);
+  writer.writeOptionalString(type.optProp);
   writer.context().pop();
-  writer.context().push("optMap", "Map<string, Nullable<i32>> | null", "writing property");
+  writer.context().push("optMap", "Map<string, Option<i32>> | null", "writing property");
   writer.writeString("optMap");
-  writer.writeNullableExtGenericMap(type.optMap, (writer: Write, key: string) => {
+  writer.writeOptionalExtGenericMap(type.optMap, (writer: Write, key: string) => {
     writer.writeString(key);
-  }, (writer: Write, value: Nullable<i32>): void => {
-    writer.writeNullableInt32(value);
+  }, (writer: Write, value: Option<i32>): void => {
+    writer.writeOptionalInt32(value);
   });
   writer.context().pop();
 }
@@ -56,7 +56,7 @@ export function readEnv(reader: Read): Env {
   let _prop: string = "";
   let _propSet: bool = false;
   let _optProp: string | null = null;
-  let _optMap: Map<string, Nullable<i32>> | null = null;
+  let _optMap: Map<string, Option<i32>> | null = null;
 
   while (numFields > 0) {
     numFields--;
@@ -71,15 +71,15 @@ export function readEnv(reader: Read): Env {
     }
     else if (field == "optProp") {
       reader.context().push(field, "string | null", "type found, reading property");
-      _optProp = reader.readNullableString();
+      _optProp = reader.readOptionalString();
       reader.context().pop();
     }
     else if (field == "optMap") {
-      reader.context().push(field, "Map<string, Nullable<i32>> | null", "type found, reading property");
-      _optMap = reader.readNullableExtGenericMap((reader: Read): string => {
+      reader.context().push(field, "Map<string, Option<i32>> | null", "type found, reading property");
+      _optMap = reader.readOptionalExtGenericMap((reader: Read): string => {
         return reader.readString();
-      }, (reader: Read): Nullable<i32> => {
-        return reader.readNullableInt32();
+      }, (reader: Read): Option<i32> => {
+        return reader.readOptionalInt32();
       });
       reader.context().pop();
     }

@@ -52,7 +52,7 @@ export function write{{type}}(writer: Write, type: {{type}}): void {
   writer.writeInt32(type.{{name}});
   {{/required}}
   {{^required}}
-  writer.writeNullableInt32(type.{{name}});
+  writer.writeOptionalInt32(type.{{name}});
   {{/required}}
   {{/enum}}
   writer.context().pop();

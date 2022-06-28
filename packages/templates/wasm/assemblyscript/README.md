@@ -11,4 +11,5 @@ A simple starter template that uses a SimpleStorage.sol contract ethereum. For m
 `yarn build`  
 
 ## Test
-`yarn test`  
+`yarn test:e2e`  
+`yarn test:workflow`  

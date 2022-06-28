@@ -71,13 +71,13 @@ export function fetchTestCases(): TestCases {
         };
       });
 
-    // Parse the input schema into the TypeInfo structure
-    const typeInfo = parseSchema(schema);
+    // Parse the input schema into the Abi structure
+    const abi = parseSchema(schema);
 
     const input: BindOptions = {
       projectName: "Test",
       bindLanguage: "TBD" as BindLanguage,
-      typeInfo,
+      abi,
       schema,
       outputDirAbs: path.join(root, "combined")
     };

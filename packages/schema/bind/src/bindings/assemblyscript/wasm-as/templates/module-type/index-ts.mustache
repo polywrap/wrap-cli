@@ -1,13 +1,13 @@
 {{#methods.length}}
 import {
   {{#methods}}
-  Input_{{name}}{{^last}},{{/last}}
+  Args_{{name}}{{^last}},{{/last}}
   {{/methods}}
 } from "./serialization";
 
 export {
   {{#methods}}
-  Input_{{name}}{{^last}},{{/last}}
+  Args_{{name}}{{^last}},{{/last}}
   {{/methods}}
 };
 {{/methods.length}}

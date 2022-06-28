@@ -20,7 +20,7 @@ export const toMsgPack: MustacheFn = () => {
     if (type[type.length - 1] === "!") {
       type = type.substring(0, type.length - 1);
     } else {
-      modifier = "Nullable";
+      modifier = "Optional";
     }
 
     if (type[0] === "[") {
@@ -50,13 +50,14 @@ export const toWasmInit: MustacheFn = () => {
       type = type.substring(0, type.length - 1);
     } else {
       const nullType = toWasm()(value, render);
-      const nullable = "Nullable";
+      const optional = "Option";
       const nullOptional = "| null";
 
       if (nullType.endsWith(nullOptional)) {
         return "null";
-      } else if (nullType.startsWith(nullable)) {
-        return `new ${nullType}()`;
+      } else if (nullType.startsWith(optional)) {
+        type = nullType.substring(6);
+        return `Option.None${type}()`;
       }
     }
 
@@ -111,19 +112,19 @@ export const toWasm: MustacheFn = () => {
     let type = render(value);
     let isEnum = false;
 
-    let nullable = false;
+    let optional = false;
     if (type[type.length - 1] === "!") {
       type = type.substring(0, type.length - 1);
     } else {
-      nullable = true;
+      optional = true;
     }
 
     if (type[0] === "[") {
-      return toWasmArray(type, nullable);
+      return toWasmArray(type, optional);
     }
 
     if (type.startsWith("Map<")) {
-      return toWasmMap(type, nullable);
+      return toWasmMap(type, optional);
     }
 
     switch (type) {
@@ -176,11 +177,11 @@ export const toWasm: MustacheFn = () => {
         }
     }
 
-    return applyNullable(type, nullable, isEnum);
+    return applyOptional(type, optional, isEnum);
   };
 };
 
-const toWasmArray = (type: string, nullable: boolean): string => {
+const toWasmArray = (type: string, optional: boolean): string => {
   const result = type.match(/(\[)([[\]A-Za-z0-9_.!]+)(\])/);
 
   if (!result || result.length !== 4) {
@@ -188,10 +189,10 @@ const toWasmArray = (type: string, nullable: boolean): string => {
   }
 
   const wasmType = toWasm()(result[2], (str) => str);
-  return applyNullable("Array<" + wasmType + ">", nullable, false);
+  return applyOptional("Array<" + wasmType + ">", optional, false);
 };
 
-const toWasmMap = (type: string, nullable: boolean): string => {
+const toWasmMap = (type: string, optional: boolean): string => {
   const firstOpenBracketIdx = type.indexOf("<");
   const lastCloseBracketIdx = type.lastIndexOf(">");
 
@@ -211,15 +212,15 @@ const toWasmMap = (type: string, nullable: boolean): string => {
   const keyType = toWasm()(keyValTypes[0], (str) => str);
   const valType = toWasm()(keyValTypes[1], (str) => str);
 
-  return applyNullable(`Map<${keyType}, ${valType}>`, nullable, false);
+  return applyOptional(`Map<${keyType}, ${valType}>`, optional, false);
 };
 
-const applyNullable = (
+const applyOptional = (
   type: string,
-  nullable: boolean,
+  optional: boolean,
   isEnum: boolean
 ): string => {
-  if (nullable) {
+  if (optional) {
     if (
       type.indexOf("Array") === 0 ||
       type.indexOf("string") === 0 ||
@@ -227,7 +228,7 @@ const applyNullable = (
     ) {
       return `${type} | null`;
     } else {
-      return `Nullable<${type}>`;
+      return `Option<${type}>`;
     }
   } else {
     return type;

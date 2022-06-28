@@ -3,41 +3,41 @@
 import * as Types from "../..";
 
 {{#methods}}
-export class Input_{{name}} {
+export class Args_{{name}} {
   {{#arguments}}
   {{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
   {{/arguments}}
 }
 
-export function serialize{{name}}Args(input: Input_{{name}}): ArrayBuffer {
+export function serialize{{name}}Args(args: Args_{{name}}): ArrayBuffer {
   const sizerContext: Context = new Context("Serializing (sizing) imported module-type: {{name}}");
   const sizer = new WriteSizer(sizerContext);
-  write{{name}}Args(sizer, input);
+  write{{name}}Args(sizer, args);
   const buffer = new ArrayBuffer(sizer.length);
   const encoderContext: Context = new Context("Serializing (encoding) imported module-type: {{name}}");
   const encoder = new WriteEncoder(buffer, sizer, encoderContext);
-  write{{name}}Args(encoder, input);
+  write{{name}}Args(encoder, args);
   return buffer;
 }
 
 export function write{{name}}Args(
   writer: Write,
-  input: Input_{{name}}
+  args: Args_{{name}}
 ): void {
   writer.writeMapLength({{arguments.length}});
   {{#arguments}}
   writer.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
   writer.writeString("{{name}}");
   {{#scalar}}
-  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(input.{{name}});
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(args.{{name}});
   {{/scalar}}
   {{#array}}
-  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(input.{{name}}, (writer: Write, item: {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}}): void => {
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(args.{{name}}, (writer: Write, item: {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}}): void => {
     {{> serialize_array}}
   });
   {{/array}}
   {{#map}}
-  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(input.{{name}}, (writer: Write, key: {{#key}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/key}}) => {
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(args.{{name}}, (writer: Write, key: {{#key}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/key}}) => {
     writer.write{{#key}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/key}}(key);
   }, (writer: Write, value: {{#value}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/value}}): void => {
     {{#value}}
@@ -47,19 +47,19 @@ export function write{{name}}Args(
   {{/map}}
   {{#enum}}
   {{#required}}
-  writer.writeInt32(input.{{name}});
+  writer.writeInt32(args.{{name}});
   {{/required}}
   {{^required}}
-  writer.writeNullableInt32(input.{{name}});
+  writer.writeNullableInt32(args.{{name}});
   {{/required}}
   {{/enum}}
   {{#object}}
   {{#required}}
-  Types.{{type}}.write(writer, input.{{name}});
+  Types.{{type}}.write(writer, args.{{name}});
   {{/required}}
   {{^required}}
-  if (input.{{name}}) {
-    Types.{{type}}.write(writer, input.{{name}} as Types.{{type}});
+  if (args.{{name}}) {
+    Types.{{type}}.write(writer, args.{{name}} as Types.{{type}});
   } else {
     writer.writeNil();
   }
@@ -70,7 +70,7 @@ export function write{{name}}Args(
 }
 
 export function deserialize{{name}}Result(buffer: ArrayBuffer): {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {
-  const context: Context =  new Context("Deserializing imported module-type: {{name}}");
+  const context: Context = new Context("Deserializing imported module-type: {{name}}");
   const reader = new ReadDecoder(buffer, context);
 
   {{#return}}

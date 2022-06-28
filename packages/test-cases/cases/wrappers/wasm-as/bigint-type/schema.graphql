@@ -2,11 +2,11 @@ type Module {
   method(
     arg1: BigInt!
     arg2: BigInt
-    obj: BigIntInput!
+    obj: BigIntArg!
   ): BigInt!
 }
 
-type BigIntInput {
+type BigIntArg {
   prop1: BigInt!
   prop2: BigInt
 }

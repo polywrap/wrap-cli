@@ -27,8 +27,8 @@ const plugins: PluginConfigSource[] = [
     files: [
       {
         name: "build/index.d.ts",
-        interfaces: ["IpfsPluginConfig"]
-      }
+        interfaces: ["IpfsPluginConfig"],
+      },
     ],
   },
   {
@@ -44,37 +44,42 @@ const plugins: PluginConfigSource[] = [
       {
         name: "build/Connection.d.ts",
         interfaces: ["ConnectionConfig", "ConnectionConfigs"],
-        types: ["EthereumProvider", "EthereumSigner", "AccountIndex", "Address"],
+        types: [
+          "EthereumProvider",
+          "EthereumSigner",
+          "AccountIndex",
+          "Address",
+        ],
       },
     ],
     externals: [
       {
         type: "Signer",
-        module: "ethers"
+        module: "ethers",
       },
       {
         type: "ExternalProvider",
-        module: "@ethersproject/providers"
+        module: "@ethersproject/providers",
       },
       {
         type: "JsonRpcProvider",
-        module: "@ethersproject/providers"
-      }
-    ]
+        module: "@ethersproject/providers",
+      },
+    ],
   },
   {
     name: "Ens",
-    module: "@polywrap/ens-plugin-js",
-    uri: "wrap://ens/ens.polywrap.eth",
-    config: "EnsPluginConfig",
+    module: "@polywrap/ens-resolver-plugin-js",
+    uri: "wrap://ens/ens-resolver.polywrap.eth",
+    config: "EnsResolverPluginConfig",
     files: [
       {
         name: "build/index.d.ts",
-        interfaces: ["EnsPluginConfig", "Addresses"],
+        interfaces: ["EnsResolverPluginConfig", "Addresses"],
         types: ["Address"],
-      }
-    ]
-  }
+      },
+    ],
+  },
 ];
 
 function main(): void {
