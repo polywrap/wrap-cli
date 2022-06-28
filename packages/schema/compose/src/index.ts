@@ -42,7 +42,9 @@ export async function composeSchema(
   return {
     schema: includeSchema ? renderSchema(abi, true) : undefined,
     abi: includeAbi ? abi : undefined,
-  };
+    // TODO: remove this post-release, this is needed to resolve the CLI<>plugin circular dependency
+    typeInfo: includeAbi ? abi : undefined
+  } as ComposerOutput;
 }
 
 export async function resolveImports(
