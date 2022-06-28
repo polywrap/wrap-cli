@@ -57,55 +57,45 @@ describe("env", () => {
     });
 
     test("module: getEnv - when set", async () => {
-      const queryEnv = await client.query({
+      const queryEnv = await client.invoke({
         uri: wrapperUri,
-        query: `
-      query {
-        getEnv(
+        method: "getEnv",
+        args: {
           arg: "string",
-        )
-      }
-    `,
+        },
       });
-      expect(queryEnv.errors).toBeFalsy();
-      expect(queryEnv.data?.getEnv).toEqual({
+      expect(queryEnv.error).toBeFalsy();
+      expect(queryEnv.data).toEqual({
         str: "module string",
         requiredInt: 1,
       });
     });
 
     test("module: getEnv - when not set", async () => {
-      const queryEnv = await client.query({
+      const queryEnv = await client.invoke({
         uri: wrapperUri,
-        query: `
-      query {
-        getEnv(
-          arg: "not set"
-        )
-      }
-    `,
+        method: "getEnv",
+        args: {
+          arg: "not set",
+        },
         config: {
           envs: [],
         },
       });
-      expect(queryEnv.data?.getEnv).toBeUndefined();
-      expect(queryEnv.errors).toBeTruthy();
-      expect(queryEnv.errors?.length).toBe(1);
-      expect(queryEnv.errors?.[0].message).toContain(
+      expect(queryEnv.data).toBeUndefined();
+      expect(queryEnv.error).toBeTruthy();
+      expect(queryEnv.error?.message).toContain(
         "Missing required property: 'requiredInt: Int'"
       );
     });
 
     test("module: getEnv - when set incorrectly", async () => {
-      const queryEnv = await client.query({
+      const queryEnv = await client.invoke({
         uri: wrapperUri,
-        query: `
-      query {
-        getEnv(
-          arg: "not set"
-        )
-      }
-    `,
+        method: "getEnv",
+        args: {
+          arg: "not set",
+        },
         config: {
           envs: [
             {
@@ -119,10 +109,9 @@ describe("env", () => {
         },
       });
 
-      expect(queryEnv.data?.getEnv).toBeUndefined();
-      expect(queryEnv.errors).toBeTruthy();
-      expect(queryEnv.errors?.length).toBe(1);
-      expect(queryEnv.errors?.[0].message).toContain(
+      expect(queryEnv.data).toBeUndefined();
+      expect(queryEnv.error).toBeTruthy();
+      expect(queryEnv.error?.message).toContain(
         "Property must be of type 'int'. Found 'string'."
       );
     });
@@ -158,18 +147,15 @@ describe("env", () => {
     });
 
     test("mockEnv", async () => {
-      const moduleEnv = await client.query({
+      const moduleEnv = await client.invoke({
         uri: wrapperUri,
-        query: `
-          query {
-            moduleEnv(
-              arg: "string"
-            )
-          }
-        `,
+        method: "moduleEnv",
+        args: {
+          arg: "string",
+        },
       });
-      expect(moduleEnv.errors).toBeFalsy();
-      expect(moduleEnv.data?.moduleEnv).toEqual({
+      expect(moduleEnv.error).toBeFalsy();
+      expect(moduleEnv.data).toEqual({
         str: "string",
         optFilledStr: "optional string",
         optStr: null,
@@ -188,18 +174,15 @@ describe("env", () => {
     });
 
     test("module time env types", async () => {
-      const moduleEnv = await client.query({
+      const moduleEnv = await client.invoke({
         uri: wrapperUri,
-        query: `
-          query {
-            moduleEnv(
-              arg: "string"
-            )
-          }
-        `,
+        method: "moduleEnv",
+        args: {
+          arg: "string",
+        },
       });
-      expect(moduleEnv.errors).toBeFalsy();
-      expect(moduleEnv.data?.moduleEnv).toEqual({
+      expect(moduleEnv.error).toBeFalsy();
+      expect(moduleEnv.data).toEqual({
         str: "string",
         optFilledStr: "optional string",
         optStr: null,
@@ -216,15 +199,12 @@ describe("env", () => {
         array: [32, 23],
       });
 
-      const mockUpdatedEnv = await client.query({
+      const mockUpdatedEnv = await client.invoke({
         uri: wrapperUri,
-        query: `
-          query {
-            moduleEnv(
-              arg: "string"
-            )
-          }
-        `,
+        method: "moduleEnv",
+        args: {
+          arg: "string",
+        },
         config: {
           envs: [
             {
@@ -244,8 +224,8 @@ describe("env", () => {
           ],
         },
       });
-      expect(mockUpdatedEnv.errors).toBeFalsy();
-      expect(mockUpdatedEnv.data?.moduleEnv).toEqual({
+      expect(mockUpdatedEnv.error).toBeFalsy();
+      expect(mockUpdatedEnv.data).toEqual({
         str: "another string",
         optFilledStr: "optional string",
         optStr: null,
@@ -286,18 +266,15 @@ describe("env", () => {
     });
 
     test("module", async () => {
-      const mockEnd = await client.query({
+      const mockEnd = await client.invoke({
         uri: wrapperUri,
-        query: `
-          query {
-            environment(
-              arg: "string"
-            )
-          }
-        `,
+        method: "environment",
+        args: {
+          arg: "string",
+        },
       });
-      expect(mockEnd.errors).toBeFalsy();
-      expect(mockEnd.data?.environment).toEqual({
+      expect(mockEnd.error).toBeFalsy();
+      expect(mockEnd.data).toEqual({
         str: "string",
         optStr: null,
         defStr: "default string",
@@ -322,13 +299,12 @@ describe("env", () => {
       ],
     });
 
-    const mockEnv = await client.query({
+    const mockEnv = await client.invoke({
       uri: wrapperUri,
-      query: `
-        query {
-          method1(en: 0) 
-        }
-      `,
+      method: "method1",
+      args: {
+        en: 0,
+      },
       config: {
         envs: [
           {
@@ -341,8 +317,8 @@ describe("env", () => {
       },
     });
 
-    expect(mockEnv.errors).toBeFalsy();
-    expect(mockEnv.data?.method1).toEqual(0);
+    expect(mockEnv.error).toBeFalsy();
+    expect(mockEnv.data).toEqual(0);
   });
 
   test("plugin env types", async () => {
@@ -365,17 +341,13 @@ describe("env", () => {
       ],
     });
 
-    const mockEnv = await client.query({
+    const mockEnv = await client.invoke({
       uri: implementationUri,
-      query: `
-        query {
-          mockEnv
-        }
-      `,
+      method: "mockEnv"
     });
 
-    expect(mockEnv.errors).toBeFalsy();
+    expect(mockEnv.error).toBeFalsy();
     expect(mockEnv.data).toBeTruthy();
-    expect(mockEnv.data?.mockEnv).toMatchObject({ arg1: "10" });
+    expect(mockEnv.data).toMatchObject({ arg1: "10" });
   });
 });

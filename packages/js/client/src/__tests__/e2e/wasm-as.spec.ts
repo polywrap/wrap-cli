@@ -86,29 +86,20 @@ describe("wasm-as test cases", () => {
     await buildWrapper(wrapperPath);
     const ensUri = wrapperUri;
 
-    const query = await client.query<{
-      method1: {
-        const: string;
-      };
-    }>({
+    const query = await client.invoke({
       uri: ensUri,
-      query: `
-        query {
-          method1(
-            const: {
-              const: "successfully used reserved keyword"
-            }
-          )
-        }
-      `,
+      method: "method1",
+      args: {
+        const: {
+          const: "successfully used reserved keyword",
+        },
+      },
     });
 
-    expect(query.errors).toBeFalsy();
+    expect(query.error).toBeFalsy();
     expect(query.data).toBeTruthy();
     expect(query.data).toMatchObject({
-      method1: {
-        const: "result: successfully used reserved keyword",
-      },
+      const: "result: successfully used reserved keyword",
     });
   });
 
@@ -190,23 +181,20 @@ describe("wasm-as test cases", () => {
 
     await buildWrapper(wrapperPath);
 
-    const query = await client.query<{
-      moduleMethod: string;
-    }>({
+    const query = await client.invoke({
       uri: wrapperUri,
-      query: `query{
-        moduleMethod(
-          arg: {
-            uint8: 1,
-            str: "Test String 1",
-          }
-        )
-      }`,
+      method: "moduleMethod",
+      args: {
+        arg: {
+          uint8: 1,
+          str: "Test String 1",
+        },
+      },
     });
 
-    expect(query.errors).toBeFalsy();
+    expect(query.error).toBeFalsy();
     expect(query.data).toBeTruthy();
-    expect(query.data?.moduleMethod).toEqual({
+    expect(query.data).toEqual({
       uint8: 1,
       str: "Test String 1",
     });

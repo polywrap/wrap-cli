@@ -175,36 +175,28 @@ enum Logger_LogLevel @imported(
       ],
     });
 
-    const queryEnv = await client.query({
+    const queryEnv = await client.invoke({
       uri: implementationUri,
-      query: `
-      query {
-        getMap
-      }
-    `,
+      method: "getMap",
     });
 
-    expect(queryEnv.errors).toBeFalsy();
+    expect(queryEnv.error).toBeFalsy();
     expect(queryEnv.data).toBeTruthy();
-    expect(queryEnv.data?.getMap).toMatchObject(
+    expect(queryEnv.data).toMatchObject(
       new Map<string, number>().set("a", 1).set("b", 2)
     );
 
-    const mutationEnv = await client.query({
+    const mutationEnv = await client.invoke({
       uri: implementationUri,
-      query: `
-      mutation {
-        updateMap(map: $map)
-      }
-      `,
-      variables: {
+      method: "updateMap",
+      args: {
         map: new Map<string, number>().set("b", 1).set("c", 5),
       },
     });
 
-    expect(mutationEnv.errors).toBeFalsy();
+    expect(mutationEnv.error).toBeFalsy();
     expect(mutationEnv.data).toBeTruthy();
-    expect(mutationEnv.data?.updateMap).toMatchObject(
+    expect(mutationEnv.data).toMatchObject(
       new Map<string, number>().set("a", 1).set("b", 3).set("c", 5)
     );
   });
