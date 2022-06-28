@@ -17,8 +17,9 @@ import {
 
 import {
   PolywrapManifest,
-  BuildManifest,
+  WrapManifest,
   MetaManifest,
+  msgpackEncode,
 } from "@polywrap/core-js";
 import { WasmWrapper } from "@polywrap/client-js";
 import { WrapImports } from "@polywrap/client-js/build/wasm/types";
@@ -98,26 +99,20 @@ export class Compiler {
       // Init & clean output directory
       resetDir(this._config.outputDir);
 
-      await this._outputComposedSchema(state);
-
-      let buildManifest: BuildManifest | undefined = undefined;
+      await this._outputInfo(state);
 
       if (!(await this._isInterface())) {
         // Generate the bindings
         await this._generateCode(state);
 
         // Compile the Wrapper
-        buildManifest = await this._buildModules(state);
+        await this._buildModules(state);
       }
 
       // Output all metadata if present
       const metaManifest = await this._outputMetadata();
 
-      await this._outputManifests(
-        state.polywrapManifest,
-        buildManifest,
-        metaManifest
-      );
+      await this._outputManifests(metaManifest);
     };
 
     if (project.quiet) {
@@ -230,7 +225,7 @@ export class Compiler {
     return writeDirectorySync(binding.outputDirAbs, binding.output);
   }
 
-  private async _buildModules(state: CompilerState): Promise<BuildManifest> {
+  private async _buildModules(state: CompilerState): Promise<void> {
     const { outputDir } = this._config;
     const { polywrapManifest } = state;
 
@@ -239,24 +234,14 @@ export class Compiler {
     }
 
     // Build the sources
-    const dockerImageId = await this._buildSourcesInDocker();
+    await this._buildSourcesInDocker();
 
     // Validate the Wasm module
     await this._validateWasmModule(outputDir);
 
     // Update the PolywrapManifest
-    polywrapManifest.module = "./module.wasm";
-    polywrapManifest.schema = "./schema.graphql";
-    polywrapManifest.build = "./polywrap.build.json";
-
-    // Create the BuildManifest
-    return {
-      format: "0.0.1-prealpha.3",
-      __type: "BuildManifest",
-      docker: {
-        buildImageId: dockerImageId,
-      },
-    };
+    polywrapManifest.module = "./wrap.wasm";
+    // polywrapManifest.info = "./wrap.info";
   }
 
   private async _buildSourcesInDocker(): Promise<string> {
@@ -331,7 +316,7 @@ export class Compiler {
 
     await copyArtifactsFromBuildImage(
       outputDir,
-      "module.wasm",
+      "wrap.wasm",
       imageName,
       removeBuilder,
       removeImage,
@@ -342,42 +327,24 @@ export class Compiler {
     return dockerImageId;
   }
 
-  private async _outputComposedSchema(state: CompilerState): Promise<void> {
+  private async _outputInfo(state: CompilerState): Promise<void> {
     const { outputDir } = this._config;
 
-    writeFileSync(
-      `${outputDir}/schema.graphql`,
-      state.composerOutput.schema,
-      "utf-8"
-    );
-
-    // Update the PolywrapManifest schema paths
-    state.polywrapManifest = {
-      ...state.polywrapManifest,
-      schema: "./schema.graphql",
+    const info: WrapManifest = {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      abi: state.composerOutput.typeInfo as unknown,
+      name: state.polywrapManifest.name,
+      type: state.polywrapManifest.module ? "wasm" : "interface",
+      version: "0.0.1",
+      __type: "WrapManifest",
     };
+
+    writeFileSync(`${outputDir}/wrap.info`, msgpackEncode(info));
   }
 
-  private async _outputManifests(
-    polywrapManifest: PolywrapManifest,
-    buildManifest?: BuildManifest,
-    metaManifest?: MetaManifest
-  ): Promise<void> {
+  private async _outputManifests(metaManifest?: MetaManifest): Promise<void> {
     const { outputDir, project } = this._config;
-
-    await outputManifest(
-      polywrapManifest,
-      path.join(outputDir, "polywrap.json"),
-      project.quiet
-    );
-
-    if (buildManifest) {
-      await outputManifest(
-        buildManifest,
-        path.join(outputDir, "polywrap.build.json"),
-        project.quiet
-      );
-    }
 
     if (metaManifest) {
       await outputManifest(
@@ -424,7 +391,7 @@ export class Compiler {
   }
 
   private async _validateWasmModule(buildDir: string): Promise<void> {
-    const modulePath = path.join(buildDir, `module.wasm`);
+    const modulePath = path.join(buildDir, `wrap.wasm`);
     const wasmSource = fs.readFileSync(modulePath);
     const wrapImports: Record<keyof WrapImports, () => void> = {
       __wrap_subinvoke: () => {},
