@@ -3,7 +3,7 @@ import {
   Input_externalEnvMethod,
 } from "./wrap";
 
-export function externalEnvMethod(input: Input_externalEnvMethod): Env {
-  return input.env;
+export function externalEnvMethod(_: Input_externalEnvMethod, env: Env): Env {
+  return env;
 }
 

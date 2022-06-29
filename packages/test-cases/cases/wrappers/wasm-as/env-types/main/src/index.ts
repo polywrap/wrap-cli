@@ -29,19 +29,19 @@ export function methodNoEnv(input: Input_methodNoEnv): string {
   return input.arg;
 }
 
-export function methodRequireEnv(input: Input_methodRequireEnv): Env {
-  return createEnv(input.env);
+export function methodRequireEnv(_: Input_methodRequireEnv, env: Env): Env {
+  return createEnv(env);
 }
 
-export function methodOptionalEnv(input: Input_methodOptionalEnv): Env | null {
-  return input.env ? createEnv(input.env as Env) : null;
+export function methodOptionalEnv(_: Input_methodOptionalEnv, env: Env | null): Env | null {
+  return env ? createEnv(env as Env) : null;
 }
 
-export function subinvokeEnvMethod(input: Input_methodRequireEnv): CompoundEnv {
+export function subinvokeEnvMethod(_: Input_methodRequireEnv, env: Env): CompoundEnv {
   const externalEnv = ExternalEnvApi_Module.externalEnvMethod({}).unwrap()
   
   return {
-    local: input.env,
+    local: env,
     external: externalEnv
   };
 }

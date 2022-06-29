@@ -17,15 +17,17 @@ import * as Types from "..";
 export function moduleMethodWrapped(argsBuf: ArrayBuffer, env_size: u32): ArrayBuffer {
   const args = deserializemoduleMethodArgs(argsBuf);
 
-  const result = moduleMethod({
-    str: args.str,
-    optStr: args.optStr,
-    en: args.en,
-    optEnum: args.optEnum,
-    enumArray: args.enumArray,
-    optEnumArray: args.optEnumArray,
-    map: args.map
-  });
+  const result = moduleMethod(
+    {
+      str: args.str,
+      optStr: args.optStr,
+      en: args.en,
+      optEnum: args.optEnum,
+      enumArray: args.enumArray,
+      optEnumArray: args.optEnumArray,
+      map: args.map
+    }
+  );
   return serializemoduleMethodResult(result);
 }
 
@@ -38,12 +40,15 @@ export function objectMethodWrapped(argsBuf: ArrayBuffer, env_size: u32): ArrayB
   const env = Types.Env.fromBuffer(envBuf);
   const args = deserializeobjectMethodArgs(argsBuf);
 
-  const result = objectMethod({
-    object: args.object,
-    optObject: args.optObject,
-    objectArray: args.objectArray,
-    optObjectArray: args.optObjectArray
-  }, env);
+  const result = objectMethod(
+    {
+      object: args.object,
+      optObject: args.optObject,
+      objectArray: args.objectArray,
+      optObjectArray: args.optObjectArray
+    },
+    env
+  );
   return serializeobjectMethodResult(result);
 }
 
@@ -55,11 +60,14 @@ export function optionalEnvMethodWrapped(argsBuf: ArrayBuffer, env_size: u32): A
   }
   const args = deserializeoptionalEnvMethodArgs(argsBuf);
 
-  const result = optionalEnvMethod({
-    object: args.object,
-    optObject: args.optObject,
-    objectArray: args.objectArray,
-    optObjectArray: args.optObjectArray
-  }, env);
+  const result = optionalEnvMethod(
+    {
+      object: args.object,
+      optObject: args.optObject,
+      objectArray: args.objectArray,
+      optObjectArray: args.optObjectArray
+    },
+    env
+  );
   return serializeoptionalEnvMethodResult(result);
 }

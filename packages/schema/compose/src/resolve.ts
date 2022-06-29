@@ -269,7 +269,6 @@ const extractObjectImportDependencies = (
     }
 
     if (idx === -1) {
-      console.log(rootTypeInfo);
       throw Error(
         `extractObjectImportDependencies: Cannot find the dependent type within the root type info.\n` +
           `Type: ${type}\nTypeInfo: ${JSON.stringify(
