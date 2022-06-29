@@ -103,7 +103,7 @@ export class Compiler {
         await this._generateCode(state);
 
         // Compile the Wrapper
-        await this._buildModules(state);
+        await this._buildModules();
       }
 
       // Output all metadata if present
@@ -222,9 +222,8 @@ export class Compiler {
     return writeDirectorySync(binding.outputDirAbs, binding.output);
   }
 
-  private async _buildModules(state: CompilerState): Promise<void> {
+  private async _buildModules(): Promise<void> {
     const { outputDir } = this._config;
-    const { polywrapManifest } = state;
 
     if (await this._isInterface()) {
       throw Error(intlMsg.lib_compiler_cannotBuildInterfaceModules());
@@ -235,10 +234,6 @@ export class Compiler {
 
     // Validate the Wasm module
     await this._validateWasmModule(outputDir);
-
-    // Update the PolywrapManifest
-    polywrapManifest.module = "./wrap.wasm";
-    // polywrapManifest.info = "./wrap.info";
   }
 
   private async _buildSourcesInDocker(): Promise<string> {
