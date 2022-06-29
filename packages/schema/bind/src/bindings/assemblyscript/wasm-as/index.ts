@@ -10,8 +10,6 @@ import {
   addFirstLast,
   extendType,
   toPrefixedGraphQLType,
-  methodHasEnv,
-  methodArgIsEnv,
 } from "@polywrap/schema-parse";
 import { OutputEntry, readDirectorySync } from "@polywrap/os-js";
 import path from "path";
@@ -171,8 +169,6 @@ function applyTransforms(typeInfo: TypeInfo): TypeInfo {
     extendType(Functions),
     addFirstLast,
     toPrefixedGraphQLType,
-    methodHasEnv,
-    methodArgIsEnv,
   ];
 
   for (const transform of transforms) {

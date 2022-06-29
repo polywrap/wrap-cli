@@ -41,7 +41,6 @@ pub fn object_method_wrapped(input: &[u8]) -> Vec<u8> {
                 opt_object: args.opt_object,
                 object_array: args.object_array,
                 opt_object_array: args.opt_object_array,
-                env: args.env,
             });
             serialize_object_method_result(&result).unwrap()
         }
@@ -59,7 +58,6 @@ pub fn optional_env_method_wrapped(input: &[u8]) -> Vec<u8> {
                 opt_object: args.opt_object,
                 object_array: args.object_array,
                 opt_object_array: args.opt_object_array,
-                env: args.env,
             });
             serialize_optional_env_method_result(&result).unwrap()
         }

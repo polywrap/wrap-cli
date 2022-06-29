@@ -62,16 +62,14 @@ type Module @imports(
     optObject: AnotherType
     objectArray: [AnotherType!]!
     optObjectArray: [AnotherType]
-    env: Env!
-  ): AnotherType
+  ): AnotherType @env(required: true)
 
   optionalEnvMethod(
     object: AnotherType!
     optObject: AnotherType
     objectArray: [AnotherType!]!
     optObjectArray: [AnotherType]
-    env: Env
-  ): AnotherType
+  ): AnotherType @env(required: false)
 }
 
 type Env {
@@ -152,8 +150,7 @@ type TestImport_Module @imported(
     optEnum: TestImport_Enum
     enumArray: [TestImport_Enum!]!
     optEnumArray: [TestImport_Enum]
-    env: TestImport_Env!
-  ): TestImport_Object
+  ): TestImport_Object @env(required: true)
 
   anotherMethod(
     arg: [String!]!

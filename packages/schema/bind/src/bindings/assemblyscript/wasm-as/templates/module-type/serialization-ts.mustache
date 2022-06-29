@@ -7,25 +7,14 @@ export class Input_{{name}} {
   {{#handleKeywords}}{{name}}{{/handleKeywords}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
   {{/arguments}}
 }
-{{#hasEnv}}
 
-class Input_{{name}}WithoutEnv {
-  {{#arguments}}
-  {{^isEnv}}
-  {{#handleKeywords}}{{name}}{{/handleKeywords}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
-  {{/isEnv}}
-  {{/arguments}}
-}
-{{/hasEnv}}
-
-export function deserialize{{name}}Args(argsBuf: ArrayBuffer): {{#hasEnv}}Input_{{name}}WithoutEnv{{/hasEnv}}{{^hasEnv}}Input_{{name}}{{/hasEnv}} {
+export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
   const context: Context = new Context("Deserializing module-type: {{name}}");
   {{#arguments.length}}
   const reader = new ReadDecoder(argsBuf, context);
   let numFields = reader.readMapLength();
 
   {{#arguments}}
-  {{^isEnv}}
   {{^object}}
   let _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
   {{/object}}
@@ -40,7 +29,6 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): {{#hasEnv}}Input_
   {{#required}}
   let _{{name}}Set: bool = false;
   {{/required}}
-  {{/isEnv}}
   {{/arguments}}
 
   while (numFields > 0) {
@@ -49,7 +37,6 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): {{#hasEnv}}Input_
 
     reader.context().push(field, "unknown", "searching for property type");
     {{#arguments}}
-    {{^isEnv}}
     {{^first}}else {{/first}}if (field == "{{name}}") {
       reader.context().push(field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading property");
       {{#scalar}}
@@ -82,13 +69,11 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): {{#hasEnv}}Input_
       {{/required}}
       reader.context().pop();
     }
-    {{/isEnv}}
     {{/arguments}}
     reader.context().pop();
   }
 
   {{#arguments}}
-  {{^isEnv}}
   {{#required}}
   {{^object}}
   if (!_{{name}}Set) {
@@ -99,15 +84,12 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): {{#hasEnv}}Input_
     throw new Error(reader.context().printWithContext("Missing required argument: '{{name}}: {{type}}'"));
   }
   {{/required}}
-  {{/isEnv}}
   {{/arguments}}
   {{/arguments.length}}
 
   return {
     {{#arguments}}
-    {{^isEnv}}
     {{#handleKeywords}}{{name}}{{/handleKeywords}}: _{{name}}{{^last}},{{/last}}
-    {{/isEnv}}
     {{/arguments}}
   };
 }

@@ -184,17 +184,9 @@ export class Input_objectMethod {
   optObject: Types.AnotherType | null;
   objectArray: Array<Types.AnotherType>;
   optObjectArray: Array<Types.AnotherType | null> | null;
-  env: Types.Env;
 }
 
-class Input_objectMethodWithoutEnv {
-  object: Types.AnotherType;
-  optObject: Types.AnotherType | null;
-  objectArray: Array<Types.AnotherType>;
-  optObjectArray: Array<Types.AnotherType | null> | null;
-}
-
-export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectMethodWithoutEnv {
+export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectMethod {
   const context: Context = new Context("Deserializing module-type: objectMethod");
   const reader = new ReadDecoder(argsBuf, context);
   let numFields = reader.readMapLength();
@@ -261,7 +253,7 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectM
     object: _object,
     optObject: _optObject,
     objectArray: _objectArray,
-    optObjectArray: _optObjectArray,
+    optObjectArray: _optObjectArray
   };
 }
 
@@ -291,17 +283,9 @@ export class Input_optionalEnvMethod {
   optObject: Types.AnotherType | null;
   objectArray: Array<Types.AnotherType>;
   optObjectArray: Array<Types.AnotherType | null> | null;
-  env: Types.Env | null;
 }
 
-class Input_optionalEnvMethodWithoutEnv {
-  object: Types.AnotherType;
-  optObject: Types.AnotherType | null;
-  objectArray: Array<Types.AnotherType>;
-  optObjectArray: Array<Types.AnotherType | null> | null;
-}
-
-export function deserializeoptionalEnvMethodArgs(argsBuf: ArrayBuffer): Input_optionalEnvMethodWithoutEnv {
+export function deserializeoptionalEnvMethodArgs(argsBuf: ArrayBuffer): Input_optionalEnvMethod {
   const context: Context = new Context("Deserializing module-type: optionalEnvMethod");
   const reader = new ReadDecoder(argsBuf, context);
   let numFields = reader.readMapLength();
@@ -368,7 +352,7 @@ export function deserializeoptionalEnvMethodArgs(argsBuf: ArrayBuffer): Input_op
     object: _object,
     optObject: _optObject,
     objectArray: _objectArray,
-    optObjectArray: _optObjectArray,
+    optObjectArray: _optObjectArray
   };
 }
 

@@ -1,5 +1,5 @@
 type Module {
-  getEnv(arg: String!, env: Env): Env
+  getEnv(arg: String!): Env @env(required: false)
 }
 
 type Env {

@@ -20,7 +20,6 @@ use crate::{
     sanitize_custom_enum_value
 };
 use crate::AnotherType;
-use crate::Env;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct InputModuleMethod {
@@ -188,7 +187,6 @@ pub struct InputObjectMethod {
     pub opt_object: Option<AnotherType>,
     pub object_array: Vec<AnotherType>,
     pub opt_object_array: Option<Vec<Option<AnotherType>>>,
-    pub env: Env,
 }
 
 pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod, DecodeError> {
@@ -204,8 +202,6 @@ pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod,
     let mut _object_array: Vec<AnotherType> = vec![];
     let mut _object_array_set = false;
     let mut _opt_object_array: Option<Vec<Option<AnotherType>>> = None;
-    let mut _env: Env = Env::new();
-    let mut _env_set = false;
 
     while num_of_fields > 0 {
         num_of_fields -= 1;
@@ -252,13 +248,6 @@ pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod,
                 })?;
                 reader.context().pop();
             }
-            "env" => {
-                reader.context().push(&field, "Env", "type found, reading argument");
-                let object = Env::read(&mut reader)?;
-                _env = object;
-                _env_set = true;
-                reader.context().pop();
-            }
             err => return Err(DecodeError::UnknownFieldName(err.to_string())),
         }
     }
@@ -268,16 +257,12 @@ pub fn deserialize_object_method_args(input: &[u8]) -> Result<InputObjectMethod,
     if !_object_array_set {
         return Err(DecodeError::MissingField("objectArray: [AnotherType].".to_string()));
     }
-    if !_env_set {
-        return Err(DecodeError::MissingField("env: Env.".to_string()));
-    }
 
     Ok(InputObjectMethod {
         object: _object,
         opt_object: _opt_object,
         object_array: _object_array,
         opt_object_array: _opt_object_array,
-        env: _env,
     })
 }
 
@@ -306,7 +291,6 @@ pub struct InputOptionalEnvMethod {
     pub opt_object: Option<AnotherType>,
     pub object_array: Vec<AnotherType>,
     pub opt_object_array: Option<Vec<Option<AnotherType>>>,
-    pub env: Option<Env>,
 }
 
 pub fn deserialize_optional_env_method_args(input: &[u8]) -> Result<InputOptionalEnvMethod, DecodeError> {
@@ -322,7 +306,6 @@ pub fn deserialize_optional_env_method_args(input: &[u8]) -> Result<InputOptiona
     let mut _object_array: Vec<AnotherType> = vec![];
     let mut _object_array_set = false;
     let mut _opt_object_array: Option<Vec<Option<AnotherType>>> = None;
-    let mut _env: Option<Env> = None;
 
     while num_of_fields > 0 {
         num_of_fields -= 1;
@@ -369,17 +352,6 @@ pub fn deserialize_optional_env_method_args(input: &[u8]) -> Result<InputOptiona
                 })?;
                 reader.context().pop();
             }
-            "env" => {
-                reader.context().push(&field, "Option<Env>", "type found, reading argument");
-                let mut object: Option<Env> = None;
-                if !reader.is_next_nil()? {
-                    object = Some(Env::read(&mut reader)?);
-                } else {
-                    object = None;
-                }
-                _env = object;
-                reader.context().pop();
-            }
             err => return Err(DecodeError::UnknownFieldName(err.to_string())),
         }
     }
@@ -395,7 +367,6 @@ pub fn deserialize_optional_env_method_args(input: &[u8]) -> Result<InputOptiona
         opt_object: _opt_object,
         object_array: _object_array,
         opt_object_array: _opt_object_array,
-        env: _env,
     })
 }
 

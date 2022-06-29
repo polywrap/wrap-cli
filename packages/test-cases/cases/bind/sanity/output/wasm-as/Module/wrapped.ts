@@ -42,9 +42,8 @@ export function objectMethodWrapped(argsBuf: ArrayBuffer, env_size: u32): ArrayB
     object: args.object,
     optObject: args.optObject,
     objectArray: args.objectArray,
-    optObjectArray: args.optObjectArray,
-    env
-  });
+    optObjectArray: args.optObjectArray
+  }, env);
   return serializeobjectMethodResult(result);
 }
 
@@ -60,8 +59,7 @@ export function optionalEnvMethodWrapped(argsBuf: ArrayBuffer, env_size: u32): A
     object: args.object,
     optObject: args.optObject,
     objectArray: args.objectArray,
-    optObjectArray: args.optObjectArray,
-    env
-  });
+    optObjectArray: args.optObjectArray
+  }, env);
   return serializeoptionalEnvMethodResult(result);
 }

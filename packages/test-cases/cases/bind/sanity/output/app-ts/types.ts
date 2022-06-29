@@ -133,7 +133,6 @@ interface TestImport_Module_Input_importedMethod extends Record<string, unknown>
   optEnum?: Types.TestImport_Enum | null;
   enumArray: Array<Types.TestImport_Enum>;
   optEnumArray?: Array<Types.TestImport_Enum | null> | null;
-  env: Types.TestImport_Env;
 }
 
 /* URI: "testimport.uri.eth" */

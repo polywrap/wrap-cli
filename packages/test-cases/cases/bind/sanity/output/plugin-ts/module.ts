@@ -24,7 +24,6 @@ export interface Input_objectMethod extends Record<string, unknown> {
   optObject?: Types.AnotherType | null;
   objectArray: Array<Types.AnotherType>;
   optObjectArray?: Array<Types.AnotherType | null> | null;
-  env: Types.Env;
 }
 
 export interface Input_optionalEnvMethod extends Record<string, unknown> {
@@ -32,7 +31,6 @@ export interface Input_optionalEnvMethod extends Record<string, unknown> {
   optObject?: Types.AnotherType | null;
   objectArray: Array<Types.AnotherType>;
   optObjectArray?: Array<Types.AnotherType | null> | null;
-  env?: Types.Env | null;
 }
 
 export abstract class Module<

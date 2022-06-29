@@ -29,11 +29,9 @@ type Module {
 
   methodRequireEnv(
     arg: String!
-    env: Env!
-  ): Env!
+  ): Env! @env(required: true)
 
   methodOptionalEnv(
     arg: String!
-    env: Env
-  ): Env
+  ): Env @env(required: false)
 }

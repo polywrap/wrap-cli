@@ -4,7 +4,5 @@ type Env {
 }
 
 type Module {
-  externalEnvMethod(
-    env: Env!
-  ): Env!
+  externalEnvMethod: Env! @env(required: true)
 }

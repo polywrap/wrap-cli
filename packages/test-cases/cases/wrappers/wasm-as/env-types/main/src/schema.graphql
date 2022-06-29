@@ -36,16 +36,13 @@ type Module {
 
   methodRequireEnv(
     arg: String!
-    env: Env!
-  ): Env!
+  ): Env! @env(required: true)
 
   methodOptionalEnv(
     arg: String!
-    env: Env
-  ): Env
+  ): Env @env(required: false)
 
   subinvokeEnvMethod(
     arg: String!
-    env: Env!
-  ): CompoundEnv!
+  ): CompoundEnv! @env(required: true)
 }
