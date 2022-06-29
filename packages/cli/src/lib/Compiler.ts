@@ -7,7 +7,6 @@ import {
   PolywrapProject,
   SchemaComposer,
   withSpinner,
-  outputManifest,
   outputMetadata,
   generateDockerfile,
   generateDockerImageName,
@@ -16,6 +15,7 @@ import {
   intlMsg,
   resetDir,
 } from "./";
+import { outputManifest } from "./project/manifests";
 
 import { msgpackEncode, WrapManifest } from "@polywrap/core-js";
 import { WasmWrapper } from "@polywrap/client-js";

@@ -5,8 +5,6 @@ export * from "./intl";
 export * from "./option-parsers";
 export * from "./polywrap-manifests";
 export * from "./project";
-export * from "./project-manifests";
-export * from "./project-templates";
 export * from "./system";
 export * from "./test-env";
 export * from "./CacheDirectory";

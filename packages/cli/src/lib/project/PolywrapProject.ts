@@ -6,26 +6,25 @@ import {
   loadPolywrapManifest,
   loadBuildManifest,
   loadMetaManifest,
-  generateDockerImageName,
-  createUUID,
   PolywrapManifestLanguage,
   polywrapManifestLanguages,
   isPolywrapManifestLanguage,
   outputManifest,
-  intlMsg,
   loadDeployManifest,
   loadDeployManifestExt,
   polywrapManifestLanguageToBindLanguage,
-  resetDir,
-} from "..";
+} from "./manifests";
 import { Deployer } from "../deploy";
-
 import {
   BuildManifest,
   PolywrapManifest,
   MetaManifest,
   DeployManifest,
-} from "@polywrap/core-js";
+} from "../polywrap-manifests";
+import { generateDockerImageName, resetDir } from "../system";
+import { createUUID } from "../helpers";
+import { intlMsg } from "../intl";
+
 import { normalizePath } from "@polywrap/os-js";
 import { bindSchema, BindOutput, BindOptions } from "@polywrap/schema-bind";
 import { ComposerOutput } from "@polywrap/schema-compose";

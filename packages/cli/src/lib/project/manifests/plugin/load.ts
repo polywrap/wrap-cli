@@ -1,16 +1,23 @@
-import { displayPath, withSpinner, intlMsg } from "../../";
+import { displayPath, withSpinner, intlMsg } from "../../../";
+import {
+  PluginManifest,
+  deserializePluginManifest,
+} from "../../../polywrap-manifests";
 
-import { AppManifest, deserializeAppManifest } from "@polywrap/core-js";
 import fs from "fs";
 
-export const defaultAppManifest = ["polywrap.app.yaml", "polywrap.app.yml"];
+export const defaultPluginManifest = [
+  "polywrap.plugin.yaml",
+  "polywrap.plugin.yml",
+];
 
-export async function loadAppManifest(
+export async function loadPluginManifest(
   manifestPath: string,
   quiet = false
-): Promise<AppManifest> {
-  const run = (): Promise<AppManifest> => {
+): Promise<PluginManifest> {
+  const run = (): Promise<PluginManifest> => {
     const manifest = fs.readFileSync(manifestPath, "utf-8");
+
     if (!manifest) {
       const noLoadMessage = intlMsg.lib_helpers_manifest_unableToLoad({
         path: `${manifestPath}`,
@@ -19,7 +26,7 @@ export async function loadAppManifest(
     }
 
     try {
-      const result = deserializeAppManifest(manifest);
+      const result = deserializePluginManifest(manifest);
       return Promise.resolve(result);
     } catch (e) {
       return Promise.reject(e);
@@ -37,6 +44,6 @@ export async function loadAppManifest(
       async (_spinner) => {
         return await run();
       }
-    )) as AppManifest;
+    )) as PluginManifest;
   }
 }

@@ -6,7 +6,7 @@ import {
   PolywrapManifest,
   MetaManifest,
   PluginManifest,
-} from "../";
+} from "../../";
 
 import { writeFileSync, normalizePath } from "@polywrap/os-js";
 import YAML from "js-yaml";

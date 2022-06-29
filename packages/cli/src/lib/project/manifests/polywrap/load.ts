@@ -4,8 +4,7 @@ import {
   intlMsg,
   searchOptional,
   loadEnvironmentVariables,
-} from "../../";
-
+} from "../../../";
 import {
   PolywrapManifest,
   BuildManifest,
@@ -17,7 +16,8 @@ import {
   deserializeDeployManifest,
   InfraManifest,
   deserializeInfraManifest,
-} from "@polywrap/core-js";
+} from "../../../polywrap-manifests";
+
 import { Schema as JsonSchema } from "jsonschema";
 import path from "path";
 import fs from "fs";
@@ -54,7 +54,7 @@ export async function loadPolywrapManifest(
       intlMsg.lib_helpers_manifest_loadText({ path: manifestPath }),
       intlMsg.lib_helpers_manifest_loadError({ path: manifestPath }),
       intlMsg.lib_helpers_manifest_loadWarning({ path: manifestPath }),
-      async (_spinner) => {
+      async () => {
         return await run();
       }
     )) as PolywrapManifest;
@@ -114,7 +114,7 @@ export async function loadBuildManifest(
       intlMsg.lib_helpers_manifest_loadText({ path: manifestPath }),
       intlMsg.lib_helpers_manifest_loadError({ path: manifestPath }),
       intlMsg.lib_helpers_manifest_loadWarning({ path: manifestPath }),
-      async (_spinner) => {
+      async () => {
         return await run();
       }
     )) as BuildManifest;
@@ -159,7 +159,7 @@ export async function loadDeployManifest(
       intlMsg.lib_helpers_manifest_loadText({ path: manifestPath }),
       intlMsg.lib_helpers_manifest_loadError({ path: manifestPath }),
       intlMsg.lib_helpers_manifest_loadWarning({ path: manifestPath }),
-      async (_spinner) => {
+      async () => {
         return await run();
       }
     )) as DeployManifest;
@@ -199,7 +199,7 @@ export async function loadDeployManifestExt(
       intlMsg.lib_helpers_deployManifestExt_loadWarning({
         path: manifestExtPath,
       }),
-      async (_spinner) => {
+      async () => {
         return run();
       }
     );
@@ -238,7 +238,7 @@ export async function loadMetaManifest(
       intlMsg.lib_helpers_manifest_loadText({ path: manifestPath }),
       intlMsg.lib_helpers_manifest_loadError({ path: manifestPath }),
       intlMsg.lib_helpers_manifest_loadWarning({ path: manifestPath }),
-      async (_spinner) => {
+      async () => {
         return await run();
       }
     )) as MetaManifest;
@@ -278,7 +278,7 @@ export async function loadInfraManifest(
       intlMsg.lib_helpers_manifest_loadText({ path: manifestPath }),
       intlMsg.lib_helpers_manifest_loadError({ path: manifestPath }),
       intlMsg.lib_helpers_manifest_loadWarning({ path: manifestPath }),
-      async (_spinner) => {
+      async () => {
         return await run();
       }
     )) as InfraManifest;

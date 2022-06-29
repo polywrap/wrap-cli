@@ -5,13 +5,13 @@ import {
   Uri,
   coreInterfaceUris,
   PluginPackage,
-  PolywrapManifest,
   Env,
   ExtendableUriResolver,
   CacheResolver,
   PluginResolver,
   RedirectsResolver,
 } from "@polywrap/core-js";
+import { PolywrapManifest } from "polywrap";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
 import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";

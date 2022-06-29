@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { Client, MaybeAsync, executeMaybeAsyncFunction } from ".";
+import { Client, MaybeAsync, executeMaybeAsyncFunction, Uri } from ".";
 
 /**
  * Invocable plugin method.
@@ -12,10 +12,7 @@ import { Client, MaybeAsync, executeMaybeAsyncFunction } from ".";
 export type PluginMethod<
   TArgs extends Record<string, unknown> = Record<string, unknown>,
   TResult = unknown
-> = (
-  args: TArgs,
-  client: Client
-) => MaybeAsync<TResult>;
+> = (args: TArgs, client: Client) => MaybeAsync<TResult>;
 
 export abstract class PluginModule<
   TConfig,
@@ -90,10 +87,20 @@ export abstract class PluginModule<
   }
 }
 
-export type PluginPackage<TConfig> = (
-  config: TConfig
-) => PluginFactory<TConfig>;
+/** The plugin package's manifest */
+export interface PluginPackageManifest {
+  /** The Wrapper's schema */
+  schema: string;
 
-export interface PluginFactory<TConfig> {
-  instantiate: () => PluginModule<TConfig>;
+  /** All interface schemas implemented by this plugin. */
+  implements: Uri[];
 }
+
+export type PluginPackage<TConfig> = {
+  factory: () => PluginModule<TConfig>;
+  manifest: PluginPackageManifest;
+};
+
+export type PluginFactory<TConfig> = (
+  config: TConfig
+) => PluginPackage<TConfig>;

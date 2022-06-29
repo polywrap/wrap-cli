@@ -1,4 +1,4 @@
-import { intlMsg } from "../";
+import { intlMsg } from "../../";
 
 import { execSync, spawn } from "child_process";
 import { GluegunFilesystem } from "gluegun";

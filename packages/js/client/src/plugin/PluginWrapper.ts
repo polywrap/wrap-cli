@@ -34,10 +34,6 @@ export class PluginWrapper extends Wrapper {
     Tracer.endSpan();
   }
 
-  public async getSchema(_client: Client): Promise<string> {
-    return Promise.resolve(this._plugin.manifest.schema);
-  }
-
   public async getFile(
     _options: GetFileOptions,
     _client: Client
@@ -82,7 +78,7 @@ export class PluginWrapper extends Wrapper {
 
         jsArgs = result as Record<string, unknown>;
       } else {
-        jsArgs = args;
+        jsArgs = args as Record<string, unknown>;
       }
 
       // Invoke the function

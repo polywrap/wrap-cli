@@ -20,7 +20,7 @@ import { Tracer } from "@polywrap/tracing-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 
 type InvokeResultOrError =
-  | { type: "InvokeResult"; invokeResult: ArrayBuffer }
+  | { type: "InvokeResult"; invokeResult: ArrayBufferView }
   | { type: "InvokeError"; invokeError: string };
 
 const hasExport = (name: string, exports: Record<string, unknown>): boolean => {
@@ -59,8 +59,6 @@ export interface State {
 
 export class WasmWrapper extends Wrapper {
   public static requiredExports: readonly string[] = ["_wrap_invoke"];
-
-  private _schema?: string;
   private _wasm: ArrayBuffer | undefined = undefined;
   private _sanitizedEnv: ArrayBuffer | undefined = undefined;
 
@@ -143,7 +141,10 @@ export class WasmWrapper extends Wrapper {
         invokeResult: {} as InvokeResult,
         method,
         sanitizeEnv: {},
-        args: args instanceof ArrayBuffer ? args : msgpackEncode(args),
+        args:
+          args instanceof ArrayBuffer
+            ? (args as ArrayBuffer)
+            : msgpackEncode(args),
       };
 
       const abort = (message: string) => {
@@ -191,12 +192,12 @@ export class WasmWrapper extends Wrapper {
           if (noDecode) {
             return {
               data: invokeResult.invokeResult,
-            } as InvokeResult<ArrayBuffer>;
+            } as InvokeResult<ArrayBufferView>;
           }
 
           try {
             return {
-              data: msgpackDecode(invokeResult.invokeResult as ArrayBuffer),
+              data: msgpackDecode(invokeResult.invokeResult as ArrayBufferView),
             } as InvokeResult<unknown>;
           } catch (err) {
             throw Error(
@@ -215,23 +216,6 @@ export class WasmWrapper extends Wrapper {
         error,
       };
     }
-  }
-
-  @Tracer.traceMethod("WasmWrapper: getSchema")
-  public async getSchema(client: Client): Promise<string> {
-    if (this._schema) {
-      return this._schema;
-    }
-
-    // Either the query or mutation module will work,
-    // as they share the same schema file
-    const schema = this._manifest.schema;
-    this._schema = (await this.getFile(
-      { path: schema, encoding: "utf8" },
-      client
-    )) as string;
-
-    return this._schema;
   }
 
   @Tracer.traceMethod("WasmWrapper: _processInvokeResult")
@@ -268,7 +252,7 @@ export class WasmWrapper extends Wrapper {
   ): Promise<void> {
     if (hasExport("_wrap_load_env", exports)) {
       if (this._sanitizedEnv !== undefined) {
-        state.env = this._sanitizedEnv as ArrayBuffer;
+        state.env = this._sanitizedEnv as ArrayBufferView;
       } else {
         const clientEnv = this._getClientEnv();
 
@@ -276,7 +260,7 @@ export class WasmWrapper extends Wrapper {
           state.sanitizeEnv.args = msgpackEncode({ env: clientEnv });
 
           await exports._wrap_sanitize_env(state.sanitizeEnv.args.byteLength);
-          state.env = state.sanitizeEnv.result as ArrayBuffer;
+          state.env = state.sanitizeEnv.result as ArrayBufferView;
           this._sanitizedEnv = state.env;
         } else {
           state.env = msgpackEncode(clientEnv);
@@ -302,7 +286,7 @@ export class WasmWrapper extends Wrapper {
       return this._wasm as ArrayBuffer;
     }
 
-    const moduleManifest = this._manifest.module;
+    const moduleManifest = "wrap.wasm";
 
     if (!moduleManifest) {
       throw Error(`Package manifest does not contain a definition for module`);

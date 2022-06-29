@@ -5,9 +5,10 @@ import {
   isAppManifestLanguage,
   loadAppManifest,
   appManifestLanguageToBindLanguage,
-} from "..";
+} from "./manifests";
+import { AppManifest } from "../polywrap-manifests";
 
-import { AppManifest, Client } from "@polywrap/core-js";
+import { Client } from "@polywrap/core-js";
 import { ComposerOutput } from "@polywrap/schema-compose";
 import { bindSchema, BindOutput } from "@polywrap/schema-bind";
 import { Abi } from "@polywrap/schema-parse";

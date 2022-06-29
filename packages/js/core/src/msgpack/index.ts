@@ -33,7 +33,7 @@ extensionCodec.register({
   },
 });
 
-export function msgpackEncode(object: unknown): ArrayBufferView {
+export function msgpackEncode(object: unknown): ArrayBuffer {
   const encoder = new Encoder(
     extensionCodec,
     undefined, // context
@@ -48,9 +48,7 @@ export function msgpackEncode(object: unknown): ArrayBufferView {
   return encoder.encode(object);
 }
 
-export function msgpackDecode(
-  buffer: ArrayBufferView
-): unknown {
+export function msgpackDecode(buffer: ArrayBuffer): unknown {
   const decoder = new Decoder(extensionCodec);
   return decoder.decode(buffer);
 }

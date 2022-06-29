@@ -1,4 +1,4 @@
-import { intlMsg } from "../../intl";
+import { intlMsg } from "../../../intl";
 
 import { BindLanguage } from "@polywrap/schema-bind";
 

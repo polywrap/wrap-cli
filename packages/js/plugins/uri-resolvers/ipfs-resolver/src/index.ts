@@ -36,7 +36,7 @@ export class IpfsResolverPlugin extends Module<IpfsResolverPluginConfig> {
 
     const manifestSearchPatterns = ["polywrap.json"];
 
-    let manifest: string | undefined;
+    let manifest: Buffer | undefined;
 
     for (const manifestSearchPattern of manifestSearchPatterns) {
       try {
@@ -51,9 +51,9 @@ export class IpfsResolverPlugin extends Module<IpfsResolverPluginConfig> {
         );
 
         if (manifestResult.data) {
-          manifest = Buffer.from(manifestResult.data).toString("utf-8");
+          manifest = Buffer.from(manifestResult.data);
         } else {
-          throw manifestResult.error;
+          throw new Error();
         }
       } catch (e) {
         // TODO: logging

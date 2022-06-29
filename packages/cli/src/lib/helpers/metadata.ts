@@ -2,7 +2,7 @@ import { withSpinner } from "./";
 import { displayPath, intlMsg } from "../";
 
 import { normalizePath } from "@polywrap/os-js";
-import { MetaManifest } from "@polywrap/core-js";
+import { MetaManifest } from "polywrap";
 import { Ora } from "ora";
 import fs from "fs";
 import path from "path";

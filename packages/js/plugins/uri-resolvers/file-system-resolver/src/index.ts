@@ -26,7 +26,7 @@ export class FileSystemResolverPlugin extends Module<NoConfig> {
 
     const manifestSearchPatterns = ["polywrap.json"];
 
-    let manifest: string | undefined;
+    let manifest: Bytes | undefined;
 
     for (const manifestSearchPattern of manifestSearchPatterns) {
       const manifestPath = path.resolve(args.path, manifestSearchPattern);
@@ -37,8 +37,8 @@ export class FileSystemResolverPlugin extends Module<NoConfig> {
 
       if (manifestExistsResult.data) {
         try {
-          const manifestResult = await FileSystem_Module.readFileAsString(
-            { path: manifestPath, encoding: FileSystem_EncodingEnum.UTF8 },
+          const manifestResult = await FileSystem_Module.readFile(
+            { path: manifestPath, encoding: FileSystem_EncodingEnum.BINARY },
             _client
           );
           if (manifestResult.error) {
@@ -51,12 +51,7 @@ export class FileSystemResolverPlugin extends Module<NoConfig> {
       }
     }
 
-    if (manifest) {
-      return { uri: null, manifest };
-    } else {
-      // Nothing found
-      return { uri: null, manifest: null };
-    }
+    return { uri: null, manifest };
   }
 
   async getFile(args: Args_getFile, _client: Client): Promise<Bytes | null> {

@@ -12,7 +12,7 @@ import {
   deserializeBuildManifest,
   deserializeMetaManifest,
   PolywrapManifest,
-} from "@polywrap/core-js";
+} from "polywrap";
 import path from "path";
 
 export class WasmPackageValidator {

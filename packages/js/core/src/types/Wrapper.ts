@@ -26,13 +26,6 @@ export abstract class Wrapper {
   ): Promise<InvokeResult<unknown>>;
 
   /**
-   * Get the Wrapper's schema
-   *
-   * @param client The client instance the schema.
-   */
-  public abstract getSchema(client: Client): Promise<string>;
-
-  /**
    * Get a file from the Wrapper package.
    * Not implemented for plugin wrappers.
    *

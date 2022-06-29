@@ -167,16 +167,6 @@ export class PolywrapClient implements Client {
     );
   }
 
-  @Tracer.traceMethod("PolywrapClient: getSchema")
-  public async getSchema<TUri extends Uri | string>(
-    uri: TUri,
-    options: GetSchemaOptions = {}
-  ): Promise<string> {
-    const wrapper = await this._loadWrapper(this._toUri(uri), options);
-    const client = contextualizeClient(this, options.contextId);
-    return await wrapper.getSchema(client);
-  }
-
   @Tracer.traceMethod("PolywrapClient: getFile")
   public async getFile<TUri extends Uri | string>(
     uri: TUri,
@@ -828,12 +818,6 @@ const contextualizeClient = (
           options: GetEnvsOptions = {}
         ) => {
           return client.getEnvByUri(uri, { ...options, contextId });
-        },
-        getSchema: <TUri extends Uri | string>(
-          uri: TUri,
-          options: GetSchemaOptions = {}
-        ) => {
-          return client.getSchema(uri, { ...options, contextId });
         },
         getFile: <TUri extends Uri | string>(
           uri: TUri,

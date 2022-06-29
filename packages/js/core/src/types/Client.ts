@@ -30,8 +30,6 @@ export type GetPluginsOptions = Contextualized;
 
 export type GetInterfacesOptions = Contextualized;
 
-export type GetSchemaOptions = Contextualized;
-
 export type GetEnvsOptions = Contextualized;
 
 export type GetUriResolversOptions = Contextualized;
@@ -67,11 +65,6 @@ export interface Client
   ): Env<Uri> | undefined;
 
   getUriResolvers(options: GetUriResolversOptions): readonly UriResolver[];
-
-  getSchema<TUri extends Uri | string>(
-    uri: TUri,
-    options: GetSchemaOptions
-  ): Promise<string>;
 
   getFile<TUri extends Uri | string>(
     uri: TUri,
