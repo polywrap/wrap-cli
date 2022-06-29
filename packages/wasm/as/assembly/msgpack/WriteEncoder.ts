@@ -343,7 +343,7 @@ export class WriteEncoder extends Write {
     this.writeBigInt(value);
   }
 
-  writeOptionalBigNumber(value: BigNumber): void {
+  writeOptionalBigNumber(value: BigNumber | null): void {
     if (value === null) {
       this.writeNil();
       return;
