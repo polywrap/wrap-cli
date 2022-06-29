@@ -67,6 +67,11 @@ type Namespace_Object {
 }
 `;
 
+const envDirectiveSchema = `
+type Object {
+  prop: String! @env(required: true)
+}
+`;
 
 describe("Polywrap Schema Directives Validation", () => {
   it("supportedDirectives", () => {
@@ -126,6 +131,16 @@ describe("Polywrap Schema Directives Validation", () => {
       ]
     })).toThrow(
       /@imported directive should only be used on object or enum type definitions, but it is being used in the following location: definitions -> 0 -> fields -> 0 -> directives -> 0/gm
+    );
+  });
+
+  it("envDirective: Improper Placement", () => {
+    expect(() => parseSchema(envDirectiveSchema, {
+      validators: [
+        directiveValidators.getEnvDirectiveValidator
+      ]
+    })).toThrow(
+      /@env directive should only be used on Module method definitions. Found on field \'prop\' of type \'Object\'/gm
     );
   });
 });

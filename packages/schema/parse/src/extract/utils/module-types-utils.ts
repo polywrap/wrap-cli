@@ -11,7 +11,16 @@ import {
 import { setPropertyType } from "./property-utils";
 import { extractAnnotateDirective } from "./object-types-utils";
 
-import { InputValueDefinitionNode, NamedTypeNode } from "graphql";
+import {
+  BooleanValueNode,
+  FieldDefinitionNode,
+  InputValueDefinitionNode,
+  NamedTypeNode,
+} from "graphql";
+
+export interface EnvDirDefinition {
+  required: boolean;
+}
 
 export interface State {
   currentModule?: ModuleDefinition;
@@ -130,4 +139,28 @@ export function extractInputValueDefinition(
 
   method.arguments.push(argument);
   state.currentArgument = argument;
+}
+
+export function extractEnvDirective(
+  node: FieldDefinitionNode
+): EnvDirDefinition | undefined {
+  if (node.directives) {
+    for (const dir of node.directives) {
+      if (dir.name.value === "env") {
+        const required = (dir.arguments?.find(
+          (arg) => arg.name.value === "required"
+        )?.value as BooleanValueNode).value;
+        if (required === undefined) {
+          throw new Error(
+            `Env directive: ${node.name.value} has invalid arguments`
+          );
+        }
+        return {
+          required,
+        };
+      }
+    }
+  }
+
+  return undefined;
 }

@@ -49,16 +49,16 @@ export const typeInfo: TypeInfo = {
         {
           ...createMethodDefinition({
             name: "envMethod",
-            return: createObjectPropertyDefinition({
+            return: createScalarPropertyDefinition({
               name: "envMethod",
-              type: "Namespace_Env",
+              type: "String",
               required: true,
             }),
           }),
           arguments: [
-            createObjectPropertyDefinition({
-              name: "env",
-              type: "Namespace_Env",
+            createScalarPropertyDefinition({
+              name: "arg",
+              type: "String",
               required: true,
             }),
           ],
@@ -66,17 +66,17 @@ export const typeInfo: TypeInfo = {
         {
           ...createMethodDefinition({
             name: "optEnvMethod",
-            return: createObjectPropertyDefinition({
+            return: createScalarPropertyDefinition({
               name: "optEnvMethod",
-              type: "Namespace_Env",
-              required: false,
+              type: "String",
+              required: true,
             }),
           }),
           arguments: [
-            createObjectPropertyDefinition({
-              name: "env",
-              type: "Namespace_Env",
-              required: false,
+            createScalarPropertyDefinition({
+              name: "arg",
+              type: "String",
+              required: true,
             }),
           ],
         },

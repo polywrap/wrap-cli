@@ -590,6 +590,9 @@ export const typeInfo: TypeInfo = {
         {
           ...createMethodDefinition({
             name: "methodRequireEnv",
+            env: {
+              required: true,
+            },
             return: createObjectPropertyDefinition({
               name: "methodRequireEnv",
               type: "Env",
@@ -601,11 +604,6 @@ export const typeInfo: TypeInfo = {
                 type: "String",
                 required: true,
               }),
-              createObjectPropertyDefinition({
-                name: "env",
-                type: "Env",
-                required: true
-              }),
             ],
           }),
           
@@ -613,6 +611,9 @@ export const typeInfo: TypeInfo = {
         {
           ...createMethodDefinition({
             name: "methodOptionalEnv",
+            env: {
+              required: false,
+            },
             return: createObjectPropertyDefinition({
               name: "methodOptionalEnv",
               type: "Env",
@@ -622,10 +623,6 @@ export const typeInfo: TypeInfo = {
                 name: "arg",
                 type: "String",
                 required: true,
-              }),
-              createObjectPropertyDefinition({
-                name: "env",
-                type: "Env",
               }),
             ],
           }),
@@ -872,6 +869,9 @@ export const typeInfo: TypeInfo = {
         {
           ...createMethodDefinition({
             name: "envMethod",
+            env: {
+              required: true,
+            },
             return: createObjectPropertyDefinition({
               name: "envMethod",
               type: "TestImport_Env",
@@ -884,16 +884,14 @@ export const typeInfo: TypeInfo = {
               type: "String",
               required: true,
             }),
-            createObjectPropertyDefinition({
-              name: "env",
-              type: "TestImport_Env",
-              required: true,
-            }),
           ],
         },
         {
           ...createMethodDefinition({
             name: "optEnvMethod",
+            env: {
+              required: false,
+            },
             return: createObjectPropertyDefinition({
               name: "optEnvMethod",
               type: "TestImport_Env",
@@ -905,11 +903,6 @@ export const typeInfo: TypeInfo = {
               name: "arg",
               type: "String",
               required: true,
-            }),
-            createObjectPropertyDefinition({
-              name: "env",
-              type: "TestImport_Env",
-              required: false,
             }),
           ],
         },

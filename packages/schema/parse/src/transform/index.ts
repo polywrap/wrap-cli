@@ -35,8 +35,6 @@ export * from "./toGraphQLType";
 export * from "./moduleCapabilities";
 export * from "./hasImports";
 export * from "./addAnnotations";
-export * from "./methodArgIsEnv";
-export * from "./methodHasEnv";
 
 export interface TypeInfoTransforms {
   enter?: TypeInfoTransformer;

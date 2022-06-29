@@ -32,6 +32,8 @@ directive @enabled_interface on OBJECT
 
 directive @annotate(type: String!) on FIELD
 
+directive @env(required: Boolean!) on FIELD_DEFINITION
+
 """
 CustomEnum comment
 """
@@ -192,13 +194,11 @@ abstractMethod comment
 
   methodRequireEnv(
     arg: String!
-    env: Env!
-  ): Env!
+  ): Env! @env(required: true)
 
   methodOptionalEnv(
     arg: String!
-    env: Env
-  ): Env
+  ): Env @env(required: false)
 }
 
 """
@@ -238,13 +238,11 @@ uArrayArray comment
 
   envMethod(
     arg: String!
-    env: TestImport_Env!
-  ): TestImport_Env!
+  ): TestImport_Env! @env(required: true)
 
   optEnvMethod(
     arg: String!
-    env: TestImport_Env
-  ): TestImport_Env
+  ): TestImport_Env @env(required: false)
 }
 
 """

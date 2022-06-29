@@ -1,12 +1,4 @@
-import {
-  isScalarType,
-  scalarTypeNames,
-  isModuleType,
-  isEnvInputField,
-  isEnvType,
-  envTypeNames,
-  isImportedEnvType,
-} from "../typeInfo";
+import { isScalarType, scalarTypeNames, isModuleType } from "../typeInfo";
 import { SchemaValidator } from "./";
 
 import {
@@ -91,7 +83,6 @@ export const getPropertyTypesValidator = (): SchemaValidator => {
   let currentObject: string | undefined;
   let currentImportType: string | undefined;
   let currentField: string | undefined;
-  let currentInputField: string | undefined;
   const objectTypes: Record<string, boolean> = {};
   const enumTypes: Record<string, boolean> = {};
   const duplicateFields: Record<string, Record<string, boolean>> = {};
@@ -142,26 +133,11 @@ export const getPropertyTypesValidator = (): SchemaValidator => {
           }
         },
         FieldDefinition: (node) => {
-          if (node.name.value === "sanitizeEnv") {
-            return;
-          }
-
           currentField = node.name.value;
         },
         NamedType: (node: NamedTypeNode) => {
           if (currentObject && currentField) {
             const namedType = node.name.value;
-
-            if (
-              currentInputField &&
-              isEnvInputField(currentInputField) &&
-              !isEnvType(namedType) &&
-              !isImportedEnvType(namedType)
-            ) {
-              throw new Error(
-                `Argument '${envTypeNames.inputField}' in method '${currentField}' must be of type '${envTypeNames.objectType}'`
-              );
-            }
 
             fieldTypes.push({
               object: currentObject,
@@ -181,8 +157,6 @@ export const getPropertyTypesValidator = (): SchemaValidator => {
                 `Found: type ${typeName} { ${currentField}(${node.name.value}) }`
             );
           }
-
-          currentInputField = node.name.value;
         },
       },
       leave: {
@@ -192,9 +166,6 @@ export const getPropertyTypesValidator = (): SchemaValidator => {
         },
         FieldDefinition: () => {
           currentField = undefined;
-        },
-        InputValueDefinition: () => {
-          currentInputField = undefined;
         },
       },
     },

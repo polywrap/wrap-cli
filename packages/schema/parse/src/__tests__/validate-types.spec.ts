@@ -118,19 +118,6 @@ type Bar {
 }
 `;
 
-const propertyTypes8 = `
-type Env {
-  str: String!
-}
-
-type Module {
-  methodRequireEnv(
-    arg: String!
-    env: String!
-  ): Env!
-}
-`;
-
 const circularTypes1 = `
 type A {
   prop: B!
@@ -312,10 +299,6 @@ describe("Polywrap Schema Type Validation", () => {
 
     expect(exec(propertyTypes7)).toThrow(
       /Methods can only be defined on module types \(Module\)\.\nFound: type Modul { method\(prop\) }/gm
-    );
-
-    expect(exec(propertyTypes8)).toThrow(
-      /Argument \'env\' in method \'methodRequireEnv\' must be of type \'Env\'/gm
     );
   })
 

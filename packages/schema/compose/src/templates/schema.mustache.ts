@@ -29,7 +29,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
     {{/comment}}
     {{name}}: {{toGraphQLType}}
     {{/arguments}}
-  ){{/arguments.length}}: {{#return}}{{toGraphQLType}}{{/return}}
+  ){{/arguments.length}}: {{#return}}{{toGraphQLType}}{{/return}}{{#env}} @env(required: {{required}}){{/env}}
   {{^last}}
 
   {{/last}}
@@ -106,7 +106,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
     {{/comment}}
     {{name}}: {{toGraphQLType}}
     {{/arguments}}
-  ){{/arguments.length}}: {{#return}}{{toGraphQLType}}{{/return}}
+  ){{/arguments.length}}: {{#return}}{{toGraphQLType}}{{/return}}{{#env}} @env(required: {{required}}){{/env}}
   {{^last}}
 
   {{/last}}

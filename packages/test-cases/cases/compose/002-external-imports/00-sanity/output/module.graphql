@@ -33,6 +33,8 @@ directive @enabled_interface on OBJECT
 
 directive @annotate(type: String!) on FIELD
 
+directive @env(required: Boolean!) on FIELD_DEFINITION
+
 ### Polywrap Header END ###
 
 type Module @imports(
@@ -53,12 +55,12 @@ type Namespace_Module @imported(
   nativeType: "Module"
 ) {
   envMethod(
-    env: Namespace_Env!
-  ): Namespace_Env!
+    arg: String!
+  ): String! @env(required: true)
 
   optEnvMethod(
-    env: Namespace_Env
-  ): Namespace_Env
+    arg: String!
+  ): String! @env(required: false)
 }
 
 ### Imported Modules END ###

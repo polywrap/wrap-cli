@@ -22,6 +22,8 @@ directive @imports(
   types: [String!]!
 ) on OBJECT
 
+directive @env(required: Boolean!) on FIELD_DEFINITION
+
 ### Polywrap Header END ###
 
 type ExternalType {
@@ -37,6 +39,6 @@ type Env {
 }
 
 type Module {
-  envMethod(env: Env!): Env!
-  optEnvMethod(env: Env): Env
+  envMethod(arg: String!): String! @env(required: true)
+  optEnvMethod(arg: String!): String! @env(required: false)
 }

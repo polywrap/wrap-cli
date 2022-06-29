@@ -385,11 +385,17 @@ export function createObjectPropertyDefinition(args: {
 
 export interface MethodDefinition extends GenericDefinition, WithComment {
   arguments: PropertyDefinition[];
+  env?: {
+    required: boolean;
+  };
   return: PropertyDefinition;
 }
 export function createMethodDefinition(args: {
   name: string;
   arguments?: PropertyDefinition[];
+  env?: {
+    required: boolean;
+  };
   return: PropertyDefinition;
   comment?: string;
 }): MethodDefinition {
