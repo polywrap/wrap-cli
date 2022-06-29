@@ -1,3 +1,12 @@
 1- update invocation to support wrap.info instead of polywrap.json
 2- update uri resolvers to search for wrap.info
-3- 
+
+
+# Jordan
+- Review:
+- - manifests
+- - core
+- - client
+- - wasmwrapper
+- - pluginwrapper
+- Add wrapper side of "getManifest"
