@@ -7,13 +7,8 @@ import {
 } from ".";
 
 import { parseSchema } from "@polywrap/schema-parse";
-import {
-  deserializePolywrapManifest,
-  deserializeBuildManifest,
-  deserializeMetaManifest,
-  PolywrapManifest,
-} from "polywrap";
 import path from "path";
+import { WrapManifest, deserializeWrapManifest } from "@polywrap/core-js";
 
 export class WasmPackageValidator {
   constructor(private constraints: WasmPackageConstraints) {}
@@ -118,7 +113,13 @@ export class WasmPackageValidator {
   private async validateManifests(
     reader: PackageReader
   ): Promise<ValidationResult> {
-    let manifest: PolywrapManifest | undefined;
+    const WRAP_INFO = "wrap.info";
+    if (!(await reader.exists(WRAP_INFO))) {
+      return this.fail(ValidationFailReason.WrapManifestNotFound);
+    }
+
+    const info = await reader.readFile(WRAP_INFO);
+    const manifest: WrapManifest | undefined = deserializeWrapManifest(info);
     // Go through manifest names, if more than one wrap manifest exists, fail
     // If no wrap manifest exists or is invalid, also fail
     for (const manifestName of VALID_WRAP_MANIFEST_NAMES) {
@@ -126,27 +127,25 @@ export class WasmPackageValidator {
         continue;
       }
 
-      if (manifest) {
-        return this.fail(ValidationFailReason.MultipleWrapManifests);
-      }
-      const manifestFile = await reader.readFileAsString(manifestName);
-      try {
-        manifest = deserializePolywrapManifest(manifestFile);
-      } catch (err) {
-        return this.fail(ValidationFailReason.InvalidWrapManifest, err);
-      }
+      // if (manifest) {
+      //   return this.fail(ValidationFailReason.MultipleWrapManifests);
+      // }
+      // try {
+      // } catch (err) {
+      //   return this.fail(ValidationFailReason.InvalidWrapManifest, err);
+      // }
     }
 
     if (!manifest) {
       return this.fail(ValidationFailReason.WrapManifestNotFound);
     }
 
-    const schemaResult = await this.validateSchema(reader, manifest.schema);
+    const schemaResult = await this.validateSchema(reader, "schema.graphql");
     if (!schemaResult.valid) {
       return schemaResult;
     }
 
-    const moduleResult = await this.validateModule(reader, manifest.module);
+    const moduleResult = await this.validateModule(reader, "wrap.wasm");
     if (!moduleResult.valid) {
       return moduleResult;
     }
@@ -198,51 +197,6 @@ export class WasmPackageValidator {
 
     if (moduleSize > this.constraints.maxModuleSize) {
       return this.fail(ValidationFailReason.ModuleTooLarge);
-    }
-
-    return this.success();
-  }
-
-  private async validateBuildManifest(
-    reader: PackageReader,
-    polywrapManifest: PolywrapManifest
-  ): Promise<ValidationResult> {
-    const manifestPath = polywrapManifest.build;
-
-    if (manifestPath) {
-      // Manifests get built as a `.json` file so we need to change the extension
-      const fileName = path.parse(manifestPath).name;
-      const fullManifestName = `${fileName}.json`;
-
-      const buildManifestFile = await reader.readFileAsString(fullManifestName);
-      try {
-        deserializeBuildManifest(buildManifestFile);
-      } catch (err) {
-        return this.fail(ValidationFailReason.InvalidBuildManifest, err);
-      }
-    }
-
-    return this.success();
-  }
-
-  private async validateMetaManifest(
-    reader: PackageReader,
-    polywrapManifest: PolywrapManifest
-  ): Promise<ValidationResult> {
-    const manifestPath = polywrapManifest.meta;
-
-    if (manifestPath) {
-      // Manifests get built as `.json` files so we need to change the extension
-      const fileName = path.parse(manifestPath).name;
-      const fullManifestName = `${fileName}.json`;
-
-      const metaManifestFile = await reader.readFileAsString(fullManifestName);
-
-      try {
-        deserializeMetaManifest(metaManifestFile);
-      } catch (err) {
-        return this.fail(ValidationFailReason.InvalidMetaManifest, err);
-      }
     }
 
     return this.success();
