@@ -1,0 +1,1 @@
+// WasmWrapPackage extends WrapPackageExtern

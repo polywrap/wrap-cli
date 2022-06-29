@@ -1,0 +1,5 @@
+language: app/typescript
+schema: ./schema.graphql
+import_redirects:
+  - uri: "wrap://ens/uri-resolver-ext.core.polywrap.eth"
+    package: ../../../../../core-interfaces/uri-resolver-ext/build

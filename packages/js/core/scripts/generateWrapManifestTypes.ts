@@ -11,7 +11,7 @@ async function generateFormatTypes() {
     "formats/wrap.info"
   );
 
-  const formatOutputDir = path.join(__dirname, `/../src/wrap-manifests/formats`);
+  const outputDir = path.join(__dirname, `/../src/wrap-core/wrap-package/manifest`);
 
   // Get all JSON schemas for this format type (0.0.1, 0.0.2, etc)
   const formatSchemaFiles = fs.readdirSync(formatsDir);
@@ -38,7 +38,7 @@ async function generateFormatTypes() {
       );
 
       // Emit the result
-      const tsOutputPath = path.join(formatOutputDir, `${formatVersion}.ts`);
+      const tsOutputPath = path.join(outputDir, `${formatVersion}.ts`);
       fs.mkdirSync(path.dirname(tsOutputPath), { recursive: true });
       os.writeFileSync(
         tsOutputPath,
@@ -66,7 +66,7 @@ async function generateFormatTypes() {
     const tsSrc = Mustache.render(tsTemplate, context);
 
     // Emit the source
-    const tsOutputPath = path.join(formatOutputDir, `${name}.ts`);
+    const tsOutputPath = path.join(outputDir, `${name}.ts`);
     fs.mkdirSync(path.dirname(tsOutputPath), { recursive: true });
     os.writeFileSync(tsOutputPath, tsSrc);
   }

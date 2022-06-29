@@ -1,0 +1,44 @@
+import {
+  InvokeOptions,
+  InvokeResult,
+  Uri
+} from ".";
+
+export interface InvokeOptions<
+  TUri extends Uri | string = string,
+  TClientConfig extends ClientConfig = ClientConfig
+> {
+  /** The Wrapper's URI */
+  uri: TUri;
+
+  /** Method to be executed. */
+  method: string;
+
+  /**
+   * Arguments for the method, structured as a map,
+   * removing the chance of incorrectly ordering arguments.
+   */
+  args?: Record<string, unknown> | ArrayBuffer;
+
+  /**
+   * If set to true, the invoke function will not decode the msgpack results
+   * into JavaScript objects, and instead return the raw ArrayBuffer.
+   */
+  noDecode?: boolean;
+
+  /**
+   * Override the client's config for all invokes within this invoke.
+   */
+  config?: Partial<TClientConfig>;
+
+  /**
+   * Invoke id used to track query context data set internally.
+   */
+  id?: string;
+}
+
+export interface ClientInvocation {
+  invoke<TData = unknown, TUri extends Uri | string = string>(
+    options: InvokeOptions<TUri>
+  ): Promise<InvokeResult<TData>>;
+}

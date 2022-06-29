@@ -72,6 +72,10 @@ export class WasmWrapper extends Wrapper {
   ) {
     super();
 
+    if (_manifest.type !== "wasm") {
+      throw sdfsdf
+    }
+
     Tracer.startSpan("WasmWrapper: constructor");
     Tracer.setAttribute("args", {
       uri: this._uri,
@@ -301,8 +305,6 @@ export class WasmWrapper extends Wrapper {
     if (this._wasm !== undefined) {
       return this._wasm as ArrayBuffer;
     }
-
-    const moduleManifest = this._manifest.module;
 
     if (!moduleManifest) {
       throw Error(`Package manifest does not contain a definition for module`);

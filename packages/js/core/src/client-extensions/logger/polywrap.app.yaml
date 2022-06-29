@@ -1,0 +1,5 @@
+language: app/typescript
+schema: ./schema.graphql
+import_redirects:
+  - from: "wrap://ens/logger.core.polywrap.eth"
+    to: ../../../../../core-interfaces/logger/build/wrap.info -> abi

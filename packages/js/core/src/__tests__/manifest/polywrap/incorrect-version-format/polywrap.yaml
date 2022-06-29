@@ -1,3 +1,0 @@
-format: "BAD_FORMAT_VERSION"
-module: ../index.ts
-schema: ../schema.graphql

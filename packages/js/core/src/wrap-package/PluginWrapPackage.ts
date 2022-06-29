@@ -1,0 +1,1 @@
+// PluginWrapPackage extends WrapPackageEmbed
