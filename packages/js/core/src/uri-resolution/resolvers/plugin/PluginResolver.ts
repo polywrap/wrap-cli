@@ -9,16 +9,16 @@ import {
   WrapperCache,
   Client,
   Env,
-  PluginPackage,
+  PluginFactory,
   Uri,
 } from "../../../types";
-import { findPluginPackage } from "../../../algorithms";
+import { findPluginRegistration } from "../../../algorithms";
 
 export class PluginResolver implements UriResolver {
   constructor(
     private readonly createPluginWrapper: (
       uri: Uri,
-      plugin: PluginPackage<unknown>,
+      plugin: PluginFactory<unknown>,
       environment: Env<Uri> | undefined
     ) => Wrapper
   ) {}
@@ -33,7 +33,7 @@ export class PluginResolver implements UriResolver {
     cache: WrapperCache,
     resolutionPath: UriResolutionStack
   ): Promise<UriResolutionResult> {
-    const plugin = findPluginPackage(uri, client.getPlugins({}));
+    const plugin = findPluginRegistration(uri, client.getPlugins({}));
 
     if (plugin) {
       const environment = getEnvFromUriOrResolutionStack(

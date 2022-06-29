@@ -33,7 +33,7 @@ extensionCodec.register({
   },
 });
 
-export function msgpackEncode(object: unknown): ArrayBuffer {
+export function msgpackEncode(object: unknown): ArrayBufferView {
   const encoder = new Encoder(
     extensionCodec,
     undefined, // context
@@ -45,11 +45,11 @@ export function msgpackEncode(object: unknown): ArrayBuffer {
     undefined // forceIntegerToFloat
   );
 
-  return encoder.encode(object).buffer;
+  return encoder.encode(object);
 }
 
 export function msgpackDecode(
-  buffer: ArrayLike<number> | BufferSource
+  buffer: ArrayBufferView
 ): unknown {
   const decoder = new Decoder(extensionCodec);
   return decoder.decode(buffer);

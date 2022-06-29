@@ -6,7 +6,7 @@ import {
   InvokeResult,
   WrapManifest,
   PluginModule,
-  PluginPackage,
+  PluginFactory,
   QueryOptions,
   QueryResult,
   Uri,
@@ -24,11 +24,12 @@ import {
   PluginRegistration,
   SubscribeOptions,
   Subscription,
+  msgpackEncode
 } from "..";
 
 describe("resolveUri", () => {
   const client = (
-    wrappers: Record<string, PluginModule>,
+    wrappers: Record<string, PluginModule<{}>>,
     plugins: PluginRegistration<Uri>[] = [],
     interfaces: InterfaceImplementations<Uri>[] = [],
     redirects: UriRedirect<Uri>[] = []
@@ -94,7 +95,7 @@ describe("resolveUri", () => {
       },
     } as unknown) as Client);
 
-  const createPluginWrapper = (uri: Uri, plugin: PluginPackage): Wrapper => {
+  const createPluginWrapper = (uri: Uri, plugin: PluginFactory<{}>): Wrapper => {
     return {
       invoke: () =>
         Promise.resolve({
@@ -123,11 +124,18 @@ describe("resolveUri", () => {
     };
   };
 
+  const testManifest: WrapManifest = {
+    version: "0.0.1",
+    type: "wasm",
+    name: "dog-cat",
+    abi: {}
+  };
+
   const ensWrapper = {
     tryResolveUri: (
       args: { authority: string; path: string },
       _client: Client
-    ) => {
+    ): UriResolverInterface.MaybeUriOrManifest => {
       return {
         uri: args.authority === "ens" ? "ipfs/QmHash" : undefined,
       };
@@ -138,12 +146,12 @@ describe("resolveUri", () => {
       tryResolveUri: (
         args: { authority: string; path: string },
         _client: Client
-      ) => {
+      ): UriResolverInterface.MaybeUriOrManifest => {
         return {
           manifest:
-            args.authority === "ipfs"
-              ? "format: 0.0.1-prealpha.9\ndog: cat"
-              : undefined,
+            args.authority === "ipfs" ?
+            msgpackEncode(testManifest) :
+            undefined,
         };
       }
   };
@@ -152,10 +160,12 @@ describe("resolveUri", () => {
     tryResolveUri: (
       args: { authority: string; path: string },
       _client: Client
-    ) => {
+    ): UriResolverInterface.MaybeUriOrManifest  => {
       return {
         manifest:
-          args.authority === "my" ? "format: 0.0.1-prealpha.9" : undefined,
+          args.authority === "my" ?
+          msgpackEncode(testManifest) :
+          undefined,
       };
     },
   };
@@ -164,11 +174,7 @@ describe("resolveUri", () => {
     {
       uri: new Uri("ens/my-plugin"),
       plugin: {
-        factory: () => ({} as Plugin),
-        manifest: {
-          schema: "",
-          implements: [coreInterfaceUris.uriResolver],
-        },
+        instantiate: () => ({} as PluginModule<{}>),
       },
     },
   ];
@@ -184,21 +190,21 @@ describe("resolveUri", () => {
     },
   ];
 
-  const wrappers: Record<string, PluginModule> = {
-    "wrap://ens/ens": ensWrapper as unknown as PluginModule,
-    "wrap://ens/ipfs": ipfsWrapper as unknown as PluginModule,
-    "wrap://ens/my-plugin": pluginWrapper as unknown as PluginModule,
+  const wrappers: Record<string, PluginModule<{}>> = {
+    "wrap://ens/ens": ensWrapper as unknown as PluginModule<{}>,
+    "wrap://ens/ipfs": ipfsWrapper as unknown as PluginModule<{}>,
+    "wrap://ens/my-plugin": pluginWrapper as unknown as PluginModule<{}>,
   };
 
   const uriResolvers: UriResolver[] = [
     new RedirectsResolver(),
-    new PluginResolver((uri: Uri, plugin: PluginPackage) =>
+    new PluginResolver((uri: Uri, plugin: PluginFactory<{}>) =>
       createPluginWrapper(uri, plugin)
     ),
     new ExtendableUriResolver(
       (
         uri: Uri,
-        manifest: PolywrapManifest,
+        manifest: WrapManifest,
         uriResolver: string,
         environment: Env<Uri> | undefined
       ) => {
@@ -237,9 +243,7 @@ describe("resolveUri", () => {
 
     expect(wrapperIdentity).toMatchObject({
       uri: new Uri("ipfs/QmHash"),
-      manifest: {
-        format: "0.0.1-prealpha.9",
-      },
+      manifest: testManifest,
       uriResolver: "wrap://ens/ipfs",
     });
   });
@@ -261,9 +265,7 @@ describe("resolveUri", () => {
 
     expect(wrapperIdentity).toMatchObject({
       uri: new Uri("my/something-different"),
-      manifest: {
-        format: "0.0.1-prealpha.9",
-      },
+      manifest: testManifest,
       uriResolver: "wrap://ens/my-plugin",
     });
   });
@@ -285,10 +287,7 @@ describe("resolveUri", () => {
 
     expect(wrapperIdentity).toMatchObject({
       uri: new Uri("ipfs/QmHash"),
-      manifest: {
-        format: "0.0.1-prealpha.9",
-        dog: "cat",
-      },
+      manifest: testManifest,
       uriResolver: "wrap://ens/ipfs",
     });
   });
@@ -310,9 +309,7 @@ describe("resolveUri", () => {
 
     expect(wrapperIdentity).toMatchObject({
       uri: new Uri("my/something-different"),
-      manifest: {
-        format: "0.0.1-prealpha.9",
-      },
+      manifest: testManifest,
       uriResolver: "wrap://ens/my-plugin",
     });
   });
@@ -373,11 +370,7 @@ describe("resolveUri", () => {
       {
         uri: new Uri("some/wrapper"),
         plugin: {
-          factory: () => ({} as Plugin),
-          manifest: {
-            schema: "",
-            implements: [coreInterfaceUris.uriResolver],
-          },
+          instantiate: () => ({} as PluginModule<{}>),
         },
       },
     ];
@@ -419,7 +412,7 @@ describe("resolveUri", () => {
       client(
         {
           ...wrappers,
-          "wrap://ens/ipfs": faultyIpfsWrapper as unknown as PluginModule
+          "wrap://ens/ipfs": faultyIpfsWrapper as unknown as PluginModule<{}>
         }, 
         plugins, 
         interfaces
