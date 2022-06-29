@@ -89,7 +89,7 @@ describe("e2e tests for app command", () => {
     });
 
     expect(code).toEqual(1);
-    expect(error).toBe("error: unknown option '--output-dir'\n");
+    expect(error).toBe("error: unknown option '--custom-config'\n");
     expect(output).toEqual(``);
   });
 
@@ -182,7 +182,7 @@ describe("e2e tests for app command", () => {
   });
 
   describe("test-cases", () => {
-    for (let i = 0; i < testCases.length; ++i) {
+    for (let i = 0; i < testCases.length - 1; ++i) {
       const testCaseName = testCases[i];
       const testCaseDir = getTestCaseDir(i);
 

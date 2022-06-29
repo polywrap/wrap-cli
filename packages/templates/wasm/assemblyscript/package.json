@@ -10,8 +10,9 @@
     "test:env:up": "npx polywrap infra up --modules=eth-ens-ipfs",
     "test:env:down": "npx polywrap infra down --modules=eth-ens-ipfs",
     "deploy": "npx polywrap deploy",
+    "test": "yarn test:e2e && yarn test:workflow",
     "test:e2e": "yarn build && yarn test:e2e:codegen && jest --passWithNoTests --runInBand --verbose",
-    "test:e2e:codegen": "npx polywrap app codegen -m ./src/__tests__/types/polywrap.app.yaml -c ./src/__tests__/types/wrap",
+    "test:e2e:codegen": "npx polywrap app codegen -m ./src/__tests__/types/polywrap.app.yaml -g ./src/__tests__/types/wrap",
     "test:workflow": "yarn build && yarn test:env:up && sleep 5 && npx polywrap run ./workflows/e2e.yaml && yarn test:env:down"
   },
   "devDependencies": {
