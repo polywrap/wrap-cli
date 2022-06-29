@@ -4,13 +4,12 @@ import {
   CodeGenerator,
   SchemaComposer,
   intlMsg,
-  getSimpleClient,
-  getTestEnvProviders,
   parseAppManifestFileOption,
   parseAppCodegenDirOption,
+  parseClientConfigOption,
 } from "../lib";
 
-import { PolywrapClient } from "@polywrap/client-js";
+import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import * as path from "path";
 
 const defaultOutputTypesDir = "./src/wrap";
@@ -18,8 +17,7 @@ const defaultOutputTypesDir = "./src/wrap";
 type AppCommandOptions = {
   manifestFile: string;
   codegenDir: string;
-  ipfs?: string;
-  ens?: string;
+  clientConfig: Partial<PolywrapClientConfig>;
 };
 
 export const app: Command = {
@@ -39,24 +37,24 @@ export const app: Command = {
         })
       )
       .option(
-        `-c, --codegen-dir <${intlMsg.commands_codegen_options_o_path()}>`,
+        `-g, --codegen-dir <${intlMsg.commands_codegen_options_o_path()}>`,
         `${intlMsg.commands_app_options_codegen({
           default: defaultOutputTypesDir,
         })}`
       )
       .option(
-        `-i, --ipfs [<${intlMsg.commands_codegen_options_i_node()}>] `,
-        `${intlMsg.commands_codegen_options_i()}`
-      )
-      .option(
-        `-e, --ens [<${intlMsg.commands_codegen_options_e_address()}>]`,
-        `${intlMsg.commands_codegen_options_e()}`
+        `-c, --client-config <${intlMsg.commands_run_options_configPath()}> `,
+        `${intlMsg.commands_run_options_config()}`
       )
       .action(async (options) => {
         await run({
           ...options,
           manifestFile: parseAppManifestFileOption(
             options.manifestFile,
+            undefined
+          ),
+          clientConfig: await parseClientConfigOption(
+            options.clientConfig,
             undefined
           ),
           codegenDir: parseAppCodegenDirOption(options.codegenDir, undefined),
@@ -66,16 +64,10 @@ export const app: Command = {
 };
 
 async function run(options: AppCommandOptions) {
-  const { manifestFile, codegenDir, ipfs, ens } = options;
+  const { manifestFile, codegenDir, clientConfig } = options;
 
-  // Get providers and client
-  const { ipfsProvider, ethProvider } = await getTestEnvProviders(ipfs);
-  const ensAddress: string | undefined = ens;
-  const client: PolywrapClient = getSimpleClient({
-    ensAddress,
-    ethProvider,
-    ipfsProvider,
-  });
+  // Get client
+  const client = new PolywrapClient(clientConfig);
 
   // App project
   const project = new AppProject({

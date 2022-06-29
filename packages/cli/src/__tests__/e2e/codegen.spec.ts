@@ -1,4 +1,3 @@
-import { defaultPolywrapManifest } from "../../lib";
 import { clearStyle, polywrapCli } from "./utils";
 
 import { runCLI } from "@polywrap/test-env-js";
@@ -12,17 +11,15 @@ const HELP = `Usage: polywrap codegen|g [options]
 Auto-generate Wrapper Types
 
 Options:
-  -m, --manifest-file <path>  Path to the Polywrap manifest file (default:
-                              ${defaultPolywrapManifest.join(" | ")})
-  -c, --codegen-dir <path>     Output directory for the generated code
-                              (default: ./wrap)
-  -s, --script <path>         Path to a custom generation script (JavaScript |
-                              TypeScript)
-  -i, --ipfs [<node>]         IPFS node to load external schemas (default:
-                              ipfs.io & localhost)
-  -e, --ens [<address>]       ENS address to lookup external schemas (default:
-                              0x0000...2e1e)
-  -h, --help                  display help for command
+  -m, --manifest-file <path>          Path to the Polywrap manifest file
+                                      (default: polywrap.yaml | polywrap.yml)
+  -g, --codegen-dir <path>             Output directory for the generated code
+                                      (default: ./wrap)
+  -s, --script <path>                 Path to a custom generation script
+                                      (JavaScript | TypeScript)
+  -c, --client-config <config-path>   Add custom configuration to the
+                                      PolywrapClient
+  -h, --help                          display help for command
 `;
 
 describe("e2e tests for codegen command", () => {
@@ -41,23 +38,11 @@ describe("e2e tests for codegen command", () => {
       cli: polywrapCli,
     });
 
+    console.log(output);
+
     expect(code).toEqual(0);
     expect(error).toBe("");
     expect(clearStyle(output)).toEqual(HELP);
-  });
-
-  test("Should throw error for invalid params - ens", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: ["codegen", "--ens"],
-      cwd: getTestCaseDir(0),
-      cli: polywrapCli,
-    });
-
-    expect(code).toEqual(1);
-    expect(error).toBe(
-      "error: option '-e, --ens [<address>]' argument missing\n"
-    );
-    expect(clearStyle(output)).toEqual(``);
   });
 
   test("Should throw error for invalid generation file - wrong file", async () => {

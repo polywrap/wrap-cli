@@ -83,20 +83,7 @@ describe("e2e tests for plugin command", () => {
     );
 
     expect(code).toEqual(1);
-    expect(error).toContain("error: option '-c, --codegen-dir <path>' argument missing");
-    expect(output).toBe("");
-  });
-
-  test("Should throw error for invalid params - ens", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
-      {
-        args: ["plugin", "codegen", "--ens"],
-        cwd: getTestCaseDir(0),
-      }
-    );
-
-    expect(code).toEqual(1);
-    expect(error).toContain("error: option '-e, --ens [<address>]' argument missing");
+    expect(error).toContain("error: option '-g, --codegen-dir <path>' argument missing");
     expect(output).toBe("");
   });
 

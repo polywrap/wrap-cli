@@ -72,23 +72,8 @@ describe("e2e tests for app command", () => {
     );
 
     expect(code).toEqual(1);
-    expect(error).toBe(`error: option '-c, --codegen-dir <path>' argument missing\n`);
+    expect(error).toBe(`error: option '-g, --codegen-dir <path>' argument missing\n`);
     expect(output).toEqual(``);
-  });
-
-  test("Should throw error for invalid params - ens", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
-      {
-        args: ["app", "codegen", "--ens"],
-        cwd: getTestCaseDir(0),
-        cli: polywrapCli,
-      },
-    );
-
-    expect(code).toEqual(1);
-    expect(error).toBe("error: option '-e, --ens [<address>]' argument missing\n");
-    expect(output)
-      .toEqual(``);
   });
 
   describe("test-cases", () => {

@@ -11,14 +11,16 @@ const HELP = `Usage: polywrap build|b [options]
 Builds a wrapper
 
 Options:
-  -m, --manifest-file <path>  Path to the Polywrap Build manifest file
-                              (default: polywrap.yaml | polywrap.yml)
-  -o, --output-dir <path>     Output directory for build results (default:
-                              build/)
-  -w, --watch                 Automatically rebuild when changes are made
-                              (default: false)
-  -v, --verbose               Verbose output (default: false)
-  -h, --help                  display help for command
+  -m, --manifest-file <path>          Path to the Polywrap Build manifest file
+                                      (default: polywrap.yaml | polywrap.yml)
+  -o, --output-dir <path>             Output directory for build results
+                                      (default: build/)
+  -c, --client-config <config-path>   Add custom configuration to the
+                                      PolywrapClient
+  -w, --watch                         Automatically rebuild when changes are
+                                      made (default: false)
+  -v, --verbose                       Verbose output (default: false)
+  -h, --help                          display help for command
 `;
 
 jest.setTimeout(500000);
