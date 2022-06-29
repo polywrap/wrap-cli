@@ -5,11 +5,11 @@ import { Tracer } from "@polywrap/tracing-js";
 
 export interface MaybeUriOrManifest {
   uri?: string;
-  manifest?: ArrayBufferView;
+  manifest?: ArrayBuffer;
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
-export const Query = {
+export const Method = {
   tryResolveUri: Tracer.traceFunc(
     "core: uri-resolver: tryResolveUri",
     async (

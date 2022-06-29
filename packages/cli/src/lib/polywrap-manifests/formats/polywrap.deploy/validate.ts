@@ -9,7 +9,7 @@ import {
   DeployManifestFormats
 } from ".";
 import * as Validators from "../../validators";
-import schema_0_0_1_prealpha_1 from "@polywrap/manifest-schemas/polywrap/polywrap.deploy/0.0.1-prealpha.1.json";
+import schema_0_0_1_prealpha_1 from "@polywrap/polywrap-manifest-schemas/formats/polywrap.deploy/0.0.1-prealpha.1.json";
 import { Tracer } from "@polywrap/tracing-js"
 
 import {

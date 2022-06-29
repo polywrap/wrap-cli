@@ -10,8 +10,8 @@ import {
   CacheResolver,
   PluginResolver,
   RedirectsResolver,
+  WrapManifest,
 } from "@polywrap/core-js";
-import { PolywrapManifest } from "polywrap";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
 import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
@@ -121,7 +121,7 @@ export const getDefaultClientConfig = Tracer.traceFunc(
         new ExtendableUriResolver(
           (
             uri: Uri,
-            manifest: PolywrapManifest,
+            manifest: WrapManifest,
             uriResolver: string,
             environment: Env<Uri> | undefined
           ) => {

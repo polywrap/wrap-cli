@@ -24,7 +24,7 @@ import {
   PluginRegistration,
   SubscribeOptions,
   Subscription,
-  msgpackEncode
+  msgpackEncode,
 } from "..";
 
 describe("resolveUri", () => {
@@ -102,7 +102,6 @@ describe("resolveUri", () => {
           uri,
           plugin,
         } as InvokeResult),
-      getSchema: (_client: Client): Promise<string> => Promise.resolve(""),
       getFile: (options: GetFileOptions, client: Client) => Promise.resolve(""),
     };
   };
@@ -119,7 +118,6 @@ describe("resolveUri", () => {
           manifest,
           uriResolver,
         } as InvokeResult),
-      getSchema: (_client: Client): Promise<string> => Promise.resolve(""),
       getFile: (options: GetFileOptions, client: Client) => Promise.resolve(""),
     };
   };
@@ -174,7 +172,11 @@ describe("resolveUri", () => {
     {
       uri: new Uri("ens/my-plugin"),
       plugin: {
-        instantiate: () => ({} as PluginModule<{}>),
+        factory: () => ({} as Plugin),
+        manifest: {
+          schema: "",
+          implements: [coreInterfaceUris.uriResolver],
+        },
       },
     },
   ];
@@ -219,7 +221,7 @@ describe("resolveUri", () => {
     const wrapper = new Uri("wrap://ens/ens");
     const file = new Uri("wrap/some-file");
     const path = "wrap/some-path";
-    const query = UriResolverInterface.Query;
+    const query = UriResolverInterface.Method;
     const uri = new Uri("wrap/some-uri");
 
     expect(query.tryResolveUri(client(wrappers).invoke, wrapper, uri)).toBeDefined();

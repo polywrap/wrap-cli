@@ -1,4 +1,4 @@
-import path from "path"
+import path from "path";
 import fs, { Dirent } from "fs";
 import * as os from "@polywrap/os-js";
 import Mustache from "mustache";
@@ -12,15 +12,18 @@ async function generateFormatTypes() {
   );
 
   // Get all format types (wasm, build, infra, app, plugin, etc)
-  const formatTypes = fs.readdirSync(
-    formatsDir, { withFileTypes: true }
-  ).filter((dirent: Dirent) => dirent.isDirectory);
+  const formatTypes = fs
+    .readdirSync(formatsDir, { withFileTypes: true })
+    .filter((dirent: Dirent) => dirent.isDirectory);
 
   // For each format type
   for (let i = 0; i < formatTypes.length; ++i) {
     const formatTypeName = formatTypes[i].name;
     const formatTypeDir = path.join(formatsDir, formatTypeName);
-    const formatOutputDir = path.join(__dirname, `/../src/lib/polywrap-manifests/formats/${formatTypeName}`);
+    const formatOutputDir = path.join(
+      __dirname,
+      `/../src/lib/polywrap-manifests/formats/${formatTypeName}`
+    );
     const formatModules = [];
 
     // Get all JSON schemas for this format type (v1, v2, etc)
@@ -41,20 +44,14 @@ async function generateFormatTypes() {
         // Insert the __type property for introspection
         formatSchema.properties["__type"] = {
           type: "string",
-          const: formatSchema.id
+          const: formatSchema.id,
         };
-        formatSchema.required = [
-          ...formatSchema.required,
-          "__type"
-        ];
+        formatSchema.required = [...formatSchema.required, "__type"];
 
         formatSchemas.push(formatSchema);
 
         // Convert it to a TypeScript interface
-        const tsFile = await JsonSchema.compile(
-          formatSchema,
-          formatSchema.id
-        );
+        const tsFile = await JsonSchema.compile(formatSchema, formatSchema.id);
 
         // Emit the result
         const tsOutputPath = path.join(formatOutputDir, `${formatVersion}.ts`);
@@ -67,10 +64,13 @@ async function generateFormatTypes() {
         // Add metadata for the root index.ts file to use
         formatModules.push({
           interface: formatSchema.id,
-          version: formatVersion
+          version: formatVersion,
         });
       } catch (error) {
-        console.error(`Error generating the Manifest file ${formatSchemaPath}: `, error);
+        console.error(
+          `Error generating the Manifest file ${formatSchemaPath}: `,
+          error
+        );
         throw error;
       }
     }
@@ -88,7 +88,7 @@ async function generateFormatTypes() {
       const tsOutputPath = path.join(formatOutputDir, `${name}.ts`);
       fs.mkdirSync(path.dirname(tsOutputPath), { recursive: true });
       os.writeFileSync(tsOutputPath, tsSrc);
-    }
+    };
 
     const lastItem = <T>(arr: Array<T>) => arr[arr.length - 1];
     const versionToTs = (version: string) =>
@@ -98,15 +98,15 @@ async function generateFormatTypes() {
       return {
         type: module.interface,
         version: module.version,
-        tsVersion: versionToTs(module.version)
-      }
+        tsVersion: versionToTs(module.version),
+      };
     });
     const latest = lastItem(formats);
 
     // Generate an index.ts file that exports root types that aggregate all versions
     const indexContext = {
       formats,
-      latest
+      latest,
     };
 
     renderTemplate("index", indexContext);
@@ -114,7 +114,7 @@ async function generateFormatTypes() {
     // Generate a migrate.ts file that exports a migration function from all version to the latest version
     const migrateContext = {
       prevFormats: [...formats],
-      latest: latest
+      latest: latest,
     };
     migrateContext.prevFormats.pop();
 
@@ -122,7 +122,7 @@ async function generateFormatTypes() {
 
     // Generate a deserialize.ts file that exports a deserialization function for the latest format version
     const deserializeContext = {
-      type: migrateContext.latest.type
+      type: migrateContext.latest.type,
     };
 
     renderTemplate("deserialize", deserializeContext);
@@ -133,14 +133,14 @@ async function generateFormatTypes() {
         type: module.interface,
         version: module.version,
         tsVersion: versionToTs(module.version),
-        dir: formatTypeName
+        dir: formatTypeName,
       };
     });
 
     const validateContext = {
       formats: validateFormats,
       latest: lastItem(validateFormats),
-      validators: [] as string[]
+      validators: [] as string[],
     };
 
     // Extract all validators
@@ -162,7 +162,7 @@ async function generateFormatTypes() {
         for (let j = 0; j < keys.length; ++j) {
           getValidator(obj[keys[j]] as Record<string, unknown>);
         }
-      }
+      };
 
       getValidator(formatSchema);
     }
@@ -171,13 +171,13 @@ async function generateFormatTypes() {
   }
 
   return Promise.resolve();
-};
+}
 
 generateFormatTypes()
-  .then(text => {
+  .then(() => {
     process.exit();
   })
-  .catch(err => {
+  .catch((err) => {
     console.error(err);
     process.abort();
   });

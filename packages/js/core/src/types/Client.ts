@@ -34,6 +34,10 @@ export type GetEnvsOptions = Contextualized;
 
 export type GetUriResolversOptions = Contextualized;
 
+export type GetManifestOptions = {
+  abi?: boolean;
+} & Contextualized;
+
 export interface GetFileOptions extends Contextualized {
   path: string;
   encoding?: "utf-8" | string;
@@ -75,4 +79,9 @@ export interface Client
     uri: TUri,
     options: GetImplementationsOptions
   ): TUri[];
+
+  getManifest<TUri extends Uri | string>(
+    uri: TUri,
+    options: GetManifestOptions
+  ): Promise<string>;
 }

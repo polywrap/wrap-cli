@@ -85,7 +85,7 @@ const tryResolveUriWithImplementation = async (
   implementationUri: Uri,
   invoke: InvokeHandler["invoke"]
 ): Promise<UriResolverInterface.MaybeUriOrManifest | undefined> => {
-  const { data } = await UriResolverInterface.Query.tryResolveUri(
+  const { data } = await UriResolverInterface.Method.tryResolveUri(
     invoke,
     implementationUri,
     uri

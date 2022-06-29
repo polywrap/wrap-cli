@@ -1,5 +1,5 @@
 import { intlMsg } from "../intl";
-import { defaultAppManifest } from "../manifest";
+import { defaultAppManifest } from "../";
 import { resolvePathIfExists } from "../system";
 
 import path from "path";

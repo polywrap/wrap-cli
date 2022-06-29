@@ -1,10 +1,4 @@
-import {
-  Uri,
-  Client,
-  GetFileOptions,
-  InvokeOptions,
-  InvokeResult,
-} from ".";
+import {Uri, Client, GetFileOptions, InvokeOptions, InvokeResult, GetManifestOptions} from ".";
 
 /**
  * The Wrapper definition, which can be used to spawn
@@ -36,6 +30,18 @@ export abstract class Wrapper {
     options: GetFileOptions,
     client: Client
   ): Promise<ArrayBuffer | string>;
+
+  /**
+   * Get a manifest from the Wrapper package.
+   * Not implemented for plugin wrappers.
+   *
+   * @param options Configuration options for manifest retrieval
+   * @param client The client instance requesting the manifest.
+   */
+  public abstract getManifest(
+    options: GetManifestOptions,
+    client: Client
+  ): Promise<string>;
 }
 
 /** Cache of Wrapper definitions, mapping the Wrapper's URI to its definition */

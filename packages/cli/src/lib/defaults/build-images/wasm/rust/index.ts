@@ -1,7 +1,7 @@
 import { CompilerOverrides } from "../../../../Compiler";
 import { intlMsg } from "../../../../intl";
 
-import { PolywrapManifest } from "@polywrap/core-js";
+import { PolywrapManifest } from "../../../../polywrap-manifests";
 
 export function getCompilerOverrides(): CompilerOverrides {
   return {

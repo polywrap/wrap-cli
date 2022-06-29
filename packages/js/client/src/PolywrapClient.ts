@@ -9,11 +9,11 @@ import {
   Env,
   GetEnvsOptions,
   GetFileOptions,
+  GetManifestOptions,
   GetImplementationsOptions,
   GetInterfacesOptions,
   GetPluginsOptions,
   GetRedirectsOptions,
-  GetSchemaOptions,
   InterfaceImplementations,
   InvokeOptions,
   InvokeResult,
@@ -165,6 +165,16 @@ export class PolywrapClient implements Client {
     return this.getEnvs(options).find((environment) =>
       Uri.equals(environment.uri, uriUri)
     );
+  }
+
+  @Tracer.traceMethod("PolywrapClient: getManifest")
+  public async getManifest<TUri extends Uri | string>(
+    uri: TUri,
+    options: GetManifestOptions
+  ): Promise<string> {
+    const wrapper = await this._loadWrapper(this._toUri(uri), options);
+    const client = contextualizeClient(this, options.contextId);
+    return await wrapper.getManifest(options, client);
   }
 
   @Tracer.traceMethod("PolywrapClient: getFile")
@@ -824,6 +834,12 @@ const contextualizeClient = (
           options: GetFileOptions
         ) => {
           return client.getFile(uri, options);
+        },
+        getManifest: <TUri extends Uri | string>(
+          uri: TUri,
+          options: GetManifestOptions
+        ) => {
+          return client.getManifest(uri, options);
         },
         getImplementations: <TUri extends Uri | string>(
           uri: TUri,

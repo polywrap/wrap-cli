@@ -15,12 +15,13 @@ import {
   GetFileOptions,
   msgpackEncode,
   msgpackDecode,
+  GetManifestOptions,
 } from "@polywrap/core-js";
 import { Tracer } from "@polywrap/tracing-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 
 type InvokeResultOrError =
-  | { type: "InvokeResult"; invokeResult: ArrayBufferView }
+  | { type: "InvokeResult"; invokeResult: ArrayBuffer }
   | { type: "InvokeError"; invokeError: string };
 
 const hasExport = (name: string, exports: Record<string, unknown>): boolean => {
@@ -60,6 +61,7 @@ export interface State {
 export class WasmWrapper extends Wrapper {
   public static requiredExports: readonly string[] = ["_wrap_invoke"];
   private _wasm: ArrayBuffer | undefined = undefined;
+  private _info: string | undefined = undefined;
   private _sanitizedEnv: ArrayBuffer | undefined = undefined;
 
   constructor(
@@ -86,7 +88,7 @@ export class WasmWrapper extends Wrapper {
     client: Client
   ): Promise<ArrayBuffer | string> {
     const { path, encoding } = options;
-    const { data, error } = await UriResolverInterface.Query.getFile(
+    const { data, error } = await UriResolverInterface.Method.getFile(
       <TData = unknown, TUri extends Uri | string = string>(
         options: InvokeOptions<TUri>
       ): Promise<InvokeResult<TData>> => client.invoke<TData, TUri>(options),
@@ -117,6 +119,38 @@ export class WasmWrapper extends Wrapper {
       }
       return text;
     }
+    return data;
+  }
+
+  @Tracer.traceMethod("WasmWrapper: getManifest")
+  public async getManifest(
+    options: GetManifestOptions,
+    client: Client
+  ): Promise<string> {
+    if (this._info !== undefined) {
+      return this._info;
+    }
+
+    const moduleManifest = "wrap.info";
+
+    if (!moduleManifest) {
+      throw Error(`Package manifest does not contain information`);
+    }
+
+    const data = (await this.getFile(
+      { path: moduleManifest, encoding: "utf-8" },
+      client
+    )) as string;
+
+    if (options.abi) {
+      try {
+        const { abi } = JSON.parse(data);
+        return JSON.stringify(abi);
+      } catch (e) {
+        console.log("Package information is not well formatted");
+      }
+    }
+
     return data;
   }
 
@@ -192,12 +226,12 @@ export class WasmWrapper extends Wrapper {
           if (noDecode) {
             return {
               data: invokeResult.invokeResult,
-            } as InvokeResult<ArrayBufferView>;
+            } as InvokeResult<ArrayBuffer>;
           }
 
           try {
             return {
-              data: msgpackDecode(invokeResult.invokeResult as ArrayBufferView),
+              data: msgpackDecode(invokeResult.invokeResult as ArrayBuffer),
             } as InvokeResult<unknown>;
           } catch (err) {
             throw Error(
@@ -252,7 +286,7 @@ export class WasmWrapper extends Wrapper {
   ): Promise<void> {
     if (hasExport("_wrap_load_env", exports)) {
       if (this._sanitizedEnv !== undefined) {
-        state.env = this._sanitizedEnv as ArrayBufferView;
+        state.env = this._sanitizedEnv as ArrayBuffer;
       } else {
         const clientEnv = this._getClientEnv();
 
@@ -260,7 +294,7 @@ export class WasmWrapper extends Wrapper {
           state.sanitizeEnv.args = msgpackEncode({ env: clientEnv });
 
           await exports._wrap_sanitize_env(state.sanitizeEnv.args.byteLength);
-          state.env = state.sanitizeEnv.result as ArrayBufferView;
+          state.env = state.sanitizeEnv.result as ArrayBuffer;
           this._sanitizedEnv = state.env;
         } else {
           state.env = msgpackEncode(clientEnv);

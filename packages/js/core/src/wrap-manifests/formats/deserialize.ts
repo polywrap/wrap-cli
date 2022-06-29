@@ -20,15 +20,12 @@ import { Tracer } from "@polywrap/tracing-js";
 
 export const deserializeWrapManifest = Tracer.traceFunc(
   "core: deserializeWrapManifest",
-  (manifest: ArrayBufferView, options?: DeserializeManifestOptions): WrapManifest => {
+  (manifest: ArrayBuffer, options?: DeserializeManifestOptions): WrapManifest => {
     let anyWrapManifest: AnyWrapManifest | undefined;
     try {
       anyWrapManifest = msgpackDecode(manifest) as AnyWrapManifest;
     } catch (e) {
-      throw Error(
-        `Unable to parse WrapManifest: ` +
-        `[${new Uint8Array(manifest.buffer, manifest.byteOffset, manifest.byteLength).toString()}]`
-      );
+      throw Error(`Unable to parse WrapManifest: ${`[${new Uint8Array(manifest).toString()}]`}`);
     }
 
     if (!options || !options.noValidate) {

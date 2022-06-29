@@ -10,6 +10,7 @@ import {
   Env,
   msgpackEncode,
   msgpackDecode,
+  GetManifestOptions,
 } from "@polywrap/core-js";
 import { Tracer } from "@polywrap/tracing-js";
 
@@ -39,6 +40,13 @@ export class PluginWrapper extends Wrapper {
     _client: Client
   ): Promise<ArrayBuffer | string> {
     throw Error("client.getFile(...) is not implemented for Plugins.");
+  }
+
+  public async getManifest(
+    _options: GetManifestOptions,
+    _client: Client
+  ): Promise<string> {
+    throw Error("client.getManifest(...) is not implemented for Plugins.");
   }
 
   @Tracer.traceMethod("PluginWrapper: invoke")
