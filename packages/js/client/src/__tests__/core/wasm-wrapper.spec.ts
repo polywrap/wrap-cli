@@ -11,16 +11,9 @@ import {
   PolywrapClientConfig,
   PluginModule,
   Subscription,
-  PolywrapManifest,
-  BuildManifest,
-  MetaManifest,
-  deserializePolywrapManifest,
-  deserializeBuildManifest,
-  deserializeMetaManifest,
   msgpackDecode
 } from "../..";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
-import fs from "fs";
 
 jest.setTimeout(200000);
 
@@ -113,13 +106,13 @@ describe("wasm-wrapper", () => {
           networkNameOrChainId: "testnet",
         },
       },
-      noDecode: true,
+      encodeResult: true,
     });
 
     expect(result.error).toBeFalsy();
     expect(result.data).toBeTruthy();
-    expect(result.data instanceof ArrayBuffer).toBeTruthy();
-    expect(msgpackDecode(result.data as ArrayBuffer)).toContain("0x");
+    expect(result.data instanceof Uint8Array).toBeTruthy();
+    expect(msgpackDecode(result.data as Uint8Array)).toContain("0x");
   });
 
   it("should invoke wrapper with custom redirects", async () => {
@@ -241,21 +234,19 @@ describe("wasm-wrapper", () => {
       encoding: "utf8",
     })) as string;
     expect(fileStr).toContain(`getData(
-    address: String!
-    connection: Ethereum_Connection
-  ): Int!
-`);
+      address: String!
+      connection: Ethereum_Connection
+    ): Int!`);
 
-    const fileBuffer: ArrayBuffer = (await client.getFile(wrapperUri, {
+    const fileBuffer: Uint8Array = (await client.getFile(wrapperUri, {
       path: "./schema.graphql",
-    })) as ArrayBuffer;
+    })) as Uint8Array;
     const decoder = new TextDecoder("utf8");
     const text = decoder.decode(fileBuffer);
     expect(text).toContain(`getData(
-    address: String!
-    connection: Ethereum_Connection
-  ): Int!
-`);
+      address: String!
+      connection: Ethereum_Connection
+    ): Int!`);
 
     await expect(() =>
       client.getFile(new Uri("wrap://ens/ipfs.polywrap.eth"), {

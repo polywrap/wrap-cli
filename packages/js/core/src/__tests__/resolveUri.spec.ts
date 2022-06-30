@@ -25,6 +25,8 @@ import {
   SubscribeOptions,
   Subscription,
   msgpackEncode,
+  PluginPackage,
+  GetManifestOptions,
 } from "..";
 
 describe("resolveUri", () => {
@@ -65,7 +67,6 @@ describe("resolveUri", () => {
             {} as Client
           ) as TData
         });
-
       },
       subscribe: <
         TData extends Record<string, unknown> = Record<string, unknown>
@@ -95,14 +96,19 @@ describe("resolveUri", () => {
       },
     } as unknown) as Client);
 
-  const createPluginWrapper = (uri: Uri, plugin: PluginFactory<{}>): Wrapper => {
+  const createPluginWrapper = (uri: Uri, plugin: PluginPackage<{}>): Wrapper => {
     return {
       invoke: () =>
         Promise.resolve({
-          uri,
-          plugin,
-        } as InvokeResult),
+          data: {
+            uri,
+            plugin,
+          },
+          encoded: false
+        }),
+      getSchema: (_client: Client): Promise<string> => Promise.resolve(""),
       getFile: (options: GetFileOptions, client: Client) => Promise.resolve(""),
+      getManifest: (options: GetManifestOptions, client: Client) => Promise.resolve({} as WrapManifest)
     };
   };
 
@@ -114,11 +120,16 @@ describe("resolveUri", () => {
     return {
       invoke: () =>
         Promise.resolve({
-          uri,
-          manifest,
-          uriResolver,
-        } as InvokeResult),
+          data: {
+            uri,
+            manifest,
+            uriResolver,
+          },
+          encoded: false
+        }),
+      getSchema: (_client: Client): Promise<string> => Promise.resolve(""),
       getFile: (options: GetFileOptions, client: Client) => Promise.resolve(""),
+      getManifest: (options: GetManifestOptions, client) => Promise.reject("")
     };
   };
 
@@ -172,7 +183,7 @@ describe("resolveUri", () => {
     {
       uri: new Uri("ens/my-plugin"),
       plugin: {
-        factory: () => ({} as Plugin),
+        factory: () => ({} as PluginModule<{}>),
         manifest: {
           schema: "",
           implements: [coreInterfaceUris.uriResolver],
@@ -200,7 +211,7 @@ describe("resolveUri", () => {
 
   const uriResolvers: UriResolver[] = [
     new RedirectsResolver(),
-    new PluginResolver((uri: Uri, plugin: PluginFactory<{}>) =>
+    new PluginResolver((uri: Uri, plugin: PluginPackage<{}>) =>
       createPluginWrapper(uri, plugin)
     ),
     new ExtendableUriResolver(
@@ -224,8 +235,8 @@ describe("resolveUri", () => {
     const query = UriResolverInterface.Method;
     const uri = new Uri("wrap/some-uri");
 
-    expect(query.tryResolveUri(client(wrappers).invoke, wrapper, uri)).toBeDefined();
-    expect(query.getFile(client(wrappers).invoke, file, path)).toBeDefined();
+    expect(query.tryResolveUri(client(wrappers), wrapper, uri)).toBeDefined();
+    expect(query.getFile(client(wrappers), file, path)).toBeDefined();
   });
 
   it("works in the typical case", async () => {
@@ -243,7 +254,7 @@ describe("resolveUri", () => {
       {} as Client
     );
 
-    expect(wrapperIdentity).toMatchObject({
+    expect(wrapperIdentity.data).toMatchObject({
       uri: new Uri("ipfs/QmHash"),
       manifest: testManifest,
       uriResolver: "wrap://ens/ipfs",
@@ -265,7 +276,7 @@ describe("resolveUri", () => {
       {} as Client
     );
 
-    expect(wrapperIdentity).toMatchObject({
+    expect(wrapperIdentity.data).toMatchObject({
       uri: new Uri("my/something-different"),
       manifest: testManifest,
       uriResolver: "wrap://ens/my-plugin",
@@ -287,7 +298,7 @@ describe("resolveUri", () => {
       {} as Client
     );
 
-    expect(wrapperIdentity).toMatchObject({
+    expect(wrapperIdentity.data).toMatchObject({
       uri: new Uri("ipfs/QmHash"),
       manifest: testManifest,
       uriResolver: "wrap://ens/ipfs",
@@ -309,7 +320,7 @@ describe("resolveUri", () => {
       {} as Client
     );
 
-    expect(wrapperIdentity).toMatchObject({
+    expect(wrapperIdentity.data).toMatchObject({
       uri: new Uri("my/something-different"),
       manifest: testManifest,
       uriResolver: "wrap://ens/my-plugin",
@@ -372,7 +383,11 @@ describe("resolveUri", () => {
       {
         uri: new Uri("some/wrapper"),
         plugin: {
-          instantiate: () => ({} as PluginModule<{}>),
+          factory: () => ({} as PluginModule<{}>),
+          manifest: {
+            schema: "",
+            implements: [coreInterfaceUris.uriResolver],
+          },
         },
       },
     ];

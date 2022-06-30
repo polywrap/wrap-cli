@@ -3094,9 +3094,9 @@
   integrity sha512-93uGjlhUD+iNg1iWhUENAtJata6w5nE+V4urXOAlIXdco6xNZtUSfYY8dzp3Udy74aqO/B5UZL80x/YMa5PKRw==
 
 "@octokit/plugin-paginate-rest@^2.16.8":
-  version "2.20.0"
-  resolved "https://registry.yarnpkg.com/@octokit/plugin-paginate-rest/-/plugin-paginate-rest-2.20.0.tgz#874f9d0cd500bfa0f0901a44de834e3de115d28b"
-  integrity sha512-LbemX86JEmOCFo9eRwrtdP5Isq69TefLS1J7w0DO4PMhfpvRfqYVzq9c0eH1xgcx2PSA7/VJHu9SwvNhD9FjVg==
+  version "2.21.0"
+  resolved "https://registry.yarnpkg.com/@octokit/plugin-paginate-rest/-/plugin-paginate-rest-2.21.0.tgz#ddd425eaa09214dfdfdc9cc411fcf676b8985e65"
+  integrity sha512-MoGEKjvDpTOCVb5gbeiW7kZm/cRfT256UJwHEuy+y+gTUuKziyXaiOkt5rM/4nzhp8UxVgvok9Tu7dMMpUybiQ==
   dependencies:
     "@octokit/types" "^6.38.1"
 
@@ -7287,9 +7287,9 @@ electron-fetch@^1.7.2:
     encoding "^0.1.13"
 
 electron-to-chromium@^1.3.378, electron-to-chromium@^1.4.172:
-  version "1.4.173"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.173.tgz#48f128dda49cd7f6317e65ac0085bd3a6b9b6e3b"
-  integrity sha512-Qo3LnVW6JRNhD32viSdPebxKI7K+3WeBDjU1+Q2yZS83zAh8C2LyPpzTimlciv6U74KpY9n/0ESAhUByRke0jw==
+  version "1.4.174"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.174.tgz#ffdf57f26dd4558c5aabdb4b190c47af1c4e443b"
+  integrity sha512-JER+w+9MV2MBVFOXxP036bLlNOnzbYAWrWU8sNUwoOO69T3w4564WhM5H5atd8VVS8U4vpi0i0kdoYzm1NPQgQ==
 
 elliptic@6.5.4, elliptic@^6.5.3:
   version "6.5.4"

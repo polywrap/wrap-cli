@@ -6,7 +6,8 @@ import spawn from "spawn-command";
 import axios from "axios";
 import fs from "fs";
 import yaml from "js-yaml";
-import { deserializePolywrapManifest, Uri } from "@polywrap/core-js";
+import { deserializePolywrapManifest } from "polywrap";
+import { Uri } from "@polywrap/core-js";
 import { PolywrapClient } from "@polywrap/client-js";
 import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
 

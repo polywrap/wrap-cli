@@ -1,4 +1,14 @@
-import {Uri, Client, GetFileOptions, InvokeOptions, InvokeResult, GetManifestOptions} from ".";
+import {
+  Uri,
+  Client,
+  GetFileOptions,
+  GetManifestOptions,
+  InvokeOptions,
+  Invocable,
+  Invoker,
+  InvocableResult,
+} from ".";
+import { WrapManifest } from "../wrap-manifests";
 
 /**
  * The Wrapper definition, which can be used to spawn
@@ -6,7 +16,7 @@ import {Uri, Client, GetFileOptions, InvokeOptions, InvokeResult, GetManifestOpt
  * this class may do things like caching WASM bytecode, spawning
  * worker threads, or indexing into resolvers to find the requested method.
  */
-export abstract class Wrapper {
+export abstract class Wrapper implements Invocable {
   /**
    * Invoke the Wrapper based on the provided [[InvokeOptions]]
    *
@@ -16,8 +26,8 @@ export abstract class Wrapper {
    */
   public abstract invoke(
     options: InvokeOptions<Uri>,
-    client: Client
-  ): Promise<InvokeResult<unknown>>;
+    invoker: Invoker
+  ): Promise<InvocableResult<unknown>>;
 
   /**
    * Get a file from the Wrapper package.
@@ -29,7 +39,7 @@ export abstract class Wrapper {
   public abstract getFile(
     options: GetFileOptions,
     client: Client
-  ): Promise<ArrayBuffer | string>;
+  ): Promise<Uint8Array | string>;
 
   /**
    * Get a manifest from the Wrapper package.
@@ -41,8 +51,14 @@ export abstract class Wrapper {
   public abstract getManifest(
     options: GetManifestOptions,
     client: Client
-  ): Promise<string>;
+  ): Promise<WrapManifest>;
+
+  /**
+   * Get the Wrapper's schema
+   *
+   * @param client The client instance the schema.
+   */
+  public abstract getSchema(client: Client): Promise<string>;
 }
 
-/** Cache of Wrapper definitions, mapping the Wrapper's URI to its definition */
 export type WrapperCache = Map<string, Wrapper>;

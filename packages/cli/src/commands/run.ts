@@ -91,7 +91,7 @@ const _run = async (workflowPath: string, options: WorkflowCommandOptions) => {
         console.log(`ID: ${id}`);
       }
 
-      if (!quiet && data && data !== {}) {
+      if (!quiet && data) {
         console.log(`Data: ${JSON.stringify(data, null, 2)}`);
         console.log("-----------------------------------");
       }

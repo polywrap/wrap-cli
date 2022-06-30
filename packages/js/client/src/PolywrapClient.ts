@@ -14,9 +14,11 @@ import {
   GetInterfacesOptions,
   GetPluginsOptions,
   GetRedirectsOptions,
+  GetSchemaOptions,
   InterfaceImplementations,
   InvokeOptions,
   InvokeResult,
+  InvokerOptions,
   PluginRegistration,
   QueryOptions,
   QueryResult,
@@ -44,6 +46,9 @@ import {
   JobRunner,
   PluginPackage,
   RunOptions,
+  msgpackEncode,
+  msgpackDecode,
+  WrapManifest,
 } from "@polywrap/core-js";
 import { Tracer } from "@polywrap/tracing-js";
 
@@ -167,11 +172,21 @@ export class PolywrapClient implements Client {
     );
   }
 
+  @Tracer.traceMethod("PolywrapClient: getSchema")
+  public async getSchema<TUri extends Uri | string>(
+    uri: TUri,
+    options: GetSchemaOptions = {}
+  ): Promise<string> {
+    const wrapper = await this._loadWrapper(this._toUri(uri), options);
+    const client = contextualizeClient(this, options.contextId);
+    return await wrapper.getSchema(client);
+  }
+
   @Tracer.traceMethod("PolywrapClient: getManifest")
   public async getManifest<TUri extends Uri | string>(
     uri: TUri,
     options: GetManifestOptions
-  ): Promise<string> {
+  ): Promise<WrapManifest> {
     const wrapper = await this._loadWrapper(this._toUri(uri), options);
     const client = contextualizeClient(this, options.contextId);
     return await wrapper.getManifest(options, client);
@@ -181,7 +196,7 @@ export class PolywrapClient implements Client {
   public async getFile<TUri extends Uri | string>(
     uri: TUri,
     options: GetFileOptions
-  ): Promise<string | ArrayBuffer> {
+  ): Promise<string | Uint8Array> {
     const wrapper = await this._loadWrapper(this._toUri(uri), options);
     const client = contextualizeClient(this, options.contextId);
     return await wrapper.getFile(options, client);
@@ -293,14 +308,14 @@ export class PolywrapClient implements Client {
 
   @Tracer.traceMethod("PolywrapClient: invoke")
   public async invoke<TData = unknown, TUri extends Uri | string = string>(
-    options: InvokeOptions<TUri, PolywrapClientConfig>
+    options: InvokerOptions<TUri, PolywrapClientConfig>
   ): Promise<InvokeResult<TData>> {
     const { contextId, shouldClearContext } = this._setContext(
       options.contextId,
       options.config
     );
 
-    let result: InvokeResult<TData>;
+    let error: Error | undefined;
 
     try {
       const typedOptions: InvokeOptions<Uri> = {
@@ -311,18 +326,39 @@ export class PolywrapClient implements Client {
 
       const wrapper = await this._loadWrapper(typedOptions.uri, { contextId });
 
-      result = (await wrapper.invoke(
+      const invocableResult = await wrapper.invoke(
         typedOptions,
         contextualizeClient(this, contextId)
-      )) as TData;
-    } catch (error) {
-      result = { error };
+      );
+
+      if (invocableResult.data !== undefined) {
+        if (options.encodeResult && !invocableResult.encoded) {
+          return {
+            // TODO: if options.encodeResult, fix return type to Uint8Array
+            data: (msgpackEncode(invocableResult.data) as unknown) as TData,
+          };
+        } else if (invocableResult.encoded && !options.encodeResult) {
+          return {
+            // TODO: if result.encoded, fix return type to Uint8Array
+            data: msgpackDecode(invocableResult.data as Uint8Array) as TData,
+          };
+        } else {
+          return {
+            data: invocableResult.data as TData,
+          };
+        }
+      } else {
+        error = invocableResult.error;
+      }
+    } catch (e) {
+      error = e;
     }
 
     if (shouldClearContext) {
       this._clearContext(contextId);
     }
-    return result;
+
+    return { error };
   }
 
   @Tracer.traceMethod("PolywrapClient: run")
@@ -834,6 +870,12 @@ const contextualizeClient = (
           options: GetFileOptions
         ) => {
           return client.getFile(uri, options);
+        },
+        getSchema: <TUri extends Uri | string>(
+          uri: TUri,
+          options: GetSchemaOptions = {}
+        ) => {
+          return client.getSchema(uri, { ...options, contextId });
         },
         getManifest: <TUri extends Uri | string>(
           uri: TUri,

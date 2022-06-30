@@ -100,7 +100,7 @@ export class SchemaComposer {
     }
 
     try {
-      return await this._client.getManifest(new Uri(uri), { abi: true });
+      return await this._client.getSchema(new Uri(uri));
     } catch (e) {
       gluegun.print.error(e);
       throw e;

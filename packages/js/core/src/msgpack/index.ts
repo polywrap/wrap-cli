@@ -33,7 +33,7 @@ extensionCodec.register({
   },
 });
 
-export function msgpackEncode(object: unknown): ArrayBuffer {
+export function msgpackEncode(object: unknown): Uint8Array {
   const encoder = new Encoder(
     extensionCodec,
     undefined, // context
@@ -51,4 +51,12 @@ export function msgpackEncode(object: unknown): ArrayBuffer {
 export function msgpackDecode(buffer: ArrayBuffer): unknown {
   const decoder = new Decoder(extensionCodec);
   return decoder.decode(buffer);
+}
+
+export function isBuffer(maybeBuf: unknown): maybeBuf is BufferSource {
+  if (maybeBuf instanceof ArrayBuffer || ArrayBuffer.isView(maybeBuf)) {
+    return true;
+  } else {
+    return false;
+  }
 }

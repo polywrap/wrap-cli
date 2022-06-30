@@ -1,6 +1,6 @@
 import {
   QueryHandler,
-  InvokeHandler,
+  Invoker,
   SubscriptionHandler,
   UriRedirect,
   Uri,
@@ -11,6 +11,7 @@ import {
 } from "./";
 import { UriResolver } from "../uri-resolution/core";
 import { UriResolverHandler } from "./UriResolver";
+import { WrapManifest } from "../wrap-manifests";
 
 export interface ClientConfig<TUri extends Uri | string = string> {
   redirects: UriRedirect<TUri>[];
@@ -34,6 +35,8 @@ export type GetEnvsOptions = Contextualized;
 
 export type GetUriResolversOptions = Contextualized;
 
+export type GetSchemaOptions = Contextualized;
+
 export type GetManifestOptions = {
   abi?: boolean;
 } & Contextualized;
@@ -48,9 +51,9 @@ export interface GetImplementationsOptions extends Contextualized {
 }
 
 export interface Client
-  extends QueryHandler,
+  extends Invoker,
+    QueryHandler,
     SubscriptionHandler,
-    InvokeHandler,
     WorkflowHandler,
     UriResolverHandler {
   getRedirects(options: GetRedirectsOptions): readonly UriRedirect<Uri>[];
@@ -70,18 +73,23 @@ export interface Client
 
   getUriResolvers(options: GetUriResolversOptions): readonly UriResolver[];
 
+  getSchema<TUri extends Uri | string>(
+    uri: TUri,
+    options: GetSchemaOptions
+  ): Promise<string>;
+
+  getManifest<TUri extends Uri | string>(
+    uri: TUri,
+    options: GetManifestOptions
+  ): Promise<WrapManifest>;
+
   getFile<TUri extends Uri | string>(
     uri: TUri,
     options: GetFileOptions
-  ): Promise<string | ArrayBuffer>;
+  ): Promise<string | Uint8Array>;
 
   getImplementations<TUri extends Uri | string>(
     uri: TUri,
     options: GetImplementationsOptions
   ): TUri[];
-
-  getManifest<TUri extends Uri | string>(
-    uri: TUri,
-    options: GetManifestOptions
-  ): Promise<string>;
 }

@@ -8,7 +8,7 @@ import {
 
 import { parseSchema } from "@polywrap/schema-parse";
 import { WrapManifest, deserializeWrapManifest } from "@polywrap/core-js";
-import { deserializeMetaManifest } from "polywrap/src/lib";
+// import { deserializeMetaManifest } from "polywrap";
 import * as path from "path";
 
 export class WasmPackageValidator {
@@ -174,7 +174,8 @@ export class WasmPackageValidator {
     if (await reader.exists(path)) {
       const metaManifestFile = await reader.readFileAsString(path);
       try {
-        deserializeMetaManifest(metaManifestFile);
+        console.log({ metaManifestFile })
+        // deserializeMetaManifest(metaManifestFile);
         // If folder manifest exists, check it
         if (await reader.exists("./meta")) {
           return await this.validateStructure(reader, "./meta");

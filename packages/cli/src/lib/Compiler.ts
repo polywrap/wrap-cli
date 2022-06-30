@@ -16,8 +16,9 @@ import {
   outputManifest,
 } from "./";
 
-import { msgpackEncode, WrapManifest, WrapImports } from "@polywrap/core-js";
+import { msgpackEncode, WrapManifest } from "@polywrap/core-js";
 import { WasmWrapper } from "@polywrap/client-js";
+import { WrapImports } from "@polywrap/client-js/build/wasm/types";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 import { Abi } from "@polywrap/schema-parse";
 import { ComposerOutput } from "@polywrap/schema-compose";

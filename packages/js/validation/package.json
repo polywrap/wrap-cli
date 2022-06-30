@@ -20,7 +20,8 @@
   },
   "dependencies": {
     "@polywrap/core-js": "0.0.1-prealpha.90",
-    "@polywrap/schema-parse": "0.0.1-prealpha.90"
+    "@polywrap/schema-parse": "0.0.1-prealpha.90",
+    "polywrap": "0.0.1-prealpha.90"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",
