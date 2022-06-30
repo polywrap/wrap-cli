@@ -25,6 +25,7 @@ export const deserializeWrapManifest = Tracer.traceFunc(
     try {
       anyWrapManifest = msgpackDecode(manifest) as AnyWrapManifest;
     } catch (e) {
+      console.log({ e })
       throw Error(`Unable to parse WrapManifest: ${`[${new Uint8Array(manifest).toString()}]`}`);
     }
 

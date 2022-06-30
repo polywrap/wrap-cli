@@ -1,4 +1,4 @@
-import { VALID_WRAP_MANIFEST_NAMES } from "..";
+import { GRAPHQL_SCHEMA, META_MANIFEST, WRAP_INFO, WRAP_WASM } from "..";
 import {
   WasmPackageConstraints,
   PackageReader,
@@ -7,30 +7,41 @@ import {
 } from ".";
 
 import { parseSchema } from "@polywrap/schema-parse";
-import path from "path";
 import { WrapManifest, deserializeWrapManifest } from "@polywrap/core-js";
+import { deserializeMetaManifest } from "polywrap/src/lib";
+import * as path from "path";
 
 export class WasmPackageValidator {
   constructor(private constraints: WasmPackageConstraints) {}
 
   async validate(reader: PackageReader): Promise<ValidationResult> {
-    let result = await this.validateManifests(reader);
-    if (!result.valid) {
-      return result;
+    const infoResult = await this.validateInfo(reader, WRAP_INFO);
+    if (!infoResult.valid) {
+      return infoResult;
     }
 
-    result = await this.validateStructure(reader);
-    if (!result.valid) {
-      return result;
+    const schemaResult = await this.validateSchema(reader, GRAPHQL_SCHEMA);
+    if (!schemaResult.valid) {
+      return schemaResult;
     }
 
+    const moduleResult = await this.validateModule(reader, WRAP_WASM);
+    if (!moduleResult.valid) {
+      return moduleResult;
+    }
+
+    const metaResult = await this.validateMetaManifest(reader, META_MANIFEST);
+    if (!metaResult.valid) {
+      return metaResult;
+    }
     return this.success();
   }
 
   private async validateStructure(
-    reader: PackageReader
+    reader: PackageReader,
+    path: string
   ): Promise<ValidationResult> {
-    const { result: pathResult } = await this.validatePath(reader, "./", 0, 0);
+    const { result: pathResult } = await this.validatePath(reader, path, 0, 0);
 
     if (!pathResult.valid) {
       return pathResult;
@@ -110,62 +121,16 @@ export class WasmPackageValidator {
     };
   }
 
-  private async validateManifests(
-    reader: PackageReader
+  private async validateInfo(
+    reader: PackageReader,
+    name: string
   ): Promise<ValidationResult> {
-    const WRAP_INFO = "wrap.info";
-    if (!(await reader.exists(WRAP_INFO))) {
-      return this.fail(ValidationFailReason.WrapManifestNotFound);
-    }
-
-    const info = await reader.readFile(WRAP_INFO);
+    const info = await reader.readFile(name);
     const manifest: WrapManifest | undefined = deserializeWrapManifest(info);
-    // Go through manifest names, if more than one wrap manifest exists, fail
-    // If no wrap manifest exists or is invalid, also fail
-    for (const manifestName of VALID_WRAP_MANIFEST_NAMES) {
-      if (!(await reader.exists(manifestName))) {
-        continue;
-      }
-
-      // if (manifest) {
-      //   return this.fail(ValidationFailReason.MultipleWrapManifests);
-      // }
-      // try {
-      // } catch (err) {
-      //   return this.fail(ValidationFailReason.InvalidWrapManifest, err);
-      // }
-    }
 
     if (!manifest) {
       return this.fail(ValidationFailReason.WrapManifestNotFound);
     }
-
-    const schemaResult = await this.validateSchema(reader, "schema.graphql");
-    if (!schemaResult.valid) {
-      return schemaResult;
-    }
-
-    const moduleResult = await this.validateModule(reader, "wrap.wasm");
-    if (!moduleResult.valid) {
-      return moduleResult;
-    }
-
-    let manifestValidationResult = await this.validateBuildManifest(
-      reader,
-      manifest
-    );
-    if (!manifestValidationResult.valid) {
-      return manifestValidationResult;
-    }
-
-    manifestValidationResult = await this.validateMetaManifest(
-      reader,
-      manifest
-    );
-    if (!manifestValidationResult.valid) {
-      return manifestValidationResult;
-    }
-
     return this.success();
   }
 
@@ -199,6 +164,25 @@ export class WasmPackageValidator {
       return this.fail(ValidationFailReason.ModuleTooLarge);
     }
 
+    return this.success();
+  }
+
+  private async validateMetaManifest(
+    reader: PackageReader,
+    path: string
+  ): Promise<ValidationResult> {
+    if (await reader.exists(path)) {
+      const metaManifestFile = await reader.readFileAsString(path);
+      try {
+        deserializeMetaManifest(metaManifestFile);
+        // If folder manifest exists, check it
+        if (await reader.exists("./meta")) {
+          return await this.validateStructure(reader, "./meta");
+        }
+      } catch (err) {
+        return this.fail(ValidationFailReason.InvalidMetaManifest, err);
+      }
+    }
     return this.success();
   }
 
