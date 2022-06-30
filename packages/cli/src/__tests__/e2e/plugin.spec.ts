@@ -75,22 +75,24 @@ describe("e2e tests for plugin command", () => {
   };
 
   const testCodegenOutput = (testCaseDir: string, codegenDir: string, buildDir: string) => {
-    const expectedTypesResult = compareSync(
-      codegenDir,
-      `${testCaseDir}/expected/src/wrap`,
-      { compareContent: true }
-    );
-    expect(expectedTypesResult.differences).toBe(0);
+    if (fs.existsSync(path.join(testCaseDir, "expected", "wrap"))) {
+      const expectedCodegenResult = compareSync(
+        codegenDir,
+        path.join(testCaseDir, "expected", "wrap"),
+        { compareContent: true }
+      );
+      expect(expectedCodegenResult.differences).toBe(0);
+    }
 
-    const expectedBuildResult = compareSync(
-      buildDir,
-      `${testCaseDir}/expected/build-artifacts`,
-      { compareContent: true }
-    );
-
-    expect(expectedBuildResult.differences).toBe(0);
+    if (fs.existsSync(path.join(testCaseDir, "expected", "build-artifacts"))) {
+      const expectedBuildResult = compareSync(
+        buildDir,
+        path.join(testCaseDir, "expected", "build-artifacts"),
+        { compareContent: true }
+      );
+      expect(expectedBuildResult.differences).toBe(0);
+    }
   };
-
 
   test("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(

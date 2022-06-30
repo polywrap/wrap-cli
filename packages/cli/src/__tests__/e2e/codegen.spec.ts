@@ -5,6 +5,7 @@ import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import path from "path";
 import fs from "fs";
 import rimraf from "rimraf";
+import { compareSync } from "dir-compare";
 
 const HELP = `Usage: polywrap codegen|g [options]
 
@@ -21,12 +22,6 @@ Options:
                                      PolywrapClient
   -h, --help                         display help for command
 `;
-
-type Directory = {
-  name: string;
-  files: string[];
-  directories: Directory[];
-}
 
 describe("e2e tests for codegen command", () => {
   const testCaseRoot = path.join(GetPathToCliTestFiles(), "wasm/codegen");
@@ -84,27 +79,14 @@ describe("e2e tests for codegen command", () => {
     }
   };
 
-  const testGeneratedDir = (currentDir: string, expectedDir: Directory) => {
-    for (const file of expectedDir.files) {
-      expect(fs.existsSync(path.join(currentDir, file))).toBeTruthy();
-    }
-    for (const subdir of expectedDir.directories) {
-      testGeneratedDir(path.join(currentDir, subdir.name), subdir)
-    }
-  }
-
   const testCodegenOutput = (testCaseDir: string, codegenDir: string) => {
-    const expectedOutputFile = path.join(
-      testCaseDir,
-      "expected",
-      "output.json"
-    );
-    if (fs.existsSync(expectedOutputFile)) {
-      const expectedDir: Directory = JSON.parse(
-        fs.readFileSync(expectedOutputFile, { encoding: "utf8" })
+    if (fs.existsSync(path.join(testCaseDir, "expected", "wrap"))) {
+      const expectedTypesResult = compareSync(
+        codegenDir,
+        path.join(testCaseDir, "expected", "wrap"),
+        { compareContent: true }
       );
-
-      testGeneratedDir(codegenDir, expectedDir);
+      expect(expectedTypesResult.differences).toBe(0);
     }
   };
 

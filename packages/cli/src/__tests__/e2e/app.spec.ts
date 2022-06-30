@@ -5,6 +5,7 @@ import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import path from "path";
 import fs from "fs";
 import rimraf from "rimraf";
+import { compareSync } from "dir-compare";
 
 const HELP = `Usage: polywrap app|a [options] [command]
 
@@ -82,19 +83,13 @@ describe("e2e tests for app command", () => {
   };
 
   const testCodegenOutput = (testCaseDir: string, codegenDir: string) => {
-    const expectedOutputFile = path.join(
-      testCaseDir,
-      "expected",
-      "output.json"
-    );
-    if (fs.existsSync(expectedOutputFile)) {
-      const expectedFiles = JSON.parse(
-        fs.readFileSync(expectedOutputFile, { encoding: "utf8" })
+    if (fs.existsSync(path.join(testCaseDir, "expected", "wrap"))) {
+      const expectedTypesResult = compareSync(
+        codegenDir,
+        path.join(testCaseDir, "expected", "wrap"),
+        { compareContent: true }
       );
-
-      for (const file of expectedFiles) {
-        expect(fs.existsSync(path.join(codegenDir, file))).toBeTruthy();
-      }
+      expect(expectedTypesResult.differences).toBe(0);
     }
   };
 

@@ -2,7 +2,7 @@
 ///       All modifications will be overwritten.
 
 // @ts-ignore
-import * as Types from "./";
+import * as Types from ".";
 
 // @ts-ignore
 import {
