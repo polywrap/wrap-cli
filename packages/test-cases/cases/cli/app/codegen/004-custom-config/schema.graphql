@@ -1,0 +1,2 @@
+#import * into Ethereum from "wrap://ens/ethereum.polywrap.eth"
+#import * into Mock from "wrap://ens/mock.eth"

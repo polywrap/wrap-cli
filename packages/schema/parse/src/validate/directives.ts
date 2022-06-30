@@ -1,4 +1,4 @@
-import { ImportedDefinition } from "../typeInfo";
+import { ImportedDefinition } from "../abi";
 import { SchemaValidator } from ".";
 
 import { DirectiveNode, ASTNode, ObjectTypeDefinitionNode } from "graphql";

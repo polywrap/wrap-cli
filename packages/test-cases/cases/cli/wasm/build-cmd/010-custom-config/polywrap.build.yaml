@@ -1,0 +1,6 @@
+format: 0.0.1-prealpha.2
+config:
+  node_version: "14.16.0"
+linked_packages:
+  - name: "@polywrap/wasm-as"
+    path: ../../../../../../wasm/as

@@ -1,5 +1,5 @@
 {
-  "name": "uri-resolver-interface",
+  "name": "@polywrap/uri-resolver-interface",
   "description": "URI Resolver Interface",
   "private": true,
   "version": "0.0.1-prealpha.90",

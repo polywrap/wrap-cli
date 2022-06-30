@@ -1,9 +1,9 @@
 import {
-  TypeInfo,
+  Abi,
   ImportedObjectDefinition,
   createImportedObjectDefinition,
   createInterfaceImplementedDefinition,
-} from "../typeInfo";
+} from "../abi";
 import {
   extractFieldDefinition,
   extractListType,
@@ -71,13 +71,11 @@ const visitorLeave = (state: State) => ({
   },
 });
 
-export const getImportedObjectTypesVisitor = (
-  typeInfo: TypeInfo
-): ASTVisitor => {
+export const getImportedObjectTypesVisitor = (abi: Abi): ASTVisitor => {
   const state: State = {};
 
   return {
-    enter: visitorEnter(typeInfo.importedObjectTypes, state),
+    enter: visitorEnter(abi.importedObjectTypes, state),
     leave: visitorLeave(state),
   };
 };

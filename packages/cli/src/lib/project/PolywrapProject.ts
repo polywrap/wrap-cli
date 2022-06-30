@@ -29,7 +29,7 @@ import {
 import { normalizePath } from "@polywrap/os-js";
 import { bindSchema, BindOutput, BindOptions } from "@polywrap/schema-bind";
 import { ComposerOutput } from "@polywrap/schema-compose";
-import { TypeInfo } from "@polywrap/schema-parse";
+import { Abi } from "@polywrap/schema-parse";
 import regexParser from "regex-parser";
 import path from "path";
 import { Schema as JsonSchema } from "jsonschema";
@@ -168,7 +168,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
 
     const options: BindOptions = {
       projectName: manifest.name,
-      typeInfo: composerOutput.typeInfo as TypeInfo,
+      abi: composerOutput.abi as Abi,
       schema: composerOutput.schema as string,
       outputDirAbs: moduleDirectory,
       bindLanguage,

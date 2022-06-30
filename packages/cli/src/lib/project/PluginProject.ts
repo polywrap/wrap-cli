@@ -11,7 +11,7 @@ import {
 import { PluginManifest } from "@polywrap/core-js";
 import { bindSchema, BindOutput, BindOptions } from "@polywrap/schema-bind";
 import { ComposerOutput } from "@polywrap/schema-compose";
-import { TypeInfo } from "@polywrap/schema-parse";
+import { Abi } from "@polywrap/schema-parse";
 import path from "path";
 
 export interface PluginProjectConfig extends ProjectConfig {
@@ -124,7 +124,7 @@ export class PluginProject extends Project<PluginManifest> {
 
     const options: BindOptions = {
       projectName: manifest.name,
-      typeInfo: composerOutput.typeInfo as TypeInfo,
+      abi: composerOutput.abi as Abi,
       schema: composerOutput.schema as string,
       outputDirAbs: moduleDirectory,
       bindLanguage,
