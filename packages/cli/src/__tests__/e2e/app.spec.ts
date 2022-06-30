@@ -34,6 +34,70 @@ describe("e2e tests for app command", () => {
   const getTestCaseDir = (index: number) =>
     path.join(testCaseRoot, testCases[index]);
 
+  const testCliOutput = (
+    testCaseDir: string,
+    exitCode: number,
+    stdout: string,
+    stder: string
+  ) => {
+    const output = clearStyle(stdout);
+    const error = clearStyle(stder);
+
+    const expected = JSON.parse(
+      fs.readFileSync(
+        path.join(testCaseDir, "expected", "stdout.json"),
+        "utf-8"
+      )
+    );
+
+    if (expected.stdout) {
+      if (Array.isArray(expected.stdout)) {
+        for (const line of expected.stdout) {
+          expect(output).toContain(line);
+        }
+      } else {
+        expect(output).toContain(expected.stdout);
+      }
+    }
+
+    if (expected.stderr) {
+      if (Array.isArray(expected.stderr)) {
+        for (const line of expected.stderr) {
+          expect(error).toContain(line);
+        }
+      } else {
+        expect(error).toContain(expected.stderr);
+      }
+    }
+
+    if (expected.exitCode) {
+      expect(exitCode).toEqual(expected.exitCode);
+    }
+
+    if (expected.files) {
+      for (const file of expected.files) {
+        expect(fs.existsSync(path.join(testCaseDir, file))).toBeTruthy();
+      }
+    }
+  };
+
+  const testCodegenOutput = (testCaseDir: string, codegenDir: string) => {
+    const expectedOutputFile = path.join(
+      testCaseDir,
+      "expected",
+      "output.json"
+    );
+    if (fs.existsSync(expectedOutputFile)) {
+      const expectedFiles = JSON.parse(
+        fs.readFileSync(expectedOutputFile, { encoding: "utf8" })
+      );
+
+      for (const file of expectedFiles) {
+        expect(fs.existsSync(path.join(codegenDir, file))).toBeTruthy();
+      }
+    }
+  };
+
   it("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["app", "--help"],
@@ -82,47 +146,32 @@ describe("e2e tests for app command", () => {
     expect(output).toEqual(``);
   });
 
-  it("Should throw error if params not specified for --custom-config option", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: ["app", "--custom-config"],
-      cwd: getTestCaseDir(0),
-      cli: polywrapCli,
-    });
+  describe("missing option arguments", () => {
+    const missingOptionArgs = {
+      "--manifest-file": "-m, --manifest-file <path>",
+      "--codegen-dir": "-g, --codegen-dir <path>",
+      "--client-config": "-c, --client-config <config-path>"
+    }
 
-    expect(code).toEqual(1);
-    expect(error).toBe("error: unknown option '--custom-config'\n");
-    expect(output).toEqual(``);
-  });
+    for (const [option, errorMessage] of Object.entries(missingOptionArgs)) {
+      it(`Should throw error if params not specified for ${option} option`, async () => {
+        const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+          args: ["app", "codegen", option],
+          cwd: getTestCaseDir(0),
+          cli: polywrapCli,
+        });
 
-  it("Should throw error is params not specified for --codegen-dir option", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: ["app", "codegen", "--codegen-dir"],
-      cwd: getTestCaseDir(0),
-      cli: polywrapCli,
-    });
-
-    expect(code).toEqual(1);
-    expect(error).toBe(
-      `error: option '-g, --codegen-dir <path>' argument missing\n`
-    );
-    expect(output).toEqual(``);
-  });
-
-  it("Should throw error is params not specified for --manifest-file option", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: ["app", "codegen", "--manifest-file"],
-      cwd: getTestCaseDir(0),
-      cli: polywrapCli,
-    });
-
-    expect(code).toEqual(1);
-    expect(error).toBe(
-      `error: option '-m, --manifest-file <path>' argument missing\n`
-    );
-    expect(output).toEqual(``);
+        expect(code).toEqual(1);
+        expect(error).toBe(
+          `error: option '${errorMessage}' argument missing\n`
+        );
+        expect(output).toEqual(``);
+      });
+    }
   });
 
   it("Should store generated files to specified codegen dir", async () => {
+    const testCaseDir = getTestCaseDir(0);
     const codegenDir = path.resolve(
       process.env.TMPDIR || "/tmp",
       `codegen-${Date.now()}`
@@ -137,106 +186,36 @@ describe("e2e tests for app command", () => {
     expect(code).toEqual(0);
     expect(clearStyle(output)).toEqual(CODEGEN_SUCCESS);
 
-    expect(fs.existsSync(path.join(codegenDir, "index.ts"))).toBeTruthy();
-    expect(fs.existsSync(path.join(codegenDir, "schema.ts"))).toBeTruthy();
-    expect(fs.existsSync(path.join(codegenDir, "types.ts"))).toBeTruthy();
+    testCodegenOutput(testCaseDir, codegenDir);
 
     rimraf.sync(codegenDir);
   });
 
-  it("Should generate the files correctly using explicitly specified manifest file", async () => {
-    const testCaseDir = getTestCaseDir(0);
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: [
-        "app",
-        "codegen",
-        "--manifest-file",
-        path.join(getTestCaseDir(0), "polywrap.custom.app.yaml"),
-      ],
-      cwd: testCaseDir,
-      cli: polywrapCli,
-    });
-
-    const codegenDir = path.resolve(testCaseDir, "src", "wrap");
-
-    expect(error).toBe("");
-    expect(code).toEqual(0);
-    expect(clearStyle(output)).toEqual(
-      CODEGEN_SUCCESS.replace(
-        /.\/polywrap.app.yaml/g,
-        "./polywrap.custom.app.yaml"
-      )
-    );
-
-    expect(fs.existsSync(path.join(codegenDir, "index.ts"))).toBeTruthy();
-    expect(fs.existsSync(path.join(codegenDir, "schema.ts"))).toBeTruthy();
-    expect(fs.existsSync(path.join(codegenDir, "types.ts"))).toBeTruthy();
-
-    rimraf.sync(codegenDir);
-  });
-
-  describe("test-cases with default client config", () => {
+  describe("test-cases", () => {
     for (let i = 0; i < testCases.length; ++i) {
       const testCaseName = testCases[i];
       const testCaseDir = getTestCaseDir(i);
+      
+      let cmdArgs: string[] = [];
+      let cmdFile = path.join(testCaseDir, "cmd.json");
+      if (fs.existsSync(cmdFile)) {
+        const cmdConfig = JSON.parse(fs.readFileSync(cmdFile, "utf-8"));
+        if (cmdConfig.args) {
+          cmdArgs.push(...cmdConfig.args);
+        }
+      }
 
       test(testCaseName, async () => {
         const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-          args: ["app", "codegen"],
+          args: ["app", "codegen", ...cmdArgs],
           cwd: testCaseDir,
           cli: polywrapCli,
         });
 
         const codegenDir = path.resolve(testCaseDir, "src", "wrap");
 
-        expect(error).toBe("");
-        expect(code).toEqual(0);
-        expect(clearStyle(output)).toEqual(CODEGEN_SUCCESS);
-
-        expect(fs.existsSync(path.join(codegenDir, "index.ts"))).toBeTruthy();
-        expect(fs.existsSync(path.join(codegenDir, "schema.ts"))).toBeTruthy();
-        expect(fs.existsSync(path.join(codegenDir, "types.ts"))).toBeTruthy();
-      });
-    }
-  });
-
-  describe("test-cases with custom client config", () => {
-    const testCaseRoot = path.join(
-      GetPathToCliTestFiles(),
-      "app", "codegen-with-config"
-    );
-    const testCases = fs
-      .readdirSync(testCaseRoot, { withFileTypes: true })
-      .filter((dirent) => dirent.isDirectory())
-      .map((dirent) => dirent.name);
-
-    const getTestCaseDir = (index: number) => path.join(testCaseRoot, testCases[index]);
-
-    for (let i = 0; i < testCases.length; i++) {
-      const testCaseName = testCases[i];
-      const testCaseDir = getTestCaseDir(i);
-
-      test(testCaseName, async () => {
-        const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-          args: [
-            "app",
-            "codegen",
-            "--client-config",
-            path.join(testCaseDir, "config.ts"),
-          ],
-          cwd: testCaseDir,
-          cli: polywrapCli,
-        });
-
-        const codegenDir = path.resolve(testCaseDir, "src", "wrap");
-
-        expect(error).toBe("");
-        expect(code).toEqual(0);
-        expect(clearStyle(output)).toEqual(CODEGEN_SUCCESS);
-
-        expect(fs.existsSync(path.join(codegenDir, "index.ts"))).toBeTruthy();
-        expect(fs.existsSync(path.join(codegenDir, "schema.ts"))).toBeTruthy();
-        expect(fs.existsSync(path.join(codegenDir, "types.ts"))).toBeTruthy();
+        testCliOutput(testCaseDir, code, output, error);
+        testCodegenOutput(testCaseDir, codegenDir);
       });
     }
   });

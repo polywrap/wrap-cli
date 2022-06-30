@@ -50,7 +50,7 @@ export const codegen: Command = {
         `${intlMsg.commands_codegen_options_s()}`
       )
       .option(
-        `-c, --client-config <${intlMsg.commands_run_options_configPath()}> `,
+        `-c, --client-config <${intlMsg.commands_run_options_configPath()}>`,
         `${intlMsg.commands_run_options_config()}`
       )
       .action(async (options) => {

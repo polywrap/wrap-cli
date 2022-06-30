@@ -34,7 +34,7 @@ describe("e2e tests for build command", () => {
   const getTestCaseDir = (index: number) =>
     path.join(testCaseRoot, testCases[index]);
 
-  const testBuildSuccess = (
+  const testCliOutput = (
     testCaseDir: string,
     exitCode: number,
     stdout: string,
@@ -45,7 +45,7 @@ describe("e2e tests for build command", () => {
 
     const expected = JSON.parse(
       fs.readFileSync(
-        path.join(testCaseDir, "expected", "output.json"),
+        path.join(testCaseDir, "expected", "stdout.json"),
         "utf-8"
       )
     );
@@ -81,6 +81,24 @@ describe("e2e tests for build command", () => {
     }
   };
 
+  const testBuildOutput = (testCaseDir: string) => {
+    const expectedOutputFile = path.join(
+      testCaseDir,
+      "expected",
+      "output.json"
+    );
+    if (fs.existsSync(expectedOutputFile)) {
+      const buildDir = path.join(testCaseDir, "build");
+      const expectedFiles = JSON.parse(
+        fs.readFileSync(expectedOutputFile, { encoding: "utf8" })
+      );
+
+      for (const file of expectedFiles) {
+        expect(fs.existsSync(path.join(buildDir, file))).toBeTruthy();
+      }
+    }
+  };
+
   it("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["build", "--help"],
@@ -105,32 +123,28 @@ describe("e2e tests for build command", () => {
     expect(output).toEqual(``);
   });
 
-  it("Should throw error is params not specified for --manifest-file option", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: ["build", "--manifest-file"],
-      cwd: getTestCaseDir(0),
-      cli: polywrapCli,
-    });
+  describe("missing option arguments", () => {
+    const missingOptionArgs = {
+      "--manifest-file": "-m, --manifest-file <path>",
+      "--output-dir": "-o, --output-dir <path>",
+      "--client-config": "-c, --client-config <config-path>"
+    }
 
-    expect(code).toEqual(1);
-    expect(error).toBe(
-      `error: option '-m, --manifest-file <path>' argument missing\n`
-    );
-    expect(output).toEqual(``);
-  });
+    for (const [option, errorMessage] of Object.entries(missingOptionArgs)) {
+      it(`Should throw error if params not specified for ${option} option`, async () => {
+        const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+          args: ["build", option],
+          cwd: getTestCaseDir(0),
+          cli: polywrapCli,
+        });
 
-  it("Should throw error if params not specified for --output-dir option", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: ["build", "--output-dir"],
-      cwd: getTestCaseDir(0),
-      cli: polywrapCli,
-    });
-
-    expect(code).toEqual(1);
-    expect(error).toContain(
-      "error: option '-o, --output-dir <path>' argument missing"
-    );
-    expect(output).toBe("");
+        expect(code).toEqual(1);
+        expect(error).toBe(
+          `error: option '${errorMessage}' argument missing\n`
+        );
+        expect(output).toEqual(``);
+      });
+    }
   });
 
   it("Should throw error if params not specified for --client-config option", async () => {
@@ -145,24 +159,6 @@ describe("e2e tests for build command", () => {
       "error: option '-c, --client-config <config-path>' argument missing"
     );
     expect(output).toBe("");
-  });
-
-  it("Should build the wrapper using specified manifest file", async () => {
-    const testCaseDir = getTestCaseDir(0);
-    const { exitCode, stdout, stderr } = await runCLI({
-      args: [
-        "build",
-        "-v",
-        "--manifest-file",
-        path.join(getTestCaseDir(0), "polywrap.custom.yaml"),
-      ],
-      cwd: testCaseDir,
-      cli: polywrapCli,
-    });
-
-    expect(stderr).toBe("");
-    expect(exitCode).toEqual(0);
-    testBuildSuccess(testCaseDir, exitCode, stdout, stderr);
   });
 
   it("Should store build files in specified output dir", async () => {
@@ -182,6 +178,8 @@ describe("e2e tests for build command", () => {
     expect(code).toEqual(0);
     expect(output).toContain(`Artifacts written to ${buildDir}`);
     expect(output).toContain(`Manifest written to ${buildDir}/polywrap.json`);
+
+    testBuildOutput(testCaseDir);
   });
 
   it("Should add uuid-v4 suffix to build image if no build manifest specified", async () => {
@@ -209,44 +207,29 @@ describe("e2e tests for build command", () => {
     );
   });
 
-  describe("test-cases with default client config", () => {
+  describe("test-cases", () => {
     for (let i = 0; i < testCases.length; ++i) {
       const testCaseName = testCases[i];
       const testCaseDir = getTestCaseDir(i);
 
+      let cmdArgs: string[] = [];
+      let cmdFile = path.join(testCaseDir, "cmd.json");
+      if (fs.existsSync(cmdFile)) {
+        const cmdConfig = JSON.parse(fs.readFileSync(cmdFile, "utf-8"));
+        if (cmdConfig.args) {
+          cmdArgs.push(...cmdConfig.args);
+        }
+      }
+
       test(testCaseName, async () => {
         let { exitCode, stdout, stderr } = await runCLI({
-          args: ["build", "-v"],
+          args: ["build", "-v", ...cmdArgs],
           cwd: testCaseDir,
           cli: polywrapCli,
         });
 
-        testBuildSuccess(testCaseDir, exitCode, stdout, stderr);
-      });
-    }
-  });
-
-  describe("test-cases with custom client config", () => {
-    const testCaseRoot = path.join(GetPathToCliTestFiles(), "wasm", "build-cmd-with-config");
-    const testCases = fs
-      .readdirSync(testCaseRoot, { withFileTypes: true })
-      .filter((dirent) => dirent.isDirectory())
-      .map((dirent) => dirent.name);
-    const getTestCaseDir = (index: number) =>
-      path.join(testCaseRoot, testCases[index]);
-
-    for (let i = 0; i < testCases.length; ++i) {
-      const testCaseName = testCases[i];
-      const testCaseDir = getTestCaseDir(i);
-
-      test(testCaseName, async () => {
-        let { exitCode, stdout, stderr } = await runCLI({
-          args: ["build", "-v", "-c", "./config.ts"],
-          cwd: testCaseDir,
-          cli: polywrapCli,
-        });
-
-        testBuildSuccess(testCaseDir, exitCode, stdout, stderr);
+        testCliOutput(testCaseDir, exitCode, stdout, stderr);
+        testBuildOutput(testCaseDir);
       });
     }
   });

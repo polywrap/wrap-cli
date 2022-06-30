@@ -43,7 +43,7 @@ export const app: Command = {
         })}`
       )
       .option(
-        `-c, --client-config <${intlMsg.commands_run_options_configPath()}> `,
+        `-c, --client-config <${intlMsg.commands_run_options_configPath()}>`,
         `${intlMsg.commands_run_options_config()}`
       )
       .action(async (options) => {
