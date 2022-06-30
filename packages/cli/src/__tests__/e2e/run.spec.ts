@@ -59,6 +59,31 @@ describe("sanity tests for workflow command", () => {
     expect(stdout).toEqual(``);
   });
 
+  describe("missing option arguments", () => {
+    const missingOptionArgs = {
+      "--validate-script": "-v, --validate-script <cue-file>",
+      "--client-config": "-c, --client-config <config-path>",
+      "--output-file": "-o, --output-file <output-file-path>",
+      "--jobs": "-j, --jobs <jobs...>",
+    };
+
+    for (const [option, errorMessage] of Object.entries(missingOptionArgs)) {
+      it(`Should throw error if params not specified for ${option} option`, async () => {
+        const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+          args: ["run", option],
+          cwd: testCaseRoot,
+          cli: polywrapCli,
+        });
+
+        expect(code).toEqual(1);
+        expect(error).toBe(
+          `error: option '${errorMessage}' argument missing\n`
+        );
+        expect(output).toEqual(``);
+      });
+    }
+  });
+
   it("Should throw error is --client-config doesn't contain arguments", async () => {
     const { exitCode, stdout, stderr } = await runCLI({
       args: ["run", "./recipes/e2e.json", "--client-config"],

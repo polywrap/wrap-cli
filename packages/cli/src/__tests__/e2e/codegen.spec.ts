@@ -230,6 +230,7 @@ describe("e2e tests for codegen command", () => {
     for (let i = 0; i < testCases.length; ++i) {
       const testCaseName = testCases[i];
       const testCaseDir = getTestCaseDir(i);
+
       let codegenDir = path.join(testCaseDir, "src", "wrap");
       let cmdArgs: string[] = [];
       let cmdFile = path.join(testCaseDir, "cmd.json");

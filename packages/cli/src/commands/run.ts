@@ -32,7 +32,7 @@ export const run: Command = {
         intlMsg.commands_run_options_workflowScript()
       )
       .option(
-        `-c, --client-config <${intlMsg.commands_run_options_configPath()}> `,
+        `-c, --client-config <${intlMsg.commands_run_options_configPath()}>`,
         `${intlMsg.commands_run_options_config()}`
       )
       .option(

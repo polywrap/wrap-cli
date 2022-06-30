@@ -126,7 +126,7 @@ describe("e2e tests for infra command", () => {
       ]);
     });
 
-    test("Should throw error for no command given", async () => {
+    it("Should throw error for no command given", async () => {
       const { exitCode: code, stderr: error } = await runPolywrapCli(
         ["infra"],
         getTestCaseDir(0),
@@ -136,7 +136,7 @@ describe("e2e tests for infra command", () => {
       expect(error).toContain(`error: missing required argument 'action'`);
     });
 
-    test("Should show help text", async () => {
+    it("Should show help text", async () => {
       const { exitCode: code, stdout: output, stderr: error } = await runPolywrapCli(
         ["infra", "--help"],
         getTestCaseDir(0),
@@ -147,7 +147,7 @@ describe("e2e tests for infra command", () => {
       expect(clearStyle(output)).toEqual(HELP);
     });
 
-    test("Extracts composed docker manifest's environment variable list", async () => {
+    it("Should extract composed docker manifest's environment variable list", async () => {
       const { exitCode: code, stdout: output } = await runPolywrapCli(
         ["infra", "vars"],
         getTestCaseDir(0),
@@ -161,7 +161,7 @@ describe("e2e tests for infra command", () => {
       expect(sanitizedOutput).toContain("DEV_SERVER_ETH_TESTNET_PORT");
     });
 
-    test("Validates and displays composed docker manifest", async () => {
+    it("Should validate and display composed docker manifest", async () => {
       const { exitCode: code, stdout: output } = await runPolywrapCli(
         ["infra", "config"],
         getTestCaseDir(0),
@@ -175,7 +175,7 @@ describe("e2e tests for infra command", () => {
       expect(sanitizedOutput).toContain("ipfs:");
     });
 
-    test("Sets environment up with all modules if no --modules are passed", async () => {
+    it("Should set environment up with all modules if no --modules are passed", async () => {
       await runPolywrapCli(
         ["infra", "down", "--manifest=./polywrap.infra.yaml"],
         getTestCaseDir(0),
@@ -199,7 +199,7 @@ describe("e2e tests for infra command", () => {
       ]);
     });
 
-    test("Should correctly fetch default & local module", async () => {
+    it("Should correctly fetch default & local module", async () => {
       await runPolywrapCli(
         ["infra", "up"],
         getTestCaseDir(4),
@@ -216,7 +216,7 @@ describe("e2e tests for infra command", () => {
       );
     });
 
-    test("Should correctly open one process for default module because modules flag overwrites it", async () => {
+    it("Should correctly open one process for default module because modules flag overwrites it", async () => {
       await runPolywrapCli(
         ["infra", "up", "--modules=eth-ens-ipfs"],
         getTestCaseDir(4),
@@ -232,7 +232,7 @@ describe("e2e tests for infra command", () => {
       );
     });
 
-    test("Should throw because default module declared in manifest is not recognized", async () => {
+    it("Should throw because default module declared in manifest is not recognized", async () => {
       const { stderr } = await runPolywrapCli(
         ["infra", "up", "--manifest=./polywrap.infra.wrong.yaml"],
         getTestCaseDir(4),
@@ -243,7 +243,7 @@ describe("e2e tests for infra command", () => {
       );
     });
 
-    test("Should correctly fetch different local modules when they are declared as folder or file", async () => {
+    it("Should correctly fetch different local modules when they are declared as folder or file", async () => {
       await runPolywrapCli(
         ["infra", "up"],
         getTestCaseDir(4),
@@ -261,7 +261,7 @@ describe("e2e tests for infra command", () => {
       );
     });
 
-    test("Tears down environment", async () => {
+    it("Should tear down environment", async () => {
       await runPolywrapCli(
         ["infra", "up"],
         getTestCaseDir(0),
@@ -285,7 +285,7 @@ describe("e2e tests for infra command", () => {
       ]);
     });
 
-    test("Sets environment up with only selected modules", async () => {
+    it("Should set environment up with only selected modules", async () => {
       await runPolywrapCli(
         ["infra", "up", "--modules=ipfs"],
         getTestCaseDir(0),
@@ -307,7 +307,7 @@ describe("e2e tests for infra command", () => {
       ]);
     });
 
-    test("Should throw error for --modules that don't exist in infra manifest and are not default modules", async () => {
+    it("Should throw error for --modules that don't exist in infra manifest and are not default modules", async () => {
       const { exitCode: code, stderr } = await runPolywrapCli(
         [
           "infra",
@@ -323,7 +323,7 @@ describe("e2e tests for infra command", () => {
       );
     });
 
-    test("Should setup and use a default module if --modules arg is passed and the module does not exist in the manifest", async () => {
+    it("Should setup and use a default module if --modules arg is passed and the module does not exist in the manifest", async () => {
       await runPolywrapCli(
         [
           "infra",
@@ -370,7 +370,7 @@ describe("e2e tests for infra command", () => {
       expect(withoutManifestModSanitizedOutput).not.toContain("dev-server:")
     })
 
-    test("Should set up a default environment if no manifest is present, but --modules option is passed", async () => {
+    it("Should set up a default environment if no manifest is present, but --modules option is passed", async () => {
       
       await runPolywrapCli(
         [
@@ -388,7 +388,7 @@ describe("e2e tests for infra command", () => {
       ]);
     })
 
-    test("Should not include default modules if no --modules option is passed and manifest exists", async () => {
+    it("Should not include default modules if no --modules option is passed and manifest exists", async () => {
       
       const { stdout } = await runPolywrapCli(
         [
@@ -404,7 +404,7 @@ describe("e2e tests for infra command", () => {
       expect(output).not.toContain("ens-scripts")
     })
 
-    test("Should fail if no manifest is present and no --modules option is passed", async () => {
+    it("Should fail if no manifest is present and no --modules option is passed", async () => {
       
       const { exitCode, stderr } = await runPolywrapCli(
         [
@@ -421,7 +421,7 @@ describe("e2e tests for infra command", () => {
   });
 
   describe("Duplicates", () => {
-    test("Should handle duplicate services", async () => {
+    it("Should handle duplicate services", async () => {
       await runPolywrapCli(
         [
           "infra",
@@ -442,7 +442,7 @@ describe("e2e tests for infra command", () => {
       );
     });
 
-    test("Should correctly duplicate pkg in different module", async () => {
+    it("Should correctly duplicate pkg in different module", async () => {
       await runPolywrapCli(
         [
           "infra",

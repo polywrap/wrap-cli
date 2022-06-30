@@ -22,7 +22,7 @@ Commands:
 
 describe("e2e tests for no command", () => {
   
-  test("Should throw error for unrecognized command", async () => {
+  it("Should throw error for unrecognized command", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["unknown"],
       cli: polywrapCli
@@ -32,7 +32,7 @@ describe("e2e tests for no command", () => {
     expect(output).toEqual(``);
   });
 
-  test("Should let the user to type polywrap help", async () => {
+  it("Should let the user to type polywrap help", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: [],
       cli: polywrapCli,
