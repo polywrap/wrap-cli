@@ -1,4 +1,4 @@
-import { clearStyle } from "./utils";
+import { clearStyle, polywrapCli } from "./utils";
 
 import { runCLI } from "@polywrap/test-env-js";
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
@@ -61,30 +61,29 @@ describe("e2e tests for plugin command", () => {
     expect(output).toBe("");
   });
 
-  test("Should throw error for invalid params - publish-dir", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
-      {
-        args: ["plugin", "codegen", "--publish-dir"],
-        cwd: getTestCaseDir(0),
-      }
-    );
+  describe("missing option arguments", () => {
+    const missingOptionArgs = {
+      "--manifest-file": "-m, --manifest-file <path>",
+      "--publish-dir": "-p, --publish-dir <path>",
+      "--codegen-dir": "-g, --codegen-dir <path>",
+      "--client-config": "-c, --client-config <config-path>"
+    };
 
-    expect(code).toEqual(1);
-    expect(error).toContain("error: option '-p, --publish-dir <path>' argument missing");
-    expect(output).toBe("");
-  });
+    for (const [option, errorMessage] of Object.entries(missingOptionArgs)) {
+      it(`Should throw error if params not specified for ${option} option`, async () => {
+        const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+          args: ["plugin", "codegen", option],
+          cwd: getTestCaseDir(0),
+          cli: polywrapCli,
+        });
 
-  test("Should throw error for invalid params - codegen-dir", async () => {
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI(
-      {
-        args: ["plugin", "codegen", "--codegen-dir"],
-        cwd: getTestCaseDir(0),
-      }
-    );
-
-    expect(code).toEqual(1);
-    expect(error).toContain("error: option '-g, --codegen-dir <path>' argument missing");
-    expect(output).toBe("");
+        expect(code).toEqual(1);
+        expect(error).toBe(
+          `error: option '${errorMessage}' argument missing\n`
+        );
+        expect(output).toEqual(``);
+      });
+    }
   });
 
   describe("test-cases", () => {

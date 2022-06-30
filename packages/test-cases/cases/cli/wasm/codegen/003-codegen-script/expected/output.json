@@ -1,6 +1,16 @@
 {
-  "stdout": [
-    "Types were generated successfully"
+  "name": "wrap",
+  "files": [
+    "schema1.ts",
+    "schema3.ts"
   ],
-  "exitCode": 0
+  "directories": [
+    {
+      "name": "folder",
+      "files": [
+        "schema2.ts"
+      ],
+      "directories": []
+    }
+  ]
 }

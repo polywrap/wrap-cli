@@ -1,4 +1,18 @@
 {
-  "stdout": "Types were generated successfully",
-  "exitCode": 0
+  "name": "wrap",
+  "files": [
+    "index.ts",
+    "entry.ts"
+  ],
+  "directories": [
+    {
+      "name": "Module",
+      "files": [
+        "index.ts",
+        "serialization.ts",
+        "wrapped.ts"
+      ],
+      "directories": []
+    }
+  ]
 }
