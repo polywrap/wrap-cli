@@ -88,7 +88,7 @@ describe("e2e tests for build command", () => {
       "output.json"
     );
     if (fs.existsSync(expectedOutputFile)) {
-      const buildDir = path.join(testCaseDir, "build");
+      const buildDir = path.join(testCaseDir, "build-artifacts");
       const expectedFiles = JSON.parse(
         fs.readFileSync(expectedOutputFile, { encoding: "utf8" })
       );
