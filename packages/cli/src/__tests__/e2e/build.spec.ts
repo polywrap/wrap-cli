@@ -88,13 +88,15 @@ describe("e2e tests for build command", () => {
       "output.json"
     );
     if (fs.existsSync(expectedOutputFile)) {
-      const buildDir = path.join(testCaseDir, "build-artifacts");
+      const buildDir = path.join(testCaseDir, "build");
       const expectedFiles = JSON.parse(
         fs.readFileSync(expectedOutputFile, { encoding: "utf8" })
       );
 
       for (const file of expectedFiles) {
-        console.log(path.join(buildDir, file), fs.existsSync(path.join(buildDir, file)))
+        if (!fs.existsSync(path.join(buildDir, file))) {
+          expect(path.join(buildDir, file)).toBe("debug")
+        }
         expect(fs.existsSync(path.join(buildDir, file))).toBeTruthy();
       }
     }
