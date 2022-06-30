@@ -33,22 +33,15 @@ export const createImports = (config: {
         const method = readString(memory.buffer, methodPtr, methodLen);
         const args = readBytes(memory.buffer, argsPtr, argsLen);
 
-        const { data, error } = await client.invoke<unknown | ArrayBuffer>({
+        const { data, error } = await client.invoke<Uint8Array>({
           uri: uri,
           method: method,
-          args: args,
-          noDecode: true,
+          args: new Uint8Array(args),
+          encodeResult: true,
         });
 
         if (!error) {
-          let msgpack: ArrayBuffer;
-          if (data instanceof ArrayBuffer) {
-            msgpack = data;
-          } else {
-            msgpack = msgpackEncode(data);
-          }
-
-          state.subinvoke.result = msgpack;
+          state.subinvoke.result = data;
         } else {
           state.subinvoke.error = `${error.name}: ${error.message}`;
         }
@@ -106,22 +99,15 @@ export const createImports = (config: {
 
         state.subinvokeImplementation.args = [implUri, method, args];
 
-        const { data, error } = await client.invoke<unknown | ArrayBuffer>({
+        const { data, error } = await client.invoke<Uint8Array>({
           uri: implUri,
           method: method,
-          args: args,
-          noDecode: true,
+          args: new Uint8Array(args),
+          encodeResult: true,
         });
 
         if (!error) {
-          let msgpack: ArrayBuffer;
-          if (data instanceof ArrayBuffer) {
-            msgpack = data;
-          } else {
-            msgpack = msgpackEncode(data);
-          }
-
-          state.subinvokeImplementation.result = msgpack;
+          state.subinvokeImplementation.result = data;
         } else {
           state.subinvokeImplementation.error = `${error.name}: ${error.message}`;
         }
@@ -179,7 +165,9 @@ export const createImports = (config: {
       },
       // Store the invocation's result
       __wrap_invoke_result: (ptr: u32, len: u32): void => {
-        state.invoke.result = readBytes(memory.buffer, ptr, len);
+        state.invoke.result = new Uint8Array(
+          readBytes(memory.buffer, ptr, len)
+        );
       },
       // Store the invocation's error
       __wrap_invoke_error: (ptr: u32, len: u32): void => {
@@ -219,7 +207,9 @@ export const createImports = (config: {
         writeBytes(state.sanitizeEnv.args, memory.buffer, ptr);
       },
       __wrap_sanitize_env_result: (ptr: u32, len: u32): void => {
-        state.sanitizeEnv.result = readBytes(memory.buffer, ptr, len);
+        state.sanitizeEnv.result = new Uint8Array(
+          readBytes(memory.buffer, ptr, len)
+        );
       },
       __wrap_abort: (
         msgPtr: u32,

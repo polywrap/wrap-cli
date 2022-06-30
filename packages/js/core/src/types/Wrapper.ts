@@ -4,7 +4,9 @@ import {
   GetFileOptions,
   GetManifestOptions,
   InvokeOptions,
-  InvokeResult,
+  Invocable,
+  Invoker,
+  InvocableResult,
 } from ".";
 import { AnyManifestArtifact, ManifestArtifactType } from "../manifest";
 
@@ -14,7 +16,7 @@ import { AnyManifestArtifact, ManifestArtifactType } from "../manifest";
  * this class may do things like caching WASM bytecode, spawning
  * worker threads, or indexing into resolvers to find the requested method.
  */
-export abstract class Wrapper {
+export abstract class Wrapper implements Invocable {
   /**
    * Invoke the Wrapper based on the provided [[InvokeOptions]]
    *
@@ -24,8 +26,8 @@ export abstract class Wrapper {
    */
   public abstract invoke(
     options: InvokeOptions<Uri>,
-    client: Client
-  ): Promise<InvokeResult<unknown>>;
+    invoker: Invoker
+  ): Promise<InvocableResult<unknown>>;
 
   /**
    * Get the Wrapper's schema
@@ -57,7 +59,7 @@ export abstract class Wrapper {
   public abstract getFile(
     options: GetFileOptions,
     client: Client
-  ): Promise<ArrayBuffer | string>;
+  ): Promise<Uint8Array | string>;
 }
 
 /** Cache of Wrapper definitions, mapping the Wrapper's URI to its definition */

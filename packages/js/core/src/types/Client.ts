@@ -1,6 +1,6 @@
 import {
   QueryHandler,
-  InvokeHandler,
+  Invoker,
   SubscriptionHandler,
   UriRedirect,
   Uri,
@@ -53,9 +53,9 @@ export interface GetImplementationsOptions extends Contextualized {
 }
 
 export interface Client
-  extends QueryHandler,
+  extends Invoker,
+    QueryHandler,
     SubscriptionHandler,
-    InvokeHandler,
     WorkflowHandler,
     UriResolverHandler {
   getRedirects(options: GetRedirectsOptions): readonly UriRedirect<Uri>[];
@@ -91,7 +91,7 @@ export interface Client
   getFile<TUri extends Uri | string>(
     uri: TUri,
     options: GetFileOptions
-  ): Promise<string | ArrayBuffer>;
+  ): Promise<string | Uint8Array>;
 
   getImplementations<TUri extends Uri | string>(
     uri: TUri,
