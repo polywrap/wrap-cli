@@ -109,7 +109,7 @@ export class PluginWrapper extends Wrapper {
             encoded: false,
           };
         } else {
-          return { };
+          return {};
         }
       } catch (e) {
         throw Error(
@@ -122,7 +122,7 @@ export class PluginWrapper extends Wrapper {
       }
     } catch (error) {
       return {
-        error
+        error,
       };
     }
   }

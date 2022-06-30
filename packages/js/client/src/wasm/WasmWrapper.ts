@@ -252,7 +252,7 @@ export class WasmWrapper extends Wrapper {
       }
     } catch (error) {
       return {
-        error
+        error,
       };
     }
   }
