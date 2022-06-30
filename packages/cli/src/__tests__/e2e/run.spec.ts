@@ -83,20 +83,6 @@ describe("sanity tests for workflow command", () => {
       });
     }
   });
-
-  it("Should throw error is --client-config doesn't contain arguments", async () => {
-    const { exitCode, stdout, stderr } = await runCLI({
-      args: ["run", "./recipes/e2e.json", "--client-config"],
-      cwd: testCaseRoot,
-      cli: polywrapCli,
-    });
-
-    expect(exitCode).toEqual(1);
-    expect(stderr).toBe(
-      "error: option '-c, --client-config <config-path> ' argument missing\n"
-    );
-    expect(stdout).toEqual(``);
-  });
 });
 
 describe("e2e tests for run command", () => {
