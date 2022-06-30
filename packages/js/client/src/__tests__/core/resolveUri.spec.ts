@@ -190,7 +190,7 @@ describe("resolveUri", () => {
           uri: pluginUri.uri,
           plugin: {
             factory: () => {
-              return ({} as unknown) as PluginModule;
+              return ({} as unknown) as PluginModule<{}>;
             },
             manifest: {
               schema: "",

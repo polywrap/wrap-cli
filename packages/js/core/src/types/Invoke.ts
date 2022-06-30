@@ -15,13 +15,7 @@ export interface InvokeOptions<
    * Arguments for the method, structured as a map,
    * removing the chance of incorrectly ordering arguments.
    */
-  args?: Record<string, unknown> | ArrayBuffer;
-
-  /**
-   * If set to true, the invoke function will not decode the msgpack results
-   * into JavaScript objects, and instead return the raw ArrayBuffer.
-   */
-  noDecode?: boolean;
+  args?: Record<string, unknown> | Uint8Array;
 
   /**
    * Override the client's config for all invokes within this invoke.
@@ -52,8 +46,26 @@ export interface InvokeResult<TData = unknown> {
   error?: Error;
 }
 
-export interface InvokeHandler {
+export interface InvokerOptions<
+  TUri extends Uri | string = string,
+  TClientConfig extends ClientConfig = ClientConfig
+> extends InvokeOptions<TUri, TClientConfig> {
+  encodeResult?: boolean;
+}
+
+export interface Invoker {
   invoke<TData = unknown, TUri extends Uri | string = string>(
-    options: InvokeOptions<TUri>
+    options: InvokerOptions<TUri>
   ): Promise<InvokeResult<TData>>;
+}
+
+export interface InvocableResult<TData = unknown> extends InvokeResult<TData> {
+  encoded: boolean;
+}
+
+export interface Invocable {
+  invoke(
+    options: InvokeOptions<Uri>,
+    invoker: Invoker
+  ): Promise<InvocableResult<unknown>>;
 }
