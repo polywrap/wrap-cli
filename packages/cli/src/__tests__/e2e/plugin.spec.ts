@@ -81,6 +81,7 @@ describe("e2e tests for plugin command", () => {
         path.join(testCaseDir, "expected", "wrap"),
         { compareContent: true }
       );
+      console.log(expectedCodegenResult);
       expect(expectedCodegenResult.differences).toBe(0);
     }
 
