@@ -60,7 +60,7 @@ export interface Invoker {
 }
 
 export interface InvocableResult<TData = unknown> extends InvokeResult<TData> {
-  encoded: boolean;
+  encoded?: boolean;
 }
 
 export interface Invocable {
