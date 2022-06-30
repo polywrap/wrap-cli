@@ -94,6 +94,7 @@ describe("e2e tests for build command", () => {
       );
 
       for (const file of expectedFiles) {
+        console.log(path.join(buildDir, file), fs.existsSync(path.join(buildDir, file)))
         expect(fs.existsSync(path.join(buildDir, file))).toBeTruthy();
       }
     }
