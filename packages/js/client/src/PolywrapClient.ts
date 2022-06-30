@@ -335,7 +335,7 @@ export class PolywrapClient implements Client {
         contextualizeClient(this, contextId)
       );
 
-      if (invocableResult.data) {
+      if (invocableResult.data !== undefined) {
         if (options.encodeResult && !invocableResult.encoded) {
           return {
             // TODO: if options.encodeResult, fix return type to Uint8Array
