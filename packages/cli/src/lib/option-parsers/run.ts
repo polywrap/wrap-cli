@@ -1,12 +1,7 @@
 import { intlMsg } from "../intl";
-import { importTypescriptModule } from "../system";
-import { getTestEnvClientConfig } from "../test-env";
-import { validateClientConfig } from "../helpers";
 
 import path from "path";
 import fs from "fs";
-import { PolywrapClientConfig } from "@polywrap/client-js";
-import { executeMaybeAsyncFunction } from "@polywrap/core-js";
 
 export function parseWorkflowScriptPathOption(
   script: string,

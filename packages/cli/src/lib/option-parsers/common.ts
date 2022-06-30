@@ -1,3 +1,12 @@
+import { validateClientConfig } from "../helpers";
+import { intlMsg } from "../intl";
+import { importTypescriptModule } from "../system";
+import { getTestEnvClientConfig } from "../test-env";
+
+import { executeMaybeAsyncFunction } from "@polywrap/core-js";
+import { PolywrapClientConfig } from "@polywrap/client-js";
+import path from "path";
+
 export async function parseClientConfigOption(
   _clientConfig: string | undefined,
   _: unknown
