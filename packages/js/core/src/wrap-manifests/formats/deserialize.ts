@@ -20,7 +20,7 @@ import { Tracer } from "@polywrap/tracing-js";
 
 export const deserializeWrapManifest = Tracer.traceFunc(
   "core: deserializeWrapManifest",
-  (manifest: ArrayBuffer, options?: DeserializeManifestOptions): WrapManifest => {
+  (manifest: Uint8Array, options?: DeserializeManifestOptions): WrapManifest => {
     let anyWrapManifest: AnyWrapManifest | undefined;
     try {
       anyWrapManifest = msgpackDecode(manifest) as AnyWrapManifest;

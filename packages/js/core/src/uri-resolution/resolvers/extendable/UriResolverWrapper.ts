@@ -7,7 +7,10 @@ import {
 } from "../../core";
 import { CreateWrapperFunc } from "./types/CreateWrapperFunc";
 import { getEnvFromUriOrResolutionStack } from "../getEnvFromUriOrResolutionStack";
-import { DeserializeManifestOptions, deserializeWrapManifest } from "../../../wrap-manifests";
+import {
+  DeserializeManifestOptions,
+  deserializeWrapManifest,
+} from "../../../wrap-manifests";
 
 import { Tracer } from "@polywrap/tracing-js";
 

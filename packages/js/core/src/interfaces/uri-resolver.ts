@@ -5,7 +5,7 @@ import { Tracer } from "@polywrap/tracing-js";
 
 export interface MaybeUriOrManifest {
   uri?: string;
-  manifest?: ArrayBuffer;
+  manifest?: Uint8Array;
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention
