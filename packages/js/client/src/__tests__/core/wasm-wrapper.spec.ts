@@ -113,13 +113,13 @@ describe("wasm-wrapper", () => {
           networkNameOrChainId: "testnet",
         },
       },
-      noDecode: true,
+      encodeResult: true,
     });
 
     expect(result.error).toBeFalsy();
     expect(result.data).toBeTruthy();
-    expect(result.data instanceof ArrayBuffer).toBeTruthy();
-    expect(msgpackDecode(result.data as ArrayBuffer)).toContain("0x");
+    expect(result.data instanceof Uint8Array).toBeTruthy();
+    expect(msgpackDecode(result.data as Uint8Array)).toContain("0x");
   });
 
   it("should invoke wrapper with custom redirects", async () => {
@@ -291,9 +291,9 @@ describe("wasm-wrapper", () => {
   ): Int!
 `);
 
-    const fileBuffer: ArrayBuffer = (await client.getFile(wrapperUri, {
+    const fileBuffer: Uint8Array = (await client.getFile(wrapperUri, {
       path: manifest.schema!,
-    })) as ArrayBuffer;
+    })) as Uint8Array;
     const decoder = new TextDecoder("utf8");
     const text = decoder.decode(fileBuffer);
     expect(text).toContain(`getData(

@@ -3,7 +3,7 @@ import {
   DeserializeManifestOptions,
   deserializePolywrapManifest,
 } from "../../../manifest";
-import { Uri, WrapperCache, Client, InvokeHandler } from "../../../types";
+import { Uri, WrapperCache, Client, Invoker } from "../../../types";
 import {
   UriResolver,
   UriResolutionStack,
@@ -34,7 +34,7 @@ export class UriResolverWrapper implements UriResolver {
     const result = await tryResolveUriWithImplementation(
       uri,
       this.implementationUri,
-      client.invoke.bind(client)
+      client
     );
 
     if (!result) {
@@ -82,10 +82,10 @@ export class UriResolverWrapper implements UriResolver {
 const tryResolveUriWithImplementation = async (
   uri: Uri,
   implementationUri: Uri,
-  invoke: InvokeHandler["invoke"]
+  invoker: Invoker
 ): Promise<UriResolverInterface.MaybeUriOrManifest | undefined> => {
   const { data } = await UriResolverInterface.Query.tryResolveUri(
-    invoke,
+    invoker,
     implementationUri,
     uri
   );
