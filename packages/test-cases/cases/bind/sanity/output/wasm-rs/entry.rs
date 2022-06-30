@@ -11,16 +11,16 @@ use polywrap_wasm_rs::{
 
 #[cfg(feature = "wrap-invoke")]
 #[no_mangle]
-pub extern "C" fn _wrap_invoke(method_size: u32, args_size: u32) -> bool {
+pub extern "C" fn _wrap_invoke(method_size: u32, args_size: u32, env_size: u32) -> bool {
     // Ensure the abort handler is properly setup
     abort::wrap_abort_setup();
 
     let args: InvokeArgs = invoke::wrap_invoke_args(method_size, args_size);
 
     match args.method.as_str() {
-        "moduleMethod" => invoke::wrap_invoke(args, Some(module_method_wrapped)),
-        "objectMethod" => invoke::wrap_invoke(args, Some(object_method_wrapped)),
-        "optionalEnvMethod" => invoke::wrap_invoke(args, Some(optional_env_method_wrapped)),
+        "moduleMethod" => invoke::wrap_invoke(args, env_size, Some(module_method_wrapped)),
+        "objectMethod" => invoke::wrap_invoke(args, env_size, Some(object_method_wrapped)),
+        "optionalEnvMethod" => invoke::wrap_invoke(args, env_size, Some(optional_env_method_wrapped)),
         _ => invoke::wrap_invoke(args, None),
     }
 }

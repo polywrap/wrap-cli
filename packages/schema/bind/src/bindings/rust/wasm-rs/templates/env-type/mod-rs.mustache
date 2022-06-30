@@ -1,0 +1,54 @@
+use serde::{Serialize, Deserialize};
+pub mod serialization;
+use polywrap_wasm_rs::{
+    BigInt,
+    BigNumber,
+    Map,
+    DecodeError,
+    EncodeError,
+    Read,
+    Write,
+    JSON,
+};
+pub use serialization::{
+    deserialize_{{#toLower}}{{type}}{{/toLower}},
+    read_{{#toLower}}{{type}}{{/toLower}},
+    serialize_{{#toLower}}{{type}}{{/toLower}},
+    write_{{#toLower}}{{type}}{{/toLower}}
+};
+{{#propertyDeps}}
+use {{crate}}::{{#toUpper}}{{type}}{{/toUpper}};
+{{/propertyDeps}}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct {{#toUpper}}{{type}}{{/toUpper}} {
+    {{#properties}}
+    pub {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
+    {{/properties}}
+}
+
+impl {{#toUpper}}{{type}}{{/toUpper}} {
+    pub fn new() -> {{#toUpper}}{{type}}{{/toUpper}} {
+        {{#toUpper}}{{type}}{{/toUpper}} {
+            {{#properties}}
+            {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}},
+            {{/properties}}
+        }
+    }
+
+    pub fn to_buffer(input: &{{#toUpper}}{{type}}{{/toUpper}}) -> Result<Vec<u8>, EncodeError> {
+        serialize_{{#toLower}}{{type}}{{/toLower}}(input).map_err(|e| EncodeError::TypeWriteError(e.to_string()))
+    }
+
+    pub fn from_buffer(input: &[u8]) -> Result<{{#toUpper}}{{type}}{{/toUpper}}, DecodeError> {
+        deserialize_{{#toLower}}{{type}}{{/toLower}}(input).map_err(|e| DecodeError::TypeReadError(e.to_string()))
+    }
+
+    pub fn write<W: Write>(input: &{{#toUpper}}{{type}}{{/toUpper}}, writer: &mut W) -> Result<(), EncodeError> {
+        write_{{#toLower}}{{type}}{{/toLower}}(input, writer).map_err(|e| EncodeError::TypeWriteError(e.to_string()))
+    }
+
+    pub fn read<R: Read>(reader: &mut R) -> Result<{{#toUpper}}{{type}}{{/toUpper}}, DecodeError> {
+        read_{{#toLower}}{{type}}{{/toLower}}(reader).map_err(|e| DecodeError::TypeReadError(e.to_string()))
+    }
+}
