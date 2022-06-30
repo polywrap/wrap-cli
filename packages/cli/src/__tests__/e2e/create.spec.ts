@@ -22,7 +22,7 @@ Commands:
 `;
 
 describe("e2e tests for create command", () => {
-  test("Should show help text", async () => {
+  it("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create", "--help"],
       cli: polywrapCli,
@@ -33,7 +33,7 @@ describe("e2e tests for create command", () => {
     expect(clearStyle(output)).toEqual(HELP);
   });
 
-  test("Should show help for no parameters", async () => {
+  it("Should show help for no parameters", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create"],
       cli: polywrapCli,
@@ -44,7 +44,7 @@ describe("e2e tests for create command", () => {
     expect(output).toBe("");
   });
 
-  test("Should throw error for invalid project type", async () => {
+  it("Should throw error for invalid project type", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["create", "unknown", "app", "name"],
       cli: polywrapCli,
@@ -57,7 +57,7 @@ describe("e2e tests for create command", () => {
 
   for (const project of Object.keys(supportedLangs)) {
     describe(project, () => {
-      test("Should throw error for missing required argument - language", async () => {
+      it("Should throw error for missing required argument - language", async () => {
         const { exitCode: code, stdout: output, stderr: error } = await runCLI({
           args: ["create", project],
           cli: polywrapCli,
@@ -68,7 +68,7 @@ describe("e2e tests for create command", () => {
         expect(output).toBe("");
       });
     
-      test("Should throw error for missing required argument - name", async () => {
+      it("Should throw error for missing required argument - name", async () => {
         const { exitCode: code, stdout: output, stderr: error } = await runCLI({
           args: ["create", project, "lang"],
           cli: polywrapCli,
@@ -79,7 +79,7 @@ describe("e2e tests for create command", () => {
         expect(output).toBe("");
       });
     
-      test("Should throw error for invalid lang parameter", async () => {
+      it("Should throw error for invalid lang parameter", async () => {
         const { exitCode: code, stdout: output, stderr: error } = await runCLI({
           args: ["create", project, "lang", "demo"],
           cli: polywrapCli,
@@ -94,7 +94,7 @@ describe("e2e tests for create command", () => {
   
       for (const lang of supportedLangs[project as ProjectType]) {
         describe(lang, () => {
-          test("Should throw error for missing path argument for output-dir option", async () => {
+          it("Should throw error for missing path argument for --output-dir option", async () => {
             const { exitCode: code, stdout: output, stderr: error } = await runCLI({
               args: ["create", project, lang, "name", "-o"],
               cli: polywrapCli,
@@ -107,7 +107,7 @@ describe("e2e tests for create command", () => {
             expect(output).toBe("");
           });
     
-          test("Should successfully generate project", async () => {
+          it("Should successfully generate project", async () => {
             rimraf.sync(`${__dirname}/test`);
         
             const { exitCode: code, stdout: output } = await runCLI({
