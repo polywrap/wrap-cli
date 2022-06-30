@@ -1,4 +1,6 @@
 {
+  "commands_common_options_configPath": "config-path",
+  "commands_common_options_config": "Add custom configuration to the PolywrapClient",
   "commands_build_description": "Builds a wrapper",
   "commands_build_error_manifestPathMissing": "{option} option missing {argument} argument",
   "commands_build_error_manifestNotFound": "Manifest not found. Search paths used: {paths}",
@@ -141,9 +143,7 @@
   "commands_plugin_options_codegen": "Output directory for the generated types (default: {default})",
   "commands_run_options_workflow": "workflow",
   "commands_run_options_workflowScript": "Path to workflow script",
-  "commands_run_options_configPath": "config-path",
   "commands_run_options_outputFilePath": "output-file-path",
-  "commands_run_options_config": "Add custom configuration to the PolywrapClient",
   "commands_run_options_validateScript": "Validate the output of the workflow jobs",
   "commands_run_options_validate": "cue-file",
   "commands_run_options_outputFile": "Output file path for the workflow result",

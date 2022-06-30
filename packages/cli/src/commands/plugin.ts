@@ -58,8 +58,8 @@ export const plugin: Command = {
         })}`
       )
       .option(
-        `-c, --client-config <${intlMsg.commands_run_options_configPath()}>`,
-        `${intlMsg.commands_run_options_config()}`
+        `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
+        `${intlMsg.commands_common_options_config()}`
       )
       .action(async (options) => {
         await run({

@@ -48,8 +48,8 @@ export const build: Command = {
         `${intlMsg.commands_build_options_o()}`
       )
       .option(
-        `-c, --client-config <${intlMsg.commands_run_options_configPath()}>`,
-        `${intlMsg.commands_run_options_config()}`
+        `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
+        `${intlMsg.commands_common_options_config()}`
       )
       .option(`-w, --watch`, `${intlMsg.commands_build_options_w()}`)
       .option(`-v, --verbose`, `${intlMsg.commands_build_options_v()}`)
