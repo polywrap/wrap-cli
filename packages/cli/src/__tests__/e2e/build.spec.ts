@@ -81,14 +81,13 @@ describe("e2e tests for build command", () => {
     }
   };
 
-  const testBuildOutput = (testCaseDir: string) => {
+  const testBuildOutput = (testCaseDir: string, buildDir: string) => {
     const expectedOutputFile = path.join(
       testCaseDir,
       "expected",
       "output.json"
     );
     if (fs.existsSync(expectedOutputFile)) {
-      const buildDir = path.join(testCaseDir, "build");
       const expectedFiles = JSON.parse(
         fs.readFileSync(expectedOutputFile, { encoding: "utf8" })
       );
@@ -175,6 +174,7 @@ describe("e2e tests for build command", () => {
       cwd: testCaseDir,
       cli: polywrapCli,
     });
+
     const buildDir = `./${path.relative(testCaseDir, outputDir)}`;
 
     expect(error).toBe("");
@@ -182,7 +182,7 @@ describe("e2e tests for build command", () => {
     expect(output).toContain(`Artifacts written to ${buildDir}`);
     expect(output).toContain(`Manifest written to ${buildDir}/polywrap.json`);
 
-    testBuildOutput(testCaseDir);
+    testBuildOutput(testCaseDir, outputDir);
   });
 
   it("Should add uuid-v4 suffix to build image if no build manifest specified", async () => {
@@ -230,9 +230,10 @@ describe("e2e tests for build command", () => {
           cwd: testCaseDir,
           cli: polywrapCli,
         });
+        const buildDir = path.join(testCaseDir, "build");
 
         testCliOutput(testCaseDir, exitCode, stdout, stderr);
-        testBuildOutput(testCaseDir);
+        testBuildOutput(testCaseDir, buildDir);
       });
     }
   });
