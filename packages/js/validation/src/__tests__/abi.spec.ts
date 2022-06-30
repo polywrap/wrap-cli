@@ -9,7 +9,7 @@ jest.setTimeout(200000);
 
 const testWrappersPath = path.join(__dirname, "./wrappers");
 
-describe("schema", () => {
+describe("abi", () => {
   let validator: WasmPackageValidator;
 
   beforeAll(async () => {
@@ -21,25 +21,25 @@ describe("schema", () => {
     });
   });
 
-  it("fails validating wrapper with missing schema", async () => {
+  it("fails validating wrapper with missing abi", async () => {
     const reader = new FileSystemPackageReader(
-      path.join(testWrappersPath, "missing-schema")
+      path.join(testWrappersPath, "missing-abi")
     );
 
     const result = await validator.validate(reader);
 
     expect(result.valid).toBeFalsy();
-    expect(result.failReason).toEqual(ValidationFailReason.SchemaNotFound);
+    expect(result.failReason).toEqual(ValidationFailReason.AbiNotFound);
   });
 
-  it("fails validating invalid schema file", async () => {
+  it("fails validating invalid abi format", async () => {
     const reader = new FileSystemPackageReader(
-      path.join(testWrappersPath, "invalid-schema")
+      path.join(testWrappersPath, "invalid-abi")
     );
 
     const result = await validator.validate(reader);
 
     expect(result.valid).toBeFalsy();
-    expect(result.failReason).toEqual(ValidationFailReason.InvalidSchema);
+    expect(result.failReason).toEqual(ValidationFailReason.InvalidAbi);
   });
 });

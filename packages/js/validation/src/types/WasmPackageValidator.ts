@@ -1,14 +1,14 @@
-import { GRAPHQL_SCHEMA, META_MANIFEST, WRAP_INFO, WRAP_WASM } from "..";
 import {
-  WasmPackageConstraints,
   PackageReader,
-  ValidationResult,
   ValidationFailReason,
-} from ".";
+  ValidationResult,
+  WasmPackageConstraints,
+  WRAP_INFO,
+  WRAP_WASM,
+} from "..";
 
-import { parseSchema } from "@polywrap/schema-parse";
-import { WrapManifest, deserializeWrapManifest } from "@polywrap/core-js";
-// import { deserializeMetaManifest } from "polywrap";
+import { deserializeWrapManifest, WrapManifest } from "@polywrap/core-js";
+import { renderSchema } from "@polywrap/schema-compose";
 import * as path from "path";
 
 export class WasmPackageValidator {
@@ -20,28 +20,24 @@ export class WasmPackageValidator {
       return infoResult;
     }
 
-    const schemaResult = await this.validateSchema(reader, GRAPHQL_SCHEMA);
-    if (!schemaResult.valid) {
-      return schemaResult;
+    const manifest = infoResult.manifest as WrapManifest;
+    const abiResult = await this.validateAbi(manifest);
+    if (!abiResult.valid) {
+      return abiResult;
     }
 
-    const moduleResult = await this.validateModule(reader, WRAP_WASM);
+    const moduleResult = await this.validateModule(reader, manifest);
     if (!moduleResult.valid) {
       return moduleResult;
     }
 
-    const metaResult = await this.validateMetaManifest(reader, META_MANIFEST);
-    if (!metaResult.valid) {
-      return metaResult;
-    }
     return this.success();
   }
 
   private async validateStructure(
-    reader: PackageReader,
-    path: string
+    reader: PackageReader
   ): Promise<ValidationResult> {
-    const { result: pathResult } = await this.validatePath(reader, path, 0, 0);
+    const { result: pathResult } = await this.validatePath(reader, "./", 0, 0);
 
     if (!pathResult.valid) {
       return pathResult;
@@ -67,7 +63,7 @@ export class WasmPackageValidator {
       currentSize += stats.size;
       if (currentSize > this.constraints.maxSize) {
         return {
-          result: this.fail(ValidationFailReason.WrapperTooLarge),
+          result: this.fail(ValidationFailReason.PackageTooLarge),
           currentSize,
           currentFileCnt,
         };
@@ -124,27 +120,36 @@ export class WasmPackageValidator {
   private async validateInfo(
     reader: PackageReader,
     name: string
-  ): Promise<ValidationResult> {
-    const info = await reader.readFile(name);
-    const manifest: WrapManifest | undefined = deserializeWrapManifest(info);
-
-    if (!manifest) {
+  ): Promise<ValidationResult & { manifest?: WrapManifest }> {
+    if (!(await reader.exists(name))) {
       return this.fail(ValidationFailReason.WrapManifestNotFound);
     }
-    return this.success();
+
+    const structureResult = await this.validateStructure(reader);
+    if (!structureResult.valid) {
+      return structureResult;
+    }
+
+    try {
+      const info = await reader.readFile(name);
+      return {
+        valid: true,
+        manifest: deserializeWrapManifest(info),
+      };
+    } catch (e) {
+      if (e.message.includes('instance requires property "abi"')) {
+        return this.fail(ValidationFailReason.AbiNotFound);
+      }
+      return this.fail(ValidationFailReason.InvalidWrapManifest);
+    }
   }
 
-  private async validateSchema(
-    reader: PackageReader,
-    schemaFilePath: string
-  ): Promise<ValidationResult> {
-    if (!(await reader.exists(schemaFilePath))) {
-      return this.fail(ValidationFailReason.SchemaNotFound);
-    }
+  private async validateAbi(manifest: WrapManifest): Promise<ValidationResult> {
     try {
-      parseSchema(await reader.readFileAsString(schemaFilePath));
+      // TODO(cbrzn): Just validate the structure of Abi with the JSON Schema and remove never
+      renderSchema(manifest.abi as never, false);
     } catch (err) {
-      return this.fail(ValidationFailReason.InvalidSchema, err);
+      return this.fail(ValidationFailReason.InvalidAbi, err);
     }
 
     return this.success();
@@ -152,38 +157,17 @@ export class WasmPackageValidator {
 
   private async validateModule(
     reader: PackageReader,
-    moduleFilePath: string | undefined
+    manifest: WrapManifest
   ): Promise<ValidationResult> {
-    if (!moduleFilePath) {
+    if (manifest.type === "interface") {
       return this.success();
     }
 
-    const moduleSize = (await reader.getStats(moduleFilePath)).size;
-
-    if (moduleSize > this.constraints.maxModuleSize) {
+    const module = await reader.getStats(WRAP_WASM);
+    if (module.size > this.constraints.maxModuleSize) {
       return this.fail(ValidationFailReason.ModuleTooLarge);
     }
 
-    return this.success();
-  }
-
-  private async validateMetaManifest(
-    reader: PackageReader,
-    path: string
-  ): Promise<ValidationResult> {
-    if (await reader.exists(path)) {
-      const metaManifestFile = await reader.readFileAsString(path);
-      try {
-        console.log({ metaManifestFile })
-        // deserializeMetaManifest(metaManifestFile);
-        // If folder manifest exists, check it
-        if (await reader.exists("./meta")) {
-          return await this.validateStructure(reader, "./meta");
-        }
-      } catch (err) {
-        return this.fail(ValidationFailReason.InvalidMetaManifest, err);
-      }
-    }
     return this.success();
   }
 

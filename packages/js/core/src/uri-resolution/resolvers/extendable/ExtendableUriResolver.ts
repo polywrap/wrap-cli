@@ -68,6 +68,7 @@ export class ExtendableUriResolver implements UriResolver {
     );
 
     for (const resolver of resolvers) {
+      console.log({ resolvers })
       const result = await resolver.resolveUri(
         uri,
         client,

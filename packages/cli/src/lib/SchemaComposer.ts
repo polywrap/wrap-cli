@@ -66,7 +66,7 @@ export class SchemaComposer {
     options.schemas.push(schemaFile);
 
     this._composerOutput = await composeSchema(options);
-
+    console.log(this._composerOutput);
     return this._composerOutput;
   }
 

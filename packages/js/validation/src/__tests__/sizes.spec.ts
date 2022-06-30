@@ -20,7 +20,6 @@ const assertValidWrapper = async (wrapperPath: string) => {
   });
 
   const result = await validator.validate(reader);
-
   expect(result.valid).toBeTruthy();
   expect(result.failReason).toEqual(undefined);
 };
@@ -28,7 +27,7 @@ const assertValidWrapper = async (wrapperPath: string) => {
 describe("manifests", () => {
   it("sanity", async () => {
     await assertValidWrapper(
-      path.join(testWrappersPath, "wrapper-size-over-100-kb")
+      path.join(testWrappersPath, "package-size-over-100-kb")
     );
     await assertValidWrapper(
       path.join(testWrappersPath, "file-size-over-100-kb")
@@ -38,9 +37,9 @@ describe("manifests", () => {
     );
   });
 
-  it("fails validating a large wrapper", async () => {
+  it("fails validating a large package", async () => {
     const reader = new FileSystemPackageReader(
-      path.join(testWrappersPath, "wrapper-size-over-100-kb")
+      path.join(testWrappersPath, "package-size-over-100-kb")
     );
 
     const validator = new WasmPackageValidator({
@@ -53,7 +52,7 @@ describe("manifests", () => {
     const result = await validator.validate(reader);
 
     expect(result.valid).toBeFalsy();
-    expect(result.failReason).toEqual(ValidationFailReason.WrapperTooLarge);
+    expect(result.failReason).toEqual(ValidationFailReason.PackageTooLarge);
   });
 
   it("fails validating a large file", async () => {
@@ -69,7 +68,6 @@ describe("manifests", () => {
     });
 
     const result = await validator.validate(reader);
-
     expect(result.valid).toBeFalsy();
     expect(result.failReason).toEqual(ValidationFailReason.FileTooLarge);
   });

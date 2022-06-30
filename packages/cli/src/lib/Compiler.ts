@@ -327,6 +327,8 @@ export class Compiler {
       throw Error("Compiler.outputComposedSchema: no schema found");
     }
 
+    console.log("HERE");
+    console.log(state.composerOutput);
     writeFileSync(
       `${outputDir}/schema.graphql`,
       state.composerOutput.schema,
@@ -344,21 +346,21 @@ export class Compiler {
     const manifest = await project.getManifest();
 
     const abi: Abi = {
-      ...state.composerOutput.abi
+      ...state.composerOutput.abi,
     };
 
+    console.log({ manifest });
+    console.log({ abi });
     const info: WrapManifest = {
       abi: { ...abi },
       name: manifest.name,
-      type: await this._isInterface() ? "interface" : "wasm",
+      type: (await this._isInterface()) ? "interface" : "wasm",
       version: "0.0.1",
     };
 
-    writeFileSync(
-      `${outputDir}/wrap.info`,
-      msgpackEncode(info),
-      { encoding: "binary" }
-    );
+    writeFileSync(`${outputDir}/wrap.info`, msgpackEncode(info), {
+      encoding: "binary",
+    });
   }
 
   private async _outputPolywrapMetadata(): Promise<void> {

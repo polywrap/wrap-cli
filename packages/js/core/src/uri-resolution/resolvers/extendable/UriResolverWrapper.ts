@@ -50,6 +50,7 @@ export class UriResolverWrapper implements UriResolver {
     } else if (result.manifest) {
       // We've found our manifest at the current implementation,
       // meaning the URI resolver can also be used as an Wrapper resolver
+      console.log({ result });
       const manifest = deserializeWrapManifest(
         result.manifest,
         this.deserializeOptions

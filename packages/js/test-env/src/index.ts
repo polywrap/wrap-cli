@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { generateName } from "./generate-name";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import * as polywrapManifests from "../../../cli/build/lib/polywrap-manifests";
 
 import path from "path";
 import spawn from "spawn-command";
 import axios from "axios";
 import fs from "fs";
 import yaml from "js-yaml";
-import { deserializePolywrapManifest } from "polywrap";
 import { Uri } from "@polywrap/core-js";
 import { PolywrapClient } from "@polywrap/client-js";
 import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
@@ -318,7 +320,10 @@ export async function buildAndDeployWrapper({
 
   // manually configure manifests
 
-  const { __type, ...polywrapManifest } = deserializePolywrapManifest(
+  const {
+    __type,
+    ...polywrapManifest
+  } = polywrapManifests.deserializePolywrapManifest(
     fs.readFileSync(manifestPath, "utf-8")
   );
 
