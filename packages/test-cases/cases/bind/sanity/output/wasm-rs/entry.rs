@@ -21,6 +21,6 @@ pub extern "C" fn _wrap_invoke(method_size: u32, args_size: u32, env_size: u32) 
         "moduleMethod" => invoke::wrap_invoke(args, env_size, Some(module_method_wrapped)),
         "objectMethod" => invoke::wrap_invoke(args, env_size, Some(object_method_wrapped)),
         "optionalEnvMethod" => invoke::wrap_invoke(args, env_size, Some(optional_env_method_wrapped)),
-        _ => invoke::wrap_invoke(args, None),
+        _ => invoke::wrap_invoke(args, env_size, None),
     }
 }

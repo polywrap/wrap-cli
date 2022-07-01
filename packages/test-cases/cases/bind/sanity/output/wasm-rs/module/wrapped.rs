@@ -45,7 +45,7 @@ pub fn object_method_wrapped(input: &[u8], env_size: u32) -> Vec<u8> {
     }
 
     let env_buf = wrap_load_env(env_size);
-    let env = Env.from_buffer(env_buf);
+    let env = Env::from_buffer(&env_buf).unwrap();
 
     match deserialize_object_method_args(input) {
         Ok(args) => {
@@ -64,11 +64,11 @@ pub fn object_method_wrapped(input: &[u8], env_size: u32) -> Vec<u8> {
 }
 
 pub fn optional_env_method_wrapped(input: &[u8], env_size: u32) -> Vec<u8> {
-    let env: Option<Env> = None;
+    let mut env: Option<Env> = None;
 
     if env_size > 0 {
       let env_buf = wrap_load_env(env_size);
-      env = Some(Env.from_buffer(env_buf));
+      env = Some(Env::from_buffer(&env_buf).unwrap());
     }
 
     match deserialize_optional_env_method_args(input) {
