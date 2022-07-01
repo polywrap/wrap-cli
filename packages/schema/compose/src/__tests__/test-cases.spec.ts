@@ -21,7 +21,7 @@ function removeFunctionProps(obj: unknown) {
   return obj;
 }
 
-describe("Web3API Schema Composer Test Cases", () => {
+describe("Polywrap Schema Composer Test Cases", () => {
   let cases = fetchTestCases();
 
   for (const test of cases) {
