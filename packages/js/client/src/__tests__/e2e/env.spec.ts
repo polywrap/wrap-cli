@@ -16,16 +16,8 @@ describe("env", () => {
       arg1: number;
     }
 
-    interface ClientEnv extends Record<string, unknown> {
-      arg1: string;
-    }
-
-    class MockEnvPlugin extends PluginModule<{}, ClientEnv, Env> {
-      sanitizeEnv(env: Env): ClientEnv {
-        return { arg1: env.arg1.toString() };
-      }
-
-      mockEnv(): ClientEnv {
+    class MockEnvPlugin extends PluginModule<{}, Env> {
+      mockEnv(): Env {
         return this.env;
       }
     }
@@ -39,7 +31,7 @@ describe("env", () => {
     };
   };
 
-  describe.skip("env client types", () => {
+  describe("env client types", () => {
     test("plugin env types", async () => {
       const implementationUri = "wrap://ens/some-implementation.eth";
       const envPlugin = mockEnvPlugin();

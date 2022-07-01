@@ -47,11 +47,13 @@ export abstract class Module<
 
   abstract objectMethod(
     input: Input_objectMethod,
-    client: Client
+    client: Client,
+    env: Types.Env
   ): MaybeAsync<Types.AnotherType | null>;
 
   abstract optionalEnvMethod(
     input: Input_optionalEnvMethod,
-    client: Client
+    client: Client,
+    env?: Types.Env | null
   ): MaybeAsync<Types.AnotherType | null>;
 }

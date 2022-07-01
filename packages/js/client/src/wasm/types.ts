@@ -5,7 +5,6 @@ export type u32 = number;
 
 export interface WrapExports extends WebAssembly.Exports {
   _wrap_invoke: (nameLen: u32, argsLen: u32, envLen: u32) => boolean;
-  _wrap_sanitize_env: (argsLen: u32) => void;
 }
 
 export interface WrapImports extends WebAssembly.Imports {
