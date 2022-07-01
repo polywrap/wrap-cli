@@ -39,17 +39,9 @@ directive @annotate(type: String!) on FIELD
 ### Polywrap Header END ###
 
 type Module {
-  sanitizeEnv(
-    env: ClientEnv!
-  ): Env!
-
   method(
     str: String!
   ): String!
-}
-
-type ClientEnv {
-  bar: UInt32!
 }
 
 type Env {

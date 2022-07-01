@@ -26,9 +26,6 @@ export type String = string;
 export type Boolean = boolean;
 
 /// Env START ///
-export interface ClientEnv extends Record<string, unknown> {
-  bar: Types.UInt32;
-}
 export interface Env extends Record<string, unknown> {
   queryArg: Types.String;
 }

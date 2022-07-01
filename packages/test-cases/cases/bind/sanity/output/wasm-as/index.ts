@@ -27,5 +27,4 @@ export {
   sanitizeTestImport_EnumValue
 } from "./imported/TestImport_Enum";
 export { TestImport } from "./TestImport";
-export { env, requireEnv } from "./env";
 export { Env } from "./Env";
