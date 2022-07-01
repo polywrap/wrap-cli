@@ -382,10 +382,7 @@ export class PolywrapClient implements Client {
   }
 
   @Tracer.traceMethod("PolywrapClient: subscribe")
-  public subscribe<
-    TData = unknown,
-    TUri extends Uri | string = string
-  >(
+  public subscribe<TData = unknown, TUri extends Uri | string = string>(
     options: SubscribeOptions<TUri, PolywrapClientConfig>
   ): Subscription<TData> {
     const { contextId, shouldClearContext } = this._setContext(
@@ -839,10 +836,7 @@ const contextualizeClient = (
         ): Promise<InvokeResult<TData>> => {
           return client.invoke({ ...options, contextId });
         },
-        subscribe: <
-          TData = unknown,
-          TUri extends Uri | string = string
-        >(
+        subscribe: <TData = unknown, TUri extends Uri | string = string>(
           options: SubscribeOptions<TUri>
         ): Subscription<TData> => {
           return client.subscribe({ ...options, contextId });

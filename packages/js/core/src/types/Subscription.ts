@@ -48,10 +48,7 @@ export interface Subscription<TData = unknown> {
 }
 
 export interface SubscriptionHandler {
-  subscribe<
-    TData = unknown,
-    TUri extends Uri | string = string
-  >(
+  subscribe<TData = unknown, TUri extends Uri | string = string>(
     options: SubscribeOptions<TUri>
   ): Subscription<TData>;
 }
