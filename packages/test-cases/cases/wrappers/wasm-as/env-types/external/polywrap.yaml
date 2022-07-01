@@ -1,5 +1,5 @@
 format: 0.0.1-prealpha.9
-name: EnvType
+name: EnvTypeExternal
 language: wasm/assemblyscript
 build: ./polywrap.build.yaml
 schema: ./src/schema.graphql

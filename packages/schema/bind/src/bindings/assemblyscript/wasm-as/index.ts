@@ -5,7 +5,6 @@ import { BindOptions, BindOutput } from "../../..";
 
 import {
   TypeInfo,
-  ObjectDefinition,
   transformTypeInfo,
   addFirstLast,
   extendType,
@@ -146,15 +145,17 @@ export const generateBinding: GenerateBindingFn = (
   }
 
   // Generate env type folders
-  const generateEnvTypeFolder = (def: ObjectDefinition | undefined) => {
-    def &&
-      output.entries.push({
-        type: "Directory",
-        name: def.type,
-        data: renderTemplates(templatePath("object-type"), def, subTemplates),
-      });
-  };
-  generateEnvTypeFolder(typeInfo.envType);
+  if (typeInfo.envType) {
+    output.entries.push({
+      type: "Directory",
+      name: typeInfo.envType.type,
+      data: renderTemplates(
+        templatePath("env-type"),
+        typeInfo.envType,
+        subTemplates
+      ),
+    });
+  }
 
   // Generate root entry file
   output.entries.push(

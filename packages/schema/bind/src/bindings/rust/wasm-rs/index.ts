@@ -48,6 +48,19 @@ export const generateBinding: GenerateBindingFn = (
     });
   }
 
+  // Generate env type folders
+  if (typeInfo.envType) {
+    output.entries.push({
+      type: "Directory",
+      name: toLower(typeInfo.envType.type),
+      data: renderTemplates(
+        templatePath("env-type"),
+        typeInfo.envType,
+        subTemplates
+      ),
+    });
+  }
+
   // Generate imported folder
   const importEntries: OutputEntry[] = [];
 
@@ -85,6 +98,19 @@ export const generateBinding: GenerateBindingFn = (
       data: renderTemplates(
         templatePath("imported/object-type"),
         importedObectType,
+        subTemplates
+      ),
+    });
+  }
+
+  // Generate imported env type folders
+  for (const importedEnvType of typeInfo.importedEnvTypes) {
+    importEntries.push({
+      type: "Directory",
+      name: toLower(importedEnvType.type),
+      data: renderTemplates(
+        templatePath("imported/env-type"),
+        importedEnvType,
         subTemplates
       ),
     });
