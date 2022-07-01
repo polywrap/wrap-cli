@@ -21,10 +21,10 @@ import {
   createObjectRef,
   createScalarDefinition,
   createScalarPropertyDefinition,
-  TypeInfo,
-} from "../../../../schema/parse/src/typeInfo";
+  Abi,
+} from "../../../../schema/parse/src/abi";
 
-export const typeInfo: TypeInfo = {
+export const abi: Abi = {
   interfaceTypes: [
     createInterfaceDefinition({
       type: "TestImport",

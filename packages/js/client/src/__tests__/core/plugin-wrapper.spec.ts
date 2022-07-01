@@ -9,7 +9,7 @@ jest.setTimeout(200000);
 
 const defaultPlugins = [
   "wrap://ens/ipfs.polywrap.eth",
-  "wrap://ens/ens.polywrap.eth",
+  "wrap://ens/ens-resolver.polywrap.eth",
   "wrap://ens/ethereum.polywrap.eth",
   "wrap://ens/http.polywrap.eth",
   "wrap://ens/js-logger.polywrap.eth",
@@ -18,6 +18,7 @@ const defaultPlugins = [
   "wrap://ens/graph-node.polywrap.eth",
   "wrap://ens/fs.polywrap.eth",
   "wrap://ens/fs-resolver.polywrap.eth",
+  "wrap://ens/ipfs-resolver.polywrap.eth",
 ];
 
 describe("plugin-wrapper", () => {
@@ -38,11 +39,11 @@ describe("plugin-wrapper", () => {
         return this.config.map;
       }
 
-      updateMap(input: { map: Map<string, number> }): Map<string, number> {
-        for (const key of input.map.keys()) {
+      updateMap(args: { map: Map<string, number> }): Map<string, number> {
+        for (const key of args.map.keys()) {
           this.config.map.set(
             key,
-            (this.config.map.get(key) || 0) + (input.map.get(key) || 0)
+            (this.config.map.get(key) || 0) + (args.map.get(key) || 0)
           );
         }
         return this.config.map;

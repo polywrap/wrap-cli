@@ -7,7 +7,7 @@ import {
   validateOutput,
 } from "../lib";
 
-import { InvokeResult, Workflow } from "@polywrap/core-js";
+import { InvokeResult, Workflow, JobResult } from "@polywrap/core-js";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import path from "path";
 import yaml from "js-yaml";
@@ -32,8 +32,8 @@ export const run: Command = {
         intlMsg.commands_run_options_workflowScript()
       )
       .option(
-        `-c, --client-config <${intlMsg.commands_run_options_configPath()}> `,
-        `${intlMsg.commands_run_options_config()}`
+        `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
+        `${intlMsg.commands_common_options_config()}`
       )
       .option(
         `-v, --validate-script <${intlMsg.commands_run_options_validate()}>`,
@@ -85,7 +85,9 @@ const _run = async (workflowPath: string, options: WorkflowCommandOptions) => {
     workflow,
     config: clientConfig,
     ids: jobs,
-    onExecution: async (id: string, data: unknown, error: Error) => {
+    onExecution: async (id: string, jobResult: JobResult) => {
+      const { data, error } = jobResult;
+
       if (!quiet) {
         console.log("-----------------------------------");
         console.log(`ID: ${id}`);

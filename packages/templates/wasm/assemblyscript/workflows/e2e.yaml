@@ -4,7 +4,7 @@ jobs:
     steps:
     - uri: fs/build
       method: deployContract
-      input:
+      args:
         connection:
           networkNameOrChainId: testnet
     jobs:
@@ -12,14 +12,14 @@ jobs:
         steps:
         - uri: fs/build
           method: setData
-          input:
+          args:
             address: "$cases.0.data"
             value: 100
             connection:
               networkNameOrChainId: testnet
         - uri: fs/build
           method: getData
-          input:
+          args:
             address: "$cases.0.data"
             connection:
               networkNameOrChainId: testnet

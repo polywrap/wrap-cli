@@ -3,8 +3,8 @@ import {
   Client,
   FileSystem_EncodingEnum,
   FileSystem_Module,
-  Input_getFile,
-  Input_tryResolveUri,
+  Args_getFile,
+  Args_tryResolveUri,
   Module,
   UriResolver_MaybeUriOrManifest,
   manifest,
@@ -17,10 +17,10 @@ type NoConfig = Record<string, never>;
 
 export class FileSystemResolverPlugin extends Module<NoConfig> {
   async tryResolveUri(
-    input: Input_tryResolveUri,
+    args: Args_tryResolveUri,
     _client: Client
   ): Promise<UriResolver_MaybeUriOrManifest | null> {
-    if (input.authority !== "fs" && input.authority !== "file") {
+    if (args.authority !== "fs" && args.authority !== "file") {
       return null;
     }
 
@@ -29,7 +29,7 @@ export class FileSystemResolverPlugin extends Module<NoConfig> {
     let manifest: string | undefined;
 
     for (const manifestSearchPattern of manifestSearchPatterns) {
-      const manifestPath = path.resolve(input.path, manifestSearchPattern);
+      const manifestPath = path.resolve(args.path, manifestSearchPattern);
       const manifestExistsResult = await FileSystem_Module.exists(
         { path: manifestPath },
         _client
@@ -54,15 +54,15 @@ export class FileSystemResolverPlugin extends Module<NoConfig> {
     if (manifest) {
       return { uri: null, manifest };
     } else {
-      // Noting found
+      // Nothing found
       return { uri: null, manifest: null };
     }
   }
 
-  async getFile(input: Input_getFile, _client: Client): Promise<Bytes | null> {
+  async getFile(args: Args_getFile, _client: Client): Promise<Bytes | null> {
     try {
       const fileResult = await FileSystem_Module.readFile(
-        { path: input.path },
+        { path: args.path },
         _client
       );
 
@@ -76,6 +76,7 @@ export class FileSystemResolverPlugin extends Module<NoConfig> {
     }
   }
 }
+
 export const fileSystemResolverPlugin: PluginFactory<NoConfig> = () => {
   return {
     factory: () => new FileSystemResolverPlugin({}),

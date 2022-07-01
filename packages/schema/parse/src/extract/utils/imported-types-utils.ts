@@ -2,7 +2,7 @@ import {
   ImportedDefinition,
   isImportedEnvType,
   isImportedModuleType,
-} from "../../typeInfo";
+} from "../../abi";
 
 import { DirectiveNode, TypeDefinitionNode } from "graphql";
 

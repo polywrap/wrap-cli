@@ -1,4 +1,5 @@
 import { runCommand } from "../system";
+import { intlMsg } from "../intl";
 
 import fs from "fs";
 import { InvokeResult } from "@polywrap/core-js";
@@ -19,6 +20,10 @@ export async function validateOutput(
   result: InvokeResult,
   validateScriptPath: string
 ): Promise<void> {
+  if (!(await cueExists())) {
+    console.warn(intlMsg.commands_run_error_cueDoesNotExist());
+  }
+
   const index = id.lastIndexOf(".");
   const jobId = id.substring(0, index);
   const stepId = id.substring(index + 1);
@@ -29,11 +34,17 @@ export async function validateOutput(
   await fs.promises.writeFile(jsonOutput, JSON.stringify(result, null, 2));
 
   try {
-    await runCommand(
-      `cue vet -d ${selector} ${validateScriptPath} ${jsonOutput}`
+    const { stderr } = await runCommand(
+      `cue vet -d ${selector} ${validateScriptPath} ${jsonOutput}`,
+      true
     );
+
+    if (stderr) {
+      console.error(stderr);
+      console.log("-----------------------------------");
+    }
   } catch (e) {
-    console.error(e.message);
+    console.error(e);
     console.log("-----------------------------------");
     process.exitCode = 1;
   }

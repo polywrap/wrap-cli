@@ -1,8 +1,8 @@
 import {
-  Input_method,
+  Args_method,
   LargeCollection,
 } from "./wrap";
 
-export function method(input: Input_method): LargeCollection {
-  return input.largeCollection;
+export function method(args: Args_method): LargeCollection {
+  return args.largeCollection;
 }

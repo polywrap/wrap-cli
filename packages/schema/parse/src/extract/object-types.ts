@@ -1,11 +1,11 @@
 import {
-  TypeInfo,
+  Abi,
   ObjectDefinition,
   createObjectDefinition,
   createInterfaceImplementedDefinition,
   isModuleType,
   isEnvType,
-} from "../typeInfo";
+} from "../abi";
 import {
   extractFieldDefinition,
   extractListType,
@@ -79,11 +79,11 @@ const visitorLeave = (state: State) => ({
   },
 });
 
-export const getObjectTypesVisitor = (typeInfo: TypeInfo): ASTVisitor => {
+export const getObjectTypesVisitor = (abi: Abi): ASTVisitor => {
   const state: State = {};
 
   return {
-    enter: visitorEnter(typeInfo.objectTypes, state),
+    enter: visitorEnter(abi.objectTypes, state),
     leave: visitorLeave(state),
   };
 };

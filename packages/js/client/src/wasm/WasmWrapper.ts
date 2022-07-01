@@ -5,6 +5,7 @@ import { createImports } from "./imports";
 import {
   InvokeOptions,
   InvokeResult,
+  InvocableResult,
   Wrapper,
   PolywrapManifest,
   Uri,
@@ -20,42 +21,42 @@ import {
   UriResolverInterface,
   GetFileOptions,
   msgpackEncode,
-  msgpackDecode,
+  isBuffer,
 } from "@polywrap/core-js";
 import { Tracer } from "@polywrap/tracing-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 
 type InvokeResultOrError =
-  | { type: "InvokeResult"; invokeResult: ArrayBuffer }
+  | { type: "InvokeResult"; invokeResult: Uint8Array }
   | { type: "InvokeError"; invokeError: string };
 
 export interface State {
   method: string;
-  args: ArrayBuffer;
+  args: Uint8Array;
   invoke: {
-    result?: ArrayBuffer;
+    result?: Uint8Array;
     error?: string;
   };
   subinvoke: {
-    result?: ArrayBuffer;
+    result?: Uint8Array;
     error?: string;
     args: unknown[];
   };
   subinvokeImplementation: {
-    result?: ArrayBuffer;
+    result?: Uint8Array;
     error?: string;
     args: unknown[];
   };
   invokeResult: InvokeResult;
-  getImplementationsResult?: ArrayBuffer;
-  env: ArrayBuffer;
+  getImplementationsResult?: Uint8Array;
+  env: Uint8Array;
 }
 
 export class WasmWrapper extends Wrapper {
   public static requiredExports: readonly string[] = ["_wrap_invoke"];
 
   private _schema?: string;
-  private _wasm: ArrayBuffer | undefined = undefined;
+  private _wasm: Uint8Array | undefined = undefined;
 
   constructor(
     private _uri: Uri,
@@ -66,7 +67,7 @@ export class WasmWrapper extends Wrapper {
     super();
 
     Tracer.startSpan("WasmWrapper: constructor");
-    Tracer.setAttribute("input", {
+    Tracer.setAttribute("args", {
       uri: this._uri,
       manifest: this._manifest,
       clientEnv: this._clientEnv,
@@ -123,12 +124,14 @@ export class WasmWrapper extends Wrapper {
   public async getFile(
     options: GetFileOptions,
     client: Client
-  ): Promise<ArrayBuffer | string> {
+  ): Promise<Uint8Array | string> {
     const { path, encoding } = options;
     const { data, error } = await UriResolverInterface.Query.getFile(
-      <TData = unknown, TUri extends Uri | string = string>(
-        options: InvokeOptions<TUri>
-      ): Promise<InvokeResult<TData>> => client.invoke<TData, TUri>(options),
+      {
+        invoke: <TData = unknown, TUri extends Uri | string = string>(
+          options: InvokeOptions<TUri>
+        ): Promise<InvokeResult<TData>> => client.invoke<TData, TUri>(options),
+      },
       // TODO: support all types of URI resolvers (cache, etc)
       new Uri(this._uriResolver),
       combinePaths(this._uri.path, path)
@@ -163,10 +166,10 @@ export class WasmWrapper extends Wrapper {
   public async invoke(
     options: InvokeOptions<Uri>,
     client: Client
-  ): Promise<InvokeResult<unknown | ArrayBuffer>> {
+  ): Promise<InvocableResult<Uint8Array>> {
     try {
-      const { method, noDecode } = options;
-      const input = options.input || {};
+      const { method } = options;
+      const args = options.args || {};
       const wasm = await this._getWasmModule(client);
 
       const state: State = {
@@ -179,7 +182,7 @@ export class WasmWrapper extends Wrapper {
         },
         invokeResult: {} as InvokeResult,
         method,
-        args: input instanceof ArrayBuffer ? input : msgpackEncode(input),
+        args: isBuffer(args) ? args : msgpackEncode(args),
         env: msgpackEncode(this._getClientEnv()),
       };
 
@@ -187,7 +190,7 @@ export class WasmWrapper extends Wrapper {
         throw new Error(
           `WasmWrapper: Wasm module aborted execution.\nURI: ${this._uri.uri}\n` +
             `Method: ${method}\n` +
-            `Input: ${JSON.stringify(input, null, 2)}\nMessage: ${message}.\n`
+            `Args: ${JSON.stringify(args, null, 2)}\nMessage: ${message}.\n`
         );
       };
 
@@ -219,28 +222,15 @@ export class WasmWrapper extends Wrapper {
             `WasmWrapper: invocation exception encountered.\n` +
               `uri: ${this._uri.uri}\n` +
               `method: ${method}\n` +
-              `input: ${JSON.stringify(input, null, 2)}\n` +
+              `args: ${JSON.stringify(args, null, 2)}\n` +
               `exception: ${invokeResult.invokeError}`
           );
         }
         case "InvokeResult": {
-          if (noDecode) {
-            return {
-              data: invokeResult.invokeResult,
-            } as InvokeResult<ArrayBuffer>;
-          }
-
-          try {
-            return {
-              data: msgpackDecode(invokeResult.invokeResult as ArrayBuffer),
-            } as InvokeResult<unknown>;
-          } catch (err) {
-            throw Error(
-              `WasmWrapper: Failed to decode query result.\nResult: ${JSON.stringify(
-                invokeResult.invokeResult
-              )}\nError: ${err}`
-            );
-          }
+          return {
+            data: invokeResult.invokeResult,
+            encoded: true,
+          };
         }
         default: {
           throw Error(`WasmWrapper: Unknown state "${state}"`);
@@ -306,9 +296,9 @@ export class WasmWrapper extends Wrapper {
   }
 
   @Tracer.traceMethod("WasmWrapper: getWasmModule")
-  private async _getWasmModule(client: Client): Promise<ArrayBuffer> {
+  private async _getWasmModule(client: Client): Promise<Uint8Array> {
     if (this._wasm !== undefined) {
-      return this._wasm as ArrayBuffer;
+      return this._wasm;
     }
 
     const moduleManifest = this._manifest.module;
@@ -320,7 +310,7 @@ export class WasmWrapper extends Wrapper {
     const data = (await this.getFile(
       { path: moduleManifest },
       client
-    )) as ArrayBuffer;
+    )) as Uint8Array;
 
     this._wasm = data;
     return data;

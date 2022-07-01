@@ -5,8 +5,8 @@ import { renderTemplates, loadSubTemplates } from "../../utils/templates";
 import { BindOptions, BindOutput } from "../../..";
 
 import {
-  TypeInfo,
-  transformTypeInfo,
+  Abi,
+  transformAbi,
   extendType,
   addFirstLast,
   toPrefixedGraphQLType,
@@ -33,10 +33,10 @@ export const generateBinding: GenerateBindingFn = (
     outputDirAbs: options.outputDirAbs,
   };
   const output = result.output;
-  const typeInfo = applyTransforms(options.typeInfo);
+  const abi = applyTransforms(options.abi);
 
   // Generate object type folders
-  for (const objectType of typeInfo.objectTypes) {
+  for (const objectType of abi.objectTypes) {
     output.entries.push({
       type: "Directory",
       name: toLower(objectType.type),
@@ -49,13 +49,13 @@ export const generateBinding: GenerateBindingFn = (
   }
 
   // Generate env type folders
-  if (typeInfo.envType) {
+  if (abi.envType) {
     output.entries.push({
       type: "Directory",
-      name: toLower(typeInfo.envType.type),
+      name: toLower(abi.envType.type),
       data: renderTemplates(
         templatePath("env-type"),
-        typeInfo.envType,
+        abi.envType,
         subTemplates
       ),
     });
@@ -65,7 +65,7 @@ export const generateBinding: GenerateBindingFn = (
   const importEntries: OutputEntry[] = [];
 
   // Generate imported module type folders
-  for (const importedModuleType of typeInfo.importedModuleTypes) {
+  for (const importedModuleType of abi.importedModuleTypes) {
     importEntries.push({
       type: "Directory",
       name: toLower(importedModuleType.type),
@@ -78,7 +78,7 @@ export const generateBinding: GenerateBindingFn = (
   }
 
   // Generate imported enum type folders
-  for (const importedEnumType of typeInfo.importedEnumTypes) {
+  for (const importedEnumType of abi.importedEnumTypes) {
     importEntries.push({
       type: "Directory",
       name: toLower(importedEnumType.type),
@@ -91,7 +91,7 @@ export const generateBinding: GenerateBindingFn = (
   }
 
   // Generate imported object type folders
-  for (const importedObectType of typeInfo.importedObjectTypes) {
+  for (const importedObectType of abi.importedObjectTypes) {
     importEntries.push({
       type: "Directory",
       name: toLower(importedObectType.type),
@@ -104,7 +104,7 @@ export const generateBinding: GenerateBindingFn = (
   }
 
   // Generate imported env type folders
-  for (const importedEnvType of typeInfo.importedEnvTypes) {
+  for (const importedEnvType of abi.importedEnvTypes) {
     importEntries.push({
       type: "Directory",
       name: toLower(importedEnvType.type),
@@ -122,13 +122,13 @@ export const generateBinding: GenerateBindingFn = (
       name: "imported",
       data: [
         ...importEntries,
-        ...renderTemplates(templatePath("imported"), typeInfo, subTemplates),
+        ...renderTemplates(templatePath("imported"), abi, subTemplates),
       ],
     });
   }
 
   // Generate interface type folders
-  for (const interfaceType of typeInfo.interfaceTypes) {
+  for (const interfaceType of abi.interfaceTypes) {
     output.entries.push({
       type: "Directory",
       name: toLower(interfaceType.type),
@@ -141,20 +141,20 @@ export const generateBinding: GenerateBindingFn = (
   }
 
   // Generate module type folders
-  if (typeInfo.moduleType) {
+  if (abi.moduleType) {
     output.entries.push({
       type: "Directory",
-      name: toLower(typeInfo.moduleType.type),
+      name: toLower(abi.moduleType.type),
       data: renderTemplates(
         templatePath("module-type"),
-        typeInfo.moduleType,
+        abi.moduleType,
         subTemplates
       ),
     });
   }
 
   // Generate enum type folders
-  for (const enumType of typeInfo.enumTypes) {
+  for (const enumType of abi.enumTypes) {
     output.entries.push({
       type: "Directory",
       name: toLower(enumType.type),
@@ -163,14 +163,12 @@ export const generateBinding: GenerateBindingFn = (
   }
 
   // Generate root entry file
-  output.entries.push(
-    ...renderTemplates(templatePath(""), typeInfo, subTemplates)
-  );
+  output.entries.push(...renderTemplates(templatePath(""), abi, subTemplates));
 
   return result;
 };
 
-function applyTransforms(typeInfo: TypeInfo): TypeInfo {
+function applyTransforms(abi: Abi): Abi {
   const transforms = [
     extendType(Functions),
     addFirstLast,
@@ -182,7 +180,7 @@ function applyTransforms(typeInfo: TypeInfo): TypeInfo {
   ];
 
   for (const transform of transforms) {
-    typeInfo = transformTypeInfo(typeInfo, transform);
+    abi = transformAbi(abi, transform);
   }
-  return typeInfo;
+  return abi;
 }

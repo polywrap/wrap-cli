@@ -40,7 +40,7 @@ module.exports = {
             ],
             format: ["camelCase"], leadingUnderscore: "allow"
           },
-          //wrap host methods doesn"t satisfy neither camel or snake
+          //wrap host methods doesn't satisfy neither camel or snake
           {selector: ["objectLiteralMethod", "typeMethod"], filter: {regex: "^_wrap_.*", match: true}, format: null},
           //variable must be in camel or upper case
           {selector: "variable", format: ["camelCase", "UPPER_CASE"], leadingUnderscore: "allow"},

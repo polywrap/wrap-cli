@@ -5,8 +5,8 @@ import {
   createPropertyDefinition,
   ImportedModuleDefinition,
   MapDefinition,
-  TypeInfo,
-} from "../typeInfo";
+  Abi,
+} from "../abi";
 import { extractImportedDefinition } from "./utils/imported-types-utils";
 import {
   extractEnvDirective,
@@ -122,13 +122,11 @@ const visitorLeave = (state: State) => ({
   },
 });
 
-export const getImportedModuleTypesVisitor = (
-  typeInfo: TypeInfo
-): ASTVisitor => {
+export const getImportedModuleTypesVisitor = (abi: Abi): ASTVisitor => {
   const state: State = {};
 
   return {
-    enter: visitorEnter(typeInfo.importedModuleTypes, state),
+    enter: visitorEnter(abi.importedModuleTypes, state),
     leave: visitorLeave(state),
   };
 };

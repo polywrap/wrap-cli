@@ -1,12 +1,12 @@
 import {
-  Input_moduleMethod,
-  Input_objectMethod,
-  Input_optionalEnvMethod
+  Args_moduleMethod,
+  Args_objectMethod,
+  Args_optionalEnvMethod
 } from "./Module";
 export {
-  Input_moduleMethod,
-  Input_objectMethod,
-  Input_optionalEnvMethod
+  Args_moduleMethod,
+  Args_objectMethod,
+  Args_optionalEnvMethod
 };
 export { CustomType } from "./CustomType";
 export { AnotherType } from "./AnotherType";

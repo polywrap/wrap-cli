@@ -1,6 +1,6 @@
 import {
   Module,
-  Input_log,
+  Args_log,
   Logger_LogLevel,
   Logger_LogLevelEnum,
   manifest,
@@ -15,30 +15,30 @@ export interface LoggerPluginConfig {
 }
 
 export class LoggerPlugin extends Module<LoggerPluginConfig> {
-  public log(input: Input_log): boolean {
+  public log(args: Args_log): boolean {
     if (this.config.logFunc) {
-      return this.config.logFunc(input.level, input.message);
+      return this.config.logFunc(args.level, args.message);
     }
 
-    switch (input.level) {
+    switch (args.level) {
       case "DEBUG":
       case Logger_LogLevelEnum.DEBUG:
-        console.debug(input.message);
+        console.debug(args.message);
         break;
       case "WARN":
       case Logger_LogLevelEnum.WARN:
-        console.warn(input.message);
+        console.warn(args.message);
         break;
       case "ERROR":
       case Logger_LogLevelEnum.ERROR:
-        console.error(input.message);
+        console.error(args.message);
         break;
       case "INFO":
       case Logger_LogLevelEnum.INFO:
-        console.log(input.message);
+        console.log(args.message);
         break;
       default:
-        console.log(input.message);
+        console.log(args.message);
     }
 
     return true;

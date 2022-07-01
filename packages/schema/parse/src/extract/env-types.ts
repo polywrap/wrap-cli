@@ -1,4 +1,4 @@
-import { TypeInfo, isEnvType, createEnvDefinition } from "../typeInfo";
+import { Abi, isEnvType, createEnvDefinition } from "../abi";
 import {
   extractFieldDefinition,
   extractListType,
@@ -15,13 +15,13 @@ import {
   ASTVisitor,
 } from "graphql";
 
-const visitorEnter = (typeInfo: TypeInfo, state: State) => ({
+const visitorEnter = (abi: Abi, state: State) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     const typeName = node.name.value;
 
     if (isEnvType(typeName)) {
-      typeInfo.envType = createEnvDefinition({});
-      state.currentType = typeInfo.envType;
+      abi.envType = createEnvDefinition({});
+      state.currentType = abi.envType;
     }
   },
   NonNullType: (_node: NonNullTypeNode) => {
@@ -50,11 +50,11 @@ const visitorLeave = (state: State) => ({
   },
 });
 
-export function getEnvVisitor(typeInfo: TypeInfo): ASTVisitor {
+export function getEnvVisitor(abi: Abi): ASTVisitor {
   const state: State = {};
 
   return {
-    enter: visitorEnter(typeInfo, state),
+    enter: visitorEnter(abi, state),
     leave: visitorLeave(state),
   };
 }

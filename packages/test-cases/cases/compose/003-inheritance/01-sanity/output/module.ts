@@ -5,12 +5,12 @@ import {
   createObjectPropertyDefinition,
   createScalarPropertyDefinition,
   createInterfaceImplementedDefinition,
-  createTypeInfo,
-  TypeInfo,
+  createAbi,
+  Abi,
 } from "@polywrap/schema-parse";
 
-export const typeInfo: TypeInfo = {
-  ...createTypeInfo(),
+export const abi: Abi = {
+  ...createAbi(),
   objectTypes: [
     {
       ...createObjectDefinition({ type: "BaseType1" }),

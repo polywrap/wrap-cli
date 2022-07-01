@@ -7,7 +7,7 @@ import {
   createArrayDefinition,
   InterfaceDefinition,
   MapDefinition,
-} from "../../typeInfo";
+} from "../../abi";
 import { setPropertyType } from "./property-utils";
 import { extractAnnotateDirective } from "./object-types-utils";
 

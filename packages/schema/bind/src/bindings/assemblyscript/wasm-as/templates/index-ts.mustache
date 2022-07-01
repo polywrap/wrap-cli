@@ -2,7 +2,7 @@
 {{#methods.length}}
 import {
   {{#methods}}
-  Input_{{name}}{{^last}},{{/last}}
+  Args_{{name}}{{^last}},{{/last}}
   {{/methods}}
 } from "./{{type}}";
 {{/methods.length}}
@@ -11,7 +11,7 @@ import {
 {{#methods.length}}
 export {
   {{#methods}}
-  Input_{{name}}{{^last}},{{/last}}
+  Args_{{name}}{{^last}},{{/last}}
   {{/methods}}
 };
 {{/methods.length}}

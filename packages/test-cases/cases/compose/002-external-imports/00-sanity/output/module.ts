@@ -4,14 +4,13 @@ import {
   createObjectPropertyDefinition,
   createImportedObjectDefinition,
   createScalarPropertyDefinition,
-  createTypeInfo,
-  TypeInfo,
+  createAbi,
   createImportedModuleDefinition,
+  createImportedEnvDefinition,
 } from "@polywrap/schema-parse";
-import { createImportedEnvDefinition } from "@polywrap/schema-parse/src/typeInfo";
 
-export const typeInfo: TypeInfo = {
-  ...createTypeInfo(),
+export const abi: Abi = {
+  ...createAbi(),
   objectTypes: [
   ],
   moduleType: {

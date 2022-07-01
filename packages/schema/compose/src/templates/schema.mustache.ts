@@ -1,5 +1,5 @@
 const template = `
-{{#typeInfo}}
+{{#abi}}
 {{#moduleType}}{{#comment}}
 """
 {{comment}}
@@ -179,6 +179,6 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
 }{{/properties.length}}
 
 {{/importedEnvTypes}}
-### Imported Envs END ###{{/typeInfo}}`;
+### Imported Envs END ###{{/abi}}`;
 
 export { template };

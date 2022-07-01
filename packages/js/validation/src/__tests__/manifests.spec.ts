@@ -9,7 +9,7 @@ jest.setTimeout(200000);
 
 const testWrappersPath = path.join(__dirname, "./wrappers");
 
-describe("manfiests", () => {
+describe("manifests", () => {
   let validator: WasmPackageValidator;
 
   beforeAll(async () => {

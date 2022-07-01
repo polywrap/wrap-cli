@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/naming-convention */
 import {
-  TypeInfo,
+  Abi,
   GenericDefinition,
   ObjectDefinition,
   AnyDefinition,
@@ -24,7 +24,7 @@ import {
   WithKind,
   MapDefinition,
   ImportedEnvDefinition,
-} from "../typeInfo";
+} from "../abi";
 
 export * from "./finalizePropertyDef";
 export * from "./extendType";
@@ -36,13 +36,13 @@ export * from "./moduleCapabilities";
 export * from "./hasImports";
 export * from "./addAnnotations";
 
-export interface TypeInfoTransforms {
-  enter?: TypeInfoTransformer;
-  leave?: TypeInfoTransformer;
+export interface AbiTransforms {
+  enter?: AbiTransformer;
+  leave?: AbiTransformer;
 }
 
-export interface TypeInfoTransformer {
-  TypeInfo?: (typeInfo: TypeInfo) => TypeInfo;
+export interface AbiTransformer {
+  Abi?: (abi: Abi) => Abi;
   GenericDefinition?: (def: GenericDefinition) => GenericDefinition;
   ObjectDefinition?: (def: ObjectDefinition) => ObjectDefinition;
   ObjectRef?: (def: ObjectRef) => ObjectRef;
@@ -72,14 +72,11 @@ export interface TypeInfoTransformer {
   MapDefinition?: (def: MapDefinition) => MapDefinition;
 }
 
-export function transformTypeInfo(
-  typeInfo: TypeInfo,
-  transforms: TypeInfoTransforms
-): TypeInfo {
-  let result = Object.assign({}, typeInfo);
+export function transformAbi(abi: Abi, transforms: AbiTransforms): Abi {
+  let result = Object.assign({}, abi);
 
-  if (transforms.enter && transforms.enter.TypeInfo) {
-    result = transforms.enter.TypeInfo(result);
+  if (transforms.enter && transforms.enter.Abi) {
+    result = transforms.enter.Abi(result);
   }
 
   for (let i = 0; i < result.interfaceTypes.length; ++i) {
@@ -136,8 +133,8 @@ export function transformTypeInfo(
     );
   }
 
-  if (transforms.leave && transforms.leave.TypeInfo) {
-    result = transforms.leave.TypeInfo(result);
+  if (transforms.leave && transforms.leave.Abi) {
+    result = transforms.leave.Abi(result);
   }
 
   return result;
@@ -145,7 +142,7 @@ export function transformTypeInfo(
 
 export function visitObjectDefinition(
   def: ObjectDefinition,
-  transforms: TypeInfoTransforms
+  transforms: AbiTransforms
 ): ObjectDefinition {
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
@@ -169,7 +166,7 @@ export function visitObjectDefinition(
 
 export function visitObjectRef(
   def: ObjectRef,
-  transforms: TypeInfoTransforms
+  transforms: AbiTransforms
 ): ObjectRef {
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
@@ -179,7 +176,7 @@ export function visitObjectRef(
 
 export function visitInterfaceImplementedDefinition(
   def: InterfaceImplementedDefinition,
-  transforms: TypeInfoTransforms
+  transforms: AbiTransforms
 ): InterfaceImplementedDefinition {
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
@@ -189,7 +186,7 @@ export function visitInterfaceImplementedDefinition(
 
 export function visitAnyDefinition(
   def: AnyDefinition,
-  transforms: TypeInfoTransforms
+  transforms: AbiTransforms
 ): AnyDefinition {
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
@@ -219,7 +216,7 @@ export function visitAnyDefinition(
 
 export function visitScalarDefinition(
   def: ScalarDefinition,
-  transforms: TypeInfoTransforms
+  transforms: AbiTransforms
 ): ScalarDefinition {
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
@@ -228,17 +225,14 @@ export function visitScalarDefinition(
 
 export function visitEnumDefinition(
   def: EnumDefinition,
-  transforms: TypeInfoTransforms
+  transforms: AbiTransforms
 ): EnumDefinition {
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
   return transformType(result, transforms.leave);
 }
 
-export function visitEnumRef(
-  def: EnumRef,
-  transforms: TypeInfoTransforms
-): EnumRef {
+export function visitEnumRef(def: EnumRef, transforms: AbiTransforms): EnumRef {
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
   return transformType(result, transforms.leave);
@@ -246,7 +240,7 @@ export function visitEnumRef(
 
 export function visitArrayDefinition(
   def: ArrayDefinition,
-  transforms: TypeInfoTransforms
+  transforms: AbiTransforms
 ): ArrayDefinition {
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
@@ -263,7 +257,7 @@ export function visitArrayDefinition(
 
 export function visitPropertyDefinition(
   def: PropertyDefinition,
-  transforms: TypeInfoTransforms
+  transforms: AbiTransforms
 ): PropertyDefinition {
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
@@ -275,7 +269,7 @@ export function visitPropertyDefinition(
 
 export function visitMethodDefinition(
   def: MethodDefinition,
-  transforms: TypeInfoTransforms
+  transforms: AbiTransforms
 ): MethodDefinition {
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
@@ -296,7 +290,7 @@ export function visitMethodDefinition(
 
 export function visitModuleDefinition(
   def: ModuleDefinition,
-  transforms: TypeInfoTransforms
+  transforms: AbiTransforms
 ): ModuleDefinition {
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
@@ -310,7 +304,7 @@ export function visitModuleDefinition(
 
 export function visitInterfaceDefinition(
   def: InterfaceDefinition,
-  transforms: TypeInfoTransforms
+  transforms: AbiTransforms
 ): InterfaceDefinition {
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
@@ -319,7 +313,7 @@ export function visitInterfaceDefinition(
 
 export function visitImportedModuleDefinition(
   def: ImportedModuleDefinition,
-  transforms: TypeInfoTransforms
+  transforms: AbiTransforms
 ): ImportedModuleDefinition {
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
@@ -333,35 +327,35 @@ export function visitImportedModuleDefinition(
 
 export function visitImportedObjectDefinition(
   def: ImportedObjectDefinition,
-  transforms: TypeInfoTransforms
+  transforms: AbiTransforms
 ): ImportedObjectDefinition {
   return visitObjectDefinition(def, transforms) as ImportedObjectDefinition;
 }
 
 export function visitImportedEnumDefinition(
   def: ImportedEnumDefinition,
-  transforms: TypeInfoTransforms
+  transforms: AbiTransforms
 ): ImportedEnumDefinition {
   return visitEnumDefinition(def, transforms) as ImportedEnumDefinition;
 }
 
 export function visitImportedEnvDefinition(
   def: ImportedEnvDefinition,
-  transforms: TypeInfoTransforms
+  transforms: AbiTransforms
 ): ImportedEnvDefinition {
   return visitEnvDefinition(def, transforms) as ImportedEnvDefinition;
 }
 
 export function visitEnvDefinition(
   def: EnvDefinition,
-  transforms: TypeInfoTransforms
+  transforms: AbiTransforms
 ): EnvDefinition {
   return visitObjectDefinition(def, transforms);
 }
 
 export function visitMapDefinition(
   def: MapDefinition,
-  transforms: TypeInfoTransforms
+  transforms: AbiTransforms
 ): MapDefinition {
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
@@ -383,7 +377,7 @@ export function visitMapDefinition(
 
 export function transformType<TDefinition extends WithKind>(
   type: TDefinition,
-  transform?: TypeInfoTransformer
+  transform?: AbiTransformer
 ): TDefinition {
   if (!transform) {
     return type;

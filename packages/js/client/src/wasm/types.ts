@@ -14,8 +14,8 @@ export interface WrapImports extends WebAssembly.Imports {
       uriLen: u32,
       methodPtr: u32,
       methodLen: u32,
-      inputPtr: u32,
-      inputLen: u32
+      argsPtr: u32,
+      argsLen: u32
     ) => Promise<boolean>;
     __wrap_subinvoke_result_len: () => u32;
     __wrap_subinvoke_result: (ptr: u32) => void;
@@ -28,8 +28,8 @@ export interface WrapImports extends WebAssembly.Imports {
       implUriLen: u32,
       methodPtr: u32,
       methodLen: u32,
-      inputPtr: u32,
-      inputLen: u32
+      argsPtr: u32,
+      argsLen: u32
     ) => Promise<boolean>;
     __wrap_subinvokeImplementation_result_len: () => u32;
     __wrap_subinvokeImplementation_result: (ptr: u32) => void;

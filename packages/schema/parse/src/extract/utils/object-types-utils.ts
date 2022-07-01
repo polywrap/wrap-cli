@@ -5,7 +5,7 @@ import {
   MapDefinition,
   ObjectDefinition,
   PropertyDefinition,
-} from "../../typeInfo";
+} from "../../abi";
 import { parseMapType } from "./map-utils";
 import { setPropertyType } from "./property-utils";
 

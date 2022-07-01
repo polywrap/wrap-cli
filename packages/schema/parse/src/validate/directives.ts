@@ -2,7 +2,7 @@ import {
   ImportedDefinition,
   isImportedModuleType,
   isModuleType,
-} from "../typeInfo";
+} from "../abi";
 import { SchemaValidator } from ".";
 
 import { DirectiveNode, ASTNode, ObjectTypeDefinitionNode } from "graphql";

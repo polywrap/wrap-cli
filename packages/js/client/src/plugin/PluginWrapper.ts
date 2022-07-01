@@ -1,10 +1,9 @@
 import {
   Wrapper,
   Client,
-  filterResults,
   GetManifestOptions,
   InvokeOptions,
-  InvokeResult,
+  InvocableResult,
   PluginModule,
   PluginPackage,
   Uri,
@@ -12,8 +11,8 @@ import {
   ManifestArtifactType,
   GetFileOptions,
   Env,
-  msgpackEncode,
   msgpackDecode,
+  isBuffer,
 } from "@polywrap/core-js";
 import { Tracer } from "@polywrap/tracing-js";
 
@@ -28,7 +27,7 @@ export class PluginWrapper extends Wrapper {
     super();
 
     Tracer.startSpan("PluginWrapper: constructor");
-    Tracer.setAttribute("input", {
+    Tracer.setAttribute("args", {
       uri: this._uri,
       plugin: this._plugin,
       clientEnv: this._clientEnv,
@@ -50,18 +49,18 @@ export class PluginWrapper extends Wrapper {
   public async getFile(
     _options: GetFileOptions,
     _client: Client
-  ): Promise<ArrayBuffer | string> {
+  ): Promise<Uint8Array | string> {
     throw Error("client.getFile(...) is not implemented for Plugins.");
   }
 
   @Tracer.traceMethod("PluginWrapper: invoke")
-  public async invoke<TData = unknown>(
+  public async invoke(
     options: InvokeOptions<Uri>,
     client: Client
-  ): Promise<InvokeResult<TData>> {
+  ): Promise<InvocableResult<unknown>> {
     try {
-      const { method, resultFilter } = options;
-      const input = options.input || {};
+      const { method } = options;
+      const args = options.args || {};
       const module = this._getInstance();
 
       if (!module) {
@@ -75,63 +74,37 @@ export class PluginWrapper extends Wrapper {
       // Sanitize & load the module's environment
       await module._wrap_load_env(this._getClientEnv() || {});
 
-      let jsInput: Record<string, unknown>;
+      let jsArgs: Record<string, unknown>;
 
-      // If the input is a msgpack buffer, deserialize it
-      if (input instanceof ArrayBuffer) {
-        const result = msgpackDecode(input);
+      // If the args are a msgpack buffer, deserialize it
+      if (isBuffer(args)) {
+        const result = msgpackDecode(args);
 
         Tracer.addEvent("msgpack-decoded", result);
 
         if (typeof result !== "object") {
           throw new Error(
-            `PluginWrapper: decoded MsgPack input did not result in an object.\nResult: ${result}`
+            `PluginWrapper: decoded MsgPack args did not result in an object.\nResult: ${result}`
           );
         }
 
-        jsInput = result as Record<string, unknown>;
+        jsArgs = result as Record<string, unknown>;
       } else {
-        jsInput = input;
+        jsArgs = args;
       }
 
       // Invoke the function
       try {
-        const result = (await module._wrap_invoke(
-          method,
-          jsInput,
-          client
-        )) as TData;
-
-        Tracer.addEvent("unfiltered-result", result);
+        const result = await module._wrap_invoke(method, jsArgs, client);
 
         if (result !== undefined) {
-          let data = result as unknown;
+          const data = result as unknown;
 
-          if (process.env.TEST_PLUGIN) {
-            // try to encode the returned result,
-            // ensuring it's msgpack compliant
-            try {
-              msgpackEncode(data);
-            } catch (e) {
-              throw Error(
-                `TEST_PLUGIN msgpack encode failure.` +
-                  `uri: ${this._uri.uri}\nmodule: ${module}\n` +
-                  `method: ${method}\n` +
-                  `input: ${JSON.stringify(jsInput, null, 2)}\n` +
-                  `result: ${JSON.stringify(data, null, 2)}\n` +
-                  `exception: ${e}`
-              );
-            }
-          }
-
-          if (resultFilter) {
-            data = filterResults(result, resultFilter);
-          }
-
-          Tracer.addEvent("Filtered result", data);
+          Tracer.addEvent("Result", data);
 
           return {
-            data: data as TData,
+            data: data,
+            encoded: false,
           };
         } else {
           return {};
@@ -140,8 +113,8 @@ export class PluginWrapper extends Wrapper {
         throw Error(
           `PluginWrapper: invocation exception encountered.\n` +
             `uri: ${this._uri.uri}\nmodule: ${module}\n` +
-            `method: ${method}\nresultFilter: ${resultFilter}\n` +
-            `input: ${JSON.stringify(jsInput, null, 2)}\n` +
+            `method: ${method}\n` +
+            `args: ${JSON.stringify(jsArgs, null, 2)}\n` +
             `exception: ${e.message}`
         );
       }

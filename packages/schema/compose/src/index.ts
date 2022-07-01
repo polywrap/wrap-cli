@@ -2,20 +2,20 @@ import { SchemaFile, SchemaResolvers } from "./types";
 import { resolveImportsAndParseSchemas } from "./resolve";
 import { renderSchema } from "./render";
 
-import { TypeInfo, combineTypeInfo } from "@polywrap/schema-parse";
+import { Abi, combineAbi } from "@polywrap/schema-parse";
 
 export * from "./types";
 export { renderSchema };
 
 export interface ComposerOutput {
   schema?: string;
-  typeInfo?: TypeInfo;
+  abi?: Abi;
 }
 
 export enum ComposerFilter {
   Schema = 1 << 0,
-  TypeInfo = 1 << 1,
-  All = Schema | TypeInfo,
+  Abi = 1 << 1,
+  All = Schema | Abi,
 }
 
 export interface ComposerOptions {
@@ -27,33 +27,32 @@ export interface ComposerOptions {
 export async function composeSchema(
   options: ComposerOptions
 ): Promise<ComposerOutput> {
-  const typeInfos = await resolveImports(options.schemas, options.resolvers);
+  const abis = await resolveImports(options.schemas, options.resolvers);
 
-  const typeInfo =
-    typeInfos.length === 1 ? typeInfos[0] : combineTypeInfo(typeInfos);
+  const abi = abis.length === 1 ? abis[0] : combineAbi(abis);
 
   // Forming our output structure for the caller
   const includeSchema = options.output & ComposerFilter.Schema;
-  const includeTypeInfo = options.output & ComposerFilter.TypeInfo;
+  const includeAbi = options.output & ComposerFilter.Abi;
 
   return {
-    schema: includeSchema ? renderSchema(typeInfo, true) : undefined,
-    typeInfo: includeTypeInfo ? typeInfo : undefined,
-  };
+    schema: includeSchema ? renderSchema(abi, true) : undefined,
+    abi: includeAbi ? abi : undefined,
+  } as ComposerOutput;
 }
 
 export async function resolveImports(
   schemas: SchemaFile[],
   resolvers: SchemaResolvers
-): Promise<TypeInfo[]> {
-  const typeInfos: TypeInfo[] = [];
+): Promise<Abi[]> {
+  const abis: Abi[] = [];
 
   if (schemas.length === 0) {
     throw Error("No schema provided");
   }
 
   for (const schema of schemas) {
-    typeInfos.push(
+    abis.push(
       await resolveImportsAndParseSchemas(
         schema.schema,
         schema.absolutePath,
@@ -62,5 +61,5 @@ export async function resolveImports(
     );
   }
 
-  return typeInfos;
+  return abis;
 }
