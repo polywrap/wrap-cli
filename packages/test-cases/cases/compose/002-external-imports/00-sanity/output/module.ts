@@ -4,6 +4,7 @@ import {
   createObjectPropertyDefinition,
   createImportedObjectDefinition,
   createScalarPropertyDefinition,
+  Abi,
   createAbi,
   createImportedModuleDefinition,
   createImportedEnvDefinition,
