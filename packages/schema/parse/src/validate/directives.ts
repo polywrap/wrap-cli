@@ -1,8 +1,4 @@
-import {
-  ImportedDefinition,
-  isImportedModuleType,
-  isModuleType,
-} from "../abi";
+import { ImportedDefinition, isImportedModuleType, isModuleType } from "../abi";
 import { SchemaValidator } from ".";
 
 import { DirectiveNode, ASTNode, ObjectTypeDefinitionNode } from "graphql";
