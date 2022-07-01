@@ -145,11 +145,7 @@ export const generateBinding: GenerateBindingFn = (
     output.entries.push({
       type: "Directory",
       name: toLower(abi.moduleType.type),
-      data: renderTemplates(
-        templatePath("module-type"),
-        abi,
-        subTemplates
-      ),
+      data: renderTemplates(templatePath("module-type"), abi, subTemplates),
     });
   }
 
