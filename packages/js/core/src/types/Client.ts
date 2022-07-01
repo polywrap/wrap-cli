@@ -11,7 +11,8 @@ import {
 } from "./";
 import { UriResolver } from "../uri-resolution/core";
 import { UriResolverHandler } from "./UriResolver";
-import { WrapManifest } from "../wrap-manifests";
+
+import { WrapManifest } from "@polywrap/wrap-manifest-schemas";
 
 export interface ClientConfig<TUri extends Uri | string = string> {
   redirects: UriRedirect<TUri>[];

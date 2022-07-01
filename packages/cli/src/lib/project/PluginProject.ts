@@ -6,9 +6,9 @@ import {
   isPluginManifestLanguage,
   pluginManifestLanguageToBindLanguage,
 } from "./manifests";
-import { PluginManifest } from "../polywrap-manifests";
 import { resetDir } from "../system";
 
+import { PluginManifest } from "@polywrap/polywrap-manifest-schemas";
 import { bindSchema, BindOutput, BindOptions } from "@polywrap/schema-bind";
 import { ComposerOutput } from "@polywrap/schema-compose";
 import { Abi } from "@polywrap/schema-parse";

@@ -1,9 +1,9 @@
 import { displayPath, withSpinner, intlMsg } from "../../../";
+
 import {
   AppManifest,
   deserializeAppManifest,
-} from "../../../polywrap-manifests";
-
+} from "@polywrap/polywrap-manifest-schemas";
 import fs from "fs";
 
 export const defaultAppManifest = ["polywrap.app.yaml", "polywrap.app.yml"];

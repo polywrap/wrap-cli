@@ -3,7 +3,6 @@ export * from "./helpers";
 export * from "./infra";
 export * from "./intl";
 export * from "./option-parsers";
-export * from "./polywrap-manifests";
 export * from "./project";
 export * from "./system";
 export * from "./test-env";
