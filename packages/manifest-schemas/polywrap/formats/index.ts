@@ -1,2 +1,2 @@
-export * from "./formats";
+export * from "./interfaces";
 export * from "./deserialize";

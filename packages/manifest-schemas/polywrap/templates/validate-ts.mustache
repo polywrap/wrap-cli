@@ -10,7 +10,7 @@ import {
 } from ".";
 {{#validators.length}}import * as Validators from "../../validators";{{/validators.length}}
 {{#formats}}
-import schema_{{tsVersion}} from "@polywrap/polywrap-manifest-schemas/formats/{{dir}}/{{version}}.json";
+import schema_{{tsVersion}} from "@polywrap/polywrap-manifest-schemas/formats/schemas/{{dir}}/{{version}}.json";
 {{/formats}}
 import { Tracer } from "@polywrap/tracing-js"
 

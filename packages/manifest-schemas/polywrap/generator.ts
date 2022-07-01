@@ -19,7 +19,7 @@ async function generateFormatTypes() {
     const formatTypeDir = path.join(formatsDir, formatTypeName);
     const formatOutputDir = path.join(
       __dirname,
-      `./interfaces/${formatTypeName}`
+      `./formats/interfaces/${formatTypeName}`
     );
     const formatModules = [];
 
