@@ -30,14 +30,14 @@ pub fn write_env<W: Write>(args: &Env, writer: &mut W) -> Result<(), EncodeError
     writer.context().pop();
     writer.context().push("optProp", "Option<String>", "writing property");
     writer.write_string("optProp")?;
-    writer.write_nullable_string(&args.opt_prop)?;
+    writer.write_optional_string(&args.opt_prop)?;
     writer.context().pop();
     writer.context().push("optMap", "Option<Map<String, Option<i32>>>", "writing property");
     writer.write_string("optMap")?;
-    writer.write_nullable_ext_generic_map(&args.opt_map, |writer, key| {
+    writer.write_optional_ext_generic_map(&args.opt_map, |writer, key| {
         writer.write_string(key)
     }, |writer, value| {
-        writer.write_nullable_i32(value)
+        writer.write_optional_i32(value)
     })?;
     writer.context().pop();
     Ok(())
@@ -71,15 +71,15 @@ pub fn read_env<R: Read>(reader: &mut R) -> Result<Env, DecodeError> {
             }
             "optProp" => {
                 reader.context().push(&field, "Option<String>", "type found, reading property");
-                _opt_prop = reader.read_nullable_string()?;
+                _opt_prop = reader.read_optional_string()?;
                 reader.context().pop();
             }
             "optMap" => {
                 reader.context().push(&field, "Option<Map<String, Option<i32>>>", "type found, reading property");
-                _opt_map = reader.read_nullable_ext_generic_map(|reader| {
+                _opt_map = reader.read_optional_ext_generic_map(|reader| {
                     reader.read_string()?
                 }, |reader| {
-                    reader.read_nullable_i32()
+                    reader.read_optional_i32()
                 })?;
                 reader.context().pop();
             }

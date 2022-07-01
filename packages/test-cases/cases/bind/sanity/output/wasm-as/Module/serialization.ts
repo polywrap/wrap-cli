@@ -329,7 +329,7 @@ export function deserializeoptionalEnvMethodArgs(argsBuf: ArrayBuffer): Args_opt
     }
     else if (field == "optObjectArray") {
       reader.context().push(field, "Array<Types.AnotherType | null> | null", "type found, reading property");
-      _optObjectArray = reader.readNullableArray((reader: Read): Types.AnotherType | null => {
+      _optObjectArray = reader.readOptionalArray((reader: Read): Types.AnotherType | null => {
         let object: Types.AnotherType | null = null;
         if (!reader.isNextNil()) {
           object = Types.AnotherType.read(reader);

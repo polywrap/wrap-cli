@@ -33,7 +33,7 @@ export abstract class PluginModule<
     return this._config;
   }
 
-  public _wrap_load_env(env: TEnv): void {
+  public setEnv(env: TEnv): void {
     this._env = env;
   }
 

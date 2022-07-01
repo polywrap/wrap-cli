@@ -71,8 +71,8 @@ export class PluginWrapper extends Wrapper {
         throw new Error(`PluginWrapper: method "${method}" not found.`);
       }
 
-      // Sanitize & load the module's environment
-      await module._wrap_load_env(this._getClientEnv() || {});
+      // Set the module's environment
+      await module.setEnv(this._getClientEnv() || {});
 
       let jsArgs: Record<string, unknown>;
 

@@ -341,7 +341,7 @@ pub fn deserialize_optional_env_method_args(args: &[u8]) -> Result<ArgsOptionalE
             }
             "optObjectArray" => {
                 reader.context().push(&field, "Option<Vec<Option<AnotherType>>>", "type found, reading argument");
-                _opt_object_array = reader.read_nullable_array(|reader| {
+                _opt_object_array = reader.read_optional_array(|reader| {
                     let mut object: Option<AnotherType> = None;
                     if !reader.is_next_nil()? {
                         object = Some(AnotherType::read(reader)?);
