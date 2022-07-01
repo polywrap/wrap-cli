@@ -1,4 +1,7 @@
 /* eslint-disable prefer-const */
+import { DeployerHandler } from "../lib/deploy/deployer";
+import { Command, Program } from "./types";
+
 import {
   intlMsg,
   PolywrapProject,
@@ -6,10 +9,7 @@ import {
   DeployPackage,
   DeployManifest,
   parseWasmManifestFileOption,
-} from "../lib";
-import { DeployerHandler } from "../lib/deploy/deployer";
-import { Command, Program } from "./types";
-
+} from "@polywrap/polywrap-manifest-schemas";
 import fs from "fs";
 import nodePath from "path";
 import { print } from "gluegun";

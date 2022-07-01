@@ -7,7 +7,7 @@ import { compile } from "json-schema-to-typescript"
 async function generateFormatTypes() {
   // Fetch all schemas within the @polywrap/wrap-manifest-schemas/formats directory
   const formatsDir = path.join(__dirname, "formats/schemas/wrap.info");
-  const formatOutputDir = path.join(__dirname, `./interfaces`);
+  const formatOutputDir = path.join(__dirname, `./formats/interfaces`);
 
   // Get all JSON schemas for this format type (0.0.1, 0.0.2, etc)
   const formatSchemaFiles = fs.readdirSync(formatsDir);

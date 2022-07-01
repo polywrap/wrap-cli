@@ -13,9 +13,9 @@ import {
   latestWrapManifestVersion,
 } from ".";
 import { DeserializeManifestOptions } from "../";
-import { msgpackDecode } from "../../";
 
 import { compare } from "semver";
+import { msgpackDecode } from "@polywrap/core-js";
 import { Tracer } from "@polywrap/tracing-js";
 
 export const deserializeWrapManifest = Tracer.traceFunc(

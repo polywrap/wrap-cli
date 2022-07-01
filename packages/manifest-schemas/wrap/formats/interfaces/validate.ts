@@ -9,7 +9,7 @@ import {
   WrapManifestVersions
 } from ".";
 
-import schema_0_0_1 from "@polywrap/wrap-manifest-schemas/formats/wrap.info/0.0.1.json";
+import schema_0_0_1 from "@polywrap/wrap-manifest-schemas/formats/schemas/wrap.info/0.0.1.json";
 import { Tracer } from "@polywrap/tracing-js"
 
 import {

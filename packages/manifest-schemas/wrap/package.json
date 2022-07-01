@@ -12,6 +12,9 @@
     "lint": "eslint --color -c ../../.eslintrc.js .",
     "build": "ts-node generator.ts && tsc"
   },
+  "dependencies": {
+   "@polywrap/core-js": "0.0.1-prealpha.91"
+  },
   "devDependencies": {
     "ts-node": "8.10.2"
   },

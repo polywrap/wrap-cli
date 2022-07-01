@@ -7,11 +7,11 @@ import {
 } from "../../core";
 import { CreateWrapperFunc } from "./types/CreateWrapperFunc";
 import { getEnvFromUriOrResolutionStack } from "../getEnvFromUriOrResolutionStack";
+
 import {
   DeserializeManifestOptions,
   deserializeWrapManifest,
-} from "../../../wrap-manifests";
-
+} from "@polywrap/wrap-manifest-schemas";
 import { Tracer } from "@polywrap/tracing-js";
 
 export class UriResolverWrapper implements UriResolver {
@@ -50,7 +50,6 @@ export class UriResolverWrapper implements UriResolver {
     } else if (result.manifest) {
       // We've found our manifest at the current implementation,
       // meaning the URI resolver can also be used as an Wrapper resolver
-      console.log({ result });
       const manifest = deserializeWrapManifest(
         result.manifest,
         this.deserializeOptions
