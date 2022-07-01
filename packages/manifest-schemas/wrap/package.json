@@ -9,7 +9,8 @@
   },
   "main": "./package.json",
   "scripts": {
-    "lint": "eslint --color -c ../../.eslintrc.js ."
+    "lint": "eslint --color -c ../../.eslintrc.js .",
+    "build": "node generateInterfaces.ts"
   },
   "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
   "publishConfig": {

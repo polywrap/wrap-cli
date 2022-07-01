@@ -5,11 +5,8 @@ import Mustache from "mustache";
 import * as JsonSchema from "json-schema-to-typescript";
 
 async function generateFormatTypes() {
-  // Fetch all schemas within the @polywrap/polywrap-manifest-schemas/formats directory
-  const formatsDir = path.join(
-    path.dirname(require.resolve("@polywrap/polywrap-manifest-schemas")),
-    "formats"
-  );
+  // Fetch all schemas within the @polywrap/polywrap-manifest-schemas/schemas/formats directory
+  const formatsDir = path.join(__dirname, "formats/schemas");
 
   // Get all format types (wasm, build, infra, app, plugin, etc)
   const formatTypes = fs
@@ -22,7 +19,7 @@ async function generateFormatTypes() {
     const formatTypeDir = path.join(formatsDir, formatTypeName);
     const formatOutputDir = path.join(
       __dirname,
-      `/../src/lib/polywrap-manifests/formats/${formatTypeName}`
+      `./interfaces/${formatTypeName}`
     );
     const formatModules = [];
 

@@ -17,7 +17,6 @@
   },
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json && yarn build:build-images && yarn build:deploy-modules && yarn build:infra-modules",
-    "build:polywrap-manifests": "ts-node ./scripts/generatePolywrapManifestTypes.ts",
     "build:build-images": "copyfiles ./src/lib/defaults/build-images/**/**/* ./build/lib/defaults/build-images/ -u 4",
     "build:deploy-modules": "copyfiles ./src/lib/defaults/deploy-modules/**/polywrap.deploy.ext.json ./build/lib/defaults/deploy-modules -u 4",
     "build:infra-modules": "ts-node ./scripts/copyfiles ./src/lib/defaults/infra-modules ./build/lib/defaults/infra-modules",
