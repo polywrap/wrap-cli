@@ -23,6 +23,7 @@ export enum DefinitionKind {
   Env = 1 << 16,
   MapKey = 1 << 17,
   Map = (1 << 18) | DefinitionKind.Any,
+  ImportedEnv = 1 << 19,
 }
 
 export function isKind(type: WithKind, kind: DefinitionKind): boolean {
@@ -384,11 +385,17 @@ export function createObjectPropertyDefinition(args: {
 
 export interface MethodDefinition extends GenericDefinition, WithComment {
   arguments: PropertyDefinition[];
+  env?: {
+    required: boolean;
+  };
   return: PropertyDefinition;
 }
 export function createMethodDefinition(args: {
   name: string;
   arguments?: PropertyDefinition[];
+  env?: {
+    required: boolean;
+  };
   return: PropertyDefinition;
   comment?: string;
 }): MethodDefinition {
@@ -560,17 +567,42 @@ export function createImportedObjectDefinition(args: {
   };
 }
 
-export interface EnvDefinition extends WithKind {
-  sanitized?: ObjectDefinition;
-  client?: ObjectDefinition;
-}
+export type EnvDefinition = ObjectDefinition;
+
 export function createEnvDefinition(args: {
-  sanitized?: ObjectDefinition;
-  client?: ObjectDefinition;
+  name?: string | null;
+  required?: boolean;
+  properties?: PropertyDefinition[];
+  interfaces?: InterfaceImplementedDefinition[];
+  comment?: string;
 }): EnvDefinition {
   return {
+    ...createObjectDefinition({ ...args, type: "Env" }),
     kind: DefinitionKind.Env,
-    sanitized: args.sanitized,
-    client: args.client,
+  };
+}
+
+export type ImportedEnvDefinition = ImportedObjectDefinition;
+
+export function createImportedEnvDefinition(args: {
+  type: string;
+  name?: string;
+  required?: boolean;
+  uri: string;
+  namespace: string;
+  nativeType: string;
+  interfaces?: InterfaceImplementedDefinition[];
+  comment?: string;
+}): ImportedEnvDefinition {
+  return {
+    ...createObjectDefinition({
+      ...args,
+      type: `${args.namespace}_Env`,
+    }),
+    uri: args.uri,
+    namespace: args.namespace,
+    nativeType: args.nativeType,
+    comment: args.comment,
+    kind: DefinitionKind.ImportedEnv,
   };
 }

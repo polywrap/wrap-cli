@@ -194,22 +194,7 @@ export const createImports = (config: {
         writeBytes(state.getImplementationsResult, memory.buffer, ptr);
       },
       __wrap_load_env: (ptr: u32): void => {
-        if (state.env) {
-          writeBytes(state.env, memory.buffer, ptr);
-        }
-      },
-      __wrap_sanitize_env_args: (ptr: u32): void => {
-        if (!state.sanitizeEnv.args) {
-          abort("__wrap_sanitize_env: args is not set");
-          return;
-        }
-
-        writeBytes(state.sanitizeEnv.args, memory.buffer, ptr);
-      },
-      __wrap_sanitize_env_result: (ptr: u32, len: u32): void => {
-        state.sanitizeEnv.result = new Uint8Array(
-          readBytes(memory.buffer, ptr, len)
-        );
+        writeBytes(state.env, memory.buffer, ptr);
       },
       __wrap_abort: (
         msgPtr: u32,

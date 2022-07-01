@@ -36,6 +36,8 @@ directive @enabled_interface on OBJECT
 
 directive @annotate(type: String!) on FIELD
 
+directive @env(required: Boolean!) on FIELD_DEFINITION
+
 ### Polywrap Header END ###
 
 type Module {
@@ -55,4 +57,8 @@ type Env {
 ### Imported Objects START ###
 
 ### Imported Objects END ###
+
+### Imported Envs START ###
+
+### Imported Envs END ###
 `;

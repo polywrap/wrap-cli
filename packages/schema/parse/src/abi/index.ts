@@ -10,8 +10,8 @@ import {
   CapabilityType,
   CapabilityDefinition,
   EnvDefinition,
-  createEnvDefinition,
   createModuleDefinition,
+  ImportedEnvDefinition,
 } from "./definitions";
 
 export * from "./definitions";
@@ -28,7 +28,8 @@ export interface Abi {
   importedObjectTypes: ImportedObjectDefinition[];
   importedModuleTypes: ImportedModuleDefinition[];
   importedEnumTypes: ImportedEnumDefinition[];
-  envType: EnvDefinition;
+  importedEnvTypes: ImportedEnvDefinition[];
+  envType?: EnvDefinition;
 }
 
 export function createAbi(): Abi {
@@ -39,7 +40,7 @@ export function createAbi(): Abi {
     importedObjectTypes: [],
     importedModuleTypes: [],
     importedEnumTypes: [],
-    envType: createEnvDefinition({}),
+    importedEnvTypes: [],
   };
 }
 
@@ -54,7 +55,7 @@ export function combineAbi(abis: Abi[]): Abi {
     importedObjectTypes: [],
     importedModuleTypes: [],
     importedEnumTypes: [],
-    envType: createEnvDefinition({}),
+    importedEnvTypes: [],
   };
 
   const compareImportedType = (
@@ -107,6 +108,10 @@ export function combineAbi(abis: Abi[]): Abi {
       );
     }
 
+    if (abi.envType) {
+      combined.envType = abi.envType;
+    }
+
     for (const importedObjectType of abi.importedObjectTypes) {
       tryInsert(
         combined.importedObjectTypes,
@@ -130,12 +135,12 @@ export function combineAbi(abis: Abi[]): Abi {
       tryInsert(combined.importedEnumTypes, importedEnumType);
     }
 
-    if (abi.envType.client) {
-      combined.envType.client = abi.envType.client;
-    }
-
-    if (abi.envType.sanitized) {
-      combined.envType.sanitized = abi.envType.sanitized;
+    for (const importedEnvType of abi.importedEnvTypes) {
+      tryInsert(
+        combined.importedEnvTypes,
+        importedEnvType,
+        compareImportedType
+      );
     }
   }
 

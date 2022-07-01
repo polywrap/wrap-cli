@@ -1,16 +1,8 @@
-type ClientEnv {
-  bar: UInt32!
-}
-
 type Env {
   queryArg: String!
 }
 
 type Module {
-  sanitizeEnv(
-    env: ClientEnv!
-  ): Env!
-
   method(
     str: String!
   ): String!

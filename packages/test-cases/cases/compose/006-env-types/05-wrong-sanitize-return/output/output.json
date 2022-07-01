@@ -1,3 +1,0 @@
-{
-  "error": "'sanitizeEnv' module method should have required return type 'Env'"
-}

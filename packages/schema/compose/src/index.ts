@@ -1,7 +1,6 @@
 import { SchemaFile, SchemaResolvers } from "./types";
 import { resolveImportsAndParseSchemas } from "./resolve";
 import { renderSchema } from "./render";
-import { validateEnv } from "./env";
 
 import { Abi, combineAbi } from "@polywrap/schema-parse";
 
@@ -32,8 +31,6 @@ export async function composeSchema(
 
   const abi = abis.length === 1 ? abis[0] : combineAbi(abis);
 
-  await validateEnv(abi);
-
   // Forming our output structure for the caller
   const includeSchema = options.output & ComposerFilter.Schema;
   const includeAbi = options.output & ComposerFilter.Abi;
@@ -41,8 +38,6 @@ export async function composeSchema(
   return {
     schema: includeSchema ? renderSchema(abi, true) : undefined,
     abi: includeAbi ? abi : undefined,
-    // TODO: remove this post-release, this is needed to resolve the CLI<>plugin circular dependency
-    typeInfo: includeAbi ? abi : undefined,
   } as ComposerOutput;
 }
 

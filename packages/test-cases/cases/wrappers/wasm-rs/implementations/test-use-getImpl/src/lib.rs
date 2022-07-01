@@ -1,7 +1,7 @@
 pub mod wrap;
 pub use wrap::*;
 
-pub fn module_implementations() -> Vec<String> {
+pub fn module_implementations(args: ArgsModuleImplementations) -> Vec<String> {
   Interface::get_implementations()
 }
 

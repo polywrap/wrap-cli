@@ -10,8 +10,5 @@ export * from "./types";
 export * from "./bindings";
 
 export function bindSchema(options: BindOptions): BindOutput {
-  // TODO: remove this post-release, this is needed to resolve the CLI<>plugin circular dependency
-  /* eslint-disable @typescript-eslint/no-explicit-any */
-  options.abi = options.abi || (options as any).typeInfo;
   return getGenerateBindingFn(options.bindLanguage)(options);
 }
