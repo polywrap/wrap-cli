@@ -15,15 +15,14 @@ import {
 import { DeserializeManifestOptions } from "../";
 
 import { compare } from "semver";
-import { msgpackDecode } from "@polywrap/core-js";
 import { Tracer } from "@polywrap/tracing-js";
 
 export const deserializeWrapManifest = Tracer.traceFunc(
   "core: deserializeWrapManifest",
-  (manifest: Uint8Array, options?: DeserializeManifestOptions): WrapManifest => {
+  (manifest: Uint8Array, decoder: (m: Uint8Array) => unknown, options?: DeserializeManifestOptions): WrapManifest => {
     let anyWrapManifest: AnyWrapManifest | undefined;
     try {
-      anyWrapManifest = msgpackDecode(manifest) as AnyWrapManifest;
+      anyWrapManifest = decoder(manifest) as AnyWrapManifest;
     } catch (e) {
       throw Error(`Unable to parse WrapManifest: ${`[${new Uint8Array(manifest).toString()}]`}`);
     }

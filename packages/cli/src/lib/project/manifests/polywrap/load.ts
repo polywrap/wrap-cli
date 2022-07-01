@@ -16,7 +16,7 @@ import {
   deserializeDeployManifest,
   InfraManifest,
   deserializeInfraManifest,
-} from "../../../polywrap-manifests";
+} from "@polywrap/polywrap-manifest-schemas";
 
 import { Schema as JsonSchema } from "jsonschema";
 import path from "path";

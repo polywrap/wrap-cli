@@ -15,16 +15,16 @@ import {
   polywrapManifestLanguageToBindLanguage,
 } from "./manifests";
 import { Deployer } from "../deploy";
+import { generateDockerImageName, resetDir } from "../system";
+import { createUUID } from "../helpers";
+import { intlMsg } from "../intl";
+
 import {
   BuildManifest,
   PolywrapManifest,
   MetaManifest,
   DeployManifest,
-} from "../polywrap-manifests";
-import { generateDockerImageName, resetDir } from "../system";
-import { createUUID } from "../helpers";
-import { intlMsg } from "../intl";
-
+} from "@polywrap/polywrap-manifest-schemas";
 import { normalizePath } from "@polywrap/os-js";
 import { bindSchema, BindOutput, BindOptions } from "@polywrap/schema-bind";
 import { ComposerOutput } from "@polywrap/schema-compose";

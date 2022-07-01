@@ -8,7 +8,7 @@ import {
   Invoker,
   InvocableResult,
 } from ".";
-import { WrapManifest } from "../wrap-manifests";
+import { WrapManifest } from "@polywrap/polywrap-manifest-schemas";
 
 /**
  * The Wrapper definition, which can be used to spawn

@@ -7,7 +7,11 @@ import {
   WRAP_WASM,
 } from "..";
 
-import { deserializeWrapManifest, WrapManifest } from "@polywrap/core-js";
+import { msgpackDecode } from "@polywrap/core-js";
+import {
+  WrapManifest,
+  deserializeWrapManifest,
+} from "@polywrap/wrap-manifest-schemas";
 import { renderSchema } from "@polywrap/schema-compose";
 import * as path from "path";
 
@@ -134,7 +138,7 @@ export class WasmPackageValidator {
       const info = await reader.readFile(name);
       return {
         valid: true,
-        manifest: deserializeWrapManifest(info),
+        manifest: deserializeWrapManifest(info, msgpackDecode),
       };
     } catch (e) {
       if (e.message.includes('instance requires property "abi"')) {

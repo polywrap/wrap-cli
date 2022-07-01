@@ -1,6 +1,7 @@
-import { intlMsg, Infra, loadInfraManifest, InfraManifest } from "../lib";
+import { intlMsg, Infra, loadInfraManifest } from "../lib";
 import { Command, Program } from "./types";
 
+import { InfraManifest } from "@polywrap/polywrap-manifest-schemas"
 import { print } from "gluegun";
 import path from "path";
 import { Argument } from "commander";

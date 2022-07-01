@@ -6,8 +6,8 @@ import {
   loadAppManifest,
   appManifestLanguageToBindLanguage,
 } from "./manifests";
-import { AppManifest } from "../polywrap-manifests";
 
+import { AppManifest } from "@polywrap/polywrap-manifest-schemas";
 import { Client } from "@polywrap/core-js";
 import { ComposerOutput } from "@polywrap/schema-compose";
 import { bindSchema, BindOutput } from "@polywrap/schema-bind";

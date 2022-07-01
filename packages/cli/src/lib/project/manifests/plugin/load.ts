@@ -1,9 +1,9 @@
 import { displayPath, withSpinner, intlMsg } from "../../../";
+
 import {
   PluginManifest,
   deserializePluginManifest,
-} from "../../../polywrap-manifests";
-
+} from "@polywrap/polywrap-manifest-schemas";
 import fs from "fs";
 
 export const defaultPluginManifest = [
