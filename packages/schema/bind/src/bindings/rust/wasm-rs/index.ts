@@ -147,7 +147,7 @@ export const generateBinding: GenerateBindingFn = (
       name: toLower(abi.moduleType.type),
       data: renderTemplates(
         templatePath("module-type"),
-        abi.moduleType,
+        abi,
         subTemplates
       ),
     });
