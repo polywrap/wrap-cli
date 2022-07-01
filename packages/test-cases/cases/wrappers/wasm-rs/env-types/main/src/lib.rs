@@ -18,23 +18,23 @@ fn create_env(env: Env) -> Env {
   }
 }
 
-pub fn method_no_env(input: InputMethodNoEnv) -> String {
-  input.arg
+pub fn method_no_env(args: ArgsMethodNoEnv) -> String {
+  args.arg
 }
 
-pub fn method_require_env(_: InputMethodRequireEnv, env: Env) -> Env {
+pub fn method_require_env(_: ArgsMethodRequireEnv, env: Env) -> Env {
   create_env(env)
 }
 
-pub fn method_optional_env(input: InputMethodOptionalEnv, env: Option<Env>) -> Option<Env> {
+pub fn method_optional_env(args: ArgsMethodOptionalEnv, env: Option<Env>) -> Option<Env> {
   match env {
     Some(e) => Some(create_env(e)),
     None => None
   }
 }
 
-pub fn subinvoke_env_method(input: InputSubinvokeEnvMethod, env: Env) -> CompoundEnv {
-  let external_env: ExternalEnvApiEnv = ExternalEnvApiModule::external_env_method(&(imported::InputExternalEnvMethod {})).unwrap();
+pub fn subinvoke_env_method(args: ArgsSubinvokeEnvMethod, env: Env) -> CompoundEnv {
+  let external_env: ExternalEnvApiEnv = ExternalEnvApiModule::external_env_method(&(imported::ArgsExternalEnvMethod {})).unwrap();
   
   return CompoundEnv {
     local: env,

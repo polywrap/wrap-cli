@@ -26,7 +26,7 @@ export interface Args_objectMethod extends Record<string, unknown> {
   optObjectArray?: Array<Types.AnotherType | null> | null;
 }
 
-export interface Input_optionalEnvMethod extends Record<string, unknown> {
+export interface Args_optionalEnvMethod extends Record<string, unknown> {
   object: Types.AnotherType;
   optObject?: Types.AnotherType | null;
   objectArray: Array<Types.AnotherType>;
@@ -46,13 +46,13 @@ export abstract class Module<
   ): MaybeAsync<Types.Int>;
 
   abstract objectMethod(
-    input: Args_objectMethod,
+    args: Args_objectMethod,
     client: Client,
     env: Types.Env
   ): MaybeAsync<Types.AnotherType | null>;
 
   abstract optionalEnvMethod(
-    input: Input_optionalEnvMethod,
+    args: Args_optionalEnvMethod,
     client: Client,
     env?: Types.Env | null
   ): MaybeAsync<Types.AnotherType | null>;

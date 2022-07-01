@@ -1,14 +1,14 @@
 export const envTypeNames = {
   objectType: "Env",
-  inputField: "env",
+  argName: "env",
 };
 
 export function isEnvType(type: string): boolean {
   return type === envTypeNames.objectType;
 }
 
-export function isEnvInputField(name: string): boolean {
-  return name === envTypeNames.inputField;
+export function isEnvArgName(name: string): boolean {
+  return name === envTypeNames.argName;
 }
 
 export function isImportedEnvType(type: string): boolean {

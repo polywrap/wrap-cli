@@ -31,16 +31,16 @@ impl TestImportEnv {
         }
     }
 
-    pub fn to_buffer(input: &TestImportEnv) -> Result<Vec<u8>, EncodeError> {
-        serialize_test_import_env(input).map_err(|e| EncodeError::TypeWriteError(e.to_string()))
+    pub fn to_buffer(args: &TestImportEnv) -> Result<Vec<u8>, EncodeError> {
+        serialize_test_import_env(args).map_err(|e| EncodeError::TypeWriteError(e.to_string()))
     }
 
-    pub fn from_buffer(input: &[u8]) -> Result<TestImportEnv, DecodeError> {
-        deserialize_test_import_env(input).map_err(|e| DecodeError::TypeReadError(e.to_string()))
+    pub fn from_buffer(args: &[u8]) -> Result<TestImportEnv, DecodeError> {
+        deserialize_test_import_env(args).map_err(|e| DecodeError::TypeReadError(e.to_string()))
     }
 
-    pub fn write<W: Write>(input: &TestImportEnv, writer: &mut W) -> Result<(), EncodeError> {
-        write_test_import_env(input, writer).map_err(|e| EncodeError::TypeWriteError(e.to_string()))
+    pub fn write<W: Write>(args: &TestImportEnv, writer: &mut W) -> Result<(), EncodeError> {
+        write_test_import_env(args, writer).map_err(|e| EncodeError::TypeWriteError(e.to_string()))
     }
 
     pub fn read<R: Read>(reader: &mut R) -> Result<TestImportEnv, DecodeError> {

@@ -286,18 +286,18 @@ pub fn write_object_method_result<W: Write>(result: &Option<AnotherType>, writer
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct InputOptionalEnvMethod {
+pub struct ArgsOptionalEnvMethod {
     pub object: AnotherType,
     pub opt_object: Option<AnotherType>,
     pub object_array: Vec<AnotherType>,
     pub opt_object_array: Option<Vec<Option<AnotherType>>>,
 }
 
-pub fn deserialize_optional_env_method_args(input: &[u8]) -> Result<InputOptionalEnvMethod, DecodeError> {
+pub fn deserialize_optional_env_method_args(args: &[u8]) -> Result<ArgsOptionalEnvMethod, DecodeError> {
     let mut context = Context::new();
     context.description = "Deserializing module-type: optional_env_method".to_string();
 
-    let mut reader = ReadDecoder::new(input, context);
+    let mut reader = ReadDecoder::new(args, context);
     let mut num_of_fields = reader.read_map_length()?;
 
     let mut _object: AnotherType = AnotherType::new();
@@ -362,7 +362,7 @@ pub fn deserialize_optional_env_method_args(input: &[u8]) -> Result<InputOptiona
         return Err(DecodeError::MissingField("objectArray: [AnotherType].".to_string()));
     }
 
-    Ok(InputOptionalEnvMethod {
+    Ok(ArgsOptionalEnvMethod {
         object: _object,
         opt_object: _opt_object,
         object_array: _object_array,

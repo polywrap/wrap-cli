@@ -14,27 +14,27 @@ use polywrap_wasm_rs::{
 };
 use crate::Env;
 
-pub fn serialize_env(input: &Env) -> Result<Vec<u8>, EncodeError> {
+pub fn serialize_env(args: &Env) -> Result<Vec<u8>, EncodeError> {
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) env-type: Env".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
-    write_env(input, &mut encoder)?;
+    write_env(args, &mut encoder)?;
     Ok(encoder.get_buffer())
 }
 
-pub fn write_env<W: Write>(input: &Env, writer: &mut W) -> Result<(), EncodeError> {
+pub fn write_env<W: Write>(args: &Env, writer: &mut W) -> Result<(), EncodeError> {
     writer.write_map_length(&3)?;
     writer.context().push("prop", "String", "writing property");
     writer.write_string("prop")?;
-    writer.write_string(&input.prop)?;
+    writer.write_string(&args.prop)?;
     writer.context().pop();
     writer.context().push("optProp", "Option<String>", "writing property");
     writer.write_string("optProp")?;
-    writer.write_nullable_string(&input.opt_prop)?;
+    writer.write_nullable_string(&args.opt_prop)?;
     writer.context().pop();
     writer.context().push("optMap", "Option<Map<String, Option<i32>>>", "writing property");
     writer.write_string("optMap")?;
-    writer.write_nullable_ext_generic_map(&input.opt_map, |writer, key| {
+    writer.write_nullable_ext_generic_map(&args.opt_map, |writer, key| {
         writer.write_string(key)
     }, |writer, value| {
         writer.write_nullable_i32(value)
@@ -43,10 +43,10 @@ pub fn write_env<W: Write>(input: &Env, writer: &mut W) -> Result<(), EncodeErro
     Ok(())
 }
 
-pub fn deserialize_env(input: &[u8]) -> Result<Env, DecodeError> {
+pub fn deserialize_env(args: &[u8]) -> Result<Env, DecodeError> {
     let mut context = Context::new();
     context.description = "Deserializing env-type: Env".to_string();
-    let mut reader = ReadDecoder::new(input, context);
+    let mut reader = ReadDecoder::new(args, context);
     read_env(&mut reader)
 }
 

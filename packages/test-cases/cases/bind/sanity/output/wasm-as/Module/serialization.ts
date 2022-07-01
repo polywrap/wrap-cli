@@ -278,14 +278,14 @@ export function writeobjectMethodResult(writer: Write, result: Types.AnotherType
   writer.context().pop();
 }
 
-export class Input_optionalEnvMethod {
+export class Args_optionalEnvMethod {
   object: Types.AnotherType;
   optObject: Types.AnotherType | null;
   objectArray: Array<Types.AnotherType>;
   optObjectArray: Array<Types.AnotherType | null> | null;
 }
 
-export function deserializeoptionalEnvMethodArgs(argsBuf: ArrayBuffer): Input_optionalEnvMethod {
+export function deserializeoptionalEnvMethodArgs(argsBuf: ArrayBuffer): Args_optionalEnvMethod {
   const context: Context = new Context("Deserializing module-type: optionalEnvMethod");
   const reader = new ReadDecoder(argsBuf, context);
   let numFields = reader.readMapLength();

@@ -1,8 +1,8 @@
 import {
   Env,
-  Input_externalEnvMethod,
+  Args_externalEnvMethod,
 } from "./wrap";
 
-export function externalEnvMethod(_: Input_externalEnvMethod, env: Env): Env {
+export function externalEnvMethod(_: Args_externalEnvMethod, env: Env): Env {
   return env;
 }

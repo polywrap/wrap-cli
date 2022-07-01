@@ -14,27 +14,27 @@ use polywrap_wasm_rs::{
 };
 use crate::TestImportEnv;
 
-pub fn serialize_test_import_env(input: &TestImportEnv) -> Result<Vec<u8>, EncodeError> {
+pub fn serialize_test_import_env(args: &TestImportEnv) -> Result<Vec<u8>, EncodeError> {
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) imported env-type: TestImportEnv".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
-    write_test_import_env(input, &mut encoder)?;
+    write_test_import_env(args, &mut encoder)?;
     Ok(encoder.get_buffer())
 }
 
-pub fn write_test_import_env<W: Write>(input: &TestImportEnv, writer: &mut W) -> Result<(), EncodeError> {
+pub fn write_test_import_env<W: Write>(args: &TestImportEnv, writer: &mut W) -> Result<(), EncodeError> {
     writer.write_map_length(&1)?;
     writer.context().push("enviroProp", "String", "writing property");
     writer.write_string("enviroProp")?;
-    writer.write_string(&input.enviro_prop)?;
+    writer.write_string(&args.enviro_prop)?;
     writer.context().pop();
     Ok(())
 }
 
-pub fn deserialize_test_import_env(input: &[u8]) -> Result<TestImportEnv, DecodeError> {
+pub fn deserialize_test_import_env(args: &[u8]) -> Result<TestImportEnv, DecodeError> {
     let mut context = Context::new();
     context.description = "Deserializing imported env-type: TestImportEnv".to_string();
-    let mut reader = ReadDecoder::new(input, context);
+    let mut reader = ReadDecoder::new(args, context);
     read_test_import_env(&mut reader)
 }
 

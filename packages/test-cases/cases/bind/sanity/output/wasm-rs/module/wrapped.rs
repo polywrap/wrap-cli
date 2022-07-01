@@ -12,15 +12,15 @@ use crate::{
     deserialize_object_method_args,
     serialize_object_method_result,
     optional_env_method,
-    InputOptionalEnvMethod,
+    ArgsOptionalEnvMethod,
     deserialize_optional_env_method_args,
     serialize_optional_env_method_result
 };
 
 use crate::Env;
 
-pub fn module_method_wrapped(input: &[u8], env_size: u32) -> Vec<u8> {
-    match deserialize_module_method_args(input) {
+pub fn module_method_wrapped(args: &[u8], env_size: u32) -> Vec<u8> {
+    match deserialize_module_method_args(args) {
         Ok(args) => {
             let result = module_method(ArgsModuleMethod {
                 str: args.str,
@@ -39,7 +39,7 @@ pub fn module_method_wrapped(input: &[u8], env_size: u32) -> Vec<u8> {
     }
 }
 
-pub fn object_method_wrapped(input: &[u8], env_size: u32) -> Vec<u8> {
+pub fn object_method_wrapped(args: &[u8], env_size: u32) -> Vec<u8> {
     if env_size == 0 {
         panic!("Environment is not set, and it is required by method 'objectMethod'");
     }
@@ -47,7 +47,7 @@ pub fn object_method_wrapped(input: &[u8], env_size: u32) -> Vec<u8> {
     let env_buf = wrap_load_env(env_size);
     let env = Env::from_buffer(&env_buf).unwrap();
 
-    match deserialize_object_method_args(input) {
+    match deserialize_object_method_args(args) {
         Ok(args) => {
             let result = object_method(ArgsObjectMethod {
                 object: args.object,
@@ -63,7 +63,7 @@ pub fn object_method_wrapped(input: &[u8], env_size: u32) -> Vec<u8> {
     }
 }
 
-pub fn optional_env_method_wrapped(input: &[u8], env_size: u32) -> Vec<u8> {
+pub fn optional_env_method_wrapped(args: &[u8], env_size: u32) -> Vec<u8> {
     let mut env: Option<Env> = None;
 
     if env_size > 0 {
@@ -71,9 +71,9 @@ pub fn optional_env_method_wrapped(input: &[u8], env_size: u32) -> Vec<u8> {
       env = Some(Env::from_buffer(&env_buf).unwrap());
     }
 
-    match deserialize_optional_env_method_args(input) {
+    match deserialize_optional_env_method_args(args) {
         Ok(args) => {
-            let result = optional_env_method(InputOptionalEnvMethod {
+            let result = optional_env_method(ArgsOptionalEnvMethod {
                 object: args.object,
                 opt_object: args.opt_object,
                 object_array: args.object_array,
