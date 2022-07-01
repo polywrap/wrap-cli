@@ -54,6 +54,38 @@ describe("wasm-wrapper", () => {
     };
   };
 
+  test("can invoke with string URI", async () => {
+    const client = await getClient();
+    const result = await client.invoke<string>({
+      uri: simpleWrapperUri.uri,
+      method: "simpleMethod",
+      args: {
+        arg: "test",
+      },
+    });
+
+    expect(result.error).toBeFalsy();
+    expect(result.data).toBeTruthy();
+    expect(typeof result.data).toBe("string");
+    expect(result.data).toEqual("test");
+  });
+
+  test("can invoke with typed URI", async () => {
+    const client = await getClient();
+    const result = await client.invoke<string, Uri>({
+      uri: simpleWrapperUri,
+      method: "simpleMethod",
+      args: {
+        arg: "test",
+      },
+    });
+
+    expect(result.error).toBeFalsy();
+    expect(result.data).toBeTruthy();
+    expect(typeof result.data).toBe("string");
+    expect(result.data).toEqual("test");
+  });
+
   test("invoke with decode defaulted to true works as expected", async () => {
     const client = await getClient();
     const result = await client.invoke<string>({
