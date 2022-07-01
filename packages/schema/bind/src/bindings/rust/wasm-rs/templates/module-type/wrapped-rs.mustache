@@ -24,15 +24,15 @@ pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped(input: &[u8], env_size: u32) -> 
     }
 
     let env_buf = wrap_load_env(env_size);
-    let env = Env.from_buffer(env_buf);
+    let env = Env::from_buffer(&env_buf).unwrap();
 
     {{/required}}
     {{^required}}
-    let env: Option<Env> = None;
+    let mut env: Option<Env> = None;
 
     if env_size > 0 {
       let env_buf = wrap_load_env(env_size);
-      env = Some(Env.from_buffer(env_buf));
+      env = Some(Env::from_buffer(&env_buf).unwrap());
     }
 
     {{/required}}
@@ -41,11 +41,11 @@ pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped(input: &[u8], env_size: u32) -> 
     match deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input) {
         Ok(args) => {
     {{/arguments.length}}
-            let result = {{#toLower}}{{name}}{{/toLower}}({{#arguments.length}}Input{{#toUpper}}{{name}}{{/toUpper}} {
+            let result = {{#toLower}}{{name}}{{/toLower}}(Input{{#toUpper}}{{name}}{{/toUpper}} {
                 {{#arguments}}
                 {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: args.{{#toLower}}{{name}}{{/toLower}},
                 {{/arguments}}
-            }{{/arguments.length}}{{#env}}, env{{/env}});
+            }{{#env}}, env{{/env}});
             serialize_{{#toLower}}{{name}}{{/toLower}}_result({{#return}}&{{/return}}result).unwrap()
     {{#arguments.length}}
         }

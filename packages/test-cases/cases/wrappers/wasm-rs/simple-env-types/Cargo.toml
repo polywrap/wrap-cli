@@ -3,7 +3,7 @@ name = "env-types"
 version = "0.1.0"
 description = "Module of env-types e2e test"
 authors = [
-  "Jordan Ellis <jelli@dorg.tech>"
+  "Nestor Amesty <nestor@dorg.tech>"
 ]
 repository = "https://github.com/polywrap/monorepo"
 license = "MIT"

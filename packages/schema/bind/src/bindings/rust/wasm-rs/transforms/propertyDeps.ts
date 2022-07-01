@@ -8,6 +8,7 @@ import {
   AnyDefinition,
   ModuleDefinition,
   TypeInfoTransforms,
+  EnvDefinition,
 } from "@polywrap/schema-parse";
 
 interface PropertyDep {
@@ -17,6 +18,7 @@ interface PropertyDep {
 }
 
 interface PropertyDepsState {
+  envDefinition?: EnvDefinition;
   objectDefinition?: ObjectDefinition;
   moduleDefinition?: ModuleDefinition;
   importedModuleDefinition?: ImportedModuleDefinition;
@@ -28,6 +30,11 @@ export function propertyDeps(): TypeInfoTransforms {
 
   return {
     enter: {
+      EnvDefinition: (def: EnvDefinition) => {
+        state.envDefinition = def;
+        state.propertyDeps = [];
+        return def;
+      },
       ObjectDefinition: (def: ObjectDefinition) => {
         state.objectDefinition = def;
         state.propertyDeps = [];
@@ -81,7 +88,12 @@ export function propertyDeps(): TypeInfoTransforms {
           return array;
         };
 
-        if (state.objectDefinition && state.propertyDeps) {
+        if (state.envDefinition && state.propertyDeps) {
+          state.propertyDeps = appendPropertyDep(
+            state.envDefinition.type,
+            state.propertyDeps
+          );
+        } else if (state.objectDefinition && state.propertyDeps) {
           state.propertyDeps = appendPropertyDep(
             state.objectDefinition.type,
             state.propertyDeps
@@ -102,6 +114,15 @@ export function propertyDeps(): TypeInfoTransforms {
       },
     },
     leave: {
+      EnvDefinition: (def: EnvDefinition) => {
+        const propertyDeps = state.propertyDeps;
+        state.propertyDeps = undefined;
+        state.envDefinition = undefined;
+        return {
+          ...def,
+          propertyDeps,
+        };
+      },
       ObjectDefinition: (def: ObjectDefinition) => {
         const propertyDeps = state.propertyDeps;
         state.propertyDeps = undefined;

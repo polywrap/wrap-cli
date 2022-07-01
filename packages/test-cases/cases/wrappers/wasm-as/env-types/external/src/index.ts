@@ -6,4 +6,3 @@ import {
 export function externalEnvMethod(_: Input_externalEnvMethod, env: Env): Env {
   return env;
 }
-
