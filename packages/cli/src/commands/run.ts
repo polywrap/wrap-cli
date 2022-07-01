@@ -7,7 +7,7 @@ import {
   validateOutput,
 } from "../lib";
 
-import { InvokeResult, Workflow } from "@polywrap/core-js";
+import { InvokeResult, Workflow, JobResult } from "@polywrap/core-js";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import path from "path";
 import yaml from "js-yaml";
@@ -85,7 +85,9 @@ const _run = async (workflowPath: string, options: WorkflowCommandOptions) => {
     workflow,
     config: clientConfig,
     ids: jobs,
-    onExecution: async (id: string, data: unknown, error: Error) => {
+    onExecution: async (id: string, jobResult: JobResult) => {
+      const { data, error } = jobResult;
+
       if (!quiet) {
         console.log("-----------------------------------");
         console.log(`ID: ${id}`);
