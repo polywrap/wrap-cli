@@ -24,6 +24,7 @@
     "@web3api/assemblyscript-json": "1.2.0",
     "as-bigint": "0.5.3",
     "as-bignumber": "0.2.0",
+    "as-fraction": "0.3.1",
     "as-container": "0.6.1"
   },
   "devDependencies": {

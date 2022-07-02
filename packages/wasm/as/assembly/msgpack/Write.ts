@@ -1,4 +1,4 @@
-import { BigInt, BigNumber } from "../math";
+import { BigInt, BigNumber, BigFraction, Fraction } from "../math";
 import { Context } from "../debug";
 import { JSON } from "../json";
 
@@ -21,6 +21,8 @@ export abstract class Write {
   abstract writeBytes(value: ArrayBuffer): void;
   abstract writeBigInt(value: BigInt): void;
   abstract writeBigNumber(value: BigNumber): void;
+  abstract writeBigFraction(value: BigFraction): void;
+  abstract writeFraction<T extends number>(value: Fraction<T>): void;
   abstract writeJSON(value: JSON.Value): void;
   abstract writeArrayLength(length: u32): void;
   abstract writeArray<T>(
@@ -52,6 +54,10 @@ export abstract class Write {
   abstract writeOptionalBytes(value: ArrayBuffer | null): void;
   abstract writeOptionalBigInt(value: BigInt | null): void;
   abstract writeOptionalBigNumber(value: BigNumber | null): void;
+  abstract writeOptionalBigFraction(value: BigFraction | null): void;
+  abstract writeOptionalFraction<T extends number>(
+    value: Fraction<T> | null
+  ): void;
   abstract writeOptionalJSON(value: JSON.Value | null): void;
   abstract writeOptionalArray<T>(
     a: Array<T> | null,

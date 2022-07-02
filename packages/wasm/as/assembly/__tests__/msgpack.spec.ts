@@ -9,6 +9,8 @@ import {
   JSON,
   BigInt,
   BigNumber,
+  BigFraction,
+  Fraction,
 } from "../";
 import { Option } from "as-container";
 
@@ -28,6 +30,8 @@ class Sanity {
   str: string = "";
   bigint: BigInt = BigInt.ONE;
   bignumber: BigNumber = BigNumber.ONE;
+  bigfraction: BigFraction = BigFraction.ONE;
+  fraction: Fraction<i32> = new Fraction<i32>(1, 1);
   json: JSON.Value = JSON.Value.Object();
   largeStr: string = "";
   bytes: ArrayBuffer = new ArrayBuffer(1);
@@ -56,6 +60,8 @@ class Sanity {
     this.str = "Hello, world!";
     this.bigint = BigInt.fromString("3124124512598273468017578125");
     this.bignumber = BigNumber.fromString("3124124512.598273468017578125");
+    this.bigfraction = BigFraction.fromString("3124124512.598273468017578125");
+    this.fraction = new Fraction<i32>(1, 256);
     this.json = JSON.parse(`{"foo": "bar", "bar": "baz"}`);
     this.largeStr = new Array<string>(10).join("polywrap ");
     this.bytes = new ArrayBuffer(12);
@@ -99,7 +105,7 @@ class Sanity {
 }
 
 function serializeSanity(writer: Write, type: Sanity): void {
-  writer.writeMapLength(23);
+  writer.writeMapLength(25);
   writer.writeString("nil");
   writer.writeOptionalString(type.nil);
   writer.writeString("int8");
@@ -136,6 +142,10 @@ function serializeSanity(writer: Write, type: Sanity): void {
   writer.writeBigInt(type.bigint);
   writer.writeString("bignumber");
   writer.writeBigNumber(type.bignumber);
+  writer.writeString("bigfraction");
+  writer.writeBigFraction(type.bigfraction);
+  writer.writeString("fraction");
+  writer.writeFraction(type.fraction);
   writer.writeString("json");
   writer.writeJSON(type.json);
   writer.writeString("array");
@@ -203,6 +213,10 @@ function deserializeSanity(reader: Read, type: Sanity): void {
       type.bigint = reader.readBigInt();
     } else if (field == "bignumber") {
       type.bignumber = reader.readBigNumber();
+    } else if (field == "bigfraction") {
+      type.bigfraction = reader.readBigFraction();
+    } else if (field == "fraction") {
+      type.fraction = reader.readFraction<i32>();
     } else if (field == "json") {
       type.json = reader.readJSON();
     } else if (field == "largeStr") {
@@ -283,6 +297,10 @@ function deserializeWithOverflow(reader: Read, type: Sanity): void {
       type.bigint = reader.readBigInt();
     } else if (field == "bignumber") {
       type.bignumber = reader.readBigNumber();
+    } else if (field == "bigfraction") {
+      type.bigfraction = reader.readBigFraction();
+    } else if (field == "fraction") {
+      type.fraction = reader.readFraction<i32>();
     } else if (field == "json") {
       type.json = reader.readJSON();
     } else if (field == "bytes") {
@@ -351,6 +369,10 @@ function deserializeWithInvalidTypes(reader: Read, type: Sanity): void {
       type.bigint = reader.readBigInt();
     } else if (field == "bignumber") {
       type.bignumber = reader.readBigNumber();
+    } else if (field == "bigfraction") {
+      type.bigfraction = reader.readBigFraction();
+    } else if (field == "fraction") {
+      type.fraction = reader.readFraction<i32>();
     } else if (field == "json") {
       type.json = reader.readJSON();
     } else if (field == "largeStr") {

@@ -1,4 +1,4 @@
-import { BigInt, BigNumber } from "../math";
+import { BigInt, BigNumber, BigFraction, Fraction } from "../math";
 import { Context } from "../debug";
 import { JSON } from "../json";
 
@@ -20,6 +20,8 @@ export abstract class Read {
   abstract readBytes(): ArrayBuffer;
   abstract readBigInt(): BigInt;
   abstract readBigNumber(): BigNumber;
+  abstract readBigFraction(): BigFraction;
+  abstract readFraction<T extends number>(): Fraction<T>;
   abstract readJSON(): JSON.Value;
   abstract readArrayLength(): u32;
   abstract readArray<T>(fn: (reader: Read) => T): Array<T>;
@@ -46,6 +48,8 @@ export abstract class Read {
   abstract readOptionalBytes(): ArrayBuffer | null;
   abstract readOptionalBigInt(): BigInt | null;
   abstract readOptionalBigNumber(): BigNumber | null;
+  abstract readOptionalBigFraction(): BigFraction | null;
+  abstract readOptionalFraction<T extends number>(): Fraction<T> | null;
   abstract readOptionalJSON(): JSON.Value | null;
   abstract readOptionalArray<T>(fn: (decoder: Read) => T): Array<T> | null;
   abstract readOptionalMap<K, V>(

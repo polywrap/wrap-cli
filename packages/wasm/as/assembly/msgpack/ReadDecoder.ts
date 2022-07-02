@@ -10,7 +10,7 @@ import {
   isFixedString,
 } from "./Format";
 import { Read } from "./Read";
-import { BigInt, BigNumber } from "../math";
+import { BigInt, BigNumber, BigFraction, Fraction } from "../math";
 import { Context } from "../debug";
 import { JSON } from "../json";
 import { ExtensionType } from "./ExtensionType";
@@ -217,6 +217,23 @@ export class ReadDecoder extends Read {
   readBigNumber(): BigNumber {
     const str = this.readString();
     return BigNumber.fromString(str);
+  }
+
+  readBigFraction(): BigFraction {
+    return new BigFraction(this.readBigInt(), this.readBigInt());
+  }
+
+  readFraction<T extends number>(): Fraction<T> {
+    let numerator: T;
+    let denominator: T;
+    if (isSigned<T>()) {
+      numerator = <T>this._readInt64();
+      denominator = <T>this._readInt64();
+    } else {
+      numerator = <T>this._readUInt64();
+      denominator = <T>this._readUInt64();
+    }
+    return new Fraction<T>(numerator, denominator);
   }
 
   readJSON(): JSON.Value {
@@ -453,6 +470,20 @@ export class ReadDecoder extends Read {
       return null;
     }
     return this.readBigNumber();
+  }
+
+  readOptionalBigFraction(): BigFraction | null {
+    if (this.isNextNil()) {
+      return null;
+    }
+    return this.readBigFraction();
+  }
+
+  readOptionalFraction<T extends number>(): Fraction<T> | null {
+    if (this.isNextNil()) {
+      return null;
+    }
+    return this.readFraction<T>();
   }
 
   readOptionalJSON(): JSON.Value | null {

@@ -1,7 +1,7 @@
 import { Write } from "../msgpack/Write";
 import { WriteSizer } from "../msgpack/WriteSizer";
 import { WriteEncoder } from "../msgpack/WriteEncoder";
-import { BigInt, BigNumber } from "../math";
+import { BigInt, BigNumber, BigFraction, Fraction } from "../math";
 import { JSON } from "../json";
 
 function fill(arr: Array<u8>): ArrayBuffer {
@@ -260,6 +260,7 @@ describe("WriteEncoder", () => {
       new Case<string>("Empty String", "", [160]),
       new Case<string>("5-char String", "hello", [165, 104, 101, 108, 108, 111]),
       new Case<string>("11-char String", "hello world", [171, 104, 101, 108, 108, 111, 32, 119, 111, 114, 108, 100]),
+      new Case<string>("Number String", "3124124512", [170,51,49,50,52,49,50,52,53,49,50]),
     ];
 
     for (let i: i32 = 0; i < cases.length; ++i) {
@@ -311,6 +312,55 @@ describe("WriteEncoder", () => {
       const buffer = new ArrayBuffer(sizer.length);
       const encoder = new WriteEncoder(buffer, sizer);
       encoder.writeBigNumber(testcase.input);
+
+      const actual = encoder._view.buffer;
+      const expected = fill(testcase.want);
+      expect(actual).toStrictEqual(expected);
+    }
+  });
+
+  it("TestWriteBigFraction", () => {
+    const numerator: BigInt = BigInt.fromString("3124124512598273468017578125");
+    const denominator: BigInt = BigInt.fromString("3124124512");
+    const numeratorSerialized: u8[] = [188, 51, 49, 50, 52, 49, 50, 52, 53, 49, 50, 53, 57, 56,
+      50, 55, 51, 52, 54, 56, 48, 49, 55, 53, 55, 56, 49, 50, 53];
+    const denominatorSerialized: u8[] = [170,51,49,50,52,49,50,52,53,49,50];
+    const cases = [
+      new Case<BigFraction>("BigFraction", new BigFraction(numerator, denominator),
+        numeratorSerialized.concat(denominatorSerialized)
+      ),
+    ];
+
+    for (let i: i32 = 0; i < cases.length; ++i) {
+      const testcase = cases[i];
+      const sizer = new WriteSizer();
+      sizer.writeBigFraction(testcase.input);
+      const buffer = new ArrayBuffer(sizer.length);
+      const encoder = new WriteEncoder(buffer, sizer);
+      encoder.writeBigFraction(testcase.input);
+
+      const actual = encoder._view.buffer;
+      const expected = fill(testcase.want);
+      expect(actual).toStrictEqual(expected);
+    }
+  });
+
+  it("TestWriteFraction", () => {
+    const numeratorSerialized: u8[] =   [210, 0, 0, 128, 0];
+    const denominatorSerialized: u8[] = [209, 255, 127];
+    const cases = [
+      new Case<Fraction<i32>>("Fraction", new Fraction<i32>(32768, -129),
+        numeratorSerialized.concat(denominatorSerialized)
+      ),
+    ];
+
+    for (let i: i32 = 0; i < cases.length; ++i) {
+      const testcase = cases[i];
+      const sizer = new WriteSizer();
+      sizer.writeFraction(testcase.input);
+      const buffer = new ArrayBuffer(sizer.length);
+      const encoder = new WriteEncoder(buffer, sizer);
+      encoder.writeFraction(testcase.input);
 
       const actual = encoder._view.buffer;
       const expected = fill(testcase.want);

@@ -4590,12 +4590,12 @@ arrify@^2.0.1:
   resolved "https://registry.yarnpkg.com/arrify/-/arrify-2.0.1.tgz#c9655e9331e0abcd588d2a7cad7e9956f66701fa"
   integrity sha512-3duEwti880xqi4eAMN8AyR4a0ByT90zoYdLlevfrvU43vb0YZwZVfxOgxWrLXXXpyugL0hNZc9G6BiB5B3nUug==
 
-as-bigint@0.5.3, as-bigint@^0.5.1:
+as-bigint@0.5.3, as-bigint@^0.5.1, as-bigint@^0.5.3:
   version "0.5.3"
   resolved "https://registry.yarnpkg.com/as-bigint/-/as-bigint-0.5.3.tgz#a0647d0b7ce835077aca33115e71eb26a83df8be"
   integrity sha512-tg9iTO/vPeovOM5CSk1WxYcsfBd/cd3twhBW5PrpcGUfiSEXlPB69eOxFKvSbZnpuDxBAyQ4YBgEkfnYL89Czw==
 
-as-bignumber@0.2.0:
+as-bignumber@0.2.0, as-bignumber@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/as-bignumber/-/as-bignumber-0.2.0.tgz#13feb2e5054c8a2d557618de2e507af39cfb7532"
   integrity sha512-Y12DyJoO1fqzc/KdosQIw/ri7NgHPZNIKoIaQ775sh/vZ/dlg50tu0GQP5npu0LJdSXzpuzqKkOfAPhdhh07QA==
@@ -4606,6 +4606,14 @@ as-container@0.6.1:
   version "0.6.1"
   resolved "https://registry.yarnpkg.com/as-container/-/as-container-0.6.1.tgz#94806a91e96b68622c55f301fc04e6339a1228c2"
   integrity sha512-cgQ7P/dQAGeU2lLhPpinThYfFcUw3HzV8b00CoqV+l5Tsgpl7xhXdoc/2srCyK0um1BVAQwlrEpNTtthzkMF+g==
+
+as-fraction@0.3.1:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/as-fraction/-/as-fraction-0.3.1.tgz#14dc3797318864855a68581a63252ecd3fdb2843"
+  integrity sha512-NS8/6FB9JIzv25vwGBjt1fy5xFIgucoHJ3y6jrtuyS6b1qYmE4xj8CZ36VjWbDbA2QTYWjheZcRVsBOXq9XQXg==
+  dependencies:
+    as-bigint "^0.5.3"
+    as-bignumber "^0.2.0"
 
 asap@^2.0.0, asap@~2.0.6:
   version "2.0.6"

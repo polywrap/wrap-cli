@@ -4,7 +4,7 @@ import { Format } from "./Format";
 import { ExtensionType } from "./ExtensionType";
 import { Write } from "./Write";
 import { throwArrayIndexOutOfRange } from "./utils";
-import { BigInt, BigNumber } from "../math";
+import { BigInt, BigNumber, BigFraction, Fraction } from "../math";
 import { Context } from "../debug";
 import { JSON } from "../json";
 
@@ -149,6 +149,23 @@ export class WriteEncoder extends Write {
   writeBigNumber(value: BigNumber): void {
     const str = value.toString();
     this.writeString(str);
+  }
+
+  writeBigFraction(value: BigFraction): void {
+    const str1 = value.numerator.toString();
+    const str2 = value.denominator.toString();
+    this.writeString(str1);
+    this.writeString(str2);
+  }
+
+  writeFraction<T extends number>(value: Fraction<T>): void {
+    if (isSigned<T>()) {
+      this.writeInt32(<i32>value.numerator);
+      this.writeInt32(<i32>value.denominator);
+    } else {
+      this.writeUInt32(<i32>value.numerator);
+      this.writeUInt32(<i32>value.denominator);
+    }
   }
 
   writeJSON(value: JSON.Value): void {
@@ -350,6 +367,24 @@ export class WriteEncoder extends Write {
     }
 
     this.writeBigNumber(value);
+  }
+
+  writeOptionalBigFraction(value: BigFraction | null): void {
+    if (value === null) {
+      this.writeNil();
+      return;
+    }
+
+    this.writeBigFraction(value);
+  }
+
+  writeOptionalFraction<T extends number>(value: Fraction<T> | null): void {
+    if (value === null) {
+      this.writeNil();
+      return;
+    }
+
+    this.writeFraction<T>(value);
   }
 
   writeOptionalJSON(value: JSON.Value | null): void {
