@@ -9,6 +9,7 @@ import {
 } from "../abi";
 import { extractImportedDefinition } from "./utils/imported-types-utils";
 import {
+  extractEnvDirective,
   extractInputValueDefinition,
   extractListType,
   extractNamedType,
@@ -31,7 +32,7 @@ const visitorEnter = (
   state: State
 ) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
-    const imported = extractImportedDefinition(node, true);
+    const imported = extractImportedDefinition(node, "module");
 
     if (!imported) {
       return;
@@ -80,6 +81,13 @@ const visitorEnter = (
       return: returnType,
       comment: node.description?.value,
     });
+
+    const envDirDefinition = extractEnvDirective(node);
+
+    if (envDirDefinition) {
+      method.env = envDirDefinition;
+    }
+
     importDef.methods.push(method);
     state.currentMethod = method;
     state.currentReturn = returnType;

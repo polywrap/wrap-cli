@@ -9,7 +9,8 @@ export const hasImports: AbiTransforms = {
         return (
           abi.importedEnumTypes.length ||
           abi.importedObjectTypes.length ||
-          abi.importedModuleTypes.length
+          abi.importedModuleTypes.length ||
+          abi.importedEnvTypes.length
         );
       },
     }),

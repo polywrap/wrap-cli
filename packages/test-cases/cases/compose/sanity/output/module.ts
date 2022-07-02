@@ -24,13 +24,10 @@ import {
 export const abi: Abi = {
   ...createAbi(),
   envType: createEnvDefinition({
-      sanitized: {
-        ...createObjectDefinition({ type: "Env" }),
-        properties: [
-          createScalarPropertyDefinition({ name: "foo", type: "String", required: true }),
-        ],
-      }
-    }),
+    properties: [
+      createScalarPropertyDefinition({ name: "foo", type: "String", required: true }),
+    ],
+  }),
   enumTypes: [],
   interfaceTypes: [
     createInterfaceDefinition({

@@ -431,8 +431,6 @@ export class Compiler {
       __wrap_abort: () => {},
       __wrap_debug_log: () => {},
       __wrap_load_env: () => {},
-      __wrap_sanitize_env_args: () => {},
-      __wrap_sanitize_env_result: () => {},
     };
 
     try {
