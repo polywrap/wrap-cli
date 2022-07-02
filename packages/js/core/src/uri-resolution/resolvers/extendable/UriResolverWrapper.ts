@@ -11,9 +11,8 @@ import { getEnvFromUriOrResolutionStack } from "../getEnvFromUriOrResolutionStac
 import {
   DeserializeManifestOptions,
   deserializeWrapManifest,
-} from "@polywrap/wrap-manifest-schemas";
+} from "@polywrap/wrap-manifest-types-js";
 import { Tracer } from "@polywrap/tracing-js";
-import { msgpackDecode } from "../../../msgpack";
 
 export class UriResolverWrapper implements UriResolver {
   constructor(
@@ -53,7 +52,6 @@ export class UriResolverWrapper implements UriResolver {
       // meaning the URI resolver can also be used as an Wrapper resolver
       const manifest = deserializeWrapManifest(
         result.manifest,
-        msgpackDecode,
         this.deserializeOptions
       );
 

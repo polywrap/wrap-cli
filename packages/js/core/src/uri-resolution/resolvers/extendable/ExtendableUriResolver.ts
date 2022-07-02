@@ -4,13 +4,14 @@ import {
   WrapperCache,
   getImplementations,
   coreInterfaceUris,
-  DeserializeManifestOptions,
 } from "../../..";
 import { CreateWrapperFunc } from "./types/CreateWrapperFunc";
 import { UriResolutionResult } from "../../core/types/UriResolutionResult";
 import { UriResolver, UriResolutionStack } from "../../core";
 import { UriResolverWrapper } from "./UriResolverWrapper";
 import { Queue } from "../../../utils/Queue";
+
+import { DeserializeManifestOptions } from "@polywrap/wrap-manifest-types-js";
 
 export type ExtendableUriResolverResult = UriResolutionResult & {
   implementationUri?: Uri;
