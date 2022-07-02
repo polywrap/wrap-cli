@@ -339,12 +339,13 @@ describe("WriteEncoder Option types", () => {
   it("TestWriteOptionalBigFraction", () => {
     const numerator: BigInt = BigInt.fromString("3124124512598273468017578125");
     const denominator: BigInt = BigInt.fromString("3124124512");
+    const numeratorSerialized: u8[] = [188, 51, 49, 50, 52, 49, 50, 52, 53, 49, 50, 53, 57, 56,
+      50, 55, 51, 52, 54, 56, 48, 49, 55, 53, 55, 56, 49, 50, 53];
+    const denominatorSerialized: u8[] = [170,51,49,50,52,49,50,52,53,49,50];
     const cases = [
       new Case<BigFraction | null>("none", null, [192]),
       new Case<BigFraction | null>("BigFraction", new BigFraction(numerator, denominator),
-        [146, 188, 51, 49, 50, 52, 49, 50, 52, 53, 49, 50, 53, 57, 56,
-          50, 55, 51, 52, 54, 56, 48, 49, 55, 53, 55, 56, 49, 50, 53,
-          170,51,49,50,52,49,50,52,53,49,50]
+        numeratorSerialized.concat(denominatorSerialized)
       ),
     ];
 
@@ -362,25 +363,23 @@ describe("WriteEncoder Option types", () => {
     }
   });
 
-  it("TestWriteOptionalFraction", () => {
+  it("TestWriteFraction", () => {
+    const numeratorSerialized: u8[] =   [210, 0, 0, 128, 0];
+    const denominatorSerialized: u8[] = [209, 255, 127];
     const cases = [
       new Case<Fraction<i32> | null>("none", null, [192]),
       new Case<Fraction<i32> | null>("Fraction", new Fraction<i32>(32768, -129),
-        [146, 210, 0, 0, 128, 0, 209, 255, 127]
+        numeratorSerialized.concat(denominatorSerialized)
       ),
     ];
 
     for (let i: i32 = 0; i < cases.length; ++i) {
       const testcase = cases[i];
       const sizer = new WriteSizer();
-      sizer.writeOptionalFraction(testcase.input, (writer: Write, item: i32) => {
-        writer.writeInt32(item);
-      });
+      sizer.writeOptionalFraction(testcase.input);
       const buffer = new ArrayBuffer(sizer.length);
       const encoder = new WriteEncoder(buffer, sizer);
-      encoder.writeOptionalFraction(testcase.input, (writer: Write, item: i32) => {
-        writer.writeInt32(item);
-      });
+      encoder.writeOptionalFraction(testcase.input);
 
       const actual = encoder._view.buffer;
       const expected = fill(testcase.want);

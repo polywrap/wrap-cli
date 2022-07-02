@@ -152,21 +152,42 @@ export class WriteEncoder extends Write {
   }
 
   writeBigFraction(value: BigFraction): void {
-    const arr = [value.numerator.toString(), value.denominator.toString()];
-    const fn: (writer: Write, item: string) => void = (
-      writer: Write,
-      item: string
-    ) => {
-      writer.writeString(item);
-    };
-    this.writeArray<string>(arr, fn);
+    const numerator = value.numerator.toString();
+    const denominator = value.denominator.toString();
+    this.writeString(numerator);
+    this.writeString(denominator);
   }
 
-  writeFraction<T extends number>(
-    value: Fraction<T>,
-    fn: (writer: Write, item: T) => void
-  ): void {
-    this.writeArray<T>(value.toArray(), fn);
+  writeFraction<T extends number>(value: Fraction<T>): void {
+    if (isSigned<T>()) {
+      switch (sizeof<T>()) {
+        case sizeof<i8>():
+          this.writeInt8(<i8>value.numerator);
+          this.writeInt8(<i8>value.denominator);
+          break;
+        case sizeof<i16>():
+          this.writeInt16(<i16>value.numerator);
+          this.writeInt16(<i16>value.denominator);
+          break;
+        default:
+          this.writeInt32(<i32>value.numerator);
+          this.writeInt32(<i32>value.denominator);
+      }
+    } else {
+      switch (sizeof<T>()) {
+        case sizeof<u8>():
+          this.writeUInt8(<u8>value.numerator);
+          this.writeUInt8(<u8>value.denominator);
+          break;
+        case sizeof<u16>():
+          this.writeUInt16(<u16>value.numerator);
+          this.writeUInt16(<u16>value.denominator);
+          break;
+        default:
+          this.writeUInt32(<u32>value.numerator);
+          this.writeUInt32(<u32>value.denominator);
+      }
+    }
   }
 
   writeJSON(value: JSON.Value): void {
@@ -375,19 +396,17 @@ export class WriteEncoder extends Write {
       this.writeNil();
       return;
     }
+
     this.writeBigFraction(value);
   }
 
-  writeOptionalFraction<T extends number>(
-    value: Fraction<T> | null,
-    fn: (writer: Write, item: T) => void
-  ): void {
+  writeOptionalFraction<T extends number>(value: Fraction<T> | null): void {
     if (value === null) {
       this.writeNil();
       return;
     }
 
-    this.writeFraction<T>(value, fn);
+    this.writeFraction<T>(value);
   }
 
   writeOptionalJSON(value: JSON.Value | null): void {

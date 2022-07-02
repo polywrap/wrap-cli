@@ -220,18 +220,29 @@ export class ReadDecoder extends Read {
   }
 
   readBigFraction(): BigFraction {
-    const fn: (reader: Read) => string = (reader: Read): string => {
-      return reader.readString();
-    };
-    const arr = this.readArray<string>(fn);
-    const numerator: BigInt = BigInt.fromString(arr[0]);
-    const denominator: BigInt = BigInt.fromString(arr[1]);
-    return new BigFraction(numerator, denominator);
+    return new BigFraction(this.readBigInt(), this.readBigInt());
   }
 
-  readFraction<T extends number>(fn: (reader: Read) => T): Fraction<T> {
-    const arr = this.readArray<T>(fn);
-    return new Fraction<T>(arr[0], arr[1]);
+  readFraction<T extends number>(): Fraction<T> {
+    if (isSigned<T>()) {
+      switch (sizeof<T>()) {
+        case sizeof<i8>():
+          return new Fraction<T>(<T>this.readInt8(), <T>this.readInt8());
+        case sizeof<i16>():
+          return new Fraction<T>(<T>this.readInt16(), <T>this.readInt16());
+        default:
+          return new Fraction<T>(<T>this.readInt32(), <T>this.readInt32());
+      }
+    } else {
+      switch (sizeof<T>()) {
+        case sizeof<u8>():
+          return new Fraction<T>(<T>this.readUInt8(), <T>this.readUInt8());
+        case sizeof<u16>():
+          return new Fraction<T>(<T>this.readUInt16(), <T>this.readUInt16());
+        default:
+          return new Fraction<T>(<T>this.readUInt32(), <T>this.readUInt32());
+      }
+    }
   }
 
   readJSON(): JSON.Value {
@@ -477,13 +488,11 @@ export class ReadDecoder extends Read {
     return this.readBigFraction();
   }
 
-  readOptionalFraction<T extends number>(
-    fn: (reader: Read) => T
-  ): Fraction<T> | null {
+  readOptionalFraction<T extends number>(): Fraction<T> | null {
     if (this.isNextNil()) {
       return null;
     }
-    return this.readFraction<T>(fn);
+    return this.readFraction<T>();
   }
 
   readOptionalJSON(): JSON.Value | null {

@@ -23,10 +23,7 @@ export abstract class Write {
   abstract writeBigInt(value: BigInt): void;
   abstract writeBigNumber(value: BigNumber): void;
   abstract writeBigFraction(value: BigFraction): void;
-  abstract writeFraction<T extends number>(
-    value: Fraction<T>,
-    fn: (writer: Write, item: T) => void
-  ): void;
+  abstract writeFraction<T extends number>(value: Fraction<T>): void;
   abstract writeJSON(value: JSON.Value): void;
   abstract writeArrayLength(length: u32): void;
   abstract writeArray<T>(
@@ -60,8 +57,7 @@ export abstract class Write {
   abstract writeOptionalBigNumber(value: BigNumber | null): void;
   abstract writeOptionalBigFraction(value: BigFraction | null): void;
   abstract writeOptionalFraction<T extends number>(
-    value: Fraction<T> | null,
-    fn: (writer: Write, item: T) => void
+    value: Fraction<T> | null
   ): void;
   abstract writeOptionalJSON(value: JSON.Value | null): void;
   abstract writeOptionalArray<T>(
