@@ -8,7 +8,7 @@ import {
 } from "./manifests";
 import { resetDir } from "../system";
 
-import { PluginManifest } from "@polywrap/polywrap-manifest-schemas";
+import { PluginManifest } from "@polywrap/polywrap-manifest-types-js";
 import { bindSchema, BindOutput, BindOptions } from "@polywrap/schema-bind";
 import { ComposerOutput } from "@polywrap/schema-compose";
 import { Abi } from "@polywrap/schema-parse";

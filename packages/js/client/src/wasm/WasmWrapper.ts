@@ -7,17 +7,17 @@ import {
   InvokeResult,
   InvocableResult,
   Wrapper,
-  WrapManifest,
   Uri,
   Client,
   combinePaths,
   Env,
   UriResolverInterface,
   GetFileOptions,
-  msgpackEncode,
   GetManifestOptions,
   isBuffer,
 } from "@polywrap/core-js";
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
+import { msgpackEncode } from "@polywrap/msgpack-js";
 import { Tracer } from "@polywrap/tracing-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 

@@ -1,15 +1,15 @@
 /* eslint-disable prefer-const */
-import { DeployerHandler } from "../lib/deploy/deployer";
 import { Command, Program } from "./types";
-
 import {
   intlMsg,
   PolywrapProject,
   defaultPolywrapManifest,
   DeployPackage,
-  DeployManifest,
+  DeployerHandler,
   parseWasmManifestFileOption,
-} from "@polywrap/polywrap-manifest-schemas";
+} from "../lib";
+
+import { DeployManifest } from "@polywrap/polywrap-manifest-types-js";
 import fs from "fs";
 import nodePath from "path";
 import { print } from "gluegun";

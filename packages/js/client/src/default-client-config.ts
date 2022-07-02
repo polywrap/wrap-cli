@@ -10,8 +10,8 @@ import {
   CacheResolver,
   PluginResolver,
   RedirectsResolver,
-  WrapManifest,
 } from "@polywrap/core-js";
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
 import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";

@@ -2,12 +2,14 @@ import {
   displayPath,
   withSpinner,
   intlMsg,
+} from "../../";
+
+import {
   BuildManifest,
   PolywrapManifest,
   MetaManifest,
   PluginManifest,
-} from "../../";
-
+} from "@polywrap/polywrap-manifest-types-js";
 import { writeFileSync, normalizePath } from "@polywrap/os-js";
 import YAML from "js-yaml";
 import path from "path";

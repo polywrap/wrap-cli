@@ -8,11 +8,11 @@ import {
   Uri,
   GetFileOptions,
   Env,
-  msgpackDecode,
   GetManifestOptions,
   isBuffer,
-  WrapManifest,
 } from "@polywrap/core-js";
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
+import { msgpackDecode } from "@polywrap/msgpack-js";
 import { Tracer } from "@polywrap/tracing-js";
 
 export class PluginWrapper extends Wrapper {
