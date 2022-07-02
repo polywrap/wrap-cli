@@ -220,20 +220,18 @@ export class ReadDecoder extends Read {
   }
 
   readBigFraction(): BigFraction {
-    return new BigFraction(this.readBigInt(), this.readBigInt());
+    const fn: (reader: Read) => string = (reader: Read): string => {
+      return reader.readString();
+    };
+    const arr = this.readArray<string>(fn);
+    const numerator: BigInt = BigInt.fromString(arr[0]);
+    const denominator: BigInt = BigInt.fromString(arr[1]);
+    return new BigFraction(numerator, denominator);
   }
 
-  readFraction<T extends number>(): Fraction<T> {
-    let numerator: T;
-    let denominator: T;
-    if (isSigned<T>()) {
-      numerator = <T>this._readInt64();
-      denominator = <T>this._readInt64();
-    } else {
-      numerator = <T>this._readUInt64();
-      denominator = <T>this._readUInt64();
-    }
-    return new Fraction<T>(numerator, denominator);
+  readFraction<T extends number>(fn: (reader: Read) => T): Fraction<T> {
+    const arr = this.readArray<T>(fn);
+    return new Fraction<T>(arr[0], arr[1]);
   }
 
   readJSON(): JSON.Value {
@@ -479,11 +477,13 @@ export class ReadDecoder extends Read {
     return this.readBigFraction();
   }
 
-  readOptionalFraction<T extends number>(): Fraction<T> | null {
+  readOptionalFraction<T extends number>(
+    fn: (reader: Read) => T
+  ): Fraction<T> | null {
     if (this.isNextNil()) {
       return null;
     }
-    return this.readFraction<T>();
+    return this.readFraction<T>(fn);
   }
 
   readOptionalJSON(): JSON.Value | null {

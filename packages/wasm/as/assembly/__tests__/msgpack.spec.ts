@@ -145,7 +145,9 @@ function serializeSanity(writer: Write, type: Sanity): void {
   writer.writeString("bigfraction");
   writer.writeBigFraction(type.bigfraction);
   writer.writeString("fraction");
-  writer.writeFraction(type.fraction);
+  writer.writeFraction(type.fraction, (writer: Write, item: i32) => {
+    writer.writeInt32(item);
+  });
   writer.writeString("json");
   writer.writeJSON(type.json);
   writer.writeString("array");
@@ -216,7 +218,9 @@ function deserializeSanity(reader: Read, type: Sanity): void {
     } else if (field == "bigfraction") {
       type.bigfraction = reader.readBigFraction();
     } else if (field == "fraction") {
-      type.fraction = reader.readFraction<i32>();
+      type.fraction = reader.readFraction<i32>((reader: Read): i32 => {
+        return reader.readInt32();
+      });
     } else if (field == "json") {
       type.json = reader.readJSON();
     } else if (field == "largeStr") {
@@ -300,7 +304,9 @@ function deserializeWithOverflow(reader: Read, type: Sanity): void {
     } else if (field == "bigfraction") {
       type.bigfraction = reader.readBigFraction();
     } else if (field == "fraction") {
-      type.fraction = reader.readFraction<i32>();
+      type.fraction = reader.readFraction<i32>((reader: Read): i32 => {
+        return reader.readInt32();
+      });
     } else if (field == "json") {
       type.json = reader.readJSON();
     } else if (field == "bytes") {
@@ -372,7 +378,9 @@ function deserializeWithInvalidTypes(reader: Read, type: Sanity): void {
     } else if (field == "bigfraction") {
       type.bigfraction = reader.readBigFraction();
     } else if (field == "fraction") {
-      type.fraction = reader.readFraction<i32>();
+      type.fraction = reader.readFraction<i32>((reader: Read): i32 => {
+        return reader.readInt32();
+      });
     } else if (field == "json") {
       type.json = reader.readJSON();
     } else if (field == "largeStr") {

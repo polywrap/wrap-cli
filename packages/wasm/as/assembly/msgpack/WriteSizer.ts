@@ -124,20 +124,21 @@ export class WriteSizer extends Write {
   }
 
   writeBigFraction(value: BigFraction): void {
-    const str1 = value.numerator.toString();
-    const str2 = value.denominator.toString();
-    this.writeString(str1);
-    this.writeString(str2);
+    const arr = [value.numerator.toString(), value.denominator.toString()];
+    const fn: (writer: Write, item: string) => void = (
+      writer: Write,
+      item: string
+    ) => {
+      writer.writeString(item);
+    };
+    this.writeArray<string>(arr, fn);
   }
 
-  writeFraction<T extends number>(value: Fraction<T>): void {
-    if (isSigned<T>()) {
-      this.writeInt32(<i32>value.numerator);
-      this.writeInt32(<i32>value.denominator);
-    } else {
-      this.writeUInt32(<i32>value.numerator);
-      this.writeUInt32(<i32>value.denominator);
-    }
+  writeFraction<T extends number>(
+    value: Fraction<T>,
+    fn: (writer: Write, item: T) => void
+  ): void {
+    this.writeArray<T>(value.toArray(), fn);
   }
 
   writeJSON(value: JSON.Value): void {
@@ -338,13 +339,16 @@ export class WriteSizer extends Write {
     this.writeBigFraction(value);
   }
 
-  writeOptionalFraction<T extends number>(value: Fraction<T> | null): void {
+  writeOptionalFraction<T extends number>(
+    value: Fraction<T> | null,
+    fn: (writer: Write, item: T) => void
+  ): void {
     if (value === null) {
       this.writeNil();
       return;
     }
 
-    this.writeFraction<T>(value);
+    this.writeFraction<T>(value, fn);
   }
 
   writeOptionalJSON(value: JSON.Value | null): void {

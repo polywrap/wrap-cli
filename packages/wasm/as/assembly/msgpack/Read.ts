@@ -21,7 +21,7 @@ export abstract class Read {
   abstract readBigInt(): BigInt;
   abstract readBigNumber(): BigNumber;
   abstract readBigFraction(): BigFraction;
-  abstract readFraction<T extends number>(): Fraction<T>;
+  abstract readFraction<T extends number>(fn: (reader: Read) => T): Fraction<T>;
   abstract readJSON(): JSON.Value;
   abstract readArrayLength(): u32;
   abstract readArray<T>(fn: (reader: Read) => T): Array<T>;
@@ -49,7 +49,9 @@ export abstract class Read {
   abstract readOptionalBigInt(): BigInt | null;
   abstract readOptionalBigNumber(): BigNumber | null;
   abstract readOptionalBigFraction(): BigFraction | null;
-  abstract readOptionalFraction<T extends number>(): Fraction<T> | null;
+  abstract readOptionalFraction<T extends number>(
+    fn: (reader: Read) => T
+  ): Fraction<T> | null;
   abstract readOptionalJSON(): JSON.Value | null;
   abstract readOptionalArray<T>(fn: (decoder: Read) => T): Array<T> | null;
   abstract readOptionalMap<K, V>(
