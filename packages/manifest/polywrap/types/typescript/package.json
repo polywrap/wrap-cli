@@ -1,0 +1,33 @@
+{
+  "name": "@polywrap/polywrap-manifest-typescript-types",
+  "description": "Polywrap Manifest TypeScript Typings",
+  "version": "0.0.1-prealpha.91",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/polywrap/monorepo.git"
+  },
+  "main": "./build/index.js",
+  "scripts": {
+    "lint": "eslint --color -c ../../.eslintrc.js .",
+    "build": "ts-node ./scripts/generate.ts && tsc"
+  },
+  "dependencies": {
+    "@polywrap/polywrap-manifest-schemas": "0.0.1-prealpha.91",
+    "jsonschema": "1.4.0",
+    "js-yaml": "3.14.0",
+    "semver": "7.3.5"
+  },
+  "devDependencies": {
+    "@polywrap/os-js": "0.0.1-prealpha.91",
+    "@types/js-yaml": "3.11.1",
+    "typescript": "4.0.7",
+    "json-schema-to-typescript": "10.1.3",
+    "mustache": "4.0.1",
+    "ts-node": "8.10.2"
+  },
+  "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
+  "publishConfig": {
+    "access": "public"
+  }
+}

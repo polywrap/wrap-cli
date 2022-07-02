@@ -12,7 +12,7 @@
       "./packages/cli",
       "./packages/core-interfaces/**",
       "./packages/js/**",
-      "./packages/manifest-schemas/**",
+      "./packages/manifest/**",
       "./packages/schema/**",
       "./packages/templates/**",
       "./packages/test-cases",

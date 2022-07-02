@@ -1,0 +1,36 @@
+{
+  "id": "BuildManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format"
+  ],
+  "properties": {
+    "format": {
+      "description": "Polywrap build manifest format version.",
+      "type": "string",
+      "const": "0.0.1-prealpha.1"
+    },
+    "docker": {
+      "description": "Docker build artifact properties.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Docker image name.",
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9\\-\\_]+$"
+        },
+        "dockerfile": {
+          "description": "Docker image file name.",
+          "type": "string",
+          "pattern": "^\\.?\\.?\\/?(\\/[\\w\\-]+|\\/\\.\\.|\\/\\.)+\\/Dockerfile$"
+        }
+      }
+    },
+    "config": {
+      "description": "Custom configuration.",
+      "type": "object"
+    }
+  }
+}
