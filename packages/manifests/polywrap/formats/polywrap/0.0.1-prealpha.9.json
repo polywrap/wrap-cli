@@ -22,17 +22,17 @@
     "build": {
       "description": "Path to the wrapper build manifest file.",
       "type": "string",
-      "pattern": "^\\.?\\.?\\/?(\\/[\\w\\-]+|\\/\\.\\.|\\/\\.)+\\/[a-zA-Z0-9\\-_]+\\.(yaml|json)$"
+      "pattern": "^\\.?\\.?(\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)*\\/[\\w\\-\\.]+\\.(yaml|json)$"
     },
     "meta": {
       "description": "Path to wrapper metadata manifest file.",
       "type": "string",
-      "pattern": "^\\.?\\.?\\/?(\\/[\\w\\-]+|\\/\\.\\.|\\/\\.)+\\/[a-zA-Z0-9\\-_]+\\.(yaml|json)$"
+      "pattern": "^\\.?\\.?(\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)*\\/[\\w\\-\\.]+\\.(yaml|json)$"
     },
     "deploy": {
       "description": "Path to wrapper deploy manifest file.",
       "type": "string",
-      "pattern": "^\\.?\\.?\\/?(\\/[\\w\\-]+|\\/\\.\\.|\\/\\.)+\\/[a-zA-Z0-9\\-_]+\\.(yaml|json)$"
+      "pattern": "^\\.?\\.?(\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)*\\/[\\w\\-\\.]+\\.(yaml|json)$"
     },
     "language": {
       "description": "Language in which the source code is written.",
@@ -42,12 +42,12 @@
     "module": {
       "description": "Path to the module's entry point.",
       "type": "string",
-      "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-]+|\\/\\.\\.|\\/\\.)+\\/)?[a-zA-Z0-9\\-_]+\\.?[\\w\\-]*$"
+      "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.?[\\w\\-\\.]*$"
     },
     "schema": {
       "description": "Path to the module's graphql schema.",
       "type": "string",
-      "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-]+|\\/\\.\\.|\\/\\.)+\\/)?[a-zA-Z0-9\\-_]+\\.graphql$"
+      "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.graphql$"
     },
     "import_redirects": {
       "description": "Redirects for the schema's imports.",
@@ -64,7 +64,7 @@
           "schema": {
             "description": "Path to a graphql schema to be used for the import.",
             "type": "string",
-            "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-]+|\\/\\.\\.|\\/\\.)+\\/)?[a-zA-Z0-9\\-_]+\\.graphql$"
+            "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.graphql$"
           }
         },
         "required": [

@@ -24,7 +24,7 @@
         "dockerfile": {
           "description": "Docker image file name.",
           "type": "string",
-          "pattern": "^\\.?\\.?\\/?(\\/[\\w\\-]+|\\/\\.\\.|\\/\\.)+\\/Dockerfile$"
+          "pattern": "^\\.?\\.?(\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)*\\/Dockerfile(.mustache)?$"
         }
       }
     },

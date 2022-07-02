@@ -22,12 +22,12 @@
     "build": {
       "description": "Path to the customized build manifest file.",
       "type": "string",
-      "pattern": "^\\.?\\.?\\/?(\\/[\\w\\-]+|\\/\\.\\.|\\/\\.)+\\/[a-zA-Z0-9\\-_]+\\.(yaml|json)$"
+      "pattern": "^\\.?\\.?(\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)*\\/[\\w\\-\\.]+\\.(yaml|json)$"
     },
     "meta": {
       "description": "Path to wrapper metadata manifest file.",
       "type": "string",
-      "pattern": "^\\.?\\.?\\/?(\\/[\\w\\-]+|\\/\\.\\.|\\/\\.)+\\/[a-zA-Z0-9\\-_]+\\.(yaml|json)$"
+      "pattern": "^\\.?\\.?(\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)*\\/[\\w\\-\\.]+\\.(yaml|json)$"
     },
     "language": {
       "description": "Language in which the source code is written.",
@@ -47,12 +47,12 @@
             "schema": {
               "description": "Path to graphql schema.",
               "type": "string",
-              "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-]+|\\/\\.\\.|\\/\\.)+\\/)?[a-zA-Z0-9\\-_]+\\.graphql$"
+              "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.graphql$"
             },
             "module": {
               "description": "Path to Polywrap implementation.",
               "type": "string",
-              "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-]+|\\/\\.\\.|\\/\\.)+\\/)?[a-zA-Z0-9\\-_]+\\.?[\\w\\-]*$"
+              "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.?[\\w\\-\\.]*$"
             }
           },
           "required": [
@@ -67,12 +67,12 @@
             "schema": {
               "description": "Path to graphql schema.",
               "type": "string",
-              "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-]+|\\/\\.\\.|\\/\\.)+\\/)?[a-zA-Z0-9\\-_]+\\.graphql$"
+              "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.graphql$"
             },
             "module": {
               "description": "Path to Polywrap implementation.",
               "type": "string",
-              "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-]+|\\/\\.\\.|\\/\\.)+\\/)?[a-zA-Z0-9\\-_]+\\.?[\\w\\-]*$"
+              "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.?[\\w\\-\\.]*$"
             }
           },
           "required": [

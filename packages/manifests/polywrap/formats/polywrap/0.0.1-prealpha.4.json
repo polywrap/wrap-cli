@@ -20,7 +20,7 @@
     "build": {
       "description": "Path to the customized build manifest file.",
       "type": "string",
-      "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-]+|\\/\\.\\.|\\/\\.)+\\/)?[a-zA-Z0-9\\-_]+\\.?[\\w\\-]*$"
+      "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.?[\\w\\-\\.]*$"
     },
     "language": {
       "description": "Language in which the source code is written.",
@@ -40,12 +40,12 @@
             "schema": {
               "description": "Path to graphql schema.",
               "type": "string",
-              "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-]+|\\/\\.\\.|\\/\\.)+\\/)?[a-zA-Z0-9\\-_]+\\.?[\\w\\-]*$"
+              "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.?[\\w\\-\\.]*$"
             },
             "module": {
               "description": "Path to Polywrap implementation.",
               "type": "string",
-              "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-]+|\\/\\.\\.|\\/\\.)+\\/)?[a-zA-Z0-9\\-_]+\\.?[\\w\\-]*$"
+              "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.?[\\w\\-\\.]*$"
             }
           },
           "required": [
@@ -60,12 +60,12 @@
             "schema": {
               "description": "Path to graphql schema.",
               "type": "string",
-              "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-]+|\\/\\.\\.|\\/\\.)+\\/)?[a-zA-Z0-9\\-_]+\\.?[\\w\\-]*$"
+              "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.?[\\w\\-\\.]*$"
             },
             "module": {
               "description": "Path to Polywrap implementation.",
               "type": "string",
-              "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-]+|\\/\\.\\.|\\/\\.)+\\/)?[a-zA-Z0-9\\-_]+\\.?[\\w\\-]*$"
+              "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.?[\\w\\-\\.]*$"
             }
           },
           "required": [

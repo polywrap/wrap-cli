@@ -21,7 +21,7 @@
         "dockerfile": {
           "description": "Docker image file name.",
           "type": "string",
-          "pattern": "^\\.?\\.?\\/?(\\/[\\w\\-]+|\\/\\.\\.|\\/\\.)+\\/Dockerfile$"
+          "pattern": "^\\.?\\.?(\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)*\\/Dockerfile(.mustache)?$"
         },
         "buildx": {
           "description": "Configuration options for Docker Buildx, set to true for default value.",
@@ -31,7 +31,7 @@
             "cache": {
               "description": "Path to cache directory, set to true for default value, set to false to disable caching.",
               "type": ["string", "boolean"],
-              "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-]+|\\/\\.\\.|\\/\\.)+\\/)?[a-zA-Z0-9\\-_]+\\.?[\\w\\-]*$"
+              "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.?[\\w\\-\\.]*$"
             },
             "removeBuilder": {
               "description": "Remove the builder instance.",

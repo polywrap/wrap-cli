@@ -31,7 +31,7 @@
     "icon": {
       "description": "Path to wrapper icon.",
       "type": "string",
-      "pattern": "^\\.?\\.?\\/?(\\/[\\w\\-]+|\\/\\.\\.|\\/\\.)+\\/[a-zA-Z0-9\\-_]+\\.(svg|png)$"
+      "pattern": "^\\.?\\.?(\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)*\\/[\\w\\-\\.]+\\.(svg|png)$"
     },
     "links": {
       "description": "Relevant web links.",
@@ -47,7 +47,7 @@
           "icon": {
             "description": "Web link icon.",
             "type": "string",
-            "pattern": "^\\.?\\.?\\/?(\\/[\\w\\-]+|\\/\\.\\.|\\/\\.)+\\/[a-zA-Z0-9\\-_]+\\.(svg|png)$"
+            "pattern": "^\\.?\\.?(\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)*\\/[\\w\\-\\.]+\\.(svg|png)$"
           },
           "url": {
             "description": "Url to the web link.",
@@ -79,12 +79,12 @@
           "query": {
             "description": "Path to graph ql file.",
             "type": "string",
-            "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-]+|\\/\\.\\.|\\/\\.)+\\/)?[a-zA-Z0-9\\-_]+\\.graphql$"
+            "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.graphql$"
           },
           "vars": {
             "description": "Query parameters.",
             "type": "string",
-            "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-]+|\\/\\.\\.|\\/\\.)+\\/)?[a-zA-Z0-9\\-_]+\\.json$"
+            "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.json$"
           }
         },
         "required": [

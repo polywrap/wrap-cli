@@ -1,6 +1,4 @@
 [
-  "module.wasm",
-  "polywrap.json",
-  "polywrap.build.json",
-  "schema.graphql"
+  "wrap.wasm",
+  "wrap.info"
 ]
