@@ -1,0 +1,5 @@
+#import { Module } into FileSystem from "wrap://ens/fs.polywrap.eth"
+
+type Module {
+  readFile(path: String!): Bytes!
+}

@@ -1,0 +1,7 @@
+format: 0.0.1-prealpha.3
+displayName: Simple Wrapper FS
+tags:
+ - wrapper
+subtext: test subtext
+description: test description
+repository: https://github.com/test/test
