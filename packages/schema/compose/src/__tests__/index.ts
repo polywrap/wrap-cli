@@ -16,7 +16,6 @@ export interface TestCase {
   name: string;
   input: ComposerOptions;
   output?: ComposerOutput;
-  error?: string;
 }
 
 type TestCases = {
@@ -75,10 +74,7 @@ async function importCase(
 
   // Fetch the output schemas
   const moduleSchema = readFileIfExists("output/module.graphql", directory);
-  const ModuleAbi = await readNamedExportIfExists<Abi>("abi", "output/module.ts", directory);
-
-  // Fetch the error if exists
-  const outputJson = readFileIfExists("output/output.json", directory)
+  const moduleAbi = await readNamedExportIfExists<Abi>("abi", "output/module.ts", directory);
 
   const resolveExternal = (uri: string): Promise<string> => {
     return Promise.resolve(readFileIfExists(`imports-ext/${uri}/schema.graphql`, directory) || "");
@@ -109,22 +105,10 @@ async function importCase(
 
   let output: ComposerOutput = { };
 
-  if (outputJson) {
-    const parsedOutput = JSON.parse(outputJson);
-
-    if (parsedOutput.error) {
-      return {
-        name,
-        input,
-        error: parsedOutput.error,
-      }
-    }
-  }
-
-  if (moduleSchema && ModuleAbi) {
+  if (moduleSchema && moduleAbi) {
     output = {
       schema: moduleSchema,
-      abi: ModuleAbi
+      abi: moduleAbi
     };
   }
 

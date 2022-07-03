@@ -256,4 +256,72 @@ describe("wasm-as test cases", () => {
       wrapperUri
     );
   });
+
+  it("simple env", async () => {
+    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-env-types`
+    const wrapperUri = `fs/${wrapperPath}/build`
+
+    await buildWrapper(
+      wrapperPath
+    );
+
+    await TestCases.runSimpleEnvTest(
+      await await getClient({
+        envs: [
+          {
+            uri: wrapperUri,
+            env: {
+              str: "module string",
+              requiredInt: 1,
+            },
+          },
+        ],
+      }), wrapperUri
+    );
+  })
+
+  it("complex env", async () => {
+    const baseWrapperEnvPaths = `${GetPathToTestWrappers()}/wasm-as/env-types`
+    const wrapperPath = `${baseWrapperEnvPaths}/main`
+    const externalWrapperPath = `${baseWrapperEnvPaths}/external`
+    const wrapperUri = `fs/${wrapperPath}/build`
+    const externalWrapperUri = `fs/${externalWrapperPath}/build`
+
+    await buildWrapper(externalWrapperPath);
+    await buildWrapper(wrapperPath);
+
+    await TestCases.runComplexEnvs(
+      await getClient({
+        envs: [
+          {
+            uri: wrapperUri,
+            env: {
+              object: {
+                prop: "object string",
+              },
+              str: "string",
+              optFilledStr: "optional string",
+              number: 10,
+              bool: true,
+              en: "FIRST",
+              array: [32, 23],
+            },
+          },
+          {
+            uri: externalWrapperUri,
+            env: {
+              externalArray: [1, 2, 3],
+              externalString: "iamexternal"
+            },
+          },
+        ],
+        redirects: [
+          {
+            from: "ens/externalenv.polywrap.eth",
+            to: externalWrapperUri
+          }
+        ]
+      }), wrapperUri
+    );
+  })
 });

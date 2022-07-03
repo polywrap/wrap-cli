@@ -4,8 +4,10 @@ import {
   createObjectPropertyDefinition,
   createImportedObjectDefinition,
   createScalarPropertyDefinition,
-  createAbi,
   Abi,
+  createAbi,
+  createImportedModuleDefinition,
+  createImportedEnvDefinition,
 } from "@polywrap/schema-parse";
 
 export const abi: Abi = {
@@ -15,7 +17,9 @@ export const abi: Abi = {
   moduleType: {
       ...createModuleDefinition({}),
       imports: [
-        { type: "Namespace_ExternalType" }
+        { type: "Namespace_ExternalType" },
+        { type: "Namespace_Env" },
+        { type: "Namespace_Module" }
       ],
       interfaces: [],
       methods: [
@@ -33,6 +37,52 @@ export const abi: Abi = {
       ],
     },
   enumTypes: [],
+  importedModuleTypes: [
+    {
+      ...createImportedModuleDefinition({
+        uri: "external.eth",
+        namespace: "Namespace",
+        isInterface: false,
+        nativeType: "Module",
+      }),
+      methods: [
+        {
+          ...createMethodDefinition({
+            name: "envMethod",
+            return: createScalarPropertyDefinition({
+              name: "envMethod",
+              type: "String",
+              required: true,
+            }),
+          }),
+          arguments: [
+            createScalarPropertyDefinition({
+              name: "arg",
+              type: "String",
+              required: true,
+            }),
+          ],
+        },
+        {
+          ...createMethodDefinition({
+            name: "optEnvMethod",
+            return: createScalarPropertyDefinition({
+              name: "optEnvMethod",
+              type: "String",
+              required: true,
+            }),
+          }),
+          arguments: [
+            createScalarPropertyDefinition({
+              name: "arg",
+              type: "String",
+              required: true,
+            }),
+          ],
+        },
+      ],
+    }
+  ],
   importedObjectTypes: [
     {
       ...createImportedObjectDefinition({
@@ -49,4 +99,20 @@ export const abi: Abi = {
       ],
     },
   ],
+  importedEnvTypes: [
+    {
+      ...createImportedEnvDefinition({
+        uri: "external.eth",
+        namespace: "Namespace",
+        nativeType: "Env",
+        type: "Namespace_Env"
+      }),
+      properties: [
+        createObjectPropertyDefinition({
+          name: "externalProp",
+          type: "Namespace_ExternalType"
+        })
+      ],
+    },
+  ]
 };

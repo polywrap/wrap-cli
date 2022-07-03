@@ -115,11 +115,13 @@ function resolveObjectOrEnumKind(
   const envType = abi.envType;
   customType = customType
     ? customType
-    : envType.client?.type === unresolved.type
-    ? envType.client
-    : envType.sanitized?.type === unresolved.type
-    ? envType.sanitized
+    : envType?.type === unresolved.type
+    ? envType
     : undefined;
+
+  customType = customType
+    ? customType
+    : abi.importedEnvTypes.find((type) => type.type === unresolved.type);
 
   if (!customType) {
     customType = abi.enumTypes.find((type) => type.type === unresolved.type);

@@ -24,7 +24,7 @@ impl WriteEncoder {
 
     pub fn write_negative_fixed_int(&mut self, value: i8) -> Result<(), EncodeError> {
         // From 0xe0 (0b11100000) taking last 5 bits, to 0xff (0b11111111), taking last 5 bits
-        assert!(-31 <= value && value <= 0);
+        assert!(-32 <= value && value <= 0);
         Format::set_format(self, Format::NegativeFixInt(value))
             .map_err(|e| EncodeError::FormatWriteError(e.to_string()))
     }

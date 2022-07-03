@@ -23,9 +23,10 @@ const languageTestCommands: Record<string, string[]> = {
     // "CI=false yarn build"
   ],
   "assemblyscript": [
-    "yarn build",
-    "yarn test:e2e",
-    "yarn test:workflow"
+    // Uncomment when env refactor is released
+    // "yarn build",
+    // "yarn test:e2e",
+    // "yarn test:workflow"
   ],
   "interface": [
     "yarn build"

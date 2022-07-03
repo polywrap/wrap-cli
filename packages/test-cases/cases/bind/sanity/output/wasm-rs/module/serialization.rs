@@ -284,3 +284,107 @@ pub fn write_object_method_result<W: Write>(result: &Option<AnotherType>, writer
     writer.context().pop();
     Ok(())
 }
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct ArgsOptionalEnvMethod {
+    pub object: AnotherType,
+    pub opt_object: Option<AnotherType>,
+    pub object_array: Vec<AnotherType>,
+    pub opt_object_array: Option<Vec<Option<AnotherType>>>,
+}
+
+pub fn deserialize_optional_env_method_args(args: &[u8]) -> Result<ArgsOptionalEnvMethod, DecodeError> {
+    let mut context = Context::new();
+    context.description = "Deserializing module-type: optional_env_method".to_string();
+
+    let mut reader = ReadDecoder::new(args, context);
+    let mut num_of_fields = reader.read_map_length()?;
+
+    let mut _object: AnotherType = AnotherType::new();
+    let mut _object_set = false;
+    let mut _opt_object: Option<AnotherType> = None;
+    let mut _object_array: Vec<AnotherType> = vec![];
+    let mut _object_array_set = false;
+    let mut _opt_object_array: Option<Vec<Option<AnotherType>>> = None;
+
+    while num_of_fields > 0 {
+        num_of_fields -= 1;
+        let field = reader.read_string()?;
+
+        match field.as_str() {
+            "object" => {
+                reader.context().push(&field, "AnotherType", "type found, reading argument");
+                let object = AnotherType::read(&mut reader)?;
+                _object = object;
+                _object_set = true;
+                reader.context().pop();
+            }
+            "optObject" => {
+                reader.context().push(&field, "Option<AnotherType>", "type found, reading argument");
+                let mut object: Option<AnotherType> = None;
+                if !reader.is_next_nil()? {
+                    object = Some(AnotherType::read(&mut reader)?);
+                } else {
+                    object = None;
+                }
+                _opt_object = object;
+                reader.context().pop();
+            }
+            "objectArray" => {
+                reader.context().push(&field, "Vec<AnotherType>", "type found, reading argument");
+                _object_array = reader.read_array(|reader| {
+                    let object = AnotherType::read(reader)?;
+                    Ok(object)
+                })?;
+                _object_array_set = true;
+                reader.context().pop();
+            }
+            "optObjectArray" => {
+                reader.context().push(&field, "Option<Vec<Option<AnotherType>>>", "type found, reading argument");
+                _opt_object_array = reader.read_optional_array(|reader| {
+                    let mut object: Option<AnotherType> = None;
+                    if !reader.is_next_nil()? {
+                        object = Some(AnotherType::read(reader)?);
+                    } else {
+                        object = None;
+                    }
+                    Ok(object)
+                })?;
+                reader.context().pop();
+            }
+            err => return Err(DecodeError::UnknownFieldName(err.to_string())),
+        }
+    }
+    if !_object_set {
+        return Err(DecodeError::MissingField("object: AnotherType.".to_string()));
+    }
+    if !_object_array_set {
+        return Err(DecodeError::MissingField("objectArray: [AnotherType].".to_string()));
+    }
+
+    Ok(ArgsOptionalEnvMethod {
+        object: _object,
+        opt_object: _opt_object,
+        object_array: _object_array,
+        opt_object_array: _opt_object_array,
+    })
+}
+
+pub fn serialize_optional_env_method_result(result: &Option<AnotherType>) -> Result<Vec<u8>, EncodeError> {
+    let mut encoder_context = Context::new();
+    encoder_context.description = "Serializing (encoding) module-type: optional_env_method".to_string();
+    let mut encoder = WriteEncoder::new(&[], encoder_context);
+    write_optional_env_method_result(result, &mut encoder)?;
+    Ok(encoder.get_buffer())
+}
+
+pub fn write_optional_env_method_result<W: Write>(result: &Option<AnotherType>, writer: &mut W) -> Result<(), EncodeError> {
+    writer.context().push("optionalEnvMethod", "Option<AnotherType>", "writing result");
+    if result.is_some() {
+        AnotherType::write(result.as_ref().unwrap(), writer)?;
+    } else {
+        writer.write_nil()?;
+    }
+    writer.context().pop();
+    Ok(())
+}
