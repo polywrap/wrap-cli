@@ -83,8 +83,8 @@ describe("wasm-wrapper", () => {
 
     expect(result.error).toBeFalsy();
     expect(result.data).toBeTruthy();
-    expect(result.data instanceof ArrayBuffer).toBeTruthy();
-    expect(msgpackDecode(result.data as ArrayBuffer)).toEqual("test");
+    expect(result.data instanceof Uint8Array).toBeTruthy();
+    expect(msgpackDecode(result.data as Uint8Array)).toEqual("test");
   });
 
   it("should invoke wrapper with custom redirects", async () => {
