@@ -17,25 +17,34 @@ import {
 } from "../..";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import fs from "fs";
+import path from "path";
 import { getClient } from "../utils/getClient";
-import { getClientWithEnsAndIpfs } from "../utils/getClientWithEnsAndIpfs";
 
 jest.setTimeout(200000);
 
 const simpleWrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple`;
 const simpleWrapperUri = new Uri(`fs/${simpleWrapperPath}/build`);
 
-const simpleStorageWrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-storage`;
-const simpleStorageWrapperUri = new Uri(`fs/${simpleStorageWrapperPath}/build`);
+const simpleFsWrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-fs`;
+const simpleFsWrapperUri = new Uri(`fs/${simpleFsWrapperPath}/build`);
+
+const tempFilePath = path.resolve(__dirname, "temp.txt");
 
 describe("wasm-wrapper", () => {
   beforeAll(async () => {
     await initTestEnvironment();
     await buildWrapper(simpleWrapperPath);
+    await buildWrapper(simpleFsWrapperPath);
+    if(fs.existsSync(tempFilePath)){
+      await fs.promises.rm(tempFilePath);
+    }
   });
 
   afterAll(async () => {
     await stopTestEnvironment();
+    if(fs.existsSync(tempFilePath)){
+      await fs.promises.rm(tempFilePath);
+    }
   });
 
   const mockPlugin = () => {
@@ -239,125 +248,71 @@ describe("wasm-wrapper", () => {
   });
 
   test("subscribe", async () => {
-    const client = await getClientWithEnsAndIpfs();
-
-    const deploy = await client.invoke<string>({
-      uri: simpleStorageWrapperUri.uri,
-      method: "deployContract",
-      args: {
-        connection: {
-          networkNameOrChainId: "testnet",
-        },
-      },
-    });
-
-    expect(deploy.error).toBeFalsy();
-    expect(deploy.data).toBeTruthy();
-    expect(deploy.data?.indexOf("0x")).toBeGreaterThan(-1);
-
-    const address = deploy.data;
+    const client = await getClient();
 
     // test subscription
-    let results: number[] = [];
+    let expectedResults: Uint8Array[] = [];
+    let results: Uint8Array[] = [];
     let value = 0;
 
     const setter = setInterval(async () => {
-      await client.invoke({
-        uri: simpleStorageWrapperUri.uri,
-        method: "setData",
-        args: {
-          address,
-          value: value++,
-          connection: {
-            networkNameOrChainId: "testnet",
-          },
-        },
-      });
+      const data = new Uint8Array([value++]);
+      await fs.promises.writeFile(tempFilePath, data);
+      expectedResults.push(data);
     }, 4000);
 
-    const getSubscription: Subscription<number> = client.subscribe<number>({
-      uri: simpleStorageWrapperUri.uri,
-      method: "getData",
+    const getSubscription: Subscription<Uint8Array> = client.subscribe<Uint8Array>({
+      uri: simpleFsWrapperUri.uri,
+      method: "readFile",
       args: {
-        address: address,
-        connection: {
-          networkNameOrChainId: "testnet"
-        }
+        path: tempFilePath,
       },
       frequency: { ms: 4500 },
     });
 
-    for await (let query of getSubscription) {
-      expect(query.error).toBeFalsy();
-      const val = query.data;
+    for await (let result of getSubscription) {
+      expect(result.error).toBeFalsy();
+      const val = result.data;
       if (val !== undefined) {
         results.push(val);
-        if (val >= 2) {
+        if (results.length >= 2) {
           break;
         }
       }
     }
     clearInterval(setter);
 
-    expect(results).toStrictEqual([0, 1, 2]);
+    expect(results).toStrictEqual(expectedResults);
   });
 
   test("subscription early stop", async () => {
-    const client = await getClientWithEnsAndIpfs();
-
-    const deploy = await client.invoke<string>({
-      uri: simpleStorageWrapperUri.uri,
-      method: "deployContract",
-      args: {
-        connection: {
-          networkNameOrChainId: "testnet",
-        },
-      },
-    });
-
-    expect(deploy.error).toBeFalsy();
-    expect(deploy.data).toBeTruthy();
-    expect(deploy.data?.indexOf("0x")).toBeGreaterThan(-1);
-
-    const address = deploy.data;
+    const client = await getClient();
 
     // test subscription
     let results: number[] = [];
     let value = 0;
 
     const setter = setInterval(async () => {
-      await client.invoke({
-        uri: simpleStorageWrapperUri.uri,
-        method: "setData",
-        args: {
-          address,
-          value: value++,
-          connection: {
-            networkNameOrChainId: "testnet",
-          },
-        },
-      });
+      const data = new Uint8Array([value++]);
+      await fs.promises.writeFile(tempFilePath, data);
     }, 4000);
 
-    const getSubscription: Subscription<number> = client.subscribe<number>({
-      uri: simpleStorageWrapperUri.uri,
-      method: "getData",
+    const getSubscription: Subscription<Uint8Array> = client.subscribe<Uint8Array>({
+      uri: simpleFsWrapperUri.uri,
+      method: "readFile",
       args: {
-        address: address,
-        connection: {
-          networkNameOrChainId: "testnet"          
-        }
+        path: tempFilePath
       },
       frequency: { ms: 4500 },
     });
 
     new Promise(async () => {
-      for await (let query of getSubscription) {
-        expect(query.error).toBeFalsy();
-        const val = query.data;
+      for await (let result of getSubscription) {
+        expect(result.error).toBeFalsy();
+        const val = result.data;
         if (val !== undefined) {
-          results.push(val);
-          if (val >= 2) {
+          results.push(val[0]);
+          if (val[0] >= 2) {
             break;
           }
         }

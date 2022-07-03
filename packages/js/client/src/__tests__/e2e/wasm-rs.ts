@@ -1,7 +1,3 @@
-import {
-  PolywrapClientConfig,
-  createPolywrapClient,
-} from "../..";
 import * as TestCases from "./test-cases";
 import {
   buildWrapper,
