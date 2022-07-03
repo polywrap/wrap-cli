@@ -47,7 +47,7 @@
     "test:cli": "lerna run test:ci --no-private --scope polywrap --concurrency 1",
     "version:apply": "lerna version $(cat VERSION) --exact --no-git-tag-version --yes",
     "postversion:apply": "git add . && git commit -m \"build(release): migrate to `cat ./VERSION`\"",
-    "publish:npm": "lerna exec --no-private --concurrency 1 -- npm publish --access public"
+    "publish:npm": "lerna exec --no-private --concurrency 1 -- yarn publish --access public --non-interactive --verbose"
   },
   "devDependencies": {
     "@types/prettier": "2.6.0",

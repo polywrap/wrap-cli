@@ -1,0 +1,8 @@
+{
+  "stdout": [
+    "Manifest loaded from ./polywrap.plugin.yaml",
+    "Generate types",
+    "Manifest written to ./build/polywrap.plugin.json"
+  ],
+  "exitCode": 0
+}

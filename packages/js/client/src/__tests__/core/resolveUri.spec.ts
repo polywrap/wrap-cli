@@ -163,7 +163,7 @@ describe("resolveUri", () => {
           uri: pluginUri.uri,
           plugin: {
             factory: () => {
-              return ({} as unknown) as PluginModule<void>;
+              return ({} as unknown) as PluginModule<{}>;
             },
             manifest: {
               schema: "",

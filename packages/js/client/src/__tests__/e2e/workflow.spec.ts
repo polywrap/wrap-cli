@@ -5,8 +5,8 @@ import {
   stopTestEnvironment,
   providers,
 } from "@polywrap/test-env-js";
-import { PolywrapClient } from "../..";
 import { getClientWithEnsAndIpfs } from "../utils/getClientWithEnsAndIpfs";
+import { JobResult, PolywrapClient } from "../..";
 import { outPropWorkflow, sanityWorkflow } from "./workflow-test-cases";
 
 jest.setTimeout(200000);
@@ -58,8 +58,8 @@ describe("workflow", () => {
     test("sanity workflow", async () => {
       await client.run({
         workflow: sanityWorkflow,
-        onExecution: async (id: string, data: unknown, error: unknown) => {
-          await tests[id](data, error);
+        onExecution: async (id: string, jobResult: JobResult) => {
+          await tests[id](jobResult.data, jobResult.error);
         },
       });
     });
@@ -67,8 +67,8 @@ describe("workflow", () => {
     test("workflow with output propagation", async () => {
       await client.run({
         workflow: outPropWorkflow,
-        onExecution: async (id: string, data: unknown, error: unknown) => {
-          await tests[id](data, error);
+        onExecution: async (id: string, jobResult: JobResult) => {
+          await tests[id](jobResult.data, jobResult.error);
         },
       });
     });

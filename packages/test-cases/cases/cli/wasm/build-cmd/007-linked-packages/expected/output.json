@@ -1,8 +1,6 @@
-{
-  "stdout": [
-    "Artifacts written to ./build from the image `polywrap-build-env-",
-    "Manifest written to ./build/polywrap.json",
-    "build/polywrap.json"
-  ],
-  "exitCode": 0
-}
+[
+  "module.wasm",
+  "polywrap.json",
+  "polywrap.build.json",
+  "schema.graphql"
+]

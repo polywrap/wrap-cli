@@ -78,7 +78,7 @@ describe("wasm-wrapper", () => {
       args: {
         arg: "test",
       },
-      noDecode: true,
+      encodeResult: true,
     });
 
     expect(result.error).toBeFalsy();
@@ -217,9 +217,9 @@ describe("wasm-wrapper", () => {
     })) as string;
     expect(fileStr).toEqual(schemaStr);
 
-    const fileBuffer: ArrayBuffer = (await client.getFile(simpleWrapperUri, {
+    const fileBuffer: Uint8Array = (await client.getFile(simpleWrapperUri, {
       path: manifest.schema!,
-    })) as ArrayBuffer;
+    })) as Uint8Array;
     const decoder = new TextDecoder("utf8");
     const text = decoder.decode(fileBuffer);
     expect(text).toEqual(schemaStr);
