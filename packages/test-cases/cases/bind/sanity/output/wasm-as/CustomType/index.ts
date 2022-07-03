@@ -4,6 +4,8 @@ import {
   Option,
   BigInt,
   BigNumber,
+  BigFraction,
+  Fraction,
   JSON
 } from "@polywrap/wasm-as";
 import {
@@ -30,6 +32,10 @@ export class CustomType {
   optBigint: BigInt | null;
   bignumber: BigNumber;
   optBignumber: BigNumber | null;
+  bigfraction: BigFraction;
+  optBigfraction: BigFraction | null;
+  fraction: Fraction<i32>;
+  optFraction: Fraction<i32> | null;
   json: JSON.Value;
   optJson: JSON.Value | null;
   bytes: ArrayBuffer;

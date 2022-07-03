@@ -10,6 +10,8 @@ import {
   InterfaceDefinition,
   capabilityTypes,
   MapDefinition,
+  DefinitionKind,
+  FractionDefinition,
 } from "../abi";
 import {
   extractInputValueDefinition,
@@ -63,16 +65,19 @@ const visitorEnter = (abi: Abi, state: State) => ({
       return;
     }
 
-    const name = node.name.value;
-
-    const { type, def } = extractAnnotateDirective(node, name);
+    const { type, def } = extractAnnotateDirective(node, node.name.value);
 
     const returnType = createPropertyDefinition({
       type: type ? type : "N/A",
       name: node.name.value,
-      map: def
-        ? ({ ...def, name: node.name.value } as MapDefinition)
-        : undefined,
+      map:
+        def && def.kind === DefinitionKind.Map
+          ? ({ ...def, name: node.name.value } as MapDefinition)
+          : undefined,
+      fraction:
+        def && def.kind === DefinitionKind.Fraction
+          ? ({ ...def, name: node.name.value } as FractionDefinition)
+          : undefined,
       required: def && def.required ? true : false,
     });
 

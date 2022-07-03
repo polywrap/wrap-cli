@@ -25,6 +25,8 @@ MessagePack encoded data is sent between module boundaries. Decoding of the mess
 | Bytes | bin 8/16/32 | array of 8-bit unsigned integer. |
 | BigInt | fixstr or str 8/16/32 | UTF-8 string. |
 | BigNumber | fixstr or str 8/16/32 | UTF-8 string. |
+| BigFraction | 2x fixstr or str 8/16/32 | Two consecutive UTF-8 strings. |
+| Fraction | 2x int or uint | Two consecutive signed or unsigned integers. |
 | JSON | fixstr or str 8/16/32 | UTF-8 string. |
 | [Type] | fixarray or array 16/32 | Array of elements. |
 | Map | Msgpack extention type | Map of key-value pairs. |

@@ -29,6 +29,9 @@ export const toMsgPack: MustacheFn = () => {
     if (type.startsWith("Map<")) {
       return modifier + "ExtGenericMap";
     }
+    if (type.startsWith("Fraction<")) {
+      return modifier + "Fraction";
+    }
     switch (type) {
       case "Int":
         return modifier + "Int32";
@@ -75,6 +78,17 @@ export const toWasmInit: MustacheFn = () => {
       return `new Map<${key}, ${value}>()`;
     }
 
+    if (type.startsWith("Fraction<")) {
+      const result = type.match(
+        /Fraction<(Int|Int8|Int16|Int32|UInt|UInt8|UInt16|UInt32)!>/
+      );
+      if (!result || result.length !== 2) {
+        throw Error(`Invalid Fraction: ${type}`);
+      }
+      const wasmType = toWasm()(result[1] + "!", render);
+      return `new Fraction<${wasmType}>(0, 1)`;
+    }
+
     switch (type) {
       case "Int":
       case "Int8":
@@ -95,6 +109,8 @@ export const toWasmInit: MustacheFn = () => {
         return `BigInt.fromUInt16(0)`;
       case "BigNumber":
         return `new BigNumber(BigInt.fromUInt16(0), 0, 0)`;
+      case "BigFraction":
+        return `new BigFraction(BigInt.fromUInt16(0), BigInt.fromUInt16(1))`;
       case "JSON":
         return `JSON.Value.Null()`;
       default:
@@ -125,6 +141,10 @@ export const toWasm: MustacheFn = () => {
 
     if (type.startsWith("Map<")) {
       return toWasmMap(type, optional);
+    }
+
+    if (type.startsWith("Fraction<")) {
+      return toWasmFraction(type, optional);
     }
 
     switch (type) {
@@ -164,6 +184,9 @@ export const toWasm: MustacheFn = () => {
         break;
       case "BigNumber":
         type = "BigNumber";
+        break;
+      case "BigFraction":
+        type = "BigFraction";
         break;
       case "JSON":
         type = "JSON.Value";
@@ -213,6 +236,19 @@ const toWasmMap = (type: string, optional: boolean): string => {
   const valType = toWasm()(keyValTypes[1], (str) => str);
 
   return applyOptional(`Map<${keyType}, ${valType}>`, optional, false);
+};
+
+const toWasmFraction = (type: string, optional: boolean): string => {
+  const result = type.match(
+    /Fraction<(Int|Int8|Int16|Int32|UInt|UInt8|UInt16|UInt32)!>/
+  );
+
+  if (!result || result.length !== 2) {
+    throw Error(`Invalid Fraction: ${type}`);
+  }
+
+  const wasmType = toWasm()(result[1] + "!", (str) => str);
+  return applyOptional("Fraction<" + wasmType + ">", optional, false);
 };
 
 const applyOptional = (

@@ -21,6 +21,9 @@ export function write{{type}}(writer: Write, type: {{type}}): void {
   {{#scalar}}
   writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{#handleKeywords}}{{name}}{{/handleKeywords}});
   {{/scalar}}
+  {{#fraction}}
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}<{{#toWasm}}{{subType}}!{{/toWasm}}>(type.{{#handleKeywords}}{{name}}{{/handleKeywords}});
+  {{/fraction}}
   {{#array}}
   writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{#handleKeywords}}{{name}}{{/handleKeywords}}, (writer: Write, item: {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}}): void => {
     {{> serialize_array}}
@@ -96,6 +99,9 @@ export function read{{type}}(reader: Read): {{type}} {
       {{#scalar}}
       _{{name}} = reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}();
       {{/scalar}}
+      {{#fraction}}
+      _{{name}} = reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}<{{#toWasm}}{{subType}}!{{/toWasm}}>();
+      {{/fraction}}
       {{#array}}
       _{{name}} = reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}((reader: Read): {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}} => {
         {{> deserialize_array}}

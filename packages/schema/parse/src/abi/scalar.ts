@@ -12,6 +12,7 @@ export const scalarTypes = {
   Bytes: "Bytes",
   BigInt: "BigInt",
   BigNumber: "BigNumber",
+  BigFraction: "BigFraction",
   JSON: "JSON",
 };
 

@@ -20,7 +20,7 @@ import {
   createObjectRef,
   createScalarDefinition,
   createScalarPropertyDefinition,
-  Abi,
+  Abi, createFractionPropertyDefinition,
 } from "../../../../schema/parse/src/abi";
 
 export const abi: Abi = {
@@ -151,6 +151,28 @@ export const abi: Abi = {
         createScalarPropertyDefinition({
           name: "optBignumber",
           type: "BigNumber",
+          required: false,
+        }),
+        createScalarPropertyDefinition({
+          name: "bigfraction",
+          type: "BigFraction",
+          required: true,
+        }),
+        createScalarPropertyDefinition({
+          name: "optBigfraction",
+          type: "BigFraction",
+          required: false,
+        }),
+        createFractionPropertyDefinition({
+          name: "fraction",
+          type: "Fraction<Int32!>!",
+          subType: "Int32",
+          required: true,
+        }),
+        createFractionPropertyDefinition({
+          name: "optFraction",
+          type: "Fraction<Int32!>",
+          subType: "Int32",
           required: false,
         }),
         createScalarPropertyDefinition({
@@ -608,6 +630,25 @@ export const abi: Abi = {
                 type: "Int",
                 required: true,
               }),
+            }),
+          ],
+        },
+        {
+          ...createMethodDefinition({
+            name: "transformFraction",
+            return: createFractionPropertyDefinition({
+              name: "transformFraction",
+              type: "Fraction<Int32!>!",
+              subType: "Int32",
+              required: true,
+            }),
+          }),
+          arguments: [
+            createFractionPropertyDefinition({
+              name: "fraction",
+              type: "Fraction<Int32!>",
+              subType: "Int32",
+              required: false,
             }),
           ],
         },

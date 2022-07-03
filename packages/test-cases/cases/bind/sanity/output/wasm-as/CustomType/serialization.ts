@@ -7,6 +7,8 @@ import {
   Option,
   BigInt,
   BigNumber,
+  BigFraction,
+  Fraction,
   JSON,
   Context
 } from "@polywrap/wasm-as";
@@ -25,7 +27,7 @@ export function serializeCustomType(type: CustomType): ArrayBuffer {
 }
 
 export function writeCustomType(writer: Write, type: CustomType): void {
-  writer.writeMapLength(37);
+  writer.writeMapLength(41);
   writer.context().push("str", "string", "writing property");
   writer.writeString("str");
   writer.writeString(type.str);
@@ -85,6 +87,22 @@ export function writeCustomType(writer: Write, type: CustomType): void {
   writer.context().push("optBignumber", "BigNumber | null", "writing property");
   writer.writeString("optBignumber");
   writer.writeOptionalBigNumber(type.optBignumber);
+  writer.context().pop();
+  writer.context().push("bigfraction", "BigFraction", "writing property");
+  writer.writeString("bigfraction");
+  writer.writeBigFraction(type.bigfraction);
+  writer.context().pop();
+  writer.context().push("optBigfraction", "BigFraction | null", "writing property");
+  writer.writeString("optBigfraction");
+  writer.writeOptionalBigFraction(type.optBigfraction);
+  writer.context().pop();
+  writer.context().push("fraction", "Fraction<i32>", "writing property");
+  writer.writeString("fraction");
+  writer.writeFraction<i32>(type.fraction);
+  writer.context().pop();
+  writer.context().push("optFraction", "Fraction<i32> | null", "writing property");
+  writer.writeString("optFraction");
+  writer.writeOptionalFraction<i32>(type.optFraction);
   writer.context().pop();
   writer.context().push("json", "JSON.Value", "writing property");
   writer.writeString("json");
@@ -257,6 +275,12 @@ export function readCustomType(reader: Read): CustomType {
   let _bignumber: BigNumber = new BigNumber(BigInt.fromUInt16(0), 0, 0);
   let _bignumberSet: bool = false;
   let _optBignumber: BigNumber | null = null;
+  let _bigfraction: BigFraction = new BigFraction(BigInt.fromUInt16(0), BigInt.fromUInt16(1));
+  let _bigfractionSet: bool = false;
+  let _optBigfraction: BigFraction | null = null;
+  let _fraction: Fraction<i32> = new Fraction<i32>(0, 1);
+  let _fractionSet: bool = false;
+  let _optFraction: Fraction<i32> | null = null;
   let _json: JSON.Value = JSON.Value.Null();
   let _jsonSet: bool = false;
   let _optJson: JSON.Value | null = null;
@@ -380,6 +404,28 @@ export function readCustomType(reader: Read): CustomType {
     else if (field == "optBignumber") {
       reader.context().push(field, "BigNumber | null", "type found, reading property");
       _optBignumber = reader.readOptionalBigNumber();
+      reader.context().pop();
+    }
+    else if (field == "bigfraction") {
+      reader.context().push(field, "BigFraction", "type found, reading property");
+      _bigfraction = reader.readBigFraction();
+      _bigfractionSet = true;
+      reader.context().pop();
+    }
+    else if (field == "optBigfraction") {
+      reader.context().push(field, "BigFraction | null", "type found, reading property");
+      _optBigfraction = reader.readOptionalBigFraction();
+      reader.context().pop();
+    }
+    else if (field == "fraction") {
+      reader.context().push(field, "Fraction<i32>", "type found, reading property");
+      _fraction = reader.readFraction<i32>();
+      _fractionSet = true;
+      reader.context().pop();
+    }
+    else if (field == "optFraction") {
+      reader.context().push(field, "Fraction<i32> | null", "type found, reading property");
+      _optFraction = reader.readOptionalFraction<i32>();
       reader.context().pop();
     }
     else if (field == "json") {
@@ -631,6 +677,12 @@ export function readCustomType(reader: Read): CustomType {
   if (!_bignumberSet) {
     throw new Error(reader.context().printWithContext("Missing required property: 'bignumber: BigNumber'"));
   }
+  if (!_bigfractionSet) {
+    throw new Error(reader.context().printWithContext("Missing required property: 'bigfraction: BigFraction'"));
+  }
+  if (!_fractionSet) {
+    throw new Error(reader.context().printWithContext("Missing required property: 'fraction: Fraction<Int32!>!'"));
+  }
   if (!_jsonSet) {
     throw new Error(reader.context().printWithContext("Missing required property: 'json: JSON'"));
   }
@@ -681,6 +733,10 @@ export function readCustomType(reader: Read): CustomType {
     optBigint: _optBigint,
     bignumber: _bignumber,
     optBignumber: _optBignumber,
+    bigfraction: _bigfraction,
+    optBigfraction: _optBigfraction,
+    fraction: _fraction,
+    optFraction: _optFraction,
     json: _json,
     optJson: _optJson,
     bytes: _bytes,

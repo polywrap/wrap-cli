@@ -10,6 +10,8 @@ scalar Int32
 scalar Bytes
 scalar BigInt
 scalar BigNumber
+scalar BigFraction
+scalar Fraction
 scalar JSON
 scalar Map
 

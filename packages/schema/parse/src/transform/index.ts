@@ -23,6 +23,7 @@ import {
   EnvDefinition,
   WithKind,
   MapDefinition,
+  FractionDefinition,
 } from "../abi";
 
 export * from "./finalizePropertyDef";
@@ -68,6 +69,7 @@ export interface AbiTransformer {
   ) => InterfaceImplementedDefinition;
   EnvDefinition?: (def: EnvDefinition) => EnvDefinition;
   MapDefinition?: (def: MapDefinition) => MapDefinition;
+  FractionDefinition?: (def: FractionDefinition) => FractionDefinition;
 }
 
 export function transformAbi(abi: Abi, transforms: AbiTransforms): Abi {
@@ -186,6 +188,10 @@ export function visitAnyDefinition(
 
   if (result.map) {
     result.map = visitMapDefinition(result.map, transforms);
+  }
+
+  if (result.fraction) {
+    result.fraction = visitFractionDefinition(result.fraction, transforms);
   }
 
   if (result.scalar) {
@@ -368,6 +374,15 @@ export function visitMapDefinition(
   return transformType(result, transforms.leave);
 }
 
+export function visitFractionDefinition(
+  def: FractionDefinition,
+  transforms: AbiTransforms
+): FractionDefinition {
+  let result = Object.assign({}, def);
+  result = transformType(result, transforms.enter);
+  return transformType(result, transforms.leave);
+}
+
 export function transformType<TDefinition extends WithKind>(
   type: TDefinition,
   transform?: AbiTransformer
@@ -396,6 +411,7 @@ export function transformType<TDefinition extends WithKind>(
     InterfaceImplementedDefinition,
     EnvDefinition,
     MapDefinition,
+    FractionDefinition,
   } = transform;
 
   if (GenericDefinition && isKind(result, DefinitionKind.Generic)) {
@@ -463,6 +479,9 @@ export function transformType<TDefinition extends WithKind>(
   }
   if (MapDefinition && isKind(result, DefinitionKind.Map)) {
     result = Object.assign(result, MapDefinition(result as any));
+  }
+  if (FractionDefinition && isKind(result, DefinitionKind.Fraction)) {
+    result = Object.assign(result, FractionDefinition(result as any));
   }
 
   return result;

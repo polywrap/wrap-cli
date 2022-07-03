@@ -7,6 +7,8 @@ import {
   createArrayDefinition,
   InterfaceDefinition,
   MapDefinition,
+  DefinitionKind,
+  FractionDefinition,
 } from "../../abi";
 import { setPropertyType } from "./property-utils";
 import { extractAnnotateDirective } from "./object-types-utils";
@@ -123,7 +125,14 @@ export function extractInputValueDefinition(
   const argument = createPropertyDefinition({
     type: type ? type : "N/A",
     name: name,
-    map: def ? (def as MapDefinition) : undefined,
+    map:
+      def && def.kind === DefinitionKind.Map
+        ? (def as MapDefinition)
+        : undefined,
+    fraction:
+      def && def.kind === DefinitionKind.Fraction
+        ? (def as FractionDefinition)
+        : undefined,
     comment: node.description?.value,
     required: def && def.required ? true : false,
   });

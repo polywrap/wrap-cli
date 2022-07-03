@@ -4,6 +4,7 @@ import {
   createUnresolvedObjectOrEnumRef,
   isScalarType,
   PropertyDefinition,
+  createFractionDefinition,
 } from "../../abi";
 
 const toBoolean = (val: unknown) => (val ? true : false);
@@ -38,6 +39,28 @@ export function setPropertyType(
         type: type.type,
       }),
       ...property.map,
+      name: name,
+      required: type.required ? true : null,
+    };
+    return;
+  }
+
+  if (type.type === "Fraction") {
+    if (toBoolean(type.required) !== toBoolean(property.fraction?.required)) {
+      throw new Error(
+        `Fraction defined as ${
+          type.required ? "required" : "optional"
+        } while declaring type but defined as ${
+          property.required ? "required" : "optional"
+        } while annotating: ${property.type} in ${property.name}`
+      );
+    }
+
+    property.fraction = {
+      ...createFractionDefinition({
+        type: type.type,
+      }),
+      ...property.fraction,
       name: name,
       required: type.required ? true : null,
     };

@@ -38,6 +38,8 @@ export function populatePropertyType(
     propertyType = property.enum;
   } else if (property.map) {
     propertyType = property.map;
+  } else if (property.fraction) {
+    propertyType = property.fraction;
   } else {
     throw Error("Property type is undefined, this should never happen.");
   }
@@ -82,6 +84,8 @@ function populateArrayType(array: ArrayDefinition, abi: Abi) {
     array.item = array.enum;
   } else if (array.map) {
     array.item = array.map;
+  } else if (array.fraction) {
+    array.item = array.fraction;
   } else {
     array.item = array.object;
   }

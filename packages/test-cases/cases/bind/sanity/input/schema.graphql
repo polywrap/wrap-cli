@@ -10,6 +10,8 @@ scalar Int32
 scalar Bytes
 scalar BigInt
 scalar BigNumber
+scalar BigFraction
+scalar Fraction
 scalar JSON
 scalar Map
 
@@ -87,6 +89,10 @@ type CustomType {
   optBigint: BigInt
   bignumber: BigNumber!
   optBignumber: BigNumber
+  bigfraction: BigFraction!
+  optBigfraction: BigFraction
+  fraction: Fraction! @annotate(type: "Fraction<Int32!>!")
+  optFraction: Fraction @annotate(type: "Fraction<Int32!>")
   json: JSON!
   optJson: JSON
   bytes: Bytes!

@@ -4,6 +4,8 @@ import {
   Option,
   BigInt,
   BigNumber,
+  BigFraction,
+  Fraction,
   JSON
 } from "@polywrap/wasm-as";
 import {

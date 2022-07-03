@@ -1,6 +1,7 @@
 import { ScalarType, isScalarType } from "./scalar";
 import { isModuleType } from "./module";
 import { isMapKeyType, MapKeyType } from "./map";
+import { FractionType, isFractionType } from "./fraction";
 
 export enum DefinitionKind {
   Generic = 0,
@@ -23,6 +24,7 @@ export enum DefinitionKind {
   Env = 1 << 16,
   MapKey = 1 << 17,
   Map = (1 << 18) | DefinitionKind.Any,
+  Fraction = 1 << 19,
 }
 
 export function isKind(type: WithKind, kind: DefinitionKind): boolean {
@@ -92,6 +94,7 @@ export interface AnyDefinition extends GenericDefinition {
   array: ArrayDefinition | null;
   scalar: ScalarDefinition | null;
   map: MapDefinition | null;
+  fraction: FractionDefinition | null;
   object: ObjectRef | null;
   enum: EnumRef | null;
   unresolvedObjectOrEnum: UnresolvedObjectOrEnumRef | null;
@@ -103,6 +106,7 @@ export function createAnyDefinition(args: {
   array?: ArrayDefinition;
   map?: MapDefinition;
   scalar?: ScalarDefinition;
+  fraction?: FractionDefinition;
   object?: ObjectRef;
   enum?: EnumRef;
 }): AnyDefinition {
@@ -111,6 +115,7 @@ export function createAnyDefinition(args: {
     array: args.array ? args.array : null,
     map: args.map ? args.map : null,
     scalar: args.scalar ? args.scalar : null,
+    fraction: args.fraction ? args.fraction : null,
     object: args.object ? args.object : null,
     enum: args.enum ? args.enum : null,
     unresolvedObjectOrEnum: null,
@@ -155,6 +160,27 @@ export function createScalarDefinition(args: {
     ...createGenericDefinition(args),
     type: args.type,
     kind: DefinitionKind.Scalar,
+  };
+}
+
+export interface FractionDefinition extends GenericDefinition {
+  subType?: FractionType;
+}
+export function createFractionDefinition(args: {
+  type: string;
+  subType?: string;
+  name?: string | null;
+  required?: boolean;
+}): FractionDefinition {
+  if (args.subType !== undefined && !isFractionType(args.subType)) {
+    throw Error(
+      `createFractionDefinition: Unrecognized fraction type provided "${args.subType}"`
+    );
+  }
+  return {
+    ...createGenericDefinition(args),
+    subType: args.subType,
+    kind: DefinitionKind.Fraction,
   };
 }
 
@@ -288,6 +314,7 @@ export function createPropertyDefinition(args: {
   required?: boolean;
   array?: ArrayDefinition;
   map?: MapDefinition;
+  fraction?: FractionDefinition;
   scalar?: ScalarDefinition;
   object?: ObjectRef;
   enum?: EnumRef;
@@ -341,6 +368,19 @@ export function createMapPropertyDefinition(args: {
   return createPropertyDefinition({
     ...args,
     map: createMapDefinition(args),
+  });
+}
+
+export function createFractionPropertyDefinition(args: {
+  type: string;
+  subType?: string;
+  name?: string | null;
+  required?: boolean;
+  comment?: string;
+}): PropertyDefinition {
+  return createPropertyDefinition({
+    ...args,
+    fraction: createFractionDefinition(args),
   });
 }
 

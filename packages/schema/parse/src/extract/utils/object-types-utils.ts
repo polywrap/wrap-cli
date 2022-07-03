@@ -1,6 +1,8 @@
 import {
   createArrayDefinition,
   createPropertyDefinition,
+  DefinitionKind,
+  FractionDefinition,
   GenericDefinition,
   MapDefinition,
   ObjectDefinition,
@@ -8,6 +10,7 @@ import {
 } from "../../abi";
 import { parseMapType } from "./map-utils";
 import { setPropertyType } from "./property-utils";
+import { parseFractionType } from "./fraction-utils";
 
 import {
   FieldDefinitionNode,
@@ -45,7 +48,15 @@ export function extractAnnotateDirective(
               `Annotate directive: ${node.name.value} has invalid arguments`
             );
           }
-          def = parseMapType(type, name);
+          if (type.startsWith("Map<")) {
+            def = parseMapType(type, name);
+          } else if (type.startsWith("Fraction<")) {
+            def = parseFractionType(type, name);
+          } else {
+            throw new Error(
+              `Annotate directive: type has invalid argument ${type}`
+            );
+          }
           break;
         }
         default:
@@ -79,7 +90,14 @@ export function extractFieldDefinition(
   const property = createPropertyDefinition({
     type: type ? type : "N/A",
     name: name,
-    map: def ? (def as MapDefinition) : undefined,
+    map:
+      def && def.kind === DefinitionKind.Map
+        ? (def as MapDefinition)
+        : undefined,
+    fraction:
+      def && def.kind === DefinitionKind.Fraction
+        ? (def as FractionDefinition)
+        : undefined,
     comment: node.description?.value,
     required: def && def.required ? true : false,
   });

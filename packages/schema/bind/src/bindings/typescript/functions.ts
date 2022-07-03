@@ -64,6 +64,10 @@ const _toTypescript = (
     return toTypescriptMap(type, optional);
   }
 
+  if (type.startsWith("Fraction<")) {
+    return toTypescriptFraction(type, optional);
+  }
+
   switch (type) {
     case "JSON":
       type = "Types.Json";
@@ -105,6 +109,19 @@ const toTypescriptMap = (type: string, optional: boolean): string => {
   const tsValType = _toTypescript(valtype, (str) => str, true);
 
   return applyOptional(`Map<${tsKeyType}, ${tsValType}>`, optional);
+};
+
+const toTypescriptFraction = (type: string, optional: boolean): string => {
+  const result = type.match(
+    /Fraction<(Int|Int8|Int16|Int32|UInt|UInt8|UInt16|UInt32)!>/
+  );
+
+  if (!result || result.length !== 2) {
+    throw Error(`Invalid Fraction: ${type}`);
+  }
+
+  const tsType = _toTypescript(result[1] + "!", (str) => str);
+  return applyOptional("Types.Fraction<" + tsType + ">", optional);
 };
 
 const applyOptional = (type: string, optional: boolean): string => {

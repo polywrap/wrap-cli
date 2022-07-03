@@ -6,6 +6,7 @@ import {
   MethodDefinition,
   DefinitionKind,
   MapDefinition,
+  FractionDefinition,
 } from "../abi";
 
 function applyRequired(type: string, required: boolean | null): string {
@@ -23,6 +24,8 @@ function anyToGraphQL(any: AnyDefinition, prefixed: boolean): string {
     return toGraphQL(any.enum, prefixed);
   } else if (any.map) {
     return toGraphQL(any.map, prefixed);
+  } else if (any.fraction) {
+    return toGraphQL(any.fraction, prefixed);
   } else {
     throw Error(
       `anyToGraphQL: Any type is invalid.\n${JSON.stringify(any, null, 2)}`
@@ -90,6 +93,19 @@ export function toGraphQL(def: GenericDefinition, prefixed = false): string {
         `Map<${toGraphQL(map.key, prefixed)}, ${anyToGraphQL(map, prefixed)}>`,
         map.required
       );
+    }
+    case DefinitionKind.Fraction: {
+      const fraction = def as FractionDefinition;
+      if (!fraction.subType) {
+        throw Error(
+          `toGraphQL: FractionDefinition's sub type is undefined.\n${JSON.stringify(
+            fraction,
+            null,
+            2
+          )}`
+        );
+      }
+      return applyRequired(`Fraction<${fraction.subType}!>`, fraction.required);
     }
     case DefinitionKind.Method: {
       const method = def as MethodDefinition;

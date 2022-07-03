@@ -31,6 +31,9 @@ export function write{{name}}Args(
   {{#scalar}}
   writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(args.{{#handleKeywords}}{{name}}{{/handleKeywords}});
   {{/scalar}}
+  {{#fraction}}
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}<{{#toWasm}}{{subType}}!{{/toWasm}}>(args.{{#handleKeywords}}{{name}}{{/handleKeywords}});
+  {{/fraction}}
   {{#array}}
   writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(args.{{#handleKeywords}}{{name}}{{/handleKeywords}}, (writer: Write, item: {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}}): void => {
     {{> serialize_array}}
@@ -78,6 +81,9 @@ export function deserialize{{name}}Result(buffer: ArrayBuffer): {{#return}}{{#to
   {{#scalar}}
   const res: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}();
   {{/scalar}}
+  {{#fraction}}
+  const res: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}<{{#toWasm}}{{subType}}!{{/toWasm}}>();
+  {{/fraction}}
   {{#array}}
   const res: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}((reader: Read): {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}} => {
     {{> deserialize_array}}

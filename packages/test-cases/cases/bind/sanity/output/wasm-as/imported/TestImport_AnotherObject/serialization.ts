@@ -7,6 +7,8 @@ import {
   Option,
   BigInt,
   BigNumber,
+  BigFraction,
+  Fraction,
   JSON,
   Context
 } from "@polywrap/wasm-as";
