@@ -4,9 +4,7 @@ import {
   Client,
   InvokeOptions,
   InvokeResult,
-  WrapManifest,
   PluginModule,
-  PluginFactory,
   QueryOptions,
   QueryResult,
   Uri,
@@ -24,10 +22,12 @@ import {
   PluginRegistration,
   SubscribeOptions,
   Subscription,
-  msgpackEncode,
   PluginPackage,
   GetManifestOptions,
 } from "..";
+
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
+import { msgpackEncode } from "@polywrap/msgpack-js";
 
 describe("resolveUri", () => {
   const client = (

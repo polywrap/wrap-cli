@@ -3,7 +3,7 @@ import { displayPath, withSpinner, intlMsg } from "../../../";
 import {
   PluginManifest,
   deserializePluginManifest,
-} from "@polywrap/polywrap-manifest-schemas";
+} from "@polywrap/polywrap-manifest-types-js";
 import fs from "fs";
 
 export const defaultPluginManifest = [

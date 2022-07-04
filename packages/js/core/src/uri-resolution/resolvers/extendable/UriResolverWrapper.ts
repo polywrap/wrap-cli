@@ -11,7 +11,7 @@ import { getEnvFromUriOrResolutionStack } from "../getEnvFromUriOrResolutionStac
 import {
   DeserializeManifestOptions,
   deserializeWrapManifest,
-} from "@polywrap/wrap-manifest-schemas";
+} from "@polywrap/wrap-manifest-types-js";
 import { Tracer } from "@polywrap/tracing-js";
 
 export class UriResolverWrapper implements UriResolver {

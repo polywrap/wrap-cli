@@ -33,18 +33,36 @@ directive @enabled_interface on OBJECT
 
 directive @annotate(type: String!) on FIELD
 
+directive @env(required: Boolean!) on FIELD_DEFINITION
+
 ### Polywrap Header END ###
 
 type Module @imports(
   types: [
     "Namespace_ExternalType",
-    "Namespace_ExternalType2"
+    "Namespace_ExternalType2",
+    "Namespace_Module",
+    "Namespace_Env"
   ]
 ) {
   method: Namespace_ExternalType
 }
 
 ### Imported Modules START ###
+
+type Namespace_Module @imported(
+  uri: "external.eth",
+  namespace: "Namespace",
+  nativeType: "Module"
+) {
+  envMethod(
+    arg: String!
+  ): String! @env(required: true)
+
+  optEnvMethod(
+    arg: String!
+  ): String! @env(required: false)
+}
 
 ### Imported Modules END ###
 
@@ -67,3 +85,15 @@ type Namespace_ExternalType2 @imported(
 }
 
 ### Imported Objects END ###
+
+### Imported Envs START ###
+
+type Namespace_Env @imported(
+  uri: "external.eth",
+  namespace: "Namespace",
+  nativeType: "Env"
+) {
+  externalProp: Namespace_ExternalType
+}
+
+### Imported Envs END ###

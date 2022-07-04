@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import {
-  PolywrapManifest,
   PolywrapProject,
   SchemaComposer,
   withSpinner,
@@ -16,7 +15,9 @@ import {
   outputManifest,
 } from "./";
 
-import { msgpackEncode, WrapManifest } from "@polywrap/core-js";
+import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
+import { msgpackEncode } from "@polywrap/msgpack-js";
 import { WasmWrapper } from "@polywrap/client-js";
 import { WrapImports } from "@polywrap/client-js/build/wasm/types";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
@@ -326,9 +327,7 @@ export class Compiler {
     if (!state.composerOutput.schema) {
       throw Error("Compiler.outputComposedSchema: no schema found");
     }
-
-    console.log("HERE");
-    console.log(state.composerOutput);
+    
     writeFileSync(
       `${outputDir}/schema.graphql`,
       state.composerOutput.schema,
@@ -349,8 +348,6 @@ export class Compiler {
       ...state.composerOutput.abi,
     };
 
-    console.log({ manifest });
-    console.log({ abi });
     const info: WrapManifest = {
       abi: { ...abi },
       name: manifest.name,
@@ -430,8 +427,6 @@ export class Compiler {
       __wrap_abort: () => {},
       __wrap_debug_log: () => {},
       __wrap_load_env: () => {},
-      __wrap_sanitize_env_args: () => {},
-      __wrap_sanitize_env_result: () => {},
     };
 
     try {

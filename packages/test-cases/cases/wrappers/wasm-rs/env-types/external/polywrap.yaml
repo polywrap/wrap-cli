@@ -1,0 +1,6 @@
+format: 0.0.1-prealpha.9
+name: EnvTypeExternal
+language: wasm/rust
+build: ./polywrap.build.yaml
+schema: ./schema.graphql
+module: ./Cargo.toml

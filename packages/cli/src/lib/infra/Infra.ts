@@ -6,7 +6,7 @@ import {
   CacheDirectory,
 } from "../";
 
-import { InfraManifest } from "@polywrap/polywrap-manifest-schemas";
+import { InfraManifest } from "@polywrap/polywrap-manifest-types-js";
 import path from "path";
 import fs, { lstatSync, readdirSync } from "fs";
 import YAML from "js-yaml";

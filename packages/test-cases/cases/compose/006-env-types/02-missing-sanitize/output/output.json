@@ -1,3 +1,0 @@
-{
-  "error": "Must have 'sanitizeEnv' method inside module methods when using 'ClientEnv'"
-}

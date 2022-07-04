@@ -1,3 +1,4 @@
+{{#moduleType}}
 use serde::{Serialize, Deserialize};
 use std::convert::TryFrom;
 use polywrap_wasm_rs::{
@@ -173,3 +174,4 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#return
     Ok(())
 }
 {{/methods}}
+{{/moduleType}}

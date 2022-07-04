@@ -24,6 +24,7 @@ export const addFirstLast: AbiTransforms = {
       objectTypes: setFirstLast(abi.objectTypes),
       importedObjectTypes: setFirstLast(abi.importedObjectTypes),
       importedModuleTypes: setFirstLast(abi.importedModuleTypes),
+      importedEnvTypes: setFirstLast(abi.importedEnvTypes),
     }),
   },
 };

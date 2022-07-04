@@ -1,6 +1,6 @@
 import { Uri } from "./Uri";
 import { ClientConfig } from "./Client";
-import { QueryOptions, QueryResult } from "./Query";
+import { InvokeOptions, InvokeResult } from "./Invoke";
 
 /** Defines the frequency of Wrapper invocations for an Wrapper subscription */
 export interface SubscriptionFrequency {
@@ -12,10 +12,9 @@ export interface SubscriptionFrequency {
 
 /** Options required for an Wrapper subscription. */
 export interface SubscribeOptions<
-  TVariables extends Record<string, unknown> = Record<string, unknown>,
   TUri extends Uri | string = string,
   TClientConfig extends ClientConfig = ClientConfig
-> extends QueryOptions<TVariables, TUri, TClientConfig> {
+> extends InvokeOptions<TUri, TClientConfig> {
   /**
    * The frequency of Wrapper invocations. Defaults to one query per minute.
    */
@@ -27,9 +26,7 @@ export interface SubscribeOptions<
  * AsyncIterable that yields query results at a specified frequency.
  * @template TData Type of the query result.
  */
-export interface Subscription<
-  TData extends Record<string, unknown> = Record<string, unknown>
-> {
+export interface Subscription<TData = unknown> {
   /**
    * The frequency of Wrapper invocations.
    */
@@ -47,15 +44,11 @@ export interface Subscription<
    * Implementation of AsyncIterator protocol makes the Subscription an
    * AsyncIterable, allowing use in for await...of loops.
    */
-  [Symbol.asyncIterator](): AsyncGenerator<QueryResult<TData>>;
+  [Symbol.asyncIterator](): AsyncGenerator<InvokeResult<TData>>;
 }
 
 export interface SubscriptionHandler {
-  subscribe<
-    TData extends Record<string, unknown> = Record<string, unknown>,
-    TVariables extends Record<string, unknown> = Record<string, unknown>,
-    TUri extends Uri | string = string
-  >(
-    options: SubscribeOptions<TVariables, TUri>
+  subscribe<TData = unknown, TUri extends Uri | string = string>(
+    options: SubscribeOptions<TUri>
   ): Subscription<TData>;
 }

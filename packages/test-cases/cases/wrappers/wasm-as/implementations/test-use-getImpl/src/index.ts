@@ -1,6 +1,6 @@
-import { Args_moduleMethod, Args_abstractModuleMethod, ImplementationType, Interface } from "./wrap";
+import { Args_moduleMethod, Args_moduleImplementations, Args_abstractModuleMethod, ImplementationType, Interface } from "./wrap";
 
-export function moduleImplementations(): string[] {
+export function moduleImplementations(_: Args_moduleImplementations): string[] {
   return Interface.getImplementations();
 }
 

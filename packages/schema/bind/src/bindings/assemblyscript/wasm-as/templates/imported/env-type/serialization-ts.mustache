@@ -1,0 +1,148 @@
+{{> serialization_imports}}
+import { {{type}} } from "./";
+import * as Types from "../..";
+
+export function serialize{{type}}(type: {{type}}): ArrayBuffer {
+  const sizerContext: Context = new Context("Serializing (sizing) imported env-type: {{type}}");
+  const sizer = new WriteSizer(sizerContext);
+  write{{type}}(sizer, type);
+  const buffer = new ArrayBuffer(sizer.length);
+  const encoderContext: Context = new Context("Serializing (encoding) imported env-type: {{type}}");
+  const encoder = new WriteEncoder(buffer, sizer, encoderContext);
+  write{{type}}(encoder, type);
+  return buffer;
+}
+
+export function write{{type}}(writer: Write, type: {{type}}): void {
+  writer.writeMapLength({{properties.length}});
+  {{#properties}}
+  writer.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
+  writer.writeString("{{name}}");
+  {{#scalar}}
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{#handleKeywords}}{{name}}{{/handleKeywords}});
+  {{/scalar}}
+  {{#array}}
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{#handleKeywords}}{{name}}{{/handleKeywords}}, (writer: Write, item: {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}}): void => {
+    {{> serialize_array}}
+  });
+  {{/array}}
+  {{#map}}
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{#handleKeywords}}{{name}}{{/handleKeywords}}, (writer: Write, key: {{#key}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/key}}) => {
+    writer.write{{#key}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/key}}(key);
+  }, (writer: Write, value: {{#value}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/value}}): void => {
+    {{#value}}
+    {{> serialize_map_value}}
+    {{/value}}
+  });
+  {{/map}}
+  {{#object}}
+  {{#required}}
+  Types.{{type}}.write(writer, type.{{#handleKeywords}}{{name}}{{/handleKeywords}});
+  {{/required}}
+  {{^required}}
+  if (type.{{#handleKeywords}}{{name}}{{/handleKeywords}}) {
+    Types.{{type}}.write(writer, type.{{#handleKeywords}}{{name}}{{/handleKeywords}} as Types.{{type}});
+  } else {
+    writer.writeNil();
+  }
+  {{/required}}
+  {{/object}}
+  {{#enum}}
+  {{#required}}
+  writer.writeInt32(type.{{#handleKeywords}}{{name}}{{/handleKeywords}});
+  {{/required}}
+  {{^required}}
+  writer.writeOptionalInt32(type.{{#handleKeywords}}{{name}}{{/handleKeywords}});
+  {{/required}}
+  {{/enum}}
+  writer.context().pop();
+  {{/properties}}
+}
+
+export function deserialize{{type}}(buffer: ArrayBuffer): {{type}} {
+  const context: Context = new Context("Deserializing imported env-type {{type}}");
+  const reader = new ReadDecoder(buffer, context);
+  return read{{type}}(reader);
+}
+
+export function read{{type}}(reader: Read): {{type}} {
+  let numFields = reader.readMapLength();
+
+  {{#properties}}
+  {{^object}}
+  let _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
+  {{/object}}
+  {{#object}}
+  {{#required}}
+  let _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} | null = null;
+  {{/required}}
+  {{^required}}
+  let _{{name}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
+  {{/required}}
+  {{/object}}
+  {{#required}}
+  let _{{name}}Set: bool = false;
+  {{/required}}
+  {{/properties}}
+
+  while (numFields > 0) {
+    numFields--;
+    const field = reader.readString();
+
+    reader.context().push(field, "unknown", "searching for property type");
+    {{#properties}}
+    {{^first}}else {{/first}}if (field == "{{name}}") {
+      reader.context().push(field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading property");
+      {{#scalar}}
+      _{{name}} = reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}();
+      {{/scalar}}
+      {{#array}}
+      _{{name}} = reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}((reader: Read): {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}} => {
+        {{> deserialize_array}}
+      });
+      {{/array}}
+      {{#map}}
+      _{{name}} = reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}((reader: Read): {{#key}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/key}} => {
+        return reader.read{{#key}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/key}}();
+      }, (reader: Read): {{#value}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/value}} => {
+        {{#value}}
+        {{> deserialize_map_value}}
+        {{/value}}
+      });
+      {{/map}}
+      {{#enum}}
+      {{> deserialize_enum}}
+      _{{name}} = value;
+      {{/enum}}
+      {{#object}}
+      {{> deserialize_object }}
+      _{{name}} = object;
+      {{/object}}
+      {{#required}}
+      _{{name}}Set = true;
+      {{/required}}
+      reader.context().pop();
+    }
+    {{/properties}}
+    reader.context().pop();
+  }
+
+  {{#properties}}
+  {{#required}}
+  {{^object}}
+  if (!_{{name}}Set) {
+  {{/object}}
+  {{#object}}
+  if (!_{{name}} || !_{{name}}Set) {
+  {{/object}}
+    throw new Error(reader.context().printWithContext("Missing required property: '{{name}}: {{type}}'"));
+  }
+  {{/required}}
+  {{/properties}}
+
+  return {
+    {{#properties}}
+    {{#handleKeywords}}{{name}}{{/handleKeywords}}: _{{name}}{{^last}},{{/last}}
+    {{/properties}}
+  };
+}

@@ -4,9 +4,7 @@
 export type u32 = number;
 
 export interface WrapExports extends WebAssembly.Exports {
-  _wrap_invoke: (nameLen: u32, argsLen: u32) => boolean;
-  _wrap_load_env: (envLen: u32) => void;
-  _wrap_sanitize_env: (argsLen: u32) => void;
+  _wrap_invoke: (nameLen: u32, argsLen: u32, envLen: u32) => boolean;
 }
 
 export interface WrapImports extends WebAssembly.Imports {
@@ -53,8 +51,6 @@ export interface WrapImports extends WebAssembly.Imports {
     ) => void;
     __wrap_debug_log: (ptr: u32, len: u32) => void;
     __wrap_load_env: (ptr: u32) => void;
-    __wrap_sanitize_env_args: (ptr: u32) => void;
-    __wrap_sanitize_env_result: (ptr: u32, len: u32) => void;
   };
   env: {
     memory: WebAssembly.Memory;

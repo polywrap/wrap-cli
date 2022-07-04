@@ -24,7 +24,7 @@ import {
   PolywrapManifest,
   MetaManifest,
   DeployManifest,
-} from "@polywrap/polywrap-manifest-schemas";
+} from "@polywrap/polywrap-manifest-types-js";
 import { normalizePath } from "@polywrap/os-js";
 import { bindSchema, BindOutput, BindOptions } from "@polywrap/schema-bind";
 import { ComposerOutput } from "@polywrap/schema-compose";

@@ -7,7 +7,10 @@ import {
   WRAP_WASM,
 } from "..";
 
-import { deserializeWrapManifest, WrapManifest } from "@polywrap/core-js";
+import {
+  WrapManifest,
+  deserializeWrapManifest,
+} from "@polywrap/wrap-manifest-types-js";
 import { renderSchema } from "@polywrap/schema-compose";
 import * as path from "path";
 

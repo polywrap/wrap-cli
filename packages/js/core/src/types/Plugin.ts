@@ -16,8 +16,7 @@ export type PluginMethod<
 
 export abstract class PluginModule<
   TConfig,
-  TEnv extends Record<string, unknown> = Record<string, unknown>,
-  TClientEnv extends Record<string, unknown> = TEnv
+  TEnv extends Record<string, unknown> = Record<string, unknown>
 > {
   private _env: TEnv;
   private _config: TConfig;
@@ -34,23 +33,8 @@ export abstract class PluginModule<
     return this._config;
   }
 
-  public _wrap_load_env(env: TEnv): void {
+  public setEnv(env: TEnv): void {
     this._env = env;
-  }
-
-  public async _wrap_sanitize_env(
-    clientEnv: TClientEnv,
-    client: Client
-  ): Promise<TEnv> {
-    if (this.getMethod("sanitizeEnv")) {
-      return this._wrap_invoke<TClientEnv, TEnv>(
-        "sanitizeEnv",
-        clientEnv,
-        client
-      );
-    } else {
-      return Promise.resolve(clientEnv as TEnv);
-    }
   }
 
   public async _wrap_invoke<

@@ -16,7 +16,7 @@ extern "C" {
 }
 
 /// Keep track of all invokable functions
-pub type InvokeFunction = fn(args_buf: &[u8]) -> Vec<u8>;
+pub type InvokeFunction = fn(args_buf: &[u8], env_size: u32) -> Vec<u8>;
 
 pub struct InvokeArgs {
     pub method: String,
@@ -40,10 +40,10 @@ pub fn wrap_invoke_args(method_size: u32, args_size: u32) -> InvokeArgs {
 }
 
 /// Helper for handling `_wrap_invoke`
-pub fn wrap_invoke(args: InvokeArgs, opt_invoke_func: Option<InvokeFunction>) -> bool {
+pub fn wrap_invoke(args: InvokeArgs, env_size: u32, opt_invoke_func: Option<InvokeFunction>) -> bool {
     match opt_invoke_func {
         Some(func) => {
-            let result = func(args.args.as_slice());
+            let result = func(args.args.as_slice(), env_size);
             let res_len = result.len() as u32;
             unsafe { __wrap_invoke_result(result.as_ptr() as u32, res_len) };
             true

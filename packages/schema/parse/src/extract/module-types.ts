@@ -12,6 +12,7 @@ import {
   MapDefinition,
 } from "../abi";
 import {
+  extractEnvDirective,
   extractInputValueDefinition,
   extractListType,
   extractNamedType,
@@ -81,6 +82,13 @@ const visitorEnter = (abi: Abi, state: State) => ({
       return: returnType,
       comment: node.description?.value,
     });
+
+    const envDirDefinition = extractEnvDirective(node);
+
+    if (envDirDefinition) {
+      method.env = envDirDefinition;
+    }
+
     module.methods.push(method);
     state.currentMethod = method;
     state.currentReturn = returnType;
