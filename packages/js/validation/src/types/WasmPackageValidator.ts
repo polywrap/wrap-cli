@@ -149,7 +149,7 @@ export class WasmPackageValidator {
 
   private async validateAbi(manifest: WrapManifest): Promise<ValidationResult> {
     try {
-      // TODO(cbrzn): Just validate the structure of Abi with the JSON Schema and remove never
+      // TODO(cbrzn): Just validate the structure of Abi with the JSON Schema and remove
       renderSchema(manifest.abi as never, false);
     } catch (err) {
       return this.fail(ValidationFailReason.InvalidAbi, err);

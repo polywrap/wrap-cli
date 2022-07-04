@@ -18,8 +18,8 @@ const assertValidWrapper = async (wrapperPath: string) => {
     maxModuleSize: 1_000_000,
     maxNumberOfFiles: 1000,
   });
-
   const result = await validator.validate(reader);
+  console.log({ result })
   expect(result.valid).toBeTruthy();
   expect(result.failReason).toEqual(undefined);
 };
