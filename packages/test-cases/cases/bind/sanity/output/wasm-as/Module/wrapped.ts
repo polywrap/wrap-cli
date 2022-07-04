@@ -16,16 +16,19 @@ import * as Types from "..";
 
 export function moduleMethodWrapped(argsBuf: ArrayBuffer, env_size: u32): ArrayBuffer {
   const args = deserializemoduleMethodArgs(argsBuf);
-  const result = moduleMethod({
-    str: args.str,
-    optStr: args.optStr,
-    en: args.en,
-    optEnum: args.optEnum,
-    enumArray: args.enumArray,
-    optEnumArray: args.optEnumArray,
-    map: args.map,
-    mapOfArr: args.mapOfArr
-  });
+
+  const result = moduleMethod(
+    {
+      str: args.str,
+      optStr: args.optStr,
+      en: args.en,
+      optEnum: args.optEnum,
+      enumArray: args.enumArray,
+      optEnumArray: args.optEnumArray,
+      map: args.map,
+      mapOfArr: args.mapOfArr
+    }
+  );
   return serializemoduleMethodResult(result);
 }
 
