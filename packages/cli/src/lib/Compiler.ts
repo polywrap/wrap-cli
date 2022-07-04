@@ -13,6 +13,7 @@ import {
   intlMsg,
   resetDir,
   outputManifest,
+  displayPath,
 } from "./";
 
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
@@ -23,7 +24,11 @@ import { WrapImports } from "@polywrap/client-js/build/wasm/types";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 import { Abi } from "@polywrap/schema-parse";
 import { ComposerOutput } from "@polywrap/schema-compose";
-import { writeFileSync, writeDirectorySync } from "@polywrap/os-js";
+import {
+  writeFileSync,
+  writeDirectorySync,
+  normalizePath,
+} from "@polywrap/os-js";
 import * as gluegun from "gluegun";
 import fs from "fs";
 import path from "path";
@@ -325,9 +330,10 @@ export class Compiler {
     const { outputDir } = this._config;
 
     if (!state.composerOutput.schema) {
+      // This is not being shown with intlMsg because this will be removed
       throw Error("Compiler.outputComposedSchema: no schema found");
     }
-    
+
     writeFileSync(
       `${outputDir}/schema.graphql`,
       state.composerOutput.schema,
@@ -335,29 +341,54 @@ export class Compiler {
     );
   }
 
-  private async _outputWrapManifest(state: CompilerState): Promise<void> {
+  private async _outputWrapManifest(
+    state: CompilerState,
+    quiet = false
+  ): Promise<unknown> {
     const { outputDir, project } = this._config;
+    let manifestPath = `${outputDir}/wrap.info`;
+    const run = async () => {
+      if (!state.composerOutput.abi) {
+        throw Error(intlMsg.lib_wrap_abi_not_found());
+      }
 
-    if (!state.composerOutput.abi) {
-      throw Error("Compiler.outputWrapManifest: no WRAP ABI found");
+      const manifest = await project.getManifest();
+
+      const abi: Abi = {
+        ...state.composerOutput.abi,
+      };
+
+      const info: WrapManifest = {
+        abi: { ...abi },
+        name: manifest.name,
+        type: (await this._isInterface()) ? "interface" : "wasm",
+        version: "0.0.1",
+      };
+
+      writeFileSync(manifestPath, msgpackEncode(info), {
+        encoding: "binary",
+      });
+    };
+
+    if (quiet) {
+      return await run();
+    } else {
+      manifestPath = displayPath(manifestPath);
+      return await withSpinner(
+        intlMsg.lib_helpers_wrap_manifest_outputText({
+          path: normalizePath(manifestPath),
+        }),
+        intlMsg.lib_helpers_wrap_manifest_outputError({
+          path: normalizePath(manifestPath),
+        }),
+        intlMsg.lib_helpers_wrap_manifest_outputWarning({
+          path: normalizePath(manifestPath),
+        }),
+        (_spinner): Promise<unknown> => {
+          return Promise.resolve(run());
+        }
+      );
     }
-
-    const manifest = await project.getManifest();
-
-    const abi: Abi = {
-      ...state.composerOutput.abi,
-    };
-
-    const info: WrapManifest = {
-      abi: { ...abi },
-      name: manifest.name,
-      type: (await this._isInterface()) ? "interface" : "wasm",
-      version: "0.0.1",
-    };
-
-    writeFileSync(`${outputDir}/wrap.info`, msgpackEncode(info), {
-      encoding: "binary",
-    });
   }
 
   private async _outputPolywrapMetadata(): Promise<void> {
