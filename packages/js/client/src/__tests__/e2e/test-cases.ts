@@ -345,39 +345,34 @@ export const runImplementationsTest = async (
     new Uri(implementationUri).uri,
   ]);
 
-  const query = await client.query<{
-    moduleMethod: string;
-    abstractModuleMethod: string;
-  }>({
-    uri: implementationUri,
-    query: `
-      query {
-        moduleMethod(
-          arg: $argument1
-        )
-        abstractModuleMethod(
-          arg: $argument2
-        )
-      }
-    `,
-    variables: {
-      argument1: {
-        uint8: 1,
-        str: "Test String 1",
+  const results = await Promise.all([
+    client.invoke({
+      uri: implementationUri,
+      method: "moduleMethod",
+      args: {
+        arg: {
+          uint8: 1,
+          str: "Test String 1",
+        },
       },
-      argument2: {
-        str: "Test String 2",
+    }),
+    client.invoke({
+      uri: implementationUri,
+      method: "abstractModuleMethod",
+      args: {
+        arg: {
+          str: "Test String 2",
+        },
       },
-    },
-  });
+    }),
+  ]);
 
-  expect(query.errors).toBeFalsy();
-  expect(query.data).toBeTruthy();
-  expect(query.data?.moduleMethod).toEqual({
+  expect(results.filter((x) => x.error).length).toEqual(0);
+  expect(results[0].data).toEqual({
     uint8: 1,
     str: "Test String 1",
   });
-  expect(query.data?.abstractModuleMethod).toBe("Test String 2");
+  expect(results[1].data).toBe("Test String 2");
 };
 
 export const runGetImplementationsTest = async (
