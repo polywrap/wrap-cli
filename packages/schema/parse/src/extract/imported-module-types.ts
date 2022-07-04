@@ -5,10 +5,11 @@ import {
   createPropertyDefinition,
   ImportedModuleDefinition,
   MapDefinition,
-  TypeInfo,
-} from "../typeInfo";
+  Abi,
+} from "../abi";
 import { extractImportedDefinition } from "./utils/imported-types-utils";
 import {
+  extractEnvDirective,
   extractInputValueDefinition,
   extractListType,
   extractNamedType,
@@ -31,7 +32,7 @@ const visitorEnter = (
   state: State
 ) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
-    const imported = extractImportedDefinition(node, true);
+    const imported = extractImportedDefinition(node, "module");
 
     if (!imported) {
       return;
@@ -80,6 +81,13 @@ const visitorEnter = (
       return: returnType,
       comment: node.description?.value,
     });
+
+    const envDirDefinition = extractEnvDirective(node);
+
+    if (envDirDefinition) {
+      method.env = envDirDefinition;
+    }
+
     importDef.methods.push(method);
     state.currentMethod = method;
     state.currentReturn = returnType;
@@ -114,13 +122,11 @@ const visitorLeave = (state: State) => ({
   },
 });
 
-export const getImportedModuleTypesVisitor = (
-  typeInfo: TypeInfo
-): ASTVisitor => {
+export const getImportedModuleTypesVisitor = (abi: Abi): ASTVisitor => {
   const state: State = {};
 
   return {
-    enter: visitorEnter(typeInfo.importedModuleTypes, state),
+    enter: visitorEnter(abi.importedModuleTypes, state),
     leave: visitorLeave(state),
   };
 };

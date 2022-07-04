@@ -15,7 +15,7 @@ export type Int = number;
 export type Int8 = number;
 export type Int16 = number;
 export type Int32 = number;
-export type Bytes = ArrayBuffer;
+export type Bytes = Uint8Array;
 export type BigInt = string;
 export type BigNumber = string;
 export type Json = string;
@@ -88,7 +88,7 @@ export type {{type}} = {{type}}Enum | {{type}}String;
 {{#methods}}
 
 /* URI: "{{parent.uri}}" */
-interface {{parent.type}}_Input_{{name}} extends Record<string, unknown> {
+interface {{parent.type}}_Args_{{name}} extends Record<string, unknown> {
   {{#arguments}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/arguments}}
@@ -99,14 +99,14 @@ interface {{parent.type}}_Input_{{name}} extends Record<string, unknown> {
 export const {{type}} = {
   {{#methods}}
   {{name}}: async (
-    input: {{parent.type}}_Input_{{name}},
+    args: {{parent.type}}_Args_{{name}},
     client: Client,
     uri: string = "{{parent.uri}}"
   ): Promise<InvokeResult<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>> => {
     return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>({
       uri,
       method: "{{name}}",
-      input
+      args
     });
   }{{^last}},{{/last}}
   {{^last}}

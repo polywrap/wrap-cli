@@ -1,33 +1,33 @@
 import {
   Client,
   Module,
-  Input_callContractView,
-  Input_callContractStatic,
-  Input_getBalance,
-  Input_encodeParams,
-  Input_encodeFunction,
-  Input_solidityPack,
-  Input_solidityKeccak256,
-  Input_soliditySha256,
-  Input_getSignerAddress,
-  Input_getSignerBalance,
-  Input_getSignerTransactionCount,
-  Input_getGasPrice,
-  Input_estimateTransactionGas,
-  Input_estimateContractCallGas,
-  Input_checkAddress,
-  Input_toWei,
-  Input_toEth,
-  Input_waitForEvent,
-  Input_awaitTransaction,
-  Input_getNetwork,
-  Input_callContractMethod,
-  Input_callContractMethodAndWait,
-  Input_deployContract,
-  Input_sendRPC,
-  Input_sendTransaction,
-  Input_sendTransactionAndWait,
-  Input_signMessage,
+  Args_callContractView,
+  Args_callContractStatic,
+  Args_getBalance,
+  Args_encodeParams,
+  Args_encodeFunction,
+  Args_solidityPack,
+  Args_solidityKeccak256,
+  Args_soliditySha256,
+  Args_getSignerAddress,
+  Args_getSignerBalance,
+  Args_getSignerTransactionCount,
+  Args_getGasPrice,
+  Args_estimateTransactionGas,
+  Args_estimateContractCallGas,
+  Args_checkAddress,
+  Args_toWei,
+  Args_toEth,
+  Args_waitForEvent,
+  Args_awaitTransaction,
+  Args_getNetwork,
+  Args_callContractMethod,
+  Args_callContractMethodAndWait,
+  Args_deployContract,
+  Args_sendRPC,
+  Args_sendTransaction,
+  Args_sendTransactionAndWait,
+  Args_signMessage,
   TxResponse,
   BigInt,
   StaticTxResult,
@@ -36,7 +36,7 @@ import {
   Network,
   Connection as SchemaConnection,
   manifest,
-} from "./wrap-man";
+} from "./wrap";
 import {
   Connections,
   Connection,
@@ -50,7 +50,7 @@ import { ethers } from "ethers";
 import { defaultAbiCoder } from "ethers/lib/utils";
 import { PluginFactory } from "@polywrap/core-js";
 
-export interface EthereumPluginConfig extends Record<string, unknown> {
+export interface EthereumPluginConfig {
   networks: ConnectionConfigs;
   defaultNetwork?: string;
 }
@@ -79,41 +79,34 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
   }
 
   async callContractView(
-    input: Input_callContractView,
+    args: Args_callContractView,
     _client: Client
   ): Promise<string> {
-    const connection = await this._getConnection(input.connection);
-    const contract = connection.getContract(
-      input.address,
-      [input.method],
-      false
-    );
+    const connection = await this._getConnection(args.connection);
+    const contract = connection.getContract(args.address, [args.method], false);
     const funcs = Object.keys(contract.interface.functions);
-    const res = await contract[funcs[0]](...parseArgs(input.args));
+    const res = await contract[funcs[0]](...parseArgs(args.args));
     return res.toString();
   }
 
   async callContractStatic(
-    input: Input_callContractStatic,
+    args: Args_callContractStatic,
     _client: Client
   ): Promise<StaticTxResult> {
-    const connection = await this._getConnection(input.connection);
-    const contract = connection.getContract(input.address, [input.method]);
+    const connection = await this._getConnection(args.connection);
+    const contract = connection.getContract(args.address, [args.method]);
     const funcs = Object.keys(contract.interface.functions);
 
     try {
-      const res = await contract.callStatic[funcs[0]](
-        ...parseArgs(input.args),
-        {
-          gasPrice: input.gasPrice
-            ? ethers.BigNumber.from(input.gasPrice)
-            : undefined,
-          gasLimit: input.gasLimit
-            ? ethers.BigNumber.from(input.gasLimit)
-            : undefined,
-          value: input.value ? ethers.BigNumber.from(input.value) : undefined,
-        }
-      );
+      const res = await contract.callStatic[funcs[0]](...parseArgs(args.args), {
+        gasPrice: args.gasPrice
+          ? ethers.BigNumber.from(args.gasPrice)
+          : undefined,
+        gasLimit: args.gasLimit
+          ? ethers.BigNumber.from(args.gasLimit)
+          : undefined,
+        value: args.value ? ethers.BigNumber.from(args.value) : undefined,
+      });
       return {
         result: res.toString(),
         error: false,
@@ -126,115 +119,112 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
     }
   }
 
-  async getBalance(input: Input_getBalance, _client: Client): Promise<BigInt> {
-    const connection = await this._getConnection(input.connection);
+  async getBalance(args: Args_getBalance, _client: Client): Promise<BigInt> {
+    const connection = await this._getConnection(args.connection);
     return (
       await connection
         .getProvider()
-        .getBalance(input.address, input.blockTag || undefined)
+        .getBalance(args.address, args.blockTag || undefined)
     ).toString();
   }
 
   async encodeParams(
-    input: Input_encodeParams,
+    args: Args_encodeParams,
     _client: Client
   ): Promise<string> {
-    return defaultAbiCoder.encode(input.types, parseArgs(input.values));
+    return defaultAbiCoder.encode(args.types, parseArgs(args.values));
   }
 
   async encodeFunction(
-    input: Input_encodeFunction,
+    args: Args_encodeFunction,
     _client: Client
   ): Promise<string> {
-    const functionInterface = ethers.Contract.getInterface([input.method]);
+    const functionInterface = ethers.Contract.getInterface([args.method]);
     return functionInterface.encodeFunctionData(
       functionInterface.functions[Object.keys(functionInterface.functions)[0]],
-      parseArgs(input.args)
+      parseArgs(args.args)
     );
   }
 
   async solidityPack(
-    input: Input_solidityPack,
+    args: Args_solidityPack,
     _client: Client
   ): Promise<string> {
-    return ethers.utils.solidityPack(input.types, parseArgs(input.values));
+    return ethers.utils.solidityPack(args.types, parseArgs(args.values));
   }
 
   async solidityKeccak256(
-    input: Input_solidityKeccak256,
+    args: Args_solidityKeccak256,
     _client: Client
   ): Promise<string> {
-    return ethers.utils.solidityKeccak256(input.types, parseArgs(input.values));
+    return ethers.utils.solidityKeccak256(args.types, parseArgs(args.values));
   }
 
   async soliditySha256(
-    input: Input_soliditySha256,
+    args: Args_soliditySha256,
     _client: Client
   ): Promise<string> {
-    return ethers.utils.soliditySha256(input.types, parseArgs(input.values));
+    return ethers.utils.soliditySha256(args.types, parseArgs(args.values));
   }
 
   async getSignerAddress(
-    input: Input_getSignerAddress,
+    args: Args_getSignerAddress,
     _client: Client
   ): Promise<string> {
-    const connection = await this._getConnection(input.connection);
+    const connection = await this._getConnection(args.connection);
     return await connection.getSigner().getAddress();
   }
 
   async getSignerBalance(
-    input: Input_getSignerBalance,
+    args: Args_getSignerBalance,
     _client: Client
   ): Promise<string> {
-    const connection = await this._getConnection(input.connection);
+    const connection = await this._getConnection(args.connection);
     return (
-      await connection.getSigner().getBalance(input.blockTag || undefined)
+      await connection.getSigner().getBalance(args.blockTag || undefined)
     ).toString();
   }
 
   async getSignerTransactionCount(
-    input: Input_getSignerTransactionCount,
+    args: Args_getSignerTransactionCount,
     _client: Client
   ): Promise<string> {
-    const connection = await this._getConnection(input.connection);
+    const connection = await this._getConnection(args.connection);
     return (
       await connection
         .getSigner()
-        .getTransactionCount(input.blockTag || undefined)
+        .getTransactionCount(args.blockTag || undefined)
     ).toString();
   }
 
-  async getGasPrice(
-    input: Input_getGasPrice,
-    _client: Client
-  ): Promise<string> {
-    const connection = await this._getConnection(input.connection);
+  async getGasPrice(args: Args_getGasPrice, _client: Client): Promise<string> {
+    const connection = await this._getConnection(args.connection);
     return (await connection.getSigner().getGasPrice()).toString();
   }
 
   async estimateTransactionGas(
-    input: Input_estimateTransactionGas,
+    args: Args_estimateTransactionGas,
     _client: Client
   ): Promise<string> {
-    const connection = await this._getConnection(input.connection);
+    const connection = await this._getConnection(args.connection);
     return (
-      await connection.getSigner().estimateGas(Mapping.fromTxRequest(input.tx))
+      await connection.getSigner().estimateGas(Mapping.fromTxRequest(args.tx))
     ).toString();
   }
 
   async estimateContractCallGas(
-    input: Input_estimateContractCallGas,
+    args: Args_estimateContractCallGas,
     _client: Client
   ): Promise<string> {
-    const connection = await this._getConnection(input.connection);
-    const contract = connection.getContract(input.address, [input.method]);
+    const connection = await this._getConnection(args.connection);
+    const contract = connection.getContract(args.address, [args.method]);
     const funcs = Object.keys(contract.interface.functions);
 
-    const gasPrice: string | null | undefined = input.txOverrides?.gasPrice;
-    const gasLimit: string | null | undefined = input.txOverrides?.gasLimit;
-    const value: string | null | undefined = input.txOverrides?.value;
+    const gasPrice: string | null | undefined = args.txOverrides?.gasPrice;
+    const gasLimit: string | null | undefined = args.txOverrides?.gasLimit;
+    const value: string | null | undefined = args.txOverrides?.value;
 
-    const gas = await contract.estimateGas[funcs[0]](...parseArgs(input.args), {
+    const gas = await contract.estimateGas[funcs[0]](...parseArgs(args.args), {
       gasPrice: gasPrice ? ethers.BigNumber.from(gasPrice) : undefined,
       gasLimit: gasLimit ? ethers.BigNumber.from(gasLimit) : undefined,
       value: value ? ethers.BigNumber.from(value) : undefined,
@@ -244,10 +234,10 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
   }
 
   async checkAddress(
-    input: Input_checkAddress,
+    args: Args_checkAddress,
     _client: Client
   ): Promise<boolean> {
-    let address = input.address;
+    let address = args.address;
 
     try {
       // If the address is all upper-case, convert to lower case
@@ -266,24 +256,24 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
     }
   }
 
-  async toWei(input: Input_toWei, _client: Client): Promise<string> {
-    const weiAmount = ethers.utils.parseEther(input.eth);
+  async toWei(args: Args_toWei, _client: Client): Promise<string> {
+    const weiAmount = ethers.utils.parseEther(args.eth);
     return weiAmount.toString();
   }
 
-  async toEth(input: Input_toEth, _client: Client): Promise<string> {
-    const etherAmount = ethers.utils.formatEther(input.wei);
+  async toEth(args: Args_toEth, _client: Client): Promise<string> {
+    const etherAmount = ethers.utils.formatEther(args.wei);
     return etherAmount.toString();
   }
 
   async waitForEvent(
-    input: Input_waitForEvent,
+    args: Args_waitForEvent,
     _client: Client
   ): Promise<EventNotification> {
-    const connection = await this._getConnection(input.connection);
-    const contract = connection.getContract(input.address, [input.event]);
+    const connection = await this._getConnection(args.connection);
+    const contract = connection.getContract(args.address, [args.event]);
     const events = Object.keys(contract.interface.events);
-    const filter = contract.filters[events[0]](...parseArgs(input.args));
+    const filter = contract.filters[events[0]](...parseArgs(args.args));
 
     return Promise.race([
       new Promise<EventNotification>((resolve) => {
@@ -301,31 +291,31 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
       new Promise<EventNotification>((_, reject) => {
         setTimeout(function () {
           reject(
-            `Waiting for event "${input.event}" on contract "${input.address}" timed out`
+            `Waiting for event "${args.event}" on contract "${args.address}" timed out`
           );
-        }, input.timeout || 60000);
+        }, args.timeout || 60000);
       }),
     ]);
   }
 
   async awaitTransaction(
-    input: Input_awaitTransaction,
+    args: Args_awaitTransaction,
     _client: Client
   ): Promise<TxReceipt> {
-    const connection = await this._getConnection(input.connection);
+    const connection = await this._getConnection(args.connection);
     const provider = connection.getProvider();
 
     const res = await provider.waitForTransaction(
-      input.txHash,
-      input.confirmations,
-      input.timeout
+      args.txHash,
+      args.confirmations,
+      args.timeout
     );
 
     return Mapping.toTxReceipt(res);
   }
 
-  async getNetwork(input: Input_getNetwork, _client: Client): Promise<Network> {
-    const connection = await this._getConnection(input.connection);
+  async getNetwork(args: Args_getNetwork, _client: Client): Promise<Network> {
+    const connection = await this._getConnection(args.connection);
     const provider = connection.getProvider();
     const network = await provider.getNetwork();
     return {
@@ -336,89 +326,85 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
   }
 
   public async callContractMethod(
-    input: Input_callContractMethod,
+    args: Args_callContractMethod,
     _client: Client
   ): Promise<TxResponse> {
-    const res = await this._callContractMethod(input);
+    const res = await this._callContractMethod(args);
     return Mapping.toTxResponse(res);
   }
 
   public async callContractMethodAndWait(
-    input: Input_callContractMethodAndWait,
+    args: Args_callContractMethodAndWait,
     _client: Client
   ): Promise<TxReceipt> {
-    const response = await this._callContractMethod(input);
+    const response = await this._callContractMethod(args);
     const res = await response.wait();
     return Mapping.toTxReceipt(res);
   }
 
   public async sendTransaction(
-    input: Input_sendTransaction,
+    args: Args_sendTransaction,
     _client: Client
   ): Promise<TxResponse> {
-    const connection = await this._getConnection(input.connection);
+    const connection = await this._getConnection(args.connection);
     const signer = connection.getSigner();
-    const res = await signer.sendTransaction(Mapping.fromTxRequest(input.tx));
+    const res = await signer.sendTransaction(Mapping.fromTxRequest(args.tx));
     return Mapping.toTxResponse(res);
   }
 
   public async sendTransactionAndWait(
-    input: Input_sendTransactionAndWait,
+    args: Args_sendTransactionAndWait,
     _client: Client
   ): Promise<TxReceipt> {
-    const connection = await this._getConnection(input.connection);
+    const connection = await this._getConnection(args.connection);
     const signer = connection.getSigner();
     const response = await signer.sendTransaction(
-      Mapping.fromTxRequest(input.tx)
+      Mapping.fromTxRequest(args.tx)
     );
     const receipt = await response.wait();
     return Mapping.toTxReceipt(receipt);
   }
 
   public async deployContract(
-    input: Input_deployContract,
+    args: Args_deployContract,
     _client: Client
   ): Promise<string> {
-    const connection = await this._getConnection(input.connection);
+    const connection = await this._getConnection(args.connection);
     const signer = connection.getSigner();
-    const factory = new ethers.ContractFactory(
-      input.abi,
-      input.bytecode,
-      signer
-    );
-    const contract = await factory.deploy(...parseArgs(input.args));
+    const factory = new ethers.ContractFactory(args.abi, args.bytecode, signer);
+    const contract = await factory.deploy(...parseArgs(args.args));
 
     await contract.deployTransaction.wait();
     return contract.address;
   }
 
   public async signMessage(
-    input: Input_signMessage,
+    args: Args_signMessage,
     _client: Client
   ): Promise<string> {
-    const connection = await this._getConnection(input.connection);
-    return await connection.getSigner().signMessage(input.message);
+    const connection = await this._getConnection(args.connection);
+    return await connection.getSigner().signMessage(args.message);
   }
 
-  public async sendRPC(input: Input_sendRPC, _client: Client): Promise<string> {
-    const connection = await this._getConnection(input.connection);
+  public async sendRPC(args: Args_sendRPC, _client: Client): Promise<string> {
+    const connection = await this._getConnection(args.connection);
     const provider = connection.getProvider();
-    const response = await provider.send(input.method, input.params);
+    const response = await provider.send(args.method, args.params);
     return response.toString();
   }
 
   private async _callContractMethod(
-    input: Input_callContractMethod
+    args: Args_callContractMethod
   ): Promise<ethers.providers.TransactionResponse> {
-    const connection = await this._getConnection(input.connection);
-    const contract = connection.getContract(input.address, [input.method]);
+    const connection = await this._getConnection(args.connection);
+    const contract = connection.getContract(args.address, [args.method]);
     const funcs = Object.keys(contract.interface.functions);
 
-    const gasPrice: string | null | undefined = input.txOverrides?.gasPrice;
-    const gasLimit: string | null | undefined = input.txOverrides?.gasLimit;
-    const value: string | null | undefined = input.txOverrides?.value;
+    const gasPrice: string | null | undefined = args.txOverrides?.gasPrice;
+    const gasLimit: string | null | undefined = args.txOverrides?.gasLimit;
+    const value: string | null | undefined = args.txOverrides?.value;
 
-    return await contract[funcs[0]](...parseArgs(input.args), {
+    return await contract[funcs[0]](...parseArgs(args.args), {
       gasPrice: gasPrice ? ethers.BigNumber.from(gasPrice) : undefined,
       gasLimit: gasLimit ? ethers.BigNumber.from(gasLimit) : undefined,
       value: value ? ethers.BigNumber.from(value) : undefined,
@@ -437,10 +423,10 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
 }
 
 export const ethereumPlugin: PluginFactory<EthereumPluginConfig> = (
-  opts: EthereumPluginConfig
+  config: EthereumPluginConfig
 ) => {
   return {
-    factory: () => new EthereumPlugin(opts),
+    factory: () => new EthereumPlugin(config),
     manifest,
   };
 };

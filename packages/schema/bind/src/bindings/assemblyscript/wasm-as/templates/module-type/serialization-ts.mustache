@@ -2,14 +2,14 @@
 import * as Types from "..";
 {{#methods}}
 
-export class Input_{{name}} {
+export class Args_{{name}} {
   {{#arguments}}
   {{#handleKeywords}}{{name}}{{/handleKeywords}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
   {{/arguments}}
 }
 
-export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Input_{{name}} {
-  const context: Context =  new Context("Deserializing module-type: {{name}}");
+export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Args_{{name}} {
+  const context: Context = new Context("Deserializing module-type: {{name}}");
   {{#arguments.length}}
   const reader = new ReadDecoder(argsBuf, context);
   let numFields = reader.readMapLength();
@@ -128,7 +128,7 @@ export function write{{name}}Result(writer: Write, result: {{#return}}{{#toWasm}
   writer.writeInt32(result);
   {{/required}}
   {{^required}}
-  writer.writeNullableInt32(result);
+  writer.writeOptionalInt32(result);
   {{/required}}
   {{/enum}}
   {{#object}}

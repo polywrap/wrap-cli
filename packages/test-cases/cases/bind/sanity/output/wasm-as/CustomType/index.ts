@@ -1,12 +1,10 @@
 import {
   Read,
   Write,
-  Nullable,
+  Option,
   BigInt,
   BigNumber,
-  JSON,
-  JSONSerializer,
-  JSONDeserializer,
+  JSON
 } from "@polywrap/wasm-as";
 import {
   serializeCustomType,
@@ -16,12 +14,11 @@ import {
 } from "./serialization";
 import * as Types from "..";
 
-@serializable
 export class CustomType {
   str: string;
   optStr: string | null;
   u: u32;
-  optU: Nullable<u32>;
+  optU: Option<u32>;
   m_u8: u8;
   m_u16: u16;
   m_u32: u32;
@@ -38,13 +35,13 @@ export class CustomType {
   bytes: ArrayBuffer;
   optBytes: ArrayBuffer | null;
   m_boolean: bool;
-  optBoolean: Nullable<bool>;
+  optBoolean: Option<bool>;
   uArray: Array<u32>;
   uOptArray: Array<u32> | null;
-  optUOptArray: Array<Nullable<u32>> | null;
+  optUOptArray: Array<Option<u32>> | null;
   optStrOptArray: Array<string | null> | null;
   uArrayArray: Array<Array<u32>>;
-  uOptArrayOptArray: Array<Array<Nullable<u32>> | null>;
+  uOptArrayOptArray: Array<Array<Option<u32>> | null>;
   uArrayOptArrayArray: Array<Array<Array<u32>> | null>;
   crazyArray: Array<Array<Array<Array<u32> | null>> | null> | null;
   object: Types.AnotherType;
@@ -52,9 +49,9 @@ export class CustomType {
   objectArray: Array<Types.AnotherType>;
   optObjectArray: Array<Types.AnotherType | null> | null;
   en: Types.CustomEnum;
-  optEnum: Nullable<Types.CustomEnum>;
+  optEnum: Option<Types.CustomEnum>;
   enumArray: Array<Types.CustomEnum>;
-  optEnumArray: Array<Nullable<Types.CustomEnum>> | null;
+  optEnumArray: Array<Option<Types.CustomEnum>> | null;
 
   static toBuffer(type: CustomType): ArrayBuffer {
     return serializeCustomType(type);
@@ -70,13 +67,5 @@ export class CustomType {
 
   static read(reader: Read): CustomType {
     return readCustomType(reader);
-  }
-
-  static toJson(type: CustomType): JSON.Value {
-    return JSONSerializer.encode(type);
-  }
-
-  static fromJson(json: JSON.Value): CustomType {
-    return (new JSONDeserializer(json)).decode<CustomType>();
   }
 }

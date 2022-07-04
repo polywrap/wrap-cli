@@ -15,12 +15,12 @@ import { addHeader } from "./templates/header.mustache";
 import { checkDuplicateEnvProperties } from "./env";
 
 import {
-  TypeInfo,
+  Abi,
   parseSchema,
   ObjectDefinition,
   ImportedObjectDefinition,
   ModuleDefinition,
-  TypeInfoTransforms,
+  AbiTransforms,
   visitObjectDefinition,
   visitModuleDefinition,
   visitEnvDefinition,
@@ -46,10 +46,13 @@ import {
   createCapability,
   ModuleCapability,
   createEnvDefinition,
-  envTypes,
-  createObjectDefinition,
   createModuleDefinition,
-  isClientEnvType,
+  EnvDefinition,
+  createImportedEnvDefinition,
+  ImportedEnvDefinition,
+  visitImportedEnvDefinition,
+  isImportedEnvType,
+  isImportedModuleType,
 } from "@polywrap/schema-parse";
 
 type ImplementationWithInterfaces = {
@@ -62,7 +65,7 @@ const TYPE_NAME_REGEX = `[a-zA-Z0-9_]+`;
 export async function resolveUseStatements(
   schema: string,
   schemaPath: string,
-  typeInfo: TypeInfo
+  abi: Abi
 ): Promise<ModuleCapability[]> {
   const useKeywordCapture = /^[#]*["{3}]*use[ \n\t]/gm;
   const useCapture = /[#]*["{3}]*use[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*for[ \n\t]*(\w+)[ \n\t]/g;
@@ -81,7 +84,7 @@ export async function resolveUseStatements(
     ImportedModuleDefinition
   > = {};
 
-  typeInfo.importedModuleTypes.forEach((value) => {
+  abi.importedModuleTypes.forEach((value) => {
     importedModuleByNamespace[value.namespace] = value;
   });
 
@@ -106,7 +109,7 @@ export async function resolveUseStatements(
       })
       .reduce((o1, o2) => ({ ...o1, ...o2 }));
 
-    typeInfo.interfaceTypes.push(
+    abi.interfaceTypes.push(
       createInterfaceDefinition({
         type: parsedUse.namespace,
         uri: importedModule.uri,
@@ -123,7 +126,7 @@ export async function resolveImportsAndParseSchemas(
   schemaPath: string,
   resolvers: SchemaResolvers,
   noValidate = false
-): Promise<TypeInfo> {
+): Promise<Abi> {
   const importKeywordCapture = /^#+["{3}]*import\s/gm;
   const externalImportCapture = /#+["{3}]*import\s*(?:({[^}]+}|\*))\s*into\s*(\w+?)\s*from\s*[\"'`]([^\"'`\s]+)[\"'`]/g;
   const localImportCapture = /#+["{3}]*import\s*(?:({[^}]+}|\*))\s*from\s*[\"'`]([^\"'`\s]+)[\"'`]/g;
@@ -159,33 +162,33 @@ export async function resolveImportsAndParseSchemas(
     schemaPath
   );
 
-  const subTypeInfo: TypeInfo = {
+  const subAbi: Abi = {
     objectTypes: [],
     enumTypes: [],
     interfaceTypes: [],
     importedEnumTypes: [],
     importedObjectTypes: [],
     importedModuleTypes: [],
-    envType: createEnvDefinition({}),
+    importedEnvTypes: [],
   };
 
   const externalImports = await resolveExternalImports(
     externalImportsToResolve,
     resolvers.external,
-    subTypeInfo
+    subAbi
   );
 
   await resolveLocalImports(
     localImportsToResolve,
     resolvers.local,
-    subTypeInfo,
+    subAbi,
     resolvers
   );
 
   const capabilitiesByModule = await resolveUseStatements(
     schema,
     schemaPath,
-    subTypeInfo
+    subAbi
   );
 
   // Remove all import statements
@@ -202,8 +205,8 @@ export async function resolveImportsAndParseSchemas(
   // Add the @capability directive
   newSchema = addCapabilityDirective(newSchema, capabilitiesByModule);
 
-  // Combine the new schema with the subTypeInfo
-  newSchema = header + newSchema + renderSchema(subTypeInfo, false);
+  // Combine the new schema with the subAbi
+  newSchema = header + newSchema + renderSchema(subAbi, false);
 
   newSchema = resolveInterfaces(newSchema, implementationsWithInterfaces);
 
@@ -215,9 +218,9 @@ export async function resolveImportsAndParseSchemas(
   );
 
   // Parse the newly formed schema
-  const typeInfo = parseSchema(newSchema, { noValidate });
+  const abi = parseSchema(newSchema, { noValidate });
 
-  return typeInfo;
+  return abi;
 }
 
 interface Namespaced {
@@ -234,24 +237,27 @@ type ImportMap = Record<
     Namespaced
 >;
 
-type EnumOrObject = ObjectDefinition | EnumDefinition;
-type ImportedEnumOrObject = ImportedObjectDefinition | ImportedEnumDefinition;
+type EnumOrObjectOrEnv = ObjectDefinition | EnumDefinition | EnvDefinition;
+type ImportedEnumOrObjectOrEnv =
+  | ImportedObjectDefinition
+  | ImportedEnumDefinition
+  | ImportedEnvDefinition;
 
 // A transformation that converts all object definitions into
 // imported object definitions
 const extractObjectImportDependencies = (
   importsFound: ImportMap,
-  rootTypeInfo: TypeInfo,
+  rootAbi: Abi,
   namespace: string,
   uri: string
-): TypeInfoTransforms => {
+): AbiTransforms => {
   const findImport = (
     type: string,
     namespaceType: string,
-    rootTypes: EnumOrObject[],
-    importedTypes: ImportedEnumOrObject[],
+    rootTypes: EnumOrObjectOrEnv[],
+    importedTypes: ImportedEnumOrObjectOrEnv[],
     kind: DefinitionKind
-  ): ImportedEnumOrObject & Namespaced => {
+  ): ImportedEnumOrObjectOrEnv & Namespaced => {
     // Find this type's ObjectDefinition in the root type info
     let idx = rootTypes.findIndex((obj) => obj.type === type);
     let obj = undefined;
@@ -265,8 +271,8 @@ const extractObjectImportDependencies = (
     if (idx === -1) {
       throw Error(
         `extractObjectImportDependencies: Cannot find the dependent type within the root type info.\n` +
-          `Type: ${type}\nTypeInfo: ${JSON.stringify(
-            rootTypeInfo
+          `Type: ${type}\nAbi: ${JSON.stringify(
+            rootAbi
           )}\n${namespace}\n${JSON.stringify(Object.keys(importsFound))}`
       );
     } else if (obj === undefined) {
@@ -299,27 +305,49 @@ const extractObjectImportDependencies = (
         const namespaceType = appendNamespace(namespace, type);
 
         if (!importsFound[namespaceType]) {
-          // Find the import
-          const importFound = findImport(
-            type,
-            namespaceType,
-            rootTypeInfo.objectTypes,
-            rootTypeInfo.importedObjectTypes,
-            DefinitionKind.ImportedObject
-          ) as ImportedObjectDefinition;
+          if (isEnvType(type)) {
+            const importFound = findImport(
+              type,
+              namespaceType,
+              rootAbi.envType ? [rootAbi.envType] : [],
+              rootAbi.importedEnvTypes,
+              DefinitionKind.ImportedObject
+            ) as ImportedEnvDefinition;
 
-          // Keep track of it
-          importsFound[importFound.type] = importFound;
+            // Keep track of it
+            importsFound[importFound.type] = importFound;
 
-          // Traverse this newly added object
-          visitObjectDefinition(importFound, {
-            ...extractObjectImportDependencies(
-              importsFound,
-              rootTypeInfo,
-              namespace,
-              uri
-            ),
-          });
+            // Traverse this newly added object
+            visitImportedEnvDefinition(importFound, {
+              ...extractObjectImportDependencies(
+                importsFound,
+                rootAbi,
+                namespace,
+                uri
+              ),
+            });
+          } else {
+            const importFound = findImport(
+              type,
+              namespaceType,
+              rootAbi.objectTypes,
+              rootAbi.importedObjectTypes,
+              DefinitionKind.ImportedObject
+            ) as ImportedObjectDefinition;
+
+            // Keep track of it
+            importsFound[importFound.type] = importFound;
+
+            // Traverse this newly added object
+            visitObjectDefinition(importFound, {
+              ...extractObjectImportDependencies(
+                importsFound,
+                rootAbi,
+                namespace,
+                uri
+              ),
+            });
+          }
         }
 
         return def;
@@ -336,27 +364,49 @@ const extractObjectImportDependencies = (
         const namespaceType = appendNamespace(namespace, type);
 
         if (!importsFound[namespaceType]) {
-          // Find the import
-          const importFound = findImport(
-            type,
-            namespaceType,
-            rootTypeInfo.objectTypes,
-            rootTypeInfo.importedObjectTypes,
-            DefinitionKind.ImportedObject
-          ) as ImportedObjectDefinition;
+          if (isEnvType(type)) {
+            const importFound = findImport(
+              type,
+              namespaceType,
+              rootAbi.envType ? [rootAbi.envType] : [],
+              rootAbi.importedEnvTypes,
+              DefinitionKind.ImportedObject
+            ) as ImportedEnvDefinition;
 
-          // Keep track of it
-          importsFound[importFound.type] = importFound;
+            // Keep track of it
+            importsFound[importFound.type] = importFound;
 
-          // Traverse this newly added object
-          visitObjectDefinition(importFound, {
-            ...extractObjectImportDependencies(
-              importsFound,
-              rootTypeInfo,
-              namespace,
-              uri
-            ),
-          });
+            // Traverse this newly added object
+            visitEnvDefinition(importFound, {
+              ...extractObjectImportDependencies(
+                importsFound,
+                rootAbi,
+                namespace,
+                uri
+              ),
+            });
+          } else {
+            const importFound = findImport(
+              type,
+              namespaceType,
+              rootAbi.objectTypes,
+              rootAbi.importedObjectTypes,
+              DefinitionKind.ImportedObject
+            ) as ImportedObjectDefinition;
+
+            // Keep track of it
+            importsFound[importFound.type] = importFound;
+
+            // Traverse this newly added object
+            visitObjectDefinition(importFound, {
+              ...extractObjectImportDependencies(
+                importsFound,
+                rootAbi,
+                namespace,
+                uri
+              ),
+            });
+          }
         }
 
         return def;
@@ -372,8 +422,8 @@ const extractObjectImportDependencies = (
           const importFound = findImport(
             def.type,
             namespaceType,
-            rootTypeInfo.enumTypes,
-            rootTypeInfo.importedEnumTypes,
+            rootAbi.enumTypes,
+            rootAbi.importedEnumTypes,
             DefinitionKind.ImportedEnum
           ) as ImportedEnumDefinition;
 
@@ -387,7 +437,7 @@ const extractObjectImportDependencies = (
   };
 };
 
-const namespaceTypes = (namespace: string): TypeInfoTransforms => ({
+const namespaceTypes = (namespace: string): AbiTransforms => ({
   enter: {
     ObjectRef: (def: ObjectRef & Namespaced) => {
       if (def.__namespaced) {
@@ -594,7 +644,7 @@ function resolveInterfaces(
 async function resolveExternalImports(
   importsToResolve: ExternalImport[],
   resolveSchema: SchemaResolver,
-  typeInfo: TypeInfo
+  abi: Abi
 ): Promise<string[]> {
   // Keep track of all imported object type names
   const typesToImport: ImportMap = {};
@@ -609,21 +659,25 @@ async function resolveExternalImports(
       throw Error(`Unable to resolve schema at "${uri}"`);
     }
 
-    // Parse the schema into TypeInfo
-    const extTypeInfo = parseSchema(schema);
+    // Parse the schema into Abi
+    const extAbi = parseSchema(schema);
 
     let extTypesToImport = importedTypes;
 
     // If the importedTypes array contains the catch-all "*"
-    // go ahead and add all extTypeInfo types to the importedTypes array
+    // go ahead and add all extAbi types to the importedTypes array
     if (extTypesToImport.indexOf("*") > -1) {
       extTypesToImport = [
-        ...extTypeInfo.objectTypes.map((x) => x.type),
-        ...extTypeInfo.enumTypes.map((x) => x.type),
+        ...extAbi.objectTypes.map((x) => x.type),
+        ...extAbi.enumTypes.map((x) => x.type),
       ];
 
-      if (extTypeInfo.moduleType) {
-        extTypesToImport.push(extTypeInfo.moduleType.type);
+      if (extAbi.moduleType) {
+        extTypesToImport.push(extAbi.moduleType.type);
+      }
+
+      if (extAbi.envType) {
+        extTypesToImport.push(extAbi.envType.type);
       }
     }
 
@@ -643,13 +697,13 @@ async function resolveExternalImports(
 
       // If it's a module type
       if (importedType === "Module") {
-        if (!extTypeInfo.moduleType) {
-          extTypeInfo.moduleType = createModuleDefinition({});
+        if (!extAbi.moduleType) {
+          extAbi.moduleType = createModuleDefinition({});
         }
 
-        extTypes = [extTypeInfo.moduleType as ModuleDefinition];
+        extTypes = [extAbi.moduleType as ModuleDefinition];
         visitorFunc = visitModuleDefinition;
-        const type = extTypeInfo.moduleType as ModuleDefinition;
+        const type = extAbi.moduleType as ModuleDefinition;
         trueType = {
           ...createImportedModuleDefinition({
             ...type,
@@ -660,32 +714,57 @@ async function resolveExternalImports(
           }),
           methods: type.methods,
         };
-      } else if (importedType.endsWith("_Module")) {
+      } else if (isImportedModuleType(importedType)) {
         throw Error(
           `Cannot import an import's imported module type. Tried to import ${importedType} from ${uri}.`
         );
+      } else if (isEnvType(importedType)) {
+        if (!extAbi.envType) {
+          throw new Error(
+            `Tried to import env type from ${uri} but it doesn't exist.`
+          );
+        }
+
+        extTypes = [extAbi.envType];
+        visitorFunc = visitEnvDefinition;
+        const type = extAbi.envType;
+        trueType = {
+          ...createImportedEnvDefinition({
+            ...type,
+            name: undefined,
+            required: undefined,
+            uri,
+            nativeType: type.type,
+            namespace,
+          }),
+          properties: type.properties,
+        };
+      } else if (isImportedEnvType(importedType)) {
+        throw Error(
+          `Cannot import an import's imported env type. Tried to import ${importedType} from ${uri}.`
+        );
       } else {
-        const objIdx = extTypeInfo.objectTypes.findIndex(
+        const objIdx = extAbi.objectTypes.findIndex(
           (def) => def.type === importedType
         );
         const impObjIdx =
           objIdx === -1 &&
-          extTypeInfo.importedObjectTypes.findIndex(
+          extAbi.importedObjectTypes.findIndex(
             (def) => def.type === importedType
           );
         const enumIdx =
           impObjIdx === -1 &&
-          extTypeInfo.enumTypes.findIndex((def) => def.type === importedType);
+          extAbi.enumTypes.findIndex((def) => def.type === importedType);
         const impEnumIdx =
           enumIdx === -1 &&
-          extTypeInfo.importedEnumTypes.findIndex(
+          extAbi.importedEnumTypes.findIndex(
             (def) => def.type === importedType
           );
 
         if (objIdx > -1) {
-          extTypes = extTypeInfo.objectTypes;
+          extTypes = extAbi.objectTypes;
           visitorFunc = visitObjectDefinition;
-          const type = extTypeInfo.objectTypes[objIdx];
+          const type = extAbi.objectTypes[objIdx];
           trueType = {
             ...createImportedObjectDefinition({
               ...type,
@@ -699,9 +778,9 @@ async function resolveExternalImports(
             properties: type.properties,
           };
         } else if (impObjIdx !== false && impObjIdx > -1) {
-          extTypes = extTypeInfo.importedObjectTypes;
+          extTypes = extAbi.importedObjectTypes;
           visitorFunc = visitObjectDefinition;
-          const type = extTypeInfo.importedObjectTypes[impObjIdx];
+          const type = extAbi.importedObjectTypes[impObjIdx];
           trueType = {
             ...createImportedObjectDefinition({
               ...type,
@@ -715,9 +794,9 @@ async function resolveExternalImports(
             properties: type.properties,
           };
         } else if (enumIdx !== false && enumIdx > -1) {
-          extTypes = extTypeInfo.enumTypes;
+          extTypes = extAbi.enumTypes;
           visitorFunc = visitEnumDefinition;
-          const type = extTypeInfo.enumTypes[enumIdx];
+          const type = extAbi.enumTypes[enumIdx];
           trueType = createImportedEnumDefinition({
             ...type,
             type: appendNamespace(namespace, importedType),
@@ -728,9 +807,9 @@ async function resolveExternalImports(
             namespace,
           });
         } else if (impEnumIdx !== false && impEnumIdx > -1) {
-          extTypes = extTypeInfo.importedEnumTypes;
+          extTypes = extAbi.importedEnumTypes;
           visitorFunc = visitEnumDefinition;
-          const type = extTypeInfo.importedEnumTypes[impEnumIdx];
+          const type = extAbi.importedEnumTypes[impEnumIdx];
           trueType = createImportedEnumDefinition({
             ...type,
             type: appendNamespace(namespace, importedType),
@@ -762,7 +841,7 @@ async function resolveExternalImports(
         continue;
       }
 
-      // Append the base type to our TypeInfo
+      // Append the base type to our Abi
       typesToImport[namespacedType] = {
         ...trueType,
         __namespaced: true,
@@ -771,46 +850,48 @@ async function resolveExternalImports(
       // Extract all object dependencies
       visitorFunc(
         trueType,
-        extractObjectImportDependencies(
-          typesToImport,
-          extTypeInfo,
-          namespace,
-          uri
-        )
+        extractObjectImportDependencies(typesToImport, extAbi, namespace, uri)
       );
     }
 
-    // Add all imported types into the aggregate TypeInfo
+    // Add all imported types into the aggregate Abi
     for (const importName of Object.keys(typesToImport)) {
       const importType = typesToImport[importName];
       let destArray:
         | ImportedObjectDefinition[]
         | ImportedModuleDefinition[]
-        | ImportedEnumDefinition[];
+        | ImportedEnumDefinition[]
+        | ImportedEnvDefinition[];
       let append;
 
-      if (importType.kind === DefinitionKind.ImportedObject) {
-        destArray = typeInfo.importedObjectTypes;
+      if (importType.kind === DefinitionKind.ImportedEnv) {
+        destArray = abi.importedEnvTypes;
+        append = () => {
+          const importDef = importType as ImportedEnvDefinition;
+          abi.importedEnvTypes.push(
+            visitImportedEnvDefinition(importDef, namespaceTypes(namespace))
+          );
+        };
+      } else if (importType.kind === DefinitionKind.ImportedObject) {
+        destArray = abi.importedObjectTypes;
         append = () => {
           const importDef = importType as ImportedObjectDefinition;
-          // Namespace all object types
-          typeInfo.importedObjectTypes.push(
+          abi.importedObjectTypes.push(
             visitImportedObjectDefinition(importDef, namespaceTypes(namespace))
           );
         };
       } else if (importType.kind === DefinitionKind.ImportedModule) {
-        destArray = typeInfo.importedModuleTypes;
+        destArray = abi.importedModuleTypes;
         append = () => {
           const importDef = importType as ImportedModuleDefinition;
-          // Namespace all object types
-          typeInfo.importedModuleTypes.push(
+          abi.importedModuleTypes.push(
             visitImportedModuleDefinition(importDef, namespaceTypes(namespace))
           );
         };
       } else if (importType.kind === DefinitionKind.ImportedEnum) {
-        destArray = typeInfo.importedEnumTypes;
+        destArray = abi.importedEnumTypes;
         append = () => {
-          typeInfo.importedEnumTypes.push(
+          abi.importedEnumTypes.push(
             visitImportedEnumDefinition(
               importType as ImportedEnumDefinition,
               namespaceTypes(namespace)
@@ -849,7 +930,7 @@ async function resolveExternalImports(
 async function resolveLocalImports(
   importsToResolve: LocalImport[],
   resolveSchema: SchemaResolver,
-  typeInfo: TypeInfo,
+  abi: Abi,
   resolvers: SchemaResolvers
 ): Promise<void> {
   for (const importToResolve of importsToResolve) {
@@ -867,8 +948,8 @@ async function resolveLocalImports(
       schema = addHeader(schema);
     }
 
-    // Parse the schema into TypeInfo
-    const localTypeInfo = await resolveImportsAndParseSchemas(
+    // Parse the schema into Abi
+    const localAbi = await resolveImportsAndParseSchemas(
       schema,
       path,
       resolvers,
@@ -878,15 +959,15 @@ async function resolveLocalImports(
     let extTypesToImport = importedTypes;
 
     // If the importedTypes array contains the catch-all "*"
-    // go ahead and add all extTypeInfo types to the importedTypes array
+    // go ahead and add all extAbi types to the importedTypes array
     if (extTypesToImport.indexOf("*") > -1) {
       extTypesToImport = [
-        ...localTypeInfo.objectTypes.map((x) => x.type),
-        ...localTypeInfo.enumTypes.map((x) => x.type),
+        ...localAbi.objectTypes.map((x) => x.type),
+        ...localAbi.enumTypes.map((x) => x.type),
       ];
 
-      if (localTypeInfo.moduleType) {
-        extTypesToImport.push(localTypeInfo.moduleType.type);
+      if (localAbi.moduleType) {
+        extTypesToImport.push(localAbi.moduleType.type);
       }
     }
 
@@ -905,34 +986,28 @@ async function resolveLocalImports(
 
       if (isEnvType(importedType)) {
         visitorFunc = visitEnvDefinition;
-        type = isClientEnvType(importedType)
-          ? localTypeInfo.envType.client
-          : localTypeInfo.envType.sanitized;
+        type = localAbi.envType;
       } else {
-        const objectIdx = localTypeInfo.objectTypes.findIndex(
+        const objectIdx = localAbi.objectTypes.findIndex(
           (type) => type.type === importedType
         );
 
         const enumIdx =
           objectIdx === -1 &&
-          localTypeInfo.enumTypes.findIndex(
-            (type) => type.type === importedType
-          );
+          localAbi.enumTypes.findIndex((type) => type.type === importedType);
 
         if (objectIdx > -1) {
           visitorFunc = visitObjectDefinition;
-          type = localTypeInfo.objectTypes[objectIdx];
+          type = localAbi.objectTypes[objectIdx];
         } else if (enumIdx > -1) {
           visitorFunc = visitEnumDefinition;
-          type = localTypeInfo.enumTypes.find(
-            (type) => type.type === importedType
-          );
+          type = localAbi.enumTypes.find((type) => type.type === importedType);
         }
       }
 
       if (!type) {
         throw Error(
-          `Cannot find type "${importedType}" in the schema at ${path}.\nFound: [ ${localTypeInfo.objectTypes.map(
+          `Cannot find type "${importedType}" in the schema at ${path}.\nFound: [ ${localAbi.objectTypes.map(
             (type) => type.type + " "
           )}]`
         );
@@ -942,7 +1017,7 @@ async function resolveLocalImports(
 
       const findImport = (
         def: GenericDefinition,
-        rootTypes: EnumOrObject[]
+        rootTypes: EnumOrObjectOrEnv[]
       ) => {
         // Skip objects that we've already processed
         if (typesToImport[def.type]) {
@@ -954,8 +1029,8 @@ async function resolveLocalImports(
 
         if (idx === -1) {
           throw Error(
-            `resolveLocalImports: Cannot find the requested type within the TypeInfo.\n` +
-              `Type: ${def.type}\nTypeInfo: ${JSON.stringify(localTypeInfo)}`
+            `resolveLocalImports: Cannot find the requested type within the Abi.\n` +
+              `Type: ${def.type}\nAbi: ${JSON.stringify(localAbi)}`
           );
         }
 
@@ -983,22 +1058,22 @@ async function resolveLocalImports(
           enter: {
             ObjectRef: (def: ObjectRef) => {
               return findImport(def, [
-                ...localTypeInfo.objectTypes,
-                ...localTypeInfo.importedObjectTypes,
+                ...localAbi.objectTypes,
+                ...localAbi.importedObjectTypes,
               ]);
             },
             EnumRef: (def: EnumRef) => {
               return findImport(def, [
-                ...localTypeInfo.enumTypes,
-                ...localTypeInfo.importedEnumTypes,
+                ...localAbi.enumTypes,
+                ...localAbi.importedEnumTypes,
               ]);
             },
             InterfaceImplementedDefinition: (
               def: InterfaceImplementedDefinition
             ) => {
               return findImport(def, [
-                ...localTypeInfo.objectTypes,
-                ...localTypeInfo.importedObjectTypes,
+                ...localAbi.objectTypes,
+                ...localAbi.importedObjectTypes,
               ]);
             },
           },
@@ -1009,78 +1084,50 @@ async function resolveLocalImports(
       visitType(type);
     }
 
-    // Add all imported types into the aggregate TypeInfo
+    // Add all imported types into the aggregate Abi
     for (const importType of Object.keys(typesToImport)) {
-      if (isEnvType(importType)) {
-        if (isClientEnvType(importType)) {
-          if (!typeInfo.envType.client) {
-            typeInfo.envType.client = createObjectDefinition({
-              type: envTypes.ClientEnv,
-            });
-          }
-
-          const sharedEnv = localTypeInfo.envType.client as ObjectDefinition;
-
-          checkDuplicateEnvProperties(
-            typeInfo.envType.client,
-            sharedEnv.properties
-          );
-
-          typeInfo.envType.client.properties.push(...sharedEnv.properties);
-        } else {
-          if (!typeInfo.envType.sanitized) {
-            typeInfo.envType.sanitized = createObjectDefinition({
-              type: envTypes.Env,
-            });
-          }
-
-          const sharedEnv = localTypeInfo.envType.sanitized as ObjectDefinition;
-
-          checkDuplicateEnvProperties(
-            typeInfo.envType.sanitized,
-            sharedEnv.properties
-          );
-
-          typeInfo.envType.sanitized.properties.push(...sharedEnv.properties);
+      if (isKind(typesToImport[importType], DefinitionKind.Env)) {
+        if (!abi.envType) {
+          abi.envType = createEnvDefinition({});
         }
+
+        const sharedEnv = localAbi.envType as EnvDefinition;
+
+        checkDuplicateEnvProperties(abi.envType, sharedEnv.properties);
+
+        abi.envType.properties.push(...sharedEnv.properties);
       } else if (
         isKind(typesToImport[importType], DefinitionKind.ImportedObject)
       ) {
         if (
-          typeInfo.importedObjectTypes.findIndex(
+          abi.importedObjectTypes.findIndex(
             (def) => def.type === importType
           ) === -1
         ) {
-          typeInfo.importedObjectTypes.push(
+          abi.importedObjectTypes.push(
             typesToImport[importType] as ImportedObjectDefinition
           );
         }
       } else if (isKind(typesToImport[importType], DefinitionKind.Object)) {
         if (
-          typeInfo.objectTypes.findIndex((def) => def.type === importType) ===
-          -1
+          abi.objectTypes.findIndex((def) => def.type === importType) === -1
         ) {
-          typeInfo.objectTypes.push(
-            typesToImport[importType] as ObjectDefinition
-          );
+          abi.objectTypes.push(typesToImport[importType] as ObjectDefinition);
         }
       } else if (
         isKind(typesToImport[importType], DefinitionKind.ImportedEnum)
       ) {
         if (
-          typeInfo.importedEnumTypes.findIndex(
-            (def) => def.type === importType
-          ) === -1
+          abi.importedEnumTypes.findIndex((def) => def.type === importType) ===
+          -1
         ) {
-          typeInfo.importedEnumTypes.push(
+          abi.importedEnumTypes.push(
             typesToImport[importType] as ImportedEnumDefinition
           );
         }
       } else if (isKind(typesToImport[importType], DefinitionKind.Enum)) {
-        if (
-          typeInfo.enumTypes.findIndex((def) => def.type === importType) === -1
-        ) {
-          typeInfo.enumTypes.push(typesToImport[importType] as EnumDefinition);
+        if (abi.enumTypes.findIndex((def) => def.type === importType) === -1) {
+          abi.enumTypes.push(typesToImport[importType] as EnumDefinition);
         }
       }
     }

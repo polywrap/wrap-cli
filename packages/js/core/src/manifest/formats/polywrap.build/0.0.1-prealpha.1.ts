@@ -7,12 +7,30 @@
  */
 
 export interface BuildManifest {
+  /**
+   * Polywrap build manifest format version.
+   */
   format: "0.0.1-prealpha.1";
+  /**
+   * Docker build artifact properties.
+   */
   docker?: {
+    /**
+     * Docker image name.
+     */
     name?: string;
+    /**
+     * Docker image file name.
+     */
     dockerfile?: string;
+    /**
+     * Id of the docker image.
+     */
     buildImageId?: string;
   };
+  /**
+   * Custom configuration.
+   */
   config?: {
     [k: string]: unknown;
   };

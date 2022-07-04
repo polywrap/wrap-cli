@@ -4,7 +4,7 @@ import { Tracer } from "@polywrap/tracing-js";
 
 export interface PluginRegistration<TUri = string> {
   uri: TUri;
-  plugin: PluginPackage;
+  plugin: PluginPackage<unknown>;
 }
 
 export const sanitizePluginRegistrations = Tracer.traceFunc(

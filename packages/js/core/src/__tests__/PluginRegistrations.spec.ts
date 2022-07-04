@@ -12,14 +12,14 @@ describe("sanitizePluginRegistrations", () => {
     const plugins = sanitizePluginRegistrations([
       {
         uri: "wrap://polywrap/wrapper",
-        plugin: {} as PluginPackage,
+        plugin: {} as PluginPackage<{}>,
       }
     ]);
 
     expect(plugins).toEqual([
       {
         uri: new Uri("wrap://polywrap/wrapper"),
-        plugin: {} as PluginPackage
+        plugin: {} as PluginPackage<{}>
       }
     ]);
   });

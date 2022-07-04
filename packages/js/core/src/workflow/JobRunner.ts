@@ -1,8 +1,9 @@
 import {
   Client,
   executeMaybeAsyncFunction,
-  InvokeResult,
   Job,
+  JobResult,
+  JobStatus,
   MaybeAsync,
   Uri,
 } from "../types";
@@ -19,14 +20,13 @@ export class JobRunner<
   TData extends unknown = unknown,
   TUri extends Uri | string = string
 > {
-  private jobOutput: Map<string, InvokeResult<TData>>;
+  private jobOutput: Map<string, JobResult<TData>>;
 
   constructor(
     private client: Client,
     private onExecution?: (
       id: string,
-      data?: InvokeResult<TData>["data"],
-      error?: InvokeResult<TData>["error"]
+      JobResult: JobResult<TData>
     ) => MaybeAsync<void>
   ) {
     this.jobOutput = new Map();
@@ -45,27 +45,47 @@ export class JobRunner<
       const steps = jobs[jobId].steps;
       if (steps) {
         for (let i = 0; i < steps.length; i++) {
+          let result: JobResult<TData> | undefined;
+          let args: Record<string, unknown> | undefined;
+
           const step = steps[i];
           const absoluteId = parentId
             ? `${parentId}.${jobId}.${i}`
             : `${jobId}.${i}`;
-          const input = this.resolveInput(absoluteId, step.input);
-          const result = await this.client.invoke<TData, TUri>({
-            uri: step.uri,
-            method: step.method,
-            config: step.config,
-            input: input,
-          });
+          try {
+            args = this.resolveArgs(absoluteId, step.args);
+          } catch (e) {
+            result = {
+              error: e,
+              status: JobStatus.SKIPPED,
+            };
+          }
 
-          this.jobOutput.set(absoluteId, result);
+          if (args) {
+            const invokeResult = await this.client.invoke<TData, TUri>({
+              uri: step.uri,
+              method: step.method,
+              config: step.config,
+              args: args,
+            });
 
-          if (this.onExecution && typeof this.onExecution === "function") {
-            await executeMaybeAsyncFunction(
-              this.onExecution,
-              absoluteId,
-              result.data,
-              result.error
-            );
+            if (invokeResult.error) {
+              result = { ...invokeResult, status: JobStatus.FAILED };
+            } else {
+              result = { ...invokeResult, status: JobStatus.SUCCEED };
+            }
+          }
+
+          if (result) {
+            this.jobOutput.set(absoluteId, result);
+
+            if (this.onExecution && typeof this.onExecution === "function") {
+              await executeMaybeAsyncFunction(
+                this.onExecution,
+                absoluteId,
+                result
+              );
+            }
           }
         }
       }
@@ -92,9 +112,9 @@ export class JobRunner<
     }
   }
 
-  resolveInput(
+  resolveArgs(
     absCurStepId: string,
-    input: Record<string, unknown>
+    args: Record<string, unknown>
   ): Record<string, unknown> {
     const index = absCurStepId.lastIndexOf(".");
     const curStepId = +absCurStepId.substring(index + 1);
@@ -124,13 +144,26 @@ export class JobRunner<
             }
           }
           const output = outputs.get(absStepId);
-          if (output && output[dataOrErr]) {
-            return output[dataOrErr];
+          if (
+            output &&
+            dataOrErr === "data" &&
+            output.status === JobStatus.SUCCEED &&
+            output.data
+          ) {
+            return output.data;
+          }
+          if (
+            output &&
+            dataOrErr === "error" &&
+            output.status === JobStatus.FAILED &&
+            output.error
+          ) {
+            return output.error;
           }
         }
 
         throw new Error(
-          `Could not resolve input for step with stepId: ${absCurJobId}.${curStepId}`
+          `Could not resolve arguments for step with stepId: ${absCurJobId}.${curStepId}`
         );
       } else if (Array.isArray(value)) return value.map(resolveValue);
       else if (typeof value === "object" && value !== null) {
@@ -141,6 +174,6 @@ export class JobRunner<
       } else return value;
     }
 
-    return resolveValue(input) as Record<string, unknown>;
+    return resolveValue(args) as Record<string, unknown>;
   }
 }

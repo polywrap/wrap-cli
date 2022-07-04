@@ -1,0 +1,8 @@
+{
+  "format": "0.0.1-prealpha.3",
+  "displayName": "Valid Wrapper Interface",
+  "tags": ["some", "tag"],
+  "subtext": "test subtext",
+  "description": "test description",
+  "repository": "https://github.com/test/test"
+}

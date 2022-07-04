@@ -4,7 +4,7 @@ import {
   Write,
   WriteSizer,
   WriteEncoder,
-  Nullable,
+  Option,
   BigInt,
   BigNumber,
   JSON,
@@ -14,11 +14,11 @@ import { Env } from "./";
 import * as Types from "..";
 
 export function serializeEnv(type: Env): ArrayBuffer {
-  const sizerContext: Context = new Context("Serializing (sizing) object-type: Env");
+  const sizerContext: Context = new Context("Serializing (sizing) env-type: Env");
   const sizer = new WriteSizer(sizerContext);
   writeEnv(sizer, type);
   const buffer = new ArrayBuffer(sizer.length);
-  const encoderContext: Context = new Context("Serializing (encoding) object-type: Env");
+  const encoderContext: Context = new Context("Serializing (encoding) env-type: Env");
   const encoder = new WriteEncoder(buffer, sizer, encoderContext);
   writeEnv(encoder, type);
   return buffer;
@@ -32,20 +32,20 @@ export function writeEnv(writer: Write, type: Env): void {
   writer.context().pop();
   writer.context().push("optProp", "string | null", "writing property");
   writer.writeString("optProp");
-  writer.writeNullableString(type.optProp);
+  writer.writeOptionalString(type.optProp);
   writer.context().pop();
-  writer.context().push("optMap", "Map<string, Nullable<i32>> | null", "writing property");
+  writer.context().push("optMap", "Map<string, Option<i32>> | null", "writing property");
   writer.writeString("optMap");
-  writer.writeNullableExtGenericMap(type.optMap, (writer: Write, key: string) => {
+  writer.writeOptionalExtGenericMap(type.optMap, (writer: Write, key: string) => {
     writer.writeString(key);
-  }, (writer: Write, value: Nullable<i32>): void => {
-    writer.writeNullableInt32(value);
+  }, (writer: Write, value: Option<i32>): void => {
+    writer.writeOptionalInt32(value);
   });
   writer.context().pop();
 }
 
 export function deserializeEnv(buffer: ArrayBuffer): Env {
-  const context: Context = new Context("Deserializing object-type Env");
+  const context: Context = new Context("Deserializing env-type Env");
   const reader = new ReadDecoder(buffer, context);
   return readEnv(reader);
 }
@@ -56,7 +56,7 @@ export function readEnv(reader: Read): Env {
   let _prop: string = "";
   let _propSet: bool = false;
   let _optProp: string | null = null;
-  let _optMap: Map<string, Nullable<i32>> | null = null;
+  let _optMap: Map<string, Option<i32>> | null = null;
 
   while (numFields > 0) {
     numFields--;
@@ -71,15 +71,15 @@ export function readEnv(reader: Read): Env {
     }
     else if (field == "optProp") {
       reader.context().push(field, "string | null", "type found, reading property");
-      _optProp = reader.readNullableString();
+      _optProp = reader.readOptionalString();
       reader.context().pop();
     }
     else if (field == "optMap") {
-      reader.context().push(field, "Map<string, Nullable<i32>> | null", "type found, reading property");
-      _optMap = reader.readNullableExtGenericMap((reader: Read): string => {
+      reader.context().push(field, "Map<string, Option<i32>> | null", "type found, reading property");
+      _optMap = reader.readOptionalExtGenericMap((reader: Read): string => {
         return reader.readString();
-      }, (reader: Read): Nullable<i32> => {
-        return reader.readNullableInt32();
+      }, (reader: Read): Option<i32> => {
+        return reader.readOptionalInt32();
       });
       reader.context().pop();
     }

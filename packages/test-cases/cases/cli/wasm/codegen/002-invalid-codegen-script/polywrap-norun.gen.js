@@ -2,7 +2,7 @@ exports.generate = (output, config) => {
   output.entries.push({
     type: "File",
     name: "./schema1.ts",
-    data: config.generate("./templates/schema1.mustache", config.typeInfo),
+    data: config.generate("./templates/schema1.mustache", config.abi),
   });
 
   output.entries.push({
@@ -12,7 +12,7 @@ exports.generate = (output, config) => {
       {
         type: "File",
         name: "./schema2.ts",
-        data: config.generate("./templates/schema2.mustache", config.typeInfo),
+        data: config.generate("./templates/schema2.mustache", config.abi),
       },
     ],
   });

@@ -1,5 +1,5 @@
-import { env, Env, Input_getEnv } from "./wrap";
+import { Env, Args_getEnv } from "./wrap";
 
-export function getEnv(input: Input_getEnv): Env {
-  return env as Env;
+export function getEnv(_: Args_getEnv, env: Env | null): Env | null {
+  return env;
 }

@@ -2,7 +2,7 @@
   "name": "templates-plugin-typescript",
   "description": "Polywrap Plugin Typescript Template",
   "private": true,
-  "version": "0.0.1-prealpha.86",
+  "version": "0.0.1-prealpha.91",
   "main": "build/index.js",
   "scripts": {
     "build": "rimraf ./build && yarn codegen && tsc --project tsconfig.json",
@@ -12,14 +12,14 @@
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@polywrap/core-js": "0.0.1-prealpha.86"
+    "@polywrap/core-js": "0.0.1-prealpha.91"
   },
   "devDependencies": {
+    "@polywrap/client-js": "0.0.1-prealpha.91",
     "@types/jest": "26.0.8",
     "@types/prettier": "2.6.0",
-    "polywrap": "0.0.1-prealpha.86",
-    "@polywrap/client-js": "0.0.1-prealpha.86",
     "jest": "26.6.3",
+    "polywrap": "0.0.1-prealpha.91",
     "rimraf": "3.0.2",
     "ts-jest": "26.5.4",
     "ts-node": "8.10.2",

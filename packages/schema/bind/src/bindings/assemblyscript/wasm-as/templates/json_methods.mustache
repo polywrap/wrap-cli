@@ -1,7 +1,0 @@
-static toJson(type: {{type}}): JSON.Value {
-  return JSONSerializer.encode(type);
-}
-
-static fromJson(json: JSON.Value): {{type}} {
-  return (new JSONDeserializer(json)).decode<{{type}}>();
-}

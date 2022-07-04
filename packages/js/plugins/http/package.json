@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/http-plugin-js",
   "description": "Polywrap HTTP Javascript Plugin",
-  "version": "0.0.1-prealpha.86",
+  "version": "0.0.1-prealpha.91",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -12,25 +12,24 @@
     "build"
   ],
   "scripts": {
-    "build": "rimraf ./build && tsc --project tsconfig.build.json",
+    "build": "rimraf ./build && yarn codegen && tsc --project tsconfig.build.json",
     "codegen": "node ../../../../dependencies/node_modules/polywrap/bin/polywrap plugin codegen",
-    "codegen:patch": "node ../../../cli/bin/polywrap plugin codegen && rimraf ./src/wrap",
     "lint": "eslint --color -c ../../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@polywrap/core-js": "0.0.1-prealpha.86",
+    "@polywrap/core-js": "0.0.1-prealpha.91",
     "axios": "0.21.4"
   },
   "devDependencies": {
+    "@polywrap/client-js": "0.0.1-prealpha.91",
+    "@polywrap/ens-resolver-plugin-js": "0.0.1-prealpha.91",
+    "@polywrap/ipfs-plugin-js": "0.0.1-prealpha.91",
+    "@polywrap/test-env-js": "0.0.1-prealpha.91",
     "@types/jest": "26.0.8",
     "@types/prettier": "2.6.0",
-    "@polywrap/client-js": "0.0.1-prealpha.86",
-    "@polywrap/ens-plugin-js": "0.0.1-prealpha.86",
-    "@polywrap/ipfs-plugin-js": "0.0.1-prealpha.86",
-    "@polywrap/test-env-js": "0.0.1-prealpha.86",
     "jest": "26.6.3",
     "nock": "13.0.7",
     "rimraf": "3.0.2",

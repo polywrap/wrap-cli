@@ -10,7 +10,7 @@ import {
 import { AppManifest, Client } from "@polywrap/core-js";
 import { ComposerOutput } from "@polywrap/schema-compose";
 import { bindSchema, BindOutput } from "@polywrap/schema-bind";
-import { TypeInfo } from "@polywrap/schema-parse";
+import { Abi } from "@polywrap/schema-parse";
 import path from "path";
 
 export interface AppProjectConfig extends ProjectConfig {
@@ -110,7 +110,7 @@ export class AppProject extends Project<AppManifest> {
   ): Promise<BindOutput> {
     return bindSchema({
       projectName: await this.getName(),
-      typeInfo: composerOutput.typeInfo as TypeInfo,
+      abi: composerOutput.abi as Abi,
       schema: composerOutput.schema as string,
       outputDirAbs: this._getGenerationDirectory(generationSubPath),
       bindLanguage: appManifestLanguageToBindLanguage(

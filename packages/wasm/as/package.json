@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/wasm-as",
   "description": "Polywrap Assemblyscript Runtime",
-  "version": "0.0.1-prealpha.86",
+  "version": "0.0.1-prealpha.91",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -21,8 +21,7 @@
     "test:ci": "asp --summary"
   },
   "dependencies": {
-    "@serial-as/transform": "1.0.2",
-    "@web3api/serial-as-json": "1.0.4",
+    "@web3api/assemblyscript-json": "1.2.0",
     "as-bigint": "0.5.3",
     "as-bignumber": "0.2.0",
     "as-container": "0.6.1"

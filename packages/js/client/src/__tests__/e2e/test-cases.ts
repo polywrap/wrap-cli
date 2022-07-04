@@ -632,40 +632,68 @@ export const runJsonTypeTest = async (
   client: PolywrapClient,
   uri: string
 ) => {
-  const fromJson = await client.invoke<{ x: number; y: number }>({
+  type Json = string;
+  const value = JSON.stringify({ foo: "bar", bar: "bar" })
+  const parseResponse = await client.invoke<{ parse: Json }>({
     uri,
-    method: "fromJson",
-    input: {
-      json: JSON.stringify({ x: 1, y: 2 }),
+    method: "parse",
+    args: {
+      value
+    }
+  })
+
+  expect(parseResponse.data).toEqual(value);
+
+  const values = [
+    JSON.stringify({ bar: "foo" }),
+    JSON.stringify({ baz: "fuz" }),
+  ];
+
+  const stringifyResponse = await client.invoke<{ stringify: Json}>({
+    uri,
+    method: "stringify",
+    args: {
+      values
+    }
+  })
+
+  expect(stringifyResponse.data).toEqual(values.join(""));
+
+  const object = {
+    jsonA: JSON.stringify({ foo: "bar" }),
+    jsonB: JSON.stringify({ fuz: "baz" }),
+  };
+
+  const stringifyObjectResponse = await client.invoke<{
+    stringifyObject: string;
+  }>({
+    uri,
+    method: "stringifyObject",
+    args: {
+      object,
     },
   });
 
-  expect(fromJson.error).toBeFalsy();
-  expect(fromJson.data).toBeTruthy();
-  expect(fromJson.data).toMatchObject({
-    x: 1,
-    y: 2,
-  });
-
-  const toJson = await client.invoke<{ str: string }>({
-    uri,
-    method: "toJson",
-    input: {
-      pair: {
-        x: 1,
-        y: 2,
-      },
-    },
-  });
-
-  expect(toJson.error).toBeFalsy();
-  expect(toJson.data).toBeTruthy();
-  expect(toJson.data).toBe(
-    JSON.stringify({
-      x: 1,
-      y: 2,
-    })
+  expect(stringifyObjectResponse.data).toEqual(
+    object.jsonA + object.jsonB
   );
+
+  const json = {
+    valueA: 5,
+    valueB: "foo",
+    valueC: true
+  }
+
+  const methodJSONResponse = await client.invoke<{
+    methodJSON: Json;
+  }>({
+    uri,
+    method: "methodJSON",
+    args: json
+  });
+
+  const methodJSONResult = JSON.stringify(json);
+  expect(methodJSONResponse.data).toEqual(methodJSONResult);
 };
 
 export const runLargeTypesTest = async (
@@ -1098,7 +1126,7 @@ export const runMapTypeTest = async (
   const returnMapResponse1 = await client.invoke<Map<string, number>>({
     uri,
     method: "returnMap",
-    input: {
+    args: {
       map: mapClass,
     },
   });
@@ -1108,7 +1136,7 @@ export const runMapTypeTest = async (
   const returnMapResponse2 = await client.invoke<Map<string, number>>({
     uri,
     method: "returnMap",
-    input: {
+    args: {
       map: mapRecord,
     },
   });
@@ -1118,7 +1146,7 @@ export const runMapTypeTest = async (
   const getKeyResponse1 = await client.invoke<number>({
     uri,
     method: "getKey",
-    input: {
+    args: {
       map: mapClass,
       key: "Hello",
     },
@@ -1129,7 +1157,7 @@ export const runMapTypeTest = async (
   const getKeyResponse2 = await client.invoke<number>({
     uri,
     method: "getKey",
-    input: {
+    args: {
       map: mapRecord,
       key: "Heyo",
     },
@@ -1262,3 +1290,211 @@ export const runSimpleStorageTest = async (
     expect(getWithUriType.data?.secondGetData).toBe(55);
     expect(getWithUriType.data?.thirdGetData).toBe(55);
 };
+
+export const runSimpleEnvTest = async (
+  client: PolywrapClient,
+  wrapperUri: string
+) => {
+  const queryGetEnv = await client.query({
+    uri: wrapperUri,
+    query: `
+  query {
+    getEnv(
+      arg: "string",
+    )
+  }
+`,
+  });
+  expect(queryGetEnv.errors).toBeFalsy();
+  expect(queryGetEnv.data?.getEnv).toEqual({
+    str: "module string",
+    requiredInt: 1,
+  });
+
+  const queryGetEnvNotSet = await client.query({
+    uri: wrapperUri,
+    query: `
+  query {
+    getEnv(
+      arg: "not set"
+    )
+  }
+`,
+    config: {
+      envs: [],
+    },
+  });
+  expect(queryGetEnvNotSet.data?.getEnv).toBeUndefined();
+  expect(queryGetEnvNotSet.errors).toBeTruthy();
+  expect(queryGetEnvNotSet.errors?.length).toBe(1);
+  expect(queryGetEnvNotSet.errors?.[0].message).toContain(
+    "requiredInt: Int"
+  );
+
+  const queryEnvIncorrect = await client.query({
+    uri: wrapperUri,
+    query: `
+  query {
+    getEnv(
+      arg: "not set"
+    )
+  }
+`,
+    config: {
+      envs: [
+        {
+          uri: wrapperUri,
+          env: {
+            str: "string",
+            requiredInt: "99",
+          },
+        },
+      ],
+    },
+  });
+
+  expect(queryEnvIncorrect.data?.getEnv).toBeUndefined();
+  expect(queryEnvIncorrect.errors).toBeTruthy();
+  expect(queryEnvIncorrect.errors?.length).toBe(1);
+  expect(queryEnvIncorrect.errors?.[0].message).toContain(
+    "Property must be of type 'int'. Found 'string'."
+  );
+};
+
+export const runComplexEnvs = async (client: PolywrapClient, wrapperUri: string) => {
+  const queryMethodRequireEnv = await client.query({
+    uri: wrapperUri,
+    query: `
+      query {
+        methodRequireEnv(
+          arg: "string"
+        )
+      }
+    `,
+  });
+  expect(queryMethodRequireEnv.errors).toBeFalsy();
+  expect(queryMethodRequireEnv.data?.methodRequireEnv).toEqual({
+    str: "string",
+    optFilledStr: "optional string",
+    optStr: null,
+    number: 10,
+    optNumber: null,
+    bool: true,
+    optBool: null,
+    object: {
+      prop: "object string",
+    },
+    optObject: null,
+    en: 0,
+    optEnum: null,
+    array: [32, 23],
+  });
+
+  const querySubinvokeEnvMethod = await client.query({
+    uri: wrapperUri,
+    query: `
+      query {
+        subinvokeEnvMethod(
+          arg: "string"
+        )
+      }
+    `,
+  });
+  expect(querySubinvokeEnvMethod.errors).toBeFalsy();
+  expect(querySubinvokeEnvMethod.data?.subinvokeEnvMethod).toEqual({
+    local: {
+      str: "string",
+      optFilledStr: "optional string",
+      optStr: null,
+      number: 10,
+      optNumber: null,
+      bool: true,
+      optBool: null,
+      object: {
+        prop: "object string",
+      },
+      optObject: null,
+      en: 0,
+      optEnum: null,
+      array: [32, 23],
+    },
+    external: {
+      externalArray: [1, 2, 3],
+      externalString: "iamexternal"
+    }
+  });
+
+  const queryMethodRequireEnvModuleTime = await client.query({
+    uri: wrapperUri,
+    query: `
+      query {
+        methodRequireEnv(
+          arg: "string"
+        )
+      }
+    `,
+  });
+  expect(queryMethodRequireEnvModuleTime.errors).toBeFalsy();
+  expect(queryMethodRequireEnvModuleTime.data?.methodRequireEnv).toEqual({
+    str: "string",
+    optFilledStr: "optional string",
+    optStr: null,
+    number: 10,
+    optNumber: null,
+    bool: true,
+    optBool: null,
+    object: {
+      prop: "object string",
+    },
+    optObject: null,
+    en: 0,
+    optEnum: null,
+    array: [32, 23],
+  });
+
+  const mockUpdatedEnv = await client.query({
+    uri: wrapperUri,
+    query: `
+      query {
+        methodRequireEnv(
+          arg: "string"
+        )
+      }
+    `,
+    config: {
+      envs: [
+        {
+          uri: wrapperUri,
+          env: {
+            object: {
+              prop: "object another string",
+            },
+            str: "another string",
+            optFilledStr: "optional string",
+            number: 10,
+            bool: true,
+            en: "FIRST",
+            array: [32, 23],
+          },
+        },
+      ],
+    },
+  });
+  expect(mockUpdatedEnv.errors).toBeFalsy();
+  expect(mockUpdatedEnv.data?.methodRequireEnv).toEqual({
+    str: "another string",
+    optFilledStr: "optional string",
+    optStr: null,
+    number: 10,
+    optNumber: null,
+    bool: true,
+    optBool: null,
+    object: {
+      prop: "object another string",
+    },
+    optObject: null,
+    en: 0,
+    optEnum: null,
+    array: [32, 23],
+  });
+}

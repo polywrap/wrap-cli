@@ -11,7 +11,7 @@ import {
 {{#moduleType}}
 {{#methods}}
 
-export interface Input_{{name}} extends Record<string, unknown> {
+export interface Args_{{name}} extends Record<string, unknown> {
   {{#arguments}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/arguments}}
@@ -20,17 +20,16 @@ export interface Input_{{name}} extends Record<string, unknown> {
 {{/moduleType}}
 
 export abstract class Module<
-  TConfig extends Record<string, unknown>
+  TConfig
 > extends PluginModule<
-  TConfig{{#envType.sanitized}},
-  Types.Env{{#envType.client}},
-  Types.ClientEnv{{/envType.client}}{{/envType.sanitized}}
+  TConfig{{#envType}},
+  Types.Env{{/envType}}
 > {
   {{#moduleType}}
   {{#methods}}
 
   abstract {{name}}(
-    input: Input_{{name}},
+    args: Args_{{name}},
     client: Client
   ): MaybeAsync<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>;
   {{/methods}}

@@ -7,24 +7,30 @@
   ],
   "properties": {
     "format": {
+      "description": "Polywrap manifest format version.",
       "type": "string",
       "const": "0.0.1-prealpha.1"
     },
     "description": {
+      "description": "Description about this wrapper.",
       "type": "string"
     },
     "repository": {
+      "description": "Reference to the repository holding source code.",
       "type": "string"
     },
     "mutation": {
+      "description": "Mutation module metadata.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
         "schema": {
+          "description": "The module's graphql schema.",
           "type": "object",
           "additionalProperties": false,
           "properties": {
             "file": {
+              "description": "Path to graphql schema file.",
               "type": "string",
               "format": "file"
             }
@@ -34,13 +40,16 @@
           ]
         },
         "module": {
+          "description": "Module for mutation operations.",
           "type": "object",
           "additionalProperties": false,
           "properties": {
             "language": {
+              "description": "Language in which the source code is written.",
               "type": "string"
             },
             "file": {
+              "description": "Path to Polywrap module implementation file.",
               "type": "string",
               "format": "file"
             }
@@ -57,14 +66,17 @@
       ]
     },
     "query": {
+      "description": "Module for query operations.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
         "schema": {
+          "description": "The module's graphql schema.",
           "type": "object",
           "additionalProperties": false,
           "properties": {
             "file": {
+              "description": "Path to graphql schema file.",
               "type": "string",
               "format": "file"
             }
@@ -74,13 +86,16 @@
           ]
         },
         "module": {
+          "description": "Module for query operations.",
           "type": "object",
           "additionalProperties": false,
           "properties": {
             "language": {
+              "description": "Language in which the source code is written.",
               "type": "string"
             },
             "file": {
+              "description": "Path to Polywrap module implementation file.",
               "type": "string",
               "format": "file"
             }
@@ -97,15 +112,18 @@
       ]
     },
     "import_redirects": {
+      "description": "Redirects for the schema's imports.",
       "type": "array",
       "items": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
           "uri": {
+            "description": "Import URI to be redirected.",
             "type": "string"
           },
           "schema": {
+            "description": "Path to a graphql schema to be used for the import.",
             "type": "string"
           }
         },

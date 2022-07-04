@@ -7,21 +7,66 @@
  */
 
 export interface MetaManifest {
+  /**
+   * Polywrap wrapper metadata manifest format version.
+   */
   format: "0.0.1-prealpha.1";
+  /**
+   * Name of the wrapper.
+   */
   name: string;
+  /**
+   * Short or summary description of the wrapper.
+   */
   subtext?: string;
+  /**
+   * Long description for the wrapper.
+   */
   description?: string;
+  /**
+   * Reference to the repository holding source code.
+   */
   repository?: string;
+  /**
+   * Path to wrapper icon.
+   */
   icon?: string;
+  /**
+   * Relevant web links.
+   */
   links?: {
+    /**
+     * Web link name.
+     */
     name: string;
+    /**
+     * Web link icon.
+     */
     icon?: string;
+    /**
+     * Url to the web link.
+     */
     url: string;
   }[];
+  /**
+   * List of example queries.
+   */
   queries?: {
+    /**
+     * Query name.
+     */
     name: string;
+    /**
+     * Query description.
+     */
     description?: string;
+    /**
+     * Path to graph ql file.
+     */
     query: string;
+    /**
+     * Query parameters.
+     */
     vars?: string;
   }[];
   __type: "MetaManifest";

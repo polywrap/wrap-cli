@@ -329,7 +329,7 @@ describe("Polywrap Schema Type Validation", () => {
     //Should allow circular references on nullable fields
     expect(exec(circularTypes6)).not.toThrow()
 
-    //Should allow recursive referece on nullable fields
+    //Should allow recursive reference on nullable fields
     expect(exec(circularTypes7)).not.toThrow()
 
     //Should allow array of recursive references

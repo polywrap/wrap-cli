@@ -6,3 +6,5 @@ pub mod test_import_enum;
 pub use test_import_enum::*;
 pub mod test_import_module;
 pub use test_import_module::*;
+pub mod test_import_env;
+pub use test_import_env::*;

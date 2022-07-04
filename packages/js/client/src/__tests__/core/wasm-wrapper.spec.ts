@@ -67,7 +67,7 @@ describe("wasm-wrapper", () => {
   };
 
   const mockPlugin = () => {
-    class MockPlugin extends PluginModule {
+    class MockPlugin extends PluginModule<{}> {
       getData(_: unknown) {
         return 100;
       }
@@ -90,7 +90,7 @@ describe("wasm-wrapper", () => {
     const result = await client.invoke<string>({
       uri: wrapperUri,
       method: "deployContract",
-      input: {
+      args: {
         connection: {
           networkNameOrChainId: "testnet",
         },
@@ -108,18 +108,18 @@ describe("wasm-wrapper", () => {
     const result = await client.invoke({
       uri: wrapperUri,
       method: "deployContract",
-      input: {
+      args: {
         connection: {
           networkNameOrChainId: "testnet",
         },
       },
-      noDecode: true,
+      encodeResult: true,
     });
 
     expect(result.error).toBeFalsy();
     expect(result.data).toBeTruthy();
-    expect(result.data instanceof ArrayBuffer).toBeTruthy();
-    expect(msgpackDecode(result.data as ArrayBuffer)).toContain("0x");
+    expect(result.data instanceof Uint8Array).toBeTruthy();
+    expect(msgpackDecode(result.data as Uint8Array)).toContain("0x");
   });
 
   it("should invoke wrapper with custom redirects", async () => {
@@ -142,7 +142,7 @@ describe("wasm-wrapper", () => {
     const result = await client.invoke({
       uri: wrapperUri,
       method: "deployContract",
-      input: {},
+      args: {},
       config: {
         redirects,
       },
@@ -291,9 +291,9 @@ describe("wasm-wrapper", () => {
   ): Int!
 `);
 
-    const fileBuffer: ArrayBuffer = (await client.getFile(wrapperUri, {
+    const fileBuffer: Uint8Array = (await client.getFile(wrapperUri, {
       path: manifest.schema!,
-    })) as ArrayBuffer;
+    })) as Uint8Array;
     const decoder = new TextDecoder("utf8");
     const text = decoder.decode(fileBuffer);
     expect(text).toContain(`getData(
@@ -367,31 +367,21 @@ describe("wasm-wrapper", () => {
       });
     }, 4000);
 
-    const getSubscription: Subscription<{
-      getData: number;
-    }> = client.subscribe<{
-      getData: number;
-    }>({
+    const getSubscription: Subscription<number> = client.subscribe<number>({
       uri: wrapperUri,
-      query: `
-        query {
-          getData(
-            address: $address
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
+      method: "getData",
+      args: {
+        address: address,
+        connection: {
+          networkNameOrChainId: "testnet"
         }
-      `,
-      variables: {
-        address,
       },
       frequency: { ms: 4500 },
     });
 
     for await (let query of getSubscription) {
-      expect(query.errors).toBeFalsy();
-      const val = query.data?.getData;
+      expect(query.error).toBeFalsy();
+      const val = query.data;
       if (val !== undefined) {
         results.push(val);
         if (val >= 2) {
@@ -455,32 +445,22 @@ describe("wasm-wrapper", () => {
       });
     }, 4000);
 
-    const getSubscription: Subscription<{
-      getData: number;
-    }> = client.subscribe<{
-      getData: number;
-    }>({
+    const getSubscription: Subscription<number> = client.subscribe<number>({
       uri: wrapperUri,
-      query: `
-          query {
-            getData(
-              address: $address
-              connection: {
-                networkNameOrChainId: "testnet"
-              }
-            )
-          }
-        `,
-      variables: {
-        address,
+      method: "getData",
+      args: {
+        address: address,
+        connection: {
+          networkNameOrChainId: "testnet"          
+        }
       },
       frequency: { ms: 4500 },
     });
 
     new Promise(async () => {
       for await (let query of getSubscription) {
-        expect(query.errors).toBeFalsy();
-        const val = query.data?.getData;
+        expect(query.error).toBeFalsy();
+        const val = query.data;
         if (val !== undefined) {
           results.push(val);
           if (val >= 2) {

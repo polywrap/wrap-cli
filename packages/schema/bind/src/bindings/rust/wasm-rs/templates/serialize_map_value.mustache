@@ -20,7 +20,7 @@ writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower
 writer.write_i32(&(*value as i32))
 {{/required}}
 {{^required}}
-writer.write_nullable_i32(&value.map(|f| f as i32))
+writer.write_optional_i32(&value.map(|f| f as i32))
 {{/required}}
 {{/enum}}
 {{#object}}

@@ -37,11 +37,9 @@ export const resolveUri = async (
           uri: currentUri,
           wrapper,
           uriHistory: new UriResolutionHistory(uriResolutionStack),
-          error: infiniteLoopDetected
-            ? {
-                type: ResolveUriErrorType.InfiniteLoop,
-              }
-            : undefined,
+          error: {
+            type: ResolveUriErrorType.InfiniteLoop,
+          },
         };
       }
 

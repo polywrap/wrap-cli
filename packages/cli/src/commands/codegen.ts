@@ -6,27 +6,25 @@ import {
   SchemaComposer,
   intlMsg,
   defaultPolywrapManifest,
-  getTestEnvProviders,
   parseCodegenDirOption,
   parseCodegenScriptOption,
   parseWasmManifestFileOption,
+  parseClientConfigOption,
 } from "../lib";
 
 import path from "path";
 import { filesystem } from "gluegun";
+import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 
 const defaultCodegenDir = "./wrap";
-const nodeStr = intlMsg.commands_codegen_options_i_node();
 const pathStr = intlMsg.commands_codegen_options_o_path();
-const addrStr = intlMsg.commands_codegen_options_e_address();
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 
 type CodegenCommandOptions = {
   manifestFile: string;
   codegenDir: string;
   script?: string;
-  ipfs?: string;
-  ens?: string;
+  clientConfig: Partial<PolywrapClientConfig>;
 };
 
 export const codegen: Command = {
@@ -42,7 +40,7 @@ export const codegen: Command = {
         })}`
       )
       .option(
-        `-c, --codegen-dir <${pathStr}>`,
+        `-g, --codegen-dir <${pathStr}>`,
         ` ${intlMsg.commands_codegen_options_codegen({
           default: defaultCodegenDir,
         })}`
@@ -52,16 +50,16 @@ export const codegen: Command = {
         `${intlMsg.commands_codegen_options_s()}`
       )
       .option(
-        `-i, --ipfs [<${nodeStr}>]`,
-        `${intlMsg.commands_codegen_options_i()}`
-      )
-      .option(
-        `-e, --ens [<${addrStr}>]`,
-        `${intlMsg.commands_codegen_options_e()}`
+        `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
+        `${intlMsg.commands_common_options_config()}`
       )
       .action(async (options) => {
         await run({
           ...options,
+          clientConfig: await parseClientConfigOption(
+            options.clientConfig,
+            undefined
+          ),
           codegenDir: parseCodegenDirOption(options.codegenDir, undefined),
           script: parseCodegenScriptOption(options.script, undefined),
           manifestFile: parseWasmManifestFileOption(
@@ -74,9 +72,10 @@ export const codegen: Command = {
 };
 
 async function run(options: CodegenCommandOptions) {
-  const { ipfs, ens, manifestFile, codegenDir, script } = options;
-  const { ipfsProvider, ethProvider } = await getTestEnvProviders(ipfs);
-  const ensAddress: string | undefined = ens;
+  const { manifestFile, codegenDir, script, clientConfig } = options;
+
+  // Get Client
+  const client = new PolywrapClient(clientConfig);
 
   // Polywrap Project
   const project = new PolywrapProject({
@@ -86,9 +85,7 @@ async function run(options: CodegenCommandOptions) {
   await project.validate();
   const schemaComposer = new SchemaComposer({
     project,
-    ipfsProvider,
-    ethProvider,
-    ensAddress,
+    client,
   });
 
   let result = false;

@@ -33,7 +33,7 @@ extensionCodec.register({
   },
 });
 
-export function msgpackEncode(object: unknown): ArrayBuffer {
+export function msgpackEncode(object: unknown): Uint8Array {
   const encoder = new Encoder(
     extensionCodec,
     undefined, // context
@@ -45,7 +45,7 @@ export function msgpackEncode(object: unknown): ArrayBuffer {
     undefined // forceIntegerToFloat
   );
 
-  return encoder.encode(object).buffer;
+  return encoder.encode(object);
 }
 
 export function msgpackDecode(
@@ -53,4 +53,12 @@ export function msgpackDecode(
 ): unknown {
   const decoder = new Decoder(extensionCodec);
   return decoder.decode(buffer);
+}
+
+export function isBuffer(maybeBuf: unknown): maybeBuf is BufferSource {
+  if (maybeBuf instanceof ArrayBuffer || ArrayBuffer.isView(maybeBuf)) {
+    return true;
+  } else {
+    return false;
+  }
 }

@@ -1,5 +1,5 @@
 // TODO: https://github.com/polywrap/monorepo/issues/101
-import { Uri, InvokeHandler, InvokeResult } from "../";
+import { Uri, Invoker, InvokeResult } from "../";
 
 import { Tracer } from "@polywrap/tracing-js";
 
@@ -13,14 +13,14 @@ export const Query = {
   tryResolveUri: Tracer.traceFunc(
     "core: uri-resolver: tryResolveUri",
     async (
-      invoke: InvokeHandler["invoke"],
+      invoker: Invoker,
       wrapper: Uri,
       uri: Uri
     ): Promise<InvokeResult<MaybeUriOrManifest>> => {
-      return invoke<MaybeUriOrManifest>({
+      return invoker.invoke<MaybeUriOrManifest>({
         uri: wrapper.uri,
         method: `tryResolveUri`,
-        input: {
+        args: {
           authority: uri.authority,
           path: uri.path,
         },
@@ -30,14 +30,14 @@ export const Query = {
   getFile: Tracer.traceFunc(
     "core: uri-resolver: getFile",
     async (
-      invoke: InvokeHandler["invoke"],
+      invoker: Invoker,
       wrapper: Uri,
       path: string
-    ): Promise<InvokeResult<ArrayBuffer>> => {
-      return invoke<ArrayBuffer>({
+    ): Promise<InvokeResult<Uint8Array>> => {
+      return invoker.invoke<Uint8Array>({
         uri: wrapper.uri,
         method: "getFile",
-        input: {
+        args: {
           path,
         },
       });

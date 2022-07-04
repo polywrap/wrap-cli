@@ -18,7 +18,7 @@ writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(value, (writer: Write,
 writer.writeInt32(value);
 {{/required}}
 {{^required}}
-writer.writeNullableInt32(value);
+writer.writeOptionalInt32(value);
 {{/required}}
 {{/enum}}
 {{#object}}

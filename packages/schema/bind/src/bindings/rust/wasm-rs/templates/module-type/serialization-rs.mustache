@@ -1,3 +1,4 @@
+{{#moduleType}}
 use serde::{Serialize, Deserialize};
 use std::convert::TryFrom;
 use polywrap_wasm_rs::{
@@ -31,18 +32,18 @@ use crate::{
 {{#methods}}
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct Input{{#toUpper}}{{name}}{{/toUpper}} {
+pub struct Args{{#toUpper}}{{name}}{{/toUpper}} {
     {{#arguments}}
     pub {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
     {{/arguments}}
 }
 
-pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result<Input{{#toUpper}}{{name}}{{/toUpper}}, DecodeError> {
+pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(args: &[u8]) -> Result<Args{{#toUpper}}{{name}}{{/toUpper}}, DecodeError> {
     let mut context = Context::new();
     context.description = "Deserializing module-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
 
     {{#arguments.length}}
-    let mut reader = ReadDecoder::new(input, context);
+    let mut reader = ReadDecoder::new(args, context);
     let mut num_of_fields = reader.read_map_length()?;
 
     {{#arguments}}
@@ -111,7 +112,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(input: &[u8]) -> Result
     {{/arguments}}
     {{/arguments.length}}
 
-    Ok(Input{{#toUpper}}{{name}}{{/toUpper}} {
+    Ok(Args{{#toUpper}}{{name}}{{/toUpper}} {
         {{#arguments}}
         {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: _{{#toLower}}{{name}}{{/toLower}},
         {{/arguments}}
@@ -151,7 +152,7 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#return
     writer.write_i32(&(*result as i32))?;
     {{/required}}
     {{^required}}
-    writer.write_nullable_i32(&result.map(|f| f as i32))?;
+    writer.write_optional_i32(&result.map(|f| f as i32))?;
     {{/required}}
     {{/enum}}
     {{#object}}
@@ -171,3 +172,4 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#return
     Ok(())
 }
 {{/methods}}
+{{/moduleType}}

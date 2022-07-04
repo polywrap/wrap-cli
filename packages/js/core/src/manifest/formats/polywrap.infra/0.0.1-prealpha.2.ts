@@ -6,10 +6,19 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
+/**
+ * A module available by default.
+ */
 export type DefaultModule = "default";
 
 export interface InfraManifest {
+  /**
+   * Polywrap infra manifest format version.
+   */
   format: "0.0.1-prealpha.2";
+  /**
+   * Path to docker compose manifest.
+   */
   dockerCompose?: string;
   env?: {
     /**
@@ -27,12 +36,33 @@ export interface InfraManifest {
   };
   __type: "InfraManifest";
 }
+/**
+ * A remote package with a docker-compose file.
+ */
 export interface RemoteModule {
+  /**
+   * Package name.
+   */
   package: string;
+  /**
+   * Package registry name.
+   */
   registry: string;
+  /**
+   * Package version.
+   */
   version: string;
+  /**
+   * Path to docker-compose file in the package directory.
+   */
   dockerComposePath?: string;
 }
+/**
+ * A local package with a docker-compose file.
+ */
 export interface LocalModule {
+  /**
+   * Path to the package.
+   */
   path: string;
 }

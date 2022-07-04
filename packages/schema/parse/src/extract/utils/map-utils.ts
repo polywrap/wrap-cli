@@ -9,7 +9,7 @@ import {
   isMapKeyType,
 } from "../..";
 
-type CurrentTypeInfo = {
+type CurrentAbi = {
   currentType: string;
   subType: string | null;
   required: boolean;
@@ -17,7 +17,7 @@ type CurrentTypeInfo = {
 
 // TODO: Make sure map also works for imported types and modules
 
-const _parseCurrentType = (rootType: string, type: string): CurrentTypeInfo => {
+const _parseCurrentType = (rootType: string, type: string): CurrentAbi => {
   let required = false;
   if (type.startsWith("[")) {
     const closeSquareBracketIdx = type.lastIndexOf("]");
@@ -173,7 +173,7 @@ const _parseMapType = (
   }
 };
 
-export function parseCurrentType(type: string): CurrentTypeInfo {
+export function parseCurrentType(type: string): CurrentAbi {
   return _parseCurrentType(type, type);
 }
 

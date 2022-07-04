@@ -5,10 +5,12 @@
   "required": ["format", "modules"],
   "properties": {
     "format": {
+      "description": "Polywrap infra manifest format version.",
       "type": "string",
       "const": "0.0.1-prealpha.1"
     },
     "dockerCompose": {
+      "description": "Path to docker compose manifest.",
       "type": "string"
     },
     "env": {
@@ -32,19 +34,24 @@
   },
   "definitions": {
     "remoteModule": {
+      "description": "A remote docker-compose package.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
         "package": {
+          "description": "Package name.",
           "type": "string"
         },
         "registry": {
+          "description": "Package registry name.",
           "type": "string"
         },
         "version": {
+          "description": "Package version.",
           "type": "string"
         },
         "dockerComposePath": {
+          "description": "Path to docker-compose file in the package directory.",
           "type": "string"
         }
       },
@@ -55,6 +62,7 @@
       "additionalProperties": false,
       "properties": {
         "path": {
+          "description": "Path to the package.",
           "type": "string"
         }
       },

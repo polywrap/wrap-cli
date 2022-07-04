@@ -1,12 +1,10 @@
 import {
   Read,
   Write,
-  Nullable,
+  Option,
   BigInt,
   BigNumber,
-  JSON,
-  JSONSerializer,
-  JSONDeserializer,
+  JSON
 } from "@polywrap/wasm-as";
 import {
   serializeTestImport_AnotherObject,
@@ -16,7 +14,6 @@ import {
 } from "./serialization";
 import * as Types from "../..";
 
-@serializable
 export class TestImport_AnotherObject {
 
   public static uri: string = "testimport.uri.eth";
@@ -37,13 +34,5 @@ export class TestImport_AnotherObject {
 
   static read(reader: Read): TestImport_AnotherObject {
     return readTestImport_AnotherObject(reader);
-  }
-
-  static toJson(type: TestImport_AnotherObject): JSON.Value {
-    return JSONSerializer.encode(type);
-  }
-
-  static fromJson(json: JSON.Value): TestImport_AnotherObject {
-    return (new JSONDeserializer(json)).decode<TestImport_AnotherObject>();
   }
 }
