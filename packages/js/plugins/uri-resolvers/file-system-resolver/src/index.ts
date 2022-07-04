@@ -24,30 +24,28 @@ export class FileSystemResolverPlugin extends Module<NoConfig> {
       return null;
     }
 
-    const manifestSearchPatterns = ["polywrap.json"];
+    const manifestSearchPattern = "wrap.info";
 
     let manifest: Bytes | undefined;
 
-    for (const manifestSearchPattern of manifestSearchPatterns) {
-      const manifestPath = path.resolve(args.path, manifestSearchPattern);
-      const manifestExistsResult = await FileSystem_Module.exists(
-        { path: manifestPath },
-        _client
-      );
+    const manifestPath = path.resolve(args.path, manifestSearchPattern);
+    const manifestExistsResult = await FileSystem_Module.exists(
+      { path: manifestPath },
+      _client
+    );
 
-      if (manifestExistsResult.data) {
-        try {
-          const manifestResult = await FileSystem_Module.readFile(
-            { path: manifestPath, encoding: FileSystem_EncodingEnum.BINARY },
-            _client
-          );
-          if (manifestResult.error) {
-            console.warn(manifestResult.error);
-          }
-          manifest = manifestResult.data;
-        } catch (e) {
-          // TODO: logging
+    if (manifestExistsResult.data) {
+      try {
+        const manifestResult = await FileSystem_Module.readFile(
+          { path: manifestPath, encoding: FileSystem_EncodingEnum.BINARY },
+          _client
+        );
+        if (manifestResult.error) {
+          console.warn(manifestResult.error);
         }
+        manifest = manifestResult.data;
+      } catch (e) {
+        // TODO: logging
       }
     }
 

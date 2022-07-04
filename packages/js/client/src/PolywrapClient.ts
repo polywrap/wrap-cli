@@ -47,13 +47,8 @@ import {
   PluginPackage,
   RunOptions,
 } from "@polywrap/core-js";
-import {
-  msgpackEncode,
-  msgpackDecode,
-} from "@polywrap/msgpack-js";
-import {
-  WrapManifest,
-} from "@polywrap/wrap-manifest-types-js";
+import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Tracer } from "@polywrap/tracing-js";
 
 export interface PolywrapClientConfig<TUri extends Uri | string = string>
@@ -329,7 +324,6 @@ export class PolywrapClient implements Client {
       };
 
       const wrapper = await this._loadWrapper(typedOptions.uri, { contextId });
-
       const invocableResult = await wrapper.invoke(
         typedOptions,
         contextualizeClient(this, contextId)
@@ -496,7 +490,6 @@ export class PolywrapClient implements Client {
     if (!cacheRead) {
       uriResolvers = uriResolvers.filter((x) => x.name !== CacheResolver.name);
     }
-
     const { wrapper, uri: resolvedUri, uriHistory, error } = await resolveUri(
       this._toUri(uri),
       uriResolvers,

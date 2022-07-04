@@ -16,7 +16,10 @@ import {
   GetManifestOptions,
   isBuffer,
 } from "@polywrap/core-js";
-import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
+import {
+  deserializeWrapManifest,
+  WrapManifest,
+} from "@polywrap/wrap-manifest-types-js";
 import { msgpackEncode } from "@polywrap/msgpack-js";
 import { Tracer } from "@polywrap/tracing-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
@@ -49,7 +52,7 @@ export interface State {
 
 export class WasmWrapper extends Wrapper {
   public static requiredExports: readonly string[] = ["_wrap_invoke"];
-  
+
   private _info: WrapManifest | undefined = undefined;
   private _schema?: string;
   private _wasm: Uint8Array | undefined = undefined;
@@ -123,32 +126,25 @@ export class WasmWrapper extends Wrapper {
       return this._info;
     }
 
-    this._schema = await this.getFile({
-      path: "schema.graphql", encoding: 'utf-8'
-    }, client) as string
-
-    const moduleManifest = "wrap.info";
-
-    if (!moduleManifest) {
-      throw Error(`Package manifest does not contain information`);
-    }
-
-    const data = (await this.getFile(
-      { path: moduleManifest, encoding: "utf-8" },
+    this._schema = (await this.getFile(
+      {
+        path: "schema.graphql",
+        encoding: "utf-8",
+      },
       client
     )) as string;
 
-    if (options.abi) {
-      try {
-        return JSON.parse(data) as WrapManifest
-        // const { abi } = JSON.parse(data);
-        // return JSON.stringify(abi);
-      } catch (e) {
-        console.log("Package information is not well formatted");
-      }
-    }
+    const moduleManifest = "wrap.info";
 
-    return JSON.parse(data) as WrapManifest
+    const data = (await this.getFile(
+      { path: moduleManifest },
+      client
+    )) as Uint8Array;
+
+    if (!data) {
+      throw Error(`Package manifest does not contain information`);
+    }
+    return deserializeWrapManifest(data);
   }
 
   @Tracer.traceMethod("WasmWrapper: invoke")

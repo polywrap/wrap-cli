@@ -38,13 +38,11 @@ export type GetUriResolversOptions = Contextualized;
 
 export type GetSchemaOptions = Contextualized;
 
-export type GetManifestOptions = {
-  abi?: boolean;
-} & Contextualized;
+export type GetManifestOptions = Contextualized;
 
 export interface GetFileOptions extends Contextualized {
   path: string;
-  encoding?: "utf-8" | string;
+  encoding?: "utf-8" | "msgpack" | string;
 }
 
 export interface GetImplementationsOptions extends Contextualized {

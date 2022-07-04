@@ -27,7 +27,6 @@ export function deserializeWrapManifest(
   } catch (e) {
     throw Error(`Unable to parse WrapManifest: ${`[${new Uint8Array(manifest).toString()}]`}`);
   }
-
   if (!options || !options.noValidate) {
     validateWrapManifest(anyWrapManifest);
   }

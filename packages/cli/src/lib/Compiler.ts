@@ -365,7 +365,8 @@ export class Compiler {
         version: "0.0.1",
       };
 
-      writeFileSync(manifestPath, msgpackEncode(info), {
+      const encodedInfo = msgpackEncode(info);
+      writeFileSync(manifestPath, encodedInfo, {
         encoding: "binary",
       });
     };

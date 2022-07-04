@@ -5,13 +5,13 @@ import {
   stopTestEnvironment,
   providers
 } from "@polywrap/test-env-js";
+import { msgpackDecode } from "@polywrap/msgpack-js"
 import {
   Uri,
   createPolywrapClient,
   PolywrapClientConfig,
   PluginModule,
-  Subscription,
-  msgpackDecode
+  Subscription
 } from "../..";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 
@@ -233,20 +233,14 @@ describe("wasm-wrapper", () => {
       path: "./schema.graphql",
       encoding: "utf8",
     })) as string;
-    expect(fileStr).toContain(`getData(
-      address: String!
-      connection: Ethereum_Connection
-    ): Int!`);
+    expect(fileStr).toContain(`type Module @imports`);
 
     const fileBuffer: Uint8Array = (await client.getFile(wrapperUri, {
       path: "./schema.graphql",
     })) as Uint8Array;
     const decoder = new TextDecoder("utf8");
     const text = decoder.decode(fileBuffer);
-    expect(text).toContain(`getData(
-      address: String!
-      connection: Ethereum_Connection
-    ): Int!`);
+    expect(text).toContain(`type Module @imports`);
 
     await expect(() =>
       client.getFile(new Uri("wrap://ens/ipfs.polywrap.eth"), {

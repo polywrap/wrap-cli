@@ -101,21 +101,21 @@ describe("Filesystem plugin", () => {
     expect(schema).toBe(expectedSchema);
 
     // get the manifest
-    const manifest = await client.getManifest(fsUri, { type: "polywrap" });
+    const manifest = await client.getManifest(fsUri, {});
 
     expect(manifest).toBeTruthy();
-    expect(manifest.language).toBe("wasm/assemblyscript");
+    expect(manifest.version).toBe("0.0.1");
 
     // get a file
     const file = await client.getFile(fsUri, {
-      path: "polywrap.json",
-      encoding: "utf-8",
+      path: "wrap.info",
     });
+
     const expectedFile = await fs.promises.readFile(
-      `${fsPath}/polywrap.json`,
-      "utf-8"
+      `${fsPath}/wrap.info`
     );
 
-    expect(file).toBe(expectedFile);
+    const expectedInfo = Uint8Array.from(expectedFile)
+    expect(file).toStrictEqual(expectedInfo);
   });
 });
