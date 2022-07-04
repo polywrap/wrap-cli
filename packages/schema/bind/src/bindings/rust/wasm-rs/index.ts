@@ -48,6 +48,19 @@ export const generateBinding: GenerateBindingFn = (
     });
   }
 
+  // Generate env type folders
+  if (abi.envType) {
+    output.entries.push({
+      type: "Directory",
+      name: toLower(abi.envType.type),
+      data: renderTemplates(
+        templatePath("env-type"),
+        abi.envType,
+        subTemplates
+      ),
+    });
+  }
+
   // Generate imported folder
   const importEntries: OutputEntry[] = [];
 
@@ -90,6 +103,19 @@ export const generateBinding: GenerateBindingFn = (
     });
   }
 
+  // Generate imported env type folders
+  for (const importedEnvType of abi.importedEnvTypes) {
+    importEntries.push({
+      type: "Directory",
+      name: toLower(importedEnvType.type),
+      data: renderTemplates(
+        templatePath("imported/env-type"),
+        importedEnvType,
+        subTemplates
+      ),
+    });
+  }
+
   if (importEntries.length > 0) {
     output.entries.push({
       type: "Directory",
@@ -119,11 +145,7 @@ export const generateBinding: GenerateBindingFn = (
     output.entries.push({
       type: "Directory",
       name: toLower(abi.moduleType.type),
-      data: renderTemplates(
-        templatePath("module-type"),
-        abi.moduleType,
-        subTemplates
-      ),
+      data: renderTemplates(templatePath("module-type"), abi, subTemplates),
     });
   }
 

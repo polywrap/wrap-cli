@@ -83,7 +83,7 @@ describe("sanity", () => {
         {
           uri: implementationUri,
           plugin: {
-            factory: () => ({} as PluginModule<void>),
+            factory: () => ({} as PluginModule<{}>),
             manifest: {
               schema: schemaStr,
               implements: [],

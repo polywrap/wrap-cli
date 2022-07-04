@@ -18,20 +18,20 @@ export type Int = number;
 export type Int8 = number;
 export type Int16 = number;
 export type Int32 = number;
-export type Bytes = ArrayBuffer;
+export type Bytes = Uint8Array;
 export type BigInt = string;
 export type BigNumber = string;
 export type Json = string;
 export type String = string;
 export type Boolean = boolean;
 
-/// Envs START ///
+/// Env START ///
 export interface Env extends Record<string, unknown> {
   prop: Types.String;
   optProp?: Types.String | null;
   optMap?: Map<Types.String, Types.Int | undefined> | null;
 }
-/// Envs END ///
+/// Env END ///
 
 /// Objects START ///
 export interface CustomType {

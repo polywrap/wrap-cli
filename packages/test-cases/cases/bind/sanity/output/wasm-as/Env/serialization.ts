@@ -14,11 +14,11 @@ import { Env } from "./";
 import * as Types from "..";
 
 export function serializeEnv(type: Env): ArrayBuffer {
-  const sizerContext: Context = new Context("Serializing (sizing) object-type: Env");
+  const sizerContext: Context = new Context("Serializing (sizing) env-type: Env");
   const sizer = new WriteSizer(sizerContext);
   writeEnv(sizer, type);
   const buffer = new ArrayBuffer(sizer.length);
-  const encoderContext: Context = new Context("Serializing (encoding) object-type: Env");
+  const encoderContext: Context = new Context("Serializing (encoding) env-type: Env");
   const encoder = new WriteEncoder(buffer, sizer, encoderContext);
   writeEnv(encoder, type);
   return buffer;
@@ -45,7 +45,7 @@ export function writeEnv(writer: Write, type: Env): void {
 }
 
 export function deserializeEnv(buffer: ArrayBuffer): Env {
-  const context: Context = new Context("Deserializing object-type Env");
+  const context: Context = new Context("Deserializing env-type Env");
   const reader = new ReadDecoder(buffer, context);
   return readEnv(reader);
 }

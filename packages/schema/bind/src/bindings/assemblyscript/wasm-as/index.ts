@@ -5,7 +5,6 @@ import { BindOptions, BindOutput } from "../../..";
 
 import {
   Abi,
-  ObjectDefinition,
   transformAbi,
   addFirstLast,
   extendType,
@@ -55,6 +54,19 @@ export const generateBinding: GenerateBindingFn = (
       data: renderTemplates(
         templatePath("imported/module-type"),
         importedModuleType,
+        subTemplates
+      ),
+    });
+  }
+
+  // Generate imported env type folders
+  for (const importedEnvType of abi.importedEnvTypes) {
+    importEntries.push({
+      type: "Directory",
+      name: importedEnvType.type,
+      data: renderTemplates(
+        templatePath("imported/env-type"),
+        importedEnvType,
         subTemplates
       ),
     });
@@ -133,16 +145,17 @@ export const generateBinding: GenerateBindingFn = (
   }
 
   // Generate env type folders
-  const generateEnvTypeFolder = (def: ObjectDefinition | undefined) => {
-    def &&
-      output.entries.push({
-        type: "Directory",
-        name: def.type,
-        data: renderTemplates(templatePath("object-type"), def, subTemplates),
-      });
-  };
-  generateEnvTypeFolder(abi.envType.client);
-  generateEnvTypeFolder(abi.envType.sanitized);
+  if (abi.envType) {
+    output.entries.push({
+      type: "Directory",
+      name: abi.envType.type,
+      data: renderTemplates(
+        templatePath("env-type"),
+        abi.envType,
+        subTemplates
+      ),
+    });
+  }
 
   // Generate root entry file
   output.entries.push(...renderTemplates(templatePath(""), abi, subTemplates));

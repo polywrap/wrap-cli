@@ -3,7 +3,7 @@ import {
   Client,
   GetManifestOptions,
   InvokeOptions,
-  InvokeResult,
+  InvocableResult,
   PluginModule,
   PluginPackage,
   Uri,
@@ -11,15 +11,13 @@ import {
   ManifestArtifactType,
   GetFileOptions,
   Env,
-  msgpackEncode,
   msgpackDecode,
+  isBuffer,
 } from "@polywrap/core-js";
 import { Tracer } from "@polywrap/tracing-js";
 
 export class PluginWrapper extends Wrapper {
   private _instance: PluginModule<unknown> | undefined;
-
-  private _sanitizedEnv: Record<string, unknown> | undefined = undefined;
 
   constructor(
     private _uri: Uri,
@@ -51,15 +49,15 @@ export class PluginWrapper extends Wrapper {
   public async getFile(
     _options: GetFileOptions,
     _client: Client
-  ): Promise<ArrayBuffer | string> {
+  ): Promise<Uint8Array | string> {
     throw Error("client.getFile(...) is not implemented for Plugins.");
   }
 
   @Tracer.traceMethod("PluginWrapper: invoke")
-  public async invoke<TData = unknown>(
+  public async invoke(
     options: InvokeOptions<Uri>,
     client: Client
-  ): Promise<InvokeResult<TData>> {
+  ): Promise<InvocableResult<unknown>> {
     try {
       const { method } = options;
       const args = options.args || {};
@@ -73,13 +71,13 @@ export class PluginWrapper extends Wrapper {
         throw new Error(`PluginWrapper: method "${method}" not found.`);
       }
 
-      // Sanitize & load the module's environment
-      await this._sanitizeAndLoadEnv(client, module);
+      // Set the module's environment
+      await module.setEnv(this._getClientEnv() || {});
 
       let jsArgs: Record<string, unknown>;
 
       // If the args are a msgpack buffer, deserialize it
-      if (args instanceof ArrayBuffer) {
+      if (isBuffer(args)) {
         const result = msgpackDecode(args);
 
         Tracer.addEvent("msgpack-decoded", result);
@@ -97,36 +95,16 @@ export class PluginWrapper extends Wrapper {
 
       // Invoke the function
       try {
-        const result = (await module._wrap_invoke(
-          method,
-          jsArgs,
-          client
-        )) as TData;
+        const result = await module._wrap_invoke(method, jsArgs, client);
 
         if (result !== undefined) {
           const data = result as unknown;
 
-          if (process.env.TEST_PLUGIN) {
-            // try to encode the returned result,
-            // ensuring it's msgpack compliant
-            try {
-              msgpackEncode(data);
-            } catch (e) {
-              throw Error(
-                `TEST_PLUGIN msgpack encode failure.` +
-                  `uri: ${this._uri.uri}\nmodule: ${module}\n` +
-                  `method: ${method}\n` +
-                  `args: ${JSON.stringify(jsArgs, null, 2)}\n` +
-                  `result: ${JSON.stringify(data, null, 2)}\n` +
-                  `exception: ${e}`
-              );
-            }
-          }
-
           Tracer.addEvent("Result", data);
 
           return {
-            data: data as TData,
+            data: data,
+            encoded: false,
           };
         } else {
           return {};
@@ -150,22 +128,6 @@ export class PluginWrapper extends Wrapper {
   private _getInstance(): PluginModule<unknown> {
     this._instance ||= this._plugin.factory();
     return this._instance;
-  }
-
-  @Tracer.traceMethod("PluginWrapper: _sanitizeAndLoadEnv")
-  private async _sanitizeAndLoadEnv(
-    client: Client,
-    pluginModule: PluginModule<unknown>
-  ): Promise<void> {
-    if (this._sanitizedEnv === undefined) {
-      const clientEnv = this._getClientEnv();
-      this._sanitizedEnv = await pluginModule._wrap_sanitize_env(
-        clientEnv,
-        client
-      );
-    }
-
-    pluginModule._wrap_load_env(this._sanitizedEnv || {});
   }
 
   @Tracer.traceMethod("PluginWrapper: _getClientEnv")

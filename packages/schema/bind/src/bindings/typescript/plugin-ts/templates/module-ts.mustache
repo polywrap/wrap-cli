@@ -22,9 +22,8 @@ export interface Args_{{name}} extends Record<string, unknown> {
 export abstract class Module<
   TConfig
 > extends PluginModule<
-  TConfig{{#envType.sanitized}},
-  Types.Env{{#envType.client}},
-  Types.ClientEnv{{/envType.client}}{{/envType.sanitized}}
+  TConfig{{#envType}},
+  Types.Env{{/envType}}
 > {
   {{#moduleType}}
   {{#methods}}

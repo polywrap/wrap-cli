@@ -22,7 +22,7 @@ Commands:
 
 describe("e2e tests for no help", () => {
 
-  test("Should display the help content", async () => {
+  it("Should display the help content", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["help"],
       cli: polywrapCli,

@@ -110,13 +110,13 @@ describe("wasm-wrapper", () => {
       args: {
         arg: "test",
       },
-      noDecode: true,
+      encodeResult: true,
     });
 
     expect(result.error).toBeFalsy();
     expect(result.data).toBeTruthy();
-    expect(result.data instanceof ArrayBuffer).toBeTruthy();
-    expect(msgpackDecode(result.data as ArrayBuffer)).toEqual("test");
+    expect(result.data instanceof Uint8Array).toBeTruthy();
+    expect(msgpackDecode(result.data as Uint8Array)).toContain("0x");
   });
 
   it("should invoke wrapper with custom redirects", async () => {
@@ -249,9 +249,9 @@ describe("wasm-wrapper", () => {
     })) as string;
     expect(fileStr).toEqual(schemaStr);
 
-    const fileBuffer: ArrayBuffer = (await client.getFile(simpleWrapperUri, {
+    const fileBuffer: Uint8Array = (await client.getFile(wrapperUri, {
       path: manifest.schema!,
-    })) as ArrayBuffer;
+    })) as Uint8Array;
     const decoder = new TextDecoder("utf8");
     const text = decoder.decode(fileBuffer);
     expect(text).toEqual(schemaStr);
@@ -307,31 +307,21 @@ describe("wasm-wrapper", () => {
       });
     }, 4000);
 
-    const getSubscription: Subscription<{
-      getData: number;
-    }> = client.subscribe<{
-      getData: number;
-    }>({
-      uri: simpleStorageWrapperUri.uri,
-      query: `
-        query {
-          getData(
-            address: $address
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
+    const getSubscription: Subscription<number> = client.subscribe<number>({
+      uri: wrapperUri,
+      method: "getData",
+      args: {
+        address: address,
+        connection: {
+          networkNameOrChainId: "testnet"
         }
-      `,
-      variables: {
-        address,
       },
       frequency: { ms: 4500 },
     });
 
     for await (let query of getSubscription) {
-      expect(query.errors).toBeFalsy();
-      const val = query.data?.getData;
+      expect(query.error).toBeFalsy();
+      const val = query.data;
       if (val !== undefined) {
         results.push(val);
         if (val >= 2) {
@@ -381,32 +371,22 @@ describe("wasm-wrapper", () => {
       });
     }, 4000);
 
-    const getSubscription: Subscription<{
-      getData: number;
-    }> = client.subscribe<{
-      getData: number;
-    }>({
-      uri: simpleStorageWrapperUri.uri,
-      query: `
-          query {
-            getData(
-              address: $address
-              connection: {
-                networkNameOrChainId: "testnet"
-              }
-            )
-          }
-        `,
-      variables: {
-        address,
+    const getSubscription: Subscription<number> = client.subscribe<number>({
+      uri: wrapperUri,
+      method: "getData",
+      args: {
+        address: address,
+        connection: {
+          networkNameOrChainId: "testnet"          
+        }
       },
       frequency: { ms: 4500 },
     });
 
     new Promise(async () => {
       for await (let query of getSubscription) {
-        expect(query.errors).toBeFalsy();
-        const val = query.data?.getData;
+        expect(query.error).toBeFalsy();
+        const val = query.data;
         if (val !== undefined) {
           results.push(val);
           if (val >= 2) {
