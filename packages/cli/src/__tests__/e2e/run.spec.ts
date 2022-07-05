@@ -230,13 +230,15 @@ describe("e2e tests for run command", () => {
         "./workflows/config.ts",
         "-v",
         "./workflows/validator.cue",
-        "-q",
       ],
       cwd: testCaseRoot,
       cli: polywrapCli,
     });
 
-    expect(stdout).toBe("");
+    const output = parseOutput(stdout);
+
+    expect(stdout).toBeTruthy();
+    expect(output.filter((o => o.status === "SUCCEED"))).toHaveLength(output.length);
     expect(stderr).toBe("");
     expect(code).toEqual(0);
 

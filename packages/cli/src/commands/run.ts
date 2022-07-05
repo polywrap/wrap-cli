@@ -7,7 +7,7 @@ import {
   validateOutput,
 } from "../lib";
 
-import { InvokeResult, Workflow, JobResult, JobStatus } from "@polywrap/core-js";
+import { Workflow, JobResult, JobStatus } from "@polywrap/core-js";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import path from "path";
 import yaml from "js-yaml";
@@ -79,7 +79,7 @@ const _run = async (workflowPath: string, options: WorkflowCommandOptions) => {
   const workflow: Workflow = getParser(workflowPath)(
     fs.readFileSync(workflowPath).toString()
   );
-  const workflowOutput: (InvokeResult & { id: string })[] = [];
+  const workflowOutput: (JobResult & { id: string })[] = [];
 
   await client.run({
     workflow,
@@ -104,11 +104,14 @@ const _run = async (workflowPath: string, options: WorkflowCommandOptions) => {
       }
 
       if (status !== JobStatus.SKIPPED && validateScript) {
-        await validateOutput(id, { data, error }, validateScript);
+        await validateOutput(id, { data, error }, validateScript, quiet);
       }
 
-      console.log("-----------------------------------");
-      workflowOutput.push({ id, data, error });
+      if (!quiet) {
+        console.log("-----------------------------------");
+      }
+
+      workflowOutput.push({ id, status, data, error });
     },
   });
 
