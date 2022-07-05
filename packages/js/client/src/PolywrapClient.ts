@@ -869,7 +869,7 @@ const contextualizeClient = (
         },
         getManifest: <TUri extends Uri | string>(
           uri: TUri,
-          options: GetManifestOptions
+          options?: GetManifestOptions
         ) => {
           return client.getManifest(uri, options);
         },
