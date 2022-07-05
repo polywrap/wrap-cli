@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "build": "polywrap build",
-    "contracts:deploy": "node ./deploy-contracts.js",
+    "test": "polywrap run ./workflows/e2e.yaml -v ./workflows/validator.cue -c ./workflows/config.ts",
     "test:env:up": "polywrap infra up --modules=eth-ens-ipfs && yarn contracts:deploy",
     "test:env:down": "polywrap infra down --modules=eth-ens-ipfs"
   },
