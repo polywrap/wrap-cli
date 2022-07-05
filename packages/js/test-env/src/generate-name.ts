@@ -2,7 +2,7 @@ const getRandomInt = (min: number, max: number) => {
   return Math.floor(Math.random() * (max - min)) + min;
 };
 
-export const generateName = (): string => {
+export const generateName = (subdomain: boolean = false): string => {
   const name1 = [
     "abandoned",
     "able",
@@ -1351,7 +1351,7 @@ export const generateName = (): string => {
     "zealous",
     "zesty",
     "zigzag",
-    "rocky",
+    "rocky"
   ];
 
   const name2 = [
@@ -2855,11 +2855,16 @@ export const generateName = (): string => {
     "yesterday",
     "Thomas",
     "Tom",
-    "Lieuwe",
+    "Lieuwe"
   ];
 
   const name = `${name1[getRandomInt(0, name1.length + 1)]}-${
     name2[getRandomInt(0, name2.length + 1)]
   }`;
+
+  if (subdomain) {
+    return name1[getRandomInt(0, 10)] + "." + name2[getRandomInt(10, 20)];
+  }
+
   return name;
 };

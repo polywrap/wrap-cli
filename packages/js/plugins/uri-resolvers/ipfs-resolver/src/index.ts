@@ -1,12 +1,12 @@
 import {
-  Module,
-  Args_tryResolveUri,
   Args_getFile,
+  Args_tryResolveUri,
   Bytes,
-  UriResolver_MaybeUriOrManifest,
-  manifest,
-  Ipfs_Module,
   Client,
+  Ipfs_Module,
+  manifest,
+  Module,
+  UriResolver_MaybeUriOrManifest,
 } from "./wrap";
 
 import { PluginFactory } from "@polywrap/core-js";
@@ -34,31 +34,29 @@ export class IpfsResolverPlugin extends Module<IpfsResolverPluginConfig> {
       return { manifest: null, uri: null };
     }
 
-    const manifestSearchPatterns = ["polywrap.json"];
+    const manifestSearchPattern = "wrap.info";
 
-    let manifest: Buffer | undefined;
+    let manifest: Bytes | undefined;
 
-    for (const manifestSearchPattern of manifestSearchPatterns) {
-      try {
-        const manifestResult = await Ipfs_Module.cat(
-          {
-            cid: `${args.path}/${manifestSearchPattern}`,
-            options: {
-              timeout: 5000,
-            },
+    try {
+      const manifestResult = await Ipfs_Module.cat(
+        {
+          cid: `${args.path}/${manifestSearchPattern}`,
+          options: {
+            timeout: 5000,
           },
-          _client
-        );
+        },
+        _client
+      );
 
-        if (manifestResult.data) {
-          manifest = Buffer.from(manifestResult.data);
-        } else {
-          throw new Error();
-        }
-      } catch (e) {
-        // TODO: logging
-        // https://github.com/web3-api/monorepo/issues/33
+      if (manifestResult.data) {
+        manifest = Buffer.from(manifestResult.data);
+      } else {
+        throw new Error();
       }
+    } catch (e) {
+      // TODO: logging
+      // https://github.com/web3-api/monorepo/issues/33
     }
 
     return { uri: null, manifest: manifest ?? null };

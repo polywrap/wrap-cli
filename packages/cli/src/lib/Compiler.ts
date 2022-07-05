@@ -2,18 +2,18 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import {
-  PolywrapProject,
-  SchemaComposer,
-  withSpinner,
-  outputMetadata,
+  copyArtifactsFromBuildImage,
+  createBuildImage,
+  displayPath,
   generateDockerfile,
   generateDockerImageName,
-  createBuildImage,
-  copyArtifactsFromBuildImage,
   intlMsg,
-  resetDir,
   outputManifest,
-  displayPath,
+  outputMetadata,
+  PolywrapProject,
+  resetDir,
+  SchemaComposer,
+  withSpinner,
 } from "./";
 
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
@@ -25,9 +25,9 @@ import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 import { Abi } from "@polywrap/schema-parse";
 import { ComposerOutput } from "@polywrap/schema-compose";
 import {
-  writeFileSync,
-  writeDirectorySync,
   normalizePath,
+  writeDirectorySync,
+  writeFileSync,
 } from "@polywrap/os-js";
 import * as gluegun from "gluegun";
 import fs from "fs";
@@ -365,7 +365,8 @@ export class Compiler {
         version: "0.0.1",
       };
 
-      const encodedInfo = msgpackEncode(info);
+      const s = JSON.stringify(info);
+      const encodedInfo = msgpackEncode(JSON.parse(s));
       writeFileSync(manifestPath, encodedInfo, {
         encoding: "binary",
       });

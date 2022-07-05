@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { ProjectConfig, Project } from ".";
+import { Project, ProjectConfig } from ".";
 import {
-  loadPolywrapManifest,
-  loadBuildManifest,
-  loadMetaManifest,
-  PolywrapManifestLanguage,
-  polywrapManifestLanguages,
   isPolywrapManifestLanguage,
-  outputManifest,
+  loadBuildManifest,
   loadDeployManifest,
   loadDeployManifestExt,
+  loadMetaManifest,
+  loadPolywrapManifest,
+  outputManifest,
+  PolywrapManifestLanguage,
+  polywrapManifestLanguages,
   polywrapManifestLanguageToBindLanguage,
 } from "./manifests";
 import { Deployer } from "../deploy";
@@ -21,12 +21,12 @@ import { intlMsg } from "../intl";
 
 import {
   BuildManifest,
-  PolywrapManifest,
-  MetaManifest,
   DeployManifest,
+  MetaManifest,
+  PolywrapManifest,
 } from "@polywrap/polywrap-manifest-types-js";
 import { normalizePath } from "@polywrap/os-js";
-import { bindSchema, BindOutput, BindOptions } from "@polywrap/schema-bind";
+import { BindOptions, BindOutput, bindSchema } from "@polywrap/schema-bind";
 import { ComposerOutput } from "@polywrap/schema-compose";
 import { Abi } from "@polywrap/schema-parse";
 import regexParser from "regex-parser";
@@ -43,13 +43,6 @@ export interface PolywrapProjectConfig extends ProjectConfig {
 }
 
 export class PolywrapProject extends Project<PolywrapManifest> {
-  private _polywrapManifest: PolywrapManifest | undefined;
-  private _buildManifest: BuildManifest | undefined;
-  private _deployManifest: DeployManifest | undefined;
-  private _metaManifest: MetaManifest | undefined;
-  private _defaultBuildImageCached = false;
-  private _defaultDeployModulesCached = false;
-
   public static cacheLayout = {
     root: "wasm/",
     buildDir: "build/",
@@ -60,6 +53,12 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     deployDir: "deploy/",
     deployModulesDir: "deploy/modules/",
   };
+  private _polywrapManifest: PolywrapManifest | undefined;
+  private _buildManifest: BuildManifest | undefined;
+  private _deployManifest: DeployManifest | undefined;
+  private _metaManifest: MetaManifest | undefined;
+  private _defaultBuildImageCached = false;
+  private _defaultDeployModulesCached = false;
 
   constructor(protected _config: PolywrapProjectConfig) {
     super(_config, {

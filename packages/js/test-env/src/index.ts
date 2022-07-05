@@ -241,7 +241,7 @@ export async function buildAndDeployWrapper({
   );
 
   // create a new ENS domain
-  const wrapperEns = ensName ?? `${generateName()}.eth`;
+  const wrapperEns = ensName ?? `${generateName(true)}.eth`;
 
   await buildWrapper(wrapperAbsPath);
 

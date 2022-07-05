@@ -1,11 +1,6 @@
 import { PolywrapClient } from "@polywrap/client-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
-import {
-  initTestEnvironment,
-  providers,
-  stopTestEnvironment,
-  buildAndDeployWrapper,
-} from "@polywrap/test-env-js";
+import { buildAndDeployWrapper, initTestEnvironment, providers, stopTestEnvironment } from "@polywrap/test-env-js";
 
 import { ipfsResolverPlugin } from "..";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
@@ -29,7 +24,7 @@ describe("IPFS Plugin", () => {
       wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/simple-storage`,
       ipfsProvider: providers.ipfs,
       ethereumProvider: providers.ethereum,
-      ensName: "simple-storage.eth",
+      ensName: "simple.storage.eth"
     });
 
     wrapperIpfsCid = ipfsCid;
@@ -39,16 +34,16 @@ describe("IPFS Plugin", () => {
         {
           uri: "wrap://ens/ipfs.polywrap.eth",
           plugin: ipfsPlugin({
-            provider: providers.ipfs,
-          }),
+            provider: providers.ipfs
+          })
         },
         {
           uri: "wrap://ens/ipfs-uri-resolver.polywrap.eth",
           plugin: ipfsResolverPlugin({
-            provider: providers.ipfs,
-          }),
-        },
-      ],
+            provider: providers.ipfs
+          })
+        }
+      ]
     });
   });
 
@@ -70,5 +65,8 @@ describe("IPFS Plugin", () => {
     const schema = await resolution.wrapper?.getSchema(client);
 
     expect(schema).toEqual(expectedSchema);
+
+    const info = await resolution.wrapper?.getManifest({}, client);
+    expect(info?.name).toBe("SimpleStorage");
   });
 });
