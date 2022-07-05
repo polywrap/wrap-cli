@@ -92,6 +92,7 @@ export class SchemaComposer {
       }
     }
 
+    // Need to work from here outwards: CLI -> Client -> Core + schema
     try {
       return await this._client.getManifest(new Uri(uri));
     } catch (e) {
