@@ -1,8 +1,0 @@
-format: 0.0.1-prealpha.9
-name: SimpleStorage
-language: wasm/assemblyscript
-build: ./polywrap.build.yaml
-meta: ./polywrap.meta.yaml
-schema: ./schema.graphql
-module: ./src/index.ts
-deploy: ./polywrap.deploy-temp.yaml
