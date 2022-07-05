@@ -84,6 +84,7 @@ export const plugin: Command = {
       });
   },
 };
+
 async function run(options: PluginCommandOptions) {
   const { manifestFile, codegenDir, publishDir, clientConfig } = options;
 
@@ -96,7 +97,6 @@ async function run(options: PluginCommandOptions) {
     pluginManifestPath: manifestFile,
   });
   await project.validate();
-  const manifest = await project.getManifest();
 
   const schemaComposer = new SchemaComposer({
     project,
@@ -123,13 +123,13 @@ async function run(options: PluginCommandOptions) {
   const schemas = await schemaComposer.getComposedSchemas(
     ComposerFilter.Schema
   );
-  const publishSchemaPath = path.join(publishDir, "schema.graphql");
-  const publishManifestPath = path.join(publishDir, "polywrap.plugin.json");
+  const schemaPath = path.join(publishDir, "schema.graphql");
+  const manifestPath = path.join(publishDir, "wrap.info");
 
   if (!fs.existsSync(publishDir)) {
     fs.mkdirSync(publishDir);
   }
 
-  writeFileSync(publishSchemaPath, schemas.schema);
-  await outputManifest(manifest, publishManifestPath);
+  writeFileSync(manifestPath, manifest);
+  writeFileSync(schemaPath, schemas.schema);
 }

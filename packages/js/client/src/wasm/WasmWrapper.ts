@@ -54,7 +54,6 @@ export class WasmWrapper extends Wrapper {
   public static requiredExports: readonly string[] = ["_wrap_invoke"];
 
   private _info: WrapManifest | undefined = undefined;
-  private _schema?: string;
   private _wasm: Uint8Array | undefined = undefined;
 
   constructor(
@@ -125,14 +124,6 @@ export class WasmWrapper extends Wrapper {
     if (this._info !== undefined) {
       return this._info;
     }
-
-    this._schema = (await this.getFile(
-      {
-        path: "schema.graphql",
-        encoding: "utf-8",
-      },
-      client
-    )) as string;
 
     const moduleManifest = "wrap.info";
 
@@ -230,17 +221,10 @@ export class WasmWrapper extends Wrapper {
 
   @Tracer.traceMethod("WasmWrapper: getSchema")
   public async getSchema(client: Client): Promise<string> {
-    if (this._schema) {
-      return this._schema;
-    }
-
-    const schema = "schema.graphql";
-    this._schema = (await this.getFile(
-      { path: schema, encoding: "utf8" },
+    return (await this.getFile(
+      { path: "schema.graphql", encoding: "utf8" },
       client
     )) as string;
-
-    return this._schema;
   }
 
   @Tracer.traceMethod("WasmWrapper: _processInvokeResult")
