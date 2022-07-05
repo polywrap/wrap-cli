@@ -8,8 +8,7 @@ export interface MaybeUriOrManifest {
   manifest?: Uint8Array;
 }
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export const Method = {
+export const module = {
   tryResolveUri: Tracer.traceFunc(
     "core: uri-resolver: tryResolveUri",
     async (

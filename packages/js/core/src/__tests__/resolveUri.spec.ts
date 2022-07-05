@@ -232,11 +232,11 @@ describe("resolveUri", () => {
     const wrapper = new Uri("wrap://ens/ens");
     const file = new Uri("wrap/some-file");
     const path = "wrap/some-path";
-    const query = UriResolverInterface.Method;
+    const module = UriResolverInterface.module;
     const uri = new Uri("wrap/some-uri");
 
-    expect(query.tryResolveUri(client(wrappers), wrapper, uri)).toBeDefined();
-    expect(query.getFile(client(wrappers), file, path)).toBeDefined();
+    expect(module.tryResolveUri(client(wrappers), wrapper, uri)).toBeDefined();
+    expect(module.getFile(client(wrappers), file, path)).toBeDefined();
   });
 
   it("works in the typical case", async () => {

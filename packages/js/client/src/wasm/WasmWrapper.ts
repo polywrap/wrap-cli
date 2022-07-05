@@ -81,7 +81,7 @@ export class WasmWrapper extends Wrapper {
     client: Client
   ): Promise<Uint8Array | string> {
     const { path, encoding } = options;
-    const { data, error } = await UriResolverInterface.Method.getFile(
+    const { data, error } = await UriResolverInterface.module.getFile(
       {
         invoke: <TData = unknown, TUri extends Uri | string = string>(
           options: InvokeOptions<TUri>
