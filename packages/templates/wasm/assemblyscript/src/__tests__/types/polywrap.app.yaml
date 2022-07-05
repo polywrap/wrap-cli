@@ -1,6 +1,7 @@
-format: 0.0.1-prealpha.1
+format: 0.0.1-prealpha.2
+name: simple-typescript-type-generation
 language: app/typescript
 schema: ./schema.graphql
 import_redirects:
-  - uri: "wrap://ens/simple-storage.eth"
+  - uri: "wrap://ens/simple.eth"
     schema: "../../../build/schema.graphql"

@@ -28,6 +28,12 @@ const languageTestCommands: Record<string, string[]> = {
     // "yarn test:e2e",
     // "yarn test:workflow"
   ],
+  "rust": [
+    // Uncomment when env refactor is released
+    // "yarn build",
+    // "yarn test:e2e",
+    // "yarn test:workflow"
+  ],
   "interface": [
     "yarn build"
   ],

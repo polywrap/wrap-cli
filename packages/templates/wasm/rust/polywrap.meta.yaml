@@ -1,7 +1,7 @@
 format: 0.0.1-prealpha.3
-displayName: Polywrap Wasm Wrapper Template in Rust
+displayName: Polywrap Wasm Wrapper Template
 subtext: A template for starting a Polywrap Wasm wrapper
-description: A Polywrap Wasm wrapper written in Rust.
+description: A Polywrap Wasm wrapper.
 tags:
   - polywrap
   - web3

@@ -1,16 +1,7 @@
-#import { Module, Connection } into Ethereum from "wrap://ens/ethereum.polywrap.eth"
-
 type Module {
-    getData(
-        address: String!
-        connection: Ethereum_Connection
-    ): Int!
-    setData(
-        address: String!
-        value: UInt32!
-        connection: Ethereum_Connection
-    ): String!
-    deployContract(
-        connection: Ethereum_Connection
-    ): String!
+    simpleMethod(arg: String!): SimpleResult!
+}
+
+type SimpleResult {
+    value: String!
 }

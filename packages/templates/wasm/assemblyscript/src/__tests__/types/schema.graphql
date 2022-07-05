@@ -1,1 +1,1 @@
-#import * into SimpleStorage from "ens/simple-storage.eth"
+#import * into Template from "wrap://ens/simple.eth"

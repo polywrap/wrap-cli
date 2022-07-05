@@ -1,5 +1,5 @@
-# Polywrap Wasm Wrapper Template in Rust
-For more information on how this project works, and a step by step on how to extend its behavior, see the documentation [here](https://docs.polywrap.io/).
+# Polywrap Wasm Wrapper Template
+A simple starter template for a Rust Wasm wrapper. For more information on how this project works, and a step by step on how to extend its behavior, see the documentation [here](https://docs.polywrap.io/).
 
 # How To Run
 

@@ -1,6 +1,6 @@
-format: 0.0.1-prealpha.2
+format: 0.0.1-prealpha.3
 docker:
-  name: polywrap-as-build-env
+  name: template-wasm-as
 config:
   node_version: "16.13.0"
   include:
