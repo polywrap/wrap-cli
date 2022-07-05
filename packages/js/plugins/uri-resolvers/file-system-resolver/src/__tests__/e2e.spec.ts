@@ -82,8 +82,8 @@ describe("Filesystem plugin", () => {
       method: "deployContract",
       args: {
         connection: {
-          networkNameOrChainId: "testnet"
-        }
+          networkNameOrChainId: "testnet",
+        },
       },
     });
 
@@ -105,17 +105,16 @@ describe("Filesystem plugin", () => {
 
     expect(manifest).toBeTruthy();
     expect(manifest.version).toBe("0.0.1");
+    expect(manifest.type).toEqual("wasm");
 
     // get a file
     const file = await client.getFile(fsUri, {
       path: "wrap.info",
     });
 
-    const expectedFile = await fs.promises.readFile(
-      `${fsPath}/wrap.info`
-    );
+    const expectedFile = await fs.promises.readFile(`${fsPath}/wrap.info`);
 
-    const expectedInfo = Uint8Array.from(expectedFile)
+    const expectedInfo = Uint8Array.from(expectedFile);
     expect(file).toStrictEqual(expectedInfo);
   });
 });
