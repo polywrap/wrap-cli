@@ -21,6 +21,8 @@ export class Input_moduleMethod {
   optEnumArray: Array<Option<Types.CustomEnum>> | null;
   map: Map<string, i32>;
   mapOfArr: Map<string, Array<i32>>;
+  mapOfObj: Map<string, Types.AnotherType>;
+  mapOfArrOfObj: Map<string, Array<Types.AnotherType>>;
 }
 
 export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Input_moduleMethod {
@@ -41,6 +43,10 @@ export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Input_moduleM
   let _mapSet: bool = false;
   let _mapOfArr: Map<string, Array<i32>> = new Map<string, Array<i32>>();
   let _mapOfArrSet: bool = false;
+  let _mapOfObj: Map<string, Types.AnotherType> = new Map<string, Types.AnotherType>();
+  let _mapOfObjSet: bool = false;
+  let _mapOfArrOfObj: Map<string, Array<Types.AnotherType>> = new Map<string, Array<Types.AnotherType>>();
+  let _mapOfArrOfObjSet: bool = false;
 
   while (numFields > 0) {
     numFields--;

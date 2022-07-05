@@ -25,7 +25,7 @@ export function serializeCustomType(type: CustomType): ArrayBuffer {
 }
 
 export function writeCustomType(writer: Write, type: CustomType): void {
-  writer.writeMapLength(37);
+  writer.writeMapLength(41);
   writer.context().push("str", "string", "writing property");
   writer.writeString("str");
   writer.writeString(type.str);

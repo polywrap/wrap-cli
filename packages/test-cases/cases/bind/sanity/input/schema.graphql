@@ -56,6 +56,8 @@ type Module @imports(
     optEnumArray: [CustomEnum]
     map: Map! @annotate(type: "Map<String!, Int!>!")
     mapOfArr: Map! @annotate(type: "Map<String!, [Int!]!>!")
+    mapOfObj: Map! @annotate(type: "Map<String!, AnotherType!>!")
+    mapOfArrOfObj: Map! @annotate(type: "Map<String!, [AnotherType!]!>!")
   ): Int!
 
   objectMethod(
@@ -110,6 +112,10 @@ type CustomType {
   optEnum: CustomEnum
   enumArray: [CustomEnum!]!
   optEnumArray: [CustomEnum]
+  map: Map! @annotate(type: "Map<String!, Int!>!")
+  mapOfArr: Map! @annotate(type: "Map<String!, [Int!]!>!")
+  mapOfObj: Map! @annotate(type: "Map<String!, AnotherType!>!")
+  mapOfArrOfObj: Map! @annotate(type: "Map<String!, [AnotherType!]!>!")
 }
 
 type AnotherType {
