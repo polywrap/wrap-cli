@@ -1,7 +1,6 @@
 {
-  "name": "@polywrap/uri-resolver-interface",
-  "description": "URI Resolver Interface",
-  "private": true,
+  "name": "@polywrap/file-system-interface",
+  "description": "Polywrap Filesystem Interface",
   "version": "0.0.1-prealpha.92",
   "scripts": {
     "build": "node ../../../dependencies/node_modules/polywrap/bin/polywrap build",

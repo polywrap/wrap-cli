@@ -1,7 +1,6 @@
 {
   "name": "@polywrap/logger-interface",
   "description": "Polywrap Logger Interface",
-  "private": true,
   "version": "0.0.1-prealpha.92",
   "scripts": {
     "build": "node ../../../dependencies/node_modules/polywrap/bin/polywrap build",

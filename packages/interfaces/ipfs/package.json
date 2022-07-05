@@ -1,7 +1,6 @@
 {
   "name": "@polywrap/ipfs-interface",
   "description": "Polywrap Ipfs Interface",
-  "private": true,
   "version": "0.0.1-prealpha.92",
   "scripts": {
     "build": "node ../../../dependencies/node_modules/polywrap/bin/polywrap build",
@@ -14,5 +13,6 @@
     "polywrap": "0.0.1-prealpha.92"
   },
   "publishConfig": {
+    "access": "public"
   }
 }
