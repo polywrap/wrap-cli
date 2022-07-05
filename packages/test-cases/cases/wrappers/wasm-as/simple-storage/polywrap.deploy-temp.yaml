@@ -1,0 +1,15 @@
+format: 0.0.1-prealpha.1
+stages:
+  ipfsDeploy:
+    package: ipfs
+    uri: >-
+      fs//home/cesar/dev/polywrap/monorepo/packages/test-cases/cases/wrappers/wasm-as/simple-storage/build
+    config:
+      gatewayUri: http://localhost:5001
+  ensPublish:
+    package: ens
+    depends_on: ipfsDeploy
+    config:
+      domainName: good-natured-reveal.eth
+      provider: http://localhost:8545
+      ensRegistryAddress: '0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab'
