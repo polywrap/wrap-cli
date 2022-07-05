@@ -14,6 +14,7 @@ import {
   Subscription
 } from "../..";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
+import fs from "fs";
 
 jest.setTimeout(200000);
 
@@ -22,8 +23,8 @@ describe("wasm-wrapper", () => {
   let ethProvider: string;
   let ensAddress: string;
 
-  const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-storage`
-  const wrapperUri = `fs/${wrapperPath}/build`
+  const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-storage`;
+  const wrapperUri = `fs/${wrapperPath}/build`;
 
   beforeAll(async () => {
     await initTestEnvironment();
@@ -229,18 +230,25 @@ describe("wasm-wrapper", () => {
 
   test("getFile -- simple-storage polywrap", async () => {
     const client = await getClient();
+    const expectedSchema = await fs.promises.readFile(
+      `${wrapperPath}/build/schema.graphql`,
+      "utf8"
+    );
+
     const fileStr: string = (await client.getFile(wrapperUri, {
       path: "./schema.graphql",
       encoding: "utf8",
     })) as string;
-    expect(fileStr).toContain(`type Module @imports`);
+
+    expect(fileStr).toEqual(expectedSchema);
 
     const fileBuffer: Uint8Array = (await client.getFile(wrapperUri, {
       path: "./schema.graphql",
     })) as Uint8Array;
     const decoder = new TextDecoder("utf8");
     const text = decoder.decode(fileBuffer);
-    expect(text).toContain(`type Module @imports`);
+    
+    expect(text).toEqual(expectedSchema);
 
     await expect(() =>
       client.getFile(new Uri("wrap://ens/ipfs.polywrap.eth"), {
@@ -306,8 +314,8 @@ describe("wasm-wrapper", () => {
       args: {
         address: address,
         connection: {
-          networkNameOrChainId: "testnet"
-        }
+          networkNameOrChainId: "testnet",
+        },
       },
       frequency: { ms: 4500 },
     });
@@ -384,8 +392,8 @@ describe("wasm-wrapper", () => {
       args: {
         address: address,
         connection: {
-          networkNameOrChainId: "testnet"          
-        }
+          networkNameOrChainId: "testnet",
+        },
       },
       frequency: { ms: 4500 },
     });
