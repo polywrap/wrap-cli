@@ -6,4 +6,4 @@ schema: ./schema.graphql
 module: ./src/index.ts
 import_redirects:
   - uri: "ens/memory-storage.polywrap.eth"
-    schema: ../plugin/build/schema.graphql
+    schema: ../../plugins/memory-storage/build/schema.graphql

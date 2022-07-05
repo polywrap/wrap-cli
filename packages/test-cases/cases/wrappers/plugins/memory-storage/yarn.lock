@@ -142,29 +142,29 @@
     "@opentelemetry/semantic-conventions" "0.20.0"
     "@opentelemetry/tracing" "0.20.0"
 
-"@polywrap/core-js@0.0.1-prealpha.91":
-  version "0.0.1-prealpha.91"
-  resolved "https://registry.yarnpkg.com/@polywrap/core-js/-/core-js-0.0.1-prealpha.91.tgz#e54b412cab8acf3abdc5ae06fe42078374109c0b"
-  integrity sha512-7CoeKLa+aHbDfo1hhLp6tSnNYo4jRqSuI293/H9Gl34tRov6tGi3m0N5f47CJIRM1nXyKFepodr/usNtrBwbbw==
+"@polywrap/core-js@0.0.1-prealpha.92":
+  version "0.0.1-prealpha.92"
+  resolved "https://registry.yarnpkg.com/@polywrap/core-js/-/core-js-0.0.1-prealpha.92.tgz#304de5cf6ef99a2bba6f84348c7281e4bd30afbf"
+  integrity sha512-porODRp9tJBF59jcC+nO5V2l3FaoAgZY9mxzf8UrEfkjuONG5nfM15vfcjYthz7GjjKsdtXSNt7ZwlWGZSQgXA==
   dependencies:
     "@msgpack/msgpack" "2.7.2"
-    "@polywrap/manifest-schemas" "0.0.1-prealpha.91"
-    "@polywrap/tracing-js" "0.0.1-prealpha.91"
+    "@polywrap/manifest-schemas" "0.0.1-prealpha.92"
+    "@polywrap/tracing-js" "0.0.1-prealpha.92"
     graphql "15.5.0"
     graphql-tag "2.10.4"
     js-yaml "3.14.0"
     jsonschema "1.4.0"
     semver "7.3.5"
 
-"@polywrap/manifest-schemas@0.0.1-prealpha.91":
-  version "0.0.1-prealpha.91"
-  resolved "https://registry.yarnpkg.com/@polywrap/manifest-schemas/-/manifest-schemas-0.0.1-prealpha.91.tgz#3d696fdc782553c7d459fd3ec9455ae66b16a6b8"
-  integrity sha512-AjoRkOtGFdeb8UMDY/ZAsQH2M6JkzaEfEOr8yM1AzanMI7WSv0dGDarkvjOFplq3mtoTFGhL9d1hJZ6Ac1TPUw==
+"@polywrap/manifest-schemas@0.0.1-prealpha.92":
+  version "0.0.1-prealpha.92"
+  resolved "https://registry.yarnpkg.com/@polywrap/manifest-schemas/-/manifest-schemas-0.0.1-prealpha.92.tgz#81e187d4b8c60398bded0f4952912c0c753d50c5"
+  integrity sha512-jcDHICKJb5qr6B5bVaL6W3gutxmVgNA/PK99d/nE9hFsuC4E14BHRP0MQG6nqpHogqzkrvfhzWifOhm+QyTpXw==
 
-"@polywrap/tracing-js@0.0.1-prealpha.91":
-  version "0.0.1-prealpha.91"
-  resolved "https://registry.yarnpkg.com/@polywrap/tracing-js/-/tracing-js-0.0.1-prealpha.91.tgz#d5df9b825299ddcf938cde87acbf361faabe452f"
-  integrity sha512-wC8dm9K/hU2kF+mSKPMeR6WUpavvgAt9d60q17Zd2DqUY7SPASBuqyFwshLAzDl3JHw9Kd+5LKjwYRdBwRDjAw==
+"@polywrap/tracing-js@0.0.1-prealpha.92":
+  version "0.0.1-prealpha.92"
+  resolved "https://registry.yarnpkg.com/@polywrap/tracing-js/-/tracing-js-0.0.1-prealpha.92.tgz#0b7f2015d544caf6eca18b1019fde06b1d26b59f"
+  integrity sha512-dOsTIBeNgNwa7MCrlbZssCqOCkoR5/2/xhmWFf7YWFu3NVMwNXZ9iVL2VApUkgTkW5qy3RDacjEU39PaUVPurw==
   dependencies:
     "@opentelemetry/api" "0.20.0"
     "@opentelemetry/context-zone" "0.20.0"

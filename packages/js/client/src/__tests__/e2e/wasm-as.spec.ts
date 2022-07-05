@@ -51,11 +51,10 @@ describe("wasm-as test cases", () => {
   }
 
   it("asyncify", async () => {
-    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/asyncify/wrapper`
+    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/asyncify`
     const wrapperUri = `fs/${wrapperPath}/build`
 
-    const pluginPath = `${GetPathToTestWrappers()}/wasm-as/asyncify/plugin`
-
+    const pluginPath = `${GetPathToTestWrappers()}/plugins/memory-storage`
     execSync(`cd ${pluginPath} && yarn && yarn build`)
 
     await buildWrapper(wrapperPath);

@@ -11,6 +11,7 @@ import {
   providers
 } from "@polywrap/test-env-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
+import { execSync } from "child_process";
 
 jest.setTimeout(1200000);
 
@@ -52,10 +53,20 @@ describe("wasm-rs test cases", () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-rs/asyncify`
     const wrapperUri = `fs/${wrapperPath}/build`
 
+    const pluginPath = `${GetPathToTestWrappers()}/plugins/memory-storage`
+    execSync(`cd ${pluginPath} && yarn && yarn build`)
+
     await buildWrapper(wrapperPath);
 
+    const client = await getClient({
+      plugins: [{
+        uri: "wrap://ens/memory-storage.polywrap.eth",
+        plugin: require(`${pluginPath}/build`).memoryStoragePlugin({}),
+      }]
+    })
+
     await TestCases.runAsyncifyTest(
-      await getClient(), wrapperUri
+      client, wrapperUri
     );
   });
 
