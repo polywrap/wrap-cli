@@ -1,6 +1,6 @@
-import { Args_simpleMethod, SimpleResult } from "./wrap";
+import { Args_sampleMethod, SampleResult } from "./wrap";
 
-export function simpleMethod(args: Args_simpleMethod): SimpleResult {
+export function sampleMethod(args: Args_sampleMethod): SampleResult {
   return {
     value: args.arg,
   };

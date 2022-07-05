@@ -1,8 +1,8 @@
 name: template-wasm-rs
 jobs:
-  simpleMethod:
+  sampleMethod:
     steps:
       - uri: fs/build
-        method: simpleMethod
+        method: sampleMethod
         args:
           arg: "polywrap"

@@ -1,7 +1,7 @@
 type Module {
-    simpleMethod(arg: String!): SimpleResult!
+    sampleMethod(arg: String!): SampleResult!
 }
 
-type SimpleResult {
+type SampleResult {
     value: String!
 }

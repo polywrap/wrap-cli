@@ -1,8 +1,8 @@
 pub mod wrap;
 pub use wrap::*;
 
-pub fn simple_method(args: ArgsSimpleMethod) -> SimpleResult {
-    return SimpleResult {
+pub fn sample_method(args: ArgsSampleMethod) -> SampleResult {
+    return SampleResult {
         value: args.arg
     };
 }

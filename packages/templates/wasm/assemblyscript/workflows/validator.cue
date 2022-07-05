@@ -1,6 +1,6 @@
 package e2e
 
-simpleMethod: {
+sampleMethod: {
 		$0: {
 			data: {
 				value: "polywrap"
