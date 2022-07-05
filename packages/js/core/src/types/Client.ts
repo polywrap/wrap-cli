@@ -42,7 +42,7 @@ export type GetManifestOptions = Contextualized;
 
 export interface GetFileOptions extends Contextualized {
   path: string;
-  encoding?: "utf-8" | "msgpack" | string;
+  encoding?: "utf-8" | string;
 }
 
 export interface GetImplementationsOptions extends Contextualized {
