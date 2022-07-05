@@ -19,8 +19,6 @@ import { Tracer } from "@polywrap/tracing-js";
 export class PluginWrapper extends Wrapper {
   private _instance: PluginModule<unknown> | undefined;
 
-  private _sanitizedEnv: Record<string, unknown> | undefined = undefined;
-
   constructor(
     private _uri: Uri,
     private _plugin: PluginPackage<unknown>,
@@ -73,8 +71,8 @@ export class PluginWrapper extends Wrapper {
         throw new Error(`PluginWrapper: method "${method}" not found.`);
       }
 
-      // Sanitize & load the module's environment
-      await this._sanitizeAndLoadEnv(client, module);
+      // Set the module's environment
+      await module.setEnv(this._getClientEnv() || {});
 
       let jsArgs: Record<string, unknown>;
 
@@ -130,22 +128,6 @@ export class PluginWrapper extends Wrapper {
   private _getInstance(): PluginModule<unknown> {
     this._instance ||= this._plugin.factory();
     return this._instance;
-  }
-
-  @Tracer.traceMethod("PluginWrapper: _sanitizeAndLoadEnv")
-  private async _sanitizeAndLoadEnv(
-    client: Client,
-    pluginModule: PluginModule<unknown>
-  ): Promise<void> {
-    if (this._sanitizedEnv === undefined) {
-      const clientEnv = this._getClientEnv();
-      this._sanitizedEnv = await pluginModule._wrap_sanitize_env(
-        clientEnv,
-        client
-      );
-    }
-
-    pluginModule._wrap_load_env(this._sanitizedEnv || {});
   }
 
   @Tracer.traceMethod("PluginWrapper: _getClientEnv")

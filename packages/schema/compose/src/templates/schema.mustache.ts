@@ -29,7 +29,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
     {{/comment}}
     {{name}}: {{toGraphQLType}}
     {{/arguments}}
-  ){{/arguments.length}}: {{#return}}{{toGraphQLType}}{{/return}}
+  ){{/arguments.length}}: {{#return}}{{toGraphQLType}}{{/return}}{{#env}} @env(required: {{required}}){{/env}}
   {{^last}}
 
   {{/last}}
@@ -37,7 +37,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
 }{{/methods.length}}
 
 {{/moduleType}}
-{{#envType.client}}{{#comment}}
+{{#envType}}{{#comment}}
 """
 {{comment}}
 """
@@ -52,23 +52,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
   {{/properties}}
 }{{/properties.length}}
 
-{{/envType.client}}
-{{#envType.sanitized}}{{#comment}}
-"""
-{{comment}}
-"""
-{{/comment}}
-type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}}{{#properties.length}} {
-  {{#properties}}{{#comment}}
-  """
-  {{comment}}
-  """
-  {{/comment}}
-  {{name}}: {{toGraphQLType}}
-  {{/properties}}
-}{{/properties.length}}
-
-{{/envType.sanitized}}
+{{/envType}}
 {{#objectTypes}}{{#comment}}
 """
 {{comment}}
@@ -122,7 +106,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
     {{/comment}}
     {{name}}: {{toGraphQLType}}
     {{/arguments}}
-  ){{/arguments.length}}: {{#return}}{{toGraphQLType}}{{/return}}
+  ){{/arguments.length}}: {{#return}}{{toGraphQLType}}{{/return}}{{#env}} @env(required: {{required}}){{/env}}
   {{^last}}
 
   {{/last}}
@@ -171,6 +155,30 @@ enum {{type}} @imported(
 }
 
 {{/importedEnumTypes}}
-### Imported Objects END ###{{/abi}}`;
+### Imported Objects END ###
+
+### Imported Envs START ###
+
+{{#importedEnvTypes}}{{#comment}}
+"""
+{{comment}}
+"""
+{{/comment}}
+type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}} @imported(
+  uri: "{{uri}}",
+  namespace: "{{namespace}}",
+  nativeType: "{{nativeType}}"
+){{#properties.length}} {
+  {{#properties}}{{#comment}}
+  """
+  {{comment}}
+  """
+  {{/comment}}
+  {{name}}: {{toGraphQLType}}
+  {{/properties}}
+}{{/properties.length}}
+
+{{/importedEnvTypes}}
+### Imported Envs END ###{{/abi}}`;
 
 export { template };

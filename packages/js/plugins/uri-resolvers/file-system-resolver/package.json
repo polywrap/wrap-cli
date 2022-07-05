@@ -1,6 +1,6 @@
 {
   "name": "@polywrap/fs-resolver-plugin-js",
-  "description": "Web3API File System URI Resolver Javascript Plugin",
+  "description": "Polywrap File System URI Resolver Javascript Plugin",
   "version": "0.0.1-prealpha.91",
   "license": "MIT",
   "repository": {

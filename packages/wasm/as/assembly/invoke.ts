@@ -13,7 +13,7 @@ export declare function __wrap_invoke_result(ptr: u32, len: u32): void;
 export declare function __wrap_invoke_error(ptr: u32, len: u32): void;
 
 // Keep track of all invokable functions
-export type InvokeFunction = (argsBuf: ArrayBuffer) => ArrayBuffer;
+export type InvokeFunction = (argsBuf: ArrayBuffer, env_size: u32) => ArrayBuffer;
 
 export class InvokeArgs {
   constructor(
@@ -39,9 +39,9 @@ export function wrap_invoke_args(method_size: u32, args_size: u32): InvokeArgs {
 }
 
 // Helper for handling _wrap_invoke
-export function wrap_invoke(args: InvokeArgs, fn: InvokeFunction | null): bool {
+export function wrap_invoke(args: InvokeArgs, env_size: u32, fn: InvokeFunction | null): bool {
   if (fn) {
-    const result = fn(args.args);
+    const result = fn(args.args, env_size);
     __wrap_invoke_result(
       changetype<u32>(result),
       result.byteLength

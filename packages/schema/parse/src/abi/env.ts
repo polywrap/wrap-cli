@@ -1,18 +1,16 @@
-export const envTypes = {
-  ClientEnv: "ClientEnv",
-  Env: "Env",
+export const envTypeNames = {
+  objectType: "Env",
+  argName: "env",
 };
 
-export type EnvTypes = typeof envTypes;
-
-export type EnvType = keyof EnvTypes;
-
-export function isEnvType(type: string): type is EnvType {
-  return type in envTypes;
+export function isEnvType(type: string): boolean {
+  return type === envTypeNames.objectType;
 }
 
-export function isClientEnvType(type: EnvType): boolean {
-  return type === "ClientEnv";
+export function isEnvArgName(name: string): boolean {
+  return name === envTypeNames.argName;
 }
 
-export const envTypeNames = Object.keys(envTypes);
+export function isImportedEnvType(type: string): boolean {
+  return type.endsWith(`_${envTypeNames.objectType}`);
+}

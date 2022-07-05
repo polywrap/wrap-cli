@@ -13,7 +13,6 @@ import {
   MethodDefinition,
   createImportedModuleDefinition,
   ImportedModuleDefinition,
-  createEnvDefinition
 } from "../abi";
 
 const schema1 = `
@@ -74,10 +73,10 @@ describe("Polywrap Schema Abi Transformations", () => {
       transforms: [addFirstLast],
     });
     const expected: Abi = {
-      envType: createEnvDefinition({}),
       enumTypes: [],
       importedEnumTypes: [],
       interfaceTypes: [],
+      importedEnvTypes: [],
       objectTypes: [
         {
           ...createObjectDefinition({ type: "MyType" }),
@@ -288,10 +287,10 @@ describe("Polywrap Schema Abi Transformations", () => {
       ],
     });
     const expected: Abi = {
-      envType: createEnvDefinition({}),
       enumTypes: [],
       interfaceTypes: [],
       importedEnumTypes: [],
+      importedEnvTypes: [],
       objectTypes: [
         {
           ...createObjectDefinition({ type: "MyType" }),

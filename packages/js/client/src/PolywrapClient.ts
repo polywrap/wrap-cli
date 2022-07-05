@@ -382,12 +382,8 @@ export class PolywrapClient implements Client {
   }
 
   @Tracer.traceMethod("PolywrapClient: subscribe")
-  public subscribe<
-    TData extends Record<string, unknown> = Record<string, unknown>,
-    TVariables extends Record<string, unknown> = Record<string, unknown>,
-    TUri extends Uri | string = string
-  >(
-    options: SubscribeOptions<TVariables, TUri, PolywrapClientConfig>
+  public subscribe<TData = unknown, TUri extends Uri | string = string>(
+    options: SubscribeOptions<TUri, PolywrapClientConfig>
   ): Subscription<TData> {
     const { contextId, shouldClearContext } = this._setContext(
       options.contextId,
@@ -397,11 +393,11 @@ export class PolywrapClient implements Client {
     const thisClient: PolywrapClient = this;
     const client = contextualizeClient(this, contextId);
 
-    const typedOptions: SubscribeOptions<TVariables, Uri> = {
+    const typedOptions: SubscribeOptions<Uri> = {
       ...options,
       uri: this._toUri(options.uri),
     };
-    const { uri, query, variables, frequency: freq } = typedOptions;
+    const { uri, method, args, config, frequency: freq } = typedOptions;
 
     // calculate interval between invokes, in milliseconds, 1 min default value
     /* eslint-disable prettier/prettier */
@@ -425,7 +421,7 @@ export class PolywrapClient implements Client {
         }
         subscription.isActive = false;
       },
-      async *[Symbol.asyncIterator](): AsyncGenerator<QueryResult<TData>> {
+      async *[Symbol.asyncIterator](): AsyncGenerator<InvokeResult<TData>> {
         let timeout: NodeJS.Timeout | undefined = undefined;
         subscription.isActive = true;
 
@@ -451,10 +447,11 @@ export class PolywrapClient implements Client {
                 break;
               }
 
-              const result: QueryResult<TData> = await client.query({
+              const result: InvokeResult<TData> = await client.invoke({
                 uri: uri,
-                query: query,
-                variables: variables,
+                method: method,
+                args: args,
+                config: config,
                 contextId,
               });
 
@@ -839,12 +836,8 @@ const contextualizeClient = (
         ): Promise<InvokeResult<TData>> => {
           return client.invoke({ ...options, contextId });
         },
-        subscribe: <
-          TData extends Record<string, unknown> = Record<string, unknown>,
-          TVariables extends Record<string, unknown> = Record<string, unknown>,
-          TUri extends Uri | string = string
-        >(
-          options: SubscribeOptions<TVariables, TUri>
+        subscribe: <TData = unknown, TUri extends Uri | string = string>(
+          options: SubscribeOptions<TUri>
         ): Subscription<TData> => {
           return client.subscribe({ ...options, contextId });
         },
