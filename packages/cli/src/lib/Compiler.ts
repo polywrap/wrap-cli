@@ -341,6 +341,19 @@ export class Compiler {
     );
   }
 
+  private async createWrapManifest(
+    name: string,
+    type: "interface" | "wasm",
+    abi: Abi
+  ): Promise<WrapManifest> {
+    return {
+      abi: { ...abi },
+      name: name,
+      type,
+      version: "0.0.1"
+    };
+  }
+
   private async _outputWrapManifest(
     state: CompilerState,
     quiet = false
