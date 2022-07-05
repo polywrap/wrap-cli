@@ -241,7 +241,7 @@ export async function buildAndDeployWrapper({
   );
 
   // create a new ENS domain
-  const wrapperEns = ensName ?? `${generateName(true)}.eth`;
+  const wrapperEns = ensName ?? `${generateName()}.eth`;
 
   await buildWrapper(wrapperAbsPath);
 
@@ -318,10 +318,7 @@ export async function buildAndDeployWrapper({
 
   // manually configure manifests
 
-  const {
-    __type,
-    ...polywrapManifest
-  } = deserializePolywrapManifest(
+  const { __type, ...polywrapManifest } = deserializePolywrapManifest(
     fs.readFileSync(manifestPath, "utf-8")
   );
 

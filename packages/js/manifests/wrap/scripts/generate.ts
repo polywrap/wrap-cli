@@ -145,7 +145,7 @@ async function generateFormatTypes() {
 };
 
 generateFormatTypes()
-  .then(text => {
+  .then(() => {
     process.exit();
   })
   .catch(err => {

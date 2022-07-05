@@ -190,7 +190,7 @@ export class Compiler {
       compilerOverrides,
     };
 
-    this._validateState(state);
+    await this._validateState(state);
 
     this._state = state;
     return this._state;

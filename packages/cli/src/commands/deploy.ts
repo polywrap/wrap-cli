@@ -1,5 +1,5 @@
 /* eslint-disable prefer-const */
-import {Command, Program} from "./types";
+import { Command, Program } from "./types";
 import {
   defaultPolywrapManifest,
   DeployerHandler,
@@ -9,12 +9,12 @@ import {
   PolywrapProject,
 } from "../lib";
 
-import {DeployManifest} from "@polywrap/polywrap-manifest-types-js";
+import { DeployManifest } from "@polywrap/polywrap-manifest-types-js";
 import fs from "fs";
 import nodePath from "path";
-import {print} from "gluegun";
-import {Uri} from "@polywrap/core-js";
-import {validate} from "jsonschema";
+import { print } from "gluegun";
+import { Uri } from "@polywrap/core-js";
+import { validate } from "jsonschema";
 
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 const pathStr = intlMsg.commands_deploy_options_o_path();

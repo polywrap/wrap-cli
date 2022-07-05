@@ -24,7 +24,7 @@ describe("IPFS Plugin", () => {
       wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/simple-storage`,
       ipfsProvider: providers.ipfs,
       ethereumProvider: providers.ethereum,
-      ensName: "simple.storage.eth"
+      ensName: "simple-storage.eth"
     });
 
     wrapperIpfsCid = ipfsCid;

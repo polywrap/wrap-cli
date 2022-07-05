@@ -7,7 +7,7 @@ export * from "./output";
 import {
   PolywrapManifest,
   PluginManifest,
-  AppManifest
+  AppManifest,
 } from "@polywrap/polywrap-manifest-types-js";
 
 export type AnyProjectManifest =

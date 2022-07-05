@@ -1,8 +1,4 @@
-import {
-  displayPath,
-  withSpinner,
-  intlMsg,
-} from "../../";
+import { displayPath, withSpinner, intlMsg } from "../../";
 
 import {
   BuildManifest,
