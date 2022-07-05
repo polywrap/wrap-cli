@@ -43,7 +43,7 @@ export const parseOutput = (
       const errIdx = output.indexOf("Error: ");
 
       const id = output.substring(idIdx + 3, statusIdx - 1);
-      const status = output.substring(statusIdx + 9, errIdx - 1);
+      const status = output.substring(statusIdx + 8, errIdx - 1);
       const error =
         validationIdx !== -1
           ? output.substring(errIdx + 6, validationIdx - 1)
@@ -56,7 +56,7 @@ export const parseOutput = (
       return {
         id: id.replace(/\s/g, ""),
         status: status,
-        error: JSON.parse(error),
+        error: error,
         validation: validation,
       };
     }
