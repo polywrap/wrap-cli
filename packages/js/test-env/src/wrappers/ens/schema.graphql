@@ -308,11 +308,6 @@ type Module @imports(
   ): CreateSubdomainInOpenDomainAndSetContentHashResponse
 }
 
-type TxOverrides {
-  gasPrice: BigInt
-  gasLimit: BigInt
-}
-
 type ConfigureOpenDomainResponse {
   fifsRegistrarAddress: String!
   registerOpenDomainTxReceipt: Ethereum_TxResponse!
@@ -334,6 +329,11 @@ type RegistrationResult {
   name: String!
   didRegister: Boolean!
   tx: Ethereum_TxResponse
+}
+
+type TxOverrides {
+  gasPrice: BigInt
+  gasLimit: BigInt
 }
 
 ### Imported Modules START ###
