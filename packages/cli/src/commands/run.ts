@@ -115,7 +115,7 @@ const _run = async (workflowPath: string, options: WorkflowCommandOptions) => {
 
   if (outputFile) {
     const outputFileExt = path.extname(outputFile).substring(1);
-    if (!outputFileExt) throw new Error("Require output file extention");
+    if (!outputFileExt) throw new Error("Require output file extension");
     switch (outputFileExt) {
       case "yaml":
       case "yml":
