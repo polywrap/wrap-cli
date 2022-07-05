@@ -1,0 +1,8 @@
+format: 0.0.1-prealpha.9
+name: template-wasm-rs
+language: wasm/rust
+build: ./polywrap.build.yaml
+meta: ./polywrap.meta.yaml
+deploy: ./polywrap.deploy.yaml
+module: ./Cargo.toml
+schema: ./src/schema.graphql

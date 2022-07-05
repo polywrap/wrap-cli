@@ -1,0 +1,5 @@
+query {
+  simpleMethod(
+    arg: $arg
+  )
+}

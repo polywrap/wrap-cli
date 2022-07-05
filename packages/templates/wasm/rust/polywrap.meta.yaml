@@ -1,0 +1,18 @@
+format: 0.0.1-prealpha.3
+displayName: Polywrap Wasm Wrapper Template in Rust
+subtext: A template for starting a Polywrap Wasm wrapper
+description: A Polywrap Wasm wrapper written in Rust.
+tags:
+  - polywrap
+  - web3
+repository: https://github.com/test/test
+icon: ./meta/icon.png
+links:
+  - name: test link
+    icon: ./meta/link.svg
+    url: http://link.com/path
+queries:
+  - name: test query
+    description: test description
+    query: ./meta/test.graphql
+    vars: ./meta/test.json

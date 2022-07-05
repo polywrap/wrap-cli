@@ -1,0 +1,7 @@
+type Module {
+    simpleMethod(arg: String!): SimpleResult!
+}
+
+type SimpleResult {
+    value: String!
+}
