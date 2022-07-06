@@ -1,6 +1,6 @@
 {
   "name": "@polywrap/test-project",
-  "version": "0.0.1-prealpha.72",
+  "version": "0.1.0",
   "license": "MIT",
   "private": true,
   "scripts": {
@@ -10,7 +10,7 @@
     "test:env:down": "polywrap infra down --modules=eth-ens-ipfs"
   },
   "dependencies": {
-    "@polywrap/wasm-as": "0.0.1-prealpha.90"
+    "@polywrap/wasm-as": "0.1.0"
   },
   "devDependencies": {
     "assemblyscript": "0.19.5",
