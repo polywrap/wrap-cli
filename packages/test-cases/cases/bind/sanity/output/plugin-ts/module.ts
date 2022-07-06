@@ -18,6 +18,8 @@ export interface Args_moduleMethod extends Record<string, unknown> {
   optEnumArray?: Array<Types.CustomEnum | null> | null;
   map: Map<Types.String, Types.Int>;
   mapOfArr: Map<Types.String, Array<Types.Int>>;
+  mapOfObj: Map<Types.String, Types.AnotherType>;
+  mapOfArrOfObj: Map<Types.String, Array<Types.AnotherType>>;
 }
 
 export interface Args_objectMethod extends Record<string, unknown> {

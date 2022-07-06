@@ -87,7 +87,7 @@ export function toGraphQL(def: GenericDefinition, prefixed = false): string {
         );
       }
       return applyRequired(
-        `Map<${toGraphQL(map.key, prefixed)}, ${anyToGraphQL(map, prefixed)}>`,
+        `Map<${toGraphQL(map.key, prefixed)}, ${toGraphQL(map.value, prefixed)}>`,
         map.required
       );
     }
