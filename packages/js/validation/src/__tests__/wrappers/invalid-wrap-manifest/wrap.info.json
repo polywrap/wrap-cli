@@ -1,0 +1,15 @@
+{
+  "name": "cool_interface",
+  "version": "0.1.0",
+  "abi": {
+    "objectTypes": [],
+    "enumTypes": [],
+    "interfaceTypes": [],
+    "importedObjectTypes": [],
+    "importedModuleTypes": [],
+    "importedEnumTypes": [],
+    "envType": {
+      "kind": 65536
+    }
+  }
+}

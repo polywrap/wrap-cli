@@ -12,7 +12,7 @@
     "version": {
       "description": "WRAP Standard Version",
       "type": "string",
-      "const": "0.0.1"
+      "const": "0.1.0"
     },
     "type": {
       "description" : "Wrapper Package Type",

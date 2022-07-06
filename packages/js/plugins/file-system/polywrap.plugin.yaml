@@ -1,4 +1,4 @@
-format: 0.0.1-prealpha.3
+format: 0.1.0
 language: plugin/typescript
 name: FileSystem
 module: ./src/index.ts
