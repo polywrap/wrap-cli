@@ -4,9 +4,12 @@ import {
   GetFileOptions,
   GetManifestOptions,
   InvokeOptions,
-  InvokeResult,
+  Invocable,
+  Invoker,
+  InvocableResult,
 } from ".";
-import { AnyManifestArtifact, ManifestArtifactType } from "../manifest";
+
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
 /**
  * The Wrapper definition, which can be used to spawn
@@ -14,7 +17,7 @@ import { AnyManifestArtifact, ManifestArtifactType } from "../manifest";
  * this class may do things like caching WASM bytecode, spawning
  * worker threads, or indexing into resolvers to find the requested method.
  */
-export abstract class Wrapper {
+export abstract class Wrapper implements Invocable {
   /**
    * Invoke the Wrapper based on the provided [[InvokeOptions]]
    *
@@ -24,28 +27,8 @@ export abstract class Wrapper {
    */
   public abstract invoke(
     options: InvokeOptions<Uri>,
-    client: Client
-  ): Promise<InvokeResult<unknown>>;
-
-  /**
-   * Get the Wrapper's schema
-   *
-   * @param client The client instance the schema.
-   */
-  public abstract getSchema(client: Client): Promise<string>;
-
-  /**
-   * Get the Wrapper's manifest
-   *
-   * @param options Configuration options for manifest retrieval
-   * @param client The client instance requesting the manifest.
-   */
-  public abstract getManifest<
-    TManifestArtifactType extends ManifestArtifactType
-  >(
-    options: GetManifestOptions<TManifestArtifactType>,
-    client: Client
-  ): Promise<AnyManifestArtifact<TManifestArtifactType>>;
+    invoker: Invoker
+  ): Promise<InvocableResult<unknown>>;
 
   /**
    * Get a file from the Wrapper package.
@@ -57,8 +40,26 @@ export abstract class Wrapper {
   public abstract getFile(
     options: GetFileOptions,
     client: Client
-  ): Promise<ArrayBuffer | string>;
+  ): Promise<Uint8Array | string>;
+
+  /**
+   * Get a manifest from the Wrapper package.
+   * Not implemented for plugin wrappers.
+   *
+   * @param options Configuration options for manifest retrieval
+   * @param client The client instance requesting the manifest.
+   */
+  public abstract getManifest(
+    options: GetManifestOptions,
+    client: Client
+  ): Promise<WrapManifest>;
+
+  /**
+   * Get the Wrapper's schema
+   *
+   * @param client The client instance the schema.
+   */
+  public abstract getSchema(client: Client): Promise<string>;
 }
 
-/** Cache of Wrapper definitions, mapping the Wrapper's URI to its definition */
 export type WrapperCache = Map<string, Wrapper>;

@@ -12,11 +12,13 @@ import {
   FileLock,
   parseWasmManifestFileOption,
   parseBuildOutputDirOption,
+  parseClientConfigOption,
 } from "../lib";
 
 import { print } from "gluegun";
 import path from "path";
 import readline from "readline";
+import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 const pathStr = intlMsg.commands_build_options_o_path();
@@ -24,6 +26,7 @@ const pathStr = intlMsg.commands_build_options_o_path();
 type BuildCommandOptions = {
   manifestFile: string;
   outputDir: string;
+  clientConfig: Partial<PolywrapClientConfig>;
   watch?: boolean;
   verbose?: boolean;
 };
@@ -44,6 +47,10 @@ export const build: Command = {
         `-o, --output-dir <${pathStr}>`,
         `${intlMsg.commands_build_options_o()}`
       )
+      .option(
+        `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
+        `${intlMsg.commands_common_options_config()}`
+      )
       .option(`-w, --watch`, `${intlMsg.commands_build_options_w()}`)
       .option(`-v, --verbose`, `${intlMsg.commands_build_options_v()}`)
       .action(async (options) => {
@@ -53,6 +60,10 @@ export const build: Command = {
             options.manifestFile,
             undefined
           ),
+          clientConfig: await parseClientConfigOption(
+            options.clientConfig,
+            undefined
+          ),
           outputDir: parseBuildOutputDirOption(options.outputDir, undefined),
         });
       });
@@ -60,7 +71,10 @@ export const build: Command = {
 };
 
 async function run(options: BuildCommandOptions) {
-  const { watch, verbose, manifestFile, outputDir } = options;
+  const { watch, verbose, manifestFile, outputDir, clientConfig } = options;
+
+  // Get Client
+  const client = new PolywrapClient(clientConfig);
 
   // Ensure docker is installed
   if (!isDockerInstalled()) {
@@ -82,6 +96,7 @@ async function run(options: BuildCommandOptions) {
 
   const schemaComposer = new SchemaComposer({
     project,
+    client,
   });
 
   const compiler = new Compiler({

@@ -1,14 +1,14 @@
 import {
-  TypeInfo,
-  createTypeInfo,
+  Abi,
+  createAbi,
   createObjectDefinition,
   createObjectPropertyDefinition,
   createArrayPropertyDefinition,
   createObjectRef,
-} from "../../../../schema/parse/src/typeInfo";
+} from "../../../../schema/parse/src/abi";
 
-export const typeInfo: TypeInfo = {
-  ...createTypeInfo(),
+export const abi: Abi = {
+  ...createAbi(),
   objectTypes: [
     {
       ...createObjectDefinition({ type: "Object" }),

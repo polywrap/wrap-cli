@@ -1,5 +1,5 @@
 import { intlMsg } from "../intl";
-import { defaultPolywrapManifest } from "../manifest";
+import { defaultPolywrapManifest } from "../";
 import { resolvePathIfExists } from "../system";
 
 export function parseWasmManifestFileOption(

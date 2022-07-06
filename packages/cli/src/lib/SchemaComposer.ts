@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-empty-function */
 
-import { Project, AnyManifest, getSimpleClient } from "./";
+import { Project, AnyProjectManifest } from "./";
 
 import { Uri, PolywrapClient } from "@polywrap/client-js";
 import {
@@ -16,14 +16,8 @@ import path from "path";
 import * as gluegun from "gluegun";
 
 export interface SchemaComposerConfig {
-  project: Project<AnyManifest>;
-
-  // TODO: add this to the project configuration
-  //       and make it configurable
-  ensAddress?: string;
-  ethProvider?: string;
-  ipfsProvider?: string;
-  client?: PolywrapClient;
+  project: Project<AnyProjectManifest>;
+  client: PolywrapClient;
 }
 
 export class SchemaComposer {
@@ -31,7 +25,7 @@ export class SchemaComposer {
   private _composerOutput: ComposerOutput | undefined;
 
   constructor(private _config: SchemaComposerConfig) {
-    this._client = this._config.client ?? getSimpleClient(this._config);
+    this._client = this._config.client;
   }
 
   public async getComposedSchemas(
@@ -72,7 +66,6 @@ export class SchemaComposer {
     options.schemas.push(schemaFile);
 
     this._composerOutput = await composeSchema(options);
-
     return this._composerOutput;
   }
 

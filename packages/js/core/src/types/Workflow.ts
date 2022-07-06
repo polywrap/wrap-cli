@@ -23,6 +23,17 @@ export type Workflow<TUri extends Uri | string = string> = {
   jobs: Job<TUri>;
 };
 
+export enum JobStatus {
+  SUCCEED,
+  FAILED,
+  SKIPPED,
+}
+
+export interface JobResult<TData extends unknown = unknown>
+  extends InvokeResult<TData> {
+  status: JobStatus;
+}
+
 export interface RunOptions<
   TData extends Record<string, unknown> = Record<string, unknown>,
   TUri extends Uri | string = string
@@ -32,11 +43,7 @@ export interface RunOptions<
   contextId?: string;
   ids?: string[];
 
-  onExecution?(
-    id: string,
-    data?: InvokeResult<TData>["data"],
-    error?: InvokeResult<TData>["error"]
-  ): MaybeAsync<void>;
+  onExecution?(id: string, jobResult: JobResult<TData>): MaybeAsync<void>;
 }
 
 export interface WorkflowHandler {

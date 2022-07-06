@@ -1,35 +1,34 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { ProjectConfig, Project } from ".";
+import { Project, ProjectConfig } from ".";
 import {
-  loadPolywrapManifest,
-  loadBuildManifest,
-  loadMetaManifest,
-  generateDockerImageName,
-  createUUID,
-  PolywrapManifestLanguage,
-  polywrapManifestLanguages,
   isPolywrapManifestLanguage,
-  outputManifest,
-  intlMsg,
+  loadBuildManifest,
   loadDeployManifest,
   loadDeployManifestExt,
+  loadMetaManifest,
+  loadPolywrapManifest,
+  outputManifest,
+  PolywrapManifestLanguage,
+  polywrapManifestLanguages,
   polywrapManifestLanguageToBindLanguage,
-  resetDir,
-} from "..";
+} from "./manifests";
 import { Deployer } from "../deploy";
+import { generateDockerImageName, resetDir } from "../system";
+import { createUUID } from "../helpers";
+import { intlMsg } from "../intl";
 
 import {
   BuildManifest,
-  PolywrapManifest,
-  MetaManifest,
   DeployManifest,
-} from "@polywrap/core-js";
+  MetaManifest,
+  PolywrapManifest,
+} from "@polywrap/polywrap-manifest-types-js";
 import { normalizePath } from "@polywrap/os-js";
-import { bindSchema, BindOutput, BindOptions } from "@polywrap/schema-bind";
+import { BindOptions, BindOutput, bindSchema } from "@polywrap/schema-bind";
 import { ComposerOutput } from "@polywrap/schema-compose";
-import { TypeInfo } from "@polywrap/schema-parse";
+import { Abi } from "@polywrap/schema-parse";
 import regexParser from "regex-parser";
 import path from "path";
 import { Schema as JsonSchema } from "jsonschema";
@@ -44,13 +43,6 @@ export interface PolywrapProjectConfig extends ProjectConfig {
 }
 
 export class PolywrapProject extends Project<PolywrapManifest> {
-  private _polywrapManifest: PolywrapManifest | undefined;
-  private _buildManifest: BuildManifest | undefined;
-  private _deployManifest: DeployManifest | undefined;
-  private _metaManifest: MetaManifest | undefined;
-  private _defaultBuildImageCached = false;
-  private _defaultDeployModulesCached = false;
-
   public static cacheLayout = {
     root: "wasm/",
     buildDir: "build/",
@@ -61,6 +53,12 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     deployDir: "deploy/",
     deployModulesDir: "deploy/modules/",
   };
+  private _polywrapManifest: PolywrapManifest | undefined;
+  private _buildManifest: BuildManifest | undefined;
+  private _deployManifest: DeployManifest | undefined;
+  private _metaManifest: MetaManifest | undefined;
+  private _defaultBuildImageCached = false;
+  private _defaultDeployModulesCached = false;
 
   constructor(protected _config: PolywrapProjectConfig) {
     super(_config, {
@@ -168,7 +166,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
 
     const options: BindOptions = {
       projectName: manifest.name,
-      typeInfo: composerOutput.typeInfo as TypeInfo,
+      abi: composerOutput.abi as Abi,
       schema: composerOutput.schema as string,
       outputDirAbs: moduleDirectory,
       bindLanguage,

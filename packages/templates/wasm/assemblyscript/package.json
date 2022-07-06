@@ -2,7 +2,7 @@
   "name": "templates-wrapper-assemblyscript",
   "description": "Polywrap Assemblyscript Template",
   "private": true,
-  "version": "0.0.1-prealpha.89",
+  "version": "0.1.0",
   "scripts": {
     "build": "yarn build:contract && yarn build:polywrap",
     "build:polywrap": "npx polywrap build",
@@ -10,25 +10,26 @@
     "test:env:up": "npx polywrap infra up --modules=eth-ens-ipfs",
     "test:env:down": "npx polywrap infra down --modules=eth-ens-ipfs",
     "deploy": "npx polywrap deploy",
+    "test": "yarn test:e2e && yarn test:workflow",
     "test:e2e": "yarn build && yarn test:e2e:codegen && jest --passWithNoTests --runInBand --verbose",
-    "test:e2e:codegen": "npx polywrap app codegen -m ./src/__tests__/types/polywrap.app.yaml -c ./src/__tests__/types/wrap",
+    "test:e2e:codegen": "npx polywrap app codegen -m ./src/__tests__/types/polywrap.app.yaml -g ./src/__tests__/types/wrap",
     "test:workflow": "yarn build && yarn test:env:up && sleep 5 && npx polywrap run ./workflows/e2e.yaml && yarn test:env:down"
   },
   "devDependencies": {
-    "@polywrap/ethereum-plugin-js": "0.0.1-prealpha.89",
+    "@polywrap/ethereum-plugin-js": "0.1.0",
     "@types/jest": "27.0.3",
     "@types/node": "16.11.11",
     "@types/prettier": "2.6.0",
     "assemblyscript": "0.19.1",
     "ethers": "5.0.7",
     "jest": "26.6.3",
-    "polywrap": "0.0.1-prealpha.89",
+    "polywrap": "0.1.0",
     "solc": "0.8.3",
     "ts-jest": "26.5.4",
     "ts-node": "8.10.2",
     "typescript": "4.0.7"
   },
   "dependencies": {
-    "@polywrap/wasm-as": "0.0.1-prealpha.89"
+    "@polywrap/wasm-as": "0.1.0"
   }
 }

@@ -13,7 +13,7 @@ import {
   isAppManifestLanguage,
   appManifestLanguageToBindLanguage,
   Project,
-  AnyManifest,
+  AnyProjectManifest,
   SchemaComposer,
   intlMsg,
   resetDir,
@@ -29,7 +29,7 @@ import Mustache from "mustache";
 
 export interface CodeGeneratorConfig {
   codegenDirAbs: string;
-  project: Project<AnyManifest>;
+  project: Project<AnyProjectManifest>;
   schemaComposer: SchemaComposer;
   customScript?: string;
   mustacheView?: Record<string, unknown>;
@@ -87,11 +87,11 @@ export class CodeGenerator {
         throw Error(intlMsg.lib_codeGenerator_noComposedSchema());
       }
 
-      const typeInfo = composed.typeInfo;
+      const abi = composed.abi;
       this._schema = composed.schema;
 
-      if (!typeInfo) {
-        throw Error(intlMsg.lib_codeGenerator_typeInfoMissing());
+      if (!abi) {
+        throw Error(intlMsg.lib_codeGenerator_abiMissing());
       }
 
       if (this._config.customScript) {
@@ -117,7 +117,7 @@ export class CodeGenerator {
 
         const binding = await generateBinding({
           projectName: await project.getName(),
-          typeInfo,
+          abi,
           schema: this._schema || "",
           outputDirAbs: codegenDirAbs,
           bindLanguage,
@@ -128,7 +128,7 @@ export class CodeGenerator {
           codegenDirAbs,
           binding.output,
           (templatePath: string) =>
-            this._generateTemplate(templatePath, typeInfo, spinner)
+            this._generateTemplate(templatePath, abi, spinner)
         );
       } else {
         const binding = await project.generateSchemaBindings(

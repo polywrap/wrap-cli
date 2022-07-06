@@ -5,19 +5,13 @@ import {
   stopTestEnvironment,
   providers
 } from "@polywrap/test-env-js";
+import { msgpackDecode } from "@polywrap/msgpack-js"
 import {
   Uri,
   createPolywrapClient,
   PolywrapClientConfig,
   PluginModule,
-  Subscription,
-  PolywrapManifest,
-  BuildManifest,
-  MetaManifest,
-  deserializePolywrapManifest,
-  deserializeBuildManifest,
-  deserializeMetaManifest,
-  msgpackDecode
+  Subscription
 } from "../..";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import fs from "fs";
@@ -29,8 +23,8 @@ describe("wasm-wrapper", () => {
   let ethProvider: string;
   let ensAddress: string;
 
-  const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-storage`
-  const wrapperUri = `fs/${wrapperPath}/build`
+  const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-storage`;
+  const wrapperUri = `fs/${wrapperPath}/build`;
 
   beforeAll(async () => {
     await initTestEnvironment();
@@ -113,13 +107,13 @@ describe("wasm-wrapper", () => {
           networkNameOrChainId: "testnet",
         },
       },
-      noDecode: true,
+      encodeResult: true,
     });
 
     expect(result.error).toBeFalsy();
     expect(result.data).toBeTruthy();
-    expect(result.data instanceof ArrayBuffer).toBeTruthy();
-    expect(msgpackDecode(result.data as ArrayBuffer)).toContain("0x");
+    expect(result.data instanceof Uint8Array).toBeTruthy();
+    expect(msgpackDecode(result.data as Uint8Array)).toContain("0x");
   });
 
   it("should invoke wrapper with custom redirects", async () => {
@@ -234,81 +228,28 @@ describe("wasm-wrapper", () => {
     expect(getFail.data?.getData).toBeFalsy();
   });
 
-  test("getManifest -- polywrap manifest, build manifest, meta manifest", async () => {
-    const client = await getClient();
-
-    const actualManifestStr: string = fs.readFileSync(
-      `${GetPathToTestWrappers()}/wasm-as/simple-storage/build/polywrap.json`,
-      "utf8"
-    );
-    const actualManifest: PolywrapManifest = deserializePolywrapManifest(
-      actualManifestStr
-    );
-    const manifest: PolywrapManifest = await client.getManifest(wrapperUri, {
-      type: "polywrap",
-    });
-    expect(manifest).toStrictEqual(actualManifest);
-
-    const actualBuildManifestStr: string = fs.readFileSync(
-      `${GetPathToTestWrappers()}/wasm-as/simple-storage/build/polywrap.build.json`,
-      "utf8"
-    );
-    const actualBuildManifest: BuildManifest = deserializeBuildManifest(
-      actualBuildManifestStr
-    );
-    const buildManifest: BuildManifest = await client.getManifest(wrapperUri, {
-      type: "build",
-    });
-    expect(buildManifest).toStrictEqual(actualBuildManifest);
-
-    const actualMetaManifestStr: string = fs.readFileSync(
-      `${GetPathToTestWrappers()}/wasm-as/simple-storage/build/polywrap.meta.json`,
-      "utf8"
-    );
-    const actualMetaManifest: MetaManifest = deserializeMetaManifest(
-      actualMetaManifestStr
-    );
-    const metaManifest: MetaManifest = await client.getManifest(wrapperUri, {
-      type: "meta",
-    });
-    expect(metaManifest).toStrictEqual(actualMetaManifest);
-  });
-
   test("getFile -- simple-storage polywrap", async () => {
     const client = await getClient();
-
-    const manifest: PolywrapManifest = await client.getManifest(wrapperUri, {
-      type: "polywrap",
-    });
+    const expectedSchema = await fs.promises.readFile(
+      `${wrapperPath}/build/schema.graphql`,
+      "utf8"
+    );
 
     const fileStr: string = (await client.getFile(wrapperUri, {
-      path: manifest.schema as string,
+      path: "./schema.graphql",
       encoding: "utf8",
     })) as string;
-    expect(fileStr).toContain(`getData(
-    address: String!
-    connection: Ethereum_Connection
-  ): Int!
-`);
 
-    const fileBuffer: ArrayBuffer = (await client.getFile(wrapperUri, {
-      path: manifest.schema!,
-    })) as ArrayBuffer;
+    expect(fileStr).toEqual(expectedSchema);
+
+    const fileBuffer: Uint8Array = (await client.getFile(wrapperUri, {
+      path: "./schema.graphql",
+    })) as Uint8Array;
     const decoder = new TextDecoder("utf8");
     const text = decoder.decode(fileBuffer);
-    expect(text).toContain(`getData(
-    address: String!
-    connection: Ethereum_Connection
-  ): Int!
-`);
+    
+    expect(text).toEqual(expectedSchema);
 
-    await expect(() =>
-      client.getManifest(new Uri("wrap://ens/ipfs.polywrap.eth"), {
-        type: "polywrap",
-      })
-    ).rejects.toThrow(
-      "client.getManifest(...) is not implemented for Plugins."
-    );
     await expect(() =>
       client.getFile(new Uri("wrap://ens/ipfs.polywrap.eth"), {
         path: "./index.js",
@@ -367,31 +308,21 @@ describe("wasm-wrapper", () => {
       });
     }, 4000);
 
-    const getSubscription: Subscription<{
-      getData: number;
-    }> = client.subscribe<{
-      getData: number;
-    }>({
+    const getSubscription: Subscription<number> = client.subscribe<number>({
       uri: wrapperUri,
-      query: `
-        query {
-          getData(
-            address: $address
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-        }
-      `,
-      variables: {
-        address,
+      method: "getData",
+      args: {
+        address: address,
+        connection: {
+          networkNameOrChainId: "testnet",
+        },
       },
       frequency: { ms: 4500 },
     });
 
     for await (let query of getSubscription) {
-      expect(query.errors).toBeFalsy();
-      const val = query.data?.getData;
+      expect(query.error).toBeFalsy();
+      const val = query.data;
       if (val !== undefined) {
         results.push(val);
         if (val >= 2) {
@@ -455,32 +386,22 @@ describe("wasm-wrapper", () => {
       });
     }, 4000);
 
-    const getSubscription: Subscription<{
-      getData: number;
-    }> = client.subscribe<{
-      getData: number;
-    }>({
+    const getSubscription: Subscription<number> = client.subscribe<number>({
       uri: wrapperUri,
-      query: `
-          query {
-            getData(
-              address: $address
-              connection: {
-                networkNameOrChainId: "testnet"
-              }
-            )
-          }
-        `,
-      variables: {
-        address,
+      method: "getData",
+      args: {
+        address: address,
+        connection: {
+          networkNameOrChainId: "testnet",
+        },
       },
       frequency: { ms: 4500 },
     });
 
     new Promise(async () => {
       for await (let query of getSubscription) {
-        expect(query.errors).toBeFalsy();
-        const val = query.data?.getData;
+        expect(query.error).toBeFalsy();
+        const val = query.data;
         if (val !== undefined) {
           results.push(val);
           if (val >= 2) {

@@ -30,7 +30,7 @@ COPY ./package.json ./package.json
 # Build the module at src
 RUN ./node_modules/.bin/asc src/wrap/entry.ts \
     --path ./node_modules \
-    --outFile ./build/module.wasm \
+    --outFile ./build/wrap.wasm \
     --use abort=src/wrap/entry/wrapAbort \
     --optimize --debug --importMemory \
     --runtime stub \

@@ -9,15 +9,16 @@ import {
   Env,
   GetEnvsOptions,
   GetFileOptions,
+  GetManifestOptions,
   GetImplementationsOptions,
   GetInterfacesOptions,
-  GetManifestOptions,
   GetPluginsOptions,
   GetRedirectsOptions,
   GetSchemaOptions,
   InterfaceImplementations,
   InvokeOptions,
   InvokeResult,
+  InvokerOptions,
   PluginRegistration,
   QueryOptions,
   QueryResult,
@@ -28,8 +29,6 @@ import {
   createQueryDocument,
   getImplementations,
   parseQuery,
-  ManifestArtifactType,
-  AnyManifestArtifact,
   ResolveUriOptions,
   ResolveUriResult,
   UriResolver,
@@ -48,6 +47,8 @@ import {
   PluginPackage,
   RunOptions,
 } from "@polywrap/core-js";
+import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Tracer } from "@polywrap/tracing-js";
 
 export interface PolywrapClientConfig<TUri extends Uri | string = string>
@@ -181,13 +182,10 @@ export class PolywrapClient implements Client {
   }
 
   @Tracer.traceMethod("PolywrapClient: getManifest")
-  public async getManifest<
-    TUri extends Uri | string,
-    TManifestArtifactType extends ManifestArtifactType
-  >(
+  public async getManifest<TUri extends Uri | string>(
     uri: TUri,
-    options: GetManifestOptions<TManifestArtifactType>
-  ): Promise<AnyManifestArtifact<TManifestArtifactType>> {
+    options: GetManifestOptions
+  ): Promise<WrapManifest> {
     const wrapper = await this._loadWrapper(this._toUri(uri), options);
     const client = contextualizeClient(this, options.contextId);
     return await wrapper.getManifest(options, client);
@@ -197,7 +195,7 @@ export class PolywrapClient implements Client {
   public async getFile<TUri extends Uri | string>(
     uri: TUri,
     options: GetFileOptions
-  ): Promise<string | ArrayBuffer> {
+  ): Promise<string | Uint8Array> {
     const wrapper = await this._loadWrapper(this._toUri(uri), options);
     const client = contextualizeClient(this, options.contextId);
     return await wrapper.getFile(options, client);
@@ -309,14 +307,14 @@ export class PolywrapClient implements Client {
 
   @Tracer.traceMethod("PolywrapClient: invoke")
   public async invoke<TData = unknown, TUri extends Uri | string = string>(
-    options: InvokeOptions<TUri, PolywrapClientConfig>
+    options: InvokerOptions<TUri, PolywrapClientConfig>
   ): Promise<InvokeResult<TData>> {
     const { contextId, shouldClearContext } = this._setContext(
       options.contextId,
       options.config
     );
 
-    let result: InvokeResult<TData>;
+    let error: Error | undefined;
 
     try {
       const typedOptions: InvokeOptions<Uri> = {
@@ -326,19 +324,39 @@ export class PolywrapClient implements Client {
       };
 
       const wrapper = await this._loadWrapper(typedOptions.uri, { contextId });
-
-      result = (await wrapper.invoke(
+      const invocableResult = await wrapper.invoke(
         typedOptions,
         contextualizeClient(this, contextId)
-      )) as TData;
-    } catch (error) {
-      result = { error };
+      );
+
+      if (invocableResult.data !== undefined) {
+        if (options.encodeResult && !invocableResult.encoded) {
+          return {
+            // TODO: if options.encodeResult, fix return type to Uint8Array
+            data: (msgpackEncode(invocableResult.data) as unknown) as TData,
+          };
+        } else if (invocableResult.encoded && !options.encodeResult) {
+          return {
+            // TODO: if result.encoded, fix return type to Uint8Array
+            data: msgpackDecode(invocableResult.data as Uint8Array) as TData,
+          };
+        } else {
+          return {
+            data: invocableResult.data as TData,
+          };
+        }
+      } else {
+        error = invocableResult.error;
+      }
+    } catch (e) {
+      error = e;
     }
 
     if (shouldClearContext) {
       this._clearContext(contextId);
     }
-    return result;
+
+    return { error };
   }
 
   @Tracer.traceMethod("PolywrapClient: run")
@@ -358,12 +376,8 @@ export class PolywrapClient implements Client {
   }
 
   @Tracer.traceMethod("PolywrapClient: subscribe")
-  public subscribe<
-    TData extends Record<string, unknown> = Record<string, unknown>,
-    TVariables extends Record<string, unknown> = Record<string, unknown>,
-    TUri extends Uri | string = string
-  >(
-    options: SubscribeOptions<TVariables, TUri, PolywrapClientConfig>
+  public subscribe<TData = unknown, TUri extends Uri | string = string>(
+    options: SubscribeOptions<TUri, PolywrapClientConfig>
   ): Subscription<TData> {
     const { contextId, shouldClearContext } = this._setContext(
       options.contextId,
@@ -373,11 +387,11 @@ export class PolywrapClient implements Client {
     const thisClient: PolywrapClient = this;
     const client = contextualizeClient(this, contextId);
 
-    const typedOptions: SubscribeOptions<TVariables, Uri> = {
+    const typedOptions: SubscribeOptions<Uri> = {
       ...options,
       uri: this._toUri(options.uri),
     };
-    const { uri, query, variables, frequency: freq } = typedOptions;
+    const { uri, method, args, config, frequency: freq } = typedOptions;
 
     // calculate interval between invokes, in milliseconds, 1 min default value
     /* eslint-disable prettier/prettier */
@@ -401,7 +415,7 @@ export class PolywrapClient implements Client {
         }
         subscription.isActive = false;
       },
-      async *[Symbol.asyncIterator](): AsyncGenerator<QueryResult<TData>> {
+      async *[Symbol.asyncIterator](): AsyncGenerator<InvokeResult<TData>> {
         let timeout: NodeJS.Timeout | undefined = undefined;
         subscription.isActive = true;
 
@@ -427,10 +441,11 @@ export class PolywrapClient implements Client {
                 break;
               }
 
-              const result: QueryResult<TData> = await client.query({
+              const result: InvokeResult<TData> = await client.invoke({
                 uri: uri,
-                query: query,
-                variables: variables,
+                method: method,
+                args: args,
+                config: config,
                 contextId,
               });
 
@@ -475,7 +490,6 @@ export class PolywrapClient implements Client {
     if (!cacheRead) {
       uriResolvers = uriResolvers.filter((x) => x.name !== CacheResolver.name);
     }
-
     const { wrapper, uri: resolvedUri, uriHistory, error } = await resolveUri(
       this._toUri(uri),
       uriResolvers,
@@ -815,12 +829,8 @@ const contextualizeClient = (
         ): Promise<InvokeResult<TData>> => {
           return client.invoke({ ...options, contextId });
         },
-        subscribe: <
-          TData extends Record<string, unknown> = Record<string, unknown>,
-          TVariables extends Record<string, unknown> = Record<string, unknown>,
-          TUri extends Uri | string = string
-        >(
-          options: SubscribeOptions<TVariables, TUri>
+        subscribe: <TData = unknown, TUri extends Uri | string = string>(
+          options: SubscribeOptions<TUri>
         ): Subscription<TData> => {
           return client.subscribe({ ...options, contextId });
         },
@@ -845,26 +855,23 @@ const contextualizeClient = (
         ) => {
           return client.getEnvByUri(uri, { ...options, contextId });
         },
+        getFile: <TUri extends Uri | string>(
+          uri: TUri,
+          options: GetFileOptions
+        ) => {
+          return client.getFile(uri, options);
+        },
         getSchema: <TUri extends Uri | string>(
           uri: TUri,
           options: GetSchemaOptions = {}
         ) => {
           return client.getSchema(uri, { ...options, contextId });
         },
-        getManifest: <
-          TUri extends Uri | string,
-          TManifestArtifactType extends ManifestArtifactType
-        >(
+        getManifest: <TUri extends Uri | string>(
           uri: TUri,
-          options: GetManifestOptions<TManifestArtifactType>
+          options: GetManifestOptions
         ) => {
-          return client.getManifest(uri, { ...options, contextId });
-        },
-        getFile: <TUri extends Uri | string>(
-          uri: TUri,
-          options: GetFileOptions
-        ) => {
-          return client.getFile(uri, options);
+          return client.getManifest(uri, options);
         },
         getImplementations: <TUri extends Uri | string>(
           uri: TUri,

@@ -1,7 +1,0 @@
-format: 0.0.1-prealpha.9
-language: wasm/assemblyscript
-schema: ../schema.graphql
-file: ../query.ts
-not_accepted_field: not_accepted_field
-
-

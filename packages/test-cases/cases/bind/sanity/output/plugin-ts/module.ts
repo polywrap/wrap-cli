@@ -26,6 +26,13 @@ export interface Args_objectMethod extends Record<string, unknown> {
   optObjectArray?: Array<Types.AnotherType | null> | null;
 }
 
+export interface Args_optionalEnvMethod extends Record<string, unknown> {
+  object: Types.AnotherType;
+  optObject?: Types.AnotherType | null;
+  objectArray: Array<Types.AnotherType>;
+  optObjectArray?: Array<Types.AnotherType | null> | null;
+}
+
 export abstract class Module<
   TConfig
 > extends PluginModule<
@@ -40,6 +47,11 @@ export abstract class Module<
 
   abstract objectMethod(
     args: Args_objectMethod,
+    client: Client
+  ): MaybeAsync<Types.AnotherType | null>;
+
+  abstract optionalEnvMethod(
+    args: Args_optionalEnvMethod,
     client: Client
   ): MaybeAsync<Types.AnotherType | null>;
 }

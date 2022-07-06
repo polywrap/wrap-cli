@@ -1,8 +1,8 @@
-format: 0.0.1-prealpha.3
+format: 0.1.0
 name: Logger
 language: plugin/typescript
 module: ./src/index.ts
 schema: ./src/schema.graphql
 import_redirects:
   - uri: "ens/logger.core.polywrap.eth"
-    schema: ../../../core-interfaces/logger/src/schema.graphql
+    schema: ../../../interfaces/logger/src/schema.graphql

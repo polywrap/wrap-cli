@@ -1,6 +1,0 @@
-format: 0.0.1-prealpha.9
-name: EnvType
-language: wasm/assemblyscript
-build: ./polywrap.build.yaml
-schema: ./src/schema.graphql
-module: ./src/index.ts

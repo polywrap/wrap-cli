@@ -5,7 +5,7 @@ import {
   MapDefinition,
   ObjectDefinition,
   PropertyDefinition,
-} from "../../typeInfo";
+} from "../../abi";
 import { parseMapType } from "./map-utils";
 import { setPropertyType } from "./property-utils";
 
@@ -36,20 +36,15 @@ export function extractAnnotateDirective(
 
   if (node.directives) {
     for (const dir of node.directives) {
-      switch (dir.name.value) {
-        case "annotate": {
-          type = (dir.arguments?.find((arg) => arg.name.value === "type")
-            ?.value as StringValueNode).value;
-          if (!type) {
-            throw new Error(
-              `Annotate directive: ${node.name.value} has invalid arguments`
-            );
-          }
-          def = parseMapType(type, name);
-          break;
+      if (dir.name.value === "annotate") {
+        type = (dir.arguments?.find((arg) => arg.name.value === "type")
+          ?.value as StringValueNode).value;
+        if (!type) {
+          throw new Error(
+            `Annotate directive: ${node.name.value} has invalid arguments`
+          );
         }
-        default:
-          throw new Error(`Unknown directive ${dir.name.value}`);
+        def = parseMapType(type, name);
       }
     }
   }

@@ -7,7 +7,7 @@ import {
   validateOutput,
 } from "../lib";
 
-import { InvokeResult, Workflow } from "@polywrap/core-js";
+import { InvokeResult, Workflow, JobResult } from "@polywrap/core-js";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import path from "path";
 import yaml from "js-yaml";
@@ -32,8 +32,8 @@ export const run: Command = {
         intlMsg.commands_run_options_workflowScript()
       )
       .option(
-        `-c, --client-config <${intlMsg.commands_run_options_configPath()}> `,
-        `${intlMsg.commands_run_options_config()}`
+        `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
+        `${intlMsg.commands_common_options_config()}`
       )
       .option(
         `-v, --validate-script <${intlMsg.commands_run_options_validate()}>`,
@@ -85,13 +85,15 @@ const _run = async (workflowPath: string, options: WorkflowCommandOptions) => {
     workflow,
     config: clientConfig,
     ids: jobs,
-    onExecution: async (id: string, data: unknown, error: Error) => {
+    onExecution: async (id: string, jobResult: JobResult) => {
+      const { data, error } = jobResult;
+
       if (!quiet) {
         console.log("-----------------------------------");
         console.log(`ID: ${id}`);
       }
 
-      if (!quiet && data && data !== {}) {
+      if (!quiet && data) {
         console.log(`Data: ${JSON.stringify(data, null, 2)}`);
         console.log("-----------------------------------");
       }
@@ -113,7 +115,7 @@ const _run = async (workflowPath: string, options: WorkflowCommandOptions) => {
 
   if (outputFile) {
     const outputFileExt = path.extname(outputFile).substring(1);
-    if (!outputFileExt) throw new Error("Require output file extention");
+    if (!outputFileExt) throw new Error("Require output file extension");
     switch (outputFileExt) {
       case "yaml":
       case "yml":

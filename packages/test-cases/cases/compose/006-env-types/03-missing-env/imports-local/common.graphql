@@ -1,3 +1,0 @@
-type ClientEnv {
-  before: UInt32!
-}

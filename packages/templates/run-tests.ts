@@ -23,9 +23,9 @@ const languageTestCommands: Record<string, string[]> = {
     // "CI=false yarn build"
   ],
   "assemblyscript": [
-    // Uncomment when the wasm/as package has been redeployed
+    // Uncomment when env refactor is released
     // "yarn build",
-    // "yarn test:e2e"
+    // "yarn test:e2e",
     // "yarn test:workflow"
   ],
   "interface": [

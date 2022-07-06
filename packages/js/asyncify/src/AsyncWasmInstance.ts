@@ -44,9 +44,7 @@ export class AsyncWasmInstance {
 
   private constructor() {}
 
-  public static createMemory(config: { module: ArrayBuffer }): WasmMemory {
-    const bytecode = new Uint8Array(config.module);
-
+  public static createMemory(config: { module: Uint8Array }): WasmMemory {
     // extract the initial memory page size, as it will
     // throw an error if the imported page size differs:
     // https://chromium.googlesource.com/v8/v8/+/644556e6ed0e6e4fac2dfabb441439820ec59813/src/wasm/module-instantiate.cc#924
@@ -73,7 +71,7 @@ export class AsyncWasmInstance {
       // 0x__,
     ]);
 
-    const sigIdx = indexOfArray(bytecode, envMemoryImportSignature);
+    const sigIdx = indexOfArray(config.module, envMemoryImportSignature);
 
     if (sigIdx < 0) {
       throw Error(
@@ -86,7 +84,7 @@ export class AsyncWasmInstance {
 
     // Extract the initial memory page-range size
     const memoryInitalLimits =
-      bytecode[sigIdx + envMemoryImportSignature.length + 1];
+      config.module[sigIdx + envMemoryImportSignature.length + 1];
 
     if (memoryInitalLimits === undefined) {
       throw Error(
@@ -98,7 +96,7 @@ export class AsyncWasmInstance {
   }
 
   public static async createInstance(config: {
-    module: ArrayBuffer;
+    module: Uint8Array;
     imports: WasmImports;
     requiredExports?: readonly string[];
   }): Promise<AsyncWasmInstance> {

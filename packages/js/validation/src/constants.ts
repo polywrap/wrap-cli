@@ -1,1 +1,2 @@
-export const VALID_WRAP_MANIFEST_NAMES = ["polywrap.json"];
+export const WRAP_INFO = "wrap.info";
+export const WRAP_WASM = "wrap.wasm";

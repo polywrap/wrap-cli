@@ -1,5 +1,0 @@
-format: 0.0.1-prealpha.9
-name: FileSystem
-language: interface
-deploy: ./polywrap.deploy.yaml
-schema: ./src/schema.graphql

@@ -7,6 +7,7 @@ import {
   createEnumRef,
   createEnvDefinition,
   createImportedEnumDefinition,
+  createImportedEnvDefinition,
   createImportedModuleDefinition,
   createImportedObjectDefinition,
   createInterfaceDefinition,
@@ -20,10 +21,10 @@ import {
   createObjectRef,
   createScalarDefinition,
   createScalarPropertyDefinition,
-  TypeInfo,
-} from "../../../../schema/parse/src/typeInfo";
+  Abi,
+} from "../../../../schema/parse/src/abi";
 
-export const typeInfo: TypeInfo = {
+export const abi: Abi = {
   interfaceTypes: [
     createInterfaceDefinition({
       type: "TestImport",
@@ -38,37 +39,19 @@ export const typeInfo: TypeInfo = {
     }),
   ],
   envType: createEnvDefinition({
-      sanitized: {
-        ...createObjectDefinition({ type: "Env" }),
-        properties: [
-          createScalarPropertyDefinition({
-            name: "prop",
-            type: "String",
-            required: true,
-          }),
-          createScalarPropertyDefinition({
-            name: "propM",
-            type: "Int",
-            required: true,
-          })
-        ],
-      },
-      client: {
-        ...createObjectDefinition({ type: "ClientEnv" }),
-        properties: [
-          createScalarPropertyDefinition({
-            name: "prop",
-            type: "String",
-            required: true,
-          }),
-          createScalarPropertyDefinition({
-            name: "propM",
-            type: "String",
-            required: false,
-          }),
-        ],
-      },
-    }),
+    properties: [
+      createScalarPropertyDefinition({
+        name: "prop",
+        type: "String",
+        required: true,
+      }),
+      createScalarPropertyDefinition({
+        name: "propM",
+        type: "Int",
+        required: true,
+      })
+    ],
+  }),
   objectTypes: [
     {
       ...createObjectDefinition({
@@ -471,13 +454,6 @@ export const typeInfo: TypeInfo = {
       methods: [
         {
           ...createMethodDefinition({
-            name: "sanitizeEnv",
-            return: createObjectPropertyDefinition({ name: "sanitizeEnv", type: "Env", required: true }),
-            arguments: [createObjectPropertyDefinition({ name: "env", type: "ClientEnv", required: true })],
-          })
-        },
-        {
-          ...createMethodDefinition({
             name: "moduleMethod",
             return: createArrayPropertyDefinition({
               name: "moduleMethod",
@@ -610,6 +586,47 @@ export const typeInfo: TypeInfo = {
               }),
             }),
           ],
+        },
+        {
+          ...createMethodDefinition({
+            name: "methodRequireEnv",
+            env: {
+              required: true,
+            },
+            return: createObjectPropertyDefinition({
+              name: "methodRequireEnv",
+              type: "Env",
+              required: true
+            }),
+            arguments: [
+              createScalarPropertyDefinition({
+                name: "arg",
+                type: "String",
+                required: true,
+              }),
+            ],
+          }),
+          
+        },
+        {
+          ...createMethodDefinition({
+            name: "methodOptionalEnv",
+            env: {
+              required: false,
+            },
+            return: createObjectPropertyDefinition({
+              name: "methodOptionalEnv",
+              type: "Env",
+            }),
+            arguments: [
+              createScalarPropertyDefinition({
+                name: "arg",
+                type: "String",
+                required: true,
+              }),
+            ],
+          }),
+          
         },
       ],
     },
@@ -849,6 +866,46 @@ export const typeInfo: TypeInfo = {
             },
           ],
         },
+        {
+          ...createMethodDefinition({
+            name: "envMethod",
+            env: {
+              required: true,
+            },
+            return: createObjectPropertyDefinition({
+              name: "envMethod",
+              type: "TestImport_Env",
+              required: true,
+            }),
+          }),
+          arguments: [
+            createScalarPropertyDefinition({
+              name: "arg",
+              type: "String",
+              required: true,
+            }),
+          ],
+        },
+        {
+          ...createMethodDefinition({
+            name: "optEnvMethod",
+            env: {
+              required: false,
+            },
+            return: createObjectPropertyDefinition({
+              name: "optEnvMethod",
+              type: "TestImport_Env",
+              required: false,
+            }),
+          }),
+          arguments: [
+            createScalarPropertyDefinition({
+              name: "arg",
+              type: "String",
+              required: true,
+            }),
+          ],
+        },
       ],
     },
     {
@@ -881,4 +938,22 @@ export const typeInfo: TypeInfo = {
       ],
     },
   ],
+  importedEnvTypes: [
+    {
+      ...createImportedEnvDefinition({
+        uri: "testimport.uri.eth",
+        namespace: "TestImport",
+        type: "TestImport_Env",
+        nativeType: "Env",
+        comment: "TestImport_Env comment",
+      }),
+      properties: [
+        createScalarPropertyDefinition({
+          name: "envProp",
+          type: "UInt8",
+          required: true,
+        }),
+      ],
+    },
+  ]
 };
