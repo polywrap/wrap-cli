@@ -1,4 +1,4 @@
-import { isScalarType, scalarTypeNames, isModuleType } from "../typeInfo";
+import { isScalarType, scalarTypeNames, isModuleType } from "../abi";
 import { SchemaValidator } from "./";
 
 import {
@@ -133,18 +133,16 @@ export const getPropertyTypesValidator = (): SchemaValidator => {
           }
         },
         FieldDefinition: (node) => {
-          if (node.name.value === "sanitizeEnv") {
-            return;
-          }
-
           currentField = node.name.value;
         },
         NamedType: (node: NamedTypeNode) => {
           if (currentObject && currentField) {
+            const namedType = node.name.value;
+
             fieldTypes.push({
               object: currentObject,
               field: currentField,
-              type: node.name.value,
+              type: namedType,
             });
           }
         },

@@ -5,12 +5,12 @@ import { renderTemplates } from "../../utils/templates";
 import { BindOptions, BindOutput } from "../../..";
 
 import {
-  transformTypeInfo,
+  transformAbi,
   extendType,
   addFirstLast,
   toPrefixedGraphQLType,
   methodParentPointers,
-  TypeInfo,
+  Abi,
 } from "@polywrap/schema-parse";
 import path from "path";
 
@@ -27,18 +27,18 @@ export const generateBinding: GenerateBindingFn = (
   };
   const output = result.output;
   const schema = options.schema;
-  const typeInfo = applyTransforms(options.typeInfo);
+  const abi = applyTransforms(options.abi);
 
   output.entries = renderTemplates(
     path.join(__dirname, "./templates"),
-    { ...typeInfo, schema },
+    { ...abi, schema },
     {}
   );
 
   return result;
 };
 
-function applyTransforms(typeInfo: TypeInfo): TypeInfo {
+function applyTransforms(abi: Abi): Abi {
   const transforms = [
     extendType(Functions),
     addFirstLast,
@@ -47,7 +47,7 @@ function applyTransforms(typeInfo: TypeInfo): TypeInfo {
   ];
 
   for (const transform of transforms) {
-    typeInfo = transformTypeInfo(typeInfo, transform);
+    abi = transformAbi(abi, transform);
   }
-  return typeInfo;
+  return abi;
 }

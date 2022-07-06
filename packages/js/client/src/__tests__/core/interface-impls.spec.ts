@@ -83,7 +83,7 @@ describe("interface-impls", () => {
         {
           uri: implementation4Uri,
           plugin: {
-            factory: () => ({} as PluginModule),
+            factory: () => ({} as PluginModule<{}>),
             manifest: {
               schema: "",
               implements: [],
@@ -145,7 +145,7 @@ describe("interface-impls", () => {
           {
             uri: interface1Uri,
             plugin: {
-              factory: () => ({} as PluginModule),
+              factory: () => ({} as PluginModule<{}>),
               manifest: {
                 schema: "",
                 implements: [],
@@ -155,7 +155,7 @@ describe("interface-impls", () => {
           {
             uri: interface2Uri,
             plugin: {
-              factory: () => ({} as PluginModule),
+              factory: () => ({} as PluginModule<{}>),
               manifest: {
                 schema: "",
                 implements: [],
@@ -197,7 +197,7 @@ describe("interface-impls", () => {
           {
             uri: interfaceUri,
             plugin: {
-              factory: () => ({} as PluginModule),
+              factory: () => ({} as PluginModule<{}>),
               manifest: {
                 schema: "",
                 implements: [],
@@ -295,7 +295,7 @@ describe("interface-impls", () => {
         {
           uri: implementation1Uri,
           plugin: {
-            factory: () => ({} as PluginModule),
+            factory: () => ({} as PluginModule<{}>),
             manifest: {
               schema: "",
               implements: [new Uri(interfaceUri)],
@@ -330,7 +330,7 @@ describe("interface-impls", () => {
         {
           uri: implementation1Uri,
           plugin: {
-            factory: () => ({} as PluginModule),
+            factory: () => ({} as PluginModule<{}>),
             manifest: {
               schema: "",
               implements: [],

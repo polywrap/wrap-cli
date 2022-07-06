@@ -90,7 +90,7 @@ export const toMsgPack: MustacheFunction = () => {
     if (type[type.length - 1] === "!") {
       type = type.substr(0, type.length - 1);
     } else {
-      modifier = "nullable_";
+      modifier = "optional_";
     }
 
     if (type[0] === "[") {
@@ -141,20 +141,20 @@ export const toMsgPack: MustacheFunction = () => {
 export const toWasmInit: MustacheFunction = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
-    let nullable = false;
+    let optional = false;
 
-    const nullableModifier = (str: string): string => {
-      return !nullable ? str : "None";
+    const optionalModifier = (str: string): string => {
+      return !optional ? str : "None";
     };
 
     if (type[type.length - 1] === "!") {
       type = type.substr(0, type.length - 1);
     } else {
-      nullable = true;
+      optional = true;
     }
 
     if (type[0] === "[") {
-      return nullableModifier("vec![]");
+      return optionalModifier("vec![]");
     }
 
     if (type.startsWith("Map<")) {
@@ -178,24 +178,24 @@ export const toWasmInit: MustacheFunction = () => {
       case "UInt16":
       case "UInt32":
       case "UInt64":
-        return nullableModifier("0");
+        return optionalModifier("0");
       case "String":
-        return nullableModifier("String::new()");
+        return optionalModifier("String::new()");
       case "Boolean":
-        return nullableModifier("false");
+        return optionalModifier("false");
       case "Bytes":
-        return nullableModifier("vec![]");
+        return optionalModifier("vec![]");
       case "BigInt":
-        return nullableModifier("BigInt::default()");
+        return optionalModifier("BigInt::default()");
       case "BigNumber":
-        return nullableModifier("BigNumber::default()");
+        return optionalModifier("BigNumber::default()");
       case "JSON":
-        return nullableModifier("JSON::Value::Null");
+        return optionalModifier("JSON::Value::Null");
       default:
         if (type.includes("Enum_")) {
-          return nullableModifier(`${toWasm()(value, render)}::_MAX_`);
+          return optionalModifier(`${toWasm()(value, render)}::_MAX_`);
         } else {
-          return nullableModifier(`${toWasm()(value, render)}::new()`);
+          return optionalModifier(`${toWasm()(value, render)}::new()`);
         }
     }
   };
@@ -206,19 +206,19 @@ export const toWasm: MustacheFunction = () => {
     let type = render(value);
     let objectType = false;
 
-    let nullable = false;
+    let optional = false;
     if (type[type.length - 1] === "!") {
       type = type.substr(0, type.length - 1);
     } else {
-      nullable = true;
+      optional = true;
     }
 
     if (type[0] === "[") {
-      return toWasmArray(type, nullable);
+      return toWasmArray(type, optional);
     }
 
     if (type.startsWith("Map<")) {
-      return toWasmMap(type, nullable);
+      return toWasmMap(type, optional);
     }
 
     switch (type) {
@@ -278,8 +278,8 @@ export const toWasm: MustacheFunction = () => {
     }
 
     return objectType
-      ? applyNullable(type, nullable)
-      : applyNullable(type, nullable);
+      ? applyOptional(type, optional)
+      : applyOptional(type, optional);
   };
 };
 
@@ -295,7 +295,7 @@ export const detectKeyword: MustacheFunction = () => {
   };
 };
 
-const toWasmArray = (type: string, nullable: boolean): string => {
+const toWasmArray = (type: string, optional: boolean): string => {
   const result = type.match(/(\[)([[\]A-Za-z1-9_.!]+)(\])/);
 
   if (!result || result.length !== 4) {
@@ -303,10 +303,10 @@ const toWasmArray = (type: string, nullable: boolean): string => {
   }
 
   const wasmType = toWasm()(result[2], (str) => str);
-  return applyNullable("Vec<" + wasmType + ">", nullable);
+  return applyOptional("Vec<" + wasmType + ">", optional);
 };
 
-const toWasmMap = (type: string, nullable: boolean): string => {
+const toWasmMap = (type: string, optional: boolean): string => {
   const firstOpenBracketIdx = type.indexOf("<");
   const lastCloseBracketIdx = type.lastIndexOf(">");
 
@@ -326,11 +326,11 @@ const toWasmMap = (type: string, nullable: boolean): string => {
   const keyType = toWasm()(keyValTypes[0], (str) => str);
   const valType = toWasm()(keyValTypes[1], (str) => str);
 
-  return applyNullable(`Map<${keyType}, ${valType}>`, nullable);
+  return applyOptional(`Map<${keyType}, ${valType}>`, optional);
 };
 
-const applyNullable = (type: string, nullable: boolean): string => {
-  if (nullable) {
+const applyOptional = (type: string, optional: boolean): string => {
+  if (optional) {
     return `Option<${type}>`;
   } else {
     return type;

@@ -1,4 +1,3 @@
-import { defaultPolywrapManifest } from "../../lib";
 import { clearStyle, polywrapCli } from "./utils";
 
 import { runCLI } from "@polywrap/test-env-js";
@@ -6,23 +5,22 @@ import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import path from "path";
 import fs from "fs";
 import rimraf from "rimraf";
+import { compareSync } from "dir-compare";
 
 const HELP = `Usage: polywrap codegen|g [options]
 
 Auto-generate Wrapper Types
 
 Options:
-  -m, --manifest-file <path>  Path to the Polywrap manifest file (default:
-                              ${defaultPolywrapManifest.join(" | ")})
-  -c, --codegen-dir <path>     Output directory for the generated code
-                              (default: ./wrap)
-  -s, --script <path>         Path to a custom generation script (JavaScript |
-                              TypeScript)
-  -i, --ipfs [<node>]         IPFS node to load external schemas (default:
-                              ipfs.io & localhost)
-  -e, --ens [<address>]       ENS address to lookup external schemas (default:
-                              0x0000...2e1e)
-  -h, --help                  display help for command
+  -m, --manifest-file <path>         Path to the Polywrap manifest file
+                                     (default: polywrap.yaml | polywrap.yml)
+  -g, --codegen-dir <path>            Output directory for the generated code
+                                     (default: ./wrap)
+  -s, --script <path>                Path to a custom generation script
+                                     (JavaScript | TypeScript)
+  -c, --client-config <config-path>  Add custom configuration to the
+                                     PolywrapClient
+  -h, --help                         display help for command
 `;
 
 describe("e2e tests for codegen command", () => {
@@ -33,6 +31,64 @@ describe("e2e tests for codegen command", () => {
     .map((dirent) => dirent.name);
   const getTestCaseDir = (index: number) =>
     path.join(testCaseRoot, testCases[index]);
+
+  const testCliOutput = (
+    testCaseDir: string,
+    exitCode: number,
+    stdout: string,
+    stder: string
+  ) => {
+    const output = clearStyle(stdout);
+    const error = clearStyle(stder);
+
+    const expected = JSON.parse(
+      fs.readFileSync(
+        path.join(testCaseDir, "expected", "stdout.json"),
+        "utf-8"
+      )
+    );
+
+    if (expected.stdout) {
+      if (Array.isArray(expected.stdout)) {
+        for (const line of expected.stdout) {
+          expect(output).toContain(line);
+        }
+      } else {
+        expect(output).toContain(expected.stdout);
+      }
+    }
+
+    if (expected.stderr) {
+      if (Array.isArray(expected.stderr)) {
+        for (const line of expected.stderr) {
+          expect(error).toContain(line);
+        }
+      } else {
+        expect(error).toContain(expected.stderr);
+      }
+    }
+
+    if (expected.exitCode) {
+      expect(exitCode).toEqual(expected.exitCode);
+    }
+
+    if (expected.files) {
+      for (const file of expected.files) {
+        expect(fs.existsSync(path.join(testCaseDir, file))).toBeTruthy();
+      }
+    }
+  };
+
+  const testCodegenOutput = (testCaseDir: string, codegenDir: string) => {
+    if (fs.existsSync(path.join(testCaseDir, "expected", "wrap"))) {
+      const expectedTypesResult = compareSync(
+        codegenDir,
+        path.join(testCaseDir, "expected", "wrap"),
+        { compareContent: true }
+      );
+      expect(expectedTypesResult.differences).toBe(0);
+    }
+  };
 
   test("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
@@ -46,21 +102,44 @@ describe("e2e tests for codegen command", () => {
     expect(clearStyle(output)).toEqual(HELP);
   });
 
-  test("Should throw error for invalid params - ens", async () => {
+  it("Should throw error for unknown option --invalid", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
-      args: ["codegen", "--ens"],
+      args: ["codegen", "--invalid"],
       cwd: getTestCaseDir(0),
       cli: polywrapCli,
     });
 
     expect(code).toEqual(1);
-    expect(error).toBe(
-      "error: option '-e, --ens [<address>]' argument missing\n"
-    );
-    expect(clearStyle(output)).toEqual(``);
+    expect(error).toBe("error: unknown option '--invalid'\n");
+    expect(output).toEqual(``);
   });
 
-  test("Should throw error for invalid generation file - wrong file", async () => {
+  describe("missing option arguments", () => {
+    const missingOptionArgs = {
+      "--manifest-file": "-m, --manifest-file <path>",
+      "--codegen-dir": "-g, --codegen-dir <path>",
+      "--client-config": "-c, --client-config <config-path>",
+      "--script": "-s, --script <path>",
+    };
+
+    for (const [option, errorMessage] of Object.entries(missingOptionArgs)) {
+      it(`Should throw error if params not specified for ${option} option`, async () => {
+        const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+          args: ["codegen", option],
+          cwd: getTestCaseDir(0),
+          cli: polywrapCli,
+        });
+
+        expect(code).toEqual(1);
+        expect(error).toBe(
+          `error: option '${errorMessage}' argument missing\n`
+        );
+        expect(output).toEqual(``);
+      });
+    }
+  });
+
+  it("Should throw error for invalid generation file - wrong file", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["codegen", "--script", `polywrap-invalid.gen.js`],
       cwd: getTestCaseDir(0),
@@ -78,7 +157,7 @@ describe("e2e tests for codegen command", () => {
     );
   });
 
-  test("Should throw error for invalid generation file - no run() method", async () => {
+  it("Should throw error for invalid generation file - no run() method", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["codegen", "--script", `polywrap-norun.gen.js`],
       cwd: getTestCaseDir(0),
@@ -92,7 +171,26 @@ describe("e2e tests for codegen command", () => {
     );
   });
 
-  test("Should successfully generate types", async () => {
+  it("Should store build files in specified codegen dir", async () => {
+    const codegenDir = path.resolve(
+      process.env.TMPDIR || "/tmp",
+      `codegen-${Date.now()}`
+    );
+    const testCaseDir = getTestCaseDir(0);
+    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+      args: ["codegen", "--codegen-dir", codegenDir],
+      cwd: testCaseDir,
+      cli: polywrapCli,
+    });
+
+    expect(error).toBe("");
+    expect(code).toEqual(0);
+    expect(clearStyle(output)).toContain(
+      `🔥 Types were generated successfully 🔥`
+    );
+  });
+
+  it("Should successfully generate types", async () => {
     rimraf.sync(`${getTestCaseDir(0)}/types`);
 
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
@@ -109,60 +207,35 @@ describe("e2e tests for codegen command", () => {
 
     rimraf.sync(`${getTestCaseDir(0)}/types`);
   });
+
   describe("test-cases", () => {
     for (let i = 0; i < testCases.length; ++i) {
       const testCaseName = testCases[i];
       const testCaseDir = getTestCaseDir(i);
 
-      test(testCaseName, async () => {
-        let cmdArgs = [];
-        let cmdFile = path.join(testCaseDir, "cmd.json");
-        if (fs.existsSync(cmdFile)) {
-          const cmdConfig = JSON.parse(fs.readFileSync(cmdFile, "utf-8"));
-          if (cmdConfig.args) {
-            cmdArgs.push(...cmdConfig.args);
-          }
+      let codegenDir = path.join(testCaseDir, "src", "wrap");
+      let cmdArgs: string[] = [];
+      let cmdFile = path.join(testCaseDir, "cmd.json");
+      if (fs.existsSync(cmdFile)) {
+        const cmdConfig = JSON.parse(fs.readFileSync(cmdFile, "utf-8"));
+        if (cmdConfig.args) {
+          cmdArgs.push(...cmdConfig.args);
         }
 
+        if(cmdConfig.codegenDir) {
+          codegenDir = path.join(testCaseDir, cmdConfig.codegenDir);
+        }
+      }
+
+      test(testCaseName, async () => {
         let { exitCode, stdout, stderr } = await runCLI({
           args: ["codegen", ...cmdArgs],
           cwd: testCaseDir,
           cli: polywrapCli,
         });
 
-        stdout = clearStyle(stdout);
-        stderr = clearStyle(stderr);
-
-        const expected = JSON.parse(
-          fs.readFileSync(
-            path.join(testCaseDir, "expected/output.json"),
-            "utf-8"
-          )
-        );
-
-        if (expected.stdout) {
-          if (Array.isArray(expected.stdout)) {
-            for (const line of expected.stdout) {
-              expect(stdout).toContain(line);
-            }
-          } else {
-            expect(stdout).toContain(expected.stdout);
-          }
-        }
-
-        if (expected.stderr) {
-          if (Array.isArray(expected.stderr)) {
-            for (const line of expected.stderr) {
-              expect(stderr).toContain(line);
-            }
-          } else {
-            expect(stderr).toContain(expected.stderr);
-          }
-        }
-
-        if (expected.exitCode) {
-          expect(exitCode).toEqual(expected.exitCode);
-        }
+        testCliOutput(testCaseDir, exitCode, stdout, stderr);
+        testCodegenOutput(testCaseDir, codegenDir);
       });
     }
   });

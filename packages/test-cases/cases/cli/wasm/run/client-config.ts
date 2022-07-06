@@ -9,8 +9,8 @@ class MockPlugin extends PluginModule<Config> {
 
   getData(_: unknown): number { return this.config.val; }
 
-  setData(input: { options: { value: number } }) {
-    this.config.val = +input.options.value;
+  setData(args: { options: { value: number } }) {
+    this.config.val = +args.options.value;
     return { txReceipt: "0xdone", value: this.config.val };
   }
 

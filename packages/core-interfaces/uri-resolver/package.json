@@ -1,16 +1,16 @@
 {
-  "name": "uri-resolver-interface",
+  "name": "@polywrap/uri-resolver-interface",
   "description": "URI Resolver Interface",
   "private": true,
-  "version": "0.0.1-prealpha.88",
+  "version": "0.0.1-prealpha.91",
   "scripts": {
-    "build": "npx polywrap build",
+    "build": "node ../../../dependencies/node_modules/polywrap/bin/polywrap build",
     "lint": "eslint --color -c ../../../.eslintrc.js .",
     "test:env:up": "npx polywrap infra up --modules=eth-ens-ipfs",
     "test:env:down": "npx polywrap infra down --modules=eth-ens-ipfs",
-    "deploy": "npx polywrap build --ipfs http://localhost:5001"
+    "deploy": "npx polywrap deploy"
   },
   "devDependencies": {
-    "polywrap": "0.0.1-prealpha.88"
+    "polywrap": "0.0.1-prealpha.91"
   }
 }

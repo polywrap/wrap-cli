@@ -5,4 +5,4 @@ module: ./src/index.ts
 schema: ./src/schema.graphql
 import_redirects:
   - uri: "ens/logger.core.polywrap.eth"
-    schema: ../../../core-interfaces/logger/src/query.graphql
+    schema: ../../../core-interfaces/logger/src/schema.graphql

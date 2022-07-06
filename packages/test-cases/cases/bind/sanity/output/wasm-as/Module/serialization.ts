@@ -12,7 +12,7 @@ import {
 } from "@polywrap/wasm-as";
 import * as Types from "..";
 
-export class Input_moduleMethod {
+export class Args_moduleMethod {
   str: string;
   optStr: string | null;
   en: Types.CustomEnum;
@@ -25,7 +25,7 @@ export class Input_moduleMethod {
   mapOfArrOfObj: Map<string, Array<Types.AnotherType>>;
 }
 
-export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Input_moduleMethod {
+export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Args_moduleMethod {
   const context: Context = new Context("Deserializing module-type: moduleMethod");
   const reader = new ReadDecoder(argsBuf, context);
   let numFields = reader.readMapLength();
@@ -61,7 +61,7 @@ export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Input_moduleM
     }
     else if (field == "optStr") {
       reader.context().push(field, "string | null", "type found, reading property");
-      _optStr = reader.readNullableString();
+      _optStr = reader.readOptionalString();
       reader.context().pop();
     }
     else if (field == "en") {
@@ -114,7 +114,7 @@ export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Input_moduleM
     }
     else if (field == "optEnumArray") {
       reader.context().push(field, "Array<Option<Types.CustomEnum>> | null", "type found, reading property");
-      _optEnumArray = reader.readNullableArray((reader: Read): Option<Types.CustomEnum> => {
+      _optEnumArray = reader.readOptionalArray((reader: Read): Option<Types.CustomEnum> => {
         let value: Option<Types.CustomEnum>;
         if (!reader.isNextNil()) {
           if (reader.isNextString()) {
@@ -204,14 +204,14 @@ export function writemoduleMethodResult(writer: Write, result: i32): void {
   writer.context().pop();
 }
 
-export class Input_objectMethod {
+export class Args_objectMethod {
   object: Types.AnotherType;
   optObject: Types.AnotherType | null;
   objectArray: Array<Types.AnotherType>;
   optObjectArray: Array<Types.AnotherType | null> | null;
 }
 
-export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectMethod {
+export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Args_objectMethod {
   const context: Context = new Context("Deserializing module-type: objectMethod");
   const reader = new ReadDecoder(argsBuf, context);
   let numFields = reader.readMapLength();
@@ -255,7 +255,7 @@ export function deserializeobjectMethodArgs(argsBuf: ArrayBuffer): Input_objectM
     }
     else if (field == "optObjectArray") {
       reader.context().push(field, "Array<Types.AnotherType | null> | null", "type found, reading property");
-      _optObjectArray = reader.readNullableArray((reader: Read): Types.AnotherType | null => {
+      _optObjectArray = reader.readOptionalArray((reader: Read): Types.AnotherType | null => {
         let object: Types.AnotherType | null = null;
         if (!reader.isNextNil()) {
           object = Types.AnotherType.read(reader);
@@ -295,6 +295,105 @@ export function serializeobjectMethodResult(result: Types.AnotherType | null): A
 
 export function writeobjectMethodResult(writer: Write, result: Types.AnotherType | null): void {
   writer.context().push("objectMethod", "Types.AnotherType | null", "writing property");
+  if (result) {
+    Types.AnotherType.write(writer, result as Types.AnotherType);
+  } else {
+    writer.writeNil();
+  }
+  writer.context().pop();
+}
+
+export class Args_optionalEnvMethod {
+  object: Types.AnotherType;
+  optObject: Types.AnotherType | null;
+  objectArray: Array<Types.AnotherType>;
+  optObjectArray: Array<Types.AnotherType | null> | null;
+}
+
+export function deserializeoptionalEnvMethodArgs(argsBuf: ArrayBuffer): Args_optionalEnvMethod {
+  const context: Context = new Context("Deserializing module-type: optionalEnvMethod");
+  const reader = new ReadDecoder(argsBuf, context);
+  let numFields = reader.readMapLength();
+
+  let _object: Types.AnotherType | null = null;
+  let _objectSet: bool = false;
+  let _optObject: Types.AnotherType | null = null;
+  let _objectArray: Array<Types.AnotherType> = [];
+  let _objectArraySet: bool = false;
+  let _optObjectArray: Array<Types.AnotherType | null> | null = null;
+
+  while (numFields > 0) {
+    numFields--;
+    const field = reader.readString();
+
+    reader.context().push(field, "unknown", "searching for property type");
+    if (field == "object") {
+      reader.context().push(field, "Types.AnotherType", "type found, reading property");
+      const object = Types.AnotherType.read(reader);
+      _object = object;
+      _objectSet = true;
+      reader.context().pop();
+    }
+    else if (field == "optObject") {
+      reader.context().push(field, "Types.AnotherType | null", "type found, reading property");
+      let object: Types.AnotherType | null = null;
+      if (!reader.isNextNil()) {
+        object = Types.AnotherType.read(reader);
+      }
+      _optObject = object;
+      reader.context().pop();
+    }
+    else if (field == "objectArray") {
+      reader.context().push(field, "Array<Types.AnotherType>", "type found, reading property");
+      _objectArray = reader.readArray((reader: Read): Types.AnotherType => {
+        const object = Types.AnotherType.read(reader);
+        return object;
+      });
+      _objectArraySet = true;
+      reader.context().pop();
+    }
+    else if (field == "optObjectArray") {
+      reader.context().push(field, "Array<Types.AnotherType | null> | null", "type found, reading property");
+      _optObjectArray = reader.readOptionalArray((reader: Read): Types.AnotherType | null => {
+        let object: Types.AnotherType | null = null;
+        if (!reader.isNextNil()) {
+          object = Types.AnotherType.read(reader);
+        }
+        return object;
+      });
+      reader.context().pop();
+    }
+    reader.context().pop();
+  }
+
+  if (!_object || !_objectSet) {
+    throw new Error(reader.context().printWithContext("Missing required argument: 'object: AnotherType'"));
+  }
+  if (!_objectArraySet) {
+    throw new Error(reader.context().printWithContext("Missing required argument: 'objectArray: [AnotherType]'"));
+  }
+
+  return {
+    object: _object,
+    optObject: _optObject,
+    objectArray: _objectArray,
+    optObjectArray: _optObjectArray
+  };
+}
+
+export function serializeoptionalEnvMethodResult(result: Types.AnotherType | null): ArrayBuffer {
+  const sizerContext: Context = new Context("Serializing (sizing) module-type: optionalEnvMethod");
+  const sizer = new WriteSizer(sizerContext);
+  writeoptionalEnvMethodResult(sizer, result);
+  const buffer = new ArrayBuffer(sizer.length);
+  const encoderContext: Context = new Context("Serializing (encoding) module-type: optionalEnvMethod");
+  const encoder = new WriteEncoder(buffer, sizer, encoderContext);
+  writeoptionalEnvMethodResult(encoder, result);
+  return buffer;
+}
+
+export function writeoptionalEnvMethodResult(writer: Write, result: Types.AnotherType | null): void {
+  writer.context().push("optionalEnvMethod", "Types.AnotherType | null", "writing property");
   if (result) {
     Types.AnotherType.write(writer, result as Types.AnotherType);
   } else {

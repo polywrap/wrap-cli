@@ -24,7 +24,7 @@ describe("e2e", () => {
     const result = await client.invoke({
       uri,
       method: "sampleMethod",
-      input: {
+      args: {
         data: "fuz baz "
       },
     });

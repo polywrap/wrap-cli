@@ -6,8 +6,8 @@ const mockPlugin = () => {
 
     getData() { return this.config.val; }
 
-    setData(input) {
-      this.config.val = +input.options.value;
+    setData(args) {
+      this.config.val = +args.options.value;
       return { txReceipt: "0xdone", value: this.config.val };
     }
 
