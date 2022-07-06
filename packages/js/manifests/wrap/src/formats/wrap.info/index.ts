@@ -6,23 +6,23 @@
  */
 
 import {
-  WrapManifest as WrapManifest0_0_1
-} from "./0.0.1";
+  WrapManifest as WrapManifest0_1_0
+} from "./0.1.0";
 
 export {
-  WrapManifest0_0_1,
+  WrapManifest0_1_0,
 };
 
 export enum WrapManifestVersions {
-  "0.0.1" = "0.0.1",
+  "0.1.0" = "0.1.0",
 }
 
 export type AnyWrapManifest =
-  | WrapManifest0_0_1
+  | WrapManifest0_1_0
 
-export type WrapManifest = WrapManifest0_0_1;
+export type WrapManifest = WrapManifest0_1_0;
 
-export const latestWrapManifestVersion = WrapManifestVersions["0.0.1"]
+export const latestWrapManifestVersion = WrapManifestVersions["0.1.0"]
 
 export { migrateWrapManifest } from "./migrate";
 

@@ -1,4 +1,4 @@
-format: 0.0.1-prealpha.1
+format: 0.1.0
 env:
   IPFS_PORT: 5001
   DEV_SERVER_PORT: 4040

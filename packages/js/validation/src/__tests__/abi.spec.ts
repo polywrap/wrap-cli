@@ -4,6 +4,7 @@ import {
   ValidationFailReason,
   WasmPackageValidator,
 } from "..";
+import { convertWrapInfoJsonToMsgpack } from "./utils";
 
 jest.setTimeout(200000);
 
@@ -19,6 +20,8 @@ describe("abi", () => {
       maxModuleSize: 1_000_000,
       maxNumberOfFiles: 1000,
     });
+
+    convertWrapInfoJsonToMsgpack();
   });
 
   it("fails validating wrapper with missing abi", async () => {

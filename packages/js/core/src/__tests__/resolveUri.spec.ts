@@ -134,7 +134,7 @@ describe("resolveUri", () => {
   };
 
   const testManifest: WrapManifest = {
-    version: "0.0.1",
+    version: "0.1.0",
     type: "wasm",
     name: "dog-cat",
     abi: {}

@@ -11,16 +11,12 @@ import {
   latestInfraManifestFormat
 } from ".";
 
-import {
-  migrate as migrate_0_0_1_prealpha_1_to_0_0_1_prealpha_2
-} from "./migrators/0.0.1-prealpha.1_to_0.0.1-prealpha.2";
 
 type Migrator = {
   [key in InfraManifestFormats]?: (m: AnyInfraManifest) => InfraManifest;
 };
 
 export const migrators: Migrator = {
-  "0.0.1-prealpha.1": migrate_0_0_1_prealpha_1_to_0_0_1_prealpha_2,
 };
 
 export function migrateInfraManifest(
@@ -37,12 +33,5 @@ export function migrateInfraManifest(
     throw new Error(`Unrecognized InfraManifestFormat "${manifest.format}"`);
   }
 
-  const migrator = migrators[from];
-  if (!migrator) {
-    throw new Error(
-      `Migrator from InfraManifestFormat "${from}" to "${to}" is not available`
-    );
-  }
-
-  return migrator(manifest);
+  throw new Error(`This should never happen, InfraManifest migrators is empty. from: ${from}, to: ${to}`);
 }

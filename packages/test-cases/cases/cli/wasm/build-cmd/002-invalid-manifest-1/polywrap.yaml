@@ -1,4 +1,4 @@
-format: 0.0.1-prealpha.9
+format: 0.1.0
 name: invalid-manifest
 language: wasm/assemblyscript
 schema: ./src/wrong/schema.graphql

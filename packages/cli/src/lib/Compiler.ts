@@ -372,7 +372,7 @@ export class Compiler {
         abi: filteredAbi,
         name: manifest.name,
         type: (await this._isInterface()) ? "interface" : "wasm",
-        version: "0.0.1",
+        version: "0.1.0",
       };
 
       const s = JSON.stringify(info);

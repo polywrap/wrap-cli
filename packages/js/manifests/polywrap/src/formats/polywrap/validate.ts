@@ -9,15 +9,7 @@ import {
   PolywrapManifestFormats
 } from ".";
 
-import schema_0_0_1_prealpha_1 from "@polywrap/polywrap-manifest-schemas/formats/polywrap/0.0.1-prealpha.1.json";
-import schema_0_0_1_prealpha_2 from "@polywrap/polywrap-manifest-schemas/formats/polywrap/0.0.1-prealpha.2.json";
-import schema_0_0_1_prealpha_3 from "@polywrap/polywrap-manifest-schemas/formats/polywrap/0.0.1-prealpha.3.json";
-import schema_0_0_1_prealpha_4 from "@polywrap/polywrap-manifest-schemas/formats/polywrap/0.0.1-prealpha.4.json";
-import schema_0_0_1_prealpha_5 from "@polywrap/polywrap-manifest-schemas/formats/polywrap/0.0.1-prealpha.5.json";
-import schema_0_0_1_prealpha_6 from "@polywrap/polywrap-manifest-schemas/formats/polywrap/0.0.1-prealpha.6.json";
-import schema_0_0_1_prealpha_7 from "@polywrap/polywrap-manifest-schemas/formats/polywrap/0.0.1-prealpha.7.json";
-import schema_0_0_1_prealpha_8 from "@polywrap/polywrap-manifest-schemas/formats/polywrap/0.0.1-prealpha.8.json";
-import schema_0_0_1_prealpha_9 from "@polywrap/polywrap-manifest-schemas/formats/polywrap/0.0.1-prealpha.9.json";
+import schema_0_1_0 from "@polywrap/polywrap-manifest-schemas/formats/polywrap/0.1.0.json";
 
 import {
   Schema,
@@ -31,15 +23,7 @@ type PolywrapManifestSchemas = {
 };
 
 const schemas: PolywrapManifestSchemas = {
-  "0.0.1-prealpha.1": schema_0_0_1_prealpha_1,
-  "0.0.1-prealpha.2": schema_0_0_1_prealpha_2,
-  "0.0.1-prealpha.3": schema_0_0_1_prealpha_3,
-  "0.0.1-prealpha.4": schema_0_0_1_prealpha_4,
-  "0.0.1-prealpha.5": schema_0_0_1_prealpha_5,
-  "0.0.1-prealpha.6": schema_0_0_1_prealpha_6,
-  "0.0.1-prealpha.7": schema_0_0_1_prealpha_7,
-  "0.0.1-prealpha.8": schema_0_0_1_prealpha_8,
-  "0.0.1-prealpha.9": schema_0_0_1_prealpha_9,
+  "0.1.0": schema_0_1_0,
 };
 
 const validator = new Validator();
