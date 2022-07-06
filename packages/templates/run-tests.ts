@@ -23,14 +23,16 @@ const languageTestCommands: Record<string, string[]> = {
     // "CI=false yarn build"
   ],
   "assemblyscript": [
+    // Workflow tests fail in CI because cuelang is not installed
     "yarn build",
     "yarn test:e2e",
-    "yarn test:workflow"
+    // "yarn test:workflow"
   ],
   "rust": [
+    // Workflow tests fail in CI because cuelang is not installed
     "yarn build",
     "yarn test:e2e",
-    "yarn test:workflow"
+    // "yarn test:workflow"
   ],
   "interface": [
     "yarn build"
