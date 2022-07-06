@@ -6,29 +6,23 @@
  */
 
 import {
-  AppManifest as AppManifest0_0_1_prealpha_1
-} from "./0.0.1-prealpha.1";
-import {
-  AppManifest as AppManifest0_0_1_prealpha_2
-} from "./0.0.1-prealpha.2";
+  AppManifest as AppManifest0_1_0
+} from "./0.1.0";
 
 export {
-  AppManifest0_0_1_prealpha_1,
-  AppManifest0_0_1_prealpha_2,
+  AppManifest0_1_0,
 };
 
 export enum AppManifestFormats {
-  "0.0.1-prealpha.1" = "0.0.1-prealpha.1",
-  "0.0.1-prealpha.2" = "0.0.1-prealpha.2",
+  "0.1.0" = "0.1.0",
 }
 
 export type AnyAppManifest =
-  | AppManifest0_0_1_prealpha_1
-  | AppManifest0_0_1_prealpha_2
+  | AppManifest0_1_0
 
-export type AppManifest = AppManifest0_0_1_prealpha_2;
+export type AppManifest = AppManifest0_1_0;
 
-export const latestAppManifestFormat = AppManifestFormats["0.0.1-prealpha.2"]
+export const latestAppManifestFormat = AppManifestFormats["0.1.0"]
 
 export { migrateAppManifest } from "./migrate";
 

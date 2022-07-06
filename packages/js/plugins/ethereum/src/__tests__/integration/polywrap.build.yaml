@@ -1,4 +1,4 @@
-format: 0.0.1-prealpha.2
+format: 0.1.0
 config:
   node_version: "16.13.0"
 linked_packages:

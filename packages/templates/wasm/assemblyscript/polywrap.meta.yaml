@@ -1,4 +1,4 @@
-format: 0.0.1-prealpha.3
+format: 0.1.0
 displayName: Polywrap Wasm Wrapper Template
 subtext: A template for starting a Polywrap Wasm wrapper
 description: A Polywrap Wasm wrapper.

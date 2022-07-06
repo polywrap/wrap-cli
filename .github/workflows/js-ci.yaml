@@ -3,9 +3,8 @@ name: JS-CI
 on: 
   push:
     branches:
-      - master
-      - prealpha
-      - prealpha-dev
+      - origin
+      - origin-dev
   pull_request:
 
 jobs:

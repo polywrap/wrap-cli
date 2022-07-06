@@ -10,7 +10,7 @@ async function generateFormatTypes() {
   const formatsDir =  path.join(schemasPackageDir, "formats/wrap.info");
   const formatOutputDir = path.join(__dirname, `../src/formats/wrap.info`);
 
-  // Get all JSON schemas for this format type (0.0.1, 0.0.2, etc)
+  // Get all JSON schemas for this format type (0.1.0, 0.2.0, etc)
   const formatSchemaFiles = fs.readdirSync(formatsDir);
   const formatSchemas: any[] = [];
   const formatModules: any[] = [];
