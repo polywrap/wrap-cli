@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/file-system-interface",
   "description": "Polywrap Filesystem Interface",
-  "version": "0.0.1-prealpha.92",
+  "version": "0.0.1-prealpha.93",
   "scripts": {
     "build": "node ../../../dependencies/node_modules/polywrap/bin/polywrap build",
     "lint": "eslint --color -c ../../../.eslintrc.js .",
@@ -10,7 +10,7 @@
     "deploy": "npx polywrap deploy"
   },
   "devDependencies": {
-    "polywrap": "0.0.1-prealpha.92"
+    "polywrap": "0.0.1-prealpha.93"
   },
   "publishConfig": {
     "access": "public"
