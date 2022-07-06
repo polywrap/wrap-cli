@@ -1,4 +1,4 @@
-format: 0.0.1-prealpha.9
+format: 0.1.0
 name: BigNumber
 language: wasm/rust
 build: ./polywrap.build.yaml

@@ -5,7 +5,8 @@ import {
   stopTestEnvironment,
   providers,
 } from "@polywrap/test-env-js";
-import { createPolywrapClient, JobResult, PolywrapClient, PolywrapClientConfig } from "../..";
+import { JobResult, PolywrapClient } from "../..";
+import { getClientWithEnsAndIpfs } from "../utils/getClientWithEnsAndIpfs";
 import { outPropWorkflow, sanityWorkflow } from "./workflow-test-cases";
 
 jest.setTimeout(200000);

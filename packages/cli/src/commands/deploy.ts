@@ -1,18 +1,19 @@
 /* eslint-disable prefer-const */
-import {
-  intlMsg,
-  PolywrapProject,
-  defaultPolywrapManifest,
-  DeployPackage,
-  parseWasmManifestFileOption,
-} from "../lib";
-import { DeployerHandler } from "../lib/deploy/deployer";
 import { Command, Program } from "./types";
+import {
+  defaultPolywrapManifest,
+  DeployerHandler,
+  DeployPackage,
+  intlMsg,
+  parseWasmManifestFileOption,
+  PolywrapProject,
+} from "../lib";
 
+import { DeployManifest } from "@polywrap/polywrap-manifest-types-js";
 import fs from "fs";
 import nodePath from "path";
 import { print } from "gluegun";
-import { Uri, DeployManifest } from "@polywrap/core-js";
+import { Uri } from "@polywrap/core-js";
 import { validate } from "jsonschema";
 
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");
@@ -54,7 +55,7 @@ async function run(options: DeployCommandOptions): Promise<void> {
   const project = new PolywrapProject({
     rootDir: nodePath.dirname(manifestFile),
     polywrapManifestPath: manifestFile,
-    quiet: verbose ? false : true,
+    quiet: !verbose,
   });
   await project.validate();
 
@@ -91,14 +92,12 @@ async function run(options: DeployCommandOptions): Promise<void> {
   // Create all handlers
   Object.entries(deployManifest.stages).forEach(([stageName, stageValue]) => {
     const publisher = stageToPackageMap[stageName].deployer;
-    const handler = new DeployerHandler(
+    handlers[stageName] = new DeployerHandler(
       stageName,
       publisher,
       stageValue.config,
       print
     );
-
-    handlers[stageName] = handler;
   });
 
   // Establish dependency chains

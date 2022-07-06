@@ -1,3 +1,31 @@
+# Polywrap Origin (0.1.0)
+![Public Release Announcement (2)](https://user-images.githubusercontent.com/5522128/177474776-76886b67-6554-41a9-841b-939728e273ca.png)
+
+*"Good evening traveler, welcome to Polywrap, a planet in the WRAP galaxy. We're happy to have you here. Ask around, I'm sure someone can help you navigate this place..." - NPC*  
+
+https://polywrap.io/
+
+# Polywrap 0.0.1-prealpha.93
+## Breaking Changes
+* [PR-986](https://github.com/polywrap/monorepo/pull/986) WRAP build artifacts have been refined:
+  * Wasm module name changed from `module.wasm` to `wrap.wasm`
+  * Polywrap manifests are no longer written to build folder (except for project metadata).
+  * The `wrap.info` is now the primary manifest file describing the wrapper:
+    * `{ version, type, name, abi }`
+    * [source](https://github.com/polywrap/monorepo/blob/7fd5b2faad2cb664044edde133d8e068d685d97a/packages/js/manifests/wrap/src/formats/wrap.info/0.0.1.ts)
+    * encoded as msgpack binary file
+  * `schema.graphql` remains but will be deprecated for `wrap.info`'s built-in `abi`.
+
+# Polywrap 0.0.1-prealpha.92
+## Features
+* [PR-1006](https://github.com/polywrap/monorepo/pull/1006/files) `polywrap-wasm-rs`: Add Rust encoder unit tests.
+* [PR-967](https://github.com/polywrap/monorepo/pull/967) `polywrap` CLI, `polywrap-wasm-rs`, `@polywrap/wasm-as`, `@polywrap/schema-parse`, `@polywrap/schema-compose`, `@polywrap/schema-bind`, `@polywrap/core-js`, `@polywrap/client-js`: Environment configuration for wrappers was refactored to enable environments at the method level, remove client env sanitization and adding support for Rust. `@env` annotation was introduced for methods declared in wrappers's schemas.
+* [PR-1005](https://github.com/polywrap/monorepo/pull/1005) `@polywrap/core-js`, `@polywrap/client-js`: Refactored `client.subscribe` to use invoke syntax.
+
+## Breaking Changes
+* [PR-967](https://github.com/polywrap/monorepo/pull/967) Wasm runtime (`polywrap-wasm-rs`, `@polywrap/wasm-as`) changed invoke signature and imports/exports, schema pipeline (`@polywrap/schema-parse`, `@polywrap/schema-compose`, `@polywrap/schema-bind`) now supports external env imports and TypeInfo and `@env` annotation for methods, `polywrap` changed compiler's imports, `@polywrap/core-js` changed Plugin interface, `@polywrap/client-js` changed environment model implementation.
+* [PR-1005](https://github.com/polywrap/monorepo/pull/1005) `@polywrap/core-js`, `@polywrap/client-js`: Refactored `client.subscribe` to use invoke syntax.
+
 # Polywrap 0.0.1-prealpha.91
 ## Features
 * [PR-989](https://github.com/polywrap/monorepo/pull/989/files) `@polywrap/core-js`: Add job status in workflow job's result object.

@@ -1,0 +1,5 @@
+format: 0.1.0
+name: package-name
+language: wasm/assemblyscript
+module: ../index.ts
+schema: ..34234./schema.graphql

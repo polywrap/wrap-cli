@@ -24,39 +24,32 @@ export class FileSystemResolverPlugin extends Module<NoConfig> {
       return null;
     }
 
-    const manifestSearchPatterns = ["polywrap.json"];
+    const manifestSearchPattern = "wrap.info";
 
-    let manifest: string | undefined;
+    let manifest: Bytes | undefined;
 
-    for (const manifestSearchPattern of manifestSearchPatterns) {
-      const manifestPath = path.resolve(args.path, manifestSearchPattern);
-      const manifestExistsResult = await FileSystem_Module.exists(
-        { path: manifestPath },
-        _client
-      );
+    const manifestPath = path.resolve(args.path, manifestSearchPattern);
+    const manifestExistsResult = await FileSystem_Module.exists(
+      { path: manifestPath },
+      _client
+    );
 
-      if (manifestExistsResult.data) {
-        try {
-          const manifestResult = await FileSystem_Module.readFileAsString(
-            { path: manifestPath, encoding: FileSystem_EncodingEnum.UTF8 },
-            _client
-          );
-          if (manifestResult.error) {
-            console.warn(manifestResult.error);
-          }
-          manifest = manifestResult.data;
-        } catch (e) {
-          // TODO: logging
+    if (manifestExistsResult.data) {
+      try {
+        const manifestResult = await FileSystem_Module.readFile(
+          { path: manifestPath, encoding: FileSystem_EncodingEnum.BINARY },
+          _client
+        );
+        if (manifestResult.error) {
+          console.warn(manifestResult.error);
         }
+        manifest = manifestResult.data;
+      } catch (e) {
+        // TODO: logging
       }
     }
 
-    if (manifest) {
-      return { uri: null, manifest };
-    } else {
-      // Nothing found
-      return { uri: null, manifest: null };
-    }
+    return { uri: null, manifest };
   }
 
   async getFile(args: Args_getFile, _client: Client): Promise<Bytes | null> {

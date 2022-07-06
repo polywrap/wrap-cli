@@ -1,10 +1,7 @@
-import { createPolywrapClient, PolywrapClientConfig } from "../..";
 import { PluginModule } from "@polywrap/core-js";
+import { getClient } from "../utils/getClient";
 
 jest.setTimeout(200000);
-
-const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-env-types`;
-const wrapperUri = `fs/${wrapperPath}/build`;
 
 describe("env", () => {
   const mockEnvPlugin = () => {
@@ -61,5 +58,5 @@ describe("env", () => {
       expect(mockEnv.data).toBeTruthy();
       expect(mockEnv.data?.mockEnv).toMatchObject({ arg1: "10" });
     });
-  })
+  });
 });

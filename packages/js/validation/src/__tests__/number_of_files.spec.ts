@@ -4,6 +4,7 @@ import {
   ValidationFailReason,
   WasmPackageValidator,
 } from "..";
+import { convertWrapInfoJsonToMsgpack } from "./utils";
 
 jest.setTimeout(200000);
 
@@ -26,6 +27,10 @@ const assertValidWrapper = async (wrapperPath: string) => {
 };
 
 describe("number of files", () => {
+  beforeAll(() => {
+    convertWrapInfoJsonToMsgpack();
+  });
+
   it("sanity", async () => {
     await assertValidWrapper(path.join(testWrappersPath, "more-than-6-files"));
   });
