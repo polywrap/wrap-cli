@@ -13,7 +13,7 @@ import {
   isAppManifestLanguage,
   appManifestLanguageToBindLanguage,
   Project,
-  AnyManifest,
+  AnyProjectManifest,
   SchemaComposer,
   intlMsg,
   resetDir,
@@ -29,7 +29,7 @@ import Mustache from "mustache";
 
 export interface CodeGeneratorConfig {
   codegenDirAbs: string;
-  project: Project<AnyManifest>;
+  project: Project<AnyProjectManifest>;
   schemaComposer: SchemaComposer;
   customScript?: string;
   mustacheView?: Record<string, unknown>;

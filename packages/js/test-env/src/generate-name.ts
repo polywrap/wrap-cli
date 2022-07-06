@@ -2858,8 +2858,7 @@ export const generateName = (): string => {
     "Lieuwe",
   ];
 
-  const name = `${name1[getRandomInt(0, name1.length + 1)]}-${
+  return `${name1[getRandomInt(0, name1.length + 1)]}-${
     name2[getRandomInt(0, name2.length + 1)]
   }`;
-  return name;
 };

@@ -1,4 +1,4 @@
-format: 0.0.1-prealpha.1
+format: 0.1.0
 stages:
   ipfs_deploy:
     package: ipfs
