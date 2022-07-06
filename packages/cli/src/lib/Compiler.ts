@@ -358,11 +358,21 @@ export class Compiler {
         ...state.composerOutput.abi,
       };
 
+      const filteredAbi: Record<string, unknown> = { ...abi };
+
+      Object.keys(filteredAbi).forEach((key) => {
+        const value = filteredAbi[key];
+
+        if (value === null || value === undefined) {
+          delete filteredAbi[key];
+        }
+      });
+
       const info: WrapManifest = {
-        abi: { ...abi },
+        abi: filteredAbi,
         name: manifest.name,
         type: (await this._isInterface()) ? "interface" : "wasm",
-        version: "0.0.1",
+        version: "0.1.0",
       };
 
       const s = JSON.stringify(info);

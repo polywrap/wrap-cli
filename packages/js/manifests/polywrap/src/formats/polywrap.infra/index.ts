@@ -6,29 +6,23 @@
  */
 
 import {
-  InfraManifest as InfraManifest0_0_1_prealpha_1
-} from "./0.0.1-prealpha.1";
-import {
-  InfraManifest as InfraManifest0_0_1_prealpha_2
-} from "./0.0.1-prealpha.2";
+  InfraManifest as InfraManifest0_1_0
+} from "./0.1.0";
 
 export {
-  InfraManifest0_0_1_prealpha_1,
-  InfraManifest0_0_1_prealpha_2,
+  InfraManifest0_1_0,
 };
 
 export enum InfraManifestFormats {
-  "0.0.1-prealpha.1" = "0.0.1-prealpha.1",
-  "0.0.1-prealpha.2" = "0.0.1-prealpha.2",
+  "0.1.0" = "0.1.0",
 }
 
 export type AnyInfraManifest =
-  | InfraManifest0_0_1_prealpha_1
-  | InfraManifest0_0_1_prealpha_2
+  | InfraManifest0_1_0
 
-export type InfraManifest = InfraManifest0_0_1_prealpha_2;
+export type InfraManifest = InfraManifest0_1_0;
 
-export const latestInfraManifestFormat = InfraManifestFormats["0.0.1-prealpha.2"]
+export const latestInfraManifestFormat = InfraManifestFormats["0.1.0"]
 
 export { migrateInfraManifest } from "./migrate";
 

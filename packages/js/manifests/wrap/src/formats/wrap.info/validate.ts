@@ -9,7 +9,7 @@ import {
   WrapManifestVersions
 } from ".";
 
-import schema_0_0_1 from "@polywrap/wrap-manifest-schemas/formats/wrap.info/0.0.1.json";
+import schema_0_1_0 from "@polywrap/wrap-manifest-schemas/formats/wrap.info/0.1.0.json";
 
 import {
   Schema,
@@ -23,7 +23,7 @@ type WrapManifestSchemas = {
 };
 
 const schemas: WrapManifestSchemas = {
-  "0.0.1": schema_0_0_1,
+  "0.1.0": schema_0_1_0,
 };
 
 const validator = new Validator();
