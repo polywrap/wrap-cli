@@ -147,9 +147,9 @@ jobs:
           committer: GitHub <noreply@github.com>
           author: ${{env.BOT}} <${{env.BOT}}@users.noreply.github.com>
           commit-message: "${{env.RELEASE_VERSION}}"
-          title: 'Polywrap ${{env.RELEASE_VERSION}}'
+          title: 'Polywrap Origin (${{env.RELEASE_VERSION}})'
           body: |
-            ## Polywrap ${{env.RELEASE_VERSION}}
+            ## Polywrap Origin (${{env.RELEASE_VERSION}})
 
             TODO: Add "Polywrap-Release" Label
 
