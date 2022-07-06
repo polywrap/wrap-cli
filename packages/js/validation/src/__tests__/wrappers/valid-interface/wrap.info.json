@@ -1,6 +1,6 @@
 {
   "name": "test",
-  "type": "wasm",
+  "type": "interface",
   "version": "0.1.0",
   "abi": {
     "objectTypes": [],

@@ -1,11 +1,16 @@
 import path from "path";
 import { WasmPackageValidator, FileSystemPackageReader } from "..";
+import { convertWrapInfoJsonToMsgpack } from "./utils";
 
 jest.setTimeout(200000);
 
 const testWrappersPath = path.join(__dirname, "./wrappers");
 
 describe("sanity", () => {
+  beforeAll(() => {
+    convertWrapInfoJsonToMsgpack();
+  });
+
   it("can validate a valid wasm wrapper", async () => {
     const pathToValidWrapper = path.join(testWrappersPath, "valid");
     const reader = new FileSystemPackageReader(pathToValidWrapper);

@@ -29,8 +29,8 @@ export const addFirstLast: AbiTransforms = {
   },
 };
 
-function setFirstLast<T>(array: T[]): T[] {
-  return array.map((item, index) => {
+function setFirstLast<T>(array: T[] | undefined): T[] {
+  return array ? array.map((item, index) => {
     if (typeof item === "object") {
       return {
         ...item,
@@ -40,5 +40,5 @@ function setFirstLast<T>(array: T[]): T[] {
     } else {
       return item;
     }
-  });
+  }): [];
 }

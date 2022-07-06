@@ -4,6 +4,7 @@ import {
   ValidationFailReason,
   WasmPackageValidator,
 } from "..";
+import { convertWrapInfoJsonToMsgpack } from "./utils";
 
 jest.setTimeout(200000);
 
@@ -19,12 +20,15 @@ const assertValidWrapper = async (wrapperPath: string) => {
     maxNumberOfFiles: 1000,
   });
   const result = await validator.validate(reader);
-  console.log({ result })
   expect(result.valid).toBeTruthy();
   expect(result.failReason).toEqual(undefined);
 };
 
 describe("manifests", () => {
+  beforeAll(() => {
+    convertWrapInfoJsonToMsgpack();
+  });
+
   it("sanity", async () => {
     await assertValidWrapper(
       path.join(testWrappersPath, "package-size-over-100-kb")

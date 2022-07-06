@@ -102,6 +102,7 @@ export function transformAbi(abi: Abi, transforms: AbiTransforms): Abi {
   }
 
   if (result.envType) {
+    console.log("HERERE", result.envType)
     result.envType = visitEnvDefinition(result.envType, transforms);
   }
 
