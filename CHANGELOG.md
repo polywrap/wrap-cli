@@ -1,4 +1,4 @@
-# Polywrap Origin (v0.1.0)
+# Polywrap Origin (0.1.0)
 ## Chapter 1: A New Hope  
 *"Welcome traveler, this is Polywrap, a planet in the WRAP galaxy. We're happy to have you here. Ask around, I'm sure someone can help you navigate this place..." - NPC*  
 
