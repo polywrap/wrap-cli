@@ -75,92 +75,29 @@ describe("plugin-wrapper", () => {
   });
 
   test("getSchema -- plugin schema", async () => {
-    const client = await getClient();
-    const schema: string = await client.getSchema(
-      "wrap://ens/js-logger.polywrap.eth"
-    );
+    const testPluginUri = "ens/test-plugin.eth";
+    const pluginSchema = "type Module { someMethod(arg: String): String }";
 
-    expect(schema).toStrictEqual(
-      `### Polywrap Header START ###
-scalar UInt
-scalar UInt8
-scalar UInt16
-scalar UInt32
-scalar Int
-scalar Int8
-scalar Int16
-scalar Int32
-scalar Bytes
-scalar BigInt
-scalar BigNumber
-scalar JSON
-scalar Map
+    const pluginPackage = {
+      factory: () => ({} as PluginModule<{}>),
+      manifest: {
+        schema: pluginSchema,
+        implements: [],
+      },
+    };
 
-directive @imported(
-  uri: String!
-  namespace: String!
-  nativeType: String!
-) on OBJECT | ENUM
+    const client = new PolywrapClient({
+      plugins: [
+        {
+          uri: testPluginUri,
+          plugin: pluginPackage,
+        },
+      ],
+    });
 
-directive @imports(
-  types: [String!]!
-) on OBJECT
+    const schema: string = await client.getSchema(testPluginUri);
 
-directive @capability(
-  type: String!
-  uri: String!
-  namespace: String!
-) repeatable on OBJECT
-
-directive @enabled_interface on OBJECT
-
-directive @annotate(type: String!) on FIELD
-
-### Polywrap Header END ###
-
-type Module implements Logger_Module @imports(
-  types: [
-    "Logger_Module",
-    "Logger_LogLevel"
-  ]
-) {
-  log(
-    level: Logger_LogLevel!
-    message: String!
-  ): Boolean!
-}
-
-### Imported Modules START ###
-
-type Logger_Module @imported(
-  uri: "ens/logger.core.polywrap.eth",
-  namespace: "Logger",
-  nativeType: "Module"
-) {
-  log(
-    level: Logger_LogLevel!
-    message: String!
-  ): Boolean!
-}
-
-### Imported Modules END ###
-
-### Imported Objects START ###
-
-enum Logger_LogLevel @imported(
-  uri: "ens/logger.core.polywrap.eth",
-  namespace: "Logger",
-  nativeType: "LogLevel"
-) {
-  DEBUG
-  INFO
-  WARN
-  ERROR
-}
-
-### Imported Objects END ###
-`
-    );
+    expect(schema).toStrictEqual(pluginSchema);
   });
 
   it("plugin map types", async () => {

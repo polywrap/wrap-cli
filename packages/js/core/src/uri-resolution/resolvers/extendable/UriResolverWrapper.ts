@@ -1,8 +1,4 @@
 import { UriResolverInterface } from "../../../interfaces";
-import {
-  DeserializeManifestOptions,
-  deserializePolywrapManifest,
-} from "../../../manifest";
 import { Uri, WrapperCache, Client, Invoker } from "../../../types";
 import {
   UriResolver,
@@ -12,6 +8,10 @@ import {
 import { CreateWrapperFunc } from "./types/CreateWrapperFunc";
 import { getEnvFromUriOrResolutionStack } from "../getEnvFromUriOrResolutionStack";
 
+import {
+  DeserializeManifestOptions,
+  deserializeWrapManifest,
+} from "@polywrap/wrap-manifest-types-js";
 import { Tracer } from "@polywrap/tracing-js";
 
 export class UriResolverWrapper implements UriResolver {
@@ -50,7 +50,7 @@ export class UriResolverWrapper implements UriResolver {
     } else if (result.manifest) {
       // We've found our manifest at the current implementation,
       // meaning the URI resolver can also be used as an Wrapper resolver
-      const manifest = deserializePolywrapManifest(
+      const manifest = deserializeWrapManifest(
         result.manifest,
         this.deserializeOptions
       );
@@ -84,7 +84,7 @@ const tryResolveUriWithImplementation = async (
   implementationUri: Uri,
   invoker: Invoker
 ): Promise<UriResolverInterface.MaybeUriOrManifest | undefined> => {
-  const { data } = await UriResolverInterface.Query.tryResolveUri(
+  const { data } = await UriResolverInterface.module.tryResolveUri(
     invoker,
     implementationUri,
     uri

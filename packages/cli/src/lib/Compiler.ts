@@ -2,35 +2,38 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import {
-  PolywrapProject,
-  SchemaComposer,
-  withSpinner,
-  outputManifest,
-  outputMetadata,
+  copyArtifactsFromBuildImage,
+  createBuildImage,
+  displayPath,
   generateDockerfile,
   generateDockerImageName,
-  createBuildImage,
-  copyArtifactsFromBuildImage,
   intlMsg,
+  outputManifest,
+  outputMetadata,
+  PolywrapProject,
   resetDir,
+  SchemaComposer,
+  withSpinner,
 } from "./";
 
-import {
-  PolywrapManifest,
-  BuildManifest,
-  MetaManifest,
-} from "@polywrap/core-js";
+import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
+import { msgpackEncode } from "@polywrap/msgpack-js";
 import { WasmWrapper } from "@polywrap/client-js";
 import { WrapImports } from "@polywrap/client-js/build/wasm/types";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
+import { Abi } from "@polywrap/schema-parse";
 import { ComposerOutput } from "@polywrap/schema-compose";
-import { writeFileSync, writeDirectorySync } from "@polywrap/os-js";
+import {
+  normalizePath,
+  writeDirectorySync,
+  writeFileSync,
+} from "@polywrap/os-js";
 import * as gluegun from "gluegun";
 import fs from "fs";
 import path from "path";
 
 interface CompilerState {
-  polywrapManifest: PolywrapManifest;
   composerOutput: ComposerOutput;
   compilerOverrides?: CompilerOverrides;
 }
@@ -98,26 +101,22 @@ export class Compiler {
       // Init & clean output directory
       resetDir(this._config.outputDir);
 
+      // Output: schema.graphql
       await this._outputComposedSchema(state);
 
-      let buildManifest: BuildManifest | undefined = undefined;
+      // Output: wrap.info
+      await this._outputWrapManifest(state);
 
       if (!(await this._isInterface())) {
         // Generate the bindings
         await this._generateCode(state);
 
         // Compile the Wrapper
-        buildManifest = await this._buildModules(state);
+        await this._buildModules();
       }
 
-      // Output all metadata if present
-      const metaManifest = await this._outputMetadata();
-
-      await this._outputManifests(
-        state.polywrapManifest,
-        buildManifest,
-        metaManifest
-      );
+      // Output Polywrap Metadata
+      await this._outputPolywrapMetadata();
     };
 
     if (project.quiet) {
@@ -187,20 +186,20 @@ export class Compiler {
     }
 
     const state: CompilerState = {
-      polywrapManifest: Object.assign({}, polywrapManifest),
       composerOutput,
       compilerOverrides,
     };
 
-    this._validateState(state);
+    await this._validateState(state);
 
     this._state = state;
     return this._state;
   }
 
   private async _isInterface(): Promise<boolean> {
-    const state = await this._getCompilerState();
-    return state.polywrapManifest.language === "interface";
+    const { project } = this._config;
+    const manifest = await project.getManifest();
+    return manifest.language === "interface";
   }
 
   private async _composeSchema(): Promise<ComposerOutput> {
@@ -230,33 +229,18 @@ export class Compiler {
     return writeDirectorySync(binding.outputDirAbs, binding.output);
   }
 
-  private async _buildModules(state: CompilerState): Promise<BuildManifest> {
+  private async _buildModules(): Promise<void> {
     const { outputDir } = this._config;
-    const { polywrapManifest } = state;
 
     if (await this._isInterface()) {
       throw Error(intlMsg.lib_compiler_cannotBuildInterfaceModules());
     }
 
     // Build the sources
-    const dockerImageId = await this._buildSourcesInDocker();
+    await this._buildSourcesInDocker();
 
     // Validate the Wasm module
     await this._validateWasmModule(outputDir);
-
-    // Update the PolywrapManifest
-    polywrapManifest.module = "./module.wasm";
-    polywrapManifest.schema = "./schema.graphql";
-    polywrapManifest.build = "./polywrap.build.json";
-
-    // Create the BuildManifest
-    return {
-      format: "0.0.1-prealpha.3",
-      __type: "BuildManifest",
-      docker: {
-        buildImageId: dockerImageId,
-      },
-    };
   }
 
   private async _buildSourcesInDocker(): Promise<string> {
@@ -331,7 +315,7 @@ export class Compiler {
 
     await copyArtifactsFromBuildImage(
       outputDir,
-      "module.wasm",
+      "wrap.wasm",
       imageName,
       removeBuilder,
       removeImage,
@@ -345,86 +329,126 @@ export class Compiler {
   private async _outputComposedSchema(state: CompilerState): Promise<void> {
     const { outputDir } = this._config;
 
+    if (!state.composerOutput.schema) {
+      // This is not being shown with intlMsg because this will be removed
+      throw Error("Compiler.outputComposedSchema: no schema found");
+    }
+
     writeFileSync(
       `${outputDir}/schema.graphql`,
       state.composerOutput.schema,
       "utf-8"
     );
+  }
 
-    // Update the PolywrapManifest schema paths
-    state.polywrapManifest = {
-      ...state.polywrapManifest,
-      schema: "./schema.graphql",
+  private async _outputWrapManifest(
+    state: CompilerState,
+    quiet = false
+  ): Promise<unknown> {
+    const { outputDir, project } = this._config;
+    let manifestPath = `${outputDir}/wrap.info`;
+    const run = async () => {
+      if (!state.composerOutput.abi) {
+        throw Error(intlMsg.lib_wrap_abi_not_found());
+      }
+
+      const manifest = await project.getManifest();
+
+      const abi: Abi = {
+        ...state.composerOutput.abi,
+      };
+
+      const filteredAbi: Record<string, unknown> = { ...abi };
+
+      Object.keys(filteredAbi).forEach((key) => {
+        const value = filteredAbi[key];
+
+        if (value === null || value === undefined) {
+          delete filteredAbi[key];
+        }
+      });
+
+      const info: WrapManifest = {
+        abi: filteredAbi,
+        name: manifest.name,
+        type: (await this._isInterface()) ? "interface" : "wasm",
+        version: "0.1.0",
+      };
+
+      const s = JSON.stringify(info);
+      const encodedInfo = msgpackEncode(JSON.parse(s));
+      writeFileSync(manifestPath, encodedInfo, {
+        encoding: "binary",
+      });
     };
-  }
 
-  private async _outputManifests(
-    polywrapManifest: PolywrapManifest,
-    buildManifest?: BuildManifest,
-    metaManifest?: MetaManifest
-  ): Promise<void> {
-    const { outputDir, project } = this._config;
-
-    await outputManifest(
-      polywrapManifest,
-      path.join(outputDir, "polywrap.json"),
-      project.quiet
-    );
-
-    if (buildManifest) {
-      await outputManifest(
-        buildManifest,
-        path.join(outputDir, "polywrap.build.json"),
-        project.quiet
-      );
-    }
-
-    if (metaManifest) {
-      await outputManifest(
-        metaManifest,
-        path.join(outputDir, "polywrap.meta.json"),
-        project.quiet
+    if (quiet) {
+      return await run();
+    } else {
+      manifestPath = displayPath(manifestPath);
+      return await withSpinner(
+        intlMsg.lib_helpers_wrap_manifest_outputText({
+          path: normalizePath(manifestPath),
+        }),
+        intlMsg.lib_helpers_wrap_manifest_outputError({
+          path: normalizePath(manifestPath),
+        }),
+        intlMsg.lib_helpers_wrap_manifest_outputWarning({
+          path: normalizePath(manifestPath),
+        }),
+        (_spinner): Promise<unknown> => {
+          return Promise.resolve(run());
+        }
       );
     }
   }
 
-  private async _outputMetadata(): Promise<MetaManifest | undefined> {
+  private async _outputPolywrapMetadata(): Promise<void> {
     const { outputDir, project } = this._config;
-    const metaManifest = await project.getMetaManifest();
 
-    if (!metaManifest) {
+    const projectMetaManifest = await project.getMetaManifest();
+
+    if (!projectMetaManifest) {
       return undefined;
     }
 
-    return await outputMetadata(
-      metaManifest,
+    const builtMetaManifest = await outputMetadata(
+      projectMetaManifest,
       outputDir,
       project.getManifestDir(),
       project.quiet
     );
+
+    await outputManifest(
+      builtMetaManifest,
+      path.join(outputDir, "polywrap.meta.json"),
+      project.quiet
+    );
   }
 
-  private _validateState(state: CompilerState) {
-    const { composerOutput, polywrapManifest } = state;
+  private async _validateState(state: CompilerState): Promise<void> {
+    const { composerOutput } = state;
+    const { project } = this._config;
+    const manifest = await project.getManifest();
 
     if (!composerOutput.schema) {
       const missingSchemaMessage = intlMsg.lib_compiler_missingSchema();
       throw Error(missingSchemaMessage);
     }
 
-    if (polywrapManifest.language !== "interface" && !polywrapManifest.module) {
+    if (manifest.language !== "interface" && !manifest.module) {
       const missingModuleMessage = intlMsg.lib_compiler_missingModule();
       throw Error(missingModuleMessage);
     }
 
-    if (polywrapManifest.language === "interface" && polywrapManifest.module) {
+    if (manifest.language === "interface" && manifest.module) {
       const noInterfaceModule = intlMsg.lib_compiler_noInterfaceModule();
       throw Error(noInterfaceModule);
     }
   }
 
   private async _validateWasmModule(buildDir: string): Promise<void> {
-    const modulePath = path.join(buildDir, `module.wasm`);
+    const modulePath = path.join(buildDir, `wrap.wasm`);
     const wasmSource = fs.readFileSync(modulePath);
     const wrapImports: Record<keyof WrapImports, () => void> = {
       __wrap_subinvoke: () => {},

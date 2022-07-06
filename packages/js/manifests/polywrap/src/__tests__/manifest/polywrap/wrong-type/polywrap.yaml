@@ -1,0 +1,5 @@
+format: 0.1.0
+name: "Wrong Type"
+language: wasm/assemblyscript
+module: 2345235235235
+schema: ../schema.graphql

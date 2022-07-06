@@ -1,0 +1,13 @@
+{
+  "name": "test",
+  "version": "0.1.0",
+  "type": "wasm",
+  "abi": {
+    "objectTypes": [],
+    "enumTypes": [],
+    "interfaceTypes": [],
+    "importedObjectTypes": [],
+    "importedModuleTypes": [],
+    "importedEnumTypes": []
+  }
+}

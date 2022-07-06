@@ -270,5 +270,9 @@
   "lib_wasm_rust_invalidModule": "Module paths must point to Cargo.toml files. Found: {path}",
   "lib_docker_invalidImageId": "Invalid docker image ID returned: {imageId}",
   "lib_docker_noInstall": "Docker executable not found in PATH",
-  "lib_infra_unrecognizedModule": "Unrecognized modules: {modules}. Default modules: {defaultModules}"
+  "lib_infra_unrecognizedModule": "Unrecognized modules: {modules}. Default modules: {defaultModules}",
+  "lib_wrap_abi_not_found": "No WRAP ABI found",
+  "lib_helpers_wrap_manifest_outputText": "WRAP manifest written in {path}",
+  "lib_helpers_wrap_manifest_outputError": "Error writing WRAP manifest in {path}",
+  "lib_helpers_wrap_manifest_outputWarning": "Warning writing WRAP manifest in {path}"
 }
