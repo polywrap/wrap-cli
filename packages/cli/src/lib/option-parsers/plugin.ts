@@ -1,5 +1,5 @@
 import { intlMsg } from "../intl";
-import { defaultPluginManifest } from "../manifest";
+import { defaultPluginManifest } from "../";
 import { resolvePathIfExists } from "../system";
 
 import path from "path";

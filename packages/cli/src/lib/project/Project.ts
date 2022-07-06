@@ -1,7 +1,7 @@
 import {
   intlMsg,
-  AnyManifest,
-  AnyManifestLanguage,
+  AnyProjectManifest,
+  AnyProjectManifestLanguage,
   CacheDirectory,
   CacheDirectoryConfig,
 } from "../";
@@ -14,7 +14,7 @@ export interface ProjectConfig {
   quiet?: boolean;
 }
 
-export abstract class Project<TManifest extends AnyManifest> {
+export abstract class Project<TManifest extends AnyProjectManifest> {
   protected _cache: CacheDirectory;
 
   constructor(protected _config: ProjectConfig, _cache: CacheDirectoryConfig) {
@@ -56,7 +56,7 @@ export abstract class Project<TManifest extends AnyManifest> {
 
   public abstract getManifestPath(): string;
 
-  public abstract getManifestLanguage(): Promise<AnyManifestLanguage>;
+  public abstract getManifestLanguage(): Promise<AnyProjectManifestLanguage>;
 
   public abstract getSchemaNamedPath(): Promise<string>;
 

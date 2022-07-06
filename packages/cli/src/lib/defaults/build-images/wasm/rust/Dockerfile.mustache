@@ -102,6 +102,6 @@ RUN wasm-snip ./build/bg_module.wasm -o ./build/snipped_module.wasm && \
     rm -rf ./build/bg_module.wasm
 
 # Use wasm-opt to perform the "asyncify" post-processing step over all modules
-RUN wasm-opt --asyncify -Os ./build/snipped_module.wasm -o ./build/module.wasm && \
+RUN wasm-opt --asyncify -Os ./build/snipped_module.wasm -o ./build/wrap.wasm && \
     rm -rf ./build/snipped_module.wasm
 {{/polywrap_module}}

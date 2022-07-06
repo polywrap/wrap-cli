@@ -16,7 +16,7 @@ packages/manifest-schemas/  @dOrgJelli
 packages/js/cli @dOrgJelli @krisbitney @namesty @nerfZael @Niraj-Kamdar
 
 # Client Interfaces
-packages/core-interfaces  @dOrgJelli
+packages/interfaces  @dOrgJelli
 
 # JS Client
 packages/js/client    @dOrgJelli @krisbitney @namesty @nerfZael

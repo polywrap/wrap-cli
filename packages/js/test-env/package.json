@@ -20,6 +20,7 @@
     "@polywrap/client-js": "0.0.1-prealpha.92",
     "@polywrap/core-js": "0.0.1-prealpha.92",
     "@polywrap/ethereum-plugin-js": "0.0.1-prealpha.92",
+    "@polywrap/polywrap-manifest-types-js": "0.0.1-prealpha.92",
     "axios": "0.21.2",
     "js-yaml": "4.1.0",
     "spawn-command": "0.0.2-1"
