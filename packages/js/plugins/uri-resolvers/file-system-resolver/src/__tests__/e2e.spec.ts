@@ -82,8 +82,8 @@ describe("Filesystem plugin", () => {
       method: "deployContract",
       args: {
         connection: {
-          networkNameOrChainId: "testnet"
-        }
+          networkNameOrChainId: "testnet",
+        },
       },
     });
 
@@ -101,21 +101,20 @@ describe("Filesystem plugin", () => {
     expect(schema).toBe(expectedSchema);
 
     // get the manifest
-    const manifest = await client.getManifest(fsUri, { type: "polywrap" });
+    const manifest = await client.getManifest(fsUri, {});
 
     expect(manifest).toBeTruthy();
-    expect(manifest.language).toBe("wasm/assemblyscript");
+    expect(manifest.version).toBe("0.0.1");
+    expect(manifest.type).toEqual("wasm");
 
     // get a file
     const file = await client.getFile(fsUri, {
-      path: "polywrap.json",
-      encoding: "utf-8",
+      path: "wrap.info",
     });
-    const expectedFile = await fs.promises.readFile(
-      `${fsPath}/polywrap.json`,
-      "utf-8"
-    );
 
-    expect(file).toBe(expectedFile);
+    const expectedFile = await fs.promises.readFile(`${fsPath}/wrap.info`);
+
+    const expectedInfo = Uint8Array.from(expectedFile);
+    expect(file).toStrictEqual(expectedInfo);
   });
 });

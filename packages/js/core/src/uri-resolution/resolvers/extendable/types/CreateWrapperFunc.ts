@@ -1,8 +1,10 @@
-import { Uri, Wrapper, PolywrapManifest, Env } from "../../../..";
+import { Uri, Wrapper, Env } from "../../../..";
+
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
 export type CreateWrapperFunc = (
   uri: Uri,
-  manifest: PolywrapManifest,
+  manifest: WrapManifest,
   uriResolver: string, // name or URI
   environment: Env<Uri> | undefined
 ) => Wrapper;

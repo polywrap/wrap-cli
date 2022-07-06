@@ -1,19 +1,18 @@
 import {
   Wrapper,
   Client,
-  GetManifestOptions,
   InvokeOptions,
   InvocableResult,
   PluginModule,
   PluginPackage,
   Uri,
-  AnyManifestArtifact,
-  ManifestArtifactType,
   GetFileOptions,
   Env,
-  msgpackDecode,
+  GetManifestOptions,
   isBuffer,
 } from "@polywrap/core-js";
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
+import { msgpackDecode } from "@polywrap/msgpack-js";
 import { Tracer } from "@polywrap/tracing-js";
 
 export class PluginWrapper extends Wrapper {
@@ -35,22 +34,22 @@ export class PluginWrapper extends Wrapper {
     Tracer.endSpan();
   }
 
-  public async getSchema(_client: Client): Promise<string> {
-    return Promise.resolve(this._plugin.manifest.schema);
-  }
-
-  public async getManifest<T extends ManifestArtifactType>(
-    _options: GetManifestOptions<T>,
-    _client: Client
-  ): Promise<AnyManifestArtifact<T>> {
-    throw Error("client.getManifest(...) is not implemented for Plugins.");
-  }
-
   public async getFile(
     _options: GetFileOptions,
     _client: Client
   ): Promise<Uint8Array | string> {
     throw Error("client.getFile(...) is not implemented for Plugins.");
+  }
+
+  public async getSchema(_client: Client): Promise<string> {
+    return Promise.resolve(this._plugin.manifest.schema);
+  }
+
+  public async getManifest(
+    _options: GetManifestOptions,
+    _client: Client
+  ): Promise<WrapManifest> {
+    throw Error("client.getManifest(...) is not implemented for Plugins.");
   }
 
   @Tracer.traceMethod("PluginWrapper: invoke")
@@ -90,7 +89,7 @@ export class PluginWrapper extends Wrapper {
 
         jsArgs = result as Record<string, unknown>;
       } else {
-        jsArgs = args;
+        jsArgs = args as Record<string, unknown>;
       }
 
       // Invoke the function

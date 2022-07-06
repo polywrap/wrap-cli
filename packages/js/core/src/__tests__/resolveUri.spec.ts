@@ -4,15 +4,11 @@ import {
   Client,
   InvokeOptions,
   InvokeResult,
-  PolywrapManifest,
   PluginModule,
-  PluginPackage,
   QueryOptions,
   QueryResult,
   Uri,
   UriRedirect,
-  AnyManifestArtifact,
-  ManifestArtifactType,
   UriResolver,
   resolveUri,
   RedirectsResolver,
@@ -22,12 +18,16 @@ import {
   Env,
   GetFileOptions,
   GetImplementationsOptions,
-  GetManifestOptions,
   InterfaceImplementations,
   PluginRegistration,
   SubscribeOptions,
   Subscription,
+  PluginPackage,
+  GetManifestOptions,
 } from "..";
+
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
+import { msgpackEncode } from "@polywrap/msgpack-js";
 
 describe("resolveUri", () => {
   const client = (
@@ -85,20 +85,6 @@ describe("resolveUri", () => {
       getSchema: (uri: Uri | string): Promise<string> => {
         return Promise.resolve("");
       },
-      getManifest: <
-        TUri extends Uri | string,
-        TManifestType extends ManifestArtifactType
-      >(
-        uri: TUri,
-        options: GetManifestOptions<TManifestType>
-      ) => {
-        const manifest = {
-          format: "0.0.1-prealpha.8",
-          language: "",
-          __type: "PolywrapManifest",
-        };
-        return Promise.resolve(manifest as AnyManifestArtifact<TManifestType>);
-      },
       getFile: () => {
         return Promise.resolve("");
       },
@@ -122,23 +108,13 @@ describe("resolveUri", () => {
         }),
       getSchema: (_client: Client): Promise<string> => Promise.resolve(""),
       getFile: (options: GetFileOptions, client: Client) => Promise.resolve(""),
-      getManifest: <TManifestType extends ManifestArtifactType>(
-        options: GetManifestOptions<TManifestType>,
-        client: Client
-      ) => {
-        const manifest = {
-          format: "0.0.1-prealpha.9",
-          language: "",
-          __type: "PluginManifest",
-        };
-        return Promise.resolve(manifest as AnyManifestArtifact<TManifestType>);
-      },
+      getManifest: (options: GetManifestOptions, client: Client) => Promise.resolve({} as WrapManifest)
     };
   };
 
   const createWrapper = (
     uri: Uri,
-    manifest: PolywrapManifest,
+    manifest: WrapManifest,
     uriResolver: string
   ): Wrapper => {
     return {
@@ -153,27 +129,22 @@ describe("resolveUri", () => {
         }),
       getSchema: (_client: Client): Promise<string> => Promise.resolve(""),
       getFile: (options: GetFileOptions, client: Client) => Promise.resolve(""),
-      getManifest: <TManifestType extends ManifestArtifactType>(
-        options: GetManifestOptions<TManifestType>,
-        client: Client
-      ) => {
-        const manifest: unknown = {
-          format: "0.0.1-prealpha.9",
-          language: "",
-          module: "",
-          schema: "",
-          __type: "PolywrapManifest",
-        };
-        return Promise.resolve(manifest as AnyManifestArtifact<TManifestType>);
-      },
+      getManifest: (options: GetManifestOptions, client) => Promise.reject("")
     };
+  };
+
+  const testManifest: WrapManifest = {
+    version: "0.0.1",
+    type: "wasm",
+    name: "dog-cat",
+    abi: {}
   };
 
   const ensWrapper = {
     tryResolveUri: (
       args: { authority: string; path: string },
       _client: Client
-    ) => {
+    ): UriResolverInterface.MaybeUriOrManifest => {
       return {
         uri: args.authority === "ens" ? "ipfs/QmHash" : undefined,
       };
@@ -184,12 +155,12 @@ describe("resolveUri", () => {
       tryResolveUri: (
         args: { authority: string; path: string },
         _client: Client
-      ) => {
+      ): UriResolverInterface.MaybeUriOrManifest => {
         return {
           manifest:
-            args.authority === "ipfs"
-              ? "format: 0.0.1-prealpha.9\ndog: cat"
-              : undefined,
+            args.authority === "ipfs" ?
+            msgpackEncode(testManifest) :
+            undefined,
         };
       }
   };
@@ -198,10 +169,12 @@ describe("resolveUri", () => {
     tryResolveUri: (
       args: { authority: string; path: string },
       _client: Client
-    ) => {
+    ): UriResolverInterface.MaybeUriOrManifest  => {
       return {
         manifest:
-          args.authority === "my" ? "format: 0.0.1-prealpha.9" : undefined,
+          args.authority === "my" ?
+          msgpackEncode(testManifest) :
+          undefined,
       };
     },
   };
@@ -244,7 +217,7 @@ describe("resolveUri", () => {
     new ExtendableUriResolver(
       (
         uri: Uri,
-        manifest: PolywrapManifest,
+        manifest: WrapManifest,
         uriResolver: string,
         environment: Env<Uri> | undefined
       ) => {
@@ -259,11 +232,11 @@ describe("resolveUri", () => {
     const wrapper = new Uri("wrap://ens/ens");
     const file = new Uri("wrap/some-file");
     const path = "wrap/some-path";
-    const query = UriResolverInterface.Query;
+    const module = UriResolverInterface.module;
     const uri = new Uri("wrap/some-uri");
 
-    expect(query.tryResolveUri(client(wrappers), wrapper, uri)).toBeDefined();
-    expect(query.getFile(client(wrappers), file, path)).toBeDefined();
+    expect(module.tryResolveUri(client(wrappers), wrapper, uri)).toBeDefined();
+    expect(module.getFile(client(wrappers), file, path)).toBeDefined();
   });
 
   it("works in the typical case", async () => {
@@ -283,9 +256,7 @@ describe("resolveUri", () => {
 
     expect(wrapperIdentity.data).toMatchObject({
       uri: new Uri("ipfs/QmHash"),
-      manifest: {
-        format: "0.0.1-prealpha.9",
-      },
+      manifest: testManifest,
       uriResolver: "wrap://ens/ipfs",
     });
   });
@@ -307,9 +278,7 @@ describe("resolveUri", () => {
 
     expect(wrapperIdentity.data).toMatchObject({
       uri: new Uri("my/something-different"),
-      manifest: {
-        format: "0.0.1-prealpha.9",
-      },
+      manifest: testManifest,
       uriResolver: "wrap://ens/my-plugin",
     });
   });
@@ -331,10 +300,7 @@ describe("resolveUri", () => {
 
     expect(wrapperIdentity.data).toMatchObject({
       uri: new Uri("ipfs/QmHash"),
-      manifest: {
-        format: "0.0.1-prealpha.9",
-        dog: "cat",
-      },
+      manifest: testManifest,
       uriResolver: "wrap://ens/ipfs",
     });
   });
@@ -356,9 +322,7 @@ describe("resolveUri", () => {
 
     expect(wrapperIdentity.data).toMatchObject({
       uri: new Uri("my/something-different"),
-      manifest: {
-        format: "0.0.1-prealpha.9",
-      },
+      manifest: testManifest,
       uriResolver: "wrap://ens/my-plugin",
     });
   });

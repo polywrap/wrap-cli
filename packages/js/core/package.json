@@ -12,17 +12,15 @@
     "build"
   ],
   "scripts": {
-    "build": "rimraf ./build && yarn build:manifest && tsc --project tsconfig.build.json",
-    "build:manifest": "node ./scripts/manifest/generateFormatTypes.js",
+    "build": "rimraf ./build && tsc --project tsconfig.build.json",
     "lint": "eslint --color -c ../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@msgpack/msgpack": "2.7.2",
-    "@polywrap/manifest-schemas": "0.0.1-prealpha.92",
     "@polywrap/tracing-js": "0.0.1-prealpha.92",
+    "@polywrap/wrap-manifest-types-js": "0.0.1-prealpha.92",
     "graphql": "15.5.0",
     "graphql-tag": "2.10.4",
     "js-yaml": "3.14.0",
