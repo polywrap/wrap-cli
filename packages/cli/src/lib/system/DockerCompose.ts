@@ -3,7 +3,7 @@ import { getDockerFileLock } from "./docker";
 
 import path from "path";
 import Commands, { IDockerComposeOptions } from "docker-compose";
-import { InfraManifest } from "@polywrap/core-js";
+import { InfraManifest } from "@polywrap/polywrap-manifest-types-js";
 
 export class DockerCompose {
   private _dockerLock = getDockerFileLock();

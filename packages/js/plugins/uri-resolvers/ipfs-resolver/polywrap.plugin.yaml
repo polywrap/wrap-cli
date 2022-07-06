@@ -5,6 +5,6 @@ module: ./src/index.ts
 schema: ./src/schema.graphql
 import_redirects:
   - uri: "ens/uri-resolver.core.polywrap.eth"
-    schema: ../../../../core-interfaces/uri-resolver/src/schema.graphql
+    schema: ../../../../interfaces/uri-resolver/src/schema.graphql
   - uri: "ens/ipfs.polywrap.eth"
-    schema: ../../../../core-interfaces/ipfs/build/schema.graphql
+    schema: ../../../../interfaces/ipfs/build/schema.graphql

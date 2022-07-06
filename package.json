@@ -10,9 +10,9 @@
   "workspaces": {
     "packages": [
       "./packages/cli",
-      "./packages/core-interfaces/**",
+      "./packages/interfaces/**",
       "./packages/js/**",
-      "./packages/manifest-schemas/**",
+      "./packages/manifests/**",
       "./packages/schema/**",
       "./packages/templates/**",
       "./packages/test-cases",

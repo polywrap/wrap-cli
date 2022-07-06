@@ -1,13 +1,13 @@
 import { intlMsg, Infra, loadInfraManifest } from "../lib";
 import { Command, Program } from "./types";
 
+import { InfraManifest } from "@polywrap/polywrap-manifest-types-js";
 import { print } from "gluegun";
 import path from "path";
 import { Argument } from "commander";
 import chalk from "chalk";
 import yaml from "js-yaml";
 import { readdirSync } from "fs";
-import { InfraManifest } from "@polywrap/core-js";
 
 type InfraCommandOptions = {
   modules?: string;

@@ -1,35 +1,21 @@
 import {
   Client,
-  PluginModule,
-  PluginPackageManifest,
-  Uri,
+  PluginModule
 } from "..";
 
-const testPluginManifest: PluginPackageManifest = {
-  schema: `
-    type Module {
-      testQuery: Number!
-      testMutation: Boolean!
-    }
-  `,
-  implements: [new Uri("host2/path2")],
-};
-
 class TestPluginModule extends PluginModule<{}> {
-  testQuery(_args: unknown, _client: Client): number {
-    return 5;
-  }
-  testMutation(_args: unknown, _client: Client): Promise<boolean> {
-    return Promise.resolve(true);
+  testMethod(args: { value: number }, _client: Client): number {
+    return 5 + args.value;
   }
 }
 
 describe("Plugin", () => {
   const plugin = new TestPluginModule({});
 
-  it("sanity", () => {
-    expect(testPluginManifest.implements.length).toBe(1);
+  it("sanity", async () => {
     expect(plugin).toBeTruthy();
-    expect(plugin.getMethod("testMutation")).toBeTruthy();
+    expect (
+      await plugin._wrap_invoke("testMethod", { value: 5 }, {} as Client)
+    ).toBe(10);
   });
 });

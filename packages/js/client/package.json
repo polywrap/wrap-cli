@@ -36,6 +36,8 @@
     "@polywrap/sha3-plugin-js": "0.0.1-prealpha.92",
     "@polywrap/tracing-js": "0.0.1-prealpha.92",
     "@polywrap/uts46-plugin-js": "0.0.1-prealpha.92",
+    "@polywrap/msgpack-js": "0.0.1-prealpha.92",
+    "@polywrap/wrap-manifest-types-js": "0.0.1-prealpha.92",
     "graphql": "15.5.0",
     "js-yaml": "3.14.0",
     "uuid": "8.3.2"
