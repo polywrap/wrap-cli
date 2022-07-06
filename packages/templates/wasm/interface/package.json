@@ -11,6 +11,6 @@
     "test": "yarn test:env:up && yarn deploy && yarn test:env:down"
   },
   "devDependencies": {
-    "polywrap": "0.0.1"
+    "polywrap": "0.1.0"
   }
 }

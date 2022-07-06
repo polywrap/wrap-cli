@@ -10,7 +10,7 @@
     "deploy": "node ../../../dependencies/node_modules/polywrap/bin/polywrap deploy"
   },
   "devDependencies": {
-    "polywrap": "0.0.1"
+    "polywrap": "0.1.0"
   },
   "publishConfig": {
     "access": "public"

@@ -23,7 +23,7 @@
     "assemblyscript": "0.19.1",
     "ethers": "5.0.7",
     "jest": "26.6.3",
-    "polywrap": "0.0.1",
+    "polywrap": "0.1.0",
     "solc": "0.8.3",
     "ts-jest": "26.5.4",
     "ts-node": "8.10.2",
