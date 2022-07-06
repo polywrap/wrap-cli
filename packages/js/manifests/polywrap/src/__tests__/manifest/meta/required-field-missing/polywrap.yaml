@@ -1,0 +1,4 @@
+format: 0.1.0
+name: IPFS
+language: wasm/assemblyscript
+meta: ./polywrap.meta.yaml

@@ -53,25 +53,20 @@ export interface MetaManifest {
     url: string;
   }[];
   /**
-   * List of example queries.
+   * List of available invocations
    */
-  queries?: {
+  invocations?: {
     /**
-     * Query name.
+     * Name of the method to invoke
      */
-    name: string;
+    method?: string;
     /**
-     * Query description.
+     * Arguments to passed to the invocation
      */
-    description?: string;
-    /**
-     * Path to graph ql file.
-     */
-    query: string;
-    /**
-     * Query parameters.
-     */
-    vars?: string;
+    arguments?: {
+      [k: string]: unknown;
+    };
+    required?: ["method", "arguments"];
   }[];
   __type: "MetaManifest";
 }

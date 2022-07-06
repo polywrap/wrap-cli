@@ -70,36 +70,23 @@
         ]
       }
     },
-    "queries": {
-      "description": "List of example queries.",
+    "invocations": {
+      "description": "List of available invocations",
       "type": "array",
       "items": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "name": {
-            "description": "Query name.",
+          "method": {
+            "description": "Name of the method to invoke",
             "type": "string"
           },
-          "description": {
-            "description": "Query description.",
-            "type": "string"
-          },
-          "query": {
-            "description": "Path to graph ql file.",
-            "type": "string",
-            "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.graphql$"
-          },
-          "vars": {
-            "description": "Query parameters.",
-            "type": "string",
-            "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.json$"
+          "arguments": {
+            "description": "Arguments to passed to the invocation",
+            "type": "object"
           }
         },
-        "required": [
-          "name",
-          "query"
-        ]
+        "required": [ "method", "arguments" ]
       }
     }
   }
