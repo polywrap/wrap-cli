@@ -10,50 +10,35 @@ export interface PolywrapManifest {
   /**
    * Polywrap manifest format version.
    */
-  format: "0.0.1-prealpha.4";
+  format: "0.1.0";
   /**
-   * Reference to the repository holding source code.
+   * Name of this wrapper package.
    */
-  repository?: string;
+  name: string;
   /**
-   * Path to the customized build manifest file.
+   * Path to the wrapper build manifest file.
    */
   build?: string;
+  /**
+   * Path to wrapper metadata manifest file.
+   */
+  meta?: string;
+  /**
+   * Path to wrapper deploy manifest file.
+   */
+  deploy?: string;
   /**
    * Language in which the source code is written.
    */
   language: string;
   /**
-   * Modules of Polywrap schema and implementation.
+   * Path to the module's entry point.
    */
-  modules: {
-    /**
-     * Module for mutation operations.
-     */
-    mutation?: {
-      /**
-       * Path to graphql schema.
-       */
-      schema: string;
-      /**
-       * Path to Polywrap implementation.
-       */
-      module?: string;
-    };
-    /**
-     * Module for query operations.
-     */
-    query?: {
-      /**
-       * Path to graphql schema.
-       */
-      schema: string;
-      /**
-       * Path to Polywrap implementation.
-       */
-      module?: string;
-    };
-  };
+  module?: string;
+  /**
+   * Path to the module's graphql schema.
+   */
+  schema: string;
   /**
    * Redirects for the schema's imports.
    */

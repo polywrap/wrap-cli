@@ -6,71 +6,23 @@
  */
 
 import {
-  PolywrapManifest as PolywrapManifest0_0_1_prealpha_1
-} from "./0.0.1-prealpha.1";
-import {
-  PolywrapManifest as PolywrapManifest0_0_1_prealpha_2
-} from "./0.0.1-prealpha.2";
-import {
-  PolywrapManifest as PolywrapManifest0_0_1_prealpha_3
-} from "./0.0.1-prealpha.3";
-import {
-  PolywrapManifest as PolywrapManifest0_0_1_prealpha_4
-} from "./0.0.1-prealpha.4";
-import {
-  PolywrapManifest as PolywrapManifest0_0_1_prealpha_5
-} from "./0.0.1-prealpha.5";
-import {
-  PolywrapManifest as PolywrapManifest0_0_1_prealpha_6
-} from "./0.0.1-prealpha.6";
-import {
-  PolywrapManifest as PolywrapManifest0_0_1_prealpha_7
-} from "./0.0.1-prealpha.7";
-import {
-  PolywrapManifest as PolywrapManifest0_0_1_prealpha_8
-} from "./0.0.1-prealpha.8";
-import {
-  PolywrapManifest as PolywrapManifest0_0_1_prealpha_9
-} from "./0.0.1-prealpha.9";
+  PolywrapManifest as PolywrapManifest0_1_0
+} from "./0.1.0";
 
 export {
-  PolywrapManifest0_0_1_prealpha_1,
-  PolywrapManifest0_0_1_prealpha_2,
-  PolywrapManifest0_0_1_prealpha_3,
-  PolywrapManifest0_0_1_prealpha_4,
-  PolywrapManifest0_0_1_prealpha_5,
-  PolywrapManifest0_0_1_prealpha_6,
-  PolywrapManifest0_0_1_prealpha_7,
-  PolywrapManifest0_0_1_prealpha_8,
-  PolywrapManifest0_0_1_prealpha_9,
+  PolywrapManifest0_1_0,
 };
 
 export enum PolywrapManifestFormats {
-  "0.0.1-prealpha.1" = "0.0.1-prealpha.1",
-  "0.0.1-prealpha.2" = "0.0.1-prealpha.2",
-  "0.0.1-prealpha.3" = "0.0.1-prealpha.3",
-  "0.0.1-prealpha.4" = "0.0.1-prealpha.4",
-  "0.0.1-prealpha.5" = "0.0.1-prealpha.5",
-  "0.0.1-prealpha.6" = "0.0.1-prealpha.6",
-  "0.0.1-prealpha.7" = "0.0.1-prealpha.7",
-  "0.0.1-prealpha.8" = "0.0.1-prealpha.8",
-  "0.0.1-prealpha.9" = "0.0.1-prealpha.9",
+  "0.1.0" = "0.1.0",
 }
 
 export type AnyPolywrapManifest =
-  | PolywrapManifest0_0_1_prealpha_1
-  | PolywrapManifest0_0_1_prealpha_2
-  | PolywrapManifest0_0_1_prealpha_3
-  | PolywrapManifest0_0_1_prealpha_4
-  | PolywrapManifest0_0_1_prealpha_5
-  | PolywrapManifest0_0_1_prealpha_6
-  | PolywrapManifest0_0_1_prealpha_7
-  | PolywrapManifest0_0_1_prealpha_8
-  | PolywrapManifest0_0_1_prealpha_9
+  | PolywrapManifest0_1_0
 
-export type PolywrapManifest = PolywrapManifest0_0_1_prealpha_9;
+export type PolywrapManifest = PolywrapManifest0_1_0;
 
-export const latestPolywrapManifestFormat = PolywrapManifestFormats["0.0.1-prealpha.9"]
+export const latestPolywrapManifestFormat = PolywrapManifestFormats["0.1.0"]
 
 export { migratePolywrapManifest } from "./migrate";
 

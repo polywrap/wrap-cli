@@ -333,7 +333,7 @@ export async function buildAndDeployWrapper({
   fs.writeFileSync(
     tempDeployManifestPath,
     yaml.dump({
-      format: "0.0.1-prealpha.1",
+      format: "0.1.0",
       stages: {
         ipfsDeploy: {
           package: "ipfs",

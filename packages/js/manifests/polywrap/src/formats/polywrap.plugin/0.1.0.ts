@@ -6,35 +6,39 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export interface AppManifest {
+export interface PluginManifest {
   /**
-   * Polywrap app manifest format version.
+   * Polywrap plugin manifest format version.
    */
-  format: "0.0.1-prealpha.2";
+  format: "0.1.0";
   /**
-   * Name of this wrapper package.
+   * Plugin name.
    */
   name: string;
   /**
-   * Language in which the source code is written.
+   * Plugin language.
    */
   language: string;
+  /**
+   * Path to Polywrap implementation.
+   */
+  module?: string;
   /**
    * Path to graphql schema.
    */
   schema: string;
   /**
-   * Redirects for the schema's imports.
+   * Redirects source URI to local wrapper or plugin.
    */
   import_redirects?: {
     /**
-     * Import URI to be redirected.
+     * Source URI that needs to be redirected.
      */
     uri: string;
     /**
-     * Path to a graphql schema to be used for the import.
+     * Path to GraphQL schema of the module to which URI will be redirected.
      */
     schema: string;
   }[];
-  __type: "AppManifest";
+  __type: "PluginManifest";
 }

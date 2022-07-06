@@ -10,7 +10,11 @@ export interface AppManifest {
   /**
    * Polywrap app manifest format version.
    */
-  format: "0.0.1-prealpha.1";
+  format: "0.1.0";
+  /**
+   * Name of this wrapper package.
+   */
+  name: string;
   /**
    * Language in which the source code is written.
    */

@@ -4,6 +4,7 @@
   "additionalProperties": false,
   "required": [
     "format",
+    "name",
     "language",
     "schema"
   ],
@@ -11,7 +12,12 @@
     "format": {
       "description": "Polywrap app manifest format version.",
       "type": "string",
-      "const": "0.0.1-prealpha.1"
+      "const": "0.1.0"
+    },
+    "name": {
+      "description": "Name of this wrapper package.",
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9\\-\\_]+$"
     },
     "language": {
       "description": "Language in which the source code is written.",

@@ -6,23 +6,23 @@
  */
 
 import {
-  DeployManifest as DeployManifest0_0_1_prealpha_1
-} from "./0.0.1-prealpha.1";
+  DeployManifest as DeployManifest0_1_0
+} from "./0.1.0";
 
 export {
-  DeployManifest0_0_1_prealpha_1,
+  DeployManifest0_1_0,
 };
 
 export enum DeployManifestFormats {
-  "0.0.1-prealpha.1" = "0.0.1-prealpha.1",
+  "0.1.0" = "0.1.0",
 }
 
 export type AnyDeployManifest =
-  | DeployManifest0_0_1_prealpha_1
+  | DeployManifest0_1_0
 
-export type DeployManifest = DeployManifest0_0_1_prealpha_1;
+export type DeployManifest = DeployManifest0_1_0;
 
-export const latestDeployManifestFormat = DeployManifestFormats["0.0.1-prealpha.1"]
+export const latestDeployManifestFormat = DeployManifestFormats["0.1.0"]
 
 export { migrateDeployManifest } from "./migrate";
 

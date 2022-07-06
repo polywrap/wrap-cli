@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/logger-interface",
   "description": "Polywrap Logger Interface",
-  "version": "0.0.1-prealpha.93",
+  "version": "0.1.0",
   "scripts": {
     "build": "node ../../../dependencies/node_modules/polywrap/bin/polywrap build",
     "lint": "eslint --color -c ../../../.eslintrc.js .",
@@ -10,7 +10,7 @@
     "deploy": "npx polywrap deploy"
   },
   "devDependencies": {
-    "polywrap": "0.0.1-prealpha.93"
+    "polywrap": "0.1.0"
   },
   "publishConfig": {
     "access": "public"

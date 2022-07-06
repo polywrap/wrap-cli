@@ -11,20 +11,12 @@ import {
   latestPluginManifestFormat
 } from ".";
 
-import {
-  migrate as migrate_0_0_1_prealpha_1_to_0_0_1_prealpha_3
-} from "./migrators/0.0.1-prealpha.1_to_0.0.1-prealpha.3";
-import {
-  migrate as migrate_0_0_1_prealpha_2_to_0_0_1_prealpha_3
-} from "./migrators/0.0.1-prealpha.2_to_0.0.1-prealpha.3";
 
 type Migrator = {
   [key in PluginManifestFormats]?: (m: AnyPluginManifest) => PluginManifest;
 };
 
 export const migrators: Migrator = {
-  "0.0.1-prealpha.1": migrate_0_0_1_prealpha_1_to_0_0_1_prealpha_3,
-  "0.0.1-prealpha.2": migrate_0_0_1_prealpha_2_to_0_0_1_prealpha_3,
 };
 
 export function migratePluginManifest(
@@ -41,12 +33,5 @@ export function migratePluginManifest(
     throw new Error(`Unrecognized PluginManifestFormat "${manifest.format}"`);
   }
 
-  const migrator = migrators[from];
-  if (!migrator) {
-    throw new Error(
-      `Migrator from PluginManifestFormat "${from}" to "${to}" is not available`
-    );
-  }
-
-  return migrator(manifest);
+  throw new Error(`This should never happen, PluginManifest migrators is empty. from: ${from}, to: ${to}`);
 }

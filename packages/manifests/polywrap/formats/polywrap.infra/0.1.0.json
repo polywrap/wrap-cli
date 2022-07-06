@@ -7,7 +7,7 @@
     "format": {
       "description": "Polywrap infra manifest format version.",
       "type": "string",
-      "const": "0.0.1-prealpha.1"
+      "const": "0.1.0"
     },
     "dockerCompose": {
       "description": "Path to docker compose manifest.",
@@ -26,7 +26,8 @@
         "^.*$": {
           "oneOf": [
             {"$ref": "#/definitions/remoteModule"},
-            {"$ref": "#/definitions/localModule"}
+            {"$ref": "#/definitions/localModule"},
+            {"$ref": "#/definitions/defaultModule"}
           ]
         }
       }
@@ -34,7 +35,7 @@
   },
   "definitions": {
     "remoteModule": {
-      "description": "A remote docker-compose package.",
+      "description": "A remote package with a docker-compose file.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -58,6 +59,7 @@
       "required": ["package", "version", "registry"]
     },
     "localModule": {
+      "description": "A local package with a docker-compose file.",
       "type": "object",
       "additionalProperties": false,
       "properties": {
@@ -67,6 +69,11 @@
         }
       },
       "required": ["path"]
+    },
+    "defaultModule": {
+      "description": "A module available by default.",
+      "type": "string",
+      "const": "default"
     }
   }
 }

@@ -10,11 +10,11 @@ export interface MetaManifest {
   /**
    * Polywrap wrapper metadata manifest format version.
    */
-  format: "0.0.1-prealpha.1";
+  format: "0.1.0";
   /**
    * Name of the wrapper.
    */
-  name: string;
+  displayName?: string;
   /**
    * Short or summary description of the wrapper.
    */
@@ -27,6 +27,10 @@ export interface MetaManifest {
    * Reference to the repository holding source code.
    */
   repository?: string;
+  /**
+   * List of relevant tag keywords.
+   */
+  tags?: string[];
   /**
    * Path to wrapper icon.
    */
