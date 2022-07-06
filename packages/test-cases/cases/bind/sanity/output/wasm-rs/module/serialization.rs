@@ -31,6 +31,8 @@ pub struct ArgsModuleMethod {
     pub opt_enum_array: Option<Vec<Option<CustomEnum>>>,
     pub map: Map<String, i32>,
     pub map_of_arr: Map<String, Vec<i32>>,
+    pub map_of_obj: Map<String, AnotherType>,
+    pub map_of_arr_of_obj: Map<String, Vec<AnotherType>>,
 }
 
 pub fn deserialize_module_method_args(args: &[u8]) -> Result<ArgsModuleMethod, DecodeError> {
@@ -53,6 +55,10 @@ pub fn deserialize_module_method_args(args: &[u8]) -> Result<ArgsModuleMethod, D
     let mut _map_set = false;
     let mut _map_of_arr: Map<String, Vec<i32>> = Map::<String, Vec<i32>>::new();
     let mut _map_of_arr_set = false;
+    let mut _map_of_obj: Map<String, AnotherType> = Map::<String, AnotherType>::new();
+    let mut _map_of_obj_set = false;
+    let mut _map_of_arr_of_obj: Map<String, Vec<AnotherType>> = Map::<String, Vec<AnotherType>>::new();
+    let mut _map_of_arr_of_obj_set = false;
 
     while num_of_fields > 0 {
         num_of_fields -= 1;
@@ -154,6 +160,30 @@ pub fn deserialize_module_method_args(args: &[u8]) -> Result<ArgsModuleMethod, D
                 _map_of_arr_set = true;
                 reader.context().pop();
             }
+            "mapOfObj" => {
+                reader.context().push(&field, "Map<String, AnotherType>", "type found, reading argument");
+                _map_of_obj = reader.read_ext_generic_map(|reader| {
+                    reader.read_string()
+                }, |reader| {
+                    let object = AnotherType::read(reader)?;
+                    Ok(object)
+                })?;
+                _map_of_obj_set = true;
+                reader.context().pop();
+            }
+            "mapOfArrOfObj" => {
+                reader.context().push(&field, "Map<String, Vec<AnotherType>>", "type found, reading argument");
+                _map_of_arr_of_obj = reader.read_ext_generic_map(|reader| {
+                    reader.read_string()
+                }, |reader| {
+                    reader.read_array(|reader| {
+                        let object = AnotherType::read(reader)?;
+                        Ok(object)
+                    })
+                })?;
+                _map_of_arr_of_obj_set = true;
+                reader.context().pop();
+            }
             err => return Err(DecodeError::UnknownFieldName(err.to_string())),
         }
     }
@@ -172,6 +202,12 @@ pub fn deserialize_module_method_args(args: &[u8]) -> Result<ArgsModuleMethod, D
     if !_map_of_arr_set {
         return Err(DecodeError::MissingField("mapOfArr: Map<String, [Int]>.".to_string()));
     }
+    if !_map_of_obj_set {
+        return Err(DecodeError::MissingField("mapOfObj: Map<String, AnotherType>.".to_string()));
+    }
+    if !_map_of_arr_of_obj_set {
+        return Err(DecodeError::MissingField("mapOfArrOfObj: Map<String, [AnotherType]>.".to_string()));
+    }
 
     Ok(ArgsModuleMethod {
         str: _str,
@@ -182,6 +218,8 @@ pub fn deserialize_module_method_args(args: &[u8]) -> Result<ArgsModuleMethod, D
         opt_enum_array: _opt_enum_array,
         map: _map,
         map_of_arr: _map_of_arr,
+        map_of_obj: _map_of_obj,
+        map_of_arr_of_obj: _map_of_arr_of_obj,
     })
 }
 

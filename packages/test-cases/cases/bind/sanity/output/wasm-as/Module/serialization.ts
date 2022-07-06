@@ -156,6 +156,30 @@ export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Args_moduleMe
       _mapOfArrSet = true;
       reader.context().pop();
     }
+    else if (field == "mapOfObj") {
+      reader.context().push(field, "Map<string, Types.AnotherType>", "type found, reading property");
+      _mapOfObj = reader.readExtGenericMap((reader: Read): string => {
+        return reader.readString();
+      }, (reader: Read): Types.AnotherType => {
+        const object = Types.AnotherType.read(reader);
+        return object;
+      });
+      _mapOfObjSet = true;
+      reader.context().pop();
+    }
+    else if (field == "mapOfArrOfObj") {
+      reader.context().push(field, "Map<string, Array<Types.AnotherType>>", "type found, reading property");
+      _mapOfArrOfObj = reader.readExtGenericMap((reader: Read): string => {
+        return reader.readString();
+      }, (reader: Read): Array<Types.AnotherType> => {
+        return reader.readArray((reader: Read): Types.AnotherType => {
+          const object = Types.AnotherType.read(reader);
+          return object;
+        });
+      });
+      _mapOfArrOfObjSet = true;
+      reader.context().pop();
+    }
     reader.context().pop();
   }
 
@@ -174,6 +198,12 @@ export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Args_moduleMe
   if (!_mapOfArrSet) {
     throw new Error(reader.context().printWithContext("Missing required argument: 'mapOfArr: Map<String, [Int]>'"));
   }
+  if (!_mapOfObjSet) {
+    throw new Error(reader.context().printWithContext("Missing required argument: 'mapOfObj: Map<String, AnotherType>'"));
+  }
+  if (!_mapOfArrOfObjSet) {
+    throw new Error(reader.context().printWithContext("Missing required argument: 'mapOfArrOfObj: Map<String, [AnotherType]>'"));
+  }
 
   return {
     str: _str,
@@ -183,7 +213,9 @@ export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Args_moduleMe
     enumArray: _enumArray,
     optEnumArray: _optEnumArray,
     map: _map,
-    mapOfArr: _mapOfArr
+    mapOfArr: _mapOfArr,
+    mapOfObj: _mapOfObj,
+    mapOfArrOfObj: _mapOfArrOfObj
   };
 }
 
