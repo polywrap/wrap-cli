@@ -352,7 +352,7 @@ export const abi: Abi = {
           name: "mapOfObj",
           type: "Map<String, AnotherType>",
           key: createMapKeyDefinition({ name: "mapOfObj", type: "String", required: true }),
-          value: createObjectDefinition({ name: "mapOfObj", type: "AnotherType", required: true }),
+          value: createObjectRef({ name: "mapOfObj", type: "AnotherType", required: true }),
           required: true
         }),
         createMapPropertyDefinition({
@@ -362,7 +362,7 @@ export const abi: Abi = {
           value: createArrayDefinition({
             name: "mapOfArrOfObj",
             type: "[AnotherType]",
-            item: createObjectDefinition({ name: "mapOfArrOfObj", type: "AnotherType", required: true }),
+            item: createObjectRef({ name: "mapOfArrOfObj", type: "AnotherType", required: true }),
             required: true
           }),
           required: true

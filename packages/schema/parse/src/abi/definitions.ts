@@ -106,6 +106,7 @@ export function createAnyDefinition(args: {
   scalar?: ScalarDefinition;
   object?: ObjectRef;
   enum?: EnumRef;
+  unresolvedObjectOrEnum?: UnresolvedObjectOrEnumRef;
 }): AnyDefinition {
   return {
     ...createGenericDefinition(args),
@@ -114,7 +115,9 @@ export function createAnyDefinition(args: {
     scalar: args.scalar ? args.scalar : null,
     object: args.object ? args.object : null,
     enum: args.enum ? args.enum : null,
-    unresolvedObjectOrEnum: null,
+    unresolvedObjectOrEnum: args.unresolvedObjectOrEnum
+      ? args.unresolvedObjectOrEnum
+      : null,
     kind: DefinitionKind.Any,
   };
 }
@@ -237,6 +240,10 @@ export function createMapDefinition(args: {
         args.value && isKind(args.value, DefinitionKind.EnumRef)
           ? (args.value as EnumRef)
           : undefined,
+      unresolvedObjectOrEnum:
+        args.value && isKind(args.value, DefinitionKind.UnresolvedObjectOrEnum)
+          ? (args.value as UnresolvedObjectOrEnumRef)
+          : undefined,
     }),
     key: args.key ? args.key : null,
     value: args.value ? args.value : null,
@@ -275,6 +282,10 @@ export function createArrayDefinition(args: {
       enum:
         args.item && isKind(args.item, DefinitionKind.EnumRef)
           ? (args.item as EnumRef)
+          : undefined,
+      unresolvedObjectOrEnum:
+        args.item && isKind(args.item, DefinitionKind.UnresolvedObjectOrEnum)
+          ? (args.item as UnresolvedObjectOrEnumRef)
           : undefined,
     }),
     item: args.item ? args.item : null,
