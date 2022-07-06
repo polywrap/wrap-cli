@@ -4,7 +4,7 @@ import path from "path";
 
 jest.setTimeout(60000);
 
-describe("JSON RPC Wasm Wrapper (Rust)", () => {
+describe("Template Wrapper End to End Tests", () => {
 
   const client: PolywrapClient = new PolywrapClient();
   let wrapperUri: string;

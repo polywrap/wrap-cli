@@ -1,5 +1,0 @@
-query {
-  sampleMethod(
-    arg: $arg
-  )
-}
