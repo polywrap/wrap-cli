@@ -1,0 +1,56 @@
+{
+  "id": "BuildManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["format"],
+  "properties": {
+    "format": {
+      "description": "Polywrap build manifest format version.",
+      "type": "string",
+      "const": "0.0.1-prealpha.2"
+    },
+    "docker": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "description": "Docker image name.",
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9\\-\\_]+$"
+        },
+        "dockerfile": {
+          "description": "Docker image file name.",
+          "type": "string",
+          "pattern": "^\\.?\\.?(\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)*\\/Dockerfile(.mustache)?$"
+        }
+      }
+    },
+    "config": {
+      "description": "Custom configuration.",
+      "type": "object"
+    },
+    "linked_packages": {
+      "description": "Locally linked packages into docker build image.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "description": "Package name",
+            "type": "string"
+          },
+          "path": {
+            "description": "Path to linked package directory.",
+            "type": "string"
+          },
+          "filter": {
+            "description": "Ignore files matching this regex in linked package directory.",
+            "type": "string"
+          }
+        },
+        "required": ["name", "path"]
+      }
+    }
+  }
+}

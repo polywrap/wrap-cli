@@ -1,5 +1,0 @@
-format: 0.0.1-prealpha.9
-name: "File string malformed"
-language: wasm/assemblyscript
-main: ../index.ts
-schema: .9-../schema.graphql

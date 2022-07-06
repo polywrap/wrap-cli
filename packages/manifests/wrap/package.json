@@ -1,0 +1,15 @@
+{
+  "name": "@polywrap/wrap-manifest-schemas",
+  "description": "WRAP Manifest Schemas",
+  "version": "0.0.1-prealpha.93",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/polywrap/monorepo.git"
+  },
+  "main": "./package.json",
+  "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
+  "publishConfig": {
+    "access": "public"
+  }
+}

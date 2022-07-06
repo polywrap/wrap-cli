@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { Uri, Client, MaybeAsync, executeMaybeAsyncFunction } from ".";
+import { Client, MaybeAsync, executeMaybeAsyncFunction, Uri } from ".";
 
 /**
  * Invocable plugin method.

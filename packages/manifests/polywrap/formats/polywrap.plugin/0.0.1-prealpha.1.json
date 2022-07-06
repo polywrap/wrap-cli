@@ -1,0 +1,49 @@
+{
+  "id": "PluginManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "language",
+    "schema"
+  ],
+  "properties": {
+    "format": {
+      "description": "Polywrap plugin manifest format version.",
+      "type": "string",
+      "const": "0.0.1-prealpha.1"
+    },
+    "language": {
+      "description" : "Plugin language.",
+      "type": "string",
+      "pattern": "^plugin\\/[a-z0-9]+$"
+    },
+    "schema": {
+      "description": "Path to graphql schema.",
+      "type": "string",
+      "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.?[\\w\\-\\.]*$"
+    },
+    "import_redirects": {
+      "description": "Redirects source URI to local wrapper or plugin.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "uri": {
+            "description": "Source URI that needs to be redirected.",
+            "type": "string"
+          },
+          "schema": {
+            "description": "Path to GraphQL schema of the module to which URI will be redirected.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "uri",
+          "schema"
+        ]
+      }
+    }
+  }
+}

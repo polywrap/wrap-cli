@@ -8,7 +8,8 @@ import {
   Invoker,
   InvocableResult,
 } from ".";
-import { AnyManifestArtifact, ManifestArtifactType } from "../manifest";
+
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
 /**
  * The Wrapper definition, which can be used to spawn
@@ -30,26 +31,6 @@ export abstract class Wrapper implements Invocable {
   ): Promise<InvocableResult<unknown>>;
 
   /**
-   * Get the Wrapper's schema
-   *
-   * @param client The client instance the schema.
-   */
-  public abstract getSchema(client: Client): Promise<string>;
-
-  /**
-   * Get the Wrapper's manifest
-   *
-   * @param options Configuration options for manifest retrieval
-   * @param client The client instance requesting the manifest.
-   */
-  public abstract getManifest<
-    TManifestArtifactType extends ManifestArtifactType
-  >(
-    options: GetManifestOptions<TManifestArtifactType>,
-    client: Client
-  ): Promise<AnyManifestArtifact<TManifestArtifactType>>;
-
-  /**
    * Get a file from the Wrapper package.
    * Not implemented for plugin wrappers.
    *
@@ -60,7 +41,25 @@ export abstract class Wrapper implements Invocable {
     options: GetFileOptions,
     client: Client
   ): Promise<Uint8Array | string>;
+
+  /**
+   * Get a manifest from the Wrapper package.
+   * Not implemented for plugin wrappers.
+   *
+   * @param options Configuration options for manifest retrieval
+   * @param client The client instance requesting the manifest.
+   */
+  public abstract getManifest(
+    options: GetManifestOptions,
+    client: Client
+  ): Promise<WrapManifest>;
+
+  /**
+   * Get the Wrapper's schema
+   *
+   * @param client The client instance the schema.
+   */
+  public abstract getSchema(client: Client): Promise<string>;
 }
 
-/** Cache of Wrapper definitions, mapping the Wrapper's URI to its definition */
 export type WrapperCache = Map<string, Wrapper>;
