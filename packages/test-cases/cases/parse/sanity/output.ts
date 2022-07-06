@@ -330,10 +330,11 @@ export const abi: Abi = {
           }),
         }),
         createMapPropertyDefinition({
-          name: "map1",
+          name: "map",
           type: "Map<String, Int>",
-          key: createMapKeyDefinition({ name: "map1", type: "String", required: true }),
-          value: createScalarDefinition({ name: "map1", type: "Int" }),
+          key: createMapKeyDefinition({ name: "map", type: "String", required: true }),
+          value: createScalarDefinition({ name: "map", type: "Int" }),
+          required: true
         }),
         createMapPropertyDefinition({
           name: "mapOfArr",
@@ -343,9 +344,29 @@ export const abi: Abi = {
             name: "mapOfArr",
             type: "[Int]",
             item: createScalarDefinition({ name: "mapOfArr", type: "Int", required: true }),
+            required: true
           }),
           required: true
-        })
+        }),
+        createMapPropertyDefinition({
+          name: "mapOfObj",
+          type: "Map<String, AnotherType>",
+          key: createMapKeyDefinition({ name: "mapOfObj", type: "String", required: true }),
+          value: createObjectDefinition({ name: "mapOfObj", type: "AnotherType", required: true }),
+          required: true
+        }),
+        createMapPropertyDefinition({
+          name: "mapOfArrOfObj",
+          type: "Map<String, [AnotherType]>",
+          key: createMapKeyDefinition({ name: "mapOfArrOfObj", type: "String", required: true }),
+          value: createArrayDefinition({
+            name: "mapOfArrOfObj",
+            type: "[AnotherType]",
+            item: createObjectDefinition({ name: "mapOfArrOfObj", type: "AnotherType", required: true }),
+            required: true
+          }),
+          required: true
+        }),
       ],
     },
     {

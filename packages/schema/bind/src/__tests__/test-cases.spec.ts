@@ -74,8 +74,6 @@ describe("Polywrap Binding Test Suite", () => {
           JSON.stringify(expectedOutput, null, 2),
         );
 
-        console.log(language);
-
         expect(output).toMatchObject(expectedOutput);
       }
     });
