@@ -1,0 +1,288 @@
+{
+  "id": "Abi",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "objectTypes",
+    "enumType",
+    "interfaceTypes",
+    "importedObjectTypes",
+    "importedModuleTypes",
+    "importedEnumTypes",
+    "importedEnvTypes"
+  ],
+  "properties": {
+    "objectTypes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/objectDefinition"
+      }
+    },
+    "enumType": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/enumDefinition"
+      }
+    },
+    "interfaceTypes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/interfaceDefinition"
+      }
+    },
+    "importedObjectTypes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/importedObjectDefinition"
+      }
+    },
+    "importedModuleTypes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/importedModuleDefinition"
+      }
+    },
+    "importedEnumTypes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/importedEnumDefinition"
+      }
+    },
+    "importedEnvTypes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/importedEnvDefinition"
+      }
+    },
+    "envType": {
+      "$ref": "#/definitions/objectDefinition"
+    }
+  },
+  "definitions": {
+    "objectDefinition": {
+      "type": "object",
+      "properties": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/genericDefinition"
+          },
+          {
+            "$ref": "#/definitions/withComment"
+          }
+        ],
+        "properties": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/propertyDefinition"
+          }
+        },
+        "interfaces": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/interfaceDefinition"
+          }
+        }
+      }
+    },
+    "enumDefinition": {
+    },
+    "interfaceDefinition": {
+    },
+    "importedObjectDefinition": {
+    },
+    "importedModuleDefinition": {
+    },
+    "importedEnumDefinition": {
+    },
+    "importedEnvDefinition": {
+    },
+    "envType": {
+    },
+    "withKind": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "number"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "kind"
+      ]
+    },
+    "withComment": {
+      "type": "object",
+      "properties": {
+        "comment": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "propertyDefinition": {
+    },
+    "genericDefinition": {
+      "type": "object",
+      "properties": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/withKind"
+          }
+        ],
+        "type": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "required": {
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ]
+    },
+    "anyDefinition": {
+      "type": "object",
+      "properties": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/genericDefinition"
+          }
+        ],
+        "array": {
+          "$ref": "#/definitions/arrayDefinition"
+        },
+        "scalar": {
+          "$ref": "#/definitions/scalarDefinition"
+        },
+        "map": {
+          "$ref": "#/definitions/mapDefinition"
+        },
+        "object": {
+          "$ref": "#/definitions/objectRef"
+        },
+        "enum": {
+          "$ref": "#/definitions/enumRef"
+        },
+        "unresolvedObjectOrEnum": {
+          "$ref": "#/definitions/unresolvedObjectOrEnumRef"
+        }
+      }
+    },
+    "arrayDefinition": {
+      "type": "object",
+      "properties": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/anyDefinition"
+          }
+        ],
+        "item": {
+          "$ref": "#/definitions/genericDefinition"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "item"
+      ]
+    },
+    "scalarType": {
+      "type": "string",
+      "enum": [
+        "UInt",
+        "UInt8",
+        "UInt16",
+        "UInt32",
+        "Int",
+        "Int8",
+        "Int16",
+        "Int32",
+        "String",
+        "Boolean",
+        "Bytes",
+        "BigInt",
+        "BigNumber",
+        "JSON"
+      ]
+    },
+    "scalarDefinition": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/scalarType"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ]
+    },
+    "mapKeyType": {
+      "type": "string",
+      "enum": [
+        "UInt",
+        "UInt8",
+        "UInt16",
+        "UInt32",
+        "Int",
+        "Int8",
+        "Int16",
+        "Int32",
+        "String"
+      ]
+    },
+    "mapKeyDefinition": {
+      "type": "object",
+      "properties": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/anyDefinition"
+          }
+        ],
+        "type": {
+          "$ref": "#/definitions/mapKeyType"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ]
+    },
+    "mapDefinition": {
+      "type": "object",
+      "properties": {
+        "allOf": [
+          {
+            "$ref": "#/definitions/anyDefinition"
+          },
+          {
+            "$ref": "#/definitions/withComment"
+          }
+        ],
+        "key": {
+          "$ref": "#/definitions/mapKeyDefinition"
+        },
+        "value": {
+          "$ref": "#/definitions/genericDefinition"
+        }
+      },
+      "additionalProperties": false,
+      "required": [
+        "key",
+        "value"
+      ]
+    },
+    "objectRef": {
+      "$ref": "#/definitions/genericDefinition"
+    },
+    "enumRef": {
+      "$ref": "#/definitions/genericDefinition"
+    },
+    "unresolvedObjectOrEnumRef": {
+      "$ref": "#/definitions/genericDefinition"
+    }
+  }
+}

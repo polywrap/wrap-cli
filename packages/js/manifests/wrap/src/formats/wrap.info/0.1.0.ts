@@ -25,4 +25,5 @@ export interface WrapManifest {
   abi: {
     [k: string]: unknown;
   };
+  __type: "WrapManifest";
 }
