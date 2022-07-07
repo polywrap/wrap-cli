@@ -20,6 +20,9 @@ export class Args_moduleMethod {
   enumArray: Array<Types.CustomEnum>;
   optEnumArray: Array<Option<Types.CustomEnum>> | null;
   map: Map<string, i32>;
+  mapOfArr: Map<string, Array<i32>>;
+  mapOfObj: Map<string, Types.AnotherType>;
+  mapOfArrOfObj: Map<string, Array<Types.AnotherType>>;
 }
 
 export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Args_moduleMethod {
@@ -38,6 +41,12 @@ export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Args_moduleMe
   let _optEnumArray: Array<Option<Types.CustomEnum>> | null = null;
   let _map: Map<string, i32> = new Map<string, i32>();
   let _mapSet: bool = false;
+  let _mapOfArr: Map<string, Array<i32>> = new Map<string, Array<i32>>();
+  let _mapOfArrSet: bool = false;
+  let _mapOfObj: Map<string, Types.AnotherType> = new Map<string, Types.AnotherType>();
+  let _mapOfObjSet: bool = false;
+  let _mapOfArrOfObj: Map<string, Array<Types.AnotherType>> = new Map<string, Array<Types.AnotherType>>();
+  let _mapOfArrOfObjSet: bool = false;
 
   while (numFields > 0) {
     numFields--;
@@ -135,6 +144,42 @@ export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Args_moduleMe
       _mapSet = true;
       reader.context().pop();
     }
+    else if (field == "mapOfArr") {
+      reader.context().push(field, "Map<string, Array<i32>>", "type found, reading property");
+      _mapOfArr = reader.readExtGenericMap((reader: Read): string => {
+        return reader.readString();
+      }, (reader: Read): Array<i32> => {
+        return reader.readArray((reader: Read): i32 => {
+          return reader.readInt32();
+        });
+      });
+      _mapOfArrSet = true;
+      reader.context().pop();
+    }
+    else if (field == "mapOfObj") {
+      reader.context().push(field, "Map<string, Types.AnotherType>", "type found, reading property");
+      _mapOfObj = reader.readExtGenericMap((reader: Read): string => {
+        return reader.readString();
+      }, (reader: Read): Types.AnotherType => {
+        const object = Types.AnotherType.read(reader);
+        return object;
+      });
+      _mapOfObjSet = true;
+      reader.context().pop();
+    }
+    else if (field == "mapOfArrOfObj") {
+      reader.context().push(field, "Map<string, Array<Types.AnotherType>>", "type found, reading property");
+      _mapOfArrOfObj = reader.readExtGenericMap((reader: Read): string => {
+        return reader.readString();
+      }, (reader: Read): Array<Types.AnotherType> => {
+        return reader.readArray((reader: Read): Types.AnotherType => {
+          const object = Types.AnotherType.read(reader);
+          return object;
+        });
+      });
+      _mapOfArrOfObjSet = true;
+      reader.context().pop();
+    }
     reader.context().pop();
   }
 
@@ -150,6 +195,15 @@ export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Args_moduleMe
   if (!_mapSet) {
     throw new Error(reader.context().printWithContext("Missing required argument: 'map: Map<String, Int>'"));
   }
+  if (!_mapOfArrSet) {
+    throw new Error(reader.context().printWithContext("Missing required argument: 'mapOfArr: Map<String, [Int]>'"));
+  }
+  if (!_mapOfObjSet) {
+    throw new Error(reader.context().printWithContext("Missing required argument: 'mapOfObj: Map<String, AnotherType>'"));
+  }
+  if (!_mapOfArrOfObjSet) {
+    throw new Error(reader.context().printWithContext("Missing required argument: 'mapOfArrOfObj: Map<String, [AnotherType]>'"));
+  }
 
   return {
     str: _str,
@@ -158,7 +212,10 @@ export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Args_moduleMe
     optEnum: _optEnum,
     enumArray: _enumArray,
     optEnumArray: _optEnumArray,
-    map: _map
+    map: _map,
+    mapOfArr: _mapOfArr,
+    mapOfObj: _mapOfObj,
+    mapOfArrOfObj: _mapOfArrOfObj
   };
 }
 
