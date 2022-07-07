@@ -69,38 +69,6 @@
           "url"
         ]
       }
-    },
-    "queries": {
-      "description": "List of example queries.",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "name": {
-            "description": "Query name.",
-            "type": "string"
-          },
-          "description": {
-            "description": "Query description.",
-            "type": "string"
-          },
-          "query": {
-            "description": "Path to graph ql file.",
-            "type": "string",
-            "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.graphql$"
-          },
-          "vars": {
-            "description": "Query parameters.",
-            "type": "string",
-            "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.json$"
-          }
-        },
-        "required": [
-          "name",
-          "query"
-        ]
-      }
     }
   }
 }
