@@ -1,4 +1,4 @@
-format: 0.0.1-prealpha.2
+format: 0.1.0
 docker:
   name: enum-types-wasm-rs
 linked_packages:

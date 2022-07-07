@@ -1,0 +1,45 @@
+{
+  "id": "DeployManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "stages"
+  ],
+  "properties": {
+    "format": {
+      "description": "Polywrap deployment manifest format version.",
+      "type": "string",
+      "const": "0.1.0"
+    },
+    "stages": {
+      "patternProperties": {
+        "^.*$": {
+          "description": "Deployment stage.",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["package"],
+          "properties": {
+            "package": {
+              "description": "Name of the deploy stage.",
+              "type": "string"
+            },
+            "config": {
+              "description": "Custom configuration.",
+              "type": "object"
+            },
+            "depends_on": {
+              "description": "Name of dependent stages.",
+              "type": "string"
+            },
+            "uri": {
+              "description": "URI to pass into the deploy stage.",
+              "type": "string",
+              "pattern": "^[wrap://]*[a-z\\-\\_0-9]+\\/.+$"
+            }
+          }
+        }
+      }
+    }
+  }
+}

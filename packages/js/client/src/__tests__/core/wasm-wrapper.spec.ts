@@ -3,18 +3,8 @@ import {
   initTestEnvironment,
   stopTestEnvironment,
 } from "@polywrap/test-env-js";
-import {
-  Uri,
-  PluginModule,
-  Subscription,
-  PolywrapManifest,
-  BuildManifest,
-  MetaManifest,
-  deserializePolywrapManifest,
-  deserializeBuildManifest,
-  deserializeMetaManifest,
-  msgpackDecode,
-} from "../..";
+import { msgpackDecode } from "@polywrap/msgpack-js";
+import { Uri, PluginModule, Subscription } from "../..";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import fs from "fs";
 import path from "path";
@@ -35,14 +25,14 @@ describe("wasm-wrapper", () => {
     await initTestEnvironment();
     await buildWrapper(simpleWrapperPath);
     await buildWrapper(simpleFsWrapperPath);
-    if(fs.existsSync(tempFilePath)){
+    if (fs.existsSync(tempFilePath)) {
       await fs.promises.rm(tempFilePath);
     }
   });
 
   afterAll(async () => {
     await stopTestEnvironment();
-    if(fs.existsSync(tempFilePath)){
+    if (fs.existsSync(tempFilePath)) {
       await fs.promises.rm(tempFilePath);
     }
   });
@@ -62,6 +52,38 @@ describe("wasm-wrapper", () => {
       },
     };
   };
+
+  test("can invoke with string URI", async () => {
+    const client = await getClient();
+    const result = await client.invoke<string>({
+      uri: simpleWrapperUri.uri,
+      method: "simpleMethod",
+      args: {
+        arg: "test",
+      },
+    });
+
+    expect(result.error).toBeFalsy();
+    expect(result.data).toBeTruthy();
+    expect(typeof result.data).toBe("string");
+    expect(result.data).toEqual("test");
+  });
+
+  test("can invoke with typed URI", async () => {
+    const client = await getClient();
+    const result = await client.invoke<string, Uri>({
+      uri: simpleWrapperUri,
+      method: "simpleMethod",
+      args: {
+        arg: "test",
+      },
+    });
+
+    expect(result.error).toBeFalsy();
+    expect(result.data).toBeTruthy();
+    expect(typeof result.data).toBe("string");
+    expect(result.data).toEqual("test");
+  });
 
   test("invoke with decode defaulted to true works as expected", async () => {
     const client = await getClient();
@@ -156,92 +178,52 @@ describe("wasm-wrapper", () => {
     expect(result.data).toEqual("plugin response");
   });
 
-  test("getManifest -- polywrap manifest, build manifest, meta manifest", async () => {
-    const client = await getClient();
-
-    const actualManifestStr: string = fs.readFileSync(
-      `${simpleWrapperPath}/build/polywrap.json`,
-      "utf8"
-    );
-    const actualManifest: PolywrapManifest = deserializePolywrapManifest(
-      actualManifestStr
-    );
-    const manifest: PolywrapManifest = await client.getManifest(
-      simpleWrapperUri,
-      {
-        type: "polywrap",
-      }
-    );
-    expect(manifest).toStrictEqual(actualManifest);
-
-    const actualBuildManifestStr: string = fs.readFileSync(
-      `${simpleWrapperPath}/build/polywrap.build.json`,
-      "utf8"
-    );
-    const actualBuildManifest: BuildManifest = deserializeBuildManifest(
-      actualBuildManifestStr
-    );
-    const buildManifest: BuildManifest = await client.getManifest(
-      simpleWrapperUri,
-      {
-        type: "build",
-      }
-    );
-    expect(buildManifest).toStrictEqual(actualBuildManifest);
-
-    const actualMetaManifestStr: string = fs.readFileSync(
-      `${simpleWrapperPath}/build/polywrap.meta.json`,
-      "utf8"
-    );
-    const actualMetaManifest: MetaManifest = deserializeMetaManifest(
-      actualMetaManifestStr
-    );
-    const metaManifest: MetaManifest = await client.getManifest(
-      simpleWrapperUri,
-      {
-        type: "meta",
-      }
-    );
-    expect(metaManifest).toStrictEqual(actualMetaManifest);
-  });
-
   test("get file from wrapper", async () => {
     const client = await getClient();
 
-    const schemaStr: string = fs.readFileSync(
-      `${simpleWrapperPath}/build/schema.graphql`,
-      "utf8"
+    const expectedManifest = new Uint8Array(
+      await fs.promises.readFile(`${simpleWrapperPath}/build/wrap.info`)
     );
 
-    const manifest: PolywrapManifest = await client.getManifest(
+    const receivedManifest: Uint8Array = (await client.getFile(
       simpleWrapperUri,
       {
-        type: "polywrap",
+        path: "./wrap.info",
       }
+    )) as Uint8Array;
+
+    expect(receivedManifest).toEqual(expectedManifest);
+
+    const expectedWasmModule = new Uint8Array(
+      await fs.promises.readFile(`${simpleWrapperPath}/build/wrap.wasm`)
     );
 
-    const fileStr: string = (await client.getFile(simpleWrapperUri, {
-      path: manifest.schema as string,
-      encoding: "utf8",
-    })) as string;
-    expect(fileStr).toEqual(schemaStr);
+    const receivedWasmModule: Uint8Array = (await client.getFile(
+      simpleWrapperUri,
+      {
+        path: "./wrap.wasm",
+      }
+    )) as Uint8Array;
 
-    const fileBuffer: Uint8Array = (await client.getFile(simpleWrapperUri, {
-      path: manifest.schema!,
-    })) as Uint8Array;
-    const decoder = new TextDecoder("utf8");
-    const text = decoder.decode(fileBuffer);
-    expect(text).toEqual(schemaStr);
+    expect(receivedWasmModule).toEqual(expectedWasmModule);
+
+    const pluginClient = await getClient({
+      plugins: [
+        {
+          uri: "ens/mock-plugin.eth",
+          plugin: {
+            factory: () => ({} as PluginModule<{}>),
+            manifest: {
+              schema: "",
+              implements: [],
+            },
+          },
+        },
+      ],
+    });
 
     await expect(() =>
-      client.getManifest(new Uri("wrap://ens/ipfs.polywrap.eth"), {
-        type: "polywrap",
-      })
-    ).rejects.toThrow(
-      "client.getManifest(...) is not implemented for Plugins."
-    );
-    await expect(() =>
-      client.getFile(new Uri("wrap://ens/ipfs.polywrap.eth"), {
+      pluginClient.getFile("ens/mock-plugin.eth", {
         path: "./index.js",
       })
     ).rejects.toThrow("client.getFile(...) is not implemented for Plugins.");
@@ -261,18 +243,21 @@ describe("wasm-wrapper", () => {
       expectedResults.push(data);
     }, 4000);
 
-    const getSubscription: Subscription<Uint8Array> = client.subscribe<Uint8Array>({
-      uri: simpleFsWrapperUri.uri,
-      method: "readFile",
-      args: {
-        path: tempFilePath,
-      },
-      frequency: { ms: 4500 },
-    });
+    const getSubscription: Subscription<Uint8Array> = client.subscribe<Uint8Array>(
+      {
+        uri: simpleFsWrapperUri.uri,
+        method: "readFile",
+        args: {
+          path: tempFilePath,
+        },
+        frequency: { ms: 4500 },
+      }
+    );
 
     for await (let result of getSubscription) {
       expect(result.error).toBeFalsy();
       const val = result.data;
+
       if (val !== undefined) {
         results.push(val);
         if (results.length >= 2) {
@@ -297,14 +282,16 @@ describe("wasm-wrapper", () => {
       await fs.promises.writeFile(tempFilePath, data);
     }, 4000);
 
-    const getSubscription: Subscription<Uint8Array> = client.subscribe<Uint8Array>({
-      uri: simpleFsWrapperUri.uri,
-      method: "readFile",
-      args: {
-        path: tempFilePath
-      },
-      frequency: { ms: 4500 },
-    });
+    const getSubscription: Subscription<Uint8Array> = client.subscribe<Uint8Array>(
+      {
+        uri: simpleFsWrapperUri.uri,
+        method: "readFile",
+        args: {
+          path: tempFilePath,
+        },
+        frequency: { ms: 4500 },
+      }
+    );
 
     new Promise(async () => {
       for await (let result of getSubscription) {

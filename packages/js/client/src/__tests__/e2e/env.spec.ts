@@ -1,5 +1,5 @@
-import { getClient } from "../utils/getClient";
 import { PluginModule } from "@polywrap/core-js";
+import { getClient } from "../utils/getClient";
 
 jest.setTimeout(200000);
 
@@ -58,5 +58,5 @@ describe("env", () => {
       expect(mockEnv.data).toBeTruthy();
       expect(mockEnv.data?.mockEnv).toMatchObject({ arg1: "10" });
     });
-  })
+  });
 });

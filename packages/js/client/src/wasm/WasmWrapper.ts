@@ -7,22 +7,20 @@ import {
   InvokeResult,
   InvocableResult,
   Wrapper,
-  PolywrapManifest,
   Uri,
   Client,
-  GetManifestOptions,
-  deserializePolywrapManifest,
-  deserializeBuildManifest,
-  deserializeMetaManifest,
-  AnyManifestArtifact,
-  ManifestArtifactType,
   combinePaths,
   Env,
   UriResolverInterface,
   GetFileOptions,
-  msgpackEncode,
+  GetManifestOptions,
   isBuffer,
 } from "@polywrap/core-js";
+import {
+  deserializeWrapManifest,
+  WrapManifest,
+} from "@polywrap/wrap-manifest-types-js";
+import { msgpackEncode } from "@polywrap/msgpack-js";
 import { Tracer } from "@polywrap/tracing-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 
@@ -55,12 +53,13 @@ export interface State {
 export class WasmWrapper extends Wrapper {
   public static requiredExports: readonly string[] = ["_wrap_invoke"];
 
+  private _info: WrapManifest | undefined = undefined;
   private _schema?: string;
   private _wasm: Uint8Array | undefined = undefined;
 
   constructor(
     private _uri: Uri,
-    private _manifest: PolywrapManifest,
+    private _manifest: WrapManifest,
     private _uriResolver: string,
     private _clientEnv?: Env<Uri>
   ) {
@@ -76,57 +75,13 @@ export class WasmWrapper extends Wrapper {
     Tracer.endSpan();
   }
 
-  @Tracer.traceMethod("WasmWrapper: getManifest")
-  public async getManifest<TManifestArtifact extends ManifestArtifactType>(
-    options: GetManifestOptions<TManifestArtifact>,
-    client: Client
-  ): Promise<AnyManifestArtifact<TManifestArtifact>> {
-    if (!options?.type) {
-      return this._manifest as AnyManifestArtifact<TManifestArtifact>;
-    }
-    let manifest: string | undefined;
-    const fileTitle: string =
-      options.type === "polywrap" ? "polywrap" : "polywrap." + options.type;
-
-    const manifestExts = ["json", "yaml", "yml"];
-    for (const ext of manifestExts) {
-      const path = `${fileTitle}.${ext}`;
-      try {
-        manifest = (await this.getFile(
-          { path, encoding: "utf8" },
-          client
-        )) as string;
-        break;
-      } catch (error) {
-        continue;
-      }
-    }
-    if (!manifest) {
-      throw new Error("WasmWrapper: Manifest was not found.");
-    }
-    switch (options.type) {
-      case "build":
-        return deserializeBuildManifest(
-          manifest
-        ) as AnyManifestArtifact<TManifestArtifact>;
-      case "meta":
-        return deserializeMetaManifest(
-          manifest
-        ) as AnyManifestArtifact<TManifestArtifact>;
-      default:
-        return deserializePolywrapManifest(
-          manifest
-        ) as AnyManifestArtifact<TManifestArtifact>;
-    }
-  }
-
   @Tracer.traceMethod("WasmWrapper: getFile")
   public async getFile(
     options: GetFileOptions,
     client: Client
   ): Promise<Uint8Array | string> {
     const { path, encoding } = options;
-    const { data, error } = await UriResolverInterface.Query.getFile(
+    const { data, error } = await UriResolverInterface.module.getFile(
       {
         invoke: <TData = unknown, TUri extends Uri | string = string>(
           options: InvokeOptions<TUri>
@@ -160,6 +115,36 @@ export class WasmWrapper extends Wrapper {
       return text;
     }
     return data;
+  }
+
+  @Tracer.traceMethod("WasmWrapper: getManifest")
+  public async getManifest(
+    options: GetManifestOptions,
+    client: Client
+  ): Promise<WrapManifest> {
+    if (this._info !== undefined) {
+      return this._info;
+    }
+
+    this._schema = (await this.getFile(
+      {
+        path: "schema.graphql",
+        encoding: "utf-8",
+      },
+      client
+    )) as string;
+
+    const moduleManifest = "wrap.info";
+
+    const data = (await this.getFile(
+      { path: moduleManifest },
+      client
+    )) as Uint8Array;
+
+    if (!data) {
+      throw Error(`Package manifest does not contain information`);
+    }
+    return deserializeWrapManifest(data);
   }
 
   @Tracer.traceMethod("WasmWrapper: invoke")
@@ -249,9 +234,7 @@ export class WasmWrapper extends Wrapper {
       return this._schema;
     }
 
-    // Either the query or mutation module will work,
-    // as they share the same schema file
-    const schema = this._manifest.schema;
+    const schema = "schema.graphql";
     this._schema = (await this.getFile(
       { path: schema, encoding: "utf8" },
       client
@@ -301,7 +284,7 @@ export class WasmWrapper extends Wrapper {
       return this._wasm;
     }
 
-    const moduleManifest = this._manifest.module;
+    const moduleManifest = "wrap.wasm";
 
     if (!moduleManifest) {
       throw Error(`Package manifest does not contain a definition for module`);

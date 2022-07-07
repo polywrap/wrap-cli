@@ -4,6 +4,7 @@ import {
   ValidationFailReason,
   WasmPackageValidator,
 } from "..";
+import { convertWrapInfoJsonToMsgpack } from "./utils";
 
 jest.setTimeout(200000);
 
@@ -19,6 +20,8 @@ describe("manifests", () => {
       maxModuleSize: 1_000_000,
       maxNumberOfFiles: 1000,
     });
+
+    convertWrapInfoJsonToMsgpack();
   });
 
   it("fails validating an invalid wrap manifest", async () => {
@@ -27,7 +30,6 @@ describe("manifests", () => {
     );
 
     const result = await validator.validate(reader);
-
     expect(result.valid).toBeFalsy();
     expect(result.failReason).toEqual(ValidationFailReason.InvalidWrapManifest);
   });
@@ -43,29 +45,5 @@ describe("manifests", () => {
     expect(result.failReason).toEqual(
       ValidationFailReason.WrapManifestNotFound
     );
-  });
-
-  it("fails validating an invalid build manifest", async () => {
-    const reader = new FileSystemPackageReader(
-      path.join(testWrappersPath, "invalid-build-manifest")
-    );
-
-    const result = await validator.validate(reader);
-
-    expect(result.valid).toBeFalsy();
-    expect(result.failReason).toEqual(
-      ValidationFailReason.InvalidBuildManifest
-    );
-  });
-
-  it("fails validating an invalid meta manifest", async () => {
-    const reader = new FileSystemPackageReader(
-      path.join(testWrappersPath, "invalid-meta-manifest")
-    );
-
-    const result = await validator.validate(reader);
-
-    expect(result.valid).toBeFalsy();
-    expect(result.failReason).toEqual(ValidationFailReason.InvalidMetaManifest);
   });
 });

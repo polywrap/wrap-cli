@@ -225,7 +225,6 @@ describe("resolveUri", () => {
     const ipfsUri = new Uri(`ipfs/${deployResult.ipfsCid}`);
 
     const result = await client.resolveUri(ensUri);
-
     expect(result.wrapper).toBeTruthy();
     expect(result.uri).toEqual(ipfsUri);
     expect(result.error).toBeFalsy();

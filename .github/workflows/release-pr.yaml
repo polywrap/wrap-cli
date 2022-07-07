@@ -142,16 +142,16 @@ jobs:
         with:
           token: ${{ secrets.POLYWRAP_BUILD_BOT_PAT }}
           push-to-fork: ${{env.BOT}}/${{github.event.repository.name}}
-          branch: release/${{env.RELEASE_VERSION}}
+          branch: release/origin-${{env.RELEASE_VERSION}}
           base: ${{ github.event.pull_request.head.ref }}
           committer: GitHub <noreply@github.com>
           author: ${{env.BOT}} <${{env.BOT}}@users.noreply.github.com>
           commit-message: "${{env.RELEASE_VERSION}}"
-          title: 'Polywrap ${{env.RELEASE_VERSION}}'
+          title: 'Polywrap Origin (${{env.RELEASE_VERSION}})'
           body: |
-            ## Polywrap ${{env.RELEASE_VERSION}}
+            ## Polywrap Origin (${{env.RELEASE_VERSION}})
 
-            TODO: Add "Polywrap-Release" Label
+            TODO: Add "Origin-Release" Label
 
             ### Breaking Changes
 

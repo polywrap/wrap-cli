@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-empty-function */
 
-import { Project, AnyManifest } from "./";
+import { Project, AnyProjectManifest } from "./";
 
 import { Uri, PolywrapClient } from "@polywrap/client-js";
 import {
@@ -16,7 +16,7 @@ import path from "path";
 import * as gluegun from "gluegun";
 
 export interface SchemaComposerConfig {
-  project: Project<AnyManifest>;
+  project: Project<AnyProjectManifest>;
   client: PolywrapClient;
 }
 
@@ -66,7 +66,6 @@ export class SchemaComposer {
     options.schemas.push(schemaFile);
 
     this._composerOutput = await composeSchema(options);
-
     return this._composerOutput;
   }
 
