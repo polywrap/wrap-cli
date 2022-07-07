@@ -17,7 +17,6 @@ export async function outputMetadata(
     ...metaManifest,
     icon: undefined,
     links: undefined,
-    invocations: undefined,
   };
 
   const writeMetadataFile = (

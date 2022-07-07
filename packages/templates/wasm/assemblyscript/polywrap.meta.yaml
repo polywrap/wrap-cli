@@ -11,8 +11,3 @@ links:
   - name: test link
     icon: ./meta/link.svg
     url: http://link.com/path
-invocations:
-  - method: testMethodWithoutArguments
-  - method: testMethodWithArguments
-    arguments:
-      firstArg: string

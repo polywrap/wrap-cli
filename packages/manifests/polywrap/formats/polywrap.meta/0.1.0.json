@@ -69,25 +69,6 @@
           "url"
         ]
       }
-    },
-    "invocations": {
-      "description": "List of available invocations",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "method": {
-            "description": "Name of the method to invoke",
-            "type": "string"
-          },
-          "arguments": {
-            "description": "Arguments to passed to the invocation",
-            "type": "object"
-          }
-        },
-        "required": [ "method" ]
-      }
     }
   }
 }

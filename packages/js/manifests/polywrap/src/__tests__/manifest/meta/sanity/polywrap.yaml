@@ -1,4 +1,0 @@
-format: 0.1.0
-name: Polywrap manifest with meta
-language: wasm/assemblyscript
-meta: ./polywrap.meta.yaml

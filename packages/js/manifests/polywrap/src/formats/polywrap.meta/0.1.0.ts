@@ -52,20 +52,5 @@ export interface MetaManifest {
      */
     url: string;
   }[];
-  /**
-   * List of available invocations
-   */
-  invocations?: {
-    /**
-     * Name of the method to invoke
-     */
-    method: string;
-    /**
-     * Arguments to passed to the invocation
-     */
-    arguments?: {
-      [k: string]: unknown;
-    };
-  }[];
   __type: "MetaManifest";
 }
