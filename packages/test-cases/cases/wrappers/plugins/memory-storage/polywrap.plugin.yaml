@@ -1,5 +1,0 @@
-format: 0.0.1-prealpha.3
-language: plugin/typescript
-name: Memory Storage
-module: ./src/index.ts
-schema: ./src/schema.graphql

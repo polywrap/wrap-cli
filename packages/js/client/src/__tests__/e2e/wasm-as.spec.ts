@@ -3,6 +3,7 @@ import {
   createPolywrapClient,
 } from "../../";
 import * as TestCases from "./test-cases";
+import { makeMemoryStoragePlugin } from "./memory-storage";
 import {
   buildWrapper,
   initTestEnvironment,
@@ -12,7 +13,6 @@ import {
   providers
 } from "@polywrap/test-env-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
-import { execSync } from "child_process";
 
 jest.setTimeout(200000);
 
@@ -54,15 +54,12 @@ describe("wasm-as test cases", () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/asyncify`
     const wrapperUri = `fs/${wrapperPath}/build`
 
-    const pluginPath = `${GetPathToTestWrappers()}/plugins/memory-storage`
-    execSync(`cd ${pluginPath} && yarn && yarn build`)
-
     await buildWrapper(wrapperPath);
 
     const client = await getClient({
       plugins: [{
         uri: "wrap://ens/memory-storage.polywrap.eth",
-        plugin: require(`${pluginPath}/build`).memoryStoragePlugin({}),
+        plugin: makeMemoryStoragePlugin({}),
       }]
     })
 
