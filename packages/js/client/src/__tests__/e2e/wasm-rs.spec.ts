@@ -1,7 +1,3 @@
-import {
-  PolywrapClientConfig,
-  createPolywrapClient,
-} from "../..";
 import * as TestCases from "./test-cases";
 import {
   buildWrapper,
@@ -91,7 +87,7 @@ describe("wasm-rs test cases", () => {
 
     await buildWrapper(implementationPath);
 
-    const client = await getClient(undefined, {
+    const client = await getClient({
       interfaces: [
         {
           interface: interfaceUri,
@@ -116,7 +112,7 @@ describe("wasm-rs test cases", () => {
 
     const implementationUri = `fs/${implementationPath}/build`;
 
-    const client = await getClient(undefined, {
+    const client = await getClient({
       interfaces: [
         {
           interface: interfaceUri,
