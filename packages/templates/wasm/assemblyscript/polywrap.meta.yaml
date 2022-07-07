@@ -1,11 +1,10 @@
 format: 0.1.0
-displayName: Simple Storage
-subtext: simple storage subtext
-description: simple storage description
+displayName: Polywrap Wasm Wrapper Template
+subtext: A template for starting a Polywrap Wasm wrapper
+description: A Polywrap Wasm wrapper.
 tags:
-  - simple-storage
-  - storage
-  - ethereum
+  - polywrap
+  - web3
 repository: https://github.com/test/test
 icon: ./meta/icon.png
 links:
@@ -17,4 +16,3 @@ invocations:
   - method: testMethodWithArguments
     arguments:
       firstArg: string
-

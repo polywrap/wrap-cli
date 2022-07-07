@@ -1,5 +1,5 @@
 format: 0.1.0
-name: simple-storage
+name: template-wasm-as
 language: wasm/assemblyscript
 build: ./polywrap.build.yaml
 meta: ./polywrap.meta.yaml
