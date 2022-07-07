@@ -59,14 +59,13 @@ export interface MetaManifest {
     /**
      * Name of the method to invoke
      */
-    method?: string;
+    method: string;
     /**
      * Arguments to passed to the invocation
      */
     arguments?: {
       [k: string]: unknown;
     };
-    required?: ["method", "arguments"];
   }[];
   __type: "MetaManifest";
 }

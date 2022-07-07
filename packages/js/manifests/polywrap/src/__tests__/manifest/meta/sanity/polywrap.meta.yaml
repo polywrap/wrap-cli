@@ -8,7 +8,6 @@ description: test description
 repository: https://github.com/test/test
 invocations:
   - method: getInformation
-    arguments:
   - method: setInformation
     arguments:
       firstArg: "foo"

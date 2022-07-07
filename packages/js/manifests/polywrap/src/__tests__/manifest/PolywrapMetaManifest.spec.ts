@@ -11,6 +11,8 @@ describe("Polywrap Manifest Meta Validation", () => {
     const expectedInvocations = {
       invocations: [{
         method: 'getInformation',
+      }, {
+        method: 'setInformation',
         arguments: {
           firstArg: "foo",
           secondArg: 0
@@ -19,10 +21,10 @@ describe("Polywrap Manifest Meta Validation", () => {
     }
     expect(JSON.stringify({ invocations })).toContain(JSON.stringify(expectedInvocations));
   });
-  it("Should throw incorrect version format error", async () => {
-    // const manifestPath = __dirname + "/manifest/polywrap/incorrect-version-format/polywrap.yaml";
-    // const manifest = fs.readFileSync(manifestPath, "utf-8");
 
-    // expect(() => deserializePolywrapManifest(manifest)).toThrowError(/Unrecognized PolywrapManifest schema format/);
+  it("Should throw incorrect version format error", async () => {
+    const manifestPath = __dirname + "/meta/required-field-missing/polywrap.meta.yaml";
+    const manifest = fs.readFileSync(manifestPath, "utf-8");
+    expect(() => deserializeMetaManifest(manifest)).toThrowError("instance.invocations[0] requires property \"method\"");
   });
 });
