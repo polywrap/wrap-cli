@@ -83,9 +83,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(args: &[u8]) -> Result<
                 _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {
                     reader.read_{{#key}}{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}{{/key}}()
                 }, |reader| {
-                    {{#value}}
                     {{> deserialize_map_value_nobox}}
-                    {{/value}}
                 })?;
                 {{/map}}
                 {{#enum}}
@@ -144,9 +142,7 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#return
     writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&result, |writer, key| {
         writer.write_{{#key}}{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}{{/key}}(key)
     }, |writer, value| {
-        {{#value}}
         {{> serialize_map_value}}
-        {{/value}}
     })?;
     {{/map}}
     {{#enum}}

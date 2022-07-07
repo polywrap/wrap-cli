@@ -230,32 +230,38 @@ describe("e2e tests for run command", () => {
         "./workflows/config.ts",
         "-v",
         "./workflows/validator.cue",
-        "-q",
       ],
       cwd: testCaseRoot,
       cli: polywrapCli,
     });
 
-    expect(stdout).toBe("");
+    const output = parseOutput(stdout);
+
+    expect(stdout).toBeTruthy();
+    expect(output.filter((o => o.status === "SUCCEED"))).toHaveLength(output.length);
     expect(stderr).toBe("");
     expect(code).toEqual(0);
 
   }, 48000);
 
   it("Should print error on stderr if validation fails", async () => {
-    const { exitCode: code, stderr } = await runCLI({
+    const { exitCode: code, stdout } = await runCLI({
       args: [
         "run",
         "./workflows/e2e.json",
         "-v",
         "./workflows/validator.cue",
-        "-q",
       ],
       cwd: testCaseRoot,
       cli: polywrapCli,
     });
 
+    const output = parseOutput(stdout);
+
     expect(code).toEqual(1);
-    expect(stderr).toBeDefined();
+    expect(output[0].status).toBe("FAILED");
+    expect(output[0].error).toBeTruthy();
+    expect(output[1].status).toBe("SKIPPED");
+    expect(output[2].status).toBe("SKIPPED");
   }, 48000);
 });

@@ -25,7 +25,10 @@ export function moduleMethodWrapped(argsBuf: ArrayBuffer, env_size: u32): ArrayB
       optEnum: args.optEnum,
       enumArray: args.enumArray,
       optEnumArray: args.optEnumArray,
-      map: args.map
+      map: args.map,
+      mapOfArr: args.mapOfArr,
+      mapOfObj: args.mapOfObj,
+      mapOfArrOfObj: args.mapOfArrOfObj
     }
   );
   return serializemoduleMethodResult(result);
