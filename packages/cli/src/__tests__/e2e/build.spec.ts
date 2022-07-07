@@ -180,7 +180,7 @@ describe("e2e tests for build command", () => {
     expect(error).toBe("");
     expect(code).toEqual(0);
     expect(output).toContain(`Artifacts written to ${buildDir}`);
-    expect(output).toContain(`Manifest written to ${buildDir}/polywrap.json`);
+    expect(output).toContain(`WRAP manifest written in ${buildDir}/wrap.info`);
 
     testBuildOutput(testCaseDir, outputDir);
   });

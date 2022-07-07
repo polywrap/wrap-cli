@@ -9,9 +9,9 @@ import {
   Env,
   GetEnvsOptions,
   GetFileOptions,
+  GetManifestOptions,
   GetImplementationsOptions,
   GetInterfacesOptions,
-  GetManifestOptions,
   GetPluginsOptions,
   GetRedirectsOptions,
   GetSchemaOptions,
@@ -29,8 +29,6 @@ import {
   createQueryDocument,
   getImplementations,
   parseQuery,
-  ManifestArtifactType,
-  AnyManifestArtifact,
   ResolveUriOptions,
   ResolveUriResult,
   UriResolver,
@@ -48,9 +46,9 @@ import {
   JobRunner,
   PluginPackage,
   RunOptions,
-  msgpackEncode,
-  msgpackDecode,
 } from "@polywrap/core-js";
+import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Tracer } from "@polywrap/tracing-js";
 
 export interface PolywrapClientConfig<TUri extends Uri | string = string>
@@ -184,13 +182,10 @@ export class PolywrapClient implements Client {
   }
 
   @Tracer.traceMethod("PolywrapClient: getManifest")
-  public async getManifest<
-    TUri extends Uri | string,
-    TManifestArtifactType extends ManifestArtifactType
-  >(
+  public async getManifest<TUri extends Uri | string>(
     uri: TUri,
-    options: GetManifestOptions<TManifestArtifactType>
-  ): Promise<AnyManifestArtifact<TManifestArtifactType>> {
+    options: GetManifestOptions
+  ): Promise<WrapManifest> {
     const wrapper = await this._loadWrapper(this._toUri(uri), options);
     const client = contextualizeClient(this, options.contextId);
     return await wrapper.getManifest(options, client);
@@ -329,7 +324,6 @@ export class PolywrapClient implements Client {
       };
 
       const wrapper = await this._loadWrapper(typedOptions.uri, { contextId });
-
       const invocableResult = await wrapper.invoke(
         typedOptions,
         contextualizeClient(this, contextId)
@@ -496,7 +490,6 @@ export class PolywrapClient implements Client {
     if (!cacheRead) {
       uriResolvers = uriResolvers.filter((x) => x.name !== CacheResolver.name);
     }
-
     const { wrapper, uri: resolvedUri, uriHistory, error } = await resolveUri(
       this._toUri(uri),
       uriResolvers,
@@ -862,26 +855,23 @@ const contextualizeClient = (
         ) => {
           return client.getEnvByUri(uri, { ...options, contextId });
         },
+        getFile: <TUri extends Uri | string>(
+          uri: TUri,
+          options: GetFileOptions
+        ) => {
+          return client.getFile(uri, options);
+        },
         getSchema: <TUri extends Uri | string>(
           uri: TUri,
           options: GetSchemaOptions = {}
         ) => {
           return client.getSchema(uri, { ...options, contextId });
         },
-        getManifest: <
-          TUri extends Uri | string,
-          TManifestArtifactType extends ManifestArtifactType
-        >(
+        getManifest: <TUri extends Uri | string>(
           uri: TUri,
-          options: GetManifestOptions<TManifestArtifactType>
+          options: GetManifestOptions
         ) => {
-          return client.getManifest(uri, { ...options, contextId });
-        },
-        getFile: <TUri extends Uri | string>(
-          uri: TUri,
-          options: GetFileOptions
-        ) => {
-          return client.getFile(uri, options);
+          return client.getManifest(uri, options);
         },
         getImplementations: <TUri extends Uri | string>(
           uri: TUri,

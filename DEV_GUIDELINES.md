@@ -21,7 +21,7 @@ When taking an issue to be resolved, one should:
 
 Once development of that issue is finished, a pull request (PR) should be created, detailing what the intended changes made were, so that others may properly evaluate with full context.
 
-Before creating the pull request contributor should make sure that changes will pass **[CI actions](https://github.com/polywrap/monorepo/blob/prealpha/.github/workflows/js-ci.yaml)** which include:
+Before creating the pull request contributor should make sure that changes will pass **[CI actions](https://github.com/polywrap/monorepo/blob/origin/.github/workflows/js-ci.yaml)** which include:
 
 * linting
 * full re-build
@@ -33,16 +33,16 @@ Please feel free to "socialize" the PR within our [Discord](https://discord.poly
 
 ## Testing
 
-In Polywrap monorepo currently unit tests can be found in almost all packages and **covering new code with unit tests is mandatory**. Unit tests can be found in the `__tests__` directory of the each package source. Additionally some re-usable test inputs and outputs can be found in the [test-cases directory](https://github.com/polywrap/monorepo/tree/prealpha/packages/test-cases).
+In Polywrap monorepo currently unit tests can be found in almost all packages and **covering new code with unit tests is mandatory**. Unit tests can be found in the `__tests__` directory of the each package source. Additionally some re-usable test inputs and outputs can be found in the [test-cases directory](https://github.com/polywrap/monorepo/tree/origin/packages/test-cases).
 
-End to end (e2e) tests are recommended when complete integration is being tested like for CLI commands or a certain code is working with an external interface like an HTTP plugin. An example of such tests are [HTTP plugin e2e tests](https://github.com/polywrap/monorepo/blob/prealpha/packages/js/plugins/http/src/__tests__/e2e/e2e.spec.ts) and [CLI e2e tests](https://github.com/polywrap/monorepo/tree/prealpha/packages/cli/src/__tests__/e2e).
+End to end (e2e) tests are recommended when complete integration is being tested like for CLI commands or a certain code is working with an external interface like an HTTP plugin. An example of such tests are [HTTP plugin e2e tests](https://github.com/polywrap/monorepo/blob/origin/packages/js/plugins/http/src/__tests__/e2e/e2e.spec.ts) and [CLI e2e tests](https://github.com/polywrap/monorepo/tree/origin/packages/cli/src/__tests__/e2e).
 
 ## Branches
 
 Currently, there are 2 active branches with configured branch policies:
-* **Release** (ex. `prealpha`)
+* **Release** (ex. `origin`)
    * 1 or more [publishers](./github/PUBLISHERS) must approve.
-* **Dev** (ex. `prealpha-dev`)
+* **Dev** (ex. `origin-dev`)
    * 2 or more developers working on the project must approve. 
 
 ## Releases

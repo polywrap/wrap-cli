@@ -1,11 +1,11 @@
-import { PolywrapClient, defaultIpfsProviders } from "@polywrap/client-js";
+import { defaultIpfsProviders, PolywrapClient } from "@polywrap/client-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import {
+  buildAndDeployWrapper,
+  ensAddresses,
   initTestEnvironment,
   providers,
-  ensAddresses,
-  stopTestEnvironment,
-  buildAndDeployWrapper,
+  stopTestEnvironment
 } from "@polywrap/test-env-js";
 
 import { ensResolverPlugin } from "..";
@@ -30,7 +30,7 @@ describe("ENS Resolver Plugin", () => {
       wrapperAbsPath: wrapperAbsPath,
       ipfsProvider: providers.ipfs,
       ethereumProvider: providers.ethereum,
-      ensName: "simple-storage.eth",
+      ensName: "cool.wrapper.eth"
     });
 
     wrapperEnsDomain = ensDomain;
@@ -41,29 +41,29 @@ describe("ENS Resolver Plugin", () => {
           uri: "wrap://ens/ipfs.polywrap.eth",
           plugin: ipfsPlugin({
             provider: providers.ipfs,
-            fallbackProviders: defaultIpfsProviders,
-          }),
+            fallbackProviders: defaultIpfsProviders
+          })
         },
         {
           uri: "wrap://ens/ethereum.polywrap.eth",
           plugin: ethereumPlugin({
             networks: {
               testnet: {
-                provider: providers.ethereum,
-              },
+                provider: providers.ethereum
+              }
             },
-            defaultNetwork: "testnet",
-          }),
+            defaultNetwork: "testnet"
+          })
         },
         {
           uri: "wrap://ens/ens-resolver.polywrap.eth",
           plugin: ensResolverPlugin({
             addresses: {
-              testnet: ensAddresses.ensAddress,
-            },
-          }),
-        },
-      ],
+              testnet: ensAddresses.ensAddress
+            }
+          })
+        }
+      ]
     });
   });
 
@@ -88,7 +88,7 @@ describe("ENS Resolver Plugin", () => {
     expect(schema).toEqual(expectedSchema);
 
     const manifest = await resolution.wrapper?.getManifest(
-      { type: "polywrap" },
+      {},
       client
     );
 

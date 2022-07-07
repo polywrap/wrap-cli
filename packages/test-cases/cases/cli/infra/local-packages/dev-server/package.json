@@ -1,6 +1,6 @@
 {
   "name": "@polywrap/dev-server-infra",
-  "version": "0.0.1-prealpha.44",
+  "version": "0.1.0",
   "files": [
     "docker-compose.yaml",
     "Dockerfile",

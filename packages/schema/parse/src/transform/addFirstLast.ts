@@ -29,16 +29,18 @@ export const addFirstLast: AbiTransforms = {
   },
 };
 
-function setFirstLast<T>(array: T[]): T[] {
-  return array.map((item, index) => {
-    if (typeof item === "object") {
-      return {
-        ...item,
-        first: index === 0 ? true : null,
-        last: index === array.length - 1 ? true : null,
-      };
-    } else {
-      return item;
-    }
-  });
+function setFirstLast<T>(array: T[] | undefined): T[] {
+  return array
+    ? array.map((item, index) => {
+        if (typeof item === "object") {
+          return {
+            ...item,
+            first: index === 0 ? true : null,
+            last: index === array.length - 1 ? true : null,
+          };
+        } else {
+          return item;
+        }
+      })
+    : [];
 }

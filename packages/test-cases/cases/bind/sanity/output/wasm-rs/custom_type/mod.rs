@@ -59,6 +59,10 @@ pub struct CustomType {
     pub opt_enum: Option<CustomEnum>,
     pub enum_array: Vec<CustomEnum>,
     pub opt_enum_array: Option<Vec<Option<CustomEnum>>>,
+    pub map: Map<String, i32>,
+    pub map_of_arr: Map<String, Vec<i32>>,
+    pub map_of_obj: Map<String, AnotherType>,
+    pub map_of_arr_of_obj: Map<String, Vec<AnotherType>>,
 }
 
 impl CustomType {
@@ -101,6 +105,10 @@ impl CustomType {
             opt_enum: None,
             enum_array: vec![],
             opt_enum_array: None,
+            map: Map::<String, i32>::new(),
+            map_of_arr: Map::<String, Vec<i32>>::new(),
+            map_of_obj: Map::<String, AnotherType>::new(),
+            map_of_arr_of_obj: Map::<String, Vec<AnotherType>>::new(),
         }
     }
 
