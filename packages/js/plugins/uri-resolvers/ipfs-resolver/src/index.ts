@@ -20,7 +20,7 @@ export interface IpfsResolverPluginConfig extends Record<string, unknown> {
 }
 
 export class IpfsResolverPlugin extends Module<IpfsResolverPluginConfig> {
-  // uri-resolver.core.web3api.eth
+  // uri-resolver.core.polywrap.eth
   public async tryResolveUri(
     args: Args_tryResolveUri,
     _client: Client
@@ -56,7 +56,7 @@ export class IpfsResolverPlugin extends Module<IpfsResolverPluginConfig> {
       }
     } catch (e) {
       // TODO: logging
-      // https://github.com/web3-api/monorepo/issues/33
+      // https://github.com/polywrap/monorepo/issues/33
     }
 
     return { uri: null, manifest: manifest ?? null };
