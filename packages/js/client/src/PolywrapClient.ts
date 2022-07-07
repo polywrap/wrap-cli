@@ -61,7 +61,7 @@ export class PolywrapClient implements Client {
   // It should help us keep track of what URI's map to what Wrappers,
   // and handle cases where the are multiple jumps. For example, if
   // A => B => C, then the cache should have A => C, and B => C.
-  private _wrapperCache: WrapperCache = new Map<string, Wrapper>();
+  private _wrapperCache: WrapperCache;
   private _config: PolywrapClientConfig<Uri> = {
     redirects: [],
     plugins: [],
@@ -98,6 +98,8 @@ export class PolywrapClient implements Client {
           uriResolvers: config.uriResolvers ?? [],
           tracingEnabled: !!config.tracingEnabled,
         };
+
+        this._wrapperCache = config.wrapperCache ?? new Map<string, Wrapper>();
       }
 
       if (!options?.noDefaults) {

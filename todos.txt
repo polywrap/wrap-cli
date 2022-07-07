@@ -1,0 +1,5 @@
+specify their own cache
+
+define a cache interface
+
+check env URI resolution stack method, it's a bit weird

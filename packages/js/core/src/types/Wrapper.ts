@@ -61,5 +61,3 @@ export abstract class Wrapper implements Invocable {
    */
   public abstract getSchema(client: Client): Promise<string>;
 }
-
-export type WrapperCache = Map<string, Wrapper>;
