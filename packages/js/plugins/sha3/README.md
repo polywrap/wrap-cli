@@ -21,14 +21,13 @@ export async function foo({
     ]
   });
 
-  const response = await client.query<{ sha3_512: string }>({
+  const response = await client.invoke<string>({
     uri: sha3PluginUri,
-    query: `
-      query {
-        sha3_512(message: "test message to hash")
-      }
-    `,
-  });
+    method: "sha3_512",
+    args: {
+      message: "test message to hash"
+    }
+  })
 })
 ```
 

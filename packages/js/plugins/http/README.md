@@ -13,20 +13,17 @@ Http plugin curently supports two different methods `GET` and `POST`. Similar to
 Below is sample invocation of the `GET` request with custom request headers and query parameters (`urlParams`).
 
 ```ts
-const response = await polywrapClient.query<{ get: Response }>({
-uri: new Uri("wrap://ens/http.polywrap.eth"),
-  query: `
-    query {
-      get(
-        url: "http://www.example.com/api"
-        request: {
-          responseType: TEXT
-          urlParams: [{key: "query", value: "foo"}]
-          headers: [{key: "X-Request-Header", value: "req-foo"}]
-        }
-      )
+const response = await polywrapClient.invoke<Response>({
+  uri: new Uri("wrap://ens/http.polywrap.eth"),
+  method: "get",
+  args: {
+    url: "http://www.example.com/api"
+    request: {
+      responseType: "TEXT"
+      urlParams: [{key: "query", value: "foo"}]
+      headers: [{key: "X-Request-Header", value: "req-foo"}]
     }
-  `
+  }
 })
 ```
 
@@ -35,20 +32,17 @@ uri: new Uri("wrap://ens/http.polywrap.eth"),
 Below is sample invocation of the `POST` request with custom request headers and query parameters (`urlParams`). It is also possible to set request body as shown below.
 
 ```ts
-const response = await polywrapClient.query<{ get: Response }>({
+const response = await polywrapClient.invoke<Response>({
   uri: new Uri("wrap://ens/http.polywrap.eth"),
-  query: `
-    query {
-      post(
-        url: "http://www.example.com/api"
-        request: {
-          responseType: TEXT
-          urlParams: [{key: "query", value: "foo"}]
-          headers: [{key: "X-Request-Header", value: "req-foo"}]
-          body: "{data: 'test-request'}"
-        }
-      )
+  method: "post",
+  args: {
+    url: "http://www.example.com/api"
+    request: {
+      responseType: "TEXT"
+      urlParams: [{key: "query", value: "foo"}]
+      headers: [{key: "X-Request-Header", value: "req-foo"}]
+      body: "{data: 'test-request'}"
     }
-  `
+  }
 })
 ```

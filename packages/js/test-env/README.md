@@ -2,6 +2,10 @@
 
 Provides functions to setup a test environment with Polywrap CLI and Docker.
 
+# Description
+
+It allows user to initiate the test environment through a javascript function (it's the `infra` command in the CLI). It also exports the providers and ens addresses expected in the deployments (They are hard coded, because the initiation of the environment is deterministic)
+
 # Usage
 
 Initialization with the simple-storage wrapper.

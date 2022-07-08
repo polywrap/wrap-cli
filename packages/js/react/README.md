@@ -47,9 +47,36 @@ export const CustomProvider = ({ children }: { children: JSX.Element }) => {
 };
 ```
 
+## usePolywrapInvoke
+
+Is the primary API for executing invocations. To run an execution within a React component, call `usePolywrapInvoke` and pass it the method name and the arguments. When your component renders, `usePolywrapInvoke` returns an object from the Polywrap client that contains `execute`, `data`, `loading`, and `error` properties you can use to render your UI.
+
+```jsx
+const { execute, data, error, loading } = usePolywrapInvoke({
+  uri: 'ens/api.helloworld.polywrap.eth',
+  method: "logMessage",
+  args: {
+    message: "Hello World!",
+  },
+});
+```
+
+By default, the `usePolywrapInvoke` hook uses the first `PolywrapProvider` found in the DOM's hierarchy. If you'd like to specify a specific provider to be used, simply set the provider: property:
+
+```typescript
+const { execute, data, errors, loading } = usePolywrapInvoke({
+  provider: "custom",
+  uri: 'ens/api.helloworld.polywrap.eth',
+  method: "logMessage",
+  args: {
+    message: "Hello World!",
+  },
+});
+```
+
 ## usePolywrapQuery
 
-The `usePolywrapQuery` is the primary API for executing queries. To run a query within a React component, call `usePolywrapQuery` and pass it a GraphQL query string. When your component renders, `usePolywrapQuery` returns an object from the Polywrap client that contains `execute`, `data`, `loading`, and `error` properties you can use to render your UI.
+The `usePolywrapInvoke` hook works the same as the `usePolywrapQuery` hook, but uses a GraphQL query string. You can pass multiple queries at once and they would be executed.
 
 Here's an example query that you could send:
 
@@ -59,35 +86,6 @@ const { execute, data, errors, loading } = usePolywrapQuery({
   query: `{
     logMessage(message: "Hello World!")
   }`,
-});
-```
-
-By default, the `usePolywrapQuery` hook uses the first `PolywrapProvider` found in the DOM's hierarchy. If you'd like to specify a specific provider to be used, simply set the provider: property:
-
-```typescript
-const { execute, data, errors, loading } = usePolywrapQuery({
-  provider: "custom",
-  uri: 'ens/api.helloworld.polywrap.eth',
-  query: `{
-    logMessage(message: "Hello World!")
-  }`,
-});
-```
-
-## **usePolywrapInvoke**
-
-The `usePolywrapInvoke` hook works the same as the `usePolywrapQuery` hook, but uses the client's `invoke` syntax instead.
-
-Here's what our "hello world" query from above would look like with `usePolywrapInvoke`.
-
-```jsx
-const { execute, data, error, loading } = usePolywrapInvoke({
-  uri: 'ens/api.helloworld.polywrap.eth',
-  module: "query",
-  method: "logMessage",
-  input: {
-    message: "Hello World!",
-  },
 });
 ```
 

@@ -23,17 +23,13 @@ export async function foo({
     }]
   });
 
-  // and send queries to the subgraph
-  const response = await client.query({
-    graphNodePluginURI,
-    query: `query {
-      querySubgraph(
-        subgraphAuthor: "ensdomains",
-        subgraphName: "ens",
-        query: $query
-      )
-    }`,
-    variables: {
+  // and send invocations to the subgraph
+  const response = await client.invoke({
+    uri: graphNodePluginURI,
+    method: "querySubgraph",
+    args: {
+      subgraphAuthor: "ensdomains",
+      subgraphName: "ens",
       query: `{
         domains(first: 5) {
           id
@@ -58,7 +54,7 @@ export async function foo({
     provider
   });
 
-  // and send queries to the subgraph
+  // and send invocations to the subgraph
   const response' = await plugin.querySubgraph({
     subgraphAuthor: "ensdomains",
     subgraphName: "ens",

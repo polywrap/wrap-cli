@@ -25,27 +25,9 @@ export async function foo({
   // spin up docker containers with Ganache and IPFS.
   await initTestEnvironment();
 
-  // initialize the client with eth, ipfs, ens plugins
+  // initialize the client with fs plugins
   client = new PolywrapClient({
     plugins: [
-      {
-        uri: "wrap://ens/ethereum.polywrap.eth",
-        plugin: ethereumPlugin({
-          networks: {
-            testnet: {
-              provider: providers.ethereum,
-            },
-          },
-          defaultNetwork: "testnet",
-        }),
-      },
-      {
-        uri: "wrap://ens/ipfs.polywrap.eth",
-        plugin: ipfsPlugin({
-          provider: providers.ipfs,
-          fallbackProviders: defaultIpfsProviders,
-        }),
-      },
       {
         uri: "wrap://ens/fs-resolver.polywrap.eth",
         plugin: fileSystemResolverPlugin({}),
@@ -53,11 +35,7 @@ export async function foo({
       {
         uri: "wrap://ens/fs.polywrap.eth",
         plugin: filesystemPlugin({}),
-      },
-      {
-        uri: "wrap://ens/fs-resolver.polywrap.eth",
-        plugin: fileSystemResolverPlugin({}),
-      },
+      }
     ],
   });
 

@@ -21,13 +21,12 @@ export async function foo({
     ]
   });
 
-  const response = await client.query<{ toAscii: string }>({
+  const response = await client.invoke<string>({
     uri: uts46PluginUri,
-    query: `
-      query {
-        toAscii(value: "xn-bb-eka.at")
-      }
-    `,
+    method: 'toAscii',
+    args: {
+      value: "xn-bb-eka.at"
+    }
   });
 })
 ```

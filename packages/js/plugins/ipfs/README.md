@@ -15,7 +15,7 @@ import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 
 const createIpfsClient = require("@dorgjelli-test/ipfs-http-client-lite");
 
-// query IPFS
+// IPFS
 export async function foo({
 
   await initTestEnvironment();

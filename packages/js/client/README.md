@@ -22,22 +22,16 @@ Instantiate the PolywrapClient.
 // Instantiate the client.
 const client = new PolywrapClient();
 
-// ...And then you'll be able to use the `query`
-// method to send GraphQL requests to any Polywrap
+// ...And then you'll be able to use the `invoke`
+// method to send requests to any Polywrap
 // that's located at the specified URI.
-const result = await client.query({
+const result = await client.invoke({
   uri: 'api.example.eth',
-  query: `query {
-    doSomething(
-      variable: $variable
-      value: "important value"
-    ) {
-      returnData
-    }
-  }`,
-  variables: {
-    variable: 555,
-  },
+  method: 'doSomething',
+  args: {
+    "foo": "bar",
+    "bizz": "buzz"
+  }
 });
 ```
 # Workflows

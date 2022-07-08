@@ -81,7 +81,7 @@ export async function foo({
     defaultNetwork: "testnet",
   });
 
-  // and send queries to ethereum
+  // and send invocations to ethereum
   const signerAddressQuery' = plugin.getSignerAddress(client)
   const response' = plugin.getBalance({address: signerAddressQuery.data}, client)
 
