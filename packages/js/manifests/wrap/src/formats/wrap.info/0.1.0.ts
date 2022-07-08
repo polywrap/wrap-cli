@@ -19,11 +19,115 @@ export interface WrapManifest {
    * Wrapper Name
    */
   name: string;
-  /**
-   * Wrapper ABI
-   */
-  abi: {
-    [k: string]: unknown;
-  };
+  abi: Abi;
   __type: "WrapManifest";
+}
+export interface Abi {
+  objectTypes: (({
+    kind: number;
+  } & {
+    type?: string;
+    name?: string;
+    required?: boolean;
+  }) & {
+    comment?: string;
+  })[];
+  moduleTypes?: (({
+    kind: number;
+  } & {
+    type?: string;
+    name?: string;
+    required?: boolean;
+  }) & {
+    comment?: string;
+  })[];
+  enumType?: (({
+    kind: number;
+  } & {
+    type?: string;
+    name?: string;
+    required?: boolean;
+  }) & {
+    comment?: string;
+  })[];
+  interfaceTypes: (({
+    kind: number;
+  } & {
+    type?: string;
+    name?: string;
+    required?: boolean;
+  }) & {
+    uri: string;
+    namespace: string;
+    nativeType: string;
+  })[];
+  importedObjectTypes: ((({
+    kind: number;
+  } & {
+    type?: string;
+    name?: string;
+    required?: boolean;
+  }) & {
+    comment?: string;
+  }) & {
+    uri: string;
+    namespace: string;
+    nativeType: string;
+  } & {
+    comment?: string;
+  })[];
+  importedModuleTypes: ((({
+    kind: number;
+  } & {
+    type?: string;
+    name?: string;
+    required?: boolean;
+  }) & {
+    comment?: string;
+  }) & {
+    uri: string;
+    namespace: string;
+    nativeType: string;
+  } & {
+    comment?: string;
+  })[];
+  importedEnumTypes: ((({
+    kind: number;
+  } & {
+    type?: string;
+    name?: string;
+    required?: boolean;
+  }) & {
+    comment?: string;
+  }) & {
+    uri: string;
+    namespace: string;
+    nativeType: string;
+  } & {
+    comment?: string;
+  })[];
+  importedEnvTypes: ((({
+    kind: number;
+  } & {
+    type?: string;
+    name?: string;
+    required?: boolean;
+  }) & {
+    comment?: string;
+  }) & {
+    uri: string;
+    namespace: string;
+    nativeType: string;
+  } & {
+    comment?: string;
+  })[];
+  envType?: ({
+    kind: number;
+  } & {
+    type?: string;
+    name?: string;
+    required?: boolean;
+  }) & {
+    comment?: string;
+  };
 }

@@ -157,11 +157,11 @@ async function generateFormatTypes() {
 
         const keys = Object.keys(obj);
         for (let j = 0; j < keys.length; ++j) {
-          getValidator(obj[keys[j]] as Record<string, unknown>);
+          setTimeout(getValidator, 0, obj[keys[j]]);
         }
       };
 
-      getValidator(formatSchema);
+      setTimeout(getValidator, 0, formatSchema);
     }
 
     renderTemplate("validate", validateContext);
