@@ -53,9 +53,7 @@ pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(args: &{{#toUpper}}{{typ
     writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}, |writer, key| {
         writer.write_{{#key}}{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}{{/key}}(key)
     }, |writer, value| {
-        {{#value}}
         {{> serialize_map_value}}
-        {{/value}}
     })?;
     {{/map}}
     {{#object}}
@@ -130,9 +128,7 @@ pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<
                 _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {
                     reader.read_{{#key}}{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}{{/key}}()?
                 }, |reader| {
-                    {{#value}}
                     {{> deserialize_map_value_nobox}}
-                    {{/value}}
                 })?;
                 {{/map}}
                 {{#enum}}

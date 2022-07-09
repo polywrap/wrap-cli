@@ -52,26 +52,5 @@ export interface MetaManifest {
      */
     url: string;
   }[];
-  /**
-   * List of example queries.
-   */
-  queries?: {
-    /**
-     * Query name.
-     */
-    name: string;
-    /**
-     * Query description.
-     */
-    description?: string;
-    /**
-     * Path to graph ql file.
-     */
-    query: string;
-    /**
-     * Query parameters.
-     */
-    vars?: string;
-  }[];
   __type: "MetaManifest";
 }

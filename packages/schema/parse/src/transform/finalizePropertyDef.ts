@@ -6,6 +6,8 @@ import {
   GenericDefinition,
   PropertyDefinition,
   Abi,
+  MapDefinition,
+  AnyDefinition,
 } from "../abi";
 
 export const finalizePropertyDef = (abi: Abi): AbiTransforms => {
@@ -37,6 +39,7 @@ export function populatePropertyType(
   } else if (property.enum) {
     propertyType = property.enum;
   } else if (property.map) {
+    populateMapType(property.map, abi);
     propertyType = property.map;
   } else {
     throw Error("Property type is undefined, this should never happen.");
@@ -44,6 +47,54 @@ export function populatePropertyType(
 
   property.type = propertyType.type;
   property.required = propertyType.required;
+}
+
+function populateMapType(map: MapDefinition, abi: Abi) {
+  let baseTypeFound = false;
+
+  let currentType: AnyDefinition = map;
+  while (!baseTypeFound) {
+    if (currentType.map) {
+      currentType = currentType.map;
+      populateMapType(currentType as MapDefinition, abi);
+    } else if (currentType.array) {
+      currentType = currentType.array;
+      populateArrayType(currentType as ArrayDefinition, abi);
+    } else if (
+      currentType.scalar ||
+      currentType.object ||
+      currentType.enum ||
+      currentType.unresolvedObjectOrEnum
+    ) {
+      baseTypeFound = true;
+    } else {
+      throw Error(
+        `This should never happen, MapDefinition is malformed.\n${JSON.stringify(
+          map,
+          null,
+          2
+        )}`
+      );
+    }
+  }
+
+  if (map.array) {
+    map.value = map.array;
+  } else if (map.unresolvedObjectOrEnum) {
+    map.value = resolveObjectOrEnumKind(map, abi);
+  } else if (map.scalar) {
+    map.value = map.scalar;
+  } else if (map.enum) {
+    map.value = map.enum;
+  } else if (map.map) {
+    map.value = map.map;
+  } else {
+    map.value = map.object;
+  }
+
+  if (!map.value) {
+    throw Error("Map isn't valid.");
+  }
 }
 
 function populateArrayType(array: ArrayDefinition, abi: Abi) {

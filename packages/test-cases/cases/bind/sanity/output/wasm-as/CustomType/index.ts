@@ -52,6 +52,10 @@ export class CustomType {
   optEnum: Option<Types.CustomEnum>;
   enumArray: Array<Types.CustomEnum>;
   optEnumArray: Array<Option<Types.CustomEnum>> | null;
+  map: Map<string, i32>;
+  mapOfArr: Map<string, Array<i32>>;
+  mapOfObj: Map<string, Types.AnotherType>;
+  mapOfArrOfObj: Map<string, Array<Types.AnotherType>>;
 
   static toBuffer(type: CustomType): ArrayBuffer {
     return serializeCustomType(type);
