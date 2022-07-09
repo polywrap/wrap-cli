@@ -13,7 +13,7 @@ import {
 } from "@polywrap/core-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackDecode } from "@polywrap/msgpack-js";
-import { Tracer } from "@polywrap/tracing-js";
+import { Tracer, TracingLevel } from "@polywrap/tracing-js";
 
 export class PluginWrapper extends Wrapper {
   private _instance: PluginModule<unknown> | undefined;
@@ -52,11 +52,16 @@ export class PluginWrapper extends Wrapper {
     throw Error("client.getManifest(...) is not implemented for Plugins.");
   }
 
-  @Tracer.traceMethod("PluginWrapper: invoke")
+  @Tracer.traceMethod("PluginWrapper: invoke", TracingLevel.High)
   public async invoke(
     options: InvokeOptions<Uri>,
     client: Client
   ): Promise<InvocableResult<unknown>> {
+    Tracer.setAttribute(
+      "label",
+      `Plugin Wrapper invoked: ${options.uri.uri}, with method ${options.method}`,
+      TracingLevel.High
+    );
     try {
       const { method } = options;
       const args = options.args || {};

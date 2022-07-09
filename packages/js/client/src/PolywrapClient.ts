@@ -49,11 +49,13 @@ import {
 } from "@polywrap/core-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
-import { Tracer } from "@polywrap/tracing-js";
+import { Tracer, TracingLevel } from "@polywrap/tracing-js";
 
 export interface PolywrapClientConfig<TUri extends Uri | string = string>
   extends ClientConfig<TUri> {
   tracingEnabled: boolean;
+  tracingLevel: TracingLevel;
+  tracingDetailed: boolean;
 }
 
 export class PolywrapClient implements Client {
@@ -69,6 +71,8 @@ export class PolywrapClient implements Client {
     envs: [],
     uriResolvers: [],
     tracingEnabled: false,
+    tracingLevel: TracingLevel.High,
+    tracingDetailed: false,
   };
 
   // Invoke specific contexts
@@ -79,7 +83,11 @@ export class PolywrapClient implements Client {
     options?: { noDefaults?: boolean }
   ) {
     try {
-      this.setTracingEnabled(!!config?.tracingEnabled);
+      this.setTracingEnabled(
+        !!config?.tracingEnabled,
+        config?.tracingLevel ?? TracingLevel.High,
+        !!config?.tracingDetailed
+      );
 
       Tracer.startSpan("PolywrapClient: constructor");
 
@@ -97,6 +105,10 @@ export class PolywrapClient implements Client {
             : [],
           uriResolvers: config.uriResolvers ?? [],
           tracingEnabled: !!config.tracingEnabled,
+          tracingLevel: config.tracingLevel
+            ? config.tracingLevel
+            : TracingLevel.High,
+          tracingDetailed: !!config.tracingDetailed,
         };
       }
 
@@ -117,13 +129,19 @@ export class PolywrapClient implements Client {
     }
   }
 
-  public setTracingEnabled(enable: boolean): void {
+  public setTracingEnabled(
+    enable: boolean,
+    tracingLevel: TracingLevel,
+    detail: boolean
+  ): void {
     if (enable) {
-      Tracer.enableTracing("PolywrapClient");
+      Tracer.enableTracing("PolywrapClient", tracingLevel, detail);
     } else {
       Tracer.disableTracing();
     }
     this._config.tracingEnabled = enable;
+    this._config.tracingLevel = tracingLevel;
+    this._config.tracingDetailed = detail;
   }
 
   @Tracer.traceMethod("PolywrapClient: getRedirects")
@@ -222,7 +240,7 @@ export class PolywrapClient implements Client {
         ) as TUri[]);
   }
 
-  @Tracer.traceMethod("PolywrapClient: query")
+  @Tracer.traceMethod("PolywrapClient: query", TracingLevel.High)
   public async query<
     TData extends Record<string, unknown> = Record<string, unknown>,
     TVariables extends Record<string, unknown> = Record<string, unknown>,
@@ -359,7 +377,7 @@ export class PolywrapClient implements Client {
     return { error };
   }
 
-  @Tracer.traceMethod("PolywrapClient: run")
+  @Tracer.traceMethod("PolywrapClient: run", TracingLevel.High)
   public async run<
     TData extends Record<string, unknown> = Record<string, unknown>,
     TUri extends Uri | string = string
@@ -467,7 +485,7 @@ export class PolywrapClient implements Client {
     return subscription;
   }
 
-  @Tracer.traceMethod("PolywrapClient: resolveUri")
+  @Tracer.traceMethod("PolywrapClient: resolveUri", TracingLevel.High)
   public async resolveUri<TUri extends Uri | string>(
     uri: TUri,
     options?: ResolveUriOptions<ClientConfig>
@@ -507,6 +525,20 @@ export class PolywrapClient implements Client {
     if (shouldClearContext) {
       this._clearContext(contextId);
     }
+
+    let uriHistoryTrace = "";
+    for (const item of uriHistory.getResolutionPath().stack) {
+      const itemTrace = `${item.uriResolver} resolved uri to ${
+        item.result.uri
+      }${item.result.wrapper ? ", found wrapper" : ""}`;
+      uriHistoryTrace = uriHistoryTrace + "\n" + itemTrace;
+    }
+
+    Tracer.setAttribute(
+      "label",
+      uriHistoryTrace.substring(1),
+      TracingLevel.High
+    );
 
     return {
       wrapper,
@@ -743,6 +775,10 @@ export class PolywrapClient implements Client {
       envs: context?.envs ? sanitizeEnvs(context.envs) : config.envs,
       uriResolvers: context?.uriResolvers ?? config.uriResolvers,
       tracingEnabled: context?.tracingEnabled || config.tracingEnabled,
+      tracingLevel: context?.tracingLevel
+        ? context.tracingLevel
+        : config.tracingLevel,
+      tracingDetailed: context?.tracingDetailed || config.tracingDetailed,
     });
 
     return {
@@ -758,11 +794,13 @@ export class PolywrapClient implements Client {
     }
   }
 
-  @Tracer.traceMethod("PolywrapClient: _loadWrapper")
+  @Tracer.traceMethod("PolywrapClient: _loadWrapper", TracingLevel.High)
   private async _loadWrapper(
     uri: Uri,
     options?: Contextualized
   ): Promise<Wrapper> {
+    Tracer.setAttribute("label", `Wrapper loaded: ${uri}`, TracingLevel.High);
+
     const { wrapper, uriHistory, error } = await this.resolveUri(uri, {
       contextId: options?.contextId,
     });

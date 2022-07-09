@@ -1,6 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import React from "react";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
+import { TracingLevel } from "@polywrap/tracing-js";
 
 type ClientContext = React.Context<PolywrapClient>
 
@@ -33,7 +34,7 @@ export function createPolywrapProvider(
     ClientContext: React.createContext({} as PolywrapClient)
   };
 
-  return ({ envs, redirects, plugins, interfaces, children }) => {
+  return ({ envs, redirects, plugins, interfaces, tracingEnabled = false, tracingLevel = TracingLevel.High, tracingDetailed = false, children }) => {
 
     const [clientCreated, setClientCreated] = React.useState(false);
 
@@ -47,7 +48,7 @@ export function createPolywrapProvider(
       }
 
       // Instantiate the client
-      PROVIDERS[name].client = new PolywrapClient({ redirects, plugins, interfaces, envs });
+      PROVIDERS[name].client = new PolywrapClient({ redirects, plugins, interfaces, envs, tracingEnabled, tracingLevel, tracingDetailed });
 
       setClientCreated(true);
 

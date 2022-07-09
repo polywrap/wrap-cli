@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@polywrap/client-js": "0.1.1",
+    "@polywrap/tracing-js": "0.1.1",
     "@polywrap/core-js": "0.1.1"
   },
   "devDependencies": {
