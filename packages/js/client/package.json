@@ -38,6 +38,7 @@
     "@polywrap/tracing-js": "0.1.1",
     "@polywrap/uts46-plugin-js": "0.1.1",
     "@polywrap/wrap-manifest-types-js": "0.1.1",
+    "@polywrap/client-config-js": "0.1.1",
     "graphql": "15.5.0",
     "js-yaml": "3.14.0",
     "uuid": "8.3.2"

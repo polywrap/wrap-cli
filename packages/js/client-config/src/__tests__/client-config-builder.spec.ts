@@ -1,11 +1,10 @@
-import { ClientConfigBuilder } from "../types/ClientConfigBuilder";
-import { Uri } from "../.";
-import { PluginModule } from "../types";
+import { ClientConfigBuilder } from "../ClientConfigBuilder";
+import { PluginModule, sanitizePluginRegistrations } from "@polywrap/core-js";
 
 describe("Client config builder", () => {
   const testPlugins = [
     {
-      uri: new Uri("wrap://ens/test1.polywrap.eth"),
+      uri: "wrap://ens/test1.polywrap.eth",
       plugin: {
         factory: () => ({} as PluginModule<{}>),
         manifest: {
@@ -15,7 +14,7 @@ describe("Client config builder", () => {
       },
     },
     {
-      uri: new Uri("wrap://ens/test2.polywrap.eth"),
+      uri: "wrap://ens/test2.polywrap.eth",
       plugin: {
         factory: () => ({} as PluginModule<{}>),
         manifest: {
@@ -39,18 +38,18 @@ describe("Client config builder", () => {
   });
 
   it("should succesfully add plugins and build", () => {
-    const clientConfig = new ClientConfigBuilder<Uri>()
+    const clientConfig = new ClientConfigBuilder()
       .add({
         plugins: testPlugins,
       })
       .build();
 
     expect(clientConfig).toBeTruthy();
-    expect(clientConfig.plugins).toStrictEqual(testPlugins);
+    expect(clientConfig.plugins).toStrictEqual(sanitizePluginRegistrations(testPlugins));
   });
 
   it("should succesfully add plugins with two separate add calls and build", () => {
-    const clientConfig = new ClientConfigBuilder<Uri>()
+    const clientConfig = new ClientConfigBuilder()
       .add({
         plugins: [testPlugins[0]],
       })
@@ -60,6 +59,13 @@ describe("Client config builder", () => {
       .build();
 
     expect(clientConfig).toBeTruthy();
-    expect(clientConfig.plugins).toStrictEqual(testPlugins);
+    expect(clientConfig.plugins).toStrictEqual(sanitizePluginRegistrations(testPlugins));
+  });
+
+  it("should successfully add a default config", () => {
+    const clientConfig = new ClientConfigBuilder().addDefaults().build();
+
+    console.log(clientConfig);
+    expect(clientConfig).toBeTruthy();
   });
 });
