@@ -10,6 +10,7 @@ import {
 } from ".";
 
 import schema_0_1_0 from "@polywrap/wrap-manifest-schemas/formats/wrap.info/0.1.0.json";
+import abi_schema_0_0_1 from "@polywrap/wrap-manifest-schemas/formats/abi/0.0.1.json";
 
 import {
   Schema,
@@ -17,40 +18,73 @@ import {
   ValidationError,
   ValidatorResult
 } from "jsonschema";
+import { bundle, FileInfo } from "json-schema-ref-parser";
+import path from "path";
 
 type WrapManifestSchemas = {
   [key in WrapManifestVersions]: Schema | undefined
 };
 
+type WrapAbiSchemas = {
+  [key in WrapManifestVersions]: Schema | undefined
+}
+
 const schemas: WrapManifestSchemas = {
   "0.1.0": schema_0_1_0,
 };
 
-const validator = new Validator();
+const abiSchemas: WrapAbiSchemas = {
+  "0.1.0": abi_schema_0_0_1,
+}
 
 
-export function validateWrapManifest(
+function throwIfErrors(result: ValidatorResult, version: string) {
+  if (result.errors.length) {
+    throw new Error([
+      `Validation errors encountered while sanitizing WrapManifest version ${version}`,
+      ...result.errors.map((error: ValidationError) => error.toString())
+    ].join("\n"));
+  }
+}
+
+export async function validateWrapManifest(
   manifest: AnyWrapManifest,
   extSchema: Schema | undefined = undefined
-): void {
+): Promise<void> {
   const schema = schemas[manifest.version as WrapManifestVersions];
+  const abiSchema = abiSchemas[manifest.version as WrapManifestVersions];
 
-  if (!schema) {
-    throw Error(`Unrecognized WrapManifest schema version "${manifest.version}"\nmanifest: ${JSON.stringify(manifest, null, 2)}`);
+  if (!schema || !abiSchema) {
+    throw new Error(`Unrecognized WrapManifest schema version "${manifest.version}"\nmanifest: ${JSON.stringify(manifest, null, 2)}`);
   }
 
-  const throwIfErrors = (result: ValidatorResult) => {
-    if (result.errors.length) {
-      throw new Error([
-        `Validation errors encountered while sanitizing WrapManifest version ${manifest.version}`,
-        ...result.errors.map((error: ValidationError) => error.toString())
-      ].join("\n"));
-    }
-  };
+  if (!schema.properties) {
+    // This should never happen
+    throw new Error(`WrapManifest schema doesn't contain any properties`)
+  }
 
-  throwIfErrors(validator.validate(manifest, schema));
+  const abiJsonSchemaRelPath = schema.properties.abi.$ref as string;
+
+  const finalSchema = await bundle(schema as any, {
+    resolve: {
+      file: {
+        read: (file: FileInfo) => {
+          // If both url is same
+          if (!path.relative(abiJsonSchemaRelPath, file.url)) {
+            return abiSchema as any;
+          }
+          return file.data;
+        },
+      },
+    },
+  }) as Schema;
+
+  const validator = new Validator();
+  validator.addSchema(finalSchema);
+
+  throwIfErrors(validator.validate(manifest, schema, {}), manifest.version);
 
   if (extSchema) {
-    throwIfErrors(validator.validate(manifest, extSchema));
+    throwIfErrors(validator.validate(manifest, extSchema), manifest.version);
   }
 }

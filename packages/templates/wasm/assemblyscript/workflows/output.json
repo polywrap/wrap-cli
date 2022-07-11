@@ -1,8 +1,12 @@
 [
   {
     "id": "sampleMethod.0",
-    "data": {
-      "value": "polywrap"
+    "status": "FAILED",
+    "error": {
+      "message": "no such schema #/properties/abi/definitions/objectDefinition located in </Abi>",
+      "schema": {
+        "$ref": "#/properties/abi/definitions/objectDefinition"
+      }
     }
   }
 ]

@@ -137,7 +137,7 @@ export class WasmPackageValidator {
       const info = await reader.readFile(name);
       return {
         valid: true,
-        manifest: deserializeWrapManifest(info),
+        manifest: await deserializeWrapManifest(info),
       };
     } catch (e) {
       if (e.message.includes('instance requires property "abi"')) {

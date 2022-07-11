@@ -17,10 +17,10 @@ import { DeserializeManifestOptions } from "../../";
 import { msgpackDecode } from "@polywrap/msgpack-js";
 import { compare } from "semver";
 
-export function deserializeWrapManifest(
+export async function deserializeWrapManifest(
   manifest: Uint8Array,
   options?: DeserializeManifestOptions
-): WrapManifest {
+): Promise<WrapManifest> {
   let anyWrapManifest: AnyWrapManifest | undefined;
   try {
     anyWrapManifest = msgpackDecode(manifest) as AnyWrapManifest;
@@ -29,7 +29,7 @@ export function deserializeWrapManifest(
   }
 
   if (!options || !options.noValidate) {
-    validateWrapManifest(anyWrapManifest);
+    await validateWrapManifest(anyWrapManifest);
   }
 
   const versionCompare = compare(

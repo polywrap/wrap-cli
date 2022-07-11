@@ -3,8 +3,9 @@ import fs from "fs";
 import * as os from "@polywrap/os-js";
 import Mustache from "mustache";
 import * as JsonSchema from "json-schema-to-typescript";
-import { FileInfo } from "json-schema-ref-parser";
+import { FileInfo, bundle, JSONSchema } from "json-schema-ref-parser";
 
+// TODO: remove __type
 async function generateFormatTypes() {
   // Fetch all schemas within the @polywrap/wrap-manifest-schemas/schemas/formats directory
   const schemasPackageDir = path.dirname(
@@ -14,65 +15,83 @@ async function generateFormatTypes() {
 
   // Resolve json-schema to typescript for wrap format type
   const formatTypeName = "wrap.info";
-  const formatTypeDir = path.join(formatsDir, formatTypeName);
-  const formatOutputDir = path.join(
+  const wrapDir = path.join(formatsDir, formatTypeName);
+  const wrapOutputDir = path.join(
     __dirname,
     `../src/formats/${formatTypeName}`
   );
-  const formatModules: any[] = [];
+  const wrapModules: {
+    interface: string;
+    version: string;
+    abiVersion: string;
+  }[] = [];
 
   // Get all JSON schemas for this format type (v1, v2, etc)
-  const formatSchemaFiles = fs.readdirSync(formatTypeDir);
-  const formatSchemas: any[] = [];
+  const wrapSchemaFiles = fs.readdirSync(wrapDir);
+  const wrapSchemas: JSONSchema[] = [];
 
-  for (let k = 0; k < formatSchemaFiles.length; ++k) {
-    const formatSchemaName = formatSchemaFiles[k];
-    const formatVersion = formatSchemaName.replace(".json", "");
-    const formatSchemaPath = path.join(formatTypeDir, formatSchemaName);
+  for (let k = 0; k < wrapSchemaFiles.length; ++k) {
+    const wrapSchemaName = wrapSchemaFiles[k];
+    const wrapVersion = wrapSchemaName.replace(".json", "");
+    const wrapSchemaPath = path.join(wrapDir, wrapSchemaName);
 
     try {
       // Parse the JSON schema
-      const formatSchema = JSON.parse(
-        fs.readFileSync(formatSchemaPath, { encoding: "utf-8" })
+      const wrapSchema = JSON.parse(
+        fs.readFileSync(wrapSchemaPath, { encoding: "utf-8" })
       );
 
       // Insert the __type property for introspection
-      formatSchema.properties["__type"] = {
+      wrapSchema.properties["__type"] = {
         type: "string",
-        const: formatSchema.id,
+        const: wrapSchema.id,
       };
-      formatSchema.required = [...formatSchema.required, "__type"];
+      wrapSchema.required = [...wrapSchema.required, "__type"];
 
-      const abiJsonSchemaRelPath = formatSchema.properties.abi.$ref;
-      const abiJsonSchemaPath = path.join(
-        formatTypeDir,
-        abiJsonSchemaRelPath
-      );
+      const abiJsonSchemaRelPath = wrapSchema.properties.abi.$ref;
+      const abiJsonSchemaPath = path.join(wrapDir, abiJsonSchemaRelPath);
       const abiJsonSchema = JSON.parse(
         fs.readFileSync(abiJsonSchemaPath, { encoding: "utf-8" })
       );
+      const abiVersion = path
+        .parse(abiJsonSchemaPath)
+        .base.replace(".json", "");
 
-      formatSchemas.push(formatSchema);
+      const finalWrapSchema = await bundle(wrapSchema, {
+        resolve: {
+          file: {
+            read: (file: FileInfo) => {
+              // If both url is same
+              if (!path.relative(abiJsonSchemaRelPath, file.url)) {
+                return abiJsonSchema;
+              }
+              return file.data;
+            },
+          },
+        },
+      });
+
+      wrapSchemas.push(finalWrapSchema);
 
       // Convert it to a TypeScript interface
-      const tsFile = await JsonSchema.compile(formatSchema, formatSchema.id, {
+      const tsFile = await JsonSchema.compile(wrapSchema, wrapSchema.id, {
         $refOptions: {
           resolve: {
             file: {
               read: (file: FileInfo) => {
                 // If both url is same
-                if(!path.relative(abiJsonSchemaRelPath, file.url)) {
-                  return abiJsonSchema
+                if (!path.relative(abiJsonSchemaRelPath, file.url)) {
+                  return abiJsonSchema;
                 }
                 return file.data;
-              }
-            }
-          }
-        }
+              },
+            },
+          },
+        },
       });
 
       // Emit the result
-      const tsOutputPath = path.join(formatOutputDir, `${formatVersion}.ts`);
+      const tsOutputPath = path.join(wrapOutputDir, `${wrapVersion}.ts`);
       fs.mkdirSync(path.dirname(tsOutputPath), { recursive: true });
       os.writeFileSync(
         tsOutputPath,
@@ -80,13 +99,14 @@ async function generateFormatTypes() {
       );
 
       // Add metadata for the root index.ts file to use
-      formatModules.push({
-        interface: formatSchema.id,
-        version: formatVersion,
+      wrapModules.push({
+        interface: wrapSchema.id,
+        version: wrapVersion,
+        abiVersion: abiVersion,
       });
     } catch (error) {
       console.error(
-        `Error generating the Manifest file ${formatSchemaPath}: `,
+        `Error generating the Manifest file ${wrapSchemaPath}: `,
         error
       );
       throw error;
@@ -103,7 +123,7 @@ async function generateFormatTypes() {
     const tsSrc = Mustache.render(tsTemplate, context);
 
     // Emit the source
-    const tsOutputPath = path.join(formatOutputDir, `${name}.ts`);
+    const tsOutputPath = path.join(wrapOutputDir, `${name}.ts`);
     fs.mkdirSync(path.dirname(tsOutputPath), { recursive: true });
     os.writeFileSync(tsOutputPath, tsSrc);
   };
@@ -112,11 +132,13 @@ async function generateFormatTypes() {
   const versionToTs = (version: string) =>
     version.replace(/\./g, "_").replace(/\-/g, "_");
 
-  const formats = formatModules.map((module) => {
+  const formats = wrapModules.map((module) => {
     return {
       type: module.interface,
       version: module.version,
       tsVersion: versionToTs(module.version),
+      abiVersion: module.abiVersion,
+      abiTsVersion: versionToTs(module.abiVersion),
     };
   });
   const latest = lastItem(formats);
@@ -146,11 +168,13 @@ async function generateFormatTypes() {
   renderTemplate("deserialize", deserializeContext);
 
   // Generate a validate.ts file that validates the manifest against the JSON schema
-  const validateFormats = formatModules.map((module) => {
+  const validateFormats = wrapModules.map((module) => {
     return {
       type: module.interface,
       version: module.version,
       tsVersion: versionToTs(module.version),
+      abiVersion: module.abiVersion,
+      abiTsVersion: versionToTs(module.abiVersion),
       dir: formatTypeName,
     };
   });
@@ -162,8 +186,8 @@ async function generateFormatTypes() {
   };
 
   // Extract all validators
-  for (let k = 0; k < formatSchemas.length; ++k) {
-    const formatSchema = formatSchemas[k];
+  for (let k = 0; k < wrapSchemas.length; ++k) {
+    const formatSchema = wrapSchemas[k];
 
     const getValidator = (obj: Record<string, unknown>) => {
       if (typeof obj !== "object") {
@@ -182,7 +206,7 @@ async function generateFormatTypes() {
       }
     };
 
-    getValidator(formatSchema);
+    getValidator(formatSchema as Record<string, unknown>);
   }
 
   renderTemplate("validate", validateContext);

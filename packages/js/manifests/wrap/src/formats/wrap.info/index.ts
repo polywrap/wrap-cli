@@ -6,31 +6,37 @@
  */
 
 import {
-  WrapManifest as WrapManifest0_1_0,
-  Abi as WrapAbi0_1_0
+  WrapManifest as WrapManifest_0_1_0,
+  Abi as WrapAbi_0_1_0_0_0_1
 } from "./0.1.0";
 
 export {
-  WrapManifest0_1_0,
-  WrapAbi0_1_0,
+  WrapManifest_0_1_0,
+  WrapAbi_0_1_0_0_0_1
 };
 
 export enum WrapManifestVersions {
   "0.1.0" = "0.1.0",
-}
+};
+
+export enum WrapAbiVersions {
+  "0.1.0" = "0.0.1",
+};
 
 export type AnyWrapManifest =
-  | WrapManifest0_1_0
+  | WrapManifest_0_1_0
+;
+
 export type AnyWrapAbi =
-  | WrapAbi0_1_0
+  | WrapAbi_0_1_0_0_0_1
+;
 
-export type WrapManifest = WrapManifest0_1_0;
-export type WrapAbi = WrapAbi0_1_0;
+export type WrapManifest = WrapManifest_0_1_0;
+export type WrapAbi = WrapAbi_0_1_0_0_0_1;
 
-export const latestWrapManifestVersion = WrapManifestVersions["0.1.0"]
+export const latestWrapManifestVersion = WrapManifestVersions["0.1.0"];
+export const latestWrapAbiVersion = "0.0.1";
 
 export { migrateWrapManifest } from "./migrate";
-
 export { deserializeWrapManifest } from "./deserialize";
-
 export { validateWrapManifest } from "./validate";
