@@ -6,11 +6,13 @@
  */
 
 import {
-  WrapManifest as WrapManifest0_1_0
+  WrapManifest as WrapManifest0_1_0,
+  Abi as WrapAbi0_1_0
 } from "./0.1.0";
 
 export {
   WrapManifest0_1_0,
+  WrapAbi0_1_0,
 };
 
 export enum WrapManifestVersions {
@@ -19,8 +21,11 @@ export enum WrapManifestVersions {
 
 export type AnyWrapManifest =
   | WrapManifest0_1_0
+export type AnyWrapAbi =
+  | WrapAbi0_1_0
 
 export type WrapManifest = WrapManifest0_1_0;
+export type WrapAbi = WrapAbi0_1_0;
 
 export const latestWrapManifestVersion = WrapManifestVersions["0.1.0"]
 
