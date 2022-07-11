@@ -4,3 +4,6 @@ language: wasm/rust
 build: ./polywrap.build.yaml
 schema: ./schema.graphql
 module: ./Cargo.toml
+import_redirects:
+  - uri: "ens/memory-storage.polywrap.eth"
+    schema: ./plugin.graphql
