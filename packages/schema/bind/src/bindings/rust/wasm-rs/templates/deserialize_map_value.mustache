@@ -10,9 +10,7 @@ reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}
 reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {
     reader.read_{{#key}}{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}{{/key}}()
 }, |reader| {
-    {{#value}}
     {{> deserialize_map_value}}
-    {{/value}}
 })
 {{/map}}
 {{#enum}}

@@ -1,19 +1,13 @@
-#import { Module, Connection } into Ethereum from "wrap://ens/ethereum.polywrap.eth"
+#import { Module } into Storage from "wrap://ens/memory-storage.polywrap.eth"
 
 type Module {
-  getData(
-    address: String!
-    connection: Ethereum_Connection
-  ): UInt32!
+  getData: UInt32!
 
   setDataWithLargeArgs(
-    address: String!
     value: String!
-    connection: Ethereum_Connection
   ): String!
 
   setDataWithManyArgs(
-    address: String!
     valueA: String!
     valueB: String!
     valueC: String!
@@ -26,11 +20,9 @@ type Module {
     valueJ: String!
     valueK: String!
     valueL: String!
-    connection: Ethereum_Connection
   ): String!
 
   setDataWithManyStructuredArgs(
-    address: String!
     valueA: BigObj!
     valueB: BigObj!
     valueC: BigObj!
@@ -43,27 +35,14 @@ type Module {
     valueJ: BigObj!
     valueK: BigObj!
     valueL: BigObj!
-    connection: Ethereum_Connection
   ): Boolean!
 
-  deployContract(
-    connection: Ethereum_Connection
-  ): String!
+  localVarMethod: Boolean!
 
-  localVarMethod(
-    address: String!
-    connection: Ethereum_Connection
-  ): Boolean!
-
-  globalVarMethod(
-    address: String!
-    connection: Ethereum_Connection
-  ): Boolean!
+  globalVarMethod: Boolean!
 
   subsequentInvokes(
-    address: String!
     numberOfTimes: Int!
-    connection: Ethereum_Connection
   ): [String!]!
 }
 

@@ -2,8 +2,6 @@
   "stdout": [
     "Artifacts written to ./build from the image `polywrap-build-env-",
     "build/polywrap.meta.json",
-    "build/meta/queries/test.graphql",
-    "build/meta/queries/test.json",
     "build/meta/links/link.svg",
     "build/meta/icon/icon.png",
     "WRAP manifest written in ./build"

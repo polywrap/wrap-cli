@@ -72,6 +72,10 @@ export interface CustomType {
   optEnum?: Types.CustomEnum | null;
   enumArray: Array<Types.CustomEnum>;
   optEnumArray?: Array<Types.CustomEnum | null> | null;
+  map: Map<Types.String, Types.Int>;
+  mapOfArr: Map<Types.String, Array<Types.Int>>;
+  mapOfObj: Map<Types.String, Types.AnotherType>;
+  mapOfArrOfObj: Map<Types.String, Array<Types.AnotherType>>;
 }
 
 export interface AnotherType {
