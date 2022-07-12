@@ -7,34 +7,28 @@ import { msgpackDecode } from "@polywrap/msgpack-js";
 import { Uri, PluginModule, Subscription } from "../..";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import fs from "fs";
-import path from "path";
 import { getClient } from "../utils/getClient";
+import { makeMemoryStoragePlugin } from "../e2e/memory-storage";
 
 jest.setTimeout(200000);
 
 const simpleWrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple`;
 const simpleWrapperUri = new Uri(`fs/${simpleWrapperPath}/build`);
 
-const simpleFsWrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-fs`;
-const simpleFsWrapperUri = new Uri(`fs/${simpleFsWrapperPath}/build`);
+const memoryStoragePluginUri = "wrap://ens/memory-storage.polywrap.eth";
 
-const tempFilePath = path.resolve(__dirname, "temp.txt");
+const simpleMemoryWrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-memory`;
+const simpleMemoryWrapperUri = new Uri(`fs/${simpleMemoryWrapperPath}/build`);
 
 describe("wasm-wrapper", () => {
   beforeAll(async () => {
     await initTestEnvironment();
     await buildWrapper(simpleWrapperPath);
-    await buildWrapper(simpleFsWrapperPath);
-    if (fs.existsSync(tempFilePath)) {
-      await fs.promises.rm(tempFilePath);
-    }
+    await buildWrapper(simpleMemoryWrapperPath);
   });
 
   afterAll(async () => {
     await stopTestEnvironment();
-    if (fs.existsSync(tempFilePath)) {
-      await fs.promises.rm(tempFilePath);
-    }
   });
 
   const mockPlugin = () => {
@@ -230,29 +224,37 @@ describe("wasm-wrapper", () => {
   });
 
   test("subscribe", async () => {
-    const client = await getClient();
+    const client = await getClient({
+      plugins: [
+        {
+          uri: memoryStoragePluginUri,
+          plugin: makeMemoryStoragePlugin({}),
+        },
+      ],
+    });
 
     // test subscription
-    let expectedResults: Uint8Array[] = [];
-    let results: Uint8Array[] = [];
+    let expectedResults: number[] = [];
+    let results: number[] = [];
     let value = 0;
 
     const setter = setInterval(async () => {
-      const data = new Uint8Array([value++]);
-      await fs.promises.writeFile(tempFilePath, data);
-      expectedResults.push(data);
+      expectedResults.push(value);
+
+      await client.invoke({
+        uri: simpleMemoryWrapperUri.uri,
+        method: "setData",
+        args: {
+          value: value++,
+        },
+      });
     }, 4000);
 
-    const getSubscription: Subscription<Uint8Array> = client.subscribe<Uint8Array>(
-      {
-        uri: simpleFsWrapperUri.uri,
-        method: "readFile",
-        args: {
-          path: tempFilePath,
-        },
-        frequency: { ms: 4500 },
-      }
-    );
+    const getSubscription: Subscription<number> = client.subscribe<number>({
+      uri: simpleMemoryWrapperUri.uri,
+      method: "getData",
+      frequency: { ms: 4500 },
+    });
 
     for await (let result of getSubscription) {
       expect(result.error).toBeFalsy();
@@ -271,35 +273,42 @@ describe("wasm-wrapper", () => {
   });
 
   test("subscription early stop", async () => {
-    const client = await getClient();
+    const client = await getClient({
+      plugins: [
+        {
+          uri: memoryStoragePluginUri,
+          plugin: makeMemoryStoragePlugin({}),
+        },
+      ],
+    });
 
     // test subscription
     let results: number[] = [];
     let value = 0;
 
     const setter = setInterval(async () => {
-      const data = new Uint8Array([value++]);
-      await fs.promises.writeFile(tempFilePath, data);
+      await client.invoke({
+        uri: simpleMemoryWrapperUri.uri,
+        method: "setData",
+        args: {
+          value: value++,
+        },
+      });
     }, 4000);
 
-    const getSubscription: Subscription<Uint8Array> = client.subscribe<Uint8Array>(
-      {
-        uri: simpleFsWrapperUri.uri,
-        method: "readFile",
-        args: {
-          path: tempFilePath,
-        },
-        frequency: { ms: 4500 },
-      }
-    );
+    const getSubscription: Subscription<number> = client.subscribe<number>({
+      uri: simpleMemoryWrapperUri.uri,
+      method: "getData",
+      frequency: { ms: 4500 },
+    });
 
     new Promise(async () => {
       for await (let result of getSubscription) {
         expect(result.error).toBeFalsy();
         const val = result.data;
         if (val !== undefined) {
-          results.push(val[0]);
-          if (val[0] >= 2) {
+          results.push(val);
+          if (val >= 2) {
             break;
           }
         }
