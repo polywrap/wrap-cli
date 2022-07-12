@@ -1,3 +1,11 @@
+# Polywrap Origin (0.1.1)
+## Features
+* [PR-1017](https://github.com/polywrap/monorepo/pull/1017) `@polywrap/templates`, `polywrap` CLI: Rust wasm wrapper project template has been added, and made available via the `polywrap create ...` CLI command.
+
+## Bugs
+* [PR-1016](https://github.com/polywrap/monorepo/pull/1016) `polywrap` CLI: Improved logging when running workflows using the `polywrap run ...` command.
+* [PR-924](https://github.com/polywrap/monorepo/pull/924) `@polywrap/schema-parse`, `@polywrap/schema-bind`: Complex `Map<Key, Value>` type usages within wrapper schemas lead to incorrect bindings being generated. Additional tests + fixes have been added.
+
 # Polywrap Origin (0.1.0)
 ![Public Release Announcement (2)](https://user-images.githubusercontent.com/5522128/177474776-76886b67-6554-41a9-841b-939728e273ca.png)
 

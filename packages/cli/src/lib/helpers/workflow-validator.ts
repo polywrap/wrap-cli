@@ -18,7 +18,8 @@ export async function cueExists(): Promise<boolean> {
 export async function validateOutput(
   id: string,
   result: InvokeResult,
-  validateScriptPath: string
+  validateScriptPath: string,
+  quiet?: boolean
 ): Promise<void> {
   if (!(await cueExists())) {
     console.warn(intlMsg.commands_run_error_cueDoesNotExist());
@@ -34,18 +35,25 @@ export async function validateOutput(
   await fs.promises.writeFile(jsonOutput, JSON.stringify(result, null, 2));
 
   try {
-    const { stderr } = await runCommand(
+    await runCommand(
       `cue vet -d ${selector} ${validateScriptPath} ${jsonOutput}`,
       true
     );
-
-    if (stderr) {
-      console.error(stderr);
-      console.log("-----------------------------------");
+    if (!quiet) {
+      console.log("Validation: SUCCEED");
     }
   } catch (e) {
-    console.error(e);
-    console.log("-----------------------------------");
+    const msgLines = e.split(/\r?\n/);
+    msgLines[1] = `${validateScriptPath}:${msgLines[1]
+      .split(":")
+      .slice(1)
+      .join(":")}`;
+    const errMsg = msgLines.slice(0, 2).join("\n");
+
+    if (!quiet) {
+      console.log("Validation: FAILED");
+      console.log(`Error: ${errMsg}`);
+    }
     process.exitCode = 1;
   }
 
