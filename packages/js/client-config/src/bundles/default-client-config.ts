@@ -27,14 +27,14 @@ import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 
 export const getDefaultClientConfig = Tracer.traceFunc(
   "client-js: getDefaultClientConfig",
-  (): ClientConfig => {
+  (): ClientConfig<Uri> => {
     return {
       envs: [],
       redirects: [],
       plugins: [
         // IPFS is required for downloading Polywrap packages
         {
-          uri: "wrap://ens/ipfs.polywrap.eth",
+          uri: new Uri("wrap://ens/ipfs.polywrap.eth"),
           plugin: ipfsPlugin({
             provider: defaultIpfsProviders[0],
             fallbackProviders: defaultIpfsProviders.slice(1),
@@ -42,11 +42,11 @@ export const getDefaultClientConfig = Tracer.traceFunc(
         },
         // ENS is required for resolving domain to IPFS hashes
         {
-          uri: "wrap://ens/ens-resolver.polywrap.eth",
+          uri: new Uri("wrap://ens/ens-resolver.polywrap.eth"),
           plugin: ensResolverPlugin({}),
         },
         {
-          uri: "wrap://ens/ethereum.polywrap.eth",
+          uri: new Uri("wrap://ens/ethereum.polywrap.eth"),
           plugin: ethereumPlugin({
             networks: {
               mainnet: {
@@ -57,37 +57,37 @@ export const getDefaultClientConfig = Tracer.traceFunc(
           }),
         },
         {
-          uri: "wrap://ens/http.polywrap.eth",
+          uri: new Uri("wrap://ens/http.polywrap.eth"),
           plugin: httpPlugin({}),
         },
         {
-          uri: "wrap://ens/js-logger.polywrap.eth",
+          uri: new Uri("wrap://ens/js-logger.polywrap.eth"),
           plugin: loggerPlugin({}),
         },
         {
-          uri: "wrap://ens/uts46.polywrap.eth",
+          uri: new Uri("wrap://ens/uts46.polywrap.eth"),
           plugin: uts46Plugin({}),
         },
         {
-          uri: "wrap://ens/sha3.polywrap.eth",
+          uri: new Uri("wrap://ens/sha3.polywrap.eth"),
           plugin: sha3Plugin({}),
         },
         {
-          uri: "wrap://ens/graph-node.polywrap.eth",
+          uri: new Uri("wrap://ens/graph-node.polywrap.eth"),
           plugin: graphNodePlugin({
             provider: "https://api.thegraph.com",
           }),
         },
         {
-          uri: "wrap://ens/fs.polywrap.eth",
+          uri: new Uri("wrap://ens/fs.polywrap.eth"),
           plugin: fileSystemPlugin({}),
         },
         {
-          uri: "wrap://ens/fs-resolver.polywrap.eth",
+          uri: new Uri("wrap://ens/fs-resolver.polywrap.eth"),
           plugin: fileSystemResolverPlugin({}),
         },
         {
-          uri: "wrap://ens/ipfs-resolver.polywrap.eth",
+          uri: new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
           plugin: ipfsResolverPlugin({
             provider: defaultIpfsProviders[0],
             fallbackProviders: defaultIpfsProviders.slice(1),
@@ -96,16 +96,16 @@ export const getDefaultClientConfig = Tracer.traceFunc(
       ],
       interfaces: [
         {
-          interface: "wrap://ens/uri-resolver.core.polywrap.eth",
+          interface: new Uri("wrap://ens/uri-resolver.core.polywrap.eth"),
           implementations: [
-            "wrap://ens/ipfs-resolver.polywrap.eth",
-            "wrap://ens/ens-resolver.polywrap.eth",
-            "wrap://ens/fs-resolver.polywrap.eth",
+            new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
+            new Uri("wrap://ens/ens-resolver.polywrap.eth"),
+            new Uri("wrap://ens/fs-resolver.polywrap.eth"),
           ],
         },
         {
-          interface: "wrap://ens/logger.core.polywrap.eth",
-          implementations: ["wrap://ens/js-logger.polywrap.eth"],
+          interface: new Uri("wrap://ens/logger.core.polywrap.eth"),
+          implementations: [new Uri("wrap://ens/js-logger.polywrap.eth")],
         },
       ],
       uriResolvers: [

@@ -5,3 +5,7 @@ export * from "./uri-resolution/core";
 export * from "./uri-resolution/resolvers";
 export * from "./utils";
 export * from "./workflow";
+
+export class Bepis {
+    
+}

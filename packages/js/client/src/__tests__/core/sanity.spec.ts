@@ -1,21 +1,31 @@
+import { ClientConfigBuilder } from "@polywrap/client-config-js";
 import {
+  Bepis,
   coreInterfaceUris,
-  PluginModule
+  PluginModule,
+  Uri
 } from "@polywrap/core-js";
+
 import {
-  Uri,
   PolywrapClient,
 } from "../..";
 
 jest.setTimeout(200000);
 
 describe("sanity", () => {
+  test("bepis", () => {
+    const a = new Bepis();
+    const b = new ClientConfigBuilder().getBepis();
+
+    console.log(a instanceof Bepis);
+    console.log(b instanceof Bepis);
+    
+    expect(a).toStrictEqual(b);
+  });
 
   test("default client config", () => {
     const client = new PolywrapClient();
-
-    expect(client.getRedirects()).toStrictEqual([]);
-    expect(client.getPlugins().map((x) => x.uri)).toStrictEqual([
+    const expectedPlugins = [
       new Uri("wrap://ens/ipfs.polywrap.eth"),
       new Uri("wrap://ens/ens-resolver.polywrap.eth"),
       new Uri("wrap://ens/ethereum.polywrap.eth"),
@@ -27,7 +37,14 @@ describe("sanity", () => {
       new Uri("wrap://ens/fs.polywrap.eth"),
       new Uri("wrap://ens/fs-resolver.polywrap.eth"),
       new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
-    ]);
+    ];
+    const actualPlugins = client.getPlugins().map(x => x.uri);
+    
+    console.log("expected", expectedPlugins[0] instanceof Uri);
+    console.log("actual", actualPlugins[0] instanceof Uri);
+
+    expect(client.getRedirects()).toStrictEqual([]);
+    expect(expectedPlugins).toStrictEqual(actualPlugins);
     expect(client.getInterfaces()).toStrictEqual([
       {
         interface: coreInterfaceUris.uriResolver,

@@ -19,7 +19,20 @@
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@polywrap/core-js": "0.1.1"
+    "@polywrap/core-js": "0.1.1",
+    "@polywrap/wrap-manifest-types-js": "0.1.1",
+    "@polywrap/ipfs-plugin-js": "0.1.1",
+    "@polywrap/ipfs-resolver-plugin-js": "0.1.1",
+    "@polywrap/ethereum-plugin-js": "0.1.1",
+    "@polywrap/ens-resolver-plugin-js": "0.1.1",
+    "@polywrap/graph-node-plugin-js": "0.1.1",
+    "@polywrap/http-plugin-js": "0.1.1",
+    "@polywrap/fs-plugin-js": "0.1.1",
+    "@polywrap/uts46-plugin-js": "0.1.1",
+    "@polywrap/sha3-plugin-js": "0.1.1",
+    "@polywrap/logger-plugin-js": "0.1.1",
+    "@polywrap/tracing-js": "0.1.1",
+    "@polywrap/fs-resolver-plugin-js": "0.1.1"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",

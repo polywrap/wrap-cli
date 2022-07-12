@@ -24,12 +24,11 @@ import { sha3Plugin } from "@polywrap/sha3-plugin-js";
 import { loggerPlugin } from "@polywrap/logger-plugin-js";
 import { Tracer } from "@polywrap/tracing-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
-import { ClientConfigBuilder } from "@polywrap/client-config-js";
 
 export const getDefaultClientConfig = Tracer.traceFunc(
   "client-js: getDefaultClientConfig",
   (): ClientConfig<Uri> => {
-    return new ClientConfigBuilder<Uri>().add({
+    return {
       envs: [],
       redirects: [],
       plugins: [
@@ -130,8 +129,7 @@ export const getDefaultClientConfig = Tracer.traceFunc(
           }
         ),
       ],
-    })
-    .build();
+    };
   }
 );
 
