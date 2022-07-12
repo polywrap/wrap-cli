@@ -1,4 +1,5 @@
 import * as TestCases from "./test-cases";
+import { makeMemoryStoragePlugin } from "./memory-storage";
 import {
   buildWrapper,
   initTestEnvironment,
@@ -26,9 +27,15 @@ describe("wasm-as test cases", () => {
 
     await buildWrapper(wrapperPath);
 
+    const client = await getClient({
+      plugins: [{
+        uri: "wrap://ens/memory-storage.polywrap.eth",
+        plugin: makeMemoryStoragePlugin({}),
+      }]
+    })
+
     await TestCases.runAsyncifyTest(
-      await getClientWithEnsAndIpfs(),
-      wrapperUri
+      client, wrapperUri
     );
   });
 

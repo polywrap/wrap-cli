@@ -5,36 +5,17 @@ export const runAsyncifyTest = async (
   client: PolywrapClient,
   wrapperUri: string
 ) => {
-  const deploy = await client.invoke<string>({
+  const subsequentInvokes = await client.query<{
+    subsequentInvokes: string;
+  }>({
     uri: wrapperUri,
-    method: "deployContract",
-    args: {
-      connection: {
-        networkNameOrChainId: "testnet",
-      },
-    },
-  });
-
-  expect(deploy.error).toBeFalsy();
-  expect(deploy.data).toBeTruthy();
-  expect(deploy.data?.indexOf("0x")).toBeGreaterThan(-1);
-
-  if (!deploy.data) {
-    return;
-  }
-
-  const address = deploy.data;
-
-  const subsequentInvokes = await client.invoke({
-    uri: wrapperUri,
-    method: "subsequentInvokes",
-    args: {
-      address,
-      numberOfTimes: 40,
-      connection: {
-        networkNameOrChainId: "testnet",
-      },
-    },
+    query: `
+      mutation {
+        subsequentInvokes(
+          numberOfTimes: 40
+        )
+      }
+    `,
   });
 
   const expected = Array.from(new Array(40), (_, index) => index.toString());
@@ -43,59 +24,41 @@ export const runAsyncifyTest = async (
   expect(subsequentInvokes.data).toBeTruthy();
   expect(subsequentInvokes.data).toEqual(expected);
 
-  const localVarMethod = await client.invoke({
+  const localVarMethod = await client.invoke<boolean>({
     uri: wrapperUri,
-    method: "localVarMethod",
-    args: {
-      address,
-      connection: {
-        networkNameOrChainId: "testnet",
-      },
-    },
+    method: "localVarMethod"
   });
 
   expect(localVarMethod.error).toBeFalsy();
   expect(localVarMethod.data).toBeTruthy();
   expect(localVarMethod.data).toEqual(true);
 
-  const globalVarMethod = await client.invoke({
+  const globalVarMethod = await client.invoke<boolean>({
     uri: wrapperUri,
-    method: "globalVarMethod",
-    args: {
-      address,
-      connection: {
-        networkNameOrChainId: "testnet",
-      },
-    },
+    method: "globalVarMethod"
   });
 
   expect(globalVarMethod.error).toBeFalsy();
   expect(globalVarMethod.data).toBeTruthy();
   expect(globalVarMethod.data).toEqual(true);
-
+  
   const largeStr = new Array(10000).join("polywrap ");
-
-  const setDataWithLargeArgs = await client.invoke({
+  const setDataWithLargeArgs = await client.invoke<string>({
     uri: wrapperUri,
     method: "setDataWithLargeArgs",
     args: {
-      address,
-      value: largeStr,
-      connection: {
-        networkNameOrChainId: "testnet",
-      },
-    },
-  });
+      value: largeStr
+    }
+  })
 
   expect(setDataWithLargeArgs.error).toBeFalsy();
   expect(setDataWithLargeArgs.data).toBeTruthy();
   expect(setDataWithLargeArgs.data).toEqual(largeStr);
 
-  const setDataWithManyArgs = await client.invoke({
+  const setDataWithManyArgs = await client.invoke<string>({
     uri: wrapperUri,
     method: "setDataWithManyArgs",
     args: {
-      address,
       valueA: "polywrap a",
       valueB: "polywrap b",
       valueC: "polywrap c",
@@ -108,10 +71,7 @@ export const runAsyncifyTest = async (
       valueJ: "polywrap j",
       valueK: "polywrap k",
       valueL: "polywrap l",
-      connection: {
-        networkNameOrChainId: "testnet",
-      },
-    },
+    }
   });
 
   expect(setDataWithManyArgs.error).toBeFalsy();
@@ -137,11 +97,10 @@ export const runAsyncifyTest = async (
     };
   };
 
-  const setDataWithManyStructuredArgs = await client.invoke({
+  const setDataWithManyStructuredArgs = await client.invoke<string>({
     uri: wrapperUri,
     method: "setDataWithManyStructuredArgs",
     args: {
-      address,
       valueA: createObj(1),
       valueB: createObj(2),
       valueC: createObj(3),
@@ -154,10 +113,7 @@ export const runAsyncifyTest = async (
       valueJ: createObj(10),
       valueK: createObj(11),
       valueL: createObj(12),
-      connection: {
-        networkNameOrChainId: "testnet",
-      },
-    },
+    }
   });
 
   expect(setDataWithManyStructuredArgs.error).toBeFalsy();
