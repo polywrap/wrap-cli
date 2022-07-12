@@ -1,7 +1,0 @@
-format: 0.1.0
-name: SimpleFs
-language: wasm/assemblyscript
-build: ./polywrap.build.yaml
-schema: ./schema.graphql
-module: ./src/index.ts
-meta: ./polywrap.meta.yaml
