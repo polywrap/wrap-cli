@@ -6,10 +6,12 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type ObjectDefinition = (GenericDefinition & WithComment) & {
-  properties: PropertyDefinition[];
-  interfaces: InterfaceDefinition[];
-};
+export type ModuleDefinition = GenericDefinition &
+  WithComment & {
+    methods?: [] | [MethodDefinition];
+    imports?: [] | [string];
+    interfaces?: [] | [GenericDefinition];
+  };
 export type GenericDefinition = WithKind & {
   type?: string;
   name?: string;
@@ -35,23 +37,17 @@ export type MapDefinition = AnyDefinition &
 export type MapKeyDefinition = AnyDefinition & {
   type?: "UInt" | "UInt8" | "UInt16" | "UInt32" | "Int" | "Int8" | "Int16" | "Int32" | "String";
 };
-export type InterfaceDefinition = (GenericDefinition & ImportedDefinition) & {
-  capabilities: CapabilityDefinition;
-};
-export type ModuleDefinition = GenericDefinition &
-  WithComment & {
-    methods?: [] | [MethodDefinition];
-    imports?: [] | [string];
-    interfaces?: [] | [GenericDefinition];
-  };
 export type EnumDefinition = (GenericDefinition & WithComment) & {
   constants: string[];
 };
-export type ImportedObjectDefinition = (GenericDefinition & WithComment) & ImportedDefinition & WithComment;
+export type InterfaceDefinition = (GenericDefinition & ImportedDefinition) & {
+  capabilities: CapabilityDefinition;
+};
+export type ImportedObjectDefinition = ObjectDefinition & ImportedDefinition & WithComment;
 export type ImportedModuleDefinition = ModuleDefinition & ImportedDefinition & WithComment;
 export type ImportedEnumDefinition = (GenericDefinition & WithComment) & ImportedDefinition & WithComment;
 export type ImportedEnvDefinition = ImportedObjectDefinition;
-export type EnvDefinition = GenericDefinition & WithComment;
+export type EnvDefinition = ObjectDefinition;
 
 export interface WrapManifest {
   /**
@@ -67,24 +63,33 @@ export interface WrapManifest {
    */
   name: string;
   abi: Abi;
-  __type: "WrapManifest";
 }
 export interface Abi {
   objectTypes: ObjectDefinition[];
-  moduleType?: ModuleDefinition[];
+  moduleType?: ModuleDefinition;
   enumTypes: EnumDefinition[];
-  interfaceTypes: (GenericDefinition & ImportedDefinition)[];
+  interfaceTypes: InterfaceDefinition[];
   importedObjectTypes: ImportedObjectDefinition[];
   importedModuleTypes: ImportedModuleDefinition[];
   importedEnumTypes: ImportedEnumDefinition[];
   importedEnvTypes: ImportedEnvDefinition[];
   envType?: EnvDefinition;
 }
+export interface ObjectDefinition {
+  [k: string]: unknown;
+}
 export interface WithKind {
   kind: number;
 }
 export interface WithComment {
   comment?: string;
+}
+export interface MethodDefinition {
+  arguments: [] | [PropertyDefinition];
+  env?: {
+    required?: boolean;
+  };
+  return: PropertyDefinition;
 }
 export interface ScalarDefinition {
   type:
@@ -112,11 +117,4 @@ export interface CapabilityDefinition {
   getImplementations?: {
     enabled: boolean;
   };
-}
-export interface MethodDefinition {
-  arguments: [] | [PropertyDefinition];
-  env?: {
-    required?: boolean;
-  };
-  return: PropertyDefinition;
 }

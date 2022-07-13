@@ -373,7 +373,6 @@ export class Compiler {
         name: manifest.name,
         type: (await this._isInterface()) ? "interface" : "wasm",
         version: "0.1.0",
-        __type: "WrapManifest",
       };
 
       const s = JSON.stringify(info);

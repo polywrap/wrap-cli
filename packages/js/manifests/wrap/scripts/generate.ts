@@ -41,13 +41,6 @@ async function generateFormatTypes() {
         fs.readFileSync(wrapSchemaPath, { encoding: "utf-8" })
       );
 
-      // Insert the __type property for introspection
-      wrapSchema.properties["__type"] = {
-        type: "string",
-        const: wrapSchema.id,
-      };
-      wrapSchema.required = [...wrapSchema.required, "__type"];
-
       const abiJsonSchemaRelPath = wrapSchema.properties.abi.$ref;
       const abiJsonSchemaPath = path.join(wrapDir, abiJsonSchemaRelPath);
       const abiJsonSchema = JSON.parse(

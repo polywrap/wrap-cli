@@ -18,15 +18,13 @@ describe("Template Wrapper End to End Tests", () => {
   it("calls sampleMethod", async () => {
     const expected: string = "polywrap";
 
-    console.log(await client.getManifest(wrapperUri, {}));
+    console.log(JSON.stringify(await client.getManifest(wrapperUri, {})));
 
     const { data, error } = await client.invoke<App.Template_SampleResult>({
       uri: wrapperUri,
       method: "sampleMethod",
       args: { arg: expected }
     });
-
-    console.log(error);
 
     expect(error).toBeFalsy();
     expect(data?.value).toEqual(expected);
