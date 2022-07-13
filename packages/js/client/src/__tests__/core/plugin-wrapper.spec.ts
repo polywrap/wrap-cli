@@ -112,18 +112,18 @@ describe("plugin-wrapper", () => {
       ],
     });
 
-    const queryEnv = await client.invoke({
+    const getResult = await client.invoke({
       uri: implementationUri,
       method: "getMap",
     });
 
-    expect(queryEnv.error).toBeFalsy();
-    expect(queryEnv.data).toBeTruthy();
-    expect(queryEnv.data).toMatchObject(
+    expect(getResult.error).toBeFalsy();
+    expect(getResult.data).toBeTruthy();
+    expect(getResult.data).toMatchObject(
       new Map<string, number>().set("a", 1).set("b", 2)
     );
 
-    const mutationEnv = await client.invoke({
+    const updateResult = await client.invoke({
       uri: implementationUri,
       method: "updateMap",
       args: {
@@ -131,9 +131,9 @@ describe("plugin-wrapper", () => {
       },
     });
 
-    expect(mutationEnv.error).toBeFalsy();
-    expect(mutationEnv.data).toBeTruthy();
-    expect(mutationEnv.data).toMatchObject(
+    expect(updateResult.error).toBeFalsy();
+    expect(updateResult.data).toBeTruthy();
+    expect(updateResult.data).toMatchObject(
       new Map<string, number>().set("a", 1).set("b", 3).set("c", 5)
     );
   });
