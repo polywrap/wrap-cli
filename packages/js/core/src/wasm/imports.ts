@@ -2,7 +2,7 @@
 
 import { u32, WrapImports } from "./types";
 import { readBytes, readString, writeBytes, writeString } from "./buffer";
-import { Client } from "@polywrap/core-js";
+import { Client } from "../.";
 import { State } from "./WasmWrapper";
 
 import { msgpackEncode } from "@polywrap/msgpack-js";

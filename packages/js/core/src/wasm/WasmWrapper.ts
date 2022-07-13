@@ -15,7 +15,7 @@ import {
   GetFileOptions,
   GetManifestOptions,
   isBuffer,
-} from "@polywrap/core-js";
+} from "../.";
 import {
   deserializeWrapManifest,
   WrapManifest,

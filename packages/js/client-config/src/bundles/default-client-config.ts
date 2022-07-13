@@ -1,6 +1,4 @@
-import { WasmWrapper } from "./wasm";
-import { PluginWrapper } from "./plugin/PluginWrapper";
-import { ClientConfig } from "@polywrap/core-js";
+import { ClientConfig, WasmWrapper, PluginWrapper } from "@polywrap/core-js";
 import {
   Uri,
   PluginPackage,

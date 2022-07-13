@@ -10,7 +10,7 @@ import {
   Env,
   GetManifestOptions,
   isBuffer,
-} from "@polywrap/core-js";
+} from "../.";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackDecode } from "@polywrap/msgpack-js";
 import { Tracer } from "@polywrap/tracing-js";

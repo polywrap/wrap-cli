@@ -19,8 +19,7 @@ import {
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackEncode } from "@polywrap/msgpack-js";
-import { WasmWrapper } from "@polywrap/client-js";
-import { WrapImports } from "@polywrap/client-js/build/wasm/types";
+import { WasmWrapper, WrapImports } from "@polywrap/core-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 import { Abi } from "@polywrap/schema-parse";
 import { ComposerOutput } from "@polywrap/schema-compose";
