@@ -248,12 +248,12 @@ describe("wasm-wrapper", () => {
           value: value++,
         },
       });
-    }, 4000);
+    }, 500);
 
     const getSubscription: Subscription<number> = client.subscribe<number>({
       uri: simpleMemoryWrapperUri.uri,
       method: "getData",
-      frequency: { ms: 4500 },
+      frequency: { ms: 550 },
     });
 
     for await (let result of getSubscription) {
@@ -294,12 +294,12 @@ describe("wasm-wrapper", () => {
           value: value++,
         },
       });
-    }, 4000);
+    }, 500);
 
     const getSubscription: Subscription<number> = client.subscribe<number>({
       uri: simpleMemoryWrapperUri.uri,
       method: "getData",
-      frequency: { ms: 4500 },
+      frequency: { ms: 550 },
     });
 
     new Promise(async () => {
