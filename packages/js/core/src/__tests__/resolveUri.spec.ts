@@ -23,7 +23,6 @@ import {
   SubscribeOptions,
   Subscription,
   PluginPackage,
-  GetManifestOptions,
 } from "..";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
@@ -106,9 +105,8 @@ describe("resolveUri", () => {
           },
           encoded: false
         }),
-      getSchema: (_client: Client): Promise<string> => Promise.resolve(""),
       getFile: (options: GetFileOptions, client: Client) => Promise.resolve(""),
-      getManifest: (options: GetManifestOptions, client: Client) => Promise.resolve({} as WrapManifest)
+      getManifest: (client: Client) => Promise.resolve({} as WrapManifest)
     };
   };
 
@@ -127,9 +125,8 @@ describe("resolveUri", () => {
           },
           encoded: false
         }),
-      getSchema: (_client: Client): Promise<string> => Promise.resolve(""),
       getFile: (options: GetFileOptions, client: Client) => Promise.resolve(""),
-      getManifest: (options: GetManifestOptions, client) => Promise.reject("")
+      getManifest: (client) => Promise.reject("")
     };
   };
 

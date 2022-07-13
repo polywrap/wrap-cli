@@ -12,7 +12,6 @@ export interface BindOptions {
   projectName: string;
   bindLanguage: BindLanguage;
   abi: Abi;
-  schema: string;
   config?: Record<string, unknown>;
   outputDirAbs: string;
 }

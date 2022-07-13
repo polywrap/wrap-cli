@@ -1,19 +1,20 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-empty-function */
 
-import { Project, AnyProjectManifest } from "./";
+import { AnyProjectManifest, Project } from "./";
 
-import { Uri, PolywrapClient } from "@polywrap/client-js";
+import { PolywrapClient, Uri } from "@polywrap/client-js";
 import {
-  composeSchema,
-  ComposerOutput,
-  ComposerFilter,
   ComposerOptions,
-  SchemaFile,
+  ComposerOutput,
+  composeSchema,
+  ManifestFile,
 } from "@polywrap/schema-compose";
 import fs from "fs";
 import path from "path";
 import * as gluegun from "gluegun";
+import { Abi } from "@polywrap/schema-parse";
+import { deserializeWrapManifest } from "@polywrap/wrap-manifest-types-js";
 
 export interface SchemaComposerConfig {
   project: Project<AnyProjectManifest>;
@@ -28,42 +29,40 @@ export class SchemaComposer {
     this._client = this._config.client;
   }
 
-  public async getComposedSchemas(
-    output: ComposerFilter = ComposerFilter.All
-  ): Promise<ComposerOutput> {
+  public async getComposedAbis(): Promise<ComposerOutput> {
     if (this._composerOutput) {
       return Promise.resolve(this._composerOutput);
     }
 
     const { project } = this._config;
 
-    const schemaNamedPath = await project.getSchemaNamedPath();
+    const manifestNamedPath = await project.getSchemaNamedPath();
     const import_redirects = await project.getImportRedirects();
 
-    const getSchemaFile = (schemaPath?: string): SchemaFile | undefined =>
-      schemaPath
+    const getManifest = (manifestPath?: string): ManifestFile | undefined =>
+      manifestPath
         ? {
-            schema: this._fetchLocalSchema(schemaPath),
-            absolutePath: schemaPath,
+            abi: this._fetchLocalManifest(manifestPath),
+            absolutePath: manifestPath,
           }
         : undefined;
 
     const options: ComposerOptions = {
-      schemas: [],
+      abis: [],
       resolvers: {
         external: (uri: string) =>
-          this._fetchExternalSchema(uri, import_redirects),
-        local: (path: string) => Promise.resolve(this._fetchLocalSchema(path)),
+          this._fetchExternalManifest(uri, import_redirects),
+        local: (path: string) =>
+          Promise.resolve(this._fetchLocalManifest(path)),
       },
-      output,
     };
 
-    const schemaFile = getSchemaFile(schemaNamedPath);
-    if (!schemaFile) {
-      throw Error(`Schema cannot be loaded at path: ${schemaNamedPath}`);
+    const manifest = getManifest(manifestNamedPath);
+    if (!manifest) {
+      throw Error(`Manifest cannot be loaded at path: ${manifestNamedPath}`);
     }
 
-    options.schemas.push(schemaFile);
+    options.abis.push(manifest.abi);
 
     this._composerOutput = await composeSchema(options);
     return this._composerOutput;
@@ -73,13 +72,13 @@ export class SchemaComposer {
     this._composerOutput = undefined;
   }
 
-  private async _fetchExternalSchema(
+  private async _fetchExternalManifest(
     uri: string,
     import_redirects?: {
       uri: string;
       schema: string;
     }[]
-  ): Promise<string> {
+  ): Promise<Abi> {
     // Check to see if we have any import redirects that match
     if (import_redirects) {
       for (const redirect of import_redirects) {
@@ -87,26 +86,29 @@ export class SchemaComposer {
         const uriParsed = new Uri(uri);
 
         if (Uri.equals(redirectUri, uriParsed)) {
-          return this._fetchLocalSchema(redirect.schema);
+          return this._fetchLocalManifest(redirect.schema);
         }
       }
     }
 
     // Need to work from here outwards: CLI -> Client -> Core + schema
     try {
-      return await this._client.getManifest(new Uri(uri));
+      const { abi } = await this._client.getManifest(new Uri(uri));
+      // TODO: Remove as unknown once Abi JSON Schema has been implemented
+      return (abi as unknown) as Abi;
     } catch (e) {
       gluegun.print.error(e);
       throw e;
     }
   }
 
-  private _fetchLocalSchema(schemaPath: string) {
-    return fs.readFileSync(
-      path.isAbsolute(schemaPath)
-        ? schemaPath
-        : path.join(this._config.project.getManifestDir(), schemaPath),
-      "utf-8"
-    );
+  private _fetchLocalManifest(manifestPath: string): Abi {
+    const currentPath = path.isAbsolute(manifestPath)
+      ? manifestPath
+      : path.join(this._config.project.getManifestDir(), manifestPath);
+    const manifest = fs.readFileSync(currentPath);
+    const { abi } = deserializeWrapManifest(manifest);
+    // TODO: Remove as unknown once Abi JSON Schema has been implemented
+    return (abi as unknown) as Abi;
   }
 }

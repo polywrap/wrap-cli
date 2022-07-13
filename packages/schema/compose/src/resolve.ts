@@ -5,8 +5,8 @@
 import {
   ExternalImport,
   LocalImport,
-  SchemaResolver,
-  SchemaResolvers,
+  AbiResolver,
+  AbiResolvers,
   SYNTAX_REFERENCE,
 } from "./types";
 import { parseExternalImports, parseLocalImports, parseUse } from "./parse";
@@ -122,9 +122,9 @@ export async function resolveUseStatements(
 }
 
 export async function resolveImportsAndParseSchemas(
-  schema: string,
-  schemaPath: string,
-  resolvers: SchemaResolvers,
+  abi: Abi,
+  abiPath: string,
+  resolvers: AbiResolvers,
   noValidate = false
 ): Promise<Abi> {
   const importKeywordCapture = /^#+["{3}]*import\s/gm;
@@ -218,9 +218,7 @@ export async function resolveImportsAndParseSchemas(
   );
 
   // Parse the newly formed schema
-  const abi = parseSchema(newSchema, { noValidate });
-
-  return abi;
+  return parseSchema(newSchema, { noValidate });
 }
 
 interface Namespaced {
@@ -643,9 +641,9 @@ function resolveInterfaces(
 
 async function resolveExternalImports(
   importsToResolve: ExternalImport[],
-  resolveSchema: SchemaResolver,
+  resolveManifest: AbiResolver,
   abi: Abi
-): Promise<string[]> {
+): Promise<Abi[]> {
   // Keep track of all imported object type names
   const typesToImport: ImportMap = {};
 
@@ -653,14 +651,10 @@ async function resolveExternalImports(
     const { uri, namespace, importedTypes } = importToResolve;
 
     // Resolve the schema
-    const schema = await resolveSchema(uri);
-
-    if (!schema) {
-      throw Error(`Unable to resolve schema at "${uri}"`);
-    }
+    const manifest = await resolveManifest(uri);
 
     // Parse the schema into Abi
-    const extAbi = parseSchema(schema);
+    const extAbi = manifest.abi as Abi;
 
     let extTypesToImport = importedTypes;
 
@@ -929,15 +923,15 @@ async function resolveExternalImports(
 
 async function resolveLocalImports(
   importsToResolve: LocalImport[],
-  resolveSchema: SchemaResolver,
+  resolveManifest: AbiResolver,
   abi: Abi,
-  resolvers: SchemaResolvers
+  resolvers: AbiResolvers
 ): Promise<void> {
   for (const importToResolve of importsToResolve) {
     const { importedTypes, path } = importToResolve;
 
     // Resolve the schema
-    let schema = await resolveSchema(path);
+    let schema = await resolveManifest(path);
 
     if (!schema) {
       throw Error(`Unable to resolve schema at "${path}"`);

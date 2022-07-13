@@ -119,17 +119,12 @@ async function run(options: PluginCommandOptions) {
     process.exitCode = 1;
   }
 
-  // Output the built schema & manifest
-  const schemas = await schemaComposer.getComposedSchemas(
-    ComposerFilter.Schema
-  );
-  const publishSchemaPath = path.join(publishDir, "schema.graphql");
+  // Output the built manifest
   const publishManifestPath = path.join(publishDir, "polywrap.plugin.json");
 
   if (!fs.existsSync(publishDir)) {
     fs.mkdirSync(publishDir);
   }
 
-  writeFileSync(publishSchemaPath, schemas.schema);
   await outputManifest(manifest, publishManifestPath);
 }
