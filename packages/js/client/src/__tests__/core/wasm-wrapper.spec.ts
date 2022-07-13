@@ -3,32 +3,28 @@ import {
   initTestEnvironment,
   stopTestEnvironment,
 } from "@polywrap/test-env-js";
-import { msgpackDecode } from "@polywrap/msgpack-js"
-import {
-  Uri,
-  PluginModule,
-  Subscription,
-  msgpackDecode,
-  Subscription
-} from "../..";
+import { msgpackDecode } from "@polywrap/msgpack-js";
+import { Uri, PluginModule, Subscription } from "../..";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import fs from "fs";
 import { getClient } from "../utils/getClient";
-import { getClientWithEnsAndIpfs } from "../utils/getClientWithEnsAndIpfs";
+import { makeMemoryStoragePlugin } from "../e2e/memory-storage";
 
 jest.setTimeout(200000);
 
 const simpleWrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple`;
 const simpleWrapperUri = new Uri(`fs/${simpleWrapperPath}/build`);
 
-const simpleStorageWrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-storage`;
-const simpleStorageWrapperUri = new Uri(`fs/${simpleStorageWrapperPath}/build`);
+const memoryStoragePluginUri = "wrap://ens/memory-storage.polywrap.eth";
+
+const simpleMemoryWrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-memory`;
+const simpleMemoryWrapperUri = new Uri(`fs/${simpleMemoryWrapperPath}/build`);
 
 describe("wasm-wrapper", () => {
   beforeAll(async () => {
     await initTestEnvironment();
     await buildWrapper(simpleWrapperPath);
-    await buildWrapper(simpleStorageWrapperPath);
+    await buildWrapper(simpleMemoryWrapperPath);
   });
 
   afterAll(async () => {
@@ -180,26 +176,28 @@ describe("wasm-wrapper", () => {
     const client = await getClient();
 
     const expectedManifest = new Uint8Array(
-      await fs.promises.readFile(
-        `${simpleWrapperPath}/build/wrap.info`
-      )
+      await fs.promises.readFile(`${simpleWrapperPath}/build/wrap.info`)
     );
 
-    const receivedManifest: Uint8Array = (await client.getFile(simpleWrapperUri, {
-      path: "./wrap.info"
-    })) as Uint8Array;
+    const receivedManifest: Uint8Array = (await client.getFile(
+      simpleWrapperUri,
+      {
+        path: "./wrap.info",
+      }
+    )) as Uint8Array;
 
     expect(receivedManifest).toEqual(expectedManifest);
 
     const expectedWasmModule = new Uint8Array(
-      await fs.promises.readFile(
-        `${simpleWrapperPath}/build/wrap.wasm`
-      )
+      await fs.promises.readFile(`${simpleWrapperPath}/build/wrap.wasm`)
     );
 
-    const receivedWasmModule: Uint8Array = (await client.getFile(simpleWrapperUri, {
-      path: "./wrap.wasm"
-    })) as Uint8Array;
+    const receivedWasmModule: Uint8Array = (await client.getFile(
+      simpleWrapperUri,
+      {
+        path: "./wrap.wasm",
+      }
+    )) as Uint8Array;
 
     expect(receivedWasmModule).toEqual(expectedWasmModule);
 
@@ -213,100 +211,76 @@ describe("wasm-wrapper", () => {
               schema: "",
               implements: [],
             },
-          }
-        }
-      ]
-    })
+          },
+        },
+      ],
+    });
 
     await expect(() =>
       pluginClient.getFile("ens/mock-plugin.eth", {
-          path: "./index.js",
-        })
+        path: "./index.js",
+      })
     ).rejects.toThrow("client.getFile(...) is not implemented for Plugins.");
   });
 
   test("subscribe", async () => {
-    const client = await getClientWithEnsAndIpfs();
-
-    const deploy = await client.invoke<string>({
-      uri: simpleStorageWrapperUri.uri,
-      method: "deployContract",
-      args: {
-        connection: {
-          networkNameOrChainId: "testnet",
+    const client = await getClient({
+      plugins: [
+        {
+          uri: memoryStoragePluginUri,
+          plugin: makeMemoryStoragePlugin({}),
         },
-      },
+      ],
     });
 
-    expect(deploy.error).toBeFalsy();
-    expect(deploy.data).toBeTruthy();
-    expect(deploy.data?.indexOf("0x")).toBeGreaterThan(-1);
-
-    const address = deploy.data;
-
     // test subscription
+    let expectedResults: number[] = [];
     let results: number[] = [];
     let value = 0;
 
     const setter = setInterval(async () => {
+      expectedResults.push(value);
+
       await client.invoke({
-        uri: simpleStorageWrapperUri.uri,
+        uri: simpleMemoryWrapperUri.uri,
         method: "setData",
         args: {
-          address,
           value: value++,
-          connection: {
-            networkNameOrChainId: "testnet",
-          },
         },
       });
-    }, 4000);
+    }, 500);
 
     const getSubscription: Subscription<number> = client.subscribe<number>({
-      uri: simpleStorageWrapperUri,
+      uri: simpleMemoryWrapperUri.uri,
       method: "getData",
-      args: {
-        address: address,
-        connection: {
-          networkNameOrChainId: "testnet",
-        },
-      },
-      frequency: { ms: 4500 },
+      frequency: { ms: 550 },
     });
 
-    for await (let query of getSubscription) {
-      expect(query.error).toBeFalsy();
-      const val = query.data;
+    for await (let result of getSubscription) {
+      expect(result.error).toBeFalsy();
+      const val = result.data;
+
       if (val !== undefined) {
         results.push(val);
-        if (val >= 2) {
+        if (results.length >= 2) {
           break;
         }
       }
     }
     clearInterval(setter);
 
-    expect(results).toStrictEqual([0, 1, 2]);
+    expect(results).toStrictEqual(expectedResults);
   });
 
   test("subscription early stop", async () => {
-    const client = await getClientWithEnsAndIpfs();
-
-    const deploy = await client.invoke<string>({
-      uri: simpleStorageWrapperUri.uri,
-      method: "deployContract",
-      args: {
-        connection: {
-          networkNameOrChainId: "testnet",
+    const client = await getClient({
+      plugins: [
+        {
+          uri: memoryStoragePluginUri,
+          plugin: makeMemoryStoragePlugin({}),
         },
-      },
+      ],
     });
-
-    expect(deploy.error).toBeFalsy();
-    expect(deploy.data).toBeTruthy();
-    expect(deploy.data?.indexOf("0x")).toBeGreaterThan(-1);
-
-    const address = deploy.data;
 
     // test subscription
     let results: number[] = [];
@@ -314,34 +288,24 @@ describe("wasm-wrapper", () => {
 
     const setter = setInterval(async () => {
       await client.invoke({
-        uri: simpleStorageWrapperUri.uri,
+        uri: simpleMemoryWrapperUri.uri,
         method: "setData",
         args: {
-          address,
           value: value++,
-          connection: {
-            networkNameOrChainId: "testnet",
-          },
         },
       });
-    }, 4000);
+    }, 500);
 
     const getSubscription: Subscription<number> = client.subscribe<number>({
-      uri: simpleStorageWrapperUri,
+      uri: simpleMemoryWrapperUri.uri,
       method: "getData",
-      args: {
-        address: address,
-        connection: {
-          networkNameOrChainId: "testnet",
-        },
-      },
-      frequency: { ms: 4500 },
+      frequency: { ms: 550 },
     });
 
     new Promise(async () => {
-      for await (let query of getSubscription) {
-        expect(query.error).toBeFalsy();
-        const val = query.data;
+      for await (let result of getSubscription) {
+        expect(result.error).toBeFalsy();
+        const val = result.data;
         if (val !== undefined) {
           results.push(val);
           if (val >= 2) {
