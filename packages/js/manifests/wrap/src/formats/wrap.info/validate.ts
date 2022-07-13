@@ -18,7 +18,7 @@ import {
   ValidationError,
   ValidatorResult
 } from "jsonschema";
-import { bundle, FileInfo } from "json-schema-ref-parser";
+import { resolve, bundle, FileInfo, $Refs } from "json-schema-ref-parser";
 import path from "path";
 
 type WrapManifestSchemas = {
@@ -77,10 +77,28 @@ export async function validateWrapManifest(
         },
       },
     },
-  }) as Schema;
+  });
+
+  const refs: $Refs = await resolve(finalSchema);
 
   const validator = new Validator();
-  validator.addSchema(finalSchema);
+  validator.addSchema(finalSchema as Schema);
+
+  const resolveRefs = () => {
+    const unresolvedRef = validator.unresolvedRefs.shift();
+    if (!unresolvedRef) return;
+
+    const relRefIdx = unresolvedRef.indexOf("#");
+    const relRef = unresolvedRef.slice(relRefIdx);
+
+    const resolvedSchema = refs.get(relRef);
+    if (!resolvedSchema) throw new Error(`Failed to resolve the ref: ${relRef}`);
+    validator.addSchema(resolvedSchema as Schema, unresolvedRef);
+
+    resolveRefs();
+  }
+  
+  resolveRefs();
 
   throwIfErrors(validator.validate(manifest, schema, {}), manifest.version);
 
