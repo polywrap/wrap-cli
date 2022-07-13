@@ -1,1 +1,1 @@
-export * from "./wasm";
+export * from "./default-client-config";

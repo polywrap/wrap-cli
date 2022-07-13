@@ -5,7 +5,7 @@ import {
   PluginRegistration,
   InterfaceImplementations
 } from "@polywrap/core-js";
-import { getDefaultClientConfig } from "./bundles/default-client-config";
+import { getDefaultClientConfig } from "./bundles";
 import {
   sanitizeEnvs,
   sanitizeInterfaceImplementations,
