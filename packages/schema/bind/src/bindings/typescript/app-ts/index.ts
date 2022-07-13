@@ -26,12 +26,11 @@ export const generateBinding: GenerateBindingFn = (
     outputDirAbs: options.outputDirAbs,
   };
   const output = result.output;
-  const schema = options.schema;
   const abi = applyTransforms(options.abi);
 
   output.entries = renderTemplates(
     path.join(__dirname, "./templates"),
-    { ...abi, schema },
+    { ...abi },
     {}
   );
 

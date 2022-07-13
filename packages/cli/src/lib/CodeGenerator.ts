@@ -80,14 +80,9 @@ export class CodeGenerator {
         );
       }
 
-      // Get the fully composed schema
-      const composed = await schemaComposer.getComposedAbis();
+      // Get the fully composed abi
+      const abi = await schemaComposer.getComposedAbis();
 
-      if (!composed) {
-        throw Error(intlMsg.lib_codeGenerator_noComposedSchema());
-      }
-
-      const abi = composed.abi;
       if (!abi) {
         throw Error(intlMsg.lib_codeGenerator_abiMissing());
       }
@@ -129,7 +124,7 @@ export class CodeGenerator {
         );
       } else {
         const binding = await project.generateSchemaBindings(
-          composed,
+          abi,
           path.relative(project.getManifestDir(), codegenDirAbs)
         );
 

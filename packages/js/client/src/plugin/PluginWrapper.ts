@@ -40,10 +40,6 @@ export class PluginWrapper extends Wrapper {
     throw Error("client.getFile(...) is not implemented for Plugins.");
   }
 
-  public async getSchema(_client: Client): Promise<string> {
-    return Promise.resolve(this._plugin.manifest.schema);
-  }
-
   public async getManifest(_client: Client): Promise<WrapManifest> {
     throw Error("client.getManifest(...) is not implemented for Plugins.");
   }

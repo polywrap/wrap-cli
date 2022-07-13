@@ -1,15 +1,16 @@
 import { Abi, CapabilityType } from "@polywrap/schema-parse";
 
-export interface ManifestFile {
-  abi: Abi;
+export interface SchemaFile {
+  schema: string;
   absolutePath: string;
 }
 
-export type AbiResolver = (uriOrPath: string) => Promise<Abi>;
+export type AbiResolver = (uri: string) => Promise<Abi>;
+export type SchemaResolver = (path: string) => Promise<string>;
 
 export interface AbiResolvers {
   external: AbiResolver;
-  local: AbiResolver;
+  local: SchemaResolver;
 }
 
 export interface ExternalImport {

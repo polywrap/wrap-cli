@@ -12,8 +12,6 @@ import {
   parseClientConfigOption,
 } from "../lib";
 
-import { ComposerFilter } from "@polywrap/schema-compose";
-import { writeFileSync } from "@polywrap/os-js";
 import path from "path";
 import fs from "fs";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";

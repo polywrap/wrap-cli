@@ -5,9 +5,10 @@
 import {
   ExternalImport,
   LocalImport,
-  AbiResolver,
+  SchemaResolver,
   AbiResolvers,
   SYNTAX_REFERENCE,
+  AbiResolver,
 } from "./types";
 import { parseExternalImports, parseLocalImports, parseUse } from "./parse";
 import { renderSchema } from "./render";
@@ -122,8 +123,8 @@ export async function resolveUseStatements(
 }
 
 export async function resolveImportsAndParseSchemas(
-  abi: Abi,
-  abiPath: string,
+  schema: string,
+  schemaPath: string,
   resolvers: AbiResolvers,
   noValidate = false
 ): Promise<Abi> {
@@ -218,7 +219,9 @@ export async function resolveImportsAndParseSchemas(
   );
 
   // Parse the newly formed schema
-  return parseSchema(newSchema, { noValidate });
+  const abi = parseSchema(newSchema, { noValidate });
+
+  return abi;
 }
 
 interface Namespaced {
@@ -641,9 +644,9 @@ function resolveInterfaces(
 
 async function resolveExternalImports(
   importsToResolve: ExternalImport[],
-  resolveManifest: AbiResolver,
+  resolveAbi: AbiResolver,
   abi: Abi
-): Promise<Abi[]> {
+): Promise<string[]> {
   // Keep track of all imported object type names
   const typesToImport: ImportMap = {};
 
@@ -651,10 +654,11 @@ async function resolveExternalImports(
     const { uri, namespace, importedTypes } = importToResolve;
 
     // Resolve the schema
-    const manifest = await resolveManifest(uri);
+    const extAbi = await resolveAbi(uri);
 
-    // Parse the schema into Abi
-    const extAbi = manifest.abi as Abi;
+    if (!extAbi) {
+      throw Error(`Unable to resolve abi at "${uri}"`);
+    }
 
     let extTypesToImport = importedTypes;
 
@@ -923,7 +927,7 @@ async function resolveExternalImports(
 
 async function resolveLocalImports(
   importsToResolve: LocalImport[],
-  resolveManifest: AbiResolver,
+  resolveSchema: SchemaResolver,
   abi: Abi,
   resolvers: AbiResolvers
 ): Promise<void> {
@@ -931,7 +935,7 @@ async function resolveLocalImports(
     const { importedTypes, path } = importToResolve;
 
     // Resolve the schema
-    let schema = await resolveManifest(path);
+    let schema = await resolveSchema(path);
 
     if (!schema) {
       throw Error(`Unable to resolve schema at "${path}"`);

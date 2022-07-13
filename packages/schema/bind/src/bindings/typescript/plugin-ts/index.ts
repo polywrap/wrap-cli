@@ -35,11 +35,7 @@ export const generateBinding: GenerateBindingFn = (
   };
   const output = result.output;
 
-  output.entries = renderTemplates(
-    templatePath(""),
-    { ...abi, schema: options.schema },
-    {}
-  );
+  output.entries = renderTemplates(templatePath(""), { ...abi }, {});
 
   return result;
 };

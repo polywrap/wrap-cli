@@ -7,7 +7,7 @@ import {
 } from "../";
 
 import { BindOutput } from "@polywrap/schema-bind";
-import { ComposerOutput } from "@polywrap/schema-compose";
+import {Abi} from "@polywrap/schema-parse";
 
 export interface ProjectConfig {
   rootDir: string;
@@ -68,7 +68,7 @@ export abstract class Project<TManifest extends AnyProjectManifest> {
   >;
 
   public abstract generateSchemaBindings(
-    composerOutput: ComposerOutput,
+    abi: Abi,
     generationSubPath?: string
   ): Promise<BindOutput>;
 

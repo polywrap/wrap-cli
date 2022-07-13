@@ -10,7 +10,6 @@ import { resetDir } from "../system";
 
 import { PluginManifest } from "@polywrap/polywrap-manifest-types-js";
 import { bindSchema, BindOutput, BindOptions } from "@polywrap/schema-bind";
-import { ComposerOutput } from "@polywrap/schema-compose";
 import { Abi } from "@polywrap/schema-parse";
 import path from "path";
 
@@ -106,7 +105,7 @@ export class PluginProject extends Project<PluginManifest> {
   }
 
   public async generateSchemaBindings(
-    composerOutput: ComposerOutput,
+    abi: Abi,
     generationSubPath?: string
   ): Promise<BindOutput> {
     const manifest = await this.getManifest();
@@ -124,8 +123,7 @@ export class PluginProject extends Project<PluginManifest> {
 
     const options: BindOptions = {
       projectName: manifest.name,
-      abi: composerOutput.abi as Abi,
-      schema: composerOutput.schema as string,
+      abi,
       outputDirAbs: moduleDirectory,
       bindLanguage,
     };

@@ -9,7 +9,6 @@ import {
 
 import { AppManifest } from "@polywrap/polywrap-manifest-types-js";
 import { Client } from "@polywrap/core-js";
-import { ComposerOutput } from "@polywrap/schema-compose";
 import { bindSchema, BindOutput } from "@polywrap/schema-bind";
 import { Abi } from "@polywrap/schema-parse";
 import path from "path";
@@ -106,13 +105,12 @@ export class AppProject extends Project<AppManifest> {
   }
 
   public async generateSchemaBindings(
-    composerOutput: ComposerOutput,
+    abi: Abi,
     generationSubPath?: string
   ): Promise<BindOutput> {
     return bindSchema({
       projectName: await this.getName(),
-      abi: composerOutput.abi as Abi,
-      schema: composerOutput.schema as string,
+      abi,
       outputDirAbs: this._getGenerationDirectory(generationSubPath),
       bindLanguage: appManifestLanguageToBindLanguage(
         await this.getManifestLanguage()
