@@ -1,11 +1,11 @@
 {
   "name": "@polywrap/ipfs-resolver-plugin-js",
   "description": "Polywrap IPFS Javascript Plugin",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/web3-api/monorepo.git"
+    "url": "https://github.com/polywrap/monorepo.git"
   },
   "main": "build/index.js",
   "files": [
@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@dorgjelli-test/ipfs-http-client-lite": "0.3.1",
-    "@polywrap/core-js": "0.1.0",
+    "@polywrap/core-js": "0.1.1",
     "abort-controller": "3.0.0",
     "is-ipfs": "1.0.3"
   },

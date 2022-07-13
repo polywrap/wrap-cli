@@ -24,9 +24,9 @@ export type Workflow<TUri extends Uri | string = string> = {
 };
 
 export enum JobStatus {
-  SUCCEED,
-  FAILED,
-  SKIPPED,
+  SUCCEED = "SUCCEED",
+  FAILED = "FAILED",
+  SKIPPED = "SKIPPED",
 }
 
 export interface JobResult<TData extends unknown = unknown>

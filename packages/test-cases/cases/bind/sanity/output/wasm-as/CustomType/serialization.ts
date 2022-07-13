@@ -25,7 +25,7 @@ export function serializeCustomType(type: CustomType): ArrayBuffer {
 }
 
 export function writeCustomType(writer: Write, type: CustomType): void {
-  writer.writeMapLength(37);
+  writer.writeMapLength(41);
   writer.context().push("str", "string", "writing property");
   writer.writeString("str");
   writer.writeString(type.str);
@@ -220,6 +220,42 @@ export function writeCustomType(writer: Write, type: CustomType): void {
     writer.writeOptionalInt32(item);
   });
   writer.context().pop();
+  writer.context().push("map", "Map<string, i32>", "writing property");
+  writer.writeString("map");
+  writer.writeExtGenericMap(type.map, (writer: Write, key: string) => {
+    writer.writeString(key);
+  }, (writer: Write, value: i32): void => {
+    writer.writeInt32(value);
+  });
+  writer.context().pop();
+  writer.context().push("mapOfArr", "Map<string, Array<i32>>", "writing property");
+  writer.writeString("mapOfArr");
+  writer.writeExtGenericMap(type.mapOfArr, (writer: Write, key: string) => {
+    writer.writeString(key);
+  }, (writer: Write, value: Array<i32>): void => {
+    writer.writeArray(value, (writer: Write, item: i32): void => {
+      writer.writeInt32(item);
+    });
+  });
+  writer.context().pop();
+  writer.context().push("mapOfObj", "Map<string, Types.AnotherType>", "writing property");
+  writer.writeString("mapOfObj");
+  writer.writeExtGenericMap(type.mapOfObj, (writer: Write, key: string) => {
+    writer.writeString(key);
+  }, (writer: Write, value: Types.AnotherType): void => {
+    Types.AnotherType.write(writer, value);
+  });
+  writer.context().pop();
+  writer.context().push("mapOfArrOfObj", "Map<string, Array<Types.AnotherType>>", "writing property");
+  writer.writeString("mapOfArrOfObj");
+  writer.writeExtGenericMap(type.mapOfArrOfObj, (writer: Write, key: string) => {
+    writer.writeString(key);
+  }, (writer: Write, value: Array<Types.AnotherType>): void => {
+    writer.writeArray(value, (writer: Write, item: Types.AnotherType): void => {
+      Types.AnotherType.write(writer, item);
+    });
+  });
+  writer.context().pop();
 }
 
 export function deserializeCustomType(buffer: ArrayBuffer): CustomType {
@@ -290,6 +326,14 @@ export function readCustomType(reader: Read): CustomType {
   let _enumArray: Array<Types.CustomEnum> = [];
   let _enumArraySet: bool = false;
   let _optEnumArray: Array<Option<Types.CustomEnum>> | null = null;
+  let _map: Map<string, i32> = new Map<string, i32>();
+  let _mapSet: bool = false;
+  let _mapOfArr: Map<string, Array<i32>> = new Map<string, Array<i32>>();
+  let _mapOfArrSet: bool = false;
+  let _mapOfObj: Map<string, Types.AnotherType> = new Map<string, Types.AnotherType>();
+  let _mapOfObjSet: bool = false;
+  let _mapOfArrOfObj: Map<string, Array<Types.AnotherType>> = new Map<string, Array<Types.AnotherType>>();
+  let _mapOfArrOfObjSet: bool = false;
 
   while (numFields > 0) {
     numFields--;
@@ -595,6 +639,52 @@ export function readCustomType(reader: Read): CustomType {
       });
       reader.context().pop();
     }
+    else if (field == "map") {
+      reader.context().push(field, "Map<string, i32>", "type found, reading property");
+      _map = reader.readExtGenericMap((reader: Read): string => {
+        return reader.readString();
+      }, (reader: Read): i32 => {
+        return reader.readInt32();
+      });
+      _mapSet = true;
+      reader.context().pop();
+    }
+    else if (field == "mapOfArr") {
+      reader.context().push(field, "Map<string, Array<i32>>", "type found, reading property");
+      _mapOfArr = reader.readExtGenericMap((reader: Read): string => {
+        return reader.readString();
+      }, (reader: Read): Array<i32> => {
+        return reader.readArray((reader: Read): i32 => {
+          return reader.readInt32();
+        });
+      });
+      _mapOfArrSet = true;
+      reader.context().pop();
+    }
+    else if (field == "mapOfObj") {
+      reader.context().push(field, "Map<string, Types.AnotherType>", "type found, reading property");
+      _mapOfObj = reader.readExtGenericMap((reader: Read): string => {
+        return reader.readString();
+      }, (reader: Read): Types.AnotherType => {
+        const object = Types.AnotherType.read(reader);
+        return object;
+      });
+      _mapOfObjSet = true;
+      reader.context().pop();
+    }
+    else if (field == "mapOfArrOfObj") {
+      reader.context().push(field, "Map<string, Array<Types.AnotherType>>", "type found, reading property");
+      _mapOfArrOfObj = reader.readExtGenericMap((reader: Read): string => {
+        return reader.readString();
+      }, (reader: Read): Array<Types.AnotherType> => {
+        return reader.readArray((reader: Read): Types.AnotherType => {
+          const object = Types.AnotherType.read(reader);
+          return object;
+        });
+      });
+      _mapOfArrOfObjSet = true;
+      reader.context().pop();
+    }
     reader.context().pop();
   }
 
@@ -664,6 +754,18 @@ export function readCustomType(reader: Read): CustomType {
   if (!_enumArraySet) {
     throw new Error(reader.context().printWithContext("Missing required property: 'enumArray: [CustomEnum]'"));
   }
+  if (!_mapSet) {
+    throw new Error(reader.context().printWithContext("Missing required property: 'map: Map<String, Int>'"));
+  }
+  if (!_mapOfArrSet) {
+    throw new Error(reader.context().printWithContext("Missing required property: 'mapOfArr: Map<String, [Int]>'"));
+  }
+  if (!_mapOfObjSet) {
+    throw new Error(reader.context().printWithContext("Missing required property: 'mapOfObj: Map<String, AnotherType>'"));
+  }
+  if (!_mapOfArrOfObjSet) {
+    throw new Error(reader.context().printWithContext("Missing required property: 'mapOfArrOfObj: Map<String, [AnotherType]>'"));
+  }
 
   return {
     str: _str,
@@ -702,6 +804,10 @@ export function readCustomType(reader: Read): CustomType {
     en: _en,
     optEnum: _optEnum,
     enumArray: _enumArray,
-    optEnumArray: _optEnumArray
+    optEnumArray: _optEnumArray,
+    map: _map,
+    mapOfArr: _mapOfArr,
+    mapOfObj: _mapOfObj,
+    mapOfArrOfObj: _mapOfArrOfObj
   };
 }

@@ -51,9 +51,7 @@ export function deserialize{{name}}Args(argsBuf: ArrayBuffer): Args_{{name}} {
       _{{name}} = reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}((reader: Read): {{#key}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/key}} => {
         return reader.read{{#key}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/key}}();
       }, (reader: Read): {{#value}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/value}} => {
-        {{#value}}
         {{> deserialize_map_value}}
-        {{/value}}
       });
       {{/map}}
       {{#enum}}
@@ -120,9 +118,7 @@ export function write{{name}}Result(writer: Write, result: {{#return}}{{#toWasm}
   writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(result, (writer: Write, key: {{#key}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/key}}) => {
     writer.write{{#key}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/key}}(key);
   }, (writer: Write, value: {{#value}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/value}}): void => {
-    {{#value}}
     {{> serialize_map_value}}
-    {{/value}}
   });
   {{/map}}
   {{#enum}}

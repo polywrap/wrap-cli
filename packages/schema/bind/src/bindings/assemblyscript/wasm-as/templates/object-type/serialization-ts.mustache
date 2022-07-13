@@ -30,9 +30,7 @@ export function write{{type}}(writer: Write, type: {{type}}): void {
   writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{#handleKeywords}}{{name}}{{/handleKeywords}}, (writer: Write, key: {{#key}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/key}}) => {
     writer.write{{#key}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/key}}(key);
   }, (writer: Write, value: {{#value}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/value}}): void => {
-    {{#value}}
     {{> serialize_map_value}}
-    {{/value}}
   });
   {{/map}}
   {{#object}}
