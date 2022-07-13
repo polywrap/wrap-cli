@@ -2,7 +2,7 @@
 
 # declare enviroment variables with default values
 BLOCK_TIME=${TEZOS_POLYWRAP_BLOCK_TIME:-5}
-PROTOCOL="${TEZOS_POLYWRAP_PROTOCOL:-Hangzhou}"
+PROTOCOL="${TEZOS_POLYWRAP_PROTOCOL:-Jakarta}"
 ROOT_PATH="${TEZOS_POLYWRAP_ROOT_PATH:-/tmp/mini-net}"
 
 export bob="$(flextesa key bob)"
