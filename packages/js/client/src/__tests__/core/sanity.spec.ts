@@ -1,6 +1,4 @@
-import { ClientConfigBuilder } from "@polywrap/client-config-js";
 import {
-  Bepis,
   coreInterfaceUris,
   PluginModule,
   Uri
@@ -13,16 +11,6 @@ import {
 jest.setTimeout(200000);
 
 describe("sanity", () => {
-  test("bepis", () => {
-    const a = new Bepis();
-    const b = new ClientConfigBuilder().getBepis();
-
-    console.log(a instanceof Bepis);
-    console.log(b instanceof Bepis);
-    
-    expect(a).toStrictEqual(b);
-  });
-
   test("default client config", () => {
     const client = new PolywrapClient();
     const expectedPlugins = [

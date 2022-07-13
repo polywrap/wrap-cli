@@ -3,8 +3,7 @@ import {
   Uri,
   PluginPackage,
   PluginRegistration,
-  InterfaceImplementations,
-  Bepis
+  InterfaceImplementations
 } from "@polywrap/core-js";
 import { getDefaultClientConfig } from "./bundles/default-client-config";
 import {
@@ -74,10 +73,6 @@ export class ClientConfigBuilder {
     this._sanitizeInterfacesAndImplementations();
 
     return this._config;
-  }
-
-  getBepis(): Bepis {
-    return new Bepis();
   }
 
   private _sanitizePlugins(): void {
