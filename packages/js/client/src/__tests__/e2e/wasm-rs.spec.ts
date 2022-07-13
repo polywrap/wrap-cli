@@ -3,6 +3,7 @@ import {
   createPolywrapClient,
 } from "../..";
 import * as TestCases from "./test-cases";
+import { makeMemoryStoragePlugin } from "./memory-storage";
 import {
   buildWrapper,
   ensAddresses,
@@ -54,8 +55,15 @@ describe("wasm-rs test cases", () => {
 
     await buildWrapper(wrapperPath);
 
+    const client = await getClient({
+      plugins: [{
+        uri: "wrap://ens/memory-storage.polywrap.eth",
+        plugin: makeMemoryStoragePlugin({}),
+      }]
+    })
+
     await TestCases.runAsyncifyTest(
-      await getClient(), wrapperUri
+      client, wrapperUri
     );
   });
 

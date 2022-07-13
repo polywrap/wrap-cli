@@ -5,31 +5,6 @@ export const runAsyncifyTest = async (
   client: PolywrapClient,
   wrapperUri: string
 ) => {
-    const deploy = await client.query<{
-      deployContract: string;
-    }>({
-      uri: wrapperUri,
-      query: `
-        mutation {
-          deployContract(
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-        }
-      `,
-    });
-
-    expect(deploy.errors).toBeFalsy();
-    expect(deploy.data).toBeTruthy();
-    expect(deploy.data?.deployContract.indexOf("0x")).toBeGreaterThan(-1);
-
-    if (!deploy.data) {
-      return;
-    }
-
-    const address = deploy.data.deployContract;
-
     const subsequentInvokes = await client.query<{
       subsequentInvokes: string;
     }>({
@@ -37,11 +12,7 @@ export const runAsyncifyTest = async (
       query: `
         mutation {
           subsequentInvokes(
-            address: "${address}"
             numberOfTimes: 40
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
           )
         }
       `,
@@ -59,12 +30,7 @@ export const runAsyncifyTest = async (
       uri: wrapperUri,
       query: `
         mutation {
-          localVarMethod(
-            address: "${address}"
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
+          localVarMethod
         }
       `,
     });
@@ -79,12 +45,7 @@ export const runAsyncifyTest = async (
       uri: wrapperUri,
       query: `
         mutation {
-          globalVarMethod(
-            address: "${address}"
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
+          globalVarMethod
         }
       `,
     });
@@ -102,11 +63,7 @@ export const runAsyncifyTest = async (
       query: `
         mutation {
           setDataWithLargeArgs(
-            address: "${address}"
             value: $largeStr
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
           )
         }
       `,
@@ -126,7 +83,6 @@ export const runAsyncifyTest = async (
       query: `
         mutation {
           setDataWithManyArgs(
-            address: "${address}"
             valueA: $valueA
             valueB: $valueB
             valueC: $valueC
@@ -139,9 +95,6 @@ export const runAsyncifyTest = async (
             valueJ: $valueJ
             valueK: $valueK
             valueL: $valueL
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
           )
         }
       `,
@@ -191,7 +144,6 @@ export const runAsyncifyTest = async (
       query: `
         mutation {
           setDataWithManyStructuredArgs(
-            address: "${address}"
             valueA: $valueA
             valueB: $valueB
             valueC: $valueC
@@ -204,9 +156,6 @@ export const runAsyncifyTest = async (
             valueJ: $valueJ
             valueK: $valueK
             valueL: $valueL
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
           )
         }
       `,
