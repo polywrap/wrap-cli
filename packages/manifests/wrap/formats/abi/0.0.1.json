@@ -18,13 +18,13 @@
         "$ref": "#/definitions/objectDefinition"
       }
     },
-    "moduleTypes": {
+    "moduleType": {
       "type": "array",
       "items": {
         "$ref": "#/definitions/moduleDefinition"
       }
     },
-    "enumType": {
+    "enumTypes": {
       "type": "array",
       "items": {
         "$ref": "#/definitions/enumDefinition"

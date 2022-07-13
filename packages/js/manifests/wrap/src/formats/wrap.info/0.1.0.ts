@@ -71,8 +71,8 @@ export interface WrapManifest {
 }
 export interface Abi {
   objectTypes: ObjectDefinition[];
-  moduleTypes?: ModuleDefinition[];
-  enumType?: EnumDefinition[];
+  moduleType?: ModuleDefinition[];
+  enumTypes: EnumDefinition[];
   interfaceTypes: (GenericDefinition & ImportedDefinition)[];
   importedObjectTypes: ImportedObjectDefinition[];
   importedModuleTypes: ImportedModuleDefinition[];
