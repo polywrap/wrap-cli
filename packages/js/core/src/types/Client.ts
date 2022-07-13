@@ -38,8 +38,6 @@ export type GetUriResolversOptions = Contextualized;
 
 export type GetSchemaOptions = Contextualized;
 
-export type GetManifestOptions = Contextualized;
-
 export interface GetFileOptions extends Contextualized {
   path: string;
   encoding?: "utf-8" | string;
@@ -72,15 +70,7 @@ export interface Client
 
   getUriResolvers(options: GetUriResolversOptions): readonly UriResolver[];
 
-  getSchema<TUri extends Uri | string>(
-    uri: TUri,
-    options: GetSchemaOptions
-  ): Promise<string>;
-
-  getManifest<TUri extends Uri | string>(
-    uri: TUri,
-    options: GetManifestOptions
-  ): Promise<WrapManifest>;
+  getManifest<TUri extends Uri | string>(uri: TUri): Promise<WrapManifest>;
 
   getFile<TUri extends Uri | string>(
     uri: TUri,

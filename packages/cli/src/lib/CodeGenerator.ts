@@ -81,15 +81,13 @@ export class CodeGenerator {
       }
 
       // Get the fully composed schema
-      const composed = await schemaComposer.getComposedSchemas();
+      const composed = await schemaComposer.getComposedAbis();
 
       if (!composed) {
         throw Error(intlMsg.lib_codeGenerator_noComposedSchema());
       }
 
       const abi = composed.abi;
-      this._schema = composed.schema;
-
       if (!abi) {
         throw Error(intlMsg.lib_codeGenerator_abiMissing());
       }
@@ -118,7 +116,6 @@ export class CodeGenerator {
         const binding = await generateBinding({
           projectName: await project.getName(),
           abi,
-          schema: this._schema || "",
           outputDirAbs: codegenDirAbs,
           bindLanguage,
         });

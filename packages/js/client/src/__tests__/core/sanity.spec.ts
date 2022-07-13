@@ -80,30 +80,4 @@ describe("sanity", () => {
       },
     ]);
   });
-
-  test("loadPolywrap - pass string or Uri", async () => {
-    const implementationUri = "wrap://ens/some-implementation.eth";
-    const schemaStr = "test-schema";
-
-    const client = new PolywrapClient({
-      plugins: [
-        {
-          uri: implementationUri,
-          plugin: {
-            factory: () => ({} as PluginModule<{}>),
-            manifest: {
-              schema: schemaStr,
-              implements: [],
-            },
-          },
-        },
-      ],
-    });
-
-    const schemaWhenString = await client.getSchema(implementationUri);
-    const schemaWhenUri = await client.getSchema(new Uri(implementationUri));
-
-    expect(schemaWhenString).toEqual(schemaStr);
-    expect(schemaWhenUri).toEqual(schemaStr);
-  });
 });

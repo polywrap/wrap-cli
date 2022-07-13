@@ -8,7 +8,6 @@ import {
   Uri,
   GetFileOptions,
   Env,
-  GetManifestOptions,
   isBuffer,
 } from "@polywrap/core-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
@@ -45,10 +44,7 @@ export class PluginWrapper extends Wrapper {
     return Promise.resolve(this._plugin.manifest.schema);
   }
 
-  public async getManifest(
-    _options: GetManifestOptions,
-    _client: Client
-  ): Promise<WrapManifest> {
+  public async getManifest(_client: Client): Promise<WrapManifest> {
     throw Error("client.getManifest(...) is not implemented for Plugins.");
   }
 

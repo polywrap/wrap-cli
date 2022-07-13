@@ -2,7 +2,6 @@ import {
   Uri,
   Client,
   GetFileOptions,
-  GetManifestOptions,
   InvokeOptions,
   Invocable,
   Invoker,
@@ -22,7 +21,7 @@ export abstract class Wrapper implements Invocable {
    * Invoke the Wrapper based on the provided [[InvokeOptions]]
    *
    * @param options Options for this invocation.
-   * @param client The client instance requesting this invocation.
+   * @param invoker The client instance requesting this invocation.
    * This client will be used for any sub-invokes that occur.
    */
   public abstract invoke(
@@ -46,20 +45,9 @@ export abstract class Wrapper implements Invocable {
    * Get a manifest from the Wrapper package.
    * Not implemented for plugin wrappers.
    *
-   * @param options Configuration options for manifest retrieval
    * @param client The client instance requesting the manifest.
    */
-  public abstract getManifest(
-    options: GetManifestOptions,
-    client: Client
-  ): Promise<WrapManifest>;
-
-  /**
-   * Get the Wrapper's schema
-   *
-   * @param client The client instance the schema.
-   */
-  public abstract getSchema(client: Client): Promise<string>;
+  public abstract getManifest(client: Client): Promise<WrapManifest>;
 }
 
 export type WrapperCache = Map<string, Wrapper>;

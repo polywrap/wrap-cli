@@ -9,12 +9,10 @@ import {
   Env,
   GetEnvsOptions,
   GetFileOptions,
-  GetManifestOptions,
   GetImplementationsOptions,
   GetInterfacesOptions,
   GetPluginsOptions,
   GetRedirectsOptions,
-  GetSchemaOptions,
   InterfaceImplementations,
   InvokeOptions,
   InvokeResult,
@@ -171,24 +169,13 @@ export class PolywrapClient implements Client {
     );
   }
 
-  @Tracer.traceMethod("PolywrapClient: getSchema")
-  public async getSchema<TUri extends Uri | string>(
-    uri: TUri,
-    options: GetSchemaOptions = {}
-  ): Promise<string> {
-    const wrapper = await this._loadWrapper(this._toUri(uri), options);
-    const client = contextualizeClient(this, options.contextId);
-    return await wrapper.getSchema(client);
-  }
-
   @Tracer.traceMethod("PolywrapClient: getManifest")
   public async getManifest<TUri extends Uri | string>(
-    uri: TUri,
-    options: GetManifestOptions
+    uri: TUri
   ): Promise<WrapManifest> {
-    const wrapper = await this._loadWrapper(this._toUri(uri), options);
-    const client = contextualizeClient(this, options.contextId);
-    return await wrapper.getManifest(options, client);
+    const wrapper = await this._loadWrapper(this._toUri(uri), undefined);
+    const client = contextualizeClient(this, undefined);
+    return await wrapper.getManifest(client);
   }
 
   @Tracer.traceMethod("PolywrapClient: getFile")
@@ -861,17 +848,8 @@ const contextualizeClient = (
         ) => {
           return client.getFile(uri, options);
         },
-        getSchema: <TUri extends Uri | string>(
-          uri: TUri,
-          options: GetSchemaOptions = {}
-        ) => {
-          return client.getSchema(uri, { ...options, contextId });
-        },
-        getManifest: <TUri extends Uri | string>(
-          uri: TUri,
-          options?: GetManifestOptions
-        ) => {
-          return client.getManifest(uri, options);
+        getManifest: <TUri extends Uri | string>(uri: TUri) => {
+          return client.getManifest(uri);
         },
         getImplementations: <TUri extends Uri | string>(
           uri: TUri,
