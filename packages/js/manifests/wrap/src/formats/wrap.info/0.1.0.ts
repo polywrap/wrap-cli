@@ -12,17 +12,17 @@ export type ObjectDefinition = (GenericDefinition & WithComment) & {
 };
 export type GenericDefinition = WithKind & {
   type: string;
-  name?: string;
-  required?: boolean;
+  name?: string | null;
+  required?: boolean | null;
 };
 export type PropertyDefinition = WithComment & AnyDefinition;
 export type AnyDefinition = GenericDefinition & {
-  array?: ArrayDefinition;
-  scalar?: ScalarDefinition;
-  map?: MapDefinition;
-  object?: ObjectRef;
-  enum?: GenericDefinition;
-  unresolvedObjectOrEnum?: UnresolvedObjectOrEnumRef;
+  array?: ArrayDefinition | null;
+  scalar?: ScalarDefinition | null;
+  map?: MapDefinition | null;
+  object?: ObjectRef | null;
+  enum?: EnumRef | null;
+  unresolvedObjectOrEnum?: UnresolvedObjectOrEnumRef | null;
 };
 export type ArrayDefinition = AnyDefinition & {
   item?: GenericDefinition;
@@ -53,6 +53,7 @@ export type MapKeyDefinition = AnyDefinition & {
   type?: "UInt" | "UInt8" | "UInt16" | "UInt32" | "Int" | "Int8" | "Int16" | "Int32" | "String";
 };
 export type ObjectRef = GenericDefinition;
+export type EnumRef = GenericDefinition;
 export type UnresolvedObjectOrEnumRef = GenericDefinition;
 export type InterfaceImplementedDefinition = GenericDefinition;
 export type ModuleDefinition = (GenericDefinition & WithComment) & {

@@ -373,10 +373,10 @@
               "type": "string"
             },
             "name": {
-              "type": "string"
+              "type": ["string", "null"]
             },
             "required": {
-              "type": "boolean"
+              "type": ["boolean", "null"]
             }
           },
           "unevaluatedProperties": false
@@ -393,22 +393,64 @@
         {
           "properties": {
             "array": {
-              "$ref": "#/definitions/arrayDefinition"
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/arrayDefinition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "scalar": {
-              "$ref": "#/definitions/scalarDefinition"
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/scalarDefinition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "map": {
-              "$ref": "#/definitions/mapDefinition"
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/mapDefinition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "object": {
-              "$ref": "#/definitions/objectRef"
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/objectRef"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "enum": {
-              "$ref": "#/definitions/enumRef"
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/enumRef"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "unresolvedObjectOrEnum": {
-              "$ref": "#/definitions/unresolvedObjectOrEnumRef"
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/unresolvedObjectOrEnumRef"
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           },
           "unevaluatedProperties": false
