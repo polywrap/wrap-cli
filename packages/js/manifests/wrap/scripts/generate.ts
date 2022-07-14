@@ -70,7 +70,6 @@ async function generateFormatTypes() {
           "additionalProperties"
         )
       );
-      console.log(JSON.stringify(finalWrapSchema));
       wrapSchemas.push(finalWrapSchema);
 
       // Convert it to a TypeScript interface
