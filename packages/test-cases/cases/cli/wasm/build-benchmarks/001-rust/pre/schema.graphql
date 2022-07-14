@@ -1,0 +1,6 @@
+type Module {
+  i8Method(
+    first: Int8!
+    second: Int8!
+  ): Int8!
+}
