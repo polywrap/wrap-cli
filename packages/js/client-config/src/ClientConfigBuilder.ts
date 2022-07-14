@@ -1,10 +1,3 @@
-import {
-  ClientConfig,
-  Uri,
-  PluginPackage,
-  PluginRegistration,
-  InterfaceImplementations
-} from "@polywrap/core-js";
 import { getDefaultClientConfig } from "./bundles";
 import {
   sanitizeEnvs,
@@ -12,6 +5,14 @@ import {
   sanitizePluginRegistrations,
   sanitizeUriRedirects,
 } from "./utils/sanitize";
+
+import {
+  ClientConfig,
+  Uri,
+  PluginPackage,
+  PluginRegistration,
+  InterfaceImplementations,
+} from "@polywrap/core-js";
 
 export class ClientConfigBuilder {
   private _config: ClientConfig<Uri>;

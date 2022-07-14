@@ -48,6 +48,7 @@
     "@polywrap/schema-parse": "0.1.1",
     "@polywrap/test-env-js": "0.1.1",
     "@polywrap/wrap-manifest-types-js": "0.1.1",
+    "@polywrap/client-config-js": "0.1.1",
     "assemblyscript": "0.19.1",
     "axios": "0.21.2",
     "chalk": "4.1.0",

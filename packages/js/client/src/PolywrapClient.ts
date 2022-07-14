@@ -608,16 +608,16 @@ export class PolywrapClient implements Client {
     const id = uuid();
 
     const builder = new ClientConfigBuilder().add(parentConfig);
-    
-    if(!!context){
+
+    if (context) {
       builder.add(context);
     }
 
     const config = builder.build();
-    
+
     const newContext = {
       ...config,
-      tracingEnabled: context?.tracingEnabled || parentConfig.tracingEnabled
+      tracingEnabled: context?.tracingEnabled || parentConfig.tracingEnabled,
     };
 
     this._contexts.set(id, newContext);

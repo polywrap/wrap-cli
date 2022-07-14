@@ -11,6 +11,7 @@ import {
   GetManifestOptions,
   isBuffer,
 } from "../.";
+
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackDecode } from "@polywrap/msgpack-js";
 import { Tracer } from "@polywrap/tracing-js";

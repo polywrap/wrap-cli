@@ -1,3 +1,5 @@
+import { toUri } from "./toUri";
+
 import {
   Env,
   InterfaceImplementations,
@@ -6,7 +8,6 @@ import {
   UriRedirect,
 } from "@polywrap/core-js";
 import { Tracer } from "@polywrap/tracing-js";
-import { toUri } from "./toUri";
 
 export const sanitizeEnvs = Tracer.traceFunc(
   "clientConfig: sanitizeEnvs",
