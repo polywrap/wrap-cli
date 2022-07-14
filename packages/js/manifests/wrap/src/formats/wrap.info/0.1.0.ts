@@ -6,14 +6,12 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type ModuleDefinition = GenericDefinition &
-  WithComment & {
-    methods?: [] | [MethodDefinition];
-    imports?: [] | [string];
-    interfaces?: [] | [GenericDefinition];
-  };
+export type ObjectDefinition = (GenericDefinition & WithComment) & {
+  properties: PropertyDefinition[];
+  interfaces: InterfaceImplementedDefinition[];
+};
 export type GenericDefinition = WithKind & {
-  type?: string;
+  type: string;
   name?: string;
   required?: boolean;
 };
@@ -22,12 +20,29 @@ export type AnyDefinition = GenericDefinition & {
   array?: ArrayDefinition;
   scalar?: ScalarDefinition;
   map?: MapDefinition;
-  object?: GenericDefinition;
+  object?: ObjectRef;
   enum?: GenericDefinition;
-  unresolvedObjectOrEnum?: GenericDefinition;
+  unresolvedObjectOrEnum?: UnresolvedObjectOrEnumRef;
 };
 export type ArrayDefinition = AnyDefinition & {
   item?: GenericDefinition;
+};
+export type ScalarDefinition = GenericDefinition & {
+  type:
+    | "UInt"
+    | "UInt8"
+    | "UInt16"
+    | "UInt32"
+    | "Int"
+    | "Int8"
+    | "Int16"
+    | "Int32"
+    | "String"
+    | "Boolean"
+    | "Bytes"
+    | "BigInt"
+    | "BigNumber"
+    | "JSON";
 };
 export type MapDefinition = AnyDefinition &
   WithComment & {
@@ -37,17 +52,32 @@ export type MapDefinition = AnyDefinition &
 export type MapKeyDefinition = AnyDefinition & {
   type?: "UInt" | "UInt8" | "UInt16" | "UInt32" | "Int" | "Int8" | "Int16" | "Int32" | "String";
 };
+export type ObjectRef = GenericDefinition;
+export type UnresolvedObjectOrEnumRef = GenericDefinition;
+export type InterfaceImplementedDefinition = GenericDefinition;
+export type ModuleDefinition = (GenericDefinition & WithComment) & {
+  methods: [] | [MethodDefinition];
+  imports: [] | [string];
+  interfaces: [] | [InterfaceImplementedDefinition];
+};
+export type MethodDefinition = (GenericDefinition & WithComment) & {
+  arguments: [] | [PropertyDefinition];
+  env?: {
+    required?: boolean;
+  };
+  return: PropertyDefinition;
+};
 export type EnumDefinition = (GenericDefinition & WithComment) & {
   constants: string[];
 };
 export type InterfaceDefinition = (GenericDefinition & ImportedDefinition) & {
   capabilities: CapabilityDefinition;
 };
-export type ImportedObjectDefinition = ObjectDefinition & ImportedDefinition & WithComment;
-export type ImportedModuleDefinition = ModuleDefinition & ImportedDefinition & WithComment;
+export type ImportedObjectDefinition = (GenericDefinition & WithComment) & ImportedDefinition & WithComment;
+export type ImportedModuleDefinition = (GenericDefinition & WithComment) & ImportedDefinition & WithComment;
 export type ImportedEnumDefinition = (GenericDefinition & WithComment) & ImportedDefinition & WithComment;
 export type ImportedEnvDefinition = ImportedObjectDefinition;
-export type EnvDefinition = ObjectDefinition;
+export type EnvDefinition = GenericDefinition & WithComment;
 
 export interface WrapManifest {
   /**
@@ -75,38 +105,11 @@ export interface Abi {
   importedEnvTypes: ImportedEnvDefinition[];
   envType?: EnvDefinition;
 }
-export interface ObjectDefinition {
-  [k: string]: unknown;
-}
 export interface WithKind {
   kind: number;
 }
 export interface WithComment {
   comment?: string;
-}
-export interface MethodDefinition {
-  arguments: [] | [PropertyDefinition];
-  env?: {
-    required?: boolean;
-  };
-  return: PropertyDefinition;
-}
-export interface ScalarDefinition {
-  type:
-    | "UInt"
-    | "UInt8"
-    | "UInt16"
-    | "UInt32"
-    | "Int"
-    | "Int8"
-    | "Int16"
-    | "Int32"
-    | "String"
-    | "Boolean"
-    | "Bytes"
-    | "BigInt"
-    | "BigNumber"
-    | "JSON";
 }
 export interface ImportedDefinition {
   uri: string;

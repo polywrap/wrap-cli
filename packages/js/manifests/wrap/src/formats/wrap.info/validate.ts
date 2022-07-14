@@ -100,7 +100,7 @@ export async function validateWrapManifest(
   
   resolveRefs();
 
-  throwIfErrors(validator.validate(manifest, schema, {}), manifest.version);
+  throwIfErrors(validator.validate(manifest, finalSchema as Schema), manifest.version);
 
   if (extSchema) {
     throwIfErrors(validator.validate(manifest, extSchema), manifest.version);

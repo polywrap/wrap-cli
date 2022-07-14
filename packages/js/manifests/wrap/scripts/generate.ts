@@ -50,7 +50,7 @@ async function generateFormatTypes() {
         .parse(abiJsonSchemaPath)
         .base.replace(".json", "");
 
-      const finalWrapSchema = await bundle(wrapSchema, {
+      const bundledSchema = await bundle(wrapSchema, {
         resolve: {
           file: {
             read: (file: FileInfo) => {
@@ -64,24 +64,17 @@ async function generateFormatTypes() {
         },
       });
 
+      const finalWrapSchema = JSON.parse(
+        JSON.stringify(bundledSchema).replace(
+          /unevaluatedProperties/g,
+          "additionalProperties"
+        )
+      );
+      console.log(JSON.stringify(finalWrapSchema));
       wrapSchemas.push(finalWrapSchema);
 
       // Convert it to a TypeScript interface
-      const tsFile = await JsonSchema.compile(wrapSchema, wrapSchema.id, {
-        $refOptions: {
-          resolve: {
-            file: {
-              read: (file: FileInfo) => {
-                // If both url is same
-                if (!path.relative(abiJsonSchemaRelPath, file.url)) {
-                  return abiJsonSchema;
-                }
-                return file.data;
-              },
-            },
-          },
-        },
-      });
+      const tsFile = await JsonSchema.compile(finalWrapSchema, wrapSchema.id);
 
       // Emit the result
       const tsOutputPath = path.join(wrapOutputDir, `${wrapVersion}.ts`);
