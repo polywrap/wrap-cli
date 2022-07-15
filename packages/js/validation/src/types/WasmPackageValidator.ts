@@ -11,7 +11,6 @@ import {
   WrapManifest,
   deserializeWrapManifest,
 } from "@polywrap/wrap-manifest-types-js";
-import { renderSchema } from "@polywrap/schema-compose";
 import * as path from "path";
 
 export class WasmPackageValidator {
@@ -24,10 +23,6 @@ export class WasmPackageValidator {
     }
 
     const manifest = infoResult.manifest as WrapManifest;
-    const abiResult = await this.validateAbi(manifest);
-    if (!abiResult.valid) {
-      return abiResult;
-    }
 
     const moduleResult = await this.validateModule(reader, manifest);
     if (!moduleResult.valid) {
@@ -142,20 +137,14 @@ export class WasmPackageValidator {
     } catch (e) {
       if (e.message.includes('instance requires property "abi"')) {
         return this.fail(ValidationFailReason.AbiNotFound);
+      } else if (
+        e.message.includes("instance.abi") &&
+        e.message.includes("Validation errors encountered")
+      ) {
+        return this.fail(ValidationFailReason.InvalidAbi);
       }
       return this.fail(ValidationFailReason.InvalidWrapManifest);
     }
-  }
-
-  private async validateAbi(manifest: WrapManifest): Promise<ValidationResult> {
-    try {
-      // TODO(cbrzn): Just validate the structure of Abi with the JSON Schema and remove
-      renderSchema(manifest.abi as never, false);
-    } catch (err) {
-      return this.fail(ValidationFailReason.InvalidAbi, err);
-    }
-
-    return this.success();
   }
 
   private async validateModule(
