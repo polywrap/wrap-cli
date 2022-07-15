@@ -82,7 +82,10 @@ export const getDefaultClientConfig = (): ClientConfig<Uri> => {
       },
       {
         uri: new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
-        plugin: ipfsResolverPlugin({}),
+        plugin: ipfsResolverPlugin({
+          provider: defaultIpfsProviders[0],
+          fallbackProviders: defaultIpfsProviders.splice(1),
+        }),
       },
     ],
     interfaces: [

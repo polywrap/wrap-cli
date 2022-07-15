@@ -607,11 +607,14 @@ export class PolywrapClient implements Client {
 
     const id = uuid();
 
-    const builder = new ClientConfigBuilder().add(parentConfig);
+    const builder = new ClientConfigBuilder();
 
     if (context) {
       builder.add(context);
     }
+
+    // Add parent config after context since currently subsequent .add() calls don't override already set values
+    builder.add(parentConfig);
 
     const config = builder.build();
 
