@@ -1,3 +1,4 @@
 format: 0.1.0
 docker:
   name: rs-benchmark-pre
+  dockerfile: ./Dockerfile

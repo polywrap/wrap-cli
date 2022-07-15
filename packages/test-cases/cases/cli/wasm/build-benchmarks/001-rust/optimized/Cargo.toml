@@ -1,7 +1,7 @@
 [package]
-name = "query"
+name = "module"
 version = "0.1.0"
-description = "Query module of number-types e2e test"
+description = "Module of number-types e2e test"
 authors = [
   "Nestor Amesty <nestor@dorg.tech>"
 ]

@@ -24,6 +24,8 @@ RUN cargo install -f wasm-snip
 # Install wasm-bindgen
 RUN cargo install -f wasm-bindgen-cli
 
+WORKDIR /
+RUN USER=root cargo new --lib project
 WORKDIR /project
 
 # Copy all manifest files
@@ -33,9 +35,6 @@ COPY polywrap.build.yaml .
 # Copy all source files
 COPY ./Cargo.lock ./Cargo.lock
 COPY ./Cargo.toml ./Cargo.toml
-
-# Ensure the Wasm module is configured to use imported memory
-ENV RUSTFLAGS="-C link-arg=-z -C link-arg=stack-size=65536 -C link-arg=--import-memory"
 
 # Ensure the module at . has the crate-type = ["cdylib"]
 RUN toml set ././Cargo.toml lib.crate-type ["cdylib"] > ././Cargo-local.toml && \
@@ -55,10 +54,16 @@ RUN toml set ././Cargo.toml package.name "module" > ././Cargo-local.toml && \
 RUN cargo build --manifest-path ././Cargo.toml --release
 RUN rm src/*.rs
 
+COPY ./plugin.schema.graphql ./plugin.schema.graphql
+COPY ./schema.graphql ./schema.graphql
 COPY ./src ./src
 
 # Build the module at .
 RUN rm ./target/release/deps/module*
+
+# Ensure the Wasm module is configured to use imported memory
+ENV RUSTFLAGS="-C link-arg=-z -C link-arg=stack-size=65536 -C link-arg=--import-memory"
+
 RUN cargo build --manifest-path ././Cargo.toml \
     --target wasm32-unknown-unknown --release
 
