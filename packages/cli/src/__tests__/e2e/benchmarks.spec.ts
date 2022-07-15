@@ -55,7 +55,7 @@ describe("benchmarking", () => {
     console.log(`${msg} (${name}): ${msTime.toFixed(2)}ms`);
   };
 
-  beforeAll(() => {
+  beforeEach(() => {
     fse.removeSync(`${getTestCaseDir(0)}/optimized/build`);
     fse.removeSync(`${getTestCaseDir(0)}/optimized/.polywrap`);
 
@@ -63,14 +63,15 @@ describe("benchmarking", () => {
     fse.removeSync(`${getTestCaseDir(0)}/current/.polywrap`);
   });
 
-  afterAll(() => {
+  afterEach(() => {
     for (const [key, value] of cacheFiles) {
       fse.writeFileSync(key, value);
     }
   });
 
-  it("Rust images", async () => {
+  it("Rust images: Current first", async () => {
     execSync(`docker system prune -a -f`);
+    console.log("----------------------CURRENT FIRST START------------------------------");
 
     await buildImage(
       `${getTestCaseDir(0)}/current`,
@@ -111,5 +112,54 @@ describe("benchmarking", () => {
       "rust-optimized",
       "3rd build - modified source"
     );
+
+    console.log("----------------------CURRENT FIRST END------------------------------");
+  });
+
+  it("Rust images: Optimized first", async () => {
+    execSync(`docker system prune -a -f`);
+    console.log("----------------------OPTIMIZED FIRST START------------------------------");
+
+    await buildImage(
+      `${getTestCaseDir(0)}/optimized`,
+      "rust-optimized",
+      "1st build - no cache"
+    );
+    await buildImage(
+      `${getTestCaseDir(0)}/optimized`,
+      "rust-optimized",
+      "2nd build - with cache"
+    );
+
+    modifySource(`${getTestCaseDir(0)}/optimized`);
+
+    await buildImage(
+      `${getTestCaseDir(0)}/optimized`,
+      "rust-optimized",
+      "3rd build - modified source"
+    );
+
+    execSync(`docker system prune -a -f`);
+
+    await buildImage(
+      `${getTestCaseDir(0)}/current`,
+      "rust-current",
+      "1st build - no cache"
+    );
+    await buildImage(
+      `${getTestCaseDir(0)}/current`,
+      "rust-current",
+      "2nd build - with cache"
+    );
+
+    modifySource(`${getTestCaseDir(0)}/current`);
+
+    await buildImage(
+      `${getTestCaseDir(0)}/current`,
+      "rust-current",
+      "3rd build - modified source"
+    );
+
+    console.log("----------------------OPTIMIZED FIRST END------------------------------");
   });
 });
