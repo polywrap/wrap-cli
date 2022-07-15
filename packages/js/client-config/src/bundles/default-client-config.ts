@@ -1,5 +1,7 @@
-import { ClientConfig, WasmWrapper, PluginWrapper } from "@polywrap/core-js";
 import {
+  ClientConfig,
+  WasmWrapper,
+  PluginWrapper,
   Uri,
   PluginPackage,
   Env,
