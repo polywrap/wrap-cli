@@ -116,9 +116,3 @@ pub fn subsequent_invokes(args: module::ArgsSubsequentInvokes) -> Vec<String> {
     }
     result
 }
-
-
-    fn foo() -> &'static str {
-  "foo"
-}
-    
