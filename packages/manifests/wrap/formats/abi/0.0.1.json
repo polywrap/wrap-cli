@@ -64,10 +64,7 @@
   "definitions": {
     "objectDefinition": {
       "type": "object",
-      "required": [
-        "properties",
-        "interfaces"
-      ],
+      "required": ["properties", "interfaces"],
       "allOf": [
         {
           "$ref": "#/definitions/genericDefinition"
@@ -94,11 +91,7 @@
     },
     "moduleDefinition": {
       "type": "object",
-      "required": [
-        "methods",
-        "imports",
-        "interfaces"
-      ],
+      "required": ["methods", "imports", "interfaces"],
       "allOf": [
         {
           "$ref": "#/definitions/genericDefinition"
@@ -120,7 +113,7 @@
           "type": "array",
           "items": [
             {
-              "type": "string"
+              "$ref": "#/definitions/importedModuleRef"
             }
           ]
         },
@@ -146,10 +139,7 @@
     },
     "methodDefinition": {
       "type": "object",
-      "required": [
-        "arguments",
-        "return"
-      ],
+      "required": ["arguments", "return"],
       "allOf": [
         {
           "$ref": "#/definitions/genericDefinition"
@@ -192,9 +182,7 @@
     },
     "enumDefinition": {
       "type": "object",
-      "required": [
-        "constants"
-      ],
+      "required": ["constants"],
       "allOf": [
         {
           "$ref": "#/definitions/genericDefinition"
@@ -215,9 +203,7 @@
     },
     "interfaceDefinition": {
       "type": "object",
-      "required": [
-        "capabilities"
-      ],
+      "required": ["capabilities"],
       "allOf": [
         {
           "$ref": "#/definitions/genericDefinition"
@@ -238,9 +224,7 @@
       "properties": {
         "getImplementations": {
           "type": "object",
-          "required": [
-            "enabled"
-          ],
+          "required": ["enabled"],
           "properties": {
             "enabled": {
               "type": "boolean"
@@ -253,11 +237,7 @@
     },
     "importedDefinition": {
       "type": "object",
-      "required": [
-        "uri",
-        "namespace",
-        "nativeType"
-      ],
+      "required": ["uri", "namespace", "nativeType"],
       "properties": {
         "uri": {
           "type": "string"
@@ -288,9 +268,10 @@
     },
     "importedModuleDefinition": {
       "type": "object",
+      "required": ["methods"],
       "allOf": [
         {
-          "$ref": "#/definitions/moduleDefinition"
+          "$ref": "#/definitions/genericDefinition"
         },
         {
           "$ref": "#/definitions/importedDefinition"
@@ -299,6 +280,19 @@
           "$ref": "#/definitions/withComment"
         }
       ],
+      "properties": {
+        "methods": {
+          "type": "array",
+          "items": [
+            {
+              "$ref": "#/definitions/methodDefinition"
+            }
+          ]
+        },
+        "isInterface": {
+          "type": ["boolean", "null"]
+        }
+      },
       "unevaluatedProperties": false
     },
     "importedEnumDefinition": {
@@ -333,9 +327,7 @@
         }
       },
       "unevaluatedProperties": false,
-      "required": [
-        "kind"
-      ]
+      "required": ["kind"]
     },
     "withComment": {
       "type": "object",
@@ -365,9 +357,7 @@
           "$ref": "#/definitions/withKind"
         },
         {
-          "required": [
-            "type"
-          ],
+          "required": ["type"],
           "properties": {
             "type": {
               "type": "string"
@@ -474,9 +464,7 @@
         }
       ],
       "unevaluatedProperties": false,
-      "required": [
-        "item"
-      ]
+      "required": ["item"]
     },
     "scalarType": {
       "type": "string",
@@ -510,9 +498,7 @@
         }
       },
       "unevaluatedProperties": false,
-      "required": [
-        "type"
-      ]
+      "required": ["type"]
     },
     "mapKeyType": {
       "type": "string",
@@ -544,9 +530,7 @@
         }
       ],
       "unevaluatedProperties": false,
-      "required": [
-        "type"
-      ]
+      "required": ["type"]
     },
     "mapDefinition": {
       "type": "object",
@@ -570,10 +554,7 @@
         }
       ],
       "unevaluatedProperties": false,
-      "required": [
-        "key",
-        "value"
-      ]
+      "required": ["key", "value"]
     },
     "objectRef": {
       "type": "object",
@@ -600,6 +581,15 @@
           "$ref": "#/definitions/genericDefinition"
         }
       ],
+      "unevaluatedProperties": false
+    },
+    "importedModuleRef": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        }
+      },
       "unevaluatedProperties": false
     }
   }

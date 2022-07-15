@@ -58,7 +58,7 @@ export type UnresolvedObjectOrEnumRef = GenericDefinition;
 export type InterfaceImplementedDefinition = GenericDefinition;
 export type ModuleDefinition = (GenericDefinition & WithComment) & {
   methods: [] | [MethodDefinition];
-  imports: [] | [string];
+  imports: [] | [ImportedModuleRef];
   interfaces: [] | [InterfaceImplementedDefinition];
 };
 export type MethodDefinition = (GenericDefinition & WithComment) & {
@@ -75,7 +75,10 @@ export type InterfaceDefinition = (GenericDefinition & ImportedDefinition) & {
   capabilities: CapabilityDefinition;
 };
 export type ImportedObjectDefinition = (GenericDefinition & WithComment) & ImportedDefinition & WithComment;
-export type ImportedModuleDefinition = (GenericDefinition & WithComment) & ImportedDefinition & WithComment;
+export type ImportedModuleDefinition = (GenericDefinition & ImportedDefinition & WithComment) & {
+  methods: [] | [GenericDefinition & WithComment];
+  isInterface?: boolean | null;
+};
 export type ImportedEnumDefinition = (GenericDefinition & WithComment) & ImportedDefinition & WithComment;
 export type ImportedEnvDefinition = ImportedObjectDefinition;
 export type EnvDefinition = GenericDefinition & WithComment;
@@ -111,6 +114,9 @@ export interface WithKind {
 }
 export interface WithComment {
   comment?: string;
+}
+export interface ImportedModuleRef {
+  type?: string;
 }
 export interface ImportedDefinition {
   uri: string;
