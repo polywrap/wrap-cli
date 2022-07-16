@@ -27,9 +27,7 @@ export class ClientConfigBuilder {
     };
   }
 
-  add(
-    config: Partial<ClientConfig<Uri | string>>
-  ): ClientConfigBuilder {
+  add(config: Partial<ClientConfig<Uri | string>>): ClientConfigBuilder {
     if (config.envs) {
       this._config.envs = [...this._config.envs, ...sanitizeEnvs(config.envs)];
     }
