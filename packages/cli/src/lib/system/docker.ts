@@ -134,7 +134,10 @@ export async function createBuildImage(
       // Build the docker image
       let buildxUseFailed: boolean;
       try {
-        const { stderr } = await runCommand(`docker buildx use ${imageName}`, quiet);
+        const { stderr } = await runCommand(
+          `docker buildx use ${imageName}`,
+          quiet
+        );
         buildxUseFailed = !!stderr;
       } catch (e) {
         buildxUseFailed = true;
