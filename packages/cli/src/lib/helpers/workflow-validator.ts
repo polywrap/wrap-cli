@@ -8,7 +8,7 @@ const TMPDIR = process.env.TMPDIR || "/tmp";
 
 export async function cueExists(): Promise<boolean> {
   try {
-    const { stdout } = await runCommand("cue version");
+    const { stdout } = await runCommand("cue version", true);
     return stdout.startsWith("cue version ");
   } catch (e) {
     return false;
