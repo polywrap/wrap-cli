@@ -27,8 +27,8 @@ export class ClientConfigBuilder {
     };
   }
 
-  add<TUri extends Uri | string = string>(
-    config: Partial<ClientConfig<TUri>>
+  add(
+    config: Partial<ClientConfig<Uri | string>>
   ): ClientConfigBuilder {
     if (config.envs) {
       this._config.envs = [...this._config.envs, ...sanitizeEnvs(config.envs)];
