@@ -613,7 +613,7 @@ export class PolywrapClient implements Client {
         interfaces: context.interfaces ?? parentConfig.interfaces,
         plugins: context.plugins ?? parentConfig.plugins,
         redirects: context.redirects ?? parentConfig.redirects,
-        uriResolvers: context.uriResolvers ?? parentConfig.uriResolvers
+        uriResolvers: context.uriResolvers ?? parentConfig.uriResolvers,
       })
       .build();
 
