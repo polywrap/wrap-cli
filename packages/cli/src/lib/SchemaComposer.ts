@@ -22,15 +22,15 @@ export interface SchemaComposerConfig {
 
 export class SchemaComposer {
   private _client: PolywrapClient;
-  private _composerOutput: Abi | undefined;
+  private _abi: Abi | undefined;
 
   constructor(private _config: SchemaComposerConfig) {
     this._client = this._config.client;
   }
 
   public async getComposedAbis(): Promise<Abi> {
-    if (this._composerOutput) {
-      return Promise.resolve(this._composerOutput);
+    if (this._abi) {
+      return Promise.resolve(this._abi);
     }
 
     const { project } = this._config;
@@ -59,12 +59,12 @@ export class SchemaComposer {
       },
     };
 
-    this._composerOutput = await composeSchema(options);
-    return this._composerOutput;
+    this._abi = await composeSchema(options);
+    return this._abi;
   }
 
   public reset(): void {
-    this._composerOutput = undefined;
+    this._abi = undefined;
   }
 
   private async _fetchExternalSchema(

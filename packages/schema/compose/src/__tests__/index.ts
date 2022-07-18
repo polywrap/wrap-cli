@@ -1,4 +1,4 @@
-import { ComposerOutput, ComposerOptions, ComposerFilter } from "..";
+import { ComposerOptions } from "..";
 
 import path from "path";
 import { readdirSync, Dirent } from "fs";
@@ -15,7 +15,7 @@ const root = GetPathToComposeTestFiles();
 export interface TestCase {
   name: string;
   input: ComposerOptions;
-  output?: ComposerOutput;
+  abi: Abi;
 }
 
 type TestCases = {
@@ -85,7 +85,13 @@ async function importCase(
   };
 
   const input: ComposerOptions = {
-    schemas: [],
+    schemaFile: {
+      schema: moduleInput!,
+      absolutePath: path.join(
+        directory,
+        "input/module.graphql"
+      ),
+    },
     resolvers: {
       external: resolveExternal,
       local: resolveLocal,
@@ -94,13 +100,13 @@ async function importCase(
   };
 
   if (moduleInput) {
-    input.schemas.push({
+    input.schemaFile = {
       schema: moduleInput,
       absolutePath: path.join(
         directory,
         "input/module.graphql"
       ),
-    });
+    };
   }
 
   let output: ComposerOutput = { };

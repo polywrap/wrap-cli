@@ -73,8 +73,9 @@ export abstract class PluginModule<
 
 /** The plugin package's manifest */
 export interface PluginPackageManifest {
-  /** The Wrapper's schema */
-  schema: string;
+  // TODO (cbrzn): Change to ABI once JSON Schema has been merged
+  /** The Wrapper's ABI */
+  abi: unknown;
 
   /** All interface schemas implemented by this plugin. */
   implements: Uri[];

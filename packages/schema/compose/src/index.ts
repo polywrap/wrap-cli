@@ -8,14 +8,14 @@ export * from "./types";
 export { renderSchema };
 
 export interface ComposerOptions {
-  manifest: SchemaFile;
+  schemaFile: SchemaFile;
   resolvers: AbiResolvers;
 }
 
 export async function composeSchema(options: ComposerOptions): Promise<Abi> {
   return await resolveImportsAndParseSchemas(
-    options.manifest.schema,
-    options.manifest.absolutePath,
+    options.schemaFile.schema,
+    options.schemaFile.absolutePath,
     options.resolvers
   );
 }

@@ -36,8 +36,6 @@ export type GetEnvsOptions = Contextualized;
 
 export type GetUriResolversOptions = Contextualized;
 
-export type GetSchemaOptions = Contextualized;
-
 export interface GetFileOptions extends Contextualized {
   path: string;
   encoding?: "utf-8" | string;
