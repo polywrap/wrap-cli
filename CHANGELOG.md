@@ -1,3 +1,11 @@
+# Polywrap Origin (0.2.0)
+## Bugs
+* [PR-1040](https://github.com/polywrap/monorepo/pull/1040) `polywrap` CLI: Added proper CORS handling for the IPFS node located within the `eth-ens-ipfs` default infra module.
+
+## Breaking Changes
+* [PR-1035](https://github.com/polywrap/monorepo/pull/1035) `polywrap.meta` Manifest: Removed the `queries` property from version `0.1.0` of the manifest.
+* [PR-1039](https://github.com/polywrap/monorepo/pull/1039) `@polywrap/ipfs-resolver-plugin-js`: Remove the `IpfsResolverPlugin`'s config, as it was never being used.
+
 # Polywrap Origin (0.1.1)
 ## Features
 * [PR-1017](https://github.com/polywrap/monorepo/pull/1017) `@polywrap/templates`, `polywrap` CLI: Rust wasm wrapper project template has been added, and made available via the `polywrap create ...` CLI command.
