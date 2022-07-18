@@ -4,10 +4,12 @@ import {
   BatchSpanProcessor,
   Tracer as otTracer,
 } from "@opentelemetry/sdk-trace-base";
-import { ZipkinExporter } from "@opentelemetry/exporter-zipkin";
 import { WebTracerProvider } from "@opentelemetry/sdk-trace-web";
 import * as api from "@opentelemetry/api";
 import { ConsoleExporter } from "@fetsorn/opentelemetry-console-exporter";
+// workaround until we can upgrade to 0.30.0
+// https://github.com/open-telemetry/opentelemetry-js/issues/2943#issuecomment-1114265125
+import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http/build/src/platform/browser/OTLPTraceExporter";
 
 type MaybeAsync<T> = Promise<T> | T;
 
@@ -17,15 +19,27 @@ export enum TracingLevel {
   High,
 }
 
+export interface TracerConfig {
+  tracingLevel: TracingLevel;
+  consoleEnabled: boolean;
+  consoleDetailed: boolean;
+  httpEnabled: boolean;
+  httpUrl: string;
+}
+
 const isPromise = <T extends unknown>(
   test?: MaybeAsync<T>
 ): test is Promise<T> =>
   !!test && typeof (test as Promise<T>).then === "function";
 
 export class Tracer {
-  public static traceEnabled = false;
-  public static tracingLevel = TracingLevel.High;
-  public static traceDetailed = false;
+  private static _config: TracerConfig = {
+    consoleEnabled: false,
+    tracingLevel: TracingLevel.High,
+    consoleDetailed: false,
+    httpEnabled: false,
+    httpUrl: "http://localhost:4318/v1/traces",
+  };
 
   private static _tracer: otTracer;
   private static _provider:
@@ -36,14 +50,17 @@ export class Tracer {
 
   static enableTracing(
     tracerName: string,
-    tracingLevel = TracingLevel.High,
-    traceDetailed = false,
-    serviceName = "Polywrap"
+    config: Partial<TracerConfig>
   ): void {
-    this.traceEnabled = true;
-    this.tracingLevel = tracingLevel;
-    this.traceDetailed = traceDetailed;
-    this._initProvider(serviceName);
+    this._config.tracingLevel =
+      config.tracingLevel ?? this._config.tracingLevel;
+    this._config.consoleEnabled =
+      config.consoleEnabled ?? this._config.consoleEnabled;
+    this._config.consoleDetailed =
+      config.consoleDetailed ?? this._config.consoleDetailed;
+    this._config.httpEnabled = config.httpEnabled ?? this._config.httpEnabled;
+    this._config.httpUrl = config.httpUrl ?? this._config.httpUrl;
+    this._initProvider();
 
     if (this._provider) {
       this._tracer = this._provider.getTracer(tracerName) as otTracer;
@@ -51,11 +68,16 @@ export class Tracer {
   }
 
   static disableTracing(): void {
-    this.traceEnabled = false;
+    this._config.consoleEnabled = false;
+    this._config.httpEnabled = false;
   }
 
   static startSpan(spanName: string, tracingLevel = TracingLevel.Low): void {
-    if (!this.traceEnabled || tracingLevel < this.tracingLevel) return;
+    if (
+      (!this._config.consoleEnabled && !this._config.httpEnabled) ||
+      tracingLevel < this._config.tracingLevel
+    )
+      return;
 
     const currentSpan = this._currentSpan();
     const span = this._tracer.startSpan(
@@ -72,7 +94,11 @@ export class Tracer {
   }
 
   static endSpan(tracingLevel = TracingLevel.Low): void {
-    if (!this.traceEnabled || tracingLevel < this.tracingLevel) return;
+    if (
+      (!this._config.consoleEnabled && !this._config.httpEnabled) ||
+      tracingLevel < this._config.tracingLevel
+    )
+      return;
 
     const span = this._currentSpan();
     if (span) {
@@ -86,7 +112,11 @@ export class Tracer {
     data: unknown,
     tracingLevel = TracingLevel.Low
   ): void {
-    if (!this.traceEnabled || tracingLevel < this.tracingLevel) return;
+    if (
+      (!this._config.consoleEnabled && !this._config.httpEnabled) ||
+      tracingLevel < this._config.tracingLevel
+    )
+      return;
 
     const span = this._currentSpan();
     if (span) {
@@ -99,7 +129,11 @@ export class Tracer {
     data?: unknown,
     tracingLevel = TracingLevel.Low
   ): void {
-    if (!this.traceEnabled || tracingLevel < this.tracingLevel) return;
+    if (
+      (!this._config.consoleEnabled && !this._config.httpEnabled) ||
+      tracingLevel < this._config.tracingLevel
+    )
+      return;
 
     const span = this._currentSpan();
 
@@ -112,7 +146,11 @@ export class Tracer {
     error: api.Exception,
     tracingLevel = TracingLevel.Low
   ): void {
-    if (!this.traceEnabled || tracingLevel < this.tracingLevel) return;
+    if (
+      (!this._config.consoleEnabled && !this._config.httpEnabled) ||
+      tracingLevel < this._config.tracingLevel
+    )
+      return;
 
     const span = this._currentSpan();
 
@@ -199,7 +237,7 @@ export class Tracer {
     };
   }
 
-  static _initProvider(serviceName: string): void {
+  static _initProvider(): void {
     if (typeof window === "undefined") {
       this._provider = new BasicTracerProvider();
     } else {
@@ -207,18 +245,20 @@ export class Tracer {
     }
 
     // Configure span processor to send spans to the exporter
-    this._provider.addSpanProcessor(
-      new SimpleSpanProcessor(
-        new ZipkinExporter({
-          serviceName: serviceName,
-        })
-      )
-    );
-    this._provider.addSpanProcessor(
-      new BatchSpanProcessor(
-        new ConsoleExporter({ isDetailed: this.traceDetailed })
-      )
-    );
+    if (this._config.httpEnabled) {
+      this._provider.addSpanProcessor(
+        new SimpleSpanProcessor(
+          new OTLPTraceExporter({ url: this._config.httpUrl })
+        )
+      );
+    }
+    if (this._config.consoleEnabled) {
+      this._provider.addSpanProcessor(
+        new BatchSpanProcessor(
+          new ConsoleExporter({ isDetailed: this._config.consoleDetailed })
+        )
+      );
+    }
 
     this._provider.register();
   }

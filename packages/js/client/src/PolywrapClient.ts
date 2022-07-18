@@ -49,13 +49,11 @@ import {
 } from "@polywrap/core-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
-import { Tracer, TracingLevel } from "@polywrap/tracing-js";
+import { Tracer, TracerConfig, TracingLevel } from "@polywrap/tracing-js";
 
 export interface PolywrapClientConfig<TUri extends Uri | string = string>
   extends ClientConfig<TUri> {
-  tracingEnabled: boolean;
-  tracingLevel: TracingLevel;
-  tracingDetailed: boolean;
+  tracerConfig: Partial<TracerConfig>;
 }
 
 export class PolywrapClient implements Client {
@@ -70,9 +68,7 @@ export class PolywrapClient implements Client {
     interfaces: [],
     envs: [],
     uriResolvers: [],
-    tracingEnabled: false,
-    tracingLevel: TracingLevel.High,
-    tracingDetailed: false,
+    tracerConfig: {},
   };
 
   // Invoke specific contexts
@@ -83,11 +79,7 @@ export class PolywrapClient implements Client {
     options?: { noDefaults?: boolean }
   ) {
     try {
-      this.setTracingEnabled(
-        !!config?.tracingEnabled,
-        config?.tracingLevel ?? TracingLevel.High,
-        !!config?.tracingDetailed
-      );
+      this.setTracingEnabled(config?.tracerConfig);
 
       Tracer.startSpan("PolywrapClient: constructor");
 
@@ -104,11 +96,13 @@ export class PolywrapClient implements Client {
             ? sanitizeInterfaceImplementations(config.interfaces)
             : [],
           uriResolvers: config.uriResolvers ?? [],
-          tracingEnabled: !!config.tracingEnabled,
-          tracingLevel: config.tracingLevel
-            ? config.tracingLevel
-            : TracingLevel.High,
-          tracingDetailed: !!config.tracingDetailed,
+          tracerConfig: {
+            consoleEnabled: !!config.tracerConfig?.consoleEnabled,
+            consoleDetailed: config.tracerConfig?.consoleDetailed,
+            httpEnabled: !!config.tracerConfig?.httpEnabled,
+            httpUrl: config.tracerConfig?.httpUrl,
+            tracingLevel: config.tracerConfig?.tracingLevel,
+          },
         };
       }
 
@@ -129,19 +123,13 @@ export class PolywrapClient implements Client {
     }
   }
 
-  public setTracingEnabled(
-    enable: boolean,
-    tracingLevel: TracingLevel,
-    detail: boolean
-  ): void {
-    if (enable) {
-      Tracer.enableTracing("PolywrapClient", tracingLevel, detail);
+  public setTracingEnabled(tracerConfig?: Partial<TracerConfig>): void {
+    if (tracerConfig?.consoleEnabled || tracerConfig?.httpEnabled) {
+      Tracer.enableTracing("PolywrapClient", tracerConfig);
     } else {
       Tracer.disableTracing();
     }
-    this._config.tracingEnabled = enable;
-    this._config.tracingLevel = tracingLevel;
-    this._config.tracingDetailed = detail;
+    this._config.tracerConfig = tracerConfig ?? {};
   }
 
   @Tracer.traceMethod("PolywrapClient: getRedirects")
@@ -774,11 +762,22 @@ export class PolywrapClient implements Client {
         : config.interfaces,
       envs: context?.envs ? sanitizeEnvs(context.envs) : config.envs,
       uriResolvers: context?.uriResolvers ?? config.uriResolvers,
-      tracingEnabled: context?.tracingEnabled || config.tracingEnabled,
-      tracingLevel: context?.tracingLevel
-        ? context.tracingLevel
-        : config.tracingLevel,
-      tracingDetailed: context?.tracingDetailed || config.tracingDetailed,
+      tracerConfig: {
+        consoleEnabled:
+          context?.tracerConfig?.consoleEnabled ||
+          config.tracerConfig.consoleEnabled,
+        consoleDetailed:
+          context?.tracerConfig?.consoleDetailed ||
+          config.tracerConfig.consoleDetailed,
+        httpEnabled:
+          context?.tracerConfig?.httpEnabled || config.tracerConfig.httpEnabled,
+        httpUrl: context?.tracerConfig?.httpUrl
+          ? context.tracerConfig.httpUrl
+          : config.tracerConfig.httpUrl,
+        tracingLevel: context?.tracerConfig?.tracingLevel
+          ? context.tracerConfig.tracingLevel
+          : config.tracerConfig.tracingLevel,
+      },
     });
 
     return {
