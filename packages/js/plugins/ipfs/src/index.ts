@@ -13,6 +13,11 @@ import { execSimple, execFallbacks } from "./utils/exec";
 
 import { Client, PluginFactory } from "@polywrap/core-js";
 
+//options:
+//  timeout
+//  disableParallelRequests
+//  provider
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention
 const createIpfsClient = require("@dorgjelli-test/ipfs-http-client-lite");
 

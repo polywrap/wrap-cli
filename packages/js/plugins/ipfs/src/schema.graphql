@@ -1,10 +1,20 @@
 #import { Module } into Ipfs from "ens/ipfs.polywrap.eth"
 
+type Timeouts {
+  addFile: UInt32,
+  cat: UInt32,
+  resolve: UInt32,
+}
+
 type Env {
   """
   Disable querying providers in parallel when resolving URIs
   """
-  disableParallelRequests: Boolean
+  disableParallelRequests: Boolean,
+  """
+  Global timeout for IPFS actions
+  """
+  timeouts: Timeouts
 }
 
 type Module implements Ipfs_Module {
