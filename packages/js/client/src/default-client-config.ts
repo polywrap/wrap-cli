@@ -88,10 +88,7 @@ export const getDefaultClientConfig = Tracer.traceFunc(
         },
         {
           uri: new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
-          plugin: ipfsResolverPlugin({
-            provider: defaultIpfsProviders[0],
-            fallbackProviders: defaultIpfsProviders.slice(1),
-          }),
+          plugin: ipfsResolverPlugin({}),
         },
       ],
       interfaces: [

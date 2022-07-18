@@ -42,9 +42,7 @@ function getPlugins(
       },
       {
         uri: "wrap://ens/ipfs-resolver.polywrap.eth",
-        plugin: ipfsResolverPlugin({
-          provider: ipfs,
-        }),
+        plugin: ipfsResolverPlugin({}),
       },
       {
         uri: "wrap://ens/ens-resolver.polywrap.eth",

@@ -14,12 +14,9 @@ import { PluginFactory } from "@polywrap/core-js";
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
 const isIPFS = require("is-ipfs");
 
-export interface IpfsResolverPluginConfig extends Record<string, unknown> {
-  provider: string;
-  fallbackProviders?: string[];
-}
+type NoConfig = Record<string, never>;
 
-export class IpfsResolverPlugin extends Module<IpfsResolverPluginConfig> {
+export class IpfsResolverPlugin extends Module<NoConfig> {
   // uri-resolver.core.polywrap.eth
   public async tryResolveUri(
     args: Args_tryResolveUri,
@@ -106,11 +103,9 @@ export class IpfsResolverPlugin extends Module<IpfsResolverPluginConfig> {
   }
 }
 
-export const ipfsResolverPlugin: PluginFactory<IpfsResolverPluginConfig> = (
-  opts: IpfsResolverPluginConfig
-) => {
+export const ipfsResolverPlugin: PluginFactory<NoConfig> = () => {
   return {
-    factory: () => new IpfsResolverPlugin(opts),
+    factory: () => new IpfsResolverPlugin({}),
     manifest,
   };
 };
