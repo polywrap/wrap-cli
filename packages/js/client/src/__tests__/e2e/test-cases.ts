@@ -5,17 +5,14 @@ export const runAsyncifyTest = async (
   client: PolywrapClient,
   wrapperUri: string
 ) => {
-  const subsequentInvokes = await client.query<{
+  const subsequentInvokes = await client.invoke<{
     subsequentInvokes: string;
   }>({
     uri: wrapperUri,
-    query: `
-      mutation {
-        subsequentInvokes(
-          numberOfTimes: 40
-        )
-      }
-    `,
+    method: "subsequentInvokes",
+    args: {
+      numberOfTimes: 40,
+    },
   });
 
   const expected = Array.from(new Array(40), (_, index) => index.toString());
