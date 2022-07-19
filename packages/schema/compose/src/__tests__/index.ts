@@ -3,7 +3,7 @@ import { ComposerOptions } from "..";
 import path from "path";
 import { readdirSync, Dirent } from "fs";
 
-import { Abi } from "@polywrap/schema-parse";
+import { Abi, createAbi } from "@polywrap/schema-parse";
 import {
   GetPathToComposeTestFiles,
   readFileIfExists,
@@ -72,12 +72,16 @@ async function importCase(
   // Fetch the input schemas
   const moduleInput = readFileIfExists("input/module.graphql", directory);
 
-  // Fetch the output schemas
-  const moduleSchema = readFileIfExists("output/module.graphql", directory);
+  // Fetch the output abi
   const moduleAbi = await readNamedExportIfExists<Abi>("abi", "output/module.ts", directory);
 
-  const resolveExternal = (uri: string): Promise<string> => {
-    return Promise.resolve(readFileIfExists(`imports-ext/${uri}/schema.graphql`, directory) || "");
+  const resolveExternal = async (uri: string): Promise<Abi> => {
+    let abi = createAbi()
+    const generatedAbi = await readNamedExportIfExists<Abi>("abi", `imports-ext/${uri}/module.ts`, directory)
+    if (generatedAbi) {
+      abi = generatedAbi
+    }
+    return Promise.resolve(abi);
   };
 
   const resolveLocal = (path: string): Promise<string> => {
@@ -86,7 +90,7 @@ async function importCase(
 
   const input: ComposerOptions = {
     schemaFile: {
-      schema: moduleInput!,
+      schema: moduleInput as string,
       absolutePath: path.join(
         directory,
         "input/module.graphql"
@@ -96,7 +100,6 @@ async function importCase(
       external: resolveExternal,
       local: resolveLocal,
     },
-    output: ComposerFilter.All
   };
 
   if (moduleInput) {
@@ -109,18 +112,9 @@ async function importCase(
     };
   }
 
-  let output: ComposerOutput = { };
-
-  if (moduleSchema && moduleAbi) {
-    output = {
-      schema: moduleSchema,
-      abi: moduleAbi
-    };
-  }
-
   return {
     name,
     input,
-    output,
+    abi: moduleAbi,
   };
 }

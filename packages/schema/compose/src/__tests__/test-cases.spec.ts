@@ -35,8 +35,8 @@ describe("Polywrap Schema Composer Test Cases", () => {
       const result = await composeSchema(testCase.input);
       removeFunctionProps(result);
 
-      if (testCase.output) {
-        expect(result).toMatchObject(testCase.output);
+      if (testCase.abi) {
+        expect(result).toMatchObject(testCase.abi);
       }
     });
   }
