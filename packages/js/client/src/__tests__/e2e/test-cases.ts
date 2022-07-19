@@ -17,9 +17,9 @@ export const runAsyncifyTest = async (
 
   const expected = Array.from(new Array(40), (_, index) => index.toString());
 
-  expect(subsequentInvokes.error).toBeFalsy();
+  expect(subsequentInvokes.errors).toBeFalsy();
   expect(subsequentInvokes.data).toBeTruthy();
-  expect(subsequentInvokes.data).toEqual(expected);
+  expect(subsequentInvokes.data?.subsequentInvokes).toEqual(expected);
 
   const localVarMethod = await client.invoke<boolean>({
     uri: wrapperUri,
