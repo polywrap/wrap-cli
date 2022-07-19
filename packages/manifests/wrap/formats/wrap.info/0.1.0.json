@@ -17,7 +17,7 @@
     "type": {
       "description" : "Wrapper Package Type",
       "type": "string",
-      "enum": ["wasm", "interface"]
+      "enum": ["wasm", "interface", "plugin"]
     },
     "name": {
       "description": "Wrapper Name",

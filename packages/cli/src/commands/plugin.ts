@@ -10,6 +10,7 @@ import {
   parsePluginManifestFileOption,
   parsePluginPublishDirOption,
   parseClientConfigOption,
+  generateWrapFile,
 } from "../lib";
 
 import path from "path";
@@ -123,6 +124,13 @@ async function run(options: PluginCommandOptions) {
   if (!fs.existsSync(publishDir)) {
     fs.mkdirSync(publishDir);
   }
+
+  generateWrapFile(
+    await schemaComposer.getComposedAbis(),
+    manifest.name,
+    "plugin",
+    publishDir
+  );
 
   await outputManifest(manifest, publishManifestPath);
 }

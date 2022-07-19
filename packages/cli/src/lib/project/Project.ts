@@ -7,7 +7,7 @@ import {
 } from "../";
 
 import { BindOutput } from "@polywrap/schema-bind";
-import {Abi} from "@polywrap/schema-parse";
+import { Abi } from "@polywrap/schema-parse";
 
 export interface ProjectConfig {
   rootDir: string;

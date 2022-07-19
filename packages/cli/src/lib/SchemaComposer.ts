@@ -41,7 +41,7 @@ export class SchemaComposer {
     const getSchemaFile = (schemaPath?: string): SchemaFile | undefined =>
       schemaPath
         ? {
-            schema: this._fetchLocalSchema(schemaPath),
+            schema: fs.readFileSync(schemaPath, "utf-8"),
             absolutePath: schemaPath,
           }
         : undefined;
@@ -51,15 +51,15 @@ export class SchemaComposer {
     }
 
     const options: ComposerOptions = {
-      manifest: schemaFile,
+      schemaFile,
       resolvers: {
         external: (uri: string) =>
-          this._fetchExternalSchema(uri, import_redirects),
-        local: (path: string) => Promise.resolve(this._fetchLocalSchema(path)),
+          this._fetchExternalAbi(uri, import_redirects),
+        local: (path: string) => Promise.resolve(this._fetchLocalAbi(path)),
       },
     };
 
-    this._abi = await composeSchema(options);
+    this._abi = (await composeSchema(options)) as Abi;
     return this._abi;
   }
 
@@ -67,7 +67,7 @@ export class SchemaComposer {
     this._abi = undefined;
   }
 
-  private async _fetchExternalSchema(
+  private async _fetchExternalAbi(
     uri: string,
     import_redirects?: {
       uri: string;
@@ -92,19 +92,19 @@ export class SchemaComposer {
 
     try {
       const manifest = await this._client.getManifest(new Uri(uri));
-      return manifest.abi;
+      return (manifest.abi as unknown) as Abi;
     } catch (e) {
       gluegun.print.error(e);
       throw e;
     }
   }
 
-  private _fetchLocalSchema(schemaPath: string) {
-    return fs.readFileSync(
-      path.isAbsolute(schemaPath)
-        ? schemaPath
-        : path.join(this._config.project.getManifestDir(), schemaPath),
-      "utf-8"
-    );
+  private _fetchLocalAbi(abiPath: string) {
+    const currentPath = path.isAbsolute(abiPath)
+      ? abiPath
+      : path.join(this._config.project.getManifestDir(), abiPath);
+
+    const manifest = fs.readFileSync(currentPath);
+    return (deserializeWrapManifest(manifest).abi as unknown) as Abi;
   }
 }

@@ -5,4 +5,4 @@ module: ./src/index.ts
 schema: ./src/schema.graphql
 import_redirects:
   - uri: "ens/ipfs.polywrap.eth"
-    schema: ../../../interfaces/ipfs/build/schema.graphql
+    schema: ../../../interfaces/ipfs/build-man/wrap.info

@@ -15,19 +15,14 @@ import {
   SchemaComposer,
   withSpinner,
 } from "./";
+import { generateWrapFile } from "./helpers/wrap";
 
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
-import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
-import { msgpackEncode } from "@polywrap/msgpack-js";
 import { WasmWrapper } from "@polywrap/client-js";
 import { WrapImports } from "@polywrap/client-js/build/wasm/types";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 import { Abi } from "@polywrap/schema-parse";
-import {
-  normalizePath,
-  writeDirectorySync,
-  writeFileSync,
-} from "@polywrap/os-js";
+import { normalizePath, writeDirectorySync } from "@polywrap/os-js";
 import * as gluegun from "gluegun";
 import fs from "fs";
 import path from "path";
@@ -349,18 +344,8 @@ export class Compiler {
         }
       });
 
-      const info: WrapManifest = {
-        abi: filteredAbi,
-        name: manifest.name,
-        type: (await this._isInterface()) ? "interface" : "wasm",
-        version: "0.1.0",
-      };
-
-      const s = JSON.stringify(info);
-      const encodedInfo = msgpackEncode(JSON.parse(s));
-      writeFileSync(manifestPath, encodedInfo, {
-        encoding: "binary",
-      });
+      const type = (await this._isInterface()) ? "interface" : "wasm";
+      generateWrapFile(filteredAbi, manifest.name, type, manifestPath);
     };
 
     if (quiet) {

@@ -14,7 +14,7 @@ export interface WrapManifest {
   /**
    * Wrapper Package Type
    */
-  type: "wasm" | "interface";
+  type: "wasm" | "interface" | "plugin";
   /**
    * Wrapper Name
    */
