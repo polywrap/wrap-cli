@@ -68,7 +68,7 @@ class ENSPublisher implements Deployer {
     const { data: resolver } = await client.invoke<string>({
       method: "getResolver",
       uri: ensWrapperUri,
-      input: {
+      args: {
         registryAddress: config.ensRegistryAddress,
         domain: config.domainName,
         connection: {
@@ -90,7 +90,7 @@ class ENSPublisher implements Deployer {
     const { data: setContenthashData } = await client.invoke<{ hash: string }>({
       method: "setContentHash",
       uri: ensWrapperUri,
-      input: {
+      args: {
         domain: config.domainName,
         cid: hash,
         resolverAddress: resolver,
@@ -107,7 +107,7 @@ class ENSPublisher implements Deployer {
     await client.invoke({
       method: "awaitTransaction",
       uri: ethereumPluginUri,
-      input: {
+      args: {
         txHash: setContenthashData.hash,
         confirmations: 1,
         timeout: 15000,

@@ -15,15 +15,15 @@ Commands:
   create|c                    Create a new project with polywrap CLI
   deploy|d [options]          Deploys/Publishes a Polywrap
   plugin|p                    Build/generate types for the plugin
-  query|q [options] <recipe>  Query wrappers using recipe scripts
   infra|i [options] <action>  Manage infrastructure for your wrapper
+  run|r [options] <workflow>  Runs workflow script
   docgen|o [options]          Build/generate documentation for your app
   help [command]              display help for command
 `;
 
 describe("e2e tests for no help", () => {
 
-  test("Should display the help content", async () => {
+  it("Should display the help content", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["help"],
       cli: polywrapCli,

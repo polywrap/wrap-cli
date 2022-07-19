@@ -1,6 +1,0 @@
-format: 0.0.1-prealpha.7
-name: UriResolver
-language: interface
-modules:
-  query:
-    schema: ./src/query.graphql

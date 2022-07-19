@@ -18,7 +18,7 @@ export class PluginResolver implements UriResolver {
   constructor(
     private readonly createPluginWrapper: (
       uri: Uri,
-      plugin: PluginPackage,
+      plugin: PluginPackage<unknown>,
       environment: Env<Uri> | undefined
     ) => Wrapper
   ) {}

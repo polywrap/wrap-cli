@@ -35,10 +35,9 @@ COPY {{dir}} {{dir}}
 # Build the module at {{dir}}
 RUN ./node_modules/.bin/asc {{dir}}/wrap/entry.ts \
     --path ./node_modules \
-    --outFile ./build/{{name}}.wasm \
+    --outFile ./build/wrap.wasm \
     --use abort={{dir}}/wrap/entry/wrapAbort \
     --optimize --importMemory \
     --runtime stub \
-    --runPasses asyncify \
-    --transform @serial-as/transform
+    --runPasses asyncify
 {{/polywrap_module}}

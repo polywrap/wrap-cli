@@ -15,15 +15,15 @@ Commands:
   create|c                    Create a new project with polywrap CLI
   deploy|d [options]          Deploys/Publishes a Polywrap
   plugin|p                    Build/generate types for the plugin
-  query|q [options] <recipe>  Query wrappers using recipe scripts
   infra|i [options] <action>  Manage infrastructure for your wrapper
+  run|r [options] <workflow>  Runs workflow script
   docgen|o [options]          Build/generate documentation for your app
   help [command]              display help for command
 `;
 
 describe("e2e tests for no command", () => {
   
-  test("Should throw error for unrecognized command", async () => {
+  it("Should throw error for unrecognized command", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["unknown"],
       cli: polywrapCli
@@ -33,7 +33,7 @@ describe("e2e tests for no command", () => {
     expect(output).toEqual(``);
   });
 
-  test("Should let the user to type polywrap help", async () => {
+  it("Should let the user to type polywrap help", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: [],
       cli: polywrapCli,

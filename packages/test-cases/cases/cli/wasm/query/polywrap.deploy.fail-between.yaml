@@ -1,7 +1,0 @@
-format: 0.0.1-prealpha.9
-name: test-project
-build: ./polywrap.build.yaml
-deploy: ./polywrap.deploy.fail-between.yaml
-language: wasm/assemblyscript
-schema: ./schema.graphql
-module: ./src/index.ts

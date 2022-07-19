@@ -112,7 +112,7 @@ export class Tracer {
       ): TReturn {
         try {
           Tracer.startSpan(span);
-          Tracer.setAttribute("input", { ...args });
+          Tracer.setAttribute("args", { ...args });
 
           const result = original.apply(this, args);
 
@@ -145,7 +145,7 @@ export class Tracer {
     return (...args: TArgs): TReturn => {
       try {
         this.startSpan(span);
-        this.setAttribute("input", { ...args });
+        this.setAttribute("args", { ...args });
 
         const result = func(...args);
 

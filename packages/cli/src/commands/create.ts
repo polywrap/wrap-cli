@@ -12,8 +12,8 @@ const createAppStr = intlMsg.commands_create_options_createApp();
 const createPluginStr = intlMsg.commands_create_options_createPlugin();
 const pathStr = intlMsg.commands_create_options_o_path();
 
-const supportedLangs = {
-  wasm: ["assemblyscript", "interface"] as const,
+export const supportedLangs = {
+  wasm: ["assemblyscript", "rust", "interface"] as const,
   app: ["typescript-node", "typescript-react"] as const,
   plugin: ["typescript"] as const,
 };

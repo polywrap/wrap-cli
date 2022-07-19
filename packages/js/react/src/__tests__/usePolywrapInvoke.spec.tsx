@@ -82,7 +82,6 @@ describe("usePolywrapInvoke hook", () => {
   ) {
     const hook = () => usePolywrapInvoke<TData>({
       uri: options.uri,
-      module: options.module,
       method: options.method,
       provider: options.provider
     });
@@ -90,7 +89,7 @@ describe("usePolywrapInvoke hook", () => {
     const { result: hookResult } = renderHook(hook, WrapperProvider);
 
     await act(async () => {
-      await hookResult.current.execute(options.input);
+      await hookResult.current.execute(options.args);
     });
 
     const result = hookResult.current;
@@ -101,9 +100,8 @@ describe("usePolywrapInvoke hook", () => {
   it("Should support passing env to client", async () => {
     const deployQuery: UsePolywrapInvokeProps = {
       uri: envUri,
-      module: "query",
       method: "getEnv",
-      input: {
+      args: {
         arg: "Alice"
       },
       config: {
@@ -130,9 +128,8 @@ describe("usePolywrapInvoke hook", () => {
   it("Should update storage data to five", async () => {
     const deployInvoke: UsePolywrapInvokeProps = {
       uri,
-      module: "mutation",
       method: "deployContract",
-      input: {
+      args: {
         connection: {
           networkNameOrChainId: "testnet",
         },
@@ -143,9 +140,8 @@ describe("usePolywrapInvoke hook", () => {
 
     const setStorageInvocation: UsePolywrapInvokeProps = {
       uri,
-      module: "mutation",
       method: "setData",
-      input: {
+      args: {
         address: address,
         value: 5,
         connection: {
@@ -160,9 +156,8 @@ describe("usePolywrapInvoke hook", () => {
 
     const getStorageDataInvocation: UsePolywrapInvokeProps = {
       uri,
-      module: "query",
       method: "getData",
-      input: {
+      args: {
         address: address,
         connection: {
           networkNameOrChainId: "testnet",
@@ -178,9 +173,8 @@ describe("usePolywrapInvoke hook", () => {
     const getStorageDataInvocation: UsePolywrapInvokeProps = {
       provider: "Non existent Polywrap Provider",
       uri,
-      module: "query",
       method: "getData",
-      input: {
+      args: {
         address: "foo",
       },
     };
@@ -199,9 +193,8 @@ describe("usePolywrapInvoke hook", () => {
     const getStorageDataInvocation: UsePolywrapInvokeProps = {
       provider: "other",
       uri,
-      module: "query",
       method: "getData",
-      input: {
+      args: {
         address: "foo",
       },
     };
@@ -217,9 +210,8 @@ describe("usePolywrapInvoke hook", () => {
   it("Should update storage data to three by setting value through variables passed to exec", async () => {
     const deployInvoke: UsePolywrapInvokeProps = {
       uri,
-      module: "mutation",
       method: "deployContract",
-      input: {
+      args: {
         connection: {
           networkNameOrChainId: "testnet",
         },
@@ -230,9 +222,8 @@ describe("usePolywrapInvoke hook", () => {
 
     const setStorageInvocation: UsePolywrapInvokeProps = {
       uri,
-      module: "mutation",
       method: "setData",
-      input: {
+      args: {
         address: address,
         value: 3,
         connection: {
@@ -247,9 +238,8 @@ describe("usePolywrapInvoke hook", () => {
 
     const getStorageDataInvocation: UsePolywrapInvokeProps = {
       uri,
-      module: "query",
       method: "getData",
-      input: {
+      args: {
         address: address,
         connection: {
           networkNameOrChainId: "testnet",

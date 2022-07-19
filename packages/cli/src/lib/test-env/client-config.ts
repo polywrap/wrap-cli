@@ -5,7 +5,7 @@ import {
   PolywrapClientConfig,
   defaultIpfsProviders,
 } from "@polywrap/client-js";
-import { ensPlugin } from "@polywrap/ens-plugin-js";
+import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ensAddresses } from "@polywrap/test-env-js";
@@ -44,8 +44,8 @@ export async function getTestEnvClientConfig(): Promise<
       }),
     },
     {
-      uri: "wrap://ens/ens.polywrap.eth",
-      plugin: ensPlugin({
+      uri: "wrap://ens/ens-resolver.polywrap.eth",
+      plugin: ensResolverPlugin({
         addresses: {
           testnet: ensAddress,
         },

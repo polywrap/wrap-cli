@@ -4,7 +4,7 @@ import {
   Write,
   WriteSizer,
   WriteEncoder,
-  Nullable,
+  Option,
   BigInt,
   BigNumber,
   JSON,

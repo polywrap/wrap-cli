@@ -1,3 +1,97 @@
+# Polywrap Origin (0.2.0)
+## Bugs
+* [PR-1040](https://github.com/polywrap/monorepo/pull/1040) `polywrap` CLI: Added proper CORS handling for the IPFS node located within the `eth-ens-ipfs` default infra module.
+
+## Breaking Changes
+* [PR-1035](https://github.com/polywrap/monorepo/pull/1035) `polywrap.meta` Manifest: Removed the `queries` property from version `0.1.0` of the manifest.
+* [PR-1039](https://github.com/polywrap/monorepo/pull/1039) `@polywrap/ipfs-resolver-plugin-js`: Remove the `IpfsResolverPlugin`'s config, as it was never being used.
+
+# Polywrap Origin (0.1.1)
+## Features
+* [PR-1017](https://github.com/polywrap/monorepo/pull/1017) `@polywrap/templates`, `polywrap` CLI: Rust wasm wrapper project template has been added, and made available via the `polywrap create ...` CLI command.
+
+## Bugs
+* [PR-1016](https://github.com/polywrap/monorepo/pull/1016) `polywrap` CLI: Improved logging when running workflows using the `polywrap run ...` command.
+* [PR-924](https://github.com/polywrap/monorepo/pull/924) `@polywrap/schema-parse`, `@polywrap/schema-bind`: Complex `Map<Key, Value>` type usages within wrapper schemas lead to incorrect bindings being generated. Additional tests + fixes have been added.
+
+# Polywrap Origin (0.1.0)
+![Public Release Announcement (2)](https://user-images.githubusercontent.com/5522128/177474776-76886b67-6554-41a9-841b-939728e273ca.png)
+
+*"Good evening traveler, welcome to Polywrap, a planet in the WRAP galaxy. We're happy to have you here. Ask around, I'm sure someone can help you navigate this place..." - NPC*  
+
+https://polywrap.io/
+
+# Polywrap 0.0.1-prealpha.93
+## Breaking Changes
+* [PR-986](https://github.com/polywrap/monorepo/pull/986) WRAP build artifacts have been refined:
+  * Wasm module name changed from `module.wasm` to `wrap.wasm`
+  * Polywrap manifests are no longer written to build folder (except for project metadata).
+  * The `wrap.info` is now the primary manifest file describing the wrapper:
+    * `{ version, type, name, abi }`
+    * [source](https://github.com/polywrap/monorepo/blob/7fd5b2faad2cb664044edde133d8e068d685d97a/packages/js/manifests/wrap/src/formats/wrap.info/0.0.1.ts)
+    * encoded as msgpack binary file
+  * `schema.graphql` remains but will be deprecated for `wrap.info`'s built-in `abi`.
+
+# Polywrap 0.0.1-prealpha.92
+## Features
+* [PR-1006](https://github.com/polywrap/monorepo/pull/1006/files) `polywrap-wasm-rs`: Add Rust encoder unit tests.
+* [PR-967](https://github.com/polywrap/monorepo/pull/967) `polywrap` CLI, `polywrap-wasm-rs`, `@polywrap/wasm-as`, `@polywrap/schema-parse`, `@polywrap/schema-compose`, `@polywrap/schema-bind`, `@polywrap/core-js`, `@polywrap/client-js`: Environment configuration for wrappers was refactored to enable environments at the method level, remove client env sanitization and adding support for Rust. `@env` annotation was introduced for methods declared in wrappers's schemas.
+* [PR-1005](https://github.com/polywrap/monorepo/pull/1005) `@polywrap/core-js`, `@polywrap/client-js`: Refactored `client.subscribe` to use invoke syntax.
+
+## Breaking Changes
+* [PR-967](https://github.com/polywrap/monorepo/pull/967) Wasm runtime (`polywrap-wasm-rs`, `@polywrap/wasm-as`) changed invoke signature and imports/exports, schema pipeline (`@polywrap/schema-parse`, `@polywrap/schema-compose`, `@polywrap/schema-bind`) now supports external env imports and TypeInfo and `@env` annotation for methods, `polywrap` changed compiler's imports, `@polywrap/core-js` changed Plugin interface, `@polywrap/client-js` changed environment model implementation.
+* [PR-1005](https://github.com/polywrap/monorepo/pull/1005) `@polywrap/core-js`, `@polywrap/client-js`: Refactored `client.subscribe` to use invoke syntax.
+
+# Polywrap 0.0.1-prealpha.91
+## Features
+* [PR-989](https://github.com/polywrap/monorepo/pull/989/files) `@polywrap/core-js`: Add job status in workflow job's result object.
+* [PR-992](https://github.com/polywrap/monorepo/pull/992) `polywrap` CLI: Allow configuring the client using the `--client-config` on all applicable commands.
+* [PR-1000](https://github.com/polywrap/monorepo/pull/1000) `@polywrap/core-js`: Added the `encodeResult` property to `InvokeOptions`.
+* [PR-1000](https://github.com/polywrap/monorepo/pull/1000) `@polywrap/core-js`: Introduced the concept of `Invoker` and `Invocable`.
+* [PR-988](https://github.com/polywrap/monorepo/pull/988) `polywrap` CLI, `wasm/rust`: Updates to the default build-image (`Dockerfile`):
+  * Added the system dependencies `clang`, `llvm` and `build-essentials`.
+  * Added steps to remove any `wasm-bindgen` imports that may have been injected.
+
+## Bugs
+* [PR-1000](https://github.com/polywrap/monorepo/pull/1000) Fixed inconsistencies around `ArrayBuffer` and `Uint8Array`.
+* [PR-1000](https://github.com/polywrap/monorepo/pull/1000) `@polywrap/client-js`: The `noDecode` flag (renamed to `encodeResult`) now enfoces the decoding properly, where before it could get confused with returning `Bytes` from a wrapper.
+* [PR-981](https://github.com/polywrap/monorepo/pull/981) `polywrap-wasm-rs`: Remove the `wrap-invoke` feature because it is not being used at the moment.
+
+## Breaking Changes
+* [PR-980](https://github.com/polywrap/monorepo/pull/980) `@polywrap/schema-parse`: Rename `TypeInfo` from `Abi`.
+
+# Polywrap 0.0.1-prealpha.90
+## Features
+* [PR-912](https://github.com/polywrap/monorepo/pull/912) [PR-930](https://github.com/polywrap/monorepo/pull/930) [PR-958](https://github.com/polywrap/monorepo/pull/958) All URI resolver extensions have been decoupled and moved into their own plugin packages:
+  * `@polywrap/fs-resolver-plugin-js`
+  * `@polywrap/ipfs-resolver-plugin-js`
+  * `@polywrap/ens-resolver-plugin-js`
+* [PR-912](https://github.com/polywrap/monorepo/pull/912) `@polywrap/file-system-interface` has been created to help standardize FileSystem wrapper implementations.
+* [PR-930](https://github.com/polywrap/monorepo/pull/930) `@polywrap/ipfs-interface` has been created to help standardize IPFS wrapper implementations.
+
+## Bugs
+* [PR-957](https://github.com/polywrap/monorepo/pull/957) `@polywrap/schema-bind`: `plugin/typescript` module config type interfaces no longer inherit from `Record<string, unknown>`, making them more type-safe and less generic.
+
+## Breaking Changes
+* [PR-937](https://github.com/polywrap/monorepo/issues/937) [PR-960](https://github.com/polywrap/monorepo/pull/960) The term `Nullable` has been changed to `Optional` within the `wasm` wrapper codegen. Additionally in `wasm/assemblyscript` the `Nullable<T>` type has been changed to a rust-style `Optional<T>` type.
+* [PR-972](https://github.com/polywrap/monorepo/pull/972) The term `input` in the context of invocations has been renamed to `args`.
+* [PR-976](https://github.com/polywrap/monorepo/pull/976) The invocation `resultFilter` option has been deprecated, as it is a needless & unused feature.
+
+# Polywrap 0.0.1-prealpha.89
+## Features
+* [PR-903](https://github.com/polywrap/monorepo/pull/903) `polywrap` CLI: Recipes have been re-worked into composable workflows, and they can be run using CLI commands.
+* [PR-951](https://github.com/polywrap/monorepo/pull/951) `polywrap` CLI: Docker Buildx output option has been removed.
+* [PR-944](https://github.com/polywrap/monorepo/pull/944) `@polywrap/schema-bind`, `@polywrap/wasm-as`: `Nullable` type has been replaced with `Option` in the Assemblyscript schema bindings.
+* [PR-938](https://github.com/polywrap/monorepo/pull/938) `@polywrap/schema-bind`, `@polywrap/wasm-as`: Rollback of JSON serialization in the Assemblyscript schema bindings.
+
+## Bugs
+* [PR-946](https://github.com/polywrap/monorepo/pull/946) `@polywrap/test-env-js`: Path fix for `npmCLI` test utility.
+
+## Breaking Changes
+* [PR-903](https://github.com/polywrap/monorepo/pull/903) `polywrap` CLI: Running recipes via the `polywrap query ...` command has been deprecated in favor of a new workflows system, accessible via the `polywrap run ...` command.
+* [PR-944](https://github.com/polywrap/monorepo/pull/944) `wasm/assemblyscript` Wrappers: `Nullable` type has been removed in favor of `Option` which also has a different interface.
+* [PR-938](https://github.com/polywrap/monorepo/pull/938) `wasm/assemblyscript` Wrappers: `JSON` serializer and deserializer, and related methods `fromJson` and `toJson` have been removed in favor of `parse` and `stringify`.
+
 # Polywrap 0.0.1-prealpha.88
 ## Bugs
 * Various CI/CD fixes.

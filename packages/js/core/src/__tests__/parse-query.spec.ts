@@ -40,7 +40,7 @@ describe("parseQuery", () => {
       someMethod: {
         uri: dummy,
         method: "someMethod",
-        input: {
+        args: {
           arg1: "hey",
           arg2: 4,
           arg3: true,
@@ -55,12 +55,6 @@ describe("parseQuery", () => {
           },
           var1: "var 1",
           var2: 55,
-        },
-        resultFilter: {
-          someResult: {
-            prop1: true,
-            prop2: true,
-          },
         },
       }
     };
@@ -145,7 +139,7 @@ describe("parseQuery", () => {
       someMethod: {
         uri: dummy,
         method: "someMethod",
-        input: {
+        args: {
           arg1: 4,
           arg2: ["hey", "there", [5.5]],
           arg3: {
@@ -157,28 +151,16 @@ describe("parseQuery", () => {
           var1: "var 1",
           var2: 55,
         },
-        resultFilter: {
-          someResult: {
-            prop1: true,
-            prop2: true,
-          },
-        }
       }
     };
     const method2: QueryInvocations<Uri> = {
       anotherMethod: {
         uri: dummy,
         method: "anotherMethod",
-        input: {
+        args: {
           arg: "hey",
           var: "var 1",
         },
-        resultFilter: {
-          resultOne: true,
-          resultTwo: {
-            prop: true,
-          },
-        }
       }
     };
 
@@ -221,21 +203,6 @@ describe("parseQuery", () => {
     const doc = createQueryDocument(`query { ...NamedFragment }`);
     expect(() => parseQuery(dummy, doc)).toThrowError(
       /Unsupported selection type found: FragmentSpread/
-    );
-  });
-
-  it("fails when a fragment spread is used on result values", () => {
-    const doc = createQueryDocument(`
-      query {
-        something(
-          arg: 5
-        ) {
-          ...NamedFragment
-        }
-      }
-    `);
-    expect(() => parseQuery(dummy, doc)).toThrowError(
-      /Unsupported result selection type found: FragmentSpread/
     );
   });
 
@@ -285,7 +252,7 @@ describe("parseQuery", () => {
     ).not.toThrowError(/Missing variable/);
   });
 
-  it("fails when duplicate input arguments are provided", () => {
+  it("fails when duplicate args arguments are provided", () => {
     const doc = createQueryDocument(`
       mutation {
         someMethod(
@@ -296,24 +263,7 @@ describe("parseQuery", () => {
     `);
 
     expect(() => parseQuery(dummy, doc)).toThrowError(
-      /Duplicate input argument found/
-    );
-  });
-
-  it("fails when duplicate result selections found", () => {
-    const doc = createQueryDocument(`
-      mutation {
-        someMethod(
-          arg1: 5
-        ) {
-          prop1
-          prop1
-        }
-      }
-    `);
-
-    expect(() => parseQuery(dummy, doc)).toThrowError(
-      /Duplicate result selections found/
+      /Duplicate arguments found/
     );
   });
 

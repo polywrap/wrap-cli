@@ -1,8 +1,0 @@
-{
-  "name": "test-case-env-client-types",
-  "private": true,
-  "dependencies": {
-    "@polywrap/wasm-as": "0.0.1-prealpha.28",
-    "assemblyscript": "0.19.5"
-  }
-}

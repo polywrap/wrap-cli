@@ -6,15 +6,14 @@ import {
   createScalarPropertyDefinition,
   ObjectDefinition,
   PropertyDefinition,
-  TypeInfo,
+  Abi,
   createModuleDefinition,
   ModuleDefinition,
   createMethodDefinition,
   MethodDefinition,
   createImportedModuleDefinition,
   ImportedModuleDefinition,
-  createEnvDefinition
-} from "../typeInfo";
+} from "../abi";
 
 const schema1 = `
 type MyType {
@@ -68,16 +67,16 @@ type AnotherType {
 }
 `;
 
-describe("Polywrap Schema TypeInfo Transformations", () => {
+describe("Polywrap Schema Abi Transformations", () => {
   it("addFirstLast", () => {
-    const typeInfo = parseSchema(schema1, {
+    const abi = parseSchema(schema1, {
       transforms: [addFirstLast],
     });
-    const expected: TypeInfo = {
-      envType: createEnvDefinition({}),
+    const expected: Abi = {
       enumTypes: [],
       importedEnumTypes: [],
       interfaceTypes: [],
+      importedEnvTypes: [],
       objectTypes: [
         {
           ...createObjectDefinition({ type: "MyType" }),
@@ -276,22 +275,22 @@ describe("Polywrap Schema TypeInfo Transformations", () => {
       ],
     };
 
-    expect(typeInfo).toMatchObject(expected);
+    expect(abi).toMatchObject(expected);
   });
 
   it("extendType", () => {
-    const typeInfo = parseSchema(schema2, {
+    const abi = parseSchema(schema2, {
       transforms: [
         extendType({
           foo: "bar",
         }),
       ],
     });
-    const expected: TypeInfo = {
-      envType: createEnvDefinition({}),
+    const expected: Abi = {
       enumTypes: [],
       interfaceTypes: [],
       importedEnumTypes: [],
+      importedEnvTypes: [],
       objectTypes: [
         {
           ...createObjectDefinition({ type: "MyType" }),
@@ -334,6 +333,6 @@ describe("Polywrap Schema TypeInfo Transformations", () => {
       importedModuleTypes: [],
     };
 
-    expect(typeInfo).toMatchObject(expected);
+    expect(abi).toMatchObject(expected);
   });
 });

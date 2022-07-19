@@ -14,19 +14,25 @@ const languageTestCommands: Record<string, string[]> = {
     "yarn test"
   ],
   "typescript-node": [
-    // Add this back once new toolchain version is released
-    /*"yarn build",
-    "yarn test"*/
+    // Uncomment when the helloworld wrapper has been deployed to polywrap.eth
+    // "yarn build",
+    // "yarn test"
   ],
   "typescript-react": [
-    // Add this back once new toolchain version is released
+    // Uncomment when the helloworld wrapper has been deployed to polywrap.eth
     // "CI=false yarn build"
   ],
   "assemblyscript": [
-    // Add this back once new toolchain version is released
-    /*"yarn build",
+    // Workflow tests fail in CI because cuelang is not installed
+    "yarn build",
     "yarn test:e2e",
-    "yarn test:recipe"*/
+    // "yarn test:workflow"
+  ],
+  "rust": [
+    // Workflow tests fail in CI because cuelang is not installed
+    "yarn build",
+    "yarn test:e2e",
+    // "yarn test:workflow"
   ],
   "interface": [
     "yarn build"

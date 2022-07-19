@@ -4,293 +4,293 @@ import {
   Ethereum_StaticTxResult,
   Ethereum_TxReceipt,
   Ethereum_Network,
-  Input_callContractView,
-  Input_callContractStatic,
-  Input_encodeParams,
-  Input_encodeFunction,
-  Input_solidityPack,
-  Input_solidityKeccak256,
-  Input_soliditySha256,
-  Input_getSignerAddress,
-  Input_getSignerBalance,
-  Input_getSignerTransactionCount,
-  Input_getGasPrice,
-  Input_estimateTransactionGas,
-  Input_estimateContractCallGas,
-  Input_checkAddress,
-  Input_toWei,
-  Input_toEth,
-  Input_awaitTransaction,
-  Input_waitForEvent,
-  Input_getNetwork,
-  Input_getBalance,
+  Args_callContractView,
+  Args_callContractStatic,
+  Args_encodeParams,
+  Args_encodeFunction,
+  Args_solidityPack,
+  Args_solidityKeccak256,
+  Args_soliditySha256,
+  Args_getSignerAddress,
+  Args_getSignerBalance,
+  Args_getSignerTransactionCount,
+  Args_getGasPrice,
+  Args_estimateTransactionGas,
+  Args_estimateContractCallGas,
+  Args_checkAddress,
+  Args_toWei,
+  Args_toEth,
+  Args_awaitTransaction,
+  Args_waitForEvent,
+  Args_getNetwork,
+  Args_getBalance,
   Ethereum_TxResponse,
-  Input_callContractMethod,
-  Input_callContractMethodAndWait,
-  Input_deployContract,
-  Input_sendRPC,
-  Input_sendTransaction,
-  Input_sendTransactionAndWait,
-  Input_signMessage
+  Args_callContractMethod,
+  Args_callContractMethodAndWait,
+  Args_deployContract,
+  Args_sendRPC,
+  Args_sendTransaction,
+  Args_sendTransactionAndWait,
+  Args_signMessage
 } from "./wrap";
 import { BigInt } from "@polywrap/wasm-as";
 
 export function callContractView(
-  input: Input_callContractView
+  args: Args_callContractView
 ): string {
   return Ethereum_Module.callContractView({
-    address: input.address,
-    method: input.method,
-    args: input.args,
-    connection: input.connection
+    address: args.address,
+    method: args.method,
+    args: args.args,
+    connection: args.connection
   }).unwrap();
 }
 
 export function callContractStatic(
-  input: Input_callContractStatic
+  args: Args_callContractStatic
 ): Ethereum_StaticTxResult {
   return Ethereum_Module.callContractStatic({
-    address: input.address,
-    method: input.method,
-    args: input.args,
-    connection: input.connection,
-    txOverrides: input.txOverrides
+    address: args.address,
+    method: args.method,
+    args: args.args,
+    connection: args.connection,
+    txOverrides: args.txOverrides
   }).unwrap();
 }
 
 export function getBalance(
-  input: Input_getBalance
+  args: Args_getBalance
 ): BigInt {
   return Ethereum_Module.getBalance({
-    address: input.address,
-    blockTag: input.blockTag,
-    connection: input.connection
+    address: args.address,
+    blockTag: args.blockTag,
+    connection: args.connection
   }).unwrap();
 }
 
 export function encodeParams(
-  input: Input_encodeParams
+  args: Args_encodeParams
 ): string {
   return Ethereum_Module.encodeParams({
-    types: input.types,
-    values: input.values
+    types: args.types,
+    values: args.values
   }).unwrap();
 }
 
 export function encodeFunction(
-  input: Input_encodeFunction
+  args: Args_encodeFunction
 ): string {
   return Ethereum_Module.encodeFunction({
-    method: input.method,
-    args: input.args
+    method: args.method,
+    args: args.args
   }).unwrap();
 }
 
 export function solidityPack(
-  input: Input_solidityPack
+  args: Args_solidityPack
 ): string {
   return Ethereum_Module.solidityPack({
-    types: input.types,
-    values: input.values
+    types: args.types,
+    values: args.values
   }).unwrap();
 }
 
 export function solidityKeccak256(
-  input: Input_solidityKeccak256
+  args: Args_solidityKeccak256
 ): string {
   return Ethereum_Module.solidityKeccak256({
-    types: input.types,
-    values: input.values
+    types: args.types,
+    values: args.values
   }).unwrap();
 }
 
 export function soliditySha256(
-  input: Input_soliditySha256
+  args: Args_soliditySha256
 ): string {
   return Ethereum_Module.soliditySha256({
-    types: input.types,
-    values: input.values
+    types: args.types,
+    values: args.values
   }).unwrap();
 }
 
 export function getSignerAddress(
-  input: Input_getSignerAddress
+  args: Args_getSignerAddress
 ): string {
   return Ethereum_Module.getSignerAddress({
-    connection: input.connection
+    connection: args.connection
   }).unwrap();
 }
 
 export function getSignerBalance(
-  input: Input_getSignerBalance
+  args: Args_getSignerBalance
 ): BigInt {
   return Ethereum_Module.getSignerBalance({
-    blockTag: input.blockTag,
-    connection: input.connection
+    blockTag: args.blockTag,
+    connection: args.connection
   }).unwrap();
 }
 
 export function getSignerTransactionCount(
-  input: Input_getSignerTransactionCount
+  args: Args_getSignerTransactionCount
 ): BigInt {
   return Ethereum_Module.getSignerTransactionCount({
-    blockTag: input.blockTag,
-    connection: input.connection
+    blockTag: args.blockTag,
+    connection: args.connection
   }).unwrap();
 }
 
 export function getGasPrice(
-  input: Input_getGasPrice
+  args: Args_getGasPrice
 ): BigInt {
   return Ethereum_Module.getGasPrice({
-    connection: input.connection
+    connection: args.connection
   }).unwrap();
 }
 
 export function estimateTransactionGas(
-  input: Input_estimateTransactionGas
+  args: Args_estimateTransactionGas
 ): BigInt {
   return Ethereum_Module.estimateTransactionGas({
-    tx: input.tx,
-    connection: input.connection
+    tx: args.tx,
+    connection: args.connection
   }).unwrap();
 }
 
 export function estimateContractCallGas(
-  input: Input_estimateContractCallGas
+  args: Args_estimateContractCallGas
 ): BigInt {
   return Ethereum_Module.estimateContractCallGas({
-    address: input.address,
-    method: input.method,
-    args: input.args,
-    connection: input.connection,
-    txOverrides: input.txOverrides
+    address: args.address,
+    method: args.method,
+    args: args.args,
+    connection: args.connection,
+    txOverrides: args.txOverrides
   }).unwrap();
 }
 
 export function checkAddress(
-  input: Input_checkAddress
+  args: Args_checkAddress
 ): bool {
   return Ethereum_Module.checkAddress({
-    address: input.address
+    address: args.address
   }).unwrap();
 }
 
 export function toWei(
-  input: Input_toWei
+  args: Args_toWei
 ): BigInt {
   return Ethereum_Module.toWei({
-    eth: input.eth
+    eth: args.eth
   }).unwrap();
 }
 
 export function toEth(
-  input: Input_toEth
+  args: Args_toEth
 ): String {
   return Ethereum_Module.toEth({
-    wei: input.wei
+    wei: args.wei
   }).unwrap();
 }
 
 export function awaitTransaction(
-  input: Input_awaitTransaction
+  args: Args_awaitTransaction
 ): Ethereum_TxReceipt {
   return Ethereum_Module.awaitTransaction({
-    txHash: input.txHash,
-    confirmations: input.confirmations,
-    timeout: input.timeout,
-    connection: input.connection
+    txHash: args.txHash,
+    confirmations: args.confirmations,
+    timeout: args.timeout,
+    connection: args.connection
   }).unwrap();
 }
 
 export function waitForEvent(
-  input: Input_waitForEvent
+  args: Args_waitForEvent
 ): Ethereum_EventNotification {
   return Ethereum_Module.waitForEvent({
-    address: input.address,
-    event: input.event,
-    args: input.args,
-    timeout: input.timeout,
-    connection: input.connection
+    address: args.address,
+    event: args.event,
+    args: args.args,
+    timeout: args.timeout,
+    connection: args.connection
   }).unwrap();
 }
 
 export function getNetwork(
-  input: Input_getNetwork
+  args: Args_getNetwork
 ): Ethereum_Network {
   return Ethereum_Module.getNetwork({
-    connection: input.connection
+    connection: args.connection
   }).unwrap();
 }
 
 export function callContractMethod(
-  input: Input_callContractMethod
+  args: Args_callContractMethod
 ): Ethereum_TxResponse {
   return Ethereum_Module.callContractMethod({
-    address: input.address,
-    method: input.method,
-    args: input.args,
-    connection: input.connection,
-    txOverrides: input.txOverrides
+    address: args.address,
+    method: args.method,
+    args: args.args,
+    connection: args.connection,
+    txOverrides: args.txOverrides
   }).unwrap();
 }
 
 export function callContractMethodAndWait(
-  input: Input_callContractMethodAndWait
+  args: Args_callContractMethodAndWait
 ): Ethereum_TxReceipt {
   return Ethereum_Module.callContractMethodAndWait({
-    address: input.address,
-    method: input.method,
-    args: input.args,
-    connection: input.connection,
-    txOverrides: input.txOverrides
+    address: args.address,
+    method: args.method,
+    args: args.args,
+    connection: args.connection,
+    txOverrides: args.txOverrides
   }).unwrap();
 }
 
 export function sendTransaction(
-  input: Input_sendTransaction
+  args: Args_sendTransaction
 ): Ethereum_TxResponse {
   return Ethereum_Module.sendTransaction({
-    tx: input.tx,
-    connection: input.connection
+    tx: args.tx,
+    connection: args.connection
   }).unwrap();
 }
 
 export function sendTransactionAndWait(
-  input: Input_sendTransactionAndWait
+  args: Args_sendTransactionAndWait
 ): Ethereum_TxReceipt {
   return Ethereum_Module.sendTransactionAndWait({
-    tx: input.tx,
-    connection: input.connection
+    tx: args.tx,
+    connection: args.connection
   }).unwrap();
 }
 
 export function deployContract(
-  input: Input_deployContract
+  args: Args_deployContract
 ): string {
   return Ethereum_Module.deployContract({
-    abi: input.abi,
-    bytecode: input.bytecode,
-    args: input.args,
-    connection: input.connection
+    abi: args.abi,
+    bytecode: args.bytecode,
+    args: args.args,
+    connection: args.connection
   }).unwrap();
 }
 
 export function signMessage(
-  input: Input_signMessage
+  args: Args_signMessage
 ): string {
   return Ethereum_Module.signMessage({
-    message: input.message,
-    connection: input.connection
+    message: args.message,
+    connection: args.connection
   }).unwrap();
 }
 
 export function sendRPC(
-  input: Input_sendRPC
+  args: Args_sendRPC
 ): string | null {
   return Ethereum_Module.sendRPC({
-    method: input.method,
-    params: input.params,
-    connection: input.connection
+    method: args.method,
+    params: args.params,
+    connection: args.connection
   }).unwrap();
 }

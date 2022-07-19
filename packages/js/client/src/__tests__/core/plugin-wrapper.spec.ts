@@ -9,7 +9,7 @@ jest.setTimeout(200000);
 
 const defaultPlugins = [
   "wrap://ens/ipfs.polywrap.eth",
-  "wrap://ens/ens.polywrap.eth",
+  "wrap://ens/ens-resolver.polywrap.eth",
   "wrap://ens/ethereum.polywrap.eth",
   "wrap://ens/http.polywrap.eth",
   "wrap://ens/js-logger.polywrap.eth",
@@ -17,6 +17,8 @@ const defaultPlugins = [
   "wrap://ens/sha3.polywrap.eth",
   "wrap://ens/graph-node.polywrap.eth",
   "wrap://ens/fs.polywrap.eth",
+  "wrap://ens/fs-resolver.polywrap.eth",
+  "wrap://ens/ipfs-resolver.polywrap.eth",
 ];
 
 describe("plugin-wrapper", () => {
@@ -37,11 +39,11 @@ describe("plugin-wrapper", () => {
         return this.config.map;
       }
 
-      updateMap(input: { map: Map<string, number> }): Map<string, number> {
-        for (const key of input.map.keys()) {
+      updateMap(args: { map: Map<string, number> }): Map<string, number> {
+        for (const key of args.map.keys()) {
           this.config.map.set(
             key,
-            (this.config.map.get(key) || 0) + (input.map.get(key) || 0)
+            (this.config.map.get(key) || 0) + (args.map.get(key) || 0)
           );
         }
         return this.config.map;
@@ -67,7 +69,7 @@ describe("plugin-wrapper", () => {
         {
           uri: implementationUri,
           plugin: {
-            factory: () => ({} as PluginModule),
+            factory: () => ({} as PluginModule<{}>),
             manifest: {
               schema: "",
               implements: [],
@@ -83,92 +85,29 @@ describe("plugin-wrapper", () => {
   });
 
   test("getSchema -- plugin schema", async () => {
-    const client = await getClient();
-    const schema: string = await client.getSchema(
-      "wrap://ens/js-logger.polywrap.eth"
-    );
+    const testPluginUri = "ens/test-plugin.eth";
+    const pluginSchema = "type Module { someMethod(arg: String): String }";
 
-    expect(schema).toStrictEqual(
-      `### Polywrap Header START ###
-scalar UInt
-scalar UInt8
-scalar UInt16
-scalar UInt32
-scalar Int
-scalar Int8
-scalar Int16
-scalar Int32
-scalar Bytes
-scalar BigInt
-scalar BigNumber
-scalar JSON
-scalar Map
+    const pluginPackage = {
+      factory: () => ({} as PluginModule<{}>),
+      manifest: {
+        schema: pluginSchema,
+        implements: [],
+      },
+    };
 
-directive @imported(
-  uri: String!
-  namespace: String!
-  nativeType: String!
-) on OBJECT | ENUM
+    const client = new PolywrapClient({
+      plugins: [
+        {
+          uri: testPluginUri,
+          plugin: pluginPackage,
+        },
+      ],
+    });
 
-directive @imports(
-  types: [String!]!
-) on OBJECT
+    const schema: string = await client.getSchema(testPluginUri);
 
-directive @capability(
-  type: String!
-  uri: String!
-  namespace: String!
-) repeatable on OBJECT
-
-directive @enabled_interface on OBJECT
-
-directive @annotate(type: String!) on FIELD
-
-### Polywrap Header END ###
-
-type Module implements Logger_Module @imports(
-  types: [
-    "Logger_Module",
-    "Logger_LogLevel"
-  ]
-) {
-  log(
-    level: Logger_LogLevel!
-    message: String!
-  ): Boolean!
-}
-
-### Imported Modules START ###
-
-type Logger_Module @imported(
-  uri: "ens/logger.core.polywrap.eth",
-  namespace: "Logger",
-  nativeType: "Module"
-) {
-  log(
-    level: Logger_LogLevel!
-    message: String!
-  ): Boolean!
-}
-
-### Imported Modules END ###
-
-### Imported Objects START ###
-
-enum Logger_LogLevel @imported(
-  uri: "ens/logger.core.polywrap.eth",
-  namespace: "Logger",
-  nativeType: "LogLevel"
-) {
-  DEBUG
-  INFO
-  WARN
-  ERROR
-}
-
-### Imported Objects END ###
-`
-    );
+    expect(schema).toStrictEqual(pluginSchema);
   });
 
   it("plugin map types", async () => {
@@ -221,7 +160,7 @@ enum Logger_LogLevel @imported(
     const pluginUriToOverride = defaultPlugins[0];
 
     const pluginPackage = {
-      factory: () => ({} as PluginModule),
+      factory: () => ({} as PluginModule<{}>),
       manifest: {
         schema: "",
         implements: [],
@@ -252,7 +191,7 @@ enum Logger_LogLevel @imported(
     const pluginUriToOverride = defaultPlugins[0];
 
     const pluginPackage1 = {
-      factory: () => ({} as PluginModule),
+      factory: () => ({} as PluginModule<{}>),
       manifest: {
         schema: "",
         implements: [],
@@ -260,7 +199,7 @@ enum Logger_LogLevel @imported(
     };
 
     const pluginPackage2 = {
-      factory: () => ({} as PluginModule),
+      factory: () => ({} as PluginModule<{}>),
       manifest: {
         schema: "",
         implements: [],

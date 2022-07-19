@@ -21,37 +21,37 @@ use crate::{
     sanitize_test_import_enum_value
 };
 
-pub fn serialize_test_import_object(input: &TestImportObject) -> Result<Vec<u8>, EncodeError> {
+pub fn serialize_test_import_object(args: &TestImportObject) -> Result<Vec<u8>, EncodeError> {
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) imported object-type: TestImportObject".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
-    write_test_import_object(input, &mut encoder)?;
+    write_test_import_object(args, &mut encoder)?;
     Ok(encoder.get_buffer())
 }
 
-pub fn write_test_import_object<W: Write>(input: &TestImportObject, writer: &mut W) -> Result<(), EncodeError> {
+pub fn write_test_import_object<W: Write>(args: &TestImportObject, writer: &mut W) -> Result<(), EncodeError> {
     writer.write_map_length(&8)?;
     writer.context().push("object", "TestImportAnotherObject", "writing property");
     writer.write_string("object")?;
-    TestImportAnotherObject::write(&input.object, writer)?;
+    TestImportAnotherObject::write(&args.object, writer)?;
     writer.context().pop();
     writer.context().push("optObject", "Option<TestImportAnotherObject>", "writing property");
     writer.write_string("optObject")?;
-    if input.opt_object.is_some() {
-        TestImportAnotherObject::write(input.opt_object.as_ref().as_ref().unwrap(), writer)?;
+    if args.opt_object.is_some() {
+        TestImportAnotherObject::write(args.opt_object.as_ref().as_ref().unwrap(), writer)?;
     } else {
         writer.write_nil()?;
     }
     writer.context().pop();
     writer.context().push("objectArray", "Vec<TestImportAnotherObject>", "writing property");
     writer.write_string("objectArray")?;
-    writer.write_array(&input.object_array, |writer, item| {
+    writer.write_array(&args.object_array, |writer, item| {
         TestImportAnotherObject::write(item, writer)
     })?;
     writer.context().pop();
     writer.context().push("optObjectArray", "Option<Vec<Option<TestImportAnotherObject>>>", "writing property");
     writer.write_string("optObjectArray")?;
-    writer.write_nullable_array(&input.opt_object_array, |writer, item| {
+    writer.write_optional_array(&args.opt_object_array, |writer, item| {
         if item.is_some() {
             TestImportAnotherObject::write(item.as_ref().as_ref().unwrap(), writer)
         } else {
@@ -61,31 +61,31 @@ pub fn write_test_import_object<W: Write>(input: &TestImportObject, writer: &mut
     writer.context().pop();
     writer.context().push("en", "TestImportEnum", "writing property");
     writer.write_string("en")?;
-    writer.write_i32(&(input.en as i32))?;
+    writer.write_i32(&(args.en as i32))?;
     writer.context().pop();
     writer.context().push("optEnum", "Option<TestImportEnum>", "writing property");
     writer.write_string("optEnum")?;
-    writer.write_nullable_i32(&input.opt_enum.map(|f| f as i32))?;
+    writer.write_optional_i32(&args.opt_enum.map(|f| f as i32))?;
     writer.context().pop();
     writer.context().push("enumArray", "Vec<TestImportEnum>", "writing property");
     writer.write_string("enumArray")?;
-    writer.write_array(&input.enum_array, |writer, item| {
+    writer.write_array(&args.enum_array, |writer, item| {
         writer.write_i32(&(*item as i32))
     })?;
     writer.context().pop();
     writer.context().push("optEnumArray", "Option<Vec<Option<TestImportEnum>>>", "writing property");
     writer.write_string("optEnumArray")?;
-    writer.write_nullable_array(&input.opt_enum_array, |writer, item| {
-        writer.write_nullable_i32(&item.map(|f| f as i32))
+    writer.write_optional_array(&args.opt_enum_array, |writer, item| {
+        writer.write_optional_i32(&item.map(|f| f as i32))
     })?;
     writer.context().pop();
     Ok(())
 }
 
-pub fn deserialize_test_import_object(input: &[u8]) -> Result<TestImportObject, DecodeError> {
+pub fn deserialize_test_import_object(args: &[u8]) -> Result<TestImportObject, DecodeError> {
     let mut context = Context::new();
     context.description = "Deserializing imported object-type: TestImportObject".to_string();
-    let mut reader = ReadDecoder::new(input, context);
+    let mut reader = ReadDecoder::new(args, context);
     read_test_import_object(&mut reader)
 }
 
@@ -139,7 +139,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
             }
             "optObjectArray" => {
                 reader.context().push(&field, "Option<Vec<Option<TestImportAnotherObject>>>", "type found, reading property");
-                _opt_object_array = reader.read_nullable_array(|reader| {
+                _opt_object_array = reader.read_optional_array(|reader| {
                     let mut object: Option<TestImportAnotherObject> = None;
                     if !reader.is_next_nil()? {
                         object = Some(TestImportAnotherObject::read(reader)?);
@@ -196,7 +196,7 @@ pub fn read_test_import_object<R: Read>(reader: &mut R) -> Result<TestImportObje
             }
             "optEnumArray" => {
                 reader.context().push(&field, "Option<Vec<Option<TestImportEnum>>>", "type found, reading property");
-                _opt_enum_array = reader.read_nullable_array(|reader| {
+                _opt_enum_array = reader.read_optional_array(|reader| {
                     let mut value: Option<TestImportEnum> = None;
                     if !reader.is_next_nil()? {
                         if reader.is_next_string()? {

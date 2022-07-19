@@ -1,32 +1,37 @@
-import { VALID_WRAP_MANIFEST_NAMES } from "..";
 import {
-  WasmPackageConstraints,
   PackageReader,
-  ValidationResult,
   ValidationFailReason,
-} from ".";
+  ValidationResult,
+  WasmPackageConstraints,
+  WRAP_INFO,
+  WRAP_WASM,
+} from "..";
 
-import { parseSchema } from "@polywrap/schema-parse";
 import {
-  deserializePolywrapManifest,
-  deserializeBuildManifest,
-  deserializeMetaManifest,
-  PolywrapManifest,
-} from "@polywrap/core-js";
-import path from "path";
+  WrapManifest,
+  deserializeWrapManifest,
+} from "@polywrap/wrap-manifest-types-js";
+import { renderSchema } from "@polywrap/schema-compose";
+import * as path from "path";
 
 export class WasmPackageValidator {
   constructor(private constraints: WasmPackageConstraints) {}
 
   async validate(reader: PackageReader): Promise<ValidationResult> {
-    let result = await this.validateManifests(reader);
-    if (!result.valid) {
-      return result;
+    const infoResult = await this.validateInfo(reader, WRAP_INFO);
+    if (!infoResult.valid) {
+      return infoResult;
     }
 
-    result = await this.validateStructure(reader);
-    if (!result.valid) {
-      return result;
+    const manifest = infoResult.manifest as WrapManifest;
+    const abiResult = await this.validateAbi(manifest);
+    if (!abiResult.valid) {
+      return abiResult;
+    }
+
+    const moduleResult = await this.validateModule(reader, manifest);
+    if (!moduleResult.valid) {
+      return moduleResult;
     }
 
     return this.success();
@@ -61,7 +66,7 @@ export class WasmPackageValidator {
       currentSize += stats.size;
       if (currentSize > this.constraints.maxSize) {
         return {
-          result: this.fail(ValidationFailReason.WrapperTooLarge),
+          result: this.fail(ValidationFailReason.PackageTooLarge),
           currentSize,
           currentFileCnt,
         };
@@ -115,72 +120,39 @@ export class WasmPackageValidator {
     };
   }
 
-  private async validateManifests(
-    reader: PackageReader
-  ): Promise<ValidationResult> {
-    let manifest: PolywrapManifest | undefined;
-    // Go through manifest names, if more than one wrap manifest exists, fail
-    // If no wrap manifest exists or is invalid, also fail
-    for (const manifestName of VALID_WRAP_MANIFEST_NAMES) {
-      if (!(await reader.exists(manifestName))) {
-        continue;
-      }
-
-      if (manifest) {
-        return this.fail(ValidationFailReason.MultipleWrapManifests);
-      }
-      const manifestFile = await reader.readFileAsString(manifestName);
-      try {
-        manifest = deserializePolywrapManifest(manifestFile);
-      } catch (err) {
-        return this.fail(ValidationFailReason.InvalidWrapManifest, err);
-      }
-    }
-
-    if (!manifest) {
+  private async validateInfo(
+    reader: PackageReader,
+    name: string
+  ): Promise<ValidationResult & { manifest?: WrapManifest }> {
+    if (!(await reader.exists(name))) {
       return this.fail(ValidationFailReason.WrapManifestNotFound);
     }
 
-    const schemaResult = await this.validateSchema(reader, manifest.schema);
-    if (!schemaResult.valid) {
-      return schemaResult;
+    const structureResult = await this.validateStructure(reader);
+    if (!structureResult.valid) {
+      return structureResult;
     }
 
-    const moduleResult = await this.validateModule(reader, manifest.module);
-    if (!moduleResult.valid) {
-      return moduleResult;
+    try {
+      const info = await reader.readFile(name);
+      return {
+        valid: true,
+        manifest: deserializeWrapManifest(info),
+      };
+    } catch (e) {
+      if (e.message.includes('instance requires property "abi"')) {
+        return this.fail(ValidationFailReason.AbiNotFound);
+      }
+      return this.fail(ValidationFailReason.InvalidWrapManifest);
     }
-
-    let manifestValidationResult = await this.validateBuildManifest(
-      reader,
-      manifest
-    );
-    if (!manifestValidationResult.valid) {
-      return manifestValidationResult;
-    }
-
-    manifestValidationResult = await this.validateMetaManifest(
-      reader,
-      manifest
-    );
-    if (!manifestValidationResult.valid) {
-      return manifestValidationResult;
-    }
-
-    return this.success();
   }
 
-  private async validateSchema(
-    reader: PackageReader,
-    schemaFilePath: string
-  ): Promise<ValidationResult> {
-    if (!(await reader.exists(schemaFilePath))) {
-      return this.fail(ValidationFailReason.SchemaNotFound);
-    }
+  private async validateAbi(manifest: WrapManifest): Promise<ValidationResult> {
     try {
-      parseSchema(await reader.readFileAsString(schemaFilePath));
+      // TODO(cbrzn): Just validate the structure of Abi with the JSON Schema and remove
+      renderSchema(manifest.abi as never, false);
     } catch (err) {
-      return this.fail(ValidationFailReason.InvalidSchema, err);
+      return this.fail(ValidationFailReason.InvalidAbi, err);
     }
 
     return this.success();
@@ -188,61 +160,15 @@ export class WasmPackageValidator {
 
   private async validateModule(
     reader: PackageReader,
-    moduleFilePath: string | undefined
+    manifest: WrapManifest
   ): Promise<ValidationResult> {
-    if (!moduleFilePath) {
+    if (manifest.type === "interface") {
       return this.success();
     }
 
-    const moduleSize = (await reader.getStats(moduleFilePath)).size;
-
-    if (moduleSize > this.constraints.maxModuleSize) {
+    const module = await reader.getStats(WRAP_WASM);
+    if (module.size > this.constraints.maxModuleSize) {
       return this.fail(ValidationFailReason.ModuleTooLarge);
-    }
-
-    return this.success();
-  }
-
-  private async validateBuildManifest(
-    reader: PackageReader,
-    polywrapManifest: PolywrapManifest
-  ): Promise<ValidationResult> {
-    const manifestPath = polywrapManifest.build;
-
-    if (manifestPath) {
-      // Manifests get built as a `.json` file so we need to change the extension
-      const fileName = path.parse(manifestPath).name;
-      const fullManifestName = `${fileName}.json`;
-
-      const buildManifestFile = await reader.readFileAsString(fullManifestName);
-      try {
-        deserializeBuildManifest(buildManifestFile);
-      } catch (err) {
-        return this.fail(ValidationFailReason.InvalidBuildManifest, err);
-      }
-    }
-
-    return this.success();
-  }
-
-  private async validateMetaManifest(
-    reader: PackageReader,
-    polywrapManifest: PolywrapManifest
-  ): Promise<ValidationResult> {
-    const manifestPath = polywrapManifest.meta;
-
-    if (manifestPath) {
-      // Manifests get built as `.json` files so we need to change the extension
-      const fileName = path.parse(manifestPath).name;
-      const fullManifestName = `${fileName}.json`;
-
-      const metaManifestFile = await reader.readFileAsString(fullManifestName);
-
-      try {
-        deserializeMetaManifest(metaManifestFile);
-      } catch (err) {
-        return this.fail(ValidationFailReason.InvalidMetaManifest, err);
-      }
     }
 
     return this.success();

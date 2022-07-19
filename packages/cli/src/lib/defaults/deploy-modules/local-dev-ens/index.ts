@@ -49,7 +49,7 @@ class LocalDevENSPublisher implements Deployer {
     const { data: signer } = await client.invoke<string>({
       method: "getSignerAddress",
       uri: ethereumPluginUri,
-      input: {
+      args: {
         connection: {
           networkNameOrChainId: "testnet",
         },
@@ -70,7 +70,7 @@ class LocalDevENSPublisher implements Deployer {
       {
         method: "registerDomainAndSubdomainsRecursively",
         uri: ensWrapperUri,
-        input: {
+        args: {
           domain: config.domainName,
           owner: signer,
           resolverAddress: ensAddresses.resolverAddress,
@@ -94,7 +94,7 @@ class LocalDevENSPublisher implements Deployer {
     await client.invoke({
       method: "awaitTransaction",
       uri: ethereumPluginUri,
-      input: {
+      args: {
         txHash: registerData.hash,
         confirmations: 1,
         timeout: 15000,
@@ -109,7 +109,7 @@ class LocalDevENSPublisher implements Deployer {
     const { data: setContenthashData } = await client.invoke<{ hash: string }>({
       method: "setContentHash",
       uri: ensWrapperUri,
-      input: {
+      args: {
         domain: config.domainName,
         cid: hash,
         resolverAddress: ensAddresses.resolverAddress,
@@ -126,7 +126,7 @@ class LocalDevENSPublisher implements Deployer {
     await client.invoke({
       method: "awaitTransaction",
       uri: ethereumPluginUri,
-      input: {
+      args: {
         txHash: setContenthashData.hash,
         confirmations: 1,
         timeout: 15000,

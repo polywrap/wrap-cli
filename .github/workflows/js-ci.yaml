@@ -3,9 +3,8 @@ name: JS-CI
 on: 
   push:
     branches:
-      - master
-      - prealpha
-      - prealpha-dev
+      - origin
+      - origin-dev
   pull_request:
 
 jobs:
@@ -168,6 +167,16 @@ jobs:
         uses: actions/setup-node@master
         with:
           node-version: '${{ steps.nvm.outputs.NVMRC }}'
+
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '^1.13.1'
+
+      - name: Install cue lang
+        run: go install cuelang.org/go/cmd/cue@latest
+      
+      - name: Check if cue is installed
+        run: cue version
 
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path

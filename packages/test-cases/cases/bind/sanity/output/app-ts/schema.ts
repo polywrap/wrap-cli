@@ -55,6 +55,9 @@ type Module @imports(
     enumArray: [CustomEnum!]!
     optEnumArray: [CustomEnum]
     map: Map! @annotate(type: "Map<String!, Int!>!")
+    mapOfArr: Map! @annotate(type: "Map<String!, [Int!]!>!")
+    mapOfObj: Map! @annotate(type: "Map<String!, AnotherType!>!")
+    mapOfArrOfObj: Map! @annotate(type: "Map<String!, [AnotherType!]!>!")
   ): Int!
 
   objectMethod(
@@ -62,7 +65,14 @@ type Module @imports(
     optObject: AnotherType
     objectArray: [AnotherType!]!
     optObjectArray: [AnotherType]
-  ): AnotherType
+  ): AnotherType @env(required: true)
+
+  optionalEnvMethod(
+    object: AnotherType!
+    optObject: AnotherType
+    objectArray: [AnotherType!]!
+    optObjectArray: [AnotherType]
+  ): AnotherType @env(required: false)
 }
 
 type Env {
@@ -109,6 +119,10 @@ type CustomType {
   optEnum: CustomEnum
   enumArray: [CustomEnum!]!
   optEnumArray: [CustomEnum]
+  map: Map! @annotate(type: "Map<String!, Int!>!")
+  mapOfArr: Map! @annotate(type: "Map<String!, [Int!]!>!")
+  mapOfObj: Map! @annotate(type: "Map<String!, AnotherType!>!")
+  mapOfArrOfObj: Map! @annotate(type: "Map<String!, [AnotherType!]!>!")
 }
 
 type AnotherType {
@@ -143,7 +157,7 @@ type TestImport_Module @imported(
     optEnum: TestImport_Enum
     enumArray: [TestImport_Enum!]!
     optEnumArray: [TestImport_Enum]
-  ): TestImport_Object
+  ): TestImport_Object @env(required: true)
 
   anotherMethod(
     arg: [String!]!
@@ -187,4 +201,15 @@ enum TestImport_Enum @imported(
 }
 
 ### Imported Objects END ###
-`;
+
+### Imported Envs START ###
+
+type TestImport_Env @imported(
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
+  nativeType: "Env"
+) {
+  enviroProp: String!
+}
+
+### Imported Envs END ###`;

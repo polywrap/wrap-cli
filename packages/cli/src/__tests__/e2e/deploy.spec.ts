@@ -79,7 +79,7 @@ const setup = async (domainNames: string[]) => {
     const result = await client.invoke({
       uri: ensWrapperUri,
       method: "registerDomainAndSubdomainsRecursively",
-      input: {
+      args: {
         domain: domainName,
         owner: signer.address,
         registrarAddress,
@@ -121,7 +121,7 @@ describe("e2e tests for deploy command", () => {
     await stopTestEnvironment();
   });
 
-  test("Should show help text", async () => {
+  it("Should show help text", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
         args: ["deploy", "--help"],
@@ -135,7 +135,7 @@ describe("e2e tests for deploy command", () => {
     expect(clearStyle(output)).toEqual(HELP);
   });
 
-  test("Successfully deploys the project", async () => {
+  it("Should deploy the project successfully", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI(
       {
         args: ["deploy"],
@@ -157,7 +157,7 @@ describe("e2e tests for deploy command", () => {
     );
   });
 
-  test("Should show warning if no manifest ext is found in deploy package", async () => {
+  it("Should show warning if no manifest ext is found in deploy package", async () => {
     const { exitCode: code, stdout: output } = await runCLI(
       {
         args: ["deploy"],
@@ -177,7 +177,7 @@ describe("e2e tests for deploy command", () => {
     );
   });
 
-  test("Throws if manifest ext exists and config property is invalid", async () => {
+  it("Should throw if manifest ext exists and config property is invalid", async () => {
     const { exitCode: code, stderr } = await runCLI(
       {
         args: ["deploy"],
@@ -192,7 +192,7 @@ describe("e2e tests for deploy command", () => {
     expect(sanitizedErr).toContain("domainName is not of a type(s) string")
   });
 
-  test("Throws and stops chain if error is found", async () => {
+  it("Should throw and stop chain if error is found", async () => {
     const { exitCode: code, stdout: output, stderr } = await runCLI(
       {
         args: ["deploy"],
@@ -217,7 +217,7 @@ describe("e2e tests for deploy command", () => {
     );
   });
 
-  test("Throws if environment variable is not loaded but defined in manifest", async () => {
+  it("Should throw if environment variable is not loaded but defined in manifest", async () => {
     const { exitCode: code, stderr } = await runCLI(
       {
         args: ["deploy"],

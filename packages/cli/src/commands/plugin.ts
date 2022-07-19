@@ -6,30 +6,28 @@ import {
   defaultPluginManifest,
   outputManifest,
   intlMsg,
-  getTestEnvProviders,
   parsePluginCodegenDirOption,
   parsePluginManifestFileOption,
   parsePluginPublishDirOption,
+  parseClientConfigOption,
 } from "../lib";
 
 import { ComposerFilter } from "@polywrap/schema-compose";
 import { writeFileSync } from "@polywrap/os-js";
 import path from "path";
 import fs from "fs";
+import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 
 const defaultPublishDir = "./build";
 const defaultCodegenDir = "./wrap";
 const pathStr = intlMsg.commands_plugin_options_path();
 const defaultManifestStr = defaultPluginManifest.join(" | ");
-const nodeStr = intlMsg.commands_plugin_options_i_node();
-const addrStr = intlMsg.commands_plugin_options_e_address();
 
 type PluginCommandOptions = {
   manifestFile: string;
   publishDir: string;
   codegenDir: string;
-  ipfs?: string;
-  ens?: string;
+  clientConfig: Partial<PolywrapClientConfig>;
 };
 
 export const plugin: Command = {
@@ -54,22 +52,22 @@ export const plugin: Command = {
         })}`
       )
       .option(
-        `-c, --codegen-dir <${pathStr}>`,
+        `-g, --codegen-dir <${pathStr}>`,
         `${intlMsg.commands_plugin_options_codegen({
           default: defaultCodegenDir,
         })}`
       )
       .option(
-        `-i, --ipfs [<${nodeStr}>]`,
-        `${intlMsg.commands_plugin_options_i()}`
-      )
-      .option(
-        `-e, --ens [<${addrStr}>]`,
-        `${intlMsg.commands_plugin_options_e()}`
+        `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
+        `${intlMsg.commands_common_options_config()}`
       )
       .action(async (options) => {
         await run({
           ...options,
+          clientConfig: await parseClientConfigOption(
+            options.clientConfig,
+            undefined
+          ),
           manifestFile: parsePluginManifestFileOption(
             options.manifestFile,
             undefined
@@ -87,10 +85,10 @@ export const plugin: Command = {
   },
 };
 async function run(options: PluginCommandOptions) {
-  const { ipfs, ens, manifestFile, codegenDir, publishDir } = options;
+  const { manifestFile, codegenDir, publishDir, clientConfig } = options;
 
-  const { ipfsProvider, ethProvider } = await getTestEnvProviders(ipfs);
-  const ensAddress: string | undefined = ens;
+  // Get Client
+  const client = new PolywrapClient(clientConfig);
 
   // Plugin project
   const project = new PluginProject({
@@ -102,9 +100,7 @@ async function run(options: PluginCommandOptions) {
 
   const schemaComposer = new SchemaComposer({
     project,
-    ipfsProvider,
-    ethProvider,
-    ensAddress,
+    client,
   });
 
   let result = false;

@@ -5,9 +5,9 @@ export enum ValidationFailReason {
   InvalidBuildManifest,
   InvalidMetaManifest,
   FileTooLarge,
-  WrapperTooLarge,
+  PackageTooLarge,
   ModuleTooLarge,
-  InvalidSchema,
-  SchemaNotFound,
+  InvalidAbi,
+  AbiNotFound,
   TooManyFiles,
 }

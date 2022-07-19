@@ -1,0 +1,13 @@
+{
+  "stdout": [
+    "Artifacts written to ./build from the image `polywrap-build-env-",
+    "WRAP manifest written in ./build",
+    "docker rmi polywrap-build-env-",
+    "docker buildx rm polywrap-build-env-"
+  ],
+  "exitCode": 0,
+  "files": [
+    ".polywrap/wasm/build/image/cache/index.json",
+    ".polywrap/wasm/build/image/cache/blobs/sha256/"
+  ]
+}

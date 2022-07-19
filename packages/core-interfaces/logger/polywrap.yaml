@@ -1,7 +1,0 @@
-format: 0.0.1-prealpha.7
-name: Logger
-repository: https://github.com/web3-api/monorepo
-language: interface
-modules:
-  query:
-    schema: ./src/query.graphql

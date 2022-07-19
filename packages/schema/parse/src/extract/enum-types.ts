@@ -1,4 +1,4 @@
-import { TypeInfo, EnumDefinition, createEnumDefinition } from "../typeInfo";
+import { Abi, EnumDefinition, createEnumDefinition } from "../abi";
 
 import { ASTVisitor, DirectiveNode, EnumTypeDefinitionNode } from "graphql";
 
@@ -30,6 +30,6 @@ const visitorEnter = (enumTypes: EnumDefinition[]) => ({
   },
 });
 
-export const getEnumTypesVisitor = (typeInfo: TypeInfo): ASTVisitor => ({
-  enter: visitorEnter(typeInfo.enumTypes),
+export const getEnumTypesVisitor = (abi: Abi): ASTVisitor => ({
+  enter: visitorEnter(abi.enumTypes),
 });

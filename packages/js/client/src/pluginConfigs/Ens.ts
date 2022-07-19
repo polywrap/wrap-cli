@@ -2,10 +2,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable prettier/prettier */
 
-/// Types generated from @polywrap/ens-plugin-js build files:
+/// Types generated from @polywrap/ens-resolver-plugin-js build files:
 /// build/index.d.ts
 
-export interface EnsPluginConfig extends Record<string, unknown> {
+export interface EnsResolverPluginConfig {
   addresses?: Addresses;
 }
 

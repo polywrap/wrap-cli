@@ -1,8 +1,8 @@
-format: 0.0.1-prealpha.3
+format: 0.1.0
 name: Ipfs
 language: plugin/typescript
 module: ./src/index.ts
 schema: ./src/schema.graphql
 import_redirects:
-  - uri: "ens/uri-resolver.core.polywrap.eth"
-    schema: ../../../core-interfaces/uri-resolver/src/query.graphql
+  - uri: "ens/ipfs.polywrap.eth"
+    schema: ../../../interfaces/ipfs/build/schema.graphql

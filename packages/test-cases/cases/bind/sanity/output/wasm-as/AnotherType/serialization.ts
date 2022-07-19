@@ -4,7 +4,7 @@ import {
   Write,
   WriteSizer,
   WriteEncoder,
-  Nullable,
+  Option,
   BigInt,
   BigNumber,
   JSON,
@@ -28,7 +28,7 @@ export function writeAnotherType(writer: Write, type: AnotherType): void {
   writer.writeMapLength(3);
   writer.context().push("prop", "string | null", "writing property");
   writer.writeString("prop");
-  writer.writeNullableString(type.prop);
+  writer.writeOptionalString(type.prop);
   writer.context().pop();
   writer.context().push("circular", "Types.CustomType | null", "writing property");
   writer.writeString("circular");
@@ -40,7 +40,7 @@ export function writeAnotherType(writer: Write, type: AnotherType): void {
   writer.context().pop();
   writer.context().push("const", "string | null", "writing property");
   writer.writeString("const");
-  writer.writeNullableString(type.m_const);
+  writer.writeOptionalString(type.m_const);
   writer.context().pop();
 }
 
@@ -64,7 +64,7 @@ export function readAnotherType(reader: Read): AnotherType {
     reader.context().push(field, "unknown", "searching for property type");
     if (field == "prop") {
       reader.context().push(field, "string | null", "type found, reading property");
-      _prop = reader.readNullableString();
+      _prop = reader.readOptionalString();
       reader.context().pop();
     }
     else if (field == "circular") {
@@ -78,7 +78,7 @@ export function readAnotherType(reader: Read): AnotherType {
     }
     else if (field == "const") {
       reader.context().push(field, "string | null", "type found, reading property");
-      _const = reader.readNullableString();
+      _const = reader.readOptionalString();
       reader.context().pop();
     }
     reader.context().pop();

@@ -1,9 +1,0 @@
-mutation SetData($address: String!, $value: Int!) {
-  setData(
-    address: $address
-    value: $value
-    connection: {
-      networkNameOrChainId: $network
-    }
-  )
-}

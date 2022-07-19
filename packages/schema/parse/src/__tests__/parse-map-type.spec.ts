@@ -1,31 +1,42 @@
-import { parseCurrentType, parseMapType, toGraphQLType } from "../extract/utils/map-utils";
+import {
+  createMapDefinition,
+  createMapKeyDefinition,
+  createScalarDefinition,
+  createUnresolvedObjectOrEnumRef,
+} from "../abi";
+import {
+  parseCurrentType,
+  parseMapType,
+  toGraphQLType,
+} from "../extract/utils/map-utils";
 
 describe("parseMapType", () => {
   test("Map<String, Int>", () => {
     const result = parseMapType("Map<String, Int>");
-    expect(result).toMatchObject({
-      type: "Map<String, Int>",
-      key: {
-        type: "String",
-      },
-      value: {
-        type: "Int",
-      },
-    });
+    expect(result).toMatchObject(
+      createMapDefinition({
+        type: "Map<String, Int>",
+        key: createMapKeyDefinition({ type: "String", required: true }),
+        value: createScalarDefinition({ type: "Int" }),
+      })
+    );
   });
 
   test("Map<String, CustomType!>", () => {
     const result = parseMapType("Map<String, CustomType!>");
-    expect(result).toMatchObject({
-      type: "Map<String, CustomType>",
-      key: {
-        type: "String",
-      },
-      value: {
-        type: "CustomType",
-        required: true,
-      },
-    });
+    expect(result).toMatchObject(
+      createMapDefinition({
+        type: "Map<String, CustomType>",
+        key: createMapKeyDefinition({
+          type: "String",
+          required: true,
+        }),
+        value: createUnresolvedObjectOrEnumRef({
+          type: "CustomType",
+          required: true,
+        }),
+      })
+    );
   });
 
   test("Map<Int, Array<String>!>", () => {
@@ -44,7 +55,7 @@ describe("parseMapType", () => {
           type: "String",
         },
         required: true,
-      }
+      },
     });
   });
 
@@ -61,7 +72,7 @@ describe("parseMapType", () => {
           type: "String",
         },
         required: true,
-      }
+      },
     });
   });
 
@@ -85,7 +96,7 @@ describe("parseMapType", () => {
       },
       required: true,
     });
-  })
+  });
 
   test("Map<CustomType, String!>", () => {
     expect(() => parseMapType("Map<CustomType, String!>")).toThrow(
@@ -93,7 +104,6 @@ describe("parseMapType", () => {
     );
   });
 });
-
 
 describe("toGraphQLType", () => {
   test("Map<String, Int>", () => {
@@ -115,7 +125,7 @@ describe("toGraphQLType", () => {
     const result = toGraphQLType("Array<String!>!");
     expect(result).toBe("[String]");
   });
-})
+});
 
 describe("parseCurrentType", () => {
   test("Map<String, Int>", () => {
@@ -132,7 +142,7 @@ describe("parseCurrentType", () => {
     expect(result).toMatchObject({
       currentType: "Map",
       subType: "String, CustomType!",
-      required: false
+      required: false,
     });
   });
 
@@ -161,7 +171,7 @@ describe("parseCurrentType", () => {
       subType: "String!, Map<String!, Int!>!",
       required: true,
     });
-  })
+  });
 
   test("CustomType!", () => {
     const result = parseCurrentType("CustomType!");

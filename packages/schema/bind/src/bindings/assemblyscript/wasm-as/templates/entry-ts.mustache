@@ -1,8 +1,6 @@
 import {
   wrap_invoke_args,
   wrap_invoke,
-  wrap_load_env,
-  wrap_sanitize_env,
   wrap_abort,
   InvokeArgs
 } from "@polywrap/wasm-as";
@@ -16,16 +14,8 @@ import {
 } from "./{{type}}/wrapped";
 {{/methods.length}}
 {{/moduleType}}
-{{#envType.sanitized}}
-import {
-  env
-} from "./env";
-import {
-  Env
-} from "./Env";
-{{/envType.sanitized}}
 
-export function _wrap_invoke(method_size: u32, args_size: u32): bool {
+export function _wrap_invoke(method_size: u32, args_size: u32, env_size: u32): bool {
   const args: InvokeArgs = wrap_invoke_args(
     method_size,
     args_size
@@ -34,28 +24,15 @@ export function _wrap_invoke(method_size: u32, args_size: u32): bool {
   {{#moduleType}}
   {{#methods}}
   {{^first}}else {{/first}}if (args.method == "{{name}}") {
-    return wrap_invoke(args, {{name}}Wrapped);
+    return wrap_invoke(args, env_size, {{name}}Wrapped);
   }
   {{/methods}}
   {{/moduleType}}
   else {
-    return wrap_invoke(args, null);
+    return wrap_invoke(args, env_size, null);
   }
 }
 
-{{#envType.sanitized}}
-export function _wrap_load_env(env_size: u32): void {
-  const envBuf = wrap_load_env(env_size);
-  env = Env.fromBuffer(envBuf);
-}
-
-{{/envType.sanitized}}
-{{#envType.client}}
-export function _wrap_sanitize_env(args_size: u32): void {
-  wrap_sanitize_env(args_size, sanitizeEnvWrapped);
-}
-
-{{/envType.client}}
 export function wrapAbort(
   msg: string | null,
   file: string | null,

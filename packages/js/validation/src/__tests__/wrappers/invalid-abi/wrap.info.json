@@ -1,0 +1,58 @@
+{
+  "name": "test",
+  "type": "wasm",
+  "version": "0.1.0",
+  "abi": {
+    "objectTypes": [],
+    "enumTypes": [],
+    "interfaceTypes": [],
+    "importedObjectTypes": [],
+    "importedModuleTypes": [],
+    "importedEnumTypes": [],
+    "importedEnvTypes": [
+      {
+        "foo": "bar"
+      }
+    ],
+    "moduleType": {
+      "type": "Module",
+      "kind": 128,
+      "methods": [
+        {
+          "type": "Method",
+          "name": "test",
+          "required": true,
+          "kind": 64,
+          "arguments": [
+            {
+              "type": "String",
+              "name": "arg",
+              "required": true,
+              "kind": 34,
+              "scalar": {
+                "type": "String",
+                "name": "arg",
+                "required": true,
+                "kind": 4
+              }
+            }
+          ],
+          "return": {
+            "type": "String",
+            "name": "test",
+            "required": true,
+            "kind": 34,
+            "scalar": {
+              "type": "String",
+              "name": "test",
+              "required": true,
+              "kind": 4
+            }
+          }
+        }
+      ],
+      "imports": [],
+      "interfaces": []
+    }
+  }
+}

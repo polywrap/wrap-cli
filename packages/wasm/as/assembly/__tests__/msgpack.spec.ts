@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-inferrable-types */
 
 import {
-  Nullable,
   Read,
   ReadDecoder,
   Write,
@@ -11,6 +10,7 @@ import {
   BigInt,
   BigNumber,
 } from "../";
+import { Option } from "as-container";
 
 class Sanity {
   nil: string | null = "null";
@@ -21,8 +21,8 @@ class Sanity {
   uint16: u16;
   uint32: u32;
   boolean: bool;
-  optUint32: Nullable<u32> = new Nullable<u32>();
-  optBool: Nullable<bool> = new Nullable<bool>();
+  optUint32: Option<u32> = Option.None<u32>();
+  optBool: Option<bool> = Option.None<bool>();
   float32: f32;
   float64: f64;
   str: string = "";
@@ -49,8 +49,8 @@ class Sanity {
     this.uint16 = 65535;
     this.uint32 = 4294967295;
     this.boolean = true;
-    this.optUint32 = Nullable.fromValue<u32>(234234234);
-    this.optBool = Nullable.fromValue<bool>(true);
+    this.optUint32 = Option.Some<u32>(234234234);
+    this.optBool = Option.Some<bool>(true);
     this.float32 = 3.40282344818115234375;
     this.float64 = 3124124512.598273468017578125;
     this.str = "Hello, world!";
@@ -101,7 +101,7 @@ class Sanity {
 function serializeSanity(writer: Write, type: Sanity): void {
   writer.writeMapLength(23);
   writer.writeString("nil");
-  writer.writeNullableString(type.nil);
+  writer.writeOptionalString(type.nil);
   writer.writeString("int8");
   writer.writeInt8(type.int8);
   writer.writeString("int16");
@@ -117,9 +117,9 @@ function serializeSanity(writer: Write, type: Sanity): void {
   writer.writeString("boolean");
   writer.writeBool(type.boolean);
   writer.writeString("optUint32");
-  writer.writeNullableUInt32(type.optUint32);
+  writer.writeOptionalUInt32(type.optUint32);
   writer.writeString("optBool");
-  writer.writeNullableBool(type.optBool);
+  writer.writeOptionalBool(type.optBool);
   writer.writeString("float32");
   writer.writeFloat32(type.float32);
   writer.writeString("float64");
@@ -174,7 +174,7 @@ function deserializeSanity(reader: Read, type: Sanity): void {
     const field = reader.readString();
 
     if (field == "nil") {
-      type.nil = reader.readNullableString();
+      type.nil = reader.readOptionalString();
     } else if (field == "int8") {
       type.int8 = reader.readInt8();
     } else if (field == "int16") {
@@ -190,9 +190,9 @@ function deserializeSanity(reader: Read, type: Sanity): void {
     } else if (field == "boolean") {
       type.boolean = reader.readBool();
     } else if (field == "optUint32") {
-      type.optUint32 = reader.readNullableUInt32();
+      type.optUint32 = reader.readOptionalUInt32();
     } else if (field == "optBool") {
-      type.optBool = reader.readNullableBool();
+      type.optBool = reader.readOptionalBool();
     } else if (field == "float32") {
       type.float32 = reader.readFloat32();
     } else if (field == "float64") {
@@ -254,7 +254,7 @@ function deserializeWithOverflow(reader: Read, type: Sanity): void {
     const field = reader.readString();
 
     if (field == "nil") {
-      type.nil = reader.readNullableString();
+      type.nil = reader.readOptionalString();
     } else if (field == "int8") {
       type.int8 = <i8>reader.readInt16();
     } else if (field == "int16") {
@@ -270,9 +270,9 @@ function deserializeWithOverflow(reader: Read, type: Sanity): void {
     } else if (field == "boolean") {
       type.boolean = reader.readBool();
     } else if (field == "optUint32") {
-      type.optUint32 = reader.readNullableUInt32();
+      type.optUint32 = reader.readOptionalUInt32();
     } else if (field == "optBool") {
-      type.optBool = reader.readNullableBool();
+      type.optBool = reader.readOptionalBool();
     } else if (field == "float32") {
       type.float32 = <f32>reader.readFloat64();
     } else if (field == "float64") {
@@ -320,7 +320,7 @@ function deserializeWithInvalidTypes(reader: Read, type: Sanity): void {
     const field = reader.readString();
 
     if (field == "nil") {
-      type.nil = reader.readNullableString();
+      type.nil = reader.readOptionalString();
     } else if (field == "int8") {
       type.str = reader.readString();
     } else if (field == "int8") {
@@ -338,9 +338,9 @@ function deserializeWithInvalidTypes(reader: Read, type: Sanity): void {
     } else if (field == "boolean") {
       type.boolean = reader.readBool();
     } else if (field == "optUint32") {
-      type.optUint32 = reader.readNullableUInt32();
+      type.optUint32 = reader.readOptionalUInt32();
     } else if (field == "optBool") {
-      type.optBool = reader.readNullableBool();
+      type.optBool = reader.readOptionalBool();
     } else if (field == "float32") {
       type.float32 = reader.readFloat32();
     } else if (field == "float64") {

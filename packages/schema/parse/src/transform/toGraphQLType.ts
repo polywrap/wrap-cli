@@ -1,4 +1,4 @@
-import { TypeInfoTransforms } from ".";
+import { AbiTransforms } from ".";
 import {
   GenericDefinition,
   AnyDefinition,
@@ -6,7 +6,7 @@ import {
   MethodDefinition,
   DefinitionKind,
   MapDefinition,
-} from "../typeInfo";
+} from "../abi";
 
 function applyRequired(type: string, required: boolean | null): string {
   return `${type}${required ? "!" : ""}`;
@@ -87,7 +87,10 @@ export function toGraphQL(def: GenericDefinition, prefixed = false): string {
         );
       }
       return applyRequired(
-        `Map<${toGraphQL(map.key, prefixed)}, ${anyToGraphQL(map, prefixed)}>`,
+        `Map<${toGraphQL(map.key, prefixed)}, ${toGraphQL(
+          map.value,
+          prefixed
+        )}>`,
         map.required
       );
     }
@@ -130,7 +133,7 @@ export function toPrefixedGraphQL(def: GenericDefinition): string {
   return toGraphQL(def, true);
 }
 
-export const toPrefixedGraphQLType: TypeInfoTransforms = {
+export const toPrefixedGraphQLType: AbiTransforms = {
   enter: {
     GenericDefinition: (def: GenericDefinition) => ({
       ...def,
@@ -139,7 +142,7 @@ export const toPrefixedGraphQLType: TypeInfoTransforms = {
   },
 };
 
-export const toGraphQLType: TypeInfoTransforms = {
+export const toGraphQLType: AbiTransforms = {
   enter: {
     GenericDefinition: (def: GenericDefinition) => ({
       ...def,

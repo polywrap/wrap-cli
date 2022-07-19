@@ -1,4 +1,4 @@
-import { TypeInfo } from "../typeInfo";
+import { Abi } from "../abi";
 
 import path from "path";
 import { readdirSync, Dirent } from "fs";
@@ -14,7 +14,7 @@ const root = GetPathToParseTestFiles();
 export type TestCase = {
   name: string;
   input: string;
-  output: TypeInfo;
+  output: Abi;
 };
 
 export type TestCases = {
@@ -71,8 +71,8 @@ async function importCase(
   // Fetch the input schema
   const input = readFileIfExists("input.graphql", directory);
 
-  // Fetch the output TypeInfo
-  const output = await readNamedExportIfExists<TypeInfo>("typeInfo", "output.ts", directory);
+  // Fetch the output Abi
+  const output = await readNamedExportIfExists<Abi>("abi", "output.ts", directory);
 
   if (!input) {
     console.error(`Missing input file "input.graphql" for test case "${name}" at ${directory}`);

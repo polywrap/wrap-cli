@@ -32,6 +32,8 @@ directive @enabled_interface on OBJECT
 
 directive @annotate(type: String!) on FIELD
 
+directive @env(required: Boolean!) on FIELD_DEFINITION
+
 """
 CustomEnum comment
 """
@@ -85,7 +87,10 @@ optStr comment
   enum: CustomEnum!
   enumArray: [CustomEnum!]!,
   optEnumArray: [CustomEnum],
-  map1: Map @annotate(type: "Map<String, Int>")
+  map: Map! @annotate(type: "Map<String!, Int>!")
+  mapOfArr: Map! @annotate(type: "Map<String!, [Int!]!>!")
+  mapOfObj: Map! @annotate(type: "Map<String!, AnotherType!>!")
+  mapOfArrOfObj: Map! @annotate(type: "Map<String!, [AnotherType!]!>!")
 }
 
 """
@@ -117,11 +122,6 @@ type Env {
   propM: Int!
 }
 
-type ClientEnv {
-  prop: String!
-  propM: String
-}
-
 """
 ImplementationObject comment
 """
@@ -149,7 +149,6 @@ type Module implements Interface_Module @imports(
   uri: "testimport.uri.eth",
   namespace: "TestImport",
 ) {
-  sanitizeEnv(env: ClientEnv!): Env!
 """
 moduleMethod comment
 """
@@ -195,6 +194,14 @@ abstractMethod comment
   transformMap(
     map: Map @annotate(type: "Map<String!, Int!>")
   ): Map @annotate(type: "Map<String!, Int!>")
+
+  methodRequireEnv(
+    arg: String!
+  ): Env! @env(required: true)
+
+  methodOptionalEnv(
+    arg: String!
+  ): Env @env(required: false)
 }
 
 """
@@ -231,6 +238,14 @@ uArrayArray comment
     enum: TestImport_Enum!
     optEnum: TestImport_Enum
   ): TestImport_Enum!
+
+  envMethod(
+    arg: String!
+  ): TestImport_Env! @env(required: true)
+
+  optEnvMethod(
+    arg: String!
+  ): TestImport_Env @env(required: false)
 }
 
 """
@@ -276,6 +291,17 @@ enum TestImport_Enum @imported(
 ) {
   TEXT
   BYTES
+}
+
+"""
+TestImport_Env comment
+"""
+type TestImport_Env @imported(
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
+  nativeType: "Env"
+) {
+  envProp: UInt8!
 }
 
 """

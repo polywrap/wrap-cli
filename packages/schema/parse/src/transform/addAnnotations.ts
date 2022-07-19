@@ -1,7 +1,7 @@
 import { toGraphQL } from ".";
-import { PropertyDefinition, TypeInfoTransforms } from "..";
+import { PropertyDefinition, AbiTransforms } from "..";
 
-export const addAnnotations: TypeInfoTransforms = {
+export const addAnnotations: AbiTransforms = {
   enter: {
     PropertyDefinition: (def: PropertyDefinition): PropertyDefinition => {
       if (!def.map) return def;

@@ -8,19 +8,19 @@ if (reader.isNextString()) {
 }
 {{/required}}
 {{^required}}
-let value: Nullable<Types.{{type}}>;
+let value: Option<Types.{{type}}>;
 if (!reader.isNextNil()) {
   if (reader.isNextString()) {
-    value = Nullable.fromValue(
+    value = Option.Some(
       Types.get{{type}}Value(reader.readString())
     );
   } else {
-    value = Nullable.fromValue(
+    value = Option.Some(
       reader.readInt32()
     );
-    Types.sanitize{{type}}Value(value.value);
+    Types.sanitize{{type}}Value(value.unwrap());
   }
 } else {
-  value = Nullable.fromNull<Types.{{type}}>();
+  value = Option.None<Types.{{type}}>();
 }
 {{/required}}
