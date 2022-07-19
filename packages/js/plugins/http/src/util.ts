@@ -1,4 +1,4 @@
-import { Request, Response, ResponseTypeEnum, Header } from "./wrap";
+import { Request, Response, ResponseTypeEnum, Header } from "./wrap-man";
 
 import { AxiosResponse, AxiosRequestConfig } from "axios";
 
