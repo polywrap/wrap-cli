@@ -672,7 +672,7 @@ describe("resolveUri", () => {
     const result2 = await client.resolveUri(sourceUri);
 
     expect(result2.wrapper).toBeTruthy();
-    expect(result2.uri).toEqual(finalUri);
+    expect(result2.uri).toEqual(redirectedUri);
     expect(result2.error).toBeFalsy();
 
     expect(result2.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
@@ -726,7 +726,7 @@ describe("resolveUri", () => {
         sourceUri: redirectedUri,
         uriResolver: "CacheResolver",
         result: {
-          uri: finalUri,
+          uri: redirectedUri,
           wrapper: true,
         },
       },
