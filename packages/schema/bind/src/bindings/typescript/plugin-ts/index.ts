@@ -35,7 +35,11 @@ export const generateBinding: GenerateBindingFn = (
   };
   const output = result.output;
 
-  output.entries = renderTemplates(templatePath(""), { ...abi }, {});
+  output.entries = renderTemplates(
+    templatePath(""),
+    { ...abi, abi: JSON.stringify(options.abi, null, 2) },
+    {}
+  );
 
   return result;
 };

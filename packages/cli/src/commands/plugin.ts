@@ -96,7 +96,6 @@ async function run(options: PluginCommandOptions) {
   });
   await project.validate();
   const manifest = await project.getManifest();
-
   const schemaComposer = new SchemaComposer({
     project,
     client,
@@ -120,6 +119,7 @@ async function run(options: PluginCommandOptions) {
 
   // Output the built manifest
   const publishManifestPath = path.join(publishDir, "polywrap.plugin.json");
+  const publishAbiPath = path.join(publishDir, "wrap.info");
 
   if (!fs.existsSync(publishDir)) {
     fs.mkdirSync(publishDir);
@@ -129,7 +129,7 @@ async function run(options: PluginCommandOptions) {
     await schemaComposer.getComposedAbis(),
     manifest.name,
     "plugin",
-    publishDir
+    publishAbiPath
   );
 
   await outputManifest(manifest, publishManifestPath);

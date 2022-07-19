@@ -1,7 +1,7 @@
 /// NOTE: This is an auto-generated file.
 ///       All modifications will be overwritten.
 
-export * from "./info";
+export * from "./wrap.info";
 export * from "./manifest";
 export * from "./module";
 export * from "./types";
