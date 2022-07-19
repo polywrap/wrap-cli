@@ -3,13 +3,13 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { schema } from "./";
+import { abi } from "./";
 
 // @ts-ignore
 import { PluginPackageManifest, Uri } from "@polywrap/core-js";
 
 export const manifest: PluginPackageManifest = {
-  schema,
+  abi,
   implements: [
   ],
 };
