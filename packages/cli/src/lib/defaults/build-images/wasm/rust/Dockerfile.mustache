@@ -84,22 +84,7 @@ COPY {{.}} {{.}}
 RUN mv ./{{dir}}/Cargo.toml ./{{dir}}/Cargo-deps.toml
 COPY {{dir}} {{dir}}
 RUN mv ./{{dir}}/Cargo-deps.toml ./{{dir}}/Cargo.toml && rm ./target/release/deps/module*
-{{/polywrap_module}}
 
-{{#polywrap_linked_packages.length}}
-# Link any local packages
-{{#polywrap_linked_packages}}
-RUN PACKAGE_NAME={{name}}; \
-    {{#polywrap_module}}
-    toml set ./{{dir}}/Cargo.toml dependencies.$PACKAGE_NAME.path /linked-packages/$PACKAGE_NAME > ./{{dir}}/Cargo-local.toml && \
-    rm -rf ./{{dir}}/Cargo.toml && \
-    mv ./{{dir}}/Cargo-local.toml ./{{dir}}/Cargo.toml && \
-    {{/polywrap_module}}
-    true
-{{/polywrap_linked_packages}}
-{{/polywrap_linked_packages.length}}
-
-{{#polywrap_module}}
 # Actual build:
 
 # Ensure the Wasm module is configured to use imported memory
