@@ -844,77 +844,19 @@ export const runSimpleStorageTest = async (
   expect(set.data).toBeTruthy();
   expect(set.data?.indexOf("0x")).toBeGreaterThan(-1);
 
-  const getWithStringType = await client.query<{
-    getData: number;
-    secondGetData: number;
-    thirdGetData: number;
-  }>({
+  const getDataResult = await client.invoke<number>({
     uri: wrapperUri,
-    query: `
-        query {
-          getData(
-            address: "${address}"
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-          secondGetData: getData(
-            address: "${address}"
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-          thirdGetData: getData(
-            address: "${address}"
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-        }
-      `,
+    method: "getData",
+    args: {
+      address,
+      connection: {
+        networkNameOrChainId: "testnet",
+      },
+    },
   });
 
-  expect(getWithStringType.errors).toBeFalsy();
-  expect(getWithStringType.data).toBeTruthy();
-  expect(getWithStringType.data?.getData).toBe(55);
-  expect(getWithStringType.data?.secondGetData).toBe(55);
-  expect(getWithStringType.data?.thirdGetData).toBe(55);
-
-  const getWithUriType = await client.query<{
-    getData: number;
-    secondGetData: number;
-    thirdGetData: number;
-  }>({
-    uri: wrapperUri,
-    query: `
-        query {
-          getData(
-            address: "${address}"
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-          secondGetData: getData(
-            address: "${address}"
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-          thirdGetData: getData(
-            address: "${address}"
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-        }
-      `,
-  });
-
-  expect(getWithUriType.errors).toBeFalsy();
-  expect(getWithUriType.data).toBeTruthy();
-  expect(getWithUriType.data?.getData).toBe(55);
-  expect(getWithUriType.data?.secondGetData).toBe(55);
-  expect(getWithUriType.data?.thirdGetData).toBe(55);
+  expect(getDataResult.error).toBeFalsy();
+  expect(getDataResult.data).toEqual(55);
 };
 
 export const runSimpleEnvTest = async (
