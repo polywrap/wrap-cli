@@ -336,8 +336,8 @@ describe("wasm-rs test cases", () => {
   })
 });
 
-describe.only("Wasm-rs benchmarking", () => {
-  const wrapperPath = `${GetPathToTestWrappers()}/wasm-rs/bignumber-type`
+describe.skip("Wasm-rs benchmarking", () => {
+  const wrapperPath = `${GetPathToTestWrappers()}/wasm-rs/benchmarks`
   const wrapperUri = `fs/${wrapperPath}/build`
 
   let cacheFiles = new Map<string, string>();
@@ -424,12 +424,6 @@ describe.only("Wasm-rs benchmarking", () => {
 
     restoreSource();
 
-    expect(timeAfterSourceNew).toBeGreaterThan(timeAfterSourceCurrent);
-
-    await new Promise<void>((res) => {
-      setTimeout(() => {
-        res();
-      }, 100000);
-    })
+    expect(timeAfterSourceNew).toBeLessThan(timeAfterSourceCurrent);
   })
 })
