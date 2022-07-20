@@ -10,12 +10,17 @@ import {
   Env,
   isBuffer,
 } from "@polywrap/core-js";
-import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
+import {
+  deserializeWrapManifest,
+  WrapManifest,
+} from "@polywrap/wrap-manifest-types-js";
 import { msgpackDecode } from "@polywrap/msgpack-js";
 import { Tracer } from "@polywrap/tracing-js";
+import fs from "fs";
 
 export class PluginWrapper extends Wrapper {
   private _instance: PluginModule<unknown> | undefined;
+  private _info: WrapManifest | undefined = undefined;
 
   constructor(
     private _uri: Uri,
@@ -35,15 +40,37 @@ export class PluginWrapper extends Wrapper {
 
   public async getFile(
     _options: GetFileOptions,
-    _client: Client
+    _: Client
   ): Promise<Uint8Array | string> {
-    throw Error("client.getFile(...) is not implemented for Plugins.");
+    const file = await fs.promises.readFile(_options.path);
+    if (!file) {
+      throw Error(
+        `PluginWrapper: File was not found. \n Path: ${_options.path}`
+      );
+    }
+    return file;
   }
 
-  public async getManifest(_client: Client): Promise<WrapManifest> {
-    throw Error("client.getManifest(...) is not implemented for Plugins.");
-  }
+  @Tracer.traceMethod("WasmWrapper: getManifest")
+  public async getManifest(_: Client): Promise<WrapManifest> {
+    if (this._info !== undefined) {
+      return this._info;
+    }
 
+    const moduleManifest = "./wrap.info";
+
+    const data = (await this.getFile(
+      { path: moduleManifest },
+      _
+    )) as Uint8Array;
+
+    if (!data) {
+      throw Error(`Package manifest does not contain information`);
+    }
+
+    this._info = deserializeWrapManifest(data);
+    return this._info;
+  }
   @Tracer.traceMethod("PluginWrapper: invoke")
   public async invoke(
     options: InvokeOptions<Uri>,

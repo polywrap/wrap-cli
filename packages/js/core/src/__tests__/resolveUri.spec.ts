@@ -70,7 +70,7 @@ describe("resolveUri", () => {
       subscribe: <
         TData extends Record<string, unknown> = Record<string, unknown>
       >(
-        _options: SubscribeOptions<Record<string, unknown>, string | Uri>
+        _options: SubscribeOptions<string | Uri>
       ): Subscription<TData> => {
         return {
           frequency: 0,
@@ -182,7 +182,7 @@ describe("resolveUri", () => {
       plugin: {
         factory: () => ({} as PluginModule<{}>),
         manifest: {
-          schema: "",
+          abi: {},
           implements: [coreInterfaceUris.uriResolver],
         },
       },
@@ -382,7 +382,7 @@ describe("resolveUri", () => {
         plugin: {
           factory: () => ({} as PluginModule<{}>),
           manifest: {
-            schema: "",
+            abi: {},
             implements: [coreInterfaceUris.uriResolver],
           },
         },

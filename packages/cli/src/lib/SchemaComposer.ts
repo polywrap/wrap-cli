@@ -55,7 +55,7 @@ export class SchemaComposer {
       resolvers: {
         external: (uri: string) =>
           this._fetchExternalAbi(uri, import_redirects),
-        local: (path: string) => Promise.resolve(this._fetchLocalAbi(path)),
+        local: (path: string) => Promise.resolve(this._fetchLocalSchema(path)),
       },
     };
 
@@ -99,12 +99,12 @@ export class SchemaComposer {
     }
   }
 
-  private _fetchLocalAbi(abiPath: string) {
-    const currentPath = path.isAbsolute(abiPath)
-      ? abiPath
-      : path.join(this._config.project.getManifestDir(), abiPath);
-
-    const manifest = fs.readFileSync(currentPath);
-    return (deserializeWrapManifest(manifest).abi as unknown) as Abi;
+  private _fetchLocalSchema(schemaPath: string) {
+    return fs.readFileSync(
+      path.isAbsolute(schemaPath)
+        ? schemaPath
+        : path.join(this._config.project.getManifestDir(), schemaPath),
+      "utf-8"
+    );
   }
 }

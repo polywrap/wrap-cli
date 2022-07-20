@@ -55,7 +55,7 @@ describe("plugin-wrapper", () => {
         map: new Map().set("a", 1).set("b", 2)
       }),
       manifest: {
-        schema: ``,
+        abi: {},
         implements: [],
       },
     };
@@ -71,7 +71,7 @@ describe("plugin-wrapper", () => {
           plugin: {
             factory: () => ({} as PluginModule<{}>),
             manifest: {
-              schema: "",
+              abi: {},
               implements: [],
             },
           },
@@ -82,32 +82,6 @@ describe("plugin-wrapper", () => {
     const pluginUris = client.getPlugins().map((x) => x.uri.uri);
 
     expect(pluginUris).toEqual([implementationUri].concat(defaultPlugins));
-  });
-
-  test("getSchema -- plugin schema", async () => {
-    const testPluginUri = "ens/test-plugin.eth";
-    const pluginSchema = "type Module { someMethod(arg: String): String }";
-
-    const pluginPackage = {
-      factory: () => ({} as PluginModule<{}>),
-      manifest: {
-        schema: pluginSchema,
-        implements: [],
-      },
-    };
-
-    const client = new PolywrapClient({
-      plugins: [
-        {
-          uri: testPluginUri,
-          plugin: pluginPackage,
-        },
-      ],
-    });
-
-    const schema: string = await client.getSchema(testPluginUri);
-
-    expect(schema).toStrictEqual(pluginSchema);
   });
 
   it("plugin map types", async () => {
@@ -162,7 +136,7 @@ describe("plugin-wrapper", () => {
     const pluginPackage = {
       factory: () => ({} as PluginModule<{}>),
       manifest: {
-        schema: "",
+        abi: {},
         implements: [],
       },
     };
@@ -193,7 +167,7 @@ describe("plugin-wrapper", () => {
     const pluginPackage1 = {
       factory: () => ({} as PluginModule<{}>),
       manifest: {
-        schema: "",
+        abi: {},
         implements: [],
       },
     };
@@ -201,7 +175,7 @@ describe("plugin-wrapper", () => {
     const pluginPackage2 = {
       factory: () => ({} as PluginModule<{}>),
       manifest: {
-        schema: "",
+        abi: {},
         implements: [],
       },
     };

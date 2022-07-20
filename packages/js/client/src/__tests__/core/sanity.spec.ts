@@ -1,6 +1,5 @@
 import {
   coreInterfaceUris,
-  PluginModule
 } from "@polywrap/core-js";
 import {
   Uri,

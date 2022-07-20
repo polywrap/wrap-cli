@@ -73,7 +73,7 @@ describe("wasm-wrapper", () => {
     return {
       factory: () => new MockPlugin({}),
       manifest: {
-        schema: ``,
+        abi: ``,
         implements: [],
       },
     };
