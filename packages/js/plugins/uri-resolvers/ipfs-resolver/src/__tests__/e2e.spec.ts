@@ -39,9 +39,7 @@ describe("IPFS Plugin", () => {
         },
         {
           uri: "wrap://ens/ipfs-uri-resolver.polywrap.eth",
-          plugin: ipfsResolverPlugin({
-            provider: providers.ipfs
-          })
+          plugin: ipfsResolverPlugin({})
         }
       ]
     });
