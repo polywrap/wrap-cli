@@ -17,13 +17,13 @@ export const runAsyncifyTest = async (
 
   const expected = Array.from(new Array(40), (_, index) => index.toString());
 
-  expect(subsequentInvokes.errors).toBeFalsy();
+  expect(subsequentInvokes.error).toBeFalsy();
   expect(subsequentInvokes.data).toBeTruthy();
-  expect(subsequentInvokes.data?.subsequentInvokes).toEqual(expected);
+  expect(subsequentInvokes.data).toEqual(expected);
 
   const localVarMethod = await client.invoke<boolean>({
     uri: wrapperUri,
-    method: "localVarMethod"
+    method: "localVarMethod",
   });
 
   expect(localVarMethod.error).toBeFalsy();
@@ -32,21 +32,21 @@ export const runAsyncifyTest = async (
 
   const globalVarMethod = await client.invoke<boolean>({
     uri: wrapperUri,
-    method: "globalVarMethod"
+    method: "globalVarMethod",
   });
 
   expect(globalVarMethod.error).toBeFalsy();
   expect(globalVarMethod.data).toBeTruthy();
   expect(globalVarMethod.data).toEqual(true);
-  
+
   const largeStr = new Array(10000).join("polywrap ");
   const setDataWithLargeArgs = await client.invoke<string>({
     uri: wrapperUri,
     method: "setDataWithLargeArgs",
     args: {
-      value: largeStr
-    }
-  })
+      value: largeStr,
+    },
+  });
 
   expect(setDataWithLargeArgs.error).toBeFalsy();
   expect(setDataWithLargeArgs.data).toBeTruthy();
@@ -68,7 +68,7 @@ export const runAsyncifyTest = async (
       valueJ: "polywrap j",
       valueK: "polywrap k",
       valueL: "polywrap l",
-    }
+    },
   });
 
   expect(setDataWithManyArgs.error).toBeFalsy();
@@ -110,7 +110,7 @@ export const runAsyncifyTest = async (
       valueJ: createObj(10),
       valueK: createObj(11),
       valueL: createObj(12),
-    }
+    },
   });
 
   expect(setDataWithManyStructuredArgs.error).toBeFalsy();
@@ -231,7 +231,9 @@ export const runBytesTypeTest = async (client: PolywrapClient, uri: string) => {
 
   expect(response.error).toBeFalsy();
   expect(response.data).toBeTruthy();
-  expect(response.data).toEqual(new TextEncoder().encode("Argument Value Sanity!"));
+  expect(response.data).toEqual(
+    new TextEncoder().encode("Argument Value Sanity!")
+  );
 };
 
 export const runEnumTypesTest = async (client: PolywrapClient, uri: string) => {
@@ -271,7 +273,7 @@ export const runEnumTypesTest = async (client: PolywrapClient, uri: string) => {
   });
 
   expect(method1c.error).toBeTruthy();
-  expect(method1c.error.message).toMatch(
+  expect(method1c.error?.message).toMatch(
     /__wrap_abort: Invalid key for enum 'SanityEnum': INVALID/gm
   );
 
@@ -951,9 +953,7 @@ export const runSimpleEnvTest = async (
   expect(queryGetEnvNotSet.data?.getEnv).toBeUndefined();
   expect(queryGetEnvNotSet.errors).toBeTruthy();
   expect(queryGetEnvNotSet.errors?.length).toBe(1);
-  expect(queryGetEnvNotSet.errors?.[0].message).toContain(
-    "requiredInt: Int"
-  );
+  expect(queryGetEnvNotSet.errors?.[0].message).toContain("requiredInt: Int");
 
   const queryEnvIncorrect = await client.query({
     uri: wrapperUri,
@@ -985,19 +985,19 @@ export const runSimpleEnvTest = async (
   );
 };
 
-export const runComplexEnvs = async (client: PolywrapClient, wrapperUri: string) => {
-  const queryMethodRequireEnv = await client.query({
+export const runComplexEnvs = async (
+  client: PolywrapClient,
+  wrapperUri: string
+) => {
+  const queryMethodRequireEnv = await client.invoke({
     uri: wrapperUri,
-    query: `
-      query {
-        methodRequireEnv(
-          arg: "string"
-        )
-      }
-    `,
+    method: "methodRequireEnv",
+    args: {
+      arg: "string",
+    },
   });
-  expect(queryMethodRequireEnv.errors).toBeFalsy();
-  expect(queryMethodRequireEnv.data?.methodRequireEnv).toEqual({
+  expect(queryMethodRequireEnv.error).toBeFalsy();
+  expect(queryMethodRequireEnv.data).toEqual({
     str: "string",
     optFilledStr: "optional string",
     optStr: null,
@@ -1014,18 +1014,15 @@ export const runComplexEnvs = async (client: PolywrapClient, wrapperUri: string)
     array: [32, 23],
   });
 
-  const querySubinvokeEnvMethod = await client.query({
+  const querySubinvokeEnvMethod = await client.invoke({
     uri: wrapperUri,
-    query: `
-      query {
-        subinvokeEnvMethod(
-          arg: "string"
-        )
-      }
-    `,
+    method: "subinvokeEnvMethod",
+    args: {
+      arg: "string",
+    },
   });
-  expect(querySubinvokeEnvMethod.errors).toBeFalsy();
-  expect(querySubinvokeEnvMethod.data?.subinvokeEnvMethod).toEqual({
+  expect(querySubinvokeEnvMethod.error).toBeFalsy();
+  expect(querySubinvokeEnvMethod.data).toEqual({
     local: {
       str: "string",
       optFilledStr: "optional string",
@@ -1044,22 +1041,19 @@ export const runComplexEnvs = async (client: PolywrapClient, wrapperUri: string)
     },
     external: {
       externalArray: [1, 2, 3],
-      externalString: "iamexternal"
-    }
+      externalString: "iamexternal",
+    },
   });
 
-  const queryMethodRequireEnvModuleTime = await client.query({
+  const queryMethodRequireEnvModuleTime = await client.invoke({
     uri: wrapperUri,
-    query: `
-      query {
-        methodRequireEnv(
-          arg: "string"
-        )
-      }
-    `,
+    method: "methodRequireEnv",
+    args: {
+      arg: "string",
+    },
   });
-  expect(queryMethodRequireEnvModuleTime.errors).toBeFalsy();
-  expect(queryMethodRequireEnvModuleTime.data?.methodRequireEnv).toEqual({
+  expect(queryMethodRequireEnvModuleTime.error).toBeFalsy();
+  expect(queryMethodRequireEnvModuleTime.data).toEqual({
     str: "string",
     optFilledStr: "optional string",
     optStr: null,
@@ -1076,15 +1070,12 @@ export const runComplexEnvs = async (client: PolywrapClient, wrapperUri: string)
     array: [32, 23],
   });
 
-  const mockUpdatedEnv = await client.query({
+  const mockUpdatedEnv = await client.invoke({
     uri: wrapperUri,
-    query: `
-      query {
-        methodRequireEnv(
-          arg: "string"
-        )
-      }
-    `,
+    method: "methodRequireEnv",
+    args: {
+      arg: "string",
+    },
     config: {
       envs: [
         {
@@ -1104,8 +1095,8 @@ export const runComplexEnvs = async (client: PolywrapClient, wrapperUri: string)
       ],
     },
   });
-  expect(mockUpdatedEnv.errors).toBeFalsy();
-  expect(mockUpdatedEnv.data?.methodRequireEnv).toEqual({
+  expect(mockUpdatedEnv.error).toBeFalsy();
+  expect(mockUpdatedEnv.data).toEqual({
     str: "another string",
     optFilledStr: "optional string",
     optStr: null,
@@ -1121,4 +1112,4 @@ export const runComplexEnvs = async (client: PolywrapClient, wrapperUri: string)
     optEnum: null,
     array: [32, 23],
   });
-}
+};
