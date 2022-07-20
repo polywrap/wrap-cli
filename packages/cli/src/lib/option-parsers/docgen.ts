@@ -38,10 +38,10 @@ export function defaultDocgenManifestFileOption(): string {
 }
 
 export function parseDocgenDirOption(
-  codegenDir: string | undefined,
+  docgenDir: string | undefined,
   _: unknown
 ): string {
-  return codegenDir ? path.resolve(codegenDir) : path.resolve(defaultDocgenDir);
+  return docgenDir ? path.resolve(docgenDir) : path.resolve(defaultDocgenDir);
 }
 
 export function defaultDocgenDirOption(): string {

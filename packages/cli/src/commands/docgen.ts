@@ -41,7 +41,7 @@ const pathStr = intlMsg.commands_codegen_options_o_path();
 
 type DocgenCommandOptions = {
   manifestFile: string;
-  codegenDir: string;
+  docgenDir: string;
   clientConfig: Partial<PolywrapClientConfig>;
 };
 
@@ -81,7 +81,6 @@ export const docgen: Command = {
           Actions.JSDOC,
         ])
       )
-      .showHelpAfterError(true)
       .option(
         `-m, --manifest-file <${pathStr}>`,
         intlMsg.commands_docgen_options_m({
@@ -89,7 +88,7 @@ export const docgen: Command = {
         })
       )
       .option(
-        `-g, --codegen-dir <${pathStr}>`,
+        `-g, --docgen-dir <${pathStr}>`,
         intlMsg.commands_docgen_options_c({
           default: `${defaultDocgenDir}`,
         })
@@ -105,7 +104,7 @@ export const docgen: Command = {
             options.manifestFile,
             undefined
           ),
-          codegenDir: parseDocgenDirOption(options.codegenDir, undefined),
+          docgenDir: parseDocgenDirOption(options.docgenDir, undefined),
           clientConfig: await parseClientConfigOption(
             options.clientConfig,
             undefined
@@ -116,14 +115,14 @@ export const docgen: Command = {
 };
 
 async function run(command: DocType, options: DocgenCommandOptions) {
-  const { manifestFile, codegenDir, clientConfig } = options;
+  const { manifestFile, docgenDir, clientConfig } = options;
 
   const isAppManifest: boolean =
-    (<string>manifestFile).toLowerCase().endsWith("web3api.app.yaml") ||
-    (<string>manifestFile).toLowerCase().endsWith("web3api.app.yml");
+    (<string>manifestFile).toLowerCase().endsWith("polywrap.app.yaml") ||
+    (<string>manifestFile).toLowerCase().endsWith("polywrap.app.yml");
   const isPluginManifest: boolean =
-    (<string>manifestFile).toLowerCase().endsWith("web3api.plugin.yaml") ||
-    (<string>manifestFile).toLowerCase().endsWith("web3api.plugin.yml");
+    (<string>manifestFile).toLowerCase().endsWith("polywrap.plugin.yaml") ||
+    (<string>manifestFile).toLowerCase().endsWith("polywrap.plugin.yml");
 
   // Resolve custom script
   const customScript = require.resolve(commandToPathMap[command]);
@@ -155,14 +154,6 @@ async function run(command: DocType, options: DocgenCommandOptions) {
   }
   await project.validate();
 
-  // Resolve output directory
-  let codegenDirAbs: string;
-  if (codegenDir) {
-    codegenDirAbs = path.resolve(codegenDir);
-  } else {
-    codegenDirAbs = path.resolve(defaultDocgenDir);
-  }
-
   const schemaComposer = new SchemaComposer({
     project,
     client,
@@ -172,7 +163,7 @@ async function run(command: DocType, options: DocgenCommandOptions) {
     project,
     schemaComposer,
     customScript,
-    codegenDirAbs,
+    codegenDirAbs: docgenDir,
     omitHeader: true,
   });
 
