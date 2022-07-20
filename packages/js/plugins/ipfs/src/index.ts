@@ -6,10 +6,10 @@ import {
   Ipfs_Options,
   Ipfs_ResolveResult,
   manifest,
+  Env,
 } from "./wrap";
 import { IpfsClient } from "./utils/IpfsClient";
 import { execSimple, execFallbacks } from "./utils/exec";
-
 import { Client, PluginFactory } from "@polywrap/core-js";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention
@@ -21,49 +21,30 @@ const isNullOrUndefined = (arg: unknown) => {
 
 const getOptions = (
   args: Ipfs_Options | undefined | null,
-  timeout: number | null | undefined,
-  disableParallelRequests: boolean | null | undefined,
-  provider: string | null | undefined
+  env: Env
 ): Ipfs_Options => {
   const options = args || {};
 
   if (isNullOrUndefined(options.disableParallelRequests)) {
-    options.disableParallelRequests = disableParallelRequests;
+    options.disableParallelRequests = env.disableParallelRequests;
   }
 
   if (isNullOrUndefined(options.timeout)) {
-    options.timeout = timeout;
+    options.timeout = env.timeout;
   }
-  
+
   if (isNullOrUndefined(options.provider)) {
-    options.provider = provider;
+    options.provider = env.provider;
   }
-  
+
   return options;
 };
 
-export interface IpfsPluginConfig {
-  provider: string;
-  fallbackProviders?: string[];
-}
+type NoConfig = Record<string, never>;
 
-export class IpfsPlugin extends Module<IpfsPluginConfig> {
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore: initialized within setProvider
-  private _ipfs: IpfsClient;
-
-  constructor(config: IpfsPluginConfig) {
-    super(config);
-    this._ipfs = createIpfsClient(this.config.provider);
-  }
-
+export class IpfsPlugin extends Module<NoConfig> {
   public async cat(args: Args_cat, _client: Client): Promise<Buffer> {
-    const options = getOptions(
-      args.options,
-      this.env.timeouts?.cat,
-      this.env.disableParallelRequests,
-      this.env.provider
-    );
+    const options = getOptions(args.options, this.env);
 
     return await this._execWithOptions(
       "cat",
@@ -78,12 +59,8 @@ export class IpfsPlugin extends Module<IpfsPluginConfig> {
     args: Args_resolve,
     _client: Client
   ): Promise<Ipfs_ResolveResult | null> {
-    const options = getOptions(
-      args.options,
-      this.env.timeouts?.resolve,
-      this.env.disableParallelRequests,
-      this.env.provider
-    );
+    const options = getOptions(args.options, this.env);
+
     return await this._execWithOptions(
       "resolve",
       async (ipfs: IpfsClient, provider: string, options: unknown) => {
@@ -98,12 +75,7 @@ export class IpfsPlugin extends Module<IpfsPluginConfig> {
   }
 
   public async addFile(args: Args_addFile): Promise<string> {
-    const options = getOptions(
-      null,
-      this.env.timeouts?.addFile,
-      this.env.disableParallelRequests,
-      this.env.provider
-    );
+    const options = getOptions(null, this.env);
 
     return await this._execWithOptions(
       "add",
@@ -131,11 +103,13 @@ export class IpfsPlugin extends Module<IpfsPluginConfig> {
     ) => Promise<TReturn>,
     options?: Ipfs_Options
   ): Promise<TReturn> {
+    const defaultIpfsClient = createIpfsClient(this.env.provider);
+
     if (!options) {
       // Default behavior if no options are provided
       return await execSimple(
         operation,
-        this._ipfs,
+        defaultIpfsClient,
         this.config.provider,
         0,
         func
@@ -144,12 +118,9 @@ export class IpfsPlugin extends Module<IpfsPluginConfig> {
 
     const timeout = options.timeout || 0;
 
-    let providers = [
-      this.config.provider,
-      ...(this.config.fallbackProviders || []),
-    ];
-    let ipfs = this._ipfs;
-    let defaultProvider = this.config.provider;
+    let providers = [this.env.provider, ...(this.env.fallbackProviders || [])];
+    let ipfs = defaultIpfsClient;
+    let defaultProvider = this.env.provider;
 
     // Use the provider default override specified
     if (options.provider) {
@@ -172,9 +143,7 @@ export class IpfsPlugin extends Module<IpfsPluginConfig> {
   }
 }
 
-export const ipfsPlugin: PluginFactory<IpfsPluginConfig> = (
-  config: IpfsPluginConfig
-) => {
+export const ipfsPlugin: PluginFactory<NoConfig> = (config: NoConfig) => {
   return {
     factory: () => new IpfsPlugin(config),
     manifest,

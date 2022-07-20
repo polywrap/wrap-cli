@@ -40,7 +40,7 @@ export class IpfsResolverPlugin extends Module<NoConfig> {
         {
           cid: `${args.path}/${manifestSearchPattern}`,
           options: {
-            timeout: 5000,
+            timeout: this.env.timeouts?.tryResolveUri,
           },
         },
         _client
@@ -64,28 +64,31 @@ export class IpfsResolverPlugin extends Module<NoConfig> {
     client: Client
   ): Promise<Bytes | null> {
     try {
-      const resolveResult = await Ipfs_Module.resolve(
-        {
-          cid: args.path,
-          options: {
-            timeout: 5000,
+      if(!this.env.skipCheckIfExistsBeforeGetFile){
+        const resolveResult = await Ipfs_Module.resolve(
+          {
+            cid: args.path,
+            options: {
+              timeout: this.env.timeouts?.checkIfExists,
+            },
           },
-        },
-        client
-      );
-
-      const result = resolveResult.data;
-
-      if (!result) {
-        return null;
+          client
+        );
+  
+        const result = resolveResult.data;
+  
+        if (!result) {
+          return null;
+        }
       }
 
       const catResult = await Ipfs_Module.cat(
         {
-          cid: result.cid,
+          cid: args.path,
           options: {
-            provider: result.provider,
-            timeout: 20000,
+            //provider: result.provider,
+            //TODO - JureG: Provider!
+            timeout: this.env.timeouts?.getFile,
             disableParallelRequests: true,
           },
         },

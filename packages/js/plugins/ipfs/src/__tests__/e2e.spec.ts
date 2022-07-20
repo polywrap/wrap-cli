@@ -29,9 +29,15 @@ describe("IPFS Plugin", () => {
       plugins: [
         {
           uri: "wrap://ens/ipfs.polywrap.eth",
-          plugin: ipfsPlugin({
+          plugin: ipfsPlugin({}),
+        },
+      ],
+      envs: [
+        {
+          uri: "wrap://ens/ipfs.polywrap.eth",
+          env: {
             provider: providers.ipfs,
-          }),
+          },
         },
       ],
     });

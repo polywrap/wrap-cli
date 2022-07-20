@@ -29,16 +29,19 @@ export const getDefaultClientConfig = Tracer.traceFunc(
   "client-js: getDefaultClientConfig",
   (): ClientConfig<Uri> => {
     return {
-      envs: [],
+      envs: [{
+        uri: new Uri("wrap://ens/ipfs.polywrap.eth"),
+        env: {
+          provider: defaultIpfsProviders[0],
+          fallbackProviders: defaultIpfsProviders.slice(1),
+        }
+      }],
       redirects: [],
       plugins: [
         // IPFS is required for downloading Polywrap packages
         {
           uri: new Uri("wrap://ens/ipfs.polywrap.eth"),
-          plugin: ipfsPlugin({
-            provider: defaultIpfsProviders[0],
-            fallbackProviders: defaultIpfsProviders.slice(1),
-          }),
+          plugin: ipfsPlugin({}),
         },
         // ENS is required for resolving domain to IPFS hashes
         {
