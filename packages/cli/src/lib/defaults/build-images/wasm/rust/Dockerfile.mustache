@@ -81,9 +81,9 @@ RUN cargo build --manifest-path ./{{dir}}/Cargo.toml --release
 {{#include}}
 COPY {{.}} {{.}}
 {{/include}}
+RUN mv ./{{dir}}/Cargo.toml ./{{dir}}/Cargo-deps.toml
 COPY {{dir}} {{dir}}
-RUN rm ./target/release/deps/module*
-
+RUN mv ./{{dir}}/Cargo-deps.toml ./{{dir}}/Cargo.toml && rm ./target/release/deps/module*
 {{/polywrap_module}}
 
 {{#polywrap_linked_packages.length}}
@@ -101,21 +101,6 @@ RUN PACKAGE_NAME={{name}}; \
 
 {{#polywrap_module}}
 # Actual build:
-
-# Ensure the module at {{dir}} has the crate-type = ["cdylib"]
-RUN toml set ./{{dir}}/Cargo.toml lib.crate-type ["cdylib"] > ./{{dir}}/Cargo-local.toml && \
-    rm -rf ./{{dir}}/Cargo.toml && \
-    mv ./{{dir}}/Cargo-local.toml ./{{dir}}/Cargo.toml && \
-    true
-
-# Clean up artifacts left by the toml CLI program ("["cdylib"]" -> ["cdylib"])
-RUN sed -i 's/"\[cdylib\]"/\["cdylib"\]/g' ./{{dir}}/Cargo.toml
-
-# Ensure the package name = "module"
-RUN toml set ./{{dir}}/Cargo.toml package.name "module" > ./{{dir}}/Cargo-local.toml && \
-    rm -rf ./{{dir}}/Cargo.toml && \
-    mv ./{{dir}}/Cargo-local.toml ./{{dir}}/Cargo.toml && \
-    true
 
 # Ensure the Wasm module is configured to use imported memory
 ENV RUSTFLAGS="-C link-arg=-z -C link-arg=stack-size=65536 -C link-arg=--import-memory"
