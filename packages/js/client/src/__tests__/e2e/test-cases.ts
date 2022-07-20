@@ -928,8 +928,8 @@ export const runSimpleEnvTest = async (
       arg: "string",
     },
   });
-  expect(queryGetEnv.errors).toBeFalsy();
-  expect(queryGetEnv.data?.getEnv).toEqual({
+  expect(queryGetEnv.error).toBeFalsy();
+  expect(queryGetEnv.data).toEqual({
     str: "module string",
     requiredInt: 1,
   });
