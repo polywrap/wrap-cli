@@ -15,7 +15,11 @@ type Env {
     """
     Timeouts for methods
     """
-    timeouts: Timeouts
+    timeouts: Timeouts,
+    """
+    Disable parallel requests
+    """
+    disableParallelRequests: Boolean
 }
 
 type Module implements UriResolver_Module {

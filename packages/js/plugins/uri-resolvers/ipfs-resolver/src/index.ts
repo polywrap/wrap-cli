@@ -41,6 +41,7 @@ export class IpfsResolverPlugin extends Module<NoConfig> {
           cid: `${args.path}/${manifestSearchPattern}`,
           options: {
             timeout: this.env.timeouts?.tryResolveUri,
+            disableParallelRequests: this.env.disableParallelRequests
           },
         },
         _client
@@ -64,12 +65,15 @@ export class IpfsResolverPlugin extends Module<NoConfig> {
     client: Client
   ): Promise<Bytes | null> {
     try {
+      let provider: string | undefined = undefined;
+
       if(!this.env.skipCheckIfExistsBeforeGetFile){
         const resolveResult = await Ipfs_Module.resolve(
           {
             cid: args.path,
             options: {
               timeout: this.env.timeouts?.checkIfExists,
+              disableParallelRequests: this.env.disableParallelRequests
             },
           },
           client
@@ -80,16 +84,17 @@ export class IpfsResolverPlugin extends Module<NoConfig> {
         if (!result) {
           return null;
         }
+
+        provider = result.provider;
       }
 
       const catResult = await Ipfs_Module.cat(
         {
           cid: args.path,
           options: {
-            //provider: result.provider,
-            //TODO - JureG: Provider!
+            provider: provider,
             timeout: this.env.timeouts?.getFile,
-            disableParallelRequests: true,
+            disableParallelRequests: this.env.disableParallelRequests,
           },
         },
         client
