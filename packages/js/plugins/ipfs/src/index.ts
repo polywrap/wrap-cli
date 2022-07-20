@@ -5,7 +5,6 @@ import {
   Args_cat,
   Ipfs_Options,
   Ipfs_ResolveResult,
-  Env,
   manifest,
 } from "./wrap";
 import { IpfsClient } from "./utils/IpfsClient";
@@ -13,27 +12,33 @@ import { execSimple, execFallbacks } from "./utils/exec";
 
 import { Client, PluginFactory } from "@polywrap/core-js";
 
-//options:
-//  timeout
-//  disableParallelRequests
-//  provider
-
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention
 const createIpfsClient = require("@dorgjelli-test/ipfs-http-client-lite");
 
+const isNullOrUndefined = (arg: unknown) => {
+  return arg === undefined || arg === null;
+};
+
 const getOptions = (
   args: Ipfs_Options | undefined | null,
-  env: Env
+  timeout: number | null | undefined,
+  disableParallelRequests: boolean | null | undefined,
+  provider: string | null | undefined
 ): Ipfs_Options => {
   const options = args || {};
 
-  if (
-    options.disableParallelRequests === undefined ||
-    options.disableParallelRequests === null
-  ) {
-    options.disableParallelRequests = env.disableParallelRequests;
+  if (isNullOrUndefined(options.disableParallelRequests)) {
+    options.disableParallelRequests = disableParallelRequests;
   }
 
+  if (isNullOrUndefined(options.timeout)) {
+    options.timeout = timeout;
+  }
+  
+  if (isNullOrUndefined(options.provider)) {
+    options.provider = provider;
+  }
+  
   return options;
 };
 
@@ -53,12 +58,19 @@ export class IpfsPlugin extends Module<IpfsPluginConfig> {
   }
 
   public async cat(args: Args_cat, _client: Client): Promise<Buffer> {
+    const options = getOptions(
+      args.options,
+      this.env.timeouts?.cat,
+      this.env.disableParallelRequests,
+      this.env.provider
+    );
+
     return await this._execWithOptions(
       "cat",
       (ipfs: IpfsClient, _provider: string, options: unknown) => {
         return ipfs.cat(args.cid, options);
       },
-      args.options ?? undefined
+      options
     );
   }
 
@@ -66,7 +78,12 @@ export class IpfsPlugin extends Module<IpfsPluginConfig> {
     args: Args_resolve,
     _client: Client
   ): Promise<Ipfs_ResolveResult | null> {
-    const options = getOptions(args.options, this.env);
+    const options = getOptions(
+      args.options,
+      this.env.timeouts?.resolve,
+      this.env.disableParallelRequests,
+      this.env.provider
+    );
     return await this._execWithOptions(
       "resolve",
       async (ipfs: IpfsClient, provider: string, options: unknown) => {
@@ -81,15 +98,28 @@ export class IpfsPlugin extends Module<IpfsPluginConfig> {
   }
 
   public async addFile(args: Args_addFile): Promise<string> {
-    const result = await this._ipfs.add(new Uint8Array(args.data));
+    const options = getOptions(
+      null,
+      this.env.timeouts?.addFile,
+      this.env.disableParallelRequests,
+      this.env.provider
+    );
 
-    if (result.length === 0) {
-      throw Error(
-        `IpfsPlugin:add failed to add contents. Result of length 0 returned.`
-      );
-    }
+    return await this._execWithOptions(
+      "add",
+      async (ipfs: IpfsClient, provider: string, options: unknown) => {
+        const result = await ipfs.add(new Uint8Array(args.data), options);
 
-    return result[0].hash.toString();
+        if (result.length === 0) {
+          throw Error(
+            `IpfsPlugin:add failed to add contents. Result of length 0 returned.`
+          );
+        }
+
+        return result[0].hash.toString();
+      },
+      options
+    );
   }
 
   private async _execWithOptions<TReturn>(

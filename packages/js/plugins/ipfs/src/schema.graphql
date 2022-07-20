@@ -14,7 +14,11 @@ type Env {
   """
   Global timeout for IPFS actions
   """
-  timeouts: Timeouts
+  timeouts: Timeouts,
+  """
+  Default provider
+  """
+  provider: String
 }
 
 type Module implements Ipfs_Module {
