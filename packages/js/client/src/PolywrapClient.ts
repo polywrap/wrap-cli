@@ -514,19 +514,17 @@ export class PolywrapClient implements Client {
       this._clearContext(contextId);
     }
 
-    let uriHistoryTrace = "";
-    for (const item of uriHistory.getResolutionPath().stack) {
-      const itemTrace = `${item.uriResolver} resolved uri to ${
-        item.result.uri
-      }${item.result.wrapper ? ", found wrapper" : ""}`;
-      uriHistoryTrace = uriHistoryTrace + "\n" + itemTrace;
+    let uriHistoryTrace = `Resolve uri: "${this._toUri(uri)}"`;
+    for (const item of uriHistory.stack) {
+      const itemTrace =
+        item.uriResolver.padEnd(25) +
+        `resolved uri to ${item.result.uri}${
+          item.result.wrapper ? ", found wrapper" : ""
+        }`;
+      uriHistoryTrace = uriHistoryTrace + "\n" + "\t".repeat(8) + itemTrace;
     }
 
-    Tracer.setAttribute(
-      "label",
-      uriHistoryTrace.substring(1),
-      TracingLevel.High
-    );
+    Tracer.setAttribute("label", uriHistoryTrace, TracingLevel.High);
 
     return {
       wrapper,
