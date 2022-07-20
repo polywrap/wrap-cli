@@ -4,11 +4,11 @@ import {
   defaultAppManifest,
   defaultPluginManifest,
   defaultPolywrapManifest,
-} from "../manifest";
+} from "../project";
 
 import path from "path";
 
-const defaultDocgenDir = "./w3";
+const defaultDocgenDir = "./wrap";
 
 export function parseDocgenManifestFileOption(
   manifestFile: string | undefined,

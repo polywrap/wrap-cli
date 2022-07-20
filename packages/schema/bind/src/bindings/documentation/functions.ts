@@ -40,17 +40,3 @@ export const toTitle: MustacheFn = () => {
     return tokens.join(" ");
   };
 };
-
-export const toLower: MustacheFn = () => {
-  return (text: string, render: (template: string) => string): string => {
-    const rendered: string = render(text);
-    return rendered.toLowerCase();
-  };
-};
-
-export const moduleToLower: MustacheFn = () => {
-  return (text: string, render: (template: string) => string): string => {
-    const rendered: string = render(text);
-    return rendered.replace("Query", "query").replace("Mutation", "mutation");
-  };
-};

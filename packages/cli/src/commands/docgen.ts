@@ -1,18 +1,17 @@
 /* eslint-disable prefer-const */
 import {
-  AnyManifest,
+  AnyProjectManifest,
   AppProject,
   CodeGenerator,
   defaultAppManifest,
   defaultPolywrapManifest,
-  getSimpleClient,
-  getTestEnvProviders,
   Project,
   SchemaComposer,
   PolywrapProject,
   intlMsg,
-  generateProjectTemplate,
   PluginProject,
+  parseClientConfigOption,
+  defaultPluginManifest,
 } from "../lib";
 import { Command, Program } from "./types";
 import {
@@ -20,39 +19,69 @@ import {
   parseDocgenManifestFileOption,
 } from "../lib/option-parsers/docgen";
 
-import { filesystem } from "gluegun";
 import path from "path";
-import { PolywrapClient } from "@polywrap/client-js";
+import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
+import chalk from "chalk";
+import { Argument } from "commander";
 
 const commandToPathMap: Record<string, string> = {
-  schema: "@web3api/schema-bind/build/bindings/documentation/schema/index.js",
-  react: "@web3api/schema-bind/build/bindings/documentation/react/index.js",
+  schema: "@polywrap/schema-bind/build/bindings/documentation/schema/index.js",
   docusaurus:
-    "@web3api/schema-bind/build/bindings/documentation/docusaurus/index.js",
-  jsdoc: "@web3api/schema-bind/build/bindings/documentation/jsdoc/index.js",
+    "@polywrap/schema-bind/build/bindings/documentation/docusaurus/index.js",
+  jsdoc: "@polywrap/schema-bind/build/bindings/documentation/jsdoc/index.js",
 };
 
 export type DocType = keyof typeof commandToPathMap;
 
-const defaultManifest = defaultPolywrapManifest.concat(defaultAppManifest);
-const defaultDocgenDir = "./w3";
-const nodeStr = intlMsg.commands_codegen_options_i_node();
+const defaultManifest = defaultPolywrapManifest
+  .concat(defaultAppManifest)
+  .concat(defaultPluginManifest);
+const defaultDocgenDir = "./wrap";
 const pathStr = intlMsg.commands_codegen_options_o_path();
-const addrStr = intlMsg.commands_codegen_options_e_address();
 
 type DocgenCommandOptions = {
   manifestFile: string;
   codegenDir: string;
-  ipfs?: string;
-  ens?: string;
+  clientConfig: Partial<PolywrapClientConfig>;
 };
+
+enum Actions {
+  SCHEMA = "schema",
+  DOCUSAURUS = "docusaurus",
+  JSDOC = "jsdoc",
+}
+
+const argumentsDescription = `
+  ${chalk.bold(
+    Actions.SCHEMA
+  )}        ${intlMsg.commands_docgen_options_schema()}
+  ${chalk.bold(
+    Actions.DOCUSAURUS
+  )}    ${intlMsg.commands_docgen_options_markdown({
+  framework: "Docusaurus",
+})}
+  ${chalk.bold(
+    Actions.JSDOC
+  )}         ${intlMsg.commands_docgen_options_markdown({
+  framework: "JSDoc",
+})}
+`;
 
 export const docgen: Command = {
   setup: (program: Program) => {
-    const docgenCommand = program
+    program
       .command("docgen")
       .alias("o")
       .description(intlMsg.commands_docgen_description())
+      .usage("<action> [options]")
+      .addArgument(
+        new Argument("<action>", argumentsDescription).choices([
+          Actions.SCHEMA,
+          Actions.DOCUSAURUS,
+          Actions.JSDOC,
+        ])
+      )
+      .showHelpAfterError(true)
       .option(
         `-m, --manifest-file <${pathStr}>`,
         intlMsg.commands_docgen_options_m({
@@ -60,67 +89,34 @@ export const docgen: Command = {
         })
       )
       .option(
-        `-c, --codegen-dir <${pathStr}>`,
+        `-g, --codegen-dir <${pathStr}>`,
         intlMsg.commands_docgen_options_c({
           default: `${defaultDocgenDir}`,
         })
       )
       .option(
-        `-i, --ipfs [<${nodeStr}>]`,
-        `${intlMsg.commands_codegen_options_i()}`
+        `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
+        `${intlMsg.commands_common_options_config()}`
       )
-      .option(
-        `-e, --ens [<${addrStr}>]`,
-        `${intlMsg.commands_codegen_options_e()}`
-      );
-
-    docgenCommand
-      .command("schema")
-      .description(intlMsg.commands_docgen_options_schema())
-      .action(async (options) => {
-        await run("schema", options);
-      });
-
-    docgenCommand
-      .command("docusaurus")
-      .description(
-        intlMsg.commands_docgen_options_markdown({
-          framework: "Docusaurus",
-        })
-      )
-      .action(async (options) => {
-        await run("docusaurus", {
+      .action(async (action, options) => {
+        await run(action, {
           ...options,
           manifestFile: parseDocgenManifestFileOption(
             options.manifestFile,
             undefined
           ),
           codegenDir: parseDocgenDirOption(options.codegenDir, undefined),
+          clientConfig: await parseClientConfigOption(
+            options.clientConfig,
+            undefined
+          ),
         });
-      });
-
-    docgenCommand
-      .command("jsdoc")
-      .description(
-        intlMsg.commands_docgen_options_markdown({
-          framework: "JSDoc",
-        })
-      )
-      .action(async (options) => {
-        await run("jsdoc", options);
-      });
-
-    docgenCommand
-      .command("react")
-      .description(intlMsg.commands_docgen_options_react())
-      .action(async (options) => {
-        await run("react", options);
       });
   },
 };
 
 async function run(command: DocType, options: DocgenCommandOptions) {
-  const { ipfs, ens, manifestFile, codegenDir } = options;
+  const { manifestFile, codegenDir, clientConfig } = options;
 
   const isAppManifest: boolean =
     (<string>manifestFile).toLowerCase().endsWith("web3api.app.yaml") ||
@@ -132,18 +128,12 @@ async function run(command: DocType, options: DocgenCommandOptions) {
   // Resolve custom script
   const customScript = require.resolve(commandToPathMap[command]);
 
-  // Get providers
-  const { ipfsProvider, ethProvider } = await getTestEnvProviders(ipfs);
-  const ensAddress: string | undefined = ens;
+  // Get client
+  const client = new PolywrapClient(clientConfig);
 
-  // App or Web3Api project
-  let project: Project<AnyManifest>;
+  // Get project
+  let project: Project<AnyProjectManifest>;
   if (isAppManifest) {
-    const client: PolywrapClient = getSimpleClient({
-      ensAddress,
-      ethProvider,
-      ipfsProvider,
-    });
     project = new AppProject({
       rootDir: path.dirname(manifestFile),
       appManifestPath: manifestFile,
@@ -175,42 +165,19 @@ async function run(command: DocType, options: DocgenCommandOptions) {
 
   const schemaComposer = new SchemaComposer({
     project,
-    ipfsProvider,
-    ethProvider,
-    ensAddress,
+    client,
   });
-
-  if (command === "react") {
-    // copy react template and adjust output dir
-    const projectDir = path.join(codegenDirAbs, "docusaurus-react-app");
-    try {
-      await generateProjectTemplate(
-        "app",
-        "docusaurus",
-        projectDir,
-        filesystem
-      );
-    } catch (err) {
-      const commandFailError = intlMsg.commands_create_error_commandFail({
-        error: err.command,
-      });
-      console.error(commandFailError);
-      process.exitCode = 1;
-      return;
-    }
-    codegenDirAbs = path.join(projectDir, "docs/polywrap");
-  }
 
   const codeGenerator = new CodeGenerator({
     project,
     schemaComposer,
     customScript,
-    codegenDirAbs: codegenDirAbs,
+    codegenDirAbs,
     omitHeader: true,
   });
 
   if (await codeGenerator.generate()) {
-    console.log(`🔥 ${intlMsg.commands_codegen_success()} 🔥`);
+    console.log(`🔥 ${intlMsg.commands_docgen_success()} 🔥`);
     process.exitCode = 0;
   } else {
     process.exitCode = 1;

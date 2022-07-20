@@ -5,8 +5,8 @@ import * as TypeScriptFunctions from "./../../typescript/functions";
 import { sortMethodsInPlaceByName, sortObjectsInPlaceByType } from "../utils";
 
 import {
-  TypeInfo,
-  transformTypeInfo,
+  Abi,
+  transformAbi,
   addFirstLast,
   toPrefixedGraphQLType,
   extendType,
@@ -28,9 +28,9 @@ export const generateBinding: GenerateBindingFn = (
     outputDirAbs: options.outputDirAbs,
   };
   const output = result.output;
-  const typeInfo = applyTransforms(options.typeInfo);
-  sortObjectsInPlaceByType(typeInfo);
-  sortMethodsInPlaceByName(typeInfo);
+  const abi = applyTransforms(options.abi);
+  sortObjectsInPlaceByType(abi);
+  sortMethodsInPlaceByName(abi);
 
   const renderTemplate = (
     subPath: string,
@@ -48,8 +48,8 @@ export const generateBinding: GenerateBindingFn = (
   };
 
   // generate modules
-  if (typeInfo.moduleType) {
-    const module: ModuleDefinition = typeInfo.moduleType;
+  if (abi.moduleType) {
+    const module: ModuleDefinition = abi.moduleType;
     renderTemplate(
       "./templates/jsdoc-module.mustache",
       module,
@@ -59,7 +59,7 @@ export const generateBinding: GenerateBindingFn = (
 
   // TODO: for imported modules, module.type contains the namespace. Should it?
   // generate imported modules
-  for (const module of typeInfo.importedModuleTypes) {
+  for (const module of abi.importedModuleTypes) {
     renderTemplate(
       "./templates/jsdoc-module.mustache",
       module,
@@ -68,16 +68,12 @@ export const generateBinding: GenerateBindingFn = (
   }
 
   // generate object types
-  if (typeInfo.objectTypes.length > 0) {
-    renderTemplate(
-      "./templates/jsdoc-objects.mustache",
-      typeInfo,
-      "objects.js"
-    );
+  if (abi.objectTypes.length > 0) {
+    renderTemplate("./templates/jsdoc-objects.mustache", abi, "objects.js");
   }
 
   // generated imported object types
-  const importedObjects = sortByNamespace(typeInfo.importedObjectTypes);
+  const importedObjects = sortByNamespace(abi.importedObjectTypes);
   for (const [namespace, objectTypes] of Object.entries(importedObjects)) {
     if (objectTypes.length > 0) {
       const objectContext = {
@@ -93,12 +89,12 @@ export const generateBinding: GenerateBindingFn = (
   }
 
   // generate enum types
-  if (typeInfo.enumTypes.length > 0) {
-    renderTemplate("./templates/jsdoc-enums.mustache", typeInfo, "enums.js");
+  if (abi.enumTypes.length > 0) {
+    renderTemplate("./templates/jsdoc-enums.mustache", abi, "enums.js");
   }
 
   // generate imported enum types
-  const importedEnums = sortByNamespace(typeInfo.importedEnumTypes);
+  const importedEnums = sortByNamespace(abi.importedEnumTypes);
   for (const [namespace, enumTypes] of Object.entries(importedEnums)) {
     if (enumTypes.length > 0) {
       const enumContext = {
@@ -116,7 +112,7 @@ export const generateBinding: GenerateBindingFn = (
   return result;
 };
 
-function applyTransforms(typeInfo: TypeInfo): TypeInfo {
+function applyTransforms(abi: Abi): Abi {
   const transforms = [
     extendType(Functions),
     extendType(TypeScriptFunctions),
@@ -126,9 +122,9 @@ function applyTransforms(typeInfo: TypeInfo): TypeInfo {
   ];
 
   for (const transform of transforms) {
-    typeInfo = transformTypeInfo(typeInfo, transform);
+    abi = transformAbi(abi, transform);
   }
-  return typeInfo;
+  return abi;
 }
 
 function sortByNamespace<T extends ImportedDefinition>(

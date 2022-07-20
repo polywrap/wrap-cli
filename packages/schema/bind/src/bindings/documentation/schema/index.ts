@@ -35,11 +35,10 @@ export const generateBinding: GenerateBindingFn = (
   const schemaContext = {
     schema: options.schema,
   };
-  const namespace = options.typeInfo.importedModuleTypes?.[0].namespace;
   renderTemplate(
     "./templates/schema.mustache",
     schemaContext,
-    `${namespace ? namespace + "_" : ""}schema.graphql`
+    "generated-schema.graphql"
   );
 
   return result;

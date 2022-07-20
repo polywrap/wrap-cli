@@ -1,12 +1,12 @@
 /**
 * {{#toTitle}}{{type}}{{/toTitle}}
-* @module {{#moduleToLower}}{{type}}{{/moduleToLower}}
+* @module {{#toLowerCase}}{{type}}{{/toLowerCase}}
 */
 
 {{#methods}}
   /**
   * {{comment}}
-  * @function module:{{#moduleToLower}}{{type}}{{/moduleToLower}}.{{name}}
+  * @function module:{{#toLowerCase}}{{type}}{{/toLowerCase}}.{{name}}
   {{#arguments}}
     {{#required}}
       * @param { {{#typeFormatFilter}}{{type}}{{/typeFormatFilter}} } {{name}} {{comment}}

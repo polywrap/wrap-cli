@@ -9,45 +9,20 @@ import {
 } from "../utils";
 
 import {
-  TypeInfo,
-  transformTypeInfo,
+  Abi,
+  transformAbi,
   addFirstLast,
   toPrefixedGraphQLType,
   extendType,
   methodParentPointers,
-  ModuleDefinition,
 } from "@polywrap/schema-parse";
 import Mustache from "mustache";
 import path from "path";
 import { readFileSync } from "fs";
 
-export const LOCAL_NAMESPACE = "Local";
-
 export const generateBinding: GenerateBindingFn = (
   options: BindOptions
 ): BindOutput => {
-  return generateDocusaurusBindings(options);
-};
-
-function applyTransforms(typeInfo: TypeInfo): TypeInfo {
-  const transforms = [
-    extendType(Functions),
-    extendType(TypeScriptFunctions),
-    addFirstLast,
-    toPrefixedGraphQLType,
-    methodParentPointers(),
-  ];
-
-  for (const transform of transforms) {
-    typeInfo = transformTypeInfo(typeInfo, transform);
-  }
-  return typeInfo;
-}
-
-export function generateDocusaurusBindings(
-  options: BindOptions,
-  _typeInfo?: TypeInfo
-): BindOutput {
   const result: BindOutput = {
     output: {
       entries: [],
@@ -55,9 +30,9 @@ export function generateDocusaurusBindings(
     outputDirAbs: options.outputDirAbs,
   };
   const output = result.output;
-  const typeInfo = _typeInfo ?? applyTransforms(options.typeInfo);
-  sortObjectsInPlaceByType(typeInfo);
-  sortMethodsInPlaceByName(typeInfo);
+  const abi = applyTransforms(options.abi);
+  sortObjectsInPlaceByType(abi);
+  sortMethodsInPlaceByName(abi);
 
   const renderTemplate = (
     subPath: string,
@@ -75,48 +50,41 @@ export function generateDocusaurusBindings(
   };
 
   // generate modules
-  if (typeInfo.moduleType) {
-    const module: ModuleDefinition = typeInfo.moduleType;
-    const moduleContext = {
-      ...module,
-      namespace: LOCAL_NAMESPACE,
-    };
+  if (abi.moduleType) {
     renderTemplate(
       "./templates/docusaurus-module.mustache",
-      moduleContext,
-      `${LOCAL_NAMESPACE}_${module.type.toLowerCase()}.md`
+      abi.moduleType,
+      "module.md"
     );
   }
 
   // generate object types
-  if (typeInfo.objectTypes.length > 0) {
+  if (abi.objectTypes.length > 0) {
     const objectContext = {
-      objectTypes: typeInfo.objectTypes,
-      namespace: LOCAL_NAMESPACE,
+      objectTypes: abi.objectTypes,
     };
     renderTemplate(
       "./templates/docusaurus-objects.mustache",
       objectContext,
-      `${LOCAL_NAMESPACE}_objects.md`
+      "objects.md"
     );
   }
 
   // generate enum types
-  if (typeInfo.enumTypes.length > 0) {
+  if (abi.enumTypes.length > 0) {
     const enumContext = {
-      enumTypes: typeInfo.enumTypes,
-      namespace: LOCAL_NAMESPACE,
+      enumTypes: abi.enumTypes,
     };
     renderTemplate(
       "./templates/docusaurus-enums.mustache",
       enumContext,
-      `${LOCAL_NAMESPACE}_enums.md`
+      "enums.md"
     );
   }
 
   // TODO: for imported modules, module.type contains the namespace. Should it?
   // generate imported modules
-  for (const module of typeInfo.importedModuleTypes) {
+  for (const module of abi.importedModuleTypes) {
     const moduleType = module.type.split("_")[1];
     const moduleContext = {
       ...module,
@@ -131,7 +99,7 @@ export function generateDocusaurusBindings(
   }
 
   // generated imported object types
-  const importedObjects = arrangeByNamespace(typeInfo.importedObjectTypes);
+  const importedObjects = arrangeByNamespace(abi.importedObjectTypes);
   for (const [namespace, objectTypes] of Object.entries(importedObjects)) {
     if (objectTypes.length > 0) {
       const objectContext = {
@@ -147,7 +115,7 @@ export function generateDocusaurusBindings(
   }
 
   // generate imported enum types
-  const importedEnums = arrangeByNamespace(typeInfo.importedEnumTypes);
+  const importedEnums = arrangeByNamespace(abi.importedEnumTypes);
   for (const [namespace, enumTypes] of Object.entries(importedEnums)) {
     if (enumTypes.length > 0) {
       const enumContext = {
@@ -163,4 +131,19 @@ export function generateDocusaurusBindings(
   }
 
   return result;
+};
+
+function applyTransforms(abi: Abi): Abi {
+  const transforms = [
+    extendType(Functions),
+    extendType(TypeScriptFunctions),
+    addFirstLast,
+    toPrefixedGraphQLType,
+    methodParentPointers(),
+  ];
+
+  for (const transform of transforms) {
+    abi = transformAbi(abi, transform);
+  }
+  return abi;
 }

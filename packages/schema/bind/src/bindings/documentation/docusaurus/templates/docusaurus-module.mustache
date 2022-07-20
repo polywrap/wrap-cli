@@ -1,6 +1,6 @@
 ---
-id: {{namespace}}_{{#toLower}}{{type}}{{/toLower}}
-title: {{#toTitle}}{{namespace}}_{{type}}{{/toTitle}}
+id: {{#imported}}{{namespace}}_{{/imported}}{{#toLowerCase}}{{type}}{{/toLowerCase}}
+title: {{#toTitle}}{{#imported}}{{namespace}} {{/imported}}{{type}}{{/toTitle}}
 ---
 
 {{#methods}}

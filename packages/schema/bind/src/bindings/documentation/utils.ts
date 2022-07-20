@@ -1,7 +1,7 @@
 import {
   ImportedDefinition,
   MethodDefinition,
-  TypeInfo,
+  Abi,
 } from "@polywrap/schema-parse";
 
 export function arrangeByNamespace<T extends ImportedDefinition>(
@@ -17,12 +17,12 @@ export function arrangeByNamespace<T extends ImportedDefinition>(
   return result;
 }
 
-export function sortObjectsInPlaceByType(typeInfo: TypeInfo): void {
+export function sortObjectsInPlaceByType(abi: Abi): void {
   const typesToSort: { type: string }[][] = [
-    typeInfo.objectTypes,
-    typeInfo.enumTypes,
-    typeInfo.importedObjectTypes,
-    typeInfo.importedEnumTypes,
+    abi.objectTypes,
+    abi.enumTypes,
+    abi.importedObjectTypes,
+    abi.importedEnumTypes,
   ];
   for (const definitions of typesToSort) {
     definitions.sort((a: { type: string }, b: { type: string }) =>
@@ -31,12 +31,12 @@ export function sortObjectsInPlaceByType(typeInfo: TypeInfo): void {
   }
 }
 
-export function sortMethodsInPlaceByName(typeInfo: TypeInfo): void {
+export function sortMethodsInPlaceByName(abi: Abi): void {
   const methodsToSort: MethodDefinition[][] = [];
-  if (typeInfo.moduleType) {
-    methodsToSort.push(typeInfo.moduleType.methods);
+  if (abi.moduleType) {
+    methodsToSort.push(abi.moduleType.methods);
   }
-  for (const moduleType of typeInfo.importedModuleTypes) {
+  for (const moduleType of abi.importedModuleTypes) {
     methodsToSort.push(moduleType.methods);
   }
   for (const definitions of methodsToSort) {
