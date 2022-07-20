@@ -8,10 +8,12 @@ import {
   AbiResolvers,
   SYNTAX_REFERENCE,
   AbiResolver,
+  SchemaResolver,
 } from "./types";
 import { parseExternalImports, parseLocalImports, parseUse } from "./parse";
 import { renderSchema } from "./render";
 import { checkDuplicateEnvProperties } from "./env";
+import { addHeader } from "./templates/header.mustache";
 
 import {
   Abi,
@@ -132,9 +134,9 @@ export async function resolveImportsAndParseSchemas(
 
   const keywords = [...schema.matchAll(importKeywordCapture)];
   const externalImportStatements = [...schema.matchAll(externalImportCapture)];
-  const localImportStatments = [...schema.matchAll(localImportCapture)];
+  const localImportStatements = [...schema.matchAll(localImportCapture)];
   const totalStatements =
-    externalImportStatements.length + localImportStatments.length;
+    externalImportStatements.length + localImportStatements.length;
 
   if (keywords.length !== totalStatements) {
     throw Error(
@@ -157,7 +159,7 @@ export async function resolveImportsAndParseSchemas(
   );
 
   const localImportsToResolve: LocalImport[] = parseLocalImports(
-    localImportStatments,
+    localImportStatements,
     schemaPath
   );
 
@@ -177,8 +179,12 @@ export async function resolveImportsAndParseSchemas(
     subAbi
   );
 
-  await resolveLocalImports(localImportsToResolve, resolvers.local, subAbi);
-
+  await resolveLocalImports(
+    localImportsToResolve,
+    resolvers.local,
+    subAbi,
+    resolvers
+  );
   const capabilitiesByModule = await resolveUseStatements(
     schema,
     schemaPath,
@@ -920,19 +926,32 @@ async function resolveExternalImports(
 
 async function resolveLocalImports(
   importsToResolve: LocalImport[],
-  resolveAbi: AbiResolver,
-  abi: Abi
+  resolveSchema: SchemaResolver,
+  abi: Abi,
+  resolvers: AbiResolvers
 ): Promise<void> {
   for (const importToResolve of importsToResolve) {
     const { importedTypes, path } = importToResolve;
 
-    // Parse the schema into Abi
-    const localAbi = await resolveAbi(path);
+    // Resolve the schema
+    let schema = await resolveSchema(path);
 
-    if (!localAbi) {
-      throw Error(`Unable to resolve Abi at "${path}"`);
+    if (!schema) {
+      throw Error(`Unable to resolve schema at "${path}"`);
     }
 
+    // Make sure the schema has the Polywrap header
+    if (schema.indexOf("### Polywrap Header START ###") === -1) {
+      schema = addHeader(schema);
+    }
+
+    // Parse the schema into Abi
+    const localAbi = await resolveImportsAndParseSchemas(
+      schema,
+      path,
+      resolvers,
+      true
+    );
     let extTypesToImport = importedTypes;
 
     // If the importedTypes array contains the catch-all "*"

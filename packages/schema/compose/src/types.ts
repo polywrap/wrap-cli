@@ -6,10 +6,11 @@ export interface SchemaFile {
 }
 
 export type AbiResolver = (uri: string) => Promise<Abi>;
+export type SchemaResolver = (path: string) => Promise<string>;
 
 export interface AbiResolvers {
   external: AbiResolver;
-  local: AbiResolver;
+  local: SchemaResolver;
 }
 
 export interface ExternalImport {

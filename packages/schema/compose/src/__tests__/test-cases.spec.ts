@@ -23,7 +23,6 @@ function removeFunctionProps(obj: unknown) {
 
 describe("Polywrap Schema Composer Test Cases", () => {
   let cases = fetchTestCases();
-
   for (const test of cases) {
     it(`Case: ${test.name}`, async () => {
       const testCase = await test.promise;

@@ -115,6 +115,6 @@ async function importCase(
   return {
     name,
     input,
-    abi: moduleAbi,
+    abi: moduleAbi as Abi,
   };
 }

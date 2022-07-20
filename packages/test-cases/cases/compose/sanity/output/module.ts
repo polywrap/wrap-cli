@@ -579,7 +579,7 @@ export const abi: Abi = {
         uri: "test.eth",
         namespace: "Namespace",
         nativeType: "NestedObjectType",
-        type: "Namespace_NestedObjectType"
+        type: "Namespace_NestedObjectType",
       }),
       properties: [createObjectPropertyDefinition({ name: "nestedObject", type: "Namespace_ObjectType", required: true })],
     },
