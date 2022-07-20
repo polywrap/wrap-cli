@@ -921,15 +921,12 @@ export const runSimpleEnvTest = async (
   client: PolywrapClient,
   wrapperUri: string
 ) => {
-  const queryGetEnv = await client.query({
+  const queryGetEnv = await client.invoke({
     uri: wrapperUri,
-    query: `
-  query {
-    getEnv(
+    method: "getEnv",
+    args: {
       arg: "string",
-    )
-  }
-`,
+    },
   });
   expect(queryGetEnv.errors).toBeFalsy();
   expect(queryGetEnv.data?.getEnv).toEqual({
@@ -937,33 +934,26 @@ export const runSimpleEnvTest = async (
     requiredInt: 1,
   });
 
-  const queryGetEnvNotSet = await client.query({
+  const queryGetEnvNotSet = await client.invoke({
     uri: wrapperUri,
-    query: `
-  query {
-    getEnv(
-      arg: "not set"
-    )
-  }
-`,
+    method: "getEnv",
+    args: {
+      arg: "not set",
+    },
     config: {
       envs: [],
     },
   });
-  expect(queryGetEnvNotSet.data?.getEnv).toBeUndefined();
-  expect(queryGetEnvNotSet.errors).toBeTruthy();
-  expect(queryGetEnvNotSet.errors?.length).toBe(1);
-  expect(queryGetEnvNotSet.errors?.[0].message).toContain("requiredInt: Int");
+  expect(queryGetEnvNotSet.data).toBeUndefined();
+  expect(queryGetEnvNotSet.error).toBeTruthy();
+  expect(queryGetEnvNotSet.error?.message).toContain("requiredInt: Int");
 
-  const queryEnvIncorrect = await client.query({
+  const queryEnvIncorrect = await client.invoke({
     uri: wrapperUri,
-    query: `
-  query {
-    getEnv(
-      arg: "not set"
-    )
-  }
-`,
+    method: "getEnv",
+    args: {
+      arg: "not set",
+    },
     config: {
       envs: [
         {
@@ -977,10 +967,9 @@ export const runSimpleEnvTest = async (
     },
   });
 
-  expect(queryEnvIncorrect.data?.getEnv).toBeUndefined();
-  expect(queryEnvIncorrect.errors).toBeTruthy();
-  expect(queryEnvIncorrect.errors?.length).toBe(1);
-  expect(queryEnvIncorrect.errors?.[0].message).toContain(
+  expect(queryEnvIncorrect.data).toBeUndefined();
+  expect(queryEnvIncorrect.error).toBeTruthy();
+  expect(queryEnvIncorrect.error?.message).toContain(
     "Property must be of type 'int'. Found 'string'."
   );
 };

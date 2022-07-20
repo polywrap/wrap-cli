@@ -45,13 +45,9 @@ describe("env", () => {
         ],
       });
 
-      const mockEnv = await client.query({
+      const mockEnv = await client.invoke({
         uri: implementationUri,
-        query: `
-          query {
-            mockEnv
-          }
-        `,
+        method: "mockEnv",
       });
 
       expect(mockEnv.errors).toBeFalsy();
