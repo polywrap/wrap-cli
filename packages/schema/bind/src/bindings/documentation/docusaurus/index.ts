@@ -82,6 +82,14 @@ export const generateBinding: GenerateBindingFn = (
     );
   }
 
+  // generate env type
+  if (abi.envType) {
+    const envContext = {
+      envType: abi.envType,
+    };
+    renderTemplate("./templates/docusaurus-env.mustache", envContext, "env.md");
+  }
+
   // TODO: for imported modules, module.type contains the namespace. Should it?
   // generate imported modules
   for (const module of abi.importedModuleTypes) {
@@ -126,6 +134,22 @@ export const generateBinding: GenerateBindingFn = (
         "./templates/docusaurus-enums.mustache",
         enumContext,
         `${namespace}_enums.md`
+      );
+    }
+  }
+
+  // generate imported env types
+  const importedEnvs = arrangeByNamespace(abi.importedEnvTypes);
+  for (const [namespace, envType] of Object.entries(importedEnvs)) {
+    if (envType) {
+      const envContext = {
+        envType,
+        namespace,
+      };
+      renderTemplate(
+        "./templates/docusaurus-env.mustache",
+        envContext,
+        `${namespace}_env.md`
       );
     }
   }

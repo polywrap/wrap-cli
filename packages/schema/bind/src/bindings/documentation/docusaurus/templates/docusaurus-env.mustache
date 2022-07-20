@@ -1,0 +1,18 @@
+---
+id: {{#imported}}{{namespace}}_{{/imported}}env
+title: {{#imported}}{{namespace}} {{/imported}}Env Type
+---
+
+
+{{#envType}}
+### {{type}} {{#addImplements}}{{#interfaces}} {{name}}{{/interfaces}}{{/addImplements}}
+{{#addReturnsIfText}}{{#markdownItalics}}{{comment}}{{/markdownItalics}}{{/addReturnsIfText}}
+```graphql
+type {{type}} {
+  {{#properties}}
+  {{name}}: {{#typeFormatFilter}}{{type}}{{/typeFormatFilter}}{{#required}}!{{/required}} {{#hashtagPrefix}}{{comment}}{{/hashtagPrefix}}
+  {{/properties}}
+}
+```
+
+{{/envType}}

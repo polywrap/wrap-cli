@@ -2,7 +2,11 @@ import { GenerateBindingFn } from "../..";
 import { BindOptions, BindOutput } from "../../..";
 import * as Functions from "./../functions";
 import * as TypeScriptFunctions from "./../../typescript/functions";
-import { sortMethodsInPlaceByName, sortObjectsInPlaceByType } from "../utils";
+import {
+  arrangeByNamespace,
+  sortMethodsInPlaceByName,
+  sortObjectsInPlaceByType,
+} from "../utils";
 
 import {
   Abi,
@@ -57,6 +61,24 @@ export const generateBinding: GenerateBindingFn = (
     );
   }
 
+  // generate object types
+  if (abi.objectTypes.length > 0) {
+    renderTemplate("./templates/jsdoc-objects.mustache", abi, "objects.js");
+  }
+
+  // generate enum types
+  if (abi.enumTypes.length > 0) {
+    renderTemplate("./templates/jsdoc-enums.mustache", abi, "enums.js");
+  }
+
+  // generate env type
+  if (abi.envType) {
+    const envContext = {
+      envType: abi.envType,
+    };
+    renderTemplate("./templates/jsdoc-env.mustache", envContext, "env.js");
+  }
+
   // TODO: for imported modules, module.type contains the namespace. Should it?
   // generate imported modules
   for (const module of abi.importedModuleTypes) {
@@ -65,11 +87,6 @@ export const generateBinding: GenerateBindingFn = (
       module,
       `${module.type}.js`
     );
-  }
-
-  // generate object types
-  if (abi.objectTypes.length > 0) {
-    renderTemplate("./templates/jsdoc-objects.mustache", abi, "objects.js");
   }
 
   // generated imported object types
@@ -88,11 +105,6 @@ export const generateBinding: GenerateBindingFn = (
     }
   }
 
-  // generate enum types
-  if (abi.enumTypes.length > 0) {
-    renderTemplate("./templates/jsdoc-enums.mustache", abi, "enums.js");
-  }
-
   // generate imported enum types
   const importedEnums = sortByNamespace(abi.importedEnumTypes);
   for (const [namespace, enumTypes] of Object.entries(importedEnums)) {
@@ -105,6 +117,22 @@ export const generateBinding: GenerateBindingFn = (
         "./templates/jsdoc-enums.mustache",
         enumContext,
         `${namespace}_enums.js`
+      );
+    }
+  }
+
+  // generate imported env types
+  const importedEnvs = arrangeByNamespace(abi.importedEnvTypes);
+  for (const [namespace, envType] of Object.entries(importedEnvs)) {
+    if (envType) {
+      const envContext = {
+        envType,
+        namespace,
+      };
+      renderTemplate(
+        "./templates/jsdoc-env.mustache",
+        envContext,
+        `${namespace}_env.js`
       );
     }
   }

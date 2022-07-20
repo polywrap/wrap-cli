@@ -4,9 +4,9 @@
 */
 
 {{#enumTypes}}
-  /**
-  * {{comment}}
-  * @typedef { {{#unionTypeTrim}}{{#constants}}"{{.}}" | {{/constants}}{{/unionTypeTrim}} } module:{{#imported}}{{namespace}}_{{/imported}}enums.{{type}} {{comment}}
-  */
+/**
+* {{comment}}
+* @typedef { {{#unionTypeTrim}}{{#constants}}"{{.}}" | {{/constants}}{{/unionTypeTrim}} } module:{{#imported}}{{namespace}}_{{/imported}}enums.{{type}} {{comment}}
+*/
 
 {{/enumTypes}}

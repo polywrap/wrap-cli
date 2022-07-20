@@ -4,10 +4,8 @@ title: {{#toTitle}}{{#imported}}{{namespace}} {{/imported}}{{type}}{{/toTitle}}
 ---
 
 {{#methods}}
-### {{name}}
-
-{{#markdownItalics}}{{comment}}{{/markdownItalics}}
-
+### {{name}} {{#addImplements}}{{#interfaces}} {{name}}{{/interfaces}}{{/addImplements}}
+{{#addReturnsIfText}}{{#markdownItalics}}{{comment}}{{/markdownItalics}}{{/addReturnsIfText}}
 ```graphql
 {{name}}(
   {{#arguments}}

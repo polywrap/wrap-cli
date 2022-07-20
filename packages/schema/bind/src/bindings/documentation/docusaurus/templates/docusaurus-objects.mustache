@@ -5,10 +5,8 @@ title: {{#imported}}{{namespace}} {{/imported}}Object Types
 
 
 {{#objectTypes}}
-### {{type}}
-
-{{#markdownItalics}}{{comment}}{{/markdownItalics}}
-
+### {{type}} {{#addImplements}}{{#interfaces}} {{name}}{{/interfaces}}{{/addImplements}}
+{{#addReturnsIfText}}{{#markdownItalics}}{{comment}}{{/markdownItalics}}{{/addReturnsIfText}}
 ```graphql
 type {{type}} {
   {{#properties}}

@@ -6,9 +6,7 @@ title: {{#imported}}{{namespace}} {{/imported}}Enum Types
 
 {{#enumTypes}}
 ### {{type}}
-
-{{#markdownItalics}}{{comment}}{{/markdownItalics}}
-
+{{#addReturnsIfText}}{{#markdownItalics}}{{comment}}{{/markdownItalics}}{{/addReturnsIfText}}
 ```graphql
 enum {{type}} {
   {{#constants}}

@@ -30,6 +30,16 @@ export const markdownItalics: MustacheFn = () => {
   };
 };
 
+export const addReturnsIfText: MustacheFn = () => {
+  return (text: string, render: (template: string) => string): string => {
+    const rendered: string = render(text);
+    if (rendered === "") {
+      return "";
+    }
+    return "\n" + rendered + "\n";
+  };
+};
+
 export const toTitle: MustacheFn = () => {
   return (text: string, render: (template: string) => string): string => {
     const rendered: string = render(text);
@@ -38,5 +48,29 @@ export const toTitle: MustacheFn = () => {
       tokens[i] = tokens[i].charAt(0).toUpperCase() + tokens[i].substring(1);
     }
     return tokens.join(" ");
+  };
+};
+
+export const addImplements: MustacheFn = () => {
+  return (text: string, render: (template: string) => string): string => {
+    const rendered: string = render(text);
+    const trimmed: string = rendered.trim();
+    if (!trimmed) {
+      return "";
+    }
+    const tokens: string[] = trimmed.split(" ");
+    return "implements " + tokens.join(", ");
+  };
+};
+
+export const addExtends: MustacheFn = () => {
+  return (text: string, render: (template: string) => string): string => {
+    const rendered: string = render(text);
+    const trimmed: string = rendered.trim();
+    if (!trimmed) {
+      return "";
+    }
+    const tokens: string[] = trimmed.split(" ");
+    return "@extends " + tokens.join(", ");
   };
 };

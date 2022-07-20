@@ -188,7 +188,7 @@ describe("e2e tests for docgen command", () => {
       const testCaseName = testCases[i];
       const testCaseDir = getTestCaseDir(i);
 
-      let docgenDir = path.join(testCaseDir, "src", "wrap");
+      let docgenDir = path.join(testCaseDir, "wrap");
       let cmdArgs: string[] = [];
       let cmdFile = path.join(testCaseDir, "cmd.json");
       if (fs.existsSync(cmdFile)) {
@@ -204,7 +204,7 @@ describe("e2e tests for docgen command", () => {
 
       test(testCaseName, async () => {
         let { exitCode, stdout, stderr } = await runCLI({
-          args: ["docgen", "docusaurus", ...cmdArgs],
+          args: ["docgen", ...cmdArgs],
           cwd: testCaseDir,
           cli: polywrapCli,
         });

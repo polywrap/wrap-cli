@@ -4,12 +4,13 @@
 */
 
 {{#objectTypes}}
-  /**
-  * {{comment}}
-  * @typedef {Object} module:{{#imported}}{{namespace}}_{{/imported}}objects.{{type}}
-  {{#properties}}
-    * @property { {{#typeFormatFilter}}{{type}}{{/typeFormatFilter}} } {{name}} {{comment}}
-  {{/properties}}
-  */
+/**
+* {{comment}}
+* @typedef {Object} module:{{#imported}}{{namespace}}_{{/imported}}objects.{{type}}
+* {{#addExtends}}{{#interfaces}} {{name}}{{/interfaces}}{{/addExtends}}
+{{#properties}}
+* @property { {{#typeFormatFilter}}{{type}}{{/typeFormatFilter}} } {{name}} {{comment}}
+{{/properties}}
+*/
 
 {{/objectTypes}}
