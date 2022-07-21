@@ -1,3 +1,4 @@
+name: templates-app-typescript-react
 format: 0.1.0
 language: app/typescript
 schema: ./schema.graphql
