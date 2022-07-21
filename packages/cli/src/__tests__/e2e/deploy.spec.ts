@@ -13,6 +13,7 @@ import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
 import { Wallet } from "@ethersproject/wallet";
 import path from "path";
 import fs from "fs";
+import yaml from "js-yaml";
 
 const HELP = `Usage: polywrap deploy|d [options]
 
@@ -21,6 +22,7 @@ Deploys/Publishes a Polywrap
 Options:
   -m, --manifest-file <path>  Path to the Polywrap Deploy manifest file
                               (default: polywrap.yaml | polywrap.yml)
+  -o, --output-file <path>    Output file path for the deploy result
   -v, --verbose               Verbose output (default: false)
   -h, --help                  display help for command
 `;
@@ -155,6 +157,98 @@ describe("e2e tests for deploy command", () => {
     expect(sanitizedOutput).toContain(
       "Successfully executed stage 'from_deploy'"
     );
+  });
+
+  it("Should output the results to a file if -o is passed", async () => {
+    await runCLI(
+      {
+        args: ["deploy", "-o", "./output.yaml"],
+        cwd: getTestCaseDir(0),
+        cli: polywrapCli,
+        env: process.env as Record<string, string>
+      },
+    );
+
+    await runCLI(
+      {
+        args: ["deploy", "-o", "./output.json"],
+        cwd: getTestCaseDir(0),
+        cli: polywrapCli,
+        env: process.env as Record<string, string>
+      },
+    );
+    
+    const yamlOutputFileContents = JSON.parse(
+      JSON.stringify(
+        (yaml.load(
+          fs.readFileSync(
+            path.join(getTestCaseDir(0), "output.yaml"),
+            "utf8"
+          )
+        ) as unknown) as Array<unknown>
+      )
+    )
+
+    const jsonOutputFileContents = JSON.parse(
+      fs.readFileSync(
+        path.join(getTestCaseDir(0), "output.json"),
+        "utf8"
+      )
+    )
+
+    fs.unlinkSync(path.join(getTestCaseDir(0), "output.yaml"))
+    fs.unlinkSync(path.join(getTestCaseDir(0), "output.json"))
+
+    expect(yamlOutputFileContents).toMatchObject(jsonOutputFileContents);
+    expect(jsonOutputFileContents).toMatchObject([
+      {
+        id: "ipfs_deploy",
+        name: "ipfs_deploy",
+        input: {
+          uri: "wrap://fs/./build"
+        },
+        result: "wrap://ipfs/QmRkysP47QawrzfyDSgbaukryjcXMxFnJgqswaeKBcziYF"
+      },
+      {
+        id: "ipfs_deploy.from_deploy",
+        name: "from_deploy",
+        input: {
+          uri: "wrap://ipfs/QmRkysP47QawrzfyDSgbaukryjcXMxFnJgqswaeKBcziYF",
+          config: {
+            domainName: "test1.eth",
+            provider: "http://localhost:8545",
+            ensRegistryAddress: "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab"
+          }
+        },
+        result: "wrap://ens/test1.eth"
+      },
+      {
+        id: "ipfs_deploy.from_deploy2",
+        name: "from_deploy2",
+        input: {
+          uri: "wrap://ipfs/QmRkysP47QawrzfyDSgbaukryjcXMxFnJgqswaeKBcziYF",
+          config: {
+            domainName: "test2.eth",
+            provider: "http://localhost:8545",
+            ensRegistryAddress: "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab"
+          }
+        },
+        result: "wrap://ens/test2.eth"
+      },
+      {
+        id: "from_uri",
+        name: "from_uri",
+        input: {
+          uri: "wrap://ipfs/QmVdDR6QtigTt38Xwpj2Ki73X1AyZn5WRCreBCJq1CEtpF",
+          config: {
+            domainName: "test3.eth",
+            provider: "http://localhost:8545",
+            ensRegistryAddress: "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab"
+          }
+        },
+        result: "wrap://ens/test3.eth"
+      }
+    ])
   });
 
   it("Should show warning if no manifest ext is found in deploy package", async () => {
