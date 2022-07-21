@@ -8,21 +8,27 @@
 import {
   AppManifest as AppManifest0_1_0
 } from "./0.1.0";
+import {
+  AppManifest as AppManifest0_1_1
+} from "./0.1.1";
 
 export {
   AppManifest0_1_0,
+  AppManifest0_1_1,
 };
 
 export enum AppManifestFormats {
   "0.1.0" = "0.1.0",
+  "0.1.1" = "0.1.1",
 }
 
 export type AnyAppManifest =
   | AppManifest0_1_0
+  | AppManifest0_1_1
 
-export type AppManifest = AppManifest0_1_0;
+export type AppManifest = AppManifest0_1_1;
 
-export const latestAppManifestFormat = AppManifestFormats["0.1.0"]
+export const latestAppManifestFormat = AppManifestFormats["0.1.1"]
 
 export { migrateAppManifest } from "./migrate";
 

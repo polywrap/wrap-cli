@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-empty-function */
 
-import { Project, AnyProjectManifest } from "./";
+import { Project, AnyProjectManifest, ImportRedirects } from "./";
 
 import { Uri, PolywrapClient } from "@polywrap/client-js";
 import {
@@ -69,10 +69,7 @@ export class SchemaComposer {
 
   private async _fetchExternalAbi(
     uri: string,
-    import_redirects?: {
-      uri: string;
-      schema: string;
-    }[]
+    import_redirects?: ImportRedirects
   ): Promise<Abi> {
     // Check to see if we have any import redirects that match
     if (import_redirects) {
@@ -82,7 +79,7 @@ export class SchemaComposer {
 
         if (Uri.equals(redirectUri, uriParsed)) {
           const manifest = fs.readFileSync(
-            path.join(this._config.project.getManifestDir(), redirect.schema)
+            path.join(this._config.project.getManifestDir(), redirect.info)
           );
           // TODO: Remove this once ABI JSON Schema has been implemented
           return (deserializeWrapManifest(manifest).abi as unknown) as Abi;

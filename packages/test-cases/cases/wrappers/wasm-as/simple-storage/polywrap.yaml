@@ -1,4 +1,4 @@
-format: 0.1.0
+format: 0.1.1
 name: SimpleStorage
 language: wasm/assemblyscript
 build: ./polywrap.build.yaml
@@ -7,4 +7,4 @@ schema: ./schema.graphql
 module: ./src/index.ts
 import_redirects:
   - uri: "wrap://ens/ethereum.polywrap.eth"
-    schema: ../../../../../js/plugins/ethereum/build-man/wrap.info
+    info: ../../../../../js/plugins/ethereum/build-man/wrap.info

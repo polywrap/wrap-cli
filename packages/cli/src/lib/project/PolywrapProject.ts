@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { Project, ProjectConfig } from ".";
+import { ImportRedirects, Project, ProjectConfig } from ".";
 import {
   isPolywrapManifestLanguage,
   loadBuildManifest,
@@ -135,12 +135,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     return path.join(dir, manifest.schema);
   }
 
-  public async getImportRedirects(): Promise<
-    {
-      uri: string;
-      schema: string;
-    }[]
-  > {
+  public async getImportRedirects(): Promise<ImportRedirects> {
     const manifest = await this.getManifest();
     return manifest.import_redirects || [];
   }

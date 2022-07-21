@@ -1,4 +1,4 @@
-import { Project, ProjectConfig } from ".";
+import { ImportRedirects, Project, ProjectConfig } from ".";
 import {
   AppManifestLanguage,
   appManifestLanguages,
@@ -94,12 +94,7 @@ export class AppProject extends Project<AppManifest> {
     return path.join(dir, manifest.schema);
   }
 
-  public async getImportRedirects(): Promise<
-    {
-      uri: string;
-      schema: string;
-    }[]
-  > {
+  public async getImportRedirects(): Promise<ImportRedirects> {
     const manifest = await this.getManifest();
     return manifest.import_redirects || [];
   }

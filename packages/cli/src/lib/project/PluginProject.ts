@@ -1,4 +1,4 @@
-import { ProjectConfig, Project } from ".";
+import { ProjectConfig, Project, ImportRedirects } from ".";
 import {
   loadPluginManifest,
   PluginManifestLanguage,
@@ -94,12 +94,7 @@ export class PluginProject extends Project<PluginManifest> {
     return path.join(dir, manifest.schema);
   }
 
-  public async getImportRedirects(): Promise<
-    {
-      uri: string;
-      schema: string;
-    }[]
-  > {
+  public async getImportRedirects(): Promise<ImportRedirects> {
     const manifest = await this.getManifest();
     return manifest.import_redirects || [];
   }

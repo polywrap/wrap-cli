@@ -14,6 +14,13 @@ export interface ProjectConfig {
   quiet?: boolean;
 }
 
+export interface ImportRedirect {
+  uri: string;
+  info: string;
+}
+
+export type ImportRedirects = Array<ImportRedirect>;
+
 export abstract class Project<TManifest extends AnyProjectManifest> {
   protected _cache: CacheDirectory;
 
@@ -60,12 +67,7 @@ export abstract class Project<TManifest extends AnyProjectManifest> {
 
   public abstract getSchemaNamedPath(): Promise<string>;
 
-  public abstract getImportRedirects(): Promise<
-    {
-      uri: string;
-      schema: string;
-    }[]
-  >;
+  public abstract getImportRedirects(): Promise<ImportRedirects>;
 
   public abstract generateSchemaBindings(
     abi: Abi,
