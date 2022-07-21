@@ -14,6 +14,7 @@ import { DeployManifest } from "@polywrap/polywrap-manifest-types-js";
 import fs from "fs";
 import nodePath from "path";
 import { print } from "gluegun";
+import yaml from "js-yaml";
 import { Uri } from "@polywrap/core-js";
 import { validate } from "jsonschema";
 
@@ -22,6 +23,7 @@ const pathStr = intlMsg.commands_deploy_options_o_path();
 
 type DeployCommandOptions = {
   manifestFile: string;
+  outputFile?: string;
   verbose?: boolean;
 };
 
@@ -141,12 +143,14 @@ async function run(options: DeployCommandOptions): Promise<void> {
     name: string;
     input: unknown;
     result: string;
+    id: string;
   }[] => {
     const id = prefix ? `${prefix}.${resultList.name}` : resultList.name;
 
     return [
       {
-        name: id,
+        id,
+        name: resultList.name,
         input: resultList.input,
         result: resultList.result,
       },
@@ -156,7 +160,22 @@ async function run(options: DeployCommandOptions): Promise<void> {
 
   if (outputFile) {
     const resultOutput = resultLists.flatMap((r) => getResults(r));
-    fs.writeFileSync(outputFile, JSON.stringify(resultOutput, null, 2));
+
+    const outputFileExt = nodePath.extname(outputFile).substring(1);
+    if (!outputFileExt) throw new Error("Require output file extension");
+    switch (outputFileExt) {
+      case "yaml":
+      case "yml":
+        fs.writeFileSync(outputFile, yaml.dump(resultOutput));
+        break;
+      case "json":
+        fs.writeFileSync(outputFile, JSON.stringify(resultOutput, null, 2));
+        break;
+      default:
+        throw new Error(
+          intlMsg.commands_run_error_unsupportedOutputFileExt({ outputFileExt })
+        );
+    }
   }
   return;
 }
