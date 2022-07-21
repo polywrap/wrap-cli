@@ -27,17 +27,23 @@ describe("Filesystem plugin", () => {
     await initTestEnvironment();
 
     const config: Partial<PolywrapClientConfig> = {
+      envs: [
+        {
+          uri: "wrap://ens/ipfs.polywrap.eth",
+          env: {
+            provider: providers.ipfs,
+            fallbackProviders: defaultIpfsProviders,
+          },
+        },
+      ],
       plugins: [
         {
           uri: "wrap://ens/fs-resolver.polywrap.eth",
-          plugin: fileSystemResolverPlugin({ }),
+          plugin: fileSystemResolverPlugin({}),
         },
         {
           uri: "wrap://ens/ipfs.polywrap.eth",
-          plugin: ipfsPlugin({
-            provider: providers.ipfs,
-            fallbackProviders: defaultIpfsProviders,
-          }),
+          plugin: ipfsPlugin({}),
         },
         {
           uri: "wrap://ens/ens-resolver.polywrap.eth",
