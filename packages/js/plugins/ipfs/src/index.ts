@@ -10,6 +10,7 @@ import {
 } from "./wrap";
 import { IpfsClient } from "./utils/IpfsClient";
 import { execSimple, execFallbacks } from "./utils/exec";
+
 import { Client, PluginFactory } from "@polywrap/core-js";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports, @typescript-eslint/naming-convention
@@ -130,7 +131,7 @@ export class IpfsPlugin extends Module<NoConfig> {
       defaultProvider = options.provider;
     }
 
-    //insert fallback providers before the env providers and fallbacks
+    // insert fallback providers before the env providers and fallbacks
     if (options.fallbackProviders) {
       providers = [
         providers[0],
