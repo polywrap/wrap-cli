@@ -12,9 +12,6 @@ import { ensResolverPlugin } from "..";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
 
-import fs from "fs";
-import path from "path";
-
 jest.setTimeout(300000);
 
 describe("ENS Resolver Plugin", () => {
@@ -78,17 +75,7 @@ describe("ENS Resolver Plugin", () => {
     expect(resolution.error).toBeFalsy();
     expect(resolution.wrapper).toBeTruthy();
 
-    const expectedSchema = await fs.promises.readFile(
-      path.resolve(wrapperAbsPath, "build/schema.graphql"),
-      { encoding: "utf-8" }
-    );
-
-    const schema = await resolution.wrapper?.getSchema(client);
-
-    expect(schema).toEqual(expectedSchema);
-
     const manifest = await resolution.wrapper?.getManifest(
-      {},
       client
     );
 

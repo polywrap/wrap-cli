@@ -1,8 +1,8 @@
-format: 0.1.0
+format: 0.1.1
 language: plugin/typescript
 name: GraphNode
 module: ./src/index.ts
 schema: ./src/schema.graphql
 import_redirects:
   - uri: "ens/http.polywrap.eth"
-    schema: ../http/build/wrap.info
+    info: ../http/build/wrap.info

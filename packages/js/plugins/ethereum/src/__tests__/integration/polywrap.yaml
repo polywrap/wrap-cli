@@ -1,7 +1,10 @@
-format: 0.1.0
+format: 0.1.1
 name: EthereumIntegration
 build: ./polywrap.build.yaml
 language: wasm/assemblyscript
 module: ./src/index.ts
 schema: ./src/schema.graphql
+import_redirects:
+  - uri: "wrap://ens/ethereum.polywrap.eth"
+    info: ../../../build/wrap.info
 

@@ -1,5 +1,5 @@
 import { HttpPlugin } from "../..";
-import { ResponseTypeEnum, Client } from "../../wrap";
+import { ResponseTypeEnum, Client } from "../../wrap-man";
 
 import axios, { AxiosResponse, AxiosRequestConfig } from "axios";
 

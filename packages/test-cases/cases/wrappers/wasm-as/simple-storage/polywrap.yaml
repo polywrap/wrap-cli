@@ -7,4 +7,4 @@ schema: ./schema.graphql
 module: ./src/index.ts
 import_redirects:
   - uri: "wrap://ens/ethereum.polywrap.eth"
-    info: ../../../../../js/plugins/ethereum/build-man/wrap.info
+    info: ../../../../../js/plugins/ethereum/build/wrap.info

@@ -1,10 +1,10 @@
-format: 0.1.0
+format: 0.1.1
 name: FileSystemResolver
 language: plugin/typescript
 module: ./src/index.ts
 schema: ./src/schema.graphql
 import_redirects:
   - uri: "ens/uri-resolver.core.polywrap.eth"
-    schema: ../../../../interfaces/uri-resolver/build-man/wrap.info
+    info: ../../../../interfaces/uri-resolver/build-man/wrap.info
   - uri: "ens/fs.polywrap.eth"
-    schema: ../../../../interfaces/file-system/build-man/wrap.info
+    info: ../../../../interfaces/file-system/build-man/wrap.info

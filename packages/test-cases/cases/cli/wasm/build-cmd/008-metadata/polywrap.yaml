@@ -1,4 +1,4 @@
-format: 0.1.0
+format: 0.1.1
 name: test-project
 language: wasm/assemblyscript
 meta: ./polywrap.meta.yaml

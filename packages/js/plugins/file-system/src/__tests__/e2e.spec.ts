@@ -1,6 +1,6 @@
 import { fileSystemPlugin } from "../index";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
-import { FileSystem_Module, FileSystem_EncodingEnum } from "../wrap";
+import { FileSystem_Module, FileSystem_EncodingEnum } from "../wrap-man";
 import fs from "fs";
 import path from "path";
 import fileSystemEncodingToBufferEncoding from "../utils/fileSystemEncodingToBufferEncoding";

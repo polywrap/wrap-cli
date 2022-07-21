@@ -17,7 +17,7 @@
     "codegen:patch": "node ../../../../cli/bin/polywrap plugin codegen && rimraf ./src/wrap",
     "lint": "eslint --color -c ../../../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
-    "test:ci": "yarn codegen && yarn test",
+    "test:ci": "yarn test",
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
