@@ -1,1 +1,1 @@
-#import * into HelloWorld from "ens/helloworld.polywrap.eth"
+#import * into HelloWorld from "wrap://ipfs/QmbD6vJJRXQRj1YLszjhxNjUrCj8xRzbokc2vLYMcR8ZuQ"
