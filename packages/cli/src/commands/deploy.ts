@@ -7,6 +7,7 @@ import {
   intlMsg,
   parseWasmManifestFileOption,
   PolywrapProject,
+  ResultList,
 } from "../lib";
 
 import { DeployManifest } from "@polywrap/polywrap-manifest-types-js";
@@ -36,6 +37,10 @@ export const deploy: Command = {
           default: defaultManifestStr,
         })}`
       )
+      .option(
+        `-o, --output-file <${pathStr}>`,
+        `${intlMsg.commands_deploy_options_o}`
+      )
       .option(`-v, --verbose`, `${intlMsg.commands_deploy_options_v()}`)
       .action(async (options) => {
         await run({
@@ -50,7 +55,7 @@ export const deploy: Command = {
 };
 
 async function run(options: DeployCommandOptions): Promise<void> {
-  const { manifestFile, verbose } = options;
+  const { manifestFile, verbose, outputFile } = options;
 
   const project = new PolywrapProject({
     rootDir: nodePath.dirname(manifestFile),
@@ -119,13 +124,40 @@ async function run(options: DeployCommandOptions): Promise<void> {
 
   // Execute roots
 
+  const resultLists: ResultList[] = [];
+
   for await (const root of roots) {
     print.info(`\nExecuting deployment chain: \n`);
     root.handler.getDependencyTree().printTree();
     print.info("");
     await root.handler.handle(root.uri);
+    resultLists.push(root.handler.getResultsList());
   }
 
+  const getResults = (
+    resultList: ResultList,
+    prefix?: string
+  ): {
+    name: string;
+    input: unknown;
+    result: string;
+  }[] => {
+    const id = prefix ? `${prefix}.${resultList.name}` : resultList.name;
+
+    return [
+      {
+        name: id,
+        input: resultList.input,
+        result: resultList.result,
+      },
+      ...resultList.children.flatMap((r) => getResults(r, id)),
+    ];
+  };
+
+  if (outputFile) {
+    const resultOutput = resultLists.flatMap((r) => getResults(r));
+    fs.writeFileSync(outputFile, JSON.stringify(resultOutput, null, 2));
+  }
   return;
 }
 
