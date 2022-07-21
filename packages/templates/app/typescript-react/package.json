@@ -31,13 +31,13 @@
     "polywrap": "0.2.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "react-app-rewired start",
     "prestart": "yarn codegen",
-    "build": "react-scripts build",
+    "build": "react-app-rewired build",
     "prebuild": "yarn codegen",
     "codegen": "npx polywrap app codegen",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "test": "react-app-rewired test",
+    "eject": "react-app-rewired eject"
   },
   "eslintConfig": {
     "root": true,
