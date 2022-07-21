@@ -42,7 +42,7 @@ describe("resolveUri", () => {
             },
           },
         },
-        ipfs: { provider: ipfsProvider },
+        ipfs: {},
         ens: {
           addresses: {
             testnet: ensAddresses.ensAddress,

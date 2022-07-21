@@ -20,6 +20,18 @@ interface PluginConfigSource {
 
 const plugins: PluginConfigSource[] = [
   {
+    name: "Ipfs",
+    module: "@polywrap/ipfs-plugin-js",
+    uri: "wrap://ens/ipfs.polywrap.eth",
+    config: "NoConfig",
+    files: [
+      {
+        name: "build/index.d.ts",
+        types: ["NoConfig"]
+      },
+    ],
+  },
+  {
     name: "Ethereum",
     module: "@polywrap/ethereum-plugin-js",
     uri: "wrap://ens/ethereum.polywrap.eth",

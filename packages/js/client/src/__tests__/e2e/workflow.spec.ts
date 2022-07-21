@@ -4,9 +4,14 @@ import {
   initTestEnvironment,
   stopTestEnvironment,
   ensAddresses,
-  providers
+  providers,
 } from "@polywrap/test-env-js";
-import { createPolywrapClient, JobResult, PolywrapClient, PolywrapClientConfig } from "../..";
+import {
+  createPolywrapClient,
+  JobResult,
+  PolywrapClient,
+  PolywrapClientConfig,
+} from "../..";
 import { outPropWorkflow, sanityWorkflow } from "./workflow-test-cases";
 
 jest.setTimeout(200000);
@@ -34,14 +39,25 @@ describe("workflow", () => {
           },
           defaultNetwork: "testnet",
         },
-        ipfs: { provider: ipfsProvider },
+        ipfs: {},
         ens: {
           addresses: {
             testnet: ensAddress,
           },
         },
       },
-      config
+      {
+        ...config,
+        envs: [
+          ...(config?.envs ?? []),
+          {
+            uri: "wrap://ens/ipfs.polywrap.eth",
+            env: {
+              provider: ipfsProvider,
+            },
+          },
+        ],
+      }
     );
   };
 
@@ -75,9 +91,7 @@ describe("workflow", () => {
       "cases.case1.0": async (data: unknown, error: unknown) => {
         expect(error).toBeFalsy();
         expect(data).toBeTruthy();
-        expect(data).toContain(
-          "0x"
-        );
+        expect(data).toContain("0x");
       },
       "cases.case1.1": async (data: unknown, error: unknown) => {
         expect(error).toBeFalsy();

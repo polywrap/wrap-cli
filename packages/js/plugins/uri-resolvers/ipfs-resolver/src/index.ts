@@ -41,7 +41,7 @@ export class IpfsResolverPlugin extends Module<NoConfig> {
           cid: `${args.path}/${manifestSearchPattern}`,
           options: {
             timeout: this.env.timeouts?.tryResolveUri,
-            disableParallelRequests: this.env.disableParallelRequests
+            disableParallelRequests: this.env.disableParallelRequests,
           },
         },
         _client
@@ -67,20 +67,20 @@ export class IpfsResolverPlugin extends Module<NoConfig> {
     try {
       let provider: string | undefined = undefined;
 
-      if(!this.env.skipCheckIfExistsBeforeGetFile){
+      if (!this.env.skipCheckIfExistsBeforeGetFile) {
         const resolveResult = await Ipfs_Module.resolve(
           {
             cid: args.path,
             options: {
               timeout: this.env.timeouts?.checkIfExists,
-              disableParallelRequests: this.env.disableParallelRequests
+              disableParallelRequests: this.env.disableParallelRequests,
             },
           },
           client
         );
-  
+
         const result = resolveResult.data;
-  
+
         if (!result) {
           return null;
         }

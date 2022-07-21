@@ -40,7 +40,7 @@ const getOptions = (
   return options;
 };
 
-type NoConfig = Record<string, never>;
+export type NoConfig = Record<string, never>;
 
 export class IpfsPlugin extends Module<NoConfig> {
   public async cat(args: Args_cat, _client: Client): Promise<Buffer> {

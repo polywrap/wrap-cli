@@ -3,15 +3,15 @@ import {
   ensAddresses,
   initTestEnvironment,
   stopTestEnvironment,
-  providers
+  providers,
 } from "@polywrap/test-env-js";
-import { msgpackDecode } from "@polywrap/msgpack-js"
+import { msgpackDecode } from "@polywrap/msgpack-js";
 import {
   Uri,
   createPolywrapClient,
   PolywrapClientConfig,
   PluginModule,
-  Subscription
+  Subscription,
 } from "../..";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import fs from "fs";
@@ -49,14 +49,24 @@ describe("wasm-wrapper", () => {
             },
           },
         },
-        ipfs: { provider: ipfsProvider },
+        ipfs: {},
         ens: {
           addresses: {
             testnet: ensAddress,
           },
         },
       },
-      config
+      {
+        ...config,
+        envs: [
+          {
+            uri: "wrap://ens/ipfs.polywrap.eth",
+            env: {
+              provider: ipfsProvider,
+            },
+          },
+        ],
+      }
     );
   };
 
@@ -247,7 +257,7 @@ describe("wasm-wrapper", () => {
     })) as Uint8Array;
     const decoder = new TextDecoder("utf8");
     const text = decoder.decode(fileBuffer);
-    
+
     expect(text).toEqual(expectedSchema);
 
     await expect(() =>

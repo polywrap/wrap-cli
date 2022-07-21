@@ -51,18 +51,18 @@ export async function getTestEnvClientConfig(): Promise<
     },
   ];
 
-  const envs : Env[] = [
+  const envs: Env[] = [
     {
       uri: "wrap://ens/ipfs.polywrap.eth",
       env: {
         provider: ipfsProvider,
         fallbackProviders: defaultIpfsProviders,
-      }
-    }
+      },
+    },
   ];
 
   return {
     plugins,
-    envs
+    envs,
   };
 }
