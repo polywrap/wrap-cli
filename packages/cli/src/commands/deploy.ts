@@ -41,7 +41,7 @@ export const deploy: Command = {
       )
       .option(
         `-o, --output-file <${pathStr}>`,
-        `${intlMsg.commands_deploy_options_o}`
+        `${intlMsg.commands_deploy_options_o()}`
       )
       .option(`-v, --verbose`, `${intlMsg.commands_deploy_options_v()}`)
       .action(async (options) => {
