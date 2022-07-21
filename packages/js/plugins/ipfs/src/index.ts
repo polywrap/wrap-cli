@@ -3,8 +3,8 @@ import {
   Args_resolve,
   Args_addFile,
   Args_cat,
-  Ipfs_Options,
   Ipfs_ResolveResult,
+  Options,
   manifest,
   Env,
 } from "./wrap";
@@ -19,10 +19,7 @@ const isNullOrUndefined = (arg: unknown) => {
   return arg === undefined || arg === null;
 };
 
-const getOptions = (
-  args: Ipfs_Options | undefined | null,
-  env: Env
-): Ipfs_Options => {
+const getOptions = (args: Options | undefined | null, env: Env): Options => {
   const options = args || {};
 
   if (isNullOrUndefined(options.disableParallelRequests)) {
@@ -35,6 +32,10 @@ const getOptions = (
 
   if (isNullOrUndefined(options.provider)) {
     options.provider = env.provider;
+  }
+
+  if (isNullOrUndefined(options.fallbackProviders)) {
+    options.fallbackProviders = env.fallbackProviders;
   }
 
   return options;
@@ -101,7 +102,7 @@ export class IpfsPlugin extends Module<NoConfig> {
       provider: string,
       options: unknown
     ) => Promise<TReturn>,
-    options?: Ipfs_Options
+    options?: Options
   ): Promise<TReturn> {
     const defaultIpfsClient = createIpfsClient(this.env.provider);
 
@@ -127,6 +128,15 @@ export class IpfsPlugin extends Module<NoConfig> {
       providers = [options.provider, ...providers];
       ipfs = createIpfsClient(options.provider);
       defaultProvider = options.provider;
+    }
+
+    //insert fallback providers before the env providers and fallbacks
+    if (options.fallbackProviders) {
+      providers = [
+        providers[0],
+        ...options.fallbackProviders,
+        ...providers.slice(1),
+      ];
     }
 
     return await execFallbacks(

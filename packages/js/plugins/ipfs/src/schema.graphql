@@ -19,5 +19,9 @@ type Env {
   fallbackProviders: [String!]
 }
 
+type Options implements Ipfs_Options {
+  fallbackProviders: [String!]
+}
+
 type Module implements Ipfs_Module {
 }
