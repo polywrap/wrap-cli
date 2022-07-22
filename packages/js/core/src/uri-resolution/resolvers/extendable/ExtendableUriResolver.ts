@@ -6,18 +6,28 @@ import {
   coreInterfaceUris,
 } from "../../..";
 import { CreateWrapperFunc } from "./types/CreateWrapperFunc";
-import { UriResolutionResult } from "../../core/types/UriResolutionResult";
-import { UriResolver, UriResolutionStack } from "../../core";
+import { UriResolver } from "../../core";
 import { UriResolverWrapper } from "./UriResolverWrapper";
 import { Queue } from "../../../utils/Queue";
 
 import { DeserializeManifestOptions } from "@polywrap/wrap-manifest-types-js";
+import { UriResolutionStep } from "../../core";
+import { ResolveUriResult } from "../../core";
 
-export type ExtendableUriResolverResult = UriResolutionResult & {
+export type ExtendableUriResolverResult = ResolveUriResult<LoadResolverExtensionsError> & {
   implementationUri?: Uri;
 };
 
-export class ExtendableUriResolver implements UriResolver {
+export class LoadResolverExtensionsError {
+  readonly message: string;
+
+  constructor(public readonly failedUriResolvers: string[]) {
+    this.message = `Could not load the following URI Resolver implementations: ${failedUriResolvers}`;
+  }
+}
+
+export class ExtendableUriResolver
+  implements UriResolver<LoadResolverExtensionsError> {
   private _hasLoadedUriResolvers: boolean;
 
   constructor(
@@ -34,11 +44,11 @@ export class ExtendableUriResolver implements UriResolver {
     return ExtendableUriResolver.name;
   }
 
-  async resolveUri(
+  async tryResolveToWrapper(
     uri: Uri,
     client: Client,
     cache: WrapperCache,
-    resolutionPath: UriResolutionStack
+    resolutionPath: UriResolutionStep[]
   ): Promise<ExtendableUriResolverResult> {
     const uriResolverImpls = getImplementations(
       coreInterfaceUris.uriResolver,
@@ -55,9 +65,7 @@ export class ExtendableUriResolver implements UriResolver {
       if (!success) {
         return {
           uri: uri,
-          error: new Error(
-            `Could not load the following URI Resolver implementations: ${failedUriResolvers}`
-          ),
+          error: new LoadResolverExtensionsError(failedUriResolvers),
         };
       }
 
@@ -69,7 +77,7 @@ export class ExtendableUriResolver implements UriResolver {
     );
 
     for (const resolver of resolvers) {
-      const result = await resolver.resolveUri(
+      const result = await resolver.tryResolveToWrapper(
         uri,
         client,
         cache,
@@ -118,7 +126,8 @@ export class ExtendableUriResolver implements UriResolver {
       // Use only loadeded URI resolver extensions to resolve the implementation URI
       // If successful, it is added to the list of loaded implementations
 
-      const { wrapper } = await client.resolveUri(implementationUri, {
+      const { wrapper } = await client.tryResolveToWrapper({
+        uri: implementationUri,
         config: {
           uriResolvers: [
             ...bootstrapUriResolvers,

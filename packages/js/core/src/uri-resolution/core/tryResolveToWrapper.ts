@@ -1,22 +1,25 @@
 import { Wrapper, WrapperCache, Client, Uri } from "../../types";
-import { UriResolutionHistory } from "./types/UriResolutionHistory";
-import { UriResolutionStack } from "./types/UriResolutionStack";
-import { UriResolutionResult } from "./types/UriResolutionResult";
-import { UriResolver } from "./types/UriResolver";
-import { ResolveUriErrorType, ResolveUriResult } from "./types";
-import { InternalResolverError } from "./types/InternalResolverError";
+import {
+  UriResolver,
+  UriResolutionResult,
+  UriResolutionStep,
+  InfiniteLoopError,
+  UriResolverError,
+  getUriResolutionPath,
+} from ".";
 
 import { Tracer } from "@polywrap/tracing-js";
+import { ResolveUriResult } from "./types";
 
-export const resolveUri = async (
+export const tryResolveToWrapper = async (
   uri: Uri,
-  uriResolvers: readonly UriResolver[],
+  uriResolvers: readonly UriResolver<unknown>[],
   client: Client,
   cache: WrapperCache
-): Promise<ResolveUriResult> => {
+): Promise<UriResolutionResult> => {
   // Keep track of past URIs to avoid infinite loops
   const visitedUriMap: Map<string, boolean> = new Map<string, boolean>();
-  const uriResolutionStack: UriResolutionStack = [];
+  const history: UriResolutionStep[] = [];
 
   let currentUri: Uri = uri;
   let wrapper: Wrapper | undefined;
@@ -36,21 +39,19 @@ export const resolveUri = async (
         return {
           uri: currentUri,
           wrapper,
-          uriHistory: new UriResolutionHistory(uriResolutionStack),
-          error: {
-            type: ResolveUriErrorType.InfiniteLoop,
-          },
+          history,
+          error: new InfiniteLoopError(),
         };
       }
 
-      const result = await resolver.resolveUri(
+      const result = await resolver.tryResolveToWrapper(
         currentUri,
         client,
         cache,
-        new UriResolutionHistory(uriResolutionStack).getResolutionPath().stack
+        getUriResolutionPath(history)
       );
 
-      trackUriHistory(currentUri, resolver, result, uriResolutionStack);
+      trackUriHistory(currentUri, resolver, result, history);
 
       if (result.wrapper) {
         wrapper = result.wrapper;
@@ -73,8 +74,8 @@ export const resolveUri = async (
       } else if (result.error) {
         return {
           uri: currentUri,
-          uriHistory: new UriResolutionHistory(uriResolutionStack),
-          error: new InternalResolverError(resolver.name, result.error),
+          history,
+          error: new UriResolverError(resolver.name, result.error),
         };
       }
     }
@@ -83,7 +84,7 @@ export const resolveUri = async (
   return {
     uri: currentUri,
     wrapper,
-    uriHistory: new UriResolutionHistory(uriResolutionStack),
+    history,
   };
 };
 
@@ -103,11 +104,11 @@ const trackVisitedUri = (uri: string, visitedUriMap: Map<string, boolean>) => {
 
 const trackUriHistory = (
   sourceUri: Uri,
-  resolver: UriResolver,
-  result: UriResolutionResult,
-  uriResolutionStack: UriResolutionStack
+  resolver: UriResolver<unknown>,
+  result: ResolveUriResult<unknown>,
+  history: UriResolutionStep[]
 ) => {
-  uriResolutionStack.push({
+  history.push({
     uriResolver: resolver.name,
     sourceUri,
     result: {

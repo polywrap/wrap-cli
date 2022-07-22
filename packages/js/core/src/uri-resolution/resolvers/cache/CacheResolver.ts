@@ -1,16 +1,16 @@
 import { Uri, Client, WrapperCache } from "../../../types";
-import { UriResolver, UriResolutionResult } from "../../core";
+import { ResolveUriResult, UriResolver } from "../../core";
 
-export class CacheResolver implements UriResolver {
+export class CacheResolver implements UriResolver<void> {
   public get name(): string {
     return CacheResolver.name;
   }
 
-  public async resolveUri(
+  public async tryResolveToWrapper(
     uri: Uri,
     client: Client,
     cache: WrapperCache
-  ): Promise<UriResolutionResult> {
+  ): Promise<ResolveUriResult<void>> {
     const wrapper = cache.get(uri.uri);
 
     return Promise.resolve({

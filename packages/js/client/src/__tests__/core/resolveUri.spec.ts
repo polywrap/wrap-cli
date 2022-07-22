@@ -3,8 +3,11 @@ import { buildWrapper } from "@polywrap/test-env-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import {
   coreInterfaceUris,
+  LoadResolverExtensionsError,
   PluginModule,
-  ResolveUriErrorType,
+  UriResolutionErrorType,
+  UriResolutionHistoryType,
+  UriResolverError,
 } from "@polywrap/core-js";
 import { getClient } from "../utils/getClient";
 
@@ -35,15 +38,16 @@ describe("resolveUri", () => {
 
     const client = await getClient();
 
-    const result = await client.resolveUri(uri);
+    const result = await client.tryResolveToWrapper({
+      uri,
+      history: UriResolutionHistoryType.Full,
+    });
 
     expect(result.uri).toEqual(uri);
     expect(result.wrapper).toBeFalsy();
     expect(result.error).toBeFalsy();
 
-    expect(result.uriHistory.getResolutionPath().getUriResolvers()).toEqual([]);
-
-    expect(result.uriHistory.stack).toEqual([
+    expect(result.history).toEqual([
       {
         uriResolver: "RedirectsResolver",
         sourceUri: uri,
@@ -77,13 +81,6 @@ describe("resolveUri", () => {
         },
       },
     ]);
-    expect(result.uriHistory.getUriResolvers()).toEqual([
-      "RedirectsResolver",
-      "CacheResolver",
-      "PluginResolver",
-      "ExtendableUriResolver",
-    ]);
-    expect(result.uriHistory.getUris()).toMatchObject([new Uri("ens/uri.eth")]);
   });
 
   it("can resolve redirects", async () => {
@@ -104,17 +101,16 @@ describe("resolveUri", () => {
       ],
     });
 
-    const result = await client.resolveUri(fromUri);
+    const result = await client.tryResolveToWrapper({
+      uri: fromUri,
+      history: UriResolutionHistoryType.Full,
+    });
 
     expect(result.uri).toEqual(toUri2);
     expect(result.wrapper).toBeFalsy();
     expect(result.error).toBeFalsy();
 
-    expect(result.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
-      "RedirectsResolver",
-    ]);
-
-    expect(result.uriHistory.stack).toEqual([
+    expect(result.history).toEqual([
       {
         uriResolver: "RedirectsResolver",
         sourceUri: fromUri,
@@ -178,13 +174,12 @@ describe("resolveUri", () => {
       ],
     });
 
-    const result = await client.resolveUri(pluginUri);
+    const result = await client.tryResolveToWrapper({
+      uri: pluginUri,
+      history: UriResolutionHistoryType.Full,
+    });
 
-    expect(result.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
-      "PluginResolver",
-    ]);
-
-    expect(result.uriHistory.stack).toEqual([
+    expect(result.history).toEqual([
       {
         uriResolver: "RedirectsResolver",
         sourceUri: pluginUri,
@@ -229,8 +224,13 @@ describe("resolveUri", () => {
     const sourceUri = new Uri(`simple/${wrapperPath}/build`);
     const redirectedUri = wrapperUri;
 
-    const result = await client.resolveUri(sourceUri);
-    expect(result.uriHistory.stack).toEqual([
+    const result = await client.tryResolveToWrapper({
+      uri: sourceUri,
+      history: UriResolutionHistoryType.Full,
+    });
+    console.log("uri history aaaaaaaaaaaaa", result.history);
+
+    expect(result.history).toEqual([
       {
         uriResolver: "RedirectsResolver",
         sourceUri: sourceUri,
@@ -299,11 +299,6 @@ describe("resolveUri", () => {
       },
     ]);
 
-    expect(result.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
-      "ExtendableUriResolver",
-      "ExtendableUriResolver",
-    ]);
-
     expect(result.wrapper).toBeTruthy();
     expect(result.uri).toEqual(redirectedUri);
     expect(result.error).toBeFalsy();
@@ -312,17 +307,16 @@ describe("resolveUri", () => {
   it("can resolve cache", async () => {
     const client = await getClient();
 
-    const result = await client.resolveUri(wrapperUri);
+    const result = await client.tryResolveToWrapper({
+      uri: wrapperUri,
+      history: UriResolutionHistoryType.Full,
+    });
 
     expect(result.wrapper).toBeTruthy();
     expect(result.uri).toEqual(wrapperUri);
     expect(result.error).toBeFalsy();
 
-    expect(result.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
-      "ExtendableUriResolver",
-    ]);
-
-    expect(result.uriHistory.stack).toEqual([
+    expect(result.history).toEqual([
       {
         uriResolver: "RedirectsResolver",
         sourceUri: wrapperUri,
@@ -358,17 +352,16 @@ describe("resolveUri", () => {
       },
     ]);
 
-    const result2 = await client.resolveUri(wrapperUri);
+    const result2 = await client.tryResolveToWrapper({
+      uri: wrapperUri,
+      history: UriResolutionHistoryType.Full,
+    });
 
     expect(result2.wrapper).toBeTruthy();
     expect(result2.uri).toEqual(wrapperUri);
     expect(result2.error).toBeFalsy();
 
-    expect(result2.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
-      "CacheResolver",
-    ]);
-
-    expect(result2.uriHistory.stack).toEqual([
+    expect(result2.history).toEqual([
       {
         uriResolver: "RedirectsResolver",
         sourceUri: wrapperUri,
@@ -391,17 +384,18 @@ describe("resolveUri", () => {
   it("can resolve cache - noCacheRead", async () => {
     const client = await getClient();
 
-    const result = await client.resolveUri(wrapperUri);
+    const result = await client.tryResolveToWrapper({
+      uri: wrapperUri,
+      history: UriResolutionHistoryType.Full,
+    });
 
     expect(result.wrapper).toBeTruthy();
     expect(result.uri).toEqual(wrapperUri);
     expect(result.error).toBeFalsy();
 
-    expect(result.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
-      "ExtendableUriResolver",
-    ]);
+    expect(result.history).toEqual(["ExtendableUriResolver"]);
 
-    expect(result.uriHistory.stack).toEqual([
+    expect(result.history).toEqual([
       {
         uriResolver: "RedirectsResolver",
         sourceUri: wrapperUri,
@@ -437,17 +431,17 @@ describe("resolveUri", () => {
       },
     ]);
 
-    const result2 = await client.resolveUri(wrapperUri, { noCacheRead: true });
+    const result2 = await client.tryResolveToWrapper({
+      uri: wrapperUri,
+      history: UriResolutionHistoryType.Full,
+      noCacheRead: true,
+    });
 
     expect(result2.wrapper).toBeTruthy();
     expect(result2.uri).toEqual(wrapperUri);
     expect(result2.error).toBeFalsy();
 
-    expect(result2.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
-      "ExtendableUriResolver",
-    ]);
-
-    expect(result2.uriHistory.stack).toEqual([
+    expect(result2.history).toEqual([
       {
         uriResolver: "RedirectsResolver",
         sourceUri: wrapperUri,
@@ -479,17 +473,17 @@ describe("resolveUri", () => {
   it("can resolve cache - noCacheWrite", async () => {
     const client = await getClient();
 
-    const result = await client.resolveUri(wrapperUri, { noCacheWrite: true });
+    const result = await client.tryResolveToWrapper({
+      uri: wrapperUri,
+      history: UriResolutionHistoryType.Full,
+      noCacheWrite: true,
+    });
 
     expect(result.wrapper).toBeTruthy();
     expect(result.uri).toEqual(wrapperUri);
     expect(result.error).toBeFalsy();
 
-    expect(result.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
-      "ExtendableUriResolver",
-    ]);
-
-    expect(result.uriHistory.stack).toEqual([
+    expect(result.history).toEqual([
       {
         uriResolver: "RedirectsResolver",
         sourceUri: wrapperUri,
@@ -525,17 +519,16 @@ describe("resolveUri", () => {
       },
     ]);
 
-    const result2 = await client.resolveUri(wrapperUri);
+    const result2 = await client.tryResolveToWrapper({
+      uri: wrapperUri,
+      history: UriResolutionHistoryType.Full,
+    });
 
     expect(result2.wrapper).toBeTruthy();
     expect(result2.uri).toEqual(wrapperUri);
     expect(result2.error).toBeFalsy();
 
-    expect(result2.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
-      "ExtendableUriResolver",
-    ]);
-
-    expect(result2.uriHistory.stack).toEqual([
+    expect(result2.history).toEqual([
       {
         uriResolver: "RedirectsResolver",
         sourceUri: wrapperUri,
@@ -589,18 +582,16 @@ describe("resolveUri", () => {
     const redirectedUri = new Uri(`simple/${wrapperPath}/build`);
     const finalUri = wrapperUri;
 
-    const result = await client.resolveUri(redirectedUri);
+    const result = await client.tryResolveToWrapper({
+      uri: redirectedUri,
+      history: UriResolutionHistoryType.Full,
+    });
 
     expect(result.wrapper).toBeTruthy();
     expect(result.uri).toEqual(finalUri);
     expect(result.error).toBeFalsy();
 
-    expect(result.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
-      "ExtendableUriResolver",
-      "ExtendableUriResolver",
-    ]);
-
-    expect(result.uriHistory.stack).toEqual([
+    expect(result.history).toEqual([
       {
         uriResolver: "RedirectsResolver",
         sourceUri: redirectedUri,
@@ -669,18 +660,16 @@ describe("resolveUri", () => {
       },
     ]);
 
-    const result2 = await client.resolveUri(sourceUri);
+    const result2 = await client.tryResolveToWrapper({
+      uri: sourceUri,
+      history: UriResolutionHistoryType.Full,
+    });
 
     expect(result2.wrapper).toBeTruthy();
     expect(result2.uri).toEqual(redirectedUri);
     expect(result2.error).toBeFalsy();
 
-    expect(result2.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
-      "ExtendableUriResolver",
-      "CacheResolver",
-    ]);
-
-    expect(result2.uriHistory.stack).toEqual([
+    expect(result2.history).toEqual([
       {
         uriResolver: "RedirectsResolver",
         sourceUri: sourceUri,
@@ -758,18 +747,16 @@ describe("resolveUri", () => {
       ],
     });
 
-    const result = await client.resolveUri(sourceUri);
+    const result = await client.tryResolveToWrapper({
+      uri: sourceUri,
+      history: UriResolutionHistoryType.Full,
+    });
 
     expect(result.wrapper).toBeFalsy();
     expect(result.uri).toEqual(finalRedirectedUri);
     expect(result.error).toBeFalsy();
 
-    expect(result.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
-      "ExtendableUriResolver",
-      "RedirectsResolver",
-    ]);
-
-    expect(result.uriHistory.stack).toEqual([
+    expect(result.history).toEqual([
       {
         uriResolver: "RedirectsResolver",
         sourceUri: sourceUri,
@@ -854,7 +841,7 @@ describe("resolveUri", () => {
       uriResolvers: [
         {
           name: "CustomResolver",
-          resolveUri: async (uri: Uri) => {
+          tryResolveToWrapper: async (uri: Uri) => {
             if (uri.uri === ensUri.uri) {
               return {
                 uri: redirectUri,
@@ -869,17 +856,16 @@ describe("resolveUri", () => {
       ],
     });
 
-    const result = await client.resolveUri(ensUri);
+    const result = await client.tryResolveToWrapper({
+      uri: ensUri,
+      history: UriResolutionHistoryType.Full,
+    });
 
     expect(result.wrapper).toBeFalsy();
     expect(result.uri).toEqual(redirectUri);
     expect(result.error).toBeFalsy();
 
-    expect(result.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
-      "CustomResolver",
-    ]);
-
-    expect(result.uriHistory.stack).toEqual([
+    expect(result.history).toEqual([
       {
         uriResolver: "CustomResolver",
         sourceUri: ensUri,
@@ -937,12 +923,14 @@ describe("resolveUri", () => {
 
     const client = await getClient();
 
-    const result = await client.resolveUri(ensUri, {
+    const result = await client.tryResolveToWrapper({
+      uri: ensUri,
+      history: UriResolutionHistoryType.Full,
       config: {
         uriResolvers: [
           {
             name: "CustomResolver",
-            resolveUri: async (uri: Uri) => {
+            tryResolveToWrapper: async (uri: Uri) => {
               if (uri.uri === ensUri.uri) {
                 return {
                   uri: redirectUri,
@@ -962,11 +950,7 @@ describe("resolveUri", () => {
     expect(result.uri).toEqual(redirectUri);
     expect(result.error).toBeFalsy();
 
-    expect(result.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
-      "CustomResolver",
-    ]);
-
-    expect(result.uriHistory.stack).toEqual([
+    expect(result.history).toEqual([
       {
         uriResolver: "CustomResolver",
         sourceUri: ensUri,
@@ -996,15 +980,20 @@ describe("resolveUri", () => {
       ],
     });
 
-    const { error } = await client.resolveUri("ens/test.eth");
+    const { error } = await client.tryResolveToWrapper({
+      uri: "ens/test.eth",
+      history: UriResolutionHistoryType.Full,
+    });
 
     expect(error).toBeTruthy();
     if (!error) {
       throw Error();
     }
 
-    expect(error.type).toEqual(ResolveUriErrorType.InternalResolver);
-    expect(error.error?.message).toEqual(
+    expect(error.type).toEqual(UriResolutionErrorType.UriResolver);
+    expect(
+      (error as UriResolverError<LoadResolverExtensionsError>).error.message
+    ).toEqual(
       "Could not load the following URI Resolver implementations: wrap://ens/test-resolver.eth"
     );
   });
@@ -1023,15 +1012,20 @@ describe("resolveUri", () => {
     expect(success).toBeFalsy();
     expect(failedUriResolvers).toEqual(["wrap://ens/test-resolver.eth"]);
 
-    const { error } = await client.resolveUri("ens/test.eth");
+    const { error } = await client.tryResolveToWrapper({
+      uri: "ens/test.eth",
+      history: UriResolutionHistoryType.Full,
+    });
     expect(error).toBeTruthy();
 
     if (!error) {
       throw Error();
     }
 
-    expect(error.type).toEqual(ResolveUriErrorType.InternalResolver);
-    expect(error.error?.message).toEqual(
+    expect(error.type).toEqual(UriResolutionErrorType.UriResolver);
+    expect(
+      (error as UriResolverError<LoadResolverExtensionsError>).error.message
+    ).toEqual(
       "Could not load the following URI Resolver implementations: wrap://ens/test-resolver.eth"
     );
   });
@@ -1044,7 +1038,10 @@ describe("resolveUri", () => {
     expect(success).toBeTruthy();
     expect(failedUriResolvers.length).toEqual(0);
 
-    const { error, uri, wrapper } = await client.resolveUri("ens/test.eth");
+    const { wrapper, uri, error } = await client.tryResolveToWrapper({
+      uri: "ens/test.eth",
+      history: UriResolutionHistoryType.Full,
+    });
 
     expect(error).toBeFalsy();
     expect(wrapper).toBeFalsy();

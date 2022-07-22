@@ -1,13 +1,13 @@
 import { WrapperCache, Client, Uri } from "../../../types";
-import { UriResolutionResult, UriResolutionStack } from ".";
+import { ResolveUriResult, UriResolutionStep } from ".";
 
-export abstract class UriResolver {
+export abstract class UriResolver<TResolutionError> {
   public abstract get name(): string;
 
-  public abstract resolveUri(
+  public abstract tryResolveToWrapper(
     uri: Uri,
     client: Client,
     cache: WrapperCache,
-    resolutionPath: UriResolutionStack
-  ): Promise<UriResolutionResult>;
+    resolutionPath: UriResolutionStep[]
+  ): Promise<ResolveUriResult<TResolutionError>>;
 }

@@ -1,6 +1,6 @@
 import { Uri } from "../../../types";
 
-export interface UriResolutionInfo {
+export interface UriResolutionStep {
   uriResolver: string;
   sourceUri: Uri;
   result: {

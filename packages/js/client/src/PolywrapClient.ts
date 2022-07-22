@@ -29,11 +29,11 @@ import {
   createQueryDocument,
   getImplementations,
   parseQuery,
-  ResolveUriOptions,
-  ResolveUriResult,
+  TryResolveToWrapperOptions,
+  getUriResolutionPath,
   UriResolver,
   GetUriResolversOptions,
-  resolveUri,
+  tryResolveToWrapper,
   sanitizeEnvs,
   sanitizeInterfaceImplementations,
   sanitizePluginRegistrations,
@@ -42,10 +42,14 @@ import {
   ExtendableUriResolver,
   coreInterfaceUris,
   Contextualized,
-  ResolveUriErrorType,
   JobRunner,
   PluginPackage,
   RunOptions,
+  UriResolutionResult,
+  UriResolutionHistoryType,
+  UriResolutionErrorType,
+  LoadResolverExtensionsError,
+  UriResolverError,
 } from "@polywrap/core-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
@@ -155,7 +159,7 @@ export class PolywrapClient implements Client {
   @Tracer.traceMethod("PolywrapClient: getUriResolvers")
   public getUriResolvers(
     options: GetUriResolversOptions = {}
-  ): readonly UriResolver[] {
+  ): readonly UriResolver<unknown>[] {
     return this._getConfig(options.contextId).uriResolvers;
   }
 
@@ -468,12 +472,9 @@ export class PolywrapClient implements Client {
   }
 
   @Tracer.traceMethod("PolywrapClient: resolveUri")
-  public async resolveUri<TUri extends Uri | string>(
-    uri: TUri,
-    options?: ResolveUriOptions<ClientConfig>
-  ): Promise<ResolveUriResult> {
-    options = options || {};
-
+  public async tryResolveToWrapper<TUri extends Uri | string>(
+    options: TryResolveToWrapperOptions<TUri, ClientConfig>
+  ): Promise<UriResolutionResult> {
     const { contextId, shouldClearContext } = this._setContext(
       options.contextId,
       options.config
@@ -490,16 +491,23 @@ export class PolywrapClient implements Client {
     if (!cacheRead) {
       uriResolvers = uriResolvers.filter((x) => x.name !== CacheResolver.name);
     }
-    const { wrapper, uri: resolvedUri, uriHistory, error } = await resolveUri(
-      this._toUri(uri),
+
+    const {
+      wrapper,
+      uri: resolvedUri,
+      history,
+      error,
+    } = await tryResolveToWrapper(
+      this._toUri(options.uri),
       uriResolvers,
       client,
       this._wrapperCache
     );
 
+    const resolutionPath = getUriResolutionPath(history);
     // Update cache for all URIs in the chain
     if (cacheWrite && wrapper) {
-      for (const item of uriHistory.getResolutionPath().stack) {
+      for (const item of resolutionPath) {
         this._wrapperCache.set(item.sourceUri.uri, wrapper);
       }
     }
@@ -511,7 +519,10 @@ export class PolywrapClient implements Client {
     return {
       wrapper,
       uri: resolvedUri,
-      uriHistory,
+      history:
+        !options.history || options.history === UriResolutionHistoryType.Path
+          ? resolutionPath
+          : history,
       error,
     };
   }
@@ -763,41 +774,48 @@ export class PolywrapClient implements Client {
     uri: Uri,
     options?: Contextualized
   ): Promise<Wrapper> {
-    const { wrapper, uriHistory, error } = await this.resolveUri(uri, {
+    const { wrapper, history, error } = await this.tryResolveToWrapper({
+      uri,
       contextId: options?.contextId,
     });
 
     if (!wrapper) {
       if (error) {
-        const errorMessage = error.error?.message ?? "";
+        const resolverError = error as UriResolverError<LoadResolverExtensionsError>;
 
         switch (error.type) {
-          case ResolveUriErrorType.InfiniteLoop:
+          case UriResolutionErrorType.InfiniteLoop:
             throw Error(
-              `Infinite loop while resolving URI "${uri}".\nResolution Stack: ${JSON.stringify(
-                uriHistory,
+              `Infinite loop while resolving URI "${uri}".\nResolution path: ${JSON.stringify(
+                history,
                 null,
                 2
               )}`
             );
             break;
-          case ResolveUriErrorType.InternalResolver:
+          case UriResolutionErrorType.UriResolver:
             throw Error(
-              `URI resolution error while resolving URI "${uri}".\n${errorMessage}\nResolution Stack: ${JSON.stringify(
-                uriHistory,
+              `URI resolution error while resolving URI "${uri}".\n${JSON.stringify(
+                resolverError.error,
                 null,
                 2
-              )}`
+              )}\nResolution path: ${JSON.stringify(history, null, 2)}`
             );
             break;
           default:
-            throw Error(`Unsupported URI resolution error type occurred`);
+            throw Error(
+              `Unsupported URI resolution error type occurred\nResolution path: ${JSON.stringify(
+                history,
+                null,
+                2
+              )}`
+            );
             break;
         }
       } else {
         throw Error(
           `Unknown URI resolution error while resolving URI "${uri}"\nResolution Stack: ${JSON.stringify(
-            uriHistory,
+            history,
             null,
             2
           )}`
@@ -879,11 +897,10 @@ const contextualizeClient = (
         ) => {
           return client.getImplementations(uri, { ...options, contextId });
         },
-        resolveUri: <TUri extends Uri | string>(
-          uri: TUri,
-          options?: ResolveUriOptions<ClientConfig>
-        ): Promise<ResolveUriResult> => {
-          return client.resolveUri(uri, { ...options, contextId });
+        tryResolveToWrapper: <TUri extends Uri | string>(
+          options: TryResolveToWrapperOptions<TUri, ClientConfig>
+        ): Promise<UriResolutionResult> => {
+          return client.tryResolveToWrapper({ ...options, contextId });
         },
         loadUriResolvers: (): Promise<{
           success: boolean;

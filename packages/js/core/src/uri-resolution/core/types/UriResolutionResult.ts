@@ -1,7 +1,8 @@
-import { Wrapper, Uri } from "../../..";
+import { UriResolutionError } from "./errors";
+import { ResolveUriResult } from "./ResolveUriResult";
+import { UriResolutionStep } from "./UriResolutionStep";
 
-export interface UriResolutionResult {
-  uri: Uri;
-  wrapper?: Wrapper;
-  error?: Error;
+export interface UriResolutionResult
+  extends ResolveUriResult<UriResolutionError> {
+  history: UriResolutionStep[];
 }

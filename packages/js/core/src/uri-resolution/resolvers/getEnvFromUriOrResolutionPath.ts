@@ -1,9 +1,9 @@
 import { Client, Env, Uri } from "../../types";
-import { UriResolutionStack } from "../core";
+import { UriResolutionStep } from "../core";
 
-export const getEnvFromUriOrResolutionStack = (
+export const getEnvFromUriOrResolutionPath = (
   uri: Uri,
-  resolutionPath: UriResolutionStack,
+  resolutionPath: UriResolutionStep[],
   client: Client
 ): Env<Uri> | undefined => {
   const env = client.getEnvByUri(uri, {});

@@ -1,13 +1,16 @@
 import { applyRedirects } from "../../../algorithms";
 import { Uri, Client } from "../../../types";
-import { UriResolver, UriResolutionResult } from "../../core";
+import { UriResolver, ResolveUriResult } from "../../core";
 
-export class RedirectsResolver implements UriResolver {
+export class RedirectsResolver implements UriResolver<void> {
   public get name(): string {
     return RedirectsResolver.name;
   }
 
-  async resolveUri(uri: Uri, client: Client): Promise<UriResolutionResult> {
+  async tryResolveToWrapper(
+    uri: Uri,
+    client: Client
+  ): Promise<ResolveUriResult<void>> {
     const redirectedUri = applyRedirects(uri, client.getRedirects({}));
 
     return Promise.resolve({

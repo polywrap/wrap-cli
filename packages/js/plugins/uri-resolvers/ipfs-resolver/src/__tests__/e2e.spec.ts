@@ -52,7 +52,7 @@ describe("IPFS Plugin", () => {
   it("Should successfully resolve a deployed wrapper - e2e", async () => {
     const wrapperUri = `ipfs/${wrapperIpfsCid}`;
 
-    const resolution = await client.resolveUri(wrapperUri);
+    const resolution = await client.tryResolveToWrapper(wrapperUri);
 
     expect(resolution.wrapper).toBeTruthy();
 

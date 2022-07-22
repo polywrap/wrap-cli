@@ -1,10 +1,7 @@
-import { Wrapper, Uri } from "../../../types";
-import { UriResolutionHistory } from "../../..";
-import { ResolveUriError } from "./ResolveUriError";
+import { Wrapper, Uri } from "../../..";
 
-export type ResolveUriResult = {
+export interface ResolveUriResult<TError> {
+  uri: Uri;
   wrapper?: Wrapper;
-  uri?: Uri;
-  uriHistory: UriResolutionHistory;
-  error?: ResolveUriError;
-};
+  error?: TError;
+}
