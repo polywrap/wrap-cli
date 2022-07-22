@@ -114,6 +114,7 @@ export class Connection {
     return this._client;
   }
 
+  // If setSigner fails, it will attempt to retrieve a signer from the given provider
   public setSigner(signer: EthereumSigner): void {
     if (typeof signer === "string") {
       this._config.signer = getAddress(signer);
@@ -126,7 +127,15 @@ export class Connection {
         );
       }
 
-      this._config.signer = signer.connect(this._client);
+      // signer.connect may throw if changing providers is not supported
+      // this is part of the ethers spec: https://docs.ethers.io/v5/api/signer/#Signer-connect
+      // in practice, checking that signer.provider is not undefined should work
+      // in theory, signer.provider does not have to work
+      try {
+        this._config.signer = signer.connect(this._client);
+      } catch (e) {
+        this._config.signer = this._client.getSigner();
+      }
     } else {
       this._config.signer = signer;
     }
