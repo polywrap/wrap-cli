@@ -4,7 +4,7 @@ import {
   Args_addFile,
   Args_cat,
   Ipfs_ResolveResult,
-  Options,
+  Ipfs_Options,
   manifest,
   Env,
 } from "./wrap";
@@ -20,7 +20,10 @@ const isNullOrUndefined = (arg: unknown) => {
   return arg === undefined || arg === null;
 };
 
-const getOptions = (args: Options | undefined | null, env: Env): Options => {
+const getOptions = (
+  args: Ipfs_Options | undefined | null,
+  env: Env
+): Ipfs_Options => {
   const options = args || {};
 
   if (isNullOrUndefined(options.disableParallelRequests)) {
@@ -103,7 +106,7 @@ export class IpfsPlugin extends Module<NoConfig> {
       provider: string,
       options: unknown
     ) => Promise<TReturn>,
-    options?: Options
+    options?: Ipfs_Options
   ): Promise<TReturn> {
     const defaultIpfsClient = createIpfsClient(this.env.provider);
 

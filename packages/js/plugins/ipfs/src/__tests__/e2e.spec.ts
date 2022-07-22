@@ -206,4 +206,54 @@ describe("IPFS Plugin", () => {
       provider: providers.ipfs,
     });
   });
+
+  it("Should use fallback provider from method options", async () => {
+    const clientWithBadProvider = new PolywrapClient({
+      plugins: [
+        {
+          uri: "wrap://ens/ipfs.polywrap.eth",
+          plugin: ipfsPlugin({}),
+        },
+      ],
+      envs: [
+        {
+          uri: "wrap://ens/ipfs.polywrap.eth",
+          env: {
+            provider: "this-provider-doesnt-exist",
+          },
+        },
+      ],
+    });
+
+    const catResult = await Ipfs_Module.cat(
+      {
+        cid: sampleFileIpfsInfo.hash.toString(),
+        options: {
+          provider: "this-provider-also-doesnt-exist",
+          fallbackProviders: [providers.ipfs],
+        },
+      },
+      clientWithBadProvider
+    );
+
+    expect(catResult.error).toBeFalsy();
+    expect(catResult.data).toEqual(sampleFileBuffer);
+
+    const resolveResult = await Ipfs_Module.resolve(
+      {
+        cid: sampleFileIpfsInfo.hash.toString(),
+        options: {
+          provider: "this-provider-also-doesnt-exist",
+          fallbackProviders: [providers.ipfs],
+        },
+      },
+      clientWithBadProvider
+    );
+
+    expect(resolveResult.error).toBeFalsy();
+    expect(resolveResult.data).toEqual({
+      cid: `/ipfs/${sampleFileIpfsInfo.hash.toString()}`,
+      provider: providers.ipfs,
+    });
+  });
 });
