@@ -10,7 +10,7 @@
     "format": {
       "description": "Polywrap deployment manifest format version.",
       "type": "string",
-      "const": "0.1.0"
+      "enum": ["0.1.0", "0.1"]
     },
     "stages": {
       "patternProperties": {
