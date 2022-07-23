@@ -17,7 +17,11 @@ import {
 } from "./";
 
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
-import { WrapManifest, WrapAbi, validateWrapManifest } from "@polywrap/wrap-manifest-types-js";
+import {
+  WrapManifest,
+  WrapAbi,
+  validateWrapManifest,
+} from "@polywrap/wrap-manifest-types-js";
 import { msgpackEncode } from "@polywrap/msgpack-js";
 import { WasmWrapper } from "@polywrap/client-js";
 import { WrapImports } from "@polywrap/client-js/build/wasm/types";
