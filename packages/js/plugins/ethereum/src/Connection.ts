@@ -134,7 +134,11 @@ export class Connection {
       try {
         this._config.signer = signer.connect(this._client);
       } catch (e) {
-        this._config.signer = this._client.getSigner();
+        if (this._client.getSigner) {
+          this._config.signer = this._client.getSigner();
+        } else {
+          throw e;
+        }
       }
     } else {
       this._config.signer = signer;
