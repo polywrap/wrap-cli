@@ -5,7 +5,6 @@ import Mustache from "mustache";
 import * as JsonSchema from "json-schema-to-typescript";
 import { FileInfo, bundle, JSONSchema } from "json-schema-ref-parser";
 
-// TODO: remove __type
 async function generateFormatTypes() {
   // Fetch all schemas within the @polywrap/wrap-manifest-schemas/schemas/formats directory
   const schemasPackageDir = path.dirname(

@@ -3645,7 +3645,7 @@
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.178.tgz#341f6d2247db528d4a13ddbb374bcdc80406f4f8"
   integrity sha512-0d5Wd09ItQWH1qFbEyQ7oTQ3GZrMfth5JkbN3EvTKLXcHLRDSXeLnlvlOn0wvxVIwK5o2M8JzP/OWz7T3NRsbw==
 
-"@types/lodash@^4.14.168", "@types/lodash@^4.14.182":
+"@types/lodash@^4.14.182":
   version "4.14.182"
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.182.tgz#05301a4d5e62963227eaafe0ce04dd77c54ea5c2"
   integrity sha512-/THyiqyQAP9AfARo4pF+aCGcyiQ94tX/Is2I7HofNRqoYLgN1PBoOWu2/zTA5zMxzP5EFutMtWtGAFRKUe961Q==
@@ -3690,7 +3690,7 @@
   resolved "https://registry.yarnpkg.com/@types/prettier/-/prettier-2.6.0.tgz#efcbd41937f9ae7434c714ab698604822d890759"
   integrity sha512-G/AdOadiZhnJp0jXCaBQU449W2h716OW/EoXeYkCytxKL06X1WCXB4DZpp8TpZ8eyIJVS1cw4lrlkkSYU21cDw==
 
-"@types/prettier@^2.0.0", "@types/prettier@^2.1.5", "@types/prettier@^2.6.1":
+"@types/prettier@^2.0.0", "@types/prettier@^2.6.1":
   version "2.6.3"
   resolved "https://registry.yarnpkg.com/@types/prettier/-/prettier-2.6.3.tgz#68ada76827b0010d0db071f739314fa429943d0a"
   integrity sha512-ymZk3LEC/fsut+/Q5qejp6R9O1rMxz3XaRHDV6kX8MrGAhOSPqVARbDi+EZvInBpw+BnCX3TD240byVkOfQsHg==
@@ -5827,7 +5827,7 @@ clean-stack@^2.0.0:
   resolved "https://registry.yarnpkg.com/clean-stack/-/clean-stack-2.2.0.tgz#ee8472dbb129e727b31e8a10a427dee9dfe4008b"
   integrity sha512-4diC9HaTE+KRAMWhDhrGOECgWZxoevMc5TlkObMqNSsVU62PYzXZ/SMTjzyGAFF1YusgxGcSWTEXBhp0CPwQ1A==
 
-cli-color@^2.0.0, cli-color@^2.0.2:
+cli-color@^2.0.2:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/cli-color/-/cli-color-2.0.3.tgz#73769ba969080629670f3f2ef69a4bf4e7cc1879"
   integrity sha512-OkoZnxyC4ERN3zLzZaY9Emb7f/MhBOIpePv0Ycok0fJYT+Ouo00UBEIwsVsr0yoow++n5YWlSUgST9GKhNHiRQ==
@@ -8838,13 +8838,6 @@ glob-parent@^5.0.0, glob-parent@^5.1.1, glob-parent@^5.1.2, glob-parent@~5.1.0, 
   dependencies:
     is-glob "^4.0.1"
 
-glob-promise@^3.4.0:
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/glob-promise/-/glob-promise-3.4.0.tgz#b6b8f084504216f702dc2ce8c9bc9ac8866fdb20"
-  integrity sha512-q08RJ6O+eJn+dVanerAndJwIcumgbDdYiUT7zFQl3Wm1xD6fBKtah7H8ZJChj4wP+8C+QfeVy8xautR7rdmKEw==
-  dependencies:
-    "@types/glob" "*"
-
 glob-promise@^4.2.2:
   version "4.2.2"
   resolved "https://registry.yarnpkg.com/glob-promise/-/glob-promise-4.2.2.tgz#15f44bcba0e14219cd93af36da6bb905ff007877"
@@ -11464,33 +11457,12 @@ json-parse-even-better-errors@^2.3.0:
   resolved "https://registry.yarnpkg.com/json-parse-even-better-errors/-/json-parse-even-better-errors-2.3.1.tgz#7c47805a94319928e05777405dc12e1f7a4ee02d"
   integrity sha512-xyFwyhro/JEof6Ghe2iz2NcXoj2sloNsWr/XsERDK/oiPCfaNhl5ONfp+jQdAZRQQ0IJWNzH9zIZF7li91kh2w==
 
-json-schema-ref-parser@9.0.9, json-schema-ref-parser@^9.0.6:
+json-schema-ref-parser@9.0.9:
   version "9.0.9"
   resolved "https://registry.yarnpkg.com/json-schema-ref-parser/-/json-schema-ref-parser-9.0.9.tgz#66ea538e7450b12af342fa3d5b8458bc1e1e013f"
   integrity sha512-qcP2lmGy+JUoQJ4DOQeLaZDqH9qSkeGCK3suKWxJXS82dg728Mn3j97azDMaOUmJAN4uCq91LdPx4K7E8F1a7Q==
   dependencies:
     "@apidevtools/json-schema-ref-parser" "9.0.9"
-
-json-schema-to-typescript@10.1.3:
-  version "10.1.3"
-  resolved "https://registry.yarnpkg.com/json-schema-to-typescript/-/json-schema-to-typescript-10.1.3.tgz#c00d2113597093d16a8695b249e398a4430077cb"
-  integrity sha512-yiyDK1sSSWhLN2JAuAyAE7jscFJj2hR7AhdF19BmdLh/N/QPdnIqrGa23CSc7z92OSSzKVPclAKof+rV8S8weA==
-  dependencies:
-    "@types/json-schema" "^7.0.6"
-    "@types/lodash" "^4.14.168"
-    "@types/prettier" "^2.1.5"
-    cli-color "^2.0.0"
-    glob "^7.1.6"
-    glob-promise "^3.4.0"
-    is-glob "^4.0.1"
-    json-schema-ref-parser "^9.0.6"
-    json-stringify-safe "^5.0.1"
-    lodash "^4.17.20"
-    minimist "^1.2.5"
-    mkdirp "^1.0.4"
-    mz "^2.7.0"
-    prettier "^2.2.0"
-    stdin "0.0.1"
 
 json-schema-to-typescript@11.0.1:
   version "11.0.1"
@@ -14719,7 +14691,7 @@ prettier@2.2.1:
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.2.1.tgz#795a1a78dd52f073da0cd42b21f9c91381923ff5"
   integrity sha512-PqyhM2yCjg/oKkFPtTGUojv7gnZAoG80ttl45O6x2Ug/rMJw4wcc9k6aaf2hibP7BGVCCM33gZoGjyvt9mm16Q==
 
-prettier@^2.2.0, prettier@^2.6.2:
+prettier@^2.6.2:
   version "2.7.1"
   resolved "https://registry.yarnpkg.com/prettier/-/prettier-2.7.1.tgz#e235806850d057f97bb08368a4f7d899f7760c64"
   integrity sha512-ujppO+MkdPqoVINuDFDRLClm7D78qbDt0/NR+wp5FqEZOoTNAjPHWj17QRhu7geIHJfcNhRk1XVQmF8Bp3ye+g==
@@ -16530,11 +16502,6 @@ statuses@2.0.1:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.5.0.tgz#161c7dac177659fd9811f43771fa99381478628c"
   integrity sha512-OpZ3zP+jT1PI7I8nemJX4AKmAX070ZkYPVWV/AaKTJl+tXCTGyVdC1a4SL8RUQYEwk/f34ZX8UTykN68FwrqAA==
-
-stdin@0.0.1:
-  version "0.0.1"
-  resolved "https://registry.yarnpkg.com/stdin/-/stdin-0.0.1.tgz#d3041981aaec3dfdbc77a1b38d6372e38f5fb71e"
-  integrity sha512-2bacd1TXzqOEsqRa+eEWkRdOSznwptrs4gqFcpMq5tOtmJUGPZd10W5Lam6wQ4YQ/+qjQt4e9u35yXCF6mrlfQ==
 
 stealthy-require@^1.1.1:
   version "1.1.1"
