@@ -23,6 +23,8 @@ type PolywrapManifestSchemas = {
 };
 
 const schemas: PolywrapManifestSchemas = {
+  // NOTE: Patch fix for backwards compatability
+  "0.1.0": schema_0_1,
   "0.1": schema_0_1,
 };
 

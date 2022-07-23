@@ -16,6 +16,8 @@ export {
 };
 
 export enum WrapManifestVersions {
+  // NOTE: Patch fix for backwards compatability
+  "v0.1.0" = "0.1.0",
   "v0.1" = "0.1",
 };
 

@@ -30,10 +30,14 @@ type WrapAbiSchemas = {
 }
 
 const schemas: WrapManifestSchemas = {
+  // NOTE: Patch fix for backwards compatability
+  "0.1.0": schema_0_1,
   "0.1": schema_0_1,
 };
 
 const abiSchemas: WrapAbiSchemas = {
+  // NOTE: Patch fix for backwards compatability
+  "0.1.0": abi_schema_0_1,
   "0.1": abi_schema_0_1,
 }
 

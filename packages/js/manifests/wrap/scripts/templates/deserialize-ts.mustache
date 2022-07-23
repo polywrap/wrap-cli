@@ -15,7 +15,7 @@ import {
 import { DeserializeManifestOptions } from "../../";
 
 import { msgpackDecode } from "@polywrap/msgpack-js";
-import { compare } from "semver";
+import * as Semver from "semver";
 
 export async function deserializeWrapManifest(
   manifest: Uint8Array,
@@ -32,9 +32,9 @@ export async function deserializeWrapManifest(
     await validateWrapManifest(anyWrapManifest);
   }
 
-  const versionCompare = compare(
-    anyWrapManifest.version,
-    latestWrapManifestVersion
+  const versionCompare = Semver.compare(
+    Semver.coerce(anyWrapManifest.version) || anyWrapManifest.version,
+    Semver.coerce(latestWrapManifestVersion) || latestWrapManifestVersion
   );
 
   if (versionCompare === -1) {

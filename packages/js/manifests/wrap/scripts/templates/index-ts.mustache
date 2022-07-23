@@ -20,6 +20,8 @@ export {
 };
 
 export enum WrapManifestVersions {
+  // NOTE: Patch fix for backwards compatability
+  "v0.1.0" = "0.1.0",
   {{#formats}}
   "v{{version}}" = "{{version}}",
   {{/formats}}

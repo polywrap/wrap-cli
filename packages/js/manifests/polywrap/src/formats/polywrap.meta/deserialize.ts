@@ -14,7 +14,7 @@ import {
 } from ".";
 import { DeserializeManifestOptions } from "../../";
 
-import { compare } from "semver";
+import * as Semver from "semver";
 import YAML from "js-yaml";
 
 export function deserializeMetaManifest(
@@ -40,9 +40,9 @@ export function deserializeMetaManifest(
 
   anyMetaManifest.__type = "MetaManifest";
 
-  const versionCompare = compare(
-    anyMetaManifest.format,
-    latestMetaManifestFormat
+  const versionCompare = Semver.compare(
+    Semver.coerce(anyMetaManifest.format) || anyMetaManifest.format,
+    Semver.coerce(latestMetaManifestFormat) || latestMetaManifestFormat
   );
 
   if (versionCompare === -1) {
