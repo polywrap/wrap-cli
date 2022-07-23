@@ -207,13 +207,13 @@ describe("e2e tests for deploy command", () => {
         input: {
           uri: "wrap://fs/./build"
         },
-        result: "wrap://ipfs/QmRkysP47QawrzfyDSgbaukryjcXMxFnJgqswaeKBcziYF"
+        result: "wrap://ipfs/QmTVbK7oZr4km4AnRuzJpm1r68G7nGzaXFvQHWdwnu8hmv"
       },
       {
         id: "ipfs_deploy.from_deploy",
         name: "from_deploy",
         input: {
-          uri: "wrap://ipfs/QmRkysP47QawrzfyDSgbaukryjcXMxFnJgqswaeKBcziYF",
+          uri: "wrap://ipfs/QmTVbK7oZr4km4AnRuzJpm1r68G7nGzaXFvQHWdwnu8hmv",
           config: {
             domainName: "test1.eth",
             provider: "http://localhost:8545",
@@ -226,7 +226,7 @@ describe("e2e tests for deploy command", () => {
         id: "ipfs_deploy.from_deploy2",
         name: "from_deploy2",
         input: {
-          uri: "wrap://ipfs/QmRkysP47QawrzfyDSgbaukryjcXMxFnJgqswaeKBcziYF",
+          uri: "wrap://ipfs/QmTVbK7oZr4km4AnRuzJpm1r68G7nGzaXFvQHWdwnu8hmv",
           config: {
             domainName: "test2.eth",
             provider: "http://localhost:8545",
