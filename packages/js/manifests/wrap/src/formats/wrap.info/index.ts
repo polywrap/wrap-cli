@@ -10,6 +10,7 @@ import {
   Abi as WrapAbi_0_1_0_1
 } from "./0.1";
 
+export * from "./0.1";
 export {
   WrapManifest_0_1,
   WrapAbi_0_1_0_1

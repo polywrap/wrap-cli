@@ -1,13 +1,4 @@
-import {
-  PropertyDefinition,
-  ImportedModuleDefinition,
-  MethodDefinition,
-  createPropertyDefinition,
-  ModuleDefinition,
-  createArrayDefinition,
-  InterfaceDefinition,
-  MapDefinition,
-} from "../../abi";
+import { createPropertyDefinition, createArrayDefinition } from "../../abi";
 import { setPropertyType } from "./property-utils";
 import { extractAnnotateDirective } from "./object-types-utils";
 
@@ -17,6 +8,14 @@ import {
   InputValueDefinitionNode,
   NamedTypeNode,
 } from "graphql";
+import {
+  ImportedModuleDefinition,
+  InterfaceDefinition,
+  MapDefinition,
+  MethodDefinition,
+  ModuleDefinition,
+  PropertyDefinition,
+} from "@polywrap/wrap-manifest-types-js";
 
 export interface EnvDirDefinition {
   required: boolean;
@@ -134,7 +133,7 @@ export function extractInputValueDefinition(
     name: name,
     map: def ? (def as MapDefinition) : undefined,
     comment: node.description?.value,
-    required: def && def.required ? true : false,
+    required: !!(def && def.required),
   });
 
   method.arguments.push(argument);

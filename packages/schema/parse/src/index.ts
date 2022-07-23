@@ -1,11 +1,11 @@
-import { Abi, createAbi } from "./abi";
+import { createAbi } from "./abi";
 import { extractors, SchemaExtractorBuilder } from "./extract";
-import { AbiTransforms, transformAbi } from "./transform";
-import { finalizePropertyDef } from "./transform/finalizePropertyDef";
+import { AbiTransforms, transformAbi, finalizePropertyDef } from "./transform";
 import { validators } from "./validate";
 import { SchemaValidatorBuilder } from "./validate";
 
 import { DocumentNode, parse, visit, visitInParallel } from "graphql";
+import { WrapAbi } from "@polywrap/wrap-manifest-types-js";
 
 export * from "./abi";
 export * from "./transform";
@@ -18,7 +18,10 @@ interface ParserOptions {
   noValidate?: boolean;
 }
 
-export function parseSchema(schema: string, options: ParserOptions = {}): Abi {
+export function parseSchema(
+  schema: string,
+  options: ParserOptions = {}
+): WrapAbi {
   const astNode = parse(schema);
 
   // Validate GraphQL Schema
@@ -64,7 +67,7 @@ const validate = (
 
 const extract = (
   astNode: DocumentNode,
-  abi: Abi,
+  abi: WrapAbi,
   extractors: SchemaExtractorBuilder[]
 ) => {
   const allVisitors = extractors.map((getVisitor) => getVisitor(abi));

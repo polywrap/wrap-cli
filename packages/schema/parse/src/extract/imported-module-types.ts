@@ -3,9 +3,6 @@ import {
   createInterfaceImplementedDefinition,
   createMethodDefinition,
   createPropertyDefinition,
-  ImportedModuleDefinition,
-  MapDefinition,
-  Abi,
 } from "../abi";
 import { extractImportedDefinition } from "./utils/imported-types-utils";
 import {
@@ -26,6 +23,11 @@ import {
   NonNullTypeNode,
   ObjectTypeDefinitionNode,
 } from "graphql";
+import {
+  ImportedModuleDefinition,
+  MapDefinition,
+  WrapAbi,
+} from "@polywrap/wrap-manifest-types-js";
 
 const visitorEnter = (
   importedModuleTypes: ImportedModuleDefinition[],
@@ -122,7 +124,7 @@ const visitorLeave = (state: State) => ({
   },
 });
 
-export const getImportedModuleTypesVisitor = (abi: Abi): ASTVisitor => {
+export const getImportedModuleTypesVisitor = (abi: WrapAbi): ASTVisitor => {
   const state: State = {};
 
   return {

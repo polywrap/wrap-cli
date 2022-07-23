@@ -4,10 +4,10 @@ import {
   createMapKeyDefinition,
   createScalarDefinition,
   createUnresolvedObjectOrEnumRef,
-  GenericDefinition,
-  isScalarType,
-  isMapKeyType,
 } from "../..";
+import { isMapKeyType, isScalarType } from "../../abi/utils";
+
+import { GenericDefinition } from "@polywrap/wrap-manifest-types-js";
 
 type CurrentAbi = {
   currentType: string;

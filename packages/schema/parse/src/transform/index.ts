@@ -1,10 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/naming-convention */
+import { DefinitionKind, isKind } from "../abi";
+
 import {
-  Abi,
+  AnyDefinition,
+  EnvDefinition,
+  ImportedEnvDefinition,
   GenericDefinition,
   ObjectDefinition,
-  AnyDefinition,
   ScalarDefinition,
   PropertyDefinition,
   ArrayDefinition,
@@ -12,19 +15,15 @@ import {
   ModuleDefinition,
   ImportedModuleDefinition,
   ImportedObjectDefinition,
-  DefinitionKind,
-  isKind,
   EnumDefinition,
   ImportedEnumDefinition,
   InterfaceImplementedDefinition,
   EnumRef,
   ObjectRef,
   InterfaceDefinition,
-  EnvDefinition,
   WithKind,
-  MapDefinition,
-  ImportedEnvDefinition,
-} from "../abi";
+  MapDefinition, WrapAbi
+} from "@polywrap/wrap-manifest-types-js";
 
 export * from "./finalizePropertyDef";
 export * from "./extendType";
@@ -42,7 +41,7 @@ export interface AbiTransforms {
 }
 
 export interface AbiTransformer {
-  Abi?: (abi: Abi) => Abi;
+  Abi?: (abi: WrapAbi) => WrapAbi;
   GenericDefinition?: (def: GenericDefinition) => GenericDefinition;
   ObjectDefinition?: (def: ObjectDefinition) => ObjectDefinition;
   ObjectRef?: (def: ObjectRef) => ObjectRef;
@@ -72,7 +71,7 @@ export interface AbiTransformer {
   MapDefinition?: (def: MapDefinition) => MapDefinition;
 }
 
-export function transformAbi(abi: Abi, transforms: AbiTransforms): Abi {
+export function transformAbi(abi: WrapAbi, transforms: AbiTransforms): WrapAbi {
   let result = Object.assign({}, abi);
 
   if (transforms.enter && transforms.enter.Abi) {

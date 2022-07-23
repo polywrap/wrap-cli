@@ -1,6 +1,4 @@
 import {
-  Abi,
-  ImportedObjectDefinition,
   createImportedObjectDefinition,
   createInterfaceImplementedDefinition,
 } from "../abi";
@@ -20,6 +18,10 @@ import {
   FieldDefinitionNode,
   ASTVisitor,
 } from "graphql";
+import {
+  ImportedObjectDefinition,
+  WrapAbi,
+} from "@polywrap/wrap-manifest-types-js";
 
 const visitorEnter = (
   importedObjectTypes: ImportedObjectDefinition[],
@@ -71,7 +73,7 @@ const visitorLeave = (state: State) => ({
   },
 });
 
-export const getImportedObjectTypesVisitor = (abi: Abi): ASTVisitor => {
+export const getImportedObjectTypesVisitor = (abi: WrapAbi): ASTVisitor => {
   const state: State = {};
 
   return {

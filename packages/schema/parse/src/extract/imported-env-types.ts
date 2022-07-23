@@ -1,5 +1,4 @@
 import {
-  Abi,
   ImportedEnvDefinition,
   createInterfaceImplementedDefinition,
   createImportedEnvDefinition,
@@ -20,6 +19,7 @@ import {
   FieldDefinitionNode,
   ASTVisitor,
 } from "graphql";
+import { WrapAbi } from "@polywrap/wrap-manifest-types-js";
 
 const visitorEnter = (
   importedEnvTypes: ImportedEnvDefinition[],
@@ -72,7 +72,7 @@ const visitorLeave = (state: State) => ({
   },
 });
 
-export const getImportedEnvTypesVisitor = (abi: Abi): ASTVisitor => {
+export const getImportedEnvTypesVisitor = (abi: WrapAbi): ASTVisitor => {
   const state: State = {};
 
   return {

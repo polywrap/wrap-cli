@@ -1,5 +1,5 @@
 import { AbiTransforms } from ".";
-import { InterfaceDefinition, CapabilityDefinition, Abi } from "../abi";
+import { CapabilityDefinition, InterfaceDefinition, WrapAbi } from "@polywrap/wrap-manifest-types-js";
 
 export interface ModuleCapability {
   type: string;
@@ -30,7 +30,7 @@ export function moduleCapabilities(): AbiTransforms {
       },
     },
     leave: {
-      Abi: (info: Abi) => {
+      Abi: (info: WrapAbi) => {
         if (info.moduleType) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           (info.moduleType as any).capabilities = capabilities;

@@ -1,16 +1,18 @@
 import { AbiTransforms } from ".";
 import {
-  ArrayDefinition,
   createEnumRef,
   createObjectRef,
-  GenericDefinition,
-  PropertyDefinition,
-  Abi,
-  MapDefinition,
   AnyDefinition,
 } from "../abi";
+import {
+  ArrayDefinition,
+  GenericDefinition,
+  MapDefinition,
+  PropertyDefinition,
+  WrapAbi
+} from "@polywrap/wrap-manifest-types-js";
 
-export const finalizePropertyDef = (abi: Abi): AbiTransforms => {
+export const finalizePropertyDef = (abi: WrapAbi): AbiTransforms => {
   return {
     enter: {
       // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -24,7 +26,7 @@ export const finalizePropertyDef = (abi: Abi): AbiTransforms => {
 
 export function populatePropertyType(
   property: PropertyDefinition,
-  abi: Abi
+  abi: WrapAbi
 ): void {
   let propertyType: GenericDefinition | undefined;
   if (property.array) {
@@ -49,7 +51,7 @@ export function populatePropertyType(
   property.required = propertyType.required;
 }
 
-function populateMapType(map: MapDefinition, abi: Abi) {
+function populateMapType(map: MapDefinition, abi: WrapAbi) {
   let baseTypeFound = false;
 
   let currentType: AnyDefinition = map;
@@ -97,7 +99,7 @@ function populateMapType(map: MapDefinition, abi: Abi) {
   }
 }
 
-function populateArrayType(array: ArrayDefinition, abi: Abi) {
+function populateArrayType(array: ArrayDefinition, abi: WrapAbi) {
   let baseTypeFound = false;
 
   let currentArray = array;
@@ -146,7 +148,7 @@ function populateArrayType(array: ArrayDefinition, abi: Abi) {
 
 function resolveObjectOrEnumKind(
   property: PropertyDefinition,
-  abi: Abi
+  abi: WrapAbi
 ): GenericDefinition {
   if (!property.unresolvedObjectOrEnum) {
     throw Error("Type reference is undefined, this should never happen.");

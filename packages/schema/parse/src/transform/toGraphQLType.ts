@@ -1,12 +1,13 @@
 import { AbiTransforms } from ".";
+import { DefinitionKind } from "../abi";
+
 import {
   GenericDefinition,
   AnyDefinition,
   ArrayDefinition,
   MethodDefinition,
-  DefinitionKind,
   MapDefinition,
-} from "../abi";
+} from "@polywrap/wrap-manifest-types-js";
 
 function applyRequired(type: string, required: boolean | null): string {
   return `${type}${required ? "!" : ""}`;

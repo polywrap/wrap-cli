@@ -2,11 +2,12 @@ import {
   createScalarDefinition,
   createMapDefinition,
   createUnresolvedObjectOrEnumRef,
-  isScalarType,
-  PropertyDefinition,
 } from "../../abi";
+import { isScalarType } from "../../abi/utils";
 
-const toBoolean = (val: unknown) => (val ? true : false);
+import { PropertyDefinition } from "@polywrap/wrap-manifest-types-js";
+
+const toBoolean = (val: unknown) => !!val;
 
 export function setPropertyType(
   property: PropertyDefinition,

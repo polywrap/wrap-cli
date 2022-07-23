@@ -1,38 +1,18 @@
+import { CapabilityType, createModuleDefinition } from "./definitions";
+
 import {
-  ObjectDefinition,
-  ModuleDefinition,
+  WrapAbi,
+  CapabilityDefinition,
+  GenericDefinition,
   ImportedModuleDefinition,
   ImportedObjectDefinition,
-  GenericDefinition,
-  EnumDefinition,
-  ImportedEnumDefinition,
   InterfaceDefinition,
-  CapabilityType,
-  CapabilityDefinition,
-  EnvDefinition,
-  createModuleDefinition,
-  ImportedEnvDefinition,
-} from "./definitions";
+} from "@polywrap/wrap-manifest-types-js";
 
 export * from "./definitions";
-export * from "./scalar";
-export * from "./module";
 export * from "./env";
-export * from "./map";
 
-export interface Abi {
-  objectTypes: ObjectDefinition[];
-  moduleType?: ModuleDefinition;
-  enumTypes: EnumDefinition[];
-  interfaceTypes: InterfaceDefinition[];
-  importedObjectTypes: ImportedObjectDefinition[];
-  importedModuleTypes: ImportedModuleDefinition[];
-  importedEnumTypes: ImportedEnumDefinition[];
-  importedEnvTypes: ImportedEnvDefinition[];
-  envType?: EnvDefinition;
-}
-
-export function createAbi(): Abi {
+export function createAbi(): WrapAbi {
   return {
     objectTypes: [],
     enumTypes: [],
@@ -46,8 +26,8 @@ export function createAbi(): Abi {
 
 type ImportedDefinition = ImportedObjectDefinition | ImportedModuleDefinition;
 
-export function combineAbi(abis: Abi[]): Abi {
-  const combined: Abi = {
+export function combineAbi(abis: WrapAbi[]): WrapAbi {
+  const combined: WrapAbi = {
     objectTypes: [],
     moduleType: createModuleDefinition({}),
     enumTypes: [],

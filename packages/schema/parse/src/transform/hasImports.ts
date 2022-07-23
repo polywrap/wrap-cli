@@ -1,9 +1,10 @@
 import { AbiTransforms } from ".";
-import { Abi } from "../abi";
+
+import { WrapAbi } from "@polywrap/wrap-manifest-types-js";
 
 export const hasImports: AbiTransforms = {
   enter: {
-    Abi: (abi: Abi) => ({
+    Abi: (abi: WrapAbi) => ({
       ...abi,
       hasImports: () => {
         return (

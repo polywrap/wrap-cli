@@ -1,10 +1,6 @@
 import {
   createArrayDefinition,
-  createPropertyDefinition,
-  GenericDefinition,
-  MapDefinition,
-  ObjectDefinition,
-  PropertyDefinition,
+  createPropertyDefinition
 } from "../../abi";
 import { parseMapType } from "./map-utils";
 import { setPropertyType } from "./property-utils";
@@ -15,6 +11,12 @@ import {
   NamedTypeNode,
   StringValueNode,
 } from "graphql";
+import {
+  GenericDefinition,
+  MapDefinition,
+  ObjectDefinition,
+  PropertyDefinition
+} from "@polywrap/wrap-manifest-types-js";
 
 export interface State {
   currentType?: ObjectDefinition;
@@ -76,7 +78,7 @@ export function extractFieldDefinition(
     name: name,
     map: def ? (def as MapDefinition) : undefined,
     comment: node.description?.value,
-    required: def && def.required ? true : false,
+    required: !!(def && def.required),
   });
 
   state.currentProperty = property;

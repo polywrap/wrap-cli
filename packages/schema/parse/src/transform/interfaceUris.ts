@@ -1,5 +1,10 @@
 import { AbiTransforms } from ".";
-import { Abi, ModuleDefinition, ObjectDefinition } from "../abi";
+
+import {
+  ModuleDefinition,
+  ObjectDefinition,
+  WrapAbi,
+} from "@polywrap/wrap-manifest-types-js";
 
 export function interfaceUris(): AbiTransforms {
   const uniqueInterfaceUris: Record<string, boolean> = {};
@@ -22,7 +27,7 @@ export function interfaceUris(): AbiTransforms {
       },
     },
     leave: {
-      Abi: (abi: Abi) => {
+      Abi: (abi: WrapAbi) => {
         for (const interfaceType of Object.keys(uniqueModuleInterfaceTypes)) {
           const importedInterface = abi.importedModuleTypes.find(
             (importedModule) => importedModule.type === interfaceType

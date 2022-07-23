@@ -1,6 +1,30 @@
-import { ScalarType, isScalarType } from "./scalar";
-import { isModuleType } from "./module";
-import { isMapKeyType, MapKeyType } from "./map";
+import { isMapKeyType, isModuleType, isScalarType } from "./utils";
+
+import {
+  AnyDefinition,
+  ArrayDefinition,
+  CapabilityDefinition,
+  EnumDefinition,
+  EnumRef,
+  EnvDefinition,
+  GenericDefinition,
+  ImportedEnumDefinition,
+  ImportedEnvDefinition,
+  ImportedModuleDefinition, ImportedModuleRef,
+  ImportedObjectDefinition,
+  InterfaceDefinition,
+  InterfaceImplementedDefinition,
+  MapDefinition,
+  MapKeyDefinition,
+  MethodDefinition,
+  ModuleDefinition,
+  ObjectDefinition,
+  ObjectRef,
+  PropertyDefinition,
+  ScalarDefinition,
+  UnresolvedObjectOrEnumRef,
+  WithKind
+} from "@polywrap/wrap-manifest-types-js";
 
 export enum DefinitionKind {
   Generic = 0,
@@ -30,19 +54,6 @@ export function isKind(type: WithKind, kind: DefinitionKind): boolean {
   return (type.kind & kind) === kind;
 }
 
-export interface WithComment {
-  comment?: string;
-}
-
-export interface WithKind {
-  kind: DefinitionKind;
-}
-
-export interface GenericDefinition extends WithKind {
-  type: string;
-  name: string | null;
-  required: boolean | null;
-}
 export function createGenericDefinition(args: {
   type: string;
   name?: string | null;
@@ -56,10 +67,6 @@ export function createGenericDefinition(args: {
   };
 }
 
-export interface ObjectDefinition extends GenericDefinition, WithComment {
-  properties: PropertyDefinition[];
-  interfaces: InterfaceImplementedDefinition[];
-}
 export function createObjectDefinition(args: {
   type: string;
   name?: string | null;
@@ -77,7 +84,6 @@ export function createObjectDefinition(args: {
   };
 }
 
-export type ObjectRef = GenericDefinition;
 export function createObjectRef(args: {
   type: string;
   name?: string | null;
@@ -89,14 +95,6 @@ export function createObjectRef(args: {
   };
 }
 
-export interface AnyDefinition extends GenericDefinition {
-  array: ArrayDefinition | null;
-  scalar: ScalarDefinition | null;
-  map: MapDefinition | null;
-  object: ObjectRef | null;
-  enum: EnumRef | null;
-  unresolvedObjectOrEnum: UnresolvedObjectOrEnumRef | null;
-}
 export function createAnyDefinition(args: {
   type: string;
   name?: string | null;
@@ -122,11 +120,8 @@ export function createAnyDefinition(args: {
   };
 }
 
-export interface MapKeyDefinition extends GenericDefinition {
-  type: MapKeyType;
-}
 export function createMapKeyDefinition(args: {
-  type: string;
+  type: MapKeyDefinition["type"];
   name?: string | null;
   required?: boolean;
 }): MapKeyDefinition {
@@ -142,11 +137,11 @@ export function createMapKeyDefinition(args: {
   };
 }
 
-export interface ScalarDefinition extends GenericDefinition {
-  type: ScalarType;
-}
+// TODO: Change this
+export const scalarTypeNames = "";
+
 export function createScalarDefinition(args: {
-  type: string;
+  type: ScalarDefinition["type"];
   name?: string | null;
   required?: boolean;
 }): ScalarDefinition {
@@ -162,9 +157,6 @@ export function createScalarDefinition(args: {
   };
 }
 
-export interface EnumDefinition extends GenericDefinition, WithComment {
-  constants: string[];
-}
 export function createEnumDefinition(args: {
   type: string;
   name?: string | null;
@@ -181,7 +173,6 @@ export function createEnumDefinition(args: {
   };
 }
 
-export type EnumRef = GenericDefinition;
 export function createEnumRef(args: {
   type: string;
   name?: string | null;
@@ -193,7 +184,6 @@ export function createEnumRef(args: {
   };
 }
 
-export type UnresolvedObjectOrEnumRef = GenericDefinition;
 export function createUnresolvedObjectOrEnumRef(args: {
   type: string;
   name?: string | null;
@@ -206,16 +196,12 @@ export function createUnresolvedObjectOrEnumRef(args: {
   };
 }
 
-export interface MapDefinition extends AnyDefinition, WithComment {
-  key: MapKeyDefinition | null;
-  value: GenericDefinition | null;
-}
 export function createMapDefinition(args: {
   type: string;
   name?: string | null;
   required?: boolean;
   key?: MapKeyDefinition;
-  value?: GenericDefinition | null;
+  value?: GenericDefinition;
 }): MapDefinition {
   return {
     ...createAnyDefinition({
@@ -245,15 +231,12 @@ export function createMapDefinition(args: {
           ? (args.value as UnresolvedObjectOrEnumRef)
           : undefined,
     }),
-    key: args.key ? args.key : null,
-    value: args.value ? args.value : null,
+    key: args.key,
+    value: args.value,
     kind: DefinitionKind.Map,
   };
 }
 
-export interface ArrayDefinition extends AnyDefinition {
-  item: GenericDefinition | null;
-}
 export function createArrayDefinition(args: {
   type: string;
   name?: string | null;
@@ -288,12 +271,11 @@ export function createArrayDefinition(args: {
           ? (args.item as UnresolvedObjectOrEnumRef)
           : undefined,
     }),
-    item: args.item ? args.item : null,
+    item: args.item,
     kind: DefinitionKind.Array,
   };
 }
 
-export type PropertyDefinition = AnyDefinition & WithComment;
 export function createPropertyDefinition(args: {
   type: string;
   name?: string | null;
@@ -312,7 +294,6 @@ export function createPropertyDefinition(args: {
   };
 }
 
-export type InterfaceImplementedDefinition = GenericDefinition;
 export function createInterfaceImplementedDefinition(args: {
   type: string;
   name?: string | null;
@@ -357,7 +338,7 @@ export function createMapPropertyDefinition(args: {
 }
 
 export function createScalarPropertyDefinition(args: {
-  type: string;
+  type: ScalarDefinition["type"];
   name?: string | null;
   required?: boolean;
   comment?: string;
@@ -394,16 +375,9 @@ export function createObjectPropertyDefinition(args: {
   });
 }
 
-export interface MethodDefinition extends GenericDefinition, WithComment {
-  arguments: PropertyDefinition[];
-  env?: {
-    required: boolean;
-  };
-  return: PropertyDefinition;
-}
 export function createMethodDefinition(args: {
   name: string;
-  arguments?: PropertyDefinition[];
+  arguments?: [] | [MethodDefinition];
   env?: {
     required: boolean;
   };
@@ -423,14 +397,9 @@ export function createMethodDefinition(args: {
   };
 }
 
-export interface ModuleDefinition extends GenericDefinition, WithComment {
-  methods: MethodDefinition[];
-  imports: { type: string }[];
-  interfaces: InterfaceImplementedDefinition[];
-}
 export function createModuleDefinition(args: {
-  imports?: { type: string }[];
-  interfaces?: InterfaceImplementedDefinition[];
+  imports?: [] | [ImportedModuleRef];
+  interfaces?: [] | [GenericDefinition];
   required?: boolean;
   comment?: string;
 }): ModuleDefinition {
@@ -447,16 +416,6 @@ export function createModuleDefinition(args: {
   };
 }
 
-export interface ImportedDefinition {
-  uri: string;
-  namespace: string;
-  nativeType: string;
-}
-
-export interface ImportedEnumDefinition
-  extends EnumDefinition,
-    ImportedDefinition,
-    WithComment {}
 export function createImportedEnumDefinition(args: {
   type: string;
   constants: string[];
@@ -477,11 +436,10 @@ export function createImportedEnumDefinition(args: {
   };
 }
 
-export const capabilityTypes = ["getImplementations"] as const;
-export type CapabilityType = typeof capabilityTypes[number];
-export interface Capability {
-  enabled: boolean;
-}
+export type CapabilityType = keyof CapabilityDefinition;
+
+// TODO: We don't want this hard coded
+export const capabilityTypes = ["getImplementations"];
 export function createCapability(args: {
   type: CapabilityType;
   enabled: boolean;
@@ -493,13 +451,6 @@ export function createCapability(args: {
   };
 }
 
-export type CapabilityDefinition = Record<CapabilityType, Capability>;
-
-export interface InterfaceDefinition
-  extends GenericDefinition,
-    ImportedDefinition {
-  capabilities: CapabilityDefinition;
-}
 export function createInterfaceDefinition(args: {
   type: string;
   required?: boolean;
@@ -517,13 +468,6 @@ export function createInterfaceDefinition(args: {
   };
 }
 
-export interface ImportedModuleDefinition
-  extends GenericDefinition,
-    ImportedDefinition,
-    WithComment {
-  methods: MethodDefinition[];
-  isInterface?: boolean;
-}
 export function createImportedModuleDefinition(args: {
   required?: boolean;
   uri: string;
@@ -554,10 +498,6 @@ export function createImportedModuleDefinition(args: {
   };
 }
 
-export interface ImportedObjectDefinition
-  extends ObjectDefinition,
-    ImportedDefinition,
-    WithComment {}
 export function createImportedObjectDefinition(args: {
   type: string;
   name?: string;
@@ -578,8 +518,6 @@ export function createImportedObjectDefinition(args: {
   };
 }
 
-export type EnvDefinition = ObjectDefinition;
-
 export function createEnvDefinition(args: {
   name?: string | null;
   required?: boolean;
@@ -592,8 +530,6 @@ export function createEnvDefinition(args: {
     kind: DefinitionKind.Env,
   };
 }
-
-export type ImportedEnvDefinition = ImportedObjectDefinition;
 
 export function createImportedEnvDefinition(args: {
   type: string;
