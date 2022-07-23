@@ -470,7 +470,7 @@ describe("e2e tests for infra command", () => {
         ...process.env,
         TEZOS_POLYWRAP_PORT: "2000",
         TEZOS_POLYWRAP_BLOCK_TIME: "5",
-        TEZOS_POLYWRAP_PROTOCOL: "hangzhou"
+        TEZOS_POLYWRAP_PROTOCOL: "Jakarta"
       };
 
       await runW3CLI(
