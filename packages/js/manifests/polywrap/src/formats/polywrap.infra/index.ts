@@ -6,23 +6,23 @@
  */
 
 import {
-  InfraManifest as InfraManifest0_1_0
-} from "./0.1.0";
+  InfraManifest as InfraManifest0_1
+} from "./0.1";
 
 export {
-  InfraManifest0_1_0,
+  InfraManifest0_1,
 };
 
 export enum InfraManifestFormats {
-  "0.1.0" = "0.1.0",
+  "v0.1" = "0.1",
 }
 
 export type AnyInfraManifest =
-  | InfraManifest0_1_0
+  | InfraManifest0_1
 
-export type InfraManifest = InfraManifest0_1_0;
+export type InfraManifest = InfraManifest0_1;
 
-export const latestInfraManifestFormat = InfraManifestFormats["0.1.0"]
+export const latestInfraManifestFormat = InfraManifestFormats["v0.1"]
 
 export { migrateInfraManifest } from "./migrate";
 

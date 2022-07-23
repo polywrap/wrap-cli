@@ -2,7 +2,7 @@ import path from "path";
 import fs from "fs";
 import * as os from "@polywrap/os-js";
 import Mustache from "mustache";
-import * as JsonSchema from "json-schema-to-typescript";
+import { compile } from "json-schema-to-typescript";
 import { FileInfo, bundle, JSONSchema } from "json-schema-ref-parser";
 
 async function generateFormatTypes() {
@@ -72,7 +72,7 @@ async function generateFormatTypes() {
       wrapSchemas.push(finalWrapSchema);
 
       // Convert it to a TypeScript interface
-      const tsFile = await JsonSchema.compile(finalWrapSchema, wrapSchema.id);
+      const tsFile = await compile(finalWrapSchema, wrapSchema.id);
 
       // Emit the result
       const tsOutputPath = path.join(wrapOutputDir, `${wrapVersion}.ts`);

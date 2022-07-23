@@ -12,6 +12,11 @@
     "importedEnvTypes"
   ],
   "properties": {
+    "version": {
+      "description": "ABI Version",
+      "type": "string",
+      "const": "0.1"
+    },
     "objectTypes": {
       "type": "array",
       "items": {

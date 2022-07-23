@@ -19,7 +19,7 @@ export {
 
 export enum {{#latest}}{{type}}{{/latest}}Formats {
   {{#formats}}
-  "{{version}}" = "{{version}}",
+  "v{{version}}" = "{{version}}",
   {{/formats}}
 }
 
@@ -30,7 +30,7 @@ export type Any{{#latest}}{{type}}{{/latest}} =
 
 export type {{#latest}}{{type}}{{/latest}} = {{#latest}}{{type}}{{tsVersion}}{{/latest}};
 
-export const latest{{#latest}}{{type}}{{/latest}}Format = {{#latest}}{{type}}{{/latest}}Formats["{{#latest}}{{version}}{{/latest}}"]
+export const latest{{#latest}}{{type}}{{/latest}}Format = {{#latest}}{{type}}{{/latest}}Formats["v{{#latest}}{{version}}{{/latest}}"]
 
 export { migrate{{#latest}}{{type}}{{/latest}} } from "./migrate";
 

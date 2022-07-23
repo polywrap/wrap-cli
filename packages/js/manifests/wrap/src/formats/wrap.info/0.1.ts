@@ -87,7 +87,7 @@ export interface WrapManifest {
   /**
    * WRAP Standard Version
    */
-  version: "0.1.0";
+  version: "0.1.0" | "0.1";
   /**
    * Wrapper Package Type
    */
@@ -99,6 +99,10 @@ export interface WrapManifest {
   abi: Abi;
 }
 export interface Abi {
+  /**
+   * ABI Version
+   */
+  version?: "0.1";
   objectTypes: ObjectDefinition[];
   moduleType?: ModuleDefinition;
   enumTypes: EnumDefinition[];

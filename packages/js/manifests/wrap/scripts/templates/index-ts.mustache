@@ -21,13 +21,19 @@ export {
 
 export enum WrapManifestVersions {
   {{#formats}}
-  "{{version}}" = "{{version}}",
+  "v{{version}}" = "{{version}}",
   {{/formats}}
+};
+
+export enum WrapManifestAbiVersions {
+  {{#formats}}
+  "v{{version}}" = "{{abiVersion}}",
+  {{/formats}} 
 };
 
 export enum WrapAbiVersions {
   {{#formats}}
-  "{{version}}" = "{{abiVersion}}",
+  "v{{abiVersion}}" = "{{abiVersion}}",
   {{/formats}} 
 };
 
@@ -44,7 +50,7 @@ export type AnyWrapAbi =
 {{#latest}}export type WrapManifest = WrapManifest_{{tsVersion}}{{/latest}};
 {{#latest}}export type WrapAbi = WrapAbi_{{tsVersion}}_{{abiTsVersion}}{{/latest}};
 
-{{#latest}}export const latestWrapManifestVersion = WrapManifestVersions["{{version}}"]{{/latest}};
+{{#latest}}export const latestWrapManifestVersion = WrapManifestVersions["v{{version}}"]{{/latest}};
 {{#latest}}export const latestWrapAbiVersion = "{{abiVersion}}"{{/latest}};
 
 export { migrateWrapManifest } from "./migrate";

@@ -6,23 +6,23 @@
  */
 
 import {
-  PolywrapManifest as PolywrapManifest0_1_0
-} from "./0.1.0";
+  PolywrapManifest as PolywrapManifest0_1
+} from "./0.1";
 
 export {
-  PolywrapManifest0_1_0,
+  PolywrapManifest0_1,
 };
 
 export enum PolywrapManifestFormats {
-  "0.1.0" = "0.1.0",
+  "v0.1" = "0.1",
 }
 
 export type AnyPolywrapManifest =
-  | PolywrapManifest0_1_0
+  | PolywrapManifest0_1
 
-export type PolywrapManifest = PolywrapManifest0_1_0;
+export type PolywrapManifest = PolywrapManifest0_1;
 
-export const latestPolywrapManifestFormat = PolywrapManifestFormats["0.1.0"]
+export const latestPolywrapManifestFormat = PolywrapManifestFormats["v0.1"]
 
 export { migratePolywrapManifest } from "./migrate";
 
