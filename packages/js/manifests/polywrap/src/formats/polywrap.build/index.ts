@@ -6,11 +6,11 @@
  */
 
 import {
-  BuildManifest as BuildManifest0_1
+  BuildManifest as BuildManifest_0_1
 } from "./0.1";
 
 export {
-  BuildManifest0_1,
+  BuildManifest_0_1,
 };
 
 export enum BuildManifestFormats {
@@ -18,9 +18,9 @@ export enum BuildManifestFormats {
 }
 
 export type AnyBuildManifest =
-  | BuildManifest0_1
+  | BuildManifest_0_1
 
-export type BuildManifest = BuildManifest0_1;
+export type BuildManifest = BuildManifest_0_1;
 
 export const latestBuildManifestFormat = BuildManifestFormats["v0.1"]
 

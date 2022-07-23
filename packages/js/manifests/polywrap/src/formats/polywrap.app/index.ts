@@ -6,11 +6,11 @@
  */
 
 import {
-  AppManifest as AppManifest0_1
+  AppManifest as AppManifest_0_1
 } from "./0.1";
 
 export {
-  AppManifest0_1,
+  AppManifest_0_1,
 };
 
 export enum AppManifestFormats {
@@ -18,9 +18,9 @@ export enum AppManifestFormats {
 }
 
 export type AnyAppManifest =
-  | AppManifest0_1
+  | AppManifest_0_1
 
-export type AppManifest = AppManifest0_1;
+export type AppManifest = AppManifest_0_1;
 
 export const latestAppManifestFormat = AppManifestFormats["v0.1"]
 

@@ -7,13 +7,13 @@
 
 {{#formats}}
 import {
-  {{type}} as {{type}}{{tsVersion}}
+  {{type}} as {{type}}_{{tsVersion}}
 } from "./{{version}}";
 {{/formats}}
 
 export {
   {{#formats}}
-  {{type}}{{tsVersion}},
+  {{type}}_{{tsVersion}},
   {{/formats}}
 };
 
@@ -25,10 +25,10 @@ export enum {{#latest}}{{type}}{{/latest}}Formats {
 
 export type Any{{#latest}}{{type}}{{/latest}} =
 {{#formats}}
-  | {{type}}{{tsVersion}}
+  | {{type}}_{{tsVersion}}
 {{/formats}}
 
-export type {{#latest}}{{type}}{{/latest}} = {{#latest}}{{type}}{{tsVersion}}{{/latest}};
+export type {{#latest}}{{type}}{{/latest}} = {{#latest}}{{type}}_{{tsVersion}}{{/latest}};
 
 export const latest{{#latest}}{{type}}{{/latest}}Format = {{#latest}}{{type}}{{/latest}}Formats["v{{#latest}}{{version}}{{/latest}}"]
 

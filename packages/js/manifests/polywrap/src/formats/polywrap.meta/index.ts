@@ -6,11 +6,11 @@
  */
 
 import {
-  MetaManifest as MetaManifest0_1
+  MetaManifest as MetaManifest_0_1
 } from "./0.1";
 
 export {
-  MetaManifest0_1,
+  MetaManifest_0_1,
 };
 
 export enum MetaManifestFormats {
@@ -18,9 +18,9 @@ export enum MetaManifestFormats {
 }
 
 export type AnyMetaManifest =
-  | MetaManifest0_1
+  | MetaManifest_0_1
 
-export type MetaManifest = MetaManifest0_1;
+export type MetaManifest = MetaManifest_0_1;
 
 export const latestMetaManifestFormat = MetaManifestFormats["v0.1"]
 

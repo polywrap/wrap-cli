@@ -6,11 +6,11 @@
  */
 
 import {
-  DeployManifest as DeployManifest0_1
+  DeployManifest as DeployManifest_0_1
 } from "./0.1";
 
 export {
-  DeployManifest0_1,
+  DeployManifest_0_1,
 };
 
 export enum DeployManifestFormats {
@@ -18,9 +18,9 @@ export enum DeployManifestFormats {
 }
 
 export type AnyDeployManifest =
-  | DeployManifest0_1
+  | DeployManifest_0_1
 
-export type DeployManifest = DeployManifest0_1;
+export type DeployManifest = DeployManifest_0_1;
 
 export const latestDeployManifestFormat = DeployManifestFormats["v0.1"]
 

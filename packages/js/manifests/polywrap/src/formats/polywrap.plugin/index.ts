@@ -6,11 +6,11 @@
  */
 
 import {
-  PluginManifest as PluginManifest0_1
+  PluginManifest as PluginManifest_0_1
 } from "./0.1";
 
 export {
-  PluginManifest0_1,
+  PluginManifest_0_1,
 };
 
 export enum PluginManifestFormats {
@@ -18,9 +18,9 @@ export enum PluginManifestFormats {
 }
 
 export type AnyPluginManifest =
-  | PluginManifest0_1
+  | PluginManifest_0_1
 
-export type PluginManifest = PluginManifest0_1;
+export type PluginManifest = PluginManifest_0_1;
 
 export const latestPluginManifestFormat = PluginManifestFormats["v0.1"]
 

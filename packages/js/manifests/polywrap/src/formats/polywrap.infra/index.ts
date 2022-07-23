@@ -6,11 +6,11 @@
  */
 
 import {
-  InfraManifest as InfraManifest0_1
+  InfraManifest as InfraManifest_0_1
 } from "./0.1";
 
 export {
-  InfraManifest0_1,
+  InfraManifest_0_1,
 };
 
 export enum InfraManifestFormats {
@@ -18,9 +18,9 @@ export enum InfraManifestFormats {
 }
 
 export type AnyInfraManifest =
-  | InfraManifest0_1
+  | InfraManifest_0_1
 
-export type InfraManifest = InfraManifest0_1;
+export type InfraManifest = InfraManifest_0_1;
 
 export const latestInfraManifestFormat = InfraManifestFormats["v0.1"]
 
