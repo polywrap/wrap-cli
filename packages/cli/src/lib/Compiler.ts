@@ -18,17 +18,21 @@ import {
 import { generateWrapFile } from "./helpers/wrap";
 
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
+import {
+  WrapManifest,
+  WrapAbi,
+  validateWrapManifest
+} from "@polywrap/wrap-manifest-types-js";
 import { WasmWrapper } from "@polywrap/client-js";
 import { WrapImports } from "@polywrap/client-js/build/wasm/types";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
-import { Abi } from "@polywrap/schema-parse";
 import { normalizePath, writeDirectorySync } from "@polywrap/os-js";
 import * as gluegun from "gluegun";
 import fs from "fs";
 import path from "path";
 
 interface CompilerState {
-  abi: Abi;
+  abi: WrapAbi;
   compilerOverrides?: CompilerOverrides;
 }
 
@@ -193,7 +197,7 @@ export class Compiler {
     return manifest.language === "interface";
   }
 
-  private async _composeAbi(): Promise<Abi> {
+  private async _composeAbi(): Promise<WrapAbi> {
     const { schemaComposer } = this._config;
 
     // Get the fully composed schema
@@ -330,7 +334,7 @@ export class Compiler {
 
       const manifest = await project.getManifest();
 
-      const abi: Abi = {
+      const abi: WrapAbi = {
         ...state.abi,
       };
 
@@ -344,6 +348,15 @@ export class Compiler {
         }
       });
 
+      const info: WrapManifest = {
+        abi: (filteredAbi as unknown) as WrapAbi,
+        name: manifest.name,
+        type: (await this._isInterface()) ? "interface" : "wasm",
+        version: "0.1",
+      };
+
+      // One last sanity check
+      await validateWrapManifest(info);
       const type = (await this._isInterface()) ? "interface" : "wasm";
       generateWrapFile(filteredAbi, manifest.name, type, manifestPath);
     };

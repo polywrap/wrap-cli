@@ -12,8 +12,8 @@ import {
 import fs from "fs";
 import path from "path";
 import * as gluegun from "gluegun";
-import { Abi } from "@polywrap/schema-parse";
 import { deserializeWrapManifest } from "@polywrap/wrap-manifest-types-js";
+import { WrapAbi } from "@polywrap/wrap-manifest-types-js";
 
 export interface SchemaComposerConfig {
   project: Project<AnyProjectManifest>;
@@ -22,13 +22,13 @@ export interface SchemaComposerConfig {
 
 export class SchemaComposer {
   private _client: PolywrapClient;
-  private _abi: Abi | undefined;
+  private _abi: WrapAbi | undefined;
 
   constructor(private _config: SchemaComposerConfig) {
     this._client = this._config.client;
   }
 
-  public async getComposedAbis(): Promise<Abi> {
+  public async getComposedAbis(): Promise<WrapAbi> {
     if (this._abi) {
       return Promise.resolve(this._abi);
     }
@@ -59,7 +59,7 @@ export class SchemaComposer {
       },
     };
 
-    this._abi = (await composeSchema(options)) as Abi;
+    this._abi = (await composeSchema(options)) as WrapAbi;
     return this._abi;
   }
 
@@ -70,7 +70,7 @@ export class SchemaComposer {
   private async _fetchExternalAbi(
     uri: string,
     import_redirects?: ImportRedirects
-  ): Promise<Abi> {
+  ): Promise<WrapAbi> {
     // Check to see if we have any import redirects that match
     if (import_redirects) {
       for (const redirect of import_redirects) {
@@ -81,15 +81,14 @@ export class SchemaComposer {
           const manifest = fs.readFileSync(
             path.join(this._config.project.getManifestDir(), redirect.info)
           );
-          // TODO: Remove this once ABI JSON Schema has been implemented
-          return (deserializeWrapManifest(manifest).abi as unknown) as Abi;
+          return deserializeWrapManifest(manifest).abi;
         }
       }
     }
 
     try {
       const manifest = await this._client.getManifest(new Uri(uri));
-      return (manifest.abi as unknown) as Abi;
+      return (manifest.abi as unknown) as WrapAbi;
     } catch (e) {
       gluegun.print.error(e);
       throw e;

@@ -9,8 +9,8 @@ import {
   AppManifestFormats
 } from ".";
 
-import schema_0_1_0 from "@polywrap/polywrap-manifest-schemas/formats/polywrap.app/0.1.0.json";
-import schema_0_1_1 from "@polywrap/polywrap-manifest-schemas/formats/polywrap.app/0.1.1.json";
+import schema_0_1 from "@polywrap/polywrap-manifest-schemas/formats/polywrap.app/0.1.json";
+import schema_0_2 from "@polywrap/polywrap-manifest-schemas/formats/polywrap.app/0.2.json";
 
 import {
   Schema,
@@ -24,8 +24,10 @@ type AppManifestSchemas = {
 };
 
 const schemas: AppManifestSchemas = {
-  "0.1.0": schema_0_1_0,
-  "0.1.1": schema_0_1_1,
+  // NOTE: Patch fix for backwards compatability
+  "0.1.0": schema_0_1,
+  "0.1": schema_0_1,
+  "0.2": schema_0_2,
 };
 
 const validator = new Validator();

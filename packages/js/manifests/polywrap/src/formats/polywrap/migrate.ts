@@ -12,15 +12,15 @@ import {
 } from ".";
 
 import {
-  migrate as migrate_0_1_0_to_0_1_1
-} from "./migrators/0.1.0_to_0.1.1";
+  migrate as migrate_0_1_to_0_2
+} from "./migrators/0.1_to_0.2";
 
 type Migrator = {
   [key in PolywrapManifestFormats]?: (m: AnyPolywrapManifest) => PolywrapManifest;
 };
 
 export const migrators: Migrator = {
-  "0.1.0": migrate_0_1_0_to_0_1_1,
+  "0.1": migrate_0_1_to_0_2,
 };
 
 export function migratePolywrapManifest(

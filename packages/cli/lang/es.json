@@ -60,6 +60,7 @@
   "commands_deploy_options_o_string": "string",
   "commands_deploy_options_h": "Show usage information",
   "commands_deploy_options_m": "Path to the Polywrap Deploy manifest file (default: {default})",
+  "commands_deploy_options_o": "Output file path for the deploy result",
   "commands_deploy_options_n": "Name of the deployment to execute",
   "commands_deploy_options_c": "Argument for deployment's publish step, in case deploy step is absent",
   "commands_deploy_options_v": "Verbose output (default: false)",

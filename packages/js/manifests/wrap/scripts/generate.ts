@@ -1,41 +1,81 @@
-import path from "path"
+import path from "path";
 import fs from "fs";
 import * as os from "@polywrap/os-js";
 import Mustache from "mustache";
-import { compile } from "json-schema-to-typescript"
+import { compile } from "json-schema-to-typescript";
+import { FileInfo, bundle, JSONSchema } from "json-schema-ref-parser";
 
 async function generateFormatTypes() {
-  // Fetch all schemas within the @polywrap/wrap-manifest-schemas/formats directory
-  const schemasPackageDir = path.dirname(require.resolve("@polywrap/wrap-manifest-schemas"));
-  const formatsDir =  path.join(schemasPackageDir, "formats/wrap.info");
-  const formatOutputDir = path.join(__dirname, `../src/formats/wrap.info`);
+  // Fetch all schemas within the @polywrap/wrap-manifest-schemas/schemas/formats directory
+  const schemasPackageDir = path.dirname(
+    require.resolve("@polywrap/wrap-manifest-schemas")
+  );
+  const formatsDir = path.join(schemasPackageDir, "formats");
 
-  // Get all JSON schemas for this format type (0.1.0, 0.2.0, etc)
-  const formatSchemaFiles = fs.readdirSync(formatsDir);
-  const formatSchemas: any[] = [];
-  const formatModules: any[] = [];
+  // Resolve json-schema to typescript for wrap format type
+  const formatTypeName = "wrap.info";
+  const wrapDir = path.join(formatsDir, formatTypeName);
+  const wrapOutputDir = path.join(
+    __dirname,
+    `../src/formats/${formatTypeName}`
+  );
+  const wrapModules: {
+    interface: string;
+    version: string;
+    abiVersion: string;
+  }[] = [];
 
-  for (let k = 0; k < formatSchemaFiles.length; ++k) {
-    const formatSchemaName = formatSchemaFiles[k];
-    const formatVersion = formatSchemaName.replace(".json", "");
-    const formatSchemaPath = path.join(formatsDir, formatSchemaName);
+  // Get all JSON schemas for this format type (v1, v2, etc)
+  const wrapSchemaFiles = fs.readdirSync(wrapDir);
+  const wrapSchemas: JSONSchema[] = [];
+
+  for (let k = 0; k < wrapSchemaFiles.length; ++k) {
+    const wrapSchemaName = wrapSchemaFiles[k];
+    const wrapVersion = wrapSchemaName.replace(".json", "");
+    const wrapSchemaPath = path.join(wrapDir, wrapSchemaName);
 
     try {
       // Parse the JSON schema
-      const formatSchema = JSON.parse(
-        fs.readFileSync(formatSchemaPath, { encoding: "utf-8" })
+      const wrapSchema = JSON.parse(
+        fs.readFileSync(wrapSchemaPath, { encoding: "utf-8" })
       );
 
-      formatSchemas.push(formatSchema);
+      const abiJsonSchemaRelPath = wrapSchema.properties.abi.$ref;
+      const abiJsonSchemaPath = path.join(wrapDir, abiJsonSchemaRelPath);
+      const abiJsonSchema = JSON.parse(
+        fs.readFileSync(abiJsonSchemaPath, { encoding: "utf-8" })
+      );
+      const abiVersion = path
+        .parse(abiJsonSchemaPath)
+        .base.replace(".json", "");
+
+      const bundledSchema = await bundle(wrapSchema, {
+        resolve: {
+          file: {
+            read: (file: FileInfo) => {
+              // If both url is same
+              if (!path.relative(abiJsonSchemaRelPath, file.url)) {
+                return abiJsonSchema;
+              }
+              return file.data;
+            },
+          },
+        },
+      });
+
+      const finalWrapSchema = JSON.parse(
+        JSON.stringify(bundledSchema).replace(
+          /unevaluatedProperties/g,
+          "additionalProperties"
+        )
+      );
+      wrapSchemas.push(finalWrapSchema);
 
       // Convert it to a TypeScript interface
-      const tsFile = await compile(
-        formatSchema,
-        formatSchema.id
-      );
+      const tsFile = await compile(finalWrapSchema, wrapSchema.id);
 
       // Emit the result
-      const tsOutputPath = path.join(formatOutputDir, `${formatVersion}.ts`);
+      const tsOutputPath = path.join(wrapOutputDir, `${wrapVersion}.ts`);
       fs.mkdirSync(path.dirname(tsOutputPath), { recursive: true });
       os.writeFileSync(
         tsOutputPath,
@@ -43,19 +83,23 @@ async function generateFormatTypes() {
       );
 
       // Add metadata for the root index.ts file to use
-      formatModules.push({
-        interface: formatSchema.id,
-        version: formatVersion
+      wrapModules.push({
+        interface: wrapSchema.id,
+        version: wrapVersion,
+        abiVersion: abiVersion,
       });
     } catch (error) {
-      console.error(`Error generating the Manifest file ${formatSchemaPath}: `, error);
+      console.error(
+        `Error generating the Manifest file ${wrapSchemaPath}: `,
+        error
+      );
       throw error;
     }
   }
 
   const renderTemplate = (name: string, context: unknown) => {
     const tsTemplate = fs.readFileSync(
-      path.join(__dirname, `./templates/${name}-ts.mustache`),
+      path.join(__dirname, `/templates/${name}-ts.mustache`),
       { encoding: "utf-8" }
     );
 
@@ -63,28 +107,30 @@ async function generateFormatTypes() {
     const tsSrc = Mustache.render(tsTemplate, context);
 
     // Emit the source
-    const tsOutputPath = path.join(formatOutputDir, `${name}.ts`);
+    const tsOutputPath = path.join(wrapOutputDir, `${name}.ts`);
     fs.mkdirSync(path.dirname(tsOutputPath), { recursive: true });
     os.writeFileSync(tsOutputPath, tsSrc);
-  }
+  };
 
-  const lastItem = (arr: any): unknown => arr[arr.length - 1];
-  const versionToTs = (version: any) =>
+  const lastItem = <T>(arr: Array<T>) => arr[arr.length - 1];
+  const versionToTs = (version: string) =>
     version.replace(/\./g, "_").replace(/\-/g, "_");
 
-  const formats = formatModules.map((module) => {
+  const formats = wrapModules.map((module) => {
     return {
       type: module.interface,
       version: module.version,
-      tsVersion: versionToTs(module.version)
-    }
+      tsVersion: versionToTs(module.version),
+      abiVersion: module.abiVersion,
+      abiTsVersion: versionToTs(module.abiVersion),
+    };
   });
   const latest = lastItem(formats);
 
   // Generate an index.ts file that exports root types that aggregate all versions
   const indexContext = {
     formats,
-    latest
+    latest,
   };
 
   renderTemplate("index", indexContext);
@@ -92,34 +138,42 @@ async function generateFormatTypes() {
   // Generate a migrate.ts file that exports a migration function from all version to the latest version
   const migrateContext = {
     prevFormats: [...formats],
-    latest: latest
+    latest: latest,
   };
   migrateContext.prevFormats.pop();
 
   renderTemplate("migrate", migrateContext);
 
   // Generate a deserialize.ts file that exports a deserialization function for the latest format version
-  renderTemplate("deserialize", {});
+  const deserializeContext = {
+    type: migrateContext.latest.type,
+  };
+
+  renderTemplate("deserialize", deserializeContext);
 
   // Generate a validate.ts file that validates the manifest against the JSON schema
-  const validateFormats = formatModules.map((module) => {
+  const validateFormats = wrapModules.map((module) => {
     return {
       type: module.interface,
       version: module.version,
       tsVersion: versionToTs(module.version),
+      abiVersion: module.abiVersion,
+      abiTsVersion: versionToTs(module.abiVersion),
+      dir: formatTypeName,
     };
   });
 
   const validateContext = {
     formats: validateFormats,
     latest: lastItem(validateFormats),
-    validators: [] as string[]
+    validators: [] as string[],
   };
 
-  for (let k = 0; k < formatSchemas.length; ++k) {
-    const formatSchema = formatSchemas[k];
+  // Extract all validators
+  for (let k = 0; k < wrapSchemas.length; ++k) {
+    const formatSchema = wrapSchemas[k];
 
-    const getValidator = (obj: any) => {
+    const getValidator = (obj: Record<string, unknown>) => {
       if (typeof obj !== "object") {
         return;
       }
@@ -132,23 +186,23 @@ async function generateFormatTypes() {
 
       const keys = Object.keys(obj);
       for (let j = 0; j < keys.length; ++j) {
-        getValidator(obj[keys[j]]);
+        getValidator(obj[keys[j]] as Record<string, unknown>);
       }
-    }
+    };
 
-    getValidator(formatSchema);
+    getValidator(formatSchema as Record<string, unknown>);
   }
 
   renderTemplate("validate", validateContext);
 
   return Promise.resolve();
-};
+}
 
 generateFormatTypes()
   .then(() => {
     process.exit();
   })
-  .catch(err => {
+  .catch((err) => {
     console.error(err);
     process.abort();
   });

@@ -6,29 +6,31 @@
  */
 
 import {
-  PluginManifest as PluginManifest0_1_0
-} from "./0.1.0";
+  PluginManifest as PluginManifest_0_1
+} from "./0.1";
 import {
-  PluginManifest as PluginManifest0_1_1
-} from "./0.1.1";
+  PluginManifest as PluginManifest_0_2
+} from "./0.2";
 
 export {
-  PluginManifest0_1_0,
-  PluginManifest0_1_1,
+  PluginManifest_0_1,
+  PluginManifest_0_2,
 };
 
 export enum PluginManifestFormats {
-  "0.1.0" = "0.1.0",
-  "0.1.1" = "0.1.1",
+  // NOTE: Patch fix for backwards compatability
+  "v0.1.0" = "0.1.0",
+  "v0.1" = "0.1",
+  "v0.2" = "0.2",
 }
 
 export type AnyPluginManifest =
-  | PluginManifest0_1_0
-  | PluginManifest0_1_1
+  | PluginManifest_0_1
+  | PluginManifest_0_2
 
-export type PluginManifest = PluginManifest0_1_1;
+export type PluginManifest = PluginManifest_0_2;
 
-export const latestPluginManifestFormat = PluginManifestFormats["0.1.1"]
+export const latestPluginManifestFormat = PluginManifestFormats["v0.2"]
 
 export { migratePluginManifest } from "./migrate";
 

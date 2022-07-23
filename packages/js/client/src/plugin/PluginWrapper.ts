@@ -20,7 +20,7 @@ import fs from "fs";
 
 export class PluginWrapper extends Wrapper {
   private _instance: PluginModule<unknown> | undefined;
-  private _info: WrapManifest | undefined = undefined;
+  private _info: WrapManifest | undefined;
 
   constructor(
     private _uri: Uri,
@@ -53,7 +53,7 @@ export class PluginWrapper extends Wrapper {
 
   @Tracer.traceMethod("WasmWrapper: getManifest")
   public async getManifest(_: Client): Promise<WrapManifest> {
-    if (this._info !== undefined) {
+    if (this._info) {
       return this._info;
     }
 
@@ -68,8 +68,10 @@ export class PluginWrapper extends Wrapper {
       throw Error(`Package manifest does not contain information`);
     }
 
-    this._info = deserializeWrapManifest(data);
-    return this._info;
+    this._info = ((await deserializeWrapManifest(
+      data
+    )) as unknown) as WrapManifest;
+    return this._info as WrapManifest;
   }
   @Tracer.traceMethod("PluginWrapper: invoke")
   public async invoke(

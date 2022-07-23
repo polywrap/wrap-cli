@@ -1,0 +1,57 @@
+{
+  "id": "AppManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "name",
+    "language",
+    "schema"
+  ],
+  "properties": {
+    "format": {
+      "description": "Polywrap app manifest format version.",
+      "type": "string",
+      "enum": ["0.1.0", "0.1"]
+    },
+    "name": {
+      "description": "Name of this wrapper package.",
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9\\-\\_]+$"
+    },
+    "language": {
+      "description": "Language in which the source code is written.",
+      "type": "string",
+      "pattern": "^app\\/[a-z0-9]+$"
+    },
+    "schema": {
+      "description": "Path to graphql schema.",
+      "type": "string",
+      "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.?[\\w\\-\\.]*$"
+    },
+    "import_redirects": {
+      "description": "Redirects for the schema's imports.",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "uri": {
+            "description": "Import URI to be redirected.",
+            "type": "string",
+            "pattern": "^[wrap://]*[a-z\\-\\_0-9]+\\/.+$"
+          },
+          "schema": {
+            "description": "Path to a graphql schema to be used for the import.",
+            "type": "string",
+            "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.graphql$"
+          }
+        },
+        "required": [
+          "uri",
+          "schema"
+        ]
+      }
+    }
+  }
+}
