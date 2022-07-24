@@ -7,33 +7,54 @@
 
 {{#formats}}
 import {
-  WrapManifest as WrapManifest{{tsVersion}}
+  WrapManifest as WrapManifest_{{tsVersion}},
+  Abi as WrapAbi_{{tsVersion}}_{{abiTsVersion}}
 } from "./{{version}}";
 {{/formats}}
 
 export {
   {{#formats}}
-  WrapManifest{{tsVersion}},
+  WrapManifest_{{tsVersion}},
+  WrapAbi_{{tsVersion}}_{{abiTsVersion}}
   {{/formats}}
 };
 
-export enum {{#latest}}WrapManifest{{/latest}}Versions {
+export enum WrapManifestVersions {
+  // NOTE: Patch fix for backwards compatability
+  "v0.1.0" = "0.1.0",
   {{#formats}}
-  "{{version}}" = "{{version}}",
+  "v{{version}}" = "{{version}}",
   {{/formats}}
-}
+};
 
-export type Any{{#latest}}WrapManifest{{/latest}} =
+export enum WrapManifestAbiVersions {
+  {{#formats}}
+  "v{{version}}" = "{{abiVersion}}",
+  {{/formats}} 
+};
+
+export enum WrapAbiVersions {
+  {{#formats}}
+  "v{{abiVersion}}" = "{{abiVersion}}",
+  {{/formats}} 
+};
+
+export type AnyWrapManifest =
 {{#formats}}
-  | WrapManifest{{tsVersion}}
-{{/formats}}
+  | WrapManifest_{{tsVersion}}
+{{/formats}};
 
-export type {{#latest}}WrapManifest{{/latest}} = {{#latest}}WrapManifest{{tsVersion}}{{/latest}};
+export type AnyWrapAbi =
+{{#formats}}
+  | WrapAbi_{{tsVersion}}_{{abiTsVersion}}
+{{/formats}};
 
-export const latest{{#latest}}WrapManifest{{/latest}}Version = {{#latest}}WrapManifest{{/latest}}Versions["{{#latest}}{{version}}{{/latest}}"]
+{{#latest}}export type WrapManifest = WrapManifest_{{tsVersion}}{{/latest}};
+{{#latest}}export type WrapAbi = WrapAbi_{{tsVersion}}_{{abiTsVersion}}{{/latest}};
 
-export { migrate{{#latest}}WrapManifest{{/latest}} } from "./migrate";
+{{#latest}}export const latestWrapManifestVersion = WrapManifestVersions["v{{version}}"]{{/latest}};
+{{#latest}}export const latestWrapAbiVersion = "{{abiVersion}}"{{/latest}};
 
-export { deserialize{{#latest}}WrapManifest{{/latest}} } from "./deserialize";
-
-export { validate{{#latest}}WrapManifest{{/latest}} } from "./validate";
+export { migrateWrapManifest } from "./migrate";
+export { deserializeWrapManifest } from "./deserialize";
+export { validateWrapManifest } from "./validate";

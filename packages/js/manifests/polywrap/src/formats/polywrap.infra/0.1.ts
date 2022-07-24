@@ -15,7 +15,7 @@ export interface InfraManifest {
   /**
    * Polywrap infra manifest format version.
    */
-  format: "0.1.0";
+  format: "0.1.0" | "0.1";
   /**
    * Path to docker compose manifest.
    */
