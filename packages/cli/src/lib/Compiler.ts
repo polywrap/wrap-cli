@@ -17,7 +17,11 @@ import {
 } from "./";
 
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
-import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
+import {
+  WrapManifest,
+  WrapAbi,
+  validateWrapManifest,
+} from "@polywrap/wrap-manifest-types-js";
 import { msgpackEncode } from "@polywrap/msgpack-js";
 import { WasmWrapper, WrapImports } from "@polywrap/core-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
@@ -368,11 +372,14 @@ export class Compiler {
       });
 
       const info: WrapManifest = {
-        abi: filteredAbi,
+        abi: (filteredAbi as unknown) as WrapAbi,
         name: manifest.name,
         type: (await this._isInterface()) ? "interface" : "wasm",
-        version: "0.1.0",
+        version: "0.1",
       };
+
+      // One last sanity check
+      await validateWrapManifest(info);
 
       const s = JSON.stringify(info);
       const encodedInfo = msgpackEncode(JSON.parse(s));
