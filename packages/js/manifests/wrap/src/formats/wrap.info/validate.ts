@@ -18,7 +18,13 @@ import {
   ValidationError,
   ValidatorResult
 } from "jsonschema";
-import { resolve, bundle, FileInfo, $Refs } from "json-schema-ref-parser";
+import {
+  bundle,
+  resolve,
+  FileInfo,
+  $Refs,
+  JSONSchema
+} from "json-schema-ref-parser";
 import path from "path";
 
 type WrapManifestSchemas = {
@@ -51,10 +57,10 @@ function throwIfErrors(result: ValidatorResult, version: string) {
   }
 }
 
-export async function validateWrapManifest(
+export function validateWrapManifest(
   manifest: AnyWrapManifest,
   extSchema: Schema | undefined = undefined
-): Promise<void> {
+): void {
   const schema = schemas[manifest.version as WrapManifestVersions];
   const abiSchema = abiSchemas[manifest.version as WrapManifestVersions];
 
@@ -69,7 +75,9 @@ export async function validateWrapManifest(
 
   const abiJsonSchemaRelPath = schema.properties.abi.$ref as string;
 
-  const finalSchema = await bundle(schema as any, {
+  let finalSchema: JSONSchema | undefined;
+
+  const res = bundle(schema as any, {
     resolve: {
       file: {
         read: (file: FileInfo) => {
@@ -81,9 +89,29 @@ export async function validateWrapManifest(
         },
       },
     },
+  }, (err: Error | null, schema: JSONSchema | undefined) => {
+    if (err) {
+      throw err;
+    }
+    finalSchema = schema;
   });
 
-  const refs: $Refs = await resolve(finalSchema);
+  if (!finalSchema) {
+    throw Error("bundle did not return a JSONSchema instance");
+  }
+
+  let refs: $Refs | undefined;
+
+  resolve(finalSchema, (err: Error | null, $refs: $Refs | undefined) => {
+    if (err) {
+      throw err;
+    }
+    refs = $refs;
+  });
+
+  if (!refs) {
+    throw Error("resolve did not return $Refs instance");
+  }
 
   const validator = new Validator();
   validator.addSchema(finalSchema as Schema);
@@ -95,7 +123,7 @@ export async function validateWrapManifest(
     const relRefIdx = unresolvedRef.indexOf("#");
     const relRef = unresolvedRef.slice(relRefIdx);
 
-    const resolvedSchema = refs.get(relRef);
+    const resolvedSchema = refs?.get(relRef);
     if (!resolvedSchema) throw new Error(`Failed to resolve the ref: ${relRef}`);
     validator.addSchema(resolvedSchema as Schema, unresolvedRef);
 
