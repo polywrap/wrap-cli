@@ -5,7 +5,6 @@ import { renderTemplates, loadSubTemplates } from "../../utils/templates";
 import { BindOptions, BindOutput } from "../../..";
 
 import {
-  Abi,
   transformAbi,
   extendType,
   addFirstLast,
@@ -15,6 +14,7 @@ import {
 } from "@polywrap/schema-parse";
 import { OutputEntry, readDirectorySync } from "@polywrap/os-js";
 import path from "path";
+import { WrapAbi } from "@polywrap/wrap-manifest-types-js/src";
 
 const templatesDir = readDirectorySync(path.join(__dirname, "./templates"));
 const subTemplates = loadSubTemplates(templatesDir.entries);
@@ -164,7 +164,7 @@ export const generateBinding: GenerateBindingFn = (
   return result;
 };
 
-function applyTransforms(abi: Abi): Abi {
+function applyTransforms(abi: WrapAbi): WrapAbi {
   const transforms = [
     extendType(Functions),
     addFirstLast,

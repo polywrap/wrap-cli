@@ -7,9 +7,9 @@ import {
   ObjectDefinition,
   AnyDefinition,
   ModuleDefinition,
-  AbiTransforms,
   EnvDefinition,
-} from "@polywrap/schema-parse";
+} from "@polywrap/wrap-manifest-types-js";
+import { AbiTransforms } from "@polywrap/schema-parse";
 
 interface PropertyDep {
   crate: string;
