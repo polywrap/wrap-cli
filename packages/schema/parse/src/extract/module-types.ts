@@ -5,7 +5,8 @@ import {
   createInterfaceImplementedDefinition,
   CapabilityType,
   createCapability,
-  createInterfaceDefinition, capabilityTypes
+  createInterfaceDefinition,
+  capabilityTypes,
 } from "../abi";
 import {
   extractEnvDirective,

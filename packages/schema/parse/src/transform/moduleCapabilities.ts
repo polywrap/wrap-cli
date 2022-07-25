@@ -1,5 +1,10 @@
 import { AbiTransforms } from ".";
-import { CapabilityDefinition, InterfaceDefinition, WrapAbi } from "@polywrap/wrap-manifest-types-js";
+
+import {
+  CapabilityDefinition,
+  InterfaceDefinition,
+  WrapAbi,
+} from "@polywrap/wrap-manifest-types-js";
 
 export interface ModuleCapability {
   type: string;

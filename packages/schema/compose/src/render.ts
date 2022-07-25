@@ -9,7 +9,7 @@ import {
   moduleCapabilities,
   addAnnotations,
 } from "@polywrap/schema-parse";
-import { WrapAbi } from "@polywrap/wrap-manifest-types-js"
+import { WrapAbi } from "@polywrap/wrap-manifest-types-js";
 // Remove mustache's built-in HTML escaping
 Mustache.escape = (value) => value;
 

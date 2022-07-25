@@ -2,7 +2,10 @@ import { createImportedEnumDefinition } from "../abi";
 import { extractImportedDefinition } from "./utils/imported-types-utils";
 
 import { ASTVisitor, EnumTypeDefinitionNode } from "graphql";
-import { ImportedEnumDefinition, WrapAbi } from "@polywrap/wrap-manifest-types-js";
+import {
+  ImportedEnumDefinition,
+  WrapAbi,
+} from "@polywrap/wrap-manifest-types-js";
 
 const visitorEnter = (importedEnumTypes: ImportedEnumDefinition[]) => ({
   EnumTypeDefinition: (node: EnumTypeDefinitionNode) => {

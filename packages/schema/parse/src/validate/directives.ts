@@ -1,7 +1,7 @@
 import { SchemaValidator } from ".";
+import { isImportedModuleType, isModuleType } from "../abi/utils";
 
 import { DirectiveNode, ASTNode, ObjectTypeDefinitionNode } from "graphql";
-import { isImportedModuleType, isModuleType } from "../abi/utils";
 import { ImportedDefinition } from "@polywrap/wrap-manifest-types-js";
 
 export const getSupportedDirectivesValidator = (): SchemaValidator => {

@@ -1,7 +1,4 @@
-import {
-  createArrayDefinition,
-  createPropertyDefinition
-} from "../../abi";
+import { createArrayDefinition, createPropertyDefinition } from "../../abi";
 import { parseMapType } from "./map-utils";
 import { setPropertyType } from "./property-utils";
 
@@ -15,7 +12,7 @@ import {
   GenericDefinition,
   MapDefinition,
   ObjectDefinition,
-  PropertyDefinition
+  PropertyDefinition,
 } from "@polywrap/wrap-manifest-types-js";
 
 export interface State {
