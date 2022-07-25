@@ -11,6 +11,7 @@ import {
 
 export * from "./definitions";
 export * from "./env";
+export * from "./utils";
 
 export function createAbi(): WrapAbi {
   return {

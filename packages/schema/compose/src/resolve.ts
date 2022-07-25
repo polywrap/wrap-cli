@@ -15,29 +15,34 @@ import { addHeader } from "./templates/header.mustache";
 import { checkDuplicateEnvProperties } from "./env";
 
 import {
-  Abi,
-  parseSchema,
+  WrapAbi,
   ObjectDefinition,
   ImportedObjectDefinition,
   ModuleDefinition,
+  ImportedModuleDefinition,
+  ImportedEnumDefinition,
+  EnumDefinition,
+  GenericDefinition,
+  InterfaceImplementedDefinition,
+  ObjectRef,
+  EnumRef,
+  EnvDefinition,
+  ImportedEnvDefinition,
+} from "@polywrap/wrap-manifest-types-js";
+import {
+  parseSchema,
   AbiTransforms,
   visitObjectDefinition,
   visitModuleDefinition,
   visitEnvDefinition,
-  ImportedModuleDefinition,
   DefinitionKind,
   visitImportedModuleDefinition,
   visitImportedObjectDefinition,
-  ImportedEnumDefinition,
-  EnumDefinition,
   visitEnumDefinition,
   visitImportedEnumDefinition,
-  GenericDefinition,
   isKind,
+  isImportedModuleType,
   header,
-  InterfaceImplementedDefinition,
-  ObjectRef,
-  EnumRef,
   isEnvType,
   createImportedObjectDefinition,
   createImportedEnumDefinition,
@@ -47,12 +52,9 @@ import {
   ModuleCapability,
   createEnvDefinition,
   createModuleDefinition,
-  EnvDefinition,
   createImportedEnvDefinition,
-  ImportedEnvDefinition,
   visitImportedEnvDefinition,
   isImportedEnvType,
-  isImportedModuleType,
 } from "@polywrap/schema-parse";
 
 type ImplementationWithInterfaces = {
@@ -65,7 +67,7 @@ const TYPE_NAME_REGEX = `[a-zA-Z0-9_]+`;
 export async function resolveUseStatements(
   schema: string,
   schemaPath: string,
-  abi: Abi
+  abi: WrapAbi
 ): Promise<ModuleCapability[]> {
   const useKeywordCapture = /^[#]*["{3}]*use[ \n\t]/gm;
   const useCapture = /[#]*["{3}]*use[ \n\t]*{([a-zA-Z0-9_, \n\t]+)}[ \n\t]*for[ \n\t]*(\w+)[ \n\t]/g;
@@ -126,7 +128,7 @@ export async function resolveImportsAndParseSchemas(
   schemaPath: string,
   resolvers: SchemaResolvers,
   noValidate = false
-): Promise<Abi> {
+): Promise<WrapAbi> {
   const importKeywordCapture = /^#+["{3}]*import\s/gm;
   const externalImportCapture = /#+["{3}]*import\s*(?:({[^}]+}|\*))\s*into\s*(\w+?)\s*from\s*[\"'`]([^\"'`\s]+)[\"'`]/g;
   const localImportCapture = /#+["{3}]*import\s*(?:({[^}]+}|\*))\s*from\s*[\"'`]([^\"'`\s]+)[\"'`]/g;
@@ -162,7 +164,7 @@ export async function resolveImportsAndParseSchemas(
     schemaPath
   );
 
-  const subAbi: Abi = {
+  const subAbi: WrapAbi = {
     objectTypes: [],
     enumTypes: [],
     interfaceTypes: [],
@@ -247,7 +249,7 @@ type ImportedEnumOrObjectOrEnv =
 // imported object definitions
 const extractObjectImportDependencies = (
   importsFound: ImportMap,
-  rootAbi: Abi,
+  rootAbi: WrapAbi,
   namespace: string,
   uri: string
 ): AbiTransforms => {
@@ -644,7 +646,7 @@ function resolveInterfaces(
 async function resolveExternalImports(
   importsToResolve: ExternalImport[],
   resolveSchema: SchemaResolver,
-  abi: Abi
+  abi: WrapAbi
 ): Promise<string[]> {
   // Keep track of all imported object type names
   const typesToImport: ImportMap = {};
@@ -930,7 +932,7 @@ async function resolveExternalImports(
 async function resolveLocalImports(
   importsToResolve: LocalImport[],
   resolveSchema: SchemaResolver,
-  abi: Abi,
+  abi: WrapAbi,
   resolvers: SchemaResolvers
 ): Promise<void> {
   for (const importToResolve of importsToResolve) {

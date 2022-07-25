@@ -1,4 +1,4 @@
-import { ObjectDefinition, AnyDefinition } from "@polywrap/schema-parse";
+import { ObjectDefinition, AnyDefinition } from "@polywrap/wrap-manifest-types-js";
 
 export function checkDuplicateEnvProperties(
   envType: ObjectDefinition,

@@ -2,14 +2,15 @@ import { SchemaFile, SchemaResolvers } from "./types";
 import { resolveImportsAndParseSchemas } from "./resolve";
 import { renderSchema } from "./render";
 
-import { Abi, combineAbi } from "@polywrap/schema-parse";
+import { combineAbi } from "@polywrap/schema-parse";
+import { WrapAbi } from "@polywrap/wrap-manifest-types-js";
 
 export * from "./types";
 export { renderSchema };
 
 export interface ComposerOutput {
   schema?: string;
-  abi?: Abi;
+  abi?: WrapAbi;
 }
 
 export enum ComposerFilter {
@@ -44,8 +45,8 @@ export async function composeSchema(
 export async function resolveImports(
   schemas: SchemaFile[],
   resolvers: SchemaResolvers
-): Promise<Abi[]> {
-  const abis: Abi[] = [];
+): Promise<WrapAbi[]> {
+  const abis: WrapAbi[] = [];
 
   if (schemas.length === 0) {
     throw Error("No schema provided");
