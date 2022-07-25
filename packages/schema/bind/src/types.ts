@@ -1,7 +1,7 @@
 import { Abi } from "@polywrap/schema-parse";
 import { OutputDirectory } from "@polywrap/os-js";
 
-export type BindLanguage = "wasm-as" | "wasm-rs" | "plugin-ts" | "app-ts";
+export type BindLanguage = "wasm-as" | "wasm-rs" | "wasm-go" | "plugin-ts" | "app-ts";
 
 export interface BindOutput {
   output: OutputDirectory;
