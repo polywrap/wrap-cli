@@ -22,7 +22,8 @@ import {
   ObjectRef,
   InterfaceDefinition,
   WithKind,
-  MapDefinition, WrapAbi
+  MapDefinition,
+  WrapAbi,
 } from "@polywrap/wrap-manifest-types-js";
 
 export * from "./finalizePropertyDef";

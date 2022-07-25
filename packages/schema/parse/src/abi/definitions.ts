@@ -1,4 +1,4 @@
-import { isMapKeyType, isModuleType, isScalarType } from "./utils";
+import { isMapKeyType, isModuleType, isScalarType, ScalarType } from "./utils";
 
 import {
   AnyDefinition,
@@ -10,7 +10,7 @@ import {
   GenericDefinition,
   ImportedEnumDefinition,
   ImportedEnvDefinition,
-  ImportedModuleDefinition, ImportedModuleRef,
+  ImportedModuleDefinition,
   ImportedObjectDefinition,
   InterfaceDefinition,
   InterfaceImplementedDefinition,
@@ -23,7 +23,7 @@ import {
   PropertyDefinition,
   ScalarDefinition,
   UnresolvedObjectOrEnumRef,
-  WithKind
+  WithKind,
 } from "@polywrap/wrap-manifest-types-js";
 
 export enum DefinitionKind {
@@ -121,7 +121,7 @@ export function createAnyDefinition(args: {
 }
 
 export function createMapKeyDefinition(args: {
-  type: MapKeyDefinition["type"];
+  type: string;
   name?: string | null;
   required?: boolean;
 }): MapKeyDefinition {
@@ -132,16 +132,15 @@ export function createMapKeyDefinition(args: {
   }
   return {
     ...createGenericDefinition(args),
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     type: args.type,
     kind: DefinitionKind.Scalar,
   };
 }
 
-// TODO: Change this
-export const scalarTypeNames = "";
-
 export function createScalarDefinition(args: {
-  type: ScalarDefinition["type"];
+  type: string;
   name?: string | null;
   required?: boolean;
 }): ScalarDefinition {
@@ -152,7 +151,7 @@ export function createScalarDefinition(args: {
   }
   return {
     ...createGenericDefinition(args),
-    type: args.type,
+    type: args.type as ScalarType,
     kind: DefinitionKind.Scalar,
   };
 }
@@ -201,7 +200,7 @@ export function createMapDefinition(args: {
   name?: string | null;
   required?: boolean;
   key?: MapKeyDefinition;
-  value?: GenericDefinition;
+  value?: GenericDefinition | null;
 }): MapDefinition {
   return {
     ...createAnyDefinition({
@@ -231,8 +230,8 @@ export function createMapDefinition(args: {
           ? (args.value as UnresolvedObjectOrEnumRef)
           : undefined,
     }),
-    key: args.key,
-    value: args.value,
+    key: args.key ? args.key : null,
+    value: args.value ? args.value : null,
     kind: DefinitionKind.Map,
   };
 }
@@ -271,7 +270,7 @@ export function createArrayDefinition(args: {
           ? (args.item as UnresolvedObjectOrEnumRef)
           : undefined,
     }),
-    item: args.item,
+    item: args.item ? args.item : null,
     kind: DefinitionKind.Array,
   };
 }
@@ -377,7 +376,7 @@ export function createObjectPropertyDefinition(args: {
 
 export function createMethodDefinition(args: {
   name: string;
-  arguments?: [] | [MethodDefinition];
+  arguments?: PropertyDefinition[];
   env?: {
     required: boolean;
   };
@@ -398,8 +397,8 @@ export function createMethodDefinition(args: {
 }
 
 export function createModuleDefinition(args: {
-  imports?: [] | [ImportedModuleRef];
-  interfaces?: [] | [GenericDefinition];
+  imports?: { type: ModuleDefinition["type"] }[];
+  interfaces?: InterfaceImplementedDefinition[];
   required?: boolean;
   comment?: string;
 }): ModuleDefinition {
@@ -436,10 +435,9 @@ export function createImportedEnumDefinition(args: {
   };
 }
 
-export type CapabilityType = keyof CapabilityDefinition;
-
 // TODO: We don't want this hard coded
-export const capabilityTypes = ["getImplementations"];
+export const capabilityTypes = ["getImplementations"] as const;
+export type CapabilityType = typeof capabilityTypes[number];
 export function createCapability(args: {
   type: CapabilityType;
   enabled: boolean;

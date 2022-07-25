@@ -5,7 +5,7 @@ import {
   createInterfaceImplementedDefinition,
   CapabilityType,
   createCapability,
-  createInterfaceDefinition,
+  createInterfaceDefinition, capabilityTypes
 } from "../abi";
 import {
   extractEnvDirective,
@@ -32,7 +32,6 @@ import {
   InterfaceDefinition,
   MapDefinition,
   WrapAbi,
-  capabilityTypes,
 } from "@polywrap/wrap-manifest-types-js";
 
 const visitorEnter = (abi: WrapAbi, state: State) => ({

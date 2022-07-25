@@ -1,15 +1,13 @@
 import { AbiTransforms } from ".";
+import { createEnumRef, createObjectRef } from "../abi";
+
 import {
-  createEnumRef,
-  createObjectRef,
   AnyDefinition,
-} from "../abi";
-import {
   ArrayDefinition,
   GenericDefinition,
   MapDefinition,
   PropertyDefinition,
-  WrapAbi
+  WrapAbi,
 } from "@polywrap/wrap-manifest-types-js";
 
 export const finalizePropertyDef = (abi: WrapAbi): AbiTransforms => {

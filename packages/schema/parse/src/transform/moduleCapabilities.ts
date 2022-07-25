@@ -17,7 +17,7 @@ export function moduleCapabilities(): AbiTransforms {
       InterfaceDefinition: (def: InterfaceDefinition) => {
         for (const type in def.capabilities) {
           const info = def.capabilities[type as keyof CapabilityDefinition];
-          if (info.enabled) {
+          if (info?.enabled) {
             capabilities.push({
               uri: def.uri,
               namespace: def.namespace,

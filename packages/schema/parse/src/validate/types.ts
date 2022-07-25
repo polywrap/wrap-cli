@@ -1,6 +1,5 @@
-import { isScalarType, isModuleType } from "../abi/utils";
+import { isScalarType, isModuleType, scalarTypeNames } from "../abi/utils";
 import { SchemaValidator } from "./";
-import { scalarTypeNames } from "../abi";
 
 import {
   DirectiveNode,

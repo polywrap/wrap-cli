@@ -20,7 +20,7 @@ import {
 
 export interface State {
   currentType?: ObjectDefinition;
-  currentProperty?: PropertyDefinition | undefined;
+  currentProperty?: PropertyDefinition;
   nonNullType?: boolean;
 }
 

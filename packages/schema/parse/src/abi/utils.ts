@@ -1,7 +1,29 @@
-import { ScalarDefinition } from "@polywrap/wrap-manifest-types-js";
+export const MapKeyTypes = {
+  UInt: "UInt",
+  UInt8: "UInt8",
+  UInt16: "UInt16",
+  UInt32: "UInt32",
+  Int: "Int",
+  Int8: "Int8",
+  Int16: "Int16",
+  Int32: "Int32",
+  String: "String",
+};
+
+export const ScalarTypes = {
+  ...MapKeyTypes,
+  Boolean: "Boolean",
+  Bytes: "Bytes",
+  BigInt: "BigInt",
+  BigNumber: "BigNumber",
+  JSON: "JSON",
+};
+
+export type ScalarType = keyof typeof ScalarTypes;
+export type MapKeyType = keyof typeof MapKeyTypes;
 
 export function isMapKeyType(type: string): boolean {
-  return type in ScalarDefinition["type"];
+  return type in MapKeyTypes;
 }
 
 export const MODULE_NAME = "Module";
@@ -15,9 +37,7 @@ export function isImportedModuleType(type: string): boolean {
 }
 
 export function isScalarType(type: string): boolean {
-  return type in scalarTypes;
+  return type in ScalarTypes;
 }
 
-// Need to hardcode because
-// https://stackoverflow.com/questions/64048938/extract-value-from-type-constant-in-typescript
-// export const scalarTypeNames = Object.keys(scalarTypes);
+export const scalarTypeNames = Object.keys(ScalarTypes);

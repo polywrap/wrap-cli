@@ -1,19 +1,20 @@
 import { parseSchema } from "../";
-import { addFirstLast } from "../transform/addFirstLast";
-import { extendType } from "../transform/extendType";
+import { addFirstLast, extendType } from "../transform";
 import {
   createObjectDefinition,
   createScalarPropertyDefinition,
+  createModuleDefinition,
+  createMethodDefinition,
+  createImportedModuleDefinition,
+} from "../abi";
+import {
+  WrapAbi,
+  ImportedModuleDefinition,
+  MethodDefinition,
+  ModuleDefinition,
   ObjectDefinition,
   PropertyDefinition,
-  Abi,
-  createModuleDefinition,
-  ModuleDefinition,
-  createMethodDefinition,
-  MethodDefinition,
-  createImportedModuleDefinition,
-  ImportedModuleDefinition,
-} from "../abi";
+} from "@polywrap/wrap-manifest-types-js";
 
 const schema1 = `
 type MyType {
@@ -72,7 +73,7 @@ describe("Polywrap Schema Abi Transformations", () => {
     const abi = parseSchema(schema1, {
       transforms: [addFirstLast],
     });
-    const expected: Abi = {
+    const expected: WrapAbi = {
       enumTypes: [],
       importedEnumTypes: [],
       interfaceTypes: [],
@@ -286,7 +287,7 @@ describe("Polywrap Schema Abi Transformations", () => {
         }),
       ],
     });
-    const expected: Abi = {
+    const expected: WrapAbi = {
       enumTypes: [],
       interfaceTypes: [],
       importedEnumTypes: [],

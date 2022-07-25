@@ -1,5 +1,4 @@
 import {
-  ImportedEnvDefinition,
   createInterfaceImplementedDefinition,
   createImportedEnvDefinition,
 } from "../abi";
@@ -19,7 +18,10 @@ import {
   FieldDefinitionNode,
   ASTVisitor,
 } from "graphql";
-import { WrapAbi } from "@polywrap/wrap-manifest-types-js";
+import {
+  ImportedEnvDefinition,
+  WrapAbi,
+} from "@polywrap/wrap-manifest-types-js";
 
 const visitorEnter = (
   importedEnvTypes: ImportedEnvDefinition[],

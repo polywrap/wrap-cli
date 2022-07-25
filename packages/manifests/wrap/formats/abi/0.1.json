@@ -108,27 +108,21 @@
       "properties": {
         "methods": {
           "type": "array",
-          "items": [
-            {
-              "$ref": "#/definitions/methodDefinition"
-            }
-          ]
+          "items": {
+            "$ref": "#/definitions/methodDefinition"
+          }
         },
         "imports": {
           "type": "array",
-          "items": [
-            {
-              "$ref": "#/definitions/importedModuleRef"
-            }
-          ]
+          "items": {
+            "$ref": "#/definitions/importedModuleRef"
+          }
         },
         "interfaces": {
           "type": "array",
-          "items": [
-            {
-              "$ref": "#/definitions/interfaceImplementedDefinition"
-            }
-          ]
+          "items": {
+            "$ref": "#/definitions/interfaceImplementedDefinition"
+          }
         }
       },
       "unevaluatedProperties": false
@@ -144,46 +138,44 @@
     },
     "methodDefinition": {
       "type": "object",
-      "required": ["arguments", "return"],
       "allOf": [
         {
           "$ref": "#/definitions/genericDefinition"
         },
         {
           "$ref": "#/definitions/withComment"
-        }
-      ],
-      "properties": {
-        "arguments": {
-          "type": "array",
-          "items": [
-            {
-              "$ref": "#/definitions/propertyDefinition"
-            }
-          ]
         },
-        "env": {
-          "type": "object",
+        {
+          "required": ["arguments", "return"],
           "properties": {
-            "required": {
-              "type": "boolean"
+            "arguments": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/propertyDefinition"
+              }
+            },
+            "env": {
+              "type": "object",
+              "properties": {
+                "required": {
+                  "type": "boolean"
+                }
+              },
+              "unevaluatedProperties": false
+            },
+            "return": {
+              "$ref": "#/definitions/propertyDefinition"
             }
           },
           "unevaluatedProperties": false
-        },
-        "return": {
-          "$ref": "#/definitions/propertyDefinition"
         }
-      },
+      ],
       "unevaluatedProperties": false
     },
     "envDefinition": {
       "type": "object",
-      "allOf": [
-        {
-          "$ref": "#/definitions/objectDefinition"
-        }
-      ]
+      "$ref": "#/definitions/objectDefinition",
+      "unevaluatedProperties": false
     },
     "enumDefinition": {
       "type": "object",
@@ -258,15 +250,13 @@
     },
     "importedObjectDefinition": {
       "type": "object",
+      "$ref": "#/definitions/objectDefinition",
       "allOf": [
         {
           "$ref": "#/definitions/objectDefinition"
         },
         {
           "$ref": "#/definitions/importedDefinition"
-        },
-        {
-          "$ref": "#/definitions/withComment"
         }
       ],
       "unevaluatedProperties": false
@@ -288,11 +278,9 @@
       "properties": {
         "methods": {
           "type": "array",
-          "items": [
-            {
-              "$ref": "#/definitions/methodDefinition"
-            }
-          ]
+          "items": {
+            "$ref": "#/definitions/methodDefinition"
+          }
         },
         "isInterface": {
           "type": ["boolean", "null"]
@@ -302,26 +290,23 @@
     },
     "importedEnumDefinition": {
       "type": "object",
+      "$ref": "#/definitions/enumDefinition",
       "allOf": [
-        {
-          "$ref": "#/definitions/enumDefinition"
-        },
         {
           "$ref": "#/definitions/importedDefinition"
         },
         {
           "$ref": "#/definitions/withComment"
+        },
+        {
+          "$ref": "#/definitions/genericDefinition"
         }
       ],
       "unevaluatedProperties": false
     },
     "importedEnvDefinition": {
       "type": "object",
-      "allOf": [
-        {
-          "$ref": "#/definitions/importedObjectDefinition"
-        }
-      ],
+      "$ref": "#/definitions/importedObjectDefinition",
       "unevaluatedProperties": false
     },
     "withKind": {
@@ -362,7 +347,7 @@
           "$ref": "#/definitions/withKind"
         },
         {
-          "required": ["type"],
+          "required": ["type", "name", "required"],
           "properties": {
             "type": {
               "type": "string"
@@ -448,6 +433,7 @@
               ]
             }
           },
+          "required": ["array", "scalar", "map", "object", "enum", "unresolvedObjectOrEnum"],
           "unevaluatedProperties": false
         }
       ],
@@ -455,17 +441,18 @@
     },
     "arrayDefinition": {
       "type": "object",
+      "properties": {
+        "item": {
+          "oneOf": [{
+            "$ref": "#/definitions/genericDefinition"
+          }, {
+            "type": "null"
+          }]
+        }
+      },
       "allOf": [
         {
           "$ref": "#/definitions/anyDefinition"
-        },
-        {
-          "properties": {
-            "item": {
-              "$ref": "#/definitions/genericDefinition"
-            }
-          },
-          "unevaluatedProperties": false
         }
       ],
       "unevaluatedProperties": false,
@@ -524,16 +511,13 @@
       "allOf": [
         {
           "$ref": "#/definitions/anyDefinition"
-        },
-        {
-          "properties": {
-            "type": {
-              "$ref": "#/definitions/mapKeyType"
-            }
-          },
-          "unevaluatedProperties": false
         }
       ],
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/mapKeyType"
+        }
+      },
       "unevaluatedProperties": false,
       "required": ["type"]
     },
@@ -545,19 +529,24 @@
         },
         {
           "$ref": "#/definitions/withComment"
-        },
-        {
-          "properties": {
-            "key": {
-              "$ref": "#/definitions/mapKeyDefinition"
-            },
-            "value": {
-              "$ref": "#/definitions/genericDefinition"
-            }
-          },
-          "unevaluatedProperties": false
         }
       ],
+      "properties": {
+        "key": {
+          "oneOf": [{
+            "$ref": "#/definitions/mapKeyDefinition"
+          }, {
+            "type": "null"
+          }]
+        },
+        "value": {
+          "oneOf": [{
+            "$ref": "#/definitions/genericDefinition"
+          }, {
+            "type": "null"
+          }]
+        }
+      },
       "unevaluatedProperties": false,
       "required": ["key", "value"]
     },
