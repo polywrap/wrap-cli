@@ -45,7 +45,6 @@
     "@polywrap/polywrap-manifest-types-js": "0.3.0",
     "@polywrap/schema-bind": "0.3.0",
     "@polywrap/schema-compose": "0.3.0",
-    "@polywrap/schema-parse": "0.3.0",
     "@polywrap/test-env-js": "0.3.0",
     "@polywrap/wrap-manifest-types-js": "0.3.0",
     "assemblyscript": "0.19.1",
