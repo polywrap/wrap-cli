@@ -1,0 +1,69 @@
+package module
+
+import (
+    "github.com/consideritdone/polywrap-go/examples/demo1/wrap/moduleTypes"
+    "github.com/consideritdone/polywrap-go/examples/demo1/wrap/sampleResult"
+    "github.com/consideritdone/polywrap-go/polywrap/msgpack"
+)
+{{#methods}}
+
+export class Args{{#toUpper}}{{name}}{{/toUpper}} {
+  {{#arguments}}
+  {{#handleKeywords}}{{name}}{{/handleKeywords}} {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
+  {{/arguments}}
+}
+
+export function deserialize{{#toUpper}}{{name}}{{/toUpper}}Args(argsBuf []byte): *moduleTypes.Args{{name}} {
+    context := msgpack.NewContext("Deserializing module-type: {{name}}")
+    {{#arguments.length}}
+    reader := msgpack.NewReadDecoder(context, argsBuf)
+    numFields := reader.ReadMapLength()
+
+  {{#arguments}}
+  {{^object}}
+  let _{{name}} {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
+  {{/object}}
+  {{#required}}
+  let _{{name}}Set: bool = false;
+  {{/required}}
+  {{/arguments}}
+
+  for i := numFields; i > 0; i-- {
+    const field = reader.readString();
+
+    reader.Context().Push(field, "unknown", "searching for property type")
+    {{#arguments}}
+    {{^first}}else {{/first}}if (field == "{{name}}") {
+      reader.Context().Push(field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading property")
+
+      {{#scalar}}
+      _{{name}} = reader.Read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}();
+      {{/scalar}}
+      {{#required}}
+      _{{name}}Set = true;
+      {{/required}}
+      reader.Context().Pop()
+    }
+    {{/arguments}}
+    reader.context().pop();
+  }
+
+  {{#arguments}}
+  {{#required}}
+  {{^object}}
+  if !_{{name}}Set {
+  {{/object}}
+    panic(reader.Context().PrintWithContext("Missing required argument: '{{name}}: {{type}}'"))
+  }
+  {{/required}}
+  {{/arguments}}
+  {{/arguments.length}}
+
+  return {
+    {{#arguments}}
+    {{#handleKeywords}}{{name}}{{/handleKeywords}}: _{{name}}{{^last}},{{/last}}
+    {{/arguments}}
+  };
+}
+
+{{/methods}}

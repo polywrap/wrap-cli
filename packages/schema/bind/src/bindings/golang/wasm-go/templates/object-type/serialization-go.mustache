@@ -1,0 +1,22 @@
+package {{#toFirstLower}}{{type}}{{/toFirstLower}}
+
+import "github.com/consideritdone/polywrap-go/polywrap/msgpack"
+
+func serialize{{type}}(args {{type}}) []byte {
+    context := msgpack.NewContext("Serializing (encoding) object-type: {{type}}")
+    encoder := msgpack.NewWriteEncoder(context)
+    write{{type}}(encoder, args)
+    
+    return encoder.Buffer()
+}
+
+func write{{type}}(writer msgpack.Write, args {{type}}) {
+    writer.WriteMapLength({{properties.length}})
+    {{#properties}}
+    writer.Context().Push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property")
+    writer.WriteString("{{name}}")
+    {{#scalar}}
+    writer.Write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(args.{{#handleKeywords}}{{name}}{{/handleKeywords}});
+    {{/scalar}}
+    {{/properties}}
+}

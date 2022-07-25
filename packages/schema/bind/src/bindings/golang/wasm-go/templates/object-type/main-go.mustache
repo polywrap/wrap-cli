@@ -1,0 +1,18 @@
+package {{#toFirstLower}}{{type}}{{/toFirstLower}}
+
+import "github.com/consideritdone/polywrap-go/polywrap/msgpack"
+
+type {{type}} struct {
+    Value string
+    {{#properties}}
+    {{#handleKeywords}}{{#toUpper}}{{name}}{{/toUpper}}{{/handleKeywords}} {{#toWasm}}{{toGraphQLType}}{{/toWasm}}
+    {{/properties}}
+}
+
+func toBuffer(args SampleResult) []byte {
+    return serializeSampleResult(args)
+}
+
+func Write(writer msgpack.Write, args SampleResult) {
+    writeSampleResult(writer, args)
+}
