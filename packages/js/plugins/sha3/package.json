@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/sha3-plugin-js",
   "description": "Polywrap SHA3 Javascript Plugin",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -21,7 +21,7 @@
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@polywrap/core-js": "0.2.0",
+    "@polywrap/core-js": "0.3.0",
     "js-sha3": "0.8.0"
   },
   "devDependencies": {
