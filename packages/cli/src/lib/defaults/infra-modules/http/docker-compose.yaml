@@ -1,0 +1,8 @@
+version: '3'
+services:
+  http-server:
+    build: ./server
+    environment:
+      PORT: '${PORT:-3500}'
+    ports:
+      - '${PORT:-3500}:${PORT:-3500}'
