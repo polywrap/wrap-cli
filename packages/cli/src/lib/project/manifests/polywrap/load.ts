@@ -22,7 +22,11 @@ import { Schema as JsonSchema } from "jsonschema";
 import path from "path";
 import fs from "fs";
 
-export const defaultPolywrapManifest = ["polywrap.yaml", "polywrap.yml"];
+export const defaultPolywrapManifest = [
+  "polywrap.yaml",
+  "polywrap.yaml",
+  "polywrap.yml",
+];
 
 export async function loadPolywrapManifest(
   manifestPath: string,

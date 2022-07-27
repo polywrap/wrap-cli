@@ -6,7 +6,7 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export interface PolywrapManifest {
+export interface AppManifest {
   /**
    * Polywrap manifest format version.
    */
@@ -28,10 +28,6 @@ export interface PolywrapManifest {
    * Project source files.
    */
   source: {
-    /**
-     * Path to the project's entry point.
-     */
-    module?: string;
     /**
      * Path to the project's graphql schema.
      */
@@ -71,5 +67,5 @@ export interface PolywrapManifest {
      */
     schema: string;
   }[];
-  __type: "PolywrapManifest";
+  __type: "AppManifest";
 }

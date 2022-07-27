@@ -169,7 +169,7 @@ export class Compiler {
     const composerOutput = await this._composeSchema();
 
     // Allow the build-image to validate the manifest & override functionality
-    const buildImageDir = `${__dirname}/defaults/build-images/${polywrapManifest.language}`;
+    const buildImageDir = `${__dirname}/defaults/build-images/${polywrapManifest.project.type}`;
     const buildImageEntryFile = path.join(buildImageDir, "index.ts");
     let compilerOverrides: CompilerOverrides | undefined;
 
@@ -203,7 +203,7 @@ export class Compiler {
   private async _isInterface(): Promise<boolean> {
     const { project } = this._config;
     const manifest = await project.getManifest();
-    return manifest.language === "interface";
+    return manifest.project.type === "interface";
   }
 
   private async _composeSchema(): Promise<ComposerOutput> {
@@ -374,7 +374,7 @@ export class Compiler {
 
       const info: WrapManifest = {
         abi: (filteredAbi as unknown) as WrapAbi,
-        name: manifest.name,
+        name: manifest.project.name,
         type: (await this._isInterface()) ? "interface" : "wasm",
         version: "0.1",
       };
@@ -443,12 +443,12 @@ export class Compiler {
       throw Error(missingSchemaMessage);
     }
 
-    if (manifest.language !== "interface" && !manifest.module) {
+    if (manifest.project.type !== "interface" && !manifest.source.module) {
       const missingModuleMessage = intlMsg.lib_compiler_missingModule();
       throw Error(missingModuleMessage);
     }
 
-    if (manifest.language === "interface" && manifest.module) {
+    if (manifest.project.type === "interface" && manifest.source.module) {
       const noInterfaceModule = intlMsg.lib_compiler_noInterfaceModule();
       throw Error(noInterfaceModule);
     }

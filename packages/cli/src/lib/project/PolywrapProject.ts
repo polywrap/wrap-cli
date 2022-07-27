@@ -94,7 +94,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
   /// Manifest (polywrap.yaml)
 
   public async getName(): Promise<string> {
-    return (await this.getManifest()).name;
+    return (await this.getManifest()).project.name;
   }
 
   public async getManifest(): Promise<PolywrapManifest> {
@@ -117,7 +117,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
   }
 
   public async getManifestLanguage(): Promise<PolywrapManifestLanguage> {
-    const language = (await this.getManifest()).language;
+    const language = (await this.getManifest()).project.type;
 
     Project.validateManifestLanguage(
       language,
@@ -133,7 +133,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
   public async getSchemaNamedPath(): Promise<string> {
     const manifest = await this.getManifest();
     const dir = this.getManifestDir();
-    return path.join(dir, manifest.schema);
+    return path.join(dir, manifest.source.schema);
   }
 
   public async getImportRedirects(): Promise<
@@ -151,7 +151,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     generationSubPath?: string
   ): Promise<BindOutput> {
     const manifest = await this.getManifest();
-    const module = manifest.module as string;
+    const module = manifest.source.module as string;
     const moduleDirectory = this._getGenerationDirectory(
       module,
       generationSubPath
@@ -165,7 +165,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     );
 
     const options: BindOptions = {
-      projectName: manifest.name,
+      projectName: manifest.project.name,
       abi: composerOutput.abi as Abi,
       schema: composerOutput.schema as string,
       outputDirAbs: moduleDirectory,
@@ -185,10 +185,10 @@ export class PolywrapProject extends Project<PolywrapManifest> {
       return this._config.buildManifestPath;
     }
     // If the polywrap.yaml manifest specifies a custom build manifest
-    else if (polywrapManifest.build) {
+    else if (polywrapManifest.extensions?.build) {
       this._config.buildManifestPath = path.join(
         this.getManifestDir(),
-        polywrapManifest.build
+        polywrapManifest.extensions.build
       );
       return this._config.buildManifestPath;
     }
@@ -377,10 +377,10 @@ export class PolywrapProject extends Project<PolywrapManifest> {
       return this._config.deployManifestPath;
     }
     // If the polywrap.yaml manifest specifies a custom deploy manifest
-    else if (polywrapManifest.deploy) {
+    else if (polywrapManifest.extensions?.deploy) {
       this._config.deployManifestPath = path.join(
         this.getManifestDir(),
-        polywrapManifest.deploy
+        polywrapManifest.extensions.deploy
       );
       return this._config.deployManifestPath;
     }
@@ -464,10 +464,10 @@ export class PolywrapProject extends Project<PolywrapManifest> {
       return this._config.metaManifestPath;
     }
     // If the polywrap.yaml manifest specifies a custom meta manifest
-    else if (polywrapManifest.meta) {
+    else if (polywrapManifest.extensions?.meta) {
       this._config.metaManifestPath = path.join(
         this.getManifestDir(),
-        polywrapManifest.meta
+        polywrapManifest.extensions.meta
       );
       return this._config.metaManifestPath;
     }
@@ -533,8 +533,8 @@ export class PolywrapProject extends Project<PolywrapManifest> {
   private async _getModule(): Promise<string | undefined> {
     const manifest = await this.getManifest();
 
-    if (manifest.module) {
-      return path.dirname(manifest.module).replace("./", "");
+    if (manifest.source.module) {
+      return path.dirname(manifest.source.module).replace("./", "");
     }
 
     return undefined;

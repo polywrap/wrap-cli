@@ -1,5 +1,5 @@
 {
-  "id": "PolywrapManifest",
+  "id": "PluginManifest",
   "type": "object",
   "additionalProperties": false,
   "required": ["format", "project", "source"],
@@ -23,7 +23,7 @@
         "type": {
           "description": "Type of this project.",
           "type": "string",
-          "pattern": "^((interface)|(wasm\\/[a-z0-9]+))$"
+          "pattern": "^plugin\\/[a-z0-9]+$"
         }
       }
     },
@@ -31,7 +31,7 @@
       "description": "Project source files.",
       "type": "object",
       "additionalProperties": false,
-      "required": ["schema"],
+      "required": ["schema", "module"],
       "properties": {
         "module": {
           "description": "Path to the project's entry point.",
