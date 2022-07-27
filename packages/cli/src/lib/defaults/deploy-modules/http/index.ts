@@ -1,6 +1,7 @@
 import { Deployer } from "../../../deploy/deployer";
 
 import { Uri } from "@polywrap/core-js";
+import FormData from "form-data";
 import axios from "axios";
 import { readdirSync, readFileSync } from "fs-extra";
 
@@ -21,9 +22,8 @@ const dirToFormData = (baseDirPath: string) => {
         convertDir(direntPath, nextFormDataRelPath);
       } else {
         const fileBuffer = readFileSync(direntPath);
-        const fileBlob = new Blob([fileBuffer]);
 
-        formData.append("file", fileBlob, nextFormDataRelPath);
+        formData.append("file[]", fileBuffer, nextFormDataRelPath);
       }
     });
   };
@@ -48,14 +48,13 @@ class HTTPDeployer implements Deployer {
     }
 
     const formData = dirToFormData(uri.path);
+    console.log(formData);
 
     const response = await axios.post<{ uri: string; error: string }>(
       config.serverUrl,
       formData,
       {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        headers: formData.getHeaders(),
       }
     );
 
