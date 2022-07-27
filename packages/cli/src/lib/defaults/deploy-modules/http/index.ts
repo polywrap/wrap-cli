@@ -2,29 +2,35 @@ import { Deployer } from "../../../deploy/deployer";
 
 import { Uri } from "@polywrap/core-js";
 import axios from "axios";
-import Zip from "jszip";
 import { readdirSync, readFileSync } from "fs-extra";
 
 const isValidUri = (uri: Uri) => uri.authority === "fs";
 
-const zipDirectory = (dirPath: string) => {
-  const loadZip = (fileOrSubdirPath: string, zip: Zip = new Zip()) => {
-    readdirSync(fileOrSubdirPath, { withFileTypes: true }).forEach((dirent) => {
-      const direntPath = `${fileOrSubdirPath}/${dirent.name}`;
+const dirToFormData = (baseDirPath: string) => {
+  const formData = new FormData();
+
+  const convertDir = (dirPath: string, formDataRelPath: string) => {
+    const files = readdirSync(dirPath, { withFileTypes: true });
+
+    files.map((dirent) => {
+      const direntPath = `${dirPath}/${dirent.name}`;
+      const nextFormDataRelPath = formDataRelPath
+        ? `${formDataRelPath}/${dirent.name}`
+        : dirent.name;
       if (dirent.isDirectory()) {
-        const subDir = zip.folder(dirent.name) as Zip;
-        loadZip(direntPath, subDir);
+        convertDir(direntPath, nextFormDataRelPath);
       } else {
-        zip.file(direntPath, readFileSync(direntPath));
+        const fileBuffer = readFileSync(direntPath);
+        const fileBlob = new Blob([fileBuffer]);
+
+        formData.append("file", fileBlob, nextFormDataRelPath);
       }
     });
-
-    return zip;
   };
 
-  const loadedZip = loadZip(dirPath);
+  convertDir(baseDirPath, "");
 
-  return loadedZip.generateAsync({ type: "blob" });
+  return formData;
 };
 
 class HTTPDeployer implements Deployer {
@@ -41,9 +47,7 @@ class HTTPDeployer implements Deployer {
       );
     }
 
-    const blob = await zipDirectory(uri.path);
-    const formData = new FormData();
-    formData.append("directory", blob, "polywrap.zip");
+    const formData = dirToFormData(uri.path);
 
     const response = await axios.post<{ uri: string; error: string }>(
       config.serverUrl,
