@@ -186,6 +186,10 @@ type Ethereum_Module @imported(
     connection: Ethereum_Connection
   ): Ethereum_Network!
 
+  requestAccounts(
+    connection: Ethereum_Connection
+  ): [String!]!
+
   callContractMethod(
     address: String!
     method: String!
