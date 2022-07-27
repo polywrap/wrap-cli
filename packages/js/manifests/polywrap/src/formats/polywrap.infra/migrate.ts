@@ -23,13 +23,18 @@ export function migrateInfraManifest(
   manifest: AnyInfraManifest,
   to: InfraManifestFormats
 ): InfraManifest {
-  const from = manifest.format as InfraManifestFormats;
+  let from = manifest.format as InfraManifestFormats;
+
+  // HACK: Patch fix for backwards compatability
+  if(from === "0.1.0" && ("0.1" in migrators)) {
+    from = "0.1" as InfraManifestFormats;
+  }
 
   if (from === latestInfraManifestFormat) {
     return manifest as InfraManifest;
   }
 
-  if (!(from in InfraManifestFormats)) {
+  if (!(Object.values(InfraManifestFormats).some(x => x === from))) {
     throw new Error(`Unrecognized InfraManifestFormat "${manifest.format}"`);
   }
 

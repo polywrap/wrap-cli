@@ -31,7 +31,7 @@
       "description": "Project source files.",
       "type": "object",
       "additionalProperties": false,
-      "required": ["schema", "module"],
+      "required": ["schema"],
       "properties": {
         "module": {
           "description": "Path to the project's entry point.",

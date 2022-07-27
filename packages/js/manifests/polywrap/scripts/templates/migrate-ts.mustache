@@ -31,13 +31,18 @@ export function migrate{{#latest}}{{type}}{{/latest}}(
   manifest: Any{{#latest}}{{type}}{{/latest}},
   to: {{#latest}}{{type}}{{/latest}}Formats
 ): {{#latest}}{{type}}{{/latest}} {
-  const from = manifest.format as {{#latest}}{{type}}{{/latest}}Formats;
+  let from = manifest.format as {{#latest}}{{type}}{{/latest}}Formats;
+
+  // HACK: Patch fix for backwards compatability
+  if(from === "0.1.0" && ("0.1" in migrators)) {
+    from = "0.1" as {{#latest}}{{type}}{{/latest}}Formats;
+  }
 
   if (from === latest{{#latest}}{{type}}{{/latest}}Format) {
     return manifest as {{#latest}}{{type}}{{/latest}};
   }
 
-  if (!(from in {{#latest}}{{type}}{{/latest}}Formats)) {
+  if (!(Object.values({{#latest}}{{type}}{{/latest}}Formats).some(x => x === from))) {
     throw new Error(`Unrecognized {{#latest}}{{type}}{{/latest}}Format "${manifest.format}"`);
   }
 

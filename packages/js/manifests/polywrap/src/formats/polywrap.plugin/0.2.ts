@@ -31,7 +31,7 @@ export interface PluginManifest {
     /**
      * Path to the project's entry point.
      */
-    module: string;
+    module?: string;
     /**
      * Path to the project's graphql schema.
      */

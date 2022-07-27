@@ -27,13 +27,18 @@ export function migrateAppManifest(
   manifest: AnyAppManifest,
   to: AppManifestFormats
 ): AppManifest {
-  const from = manifest.format as AppManifestFormats;
+  let from = manifest.format as AppManifestFormats;
+
+  // HACK: Patch fix for backwards compatability
+  if(from === "0.1.0" && ("0.1" in migrators)) {
+    from = "0.1" as AppManifestFormats;
+  }
 
   if (from === latestAppManifestFormat) {
     return manifest as AppManifest;
   }
 
-  if (!(from in AppManifestFormats)) {
+  if (!(Object.values(AppManifestFormats).some(x => x === from))) {
     throw new Error(`Unrecognized AppManifestFormat "${manifest.format}"`);
   }
 

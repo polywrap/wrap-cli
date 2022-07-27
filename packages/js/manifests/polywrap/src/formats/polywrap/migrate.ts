@@ -27,13 +27,18 @@ export function migratePolywrapManifest(
   manifest: AnyPolywrapManifest,
   to: PolywrapManifestFormats
 ): PolywrapManifest {
-  const from = manifest.format as PolywrapManifestFormats;
+  let from = manifest.format as PolywrapManifestFormats;
+
+  // HACK: Patch fix for backwards compatability
+  if(from === "0.1.0" && ("0.1" in migrators)) {
+    from = "0.1" as PolywrapManifestFormats;
+  }
 
   if (from === latestPolywrapManifestFormat) {
     return manifest as PolywrapManifest;
   }
 
-  if (!(from in PolywrapManifestFormats)) {
+  if (!(Object.values(PolywrapManifestFormats).some(x => x === from))) {
     throw new Error(`Unrecognized PolywrapManifestFormat "${manifest.format}"`);
   }
 
