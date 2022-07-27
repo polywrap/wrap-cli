@@ -395,3 +395,83 @@ export async function buildAndDeployWrapper({
     ipfsCid: wrapperCid,
   };
 }
+
+export async function buildAndDeployWrapperToHttp({
+  wrapperAbsPath,
+  httpProvider,
+  name,
+}: {
+  wrapperAbsPath: string;
+  httpProvider: string;
+  name?: string;
+}): Promise<{ uri: string }> {
+  const manifestPath = `${wrapperAbsPath}/polywrap.yaml`;
+  const tempManifestFilename = `polywrap-temp.yaml`;
+  const tempDeployManifestFilename = `polywrap.deploy-temp.yaml`;
+  const tempManifestPath = path.join(wrapperAbsPath, tempManifestFilename);
+  const tempDeployManifestPath = path.join(
+    wrapperAbsPath,
+    tempDeployManifestFilename
+  );
+
+  const wrapperName = name ?? generateName();
+  const postUrl = `${httpProvider}/wrappers/local/${wrapperName}`;
+
+  await buildWrapper(wrapperAbsPath);
+
+  // manually configure manifests
+
+  const { __type, ...polywrapManifest } = deserializePolywrapManifest(
+    fs.readFileSync(manifestPath, "utf-8")
+  );
+
+  fs.writeFileSync(
+    tempManifestPath,
+    yaml.dump({
+      ...polywrapManifest,
+      deploy: `./${tempDeployManifestFilename}`,
+    })
+  );
+
+  fs.writeFileSync(
+    tempDeployManifestPath,
+    yaml.dump({
+      format: "0.1.0",
+      stages: {
+        httpDeploy: {
+          package: "http",
+          uri: `fs/${wrapperAbsPath}/build`,
+          config: {
+            serverUrl: postUrl,
+          },
+        },
+      },
+    })
+  );
+
+  // deploy Wrapper
+
+  const {
+    exitCode: deployExitCode,
+    stdout: deployStdout,
+    stderr: deployStderr,
+  } = await runCLI({
+    args: ["deploy", "--manifest-file", tempManifestPath],
+  });
+
+  if (deployExitCode !== 0) {
+    console.error(`polywrap exited with code: ${deployExitCode}`);
+    console.log(`stderr:\n${deployStderr}`);
+    console.log(`stdout:\n${deployStdout}`);
+    throw Error("polywrap CLI failed");
+  }
+
+  // remove manually configured manifests
+
+  fs.unlinkSync(tempManifestPath);
+  fs.unlinkSync(tempDeployManifestPath);
+
+  return {
+    uri: postUrl,
+  };
+}
