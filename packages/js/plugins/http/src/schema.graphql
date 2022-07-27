@@ -1,33 +1,11 @@
-type Header {
-  key: String!
-  value: String!
+#import { Module } into Http from "ens/http.polywrap.eth"
+
+type Env {
+  """
+  Disable querying providers in parallel when resolving URIs
+  """
+  disableParallelRequests: Boolean
 }
 
-type UrlParam {
-  key: String!
-  value: String!
-}
-
-type Response {
-  status: Int!
-  statusText: String!
-  headers: [Header!]
-  body: String
-}
-
-type Request {
-  headers: [Header!]
-  urlParams: [UrlParam!]
-  responseType: ResponseType!
-  body: String
-}
-
-enum ResponseType {
-  TEXT
-  BINARY
-}
-
-type Module {
-  get(url: String!, request: Request): Response
-  post(url: String!, request: Request): Response
+type Module implements Http_Module {
 }
