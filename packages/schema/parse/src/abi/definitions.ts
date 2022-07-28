@@ -1,4 +1,4 @@
-import { isMapKeyType, isModuleType, isScalarType, ScalarType } from "./utils";
+import { isMapKeyType, isModuleType, isScalarType, MapKeyType, ScalarType } from "./utils";
 
 import {
   AnyDefinition,
@@ -130,9 +130,7 @@ export function createMapKeyDefinition(args: {
   }
   return {
     ...createGenericDefinition(args),
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    type: args.type,
+    type: args.type as MapKeyType,
     kind: DefinitionKind.Scalar,
   };
 }
