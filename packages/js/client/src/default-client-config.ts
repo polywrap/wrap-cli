@@ -24,6 +24,7 @@ import { sha3Plugin } from "@polywrap/sha3-plugin-js";
 import { loggerPlugin } from "@polywrap/logger-plugin-js";
 import { Tracer } from "@polywrap/tracing-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
+import { httpResolverPlugin } from "@polywrap/http-resolver-plugin-js";
 
 export const getDefaultClientConfig = Tracer.traceFunc(
   "client-js: getDefaultClientConfig",
@@ -59,6 +60,10 @@ export const getDefaultClientConfig = Tracer.traceFunc(
         {
           uri: new Uri("wrap://ens/http.polywrap.eth"),
           plugin: httpPlugin({}),
+        },
+        {
+          uri: new Uri("wrap://ens/http-resolver.polywrap.eth"),
+          plugin: httpResolverPlugin({}),
         },
         {
           uri: new Uri("wrap://ens/js-logger.polywrap.eth"),
@@ -98,6 +103,7 @@ export const getDefaultClientConfig = Tracer.traceFunc(
             new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
             new Uri("wrap://ens/ens-resolver.polywrap.eth"),
             new Uri("wrap://ens/fs-resolver.polywrap.eth"),
+            new Uri("wrap://ens/http-resolver.polywrap.eth"),
           ],
         },
         {

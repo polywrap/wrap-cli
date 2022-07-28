@@ -32,19 +32,14 @@ export class HttpResolverPlugin extends Module<NoConfig> {
         {
           url: `${args.path}/${manifestSearchPattern}`,
           request: {
-            headers: [],
-            urlParams: [],
-            responseType: "TEXT",
+            responseType: "BINARY",
           },
         },
         _client
       );
 
-      console.log(manifestResult);
-
       if (manifestResult.data && manifestResult.data.body) {
-        console.log(manifestResult.data.body);
-        manifest = Buffer.from(manifestResult.data.body);
+        manifest = Buffer.from(manifestResult.data.body, "base64");
       } else {
         throw new Error();
       }
@@ -65,8 +60,6 @@ export class HttpResolverPlugin extends Module<NoConfig> {
         {
           url: args.path,
           request: {
-            headers: [],
-            urlParams: [],
             responseType: "TEXT",
           },
         },
