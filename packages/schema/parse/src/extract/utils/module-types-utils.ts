@@ -53,7 +53,7 @@ export function extractNamedType(node: NamedTypeNode, state: State): void {
       required: state.nonNullType,
     });
 
-    state.nonNullType = false;
+    state.nonNullType = undefined;
   } else if (method) {
     // Return value
     if (!state.currentReturn) {
@@ -78,7 +78,7 @@ export function extractNamedType(node: NamedTypeNode, state: State): void {
       });
     }
 
-    state.nonNullType = false;
+    state.nonNullType = undefined;
   }
 }
 
@@ -94,7 +94,7 @@ export function extractListType(state: State): void {
       required: state.nonNullType,
     });
     state.currentArgument = argument.array;
-    state.nonNullType = false;
+    state.nonNullType = undefined;
   } else if (method) {
     // Return value
     if (!method.return) {
@@ -113,7 +113,7 @@ export function extractListType(state: State): void {
       required: state.nonNullType,
     });
     state.currentReturn = state.currentReturn.array;
-    state.nonNullType = false;
+    state.nonNullType = undefined;
   }
 }
 
@@ -135,7 +135,7 @@ export function extractInputValueDefinition(
     name: name,
     map: def ? (def as MapDefinition) : undefined,
     comment: node.description?.value,
-    required: !!(def && def.required),
+    required: def && def.required ? true : undefined,
   });
 
   if (!method.arguments) {

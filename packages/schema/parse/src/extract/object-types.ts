@@ -41,12 +41,14 @@ const visitorEnter = (objectTypes: ObjectDefinition[], state: State) => ({
       return;
     }
 
+    const interfaces = node.interfaces?.map((x) =>
+      createInterfaceImplementedDefinition({ type: x.name.value })
+    );
+
     // Create a new TypeDefinition
     const type = createObjectDefinition({
       type: typeName,
-      interfaces: node.interfaces?.map((x) =>
-        createInterfaceImplementedDefinition({ type: x.name.value })
-      ),
+      interfaces: interfaces?.length ? interfaces : undefined,
       comment: node.description?.value,
     });
     objectTypes.push(type);

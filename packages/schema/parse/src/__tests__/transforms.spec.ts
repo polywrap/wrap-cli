@@ -74,10 +74,6 @@ describe("Polywrap Schema Abi Transformations", () => {
       transforms: [addFirstLast],
     });
     const expected: WrapAbi = {
-      enumTypes: [],
-      importedEnumTypes: [],
-      interfaceTypes: [],
-      importedEnvTypes: [],
       objectTypes: [
         {
           ...createObjectDefinition({ type: "MyType" }),
@@ -142,7 +138,6 @@ describe("Polywrap Schema Abi Transformations", () => {
                     ...createScalarPropertyDefinition({
                       type: "String",
                       name: "arg2",
-                      required: false,
                     }),
                     first: null,
                     last: null
@@ -151,7 +146,6 @@ describe("Polywrap Schema Abi Transformations", () => {
                     ...createScalarPropertyDefinition({
                       type: "Boolean",
                       name: "arg3",
-                      required: false,
                     }),
                     first: null,
                     last: true
@@ -205,7 +199,6 @@ describe("Polywrap Schema Abi Transformations", () => {
                 return: createScalarPropertyDefinition({
                   type: "Boolean",
                   name: "method3",
-                  required: false
                 })
               }),
               first: null,
@@ -213,7 +206,6 @@ describe("Polywrap Schema Abi Transformations", () => {
             } as MethodDefinition,
           ],
         } as ModuleDefinition,
-      importedObjectTypes: [],
       importedModuleTypes: [
         {
           ...createImportedModuleDefinition({
@@ -288,10 +280,6 @@ describe("Polywrap Schema Abi Transformations", () => {
       ],
     });
     const expected: WrapAbi = {
-      enumTypes: [],
-      interfaceTypes: [],
-      importedEnumTypes: [],
-      importedEnvTypes: [],
       objectTypes: [
         {
           ...createObjectDefinition({ type: "MyType" }),
@@ -330,8 +318,6 @@ describe("Polywrap Schema Abi Transformations", () => {
           foo: "bar",
         } as ObjectDefinition,
       ],
-      importedObjectTypes: [],
-      importedModuleTypes: [],
     };
 
     expect(abi).toMatchObject(expected);

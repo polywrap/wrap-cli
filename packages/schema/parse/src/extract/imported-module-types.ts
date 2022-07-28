@@ -75,7 +75,7 @@ const visitorEnter = (
       map: def
         ? ({ ...def, name: node.name.value } as MapDefinition)
         : undefined,
-      required: def && def.required ? true : false,
+      required: def && def.required ? true : undefined,
     });
 
     const method = createMethodDefinition({

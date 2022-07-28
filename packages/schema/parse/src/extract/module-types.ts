@@ -45,14 +45,16 @@ const visitorEnter = (abi: WrapAbi, state: State) => ({
 
     const imports = parseImportsDirective(nodeName, node);
 
-    const interfaces = parseCapabilitiesDirective(nodeName, node);
-    state.currentInterfaces = interfaces;
+    const enabledInterfaces = parseCapabilitiesDirective(nodeName, node);
+    state.currentInterfaces = enabledInterfaces;
+
+    const interfaces = node.interfaces?.map((x) =>
+      createInterfaceImplementedDefinition({ type: x.name.value })
+    );
 
     const module = createModuleDefinition({
-      imports,
-      interfaces: node.interfaces?.map((x) =>
-        createInterfaceImplementedDefinition({ type: x.name.value })
-      ),
+      imports: imports.length ? imports : undefined,
+      interfaces: interfaces?.length ? interfaces : undefined,
       comment: node.description?.value,
     });
 
@@ -76,7 +78,7 @@ const visitorEnter = (abi: WrapAbi, state: State) => ({
       map: def
         ? ({ ...def, name: node.name.value } as MapDefinition)
         : undefined,
-      required: def && def.required ? true : false,
+      required: def && def.required ? true : undefined,
     });
 
     const method = createMethodDefinition({

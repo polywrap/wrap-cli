@@ -1,4 +1,10 @@
-import { isMapKeyType, isModuleType, isScalarType, MapKeyType, ScalarType } from "./utils";
+import {
+  isMapKeyType,
+  isModuleType,
+  isScalarType,
+  MapKeyType,
+  ScalarType,
+} from "./utils";
 
 import {
   AnyDefinition,
@@ -163,7 +169,7 @@ export function createEnumDefinition(args: {
     ...createGenericDefinition(args),
     type: args.type,
     kind: DefinitionKind.Enum,
-    constants: args.constants ? args.constants : [],
+    constants: args.constants,
     comment: args.comment,
   };
 }
@@ -385,7 +391,7 @@ export function createMethodDefinition(args: {
       type: "Method",
     }),
     required: true,
-    arguments: args.arguments ? args.arguments : [],
+    arguments: args.arguments,
     return: args.return,
     comment: args.comment,
     kind: DefinitionKind.Method,
@@ -404,8 +410,8 @@ export function createModuleDefinition(args: {
       type: "Module",
     }),
     methods: [],
-    imports: args.imports ? args.imports : [],
-    interfaces: args.interfaces ? args.interfaces : [],
+    imports: args.imports,
+    interfaces: args.interfaces,
     comment: args.comment,
     kind: DefinitionKind.Module,
   };

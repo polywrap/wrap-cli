@@ -11,14 +11,14 @@ import { GenericDefinition } from "@polywrap/wrap-manifest-types-js";
 
 type CurrentAbi = {
   currentType: string;
-  subType: string | null;
-  required: boolean;
+  subType: string | undefined;
+  required: boolean | undefined;
 };
 
 // TODO: Make sure map also works for imported types and modules
 
 const _parseCurrentType = (rootType: string, type: string): CurrentAbi => {
-  let required = false;
+  let required = undefined;
   if (type.startsWith("[")) {
     const closeSquareBracketIdx = type.lastIndexOf("]");
     if (type[closeSquareBracketIdx + 1] === "!") {
@@ -64,7 +64,7 @@ const _parseCurrentType = (rootType: string, type: string): CurrentAbi => {
       : type,
     subType: hasSubType
       ? type.substring(openAngleBracketIdx + 1, closeAngleBracketIdx)
-      : null,
+      : undefined,
     required: required,
   };
 };
