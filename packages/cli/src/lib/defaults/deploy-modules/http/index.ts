@@ -48,7 +48,6 @@ class HTTPDeployer implements Deployer {
     }
 
     const formData = dirToFormData(uri.path);
-    console.log(formData);
 
     const response = await axios.post<{ uri: string; error: string }>(
       config.serverUrl,

@@ -38,10 +38,10 @@ export class HttpResolverPlugin extends Module<NoConfig> {
         _client
       );
 
-      if (manifestResult.data && manifestResult.data.body) {
-        manifest = Buffer.from(manifestResult.data.body, "base64");
-      } else {
-        throw new Error();
+      const result = manifestResult.data;
+
+      if (result && result.body) {
+        manifest = Buffer.from(result.body, "base64");
       }
     } catch (e) {
       // TODO: logging
@@ -60,7 +60,7 @@ export class HttpResolverPlugin extends Module<NoConfig> {
         {
           url: args.path,
           request: {
-            responseType: "TEXT",
+            responseType: "BINARY",
           },
         },
         client
@@ -68,13 +68,11 @@ export class HttpResolverPlugin extends Module<NoConfig> {
 
       const result = resolveResult.data;
 
-      console.log(result);
-
       if (!result || !result.body) {
         return null;
       }
 
-      return Uint8Array.from([]);
+      return Buffer.from(result.body, "base64");
     } catch (e) {
       return null;
     }

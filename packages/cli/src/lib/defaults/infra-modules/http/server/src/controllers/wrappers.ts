@@ -27,7 +27,6 @@ router.post(
         }
 
         req.files.forEach((file) => {
-          console.log(file.filename);
           fse.moveSync(file.path, `${basePath}/${file.originalname}`, {
             overwrite: true,
           });
