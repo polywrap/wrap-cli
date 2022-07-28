@@ -104,7 +104,7 @@ describe("Filesystem plugin", () => {
     const manifest = await client.getManifest(fsUri, {});
 
     expect(manifest).toBeTruthy();
-    expect(manifest.version).toBe("0.1.0");
+    expect(manifest.version).toBe("0.1");
     expect(manifest.type).toEqual("wasm");
 
     // get a file

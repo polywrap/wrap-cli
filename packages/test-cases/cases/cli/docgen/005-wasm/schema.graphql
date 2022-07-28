@@ -1,0 +1,11 @@
+type Module {
+  method(
+    arg: String!
+  ): String!
+}
+
+type Object {
+  uint: UInt!
+  bools: [Boolean!]!
+  bites: Bytes
+}

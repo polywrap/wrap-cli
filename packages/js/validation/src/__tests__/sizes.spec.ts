@@ -29,13 +29,19 @@ describe("manifests", () => {
     convertWrapInfoJsonToMsgpack();
   });
 
-  it("sanity", async () => {
+  test("sanity package-size-over-100-kb", async () => {
     await assertValidWrapper(
       path.join(testWrappersPath, "package-size-over-100-kb")
     );
+  });
+
+  test("sanity file-size-over-100-kb", async () => {
     await assertValidWrapper(
       path.join(testWrappersPath, "file-size-over-100-kb")
     );
+  });
+
+  test("sanity module-size-over-100-kb", async () => {
     await assertValidWrapper(
       path.join(testWrappersPath, "module-size-over-100-kb")
     );

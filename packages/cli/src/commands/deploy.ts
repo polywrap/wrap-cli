@@ -7,12 +7,14 @@ import {
   intlMsg,
   parseWasmManifestFileOption,
   PolywrapProject,
+  ResultList,
 } from "../lib";
 
 import { DeployManifest } from "@polywrap/polywrap-manifest-types-js";
 import fs from "fs";
 import nodePath from "path";
 import { print } from "gluegun";
+import yaml from "js-yaml";
 import { Uri } from "@polywrap/core-js";
 import { validate } from "jsonschema";
 
@@ -21,6 +23,7 @@ const pathStr = intlMsg.commands_deploy_options_o_path();
 
 type DeployCommandOptions = {
   manifestFile: string;
+  outputFile?: string;
   verbose?: boolean;
 };
 
@@ -36,6 +39,10 @@ export const deploy: Command = {
           default: defaultManifestStr,
         })}`
       )
+      .option(
+        `-o, --output-file <${pathStr}>`,
+        `${intlMsg.commands_deploy_options_o()}`
+      )
       .option(`-v, --verbose`, `${intlMsg.commands_deploy_options_v()}`)
       .action(async (options) => {
         await run({
@@ -50,7 +57,7 @@ export const deploy: Command = {
 };
 
 async function run(options: DeployCommandOptions): Promise<void> {
-  const { manifestFile, verbose } = options;
+  const { manifestFile, verbose, outputFile } = options;
 
   const project = new PolywrapProject({
     rootDir: nodePath.dirname(manifestFile),
@@ -119,13 +126,57 @@ async function run(options: DeployCommandOptions): Promise<void> {
 
   // Execute roots
 
+  const resultLists: ResultList[] = [];
+
   for await (const root of roots) {
     print.info(`\nExecuting deployment chain: \n`);
     root.handler.getDependencyTree().printTree();
     print.info("");
     await root.handler.handle(root.uri);
+    resultLists.push(root.handler.getResultsList());
   }
 
+  const getResults = (
+    resultList: ResultList,
+    prefix?: string
+  ): {
+    name: string;
+    input: unknown;
+    result: string;
+    id: string;
+  }[] => {
+    const id = prefix ? `${prefix}.${resultList.name}` : resultList.name;
+
+    return [
+      {
+        id,
+        name: resultList.name,
+        input: resultList.input,
+        result: resultList.result,
+      },
+      ...resultList.children.flatMap((r) => getResults(r, id)),
+    ];
+  };
+
+  if (outputFile) {
+    const resultOutput = resultLists.flatMap((r) => getResults(r));
+
+    const outputFileExt = nodePath.extname(outputFile).substring(1);
+    if (!outputFileExt) throw new Error("Require output file extension");
+    switch (outputFileExt) {
+      case "yaml":
+      case "yml":
+        fs.writeFileSync(outputFile, yaml.dump(resultOutput));
+        break;
+      case "json":
+        fs.writeFileSync(outputFile, JSON.stringify(resultOutput, null, 2));
+        break;
+      default:
+        throw new Error(
+          intlMsg.commands_run_error_unsupportedOutputFileExt({ outputFileExt })
+        );
+    }
+  }
   return;
 }
 
