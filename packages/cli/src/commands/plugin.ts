@@ -4,7 +4,6 @@ import {
   PluginProject,
   SchemaComposer,
   defaultPluginManifest,
-  outputManifest,
   intlMsg,
   parsePluginCodegenDirOption,
   parsePluginManifestFileOption,
@@ -101,25 +100,17 @@ async function run(options: PluginCommandOptions) {
     client,
   });
 
-  let result = false;
-
   const codeGenerator = new CodeGenerator({
     project,
     schemaComposer,
     codegenDirAbs: codegenDir,
   });
 
-  result = await codeGenerator.generate();
-
-  if (result) {
-    process.exitCode = 0;
-  } else {
-    process.exitCode = 1;
-  }
+  const result = await codeGenerator.generate();
+  process.exitCode = result ? 0 : 1;
 
   // Output the built manifest
-  const publishManifestPath = path.join(publishDir, "polywrap.plugin.json");
-  const publishAbiPath = path.join(publishDir, "wrap.info");
+  const publishAbiPath = path.join(publishDir, "wrap.info.ts");
 
   if (!fs.existsSync(publishDir)) {
     fs.mkdirSync(publishDir);
@@ -131,6 +122,4 @@ async function run(options: PluginCommandOptions) {
     "plugin",
     publishAbiPath
   );
-
-  await outputManifest(manifest, publishManifestPath);
 }

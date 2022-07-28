@@ -6,18 +6,27 @@ export const generateWrapFile = (
   abi: unknown,
   name: string,
   type: "interface" | "wasm" | "plugin",
-  path: string
+  path: string,
+  encoded = true
 ): void => {
-  const info: WrapManifest = {
+  const manifest: WrapManifest = {
     abi: abi as never,
     name,
     type,
     version: "0.1.0",
   };
+  const stringifyInfo = JSON.stringify(manifest);
+  let info = JSON.parse(stringifyInfo);
 
-  const s = JSON.stringify(info);
-  const encodedInfo = msgpackEncode(JSON.parse(s));
-  writeFileSync(path, encodedInfo, {
-    encoding: "binary",
+  let encoding = "utf-8";
+  if (encoded) {
+    info = msgpackEncode(info);
+    encoding = "binary";
+  } else {
+    info = `export const manifest = ${info}`;
+  }
+
+  writeFileSync(path, info, {
+    encoding,
   });
 };
