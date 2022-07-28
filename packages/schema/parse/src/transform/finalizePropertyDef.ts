@@ -155,13 +155,14 @@ function resolveObjectOrEnumKind(
   const unresolved = property.unresolvedObjectOrEnum;
 
   // Check to see if the type is a part of the custom types defined inside the schema (objects, enums, envs)
-  let customType: GenericDefinition | undefined = abi.objectTypes.find(
-    (type) => type.type === unresolved.type
-  );
+  let customType: GenericDefinition | undefined =
+    abi.objectTypes &&
+    abi.objectTypes.find((type) => type.type === unresolved.type);
 
   customType = customType
     ? customType
-    : abi.importedObjectTypes.find((type) => type.type === unresolved.type);
+    : abi.importedObjectTypes &&
+      abi.importedObjectTypes.find((type) => type.type === unresolved.type);
 
   const envType = abi.envType;
   customType = customType
@@ -172,14 +173,18 @@ function resolveObjectOrEnumKind(
 
   customType = customType
     ? customType
-    : abi.importedEnvTypes.find((type) => type.type === unresolved.type);
+    : abi.importedEnvTypes &&
+      abi.importedEnvTypes.find((type) => type.type === unresolved.type);
 
   if (!customType) {
-    customType = abi.enumTypes.find((type) => type.type === unresolved.type);
+    customType =
+      abi.enumTypes &&
+      abi.enumTypes.find((type) => type.type === unresolved.type);
 
     customType = customType
       ? customType
-      : abi.importedEnumTypes.find((type) => type.type === unresolved.type);
+      : abi.importedEnumTypes &&
+        abi.importedEnumTypes.find((type) => type.type === unresolved.type);
 
     if (!customType) {
       throw new Error(`Unsupported type ${unresolved.type}`);
@@ -191,7 +196,7 @@ function resolveObjectOrEnumKind(
       type: unresolved.type,
     });
 
-    property.unresolvedObjectOrEnum = null;
+    property.unresolvedObjectOrEnum = undefined;
 
     return property.enum;
   } else {
@@ -201,7 +206,7 @@ function resolveObjectOrEnumKind(
       type: property.unresolvedObjectOrEnum.type,
     });
 
-    property.unresolvedObjectOrEnum = null;
+    property.unresolvedObjectOrEnum = undefined;
 
     return property.object;
   }

@@ -78,7 +78,7 @@ export const getImportedEnvTypesVisitor = (abi: WrapAbi): ASTVisitor => {
   const state: State = {};
 
   return {
-    enter: visitorEnter(abi.importedEnvTypes, state),
+    enter: visitorEnter(abi.importedEnvTypes || [], state),
     leave: visitorLeave(state),
   };
 };

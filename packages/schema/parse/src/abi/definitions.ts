@@ -56,20 +56,20 @@ export function isKind(type: WithKind, kind: DefinitionKind): boolean {
 
 export function createGenericDefinition(args: {
   type: string;
-  name?: string | null;
+  name?: string;
   required?: boolean;
 }): GenericDefinition {
   return {
     type: args.type,
-    name: args.name ? args.name : null,
-    required: args.required ? args.required : null,
+    name: args.name,
+    required: args.required,
     kind: DefinitionKind.Generic,
   };
 }
 
 export function createObjectDefinition(args: {
   type: string;
-  name?: string | null;
+  name?: string;
   required?: boolean;
   properties?: PropertyDefinition[];
   interfaces?: InterfaceImplementedDefinition[];
@@ -77,8 +77,8 @@ export function createObjectDefinition(args: {
 }): ObjectDefinition {
   return {
     ...createGenericDefinition(args),
-    properties: args.properties ? args.properties : [],
-    interfaces: args.interfaces ? args.interfaces : [],
+    properties: args.properties,
+    interfaces: args.interfaces,
     comment: args.comment,
     kind: DefinitionKind.Object,
   };
@@ -86,7 +86,7 @@ export function createObjectDefinition(args: {
 
 export function createObjectRef(args: {
   type: string;
-  name?: string | null;
+  name?: string;
   required?: boolean;
 }): ObjectRef {
   return {
@@ -97,7 +97,7 @@ export function createObjectRef(args: {
 
 export function createAnyDefinition(args: {
   type: string;
-  name?: string | null;
+  name?: string;
   required?: boolean;
   array?: ArrayDefinition;
   map?: MapDefinition;
@@ -108,21 +108,19 @@ export function createAnyDefinition(args: {
 }): AnyDefinition {
   return {
     ...createGenericDefinition(args),
-    array: args.array ? args.array : null,
-    map: args.map ? args.map : null,
-    scalar: args.scalar ? args.scalar : null,
-    object: args.object ? args.object : null,
-    enum: args.enum ? args.enum : null,
-    unresolvedObjectOrEnum: args.unresolvedObjectOrEnum
-      ? args.unresolvedObjectOrEnum
-      : null,
+    array: args.array,
+    map: args.map,
+    scalar: args.scalar,
+    object: args.object,
+    enum: args.enum,
+    unresolvedObjectOrEnum: args.unresolvedObjectOrEnum,
     kind: DefinitionKind.Any,
   };
 }
 
 export function createMapKeyDefinition(args: {
   type: string;
-  name?: string | null;
+  name?: string;
   required?: boolean;
 }): MapKeyDefinition {
   if (!isMapKeyType(args.type)) {
@@ -141,7 +139,7 @@ export function createMapKeyDefinition(args: {
 
 export function createScalarDefinition(args: {
   type: string;
-  name?: string | null;
+  name?: string;
   required?: boolean;
 }): ScalarDefinition {
   if (!isScalarType(args.type)) {
@@ -158,7 +156,7 @@ export function createScalarDefinition(args: {
 
 export function createEnumDefinition(args: {
   type: string;
-  name?: string | null;
+  name?: string;
   required?: boolean;
   constants?: string[];
   comment?: string;
@@ -174,7 +172,7 @@ export function createEnumDefinition(args: {
 
 export function createEnumRef(args: {
   type: string;
-  name?: string | null;
+  name?: string;
   required?: boolean;
 }): EnumRef {
   return {
@@ -185,7 +183,7 @@ export function createEnumRef(args: {
 
 export function createUnresolvedObjectOrEnumRef(args: {
   type: string;
-  name?: string | null;
+  name?: string;
   required?: boolean;
 }): UnresolvedObjectOrEnumRef {
   return {
@@ -197,10 +195,10 @@ export function createUnresolvedObjectOrEnumRef(args: {
 
 export function createMapDefinition(args: {
   type: string;
-  name?: string | null;
+  name?: string;
   required?: boolean;
   key?: MapKeyDefinition;
-  value?: GenericDefinition | null;
+  value?: GenericDefinition;
 }): MapDefinition {
   return {
     ...createAnyDefinition({
@@ -230,15 +228,15 @@ export function createMapDefinition(args: {
           ? (args.value as UnresolvedObjectOrEnumRef)
           : undefined,
     }),
-    key: args.key ? args.key : null,
-    value: args.value ? args.value : null,
+    key: args.key,
+    value: args.value,
     kind: DefinitionKind.Map,
   };
 }
 
 export function createArrayDefinition(args: {
   type: string;
-  name?: string | null;
+  name?: string;
   required?: boolean;
   item?: GenericDefinition;
 }): ArrayDefinition {
@@ -270,14 +268,14 @@ export function createArrayDefinition(args: {
           ? (args.item as UnresolvedObjectOrEnumRef)
           : undefined,
     }),
-    item: args.item ? args.item : null,
+    item: args.item,
     kind: DefinitionKind.Array,
   };
 }
 
 export function createPropertyDefinition(args: {
   type: string;
-  name?: string | null;
+  name?: string;
   required?: boolean;
   array?: ArrayDefinition;
   map?: MapDefinition;
@@ -295,7 +293,7 @@ export function createPropertyDefinition(args: {
 
 export function createInterfaceImplementedDefinition(args: {
   type: string;
-  name?: string | null;
+  name?: string;
   required?: boolean;
   array?: ArrayDefinition;
   map?: MapDefinition;
@@ -311,7 +309,7 @@ export function createInterfaceImplementedDefinition(args: {
 
 export function createArrayPropertyDefinition(args: {
   type: string;
-  name?: string | null;
+  name?: string;
   required?: boolean;
   item?: GenericDefinition;
   comment?: string;
@@ -324,7 +322,7 @@ export function createArrayPropertyDefinition(args: {
 
 export function createMapPropertyDefinition(args: {
   type: string;
-  name?: string | null;
+  name?: string;
   required?: boolean;
   key: MapKeyDefinition;
   value?: GenericDefinition;
@@ -338,7 +336,7 @@ export function createMapPropertyDefinition(args: {
 
 export function createScalarPropertyDefinition(args: {
   type: ScalarDefinition["type"];
-  name?: string | null;
+  name?: string;
   required?: boolean;
   comment?: string;
 }): PropertyDefinition {
@@ -350,7 +348,7 @@ export function createScalarPropertyDefinition(args: {
 
 export function createEnumPropertyDefinition(args: {
   type: string;
-  name?: string | null;
+  name?: string;
   required?: boolean;
   constants?: string[];
   comment?: string;
@@ -363,7 +361,7 @@ export function createEnumPropertyDefinition(args: {
 
 export function createObjectPropertyDefinition(args: {
   type: string;
-  name?: string | null;
+  name?: string;
   required?: boolean;
   properties?: PropertyDefinition[];
   comment?: string;
@@ -517,7 +515,7 @@ export function createImportedObjectDefinition(args: {
 }
 
 export function createEnvDefinition(args: {
-  name?: string | null;
+  name?: string;
   required?: boolean;
   properties?: PropertyDefinition[];
   interfaces?: InterfaceImplementedDefinition[];

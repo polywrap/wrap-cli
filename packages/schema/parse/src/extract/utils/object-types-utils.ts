@@ -79,6 +79,9 @@ export function extractFieldDefinition(
   });
 
   state.currentProperty = property;
+  if (!importDef.properties) {
+    importDef.properties = [];
+  }
   importDef.properties.push(property);
 }
 

@@ -41,9 +41,11 @@ export function moduleCapabilities(): AbiTransforms {
           (info.moduleType as any).capabilities = capabilities;
         }
 
-        for (const importedModuleDef of info.importedModuleTypes) {
-          if (enabledInterfaces.has(importedModuleDef.namespace)) {
-            importedModuleDef.isInterface = true;
+        if (info.importedModuleTypes) {
+          for (const importedModuleDef of info.importedModuleTypes) {
+            if (enabledInterfaces.has(importedModuleDef.namespace)) {
+              importedModuleDef.isInterface = true;
+            }
           }
         }
 

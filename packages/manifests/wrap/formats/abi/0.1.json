@@ -2,7 +2,6 @@
   "id": "Abi",
   "type": "object",
   "unevaluatedProperties": false,
-  "required": ["version"],
   "properties": {
     "version": {
       "description": "ABI Version",
@@ -67,22 +66,25 @@
         },
         {
           "$ref": "#/definitions/withComment"
+        },
+        {
+          "properties": {
+            "properties": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/propertyDefinition"
+              }
+            },
+            "interfaces": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/interfaceImplementedDefinition"
+              }
+            }
+          },
+          "unevaluatedProperties": false
         }
       ],
-      "properties": {
-        "properties": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/propertyDefinition"
-          }
-        },
-        "interfaces": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/interfaceImplementedDefinition"
-          }
-        }
-      },
       "unevaluatedProperties": false
     },
     "moduleDefinition": {
@@ -93,28 +95,31 @@
         },
         {
           "$ref": "#/definitions/withComment"
+        },
+        {
+          "properties": {
+            "methods": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/methodDefinition"
+              }
+            },
+            "imports": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/importedModuleRef"
+              }
+            },
+            "interfaces": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/interfaceImplementedDefinition"
+              }
+            }
+          },
+          "unevaluatedProperties": false
         }
       ],
-      "properties": {
-        "methods": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/methodDefinition"
-          }
-        },
-        "imports": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/importedModuleRef"
-          }
-        },
-        "interfaces": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/interfaceImplementedDefinition"
-          }
-        }
-      },
       "unevaluatedProperties": false
     },
     "interfaceImplementedDefinition": {
@@ -135,28 +140,31 @@
         },
         {
           "$ref": "#/definitions/withComment"
-        }
-      ],
-      "properties": {
-        "arguments": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/propertyDefinition"
-          }
         },
-        "env": {
-          "type": "object",
+        {
           "properties": {
-            "required": {
-              "type": "boolean"
+            "arguments": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/propertyDefinition"
+              }
+            },
+            "env": {
+              "type": "object",
+              "properties": {
+                "required": {
+                  "type": "boolean"
+                }
+              },
+              "unevaluatedProperties": false
+            },
+            "return": {
+              "$ref": "#/definitions/propertyDefinition"
             }
           },
           "unevaluatedProperties": false
-        },
-        "return": {
-          "$ref": "#/definitions/propertyDefinition"
         }
-      },
+      ],
       "unevaluatedProperties": false
     },
     "envDefinition": {
@@ -176,16 +184,19 @@
         },
         {
           "$ref": "#/definitions/withComment"
+        },
+        {
+          "properties": {
+            "constants": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "unevaluatedProperties": false
         }
       ],
-      "properties": {
-        "constants": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      },
       "unevaluatedProperties": false
     },
     "interfaceDefinition": {
@@ -197,13 +208,16 @@
         },
         {
           "$ref": "#/definitions/importedDefinition"
+        },
+        {
+          "properties": {
+            "capabilities": {
+              "$ref": "#/definitions/capabilityDefinition"
+            }
+          },
+          "unevaluatedProperties": false
         }
       ],
-      "properties": {
-        "capabilities": {
-          "$ref": "#/definitions/capabilityDefinition"
-        }
-      },
       "unevaluatedProperties": false
     },
     "capabilityDefinition": {
@@ -264,19 +278,22 @@
         },
         {
           "$ref": "#/definitions/withComment"
+        },
+        {
+          "properties": {
+            "methods": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/methodDefinition"
+              }
+            },
+            "isInterface": {
+              "type": ["boolean"]
+            }
+          },
+          "unevaluatedProperties": false
         }
       ],
-      "properties": {
-        "methods": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/methodDefinition"
-          }
-        },
-        "isInterface": {
-          "type": ["boolean"]
-        }
-      },
       "unevaluatedProperties": false
     },
     "importedEnumDefinition": {
@@ -287,9 +304,6 @@
         },
         {
           "$ref": "#/definitions/importedDefinition"
-        },
-        {
-          "$ref": "#/definitions/withComment"
         }
       ],
       "unevaluatedProperties": false

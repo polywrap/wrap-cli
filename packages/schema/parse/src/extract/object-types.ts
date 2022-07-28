@@ -82,7 +82,7 @@ export const getObjectTypesVisitor = (abi: WrapAbi): ASTVisitor => {
   const state: State = {};
 
   return {
-    enter: visitorEnter(abi.objectTypes, state),
+    enter: visitorEnter(abi.objectTypes || [], state),
     leave: visitorLeave(state),
   };
 };

@@ -43,7 +43,7 @@ export function setPropertyType(
       }),
       ...property.map,
       name: name,
-      required: type.required ? true : null,
+      required: type.required ? true : undefined, // replacing falsy value with undefined to compact wrap.info
     };
     return;
   }

@@ -8,10 +8,10 @@ export const hasImports: AbiTransforms = {
       ...abi,
       hasImports: () => {
         return (
-          abi.importedEnumTypes.length ||
-          abi.importedObjectTypes.length ||
-          abi.importedModuleTypes.length ||
-          abi.importedEnvTypes.length
+          (abi.importedEnumTypes && abi.importedEnumTypes.length) ||
+          (abi.importedObjectTypes && abi.importedObjectTypes.length) ||
+          (abi.importedModuleTypes && abi.importedModuleTypes.length) ||
+          (abi.importedEnvTypes && abi.importedEnvTypes.length)
         );
       },
     }),

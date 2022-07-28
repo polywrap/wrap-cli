@@ -91,6 +91,10 @@ const visitorEnter = (abi: WrapAbi, state: State) => ({
       method.env = envDirDefinition;
     }
 
+    if (!module.methods) {
+      module.methods = [];
+    }
+
     module.methods.push(method);
     state.currentMethod = method;
     state.currentReturn = returnType;
@@ -275,6 +279,9 @@ const parseImportsDirective = (
 
 const visitorLeave = (abi: WrapAbi, state: State) => ({
   ObjectTypeDefinition: (_node: ObjectTypeDefinitionNode) => {
+    if (!abi.interfaceTypes) {
+      abi.interfaceTypes = [];
+    }
     if (state.currentInterfaces) {
       abi.interfaceTypes = [...abi.interfaceTypes, ...state.currentInterfaces];
     }

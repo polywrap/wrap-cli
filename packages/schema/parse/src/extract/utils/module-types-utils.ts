@@ -71,10 +71,12 @@ export function extractNamedType(node: NamedTypeNode, state: State): void {
       );
     }
 
-    setPropertyType(state.currentReturn, method.name, {
-      type: node.name.value,
-      required: state.nonNullType,
-    });
+    if (state.currentReturn) {
+      setPropertyType(state.currentReturn, method.name, {
+        type: node.name.value,
+        required: state.nonNullType,
+      });
+    }
 
     state.nonNullType = false;
   }
@@ -136,6 +138,9 @@ export function extractInputValueDefinition(
     required: !!(def && def.required),
   });
 
+  if (!method.arguments) {
+    method.arguments = [];
+  }
   method.arguments.push(argument);
   state.currentArgument = argument;
 }

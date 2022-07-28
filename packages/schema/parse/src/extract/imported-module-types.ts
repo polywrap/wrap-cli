@@ -90,6 +90,10 @@ const visitorEnter = (
       method.env = envDirDefinition;
     }
 
+    if (!importDef.methods) {
+      importDef.methods = [];
+    }
+
     importDef.methods.push(method);
     state.currentMethod = method;
     state.currentReturn = returnType;
@@ -128,7 +132,7 @@ export const getImportedModuleTypesVisitor = (abi: WrapAbi): ASTVisitor => {
   const state: State = {};
 
   return {
-    enter: visitorEnter(abi.importedModuleTypes, state),
+    enter: visitorEnter(abi.importedModuleTypes || [], state),
     leave: visitorLeave(state),
   };
 };
