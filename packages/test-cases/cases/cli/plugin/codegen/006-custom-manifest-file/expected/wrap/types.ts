@@ -287,6 +287,11 @@ interface Ethereum_Module_Args_getNetwork extends Record<string, unknown> {
 }
 
 /* URI: "ens/ethereum.polywrap.eth" */
+interface Ethereum_Module_Args_requestAccounts extends Record<string, unknown> {
+  connection?: Types.Ethereum_Connection | null;
+}
+
+/* URI: "ens/ethereum.polywrap.eth" */
 interface Ethereum_Module_Args_callContractMethod extends Record<string, unknown> {
   address: Types.String;
   method: Types.String;
@@ -555,6 +560,17 @@ export const Ethereum_Module = {
     return client.invoke<Types.Ethereum_Network>({
       uri: "ens/ethereum.polywrap.eth",
       method: "getNetwork",
+      args
+    });
+  },
+
+  requestAccounts: async (
+    args: Ethereum_Module_Args_requestAccounts,
+    client: Client
+  ): Promise<InvokeResult<Array<Types.String>>> => {
+    return client.invoke<Array<Types.String>>({
+      uri: "ens/ethereum.polywrap.eth",
+      method: "requestAccounts",
       args
     });
   },

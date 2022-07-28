@@ -798,6 +798,21 @@ describe("Ethereum Plugin", () => {
       expect(polygonNetwork.data?.getNetwork.chainId).toBe("137");
       expect(polygonNetwork.data?.getNetwork.name).toBe("matic");
     });
+
+    it("requestAccounts", async () => {
+      const { error } = await client.invoke<string[]>({
+        uri,
+        method: "requestAccounts",
+      })
+
+      // eth_requestAccounts is not supported by Ganache
+      // this RPC error indicates that the method call was attempted
+      expect(error?.message.indexOf("Method eth_requestAccounts not supported")).toBeGreaterThanOrEqual(0);
+
+      // expect(error).toBeFalsy();
+      // expect(data).toBeTruthy();
+      // expect(data?.length).toBeGreaterThan(0);
+    });
   });
 
   describe("Mutation", () => {
