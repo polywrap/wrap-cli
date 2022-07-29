@@ -1,14 +1,12 @@
 import {
-  Abi,
-  createAbi,
+  WrapAbi,
   createObjectDefinition,
   createObjectPropertyDefinition,
   createArrayPropertyDefinition,
   createObjectRef,
 } from "../../../../schema/parse/src/abi";
 
-export const abi: Abi = {
-  ...createAbi(),
+export const abi: WrapAbi = {
   objectTypes: [
     {
       ...createObjectDefinition({ type: "Object" }),
@@ -16,7 +14,6 @@ export const abi: Abi = {
         createObjectPropertyDefinition({
           name: "recursive",
           type: "Object",
-          required: false
         }),
         createArrayPropertyDefinition({
           name: "recursiveArray",
@@ -31,7 +28,6 @@ export const abi: Abi = {
         createArrayPropertyDefinition({
           name: "recursiveOptArray",
           type: "[Object]",
-          required: false,
           item: createObjectRef({
             name: "recursiveOptArray",
             type: "Object",
@@ -45,17 +41,14 @@ export const abi: Abi = {
           item: createObjectRef({
             name: "recursiveArrayOpt",
             type: "Object",
-            required: false,
           })
         }),
         createArrayPropertyDefinition({
           name: "recursiveOptArrayOpt",
           type: "[Object]",
-          required: false,
           item: createObjectRef({
             name: "recursiveOptArrayOpt",
             type: "Object",
-            required: false,
           })
         }),
       ],

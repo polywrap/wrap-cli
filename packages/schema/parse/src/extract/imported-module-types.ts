@@ -45,14 +45,16 @@ const visitorEnter = (
       node.directives.find((dir) => dir.name.value === "enabled_interface");
     const isInterface = dir ? true : false;
 
+    const interfaces = node.interfaces?.map((x) =>
+      createInterfaceImplementedDefinition({ type: x.name.value })
+    );
+
     const importedType = createImportedModuleDefinition({
       uri: imported.uri,
       namespace: imported.namespace,
       nativeType: imported.nativeType,
       isInterface: isInterface,
-      interfaces: node.interfaces?.map((x) =>
-        createInterfaceImplementedDefinition({ type: x.name.value })
-      ),
+      interfaces: interfaces?.length ? interfaces : undefined,
       comment: node.description?.value,
     });
     importedModuleTypes.push(importedType);
@@ -124,7 +126,7 @@ const visitorLeave = (state: State) => ({
     state.currentArgument = undefined;
   },
   NonNullType: (_node: NonNullTypeNode) => {
-    state.nonNullType = false;
+    state.nonNullType = undefined;
   },
 });
 

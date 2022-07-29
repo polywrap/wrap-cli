@@ -45,7 +45,27 @@ export function parseSchema(
     }
   }
 
-  return info;
+  return {
+    objectTypes: info.objectTypes?.length ? info.objectTypes : undefined,
+    moduleType: info.moduleType ? info.moduleType : undefined,
+    enumTypes: info.enumTypes?.length ? info.enumTypes : undefined,
+    interfaceTypes: info.interfaceTypes?.length
+      ? info.interfaceTypes
+      : undefined,
+    importedObjectTypes: info.importedObjectTypes?.length
+      ? info.importedObjectTypes
+      : undefined,
+    importedModuleTypes: info.importedModuleTypes?.length
+      ? info.importedModuleTypes
+      : undefined,
+    importedEnumTypes: info.importedEnumTypes?.length
+      ? info.importedEnumTypes
+      : undefined,
+    importedEnvTypes: info.importedEnvTypes?.length
+      ? info.importedEnvTypes
+      : undefined,
+    envType: info.envType ? info.envType : undefined,
+  };
 }
 
 const validate = (

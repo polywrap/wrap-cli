@@ -78,7 +78,7 @@ const visitorEnter = (abi: WrapAbi, state: State) => ({
       map: def
         ? ({ ...def, name: node.name.value } as MapDefinition)
         : undefined,
-      required: def && def.required ? true : undefined,
+      required: def && def.required,
     });
 
     const method = createMethodDefinition({
@@ -299,7 +299,7 @@ const visitorLeave = (abi: WrapAbi, state: State) => ({
     state.currentArgument = undefined;
   },
   NonNullType: (_node: NonNullTypeNode) => {
-    state.nonNullType = false;
+    state.nonNullType = undefined;
   },
 });
 

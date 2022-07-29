@@ -75,7 +75,7 @@ export function extractFieldDefinition(
     name: name,
     map: def ? (def as MapDefinition) : undefined,
     comment: node.description?.value,
-    required: !!(def && def.required),
+    required: def && def.required,
   });
 
   state.currentProperty = property;
@@ -112,7 +112,7 @@ export function extractNamedType(node: NamedTypeNode, state: State): void {
     required: state.nonNullType,
   });
 
-  state.nonNullType = false;
+  state.nonNullType = undefined;
 }
 
 export function extractListType(state: State): void {
@@ -132,5 +132,5 @@ export function extractListType(state: State): void {
     required: state.nonNullType,
   });
   state.currentProperty = property.array;
-  state.nonNullType = false;
+  state.nonNullType = undefined;
 }

@@ -19,7 +19,7 @@ import {
 const schema1 = `
 type MyType {
   prop1: String!
-  prop2: String!
+  prop2: String
 }
 
 type AnotherType {
@@ -60,7 +60,7 @@ type TestImport_Module @imported(
 const schema2 = `
 type MyType {
   prop1: String!
-  prop2: String!
+  prop2: String
 }
 
 type AnotherType {
@@ -70,6 +70,8 @@ type AnotherType {
 
 describe("Polywrap Schema Abi Transformations", () => {
   it("addFirstLast", () => {
+    // const parsed = parseSchema(schema1);
+    // console.log(JSON.stringify(parsed));
     const abi = parseSchema(schema1, {
       transforms: [addFirstLast],
     });
@@ -90,8 +92,7 @@ describe("Polywrap Schema Abi Transformations", () => {
             {
               ...createScalarPropertyDefinition({
                 name: "prop2",
-                type: "String",
-                required: true
+                type: "String"
               }),
               first: null,
               last: true,
@@ -295,8 +296,7 @@ describe("Polywrap Schema Abi Transformations", () => {
             {
               ...createScalarPropertyDefinition({
                 name: "prop2",
-                type: "String",
-                required: true
+                type: "String"
               }),
               foo: "bar",
             },
