@@ -31,71 +31,81 @@ export const generateBinding: GenerateBindingFn = (
   const abi = applyTransforms(options.abi);
 
   // Generate object type folders
-  for (const objectType of abi.objectTypes) {
-    output.entries.push({
-      type: "Directory",
-      name: objectType.type,
-      data: renderTemplates(
-        templatePath("object-type"),
-        objectType,
-        subTemplates
-      ),
-    });
+  if (abi.objectTypes) {
+    for (const objectType of abi.objectTypes) {
+      output.entries.push({
+        type: "Directory",
+        name: objectType.type,
+        data: renderTemplates(
+          templatePath("object-type"),
+          objectType,
+          subTemplates
+        ),
+      });
+    }
   }
 
   // Generate imported folder
   const importEntries: OutputEntry[] = [];
 
   // Generate imported module type folders
-  for (const importedModuleType of abi.importedModuleTypes) {
-    importEntries.push({
-      type: "Directory",
-      name: importedModuleType.type,
-      data: renderTemplates(
-        templatePath("imported/module-type"),
-        importedModuleType,
-        subTemplates
-      ),
-    });
+  if (abi.importedModuleTypes) {
+    for (const importedModuleType of abi.importedModuleTypes) {
+      importEntries.push({
+        type: "Directory",
+        name: importedModuleType.type,
+        data: renderTemplates(
+          templatePath("imported/module-type"),
+          importedModuleType,
+          subTemplates
+        ),
+      });
+    }
   }
 
   // Generate imported env type folders
-  for (const importedEnvType of abi.importedEnvTypes) {
-    importEntries.push({
-      type: "Directory",
-      name: importedEnvType.type,
-      data: renderTemplates(
-        templatePath("imported/env-type"),
-        importedEnvType,
-        subTemplates
-      ),
-    });
+  if (abi.importedEnvTypes) {
+    for (const importedEnvType of abi.importedEnvTypes) {
+      importEntries.push({
+        type: "Directory",
+        name: importedEnvType.type,
+        data: renderTemplates(
+          templatePath("imported/env-type"),
+          importedEnvType,
+          subTemplates
+        ),
+      });
+    }
   }
 
   // Generate imported enum type folders
-  for (const importedEnumType of abi.importedEnumTypes) {
-    importEntries.push({
-      type: "Directory",
-      name: importedEnumType.type,
-      data: renderTemplates(
-        templatePath("imported/enum-type"),
-        importedEnumType,
-        subTemplates
-      ),
-    });
+  if (abi.importedEnumTypes) {
+    for (const importedEnumType of abi.importedEnumTypes) {
+      importEntries.push({
+        type: "Directory",
+        name: importedEnumType.type,
+        data: renderTemplates(
+          templatePath("imported/enum-type"),
+          importedEnumType,
+          subTemplates
+        ),
+      });
+    }
   }
 
   // Generate imported object type folders
-  for (const importedObectType of abi.importedObjectTypes) {
-    importEntries.push({
-      type: "Directory",
-      name: importedObectType.type,
-      data: renderTemplates(
-        templatePath("imported/object-type"),
-        importedObectType,
-        subTemplates
-      ),
-    });
+  if (abi.importedObjectTypes) {
+    for (const importedObectType of abi.importedObjectTypes) {
+      importEntries.push({
+        type: "Directory",
+        name: importedObectType.type,
+        data: renderTemplates(
+          templatePath("imported/object-type"),
+          importedObectType,
+          subTemplates
+        ),
+      });
+    }
   }
 
   if (importEntries.length) {
@@ -110,16 +120,18 @@ export const generateBinding: GenerateBindingFn = (
   }
 
   // Generate interface type folders
-  for (const interfaceType of abi.interfaceTypes) {
-    output.entries.push({
-      type: "Directory",
-      name: interfaceType.type,
-      data: renderTemplates(
-        templatePath("interface-type"),
-        interfaceType,
-        subTemplates
-      ),
-    });
+  if (abi.interfaceTypes) {
+    for (const interfaceType of abi.interfaceTypes) {
+      output.entries.push({
+        type: "Directory",
+        name: interfaceType.type,
+        data: renderTemplates(
+          templatePath("interface-type"),
+          interfaceType,
+          subTemplates
+        ),
+      });
+    }
   }
 
   // Generate module type folders
@@ -136,12 +148,18 @@ export const generateBinding: GenerateBindingFn = (
   }
 
   // Generate enum type folders
-  for (const enumType of abi.enumTypes) {
-    output.entries.push({
-      type: "Directory",
-      name: enumType.type,
-      data: renderTemplates(templatePath("enum-type"), enumType, subTemplates),
-    });
+  if (abi.enumTypes) {
+    for (const enumType of abi.enumTypes) {
+      output.entries.push({
+        type: "Directory",
+        name: enumType.type,
+        data: renderTemplates(
+          templatePath("enum-type"),
+          enumType,
+          subTemplates
+        ),
+      });
+    }
   }
 
   // Generate env type folders
