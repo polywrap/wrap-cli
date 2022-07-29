@@ -274,7 +274,7 @@ export const runEnumTypesTest = async (client: PolywrapClient, uri: string) => {
   });
 
   expect(method1c.error).toBeTruthy();
-  expect(method1c.error.message).toMatch(
+  expect(method1c.error?.message).toMatch(
     /__wrap_abort: Invalid key for enum 'SanityEnum': INVALID/gm
   );
 

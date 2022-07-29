@@ -314,7 +314,7 @@ describe("wasm-wrapper", () => {
         }
       }
     });
-    await new Promise((r) => setTimeout(r, 8000));
+    await new Promise((r) => setTimeout(r, 1000));
     getSubscription.stop();
     clearInterval(setter);
 
