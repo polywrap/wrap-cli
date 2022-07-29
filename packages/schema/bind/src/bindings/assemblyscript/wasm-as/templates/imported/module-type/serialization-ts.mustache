@@ -24,7 +24,12 @@ export function write{{name}}Args(
   writer: Write,
   args: Args_{{name}}
 ): void {
-  writer.writeMapLength({{arguments.length}});
+  {{#arguments}}
+  writer.writeMapLength({{length}});
+  {{/arguments}}
+  {{^arguments}}
+  writer.writeMapLength(0);
+  {{/arguments}}
   {{#arguments}}
   writer.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
   writer.writeString("{{name}}");

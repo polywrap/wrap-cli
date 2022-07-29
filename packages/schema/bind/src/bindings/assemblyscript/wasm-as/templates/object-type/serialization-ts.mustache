@@ -14,7 +14,12 @@ export function serialize{{type}}(type: {{type}}): ArrayBuffer {
 }
 
 export function write{{type}}(writer: Write, type: {{type}}): void {
+  {{#properties}}
   writer.writeMapLength({{properties.length}});
+  {{/properties}}
+  {{^properties}}
+  writer.writeMapLength(0);
+  {{/properties}}
   {{#properties}}
   writer.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
   writer.writeString("{{name}}");
