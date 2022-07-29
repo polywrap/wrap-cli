@@ -52,15 +52,14 @@ export const createPolywrapClient = Tracer.traceFunc(
       const pluginPackage = pluginFactory(
         (pluginConfigs as Record<string, unknown>)[plugin]
       );
-
       if (
         !pluginPackage ||
         typeof pluginPackage !== "object" ||
         !pluginPackage.factory ||
-        !pluginPackage.abi
+        !pluginPackage.manifest
       ) {
         throw Error(
-          `Plugin package is malformed. Expected object with keys "factory" and "abi". Got: ${pluginPackage}`
+          `Plugin package is malformed. Expected object with keys "factory" and "manifest". Got: ${pluginPackage}`
         );
       }
 

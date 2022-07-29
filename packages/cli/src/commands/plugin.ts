@@ -13,8 +13,8 @@ import {
 } from "../lib";
 
 import path from "path";
-import fs from "fs";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
+import fs from "fs";
 
 const defaultPublishDir = "./build";
 const defaultCodegenDir = "./wrap";
@@ -110,16 +110,16 @@ async function run(options: PluginCommandOptions) {
   process.exitCode = result ? 0 : 1;
 
   // Output the built manifest
-  const publishAbiPath = path.join(publishDir, "wrap.info.ts");
+  const manifestPath = path.join(publishDir, "wrap.info");
 
   if (!fs.existsSync(publishDir)) {
     fs.mkdirSync(publishDir);
   }
 
-  generateWrapFile(
+  await generateWrapFile(
     await schemaComposer.getComposedAbis(),
     manifest.name,
     "plugin",
-    publishAbiPath
+    manifestPath
   );
 }

@@ -193,7 +193,7 @@ describe("resolveUri", () => {
               return ({} as unknown) as PluginModule<{}>;
             },
             manifest: {
-              schema: "",
+              abi: {},
               implements: [],
             },
           },
@@ -244,7 +244,6 @@ describe("resolveUri", () => {
       args: ["build"],
       cwd: `${GetPathToTestWrappers()}/wasm-as/interface-invoke/test-interface`,
     });
-
     const client = await getClient();
 
     const deployResult = await buildAndDeployWrapper({

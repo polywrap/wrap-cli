@@ -7,6 +7,7 @@ import {
   displayPath,
   generateDockerfile,
   generateDockerImageName,
+  generateWrapFile,
   intlMsg,
   outputManifest,
   outputMetadata,
@@ -15,24 +16,25 @@ import {
   SchemaComposer,
   withSpinner,
 } from "./";
-import { generateWrapFile } from "./helpers/wrap";
 
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 import {
   WrapManifest,
+  validateWrapManifest,
   WrapAbi,
-  validateWrapManifest
 } from "@polywrap/wrap-manifest-types-js";
 import { WasmWrapper } from "@polywrap/client-js";
 import { WrapImports } from "@polywrap/client-js/build/wasm/types";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 import { normalizePath, writeDirectorySync } from "@polywrap/os-js";
 import * as gluegun from "gluegun";
-import fs from "fs";
+import fs, { writeFileSync } from "fs";
 import path from "path";
+import { Abi } from "@polywrap/schema-parse";
+import { msgpackEncode } from "@polywrap/msgpack-js";
 
 interface CompilerState {
-  abi: WrapAbi;
+  abi: Abi;
   compilerOverrides?: CompilerOverrides;
 }
 
@@ -156,7 +158,7 @@ export class Compiler {
     // Get the PolywrapManifest
     const polywrapManifest = await project.getManifest();
 
-    // Compose the schema
+    // Compose the ABI
     const abi = await this._composeAbi();
 
     // Allow the build-image to validate the manifest & override functionality
@@ -197,7 +199,7 @@ export class Compiler {
     return manifest.language === "interface";
   }
 
-  private async _composeAbi(): Promise<WrapAbi> {
+  private async _composeAbi(): Promise<Abi> {
     const { schemaComposer } = this._config;
 
     // Get the fully composed schema
@@ -334,7 +336,7 @@ export class Compiler {
 
       const manifest = await project.getManifest();
 
-      const abi: WrapAbi = {
+      const abi: Abi = {
         ...state.abi,
       };
 
@@ -348,17 +350,8 @@ export class Compiler {
         }
       });
 
-      const info: WrapManifest = {
-        abi: (filteredAbi as unknown) as WrapAbi,
-        name: manifest.name,
-        type: (await this._isInterface()) ? "interface" : "wasm",
-        version: "0.1",
-      };
-
-      // One last sanity check
-      await validateWrapManifest(info);
       const type = (await this._isInterface()) ? "interface" : "wasm";
-      generateWrapFile(filteredAbi, manifest.name, type, manifestPath);
+      await generateWrapFile(filteredAbi, manifest.name, type, manifestPath);
     };
 
     if (quiet) {

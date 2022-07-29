@@ -117,6 +117,10 @@ export interface Args_getNetwork extends Record<string, unknown> {
   connection?: Types.Connection | null;
 }
 
+export interface Args_requestAccounts extends Record<string, unknown> {
+  connection?: Types.Connection | null;
+}
+
 export interface Args_callContractMethod extends Record<string, unknown> {
   address: Types.String;
   method: Types.String;
@@ -267,6 +271,11 @@ export abstract class Module<
     args: Args_getNetwork,
     client: Client
   ): MaybeAsync<Types.Network>;
+
+  abstract requestAccounts(
+    args: Args_requestAccounts,
+    client: Client
+  ): MaybeAsync<Array<Types.String>>;
 
   abstract callContractMethod(
     args: Args_callContractMethod,

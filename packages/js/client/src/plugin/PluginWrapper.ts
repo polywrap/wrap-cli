@@ -10,10 +10,7 @@ import {
   Env,
   isBuffer,
 } from "@polywrap/core-js";
-import {
-  deserializeWrapManifest,
-  WrapManifest,
-} from "@polywrap/wrap-manifest-types-js";
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackDecode } from "@polywrap/msgpack-js";
 import { Tracer } from "@polywrap/tracing-js";
 import fs from "fs";
@@ -57,22 +54,12 @@ export class PluginWrapper extends Wrapper {
       return this._info;
     }
 
-    const moduleManifest = "./wrap.info";
-
-    const data = (await this.getFile(
-      { path: moduleManifest },
-      _
-    )) as Uint8Array;
-
-    if (!data) {
-      throw Error(`Package manifest does not contain information`);
-    }
-
-    this._info = ((await deserializeWrapManifest(
-      data
-    )) as unknown) as WrapManifest;
-    return this._info as WrapManifest;
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    this._info = (await import("./wrap-man/wrap.info")) as WrapManifest;
+    return this._info;
   }
+
   @Tracer.traceMethod("PluginWrapper: invoke")
   public async invoke(
     options: InvokeOptions<Uri>,

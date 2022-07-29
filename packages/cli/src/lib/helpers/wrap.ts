@@ -1,32 +1,26 @@
 import { msgpackEncode } from "@polywrap/msgpack-js";
-import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
+import { validateWrapManifest, WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { writeFileSync } from "@polywrap/os-js";
 
-export const generateWrapFile = (
+export const generateWrapFile = async (
   abi: unknown,
   name: string,
   type: "interface" | "wasm" | "plugin",
-  path: string,
-  encoded = true
-): void => {
-  const manifest: WrapManifest = {
+  path: string
+): Promise<void> => {
+  const info: WrapManifest = {
     abi: abi as never,
     name,
     type,
     version: "0.1.0",
   };
-  const stringifyInfo = JSON.stringify(manifest);
-  let info = JSON.parse(stringifyInfo);
 
-  let encoding = "utf-8";
-  if (encoded) {
-    info = msgpackEncode(info);
-    encoding = "binary";
-  } else {
-    info = `export const manifest = ${info}`;
-  }
+  // One last sanity check
+  await validateWrapManifest(info);
 
-  writeFileSync(path, info, {
-    encoding,
+  const s = JSON.stringify(info);
+  const encodedInfo = msgpackEncode(JSON.parse(s));
+  writeFileSync(path, encodedInfo, {
+    encoding: "binary",
   });
 };

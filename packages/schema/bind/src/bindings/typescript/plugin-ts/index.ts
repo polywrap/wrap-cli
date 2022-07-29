@@ -35,9 +35,15 @@ export const generateBinding: GenerateBindingFn = (
   };
   const output = result.output;
 
+  const wrapManifest = {
+    name: options.projectName,
+    type: "plugin",
+    version: "0.1",
+    abi: JSON.stringify(options.abi, null, 2),
+  };
   output.entries = renderTemplates(
     templatePath(""),
-    { ...abi, abi: JSON.stringify(options.abi, null, 2) },
+    { ...abi, wrapManifest },
     {}
   );
 
