@@ -28,15 +28,15 @@ describe("wasm-as test cases", () => {
     await buildWrapper(wrapperPath);
 
     const client = await getClient({
-      plugins: [{
-        uri: "wrap://ens/memory-storage.polywrap.eth",
-        plugin: makeMemoryStoragePlugin({}),
-      }]
-    })
+      plugins: [
+        {
+          uri: "wrap://ens/memory-storage.polywrap.eth",
+          plugin: makeMemoryStoragePlugin({}),
+        },
+      ],
+    });
 
-    await TestCases.runAsyncifyTest(
-      client, wrapperUri
-    );
+    await TestCases.runAsyncifyTest(client, wrapperUri);
   });
 
   it("bigint-type", async () => {
@@ -265,12 +265,10 @@ describe("wasm-as test cases", () => {
   });
 
   it("simple env", async () => {
-    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-env-types`
-    const wrapperUri = `fs/${wrapperPath}/build`
+    const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-env-types`;
+    const wrapperUri = `fs/${wrapperPath}/build`;
 
-    await buildWrapper(
-      wrapperPath
-    );
+    await buildWrapper(wrapperPath);
 
     await TestCases.runSimpleEnvTest(
       await await getClient({
@@ -283,16 +281,17 @@ describe("wasm-as test cases", () => {
             },
           },
         ],
-      }), wrapperUri
+      }),
+      wrapperUri
     );
-  })
+  });
 
   it("complex env", async () => {
-    const baseWrapperEnvPaths = `${GetPathToTestWrappers()}/wasm-as/env-types`
-    const wrapperPath = `${baseWrapperEnvPaths}/main`
-    const externalWrapperPath = `${baseWrapperEnvPaths}/external`
-    const wrapperUri = `fs/${wrapperPath}/build`
-    const externalWrapperUri = `fs/${externalWrapperPath}/build`
+    const baseWrapperEnvPaths = `${GetPathToTestWrappers()}/wasm-as/env-types`;
+    const wrapperPath = `${baseWrapperEnvPaths}/main`;
+    const externalWrapperPath = `${baseWrapperEnvPaths}/external`;
+    const wrapperUri = `fs/${wrapperPath}/build`;
+    const externalWrapperUri = `fs/${externalWrapperPath}/build`;
 
     await buildWrapper(externalWrapperPath);
     await buildWrapper(wrapperPath);
@@ -318,17 +317,18 @@ describe("wasm-as test cases", () => {
             uri: externalWrapperUri,
             env: {
               externalArray: [1, 2, 3],
-              externalString: "iamexternal"
+              externalString: "iamexternal",
             },
           },
         ],
         redirects: [
           {
             from: "ens/externalenv.polywrap.eth",
-            to: externalWrapperUri
-          }
-        ]
-      }), wrapperUri
+            to: externalWrapperUri,
+          },
+        ],
+      }),
+      wrapperUri
     );
-  })
+  });
 });

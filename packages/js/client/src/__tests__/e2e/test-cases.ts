@@ -5,28 +5,23 @@ export const runAsyncifyTest = async (
   client: PolywrapClient,
   wrapperUri: string
 ) => {
-  const subsequentInvokes = await client.query<{
-    subsequentInvokes: string;
-  }>({
+  const subsequentInvokes = await client.invoke<string>({
     uri: wrapperUri,
-    query: `
-      mutation {
-        subsequentInvokes(
-          numberOfTimes: 40
-        )
-      }
-    `,
+    method: "subsequentInvokes",
+    args: {
+      numberOfTimes: 40,
+    },
   });
 
   const expected = Array.from(new Array(40), (_, index) => index.toString());
 
-  expect(subsequentInvokes.errors).toBeFalsy();
+  expect(subsequentInvokes.error).toBeFalsy();
   expect(subsequentInvokes.data).toBeTruthy();
-  expect(subsequentInvokes.data?.subsequentInvokes).toEqual(expected);
+  expect(subsequentInvokes.data).toEqual(expected);
 
   const localVarMethod = await client.invoke<boolean>({
     uri: wrapperUri,
-    method: "localVarMethod"
+    method: "localVarMethod",
   });
 
   expect(localVarMethod.error).toBeFalsy();
@@ -35,21 +30,21 @@ export const runAsyncifyTest = async (
 
   const globalVarMethod = await client.invoke<boolean>({
     uri: wrapperUri,
-    method: "globalVarMethod"
+    method: "globalVarMethod",
   });
 
   expect(globalVarMethod.error).toBeFalsy();
   expect(globalVarMethod.data).toBeTruthy();
   expect(globalVarMethod.data).toEqual(true);
-  
+
   const largeStr = new Array(10000).join("polywrap ");
   const setDataWithLargeArgs = await client.invoke<string>({
     uri: wrapperUri,
     method: "setDataWithLargeArgs",
     args: {
-      value: largeStr
-    }
-  })
+      value: largeStr,
+    },
+  });
 
   expect(setDataWithLargeArgs.error).toBeFalsy();
   expect(setDataWithLargeArgs.data).toBeTruthy();
@@ -71,7 +66,7 @@ export const runAsyncifyTest = async (
       valueJ: "polywrap j",
       valueK: "polywrap k",
       valueL: "polywrap l",
-    }
+    },
   });
 
   expect(setDataWithManyArgs.error).toBeFalsy();
@@ -113,7 +108,7 @@ export const runAsyncifyTest = async (
       valueJ: createObj(10),
       valueK: createObj(11),
       valueL: createObj(12),
-    }
+    },
   });
 
   expect(setDataWithManyStructuredArgs.error).toBeFalsy();
@@ -234,7 +229,9 @@ export const runBytesTypeTest = async (client: PolywrapClient, uri: string) => {
 
   expect(response.error).toBeFalsy();
   expect(response.data).toBeTruthy();
-  expect(response.data).toEqual(new TextEncoder().encode("Argument Value Sanity!"));
+  expect(response.data).toEqual(
+    new TextEncoder().encode("Argument Value Sanity!")
+  );
 };
 
 export const runEnumTypesTest = async (client: PolywrapClient, uri: string) => {
@@ -338,14 +335,14 @@ export const runGetImplementationsTest = async (
   let implUri = new Uri(implementationUri);
   expect(client.getImplementations(interfaceUri)).toEqual([implUri.uri]);
 
-  const query = await client.invoke({
+  const result = await client.invoke({
     uri: implUri.uri,
     method: "moduleImplementations",
   });
 
-  expect(query.error).toBeFalsy();
-  expect(query.data).toBeTruthy();
-  expect(query.data).toEqual([implUri.uri]);
+  expect(result.error).toBeFalsy();
+  expect(result.data).toBeTruthy();
+  expect(result.data).toEqual([implUri.uri]);
 };
 
 export const runInvalidTypesTest = async (
@@ -845,128 +842,58 @@ export const runSimpleStorageTest = async (
   expect(set.data).toBeTruthy();
   expect(set.data?.indexOf("0x")).toBeGreaterThan(-1);
 
-  const getWithStringType = await client.query<{
-    getData: number;
-    secondGetData: number;
-    thirdGetData: number;
-  }>({
+  const getDataResult = await client.invoke<number>({
     uri: wrapperUri,
-    query: `
-        query {
-          getData(
-            address: "${address}"
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-          secondGetData: getData(
-            address: "${address}"
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-          thirdGetData: getData(
-            address: "${address}"
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-        }
-      `,
+    method: "getData",
+    args: {
+      address,
+      connection: {
+        networkNameOrChainId: "testnet",
+      },
+    },
   });
 
-  expect(getWithStringType.errors).toBeFalsy();
-  expect(getWithStringType.data).toBeTruthy();
-  expect(getWithStringType.data?.getData).toBe(55);
-  expect(getWithStringType.data?.secondGetData).toBe(55);
-  expect(getWithStringType.data?.thirdGetData).toBe(55);
-
-  const getWithUriType = await client.query<{
-    getData: number;
-    secondGetData: number;
-    thirdGetData: number;
-  }>({
-    uri: wrapperUri,
-    query: `
-        query {
-          getData(
-            address: "${address}"
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-          secondGetData: getData(
-            address: "${address}"
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-          thirdGetData: getData(
-            address: "${address}"
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-        }
-      `,
-  });
-
-  expect(getWithUriType.errors).toBeFalsy();
-  expect(getWithUriType.data).toBeTruthy();
-  expect(getWithUriType.data?.getData).toBe(55);
-  expect(getWithUriType.data?.secondGetData).toBe(55);
-  expect(getWithUriType.data?.thirdGetData).toBe(55);
+  expect(getDataResult.error).toBeFalsy();
+  expect(getDataResult.data).toEqual(55);
 };
 
 export const runSimpleEnvTest = async (
   client: PolywrapClient,
   wrapperUri: string
 ) => {
-  const queryGetEnv = await client.query({
+  const getEnvResult = await client.invoke({
     uri: wrapperUri,
-    query: `
-  query {
-    getEnv(
+    method: "getEnv",
+    args: {
       arg: "string",
-    )
-  }
-`,
+    },
   });
-  expect(queryGetEnv.errors).toBeFalsy();
-  expect(queryGetEnv.data?.getEnv).toEqual({
+  expect(getEnvResult.error).toBeFalsy();
+  expect(getEnvResult.data).toEqual({
     str: "module string",
     requiredInt: 1,
   });
 
-  const queryGetEnvNotSet = await client.query({
+  const getEnvNotSetResult = await client.invoke({
     uri: wrapperUri,
-    query: `
-  query {
-    getEnv(
-      arg: "not set"
-    )
-  }
-`,
+    method: "getEnv",
+    args: {
+      arg: "not set",
+    },
     config: {
       envs: [],
     },
   });
-  expect(queryGetEnvNotSet.data?.getEnv).toBeUndefined();
-  expect(queryGetEnvNotSet.errors).toBeTruthy();
-  expect(queryGetEnvNotSet.errors?.length).toBe(1);
-  expect(queryGetEnvNotSet.errors?.[0].message).toContain(
-    "requiredInt: Int"
-  );
+  expect(getEnvNotSetResult.data).toBeUndefined();
+  expect(getEnvNotSetResult.error).toBeTruthy();
+  expect(getEnvNotSetResult.error?.message).toContain("requiredInt: Int");
 
-  const queryEnvIncorrect = await client.query({
+  const envIncorrectResult = await client.invoke({
     uri: wrapperUri,
-    query: `
-  query {
-    getEnv(
-      arg: "not set"
-    )
-  }
-`,
+    method: "getEnv",
+    args: {
+      arg: "not set",
+    },
     config: {
       envs: [
         {
@@ -980,27 +907,26 @@ export const runSimpleEnvTest = async (
     },
   });
 
-  expect(queryEnvIncorrect.data?.getEnv).toBeUndefined();
-  expect(queryEnvIncorrect.errors).toBeTruthy();
-  expect(queryEnvIncorrect.errors?.length).toBe(1);
-  expect(queryEnvIncorrect.errors?.[0].message).toContain(
+  expect(envIncorrectResult.data).toBeUndefined();
+  expect(envIncorrectResult.error).toBeTruthy();
+  expect(envIncorrectResult.error?.message).toContain(
     "Property must be of type 'int'. Found 'string'."
   );
 };
 
-export const runComplexEnvs = async (client: PolywrapClient, wrapperUri: string) => {
-  const queryMethodRequireEnv = await client.query({
+export const runComplexEnvs = async (
+  client: PolywrapClient,
+  wrapperUri: string
+) => {
+  const methodRequireEnvResult = await client.invoke({
     uri: wrapperUri,
-    query: `
-      query {
-        methodRequireEnv(
-          arg: "string"
-        )
-      }
-    `,
+    method: "methodRequireEnv",
+    args: {
+      arg: "string",
+    },
   });
-  expect(queryMethodRequireEnv.errors).toBeFalsy();
-  expect(queryMethodRequireEnv.data?.methodRequireEnv).toEqual({
+  expect(methodRequireEnvResult.error).toBeFalsy();
+  expect(methodRequireEnvResult.data).toEqual({
     str: "string",
     optFilledStr: "optional string",
     optStr: null,
@@ -1017,18 +943,15 @@ export const runComplexEnvs = async (client: PolywrapClient, wrapperUri: string)
     array: [32, 23],
   });
 
-  const querySubinvokeEnvMethod = await client.query({
+  const subinvokeEnvMethodResult = await client.invoke({
     uri: wrapperUri,
-    query: `
-      query {
-        subinvokeEnvMethod(
-          arg: "string"
-        )
-      }
-    `,
+    method: "subinvokeEnvMethod",
+    args: {
+      arg: "string",
+    },
   });
-  expect(querySubinvokeEnvMethod.errors).toBeFalsy();
-  expect(querySubinvokeEnvMethod.data?.subinvokeEnvMethod).toEqual({
+  expect(subinvokeEnvMethodResult.error).toBeFalsy();
+  expect(subinvokeEnvMethodResult.data).toEqual({
     local: {
       str: "string",
       optFilledStr: "optional string",
@@ -1047,22 +970,19 @@ export const runComplexEnvs = async (client: PolywrapClient, wrapperUri: string)
     },
     external: {
       externalArray: [1, 2, 3],
-      externalString: "iamexternal"
-    }
+      externalString: "iamexternal",
+    },
   });
 
-  const queryMethodRequireEnvModuleTime = await client.query({
+  const methodRequireEnvModuleTimeResult = await client.invoke({
     uri: wrapperUri,
-    query: `
-      query {
-        methodRequireEnv(
-          arg: "string"
-        )
-      }
-    `,
+    method: "methodRequireEnv",
+    args: {
+      arg: "string",
+    },
   });
-  expect(queryMethodRequireEnvModuleTime.errors).toBeFalsy();
-  expect(queryMethodRequireEnvModuleTime.data?.methodRequireEnv).toEqual({
+  expect(methodRequireEnvModuleTimeResult.error).toBeFalsy();
+  expect(methodRequireEnvModuleTimeResult.data).toEqual({
     str: "string",
     optFilledStr: "optional string",
     optStr: null,
@@ -1079,15 +999,12 @@ export const runComplexEnvs = async (client: PolywrapClient, wrapperUri: string)
     array: [32, 23],
   });
 
-  const mockUpdatedEnv = await client.query({
+  const mockUpdatedEnvResult = await client.invoke({
     uri: wrapperUri,
-    query: `
-      query {
-        methodRequireEnv(
-          arg: "string"
-        )
-      }
-    `,
+    method: "methodRequireEnv",
+    args: {
+      arg: "string",
+    },
     config: {
       envs: [
         {
@@ -1107,8 +1024,8 @@ export const runComplexEnvs = async (client: PolywrapClient, wrapperUri: string)
       ],
     },
   });
-  expect(mockUpdatedEnv.errors).toBeFalsy();
-  expect(mockUpdatedEnv.data?.methodRequireEnv).toEqual({
+  expect(mockUpdatedEnvResult.error).toBeFalsy();
+  expect(mockUpdatedEnvResult.data).toEqual({
     str: "another string",
     optFilledStr: "optional string",
     optStr: null,
@@ -1124,4 +1041,4 @@ export const runComplexEnvs = async (client: PolywrapClient, wrapperUri: string)
     optEnum: null,
     array: [32, 23],
   });
-}
+};

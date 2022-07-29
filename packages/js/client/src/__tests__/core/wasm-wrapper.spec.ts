@@ -1,8 +1,4 @@
-import {
-  buildWrapper,
-  initTestEnvironment,
-  stopTestEnvironment,
-} from "@polywrap/test-env-js";
+import { buildWrapper } from "@polywrap/test-env-js";
 import { msgpackDecode } from "@polywrap/msgpack-js";
 import { Uri, PluginModule, Subscription } from "../..";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
@@ -22,13 +18,8 @@ const simpleMemoryWrapperUri = new Uri(`fs/${simpleMemoryWrapperPath}/build`);
 
 describe("wasm-wrapper", () => {
   beforeAll(async () => {
-    await initTestEnvironment();
     await buildWrapper(simpleWrapperPath);
     await buildWrapper(simpleMemoryWrapperPath);
-  });
-
-  afterAll(async () => {
-    await stopTestEnvironment();
   });
 
   const mockPlugin = () => {

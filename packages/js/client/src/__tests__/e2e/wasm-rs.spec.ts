@@ -1,4 +1,3 @@
-  PolywrapClient,
 import * as TestCases from "./test-cases";
 import { makeMemoryStoragePlugin } from "./memory-storage";
 import {
@@ -32,15 +31,15 @@ describe("wasm-rs test cases", () => {
     await buildWrapper(wrapperPath);
 
     const client = await getClient({
-      plugins: [{
-        uri: "wrap://ens/memory-storage.polywrap.eth",
-        plugin: makeMemoryStoragePlugin({}),
-      }]
-    })
+      plugins: [
+        {
+          uri: "wrap://ens/memory-storage.polywrap.eth",
+          plugin: makeMemoryStoragePlugin({}),
+        },
+      ],
+    });
 
-    await TestCases.runAsyncifyTest(
-      client, wrapperUri
-    );
+    await TestCases.runAsyncifyTest(client, wrapperUri);
   });
 
   it("bigint-type", async () => {
@@ -198,12 +197,10 @@ describe("wasm-rs test cases", () => {
   });
 
   it("simple env", async () => {
-    const wrapperPath = `${GetPathToTestWrappers()}/wasm-rs/simple-env-types`
-    const wrapperUri = `fs/${wrapperPath}/build`
+    const wrapperPath = `${GetPathToTestWrappers()}/wasm-rs/simple-env-types`;
+    const wrapperUri = `fs/${wrapperPath}/build`;
 
-    await buildWrapper(
-      wrapperPath
-    );
+    await buildWrapper(wrapperPath);
 
     await TestCases.runSimpleEnvTest(
       await await getClient({
@@ -216,16 +213,17 @@ describe("wasm-rs test cases", () => {
             },
           },
         ],
-      }), wrapperUri
+      }),
+      wrapperUri
     );
-  })
+  });
 
   it("complex env", async () => {
-    const baseWrapperEnvPaths = `${GetPathToTestWrappers()}/wasm-rs/env-types`
-    const wrapperPath = `${baseWrapperEnvPaths}/main`
-    const externalWrapperPath = `${baseWrapperEnvPaths}/external`
-    const wrapperUri = `fs/${wrapperPath}/build`
-    const externalWrapperUri = `fs/${externalWrapperPath}/build`
+    const baseWrapperEnvPaths = `${GetPathToTestWrappers()}/wasm-rs/env-types`;
+    const wrapperPath = `${baseWrapperEnvPaths}/main`;
+    const externalWrapperPath = `${baseWrapperEnvPaths}/external`;
+    const wrapperUri = `fs/${wrapperPath}/build`;
+    const externalWrapperUri = `fs/${externalWrapperPath}/build`;
 
     await buildWrapper(externalWrapperPath);
     await buildWrapper(wrapperPath);
@@ -251,24 +249,25 @@ describe("wasm-rs test cases", () => {
             uri: externalWrapperUri,
             env: {
               externalArray: [1, 2, 3],
-              externalString: "iamexternal"
+              externalString: "iamexternal",
             },
           },
         ],
         redirects: [
           {
             from: "ens/externalenv.polywrap.eth",
-            to: externalWrapperUri
-          }
-        ]
-      }), wrapperUri
+            to: externalWrapperUri,
+          },
+        ],
+      }),
+      wrapperUri
     );
-  })
+  });
 });
 
 describe.skip("Wasm-rs benchmarking", () => {
-  const wrapperPath = `${GetPathToTestWrappers()}/wasm-rs/benchmarks`
-  const wrapperUri = `fs/${wrapperPath}/build`
+  const wrapperPath = `${GetPathToTestWrappers()}/wasm-rs/benchmarks`;
+  const wrapperUri = `fs/${wrapperPath}/build`;
 
   let cacheFiles = new Map<string, string>();
   const mockFunc = `
@@ -293,18 +292,16 @@ describe.skip("Wasm-rs benchmarking", () => {
 
     await buildWrapper(
       wrapperPath,
-      name === "current"? "./polywrap-current.yaml": "./polywrap.yaml"
+      name === "current" ? "./polywrap-current.yaml" : "./polywrap.yaml"
     );
 
     const endTime = performance.now();
     const msTime = endTime - startTime;
 
     //Make sure the wrapper works correctly
-    await TestCases.runBigNumberTypeTest(
-      new PolywrapClient(), wrapperUri
-    );
+    await TestCases.runBigNumberTypeTest(await getClient(), wrapperUri);
 
-    return msTime
+    return msTime;
   };
 
   beforeEach(() => {
@@ -321,39 +318,53 @@ describe.skip("Wasm-rs benchmarking", () => {
   it("Build image performance", async () => {
     //Delete cached images and containers
     execSync(`docker system prune -a -f`);
-    
+
     //Build the wrapper with no previously cached images
     const firstBuildTimeNew = await buildImage("new");
-    console.log(`1st build - no cache (new): ${firstBuildTimeNew.toFixed(2)}ms`);
+    console.log(
+      `1st build - no cache (new): ${firstBuildTimeNew.toFixed(2)}ms`
+    );
 
     //Build the wrapper again
     const secondBuildTimeNew = await buildImage("new");
-    console.log(`2nd build - with cache (new): ${secondBuildTimeNew.toFixed(2)}ms`);
+    console.log(
+      `2nd build - with cache (new): ${secondBuildTimeNew.toFixed(2)}ms`
+    );
 
     //Modify the source code and measure build time
     modifySource();
 
-    const timeAfterSourceNew = await buildImage("new",);
-    console.log(`3rd build - modified source (new): ${timeAfterSourceNew.toFixed(2)}ms`);
+    const timeAfterSourceNew = await buildImage("new");
+    console.log(
+      `3rd build - modified source (new): ${timeAfterSourceNew.toFixed(2)}ms`
+    );
 
     restoreSource();
 
     // Repeat the process for current image and compare
     execSync(`docker system prune -a -f`);
-    
+
     const firstBuildTimeCurrent = await buildImage("current");
-    console.log(`1st build - no cache (current): ${firstBuildTimeCurrent.toFixed(2)}ms`);
+    console.log(
+      `1st build - no cache (current): ${firstBuildTimeCurrent.toFixed(2)}ms`
+    );
 
     const secondBuildTimeCurrent = await buildImage("current");
-    console.log(`2nd build - with cache (current): ${secondBuildTimeCurrent.toFixed(2)}ms`);
+    console.log(
+      `2nd build - with cache (current): ${secondBuildTimeCurrent.toFixed(2)}ms`
+    );
 
     modifySource();
 
     const timeAfterSourceCurrent = await buildImage("current");
-    console.log(`3rd build - modified source (current): ${timeAfterSourceCurrent.toFixed(2)}ms`);
+    console.log(
+      `3rd build - modified source (current): ${timeAfterSourceCurrent.toFixed(
+        2
+      )}ms`
+    );
 
     restoreSource();
 
     expect(timeAfterSourceNew).toBeLessThan(timeAfterSourceCurrent);
-  })
-})
+  });
+});

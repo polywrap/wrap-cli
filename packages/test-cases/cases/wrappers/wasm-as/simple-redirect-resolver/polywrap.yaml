@@ -1,0 +1,9 @@
+format: 0.1.0
+name: SimpleRedirectResolver
+language: wasm/assemblyscript
+build: ./polywrap.build.yaml
+schema: ./schema.graphql
+module: ./src/index.ts
+import_redirects:
+  - uri: "ens/uri-resolver.core.polywrap.eth"
+    schema: ../../../../../interfaces/uri-resolver/src/schema.graphql
