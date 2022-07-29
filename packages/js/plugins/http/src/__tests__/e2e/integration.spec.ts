@@ -1,5 +1,5 @@
 import { httpPlugin } from "../..";
-import { Response } from "../../wrap";
+import { Http_Response } from "../../wrap";
 
 import { PolywrapClient } from "@polywrap/client-js"
 import {
@@ -43,7 +43,7 @@ describe("e2e tests for HttpPlugin", () => {
         .query({ query: "foo" })
         .reply(200, '{data: "test-response"}', { 'X-Response-Header': "resp-foo" })
 
-      const response = await client.query<{ get: Response }>({
+      const response = await client.query<{ get: Http_Response }>({
         uri,
         query: `query {
           get(
@@ -69,7 +69,7 @@ describe("e2e tests for HttpPlugin", () => {
         .query({ query: "foo" })
         .reply(200, '{data: "test-response"}', { 'X-Response-Header': "resp-foo" })
 
-        const response = await client.query<{ post: Response }>({
+        const response = await client.query<{ post: Http_Response }>({
           uri,
           query: `query {
             post(

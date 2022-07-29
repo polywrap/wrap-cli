@@ -1,5 +1,5 @@
 import { httpPlugin } from "../..";
-import { Response } from "../../wrap";
+import { Http_Response } from "../../wrap";
 
 import { PolywrapClient } from "@polywrap/client-js"
 import nock from "nock";
@@ -33,7 +33,7 @@ describe("e2e tests for HttpPlugin", () => {
         .get("/api")
         .reply(200, '{data: "test-response"}')
 
-      const response = await polywrapClient.query<{ get: Response }>({
+      const response = await polywrapClient.query<{ get: Http_Response }>({
         uri: "wrap://ens/http.polywrap.eth",
         query: `
           query {
@@ -61,7 +61,7 @@ describe("e2e tests for HttpPlugin", () => {
         .get("/api")
         .reply(200, '{data: "test-response"}')
 
-      const response = await polywrapClient.query<{ get: Response }>({
+      const response = await polywrapClient.query<{ get: Http_Response }>({
         uri: "wrap://ens/http.polywrap.eth",
         query: `
           query {
@@ -90,7 +90,7 @@ describe("e2e tests for HttpPlugin", () => {
         .query({ query: "foo" })
         .reply(200, '{data: "test-response"}', { 'X-Response-Header': "resp-foo" })
 
-      const response = await polywrapClient.query<{ get: Response }>({
+      const response = await polywrapClient.query<{ get: Http_Response }>({
         uri: "wrap://ens/http.polywrap.eth",
         query: `
           query {
@@ -124,7 +124,7 @@ describe("e2e tests for HttpPlugin", () => {
         .get("/api")
         .reply(404)
 
-      const response = await polywrapClient.query<{ get: Response }>({
+      const response = await polywrapClient.query<{ get: Http_Response }>({
         uri: "wrap://ens/http.polywrap.eth",
         query: `
           query {
@@ -162,7 +162,7 @@ describe("e2e tests for HttpPlugin", () => {
           .post("/api", reqPayloadStringified)
           .reply(200, resPayloadStringfified)
 
-      const response = await polywrapClient.query<{ post: Response }>({
+      const response = await polywrapClient.query<{ post: Http_Response }>({
         uri: "wrap://ens/http.polywrap.eth",
         query: `
           query {
@@ -194,7 +194,7 @@ describe("e2e tests for HttpPlugin", () => {
         .post("/api", "{data: 'test-request'}")
         .reply(200, '{data: "test-response"}')
 
-      const response = await polywrapClient.query<{ post: Response }>({
+      const response = await polywrapClient.query<{ post: Http_Response }>({
         uri: "wrap://ens/http.polywrap.eth",
         query: `
           query {
@@ -223,7 +223,7 @@ describe("e2e tests for HttpPlugin", () => {
         .post("/api", "{data: 'test-request'}")
         .reply(200, '{data: "test-response"}')
 
-      const response = await polywrapClient.query<{ post: Response }>({
+      const response = await polywrapClient.query<{ post: Http_Response }>({
         uri: "wrap://ens/http.polywrap.eth",
         query: `
           query {
@@ -253,7 +253,7 @@ describe("e2e tests for HttpPlugin", () => {
         .query({ query: "foo" })
         .reply(200, '{data: "test-response"}', { 'X-Response-Header': "resp-foo" })
 
-      const response = await polywrapClient.query<{ post: Response }>({
+      const response = await polywrapClient.query<{ post: Http_Response }>({
         uri: "wrap://ens/http.polywrap.eth",
         query: `
           query {
@@ -288,7 +288,7 @@ describe("e2e tests for HttpPlugin", () => {
         .post("/api")
         .reply(404)
 
-      const response = await polywrapClient.query<{ get: Response }>({
+      const response = await polywrapClient.query<{ get: Http_Response }>({
         uri: "wrap://ens/http.polywrap.eth",
         query: `
           query {
