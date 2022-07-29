@@ -4,3 +4,6 @@ build: ./polywrap.build.yaml
 language: wasm/assemblyscript
 schema: ./schema.graphql
 module: ./src/index.ts
+import_redirects:
+  - uri: "ens/http.polywrap.eth"
+    schema: ../../../../../../../interfaces/http/build/schema.graphql
