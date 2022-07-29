@@ -5,9 +5,7 @@ export const runAsyncifyTest = async (
   client: PolywrapClient,
   wrapperUri: string
 ) => {
-  const subsequentInvokes = await client.invoke<{
-    subsequentInvokes: string;
-  }>({
+  const subsequentInvokes = await client.invoke<string>({
     uri: wrapperUri,
     method: "subsequentInvokes",
     args: {
