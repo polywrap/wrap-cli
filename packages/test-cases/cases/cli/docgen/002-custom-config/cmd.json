@@ -1,0 +1,3 @@
+{
+  "args": ["docusaurus", "-c", "./config.ts"]
+}
