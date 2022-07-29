@@ -419,7 +419,7 @@ export function createModuleDefinition(args: {
 
 export function createImportedEnumDefinition(args: {
   type: string;
-  constants: string[];
+  constants?: string[];
   name?: string;
   required?: boolean;
   uri: string;

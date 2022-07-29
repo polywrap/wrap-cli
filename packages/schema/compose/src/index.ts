@@ -2,7 +2,6 @@ import { SchemaFile, SchemaResolvers } from "./types";
 import { resolveImportsAndParseSchemas } from "./resolve";
 import { renderSchema } from "./render";
 
-import { combineAbi } from "@polywrap/schema-parse";
 import { WrapAbi } from "@polywrap/wrap-manifest-types-js";
 
 export * from "./types";
@@ -20,7 +19,7 @@ export enum ComposerFilter {
 }
 
 export interface ComposerOptions {
-  schemas: SchemaFile[];
+  schema: SchemaFile;
   resolvers: SchemaResolvers;
   output: ComposerFilter;
 }
@@ -28,9 +27,7 @@ export interface ComposerOptions {
 export async function composeSchema(
   options: ComposerOptions
 ): Promise<ComposerOutput> {
-  const abis = await resolveImports(options.schemas, options.resolvers);
-
-  const abi = abis.length === 1 ? abis[0] : combineAbi(abis);
+  const abi = await resolveImports(options.schema, options.resolvers);
 
   // Forming our output structure for the caller
   const includeSchema = options.output & ComposerFilter.Schema;
@@ -43,24 +40,12 @@ export async function composeSchema(
 }
 
 export async function resolveImports(
-  schemas: SchemaFile[],
+  schema: SchemaFile,
   resolvers: SchemaResolvers
-): Promise<WrapAbi[]> {
-  const abis: WrapAbi[] = [];
-
-  if (schemas.length === 0) {
-    throw Error("No schema provided");
-  }
-
-  for (const schema of schemas) {
-    abis.push(
-      await resolveImportsAndParseSchemas(
-        schema.schema,
-        schema.absolutePath,
-        resolvers
-      )
-    );
-  }
-
-  return abis;
+): Promise<WrapAbi> {
+  return await resolveImportsAndParseSchemas(
+    schema.schema,
+    schema.absolutePath,
+    resolvers
+  );
 }

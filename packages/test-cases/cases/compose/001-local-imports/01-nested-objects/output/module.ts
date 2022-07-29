@@ -4,12 +4,10 @@ import {
   createScalarPropertyDefinition,
   createObjectDefinition,
   createObjectPropertyDefinition,
-  createAbi,
-  Abi,
+  WrapAbi
 } from "@polywrap/schema-parse";
 
-export const abi: Abi = {
-  ...createAbi(),
+export const abi: WrapAbi = {
   objectTypes: [
     {
       ...createObjectDefinition({
@@ -37,8 +35,6 @@ export const abi: Abi = {
   moduleType:
     {
       ...createModuleDefinition({}),
-      imports: [],
-      interfaces: [],
       methods: [
         {
           ...createMethodDefinition({
@@ -48,8 +44,6 @@ export const abi: Abi = {
               type: "TypeA",
             }),
           }),
-          arguments: [
-          ],
         },
       ],
     },
