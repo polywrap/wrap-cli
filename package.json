@@ -25,7 +25,7 @@
     "clean": "npx rimraf ./**/node_modules ./**/yarn.lock ./**/build ./**/coverage ./**/.polywrap",
     "dependencies:install": "cd dependencies && yarn",
     "preinstall": "yarn dependencies:install",
-    "build": "yarn build:core && yarn link:interface:deps && yarn build:plugins && yarn build:client && yarn build:test-env && yarn build:cli && plugins:codegen:patch",
+    "build": "yarn build:core && yarn link:interface:deps && yarn build:plugins && yarn build:client && yarn build:test-env && yarn build:cli && yarn build:plugins:patch",
     "build:core": "lerna run build --no-private --ignore @polywrap/*-plugin-js --ignore polywrap --ignore @polywrap/client-js --ignore @polywrap/react --ignore @polywrap/test-env-js --ignore @polywrap/*-interface",
     "build:interfaces": "lerna run build --scope @polywrap/*-interface --concurrency 1",
     "build:plugins": "lerna run build --scope @polywrap/*-plugin-js --concurrency 1",

@@ -3,13 +3,13 @@
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { abi } from "./";
+import { wrapManifest } from "./wrap.info";
 
 // @ts-ignore
 import { PluginPackageManifest, Uri } from "@polywrap/core-js";
 
 export const manifest: PluginPackageManifest = {
-  abi,
+  abi: wrapManifest.abi,
   implements: [
     new Uri("ens/fs.polywrap.eth"),
   ],

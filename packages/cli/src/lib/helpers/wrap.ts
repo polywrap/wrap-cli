@@ -1,5 +1,8 @@
 import { msgpackEncode } from "@polywrap/msgpack-js";
-import { validateWrapManifest, WrapManifest } from "@polywrap/wrap-manifest-types-js";
+import {
+  validateWrapManifest,
+  WrapManifest,
+} from "@polywrap/wrap-manifest-types-js";
 import { writeFileSync } from "@polywrap/os-js";
 
 export const generateWrapFile = async (
@@ -9,18 +12,17 @@ export const generateWrapFile = async (
   path: string
 ): Promise<void> => {
   const info: WrapManifest = {
-    abi: abi as never,
+    version: "0.1",
     name,
     type,
-    version: "0.1.0",
+    /// TODO(cbrzn): Change this to WrapAbi
+    abi: abi as never,
   };
 
   // One last sanity check
   await validateWrapManifest(info);
-
-  const s = JSON.stringify(info);
-  const encodedInfo = msgpackEncode(JSON.parse(s));
-  writeFileSync(path, encodedInfo, {
+  const parsedInfo = JSON.parse(JSON.stringify(info));
+  writeFileSync(path, msgpackEncode(parsedInfo), {
     encoding: "binary",
   });
 };

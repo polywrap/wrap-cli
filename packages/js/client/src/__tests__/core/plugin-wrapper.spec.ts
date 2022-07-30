@@ -203,4 +203,10 @@ describe("plugin-wrapper", () => {
 
     expect(registeredPlugin?.plugin).toEqual(pluginPackage1);
   });
+
+  test("get manifest should fetch wrap manifest from plugin", async () => {
+    const client = await getClient()
+    const manifest = await client.getManifest("ens/ipfs.polywrap.eth")
+    expect(manifest.type).toEqual("plugin")
+  })
 });

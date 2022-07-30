@@ -230,25 +230,25 @@ describe("wasm-wrapper", () => {
 
   test("getFile -- simple-storage polywrap", async () => {
     const client = await getClient();
-    const expectedSchema = await fs.promises.readFile(
-      `${wrapperPath}/build/schema.graphql`,
+    const expectedMeta = await fs.promises.readFile(
+      `${wrapperPath}/build/polywrap.meta.json`,
       "utf8"
     );
 
-    const fileStr: string = (await client.getFile(wrapperUri, {
-      path: "./schema.graphql",
+    const metaStr: string = (await client.getFile(wrapperUri, {
+      path: "./polywrap.meta.json",
       encoding: "utf8",
     })) as string;
 
-    expect(fileStr).toEqual(expectedSchema);
+    expect(metaStr).toEqual(expectedMeta);
 
-    const fileBuffer: Uint8Array = (await client.getFile(wrapperUri, {
-      path: "./schema.graphql",
+    const metaBuffer: Uint8Array = (await client.getFile(wrapperUri, {
+      path: "./polywrap.meta.json",
     })) as Uint8Array;
     const decoder = new TextDecoder("utf8");
-    const text = decoder.decode(fileBuffer);
+    const text = decoder.decode(metaBuffer);
     
-    expect(text).toEqual(expectedSchema);
+    expect(text).toEqual(expectedMeta);
 
     await expect(() =>
       client.getFile(new Uri("wrap://ens/ipfs.polywrap.eth"), {

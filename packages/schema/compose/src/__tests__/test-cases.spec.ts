@@ -34,10 +34,6 @@ describe("Polywrap Schema Composer Test Cases", () => {
       const result = await composeSchema(testCase.input);
       removeFunctionProps(result);
 
-
-      if (test.name === "001-local-imports 00-sanity") {
-        console.log(JSON.stringify(result, null, 2))
-      }
       if (testCase.abi) {
         expect(result).toMatchObject(testCase.abi);
       }

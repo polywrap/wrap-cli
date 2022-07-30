@@ -13,11 +13,9 @@ import {
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackDecode } from "@polywrap/msgpack-js";
 import { Tracer } from "@polywrap/tracing-js";
-import fs from "fs";
 
 export class PluginWrapper extends Wrapper {
   private _instance: PluginModule<unknown> | undefined;
-  private _info: WrapManifest | undefined;
 
   constructor(
     private _uri: Uri,
@@ -36,29 +34,16 @@ export class PluginWrapper extends Wrapper {
   }
 
   public async getFile(
-    _options: GetFileOptions,
-    _: Client
+    _: GetFileOptions,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    client: Client
   ): Promise<Uint8Array | string> {
-    const file = await fs.promises.readFile(_options.path);
-    if (!file) {
-      throw Error(
-        `PluginWrapper: File was not found. \n Path: ${_options.path}`
-      );
-    }
-    return file;
+    throw Error("client.getFile(...) is not implemented for Plugins.");
   }
 
-  @Tracer.traceMethod("WasmWrapper: getManifest")
+  @Tracer.traceMethod("PluginWrapper: getManifest")
   public async getManifest(_: Client): Promise<WrapManifest> {
-    if (this._info) {
-      return this._info;
-    }
-
-    // TODO(cbrzn): Remove this once wrap-man has been removed
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    this._info = (await import("./wrap-man/wrap.info")) as WrapManifest;
-    return this._info;
+    return this._plugin.manifest;
   }
 
   @Tracer.traceMethod("PluginWrapper: invoke")

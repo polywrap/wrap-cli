@@ -131,10 +131,10 @@ describe("resolveUri", () => {
   };
 
   const testManifest: WrapManifest = {
-    version: "0.1.0",
+    version: "0.1",
     type: "wasm",
     name: "dog-cat",
-    abi: {}
+    abi: {} as never
   };
 
   const ensWrapper = {
@@ -181,10 +181,7 @@ describe("resolveUri", () => {
       uri: new Uri("ens/my-plugin"),
       plugin: {
         factory: () => ({} as PluginModule<{}>),
-        manifest: {
-          abi: {},
-          implements: [coreInterfaceUris.uriResolver],
-        },
+        manifest: {} as WrapManifest,
       },
     },
   ];
@@ -381,10 +378,7 @@ describe("resolveUri", () => {
         uri: new Uri("some/wrapper"),
         plugin: {
           factory: () => ({} as PluginModule<{}>),
-          manifest: {
-            abi: {},
-            implements: [coreInterfaceUris.uriResolver],
-          },
+          manifest: {} as WrapManifest,
         },
       },
     ];

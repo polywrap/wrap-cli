@@ -6,10 +6,6 @@
 import { wrapManifest } from "./";
 
 // @ts-ignore
-import { PluginPackageManifest, Uri } from "@polywrap/core-js";
+import { WrapInfoManifest, Uri } from "@polywrap/core-js";
 
-export const manifest: PluginPackageManifest = {
-  abi: wrapManifest.abi,
-  implements: [
-  ],
-};
+export const manifest: WrapInfoManifest = wrapManifest;
