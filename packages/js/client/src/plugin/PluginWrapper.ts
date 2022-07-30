@@ -54,6 +54,7 @@ export class PluginWrapper extends Wrapper {
       return this._info;
     }
 
+    // TODO(cbrzn): Remove this once wrap-man has been removed
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     this._info = (await import("./wrap-man/wrap.info")) as WrapManifest;

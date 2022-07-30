@@ -1,7 +1,7 @@
 export const wrapManifest = {
   name: "Ethereum",
   type: "plugin",
-  version: "0.0.1",
+  version: "0.1",
   abi: {
     objectTypes: [
       {

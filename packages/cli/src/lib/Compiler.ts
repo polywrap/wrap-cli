@@ -18,20 +18,14 @@ import {
 } from "./";
 
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
-import {
-  WrapManifest,
-  validateWrapManifest,
-  WrapAbi,
-} from "@polywrap/wrap-manifest-types-js";
 import { WasmWrapper } from "@polywrap/client-js";
 import { WrapImports } from "@polywrap/client-js/build/wasm/types";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 import { normalizePath, writeDirectorySync } from "@polywrap/os-js";
 import * as gluegun from "gluegun";
-import fs, { writeFileSync } from "fs";
+import fs from "fs";
 import path from "path";
 import { Abi } from "@polywrap/schema-parse";
-import { msgpackEncode } from "@polywrap/msgpack-js";
 
 interface CompilerState {
   abi: Abi;
