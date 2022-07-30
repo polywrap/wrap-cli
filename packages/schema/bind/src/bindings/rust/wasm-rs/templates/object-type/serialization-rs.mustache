@@ -37,9 +37,9 @@ pub fn serialize_{{#toLower}}{{type}}{{/toLower}}(args: &{{#toUpper}}{{type}}{{/
 }
 
 pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(args: &{{#toUpper}}{{type}}{{/toUpper}}, writer: &mut W) -> Result<(), EncodeError> {
-    {{#properties}}
-    writer.write_map_length(&{{length}})?;
-    {{/properties}}
+    {{#properties.length}}
+    writer.write_map_length(&{{properties.length}})?;
+    {{/properties.length}}
     {{^properties}}
     writer.write_map_length(&0)?;
     {{/properties}}

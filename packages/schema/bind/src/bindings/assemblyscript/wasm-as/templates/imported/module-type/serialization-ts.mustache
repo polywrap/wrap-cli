@@ -24,9 +24,9 @@ export function write{{name}}Args(
   writer: Write,
   args: Args_{{name}}
 ): void {
-  {{#arguments}}
-  writer.writeMapLength({{length}});
-  {{/arguments}}
+  {{#arguments.length}}
+  writer.writeMapLength({{arguments.length}});
+  {{/arguments.length}}
   {{^arguments}}
   writer.writeMapLength(0);
   {{/arguments}}
