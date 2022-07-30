@@ -21,6 +21,7 @@ export const ensAddresses = {
 export const providers = {
   ipfs: "http://localhost:5001",
   ethereum: "http://localhost:8545",
+  http: "http://localhost:3500",
 };
 
 const monorepoCli = `${__dirname}/../../../cli/bin/polywrap`;
@@ -442,7 +443,7 @@ export async function buildAndDeployWrapperToHttp({
           package: "http",
           uri: `fs/${wrapperAbsPath}/build`,
           config: {
-            serverUrl: postUrl,
+            postUrl,
           },
         },
       },

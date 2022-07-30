@@ -1,6 +1,6 @@
 import { PolywrapClient } from "@polywrap/client-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
-import { buildAndDeployWrapperToHttp, runCLI } from "@polywrap/test-env-js";
+import { buildAndDeployWrapperToHttp, runCLI, providers } from "@polywrap/test-env-js";
 
 import { httpPlugin } from "@polywrap/http-plugin-js";
 import axios from "axios";
@@ -11,6 +11,8 @@ jest.setTimeout(300000);
 describe("HTTP Plugin", () => {
   let client: PolywrapClient;
   let wrapperHttpUri: string;
+
+  const wrapperName = "test-wrapper";
 
   beforeAll(async () => {
     const { exitCode, stderr } = await runCLI({
@@ -23,8 +25,8 @@ describe("HTTP Plugin", () => {
 
     const { uri } = await buildAndDeployWrapperToHttp({
       wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/simple-storage`,
-      name: "test-wrapper",
-      httpProvider: "http://localhost:3500",
+      name: wrapperName,
+      httpProvider: providers.http,
     });
 
     wrapperHttpUri = uri;
@@ -60,7 +62,7 @@ describe("HTTP Plugin", () => {
 
     expect(resolution.wrapper).toBeTruthy();
     
-    const { data } = await axios.get(`http://localhost:3500/wrappers/local/test-wrapper/schema.graphql`, {
+    const { data } = await axios.get(`${providers.http}/wrappers/local/${wrapperName}/schema.graphql`, {
       responseType: "arraybuffer"
     })
 

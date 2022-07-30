@@ -2,10 +2,10 @@
   "id": "DeployManifest_Deployer_WasmAsExt",
   "type": "object",
   "required": [
-    "serverUrl"
+    "postUrl"
   ],
   "properties": {
-    "serverUrl": {
+    "postUrl": {
       "type": "string"
     }
   }

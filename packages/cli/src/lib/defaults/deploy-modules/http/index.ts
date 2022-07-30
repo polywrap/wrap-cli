@@ -34,23 +34,23 @@ const dirToFormData = (baseDirPath: string) => {
 };
 
 class HTTPDeployer implements Deployer {
-  async execute(uri: Uri, config?: { serverUrl: string }): Promise<Uri> {
+  async execute(uri: Uri, config?: { postUrl: string }): Promise<Uri> {
     if (!isValidUri(uri)) {
       throw new Error(
         `HTTP Deployer error: Invalid URI: ${uri.toString()}. Supplied URI needs to be a Filesystem URI, example: fs/./build`
       );
     }
 
-    if (!config?.serverUrl) {
+    if (!config?.postUrl) {
       throw new Error(
-        `HTTP Deployer error: No serverUrl provided. Please provide a serverUrl in the deploy manifest's config object`
+        `HTTP Deployer error: No postUrl provided. Please provide a postUrl in the deploy manifest's config object`
       );
     }
 
     const formData = dirToFormData(uri.path);
 
     const response = await axios.post<{ uri: string; error: string }>(
-      config.serverUrl,
+      config.postUrl,
       formData,
       {
         headers: formData.getHeaders(),
