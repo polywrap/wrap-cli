@@ -13,8 +13,8 @@ Http plugin curently supports two different methods `GET` and `POST`. Similar to
 Below is sample invocation of the `GET` request with custom request headers and query parameters (`urlParams`).
 
 ```ts
-const response = await web3ApiClient.query<{ get: Response }>({
-uri: new Uri("w3://ens/http.web3api.eth"),
+const response = await polywrapClient.query<{ get: Response }>({
+uri: new Uri("wrap://ens/http.polywrap.eth"),
   query: `
     query {
       get(
@@ -35,8 +35,8 @@ uri: new Uri("w3://ens/http.web3api.eth"),
 Below is sample invocation of the `POST` request with custom request headers and query parameters (`urlParams`). It is also possible to set request body as shown below.
 
 ```ts
-const response = await web3ApiClient.query<{ get: Response }>({
-  uri: new Uri("w3://ens/http.web3api.eth"),
+const response = await polywrapClient.query<{ get: Response }>({
+  uri: new Uri("wrap://ens/http.polywrap.eth"),
   query: `
     query {
       post(

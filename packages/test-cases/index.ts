@@ -1,12 +1,13 @@
 import path from "path";
 import { readFileSync, existsSync } from "fs";
 
-import { normalizeLineEndings } from "@web3api/os-js";
+import { normalizeLineEndings } from "@polywrap/os-js";
 
 export const GetPathToBindTestFiles = () => `${__dirname}/cases/bind`
 export const GetPathToComposeTestFiles = () => `${__dirname}/cases/compose`
 export const GetPathToParseTestFiles = () => `${__dirname}/cases/parse`
-export const GetPathToTestApis = () => `${__dirname}/cases/apis`
+export const GetPathToTestWrappers = () => `${__dirname}/cases/wrappers`
+export const GetPathToCliTestFiles = () => `${__dirname}/cases/cli`;
 
 export function readFileIfExists(
   file: string,

@@ -1,6 +1,6 @@
 [package]
 name = "polywrap-wasm-rs"
-version = "0.0.1-prealpha.57"
+version = "0.3.0"
 license = "MIT"
 description = "Polywrap's Rust-Wasm Runtime"
 homepage = "https://polywrap.io"
@@ -8,7 +8,8 @@ documentation = "https://docs.polywrap.io"
 repository = "https://github.com/polywrap/monorepo"
 authors = [
   "Kobby Pentangeli <kobbypentangeli@gmail.com>",
-  "Jordan Ellis <jelli@dorg.tech>"
+  "Jordan Ellis <jelli@dorg.tech>",
+  "Nestor Amesty <nestor@dorg.tech>"
 ]
 keywords = ["polywrap", "wasm", "webassembly"]
 categories = ["wasm"]
@@ -21,7 +22,8 @@ crate-type = ["cdylib", "rlib"]
 byteorder = "1.4.3"
 thiserror = "1.0.30"
 num-bigint = { version = "0.4", default-features = false, features = ["serde"] }
-num-traits = "0.2.14"
+num-traits = { version = "0.2.14", default-features = false }
+bigdecimal = { version = "0.3.0", default-features = false, features = ["serde"] }
 serde_json = { version = "1.0.74", default-features = false, features = ["alloc"] }
 
 [dev-dependencies]

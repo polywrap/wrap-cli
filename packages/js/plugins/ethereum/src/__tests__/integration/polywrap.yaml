@@ -1,0 +1,7 @@
+format: 0.1.0
+name: EthereumIntegration
+build: ./polywrap.build.yaml
+language: wasm/assemblyscript
+module: ./src/index.ts
+schema: ./src/schema.graphql
+

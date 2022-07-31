@@ -1,0 +1,25 @@
+{{#scalar}}
+reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}()
+{{/scalar}}
+{{#array}}
+reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {
+    {{> deserialize_array}}
+})
+{{/array}}
+{{#map}}
+reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {
+    reader.read_{{#key}}{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}{{/key}}()
+}, |reader| {
+    {{#value}}
+    {{> deserialize_map_value}}
+    {{/value}}
+})
+{{/map}}
+{{#enum}}
+{{> deserialize_enum}}
+Ok(value)
+{{/enum}}
+{{#object}}
+{{> deserialize_object}}
+Ok(object)
+{{/object}}

@@ -1,4 +1,4 @@
-export const header = `### Web3API Header START ###
+export const header = `### Polywrap Header START ###
 scalar UInt
 scalar UInt8
 scalar UInt16
@@ -9,7 +9,9 @@ scalar Int16
 scalar Int32
 scalar Bytes
 scalar BigInt
+scalar BigNumber
 scalar JSON
+scalar Map
 
 directive @imported(
   uri: String!
@@ -28,5 +30,10 @@ directive @capability(
 ) repeatable on OBJECT
 
 directive @enabled_interface on OBJECT
-### Web3API Header END ###
+
+directive @annotate(type: String!) on FIELD
+
+directive @env(required: Boolean!) on FIELD_DEFINITION
+
+### Polywrap Header END ###
 `;

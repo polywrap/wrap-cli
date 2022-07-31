@@ -1,34 +1,45 @@
-import path from "path";
-import { clearStyle, w3Cli } from "./utils";
+import { clearStyle, polywrapCli } from "./utils";
 
-import { runCLI } from "@web3api/test-env-js";
+import { runCLI } from "@polywrap/test-env-js";
+
+
+const HELP = `Usage: polywrap [options] [command]
+
+Options:
+  -h, --help                   display help for command
+
+Commands:
+  app|a                        Build/generate types for your app
+  build|b [options]            Builds a wrapper
+  codegen|g [options]          Auto-generate Wrapper Types
+  create|c                     Create a new project with polywrap CLI
+  deploy|d [options]           Deploys/Publishes a Polywrap
+  plugin|p                     Build/generate types for the plugin
+  infra|i [options] <action>   Manage infrastructure for your wrapper
+  run|r [options] <workflow>   Runs workflow script
+  docgen|o [options] <action>  Generate wrapper documentation
+  help [command]               display help for command
+`;
 
 describe("e2e tests for no command", () => {
-  const projectRoot = path.resolve(__dirname, "../project/");
   
-  test("Should throw error for unrecognized command", async () => {
+  it("Should throw error for unrecognized command", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["unknown"],
-      cwd: projectRoot,
-      cli: w3Cli
+      cli: polywrapCli
     });
-
-    expect(code).toEqual(0);
-    expect(error).toBe("");
-    expect(clearStyle(output)).toEqual(`w3 unknown is not a command\n`);
+    expect(code).toEqual(1);
+    expect(error).toBe(`error: unknown command 'unknown'\n`);
+    expect(output).toEqual(``);
   });
 
-  test("Should let the user to type w3 help", async () => {
+  it("Should let the user to type polywrap help", async () => {
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: [],
-      cwd: projectRoot,
-      cli: w3Cli,
+      cli: polywrapCli,
     });
-
-    expect(code).toEqual(0);
-    expect(error).toBe("");
-    expect(clearStyle(output)).toEqual(
-      `Type w3 help to view common commands\n`
-    );
+    expect(code).toEqual(1);
+    expect(clearStyle(error)).toBe(clearStyle(HELP));
+    expect(output).toEqual(``);
   });
 });

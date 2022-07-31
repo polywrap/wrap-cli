@@ -1,16 +1,10 @@
-import {
-  TypeInfo,
-  createObjectDefinition,
-  EnvDefinition,
-  isEnvType,
-  isClientEnvType,
-} from "../typeInfo";
+import { Abi, isEnvType, createEnvDefinition } from "../abi";
 import {
   extractFieldDefinition,
   extractListType,
   extractNamedType,
   State,
-} from "./object-types-utils";
+} from "./utils/object-types-utils";
 
 import {
   ObjectTypeDefinitionNode,
@@ -21,29 +15,13 @@ import {
   ASTVisitor,
 } from "graphql";
 
-const visitorEnter = (
-  envTypes: {
-    query: EnvDefinition;
-    mutation: EnvDefinition;
-  },
-  state: State
-) => ({
+const visitorEnter = (abi: Abi, state: State) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     const typeName = node.name.value;
 
     if (isEnvType(typeName)) {
-      const type = createObjectDefinition({ type: typeName });
-      const envType = typeName.includes("Query")
-        ? envTypes.query
-        : envTypes.mutation;
-
-      if (isClientEnvType(typeName)) {
-        envType.client = type;
-      } else {
-        envType.sanitized = type;
-      }
-
-      state.currentType = type;
+      abi.envType = createEnvDefinition({});
+      state.currentType = abi.envType;
     }
   },
   NonNullType: (_node: NonNullTypeNode) => {
@@ -72,11 +50,11 @@ const visitorLeave = (state: State) => ({
   },
 });
 
-export function getEnvVisitor(typeInfo: TypeInfo): ASTVisitor {
+export function getEnvVisitor(abi: Abi): ASTVisitor {
   const state: State = {};
 
   return {
-    enter: visitorEnter(typeInfo.envTypes, state),
+    enter: visitorEnter(abi, state),
     leave: visitorLeave(state),
   };
 }

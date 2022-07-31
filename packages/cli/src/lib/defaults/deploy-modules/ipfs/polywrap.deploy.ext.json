@@ -1,0 +1,12 @@
+{
+  "id": "DeployManifest_Deployer_WasmAsExt",
+  "type": "object",
+  "required": [
+    "gatewayUri"
+  ],
+  "properties": {
+    "gatewayUri": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,6 @@
+format: 0.1.0
+name: default-dockerfile
+language: wasm/assemblyscript
+build: ./polywrap.build.yaml
+schema: ./src/schema.graphql
+module: ./src/index.ts

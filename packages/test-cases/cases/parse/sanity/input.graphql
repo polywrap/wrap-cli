@@ -8,7 +8,9 @@ scalar Int16
 scalar Int32
 scalar Bytes
 scalar BigInt
+scalar BigNumber
 scalar JSON
+scalar Map
 
 directive @imported(
   uri: String!
@@ -27,6 +29,11 @@ directive @capability(
 ) repeatable on OBJECT
 
 directive @enabled_interface on OBJECT
+
+directive @annotate(type: String!) on FIELD
+
+directive @env(required: Boolean!) on FIELD_DEFINITION
+
 """
 CustomEnum comment
 """
@@ -59,6 +66,8 @@ optStr comment
   i32: Int32!
   bigint: BigInt!
   optBigint: BigInt
+  bignumber: BigNumber!
+  optBignumber: BigNumber
   json: JSON!
   optJson: JSON
   bytes: Bytes!
@@ -77,7 +86,11 @@ optStr comment
   optEnum: CustomEnum
   enum: CustomEnum!
   enumArray: [CustomEnum!]!,
-  optEnumArray: [CustomEnum]
+  optEnumArray: [CustomEnum],
+  map: Map! @annotate(type: "Map<String!, Int>!")
+  mapOfArr: Map! @annotate(type: "Map<String!, [Int!]!>!")
+  mapOfObj: Map! @annotate(type: "Map<String!, AnotherType!>!")
+  mapOfArrOfObj: Map! @annotate(type: "Map<String!, [AnotherType!]!>!")
 }
 
 """
@@ -98,24 +111,15 @@ type UserObject {
   fieldB: Int!
 }
 
-type QueryEnv {
+type UserObjectFromInterface implements UserObject {
+  fieldA: String
+  fieldB: Int!
+  fieldC: UInt32!
+}
+
+type Env {
   prop: String!
-}
-
-type QueryClientEnv {
-  prop: String!
-}
-
-type MutationEnv {
-  prop: Int!
-}
-
-type MutationClientEnv {
-  prop: String
-}
-
-type Mutation {
-  sanitizeMutationEnv(env: MutationClientEnv!): MutationEnv!
+  propM: Int!
 }
 
 """
@@ -131,21 +135,24 @@ anotherProp comment
   str2: String!
 }
 
+type ModuleObjectType {
+  prop: String!
+}
+
 """
-Query comment
+Module comment
 """
-type Query implements Interface_Query @imports(
-  types: [ "TestImport_Query", "Interface_Query" ]
+type Module implements Interface_Module @imports(
+  types: [ "TestImport_Module", "Interface_Module" ]
 ) @capability(
   type: "getImplementations",
   uri: "testimport.uri.eth",
   namespace: "TestImport",
 ) {
-  sanitizeQueryEnv(env: QueryClientEnv!): QueryEnv!
 """
-queryMethod comment
+moduleMethod comment
 """
-  queryMethod(
+  moduleMethod(
 """
 arg comment
 """
@@ -183,15 +190,27 @@ abstractMethod comment
   abstractMethod(
     arg: UInt8!
   ): String!
+
+  transformMap(
+    map: Map @annotate(type: "Map<String!, Int!>")
+  ): Map @annotate(type: "Map<String!, Int!>")
+
+  methodRequireEnv(
+    arg: String!
+  ): Env! @env(required: true)
+
+  methodOptionalEnv(
+    arg: String!
+  ): Env @env(required: false)
 }
 
 """
-TestImport_Query comment
+TestImport_Module comment
 """
-type TestImport_Query @imported(
+type TestImport_Module @imported(
   uri: "testimport.uri.eth",
   namespace: "TestImport",
-  nativeType: "Query"
+  nativeType: "Module"
 ) @enabled_interface {
 """
 importedMethod comment
@@ -219,25 +238,14 @@ uArrayArray comment
     enum: TestImport_Enum!
     optEnum: TestImport_Enum
   ): TestImport_Enum!
-}
 
-"""
-TestImport_Mutation comment
-"""
-type TestImport_Mutation @imported(
-  uri: "testimport.uri.eth",
-  namespace: "TestImport",
-  nativeType: "Mutation"
-) {
-"""
-importedMethod comment
-"""
-  importedMethod(
-"""
-str comment
-"""
-    str: String!
-  ): String!
+  envMethod(
+    arg: String!
+  ): TestImport_Env! @env(required: true)
+
+  optEnvMethod(
+    arg: String!
+  ): TestImport_Env @env(required: false)
 }
 
 """
@@ -286,12 +294,23 @@ enum TestImport_Enum @imported(
 }
 
 """
-Interface_Query comment
+TestImport_Env comment
 """
-type Interface_Query @imported(
+type TestImport_Env @imported(
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
+  nativeType: "Env"
+) {
+  envProp: UInt8!
+}
+
+"""
+Interface_Module comment
+"""
+type Interface_Module @imported(
   uri: "interface.uri.eth",
   namespace: "Interface",
-  nativeType: "Query"
+  nativeType: "Module"
 ) {
 """
 abstractMethod comment

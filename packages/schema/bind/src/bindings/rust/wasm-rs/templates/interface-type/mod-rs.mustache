@@ -1,0 +1,23 @@
+{{#capabilities}}
+{{#getImplementations}}
+{{#enabled}}
+use polywrap_wasm_rs::wrap_get_implementations;
+{{/enabled}}
+{{/getImplementations}}
+{{/capabilities}}
+
+pub struct {{#toUpper}}{{namespace}}{{/toUpper}} {}
+
+impl {{#toUpper}}{{namespace}}{{/toUpper}} {
+  const uri: &'static str = "{{uri}}";
+
+  {{#capabilities}}
+  {{#getImplementations}}
+  {{#enabled}}
+  pub fn get_implementations() -> Vec<String> {
+    wrap_get_implementations(Self::uri)
+  }
+  {{/enabled}}
+  {{/getImplementations}}
+  {{/capabilities}}
+}

@@ -1,8 +1,8 @@
 use super::{
     error::{get_error_message, DecodeError},
-    Context, DataView, Format, Read,
+    DataView, Format, Read, ExtensionType,
 };
-use crate::{BigInt, JSON};
+use crate::{BigInt, BigNumber, JSON, Context};
 use byteorder::{BigEndian, ReadBytesExt};
 use core::hash::Hash;
 use std::{collections::BTreeMap, io::Read as StdioRead, str::FromStr};
@@ -34,9 +34,9 @@ impl ReadDecoder {
         let f = Format::get_format(self)?;
         let prefix = f.to_u8();
         if Format::is_positive_fixed_int(prefix) {
-            return Ok(prefix as i64);
+            Ok(prefix as i64)
         } else if Format::is_negative_fixed_int(prefix) {
-          return Ok((prefix as i8) as i64);
+          Ok((prefix as i8) as i64)
         } else {
             match f {
                 Format::Int8 => Ok(ReadBytesExt::read_i8(self)? as i64),
@@ -52,7 +52,7 @@ impl ReadDecoder {
                   if v <= i64::MAX as u64 {
                     Ok(v as i64)
                   } else {
-                    let formatted_err = format!("integer overflow: value = {}; bits = 64", v.to_string());
+                    let formatted_err = format!("integer overflow: value = {}; bits = 64", v);
                     let err_msg = self.context().print_with_context(&formatted_err);
                     Err(DecodeError::IntRangeError(err_msg))
                   }
@@ -102,7 +102,7 @@ impl ReadDecoder {
               );
               let err_msg = self.context().print_with_context(&formatted_err);
   
-              return Err(DecodeError::IntRangeError(err_msg))
+              Err(DecodeError::IntRangeError(err_msg))
             },
             Format::Int16 => {
               let int16 = ReadBytesExt::read_i16::<BigEndian>(self)?;
@@ -117,7 +117,7 @@ impl ReadDecoder {
               );
               let err_msg = self.context().print_with_context(&formatted_err);
   
-              return Err(DecodeError::IntRangeError(err_msg))
+              Err(DecodeError::IntRangeError(err_msg))
             },
             Format::Int32 => {
               let int32 = ReadBytesExt::read_i32::<BigEndian>(self)?;
@@ -132,7 +132,7 @@ impl ReadDecoder {
               );
               let err_msg = self.context().print_with_context(&formatted_err);
   
-              return Err(DecodeError::IntRangeError(err_msg))
+              Err(DecodeError::IntRangeError(err_msg))
             },
             Format::Int64 => {
               let int64 = ReadBytesExt::read_i64::<BigEndian>(self)?;
@@ -147,7 +147,7 @@ impl ReadDecoder {
               );
               let err_msg = self.context().print_with_context(&formatted_err);
   
-              return Err(DecodeError::IntRangeError(err_msg))
+              Err(DecodeError::IntRangeError(err_msg))
             },
 
             err_f => {
@@ -165,7 +165,7 @@ impl ReadDecoder {
 
 impl StdioRead for ReadDecoder {
     fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
-        self.view.buffer.read(&mut buf[..])
+        self.view.buffer.read(&mut *buf)
     }
 }
 
@@ -191,7 +191,7 @@ impl Read for ReadDecoder {
         if v <= i8::MAX as i64 && v >= i8::MIN as i64 {
             Ok(v as i8)
         } else {
-            let formatted_err = format!("integer overflow: value = {}; bits = 8", v.to_string());
+            let formatted_err = format!("integer overflow: value = {}; bits = 8", v);
             let err_msg = self.context().print_with_context(&formatted_err);
             Err(DecodeError::IntRangeError(err_msg))
         }
@@ -203,7 +203,7 @@ impl Read for ReadDecoder {
         if v <= i16::MAX as i64 && v >= i16::MIN as i64 {
             Ok(v as i16)
         } else {
-            let formatted_err = format!("integer overflow: value = {}; bits = 16", v.to_string());
+            let formatted_err = format!("integer overflow: value = {}; bits = 16", v);
             let err_msg = self.context().print_with_context(&formatted_err);
             Err(DecodeError::IntRangeError(err_msg))
         }
@@ -215,7 +215,7 @@ impl Read for ReadDecoder {
         if v <= i32::MAX as i64 && v >= i32::MIN as i64 {
             Ok(v as i32)
         } else {
-            let formatted_err = format!("integer overflow: value = {}; bits = 32", v.to_string());
+            let formatted_err = format!("integer overflow: value = {}; bits = 32", v);
             let err_msg = self.context().print_with_context(&formatted_err);
             Err(DecodeError::IntRangeError(err_msg))
         }
@@ -227,7 +227,7 @@ impl Read for ReadDecoder {
         if v <= u8::MAX as u64 && v >= u8::MIN as u64 {
             Ok(v as u8)
         } else {
-            let formatted_err = format!("unsigned integer overflow: value = {}; bits = 8", v.to_string());
+            let formatted_err = format!("unsigned integer overflow: value = {}; bits = 8", v);
             let err_msg = self.context().print_with_context(&formatted_err);
             Err(DecodeError::IntRangeError(err_msg))
         }
@@ -239,7 +239,7 @@ impl Read for ReadDecoder {
         if v <= u16::MAX as u64 && v >= u16::MIN as u64 {
             Ok(v as u16)
         } else {
-            let formatted_err = format!("unsigned integer overflow: value = {}; bits = 16", v.to_string());
+            let formatted_err = format!("unsigned integer overflow: value = {}; bits = 16", v);
             let err_msg = self.context().print_with_context(&formatted_err);
             Err(DecodeError::IntRangeError(err_msg))
         }
@@ -251,7 +251,7 @@ impl Read for ReadDecoder {
         if v <= u32::MAX as u64 && v >= u32::MIN as u64 {
             Ok(v as u32)
         } else {
-            let formatted_err = format!("unsigned integer overflow: value = {}; bits = 32", v.to_string());
+            let formatted_err = format!("unsigned integer overflow: value = {}; bits = 32", v);
             let err_msg = self.context().print_with_context(&formatted_err);
             Err(DecodeError::IntRangeError(err_msg))
         }
@@ -351,6 +351,11 @@ impl Read for ReadDecoder {
         BigInt::from_str(&bigint_str).map_err(|e| DecodeError::ParseBigIntError(e.to_string()))
     }
 
+    fn read_bignumber(&mut self) -> Result<BigNumber, DecodeError> {
+        let bignumber_str = self.read_string()?;
+        BigNumber::from_str(&bignumber_str).map_err(|e| DecodeError::ParseBigNumberError(e.to_string()))
+    }
+
     fn read_json(&mut self) -> Result<JSON::Value, DecodeError> {
         let json_str = self.read_string()?;
         JSON::from_str(&json_str).map_err(|e| DecodeError::JSONReadError(e.to_string()))
@@ -379,13 +384,13 @@ impl Read for ReadDecoder {
 
     fn read_array<T>(
         &mut self,
-        mut reader: impl FnMut(&mut Self) -> Result<T, DecodeError>,
+        mut item_reader: impl FnMut(&mut Self) -> Result<T, DecodeError>,
     ) -> Result<Vec<T>, DecodeError> {
         let arr_len = self.read_array_length()?;
         let mut array: Vec<T> = vec![];
         for i in 0..arr_len {
             self.context.push("array[", &i.to_string(), "]");
-            let item = reader(self)?;
+            let item = item_reader(self)?;
             array.push(item);
             self.context.pop();
         }
@@ -433,9 +438,68 @@ impl Read for ReadDecoder {
         Ok(map)
     }
 
-    fn read_nullable_bool(&mut self) -> Result<Option<bool>, DecodeError> {
+    fn read_ext_generic_map<K, V>(
+        &mut self,
+        mut key_reader: impl FnMut(&mut Self) -> Result<K, DecodeError>,
+        mut val_reader: impl FnMut(&mut Self) -> Result<V, DecodeError>,
+    ) -> Result<BTreeMap<K, V>, DecodeError>
+    where
+        K: Eq + Hash + Ord,
+    {
+        let position = self.view.buffer.position();
+        let format = Format::get_format(self)?;
+        self.view.buffer.set_position(position);
+
+        let _byte_length = match format {
+            Format::FixMap(_) => {
+                return self.read_map(key_reader, val_reader);
+            },
+            Format::Map16 => {
+                return self.read_map(key_reader, val_reader);
+            },
+            Format::FixExt1 => 1,
+            Format::FixExt2 => 2,
+            Format::FixExt4 => 4,
+            Format::FixExt8 => 8,
+            Format::FixExt16 => 16,
+            Format::Ext8 => ReadBytesExt::read_u8(self)? as u32,
+            Format::Ext16 => {
+                ReadBytesExt::read_u16::<BigEndian>(self)? as u32
+            },
+            Format::Ext32 => {
+                ReadBytesExt::read_u32::<BigEndian>(self)?
+            },
+            err_f => {
+                let formatted_err = format!(
+                  "Property must be of type 'ext generic map'. {}",
+                  get_error_message(err_f)
+                );
+                let err_msg = self.context().print_with_context(&formatted_err);
+                return Err(DecodeError::WrongMsgPackFormat(err_msg))
+            }
+        };
+
+        // Consume the leadByte
+        ReadBytesExt::read_u8(self)?;
+
+        // Get the extension type
+        let ext_type = ReadBytesExt::read_u8(self)?;
+
+        if ext_type != ExtensionType::GenericMap.to_u8() {
+            let formatted_err = format!(
+                "Extension must be of type 'ext generic map'. Found {}",
+                ext_type
+            );
+            let err_msg = self.context().print_with_context(&formatted_err);
+            return Err(DecodeError::WrongMsgPackFormat(err_msg))
+        }
+
+        self.read_map(key_reader, val_reader)
+    }
+
+    fn read_optional_bool(&mut self) -> Result<Option<bool>, DecodeError> {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
         } else {
             match self.read_bool() {
                 Ok(v) => Ok(Some(v)),
@@ -444,9 +508,9 @@ impl Read for ReadDecoder {
         }
     }
 
-    fn read_nullable_i8(&mut self) -> Result<Option<i8>, DecodeError> {
+    fn read_optional_i8(&mut self) -> Result<Option<i8>, DecodeError> {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
         } else {
             match Read::read_i8(self) {
                 Ok(v) => Ok(Some(v)),
@@ -455,9 +519,9 @@ impl Read for ReadDecoder {
         }
     }
 
-    fn read_nullable_i16(&mut self) -> Result<Option<i16>, DecodeError> {
+    fn read_optional_i16(&mut self) -> Result<Option<i16>, DecodeError> {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
         } else {
             match Read::read_i16(self) {
                 Ok(v) => Ok(Some(v)),
@@ -466,9 +530,9 @@ impl Read for ReadDecoder {
         }
     }
 
-    fn read_nullable_i32(&mut self) -> Result<Option<i32>, DecodeError> {
+    fn read_optional_i32(&mut self) -> Result<Option<i32>, DecodeError> {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
         } else {
             match Read::read_i32(self) {
                 Ok(v) => Ok(Some(v)),
@@ -477,9 +541,9 @@ impl Read for ReadDecoder {
         }
     }
 
-    fn read_nullable_u8(&mut self) -> Result<Option<u8>, DecodeError> {
+    fn read_optional_u8(&mut self) -> Result<Option<u8>, DecodeError> {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
         } else {
             match Read::read_u8(self) {
                 Ok(v) => Ok(Some(v)),
@@ -488,9 +552,9 @@ impl Read for ReadDecoder {
         }
     }
 
-    fn read_nullable_u16(&mut self) -> Result<Option<u16>, DecodeError> {
+    fn read_optional_u16(&mut self) -> Result<Option<u16>, DecodeError> {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
         } else {
             match Read::read_u16(self) {
                 Ok(v) => Ok(Some(v)),
@@ -499,9 +563,9 @@ impl Read for ReadDecoder {
         }
     }
 
-    fn read_nullable_u32(&mut self) -> Result<Option<u32>, DecodeError> {
+    fn read_optional_u32(&mut self) -> Result<Option<u32>, DecodeError> {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
         } else {
             match Read::read_u32(self) {
                 Ok(v) => Ok(Some(v)),
@@ -510,9 +574,9 @@ impl Read for ReadDecoder {
         }
     }
 
-    fn read_nullable_f32(&mut self) -> Result<Option<f32>, DecodeError> {
+    fn read_optional_f32(&mut self) -> Result<Option<f32>, DecodeError> {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
         } else {
             match Read::read_f32(self) {
                 Ok(v) => Ok(Some(v)),
@@ -521,9 +585,9 @@ impl Read for ReadDecoder {
         }
     }
 
-    fn read_nullable_f64(&mut self) -> Result<Option<f64>, DecodeError> {
+    fn read_optional_f64(&mut self) -> Result<Option<f64>, DecodeError> {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
         } else {
             match Read::read_f64(self) {
                 Ok(v) => Ok(Some(v)),
@@ -532,9 +596,9 @@ impl Read for ReadDecoder {
         }
     }
 
-    fn read_nullable_string(&mut self) -> Result<Option<String>, DecodeError> {
+    fn read_optional_string(&mut self) -> Result<Option<String>, DecodeError> {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
         } else {
             match self.read_string() {
                 Ok(s) => Ok(Some(s)),
@@ -543,9 +607,9 @@ impl Read for ReadDecoder {
         }
     }
 
-    fn read_nullable_bytes(&mut self) -> Result<Option<Vec<u8>>, DecodeError> {
+    fn read_optional_bytes(&mut self) -> Result<Option<Vec<u8>>, DecodeError> {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
         } else {
             match self.read_bytes() {
                 Ok(bytes) => Ok(Some(bytes)),
@@ -554,9 +618,9 @@ impl Read for ReadDecoder {
         }
     }
 
-    fn read_nullable_bigint(&mut self) -> Result<Option<BigInt>, DecodeError> {
+    fn read_optional_bigint(&mut self) -> Result<Option<BigInt>, DecodeError> {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
         } else {
             match self.read_bigint() {
                 Ok(bigint) => Ok(Some(bigint)),
@@ -565,9 +629,20 @@ impl Read for ReadDecoder {
         }
     }
 
-    fn read_nullable_json(&mut self) -> Result<Option<JSON::Value>, DecodeError> {
+    fn read_optional_bignumber(&mut self) -> Result<Option<BigNumber>, DecodeError> {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
+        } else {
+            match self.read_bignumber() {
+                Ok(bignumber) => Ok(Some(bignumber)),
+                Err(e) => Err(DecodeError::BigNumberReadError(e.to_string())),
+            }
+        }
+    }
+
+    fn read_optional_json(&mut self) -> Result<Option<JSON::Value>, DecodeError> {
+        if self.is_next_nil()? {
+            Ok(None)
         } else {
             match self.read_json() {
                 Ok(value) => Ok(Some(value)),
@@ -576,21 +651,21 @@ impl Read for ReadDecoder {
         }
     }
 
-    fn read_nullable_array<T>(
+    fn read_optional_array<T>(
         &mut self,
-        reader: impl FnMut(&mut Self) -> Result<T, DecodeError>,
+        item_reader: impl FnMut(&mut Self) -> Result<T, DecodeError>,
     ) -> Result<Option<Vec<T>>, DecodeError> {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
         } else {
-            match self.read_array(reader) {
+            match self.read_array(item_reader) {
                 Ok(array) => Ok(Some(array)),
                 Err(e) => Err(DecodeError::ArrayReadError(e.to_string())),
             }
         }
     }
 
-    fn read_nullable_map<K, V>(
+    fn read_optional_map<K, V>(
         &mut self,
         key_reader: impl FnMut(&mut Self) -> Result<K, DecodeError>,
         val_reader: impl FnMut(&mut Self) -> Result<V, DecodeError>,
@@ -599,11 +674,29 @@ impl Read for ReadDecoder {
         K: Eq + Hash + Ord,
     {
         if self.is_next_nil()? {
-            return Ok(None);
+            Ok(None)
         } else {
             match self.read_map(key_reader, val_reader) {
                 Ok(map) => Ok(Some(map)),
                 Err(e) => Err(DecodeError::MapReadError(e.to_string())),
+            }
+        }
+    }
+
+    fn read_optional_ext_generic_map<K, V>(
+        &mut self,
+        key_reader: impl FnMut(&mut Self) -> Result<K, DecodeError>,
+        val_reader: impl FnMut(&mut Self) -> Result<V, DecodeError>,
+    ) -> Result<Option<BTreeMap<K, V>>, DecodeError>
+    where
+        K: Eq + Hash + Ord,
+    {
+        if self.is_next_nil()? {
+            Ok(None)
+        } else {
+            match self.read_ext_generic_map(key_reader, val_reader) {
+                Ok(map) => Ok(Some(map)),
+                Err(e) => Err(DecodeError::ExtGenericMapReadError(e.to_string())),
             }
         }
     }

@@ -1,0 +1,13 @@
+enum LogLevel {
+  DEBUG
+  INFO
+  WARN
+  ERROR
+}
+
+type Module {
+  log(
+    level: LogLevel!
+    message: String!
+  ): Boolean!
+}

@@ -1,11 +1,11 @@
 {
-  "name": "@web3api/schema-compose",
-  "description": "Web3API Schema Composition",
-  "version": "0.0.1-prealpha.65",
+  "name": "@polywrap/schema-compose",
+  "description": "Polywrap Schema Composition",
+  "version": "0.3.0",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/web3-api/monorepo.git"
+    "url": "https://github.com/polywrap/monorepo.git"
   },
   "main": "build/index.js",
   "files": [
@@ -19,14 +19,15 @@
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@web3api/schema-parse": "0.0.1-prealpha.65",
+    "@polywrap/schema-parse": "0.3.0",
     "graphql": "15.5.0",
     "mustache": "4.0.1"
   },
   "devDependencies": {
+    "@polywrap/test-cases": "0.3.0",
     "@types/jest": "26.0.8",
     "@types/mustache": "4.0.1",
-    "@web3api/test-cases": "0.0.1-prealpha.65",
+    "@types/prettier": "2.6.0",
     "jest": "26.6.3",
     "rimraf": "3.0.2",
     "ts-jest": "26.5.4",

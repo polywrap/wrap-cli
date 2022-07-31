@@ -1,0 +1,10 @@
+type Module {
+  toAscii(value: String!): String!
+  toUnicode(value: String!): String!
+  convert(value: String!): ConvertResult!
+}
+
+type ConvertResult {
+  IDN: String!
+  PC: String!
+}

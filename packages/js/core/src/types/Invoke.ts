@@ -1,40 +1,21 @@
 import { ClientConfig, Uri } from ".";
 
-export type InvokableModules = "query" | "mutation";
-
-/** Options required for an API invocation. */
-export interface InvokeApiOptions<
+/** Options required for an Wrapper invocation. */
+export interface InvokeOptions<
   TUri extends Uri | string = string,
   TClientConfig extends ClientConfig = ClientConfig
 > {
-  /** The API's URI */
+  /** The Wrapper's URI */
   uri: TUri;
-
-  /** Module to be called into. */
-  module: InvokableModules;
 
   /** Method to be executed. */
   method: string;
 
   /**
-   * Input arguments for the method, structured as a map,
+   * Arguments for the method, structured as a map,
    * removing the chance of incorrectly ordering arguments.
    */
-  input?: Record<string, unknown> | ArrayBuffer;
-
-  /**
-   * Filters the [[InvokeApiResult]] data properties. The key
-   * of this map is the property's name, while the value is
-   * either true (meaning select this prop), or a nested named map,
-   * allowing for the filtering of nested objects.
-   */
-  resultFilter?: Record<string, unknown>;
-
-  /**
-   * If set to true, the invoke function will not decode the msgpack results
-   * into JavaScript objects, and instead return the raw ArrayBuffer.
-   */
-  noDecode?: boolean;
+  args?: Record<string, unknown> | Uint8Array;
 
   /**
    * Override the client's config for all invokes within this invoke.
@@ -48,11 +29,11 @@ export interface InvokeApiOptions<
 }
 
 /**
- * Result of an API invocation.
+ * Result of an Wrapper invocation.
  *
  * @template TData Type of the invoke result data.
  */
-export interface InvokeApiResult<TData = unknown> {
+export interface InvokeResult<TData = unknown> {
   /**
    * Invoke result data. The type of this value is the return type
    * of the method. If undefined, it means something went wrong.
@@ -65,8 +46,26 @@ export interface InvokeApiResult<TData = unknown> {
   error?: Error;
 }
 
-export interface InvokeHandler {
+export interface InvokerOptions<
+  TUri extends Uri | string = string,
+  TClientConfig extends ClientConfig = ClientConfig
+> extends InvokeOptions<TUri, TClientConfig> {
+  encodeResult?: boolean;
+}
+
+export interface Invoker {
   invoke<TData = unknown, TUri extends Uri | string = string>(
-    options: InvokeApiOptions<TUri>
-  ): Promise<InvokeApiResult<TData>>;
+    options: InvokerOptions<TUri>
+  ): Promise<InvokeResult<TData>>;
+}
+
+export interface InvocableResult<TData = unknown> extends InvokeResult<TData> {
+  encoded?: boolean;
+}
+
+export interface Invocable {
+  invoke(
+    options: InvokeOptions<Uri>,
+    invoker: Invoker
+  ): Promise<InvocableResult<unknown>>;
 }

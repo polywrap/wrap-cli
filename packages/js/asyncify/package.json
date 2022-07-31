@@ -1,11 +1,11 @@
 {
-  "name": "@web3api/asyncify-js",
+  "name": "@polywrap/asyncify-js",
   "description": "Async Wasm Imports Support Using Asyncify",
-  "version": "0.0.1-prealpha.65",
+  "version": "0.3.0",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/web3-api/monorepo.git"
+    "url": "https://github.com/polywrap/monorepo.git"
   },
   "main": "build/index.js",
   "files": [
@@ -14,12 +14,13 @@
   "scripts": {
     "build": "rimraf ./build && tsc --project tsconfig.build.json",
     "lint": "eslint --color -c ../../../.eslintrc.js --ignore-pattern src/__tests__/cases/* src/",
-    "test": "jest --passWithNoTests --runInBand --verbose=true",
+    "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",
+    "@types/prettier": "2.6.0",
     "assemblyscript": "0.19.10",
     "jest": "26.6.3",
     "rimraf": "3.0.2",

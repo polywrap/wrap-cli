@@ -1,3 +1,6 @@
-export enum ResolveUriError {
-  InfiniteLoop,
+import { ResolveUriErrorType } from ".";
+
+export interface ResolveUriError {
+  type: ResolveUriErrorType;
+  error?: Error;
 }

@@ -1,5 +1,0 @@
-#import { TypeA } from "../imports-local/schemaA.graphql"
-
-type Mutation {
-  method: TypeA
-}

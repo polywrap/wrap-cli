@@ -8,10 +8,12 @@ export function isPromise<T extends unknown>(
 
 export function proxyGet<T extends Record<string, unknown>>(
   obj: T,
-  transform: (value: unknown) => unknown
+  transform: (value: unknown, name: string) => unknown
 ): T {
   return new Proxy<T>(obj, {
-    get: (obj: T, name: string) => transform(obj[name]),
+    get: (obj: T, name: string) => {
+      return transform(obj[name], name);
+    },
   });
 }
 

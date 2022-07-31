@@ -1,10 +1,10 @@
 import { PluginPackage, Uri } from ".";
 
-import { Tracer } from "@web3api/tracing-js";
+import { Tracer } from "@polywrap/tracing-js";
 
 export interface PluginRegistration<TUri = string> {
   uri: TUri;
-  plugin: PluginPackage;
+  plugin: PluginPackage<unknown>;
 }
 
 export const sanitizePluginRegistrations = Tracer.traceFunc(

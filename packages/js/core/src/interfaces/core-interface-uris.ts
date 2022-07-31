@@ -1,6 +1,6 @@
 import { Uri } from "../";
 
 export const coreInterfaceUris = {
-  uriResolver: new Uri("w3://ens/uri-resolver.core.web3api.eth"),
-  logger: new Uri("w3://ens/logger.core.web3api.eth"),
+  uriResolver: new Uri("wrap://ens/uri-resolver.core.polywrap.eth"),
+  logger: new Uri("wrap://ens/logger.core.polywrap.eth"),
 };

@@ -1,28 +1,25 @@
 import {
   QueryHandler,
-  InvokeHandler,
+  Invoker,
   SubscriptionHandler,
   UriRedirect,
   Uri,
   PluginRegistration,
   InterfaceImplementations,
   Env,
-  ResolveUriOptions,
-  Api,
+  WorkflowHandler,
 } from "./";
-import { ManifestType, AnyManifest } from "../manifest";
-import {
-  UriToApiResolver,
-  ResolveUriError,
-  UriResolutionHistory,
-} from "../uri-resolution/core";
+import { UriResolver } from "../uri-resolution/core";
+import { UriResolverHandler } from "./UriResolver";
+
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
 export interface ClientConfig<TUri extends Uri | string = string> {
   redirects: UriRedirect<TUri>[];
   plugins: PluginRegistration<TUri>[];
   interfaces: InterfaceImplementations<TUri>[];
   envs: Env<TUri>[];
-  resolvers: UriToApiResolver[];
+  uriResolvers: UriResolver[];
 }
 
 export interface Contextualized {
@@ -35,16 +32,13 @@ export type GetPluginsOptions = Contextualized;
 
 export type GetInterfacesOptions = Contextualized;
 
-export type GetSchemaOptions = Contextualized;
-
 export type GetEnvsOptions = Contextualized;
 
-export type GetResolversOptions = Contextualized;
+export type GetUriResolversOptions = Contextualized;
 
-export interface GetManifestOptions<TManifestType extends ManifestType>
-  extends Contextualized {
-  type: TManifestType;
-}
+export type GetSchemaOptions = Contextualized;
+
+export type GetManifestOptions = Contextualized;
 
 export interface GetFileOptions extends Contextualized {
   path: string;
@@ -56,9 +50,11 @@ export interface GetImplementationsOptions extends Contextualized {
 }
 
 export interface Client
-  extends QueryHandler,
+  extends Invoker,
+    QueryHandler,
     SubscriptionHandler,
-    InvokeHandler {
+    WorkflowHandler,
+    UriResolverHandler {
   getRedirects(options: GetRedirectsOptions): readonly UriRedirect<Uri>[];
 
   getPlugins(options: GetPluginsOptions): readonly PluginRegistration<Uri>[];
@@ -69,40 +65,30 @@ export interface Client
 
   getEnvs(options: GetEnvsOptions): readonly Env<Uri>[];
 
-  getResolvers(options: GetResolversOptions): readonly UriToApiResolver[];
-
   getEnvByUri<TUri extends Uri | string>(
     uri: TUri,
     options: GetEnvsOptions
   ): Env<Uri> | undefined;
+
+  getUriResolvers(options: GetUriResolversOptions): readonly UriResolver[];
 
   getSchema<TUri extends Uri | string>(
     uri: TUri,
     options: GetSchemaOptions
   ): Promise<string>;
 
-  getManifest<TUri extends Uri | string, TManifestType extends ManifestType>(
+  getManifest<TUri extends Uri | string>(
     uri: TUri,
-    options: GetManifestOptions<TManifestType>
-  ): Promise<AnyManifest<TManifestType>>;
+    options: GetManifestOptions
+  ): Promise<WrapManifest>;
 
   getFile<TUri extends Uri | string>(
     uri: TUri,
     options: GetFileOptions
-  ): Promise<string | ArrayBuffer>;
+  ): Promise<string | Uint8Array>;
 
   getImplementations<TUri extends Uri | string>(
     uri: TUri,
     options: GetImplementationsOptions
   ): TUri[];
-
-  resolveUri<TUri extends Uri | string>(
-    uri: TUri,
-    options?: ResolveUriOptions<ClientConfig>
-  ): Promise<{
-    api?: Api;
-    uri?: Uri;
-    uriHistory: UriResolutionHistory;
-    error?: ResolveUriError;
-  }>;
 }

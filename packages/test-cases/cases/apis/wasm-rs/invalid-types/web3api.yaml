@@ -1,7 +1,0 @@
-format: 0.0.1-prealpha.5
-language: wasm/rust
-build: ./web3api.build.yaml
-modules:
-  query:
-    schema: ./query/schema.graphql
-    module: ./query/Cargo.toml

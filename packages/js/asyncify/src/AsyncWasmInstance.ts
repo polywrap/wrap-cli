@@ -44,9 +44,7 @@ export class AsyncWasmInstance {
 
   private constructor() {}
 
-  public static createMemory(config: { module: ArrayBuffer }): WasmMemory {
-    const bytecode = new Uint8Array(config.module);
-
+  public static createMemory(config: { module: Uint8Array }): WasmMemory {
     // extract the initial memory page size, as it will
     // throw an error if the imported page size differs:
     // https://chromium.googlesource.com/v8/v8/+/644556e6ed0e6e4fac2dfabb441439820ec59813/src/wasm/module-instantiate.cc#924
@@ -73,7 +71,7 @@ export class AsyncWasmInstance {
       // 0x__,
     ]);
 
-    const sigIdx = indexOfArray(bytecode, envMemoryImportSignature);
+    const sigIdx = indexOfArray(config.module, envMemoryImportSignature);
 
     if (sigIdx < 0) {
       throw Error(
@@ -86,7 +84,7 @@ export class AsyncWasmInstance {
 
     // Extract the initial memory page-range size
     const memoryInitalLimits =
-      bytecode[sigIdx + envMemoryImportSignature.length + 1];
+      config.module[sigIdx + envMemoryImportSignature.length + 1];
 
     if (memoryInitalLimits === undefined) {
       throw Error(
@@ -98,7 +96,7 @@ export class AsyncWasmInstance {
   }
 
   public static async createInstance(config: {
-    module: ArrayBuffer;
+    module: Uint8Array;
     imports: WasmImports;
     requiredExports?: readonly string[];
   }): Promise<AsyncWasmInstance> {
@@ -107,12 +105,9 @@ export class AsyncWasmInstance {
     instance._wrappedImports = instance._wrapImports(config.imports);
 
     // Create Wasm module instance
-    const module = await WebAssembly.compile(config.module);
-    const resp = await WebAssembly.instantiate(
-      module,
-      instance._wrappedImports
-    );
-    instance._instance = resp;
+    instance._instance = (
+      await WebAssembly.instantiate(config.module, instance._wrappedImports)
+    ).instance;
 
     // Ensure all required exports exist on Wasm module
     const exportKeys = Object.keys(instance._instance.exports);
@@ -159,18 +154,40 @@ export class AsyncWasmInstance {
   }
 
   private _wrapImports(imports: WasmImports): WasmImports {
-    return proxyGet(imports, (moduleImports: WasmModuleImports) =>
-      this._wrapModuleImports(moduleImports)
+    return proxyGet(
+      imports,
+      (moduleImports: WasmModuleImports | undefined, name: string) => {
+        if (moduleImports === undefined) {
+          throw Error(
+            `Unsupported wasm import namespace requested: "${name}"; ` +
+              `Supported wasm import namespaces: ${Object.keys(imports)
+                .map((x) => `"${x}"`)
+                .join(", ")}`
+          );
+        }
+        return this._wrapModuleImports(moduleImports);
+      }
     );
   }
 
   private _wrapModuleImports(imports: WasmModuleImports) {
-    return proxyGet(imports, (importValue: WasmImportValue) => {
-      if (typeof importValue === "function") {
-        return this._wrapImportFn(importValue);
+    return proxyGet(
+      imports,
+      (importValue: WasmImportValue | undefined, name: string) => {
+        if (importValue === undefined) {
+          throw Error(
+            `Unsupported wasm import requested: "${name}"; ` +
+              `Supported wasm imports: ${Object.keys(imports)
+                .map((x) => `"${x}"`)
+                .join(", ")}`
+          );
+        }
+        if (typeof importValue === "function") {
+          return this._wrapImportFn(importValue);
+        }
+        return importValue;
       }
-      return importValue;
-    });
+    );
   }
 
   private _wrapImportFn(fn: Function) {

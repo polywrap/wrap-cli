@@ -1,4 +1,4 @@
-export * from "./Api";
+export * from "./Wrapper";
 export * from "./Client";
 export * from "./Invoke";
 export * from "./MaybeAsync";
@@ -10,4 +10,5 @@ export * from "./UriRedirect";
 export * from "./Env";
 export * from "./InterfaceImplementations";
 export * from "./PluginRegistration";
-export * from "./ResolveUriOptions";
+export * from "./UriResolver";
+export * from "./Workflow";

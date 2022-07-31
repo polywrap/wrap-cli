@@ -1,37 +1,37 @@
 {
-  "name": "@web3api/ethereum-plugin-js",
-  "description": "Web3API Ethereum Javascript Plugin",
-  "version": "0.0.1-prealpha.65",
+  "name": "@polywrap/ethereum-plugin-js",
+  "description": "Polywrap Ethereum Javascript Plugin",
+  "version": "0.3.0",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/web3-api/monorepo.git"
+    "url": "https://github.com/polywrap/monorepo.git"
   },
   "main": "build/index.js",
   "files": [
-    "build",
-    "schema.graphql"
+    "build"
   ],
   "scripts": {
     "build": "rimraf ./build && yarn codegen && tsc --project tsconfig.build.json",
-    "codegen": "node ../../../../dependencies/node_modules/@web3api/cli/bin/w3 plugin codegen",
+    "codegen": "node ../../../../dependencies/node_modules/polywrap/bin/polywrap plugin codegen",
     "lint": "eslint --color -c ../../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
-    "test:ci": "jest --passWithNoTests --runInBand --verbose",
+    "test:ci": "jest --passWithNoTests --runInBand --detectOpenHandles --verbose",
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
     "@ethersproject/address": "5.0.7",
     "@ethersproject/providers": "5.0.7",
-    "@web3api/core-js": "0.0.1-prealpha.65",
+    "@polywrap/core-js": "0.3.0",
     "ethers": "5.0.7"
   },
   "devDependencies": {
+    "@polywrap/client-js": "0.3.0",
+    "@polywrap/ens-resolver-plugin-js": "0.3.0",
+    "@polywrap/ipfs-plugin-js": "0.3.0",
+    "@polywrap/test-env-js": "0.3.0",
     "@types/jest": "26.0.8",
-    "@web3api/client-js": "0.0.1-prealpha.65",
-    "@web3api/ens-plugin-js": "0.0.1-prealpha.65",
-    "@web3api/ipfs-plugin-js": "0.0.1-prealpha.65",
-    "@web3api/test-env-js": "0.0.1-prealpha.65",
+    "@types/prettier": "2.6.0",
     "eth-ens-namehash": "2.0.8",
     "jest": "26.6.3",
     "js-sha3": "0.8.0",

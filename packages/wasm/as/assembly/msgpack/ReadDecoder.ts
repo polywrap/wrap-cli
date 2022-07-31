@@ -9,11 +9,13 @@ import {
   isFixedArray,
   isFixedString,
 } from "./Format";
-import { Nullable } from "./Nullable";
 import { Read } from "./Read";
-import { BigInt } from "../math";
+import { BigInt, BigNumber } from "../math";
 import { Context } from "../debug";
 import { JSON } from "../json";
+import { ExtensionType } from "./ExtensionType";
+
+import { Option } from "as-container";
 
 export class ReadDecoder extends Read {
   private readonly _context: Context;
@@ -212,6 +214,11 @@ export class ReadDecoder extends Read {
     return BigInt.fromString(str);
   }
 
+  readBigNumber(): BigNumber {
+    const str = this.readString();
+    return BigNumber.fromString(str);
+  }
+
   readJSON(): JSON.Value {
     const str = this.readString();
     return JSON.parse(str);
@@ -291,91 +298,164 @@ export class ReadDecoder extends Read {
     return m;
   }
 
-  readNullableBool(): Nullable<bool> {
-    if (this.isNextNil()) {
-      return Nullable.fromNull<bool>();
+  readExtGenericMap<K, V>(
+    key_fn: (reader: Read) => K,
+    value_fn: (reader: Read) => V
+  ): Map<K, V> {
+    const leadByte = this._view.peekUint8();
+    let byteLength: u32;
+
+    if (isFixedMap(leadByte)) {
+      return this.readMap(key_fn, value_fn);
     }
-    return Nullable.fromValue<bool>(this.readBool());
+
+    switch (leadByte) {
+      case Format.FIXMAP:
+      case Format.MAP16:
+        return this.readMap(key_fn, value_fn);
+      case Format.FIXEXT1:
+        byteLength = 1;
+        break;
+      case Format.FIXEXT2:
+        byteLength = 2;
+        break;
+      case Format.FIXEXT4:
+        byteLength = 4;
+        break;
+      case Format.FIXEXT8:
+        byteLength = 8;
+        break;
+      case Format.FIXEXT16:
+        byteLength = 16;
+        break;
+      case Format.EXT8:
+        byteLength = <u32>this._view.getUint8();
+        break;
+      case Format.EXT16:
+        byteLength = <u32>this._view.getUint16();
+        break;
+      case Format.EXT32:
+        byteLength = this._view.getUint32();
+        break;
+      default:
+        throw new TypeError(
+          this._context.printWithContext(
+            "Property must be of type 'ext generic map'. " +
+              this._getErrorMessage(leadByte)
+          )
+        );
+    }
+
+    // Consume the leadByte
+    this._view.getUint8();
+
+    // Get the extension type
+    const extType = this._view.getUint8();
+
+    if (extType !== ExtensionType.GENERIC_MAP) {
+      throw new TypeError(
+        this._context.printWithContext(
+          "Extension must be of type 'ext generic map'. Found " +
+            extType.toString()
+        )
+      );
+    }
+
+    return this.readMap(key_fn, value_fn);
   }
 
-  readNullableInt8(): Nullable<i8> {
+  readOptionalBool(): Option<bool> {
     if (this.isNextNil()) {
-      return Nullable.fromNull<i8>();
+      return Option.None<bool>();
     }
-    return Nullable.fromValue<i8>(this.readInt8());
+    return Option.Some<bool>(this.readBool());
   }
 
-  readNullableInt16(): Nullable<i16> {
+  readOptionalInt8(): Option<i8> {
     if (this.isNextNil()) {
-      return Nullable.fromNull<i16>();
+      return Option.None<i8>();
     }
-    return Nullable.fromValue<i16>(this.readInt16());
+    return Option.Some<i8>(this.readInt8());
   }
 
-  readNullableInt32(): Nullable<i32> {
+  readOptionalInt16(): Option<i16> {
     if (this.isNextNil()) {
-      return Nullable.fromNull<i32>();
+      return Option.None<i16>();
     }
-    return Nullable.fromValue<i32>(this.readInt32());
+    return Option.Some<i16>(this.readInt16());
   }
 
-  readNullableUInt8(): Nullable<u8> {
+  readOptionalInt32(): Option<i32> {
     if (this.isNextNil()) {
-      return Nullable.fromNull<u8>();
+      return Option.None<i32>();
     }
-    return Nullable.fromValue<u8>(this.readUInt8());
+    return Option.Some<i32>(this.readInt32());
   }
 
-  readNullableUInt16(): Nullable<u16> {
+  readOptionalUInt8(): Option<u8> {
     if (this.isNextNil()) {
-      return Nullable.fromNull<u16>();
+      return Option.None<u8>();
     }
-    return Nullable.fromValue<u16>(this.readUInt16());
+    return Option.Some<u8>(this.readUInt8());
   }
 
-  readNullableUInt32(): Nullable<u32> {
+  readOptionalUInt16(): Option<u16> {
     if (this.isNextNil()) {
-      return Nullable.fromNull<u32>();
+      return Option.None<u16>();
     }
-    return Nullable.fromValue<u32>(this.readUInt32());
+    return Option.Some<u16>(this.readUInt16());
   }
 
-  readNullableFloat32(): Nullable<f32> {
+  readOptionalUInt32(): Option<u32> {
     if (this.isNextNil()) {
-      return Nullable.fromNull<f32>();
+      return Option.None<u32>();
     }
-    return Nullable.fromValue<f32>(this.readFloat32());
+    return Option.Some<u32>(this.readUInt32());
   }
 
-  readNullableFloat64(): Nullable<f64> {
+  readOptionalFloat32(): Option<f32> {
     if (this.isNextNil()) {
-      return Nullable.fromNull<f64>();
+      return Option.None<f32>();
     }
-    return Nullable.fromValue<f64>(this.readFloat64());
+    return Option.Some<f32>(this.readFloat32());
   }
 
-  readNullableString(): string | null {
+  readOptionalFloat64(): Option<f64> {
+    if (this.isNextNil()) {
+      return Option.None<f64>();
+    }
+    return Option.Some<f64>(this.readFloat64());
+  }
+
+  readOptionalString(): string | null {
     if (this.isNextNil()) {
       return null;
     }
     return this.readString();
   }
 
-  readNullableBytes(): ArrayBuffer | null {
+  readOptionalBytes(): ArrayBuffer | null {
     if (this.isNextNil()) {
       return null;
     }
     return this.readBytes();
   }
 
-  readNullableBigInt(): BigInt | null {
+  readOptionalBigInt(): BigInt | null {
     if (this.isNextNil()) {
       return null;
     }
     return this.readBigInt();
   }
 
-  readNullableJSON(): JSON.Value | null {
+  readOptionalBigNumber(): BigNumber | null {
+    if (this.isNextNil()) {
+      return null;
+    }
+    return this.readBigNumber();
+  }
+
+  readOptionalJSON(): JSON.Value | null {
     if (this.isNextNil()) {
       return null;
     }
@@ -383,14 +463,14 @@ export class ReadDecoder extends Read {
     return this.readJSON();
   }
 
-  readNullableArray<T>(fn: (decoder: Read) => T): Array<T> | null {
+  readOptionalArray<T>(fn: (decoder: Read) => T): Array<T> | null {
     if (this.isNextNil()) {
       return null;
     }
     return this.readArray(fn);
   }
 
-  readNullableMap<K, V>(
+  readOptionalMap<K, V>(
     key_fn: (decoder: Read) => K,
     value_fn: (decoder: Read) => V
   ): Map<K, V> | null {
@@ -398,6 +478,16 @@ export class ReadDecoder extends Read {
       return null;
     }
     return this.readMap(key_fn, value_fn);
+  }
+
+  readOptionalExtGenericMap<K, V>(
+    key_fn: (decoder: Read) => K,
+    value_fn: (decoder: Read) => V
+  ): Map<K, V> | null {
+    if (this.isNextNil()) {
+      return null;
+    }
+    return this.readExtGenericMap(key_fn, value_fn);
   }
 
   isNextNil(): bool {

@@ -1,0 +1,27 @@
+#import { Module, Connection } into Ethereum from "wrap://ens/ethereum.polywrap.eth"
+
+type Module {
+  getData(
+    address: String!
+    connection: Ethereum_Connection
+  ): UInt32!
+
+  setData(
+    options: SetDataOptions!
+    connection: Ethereum_Connection
+  ): SetDataResult!
+
+  deployContract(
+    connection: Ethereum_Connection
+  ): String!
+}
+
+type SetDataOptions {
+  address: String!
+  value: UInt32!
+}
+
+type SetDataResult {
+  txReceipt: String!
+  value: UInt32!
+}

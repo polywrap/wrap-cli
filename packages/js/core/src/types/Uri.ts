@@ -1,4 +1,4 @@
-import { Tracer } from "@web3api/tracing-js";
+import { Tracer } from "@polywrap/tracing-js";
 
 /** URI configuration */
 export interface UriConfig {
@@ -8,17 +8,17 @@ export interface UriConfig {
 }
 
 /**
- * A Web3API URI. Some examples of valid URIs are:
- * w3://ipfs/QmHASH
- * w3://ens/sub.dimain.eth
- * w3://fs/directory/file.txt
- * w3://uns/domain.crypto
+ * A Polywrap URI. Some examples of valid URIs are:
+ * wrap://ipfs/QmHASH
+ * wrap://ens/sub.dimain.eth
+ * wrap://fs/directory/file.txt
+ * wrap://uns/domain.crypto
  *
  * Breaking down the various parts of the URI, as it applies
  * to [the URI standard](https://tools.ietf.org/html/rfc3986#section-3):
- * **w3://** - URI Scheme: differentiates Web3API URIs.
- * **ipfs/** - URI Authority: allows the Web3API URI resolution algorithm to determine an authoritative URI resolver.
- * **sub.domain.eth** - URI Path: tells the Authority where the API resides.
+ * **wrap://** - URI Scheme: differentiates Polywrap URIs.
+ * **ipfs/** - URI Authority: allows the Polywrap URI resolution algorithm to determine an authoritative URI resolver.
+ * **sub.domain.eth** - URI Path: tells the Authority where the Wrapper resides.
  */
 export class Uri {
   private _config: UriConfig;
@@ -78,23 +78,23 @@ export class Uri {
       processed = processed.substring(1);
     }
 
-    // Check for the w3:// scheme, add if it isn't there
-    const w3SchemeIdx = processed.indexOf("w3://");
+    // Check for the wrap:// scheme, add if it isn't there
+    const wrapSchemeIdx = processed.indexOf("wrap://");
 
-    // If it's missing the w3:// scheme, add it
-    if (w3SchemeIdx === -1) {
-      processed = "w3://" + processed;
+    // If it's missing the wrap:// scheme, add it
+    if (wrapSchemeIdx === -1) {
+      processed = "wrap://" + processed;
     }
 
-    // If the w3:// is not in the beginning, throw an error
-    if (w3SchemeIdx > -1 && w3SchemeIdx !== 0) {
+    // If the wrap:// is not in the beginning, throw an error
+    if (wrapSchemeIdx > -1 && wrapSchemeIdx !== 0) {
       throw Error(
-        "The w3:// scheme must be at the beginning of the URI string"
+        "The wrap:// scheme must be at the beginning of the URI string"
       );
     }
 
     // Extract the authoriy & path
-    let result = processed.match(/w3:\/\/([a-z][a-z0-9-_]+)\/(.*)/);
+    let result = processed.match(/wrap:\/\/([a-z][a-z0-9-_]+)\/(.*)/);
 
     // Remove all empty strings
     if (result) {
@@ -104,8 +104,8 @@ export class Uri {
     if (!result || result.length !== 3) {
       throw Error(
         `URI is malformed, here are some examples of valid URIs:\n` +
-          `w3://ipfs/QmHASH\n` +
-          `w3://ens/domain.eth\n` +
+          `wrap://ipfs/QmHASH\n` +
+          `wrap://ens/domain.eth\n` +
           `ens/domain.eth\n\n` +
           `Invalid URI Received: ${uri}`
       );

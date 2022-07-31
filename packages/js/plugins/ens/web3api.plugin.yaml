@@ -1,6 +1,0 @@
-format: 0.0.1-prealpha.1
-language: plugin/typescript
-schema: ./schema.graphql
-import_redirects:
-  - uri: "ens/uri-resolver.core.web3api.eth"
-    schema: ../../../core-interfaces/uri-resolver/src/query.graphql

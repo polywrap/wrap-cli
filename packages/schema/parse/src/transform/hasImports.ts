@@ -1,15 +1,16 @@
-import { TypeInfoTransforms } from ".";
-import { TypeInfo } from "../typeInfo";
+import { AbiTransforms } from ".";
+import { Abi } from "../abi";
 
-export const hasImports: TypeInfoTransforms = {
+export const hasImports: AbiTransforms = {
   enter: {
-    TypeInfo: (typeInfo: TypeInfo) => ({
-      ...typeInfo,
+    Abi: (abi: Abi) => ({
+      ...abi,
       hasImports: () => {
         return (
-          typeInfo.importedEnumTypes.length ||
-          typeInfo.importedObjectTypes.length ||
-          typeInfo.importedModuleTypes.length
+          abi.importedEnumTypes.length ||
+          abi.importedObjectTypes.length ||
+          abi.importedModuleTypes.length ||
+          abi.importedEnvTypes.length
         );
       },
     }),

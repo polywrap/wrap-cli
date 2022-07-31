@@ -1,0 +1,5 @@
+#import { ExternalType, Env, Module } into Namespace from "external.eth"
+
+type Module {
+  method: Namespace_ExternalType
+}

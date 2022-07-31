@@ -1,0 +1,6 @@
+format: 0.1.0
+name: TODO
+language: interface
+meta: ./polywrap.meta.yaml
+deploy: ./polywrap.deploy.yaml
+schema: ./schema.graphql

@@ -1,0 +1,7 @@
+#import { ExternalType } into Namespace from "external.eth"
+#import { LocalType } from "../imports-local/local.graphql"
+
+type Module {
+  method1: Namespace_ExternalType
+  method2: LocalType
+}

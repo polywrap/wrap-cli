@@ -1,6 +1,0 @@
-{{#required}}
-writer.write_i32(&(*item as i32))
-{{/required}}
-{{^required}}
-writer.write_nullable_i32(&item.map(|f| f as i32))
-{{/required}}

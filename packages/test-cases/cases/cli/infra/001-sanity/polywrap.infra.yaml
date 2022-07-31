@@ -1,0 +1,12 @@
+format: 0.1.0
+env:
+  IPFS_PORT: $ENV_IPFS_PORT
+  DEV_SERVER_PORT: 4040
+  DEV_SERVER_ETH_TESTNET_PORT: 8545
+modules:
+  ipfs:
+    package: "@namestys/ipfs-infra"
+    version: "0.0.1"
+    registry: npm
+  dev-server:
+    path: ../local-packages/dev-server

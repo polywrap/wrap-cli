@@ -1,11 +1,11 @@
 {
-  "name": "@web3api/wasm-as",
-  "description": "Web3API Assemblyscript Runtime",
-  "version": "0.0.1-prealpha.65",
+  "name": "@polywrap/wasm-as",
+  "description": "Polywrap Assemblyscript Runtime",
+  "version": "0.3.0",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/web3-api/monorepo.git"
+    "url": "https://github.com/polywrap/monorepo.git"
   },
   "main": "./assembly/index.ts",
   "files": [
@@ -22,7 +22,8 @@
   },
   "dependencies": {
     "@web3api/assemblyscript-json": "1.2.0",
-    "as-bigint": "0.4.0",
+    "as-bigint": "0.5.3",
+    "as-bignumber": "0.2.1",
     "as-container": "0.6.1"
   },
   "devDependencies": {

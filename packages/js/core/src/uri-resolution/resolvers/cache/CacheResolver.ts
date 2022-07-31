@@ -1,7 +1,7 @@
-import { Uri, Client, ApiCache } from "../../../types";
-import { UriToApiResolver, UriResolutionResult } from "../../core";
+import { Uri, Client, WrapperCache } from "../../../types";
+import { UriResolver, UriResolutionResult } from "../../core";
 
-export class CacheResolver implements UriToApiResolver {
+export class CacheResolver implements UriResolver {
   public get name(): string {
     return CacheResolver.name;
   }
@@ -9,13 +9,13 @@ export class CacheResolver implements UriToApiResolver {
   public async resolveUri(
     uri: Uri,
     client: Client,
-    cache: ApiCache
+    cache: WrapperCache
   ): Promise<UriResolutionResult> {
-    const api = cache.get(uri.uri);
+    const wrapper = cache.get(uri.uri);
 
     return Promise.resolve({
       uri: uri,
-      api: api,
+      wrapper: wrapper,
     });
   }
 }

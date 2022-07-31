@@ -1,0 +1,19 @@
+format: 0.1.0
+stages:
+  ipfs_deploy:
+    package: ipfs
+    uri: fs/./build
+  from_deploy:
+    package: local-dev-ens
+    depends_on: ipfs_deploy
+    config:
+      domainName: foo
+      ports:
+        ethereum: 8545
+  from_deploy2:
+    package: local-dev-ens
+    depends_on: ipfs_deploy
+    config:
+      domainName: test2.eth
+      ports:
+        ethereum: 8545

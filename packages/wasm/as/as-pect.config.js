@@ -29,10 +29,10 @@ module.exports = {
    * Add your required AssemblyScript imports here.
    */
   imports: {
-    w3: {
-      __w3_invoke_args: () => { },
-      __w3_invoke_result: () => { },
-      __w3_invoke_error: () => { }
+    wrap: {
+      __wrap_invoke_args: () => { },
+      __wrap_invoke_result: () => { },
+      __wrap_invoke_error: () => { }
     }
   },
   /**

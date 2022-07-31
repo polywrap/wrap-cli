@@ -1,13 +1,13 @@
-import { plugin, GraphNodePlugin } from "..";
-import { Web3ApiClient } from "@web3api/client-js";
+import { GraphNodePlugin, plugin } from "..";
+import { PolywrapClient } from "@polywrap/client-js";
 
-const uri = "ens/graph-node.web3api.eth";
+const uri = "ens/graph-node.polywrap.eth";
 const provider = "https://api.thegraph.com";
 
 jest.setTimeout(30000);
 
 describe("Graph Node Plugin", () => {
-  const client = new Web3ApiClient({
+  const client = new PolywrapClient({
     plugins: [{
       uri,
       plugin: plugin({
@@ -63,10 +63,10 @@ describe("Graph Node Plugin", () => {
 
   it("Throws if errors in querystring", async () => {
     await expect(
-      graphNode.query(
-        "ensdomains",
-        "ens",
-        `{
+      graphNode.querySubgraph({
+        subgraphAuthor: "ensdomains",
+        subgraphName: "ens",
+        query: `{
           domains(first: 5) {
             ids
             names
@@ -82,15 +82,14 @@ describe("Graph Node Plugin", () => {
             transactionID
           }
         }`,
-        client
-      )
+      }, client)
     ).rejects.toThrowError();
 
     try {
-      await graphNode.query(
-        "ensdomains",
-        "ens",
-        `{
+      await graphNode.querySubgraph({
+        subgraphAuthor: "ensdomains",
+        subgraphName: "ens",
+        query: `{
           domains(first: 5) {
             ids
             names
@@ -106,8 +105,7 @@ describe("Graph Node Plugin", () => {
             transactionID
           }
         }`,
-        client
-      );
+      }, client);
     } catch (e) {
       expect(e.message).toContain(
         `Message: Type \`Domain\` has no field \`ids\``
@@ -123,10 +121,10 @@ describe("Graph Node Plugin", () => {
 
   it("Throws if wrong subgraph name/author", async () => {
     await expect(
-      graphNode.query(
-        "ens",
-        "ens",
-        `{
+      graphNode.querySubgraph({
+        subgraphAuthor: "ens",
+        subgraphName: "ens",
+        query: `{
           domains(first: 5) {
             id
             name
@@ -142,20 +140,19 @@ describe("Graph Node Plugin", () => {
             transactionID
           }
         }`,
-        client
-      )
+      }, client)
     ).rejects.toThrowError(
       new RegExp(
-        "Store error: query execution failed: Subgraph `ens/ens` not found",
+        "`ens/ens` does not exist",
         "g"
       )
     );
 
     await expect(
-      graphNode.query(
-        "ensdomains",
-        "foo",
-        `{
+      graphNode.querySubgraph({
+        subgraphAuthor: "ensdomains",
+        subgraphName: "foo",
+        query: `{
           domains(first: 5) {
             id
             name
@@ -171,11 +168,10 @@ describe("Graph Node Plugin", () => {
             transactionID
           }
         }`,
-        client
-      )
+      }, client)
     ).rejects.toThrowError(
       new RegExp(
-        "Store error: query execution failed: Subgraph `ensdomains/foo` not found",
+        "`ensdomains/foo` does not exist",
         "g"
       )
     );

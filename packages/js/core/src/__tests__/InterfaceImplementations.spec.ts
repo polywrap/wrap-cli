@@ -11,15 +11,15 @@ describe("sanitizeInterfaceImplementations", () => {
   it("Returns interfaces from interfaces definitions", () => {
     const interfaces = sanitizeInterfaceImplementations([
       {
-        interface: "w3://w3/interface",
-        implementations: ["w3://w3/api1", "w3://w3/api2"]
+        interface: "wrap://polywrap/interface",
+        implementations: ["wrap://polywrap/wrapper1", "wrap://polywrap/wrapper2"]
       }
     ]);
 
     expect(interfaces).toEqual([
       {
-        interface: new Uri("w3://w3/interface"),
-        implementations: [new Uri("w3://w3/api1"), new Uri("w3://w3/api2")]
+        interface: new Uri("wrap://polywrap/interface"),
+        implementations: [new Uri("wrap://polywrap/wrapper1"), new Uri("wrap://polywrap/wrapper2")]
       }
     ]);
   });

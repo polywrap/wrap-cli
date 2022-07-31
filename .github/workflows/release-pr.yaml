@@ -8,7 +8,7 @@ jobs:
     if: |
       github.event.issue.pull_request &&
       startsWith(github.event.comment.body, '/workflows/release-pr') &&
-      github.event.comment.user.login != 'web3-api-build-bot'
+      github.event.comment.user.login != 'polywrap-build-bot'
     runs-on: ubuntu-18.04
     steps:
       - name: Checkout
@@ -31,7 +31,7 @@ jobs:
         if: ${{env.IS_PUBLISHER == 'false'}}
         uses: actions/github-script@0.8.0
         with:
-          github-token: ${{secrets.WEB3_API_BUILD_BOT_PAT}}
+          github-token: ${{secrets.POLYWRAP_BUILD_BOT_PAT}}
           script: |
             github.issues.createComment({
               issue_number: context.issue.number,
@@ -62,7 +62,7 @@ jobs:
         if: ${{env.TAG_EXISTS == 'true'}}
         uses: actions/github-script@0.8.0
         with:
-          github-token: ${{secrets.WEB3_API_BUILD_BOT_PAT}}
+          github-token: ${{secrets.POLYWRAP_BUILD_BOT_PAT}}
           script: |
             github.issues.createComment({
               issue_number: context.issue.number,
@@ -87,7 +87,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Set env.BOT to Build Bot's Username
-        run: echo BOT=web3-api-build-bot >> $GITHUB_ENV
+        run: echo BOT=polywrap-build-bot >> $GITHUB_ENV
 
       - name: Read VERSION into env.RELEASE_VERSION
         run: echo RELEASE_VERSION=$(cat VERSION) >> $GITHUB_ENV
@@ -95,7 +95,7 @@ jobs:
       - name: Building Release PR...
         uses: actions/github-script@0.8.0
         with:
-          github-token: ${{secrets.WEB3_API_BUILD_BOT_PAT}}
+          github-token: ${{secrets.POLYWRAP_BUILD_BOT_PAT}}
           script: |
             github.issues.createComment({
               issue_number: context.issue.number,
@@ -123,36 +123,35 @@ jobs:
           git config --global user.name '${{env.BOT}}'
           git config --global user.email '${{env.BOT}}@users.noreply.github.com'
         env:
-          GITHUB_TOKEN: ${{ secrets.WEB3_API_BUILD_BOT_PAT }}
+          GITHUB_TOKEN: ${{ secrets.POLYWRAP_BUILD_BOT_PAT }}
 
       - name: Apply Rust Version & Commit
         working-directory: ./packages/wasm/rs
         run: |
-          cargo install cargo-release
-          cargo release $(cat ../../../VERSION) --execute --no-confirm
+          cargo install cargo-edit
+          cargo set-version $(cat ../../../VERSION)
 
       - name: Apply Node Version & Commit
         run: |
-          yarn run version:apply --yes
-          cargo install cargo-release
-          cargo release $(cat VERSION)
+          yarn
+          yarn run version:apply
 
       - name: Create Pull Request
         id: cpr
         uses: peter-evans/create-pull-request@v3
         with:
-          token: ${{ secrets.WEB3_API_BUILD_BOT_PAT }}
+          token: ${{ secrets.POLYWRAP_BUILD_BOT_PAT }}
           push-to-fork: ${{env.BOT}}/${{github.event.repository.name}}
-          branch: release/${{env.RELEASE_VERSION}}
+          branch: release/origin-${{env.RELEASE_VERSION}}
           base: ${{ github.event.pull_request.head.ref }}
           committer: GitHub <noreply@github.com>
           author: ${{env.BOT}} <${{env.BOT}}@users.noreply.github.com>
           commit-message: "${{env.RELEASE_VERSION}}"
-          title: 'Web3API ${{env.RELEASE_VERSION}}'
+          title: 'Polywrap Origin (${{env.RELEASE_VERSION}})'
           body: |
-            ## Web3API ${{env.RELEASE_VERSION}}
+            ## Polywrap Origin (${{env.RELEASE_VERSION}})
 
-            TODO: Add "Web3API-Release" Label
+            TODO: Add "Origin-Release" Label
 
             ### Breaking Changes
 
@@ -169,7 +168,7 @@ jobs:
       - name: Release PR Created...
         uses: actions/github-script@0.8.0
         with:
-          github-token: ${{secrets.WEB3_API_BUILD_BOT_PAT}}
+          github-token: ${{secrets.POLYWRAP_BUILD_BOT_PAT}}
           script: |
             github.issues.createComment({
               issue_number: context.issue.number,

@@ -1,1 +1,1 @@
-export { WasmWeb3Api } from "./WasmWeb3Api";
+export { WasmWrapper } from "./WasmWrapper";

@@ -1,11 +1,11 @@
 {
-  "name": "@web3api/tracing-js",
-  "description": "Web3API Core Tracing",
-  "version": "0.0.1-prealpha.65",
+  "name": "@polywrap/tracing-js",
+  "description": "Polywrap Core Tracing",
+  "version": "0.3.0",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/web3-api/monorepo.git"
+    "url": "https://github.com/polywrap/monorepo.git"
   },
   "main": "build/index.js",
   "files": [
@@ -33,13 +33,13 @@
   },
   "devDependencies": {
     "@types/jest": "26.0.8",
+    "@types/prettier": "2.6.0",
     "@types/uuid": "3.4.3",
     "jest": "26.2.2",
-    "json-schema-to-typescript": "10.1.3",
     "rimraf": "3.0.2",
     "ts-jest": "26.1.4",
     "ts-node": "8.10.2",
-    "typescript": "3.9.7"
+    "typescript": "4.0.7"
   },
   "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
   "publishConfig": {

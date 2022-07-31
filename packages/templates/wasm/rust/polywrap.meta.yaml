@@ -1,0 +1,13 @@
+format: 0.1.0
+displayName: Polywrap Wasm Wrapper Template
+subtext: A template for starting a Polywrap Wasm wrapper
+description: A Polywrap Wasm wrapper.
+tags:
+  - polywrap
+  - web3
+repository: https://github.com/test/test
+icon: ./meta/icon.png
+links:
+  - name: test link
+    icon: ./meta/link.svg
+    url: http://link.com/path

@@ -1,4 +1,7 @@
-export const schema: string = `### Web3API Header START ###
+/// NOTE: This is an auto-generated file.
+///       All modifications will be overwritten.
+
+export const schema: string = `### Polywrap Header START ###
 scalar UInt
 scalar UInt8
 scalar UInt16
@@ -9,7 +12,9 @@ scalar Int16
 scalar Int32
 scalar Bytes
 scalar BigInt
+scalar BigNumber
 scalar JSON
+scalar Map
 
 directive @imported(
   uri: String!
@@ -28,11 +33,14 @@ directive @capability(
 ) repeatable on OBJECT
 
 directive @enabled_interface on OBJECT
-### Web3API Header END ###
 
-type Query @imports(
+directive @annotate(type: String!) on FIELD
+
+### Polywrap Header END ###
+
+type Module @imports(
   types: [
-    "TestImport_Query",
+    "TestImport_Module",
     "TestImport_Object",
     "TestImport_AnotherObject",
     "TestImport_Enum"
@@ -42,13 +50,17 @@ type Query @imports(
   uri: "testimport.uri.eth",
   namespace: "TestImport"
 ) {
-  queryMethod(
+  moduleMethod(
     str: String!
     optStr: String
     en: CustomEnum!
     optEnum: CustomEnum
     enumArray: [CustomEnum!]!
     optEnumArray: [CustomEnum]
+    map: Map! @annotate(type: "Map<String!, Int!>!")
+    mapOfArr: Map! @annotate(type: "Map<String!, [Int!]!>!")
+    mapOfObj: Map! @annotate(type: "Map<String!, AnotherType!>!")
+    mapOfArrOfObj: Map! @annotate(type: "Map<String!, [AnotherType!]!>!")
   ): Int!
 
   objectMethod(
@@ -56,45 +68,20 @@ type Query @imports(
     optObject: AnotherType
     objectArray: [AnotherType!]!
     optObjectArray: [AnotherType]
-  ): AnotherType
-}
+  ): AnotherType @env(required: true)
 
-type Mutation @imports(
-  types: [
-    "TestImport_Query",
-    "TestImport_Object",
-    "TestImport_AnotherObject",
-    "TestImport_Enum",
-    "TestImport_Mutation"
-  ]
-) {
-  mutationMethod(
-    str: String!
-    optStr: String
-    en: CustomEnum!
-    optEnum: CustomEnum
-    enumArray: [CustomEnum!]!
-    optEnumArray: [CustomEnum]
-  ): Int!
-
-  objectMethod(
+  optionalEnvMethod(
     object: AnotherType!
     optObject: AnotherType
     objectArray: [AnotherType!]!
     optObjectArray: [AnotherType]
-  ): AnotherType
+  ): AnotherType @env(required: false)
 }
 
-type QueryEnv {
-  queryProp: String!
+type Env {
   prop: String!
   optProp: String
-}
-
-type MutationEnv {
-  mutProp: String!
-  prop: String!
-  optProp: String
+  optMap: Map @annotate(type: "Map<String!, Int>")
 }
 
 type CustomType {
@@ -111,6 +98,8 @@ type CustomType {
   i32: Int32!
   bigint: BigInt!
   optBigint: BigInt
+  bignumber: BigNumber!
+  optBignumber: BigNumber
   json: JSON!
   optJson: JSON
   bytes: Bytes!
@@ -133,6 +122,10 @@ type CustomType {
   optEnum: CustomEnum
   enumArray: [CustomEnum!]!
   optEnumArray: [CustomEnum]
+  map: Map! @annotate(type: "Map<String!, Int!>!")
+  mapOfArr: Map! @annotate(type: "Map<String!, [Int!]!>!")
+  mapOfObj: Map! @annotate(type: "Map<String!, AnotherType!>!")
+  mapOfArrOfObj: Map! @annotate(type: "Map<String!, [AnotherType!]!>!")
 }
 
 type AnotherType {
@@ -146,12 +139,12 @@ enum CustomEnum {
   BYTES
 }
 
-### Imported Queries START ###
+### Imported Modules START ###
 
-type TestImport_Query @imported(
+type TestImport_Module @imported(
   uri: "testimport.uri.eth",
   namespace: "TestImport",
-  nativeType: "Query"
+  nativeType: "Module"
 ) @enabled_interface {
   importedMethod(
     str: String!
@@ -167,30 +160,14 @@ type TestImport_Query @imported(
     optEnum: TestImport_Enum
     enumArray: [TestImport_Enum!]!
     optEnumArray: [TestImport_Enum]
-  ): TestImport_Object
+  ): TestImport_Object @env(required: true)
 
   anotherMethod(
     arg: [String!]!
   ): Int32!
 }
 
-type TestImport_Mutation @imported(
-  uri: "testimport.uri.eth",
-  namespace: "TestImport",
-  nativeType: "Mutation"
-) {
-  importedMethod(
-    str: String!
-    object: TestImport_Object!
-    objectArray: [TestImport_Object!]!
-  ): TestImport_Object
-
-  anotherMethod(
-    arg: [String!]!
-  ): Int32!
-}
-
-### Imported Queries END ###
+### Imported Modules END ###
 
 ### Imported Objects START ###
 
@@ -227,4 +204,15 @@ enum TestImport_Enum @imported(
 }
 
 ### Imported Objects END ###
-`;
+
+### Imported Envs START ###
+
+type TestImport_Env @imported(
+  uri: "testimport.uri.eth",
+  namespace: "TestImport",
+  nativeType: "Env"
+) {
+  enviroProp: String!
+}
+
+### Imported Envs END ###`;

@@ -1,22 +1,25 @@
-import { OutputDirectory, BindLanguage } from "../";
-import * as WasmAs from "./wasm-as";
-import * as WasmRs from "./wasm-rs";
-import * as PluginTs from "./plugin-ts";
+import { GenerateBindingFn } from "./types";
+import * as WasmAs from "./assemblyscript/wasm-as";
+import * as WasmRs from "./rust/wasm-rs";
+import * as PluginTs from "./typescript/plugin-ts";
+import * as AppTs from "./typescript/app-ts";
+import { BindLanguage } from "../";
 
-import { TypeInfo } from "@web3api/schema-parse";
+export { WasmAs, WasmRs, PluginTs, AppTs };
+export * from "./types";
 
-export function generateBinding(
-  bindLanguage: BindLanguage,
-  typeInfo: TypeInfo,
-  schema: string
-): OutputDirectory {
+export function getGenerateBindingFn(
+  bindLanguage: BindLanguage
+): GenerateBindingFn {
   switch (bindLanguage) {
     case "wasm-as":
-      return WasmAs.generateBinding(typeInfo);
+      return WasmAs.generateBinding;
     case "wasm-rs":
-      return WasmRs.generateBinding(typeInfo);
+      return WasmRs.generateBinding;
     case "plugin-ts":
-      return PluginTs.generateBinding(typeInfo, schema);
+      return PluginTs.generateBinding;
+    case "app-ts":
+      return AppTs.generateBinding;
     default:
       throw Error(`Error: Language binding unsupported - ${bindLanguage}`);
   }

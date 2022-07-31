@@ -1,0 +1,13 @@
+#import { Module, Request, Response } into HTTP from "wrap://ens/http.polywrap.eth"
+
+type Module {
+  get(
+    url: String!
+    request: HTTP_Request
+  ): HTTP_Response
+
+  post(
+    url: String!
+    request: HTTP_Request
+  ): HTTP_Response
+}

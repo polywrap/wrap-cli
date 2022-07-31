@@ -1,0 +1,13 @@
+format: 0.1.0
+displayName: Interface
+subtext: interface subtext
+description: interface description
+tags:
+  - tag1
+  - tag2
+repository: https://github.com/test/test
+icon: ./meta/icon.png
+links:
+  - name: test link
+    icon: ./meta/link.svg
+    url: http://link.com/path

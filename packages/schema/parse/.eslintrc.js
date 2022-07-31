@@ -32,8 +32,8 @@ module.exports = {
             format: ["camelCase"],
             leadingUnderscore: "allow"
           },
-          //web3 api host methods doesn"t satisfy neither camel or snake
-          {selector: ["objectLiteralMethod", "typeMethod"], filter: {regex: "^_w3_.*", match: true}, format: null},
+          //wrapper host methods doesn"t satisfy neither camel or snake
+          {selector: ["objectLiteralMethod", "typeMethod"], filter: {regex: "^_wrap_.*", match: true}, format: null},
           //variable must be in camel or upper case
           {selector: "variable", format: ["camelCase", "PascalCase", "UPPER_CASE"], leadingUnderscore: "allow"},
           //classes and types must be in PascalCase

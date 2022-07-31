@@ -1,19 +1,13 @@
 import { Uri } from ".";
 
-import { Tracer } from "@web3api/tracing-js";
+import { Tracer } from "@polywrap/tracing-js";
 
 export interface Env<TUri = string> {
-  /** Uri of Web3Api */
+  /** Uri of wrapper */
   uri: TUri;
 
-  /** Env variables shared by both mutation and query */
-  common?: Record<string, unknown>;
-
-  /** Env variables specific to mutation module */
-  mutation?: Record<string, unknown>;
-
-  /** Env variables specific to query module */
-  query?: Record<string, unknown>;
+  /** Env variables used by the module */
+  env: Record<string, unknown>;
 }
 
 export const sanitizeEnvs = Tracer.traceFunc(

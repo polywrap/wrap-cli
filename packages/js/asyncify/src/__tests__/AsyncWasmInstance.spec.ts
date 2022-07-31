@@ -74,7 +74,7 @@ describe("AsyncWasmInstance", () => {
     const instance = await AsyncWasmInstance.createInstance({
       module,
       imports: {
-        w3: {
+        wrap: {
           log: (x: number) => {
             logs.push(x);
           },
@@ -109,7 +109,7 @@ describe("AsyncWasmInstance", () => {
     const instance = await AsyncWasmInstance.createInstance({
       module,
       imports: {
-        w3: {
+        wrap: {
           log: (x: number) => {
             logs.push(x);
           },
@@ -144,7 +144,7 @@ describe("AsyncWasmInstance", () => {
     const instance = await AsyncWasmInstance.createInstance({
       module,
       imports: {
-        w3: {
+        wrap: {
           log: (x: number) => {
             logs.push(x);
           },
@@ -183,7 +183,7 @@ describe("AsyncWasmInstance", () => {
     const instance = await AsyncWasmInstance.createInstance({
       module,
       imports: {
-        w3: {
+        wrap: {
           log: (x: number) => {
             logs.push(x);
           },
@@ -250,7 +250,7 @@ describe("AsyncWasmInstance", () => {
     const instance = await AsyncWasmInstance.createInstance({
       module,
       imports: {
-        w3: {
+        wrap: {
           log: (x: number) => {
             logs.push(x);
           },

@@ -1,0 +1,6 @@
+format: 0.1.0
+name: MapType
+language: wasm/rust
+build: ./polywrap.build.yaml
+schema: ./schema.graphql
+module: ./Cargo.toml

@@ -82,7 +82,7 @@ type Bar {
 `;
 
 const propertyTypes5 = `
-type Query {
+type Module {
   method(
     prop: Bar!
     other: Barr!
@@ -95,7 +95,7 @@ type Bar {
 `;
 
 const propertyTypes6 = `
-type Query {
+type Module {
   method(
     prop: Bar!
   ): Barr!
@@ -107,7 +107,7 @@ type Bar {
 `;
 
 const propertyTypes7 = `
-type Queryy {
+type Modul {
   method(
     prop: Bar!
   ): String!
@@ -164,7 +164,7 @@ type D {
 `
 
 const circularTypes4 = `
-type Mutation {
+type Module {
   method1(
     arg1: String!
     arg2: String
@@ -172,10 +172,10 @@ type Mutation {
   ): String!
 }
 
-type TestImport_Query @imported(
+type TestImport_Module @imported(
   uri: "testimport.uri.eth",
   namespace: "TestImport",
-  nativeType: "Query"
+  nativeType: "Module"
 ) {
   importedMethod(
     str: String!
@@ -241,14 +241,14 @@ type A {
 }
 `
 
-describe("Web3API Schema Type Validation", () => {
+describe("Polywrap Schema Type Validation", () => {
   it("typeDefinitions", () => {
     const exec = (schema: string) => () => parseSchema(schema, {
       validators: [typeValidators.getTypeDefinitionsValidator]
     });
 
     expect(exec(typeDefinitions1)).toThrow(
-      /Subscriptions are not yet supported./gm
+      /OperationType names \(Mutation, Subscription, Query\) are not allowed./gm
     );
 
     expect(exec(typeDefinitions2)).toThrow(
@@ -290,15 +290,15 @@ describe("Web3API Schema Type Validation", () => {
     );
 
     expect(exec(propertyTypes5)).toThrow(
-      /Unknown property type found: type Query { method: Barr }/gm
+      /Unknown property type found: type Module { method: Barr }/gm
     );
 
     expect(exec(propertyTypes6)).toThrow(
-      /Unknown property type found: type Query { method: Barr }/gm
+      /Unknown property type found: type Module { method: Barr }/gm
     );
 
     expect(exec(propertyTypes7)).toThrow(
-      /Methods can only be defined on module types \(Mutation, Query\)\.\nFound: type Queryy { method\(prop\) }/gm
+      /Methods can only be defined on module types \(Module\)\.\nFound: type Modul { method\(prop\) }/gm
     );
   })
 
@@ -329,7 +329,7 @@ describe("Web3API Schema Type Validation", () => {
     //Should allow circular references on nullable fields
     expect(exec(circularTypes6)).not.toThrow()
 
-    //Should allow recursive referece on nullable fields
+    //Should allow recursive reference on nullable fields
     expect(exec(circularTypes7)).not.toThrow()
 
     //Should allow array of recursive references

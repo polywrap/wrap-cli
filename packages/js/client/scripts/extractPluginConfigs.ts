@@ -1,5 +1,5 @@
 import { Project as TsProject } from "ts-morph";
-import { writeFileSync } from "@web3api/os-js";
+import { writeFileSync } from "@polywrap/os-js";
 import path from "path";
 
 interface PluginConfigSource {
@@ -21,62 +21,72 @@ interface PluginConfigSource {
 const plugins: PluginConfigSource[] = [
   {
     name: "Ipfs",
-    module: "@web3api/ipfs-plugin-js",
-    uri: "w3://ens/ipfs.web3api.eth",
-    config: "IpfsConfig",
-    files: [{
-      name: "build/index.d.ts",
-      interfaces: ["IpfsConfig"]
-    }]
-  },
-  {
-    name: "Ethereum",
-    module: "@web3api/ethereum-plugin-js",
-    uri: "w3://ens/ethereum.web3api.eth",
-    config: "EthereumConfig",
+    module: "@polywrap/ipfs-plugin-js",
+    uri: "wrap://ens/ipfs.polywrap.eth",
+    config: "IpfsPluginConfig",
     files: [
       {
         name: "build/index.d.ts",
-        interfaces: ["EthereumConfig"],
+        interfaces: ["IpfsPluginConfig"],
+      },
+    ],
+  },
+  {
+    name: "Ethereum",
+    module: "@polywrap/ethereum-plugin-js",
+    uri: "wrap://ens/ethereum.polywrap.eth",
+    config: "EthereumPluginConfig",
+    files: [
+      {
+        name: "build/index.d.ts",
+        interfaces: ["EthereumPluginConfig"],
       },
       {
         name: "build/Connection.d.ts",
         interfaces: ["ConnectionConfig", "ConnectionConfigs"],
-        types: ["EthereumProvider", "EthereumSigner", "AccountIndex", "Address"],
+        types: [
+          "EthereumProvider",
+          "EthereumSigner",
+          "AccountIndex",
+          "Address",
+        ],
       },
     ],
     externals: [
       {
         type: "Signer",
-        module: "ethers"
+        module: "ethers",
       },
       {
         type: "ExternalProvider",
-        module: "@ethersproject/providers"
+        module: "@ethersproject/providers",
       },
       {
         type: "JsonRpcProvider",
-        module: "@ethersproject/providers"
-      }
-    ]
+        module: "@ethersproject/providers",
+      },
+    ],
   },
   {
     name: "Ens",
-    module: "@web3api/ens-plugin-js",
-    uri: "w3://ens/ens.web3api.eth",
-    config: "EnsConfig",
-    files: [{
-      name: "build/index.d.ts",
-      interfaces: ["EnsConfig", "Addresses"],
-      types: ["Address"]
-    }]
-  }
+    module: "@polywrap/ens-resolver-plugin-js",
+    uri: "wrap://ens/ens-resolver.polywrap.eth",
+    config: "EnsResolverPluginConfig",
+    files: [
+      {
+        name: "build/index.d.ts",
+        interfaces: ["EnsResolverPluginConfig", "Addresses"],
+        types: ["Address"],
+      },
+    ],
+  },
 ];
 
 function main(): void {
 
   const header = "/// NOTE: This is an auto-generated file. See scripts/extractPluginConfigs.ts\n" +
-    "/* eslint-disable @typescript-eslint/no-explicit-any */";
+    "/* eslint-disable @typescript-eslint/no-explicit-any */\n" +
+    "/* eslint-disable prettier/prettier */";
   const outputFiles: {
     fileName: string,
     content: string

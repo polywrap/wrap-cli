@@ -1,64 +1,57 @@
-import { query } from "./resolvers";
-import { manifest, Query, Logger_LogLevel, Logger_LogLevelEnum } from "./w3";
+import {
+  Module,
+  Args_log,
+  Logger_LogLevel,
+  Logger_LogLevelEnum,
+  manifest,
+} from "./wrap";
 
-import { Plugin, PluginPackageManifest, PluginPackage } from "@web3api/core-js";
+import { PluginFactory } from "@polywrap/core-js";
 
 export type LogFunc = (level: Logger_LogLevel, message: string) => boolean;
 
-export class LoggerPlugin extends Plugin {
-  private _logFunc?: LogFunc;
+export interface LoggerPluginConfig {
+  logFunc?: LogFunc;
+}
 
-  constructor(logFunc?: LogFunc) {
-    super();
-    this._logFunc = logFunc;
-  }
-
-  public static manifest(): PluginPackageManifest {
-    return manifest;
-  }
-
-  public getModules(): {
-    query: Query.Module;
-  } {
-    return {
-      query: query(this),
-    };
-  }
-
-  public log(level: Logger_LogLevel, message: string): boolean {
-    if (this._logFunc) {
-      return this._logFunc(level, message);
+export class LoggerPlugin extends Module<LoggerPluginConfig> {
+  public log(args: Args_log): boolean {
+    if (this.config.logFunc) {
+      return this.config.logFunc(args.level, args.message);
     }
 
-    switch (level) {
+    switch (args.level) {
       case "DEBUG":
       case Logger_LogLevelEnum.DEBUG:
-        console.debug(message);
+        console.debug(args.message);
         break;
       case "WARN":
       case Logger_LogLevelEnum.WARN:
-        console.warn(message);
+        console.warn(args.message);
         break;
       case "ERROR":
       case Logger_LogLevelEnum.ERROR:
-        console.error(message);
+        console.error(args.message);
         break;
       case "INFO":
       case Logger_LogLevelEnum.INFO:
-        console.log(message);
+        console.log(args.message);
         break;
       default:
-        console.log(message);
+        console.log(args.message);
     }
 
     return true;
   }
 }
 
-export const loggerPlugin = (): PluginPackage => {
+export const loggerPlugin: PluginFactory<LoggerPluginConfig> = (
+  config: LoggerPluginConfig
+) => {
   return {
-    factory: () => new LoggerPlugin(),
-    manifest: manifest,
+    factory: () => new LoggerPlugin(config),
+    manifest,
   };
 };
+
 export const plugin = loggerPlugin;

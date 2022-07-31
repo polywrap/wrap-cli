@@ -4,15 +4,18 @@ import {
   createMethodDefinition,
   createPropertyDefinition,
   ImportedModuleDefinition,
-  TypeInfo,
-} from "../typeInfo";
-import { extractImportedDefinition } from "./imported-types-utils";
+  MapDefinition,
+  Abi,
+} from "../abi";
+import { extractImportedDefinition } from "./utils/imported-types-utils";
 import {
+  extractEnvDirective,
   extractInputValueDefinition,
   extractListType,
   extractNamedType,
   State,
-} from "./module-types-utils";
+} from "./utils/module-types-utils";
+import { extractAnnotateDirective } from "./utils/object-types-utils";
 
 import {
   ASTVisitor,
@@ -29,7 +32,7 @@ const visitorEnter = (
   state: State
 ) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
-    const imported = extractImportedDefinition(node, true);
+    const imported = extractImportedDefinition(node, "module");
 
     if (!imported) {
       return;
@@ -41,7 +44,6 @@ const visitorEnter = (
     const isInterface = dir ? true : false;
 
     const importedType = createImportedModuleDefinition({
-      type: node.name.value,
       uri: imported.uri,
       namespace: imported.namespace,
       nativeType: imported.nativeType,
@@ -61,17 +63,31 @@ const visitorEnter = (
       return;
     }
 
+    const name = node.name.value;
+
+    const { type, def } = extractAnnotateDirective(node, name);
+
     const returnType = createPropertyDefinition({
-      type: "N/A",
+      type: type ? type : "N/A",
       name: node.name.value,
+      map: def
+        ? ({ ...def, name: node.name.value } as MapDefinition)
+        : undefined,
+      required: def && def.required ? true : false,
     });
 
     const method = createMethodDefinition({
-      type: importDef.nativeType,
       name: node.name.value,
       return: returnType,
       comment: node.description?.value,
     });
+
+    const envDirDefinition = extractEnvDirective(node);
+
+    if (envDirDefinition) {
+      method.env = envDirDefinition;
+    }
+
     importDef.methods.push(method);
     state.currentMethod = method;
     state.currentReturn = returnType;
@@ -106,13 +122,11 @@ const visitorLeave = (state: State) => ({
   },
 });
 
-export const getimportedModuleTypesVisitor = (
-  typeInfo: TypeInfo
-): ASTVisitor => {
+export const getImportedModuleTypesVisitor = (abi: Abi): ASTVisitor => {
   const state: State = {};
 
   return {
-    enter: visitorEnter(typeInfo.importedModuleTypes, state),
+    enter: visitorEnter(abi.importedModuleTypes, state),
     leave: visitorLeave(state),
   };
 };

@@ -1,36 +1,36 @@
 {
-  "name": "@web3api/uts46-plugin-js",
-  "description": "Web3API IDNA-UTS #46 Javascript Plugin",
-  "version": "0.0.1-prealpha.65",
+  "name": "@polywrap/uts46-plugin-js",
+  "description": "Polywrap IDNA-UTS #46 Javascript Plugin",
+  "version": "0.3.0",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/web3-api/monorepo.git"
+    "url": "https://github.com/polywrap/monorepo.git"
   },
   "main": "build/index.js",
   "files": [
-    "build",
-    "schema.graphql"
+    "build"
   ],
   "scripts": {
     "build": "rimraf ./build && yarn codegen && tsc --project tsconfig.build.json",
-    "codegen": "node ../../../../dependencies/node_modules/@web3api/cli/bin/w3 plugin codegen",
+    "codegen": "node ../../../../dependencies/node_modules/polywrap/bin/polywrap plugin codegen",
     "lint": "eslint --color -c ../../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@web3api/core-js": "0.0.1-prealpha.65",
+    "@polywrap/core-js": "0.3.0",
     "idna-uts46-hx": "3.4.0"
   },
   "devDependencies": {
     "@types/jest": "26.0.8",
+    "@types/prettier": "2.6.0",
     "jest": "26.2.2",
     "rimraf": "3.0.2",
     "ts-jest": "26.1.4",
     "ts-node": "8.10.2",
-    "typescript": "3.9.7"
+    "typescript": "4.0.7"
   },
   "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
   "publishConfig": {

@@ -1,3 +1,4 @@
-export { createWeb3ApiProvider, Web3ApiProvider } from "./provider"
-export { useWeb3ApiClient } from "./client";
-export { useWeb3ApiQuery } from "./query";
+export { createPolywrapProvider, PolywrapProvider } from "./provider"
+export { usePolywrapClient } from "./client";
+export { usePolywrapQuery } from "./query";
+export { usePolywrapInvoke } from "./invoke";

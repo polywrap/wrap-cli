@@ -1,7 +1,7 @@
-import { QueryApiInvocations, QueryDocument, Uri } from "../types";
+import { QueryInvocations, QueryDocument, Uri } from "../types";
 
 import { SelectionSetNode, ValueNode } from "graphql";
-import { Tracer } from "@web3api/tracing-js";
+import { Tracer } from "@polywrap/tracing-js";
 
 export const parseQuery = Tracer.traceFunc(
   "core: parseQuery",
@@ -9,12 +9,12 @@ export const parseQuery = Tracer.traceFunc(
     uri: Uri,
     doc: QueryDocument,
     variables?: Record<string, unknown>
-  ): QueryApiInvocations<Uri> => {
+  ): QueryInvocations<Uri> => {
     if (doc.definitions.length === 0) {
       throw Error("Empty query document found.");
     }
 
-    const queryInvocations: QueryApiInvocations<Uri> = {};
+    const queryInvocations: QueryInvocations<Uri> = {};
 
     for (const def of doc.definitions) {
       if (def.kind !== "OperationDefinition") {
@@ -22,13 +22,6 @@ export const parseQuery = Tracer.traceFunc(
           `Unrecognized root level definition type: ${def.kind}\n` +
             "Please use a 'query' or 'mutation' operations."
         );
-      }
-
-      // Get the module name (query or mutation)
-      const module = def.operation;
-
-      if (module === "subscription") {
-        throw Error("Subscription queries are not yet supported.");
       }
 
       // Get the method name
@@ -58,36 +51,26 @@ export const parseQuery = Tracer.traceFunc(
           );
         }
 
-        // Get all input arguments
+        // Get all arguments
         const selectionArgs = selection.arguments;
-        const input: Record<string, unknown> = {};
+        const args: Record<string, unknown> = {};
 
         if (selectionArgs) {
           for (const arg of selectionArgs) {
             const name = arg.name.value;
 
-            if (input[name]) {
-              throw Error(`Duplicate input argument found: ${name}`);
+            if (args[name]) {
+              throw Error(`Duplicate arguments found: ${name}`);
             }
 
-            input[name] = extractValue(arg.value, variables);
+            args[name] = extractValue(arg.value, variables);
           }
-        }
-
-        // Get the results the query is asking for
-        const selectionResults = selection.selectionSet;
-        let resultFilter: Record<string, unknown> | undefined = undefined;
-
-        if (selectionResults) {
-          resultFilter = extractSelections(selectionResults);
         }
 
         queryInvocations[invocationName] = {
           uri,
-          module,
           method,
-          input,
-          resultFilter,
+          args,
         };
       }
     }

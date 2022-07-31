@@ -1,0 +1,9 @@
+{
+  "format": "0.1.0",
+  "displayName": "Valid Wrapper",
+  "tags": ["some", "tag"],
+  "subtext": "test subtext",
+  "description": "test description",
+  "repository": "https://github.com/test/test",
+  "icon": "./meta/icon/icon.png"
+}

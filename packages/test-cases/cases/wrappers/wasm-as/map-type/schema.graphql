@@ -1,0 +1,10 @@
+type Module {
+  getKey(
+    key: String!
+    map: Map! @annotate(type: "Map<String!, Int!>!")
+  ): Int!
+
+  returnMap(
+    map: Map! @annotate(type: "Map<String!, Int!>!")
+  ): Map! @annotate(type: "Map<String!, Int!>!")
+}

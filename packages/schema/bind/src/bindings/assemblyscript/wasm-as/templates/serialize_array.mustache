@@ -1,0 +1,21 @@
+{{#scalar}}
+writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(item);
+{{/scalar}}
+{{#array}}
+writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(item, (writer: Write, item: {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}}): void => {
+  {{> serialize_array}}
+});
+{{/array}}
+{{#map}}
+writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(item, (writer: Write, key: {{#key}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/key}}) => {
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(key);
+}, (writer: Write, value: {{#value}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/value}}): void => {
+  {{> serialize_map_value}}
+});
+{{/map}}
+{{#enum}}
+{{> serialize_enum}}
+{{/enum}}
+{{#object}}
+{{> serialize_object}}
+{{/object}}

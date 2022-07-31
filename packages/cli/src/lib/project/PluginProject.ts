@@ -1,47 +1,98 @@
-import { Project, ProjectConfig } from "./Project";
-import { loadPluginManifest, ManifestLanguage } from "../helpers";
+import { ProjectConfig, Project } from ".";
+import {
+  loadPluginManifest,
+  PluginManifestLanguage,
+  pluginManifestLanguages,
+  isPluginManifestLanguage,
+  pluginManifestLanguageToBindLanguage,
+} from "./manifests";
+import { resetDir } from "../system";
 
-import { PluginManifest } from "@web3api/core-js";
+import { PluginManifest } from "@polywrap/polywrap-manifest-types-js";
+import { bindSchema, BindOutput, BindOptions } from "@polywrap/schema-bind";
+import { ComposerOutput } from "@polywrap/schema-compose";
+import { Abi } from "@polywrap/schema-parse";
 import path from "path";
 
 export interface PluginProjectConfig extends ProjectConfig {
   pluginManifestPath: string;
 }
 
-export class PluginProject extends Project {
+export class PluginProject extends Project<PluginManifest> {
   private _pluginManifest: PluginManifest | undefined;
 
+  public static cacheLayout = {
+    root: "plugin",
+  };
+
   constructor(protected _config: PluginProjectConfig) {
-    super(_config);
+    super(_config, {
+      rootDir: _config.rootDir,
+      subDir: PluginProject.cacheLayout.root,
+    });
   }
 
   /// Project Base Methods
 
   public reset(): void {
     this._pluginManifest = undefined;
+    this._cache.resetCache();
   }
 
-  public getRootDir(): string {
-    return this.getPluginManifestDir();
+  public async validate(): Promise<void> {
+    const manifest = await this.getManifest();
+
+    // Validate language
+    Project.validateManifestLanguage(
+      manifest.language,
+      pluginManifestLanguages,
+      isPluginManifestLanguage
+    );
   }
 
-  public async getManifestLanguage(): Promise<ManifestLanguage> {
-    const language = (await this.getPluginManifest()).language;
+  /// Manifest (polywrap.plugin.yaml)
 
-    this.validateManifestLanguage(language, ["plugin/"]);
-
-    return language as ManifestLanguage;
+  public async getName(): Promise<string> {
+    return (await this.getManifest()).name;
   }
 
-  public async getSchemaNamedPaths(): Promise<{
-    [name: string]: string;
-  }> {
-    const manifest = await this.getPluginManifest();
-    const dir = this.getPluginManifestDir();
-    const namedPaths: { [name: string]: string } = {};
+  public async getManifest(): Promise<PluginManifest> {
+    if (!this._pluginManifest) {
+      this._pluginManifest = await loadPluginManifest(
+        this.getManifestPath(),
+        this.quiet
+      );
+    }
 
-    namedPaths["combined"] = path.join(dir, manifest.schema);
-    return namedPaths;
+    return Promise.resolve(this._pluginManifest);
+  }
+
+  public getManifestDir(): string {
+    return path.dirname(this._config.pluginManifestPath);
+  }
+
+  public getManifestPath(): string {
+    return this._config.pluginManifestPath;
+  }
+
+  public async getManifestLanguage(): Promise<PluginManifestLanguage> {
+    const language = (await this.getManifest()).language;
+
+    Project.validateManifestLanguage(
+      language,
+      pluginManifestLanguages,
+      isPluginManifestLanguage
+    );
+
+    return language as PluginManifestLanguage;
+  }
+
+  /// Schema
+
+  public async getSchemaNamedPath(): Promise<string> {
+    const manifest = await this.getManifest();
+    const dir = this.getManifestDir();
+    return path.join(dir, manifest.schema);
   }
 
   public async getImportRedirects(): Promise<
@@ -50,28 +101,45 @@ export class PluginProject extends Project {
       schema: string;
     }[]
   > {
-    const manifest = await this.getPluginManifest();
+    const manifest = await this.getManifest();
     return manifest.import_redirects || [];
   }
 
-  /// Plugin Manifest (web3api.plugin.yaml)
+  public async generateSchemaBindings(
+    composerOutput: ComposerOutput,
+    generationSubPath?: string
+  ): Promise<BindOutput> {
+    const manifest = await this.getManifest();
+    const module = manifest.module as string;
+    const moduleDirectory = this._getGenerationDirectory(
+      module,
+      generationSubPath
+    );
 
-  public getPluginManifestPath(): string {
-    return this._config.pluginManifestPath;
+    // Clean the code generation
+    resetDir(moduleDirectory);
+    const bindLanguage = pluginManifestLanguageToBindLanguage(
+      await this.getManifestLanguage()
+    );
+
+    const options: BindOptions = {
+      projectName: manifest.name,
+      abi: composerOutput.abi as Abi,
+      schema: composerOutput.schema as string,
+      outputDirAbs: moduleDirectory,
+      bindLanguage,
+    };
+
+    return bindSchema(options);
   }
 
-  public getPluginManifestDir(): string {
-    return path.dirname(this._config.pluginManifestPath);
-  }
-
-  public async getPluginManifest(): Promise<PluginManifest> {
-    if (!this._pluginManifest) {
-      this._pluginManifest = await loadPluginManifest(
-        this.getPluginManifestPath(),
-        this.quiet
-      );
-    }
-
-    return Promise.resolve(this._pluginManifest);
+  private _getGenerationDirectory(
+    entryPoint: string,
+    generationSubPath = "wrap"
+  ): string {
+    const absolute = path.isAbsolute(entryPoint)
+      ? entryPoint
+      : path.join(this.getManifestDir(), entryPoint);
+    return path.join(path.dirname(absolute), generationSubPath);
   }
 }

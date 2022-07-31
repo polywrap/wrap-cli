@@ -1,82 +1,31 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-empty-function */
 
-import { Project } from "./project";
+import { Project, AnyProjectManifest } from "./";
 
-import {
-  Uri,
-  Web3ApiClient,
-  PluginRegistration,
-  defaultIpfsProviders,
-} from "@web3api/client-js";
+import { Uri, PolywrapClient } from "@polywrap/client-js";
 import {
   composeSchema,
   ComposerOutput,
   ComposerFilter,
   ComposerOptions,
-  SchemaKind,
-} from "@web3api/schema-compose";
-import { ensPlugin } from "@web3api/ens-plugin-js";
-import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
-import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
+  SchemaFile,
+} from "@polywrap/schema-compose";
 import fs from "fs";
 import path from "path";
 import * as gluegun from "gluegun";
-import { SchemaFile } from "@web3api/schema-compose";
 
 export interface SchemaComposerConfig {
-  project: Project;
-
-  // TODO: add this to the project configuration
-  //       and make it configurable
-  ensAddress?: string;
-  ethProvider?: string;
-  ipfsProvider?: string;
+  project: Project<AnyProjectManifest>;
+  client: PolywrapClient;
 }
 
 export class SchemaComposer {
-  private _client: Web3ApiClient;
+  private _client: PolywrapClient;
   private _composerOutput: ComposerOutput | undefined;
 
   constructor(private _config: SchemaComposerConfig) {
-    const { ensAddress, ethProvider, ipfsProvider } = this._config;
-    const plugins: PluginRegistration[] = [];
-
-    if (ensAddress) {
-      plugins.push({
-        uri: "w3://ens/ens.web3api.eth",
-        plugin: ensPlugin({
-          addresses: {
-            testnet: ensAddress,
-          },
-        }),
-      });
-    }
-
-    if (ethProvider) {
-      plugins.push({
-        uri: "w3://ens/ethereum.web3api.eth",
-        plugin: ethereumPlugin({
-          networks: {
-            testnet: {
-              provider: ethProvider,
-            },
-          },
-        }),
-      });
-    }
-
-    if (ipfsProvider) {
-      plugins.push({
-        uri: "w3://ens/ipfs.web3api.eth",
-        plugin: ipfsPlugin({
-          provider: ipfsProvider,
-          fallbackProviders: defaultIpfsProviders,
-        }),
-      });
-    }
-
-    this._client = new Web3ApiClient({ plugins });
+    this._client = this._config.client;
   }
 
   public async getComposedSchemas(
@@ -88,7 +37,7 @@ export class SchemaComposer {
 
     const { project } = this._config;
 
-    const schemaNamedPaths = await project.getSchemaNamedPaths();
+    const schemaNamedPath = await project.getSchemaNamedPath();
     const import_redirects = await project.getImportRedirects();
 
     const getSchemaFile = (schemaPath?: string): SchemaFile | undefined =>
@@ -100,7 +49,7 @@ export class SchemaComposer {
         : undefined;
 
     const options: ComposerOptions = {
-      schemas: {},
+      schemas: [],
       resolvers: {
         external: (uri: string) =>
           this._fetchExternalSchema(uri, import_redirects),
@@ -109,28 +58,14 @@ export class SchemaComposer {
       output,
     };
 
-    for (const name of Object.keys(schemaNamedPaths)) {
-      const schemaPath = schemaNamedPaths[name];
-      const schemaFile = getSchemaFile(schemaPath);
-
-      if (!schemaFile) {
-        throw Error(`Schema "${name}" cannot be loaded at path: ${schemaPath}`);
-      }
-
-      const isPlugin =
-        (await project.getManifestLanguage()).indexOf("plugin/") > -1;
-
-      if (isPlugin) {
-        options.schemas.plugin = schemaFile;
-      } else {
-        // TODO: this is bad, will remove when we don't have "fixed" schema kinds,
-        // and just have individual modules
-        options.schemas[name as SchemaKind] = schemaFile;
-      }
+    const schemaFile = getSchemaFile(schemaNamedPath);
+    if (!schemaFile) {
+      throw Error(`Schema cannot be loaded at path: ${schemaNamedPath}`);
     }
 
-    this._composerOutput = await composeSchema(options);
+    options.schemas.push(schemaFile);
 
+    this._composerOutput = await composeSchema(options);
     return this._composerOutput;
   }
 
@@ -169,7 +104,7 @@ export class SchemaComposer {
     return fs.readFileSync(
       path.isAbsolute(schemaPath)
         ? schemaPath
-        : path.join(this._config.project.getRootDir(), schemaPath),
+        : path.join(this._config.project.getManifestDir(), schemaPath),
       "utf-8"
     );
   }

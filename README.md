@@ -1,22 +1,14 @@
-![polywrap-banner](https://user-images.githubusercontent.com/12145726/140437007-d2b8c969-df29-4a43-906a-d5400b4394ac.png) 
+![Public Release Announcement](https://user-images.githubusercontent.com/5522128/177473887-2689cf25-7937-4620-8ca5-17620729a65d.png)
 
-> ⚠️ _Polywrap is in pre-alpha, meaning our code and documentation are rapidly changing._
->
-> Have questions or want to get involved? Join our community [Discord](https://discord.polywrap.io) or [open an issue](https://github.com/polywrap/monorepo/issues) on Github.
+[**Polywrap**](https://polywrap.io/) is a developer tool that enables easy integration of Web3 protocols into any application. It makes it possible for applications on any platform, written in any language, to read and write data to Web3 protocols.
 
-**Polywrap** is a developer tool that enables easy integration of Web3 protocols into any application. It makes it possible for applications on any platform, written in any language, to read and write data to Web3 protocols.
+# Getting Started
 
-## Documentation
+Have questions or want to get involved? Join our community [Discord](https://discord.polywrap.io) or [open an issue](https://github.com/polywrap/monorepo/issues) on Github.
 
-For detailed information about our toolchain, visit our [developer documentation](https://docs.polywrap.io/).
+For detailed information about Polywrap and the WRAP standard, visit our [developer documentation](https://docs.polywrap.io/).
 
-The documentation is divided into helpful sections:
-
-- [What is Polywrap?](https://docs.polywrap.io/getting-started/what-is-polywrap)
-- [Creating a wrapper](https://docs.polywrap.io/guides/create-as-wrapper/project-setup)
-- [Integrating into a JS dapp](https://docs.polywrap.io/guides/create-js-dapp/install-client)
-
-## Overview of the Polywrap project
+# Contributing
 
 The Polywrap project is completely open-source and we welcome contributors of all levels.
 
@@ -32,7 +24,6 @@ Come visit our [Github issues](https://github.com/polywrap/monorepo/issues) to s
 
 Below are a series of steps to get started with our monorepo after you've cloned it into your local repository.
 
-## Contributing  
 Before contributing to this repository, please read the [developer guidelines](DEV_GUIDELINES.md).
 
 ## Pre-reqs
@@ -84,10 +75,7 @@ To auto-fix lint errors:
 yarn lint:fix
 ```
 
----
-
-## Resources to contribute or learn more about our project
-
+# Resources
 - [Website](https://polywrap.io/)
 - [Documentation](https://docs.polywrap.io/)
 - [Forum](https://forum.polywrap.io/)

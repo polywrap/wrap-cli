@@ -1,0 +1,7 @@
+#import { Env } from "../imports-local/common.graphql"
+
+type Module {
+  method(
+    str: String!
+  ): String!
+}

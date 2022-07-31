@@ -1,4 +1,4 @@
-import { ImportedDefinition } from "../typeInfo";
+import { ImportedDefinition, isImportedModuleType, isModuleType } from "../abi";
 import { SchemaValidator } from ".";
 
 import { DirectiveNode, ASTNode, ObjectTypeDefinitionNode } from "graphql";
@@ -9,6 +9,8 @@ export const getSupportedDirectivesValidator = (): SchemaValidator => {
     "imports",
     "capability",
     "enabled_interface",
+    "annotate",
+    "env",
   ];
   const unsupportedUsages: string[] = [];
 
@@ -36,6 +38,41 @@ export const getSupportedDirectivesValidator = (): SchemaValidator => {
   };
 };
 
+export const getEnvDirectiveValidator = (): SchemaValidator => {
+  let currentType: string | undefined;
+
+  return {
+    visitor: {
+      enter: {
+        ObjectTypeDefinition: (node) => {
+          currentType = node.name.value;
+        },
+        FieldDefinition: (node) => {
+          const envDirective = node.directives?.find(
+            (d) => d.name.value === "env"
+          );
+
+          if (
+            envDirective &&
+            currentType &&
+            !isModuleType(currentType) &&
+            !isImportedModuleType(currentType)
+          ) {
+            throw new Error(
+              `@env directive should only be used on Module method definitions. Found on field '${node.name.value}' of type '${currentType}'`
+            );
+          }
+        },
+      },
+      leave: {
+        ObjectTypeDefinition: () => {
+          currentType = undefined;
+        },
+      },
+    },
+  };
+};
+
 export const getImportsDirectiveValidator = (): SchemaValidator => {
   let isInsideObjectTypeDefinition = false;
 
@@ -43,7 +80,7 @@ export const getImportsDirectiveValidator = (): SchemaValidator => {
     isInsideObjectTypeDefinition = true;
     const badUsageLocations: string[] = [];
 
-    const importsAllowedObjectTypes = ["Query", "Mutation"];
+    const importsAllowedObjectTypes = ["Module"];
     const directives =
       node.directives &&
       node.directives.map((directive) => directive.name.value);
@@ -58,7 +95,7 @@ export const getImportsDirectiveValidator = (): SchemaValidator => {
 
     if (badUsageLocations.length) {
       throw new Error(
-        `@imports directive should only be used on QUERY or MUTATION type definitions, ` +
+        `@imports directive should only be used on Module type definitions, ` +
           `but it is being used on the following ObjectTypeDefinitions:${badUsageLocations.map(
             (b) => `\n${b}`
           )}`
@@ -78,7 +115,7 @@ export const getImportsDirectiveValidator = (): SchemaValidator => {
 
     if (!isInsideObjectTypeDefinition) {
       throw new Error(
-        `@imports directive should only be used on QUERY or MUTATION type definitions, ` +
+        `@imports directive should only be used on Module type definitions, ` +
           `but it is being used in the following location: ${path.join(" -> ")}`
       );
     }

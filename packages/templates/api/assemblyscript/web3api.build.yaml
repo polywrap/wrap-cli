@@ -1,8 +1,0 @@
-format: 0.0.1-prealpha.1
-docker:
-  name: polywrap-as-build-env
-config:
-  node_version: "14.16.0"
-  include:
-    - ./package.json
-    - ./src

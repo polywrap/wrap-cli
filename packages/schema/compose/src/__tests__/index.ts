@@ -3,19 +3,19 @@ import { ComposerOutput, ComposerOptions, ComposerFilter } from "..";
 import path from "path";
 import { readdirSync, Dirent } from "fs";
 
-import { TypeInfo } from "@web3api/schema-parse";
+import { Abi } from "@polywrap/schema-parse";
 import {
   GetPathToComposeTestFiles,
   readFileIfExists,
   readNamedExportIfExists,
-} from "@web3api/test-cases"
+} from "@polywrap/test-cases"
 
 const root = GetPathToComposeTestFiles();
 
 export interface TestCase {
   name: string;
   input: ComposerOptions;
-  output: ComposerOutput;
+  output?: ComposerOutput;
 }
 
 type TestCases = {
@@ -58,7 +58,7 @@ function buildTestCases(
     for (const item of items) {
       buildTestCases(
         path.join(directory, item.name),
-        item.name,
+        name + " " + item.name,
         testCases
       );
     }
@@ -70,16 +70,11 @@ async function importCase(
   name: string,
 ): Promise<TestCase | undefined> {
   // Fetch the input schemas
-  const queryInput = readFileIfExists("input/query.graphql", directory);
-  const mutationInput = readFileIfExists("input/mutation.graphql", directory);
+  const moduleInput = readFileIfExists("input/module.graphql", directory);
 
   // Fetch the output schemas
-  const querySchema = readFileIfExists("output/query.graphql", directory);
-  const ModuleTypeInfo = await readNamedExportIfExists<TypeInfo>("typeInfo", "output/query.ts", directory);
-  const mutationSchema = readFileIfExists("output/mutation.graphql", directory);
-  const mutationTypeInfo = await readNamedExportIfExists<TypeInfo>("typeInfo", "output/mutation.ts", directory);
-  const schemaSchema = readFileIfExists("output/schema.graphql", directory);
-  const schemaTypeInfo = await readNamedExportIfExists<TypeInfo>("typeInfo", "output/schema.ts", directory);
+  const moduleSchema = readFileIfExists("output/module.graphql", directory);
+  const moduleAbi = await readNamedExportIfExists<Abi>("abi", "output/module.ts", directory);
 
   const resolveExternal = (uri: string): Promise<string> => {
     return Promise.resolve(readFileIfExists(`imports-ext/${uri}/schema.graphql`, directory) || "");
@@ -90,7 +85,7 @@ async function importCase(
   };
 
   const input: ComposerOptions = {
-    schemas: { },
+    schemas: [],
     resolvers: {
       external: resolveExternal,
       local: resolveLocal,
@@ -98,48 +93,22 @@ async function importCase(
     output: ComposerFilter.All
   };
 
-  if (queryInput) {
-    input.schemas.query = {
-      schema: queryInput,
+  if (moduleInput) {
+    input.schemas.push({
+      schema: moduleInput,
       absolutePath: path.join(
         directory,
-        "input/query.graphql"
+        "input/module.graphql"
       ),
-    };
+    });
   }
 
-  if (mutationInput) {
-    input.schemas.mutation = {
-      schema: mutationInput,
-      absolutePath: path.join(
-        directory,
-        "input/mutation.graphql"
-      ),
-    };
-  }
+  let output: ComposerOutput = { };
 
-  const output: ComposerOutput = {
-    combined: {}
-  };
-
-  if (querySchema && ModuleTypeInfo) {
-    output.query = {
-      schema: querySchema,
-      typeInfo: ModuleTypeInfo
-    };
-  }
-
-  if (mutationSchema && mutationTypeInfo) {
-    output.mutation = {
-      schema: mutationSchema,
-      typeInfo: mutationTypeInfo
-    };
-  }
-
-  if (schemaSchema && schemaTypeInfo) {
-    output.combined = {
-      schema: schemaSchema,
-      typeInfo: schemaTypeInfo
+  if (moduleSchema && moduleAbi) {
+    output = {
+      schema: moduleSchema,
+      abi: moduleAbi
     };
   }
 

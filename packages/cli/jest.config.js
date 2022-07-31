@@ -9,13 +9,13 @@ module.exports = {
     },
   },
   modulePathIgnorePatterns: [
-    "<rootDir>/src/__tests__/project/.w3"
+    "<rootDir>/src/__tests__/project/.polywrap"
   ],
   testPathIgnorePatterns: [
-    "<rootDir>/src/__tests__/project/.w3"
+    "<rootDir>/src/__tests__/project/.polywrap"
   ],
   transformIgnorePatterns: [
-    "<rootDir>/src/__tests__/project/.w3"
+    "<rootDir>/src/__tests__/project/.polywrap"
   ],
   setupFilesAfterEnv: ["./jest.setup.js"],
 };

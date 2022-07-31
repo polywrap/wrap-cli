@@ -1,9 +1,4 @@
-import {
-  isScalarType,
-  scalarTypeNames,
-  isModuleType,
-  ModuleTypeNames,
-} from "../typeInfo";
+import { isScalarType, scalarTypeNames, isModuleType } from "../abi";
 import { SchemaValidator } from "./";
 
 import {
@@ -20,6 +15,8 @@ import {
   UnionTypeDefinitionNode,
 } from "graphql";
 import { getSchemaCycles } from "@dorgjelli/graphql-schema-cycles";
+
+const operationTypeNames = ["Mutation", "Subscription", "Query"];
 
 export const getTypeDefinitionsValidator = (): SchemaValidator => {
   const objectTypes: Record<string, boolean> = {};
@@ -44,10 +41,12 @@ export const getTypeDefinitionsValidator = (): SchemaValidator => {
           );
         },
         ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
-          // No Subscriptions
-          if (node.name.value === "Subscription") {
+          // No Operation types
+          if (operationTypeNames.includes(node.name.value)) {
             throw Error(
-              "Subscriptions are not yet supported. Please use Query or Mutation."
+              `OperationType names (${operationTypeNames.join(
+                ", "
+              )}) are not allowed.`
             );
           }
 
@@ -62,7 +61,7 @@ export const getTypeDefinitionsValidator = (): SchemaValidator => {
         },
         // No New Scalars
         ScalarTypeDefinition: (node: ScalarTypeDefinitionNode) => {
-          if (!isScalarType(node.name.value)) {
+          if (node.name.value !== "Map" && !isScalarType(node.name.value)) {
             throw Error(
               `Custom scalar types are not supported. Found: "${node.name.value}". Supported scalars: ${scalarTypeNames}`
             );
@@ -134,21 +133,16 @@ export const getPropertyTypesValidator = (): SchemaValidator => {
           }
         },
         FieldDefinition: (node) => {
-          if (
-            node.name.value === "sanitizeMutationEnv" ||
-            node.name.value === "sanitizeQueryEnv"
-          ) {
-            return;
-          }
-
           currentField = node.name.value;
         },
         NamedType: (node: NamedTypeNode) => {
           if (currentObject && currentField) {
+            const namedType = node.name.value;
+
             fieldTypes.push({
               object: currentObject,
               field: currentField,
-              type: node.name.value,
+              type: namedType,
             });
           }
         },
@@ -159,9 +153,7 @@ export const getPropertyTypesValidator = (): SchemaValidator => {
           if (typeName && !isModuleType(typeName)) {
             // Arguments not supported on non-module types
             throw Error(
-              `Methods can only be defined on module types (${ModuleTypeNames.join(
-                ", "
-              )}).\n` +
+              `Methods can only be defined on module types (Module).\n` +
                 `Found: type ${typeName} { ${currentField}(${node.name.value}) }`
             );
           }
@@ -184,7 +176,8 @@ export const getPropertyTypesValidator = (): SchemaValidator => {
         if (
           !isScalarType(field.type) &&
           !objectTypes[field.type] &&
-          !enumTypes[field.type]
+          !enumTypes[field.type] &&
+          field.type !== "Map"
         ) {
           throw Error(
             `Unknown property type found: type ${field.object} { ${field.field}: ${field.type} }`
@@ -210,7 +203,6 @@ export const getPropertyTypesValidator = (): SchemaValidator => {
 
 export function getCircularDefinitionsValidator(): SchemaValidator {
   const operationTypes: string[] = [];
-  const operationTypeNames = ["Mutation", "Subscription", "Query"];
 
   return {
     visitor: {

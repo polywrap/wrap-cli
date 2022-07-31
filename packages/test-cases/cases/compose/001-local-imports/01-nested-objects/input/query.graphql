@@ -1,5 +1,0 @@
-#import { TypeA } from "../imports-local/local.graphql"
-
-type Query {
-  method: TypeA
-}

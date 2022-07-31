@@ -13,7 +13,7 @@ pub fn alloc(len: usize) -> *mut u8 {
     std::mem::forget(buf);
     // return the pointer so the runtime
     // can write data at this offset
-    return ptr;
+    ptr
 }
 
 #[no_mangle]

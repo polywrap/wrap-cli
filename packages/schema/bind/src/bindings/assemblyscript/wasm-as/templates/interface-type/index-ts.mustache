@@ -1,0 +1,23 @@
+{{#capabilities}}
+{{#getImplementations}}
+{{#enabled}}
+import {
+  wrap_getImplementations
+} from "@polywrap/wasm-as";
+{{/enabled}}
+{{/getImplementations}}
+{{/capabilities}}
+
+export class {{namespace}} {
+  static uri: string = "{{uri}}"
+
+  {{#capabilities}}
+  {{#getImplementations}}
+  {{#enabled}}
+  public static getImplementations(): string[] {
+    return wrap_getImplementations(this.uri);
+  }
+  {{/enabled}}
+  {{/getImplementations}}
+  {{/capabilities}}
+}

@@ -1,42 +1,42 @@
-import { useWeb3ApiClient } from "./client";
+import { usePolywrapClient } from "./client";
 import { useStateReducer } from "./state";
 
-import { QueryApiResult, QueryApiOptions } from "@web3api/core-js";
+import { QueryResult, QueryOptions } from "@polywrap/core-js";
 
-export interface UseWeb3ApiQueryState<
+export interface UsePolywrapQueryState<
   TData extends Record<string, unknown> = Record<string, unknown>
-> extends QueryApiResult<TData> {
+  > extends QueryResult<TData> {
   loading: boolean;
 }
 
-export const INITIAL_QUERY_STATE: UseWeb3ApiQueryState = {
+export const INITIAL_QUERY_STATE: UsePolywrapQueryState = {
   data: undefined,
   errors: undefined,
   loading: false,
 };
 
-export interface UseWeb3ApiQueryProps<
+export interface UsePolywrapQueryProps<
   TVariables extends Record<string, unknown> = Record<string, unknown>
-> extends QueryApiOptions<TVariables, string> {
+  > extends QueryOptions<TVariables, string> {
   provider?: string;
 }
 
-export interface UseWeb3ApiQuery<
+export interface UsePolywrapQuery<
   TData extends Record<string, unknown> = Record<string, unknown>
-> extends UseWeb3ApiQueryState<TData> {
+  > extends UsePolywrapQueryState<TData> {
   execute: (
     variables?: Record<string, unknown>
-  ) => Promise<QueryApiResult<TData>>;
+  ) => Promise<QueryResult<TData>>;
 }
 
-export function useWeb3ApiQuery<
+export function usePolywrapQuery<
   TData extends Record<string, unknown> = Record<string, unknown>
->(props: UseWeb3ApiQueryProps): UseWeb3ApiQuery<TData> {
-  const client = useWeb3ApiClient({ provider: props.provider });
+  >(props: UsePolywrapQueryProps): UsePolywrapQuery<TData> {
+  const client = usePolywrapClient({ provider: props.provider });
 
-  // Initialize the UseWeb3ApiQueryState
-  const { state, dispatch } = useStateReducer<UseWeb3ApiQueryState<TData>>(
-    INITIAL_QUERY_STATE as UseWeb3ApiQueryState<TData>
+  // Initialize the UsePolywrapQueryState
+  const { state, dispatch } = useStateReducer<UsePolywrapQueryState<TData>>(
+    INITIAL_QUERY_STATE as UsePolywrapQueryState<TData>
   );
 
   const execute = async (variables?: Record<string, unknown>) => {

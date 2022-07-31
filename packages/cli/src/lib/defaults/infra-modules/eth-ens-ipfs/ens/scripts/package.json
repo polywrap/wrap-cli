@@ -1,0 +1,23 @@
+{
+  "private": true,
+  "main": "build/index.js",
+  "scripts": {
+    "deployEns": "node ./build/index.js",
+    "build": "rimraf ./build && tsc --project tsconfig.build.json"
+  },
+  "files": [
+    "build"
+  ],
+  "dependencies": {
+    "@ensdomains/ens": "0.4.4",
+    "@ensdomains/resolver": "0.2.4",
+    "content-hash": "2.5.2",
+    "eth-ens-namehash": "2.0.8",
+    "ethers": "5.6.6"
+  },
+  "devDependencies": {
+    "rimraf": "3.0.2",
+    "ts-node": "8.10.2",
+    "typescript": "4.0.7"
+  }
+}

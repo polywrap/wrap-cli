@@ -3,24 +3,26 @@ import { addHeader } from "./templates/header.mustache";
 
 import Mustache from "mustache";
 import {
-  TypeInfo,
+  Abi,
   addFirstLast,
   toGraphQLType,
-  transformTypeInfo,
+  transformAbi,
   moduleCapabilities,
-} from "@web3api/schema-parse";
+  addAnnotations,
+} from "@polywrap/schema-parse";
 
 // Remove mustache's built-in HTML escaping
 Mustache.escape = (value) => value;
 
-export function renderSchema(typeInfo: TypeInfo, header: boolean): string {
-  // Prepare the TypeInfo for the renderer
-  typeInfo = transformTypeInfo(typeInfo, addFirstLast);
-  typeInfo = transformTypeInfo(typeInfo, toGraphQLType);
-  typeInfo = transformTypeInfo(typeInfo, moduleCapabilities());
+export function renderSchema(abi: Abi, header: boolean): string {
+  // Prepare the Abi for the renderer
+  abi = transformAbi(abi, addFirstLast);
+  abi = transformAbi(abi, toGraphQLType);
+  abi = transformAbi(abi, moduleCapabilities());
+  abi = transformAbi(abi, addAnnotations);
 
   let schema = Mustache.render(schemaTemplate, {
-    typeInfo,
+    abi,
   });
 
   if (header) {

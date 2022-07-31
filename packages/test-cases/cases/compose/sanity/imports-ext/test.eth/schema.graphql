@@ -1,4 +1,4 @@
-### Web3API Header START ###
+### Polywrap Header START ###
 scalar UInt
 scalar UInt8
 scalar UInt16
@@ -9,7 +9,9 @@ scalar Int16
 scalar Int32
 scalar Bytes
 scalar BigInt
+scalar BigNumber
 scalar JSON
+scalar Map
 
 directive @imported(
   uri: String!
@@ -28,7 +30,12 @@ directive @capability(
 ) repeatable on OBJECT
 
 directive @enabled_interface on OBJECT
-### Web3API Header END ###
+
+directive @annotate(type: String!) on FIELD
+
+directive @env(required: Boolean!) on FIELD_DEFINITION
+
+### Polywrap Header END ###
 
 enum CustomEnum {
   STRING
@@ -36,9 +43,14 @@ enum CustomEnum {
 }
 
 """
-Query comment
+Module comment
 """
-type Query {
+type Module @imports(
+  types: [
+    "Imported_NestedObjectType",
+    "Imported_ObjectType"
+  ]
+) {
   method1(
     str: String!
     optStr: String
@@ -54,28 +66,6 @@ method2 comment
 """
 arg comment
 """
-    arg: [String!]!
-  ): [Int32!]!
-}
-
-"""
-Mutation comment
-"""
-type Mutation @imports(
-  types: [
-    "Imported_NestedObjectType",
-    "Imported_ObjectType"
-  ]
-) {
-  method1(
-    str: String!
-    optStr: String
-    u: UInt!
-    optU: UInt
-    uArrayArray: [[UInt]]!
-  ): String!
-
-  method2(
     arg: [String!]!
   ): [Int32!]!
 

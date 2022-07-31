@@ -1,0 +1,4 @@
+{
+  "stdout": "instance is not allowed to have the additional property \"wrong\"",
+  "exitCode": 1
+}

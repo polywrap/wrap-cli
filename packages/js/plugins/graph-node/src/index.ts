@@ -1,46 +1,41 @@
-import { query } from "./resolvers";
-import { manifest, Query, HTTP_Query } from "./w3";
-import { RequestData, RequestError } from "./types";
-
 import {
   Client,
-  Plugin,
-  PluginFactory,
-  PluginPackageManifest,
-} from "@web3api/core-js";
+  Module,
+  Args_querySubgraph,
+  HTTP_Module,
+  manifest,
+} from "./wrap";
 
-export interface GraphNodeConfig {
+import { PluginFactory } from "@polywrap/core-js";
+
+export interface RequestError {
+  errors: {
+    locations: { column: number; line: number }[];
+    message: string;
+  }[];
+}
+
+export interface RequestData {
+  data: Record<string, unknown>;
+}
+
+export interface GraphNodePluginConfig {
   provider: string;
 }
 
-export class GraphNodePlugin extends Plugin {
-  constructor(private _config: GraphNodeConfig) {
-    super();
+export class GraphNodePlugin extends Module<GraphNodePluginConfig> {
+  constructor(config: GraphNodePluginConfig) {
+    super(config);
   }
 
-  public static manifest(): PluginPackageManifest {
-    return manifest;
-  }
-
-  public getModules(
-    client: Client
-  ): {
-    query: Query.Module;
-  } {
-    return {
-      query: query(this, client),
-    };
-  }
-
-  public async query(
-    author: string,
-    name: string,
-    query: string,
+  public async querySubgraph(
+    args: Args_querySubgraph,
     client: Client
   ): Promise<string> {
-    const { data, error } = await HTTP_Query.post(
+    const { subgraphAuthor, subgraphName, query } = args;
+    const { data, error } = await HTTP_Module.post(
       {
-        url: `${this._config.provider}/subgraphs/name/${author}/${name}`,
+        url: `${this.config.provider}/subgraphs/name/${subgraphAuthor}/${subgraphName}`,
         request: {
           body: JSON.stringify({
             query,
@@ -85,12 +80,13 @@ export class GraphNodePlugin extends Plugin {
   }
 }
 
-export const graphNodePlugin: PluginFactory<GraphNodeConfig> = (
-  opts: GraphNodeConfig
+export const graphNodePlugin: PluginFactory<GraphNodePluginConfig> = (
+  config: GraphNodePluginConfig
 ) => {
   return {
-    factory: () => new GraphNodePlugin(opts),
-    manifest: manifest,
+    factory: () => new GraphNodePlugin(config),
+    manifest,
   };
 };
+
 export const plugin = graphNodePlugin;

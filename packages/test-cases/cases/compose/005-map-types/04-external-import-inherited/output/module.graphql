@@ -1,0 +1,91 @@
+### Polywrap Header START ###
+scalar UInt
+scalar UInt8
+scalar UInt16
+scalar UInt32
+scalar Int
+scalar Int8
+scalar Int16
+scalar Int32
+scalar Bytes
+scalar BigInt
+scalar BigNumber
+scalar JSON
+scalar Map
+
+directive @imported(
+  uri: String!
+  namespace: String!
+  nativeType: String!
+) on OBJECT | ENUM
+
+directive @imports(
+  types: [String!]!
+) on OBJECT
+
+directive @capability(
+  type: String!
+  uri: String!
+  namespace: String!
+) repeatable on OBJECT
+
+directive @enabled_interface on OBJECT
+
+directive @annotate(type: String!) on FIELD
+
+directive @env(required: Boolean!) on FIELD_DEFINITION
+
+### Polywrap Header END ###
+
+type Module @imports(
+  types: [
+    "Base_ImportedBaseType",
+    "Derived_ImportedDerivedType",
+    "Derived_ImportedBaseType"
+  ]
+) {
+  method1: Derived_ImportedDerivedType
+
+  method2: CustomType
+}
+
+type CustomType implements Base_ImportedBaseType {
+  requiredMap: Map! @annotate(type: "Map<String!, Int!>!")
+}
+
+### Imported Modules START ###
+
+### Imported Modules END ###
+
+### Imported Objects START ###
+
+type Base_ImportedBaseType @imported(
+  uri: "base.eth",
+  namespace: "Base",
+  nativeType: "ImportedBaseType"
+) {
+  requiredMap: Map! @annotate(type: "Map<String!, Int!>!")
+}
+
+type Derived_ImportedDerivedType implements Derived_ImportedBaseType @imported(
+  uri: "derived.eth",
+  namespace: "Derived",
+  nativeType: "ImportedDerivedType"
+) {
+  mapOfValueArr: Map! @annotate(type: "Map<String!, [Int!]!>!")
+  requiredMap: Map! @annotate(type: "Map<String!, Int!>!")
+}
+
+type Derived_ImportedBaseType @imported(
+  uri: "derived.eth",
+  namespace: "Derived",
+  nativeType: "ImportedBaseType"
+) {
+  requiredMap: Map! @annotate(type: "Map<String!, Int!>!")
+}
+
+### Imported Objects END ###
+
+### Imported Envs START ###
+
+### Imported Envs END ###

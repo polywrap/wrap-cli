@@ -1,5 +1,5 @@
 import { fromAxiosResponse, toAxiosRequestConfig } from "../../util";
-import { ResponseTypeEnum } from "../../w3";
+import { ResponseTypeEnum } from "../../wrap";
 
 describe("converting axios response", () => {
   test("response type: text", () => {

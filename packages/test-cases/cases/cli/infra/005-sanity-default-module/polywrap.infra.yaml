@@ -1,0 +1,7 @@
+format: 0.1.0
+modules:
+  eth-ens-ipfs: default
+  mainnet-fork:
+    path: ./mainnet-fork/docker-compose.yaml
+  ropsten-fork:
+    path: ./ropsten-fork

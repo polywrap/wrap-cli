@@ -1,7 +1,0 @@
-format: 0.0.1-prealpha.5
-build: ./web3api.build.yaml
-language: wasm/assemblyscript
-modules:
-  query:
-    schema: ./src/query/schema.graphql
-    module: ./src/query/index.ts

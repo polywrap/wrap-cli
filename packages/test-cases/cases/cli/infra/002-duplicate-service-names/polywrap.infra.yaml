@@ -1,0 +1,21 @@
+format: 0.1.0
+env:
+  IPFS_PORT: 5001
+  DEV_SERVER_PORT: 4040
+  ETH_TESTNET_PORT: 8546
+  DEV_SERVER_ETH_TESTNET_PORT: 8545
+modules:
+  ipfs:
+    package: "@namestys/ipfs-infra"
+    version: "0.0.1"
+    registry: npm
+  dev-server:
+    path: ../local-packages/dev-server
+  ipfs-duplicate:
+    package: "@namestys/ipfs-infra"
+    version: "0.0.1"
+    registry: npm
+  ganache:
+    package: "@namestys/ganache-infra"
+    version: "0.0.2"
+    registry: npm

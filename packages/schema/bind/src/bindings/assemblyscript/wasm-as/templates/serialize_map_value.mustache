@@ -1,0 +1,35 @@
+{{#scalar}}
+writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(value);
+{{/scalar}}
+{{#array}}
+writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(value, (writer: Write, item: {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}}): void => {
+  {{> serialize_array}}
+});
+{{/array}}
+{{#map}}
+writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(value, (writer: Write, key: {{#key}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/key}}) => {
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(key);
+}, (writer: Write, value: {{#value}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/value}}): void => {
+  {{> serialize_map_value}}
+});
+{{/map}}
+{{#enum}}
+{{#required}}
+writer.writeInt32(value);
+{{/required}}
+{{^required}}
+writer.writeOptionalInt32(value);
+{{/required}}
+{{/enum}}
+{{#object}}
+{{#required}}
+Types.{{type}}.write(writer, value);
+{{/required}}
+{{^required}}
+if (value) {
+  Types.{{type}}.write(writer, value as Types.{{type}});
+} else {
+  writer.writeNil();
+}
+{{/required}}
+{{/object}}

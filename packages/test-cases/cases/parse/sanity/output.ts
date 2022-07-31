@@ -1,27 +1,30 @@
 import {
-  TypeInfo,
-  createScalarDefinition,
   createArrayDefinition,
-  createObjectDefinition,
-  createModuleDefinition,
-  createMethodDefinition,
-  createScalarPropertyDefinition,
   createArrayPropertyDefinition,
-  createObjectPropertyDefinition,
-  createImportedObjectDefinition,
-  createImportedModuleDefinition,
+  createCapability,
   createEnumDefinition,
   createEnumPropertyDefinition,
-  createImportedEnumDefinition,
-  createInterfaceImplementedDefinition,
-  createObjectRef,
   createEnumRef,
+  createEnvDefinition,
+  createImportedEnumDefinition,
+  createImportedEnvDefinition,
+  createImportedModuleDefinition,
+  createImportedObjectDefinition,
   createInterfaceDefinition,
-  createCapability,
-  createEnvDefinition
-} from "../../../../schema/parse/src/typeInfo";
+  createInterfaceImplementedDefinition,
+  createMapKeyDefinition,
+  createMapPropertyDefinition,
+  createMethodDefinition,
+  createModuleDefinition,
+  createObjectDefinition,
+  createObjectPropertyDefinition,
+  createObjectRef,
+  createScalarDefinition,
+  createScalarPropertyDefinition,
+  Abi,
+} from "../../../../schema/parse/src/abi";
 
-export const typeInfo: TypeInfo = {
+export const abi: Abi = {
   interfaceTypes: [
     createInterfaceDefinition({
       type: "TestImport",
@@ -31,84 +34,162 @@ export const typeInfo: TypeInfo = {
         ...createCapability({
           type: "getImplementations",
           enabled: true,
-          modules: ["query"]
-        })
+        }),
       },
-    })
+    }),
   ],
-  envTypes: {
-    query: createEnvDefinition({
-      sanitized: {
-        ...createObjectDefinition({ type: "QueryEnv" }),
-        properties: [
-          createScalarPropertyDefinition({ name: "prop", type: "String", required: true })
-        ]
-      },
-      client: {
-        ...createObjectDefinition({ type: "QueryClientEnv" }),
-        properties: [
-          createScalarPropertyDefinition({ name: "prop", type: "String", required: true })
-        ]
-      }
-    }),
-    mutation: createEnvDefinition({
-      sanitized: {
-        ...createObjectDefinition({ type: "MutationEnv" }),
-        properties: [
-          createScalarPropertyDefinition({ name: "prop", type: "Int", required: true })
-        ]
-      },
-      client: {
-        ...createObjectDefinition({ type: "MutationClientEnv" }),
-        properties: [
-          createScalarPropertyDefinition({ name: "prop", type: "String", required: false })
-        ]
-      }
-    }),
-  },
+  envType: createEnvDefinition({
+    properties: [
+      createScalarPropertyDefinition({
+        name: "prop",
+        type: "String",
+        required: true,
+      }),
+      createScalarPropertyDefinition({
+        name: "propM",
+        type: "Int",
+        required: true,
+      })
+    ],
+  }),
   objectTypes: [
     {
-      ...createObjectDefinition({ type: "CustomType", comment: "CustomType multi-line comment\nline 2" }),
+      ...createObjectDefinition({
+        type: "CustomType",
+        comment: "CustomType multi-line comment\nline 2",
+      }),
       properties: [
-        createScalarPropertyDefinition({ name: "str", type: "String", required: true, comment: "str comment" }),
-        createScalarPropertyDefinition({ name: "optStr", type: "String", required: false, comment: "optStr comment" }),
-        createScalarPropertyDefinition({ name: "u", type: "UInt", required: true }),
-        createScalarPropertyDefinition({ name: "optU", type: "UInt", required: false }),
-        createScalarPropertyDefinition({ name: "u8", type: "UInt8", required: true }),
-        createScalarPropertyDefinition({ name: "u16", type: "UInt16", required: true }),
-        createScalarPropertyDefinition({ name: "u32", type: "UInt32", required: true }),
-        createScalarPropertyDefinition({ name: "i", type: "Int", required: true }),
-        createScalarPropertyDefinition({ name: "i8", type: "Int8", required: true }),
-        createScalarPropertyDefinition({ name: "i16", type: "Int16", required: true }),
-        createScalarPropertyDefinition({ name: "i32", type: "Int32", required: true }),
-        createScalarPropertyDefinition({ name: "bigint", type: "BigInt", required: true }),
-        createScalarPropertyDefinition({ name: "optBigint", type: "BigInt", required: false }),
-        createScalarPropertyDefinition({ name: "json", type: "JSON", required: true }),
-        createScalarPropertyDefinition({ name: "optJson", type: "JSON", required: false }),
-        createScalarPropertyDefinition({ name: "bytes", type: "Bytes", required: true }),
+        createScalarPropertyDefinition({
+          name: "str",
+          type: "String",
+          required: true,
+          comment: "str comment",
+        }),
+        createScalarPropertyDefinition({
+          name: "optStr",
+          type: "String",
+          required: false,
+          comment: "optStr comment",
+        }),
+        createScalarPropertyDefinition({
+          name: "u",
+          type: "UInt",
+          required: true,
+        }),
+        createScalarPropertyDefinition({
+          name: "optU",
+          type: "UInt",
+          required: false,
+        }),
+        createScalarPropertyDefinition({
+          name: "u8",
+          type: "UInt8",
+          required: true,
+        }),
+        createScalarPropertyDefinition({
+          name: "u16",
+          type: "UInt16",
+          required: true,
+        }),
+        createScalarPropertyDefinition({
+          name: "u32",
+          type: "UInt32",
+          required: true,
+        }),
+        createScalarPropertyDefinition({
+          name: "i",
+          type: "Int",
+          required: true,
+        }),
+        createScalarPropertyDefinition({
+          name: "i8",
+          type: "Int8",
+          required: true,
+        }),
+        createScalarPropertyDefinition({
+          name: "i16",
+          type: "Int16",
+          required: true,
+        }),
+        createScalarPropertyDefinition({
+          name: "i32",
+          type: "Int32",
+          required: true,
+        }),
+        createScalarPropertyDefinition({
+          name: "bigint",
+          type: "BigInt",
+          required: true,
+        }),
+        createScalarPropertyDefinition({
+          name: "optBigint",
+          type: "BigInt",
+          required: false,
+        }),
+        createScalarPropertyDefinition({
+          name: "bignumber",
+          type: "BigNumber",
+          required: true,
+        }),
+        createScalarPropertyDefinition({
+          name: "optBignumber",
+          type: "BigNumber",
+          required: false,
+        }),
+        createScalarPropertyDefinition({
+          name: "json",
+          type: "JSON",
+          required: true,
+        }),
+        createScalarPropertyDefinition({
+          name: "optJson",
+          type: "JSON",
+          required: false,
+        }),
+        createScalarPropertyDefinition({
+          name: "bytes",
+          type: "Bytes",
+          required: true,
+        }),
         createArrayPropertyDefinition({
           name: "uArray",
           type: "[UInt]",
           required: true,
-          item: createScalarDefinition({ name: "uArray", type: "UInt", required: true })
+          item: createScalarDefinition({
+            name: "uArray",
+            type: "UInt",
+            required: true,
+          }),
         }),
         createArrayPropertyDefinition({
           name: "uOptArray",
           type: "[UInt]",
           required: false,
-          item: createScalarDefinition({ name: "uOptArray", type: "UInt", required: true })
+          item: createScalarDefinition({
+            name: "uOptArray",
+            type: "UInt",
+            required: true,
+          }),
         }),
         createArrayPropertyDefinition({
           name: "optUOptArray",
           type: "[UInt]",
           required: false,
-          item: createScalarDefinition({ name: "optUOptArray", type: "UInt", required: false })
+          item: createScalarDefinition({
+            name: "optUOptArray",
+            type: "UInt",
+            required: false,
+          }),
         }),
         createArrayPropertyDefinition({
           name: "optStrOptArray",
           type: "[String]",
           required: false,
-          item: createScalarDefinition({ name: "optStrOptArray", type: "String", required: false })
+          item: createScalarDefinition({
+            name: "optStrOptArray",
+            type: "String",
+            required: false,
+          }),
         }),
         createArrayPropertyDefinition({
           name: "uArrayArray",
@@ -118,8 +199,12 @@ export const typeInfo: TypeInfo = {
             name: "uArrayArray",
             type: "[UInt]",
             required: true,
-            item: createScalarDefinition({ name: "uArrayArray", type: "UInt", required: true })
-          })
+            item: createScalarDefinition({
+              name: "uArrayArray",
+              type: "UInt",
+              required: true,
+            }),
+          }),
         }),
         createArrayPropertyDefinition({
           name: "uOptArrayOptArray",
@@ -129,8 +214,12 @@ export const typeInfo: TypeInfo = {
             name: "uOptArrayOptArray",
             type: "[UInt32]",
             required: false,
-            item: createScalarDefinition({ name: "uOptArrayOptArray", type: "UInt32", required: false })
-          })
+            item: createScalarDefinition({
+              name: "uOptArrayOptArray",
+              type: "UInt32",
+              required: false,
+            }),
+          }),
         }),
         createArrayPropertyDefinition({
           name: "uArrayOptArrayArray",
@@ -144,9 +233,13 @@ export const typeInfo: TypeInfo = {
               name: "uArrayOptArrayArray",
               type: "[UInt32]",
               required: true,
-              item: createScalarDefinition({ name: "uArrayOptArrayArray", type: "UInt32", required: true })
-            })
-          })
+              item: createScalarDefinition({
+                name: "uArrayOptArrayArray",
+                type: "UInt32",
+                required: true,
+              }),
+            }),
+          }),
         }),
         createArrayPropertyDefinition({
           name: "crazyArray",
@@ -164,16 +257,24 @@ export const typeInfo: TypeInfo = {
                 name: "crazyArray",
                 type: "[UInt32]",
                 required: false,
-                item: createScalarDefinition({ name: "crazyArray", type: "UInt32", required: true })
-              })
-            })
-          })
+                item: createScalarDefinition({
+                  name: "crazyArray",
+                  type: "UInt32",
+                  required: true,
+                }),
+              }),
+            }),
+          }),
         }),
         createArrayPropertyDefinition({
           name: "objectArray",
           type: "[UserObject]",
           required: true,
-          item: createObjectRef({ name: "objectArray", type: "UserObject", required: true })
+          item: createObjectRef({
+            name: "objectArray",
+            type: "UserObject",
+            required: true,
+          }),
         }),
         createArrayPropertyDefinition({
           name: "objectArrayArray",
@@ -183,13 +284,17 @@ export const typeInfo: TypeInfo = {
             name: "objectArrayArray",
             type: "[UserObject]",
             required: true,
-            item: createObjectRef({ name: "objectArrayArray", type: "UserObject", required: true })
-          })
+            item: createObjectRef({
+              name: "objectArrayArray",
+              type: "UserObject",
+              required: true,
+            }),
+          }),
         }),
         createObjectPropertyDefinition({
           name: "nestedObject",
           type: "UserObject",
-          required: true
+          required: true,
         }),
         createObjectPropertyDefinition({
           name: "optNestedObject",
@@ -202,7 +307,7 @@ export const typeInfo: TypeInfo = {
         createEnumPropertyDefinition({
           name: "enum",
           type: "CustomEnum",
-          required: true
+          required: true,
         }),
         createArrayPropertyDefinition({
           name: "enumArray",
@@ -212,7 +317,7 @@ export const typeInfo: TypeInfo = {
             name: "enumArray",
             type: "CustomEnum",
             required: true,
-          })
+          }),
         }),
         createArrayPropertyDefinition({
           name: "optEnumArray",
@@ -221,20 +326,89 @@ export const typeInfo: TypeInfo = {
           item: createEnumRef({
             name: "optEnumArray",
             type: "CustomEnum",
-            required: false
-          })
-        })
+            required: false,
+          }),
+        }),
+        createMapPropertyDefinition({
+          name: "map",
+          type: "Map<String, Int>",
+          key: createMapKeyDefinition({ name: "map", type: "String", required: true }),
+          value: createScalarDefinition({ name: "map", type: "Int" }),
+          required: true
+        }),
+        createMapPropertyDefinition({
+          name: "mapOfArr",
+          type: "Map<String, [Int]>",
+          key: createMapKeyDefinition({ name: "mapOfArr", type: "String", required: true }),
+          value: createArrayDefinition({
+            name: "mapOfArr",
+            type: "[Int]",
+            item: createScalarDefinition({ name: "mapOfArr", type: "Int", required: true }),
+            required: true
+          }),
+          required: true
+        }),
+        createMapPropertyDefinition({
+          name: "mapOfObj",
+          type: "Map<String, AnotherType>",
+          key: createMapKeyDefinition({ name: "mapOfObj", type: "String", required: true }),
+          value: createObjectRef({ name: "mapOfObj", type: "AnotherType", required: true }),
+          required: true
+        }),
+        createMapPropertyDefinition({
+          name: "mapOfArrOfObj",
+          type: "Map<String, [AnotherType]>",
+          key: createMapKeyDefinition({ name: "mapOfArrOfObj", type: "String", required: true }),
+          value: createArrayDefinition({
+            name: "mapOfArrOfObj",
+            type: "[AnotherType]",
+            item: createObjectRef({ name: "mapOfArrOfObj", type: "AnotherType", required: true }),
+            required: true
+          }),
+          required: true
+        }),
       ],
     },
     {
-      ...createObjectDefinition({ type: "AnotherType", comment: "AnotherType comment" }),
-      properties: [createScalarPropertyDefinition({ name: "prop", type: "String", comment: "prop comment" })],
+      ...createObjectDefinition({
+        type: "AnotherType",
+        comment: "AnotherType comment",
+      }),
+      properties: [
+        createScalarPropertyDefinition({
+          name: "prop",
+          type: "String",
+          comment: "prop comment",
+        }),
+      ],
     },
     {
-      ...createObjectDefinition({ type: "UserObject", comment: "UserObject comment" }),
+      ...createObjectDefinition({
+        type: "UserObject",
+        comment: "UserObject comment",
+      }),
+      properties: [
+        createScalarPropertyDefinition({
+          name: "fieldA",
+          type: "String",
+          required: false,
+        }),
+        createScalarPropertyDefinition({
+          name: "fieldB",
+          type: "Int",
+          required: true,
+        }),
+      ],
+    },
+    {
+      ...createObjectDefinition({ type: "UserObjectFromInterface" }),
+      interfaces: [
+        createInterfaceImplementedDefinition({ type: "UserObject" }),
+      ],
       properties: [
         createScalarPropertyDefinition({ name: "fieldA", type: "String", required: false }),
         createScalarPropertyDefinition({ name: "fieldB", type: "Int", required: true }),
+        createScalarPropertyDefinition({ name: "fieldC", type: "UInt32", required: true }),
       ],
     },
     {
@@ -242,24 +416,53 @@ export const typeInfo: TypeInfo = {
         type: "ImplementationObject",
         interfaces: [
           createInterfaceImplementedDefinition({ type: "Interface_Object" }),
-          createInterfaceImplementedDefinition({ type: "Interface_Object2" })
+          createInterfaceImplementedDefinition({ type: "Interface_Object2" }),
         ],
-        comment: "ImplementationObject comment"
+        comment: "ImplementationObject comment",
       }),
       properties: [
-        createScalarPropertyDefinition({ name: "anotherProp", type: "String", required: false, comment: "anotherProp comment" }),
-        createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
-        createScalarPropertyDefinition({ name: "uint8", type: "UInt8", required: true }),
-        createScalarPropertyDefinition({ name: "str2", type: "String", required: true }),
+        createScalarPropertyDefinition({
+          name: "anotherProp",
+          type: "String",
+          required: false,
+          comment: "anotherProp comment",
+        }),
+        createScalarPropertyDefinition({
+          name: "str",
+          type: "String",
+          required: true,
+        }),
+        createScalarPropertyDefinition({
+          name: "uint8",
+          type: "UInt8",
+          required: true,
+        }),
+        createScalarPropertyDefinition({
+          name: "str2",
+          type: "String",
+          required: true,
+        }),
       ],
     },
+    {
+      ...createObjectDefinition({
+        type: "ModuleObjectType",
+      }),
+      properties: [
+        createScalarPropertyDefinition({
+          name: "prop",
+          type: "String",
+          required: true,
+        }),
+      ],
+    }
   ],
   enumTypes: [
     createEnumDefinition({
       type: "CustomEnum",
       constants: ["TEXT", "BINARY"],
-      comment: "CustomEnum comment"
-    })
+      comment: "CustomEnum comment",
+    }),
   ],
   importedEnumTypes: [
     createImportedEnumDefinition({
@@ -268,123 +471,197 @@ export const typeInfo: TypeInfo = {
       namespace: "TestImport",
       nativeType: "Enum",
       constants: ["TEXT", "BYTES"],
-      comment: "TestImport_Enum comment"
-    })
+      comment: "TestImport_Enum comment",
+    }),
   ],
-  moduleTypes: [
-    {
-      ...createModuleDefinition({ type: "Mutation" }),
-      methods: [
-        {
-          ...createMethodDefinition({
-            type: "mutation",
-            name: "sanitizeMutationEnv",
-            return: createObjectPropertyDefinition({ name: "sanitizeMutationEnv", type: "MutationEnv", required: true }),
-            arguments: [createObjectPropertyDefinition({ name: "env", type: "MutationClientEnv", required: true })],
-          })
-        },
-      ],
-    },
+  moduleType: 
     {
       ...createModuleDefinition({
-        type: "Query",
-        imports: [{ type: "TestImport_Query" }, { type: "Interface_Query" }],
+        imports: [{ type: "TestImport_Module" }, { type: "Interface_Module" }],
         interfaces: [
-          createInterfaceImplementedDefinition({ type: "Interface_Query" }),
+          createInterfaceImplementedDefinition({ type: "Interface_Module" }),
         ],
-        comment: "Query comment"
+        comment: "Module comment",
       }),
       methods: [
         {
           ...createMethodDefinition({
-            type: "query",
-            name: "sanitizeQueryEnv",
-            return: createObjectPropertyDefinition({ name: "sanitizeQueryEnv", type: "QueryEnv", required: true }),
-            arguments: [createObjectPropertyDefinition({ name: "env", type: "QueryClientEnv", required: true })],
-          })
-        },
-        {
-          ...createMethodDefinition({
-            type: "query",
-            name: "queryMethod",
+            name: "moduleMethod",
             return: createArrayPropertyDefinition({
-              name: "queryMethod",
+              name: "moduleMethod",
               type: "[Int]",
               required: true,
-              item: createScalarDefinition({ name: "queryMethod", type: "Int", required: false }),
+              item: createScalarDefinition({
+                name: "moduleMethod",
+                type: "Int",
+                required: false,
+              }),
             }),
-            comment: "queryMethod comment"
+            comment: "moduleMethod comment",
           }),
-          arguments: [createScalarPropertyDefinition({ name: "arg", type: "String", required: true, comment: "arg comment" })],
+          arguments: [
+            createScalarPropertyDefinition({
+              name: "arg",
+              type: "String",
+              required: true,
+              comment: "arg comment",
+            }),
+          ],
         },
         {
           ...createMethodDefinition({
-            type: "query",
             name: "userObjectMethod",
             return: createObjectPropertyDefinition({
               name: "userObjectMethod",
               type: "UserObject",
-              required: true
+              required: true,
             }),
-            comment: "userObjectMethod comment"
+            comment: "userObjectMethod comment",
           }),
           arguments: [
-            createObjectPropertyDefinition({ name: "userObject", type: "UserObject", comment: "userObject comment" }),
+            createObjectPropertyDefinition({
+              name: "userObject",
+              type: "UserObject",
+              comment: "userObject comment",
+            }),
             createArrayPropertyDefinition({
-              name: "arrayObject", type: "[UserObject]", required: true, comment: "arrayObject comment",
+              name: "arrayObject",
+              type: "[UserObject]",
+              required: true,
+              comment: "arrayObject comment",
               item: createObjectRef({
                 type: "UserObject",
                 name: "arrayObject",
-                required: true
-              })
+                required: true,
+              }),
             }),
           ],
         },
         {
           ...createMethodDefinition({
-            type: "query",
             name: "enumMethod",
             return: createEnumPropertyDefinition({
               name: "enumMethod",
               type: "CustomEnum",
-              required: true
+              required: true,
             }),
-            comment: "enumMethod comment"
+            comment: "enumMethod comment",
           }),
           arguments: [
-            createEnumPropertyDefinition({ name: "enum", type: "CustomEnum", comment: "enum comment" }),
+            createEnumPropertyDefinition({
+              name: "enum",
+              type: "CustomEnum",
+              comment: "enum comment",
+            }),
             createArrayPropertyDefinition({
-              name: "arrayEnum", type: "[CustomEnum]", required: true, comment: "arrayEnum comment",
+              name: "arrayEnum",
+              type: "[CustomEnum]",
+              required: true,
+              comment: "arrayEnum comment",
               item: createEnumRef({
                 type: "CustomEnum",
                 name: "arrayEnum",
-                required: true
-              })
-            })
+                required: true,
+              }),
+            }),
           ],
         },
         {
           ...createMethodDefinition({
-            type: "query",
             name: "abstractMethod",
             return: createScalarPropertyDefinition({
               name: "abstractMethod",
               type: "String",
-              required: true
+              required: true,
             }),
-            comment: "abstractMethod comment"
+            comment: "abstractMethod comment",
           }),
           arguments: [
             createScalarPropertyDefinition({
               name: "arg",
               type: "UInt8",
-              required: true
+              required: true,
             }),
           ],
         },
+        {
+          ...createMethodDefinition({
+            name: "transformMap",
+            return: createMapPropertyDefinition({
+              name: "transformMap",
+              type: "Map<String, Int>",
+              key: createMapKeyDefinition({
+                name: "transformMap",
+                type: "String",
+                required: true,
+              }),
+              value: createScalarDefinition({
+                name: "transformMap",
+                type: "Int",
+                required: true,
+              }),
+            }),
+          }),
+          arguments: [
+            createMapPropertyDefinition({
+              name: "map",
+              type: "Map<String, Int>",
+              key: createMapKeyDefinition({
+                name: "map",
+                type: "String",
+                required: true,
+              }),
+              value: createScalarDefinition({
+                name: "map",
+                type: "Int",
+                required: true,
+              }),
+            }),
+          ],
+        },
+        {
+          ...createMethodDefinition({
+            name: "methodRequireEnv",
+            env: {
+              required: true,
+            },
+            return: createObjectPropertyDefinition({
+              name: "methodRequireEnv",
+              type: "Env",
+              required: true
+            }),
+            arguments: [
+              createScalarPropertyDefinition({
+                name: "arg",
+                type: "String",
+                required: true,
+              }),
+            ],
+          }),
+          
+        },
+        {
+          ...createMethodDefinition({
+            name: "methodOptionalEnv",
+            env: {
+              required: false,
+            },
+            return: createObjectPropertyDefinition({
+              name: "methodOptionalEnv",
+              type: "Env",
+            }),
+            arguments: [
+              createScalarPropertyDefinition({
+                name: "arg",
+                type: "String",
+                required: true,
+              }),
+            ],
+          }),
+          
+        },
       ],
     },
-  ],
   importedObjectTypes: [
     {
       ...createImportedObjectDefinition({
@@ -392,11 +669,21 @@ export const typeInfo: TypeInfo = {
         namespace: "TestImport",
         type: "TestImport_Object",
         nativeType: "Object",
-        comment: "TestImport_Object comment"
+        comment: "TestImport_Object comment",
       }),
       properties: [
-        createScalarPropertyDefinition({ name: "prop", type: "String", required: true, comment: "prop comment" }),
-        createObjectPropertyDefinition({ name: "nested", type: "TestImport_NestedObject", required: true, comment: "nested comment" })
+        createScalarPropertyDefinition({
+          name: "prop",
+          type: "String",
+          required: true,
+          comment: "prop comment",
+        }),
+        createObjectPropertyDefinition({
+          name: "nested",
+          type: "TestImport_NestedObject",
+          required: true,
+          comment: "nested comment",
+        }),
       ],
     },
     {
@@ -405,7 +692,7 @@ export const typeInfo: TypeInfo = {
         namespace: "TestImport",
         type: "TestImport_NestedObject",
         nativeType: "NestedObject",
-        comment: "TestImport_NestedObject comment"
+        comment: "TestImport_NestedObject comment",
       }),
       properties: [
         createArrayPropertyDefinition({
@@ -423,7 +710,7 @@ export const typeInfo: TypeInfo = {
           name: "circular",
           type: "TestImport_Object",
           required: false,
-        })
+        }),
       ],
     },
     {
@@ -432,19 +719,19 @@ export const typeInfo: TypeInfo = {
         namespace: "Interface",
         type: "Interface_Object",
         nativeType: "Object",
-        comment: "Interface_Object comment"
+        comment: "Interface_Object comment",
       }),
       properties: [
         createScalarPropertyDefinition({
           name: "str",
           type: "String",
-          required: true
+          required: true,
         }),
         createScalarPropertyDefinition({
           name: "uint8",
           type: "UInt8",
           required: true,
-        })
+        }),
       ],
     },
     {
@@ -453,14 +740,14 @@ export const typeInfo: TypeInfo = {
         namespace: "Interface",
         type: "Interface_Object2",
         nativeType: "Object2",
-        comment: "Interface_Object2 comment"
+        comment: "Interface_Object2 comment",
       }),
       properties: [
         createScalarPropertyDefinition({
           name: "str2",
           type: "String",
-          required: true
-        })
+          required: true,
+        }),
       ],
     },
   ],
@@ -469,28 +756,42 @@ export const typeInfo: TypeInfo = {
       ...createImportedModuleDefinition({
         uri: "testimport.uri.eth",
         namespace: "TestImport",
-        type: "TestImport_Query",
         isInterface: true,
-        nativeType: "Query",
-        comment: "TestImport_Query comment"
+        nativeType: "Module",
+        comment: "TestImport_Module comment",
       }),
       methods: [
         {
           ...createMethodDefinition({
-            type: "query",
             name: "importedMethod",
             return: createScalarPropertyDefinition({
               name: "importedMethod",
               type: "String",
-              required: true
+              required: true,
             }),
-            comment: "importedMethod comment"
+            comment: "importedMethod comment",
           }),
           arguments: [
-            createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
-            createScalarPropertyDefinition({ name: "optStr", type: "String", required: false }),
-            createScalarPropertyDefinition({ name: "u", type: "UInt", required: true }),
-            createScalarPropertyDefinition({ name: "optU", type: "UInt", required: false }),
+            createScalarPropertyDefinition({
+              name: "str",
+              type: "String",
+              required: true,
+            }),
+            createScalarPropertyDefinition({
+              name: "optStr",
+              type: "String",
+              required: false,
+            }),
+            createScalarPropertyDefinition({
+              name: "u",
+              type: "UInt",
+              required: true,
+            }),
+            createScalarPropertyDefinition({
+              name: "optU",
+              type: "UInt",
+              required: false,
+            }),
             createArrayPropertyDefinition({
               name: "uArrayArray",
               type: "[[UInt]]",
@@ -500,14 +801,17 @@ export const typeInfo: TypeInfo = {
                 name: "uArrayArray",
                 type: "[UInt]",
                 required: false,
-                item: createScalarDefinition({ name: "uArrayArray", type: "UInt", required: false })
-              })
+                item: createScalarDefinition({
+                  name: "uArrayArray",
+                  type: "UInt",
+                  required: false,
+                }),
+              }),
             }),
           ],
         },
         {
           ...createMethodDefinition({
-            type: "query",
             name: "anotherMethod",
             return: createArrayPropertyDefinition({
               name: "anotherMethod",
@@ -516,7 +820,7 @@ export const typeInfo: TypeInfo = {
               item: createScalarDefinition({
                 name: "anotherMethod",
                 type: "Int32",
-                required: false
+                required: false,
               }),
             }),
           }),
@@ -525,27 +829,30 @@ export const typeInfo: TypeInfo = {
               name: "arg",
               type: "[String]",
               required: true,
-              item: createScalarDefinition({ name: "arg", type: "String", required: true })
+              item: createScalarDefinition({
+                name: "arg",
+                type: "String",
+                required: true,
+              }),
             }),
           ],
         },
         {
           ...createMethodDefinition({
-            type: "query",
             name: "importedObjectMethod",
             return: {
               ...createObjectPropertyDefinition({
                 name: "importedObjectMethod",
                 type: "TestImport_Object",
-                required: true
+                required: true,
               }),
               object: {
                 ...createObjectRef({
                   name: "importedObjectMethod",
                   type: "TestImport_Object",
-                  required: true
+                  required: true,
                 }),
-              }
+              },
             },
           }),
           arguments: [
@@ -553,26 +860,25 @@ export const typeInfo: TypeInfo = {
               ...createObjectPropertyDefinition({
                 name: "importedObject",
                 type: "TestImport_Object",
-                required: true
+                required: true,
               }),
               object: {
                 ...createObjectRef({
                   name: "importedObject",
                   type: "TestImport_Object",
-                  required: true
+                  required: true,
                 }),
-              }
-            }
+              },
+            },
           ],
         },
         {
           ...createMethodDefinition({
-            type: "query",
             name: "importedEnumMethod",
             return: createEnumPropertyDefinition({
               name: "importedEnumMethod",
               type: "TestImport_Enum",
-              required: true
+              required: true,
             }),
           }),
           arguments: [
@@ -580,42 +886,57 @@ export const typeInfo: TypeInfo = {
               ...createEnumPropertyDefinition({
                 name: "enum",
                 type: "TestImport_Enum",
-                required: true
+                required: true,
               }),
             },
             {
               ...createEnumPropertyDefinition({
                 name: "optEnum",
                 type: "TestImport_Enum",
-                required: false
+                required: false,
               }),
-            }
-          ]
+            },
+          ],
         },
-      ],
-    },
-    {
-      ...createImportedModuleDefinition({
-        uri: "testimport.uri.eth",
-        namespace: "TestImport",
-        type: "TestImport_Mutation",
-        nativeType: "Mutation",
-        isInterface: false,
-        comment: "TestImport_Mutation comment"
-      }),
-      methods: [
         {
           ...createMethodDefinition({
-            type: "mutation",
-            name: "importedMethod",
-            return: createScalarPropertyDefinition({
-              name: "importedMethod",
-              type: "String",
-              required: true
+            name: "envMethod",
+            env: {
+              required: true,
+            },
+            return: createObjectPropertyDefinition({
+              name: "envMethod",
+              type: "TestImport_Env",
+              required: true,
             }),
-            comment: "importedMethod comment"
           }),
-          arguments: [createScalarPropertyDefinition({ name: "str", type: "String", required: true, comment: "str comment" })],
+          arguments: [
+            createScalarPropertyDefinition({
+              name: "arg",
+              type: "String",
+              required: true,
+            }),
+          ],
+        },
+        {
+          ...createMethodDefinition({
+            name: "optEnvMethod",
+            env: {
+              required: false,
+            },
+            return: createObjectPropertyDefinition({
+              name: "optEnvMethod",
+              type: "TestImport_Env",
+              required: false,
+            }),
+          }),
+          arguments: [
+            createScalarPropertyDefinition({
+              name: "arg",
+              type: "String",
+              required: true,
+            }),
+          ],
         },
       ],
     },
@@ -623,26 +944,48 @@ export const typeInfo: TypeInfo = {
       ...createImportedModuleDefinition({
         uri: "interface.uri.eth",
         namespace: "Interface",
-        type: "Interface_Query",
         isInterface: false,
-        nativeType: "Query",
-        comment: "Interface_Query comment"
+        nativeType: "Module",
+        comment: "Interface_Module comment",
       }),
       methods: [
         {
           ...createMethodDefinition({
-            type: "query",
             name: "abstractMethod",
             return: createScalarPropertyDefinition({
               name: "abstractMethod",
               type: "String",
-              required: true
+              required: true,
             }),
-            comment: "abstractMethod comment"
+            comment: "abstractMethod comment",
           }),
-          arguments: [createScalarPropertyDefinition({ name: "arg", type: "UInt8", required: true })],
+          arguments: [
+            createScalarPropertyDefinition({
+              name: "arg",
+              type: "UInt8",
+              required: true,
+            }),
+          ],
         },
       ],
     },
   ],
+  importedEnvTypes: [
+    {
+      ...createImportedEnvDefinition({
+        uri: "testimport.uri.eth",
+        namespace: "TestImport",
+        type: "TestImport_Env",
+        nativeType: "Env",
+        comment: "TestImport_Env comment",
+      }),
+      properties: [
+        createScalarPropertyDefinition({
+          name: "envProp",
+          type: "UInt8",
+          required: true,
+        }),
+      ],
+    },
+  ]
 };

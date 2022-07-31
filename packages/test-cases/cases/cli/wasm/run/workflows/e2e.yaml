@@ -1,0 +1,23 @@
+name: simple-storage
+jobs:
+  cases:
+    steps:
+    - uri: fs/build
+      method: deployContract
+      args:
+        connection: null
+    jobs:
+      case1:
+        steps:
+        - uri: fs/build
+          method: setData
+          args:
+            options:
+              address: "$cases.0.data"
+              value: 100
+            connection: null
+        - uri: fs/build
+          method: getData
+          args:
+            address: "$cases.0.data"
+            connection: null

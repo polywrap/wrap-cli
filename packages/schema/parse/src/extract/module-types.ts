@@ -1,23 +1,24 @@
 import {
-  TypeInfo,
-  ModuleDefinition,
+  Abi,
   createModuleDefinition,
   createMethodDefinition,
   createPropertyDefinition,
   createInterfaceImplementedDefinition,
   CapabilityType,
-  InvokableModules,
   createCapability,
   createInterfaceDefinition,
   InterfaceDefinition,
   capabilityTypes,
-} from "../typeInfo";
+  MapDefinition,
+} from "../abi";
 import {
+  extractEnvDirective,
   extractInputValueDefinition,
   extractListType,
   extractNamedType,
   State,
-} from "./module-types-utils";
+} from "./utils/module-types-utils";
+import { extractAnnotateDirective } from "./utils/object-types-utils";
 
 import {
   ObjectTypeDefinitionNode,
@@ -32,11 +33,11 @@ import {
   ASTVisitor,
 } from "graphql";
 
-const visitorEnter = (moduleTypes: ModuleDefinition[], state: State) => ({
+const visitorEnter = (abi: Abi, state: State) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     const nodeName = node.name.value;
 
-    if (nodeName !== "Query" && nodeName !== "Mutation") {
+    if (nodeName !== "Module") {
       return;
     }
 
@@ -46,14 +47,14 @@ const visitorEnter = (moduleTypes: ModuleDefinition[], state: State) => ({
     state.currentInterfaces = interfaces;
 
     const module = createModuleDefinition({
-      type: nodeName,
       imports,
       interfaces: node.interfaces?.map((x) =>
         createInterfaceImplementedDefinition({ type: x.name.value })
       ),
       comment: node.description?.value,
     });
-    moduleTypes.push(module);
+
+    abi.moduleType = module;
     state.currentModule = module;
   },
   FieldDefinition: (node: FieldDefinitionNode) => {
@@ -63,17 +64,31 @@ const visitorEnter = (moduleTypes: ModuleDefinition[], state: State) => ({
       return;
     }
 
+    const name = node.name.value;
+
+    const { type, def } = extractAnnotateDirective(node, name);
+
     const returnType = createPropertyDefinition({
-      type: "N/A",
+      type: type ? type : "N/A",
       name: node.name.value,
+      map: def
+        ? ({ ...def, name: node.name.value } as MapDefinition)
+        : undefined,
+      required: def && def.required ? true : false,
     });
 
     const method = createMethodDefinition({
-      type: module.type,
       name: node.name.value,
       return: returnType,
       comment: node.description?.value,
     });
+
+    const envDirDefinition = extractEnvDirective(node);
+
+    if (envDirDefinition) {
+      method.env = envDirDefinition;
+    }
+
     module.methods.push(method);
     state.currentMethod = method;
     state.currentReturn = returnType;
@@ -190,21 +205,8 @@ const parseCapabilitiesDirective = (
         capabilities: createCapability({
           type: capabilityType,
           enabled: true,
-          modules: [node.name.value.toLowerCase() as InvokableModules],
         }),
       });
-    } else {
-      const interfaceType = interfacesByNamespace[namespace];
-      if (
-        interfaceType.capabilities[capabilityType] &&
-        !interfaceType.capabilities[capabilityType].modules.includes(
-          node.name.value.toLowerCase() as InvokableModules
-        )
-      ) {
-        interfaceType.capabilities[capabilityType].modules.push(
-          node.name.value.toLowerCase() as InvokableModules
-        );
-      }
     }
   }
 
@@ -269,13 +271,10 @@ const parseImportsDirective = (
   return imports;
 };
 
-const visitorLeave = (typeInfo: TypeInfo, state: State) => ({
+const visitorLeave = (abi: Abi, state: State) => ({
   ObjectTypeDefinition: (_node: ObjectTypeDefinitionNode) => {
     if (state.currentInterfaces) {
-      typeInfo.interfaceTypes = [
-        ...typeInfo.interfaceTypes,
-        ...state.currentInterfaces,
-      ];
+      abi.interfaceTypes = [...abi.interfaceTypes, ...state.currentInterfaces];
     }
 
     state.currentInterfaces = undefined;
@@ -293,11 +292,11 @@ const visitorLeave = (typeInfo: TypeInfo, state: State) => ({
   },
 });
 
-export const getmoduleTypesVisitor = (typeInfo: TypeInfo): ASTVisitor => {
+export const getModuleTypesVisitor = (abi: Abi): ASTVisitor => {
   const state: State = {};
 
   return {
-    enter: visitorEnter(typeInfo.moduleTypes, state),
-    leave: visitorLeave(typeInfo, state),
+    enter: visitorEnter(abi, state),
+    leave: visitorLeave(abi, state),
   };
 };

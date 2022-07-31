@@ -1,15 +1,15 @@
 import { Uri, PluginPackage, PluginRegistration } from "../types";
 
-import { Tracer } from "@web3api/tracing-js";
+import { Tracer } from "@polywrap/tracing-js";
 
 export const findPluginPackage = Tracer.traceFunc(
   "core: findPluginPackage",
   (
     uri: Uri,
     plugins: readonly PluginRegistration<Uri>[]
-  ): PluginPackage | undefined => {
+  ): PluginPackage<unknown> | undefined => {
     const pluginRedirect = plugins.find((x) => Uri.equals(x.uri, uri));
 
-    return pluginRedirect?.plugin as PluginPackage | undefined;
+    return pluginRedirect?.plugin as PluginPackage<unknown> | undefined;
   }
 );

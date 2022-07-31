@@ -1,48 +1,26 @@
-import { mutation, query } from "./resolvers";
-import { manifest } from "./w3";
+import { Module, Args_sampleMethod, manifest } from "./wrap";
 
-import {
-  Plugin,
-  PluginFactory,
-  PluginPackageManifest,
-  PluginModules,
-} from "@web3api/core-js";
+import { PluginFactory } from "@polywrap/core-js";
 
 export interface SamplePluginConfig {
   defaultValue: string;
 }
 
-export class SamplePlugin extends Plugin {
-  constructor(private _config: SamplePluginConfig) {
-    super();
+export class SamplePlugin extends Module<SamplePluginConfig> {
+  constructor(config: SamplePluginConfig) {
+    super(config);
   }
-
-  public static manifest(): PluginPackageManifest {
-    return manifest;
-  }
-
-  public getModules(): PluginModules {
-    return {
-      query: query(this),
-      mutation: mutation(this),
-    };
-  }
-
-  public async sampleQuery(data: string): Promise<string> {
-    return data + this._config.defaultValue;
-  }
-
-  public sampleMutation(data: Uint8Array): boolean {
-    return data.length > 0;
+  public sampleMethod(args: Args_sampleMethod): string {
+    return args.data + this.config.defaultValue;
   }
 }
 
 export const samplePlugin: PluginFactory<SamplePluginConfig> = (
-  opts: SamplePluginConfig
+  config: SamplePluginConfig
 ) => {
   return {
-    factory: () => new SamplePlugin(opts),
-    manifest: SamplePlugin.manifest(),
+    factory: () => new SamplePlugin(config),
+    manifest,
   };
 };
 

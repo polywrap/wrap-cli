@@ -1,6 +1,6 @@
 const template = `
-{{#typeInfo}}
-{{#moduleTypes}}{{#comment}}
+{{#abi}}
+{{#moduleType}}{{#comment}}
 """
 {{comment}}
 """
@@ -29,15 +29,15 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
     {{/comment}}
     {{name}}: {{toGraphQLType}}
     {{/arguments}}
-  ){{/arguments.length}}: {{#return}}{{toGraphQLType}}{{/return}}
+  ){{/arguments.length}}: {{#return}}{{toGraphQLType}}{{/return}}{{#env}} @env(required: {{required}}){{/env}}
   {{^last}}
 
   {{/last}}
   {{/methods}}
 }{{/methods.length}}
 
-{{/moduleTypes}}
-{{#envTypes.query.client}}{{#comment}}
+{{/moduleType}}
+{{#envType}}{{#comment}}
 """
 {{comment}}
 """
@@ -52,55 +52,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
   {{/properties}}
 }{{/properties.length}}
 
-{{/envTypes.query.client}}
-{{#envTypes.query.sanitized}}{{#comment}}
-"""
-{{comment}}
-"""
-{{/comment}}
-type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}}{{#properties.length}} {
-  {{#properties}}{{#comment}}
-  """
-  {{comment}}
-  """
-  {{/comment}}
-  {{name}}: {{toGraphQLType}}
-  {{/properties}}
-}{{/properties.length}}
-
-{{/envTypes.query.sanitized}}
-{{#envTypes.mutation.client}}{{#comment}}
-"""
-{{comment}}
-"""
-{{/comment}}
-type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}}{{#properties.length}} {
-  {{#properties}}{{#comment}}
-  """
-  {{comment}}
-  """
-  {{/comment}}
-  {{name}}: {{toGraphQLType}}
-  {{/properties}}
-}{{/properties.length}}
-
-{{/envTypes.mutation.client}}
-{{#envTypes.mutation.sanitized}}{{#comment}}
-"""
-{{comment}}
-"""
-{{/comment}}
-type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}}{{#properties.length}} {
-  {{#properties}}{{#comment}}
-  """
-  {{comment}}
-  """
-  {{/comment}}
-  {{name}}: {{toGraphQLType}}
-  {{/properties}}
-}{{/properties.length}}
-
-{{/envTypes.mutation.sanitized}}
+{{/envType}}
 {{#objectTypes}}{{#comment}}
 """
 {{comment}}
@@ -129,7 +81,7 @@ enum {{type}} {
 }
 
 {{/enumTypes}}
-### Imported Queries START ###
+### Imported Modules START ###
 
 {{#importedModuleTypes}}{{#comment}}
 """
@@ -154,7 +106,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
     {{/comment}}
     {{name}}: {{toGraphQLType}}
     {{/arguments}}
-  ){{/arguments.length}}: {{#return}}{{toGraphQLType}}{{/return}}
+  ){{/arguments.length}}: {{#return}}{{toGraphQLType}}{{/return}}{{#env}} @env(required: {{required}}){{/env}}
   {{^last}}
 
   {{/last}}
@@ -162,7 +114,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
 }{{/methods.length}}
 
 {{/importedModuleTypes}}
-### Imported Queries END ###
+### Imported Modules END ###
 
 ### Imported Objects START ###
 
@@ -203,6 +155,30 @@ enum {{type}} @imported(
 }
 
 {{/importedEnumTypes}}
-### Imported Objects END ###{{/typeInfo}}`;
+### Imported Objects END ###
+
+### Imported Envs START ###
+
+{{#importedEnvTypes}}{{#comment}}
+"""
+{{comment}}
+"""
+{{/comment}}
+type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} &{{/last}}{{/interfaces}}{{/interfaces.length}} @imported(
+  uri: "{{uri}}",
+  namespace: "{{namespace}}",
+  nativeType: "{{nativeType}}"
+){{#properties.length}} {
+  {{#properties}}{{#comment}}
+  """
+  {{comment}}
+  """
+  {{/comment}}
+  {{name}}: {{toGraphQLType}}
+  {{/properties}}
+}{{/properties.length}}
+
+{{/importedEnvTypes}}
+### Imported Envs END ###{{/abi}}`;
 
 export { template };

@@ -1,95 +1,14 @@
-/* eslint-disable @typescript-eslint/naming-convention */
-import { generateBinding } from "./bindings";
-import { getRelativePath, findCommonTypes, extendCommonTypes } from "./utils";
+import { BindOptions, BindOutput } from "./types";
+import { getGenerateBindingFn } from "./bindings";
 
-import { transformTypeInfo, TypeInfo } from "@web3api/schema-parse";
+import Mustache from "mustache";
 
-export * from "./utils";
+// Remove mustache's built-in HTML escaping
+Mustache.escape = (value) => value;
 
-export type BindLanguage = "wasm-as" | "wasm-rs" | "plugin-ts";
-
-export type OutputEntry = FileEntry | DirectoryEntry | TemplateEntry;
-
-export interface FileEntry {
-  type: "File";
-  name: string;
-  data: string;
-}
-
-export interface DirectoryEntry {
-  type: "Directory";
-  name: string;
-  data: OutputEntry[];
-}
-
-export interface TemplateEntry {
-  type: "Template";
-  name: string;
-  data: string;
-}
-
-export interface OutputDirectory {
-  entries: OutputEntry[];
-}
-
-export interface BindOutput {
-  combined?: OutputDirectory;
-  query?: OutputDirectory;
-  mutation?: OutputDirectory;
-}
-
-export interface BindModuleOptions {
-  typeInfo: TypeInfo;
-  schema: string;
-  outputDirAbs: string;
-}
-
-export interface BindOptions {
-  bindLanguage: BindLanguage;
-  combined?: BindModuleOptions;
-  query?: BindModuleOptions;
-  mutation?: BindModuleOptions;
-}
+export * from "./types";
+export * from "./bindings";
 
 export function bindSchema(options: BindOptions): BindOutput {
-  const { combined, query, mutation, bindLanguage } = options;
-
-  // If both Query & Mutation modules are present,
-  // determine which types are shared between them,
-  // and add the __common & __commonPath properties
-  if (query && mutation) {
-    // Find all common types
-    const commonTypes = findCommonTypes(query.typeInfo, mutation.typeInfo);
-
-    if (commonTypes.length) {
-      query.typeInfo = transformTypeInfo(
-        query.typeInfo,
-        extendCommonTypes(commonTypes)
-      );
-
-      // Compute the __commonPath
-      const commonPath =
-        getRelativePath(mutation.outputDirAbs, query.outputDirAbs) + "/common";
-
-      mutation.typeInfo = {
-        ...transformTypeInfo(
-          mutation.typeInfo,
-          extendCommonTypes(commonTypes, commonPath)
-        ),
-        __commonPath: commonPath,
-      } as TypeInfo;
-    }
-  }
-
-  return {
-    combined: combined
-      ? generateBinding(bindLanguage, combined.typeInfo, combined.schema)
-      : undefined,
-    query: query
-      ? generateBinding(bindLanguage, query.typeInfo, query.schema)
-      : undefined,
-    mutation: mutation
-      ? generateBinding(bindLanguage, mutation.typeInfo, mutation.schema)
-      : undefined,
-  };
+  return getGenerateBindingFn(options.bindLanguage)(options);
 }

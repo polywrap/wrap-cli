@@ -1,4 +1,4 @@
-### Web3API Header START ###
+### Polywrap Header START ###
 scalar UInt
 scalar UInt8
 scalar UInt16
@@ -9,7 +9,9 @@ scalar Int16
 scalar Int32
 scalar Bytes
 scalar BigInt
+scalar BigNumber
 scalar JSON
+scalar Map
 
 directive @imported(
   uri: String!
@@ -21,7 +23,9 @@ directive @imports(
   types: [String!]!
 ) on OBJECT
 
-### Web3API Header END ###
+directive @env(required: Boolean!) on FIELD_DEFINITION
+
+### Polywrap Header END ###
 
 type ImportedBaseType
 

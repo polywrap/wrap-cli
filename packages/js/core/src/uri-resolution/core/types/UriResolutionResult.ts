@@ -1,6 +1,7 @@
-import { Api, Uri } from "../../..";
+import { Wrapper, Uri } from "../../..";
 
 export interface UriResolutionResult {
   uri: Uri;
-  api?: Api;
+  wrapper?: Wrapper;
+  error?: Error;
 }

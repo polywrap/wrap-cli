@@ -1,0 +1,109 @@
+#import { Module, CustomType } into Namespace from "test.eth"
+#import { Module } into JustModule from "just.module.eth"
+#import { InterfaceObject1, InterfaceObject2, Module } into Interface from "test-interface.eth"
+#import { CommonType, Env } from "../imports-local/common.graphql"
+#use { getImplementations } for Namespace
+
+"""
+Module comment
+"""
+type Module implements Interface_Module {
+
+#Testing normal comment with keyword characters: 
+#type Module {}
+#These comments should be ignored
+
+"""
+method1 comment
+"""
+  method1(
+"""
+str comment
+"""
+    str: String!
+"""
+optStr comment
+"""
+    optStr: String
+    u: UInt!
+"""
+uArrayArray comment
+"""
+    uArrayArray: [[UInt]]!
+"""
+implObject comment
+"""
+    implObject: LocalImplementationObject!
+"""
+Map<String!, Int!> comment
+"""
+  map: Map! @annotate(type: "Map<String!, Int!>!")
+  ): String!
+
+  """
+  method2 comment
+  """
+  method2(
+    arg: [String!]!
+  ): [Int32!]!
+}
+
+"""
+CustomModuleType multi-line comment
+line 2
+"""
+type CustomModuleType {
+"""
+str comment
+"""
+  str: String!
+"""
+optStr comment
+"""
+  optStr: String
+  u: UInt!
+  optU: UInt
+  u8: UInt8!
+  i: Int!
+  i8: Int8!
+  bytes: Bytes!
+  uArray: [UInt!]!
+  uOptArray: [UInt!]
+  optStrOptArray: [String]
+"""
+crazyArray comment
+"""
+  crazyArray: [[[[UInt32!]]!]]
+  commonType: CommonType!
+  optMap: Map @annotate(type: "Map<String, Int>")
+"""
+customType comment
+"""
+  customType: Namespace_CustomType!
+}
+
+type AnotherModuleType {
+  prop: String
+}
+
+type TypeFromInterface implements AnotherModuleType {
+  prop2: UInt32!
+}
+
+"""
+ImplementationObject comment
+"""
+type ImplementationObject implements Interface_InterfaceObject1 & Interface_InterfaceObject2 {
+"""
+anotherProp comment
+"""
+  anotherProp: String
+}
+
+type LocalImplementationObject implements LocalInterfaceObject {
+  uint8: UInt8!
+}
+
+type LocalInterfaceObject {
+  str: String!
+}

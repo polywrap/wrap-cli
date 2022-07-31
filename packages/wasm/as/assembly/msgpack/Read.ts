@@ -1,7 +1,8 @@
-import { Nullable } from "./Nullable";
-import { BigInt } from "../math";
+import { BigInt, BigNumber } from "../math";
 import { Context } from "../debug";
 import { JSON } from "../json";
+
+import { Option } from "as-container";
 
 export abstract class Read {
   abstract readBool(): bool;
@@ -18,6 +19,7 @@ export abstract class Read {
   abstract readBytesLength(): u32;
   abstract readBytes(): ArrayBuffer;
   abstract readBigInt(): BigInt;
+  abstract readBigNumber(): BigNumber;
   abstract readJSON(): JSON.Value;
   abstract readArrayLength(): u32;
   abstract readArray<T>(fn: (reader: Read) => T): Array<T>;
@@ -26,22 +28,31 @@ export abstract class Read {
     key_fn: (reader: Read) => K,
     value_fn: (reader: Read) => V
   ): Map<K, V>;
+  abstract readExtGenericMap<K, V>(
+    key_fn: (reader: Read) => K,
+    value_fn: (reader: Read) => V
+  ): Map<K, V>;
 
-  abstract readNullableBool(): Nullable<bool>;
-  abstract readNullableInt8(): Nullable<i8>;
-  abstract readNullableInt16(): Nullable<i16>;
-  abstract readNullableInt32(): Nullable<i32>;
-  abstract readNullableUInt8(): Nullable<u8>;
-  abstract readNullableUInt16(): Nullable<u16>;
-  abstract readNullableUInt32(): Nullable<u32>;
-  abstract readNullableFloat32(): Nullable<f32>;
-  abstract readNullableFloat64(): Nullable<f64>;
-  abstract readNullableString(): string | null;
-  abstract readNullableBytes(): ArrayBuffer | null;
-  abstract readNullableBigInt(): BigInt | null;
-  abstract readNullableJSON(): JSON.Value | null;
-  abstract readNullableArray<T>(fn: (decoder: Read) => T): Array<T> | null;
-  abstract readNullableMap<K, V>(
+  abstract readOptionalBool(): Option<bool>;
+  abstract readOptionalInt8(): Option<i8>;
+  abstract readOptionalInt16(): Option<i16>;
+  abstract readOptionalInt32(): Option<i32>;
+  abstract readOptionalUInt8(): Option<u8>;
+  abstract readOptionalUInt16(): Option<u16>;
+  abstract readOptionalUInt32(): Option<u32>;
+  abstract readOptionalFloat32(): Option<f32>;
+  abstract readOptionalFloat64(): Option<f64>;
+  abstract readOptionalString(): string | null;
+  abstract readOptionalBytes(): ArrayBuffer | null;
+  abstract readOptionalBigInt(): BigInt | null;
+  abstract readOptionalBigNumber(): BigNumber | null;
+  abstract readOptionalJSON(): JSON.Value | null;
+  abstract readOptionalArray<T>(fn: (decoder: Read) => T): Array<T> | null;
+  abstract readOptionalMap<K, V>(
+    key_fn: (reader: Read) => K,
+    value_fn: (reader: Read) => V
+  ): Map<K, V> | null;
+  abstract readOptionalExtGenericMap<K, V>(
     key_fn: (reader: Read) => K,
     value_fn: (reader: Read) => V
   ): Map<K, V> | null;

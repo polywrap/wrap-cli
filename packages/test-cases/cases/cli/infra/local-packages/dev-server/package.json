@@ -1,0 +1,10 @@
+{
+  "name": "@polywrap/dev-server-infra",
+  "version": "0.1.0",
+  "files": [
+    "docker-compose.yaml",
+    "Dockerfile",
+    "tsconfig.json",
+    "src/**/*"
+  ]
+}

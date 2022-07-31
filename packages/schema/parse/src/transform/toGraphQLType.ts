@@ -1,11 +1,12 @@
-import { TypeInfoTransforms } from ".";
+import { AbiTransforms } from ".";
 import {
   GenericDefinition,
   AnyDefinition,
   ArrayDefinition,
   MethodDefinition,
   DefinitionKind,
-} from "../typeInfo";
+  MapDefinition,
+} from "../abi";
 
 function applyRequired(type: string, required: boolean | null): string {
   return `${type}${required ? "!" : ""}`;
@@ -20,6 +21,8 @@ function anyToGraphQL(any: AnyDefinition, prefixed: boolean): string {
     return toGraphQL(any.scalar, prefixed);
   } else if (any.enum) {
     return toGraphQL(any.enum, prefixed);
+  } else if (any.map) {
+    return toGraphQL(any.map, prefixed);
   } else {
     throw Error(
       `anyToGraphQL: Any type is invalid.\n${JSON.stringify(any, null, 2)}`
@@ -27,7 +30,7 @@ function anyToGraphQL(any: AnyDefinition, prefixed: boolean): string {
   }
 }
 
-function toGraphQL(def: GenericDefinition, prefixed = false): string {
+export function toGraphQL(def: GenericDefinition, prefixed = false): string {
   switch (def.kind) {
     case DefinitionKind.Object:
     case DefinitionKind.ObjectRef:
@@ -61,6 +64,34 @@ function toGraphQL(def: GenericDefinition, prefixed = false): string {
       return applyRequired(
         `[${toGraphQL(array.item, prefixed)}]`,
         array.required
+      );
+    }
+    case DefinitionKind.Map: {
+      const map = def as MapDefinition;
+      if (!map.key) {
+        throw Error(
+          `toGraphQL: MapDefinition's key type is undefined.\n${JSON.stringify(
+            map,
+            null,
+            2
+          )}`
+        );
+      }
+      if (!map.value) {
+        throw Error(
+          `toGraphQL: MapDefinition's value type is undefined.\n${JSON.stringify(
+            map,
+            null,
+            2
+          )}`
+        );
+      }
+      return applyRequired(
+        `Map<${toGraphQL(map.key, prefixed)}, ${toGraphQL(
+          map.value,
+          prefixed
+        )}>`,
+        map.required
       );
     }
     case DefinitionKind.Method: {
@@ -102,7 +133,7 @@ export function toPrefixedGraphQL(def: GenericDefinition): string {
   return toGraphQL(def, true);
 }
 
-export const toPrefixedGraphQLType: TypeInfoTransforms = {
+export const toPrefixedGraphQLType: AbiTransforms = {
   enter: {
     GenericDefinition: (def: GenericDefinition) => ({
       ...def,
@@ -111,7 +142,7 @@ export const toPrefixedGraphQLType: TypeInfoTransforms = {
   },
 };
 
-export const toGraphQLType: TypeInfoTransforms = {
+export const toGraphQLType: AbiTransforms = {
   enter: {
     GenericDefinition: (def: GenericDefinition) => ({
       ...def,

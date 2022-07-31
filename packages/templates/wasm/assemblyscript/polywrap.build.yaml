@@ -1,0 +1,8 @@
+format: 0.1.0
+docker:
+  name: template-wasm-as
+config:
+  node_version: "16.13.0"
+  include:
+    - ./package.json
+    - ./src

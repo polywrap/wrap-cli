@@ -1,24 +1,25 @@
 {
   "name": "templates-plugin-typescript",
-  "description": "Web3API Plugin Typescript Template",
+  "description": "Polywrap Plugin Typescript Template",
   "private": true,
-  "version": "0.0.1-prealpha.65",
+  "version": "0.3.0",
   "main": "build/index.js",
   "scripts": {
-    "build": "rimraf ./build && tsc --project tsconfig.json",
-    "prebuild": "npx w3 plugin codegen",
+    "build": "rimraf ./build && yarn codegen && tsc --project tsconfig.json",
+    "codegen": "npx polywrap plugin codegen",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "jest --passWithNoTests --runInBand --verbose",
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@web3api/core-js": "0.0.1-prealpha.65"
+    "@polywrap/core-js": "0.3.0"
   },
   "devDependencies": {
+    "@polywrap/client-js": "0.3.0",
     "@types/jest": "26.0.8",
-    "@web3api/cli": "0.0.1-prealpha.65",
-    "@web3api/client-js": "0.0.1-prealpha.65",
+    "@types/prettier": "2.6.0",
     "jest": "26.6.3",
+    "polywrap": "0.3.0",
     "rimraf": "3.0.2",
     "ts-jest": "26.5.4",
     "ts-node": "8.10.2",

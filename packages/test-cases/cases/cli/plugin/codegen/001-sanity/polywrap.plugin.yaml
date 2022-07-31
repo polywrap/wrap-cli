@@ -1,0 +1,5 @@
+format: 0.1.0
+name: Test
+language: plugin/typescript
+schema: ./schema.graphql
+module: ./src/index.ts

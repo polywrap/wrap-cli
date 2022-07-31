@@ -1,7 +1,7 @@
-@external("w3", "asyncFunc")
+@external("wrap", "asyncFunc")
 declare function asyncFunc(ms: number): void;
 
-@external("w3", "log")
+@external("wrap", "log")
 declare function log(value: number): void;
 
 export function main(): void {

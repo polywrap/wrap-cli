@@ -1,0 +1,34 @@
+#import { * } from "../imports-local/common.graphql"
+
+type Module {
+  method1(
+    str: String!
+    optStr: String
+    u: UInt!
+    uArrayArray: [[UInt]]!
+  ): String!
+
+  method2(
+    arg: [String!]!
+  ): [Int32!]!
+}
+
+type CustomModuleType {
+  str: String!
+  optStr: String
+  u: UInt!
+  optU: UInt
+  u8: UInt8!
+  i: Int!
+  i8: Int8!
+  bytes: Bytes!
+  uArray: [UInt!]!
+  uOptArray: [UInt!]
+  optStrOptArray: [String]
+  crazyArray: [[[[UInt32!]]!]]
+  commonType: CommonType!
+}
+
+type AnotherModuleType {
+  prop: String
+}

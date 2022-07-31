@@ -1,3 +1,6 @@
 export * from "./Project";
-export * from "./Web3ApiProject";
+export * from "./PolywrapProject";
 export * from "./PluginProject";
+export * from "./AppProject";
+export * from "./templates";
+export * from "./manifests";

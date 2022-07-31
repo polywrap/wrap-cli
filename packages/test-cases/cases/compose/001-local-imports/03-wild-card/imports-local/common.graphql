@@ -1,0 +1,27 @@
+type CommonType {
+  prop: UInt8!
+  nestedObject: NestedType!
+  objectArray: [[ArrayObject]]!
+  enum: CommonEnum!
+}
+
+type NestedType {
+  prop: String!
+}
+
+type ArrayObject {
+  prop: String!
+}
+
+enum CommonEnum {
+  STRING
+  BYTES
+}
+
+type IgnoredType1 {
+  prop: IgnoredType2
+}
+
+type IgnoredType2 {
+  prop: String
+}

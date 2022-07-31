@@ -1,9 +1,0 @@
-type Mutation {
-  method: DerivedType
-}
-
-type BaseType {
-}
-
-type DerivedType implements BaseType {
-}

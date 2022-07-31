@@ -1,3 +1,0 @@
-#import { Query } into Logger from "ens/logger.core.web3api.eth"
-
-type Query implements Logger_Query { }

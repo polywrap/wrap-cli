@@ -1,0 +1,24 @@
+type Module {
+  parse(
+    value: String!
+  ): JSON!
+
+  stringify(
+    values: [JSON!]!
+  ): String!
+
+  stringifyObject(
+    object: Object!
+  ): String!
+
+  methodJSON(
+    valueA: Int!
+    valueB: String!
+    valueC: Boolean!
+  ): JSON!
+}
+
+type Object {
+  jsonA: JSON!
+  jsonB: JSON!
+}

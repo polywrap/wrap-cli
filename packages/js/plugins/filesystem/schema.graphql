@@ -1,3 +1,0 @@
-#import { Query, MaybeUriOrManifest } into UriResolver from "ens/uri-resolver.core.web3api.eth"
-
-type Query implements UriResolver_Query { }

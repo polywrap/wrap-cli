@@ -1,8 +1,8 @@
 import { Uri } from "./Uri";
 import { ClientConfig } from "./Client";
-import { QueryApiOptions, QueryApiResult } from "./Query";
+import { InvokeOptions, InvokeResult } from "./Invoke";
 
-/** Defines the frequency of API invocations for an API subscription */
+/** Defines the frequency of Wrapper invocations for an Wrapper subscription */
 export interface SubscriptionFrequency {
   ms?: number;
   sec?: number;
@@ -10,28 +10,25 @@ export interface SubscriptionFrequency {
   hours?: number;
 }
 
-/** Options required for an API subscription. */
+/** Options required for an Wrapper subscription. */
 export interface SubscribeOptions<
-  TVariables extends Record<string, unknown> = Record<string, unknown>,
   TUri extends Uri | string = string,
   TClientConfig extends ClientConfig = ClientConfig
-> extends QueryApiOptions<TVariables, TUri, TClientConfig> {
+> extends InvokeOptions<TUri, TClientConfig> {
   /**
-   * The frequency of API invocations. Defaults to one query per minute.
+   * The frequency of Wrapper invocations. Defaults to one query per minute.
    */
   frequency?: SubscriptionFrequency;
 }
 
 /**
- * An API subscription, which implements the AsyncIterator protocol, is an
+ * An Wrapper subscription, which implements the AsyncIterator protocol, is an
  * AsyncIterable that yields query results at a specified frequency.
  * @template TData Type of the query result.
  */
-export interface Subscription<
-  TData extends Record<string, unknown> = Record<string, unknown>
-> {
+export interface Subscription<TData = unknown> {
   /**
-   * The frequency of API invocations.
+   * The frequency of Wrapper invocations.
    */
   frequency: number;
   /**
@@ -47,15 +44,11 @@ export interface Subscription<
    * Implementation of AsyncIterator protocol makes the Subscription an
    * AsyncIterable, allowing use in for await...of loops.
    */
-  [Symbol.asyncIterator](): AsyncGenerator<QueryApiResult<TData>>;
+  [Symbol.asyncIterator](): AsyncGenerator<InvokeResult<TData>>;
 }
 
 export interface SubscriptionHandler {
-  subscribe<
-    TData extends Record<string, unknown> = Record<string, unknown>,
-    TVariables extends Record<string, unknown> = Record<string, unknown>,
-    TUri extends Uri | string = string
-  >(
-    options: SubscribeOptions<TVariables, TUri>
+  subscribe<TData = unknown, TUri extends Uri | string = string>(
+    options: SubscribeOptions<TUri>
   ): Subscription<TData>;
 }

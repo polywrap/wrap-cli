@@ -1,1 +1,39 @@
-* @dOrgJelli
+# Default
+* @dOrgJelli @namesty
+
+# Wasm Runtime
+packages/wasm/as  @dOrgJelli @krisbitney @namesty @Niraj-Kamdar
+
+# Schema
+packages/schema/parse    @dOrgJelli @namesty @nerfZael @Niraj-Kamdar
+packages/schema/compose  @dOrgJelli @namesty @nerfZael @Niraj-Kamdar
+packages/schema/bind     @dOrgJelli @krisbitney @nerfZael @Niraj-Kamdar
+
+# Project Manifests
+packages/manifest-schemas/  @dOrgJelli
+
+# CLI
+packages/js/cli @dOrgJelli @krisbitney @namesty @nerfZael @Niraj-Kamdar
+
+# Client Interfaces
+packages/interfaces  @dOrgJelli
+
+# JS Client
+packages/js/client    @dOrgJelli @krisbitney @namesty @nerfZael
+packages/js/react     @dOrgJelli @nerfZael
+packages/js/core      @dOrgJelli @krisbitney @namesty @nerfZael
+packages/js/os        @dOrgJelli
+packages/js/asyncify  @namesty @dOrgJelli
+packages/js/tracing   @dOrgJelli @Niraj-Kamdar
+packages/js/test-env  @dOrgJelli
+
+# JS Plugins
+packages/js/plugins/ens         @dOrgJelli @krisbitney
+packages/js/plugins/ethereum    @dOrgJelli @krisbitney @namesty
+packages/js/plugins/filesystem  @krisbitney @dOrgJelli @Niraj-Kamdar
+packages/js/plugins/graph-node  @namesty
+packages/js/plugins/http        @dOrgJelli @ramilexe
+packages/js/plugins/ipfs        @dOrgJelli @krisbitney @nerfZael
+packages/js/plugins/logger      @dOrgJelli @nerfZael
+packgaes/js/plugins/sha3        @namesty @dOrgJelli @krisbitney
+packages/js/plugins/uts46       @namesty @dOrgJelli @krisbitney

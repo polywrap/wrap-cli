@@ -1,0 +1,44 @@
+### Polywrap Header START ###
+scalar UInt
+scalar UInt8
+scalar UInt16
+scalar UInt32
+scalar Int
+scalar Int8
+scalar Int16
+scalar Int32
+scalar Bytes
+scalar BigInt
+scalar BigNumber
+scalar JSON
+
+directive @imported(
+  uri: String!
+  namespace: String!
+  nativeType: String!
+) on OBJECT | ENUM
+
+directive @imports(
+  types: [String!]!
+) on OBJECT
+
+directive @env(required: Boolean!) on FIELD_DEFINITION
+
+### Polywrap Header END ###
+
+type ExternalType {
+  str: String
+}
+
+type ExternalType2 {
+  foo: UInt32
+}
+
+type Env {
+  externalProp: ExternalType
+}
+
+type Module {
+  envMethod(arg: String!): String! @env(required: true)
+  optEnvMethod(arg: String!): String! @env(required: false)
+}

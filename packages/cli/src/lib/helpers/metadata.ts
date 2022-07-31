@@ -1,8 +1,8 @@
-import { withSpinner, displayPath } from "./";
-import { intlMsg } from "../intl";
+import { withSpinner } from "./";
+import { displayPath, intlMsg } from "../";
 
-import { normalizePath } from "@web3api/os-js";
-import { MetaManifest } from "@web3api/core-js";
+import { normalizePath } from "@polywrap/os-js";
+import { MetaManifest } from "@polywrap/polywrap-manifest-types-js";
 import { Ora } from "ora";
 import fs from "fs";
 import path from "path";
@@ -17,7 +17,6 @@ export async function outputMetadata(
     ...metaManifest,
     icon: undefined,
     links: undefined,
-    queries: undefined,
   };
 
   const writeMetadataFile = (
@@ -66,28 +65,6 @@ export async function outputMetadata(
           result.links[result.links.length - 1].icon = writeFile(
             link.icon,
             "links/"
-          );
-        }
-      }
-    }
-
-    if (metaManifest.queries) {
-      result.queries = [];
-
-      for (const query of metaManifest.queries) {
-        result.queries.push({
-          ...query,
-        });
-
-        result.queries[result.queries.length - 1].query = writeFile(
-          query.query,
-          "queries/"
-        );
-
-        if (query.vars) {
-          result.queries[result.queries.length - 1].vars = writeFile(
-            query.vars,
-            "queries/"
           );
         }
       }

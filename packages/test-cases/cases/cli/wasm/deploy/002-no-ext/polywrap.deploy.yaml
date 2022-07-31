@@ -1,0 +1,7 @@
+format: 0.1.0
+stages:
+  ipfs_test:
+    package: ipfs-test
+    uri: fs/./build
+    config:
+      foo: bar

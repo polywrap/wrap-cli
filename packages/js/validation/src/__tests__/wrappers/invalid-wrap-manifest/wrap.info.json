@@ -1,0 +1,13 @@
+{
+  "name": "test",
+  "version": "invalid",
+  "abi": {
+    "objectTypes": [],
+    "enumTypes": [],
+    "interfaceTypes": [],
+    "importedObjectTypes": [],
+    "importedModuleTypes": [],
+    "importedEnumTypes": [],
+    "importedEnvTypes": []
+  }
+}

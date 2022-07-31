@@ -1,27 +1,25 @@
-// TODO: https://github.com/web3-api/monorepo/issues/101
-import { Uri, InvokeHandler, InvokeApiResult } from "../";
+// TODO: https://github.com/polywrap/monorepo/issues/101
+import { Uri, Invoker, InvokeResult } from "../";
 
-import { Tracer } from "@web3api/tracing-js";
+import { Tracer } from "@polywrap/tracing-js";
 
 export interface MaybeUriOrManifest {
   uri?: string;
-  manifest?: string;
+  manifest?: Uint8Array;
 }
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
-export const Query = {
+export const module = {
   tryResolveUri: Tracer.traceFunc(
     "core: uri-resolver: tryResolveUri",
     async (
-      invoke: InvokeHandler["invoke"],
-      api: Uri,
+      invoker: Invoker,
+      wrapper: Uri,
       uri: Uri
-    ): Promise<InvokeApiResult<MaybeUriOrManifest>> => {
-      return invoke<MaybeUriOrManifest>({
-        uri: api.uri,
-        module: "query",
+    ): Promise<InvokeResult<MaybeUriOrManifest>> => {
+      return invoker.invoke<MaybeUriOrManifest>({
+        uri: wrapper.uri,
         method: `tryResolveUri`,
-        input: {
+        args: {
           authority: uri.authority,
           path: uri.path,
         },
@@ -31,15 +29,14 @@ export const Query = {
   getFile: Tracer.traceFunc(
     "core: uri-resolver: getFile",
     async (
-      invoke: InvokeHandler["invoke"],
-      api: Uri,
+      invoker: Invoker,
+      wrapper: Uri,
       path: string
-    ): Promise<InvokeApiResult<ArrayBuffer>> => {
-      return invoke<ArrayBuffer>({
-        uri: api.uri,
-        module: "query",
+    ): Promise<InvokeResult<Uint8Array>> => {
+      return invoker.invoke<Uint8Array>({
+        uri: wrapper.uri,
         method: "getFile",
-        input: {
+        args: {
           path,
         },
       });

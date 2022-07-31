@@ -3,8 +3,7 @@
 This is a sample plugin with sample query/mutation.
 You can add new functionalities to it by following steps.
 
-1. Add queries/mutations the `schema.graphql` file
-2. Add resolvers for that to the `resolvers.ts` file.
-   Use the Plugin class in the `index.ts` file to add helpers/methods to handle queries/mutations.
-3. Update the `manifest.ts` file.
+1. Add types & module methods to the `schema.graphql` file
+2. Run `yarn codegen`
+3. Implement the module's methods within the Plugin class in the `index.ts` file.
 4. Run `yarn build`

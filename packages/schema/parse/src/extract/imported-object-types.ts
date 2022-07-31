@@ -1,16 +1,16 @@
 import {
-  TypeInfo,
+  Abi,
   ImportedObjectDefinition,
   createImportedObjectDefinition,
   createInterfaceImplementedDefinition,
-} from "../typeInfo";
+} from "../abi";
 import {
   extractFieldDefinition,
   extractListType,
   extractNamedType,
   State,
-} from "./object-types-utils";
-import { extractImportedDefinition } from "./imported-types-utils";
+} from "./utils/object-types-utils";
+import { extractImportedDefinition } from "./utils/imported-types-utils";
 
 import {
   ObjectTypeDefinitionNode,
@@ -71,13 +71,11 @@ const visitorLeave = (state: State) => ({
   },
 });
 
-export const getImportedObjectTypesVisitor = (
-  typeInfo: TypeInfo
-): ASTVisitor => {
+export const getImportedObjectTypesVisitor = (abi: Abi): ASTVisitor => {
   const state: State = {};
 
   return {
-    enter: visitorEnter(typeInfo.importedObjectTypes, state),
+    enter: visitorEnter(abi.importedObjectTypes, state),
     leave: visitorLeave(state),
   };
 };

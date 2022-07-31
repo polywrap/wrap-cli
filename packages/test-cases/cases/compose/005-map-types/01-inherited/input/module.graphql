@@ -1,0 +1,14 @@
+type BaseType {
+  requiredMap: Map! @annotate(type: "Map<String!, Int!>!")
+}
+
+type InheritedType implements BaseType {
+  mapOfValueArr: Map! @annotate(type: "Map<String!, Array<Int!>!>!")
+}
+
+type Module {
+  method(
+    map: Map! @annotate(type: "Map<String!, Int!>!")
+    other: InheritedType!
+  ): Map! @annotate(type: "Map<String!, Int!>!")
+}

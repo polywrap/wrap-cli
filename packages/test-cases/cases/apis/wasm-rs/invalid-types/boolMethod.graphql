@@ -1,5 +1,0 @@
-query {
-  boolMethod(
-    arg: $arg
-  )
-}

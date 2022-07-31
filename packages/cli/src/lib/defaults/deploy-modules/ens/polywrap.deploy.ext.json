@@ -1,0 +1,23 @@
+{
+  "id": "DeployManifest_ENS_WasmAsExt",
+  "type": "object",
+  "required": [
+    "domainName",
+    "provider",
+    "ensRegistryAddress"
+  ],
+  "properties": {
+    "domainName": {
+      "type": "string"
+    },
+    "provider": {
+      "type": "string"
+    },
+    "privateKey": {
+      "type": "string"
+    },
+    "ensRegistryAddress": {
+      "type": "string"
+    }
+  }
+}

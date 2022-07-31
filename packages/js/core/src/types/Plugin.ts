@@ -1,87 +1,90 @@
-import { Uri, Client, InvokableModules, MaybeAsync } from ".";
+/* eslint-disable @typescript-eslint/naming-convention */
+import { Client, MaybeAsync, executeMaybeAsyncFunction, Uri } from ".";
 
 /**
  * Invocable plugin method.
  *
- * @param input Input arguments for the method, structured as
+ * @param args Arguments for the method, structured as
  * a map, removing the chance of incorrectly ordering arguments.
  * @param client The client instance requesting this invocation.
- * This client will be used for any sub-queries that occur.
+ * This client will be used for any sub-invokes that occur.
  */
-export type PluginMethod = (
-  input: Record<string, unknown>,
-  client: Client
-) => MaybeAsync<unknown>;
+export type PluginMethod<
+  TArgs extends Record<string, unknown> = Record<string, unknown>,
+  TResult = unknown
+> = (args: TArgs, client: Client) => MaybeAsync<TResult>;
 
-/**
- * A plugin "module" is a named map of [[PluginMethod | invocable methods]].
- * The names of these methods map 1:1 with the schema's query methods.
- */
-export type PluginModule = Record<string, PluginMethod>;
+export abstract class PluginModule<
+  TConfig,
+  TEnv extends Record<string, unknown> = Record<string, unknown>
+> {
+  private _env: TEnv;
+  private _config: TConfig;
 
-/** @ignore */
-type PluginModulesType = {
-  [module in InvokableModules]?: PluginModule;
-};
-
-/** The plugin's query "modules" */
-export type PluginModules = PluginModulesType;
-
-/**
- * The plugin instance.
- */
-export abstract class Plugin {
-  private _env: Record<InvokableModules, Record<string, unknown>> = {
-    query: {},
-    mutation: {},
-  };
-  /**
-   * Get an instance of this plugin's modules.
-   *
-   * @param client The client instance requesting the modules.
-   * This client will be used for any sub-queries that occur.
-   */
-  public abstract getModules(client: Client): PluginModules;
-
-  /**
-   * Sanitize plugin environment.
-   * This can optionally implemented by plugin
-   *
-   * @param env Module environment to be sanitized
-   */
-  public sanitizeEnv?(
-    env: Record<string, unknown>
-  ): Promise<Record<string, unknown>>;
-
-  /**
-   * Load module enviroment to be used
-   *
-   * @param env module enviroment to be set inside plugin
-   */
-  public loadEnv(env: Record<string, unknown>, module: InvokableModules): void {
-    this._env[module] = env;
+  constructor(config: TConfig) {
+    this._config = config;
   }
 
-  /**
-   * Get module environment
-   */
-  public getEnv(module: InvokableModules): Record<string, unknown> {
-    return this._env[module];
+  public get env(): TEnv {
+    return this._env;
+  }
+
+  public get config(): TConfig {
+    return this._config;
+  }
+
+  public setEnv(env: TEnv): void {
+    this._env = env;
+  }
+
+  public async _wrap_invoke<
+    TArgs extends Record<string, unknown> = Record<string, unknown>,
+    TResult = unknown
+  >(method: string, args: TArgs, client: Client): Promise<TResult> {
+    const fn = this.getMethod<TArgs, TResult>(method);
+
+    if (!fn) {
+      throw Error(`Plugin missing method "${method}"`);
+    }
+
+    if (typeof fn !== "function") {
+      throw Error(`Plugin method "${method}" must be of type 'function'`);
+    }
+
+    return await executeMaybeAsyncFunction<TResult>(
+      fn.bind(this, args, client)
+    );
+  }
+
+  public getMethod<
+    TArgs extends Record<string, unknown> = Record<string, unknown>,
+    TResult = unknown
+  >(method: string): PluginMethod<TArgs, TResult> | undefined {
+    const fn:
+      | PluginMethod<TArgs, TResult>
+      | undefined = ((this as unknown) as Record<
+      string,
+      PluginMethod<TArgs, TResult>
+    >)[method];
+
+    return fn;
   }
 }
 
 /** The plugin package's manifest */
 export interface PluginPackageManifest {
-  /** The API's schema */
+  /** The Wrapper's schema */
   schema: string;
 
   /** All interface schemas implemented by this plugin. */
   implements: Uri[];
 }
 
-export type PluginPackage = {
-  factory: () => Plugin;
+export type PluginPackage<TConfig> = {
+  factory: () => PluginModule<TConfig>;
   manifest: PluginPackageManifest;
 };
 
-export type PluginFactory<TOpts> = (opts: TOpts) => PluginPackage;
+export type PluginFactory<TConfig> = (
+  config: TConfig
+) => PluginPackage<TConfig>;

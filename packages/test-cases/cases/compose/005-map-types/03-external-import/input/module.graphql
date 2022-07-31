@@ -1,0 +1,4 @@
+#import { Module } into Namespace from "external.eth"
+
+type Module implements Namespace_Module {
+}

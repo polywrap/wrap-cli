@@ -1,16 +1,10 @@
 import { httpPlugin } from "../..";
-import { Response } from "../../w3";
+import { Response } from "../../wrap";
 
-import { Web3ApiClient, defaultIpfsProviders } from "@web3api/client-js"
-import { ensPlugin } from "@web3api/ens-plugin-js";
-import { ipfsPlugin } from "@web3api/ipfs-plugin-js";
-import { ethereumPlugin } from "@web3api/ethereum-plugin-js";
+import { PolywrapClient } from "@polywrap/client-js"
 import {
-  initTestEnvironment,
-  stopTestEnvironment,
-  buildAndDeployApi
-} from "@web3api/test-env-js";
-import axios from "axios";
+  buildWrapper
+} from "@polywrap/test-env-js";
 import nock from "nock";
 
 jest.setTimeout(360000)
@@ -24,62 +18,22 @@ describe("e2e tests for HttpPlugin", () => {
 
   describe("integration", () => {
 
-    let client: Web3ApiClient;
-    let uri: string;
-    let ensAddress: string;
+    let client: PolywrapClient;
+
+    const wrapperPath = `${__dirname}/integration`
+    const uri = `fs/${wrapperPath}/build`
 
     beforeAll(async () => {
-      const { ethereum, ipfs } = await initTestEnvironment();
-      const { data } = await axios.get("http://localhost:4040/deploy-ens");
-
-      ensAddress = data.ensAddress
-
-      client = new Web3ApiClient({
+      client = new PolywrapClient({
         plugins: [
           {
-            uri: "w3://ens/http.web3api.eth",
-            plugin: httpPlugin(),
+            uri: "wrap://ens/http.polywrap.eth",
+            plugin: httpPlugin({ }),
           },
-          {
-            uri: "w3://ens/ethereum.web3api.eth",
-            plugin: ethereumPlugin({
-              networks: {
-                testnet: {
-                  provider: ethereum
-                }
-              },
-              defaultNetwork: "testnet"
-            }),
-          },
-          {
-            uri: "w3://ens/ipfs.web3api.eth",
-            plugin: ipfsPlugin({
-              provider: ipfs,
-              fallbackProviders: defaultIpfsProviders,
-            })
-          },
-          {
-            uri: "w3://ens/ens.web3api.eth",
-            plugin: ensPlugin({
-              addresses: {
-                testnet: ensAddress
-              }
-            })
-          }
         ],
       });
 
-      const api = await buildAndDeployApi(
-        `${__dirname}/integration`,
-        ipfs,
-        ensAddress
-      );
-
-      uri = `ens/testnet/${api.ensDomain}`;
-    });
-
-    afterAll(async () => {
-      await stopTestEnvironment();
+      await buildWrapper(wrapperPath);
     });
 
     it("get", async () => {

@@ -1,57 +1,45 @@
-/* eslint-disable import/no-extraneous-dependencies */
-import { query } from "./resolvers";
-import { fromAxiosResponse, toAxiosRequestConfig } from "./util";
-import { manifest, Response, Request, Query } from "./w3";
-
-import axios from "axios";
 import {
   Client,
-  Plugin,
-  PluginPackageManifest,
-  PluginPackage,
-} from "@web3api/core-js";
+  Module,
+  Args_get,
+  Args_post,
+  Response,
+  manifest,
+} from "./wrap";
+import { fromAxiosResponse, toAxiosRequestConfig } from "./util";
 
-export class HttpPlugin extends Plugin {
-  constructor() {
-    super();
-  }
+import axios from "axios";
+import { PluginFactory } from "@polywrap/core-js";
 
-  public static manifest(): PluginPackageManifest {
-    return manifest;
-  }
+type NoConfig = Record<string, never>;
 
-  public getModules(
-    _client: Client
-  ): {
-    query: Query.Module;
-  } {
-    return {
-      query: query(this),
-    };
-  }
-
-  public async get(url: string, request?: Request): Promise<Response> {
+export class HttpPlugin extends Module<NoConfig> {
+  public async get(args: Args_get, _client: Client): Promise<Response | null> {
     const response = await axios.get<string>(
-      url,
-      request ? toAxiosRequestConfig(request) : undefined
+      args.url,
+      args.request ? toAxiosRequestConfig(args.request) : undefined
     );
     return fromAxiosResponse(response);
   }
 
-  public async post(url: string, request?: Request): Promise<Response> {
+  public async post(
+    args: Args_post,
+    _client: Client
+  ): Promise<Response | null> {
     const response = await axios.post(
-      url,
-      request ? request.body : undefined,
-      request ? toAxiosRequestConfig(request) : undefined
+      args.url,
+      args.request ? args.request.body : undefined,
+      args.request ? toAxiosRequestConfig(args.request) : undefined
     );
     return fromAxiosResponse(response);
   }
 }
 
-export const httpPlugin = (): PluginPackage => {
+export const httpPlugin: PluginFactory<NoConfig> = () => {
   return {
-    factory: () => new HttpPlugin(),
-    manifest: manifest,
+    factory: () => new HttpPlugin({}),
+    manifest,
   };
 };
+
 export const plugin = httpPlugin;

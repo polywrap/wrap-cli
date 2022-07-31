@@ -1,0 +1,8 @@
+{
+  "name": "test-case-map-type",
+  "private": true,
+  "dependencies": {
+    "@polywrap/wasm-as": "0.1.0",
+    "assemblyscript": "0.19.1"
+  }
+}

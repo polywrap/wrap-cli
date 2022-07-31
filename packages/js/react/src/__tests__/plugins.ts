@@ -1,8 +1,8 @@
-import { PluginRegistration } from "@web3api/core-js";
-import { defaultIpfsProviders } from "@web3api/client-js";
-import { plugin as ensPlugin } from "@web3api/ens-plugin-js";
-import { plugin as ethereumPlugin } from "@web3api/ethereum-plugin-js";
-import { plugin as ipfsPlugin } from "@web3api/ipfs-plugin-js";
+import { PluginRegistration } from "@polywrap/core-js";
+import { defaultIpfsProviders } from "@polywrap/client-js";
+import { plugin as ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
+import { plugin as ethereumPlugin } from "@polywrap/ethereum-plugin-js";
+import { plugin as ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 
 export function createPlugins(
   ensAddress: string,
@@ -11,7 +11,7 @@ export function createPlugins(
 ): PluginRegistration[] {
   return [
     {
-      uri: "w3://ens/ethereum.web3api.eth",
+      uri: "wrap://ens/ethereum.polywrap.eth",
       plugin: ethereumPlugin({
         networks: {
           testnet: {
@@ -21,15 +21,15 @@ export function createPlugins(
       }),
     },
     {
-      uri: "w3://ens/ipfs.web3api.eth",
+      uri: "wrap://ens/ipfs.polywrap.eth",
       plugin: ipfsPlugin({
         provider: ipfsProvider,
         fallbackProviders: defaultIpfsProviders,
       }),
     },
     {
-      uri: "w3://ens/ens.web3api.eth",
-      plugin: ensPlugin({
+      uri: "wrap://ens/ens-resolver.polywrap.eth",
+      plugin: ensResolverPlugin({
         addresses: {
           testnet: ensAddress,
         },

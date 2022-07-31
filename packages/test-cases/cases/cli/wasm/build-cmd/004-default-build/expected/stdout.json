@@ -1,0 +1,7 @@
+{
+  "stdout": [
+    "Artifacts written to ./build from the image `polywrap-build-env-",
+    "WRAP manifest written in ./build"
+  ],
+  "exitCode": 0
+}

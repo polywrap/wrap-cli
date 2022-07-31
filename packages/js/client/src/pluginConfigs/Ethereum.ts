@@ -1,10 +1,11 @@
 /// NOTE: This is an auto-generated file. See scripts/extractPluginConfigs.ts
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable prettier/prettier */
 
-/// Types generated from @web3api/ethereum-plugin-js build files:
+/// Types generated from @polywrap/ethereum-plugin-js build files:
 /// build/index.d.ts, build/Connection.d.ts
 
-export interface EthereumConfig {
+export interface EthereumPluginConfig {
   networks: ConnectionConfigs;
   defaultNetwork?: string;
 }

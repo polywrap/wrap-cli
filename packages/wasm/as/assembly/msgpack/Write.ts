@@ -1,7 +1,8 @@
-import { Nullable } from "./Nullable";
-import { BigInt } from "../math";
+import { BigInt, BigNumber } from "../math";
 import { Context } from "../debug";
 import { JSON } from "../json";
+
+import { Option } from "as-container";
 
 export abstract class Write {
   abstract writeNil(): void;
@@ -19,6 +20,7 @@ export abstract class Write {
   abstract writeBytesLength(length: u32): void;
   abstract writeBytes(value: ArrayBuffer): void;
   abstract writeBigInt(value: BigInt): void;
+  abstract writeBigNumber(value: BigNumber): void;
   abstract writeJSON(value: JSON.Value): void;
   abstract writeArrayLength(length: u32): void;
   abstract writeArray<T>(
@@ -31,26 +33,37 @@ export abstract class Write {
     key_fn: (writer: Write, key: K) => void,
     value_fn: (writer: Write, value: V) => void
   ): void;
+  abstract writeExtGenericMap<K, V>(
+    m: Map<K, V>,
+    key_fn: (writer: Write, key: K) => void,
+    value_fn: (writer: Write, value: V) => void
+  ): void;
 
-  abstract writeNullableBool(value: Nullable<bool>): void;
-  abstract writeNullableInt8(value: Nullable<i8>): void;
-  abstract writeNullableInt16(value: Nullable<i16>): void;
-  abstract writeNullableInt32(value: Nullable<i32>): void;
-  abstract writeNullableUInt8(value: Nullable<u8>): void;
-  abstract writeNullableUInt16(value: Nullable<u16>): void;
-  abstract writeNullableUInt32(value: Nullable<u32>): void;
-  abstract writeNullableFloat32(value: Nullable<f32>): void;
-  abstract writeNullableFloat64(value: Nullable<f64>): void;
-  abstract writeNullableString(value: string | null): void;
-  abstract writeNullableBytes(value: ArrayBuffer | null): void;
-  abstract writeNullableBigInt(value: BigInt | null): void;
-  abstract writeNullableJSON(value: JSON.Value | null): void;
-  abstract writeNullableArray<T>(
+  abstract writeOptionalBool(value: Option<bool>): void;
+  abstract writeOptionalInt8(value: Option<i8>): void;
+  abstract writeOptionalInt16(value: Option<i16>): void;
+  abstract writeOptionalInt32(value: Option<i32>): void;
+  abstract writeOptionalUInt8(value: Option<u8>): void;
+  abstract writeOptionalUInt16(value: Option<u16>): void;
+  abstract writeOptionalUInt32(value: Option<u32>): void;
+  abstract writeOptionalFloat32(value: Option<f32>): void;
+  abstract writeOptionalFloat64(value: Option<f64>): void;
+  abstract writeOptionalString(value: string | null): void;
+  abstract writeOptionalBytes(value: ArrayBuffer | null): void;
+  abstract writeOptionalBigInt(value: BigInt | null): void;
+  abstract writeOptionalBigNumber(value: BigNumber | null): void;
+  abstract writeOptionalJSON(value: JSON.Value | null): void;
+  abstract writeOptionalArray<T>(
     a: Array<T> | null,
     fn: (writer: Write, item: T) => void
   ): void;
-  abstract writeNullableMap<K, V>(
+  abstract writeOptionalMap<K, V>(
     m: Map<K, V> | null,
+    key_fn: (writer: Write, key: K) => void,
+    value_fn: (writer: Write, value: V) => void
+  ): void;
+  abstract writeOptionalExtGenericMap<K, V>(
+    m: Map<K, V>,
     key_fn: (writer: Write, key: K) => void,
     value_fn: (writer: Write, value: V) => void
   ): void;

@@ -1,4 +1,4 @@
-import { Web3ApiClient } from "@web3api/client-js"
+import { PolywrapClient } from "@polywrap/client-js"
 import {
   sha3_512,
   sha3_384,
@@ -16,14 +16,14 @@ import { sha3Plugin } from "..";
 const testMessage = "test message to hash"
 
 describe("js-sha3 algorithms returned values match the plugin's", () => {
-  let client: Web3ApiClient
+  let client: PolywrapClient
 
   beforeAll(() => {
-    client = new Web3ApiClient({
+    client = new PolywrapClient({
       plugins: [
         {
-          uri: "w3://ens/sha3.web3api.eth",
-          plugin: sha3Plugin(),
+          uri: "wrap://ens/sha3.polywrap.eth",
+          plugin: sha3Plugin({ }),
         },
       ]
     })
@@ -32,7 +32,7 @@ describe("js-sha3 algorithms returned values match the plugin's", () => {
   it("sha3_512 matches", async () => {
     const expected = sha3_512(testMessage)
     const response = await client.query<{ sha3_512: string }>({
-      uri: "w3://ens/sha3.web3api.eth",
+      uri: "wrap://ens/sha3.polywrap.eth",
       query: `
         query {
           sha3_512(message: "${testMessage}")
@@ -48,7 +48,7 @@ describe("js-sha3 algorithms returned values match the plugin's", () => {
   it("sha3_384 matches", async () => {
     const expected = sha3_384(testMessage)
     const response = await client.query<{ sha3_384: string }>({
-      uri: "w3://ens/sha3.web3api.eth",
+      uri: "wrap://ens/sha3.polywrap.eth",
       query: `
         query {
           sha3_384(message: "${testMessage}")
@@ -64,7 +64,7 @@ describe("js-sha3 algorithms returned values match the plugin's", () => {
   it("sha3_256 matches", async () => {
     const expected = sha3_256(testMessage)
     const response = await client.query<{ sha3_256: string }>({
-      uri: "w3://ens/sha3.web3api.eth",
+      uri: "wrap://ens/sha3.polywrap.eth",
       query: `
         query {
           sha3_256(message: "${testMessage}")
@@ -80,7 +80,7 @@ describe("js-sha3 algorithms returned values match the plugin's", () => {
   it("sha3_224 matches", async () => {
     const expected = sha3_224(testMessage)
     const response = await client.query<{ sha3_224: string }>({
-      uri: "w3://ens/sha3.web3api.eth",
+      uri: "wrap://ens/sha3.polywrap.eth",
       query: `
         query {
           sha3_224(message: "${testMessage}")
@@ -96,7 +96,7 @@ describe("js-sha3 algorithms returned values match the plugin's", () => {
   it("keccak512 matches", async () => {
     const expected = keccak512(testMessage)
     const response = await client.query<{ keccak_512: string }>({
-      uri: "w3://ens/sha3.web3api.eth",
+      uri: "wrap://ens/sha3.polywrap.eth",
       query: `
         query {
           keccak_512(message: "${testMessage}")
@@ -112,7 +112,7 @@ describe("js-sha3 algorithms returned values match the plugin's", () => {
   it("keccak384 matches", async () => {
     const expected = keccak384(testMessage)
     const response = await client.query<{ keccak_384: string }>({
-      uri: "w3://ens/sha3.web3api.eth",
+      uri: "wrap://ens/sha3.polywrap.eth",
       query: `
         query {
           keccak_384(message: "${testMessage}")
@@ -128,7 +128,7 @@ describe("js-sha3 algorithms returned values match the plugin's", () => {
   it("keccak256 matches", async () => {
     const expected = keccak256(testMessage)
     const response = await client.query<{ keccak_256: string }>({
-      uri: "w3://ens/sha3.web3api.eth",
+      uri: "wrap://ens/sha3.polywrap.eth",
       query: `
         query {
           keccak_256(message: "${testMessage}")
@@ -146,7 +146,7 @@ describe("js-sha3 algorithms returned values match the plugin's", () => {
     const testMessageBuffer = encoder.encode(testMessage);
     const expected = keccak256(testMessageBuffer)
     const response = await client.query<{ buffer_keccak_256: Uint8Array }>({
-      uri: "w3://ens/sha3.web3api.eth",
+      uri: "wrap://ens/sha3.polywrap.eth",
       query: `
         query {
           buffer_keccak_256(message: $message)
@@ -165,7 +165,7 @@ describe("js-sha3 algorithms returned values match the plugin's", () => {
   it("keccak224 matches", async () => {
     const expected = keccak224(testMessage)
     const response = await client.query<{ keccak_224: string }>({
-      uri: "w3://ens/sha3.web3api.eth",
+      uri: "wrap://ens/sha3.polywrap.eth",
       query: `
         query {
           keccak_224(message: "${testMessage}")
@@ -181,7 +181,7 @@ describe("js-sha3 algorithms returned values match the plugin's", () => {
   it("shake128 matches", async () => {
     const expected = shake128(testMessage, 256)
     const response = await client.query<{ shake_128: string }>({
-      uri: "w3://ens/sha3.web3api.eth",
+      uri: "wrap://ens/sha3.polywrap.eth",
       query: `
         query {
           shake_128(message: "${testMessage}", outputBits: 256)
@@ -197,7 +197,7 @@ describe("js-sha3 algorithms returned values match the plugin's", () => {
   it("shake256 matches", async () => {
     const expected = shake256(testMessage, 512)
     const response = await client.query<{ shake_256: string }>({
-      uri: "w3://ens/sha3.web3api.eth",
+      uri: "wrap://ens/sha3.polywrap.eth",
       query: `
         query {
           shake_256(message: "${testMessage}", outputBits: 512)

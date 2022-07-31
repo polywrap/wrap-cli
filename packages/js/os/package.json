@@ -1,11 +1,11 @@
 {
-  "name": "@web3api/os-js",
-  "description": "Web3API Javascript OS Utilities",
-  "version": "0.0.1-prealpha.65",
+  "name": "@polywrap/os-js",
+  "description": "Polywrap Javascript OS Utilities",
+  "version": "0.3.0",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/web3-api/monorepo.git"
+    "url": "https://github.com/polywrap/monorepo.git"
   },
   "main": "build/index.js",
   "files": [

@@ -1,7 +1,7 @@
 import { httpPlugin } from "../..";
-import { Response } from "../../w3";
+import { Response } from "../../wrap";
 
-import { Web3ApiClient } from "@web3api/client-js"
+import { PolywrapClient } from "@polywrap/client-js"
 import nock from "nock";
 
 jest.setTimeout(360000)
@@ -12,14 +12,14 @@ const defaultReplyHeaders = {
 }
 
 describe("e2e tests for HttpPlugin", () => {
-  let web3ApiClient: Web3ApiClient;
+  let polywrapClient: PolywrapClient;
 
   beforeEach(() => {
-    web3ApiClient = new Web3ApiClient({
+    polywrapClient = new PolywrapClient({
       plugins: [
         {
-          uri: "w3://ens/http.web3api.eth",
-          plugin: httpPlugin(),
+          uri: "wrap://ens/http.polywrap.eth",
+          plugin: httpPlugin({ }),
         },
       ]
     });
@@ -27,14 +27,14 @@ describe("e2e tests for HttpPlugin", () => {
 
   describe("get method", () => {
 
-    test("succesfull request with response type as TEXT", async () => {
+    test("successful request with response type as TEXT", async () => {
       nock("http://www.example.com")
         .defaultReplyHeaders(defaultReplyHeaders)
         .get("/api")
         .reply(200, '{data: "test-response"}')
 
-      const response = await web3ApiClient.query<{ get: Response }>({
-        uri: "w3://ens/http.web3api.eth",
+      const response = await polywrapClient.query<{ get: Response }>({
+        uri: "wrap://ens/http.polywrap.eth",
         query: `
           query {
             get(
@@ -55,14 +55,14 @@ describe("e2e tests for HttpPlugin", () => {
       expect(response.data?.get.headers?.length).toEqual(2) // default reply headers
     });
 
-    test("succesfull request with response type as BINARY", async () => {
+    test("successful request with response type as BINARY", async () => {
       nock("http://www.example.com")
         .defaultReplyHeaders(defaultReplyHeaders)
         .get("/api")
         .reply(200, '{data: "test-response"}')
 
-      const response = await web3ApiClient.query<{ get: Response }>({
-        uri: "w3://ens/http.web3api.eth",
+      const response = await polywrapClient.query<{ get: Response }>({
+        uri: "wrap://ens/http.polywrap.eth",
         query: `
           query {
             get(
@@ -83,15 +83,15 @@ describe("e2e tests for HttpPlugin", () => {
       expect(response.data?.get.headers?.length).toEqual(2) // default reply headers
     });
 
-    test("succesfull request with query params and request headers", async () => {
+    test("successful request with query params and request headers", async () => {
       nock("http://www.example.com", { reqheaders: { 'X-Request-Header': "req-foo" } })
         .defaultReplyHeaders(defaultReplyHeaders)
         .get("/api")
         .query({ query: "foo" })
         .reply(200, '{data: "test-response"}', { 'X-Response-Header': "resp-foo" })
 
-      const response = await web3ApiClient.query<{ get: Response }>({
-        uri: "w3://ens/http.web3api.eth",
+      const response = await polywrapClient.query<{ get: Response }>({
+        uri: "wrap://ens/http.polywrap.eth",
         query: `
           query {
             get(
@@ -124,8 +124,8 @@ describe("e2e tests for HttpPlugin", () => {
         .get("/api")
         .reply(404)
 
-      const response = await web3ApiClient.query<{ get: Response }>({
-        uri: "w3://ens/http.web3api.eth",
+      const response = await polywrapClient.query<{ get: Response }>({
+        uri: "wrap://ens/http.polywrap.eth",
         query: `
           query {
             get(
@@ -146,7 +146,7 @@ describe("e2e tests for HttpPlugin", () => {
 
   describe("post method", () => {
 
-    test("succesfull request with request type as application/json", async () => {
+    test("successful request with request type as application/json", async () => {
       const reqPayload = {
         data: "test-request",
       };
@@ -162,8 +162,8 @@ describe("e2e tests for HttpPlugin", () => {
           .post("/api", reqPayloadStringified)
           .reply(200, resPayloadStringfified)
 
-      const response = await web3ApiClient.query<{ post: Response }>({
-        uri: "w3://ens/http.web3api.eth",
+      const response = await polywrapClient.query<{ post: Response }>({
+        uri: "wrap://ens/http.polywrap.eth",
         query: `
           query {
             post(
@@ -188,14 +188,14 @@ describe("e2e tests for HttpPlugin", () => {
       expect(response.data?.post.headers?.length).toEqual(2) // default reply headers
     });
 
-    test("succesfull request with response type as TEXT", async () => {
+    test("successful request with response type as TEXT", async () => {
       nock("http://www.example.com")
         .defaultReplyHeaders(defaultReplyHeaders)
         .post("/api", "{data: 'test-request'}")
         .reply(200, '{data: "test-response"}')
 
-      const response = await web3ApiClient.query<{ post: Response }>({
-        uri: "w3://ens/http.web3api.eth",
+      const response = await polywrapClient.query<{ post: Response }>({
+        uri: "wrap://ens/http.polywrap.eth",
         query: `
           query {
             post(
@@ -217,14 +217,14 @@ describe("e2e tests for HttpPlugin", () => {
       expect(response.data?.post.headers?.length).toEqual(2) // default reply headers
     });
 
-    test("succesfull request with response type as BINARY", async () => {
+    test("successful request with response type as BINARY", async () => {
       nock("http://www.example.com")
         .defaultReplyHeaders(defaultReplyHeaders)
         .post("/api", "{data: 'test-request'}")
         .reply(200, '{data: "test-response"}')
 
-      const response = await web3ApiClient.query<{ post: Response }>({
-        uri: "w3://ens/http.web3api.eth",
+      const response = await polywrapClient.query<{ post: Response }>({
+        uri: "wrap://ens/http.polywrap.eth",
         query: `
           query {
             post(
@@ -246,15 +246,15 @@ describe("e2e tests for HttpPlugin", () => {
       expect(response.data?.post.headers?.length).toEqual(2) // default reply headers
     });
 
-    test("succesfull request with query params and request headers", async () => {
+    test("successful request with query params and request headers", async () => {
       nock("http://www.example.com", { reqheaders: { 'X-Request-Header': "req-foo" } })
         .defaultReplyHeaders(defaultReplyHeaders)
         .post("/api", "{data: 'test-request'}")
         .query({ query: "foo" })
         .reply(200, '{data: "test-response"}', { 'X-Response-Header': "resp-foo" })
 
-      const response = await web3ApiClient.query<{ post: Response }>({
-        uri: "w3://ens/http.web3api.eth",
+      const response = await polywrapClient.query<{ post: Response }>({
+        uri: "wrap://ens/http.polywrap.eth",
         query: `
           query {
             post(
@@ -288,8 +288,8 @@ describe("e2e tests for HttpPlugin", () => {
         .post("/api")
         .reply(404)
 
-      const response = await web3ApiClient.query<{ get: Response }>({
-        uri: "w3://ens/http.web3api.eth",
+      const response = await polywrapClient.query<{ get: Response }>({
+        uri: "wrap://ens/http.polywrap.eth",
         query: `
           query {
             post(

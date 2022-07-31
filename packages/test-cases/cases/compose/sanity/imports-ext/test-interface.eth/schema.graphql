@@ -1,4 +1,4 @@
-### Web3API Header START ###
+### Polywrap Header START ###
 scalar UInt
 scalar UInt8
 scalar UInt16
@@ -9,7 +9,9 @@ scalar Int16
 scalar Int32
 scalar Bytes
 scalar BigInt
+scalar BigNumber
 scalar JSON
+scalar Map
 
 directive @imported(
   uri: String!
@@ -28,36 +30,32 @@ directive @capability(
 ) repeatable on OBJECT
 
 directive @enabled_interface on OBJECT
-### Web3API Header END ###
+
+directive @annotate(type: String!) on FIELD
+
+directive @env(required: Boolean!) on FIELD_DEFINITION
+
+### Polywrap Header END ###
 
 """
-Mutation comment
+Module comment
 """
-type Mutation {
-  abstractMutationMethod(
-    arg: UInt8!
-  ): String!
-}
-
+type Module {
 """
-Query comment
+abstractModuleMethod comment
 """
-type Query {
-"""
-abstractQueryMethod comment
-"""
-  abstractQueryMethod(
+  abstractModuleMethod(
 """
 arg comment
 """
-    arg: QueryInterfaceArgument!
+    arg: ModuleInterfaceArgument!
   ): InterfaceObject2!
 }
 
 """
-QueryInterfaceArgument comment
+ModuleInterfaceArgument comment
 """
-type QueryInterfaceArgument implements NestedQueryInterfaceArgument {
+type ModuleInterfaceArgument implements NestedModuleInterfaceArgument {
   str: String!
 """
 uint8 comment
@@ -66,9 +64,9 @@ uint8 comment
 }
 
 """
-NestedQueryInterfaceArgument comment
+NestedModuleInterfaceArgument comment
 """
-type NestedQueryInterfaceArgument {
+type NestedModuleInterfaceArgument {
   uint8: UInt8!
 }
 
