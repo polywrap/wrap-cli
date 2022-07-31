@@ -27,7 +27,7 @@ describe("e2e tests for HttpPlugin", () => {
 
   describe("get method", () => {
 
-    test("succesfull request with response type as TEXT", async () => {
+    test("successful request with response type as TEXT", async () => {
       nock("http://www.example.com")
         .defaultReplyHeaders(defaultReplyHeaders)
         .get("/api")
@@ -55,7 +55,7 @@ describe("e2e tests for HttpPlugin", () => {
       expect(response.data?.get.headers?.length).toEqual(2) // default reply headers
     });
 
-    test("succesfull request with response type as BINARY", async () => {
+    test("successful request with response type as BINARY", async () => {
       nock("http://www.example.com")
         .defaultReplyHeaders(defaultReplyHeaders)
         .get("/api")
@@ -83,7 +83,7 @@ describe("e2e tests for HttpPlugin", () => {
       expect(response.data?.get.headers?.length).toEqual(2) // default reply headers
     });
 
-    test("succesfull request with query params and request headers", async () => {
+    test("successful request with query params and request headers", async () => {
       nock("http://www.example.com", { reqheaders: { 'X-Request-Header': "req-foo" } })
         .defaultReplyHeaders(defaultReplyHeaders)
         .get("/api")
@@ -146,7 +146,7 @@ describe("e2e tests for HttpPlugin", () => {
 
   describe("post method", () => {
 
-    test("succesfull request with request type as application/json", async () => {
+    test("successful request with request type as application/json", async () => {
       const reqPayload = {
         data: "test-request",
       };
@@ -188,7 +188,7 @@ describe("e2e tests for HttpPlugin", () => {
       expect(response.data?.post.headers?.length).toEqual(2) // default reply headers
     });
 
-    test("succesfull request with response type as TEXT", async () => {
+    test("successful request with response type as TEXT", async () => {
       nock("http://www.example.com")
         .defaultReplyHeaders(defaultReplyHeaders)
         .post("/api", "{data: 'test-request'}")
@@ -217,7 +217,7 @@ describe("e2e tests for HttpPlugin", () => {
       expect(response.data?.post.headers?.length).toEqual(2) // default reply headers
     });
 
-    test("succesfull request with response type as BINARY", async () => {
+    test("successful request with response type as BINARY", async () => {
       nock("http://www.example.com")
         .defaultReplyHeaders(defaultReplyHeaders)
         .post("/api", "{data: 'test-request'}")
@@ -246,7 +246,7 @@ describe("e2e tests for HttpPlugin", () => {
       expect(response.data?.post.headers?.length).toEqual(2) // default reply headers
     });
 
-    test("succesfull request with query params and request headers", async () => {
+    test("successful request with query params and request headers", async () => {
       nock("http://www.example.com", { reqheaders: { 'X-Request-Header': "req-foo" } })
         .defaultReplyHeaders(defaultReplyHeaders)
         .post("/api", "{data: 'test-request'}")

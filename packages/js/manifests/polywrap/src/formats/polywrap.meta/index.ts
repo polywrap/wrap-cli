@@ -6,23 +6,25 @@
  */
 
 import {
-  MetaManifest as MetaManifest0_1_0
-} from "./0.1.0";
+  MetaManifest as MetaManifest_0_1
+} from "./0.1";
 
 export {
-  MetaManifest0_1_0,
+  MetaManifest_0_1,
 };
 
 export enum MetaManifestFormats {
-  "0.1.0" = "0.1.0",
+  // NOTE: Patch fix for backwards compatability
+  "v0.1.0" = "0.1.0",
+  "v0.1" = "0.1",
 }
 
 export type AnyMetaManifest =
-  | MetaManifest0_1_0
+  | MetaManifest_0_1
 
-export type MetaManifest = MetaManifest0_1_0;
+export type MetaManifest = MetaManifest_0_1;
 
-export const latestMetaManifestFormat = MetaManifestFormats["0.1.0"]
+export const latestMetaManifestFormat = MetaManifestFormats["v0.1"]
 
 export { migrateMetaManifest } from "./migrate";
 
