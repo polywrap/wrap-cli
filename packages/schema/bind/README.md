@@ -1,6 +1,26 @@
-# Polywrap Binding
+# @polywrap/schema-bind
 
-Generates Polywrap schema bindings for supported guest languages.
+Bind WRAP ABIs to a variety of supported languages through codegen.
+
+## Usage
+
+``` typescript
+import { BindOptions, BindOutput, bindSchema } from "@polywrap/schema-bind";
+import { parseSchema } from "@polywrap/schema-parse";
+
+const schema = fetch("schema.graphql");
+const abi = parseSchema(schema);
+
+const input: BindOptions = {
+  projectName: "Test",
+  bindLanguage: "wasm-as",
+  abi,
+  schema,
+  outputDirAbs: "/path/to/output/dir"
+};
+
+const output: BindOutput = bindSchema(input);
+```
 
 ## Details
 
@@ -29,7 +49,3 @@ MessagePack encoded data is sent between module boundaries. Decoding of the mess
 | [Type] | fixarray or array 16/32 | Array of elements. |
 | Map | Msgpack extention type | Map of key-value pairs. |
 | type CustomObject {<br/>&nbsp;&nbsp;prop: Type<br/>} | fixmap or map 16/32 | Structured object. |
-
-## Usage
-
-TODO
