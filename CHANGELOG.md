@@ -1,3 +1,33 @@
+# Polywrap Origin (0.3.0)
+## Features
+* [PR-1034](https://github.com/polywrap/monorepo/pull/1034) `@polywrap/wrap-manifest-schemas`, `@polywrap/wrap-manifest-types-js`: Added a JSON-schema for the `wrap.info`'s `abi` field.
+* [PR-1058](https://github.com/polywrap/monorepo/pull/1058) `polywrap` CLI: Deploy results can now be output to a file using the `-o, --output-file <path>` option of the `deploy` command.
+
+## Bugs
+* [PR-1034](https://github.com/polywrap/monorepo/pull/1034) `@polywrap/wrap-manifest-schemas`, `@polywrap/polywrap-manifest-schemas`: Version numbers for the manifest's `format: ...` field have been changed to only include `<major>.<minor>` (ex: `0.1.0` is now `0.1`). This is because there cannot be a change to a pure interface that is a `<patch>`.
+* [PR-1034](https://github.com/polywrap/monorepo/pull/1034) `@polywrap/package-validation`: The `wrap.info.abi` field is no longer being validated via schema rendering, and is instead utilizing the newly added JSON-schema.
+* [PR-1054](https://github.com/polywrap/monorepo/pull/1054) `polywrap` CLI: Improved `wasm/rust` build times by refactoring the build image's Dockerfile, helping reduce cache invalidations.
+* [PR-1053](https://github.com/polywrap/monorepo/pull/1053) `@polywrap/wasm-as`: Increased minor version of as-bignumber. The new version has a bug fix for the toFixed method, which was incorrectly printing numbers when a decimal number was rounded to an integer.
+
+## Breaking Changes
+* [PR-1034](https://github.com/polywrap/monorepo/pull/1034) `@polywrap/wrap-manifest-types-js`: `deserializeWrapManifest` is now `async`.
+
+# Polywrap Origin (0.2.0)
+## Bugs
+* [PR-1040](https://github.com/polywrap/monorepo/pull/1040) `polywrap` CLI: Added proper CORS handling for the IPFS node located within the `eth-ens-ipfs` default infra module.
+
+## Breaking Changes
+* [PR-1035](https://github.com/polywrap/monorepo/pull/1035) `polywrap.meta` Manifest: Removed the `queries` property from version `0.1.0` of the manifest.
+* [PR-1039](https://github.com/polywrap/monorepo/pull/1039) `@polywrap/ipfs-resolver-plugin-js`: Remove the `IpfsResolverPlugin`'s config, as it was never being used.
+
+# Polywrap Origin (0.1.1)
+## Features
+* [PR-1017](https://github.com/polywrap/monorepo/pull/1017) `@polywrap/templates`, `polywrap` CLI: Rust wasm wrapper project template has been added, and made available via the `polywrap create ...` CLI command.
+
+## Bugs
+* [PR-1016](https://github.com/polywrap/monorepo/pull/1016) `polywrap` CLI: Improved logging when running workflows using the `polywrap run ...` command.
+* [PR-924](https://github.com/polywrap/monorepo/pull/924) `@polywrap/schema-parse`, `@polywrap/schema-bind`: Complex `Map<Key, Value>` type usages within wrapper schemas lead to incorrect bindings being generated. Additional tests + fixes have been added.
+
 # Polywrap Origin (0.1.0)
 ![Public Release Announcement (2)](https://user-images.githubusercontent.com/5522128/177474776-76886b67-6554-41a9-841b-939728e273ca.png)
 

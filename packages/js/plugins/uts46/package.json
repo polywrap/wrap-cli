@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/uts46-plugin-js",
   "description": "Polywrap IDNA-UTS #46 Javascript Plugin",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -20,7 +20,7 @@
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@polywrap/core-js": "0.1.0",
+    "@polywrap/core-js": "0.3.0",
     "idna-uts46-hx": "3.4.0"
   },
   "devDependencies": {

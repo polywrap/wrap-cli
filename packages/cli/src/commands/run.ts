@@ -7,7 +7,7 @@ import {
   validateOutput,
 } from "../lib";
 
-import { InvokeResult, Workflow, JobResult } from "@polywrap/core-js";
+import { Workflow, JobResult, JobStatus } from "@polywrap/core-js";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import path from "path";
 import yaml from "js-yaml";
@@ -79,37 +79,39 @@ const _run = async (workflowPath: string, options: WorkflowCommandOptions) => {
   const workflow: Workflow = getParser(workflowPath)(
     fs.readFileSync(workflowPath).toString()
   );
-  const workflowOutput: (InvokeResult & { id: string })[] = [];
+  const workflowOutput: (JobResult & { id: string })[] = [];
 
   await client.run({
     workflow,
     config: clientConfig,
     ids: jobs,
     onExecution: async (id: string, jobResult: JobResult) => {
-      const { data, error } = jobResult;
+      const { data, error, status } = jobResult;
 
       if (!quiet) {
         console.log("-----------------------------------");
         console.log(`ID: ${id}`);
+        console.log(`Status: ${status}`);
       }
 
-      if (!quiet && data) {
+      if (!quiet && data !== undefined) {
         console.log(`Data: ${JSON.stringify(data, null, 2)}`);
-        console.log("-----------------------------------");
       }
 
-      if (!quiet && error) {
+      if (!quiet && error !== undefined) {
         console.log(`Error: ${error.message}`);
-        console.log(error.stack || "");
-        console.log("-----------------------------------");
         process.exitCode = 1;
       }
 
-      if (validateScript) {
-        await validateOutput(id, { data, error }, validateScript);
+      if (status !== JobStatus.SKIPPED && validateScript) {
+        await validateOutput(id, { data, error }, validateScript, quiet);
       }
 
-      workflowOutput.push({ id, data, error });
+      if (!quiet) {
+        console.log("-----------------------------------");
+      }
+
+      workflowOutput.push({ id, status, data, error });
     },
   });
 

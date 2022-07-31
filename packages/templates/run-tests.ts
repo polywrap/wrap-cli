@@ -23,14 +23,24 @@ const languageTestCommands: Record<string, string[]> = {
     // "CI=false yarn build"
   ],
   "assemblyscript": [
-    // Uncomment when env refactor is released
-    // "yarn build",
-    // "yarn test:e2e",
+    // Workflow tests fail in CI because cuelang is not installed
+    "yarn build",
+    "yarn test:e2e",
+    // "yarn test:workflow"
+  ],
+  "rust": [
+    // Workflow tests fail in CI because cuelang is not installed
+    "yarn build",
+    "yarn test:e2e",
     // "yarn test:workflow"
   ],
   "interface": [
     "yarn build"
   ],
+  "docusaurus": [
+    "yarn install --no-lockfile",
+    "yarn build"
+  ]
 };
 
 // Filter unnecessary directories

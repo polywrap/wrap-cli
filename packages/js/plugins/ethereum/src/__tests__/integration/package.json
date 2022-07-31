@@ -2,7 +2,7 @@
   "name": "ethereum-js-plugin-integration-test",
   "description": "Ethereum JS Plugin Integration Test",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.3.0",
   "scripts": {
     "build": "yarn build:polywrap",
     "build:polywrap": "npx polywrap build",
@@ -11,7 +11,7 @@
     "deploy": "npx polywrap deploy"
   },
   "dependencies": {
-    "@polywrap/wasm-as": "0.1.0",
+    "@polywrap/wasm-as": "0.3.0",
     "assemblyscript": "0.19.5"
   }
 }
