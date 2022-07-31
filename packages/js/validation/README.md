@@ -1,13 +1,13 @@
 # @polywrap/package-validation
 
-# Description 
+## Description 
 
 Utilities for the validation of WRAP packages. Allows to implement custom constraints to
 check if a WRAP package is valid
 
 The main two entities here are `WasmPackageValidator` and `FileSystemPackageReader`
 
-# Usage
+## Usage
 
 ```typescript
 import { WasmPackageValidator, FileSystemPackageReader } from "@polywrap/package-validation"
