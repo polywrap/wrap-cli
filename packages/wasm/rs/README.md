@@ -1,3 +1,3 @@
-# Polywrap Rust (@polywrap-wasm-rs)
+# polywrap-wasm-rs
 
-This library is the Rust implementation of the Polywrap WASM runtime and msgpack.
+The Rust implementation of the WRAP Wasm runtime.

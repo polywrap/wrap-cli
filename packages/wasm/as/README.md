@@ -1,3 +1,3 @@
-# Polywrap AssemblyScript (@polywrap/wasm-as)
+# @polywrap/wasm-as
 
-This library is the AssemblyScript implementation of the Polywrap WASM runtime and msgpack.
+The AssemblyScript implementation of the WRAP Wasm runtime.
