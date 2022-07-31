@@ -1,17 +1,68 @@
-# Polywrap Schema Parse (@polywrap/schema-parse)
+# @polywrap/schema-parse
 
-Parses and validates Polywrap schema.
+Parse & validate WRAP schemas, converting them into a WRAP ABI structure. Optionally perform transformations upon the WRAP ABI.
 
 ## Usage
+```typescript
+import {
+  Abi,
+  parseSchema,
+  ParserOptions
+} from "@polywrap/schema-parse";
 
-``` typescript
-import { readFileSync } from "fs";
-import { TypeInfo, parseSchema } from "@polywrap/schema-parse";
+const schema = readFileSync("module.graphql", "utf-8");
+const options: ParserOptions = { };
 
-const schemaPath = "input/module.graphql"
+const abi: Abi = parseSchema(schema, options);
+```
 
-const schema = readFileSync(schemaPath);
+### Options
+```typescript
+interface ParserOptions {
+  // Disable schema validation
+  noValidate?: boolean;
+  // Use custom validators
+  validators?: SchemaValidatorBuilder[];
+  // Use custom extractors
+  extractors?: SchemaExtractorBuilder[];
+  // Use custom transformations
+  transforms?: AbiTransforms[];
+}
+```
 
-const typeInfo: TypeInfo = parseSchema(schema);
+### ABI Transforms
+ABI transformations can be used to modify the ABI structure. A variety of pre-defined transformations can be found in the [./src/transform/](./src/transform/) directory.
 
+Example:
+```typescript
+import {
+  Abi,
+  AbiTransforms,
+  GenericDefinition,
+  parseSchema
+} from "@polywrap/schema-parse";
+
+function extendType(extension: any): AbiTransforms {
+  return {
+    enter: {
+      Abi: (abi: Abi) => ({
+        ...abi,
+        extension,
+      }),
+      GenericDefinition: (def: GenericDefinition) => ({
+        ...def,
+        ...extension,
+      }),
+    },
+  };
+}
+```
+
+Usage:
+```typescript
+parseSchema(schema, {
+  transforms: [
+    extendType({ newProp: "foo" })
+  ]
+});
 ```
