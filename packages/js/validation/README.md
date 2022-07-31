@@ -1,4 +1,4 @@
-# Polywrap Validation (@polywrap/package-validation)
+# @polywrap/package-validation
 
 # Description 
 
@@ -23,5 +23,3 @@ const validator = new WasmPackageValidator({
 const reader = new FileSystemPackageReader("absolute/path/to/package/folder")
 const result = await validator.validate(result)
 ```
-
-

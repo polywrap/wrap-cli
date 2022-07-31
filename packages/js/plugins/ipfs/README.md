@@ -1,8 +1,8 @@
-# IPFS Plugin (@polywrap/ipfs-plugin-js)
+# @polywrap/ipfs-plugin-js
 
 IPFS Plugin allows the Polywrap JS Client to interact with [IPFS](https://ipfs.io/).
 
-# Usage
+## Usage
 
 ``` typescript
 import { PolywrapClient } from "@polywrap/client-js";
@@ -65,6 +65,6 @@ export async function foo({
 
 For more usage examples see `src/__tests__`.
 
-# API
+## API
 
 Full API in `src/schema.graphql`

@@ -1,4 +1,4 @@
-# HTTP Plugin (@polywrap/http-plugin-js)
+# @polywrap/http-plugin-js
 
 Http plugin curently supports two different methods `GET` and `POST`. Similar to calling axios, when defining request you need to specify a response type. Headers and query parameters may also be defined.
 

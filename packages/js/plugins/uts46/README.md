@@ -1,8 +1,8 @@
-# UTS46 Plugin (@polywrap/uts46-plugin-js)
+# @polywrap/uts46-plugin-js
 
 UTS46 Plugin allows Polywrap JS Client to handle internationalized domain names (IDNA), with a full mapping between Unicode and Punycode defined by [UTS #46](https://unicode.org/reports/tr46/).
 
-# Usage
+## Usage
 
 ``` typescript
 import { PolywrapClient } from "@polywrap/client-js";
@@ -31,6 +31,6 @@ export async function foo({
 })
 ```
 
-# API
+## API
 
 Full API in `src/schema.graphql`

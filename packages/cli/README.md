@@ -2,10 +2,10 @@
 
 A command-line interface for building and deploying Polywrap projects.
 
-# Documentation
+## Documentation
 https://docs.polywrap.io/reference/cli/polywrap-cli
 
-# Examples
+## Examples
 Demos:  
 https://github.com/polywrap/demos
 

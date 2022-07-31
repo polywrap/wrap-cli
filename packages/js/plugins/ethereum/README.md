@@ -1,8 +1,8 @@
-# Ethereum Plugin (@polywrap/ethereum-plugin-js)
+# @polywrap/ethereum-plugin-js
 
 Ethereum Plugin allows the Polywrap JS Client to interact with the [Ethereum blockchain](https://ethereum.org/).
 
-# Usage
+## Usage
 
 ``` typescript
 import {
@@ -92,6 +92,6 @@ export async function foo({
 
 For more usage examples see `src/__tests__`.
 
-# API
+## API
 
 Full API in `src/schema.graphql`

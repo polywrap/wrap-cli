@@ -1,8 +1,8 @@
-# Filesystem Resolver Plugin (@polywrap/fs-resolver-plugin-js)
+# @polywrap/fs-resolver-plugin-js
 
 Filesystem Resolver Plugin allows the Polywrap JS Client to resolve URIs from the local filesystem.
 
-# Usage
+## Usage
 
 ``` typescript
 import { PolywrapClient } from "@polywrap/client-js";
@@ -69,6 +69,6 @@ export async function foo({
 
 For more usage examples see `src/__tests__`.
 
-# API
+## API
 
 Filesystem Resolver Plugin conforms to a generic UriResolver interface that provides tryResolveUri and getFile methods to the Polywrap client and adds filesystem resolution capability to every client method, e.g. getSchema, getManifest, resolveUri.

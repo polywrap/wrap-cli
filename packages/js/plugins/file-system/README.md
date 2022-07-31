@@ -1,8 +1,8 @@
-# Filesystem Plugin (@polywrap/fs-plugin-js)
+# @polywrap/fs-plugin-js
 
 Filesystem Plugin allows the Polywrap JS Client to interact with the local filesystem.
 
-# Usage
+## Usage
 
 ``` typescript
 import { PolywrapClient } from "@polywrap/client-js";
@@ -47,7 +47,7 @@ export async function foo({
 
 For more usage examples see `src/__tests__`.
 
-# API
+## API
 
  - readFile
  - readFileAsString

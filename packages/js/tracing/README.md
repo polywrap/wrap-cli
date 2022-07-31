@@ -1,6 +1,6 @@
-### Tracing
+# `@polywrap/tracing-js`
 
-#### Steps to use tracing
+## Steps to use tracing
 
 1. Run the zipkin client using docker
 

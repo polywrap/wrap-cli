@@ -1,4 +1,4 @@
-# Polywrap Test Env (@polywrap/test-env-js)
+# @polywrap/test-env-js
 
 Provides functions to setup a test environment with Polywrap CLI and Docker.
 

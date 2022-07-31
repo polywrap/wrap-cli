@@ -1,8 +1,8 @@
-# IPFS Plugin (@polywrap/ipfs-plugin-js)
+# @polywrap/ipfs-plugin-js
 
 IPFS Resolver Plugin allows the Polywrap JS Client to resolve wrapper URIs from IPFS.
 
-# Usage
+## Usage
 
 ``` typescript
 import { PolywrapClient } from "@polywrap/client-js";
@@ -70,6 +70,6 @@ export async function foo({
 ```
 For more usage examples see `src/__tests__`.
 
-# API
+## API
 
 IPFS Resolver Plugin conforms to a generic UriResolver interface that provides tryResolveUri and getFile methods to the Polywrap client and adds IPFS resolution capability to every client method, e.g. getSchema, getManifest, resolveUri.

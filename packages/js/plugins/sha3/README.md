@@ -1,8 +1,8 @@
-# SHA3 Plugin (@polywrap/sha3-plugin-js)
+# @polywrap/sha3-plugin-js
 
 SHA3 Plugin provides the Polywrap JS Client with SHA-3 / Keccak / Shake hash functions.
 
-# Usage
+## Usage
 
 ``` typescript
 import { PolywrapClient } from "@polywrap/client-js"
@@ -31,6 +31,6 @@ export async function foo({
 })
 ```
 
-# API
+## API
 
 Full API in `src/schema.graphql`

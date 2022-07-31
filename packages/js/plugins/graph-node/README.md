@@ -1,8 +1,8 @@
-# Graph Node Plugin (@polywrap/graph-node-plugin-js)
+# @polywrap/graph-node-plugin-js
 
 Graph Node Plugin allows the Polywrap JS Client to send queries to the [Graph Node](https://github.com/graphprotocol/graph-node).
 
-# Usage
+## Usage
 
 ``` typescript
 import { graphNodePlugin } from "@polywrap/graph-node-plugin-js";
@@ -79,6 +79,6 @@ export async function foo({
 ```
 For more usage examples see `src/__tests__`.
 
-# API
+## API
 
 Full API in `src/schema.graphql`
