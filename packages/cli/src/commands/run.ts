@@ -52,14 +52,13 @@ export const run: Command = {
         await _run(workflow, {
           ...options,
           clientConfig: await parseClientConfigOption(
-            options.clientConfig,
-            undefined
+            options.clientConfig
           ),
           outputFile: options.outputFile
-            ? parseWorkflowOutputFilePathOption(options.outputFile, undefined)
+            ? parseWorkflowOutputFilePathOption(options.outputFile)
             : undefined,
           validateScript: options.validateScript
-            ? parseValidateScriptOption(options.validateScript, undefined)
+            ? parseValidateScriptOption(options.validateScript)
             : undefined,
         });
       });

@@ -11,7 +11,7 @@ import {
   isDockerInstalled,
   FileLock,
   parseWasmManifestFileOption,
-  parseBuildOutputDirOption,
+  parseDirOption,
   parseClientConfigOption,
 } from "../lib";
 
@@ -20,6 +20,7 @@ import path from "path";
 import readline from "readline";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 
+const defaultOutputDir = "./build";
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 const pathStr = intlMsg.commands_build_options_o_path();
 
@@ -45,7 +46,9 @@ export const build: Command = {
       )
       .option(
         `-o, --output-dir <${pathStr}>`,
-        `${intlMsg.commands_build_options_o()}`
+        `${intlMsg.commands_build_options_o({
+          default: defaultOutputDir
+        })}`
       )
       .option(
         `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
@@ -57,14 +60,12 @@ export const build: Command = {
         await run({
           ...options,
           manifestFile: parseWasmManifestFileOption(
-            options.manifestFile,
-            undefined
+            options.manifestFile
           ),
           clientConfig: await parseClientConfigOption(
-            options.clientConfig,
-            undefined
+            options.clientConfig
           ),
-          outputDir: parseBuildOutputDirOption(options.outputDir, undefined),
+          outputDir: parseDirOption(options.outputDir, defaultOutputDir),
         });
       });
   },

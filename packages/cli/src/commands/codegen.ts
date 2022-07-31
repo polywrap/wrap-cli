@@ -6,7 +6,7 @@ import {
   SchemaComposer,
   intlMsg,
   defaultPolywrapManifest,
-  parseCodegenDirOption,
+  parseDirOption,
   parseCodegenScriptOption,
   parseWasmManifestFileOption,
   parseClientConfigOption,
@@ -57,14 +57,12 @@ export const codegen: Command = {
         await run({
           ...options,
           clientConfig: await parseClientConfigOption(
-            options.clientConfig,
-            undefined
+            options.clientConfig
           ),
-          codegenDir: parseCodegenDirOption(options.codegenDir, undefined),
-          script: parseCodegenScriptOption(options.script, undefined),
+          codegenDir: parseDirOption(options.codegenDir, defaultCodegenDir),
+          script: parseCodegenScriptOption(options.script),
           manifestFile: parseWasmManifestFileOption(
-            options.manifestFile,
-            undefined
+            options.manifestFile
           ),
         });
       });

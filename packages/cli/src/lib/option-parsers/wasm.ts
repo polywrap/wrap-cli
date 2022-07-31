@@ -3,8 +3,7 @@ import { defaultPolywrapManifest } from "../";
 import { resolvePathIfExists } from "../system";
 
 export function parseWasmManifestFileOption(
-  manifestFile: string | undefined,
-  _: unknown
+  manifestFile: string | undefined
 ): string {
   const manifestPaths = manifestFile
     ? [manifestFile as string]
@@ -22,8 +21,4 @@ export function parseWasmManifestFileOption(
   }
 
   return manifestFile;
-}
-
-export function defaultWasmManifestFileOption(): string {
-  return parseWasmManifestFileOption(undefined, undefined);
 }

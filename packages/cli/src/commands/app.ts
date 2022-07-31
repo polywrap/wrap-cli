@@ -5,8 +5,8 @@ import {
   SchemaComposer,
   intlMsg,
   parseAppManifestFileOption,
-  parseAppCodegenDirOption,
   parseClientConfigOption,
+  parseDirOption
 } from "../lib";
 
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
@@ -50,14 +50,12 @@ export const app: Command = {
         await run({
           ...options,
           manifestFile: parseAppManifestFileOption(
-            options.manifestFile,
-            undefined
+            options.manifestFile
           ),
           clientConfig: await parseClientConfigOption(
-            options.clientConfig,
-            undefined
+            options.clientConfig
           ),
-          codegenDir: parseAppCodegenDirOption(options.codegenDir, undefined),
+          codegenDir: parseDirOption(options.codegenDir, defaultOutputTypesDir),
         });
       });
   },

@@ -15,20 +15,23 @@ import {
 } from "../lib";
 import { Command, Program } from "./types";
 import {
-  parseDocgenDirOption,
+  parseDirOption,
   parseDocgenManifestFileOption,
-} from "../lib/option-parsers/docgen";
+} from "../lib/option-parsers";
 
 import path from "path";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import chalk from "chalk";
 import { Argument } from "commander";
 
+import { scriptPath as docusaurusScriptPath } from "../lib/docgen/docusaurus";
+import { scriptPath as jsdocScriptPath } from "../lib/docgen/jsdoc";
+import { scriptPath as schemaScriptPath } from "../lib/docgen/schema";
+
 const commandToPathMap: Record<string, string> = {
-  schema: "@polywrap/schema-bind/build/bindings/documentation/schema/index.js",
-  docusaurus:
-    "@polywrap/schema-bind/build/bindings/documentation/docusaurus/index.js",
-  jsdoc: "@polywrap/schema-bind/build/bindings/documentation/jsdoc/index.js",
+  schema: schemaScriptPath,
+  docusaurus: docusaurusScriptPath,
+  jsdoc: jsdocScriptPath,
 };
 
 export type DocType = keyof typeof commandToPathMap;
@@ -36,7 +39,7 @@ export type DocType = keyof typeof commandToPathMap;
 const defaultManifest = defaultPolywrapManifest
   .concat(defaultAppManifest)
   .concat(defaultPluginManifest);
-const defaultDocgenDir = "./wrap";
+const defaultDocgenDir = "./docs";
 const pathStr = intlMsg.commands_codegen_options_o_path();
 
 type DocgenCommandOptions = {
@@ -101,13 +104,11 @@ export const docgen: Command = {
         await run(action, {
           ...options,
           manifestFile: parseDocgenManifestFileOption(
-            options.manifestFile,
-            undefined
+            options.manifestFile
           ),
-          docgenDir: parseDocgenDirOption(options.docgenDir, undefined),
+          docgenDir: parseDirOption(options.docgenDir, defaultDocgenDir),
           clientConfig: await parseClientConfigOption(
-            options.clientConfig,
-            undefined
+            options.clientConfig
           ),
         });
       });

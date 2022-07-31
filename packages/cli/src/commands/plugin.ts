@@ -6,9 +6,8 @@ import {
   defaultPluginManifest,
   outputManifest,
   intlMsg,
-  parsePluginCodegenDirOption,
+  parseDirOption,
   parsePluginManifestFileOption,
-  parsePluginPublishDirOption,
   parseClientConfigOption,
 } from "../lib";
 
@@ -65,20 +64,19 @@ export const plugin: Command = {
         await run({
           ...options,
           clientConfig: await parseClientConfigOption(
-            options.clientConfig,
-            undefined
+            options.clientConfig
           ),
           manifestFile: parsePluginManifestFileOption(
             options.manifestFile,
             undefined
           ),
-          publishDir: parsePluginPublishDirOption(
+          publishDir: parseDirOption(
             options.publishDir,
-            undefined
+            defaultPublishDir
           ),
-          codegenDir: parsePluginCodegenDirOption(
+          codegenDir: parseDirOption(
             options.codegenDir,
-            undefined
+            defaultCodegenDir
           ),
         });
       });
