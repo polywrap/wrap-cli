@@ -1,4 +1,4 @@
-# `@polywrap/tracing-js`
+# @polywrap/tracing-js
 
 ## Steps to use tracing
 
