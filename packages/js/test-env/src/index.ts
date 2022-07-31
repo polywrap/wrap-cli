@@ -194,8 +194,13 @@ export const runCLI = async (options: {
   };
 };
 
-export async function buildWrapper(wrapperAbsPath: string): Promise<void> {
-  const manifestPath = `${wrapperAbsPath}/polywrap.yaml`;
+export async function buildWrapper(
+  wrapperAbsPath: string,
+  manifestPathOverride?: string
+): Promise<void> {
+  const manifestPath = manifestPathOverride
+    ? path.join(wrapperAbsPath, manifestPathOverride)
+    : `${wrapperAbsPath}/polywrap.yaml`;
   const {
     exitCode: buildExitCode,
     stdout: buildStdout,

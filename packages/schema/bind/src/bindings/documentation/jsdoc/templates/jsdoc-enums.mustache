@@ -1,0 +1,12 @@
+/**
+* {{#imported}}{{namespace}} {{/imported}}Enum Types
+* @module {{#imported}}{{namespace}}_{{/imported}}enums
+*/
+
+{{#enumTypes}}
+/**
+* {{comment}}
+* @typedef { {{#unionTypeTrim}}{{#constants}}"{{.}}" | {{/constants}}{{/unionTypeTrim}} } module:{{#imported}}{{namespace}}_{{/imported}}enums.{{type}} {{comment}}
+*/
+
+{{/enumTypes}}

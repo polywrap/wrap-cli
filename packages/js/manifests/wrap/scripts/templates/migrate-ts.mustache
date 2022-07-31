@@ -5,10 +5,10 @@
  * and run node ./scripts/manifest/generateFormatTypes.js to regenerate this file.
  */
 import {
-  Any{{#latest}}WrapManifest{{/latest}},
-  {{#latest}}WrapManifest{{/latest}},
-  {{#latest}}WrapManifest{{/latest}}Versions,
-  latest{{#latest}}WrapManifest{{/latest}}Version
+  AnyWrapManifest,
+  WrapManifest,
+  WrapManifestVersions,
+  latestWrapManifestVersion
 } from ".";
 
 {{#prevFormats}}
@@ -18,7 +18,7 @@ import {
 {{/prevFormats}}
 
 type Migrator = {
-  [key in {{#latest}}WrapManifest{{/latest}}Versions]?: (m: Any{{#latest}}WrapManifest{{/latest}}) => {{#latest}}WrapManifest{{/latest}};
+  [key in WrapManifestVersions]?: (m: AnyWrapManifest) => WrapManifest;
 };
 
 export const migrators: Migrator = {
@@ -27,31 +27,31 @@ export const migrators: Migrator = {
 {{/prevFormats}}
 };
 
-export function migrate{{#latest}}WrapManifest{{/latest}}(
-  manifest: Any{{#latest}}WrapManifest{{/latest}},
-  to: {{#latest}}WrapManifest{{/latest}}Versions
-): {{#latest}}WrapManifest{{/latest}} {
-  const from = manifest.version as {{#latest}}WrapManifest{{/latest}}Versions;
+export function migrateWrapManifest(
+  manifest: AnyWrapManifest,
+  to: WrapManifestVersions
+): WrapManifest {
+  const from = manifest.version as WrapManifestVersions;
 
-  if (from === latest{{#latest}}WrapManifest{{/latest}}Version) {
-    return manifest as {{#latest}}WrapManifest{{/latest}};
+  if (from === latestWrapManifestVersion) {
+    return manifest as WrapManifest;
   }
 
-  if (!(from in {{#latest}}WrapManifest{{/latest}}Versions)) {
-    throw new Error(`Unrecognized {{#latest}}WrapManifest{{/latest}}Version "${manifest.version}"`);
+  if (!(from in WrapManifestVersions)) {
+    throw new Error(`Unrecognized WrapManifestVersion "${manifest.version}"`);
   }
 
 {{#prevFormats.length}}
   const migrator = migrators[from];
   if (!migrator) {
     throw new Error(
-      `Migrator from {{#latest}}WrapManifest{{/latest}}Version "${from}" to "${to}" is not available`
+      `Migrator from WrapManifestVersion "${from}" to "${to}" is not available`
     );
   }
 
   return migrator(manifest);
 {{/prevFormats.length}}
 {{^prevFormats.length}}
-  throw new Error(`This should never happen, {{#latest}}WrapManifest{{/latest}} migrators is empty. from: ${from}, to: ${to}`);
+  throw new Error(`This should never happen, WrapManifest migrators is empty. from: ${from}, to: ${to}`);
 {{/prevFormats.length}}
 }

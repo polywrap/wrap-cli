@@ -12,7 +12,7 @@
   "author": "dOrg",
   "license": "ISC",
   "dependencies": {
-    "@polywrap/msgpack-js": "^0.2.0",
+    "@polywrap/msgpack-js": "0.3.0",
     "@types/multer": "^1.4.7",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
