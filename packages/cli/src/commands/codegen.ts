@@ -56,14 +56,10 @@ export const codegen: Command = {
       .action(async (options) => {
         await run({
           ...options,
-          clientConfig: await parseClientConfigOption(
-            options.clientConfig
-          ),
+          clientConfig: await parseClientConfigOption(options.clientConfig),
           codegenDir: parseDirOption(options.codegenDir, defaultCodegenDir),
           script: parseCodegenScriptOption(options.script),
-          manifestFile: parseWasmManifestFileOption(
-            options.manifestFile
-          ),
+          manifestFile: parseWasmManifestFileOption(options.manifestFile),
         });
       });
   },

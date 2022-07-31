@@ -51,9 +51,7 @@ export const run: Command = {
       .action(async (workflow: string, options) => {
         await _run(workflow, {
           ...options,
-          clientConfig: await parseClientConfigOption(
-            options.clientConfig
-          ),
+          clientConfig: await parseClientConfigOption(options.clientConfig),
           outputFile: options.outputFile
             ? parseWorkflowOutputFilePathOption(options.outputFile)
             : undefined,

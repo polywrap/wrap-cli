@@ -3,9 +3,7 @@ import { intlMsg } from "../intl";
 import path from "path";
 import fs from "fs";
 
-export function parseWorkflowScriptPathOption(
-  script: string
-): string {
+export function parseWorkflowScriptPathOption(script: string): string {
   const absPath = path.resolve(script);
   if (!fs.existsSync(absPath)) {
     throw new Error(
@@ -15,9 +13,7 @@ export function parseWorkflowScriptPathOption(
   return absPath;
 }
 
-export function parseWorkflowOutputFilePathOption(
-  outputFile: string
-): string {
+export function parseWorkflowOutputFilePathOption(outputFile: string): string {
   return path.resolve(outputFile);
 }
 

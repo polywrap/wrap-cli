@@ -17,7 +17,7 @@ import {
   BindOptions,
   BindOutput,
   GenerateBindingFn,
-  TypeScript
+  TypeScript,
 } from "@polywrap/schema-bind";
 import Mustache from "mustache";
 import path from "path";

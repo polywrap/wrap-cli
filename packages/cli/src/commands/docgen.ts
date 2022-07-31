@@ -18,15 +18,14 @@ import {
   parseDirOption,
   parseDocgenManifestFileOption,
 } from "../lib/option-parsers";
+import { scriptPath as docusaurusScriptPath } from "../lib/docgen/docusaurus";
+import { scriptPath as jsdocScriptPath } from "../lib/docgen/jsdoc";
+import { scriptPath as schemaScriptPath } from "../lib/docgen/schema";
 
 import path from "path";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import chalk from "chalk";
 import { Argument } from "commander";
-
-import { scriptPath as docusaurusScriptPath } from "../lib/docgen/docusaurus";
-import { scriptPath as jsdocScriptPath } from "../lib/docgen/jsdoc";
-import { scriptPath as schemaScriptPath } from "../lib/docgen/schema";
 
 const commandToPathMap: Record<string, string> = {
   schema: schemaScriptPath,
@@ -103,13 +102,9 @@ export const docgen: Command = {
       .action(async (action, options) => {
         await run(action, {
           ...options,
-          manifestFile: parseDocgenManifestFileOption(
-            options.manifestFile
-          ),
+          manifestFile: parseDocgenManifestFileOption(options.manifestFile),
           docgenDir: parseDirOption(options.docgenDir, defaultDocgenDir),
-          clientConfig: await parseClientConfigOption(
-            options.clientConfig
-          ),
+          clientConfig: await parseClientConfigOption(options.clientConfig),
         });
       });
   },

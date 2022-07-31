@@ -63,21 +63,13 @@ export const plugin: Command = {
       .action(async (options) => {
         await run({
           ...options,
-          clientConfig: await parseClientConfigOption(
-            options.clientConfig
-          ),
+          clientConfig: await parseClientConfigOption(options.clientConfig),
           manifestFile: parsePluginManifestFileOption(
             options.manifestFile,
             undefined
           ),
-          publishDir: parseDirOption(
-            options.publishDir,
-            defaultPublishDir
-          ),
-          codegenDir: parseDirOption(
-            options.codegenDir,
-            defaultCodegenDir
-          ),
+          publishDir: parseDirOption(options.publishDir, defaultPublishDir),
+          codegenDir: parseDirOption(options.codegenDir, defaultCodegenDir),
         });
       });
   },

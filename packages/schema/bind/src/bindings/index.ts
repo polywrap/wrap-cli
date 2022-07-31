@@ -1,6 +1,5 @@
 import { GenerateBindingFn } from "./types";
 import { BindLanguage } from "../";
-
 import * as AssemblyScript from "./assemblyscript";
 import * as Rust from "./rust";
 import * as TypeScript from "./typescript";

@@ -47,7 +47,7 @@ export const build: Command = {
       .option(
         `-o, --output-dir <${pathStr}>`,
         `${intlMsg.commands_build_options_o({
-          default: defaultOutputDir
+          default: defaultOutputDir,
         })}`
       )
       .option(
@@ -59,12 +59,8 @@ export const build: Command = {
       .action(async (options) => {
         await run({
           ...options,
-          manifestFile: parseWasmManifestFileOption(
-            options.manifestFile
-          ),
-          clientConfig: await parseClientConfigOption(
-            options.clientConfig
-          ),
+          manifestFile: parseWasmManifestFileOption(options.manifestFile),
+          clientConfig: await parseClientConfigOption(options.clientConfig),
           outputDir: parseDirOption(options.outputDir, defaultOutputDir),
         });
       });

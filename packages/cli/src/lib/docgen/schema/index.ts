@@ -1,7 +1,7 @@
 import {
   BindOptions,
   BindOutput,
-  GenerateBindingFn
+  GenerateBindingFn,
 } from "@polywrap/schema-bind";
 import Mustache from "mustache";
 import path from "path";

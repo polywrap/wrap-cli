@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import * as Functions from "../functions";
-import { GenerateBindingFn,renderTemplates } from "../..";
+import { GenerateBindingFn, renderTemplates } from "../..";
 import { BindOptions, BindOutput } from "../../..";
 
 import {
