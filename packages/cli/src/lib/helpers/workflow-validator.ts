@@ -43,7 +43,7 @@ export async function validateOutput(
       console.log("Validation: SUCCEED");
     }
   } catch (e) {
-    const msgLines = e.split(/\r?\n/);
+    const msgLines = e.stderr.split(/\r?\n/);
     msgLines[1] = `${validateScriptPath}:${msgLines[1]
       .split(":")
       .slice(1)
