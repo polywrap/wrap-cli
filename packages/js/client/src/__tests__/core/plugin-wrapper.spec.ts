@@ -12,6 +12,7 @@ const defaultPlugins = [
   "wrap://ens/ens-resolver.polywrap.eth",
   "wrap://ens/ethereum.polywrap.eth",
   "wrap://ens/http.polywrap.eth",
+  "wrap://ens/http-resolver.polywrap.eth",
   "wrap://ens/js-logger.polywrap.eth",
   "wrap://ens/uts46.polywrap.eth",
   "wrap://ens/sha3.polywrap.eth",
