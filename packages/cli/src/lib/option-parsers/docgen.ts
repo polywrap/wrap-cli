@@ -6,13 +6,8 @@ import {
   defaultPolywrapManifest,
 } from "../project";
 
-import path from "path";
-
-const defaultDocgenDir = "./wrap";
-
 export function parseDocgenManifestFileOption(
-  manifestFile: string | undefined,
-  _: unknown
+  manifestFile: string | undefined
 ): string {
   const manifestPaths = manifestFile
     ? [manifestFile]
@@ -31,19 +26,4 @@ export function parseDocgenManifestFileOption(
   }
 
   return manifestFile;
-}
-
-export function defaultDocgenManifestFileOption(): string {
-  return parseDocgenManifestFileOption(undefined, undefined);
-}
-
-export function parseDocgenDirOption(
-  docgenDir: string | undefined,
-  _: unknown
-): string {
-  return docgenDir ? path.resolve(docgenDir) : path.resolve(defaultDocgenDir);
-}
-
-export function defaultDocgenDirOption(): string {
-  return parseDocgenDirOption(undefined, undefined);
 }
