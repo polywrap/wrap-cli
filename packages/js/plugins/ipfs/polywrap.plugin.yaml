@@ -1,10 +1,8 @@
-format: 0.2.0
-project:
-  name: Ipfs
-  type: plugin/typescript
-source:
-  module: ./src/index.ts
-  schema: ./src/schema.graphql
+format: 0.1.0
+name: Ipfs
+language: plugin/typescript
+module: ./src/index.ts
+schema: ./src/schema.graphql
 import_redirects:
   - uri: "ens/ipfs.polywrap.eth"
     schema: ../../../interfaces/ipfs/build/schema.graphql
