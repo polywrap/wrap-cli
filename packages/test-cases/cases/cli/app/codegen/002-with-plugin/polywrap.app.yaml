@@ -1,7 +1,7 @@
-format: 0.1.0
+format: "0.2"
 name: test-app
 language: app/typescript
 schema: ./schema.graphql
 import_redirects:
     - uri: "wrap://ens/plugin.eth"
-      schema: "./../../../../../../js/plugins/http/build/schema.graphql"
+      info: "./../../../../../../js/plugins/http/build/wrap.info"
