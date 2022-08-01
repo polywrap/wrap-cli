@@ -70,8 +70,6 @@ type AnotherType {
 
 describe("Polywrap Schema Abi Transformations", () => {
   it("addFirstLast", () => {
-    // const parsed = parseSchema(schema1);
-    // console.log(JSON.stringify(parsed));
     const abi = parseSchema(schema1, {
       transforms: [addFirstLast],
     });
