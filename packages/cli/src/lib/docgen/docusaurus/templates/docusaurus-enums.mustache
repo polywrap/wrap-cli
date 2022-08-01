@@ -1,0 +1,18 @@
+---
+id: {{#imported}}{{namespace}}_{{/imported}}enums
+title: {{#imported}}{{namespace}} {{/imported}}Enum Types
+---
+
+
+{{#enumTypes}}
+### {{type}}
+{{#addReturnsIfText}}{{#markdownItalics}}{{comment}}{{/markdownItalics}}{{/addReturnsIfText}}
+```graphql
+enum {{type}} {
+  {{#constants}}
+  {{.}}
+  {{/constants}}
+}
+```
+
+{{/enumTypes}}

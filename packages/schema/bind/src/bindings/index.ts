@@ -1,25 +1,25 @@
 import { GenerateBindingFn } from "./types";
-import * as WasmAs from "./assemblyscript/wasm-as";
-import * as WasmRs from "./rust/wasm-rs";
-import * as PluginTs from "./typescript/plugin-ts";
-import * as AppTs from "./typescript/app-ts";
 import { BindLanguage } from "../";
+import * as AssemblyScript from "./assemblyscript";
+import * as Rust from "./rust";
+import * as TypeScript from "./typescript";
 
-export { WasmAs, WasmRs, PluginTs, AppTs };
+export { AssemblyScript, Rust, TypeScript };
 export * from "./types";
+export * from "./utils";
 
 export function getGenerateBindingFn(
   bindLanguage: BindLanguage
 ): GenerateBindingFn {
   switch (bindLanguage) {
     case "wasm-as":
-      return WasmAs.generateBinding;
+      return AssemblyScript.Wasm.generateBinding;
     case "wasm-rs":
-      return WasmRs.generateBinding;
+      return Rust.Wasm.generateBinding;
     case "plugin-ts":
-      return PluginTs.generateBinding;
+      return TypeScript.Plugin.generateBinding;
     case "app-ts":
-      return AppTs.generateBinding;
+      return TypeScript.App.generateBinding;
     default:
       throw Error(`Error: Language binding unsupported - ${bindLanguage}`);
   }
