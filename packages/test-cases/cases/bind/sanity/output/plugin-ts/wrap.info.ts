@@ -1,7 +1,11 @@
 /// NOTE: This is an auto-generated file.
 ///       All modifications will be overwritten.
 
-export const abi = {
+export const wrapManifest = {
+  name: "Test",
+  type: "plugin",
+  version: "0.1",
+  abi: {
   "objectTypes": [
     {
       "type": "CustomType",
@@ -3059,4 +3063,5 @@ export const abi = {
     ],
     "interfaces": []
   }
-};
+}
+}

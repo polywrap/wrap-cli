@@ -1,4 +1,11 @@
 /// NOTE: This is an auto-generated file.
 ///       All modifications will be overwritten.
 
-export const wrapManifest = {{wrapManifest}};
+{{#wrapManifest}}
+export const wrapManifest = {
+  name: "{{name}}",
+  type: "{{type}}",
+  version: "{{version}}",
+  abi: {{abi}}
+}
+{{/wrapManifest}}

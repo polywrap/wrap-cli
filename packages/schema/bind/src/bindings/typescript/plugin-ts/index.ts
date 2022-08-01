@@ -14,6 +14,7 @@ import {
   interfaceUris,
 } from "@polywrap/schema-parse";
 import path from "path";
+import { latestWrapManifestVersion } from "@polywrap/wrap-manifest-types-js";
 
 export { Functions };
 
@@ -34,11 +35,10 @@ export const generateBinding: GenerateBindingFn = (
     outputDirAbs: options.outputDirAbs,
   };
   const output = result.output;
-
   const wrapManifest = {
     name: options.projectName,
     type: "plugin",
-    version: "0.1",
+    version: latestWrapManifestVersion,
     abi: JSON.stringify(options.abi, null, 2),
   };
   output.entries = renderTemplates(

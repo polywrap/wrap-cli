@@ -1,4 +1,4 @@
-format: 0.1.0
+format: "0.2"
 name: TestUseGetImpl
 build: ./polywrap.build.yaml
 language: wasm/rust
@@ -6,4 +6,4 @@ schema: ./schema.graphql
 module: ./Cargo.toml
 import_redirects:
   - uri: wrap://ens/interface.eth
-    schema: ../test-interface/build/schema.graphql
+    info: ../test-interface/build/wrap.info
