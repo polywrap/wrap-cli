@@ -6,4 +6,4 @@ schema: ./src/schema.graphql
 module: ./src/index.ts
 import_redirects:
   - uri: "ens/externalenv.polywrap.eth"
-    schema: ../external/build/wrap.info
+    info: ../external/build/wrap.info

@@ -1,5 +1,6 @@
 import { createPolywrapClient, PolywrapClientConfig } from "../..";
 import { PluginModule } from "@polywrap/core-js";
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
 jest.setTimeout(200000);
 
@@ -24,10 +25,7 @@ describe("env", () => {
 
     return {
       factory: () => new MockEnvPlugin({}),
-      manifest: {
-        schema: ``,
-        implements: [],
-      },
+      manifest: {} as WrapManifest,
     };
   };
 

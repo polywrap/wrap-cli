@@ -7,6 +7,7 @@ import {
   PolywrapClient,
   PolywrapClientConfig,
 } from "../..";
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
 jest.setTimeout(200000);
 
@@ -84,10 +85,7 @@ describe("interface-impls", () => {
           uri: implementation4Uri,
           plugin: {
             factory: () => ({} as PluginModule<{}>),
-            manifest: {
-              abi: {},
-              implements: [],
-            },
+            manifest: {} as WrapManifest
           },
         },
       ],
@@ -146,20 +144,14 @@ describe("interface-impls", () => {
             uri: interface1Uri,
             plugin: {
               factory: () => ({} as PluginModule<{}>),
-              manifest: {
-                abi: {},
-                implements: [],
-              },
+              manifest: {} as WrapManifest
             },
           },
           {
             uri: interface2Uri,
             plugin: {
               factory: () => ({} as PluginModule<{}>),
-              manifest: {
-                abi: {},
-                implements: [],
-              },
+              manifest: {} as WrapManifest,
             },
           },
         ],
@@ -198,10 +190,7 @@ describe("interface-impls", () => {
             uri: interfaceUri,
             plugin: {
               factory: () => ({} as PluginModule<{}>),
-              manifest: {
-                abi: {},
-                implements: [],
-              },
+              manifest: {} as WrapManifest,
             },
           },
         ],
@@ -296,10 +285,7 @@ describe("interface-impls", () => {
           uri: implementation1Uri,
           plugin: {
             factory: () => ({} as PluginModule<{}>),
-            manifest: {
-              abi: {},
-              implements: [new Uri(interfaceUri)],
-            },
+            manifest: {} as WrapManifest,
           },
         },
       ],
@@ -331,10 +317,7 @@ describe("interface-impls", () => {
           uri: implementation1Uri,
           plugin: {
             factory: () => ({} as PluginModule<{}>),
-            manifest: {
-              abi: {},
-              implements: [],
-            },
+            manifest: {} as WrapManifest,
           },
         },
       ],

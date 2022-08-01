@@ -15,6 +15,7 @@ import {
 } from "@polywrap/test-env-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { ResolveUriErrorType } from "@polywrap/core-js";
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
 jest.setTimeout(200000);
 
@@ -192,10 +193,7 @@ describe("resolveUri", () => {
             factory: () => {
               return ({} as unknown) as PluginModule<{}>;
             },
-            manifest: {
-              abi: {},
-              implements: [],
-            },
+            manifest: {} as WrapManifest,
           },
         },
       ],

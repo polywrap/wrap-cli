@@ -15,6 +15,7 @@ import {
 } from "../..";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import fs from "fs";
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
 jest.setTimeout(200000);
 
@@ -72,10 +73,7 @@ describe("wasm-wrapper", () => {
 
     return {
       factory: () => new MockPlugin({}),
-      manifest: {
-        abi: ``,
-        implements: [],
-      },
+      manifest: {} as WrapManifest,
     };
   };
 

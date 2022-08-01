@@ -4,6 +4,7 @@ import {
   createPolywrapClient,
   PluginModule,
 } from "../..";
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
 jest.setTimeout(200000);
 
@@ -54,10 +55,7 @@ describe("plugin-wrapper", () => {
       factory: () => new MockMapPlugin({
         map: new Map().set("a", 1).set("b", 2)
       }),
-      manifest: {
-        abi: {},
-        implements: [],
-      },
+      manifest: {} as WrapManifest,
     };
   };
 
@@ -70,10 +68,7 @@ describe("plugin-wrapper", () => {
           uri: implementationUri,
           plugin: {
             factory: () => ({} as PluginModule<{}>),
-            manifest: {
-              abi: {},
-              implements: [],
-            },
+            manifest: {} as WrapManifest,
           },
         },
       ],
@@ -135,10 +130,7 @@ describe("plugin-wrapper", () => {
 
     const pluginPackage = {
       factory: () => ({} as PluginModule<{}>),
-      manifest: {
-        abi: {},
-        implements: [],
-      },
+      manifest: {} as WrapManifest,
     };
 
     const client = new PolywrapClient({
@@ -166,18 +158,12 @@ describe("plugin-wrapper", () => {
 
     const pluginPackage1 = {
       factory: () => ({} as PluginModule<{}>),
-      manifest: {
-        abi: {},
-        implements: [],
-      },
+      manifest: {} as WrapManifest,
     };
 
     const pluginPackage2 = {
       factory: () => ({} as PluginModule<{}>),
-      manifest: {
-        abi: {},
-        implements: [],
-      },
+      manifest: {} as WrapManifest,
     };
 
     const client = new PolywrapClient({
@@ -208,5 +194,6 @@ describe("plugin-wrapper", () => {
     const client = await getClient()
     const manifest = await client.getManifest("ens/ipfs.polywrap.eth")
     expect(manifest.type).toEqual("plugin")
+    expect(manifest.name).toEqual("IPFS")
   })
 });
