@@ -931,7 +931,7 @@ describe("resolveUri", () => {
     ]);
   });
 
-  it("can resolve uri with custom resolver at query-time", async () => {
+  it("can resolve uri with custom resolver at invoke-time", async () => {
     const ensUri = new Uri(`ens/test`);
     const redirectUri = new Uri(`ens/redirect.eth`);
 
