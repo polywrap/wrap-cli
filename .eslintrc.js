@@ -2,6 +2,7 @@ module.exports = {
   root: true,
   ignorePatterns: [
     "**/wrap/**/*.*",
+    "**/wrap-man/**/*.*",
     "**/infra-modules/**/*.*",
     "**/build/**/*.*",
     "**/__tests__/**/*.*",

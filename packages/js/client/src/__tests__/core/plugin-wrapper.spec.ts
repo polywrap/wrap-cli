@@ -194,6 +194,6 @@ describe("plugin-wrapper", () => {
     const client = await getClient()
     const manifest = await client.getManifest("ens/ipfs.polywrap.eth")
     expect(manifest.type).toEqual("plugin")
-    expect(manifest.name).toEqual("IPFS")
+    expect(manifest.name).toEqual("Ipfs")
   })
 });

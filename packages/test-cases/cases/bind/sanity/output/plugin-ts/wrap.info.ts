@@ -1,7 +1,8 @@
 /// NOTE: This is an auto-generated file.
 ///       All modifications will be overwritten.
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js"
 
-export const wrapManifest = {
+export const wrapManifest: WrapManifest = {
   name: "Test",
   type: "plugin",
   version: "0.1",

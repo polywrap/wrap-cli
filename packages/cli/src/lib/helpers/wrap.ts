@@ -1,5 +1,6 @@
 import { msgpackEncode } from "@polywrap/msgpack-js";
 import {
+  latestWrapManifestVersion,
   validateWrapManifest,
   WrapManifest,
 } from "@polywrap/wrap-manifest-types-js";
@@ -12,7 +13,7 @@ export const generateWrapFile = async (
   path: string
 ): Promise<void> => {
   const info: WrapManifest = {
-    version: "0.1",
+    version: latestWrapManifestVersion,
     name,
     type,
     /// TODO(cbrzn): Change this to WrapAbi
