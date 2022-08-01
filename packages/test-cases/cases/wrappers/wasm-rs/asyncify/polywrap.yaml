@@ -6,4 +6,4 @@ schema: ./schema.graphql
 module: ./Cargo.toml
 import_redirects:
   - uri: "ens/memory-storage.polywrap.eth"
-    schema: ./plugin.wrap.info
+    info: ./plugin.wrap.info

@@ -217,10 +217,8 @@ export async function resolveImportsAndParseSchemas(
     "$1"
   );
 
-  // Parse the newly formed schema
-  const abi = parseSchema(newSchema, { noValidate });
-
-  return abi;
+  // Parse and return the newly formed schema
+  return parseSchema(newSchema, { noValidate });
 }
 
 interface Namespaced {

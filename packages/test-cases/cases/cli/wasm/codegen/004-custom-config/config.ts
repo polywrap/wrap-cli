@@ -1,5 +1,6 @@
 import { PolywrapClientConfig } from "@polywrap/client-js";
 import { PluginModule } from "@polywrap/core-js";
+import { latestWrapManifestVersion, WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
 interface Config extends Record<string, unknown> {
   val: number;
@@ -21,15 +22,11 @@ const mockPlugin = () => {
   return {
     factory: () => new MockPlugin({ val: 0 }),
     manifest: {
-      schema: `
-        type Module {
-          getData: Int!
-          setData(value: Int!): Boolean!
-          deployContract: String!
-        }
-      `,
-      implements: [],
-    },
+      name: "mock",
+      type: "plugin",
+      version: latestWrapManifestVersion,
+      abi
+    } as WrapManifest
   };
 };
 
@@ -48,4 +45,114 @@ export function getClientConfig(defaultConfigs: Partial<PolywrapClientConfig>) {
     ];
   }
   return defaultConfigs;
+}
+
+const abi = {
+  "objectTypes": [],
+  "enumTypes": [],
+  "interfaceTypes": [],
+  "importedObjectTypes": [],
+  "importedModuleTypes": [],
+  "importedEnumTypes": [],
+  "importedEnvTypes": [],
+  "moduleType": {
+    "type": "Module",
+    "name": null,
+    "required": null,
+    "kind": 128,
+    "methods": [
+      {
+        "type": "Method",
+        "name": "getData",
+        "required": true,
+        "kind": 64,
+        "arguments": [],
+        "return": {
+          "type": "Int",
+          "name": "getData",
+          "required": true,
+          "kind": 34,
+          "array": null,
+          "map": null,
+          "scalar": {
+            "type": "Int",
+            "name": "getData",
+            "required": true,
+            "kind": 4
+          },
+          "object": null,
+          "enum": null,
+          "unresolvedObjectOrEnum": null
+        }
+      },
+      {
+        "type": "Method",
+        "name": "setData",
+        "required": true,
+        "kind": 64,
+        "arguments": [
+          {
+            "type": "Int",
+            "name": "value",
+            "required": true,
+            "kind": 34,
+            "array": null,
+            "map": null,
+            "scalar": {
+              "type": "Int",
+              "name": "value",
+              "required": true,
+              "kind": 4
+            },
+            "object": null,
+            "enum": null,
+            "unresolvedObjectOrEnum": null
+          }
+        ],
+        "return": {
+          "type": "Boolean",
+          "name": "setData",
+          "required": true,
+          "kind": 34,
+          "array": null,
+          "map": null,
+          "scalar": {
+            "type": "Boolean",
+            "name": "setData",
+            "required": true,
+            "kind": 4
+          },
+          "object": null,
+          "enum": null,
+          "unresolvedObjectOrEnum": null
+        }
+      },
+      {
+        "type": "Method",
+        "name": "deployContract",
+        "required": true,
+        "kind": 64,
+        "arguments": [],
+        "return": {
+          "type": "String",
+          "name": "deployContract",
+          "required": true,
+          "kind": 34,
+          "array": null,
+          "map": null,
+          "scalar": {
+            "type": "String",
+            "name": "deployContract",
+            "required": true,
+            "kind": 4
+          },
+          "object": null,
+          "enum": null,
+          "unresolvedObjectOrEnum": null
+        }
+      }
+    ],
+    "imports": [],
+    "interfaces": []
+  }
 }

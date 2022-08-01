@@ -1,5 +1,6 @@
 import { PolywrapClientConfig } from "@polywrap/client-js";
 import { PluginModule } from "@polywrap/core-js";
+import { mockPluginManifest } from "../../../../index";
 
 interface Config extends Record<string, unknown> {
   val: number;
@@ -20,16 +21,7 @@ class MockPlugin extends PluginModule<Config> {
 const mockPlugin = () => {
   return {
     factory: () => new MockPlugin({ val: 0 }),
-    manifest: {
-      schema: `
-        type Module {
-          getData: Int!
-          setData(value: Int!): Boolean!
-          deployContract: String!
-        }
-      `,
-      implements: [],
-    },
+    manifest: mockPluginManifest
   };
 };
 
