@@ -15,9 +15,11 @@ import {
 } from "../lib";
 import { Command, Program } from "./types";
 import {
-  parseDocgenDirOption,
+  parseDirOption,
   parseDocgenManifestFileOption,
-} from "../lib/option-parsers/docgen";
+} from "../lib/option-parsers";
+import { scriptPath as docusaurusScriptPath } from "../lib/docgen/docusaurus";
+import { scriptPath as jsdocScriptPath } from "../lib/docgen/jsdoc";
 
 import path from "path";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
@@ -25,10 +27,8 @@ import chalk from "chalk";
 import { Argument } from "commander";
 
 const commandToPathMap: Record<string, string> = {
-  schema: "@polywrap/schema-bind/build/bindings/documentation/schema/index.js",
-  docusaurus:
-    "@polywrap/schema-bind/build/bindings/documentation/docusaurus/index.js",
-  jsdoc: "@polywrap/schema-bind/build/bindings/documentation/jsdoc/index.js",
+  docusaurus: docusaurusScriptPath,
+  jsdoc: jsdocScriptPath,
 };
 
 export type DocType = keyof typeof commandToPathMap;
@@ -36,7 +36,7 @@ export type DocType = keyof typeof commandToPathMap;
 const defaultManifest = defaultPolywrapManifest
   .concat(defaultAppManifest)
   .concat(defaultPluginManifest);
-const defaultDocgenDir = "./wrap";
+const defaultDocgenDir = "./docs";
 const pathStr = intlMsg.commands_codegen_options_o_path();
 
 type DocgenCommandOptions = {
@@ -46,15 +46,11 @@ type DocgenCommandOptions = {
 };
 
 enum Actions {
-  SCHEMA = "schema",
   DOCUSAURUS = "docusaurus",
   JSDOC = "jsdoc",
 }
 
 const argumentsDescription = `
-  ${chalk.bold(
-    Actions.SCHEMA
-  )}        ${intlMsg.commands_docgen_options_schema()}
   ${chalk.bold(
     Actions.DOCUSAURUS
   )}    ${intlMsg.commands_docgen_options_markdown({
@@ -76,7 +72,6 @@ export const docgen: Command = {
       .usage("<action> [options]")
       .addArgument(
         new Argument("<action>", argumentsDescription).choices([
-          Actions.SCHEMA,
           Actions.DOCUSAURUS,
           Actions.JSDOC,
         ])
@@ -100,15 +95,9 @@ export const docgen: Command = {
       .action(async (action, options) => {
         await run(action, {
           ...options,
-          manifestFile: parseDocgenManifestFileOption(
-            options.manifestFile,
-            undefined
-          ),
-          docgenDir: parseDocgenDirOption(options.docgenDir, undefined),
-          clientConfig: await parseClientConfigOption(
-            options.clientConfig,
-            undefined
-          ),
+          manifestFile: parseDocgenManifestFileOption(options.manifestFile),
+          docgenDir: parseDirOption(options.docgenDir, defaultDocgenDir),
+          clientConfig: await parseClientConfigOption(options.clientConfig),
         });
       });
   },

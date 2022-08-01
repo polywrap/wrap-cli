@@ -1,4 +1,6 @@
-export const wrapManifest = {
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
+
+export const manifest: WrapManifest = {
   name: "Uts46",
   type: "plugin",
   version: "0.1",

@@ -9,7 +9,7 @@
   "commands_build_keypressListener_watching": "Watching",
   "commands_build_options_h": "Show usage information",
   "commands_build_options_m": "Path to the Polywrap Build manifest file (default: {default})",
-  "commands_build_options_o": "Output directory for build results (default: build/)",
+  "commands_build_options_o": "Output directory for build results (default: {default})",
   "commands_build_options_o_path": "path",
   "commands_build_options_options": "options",
   "commands_build_options_t": "Use the development server's ENS instance",

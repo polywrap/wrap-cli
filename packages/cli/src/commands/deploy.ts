@@ -47,10 +47,7 @@ export const deploy: Command = {
       .action(async (options) => {
         await run({
           ...options,
-          manifestFile: parseWasmManifestFileOption(
-            options.manifestFile,
-            undefined
-          ),
+          manifestFile: parseWasmManifestFileOption(options.manifestFile),
         });
       });
   },

@@ -2,7 +2,6 @@
 ///       All modifications will be overwritten.
 
 export * from "./wrap.info";
-export * from "./manifest";
 export * from "./module";
 export * from "./types";
 

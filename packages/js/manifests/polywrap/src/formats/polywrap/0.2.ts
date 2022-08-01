@@ -10,7 +10,7 @@ export interface PolywrapManifest {
   /**
    * Polywrap manifest format version.
    */
-  format: 0.2;
+  format: "0.2";
   /**
    * Name of this wrapper package.
    */

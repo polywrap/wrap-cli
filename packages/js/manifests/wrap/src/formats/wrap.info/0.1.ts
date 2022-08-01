@@ -96,7 +96,8 @@ export interface WrapManifest {
    * Wrapper Name
    */
   name: string;
-  abi: Abi;
+  // TODO(cbrzn): Modify this once Abi PR has been merged
+  abi: unknown;
 }
 export interface Abi {
   /**

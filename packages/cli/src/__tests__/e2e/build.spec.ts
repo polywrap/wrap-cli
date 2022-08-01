@@ -14,7 +14,7 @@ Options:
   -m, --manifest-file <path>         Path to the Polywrap Build manifest file
                                      (default: polywrap.yaml | polywrap.yml)
   -o, --output-dir <path>            Output directory for build results
-                                     (default: build/)
+                                     (default: ./build)
   -c, --client-config <config-path>  Add custom configuration to the
                                      PolywrapClient
   -w, --watch                        Automatically rebuild when changes are
