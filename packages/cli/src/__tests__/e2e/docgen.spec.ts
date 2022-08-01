@@ -25,7 +25,7 @@ Options:
                                      polywrap.plugin.yaml |
                                      polywrap.plugin.yml)
   -g, --docgen-dir <path>            Output directory for generated docs
-                                     (default: ./wrap)
+                                     (default: ./docs)
   -c, --client-config <config-path>  Add custom configuration to the
                                      PolywrapClient
   -h, --help                         display help for command
@@ -88,10 +88,10 @@ describe("e2e tests for docgen command", () => {
   };
 
   const testDocgenOutput = (testCaseDir: string, docgenDir: string) => {
-    if (fs.existsSync(path.join(testCaseDir, "expected", "wrap"))) {
+    if (fs.existsSync(path.join(testCaseDir, "expected", "docs"))) {
       const expectedTypesResult = compareSync(
         docgenDir,
-        path.join(testCaseDir, "expected", "wrap"),
+        path.join(testCaseDir, "expected", "docs"),
         { compareContent: true }
       );
       expect(expectedTypesResult.differences).toBe(0);
@@ -105,8 +105,8 @@ describe("e2e tests for docgen command", () => {
       cli: polywrapCli,
     });
 
-    expect(code).toEqual(0);
     expect(error).toBe("");
+    expect(code).toEqual(0);
     expect(clearStyle(output)).toEqual(HELP);
   });
 
@@ -188,7 +188,7 @@ describe("e2e tests for docgen command", () => {
       const testCaseName = testCases[i];
       const testCaseDir = getTestCaseDir(i);
 
-      let docgenDir = path.join(testCaseDir, "wrap");
+      let docgenDir = path.join(testCaseDir, "docs");
       let cmdArgs: string[] = [];
       let cmdFile = path.join(testCaseDir, "cmd.json");
       if (fs.existsSync(cmdFile)) {
