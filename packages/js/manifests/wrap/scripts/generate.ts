@@ -82,6 +82,9 @@ async function generateFormatTypes() {
         `/* eslint-disable @typescript-eslint/naming-convention */\n${tsFile}`
       );
 
+      const schemaOutputPath = path.join(wrapOutputDir, `${wrapVersion}.schema.json`);
+      os.writeFileSync(schemaOutputPath, JSON.stringify(bundledSchema, null ,2));
+
       // Add metadata for the root index.ts file to use
       wrapModules.push({
         interface: wrapSchema.id,
