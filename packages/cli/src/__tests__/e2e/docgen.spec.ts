@@ -13,10 +13,9 @@ Generate wrapper documentation
 
 Arguments:
   action                             
-    schema        Generate GraphQL schema
     docusaurus    Generate Docusaurus markdown
     jsdoc         Generate JSDoc markdown
-   (choices: "schema", "docusaurus", "jsdoc")
+   (choices: "docusaurus", "jsdoc")
 
 Options:
   -m, --manifest-file <path>         Path to the project manifest file

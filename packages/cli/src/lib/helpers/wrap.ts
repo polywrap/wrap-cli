@@ -1,12 +1,16 @@
+import { withSpinner } from "./spinner";
+import { intlMsg } from "../intl";
+import { displayPath } from "../system";
+
 import { msgpackEncode } from "@polywrap/msgpack-js";
 import {
   latestWrapManifestVersion,
   validateWrapManifest,
   WrapManifest,
 } from "@polywrap/wrap-manifest-types-js";
-import { writeFileSync } from "@polywrap/os-js";
+import { normalizePath, writeFileSync } from "@polywrap/os-js";
 
-export const generateWrapFile = async (
+const run = async (
   abi: unknown,
   name: string,
   type: "interface" | "wasm" | "plugin",
@@ -26,4 +30,32 @@ export const generateWrapFile = async (
   writeFileSync(path, msgpackEncode(parsedInfo), {
     encoding: "binary",
   });
+};
+
+export const generateWrapFile = async (
+  abi: unknown,
+  name: string,
+  type: "interface" | "wasm" | "plugin",
+  path: string,
+  quiet = false
+): Promise<void> => {
+  if (quiet) {
+    return run(abi, name, type, path);
+  } else {
+    const relativePath = displayPath(path);
+    return await withSpinner(
+      intlMsg.lib_helpers_manifest_outputText({
+        path: normalizePath(relativePath),
+      }),
+      intlMsg.lib_helpers_manifest_outputError({
+        path: normalizePath(relativePath),
+      }),
+      intlMsg.lib_helpers_manifest_outputWarning({
+        path: normalizePath(relativePath),
+      }),
+      async (_spinner): Promise<void> => {
+        await run(abi, name, type, path);
+      }
+    );
+  }
 };
