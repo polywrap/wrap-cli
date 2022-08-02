@@ -1,10 +1,14 @@
 import { runCommand } from "../system";
 import { intlMsg } from "../intl";
 
+import path from "path";
 import fs from "fs";
+import os from "os";
 import { InvokeResult } from "@polywrap/core-js";
 
-const TMPDIR = process.env.TMPDIR || "/tmp";
+const TMPDIR = fs.mkdtempSync(
+  path.join(os.tmpdir(), `polywrap-cli`)
+);
 
 export async function cueExists(): Promise<boolean> {
   try {

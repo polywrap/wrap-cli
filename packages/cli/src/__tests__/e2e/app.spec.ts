@@ -4,6 +4,7 @@ import { runCLI } from "@polywrap/test-env-js";
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import path from "path";
 import fs from "fs";
+import os from "os";
 import rimraf from "rimraf";
 import { compareSync } from "dir-compare";
 
@@ -167,9 +168,8 @@ describe("e2e tests for app command", () => {
 
   it("Should store generated files to specified codegen dir", async () => {
     const testCaseDir = getTestCaseDir(0);
-    const codegenDir = path.resolve(
-      process.env.TMPDIR || "./.tmp",
-      `app-codegen-${Date.now()}`
+    const codegenDir = fs.mkdtempSync(
+      path.join(os.tmpdir(), `polywrap-cli-tests`)
     );
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["app", "codegen", "--codegen-dir", codegenDir],

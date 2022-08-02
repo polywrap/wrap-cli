@@ -4,6 +4,7 @@ import { clearStyle, polywrapCli } from "./utils";
 import { runCLI } from "@polywrap/test-env-js";
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import fs from "fs";
+import os from "os";
 import path from "path";
 
 const HELP = `Usage: polywrap build|b [options]
@@ -164,9 +165,8 @@ describe("e2e tests for build command", () => {
   });
 
   it("Should store build files in specified output dir", async () => {
-    const outputDir = path.resolve(
-      process.env.TMPDIR || "./.tmp",
-      `build-${Date.now()}`
+    const outputDir = fs.mkdtempSync(
+      path.join(os.tmpdir(), `polywrap-cli-tests`)
     );
     const testCaseDir = getTestCaseDir(0);
     const { exitCode: code, stdout: output } = await runCLI({

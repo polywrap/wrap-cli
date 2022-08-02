@@ -4,6 +4,7 @@ import { runCLI } from "@polywrap/test-env-js";
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import path from "path";
 import fs from "fs";
+import os from "os";
 import rimraf from "rimraf";
 import { compareSync } from "dir-compare";
 
@@ -147,9 +148,8 @@ describe("e2e tests for docgen command", () => {
   });
 
   it("Should store build files in specified docgen dir", async () => {
-    const docgenDir = path.resolve(
-      process.env.TMPDIR || "./.tmp",
-      `docgen-${Date.now()}`
+    const docgenDir = fs.mkdtempSync(
+      path.join(os.tmpdir(), `polywrap-cli-tests`)
     );
     const testCaseDir = getTestCaseDir(0);
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
