@@ -1,0 +1,58 @@
+{
+  "id": "DeployManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "sequences"
+  ],
+  "properties": {
+    "format": {
+      "description": "Polywrap deployment manifest format version.",
+      "type": "string",
+      "enum": ["0.2.0", "0.2"]
+    },
+    "sequences": {
+      "patternProperties": {
+        "^.*$": {
+          "description": "Sequences of deployment steps",
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["steps"],
+          "properties": {
+            "steps": {
+              "description": "Name of the deploy step.",
+              "patternProperties": {
+                "^.*$": {
+                  "description": "Deployment step",
+                  "type": "object",
+                  "additionalProperties": false,
+                  "required": ["package", "uri"],
+                  "properties": {
+                    "package": {
+                      "description": "Name of the deploy step.",
+                      "type": "string"
+                    },
+                    "config": {
+                      "description": "Step-level custom configuration.",
+                      "type": "object"
+                    },
+                    "uri": {
+                      "description": "URI to pass into the deploy step.",
+                      "type": "string",
+                      "pattern": "^[wrap://]*[a-z\\-\\_0-9]+\\/.+$"
+                    }
+                  }
+                }
+              }
+            },
+            "config": {
+              "description": "Sequence-level custom configuration.",
+              "type": "object"
+            }
+          }
+        }
+      }
+    }
+  }
+}
