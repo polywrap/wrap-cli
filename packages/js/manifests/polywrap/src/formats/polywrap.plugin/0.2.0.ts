@@ -10,7 +10,7 @@ export interface PluginManifest {
   /**
    * Polywrap manifest format version.
    */
-  format: "0.2.0" | "0.2";
+  format: "0.2.0";
   /**
    * Basic project properties.
    */

@@ -10,7 +10,7 @@ import {
 } from ".";
 
 import schema_0_1 from "@polywrap/polywrap-manifest-schemas/formats/polywrap/0.1.json";
-import schema_0_2 from "@polywrap/polywrap-manifest-schemas/formats/polywrap/0.2.json";
+import schema_0_2_0 from "@polywrap/polywrap-manifest-schemas/formats/polywrap/0.2.0.json";
 
 import {
   Schema,
@@ -27,7 +27,7 @@ const schemas: PolywrapManifestSchemas = {
   // NOTE: Patch fix for backwards compatability
   "0.1.0": schema_0_1,
   "0.1": schema_0_1,
-  "0.2": schema_0_2,
+  "0.2.0": schema_0_2_0,
 };
 
 const validator = new Validator();

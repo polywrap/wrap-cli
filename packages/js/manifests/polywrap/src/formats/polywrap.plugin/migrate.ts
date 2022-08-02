@@ -12,15 +12,15 @@ import {
 } from ".";
 
 import {
-  migrate as migrate_0_1_to_0_2
-} from "./migrators/0.1_to_0.2";
+  migrate as migrate_0_1_to_0_2_0
+} from "./migrators/0.1_to_0.2.0";
 
 type Migrator = {
   [key in PluginManifestFormats]?: (m: AnyPluginManifest) => PluginManifest;
 };
 
 export const migrators: Migrator = {
-  "0.1": migrate_0_1_to_0_2,
+  "0.1": migrate_0_1_to_0_2_0,
 };
 
 export function migratePluginManifest(

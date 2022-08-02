@@ -1,5 +1,5 @@
 {
-  "id": "AppManifest",
+  "id": "PolywrapManifest",
   "type": "object",
   "additionalProperties": false,
   "required": ["format", "project", "source"],
@@ -7,7 +7,7 @@
     "format": {
       "description": "Polywrap manifest format version.",
       "type": "string",
-      "enum": ["0.2.0", "0.2"]
+      "enum": ["0.2.0"]
     },
     "project": {
       "description": "Basic project properties.",
@@ -23,7 +23,7 @@
         "type": {
           "description": "Type of this project.",
           "type": "string",
-          "pattern": "^app\\/[a-z0-9]+$"
+          "pattern": "^((interface)|(wasm\\/[a-z0-9]+))$"
         }
       }
     },
@@ -33,6 +33,11 @@
       "additionalProperties": false,
       "required": ["schema"],
       "properties": {
+        "module": {
+          "description": "Path to the project's entry point.",
+          "type": "string",
+          "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.?[\\w\\-\\.]*$"
+        },
         "schema": {
           "description": "Path to the project's graphql schema.",
           "type": "string",
