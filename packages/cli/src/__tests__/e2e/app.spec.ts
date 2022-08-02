@@ -168,8 +168,8 @@ describe("e2e tests for app command", () => {
   it("Should store generated files to specified codegen dir", async () => {
     const testCaseDir = getTestCaseDir(0);
     const codegenDir = path.resolve(
-      process.env.TMPDIR || "/tmp",
-      `codegen-${Date.now()}`
+      process.env.TMPDIR || "./.tmp",
+      `app-codegen-${Date.now()}`
     );
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
       args: ["app", "codegen", "--codegen-dir", codegenDir],

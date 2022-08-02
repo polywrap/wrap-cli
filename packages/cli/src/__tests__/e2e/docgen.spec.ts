@@ -148,7 +148,7 @@ describe("e2e tests for docgen command", () => {
 
   it("Should store build files in specified docgen dir", async () => {
     const docgenDir = path.resolve(
-      process.env.TMPDIR || "/tmp",
+      process.env.TMPDIR || "./.tmp",
       `docgen-${Date.now()}`
     );
     const testCaseDir = getTestCaseDir(0);

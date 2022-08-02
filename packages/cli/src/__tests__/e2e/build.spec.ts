@@ -165,11 +165,11 @@ describe("e2e tests for build command", () => {
 
   it("Should store build files in specified output dir", async () => {
     const outputDir = path.resolve(
-      process.env.TMPDIR || "/tmp",
-      `codegen-${Date.now()}`
+      process.env.TMPDIR || "./.tmp",
+      `build-${Date.now()}`
     );
     const testCaseDir = getTestCaseDir(0);
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+    const { exitCode: code, stdout: output } = await runCLI({
       args: ["build", "-v", "--output-dir", outputDir],
       cwd: testCaseDir,
       cli: polywrapCli,
@@ -177,7 +177,6 @@ describe("e2e tests for build command", () => {
 
     const buildDir = `./${path.relative(testCaseDir, outputDir)}`;
 
-    expect(error).toBe("");
     expect(code).toEqual(0);
     expect(output).toContain(`Artifacts written to ${buildDir}`);
     expect(output).toContain(`WRAP manifest written in ${buildDir}/wrap.info`);

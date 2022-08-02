@@ -173,7 +173,7 @@ describe("e2e tests for codegen command", () => {
 
   it("Should store build files in specified codegen dir", async () => {
     const codegenDir = path.resolve(
-      process.env.TMPDIR || "/tmp",
+      process.env.TMPDIR || "./.tmp",
       `codegen-${Date.now()}`
     );
     const testCaseDir = getTestCaseDir(0);
