@@ -1,5 +1,5 @@
 import { UriResolutionErrorType } from "./UriResolutionErrorType";
 
-export interface UriResolutionError {
+export interface IUriResolutionError {
   type: UriResolutionErrorType;
 }

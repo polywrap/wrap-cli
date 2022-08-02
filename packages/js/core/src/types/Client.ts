@@ -9,7 +9,7 @@ import {
   Env,
   WorkflowHandler,
 } from "./";
-import { UriResolver } from "../uri-resolution/core";
+import { IUriResolver } from "../uri-resolution/core";
 import { UriResolverHandler } from "./UriResolver";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
@@ -19,7 +19,7 @@ export interface ClientConfig<TUri extends Uri | string = string> {
   plugins: PluginRegistration<TUri>[];
   interfaces: InterfaceImplementations<TUri>[];
   envs: Env<TUri>[];
-  uriResolvers: UriResolver<unknown>[];
+  uriResolver: IUriResolver;
 }
 
 export interface Contextualized {
@@ -34,7 +34,7 @@ export type GetInterfacesOptions = Contextualized;
 
 export type GetEnvsOptions = Contextualized;
 
-export type GetUriResolversOptions = Contextualized;
+export type GetUriResolverOptions = Contextualized;
 
 export type GetSchemaOptions = Contextualized;
 
@@ -70,9 +70,7 @@ export interface Client
     options: GetEnvsOptions
   ): Env<Uri> | undefined;
 
-  getUriResolvers(
-    options: GetUriResolversOptions
-  ): readonly UriResolver<unknown>[];
+  getUriResolver(options: GetUriResolverOptions): IUriResolver;
 
   getSchema<TUri extends Uri | string>(
     uri: TUri,

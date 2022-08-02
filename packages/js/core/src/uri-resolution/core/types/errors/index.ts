@@ -1,4 +1,4 @@
 export * from "./InfiniteLoopError";
 export * from "./UriResolverError";
-export * from "./UriResolutionError";
+export * from "./IUriResolutionError";
 export * from "./UriResolutionErrorType";

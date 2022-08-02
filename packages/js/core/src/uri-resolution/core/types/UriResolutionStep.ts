@@ -1,10 +1,5 @@
-import { Uri } from "../../../types";
+import { IUriResolutionStep, UriResolutionResult } from ".";
 
-export interface UriResolutionStep {
-  uriResolver: string;
-  sourceUri: Uri;
-  result: {
-    uri: Uri;
-    wrapper: boolean;
-  };
+export interface UriResolutionStep<TError> extends IUriResolutionStep {
+  result: UriResolutionResult<TError>;
 }

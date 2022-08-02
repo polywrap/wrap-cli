@@ -31,16 +31,12 @@ import {
   parseQuery,
   TryResolveToWrapperOptions,
   getUriResolutionPath,
-  UriResolver,
-  GetUriResolversOptions,
-  tryResolveToWrapper,
+  IUriResolver,
+  GetUriResolverOptions,
   sanitizeEnvs,
   sanitizeInterfaceImplementations,
   sanitizePluginRegistrations,
   sanitizeUriRedirects,
-  CacheResolver,
-  ExtendableUriResolver,
-  coreInterfaceUris,
   Contextualized,
   JobRunner,
   PluginPackage,
@@ -50,6 +46,9 @@ import {
   UriResolutionErrorType,
   LoadResolverExtensionsError,
   UriResolverError,
+  IUriResolutionStep,
+  IUriResolutionResult,
+  IUriResolutionError,
 } from "@polywrap/core-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
@@ -66,14 +65,13 @@ export class PolywrapClient implements Client {
   // and handle cases where the are multiple jumps. For example, if
   // A => B => C, then the cache should have A => C, and B => C.
   private _wrapperCache: WrapperCache = new Map<string, Wrapper>();
-  private _config: PolywrapClientConfig<Uri> = {
+  private _config: PolywrapClientConfig<Uri> = ({
     redirects: [],
     plugins: [],
     interfaces: [],
     envs: [],
-    uriResolvers: [],
     tracingEnabled: false,
-  };
+  } as unknown) as PolywrapClientConfig<Uri>;
 
   // Invoke specific contexts
   private _contexts: Map<string, PolywrapClientConfig<Uri>> = new Map();
@@ -99,13 +97,17 @@ export class PolywrapClient implements Client {
           interfaces: config.interfaces
             ? sanitizeInterfaceImplementations(config.interfaces)
             : [],
-          uriResolvers: config.uriResolvers ?? [],
+          uriResolver: config.uriResolver as IUriResolver,
           tracingEnabled: !!config.tracingEnabled,
         };
       }
 
       if (!options?.noDefaults) {
         this._addDefaultConfig();
+      }
+
+      if (!this._config.uriResolver) {
+        throw new Error("No URI resolver provided");
       }
 
       this._validateConfig();
@@ -156,11 +158,9 @@ export class PolywrapClient implements Client {
     return this._getConfig(options.contextId).envs;
   }
 
-  @Tracer.traceMethod("PolywrapClient: getUriResolvers")
-  public getUriResolvers(
-    options: GetUriResolversOptions = {}
-  ): readonly UriResolver<unknown>[] {
-    return this._getConfig(options.contextId).uriResolvers;
+  @Tracer.traceMethod("PolywrapClient: getUriResolver")
+  public getUriResolver(options: GetUriResolverOptions = {}): IUriResolver {
+    return this._getConfig(options.contextId).uriResolver;
   }
 
   @Tracer.traceMethod("PolywrapClient: getEnvByUri")
@@ -472,7 +472,7 @@ export class PolywrapClient implements Client {
   @Tracer.traceMethod("PolywrapClient: resolveUri")
   public async tryResolveToWrapper<TUri extends Uri | string>(
     options: TryResolveToWrapperOptions<TUri, ClientConfig>
-  ): Promise<UriResolutionResult> {
+  ): Promise<UriResolutionResult<IUriResolutionError>> {
     const { contextId, shouldClearContext } = this._setContext(
       options.contextId,
       options.config
@@ -480,29 +480,31 @@ export class PolywrapClient implements Client {
 
     const ignoreCache = this._isContextualized(contextId);
     const cacheWrite = !ignoreCache && !options?.noCacheWrite;
-    const cacheRead = !ignoreCache && !options?.noCacheRead;
+    // const cacheRead = !ignoreCache && !options?.noCacheRead;
 
     const client = contextualizeClient(this, contextId);
 
-    let uriResolvers = this.getUriResolvers({ contextId: contextId });
+    const uriResolver = this.getUriResolver({ contextId: contextId });
 
-    if (!cacheRead) {
-      uriResolvers = uriResolvers.filter((x) => x.name !== CacheResolver.name);
-    }
+    // if (!cacheRead) {
+    //   uriResolver = uriResolvers.filter((x) => x.name !== CacheResolver.name);
+    // }
 
     const {
       wrapper,
       uri: resolvedUri,
       history,
       error,
-    } = await tryResolveToWrapper(
+    } = await uriResolver.tryResolveToWrapper(
       this._toUri(options.uri),
-      uriResolvers,
       client,
-      this._wrapperCache
+      this._wrapperCache,
+      []
     );
 
-    const resolutionPath = getUriResolutionPath(history);
+    const resolutionPath = getUriResolutionPath(
+      history as IUriResolutionStep[]
+    );
     // Update cache for all URIs in the chain
     if (cacheWrite && wrapper) {
       for (const item of resolutionPath) {
@@ -522,37 +524,8 @@ export class PolywrapClient implements Client {
         options.history === UriResolutionHistoryType.Path
           ? resolutionPath
           : history,
-      error,
+      error: error as IUriResolutionError,
     };
-  }
-
-  @Tracer.traceMethod("PolywrapClient: loadUriResolverWrappers")
-  public async loadUriResolvers(): Promise<{
-    success: boolean;
-    failedUriResolvers: string[];
-  }> {
-    const extendableUriResolver = this.getUriResolvers().find(
-      (x) => x.name === ExtendableUriResolver.name
-    ) as ExtendableUriResolver;
-
-    if (!extendableUriResolver) {
-      return {
-        success: true,
-        failedUriResolvers: [],
-      };
-    }
-
-    const uriResolverImpls = getImplementations(
-      coreInterfaceUris.uriResolver,
-      this.getInterfaces(),
-      this.getRedirects()
-    );
-
-    return extendableUriResolver.loadUriResolverWrappers(
-      this,
-      this._wrapperCache,
-      uriResolverImpls
-    );
   }
 
   private _addDefaultConfig() {
@@ -570,8 +543,8 @@ export class PolywrapClient implements Client {
       this._config.interfaces.push(...defaultClientConfig.interfaces);
     }
 
-    if (defaultClientConfig.uriResolvers) {
-      this._config.uriResolvers.push(...defaultClientConfig.uriResolvers);
+    if (!this._config.uriResolver && defaultClientConfig.uriResolver) {
+      this._config.uriResolver = defaultClientConfig.uriResolver;
     }
   }
 
@@ -751,7 +724,7 @@ export class PolywrapClient implements Client {
         ? sanitizeInterfaceImplementations(context.interfaces)
         : config.interfaces,
       envs: context?.envs ? sanitizeEnvs(context.envs) : config.envs,
-      uriResolvers: context?.uriResolvers ?? config.uriResolvers,
+      uriResolver: context?.uriResolver ?? config.uriResolver,
       tracingEnabled: context?.tracingEnabled || config.tracingEnabled,
     });
 
@@ -863,8 +836,8 @@ const contextualizeClient = (
         getEnvs: (options: GetEnvsOptions = {}) => {
           return client.getEnvs({ ...options, contextId });
         },
-        getUriResolvers: (options: GetUriResolversOptions = {}) => {
-          return client.getUriResolvers({ ...options, contextId });
+        getUriResolver: (options: GetUriResolverOptions = {}) => {
+          return client.getUriResolver({ ...options, contextId });
         },
         getEnvByUri: <TUri extends Uri | string>(
           uri: TUri,
@@ -898,14 +871,8 @@ const contextualizeClient = (
         },
         tryResolveToWrapper: <TUri extends Uri | string>(
           options: TryResolveToWrapperOptions<TUri, ClientConfig>
-        ): Promise<UriResolutionResult> => {
+        ): Promise<IUriResolutionResult> => {
           return client.tryResolveToWrapper({ ...options, contextId });
-        },
-        loadUriResolvers: (): Promise<{
-          success: boolean;
-          failedUriResolvers: string[];
-        }> => {
-          return client.loadUriResolvers();
         },
         run: <TData extends Record<string, unknown> = Record<string, unknown>>(
           options: RunOptions<TData>

@@ -1,8 +1,12 @@
-import { UriResolverInterface } from "../../../interfaces";
-import { Uri, WrapperCache, Client, Invoker } from "../../../types";
-import { UriResolver, UriResolutionStep, ResolveUriResult } from "../../core";
-import { CreateWrapperFunc } from "./types/CreateWrapperFunc";
-import { getEnvFromUriOrResolutionPath } from "../getEnvFromUriOrResolutionPath";
+import { UriResolverInterface } from "../../interfaces";
+import { Uri, WrapperCache, Client, Invoker } from "../../types";
+import {
+  IUriResolver,
+  IUriResolutionStep,
+  IUriResolutionResult,
+} from "../core";
+import { CreateWrapperFunc } from "./extendable/types/CreateWrapperFunc";
+import { getEnvFromUriOrResolutionPath } from "./getEnvFromUriOrResolutionPath";
 
 import {
   DeserializeManifestOptions,
@@ -10,7 +14,7 @@ import {
 } from "@polywrap/wrap-manifest-types-js";
 import { Tracer } from "@polywrap/tracing-js";
 
-export class UriResolverWrapper implements UriResolver<void> {
+export class UriResolverWrapper implements IUriResolver {
   constructor(
     public readonly implementationUri: Uri,
     private readonly createWrapper: CreateWrapperFunc,
@@ -25,8 +29,8 @@ export class UriResolverWrapper implements UriResolver<void> {
     uri: Uri,
     client: Client,
     cache: WrapperCache,
-    resolutionPath: UriResolutionStep[]
-  ): Promise<ResolveUriResult<void>> {
+    resolutionPath: IUriResolutionStep[]
+  ): Promise<IUriResolutionResult> {
     const result = await tryResolveUriWithImplementation(
       uri,
       this.implementationUri,

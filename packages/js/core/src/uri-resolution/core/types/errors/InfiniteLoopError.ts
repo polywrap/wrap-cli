@@ -1,6 +1,6 @@
 import { UriResolutionErrorType } from "./UriResolutionErrorType";
-import { UriResolutionError } from "./UriResolutionError";
+import { IUriResolutionError } from "./IUriResolutionError";
 
-export class InfiniteLoopError implements UriResolutionError {
+export class InfiniteLoopError implements IUriResolutionError {
   type: UriResolutionErrorType.InfiniteLoop;
 }

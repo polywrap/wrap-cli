@@ -1,5 +1,4 @@
-import { getEnvFromUriOrResolutionPath } from "../getEnvFromUriOrResolutionPath";
-import { UriResolver } from "../../core";
+import { getEnvFromUriOrResolutionPath } from "./getEnvFromUriOrResolutionPath";
 import {
   Wrapper,
   WrapperCache,
@@ -7,11 +6,15 @@ import {
   Env,
   PluginPackage,
   Uri,
-} from "../../../types";
-import { findPluginPackage } from "../../../algorithms";
-import { UriResolutionStep, ResolveUriResult } from "../../core";
+} from "../../types";
+import { findPluginPackage } from "../../algorithms";
+import {
+  IUriResolutionResult,
+  IUriResolutionStep,
+  IUriResolver,
+} from "../core";
 
-export class PluginResolver implements UriResolver<void> {
+export class PluginResolver implements IUriResolver {
   constructor(
     private readonly createPluginWrapper: (
       uri: Uri,
@@ -28,8 +31,8 @@ export class PluginResolver implements UriResolver<void> {
     uri: Uri,
     client: Client,
     cache: WrapperCache,
-    resolutionPath: UriResolutionStep[]
-  ): Promise<ResolveUriResult<void>> {
+    resolutionPath: IUriResolutionStep[]
+  ): Promise<IUriResolutionResult> {
     const plugin = findPluginPackage(uri, client.getPlugins({}));
 
     if (plugin) {

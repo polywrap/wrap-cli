@@ -1,7 +1,7 @@
-import { UriResolutionError } from "./UriResolutionError";
+import { IUriResolutionError } from "./IUriResolutionError";
 import { UriResolutionErrorType } from "./UriResolutionErrorType";
 
-export class UriResolverError<TError> implements UriResolutionError {
+export class UriResolverError<TError> implements IUriResolutionError {
   type: UriResolutionErrorType = UriResolutionErrorType.UriResolver;
 
   constructor(

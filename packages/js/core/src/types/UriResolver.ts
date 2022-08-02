@@ -1,5 +1,5 @@
 import { ClientConfig, Uri } from ".";
-import { UriResolutionResult } from "../uri-resolution/core";
+import { IUriResolutionResult } from "../uri-resolution/core/types";
 
 /** Options required for an URI resolution. */
 export interface TryResolveToWrapperOptions<
@@ -38,12 +38,7 @@ export interface TryResolveToWrapperOptions<
 export interface UriResolverHandler {
   tryResolveToWrapper<TUri extends Uri | string>(
     options?: TryResolveToWrapperOptions<TUri, ClientConfig>
-  ): Promise<UriResolutionResult>;
-
-  loadUriResolvers(): Promise<{
-    success: boolean;
-    failedUriResolvers: string[];
-  }>;
+  ): Promise<IUriResolutionResult>;
 }
 
 export enum UriResolutionHistoryType {

@@ -10,6 +10,7 @@ import {
   CacheResolver,
   PluginResolver,
   RedirectsResolver,
+  PreloadedUriResolverAggregator,
 } from "@polywrap/core-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
@@ -105,27 +106,33 @@ export const getDefaultClientConfig = Tracer.traceFunc(
           implementations: [new Uri("wrap://ens/js-logger.polywrap.eth")],
         },
       ],
-      uriResolvers: [
-        new RedirectsResolver(),
-        new CacheResolver(),
-        new PluginResolver(
-          (
-            uri: Uri,
-            plugin: PluginPackage<unknown>,
-            environment: Env<Uri> | undefined
-          ) => new PluginWrapper(uri, plugin, environment)
-        ),
-        new ExtendableUriResolver(
-          (
-            uri: Uri,
-            manifest: WrapManifest,
-            uriResolver: string,
-            environment: Env<Uri> | undefined
-          ) => {
-            return new WasmWrapper(uri, manifest, uriResolver, environment);
-          }
-        ),
-      ],
+      uriResolver: new PreloadedUriResolverAggregator(
+        [
+          new RedirectsResolver(),
+          new CacheResolver(),
+          new PluginResolver(
+            (
+              uri: Uri,
+              plugin: PluginPackage<unknown>,
+              environment: Env<Uri> | undefined
+            ) => new PluginWrapper(uri, plugin, environment)
+          ),
+          new ExtendableUriResolver(
+            { fullResolution: false },
+            (
+              uri: Uri,
+              manifest: WrapManifest,
+              uriResolver: string,
+              environment: Env<Uri> | undefined
+            ) => {
+              return new WasmWrapper(uri, manifest, uriResolver, environment);
+            }
+          ),
+        ],
+        {
+          fullResolution: true,
+        }
+      ),
     };
   }
 );

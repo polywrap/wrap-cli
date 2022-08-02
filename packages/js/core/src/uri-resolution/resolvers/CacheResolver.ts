@@ -1,7 +1,12 @@
-import { Uri, Client, WrapperCache } from "../../../types";
-import { ResolveUriResult, UriResolver } from "../../core";
+import {
+  IUriResolver,
+  Uri,
+  Client,
+  WrapperCache,
+  IUriResolutionResult,
+} from "../..";
 
-export class CacheResolver implements UriResolver<void> {
+export class CacheResolver implements IUriResolver {
   public get name(): string {
     return CacheResolver.name;
   }
@@ -10,7 +15,7 @@ export class CacheResolver implements UriResolver<void> {
     uri: Uri,
     client: Client,
     cache: WrapperCache
-  ): Promise<ResolveUriResult<void>> {
+  ): Promise<IUriResolutionResult> {
     const wrapper = cache.get(uri.uri);
 
     return Promise.resolve({
