@@ -9,7 +9,6 @@ import {
   QueryResult,
   Uri,
   UriRedirect,
-  UriResolver,
   RedirectsResolver,
   ExtendableUriResolver,
   PluginResolver,
@@ -23,13 +22,13 @@ import {
   Subscription,
   PluginPackage,
   GetManifestOptions,
-  tryResolveToWrapper,
 } from "..";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackEncode } from "@polywrap/msgpack-js";
+import { PreloadedUriResolverAggregator } from "../uri-resolution/resolvers";
 
-describe("resolveUri", () => {
+describe("URI resolution", () => {
   const client = (
     wrappers: Record<string, PluginModule<{}>>,
     plugins: PluginRegistration<Uri>[] = [],
@@ -209,24 +208,28 @@ describe("resolveUri", () => {
     "wrap://ens/my-plugin": (pluginWrapper as unknown) as PluginModule<{}>,
   };
 
-  const uriResolvers: UriResolver[] = [
-    new RedirectsResolver(),
-    new PluginResolver((uri: Uri, plugin: PluginPackage<{}>) =>
-      createPluginWrapper(uri, plugin)
-    ),
-    new ExtendableUriResolver(
-      (
-        uri: Uri,
-        manifest: WrapManifest,
-        uriResolver: string,
-        environment: Env<Uri> | undefined
-      ) => {
-        return createWrapper(uri, manifest, uriResolver);
-      },
-      { noValidate: true },
-      true
-    ),
-  ];
+  const resolver = new PreloadedUriResolverAggregator(
+    [
+      new RedirectsResolver(),
+      new PluginResolver((uri: Uri, plugin: PluginPackage<{}>) =>
+        createPluginWrapper(uri, plugin)
+      ),
+      new ExtendableUriResolver(
+        { fullResolution: false },
+        (
+          uri: Uri,
+          manifest: WrapManifest,
+          uriResolver: string,
+          environment: Env<Uri> | undefined
+        ) => {
+          return createWrapper(uri, manifest, uriResolver);
+        },
+        { noValidate: true },
+        true
+      ),
+    ],
+    { fullResolution: true }
+  );
 
   it("sanity", () => {
     const wrapper = new Uri("wrap://ens/ens");
@@ -240,9 +243,8 @@ describe("resolveUri", () => {
   });
 
   it("works in the typical case", async () => {
-    const result = await tryResolveToWrapper(
+    const result = await resolver.tryResolveToWrapper(
       new Uri("ens/test.eth"),
-      uriResolvers,
       client(wrappers, plugins, interfaces),
       new Map<string, Wrapper>()
     );
@@ -262,9 +264,8 @@ describe("resolveUri", () => {
   });
 
   it("uses a plugin that implements uri-resolver", async () => {
-    const result = await tryResolveToWrapper(
+    const result = await resolver.tryResolveToWrapper(
       new Uri("my/something-different"),
-      uriResolvers,
       client(wrappers, plugins, interfaces),
       new Map<string, Wrapper>()
     );
@@ -284,9 +285,8 @@ describe("resolveUri", () => {
   });
 
   it("works when direct query a Polywrap that implements the uri-resolver", async () => {
-    const result = await tryResolveToWrapper(
+    const result = await resolver.tryResolveToWrapper(
       new Uri("ens/ens"),
-      uriResolvers,
       client(wrappers, plugins, interfaces),
       new Map<string, Wrapper>()
     );
@@ -306,9 +306,8 @@ describe("resolveUri", () => {
   });
 
   it("works when direct query a plugin Polywrap that implements the uri-resolver", async () => {
-    const result = await tryResolveToWrapper(
+    const result = await resolver.tryResolveToWrapper(
       new Uri("my/something-different"),
-      uriResolvers,
       client(wrappers, plugins, interfaces),
       new Map<string, Wrapper>()
     );
@@ -341,14 +340,15 @@ describe("resolveUri", () => {
 
     expect.assertions(1);
 
-    return tryResolveToWrapper(
-      new Uri("some/wrapper"),
-      uriResolvers,
-      client(wrappers, plugins, interfaces, circular),
-      new Map<string, Wrapper>()
-    ).catch((e: Error) =>
-      expect(e.message).toMatch(/Infinite loop while resolving URI/)
-    );
+    return resolver
+      .tryResolveToWrapper(
+        new Uri("some/wrapper"),
+        client(wrappers, plugins, interfaces, circular),
+        new Map<string, Wrapper>()
+      )
+      .catch((e: Error) =>
+        expect(e.message).toMatch(/Infinite loop while resolving URI/)
+      );
   });
 
   it("throws when redirect missing the from property", async () => {
@@ -365,16 +365,17 @@ describe("resolveUri", () => {
 
     expect.assertions(1);
 
-    return tryResolveToWrapper(
-      new Uri("some/wrapper"),
-      uriResolvers,
-      client(wrappers, plugins, interfaces, missingFromProperty),
-      new Map<string, Wrapper>()
-    ).catch((e: Error) =>
-      expect(e.message).toMatch(
-        "Redirect missing the from property.\nEncountered while resolving wrap://some/wrapper"
+    return resolver
+      .tryResolveToWrapper(
+        new Uri("some/wrapper"),
+        client(wrappers, plugins, interfaces, missingFromProperty),
+        new Map<string, Wrapper>()
       )
-    );
+      .catch((e: Error) =>
+        expect(e.message).toMatch(
+          "Redirect missing the from property.\nEncountered while resolving wrap://some/wrapper"
+        )
+      );
   });
 
   it("works when a Polywrap registers a Plugin", async () => {
@@ -392,9 +393,8 @@ describe("resolveUri", () => {
       },
     ];
 
-    const result = await tryResolveToWrapper(
+    const result = await resolver.tryResolveToWrapper(
       new Uri("some/wrapper"),
-      uriResolvers,
       client(wrappers, pluginRegistrations, interfaces),
       new Map<string, Wrapper>()
     );
@@ -423,9 +423,12 @@ describe("resolveUri", () => {
 
     const uri = new Uri("some/wrapper");
 
-    const { uri: resolvedUri, wrapper, error } = await tryResolveToWrapper(
+    const {
+      uri: resolvedUri,
+      wrapper,
+      error,
+    } = await resolver.tryResolveToWrapper(
       uri,
-      uriResolvers,
       client(
         {
           ...wrappers,
