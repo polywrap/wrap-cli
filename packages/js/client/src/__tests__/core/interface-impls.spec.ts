@@ -1,28 +1,14 @@
 import {
   coreInterfaceUris,
-  createPolywrapClient,
   Uri,
   PluginModule,
   PolywrapClient,
-  PolywrapClientConfig,
 } from "../..";
-import { ClientConfigBuilder } from "@polywrap/client-config-js";
+import { getClient, getDefaultClientConfig } from "../utils/getClient";
 
 jest.setTimeout(200000);
 
 describe("interface-impls", () => {
-  const getDefaultClientConfig = () => {
-    return new ClientConfigBuilder().addDefaults().build();
-  };
-  
-  const getClient = async (config?: Partial<PolywrapClientConfig>) => {
-    const client = await createPolywrapClient(
-      {},
-      config
-    );
-
-    return client;
-  };
   it("should register interface implementations successfully", () => {
     const interfaceUri = "wrap://ens/some-interface1.eth";
     const implementation1Uri = "wrap://ens/some-implementation1.eth";

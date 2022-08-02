@@ -1,12 +1,5 @@
-import {
-  coreInterfaceUris,
-  PluginModule,
-  Uri
-} from "@polywrap/core-js";
-
-import {
-  PolywrapClient,
-} from "../..";
+import { coreInterfaceUris, PluginModule } from "@polywrap/core-js";
+import { Uri, PolywrapClient } from "../..";
 
 jest.setTimeout(200000);
 
@@ -27,9 +20,6 @@ describe("sanity", () => {
       new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
     ];
     const actualPlugins = client.getPlugins().map(x => x.uri);
-    
-    console.log("expected", expectedPlugins[0] instanceof Uri);
-    console.log("actual", actualPlugins[0] instanceof Uri);
 
     expect(client.getRedirects()).toStrictEqual([]);
     expect(expectedPlugins).toStrictEqual(actualPlugins);
