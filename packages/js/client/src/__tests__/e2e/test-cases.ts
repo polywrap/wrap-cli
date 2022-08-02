@@ -5,9 +5,7 @@ export const runAsyncifyTest = async (
   client: PolywrapClient,
   wrapperUri: string
 ) => {
-  const subsequentInvokes = await client.invoke<{
-    subsequentInvokes: string;
-  }>({
+  const subsequentInvokes = await client.invoke<string>({
     uri: wrapperUri,
     method: "subsequentInvokes",
     args: {
@@ -337,14 +335,14 @@ export const runGetImplementationsTest = async (
   let implUri = new Uri(implementationUri);
   expect(client.getImplementations(interfaceUri)).toEqual([implUri.uri]);
 
-  const query = await client.invoke({
+  const result = await client.invoke({
     uri: implUri.uri,
     method: "moduleImplementations",
   });
 
-  expect(query.error).toBeFalsy();
-  expect(query.data).toBeTruthy();
-  expect(query.data).toEqual([implUri.uri]);
+  expect(result.error).toBeFalsy();
+  expect(result.data).toBeTruthy();
+  expect(result.data).toEqual([implUri.uri]);
 };
 
 export const runInvalidTypesTest = async (
@@ -863,20 +861,20 @@ export const runSimpleEnvTest = async (
   client: PolywrapClient,
   wrapperUri: string
 ) => {
-  const queryGetEnv = await client.invoke({
+  const getEnvResult = await client.invoke({
     uri: wrapperUri,
     method: "getEnv",
     args: {
       arg: "string",
     },
   });
-  expect(queryGetEnv.error).toBeFalsy();
-  expect(queryGetEnv.data).toEqual({
+  expect(getEnvResult.error).toBeFalsy();
+  expect(getEnvResult.data).toEqual({
     str: "module string",
     requiredInt: 1,
   });
 
-  const queryGetEnvNotSet = await client.invoke({
+  const getEnvNotSetResult = await client.invoke({
     uri: wrapperUri,
     method: "getEnv",
     args: {
@@ -886,11 +884,11 @@ export const runSimpleEnvTest = async (
       envs: [],
     },
   });
-  expect(queryGetEnvNotSet.data).toBeUndefined();
-  expect(queryGetEnvNotSet.error).toBeTruthy();
-  expect(queryGetEnvNotSet.error?.message).toContain("requiredInt: Int");
+  expect(getEnvNotSetResult.data).toBeUndefined();
+  expect(getEnvNotSetResult.error).toBeTruthy();
+  expect(getEnvNotSetResult.error?.message).toContain("requiredInt: Int");
 
-  const queryEnvIncorrect = await client.invoke({
+  const envIncorrectResult = await client.invoke({
     uri: wrapperUri,
     method: "getEnv",
     args: {
@@ -909,9 +907,9 @@ export const runSimpleEnvTest = async (
     },
   });
 
-  expect(queryEnvIncorrect.data).toBeUndefined();
-  expect(queryEnvIncorrect.error).toBeTruthy();
-  expect(queryEnvIncorrect.error?.message).toContain(
+  expect(envIncorrectResult.data).toBeUndefined();
+  expect(envIncorrectResult.error).toBeTruthy();
+  expect(envIncorrectResult.error?.message).toContain(
     "Property must be of type 'int'. Found 'string'."
   );
 };
@@ -920,15 +918,15 @@ export const runComplexEnvs = async (
   client: PolywrapClient,
   wrapperUri: string
 ) => {
-  const queryMethodRequireEnv = await client.invoke({
+  const methodRequireEnvResult = await client.invoke({
     uri: wrapperUri,
     method: "methodRequireEnv",
     args: {
       arg: "string",
     },
   });
-  expect(queryMethodRequireEnv.error).toBeFalsy();
-  expect(queryMethodRequireEnv.data).toEqual({
+  expect(methodRequireEnvResult.error).toBeFalsy();
+  expect(methodRequireEnvResult.data).toEqual({
     str: "string",
     optFilledStr: "optional string",
     optStr: null,
@@ -945,15 +943,15 @@ export const runComplexEnvs = async (
     array: [32, 23],
   });
 
-  const querySubinvokeEnvMethod = await client.invoke({
+  const subinvokeEnvMethodResult = await client.invoke({
     uri: wrapperUri,
     method: "subinvokeEnvMethod",
     args: {
       arg: "string",
     },
   });
-  expect(querySubinvokeEnvMethod.error).toBeFalsy();
-  expect(querySubinvokeEnvMethod.data).toEqual({
+  expect(subinvokeEnvMethodResult.error).toBeFalsy();
+  expect(subinvokeEnvMethodResult.data).toEqual({
     local: {
       str: "string",
       optFilledStr: "optional string",
@@ -976,15 +974,15 @@ export const runComplexEnvs = async (
     },
   });
 
-  const queryMethodRequireEnvModuleTime = await client.invoke({
+  const methodRequireEnvModuleTimeResult = await client.invoke({
     uri: wrapperUri,
     method: "methodRequireEnv",
     args: {
       arg: "string",
     },
   });
-  expect(queryMethodRequireEnvModuleTime.error).toBeFalsy();
-  expect(queryMethodRequireEnvModuleTime.data).toEqual({
+  expect(methodRequireEnvModuleTimeResult.error).toBeFalsy();
+  expect(methodRequireEnvModuleTimeResult.data).toEqual({
     str: "string",
     optFilledStr: "optional string",
     optStr: null,
@@ -1001,7 +999,7 @@ export const runComplexEnvs = async (
     array: [32, 23],
   });
 
-  const mockUpdatedEnv = await client.invoke({
+  const mockUpdatedEnvResult = await client.invoke({
     uri: wrapperUri,
     method: "methodRequireEnv",
     args: {
@@ -1026,8 +1024,8 @@ export const runComplexEnvs = async (
       ],
     },
   });
-  expect(mockUpdatedEnv.error).toBeFalsy();
-  expect(mockUpdatedEnv.data).toEqual({
+  expect(mockUpdatedEnvResult.error).toBeFalsy();
+  expect(mockUpdatedEnvResult.data).toEqual({
     str: "another string",
     optFilledStr: "optional string",
     optStr: null,

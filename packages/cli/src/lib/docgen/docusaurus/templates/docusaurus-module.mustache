@@ -1,0 +1,17 @@
+---
+id: {{#imported}}{{namespace}}_{{/imported}}{{#toLowerCase}}{{type}}{{/toLowerCase}}
+title: {{#toTitle}}{{#imported}}{{namespace}} {{/imported}}{{type}}{{/toTitle}}
+---
+
+{{#methods}}
+### {{name}} {{#addImplements}}{{#interfaces}} {{name}}{{/interfaces}}{{/addImplements}}
+{{#addReturnsIfText}}{{#markdownItalics}}{{comment}}{{/markdownItalics}}{{/addReturnsIfText}}
+```graphql
+{{name}}(
+  {{#arguments}}
+  {{name}}: {{#typeFormatFilter}}{{type}}{{/typeFormatFilter}}{{#required}}!{{/required}} {{#hashtagPrefix}}{{comment}}{{/hashtagPrefix}}
+  {{/arguments}}
+): {{#return}}{{#typeFormatFilter}}{{type}}{{/typeFormatFilter}}{{#required}}!{{/required}}{{/return}}
+```
+
+{{/methods}}
