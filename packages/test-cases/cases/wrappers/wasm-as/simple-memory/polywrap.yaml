@@ -1,0 +1,10 @@
+format: "0.2"
+name: SimpleMemory
+language: wasm/assemblyscript
+build: ./polywrap.build.yaml
+schema: ./schema.graphql
+module: ./src/index.ts
+meta: ./polywrap.meta.yaml
+import_redirects:
+  - uri: "ens/memory-storage.polywrap.eth"
+    info: ./plugin.wrap.info

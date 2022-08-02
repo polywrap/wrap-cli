@@ -1,15 +1,9 @@
-import {
-  coreInterfaceUris,
-} from "@polywrap/core-js";
-import {
-  Uri,
-  PolywrapClient,
-} from "../..";
+import { coreInterfaceUris } from "@polywrap/core-js";
+import { Uri, PolywrapClient } from "../..";
 
 jest.setTimeout(200000);
 
 describe("sanity", () => {
-
   test("default client config", () => {
     const client = new PolywrapClient();
 

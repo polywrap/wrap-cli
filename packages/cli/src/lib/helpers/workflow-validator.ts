@@ -1,14 +1,16 @@
 import { runCommand } from "../system";
 import { intlMsg } from "../intl";
 
+import path from "path";
 import fs from "fs";
+import os from "os";
 import { InvokeResult } from "@polywrap/core-js";
 
-const TMPDIR = process.env.TMPDIR || "/tmp";
+const TMPDIR = fs.mkdtempSync(path.join(os.tmpdir(), `polywrap-cli`));
 
 export async function cueExists(): Promise<boolean> {
   try {
-    const { stdout } = await runCommand("cue version");
+    const { stdout } = await runCommand("cue version", true);
     return stdout.startsWith("cue version ");
   } catch (e) {
     return false;
@@ -43,7 +45,7 @@ export async function validateOutput(
       console.log("Validation: SUCCEED");
     }
   } catch (e) {
-    const msgLines = e.split(/\r?\n/);
+    const msgLines = e.stderr.split(/\r?\n/);
     msgLines[1] = `${validateScriptPath}:${msgLines[1]
       .split(":")
       .slice(1)

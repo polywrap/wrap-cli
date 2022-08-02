@@ -5,228 +5,152 @@ export const runAsyncifyTest = async (
   client: PolywrapClient,
   wrapperUri: string
 ) => {
-    const subsequentInvokes = await client.query<{
-      subsequentInvokes: string;
-    }>({
-      uri: wrapperUri,
-      query: `
-        mutation {
-          subsequentInvokes(
-            numberOfTimes: 40
-          )
-        }
-      `,
-    });
+  const subsequentInvokes = await client.invoke<string>({
+    uri: wrapperUri,
+    method: "subsequentInvokes",
+    args: {
+      numberOfTimes: 40,
+    },
+  });
 
-    const expected = Array.from(new Array(40), (_, index) => index.toString());
+  const expected = Array.from(new Array(40), (_, index) => index.toString());
 
-    expect(subsequentInvokes.errors).toBeFalsy();
-    expect(subsequentInvokes.data).toBeTruthy();
-    expect(subsequentInvokes.data?.subsequentInvokes).toEqual(expected);
+  expect(subsequentInvokes.error).toBeFalsy();
+  expect(subsequentInvokes.data).toBeTruthy();
+  expect(subsequentInvokes.data).toEqual(expected);
 
-    const localVarMethod = await client.query<{
-      localVarMethod: boolean;
-    }>({
-      uri: wrapperUri,
-      query: `
-        mutation {
-          localVarMethod
-        }
-      `,
-    });
+  const localVarMethod = await client.invoke<boolean>({
+    uri: wrapperUri,
+    method: "localVarMethod",
+  });
 
-    expect(localVarMethod.errors).toBeFalsy();
-    expect(localVarMethod.data).toBeTruthy();
-    expect(localVarMethod.data?.localVarMethod).toEqual(true);
+  expect(localVarMethod.error).toBeFalsy();
+  expect(localVarMethod.data).toBeTruthy();
+  expect(localVarMethod.data).toEqual(true);
 
-    const globalVarMethod = await client.query<{
-      globalVarMethod: boolean;
-    }>({
-      uri: wrapperUri,
-      query: `
-        mutation {
-          globalVarMethod
-        }
-      `,
-    });
+  const globalVarMethod = await client.invoke<boolean>({
+    uri: wrapperUri,
+    method: "globalVarMethod",
+  });
 
-    expect(globalVarMethod.errors).toBeFalsy();
-    expect(globalVarMethod.data).toBeTruthy();
-    expect(globalVarMethod.data?.globalVarMethod).toEqual(true);
+  expect(globalVarMethod.error).toBeFalsy();
+  expect(globalVarMethod.data).toBeTruthy();
+  expect(globalVarMethod.data).toEqual(true);
 
-    const largeStr = new Array(10000).join("polywrap ");
+  const largeStr = new Array(10000).join("polywrap ");
+  const setDataWithLargeArgs = await client.invoke<string>({
+    uri: wrapperUri,
+    method: "setDataWithLargeArgs",
+    args: {
+      value: largeStr,
+    },
+  });
 
-    const setDataWithLargeArgs = await client.query<{
-      setDataWithLargeArgs: string;
-    }>({
-      uri: wrapperUri,
-      query: `
-        mutation {
-          setDataWithLargeArgs(
-            value: $largeStr
-          )
-        }
-      `,
-      variables: {
-        largeStr,
-      },
-    });
+  expect(setDataWithLargeArgs.error).toBeFalsy();
+  expect(setDataWithLargeArgs.data).toBeTruthy();
+  expect(setDataWithLargeArgs.data).toEqual(largeStr);
 
-    expect(setDataWithLargeArgs.errors).toBeFalsy();
-    expect(setDataWithLargeArgs.data).toBeTruthy();
-    expect(setDataWithLargeArgs.data?.setDataWithLargeArgs).toEqual(largeStr);
+  const setDataWithManyArgs = await client.invoke<string>({
+    uri: wrapperUri,
+    method: "setDataWithManyArgs",
+    args: {
+      valueA: "polywrap a",
+      valueB: "polywrap b",
+      valueC: "polywrap c",
+      valueD: "polywrap d",
+      valueE: "polywrap e",
+      valueF: "polywrap f",
+      valueG: "polywrap g",
+      valueH: "polywrap h",
+      valueI: "polywrap i",
+      valueJ: "polywrap j",
+      valueK: "polywrap k",
+      valueL: "polywrap l",
+    },
+  });
 
-    const setDataWithManyArgs = await client.query<{
-      setDataWithManyArgs: string;
-    }>({
-      uri: wrapperUri,
-      query: `
-        mutation {
-          setDataWithManyArgs(
-            valueA: $valueA
-            valueB: $valueB
-            valueC: $valueC
-            valueD: $valueD
-            valueE: $valueE
-            valueF: $valueF
-            valueG: $valueG
-            valueH: $valueH
-            valueI: $valueI
-            valueJ: $valueJ
-            valueK: $valueK
-            valueL: $valueL
-          )
-        }
-      `,
-      variables: {
-        valueA: "polywrap a",
-        valueB: "polywrap b",
-        valueC: "polywrap c",
-        valueD: "polywrap d",
-        valueE: "polywrap e",
-        valueF: "polywrap f",
-        valueG: "polywrap g",
-        valueH: "polywrap h",
-        valueI: "polywrap i",
-        valueJ: "polywrap j",
-        valueK: "polywrap k",
-        valueL: "polywrap l",
-      },
-    });
+  expect(setDataWithManyArgs.error).toBeFalsy();
+  expect(setDataWithManyArgs.data).toBeTruthy();
+  expect(setDataWithManyArgs.data).toEqual(
+    "polywrap apolywrap bpolywrap cpolywrap dpolywrap epolywrap fpolywrap gpolywrap hpolywrap ipolywrap jpolywrap kpolywrap l"
+  );
 
-    expect(setDataWithManyArgs.errors).toBeFalsy();
-    expect(setDataWithManyArgs.data).toBeTruthy();
-    expect(setDataWithManyArgs.data?.setDataWithManyArgs).toEqual(
-      "polywrap apolywrap bpolywrap cpolywrap dpolywrap epolywrap fpolywrap gpolywrap hpolywrap ipolywrap jpolywrap kpolywrap l"
-    );
-
-    const createObj = (i: number) => {
-      return {
-        propA: `a-${i}`,
-        propB: `b-${i}`,
-        propC: `c-${i}`,
-        propD: `d-${i}`,
-        propE: `e-${i}`,
-        propF: `f-${i}`,
-        propG: `g-${i}`,
-        propH: `h-${i}`,
-        propI: `i-${i}`,
-        propJ: `j-${i}`,
-        propK: `k-${i}`,
-        propL: `l-${i}`,
-      };
+  const createObj = (i: number) => {
+    return {
+      propA: `a-${i}`,
+      propB: `b-${i}`,
+      propC: `c-${i}`,
+      propD: `d-${i}`,
+      propE: `e-${i}`,
+      propF: `f-${i}`,
+      propG: `g-${i}`,
+      propH: `h-${i}`,
+      propI: `i-${i}`,
+      propJ: `j-${i}`,
+      propK: `k-${i}`,
+      propL: `l-${i}`,
     };
+  };
 
-    const setDataWithManyStructuredArgs = await client.query<{
-      setDataWithManyStructuredArgs: string;
-    }>({
-      uri: wrapperUri,
-      query: `
-        mutation {
-          setDataWithManyStructuredArgs(
-            valueA: $valueA
-            valueB: $valueB
-            valueC: $valueC
-            valueD: $valueD
-            valueE: $valueE
-            valueF: $valueF
-            valueG: $valueG
-            valueH: $valueH
-            valueI: $valueI
-            valueJ: $valueJ
-            valueK: $valueK
-            valueL: $valueL
-          )
-        }
-      `,
-      variables: {
-        valueA: createObj(1),
-        valueB: createObj(2),
-        valueC: createObj(3),
-        valueD: createObj(4),
-        valueE: createObj(5),
-        valueF: createObj(6),
-        valueG: createObj(7),
-        valueH: createObj(8),
-        valueI: createObj(9),
-        valueJ: createObj(10),
-        valueK: createObj(11),
-        valueL: createObj(12),
-      },
-    });
+  const setDataWithManyStructuredArgs = await client.invoke<string>({
+    uri: wrapperUri,
+    method: "setDataWithManyStructuredArgs",
+    args: {
+      valueA: createObj(1),
+      valueB: createObj(2),
+      valueC: createObj(3),
+      valueD: createObj(4),
+      valueE: createObj(5),
+      valueF: createObj(6),
+      valueG: createObj(7),
+      valueH: createObj(8),
+      valueI: createObj(9),
+      valueJ: createObj(10),
+      valueK: createObj(11),
+      valueL: createObj(12),
+    },
+  });
 
-    expect(setDataWithManyStructuredArgs.errors).toBeFalsy();
-    expect(setDataWithManyStructuredArgs.data).toBeTruthy();
-    expect(
-      setDataWithManyStructuredArgs.data?.setDataWithManyStructuredArgs
-    ).toBe(true);
+  expect(setDataWithManyStructuredArgs.error).toBeFalsy();
+  expect(setDataWithManyStructuredArgs.data).toBeTruthy();
+  expect(setDataWithManyStructuredArgs.data).toBe(true);
 };
-
 
 export const runBigIntTypeTest = async (
   client: PolywrapClient,
   uri: string
 ) => {
   {
-    const response = await client.query<{
-      method: string;
-    }>({
+    const response = await client.invoke({
       uri,
-      query: `query {
-        method(
-          arg1: "123456789123456789"
-          obj: {
-            prop1: "987654321987654321"
-          }
-        )
-      }`,
+      method: "method",
+      args: {
+        arg1: "123456789123456789",
+        obj: {
+          prop1: "987654321987654321",
+        },
+      },
     });
 
-    const result =
-      BigInt("123456789123456789") * BigInt("987654321987654321");
+    const result = BigInt("123456789123456789") * BigInt("987654321987654321");
 
-    expect(response.errors).toBeFalsy();
+    expect(response.error).toBeFalsy();
     expect(response.data).toBeTruthy();
-    expect(response.data).toMatchObject({
-      method: result.toString(),
-    });
+    expect(response.data).toEqual(result.toString());
   }
 
   {
-    const response = await client.query<{
-      method: string;
-    }>({
+    const response = await client.invoke({
       uri,
-      query: `query {
-        method(
-          arg1: "123456789123456789"
-          arg2: "123456789123456789123456789123456789"
-          obj: {
-            prop1: "987654321987654321"
-            prop2: "987654321987654321987654321987654321"
-          }
-        )
-      }`,
+      method: "method",
+      args: {
+        arg1: "123456789123456789",
+        arg2: "123456789123456789123456789123456789",
+        obj: {
+          prop1: "987654321987654321",
+          prop2: "987654321987654321987654321987654321",
+        },
+      },
     });
 
     const result =
@@ -235,11 +159,9 @@ export const runBigIntTypeTest = async (
       BigInt("987654321987654321") *
       BigInt("987654321987654321987654321987654321");
 
-    expect(response.errors).toBeFalsy();
+    expect(response.error).toBeFalsy();
     expect(response.data).toBeTruthy();
-    expect(response.data).toMatchObject({
-      method: result.toString(),
-    });
+    expect(response.data).toEqual(result.toString());
   }
 };
 
@@ -248,164 +170,122 @@ export const runBigNumberTypeTest = async (
   uri: string
 ) => {
   {
-    const response = await client.query<{
-      method: string;
-    }>({
+    const response = await client.invoke({
       uri,
-      query: `query {
-        method(
-          arg1: "1234.56789123456789"
-          obj: {
-            prop1: "98.7654321987654321"
-          }
-        )
-      }`,
+      method: "method",
+      args: {
+        arg1: "1234.56789123456789",
+        obj: {
+          prop1: "98.7654321987654321",
+        },
+      },
     });
 
     const arg1 = new BigNumber("1234.56789123456789");
-    const prop1 = new BigNumber("98.7654321987654321")
+    const prop1 = new BigNumber("98.7654321987654321");
     const result = arg1.times(prop1);
 
-    expect(response.errors).toBeFalsy();
+    expect(response.error).toBeFalsy();
     expect(response.data).toBeTruthy();
-    expect(response.data).toMatchObject({
-      method: result.toFixed(),
-    });
+    expect(response.data).toEqual(result.toFixed());
   }
 
   {
-    const response = await client.query<{
-      method: string;
-    }>({
+    const response = await client.invoke({
       uri,
-      query: `query {
-        method(
-          arg1: "1234567.89123456789"
-          arg2: "123456789123.456789123456789123456789"
-          obj: {
-            prop1: "987654.321987654321"
-            prop2: "987.654321987654321987654321987654321"
-          }
-        )
-      }`,
+      method: "method",
+      args: {
+        arg1: "1234567.89123456789",
+        arg2: "123456789123.456789123456789123456789",
+        obj: {
+          prop1: "987654.321987654321",
+          prop2: "987.654321987654321987654321987654321",
+        },
+      },
     });
 
     const arg1 = new BigNumber("1234567.89123456789");
     const arg2 = new BigNumber("123456789123.456789123456789123456789");
-    const prop1 = new BigNumber("987654.321987654321")
-    const prop2 = new BigNumber("987.654321987654321987654321987654321")
+    const prop1 = new BigNumber("987654.321987654321");
+    const prop2 = new BigNumber("987.654321987654321987654321987654321");
     const result = arg1.times(arg2).times(prop1).times(prop2);
 
-    expect(response.errors).toBeFalsy();
+    expect(response.error).toBeFalsy();
     expect(response.data).toBeTruthy();
-    expect(response.data).toMatchObject({
-      method: result.toFixed(),
-    });
+    expect(response.data).toEqual(result.toFixed());
   }
 };
 
-export const runBytesTypeTest = async (
-  client: PolywrapClient,
-  uri: string
-) => {
-
-  const response = await client.query<{
-    bytesMethod: Buffer;
-  }>({
+export const runBytesTypeTest = async (client: PolywrapClient, uri: string) => {
+  const response = await client.invoke({
     uri,
-    query: `
-      query {
-        bytesMethod(
-          arg: {
-            prop: $buffer
-          }
-        )
-      }
-    `,
-    variables: {
-      buffer: Buffer.from("Argument Value"),
+    method: "bytesMethod",
+    args: {
+      arg: {
+        prop: Buffer.from("Argument Value"),
+      },
     },
   });
 
-  expect(response.errors).toBeFalsy();
+  expect(response.error).toBeFalsy();
   expect(response.data).toBeTruthy();
-  expect(response.data).toMatchObject({
-    bytesMethod: Buffer.from("Argument Value Sanity!").buffer,
-  });
+  expect(response.data).toEqual(
+    new TextEncoder().encode("Argument Value Sanity!")
+  );
 };
 
-export const runEnumTypesTest = async (
-  client: PolywrapClient,
-  uri: string
-) => {
-  const method1a = await client.query<any>({
+export const runEnumTypesTest = async (client: PolywrapClient, uri: string) => {
+  const method1a = await client.invoke({
     uri,
-    query: `
-      query {
-        method1(
-          en: 5
-        )
-      }
-    `,
+    method: "method1",
+    args: {
+      en: 5,
+    },
   });
 
-  expect(method1a.errors).toBeTruthy();
-  expect((method1a.errors as Error[])[0].message).toMatch(
+  expect(method1a.error).toBeTruthy();
+  expect((method1a.error as Error).message).toMatch(
     /__wrap_abort: Invalid value for enum 'SanityEnum': 5/gm
   );
 
-  const method1b = await client.query<any>({
+  const method1b = await client.invoke({
     uri,
-    query: `
-      query {
-        method1(
-          en: 2
-          optEnum: 1
-        )
-      }
-    `,
+    method: "method1",
+    args: {
+      en: 2,
+      optEnum: 1,
+    },
   });
 
-  expect(method1b.errors).toBeFalsy();
+  expect(method1b.error).toBeFalsy();
   expect(method1b.data).toBeTruthy();
-  expect(method1b.data).toMatchObject({
-    method1: 2,
-  });
+  expect(method1b.data).toEqual(2);
 
-  const method1c = await client.query<any>({
+  const method1c = await client.invoke({
     uri,
-    query: `
-      query {
-        method1(
-          en: 1
-          optEnum: INVALID
-        )
-      }
-    `,
+    method: "method1",
+    args: {
+      en: 1,
+      optEnum: "INVALID",
+    },
   });
 
-  expect(method1c.errors).toBeTruthy();
-  // @ts-ignore
-  expect(method1c.errors[0].message).toMatch(
+  expect(method1c.error).toBeTruthy();
+  expect(method1c.error?.message).toMatch(
     /__wrap_abort: Invalid key for enum 'SanityEnum': INVALID/gm
   );
 
-  const method2a = await client.query<any>({
+  const method2a = await client.invoke({
     uri,
-    query: `
-      query {
-        method2(
-          enumArray: [OPTION1, 0, OPTION3]
-        )
-      }
-    `,
+    method: "method2",
+    args: {
+      enumArray: ["OPTION1", 0, "OPTION3"],
+    },
   });
 
-  expect(method2a.errors).toBeFalsy();
+  expect(method2a.error).toBeFalsy();
   expect(method2a.data).toBeTruthy();
-  expect(method2a.data).toMatchObject({
-    method2: [0, 0, 2],
-  });
+  expect(method2a.data).toEqual([0, 0, 2]);
 };
 
 export const runImplementationsTest = async (
@@ -413,42 +293,38 @@ export const runImplementationsTest = async (
   interfaceUri: string,
   implementationUri: string
 ) => {
-  expect(client.getImplementations(interfaceUri))
-    .toEqual([new Uri(implementationUri).uri]);
+  expect(client.getImplementations(interfaceUri)).toEqual([
+    new Uri(implementationUri).uri,
+  ]);
 
-  const query = await client.query<{
-    moduleMethod: string;
-    abstractModuleMethod: string;
-  }>({
-    uri: implementationUri,
-    query: `
-      query {
-        moduleMethod(
-          arg: $argument1
-        )
-        abstractModuleMethod(
-          arg: $argument2
-        )
-      }
-    `,
-    variables: {
-      argument1: {
-        uint8: 1,
-        str: "Test String 1",
+  const results = await Promise.all([
+    client.invoke({
+      uri: implementationUri,
+      method: "moduleMethod",
+      args: {
+        arg: {
+          uint8: 1,
+          str: "Test String 1",
+        },
       },
-      argument2: {
-        str: "Test String 2",
+    }),
+    client.invoke({
+      uri: implementationUri,
+      method: "abstractModuleMethod",
+      args: {
+        arg: {
+          str: "Test String 2",
+        },
       },
-    },
-  });
+    }),
+  ]);
 
-  expect(query.errors).toBeFalsy();
-  expect(query.data).toBeTruthy();
-  expect(query.data?.moduleMethod).toEqual({
+  expect(results.filter((x) => x.error).length).toEqual(0);
+  expect(results[0].data).toEqual({
     uint8: 1,
     str: "Test String 1",
   });
-  expect(query.data?.abstractModuleMethod).toBe("Test String 2");
+  expect(results[1].data).toBe("Test String 2");
 };
 
 export const runGetImplementationsTest = async (
@@ -456,140 +332,96 @@ export const runGetImplementationsTest = async (
   interfaceUri: string,
   implementationUri: string
 ) => {
-  let implUri = new Uri(implementationUri);;
-  expect(client.getImplementations(interfaceUri)).toEqual([
-    implUri.uri,
-  ]);
+  let implUri = new Uri(implementationUri);
+  expect(client.getImplementations(interfaceUri)).toEqual([implUri.uri]);
 
-  const query = await client.query<{
-    moduleImplementations: string[];
-  }>({
+  const result = await client.invoke({
     uri: implUri.uri,
-    query: `
-      query {
-        moduleImplementations
-      }
-    `,
-    variables: {},
+    method: "moduleImplementations",
   });
 
-  expect(query.errors).toBeFalsy();
-  expect(query.data).toBeTruthy();
-  expect(query.data?.moduleImplementations).toEqual([
-    implUri.uri,
-  ]);
+  expect(result.error).toBeFalsy();
+  expect(result.data).toBeTruthy();
+  expect(result.data).toEqual([implUri.uri]);
 };
 
 export const runInvalidTypesTest = async (
   client: PolywrapClient,
   uri: string
 ) => {
-  const invalidBoolIntSent = await client.query({
+  const invalidBoolIntSent = await client.invoke({
     uri,
-    query: `
-      query {
-        boolMethod(
-          arg: $integer
-        )
-      }
-    `,
-    variables: {
-      integer: 10,
+    method: "boolMethod",
+    args: {
+      arg: 10,
     },
   });
-  expect(invalidBoolIntSent.errors).toBeTruthy();
-  expect(invalidBoolIntSent.errors?.[0].message).toMatch(
+  expect(invalidBoolIntSent.error).toBeTruthy();
+  expect(invalidBoolIntSent.error?.message).toMatch(
     /Property must be of type 'bool'. Found 'int'./
   );
 
-  const invalidIntBoolSent = await client.query({
+  const invalidIntBoolSent = await client.invoke({
     uri,
-    query: `
-    query {
-      intMethod(
-        arg: $bool
-      )
-    }
-  `,
-    variables: {
-      bool: true,
+    method: "intMethod",
+    args: {
+      arg: true,
     },
   });
-  expect(invalidIntBoolSent.errors).toBeTruthy();
-  expect(invalidIntBoolSent.errors?.[0].message).toMatch(
+  expect(invalidIntBoolSent.error).toBeTruthy();
+  expect(invalidIntBoolSent.error?.message).toMatch(
     /Property must be of type 'int'. Found 'bool'./
   );
 
-  const invalidUIntArraySent = await client.query({
+  const invalidUIntArraySent = await client.invoke({
     uri,
-    query: `
-    query {
-      uIntMethod(
-        arg: $array
-      )
-    }
-  `,
-    variables: {
-      array: [10],
+    method: "uIntMethod",
+    args: {
+      arg: [10],
     },
   });
-  expect(invalidUIntArraySent.errors).toBeTruthy();
-  expect(invalidUIntArraySent.errors?.[0].message).toMatch(
+  expect(invalidUIntArraySent.error).toBeTruthy();
+  expect(invalidUIntArraySent.error?.message).toMatch(
     /Property must be of type 'uint'. Found 'array'./
   );
 
-  const invalidBytesFloatSent = await client.query({
+  const invalidBytesFloatSent = await client.invoke({
     uri,
-    query: `
-    query {
-      bytesMethod(
-        arg: $float
-      )
-    }
-  `,
-    variables: {
-      float: 10.15,
+    method: "bytesMethod",
+    args: {
+      arg: 10.15,
     },
   });
-  expect(invalidBytesFloatSent.errors).toBeTruthy();
-  expect(invalidBytesFloatSent.errors?.[0].message).toMatch(
+  expect(invalidBytesFloatSent.error).toBeTruthy();
+  expect(invalidBytesFloatSent.error?.message).toMatch(
     /Property must be of type 'bytes'. Found 'float64'./
   );
 
-  const invalidArrayMapSent = await client.query({
+  const invalidArrayMapSent = await client.invoke({
     uri,
-    query: `
-    query {
-      arrayMethod(
-        arg: $object
-      )
-    }
-  `,
-    variables: {
-      object: {
+    method: "arrayMethod",
+    args: {
+      arg: {
         prop: "prop",
       },
     },
   });
-  expect(invalidArrayMapSent.errors).toBeTruthy();
-  expect(invalidArrayMapSent.errors?.[0].message).toMatch(
+  expect(invalidArrayMapSent.error).toBeTruthy();
+  expect(invalidArrayMapSent.error?.message).toMatch(
     /Property must be of type 'array'. Found 'map'./
   );
 };
 
-export const runJsonTypeTest = async (
-  client: PolywrapClient,
-  uri: string
-) => {
+export const runJsonTypeTest = async (client: PolywrapClient, uri: string) => {
   type Json = string;
-  const value = JSON.stringify({ foo: "bar", bar: "bar" })
+  const value = JSON.stringify({ foo: "bar", bar: "bar" });
   const parseResponse = await client.invoke<{ parse: Json }>({
     uri,
     method: "parse",
     args: {
-      value
-    }
-  })
+      value,
+    },
+  });
 
   expect(parseResponse.data).toEqual(value);
 
@@ -598,13 +430,13 @@ export const runJsonTypeTest = async (
     JSON.stringify({ baz: "fuz" }),
   ];
 
-  const stringifyResponse = await client.invoke<{ stringify: Json}>({
+  const stringifyResponse = await client.invoke<{ stringify: Json }>({
     uri,
     method: "stringify",
     args: {
-      values
-    }
-  })
+      values,
+    },
+  });
 
   expect(stringifyResponse.data).toEqual(values.join(""));
 
@@ -623,22 +455,20 @@ export const runJsonTypeTest = async (
     },
   });
 
-  expect(stringifyObjectResponse.data).toEqual(
-    object.jsonA + object.jsonB
-  );
+  expect(stringifyObjectResponse.data).toEqual(object.jsonA + object.jsonB);
 
   const json = {
     valueA: 5,
     valueB: "foo",
-    valueC: true
-  }
+    valueC: true,
+  };
 
   const methodJSONResponse = await client.invoke<{
     methodJSON: Json;
   }>({
     uri,
     method: "methodJSON",
-    args: json
+    args: json,
   });
 
   const methodJSONResult = JSON.stringify(json);
@@ -659,36 +489,25 @@ export const runLargeTypesTest = async (
     largeBytesArray.push(largeBytes);
   }
 
-  const largeTypesMethodCall = await client.query<any>({
+  const largeTypesMethodCall = await client.invoke({
     uri,
-    query: `
-      query {
-        method(
-          largeCollection: {
-            largeStr: $largeStr
-            largeBytes: $largeBytes
-            largeStrArray: $largeStrArray
-            largeBytesArray: $largeBytesArray
-          }
-        )
-      }
-    `,
-    variables: {
-      largeStr: largeStr,
-      largeBytes: largeBytes,
-      largeStrArray: largeStrArray,
-      largeBytesArray: largeBytesArray,
+    method: "method",
+    args: {
+      largeCollection: {
+        largeStr: largeStr,
+        largeBytes: largeBytes,
+        largeStrArray: largeStrArray,
+        largeBytesArray: largeBytesArray,
+      },
     },
   });
 
   expect(largeTypesMethodCall.data).toBeTruthy();
   expect(largeTypesMethodCall.data).toEqual({
-    method: {
-      largeStr: largeStr,
-      largeBytes: largeBytes,
-      largeStrArray: largeStrArray,
-      largeBytesArray: largeBytesArray,
-    },
+    largeStr: largeStr,
+    largeBytes: largeBytes,
+    largeStrArray: largeStrArray,
+    largeBytesArray: largeBytesArray,
   });
 };
 
@@ -696,376 +515,245 @@ export const runNumberTypesTest = async (
   client: PolywrapClient,
   uri: string
 ) => {
-  const i8Underflow = await client.query<{
-    i8Method: number;
-  }>({
+  const i8Underflow = await client.invoke({
     uri,
-    query: `
-    query {
-      i8Method(
-        first: $firstInt
-        second: $secondInt
-      )
-    }
-  `,
-    variables: {
-      firstInt: -129, // min i8 = -128
-      secondInt: 10,
+    method: "i8Method",
+    args: {
+      first: -129, // min i8 = -128
+      second: 10,
     },
   });
-  expect(i8Underflow.errors).toBeTruthy();
-  expect(i8Underflow.errors?.[0].message).toMatch(
+  expect(i8Underflow.error).toBeTruthy();
+  expect(i8Underflow.error?.message).toMatch(
     /integer overflow: value = -129; bits = 8/
   );
-  expect(i8Underflow.data?.i8Method).toBeUndefined();
+  expect(i8Underflow.data).toBeUndefined();
 
-  const u8Overflow = await client.query<{
-    u8Method: number;
-  }>({
+  const u8Overflow = await client.invoke({
     uri,
-    query: `
-      query {
-        u8Method(
-          first: $firstInt
-          second: $secondInt
-        )
-      }
-    `,
-    variables: {
-      firstInt: 256, // max u8 = 255
-      secondInt: 10,
+    method: "u8Method",
+    args: {
+      first: 256, // max u8 = 255
+      second: 10,
     },
   });
-  expect(u8Overflow.errors).toBeTruthy();
-  expect(u8Overflow.errors?.[0].message).toMatch(
+  expect(u8Overflow.error).toBeTruthy();
+  expect(u8Overflow.error?.message).toMatch(
     /unsigned integer overflow: value = 256; bits = 8/
   );
-  expect(u8Overflow.data?.u8Method).toBeUndefined();
+  expect(u8Overflow.data).toBeUndefined();
 
-  const i16Underflow = await client.query<{
-    i16Method: number;
-  }>({
+  const i16Underflow = await client.invoke({
     uri,
-    query: `
-    query {
-      i16Method(
-        first: $firstInt
-        second: $secondInt
-      )
-    }
-  `,
-    variables: {
-      firstInt: -32769, // min i16 = -32768
-      secondInt: 10,
+    method: "i16Method",
+    args: {
+      first: -32769, // min i16 = -32768
+      second: 10,
     },
   });
-  expect(i16Underflow.errors).toBeTruthy();
-  expect(i16Underflow.errors?.[0].message).toMatch(
+  expect(i16Underflow.error).toBeTruthy();
+  expect(i16Underflow.error?.message).toMatch(
     /integer overflow: value = -32769; bits = 16/
   );
-  expect(i16Underflow.data?.i16Method).toBeUndefined();
+  expect(i16Underflow.data).toBeUndefined();
 
-  const u16Overflow = await client.query<{
-    u16Method: number;
-  }>({
+  const u16Overflow = await client.invoke({
     uri,
-    query: `
-      query {
-        u16Method(
-          first: $firstInt
-          second: $secondInt
-        )
-      }
-    `,
-    variables: {
-      firstInt: 65536, // max u16 = 65535
-      secondInt: 10,
+    method: "u16Method",
+    args: {
+      first: 65536, // max u16 = 65535
+      second: 10,
     },
   });
-  expect(u16Overflow.errors).toBeTruthy();
-  expect(u16Overflow.errors?.[0].message).toMatch(
+  expect(u16Overflow.error).toBeTruthy();
+  expect(u16Overflow.error?.message).toMatch(
     /unsigned integer overflow: value = 65536; bits = 16/
   );
-  expect(u16Overflow.data?.u16Method).toBeUndefined();
+  expect(u16Overflow.data).toBeUndefined();
 
-  const i32Underflow = await client.query<{
-    i32Method: number;
-  }>({
+  const i32Underflow = await client.invoke({
     uri,
-    query: `
-    query {
-      i32Method(
-        first: $firstInt
-        second: $secondInt
-      )
-    }
-  `,
-    variables: {
-      firstInt: -2147483649, // min i32 = -2147483648
-      secondInt: 10,
+    method: "i32Method",
+    args: {
+      first: -2147483649, // min i32 = -2147483648
+      second: 10,
     },
   });
-  expect(i32Underflow.errors).toBeTruthy();
-  expect(i32Underflow.errors?.[0].message).toMatch(
+  expect(i32Underflow.error).toBeTruthy();
+  expect(i32Underflow.error?.message).toMatch(
     /integer overflow: value = -2147483649; bits = 32/
   );
-  expect(i32Underflow.data?.i32Method).toBeUndefined();
+  expect(i32Underflow.data).toBeUndefined();
 
-  const u32Overflow = await client.query<{
-    u32Method: number;
-  }>({
+  const u32Overflow = await client.invoke({
     uri,
-    query: `
-      query {
-        u32Method(
-          first: $firstInt
-          second: $secondInt
-        )
-      }
-    `,
-    variables: {
-      firstInt: 4294967296, // max u32 = 4294967295
-      secondInt: 10,
+    method: "u32Method",
+    args: {
+      first: 4294967296, // max u32 = 4294967295
+      second: 10,
     },
   });
-  expect(u32Overflow.errors).toBeTruthy();
-  expect(u32Overflow.errors?.[0].message).toMatch(
+  expect(u32Overflow.error).toBeTruthy();
+  expect(u32Overflow.error?.message).toMatch(
     /unsigned integer overflow: value = 4294967296; bits = 32/
   );
-  expect(u32Overflow.data?.u32Method).toBeUndefined();
+  expect(u32Overflow.data).toBeUndefined();
 };
 
 export const runObjectTypesTest = async (
   client: PolywrapClient,
   uri: string
 ) => {
-  const method1a = await client.query<{
-    method1: {
-      prop: string;
-      nested: {
-        prop: string;
-      };
-    }[];
-  }>({
+  const method1a = await client.invoke({
     uri,
-    query: `
-      query {
-        method1(
-          arg1: {
-            prop: "arg1 prop"
-            nested: {
-              prop: "arg1 nested prop"
-            }
-          }
-        )
-      }
-    `,
-  });
-
-  expect(method1a.errors).toBeFalsy();
-  expect(method1a.data).toBeTruthy();
-  expect(method1a.data).toMatchObject({
-    method1: [
-      {
+    method: "method1",
+    args: {
+      arg1: {
         prop: "arg1 prop",
         nested: {
           prop: "arg1 nested prop",
         },
-      },
-      {
-        prop: "",
-        nested: {
-          prop: "",
-        },
-      },
-    ],
-  });
-
-  const method1b = await client.query<{
-    method1: {
-      prop: string;
-      nested: {
-        prop: string;
-      };
-    }[];
-  }>({
-    uri,
-    query: `
-      query {
-        method1(
-          arg1: {
-            prop: "arg1 prop"
-            nested: {
-              prop: "arg1 nested prop"
-            }
-          }
-          arg2: {
-            prop: "arg2 prop"
-            circular: {
-              prop: "arg2 circular prop"
-            }
-          }
-        )
-      }
-    `,
-  });
-
-  expect(method1b.errors).toBeFalsy();
-  expect(method1b.data).toBeTruthy();
-  expect(method1b.data).toMatchObject({
-    method1: [
-      {
-        prop: "arg1 prop",
-        nested: {
-          prop: "arg1 nested prop",
-        },
-      },
-      {
-        prop: "arg2 prop",
-        nested: {
-          prop: "arg2 circular prop",
-        },
-      },
-    ],
-  });
-
-  const method2a = await client.query<{
-    method2: {
-      prop: string;
-      nested: {
-        prop: string;
-      };
-    } | null;
-  }>({
-    uri,
-    query: `
-      query {
-        method2(
-          arg: {
-            prop: "arg prop"
-            nested: {
-              prop: "arg nested prop"
-            }
-          }
-        )
-      }
-    `,
-  });
-
-  expect(method2a.errors).toBeFalsy();
-  expect(method2a.data).toBeTruthy();
-  expect(method2a.data).toMatchObject({
-    method2: {
-      prop: "arg prop",
-      nested: {
-        prop: "arg nested prop",
       },
     },
   });
 
-  const method2b = await client.query<{
-    method2: {
-      prop: string;
+  expect(method1a.error).toBeFalsy();
+  expect(method1a.data).toBeTruthy();
+  expect(method1a.data).toEqual([
+    {
+      prop: "arg1 prop",
       nested: {
-        prop: string;
-      };
-    } | null;
-  }>({
-    uri,
-    query: `
-      query {
-        method2(
-          arg: {
-            prop: "null"
-            nested: {
-              prop: "arg nested prop"
-            }
-          }
-        )
-      }
-    `,
-  });
-
-  expect(method2b.errors).toBeFalsy();
-  expect(method2b.data).toBeTruthy();
-  expect(method2b.data).toMatchObject({
-    method2: null,
-  });
-
-  const method3 = await client.query<{
-    method3: ({
-      prop: string;
+        prop: "arg1 nested prop",
+      },
+    },
+    {
+      prop: "",
       nested: {
-        prop: string;
-      };
-    } | null)[];
-  }>({
+        prop: "",
+      },
+    },
+  ]);
+
+  const method1b = await client.invoke({
     uri,
-    query: `
-      query {
-        method3(
-          arg: {
-            prop: "arg prop"
-            nested: {
-              prop: "arg nested prop"
-            }
-          }
-        )
-      }
-    `,
+    method: "method1",
+    args: {
+      arg1: {
+        prop: "arg1 prop",
+        nested: {
+          prop: "arg1 nested prop",
+        },
+      },
+      arg2: {
+        prop: "arg2 prop",
+        circular: {
+          prop: "arg2 circular prop",
+        },
+      },
+    },
   });
 
-  expect(method3.errors).toBeFalsy();
-  expect(method3.data).toBeTruthy();
-  expect(method3.data).toMatchObject({
-    method3: [
-      null,
-      {
+  expect(method1b.error).toBeFalsy();
+  expect(method1b.data).toBeTruthy();
+  expect(method1b.data).toEqual([
+    {
+      prop: "arg1 prop",
+      nested: {
+        prop: "arg1 nested prop",
+      },
+    },
+    {
+      prop: "arg2 prop",
+      nested: {
+        prop: "arg2 circular prop",
+      },
+    },
+  ]);
+
+  const method2a = await client.invoke({
+    uri,
+    method: "method2",
+    args: {
+      arg: {
         prop: "arg prop",
         nested: {
           prop: "arg nested prop",
         },
       },
-    ],
+    },
   });
 
-  const method5 = await client.query<{
-    method5: {
-      prop: string;
-      nested: {
-        prop: string;
-      };
-    };
-  }>({
+  expect(method2a.error).toBeFalsy();
+  expect(method2a.data).toBeTruthy();
+  expect(method2a.data).toEqual({
+    prop: "arg prop",
+    nested: {
+      prop: "arg nested prop",
+    },
+  });
+
+  const method2b = await client.invoke({
     uri,
-    query: `
-      query {
-        method5(
-          arg: {
-            prop: [49, 50, 51, 52]
-          }
-        )
-      }
-    `,
+    method: "method2",
+    args: {
+      arg: {
+        prop: "null",
+        nested: {
+          prop: "arg nested prop",
+        },
+      },
+    },
   });
 
-  expect(method5.errors).toBeFalsy();
-  expect(method5.data).toBeTruthy();
-  expect(method5.data).toMatchObject({
-    method5: {
-      prop: "1234",
-      nested: {
-        prop: "nested prop",
+  expect(method2b.error).toBeFalsy();
+  expect(method2b.data).toEqual(null);
+
+  const method3 = await client.invoke({
+    uri,
+    method: "method3",
+    args: {
+      arg: {
+        prop: "arg prop",
+        nested: {
+          prop: "arg nested prop",
+        },
       },
+    },
+  });
+
+  expect(method3.error).toBeFalsy();
+  expect(method3.data).toBeTruthy();
+  expect(method3.data).toEqual([
+    null,
+    {
+      prop: "arg prop",
+      nested: {
+        prop: "arg nested prop",
+      },
+    },
+  ]);
+
+  const method5 = await client.invoke({
+    uri,
+    method: "method5",
+    args: {
+      arg: {
+        prop: [49, 50, 51, 52],
+      },
+    },
+  });
+
+  expect(method5.error).toBeFalsy();
+  expect(method5.data).toBeTruthy();
+  expect(method5.data).toEqual({
+    prop: "1234",
+    nested: {
+      prop: "nested prop",
     },
   });
 };
 
-export const runMapTypeTest = async (
-  client: PolywrapClient,
-  uri: string
-) => {
-
+export const runMapTypeTest = async (client: PolywrapClient, uri: string) => {
   const mapClass = new Map<string, number>().set("Hello", 1).set("Heyo", 50);
   const mapRecord: Record<string, number> = {
     Hello: 1,
@@ -1119,176 +807,93 @@ export const runSimpleStorageTest = async (
   client: PolywrapClient,
   wrapperUri: string
 ) => {
-    const deploy = await client.query<{
-      deployContract: string;
-    }>({
-      uri: wrapperUri,
-      query: `
-        mutation {
-          deployContract(
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-        }
-      `,
-    });
-
-    expect(deploy.errors).toBeFalsy();
-    expect(deploy.data).toBeTruthy();
-    expect(deploy.data?.deployContract.indexOf("0x")).toBeGreaterThan(-1);
-
-    if (!deploy.data) {
-      return;
-    }
-
-    const address = deploy.data.deployContract;
-    const set = await client.query<{
-      setData: string;
-    }>({
-      uri: wrapperUri,
-      query: `
-        mutation {
-          setData(
-            address: "${address}"
-            value: $value
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-        }
-      `,
-      variables: {
-        value: 55,
+  const deploy = await client.invoke<string>({
+    uri: wrapperUri,
+    method: "deployContract",
+    args: {
+      connection: {
+        networkNameOrChainId: "testnet",
       },
-    });
+    },
+  });
 
-    expect(set.errors).toBeFalsy();
-    expect(set.data).toBeTruthy();
-    expect(set.data?.setData.indexOf("0x")).toBeGreaterThan(-1);
+  expect(deploy.error).toBeFalsy();
+  expect(deploy.data).toBeTruthy();
+  expect(deploy.data?.indexOf("0x")).toBeGreaterThan(-1);
 
-    const getWithStringType = await client.query<{
-      getData: number;
-      secondGetData: number;
-      thirdGetData: number;
-    }>({
-      uri: wrapperUri,
-      query: `
-        query {
-          getData(
-            address: "${address}"
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-          secondGetData: getData(
-            address: "${address}"
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-          thirdGetData: getData(
-            address: "${address}"
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-        }
-      `,
-    });
+  if (!deploy.data) {
+    return;
+  }
 
-    expect(getWithStringType.errors).toBeFalsy();
-    expect(getWithStringType.data).toBeTruthy();
-    expect(getWithStringType.data?.getData).toBe(55);
-    expect(getWithStringType.data?.secondGetData).toBe(55);
-    expect(getWithStringType.data?.thirdGetData).toBe(55);
+  const address = deploy.data;
+  const set = await client.invoke<string>({
+    uri: wrapperUri,
+    method: "setData",
+    args: {
+      address,
+      value: 55,
+      connection: {
+        networkNameOrChainId: "testnet",
+      },
+    },
+  });
 
-    const getWithUriType = await client.query<{
-      getData: number;
-      secondGetData: number;
-      thirdGetData: number;
-    }>({
-      uri: wrapperUri,
-      query: `
-        query {
-          getData(
-            address: "${address}"
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-          secondGetData: getData(
-            address: "${address}"
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-          thirdGetData: getData(
-            address: "${address}"
-            connection: {
-              networkNameOrChainId: "testnet"
-            }
-          )
-        }
-      `,
-    });
+  expect(set.error).toBeFalsy();
+  expect(set.data).toBeTruthy();
+  expect(set.data?.indexOf("0x")).toBeGreaterThan(-1);
 
-    expect(getWithUriType.errors).toBeFalsy();
-    expect(getWithUriType.data).toBeTruthy();
-    expect(getWithUriType.data?.getData).toBe(55);
-    expect(getWithUriType.data?.secondGetData).toBe(55);
-    expect(getWithUriType.data?.thirdGetData).toBe(55);
+  const getDataResult = await client.invoke<number>({
+    uri: wrapperUri,
+    method: "getData",
+    args: {
+      address,
+      connection: {
+        networkNameOrChainId: "testnet",
+      },
+    },
+  });
+
+  expect(getDataResult.error).toBeFalsy();
+  expect(getDataResult.data).toEqual(55);
 };
 
 export const runSimpleEnvTest = async (
   client: PolywrapClient,
   wrapperUri: string
 ) => {
-  const queryGetEnv = await client.query({
+  const getEnvResult = await client.invoke({
     uri: wrapperUri,
-    query: `
-  query {
-    getEnv(
+    method: "getEnv",
+    args: {
       arg: "string",
-    )
-  }
-`,
+    },
   });
-  expect(queryGetEnv.errors).toBeFalsy();
-  expect(queryGetEnv.data?.getEnv).toEqual({
+  expect(getEnvResult.error).toBeFalsy();
+  expect(getEnvResult.data).toEqual({
     str: "module string",
     requiredInt: 1,
   });
 
-  const queryGetEnvNotSet = await client.query({
+  const getEnvNotSetResult = await client.invoke({
     uri: wrapperUri,
-    query: `
-  query {
-    getEnv(
-      arg: "not set"
-    )
-  }
-`,
+    method: "getEnv",
+    args: {
+      arg: "not set",
+    },
     config: {
       envs: [],
     },
   });
-  expect(queryGetEnvNotSet.data?.getEnv).toBeUndefined();
-  expect(queryGetEnvNotSet.errors).toBeTruthy();
-  expect(queryGetEnvNotSet.errors?.length).toBe(1);
-  expect(queryGetEnvNotSet.errors?.[0].message).toContain(
-    "requiredInt: Int"
-  );
+  expect(getEnvNotSetResult.data).toBeUndefined();
+  expect(getEnvNotSetResult.error).toBeTruthy();
+  expect(getEnvNotSetResult.error?.message).toContain("requiredInt: Int");
 
-  const queryEnvIncorrect = await client.query({
+  const envIncorrectResult = await client.invoke({
     uri: wrapperUri,
-    query: `
-  query {
-    getEnv(
-      arg: "not set"
-    )
-  }
-`,
+    method: "getEnv",
+    args: {
+      arg: "not set",
+    },
     config: {
       envs: [
         {
@@ -1302,27 +907,26 @@ export const runSimpleEnvTest = async (
     },
   });
 
-  expect(queryEnvIncorrect.data?.getEnv).toBeUndefined();
-  expect(queryEnvIncorrect.errors).toBeTruthy();
-  expect(queryEnvIncorrect.errors?.length).toBe(1);
-  expect(queryEnvIncorrect.errors?.[0].message).toContain(
+  expect(envIncorrectResult.data).toBeUndefined();
+  expect(envIncorrectResult.error).toBeTruthy();
+  expect(envIncorrectResult.error?.message).toContain(
     "Property must be of type 'int'. Found 'string'."
   );
 };
 
-export const runComplexEnvs = async (client: PolywrapClient, wrapperUri: string) => {
-  const queryMethodRequireEnv = await client.query({
+export const runComplexEnvs = async (
+  client: PolywrapClient,
+  wrapperUri: string
+) => {
+  const methodRequireEnvResult = await client.invoke({
     uri: wrapperUri,
-    query: `
-      query {
-        methodRequireEnv(
-          arg: "string"
-        )
-      }
-    `,
+    method: "methodRequireEnv",
+    args: {
+      arg: "string",
+    },
   });
-  expect(queryMethodRequireEnv.errors).toBeFalsy();
-  expect(queryMethodRequireEnv.data?.methodRequireEnv).toEqual({
+  expect(methodRequireEnvResult.error).toBeFalsy();
+  expect(methodRequireEnvResult.data).toEqual({
     str: "string",
     optFilledStr: "optional string",
     optStr: null,
@@ -1339,18 +943,15 @@ export const runComplexEnvs = async (client: PolywrapClient, wrapperUri: string)
     array: [32, 23],
   });
 
-  const querySubinvokeEnvMethod = await client.query({
+  const subinvokeEnvMethodResult = await client.invoke({
     uri: wrapperUri,
-    query: `
-      query {
-        subinvokeEnvMethod(
-          arg: "string"
-        )
-      }
-    `,
+    method: "subinvokeEnvMethod",
+    args: {
+      arg: "string",
+    },
   });
-  expect(querySubinvokeEnvMethod.errors).toBeFalsy();
-  expect(querySubinvokeEnvMethod.data?.subinvokeEnvMethod).toEqual({
+  expect(subinvokeEnvMethodResult.error).toBeFalsy();
+  expect(subinvokeEnvMethodResult.data).toEqual({
     local: {
       str: "string",
       optFilledStr: "optional string",
@@ -1369,22 +970,19 @@ export const runComplexEnvs = async (client: PolywrapClient, wrapperUri: string)
     },
     external: {
       externalArray: [1, 2, 3],
-      externalString: "iamexternal"
-    }
+      externalString: "iamexternal",
+    },
   });
 
-  const queryMethodRequireEnvModuleTime = await client.query({
+  const methodRequireEnvModuleTimeResult = await client.invoke({
     uri: wrapperUri,
-    query: `
-      query {
-        methodRequireEnv(
-          arg: "string"
-        )
-      }
-    `,
+    method: "methodRequireEnv",
+    args: {
+      arg: "string",
+    },
   });
-  expect(queryMethodRequireEnvModuleTime.errors).toBeFalsy();
-  expect(queryMethodRequireEnvModuleTime.data?.methodRequireEnv).toEqual({
+  expect(methodRequireEnvModuleTimeResult.error).toBeFalsy();
+  expect(methodRequireEnvModuleTimeResult.data).toEqual({
     str: "string",
     optFilledStr: "optional string",
     optStr: null,
@@ -1401,15 +999,12 @@ export const runComplexEnvs = async (client: PolywrapClient, wrapperUri: string)
     array: [32, 23],
   });
 
-  const mockUpdatedEnv = await client.query({
+  const mockUpdatedEnvResult = await client.invoke({
     uri: wrapperUri,
-    query: `
-      query {
-        methodRequireEnv(
-          arg: "string"
-        )
-      }
-    `,
+    method: "methodRequireEnv",
+    args: {
+      arg: "string",
+    },
     config: {
       envs: [
         {
@@ -1429,8 +1024,8 @@ export const runComplexEnvs = async (client: PolywrapClient, wrapperUri: string)
       ],
     },
   });
-  expect(mockUpdatedEnv.errors).toBeFalsy();
-  expect(mockUpdatedEnv.data?.methodRequireEnv).toEqual({
+  expect(mockUpdatedEnvResult.error).toBeFalsy();
+  expect(mockUpdatedEnvResult.data).toEqual({
     str: "another string",
     optFilledStr: "optional string",
     optStr: null,
@@ -1446,4 +1041,4 @@ export const runComplexEnvs = async (client: PolywrapClient, wrapperUri: string)
     optEnum: null,
     array: [32, 23],
   });
-}
+};
