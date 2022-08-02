@@ -22,6 +22,7 @@ import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
 import { uts46Plugin } from "@polywrap/uts46-plugin-js";
 import { sha3Plugin } from "@polywrap/sha3-plugin-js";
 import { loggerPlugin } from "@polywrap/logger-plugin-js";
+import { wsPlugin } from "@polywrap/ws-plugin-js";
 import { Tracer } from "@polywrap/tracing-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 
@@ -89,6 +90,10 @@ export const getDefaultClientConfig = Tracer.traceFunc(
         {
           uri: new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
           plugin: ipfsResolverPlugin({}),
+        },
+        {
+          uri: new Uri("wrap://ens/ws.polywrap.eth"),
+          plugin: wsPlugin({}),
         },
       ],
       interfaces: [
