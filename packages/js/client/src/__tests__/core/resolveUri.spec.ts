@@ -393,8 +393,6 @@ describe("resolveUri", () => {
     expect(result.uri).toEqual(wrapperUri);
     expect(result.error).toBeFalsy();
 
-    expect(result.history).toEqual(["ExtendableUriResolver"]);
-
     expect(result.history).toEqual([
       {
         uriResolver: "RedirectsResolver",

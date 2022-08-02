@@ -518,7 +518,8 @@ export class PolywrapClient implements Client {
       wrapper,
       uri: resolvedUri,
       history:
-        !options.history || options.history === UriResolutionHistoryType.Path
+        options.history == null ||
+        options.history === UriResolutionHistoryType.Path
           ? resolutionPath
           : history,
       error,
