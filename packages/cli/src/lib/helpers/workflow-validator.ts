@@ -6,9 +6,7 @@ import fs from "fs";
 import os from "os";
 import { InvokeResult } from "@polywrap/core-js";
 
-const TMPDIR = fs.mkdtempSync(
-  path.join(os.tmpdir(), `polywrap-cli`)
-);
+const TMPDIR = fs.mkdtempSync(path.join(os.tmpdir(), `polywrap-cli`));
 
 export async function cueExists(): Promise<boolean> {
   try {
