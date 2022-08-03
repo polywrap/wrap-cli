@@ -1,9 +1,5 @@
-import {
-  PolywrapClientConfig,
-  PolywrapClient,
-  createPolywrapClient,
-  PluginModule,
-} from "../..";
+import { PolywrapClient, PluginModule } from "../..";
+import { getClient } from "../utils/getClient";
 
 jest.setTimeout(200000);
 
@@ -22,13 +18,6 @@ const defaultPlugins = [
 ];
 
 describe("plugin-wrapper", () => {
-  const getClient = async (config?: Partial<PolywrapClientConfig>) => {
-    return await createPolywrapClient(
-      {},
-      config
-    );
-  };
-
   const mockMapPlugin = () => {
     interface Config extends Record<string, unknown> {
       map: Map<string, number>;
@@ -51,9 +40,10 @@ describe("plugin-wrapper", () => {
     }
 
     return {
-      factory: () => new MockMapPlugin({
-        map: new Map().set("a", 1).set("b", 2)
-      }),
+      factory: () =>
+        new MockMapPlugin({
+          map: new Map().set("a", 1).set("b", 2),
+        }),
       manifest: {
         schema: ``,
         implements: [],
@@ -122,36 +112,28 @@ describe("plugin-wrapper", () => {
       ],
     });
 
-    const queryEnv = await client.query({
+    const getResult = await client.invoke({
       uri: implementationUri,
-      query: `
-      query {
-        getMap
-      }
-    `,
+      method: "getMap",
     });
 
-    expect(queryEnv.errors).toBeFalsy();
-    expect(queryEnv.data).toBeTruthy();
-    expect(queryEnv.data?.getMap).toMatchObject(
+    expect(getResult.error).toBeFalsy();
+    expect(getResult.data).toBeTruthy();
+    expect(getResult.data).toMatchObject(
       new Map<string, number>().set("a", 1).set("b", 2)
     );
 
-    const mutationEnv = await client.query({
+    const updateResult = await client.invoke({
       uri: implementationUri,
-      query: `
-      mutation {
-        updateMap(map: $map)
-      }
-      `,
-      variables: {
+      method: "updateMap",
+      args: {
         map: new Map<string, number>().set("b", 1).set("c", 5),
       },
     });
 
-    expect(mutationEnv.errors).toBeFalsy();
-    expect(mutationEnv.data).toBeTruthy();
-    expect(mutationEnv.data?.updateMap).toMatchObject(
+    expect(updateResult.error).toBeFalsy();
+    expect(updateResult.data).toBeTruthy();
+    expect(updateResult.data).toMatchObject(
       new Map<string, number>().set("a", 1).set("b", 3).set("c", 5)
     );
   });
