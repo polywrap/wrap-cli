@@ -12,7 +12,7 @@ class Api(ABC):
 
     @classmethod
     @abstractmethod
-    def invoke(cls, options: InvokeApiOptions, client: Client) -> Awaitable[InvokeApiResult]:
+    async def invoke(cls, options: InvokeApiOptions, client: Client) -> Awaitable[InvokeApiResult]:
         """
         Invoke the API based on the provided [InvokeApiOptions].
 

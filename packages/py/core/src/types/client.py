@@ -117,7 +117,7 @@ class Client:
 
     @classmethod
     @abstractmethod
-    def resolve_uri(
+    async def resolve_uri(
         cls, uri: Union[Uri, str], options: Optional[ResolveUriOptions] = None
     ) -> Awaitable[ResolveUriResult]:
         return None
