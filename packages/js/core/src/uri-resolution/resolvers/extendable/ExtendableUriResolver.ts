@@ -1,14 +1,6 @@
-import {
-  Uri,
-  Client,
-  WrapperCache,
-  getImplementations,
-  coreInterfaceUris,
-} from "../../..";
 import { CreateWrapperFunc } from "./types/CreateWrapperFunc";
 import {
   IUriResolver,
-  UriResolverAggregator,
   IUriResolutionError,
   UriResolutionErrorType,
 } from "../../core";
@@ -16,6 +8,14 @@ import { UriResolverWrapper } from "../UriResolverWrapper";
 
 import { DeserializeManifestOptions } from "@polywrap/wrap-manifest-types-js";
 import { UriResolutionResult } from "../../core";
+import { UriResolverAggregatorBase } from "..";
+import {
+  Uri,
+  Client,
+  getImplementations,
+  coreInterfaceUris,
+  WrapperCache,
+} from "../../..";
 
 export type ExtendableUriResolverResult = UriResolutionResult<LoadResolverExtensionsError> & {
   implementationUri?: Uri;
@@ -30,20 +30,13 @@ export class LoadResolverExtensionsError implements IUriResolutionError {
   }
 }
 
-export class ExtendableUriResolver extends UriResolverAggregator {
-  private _hasLoadedUriResolvers: boolean;
-
+export class ExtendableUriResolver extends UriResolverAggregatorBase<LoadResolverExtensionsError> {
   constructor(
     options: { fullResolution: boolean },
     private readonly _createWrapper: CreateWrapperFunc,
-    private _deserializeOptions?: DeserializeManifestOptions,
-    disablePreload?: boolean
+    private _deserializeOptions?: DeserializeManifestOptions
   ) {
     super(options);
-
-    if (disablePreload) {
-      this._hasLoadedUriResolvers = true;
-    }
   }
 
   get name(): string {
@@ -52,8 +45,7 @@ export class ExtendableUriResolver extends UriResolverAggregator {
 
   async getUriResolvers(
     uri: Uri,
-    client: Client,
-    cache: WrapperCache
+    client: Client
   ): Promise<IUriResolver[] | IUriResolutionError> {
     const uriResolverImpls = getImplementations(
       coreInterfaceUris.uriResolver,
@@ -61,18 +53,18 @@ export class ExtendableUriResolver extends UriResolverAggregator {
       client.getRedirects({})
     );
 
-    if (!this._hasLoadedUriResolvers) {
-      const {
-        success,
-        failedUriResolvers,
-      } = await this.loadUriResolverWrappers(client, cache, uriResolverImpls);
+    // if (!this._hasLoadedUriResolvers) {
+    //   const {
+    //     success,
+    //     failedUriResolvers,
+    //   } = await this.loadUriResolverWrappers(client, cache, uriResolverImpls);
 
-      if (!success) {
-        return new LoadResolverExtensionsError(failedUriResolvers);
-      }
+    //   if (!success) {
+    //     return new LoadResolverExtensionsError(failedUriResolvers);
+    //   }
 
-      this._hasLoadedUriResolvers = true;
-    }
+    //   this._hasLoadedUriResolvers = true;
+    // }
 
     const resolvers: UriResolverWrapper[] = await this._createUriResolverWrappers(
       uriResolverImpls
@@ -81,78 +73,116 @@ export class ExtendableUriResolver extends UriResolverAggregator {
     return resolvers;
   }
 
-  async loadUriResolverWrappers(
+  private resolverIndex = -1;
+
+  async tryResolveToWrapper(
+    uri: Uri,
     client: Client,
-    cache: WrapperCache,
-    implementationUris: Uri[]
-  ): Promise<{
-    success: boolean;
-    failedUriResolvers: string[];
-  }> {
-    return {
-      success: true,
-      failedUriResolvers: [],
-    };
-    // const implementationsToLoad = new Queue<Uri>();
+    cache: WrapperCache
+  ): Promise<ExtendableUriResolverResult> {
+    const result = await this.getUriResolvers(uri, client);
+    const error = result as IUriResolutionError;
 
-    // for (const implementationUri of implementationUris) {
-    //   if (!cache.has(implementationUri.uri)) {
-    //     implementationsToLoad.enqueue(implementationUri);
-    //   }
-    // }
+    if (error.type) {
+      return {
+        uri,
+        error: error as LoadResolverExtensionsError,
+      };
+    }
 
-    // let implementationUri: Uri | undefined;
-    // let failedAttempts = 0;
+    const resolvers = result as IUriResolver[];
 
-    // const loadedImplementations: string[] = [];
-    // while ((implementationUri = implementationsToLoad.dequeue())) {
-    //   // Use only loadeded URI resolver extensions to resolve the implementation URI
-    //   // If successful, it is added to the list of loaded implementations
+    this.resolverIndex++;
 
-    //   const { wrapper } = await client.tryResolveToWrapper({
-    //     uri: implementationUri,
-    //     config: {
-    //       uriResolvers: [
-    //         ...bootstrapUriResolvers,
-    //         ...loadedImplementations.map(
-    //           (x) =>
-    //             new UriResolverWrapper(
-    //               new Uri(x),
-    //               this._createWrapper,
-    //               this._deserializeOptions
-    //             )
-    //         ),
-    //       ],
-    //     },
-    //   });
+    if (this.resolverIndex >= resolvers.length) {
+      return {
+        uri,
+      };
+    }
 
-    //   if (!wrapper) {
-    //     // If not successful, add the resolver to the end of the queue
-    //     implementationsToLoad.enqueue(implementationUri);
-    //     failedAttempts++;
+    try {
+      const result = await super.tryResolveToWrapperWithResolvers(
+        uri,
+        client,
+        cache,
+        resolvers.slice(this.resolverIndex, resolvers.length)
+      );
 
-    //     if (failedAttempts === implementationsToLoad.length) {
-    //       return {
-    //         success: false,
-    //         failedUriResolvers: implementationsToLoad
-    //           .toArray()
-    //           .map((x) => x.uri),
-    //       };
-    //     }
-    //   } else {
-    //     cache.set(implementationUri.uri, wrapper);
-    //     loadedImplementations.push(implementationUri.uri);
-    //     failedAttempts = 0;
-    //   }
-    // }
-
-    // this._hasLoadedUriResolvers = true;
-
-    // return {
-    //   success: true,
-    //   failedUriResolvers: [],
-    // };
+      return result;
+    } catch (ex) {
+      this.resolverIndex = -1;
+      throw ex;
+    }
   }
+
+  // async loadUriResolverWrappers(
+  //   client: Client,
+  //   cache: WrapperCache,
+  //   implementationUris: Uri[]
+  // ): Promise<{
+  //   success: boolean;
+  //   failedUriResolvers: string[];
+  // }> {
+  //   const implementationsToLoad = new Queue<Uri>();
+
+  //   for (const implementationUri of implementationUris) {
+  //     if (!cache.has(implementationUri.uri)) {
+  //       implementationsToLoad.enqueue(implementationUri);
+  //     }
+  //   }
+
+  //   let implementationUri: Uri | undefined;
+  //   let failedAttempts = 0;
+
+  //   const loadedImplementations: string[] = [];
+  //   while ((implementationUri = implementationsToLoad.dequeue())) {
+  //     // Use only loadeded URI resolver extensions to resolve the implementation URI
+  //     // If successful, it is added to the list of loaded implementations
+
+  //     const { wrapper } = await client.tryResolveToWrapper({
+  //       uri: implementationUri,
+  //       config: {
+  //         uriResolver: [
+  //           ...bootstrapUriResolvers,
+  //           ...loadedImplementations.map(
+  //             (x) =>
+  //               new UriResolverWrapper(
+  //                 new Uri(x),
+  //                 this._createWrapper,
+  //                 this._deserializeOptions
+  //               )
+  //           ),
+  //         ],
+  //       },
+  //     });
+
+  //     if (!wrapper) {
+  //       // If not successful, add the resolver to the end of the queue
+  //       implementationsToLoad.enqueue(implementationUri);
+  //       failedAttempts++;
+
+  //       if (failedAttempts === implementationsToLoad.length) {
+  //         return {
+  //           success: false,
+  //           failedUriResolvers: implementationsToLoad
+  //             .toArray()
+  //             .map((x) => x.uri),
+  //         };
+  //       }
+  //     } else {
+  //       cache.set(implementationUri.uri, wrapper);
+  //       loadedImplementations.push(implementationUri.uri);
+  //       failedAttempts = 0;
+  //     }
+  //   }
+
+  //   this._hasLoadedUriResolvers = true;
+
+  //   return {
+  //     success: true,
+  //     failedUriResolvers: [],
+  //   };
+  // }
 
   private async _createUriResolverWrappers(
     implementationUris: Uri[]

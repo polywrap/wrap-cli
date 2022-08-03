@@ -8,9 +8,9 @@ import {
   Env,
   ExtendableUriResolver,
   CacheResolver,
-  PluginResolver,
-  RedirectsResolver,
-  PreloadedUriResolverAggregator,
+  LegacyPluginsResolver,
+  LegacyRedirectsResolver,
+  buildUriResolver,
 } from "@polywrap/core-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
@@ -106,11 +106,11 @@ export const getDefaultClientConfig = Tracer.traceFunc(
           implementations: [new Uri("wrap://ens/js-logger.polywrap.eth")],
         },
       ],
-      uriResolver: new PreloadedUriResolverAggregator(
+      uriResolver: buildUriResolver(
         [
-          new RedirectsResolver(),
+          new LegacyRedirectsResolver(),
           new CacheResolver(),
-          new PluginResolver(
+          new LegacyPluginsResolver(
             (
               uri: Uri,
               plugin: PluginPackage<unknown>,

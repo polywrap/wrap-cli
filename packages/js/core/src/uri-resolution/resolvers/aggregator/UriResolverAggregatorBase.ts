@@ -1,23 +1,27 @@
 import { Tracer } from "@polywrap/tracing-js";
 import {
   UriResolutionResult,
-  IUriResolver,
-  UriResolver,
-  IUriResolutionStep,
   InfiniteLoopError,
+  IUriResolutionError,
+  UriResolver,
+  Uri,
+  Client,
+  WrapperCache,
+  IUriResolver,
+  IUriResolutionStep,
+  Wrapper,
   getUriResolutionPath,
   UriResolverError,
-  IUriResolutionError,
-} from "../core";
-import { Uri, Client, WrapperCache, Wrapper } from "../..";
+} from "../../..";
 
 export type UriResolverAggregatorResult = UriResolutionResult<UriResolverAggregatorError>;
 
 export type UriResolverAggregatorError =
   | InfiniteLoopError
   | IUriResolutionError;
-export abstract class UriResolverAggregator
-  implements UriResolver<UriResolverAggregatorError> {
+export abstract class UriResolverAggregatorBase<
+  TError extends IUriResolutionError = UriResolverAggregatorError
+> implements UriResolver<TError> {
   constructor(private readonly options: { fullResolution: boolean }) {}
 
   abstract get name(): string;
@@ -32,9 +36,9 @@ export abstract class UriResolverAggregator
     uri: Uri,
     client: Client,
     cache: WrapperCache
-  ): Promise<UriResolverAggregatorResult> {
+  ): Promise<UriResolutionResult<TError>> {
     const result = await this.getUriResolvers(uri, client, cache);
-    const error = result as IUriResolutionError;
+    const error = result as TError;
 
     if (error.type) {
       return {
@@ -45,6 +49,20 @@ export abstract class UriResolverAggregator
 
     const resolvers = result as IUriResolver[];
 
+    return await this.tryResolveToWrapperWithResolvers(
+      uri,
+      client,
+      cache,
+      resolvers
+    );
+  }
+
+  protected async tryResolveToWrapperWithResolvers(
+    uri: Uri,
+    client: Client,
+    cache: WrapperCache,
+    resolvers: IUriResolver[]
+  ): Promise<UriResolutionResult<TError>> {
     // Keep track of past URIs to avoid infinite loops
     const visitedUriMap: Map<string, boolean> = new Map<string, boolean>();
     const history: IUriResolutionStep[] = [];
@@ -68,7 +86,7 @@ export abstract class UriResolverAggregator
             uri: currentUri,
             wrapper,
             history,
-            error: new InfiniteLoopError(),
+            error: new InfiniteLoopError() as TError,
           };
         }
 
@@ -110,7 +128,10 @@ export abstract class UriResolverAggregator
           return {
             uri: currentUri,
             history,
-            error: new UriResolverError(resolver.name, result.error),
+            error: (new UriResolverError(
+              resolver.name,
+              result.error
+            ) as unknown) as TError,
           };
         }
       }

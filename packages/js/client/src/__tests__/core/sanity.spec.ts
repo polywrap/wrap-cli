@@ -1,4 +1,8 @@
-import { coreInterfaceUris, PluginModule } from "@polywrap/core-js";
+import {
+  buildUriResolver,
+  coreInterfaceUris,
+  PluginModule,
+} from "@polywrap/core-js";
 import { Uri, PolywrapClient } from "../..";
 
 jest.setTimeout(200000);
@@ -40,15 +44,29 @@ describe("sanity", () => {
   test("client noDefaults flag works as expected", async () => {
     let client = new PolywrapClient();
     expect(client.getPlugins().length !== 0).toBeTruthy();
+    expect(client.getUriResolver()).toBeTruthy();
 
     client = new PolywrapClient({}, {});
     expect(client.getPlugins().length !== 0).toBeTruthy();
+    expect(client.getUriResolver()).toBeTruthy();
 
     client = new PolywrapClient({}, { noDefaults: false });
     expect(client.getPlugins().length !== 0).toBeTruthy();
+    expect(client.getUriResolver()).toBeTruthy();
 
-    client = new PolywrapClient({}, { noDefaults: true });
+    client = new PolywrapClient(
+      { uriResolver: buildUriResolver([]) },
+      { noDefaults: true }
+    );
+
     expect(client.getPlugins().length === 0).toBeTruthy();
+    expect(client.getUriResolver()).toBeTruthy();
+
+    try {
+      client = new PolywrapClient({}, { noDefaults: true });
+    } catch (e) {
+      expect(e.message).toBe("No URI resolver provided");
+    }
   });
 
   test("redirect registration", () => {

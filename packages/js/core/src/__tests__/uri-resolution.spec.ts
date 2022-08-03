@@ -26,7 +26,13 @@ import {
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackEncode } from "@polywrap/msgpack-js";
-import { PreloadedUriResolverAggregator } from "../uri-resolution/resolvers";
+import {
+  buildUriResolver,
+  LegacyPluginsResolver,
+  LegacyRedirectsResolver,
+  PreloadedUriResolverAggregator,
+} from "../uri-resolution/resolvers";
+import { IUriResolutionStep } from "../uri-resolution/core";
 
 describe("URI resolution", () => {
   const client = (
@@ -180,9 +186,39 @@ describe("URI resolution", () => {
 
   const plugins: PluginRegistration<Uri>[] = [
     {
+      uri: new Uri("ens/ens-resolver"),
+      plugin: {
+        factory: () => (ensWrapper as unknown) as PluginModule<{}>,
+        manifest: {
+          schema: "",
+          implements: [coreInterfaceUris.uriResolver],
+        },
+      },
+    },
+    {
       uri: new Uri("ens/my-plugin"),
       plugin: {
-        factory: () => ({} as PluginModule<{}>),
+        factory: () => (pluginWrapper as unknown) as PluginModule<{}>,
+        manifest: {
+          schema: "",
+          implements: [coreInterfaceUris.uriResolver],
+        },
+      },
+    },
+    {
+      uri: new Uri("ens/my-plugin"),
+      plugin: {
+        factory: () => (pluginWrapper as unknown) as PluginModule<{}>,
+        manifest: {
+          schema: "",
+          implements: [coreInterfaceUris.uriResolver],
+        },
+      },
+    },
+    {
+      uri: new Uri("ens/my-plugin"),
+      plugin: {
+        factory: () => (pluginWrapper as unknown) as PluginModule<{}>,
         manifest: {
           schema: "",
           implements: [coreInterfaceUris.uriResolver],
@@ -195,23 +231,17 @@ describe("URI resolution", () => {
     {
       interface: coreInterfaceUris.uriResolver,
       implementations: [
-        new Uri("ens/ens"),
-        new Uri("ens/ipfs"),
+        new Uri("ens/ens-resolver"),
+        new Uri("ens/ipfs-resolver"),
         new Uri("ens/my-plugin"),
       ],
     },
   ];
 
-  const wrappers: Record<string, PluginModule<{}>> = {
-    "wrap://ens/ens": (ensWrapper as unknown) as PluginModule<{}>,
-    "wrap://ens/ipfs": (ipfsWrapper as unknown) as PluginModule<{}>,
-    "wrap://ens/my-plugin": (pluginWrapper as unknown) as PluginModule<{}>,
-  };
-
-  const resolver = new PreloadedUriResolverAggregator(
+  const resolver = buildUriResolver(
     [
-      new RedirectsResolver(),
-      new PluginResolver((uri: Uri, plugin: PluginPackage<{}>) =>
+      new LegacyRedirectsResolver(),
+      new LegacyPluginsResolver((uri: Uri, plugin: PluginPackage<{}>) =>
         createPluginWrapper(uri, plugin)
       ),
       new ExtendableUriResolver(
@@ -224,22 +254,23 @@ describe("URI resolution", () => {
         ) => {
           return createWrapper(uri, manifest, uriResolver);
         },
-        { noValidate: true },
-        true
+        { noValidate: true }
       ),
     ],
-    { fullResolution: true }
+    {
+      fullResolution: true,
+    }
   );
 
-  it("sanity", () => {
-    const wrapper = new Uri("wrap://ens/ens");
-    const file = new Uri("wrap/some-file");
-    const path = "wrap/some-path";
-    const module = UriResolverInterface.module;
-    const uri = new Uri("wrap/some-uri");
-
-    expect(module.tryResolveUri(client(wrappers), wrapper, uri)).toBeDefined();
-    expect(module.getFile(client(wrappers), file, path)).toBeDefined();
+  it("URI resolver", () => {
+    // const resolve;
+    // const wrapper = new Uri("wrap://ens/ens");
+    // const file = new Uri("wrap/some-file");
+    // const path = "wrap/some-path";
+    // const module = UriResolverInterface.module;
+    // const uri = new Uri("wrap/some-uri");
+    // expect(module.tryResolveUri(client(wrappers), wrapper, uri)).toBeDefined();
+    // expect(module.getFile(client(wrappers), file, path)).toBeDefined();
   });
 
   it("works in the typical case", async () => {
@@ -290,6 +321,10 @@ describe("URI resolution", () => {
       client(wrappers, plugins, interfaces),
       new Map<string, Wrapper>()
     );
+
+    let step: IUriResolutionStep | undefined =
+      result.history && result.history[2];
+    console.log("aaaaaaaadddddd", step?.result);
 
     expect(result.wrapper).toBeTruthy();
 

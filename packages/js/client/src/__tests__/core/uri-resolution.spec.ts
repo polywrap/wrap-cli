@@ -26,7 +26,7 @@ const simpleRedirectResolverWrapperUri = new Uri(
   `wrap://file/${simpleRedirectResolverWrapperPath}/build`
 );
 
-describe("resolveUri", () => {
+describe("URI resolution", () => {
   beforeAll(async () => {
     await buildWrapper(wrapperPath);
     await buildWrapper(simpleFsResolverWrapperPath);
@@ -201,7 +201,7 @@ describe("resolveUri", () => {
         sourceUri: pluginUri,
         result: {
           uri: pluginUri,
-          wrapper: true,
+          wrapper: result.wrapper,
         },
       },
     ]);
@@ -293,7 +293,7 @@ describe("resolveUri", () => {
         sourceUri: redirectedUri,
         result: {
           uri: redirectedUri,
-          wrapper: true,
+          wrapper: result.wrapper,
           implementationUri: new Uri("wrap://ens/fs-resolver.polywrap.eth"),
         },
       },
@@ -346,7 +346,7 @@ describe("resolveUri", () => {
         sourceUri: wrapperUri,
         result: {
           uri: wrapperUri,
-          wrapper: true,
+          wrapper: result.wrapper,
           implementationUri: new Uri("wrap://ens/fs-resolver.polywrap.eth"),
         },
       },
@@ -375,7 +375,7 @@ describe("resolveUri", () => {
         uriResolver: "CacheResolver",
         result: {
           uri: wrapperUri,
-          wrapper: true,
+          wrapper: result.wrapper,
         },
       },
     ]);
@@ -423,7 +423,7 @@ describe("resolveUri", () => {
         sourceUri: wrapperUri,
         result: {
           uri: wrapperUri,
-          wrapper: true,
+          wrapper: result.wrapper,
           implementationUri: new Uri("wrap://ens/fs-resolver.polywrap.eth"),
         },
       },
@@ -461,7 +461,7 @@ describe("resolveUri", () => {
         sourceUri: wrapperUri,
         result: {
           uri: wrapperUri,
-          wrapper: true,
+          wrapper: result.wrapper,
           implementationUri: new Uri("wrap://ens/fs-resolver.polywrap.eth"),
         },
       },
@@ -511,7 +511,7 @@ describe("resolveUri", () => {
         sourceUri: wrapperUri,
         result: {
           uri: wrapperUri,
-          wrapper: true,
+          wrapper: result.wrapper,
           implementationUri: new Uri("wrap://ens/fs-resolver.polywrap.eth"),
         },
       },
@@ -556,7 +556,7 @@ describe("resolveUri", () => {
         sourceUri: wrapperUri,
         result: {
           uri: wrapperUri,
-          wrapper: true,
+          wrapper: result.wrapper,
           implementationUri: new Uri("wrap://ens/fs-resolver.polywrap.eth"),
         },
       },
@@ -652,7 +652,7 @@ describe("resolveUri", () => {
         sourceUri: finalUri,
         result: {
           uri: finalUri,
-          wrapper: true,
+          wrapper: result.wrapper,
           implementationUri: new Uri("wrap://ens/fs-resolver.polywrap.eth"),
         },
       },
@@ -714,7 +714,7 @@ describe("resolveUri", () => {
         uriResolver: "CacheResolver",
         result: {
           uri: redirectedUri,
-          wrapper: true,
+          wrapper: result.wrapper,
         },
       },
     ]);
@@ -836,22 +836,20 @@ describe("resolveUri", () => {
     const redirectUri = new Uri(`ens/redirect.eth`);
 
     const client = await getClient({
-      uriResolvers: [
-        {
-          name: "CustomResolver",
-          tryResolveToWrapper: async (uri: Uri) => {
-            if (uri.uri === ensUri.uri) {
-              return {
-                uri: redirectUri,
-              };
-            }
-
+      uriResolver: {
+        name: "CustomResolver",
+        tryResolveToWrapper: async (uri: Uri) => {
+          if (uri.uri === ensUri.uri) {
             return {
-              uri: uri,
+              uri: redirectUri,
             };
-          },
+          }
+
+          return {
+            uri: uri,
+          };
         },
-      ],
+      },
     });
 
     const result = await client.tryResolveToWrapper({
@@ -925,22 +923,20 @@ describe("resolveUri", () => {
       uri: ensUri,
       history: UriResolutionHistoryType.Full,
       config: {
-        uriResolvers: [
-          {
-            name: "CustomResolver",
-            tryResolveToWrapper: async (uri: Uri) => {
-              if (uri.uri === ensUri.uri) {
-                return {
-                  uri: redirectUri,
-                };
-              }
-
+        uriResolver: {
+          name: "CustomResolver",
+          tryResolveToWrapper: async (uri: Uri) => {
+            if (uri.uri === ensUri.uri) {
               return {
-                uri: uri,
+                uri: redirectUri,
               };
-            },
+            }
+
+            return {
+              uri: uri,
+            };
           },
-        ],
+        },
       },
     });
 
