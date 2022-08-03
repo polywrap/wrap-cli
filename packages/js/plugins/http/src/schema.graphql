@@ -17,7 +17,7 @@ type Response {
 
 type Request {
   headers: [Header!]
-  urlParams: [UrlParam!]
+  urlParams: Map @annotate(type: "Map<String!, String!>")
   responseType: ResponseType!
   body: String
 }

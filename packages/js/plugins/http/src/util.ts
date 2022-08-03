@@ -62,10 +62,6 @@ export function fromAxiosResponse(
  * @param request
  */
 export function toAxiosRequestConfig(request: Request): AxiosRequestConfig {
-  const urlParams = request.urlParams?.reduce((params, p) => {
-    return { ...params, [p.key]: p.value };
-  }, {});
-
   const requestHeaders = request.headers?.reduce((headers, h) => {
     return { ...headers, [h.key]: h.value };
   }, {});
@@ -82,8 +78,8 @@ export function toAxiosRequestConfig(request: Request): AxiosRequestConfig {
     responseType,
   };
 
-  if (urlParams) {
-    config = { ...config, params: urlParams };
+  if (request.urlParams) {
+    config = { ...config, params: Object.fromEntries(request.urlParams) };
   }
 
   if (requestHeaders) {
