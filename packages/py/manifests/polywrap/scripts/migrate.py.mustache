@@ -1,0 +1,37 @@
+# This file was automatically generated. DO NOT MODIFY IT BY HAND. Instead, modify `migrate.py.mustache` and run the
+# `generate_manifest_types.py` script to regenerate this file.
+from . import (
+    Any{{#latest}}{{type}}{{/latest}},
+    {{#latest}}{{type}}{{/latest}},
+    {{#latest}}{{type}}{{/latest}}Formats,
+    latest{{#latest}}{{type}}{{/latest}}Format
+)
+{{#prevFormats}}
+from .migrators._{{version_identifier}}_to_{{#latest}}{{version_identifier}}{{/latest}} import migrate as migrate_{{version_identifier}}_to_{{#latest}}{{version_identifier}}{{/latest}}
+{{/prevFormats}}
+from typing import cast, Callable, Dict
+
+migrators: Dict[{{#latest}}{{type}}{{/latest}}Formats, Callable[[Any{{#latest}}{{type}}{{/latest}}], {{#latest}}{{type}}{{/latest}}]] = {
+{{#prevFormats}}
+    {{#latest}}{{type}}{{/latest}}Formats('{{version}}'): migrate_{{version_identifier}}_to_{{#latest}}{{version_identifier}}{{/latest}},
+{{/prevFormats}}
+}
+
+
+def migrate{{#latest}}{{type}}{{/latest}}(manifest: Any{{#latest}}{{type}}{{/latest}}, to: {{#latest}}{{type}}{{/latest}}Formats) -> {{#latest}}{{type}}{{/latest}}:
+    try:
+        old = {{#latest}}{{type}}{{/latest}}Formats('manifest.format')
+        if old == latest{{#latest}}{{type}}{{/latest}}Format:
+            return cast(manifest, {{#latest}}{{type}}{{/latest}})
+    except ValueError as ve:
+        raise ValueError(f'Unrecognized {{#latest}}{{type}}{{/latest}}Format "{manifest.format}"') from ve
+
+{{#prevFormats.length}}
+    if old not in migrators:
+        raise LookupError(f'Migrator from {{#latest}}{{type}}{{/latest}}Format "{old}" to "{to}" is not available')
+
+    return migrators[old](manifest);
+{{/prevFormats.length}}
+{{^prevFormats.length}}
+    raise LookupError(f'This should never happen, {{#latest}}{{type}}{{/latest}} migrators is empty. from: {old}, to: {to}')
+{{/prevFormats.length}}

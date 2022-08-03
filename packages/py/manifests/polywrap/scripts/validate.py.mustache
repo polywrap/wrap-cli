@@ -1,0 +1,39 @@
+# This file was automatically generated. DO NOT MODIFY IT BY HAND. Instead, modify `validate.py.mustache` and run the
+# `generate_manifest_types.py` script to regenerate this file.
+from . import (
+    Any{{#latest}}{{type}}{{/latest}},
+    {{#latest}}{{type}}{{/latest}}Formats
+)
+from ... import validators
+from typing import Callable, Dict, Optional
+import fastjsonschema
+import json
+
+{{#formats}}
+with open('manifest-schemas/formats/{{dir}}/{{version}}.json') as json_file:
+    schema_{{version_identifier}}: Dict = json.load(json_file)
+{{/formats}}
+
+schemas: Dict[{{#latest}}{{type}}{{/latest}}Formats: Dict] = {
+    {{#formats}}
+    {{#latest}}{{type}}{{/latest}}Formats('{{version}}'): schema_{{version_identifier}},
+    {{/formats}}
+}
+
+formats_dict: Dict[str: Callable] = {
+    {{#validators}}
+    '{{.}}': validators.{{.}}(),
+    {{/validators}}
+}
+
+def validate{{#latest}}{{type}}{{/latest}}(manifest: Any{{#latest}}{{type}}{{/latest}}, ext_schema: Optional[Dict] = None) -> None:
+    if manifest.format not in schemas:
+        raise KeyError(f'Unrecognized {{#latest}}{{type}}{{/latest}} schema format "{manifest.format}"\nmanifest: {json.loads(manifest)}')
+
+    try:
+        fastjsonschema.validate(schemas[manifest.format], manifest, formats=formats_dict)
+        if ext_schema:
+            fastjsonschema.validate(ext_schema, manifest, formats=formats_dict)
+    except fastjsonschema.JsonSchemaException as jse:
+        raise ValueError(f'Validation errors encountered while sanitizing {{#latest}}{{type}}{{/latest}} format "{manifest.format}"') from jse
+

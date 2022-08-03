@@ -1,0 +1,43 @@
+# This file was automatically generated. DO NOT MODIFY IT BY HAND. Instead, modify `__init__.py.mustache` and run the
+# `generate_manifest_types.py` script to regenerate this file.
+from enum import Enum, unique
+from typing import TypeAlias, Union, final
+from formats import import_manifest
+from migrate import migrate{{#latest}}{{type}}{{/latest}}
+from deserialize import deserialize{{#latest}}{{type}}{{/latest}}
+from validate import validate{{#latest}}{{type}}{{/latest}}
+
+{{#formats}}
+__{{version_identifier}} = import_manifest('{{version}}','py.src.core.manifest.formats.polywrap.migrators')
+{{type}}{{version_identifier}}: TypeAlias = __{{version_identifier}}.{{type}}
+{{/formats}}
+
+
+@final
+@unique
+class {{#latest}}{{type}}{{/latest}}Formats(Enum):
+    {{#formats}}
+    _{{version_identifier}} = '{{version}}'
+    {{/formats}}
+
+
+Any{{#latest}}{{type}}{{/latest}}: TypeAlias = Union[
+    {{#formats}}
+    {{type}}{{version_identifier}},
+    {{/formats}}
+]
+{{#latest}}{{type}}{{/latest}}: TypeAlias = {{#latest}}{{type}}{{version_identifier}}{{/latest}}
+latest{{#latest}}{{type}}{{/latest}}Format = {{#latest}}{{type}}{{/latest}}Formats('{{#latest}}{{version}}{{/latest}}')
+
+__all__ = [
+    {{#formats}}
+    '{{type}}{{version_identifier}}',
+    {{/formats}}
+    '{{#latest}}{{type}}{{/latest}}Formats',
+    'Any{{#latest}}{{type}}{{/latest}}',
+    '{{#latest}}{{type}}{{/latest}}',
+    'latest{{#latest}}{{type}}{{/latest}}Format',
+    'migrate{{#latest}}{{type}}{{/latest}}',
+    'deserialize{{#latest}}{{type}}{{/latest}}',
+    'validate{{#latest}}{{type}}{{/latest}}',
+]

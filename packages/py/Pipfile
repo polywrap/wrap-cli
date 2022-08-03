@@ -4,6 +4,11 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+chevron = "*"
+fastjsonschema = "*"
+statham-schema = "*"
+packaging = "*"
+pyyaml = "*"
 
 [dev-packages]
 bandit = "*"

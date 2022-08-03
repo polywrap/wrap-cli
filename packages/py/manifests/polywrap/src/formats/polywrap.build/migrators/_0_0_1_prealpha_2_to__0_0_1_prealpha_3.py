@@ -1,0 +1,16 @@
+from ... import import_manifest
+from typing import TypeAlias
+import os
+
+local_path: os.PathLike = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+__0_0_1_prealpha_2 = import_manifest('0.0.1-prealpha.2', local_path)
+OldManifest: TypeAlias = __0_0_1_prealpha_2.BuildManifest
+__0_0_1_prealpha_3 = import_manifest('0.0.1-prealpha.3', local_path)
+NewManifest: TypeAlias = __0_0_1_prealpha_3.BuildManifest
+
+def migrate(old: OldManifest) -> NewManifest:
+    new: NewManifest = old
+    new.__type = "BuildManifest"
+    new.format = "0.0.1-prealpha.3"
+    return new
