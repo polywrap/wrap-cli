@@ -23,11 +23,11 @@
   },
   "devDependencies": {
     "@polywrap/os-js": "0.3.0",
+    "@polywrap/wrap-manifest-schemas": "0.3.0",
     "@types/jest": "26.0.8",
     "@types/mustache": "4.0.1",
     "@types/prettier": "2.6.0",
     "@types/semver": "7.3.8",
-    "@polywrap/wrap-manifest-schemas": "0.3.0",
     "jest": "26.6.3",
     "json-schema-to-typescript": "11.0.1",
     "mustache": "4.0.1",
