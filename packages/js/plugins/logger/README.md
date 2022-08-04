@@ -1,4 +1,4 @@
-# Consoler Logger Plugin
+# @polywrap/logger-plugin-js
 
 Console Logger plugin implements the `wrap://ens/logger.core.polywrap.eth` core Polywrap interface. By default it logs all events using the Javascript `console` module. Different logging mechanisms can be set using the `LoggerConfig`.
 

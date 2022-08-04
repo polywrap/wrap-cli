@@ -1,13 +1,3 @@
-# URI Resolver Interface
+# @polywrap/uri-resolver-interface
 
-# How To Run
-
-## Install Dependencies
-`nvm install && nvm use`  
-`yarn`  
-
-## Start Test Environment
-`yarn test:env:up`  
-
-## Build & Deploy Polywrap
-`yarn deploy` 
+Interface for extendable WRAP URI resolvers.

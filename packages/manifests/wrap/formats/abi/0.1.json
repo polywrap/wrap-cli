@@ -1,0 +1,601 @@
+{
+  "id": "Abi",
+  "type": "object",
+  "unevaluatedProperties": false,
+  "required": [
+    "objectTypes",
+    "enumTypes",
+    "interfaceTypes",
+    "importedObjectTypes",
+    "importedModuleTypes",
+    "importedEnumTypes",
+    "importedEnvTypes"
+  ],
+  "properties": {
+    "version": {
+      "description": "ABI Version",
+      "type": "string",
+      "const": "0.1"
+    },
+    "objectTypes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/objectDefinition"
+      }
+    },
+    "moduleType": {
+      "$ref": "#/definitions/moduleDefinition"
+    },
+    "enumTypes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/enumDefinition"
+      }
+    },
+    "interfaceTypes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/interfaceDefinition"
+      }
+    },
+    "importedObjectTypes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/importedObjectDefinition"
+      }
+    },
+    "importedModuleTypes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/importedModuleDefinition"
+      }
+    },
+    "importedEnumTypes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/importedEnumDefinition"
+      }
+    },
+    "importedEnvTypes": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/importedEnvDefinition"
+      }
+    },
+    "envType": {
+      "$ref": "#/definitions/envDefinition"
+    }
+  },
+  "definitions": {
+    "objectDefinition": {
+      "type": "object",
+      "required": ["properties", "interfaces"],
+      "allOf": [
+        {
+          "$ref": "#/definitions/genericDefinition"
+        },
+        {
+          "$ref": "#/definitions/withComment"
+        }
+      ],
+      "properties": {
+        "properties": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/propertyDefinition"
+          }
+        },
+        "interfaces": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/interfaceImplementedDefinition"
+          }
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "moduleDefinition": {
+      "type": "object",
+      "required": ["methods", "imports", "interfaces"],
+      "allOf": [
+        {
+          "$ref": "#/definitions/genericDefinition"
+        },
+        {
+          "$ref": "#/definitions/withComment"
+        }
+      ],
+      "properties": {
+        "methods": {
+          "type": "array",
+          "items": [
+            {
+              "$ref": "#/definitions/methodDefinition"
+            }
+          ]
+        },
+        "imports": {
+          "type": "array",
+          "items": [
+            {
+              "$ref": "#/definitions/importedModuleRef"
+            }
+          ]
+        },
+        "interfaces": {
+          "type": "array",
+          "items": [
+            {
+              "$ref": "#/definitions/interfaceImplementedDefinition"
+            }
+          ]
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "interfaceImplementedDefinition": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/genericDefinition"
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "methodDefinition": {
+      "type": "object",
+      "required": ["arguments", "return"],
+      "allOf": [
+        {
+          "$ref": "#/definitions/genericDefinition"
+        },
+        {
+          "$ref": "#/definitions/withComment"
+        }
+      ],
+      "properties": {
+        "arguments": {
+          "type": "array",
+          "items": [
+            {
+              "$ref": "#/definitions/propertyDefinition"
+            }
+          ]
+        },
+        "env": {
+          "type": "object",
+          "properties": {
+            "required": {
+              "type": "boolean"
+            }
+          },
+          "unevaluatedProperties": false
+        },
+        "return": {
+          "$ref": "#/definitions/propertyDefinition"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "envDefinition": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/objectDefinition"
+        }
+      ]
+    },
+    "enumDefinition": {
+      "type": "object",
+      "required": ["constants"],
+      "allOf": [
+        {
+          "$ref": "#/definitions/genericDefinition"
+        },
+        {
+          "$ref": "#/definitions/withComment"
+        }
+      ],
+      "properties": {
+        "constants": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "interfaceDefinition": {
+      "type": "object",
+      "required": ["capabilities"],
+      "allOf": [
+        {
+          "$ref": "#/definitions/genericDefinition"
+        },
+        {
+          "$ref": "#/definitions/importedDefinition"
+        }
+      ],
+      "properties": {
+        "capabilities": {
+          "$ref": "#/definitions/capabilityDefinition"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "capabilityDefinition": {
+      "type": "object",
+      "properties": {
+        "getImplementations": {
+          "type": "object",
+          "required": ["enabled"],
+          "properties": {
+            "enabled": {
+              "type": "boolean"
+            }
+          },
+          "unevaluatedProperties": false
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "importedDefinition": {
+      "type": "object",
+      "required": ["uri", "namespace", "nativeType"],
+      "properties": {
+        "uri": {
+          "type": "string"
+        },
+        "namespace": {
+          "type": "string"
+        },
+        "nativeType": {
+          "type": "string"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "importedObjectDefinition": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/objectDefinition"
+        },
+        {
+          "$ref": "#/definitions/importedDefinition"
+        },
+        {
+          "$ref": "#/definitions/withComment"
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "importedModuleDefinition": {
+      "type": "object",
+      "required": ["methods"],
+      "allOf": [
+        {
+          "$ref": "#/definitions/genericDefinition"
+        },
+        {
+          "$ref": "#/definitions/importedDefinition"
+        },
+        {
+          "$ref": "#/definitions/withComment"
+        }
+      ],
+      "properties": {
+        "methods": {
+          "type": "array",
+          "items": [
+            {
+              "$ref": "#/definitions/methodDefinition"
+            }
+          ]
+        },
+        "isInterface": {
+          "type": ["boolean", "null"]
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "importedEnumDefinition": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/enumDefinition"
+        },
+        {
+          "$ref": "#/definitions/importedDefinition"
+        },
+        {
+          "$ref": "#/definitions/withComment"
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "importedEnvDefinition": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/importedObjectDefinition"
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "withKind": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "number"
+        }
+      },
+      "unevaluatedProperties": false,
+      "required": ["kind"]
+    },
+    "withComment": {
+      "type": "object",
+      "properties": {
+        "comment": {
+          "type": "string"
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "propertyDefinition": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/withComment"
+        },
+        {
+          "$ref": "#/definitions/anyDefinition"
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "genericDefinition": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/withKind"
+        },
+        {
+          "required": ["type"],
+          "properties": {
+            "type": {
+              "type": "string"
+            },
+            "name": {
+              "type": ["string", "null"]
+            },
+            "required": {
+              "type": ["boolean", "null"]
+            }
+          },
+          "unevaluatedProperties": false
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "anyDefinition": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/genericDefinition"
+        },
+        {
+          "properties": {
+            "array": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/arrayDefinition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "scalar": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/scalarDefinition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "map": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/mapDefinition"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "object": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/objectRef"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "enum": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/enumRef"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "unresolvedObjectOrEnum": {
+              "anyOf": [
+                {
+                  "$ref": "#/definitions/unresolvedObjectOrEnumRef"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "unevaluatedProperties": false
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "arrayDefinition": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/anyDefinition"
+        },
+        {
+          "properties": {
+            "item": {
+              "$ref": "#/definitions/genericDefinition"
+            }
+          },
+          "unevaluatedProperties": false
+        }
+      ],
+      "unevaluatedProperties": false,
+      "required": ["item"]
+    },
+    "scalarType": {
+      "type": "string",
+      "enum": [
+        "UInt",
+        "UInt8",
+        "UInt16",
+        "UInt32",
+        "Int",
+        "Int8",
+        "Int16",
+        "Int32",
+        "String",
+        "Boolean",
+        "Bytes",
+        "BigInt",
+        "BigNumber",
+        "JSON"
+      ]
+    },
+    "scalarDefinition": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/genericDefinition"
+        }
+      ],
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/scalarType"
+        }
+      },
+      "unevaluatedProperties": false,
+      "required": ["type"]
+    },
+    "mapKeyType": {
+      "type": "string",
+      "enum": [
+        "UInt",
+        "UInt8",
+        "UInt16",
+        "UInt32",
+        "Int",
+        "Int8",
+        "Int16",
+        "Int32",
+        "String"
+      ]
+    },
+    "mapKeyDefinition": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/anyDefinition"
+        },
+        {
+          "properties": {
+            "type": {
+              "$ref": "#/definitions/mapKeyType"
+            }
+          },
+          "unevaluatedProperties": false
+        }
+      ],
+      "unevaluatedProperties": false,
+      "required": ["type"]
+    },
+    "mapDefinition": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/anyDefinition"
+        },
+        {
+          "$ref": "#/definitions/withComment"
+        },
+        {
+          "properties": {
+            "key": {
+              "$ref": "#/definitions/mapKeyDefinition"
+            },
+            "value": {
+              "$ref": "#/definitions/genericDefinition"
+            }
+          },
+          "unevaluatedProperties": false
+        }
+      ],
+      "unevaluatedProperties": false,
+      "required": ["key", "value"]
+    },
+    "objectRef": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/genericDefinition"
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "enumRef": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/genericDefinition"
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "unresolvedObjectOrEnumRef": {
+      "type": "object",
+      "allOf": [
+        {
+          "$ref": "#/definitions/genericDefinition"
+        }
+      ],
+      "unevaluatedProperties": false
+    },
+    "importedModuleRef": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        }
+      },
+      "unevaluatedProperties": false
+    }
+  }
+}

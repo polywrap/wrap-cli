@@ -12,10 +12,14 @@ export * from "./transform";
 export * from "./header";
 
 interface ParserOptions {
-  extractors?: SchemaExtractorBuilder[];
-  transforms?: AbiTransforms[];
-  validators?: SchemaValidatorBuilder[];
+  // Disable schema validation
   noValidate?: boolean;
+  // Use custom validators
+  validators?: SchemaValidatorBuilder[];
+  // Use custom extractors
+  extractors?: SchemaExtractorBuilder[];
+  // Use custom transformations
+  transforms?: AbiTransforms[];
 }
 
 export function parseSchema(schema: string, options: ParserOptions = {}): Abi {

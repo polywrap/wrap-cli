@@ -1,0 +1,6 @@
+format: 0.1.0
+name: Benchmark
+language: wasm/rust
+build: ./polywrap-current.build.yaml
+schema: ./schema.graphql
+module: ./Cargo.toml
