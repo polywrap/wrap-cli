@@ -1,4 +1,5 @@
 #import { Module, Callback } into WS from "wrap://ens/ws.polywrap.eth"
+#import { Module } into Memory from "wrap://ens/memory.polywrap.eth"
 
 type Module {
   send(
@@ -9,6 +10,16 @@ type Module {
   subscribe(
     url: String!,
     callback: WS_Callback!
+  ): Boolean!
+
+  callback(
+    data: String!
+  ): Boolean!
+
+  subscribeAndSend(
+    url: String!,
+    callback: WS_Callback!
+    message: String!
   ): Boolean!
 
   get(

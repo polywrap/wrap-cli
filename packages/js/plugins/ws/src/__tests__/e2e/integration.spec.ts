@@ -55,7 +55,7 @@ describe("e2e tests for WsPlugin", () => {
       expect(server).toHaveReceivedMessages(["test"]);
     });
 
-    it("callback", async () => {
+    it("callback to plugin", async () => {
       let msgs: string[] = []
       class MemoryPlugin extends PluginModule<{}> {
         callback(args: { data: string }, _client: Client): void {
@@ -100,6 +100,55 @@ describe("e2e tests for WsPlugin", () => {
       await new Promise(async (resolve) => {setTimeout(() => resolve(), 1)})
 
       expect(msgs).toEqual(["1","2"])
+    });
+
+    it("callback to wrapper", async () => {
+      let value: Record<string, string> = {}
+      class MemoryPlugin extends PluginModule<{}> {
+        set(args: { key: string, value: string }, _client: Client): boolean {
+          value[args.key] = args.value
+	  return true
+        }
+        get(args: { key: string }, _client: Client): string | null {
+          return value[args.key] ?? null
+        }
+      }
+      let memoryPlugin = {
+        factory: () => {
+          return new MemoryPlugin({})
+        },
+        manifest: { schema: "", implements: [] },
+      }
+      client = new PolywrapClient({
+        plugins: [
+          {
+            uri: "wrap://ens/memory.polywrap.eth",
+            plugin: memoryPlugin
+          },
+          {
+            uri: "wrap://ens/ws.polywrap.eth",
+            plugin: wsPlugin({}),
+          },
+        ],
+      });
+
+      await client.invoke<boolean>({
+        uri,
+        method: "subscribeAndSend",
+        args: {
+          url: "ws://localhost:1234",
+          callback: {
+            uri,
+            method: "callback"
+          },
+	  message: "test"
+        }
+      });
+
+      server.send("1");
+     
+      await expect(server).toReceiveMessage("test");
+      expect(server).toHaveReceivedMessages(["test"]);
     });
 
     it("cache", async () => {

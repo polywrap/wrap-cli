@@ -1,7 +1,10 @@
 import {
   WS_Module,
+  Memory_Module,
   Args_send,
   Args_subscribe,
+  Args_callback,
+  Args_subscribeAndSend,
   Args_get
 } from "./wrap";
 
@@ -27,6 +30,33 @@ export function subscribe(args: Args_subscribe): boolean {
     id,
     callback: args.callback
   })
+
+  return true;
+}
+
+export function callback(args: Args_callback): boolean {
+  const id = Memory_Module.get({ key: "id" }).unwrap();
+  const message = Memory_Module.get({ key: "message" }).unwrap();
+
+  if (id && message) {
+    WS_Module.send({ id: I32.parseInt(id), message }).unwrap();
+  }
+
+  return true;
+}
+
+export function subscribeAndSend(args: Args_subscribeAndSend): boolean {
+  const id = WS_Module.open({
+    url: args.url
+  }).unwrap();
+
+  WS_Module.addCallback({
+    id,
+    callback: args.callback
+  })
+
+  Memory_Module.set({ key: "id", value: id.toString() }).unwrap();
+  Memory_Module.set({ key: "message", value: args.message }).unwrap();
 
   return true;
 }
