@@ -6,10 +6,10 @@
  */
 import {
   AnyWrapManifest,
-  WrapManifestVersions
+  WrapManifestVersions,
+  WrapManifestSchema_0_1
 } from ".";
 
-import schema_0_1_0 from "@polywrap/wrap-manifest-schemas/formats/wrap.info/0.1.0.json";
 
 import {
   Schema,
@@ -17,40 +17,62 @@ import {
   ValidationError,
   ValidatorResult
 } from "jsonschema";
+import { resolve, $Refs } from "json-schema-ref-parser";
 
 type WrapManifestSchemas = {
   [key in WrapManifestVersions]: Schema | undefined
 };
 
 const schemas: WrapManifestSchemas = {
-  "0.1.0": schema_0_1_0,
+  // NOTE: Patch fix for backwards compatability
+  "0.1.0": WrapManifestSchema_0_1,
+  "0.1": WrapManifestSchema_0_1,
 };
 
-const validator = new Validator();
 
+function throwIfErrors(result: ValidatorResult, version: string) {
+  if (result.errors.length) {
+    throw new Error([
+      `Validation errors encountered while sanitizing WrapManifest version ${version}`,
+      ...result.errors.map((error: ValidationError) => error.toString())
+    ].join("\n"));
+  }
+}
 
-export function validateWrapManifest(
+export async function validateWrapManifest(
   manifest: AnyWrapManifest,
   extSchema: Schema | undefined = undefined
-): void {
+): Promise<void> {
   const schema = schemas[manifest.version as WrapManifestVersions];
 
   if (!schema) {
-    throw Error(`Unrecognized WrapManifest schema version "${manifest.version}"\nmanifest: ${JSON.stringify(manifest, null, 2)}`);
+    throw new Error(`Unrecognized WrapManifest schema version "${manifest.version}"\nmanifest: ${JSON.stringify(manifest, null, 2)}`);
   }
 
-  const throwIfErrors = (result: ValidatorResult) => {
-    if (result.errors.length) {
-      throw new Error([
-        `Validation errors encountered while sanitizing WrapManifest version ${manifest.version}`,
-        ...result.errors.map((error: ValidationError) => error.toString())
-      ].join("\n"));
-    }
-  };
+  const refs: $Refs = await resolve(schema as any);
 
-  throwIfErrors(validator.validate(manifest, schema));
+  const validator = new Validator();
+  validator.addSchema(schema);
+
+  const resolveRefs = () => {
+    const unresolvedRef = validator.unresolvedRefs.shift();
+    if (!unresolvedRef) return;
+
+    const relRefIdx = unresolvedRef.indexOf("#");
+    const relRef = unresolvedRef.slice(relRefIdx);
+
+    const resolvedSchema = refs.get(relRef);
+    if (!resolvedSchema) throw new Error(`Failed to resolve the ref: ${relRef}`);
+    validator.addSchema(resolvedSchema as Schema, unresolvedRef);
+
+    resolveRefs();
+  }
+  
+  resolveRefs();
+
+  throwIfErrors(validator.validate(manifest, schema), manifest.version);
 
   if (extSchema) {
-    throwIfErrors(validator.validate(manifest, extSchema));
+    throwIfErrors(validator.validate(manifest, extSchema), manifest.version);
   }
 }

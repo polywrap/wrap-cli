@@ -338,12 +338,10 @@ export class PolywrapClient implements Client {
       if (invocableResult.data !== undefined) {
         if (options.encodeResult && !invocableResult.encoded) {
           return {
-            // TODO: if options.encodeResult, fix return type to Uint8Array
             data: (msgpackEncode(invocableResult.data) as unknown) as TData,
           };
         } else if (invocableResult.encoded && !options.encodeResult) {
           return {
-            // TODO: if result.encoded, fix return type to Uint8Array
             data: msgpackDecode(invocableResult.data as Uint8Array) as TData,
           };
         } else {

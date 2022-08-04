@@ -1,0 +1,8 @@
+format: 0.1.0
+displayName: Simple Calculator Wrapper
+tags:
+  - calculator
+  - wrapper
+subtext: test subtext
+description: test description
+repository: https://github.com/test/test

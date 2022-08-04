@@ -37,6 +37,10 @@ const languageTestCommands: Record<string, string[]> = {
   "interface": [
     "yarn build"
   ],
+  "docusaurus": [
+    "yarn install --no-lockfile",
+    "yarn build"
+  ]
 };
 
 // Filter unnecessary directories

@@ -4,6 +4,7 @@ import { clearStyle, polywrapCli } from "./utils";
 import { runCLI } from "@polywrap/test-env-js";
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import fs from "fs";
+import os from "os";
 import path from "path";
 
 const HELP = `Usage: polywrap build|b [options]
@@ -14,7 +15,7 @@ Options:
   -m, --manifest-file <path>         Path to the Polywrap Build manifest file
                                      (default: polywrap.yaml | polywrap.yml)
   -o, --output-dir <path>            Output directory for build results
-                                     (default: build/)
+                                     (default: ./build)
   -c, --client-config <config-path>  Add custom configuration to the
                                      PolywrapClient
   -w, --watch                        Automatically rebuild when changes are
@@ -164,12 +165,11 @@ describe("e2e tests for build command", () => {
   });
 
   it("Should store build files in specified output dir", async () => {
-    const outputDir = path.resolve(
-      process.env.TMPDIR || "/tmp",
-      `codegen-${Date.now()}`
+    const outputDir = fs.mkdtempSync(
+      path.join(os.tmpdir(), `polywrap-cli-tests`)
     );
     const testCaseDir = getTestCaseDir(0);
-    const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+    const { exitCode: code, stdout: output } = await runCLI({
       args: ["build", "-v", "--output-dir", outputDir],
       cwd: testCaseDir,
       cli: polywrapCli,
@@ -177,7 +177,6 @@ describe("e2e tests for build command", () => {
 
     const buildDir = `./${path.relative(testCaseDir, outputDir)}`;
 
-    expect(error).toBe("");
     expect(code).toEqual(0);
     expect(output).toContain(`Artifacts written to ${buildDir}`);
     expect(output).toContain(`WRAP manifest written in ${buildDir}/wrap.info`);

@@ -14,7 +14,7 @@ import {
 } from ".";
 import { DeserializeManifestOptions } from "../../";
 
-import { compare } from "semver";
+import * as Semver from "semver";
 import YAML from "js-yaml";
 
 export function deserializeInfraManifest(
@@ -40,9 +40,9 @@ export function deserializeInfraManifest(
 
   anyInfraManifest.__type = "InfraManifest";
 
-  const versionCompare = compare(
-    anyInfraManifest.format,
-    latestInfraManifestFormat
+  const versionCompare = Semver.compare(
+    Semver.coerce(anyInfraManifest.format) || anyInfraManifest.format,
+    Semver.coerce(latestInfraManifestFormat) || latestInfraManifestFormat
   );
 
   if (versionCompare === -1) {
