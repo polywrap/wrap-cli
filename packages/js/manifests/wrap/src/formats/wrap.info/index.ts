@@ -10,12 +10,12 @@ import {
   Abi as WrapAbi_0_1_0_1
 } from "./0.1";
 
-import schema_0_1 from "./0.1.schema.json";
+import WrapManifestSchema_0_1 from "./0.1.schema.json";
 
 export {
   WrapManifest_0_1,
   WrapAbi_0_1_0_1,
-  schema_0_1
+  WrapManifestSchema_0_1
 };
 
 export enum WrapManifestVersions {

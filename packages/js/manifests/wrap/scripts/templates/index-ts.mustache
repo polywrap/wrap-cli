@@ -13,14 +13,14 @@ import {
 {{/formats}}
 
 {{#formats}}
-import schema_{{tsVersion}} from "./{{version}}.schema.json";
+import WrapManifestSchema_{{tsVersion}} from "./{{version}}.schema.json";
 {{/formats}}
 
 export {
   {{#formats}}
   WrapManifest_{{tsVersion}},
   WrapAbi_{{tsVersion}}_{{abiTsVersion}},
-  schema_{{tsVersion}}
+  WrapManifestSchema_{{tsVersion}}
   {{/formats}}
 };
 

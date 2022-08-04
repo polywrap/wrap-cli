@@ -7,7 +7,7 @@
 import {
   AnyWrapManifest,
   WrapManifestVersions,
-  schema_0_1
+  WrapManifestSchema_0_1
 } from ".";
 
 
@@ -25,8 +25,8 @@ type WrapManifestSchemas = {
 
 const schemas: WrapManifestSchemas = {
   // NOTE: Patch fix for backwards compatability
-  "0.1.0": schema_0_1,
-  "0.1": schema_0_1,
+  "0.1.0": WrapManifestSchema_0_1,
+  "0.1": WrapManifestSchema_0_1,
 };
 
 
