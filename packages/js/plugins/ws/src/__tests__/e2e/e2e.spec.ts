@@ -24,13 +24,13 @@ describe("WebSocket plugin", () => {
     });
     server = new WS("ws://localhost:1234");
     t1 = setTimeout(() => {
-      server.send("hi")
+      server.send("1")
     }, 100)
     t2 = setTimeout(() => {
-      server.send("hi2")
+      server.send("2")
     }, 200)
     t3 = setTimeout(() => {
-      server.send("hi3")
+      server.send("3")
     }, 300)
   }
 
@@ -118,12 +118,12 @@ describe("WebSocket plugin", () => {
         method: "send",
         args: {
           id,
-          message: "hello"
+          message: "test"
         }
       })
 
-      await expect(server).toReceiveMessage("hello");
-      expect(server).toHaveReceivedMessages(["hello"]);
+      await expect(server).toReceiveMessage("test");
+      expect(server).toHaveReceivedMessages(["test"]);
     });
   });
 
@@ -196,7 +196,7 @@ describe("WebSocket plugin", () => {
 
       await new Promise(async (resolve) => {setTimeout(() => resolve(), 250)})
 
-      expect(msgs).toEqual(["hi", "hi2"]);
+      expect(msgs).toEqual(["1", "2"]);
     });
 
     it("should remove callback", async () => {
@@ -237,7 +237,7 @@ describe("WebSocket plugin", () => {
 
       await new Promise(async (resolve) => {setTimeout(() => resolve(), 250)})
 
-      expect(msgs).toEqual(["hi", "hi2"]);
+      expect(msgs).toEqual(["1", "2"]);
     });
   });
 
@@ -279,7 +279,7 @@ describe("WebSocket plugin", () => {
       })
 
       let data = response?.data?.map((msg) => msg.data)
-      expect(data).toEqual(["hi", "hi2"]);
+      expect(data).toEqual(["1", "2"]);
     });
 
     it("should remove cache callback", async () => {
@@ -321,7 +321,7 @@ describe("WebSocket plugin", () => {
       })
 
       let data = response?.data?.map((msg) => msg.data)
-      expect(data).toEqual(["hi", "hi2"]);
+      expect(data).toEqual(["1", "2"]);
     });
 
     it("should receive messages when a timeout is reached", async () => {
@@ -352,7 +352,7 @@ describe("WebSocket plugin", () => {
 
 
       let data = response?.data?.map((msg) => msg.data)
-      expect(data).toEqual(["hi", "hi2"]);
+      expect(data).toEqual(["1", "2"]);
     });
 
     it("should receive messages when min is reached", async () => {
@@ -382,7 +382,7 @@ describe("WebSocket plugin", () => {
       })
 
       let data = response?.data?.map((msg) => msg.data)
-      expect(data).toEqual(["hi", "hi2"]);
+      expect(data).toEqual(["1", "2"]);
     });
 
     it("should reach timeout before min", async () => {
@@ -413,7 +413,7 @@ describe("WebSocket plugin", () => {
       })
 
       let data = response?.data?.map((msg) => msg.data)
-      expect(data).toEqual(["hi"]);
+      expect(data).toEqual(["1"]);
     });
 
     it("should reach min before timeout", async () => {
@@ -444,7 +444,7 @@ describe("WebSocket plugin", () => {
       })
 
       let data = response?.data?.map((msg) => msg.data)
-      expect(data).toEqual(["hi"]);
+      expect(data).toEqual(["1"]);
     });
 
     it("should receive messages in batches", async () => {
@@ -496,10 +496,10 @@ describe("WebSocket plugin", () => {
       })
 
       let data1 = response1?.data?.map((msg) => msg.data)
-      expect(data1).toEqual(["hi", "hi2"]);
+      expect(data1).toEqual(["1", "2"]);
 
       let data2 = response2?.data?.map((msg) => msg.data)
-      expect(data2).toEqual(["hi3"]);
+      expect(data2).toEqual(["3"]);
 
       let data3 = response3?.data?.map((msg) => msg.data)
       expect(data3).toEqual([]);

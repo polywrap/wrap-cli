@@ -1,5 +1,4 @@
 #import { Module, Callback } into WS from "wrap://ens/ws.polywrap.eth"
-#import { Module } into Logger from "wrap://ens/js-logger.polywrap.eth"
 
 type Module {
   send(
@@ -12,12 +11,8 @@ type Module {
     callback: WS_Callback!
   ): Boolean!
 
-  callback(
-    data: String!
-  ): Boolean!
-
   get(
     url: String!,
-    message: String!
+    timeout: Int!
   ): [String!]!
 }

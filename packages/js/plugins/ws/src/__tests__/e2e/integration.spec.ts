@@ -15,9 +15,6 @@ describe("e2e tests for WsPlugin", () => {
 
     let client: PolywrapClient;
     let server: WS;
-    let t1: ReturnType<typeof setTimeout>
-    let t2: ReturnType<typeof setTimeout>
-    let t3: ReturnType<typeof setTimeout>
 
     const wrapperPath = `${__dirname}/integration`
     const uri = `fs/${wrapperPath}/build`
@@ -37,22 +34,10 @@ describe("e2e tests for WsPlugin", () => {
 
     beforeEach(() => {
       server = new WS("ws://localhost:1234");
-      t1 = setTimeout(() => {
-        server.send("hi")
-      }, 100)
-      t2 = setTimeout(() => {
-        server.send("hi2")
-      }, 200)
-      t3 = setTimeout(() => {
-        server.send("hi3")
-      }, 300)
     });
 
     afterEach(() => {
       WS.clean();
-      clearTimeout(t1)
-      clearTimeout(t2)
-      clearTimeout(t3)
     });
 
     it("send", async () => {
@@ -62,15 +47,15 @@ describe("e2e tests for WsPlugin", () => {
         method: "send",
         args: {
           url: "ws://localhost:1234",
-          message: "hello"
+          message: "test"
         }
       })
 
-      await expect(server).toReceiveMessage("hello");
-      expect(server).toHaveReceivedMessages(["hello"]);
+      await expect(server).toReceiveMessage("test");
+      expect(server).toHaveReceivedMessages(["test"]);
     });
 
-    it("subscribe", async () => {
+    it("callback", async () => {
       let msgs: string[] = []
       class MemoryPlugin extends PluginModule<{}> {
         callback(args: { data: string }, _client: Client): void {
@@ -107,27 +92,42 @@ describe("e2e tests for WsPlugin", () => {
           }
         }
       });
-      
-      await new Promise(async (resolve) => {setTimeout(() => resolve(), 250)})
 
-      expect(msgs).toEqual(["hi","hi2"])
+      server.send("1")
+      server.send("2")
+
+      // wait for callbacks to be called
+      await new Promise(async (resolve) => {setTimeout(() => resolve(), 1)})
+
+      expect(msgs).toEqual(["1","2"])
     });
 
-    it("receive", async () => {
+    it("cache", async () => {
 
+      let t1 = setTimeout(() => {
+        server.send("1")
+      }, 10)
+      let t2 = setTimeout(() => {
+        server.send("2")
+      }, 20)
+      let t3 = setTimeout(() => {
+        server.send("3")
+      }, 30)
+      
       const response = await client.invoke<boolean>({
         uri,
         method: "get",
         args: {
           url: "ws://localhost:1234",
-          message: "hello"
+	  timeout: 20
         }
       });
 
-      await new Promise(async (resolve) => {setTimeout(() => resolve(), 300)})
+      expect(response.data).toEqual(["1","2"])
 
-      expect(response.data).toEqual(["hi","hi2"])
-
+      clearTimeout(t1)
+      clearTimeout(t2)
+      clearTimeout(t3)
     });
   });
 });
