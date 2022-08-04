@@ -38,7 +38,9 @@ export type GetUriResolversOptions = Contextualized;
 
 export type GetSchemaOptions = Contextualized;
 
-export type GetManifestOptions = Contextualized;
+export interface GetManifestOptions extends Contextualized {
+  noValidate?: boolean;
+}
 
 export interface GetFileOptions extends Contextualized {
   path: string;
