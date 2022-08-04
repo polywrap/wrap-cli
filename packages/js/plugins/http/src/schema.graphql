@@ -3,11 +3,6 @@ type Header {
   value: String!
 }
 
-type UrlParam {
-  key: String!
-  value: String!
-}
-
 type Response {
   status: Int!
   statusText: String!
