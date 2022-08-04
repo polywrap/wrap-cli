@@ -51,13 +51,13 @@ describe("e2e tests for HttpPlugin", () => {
           request: {
             responseType: "TEXT",
             urlParams: new Map([["query", "foo"]]),
-            headers: [{ key: "X-Request-Header", value: "req-foo" }],
+            headers: new Map([["X-Request-Header", "req-foo"]]),
           },
         },
       });
 
-      expect(response.data).toBeDefined();
       expect(response.error).toBeUndefined();
+      expect(response.data).toBeDefined();
       expect(response.data?.status).toBe(200);
     });
 
@@ -81,14 +81,13 @@ describe("e2e tests for HttpPlugin", () => {
             responseType: "TEXT",
             body: "{data: 'test-request'}",
             urlParams: { query: "foo" },
-            headers: [{ key: "X-Request-Header", value: "req-foo" }],
+            headers: new Map([["X-Request-Header", "req-foo"]]),
           },
         },
       });
 
-      expect(response.data).toBeTruthy();
       expect(response.error).toBeFalsy();
-
+      expect(response.data).toBeTruthy();
       expect(response.data?.status).toBe(200);
       expect(response.data?.body).toBeTruthy();
     });

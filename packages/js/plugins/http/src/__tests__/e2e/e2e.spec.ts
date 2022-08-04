@@ -32,26 +32,22 @@ describe("e2e tests for HttpPlugin", () => {
         .get("/api")
         .reply(200, '{data: "test-response"}');
 
-      const response = await polywrapClient.query<{ get: Response }>({
+      const response = await polywrapClient.invoke<Response>({
         uri: "wrap://ens/http.polywrap.eth",
-        query: `
-          query {
-            get(
-              url: "http://www.example.com/api"
-              request: {
-                responseType: TEXT
-              }
-            )
-          }
-        `,
+        method: "get",
+        args: {
+          url: "http://www.example.com/api",
+          request: {
+            responseType: "TEXT",
+          },
+        },
       });
 
+      expect(response.error).toBeUndefined();
       expect(response.data).toBeDefined();
-      expect(response.errors).toBeUndefined();
-      expect(response.data?.get.status).toBe(200);
-      // expect(response.data?.get.statusText).toBe("OK")
-      expect(response.data?.get.body).toBe('{data: "test-response"}');
-      expect(response.data?.get.headers?.length).toEqual(2); // default reply headers
+      expect(response.data?.status).toBe(200);
+      expect(response.data?.body).toBe('{data: "test-response"}');
+      expect(response.data?.headers?.size).toEqual(2); // default reply headers
     });
 
     test("successful request with response type as BINARY", async () => {
@@ -60,28 +56,24 @@ describe("e2e tests for HttpPlugin", () => {
         .get("/api")
         .reply(200, '{data: "test-response"}');
 
-      const response = await polywrapClient.query<{ get: Response }>({
+      const response = await polywrapClient.invoke<Response>({
         uri: "wrap://ens/http.polywrap.eth",
-        query: `
-          query {
-            get(
-              url: "http://www.example.com/api"
-              request: {
-                responseType: BINARY
-              }
-            )
-          }
-        `,
+        method: "get",
+        args: {
+          url: "http://www.example.com/api",
+          request: {
+            responseType: "BINARY",
+          },
+        },
       });
 
+      expect(response.error).toBeUndefined();
       expect(response.data).toBeDefined();
-      expect(response.errors).toBeUndefined();
-      expect(response.data?.get.status).toBe(200);
-      // expect(response.data?.get.statusText).toBe("OK")
-      expect(response.data?.get.body).toBe(
+      expect(response.data?.status).toBe(200);
+      expect(response.data?.body).toBe(
         Buffer.from('{data: "test-response"}').toString("base64")
       );
-      expect(response.data?.get.headers?.length).toEqual(2); // default reply headers
+      expect(response.data?.headers?.size).toEqual(2); // default reply headers
     });
 
     test("successful request with query params and request headers", async () => {
@@ -103,20 +95,22 @@ describe("e2e tests for HttpPlugin", () => {
           request: {
             responseType: "TEXT",
             urlParams: new Map([["query", "foo"]]),
-            headers: [{ key: "X-Request-Header", value: "req-foo" }],
+            headers: new Map([["X-Request-Header", "req-foo"]]),
           },
         },
       });
 
-      expect(response.data).toBeDefined();
       expect(response.error).toBeUndefined();
+      expect(response.data).toBeDefined();
       expect(response.data?.status).toBe(200);
       expect(response.data?.body).toBe('{data: "test-response"}');
-      expect(response.data?.headers).toEqual([
-        { key: "x-response-header", value: "resp-foo" },
-        { key: "access-control-allow-origin", value: "*" },
-        { key: "access-control-allow-credentials", value: "true" },
-      ]);
+      expect(response.data?.headers).toEqual(
+        new Map([
+          ["x-response-header", "resp-foo"],
+          ["access-control-allow-origin", "*"],
+          ["access-control-allow-credentials", "true"],
+        ])
+      );
     });
 
     test("failed request", async () => {
@@ -125,22 +119,19 @@ describe("e2e tests for HttpPlugin", () => {
         .get("/api")
         .reply(404);
 
-      const response = await polywrapClient.query<{ get: Response }>({
+      const response = await polywrapClient.invoke<Response>({
         uri: "wrap://ens/http.polywrap.eth",
-        query: `
-          query {
-            get(
-              url: "http://www.example.com/api"
-              request: {
-                responseType: TEXT
-              }
-            )
-          }
-        `,
+        method: "get",
+        args: {
+          url: "http://www.example.com/api",
+          request: {
+            responseType: "TEXT",
+          },
+        },
       });
 
-      expect(response.data?.get).toBeUndefined();
-      expect(response.errors).toBeDefined();
+      expect(response.data).toBeUndefined();
+      expect(response.error).toBeDefined();
     });
   });
 
@@ -161,30 +152,24 @@ describe("e2e tests for HttpPlugin", () => {
         .post("/api", reqPayloadStringified)
         .reply(200, resPayloadStringfified);
 
-      const response = await polywrapClient.query<{ post: Response }>({
+      const response = await polywrapClient.invoke<Response>({
         uri: "wrap://ens/http.polywrap.eth",
-        query: `
-          query {
-            post(
-              url: "http://www.example.com/api"
-              request: {
-                headers: [
-                  { key: "Content-Type", value: "application/json" },
-                ],
-                responseType: TEXT
-                body: "{\\"data\\":\\"test-request\\"}"
-              }
-            )
-          }
-        `,
+        method: "post",
+        args: {
+          url: "http://www.example.com/api",
+          request: {
+            headers: new Map([["Content-Type", "application/json"]]),
+            responseType: "TEXT",
+            body: `{\"data\":\"test-request\"}`,
+          },
+        },
       });
 
+      expect(response.error).toBeUndefined();
       expect(response.data).toBeDefined();
-      expect(response.errors).toBeUndefined();
-      expect(response.data?.post.status).toBe(200);
-      // expect(response.data?.get.statusText).toBe("OK")
-      expect(response.data?.post.body).toBe(resPayloadStringfified);
-      expect(response.data?.post.headers?.length).toEqual(2); // default reply headers
+      expect(response.data?.status).toBe(200);
+      expect(response.data?.body).toBe(resPayloadStringfified);
+      expect(response.data?.headers?.size).toEqual(2); // default reply headers
     });
 
     test("successful request with response type as TEXT", async () => {
@@ -193,27 +178,23 @@ describe("e2e tests for HttpPlugin", () => {
         .post("/api", "{data: 'test-request'}")
         .reply(200, '{data: "test-response"}');
 
-      const response = await polywrapClient.query<{ post: Response }>({
+      const response = await polywrapClient.invoke<Response>({
         uri: "wrap://ens/http.polywrap.eth",
-        query: `
-          query {
-            post(
-              url: "http://www.example.com/api"
-              request: {
-                responseType: TEXT
-                body: "{data: 'test-request'}"
-              }
-            )
-          }
-        `,
+        method: "post",
+        args: {
+          url: "http://www.example.com/api",
+          request: {
+            responseType: "TEXT",
+            body: "{data: 'test-request'}",
+          },
+        },
       });
 
+      expect(response.error).toBeUndefined();
       expect(response.data).toBeDefined();
-      expect(response.errors).toBeUndefined();
-      expect(response.data?.post.status).toBe(200);
-      // expect(response.data?.get.statusText).toBe("OK")
-      expect(response.data?.post.body).toBe('{data: "test-response"}');
-      expect(response.data?.post.headers?.length).toEqual(2); // default reply headers
+      expect(response.data?.status).toBe(200);
+      expect(response.data?.body).toBe('{data: "test-response"}');
+      expect(response.data?.headers?.size).toEqual(2); // default reply headers
     });
 
     test("successful request with response type as BINARY", async () => {
@@ -222,29 +203,25 @@ describe("e2e tests for HttpPlugin", () => {
         .post("/api", "{data: 'test-request'}")
         .reply(200, '{data: "test-response"}');
 
-      const response = await polywrapClient.query<{ post: Response }>({
+      const response = await polywrapClient.invoke<Response>({
         uri: "wrap://ens/http.polywrap.eth",
-        query: `
-          query {
-            post(
-              url: "http://www.example.com/api"
-              request: {
-                responseType: BINARY
-                body: "{data: 'test-request'}"
-              }
-            )
-          }
-        `,
+        method: "post",
+        args: {
+          url: "http://www.example.com/api",
+          request: {
+            responseType: "BINARY",
+            body: "{data: 'test-request'}",
+          },
+        },
       });
 
+      expect(response.error).toBeUndefined();
       expect(response.data).toBeDefined();
-      expect(response.errors).toBeUndefined();
-      expect(response.data?.post.status).toBe(200);
-      // expect(response.data?.get.statusText).toBe("OK")
-      expect(response.data?.post.body).toBe(
+      expect(response.data?.status).toBe(200);
+      expect(response.data?.body).toBe(
         Buffer.from('{data: "test-response"}').toString("base64")
       );
-      expect(response.data?.post.headers?.length).toEqual(2); // default reply headers
+      expect(response.data?.headers?.size).toEqual(2); // default reply headers
     });
 
     test("successful request with query params and request headers", async () => {
@@ -267,7 +244,7 @@ describe("e2e tests for HttpPlugin", () => {
             responseType: "TEXT",
             body: "{data: 'test-request'}",
             urlParams: new Map([["query", "foo"]]),
-            headers: [{ key: "X-Request-Header", value: "req-foo" }],
+            headers: new Map([["X-Request-Header", "req-foo"]]),
           },
         },
       });
@@ -276,11 +253,13 @@ describe("e2e tests for HttpPlugin", () => {
       expect(response.error).toBeUndefined();
       expect(response.data?.status).toBe(200);
       expect(response.data?.body).toBe('{data: "test-response"}');
-      expect(response.data?.headers).toEqual([
-        { key: "x-response-header", value: "resp-foo" },
-        { key: "access-control-allow-origin", value: "*" },
-        { key: "access-control-allow-credentials", value: "true" },
-      ]);
+      expect(response.data?.headers).toEqual(
+        new Map([
+          ["x-response-header", "resp-foo"],
+          ["access-control-allow-origin", "*"],
+          ["access-control-allow-credentials", "true"],
+        ])
+      );
     });
 
     test("failed request", async () => {
@@ -289,22 +268,19 @@ describe("e2e tests for HttpPlugin", () => {
         .post("/api")
         .reply(404);
 
-      const response = await polywrapClient.query<{ get: Response }>({
+      const response = await polywrapClient.invoke<Response>({
         uri: "wrap://ens/http.polywrap.eth",
-        query: `
-          query {
-            post(
-              url: "http://www.example.com/api"
-              request: {
-                responseType: TEXT
-              }
-            )
-          }
-        `,
+        method: "post",
+        args: {
+          url: "http://www.example.com/api",
+          request: {
+            responseType: "TEXT",
+          },
+        },
       });
 
-      expect(response.data?.get).toBeUndefined();
-      expect(response.errors).toBeDefined();
+      expect(response.data).toBeUndefined();
+      expect(response.error).toBeDefined();
     });
   });
 });

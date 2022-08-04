@@ -34,10 +34,10 @@ describe("test http plugin", () => {
         {
           url: "/api/test",
           request: {
-            headers: [
-              { key: "Accept", value: "application/json" },
-              { key: "X-Test-Header", value: "test-header-value" },
-            ],
+            headers: new Map([
+              ["Accept", "application/json"],
+              ["X-Test-Header", "test-header-value"],
+            ]),
             urlParams: new Map([["q", "test-param"]]),
             responseType: ResponseTypeEnum.TEXT,
           },
@@ -56,9 +56,9 @@ describe("test http plugin", () => {
 
       expect(response?.status).toBe(200);
       expect(response?.statusText).toBe("Ok");
-      expect(response?.headers).toStrictEqual([
-        { key: "Content-Type", value: "application/json; charset=utf-8" },
-      ]);
+      expect(response?.headers).toStrictEqual(
+        new Map([["Content-Type", "application/json; charset=utf-8"]])
+      );
       expect(response?.body).toBe("{result: 1001}");
     });
 
@@ -77,10 +77,10 @@ describe("test http plugin", () => {
         {
           url: "/api/test",
           request: {
-            headers: [
-              { key: "Accept", value: "application/json" },
-              { key: "X-Test-Header", value: "test-header-value" },
-            ],
+            headers: new Map([
+              ["Accept", "application/json"],
+              ["X-Test-Header", "test-header-value"],
+            ]),
             urlParams: new Map([["q", "test-param"]]),
             responseType: "BINARY",
           },
@@ -99,9 +99,9 @@ describe("test http plugin", () => {
 
       expect(response?.status).toBe(200);
       expect(response?.statusText).toBe("Ok");
-      expect(response?.headers).toStrictEqual([
-        { key: "Content-Type", value: "application/json; charset=utf-8" },
-      ]);
+      expect(response?.headers).toStrictEqual(
+        new Map([["Content-Type", "application/json; charset=utf-8"]])
+      );
       expect(response?.body).toBeTruthy();
       if (response?.body) {
         expect(Buffer.from(response.body, "base64").toString()).toBe(
@@ -129,10 +129,10 @@ describe("test http plugin", () => {
         {
           url: "/api/test",
           request: {
-            headers: [
-              { key: "Accept", value: "application/json" },
-              { key: "X-Test-Header", value: "test-header-value" },
-            ],
+            headers: new Map([
+              ["Accept", "application/json"],
+              ["X-Test-Header", "test-header-value"],
+            ]),
             urlParams: new Map([["q", "test-param"]]),
             body: "{request: 1001}",
             responseType: "TEXT",
@@ -152,9 +152,9 @@ describe("test http plugin", () => {
 
       expect(response?.status).toBe(200);
       expect(response?.statusText).toBe("Ok");
-      expect(response?.headers).toStrictEqual([
-        { key: "Content-Type", value: "application/json; charset=utf-8" },
-      ]);
+      expect(response?.headers).toStrictEqual(
+        new Map([["Content-Type", "application/json; charset=utf-8"]])
+      );
       expect(response?.body).toBe("{response: 1001}");
     });
 
@@ -173,10 +173,10 @@ describe("test http plugin", () => {
         {
           url: "/api/test",
           request: {
-            headers: [
-              { key: "Accept", value: "application/json" },
-              { key: "X-Test-Header", value: "test-header-value" },
-            ],
+            headers: new Map([
+              ["Accept", "application/json"],
+              ["X-Test-Header", "test-header-value"],
+            ]),
             urlParams: new Map([["q", "test-param"]]),
             body: "{request: 1001}",
             responseType: "BINARY",
@@ -196,9 +196,9 @@ describe("test http plugin", () => {
 
       expect(response?.status).toBe(200);
       expect(response?.statusText).toBe("Ok");
-      expect(response?.headers).toStrictEqual([
-        { key: "Content-Type", value: "application/json; charset=utf-8" },
-      ]);
+      expect(response?.headers).toStrictEqual(
+        new Map([["Content-Type", "application/json; charset=utf-8"]])
+      );
       expect(response?.body).toBeTruthy();
       if (response?.body) {
         expect(Buffer.from(response.body, "base64").toString()).toBe(

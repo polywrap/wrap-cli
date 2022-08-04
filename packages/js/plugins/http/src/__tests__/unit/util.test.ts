@@ -11,10 +11,12 @@ describe("converting axios response", () => {
       config: { responseType: "text" },
     });
 
-    expect(response.headers).toStrictEqual([
-      { key: "Accept", value: "application-json" },
-      { key: "X-Header", value: "test-value" },
-    ]);
+    expect(response.headers).toStrictEqual(
+      new Map([
+        ["Accept", "application-json"],
+        ["X-Header", "test-value"],
+      ])
+    );
     expect(response.status).toBe(200);
     expect(response.statusText).toBe("Ok");
     expect(response.body).toBe("body-content");
@@ -33,11 +35,13 @@ describe("converting axios response", () => {
       config: { responseType: "text" },
     });
 
-    expect(response.headers).toStrictEqual([
-      { key: "Accept", value: "application-json" },
-      { key: "X-Header", value: "test-value" },
-      { key: "set-cookie", value: "key=val; key2=val2;" },
-    ]);
+    expect(response.headers).toStrictEqual(
+      new Map([
+        ["Accept", "application-json"],
+        ["X-Header", "test-value"],
+        ["set-cookie", "key=val; key2=val2;"],
+      ])
+    );
     expect(response.status).toBe(200);
     expect(response.statusText).toBe("Ok");
     expect(response.body).toBe("body-content");
@@ -52,10 +56,12 @@ describe("converting axios response", () => {
       config: { responseType: "arraybuffer" },
     });
 
-    expect(response.headers).toStrictEqual([
-      { key: "Accept", value: "application-json" },
-      { key: "X-Header", value: "test-value" },
-    ]);
+    expect(response.headers).toStrictEqual(
+      new Map([
+        ["Accept", "application-json"],
+        ["X-Header", "test-value"],
+      ])
+    );
     expect(response.status).toBe(200);
     expect(response.statusText).toBe("Ok");
     expect(response.body).toBe(Buffer.from("body-content").toString("base64"));
@@ -65,10 +71,10 @@ describe("converting axios response", () => {
 describe("creating axios config", () => {
   test("with headers", () => {
     const config = toAxiosRequestConfig({
-      headers: [
-        { key: "Accept", value: "application-json" },
-        { key: "X-Header", value: "test-value" },
-      ],
+      headers: new Map([
+        ["Accept", "application-json"],
+        ["X-Header", "test-value"],
+      ]),
       responseType: "TEXT",
       body: "body-content",
     });
