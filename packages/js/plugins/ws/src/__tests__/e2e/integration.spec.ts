@@ -119,7 +119,7 @@ describe("e2e tests for WsPlugin", () => {
         method: "get",
         args: {
           url: "ws://localhost:1234",
-	  timeout: 20
+          timeout: 20
         }
       });
 

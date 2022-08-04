@@ -15,6 +15,7 @@ const defaultPlugins = [
   "wrap://ens/fs.polywrap.eth",
   "wrap://ens/fs-resolver.polywrap.eth",
   "wrap://ens/ipfs-resolver.polywrap.eth",
+  "wrap://ens/ws.polywrap.eth",
 ];
 
 describe("plugin-wrapper", () => {
