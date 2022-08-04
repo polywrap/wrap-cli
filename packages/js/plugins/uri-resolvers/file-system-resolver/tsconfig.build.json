@@ -10,7 +10,6 @@
       "dom"
     ],
     "moduleResolution": "node",
-    "resolveJsonModule": true,
     "declaration": true,
     "preserveSymlinks": true,
     "preserveWatchOutput": true,
