@@ -3,19 +3,28 @@ sequences:
   - name: test
     config:
       gatewayUri: $IPFS_GATEWAY_URI
+      ensRegistryAddress: $ENS_REG_ADDR
+      ensRegistrarAddress: $ENS_REGISTRAR_ADDR
+      ensResolverAddress: $ENS_RESOLVER_ADDR
     steps:
       - name: ipfs_deploy
         package: ipfs
         uri: fs/./build
+      - name: ens_register
+        package: ens-recursive-name-register
+        uri: wrap://ens/foo
       - name: from_deploy
-        package: local-dev-ens
+        package: ens
         uri: $$ipfs_deploy
         config:
           domainName: foo
           ports:
             ethereum: 8545
+      - name: ens_register2
+        package: ens-recursive-name-register
+        uri: wrap://ens/test2.eth
       - name: from_deploy2
-        package: local-dev-ens
+        package: ens
         uri: $$ipfs_deploy
         config:
           domainName: test2.eth

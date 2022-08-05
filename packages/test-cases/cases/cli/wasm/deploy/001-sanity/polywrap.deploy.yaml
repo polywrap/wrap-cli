@@ -4,8 +4,16 @@ sequences:
     config:
       provider: 'http://localhost:8545'
       ensRegistryAddress: $ENS_REG_ADDR
+      ensRegistrarAddress: $ENS_REGISTRAR_ADDR
+      ensResolverAddress: $ENS_RESOLVER_ADDR
       gatewayUri: $IPFS_GATEWAY_URI
     steps:
+      - name: ens_register
+        package: ens-recursive-name-register
+        uri: wrap://ens/$DOMAIN_NAME
+      - name: ens_register2
+        package: ens-recursive-name-register
+        uri: wrap://ens/test2.eth
       - name: ipfs_deploy
         package: ipfs
         uri: wrap://fs/./build

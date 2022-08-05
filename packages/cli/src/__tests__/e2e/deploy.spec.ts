@@ -8,9 +8,6 @@ import {
   providers
 } from "@polywrap/test-env-js";
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
-import { PolywrapClient } from "@polywrap/client-js";
-import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
-import { Wallet } from "@ethersproject/wallet";
 import path from "path";
 import fs from "fs";
 import yaml from "js-yaml";
@@ -35,77 +32,27 @@ const testCaseRoot = path.join(GetPathToCliTestFiles(), "wasm/deploy");
   const getTestCaseDir = (index: number) =>
     path.join(testCaseRoot, testCases[index]);
 
-const setup = async (domainNames: string[]) => {
+const setup = async () => {
   await stopTestEnvironment();
   await initTestEnvironment();
 
   // Wait a little longer just in case
   await new Promise((resolve) => setTimeout(resolve, 3000));
 
-  const ensAddress = ensAddresses.ensAddress
-  const resolverAddress = ensAddresses.resolverAddress
-  const registrarAddress = ensAddresses.registrarAddress
-  const signer = new Wallet("0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d");
-
   // Setup environment variables
   process.env = {
     ...process.env,
     IPFS_GATEWAY_URI: providers.ipfs,
     DOMAIN_NAME: "test1.eth",
-    ENS_REG_ADDR: ensAddress
+    ENS_REG_ADDR: ensAddresses.ensAddress,
+    ENS_REGISTRAR_ADDR: ensAddresses.registrarAddress,
+    ENS_RESOLVER_ADDR: ensAddresses.resolverAddress,
   };
-
-  const ethereumPluginUri = "wrap://ens/ethereum.polywrap.eth"
-  const client = new PolywrapClient({
-    plugins: [
-      {
-        uri: ethereumPluginUri,
-        plugin: ethereumPlugin({
-          networks: {
-            testnet: {
-              provider: providers.ethereum,
-              signer
-            }
-          },
-          defaultNetwork: "testnet"
-        }),
-      }
-    ],
-  });
-
-  const ensWrapperUri = `fs/${path.join(
-    path.dirname(require.resolve("@polywrap/test-env-js")),
-    "wrappers", "ens"
-  )}`;
-
-  for await (const domainName of domainNames) {
-    const result = await client.invoke({
-      uri: ensWrapperUri,
-      method: "registerDomainAndSubdomainsRecursively",
-      args: {
-        domain: domainName,
-        owner: signer.address,
-        registrarAddress,
-        registryAddress: ensAddress,
-        resolverAddress,
-        ttl: "0",
-        connection: {
-          networkNameOrChainId: "testnet",
-        },
-      },
-    });
-
-    if (result.error) {
-      throw Error(
-        `Failed to register ${domainName}: ${result.error.message}`
-      );
-    }
-  }
 }
 
 describe("e2e tests for deploy command", () => {
   beforeAll(async () => {
-    await setup(["test1.eth", "test2.eth", "test3.eth"])
+    await setup()
 
     for (let i = 0; i < testCases.length; ++i) {
       await runCLI(

@@ -7,8 +7,6 @@ import axios from "axios";
 import fs from "fs";
 import yaml from "js-yaml";
 import { Uri } from "@polywrap/core-js";
-import { PolywrapClient } from "@polywrap/client-js";
-import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
 import { deserializePolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 
 export const ensAddresses = {
@@ -250,79 +248,7 @@ export async function buildAndDeployWrapper({
 
   await buildWrapper(wrapperAbsPath);
 
-  // register ENS domain
-  const ensWrapperUri = `fs/${__dirname}/wrappers/ens`;
-
-  const ethereumPluginUri = "wrap://ens/ethereum.polywrap.eth";
-
-  const client = new PolywrapClient({
-    plugins: [
-      {
-        uri: ethereumPluginUri,
-        plugin: ethereumPlugin({
-          networks: {
-            testnet: {
-              provider: ethereumProvider,
-            },
-          },
-          defaultNetwork: "testnet",
-        }),
-      },
-    ],
-  });
-
-  const { data: signerAddress } = await client.invoke<string>({
-    method: "getSignerAddress",
-    uri: ethereumPluginUri,
-    args: {
-      connection: {
-        networkNameOrChainId: "testnet",
-      },
-    },
-  });
-
-  if (!signerAddress) {
-    throw new Error("Could not get signer");
-  }
-
-  const { data: registerData, error } = await client.invoke<{ hash: string }>({
-    method: "registerDomainAndSubdomainsRecursively",
-    uri: ensWrapperUri,
-    args: {
-      domain: wrapperEns,
-      owner: signerAddress,
-      resolverAddress: ensAddresses.resolverAddress,
-      ttl: "0",
-      registrarAddress: ensAddresses.registrarAddress,
-      registryAddress: ensAddresses.ensAddress,
-      connection: {
-        networkNameOrChainId: "testnet",
-      },
-    },
-  });
-
-  if (!registerData) {
-    throw new Error(
-      `Could not register domain '${wrapperEns}'` +
-        (error ? `\nError: ${error.message}` : "")
-    );
-  }
-
-  await client.invoke({
-    method: "awaitTransaction",
-    uri: ethereumPluginUri,
-    args: {
-      txHash: registerData.hash,
-      confirmations: 1,
-      timeout: 15000,
-      connection: {
-        networkNameOrChainId: "testnet",
-      },
-    },
-  });
-
   // manually configure manifests
-
   const { __type, ...polywrapManifest } = deserializePolywrapManifest(
     fs.readFileSync(manifestPath, "utf-8")
   );
@@ -342,7 +268,18 @@ export async function buildAndDeployWrapper({
       sequences: [
         {
           name: "buildAndDeployWrapper",
+          config: {
+            provider: ethereumProvider,
+            ensRegistryAddress: ensAddresses.ensAddress,
+            ensRegistrarAddress: ensAddresses.registrarAddress,
+            ensResolverAddress: ensAddresses.resolverAddress,
+          },
           steps: [
+            {
+              name: "registerName",
+              package: "ens-recursive-name-register",
+              uri: `wrap://ens/${wrapperEns}`,
+            },
             {
               name: "ipfsDeploy",
               package: "ipfs",
@@ -357,8 +294,6 @@ export async function buildAndDeployWrapper({
               uri: "$$ipfsDeploy",
               config: {
                 domainName: wrapperEns,
-                provider: ethereumProvider,
-                ensRegistryAddress: ensAddresses.ensAddress,
               },
             },
           ],

@@ -8,7 +8,7 @@ sequences:
         package: ipfs
         uri: wrap://fs/./build
       - name: from_deploy
-        package: local-dev-ens
+        package: ens
         uri: $$ipfs_deploy
         config:
           domainName: true
