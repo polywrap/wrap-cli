@@ -165,6 +165,42 @@ describe("e2e tests for deploy command", () => {
         "name": "fs_to_ens",
         "steps": [
           {
+            "name": "ens_register",
+            "id": "fs_to_ens.ens_register",
+            "input": {
+              "_config": {
+                "uri": "wrap://ens/test1.eth",
+                "authority": "ens",
+                "path": "test1.eth"
+              }
+            },
+            "result": {
+              "_config": {
+                "uri": "wrap://ens/test1.eth",
+                "authority": "ens",
+                "path": "test1.eth"
+              }
+            }
+          },
+          {
+            "name": "ens_register2",
+            "id": "fs_to_ens.ens_register2",
+            "input": {
+              "_config": {
+                "uri": "wrap://ens/test2.eth",
+                "authority": "ens",
+                "path": "test2.eth"
+              }
+            },
+            "result": {
+              "_config": {
+                "uri": "wrap://ens/test2.eth",
+                "authority": "ens",
+                "path": "test2.eth"
+              }
+            }
+          },
+          {
             "name": "ipfs_deploy",
             "id": "fs_to_ens.ipfs_deploy",
             "input": {
@@ -223,6 +259,24 @@ describe("e2e tests for deploy command", () => {
       {
         "name": "ipfs_to_ens",
         "steps": [
+          {
+            "name": "ens_register",
+            "id": "ipfs_to_ens.ens_register",
+            "input": {
+              "_config": {
+                "uri": "wrap://ens/test3.eth",
+                "authority": "ens",
+                "path": "test3.eth"
+              }
+            },
+            "result": {
+              "_config": {
+                "uri": "wrap://ens/test3.eth",
+                "authority": "ens",
+                "path": "test3.eth"
+              }
+            }
+          },
           {
             "name": "from_uri",
             "id": "ipfs_to_ens.from_uri",
