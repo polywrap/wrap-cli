@@ -7,7 +7,6 @@ import {
   parseWasmManifestFileOption,
   PolywrapProject,
   Sequence,
-  SequenceResult,
   Step,
 } from "../lib";
 
@@ -89,11 +88,14 @@ async function run(options: DeployCommandOptions): Promise<void> {
 
   await project.cacheDeployModules(packageNames);
 
-  const packageMap: Record<string, DeployPackage> = {};
+  const packageMapEntries = await Promise.all(
+    packageNames.map(async (packageName) => {
+      const deployerPackage = await project.getDeployModule(packageName);
+      return [packageName, deployerPackage];
+    })
+  );
 
-  for await (const packageName of packageNames) {
-    packageMap[packageName] = await project.getDeployModule(packageName);
-  }
+  const packageMap = Object.fromEntries(packageMapEntries);
 
   const stepToPackageMap: Record<
     string,
@@ -127,12 +129,9 @@ async function run(options: DeployCommandOptions): Promise<void> {
     });
   });
 
-  const sequenceResults: SequenceResult[] = [];
-
-  for await (const sequence of sequences) {
-    const sequenceResult = await sequence.run();
-    sequenceResults.push(sequenceResult);
-  }
+  const sequenceResults = await Promise.all(
+    sequences.map((sequence) => sequence.run())
+  );
 
   if (outputFile) {
     const outputFileExt = nodePath.extname(outputFile).substring(1);
