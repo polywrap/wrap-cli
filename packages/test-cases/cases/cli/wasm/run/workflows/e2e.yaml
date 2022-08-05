@@ -1,4 +1,5 @@
 name: simple-storage
+format: 0.1
 jobs:
   cases:
     steps:

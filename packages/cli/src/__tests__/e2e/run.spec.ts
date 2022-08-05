@@ -59,6 +59,18 @@ describe("sanity tests for workflow command", () => {
     expect(stdout).toEqual(``);
   });
 
+  it("Should throw error for invalid workflow-string", async () => {
+    const { exitCode, stdout, stderr } = await runCLI({
+      args: ["run", "./workflows/e2e.invalid.json", "-c", "./workflows/config.ts"],
+      cwd: testCaseRoot,
+      cli: polywrapCli,
+    });
+
+    expect(exitCode).toEqual(1);
+    expect(stderr).toContain("error: invalid workflow string");
+    expect(stdout).toEqual(``);
+  });
+
   describe("missing option arguments", () => {
     const missingOptionArgs = {
       "--validate-script": "-v, --validate-script <cue-file>",

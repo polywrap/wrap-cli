@@ -1,17 +1,19 @@
 import {
   Client,
   executeMaybeAsyncFunction,
-  Job,
   JobResult,
   JobStatus,
   MaybeAsync,
   Uri,
 } from "../types";
+import {
+  Jobs
+} from "@polywrap/workflow-manifest-types-js";
 
-export interface JobRunOptions<TUri extends Uri | string = string> {
+export interface JobRunOptions {
   relativeId: string;
   parentId: string;
-  jobs: Job<TUri>;
+  jobs: Jobs;
 }
 
 type DataOrError = "data" | "error";
@@ -32,7 +34,7 @@ export class JobRunner<
     this.jobOutput = new Map();
   }
 
-  async run(opts: JobRunOptions<TUri>): Promise<void> {
+  async run(opts: JobRunOptions): Promise<void> {
     const { relativeId, parentId, jobs } = opts;
 
     if (relativeId) {

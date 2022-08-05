@@ -361,7 +361,7 @@ export class PolywrapClient implements Client {
   public async run<
     TData extends Record<string, unknown> = Record<string, unknown>,
     TUri extends Uri | string = string
-  >(options: RunOptions<TData, TUri>): Promise<void> {
+  >(options: RunOptions<TData>): Promise<void> {
     const { workflow, onExecution } = options;
     const ids = options.ids ? options.ids : Object.keys(workflow.jobs);
     const jobRunner = new JobRunner<TData, TUri>(this, onExecution);

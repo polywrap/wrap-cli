@@ -7,7 +7,8 @@ import {
   validateOutput,
 } from "../lib";
 
-import { Workflow, JobResult, JobStatus } from "@polywrap/core-js";
+import { JobResult, JobStatus } from "@polywrap/core-js";
+import { PolywrapWorkflow } from "@polywrap/workflow-manifest-types-js";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import path from "path";
 import yaml from "js-yaml";
@@ -73,7 +74,7 @@ const _run = async (workflowPath: string, options: WorkflowCommandOptions) => {
       : JSON.parse;
   }
 
-  const workflow: Workflow = getParser(workflowPath)(
+  const workflow: PolywrapWorkflow = getParser(workflowPath)(
     fs.readFileSync(workflowPath).toString()
   );
   const workflowOutput: (JobResult & { id: string })[] = [];
