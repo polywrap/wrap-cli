@@ -1,8 +1,10 @@
 import fs from "fs";
 import path from "path";
-import { execSync } from "child_process";
+import { exec } from "child_process";
 
-describe("templates", () => {
+jest.setTimeout(300000);
+
+describe("Templates", () => {
   const rootDir = __dirname;
 
   // Mapping of all project types (app, plugin, etc) to all supported languages
@@ -78,28 +80,22 @@ describe("templates", () => {
 
       // run all commands
       for (const command of commands) {
-        test(`run-tests: ${projectType}/${language} > ${command}`, async () => {
-          const runCommandFn = () => {
-            try {
-              const output = execSync(command, {
-                cwd: path.join(rootDir, projectType, language),
-              }).toString();
-              console.log(output);
-            } catch (e) {
-              if (e.stdout) {
-                e.stdout = e.stdout.toString();
-              }
-              if (e.stderr) {
-                e.stderr = e.stderr.toString();
-              }
-              console.error(`status: ${e.status}`);
-              console.error(`stdout: ${e.stdout}`);
-              console.error(`stderr: ${e.stderr}`);
-              throw e;
-            }
-          };
+        test(`${projectType}/${language} > ${command}`, async () => {
+          const execPromise = new Promise<{
+            error: Error | null;
+            stdout: string;
+            stderr: string;
+          }>((resolve) => {
+            exec(
+              command,
+              { cwd: path.join(rootDir, projectType, language) },
+              (error, stdout, stderr) => resolve({ error, stdout, stderr })
+            );
+          });
 
-          expect(runCommandFn).not.toThrowError();
+          const execResult = await execPromise;
+
+          expect(execResult.error).toBeNull();
         });
       }
     }
