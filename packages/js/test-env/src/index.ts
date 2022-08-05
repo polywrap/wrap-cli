@@ -338,26 +338,32 @@ export async function buildAndDeployWrapper({
   fs.writeFileSync(
     tempDeployManifestPath,
     yaml.dump({
-      format: "0.1.0",
-      stages: {
-        ipfsDeploy: {
-          package: "ipfs",
-          uri: `fs/${wrapperAbsPath}/build`,
-          config: {
-            gatewayUri: ipfsProvider,
-          },
+      format: "0.2",
+      sequences: [
+        {
+          name: "buildAndDeployWrapper",
+          steps: [
+            {
+              name: "ipfsDeploy",
+              package: "ipfs",
+              uri: `fs/${wrapperAbsPath}/build`,
+              config: {
+                gatewayUri: ipfsProvider,
+              },
+            },
+            {
+              name: "ensPublish",
+              package: "ens",
+              uri: "$$ipfsDeploy",
+              config: {
+                domainName: wrapperEns,
+                provider: ethereumProvider,
+                ensRegistryAddress: ensAddresses.ensAddress,
+              },
+            },
+          ],
         },
-        ensPublish: {
-          package: "ens",
-          // eslint-disable-next-line @typescript-eslint/naming-convention
-          depends_on: "ipfsDeploy",
-          config: {
-            domainName: wrapperEns,
-            provider: ethereumProvider,
-            ensRegistryAddress: ensAddresses.ensAddress,
-          },
-        },
-      },
+      ],
     })
   );
 
