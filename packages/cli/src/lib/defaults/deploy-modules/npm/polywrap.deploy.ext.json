@@ -1,0 +1,12 @@
+{
+  "id": "DeployManifest_NPMDeployer_WasmAsExt",
+  "type": "object",
+  "required": [
+    "npmToken"
+  ],
+  "properties": {
+    "npmToken": {
+      "type": "string"
+    }
+  }
+}
