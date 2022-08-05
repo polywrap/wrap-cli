@@ -27,6 +27,9 @@ type DeployCommandOptions = {
   verbose?: boolean;
 };
 
+type ManifestSequence = DeployManifest["sequences"][number];
+type ManifestStep = ManifestSequence["steps"][number];
+
 export const deploy: Command = {
   setup: (program: Program) => {
     program
@@ -69,17 +72,14 @@ async function run(options: DeployCommandOptions): Promise<void> {
     throw new Error("No deploy manifest found.");
   }
 
-  const allStepsFromAllSequences = Object.entries(
-    deployManifest.sequences
-  ).flatMap(([sequenceName, sequence]) => {
-    return Object.entries(sequence.steps).map(([stepName, step]) => {
-      return {
-        sequenceName,
-        name: stepName,
+  const allStepsFromAllSequences = deployManifest.sequences.flatMap(
+    (sequence) => {
+      return sequence.steps.map((step) => ({
+        sequenceName: sequence.name,
         ...step,
-      };
-    });
-  });
+      }));
+    }
+  );
 
   const packageNames = [
     ...new Set(allStepsFromAllSequences.map((step) => step.package)),
@@ -109,27 +109,23 @@ async function run(options: DeployCommandOptions): Promise<void> {
 
   validateManifestWithExts(deployManifest, stepToPackageMap);
 
-  const sequences = Object.entries(deployManifest.sequences).map(
-    ([sequenceName, sequenceValue]) => {
-      const steps = Object.entries(sequenceValue.steps).map(
-        ([stepName, stepValue]) => {
-          return new Step({
-            name: stepName,
-            uriOrStepResult: stepValue.uri,
-            deployer: stepToPackageMap[stepName].deployer,
-            config: stepValue.config ?? {},
-          });
-        }
-      );
-
-      return new Sequence({
-        name: sequenceName,
-        steps,
-        config: sequenceValue.config ?? {},
-        printer: print,
+  const sequences = deployManifest.sequences.map((sequence) => {
+    const steps = sequence.steps.map((step) => {
+      return new Step({
+        name: step.name,
+        uriOrStepResult: step.uri,
+        deployer: stepToPackageMap[step.name].deployer,
+        config: step.config ?? {},
       });
-    }
-  );
+    });
+
+    return new Sequence({
+      name: sequence.name,
+      steps,
+      config: sequence.config ?? {},
+      printer: print,
+    });
+  });
 
   const sequenceResults: SequenceResult[] = [];
 
@@ -182,13 +178,26 @@ function validateManifestWithExts(
   deployManifest: DeployManifest,
   stepToPackageMap: Record<string, DeployPackage & { sequenceName: string }>
 ) {
-  const errors = Object.entries(stepToPackageMap).flatMap(([stepName, step]) =>
-    step.manifestExt
-      ? validate(
-          deployManifest.sequences[step.sequenceName].steps[stepName].config,
-          step.manifestExt
-        ).errors
-      : []
+  const errors = Object.entries(stepToPackageMap).flatMap(
+    ([stepName, step]) => {
+      const sequence = deployManifest.sequences.find(
+        (seq) => seq.name === step.sequenceName
+      ) as ManifestSequence;
+
+      const stepToValidate = sequence.steps.find(
+        (s) => s.name === stepName
+      ) as ManifestStep;
+
+      return step.manifestExt
+        ? validate(
+            {
+              ...sequence.config,
+              ...stepToValidate.config,
+            },
+            step.manifestExt
+          ).errors
+        : [];
+    }
   );
 
   if (errors.length) {

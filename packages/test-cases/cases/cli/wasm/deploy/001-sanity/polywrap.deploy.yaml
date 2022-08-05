@@ -1,26 +1,30 @@
-format: 0.1.0
-stages:
-  ipfs_deploy:
-    package: ipfs
-    uri: fs/./build
-  from_deploy:
-    package: ens
-    depends_on: ipfs_deploy
+format: "0.2"
+sequences:
+  - name: fs_to_ens
     config:
-      domainName: $DOMAIN_NAME
       provider: 'http://localhost:8545'
       ensRegistryAddress: $ENS_REG_ADDR
-  from_deploy2:
-    package: ens
-    depends_on: ipfs_deploy
-    config:
-      domainName: test2.eth
-      provider: 'http://localhost:8545'
-      ensRegistryAddress: $ENS_REG_ADDR
-  from_uri:
-    package: ens
-    uri: ipfs/QmVdDR6QtigTt38Xwpj2Ki73X1AyZn5WRCreBCJq1CEtpF
-    config:
-      domainName: test3.eth
-      provider: 'http://localhost:8545'
-      ensRegistryAddress: $ENS_REG_ADDR
+      gatewayUri: $IPFS_GATEWAY_URI
+    steps:
+      - name: ipfs_deploy
+        package: ipfs
+        uri: wrap://fs/./build
+      - name: from_deploy
+        package: ens
+        uri: $$ipfs_deploy
+        config:
+          domainName: $DOMAIN_NAME
+      - name: from_deploy2
+        package: ens
+        uri: $$ipfs_deploy
+        config:
+          domainName: test2.eth
+  - name: ipfs_to_ens
+    steps:
+      - name: from_uri
+        package: ens
+        uri: wrap://ipfs/QmVdDR6QtigTt38Xwpj2Ki73X1AyZn5WRCreBCJq1CEtpF
+        config:
+          domainName: test3.eth
+          provider: 'http://localhost:8545'
+          ensRegistryAddress: $ENS_REG_ADDR

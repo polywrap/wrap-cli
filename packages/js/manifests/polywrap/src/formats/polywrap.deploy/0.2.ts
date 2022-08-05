@@ -11,48 +11,43 @@ export interface DeployManifest {
    * Polywrap deployment manifest format version.
    */
   format: "0.2.0" | "0.2";
+  /**
+   * Sequences of deployment steps
+   */
   sequences: {
     /**
-     * Sequences of deployment steps
-     *
-     * This interface was referenced by `undefined`'s JSON-Schema definition
-     * via the `patternProperty` "^.*$".
+     * Name of the sequence
      */
-    [k: string]: {
+    name: string;
+    /**
+     * Deployment steps
+     */
+    steps: {
       /**
-       * Name of the deploy step.
+       * Name of the step
        */
-      steps: {
-        /**
-         * Deployment step
-         *
-         * This interface was referenced by `undefined`'s JSON-Schema definition
-         * via the `patternProperty` "^.*$".
-         */
-        [k: string]: {
-          /**
-           * Name of the deploy step.
-           */
-          package: string;
-          /**
-           * Step-level custom configuration.
-           */
-          config?: {
-            [k: string]: unknown;
-          };
-          /**
-           * URI to pass into the deploy step.
-           */
-          uri: string;
-        };
-      };
+      name: string;
       /**
-       * Sequence-level custom configuration.
+       * Name of the deployer package.
+       */
+      package: string;
+      /**
+       * Step-level custom configuration.
        */
       config?: {
         [k: string]: unknown;
       };
+      /**
+       * URI to pass into the deploy step.
+       */
+      uri: string | string;
+    }[];
+    /**
+     * Sequence-level custom configuration.
+     */
+    config?: {
+      [k: string]: unknown;
     };
-  };
+  }[];
   __type: "DeployManifest";
 }

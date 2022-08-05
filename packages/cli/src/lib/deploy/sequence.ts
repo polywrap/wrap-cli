@@ -54,16 +54,16 @@ export class Sequence {
 
   public async run(): Promise<SequenceResult> {
     this._printer.info(
-      `\nExecuting '${this.name}' deployment sequence: \n${this.steps
+      `\n\nExecuting '${this.name}' deployment sequence: \n${this.steps
         .map((s) => `\n- ${s.name}`)
-        .join("")}`
+        .join("")}\n\n`
     );
 
     for await (const step of this.steps) {
       const uri = this._getUriArgument(step.uriOrStepResult);
 
       this._printer.info(
-        `Executing step: '${this.name}', with URI: '${uri.toString()}'`
+        `Executing step: '${step.name}', with URI: '${uri.toString()}'`
       );
 
       try {
@@ -80,16 +80,16 @@ export class Sequence {
 
         this._printer.success(
           `Successfully executed step '${
-            this.name
+            step.name
           }'. Result: '${result.toString()}'`
         );
       } catch (e) {
-        throw new Error(`Failed to execute stage '${this.name}'. Error: ${e}`);
+        throw new Error(`Failed to execute step '${step.name}'. Error: ${e}`);
       }
     }
 
     this._printer.info(
-      `\nSuccessfully executed '${this.name}' deployment sequence`
+      `\n\nSuccessfully executed '${this.name}' deployment sequence\n\n`
     );
 
     return {

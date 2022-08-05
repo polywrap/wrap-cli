@@ -13,21 +13,17 @@ class SequenceTree {
 
   constructor(
     public name: string,
-    public stepInfo: NewManifest["sequences"][string]["steps"][string]
+    public stepInfo: NewManifest["sequences"][number]["steps"][number]
   ) {}
 
   public addNext(handler: SequenceTree): void {
     this.nextTrees.push(handler);
   }
 
-  public getSteps(): NewManifest["sequences"][string]["steps"] {
+  public getSteps(): NewManifest["sequences"][number]["steps"] {
     return this.nextTrees.reduce((acc, tree) => {
-      acc[tree.name] = tree.stepInfo;
-      return {
-        ...acc,
-        ...tree.getSteps(),
-      };
-    }, {} as NewManifest["sequences"][string]["steps"]);
+      return [...acc, tree.stepInfo, ...tree.getSteps()];
+    }, [] as NewManifest["sequences"][number]["steps"]);
   }
 }
 
@@ -41,6 +37,7 @@ export function migrate(old: OldManifest): NewManifest {
 
   Object.entries(old.stages).forEach(([stageName, stageValue]) => {
     trees[stageName] = new SequenceTree(stageName, {
+      name: stageName,
       package: stageValue.package,
       config: stageValue.config,
       uri: stageValue.uri ?? `$${stageValue.depends_on}`,
@@ -61,12 +58,13 @@ export function migrate(old: OldManifest): NewManifest {
     }
   });
 
-  const sequences: NewManifest["sequences"] = {};
+  const sequences: NewManifest["sequences"] = [];
 
   roots.forEach((root) => {
-    sequences[root.name] = {
+    sequences.push({
+      name: root.name,
       steps: root.getSteps(),
-    };
+    });
   });
 
   return {
