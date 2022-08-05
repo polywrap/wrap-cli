@@ -2,7 +2,7 @@ import { exec, ExecException } from "child_process";
 
 export async function runCommand(
   command: string,
-  quiet = true,
+  quiet = false,
   env: Record<string, string> | undefined = undefined
 ): Promise<{ stdout: string; stderr: string }> {
   if (!quiet) {
@@ -16,7 +16,7 @@ export async function runCommand(
       stderr: string
     ) => {
       if (err) {
-        reject(stderr);
+        reject({ stdout, stderr });
       } else {
         resolve({ stdout, stderr });
       }
@@ -40,7 +40,7 @@ export async function runCommand(
       });
 
       childObj.stderr?.on("data", (data) => {
-        console.log(data.toString());
+        console.error(data.toString());
       });
     }
   });

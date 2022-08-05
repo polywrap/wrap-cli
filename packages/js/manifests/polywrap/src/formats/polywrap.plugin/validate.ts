@@ -9,7 +9,7 @@ import {
   PluginManifestFormats
 } from ".";
 
-import schema_0_1 from "@polywrap/polywrap-manifest-schemas/formats/polywrap.plugin/0.1.json";
+import PluginManifestSchema_0_1 from "@polywrap/polywrap-manifest-schemas/formats/polywrap.plugin/0.1.json";
 
 import {
   Schema,
@@ -24,8 +24,8 @@ type PluginManifestSchemas = {
 
 const schemas: PluginManifestSchemas = {
   // NOTE: Patch fix for backwards compatability
-  "0.1.0": schema_0_1,
-  "0.1": schema_0_1,
+  "0.1.0": PluginManifestSchema_0_1,
+  "0.1": PluginManifestSchema_0_1,
 };
 
 const validator = new Validator();
