@@ -12,14 +12,13 @@ import {
   PluginProject,
   parseClientConfigOption,
   defaultPluginManifest,
-} from "../lib";
-import { Command, Program } from "./types";
-import {
   parseDirOption,
   parseDocgenManifestFileOption,
-} from "../lib/option-parsers";
+} from "../lib";
+import { Command, Program } from "./types";
 import { scriptPath as docusaurusScriptPath } from "../lib/docgen/docusaurus";
 import { scriptPath as jsdocScriptPath } from "../lib/docgen/jsdoc";
+import { scriptPath as schemaScriptPath } from "../lib/docgen/schema";
 
 import path from "path";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
@@ -27,6 +26,7 @@ import chalk from "chalk";
 import { Argument } from "commander";
 
 const commandToPathMap: Record<string, string> = {
+  schema: schemaScriptPath,
   docusaurus: docusaurusScriptPath,
   jsdoc: jsdocScriptPath,
 };
@@ -46,11 +46,15 @@ type DocgenCommandOptions = {
 };
 
 enum Actions {
+  SCHEMA = "schema",
   DOCUSAURUS = "docusaurus",
   JSDOC = "jsdoc",
 }
 
 const argumentsDescription = `
+  ${chalk.bold(
+    Actions.SCHEMA
+  )}      ${intlMsg.commands_docgen_options_schema()}
   ${chalk.bold(
     Actions.DOCUSAURUS
   )}    ${intlMsg.commands_docgen_options_markdown({
@@ -72,6 +76,7 @@ export const docgen: Command = {
       .usage("<action> [options]")
       .addArgument(
         new Argument("<action>", argumentsDescription).choices([
+          Actions.SCHEMA,
           Actions.DOCUSAURUS,
           Actions.JSDOC,
         ])
