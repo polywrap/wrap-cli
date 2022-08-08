@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { exec } from "child_process";
 
-jest.setTimeout(300000);
+jest.setTimeout(600000);
 
 describe("Templates", () => {
   const rootDir = __dirname;
