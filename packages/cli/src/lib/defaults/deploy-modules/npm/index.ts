@@ -22,10 +22,23 @@ class NPMDeployer implements Deployer {
     const tarball = await pacote.tarball(path);
     const manifest = await pacote.manifest(path);
 
-    const response = await publish(JSON.parse(manifest._resolved), tarball, {
-      npmVersion: manifest.version,
-      token: config.npmToken,
-    });
+    if (manifest.bundledDependencies) {
+      throw new Error(
+        "NPM Deployer error: bundled dependencies are not supported"
+      );
+    }
+
+    const response = await publish(
+      {
+        ...manifest,
+        bundledDependencies: undefined,
+      },
+      tarball,
+      {
+        npmVersion: manifest.version,
+        token: config.npmToken,
+      }
+    );
 
     if (!response.ok) {
       throw new Error(
