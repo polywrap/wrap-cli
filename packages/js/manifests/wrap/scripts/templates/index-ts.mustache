@@ -13,10 +13,16 @@ import {
 {{/formats}}
 
 export * from "./0.1";
+
+{{#formats}}
+import WrapManifestSchema_{{tsVersion}} from "./{{version}}.schema.json";
+{{/formats}}
+
 export {
   {{#formats}}
   WrapManifest_{{tsVersion}},
-  WrapAbi_{{tsVersion}}_{{abiTsVersion}}
+  WrapAbi_{{tsVersion}}_{{abiTsVersion}},
+  WrapManifestSchema_{{tsVersion}}
   {{/formats}}
 };
 

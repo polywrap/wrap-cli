@@ -1,0 +1,7 @@
+type Module {
+  getData: Int!
+
+  setData(
+    value: Int!
+  ): Boolean!
+}

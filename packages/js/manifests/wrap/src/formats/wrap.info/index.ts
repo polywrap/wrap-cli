@@ -11,9 +11,13 @@ import {
 } from "./0.1";
 
 export * from "./0.1";
+
+import WrapManifestSchema_0_1 from "./0.1.schema.json";
+
 export {
   WrapManifest_0_1,
-  WrapAbi_0_1_0_1
+  WrapAbi_0_1_0_1,
+  WrapManifestSchema_0_1
 };
 
 export enum WrapManifestVersions {
