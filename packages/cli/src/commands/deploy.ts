@@ -5,6 +5,7 @@ import {
   DeployPackage,
   intlMsg,
   parseWasmManifestFileOption,
+  PluginProject,
   PolywrapProject,
   Sequence,
   Step,
@@ -58,11 +59,25 @@ export const deploy: Command = {
 async function run(options: DeployCommandOptions): Promise<void> {
   const { manifestFile, verbose, outputFile } = options;
 
-  const project = new PolywrapProject({
-    rootDir: nodePath.dirname(manifestFile),
-    polywrapManifestPath: manifestFile,
-    quiet: !verbose,
-  });
+  const isPluginManifest: boolean =
+    (<string>manifestFile).toLowerCase().endsWith("polywrap.plugin.yaml") ||
+    (<string>manifestFile).toLowerCase().endsWith("polywrap.plugin.yml");
+
+  let project: PluginProject | PolywrapProject;
+  if (isPluginManifest) {
+    project = new PluginProject({
+      rootDir: nodePath.dirname(manifestFile),
+      pluginManifestPath: manifestFile,
+      quiet: !verbose,
+    });
+  } else {
+    project = new PolywrapProject({
+      rootDir: nodePath.dirname(manifestFile),
+      polywrapManifestPath: manifestFile,
+      quiet: !verbose,
+    });
+  }
+
   await project.validate();
 
   const deployManifest = await project.getDeployManifest();

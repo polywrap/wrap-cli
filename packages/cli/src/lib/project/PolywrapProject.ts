@@ -18,6 +18,7 @@ import { Deployer } from "../deploy";
 import { generateDockerImageName, resetDir } from "../system";
 import { createUUID } from "../helpers";
 import { intlMsg } from "../intl";
+import { Deployable } from "./Deployable";
 
 import {
   BuildManifest,
@@ -42,7 +43,9 @@ export interface PolywrapProjectConfig extends ProjectConfig {
   metaManifestPath?: string;
 }
 
-export class PolywrapProject extends Project<PolywrapManifest> {
+export class PolywrapProject
+  extends Project<PolywrapManifest>
+  implements Deployable {
   public static cacheLayout = {
     root: "wasm/",
     buildDir: "build/",
