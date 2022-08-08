@@ -1,0 +1,9 @@
+format: "0.2"
+sequences:
+  - name: test
+    config:
+      npmToken: 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
+    steps:
+      - name: npm_deploy
+        package: npm
+        uri: wrap://fs/.
