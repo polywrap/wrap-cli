@@ -140,6 +140,33 @@ export class PolywrapClient implements Client {
     return this._getConfig(options.contextId).plugins;
   }
 
+  @Tracer.traceMethod("PolywrapClient: setPlugin")
+  public setPlugin(plugin: PluginRegistration): void {
+    const sanitized = sanitizePluginRegistrations([plugin])[0];
+
+    // add plugin
+    const plugins: PluginRegistration<Uri>[] = this._config.plugins;
+    let i = 0;
+    for (; i < plugins.length; i++) {
+      if (this._isSamePlugin(plugins[i], sanitized)) {
+        break;
+      }
+    }
+    if (i === plugins.length) {
+      plugins.push(sanitized);
+    } else {
+      plugins[i] = sanitized;
+    }
+
+    // validate config
+    // we only need to validate this one plugin
+    // we do not need to sanitize plugins because this implementation ensures unique URIs
+    this._validateConfig([plugins[i]]);
+
+    // update cache
+    this._wrapperCache.delete(sanitized.uri.uri);
+  }
+
   @Tracer.traceMethod("PolywrapClient: getInterfaces")
   public getInterfaces(
     options: GetInterfacesOptions = {}
@@ -676,10 +703,13 @@ export class PolywrapClient implements Client {
   }
 
   @Tracer.traceMethod("PolywrapClient: validateConfig")
-  private _validateConfig(): void {
+  private _validateConfig(
+    plugins: readonly PluginRegistration<Uri>[] = this.getPlugins(),
+    interfaces: readonly InterfaceImplementations<Uri>[] = this.getInterfaces()
+  ): void {
     // Require plugins to use non-interface URIs
-    const pluginUris = this.getPlugins().map((x) => x.uri.uri);
-    const interfaceUris = this.getInterfaces().map((x) => x.interface.uri);
+    const pluginUris = plugins.map((x) => x.uri.uri);
+    const interfaceUris = interfaces.map((x) => x.interface.uri);
 
     const pluginsWithInterfaceUris = pluginUris.filter((plugin) =>
       interfaceUris.includes(plugin)
@@ -690,6 +720,31 @@ export class PolywrapClient implements Client {
         `Plugins can't use interfaces for their URI. Invalid plugins: ${pluginsWithInterfaceUris}`
       );
     }
+  }
+
+  @Tracer.traceMethod("PolywrapClient: isSamePlugin")
+  private _isSamePlugin(
+    current: PluginRegistration<Uri>,
+    alt: PluginRegistration<Uri>
+  ): boolean {
+    if (current.uri.uri === alt.uri.uri) {
+      const currentManifest = current.plugin.manifest;
+      const newManifest = alt.plugin.manifest;
+      if (currentManifest.schema !== newManifest.schema) {
+        throw Error(
+          "Cannot override a plugin registration with a new plugin that does not share the same schema"
+        );
+      }
+      for (const uri of currentManifest.implements) {
+        if (!newManifest.implements.some((value) => uri.uri === value.uri)) {
+          throw Error(
+            "Cannot override a plugin registration with a new plugin that does not implement the same interfaces"
+          );
+        }
+      }
+      return true;
+    }
+    return false;
   }
 
   @Tracer.traceMethod("PolywrapClient: toUri")
