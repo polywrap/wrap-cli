@@ -11,31 +11,34 @@ describe("Templates", () => {
   const projectLanguages: Record<string, string[]> = {};
 
   // Define the commands to run for each language
-  const languageTestCommands: Record<string, string[]> = {
-    typescript: ["yarn build", "yarn test"],
-    "typescript-node": [
+  const languageTestCommands: Record<string, Record<string, string>> = {
+    typescript: { build: "yarn build", test: "yarn test" },
+    "typescript-node": {
       // Uncomment when the helloworld wrapper has been deployed to polywrap.eth
-      // "yarn build",
-      // "yarn test"
-    ],
-    "typescript-react": [
+      // build: "yarn build",
+      // test: "yarn test",
+    },
+    "typescript-react": {
       // Uncomment when the helloworld wrapper has been deployed to polywrap.eth
-      // "CI=false yarn build"
-    ],
-    assemblyscript: [
+      // build: "CI=false yarn build"
+    },
+    assemblyscript: {
       // Workflow tests fail in CI because cuelang is not installed
-      "yarn build",
-      "yarn test:e2e",
+      build: "yarn build",
+      test: "yarn test:e2e",
       // "yarn test:workflow"
-    ],
-    rust: [
+    },
+    rust: {
       // Workflow tests fail in CI because cuelang is not installed
-      "yarn build",
-      "yarn test:e2e",
+      build: "yarn build",
+      test: "yarn test:e2e",
       // "yarn test:workflow"
-    ],
-    interface: ["yarn build"],
-    docusaurus: ["yarn install --no-lockfile", "yarn build"],
+    },
+    interface: { build: "yarn build" },
+    docusaurus: {
+      install: "yarn install --no-lockfile",
+      build: "yarn build",
+    },
   };
 
   // Filter unnecessary directories
@@ -79,7 +82,7 @@ describe("Templates", () => {
       }
 
       // run all commands
-      for (const command of commands) {
+      for (const command of Object.keys(commands)) {
         test(`${projectType}/${language} > ${command}`, async () => {
           const execPromise = new Promise<{
             error: Error | null;
@@ -87,7 +90,7 @@ describe("Templates", () => {
             stderr: string;
           }>((resolve) => {
             exec(
-              command,
+              commands[command],
               { cwd: path.join(rootDir, projectType, language) },
               (error, stdout, stderr) => resolve({ error, stdout, stderr })
             );
