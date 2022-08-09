@@ -21,6 +21,7 @@
   "dependencies": {
     "@polywrap/tracing-js": "0.3.0",
     "@polywrap/wrap-manifest-types-js": "0.3.0",
+    "@polywrap/workflow-manifest-types-js": "0.3.0",
     "graphql": "15.5.0",
     "graphql-tag": "2.10.4",
     "js-yaml": "3.14.0",

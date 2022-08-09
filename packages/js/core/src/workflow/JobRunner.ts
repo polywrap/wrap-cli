@@ -6,9 +6,8 @@ import {
   MaybeAsync,
   Uri,
 } from "../types";
-import {
-  Jobs
-} from "@polywrap/workflow-manifest-types-js";
+
+import { Jobs } from "@polywrap/workflow-manifest-types-js";
 
 export interface JobRunOptions {
   relativeId: string;

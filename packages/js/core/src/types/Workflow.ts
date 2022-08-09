@@ -1,6 +1,7 @@
 import { ClientConfig } from ".";
 import { InvokeResult } from "./Invoke";
 import { MaybeAsync } from "./MaybeAsync";
+
 import { PolywrapWorkflow } from "@polywrap/workflow-manifest-types-js";
 
 export enum JobStatus {
@@ -15,7 +16,7 @@ export interface JobResult<TData extends unknown = unknown>
 }
 
 export interface RunOptions<
-  TData extends Record<string, unknown> = Record<string, unknown>,
+  TData extends Record<string, unknown> = Record<string, unknown>
 > {
   workflow: PolywrapWorkflow;
   config?: Partial<ClientConfig>;
