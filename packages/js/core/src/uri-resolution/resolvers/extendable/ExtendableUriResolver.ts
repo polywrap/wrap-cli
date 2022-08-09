@@ -110,6 +110,7 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<LoadResolve
 
       return result;
     } catch (ex) {
+      console.log("THROOOOWN", ex);
       this.resolverIndex = -1;
       throw ex;
     }

@@ -1,5 +1,5 @@
 import { IUriResolutionStep } from ".";
-import { Uri, Wrapper } from "../../..";
+import { Uri, Wrapper } from "../..";
 
 export interface IUriResolutionResult {
   uri: Uri;

@@ -1,5 +1,5 @@
-import { WrapperCache, Client, Uri } from "../../../types";
 import { IUriResolutionStep, IUriResolutionResult } from ".";
+import { Uri, Client, WrapperCache } from "../..";
 
 export interface IUriResolver {
   name: string;

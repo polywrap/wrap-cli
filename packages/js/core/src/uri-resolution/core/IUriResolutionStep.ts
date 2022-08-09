@@ -1,5 +1,5 @@
-import { Uri } from "../../../types";
-import { IUriResolutionResult } from "./IUriResolutionResult";
+import { Uri } from "../..";
+import { IUriResolutionResult } from ".";
 
 export interface IUriResolutionStep {
   uriResolver: string;

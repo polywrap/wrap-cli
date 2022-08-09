@@ -4,6 +4,8 @@ import {
   IUriResolver,
   IUriResolutionStep,
   IUriResolutionResult,
+  IUriResolutionError,
+  UriResolutionErrorType,
 } from "../core";
 import { CreateWrapperFunc } from "./extendable/types/CreateWrapperFunc";
 import { getEnvFromUriOrResolutionPath } from "./getEnvFromUriOrResolutionPath";
@@ -22,7 +24,7 @@ export class UriResolverWrapper implements IUriResolver {
   ) {}
 
   public get name(): string {
-    return UriResolverWrapper.name;
+    return `${UriResolverWrapper.name}: (${this.implementationUri.uri})`;
   }
 
   async tryResolveToWrapper(
@@ -34,24 +36,31 @@ export class UriResolverWrapper implements IUriResolver {
     const result = await tryResolveUriWithImplementation(
       uri,
       this.implementationUri,
+      client,
       client
     );
 
-    if (!result) {
+    console.log("xa" + this.implementationUri.uri);
+    if ((result as IUriResolutionError).type) {
+      console.log("if" + this.implementationUri.uri);
       return {
         uri,
+        error: result as IUriResolutionError,
       };
     }
+    console.log("else" + this.implementationUri.uri);
 
-    if (result.uri) {
+    const uriOrManifest = result as UriResolverInterface.MaybeUriOrManifest;
+
+    if (uriOrManifest.uri) {
       return {
-        uri: new Uri(result.uri),
+        uri: new Uri(uriOrManifest.uri),
       };
-    } else if (result.manifest) {
+    } else if (uriOrManifest.manifest) {
       // We've found our manifest at the current implementation,
       // meaning the URI resolver can also be used as an Wrapper resolver
       const manifest = await deserializeWrapManifest(
-        result.manifest,
+        uriOrManifest.manifest,
         this.deserializeOptions
       );
 
@@ -82,18 +91,34 @@ export class UriResolverWrapper implements IUriResolver {
 const tryResolveUriWithImplementation = async (
   uri: Uri,
   implementationUri: Uri,
-  invoker: Invoker
-): Promise<UriResolverInterface.MaybeUriOrManifest | undefined> => {
-  const { data } = await UriResolverInterface.module.tryResolveUri(
+  invoker: Invoker,
+  client: Client
+): Promise<UriResolverInterface.MaybeUriOrManifest | IUriResolutionError> => {
+  const { error: resolutionError } = await client.tryResolveToWrapper(
+    implementationUri
+  );
+
+  if (resolutionError) {
+    console.log("ahhahahah");
+    return resolutionError;
+  }
+  const result = await UriResolverInterface.module.tryResolveUri(
     invoker,
     implementationUri,
     uri
   );
 
+  console.log(`xxxxx - ${implementationUri.uri}`, result);
+
+  const { data, error } = result;
+
   // If nothing was returned, the URI is not supported
   if (!data || (!data.uri && !data.manifest)) {
     Tracer.addEvent("continue", implementationUri.uri);
-    return undefined;
+    return {
+      type: UriResolutionErrorType.UriResolver,
+      error: error,
+    } as IUriResolutionError;
   }
 
   return data;

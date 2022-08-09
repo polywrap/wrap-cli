@@ -41,11 +41,7 @@ import {
   JobRunner,
   PluginPackage,
   RunOptions,
-  UriResolutionResult,
   UriResolutionHistoryType,
-  UriResolutionErrorType,
-  LoadResolverExtensionsError,
-  UriResolverError,
   IUriResolutionStep,
   IUriResolutionResult,
   IUriResolutionError,
@@ -469,10 +465,10 @@ export class PolywrapClient implements Client {
     return subscription;
   }
 
-  @Tracer.traceMethod("PolywrapClient: resolveUri")
+  @Tracer.traceMethod("PolywrapClient: tryResolveToWrapper")
   public async tryResolveToWrapper<TUri extends Uri | string>(
     options: TryResolveToWrapperOptions<TUri, ClientConfig>
-  ): Promise<UriResolutionResult<IUriResolutionError>> {
+  ): Promise<IUriResolutionResult> {
     const { contextId, shouldClearContext } = this._setContext(
       options.contextId,
       options.config
@@ -746,51 +742,24 @@ export class PolywrapClient implements Client {
     uri: Uri,
     options?: Contextualized
   ): Promise<Wrapper> {
-    const { wrapper, history, error } = await this.tryResolveToWrapper({
+    const {
+      wrapper,
+      history,
+      error,
+      uri: resultUri,
+    } = await this.tryResolveToWrapper({
       uri,
       contextId: options?.contextId,
     });
 
     if (!wrapper) {
       if (error) {
-        const resolverError = error as UriResolverError<LoadResolverExtensionsError>;
-
-        switch (error.type) {
-          case UriResolutionErrorType.InfiniteLoop:
-            throw Error(
-              `Infinite loop while resolving URI "${uri}".\nResolution path: ${JSON.stringify(
-                history,
-                null,
-                2
-              )}`
-            );
-            break;
-          case UriResolutionErrorType.UriResolver:
-            throw Error(
-              `URI resolution error while resolving URI "${uri}".\n${JSON.stringify(
-                resolverError.error,
-                null,
-                2
-              )}\nResolution path: ${JSON.stringify(history, null, 2)}`
-            );
-            break;
-          default:
-            throw Error(
-              `Unsupported URI resolution error type occurred\nResolution path: ${JSON.stringify(
-                history,
-                null,
-                2
-              )}`
-            );
-            break;
-        }
+        throw error;
       } else {
         throw Error(
-          `Unknown URI resolution error while resolving URI "${uri}"\nResolution Stack: ${JSON.stringify(
-            history,
-            null,
-            2
-          )}`
+          `Error resolving URI "${uri.uri}"\nURI not found ${
+            resultUri.uri
+          }\nResolution Stack: ${JSON.stringify(history, null, 2)}`
         );
       }
     }

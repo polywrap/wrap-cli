@@ -15,16 +15,15 @@ export class PluginsResolver extends UriResolverAggregator {
       uri: Uri,
       plugin: PluginPackage<unknown>,
       environment: Env<Uri> | undefined
-    ) => Wrapper,
-    options: {
-      fullResolution: boolean;
-    }
+    ) => Wrapper
   ) {
     super(
       pluginRegistrations.map(
         (x) => new PluginResolver(x, this.createPluginWrapper)
       ),
-      options
+      {
+        fullResolution: false,
+      }
     );
   }
 

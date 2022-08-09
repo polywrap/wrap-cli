@@ -1,10 +1,12 @@
 import { UriResolverAggregator } from "./aggregator";
 import { RedirectResolver } from "./RedirectResolver";
-import { Uri } from "../..";
+import { Uri, UriRedirect } from "../..";
 
-export class RedirectsResolver extends UriResolverAggregator {
+export class RedirectsResolver<
+  TUri extends string | Uri = string
+> extends UriResolverAggregator {
   constructor(
-    redirects: readonly { from: Uri; to: Uri }[],
+    redirects: readonly UriRedirect<TUri>[],
     options: {
       fullResolution: boolean;
     }

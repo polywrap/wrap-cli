@@ -1,12 +1,13 @@
-import { IUriResolver, Uri, IUriResolutionResult } from "../..";
+import { IUriResolver, Uri, IUriResolutionResult, toUri } from "../..";
 
-export class RedirectResolver implements IUriResolver {
+export class RedirectResolver<TUri extends string | Uri = string>
+  implements IUriResolver {
   from: Uri;
   to: Uri;
 
-  constructor(from: Uri, to: Uri) {
-    this.from = from;
-    this.to = to;
+  constructor(from: TUri, to: TUri) {
+    this.from = toUri(from);
+    this.to = toUri(to);
   }
 
   public get name(): string {
