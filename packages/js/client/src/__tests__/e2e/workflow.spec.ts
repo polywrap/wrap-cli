@@ -1,121 +1,29 @@
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
-import {
-  buildAndDeployWrapper,
-  initTestEnvironment,
-  stopTestEnvironment,
-  ensAddresses,
-  providers,
-} from "@polywrap/test-env-js";
-import {
-  createPolywrapClient,
-  JobResult,
-  PolywrapClient,
-  PolywrapClientConfig,
-} from "../..";
-import { outPropWorkflow, sanityWorkflow } from "./workflow-test-cases";
+import { buildWrapper } from "@polywrap/test-env-js";
+import { PolywrapClient } from "../..";
+import { testCases } from "./workflow-test-cases";
+import path from "path";
+import { getClient } from "../utils/getClient";
 
 jest.setTimeout(200000);
 
 describe("workflow", () => {
-  let ipfsProvider: string;
-  let ethProvider: string;
-  let ensAddress: string;
+  let client: PolywrapClient;
 
   beforeAll(async () => {
-    await initTestEnvironment();
-    ipfsProvider = providers.ipfs;
-    ethProvider = providers.ethereum;
-    ensAddress = ensAddresses.ensAddress;
-  });
-
-  const getClient = async (config?: Partial<PolywrapClientConfig>) => {
-    return createPolywrapClient(
-      {
-        ethereum: {
-          networks: {
-            testnet: {
-              provider: ethProvider,
-            },
-          },
-          defaultNetwork: "testnet",
-        },
-        ipfs: {},
-        ens: {
-          addresses: {
-            testnet: ensAddress,
-          },
-        },
-      },
-      {
-        ...config,
-        envs: [
-          ...(config?.envs ?? []),
-          {
-            uri: "wrap://ens/ipfs.polywrap.eth",
-            env: {
-              provider: ipfsProvider,
-            },
-          },
-        ],
-      }
+    await buildWrapper(
+      path.join(GetPathToTestWrappers(), "wasm-as", "simple-calculator")
     );
-  };
 
-  afterAll(async () => {
-    await stopTestEnvironment();
+    client = await getClient();
   });
 
-  describe("simple-storage", () => {
-    let client: PolywrapClient;
-
-    beforeAll(async () => {
-      await buildAndDeployWrapper({
-        wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/simple-storage`,
-        ipfsProvider,
-        ethereumProvider: ethProvider,
-        ensName: "simple-storage.eth",
-      });
-
-      client = await getClient();
-    });
-
-    const tests: Record<
-      string,
-      (data: unknown, error: unknown) => Promise<void>
-    > = {
-      "cases.0": async (data: unknown, error: unknown) => {
-        expect(error).toBeFalsy();
-        expect(data).toBeTruthy();
-        expect(data).toContain("0x");
-      },
-      "cases.case1.0": async (data: unknown, error: unknown) => {
-        expect(error).toBeFalsy();
-        expect(data).toBeTruthy();
-        expect(data).toContain("0x");
-      },
-      "cases.case1.1": async (data: unknown, error: unknown) => {
-        expect(error).toBeFalsy();
-        expect(data).toBeTruthy();
-        expect(data).toBe(100);
-      },
-    };
-
-    test("sanity workflow", async () => {
+  for (const testCase of testCases) {
+    test(testCase.name, async () => {
       await client.run({
-        workflow: sanityWorkflow,
-        onExecution: async (id: string, jobResult: JobResult) => {
-          await tests[id](jobResult.data, jobResult.error);
-        },
+        workflow: testCase.workflow,
+        onExecution: testCase.onExecution,
       });
     });
-
-    test("workflow with output propagation", async () => {
-      await client.run({
-        workflow: outPropWorkflow,
-        onExecution: async (id: string, jobResult: JobResult) => {
-          await tests[id](jobResult.data, jobResult.error);
-        },
-      });
-    });
-  });
+  }
 });

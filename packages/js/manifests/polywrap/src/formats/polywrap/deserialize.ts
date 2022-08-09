@@ -14,7 +14,7 @@ import {
 } from ".";
 import { DeserializeManifestOptions } from "../../";
 
-import { compare } from "semver";
+import * as Semver from "semver";
 import YAML from "js-yaml";
 
 export function deserializePolywrapManifest(
@@ -40,9 +40,9 @@ export function deserializePolywrapManifest(
 
   anyPolywrapManifest.__type = "PolywrapManifest";
 
-  const versionCompare = compare(
-    anyPolywrapManifest.format,
-    latestPolywrapManifestFormat
+  const versionCompare = Semver.compare(
+    Semver.coerce(anyPolywrapManifest.format) || anyPolywrapManifest.format,
+    Semver.coerce(latestPolywrapManifestFormat) || latestPolywrapManifestFormat
   );
 
   if (versionCompare === -1) {

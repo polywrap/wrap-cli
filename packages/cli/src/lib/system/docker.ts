@@ -19,7 +19,7 @@ export function getDockerFileLock(): FileLock {
 }
 
 export async function isDockerBuildxInstalled(): Promise<boolean> {
-  const { stdout: version } = await runCommand("docker buildx version");
+  const { stdout: version } = await runCommand("docker buildx version", true);
   return version.startsWith("github.com/docker/buildx");
 }
 
@@ -134,7 +134,10 @@ export async function createBuildImage(
       // Build the docker image
       let buildxUseFailed: boolean;
       try {
-        const { stderr } = await runCommand(`docker buildx use ${imageName}`);
+        const { stderr } = await runCommand(
+          `docker buildx use ${imageName}`,
+          quiet
+        );
         buildxUseFailed = !!stderr;
       } catch (e) {
         buildxUseFailed = true;

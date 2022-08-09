@@ -204,6 +204,8 @@ type Module {
 
     getNetwork(connection: Connection): Network!
 
+    requestAccounts(connection: Connection): [String!]!
+
     callContractMethod(
         address: String!
         method: String!
