@@ -122,6 +122,7 @@ export class CodeGenerator {
           schema: this._schema || "",
           outputDirAbs: codegenDirAbs,
           bindLanguage,
+          config: this._config.mustacheView,
         });
 
         resetDir(codegenDirAbs);
