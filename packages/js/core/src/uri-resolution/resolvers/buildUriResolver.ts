@@ -1,11 +1,5 @@
 import { UriResolverAggregator } from ".";
-import {
-  IUriResolver,
-  Uri,
-  Client,
-  WrapperCache,
-  IUriResolutionError,
-} from "../..";
+import { IUriResolver, Uri, Client, WrapperCache } from "../..";
 import { UriResolvable } from "./UriResolvable";
 
 export const buildUriResolver = (
@@ -23,7 +17,10 @@ export const buildUriResolver = (
         uri: Uri,
         client: Client,
         cache: WrapperCache
-      ) => Promise<IUriResolver[] | IUriResolutionError>,
+      ) => Promise<{
+        resolvers: IUriResolver[];
+        error?: unknown;
+      }>,
       options
     );
   } else if ((resolvable as IUriResolver).tryResolveToWrapper !== undefined) {

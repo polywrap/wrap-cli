@@ -12,10 +12,11 @@ export class RedirectsResolver<
     }
   ) {
     super(
-      async () =>
-        redirects.map(
+      async () => ({
+        resolvers: redirects.map(
           (redirect) => new RedirectResolver(redirect.from, redirect.to)
         ),
+      }),
       options
     );
   }

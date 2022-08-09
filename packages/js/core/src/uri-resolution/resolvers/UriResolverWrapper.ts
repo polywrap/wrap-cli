@@ -1,11 +1,9 @@
 import { UriResolverInterface } from "../../interfaces";
-import { Uri, WrapperCache, Client, Invoker } from "../../types";
+import { Uri, WrapperCache, Client } from "../../types";
 import {
   IUriResolver,
   IUriResolutionStep,
   IUriResolutionResult,
-  IUriResolutionError,
-  UriResolutionErrorType,
 } from "../core";
 import { CreateWrapperFunc } from "./extendable/types/CreateWrapperFunc";
 import { getEnvFromUriOrResolutionPath } from "./getEnvFromUriOrResolutionPath";
@@ -33,24 +31,23 @@ export class UriResolverWrapper implements IUriResolver {
     cache: WrapperCache,
     resolutionPath: IUriResolutionStep[]
   ): Promise<IUriResolutionResult> {
-    const result = await tryResolveUriWithImplementation(
+    const { uriOrManifest, error } = await tryResolveUriWithImplementation(
       uri,
       this.implementationUri,
-      client,
       client
     );
 
-    console.log("xa" + this.implementationUri.uri);
-    if ((result as IUriResolutionError).type) {
-      console.log("if" + this.implementationUri.uri);
+    if (!uriOrManifest) {
+      console.log(
+        "wrapper - tryResolveToWrapper - error" + this.implementationUri.uri
+      );
       return {
         uri,
-        error: result as IUriResolutionError,
+        error,
       };
     }
-    console.log("else" + this.implementationUri.uri);
 
-    const uriOrManifest = result as UriResolverInterface.MaybeUriOrManifest;
+    console.log("else" + this.implementationUri.uri);
 
     if (uriOrManifest.uri) {
       return {
@@ -91,35 +88,47 @@ export class UriResolverWrapper implements IUriResolver {
 const tryResolveUriWithImplementation = async (
   uri: Uri,
   implementationUri: Uri,
-  invoker: Invoker,
   client: Client
-): Promise<UriResolverInterface.MaybeUriOrManifest | IUriResolutionError> => {
-  const { error: resolutionError } = await client.tryResolveToWrapper(
+): Promise<{
+  uriOrManifest?: UriResolverInterface.MaybeUriOrManifest;
+  error?: unknown;
+}> => {
+  const { error: resolutionError, wrapper } = await client.tryResolveToWrapper(
     implementationUri
   );
 
-  if (resolutionError) {
+  if (!wrapper) {
     console.log("ahhahahah");
-    return resolutionError;
+    return {
+      error: resolutionError,
+    };
   }
-  const result = await UriResolverInterface.module.tryResolveUri(
-    invoker,
-    implementationUri,
-    uri
+
+  const result = await wrapper.invoke<UriResolverInterface.MaybeUriOrManifest>(
+    {
+      uri: implementationUri,
+      method: "tryResolveUri",
+      args: {
+        authority: uri.authority,
+        path: uri.path,
+      },
+    },
+    client
   );
 
   console.log(`xxxxx - ${implementationUri.uri}`, result);
 
-  const { data, error } = result;
+  const { data: uriOrManifest, error } = result;
 
   // If nothing was returned, the URI is not supported
-  if (!data || (!data.uri && !data.manifest)) {
+  if (!uriOrManifest || (!uriOrManifest.uri && !uriOrManifest.manifest)) {
     Tracer.addEvent("continue", implementationUri.uri);
     return {
-      type: UriResolutionErrorType.UriResolver,
       error: error,
-    } as IUriResolutionError;
+    };
   }
 
-  return data;
+  return {
+    uriOrManifest,
+  };
 };

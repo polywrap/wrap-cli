@@ -1,13 +1,13 @@
-import { IUriResolver, IUriResolutionStep, UriResolutionResult } from ".";
+import { IUriResolver, IUriResolutionStep } from ".";
 import { Uri, Client, WrapperCache } from "../..";
-import { IUriResolutionError } from "./errors";
+import { IUriResolutionResult } from "./IUriResolutionResult";
 
-export interface UriResolver<TResolutionError extends IUriResolutionError>
+export interface UriResolver<TResolutionResult extends IUriResolutionResult>
   extends IUriResolver {
   tryResolveToWrapper(
     uri: Uri,
     client: Client,
     cache: WrapperCache,
     resolutionPath: IUriResolutionStep[]
-  ): Promise<UriResolutionResult<TResolutionError>>;
+  ): Promise<TResolutionResult>;
 }

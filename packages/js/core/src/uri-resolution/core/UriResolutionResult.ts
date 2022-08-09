@@ -1,7 +1,6 @@
 import { IUriResolutionResult } from ".";
-import { IUriResolutionError } from "./errors";
 
-export interface UriResolutionResult<TError extends IUriResolutionError>
+export interface UriResolutionResult<TError = undefined>
   extends IUriResolutionResult {
   error?: TError;
 }

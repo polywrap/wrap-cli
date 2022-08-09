@@ -2,7 +2,7 @@ import { Uri } from "../..";
 import { IUriResolutionResult } from ".";
 
 export interface IUriResolutionStep {
-  uriResolver: string;
+  resolverName: string;
   sourceUri: Uri;
   result: IUriResolutionResult;
 }

@@ -1,4 +1,4 @@
-import { getUriResolutionPath, IUriResolutionStep, Uri } from "../../..";
+import { getUriResolutionPath, IUriResolutionStep, Uri } from "../..";
 
 export class InfiniteLoopError extends Error {
   constructor(

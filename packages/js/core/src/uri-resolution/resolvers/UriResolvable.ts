@@ -5,7 +5,6 @@ import {
   IUriResolver,
   Client,
   WrapperCache,
-  IUriResolutionError,
 } from "../..";
 
 export type UriResolvable =
@@ -17,4 +16,7 @@ export type UriResolvable =
       uri: Uri,
       client: Client,
       cache: WrapperCache
-    ) => Promise<IUriResolver[] | IUriResolutionError>);
+    ) => Promise<{
+      resolvers: IUriResolver[];
+      error?: unknown;
+    }>);

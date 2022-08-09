@@ -1,9 +1,5 @@
 import { CreateWrapperFunc } from "./types/CreateWrapperFunc";
-import {
-  IUriResolver,
-  IUriResolutionError,
-  UriResolutionErrorType,
-} from "../../core";
+import { IUriResolver } from "../../core";
 import { UriResolverWrapper } from "../UriResolverWrapper";
 
 import { DeserializeManifestOptions } from "@polywrap/wrap-manifest-types-js";
@@ -21,8 +17,7 @@ export type ExtendableUriResolverResult = UriResolutionResult<LoadResolverExtens
   implementationUri?: Uri;
 };
 
-export class LoadResolverExtensionsError implements IUriResolutionError {
-  type = UriResolutionErrorType.UriResolver;
+export class LoadResolverExtensionsError {
   readonly message: string;
 
   constructor(public readonly failedUriResolvers: string[]) {
@@ -46,7 +41,10 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<LoadResolve
   async getUriResolvers(
     uri: Uri,
     client: Client
-  ): Promise<IUriResolver[] | IUriResolutionError> {
+  ): Promise<{
+    resolvers?: IUriResolver[];
+    error?: LoadResolverExtensionsError;
+  }> {
     const uriResolverImpls = getImplementations(
       coreInterfaceUris.uriResolver,
       client.getInterfaces({}),
@@ -70,7 +68,9 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<LoadResolve
       uriResolverImpls
     );
 
-    return resolvers;
+    return {
+      resolvers,
+    };
   }
 
   private resolverIndex = -1;

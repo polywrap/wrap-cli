@@ -17,10 +17,11 @@ export class LegacyPluginsResolver extends UriResolverAggregator {
     ) => Wrapper
   ) {
     super(
-      async (uri: Uri, client: Client) =>
-        client
+      async (uri: Uri, client: Client) => ({
+        resolvers: client
           .getPlugins({})
           .map((x) => new PluginResolver(x, createPluginWrapper)),
+      }),
       {
         fullResolution: false,
       }

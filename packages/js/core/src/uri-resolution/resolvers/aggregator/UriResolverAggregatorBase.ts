@@ -14,14 +14,8 @@ import {
   UriResolverError,
 } from "../../..";
 
-export type UriResolverAggregatorResult = UriResolutionResult<UriResolverAggregatorError>;
-
-export type UriResolverAggregatorError =
-  | InfiniteLoopError
-  | IUriResolutionError;
-export abstract class UriResolverAggregatorBase<
-  TError extends IUriResolutionError = UriResolverAggregatorError
-> implements UriResolver<TError> {
+export abstract class UriResolverAggregatorBase<TError = undefined>
+  implements UriResolver<UriResolutionResult<TError>> {
   constructor(private readonly options: { fullResolution: boolean }) {}
 
   abstract get name(): string;
@@ -30,7 +24,10 @@ export abstract class UriResolverAggregatorBase<
     uri: Uri,
     client: Client,
     cache: WrapperCache
-  ): Promise<IUriResolver[] | IUriResolutionError>;
+  ): Promise<{
+    resolvers: IUriResolver[];
+    error: TError;
+  }>;
 
   async tryResolveToWrapper(
     uri: Uri,
@@ -38,16 +35,15 @@ export abstract class UriResolverAggregatorBase<
     cache: WrapperCache
   ): Promise<UriResolutionResult<TError>> {
     const result = await this.getUriResolvers(uri, client, cache);
-    const error = result as TError;
 
-    if (error.type) {
+    if (result.error) {
       return {
         uri,
-        error,
+        error: result.error,
       };
     }
 
-    const resolvers = result as IUriResolver[];
+    const resolvers = result.resolvers as IUriResolver[];
 
     return await this.tryResolveToWrapperWithResolvers(
       uri,
