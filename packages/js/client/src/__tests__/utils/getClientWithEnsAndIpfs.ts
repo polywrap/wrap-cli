@@ -14,7 +14,7 @@ export const getClientWithEnsAndIpfs = async (
         },
         defaultNetwork: "testnet",
       },
-      ipfs: { provider: providers.ipfs },
+      ipfs: {},
       ens: {
         addresses: {
           testnet: ensAddresses.ensAddress,
