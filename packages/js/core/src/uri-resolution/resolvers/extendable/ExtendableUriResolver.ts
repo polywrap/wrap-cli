@@ -13,12 +13,12 @@ import {
   WrapperCache,
 } from "../../..";
 import { InfiniteLoopError } from "../InfiniteLoopError";
+import { Err, Ok, Result } from "../../../types";
 
-export type ExtendableUriResolverResult = UriResolutionResult<
+export type ExtendableUriResolverResult = Result<
+  UriResolutionResult,
   LoadResolverExtensionsError | InfiniteLoopError
-> & {
-  implementationUri?: Uri;
-};
+>;
 
 export class LoadResolverExtensionsError {
   readonly message: string;
@@ -44,10 +44,7 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<LoadResolve
   async getUriResolvers(
     uri: Uri,
     client: Client
-  ): Promise<{
-    resolvers?: IUriResolver[];
-    error?: LoadResolverExtensionsError;
-  }> {
+  ): Promise<Result<IUriResolver<unknown>[], LoadResolverExtensionsError>> {
     const uriResolverImpls = getImplementations(
       coreInterfaceUris.uriResolver,
       client.getInterfaces({}),
@@ -71,9 +68,7 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<LoadResolve
       uriResolverImpls
     );
 
-    return {
-      resolvers,
-    };
+    return Ok(resolvers);
   }
 
   private resolverIndex = -1;
@@ -83,21 +78,18 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<LoadResolve
     client: Client,
     cache: WrapperCache
   ): Promise<ExtendableUriResolverResult> {
-    const { resolvers, error } = await this.getUriResolvers(uri, client);
+    const result = await this.getUriResolvers(uri, client);
 
-    if (error || !resolvers) {
-      return {
-        uri,
-        error,
-      };
+    if (!result.ok) {
+      return Err(result.error);
     }
+
+    const resolvers = result.value;
 
     this.resolverIndex++;
 
     if (this.resolverIndex >= resolvers.length) {
-      return {
-        uri,
-      };
+      return Ok(new UriResolutionResult(uri));
     }
 
     try {

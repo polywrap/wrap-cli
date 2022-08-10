@@ -1,13 +1,13 @@
 import { UriResolverAggregator } from ".";
-import { IUriResolver, Uri, Client, WrapperCache } from "../..";
+import { IUriResolver, Uri, Client, WrapperCache, Result } from "../..";
 import { UriResolvable } from "./UriResolvable";
 
 export const buildUriResolver = (
   resolvable: UriResolvable,
   options: { fullResolution: boolean } = { fullResolution: false }
-): IUriResolver => {
+): IUriResolver<unknown> => {
   if (Array.isArray(resolvable)) {
-    return new UriResolverAggregator(
+    return new UriResolverAggregator<unknown>(
       (resolvable as UriResolvable[]).map((x) => buildUriResolver(x, options)),
       options
     );
@@ -17,10 +17,7 @@ export const buildUriResolver = (
         uri: Uri,
         client: Client,
         cache: WrapperCache
-      ) => Promise<{
-        resolvers: IUriResolver[];
-        error?: unknown;
-      }>,
+      ) => Promise<Result<IUriResolver[], unknown>>,
       options
     );
   } else if ((resolvable as IUriResolver).tryResolveToWrapper !== undefined) {

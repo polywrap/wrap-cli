@@ -1,5 +1,7 @@
 import { IUriResolutionStep, UriResolutionResult } from ".";
+import { Result } from "../..";
 
-export interface UriResolutionStep<TError> extends IUriResolutionStep {
-  result: UriResolutionResult<TError>;
+export interface UriResolutionStep<TError = undefined>
+  extends IUriResolutionStep {
+  result: Result<UriResolutionResult, TError>;
 }

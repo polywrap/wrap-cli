@@ -3,7 +3,9 @@ import {
   Uri,
   Client,
   WrapperCache,
-  IUriResolutionResult,
+  UriResolutionResult,
+  Result,
+  Ok,
 } from "../..";
 
 export class CacheResolver implements IUriResolver {
@@ -15,12 +17,11 @@ export class CacheResolver implements IUriResolver {
     uri: Uri,
     client: Client,
     cache: WrapperCache
-  ): Promise<IUriResolutionResult> {
+  ): Promise<Result<UriResolutionResult>> {
     const wrapper = cache.get(uri.uri);
 
-    return Promise.resolve({
-      uri: uri,
-      wrapper: wrapper,
-    });
+    return wrapper
+      ? Ok(new UriResolutionResult(wrapper))
+      : Ok(new UriResolutionResult(uri));
   }
 }

@@ -1,4 +1,12 @@
-import { Uri, Client, WrapperCache, IUriResolver } from "../../..";
+import {
+  Uri,
+  Client,
+  WrapperCache,
+  IUriResolver,
+  InfiniteLoopError,
+  Result,
+  Ok,
+} from "../../..";
 import { UriResolverAggregatorBase } from "./UriResolverAggregatorBase";
 
 export class UriResolverAggregator<
@@ -10,10 +18,7 @@ export class UriResolverAggregator<
       uri: Uri,
       client: Client,
       cache: WrapperCache
-    ) => Promise<{
-      resolvers?: IUriResolver[];
-      error?: TError;
-    }>,
+    ) => Promise<Result<IUriResolver[], TError | InfiniteLoopError>>,
     options: { fullResolution: boolean }
   );
   constructor(
@@ -36,10 +41,7 @@ export class UriResolverAggregator<
           uri: Uri,
           client: Client,
           cache: WrapperCache
-        ) => Promise<{
-          resolvers?: IUriResolver[];
-          error?: TError;
-        }>),
+        ) => Promise<Result<IUriResolver[], TError | InfiniteLoopError>>),
     options: { fullResolution: boolean }
   ) {
     super(options);
@@ -53,21 +55,14 @@ export class UriResolverAggregator<
     uri: Uri,
     client: Client,
     cache: WrapperCache
-  ): Promise<{
-    resolvers?: IUriResolver[];
-    error?: TError;
-  }> {
+  ): Promise<Result<IUriResolver[], TError | InfiniteLoopError>> {
     if (Array.isArray(this.resolvers)) {
-      return {
-        resolvers: this.resolvers,
-      };
+      return Ok(this.resolvers);
     } else {
       const result = await this.resolvers(uri, client, cache);
 
       if (Array.isArray(result)) {
-        return {
-          resolvers: result,
-        };
+        return Ok(result);
       } else {
         return result;
       }

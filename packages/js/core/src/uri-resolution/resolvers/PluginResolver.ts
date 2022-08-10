@@ -7,13 +7,11 @@ import {
   PluginPackage,
   Uri,
   PluginRegistration,
-} from "../../types";
-import {
-  IUriResolutionResult,
-  IUriResolutionStep,
-  IUriResolver,
-} from "../core";
+  Result,
+} from "../..";
+import { IUriResolutionStep, IUriResolver, UriResolutionResult } from "../core";
 import { toUri } from "../../utils";
+import { Ok } from "../../types";
 
 export class PluginResolver implements IUriResolver {
   pluginUri: Uri;
@@ -38,7 +36,7 @@ export class PluginResolver implements IUriResolver {
     client: Client,
     cache: WrapperCache,
     resolutionPath: IUriResolutionStep[]
-  ): Promise<IUriResolutionResult> {
+  ): Promise<Result<UriResolutionResult>> {
     if (uri.uri !== this.pluginUri.uri) {
       return this.notFound(uri);
     }
@@ -55,15 +53,10 @@ export class PluginResolver implements IUriResolver {
       environment
     );
 
-    return {
-      uri,
-      wrapper,
-    };
+    return Ok(new UriResolutionResult(wrapper));
   }
 
-  notFound(uri: Uri): IUriResolutionResult {
-    return {
-      uri,
-    };
+  notFound(uri: Uri): Result<UriResolutionResult> {
+    return Ok(new UriResolutionResult(uri));
   }
 }

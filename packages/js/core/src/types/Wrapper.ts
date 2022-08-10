@@ -17,7 +17,8 @@ import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
  * this class may do things like caching WASM bytecode, spawning
  * worker threads, or indexing into resolvers to find the requested method.
  */
-export abstract class Wrapper implements Invocable {
+export interface Wrapper extends Invocable {
+  uri: Uri;
   /**
    * Invoke the Wrapper based on the provided [[InvokeOptions]]
    *
@@ -25,7 +26,7 @@ export abstract class Wrapper implements Invocable {
    * @param client The client instance requesting this invocation.
    * This client will be used for any sub-invokes that occur.
    */
-  public abstract invoke<TData = unknown>(
+  invoke<TData = unknown>(
     options: InvokeOptions<Uri>,
     invoker: Invoker
   ): Promise<InvocableResult<TData>>;
@@ -37,7 +38,7 @@ export abstract class Wrapper implements Invocable {
    * @param options Configuration options for file retrieval
    * @param client The client instance requesting the file.
    */
-  public abstract getFile(
+  getFile(
     options: GetFileOptions,
     client: Client
   ): Promise<Uint8Array | string>;
@@ -49,7 +50,7 @@ export abstract class Wrapper implements Invocable {
    * @param options Configuration options for manifest retrieval
    * @param client The client instance requesting the manifest.
    */
-  public abstract getManifest(
+  getManifest(
     options: GetManifestOptions,
     client: Client
   ): Promise<WrapManifest>;
@@ -59,7 +60,7 @@ export abstract class Wrapper implements Invocable {
    *
    * @param client The client instance the schema.
    */
-  public abstract getSchema(client: Client): Promise<string>;
+  getSchema(client: Client): Promise<string>;
 }
 
 export type WrapperCache = Map<string, Wrapper>;

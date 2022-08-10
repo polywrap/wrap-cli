@@ -98,8 +98,15 @@ describe("URI resolution", () => {
       new Map<string, Wrapper>()
     );
 
-    expect(result.wrapper).toBeFalsy();
-    expect(result.uri).toEqual(unknownUri);
+    console.log(result);
+
+    expect(result.ok).toBeTruthy();
+
+    if (!result.ok) {
+      throw "Result should not be an error";
+    }
+    expect(result.value.uri()).toBeTruthy();
+    expect(result.value.uri()).toEqual(unknownUri);
 
     const redirectResult = await resolver.tryResolveToWrapper(
       fromUri,
@@ -107,7 +114,13 @@ describe("URI resolution", () => {
       new Map<string, Wrapper>()
     );
 
-    expect(redirectResult.wrapper).toBeFalsy();
-    expect(redirectResult.uri).toEqual(toUri);
+    expect(redirectResult.ok).toBeTruthy();
+
+    if (!redirectResult.ok) {
+      throw "Result should not be an error";
+    }
+    expect(redirectResult.value.wrapper()).toBeFalsy();
+    expect(redirectResult.value.uri()).toBeTruthy();
+    expect(redirectResult.value.uri()).toEqual(toUri);
   });
 });

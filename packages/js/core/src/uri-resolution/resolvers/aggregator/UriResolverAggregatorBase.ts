@@ -1,19 +1,15 @@
 import { Tracer } from "@polywrap/tracing-js";
+import { InfiniteLoopError } from "..";
+import { Client, Err, Ok, Result, Uri, WrapperCache } from "../../..";
 import {
-  UriResolver,
   UriResolutionResult,
-  Uri,
-  Client,
-  WrapperCache,
   IUriResolver,
   IUriResolutionStep,
-  Wrapper,
   getUriResolutionPath,
-} from "../../..";
-import { InfiniteLoopError } from "..";
+} from "../../core";
 
 export abstract class UriResolverAggregatorBase<TError = undefined>
-  implements UriResolver<UriResolutionResult<TError | InfiniteLoopError>> {
+  implements IUriResolver<TError | InfiniteLoopError> {
   constructor(private readonly options: { fullResolution: boolean }) {}
 
   abstract get name(): string;
@@ -22,26 +18,20 @@ export abstract class UriResolverAggregatorBase<TError = undefined>
     uri: Uri,
     client: Client,
     cache: WrapperCache
-  ): Promise<{
-    resolvers?: IUriResolver[];
-    error?: TError;
-  }>;
+  ): Promise<Result<IUriResolver<unknown>[], TError | InfiniteLoopError>>;
 
   async tryResolveToWrapper(
     uri: Uri,
     client: Client,
     cache: WrapperCache
-  ): Promise<UriResolutionResult<TError | InfiniteLoopError>> {
+  ): Promise<Result<UriResolutionResult, TError | InfiniteLoopError>> {
     const result = await this.getUriResolvers(uri, client, cache);
 
-    if (result.error) {
-      return {
-        uri,
-        error: result.error,
-      };
+    if (!result.ok) {
+      return Err(result.error);
     }
 
-    const resolvers = result.resolvers as IUriResolver[];
+    const resolvers = result.value as IUriResolver[];
 
     return await this.tryResolveToWrapperWithResolvers(
       uri,
@@ -55,14 +45,13 @@ export abstract class UriResolverAggregatorBase<TError = undefined>
     uri: Uri,
     client: Client,
     cache: WrapperCache,
-    resolvers: IUriResolver[]
-  ): Promise<UriResolutionResult<TError | InfiniteLoopError>> {
+    resolvers: IUriResolver<unknown>[]
+  ): Promise<Result<UriResolutionResult, TError | InfiniteLoopError>> {
     // Keep track of past URIs to avoid infinite loops
     const visitedUriMap: Map<string, boolean> = new Map<string, boolean>();
     const history: IUriResolutionStep[] = [];
 
     let currentUri: Uri = uri;
-    let wrapper: Wrapper | undefined;
 
     let runAgain = true;
 
@@ -76,12 +65,7 @@ export abstract class UriResolverAggregatorBase<TError = undefined>
 
       for (const resolver of resolvers) {
         if (infiniteLoopDetected) {
-          return {
-            uri: currentUri,
-            wrapper,
-            history,
-            error: new InfiniteLoopError(currentUri, history),
-          };
+          return Err(new InfiniteLoopError(currentUri, history));
         }
 
         const result = await resolver.tryResolveToWrapper(
@@ -97,42 +81,35 @@ export abstract class UriResolverAggregatorBase<TError = undefined>
           result,
         });
 
-        if (result.wrapper) {
-          wrapper = result.wrapper;
+        if (!result.ok) {
+          return Err(result.error as TError);
+        } else if (result.ok) {
+          if (result.value.uri()) {
+            const resultUri = result.value.uri() as Uri;
 
-          Tracer.addEvent("uri-resolver-redirect", {
-            from: currentUri.uri,
-            to: "wrapper",
-          });
+            Tracer.addEvent("uri-resolver-redirect", {
+              from: currentUri.uri,
+              to: resultUri.uri,
+            });
 
-          break;
-        } else if (result.uri && result.uri.uri !== currentUri.uri) {
-          Tracer.addEvent("uri-resolver-redirect", {
-            from: currentUri.uri,
-            to: result.uri.uri,
-          });
+            if (resultUri.uri === currentUri.uri) {
+              continue;
+            }
 
-          currentUri = result.uri;
+            currentUri = resultUri;
 
-          if (this.options.fullResolution) {
-            runAgain = true;
+            if (this.options.fullResolution) {
+              runAgain = true;
+            }
+            break;
+          } else {
+            return Ok(result.value);
           }
-          break;
-        } else if (result.error) {
-          return {
-            uri: currentUri,
-            history,
-            error: result.error as TError,
-          };
         }
       }
     }
 
-    return {
-      uri: currentUri,
-      wrapper,
-      history,
-    };
+    return Ok(new UriResolutionResult(currentUri));
   }
 }
 
