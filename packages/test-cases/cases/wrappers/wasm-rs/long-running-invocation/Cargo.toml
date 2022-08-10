@@ -1,0 +1,20 @@
+[package]
+name = "long-running-invocation"
+version = "0.1.0"
+description = "run a long invocation to test concurrency robustness"
+authors = ["Kris Bitney <kris@dorg.tech>"]
+repository = "https://github.com/polywrap/monorepo"
+license = "MIT"
+edition = "2021"
+
+[dependencies]
+polywrap-wasm-rs = { path = "../../../../../wasm/rs" }
+serde = { version = "1.0", features = ["derive"] }
+
+[lib]
+crate-type = ["cdylib"]
+
+[profile.release]
+opt-level = 's'
+lto = true
+panic = 'abort'

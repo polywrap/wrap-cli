@@ -1,0 +1,8 @@
+#import { Module } into Sleep from "wrap://ipfs/QmTpxLnLRf7euNnDHcaYvYPYfLWyvvP2dZeVXQtsKLahwW"
+
+type Module {
+  sleepLoop(
+    msPerSleep: UInt!
+    repeats: UInt!
+  ): Boolean!
+}
