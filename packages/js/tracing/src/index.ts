@@ -10,7 +10,6 @@ import { ConsoleExporter } from "@fetsorn/opentelemetry-console-exporter";
 // workaround until we can upgrade to 0.30.0
 // https://github.com/open-telemetry/opentelemetry-js/issues/2943#issuecomment-1114265125
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http/build/src/platform/browser/OTLPTraceExporter";
-
 type MaybeAsync<T> = Promise<T> | T;
 
 export enum TracingLevel {

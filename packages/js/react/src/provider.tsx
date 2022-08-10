@@ -1,6 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import React from "react";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
+import { TracingLevel } from "@polywrap/tracing-js";
 
 type ClientContext = React.Context<PolywrapClient>
 
