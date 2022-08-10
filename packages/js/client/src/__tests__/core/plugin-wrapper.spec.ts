@@ -211,4 +211,62 @@ describe("plugin-wrapper", () => {
 
     expect(registeredPlugin?.plugin).toEqual(pluginPackage1);
   });
+
+  test("setPlugin - override existing plugin", async () => {
+    const client = new PolywrapClient();
+
+    const pluginUriToOverride = defaultPlugins[0];
+
+    const pluginPackage = {
+      factory: () => ({} as PluginModule<{}>),
+      manifest: {
+        schema: "",
+        implements: [],
+      },
+    };
+
+    client.setPlugin({
+      uri: pluginUriToOverride,
+      plugin: pluginPackage,
+    });
+
+    // check URIs
+    const pluginUris = client.getPlugins().map((x) => x.uri.uri);
+    expect(pluginUris).toEqual(defaultPlugins);
+
+    // check plugin package
+    const registeredPlugin = client
+      .getPlugins()
+      .find((x) => x.uri.uri === pluginUriToOverride);
+    expect(registeredPlugin?.plugin).toEqual(pluginPackage);
+  });
+
+  test("setPlugin - add new plugin", async () => {
+    const client = new PolywrapClient();
+
+    const pluginUri = "wrap://ens/mock-uri.polywrap.eth";
+
+    const pluginPackage = {
+      factory: () => ({} as PluginModule<{}>),
+      manifest: {
+        schema: "",
+        implements: [],
+      },
+    };
+
+    client.setPlugin({
+      uri: pluginUri,
+      plugin: pluginPackage,
+    });
+
+    // check URIs
+    const pluginUris = client.getPlugins().map((x) => x.uri.uri);
+    expect(pluginUris).toEqual([...defaultPlugins, pluginUri]);
+
+    // check plugin package
+    const registeredPlugin = client
+      .getPlugins()
+      .find((x) => x.uri.uri === pluginUri);
+    expect(registeredPlugin?.plugin).toEqual(pluginPackage);
+  });
 });

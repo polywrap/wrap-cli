@@ -141,14 +141,14 @@ export class PolywrapClient implements Client {
   }
 
   @Tracer.traceMethod("PolywrapClient: setPlugin")
-  public setPlugin(plugin: PluginRegistration): void {
+  public setPlugin(plugin: PluginRegistration): this {
     const sanitized = sanitizePluginRegistrations([plugin])[0];
 
     // add plugin
     const plugins: PluginRegistration<Uri>[] = this._config.plugins;
     let i = 0;
     for (; i < plugins.length; i++) {
-      if (this._isSamePlugin(plugins[i], sanitized)) {
+      if (plugins[i].uri.uri === sanitized.uri.uri) {
         break;
       }
     }
@@ -165,6 +165,8 @@ export class PolywrapClient implements Client {
 
     // update cache
     this._wrapperCache.delete(sanitized.uri.uri);
+
+    return this;
   }
 
   @Tracer.traceMethod("PolywrapClient: getInterfaces")
@@ -720,31 +722,6 @@ export class PolywrapClient implements Client {
         `Plugins can't use interfaces for their URI. Invalid plugins: ${pluginsWithInterfaceUris}`
       );
     }
-  }
-
-  @Tracer.traceMethod("PolywrapClient: isSamePlugin")
-  private _isSamePlugin(
-    current: PluginRegistration<Uri>,
-    alt: PluginRegistration<Uri>
-  ): boolean {
-    if (current.uri.uri === alt.uri.uri) {
-      const currentManifest = current.plugin.manifest;
-      const newManifest = alt.plugin.manifest;
-      if (currentManifest.schema !== newManifest.schema) {
-        throw Error(
-          "Cannot override a plugin registration with a new plugin that does not share the same schema"
-        );
-      }
-      for (const uri of currentManifest.implements) {
-        if (!newManifest.implements.some((value) => uri.uri === value.uri)) {
-          throw Error(
-            "Cannot override a plugin registration with a new plugin that does not implement the same interfaces"
-          );
-        }
-      }
-      return true;
-    }
-    return false;
   }
 
   @Tracer.traceMethod("PolywrapClient: toUri")
