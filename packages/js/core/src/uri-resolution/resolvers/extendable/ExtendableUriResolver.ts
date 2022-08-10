@@ -113,12 +113,24 @@ export class ExtendableUriResolver implements UriResolver {
     let implementationUri: Uri | undefined;
     let failedAttempts = 0;
 
+    const loadedImplementations: string[] = [];
     while ((implementationUri = implementationsToLoad.dequeue())) {
-      // Use only the bootstrap resolvers to resolve the resolverUri
-      // If successful, it is automatically cached
+      // Use only loadeded URI resolver extensions to resolve the implementation URI
+      // If successful, it is added to the list of loaded implementations
+
       const { wrapper } = await client.resolveUri(implementationUri, {
         config: {
-          uriResolvers: bootstrapUriResolvers,
+          uriResolvers: [
+            ...bootstrapUriResolvers,
+            ...loadedImplementations.map(
+              (x) =>
+                new UriResolverWrapper(
+                  new Uri(x),
+                  this._createWrapper,
+                  this._deserializeOptions
+                )
+            ),
+          ],
         },
       });
 
@@ -136,7 +148,8 @@ export class ExtendableUriResolver implements UriResolver {
           };
         }
       } else {
-        // If successful, it is automatically cached during the resolveUri method
+        cache.set(implementationUri.uri, wrapper);
+        loadedImplementations.push(implementationUri.uri);
         failedAttempts = 0;
       }
     }
