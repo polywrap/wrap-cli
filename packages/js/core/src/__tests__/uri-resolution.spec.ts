@@ -1,6 +1,4 @@
 import {
-  UriResolverInterface,
-  coreInterfaceUris,
   Client,
   InvokeOptions,
   InvokeResult,
@@ -9,29 +7,14 @@ import {
   QueryResult,
   Uri,
   UriRedirect,
-  RedirectsResolver,
-  ExtendableUriResolver,
-  PluginResolver,
   Wrapper,
-  Env,
-  GetFileOptions,
   GetImplementationsOptions,
   InterfaceImplementations,
   PluginRegistration,
   SubscribeOptions,
   Subscription,
-  PluginPackage,
-  GetManifestOptions,
 } from "..";
-
-import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
-import { msgpackEncode } from "@polywrap/msgpack-js";
-import {
-  buildUriResolver,
-  LegacyPluginsResolver,
-  LegacyRedirectsResolver,
-} from "../uri-resolution/resolvers";
-import { IUriResolutionStep } from "../uri-resolution/core";
+import { RedirectsResolver } from "../uri-resolution/resolvers";
 
 describe("URI resolution", () => {
   const client = (

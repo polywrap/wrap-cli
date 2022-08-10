@@ -25,10 +25,10 @@ export abstract class Wrapper implements Invocable {
    * @param client The client instance requesting this invocation.
    * This client will be used for any sub-invokes that occur.
    */
-  public abstract invoke<TResult>(
+  public abstract invoke<TData = unknown>(
     options: InvokeOptions<Uri>,
     invoker: Invoker
-  ): Promise<InvocableResult<TResult>>;
+  ): Promise<InvocableResult<TData>>;
 
   /**
    * Get a file from the Wrapper package.

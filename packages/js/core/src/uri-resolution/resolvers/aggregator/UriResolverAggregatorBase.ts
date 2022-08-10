@@ -1,9 +1,7 @@
 import { Tracer } from "@polywrap/tracing-js";
 import {
-  UriResolutionResult,
-  InfiniteLoopError,
-  IUriResolutionError,
   UriResolver,
+  UriResolutionResult,
   Uri,
   Client,
   WrapperCache,
@@ -11,11 +9,11 @@ import {
   IUriResolutionStep,
   Wrapper,
   getUriResolutionPath,
-  UriResolverError,
 } from "../../..";
+import { InfiniteLoopError } from "..";
 
 export abstract class UriResolverAggregatorBase<TError = undefined>
-  implements UriResolver<UriResolutionResult<TError>> {
+  implements UriResolver<UriResolutionResult<TError | InfiniteLoopError>> {
   constructor(private readonly options: { fullResolution: boolean }) {}
 
   abstract get name(): string;
@@ -25,15 +23,15 @@ export abstract class UriResolverAggregatorBase<TError = undefined>
     client: Client,
     cache: WrapperCache
   ): Promise<{
-    resolvers: IUriResolver[];
-    error: TError;
+    resolvers?: IUriResolver[];
+    error?: TError;
   }>;
 
   async tryResolveToWrapper(
     uri: Uri,
     client: Client,
     cache: WrapperCache
-  ): Promise<UriResolutionResult<TError>> {
+  ): Promise<UriResolutionResult<TError | InfiniteLoopError>> {
     const result = await this.getUriResolvers(uri, client, cache);
 
     if (result.error) {
@@ -58,7 +56,7 @@ export abstract class UriResolverAggregatorBase<TError = undefined>
     client: Client,
     cache: WrapperCache,
     resolvers: IUriResolver[]
-  ): Promise<UriResolutionResult<TError>> {
+  ): Promise<UriResolutionResult<TError | InfiniteLoopError>> {
     // Keep track of past URIs to avoid infinite loops
     const visitedUriMap: Map<string, boolean> = new Map<string, boolean>();
     const history: IUriResolutionStep[] = [];
@@ -82,7 +80,7 @@ export abstract class UriResolverAggregatorBase<TError = undefined>
             uri: currentUri,
             wrapper,
             history,
-            error: new InfiniteLoopError() as TError,
+            error: new InfiniteLoopError(currentUri, history),
           };
         }
 
@@ -94,7 +92,7 @@ export abstract class UriResolverAggregatorBase<TError = undefined>
         );
 
         history.push({
-          uriResolver: resolver.name,
+          resolverName: resolver.name,
           sourceUri: currentUri,
           result,
         });
@@ -124,10 +122,7 @@ export abstract class UriResolverAggregatorBase<TError = undefined>
           return {
             uri: currentUri,
             history,
-            error: (new UriResolverError(
-              resolver.name,
-              result.error
-            ) as unknown) as TError,
+            error: result.error as TError,
           };
         }
       }

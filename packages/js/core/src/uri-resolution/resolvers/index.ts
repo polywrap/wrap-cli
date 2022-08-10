@@ -1,4 +1,5 @@
 export * from "./CacheResolver";
+export * from "./InfiniteLoopError";
 export * from "./PluginResolver";
 export * from "./PluginsResolver";
 export * from "./RedirectResolver";

@@ -17,8 +17,21 @@ export class UriResolverAggregator<
     options: { fullResolution: boolean }
   );
   constructor(
+    resolvers: (
+      uri: Uri,
+      client: Client,
+      cache: WrapperCache
+    ) => Promise<IUriResolver[]>,
+    options: { fullResolution: boolean }
+  );
+  constructor(
     private resolvers:
       | IUriResolver[]
+      | ((
+          uri: Uri,
+          client: Client,
+          cache: WrapperCache
+        ) => Promise<IUriResolver[]>)
       | ((
           uri: Uri,
           client: Client,
@@ -49,7 +62,15 @@ export class UriResolverAggregator<
         resolvers: this.resolvers,
       };
     } else {
-      return await this.resolvers(uri, client, cache);
+      const result = await this.resolvers(uri, client, cache);
+
+      if (Array.isArray(result)) {
+        return {
+          resolvers: result,
+        };
+      } else {
+        return result;
+      }
     }
   }
 }

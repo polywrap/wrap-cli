@@ -12,8 +12,11 @@ import {
   coreInterfaceUris,
   WrapperCache,
 } from "../../..";
+import { InfiniteLoopError } from "../InfiniteLoopError";
 
-export type ExtendableUriResolverResult = UriResolutionResult<LoadResolverExtensionsError> & {
+export type ExtendableUriResolverResult = UriResolutionResult<
+  LoadResolverExtensionsError | InfiniteLoopError
+> & {
   implementationUri?: Uri;
 };
 
@@ -80,17 +83,14 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<LoadResolve
     client: Client,
     cache: WrapperCache
   ): Promise<ExtendableUriResolverResult> {
-    const result = await this.getUriResolvers(uri, client);
-    const error = result as IUriResolutionError;
+    const { resolvers, error } = await this.getUriResolvers(uri, client);
 
-    if (error.type) {
+    if (error || !resolvers) {
       return {
         uri,
-        error: error as LoadResolverExtensionsError,
+        error,
       };
     }
-
-    const resolvers = result as IUriResolver[];
 
     this.resolverIndex++;
 

@@ -44,7 +44,6 @@ import {
   UriResolutionHistoryType,
   IUriResolutionStep,
   IUriResolutionResult,
-  IUriResolutionError,
 } from "@polywrap/core-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
@@ -520,7 +519,7 @@ export class PolywrapClient implements Client {
         options.history === UriResolutionHistoryType.Path
           ? resolutionPath
           : history,
-      error: error as IUriResolutionError,
+      error,
     };
   }
 
