@@ -1,6 +1,6 @@
 {
   "name": "@polywrap/workflow-manifest-types-js",
-  "description": "Polywrap Manifest TypeScript Typings",
+  "description": "Workflow Manifest TypeScript Typings",
   "version": "0.3.0",
   "license": "MIT",
   "repository": {

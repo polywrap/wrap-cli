@@ -6,11 +6,13 @@
  */
 
 import {
-  PolywrapWorkflow as PolywrapWorkflow_0_1
+  PolywrapWorkflow as PolywrapWorkflow_0_1,
+  Jobs as WorkflowJobs_0_1
 } from "./0.1";
 
 export {
   PolywrapWorkflow_0_1,
+  WorkflowJobs_0_1,
 };
 
 export enum PolywrapWorkflowFormats {
@@ -21,6 +23,10 @@ export enum PolywrapWorkflowFormats {
 
 export type AnyPolywrapWorkflow =
   | PolywrapWorkflow_0_1
+
+export type WorkflowJobs =
+   | WorkflowJobs_0_1
+;
 
 export type PolywrapWorkflow = PolywrapWorkflow_0_1;
 

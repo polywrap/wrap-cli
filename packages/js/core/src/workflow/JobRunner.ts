@@ -7,12 +7,12 @@ import {
   Uri,
 } from "../types";
 
-import { Jobs } from "@polywrap/workflow-manifest-types-js";
+import { WorkflowJobs } from "@polywrap/workflow-manifest-types-js";
 
 export interface JobRunOptions {
   relativeId: string;
   parentId: string;
-  jobs: Jobs;
+  jobs: WorkflowJobs;
 }
 
 type DataOrError = "data" | "error";

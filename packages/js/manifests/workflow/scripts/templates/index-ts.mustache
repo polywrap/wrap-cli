@@ -7,13 +7,15 @@
 
 {{#formats}}
 import {
-  {{type}} as {{type}}_{{tsVersion}}
+  {{type}} as {{type}}_{{tsVersion}},
+  Jobs as WorkflowJobs_{{tsVersion}}
 } from "./{{version}}";
 {{/formats}}
 
 export {
   {{#formats}}
   {{type}}_{{tsVersion}},
+  WorkflowJobs_{{tsVersion}},
   {{/formats}}
 };
 
@@ -29,6 +31,11 @@ export type Any{{#latest}}{{type}}{{/latest}} =
 {{#formats}}
   | {{type}}_{{tsVersion}}
 {{/formats}}
+
+export type WorkflowJobs =
+{{#formats}}
+   | WorkflowJobs_{{tsVersion}}
+{{/formats}};
 
 export type {{#latest}}{{type}}{{/latest}} = {{#latest}}{{type}}_{{tsVersion}}{{/latest}};
 

@@ -1,3 +1,3 @@
-# @polywrap/polywrap-manifest-types-js
+# @polywrap/workflow-manifest-types-js
 
-TypeScript typings for the `@polywrap/polywrap-manifest-schemas` package.
+TypeScript typings for the `@polywrap/workflow-manifest-schemas` package.

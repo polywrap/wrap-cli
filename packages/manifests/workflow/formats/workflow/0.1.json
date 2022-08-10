@@ -2,12 +2,6 @@
   "id": "PolywrapWorkflow",
   "type": "object",
   "additionalProperties": false,
-  "required": [
-    "format",
-    "name",
-    "schema",
-    "language"
-  ],
   "required": ["format", "name", "jobs"],
   "properties": {
     "format": {
