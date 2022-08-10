@@ -1,0 +1,11 @@
+format: 0.1.0
+name: "Migrate_0-1-0_to_0-2-0"
+language: wasm/assemblyscript
+schema: ../schema.graphql
+module: ../index.ts
+build: ./polywrap.build.yaml
+meta: ./polywrap.meta.yaml
+deploy: ./polywrap.deploy.yaml
+import_redirects:
+  - uri: "ens/ipfs.polywrap.eth"
+    schema: ../../../../../../../../interfaces/ipfs/build/schema.graphql
