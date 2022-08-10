@@ -1,4 +1,4 @@
-import { HelloWorld_Query } from './wrap';
+import { HelloWorld_Module } from './wrap';
 import React from 'react';
 import { usePolywrapClient } from '@polywrap/react';
 import { ToastContainer, toast } from 'react-toastify';
@@ -14,7 +14,7 @@ export const HelloWorld: React.FC = () => {
     event.preventDefault();
     notify();
     console.info("Invoking Method: logMessage");
-    const result = await HelloWorld_Query.logMessage({ message }, client);
+    const result = await HelloWorld_Module.logMessage({ message }, client);
     console.info(`Invoke Result: ${JSON.stringify(result, null, 2)}`);
   };
 

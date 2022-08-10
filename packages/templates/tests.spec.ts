@@ -14,25 +14,19 @@ describe("Templates", () => {
   const languageTestCommands: Record<string, Record<string, string>> = {
     typescript: { build: "yarn build", test: "yarn test" },
     "typescript-node": {
-      // Uncomment when the helloworld wrapper has been deployed to polywrap.eth
-      // build: "yarn build",
-      // test: "yarn test",
+      build: "yarn build",
+      test: "yarn test",
     },
     "typescript-react": {
-      // Uncomment when the helloworld wrapper has been deployed to polywrap.eth
-      // build: "CI=false yarn build"
+      build: "CI=false yarn build",
     },
     assemblyscript: {
-      // Workflow tests fail in CI because cuelang is not installed
       build: "yarn build",
       test: "yarn test:e2e",
-      // "yarn test:workflow"
     },
     rust: {
-      // Workflow tests fail in CI because cuelang is not installed
       build: "yarn build",
       test: "yarn test:e2e",
-      // "yarn test:workflow"
     },
     interface: { build: "yarn build" },
     docusaurus: {
