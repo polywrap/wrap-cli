@@ -55,46 +55,48 @@ describe("Templates", () => {
   // for each project + language
   for (const projectType of Object.keys(projectLanguages)) {
     for (const language of projectLanguages[projectType]) {
-      // run the test commands at commands[language]
-      let commands = languageTestCommands[language];
+      describe(`${projectType}/${language}`, () => {
+        // run the test commands at commands[language]
+        let commands = languageTestCommands[language];
 
-      // if nothing exists, try to match language as a substring
-      if (!commands) {
-        for (const testLanguage of Object.keys(languageTestCommands)) {
-          if (language.indexOf(testLanguage) > -1) {
-            commands = languageTestCommands[testLanguage];
-            break;
+        // if nothing exists, try to match language as a substring
+        if (!commands) {
+          for (const testLanguage of Object.keys(languageTestCommands)) {
+            if (language.indexOf(testLanguage) > -1) {
+              commands = languageTestCommands[testLanguage];
+              break;
+            }
           }
         }
-      }
 
-      // if nothing exists, error
-      if (!commands) {
-        throw Error(
-          `Unknown project language ${projectType}/${language}, no test commands found. Please update this script's configuration.`
-        );
-      }
+        // if nothing exists, error
+        if (!commands) {
+          throw Error(
+            `Unknown project language ${projectType}/${language}, no test commands found. Please update this script's configuration.`
+          );
+        }
 
-      // run all commands
-      for (const command of Object.keys(commands)) {
-        test(`${projectType}/${language} > ${command}`, async () => {
-          const execPromise = new Promise<{
-            error: Error | null;
-            stdout: string;
-            stderr: string;
-          }>((resolve) => {
-            exec(
-              commands[command],
-              { cwd: path.join(rootDir, projectType, language) },
-              (error, stdout, stderr) => resolve({ error, stdout, stderr })
-            );
+        // run all commands
+        for (const command of Object.keys(commands)) {
+          test(`${command}`, async () => {
+            const execPromise = new Promise<{
+              error: Error | null;
+              stdout: string;
+              stderr: string;
+            }>((resolve) => {
+              exec(
+                commands[command],
+                { cwd: path.join(rootDir, projectType, language) },
+                (error, stdout, stderr) => resolve({ error, stdout, stderr })
+              );
+            });
+
+            const execResult = await execPromise;
+
+            expect(execResult.error).toBeNull();
           });
-
-          const execResult = await execPromise;
-
-          expect(execResult.error).toBeNull();
-        });
-      }
+        }
+      });
     }
   }
 });
