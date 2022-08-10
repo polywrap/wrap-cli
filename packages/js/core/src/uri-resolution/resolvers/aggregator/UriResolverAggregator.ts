@@ -12,13 +12,8 @@ import { UriResolverAggregatorBase } from "./UriResolverAggregatorBase";
 export class UriResolverAggregator<
   TError = undefined
 > extends UriResolverAggregatorBase<TError> {
-  constructor(resolvers: IUriResolver[], options: { fullResolution: boolean });
   constructor(
-    resolvers: (
-      uri: Uri,
-      client: Client,
-      cache: WrapperCache
-    ) => Promise<Result<IUriResolver[], TError | InfiniteLoopError>>,
+    resolvers: IUriResolver<unknown>[],
     options: { fullResolution: boolean }
   );
   constructor(
@@ -26,22 +21,32 @@ export class UriResolverAggregator<
       uri: Uri,
       client: Client,
       cache: WrapperCache
-    ) => Promise<IUriResolver[]>,
+    ) => Promise<Result<IUriResolver<unknown>[], TError | InfiniteLoopError>>,
+    options: { fullResolution: boolean }
+  );
+  constructor(
+    resolvers: (
+      uri: Uri,
+      client: Client,
+      cache: WrapperCache
+    ) => Promise<IUriResolver<unknown>[]>,
     options: { fullResolution: boolean }
   );
   constructor(
     private resolvers:
-      | IUriResolver[]
+      | IUriResolver<unknown>[]
       | ((
           uri: Uri,
           client: Client,
           cache: WrapperCache
-        ) => Promise<IUriResolver[]>)
+        ) => Promise<IUriResolver<unknown>[]>)
       | ((
           uri: Uri,
           client: Client,
           cache: WrapperCache
-        ) => Promise<Result<IUriResolver[], TError | InfiniteLoopError>>),
+        ) => Promise<
+          Result<IUriResolver<unknown>[], TError | InfiniteLoopError>
+        >),
     options: { fullResolution: boolean }
   ) {
     super(options);
@@ -55,7 +60,7 @@ export class UriResolverAggregator<
     uri: Uri,
     client: Client,
     cache: WrapperCache
-  ): Promise<Result<IUriResolver[], TError | InfiniteLoopError>> {
+  ): Promise<Result<IUriResolver<unknown>[], TError | InfiniteLoopError>> {
     if (Array.isArray(this.resolvers)) {
       return Ok(this.resolvers);
     } else {

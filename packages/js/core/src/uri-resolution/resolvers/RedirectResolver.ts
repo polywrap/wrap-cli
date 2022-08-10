@@ -1,11 +1,5 @@
-import {
-  IUriResolver,
-  Uri,
-  UriResolutionResult,
-  toUri,
-  Result,
-  Ok,
-} from "../..";
+import { IUriResolver, Uri, UriResolutionResult, toUri, Ok } from "../..";
+import { UriResolutionResponse } from "../core/UriResolutionResponse";
 
 export class RedirectResolver<TUri extends string | Uri = string>
   implements IUriResolver {
@@ -21,11 +15,15 @@ export class RedirectResolver<TUri extends string | Uri = string>
     return `${RedirectResolver.name} - ${this.from.uri} - ${this.to.uri}`;
   }
 
-  async tryResolveToWrapper(uri: Uri): Promise<Result<UriResolutionResult>> {
+  async tryResolveToWrapper(uri: Uri): Promise<UriResolutionResult> {
     if (uri.uri !== this.from.uri) {
-      return Ok(new UriResolutionResult(uri));
+      return {
+        response: Ok(new UriResolutionResponse(uri)),
+      };
     }
 
-    return Ok(new UriResolutionResult(this.to));
+    return {
+      response: Ok(new UriResolutionResponse(this.to)),
+    };
   }
 }

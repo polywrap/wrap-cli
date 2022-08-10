@@ -15,7 +15,7 @@ import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackDecode } from "@polywrap/msgpack-js";
 import { Tracer } from "@polywrap/tracing-js";
 
-export class PluginWrapper extends Wrapper {
+export class PluginWrapper implements Wrapper {
   private _instance: PluginModule<unknown> | undefined;
 
   constructor(
@@ -23,8 +23,6 @@ export class PluginWrapper extends Wrapper {
     private _plugin: PluginPackage<unknown>,
     private _clientEnv?: Env<Uri>
   ) {
-    super();
-
     Tracer.startSpan("PluginWrapper: constructor");
     Tracer.setAttribute("args", {
       uri: this._uri,
@@ -53,10 +51,10 @@ export class PluginWrapper extends Wrapper {
   }
 
   @Tracer.traceMethod("PluginWrapper: invoke")
-  public async invoke(
+  public async invoke<TData = unknown>(
     options: InvokeOptions<Uri>,
     client: Client
-  ): Promise<InvocableResult<unknown>> {
+  ): Promise<InvocableResult<TData>> {
     try {
       const { method } = options;
       const args = options.args || {};

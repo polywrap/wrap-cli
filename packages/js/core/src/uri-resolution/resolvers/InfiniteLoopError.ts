@@ -3,7 +3,7 @@ import { getUriResolutionPath, IUriResolutionStep, Uri } from "../..";
 export class InfiniteLoopError extends Error {
   constructor(
     private readonly uri: Uri,
-    private readonly history: IUriResolutionStep[]
+    private readonly history: IUriResolutionStep<unknown>[]
   ) {
     super();
   }

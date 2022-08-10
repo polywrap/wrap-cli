@@ -10,6 +10,7 @@ import {
 } from "@polywrap/wrap-manifest-types-js";
 import { Tracer } from "@polywrap/tracing-js";
 import { initWrapper, IWrapPackage } from "../../types";
+import { UriResolutionResponse } from "../core/UriResolutionResponse";
 
 export class UriResolverWrapper implements IUriResolver<unknown> {
   constructor(
@@ -26,8 +27,8 @@ export class UriResolverWrapper implements IUriResolver<unknown> {
     uri: Uri,
     client: Client,
     cache: WrapperCache,
-    resolutionPath: IUriResolutionStep[]
-  ): Promise<Result<UriResolutionResult, unknown>> {
+    resolutionPath: IUriResolutionStep<unknown>[]
+  ): Promise<UriResolutionResult<unknown>> {
     const result = await tryResolveUriWithImplementation(
       uri,
       this.implementationUri,
@@ -38,7 +39,9 @@ export class UriResolverWrapper implements IUriResolver<unknown> {
       console.log(
         "wrapper - tryResolveToWrapper - error" + this.implementationUri.uri
       );
-      return Err(result.error);
+      return {
+        response: Err(result.error),
+      };
     }
 
     const uriOrManifest = result.value;
@@ -46,7 +49,9 @@ export class UriResolverWrapper implements IUriResolver<unknown> {
     console.log("else" + this.implementationUri.uri);
 
     if (uriOrManifest.uri) {
-      return Ok(new UriResolutionResult(uriOrManifest as Uri));
+      return {
+        response: Ok(new UriResolutionResponse(uriOrManifest as Uri)),
+      };
     } else if (uriOrManifest.manifest) {
       // We've found our manifest at the current implementation,
       // meaning the URI resolver can also be used as an Wrapper resolver
@@ -67,10 +72,14 @@ export class UriResolverWrapper implements IUriResolver<unknown> {
         environment
       );
 
-      return Ok(new UriResolutionResult(wrapper));
+      return {
+        response: Ok(new UriResolutionResponse(wrapper)),
+      };
     }
 
-    return Ok(new UriResolutionResult(uri));
+    return {
+      response: Ok(new UriResolutionResponse(uri)),
+    };
   }
 }
 
@@ -81,21 +90,20 @@ const tryResolveUriWithImplementation = async (
 ): Promise<Result<UriResolverInterface.MaybeUriOrManifest, unknown>> => {
   const result = await client.tryResolveToWrapper(implementationUri);
 
-  if (!result.ok) {
+  if (!result.response.ok) {
     console.log("tryResolveUriWithImplementation - error");
-    return Err(result.error);
+    return Err(result.response.error);
   }
 
-  if (result.value.uri()) {
-    return Err(`Could not find URI: ${result.value.uri()}`);
+  const uriWrapperOrPackage = result.response.value;
+
+  if (uriWrapperOrPackage.uri) {
+    return Err(`Could not find URI: ${uriWrapperOrPackage.uri}`);
   }
 
-  const packageOrWrapper = result.value.response;
+  const wrapperOrPackage = uriWrapperOrPackage as IWrapPackage | Wrapper;
 
-  const wrapper = await initWrapper(
-    packageOrWrapper as IWrapPackage | Wrapper,
-    client
-  );
+  const wrapper = await initWrapper(wrapperOrPackage, client);
 
   const invokeResult = await wrapper.invoke<UriResolverInterface.MaybeUriOrManifest>(
     {

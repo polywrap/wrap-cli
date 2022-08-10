@@ -43,7 +43,8 @@ import {
   RunOptions,
   UriResolutionHistoryType,
   IUriResolutionStep,
-  IUriResolutionResult,
+  UriResolutionResult,
+  Result,
 } from "@polywrap/core-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
@@ -467,7 +468,7 @@ export class PolywrapClient implements Client {
   @Tracer.traceMethod("PolywrapClient: tryResolveToWrapper")
   public async tryResolveToWrapper<TUri extends Uri | string>(
     options: TryResolveToWrapperOptions<TUri, ClientConfig>
-  ): Promise<IUriResolutionResult> {
+  ): Promise<Result<UriResolutionResult, unknown>> {
     const { contextId, shouldClearContext } = this._setContext(
       options.contextId,
       options.config
@@ -485,17 +486,15 @@ export class PolywrapClient implements Client {
     //   uriResolver = uriResolvers.filter((x) => x.name !== CacheResolver.name);
     // }
 
-    const {
-      wrapper,
-      uri: resolvedUri,
-      history,
-      error,
-    } = await uriResolver.tryResolveToWrapper(
+    const { response, history } = await uriResolver.tryResolveToWrapper(
       this._toUri(options.uri),
       client,
       this._wrapperCache,
       []
     );
+
+    if (!result.resp.ok) {
+    }
 
     const resolutionPath = getUriResolutionPath(
       history as IUriResolutionStep[]

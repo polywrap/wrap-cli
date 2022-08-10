@@ -14,9 +14,9 @@ import {
 } from "../../..";
 import { InfiniteLoopError } from "../InfiniteLoopError";
 import { Err, Ok, Result } from "../../../types";
+import { UriResolutionResponse } from "../../core/UriResolutionResponse";
 
-export type ExtendableUriResolverResult = Result<
-  UriResolutionResult,
+export type ExtendableUriResolverResult = UriResolutionResult<
   LoadResolverExtensionsError | InfiniteLoopError
 >;
 
@@ -81,7 +81,9 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<LoadResolve
     const result = await this.getUriResolvers(uri, client);
 
     if (!result.ok) {
-      return Err(result.error);
+      return {
+        response: Err(result.error),
+      };
     }
 
     const resolvers = result.value;
@@ -89,7 +91,10 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<LoadResolve
     this.resolverIndex++;
 
     if (this.resolverIndex >= resolvers.length) {
-      return Ok(new UriResolutionResult(uri));
+      return {
+        response: Ok(new UriResolutionResponse(uri)),
+        history: [],
+      };
     }
 
     try {

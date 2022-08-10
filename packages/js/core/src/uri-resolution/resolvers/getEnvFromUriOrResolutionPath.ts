@@ -3,7 +3,7 @@ import { IUriResolutionStep } from "../core";
 
 export const getEnvFromUriOrResolutionPath = (
   uri: Uri,
-  resolutionPath: IUriResolutionStep[],
+  resolutionPath: IUriResolutionStep<unknown>[],
   client: Client
 ): Env<Uri> | undefined => {
   const env = client.getEnvByUri(uri, {});
