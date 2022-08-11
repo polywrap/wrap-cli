@@ -104,6 +104,26 @@ export class ClientConfigBuilder {
     return this;
   }
 
+  addEnv(uri: Uri | string, env: Record<string, unknown>): ClientConfigBuilder {
+    const envUri = toUri(uri);
+
+    const idx = this._config.envs.findIndex((x) => Uri.equals(x.uri, envUri));
+
+    if (idx > -1) {
+      this._config.envs[idx].env = {
+        ...this._config.envs[idx].env,
+        ...env,
+      };
+    } else {
+      this._config.envs.push({
+        uri: envUri,
+        env: env,
+      });
+    }
+
+    return this;
+  }
+
   build(): ClientConfig<Uri> {
     this._sanitizePlugins();
     this._sanitizeInterfacesAndImplementations();

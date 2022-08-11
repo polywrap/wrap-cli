@@ -161,6 +161,23 @@ describe("Client config builder", () => {
     expect(config.plugins[0].plugin).toStrictEqual(pluginPackage);
   });
 
+  it("should successfully add multiple plugins", () => {
+    const config = new ClientConfigBuilder()
+      .addPlugin(testPlugins[0].uri, testPlugins[0].plugin)
+      .addPlugin(testPlugins[1].uri, testPlugins[1].plugin)
+      .build();
+
+    expect(config.plugins).toHaveLength(2);
+    expect(config.plugins).toContainEqual({
+      uri: toUri(testPlugins[0].uri),
+      plugin: testPlugins[0].plugin
+    });
+    expect(config.plugins).toContainEqual({
+      uri: toUri(testPlugins[1].uri),
+      plugin: testPlugins[1].plugin
+    });
+  });
+
   it("should succesfully overwrite a plugin", () => {
     const pluginUri = "wrap://ens/some-plugin.polywrap.eth";
     const pluginPackage1 = testPlugins[0].plugin;
@@ -190,5 +207,61 @@ describe("Client config builder", () => {
 
     expect(remainingPlugin.uri).toStrictEqual(toUri(testPlugins[1].uri));
     expect(remainingPlugin.plugin).toStrictEqual(testPlugins[1].plugin);
+  });
+
+  it("should successfully add an env", () => {
+    const envUri = "wrap://ens/some-plugin.polywrap.eth";
+    const env = {
+      foo: "bar",
+      baz: {
+        biz: "buz",
+      },
+    };
+
+    const config = new ClientConfigBuilder().addEnv(envUri, env).build();
+
+    expect(config.envs).toHaveLength(1);
+    expect(config.envs[0].uri).toStrictEqual(toUri(envUri));
+    expect(config.envs[0].env).toStrictEqual(env);
+  });
+
+  it("should successfully add to an existing env", () => {
+    const envUri = "wrap://ens/some-plugin.polywrap.eth";
+    const env1 = {
+      foo: "bar",
+    };
+    const env2 = {
+      baz: {
+        biz: "buz",
+      },
+    };
+
+    const config = new ClientConfigBuilder()
+      .addEnv(envUri, env1)
+      .addEnv(envUri, env2)
+      .build();
+
+    const expectedEnv = { ...env1, ...env2 };
+
+    expect(config.envs).toHaveLength(1);
+    expect(config.envs[0].uri).toStrictEqual(toUri(envUri));
+    expect(config.envs[0].env).toStrictEqual(expectedEnv);
+  });
+
+  it("should succesfully add two separate envs", () => {
+    const config = new ClientConfigBuilder()
+      .addEnv(testEnvs[0].uri, testEnvs[0].env)
+      .addEnv(testEnvs[1].uri, testEnvs[1].env)
+      .build();
+
+    expect(config.envs).toHaveLength(2);
+    expect(config.envs).toContainEqual({
+      uri: toUri(testEnvs[0].uri),
+      env: testEnvs[0].env
+    });
+    expect(config.envs).toContainEqual({
+      uri: toUri(testEnvs[1].uri),
+      env: testEnvs[1].env
+    });
   });
 });
