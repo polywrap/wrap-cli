@@ -170,11 +170,11 @@ describe("Client config builder", () => {
     expect(config.plugins).toHaveLength(2);
     expect(config.plugins).toContainEqual({
       uri: toUri(testPlugins[0].uri),
-      plugin: testPlugins[0].plugin
+      plugin: testPlugins[0].plugin,
     });
     expect(config.plugins).toContainEqual({
       uri: toUri(testPlugins[1].uri),
-      plugin: testPlugins[1].plugin
+      plugin: testPlugins[1].plugin,
     });
   });
 
@@ -257,11 +257,25 @@ describe("Client config builder", () => {
     expect(config.envs).toHaveLength(2);
     expect(config.envs).toContainEqual({
       uri: toUri(testEnvs[0].uri),
-      env: testEnvs[0].env
+      env: testEnvs[0].env,
     });
     expect(config.envs).toContainEqual({
       uri: toUri(testEnvs[1].uri),
-      env: testEnvs[1].env
+      env: testEnvs[1].env,
+    });
+  });
+
+  it("should remove an env", () => {
+    const config = new ClientConfigBuilder()
+      .addEnv(testEnvs[0].uri, testEnvs[0].env)
+      .addEnv(testEnvs[1].uri, testEnvs[1].env)
+      .removeEnv(testEnvs[0].uri)
+      .build();
+
+    expect(config.envs).toHaveLength(1);
+    expect(config.envs).toContainEqual({
+      uri: toUri(testEnvs[1].uri),
+      env: testEnvs[1].env,
     });
   });
 });
