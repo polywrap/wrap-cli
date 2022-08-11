@@ -15,6 +15,7 @@ import {
   sanitizePluginRegistrations,
   sanitizeUriRedirects,
 } from "../utils/sanitize";
+import { toUri } from "../utils/toUri";
 
 describe("Client config builder", () => {
   const testEnvs: Env[] = [
@@ -123,26 +124,56 @@ describe("Client config builder", () => {
         interfaces: [testInterfaces[1]],
         plugins: [testPlugins[1]],
         redirects: [testUriRedirects[1]],
-        uriResolvers: [testUriResolvers[1]],      })
+        uriResolvers: [testUriResolvers[1]],
+      })
       .build();
 
-      expect(clientConfig).toBeTruthy();
-      expect(clientConfig.envs).toStrictEqual(sanitizeEnvs(testEnvs));
-      expect(clientConfig.interfaces).toStrictEqual(
-        sanitizeInterfaceImplementations(testInterfaces)
-      );
-      expect(clientConfig.plugins).toStrictEqual(
-        sanitizePluginRegistrations(testPlugins)
-      );
-      expect(clientConfig.redirects).toStrictEqual(
-        sanitizeUriRedirects(testUriRedirects)
-      );
-      expect(clientConfig.uriResolvers).toStrictEqual(testUriResolvers);
+    expect(clientConfig).toBeTruthy();
+    expect(clientConfig.envs).toStrictEqual(sanitizeEnvs(testEnvs));
+    expect(clientConfig.interfaces).toStrictEqual(
+      sanitizeInterfaceImplementations(testInterfaces)
+    );
+    expect(clientConfig.plugins).toStrictEqual(
+      sanitizePluginRegistrations(testPlugins)
+    );
+    expect(clientConfig.redirects).toStrictEqual(
+      sanitizeUriRedirects(testUriRedirects)
+    );
+    expect(clientConfig.uriResolvers).toStrictEqual(testUriResolvers);
   });
 
   it("should successfully add a default config", () => {
     const clientConfig = new ClientConfigBuilder().addDefaults().build();
 
     expect(clientConfig).toBeTruthy();
+  });
+
+  it("should successfully add a plugin", () => {
+    const pluginUri = "wrap://ens/some-plugin.polywrap.eth";
+    const pluginPackage = testPlugins[0].plugin;
+
+    const config = new ClientConfigBuilder()
+      .addPlugin(pluginUri, pluginPackage)
+      .build();
+
+    expect(config.plugins).toHaveLength(1);
+    expect(config.plugins[0].uri).toStrictEqual(toUri(pluginUri));
+    expect(config.plugins[0].plugin).toStrictEqual(pluginPackage);
+  });
+
+  it("should succesfully overwrite a plugin", () => {
+    const pluginUri = "wrap://ens/some-plugin.polywrap.eth";
+    const pluginPackage1 = testPlugins[0].plugin;
+    const pluginPackage2 = testPlugins[1].plugin;
+
+    const config = new ClientConfigBuilder()
+      .addPlugin(pluginUri, pluginPackage1)
+      .addPlugin(pluginUri, pluginPackage2)
+      .build();
+
+    expect(config.plugins).toHaveLength(1);
+    expect(config.plugins[0].uri).toStrictEqual(toUri(pluginUri));
+    expect(config.plugins[0].plugin).not.toStrictEqual(pluginPackage1);
+    expect(config.plugins[0].plugin).toStrictEqual(pluginPackage2);
   });
 });

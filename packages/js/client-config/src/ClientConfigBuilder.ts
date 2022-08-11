@@ -5,6 +5,7 @@ import {
   sanitizePluginRegistrations,
   sanitizeUriRedirects,
 } from "./utils/sanitize";
+import { toUri } from "./utils/toUri";
 
 import {
   ClientConfig,
@@ -65,6 +66,28 @@ export class ClientConfigBuilder {
 
   addDefaults(): ClientConfigBuilder {
     return this.add(getDefaultClientConfig());
+  }
+
+  addPlugin<TPluginConfig>(
+    uri: Uri | string,
+    plugin: PluginPackage<TPluginConfig>
+  ): ClientConfigBuilder {
+    const pluginUri = toUri(uri);
+
+    const existingRegistration = this._config.plugins.find((x) =>
+      Uri.equals(x.uri, pluginUri)
+    );
+
+    if (existingRegistration) {
+      existingRegistration.plugin = plugin;
+    } else {
+      this._config.plugins.push({
+        uri: pluginUri,
+        plugin: plugin,
+      });
+    }
+
+    return this;
   }
 
   build(): ClientConfig<Uri> {
