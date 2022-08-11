@@ -176,4 +176,19 @@ describe("Client config builder", () => {
     expect(config.plugins[0].plugin).not.toStrictEqual(pluginPackage1);
     expect(config.plugins[0].plugin).toStrictEqual(pluginPackage2);
   });
+
+  it("should remove a plugin", () => {
+    const config = new ClientConfigBuilder()
+      .addPlugin(testPlugins[0].uri, testPlugins[0].plugin)
+      .addPlugin(testPlugins[1].uri, testPlugins[1].plugin)
+      .removePlugin(testPlugins[0].uri)
+      .build();
+
+    expect(config.plugins).toHaveLength(1);
+
+    const remainingPlugin = config.plugins[0];
+
+    expect(remainingPlugin.uri).toStrictEqual(toUri(testPlugins[1].uri));
+    expect(remainingPlugin.plugin).toStrictEqual(testPlugins[1].plugin);
+  });
 });

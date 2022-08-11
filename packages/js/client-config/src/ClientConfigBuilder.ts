@@ -90,6 +90,20 @@ export class ClientConfigBuilder {
     return this;
   }
 
+  removePlugin(uri: Uri | string): ClientConfigBuilder {
+    const pluginUri = toUri(uri);
+
+    const idx = this._config.plugins.findIndex((x) =>
+      Uri.equals(x.uri, pluginUri)
+    );
+
+    if (idx > -1) {
+      this._config.plugins.splice(idx, 1);
+    }
+
+    return this;
+  }
+
   build(): ClientConfig<Uri> {
     this._sanitizePlugins();
     this._sanitizeInterfacesAndImplementations();
