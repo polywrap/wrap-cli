@@ -4,4 +4,4 @@ language: app/typescript
 schema: ./schema.graphql
 import_redirects:
   - uri: "wrap://ens/sample.eth"
-    schema: "../../../build/schema.graphql"
+    schema: ./schema.graphql
