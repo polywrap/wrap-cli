@@ -278,4 +278,42 @@ describe("Client config builder", () => {
       env: testEnvs[1].env,
     });
   });
+
+  it("should set an env", () => {
+    const envUri = "wrap://ens/some.plugin.eth";
+
+    const env = {
+      foo: "bar",
+    };
+
+    const config = new ClientConfigBuilder().setEnv(envUri, env).build();
+
+    expect(config.envs).toHaveLength(1);
+    expect(config.envs[0]).toEqual({
+      uri: toUri(envUri),
+      env: env,
+    });
+  });
+
+  it("should set an env over an existing env", () => {
+    const envUri = "wrap://ens/some.plugin.eth";
+
+    const env1 = {
+      foo: "bar",
+    };
+    const env2 = {
+      bar: "baz",
+    };
+
+    const config = new ClientConfigBuilder()
+      .addEnv(envUri, env1)
+      .setEnv(envUri, env2)
+      .build();
+
+    expect(config.envs).toHaveLength(1);
+    expect(config.envs[0]).toEqual({
+      uri: toUri(envUri),
+      env: env2,
+    });
+  });
 });
