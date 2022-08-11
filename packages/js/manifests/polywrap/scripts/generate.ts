@@ -88,6 +88,7 @@ async function generateFormatTypes() {
       os.writeFileSync(tsOutputPath, tsSrc);
     };
 
+    const firstItem = <T>(arr: Array<T>) => arr[0];
     const lastItem = <T>(arr: Array<T>) => arr[arr.length - 1];
     const versionToTs = (version: string) =>
       version.replace(/\./g, "_").replace(/\-/g, "_");
@@ -137,6 +138,7 @@ async function generateFormatTypes() {
 
     const validateContext = {
       formats: validateFormats,
+      first: firstItem(validateFormats),
       latest: lastItem(validateFormats),
       validators: [] as string[],
     };
