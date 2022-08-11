@@ -40,6 +40,8 @@ export type GetSchemaOptions = Contextualized;
 
 export type GetManifestOptions = Contextualized;
 
+export type GetPluginConfigOptions = Contextualized;
+
 export interface GetFileOptions extends Contextualized {
   path: string;
   encoding?: "utf-8" | string;

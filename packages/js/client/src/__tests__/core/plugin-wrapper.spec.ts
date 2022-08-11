@@ -211,4 +211,38 @@ describe("plugin-wrapper", () => {
 
     expect(registeredPlugin?.plugin).toEqual(pluginPackage1);
   });
+
+  test("get plugin config", async () => {
+    interface SamplePluginConfig {
+      bar: string;
+    }
+    class SamplePluginModule extends PluginModule<SamplePluginConfig> {}
+    const config: SamplePluginConfig = { bar: "test" };
+
+    const pluginPackage = {
+      factory: () => new SamplePluginModule(config),
+      manifest: {
+        schema: "",
+        implements: [],
+      },
+    };
+
+    const client = new PolywrapClient(
+      {
+        plugins: [
+          {
+            uri: "wrap://ens/some.plugin.eth",
+            plugin: pluginPackage,
+          },
+        ],
+      },
+      { noDefaults: true }
+    );
+
+    const pluginConfig = await client.getPluginConfig(
+      "wrap://ens/some.plugin.eth"
+    );
+
+    expect(pluginConfig).toStrictEqual(config);
+  });
 });

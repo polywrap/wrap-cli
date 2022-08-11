@@ -46,6 +46,7 @@ import {
   JobRunner,
   PluginPackage,
   RunOptions,
+  GetPluginConfigOptions,
 } from "@polywrap/core-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
@@ -169,6 +170,16 @@ export class PolywrapClient implements Client {
     return this.getEnvs(options).find((environment) =>
       Uri.equals(environment.uri, uriUri)
     );
+  }
+
+  @Tracer.traceMethod("PolywrapClient: getPluginConfig")
+  public async getPluginConfig<TUri extends Uri | string>(
+    uri: TUri,
+    options: GetPluginConfigOptions = {}
+  ): Promise<unknown> {
+    return this.getPlugins(options)
+      .find((x) => Uri.equals(x.uri, this._toUri(uri)))
+      ?.plugin.factory().config;
   }
 
   @Tracer.traceMethod("PolywrapClient: getSchema")
