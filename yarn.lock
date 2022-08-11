@@ -16189,6 +16189,13 @@ slash@^3.0.0:
   resolved "https://registry.yarnpkg.com/slash/-/slash-3.0.0.tgz#6539be870c165adbd5240220dbe361f1bc4d4634"
   integrity sha512-g9Q1haeby36OSStwb4ntCGGGaKsaVSjQ68fBxoQcutl5fS1vuY18H3wSt3jFyFtrkx+Kz0V1G85A4MyAdDMi2Q==
 
+sleep-plugin-js@0.3.1:
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/sleep-plugin-js/-/sleep-plugin-js-0.3.1.tgz#d75383c65c2747f3c2a664764ee8e2abf260267c"
+  integrity sha512-vLBG/Cy5jUT0vXnldqZEayRkflFCquCOpndze53sC1WomnJvp/znJpn4/7CqmSAvLo2WPs4mKk88Jkr4mmD7rw==
+  dependencies:
+    "@polywrap/core-js" "0.3.0"
+
 slice-ansi@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/slice-ansi/-/slice-ansi-2.1.0.tgz#cacd7693461a637a5788d92a7dd4fba068e81636"

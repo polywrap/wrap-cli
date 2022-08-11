@@ -5,4 +5,7 @@ build: ./polywrap.build.yaml
 deploy: ./polywrap.deploy.yaml
 schema: ./src/schema.graphql
 module: ./Cargo.toml
+import_redirects:
+  - uri: "wrap://ens/sleep-js.wrappers.eth"
+    schema: ./node_modules/sleep-plugin-js/build/schema.graphql
 

@@ -43,6 +43,7 @@
     "uuid": "8.3.2"
   },
   "devDependencies": {
+    "sleep-plugin-js": "0.3.1",
     "@polywrap/os-js": "0.3.0",
     "@polywrap/test-cases": "0.3.0",
     "@polywrap/test-env-js": "0.3.0",

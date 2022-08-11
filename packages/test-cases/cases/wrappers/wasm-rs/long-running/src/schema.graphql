@@ -1,0 +1,8 @@
+#import { Module } into Sleep from "wrap://ens/sleep-js.wrappers.eth"
+
+type Module {
+  sleepLoop(
+    msPerSleep: UInt!
+    repeats: UInt!
+  ): Boolean!
+}

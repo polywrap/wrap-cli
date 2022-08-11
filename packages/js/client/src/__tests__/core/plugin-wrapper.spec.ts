@@ -1,5 +1,8 @@
 import { PolywrapClient, PluginModule } from "../..";
 import { getClient } from "../utils/getClient";
+import { sleepPlugin } from "sleep-plugin-js";
+import { GetPathToTestWrappers } from "@polywrap/test-cases";
+import path from "path";
 
 jest.setTimeout(200000);
 
@@ -268,5 +271,47 @@ describe("plugin-wrapper", () => {
       .getPlugins()
       .find((x) => x.uri.uri === pluginUri);
     expect(registeredPlugin?.plugin).toEqual(pluginPackage);
+  });
+
+  test.only("setPlugin - does not affect running invocations", async () => {
+    const sleepPluginUri = "wrap://ens/sleep-js.wrappers.eth";
+    const longRunningInvocationUri = "wrap://fs/" + path.join(GetPathToTestWrappers(), "wasm-rs/long-running/build");
+
+    const result: string[] = [];
+
+    const client = new PolywrapClient({
+      plugins: [
+        {
+          uri: sleepPluginUri,
+          plugin: sleepPlugin({
+            onWake: () => !!result.push("first")
+          })
+        },
+      ],
+    });
+
+    const sleepLoop = client.invoke({
+      uri: longRunningInvocationUri,
+      method: "sleepLoop",
+      args: {
+        msPerSleep: 1000,
+        repeats: 5,
+      }
+    });
+
+    await new Promise(r => setTimeout(r, 2000));
+
+    client.setPlugin({
+      uri: sleepPluginUri,
+      plugin: sleepPlugin({
+        onWake: () => !!result.push("second")
+      })
+    });
+
+    const { data, error } = await sleepLoop;
+    expect(error).toBeFalsy();
+    expect(data).toBeTruthy();
+
+    expect(result).toStrictEqual(["first", "first", "first", "first", "first"]);
   });
 });

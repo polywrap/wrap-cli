@@ -1,0 +1,21 @@
+{
+  "name": "@polywrap/long-running",
+  "description": "can be used to test effects on long running invocations",
+  "private": true,
+  "version": "0.3.0",
+  "scripts": {
+    "build": "polywrap build -c ./config.ts",
+    "codegen": "polywrap codegen  -c ./config.ts",
+    "deploy": "polywrap deploy",
+    "test": "jest --passWithNoTests --runInBand --verbose"
+  },
+  "devDependencies": {
+    "polywrap": "0.3.0",
+    "@types/jest": "26.0.8",
+    "@polywrap/client-js": "0.3.0",
+    "jest": "26.6.3",
+    "ts-jest": "26.5.4",
+    "typescript": "4.0.7",
+    "sleep-plugin-js": "0.3.2"
+  }
+}
