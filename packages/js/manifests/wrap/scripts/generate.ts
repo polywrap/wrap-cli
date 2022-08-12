@@ -63,16 +63,10 @@ async function generateFormatTypes() {
         },
       });
 
-      const finalWrapSchema = JSON.parse(
-        JSON.stringify(bundledSchema).replace(
-          /unevaluatedProperties/g,
-          "additionalProperties"
-        )
-      );
-      wrapSchemas.push(finalWrapSchema);
+      wrapSchemas.push(bundledSchema);
 
       // Convert it to a TypeScript interface
-      const tsFile = await compile(finalWrapSchema, wrapSchema.id);
+      const tsFile = await compile(bundledSchema as any, wrapSchema.id, {additionalProperties: false});
 
       // Emit the result
       const tsOutputPath = path.join(wrapOutputDir, `${wrapVersion}.ts`);

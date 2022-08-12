@@ -2,16 +2,14 @@ import {
   createModuleDefinition,
   createInterfaceImplementedDefinition,
   createImportedModuleDefinition,
-  createAbi,
-  Abi,
   createMethodDefinition,
   createMapPropertyDefinition,
   createMapKeyDefinition,
   createScalarDefinition,
+  WrapAbi,
 } from "@polywrap/schema-parse";
 
-export const abi: Abi = {
-  ...createAbi(),
+export const abi: WrapAbi = {
   moduleType:
     {
       ...createModuleDefinition({}),
@@ -36,12 +34,10 @@ export const abi: Abi = {
               value: createScalarDefinition({
                 name: "getMap",
                 type: "Int",
-                required: false,
+                required: undefined,
               }),
               required: true,
             }),
-            arguments: [
-            ],
           }),
         },
         {
@@ -58,7 +54,7 @@ export const abi: Abi = {
               value: createScalarDefinition({
                 name: "updateMap",
                 type: "Int",
-                required: false,
+                required: undefined,
               }),
               required: true,
             }),
@@ -74,7 +70,7 @@ export const abi: Abi = {
                 value: createScalarDefinition({
                   name: "map",
                   type: "Int",
-                  required: false,
+                  required: undefined,
                 }),
                 required: true,
               })}
@@ -106,12 +102,10 @@ export const abi: Abi = {
               value: createScalarDefinition({
                 name: "getMap",
                 type: "Int",
-                required: false,
+                required: undefined,
               }),
               required: true,
             }),
-            arguments: [
-            ],
           }),
         },
         {
@@ -128,7 +122,7 @@ export const abi: Abi = {
               value: createScalarDefinition({
                 name: "updateMap",
                 type: "Int",
-                required: false,
+                required: undefined,
               }),
               required: true,
             }),
@@ -144,7 +138,7 @@ export const abi: Abi = {
                 value: createScalarDefinition({
                   name: "map",
                   type: "Int",
-                  required: false,
+                  required: undefined,
                 }),
                 required: true,
               })}

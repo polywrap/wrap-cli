@@ -4,7 +4,6 @@ import { GenerateBindingFn, renderTemplates } from "../..";
 import { BindOptions, BindOutput } from "../../..";
 
 import {
-  Abi,
   transformAbi,
   extendType,
   addFirstLast,
@@ -12,6 +11,7 @@ import {
   methodParentPointers,
   interfaceUris,
 } from "@polywrap/schema-parse";
+import { WrapAbi } from "@polywrap/wrap-manifest-types-js";
 import path from "path";
 
 export { Functions };
@@ -43,7 +43,7 @@ export const generateBinding: GenerateBindingFn = (
   return result;
 };
 
-function applyTransforms(abi: Abi): Abi {
+function applyTransforms(abi: WrapAbi): WrapAbi {
   const transforms = [
     extendType(Functions),
     addFirstLast,

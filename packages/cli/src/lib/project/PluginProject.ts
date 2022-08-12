@@ -11,8 +11,8 @@ import { resetDir } from "../system";
 import { PluginManifest } from "@polywrap/polywrap-manifest-types-js";
 import { bindSchema, BindOutput, BindOptions } from "@polywrap/schema-bind";
 import { ComposerOutput } from "@polywrap/schema-compose";
-import { Abi } from "@polywrap/schema-parse";
 import path from "path";
+import { WrapAbi } from "@polywrap/wrap-manifest-types-js";
 
 export interface PluginProjectConfig extends ProjectConfig {
   pluginManifestPath: string;
@@ -124,7 +124,7 @@ export class PluginProject extends Project<PluginManifest> {
 
     const options: BindOptions = {
       projectName: manifest.name,
-      abi: composerOutput.abi as Abi,
+      abi: composerOutput.abi as WrapAbi,
       schema: composerOutput.schema as string,
       outputDirAbs: moduleDirectory,
       bindLanguage,

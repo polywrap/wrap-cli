@@ -26,7 +26,6 @@ import { msgpackEncode } from "@polywrap/msgpack-js";
 import { WasmWrapper } from "@polywrap/client-js";
 import { WrapImports } from "@polywrap/client-js/build/wasm/types";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
-import { Abi } from "@polywrap/schema-parse";
 import { ComposerOutput } from "@polywrap/schema-compose";
 import {
   normalizePath,
@@ -358,7 +357,7 @@ export class Compiler {
 
       const manifest = await project.getManifest();
 
-      const abi: Abi = {
+      const abi: WrapAbi = {
         ...state.composerOutput.abi,
       };
 
