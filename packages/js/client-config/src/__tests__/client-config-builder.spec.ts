@@ -641,6 +641,20 @@ describe("Client config builder", () => {
     }
   }
 
+  it("should add uri resolvers", () => {
+    const uriResolver1 = new NamedUriResolver("first");
+    const uriResolver2 = new NamedUriResolver("second");
+
+    const config = new ClientConfigBuilder()
+      .addUriResolver(uriResolver1)
+      .addUriResolver(uriResolver2)
+      .build();
+
+    expect(config.uriResolvers).toHaveLength(2);
+    expect(config.uriResolvers[0].name).toBe("first");
+    expect(config.uriResolvers[1].name).toBe("second");
+  });
+
   it("should set uri resolvers", () => {
     const uriResolver1 = new NamedUriResolver("first");
     const uriResolver2 = new NamedUriResolver("second");

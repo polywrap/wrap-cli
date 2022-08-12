@@ -1,10 +1,4 @@
 import { getDefaultClientConfig } from "./bundles";
-import {
-  sanitizeEnvs,
-  sanitizeInterfaceImplementations,
-  sanitizePluginRegistrations,
-  sanitizeUriRedirects,
-} from "./utils/sanitize";
 import { toUri } from "./utils/toUri";
 
 import {
@@ -31,35 +25,36 @@ export class ClientConfigBuilder {
 
   add(config: Partial<ClientConfig<Uri | string>>): ClientConfigBuilder {
     if (config.envs) {
-      this._config.envs = [...this._config.envs, ...sanitizeEnvs(config.envs)];
+      for (const env of config.envs) {
+        this.addEnv(env.uri, env.env);
+      }
     }
 
     if (config.interfaces) {
-      this._config.interfaces = [
-        ...this._config.interfaces,
-        ...sanitizeInterfaceImplementations(config.interfaces),
-      ];
+      for (const interfaceImpl of config.interfaces) {
+        this.addInterfaceImplementations(
+          interfaceImpl.interface,
+          interfaceImpl.implementations
+        );
+      }
     }
 
     if (config.plugins) {
-      this._config.plugins = [
-        ...this._config.plugins,
-        ...sanitizePluginRegistrations(config.plugins),
-      ];
+      for (const plugin of config.plugins) {
+        this.addPlugin(plugin.uri, plugin.plugin);
+      }
     }
 
     if (config.redirects) {
-      this._config.redirects = [
-        ...this._config.redirects,
-        ...sanitizeUriRedirects(config.redirects),
-      ];
+      for (const redirect of config.redirects) {
+        this.addUriRedirect(redirect.from, redirect.to);
+      }
     }
 
     if (config.uriResolvers) {
-      this._config.uriResolvers = [
-        ...this._config.uriResolvers,
-        ...config.uriResolvers,
-      ];
+      for (const resolver of config.uriResolvers) {
+        this.addUriResolver(resolver);
+      }
     }
 
     return this;
@@ -273,6 +268,12 @@ export class ClientConfigBuilder {
     if (idx > -1) {
       this._config.redirects.splice(idx, 1);
     }
+
+    return this;
+  }
+
+  addUriResolver(resolver: UriResolver): ClientConfigBuilder {
+    this._config.uriResolvers.push(resolver);
 
     return this;
   }
