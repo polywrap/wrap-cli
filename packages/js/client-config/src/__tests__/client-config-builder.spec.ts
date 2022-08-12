@@ -402,8 +402,12 @@ describe("Client config builder", () => {
 
     expect(config.interfaces[0].interface).toStrictEqual(toUri(interfaceUri));
     expect(config.interfaces[0].implementations).toHaveLength(2);
-    expect(config.interfaces[0].implementations).toContainEqual(toUri(implUri1));
-    expect(config.interfaces[0].implementations).toContainEqual(toUri(implUri2));
+    expect(config.interfaces[0].implementations).toContainEqual(
+      toUri(implUri1)
+    );
+    expect(config.interfaces[0].implementations).toContainEqual(
+      toUri(implUri2)
+    );
   });
 
   it("should add multiple implementations for an existing interface", () => {
@@ -421,9 +425,15 @@ describe("Client config builder", () => {
 
     expect(config.interfaces[0].interface).toStrictEqual(toUri(interfaceUri));
     expect(config.interfaces[0].implementations).toHaveLength(3);
-    expect(config.interfaces[0].implementations).toContainEqual(toUri(implUri1));
-    expect(config.interfaces[0].implementations).toContainEqual(toUri(implUri2));
-    expect(config.interfaces[0].implementations).toContainEqual(toUri(implUri3));
+    expect(config.interfaces[0].implementations).toContainEqual(
+      toUri(implUri1)
+    );
+    expect(config.interfaces[0].implementations).toContainEqual(
+      toUri(implUri2)
+    );
+    expect(config.interfaces[0].implementations).toContainEqual(
+      toUri(implUri3)
+    );
   });
 
   it("should add multiple different implementations for different interfaces", () => {
@@ -463,5 +473,66 @@ describe("Client config builder", () => {
     expect(interface2?.implementations).toContainEqual(toUri(implUri2));
     expect(interface2?.implementations).toContainEqual(toUri(implUri4));
     expect(interface2?.implementations).toContainEqual(toUri(implUri6));
+  });
+
+  it("should remove an interface implementation", () => {
+    const interfaceUri1 = "wrap://ens/some.interface1.eth";
+    const interfaceUri2 = "wrap://ens/some.interface2.eth";
+    const implUri1 = "wrap://ens/interface.impl1.eth";
+    const implUri2 = "wrap://ens/interface.impl2.eth";
+
+    const config = new ClientConfigBuilder()
+      .addInterfaceImplementations(interfaceUri1, [implUri1, implUri2])
+      .addInterfaceImplementations(interfaceUri2, [implUri1, implUri2])
+      .removeInterfaceImplementation(interfaceUri1, implUri2)
+      .build();
+
+    expect(config.interfaces).toHaveLength(2);
+
+    const interface1 = config.interfaces.find(
+      (x) => x.interface.uri === interfaceUri1
+    );
+    const interface2 = config.interfaces.find(
+      (x) => x.interface.uri === interfaceUri2
+    );
+
+    expect(interface1).toBeDefined();
+    expect(interface1?.implementations).toHaveLength(1);
+    expect(interface1?.implementations).toContainEqual(toUri(implUri1));
+
+    expect(interface2).toBeDefined();
+    expect(interface2?.implementations).toHaveLength(2);
+    expect(interface2?.implementations).toContainEqual(toUri(implUri1));
+    expect(interface2?.implementations).toContainEqual(toUri(implUri2));
+  });
+
+  it("should completely remove an interface if there are no implementations left", () => {
+    const interfaceUri1 = "wrap://ens/some.interface1.eth";
+    const interfaceUri2 = "wrap://ens/some.interface2.eth";
+    const implUri1 = "wrap://ens/interface.impl1.eth";
+    const implUri2 = "wrap://ens/interface.impl2.eth";
+
+    const config = new ClientConfigBuilder()
+      .addInterfaceImplementations(interfaceUri1, [implUri1, implUri2])
+      .addInterfaceImplementations(interfaceUri2, [implUri1, implUri2])
+      .removeInterfaceImplementation(interfaceUri1, implUri1)
+      .removeInterfaceImplementation(interfaceUri1, implUri2)
+      .build();
+
+    expect(config.interfaces).toHaveLength(1);
+
+    const interface1 = config.interfaces.find(
+      (x) => x.interface.uri === interfaceUri1
+    );
+    const interface2 = config.interfaces.find(
+      (x) => x.interface.uri === interfaceUri2
+    );
+
+    expect(interface1).toBeUndefined();
+
+    expect(interface2).toBeDefined();
+    expect(interface2?.implementations).toHaveLength(2);
+    expect(interface2?.implementations).toContainEqual(toUri(implUri1));
+    expect(interface2?.implementations).toContainEqual(toUri(implUri2));
   });
 });

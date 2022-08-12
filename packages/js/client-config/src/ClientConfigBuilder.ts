@@ -211,6 +211,37 @@ export class ClientConfigBuilder {
     return this;
   }
 
+  removeInterfaceImplementation(
+    interfaceUri: Uri | string,
+    implementationUri: Uri | string
+  ): ClientConfigBuilder {
+    const interfaceUriSanitized = toUri(interfaceUri);
+    const implementationUriSanitized = toUri(implementationUri);
+
+    const existingInterface = this._config.interfaces.find((x) =>
+      Uri.equals(x.interface, interfaceUriSanitized)
+    );
+
+    if (existingInterface) {
+      const idx = existingInterface.implementations.findIndex((x) =>
+        Uri.equals(x, implementationUriSanitized)
+      );
+
+      if (idx > -1) {
+        existingInterface.implementations.splice(idx, 1);
+      }
+
+      if (existingInterface.implementations.length === 0) {
+        this._config.interfaces.splice(
+          this._config.interfaces.indexOf(existingInterface),
+          1
+        );
+      }
+    }
+
+    return this;
+  }
+
   build(): ClientConfig<Uri> {
     this._sanitizePlugins();
     this._sanitizeInterfacesAndImplementations();
