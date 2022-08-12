@@ -1,13 +1,18 @@
 import { ClientConfigBuilder } from "../ClientConfigBuilder";
 import {
   CacheResolver,
+  Client,
   Env,
   InterfaceImplementations,
   PluginModule,
   PluginRegistration,
   RedirectsResolver,
+  Uri,
   UriRedirect,
+  UriResolutionResult,
+  UriResolutionStack,
   UriResolver,
+  WrapperCache,
 } from "@polywrap/core-js";
 import {
   sanitizeEnvs,
@@ -613,5 +618,53 @@ describe("Client config builder", () => {
       from: toUri(from2),
       to: toUri(to2),
     });
+  });
+
+  class NamedUriResolver extends UriResolver {
+    private _name: string;
+
+    constructor(name: string) {
+      super();
+
+      this._name = name;
+    }
+    get name(): string {
+      return this._name;
+    }
+    resolveUri(
+      uri: Uri,
+      client: Client,
+      cache: WrapperCache,
+      resolutionPath: UriResolutionStack
+    ): Promise<UriResolutionResult> {
+      throw new Error("Method not implemented.");
+    }
+  }
+
+  it("should set uri resolvers", () => {
+    const uriResolver1 = new NamedUriResolver("first");
+    const uriResolver2 = new NamedUriResolver("second");
+
+    const config = new ClientConfigBuilder()
+      .setUriResolvers([uriResolver1, uriResolver2])
+      .build();
+
+    expect(config.uriResolvers).toHaveLength(2);
+    expect(config.uriResolvers[0].name).toBe("first");
+    expect(config.uriResolvers[1].name).toBe("second");
+  });
+
+  it("should overwrite uri resolvers on set when they already exist", () => {
+    const uriResolver1 = new NamedUriResolver("first");
+    const uriResolver2 = new NamedUriResolver("second");
+
+    const config = new ClientConfigBuilder()
+      .setUriResolvers([uriResolver1, uriResolver2])
+      .setUriResolvers([uriResolver2, uriResolver1])
+      .build();
+
+    expect(config.uriResolvers).toHaveLength(2);
+    expect(config.uriResolvers[0].name).toBe("second");
+    expect(config.uriResolvers[1].name).toBe("first");
   });
 });

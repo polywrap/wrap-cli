@@ -13,6 +13,7 @@ import {
   PluginPackage,
   PluginRegistration,
   InterfaceImplementations,
+  UriResolver,
 } from "@polywrap/core-js";
 
 export class ClientConfigBuilder {
@@ -272,6 +273,12 @@ export class ClientConfigBuilder {
     if (idx > -1) {
       this._config.redirects.splice(idx, 1);
     }
+
+    return this;
+  }
+
+  setUriResolvers(resolvers: UriResolver[]): ClientConfigBuilder {
+    this._config.uriResolvers = resolvers;
 
     return this;
   }
