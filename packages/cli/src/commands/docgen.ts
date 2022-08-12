@@ -45,6 +45,7 @@ type DocgenCommandOptions = {
   manifestFile: string;
   docgenDir: string;
   clientConfig: Partial<PolywrapClientConfig>;
+  imports: boolean;
 };
 
 enum Actions {
@@ -99,6 +100,7 @@ export const docgen: Command = {
         `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
         `${intlMsg.commands_common_options_config()}`
       )
+      .option(`-i, --imports`, `${intlMsg.commands_docgen_options_i()}`)
       .action(async (action, options) => {
         await run(action, {
           ...options,
@@ -111,7 +113,7 @@ export const docgen: Command = {
 };
 
 async function run(command: DocType, options: DocgenCommandOptions) {
-  const { manifestFile, docgenDir, clientConfig } = options;
+  const { manifestFile, docgenDir, clientConfig, imports } = options;
 
   const isAppManifest: boolean =
     (<string>manifestFile).toLowerCase().endsWith("polywrap.app.yaml") ||
@@ -161,6 +163,7 @@ async function run(command: DocType, options: DocgenCommandOptions) {
     customScript,
     codegenDirAbs: docgenDir,
     omitHeader: true,
+    mustacheView: { imports },
   });
 
   if (await codeGenerator.generate()) {

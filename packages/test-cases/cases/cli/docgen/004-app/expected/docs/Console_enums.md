@@ -1,6 +1,7 @@
 ---
-id: enums
-title: Enum Types
+id: Console_enums
+title: Console Enum Types
+sidebar_position: 3
 ---
 
 

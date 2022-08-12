@@ -1,6 +1,7 @@
 ---
 id: objects
 title: Object Types
+sidebar_position: 2
 ---
 
 
