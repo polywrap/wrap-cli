@@ -160,24 +160,51 @@ export class ClientConfigBuilder {
     const interfaceUriSanitized = toUri(interfaceUri);
     const implementationUriSanitized = toUri(implementationUri);
 
-    const existingInterfaceImplementations = this._config.interfaces.find((x) =>
+    const existingInterface = this._config.interfaces.find((x) =>
       Uri.equals(x.interface, interfaceUriSanitized)
     );
 
-    if (existingInterfaceImplementations) {
+    if (existingInterface) {
       if (
-        !existingInterfaceImplementations.implementations.some((x) =>
+        !existingInterface.implementations.some((x) =>
           Uri.equals(x, implementationUriSanitized)
         )
       ) {
-        existingInterfaceImplementations.implementations.push(
-          implementationUriSanitized
-        );
+        existingInterface.implementations.push(implementationUriSanitized);
       }
     } else {
       this._config.interfaces.push({
         interface: interfaceUriSanitized,
         implementations: [implementationUriSanitized],
+      });
+    }
+
+    return this;
+  }
+
+  addInterfaceImplementations(
+    interfaceUri: Uri | string,
+    implementationUris: Array<Uri | string>
+  ): ClientConfigBuilder {
+    const interfaceUriSanitized = toUri(interfaceUri);
+    const implementationUrisSanitized = implementationUris.map(toUri);
+
+    const existingInterface = this._config.interfaces.find((x) =>
+      Uri.equals(x.interface, interfaceUriSanitized)
+    );
+
+    if (existingInterface) {
+      for (const implUri of implementationUrisSanitized) {
+        if (
+          !existingInterface.implementations.some((x) => Uri.equals(x, implUri))
+        ) {
+          existingInterface.implementations.push(implUri);
+        }
+      }
+    } else {
+      this._config.interfaces.push({
+        interface: interfaceUriSanitized,
+        implementations: implementationUrisSanitized,
       });
     }
 

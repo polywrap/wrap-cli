@@ -329,7 +329,7 @@ describe("Client config builder", () => {
 
     expect(config.interfaces[0]).toStrictEqual({
       interface: toUri(interfaceUri),
-      implementations: [toUri(implUri)]
+      implementations: [toUri(implUri)],
     });
   });
 
@@ -346,11 +346,15 @@ describe("Client config builder", () => {
     expect(config.interfaces).toHaveLength(1);
 
     expect(config.interfaces[0].interface).toStrictEqual(toUri(interfaceUri));
-    expect(config.interfaces[0].implementations).toContainEqual(toUri(implUri1));
-    expect(config.interfaces[0].implementations).toContainEqual(toUri(implUri2));
+    expect(config.interfaces[0].implementations).toContainEqual(
+      toUri(implUri1)
+    );
+    expect(config.interfaces[0].implementations).toContainEqual(
+      toUri(implUri2)
+    );
   });
 
-  it("should add implementations for multiple interfaces", () => {
+  it("should add different implementations for different interfaces", () => {
     const interfaceUri1 = "wrap://ens/some.interface1.eth";
     const interfaceUri2 = "wrap://ens/some.interface2.eth";
     const implUri1 = "wrap://ens/interface.impl1.eth";
@@ -367,15 +371,97 @@ describe("Client config builder", () => {
 
     expect(config.interfaces).toHaveLength(2);
 
-    const interface1 = config.interfaces.find(x => x.interface.uri === interfaceUri1);
-    const interface2 = config.interfaces.find(x => x.interface.uri === interfaceUri2);
+    const interface1 = config.interfaces.find(
+      (x) => x.interface.uri === interfaceUri1
+    );
+    const interface2 = config.interfaces.find(
+      (x) => x.interface.uri === interfaceUri2
+    );
 
     expect(interface1).toBeDefined();
+    expect(interface1?.implementations).toHaveLength(2);
     expect(interface1?.implementations).toContainEqual(toUri(implUri1));
     expect(interface1?.implementations).toContainEqual(toUri(implUri3));
-    
+
     expect(interface2).toBeDefined();
+    expect(interface2?.implementations).toHaveLength(2);
     expect(interface2?.implementations).toContainEqual(toUri(implUri2));
     expect(interface2?.implementations).toContainEqual(toUri(implUri4));
+  });
+
+  it("should add multiple implementations for a non-existent interface", () => {
+    const interfaceUri = "wrap://ens/some.interface.eth";
+    const implUri1 = "wrap://ens/interface.impl1.eth";
+    const implUri2 = "wrap://ens/interface.impl2.eth";
+
+    const config = new ClientConfigBuilder()
+      .addInterfaceImplementations(interfaceUri, [implUri1, implUri2])
+      .build();
+
+    expect(config.interfaces).toHaveLength(1);
+
+    expect(config.interfaces[0].interface).toStrictEqual(toUri(interfaceUri));
+    expect(config.interfaces[0].implementations).toHaveLength(2);
+    expect(config.interfaces[0].implementations).toContainEqual(toUri(implUri1));
+    expect(config.interfaces[0].implementations).toContainEqual(toUri(implUri2));
+  });
+
+  it("should add multiple implementations for an existing interface", () => {
+    const interfaceUri = "wrap://ens/some.interface.eth";
+    const implUri1 = "wrap://ens/interface.impl1.eth";
+    const implUri2 = "wrap://ens/interface.impl2.eth";
+    const implUri3 = "wrap://ens/interface.impl3.eth";
+
+    const config = new ClientConfigBuilder()
+      .addInterfaceImplementations(interfaceUri, [implUri1])
+      .addInterfaceImplementations(interfaceUri, [implUri2, implUri3])
+      .build();
+
+    expect(config.interfaces).toHaveLength(1);
+
+    expect(config.interfaces[0].interface).toStrictEqual(toUri(interfaceUri));
+    expect(config.interfaces[0].implementations).toHaveLength(3);
+    expect(config.interfaces[0].implementations).toContainEqual(toUri(implUri1));
+    expect(config.interfaces[0].implementations).toContainEqual(toUri(implUri2));
+    expect(config.interfaces[0].implementations).toContainEqual(toUri(implUri3));
+  });
+
+  it("should add multiple different implementations for different interfaces", () => {
+    const interfaceUri1 = "wrap://ens/some.interface1.eth";
+    const interfaceUri2 = "wrap://ens/some.interface2.eth";
+    const implUri1 = "wrap://ens/interface.impl1.eth";
+    const implUri2 = "wrap://ens/interface.impl2.eth";
+    const implUri3 = "wrap://ens/interface.impl3.eth";
+    const implUri4 = "wrap://ens/interface.impl4.eth";
+    const implUri5 = "wrap://ens/interface.impl5.eth";
+    const implUri6 = "wrap://ens/interface.impl6.eth";
+
+    const config = new ClientConfigBuilder()
+      .addInterfaceImplementation(interfaceUri1, implUri1)
+      .addInterfaceImplementation(interfaceUri2, implUri2)
+      .addInterfaceImplementations(interfaceUri1, [implUri3, implUri5])
+      .addInterfaceImplementations(interfaceUri2, [implUri4, implUri6])
+      .build();
+
+    expect(config.interfaces).toHaveLength(2);
+
+    const interface1 = config.interfaces.find(
+      (x) => x.interface.uri === interfaceUri1
+    );
+    const interface2 = config.interfaces.find(
+      (x) => x.interface.uri === interfaceUri2
+    );
+
+    expect(interface1).toBeDefined();
+    expect(interface1?.implementations).toHaveLength(3);
+    expect(interface1?.implementations).toContainEqual(toUri(implUri1));
+    expect(interface1?.implementations).toContainEqual(toUri(implUri3));
+    expect(interface1?.implementations).toContainEqual(toUri(implUri5));
+
+    expect(interface2).toBeDefined();
+    expect(interface2?.implementations).toHaveLength(3);
+    expect(interface2?.implementations).toContainEqual(toUri(implUri2));
+    expect(interface2?.implementations).toContainEqual(toUri(implUri4));
+    expect(interface2?.implementations).toContainEqual(toUri(implUri6));
   });
 });
