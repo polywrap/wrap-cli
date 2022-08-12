@@ -535,4 +535,63 @@ describe("Client config builder", () => {
     expect(interface2?.implementations).toContainEqual(toUri(implUri1));
     expect(interface2?.implementations).toContainEqual(toUri(implUri2));
   });
+
+  it("should add an uri redirect", () => {
+    const from = "wrap://ens/from.this.ens";
+    const to = "wrap://ens/to.that.ens";
+
+    const config = new ClientConfigBuilder().addUriRedirect(from, to).build();
+
+    expect(config.redirects).toHaveLength(1);
+    expect(config.redirects).toContainEqual({
+      from: toUri(from),
+      to: toUri(to),
+    });
+  });
+
+  it("should add two uri redirects with different from uris", () => {
+    const from1 = "wrap://ens/from.this1.ens";
+    const to1 = "wrap://ens/to.that1.ens";
+
+    const from2 = "wrap://ens/from.this2.ens";
+    const to2 = "wrap://ens/to.that2.ens";
+
+    const config = new ClientConfigBuilder()
+      .addUriRedirect(from1, to1)
+      .addUriRedirect(from2, to2)
+      .build();
+
+    expect(config.redirects).toHaveLength(2);
+    expect(config.redirects).toContainEqual({
+      from: toUri(from1),
+      to: toUri(to1),
+    });
+    expect(config.redirects).toContainEqual({
+      from: toUri(from2),
+      to: toUri(to2),
+    });
+  });
+
+  it("should overwrite an existing uri redirect if from matches on add", () => {
+    const from1 = "wrap://ens/from1.this.ens";
+    const from2 = "wrap://ens/from2.this.ens";
+    const to1 = "wrap://ens/to.that1.ens";
+    const to2 = "wrap://ens/to.that2.ens";
+
+    const config = new ClientConfigBuilder()
+      .addUriRedirect(from1, to1)
+      .addUriRedirect(from2, to1)
+      .addUriRedirect(from1, to2)
+      .build();
+
+    expect(config.redirects).toHaveLength(2);
+    expect(config.redirects).toContainEqual({
+      from: toUri(from1),
+      to: toUri(to2),
+    });
+    expect(config.redirects).toContainEqual({
+      from: toUri(from2),
+      to: toUri(to1),
+    });
+  });
 });

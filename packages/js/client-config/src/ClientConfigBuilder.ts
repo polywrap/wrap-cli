@@ -242,6 +242,26 @@ export class ClientConfigBuilder {
     return this;
   }
 
+  addUriRedirect(from: Uri | string, to: Uri | string): ClientConfigBuilder {
+    const fromSanitized = toUri(from);
+    const toSanitized = toUri(to);
+
+    const existingRedirect = this._config.redirects.find((x) =>
+      Uri.equals(x.from, fromSanitized)
+    );
+
+    if (existingRedirect) {
+      existingRedirect.to = toSanitized;
+    } else {
+      this._config.redirects.push({
+        from: fromSanitized,
+        to: toSanitized,
+      });
+    }
+
+    return this;
+  }
+
   build(): ClientConfig<Uri> {
     this._sanitizePlugins();
     this._sanitizeInterfacesAndImplementations();
