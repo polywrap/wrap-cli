@@ -262,6 +262,20 @@ export class ClientConfigBuilder {
     return this;
   }
 
+  removeUriRedirect(from: Uri | string): ClientConfigBuilder {
+    const fromSanitized = toUri(from);
+
+    const idx = this._config.redirects.findIndex((x) =>
+      Uri.equals(x.from, fromSanitized)
+    );
+
+    if (idx > -1) {
+      this._config.redirects.splice(idx, 1);
+    }
+
+    return this;
+  }
+
   build(): ClientConfig<Uri> {
     this._sanitizePlugins();
     this._sanitizeInterfacesAndImplementations();

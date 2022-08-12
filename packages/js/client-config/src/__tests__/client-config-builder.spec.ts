@@ -594,4 +594,24 @@ describe("Client config builder", () => {
       to: toUri(to1),
     });
   });
+
+  it("should remove an uri redirect", () => {
+    const from1 = "wrap://ens/from.this1.ens";
+    const to1 = "wrap://ens/to.that1.ens";
+
+    const from2 = "wrap://ens/from.this2.ens";
+    const to2 = "wrap://ens/to.that2.ens";
+
+    const config = new ClientConfigBuilder()
+      .addUriRedirect(from1, to1)
+      .addUriRedirect(from2, to2)
+      .removeUriRedirect(from1)
+      .build();
+
+    expect(config.redirects).toHaveLength(1);
+    expect(config.redirects).toContainEqual({
+      from: toUri(from2),
+      to: toUri(to2),
+    });
+  });
 });
