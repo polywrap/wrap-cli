@@ -2,14 +2,14 @@ import {
   createObjectDefinition,
   createInterfaceImplementedDefinition,
   isEnvType,
-} from "../abi";
+  isModuleType
+} from "..";
 import {
   extractFieldDefinition,
   extractListType,
   extractNamedType,
   State,
 } from "./utils/object-types-utils";
-import { isModuleType } from "../abi/utils";
 
 import {
   ObjectTypeDefinitionNode,

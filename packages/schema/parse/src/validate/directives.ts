@@ -1,5 +1,5 @@
 import { SchemaValidator } from ".";
-import { isImportedModuleType, isModuleType } from "../abi/utils";
+import { isImportedModuleType, isModuleType } from "..";
 
 import { DirectiveNode, ASTNode, ObjectTypeDefinitionNode } from "graphql";
 import { ImportedDefinition } from "@polywrap/wrap-manifest-types-js";

@@ -4,8 +4,9 @@ import {
   createMapKeyDefinition,
   createScalarDefinition,
   createUnresolvedObjectOrEnumRef,
+  isMapKeyType,
+  isScalarType
 } from "../..";
-import { isMapKeyType, isScalarType } from "../../abi/utils";
 
 import { GenericDefinition } from "@polywrap/wrap-manifest-types-js";
 

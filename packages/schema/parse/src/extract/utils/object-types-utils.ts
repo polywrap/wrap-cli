@@ -1,4 +1,4 @@
-import { createArrayDefinition, createPropertyDefinition } from "../../abi";
+import { createArrayDefinition, createPropertyDefinition } from "../..";
 import { parseMapType } from "./map-utils";
 import { setPropertyType } from "./property-utils";
 

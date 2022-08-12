@@ -1,4 +1,4 @@
-import { createPropertyDefinition, createArrayDefinition } from "../../abi";
+import { createPropertyDefinition, createArrayDefinition } from "../..";
 import { setPropertyType } from "./property-utils";
 import { extractAnnotateDirective } from "./object-types-utils";
 

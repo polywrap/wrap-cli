@@ -7,7 +7,7 @@ import {
   createCapability,
   createInterfaceDefinition,
   capabilityTypes,
-} from "../abi";
+} from "..";
 import {
   extractEnvDirective,
   extractInputValueDefinition,

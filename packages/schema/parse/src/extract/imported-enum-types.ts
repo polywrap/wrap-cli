@@ -1,4 +1,4 @@
-import { createImportedEnumDefinition } from "../abi";
+import { createImportedEnumDefinition } from "..";
 import { extractImportedDefinition } from "./utils/imported-types-utils";
 
 import { ASTVisitor, EnumTypeDefinitionNode } from "graphql";

@@ -2,8 +2,8 @@ import {
   createScalarDefinition,
   createMapDefinition,
   createUnresolvedObjectOrEnumRef,
-} from "../../abi";
-import { isScalarType } from "../../abi/utils";
+  isScalarType
+} from "../..";
 
 import { PropertyDefinition } from "@polywrap/wrap-manifest-types-js";
 

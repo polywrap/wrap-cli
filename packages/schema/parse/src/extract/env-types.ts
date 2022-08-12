@@ -1,4 +1,4 @@
-import { isEnvType, createEnvDefinition } from "../abi";
+import { isEnvType, createEnvDefinition } from "..";
 import {
   extractFieldDefinition,
   extractListType,

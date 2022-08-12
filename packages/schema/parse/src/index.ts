@@ -1,14 +1,15 @@
 import { createAbi } from "./abi";
 import { extractors, SchemaExtractorBuilder } from "./extract";
 import { AbiTransforms, transformAbi, finalizePropertyDef } from "./transform";
-import { validators } from "./validate";
-import { SchemaValidatorBuilder } from "./validate";
+import { validators, SchemaValidatorBuilder } from "./validate";
 
 import { DocumentNode, parse, visit, visitInParallel } from "graphql";
 import { WrapAbi } from "@polywrap/wrap-manifest-types-js";
 
 export * from "./abi";
+export * from "./extract";
 export * from "./transform";
+export * from "./validate";
 export * from "./header";
 
 interface ParserOptions {

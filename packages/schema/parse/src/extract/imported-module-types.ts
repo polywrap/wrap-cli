@@ -3,7 +3,7 @@ import {
   createInterfaceImplementedDefinition,
   createMethodDefinition,
   createPropertyDefinition,
-} from "../abi";
+} from "..";
 import { extractImportedDefinition } from "./utils/imported-types-utils";
 import {
   extractEnvDirective,

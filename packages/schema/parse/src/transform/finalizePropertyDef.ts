@@ -1,5 +1,5 @@
 import { AbiTransforms } from ".";
-import { createEnumRef, createObjectRef } from "../abi";
+import { createEnumRef, createObjectRef } from "..";
 
 import {
   AnyDefinition,

@@ -1,7 +1,7 @@
 import {
   createImportedObjectDefinition,
   createInterfaceImplementedDefinition,
-} from "../abi";
+} from "..";
 import {
   extractFieldDefinition,
   extractListType,

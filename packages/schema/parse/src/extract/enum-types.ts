@@ -1,4 +1,4 @@
-import { createEnumDefinition } from "../abi";
+import { createEnumDefinition } from "..";
 
 import { WrapAbi, EnumDefinition } from "@polywrap/wrap-manifest-types-js";
 import { ASTVisitor, DirectiveNode, EnumTypeDefinitionNode } from "graphql";

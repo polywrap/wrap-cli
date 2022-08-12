@@ -1,5 +1,5 @@
 import { AbiTransforms } from ".";
-import { DefinitionKind } from "../abi";
+import { DefinitionKind } from "..";
 
 import {
   GenericDefinition,
