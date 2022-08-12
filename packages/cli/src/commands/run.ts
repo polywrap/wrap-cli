@@ -5,9 +5,12 @@ import {
   parseValidateScriptOption,
   parseWorkflowOutputFilePathOption,
   validateOutput,
+  JobRunner,
+  JobStatus,
+  JobResult,
 } from "../lib";
 
-import { JobResult, JobStatus } from "@polywrap/core-js";
+import { Uri } from "@polywrap/core-js";
 import { PolywrapWorkflow } from "@polywrap/workflow-manifest-types-js";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import path from "path";
@@ -79,39 +82,47 @@ const _run = async (workflowPath: string, options: WorkflowCommandOptions) => {
   );
   const workflowOutput: (JobResult & { id: string })[] = [];
 
-  await client.run({
-    workflow,
-    config: clientConfig,
-    ids: jobs,
-    onExecution: async (id: string, jobResult: JobResult) => {
-      const { data, error, status } = jobResult;
+  const onExecution = async (id: string, jobResult: JobResult) => {
+    const { data, error, status } = jobResult;
 
-      if (!quiet) {
-        console.log("-----------------------------------");
-        console.log(`ID: ${id}`);
-        console.log(`Status: ${status}`);
-      }
+    if (!quiet) {
+      console.log("-----------------------------------");
+      console.log(`ID: ${id}`);
+      console.log(`Status: ${status}`);
+    }
 
-      if (!quiet && data !== undefined) {
-        console.log(`Data: ${JSON.stringify(data, null, 2)}`);
-      }
+    if (!quiet && data !== undefined) {
+      console.log(`Data: ${JSON.stringify(data, null, 2)}`);
+    }
 
-      if (!quiet && error !== undefined) {
-        console.log(`Error: ${error.message}`);
-        process.exitCode = 1;
-      }
+    if (!quiet && error !== undefined) {
+      console.log(`Error: ${error.message}`);
+      process.exitCode = 1;
+    }
 
-      if (status !== JobStatus.SKIPPED && validateScript) {
-        await validateOutput(id, { data, error }, validateScript, quiet);
-      }
+    if (status !== JobStatus.SKIPPED && validateScript) {
+      await validateOutput(id, { data, error }, validateScript, quiet);
+    }
 
-      if (!quiet) {
-        console.log("-----------------------------------");
-      }
+    if (!quiet) {
+      console.log("-----------------------------------");
+    }
 
-      workflowOutput.push({ id, status, data, error });
-    },
-  });
+    workflowOutput.push({ id, status, data, error });
+  };
+
+  const jobRunner = new JobRunner<Record<string, unknown>, Uri | string>(
+    client,
+    onExecution
+  );
+
+  const ids = jobs ? jobs : Object.keys(workflow.jobs);
+
+  await Promise.all(
+    ids.map((id) =>
+      jobRunner.run({ relativeId: id, parentId: "", jobs: workflow.jobs })
+    )
+  );
 
   if (outputFile) {
     const outputFileExt = path.extname(outputFile).substring(1);

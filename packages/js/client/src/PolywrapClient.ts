@@ -41,10 +41,7 @@ import {
   coreInterfaceUris,
   Contextualized,
   ResolveUriErrorType,
-  JobRunner,
   PluginPackage,
-  RunOptions,
-  GetManifestOptions,
 } from "@polywrap/core-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
@@ -344,22 +341,6 @@ export class PolywrapClient implements Client {
     }
 
     return { error };
-  }
-
-  @Tracer.traceMethod("PolywrapClient: run")
-  public async run<
-    TData extends Record<string, unknown> = Record<string, unknown>,
-    TUri extends Uri | string = string
-  >(options: RunOptions<TData>): Promise<void> {
-    const { workflow, onExecution } = options;
-    const ids = options.ids ? options.ids : Object.keys(workflow.jobs);
-    const jobRunner = new JobRunner<TData, TUri>(this, onExecution);
-
-    await Promise.all(
-      ids.map((id) =>
-        jobRunner.run({ relativeId: id, parentId: "", jobs: workflow.jobs })
-      )
-    );
   }
 
   @Tracer.traceMethod("PolywrapClient: subscribe")
@@ -871,11 +852,6 @@ const contextualizeClient = (
           failedUriResolvers: string[];
         }> => {
           return client.loadUriResolvers();
-        },
-        run: <TData extends Record<string, unknown> = Record<string, unknown>>(
-          options: RunOptions<TData>
-        ): Promise<void> => {
-          return client.run({ ...options, contextId });
         },
       }
     : client;

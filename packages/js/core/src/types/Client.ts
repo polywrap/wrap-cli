@@ -7,7 +7,6 @@ import {
   PluginRegistration,
   InterfaceImplementations,
   Env,
-  WorkflowHandler,
 } from "./";
 import { UriResolver } from "../uri-resolution/core";
 import { UriResolverHandler } from "./UriResolver";
@@ -53,7 +52,6 @@ export interface Client
   extends Invoker,
     QueryHandler,
     SubscriptionHandler,
-    WorkflowHandler,
     UriResolverHandler {
   getRedirects(options?: GetRedirectsOptions): readonly UriRedirect<Uri>[];
 

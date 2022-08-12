@@ -1,13 +1,22 @@
 import {
   Client,
   executeMaybeAsyncFunction,
-  JobResult,
-  JobStatus,
   MaybeAsync,
   Uri,
-} from "../types";
-
+  InvokeResult,
+} from "@polywrap/core-js";
 import { WorkflowJobs } from "@polywrap/workflow-manifest-types-js";
+
+export enum JobStatus {
+  SUCCEED = "SUCCEED",
+  FAILED = "FAILED",
+  SKIPPED = "SKIPPED",
+}
+
+export interface JobResult<TData extends unknown = unknown>
+  extends InvokeResult<TData> {
+  status: JobStatus;
+}
 
 export interface JobRunOptions {
   relativeId: string;

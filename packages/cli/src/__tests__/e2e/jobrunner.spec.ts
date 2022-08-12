@@ -1,13 +1,16 @@
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { buildWrapper } from "@polywrap/test-env-js";
-import { PolywrapClient } from "../..";
-import { testCases } from "./workflow-test-cases";
+import { testCases } from "./jobrunner-test-cases";
+import { Uri } from "@polywrap/core-js";
+import { JobRunner } from "../../lib";
 import path from "path";
 import { getClient } from "../utils/getClient";
+import { PolywrapClient } from "@polywrap/client-js";
 
 jest.setTimeout(200000);
 
 describe("workflow", () => {
+
   let client: PolywrapClient;
 
   beforeAll(async () => {
@@ -20,10 +23,15 @@ describe("workflow", () => {
 
   for (const testCase of testCases) {
     test(testCase.name, async () => {
-      await client.run({
-        workflow: testCase.workflow,
-        onExecution: testCase.onExecution,
-      });
+      const ids = Object.keys(testCase.workflow.jobs);
+      const jobRunner = new JobRunner<Record<string, unknown>, Uri | string>(client, testCase.onExecution);
+
+      await Promise.all(
+          ids.map((id) =>
+              jobRunner.run({ relativeId: id, parentId: "", jobs: testCase.workflow.jobs })
+                )
+      );
     });
   }
 });
+
