@@ -1,7 +1,4 @@
-import {
-  isImportedEnvType,
-  isImportedModuleType
-} from "../..";
+import { isImportedEnvType, isImportedModuleType } from "../..";
 
 import { DirectiveNode, TypeDefinitionNode } from "graphql";
 import { ImportedDefinition } from "@polywrap/wrap-manifest-types-js";

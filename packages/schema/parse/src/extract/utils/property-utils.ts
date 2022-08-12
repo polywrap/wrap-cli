@@ -2,7 +2,7 @@ import {
   createScalarDefinition,
   createMapDefinition,
   createUnresolvedObjectOrEnumRef,
-  isScalarType
+  isScalarType,
 } from "../..";
 
 import { PropertyDefinition } from "@polywrap/wrap-manifest-types-js";

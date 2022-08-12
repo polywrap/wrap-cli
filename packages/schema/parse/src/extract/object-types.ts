@@ -2,7 +2,7 @@ import {
   createObjectDefinition,
   createInterfaceImplementedDefinition,
   isEnvType,
-  isModuleType
+  isModuleType,
 } from "..";
 import {
   extractFieldDefinition,

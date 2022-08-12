@@ -5,7 +5,7 @@ import {
   createScalarDefinition,
   createUnresolvedObjectOrEnumRef,
   isMapKeyType,
-  isScalarType
+  isScalarType,
 } from "../..";
 
 import { GenericDefinition } from "@polywrap/wrap-manifest-types-js";
