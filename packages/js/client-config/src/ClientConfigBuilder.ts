@@ -153,6 +153,37 @@ export class ClientConfigBuilder {
     return this;
   }
 
+  addInterfaceImplementation(
+    interfaceUri: Uri | string,
+    implementationUri: Uri | string
+  ): ClientConfigBuilder {
+    const interfaceUriSanitized = toUri(interfaceUri);
+    const implementationUriSanitized = toUri(implementationUri);
+
+    const existingInterfaceImplementations = this._config.interfaces.find((x) =>
+      Uri.equals(x.interface, interfaceUriSanitized)
+    );
+
+    if (existingInterfaceImplementations) {
+      if (
+        !existingInterfaceImplementations.implementations.some((x) =>
+          Uri.equals(x, implementationUriSanitized)
+        )
+      ) {
+        existingInterfaceImplementations.implementations.push(
+          implementationUriSanitized
+        );
+      }
+    } else {
+      this._config.interfaces.push({
+        interface: interfaceUriSanitized,
+        implementations: [implementationUriSanitized],
+      });
+    }
+
+    return this;
+  }
+
   build(): ClientConfig<Uri> {
     this._sanitizePlugins();
     this._sanitizeInterfacesAndImplementations();
