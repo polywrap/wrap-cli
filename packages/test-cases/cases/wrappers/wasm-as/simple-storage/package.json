@@ -5,7 +5,7 @@
     "build": "../../../../../cli/bin/polywrap build"
   },
   "dependencies": {
-    "@polywrap/wasm-as": "0.2.0",
+    "@polywrap/wasm-as": "0.3.0",
     "assemblyscript": "0.19.5"
   }
 }

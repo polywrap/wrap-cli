@@ -32,18 +32,10 @@
       "pattern": "^[a-zA-Z0-9\\-\\_]+$"
     },
     "abi": {
+      "description": "Information of modules",
       "id": "Abi",
       "type": "object",
       "unevaluatedProperties": false,
-      "required": [
-        "objectTypes",
-        "enumTypes",
-        "interfaceTypes",
-        "importedObjectTypes",
-        "importedModuleTypes",
-        "importedEnumTypes",
-        "importedEnvTypes"
-      ],
       "properties": {
         "version": {
           "description": "ABI Version",
@@ -102,75 +94,66 @@
       "definitions": {
         "objectDefinition": {
           "type": "object",
-          "required": [
-            "properties",
-            "interfaces"
-          ],
           "allOf": [
             {
               "$ref": "#/properties/abi/definitions/genericDefinition"
             },
             {
               "$ref": "#/properties/abi/definitions/withComment"
+            },
+            {
+              "properties": {
+                "properties": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/properties/abi/definitions/propertyDefinition"
+                  }
+                },
+                "interfaces": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/properties/abi/definitions/interfaceImplementedDefinition"
+                  }
+                }
+              },
+              "unevaluatedProperties": false
             }
           ],
-          "properties": {
-            "properties": {
-              "type": "array",
-              "items": {
-                "$ref": "#/properties/abi/definitions/propertyDefinition"
-              }
-            },
-            "interfaces": {
-              "type": "array",
-              "items": {
-                "$ref": "#/properties/abi/definitions/interfaceImplementedDefinition"
-              }
-            }
-          },
           "unevaluatedProperties": false
         },
         "moduleDefinition": {
           "type": "object",
-          "required": [
-            "methods",
-            "imports",
-            "interfaces"
-          ],
           "allOf": [
             {
               "$ref": "#/properties/abi/definitions/genericDefinition"
             },
             {
               "$ref": "#/properties/abi/definitions/withComment"
+            },
+            {
+              "properties": {
+                "methods": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/properties/abi/definitions/methodDefinition"
+                  }
+                },
+                "imports": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/properties/abi/definitions/importedModuleRef"
+                  }
+                },
+                "interfaces": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/properties/abi/definitions/interfaceImplementedDefinition"
+                  }
+                }
+              },
+              "unevaluatedProperties": false
             }
           ],
-          "properties": {
-            "methods": {
-              "type": "array",
-              "items": [
-                {
-                  "$ref": "#/properties/abi/definitions/methodDefinition"
-                }
-              ]
-            },
-            "imports": {
-              "type": "array",
-              "items": [
-                {
-                  "$ref": "#/properties/abi/definitions/importedModuleRef"
-                }
-              ]
-            },
-            "interfaces": {
-              "type": "array",
-              "items": [
-                {
-                  "$ref": "#/properties/abi/definitions/interfaceImplementedDefinition"
-                }
-              ]
-            }
-          },
           "unevaluatedProperties": false
         },
         "interfaceImplementedDefinition": {
@@ -185,7 +168,6 @@
         "methodDefinition": {
           "type": "object",
           "required": [
-            "arguments",
             "return"
           ],
           "allOf": [
@@ -194,30 +176,31 @@
             },
             {
               "$ref": "#/properties/abi/definitions/withComment"
-            }
-          ],
-          "properties": {
-            "arguments": {
-              "type": "array",
-              "items": [
-                {
-                  "$ref": "#/properties/abi/definitions/propertyDefinition"
-                }
-              ]
             },
-            "env": {
-              "type": "object",
+            {
               "properties": {
-                "required": {
-                  "type": "boolean"
+                "arguments": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/properties/abi/definitions/propertyDefinition"
+                  }
+                },
+                "env": {
+                  "type": "object",
+                  "properties": {
+                    "required": {
+                      "type": "boolean"
+                    }
+                  },
+                  "unevaluatedProperties": false
+                },
+                "return": {
+                  "$ref": "#/properties/abi/definitions/propertyDefinition"
                 }
               },
               "unevaluatedProperties": false
-            },
-            "return": {
-              "$ref": "#/properties/abi/definitions/propertyDefinition"
             }
-          },
+          ],
           "unevaluatedProperties": false
         },
         "envDefinition": {
@@ -239,16 +222,19 @@
             },
             {
               "$ref": "#/properties/abi/definitions/withComment"
+            },
+            {
+              "properties": {
+                "constants": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "unevaluatedProperties": false
             }
           ],
-          "properties": {
-            "constants": {
-              "type": "array",
-              "items": {
-                "type": "string"
-              }
-            }
-          },
           "unevaluatedProperties": false
         },
         "interfaceDefinition": {
@@ -262,13 +248,16 @@
             },
             {
               "$ref": "#/properties/abi/definitions/importedDefinition"
+            },
+            {
+              "properties": {
+                "capabilities": {
+                  "$ref": "#/properties/abi/definitions/capabilityDefinition"
+                }
+              },
+              "unevaluatedProperties": false
             }
           ],
-          "properties": {
-            "capabilities": {
-              "$ref": "#/properties/abi/definitions/capabilityDefinition"
-            }
-          },
           "unevaluatedProperties": false
         },
         "capabilityDefinition": {
@@ -326,9 +315,6 @@
         },
         "importedModuleDefinition": {
           "type": "object",
-          "required": [
-            "methods"
-          ],
           "allOf": [
             {
               "$ref": "#/properties/abi/definitions/genericDefinition"
@@ -338,24 +324,24 @@
             },
             {
               "$ref": "#/properties/abi/definitions/withComment"
+            },
+            {
+              "properties": {
+                "methods": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/properties/abi/definitions/methodDefinition"
+                  }
+                },
+                "isInterface": {
+                  "type": [
+                    "boolean"
+                  ]
+                }
+              },
+              "unevaluatedProperties": false
             }
           ],
-          "properties": {
-            "methods": {
-              "type": "array",
-              "items": [
-                {
-                  "$ref": "#/properties/abi/definitions/methodDefinition"
-                }
-              ]
-            },
-            "isInterface": {
-              "type": [
-                "boolean",
-                "null"
-              ]
-            }
-          },
           "unevaluatedProperties": false
         },
         "importedEnumDefinition": {
@@ -366,9 +352,6 @@
             },
             {
               "$ref": "#/properties/abi/definitions/importedDefinition"
-            },
-            {
-              "$ref": "#/properties/abi/definitions/withComment"
             }
           ],
           "unevaluatedProperties": false
@@ -431,14 +414,12 @@
                 },
                 "name": {
                   "type": [
-                    "string",
-                    "null"
+                    "string"
                   ]
                 },
                 "required": {
                   "type": [
-                    "boolean",
-                    "null"
+                    "boolean"
                   ]
                 }
               },
@@ -456,64 +437,29 @@
             {
               "properties": {
                 "array": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/properties/abi/definitions/arrayDefinition"
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
+                  "$ref": "#/properties/abi/definitions/arrayDefinition"
                 },
                 "scalar": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/properties/abi/definitions/scalarDefinition"
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
+                  "$ref": "#/properties/abi/definitions/scalarDefinition"
                 },
                 "map": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/properties/abi/definitions/mapDefinition"
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
+                  "$ref": "#/properties/abi/definitions/mapDefinition"
                 },
                 "object": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/properties/abi/definitions/objectRef"
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
+                  "$ref": "#/properties/abi/definitions/objectRef"
                 },
                 "enum": {
-                  "anyOf": [
+                  "allOf": [
                     {
                       "$ref": "#/properties/abi/definitions/enumRef"
-                    },
-                    {
-                      "type": "null"
                     }
+                  ],
+                  "required": [
+                    "type"
                   ]
                 },
                 "unresolvedObjectOrEnum": {
-                  "anyOf": [
-                    {
-                      "$ref": "#/properties/abi/definitions/unresolvedObjectOrEnumRef"
-                    },
-                    {
-                      "type": "null"
-                    }
-                  ]
+                  "$ref": "#/properties/abi/definitions/unresolvedObjectOrEnumRef"
                 }
               },
               "unevaluatedProperties": false

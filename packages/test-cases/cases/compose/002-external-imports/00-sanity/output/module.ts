@@ -4,16 +4,12 @@ import {
   createObjectPropertyDefinition,
   createImportedObjectDefinition,
   createScalarPropertyDefinition,
-  Abi,
-  createAbi,
+  WrapAbi,
   createImportedModuleDefinition,
   createImportedEnvDefinition,
 } from "@polywrap/schema-parse";
 
-export const abi: Abi = {
-  ...createAbi(),
-  objectTypes: [
-  ],
+export const abi: WrapAbi = {
   moduleType: {
       ...createModuleDefinition({}),
       imports: [
@@ -21,7 +17,6 @@ export const abi: Abi = {
         { type: "Namespace_Env" },
         { type: "Namespace_Module" }
       ],
-      interfaces: [],
       methods: [
         {
           ...createMethodDefinition({
@@ -31,12 +26,9 @@ export const abi: Abi = {
               type: "Namespace_ExternalType",
             }),
           }),
-          arguments: [
-          ],
         },
       ],
     },
-  enumTypes: [],
   importedModuleTypes: [
     {
       ...createImportedModuleDefinition({

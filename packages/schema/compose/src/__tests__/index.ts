@@ -88,9 +88,13 @@ async function importCase(
     return Promise.resolve(readFileIfExists(path, directory, true) || "");
   };
 
+  if (!moduleInput) {
+    throw new Error("Expected input schema.graphql file to Exist")
+  }
+
   const input: ComposerOptions = {
-    schemaFile: {
-      schema: moduleInput as string,
+    schema: {
+      schema: moduleInput,
       absolutePath: path.join(
         directory,
         "input/module.graphql"
@@ -103,7 +107,7 @@ async function importCase(
   };
 
   if (moduleInput) {
-    input.schemaFile = {
+    input.schema = {
       schema: moduleInput,
       absolutePath: path.join(
         directory,

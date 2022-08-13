@@ -3,18 +3,17 @@ import { addHeader } from "./templates/header.mustache";
 
 import Mustache from "mustache";
 import {
-  Abi,
   addFirstLast,
   toGraphQLType,
   transformAbi,
   moduleCapabilities,
   addAnnotations,
 } from "@polywrap/schema-parse";
-
+import { WrapAbi } from "@polywrap/wrap-manifest-types-js";
 // Remove mustache's built-in HTML escaping
 Mustache.escape = (value) => value;
 
-export function renderSchema(abi: Abi, header: boolean): string {
+export function renderSchema(abi: WrapAbi, header: boolean): string {
   // Prepare the Abi for the renderer
   abi = transformAbi(abi, addFirstLast);
   abi = transformAbi(abi, toGraphQLType);

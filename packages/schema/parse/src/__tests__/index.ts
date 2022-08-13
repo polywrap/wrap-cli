@@ -1,4 +1,4 @@
-import { Abi } from "../abi";
+import { WrapAbi } from "../abi";
 
 import path from "path";
 import { readdirSync, Dirent } from "fs";
@@ -14,7 +14,7 @@ const root = GetPathToParseTestFiles();
 export type TestCase = {
   name: string;
   input: string;
-  output: Abi;
+  output: WrapAbi;
 };
 
 export type TestCases = {
@@ -72,7 +72,7 @@ async function importCase(
   const input = readFileIfExists("input.graphql", directory);
 
   // Fetch the output Abi
-  const output = await readNamedExportIfExists<Abi>("abi", "output.ts", directory);
+  const output = await readNamedExportIfExists<WrapAbi>("abi", "output.ts", directory);
 
   if (!input) {
     console.error(`Missing input file "input.graphql" for test case "${name}" at ${directory}`);

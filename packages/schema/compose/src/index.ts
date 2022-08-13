@@ -2,20 +2,22 @@ import { SchemaFile, AbiResolvers } from "./types";
 import { resolveImportsAndParseSchemas } from "./resolve";
 import { renderSchema } from "./render";
 
-import { Abi } from "@polywrap/schema-parse";
+import { WrapAbi } from "@polywrap/wrap-manifest-types-js";
 
 export * from "./types";
 export { renderSchema };
 
 export interface ComposerOptions {
-  schemaFile: SchemaFile;
+  schema: SchemaFile;
   resolvers: AbiResolvers;
 }
 
-export async function composeSchema(options: ComposerOptions): Promise<Abi> {
+export async function composeSchema(
+  options: ComposerOptions
+): Promise<WrapAbi> {
   return await resolveImportsAndParseSchemas(
-    options.schemaFile.schema,
-    options.schemaFile.absolutePath,
+    options.schema.schema,
+    options.schema.absolutePath,
     options.resolvers
   );
 }

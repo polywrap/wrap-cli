@@ -7,6 +7,7 @@ import {
   PluginPackage,
   Uri,
   GetFileOptions,
+  GetManifestOptions,
   Env,
   isBuffer,
 } from "@polywrap/core-js";
@@ -35,14 +36,16 @@ export class PluginWrapper extends Wrapper {
 
   public async getFile(
     _: GetFileOptions,
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    client: Client
+    _client: Client
   ): Promise<Uint8Array | string> {
     throw Error("client.getFile(...) is not implemented for Plugins.");
   }
 
   @Tracer.traceMethod("PluginWrapper: getManifest")
-  public async getManifest(_: Client): Promise<WrapManifest> {
+  public async getManifest(
+    _: GetManifestOptions,
+    _client: Client
+  ): Promise<WrapManifest> {
     return this._plugin.manifest;
   }
 

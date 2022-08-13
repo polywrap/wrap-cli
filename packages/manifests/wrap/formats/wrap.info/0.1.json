@@ -25,6 +25,7 @@
       "pattern": "^[a-zA-Z0-9\\-\\_]+$"
     },
     "abi": {
+      "description": "Information of modules",
       "$ref": "../abi/0.1.json"
     }
   }

@@ -44,6 +44,7 @@ import {
   JobRunner,
   PluginPackage,
   RunOptions,
+  GetManifestOptions,
 } from "@polywrap/core-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
@@ -171,11 +172,12 @@ export class PolywrapClient implements Client {
 
   @Tracer.traceMethod("PolywrapClient: getManifest")
   public async getManifest<TUri extends Uri | string>(
-    uri: TUri
+    uri: TUri,
+    options: GetManifestOptions = {}
   ): Promise<WrapManifest> {
     const wrapper = await this._loadWrapper(this._toUri(uri), undefined);
     const client = contextualizeClient(this, undefined);
-    return await wrapper.getManifest(client);
+    return await wrapper.getManifest(options, client);
   }
 
   @Tracer.traceMethod("PolywrapClient: getFile")

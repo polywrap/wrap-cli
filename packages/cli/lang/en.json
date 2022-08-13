@@ -90,6 +90,7 @@
   "commands_docgen_options_m": "Path to the project manifest file (default: {default})",
   "commands_docgen_options_schema": "Generate GraphQL schema",
   "commands_docgen_options_markdown": "Generate {framework} markdown",
+  "commands_docgen_options_i": "Also generate docs for dependencies",
   "commands_create_description": "Create a new project with polywrap CLI",
   "commands_create_directoryExists": "Directory with name {dir} already exists",
   "commands_create_error_commandFail": "Command failed: {error}",

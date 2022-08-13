@@ -42,21 +42,10 @@ describe("plugin-wrapper", () => {
     }
 
     return {
-<<<<<<< HEAD
       factory: () => new MockMapPlugin({
         map: new Map().set("a", 1).set("b", 2)
       }),
       manifest: {} as WrapManifest,
-=======
-      factory: () =>
-        new MockMapPlugin({
-          map: new Map().set("a", 1).set("b", 2),
-        }),
-      manifest: {
-        schema: ``,
-        implements: [],
-      },
->>>>>>> origin-dev
     };
   };
 

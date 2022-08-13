@@ -27,7 +27,7 @@ import {
 } from "@polywrap/polywrap-manifest-types-js";
 import { normalizePath } from "@polywrap/os-js";
 import { BindOptions, BindOutput, bindSchema } from "@polywrap/schema-bind";
-import { Abi } from "@polywrap/schema-parse";
+import { WrapAbi } from "@polywrap/schema-parse";
 import regexParser from "regex-parser";
 import path from "path";
 import { Schema as JsonSchema } from "jsonschema";
@@ -141,7 +141,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
   }
 
   public async generateSchemaBindings(
-    abi: Abi,
+    abi: WrapAbi,
     generationSubPath?: string
   ): Promise<BindOutput> {
     const manifest = await this.getManifest();

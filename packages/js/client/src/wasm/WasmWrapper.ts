@@ -7,6 +7,7 @@ import {
   combinePaths,
   Env,
   GetFileOptions,
+  GetManifestOptions,
   InvocableResult,
   InvokeOptions,
   InvokeResult,
@@ -116,7 +117,10 @@ export class WasmWrapper extends Wrapper {
   }
 
   @Tracer.traceMethod("WasmWrapper: getManifest")
-  public async getManifest(client: Client): Promise<WrapManifest> {
+  public async getManifest(
+    options: GetManifestOptions,
+    client: Client
+  ): Promise<WrapManifest> {
     if (this._info !== undefined) {
       return this._info;
     }
@@ -131,7 +135,7 @@ export class WasmWrapper extends Wrapper {
     if (!data) {
       throw Error(`Package manifest does not contain information`);
     }
-    return deserializeWrapManifest(data);
+    return deserializeWrapManifest(data, options);
   }
 
   @Tracer.traceMethod("WasmWrapper: invoke")

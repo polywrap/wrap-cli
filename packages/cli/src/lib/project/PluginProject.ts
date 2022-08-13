@@ -10,7 +10,7 @@ import { resetDir } from "../system";
 
 import { PluginManifest } from "@polywrap/polywrap-manifest-types-js";
 import { bindSchema, BindOutput, BindOptions } from "@polywrap/schema-bind";
-import { Abi } from "@polywrap/schema-parse";
+import { WrapAbi } from "@polywrap/schema-parse";
 import path from "path";
 
 export interface PluginProjectConfig extends ProjectConfig {
@@ -100,7 +100,7 @@ export class PluginProject extends Project<PluginManifest> {
   }
 
   public async generateSchemaBindings(
-    abi: Abi,
+    abi: WrapAbi,
     generationSubPath?: string
   ): Promise<BindOutput> {
     const manifest = await this.getManifest();

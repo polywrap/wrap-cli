@@ -8,12 +8,10 @@ import {
   createObjectDefinition,
   createObjectPropertyDefinition,
   createScalarDefinition,
-  createAbi,
-  Abi,
+  WrapAbi,
 } from "@polywrap/schema-parse";
 
-export const abi: Abi = {
-  ...createAbi(),
+export const abi: WrapAbi = {
   objectTypes: [
     {
       ...createObjectDefinition({
@@ -94,8 +92,6 @@ export const abi: Abi = {
   moduleType:
     {
       ...createModuleDefinition({}),
-      imports: [],
-      interfaces: [],
       methods: [
         {
           ...createMethodDefinition({

@@ -2,6 +2,7 @@ import {
   Uri,
   Client,
   GetFileOptions,
+  GetManifestOptions,
   InvokeOptions,
   Invocable,
   Invoker,
@@ -47,7 +48,10 @@ export abstract class Wrapper implements Invocable {
    *
    * @param client The client instance requesting the manifest.
    */
-  public abstract getManifest(client: Client): Promise<WrapManifest>;
+  public abstract getManifest(
+    options: GetManifestOptions,
+    client: Client
+  ): Promise<WrapManifest>;
 }
 
 export type WrapperCache = Map<string, Wrapper>;

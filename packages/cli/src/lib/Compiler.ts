@@ -25,10 +25,10 @@ import { normalizePath, writeDirectorySync } from "@polywrap/os-js";
 import * as gluegun from "gluegun";
 import fs from "fs";
 import path from "path";
-import { Abi } from "@polywrap/schema-parse";
+import { WrapAbi } from "@polywrap/schema-parse";
 
 interface CompilerState {
-  abi: Abi;
+  abi: WrapAbi;
   compilerOverrides?: CompilerOverrides;
 }
 
@@ -193,7 +193,7 @@ export class Compiler {
     return manifest.language === "interface";
   }
 
-  private async _composeAbi(): Promise<Abi> {
+  private async _composeAbi(): Promise<WrapAbi> {
     const { schemaComposer } = this._config;
 
     // Get the fully composed schema
@@ -330,7 +330,7 @@ export class Compiler {
 
       const manifest = await project.getManifest();
 
-      const abi: Abi = {
+      const abi: WrapAbi = {
         ...state.abi,
       };
 

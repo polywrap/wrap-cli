@@ -10,8 +10,8 @@ import {
 import { AppManifest } from "@polywrap/polywrap-manifest-types-js";
 import { Client } from "@polywrap/core-js";
 import { bindSchema, BindOutput } from "@polywrap/schema-bind";
-import { Abi } from "@polywrap/schema-parse";
 import path from "path";
+import { WrapAbi } from "@polywrap/wrap-manifest-types-js";
 
 export interface AppProjectConfig extends ProjectConfig {
   appManifestPath: string;
@@ -100,7 +100,7 @@ export class AppProject extends Project<AppManifest> {
   }
 
   public async generateSchemaBindings(
-    abi: Abi,
+    abi: WrapAbi,
     generationSubPath?: string
   ): Promise<BindOutput> {
     return bindSchema({

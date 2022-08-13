@@ -114,6 +114,7 @@ export class CodeGenerator {
           abi,
           outputDirAbs: codegenDirAbs,
           bindLanguage,
+          config: this._config.mustacheView,
         });
 
         resetDir(codegenDirAbs);
