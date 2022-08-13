@@ -76,6 +76,7 @@ describe("ENS Resolver Plugin", () => {
     expect(resolution.wrapper).toBeTruthy();
 
     const manifest = await resolution.wrapper?.getManifest(
+      {},
       client
     );
 

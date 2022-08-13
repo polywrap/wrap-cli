@@ -51,7 +51,7 @@ describe("IPFS Plugin", () => {
 
     expect(resolution.wrapper).toBeTruthy();
 
-    const info = await resolution.wrapper?.getManifest(client);
+    const info = await resolution.wrapper?.getManifest({}, client);
     expect(info?.name).toBe("SimpleStorage");
   });
 });
