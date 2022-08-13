@@ -32,7 +32,7 @@
     "build:client": "lerna run build --scope @polywrap/client-js --scope @polywrap/react",
     "build:test-env": "lerna run build --scope @polywrap/test-env-js",
     "build:cli": "lerna run build --scope polywrap",
-    "build:plugins:patch": "lerna run codegen:patch --scope @polywrap/*-plugin-js --concurrency 1",
+    "build:plugins:patch": "cd packages/js/plugins/ethereum && yarn codegen:patch && cd ../http && yarn codegen:patch && lerna run codegen:patch --scope @polywrap/*-plugin-js --concurrency 1",
     "link:interface:deps": "yarn link:manifests && yarn link:schema",
     "link:manifests": "yarn link:manifests:polywrap && yarn link:manifests:wrap",
     "link:manifests:polywrap": "cd packages/js/manifests/polywrap && (yarn unlink || true) && yarn link && cd ../../../../dependencies && yarn link @polywrap/polywrap-manifest-types-js && cd ../",
