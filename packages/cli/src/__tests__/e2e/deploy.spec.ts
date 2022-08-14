@@ -176,9 +176,9 @@ describe("e2e tests for deploy command", () => {
             },
             "result": {
               "_config": {
-                "uri": "wrap://ens/test1.eth",
+                "uri": "wrap://ens/testnet/test1.eth",
                 "authority": "ens",
-                "path": "test1.eth"
+                "path": "testnet/test1.eth"
               }
             }
           },
@@ -194,9 +194,9 @@ describe("e2e tests for deploy command", () => {
             },
             "result": {
               "_config": {
-                "uri": "wrap://ens/test2.eth",
+                "uri": "wrap://ens/testnet/test2.eth",
                 "authority": "ens",
-                "path": "test2.eth"
+                "path": "testnet/test2.eth"
               }
             }
           },
@@ -230,9 +230,9 @@ describe("e2e tests for deploy command", () => {
             },
             "result": {
               "_config": {
-                "uri": "wrap://ens/test1.eth",
+                "uri": "wrap://ens/testnet/test1.eth",
                 "authority": "ens",
-                "path": "test1.eth"
+                "path": "testnet/test1.eth"
               }
             }
           },
@@ -248,9 +248,9 @@ describe("e2e tests for deploy command", () => {
             },
             "result": {
               "_config": {
-                "uri": "wrap://ens/test2.eth",
+                "uri": "wrap://ens/testnet/test2.eth",
                 "authority": "ens",
-                "path": "test2.eth"
+                "path": "testnet/test2.eth"
               }
             }
           }
@@ -271,9 +271,9 @@ describe("e2e tests for deploy command", () => {
             },
             "result": {
               "_config": {
-                "uri": "wrap://ens/test3.eth",
+                "uri": "wrap://ens/testnet/test3.eth",
                 "authority": "ens",
-                "path": "test3.eth"
+                "path": "testnet/test3.eth"
               }
             }
           },
@@ -289,9 +289,9 @@ describe("e2e tests for deploy command", () => {
             },
             "result": {
               "_config": {
-                "uri": "wrap://ens/test3.eth",
+                "uri": "wrap://ens/testnet/test3.eth",
                 "authority": "ens",
-                "path": "test3.eth"
+                "path": "testnet/test3.eth"
               }
             }
           }

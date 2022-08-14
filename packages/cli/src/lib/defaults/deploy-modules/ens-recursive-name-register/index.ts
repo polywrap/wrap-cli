@@ -116,7 +116,7 @@ class ENSRecursiveNameRegisterPublisher implements Deployer {
       },
     });
 
-    return uri;
+    return new Uri(`ens/${network}/${ensDomain}`);
   }
 }
 

@@ -117,7 +117,7 @@ class ENSPublisher implements Deployer {
       },
     });
 
-    return new Uri(`ens/${config.domainName}`);
+    return new Uri(`ens/${network}/${config.domainName}`);
   }
 }
 
