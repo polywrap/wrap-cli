@@ -5,7 +5,6 @@ import { clearStyle, polywrapCli } from "./utils";
 
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import { runCLI } from "@polywrap/test-env-js";
-import { spawnSync } from 'child_process';
 
 const testCaseRoot = path.join(GetPathToCliTestFiles(), "infra");
   const testCases =
@@ -215,18 +214,6 @@ describe("e2e tests for infra command", () => {
         ["infra", "down"],
         getTestCaseDir(4),
       );
-    });
-
-    it.skip("Should show error message if Docker daemon is not running", async () => {
-      spawnSync("sudo service docker stop")
-      const { stderr } = await runPolywrapCli(
-        ["infra", "up"],
-        getTestCaseDir(4),
-      );
-
-      spawnSync("sudo service docker start")
-
-      expect(stderr).toContain("Could not connect to the Docker daemon. Is the docker daemon running?");
     });
 
     it("Should correctly open one process for default module because modules flag overwrites it", async () => {
