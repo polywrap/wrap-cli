@@ -1,4 +1,9 @@
-import { intlMsg, Infra, loadInfraManifest } from "../lib";
+import {
+  intlMsg,
+  Infra,
+  loadInfraManifest,
+  ensureDockerDaemonRunning,
+} from "../lib";
 import { Command, Program } from "./types";
 
 import { InfraManifest } from "@polywrap/polywrap-manifest-types-js";
@@ -115,6 +120,8 @@ Example: 'polywrap infra up --modules=eth-ens-ipfs'.`
     defaultInfraModulesPath: DEFAULT_MODULES_PATH,
     quiet: !verbose,
   });
+
+  await ensureDockerDaemonRunning();
 
   const filteredModules = infra.getFilteredModules();
 
