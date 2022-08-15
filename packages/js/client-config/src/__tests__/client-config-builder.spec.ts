@@ -13,6 +13,7 @@ import {
   WrapperCache,
 } from "@polywrap/core-js";
 import { toUri } from "../utils/toUri";
+import { getDefaultClientConfig } from "../bundles";
 
 class NamedUriResolver extends UriResolver {
   private _name: string;
@@ -188,10 +189,30 @@ describe("Client config builder", () => {
     expect(clientConfig.uriResolvers).toStrictEqual(testUriResolvers);
   });
 
-  it("should successfully add a default config", () => {
+  it("should successfully add the default config", () => {
     const clientConfig = new ClientConfigBuilder().addDefaults().build();
 
+    const expectedConfig = getDefaultClientConfig();
+
     expect(clientConfig).toBeTruthy();
+    expect(clientConfig.envs).toStrictEqual(expectedConfig.envs);
+    expect(clientConfig.interfaces).toStrictEqual(expectedConfig.interfaces);
+    expect(clientConfig.plugins).toHaveLength(expectedConfig.plugins.length);
+    for (let i = 0; i < clientConfig.plugins.length; i++) {
+      expect(clientConfig.plugins[i].uri).toEqual(
+        expectedConfig.plugins[i].uri
+      );
+      expect(clientConfig.plugins[i].plugin.manifest).toEqual(
+        expectedConfig.plugins[i].plugin.manifest
+      );
+    }
+    expect(clientConfig.redirects).toStrictEqual(expectedConfig.redirects);
+    expect(clientConfig.uriResolvers).toHaveLength(expectedConfig.uriResolvers.length);
+    for (let i = 0; i < clientConfig.uriResolvers.length; i++) {
+      expect(clientConfig.uriResolvers[i].name).toEqual(
+        expectedConfig.uriResolvers[i].name
+      );
+    }
   });
 
   it("should successfully add a plugin", () => {
