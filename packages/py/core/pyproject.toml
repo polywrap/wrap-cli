@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "core"
+version = "0.1.0"
+description = ""
+authors = ["Niraj Kamdar <niraj@polywrap.io>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+gql = "3.4.0"
+graphql-core = "^3.2.1"
+
+[tool.poetry.dev-dependencies]
+bandit = "1.7.4"
+black = "22.6.0"
+flake8 = "5.0.4"
+mypy = "0.971"
+pydocstringformatter = "0.6.2"
+pyment = "0.3.3"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
