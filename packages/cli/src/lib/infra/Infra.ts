@@ -4,7 +4,7 @@ import {
   correctBuildContextPathsFromCompose,
   ensureDockerDaemonRunning,
   DockerCompose,
-  CacheDirectory
+  CacheDirectory,
 } from "../";
 
 import { InfraManifest } from "@polywrap/polywrap-manifest-types-js";
