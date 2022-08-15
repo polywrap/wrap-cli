@@ -49,7 +49,7 @@ export interface Step {
   /**
    * Wrapper method arguments
    */
-  args: {
+  args?: {
     [k: string]: unknown;
   };
   config?: ClientConfig;

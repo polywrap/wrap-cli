@@ -27,7 +27,7 @@
     "step": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["uri", "method", "args"],
+      "required": ["uri", "method"],
       "properties": {
         "uri": {
           "description": "Wrapper URI",

@@ -124,7 +124,7 @@ export class JobRunner<
 
   resolveArgs(
     absCurStepId: string,
-    args: Record<string, unknown>
+    args: Record<string, unknown> | undefined
   ): Record<string, unknown> {
     const index = absCurStepId.lastIndexOf(".");
     const curStepId = +absCurStepId.substring(index + 1);
@@ -184,6 +184,6 @@ export class JobRunner<
       } else return value;
     }
 
-    return resolveValue(args) as Record<string, unknown>;
+    return args ? resolveValue(args) as Record<string, unknown> : {} as Record<string, unknown>;
   }
 }
