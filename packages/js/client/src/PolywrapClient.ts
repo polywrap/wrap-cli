@@ -175,8 +175,8 @@ export class PolywrapClient implements Client {
     uri: TUri,
     options: GetManifestOptions = {}
   ): Promise<WrapManifest> {
-    const wrapper = await this._loadWrapper(this._toUri(uri), undefined);
-    const client = contextualizeClient(this, undefined);
+    const wrapper = await this._loadWrapper(this._toUri(uri), options);
+    const client = contextualizeClient(this, options.contextId);
     return await wrapper.getManifest(options, client);
   }
 
@@ -846,10 +846,13 @@ const contextualizeClient = (
           uri: TUri,
           options: GetFileOptions
         ) => {
-          return client.getFile(uri, options);
+          return client.getFile(uri, { ...options, contextId });
         },
-        getManifest: <TUri extends Uri | string>(uri: TUri) => {
-          return client.getManifest(uri);
+        getManifest: <TUri extends Uri | string>(
+          uri: TUri,
+          options: GetManifestOptions = {}
+        ) => {
+          return client.getManifest(uri, { ...options, contextId });
         },
         getImplementations: <TUri extends Uri | string>(
           uri: TUri,
