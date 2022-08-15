@@ -1,6 +1,6 @@
 import { PolywrapClientConfig } from "@polywrap/client-js";
 import { PluginModule } from "@polywrap/core-js";
-import { latestWrapManifestVersion, WrapManifest } from "@polywrap/wrap-manifest-types-js";
+import { latestWrapManifestVersion, WrapManifest, WrapAbi } from "@polywrap/wrap-manifest-types-js";
 
 interface Config extends Record<string, unknown> {
   val: number;
@@ -47,18 +47,9 @@ export function getClientConfig(defaultConfigs: Partial<PolywrapClientConfig>) {
   return defaultConfigs;
 }
 
-const abi = {
-  "objectTypes": [],
-  "enumTypes": [],
-  "interfaceTypes": [],
-  "importedObjectTypes": [],
-  "importedModuleTypes": [],
-  "importedEnumTypes": [],
-  "importedEnvTypes": [],
+const abi: WrapAbi = {
   "moduleType": {
     "type": "Module",
-    "name": null,
-    "required": null,
     "kind": 128,
     "methods": [
       {
@@ -72,17 +63,12 @@ const abi = {
           "name": "getData",
           "required": true,
           "kind": 34,
-          "array": null,
-          "map": null,
           "scalar": {
             "type": "Int",
             "name": "getData",
             "required": true,
             "kind": 4
-          },
-          "object": null,
-          "enum": null,
-          "unresolvedObjectOrEnum": null
+          }
         }
       },
       {
@@ -96,17 +82,12 @@ const abi = {
             "name": "value",
             "required": true,
             "kind": 34,
-            "array": null,
-            "map": null,
             "scalar": {
               "type": "Int",
               "name": "value",
               "required": true,
               "kind": 4
-            },
-            "object": null,
-            "enum": null,
-            "unresolvedObjectOrEnum": null
+            }
           }
         ],
         "return": {
@@ -114,17 +95,12 @@ const abi = {
           "name": "setData",
           "required": true,
           "kind": 34,
-          "array": null,
-          "map": null,
           "scalar": {
             "type": "Boolean",
             "name": "setData",
             "required": true,
             "kind": 4
-          },
-          "object": null,
-          "enum": null,
-          "unresolvedObjectOrEnum": null
+          }
         }
       },
       {
@@ -138,21 +114,14 @@ const abi = {
           "name": "deployContract",
           "required": true,
           "kind": 34,
-          "array": null,
-          "map": null,
           "scalar": {
             "type": "String",
             "name": "deployContract",
             "required": true,
             "kind": 4
-          },
-          "object": null,
-          "enum": null,
-          "unresolvedObjectOrEnum": null
+          }
         }
       }
-    ],
-    "imports": [],
-    "interfaces": []
+    ]
   }
-}
+};

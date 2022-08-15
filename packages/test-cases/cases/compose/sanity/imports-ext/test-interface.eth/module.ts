@@ -1,306 +1,207 @@
-export const abi = {
-  "objectTypes": [
+import { WrapAbi } from "@polywrap/schema-parse";
+
+export const abi: WrapAbi = {
+  objectTypes: [
     {
-      "type": "ModuleInterfaceArgument",
-      "name": null,
-      "required": null,
-      "kind": 1,
-      "properties": [
+      type: "ModuleInterfaceArgument",
+      kind: 1,
+      properties: [
         {
-          "type": "String",
-          "name": "str",
-          "required": true,
-          "kind": 34,
-          "array": null,
-          "map": null,
-          "scalar": {
-            "type": "String",
-            "name": "str",
-            "required": true,
-            "kind": 4
-          },
-          "object": null,
-          "enum": null,
-          "unresolvedObjectOrEnum": null
+          type: "String",
+          name: "str",
+          required: true,
+          kind: 34,
+          scalar: {
+            type: "String",
+            name: "str",
+            required: true,
+            kind: 4
+          }
         },
         {
-          "type": "UInt8",
-          "name": "uint8",
-          "required": true,
-          "kind": 34,
-          "array": null,
-          "map": null,
-          "scalar": {
-            "type": "UInt8",
-            "name": "uint8",
-            "required": true,
-            "kind": 4
-          },
-          "object": null,
-          "enum": null,
-          "unresolvedObjectOrEnum": null
+          type: "UInt8",
+          name: "uint8",
+          required: true,
+          kind: 34,
+          scalar: {
+            type: "UInt8",
+            name: "uint8",
+            required: true,
+            kind: 4
+          }
         }
       ],
-      "interfaces": [
+      interfaces: [
         {
-          "type": "NestedModuleInterfaceArgument",
-          "name": null,
-          "required": null,
-          "kind": 2048,
-          "array": null,
-          "map": null,
-          "scalar": null,
-          "object": null,
-          "enum": null,
-          "unresolvedObjectOrEnum": null
+          type: "NestedModuleInterfaceArgument",
+          kind: 2048
         }
       ],
-      "comment": "ModuleInterfaceArgument comment"
+      comment: "ModuleInterfaceArgument comment"
     },
     {
-      "type": "NestedModuleInterfaceArgument",
-      "name": null,
-      "required": null,
-      "kind": 1,
-      "properties": [
+      type: "NestedModuleInterfaceArgument",
+      kind: 1,
+      properties: [
         {
-          "type": "UInt8",
-          "name": "uint8",
-          "required": true,
-          "kind": 34,
-          "array": null,
-          "map": null,
-          "scalar": {
-            "type": "UInt8",
-            "name": "uint8",
-            "required": true,
-            "kind": 4
-          },
-          "object": null,
-          "enum": null,
-          "unresolvedObjectOrEnum": null
+          type: "UInt8",
+          name: "uint8",
+          required: true,
+          kind: 34,
+          scalar: {
+            type: "UInt8",
+            name: "uint8",
+            required: true,
+            kind: 4
+          }
         }
       ],
-      "interfaces": [],
-      "comment": "NestedModuleInterfaceArgument comment"
+      comment: "NestedModuleInterfaceArgument comment"
     },
     {
-      "type": "InterfaceObject1",
-      "name": null,
-      "required": null,
-      "kind": 1,
-      "properties": [
+      type: "InterfaceObject1",
+      kind: 1,
+      properties: [
         {
-          "type": "String",
-          "name": "str",
-          "required": true,
-          "kind": 34,
-          "array": null,
-          "map": null,
-          "scalar": {
-            "type": "String",
-            "name": "str",
-            "required": true,
-            "kind": 4
-          },
-          "object": null,
-          "enum": null,
-          "unresolvedObjectOrEnum": null
+          type: "String",
+          name: "str",
+          required: true,
+          kind: 34,
+          scalar: {
+            type: "String",
+            name: "str",
+            required: true,
+            kind: 4
+          }
         },
         {
-          "type": "UInt8",
-          "name": "uint8",
-          "required": true,
-          "kind": 34,
-          "array": null,
-          "map": null,
-          "scalar": {
-            "type": "UInt8",
-            "name": "uint8",
-            "required": true,
-            "kind": 4
+          type: "UInt8",
+          name: "uint8",
+          required: true,
+          kind: 34,
+          scalar: {
+            type: "UInt8",
+            name: "uint8",
+            required: true,
+            kind: 4
           },
-          "object": null,
-          "enum": null,
-          "unresolvedObjectOrEnum": null,
-          "comment": "InterfaceObject1_uint8 comment"
+          comment: "InterfaceObject1_uint8 comment"
         }
       ],
-      "interfaces": [],
-      "comment": "InterfaceObject1 comment"
+      comment: "InterfaceObject1 comment"
     },
     {
-      "type": "InterfaceObject2",
-      "name": null,
-      "required": null,
-      "kind": 1,
-      "properties": [
+      type: "InterfaceObject2",
+      kind: 1,
+      properties: [
         {
-          "type": "String",
-          "name": "str2",
-          "required": true,
-          "kind": 34,
-          "array": null,
-          "map": null,
-          "scalar": {
-            "type": "String",
-            "name": "str2",
-            "required": true,
-            "kind": 4
-          },
-          "object": null,
-          "enum": null,
-          "unresolvedObjectOrEnum": null
+          type: "String",
+          name: "str2",
+          required: true,
+          kind: 34,
+          scalar: {
+            type: "String",
+            name: "str2",
+            required: true,
+            kind: 4
+          }
         },
         {
-          "type": "Object",
-          "name": "object",
-          "required": null,
-          "kind": 34,
-          "array": null,
-          "map": null,
-          "scalar": null,
-          "object": {
-            "type": "Object",
-            "name": "object",
-            "required": null,
-            "kind": 8192
-          },
-          "enum": null,
-          "unresolvedObjectOrEnum": null
+          type: "Object",
+          name: "object",
+          kind: 34,
+          object: {
+            type: "Object",
+            name: "object",
+            kind: 8192
+          }
         }
       ],
-      "interfaces": [
+      interfaces: [
         {
-          "type": "NestedInterfaceObject",
-          "name": null,
-          "required": null,
-          "kind": 2048,
-          "array": null,
-          "map": null,
-          "scalar": null,
-          "object": null,
-          "enum": null,
-          "unresolvedObjectOrEnum": null
+          type: "NestedInterfaceObject",
+          kind: 2048
         }
       ],
-      "comment": "InterfaceObject2 comment"
+      comment: "InterfaceObject2 comment"
     },
     {
-      "type": "NestedInterfaceObject",
-      "name": null,
-      "required": null,
-      "kind": 1,
-      "properties": [
+      type: "NestedInterfaceObject",
+      kind: 1,
+      properties: [
         {
-          "type": "Object",
-          "name": "object",
-          "required": null,
-          "kind": 34,
-          "array": null,
-          "map": null,
-          "scalar": null,
-          "object": {
-            "type": "Object",
-            "name": "object",
-            "required": null,
-            "kind": 8192
+          type: "Object",
+          name: "object",
+          kind: 34,
+          object: {
+            type: "Object",
+            name: "object",
+            kind: 8192
           },
-          "enum": null,
-          "unresolvedObjectOrEnum": null,
-          "comment": "object comment"
+          comment: "object comment"
         }
       ],
-      "interfaces": [],
-      "comment": "NestedInterfaceObject comment"
+      comment: "NestedInterfaceObject comment"
     },
     {
-      "type": "Object",
-      "name": null,
-      "required": null,
-      "kind": 1,
-      "properties": [
+      type: "Object",
+      kind: 1,
+      properties: [
         {
-          "type": "UInt8",
-          "name": "uint8",
-          "required": true,
-          "kind": 34,
-          "array": null,
-          "map": null,
-          "scalar": {
-            "type": "UInt8",
-            "name": "uint8",
-            "required": true,
-            "kind": 4
-          },
-          "object": null,
-          "enum": null,
-          "unresolvedObjectOrEnum": null
+          type: "UInt8",
+          name: "uint8",
+          required: true,
+          kind: 34,
+          scalar: {
+            type: "UInt8",
+            name: "uint8",
+            required: true,
+            kind: 4
+          }
         }
       ],
-      "interfaces": [],
-      "comment": "Object comment"
+      comment: "Object comment"
     }
   ],
-  "enumTypes": [],
-  "interfaceTypes": [],
-  "importedObjectTypes": [],
-  "importedModuleTypes": [],
-  "importedEnumTypes": [],
-  "importedEnvTypes": [],
-  "moduleType": {
-    "type": "Module",
-    "name": null,
-    "required": null,
-    "kind": 128,
-    "methods": [
+  moduleType: {
+    type: "Module",
+    kind: 128,
+    methods: [
       {
-        "type": "Method",
-        "name": "abstractModuleMethod",
-        "required": true,
-        "kind": 64,
-        "arguments": [
+        type: "Method",
+        name: "abstractModuleMethod",
+        required: true,
+        kind: 64,
+        arguments: [
           {
-            "type": "ModuleInterfaceArgument",
-            "name": "arg",
-            "required": true,
-            "kind": 34,
-            "array": null,
-            "map": null,
-            "scalar": null,
-            "object": {
-              "type": "ModuleInterfaceArgument",
-              "name": "arg",
-              "required": true,
-              "kind": 8192
+            type: "ModuleInterfaceArgument",
+            name: "arg",
+            required: true,
+            kind: 34,
+            object: {
+              type: "ModuleInterfaceArgument",
+              name: "arg",
+              required: true,
+              kind: 8192
             },
-            "enum": null,
-            "unresolvedObjectOrEnum": null,
-            "comment": "arg comment"
+            comment: "arg comment"
           }
         ],
-        "return": {
-          "type": "InterfaceObject2",
-          "name": "abstractModuleMethod",
-          "required": true,
-          "kind": 34,
-          "array": null,
-          "map": null,
-          "scalar": null,
-          "object": {
-            "type": "InterfaceObject2",
-            "name": "abstractModuleMethod",
-            "required": true,
-            "kind": 8192
-          },
-          "enum": null,
-          "unresolvedObjectOrEnum": null
+        return: {
+          type: "InterfaceObject2",
+          name: "abstractModuleMethod",
+          required: true,
+          kind: 34,
+          object: {
+            type: "InterfaceObject2",
+            name: "abstractModuleMethod",
+            required: true,
+            kind: 8192
+          }
         },
-        "comment": "abstractModuleMethod comment"
+        comment: "abstractModuleMethod comment"
       }
     ],
-    "imports": [],
-    "interfaces": [],
-    "comment": "Module comment"
+    comment: "Module comment"
   }
-}
+};

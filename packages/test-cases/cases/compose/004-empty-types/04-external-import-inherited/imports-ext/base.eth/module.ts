@@ -1,39 +1,20 @@
-export const abi = {
+import { WrapAbi } from "@polywrap/schema-parse";
+
+export const abi: WrapAbi = {
   "objectTypes": [
     {
       "type": "ImportedBaseType",
-      "name": null,
-      "required": null,
-      "kind": 1,
-      "properties": [],
-      "interfaces": []
+      "kind": 1
     },
     {
       "type": "ImportedDerivedType",
-      "name": null,
-      "required": null,
       "kind": 1,
-      "properties": [],
       "interfaces": [
         {
           "type": "ImportedBaseType",
-          "name": null,
-          "required": null,
-          "kind": 2048,
-          "array": null,
-          "map": null,
-          "scalar": null,
-          "object": null,
-          "enum": null,
-          "unresolvedObjectOrEnum": null
+          "kind": 2048
         }
       ]
     }
-  ],
-  "enumTypes": [],
-  "interfaceTypes": [],
-  "importedObjectTypes": [],
-  "importedModuleTypes": [],
-  "importedEnumTypes": [],
-  "importedEnvTypes": []
-}
+  ]
+};
