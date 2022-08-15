@@ -2,8 +2,9 @@ import {
   intlMsg,
   dependencyFetcherClassMap,
   correctBuildContextPathsFromCompose,
+  ensureDockerDaemonRunning,
   DockerCompose,
-  CacheDirectory,
+  CacheDirectory
 } from "../";
 
 import { InfraManifest } from "@polywrap/polywrap-manifest-types-js";
@@ -76,6 +77,8 @@ export class Infra {
   }
 
   public async up(): Promise<void> {
+    await ensureDockerDaemonRunning();
+
     const modulesWithPaths = await this._fetchModules();
 
     await this._dockerCompose.commands.upAll({
@@ -86,6 +89,8 @@ export class Infra {
   }
 
   public async down(): Promise<void> {
+    await ensureDockerDaemonRunning();
+
     const modulesWithPaths = await this._fetchModules();
 
     await this._dockerCompose.commands.down({

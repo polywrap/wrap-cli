@@ -121,8 +121,6 @@ Example: 'polywrap infra up --modules=eth-ens-ipfs'.`
     quiet: !verbose,
   });
 
-  await ensureDockerDaemonRunning();
-
   const filteredModules = infra.getFilteredModules();
 
   if (!filteredModules.length) {
