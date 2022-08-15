@@ -645,7 +645,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
             "map" => {
                 reader.context().push(&field, "Map<String, i32>", "type found, reading property");
                 _map = reader.read_ext_generic_map(|reader| {
-                    reader.read_string()?
+                    reader.read_string()
                 }, |reader| {
                     reader.read_i32()
                 })?;
@@ -655,7 +655,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
             "mapOfArr" => {
                 reader.context().push(&field, "Map<String, Vec<i32>>", "type found, reading property");
                 _map_of_arr = reader.read_ext_generic_map(|reader| {
-                    reader.read_string()?
+                    reader.read_string()
                 }, |reader| {
                     reader.read_array(|reader| {
                         reader.read_i32()
@@ -667,7 +667,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
             "mapOfObj" => {
                 reader.context().push(&field, "Map<String, AnotherType>", "type found, reading property");
                 _map_of_obj = reader.read_ext_generic_map(|reader| {
-                    reader.read_string()?
+                    reader.read_string()
                 }, |reader| {
                     let object = AnotherType::read(reader)?;
                     Ok(object)
@@ -678,7 +678,7 @@ pub fn read_custom_type<R: Read>(reader: &mut R) -> Result<CustomType, DecodeErr
             "mapOfArrOfObj" => {
                 reader.context().push(&field, "Map<String, Vec<AnotherType>>", "type found, reading property");
                 _map_of_arr_of_obj = reader.read_ext_generic_map(|reader| {
-                    reader.read_string()?
+                    reader.read_string()
                 }, |reader| {
                     reader.read_array(|reader| {
                         let object = AnotherType::read(reader)?;
