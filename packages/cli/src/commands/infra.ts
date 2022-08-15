@@ -1,8 +1,7 @@
 import {
   intlMsg,
   Infra,
-  loadInfraManifest,
-  ensureDockerDaemonRunning,
+  loadInfraManifest
 } from "../lib";
 import { Command, Program } from "./types";
 
