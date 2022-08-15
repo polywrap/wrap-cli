@@ -145,11 +145,12 @@ async function generateFormatTypes() {
   renderTemplate("migrate", migrateContext);
 
   // Generate a deserialize.ts file that exports a deserialization function for the latest format version
-  const deserializeContext = {
+  const serializeContext = {
     type: migrateContext.latest.type,
   };
 
-  renderTemplate("deserialize", deserializeContext);
+  renderTemplate("deserialize", serializeContext);
+  renderTemplate("serialize", serializeContext);
 
   // Generate a validate.ts file that validates the manifest against the JSON schema
   const validateFormats = wrapModules.map((module) => {

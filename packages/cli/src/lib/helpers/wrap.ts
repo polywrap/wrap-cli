@@ -2,10 +2,9 @@ import { withSpinner } from "./spinner";
 import { intlMsg } from "../intl";
 import { displayPath } from "../system";
 
-import { msgpackEncode } from "@polywrap/msgpack-js";
 import {
+  serializeWrapManifest,
   latestWrapManifestVersion,
-  validateWrapManifest,
   WrapManifest,
   WrapAbi
 } from "@polywrap/wrap-manifest-types-js";
@@ -17,24 +16,20 @@ const run = async (
   type: "interface" | "wasm" | "plugin",
   path: string
 ): Promise<void> => {
-  const info: WrapManifest = {
+  const manifest: WrapManifest = {
     version: latestWrapManifestVersion,
     name,
     type,
     abi,
   };
 
-  // One last sanity check
-  await validateWrapManifest(info);
+  const bytes = serializeWrapManifest(manifest);
 
-  const parsedInfo = JSON.parse(JSON.stringify(info));
-  writeFileSync(path, msgpackEncode(parsedInfo), {
-    encoding: "binary",
-  });
+  writeFileSync(path, bytes, { encoding: "binary" });
 };
 
 export const generateWrapFile = async (
-  abi: unknown,
+  abi: WrapAbi,
   name: string,
   type: "interface" | "wasm" | "plugin",
   path: string,
