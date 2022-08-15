@@ -103,7 +103,7 @@ export interface WrapManifest {
    * Wrapper Name
    */
   name: string;
-  abi: unknown;
+  abi: Abi;
 }
 /**
  * Information of modules

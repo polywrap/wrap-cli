@@ -14,7 +14,7 @@ Generate wrapper documentation
 
 Arguments:
   action                             
-    schema        Generate GraphQL schema
+    schema      Generate GraphQL schema
     docusaurus    Generate Docusaurus markdown
     jsdoc         Generate JSDoc markdown
    (choices: "schema", "docusaurus", "jsdoc")
@@ -35,7 +35,7 @@ Options:
 
 describe("e2e tests for docgen command", () => {
   const testCaseRoot = path.join(GetPathToCliTestFiles(), "docgen");
-  let testCases = fs
+  const testCases = fs
     .readdirSync(testCaseRoot, { withFileTypes: true })
     .filter((dirent) => dirent.isDirectory())
     .map((dirent) => dirent.name);
@@ -185,7 +185,6 @@ describe("e2e tests for docgen command", () => {
   });
 
   describe("test-cases", () => {
-    testCases = testCases.filter(n => n === "009-schema")
     for (let i = 0; i < testCases.length; ++i) {
       const testCaseName = testCases[i];
       const testCaseDir = getTestCaseDir(i);

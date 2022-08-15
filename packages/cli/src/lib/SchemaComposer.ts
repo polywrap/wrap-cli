@@ -82,14 +82,14 @@ export class SchemaComposer {
           const manifest = fs.readFileSync(
             path.join(this._config.project.getManifestDir(), redirect.info)
           );
-          return (await deserializeWrapManifest(manifest)).abi as WrapAbi;
+          return (await deserializeWrapManifest(manifest)).abi;
         }
       }
     }
 
     try {
       const manifest = await this._client.getManifest(new Uri(uri));
-      return manifest.abi as WrapAbi;
+      return manifest.abi;
     } catch (e) {
       gluegun.print.error(e);
       throw e;

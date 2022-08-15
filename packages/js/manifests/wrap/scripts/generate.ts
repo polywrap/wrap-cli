@@ -66,7 +66,10 @@ async function generateFormatTypes() {
       wrapSchemas.push(bundledSchema);
 
       // Convert it to a TypeScript interface
-      const tsFile = await compile(bundledSchema as any, wrapSchema.id, {additionalProperties: false});
+      let tsFile = await compile(bundledSchema as any, wrapSchema.id, {additionalProperties: false});
+
+      // Hack: replace all instances of `abi: unknown;` with `abi: Abi;`
+      tsFile = tsFile.replace("abi: unknown;", "abi: Abi;");
 
       // Emit the result
       const tsOutputPath = path.join(wrapOutputDir, `${wrapVersion}.ts`);
