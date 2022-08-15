@@ -27,6 +27,7 @@ export class Connections {
     }
   }
 
+  /** Returns Connection indexed by key, or by default network if key is undefined */
   get(key?: string): Connection {
     if (!key) {
       return this._connections[this._defaultNetwork];
@@ -34,6 +35,7 @@ export class Connections {
     return this._connections[key];
   }
 
+  /** sets Connection to index of key */
   set(key: string, value: Connection): void {
     const networkStr = key.toLowerCase();
 
@@ -48,6 +50,7 @@ export class Connections {
     }
   }
 
+  /** sets defaultNetwork to key, and creates new Connection if key is not found in store */
   set defaultNetwork(key: string) {
     this._defaultNetwork = key;
 
@@ -60,10 +63,12 @@ export class Connections {
     }
   }
 
+  /** returns default network */
   get defaultNetwork(): string {
     return this._defaultNetwork;
   }
 
+  /** returns Connection indexed by given connection, or returns new Connection if connection is not found in store */
   async getConnection(
     connection?: SchemaConnection | null
   ): Promise<Connection> {
