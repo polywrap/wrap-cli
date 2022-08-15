@@ -40,17 +40,18 @@ export interface PolywrapManifest {
    */
   schema: string;
   /**
-   * Redirects for the schema's imports.
+   * Redirects source URI to local wrapper or plugin.
    */
-  import_redirects?: {
-    /**
-     * Import URI to be redirected.
-     */
-    uri: string;
-    /**
-     * Path to a WRAP manifest to be used for the import.
-     */
-    info: string;
-  }[];
+  import_redirects?: ImportRedirect[];
   __type: "PolywrapManifest";
+}
+export interface ImportRedirect {
+  /**
+   * Source URI that needs to be redirected.
+   */
+  uri: string;
+  /**
+   * Path to Wrap Manifest of the module to which URI will be redirected.
+   */
+  info: string;
 }

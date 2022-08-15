@@ -30,28 +30,33 @@
       "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.?[\\w\\-\\.]*$"
     },
     "import_redirects": {
-      "description": "Redirects for the manifest's imports.",
+      "description": "Redirects source URI to local wrapper or plugin.",
       "type": "array",
       "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "uri": {
-            "description": "Import URI to be redirected.",
-            "type": "string",
-            "pattern": "^[wrap://]*[a-z\\-\\_0-9]+\\/.+$"
-          },
-          "info": {
-            "description": "Path to a WRAP Manifest to be used for the import.",
-            "type": "string",
-            "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.info$"
-          }
-        },
-        "required": [
-          "uri",
-          "info"
-        ]
+        "$ref": "#/definitions/import_redirect"
       }
+    }
+  },
+  "definitions": {
+    "import_redirect": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "uri": {
+          "description": "Source URI that needs to be redirected.",
+          "type": "string",
+          "pattern": "^[wrap://]*[a-z\\-\\_0-9]+\\/.+$"
+        },
+        "info": {
+          "description": "Path to Wrap Manifest of the module to which URI will be redirected.",
+          "type": "string",
+          "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.info$"
+        }
+      },
+      "required": [
+        "uri",
+        "info"
+      ]
     }
   }
 }

@@ -30,15 +30,16 @@ export interface PluginManifest {
   /**
    * Redirects source URI to local wrapper or plugin.
    */
-  import_redirects?: {
-    /**
-     * Source URI that needs to be redirected.
-     */
-    uri: string;
-    /**
-     * Path to Wrap Manifest of the module to which URI will be redirected.
-     */
-    info: string;
-  }[];
+  import_redirects?: ImportRedirect[];
   __type: "PluginManifest";
+}
+export interface ImportRedirect {
+  /**
+   * Source URI that needs to be redirected.
+   */
+  uri: string;
+  /**
+   * Path to Wrap Manifest of the module to which URI will be redirected.
+   */
+  info: string;
 }

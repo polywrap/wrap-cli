@@ -38,25 +38,30 @@
       "description": "Redirects source URI to local wrapper or plugin.",
       "type": "array",
       "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "uri": {
-            "description": "Source URI that needs to be redirected.",
-            "type": "string",
-            "pattern": "^[wrap://]*[a-z\\-\\_0-9]+\\/.+$"
-          },
-          "info": {
-            "description": "Path to Wrap Manifest of the module to which URI will be redirected.",
-            "type": "string",
-            "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.info$"
-          }
-        },
-        "required": [
-          "uri",
-          "info"
-        ]
+        "$ref": "#/definitions/import_redirect"
       }
+    }
+  },
+  "definitions": {
+    "import_redirect": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "uri": {
+          "description": "Source URI that needs to be redirected.",
+          "type": "string",
+          "pattern": "^[wrap://]*[a-z\\-\\_0-9]+\\/.+$"
+        },
+        "info": {
+          "description": "Path to Wrap Manifest of the module to which URI will be redirected.",
+          "type": "string",
+          "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.info$"
+        }
+      },
+      "required": [
+        "uri",
+        "info"
+      ]
     }
   }
 }
