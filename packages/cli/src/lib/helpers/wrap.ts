@@ -7,11 +7,12 @@ import {
   latestWrapManifestVersion,
   validateWrapManifest,
   WrapManifest,
+  WrapAbi
 } from "@polywrap/wrap-manifest-types-js";
 import { normalizePath, writeFileSync } from "@polywrap/os-js";
 
 const run = async (
-  abi: unknown,
+  abi: WrapAbi,
   name: string,
   type: "interface" | "wasm" | "plugin",
   path: string
@@ -20,12 +21,12 @@ const run = async (
     version: latestWrapManifestVersion,
     name,
     type,
-    /// TODO(cbrzn): Change this to WrapAbi
-    abi: abi as never,
+    abi,
   };
 
   // One last sanity check
   await validateWrapManifest(info);
+
   const parsedInfo = JSON.parse(JSON.stringify(info));
   writeFileSync(path, msgpackEncode(parsedInfo), {
     encoding: "binary",
