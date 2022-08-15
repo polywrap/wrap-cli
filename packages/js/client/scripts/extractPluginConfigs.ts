@@ -43,7 +43,7 @@ const plugins: PluginConfigSource[] = [
       },
       {
         name: "build/Connection.d.ts",
-        interfaces: ["ConnectionConfig", "ConnectionConfigs"],
+        interfaces: ["ConnectionConfig"],
         types: [
           "EthereumProvider",
           "EthereumSigner",
@@ -51,8 +51,20 @@ const plugins: PluginConfigSource[] = [
           "Address",
         ],
       },
+      {
+        name: "build/Connections.d.ts",
+        interfaces: ["ConnectionsConfig"],
+      },
     ],
     externals: [
+      {
+        type: "Connection",
+        module: "@polywrap/ethereum-plugin-js"
+      },
+      {
+        type: "Connections",
+        module: "@polywrap/ethereum-plugin-js"
+      },
       {
         type: "Signer",
         module: "ethers",

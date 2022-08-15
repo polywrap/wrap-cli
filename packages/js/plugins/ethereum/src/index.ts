@@ -47,6 +47,9 @@ import { ethers } from "ethers";
 import { defaultAbiCoder } from "ethers/lib/utils";
 import { PluginFactory } from "@polywrap/core-js";
 
+export * from "./Connection";
+export * from "./Connections";
+
 export interface EthereumPluginConfig {
   connections: Connections;
 }

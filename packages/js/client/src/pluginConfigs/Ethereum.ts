@@ -3,20 +3,15 @@
 /* eslint-disable prettier/prettier */
 
 /// Types generated from @polywrap/ethereum-plugin-js build files:
-/// build/index.d.ts, build/Connection.d.ts
+/// build/index.d.ts, build/Connection.d.ts, build/Connections.d.ts
 
 export interface EthereumPluginConfig {
-  networks: ConnectionConfigs;
-  defaultNetwork?: string;
+  connections: Connections;
 }
 
 export interface ConnectionConfig {
   provider: EthereumProvider;
   signer?: EthereumSigner;
-}
-
-export interface ConnectionConfigs {
-  [network: string]: ConnectionConfig;
 }
 
 export type EthereumProvider = string | ExternalProvider | JsonRpcProvider;
@@ -26,6 +21,19 @@ export type EthereumSigner = Signer | Address | AccountIndex;
 export type AccountIndex = number;
 
 export type Address = string;
+
+export interface ConnectionsConfig {
+  networks: {
+    [network: string]: Connection;
+  };
+  defaultNetwork?: string;
+}
+
+// import { Connection } from "@polywrap/ethereum-plugin-js"
+export type Connection = any;
+
+// import { Connections } from "@polywrap/ethereum-plugin-js"
+export type Connections = any;
 
 // import { Signer } from "ethers"
 export type Signer = any;

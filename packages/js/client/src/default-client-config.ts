@@ -14,7 +14,11 @@ import {
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
-import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
+import {
+  ethereumPlugin,
+  Connection,
+  Connections,
+} from "@polywrap/ethereum-plugin-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import { graphNodePlugin } from "@polywrap/graph-node-plugin-js";
 import { httpPlugin } from "@polywrap/http-plugin-js";
@@ -48,12 +52,14 @@ export const getDefaultClientConfig = Tracer.traceFunc(
         {
           uri: new Uri("wrap://ens/ethereum.polywrap.eth"),
           plugin: ethereumPlugin({
-            networks: {
-              mainnet: {
-                provider:
-                  "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+            connections: new Connections({
+              networks: {
+                mainnet: new Connection({
+                  provider:
+                    "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+                }),
               },
-            },
+            }),
           }),
         },
         {
