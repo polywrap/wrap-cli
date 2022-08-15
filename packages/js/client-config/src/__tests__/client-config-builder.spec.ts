@@ -1,12 +1,10 @@
 import { ClientConfigBuilder } from "../ClientConfigBuilder";
 import {
-  CacheResolver,
   Client,
   Env,
   InterfaceImplementations,
   PluginModule,
   PluginRegistration,
-  RedirectsResolver,
   Uri,
   UriRedirect,
   UriResolutionResult,
@@ -14,13 +12,28 @@ import {
   UriResolver,
   WrapperCache,
 } from "@polywrap/core-js";
-import {
-  sanitizeEnvs,
-  sanitizeInterfaceImplementations,
-  sanitizePluginRegistrations,
-  sanitizeUriRedirects,
-} from "../utils/sanitize";
 import { toUri } from "../utils/toUri";
+
+class NamedUriResolver extends UriResolver {
+  private _name: string;
+
+  constructor(name: string) {
+    super();
+
+    this._name = name;
+  }
+  get name(): string {
+    return this._name;
+  }
+  resolveUri(
+    uri: Uri,
+    client: Client,
+    cache: WrapperCache,
+    resolutionPath: UriResolutionStack
+  ): Promise<UriResolutionResult> {
+    throw new Error("Method not implemented.");
+  }
+}
 
 describe("Client config builder", () => {
   const testEnvs: Env[] = [
@@ -74,8 +87,8 @@ describe("Client config builder", () => {
   ];
 
   const testUriResolvers: UriResolver[] = [
-    new RedirectsResolver(),
-    new CacheResolver(),
+    new NamedUriResolver("test1"),
+    new NamedUriResolver("test2"),
   ];
 
   it("should build an empty config", () => {
@@ -102,15 +115,29 @@ describe("Client config builder", () => {
       .build();
 
     expect(clientConfig).toBeTruthy();
-    expect(clientConfig.envs).toStrictEqual(sanitizeEnvs(testEnvs));
+    expect(clientConfig.envs).toStrictEqual(
+      testEnvs.map((x) => ({
+        uri: toUri(x.uri),
+        env: x.env,
+      }))
+    );
     expect(clientConfig.interfaces).toStrictEqual(
-      sanitizeInterfaceImplementations(testInterfaces)
+      testInterfaces.map((x) => ({
+        interface: toUri(x.interface),
+        implementations: x.implementations.map(toUri),
+      }))
     );
     expect(clientConfig.plugins).toStrictEqual(
-      sanitizePluginRegistrations(testPlugins)
+      testPlugins.map((x) => ({
+        uri: toUri(x.uri),
+        plugin: x.plugin,
+      }))
     );
     expect(clientConfig.redirects).toStrictEqual(
-      sanitizeUriRedirects(testUriRedirects)
+      testUriRedirects.map((x) => ({
+        from: toUri(x.from),
+        to: toUri(x.to),
+      }))
     );
     expect(clientConfig.uriResolvers).toStrictEqual(testUriResolvers);
   });
@@ -134,15 +161,29 @@ describe("Client config builder", () => {
       .build();
 
     expect(clientConfig).toBeTruthy();
-    expect(clientConfig.envs).toStrictEqual(sanitizeEnvs(testEnvs));
+    expect(clientConfig.envs).toStrictEqual(
+      testEnvs.map((x) => ({
+        uri: toUri(x.uri),
+        env: x.env,
+      }))
+    );
     expect(clientConfig.interfaces).toStrictEqual(
-      sanitizeInterfaceImplementations(testInterfaces)
+      testInterfaces.map((x) => ({
+        interface: toUri(x.interface),
+        implementations: x.implementations.map(toUri),
+      }))
     );
     expect(clientConfig.plugins).toStrictEqual(
-      sanitizePluginRegistrations(testPlugins)
+      testPlugins.map((x) => ({
+        uri: toUri(x.uri),
+        plugin: x.plugin,
+      }))
     );
     expect(clientConfig.redirects).toStrictEqual(
-      sanitizeUriRedirects(testUriRedirects)
+      testUriRedirects.map((x) => ({
+        from: toUri(x.from),
+        to: toUri(x.to),
+      }))
     );
     expect(clientConfig.uriResolvers).toStrictEqual(testUriResolvers);
   });
@@ -619,27 +660,6 @@ describe("Client config builder", () => {
       to: toUri(to2),
     });
   });
-
-  class NamedUriResolver extends UriResolver {
-    private _name: string;
-
-    constructor(name: string) {
-      super();
-
-      this._name = name;
-    }
-    get name(): string {
-      return this._name;
-    }
-    resolveUri(
-      uri: Uri,
-      client: Client,
-      cache: WrapperCache,
-      resolutionPath: UriResolutionStack
-    ): Promise<UriResolutionResult> {
-      throw new Error("Method not implemented.");
-    }
-  }
 
   it("should add uri resolvers", () => {
     const uriResolver1 = new NamedUriResolver("first");
