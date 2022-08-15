@@ -15,6 +15,8 @@ import { Wallet } from "ethers";
 
 import { ethers } from "ethers";
 import { keccak256 } from "js-sha3";
+import { Connections } from "../Connections";
+import { Connection } from "../Connection";
 
 const { hash: namehash } = require("eth-ens-namehash");
 const contracts = {
@@ -47,21 +49,23 @@ describe("Ethereum Plugin", () => {
     resolverAddress = ensAddresses.resolverAddress;
     registrarAddress = ensAddresses.registrarAddress;
 
+    const connections = new Connections({
+      networks: {
+        testnet: new Connection({
+          provider: providers.ethereum,
+          signer: new Wallet(
+            "0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d"
+          ),
+        }),
+      },
+      defaultNetwork: "testnet",
+    });
+
     client = new PolywrapClient({
       plugins: [
         {
           uri: "wrap://ens/ethereum.polywrap.eth",
-          plugin: ethereumPlugin({
-            networks: {
-              testnet: {
-                provider: providers.ethereum,
-                signer: new Wallet(
-                  "0x4f3edf983ac636a65a842ce7c78d9aa706d3b113bce9c46f30d7d21715b23b1d"
-                ),
-              },
-            },
-            defaultNetwork: "testnet",
-          }),
+          plugin: ethereumPlugin({ connections }),
         },
         {
           uri: "wrap://ens/ipfs.polywrap.eth",
