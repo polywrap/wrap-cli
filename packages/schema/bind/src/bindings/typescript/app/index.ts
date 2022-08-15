@@ -29,7 +29,7 @@ export const generateBinding: GenerateBindingFn = (
 
   output.entries = renderTemplates(
     path.join(__dirname, "./templates"),
-    { ...abi },
+    abi,
     {}
   );
 
