@@ -27,7 +27,7 @@ export function renderTemplates(
           if (data) {
             output.push({
               type: "File",
-              name: name.replace("-", "."),
+              name: name.replace("-", ".").replace("%type%", (view as {type: string}).type.toLowerCase()),
               data,
             });
           }

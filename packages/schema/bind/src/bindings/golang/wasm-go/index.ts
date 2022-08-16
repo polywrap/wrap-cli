@@ -34,7 +34,7 @@ export const generateBinding: GenerateBindingFn = (
   for (const objectType of abi.objectTypes) {
     output.entries.push({
       type: "Directory",
-      name: objectType.type,
+      name: "abc",
       data: renderTemplates(
         templatePath("object-type"),
         objectType,
@@ -42,6 +42,18 @@ export const generateBinding: GenerateBindingFn = (
       ),
     });
   }
+
+  // if (abi.moduleType) {
+  //   output.entries.push({
+  //     type: "Directory",
+  //     name: "types",
+  //     data: renderTemplates(
+  //         templatePath("types"),
+  //         abi.moduleType,
+  //         subTemplates
+  //     ),
+  //   });
+  // }
 
   // Generate imported folder
   const importEntries: OutputEntry[] = [];
@@ -123,38 +135,38 @@ export const generateBinding: GenerateBindingFn = (
   // }
   //
   // Generate module type folders
-  if (abi.moduleType) {
-    output.entries.push({
-      type: "Directory",
-      name: abi.moduleType.type,
-      data: renderTemplates(
-        templatePath("module-type"),
-        abi.moduleType,
-        subTemplates
-      ),
-    });
-  }
-
-  // Generate enum type folders
-  for (const enumType of abi.enumTypes) {
-    output.entries.push({
-      type: "Directory",
-      name: enumType.type,
-      data: renderTemplates(templatePath("enum-type"), enumType, subTemplates),
-    });
-  }
-
-  // Generate env type folders
-  if (abi.envType) {
-    output.entries.push({
-      type: "Directory",
-      name: abi.envType.type,
-      data: renderTemplates(templatePath("object-type"), abi.envType, subTemplates),
-    });
-  }
+  // if (abi.moduleType) {
+  //   output.entries.push({
+  //     type: "Directory",
+  //     name: abi.moduleType.type,
+  //     data: renderTemplates(
+  //       templatePath("module-type"),
+  //       abi.moduleType,
+  //       subTemplates
+  //     ),
+  //   });
+  // }
+  //
+  // // Generate enum type folders
+  // for (const enumType of abi.enumTypes) {
+  //   output.entries.push({
+  //     type: "Directory",
+  //     name: enumType.type,
+  //     data: renderTemplates(templatePath("enum-type"), enumType, subTemplates),
+  //   });
+  // }
+  //
+  // // Generate env type folders
+  // if (abi.envType) {
+  //   output.entries.push({
+  //     type: "Directory",
+  //     name: abi.envType.type,
+  //     data: renderTemplates(templatePath("object-type"), abi.envType, subTemplates),
+  //   });
+  // }
 
   // Generate root entry file
-  output.entries.push(...renderTemplates(templatePath(""), abi, subTemplates));
+  // output.entries.push(...renderTemplates(templatePath(""), abi, subTemplates));
 
   return result;
 };
