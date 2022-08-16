@@ -3,6 +3,8 @@ pub mod custom_type;
 pub use custom_type::CustomType;
 pub mod another_type;
 pub use another_type::AnotherType;
+pub mod custom_map_value;
+pub use custom_map_value::CustomMapValue;
 pub mod custom_enum;
 pub use custom_enum::{
     get_custom_enum_key,
