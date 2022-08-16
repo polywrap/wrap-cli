@@ -20,10 +20,10 @@ const run = async (
     version: latestWrapManifestVersion,
     name,
     type,
-    abi,
+    abi
   };
 
-  const bytes = serializeWrapManifest(manifest);
+  const bytes = await serializeWrapManifest(manifest);
 
   writeFileSync(path, bytes, { encoding: "binary" });
 };

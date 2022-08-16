@@ -1,7 +1,7 @@
 import { composeSchema } from "../";
 import { fetchTestCases } from "./index";
 
-function removeFunctionProps(obj: unknown) {
+function sanitizeObj(obj: unknown) {
   if (typeof obj !== "object") {
     return;
   }
@@ -12,8 +12,10 @@ function removeFunctionProps(obj: unknown) {
     const typeOf = typeof (obj as any)[i];
 
     if (typeOf === "object") {
-      removeFunctionProps((obj as any)[i]);
-    } else if (typeOf == "function") {
+      sanitizeObj((obj as any)[i]);
+    } else if (typeOf === "function") {
+      delete (obj as any)[i];
+    } else if (typeOf === "undefined") {
       delete (obj as any)[i];
     }
   }
@@ -32,9 +34,10 @@ describe("Polywrap Schema Composer Test Cases", () => {
       }
 
       const result = await composeSchema(testCase.input);
-      removeFunctionProps(result);
 
       if (testCase.abi) {
+        sanitizeObj(result);
+        sanitizeObj(testCase.abi);
         expect(result).toMatchObject(testCase.abi);
       }
     });

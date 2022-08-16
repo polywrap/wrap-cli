@@ -33,6 +33,28 @@ extensionCodec.register({
   },
 });
 
+function sanitizeObj(obj: Record<string, unknown>): Record<string, unknown> {
+  for (const key of Object.keys(obj)) {
+    if (typeof obj[key] === "function") {
+      delete obj[key];
+    } else if (obj[key] === null || obj[key] === undefined) {
+      delete obj[key];
+    } else if (typeof obj[key] === "object") {
+      const sanitized = sanitizeObj(
+        obj[key] as Record<string, unknown>
+      );
+
+      if (Array.isArray(obj[key])) {
+        obj[key] = Object.values(sanitized);
+      } else {
+        obj[key] = sanitized;
+      }
+    }
+  }
+
+  return obj;
+}
+
 export function msgpackEncode(object: unknown): Uint8Array {
   const encoder = new Encoder(
     extensionCodec,
@@ -44,6 +66,10 @@ export function msgpackEncode(object: unknown): Uint8Array {
     true, // ignoreUndefined
     undefined // forceIntegerToFloat
   );
+
+  if (typeof object === "object") {
+    object = sanitizeObj(object as Record<string, unknown>);
+  }
 
   return encoder.encode(object);
 }

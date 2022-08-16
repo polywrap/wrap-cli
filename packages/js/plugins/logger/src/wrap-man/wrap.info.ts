@@ -12,8 +12,6 @@ export const manifest: WrapManifest = {
     importedModuleTypes: [
       {
         type: "Logger_Module",
-        name: null,
-        required: null,
         kind: 256,
         methods: [
           {
@@ -27,34 +25,24 @@ export const manifest: WrapManifest = {
                 name: "level",
                 required: true,
                 kind: 34,
-                array: null,
-                map: null,
-                scalar: null,
-                object: null,
                 enum: {
                   type: "Logger_LogLevel",
                   name: "level",
                   required: true,
                   kind: 16384,
                 },
-                unresolvedObjectOrEnum: null,
               },
               {
                 type: "String",
                 name: "message",
                 required: true,
                 kind: 34,
-                array: null,
-                map: null,
                 scalar: {
                   type: "String",
                   name: "message",
                   required: true,
                   kind: 4,
                 },
-                object: null,
-                enum: null,
-                unresolvedObjectOrEnum: null,
               },
             ],
             return: {
@@ -62,12 +50,7 @@ export const manifest: WrapManifest = {
               name: "log",
               required: true,
               kind: 34,
-              array: null,
-              map: null,
               scalar: { type: "Boolean", name: "log", required: true, kind: 4 },
-              object: null,
-              enum: null,
-              unresolvedObjectOrEnum: null,
             },
           },
         ],
@@ -80,8 +63,6 @@ export const manifest: WrapManifest = {
     importedEnumTypes: [
       {
         type: "Logger_LogLevel",
-        name: null,
-        required: null,
         kind: 520,
         constants: ["DEBUG", "INFO", "WARN", "ERROR"],
         uri: "ens/logger.core.polywrap.eth",
@@ -92,8 +73,6 @@ export const manifest: WrapManifest = {
     importedEnvTypes: [],
     moduleType: {
       type: "Module",
-      name: null,
-      required: null,
       kind: 128,
       methods: [
         {
@@ -107,34 +86,24 @@ export const manifest: WrapManifest = {
               name: "level",
               required: true,
               kind: 34,
-              array: null,
-              map: null,
-              scalar: null,
-              object: null,
               enum: {
                 type: "Logger_LogLevel",
                 name: "level",
                 required: true,
                 kind: 16384,
               },
-              unresolvedObjectOrEnum: null,
             },
             {
               type: "String",
               name: "message",
               required: true,
               kind: 34,
-              array: null,
-              map: null,
               scalar: {
                 type: "String",
                 name: "message",
                 required: true,
                 kind: 4,
               },
-              object: null,
-              enum: null,
-              unresolvedObjectOrEnum: null,
             },
           ],
           return: {
@@ -142,12 +111,7 @@ export const manifest: WrapManifest = {
             name: "log",
             required: true,
             kind: 34,
-            array: null,
-            map: null,
             scalar: { type: "Boolean", name: "log", required: true, kind: 4 },
-            object: null,
-            enum: null,
-            unresolvedObjectOrEnum: null,
           },
         },
       ],
@@ -155,15 +119,7 @@ export const manifest: WrapManifest = {
       interfaces: [
         {
           type: "Logger_Module",
-          name: null,
-          required: null,
           kind: 2048,
-          array: null,
-          map: null,
-          scalar: null,
-          object: null,
-          enum: null,
-          unresolvedObjectOrEnum: null,
         },
       ],
     }
