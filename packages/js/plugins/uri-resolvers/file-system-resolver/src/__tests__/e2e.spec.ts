@@ -14,7 +14,7 @@ import {
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
-import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
+import { ethereumPlugin, Connections, Connection } from "@polywrap/ethereum-plugin-js";
 import fs from "fs";
 import path from "path";
 
@@ -50,12 +50,14 @@ describe("Filesystem plugin", () => {
         {
           uri: "wrap://ens/ethereum.polywrap.eth",
           plugin: ethereumPlugin({
-            networks: {
-              testnet: {
-                provider: providers.ethereum,
+            connections: new Connections({
+              networks: {
+                testnet: new Connection({
+                  provider: providers.ethereum
+                })
               },
-            },
-            defaultNetwork: "testnet",
+              defaultNetwork: "testnet"
+            })
           }),
         },
       ],

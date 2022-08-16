@@ -10,7 +10,7 @@ import {
 
 import { ensResolverPlugin } from "..";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
-import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
+import { ethereumPlugin, Connections, Connection } from "@polywrap/ethereum-plugin-js";
 
 import fs from "fs";
 import path from "path";
@@ -47,12 +47,14 @@ describe("ENS Resolver Plugin", () => {
         {
           uri: "wrap://ens/ethereum.polywrap.eth",
           plugin: ethereumPlugin({
-            networks: {
-              testnet: {
-                provider: providers.ethereum
-              }
-            },
-            defaultNetwork: "testnet"
+            connections: new Connections({
+              networks: {
+                testnet: new Connection({
+                  provider: providers.ethereum
+                })
+              },
+              defaultNetwork: "testnet"
+            })
           })
         },
         {
