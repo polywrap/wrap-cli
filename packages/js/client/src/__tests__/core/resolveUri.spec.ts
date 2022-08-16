@@ -7,6 +7,8 @@ import {
   ResolveUriErrorType,
 } from "@polywrap/core-js";
 import { getClient } from "../utils/getClient";
+import { ClientConfigBuilder } from "@polywrap/client-config-js";
+import { PolywrapClient } from "../..";
 
 jest.setTimeout(200000);
 
@@ -217,14 +219,15 @@ describe("resolveUri", () => {
   });
 
   it("can resolve an URI resolver extension wrapper", async () => {
-    const client = await getClient({
-      interfaces: [
-        {
-          interface: coreInterfaceUris.uriResolver.uri,
-          implementations: [simpleFsResolverWrapperUri.uri],
-        },
-      ],
-    });
+    const config = new ClientConfigBuilder()
+      .addInterfaceImplementation(
+        coreInterfaceUris.uriResolver,
+        simpleFsResolverWrapperUri
+      )
+      .addDefaults()
+      .build();
+
+    const client = new PolywrapClient(config, { noDefaults: true });
 
     const sourceUri = new Uri(`simple/${wrapperPath}/build`);
     const redirectedUri = wrapperUri;
@@ -850,24 +853,25 @@ describe("resolveUri", () => {
     const ensUri = new Uri(`ens/test`);
     const redirectUri = new Uri(`ens/redirect.eth`);
 
-    const client = await getClient({
-      uriResolvers: [
-        {
-          name: "CustomResolver",
-          resolveUri: async (uri: Uri) => {
-            if (uri.uri === ensUri.uri) {
-              return {
-                uri: redirectUri,
-              };
-            }
-
+    const config = new ClientConfigBuilder()
+      .addUriResolver({
+        name: "CustomResolver",
+        resolveUri: async (uri: Uri) => {
+          if (uri.uri === ensUri.uri) {
             return {
-              uri: uri,
+              uri: redirectUri,
             };
-          },
+          }
+
+          return {
+            uri: uri,
+          };
         },
-      ],
-    });
+      })
+      .addDefaults()
+      .build();
+
+    const client = new PolywrapClient(config, { noDefaults: true });
 
     const result = await client.resolveUri(ensUri);
 

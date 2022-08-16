@@ -881,7 +881,12 @@ export const runSimpleEnvTest = async (
       arg: "not set",
     },
     config: {
-      envs: [],
+      envs: [
+        {
+          uri: wrapperUri,
+          env: {},
+        },
+      ],
     },
   });
   expect(getEnvNotSetResult.data).toBeUndefined();

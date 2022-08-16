@@ -71,7 +71,7 @@ describe("plugin-wrapper", () => {
 
     const pluginUris = client.getPlugins().map((x) => x.uri.uri);
 
-    expect(pluginUris).toEqual([implementationUri].concat(defaultPlugins));
+    expect(pluginUris).toEqual(defaultPlugins.concat([implementationUri]));
   });
 
   test("getSchema -- plugin schema", async () => {
@@ -209,6 +209,6 @@ describe("plugin-wrapper", () => {
       .getPlugins()
       .find((x) => x.uri.uri === pluginUriToOverride);
 
-    expect(registeredPlugin?.plugin).toEqual(pluginPackage1);
+    expect(registeredPlugin?.plugin).toEqual(pluginPackage2);
   });
 });
