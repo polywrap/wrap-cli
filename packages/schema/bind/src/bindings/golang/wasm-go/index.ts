@@ -136,26 +136,22 @@ export const generateBinding: GenerateBindingFn = (
   }
 
   // Generate enum type folders
-  // for (const enumType of abi.enumTypes) {
-  //   output.entries.push({
-  //     type: "Directory",
-  //     name: enumType.type,
-  //     data: renderTemplates(templatePath("enum-type"), enumType, subTemplates),
-  //   });
-  // }
-  //
-  // // Generate env type folders
-  // if (abi.envType) {
-  //   output.entries.push({
-  //     type: "Directory",
-  //     name: abi.envType.type,
-  //     data: renderTemplates(
-  //       templatePath("env-type"),
-  //       abi.envType,
-  //       subTemplates
-  //     ),
-  //   });
-  // }
+  for (const enumType of abi.enumTypes) {
+    output.entries.push({
+      type: "Directory",
+      name: enumType.type,
+      data: renderTemplates(templatePath("enum-type"), enumType, subTemplates),
+    });
+  }
+
+  // Generate env type folders
+  if (abi.envType) {
+    output.entries.push({
+      type: "Directory",
+      name: abi.envType.type,
+      data: renderTemplates(templatePath("object-type"), abi.envType, subTemplates),
+    });
+  }
 
   // Generate root entry file
   output.entries.push(...renderTemplates(templatePath(""), abi, subTemplates));

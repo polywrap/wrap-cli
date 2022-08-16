@@ -2,6 +2,86 @@ import { isBaseType } from "./baseTypes";
 import { reservedWordsAS } from "./reservedWords";
 import { MustacheFn } from "../../types";
 
+let num = -1;
+
+export const startIter: MustacheFn = () => {
+  return (): string => {
+    num = -1;
+    return ""
+  }
+}
+
+export const stopIter: MustacheFn = () => {
+  return (): string => {
+    num = -1;
+    return ""
+  }
+}
+
+export const currIter: MustacheFn = () => {
+  return (text: string, render: (template: string) => string): string => {
+    const rendered: string = render(text);
+    return `${rendered}${num}`;
+  }
+}
+
+export const nextIter: MustacheFn = () => {
+  return (text: string, render: (template: string) => string): string => {
+    const rendered: string = render(text);
+    return `${rendered}${++num}`;
+  }
+}
+
+export const prevFullIter: MustacheFn = () => {
+  return (text: string, render: (template: string) => string): string => {
+    const rendered: string = render(text);
+    if (rendered == "stop") {
+      return "";
+    }
+    return Array(num).fill(0).map((_, i) => `[${rendered}${i}]`).join("");
+  }
+}
+
+export const lastFullIter: MustacheFn = () => {
+  return (text: string, render: (template: string) => string): string => {
+    const rendered: string = render(text);
+    if (rendered == "stop") {
+      return "";
+    }
+    return Array(num + 1).fill(0).map((_, i) => `[${rendered}${i}]`).join("");
+  }
+}
+
+export const writePointer: MustacheFn = () => {
+  return (text: string, render: (template: string) => string): string => {
+    const [type, value] = render(text).split(" - ");
+    let pointer = "*";
+    if ({
+      "BigInt": true,
+      "Json": true,
+      "Bytes": true,
+    }[type] ?? false) {
+      pointer = "";
+    }
+    return `writer.Write${type}(${pointer}${value})`
+  }
+}
+
+export const readPointer: MustacheFn = () => {
+  return (text: string, render: (template: string) => string): string => {
+    const [type, value] = render(text).split(" - ");
+    let pointer = "&";
+    if ({
+      "BigInt": true,
+      "Json": true,
+      "Bytes": true,
+    }[type] ?? false) {
+      pointer = "";
+    }
+    return `${pointer}${value}`
+  }
+}
+
 export const handleKeywords: MustacheFn = () => {
   return (text: string, render: (template: string) => string): string => {
     const rendered: string = render(text);
@@ -15,7 +95,6 @@ export const handleKeywords: MustacheFn = () => {
 export const toMsgPack: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
-
     let modifier = "";
     if (type[type.length - 1] === "!") {
       type = type.substring(0, type.length - 1);
@@ -23,87 +102,45 @@ export const toMsgPack: MustacheFn = () => {
       modifier = "Optional";
     }
 
-    if (type[0] === "[") {
-      return modifier + "Array";
+    let t = type;
+    if (type.startsWith("[")) {
+      t = "Array";
+    } else if (type.startsWith("Map")) {
+      t = "Map";
+    } else if (type.startsWith("Int8")) {
+      t = "I8"
+    } else if (type.startsWith("Int16")) {
+      t = "I16"
+    } else if (type.startsWith("Int32")) {
+      t = "I32"
+    } else if (type.startsWith("Int64")) {
+      t = "I64"
+    } else if (type.startsWith("Int")) {
+      t = "I32"
+    } else if (type.startsWith("UInt8")) {
+      t = "U8"
+    } else if (type.startsWith("UInt16")) {
+      t = "U16"
+    } else if (type.startsWith("UInt32")) {
+      t = "U32"
+    } else if (type.startsWith("UInt64")) {
+      t = "U64"
+    } else if (type.startsWith("UInt")) {
+      t = "U32"
+    } else if (type.startsWith("String")) {
+      t = "String"
+    } else if (type.startsWith("Boolean")) {
+      t = "Bool"
+    } else if (type.startsWith("Bytes")) {
+      t = "Bytes"
+    } else if (type.startsWith("BigInt")) {
+      t = "BigInt"
+    } else if (type.startsWith("BigNumber")) {
+      t = "BigInt"
+    } else if (type.startsWith("JSON")) {
+      t = "Json"
     }
-    if (type.startsWith("Map<")) {
-      return modifier + "ExtGenericMap";
-    }
-    switch (type) {
-      case "Int":
-        return modifier + "Int32";
-      case "UInt":
-        return modifier + "UInt32";
-      case "Boolean":
-        return modifier + "Bool";
-      default:
-        return modifier + type;
-    }
-  };
-};
-
-export const toWasmInit: MustacheFn = () => {
-  return (value: string, render: (template: string) => string) => {
-    let type = render(value);
-
-    if (type[type.length - 1] === "!") {
-      type = type.substring(0, type.length - 1);
-    } else {
-      const nullType = toWasm()(value, render);
-      const optional = "Option";
-      const nullOptional = "| null";
-
-      if (nullType.endsWith(nullOptional)) {
-        return "null";
-      } else if (nullType.startsWith(optional)) {
-        type = nullType.substring(6);
-        return `Option.None${type}()`;
-      }
-    }
-
-    if (type[0] === "[") {
-      return "[]";
-    }
-
-    if (type.startsWith("Map<")) {
-      const openBracketIdx = type.indexOf("<");
-      const closeBracketIdx = type.lastIndexOf(">");
-      const [key, value] = type
-        .substring(openBracketIdx + 1, closeBracketIdx)
-        .split(",")
-        .map((x) => toWasm()(x.trim(), render));
-      return `new Map<${key}, ${value}>()`;
-    }
-
-    switch (type) {
-      case "Int":
-      case "Int8":
-      case "Int16":
-      case "Int32":
-      case "UInt":
-      case "UInt8":
-      case "UInt16":
-      case "UInt32":
-        return "0";
-      case "String":
-        return `""`;
-      case "Boolean":
-        return "false";
-      case "Bytes":
-        return `new ArrayBuffer(0)`;
-      case "BigInt":
-        return `BigInt.fromUInt16(0)`;
-      case "BigNumber":
-        return `new BigNumber(BigInt.fromUInt16(0), 0, 0)`;
-      case "JSON":
-        return `JSON.Value.Null()`;
-      default:
-        if (type.includes("Enum_")) {
-          return "0";
-        } else {
-          return `new Types.${type}()`;
-        }
-    }
+    return t;
   };
 };
 
@@ -129,26 +166,34 @@ export const toWasm: MustacheFn = () => {
 
     switch (type) {
       case "Int":
-        type = "i32";
+        type = "int32";
         break;
       case "Int8":
-        type = "i8";
+        type = "int8";
         break;
       case "Int16":
-        type = "i16";
+        type = "int16";
         break;
       case "Int32":
-        type = "i32";
+        type = "int32";
+        break;
+      case "Int64":
+        type = "int64";
         break;
       case "UInt":
-      case "UInt32":
-        type = "u32";
+        type = "uint32";
         break;
       case "UInt8":
-        type = "u8";
+        type = "uint8";
         break;
       case "UInt16":
-        type = "u16";
+        type = "uint16";
+        break;
+      case "UInt32":
+        type = "uint32";
+        break;
+      case "UInt64":
+        type = "uint64";
         break;
       case "String":
         type = "string";
@@ -157,23 +202,23 @@ export const toWasm: MustacheFn = () => {
         type = "bool";
         break;
       case "Bytes":
-        type = "ArrayBuffer";
+        type = "[]byte";
         break;
       case "BigInt":
-        type = "BigInt";
+        type = "*big.Int";
         break;
       case "BigNumber":
-        type = "BigNumber";
+        type = "*big.Int";
         break;
       case "JSON":
-        type = "JSON.Value";
+        type = "*fastjson.Value";
         break;
       default:
         if (type.includes("Enum_")) {
-          type = `Types.${type.replace("Enum_", "")}`;
+          type = `${type.replace("Enum_", "")}`;
           isEnum = true;
         } else {
-          type = `Types.${type}`;
+          type = `${type}`;
         }
     }
 
@@ -189,7 +234,7 @@ const toWasmArray = (type: string, optional: boolean): string => {
   }
 
   const wasmType = toWasm()(result[2], (str) => str);
-  return applyOptional("Array<" + wasmType + ">", optional, false);
+  return applyOptional(`[]${wasmType}`, optional, false);
 };
 
 const toWasmMap = (type: string, optional: boolean): string => {
@@ -212,7 +257,7 @@ const toWasmMap = (type: string, optional: boolean): string => {
   const keyType = toWasm()(keyValTypes[0], (str) => str);
   const valType = toWasm()(keyValTypes[1], (str) => str);
 
-  return applyOptional(`Map<${keyType}, ${valType}>`, optional, false);
+  return applyOptional(`map[${keyType}]${valType}`, optional, false);
 };
 
 const applyOptional = (
@@ -220,16 +265,8 @@ const applyOptional = (
   optional: boolean,
   isEnum: boolean
 ): string => {
-  if (optional) {
-    if (
-      type.indexOf("Array") === 0 ||
-      type.indexOf("string") === 0 ||
-      (!isEnum && !isBaseType(type))
-    ) {
-      return `${type} | null`;
-    } else {
-      return `Option<${type}>`;
-    }
+  if (optional && !type.startsWith("*") && !type.startsWith("[]") && !type.startsWith("map")) {
+    return `*${type}`
   } else {
     return type;
   }

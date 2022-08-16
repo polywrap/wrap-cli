@@ -1,18 +1,31 @@
-package {{#toFirstLower}}{{type}}{{/toFirstLower}}
+package types
 
-import "github.com/consideritdone/polywrap-go/polywrap/msgpack"
+import (
+	"github.com/consideritdone/polywrap-go/polywrap/msgpack"
+	"github.com/consideritdone/polywrap-go/polywrap/msgpack/big"
+	"github.com/consideritdone/polywrap-go/polywrap/msgpack/container"
+	"github.com/valyala/fastjson"
+)
 
-type {{type}} struct {
-    Value string
-    {{#properties}}
-    {{#handleKeywords}}{{#toUpper}}{{name}}{{/toUpper}}{{/handleKeywords}} {{#toWasm}}{{toGraphQLType}}{{/toWasm}}
-    {{/properties}}
+type {{#toUpper}}{{type}}{{/toUpper}} struct {
+  {{#properties}}
+  {{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}} {{#toWasm}}{{toGraphQLType}}{{/toWasm}}
+  {{/properties}}
 }
 
-func toBuffer(args SampleResult) []byte {
-    return serializeSampleResult(args)
+func {{#toUpper}}{{type}}{{/toUpper}}ToBuffer(value *{{#toUpper}}{{type}}{{/toUpper}}) []byte {
+	return serialize{{#toUpper}}{{type}}{{/toUpper}}(value)
 }
 
-func Write(writer msgpack.Write, args SampleResult) {
-    writeSampleResult(writer, args)
+func {{#toUpper}}{{type}}{{/toUpper}}FromBuffer(data []byte) *{{#toUpper}}{{type}}{{/toUpper}} {
+	return deserialize{{#toUpper}}{{type}}{{/toUpper}}(data)
 }
+
+func {{#toUpper}}{{type}}{{/toUpper}}Write(writer msgpack.Write, value *{{#toUpper}}{{type}}{{/toUpper}}) {
+	write{{#toUpper}}{{type}}{{/toUpper}}(writer, value)
+}
+
+func {{#toUpper}}{{type}}{{/toUpper}}Read(reader msgpack.Read) *{{#toUpper}}{{type}}{{/toUpper}} {
+	return read{{#toUpper}}{{type}}{{/toUpper}}(reader)
+}
+
