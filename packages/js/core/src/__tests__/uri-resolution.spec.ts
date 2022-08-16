@@ -92,26 +92,26 @@ describe("URI resolution", () => {
       fullResolution: true,
     });
 
-    const { response, history } = await resolver.tryResolveToWrapper(
+    const { result, history } = await resolver.tryResolveToWrapper(
       unknownUri,
       client({}, [], []),
       new Map<string, Wrapper>()
     );
 
-    console.log("response", response);
+    console.log("result", result);
     console.log("history", history);
 
-    expect(response.ok).toBeTruthy();
+    expect(result.ok).toBeTruthy();
 
-    if (!response.ok) {
+    if (!result.ok) {
       throw "Result should not be an error";
     }
 
-    expect(response.value.uri).toBeTruthy();
-    expect(response.value.uri).toEqual(unknownUri);
+    expect(result.value.uri).toBeTruthy();
+    expect(result.value.uri).toEqual(unknownUri);
 
     const {
-      response: redirectResponse,
+      result: redirectResult,
       history: redirectHistory,
     } = await resolver.tryResolveToWrapper(
       fromUri,
@@ -119,16 +119,16 @@ describe("URI resolution", () => {
       new Map<string, Wrapper>()
     );
 
-    console.log("redirectResponse", redirectResponse);
+    console.log("redirectResponse", redirectResult);
     console.log("redirectHistory", redirectHistory);
 
-    expect(redirectResponse.ok).toBeTruthy();
+    expect(redirectResult.ok).toBeTruthy();
 
-    if (!redirectResponse.ok) {
+    if (!redirectResult.ok) {
       throw "Result should not be an error";
     }
-    expect(redirectResponse.value.wrapper).toBeFalsy();
-    expect(redirectResponse.value.uri).toBeTruthy();
-    expect(redirectResponse.value.uri).toEqual(toUri);
+    expect(redirectResult.value.wrapper).toBeFalsy();
+    expect(redirectResult.value.uri).toBeTruthy();
+    expect(redirectResult.value.uri).toEqual(toUri);
   });
 });

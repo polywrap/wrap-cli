@@ -42,7 +42,7 @@ import {
   PluginPackage,
   RunOptions,
   IUriResolutionStep,
-  UriResolutionResult,
+  UriResolutionResponse,
   initWrapper,
   IWrapPackage,
 } from "@polywrap/core-js";
@@ -505,7 +505,7 @@ export class PolywrapClient implements Client {
   @Tracer.traceMethod("PolywrapClient: tryResolveToWrapper")
   public async tryResolveToWrapper<TUri extends Uri | string>(
     options: TryResolveToWrapperOptions<TUri, ClientConfig>
-  ): Promise<UriResolutionResult<unknown>> {
+  ): Promise<UriResolutionResponse<unknown>> {
     const { contextId, shouldClearContext } = this._setContext(
       options.contextId,
       options.config
@@ -523,27 +523,27 @@ export class PolywrapClient implements Client {
     //   uriResolver = uriResolvers.filter((x) => x.name !== CacheResolver.name);
     // }
 
-    const result = await uriResolver.tryResolveToWrapper(
+    const response = await uriResolver.tryResolveToWrapper(
       this._toUri(options.uri),
       client,
       this._wrapperCache,
       []
     );
 
-    const { response, history } = result;
+    const { result, history } = response;
 
     if (shouldClearContext) {
       this._clearContext(contextId);
     }
 
-    if (!response.ok) {
-      return result;
+    if (!result.ok) {
+      return response;
     }
 
-    const uriPackageOrWrapper = response.value;
+    const uriPackageOrWrapper = result.value;
 
     if (uriPackageOrWrapper.type === "uri") {
-      return result;
+      return response;
     }
 
     let packageOrWrapper: IWrapPackage | Wrapper;
@@ -566,7 +566,7 @@ export class PolywrapClient implements Client {
       }
     }
 
-    return result;
+    return response;
   }
 
   private _addDefaultConfig() {
@@ -787,14 +787,14 @@ export class PolywrapClient implements Client {
     uri: Uri,
     options?: Contextualized
   ): Promise<Wrapper> {
-    const { response } = await this.tryResolveToWrapper({
+    const { result } = await this.tryResolveToWrapper({
       uri,
       contextId: options?.contextId,
     });
 
-    if (!response.ok) {
-      if (response.error) {
-        throw response.error;
+    if (!result.ok) {
+      if (result.error) {
+        throw result.error;
       } else {
         throw Error(
           `Error resolving URI "${uri.uri}"\nResolution Stack: ${JSON.stringify(
@@ -806,7 +806,7 @@ export class PolywrapClient implements Client {
       }
     }
 
-    const uriPackageOrWrapper = response.value;
+    const uriPackageOrWrapper = result.value;
 
     if (uriPackageOrWrapper.type === "uri") {
       throw Error(
@@ -907,7 +907,7 @@ const contextualizeClient = (
         },
         tryResolveToWrapper: <TUri extends Uri | string>(
           options: TryResolveToWrapperOptions<TUri, ClientConfig>
-        ): Promise<UriResolutionResult<unknown>> => {
+        ): Promise<UriResolutionResponse<unknown>> => {
           return client.tryResolveToWrapper({ ...options, contextId });
         },
         run: <TData extends Record<string, unknown> = Record<string, unknown>>(

@@ -3,11 +3,11 @@ import { buildWrapper } from "@polywrap/test-env-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import {
   coreInterfaceUris,
-  IUriResolutionResult,
+  IUriResolutionResponse,
   IUriResolutionStep,
   PluginModule,
   UriResolutionHistoryType,
-  UriResolutionResult,
+  UriResolutionResponse,
 } from "@polywrap/core-js";
 import { getClient } from "../../utils/getClient";
 import fs from "fs";
@@ -46,14 +46,14 @@ const buildCleanUriHistory = (
     cleanHistory.push(`${step.sourceUri.uri} => ${step.resolverName}`);
 
     if (
-      !step.result.history ||
-      step.result.history.length === 0 ||
+      !step.response.history ||
+      step.response.history.length === 0 ||
       (depth != null && depth < 0)
     ) {
       continue;
     }
 
-    const subHistory = buildCleanUriHistory(step.result.history, depth);
+    const subHistory = buildCleanUriHistory(step.response.history, depth);
     if (subHistory.length > 0) {
       cleanHistory.push(subHistory);
     }
@@ -63,17 +63,17 @@ const buildCleanUriHistory = (
 };
 
 const expectResultWithHistory = async (
-  receivedResult: IUriResolutionResult<unknown>,
-  expectedResult: IUriResolutionResult<unknown>,
+  receivedResponse: IUriResolutionResponse<unknown>,
+  expectedResponse: IUriResolutionResponse<unknown>,
   historyFileName?: string
 ): Promise<void> => {
   if (!historyFileName) {
-    expect(receivedResult.history).toBeUndefined();
+    expect(receivedResponse.history).toBeUndefined();
   } else {
-    await expectHistory(receivedResult.history, historyFileName);
+    await expectHistory(receivedResponse.history, historyFileName);
   }
 
-  expect(receivedResult.response).toEqual(expectedResult.response);
+  expect(receivedResponse.result).toEqual(expectedResponse.result);
 };
 
 const expectHistory = async (
@@ -89,19 +89,23 @@ const expectHistory = async (
     "utf-8"
   );
 
-  const receivedCleanHistory = replaceAll(JSON.stringify(buildCleanUriHistory(receivedHistory), null, 2), `${GetPathToTestWrappers()}/wasm-as`, "$root-wrapper-dir");
+  const receivedCleanHistory = replaceAll(
+    JSON.stringify(buildCleanUriHistory(receivedHistory), null, 2),
+    `${GetPathToTestWrappers()}/wasm-as`,
+    "$root-wrapper-dir"
+  );
 
-  expect(
-    receivedCleanHistory
-  ).toEqual(JSON.stringify(JSON.parse(expectedCleanHistory), null, 2));
+  expect(receivedCleanHistory).toEqual(
+    JSON.stringify(JSON.parse(expectedCleanHistory), null, 2)
+  );
 };
 
 const expectWrapperWithHistory = async (
-  receivedResult: IUriResolutionResult<unknown>,
+  receivedResult: IUriResolutionResponse<unknown>,
   expectedUri: Uri,
   historyFileName?: string
 ): Promise<void> => {
-  const { response: result, history } = receivedResult;
+  const { result, history } = receivedResult;
 
   if (!historyFileName) {
     expect(history).toBeUndefined();
@@ -124,7 +128,7 @@ const expectWrapperWithHistory = async (
 };
 
 function replaceAll(str: string, strToReplace: string, replaceStr: string) {
-  return str.replace(new RegExp(strToReplace, 'g'), replaceStr);
+  return str.replace(new RegExp(strToReplace, "g"), replaceStr);
 }
 
 describe("URI resolution", () => {
@@ -146,7 +150,7 @@ describe("URI resolution", () => {
 
     await expectResultWithHistory(
       response,
-      UriResolutionResult.ok(uri),
+      UriResolutionResponse.ok(uri),
       "sanity"
     );
   });
@@ -176,7 +180,7 @@ describe("URI resolution", () => {
 
     await expectResultWithHistory(
       response,
-      UriResolutionResult.ok(toUri2),
+      UriResolutionResponse.ok(toUri2),
       "can resolve redirects"
     );
   });
@@ -567,8 +571,8 @@ describe("URI resolution", () => {
     });
     await expectResultWithHistory(
       response,
-      UriResolutionResult.ok(finalRedirectedUri),
-      "restarts URI resolution after URI resolver extension redirect",
+      UriResolutionResponse.ok(finalRedirectedUri),
+      "restarts URI resolution after URI resolver extension redirect"
     );
   });
 
@@ -581,10 +585,10 @@ describe("URI resolution", () => {
         name: "CustomResolver",
         tryResolveToWrapper: async (uri: Uri) => {
           if (uri.uri === ensUri.uri) {
-            return UriResolutionResult.ok(redirectUri);
+            return UriResolutionResponse.ok(redirectUri);
           }
 
-          return UriResolutionResult.ok(uri);
+          return UriResolutionResponse.ok(uri);
         },
       },
     });
@@ -596,7 +600,7 @@ describe("URI resolution", () => {
 
     await expectResultWithHistory(
       response,
-      UriResolutionResult.ok(redirectUri)
+      UriResolutionResponse.ok(redirectUri)
     );
   });
 
@@ -614,10 +618,10 @@ describe("URI resolution", () => {
           name: "CustomResolver",
           tryResolveToWrapper: async (uri: Uri) => {
             if (uri.uri === fromUri.uri) {
-              return UriResolutionResult.ok(redirectUri);
+              return UriResolutionResponse.ok(redirectUri);
             }
 
-            return UriResolutionResult.ok(uri);
+            return UriResolutionResponse.ok(uri);
           },
         },
       },
@@ -625,7 +629,7 @@ describe("URI resolution", () => {
 
     await expectResultWithHistory(
       response,
-      UriResolutionResult.ok(redirectUri)
+      UriResolutionResponse.ok(redirectUri)
     );
   });
 
@@ -646,7 +650,7 @@ describe("URI resolution", () => {
 
     await expectResultWithHistory(
       response,
-      UriResolutionResult.err(
+      UriResolutionResponse.err(
         "While resolving wrap://ens/test.eth with URI resolver extension wrap://ens/undefined-resolver.eth, the extension could not be fully resolved. Last found URI is wrap://ens/undefined-resolver.eth"
       ),
       "custom wrapper resolver does not cause infinite recursion when resolved at runtime"

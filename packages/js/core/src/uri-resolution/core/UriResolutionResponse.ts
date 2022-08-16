@@ -1,21 +1,18 @@
 import { Uri, Wrapper, IWrapPackage } from "../..";
 
-type UriResolutionResponseUri = {
+type UriValue = {
   type: "uri";
   uri: Uri;
 };
 
-type UriResolutionResponsePackage = {
+type PackageValue = {
   type: "package";
   package: IWrapPackage;
 };
 
-type UriResolutionResponseWrapper = {
+type WrapperValue = {
   type: "wrapper";
   wrapper: Wrapper;
 };
 
-export type UriResolutionResponse =
-  | UriResolutionResponseUri
-  | UriResolutionResponsePackage
-  | UriResolutionResponseWrapper;
+export type UriPackageOrWrapper = UriValue | PackageValue | WrapperValue;

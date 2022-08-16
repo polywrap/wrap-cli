@@ -3,8 +3,8 @@ import { Uri, WrapperCache, Client, Result, Ok, Err, Wrapper } from "../..";
 import {
   IUriResolver,
   IUriResolutionStep,
-  IUriResolutionResult,
-  UriResolutionResult,
+  IUriResolutionResponse,
+  UriResolutionResponse,
 } from "../core";
 import { CreateWrapperFunc } from "./extendable/types/CreateWrapperFunc";
 import { getEnvFromUriOrResolutionPath } from "./getEnvFromUriOrResolutionPath";
@@ -32,21 +32,21 @@ export class UriResolverWrapper implements IUriResolver<unknown> {
     client: Client,
     cache: WrapperCache,
     resolutionPath: IUriResolutionStep<unknown>[]
-  ): Promise<IUriResolutionResult<unknown>> {
-    const { response, history } = await tryResolveUriWithImplementation(
+  ): Promise<IUriResolutionResponse<unknown>> {
+    const { result, history } = await tryResolveUriWithImplementation(
       uri,
       this.implementationUri,
       client
     );
 
-    if (!response.ok) {
-      return UriResolutionResult.err(response.error, history);
+    if (!result.ok) {
+      return UriResolutionResponse.err(result.error, history);
     }
 
-    const uriOrManifest = response.value;
+    const uriOrManifest = result.value;
 
     if (uriOrManifest?.uri) {
-      return UriResolutionResult.ok(new Uri(uriOrManifest.uri), history);
+      return UriResolutionResponse.ok(new Uri(uriOrManifest.uri), history);
     } else if (uriOrManifest?.manifest) {
       // We've found our manifest at the current implementation,
       // meaning the URI resolver can also be used as an Wrapper resolver
@@ -67,10 +67,10 @@ export class UriResolverWrapper implements IUriResolver<unknown> {
         environment
       );
 
-      return UriResolutionResult.ok(wrapper, history);
+      return UriResolutionResponse.ok(wrapper, history);
     }
 
-    return UriResolutionResult.ok(uri, history);
+    return UriResolutionResponse.ok(uri, history);
   }
 }
 
@@ -79,31 +79,28 @@ const tryResolveUriWithImplementation = async (
   implementationUri: Uri,
   client: Client
 ): Promise<{
-  response: Result<
-    UriResolverInterface.MaybeUriOrManifest | undefined,
-    unknown
-  >;
+  result: Result<UriResolverInterface.MaybeUriOrManifest | undefined, unknown>;
   history?: IUriResolutionStep<unknown>[];
 }> => {
-  const result = await client.tryResolveToWrapper(implementationUri);
+  const response = await client.tryResolveToWrapper(implementationUri);
 
-  if (!result.response.ok) {
+  if (!response.result.ok) {
     return {
-      response: Err(result.response.error),
-      history: result.history,
+      result: Err(response.result.error),
+      history: response.history,
     };
   }
 
-  const uriPackageOrWrapper = result.response.value;
+  const uriPackageOrWrapper = response.result.value;
 
   if (uriPackageOrWrapper.type === "uri") {
     const lastFoundUri = uriPackageOrWrapper.uri as Uri;
 
     return {
-      response: Err(
+      result: Err(
         `While resolving ${uri.uri} with URI resolver extension ${implementationUri.uri}, the extension could not be fully resolved. Last found URI is ${lastFoundUri.uri}`
       ),
-      history: result.history,
+      history: response.history,
     };
   }
 
@@ -135,14 +132,14 @@ const tryResolveUriWithImplementation = async (
 
   if (error) {
     return {
-      response: Err(error),
+      result: Err(error),
       history: [],
     };
   }
   Tracer.addEvent("continue", implementationUri.uri);
 
   return {
-    response: Ok(uriOrManifest ?? undefined),
+    result: Ok(uriOrManifest ?? undefined),
     history: [],
   };
 };

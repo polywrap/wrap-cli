@@ -1,4 +1,4 @@
-export * from "./IUriResolutionResult";
+export * from "./IUriResolutionResponse";
 export * from "./IUriResolutionStep";
 export * from "./IUriResolver";
 export * from "./UriResolutionResponse";

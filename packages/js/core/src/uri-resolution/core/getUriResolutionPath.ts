@@ -6,11 +6,11 @@ export const getUriResolutionPath = (
 ): IUriResolutionStep<unknown>[] => {
   return history.filter((x) => {
     let resultUri: Uri | undefined;
-    if (!x.result.response.ok) {
+    if (!x.response.result.ok) {
       return true;
     }
 
-    const uriPackageOrWrapper = x.result.response.value;
+    const uriPackageOrWrapper = x.response.result.value;
 
     if (uriPackageOrWrapper.type === "uri") {
       resultUri = uriPackageOrWrapper.uri;

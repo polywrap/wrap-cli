@@ -1,8 +1,8 @@
 import { Uri } from "../..";
-import { IUriResolutionResult } from ".";
+import { IUriResolutionResponse } from ".";
 
 export interface IUriResolutionStep<TError = undefined> {
   resolverName: string;
   sourceUri: Uri;
-  result: IUriResolutionResult<TError>;
+  response: IUriResolutionResponse<TError>;
 }

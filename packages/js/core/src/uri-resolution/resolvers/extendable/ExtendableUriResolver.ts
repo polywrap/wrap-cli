@@ -4,8 +4,8 @@ import { UriResolverWrapper } from "../UriResolverWrapper";
 import { DeserializeManifestOptions } from "@polywrap/wrap-manifest-types-js";
 import {
   IUriResolver,
-  IUriResolutionResult,
-  UriResolutionResult,
+  IUriResolutionResponse,
+  UriResolutionResponse,
 } from "../../core";
 import { UriResolverAggregatorBase } from "..";
 import {
@@ -18,7 +18,7 @@ import {
 import { InfiniteLoopError } from "../InfiniteLoopError";
 import { Ok, Result } from "../../../types";
 
-export type ExtendableUriResolverResult = IUriResolutionResult<
+export type ExtendableUriResolverResponse = IUriResolutionResponse<
   LoadResolverExtensionsError | InfiniteLoopError
 >;
 
@@ -53,19 +53,6 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<LoadResolve
       client.getRedirects({})
     );
 
-    // if (!this._hasLoadedUriResolvers) {
-    //   const {
-    //     success,
-    //     failedUriResolvers,
-    //   } = await this.loadUriResolverWrappers(client, cache, uriResolverImpls);
-
-    //   if (!success) {
-    //     return new LoadResolverExtensionsError(failedUriResolvers);
-    //   }
-
-    //   this._hasLoadedUriResolvers = true;
-    // }
-
     const resolvers: UriResolverWrapper[] = await this._createUriResolverWrappers(
       uriResolverImpls
     );
@@ -79,11 +66,11 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<LoadResolve
     uri: Uri,
     client: Client,
     cache: WrapperCache
-  ): Promise<ExtendableUriResolverResult> {
+  ): Promise<ExtendableUriResolverResponse> {
     const result = await this.getUriResolvers(uri, client);
 
     if (!result.ok) {
-      return UriResolutionResult.err(result.error);
+      return UriResolutionResponse.err(result.error);
     }
 
     const resolvers = result.value as UriResolverWrapper[];
@@ -92,7 +79,7 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<LoadResolve
 
     if (this.resolverIndex >= resolvers.length) {
       this.resolverIndex = -1;
-      return UriResolutionResult.ok(uri);
+      return UriResolutionResponse.ok(uri);
     }
 
     try {

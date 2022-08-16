@@ -11,10 +11,10 @@ import {
 import {
   IUriResolutionStep,
   IUriResolver,
-  IUriResolutionResult,
+  IUriResolutionResponse,
 } from "../core";
 import { toUri } from "../../utils";
-import { UriResolutionResult } from "../core";
+import { UriResolutionResponse } from "../core";
 
 export class PluginResolver implements IUriResolver {
   pluginUri: Uri;
@@ -39,9 +39,9 @@ export class PluginResolver implements IUriResolver {
     client: Client,
     cache: WrapperCache,
     resolutionPath: IUriResolutionStep<unknown>[]
-  ): Promise<IUriResolutionResult> {
+  ): Promise<IUriResolutionResponse> {
     if (uri.uri !== this.pluginUri.uri) {
-      return UriResolutionResult.ok(uri);
+      return UriResolutionResponse.ok(uri);
     }
 
     const environment = getEnvFromUriOrResolutionPath(
@@ -56,6 +56,6 @@ export class PluginResolver implements IUriResolver {
       environment
     );
 
-    return UriResolutionResult.ok(wrapper);
+    return UriResolutionResponse.ok(wrapper);
   }
 }
