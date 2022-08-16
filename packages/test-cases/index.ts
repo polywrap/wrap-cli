@@ -2,7 +2,6 @@ import path from "path";
 import { readFileSync, existsSync } from "fs";
 
 import { normalizeLineEndings } from "@polywrap/os-js";
-import { latestWrapManifestVersion, WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
 export const GetPathToBindTestFiles = () => `${__dirname}/cases/bind`
 export const GetPathToComposeTestFiles = () => `${__dirname}/cases/compose`
