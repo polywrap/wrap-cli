@@ -1,0 +1,10 @@
+
+{
+  v := value.{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}}{{#lastFullIter}}i{{/lastFullIter}}
+  {{#required}}
+  {{#toUpper}}{{type}}{{/toUpper}}Write(writer, &v)
+  {{/required}}
+  {{^required}}
+  {{#toUpper}}{{type}}{{/toUpper}}Write(writer, v)
+  {{/required}}
+}
