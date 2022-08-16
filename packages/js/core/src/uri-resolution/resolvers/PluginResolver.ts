@@ -1,18 +1,13 @@
-import { getEnvFromUriOrResolutionPath } from "./getEnvFromUriOrResolutionPath";
 import {
   Wrapper,
-  WrapperCache,
   Client,
   Env,
   PluginPackage,
   Uri,
   PluginRegistration,
+  IWrapPackage,
 } from "../..";
-import {
-  IUriResolutionStep,
-  IUriResolver,
-  IUriResolutionResponse,
-} from "../core";
+import { IUriResolver, IUriResolutionResponse } from "../core";
 import { toUri } from "../../utils";
 import { UriResolutionResponse } from "../core";
 
@@ -34,28 +29,36 @@ export class PluginResolver implements IUriResolver {
     return `${PluginResolver.name} (${this.pluginUri.uri})`;
   }
 
-  async tryResolveToWrapper(
-    uri: Uri,
-    client: Client,
-    cache: WrapperCache,
-    resolutionPath: IUriResolutionStep<unknown>[]
-  ): Promise<IUriResolutionResponse> {
+  async tryResolveToWrapper(uri: Uri): Promise<IUriResolutionResponse> {
     if (uri.uri !== this.pluginUri.uri) {
       return UriResolutionResponse.ok(uri);
     }
 
-    const environment = getEnvFromUriOrResolutionPath(
-      uri,
-      resolutionPath,
-      client
-    );
-
-    const wrapper = this.createPluginWrapper(
+    const wrapPackage = new PluginWrapperPackage(
       uri,
       this.pluginRegistration.plugin,
-      environment
+      this.createPluginWrapper
     );
 
-    return UriResolutionResponse.ok(wrapper);
+    return UriResolutionResponse.ok(wrapPackage);
+  }
+}
+
+// TODO: this is a temporary solution until we refactor the plugin package to be an IWrapPackage
+export class PluginWrapperPackage implements IWrapPackage {
+  constructor(
+    public readonly uri: Uri,
+    private readonly pluginPackage: PluginPackage<unknown>,
+    private readonly createPluginWrapper: (
+      uri: Uri,
+      plugin: PluginPackage<unknown>,
+      environment: Env<Uri> | undefined
+    ) => Wrapper
+  ) {}
+
+  async createWrapper(client: Client): Promise<Wrapper> {
+    const env = client.getEnvByUri(this.uri, {});
+
+    return this.createPluginWrapper(this.uri, this.pluginPackage, env);
   }
 }

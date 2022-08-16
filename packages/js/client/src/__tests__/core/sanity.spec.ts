@@ -55,7 +55,7 @@ describe("sanity", () => {
     expect(client.getUriResolver()).toBeTruthy();
 
     client = new PolywrapClient(
-      { uriResolver: buildUriResolver([]) },
+      { resolver: buildUriResolver([]) },
       { noDefaults: true }
     );
 

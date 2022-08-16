@@ -100,6 +100,33 @@ const expectHistory = async (
   );
 };
 
+const expectPackageWithHistory = async (
+  receivedResult: IUriResolutionResponse<unknown>,
+  expectedUri: Uri,
+  historyFileName?: string
+): Promise<void> => {
+  const { result, history } = receivedResult;
+
+  if (!historyFileName) {
+    expect(history).toBeUndefined();
+    return;
+  } else {
+    await expectHistory(history, historyFileName);
+  }
+
+  if (!result.ok) {
+    fail("Uri resolution failed " + result.error);
+  }
+
+  const uriPackageOrWrapper = result.value;
+
+  if (uriPackageOrWrapper.type !== "package") {
+    fail("Uri resolution did not return a package");
+  }
+
+  expect(uriPackageOrWrapper.package.uri).toEqual(expectedUri);
+};
+
 const expectWrapperWithHistory = async (
   receivedResult: IUriResolutionResponse<unknown>,
   expectedUri: Uri,
@@ -121,7 +148,7 @@ const expectWrapperWithHistory = async (
   const uriPackageOrWrapper = result.value;
 
   if (uriPackageOrWrapper.type !== "wrapper") {
-    fail("Uri resolution did not return a uri or package");
+    fail("Uri resolution did not return a wrapper");
   }
 
   expect(uriPackageOrWrapper.wrapper.uri).toEqual(expectedUri);
@@ -210,7 +237,7 @@ describe("URI resolution", () => {
       history: UriResolutionHistoryType.Full,
     });
 
-    await expectWrapperWithHistory(response, pluginUri, "can resolve plugin");
+    await expectPackageWithHistory(response, pluginUri, "can resolve plugin");
   });
 
   it("can resolve a URI resolver extension wrapper", async () => {
@@ -231,7 +258,7 @@ describe("URI resolution", () => {
       history: UriResolutionHistoryType.Full,
     });
 
-    await expectWrapperWithHistory(
+    await expectPackageWithHistory(
       response,
       redirectedUri,
       "can resolve a URI resolver extension wrapper"

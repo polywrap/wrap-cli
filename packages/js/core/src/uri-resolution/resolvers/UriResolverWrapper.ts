@@ -1,5 +1,5 @@
 import { UriResolverInterface } from "../../interfaces";
-import { Uri, WrapperCache, Client, Result, Ok, Err, Wrapper } from "../..";
+import { Uri, Client, Result, Ok, Err, Wrapper, initWrapper } from "../..";
 import {
   IUriResolver,
   IUriResolutionStep,
@@ -7,14 +7,14 @@ import {
   UriResolutionResponse,
 } from "../core";
 import { CreateWrapperFunc } from "./extendable/types/CreateWrapperFunc";
-import { getEnvFromUriOrResolutionPath } from "./getEnvFromUriOrResolutionPath";
 
 import {
   DeserializeManifestOptions,
   deserializeWrapManifest,
+  WrapManifest,
 } from "@polywrap/wrap-manifest-types-js";
 import { Tracer } from "@polywrap/tracing-js";
-import { initWrapper, IWrapPackage } from "../../types";
+import { IWrapPackage } from "../../types";
 
 export class UriResolverWrapper implements IUriResolver<unknown> {
   constructor(
@@ -29,9 +29,7 @@ export class UriResolverWrapper implements IUriResolver<unknown> {
 
   async tryResolveToWrapper(
     uri: Uri,
-    client: Client,
-    cache: WrapperCache,
-    resolutionPath: IUriResolutionStep<unknown>[]
+    client: Client
   ): Promise<IUriResolutionResponse<unknown>> {
     const { result, history } = await tryResolveUriWithImplementation(
       uri,
@@ -55,19 +53,14 @@ export class UriResolverWrapper implements IUriResolver<unknown> {
         this.deserializeOptions
       );
 
-      const environment = getEnvFromUriOrResolutionPath(
-        uri,
-        resolutionPath,
-        client
-      );
-      const wrapper = this.createWrapper(
+      const wrapPackage = new WasmPackage(
         uri,
         manifest,
         this.implementationUri.uri,
-        environment
+        this.createWrapper
       );
 
-      return UriResolutionResponse.ok(wrapper, history);
+      return UriResolutionResponse.ok(wrapPackage, history);
     }
 
     return UriResolutionResponse.ok(uri, history);
@@ -143,3 +136,19 @@ const tryResolveUriWithImplementation = async (
     history: [],
   };
 };
+
+// TODO: this is a temporary solution until we implement the WasmPackage
+export class WasmPackage implements IWrapPackage {
+  constructor(
+    public readonly uri: Uri,
+    private readonly manifest: WrapManifest,
+    private readonly resolver: string,
+    private readonly createWrapperFunc: CreateWrapperFunc
+  ) {}
+
+  async createWrapper(client: Client): Promise<Wrapper> {
+    const env = client.getEnvByUri(this.uri, {});
+
+    return this.createWrapperFunc(this.uri, this.manifest, this.resolver, env);
+  }
+}
