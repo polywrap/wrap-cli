@@ -21,38 +21,38 @@ export class Connections {
     }
     // Assign the default network (mainnet if not provided)
     if (config.defaultNetwork) {
-      this.defaultNetwork = config.defaultNetwork;
+      this.setDefaultNetwork(config.defaultNetwork);
     } else {
-      this.defaultNetwork = "mainnet";
+      this.setDefaultNetwork("mainnet");
     }
   }
 
-  /** Returns Connection indexed by key, or by default network if key is undefined */
-  get(key?: string): Connection {
-    if (!key) {
+  /** Returns Connection indexed by network name, or by default network if key is undefined */
+  get(network?: string): Connection {
+    if (!network) {
       return this._connections[this._defaultNetwork];
     }
-    return this._connections[key];
+    return this._connections[network];
   }
 
-  /** sets Connection to index of key */
-  set(key: string, value: Connection): void {
-    const networkStr = key.toLowerCase();
+  /** sets Connection to index of network name */
+  set(network: string, connection: Connection): void {
+    const networkStr = network.toLowerCase();
 
-    this._connections[networkStr] = value;
+    this._connections[networkStr] = connection;
 
     // Handle the case where `network` is a number
     const networkNumber = Number.parseInt(networkStr);
 
     if (networkNumber) {
       const namedNetwork = getNetwork(networkNumber);
-      this._connections[namedNetwork.name] = value;
+      this._connections[namedNetwork.name] = connection;
     }
   }
 
-  /** sets defaultNetwork to key, and creates new Connection if key is not found in store */
-  set defaultNetwork(key: string) {
-    this._defaultNetwork = key;
+  /** sets defaultNetwork to network, and creates new Connection if network is not found in store */
+  setDefaultNetwork(network: string): void {
+    this._defaultNetwork = network;
 
     // Create a connection for the default network if none exists
     if (!this._connections[this._defaultNetwork]) {
@@ -64,11 +64,12 @@ export class Connections {
   }
 
   /** returns default network */
-  get defaultNetwork(): string {
+  getDefaultNetwork(): string {
     return this._defaultNetwork;
   }
 
-  /** returns Connection indexed by given connection, or returns new Connection if connection is not found in store */
+  /** returns Connection indexed by given connection, or returns new Connection if connection is not found in store.
+   * Returns default network Connection if a connection argument is not provided. */
   async getConnection(
     connection?: SchemaConnection | null
   ): Promise<Connection> {
