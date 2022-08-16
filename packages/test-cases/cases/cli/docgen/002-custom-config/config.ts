@@ -56,8 +56,6 @@ export const mockPluginManifest: WrapManifest = {
     "importedEnvTypes": [],
     "moduleType": {
       "type": "Module",
-      "name": null,
-      "required": null,
       "kind": 128,
       "methods": [
         {
@@ -71,17 +69,12 @@ export const mockPluginManifest: WrapManifest = {
             "name": "getData",
             "required": true,
             "kind": 34,
-            "array": null,
-            "map": null,
             "scalar": {
               "type": "Int",
               "name": "getData",
               "required": true,
               "kind": 4
-            },
-            "object": null,
-            "enum": null,
-            "unresolvedObjectOrEnum": null
+            }
           }
         },
         {
@@ -95,17 +88,12 @@ export const mockPluginManifest: WrapManifest = {
               "name": "value",
               "required": true,
               "kind": 34,
-              "array": null,
-              "map": null,
               "scalar": {
                 "type": "Int",
                 "name": "value",
                 "required": true,
                 "kind": 4
-              },
-              "object": null,
-              "enum": null,
-              "unresolvedObjectOrEnum": null
+              }
             }
           ],
           "return": {
@@ -113,17 +101,12 @@ export const mockPluginManifest: WrapManifest = {
             "name": "setData",
             "required": true,
             "kind": 34,
-            "array": null,
-            "map": null,
             "scalar": {
               "type": "Boolean",
               "name": "setData",
               "required": true,
               "kind": 4
-            },
-            "object": null,
-            "enum": null,
-            "unresolvedObjectOrEnum": null
+            }
           }
         },
         {
@@ -137,17 +120,12 @@ export const mockPluginManifest: WrapManifest = {
             "name": "deployContract",
             "required": true,
             "kind": 34,
-            "array": null,
-            "map": null,
             "scalar": {
               "type": "String",
               "name": "deployContract",
               "required": true,
               "kind": 4
-            },
-            "object": null,
-            "enum": null,
-            "unresolvedObjectOrEnum": null
+            }
           }
         }
       ],
