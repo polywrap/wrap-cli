@@ -19,7 +19,7 @@ export interface ClientConfig<TUri extends Uri | string = string> {
   plugins: PluginRegistration<TUri>[];
   interfaces: InterfaceImplementations<TUri>[];
   envs: Env<TUri>[];
-  uriResolver: IUriResolver;
+  resolver: IUriResolver<unknown>;
 }
 
 export interface Contextualized {
@@ -70,7 +70,7 @@ export interface Client
     options: GetEnvsOptions
   ): Env<Uri> | undefined;
 
-  getUriResolver(options: GetUriResolverOptions): IUriResolver;
+  getUriResolver(options: GetUriResolverOptions): IUriResolver<unknown>;
 
   getSchema<TUri extends Uri | string>(
     uri: TUri,

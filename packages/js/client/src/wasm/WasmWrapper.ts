@@ -50,7 +50,7 @@ export interface State {
   env: Uint8Array;
 }
 
-export class WasmWrapper extends Wrapper {
+export class WasmWrapper implements Wrapper {
   public static requiredExports: readonly string[] = ["_wrap_invoke"];
 
   private _info: WrapManifest | undefined = undefined;
@@ -58,16 +58,14 @@ export class WasmWrapper extends Wrapper {
   private _wasm: Uint8Array | undefined = undefined;
 
   constructor(
-    private _uri: Uri,
+    public readonly uri: Uri,
     private _manifest: WrapManifest,
     private _uriResolver: string,
     private _clientEnv?: Env<Uri>
   ) {
-    super();
-
     Tracer.startSpan("WasmWrapper: constructor");
     Tracer.setAttribute("args", {
-      uri: this._uri,
+      uri: this.uri,
       manifest: this._manifest,
       clientEnv: this._clientEnv,
       uriResolver: this._uriResolver,
@@ -86,10 +84,14 @@ export class WasmWrapper extends Wrapper {
         invoke: <TData = unknown, TUri extends Uri | string = string>(
           options: InvokeOptions<TUri>
         ): Promise<InvokeResult<TData>> => client.invoke<TData, TUri>(options),
+        invokeWrapper: <TData = unknown, TUri extends Uri | string = string>(
+          options: InvokeOptions<TUri> & { wrapper: Wrapper }
+        ): Promise<InvokeResult<TData>> =>
+          client.invokeWrapper<TData, TUri>(options),
       },
       // TODO: support all types of URI resolvers (cache, etc)
       new Uri(this._uriResolver),
-      combinePaths(this._uri.path, path)
+      combinePaths(this.uri.path, path)
     );
 
     if (error) {
@@ -99,7 +101,7 @@ export class WasmWrapper extends Wrapper {
     // If nothing is returned, the file was not found
     if (!data) {
       throw Error(
-        `WasmWrapper: File was not found.\nURI: ${this._uri}\nSubpath: ${path}`
+        `WasmWrapper: File was not found.\nURI: ${this.uri}\nSubpath: ${path}`
       );
     }
 
@@ -173,7 +175,7 @@ export class WasmWrapper extends Wrapper {
 
       const abort = (message: string) => {
         throw new Error(
-          `WasmWrapper: Wasm module aborted execution.\nURI: ${this._uri.uri}\n` +
+          `WasmWrapper: Wasm module aborted execution.\nURI: ${this.uri.uri}\n` +
             `Method: ${method}\n` +
             `Args: ${JSON.stringify(args, null, 2)}\nMessage: ${message}.\n`
         );
@@ -205,7 +207,7 @@ export class WasmWrapper extends Wrapper {
         case "InvokeError": {
           throw Error(
             `WasmWrapper: invocation exception encountered.\n` +
-              `uri: ${this._uri.uri}\n` +
+              `uri: ${this.uri.uri}\n` +
               `method: ${method}\n` +
               `args: ${JSON.stringify(args, null, 2)}\n` +
               `exception: ${invokeResult.invokeError}`

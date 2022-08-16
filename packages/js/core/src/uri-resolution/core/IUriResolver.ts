@@ -1,4 +1,4 @@
-import { IUriResolutionStep, UriResolutionResult } from ".";
+import { IUriResolutionStep, IUriResolutionResult } from ".";
 import { Uri, Client, WrapperCache } from "../..";
 
 export interface IUriResolver<TError = undefined> {
@@ -8,5 +8,5 @@ export interface IUriResolver<TError = undefined> {
     client: Client,
     cache: WrapperCache,
     resolutionPath: IUriResolutionStep<TError>[]
-  ): Promise<UriResolutionResult<TError>>;
+  ): Promise<IUriResolutionResult<TError>>;
 }

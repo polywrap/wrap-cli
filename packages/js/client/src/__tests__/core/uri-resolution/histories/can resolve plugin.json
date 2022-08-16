@@ -1,0 +1,8 @@
+[
+  "wrap://ens/plugin.eth => LegacyRedirectsResolver",
+  "wrap://ens/plugin.eth => CacheResolver",
+  "wrap://ens/plugin.eth => LegacyPluginsResolver",
+  [
+    "wrap://ens/plugin.eth => PluginResolver (wrap://ens/plugin.eth)"
+  ]
+]

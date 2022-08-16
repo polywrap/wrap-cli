@@ -1,4 +1,4 @@
-import { ClientConfig, Uri } from ".";
+import { ClientConfig, Uri, Wrapper } from ".";
 
 /** Options required for an Wrapper invocation. */
 export interface InvokeOptions<
@@ -54,6 +54,9 @@ export interface InvokerOptions<
 }
 
 export interface Invoker {
+  invokeWrapper<TData = unknown, TUri extends Uri | string = string>(
+    options: InvokerOptions<TUri> & { wrapper: Wrapper }
+  ): Promise<InvokeResult<TData>>;
   invoke<TData = unknown, TUri extends Uri | string = string>(
     options: InvokerOptions<TUri>
   ): Promise<InvokeResult<TData>>;

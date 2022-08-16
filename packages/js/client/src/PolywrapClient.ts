@@ -41,10 +41,10 @@ import {
   JobRunner,
   PluginPackage,
   RunOptions,
-  UriResolutionHistoryType,
   IUriResolutionStep,
   UriResolutionResult,
-  Result,
+  initWrapper,
+  IWrapPackage,
 } from "@polywrap/core-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
@@ -93,7 +93,7 @@ export class PolywrapClient implements Client {
           interfaces: config.interfaces
             ? sanitizeInterfaceImplementations(config.interfaces)
             : [],
-          uriResolver: config.uriResolver as IUriResolver,
+          resolver: config.resolver as IUriResolver<unknown>,
           tracingEnabled: !!config.tracingEnabled,
         };
       }
@@ -102,7 +102,7 @@ export class PolywrapClient implements Client {
         this._addDefaultConfig();
       }
 
-      if (!this._config.uriResolver) {
+      if (!this._config.resolver) {
         throw new Error("No URI resolver provided");
       }
 
@@ -155,8 +155,10 @@ export class PolywrapClient implements Client {
   }
 
   @Tracer.traceMethod("PolywrapClient: getUriResolver")
-  public getUriResolver(options: GetUriResolverOptions = {}): IUriResolver {
-    return this._getConfig(options.contextId).uriResolver;
+  public getUriResolver(
+    options: GetUriResolverOptions = {}
+  ): IUriResolver<unknown> {
+    return this._getConfig(options.contextId).resolver;
   }
 
   @Tracer.traceMethod("PolywrapClient: getEnvByUri")
@@ -305,9 +307,12 @@ export class PolywrapClient implements Client {
     return result;
   }
 
-  @Tracer.traceMethod("PolywrapClient: invoke")
-  public async invoke<TData = unknown, TUri extends Uri | string = string>(
-    options: InvokerOptions<TUri, PolywrapClientConfig>
+  @Tracer.traceMethod("PolywrapClient: invokeWrapper")
+  public async invokeWrapper<
+    TData = unknown,
+    TUri extends Uri | string = string
+  >(
+    options: InvokerOptions<TUri, PolywrapClientConfig> & { wrapper: Wrapper }
   ): Promise<InvokeResult<TData>> {
     const { contextId, shouldClearContext } = this._setContext(
       options.contextId,
@@ -323,7 +328,7 @@ export class PolywrapClient implements Client {
         uri: this._toUri(options.uri),
       };
 
-      const wrapper = await this._loadWrapper(typedOptions.uri, { contextId });
+      const wrapper = options.wrapper;
       const invocableResult = await wrapper.invoke(
         typedOptions,
         contextualizeClient(this, contextId)
@@ -346,6 +351,38 @@ export class PolywrapClient implements Client {
       } else {
         error = invocableResult.error;
       }
+    } catch (e) {
+      error = e;
+    }
+
+    if (shouldClearContext) {
+      this._clearContext(contextId);
+    }
+
+    return { error };
+  }
+
+  @Tracer.traceMethod("PolywrapClient: invoke")
+  public async invoke<TData = unknown, TUri extends Uri | string = string>(
+    options: InvokerOptions<TUri, PolywrapClientConfig>
+  ): Promise<InvokeResult<TData>> {
+    const { contextId, shouldClearContext } = this._setContext(
+      options.contextId,
+      options.config
+    );
+
+    let error: Error | undefined;
+
+    try {
+      const typedOptions: InvokeOptions<Uri> = {
+        ...options,
+        contextId: contextId,
+        uri: this._toUri(options.uri),
+      };
+
+      const wrapper = await this._loadWrapper(typedOptions.uri, { contextId });
+
+      return await this.invokeWrapper({ ...typedOptions, wrapper });
     } catch (e) {
       error = e;
     }
@@ -468,7 +505,7 @@ export class PolywrapClient implements Client {
   @Tracer.traceMethod("PolywrapClient: tryResolveToWrapper")
   public async tryResolveToWrapper<TUri extends Uri | string>(
     options: TryResolveToWrapperOptions<TUri, ClientConfig>
-  ): Promise<Result<UriResolutionResult, unknown>> {
+  ): Promise<UriResolutionResult<unknown>> {
     const { contextId, shouldClearContext } = this._setContext(
       options.contextId,
       options.config
@@ -486,15 +523,38 @@ export class PolywrapClient implements Client {
     //   uriResolver = uriResolvers.filter((x) => x.name !== CacheResolver.name);
     // }
 
-    const { response, history } = await uriResolver.tryResolveToWrapper(
+    const result = await uriResolver.tryResolveToWrapper(
       this._toUri(options.uri),
       client,
       this._wrapperCache,
       []
     );
 
-    if (!result.resp.ok) {
+    const { response, history } = result;
+
+    if (shouldClearContext) {
+      this._clearContext(contextId);
     }
+
+    if (!response.ok) {
+      return result;
+    }
+
+    const uriPackageOrWrapper = response.value;
+
+    if (uriPackageOrWrapper.type === "uri") {
+      return result;
+    }
+
+    let packageOrWrapper: IWrapPackage | Wrapper;
+
+    if (uriPackageOrWrapper.type === "package") {
+      packageOrWrapper = uriPackageOrWrapper.package;
+    } else {
+      packageOrWrapper = uriPackageOrWrapper.wrapper;
+    }
+
+    const wrapper = await initWrapper(packageOrWrapper, this);
 
     const resolutionPath = getUriResolutionPath(
       history as IUriResolutionStep[]
@@ -506,20 +566,7 @@ export class PolywrapClient implements Client {
       }
     }
 
-    if (shouldClearContext) {
-      this._clearContext(contextId);
-    }
-
-    return {
-      wrapper,
-      uri: resolvedUri,
-      history:
-        options.history == null ||
-        options.history === UriResolutionHistoryType.Path
-          ? resolutionPath
-          : history,
-      error,
-    };
+    return result;
   }
 
   private _addDefaultConfig() {
@@ -537,8 +584,8 @@ export class PolywrapClient implements Client {
       this._config.interfaces.push(...defaultClientConfig.interfaces);
     }
 
-    if (!this._config.uriResolver && defaultClientConfig.uriResolver) {
-      this._config.uriResolver = defaultClientConfig.uriResolver;
+    if (!this._config.resolver && defaultClientConfig.resolver) {
+      this._config.resolver = defaultClientConfig.resolver;
     }
   }
 
@@ -718,7 +765,7 @@ export class PolywrapClient implements Client {
         ? sanitizeInterfaceImplementations(context.interfaces)
         : config.interfaces,
       envs: context?.envs ? sanitizeEnvs(context.envs) : config.envs,
-      uriResolver: context?.uriResolver ?? config.uriResolver,
+      resolver: context?.resolver ?? config.resolver,
       tracingEnabled: context?.tracingEnabled || config.tracingEnabled,
     });
 
@@ -740,27 +787,44 @@ export class PolywrapClient implements Client {
     uri: Uri,
     options?: Contextualized
   ): Promise<Wrapper> {
-    const {
-      wrapper,
-      history,
-      error,
-      uri: resultUri,
-    } = await this.tryResolveToWrapper({
+    const { response } = await this.tryResolveToWrapper({
       uri,
       contextId: options?.contextId,
     });
 
-    if (!wrapper) {
-      if (error) {
-        throw error;
+    if (!response.ok) {
+      if (response.error) {
+        throw response.error;
       } else {
         throw Error(
-          `Error resolving URI "${uri.uri}"\nURI not found ${
-            resultUri.uri
-          }\nResolution Stack: ${JSON.stringify(history, null, 2)}`
+          `Error resolving URI "${uri.uri}"\nResolution Stack: ${JSON.stringify(
+            history,
+            null,
+            2
+          )}`
         );
       }
     }
+
+    const uriPackageOrWrapper = response.value;
+
+    if (uriPackageOrWrapper.type === "uri") {
+      throw Error(
+        `Error resolving URI "${uri.uri}"\nURI not found ${
+          uriPackageOrWrapper.uri.uri
+        }\nResolution Stack: ${JSON.stringify(history, null, 2)}`
+      );
+    }
+
+    let packageOrWrapper: IWrapPackage | Wrapper;
+
+    if (uriPackageOrWrapper.type === "package") {
+      packageOrWrapper = uriPackageOrWrapper.package;
+    } else {
+      packageOrWrapper = uriPackageOrWrapper.wrapper;
+    }
+
+    const wrapper = await initWrapper(packageOrWrapper, this);
 
     return wrapper;
   }
@@ -780,6 +844,11 @@ const contextualizeClient = (
           options: QueryOptions<TVariables, TUri>
         ): Promise<QueryResult<TData>> => {
           return client.query({ ...options, contextId });
+        },
+        invokeWrapper: <TData = unknown, TUri extends Uri | string = string>(
+          options: InvokeOptions<TUri> & { wrapper: Wrapper }
+        ): Promise<InvokeResult<TData>> => {
+          return client.invokeWrapper({ ...options, contextId });
         },
         invoke: <TData = unknown, TUri extends Uri | string = string>(
           options: InvokeOptions<TUri>
@@ -838,7 +907,7 @@ const contextualizeClient = (
         },
         tryResolveToWrapper: <TUri extends Uri | string>(
           options: TryResolveToWrapperOptions<TUri, ClientConfig>
-        ): Promise<IUriResolutionResult> => {
+        ): Promise<UriResolutionResult<unknown>> => {
           return client.tryResolveToWrapper({ ...options, contextId });
         },
         run: <TData extends Record<string, unknown> = Record<string, unknown>>(

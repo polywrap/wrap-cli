@@ -1,0 +1,24 @@
+[
+  "wrap://ens/uri.eth => LegacyRedirectsResolver",
+  "wrap://ens/uri.eth => CacheResolver",
+  "wrap://ens/uri.eth => LegacyPluginsResolver",
+  [
+    "wrap://ens/uri.eth => PluginResolver (wrap://ens/ipfs.polywrap.eth)",
+    "wrap://ens/uri.eth => PluginResolver (wrap://ens/ens-resolver.polywrap.eth)",
+    "wrap://ens/uri.eth => PluginResolver (wrap://ens/ethereum.polywrap.eth)",
+    "wrap://ens/uri.eth => PluginResolver (wrap://ens/http.polywrap.eth)",
+    "wrap://ens/uri.eth => PluginResolver (wrap://ens/js-logger.polywrap.eth)",
+    "wrap://ens/uri.eth => PluginResolver (wrap://ens/uts46.polywrap.eth)",
+    "wrap://ens/uri.eth => PluginResolver (wrap://ens/sha3.polywrap.eth)",
+    "wrap://ens/uri.eth => PluginResolver (wrap://ens/graph-node.polywrap.eth)",
+    "wrap://ens/uri.eth => PluginResolver (wrap://ens/fs.polywrap.eth)",
+    "wrap://ens/uri.eth => PluginResolver (wrap://ens/fs-resolver.polywrap.eth)",
+    "wrap://ens/uri.eth => PluginResolver (wrap://ens/ipfs-resolver.polywrap.eth)"
+  ],
+  "wrap://ens/uri.eth => ExtendableUriResolver",
+  [
+    "wrap://ens/uri.eth => UriResolverWrapper: (wrap://ens/ipfs-resolver.polywrap.eth)",
+    "wrap://ens/uri.eth => UriResolverWrapper: (wrap://ens/ens-resolver.polywrap.eth)",
+    "wrap://ens/uri.eth => UriResolverWrapper: (wrap://ens/fs-resolver.polywrap.eth)"
+  ]
+]

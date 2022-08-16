@@ -10,14 +10,14 @@ export const getUriResolutionPath = (
       return true;
     }
 
-    const uriWrapperOrPackage = x.result.response.value;
+    const uriPackageOrWrapper = x.result.response.value;
 
-    if (uriWrapperOrPackage.uri) {
-      resultUri = uriWrapperOrPackage.uri;
-    } else if (uriWrapperOrPackage.wrapper) {
-      resultUri = uriWrapperOrPackage.wrapper?.uri;
-    } else if (uriWrapperOrPackage.package) {
-      resultUri = uriWrapperOrPackage.package?.uri;
+    if (uriPackageOrWrapper.type === "uri") {
+      resultUri = uriPackageOrWrapper.uri;
+    } else if (uriPackageOrWrapper.type === "package") {
+      resultUri = uriPackageOrWrapper.package?.uri;
+    } else if (uriPackageOrWrapper.type === "wrapper") {
+      resultUri = uriPackageOrWrapper.wrapper.uri;
     }
 
     return !resultUri || resultUri.uri !== x.sourceUri.uri;

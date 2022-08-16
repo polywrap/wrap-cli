@@ -12,4 +12,8 @@ export class LegacyRedirectsResolver extends UriResolverAggregator {
       { fullResolution: true }
     );
   }
+
+  get name(): string {
+    return LegacyRedirectsResolver.name;
+  }
 }

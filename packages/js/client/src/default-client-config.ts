@@ -106,7 +106,7 @@ export const getDefaultClientConfig = Tracer.traceFunc(
           implementations: [new Uri("wrap://ens/js-logger.polywrap.eth")],
         },
       ],
-      uriResolver: buildUriResolver(
+      resolver: buildUriResolver(
         [
           new LegacyRedirectsResolver(),
           new CacheResolver(),

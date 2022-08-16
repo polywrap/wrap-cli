@@ -6,15 +6,17 @@ import {
   Client,
   WrapperCache,
   Result,
+  IUriResolutionStep,
 } from "../..";
 
 export type UriResolvable =
-  | IUriResolver
+  | IUriResolver<unknown>
   | UriRedirect<string | Uri>
   | UriResolvable[]
   | PluginRegistration<string | Uri>
   | ((
       uri: Uri,
       client: Client,
-      cache: WrapperCache
-    ) => Promise<Result<IUriResolver[], unknown>>);
+      cache: WrapperCache,
+      uriResolutionPath: IUriResolutionStep<unknown>[]
+    ) => Promise<Result<IUriResolver<unknown>[], unknown>>);

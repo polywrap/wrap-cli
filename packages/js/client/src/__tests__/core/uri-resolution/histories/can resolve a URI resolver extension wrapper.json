@@ -1,0 +1,45 @@
+[
+  "wrap://simple/$root-wrapper-dir/simple/build => LegacyRedirectsResolver",
+  "wrap://simple/$root-wrapper-dir/simple/build => CacheResolver",
+  "wrap://simple/$root-wrapper-dir/simple/build => LegacyPluginsResolver",
+  [
+    "wrap://simple/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/ipfs.polywrap.eth)",
+    "wrap://simple/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/ens-resolver.polywrap.eth)",
+    "wrap://simple/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/ethereum.polywrap.eth)",
+    "wrap://simple/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/http.polywrap.eth)",
+    "wrap://simple/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/js-logger.polywrap.eth)",
+    "wrap://simple/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/uts46.polywrap.eth)",
+    "wrap://simple/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/sha3.polywrap.eth)",
+    "wrap://simple/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/graph-node.polywrap.eth)",
+    "wrap://simple/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/fs.polywrap.eth)",
+    "wrap://simple/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/fs-resolver.polywrap.eth)",
+    "wrap://simple/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/ipfs-resolver.polywrap.eth)"
+  ],
+  "wrap://simple/$root-wrapper-dir/simple/build => ExtendableUriResolver",
+  [
+    "wrap://simple/$root-wrapper-dir/simple/build => UriResolverWrapper: (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)"
+  ],
+  "wrap://file/$root-wrapper-dir/simple/build => LegacyRedirectsResolver",
+  "wrap://file/$root-wrapper-dir/simple/build => CacheResolver",
+  "wrap://file/$root-wrapper-dir/simple/build => LegacyPluginsResolver",
+  [
+    "wrap://file/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/ipfs.polywrap.eth)",
+    "wrap://file/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/ens-resolver.polywrap.eth)",
+    "wrap://file/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/ethereum.polywrap.eth)",
+    "wrap://file/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/http.polywrap.eth)",
+    "wrap://file/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/js-logger.polywrap.eth)",
+    "wrap://file/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/uts46.polywrap.eth)",
+    "wrap://file/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/sha3.polywrap.eth)",
+    "wrap://file/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/graph-node.polywrap.eth)",
+    "wrap://file/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/fs.polywrap.eth)",
+    "wrap://file/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/fs-resolver.polywrap.eth)",
+    "wrap://file/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/ipfs-resolver.polywrap.eth)"
+  ],
+  "wrap://file/$root-wrapper-dir/simple/build => ExtendableUriResolver",
+  [
+    "wrap://file/$root-wrapper-dir/simple/build => UriResolverWrapper: (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)",
+    "wrap://file/$root-wrapper-dir/simple/build => UriResolverWrapper: (wrap://ens/ipfs-resolver.polywrap.eth)",
+    "wrap://file/$root-wrapper-dir/simple/build => UriResolverWrapper: (wrap://ens/ens-resolver.polywrap.eth)",
+    "wrap://file/$root-wrapper-dir/simple/build => UriResolverWrapper: (wrap://ens/fs-resolver.polywrap.eth)"
+  ]
+]

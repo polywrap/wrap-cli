@@ -19,13 +19,13 @@ export class PluginWrapper implements Wrapper {
   private _instance: PluginModule<unknown> | undefined;
 
   constructor(
-    private _uri: Uri,
+    public readonly uri: Uri,
     private _plugin: PluginPackage<unknown>,
     private _clientEnv?: Env<Uri>
   ) {
     Tracer.startSpan("PluginWrapper: constructor");
     Tracer.setAttribute("args", {
-      uri: this._uri,
+      uri: this.uri,
       plugin: this._plugin,
       clientEnv: this._clientEnv,
     });
@@ -51,10 +51,10 @@ export class PluginWrapper implements Wrapper {
   }
 
   @Tracer.traceMethod("PluginWrapper: invoke")
-  public async invoke<TData = unknown>(
+  public async invoke(
     options: InvokeOptions<Uri>,
     client: Client
-  ): Promise<InvocableResult<TData>> {
+  ): Promise<InvocableResult<unknown>> {
     try {
       const { method } = options;
       const args = options.args || {};
@@ -109,7 +109,7 @@ export class PluginWrapper implements Wrapper {
       } catch (e) {
         throw Error(
           `PluginWrapper: invocation exception encountered.\n` +
-            `uri: ${this._uri.uri}\nmodule: ${module}\n` +
+            `uri: ${this.uri.uri}\nmodule: ${module}\n` +
             `method: ${method}\n` +
             `args: ${JSON.stringify(jsArgs, null, 2)}\n` +
             `exception: ${e.message}`

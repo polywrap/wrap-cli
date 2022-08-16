@@ -1,13 +1,13 @@
 import { Tracer } from "@polywrap/tracing-js";
 import { InfiniteLoopError } from "..";
-import { Client, Err, Ok, Result, Uri, WrapperCache } from "../../..";
+import { Client, Result, Uri, WrapperCache } from "../../..";
+import { UriResolutionResult } from "../../core";
 import {
-  UriResolutionResult,
+  IUriResolutionResult,
   IUriResolver,
   IUriResolutionStep,
   getUriResolutionPath,
 } from "../../core";
-import { UriResolutionResponse } from "../../core/UriResolutionResponse";
 
 export abstract class UriResolverAggregatorBase<TError = undefined>
   implements IUriResolver<TError | InfiniteLoopError> {
@@ -25,13 +25,11 @@ export abstract class UriResolverAggregatorBase<TError = undefined>
     uri: Uri,
     client: Client,
     cache: WrapperCache
-  ): Promise<UriResolutionResult<TError | InfiniteLoopError>> {
+  ): Promise<IUriResolutionResult<TError | InfiniteLoopError>> {
     const result = await this.getUriResolvers(uri, client, cache);
 
     if (!result.ok) {
-      return {
-        response: Err(result.error),
-      };
+      return UriResolutionResult.err(result.error);
     }
 
     const resolvers = result.value as IUriResolver[];
@@ -49,7 +47,7 @@ export abstract class UriResolverAggregatorBase<TError = undefined>
     client: Client,
     cache: WrapperCache,
     resolvers: IUriResolver<unknown>[]
-  ): Promise<UriResolutionResult<TError | InfiniteLoopError>> {
+  ): Promise<IUriResolutionResult<TError | InfiniteLoopError>> {
     // Keep track of past URIs to avoid infinite loops
     const visitedUriMap: Map<string, boolean> = new Map<string, boolean>();
     const history: IUriResolutionStep<unknown>[] = [];
@@ -68,9 +66,10 @@ export abstract class UriResolverAggregatorBase<TError = undefined>
 
       for (const resolver of resolvers) {
         if (infiniteLoopDetected) {
-          return {
-            response: Err(new InfiniteLoopError(currentUri, history)),
-          };
+          return UriResolutionResult.err(
+            new InfiniteLoopError(currentUri, history),
+            history
+          );
         }
 
         const result = await resolver.tryResolveToWrapper(
@@ -87,14 +86,15 @@ export abstract class UriResolverAggregatorBase<TError = undefined>
         });
 
         if (!result.response.ok) {
-          return {
-            response: Err(result.response.error as TError),
-          };
+          return UriResolutionResult.err(
+            result.response.error as TError,
+            history
+          );
         } else if (result.response.ok) {
-          const uriWrapperOrPackage = result.response.value;
+          const uriPackageOrWrapper = result.response.value;
 
-          if (uriWrapperOrPackage.uri) {
-            const resultUri = uriWrapperOrPackage.uri as Uri;
+          if (uriPackageOrWrapper.type === "uri") {
+            const resultUri = uriPackageOrWrapper.uri;
 
             Tracer.addEvent("uri-resolver-redirect", {
               from: currentUri.uri,
@@ -112,18 +112,13 @@ export abstract class UriResolverAggregatorBase<TError = undefined>
             }
             break;
           } else {
-            return {
-              response: Ok(uriWrapperOrPackage),
-              history,
-            } as UriResolutionResult<TError | InfiniteLoopError>;
+            return UriResolutionResult.ok(uriPackageOrWrapper, history);
           }
         }
       }
     }
 
-    return {
-      response: Ok(new UriResolutionResponse(currentUri)),
-    };
+    return UriResolutionResult.ok(currentUri, history);
   }
 }
 

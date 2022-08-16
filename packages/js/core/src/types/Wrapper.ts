@@ -26,10 +26,10 @@ export interface Wrapper extends Invocable {
    * @param client The client instance requesting this invocation.
    * This client will be used for any sub-invokes that occur.
    */
-  invoke<TData = unknown>(
+  invoke(
     options: InvokeOptions<Uri>,
     invoker: Invoker
-  ): Promise<InvocableResult<TData>>;
+  ): Promise<InvocableResult<unknown>>;
 
   /**
    * Get a file from the Wrapper package.

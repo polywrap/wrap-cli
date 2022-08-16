@@ -8,10 +8,13 @@ import {
   Uri,
   PluginRegistration,
 } from "../..";
-import { IUriResolutionStep, IUriResolver, UriResolutionResult } from "../core";
+import {
+  IUriResolutionStep,
+  IUriResolver,
+  IUriResolutionResult,
+} from "../core";
 import { toUri } from "../../utils";
-import { Ok } from "../../types";
-import { UriResolutionResponse } from "../core/UriResolutionResponse";
+import { UriResolutionResult } from "../core";
 
 export class PluginResolver implements IUriResolver {
   pluginUri: Uri;
@@ -28,7 +31,7 @@ export class PluginResolver implements IUriResolver {
   }
 
   public get name(): string {
-    return PluginResolver.name;
+    return `${PluginResolver.name} (${this.pluginUri.uri})`;
   }
 
   async tryResolveToWrapper(
@@ -36,9 +39,9 @@ export class PluginResolver implements IUriResolver {
     client: Client,
     cache: WrapperCache,
     resolutionPath: IUriResolutionStep<unknown>[]
-  ): Promise<UriResolutionResult> {
+  ): Promise<IUriResolutionResult> {
     if (uri.uri !== this.pluginUri.uri) {
-      return this.notFound(uri);
+      return UriResolutionResult.ok(uri);
     }
 
     const environment = getEnvFromUriOrResolutionPath(
@@ -53,14 +56,6 @@ export class PluginResolver implements IUriResolver {
       environment
     );
 
-    return {
-      response: Ok(new UriResolutionResponse(wrapper)),
-    };
-  }
-
-  notFound(uri: Uri): UriResolutionResult {
-    return {
-      response: Ok(new UriResolutionResponse(uri)),
-    };
+    return UriResolutionResult.ok(wrapper);
   }
 }
