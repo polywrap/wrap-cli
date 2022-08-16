@@ -22,6 +22,7 @@
   "dependencies": {
     "@polywrap/os-js": "0.3.0",
     "@polywrap/schema-parse": "0.3.0",
+    "@polywrap/wrap-manifest-types-js": "0.3.0",
     "mustache": "4.0.1"
   },
   "devDependencies": {

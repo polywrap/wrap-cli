@@ -4,19 +4,15 @@ import {
   createObjectDefinition,
   createObjectPropertyDefinition,
   createInterfaceImplementedDefinition,
-  createAbi,
-  Abi,
+  WrapAbi,
 } from "@polywrap/schema-parse";
 
-export const abi: Abi = {
-  ...createAbi(),
+export const abi: WrapAbi = {
   objectTypes: [
     {
       ...createObjectDefinition({
         type: "BaseType",
       }),
-      properties: [
-      ],
     },
     {
       ...createObjectDefinition({
@@ -27,15 +23,11 @@ export const abi: Abi = {
           type: "BaseType"
         })
       ],
-      properties: [
-      ],
     },
   ],
   moduleType:
     {
       ...createModuleDefinition({}),
-      imports: [],
-      interfaces: [],
       methods: [
         {
           ...createMethodDefinition({
@@ -45,8 +37,6 @@ export const abi: Abi = {
               type: "DerivedType",
             }),
           }),
-          arguments: [
-          ],
         },
       ],
     },

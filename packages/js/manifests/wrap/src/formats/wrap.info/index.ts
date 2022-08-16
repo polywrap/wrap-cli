@@ -10,6 +10,8 @@ import {
   Abi as WrapAbi_0_1_0_1
 } from "./0.1";
 
+export * from "./0.1";
+
 import WrapManifestSchema_0_1 from "./0.1.schema.json";
 
 export {

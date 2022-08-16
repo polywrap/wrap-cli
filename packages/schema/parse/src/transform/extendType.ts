@@ -1,11 +1,12 @@
 import { AbiTransforms } from ".";
-import { GenericDefinition, Abi } from "../abi";
+
+import { GenericDefinition, WrapAbi } from "@polywrap/wrap-manifest-types-js";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/explicit-module-boundary-types
 export function extendType(extension: any): AbiTransforms {
   return {
     enter: {
-      Abi: (abi: Abi) => ({
+      Abi: (abi: WrapAbi) => ({
         ...abi,
         extension,
       }),

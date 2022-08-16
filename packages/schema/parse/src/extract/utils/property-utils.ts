@@ -3,15 +3,19 @@ import {
   createMapDefinition,
   createUnresolvedObjectOrEnumRef,
   isScalarType,
-  PropertyDefinition,
-} from "../../abi";
+} from "../..";
 
-const toBoolean = (val: unknown) => (val ? true : false);
+import { PropertyDefinition } from "@polywrap/wrap-manifest-types-js";
+
+const toBoolean = (val: unknown) => !!val;
 
 export function setPropertyType(
   property: PropertyDefinition,
   name: string,
-  type: { type: string; required: boolean | undefined }
+  type: {
+    type: string;
+    required: boolean | undefined;
+  }
 ): void {
   if (isScalarType(type.type)) {
     property.scalar = createScalarDefinition({
@@ -39,7 +43,7 @@ export function setPropertyType(
       }),
       ...property.map,
       name: name,
-      required: type.required ? true : null,
+      required: type.required,
     };
     return;
   }

@@ -1,10 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/naming-convention */
+import { DefinitionKind, isKind } from "../abi";
+
 import {
-  Abi,
+  AnyDefinition,
+  EnvDefinition,
+  ImportedEnvDefinition,
   GenericDefinition,
   ObjectDefinition,
-  AnyDefinition,
   ScalarDefinition,
   PropertyDefinition,
   ArrayDefinition,
@@ -12,19 +15,16 @@ import {
   ModuleDefinition,
   ImportedModuleDefinition,
   ImportedObjectDefinition,
-  DefinitionKind,
-  isKind,
   EnumDefinition,
   ImportedEnumDefinition,
   InterfaceImplementedDefinition,
   EnumRef,
   ObjectRef,
   InterfaceDefinition,
-  EnvDefinition,
   WithKind,
   MapDefinition,
-  ImportedEnvDefinition,
-} from "../abi";
+  WrapAbi,
+} from "@polywrap/wrap-manifest-types-js";
 
 export * from "./finalizePropertyDef";
 export * from "./extendType";
@@ -42,7 +42,7 @@ export interface AbiTransforms {
 }
 
 export interface AbiTransformer {
-  Abi?: (abi: Abi) => Abi;
+  Abi?: (abi: WrapAbi) => WrapAbi;
   GenericDefinition?: (def: GenericDefinition) => GenericDefinition;
   ObjectDefinition?: (def: ObjectDefinition) => ObjectDefinition;
   ObjectRef?: (def: ObjectRef) => ObjectRef;
@@ -72,29 +72,38 @@ export interface AbiTransformer {
   MapDefinition?: (def: MapDefinition) => MapDefinition;
 }
 
-export function transformAbi(abi: Abi, transforms: AbiTransforms): Abi {
+export function transformAbi(abi: WrapAbi, transforms: AbiTransforms): WrapAbi {
   let result = Object.assign({}, abi);
 
   if (transforms.enter && transforms.enter.Abi) {
     result = transforms.enter.Abi(result);
   }
 
-  for (let i = 0; i < result.interfaceTypes.length; ++i) {
-    result.interfaceTypes[i] = visitInterfaceDefinition(
-      result.interfaceTypes[i],
-      transforms
-    );
+  if (result.interfaceTypes) {
+    for (let i = 0; i < result.interfaceTypes.length; ++i) {
+      result.interfaceTypes[i] = visitInterfaceDefinition(
+        result.interfaceTypes[i],
+        transforms
+      );
+    }
   }
 
-  for (let i = 0; i < result.enumTypes.length; ++i) {
-    result.enumTypes[i] = visitEnumDefinition(result.enumTypes[i], transforms);
+  if (result.enumTypes) {
+    for (let i = 0; i < result.enumTypes.length; ++i) {
+      result.enumTypes[i] = visitEnumDefinition(
+        result.enumTypes[i],
+        transforms
+      );
+    }
   }
 
-  for (let i = 0; i < result.objectTypes.length; ++i) {
-    result.objectTypes[i] = visitObjectDefinition(
-      result.objectTypes[i],
-      transforms
-    );
+  if (result.objectTypes) {
+    for (let i = 0; i < result.objectTypes.length; ++i) {
+      result.objectTypes[i] = visitObjectDefinition(
+        result.objectTypes[i],
+        transforms
+      );
+    }
   }
 
   if (result.moduleType) {
@@ -105,32 +114,40 @@ export function transformAbi(abi: Abi, transforms: AbiTransforms): Abi {
     result.envType = visitEnvDefinition(result.envType, transforms);
   }
 
-  for (let i = 0; i < result.importedObjectTypes.length; ++i) {
-    result.importedObjectTypes[i] = visitImportedObjectDefinition(
-      result.importedObjectTypes[i],
-      transforms
-    );
+  if (result.importedObjectTypes) {
+    for (let i = 0; i < result.importedObjectTypes.length; ++i) {
+      result.importedObjectTypes[i] = visitImportedObjectDefinition(
+        result.importedObjectTypes[i],
+        transforms
+      );
+    }
   }
 
-  for (let i = 0; i < result.importedModuleTypes.length; ++i) {
-    result.importedModuleTypes[i] = visitImportedModuleDefinition(
-      result.importedModuleTypes[i],
-      transforms
-    );
+  if (result.importedModuleTypes) {
+    for (let i = 0; i < result.importedModuleTypes.length; ++i) {
+      result.importedModuleTypes[i] = visitImportedModuleDefinition(
+        result.importedModuleTypes[i],
+        transforms
+      );
+    }
   }
 
-  for (let i = 0; i < result.importedEnumTypes.length; ++i) {
-    result.importedEnumTypes[i] = visitImportedEnumDefinition(
-      result.importedEnumTypes[i],
-      transforms
-    );
+  if (result.importedEnumTypes) {
+    for (let i = 0; i < result.importedEnumTypes.length; ++i) {
+      result.importedEnumTypes[i] = visitImportedEnumDefinition(
+        result.importedEnumTypes[i],
+        transforms
+      );
+    }
   }
 
-  for (let i = 0; i < result.importedEnvTypes.length; ++i) {
-    result.importedEnvTypes[i] = visitImportedEnvDefinition(
-      result.importedEnvTypes[i],
-      transforms
-    );
+  if (result.importedEnvTypes) {
+    for (let i = 0; i < result.importedEnvTypes.length; ++i) {
+      result.importedEnvTypes[i] = visitImportedEnvDefinition(
+        result.importedEnvTypes[i],
+        transforms
+      );
+    }
   }
 
   if (transforms.leave && transforms.leave.Abi) {
@@ -147,18 +164,22 @@ export function visitObjectDefinition(
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
 
-  for (let i = 0; i < result.properties.length; ++i) {
-    result.properties[i] = visitPropertyDefinition(
-      result.properties[i],
-      transforms
-    );
+  if (result.properties) {
+    for (let i = 0; i < result.properties.length; ++i) {
+      result.properties[i] = visitPropertyDefinition(
+        result.properties[i],
+        transforms
+      );
+    }
   }
 
-  for (let i = 0; i < result.interfaces.length; ++i) {
-    result.interfaces[i] = visitInterfaceImplementedDefinition(
-      result.interfaces[i],
-      transforms
-    );
+  if (result.interfaces) {
+    for (let i = 0; i < result.interfaces.length; ++i) {
+      result.interfaces[i] = visitInterfaceImplementedDefinition(
+        result.interfaces[i],
+        transforms
+      );
+    }
   }
 
   return transformType(result, transforms.leave);
@@ -274,11 +295,13 @@ export function visitMethodDefinition(
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
 
-  for (let i = 0; i < result.arguments.length; ++i) {
-    result.arguments[i] = visitPropertyDefinition(
-      result.arguments[i],
-      transforms
-    );
+  if (result.arguments) {
+    for (let i = 0; i < result.arguments.length; ++i) {
+      result.arguments[i] = visitPropertyDefinition(
+        result.arguments[i],
+        transforms
+      );
+    }
   }
 
   if (result.return) {
@@ -295,8 +318,10 @@ export function visitModuleDefinition(
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
 
-  for (let i = 0; i < result.methods.length; ++i) {
-    result.methods[i] = visitMethodDefinition(result.methods[i], transforms);
+  if (result.methods) {
+    for (let i = 0; i < result.methods.length; ++i) {
+      result.methods[i] = visitMethodDefinition(result.methods[i], transforms);
+    }
   }
 
   return transformType(result, transforms.leave);
@@ -318,8 +343,10 @@ export function visitImportedModuleDefinition(
   let result = Object.assign({}, def);
   result = transformType(result, transforms.enter);
 
-  for (let i = 0; i < result.methods.length; ++i) {
-    result.methods[i] = visitMethodDefinition(result.methods[i], transforms);
+  if (result.methods) {
+    for (let i = 0; i < result.methods.length; ++i) {
+      result.methods[i] = visitMethodDefinition(result.methods[i], transforms);
+    }
   }
 
   return transformType(result, transforms.leave);
