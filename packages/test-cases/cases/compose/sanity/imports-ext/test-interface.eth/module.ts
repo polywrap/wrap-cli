@@ -28,7 +28,8 @@ export const abi: WrapAbi = {
             name: "uint8",
             required: true,
             kind: 4
-          }
+          },
+          comment: "uint8 comment"
         }
       ],
       interfaces: [

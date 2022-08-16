@@ -7,1493 +7,580 @@ export const wrapManifest: WrapManifest = {
   type: "plugin",
   version: "0.1",
   abi: {
-  "objectTypes": [
+  "enumTypes": [
     {
-      "type": "CustomType",
-      "kind": 1,
+      "constants": [
+        "STRING",
+        "BYTES"
+      ],
+      "kind": 8,
+      "type": "CustomEnum"
+    }
+  ],
+  "envType": {
+    "kind": 65536,
+    "properties": [
+      {
+        "kind": 34,
+        "name": "prop",
+        "required": true,
+        "scalar": {
+          "kind": 4,
+          "name": "prop",
+          "required": true,
+          "type": "String"
+        },
+        "type": "String"
+      },
+      {
+        "kind": 34,
+        "name": "optProp",
+        "scalar": {
+          "kind": 4,
+          "name": "optProp",
+          "type": "String"
+        },
+        "type": "String"
+      },
+      {
+        "kind": 34,
+        "map": {
+          "key": {
+            "kind": 4,
+            "name": "optMap",
+            "required": true,
+            "type": "String"
+          },
+          "kind": 262146,
+          "name": "optMap",
+          "scalar": {
+            "kind": 4,
+            "name": "optMap",
+            "type": "Int"
+          },
+          "type": "Map<String, Int>",
+          "value": {
+            "kind": 4,
+            "name": "optMap",
+            "type": "Int"
+          }
+        },
+        "name": "optMap",
+        "type": "Map<String, Int>"
+      }
+    ],
+    "type": "Env"
+  },
+  "importedEnumTypes": [
+    {
+      "constants": [
+        "STRING",
+        "BYTES"
+      ],
+      "kind": 520,
+      "namespace": "TestImport",
+      "nativeType": "Enum",
+      "type": "TestImport_Enum",
+      "uri": "testimport.uri.eth"
+    }
+  ],
+  "importedEnvTypes": [
+    {
+      "kind": 524288,
+      "namespace": "TestImport",
+      "nativeType": "Env",
       "properties": [
         {
-          "type": "String",
-          "name": "str",
+          "kind": 34,
+          "name": "enviroProp",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "String",
-            "name": "str",
+            "kind": 4,
+            "name": "enviroProp",
             "required": true,
-            "kind": 4
-          }
-        },
+            "type": "String"
+          },
+          "type": "String"
+        }
+      ],
+      "type": "TestImport_Env",
+      "uri": "testimport.uri.eth"
+    }
+  ],
+  "importedModuleTypes": [
+    {
+      "isInterface": true,
+      "kind": 256,
+      "methods": [
         {
-          "type": "String",
-          "name": "optStr",
-          "kind": 34,
-          "scalar": {
-            "type": "String",
-            "name": "optStr",
-            "kind": 4
-          }
-        },
-        {
-          "type": "UInt",
-          "name": "u",
-          "required": true,
-          "kind": 34,
-          "scalar": {
-            "type": "UInt",
-            "name": "u",
-            "required": true,
-            "kind": 4
-          }
-        },
-        {
-          "type": "UInt",
-          "name": "optU",
-          "kind": 34,
-          "scalar": {
-            "type": "UInt",
-            "name": "optU",
-            "kind": 4
-          }
-        },
-        {
-          "type": "UInt8",
-          "name": "u8",
-          "required": true,
-          "kind": 34,
-          "scalar": {
-            "type": "UInt8",
-            "name": "u8",
-            "required": true,
-            "kind": 4
-          }
-        },
-        {
-          "type": "UInt16",
-          "name": "u16",
-          "required": true,
-          "kind": 34,
-          "scalar": {
-            "type": "UInt16",
-            "name": "u16",
-            "required": true,
-            "kind": 4
-          }
-        },
-        {
-          "type": "UInt32",
-          "name": "u32",
-          "required": true,
-          "kind": 34,
-          "scalar": {
-            "type": "UInt32",
-            "name": "u32",
-            "required": true,
-            "kind": 4
-          }
-        },
-        {
-          "type": "Int",
-          "name": "i",
-          "required": true,
-          "kind": 34,
-          "scalar": {
-            "type": "Int",
-            "name": "i",
-            "required": true,
-            "kind": 4
-          }
-        },
-        {
-          "type": "Int8",
-          "name": "i8",
-          "required": true,
-          "kind": 34,
-          "scalar": {
-            "type": "Int8",
-            "name": "i8",
-            "required": true,
-            "kind": 4
-          }
-        },
-        {
-          "type": "Int16",
-          "name": "i16",
-          "required": true,
-          "kind": 34,
-          "scalar": {
-            "type": "Int16",
-            "name": "i16",
-            "required": true,
-            "kind": 4
-          }
-        },
-        {
-          "type": "Int32",
-          "name": "i32",
-          "required": true,
-          "kind": 34,
-          "scalar": {
-            "type": "Int32",
-            "name": "i32",
-            "required": true,
-            "kind": 4
-          }
-        },
-        {
-          "type": "BigInt",
-          "name": "bigint",
-          "required": true,
-          "kind": 34,
-          "scalar": {
-            "type": "BigInt",
-            "name": "bigint",
-            "required": true,
-            "kind": 4
-          }
-        },
-        {
-          "type": "BigInt",
-          "name": "optBigint",
-          "kind": 34,
-          "scalar": {
-            "type": "BigInt",
-            "name": "optBigint",
-            "kind": 4
-          }
-        },
-        {
-          "type": "BigNumber",
-          "name": "bignumber",
-          "required": true,
-          "kind": 34,
-          "scalar": {
-            "type": "BigNumber",
-            "name": "bignumber",
-            "required": true,
-            "kind": 4
-          }
-        },
-        {
-          "type": "BigNumber",
-          "name": "optBignumber",
-          "kind": 34,
-          "scalar": {
-            "type": "BigNumber",
-            "name": "optBignumber",
-            "kind": 4
-          }
-        },
-        {
-          "type": "JSON",
-          "name": "json",
-          "required": true,
-          "kind": 34,
-          "scalar": {
-            "type": "JSON",
-            "name": "json",
-            "required": true,
-            "kind": 4
-          }
-        },
-        {
-          "type": "JSON",
-          "name": "optJson",
-          "kind": 34,
-          "scalar": {
-            "type": "JSON",
-            "name": "optJson",
-            "kind": 4
-          }
-        },
-        {
-          "type": "Bytes",
-          "name": "bytes",
-          "required": true,
-          "kind": 34,
-          "scalar": {
-            "type": "Bytes",
-            "name": "bytes",
-            "required": true,
-            "kind": 4
-          }
-        },
-        {
-          "type": "Bytes",
-          "name": "optBytes",
-          "kind": 34,
-          "scalar": {
-            "type": "Bytes",
-            "name": "optBytes",
-            "kind": 4
-          }
-        },
-        {
-          "type": "Boolean",
-          "name": "boolean",
-          "required": true,
-          "kind": 34,
-          "scalar": {
-            "type": "Boolean",
-            "name": "boolean",
-            "required": true,
-            "kind": 4
-          }
-        },
-        {
-          "type": "Boolean",
-          "name": "optBoolean",
-          "kind": 34,
-          "scalar": {
-            "type": "Boolean",
-            "name": "optBoolean",
-            "kind": 4
-          }
-        },
-        {
-          "type": "[UInt]",
-          "name": "uArray",
-          "required": true,
-          "kind": 34,
-          "array": {
-            "type": "[UInt]",
-            "name": "uArray",
-            "required": true,
-            "kind": 18,
-            "scalar": {
-              "type": "UInt",
-              "name": "uArray",
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "str",
               "required": true,
-              "kind": 4
+              "scalar": {
+                "kind": 4,
+                "name": "str",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
             },
-            "item": {
-              "type": "UInt",
-              "name": "uArray",
+            {
+              "kind": 34,
+              "name": "optStr",
+              "scalar": {
+                "kind": 4,
+                "name": "optStr",
+                "type": "String"
+              },
+              "type": "String"
+            },
+            {
+              "kind": 34,
+              "name": "u",
               "required": true,
-              "kind": 4
-            }
-          }
-        },
-        {
-          "type": "[UInt]",
-          "name": "uOptArray",
-          "kind": 34,
-          "array": {
-            "type": "[UInt]",
-            "name": "uOptArray",
-            "kind": 18,
-            "scalar": {
-              "type": "UInt",
-              "name": "uOptArray",
-              "required": true,
-              "kind": 4
+              "scalar": {
+                "kind": 4,
+                "name": "u",
+                "required": true,
+                "type": "UInt"
+              },
+              "type": "UInt"
             },
-            "item": {
-              "type": "UInt",
-              "name": "uOptArray",
-              "required": true,
-              "kind": 4
-            }
-          }
-        },
-        {
-          "type": "[UInt]",
-          "name": "optUOptArray",
-          "kind": 34,
-          "array": {
-            "type": "[UInt]",
-            "name": "optUOptArray",
-            "kind": 18,
-            "scalar": {
-              "type": "UInt",
-              "name": "optUOptArray",
-              "kind": 4
+            {
+              "kind": 34,
+              "name": "optU",
+              "scalar": {
+                "kind": 4,
+                "name": "optU",
+                "type": "UInt"
+              },
+              "type": "UInt"
             },
-            "item": {
-              "type": "UInt",
-              "name": "optUOptArray",
-              "kind": 4
-            }
-          }
-        },
-        {
-          "type": "[String]",
-          "name": "optStrOptArray",
-          "kind": 34,
-          "array": {
-            "type": "[String]",
-            "name": "optStrOptArray",
-            "kind": 18,
-            "scalar": {
-              "type": "String",
-              "name": "optStrOptArray",
-              "kind": 4
-            },
-            "item": {
-              "type": "String",
-              "name": "optStrOptArray",
-              "kind": 4
-            }
-          }
-        },
-        {
-          "type": "[[UInt]]",
-          "name": "uArrayArray",
-          "required": true,
-          "kind": 34,
-          "array": {
-            "type": "[[UInt]]",
-            "name": "uArrayArray",
-            "required": true,
-            "kind": 18,
-            "array": {
-              "type": "[UInt]",
+            {
+              "array": {
+                "array": {
+                  "item": {
+                    "kind": 4,
+                    "name": "uArrayArray",
+                    "type": "UInt"
+                  },
+                  "kind": 18,
+                  "name": "uArrayArray",
+                  "scalar": {
+                    "kind": 4,
+                    "name": "uArrayArray",
+                    "type": "UInt"
+                  },
+                  "type": "[UInt]"
+                },
+                "item": {
+                  "item": {
+                    "kind": 4,
+                    "name": "uArrayArray",
+                    "type": "UInt"
+                  },
+                  "kind": 18,
+                  "name": "uArrayArray",
+                  "scalar": {
+                    "kind": 4,
+                    "name": "uArrayArray",
+                    "type": "UInt"
+                  },
+                  "type": "[UInt]"
+                },
+                "kind": 18,
+                "name": "uArrayArray",
+                "required": true,
+                "type": "[[UInt]]"
+              },
+              "kind": 34,
               "name": "uArrayArray",
               "required": true,
-              "kind": 18,
-              "scalar": {
-                "type": "UInt",
-                "name": "uArrayArray",
-                "required": true,
-                "kind": 4
-              },
-              "item": {
-                "type": "UInt",
-                "name": "uArrayArray",
-                "required": true,
-                "kind": 4
-              }
+              "type": "[[UInt]]"
             },
-            "item": {
-              "type": "[UInt]",
-              "name": "uArrayArray",
+            {
+              "kind": 34,
+              "name": "object",
+              "object": {
+                "kind": 8192,
+                "name": "object",
+                "required": true,
+                "type": "TestImport_Object"
+              },
               "required": true,
-              "kind": 18,
-              "scalar": {
-                "type": "UInt",
-                "name": "uArrayArray",
-                "required": true,
-                "kind": 4
+              "type": "TestImport_Object"
+            },
+            {
+              "kind": 34,
+              "name": "optObject",
+              "object": {
+                "kind": 8192,
+                "name": "optObject",
+                "type": "TestImport_Object"
               },
-              "item": {
-                "type": "UInt",
-                "name": "uArrayArray",
+              "type": "TestImport_Object"
+            },
+            {
+              "array": {
+                "item": {
+                  "kind": 8192,
+                  "name": "objectArray",
+                  "required": true,
+                  "type": "TestImport_Object"
+                },
+                "kind": 18,
+                "name": "objectArray",
+                "object": {
+                  "kind": 8192,
+                  "name": "objectArray",
+                  "required": true,
+                  "type": "TestImport_Object"
+                },
                 "required": true,
-                "kind": 4
-              }
+                "type": "[TestImport_Object]"
+              },
+              "kind": 34,
+              "name": "objectArray",
+              "required": true,
+              "type": "[TestImport_Object]"
+            },
+            {
+              "array": {
+                "item": {
+                  "kind": 8192,
+                  "name": "optObjectArray",
+                  "type": "TestImport_Object"
+                },
+                "kind": 18,
+                "name": "optObjectArray",
+                "object": {
+                  "kind": 8192,
+                  "name": "optObjectArray",
+                  "type": "TestImport_Object"
+                },
+                "type": "[TestImport_Object]"
+              },
+              "kind": 34,
+              "name": "optObjectArray",
+              "type": "[TestImport_Object]"
+            },
+            {
+              "enum": {
+                "kind": 16384,
+                "name": "en",
+                "required": true,
+                "type": "TestImport_Enum"
+              },
+              "kind": 34,
+              "name": "en",
+              "required": true,
+              "type": "TestImport_Enum"
+            },
+            {
+              "enum": {
+                "kind": 16384,
+                "name": "optEnum",
+                "type": "TestImport_Enum"
+              },
+              "kind": 34,
+              "name": "optEnum",
+              "type": "TestImport_Enum"
+            },
+            {
+              "array": {
+                "enum": {
+                  "kind": 16384,
+                  "name": "enumArray",
+                  "required": true,
+                  "type": "TestImport_Enum"
+                },
+                "item": {
+                  "kind": 16384,
+                  "name": "enumArray",
+                  "required": true,
+                  "type": "TestImport_Enum"
+                },
+                "kind": 18,
+                "name": "enumArray",
+                "required": true,
+                "type": "[TestImport_Enum]"
+              },
+              "kind": 34,
+              "name": "enumArray",
+              "required": true,
+              "type": "[TestImport_Enum]"
+            },
+            {
+              "array": {
+                "enum": {
+                  "kind": 16384,
+                  "name": "optEnumArray",
+                  "type": "TestImport_Enum"
+                },
+                "item": {
+                  "kind": 16384,
+                  "name": "optEnumArray",
+                  "type": "TestImport_Enum"
+                },
+                "kind": 18,
+                "name": "optEnumArray",
+                "type": "[TestImport_Enum]"
+              },
+              "kind": 34,
+              "name": "optEnumArray",
+              "type": "[TestImport_Enum]"
             }
-          }
-        },
-        {
-          "type": "[[UInt32]]",
-          "name": "uOptArrayOptArray",
+          ],
+          "env": {
+            "required": true
+          },
+          "kind": 64,
+          "name": "importedMethod",
           "required": true,
-          "kind": 34,
-          "array": {
-            "type": "[[UInt32]]",
-            "name": "uOptArrayOptArray",
-            "required": true,
-            "kind": 18,
-            "array": {
-              "type": "[UInt32]",
-              "name": "uOptArrayOptArray",
-              "kind": 18,
-              "scalar": {
-                "type": "UInt32",
-                "name": "uOptArrayOptArray",
-                "kind": 4
-              },
-              "item": {
-                "type": "UInt32",
-                "name": "uOptArrayOptArray",
-                "kind": 4
-              }
+          "return": {
+            "kind": 34,
+            "name": "importedMethod",
+            "object": {
+              "kind": 8192,
+              "name": "importedMethod",
+              "type": "TestImport_Object"
             },
-            "item": {
-              "type": "[UInt32]",
-              "name": "uOptArrayOptArray",
-              "kind": 18,
-              "scalar": {
-                "type": "UInt32",
-                "name": "uOptArrayOptArray",
-                "kind": 4
-              },
-              "item": {
-                "type": "UInt32",
-                "name": "uOptArrayOptArray",
-                "kind": 4
-              }
-            }
-          }
+            "type": "TestImport_Object"
+          },
+          "type": "Method"
         },
         {
-          "type": "[[[UInt32]]]",
-          "name": "uArrayOptArrayArray",
+          "arguments": [
+            {
+              "array": {
+                "item": {
+                  "kind": 4,
+                  "name": "arg",
+                  "required": true,
+                  "type": "String"
+                },
+                "kind": 18,
+                "name": "arg",
+                "required": true,
+                "scalar": {
+                  "kind": 4,
+                  "name": "arg",
+                  "required": true,
+                  "type": "String"
+                },
+                "type": "[String]"
+              },
+              "kind": 34,
+              "name": "arg",
+              "required": true,
+              "type": "[String]"
+            }
+          ],
+          "kind": 64,
+          "name": "anotherMethod",
           "required": true,
-          "kind": 34,
-          "array": {
-            "type": "[[[UInt32]]]",
-            "name": "uArrayOptArrayArray",
+          "return": {
+            "kind": 34,
+            "name": "anotherMethod",
             "required": true,
-            "kind": 18,
-            "array": {
-              "type": "[[UInt32]]",
-              "name": "uArrayOptArrayArray",
-              "kind": 18,
-              "array": {
-                "type": "[UInt32]",
-                "name": "uArrayOptArrayArray",
-                "required": true,
-                "kind": 18,
-                "scalar": {
-                  "type": "UInt32",
-                  "name": "uArrayOptArrayArray",
-                  "required": true,
-                  "kind": 4
-                },
-                "item": {
-                  "type": "UInt32",
-                  "name": "uArrayOptArrayArray",
-                  "required": true,
-                  "kind": 4
-                }
-              },
-              "item": {
-                "type": "[UInt32]",
-                "name": "uArrayOptArrayArray",
-                "required": true,
-                "kind": 18,
-                "scalar": {
-                  "type": "UInt32",
-                  "name": "uArrayOptArrayArray",
-                  "required": true,
-                  "kind": 4
-                },
-                "item": {
-                  "type": "UInt32",
-                  "name": "uArrayOptArrayArray",
-                  "required": true,
-                  "kind": 4
-                }
-              }
+            "scalar": {
+              "kind": 4,
+              "name": "anotherMethod",
+              "required": true,
+              "type": "Int32"
             },
-            "item": {
-              "type": "[[UInt32]]",
-              "name": "uArrayOptArrayArray",
-              "kind": 18,
-              "array": {
-                "type": "[UInt32]",
-                "name": "uArrayOptArrayArray",
-                "required": true,
-                "kind": 18,
-                "scalar": {
-                  "type": "UInt32",
-                  "name": "uArrayOptArrayArray",
-                  "required": true,
-                  "kind": 4
-                },
-                "item": {
-                  "type": "UInt32",
-                  "name": "uArrayOptArrayArray",
-                  "required": true,
-                  "kind": 4
-                }
-              },
-              "item": {
-                "type": "[UInt32]",
-                "name": "uArrayOptArrayArray",
-                "required": true,
-                "kind": 18,
-                "scalar": {
-                  "type": "UInt32",
-                  "name": "uArrayOptArrayArray",
-                  "required": true,
-                  "kind": 4
-                },
-                "item": {
-                  "type": "UInt32",
-                  "name": "uArrayOptArrayArray",
-                  "required": true,
-                  "kind": 4
-                }
-              }
-            }
-          }
-        },
+            "type": "Int32"
+          },
+          "type": "Method"
+        }
+      ],
+      "namespace": "TestImport",
+      "nativeType": "Module",
+      "type": "TestImport_Module",
+      "uri": "testimport.uri.eth"
+    }
+  ],
+  "importedObjectTypes": [
+    {
+      "kind": 1025,
+      "namespace": "TestImport",
+      "nativeType": "Object",
+      "properties": [
         {
-          "type": "[[[[UInt32]]]]",
-          "name": "crazyArray",
           "kind": 34,
-          "array": {
-            "type": "[[[[UInt32]]]]",
-            "name": "crazyArray",
-            "kind": 18,
-            "array": {
-              "type": "[[[UInt32]]]",
-              "name": "crazyArray",
-              "kind": 18,
-              "array": {
-                "type": "[[UInt32]]",
-                "name": "crazyArray",
-                "required": true,
-                "kind": 18,
-                "array": {
-                  "type": "[UInt32]",
-                  "name": "crazyArray",
-                  "kind": 18,
-                  "scalar": {
-                    "type": "UInt32",
-                    "name": "crazyArray",
-                    "required": true,
-                    "kind": 4
-                  },
-                  "item": {
-                    "type": "UInt32",
-                    "name": "crazyArray",
-                    "required": true,
-                    "kind": 4
-                  }
-                },
-                "item": {
-                  "type": "[UInt32]",
-                  "name": "crazyArray",
-                  "kind": 18,
-                  "scalar": {
-                    "type": "UInt32",
-                    "name": "crazyArray",
-                    "required": true,
-                    "kind": 4
-                  },
-                  "item": {
-                    "type": "UInt32",
-                    "name": "crazyArray",
-                    "required": true,
-                    "kind": 4
-                  }
-                }
-              },
-              "item": {
-                "type": "[[UInt32]]",
-                "name": "crazyArray",
-                "required": true,
-                "kind": 18,
-                "array": {
-                  "type": "[UInt32]",
-                  "name": "crazyArray",
-                  "kind": 18,
-                  "scalar": {
-                    "type": "UInt32",
-                    "name": "crazyArray",
-                    "required": true,
-                    "kind": 4
-                  },
-                  "item": {
-                    "type": "UInt32",
-                    "name": "crazyArray",
-                    "required": true,
-                    "kind": 4
-                  }
-                },
-                "item": {
-                  "type": "[UInt32]",
-                  "name": "crazyArray",
-                  "kind": 18,
-                  "scalar": {
-                    "type": "UInt32",
-                    "name": "crazyArray",
-                    "required": true,
-                    "kind": 4
-                  },
-                  "item": {
-                    "type": "UInt32",
-                    "name": "crazyArray",
-                    "required": true,
-                    "kind": 4
-                  }
-                }
-              }
-            },
-            "item": {
-              "type": "[[[UInt32]]]",
-              "name": "crazyArray",
-              "kind": 18,
-              "array": {
-                "type": "[[UInt32]]",
-                "name": "crazyArray",
-                "required": true,
-                "kind": 18,
-                "array": {
-                  "type": "[UInt32]",
-                  "name": "crazyArray",
-                  "kind": 18,
-                  "scalar": {
-                    "type": "UInt32",
-                    "name": "crazyArray",
-                    "required": true,
-                    "kind": 4
-                  },
-                  "item": {
-                    "type": "UInt32",
-                    "name": "crazyArray",
-                    "required": true,
-                    "kind": 4
-                  }
-                },
-                "item": {
-                  "type": "[UInt32]",
-                  "name": "crazyArray",
-                  "kind": 18,
-                  "scalar": {
-                    "type": "UInt32",
-                    "name": "crazyArray",
-                    "required": true,
-                    "kind": 4
-                  },
-                  "item": {
-                    "type": "UInt32",
-                    "name": "crazyArray",
-                    "required": true,
-                    "kind": 4
-                  }
-                }
-              },
-              "item": {
-                "type": "[[UInt32]]",
-                "name": "crazyArray",
-                "required": true,
-                "kind": 18,
-                "array": {
-                  "type": "[UInt32]",
-                  "name": "crazyArray",
-                  "kind": 18,
-                  "scalar": {
-                    "type": "UInt32",
-                    "name": "crazyArray",
-                    "required": true,
-                    "kind": 4
-                  },
-                  "item": {
-                    "type": "UInt32",
-                    "name": "crazyArray",
-                    "required": true,
-                    "kind": 4
-                  }
-                },
-                "item": {
-                  "type": "[UInt32]",
-                  "name": "crazyArray",
-                  "kind": 18,
-                  "scalar": {
-                    "type": "UInt32",
-                    "name": "crazyArray",
-                    "required": true,
-                    "kind": 4
-                  },
-                  "item": {
-                    "type": "UInt32",
-                    "name": "crazyArray",
-                    "required": true,
-                    "kind": 4
-                  }
-                }
-              }
-            }
-          }
-        },
-        {
-          "type": "AnotherType",
           "name": "object",
-          "required": true,
-          "kind": 34,
           "object": {
-            "type": "AnotherType",
+            "kind": 8192,
             "name": "object",
             "required": true,
-            "kind": 8192
-          }
+            "type": "TestImport_AnotherObject"
+          },
+          "required": true,
+          "type": "TestImport_AnotherObject"
         },
         {
-          "type": "AnotherType",
-          "name": "optObject",
           "kind": 34,
+          "name": "optObject",
           "object": {
-            "type": "AnotherType",
+            "kind": 8192,
             "name": "optObject",
-            "kind": 8192
-          }
+            "type": "TestImport_AnotherObject"
+          },
+          "type": "TestImport_AnotherObject"
         },
         {
-          "type": "[AnotherType]",
+          "array": {
+            "item": {
+              "kind": 8192,
+              "name": "objectArray",
+              "required": true,
+              "type": "TestImport_AnotherObject"
+            },
+            "kind": 18,
+            "name": "objectArray",
+            "object": {
+              "kind": 8192,
+              "name": "objectArray",
+              "required": true,
+              "type": "TestImport_AnotherObject"
+            },
+            "required": true,
+            "type": "[TestImport_AnotherObject]"
+          },
+          "kind": 34,
           "name": "objectArray",
           "required": true,
-          "kind": 34,
-          "array": {
-            "type": "[AnotherType]",
-            "name": "objectArray",
-            "required": true,
-            "kind": 18,
-            "object": {
-              "type": "AnotherType",
-              "name": "objectArray",
-              "required": true,
-              "kind": 8192
-            },
-            "item": {
-              "type": "AnotherType",
-              "name": "objectArray",
-              "required": true,
-              "kind": 8192
-            }
-          }
+          "type": "[TestImport_AnotherObject]"
         },
         {
-          "type": "[AnotherType]",
-          "name": "optObjectArray",
-          "kind": 34,
           "array": {
-            "type": "[AnotherType]",
+            "item": {
+              "kind": 8192,
+              "name": "optObjectArray",
+              "type": "TestImport_AnotherObject"
+            },
+            "kind": 18,
             "name": "optObjectArray",
-            "kind": 18,
             "object": {
-              "type": "AnotherType",
+              "kind": 8192,
               "name": "optObjectArray",
-              "kind": 8192
+              "type": "TestImport_AnotherObject"
             },
-            "item": {
-              "type": "AnotherType",
-              "name": "optObjectArray",
-              "kind": 8192
-            }
-          }
+            "type": "[TestImport_AnotherObject]"
+          },
+          "kind": 34,
+          "name": "optObjectArray",
+          "type": "[TestImport_AnotherObject]"
         },
         {
-          "type": "CustomEnum",
-          "name": "en",
-          "required": true,
-          "kind": 34,
           "enum": {
-            "type": "CustomEnum",
+            "kind": 16384,
             "name": "en",
             "required": true,
-            "kind": 16384
-          }
-        },
-        {
-          "type": "CustomEnum",
-          "name": "optEnum",
+            "type": "TestImport_Enum"
+          },
           "kind": 34,
-          "enum": {
-            "type": "CustomEnum",
-            "name": "optEnum",
-            "kind": 16384
-          }
-        },
-        {
-          "type": "[CustomEnum]",
-          "name": "enumArray",
+          "name": "en",
           "required": true,
+          "type": "TestImport_Enum"
+        },
+        {
+          "enum": {
+            "kind": 16384,
+            "name": "optEnum",
+            "type": "TestImport_Enum"
+          },
           "kind": 34,
+          "name": "optEnum",
+          "type": "TestImport_Enum"
+        },
+        {
           "array": {
-            "type": "[CustomEnum]",
+            "enum": {
+              "kind": 16384,
+              "name": "enumArray",
+              "required": true,
+              "type": "TestImport_Enum"
+            },
+            "item": {
+              "kind": 16384,
+              "name": "enumArray",
+              "required": true,
+              "type": "TestImport_Enum"
+            },
+            "kind": 18,
             "name": "enumArray",
             "required": true,
-            "kind": 18,
-            "enum": {
-              "type": "CustomEnum",
-              "name": "enumArray",
-              "required": true,
-              "kind": 16384
-            },
-            "item": {
-              "type": "CustomEnum",
-              "name": "enumArray",
-              "required": true,
-              "kind": 16384
-            }
-          }
+            "type": "[TestImport_Enum]"
+          },
+          "kind": 34,
+          "name": "enumArray",
+          "required": true,
+          "type": "[TestImport_Enum]"
         },
         {
-          "type": "[CustomEnum]",
-          "name": "optEnumArray",
-          "kind": 34,
           "array": {
-            "type": "[CustomEnum]",
-            "name": "optEnumArray",
-            "kind": 18,
             "enum": {
-              "type": "CustomEnum",
+              "kind": 16384,
               "name": "optEnumArray",
-              "kind": 16384
+              "type": "TestImport_Enum"
             },
             "item": {
-              "type": "CustomEnum",
+              "kind": 16384,
               "name": "optEnumArray",
-              "kind": 16384
-            }
-          }
-        },
-        {
-          "type": "Map<String, Int>",
-          "name": "map",
-          "required": true,
+              "type": "TestImport_Enum"
+            },
+            "kind": 18,
+            "name": "optEnumArray",
+            "type": "[TestImport_Enum]"
+          },
           "kind": 34,
-          "map": {
-            "type": "Map<String, Int>",
-            "name": "map",
-            "required": true,
-            "kind": 262146,
-            "scalar": {
-              "type": "Int",
-              "name": "map",
-              "required": true,
-              "kind": 4
-            },
-            "key": {
-              "type": "String",
-              "name": "map",
-              "required": true,
-              "kind": 4
-            },
-            "value": {
-              "type": "Int",
-              "name": "map",
-              "required": true,
-              "kind": 4
-            }
-          }
-        },
-        {
-          "type": "Map<String, [Int]>",
-          "name": "mapOfArr",
-          "required": true,
-          "kind": 34,
-          "map": {
-            "type": "Map<String, [Int]>",
-            "name": "mapOfArr",
-            "required": true,
-            "kind": 262146,
-            "array": {
-              "type": "[Int]",
-              "name": "mapOfArr",
-              "required": true,
-              "kind": 18,
-              "scalar": {
-                "type": "Int",
-                "name": "mapOfArr",
-                "required": true,
-                "kind": 4
-              },
-              "item": {
-                "type": "Int",
-                "name": "mapOfArr",
-                "required": true,
-                "kind": 4
-              }
-            },
-            "key": {
-              "type": "String",
-              "name": "mapOfArr",
-              "required": true,
-              "kind": 4
-            },
-            "value": {
-              "type": "[Int]",
-              "name": "mapOfArr",
-              "required": true,
-              "kind": 18,
-              "scalar": {
-                "type": "Int",
-                "name": "mapOfArr",
-                "required": true,
-                "kind": 4
-              },
-              "item": {
-                "type": "Int",
-                "name": "mapOfArr",
-                "required": true,
-                "kind": 4
-              }
-            }
-          }
-        },
-        {
-          "type": "Map<String, AnotherType>",
-          "name": "mapOfObj",
-          "required": true,
-          "kind": 34,
-          "map": {
-            "type": "Map<String, AnotherType>",
-            "name": "mapOfObj",
-            "required": true,
-            "kind": 262146,
-            "object": {
-              "type": "AnotherType",
-              "name": "mapOfObj",
-              "required": true,
-              "kind": 8192
-            },
-            "key": {
-              "type": "String",
-              "name": "mapOfObj",
-              "required": true,
-              "kind": 4
-            },
-            "value": {
-              "type": "AnotherType",
-              "name": "mapOfObj",
-              "required": true,
-              "kind": 8192
-            }
-          }
-        },
-        {
-          "type": "Map<String, [AnotherType]>",
-          "name": "mapOfArrOfObj",
-          "required": true,
-          "kind": 34,
-          "map": {
-            "type": "Map<String, [AnotherType]>",
-            "name": "mapOfArrOfObj",
-            "required": true,
-            "kind": 262146,
-            "array": {
-              "type": "[AnotherType]",
-              "name": "mapOfArrOfObj",
-              "required": true,
-              "kind": 18,
-              "object": {
-                "type": "AnotherType",
-                "name": "mapOfArrOfObj",
-                "required": true,
-                "kind": 8192
-              },
-              "item": {
-                "type": "AnotherType",
-                "name": "mapOfArrOfObj",
-                "required": true,
-                "kind": 8192
-              }
-            },
-            "key": {
-              "type": "String",
-              "name": "mapOfArrOfObj",
-              "required": true,
-              "kind": 4
-            },
-            "value": {
-              "type": "[AnotherType]",
-              "name": "mapOfArrOfObj",
-              "required": true,
-              "kind": 18,
-              "object": {
-                "type": "AnotherType",
-                "name": "mapOfArrOfObj",
-                "required": true,
-                "kind": 8192
-              },
-              "item": {
-                "type": "AnotherType",
-                "name": "mapOfArrOfObj",
-                "required": true,
-                "kind": 8192
-              }
-            }
-          }
+          "name": "optEnumArray",
+          "type": "[TestImport_Enum]"
         }
-      ]
+      ],
+      "type": "TestImport_Object",
+      "uri": "testimport.uri.eth"
     },
     {
-      "type": "AnotherType",
-      "kind": 1,
+      "kind": 1025,
+      "namespace": "TestImport",
+      "nativeType": "AnotherObject",
       "properties": [
         {
-          "type": "String",
+          "kind": 34,
           "name": "prop",
-          "kind": 34,
+          "required": true,
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "prop",
-            "kind": 4
-          }
-        },
-        {
-          "type": "CustomType",
-          "name": "circular",
-          "kind": 34,
-          "object": {
-            "type": "CustomType",
-            "name": "circular",
-            "kind": 8192
-          }
-        },
-        {
-          "type": "String",
-          "name": "const",
-          "kind": 34,
-          "scalar": {
-            "type": "String",
-            "name": "const",
-            "kind": 4
-          }
+            "required": true,
+            "type": "String"
+          },
+          "type": "String"
         }
-      ]
+      ],
+      "type": "TestImport_AnotherObject",
+      "uri": "testimport.uri.eth"
+    }
+  ],
+  "interfaceTypes": [
+    {
+      "capabilities": {
+        "getImplementations": {
+          "enabled": true
+        }
+      },
+      "kind": 32768,
+      "namespace": "TestImport",
+      "nativeType": "Interface",
+      "type": "TestImport",
+      "uri": "testimport.uri.eth"
     }
   ],
   "moduleType": {
-    "type": "Module",
-    "kind": 128,
-    "methods": [
-      {
-        "type": "Method",
-        "name": "moduleMethod",
-        "required": true,
-        "kind": 64,
-        "arguments": [
-          {
-            "type": "String",
-            "name": "str",
-            "required": true,
-            "kind": 34,
-            "scalar": {
-              "type": "String",
-              "name": "str",
-              "required": true,
-              "kind": 4
-            }
-          },
-          {
-            "type": "String",
-            "name": "optStr",
-            "kind": 34,
-            "scalar": {
-              "type": "String",
-              "name": "optStr",
-              "kind": 4
-            }
-          },
-          {
-            "type": "CustomEnum",
-            "name": "en",
-            "required": true,
-            "kind": 34,
-            "enum": {
-              "type": "CustomEnum",
-              "name": "en",
-              "required": true,
-              "kind": 16384
-            }
-          },
-          {
-            "type": "CustomEnum",
-            "name": "optEnum",
-            "kind": 34,
-            "enum": {
-              "type": "CustomEnum",
-              "name": "optEnum",
-              "kind": 16384
-            }
-          },
-          {
-            "type": "[CustomEnum]",
-            "name": "enumArray",
-            "required": true,
-            "kind": 34,
-            "array": {
-              "type": "[CustomEnum]",
-              "name": "enumArray",
-              "required": true,
-              "kind": 18,
-              "enum": {
-                "type": "CustomEnum",
-                "name": "enumArray",
-                "required": true,
-                "kind": 16384
-              },
-              "item": {
-                "type": "CustomEnum",
-                "name": "enumArray",
-                "required": true,
-                "kind": 16384
-              }
-            }
-          },
-          {
-            "type": "[CustomEnum]",
-            "name": "optEnumArray",
-            "kind": 34,
-            "array": {
-              "type": "[CustomEnum]",
-              "name": "optEnumArray",
-              "kind": 18,
-              "enum": {
-                "type": "CustomEnum",
-                "name": "optEnumArray",
-                "kind": 16384
-              },
-              "item": {
-                "type": "CustomEnum",
-                "name": "optEnumArray",
-                "kind": 16384
-              }
-            }
-          },
-          {
-            "type": "Map<String, Int>",
-            "name": "map",
-            "required": true,
-            "kind": 34,
-            "map": {
-              "type": "Map<String, Int>",
-              "name": "map",
-              "required": true,
-              "kind": 262146,
-              "scalar": {
-                "type": "Int",
-                "name": "map",
-                "required": true,
-                "kind": 4
-              },
-              "key": {
-                "type": "String",
-                "name": "map",
-                "required": true,
-                "kind": 4
-              },
-              "value": {
-                "type": "Int",
-                "name": "map",
-                "required": true,
-                "kind": 4
-              }
-            }
-          },
-          {
-            "type": "Map<String, [Int]>",
-            "name": "mapOfArr",
-            "required": true,
-            "kind": 34,
-            "map": {
-              "type": "Map<String, [Int]>",
-              "name": "mapOfArr",
-              "required": true,
-              "kind": 262146,
-              "array": {
-                "type": "[Int]",
-                "name": "mapOfArr",
-                "required": true,
-                "kind": 18,
-                "scalar": {
-                  "type": "Int",
-                  "name": "mapOfArr",
-                  "required": true,
-                  "kind": 4
-                },
-                "item": {
-                  "type": "Int",
-                  "name": "mapOfArr",
-                  "required": true,
-                  "kind": 4
-                }
-              },
-              "key": {
-                "type": "String",
-                "name": "mapOfArr",
-                "required": true,
-                "kind": 4
-              },
-              "value": {
-                "type": "[Int]",
-                "name": "mapOfArr",
-                "required": true,
-                "kind": 18,
-                "scalar": {
-                  "type": "Int",
-                  "name": "mapOfArr",
-                  "required": true,
-                  "kind": 4
-                },
-                "item": {
-                  "type": "Int",
-                  "name": "mapOfArr",
-                  "required": true,
-                  "kind": 4
-                }
-              }
-            }
-          },
-          {
-            "type": "Map<String, AnotherType>",
-            "name": "mapOfObj",
-            "required": true,
-            "kind": 34,
-            "map": {
-              "type": "Map<String, AnotherType>",
-              "name": "mapOfObj",
-              "required": true,
-              "kind": 262146,
-              "object": {
-                "type": "AnotherType",
-                "name": "mapOfObj",
-                "required": true,
-                "kind": 8192
-              },
-              "key": {
-                "type": "String",
-                "name": "mapOfObj",
-                "required": true,
-                "kind": 4
-              },
-              "value": {
-                "type": "AnotherType",
-                "name": "mapOfObj",
-                "required": true,
-                "kind": 8192
-              }
-            }
-          },
-          {
-            "type": "Map<String, [AnotherType]>",
-            "name": "mapOfArrOfObj",
-            "required": true,
-            "kind": 34,
-            "map": {
-              "type": "Map<String, [AnotherType]>",
-              "name": "mapOfArrOfObj",
-              "required": true,
-              "kind": 262146,
-              "array": {
-                "type": "[AnotherType]",
-                "name": "mapOfArrOfObj",
-                "required": true,
-                "kind": 18,
-                "object": {
-                  "type": "AnotherType",
-                  "name": "mapOfArrOfObj",
-                  "required": true,
-                  "kind": 8192
-                },
-                "item": {
-                  "type": "AnotherType",
-                  "name": "mapOfArrOfObj",
-                  "required": true,
-                  "kind": 8192
-                }
-              },
-              "key": {
-                "type": "String",
-                "name": "mapOfArrOfObj",
-                "required": true,
-                "kind": 4
-              },
-              "value": {
-                "type": "[AnotherType]",
-                "name": "mapOfArrOfObj",
-                "required": true,
-                "kind": 18,
-                "object": {
-                  "type": "AnotherType",
-                  "name": "mapOfArrOfObj",
-                  "required": true,
-                  "kind": 8192
-                },
-                "item": {
-                  "type": "AnotherType",
-                  "name": "mapOfArrOfObj",
-                  "required": true,
-                  "kind": 8192
-                }
-              }
-            }
-          }
-        ],
-        "return": {
-          "type": "Int",
-          "name": "moduleMethod",
-          "required": true,
-          "kind": 34,
-          "scalar": {
-            "type": "Int",
-            "name": "moduleMethod",
-            "required": true,
-            "kind": 4
-          }
-        }
-      },
-      {
-        "type": "Method",
-        "name": "objectMethod",
-        "required": true,
-        "kind": 64,
-        "arguments": [
-          {
-            "type": "AnotherType",
-            "name": "object",
-            "required": true,
-            "kind": 34,
-            "object": {
-              "type": "AnotherType",
-              "name": "object",
-              "required": true,
-              "kind": 8192
-            }
-          },
-          {
-            "type": "AnotherType",
-            "name": "optObject",
-            "kind": 34,
-            "object": {
-              "type": "AnotherType",
-              "name": "optObject",
-              "kind": 8192
-            }
-          },
-          {
-            "type": "[AnotherType]",
-            "name": "objectArray",
-            "required": true,
-            "kind": 34,
-            "array": {
-              "type": "[AnotherType]",
-              "name": "objectArray",
-              "required": true,
-              "kind": 18,
-              "object": {
-                "type": "AnotherType",
-                "name": "objectArray",
-                "required": true,
-                "kind": 8192
-              },
-              "item": {
-                "type": "AnotherType",
-                "name": "objectArray",
-                "required": true,
-                "kind": 8192
-              }
-            }
-          },
-          {
-            "type": "[AnotherType]",
-            "name": "optObjectArray",
-            "kind": 34,
-            "array": {
-              "type": "[AnotherType]",
-              "name": "optObjectArray",
-              "kind": 18,
-              "object": {
-                "type": "AnotherType",
-                "name": "optObjectArray",
-                "kind": 8192
-              },
-              "item": {
-                "type": "AnotherType",
-                "name": "optObjectArray",
-                "kind": 8192
-              }
-            }
-          }
-        ],
-        "return": {
-          "type": "AnotherType",
-          "name": "objectMethod",
-          "kind": 34,
-          "object": {
-            "type": "AnotherType",
-            "name": "objectMethod",
-            "kind": 8192
-          }
-        },
-        "env": {
-          "required": true
-        }
-      },
-      {
-        "type": "Method",
-        "name": "optionalEnvMethod",
-        "required": true,
-        "kind": 64,
-        "arguments": [
-          {
-            "type": "AnotherType",
-            "name": "object",
-            "required": true,
-            "kind": 34,
-            "object": {
-              "type": "AnotherType",
-              "name": "object",
-              "required": true,
-              "kind": 8192
-            }
-          },
-          {
-            "type": "AnotherType",
-            "name": "optObject",
-            "kind": 34,
-            "object": {
-              "type": "AnotherType",
-              "name": "optObject",
-              "kind": 8192
-            }
-          },
-          {
-            "type": "[AnotherType]",
-            "name": "objectArray",
-            "required": true,
-            "kind": 34,
-            "array": {
-              "type": "[AnotherType]",
-              "name": "objectArray",
-              "required": true,
-              "kind": 18,
-              "object": {
-                "type": "AnotherType",
-                "name": "objectArray",
-                "required": true,
-                "kind": 8192
-              },
-              "item": {
-                "type": "AnotherType",
-                "name": "objectArray",
-                "required": true,
-                "kind": 8192
-              }
-            }
-          },
-          {
-            "type": "[AnotherType]",
-            "name": "optObjectArray",
-            "kind": 34,
-            "array": {
-              "type": "[AnotherType]",
-              "name": "optObjectArray",
-              "kind": 18,
-              "object": {
-                "type": "AnotherType",
-                "name": "optObjectArray",
-                "kind": 8192
-              },
-              "item": {
-                "type": "AnotherType",
-                "name": "optObjectArray",
-                "kind": 8192
-              }
-            }
-          }
-        ],
-        "return": {
-          "type": "AnotherType",
-          "name": "optionalEnvMethod",
-          "kind": 34,
-          "object": {
-            "type": "AnotherType",
-            "name": "optionalEnvMethod",
-            "kind": 8192
-          }
-        },
-        "env": {
-          "required": false
-        }
-      }
-    ],
     "imports": [
       {
         "type": "TestImport_Module"
@@ -1507,580 +594,1493 @@ export const wrapManifest: WrapManifest = {
       {
         "type": "TestImport_Enum"
       }
-    ]
-  },
-  "enumTypes": [
-    {
-      "type": "CustomEnum",
-      "kind": 8,
-      "constants": [
-        "STRING",
-        "BYTES"
-      ]
-    }
-  ],
-  "interfaceTypes": [
-    {
-      "type": "TestImport",
-      "kind": 32768,
-      "namespace": "TestImport",
-      "uri": "testimport.uri.eth",
-      "nativeType": "Interface",
-      "capabilities": {
-        "getImplementations": {
-          "enabled": true
-        }
-      }
-    }
-  ],
-  "importedObjectTypes": [
-    {
-      "type": "TestImport_Object",
-      "kind": 1025,
-      "properties": [
-        {
-          "type": "TestImport_AnotherObject",
-          "name": "object",
-          "required": true,
-          "kind": 34,
-          "object": {
-            "type": "TestImport_AnotherObject",
-            "name": "object",
+    ],
+    "kind": 128,
+    "methods": [
+      {
+        "arguments": [
+          {
+            "kind": 34,
+            "name": "str",
             "required": true,
-            "kind": 8192
-          }
-        },
-        {
-          "type": "TestImport_AnotherObject",
-          "name": "optObject",
-          "kind": 34,
-          "object": {
-            "type": "TestImport_AnotherObject",
-            "name": "optObject",
-            "kind": 8192
-          }
-        },
-        {
-          "type": "[TestImport_AnotherObject]",
-          "name": "objectArray",
-          "required": true,
-          "kind": 34,
-          "array": {
-            "type": "[TestImport_AnotherObject]",
-            "name": "objectArray",
-            "required": true,
-            "kind": 18,
-            "object": {
-              "type": "TestImport_AnotherObject",
-              "name": "objectArray",
-              "required": true,
-              "kind": 8192
-            },
-            "item": {
-              "type": "TestImport_AnotherObject",
-              "name": "objectArray",
-              "required": true,
-              "kind": 8192
-            }
-          }
-        },
-        {
-          "type": "[TestImport_AnotherObject]",
-          "name": "optObjectArray",
-          "kind": 34,
-          "array": {
-            "type": "[TestImport_AnotherObject]",
-            "name": "optObjectArray",
-            "kind": 18,
-            "object": {
-              "type": "TestImport_AnotherObject",
-              "name": "optObjectArray",
-              "kind": 8192
-            },
-            "item": {
-              "type": "TestImport_AnotherObject",
-              "name": "optObjectArray",
-              "kind": 8192
-            }
-          }
-        },
-        {
-          "type": "TestImport_Enum",
-          "name": "en",
-          "required": true,
-          "kind": 34,
-          "enum": {
-            "type": "TestImport_Enum",
-            "name": "en",
-            "required": true,
-            "kind": 16384
-          }
-        },
-        {
-          "type": "TestImport_Enum",
-          "name": "optEnum",
-          "kind": 34,
-          "enum": {
-            "type": "TestImport_Enum",
-            "name": "optEnum",
-            "kind": 16384
-          }
-        },
-        {
-          "type": "[TestImport_Enum]",
-          "name": "enumArray",
-          "required": true,
-          "kind": 34,
-          "array": {
-            "type": "[TestImport_Enum]",
-            "name": "enumArray",
-            "required": true,
-            "kind": 18,
-            "enum": {
-              "type": "TestImport_Enum",
-              "name": "enumArray",
-              "required": true,
-              "kind": 16384
-            },
-            "item": {
-              "type": "TestImport_Enum",
-              "name": "enumArray",
-              "required": true,
-              "kind": 16384
-            }
-          }
-        },
-        {
-          "type": "[TestImport_Enum]",
-          "name": "optEnumArray",
-          "kind": 34,
-          "array": {
-            "type": "[TestImport_Enum]",
-            "name": "optEnumArray",
-            "kind": 18,
-            "enum": {
-              "type": "TestImport_Enum",
-              "name": "optEnumArray",
-              "kind": 16384
-            },
-            "item": {
-              "type": "TestImport_Enum",
-              "name": "optEnumArray",
-              "kind": 16384
-            }
-          }
-        }
-      ],
-      "uri": "testimport.uri.eth",
-      "namespace": "TestImport",
-      "nativeType": "Object"
-    },
-    {
-      "type": "TestImport_AnotherObject",
-      "kind": 1025,
-      "properties": [
-        {
-          "type": "String",
-          "name": "prop",
-          "required": true,
-          "kind": 34,
-          "scalar": {
-            "type": "String",
-            "name": "prop",
-            "required": true,
-            "kind": 4
-          }
-        }
-      ],
-      "uri": "testimport.uri.eth",
-      "namespace": "TestImport",
-      "nativeType": "AnotherObject"
-    }
-  ],
-  "importedModuleTypes": [
-    {
-      "type": "TestImport_Module",
-      "kind": 256,
-      "methods": [
-        {
-          "type": "Method",
-          "name": "importedMethod",
-          "required": true,
-          "kind": 64,
-          "arguments": [
-            {
-              "type": "String",
+            "scalar": {
+              "kind": 4,
               "name": "str",
               "required": true,
-              "kind": 34,
-              "scalar": {
-                "type": "String",
-                "name": "str",
-                "required": true,
-                "kind": 4
-              }
+              "type": "String"
             },
-            {
-              "type": "String",
+            "type": "String"
+          },
+          {
+            "kind": 34,
+            "name": "optStr",
+            "scalar": {
+              "kind": 4,
               "name": "optStr",
-              "kind": 34,
-              "scalar": {
-                "type": "String",
-                "name": "optStr",
-                "kind": 4
-              }
+              "type": "String"
             },
-            {
-              "type": "UInt",
-              "name": "u",
-              "required": true,
-              "kind": 34,
-              "scalar": {
-                "type": "UInt",
-                "name": "u",
-                "required": true,
-                "kind": 4
-              }
-            },
-            {
-              "type": "UInt",
-              "name": "optU",
-              "kind": 34,
-              "scalar": {
-                "type": "UInt",
-                "name": "optU",
-                "kind": 4
-              }
-            },
-            {
-              "type": "[[UInt]]",
-              "name": "uArrayArray",
-              "required": true,
-              "kind": 34,
-              "array": {
-                "type": "[[UInt]]",
-                "name": "uArrayArray",
-                "required": true,
-                "kind": 18,
-                "array": {
-                  "type": "[UInt]",
-                  "name": "uArrayArray",
-                  "kind": 18,
-                  "scalar": {
-                    "type": "UInt",
-                    "name": "uArrayArray",
-                    "kind": 4
-                  },
-                  "item": {
-                    "type": "UInt",
-                    "name": "uArrayArray",
-                    "kind": 4
-                  }
-                },
-                "item": {
-                  "type": "[UInt]",
-                  "name": "uArrayArray",
-                  "kind": 18,
-                  "scalar": {
-                    "type": "UInt",
-                    "name": "uArrayArray",
-                    "kind": 4
-                  },
-                  "item": {
-                    "type": "UInt",
-                    "name": "uArrayArray",
-                    "kind": 4
-                  }
-                }
-              }
-            },
-            {
-              "type": "TestImport_Object",
-              "name": "object",
-              "required": true,
-              "kind": 34,
-              "object": {
-                "type": "TestImport_Object",
-                "name": "object",
-                "required": true,
-                "kind": 8192
-              }
-            },
-            {
-              "type": "TestImport_Object",
-              "name": "optObject",
-              "kind": 34,
-              "object": {
-                "type": "TestImport_Object",
-                "name": "optObject",
-                "kind": 8192
-              }
-            },
-            {
-              "type": "[TestImport_Object]",
-              "name": "objectArray",
-              "required": true,
-              "kind": 34,
-              "array": {
-                "type": "[TestImport_Object]",
-                "name": "objectArray",
-                "required": true,
-                "kind": 18,
-                "object": {
-                  "type": "TestImport_Object",
-                  "name": "objectArray",
-                  "required": true,
-                  "kind": 8192
-                },
-                "item": {
-                  "type": "TestImport_Object",
-                  "name": "objectArray",
-                  "required": true,
-                  "kind": 8192
-                }
-              }
-            },
-            {
-              "type": "[TestImport_Object]",
-              "name": "optObjectArray",
-              "kind": 34,
-              "array": {
-                "type": "[TestImport_Object]",
-                "name": "optObjectArray",
-                "kind": 18,
-                "object": {
-                  "type": "TestImport_Object",
-                  "name": "optObjectArray",
-                  "kind": 8192
-                },
-                "item": {
-                  "type": "TestImport_Object",
-                  "name": "optObjectArray",
-                  "kind": 8192
-                }
-              }
-            },
-            {
-              "type": "TestImport_Enum",
+            "type": "String"
+          },
+          {
+            "enum": {
+              "kind": 16384,
               "name": "en",
               "required": true,
-              "kind": 34,
-              "enum": {
-                "type": "TestImport_Enum",
-                "name": "en",
-                "required": true,
-                "kind": 16384
-              }
+              "type": "CustomEnum"
             },
-            {
-              "type": "TestImport_Enum",
+            "kind": 34,
+            "name": "en",
+            "required": true,
+            "type": "CustomEnum"
+          },
+          {
+            "enum": {
+              "kind": 16384,
               "name": "optEnum",
-              "kind": 34,
-              "enum": {
-                "type": "TestImport_Enum",
-                "name": "optEnum",
-                "kind": 16384
-              }
+              "type": "CustomEnum"
             },
-            {
-              "type": "[TestImport_Enum]",
-              "name": "enumArray",
-              "required": true,
-              "kind": 34,
-              "array": {
-                "type": "[TestImport_Enum]",
+            "kind": 34,
+            "name": "optEnum",
+            "type": "CustomEnum"
+          },
+          {
+            "array": {
+              "enum": {
+                "kind": 16384,
                 "name": "enumArray",
                 "required": true,
-                "kind": 18,
-                "enum": {
-                  "type": "TestImport_Enum",
-                  "name": "enumArray",
-                  "required": true,
-                  "kind": 16384
-                },
-                "item": {
-                  "type": "TestImport_Enum",
-                  "name": "enumArray",
-                  "required": true,
-                  "kind": 16384
-                }
+                "type": "CustomEnum"
+              },
+              "item": {
+                "kind": 16384,
+                "name": "enumArray",
+                "required": true,
+                "type": "CustomEnum"
+              },
+              "kind": 18,
+              "name": "enumArray",
+              "required": true,
+              "type": "[CustomEnum]"
+            },
+            "kind": 34,
+            "name": "enumArray",
+            "required": true,
+            "type": "[CustomEnum]"
+          },
+          {
+            "array": {
+              "enum": {
+                "kind": 16384,
+                "name": "optEnumArray",
+                "type": "CustomEnum"
+              },
+              "item": {
+                "kind": 16384,
+                "name": "optEnumArray",
+                "type": "CustomEnum"
+              },
+              "kind": 18,
+              "name": "optEnumArray",
+              "type": "[CustomEnum]"
+            },
+            "kind": 34,
+            "name": "optEnumArray",
+            "type": "[CustomEnum]"
+          },
+          {
+            "kind": 34,
+            "map": {
+              "key": {
+                "kind": 4,
+                "name": "map",
+                "required": true,
+                "type": "String"
+              },
+              "kind": 262146,
+              "name": "map",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "map",
+                "required": true,
+                "type": "Int"
+              },
+              "type": "Map<String, Int>",
+              "value": {
+                "kind": 4,
+                "name": "map",
+                "required": true,
+                "type": "Int"
               }
             },
-            {
-              "type": "[TestImport_Enum]",
-              "name": "optEnumArray",
-              "kind": 34,
-              "array": {
-                "type": "[TestImport_Enum]",
-                "name": "optEnumArray",
-                "kind": 18,
-                "enum": {
-                  "type": "TestImport_Enum",
-                  "name": "optEnumArray",
-                  "kind": 16384
-                },
-                "item": {
-                  "type": "TestImport_Enum",
-                  "name": "optEnumArray",
-                  "kind": 16384
-                }
-              }
-            }
-          ],
-          "return": {
-            "type": "TestImport_Object",
-            "name": "importedMethod",
-            "kind": 34,
-            "object": {
-              "type": "TestImport_Object",
-              "name": "importedMethod",
-              "kind": 8192
-            }
-          },
-          "env": {
-            "required": true
-          }
-        },
-        {
-          "type": "Method",
-          "name": "anotherMethod",
-          "required": true,
-          "kind": 64,
-          "arguments": [
-            {
-              "type": "[String]",
-              "name": "arg",
-              "required": true,
-              "kind": 34,
-              "array": {
-                "type": "[String]",
-                "name": "arg",
-                "required": true,
-                "kind": 18,
-                "scalar": {
-                  "type": "String",
-                  "name": "arg",
-                  "required": true,
-                  "kind": 4
-                },
-                "item": {
-                  "type": "String",
-                  "name": "arg",
-                  "required": true,
-                  "kind": 4
-                }
-              }
-            }
-          ],
-          "return": {
-            "type": "Int32",
-            "name": "anotherMethod",
+            "name": "map",
             "required": true,
+            "type": "Map<String, Int>"
+          },
+          {
             "kind": 34,
-            "scalar": {
-              "type": "Int32",
-              "name": "anotherMethod",
+            "map": {
+              "array": {
+                "item": {
+                  "kind": 4,
+                  "name": "mapOfArr",
+                  "required": true,
+                  "type": "Int"
+                },
+                "kind": 18,
+                "name": "mapOfArr",
+                "required": true,
+                "scalar": {
+                  "kind": 4,
+                  "name": "mapOfArr",
+                  "required": true,
+                  "type": "Int"
+                },
+                "type": "[Int]"
+              },
+              "key": {
+                "kind": 4,
+                "name": "mapOfArr",
+                "required": true,
+                "type": "String"
+              },
+              "kind": 262146,
+              "name": "mapOfArr",
               "required": true,
-              "kind": 4
-            }
+              "type": "Map<String, [Int]>",
+              "value": {
+                "item": {
+                  "kind": 4,
+                  "name": "mapOfArr",
+                  "required": true,
+                  "type": "Int"
+                },
+                "kind": 18,
+                "name": "mapOfArr",
+                "required": true,
+                "scalar": {
+                  "kind": 4,
+                  "name": "mapOfArr",
+                  "required": true,
+                  "type": "Int"
+                },
+                "type": "[Int]"
+              }
+            },
+            "name": "mapOfArr",
+            "required": true,
+            "type": "Map<String, [Int]>"
+          },
+          {
+            "kind": 34,
+            "map": {
+              "key": {
+                "kind": 4,
+                "name": "mapOfObj",
+                "required": true,
+                "type": "String"
+              },
+              "kind": 262146,
+              "name": "mapOfObj",
+              "object": {
+                "kind": 8192,
+                "name": "mapOfObj",
+                "required": true,
+                "type": "AnotherType"
+              },
+              "required": true,
+              "type": "Map<String, AnotherType>",
+              "value": {
+                "kind": 8192,
+                "name": "mapOfObj",
+                "required": true,
+                "type": "AnotherType"
+              }
+            },
+            "name": "mapOfObj",
+            "required": true,
+            "type": "Map<String, AnotherType>"
+          },
+          {
+            "kind": 34,
+            "map": {
+              "array": {
+                "item": {
+                  "kind": 8192,
+                  "name": "mapOfArrOfObj",
+                  "required": true,
+                  "type": "AnotherType"
+                },
+                "kind": 18,
+                "name": "mapOfArrOfObj",
+                "object": {
+                  "kind": 8192,
+                  "name": "mapOfArrOfObj",
+                  "required": true,
+                  "type": "AnotherType"
+                },
+                "required": true,
+                "type": "[AnotherType]"
+              },
+              "key": {
+                "kind": 4,
+                "name": "mapOfArrOfObj",
+                "required": true,
+                "type": "String"
+              },
+              "kind": 262146,
+              "name": "mapOfArrOfObj",
+              "required": true,
+              "type": "Map<String, [AnotherType]>",
+              "value": {
+                "item": {
+                  "kind": 8192,
+                  "name": "mapOfArrOfObj",
+                  "required": true,
+                  "type": "AnotherType"
+                },
+                "kind": 18,
+                "name": "mapOfArrOfObj",
+                "object": {
+                  "kind": 8192,
+                  "name": "mapOfArrOfObj",
+                  "required": true,
+                  "type": "AnotherType"
+                },
+                "required": true,
+                "type": "[AnotherType]"
+              }
+            },
+            "name": "mapOfArrOfObj",
+            "required": true,
+            "type": "Map<String, [AnotherType]>"
           }
-        }
-      ],
-      "uri": "testimport.uri.eth",
-      "namespace": "TestImport",
-      "nativeType": "Module",
-      "isInterface": true
-    }
-  ],
-  "importedEnumTypes": [
+        ],
+        "kind": 64,
+        "name": "moduleMethod",
+        "required": true,
+        "return": {
+          "kind": 34,
+          "name": "moduleMethod",
+          "required": true,
+          "scalar": {
+            "kind": 4,
+            "name": "moduleMethod",
+            "required": true,
+            "type": "Int"
+          },
+          "type": "Int"
+        },
+        "type": "Method"
+      },
+      {
+        "arguments": [
+          {
+            "kind": 34,
+            "name": "object",
+            "object": {
+              "kind": 8192,
+              "name": "object",
+              "required": true,
+              "type": "AnotherType"
+            },
+            "required": true,
+            "type": "AnotherType"
+          },
+          {
+            "kind": 34,
+            "name": "optObject",
+            "object": {
+              "kind": 8192,
+              "name": "optObject",
+              "type": "AnotherType"
+            },
+            "type": "AnotherType"
+          },
+          {
+            "array": {
+              "item": {
+                "kind": 8192,
+                "name": "objectArray",
+                "required": true,
+                "type": "AnotherType"
+              },
+              "kind": 18,
+              "name": "objectArray",
+              "object": {
+                "kind": 8192,
+                "name": "objectArray",
+                "required": true,
+                "type": "AnotherType"
+              },
+              "required": true,
+              "type": "[AnotherType]"
+            },
+            "kind": 34,
+            "name": "objectArray",
+            "required": true,
+            "type": "[AnotherType]"
+          },
+          {
+            "array": {
+              "item": {
+                "kind": 8192,
+                "name": "optObjectArray",
+                "type": "AnotherType"
+              },
+              "kind": 18,
+              "name": "optObjectArray",
+              "object": {
+                "kind": 8192,
+                "name": "optObjectArray",
+                "type": "AnotherType"
+              },
+              "type": "[AnotherType]"
+            },
+            "kind": 34,
+            "name": "optObjectArray",
+            "type": "[AnotherType]"
+          }
+        ],
+        "env": {
+          "required": true
+        },
+        "kind": 64,
+        "name": "objectMethod",
+        "required": true,
+        "return": {
+          "kind": 34,
+          "name": "objectMethod",
+          "object": {
+            "kind": 8192,
+            "name": "objectMethod",
+            "type": "AnotherType"
+          },
+          "type": "AnotherType"
+        },
+        "type": "Method"
+      },
+      {
+        "arguments": [
+          {
+            "kind": 34,
+            "name": "object",
+            "object": {
+              "kind": 8192,
+              "name": "object",
+              "required": true,
+              "type": "AnotherType"
+            },
+            "required": true,
+            "type": "AnotherType"
+          },
+          {
+            "kind": 34,
+            "name": "optObject",
+            "object": {
+              "kind": 8192,
+              "name": "optObject",
+              "type": "AnotherType"
+            },
+            "type": "AnotherType"
+          },
+          {
+            "array": {
+              "item": {
+                "kind": 8192,
+                "name": "objectArray",
+                "required": true,
+                "type": "AnotherType"
+              },
+              "kind": 18,
+              "name": "objectArray",
+              "object": {
+                "kind": 8192,
+                "name": "objectArray",
+                "required": true,
+                "type": "AnotherType"
+              },
+              "required": true,
+              "type": "[AnotherType]"
+            },
+            "kind": 34,
+            "name": "objectArray",
+            "required": true,
+            "type": "[AnotherType]"
+          },
+          {
+            "array": {
+              "item": {
+                "kind": 8192,
+                "name": "optObjectArray",
+                "type": "AnotherType"
+              },
+              "kind": 18,
+              "name": "optObjectArray",
+              "object": {
+                "kind": 8192,
+                "name": "optObjectArray",
+                "type": "AnotherType"
+              },
+              "type": "[AnotherType]"
+            },
+            "kind": 34,
+            "name": "optObjectArray",
+            "type": "[AnotherType]"
+          }
+        ],
+        "env": {
+          "required": false
+        },
+        "kind": 64,
+        "name": "optionalEnvMethod",
+        "required": true,
+        "return": {
+          "kind": 34,
+          "name": "optionalEnvMethod",
+          "object": {
+            "kind": 8192,
+            "name": "optionalEnvMethod",
+            "type": "AnotherType"
+          },
+          "type": "AnotherType"
+        },
+        "type": "Method"
+      }
+    ],
+    "type": "Module"
+  },
+  "objectTypes": [
     {
-      "type": "TestImport_Enum",
-      "kind": 520,
-      "constants": [
-        "STRING",
-        "BYTES"
-      ],
-      "uri": "testimport.uri.eth",
-      "namespace": "TestImport",
-      "nativeType": "Enum"
-    }
-  ],
-  "importedEnvTypes": [
-    {
-      "type": "TestImport_Env",
-      "kind": 524288,
+      "kind": 1,
       "properties": [
         {
-          "type": "String",
-          "name": "enviroProp",
-          "required": true,
           "kind": 34,
+          "name": "str",
+          "required": true,
           "scalar": {
-            "type": "String",
-            "name": "enviroProp",
+            "kind": 4,
+            "name": "str",
             "required": true,
-            "kind": 4
-          }
+            "type": "String"
+          },
+          "type": "String"
+        },
+        {
+          "kind": 34,
+          "name": "optStr",
+          "scalar": {
+            "kind": 4,
+            "name": "optStr",
+            "type": "String"
+          },
+          "type": "String"
+        },
+        {
+          "kind": 34,
+          "name": "u",
+          "required": true,
+          "scalar": {
+            "kind": 4,
+            "name": "u",
+            "required": true,
+            "type": "UInt"
+          },
+          "type": "UInt"
+        },
+        {
+          "kind": 34,
+          "name": "optU",
+          "scalar": {
+            "kind": 4,
+            "name": "optU",
+            "type": "UInt"
+          },
+          "type": "UInt"
+        },
+        {
+          "kind": 34,
+          "name": "u8",
+          "required": true,
+          "scalar": {
+            "kind": 4,
+            "name": "u8",
+            "required": true,
+            "type": "UInt8"
+          },
+          "type": "UInt8"
+        },
+        {
+          "kind": 34,
+          "name": "u16",
+          "required": true,
+          "scalar": {
+            "kind": 4,
+            "name": "u16",
+            "required": true,
+            "type": "UInt16"
+          },
+          "type": "UInt16"
+        },
+        {
+          "kind": 34,
+          "name": "u32",
+          "required": true,
+          "scalar": {
+            "kind": 4,
+            "name": "u32",
+            "required": true,
+            "type": "UInt32"
+          },
+          "type": "UInt32"
+        },
+        {
+          "kind": 34,
+          "name": "i",
+          "required": true,
+          "scalar": {
+            "kind": 4,
+            "name": "i",
+            "required": true,
+            "type": "Int"
+          },
+          "type": "Int"
+        },
+        {
+          "kind": 34,
+          "name": "i8",
+          "required": true,
+          "scalar": {
+            "kind": 4,
+            "name": "i8",
+            "required": true,
+            "type": "Int8"
+          },
+          "type": "Int8"
+        },
+        {
+          "kind": 34,
+          "name": "i16",
+          "required": true,
+          "scalar": {
+            "kind": 4,
+            "name": "i16",
+            "required": true,
+            "type": "Int16"
+          },
+          "type": "Int16"
+        },
+        {
+          "kind": 34,
+          "name": "i32",
+          "required": true,
+          "scalar": {
+            "kind": 4,
+            "name": "i32",
+            "required": true,
+            "type": "Int32"
+          },
+          "type": "Int32"
+        },
+        {
+          "kind": 34,
+          "name": "bigint",
+          "required": true,
+          "scalar": {
+            "kind": 4,
+            "name": "bigint",
+            "required": true,
+            "type": "BigInt"
+          },
+          "type": "BigInt"
+        },
+        {
+          "kind": 34,
+          "name": "optBigint",
+          "scalar": {
+            "kind": 4,
+            "name": "optBigint",
+            "type": "BigInt"
+          },
+          "type": "BigInt"
+        },
+        {
+          "kind": 34,
+          "name": "bignumber",
+          "required": true,
+          "scalar": {
+            "kind": 4,
+            "name": "bignumber",
+            "required": true,
+            "type": "BigNumber"
+          },
+          "type": "BigNumber"
+        },
+        {
+          "kind": 34,
+          "name": "optBignumber",
+          "scalar": {
+            "kind": 4,
+            "name": "optBignumber",
+            "type": "BigNumber"
+          },
+          "type": "BigNumber"
+        },
+        {
+          "kind": 34,
+          "name": "json",
+          "required": true,
+          "scalar": {
+            "kind": 4,
+            "name": "json",
+            "required": true,
+            "type": "JSON"
+          },
+          "type": "JSON"
+        },
+        {
+          "kind": 34,
+          "name": "optJson",
+          "scalar": {
+            "kind": 4,
+            "name": "optJson",
+            "type": "JSON"
+          },
+          "type": "JSON"
+        },
+        {
+          "kind": 34,
+          "name": "bytes",
+          "required": true,
+          "scalar": {
+            "kind": 4,
+            "name": "bytes",
+            "required": true,
+            "type": "Bytes"
+          },
+          "type": "Bytes"
+        },
+        {
+          "kind": 34,
+          "name": "optBytes",
+          "scalar": {
+            "kind": 4,
+            "name": "optBytes",
+            "type": "Bytes"
+          },
+          "type": "Bytes"
+        },
+        {
+          "kind": 34,
+          "name": "boolean",
+          "required": true,
+          "scalar": {
+            "kind": 4,
+            "name": "boolean",
+            "required": true,
+            "type": "Boolean"
+          },
+          "type": "Boolean"
+        },
+        {
+          "kind": 34,
+          "name": "optBoolean",
+          "scalar": {
+            "kind": 4,
+            "name": "optBoolean",
+            "type": "Boolean"
+          },
+          "type": "Boolean"
+        },
+        {
+          "array": {
+            "item": {
+              "kind": 4,
+              "name": "uArray",
+              "required": true,
+              "type": "UInt"
+            },
+            "kind": 18,
+            "name": "uArray",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "uArray",
+              "required": true,
+              "type": "UInt"
+            },
+            "type": "[UInt]"
+          },
+          "kind": 34,
+          "name": "uArray",
+          "required": true,
+          "type": "[UInt]"
+        },
+        {
+          "array": {
+            "item": {
+              "kind": 4,
+              "name": "uOptArray",
+              "required": true,
+              "type": "UInt"
+            },
+            "kind": 18,
+            "name": "uOptArray",
+            "scalar": {
+              "kind": 4,
+              "name": "uOptArray",
+              "required": true,
+              "type": "UInt"
+            },
+            "type": "[UInt]"
+          },
+          "kind": 34,
+          "name": "uOptArray",
+          "type": "[UInt]"
+        },
+        {
+          "array": {
+            "item": {
+              "kind": 4,
+              "name": "optUOptArray",
+              "type": "UInt"
+            },
+            "kind": 18,
+            "name": "optUOptArray",
+            "scalar": {
+              "kind": 4,
+              "name": "optUOptArray",
+              "type": "UInt"
+            },
+            "type": "[UInt]"
+          },
+          "kind": 34,
+          "name": "optUOptArray",
+          "type": "[UInt]"
+        },
+        {
+          "array": {
+            "item": {
+              "kind": 4,
+              "name": "optStrOptArray",
+              "type": "String"
+            },
+            "kind": 18,
+            "name": "optStrOptArray",
+            "scalar": {
+              "kind": 4,
+              "name": "optStrOptArray",
+              "type": "String"
+            },
+            "type": "[String]"
+          },
+          "kind": 34,
+          "name": "optStrOptArray",
+          "type": "[String]"
+        },
+        {
+          "array": {
+            "array": {
+              "item": {
+                "kind": 4,
+                "name": "uArrayArray",
+                "required": true,
+                "type": "UInt"
+              },
+              "kind": 18,
+              "name": "uArrayArray",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "uArrayArray",
+                "required": true,
+                "type": "UInt"
+              },
+              "type": "[UInt]"
+            },
+            "item": {
+              "item": {
+                "kind": 4,
+                "name": "uArrayArray",
+                "required": true,
+                "type": "UInt"
+              },
+              "kind": 18,
+              "name": "uArrayArray",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "uArrayArray",
+                "required": true,
+                "type": "UInt"
+              },
+              "type": "[UInt]"
+            },
+            "kind": 18,
+            "name": "uArrayArray",
+            "required": true,
+            "type": "[[UInt]]"
+          },
+          "kind": 34,
+          "name": "uArrayArray",
+          "required": true,
+          "type": "[[UInt]]"
+        },
+        {
+          "array": {
+            "array": {
+              "item": {
+                "kind": 4,
+                "name": "uOptArrayOptArray",
+                "type": "UInt32"
+              },
+              "kind": 18,
+              "name": "uOptArrayOptArray",
+              "scalar": {
+                "kind": 4,
+                "name": "uOptArrayOptArray",
+                "type": "UInt32"
+              },
+              "type": "[UInt32]"
+            },
+            "item": {
+              "item": {
+                "kind": 4,
+                "name": "uOptArrayOptArray",
+                "type": "UInt32"
+              },
+              "kind": 18,
+              "name": "uOptArrayOptArray",
+              "scalar": {
+                "kind": 4,
+                "name": "uOptArrayOptArray",
+                "type": "UInt32"
+              },
+              "type": "[UInt32]"
+            },
+            "kind": 18,
+            "name": "uOptArrayOptArray",
+            "required": true,
+            "type": "[[UInt32]]"
+          },
+          "kind": 34,
+          "name": "uOptArrayOptArray",
+          "required": true,
+          "type": "[[UInt32]]"
+        },
+        {
+          "array": {
+            "array": {
+              "array": {
+                "item": {
+                  "kind": 4,
+                  "name": "uArrayOptArrayArray",
+                  "required": true,
+                  "type": "UInt32"
+                },
+                "kind": 18,
+                "name": "uArrayOptArrayArray",
+                "required": true,
+                "scalar": {
+                  "kind": 4,
+                  "name": "uArrayOptArrayArray",
+                  "required": true,
+                  "type": "UInt32"
+                },
+                "type": "[UInt32]"
+              },
+              "item": {
+                "item": {
+                  "kind": 4,
+                  "name": "uArrayOptArrayArray",
+                  "required": true,
+                  "type": "UInt32"
+                },
+                "kind": 18,
+                "name": "uArrayOptArrayArray",
+                "required": true,
+                "scalar": {
+                  "kind": 4,
+                  "name": "uArrayOptArrayArray",
+                  "required": true,
+                  "type": "UInt32"
+                },
+                "type": "[UInt32]"
+              },
+              "kind": 18,
+              "name": "uArrayOptArrayArray",
+              "type": "[[UInt32]]"
+            },
+            "item": {
+              "array": {
+                "item": {
+                  "kind": 4,
+                  "name": "uArrayOptArrayArray",
+                  "required": true,
+                  "type": "UInt32"
+                },
+                "kind": 18,
+                "name": "uArrayOptArrayArray",
+                "required": true,
+                "scalar": {
+                  "kind": 4,
+                  "name": "uArrayOptArrayArray",
+                  "required": true,
+                  "type": "UInt32"
+                },
+                "type": "[UInt32]"
+              },
+              "item": {
+                "item": {
+                  "kind": 4,
+                  "name": "uArrayOptArrayArray",
+                  "required": true,
+                  "type": "UInt32"
+                },
+                "kind": 18,
+                "name": "uArrayOptArrayArray",
+                "required": true,
+                "scalar": {
+                  "kind": 4,
+                  "name": "uArrayOptArrayArray",
+                  "required": true,
+                  "type": "UInt32"
+                },
+                "type": "[UInt32]"
+              },
+              "kind": 18,
+              "name": "uArrayOptArrayArray",
+              "type": "[[UInt32]]"
+            },
+            "kind": 18,
+            "name": "uArrayOptArrayArray",
+            "required": true,
+            "type": "[[[UInt32]]]"
+          },
+          "kind": 34,
+          "name": "uArrayOptArrayArray",
+          "required": true,
+          "type": "[[[UInt32]]]"
+        },
+        {
+          "array": {
+            "array": {
+              "array": {
+                "array": {
+                  "item": {
+                    "kind": 4,
+                    "name": "crazyArray",
+                    "required": true,
+                    "type": "UInt32"
+                  },
+                  "kind": 18,
+                  "name": "crazyArray",
+                  "scalar": {
+                    "kind": 4,
+                    "name": "crazyArray",
+                    "required": true,
+                    "type": "UInt32"
+                  },
+                  "type": "[UInt32]"
+                },
+                "item": {
+                  "item": {
+                    "kind": 4,
+                    "name": "crazyArray",
+                    "required": true,
+                    "type": "UInt32"
+                  },
+                  "kind": 18,
+                  "name": "crazyArray",
+                  "scalar": {
+                    "kind": 4,
+                    "name": "crazyArray",
+                    "required": true,
+                    "type": "UInt32"
+                  },
+                  "type": "[UInt32]"
+                },
+                "kind": 18,
+                "name": "crazyArray",
+                "required": true,
+                "type": "[[UInt32]]"
+              },
+              "item": {
+                "array": {
+                  "item": {
+                    "kind": 4,
+                    "name": "crazyArray",
+                    "required": true,
+                    "type": "UInt32"
+                  },
+                  "kind": 18,
+                  "name": "crazyArray",
+                  "scalar": {
+                    "kind": 4,
+                    "name": "crazyArray",
+                    "required": true,
+                    "type": "UInt32"
+                  },
+                  "type": "[UInt32]"
+                },
+                "item": {
+                  "item": {
+                    "kind": 4,
+                    "name": "crazyArray",
+                    "required": true,
+                    "type": "UInt32"
+                  },
+                  "kind": 18,
+                  "name": "crazyArray",
+                  "scalar": {
+                    "kind": 4,
+                    "name": "crazyArray",
+                    "required": true,
+                    "type": "UInt32"
+                  },
+                  "type": "[UInt32]"
+                },
+                "kind": 18,
+                "name": "crazyArray",
+                "required": true,
+                "type": "[[UInt32]]"
+              },
+              "kind": 18,
+              "name": "crazyArray",
+              "type": "[[[UInt32]]]"
+            },
+            "item": {
+              "array": {
+                "array": {
+                  "item": {
+                    "kind": 4,
+                    "name": "crazyArray",
+                    "required": true,
+                    "type": "UInt32"
+                  },
+                  "kind": 18,
+                  "name": "crazyArray",
+                  "scalar": {
+                    "kind": 4,
+                    "name": "crazyArray",
+                    "required": true,
+                    "type": "UInt32"
+                  },
+                  "type": "[UInt32]"
+                },
+                "item": {
+                  "item": {
+                    "kind": 4,
+                    "name": "crazyArray",
+                    "required": true,
+                    "type": "UInt32"
+                  },
+                  "kind": 18,
+                  "name": "crazyArray",
+                  "scalar": {
+                    "kind": 4,
+                    "name": "crazyArray",
+                    "required": true,
+                    "type": "UInt32"
+                  },
+                  "type": "[UInt32]"
+                },
+                "kind": 18,
+                "name": "crazyArray",
+                "required": true,
+                "type": "[[UInt32]]"
+              },
+              "item": {
+                "array": {
+                  "item": {
+                    "kind": 4,
+                    "name": "crazyArray",
+                    "required": true,
+                    "type": "UInt32"
+                  },
+                  "kind": 18,
+                  "name": "crazyArray",
+                  "scalar": {
+                    "kind": 4,
+                    "name": "crazyArray",
+                    "required": true,
+                    "type": "UInt32"
+                  },
+                  "type": "[UInt32]"
+                },
+                "item": {
+                  "item": {
+                    "kind": 4,
+                    "name": "crazyArray",
+                    "required": true,
+                    "type": "UInt32"
+                  },
+                  "kind": 18,
+                  "name": "crazyArray",
+                  "scalar": {
+                    "kind": 4,
+                    "name": "crazyArray",
+                    "required": true,
+                    "type": "UInt32"
+                  },
+                  "type": "[UInt32]"
+                },
+                "kind": 18,
+                "name": "crazyArray",
+                "required": true,
+                "type": "[[UInt32]]"
+              },
+              "kind": 18,
+              "name": "crazyArray",
+              "type": "[[[UInt32]]]"
+            },
+            "kind": 18,
+            "name": "crazyArray",
+            "type": "[[[[UInt32]]]]"
+          },
+          "kind": 34,
+          "name": "crazyArray",
+          "type": "[[[[UInt32]]]]"
+        },
+        {
+          "kind": 34,
+          "name": "object",
+          "object": {
+            "kind": 8192,
+            "name": "object",
+            "required": true,
+            "type": "AnotherType"
+          },
+          "required": true,
+          "type": "AnotherType"
+        },
+        {
+          "kind": 34,
+          "name": "optObject",
+          "object": {
+            "kind": 8192,
+            "name": "optObject",
+            "type": "AnotherType"
+          },
+          "type": "AnotherType"
+        },
+        {
+          "array": {
+            "item": {
+              "kind": 8192,
+              "name": "objectArray",
+              "required": true,
+              "type": "AnotherType"
+            },
+            "kind": 18,
+            "name": "objectArray",
+            "object": {
+              "kind": 8192,
+              "name": "objectArray",
+              "required": true,
+              "type": "AnotherType"
+            },
+            "required": true,
+            "type": "[AnotherType]"
+          },
+          "kind": 34,
+          "name": "objectArray",
+          "required": true,
+          "type": "[AnotherType]"
+        },
+        {
+          "array": {
+            "item": {
+              "kind": 8192,
+              "name": "optObjectArray",
+              "type": "AnotherType"
+            },
+            "kind": 18,
+            "name": "optObjectArray",
+            "object": {
+              "kind": 8192,
+              "name": "optObjectArray",
+              "type": "AnotherType"
+            },
+            "type": "[AnotherType]"
+          },
+          "kind": 34,
+          "name": "optObjectArray",
+          "type": "[AnotherType]"
+        },
+        {
+          "enum": {
+            "kind": 16384,
+            "name": "en",
+            "required": true,
+            "type": "CustomEnum"
+          },
+          "kind": 34,
+          "name": "en",
+          "required": true,
+          "type": "CustomEnum"
+        },
+        {
+          "enum": {
+            "kind": 16384,
+            "name": "optEnum",
+            "type": "CustomEnum"
+          },
+          "kind": 34,
+          "name": "optEnum",
+          "type": "CustomEnum"
+        },
+        {
+          "array": {
+            "enum": {
+              "kind": 16384,
+              "name": "enumArray",
+              "required": true,
+              "type": "CustomEnum"
+            },
+            "item": {
+              "kind": 16384,
+              "name": "enumArray",
+              "required": true,
+              "type": "CustomEnum"
+            },
+            "kind": 18,
+            "name": "enumArray",
+            "required": true,
+            "type": "[CustomEnum]"
+          },
+          "kind": 34,
+          "name": "enumArray",
+          "required": true,
+          "type": "[CustomEnum]"
+        },
+        {
+          "array": {
+            "enum": {
+              "kind": 16384,
+              "name": "optEnumArray",
+              "type": "CustomEnum"
+            },
+            "item": {
+              "kind": 16384,
+              "name": "optEnumArray",
+              "type": "CustomEnum"
+            },
+            "kind": 18,
+            "name": "optEnumArray",
+            "type": "[CustomEnum]"
+          },
+          "kind": 34,
+          "name": "optEnumArray",
+          "type": "[CustomEnum]"
+        },
+        {
+          "kind": 34,
+          "map": {
+            "key": {
+              "kind": 4,
+              "name": "map",
+              "required": true,
+              "type": "String"
+            },
+            "kind": 262146,
+            "name": "map",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "map",
+              "required": true,
+              "type": "Int"
+            },
+            "type": "Map<String, Int>",
+            "value": {
+              "kind": 4,
+              "name": "map",
+              "required": true,
+              "type": "Int"
+            }
+          },
+          "name": "map",
+          "required": true,
+          "type": "Map<String, Int>"
+        },
+        {
+          "kind": 34,
+          "map": {
+            "array": {
+              "item": {
+                "kind": 4,
+                "name": "mapOfArr",
+                "required": true,
+                "type": "Int"
+              },
+              "kind": 18,
+              "name": "mapOfArr",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "mapOfArr",
+                "required": true,
+                "type": "Int"
+              },
+              "type": "[Int]"
+            },
+            "key": {
+              "kind": 4,
+              "name": "mapOfArr",
+              "required": true,
+              "type": "String"
+            },
+            "kind": 262146,
+            "name": "mapOfArr",
+            "required": true,
+            "type": "Map<String, [Int]>",
+            "value": {
+              "item": {
+                "kind": 4,
+                "name": "mapOfArr",
+                "required": true,
+                "type": "Int"
+              },
+              "kind": 18,
+              "name": "mapOfArr",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "mapOfArr",
+                "required": true,
+                "type": "Int"
+              },
+              "type": "[Int]"
+            }
+          },
+          "name": "mapOfArr",
+          "required": true,
+          "type": "Map<String, [Int]>"
+        },
+        {
+          "kind": 34,
+          "map": {
+            "key": {
+              "kind": 4,
+              "name": "mapOfObj",
+              "required": true,
+              "type": "String"
+            },
+            "kind": 262146,
+            "name": "mapOfObj",
+            "object": {
+              "kind": 8192,
+              "name": "mapOfObj",
+              "required": true,
+              "type": "AnotherType"
+            },
+            "required": true,
+            "type": "Map<String, AnotherType>",
+            "value": {
+              "kind": 8192,
+              "name": "mapOfObj",
+              "required": true,
+              "type": "AnotherType"
+            }
+          },
+          "name": "mapOfObj",
+          "required": true,
+          "type": "Map<String, AnotherType>"
+        },
+        {
+          "kind": 34,
+          "map": {
+            "array": {
+              "item": {
+                "kind": 8192,
+                "name": "mapOfArrOfObj",
+                "required": true,
+                "type": "AnotherType"
+              },
+              "kind": 18,
+              "name": "mapOfArrOfObj",
+              "object": {
+                "kind": 8192,
+                "name": "mapOfArrOfObj",
+                "required": true,
+                "type": "AnotherType"
+              },
+              "required": true,
+              "type": "[AnotherType]"
+            },
+            "key": {
+              "kind": 4,
+              "name": "mapOfArrOfObj",
+              "required": true,
+              "type": "String"
+            },
+            "kind": 262146,
+            "name": "mapOfArrOfObj",
+            "required": true,
+            "type": "Map<String, [AnotherType]>",
+            "value": {
+              "item": {
+                "kind": 8192,
+                "name": "mapOfArrOfObj",
+                "required": true,
+                "type": "AnotherType"
+              },
+              "kind": 18,
+              "name": "mapOfArrOfObj",
+              "object": {
+                "kind": 8192,
+                "name": "mapOfArrOfObj",
+                "required": true,
+                "type": "AnotherType"
+              },
+              "required": true,
+              "type": "[AnotherType]"
+            }
+          },
+          "name": "mapOfArrOfObj",
+          "required": true,
+          "type": "Map<String, [AnotherType]>"
         }
       ],
-      "uri": "testimport.uri.eth",
-      "namespace": "TestImport",
-      "nativeType": "Env"
-    }
-  ],
-  "envType": {
-    "type": "Env",
-    "kind": 65536,
-    "properties": [
-      {
-        "type": "String",
-        "name": "prop",
-        "required": true,
-        "kind": 34,
-        "scalar": {
-          "type": "String",
+      "type": "CustomType"
+    },
+    {
+      "kind": 1,
+      "properties": [
+        {
+          "kind": 34,
           "name": "prop",
-          "required": true,
-          "kind": 4
-        }
-      },
-      {
-        "type": "String",
-        "name": "optProp",
-        "kind": 34,
-        "scalar": {
-          "type": "String",
-          "name": "optProp",
-          "kind": 4
-        }
-      },
-      {
-        "type": "Map<String, Int>",
-        "name": "optMap",
-        "kind": 34,
-        "map": {
-          "type": "Map<String, Int>",
-          "name": "optMap",
-          "kind": 262146,
           "scalar": {
-            "type": "Int",
-            "name": "optMap",
-            "kind": 4
+            "kind": 4,
+            "name": "prop",
+            "type": "String"
           },
-          "key": {
-            "type": "String",
-            "name": "optMap",
-            "required": true,
-            "kind": 4
+          "type": "String"
+        },
+        {
+          "kind": 34,
+          "name": "circular",
+          "object": {
+            "kind": 8192,
+            "name": "circular",
+            "type": "CustomType"
           },
-          "value": {
-            "type": "Int",
-            "name": "optMap",
-            "kind": 4
-          }
+          "type": "CustomType"
+        },
+        {
+          "kind": 34,
+          "name": "const",
+          "scalar": {
+            "kind": 4,
+            "name": "const",
+            "type": "String"
+          },
+          "type": "String"
         }
-      }
-    ]
-  }
+      ],
+      "type": "AnotherType"
+    }
+  ]
 }
 }

@@ -644,7 +644,7 @@ export const abi: WrapAbi = {
           ...createMethodDefinition({
             name: "methodOptionalEnv",
             env: {
-              required: undefined,
+              required: false,
             },
             return: createObjectPropertyDefinition({
               name: "methodOptionalEnv",
@@ -975,7 +975,6 @@ export const abi: WrapAbi = {
       ...createImportedEnvDefinition({
         uri: "testimport.uri.eth",
         namespace: "TestImport",
-        type: "TestImport_Env",
         nativeType: "Env",
         comment: "TestImport_Env comment",
       }),

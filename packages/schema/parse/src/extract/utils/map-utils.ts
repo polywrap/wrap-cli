@@ -8,7 +8,11 @@ import {
   isScalarType,
 } from "../..";
 
-import { GenericDefinition } from "@polywrap/wrap-manifest-types-js";
+import {
+  GenericDefinition,
+  MapKeyDefinition,
+  ScalarDefinition
+} from "@polywrap/wrap-manifest-types-js";
 
 type CurrentAbi = {
   currentType: string;
@@ -115,7 +119,7 @@ const _parseMapType = (
     if (isScalarType(currentType)) {
       return createScalarDefinition({
         name: name,
-        type: currentType,
+        type: currentType as ScalarDefinition["type"],
         required: required,
       });
     }
@@ -162,7 +166,7 @@ const _parseMapType = (
         name: name,
         key: createMapKeyDefinition({
           name: name,
-          type: keyType,
+          type: keyType as MapKeyDefinition["type"],
           required: keyRequired,
         }),
         value: _parseMapType(rootType, valType, name),

@@ -20,6 +20,22 @@ export { Functions };
 const templatePath = (subpath: string) =>
   path.join(__dirname, "./templates", subpath);
 
+const sort = (obj: any) => Object
+  .keys(obj)
+  .sort()
+  .reduce((map: any, key) => {
+    if (typeof obj[key] === "object") {
+      map[key] = sort(obj[key]);
+
+      if (Array.isArray(obj[key])) {
+        map[key] = Object.values(map[key]);
+      }
+    } else {
+      map[key] = obj[key];
+    }
+    return map
+  }, {});
+
 export const generateBinding: GenerateBindingFn = (
   options: BindOptions
 ): BindOutput => {
@@ -38,8 +54,9 @@ export const generateBinding: GenerateBindingFn = (
     name: options.projectName,
     type: "plugin",
     version: latestWrapManifestVersion,
-    abi: JSON.stringify(options.abi, null, 2),
+    abi: JSON.stringify(sort(options.abi), null, 2),
   };
+
   output.entries = renderTemplates(
     templatePath(""),
     { ...abi, wrapManifest },
