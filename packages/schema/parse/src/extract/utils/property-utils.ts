@@ -7,7 +7,7 @@ import {
 
 import {
   PropertyDefinition,
-  ScalarDefinition
+  ScalarDefinition,
 } from "@polywrap/wrap-manifest-types-js";
 
 const toBoolean = (val: unknown) => !!val;

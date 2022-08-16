@@ -63,7 +63,9 @@ export abstract class Project<TManifest extends AnyProjectManifest> {
 
   public abstract getSchemaNamedPath(): Promise<string>;
 
-  public abstract getImportRedirects(): Promise<PolywrapManifest["import_redirects"]>;
+  public abstract getImportRedirects(): Promise<
+    PolywrapManifest["import_redirects"]
+  >;
 
   public abstract generateSchemaBindings(
     abi: Abi,

@@ -1,8 +1,4 @@
-import {
-  isMapKeyType,
-  isModuleType,
-  isScalarType,
-} from "./utils";
+import { isMapKeyType, isModuleType, isScalarType } from "./utils";
 
 import {
   AnyDefinition,
@@ -77,9 +73,7 @@ export function createObjectDefinition(
   };
 }
 
-export function createObjectRef(
-  args: Omit<ObjectRef, "kind">
-): ObjectRef {
+export function createObjectRef(args: Omit<ObjectRef, "kind">): ObjectRef {
   return {
     ...args,
     kind: DefinitionKind.ObjectRef,
@@ -132,9 +126,7 @@ export function createEnumDefinition(
   };
 }
 
-export function createEnumRef(
-  args: Omit<EnumRef, "kind">
-): EnumRef {
+export function createEnumRef(args: Omit<EnumRef, "kind">): EnumRef {
   return {
     ...args,
     kind: DefinitionKind.EnumRef,
@@ -187,7 +179,7 @@ export function createMapDefinition(
 }
 
 export function createArrayDefinition(
-  args:  Omit<ArrayDefinition, "kind">
+  args: Omit<ArrayDefinition, "kind">
 ): ArrayDefinition {
   return {
     ...args,

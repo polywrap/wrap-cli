@@ -11,7 +11,7 @@ import {
 import {
   GenericDefinition,
   MapKeyDefinition,
-  ScalarDefinition
+  ScalarDefinition,
 } from "@polywrap/wrap-manifest-types-js";
 
 type CurrentAbi = {

@@ -6,7 +6,7 @@ import {
   serializeWrapManifest,
   latestWrapManifestVersion,
   WrapManifest,
-  WrapAbi
+  WrapAbi,
 } from "@polywrap/wrap-manifest-types-js";
 import { normalizePath, writeFileSync } from "@polywrap/os-js";
 
