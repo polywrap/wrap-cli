@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@polywrap/schema-parse": "0.3.0",
+    "@polywrap/wrap-manifest-types-js": "0.3.0",
     "graphql": "15.5.0",
     "mustache": "4.0.1"
   },

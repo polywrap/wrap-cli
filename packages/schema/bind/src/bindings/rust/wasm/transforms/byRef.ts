@@ -1,4 +1,5 @@
-import { AbiTransforms, AnyDefinition } from "@polywrap/schema-parse";
+import { AbiTransforms } from "@polywrap/schema-parse";
+import { AnyDefinition } from "@polywrap/wrap-manifest-types-js";
 
 export function byRef(): AbiTransforms {
   return {

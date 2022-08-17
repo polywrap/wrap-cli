@@ -133,7 +133,6 @@ describe("parseCurrentType", () => {
     expect(result).toMatchObject({
       currentType: "Map",
       subType: "String, Int",
-      required: false,
     });
   });
 
@@ -142,7 +141,6 @@ describe("parseCurrentType", () => {
     expect(result).toMatchObject({
       currentType: "Map",
       subType: "String, CustomType!",
-      required: false,
     });
   });
 
@@ -177,7 +175,6 @@ describe("parseCurrentType", () => {
     const result = parseCurrentType("CustomType!");
     expect(result).toMatchObject({
       currentType: "CustomType",
-      subType: null,
       required: true,
     });
   });
@@ -186,8 +183,6 @@ describe("parseCurrentType", () => {
     const result = parseCurrentType("String");
     expect(result).toMatchObject({
       currentType: "String",
-      subType: null,
-      required: false,
     });
   });
 });
