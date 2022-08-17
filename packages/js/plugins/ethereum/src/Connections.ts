@@ -1,17 +1,19 @@
-import { Connection } from "./Connection";
+import { Connection, EthereumProvider } from "./Connection";
 import { Connection as SchemaConnection } from "./wrap";
 
 import { getNetwork } from "@ethersproject/providers";
 
+type Networks = {
+  [network: string]: Connection;
+};
+
 export interface ConnectionsConfig {
-  networks: {
-    [network: string]: Connection;
-  };
+  networks: Networks;
   defaultNetwork?: string;
 }
 
 export class Connections {
-  private _connections: { [network: string]: Connection } = {};
+  private _connections: Networks = {};
   private _defaultNetwork: string;
 
   constructor(config: ConnectionsConfig) {
@@ -21,23 +23,28 @@ export class Connections {
     // Assign the default network (mainnet if not provided)
     if (config.defaultNetwork) {
       this.setDefaultNetwork(config.defaultNetwork);
-    } else {
+    } else if (this._connections["mainnet"]) {
       this.setDefaultNetwork("mainnet");
+    } else {
+      this.setDefaultNetwork("mainnet", Connection.fromNetwork("mainnet"));
     }
   }
 
   /** Returns Connection indexed by network name, or by default network if key is undefined */
-  get(network?: string): Connection {
+  get(network?: string): Connection | undefined {
     if (!network) {
-      return this._connections[this._defaultNetwork];
+      return this._connections[this._defaultNetwork.toLowerCase()];
     }
-    return this._connections[network];
+    return this._connections[network.toLowerCase()];
   }
 
   /** sets Connection to index of network name */
-  set(network: string, connection: Connection): void {
+  set(network: string, connection: Connection | EthereumProvider): void {
     const networkStr = network.toLowerCase();
 
+    if (!(connection instanceof Connection)) {
+      connection = new Connection({ provider: connection });
+    }
     this._connections[networkStr] = connection;
 
     // Handle the case where `network` is a number
@@ -49,17 +56,20 @@ export class Connections {
     }
   }
 
-  /** sets defaultNetwork to network, and creates new Connection if network is not found in store */
-  setDefaultNetwork(network: string): void {
-    this._defaultNetwork = network;
-
-    // Create a connection for the default network if none exists
-    if (!this._connections[this._defaultNetwork]) {
-      this.set(
-        this._defaultNetwork,
-        Connection.fromNetwork(this._defaultNetwork)
-      );
+  /** sets defaultNetwork to network, and optionally sets associated connection */
+  setDefaultNetwork(
+    network: string,
+    connection?: Connection | EthereumProvider
+  ): void {
+    if (connection) {
+      this.set(network, connection);
     }
+
+    if (!this.get(network)) {
+      throw Error(`No connection found for network: ${network}`);
+    }
+
+    this._defaultNetwork = network;
   }
 
   /** returns default network */
@@ -73,7 +83,7 @@ export class Connections {
     connection?: SchemaConnection | null
   ): Promise<Connection> {
     if (!connection) {
-      return this.get(this._defaultNetwork);
+      return this.get(this._defaultNetwork) as Connection;
     }
 
     const { networkNameOrChainId, node } = connection;
@@ -84,7 +94,7 @@ export class Connections {
     if (networkNameOrChainId) {
       const networkStr = networkNameOrChainId.toLowerCase();
       if (this.get(networkStr)) {
-        result = this.get(networkStr);
+        result = this.get(networkStr) as Connection;
       } else {
         const chainId = Number.parseInt(networkStr);
 
@@ -95,7 +105,7 @@ export class Connections {
         }
       }
     } else {
-      result = this.get(this._defaultNetwork);
+      result = this.get(this._defaultNetwork) as Connection;
     }
 
     // If a custom node endpoint is provided, create a combined
