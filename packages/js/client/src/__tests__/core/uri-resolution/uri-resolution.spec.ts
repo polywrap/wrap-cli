@@ -6,7 +6,6 @@ import {
   IUriResolutionResponse,
   IUriResolutionStep,
   PluginModule,
-  UriResolutionHistoryType,
   UriResolutionResponse,
 } from "@polywrap/core-js";
 import { buildCleanUriHistory } from "@polywrap/uri-resolvers-js";
@@ -154,7 +153,7 @@ describe("URI resolution", () => {
 
     const response = await client.tryResolveToWrapper({
       uri,
-      history: UriResolutionHistoryType.Full,
+      history: "full",
     });
 
     await expectResultWithHistory(
@@ -184,7 +183,7 @@ describe("URI resolution", () => {
 
     const response = await client.tryResolveToWrapper({
       uri: fromUri,
-      history: UriResolutionHistoryType.Full,
+      history: "full",
     });
 
     await expectResultWithHistory(
@@ -216,7 +215,7 @@ describe("URI resolution", () => {
 
     const response = await client.tryResolveToWrapper({
       uri: pluginUri,
-      history: UriResolutionHistoryType.Full,
+      history: "full",
     });
 
     await expectWrapperWithHistory(response, pluginUri, "can resolve plugin");
@@ -237,7 +236,7 @@ describe("URI resolution", () => {
 
     const response = await client.tryResolveToWrapper({
       uri: sourceUri,
-      history: UriResolutionHistoryType.Full,
+      history: "full",
     });
 
     await expectWrapperWithHistory(
@@ -252,7 +251,7 @@ describe("URI resolution", () => {
 
     const response1 = await client.tryResolveToWrapper({
       uri: wrapperUri,
-      history: UriResolutionHistoryType.Full,
+      history: "full",
     });
 
     await expectWrapperWithHistory(
@@ -263,7 +262,7 @@ describe("URI resolution", () => {
 
     const response2 = await client.tryResolveToWrapper({
       uri: wrapperUri,
-      history: UriResolutionHistoryType.Full,
+      history: "full",
     });
 
     await expectWrapperWithHistory(
@@ -292,7 +291,7 @@ describe("URI resolution", () => {
 
     const response1 = await client.tryResolveToWrapper({
       uri: redirectedUri,
-      history: UriResolutionHistoryType.Full,
+      history: "full",
     });
 
     await expectWrapperWithHistory(
@@ -303,7 +302,7 @@ describe("URI resolution", () => {
 
     const response2 = await client.tryResolveToWrapper({
       uri: sourceUri,
-      history: UriResolutionHistoryType.Full,
+      history: "full",
     });
 
     await expectWrapperWithHistory(
@@ -337,7 +336,7 @@ describe("URI resolution", () => {
     });
     const response = await client.tryResolveToWrapper({
       uri: sourceUri,
-      history: UriResolutionHistoryType.Full,
+      history: "full",
     });
     await expectResultWithHistory(
       response,
@@ -365,7 +364,7 @@ describe("URI resolution", () => {
 
     const response = await client.tryResolveToWrapper({
       uri: ensUri,
-      history: UriResolutionHistoryType.Full,
+      history: "full",
     });
 
     await expectResultWithHistory(
@@ -382,7 +381,7 @@ describe("URI resolution", () => {
 
     const response = await client.tryResolveToWrapper({
       uri: fromUri,
-      history: UriResolutionHistoryType.Full,
+      history: "full",
       config: {
         resolver: {
           name: "CustomResolver",
@@ -415,7 +414,7 @@ describe("URI resolution", () => {
 
     const response = await client.tryResolveToWrapper({
       uri: "ens/test.eth",
-      history: UriResolutionHistoryType.Full,
+      history: "full",
     });
 
     await expectResultWithHistory(

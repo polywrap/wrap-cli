@@ -22,7 +22,7 @@ export interface TryResolveToWrapperOptions<
   /**
    * If set to true, the resolveUri function will not cache the results
    */
-  history?: UriResolutionHistoryType;
+  history: "none" | "path" | "full";
 
   /**
    * Override the client's config for all resolutions.
@@ -39,9 +39,4 @@ export interface UriResolverHandler {
   tryResolveToWrapper<TUri extends Uri | string>(
     options?: TryResolveToWrapperOptions<TUri, ClientConfig>
   ): Promise<IUriResolutionResponse<unknown>>;
-}
-
-export enum UriResolutionHistoryType {
-  Path,
-  Full,
 }

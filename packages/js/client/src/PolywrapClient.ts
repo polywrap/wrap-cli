@@ -790,6 +790,7 @@ export class PolywrapClient implements Client {
     const { result } = await this.tryResolveToWrapper({
       uri,
       contextId: options?.contextId,
+      history: "none",
     });
 
     if (!result.ok) {
