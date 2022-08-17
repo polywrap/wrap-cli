@@ -8,13 +8,14 @@ import {
   Ok,
 } from "../../..";
 import { UriResolverAggregatorBase } from "./UriResolverAggregatorBase";
+import { UriResolverAggregatorOptions } from "./UriResolverAggregatorOptions";
 
 export class UriResolverAggregator<
   TError = undefined
 > extends UriResolverAggregatorBase<TError> {
   constructor(
     resolvers: IUriResolver<unknown>[],
-    options: { fullResolution: boolean }
+    options: UriResolverAggregatorOptions
   );
   constructor(
     resolvers: (
@@ -22,7 +23,7 @@ export class UriResolverAggregator<
       client: Client,
       cache: WrapperCache
     ) => Promise<Result<IUriResolver<unknown>[], TError | InfiniteLoopError>>,
-    options: { fullResolution: boolean }
+    options: UriResolverAggregatorOptions
   );
   constructor(
     resolvers: (
@@ -30,7 +31,7 @@ export class UriResolverAggregator<
       client: Client,
       cache: WrapperCache
     ) => Promise<IUriResolver<unknown>[]>,
-    options: { fullResolution: boolean }
+    options: UriResolverAggregatorOptions
   );
   constructor(
     private resolvers:
@@ -47,13 +48,9 @@ export class UriResolverAggregator<
         ) => Promise<
           Result<IUriResolver<unknown>[], TError | InfiniteLoopError>
         >),
-    options: { fullResolution: boolean }
+    options: UriResolverAggregatorOptions
   ) {
     super(options);
-  }
-
-  get name(): string {
-    return UriResolverAggregator.name;
   }
 
   async getUriResolvers(

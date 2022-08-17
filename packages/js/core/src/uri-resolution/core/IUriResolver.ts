@@ -7,6 +7,6 @@ export interface IUriResolver<TError = undefined> {
     uri: Uri,
     client: Client,
     cache: WrapperCache,
-    resolutionPath: IUriResolutionStep<TError>[]
+    resolutionPath: IUriResolutionStep<unknown>[]
   ): Promise<IUriResolutionResponse<TError>>;
 }

@@ -8,12 +8,15 @@ import {
   IUriResolutionStep,
   getUriResolutionPath,
 } from "../../core";
+import { UriResolverAggregatorOptions } from "./UriResolverAggregatorOptions";
 
 export abstract class UriResolverAggregatorBase<TError = undefined>
   implements IUriResolver<TError | InfiniteLoopError> {
-  constructor(private readonly options: { fullResolution: boolean }) {}
+  constructor(private readonly options: UriResolverAggregatorOptions) {}
 
-  abstract get name(): string;
+  get name(): string {
+    return this.options.resolverName ?? "UriResolverAggregator";
+  }
 
   abstract getUriResolvers(
     uri: Uri,

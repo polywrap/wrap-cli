@@ -7,9 +7,10 @@ import {
   PluginPackage,
   Env,
   ExtendableUriResolver,
-  CacheResolver,
+  CacheableResolver,
   LegacyPluginsResolver,
   LegacyRedirectsResolver,
+  LegacyCacheResolver,
   buildUriResolver,
 } from "@polywrap/core-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
@@ -106,32 +107,34 @@ export const getDefaultClientConfig = Tracer.traceFunc(
           implementations: [new Uri("wrap://ens/js-logger.polywrap.eth")],
         },
       ],
-      resolver: buildUriResolver(
-        [
-          new LegacyRedirectsResolver(),
-          new CacheResolver(),
-          new LegacyPluginsResolver(
-            (
-              uri: Uri,
-              plugin: PluginPackage<unknown>,
-              environment: Env<Uri> | undefined
-            ) => new PluginWrapper(uri, plugin, environment)
-          ),
-          new ExtendableUriResolver(
-            { fullResolution: false },
-            (
-              uri: Uri,
-              manifest: WrapManifest,
-              uriResolver: string,
-              environment: Env<Uri> | undefined
-            ) => {
-              return new WasmWrapper(uri, manifest, uriResolver, environment);
-            }
-          ),
-        ],
-        {
-          fullResolution: true,
-        }
+      resolver: new CacheableResolver(
+        new LegacyCacheResolver(),
+        buildUriResolver(
+          [
+            new LegacyRedirectsResolver(),
+            new LegacyPluginsResolver(
+              (
+                uri: Uri,
+                plugin: PluginPackage<unknown>,
+                environment: Env<Uri> | undefined
+              ) => new PluginWrapper(uri, plugin, environment)
+            ),
+            new ExtendableUriResolver(
+              { fullResolution: false },
+              (
+                uri: Uri,
+                manifest: WrapManifest,
+                uriResolver: string,
+                environment: Env<Uri> | undefined
+              ) => {
+                return new WasmWrapper(uri, manifest, uriResolver, environment);
+              }
+            ),
+          ],
+          {
+            fullResolution: true,
+          }
+        )
       ),
     };
   }

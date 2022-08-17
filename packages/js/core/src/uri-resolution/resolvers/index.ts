@@ -1,4 +1,3 @@
-export * from "./CacheResolver";
 export * from "./InfiniteLoopError";
 export * from "./PluginResolver";
 export * from "./PluginsResolver";
@@ -8,6 +7,7 @@ export * from "./UriResolvable";
 export * from "./UriResolverWrapper";
 export * from "./aggregator";
 export * from "./buildUriResolver";
+export * from "./cache";
 export * from "./extendable";
 export * from "./getEnvFromUriOrResolutionPath";
 export * from "./legacy";

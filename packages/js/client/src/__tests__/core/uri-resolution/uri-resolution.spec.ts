@@ -43,7 +43,35 @@ const buildCleanUriHistory = (
     return cleanHistory;
   }
   for (let step of history) {
-    cleanHistory.push(`${step.sourceUri.uri} => ${step.resolverName}`);
+    if (step.response.result.ok) {
+      const uriPackageOrWrapper = step.response.result.value;
+
+      switch (uriPackageOrWrapper.type) {
+        case "uri":
+          if (step.sourceUri.uri === uriPackageOrWrapper.uri.uri) {
+            cleanHistory.push(`${step.sourceUri.uri} => ${step.resolverName}`);
+          } else {
+            cleanHistory.push(
+              `${step.sourceUri.uri} => ${step.resolverName} => uri (${uriPackageOrWrapper.uri.uri})`
+            );
+          }
+          break;
+        case "package":
+          cleanHistory.push(
+            `${step.sourceUri.uri} => ${step.resolverName} => package (${uriPackageOrWrapper.package.uri.uri})`
+          );
+          break;
+        case "wrapper":
+          cleanHistory.push(
+            `${step.sourceUri.uri} => ${step.resolverName} => wrapper (${uriPackageOrWrapper.wrapper.uri.uri})`
+          );
+          break;
+      }
+    } else {
+      cleanHistory.push(
+        `${step.sourceUri.uri} => ${step.resolverName} => error`
+      );
+    }
 
     if (
       !step.response.history ||
@@ -121,7 +149,15 @@ const expectPackageWithHistory = async (
   const uriPackageOrWrapper = result.value;
 
   if (uriPackageOrWrapper.type !== "package") {
-    fail("Uri resolution did not return a package");
+    if (uriPackageOrWrapper.type === "wrapper") {
+      fail(
+        `Uri resolution did not return a package, it returned a wrapper (${uriPackageOrWrapper.wrapper.uri.uri})`
+      );
+    } else {
+      fail(
+        `Uri resolution did not return a package, it returned a uri (${uriPackageOrWrapper.uri.uri})`
+      );
+    }
   }
 
   expect(uriPackageOrWrapper.package.uri).toEqual(expectedUri);
@@ -148,7 +184,15 @@ const expectWrapperWithHistory = async (
   const uriPackageOrWrapper = result.value;
 
   if (uriPackageOrWrapper.type !== "wrapper") {
-    fail("Uri resolution did not return a wrapper");
+    if (uriPackageOrWrapper.type === "package") {
+      fail(
+        `Uri resolution did not return a wrapper, it returned a package (${uriPackageOrWrapper.package.uri.uri})`
+      );
+    } else {
+      fail(
+        `Uri resolution did not return a wrapper, it returned a uri (${uriPackageOrWrapper.uri.uri})`
+      );
+    }
   }
 
   expect(uriPackageOrWrapper.wrapper.uri).toEqual(expectedUri);
@@ -237,7 +281,7 @@ describe("URI resolution", () => {
       history: UriResolutionHistoryType.Full,
     });
 
-    await expectPackageWithHistory(response, pluginUri, "can resolve plugin");
+    await expectWrapperWithHistory(response, pluginUri, "can resolve plugin");
   });
 
   it("can resolve a URI resolver extension wrapper", async () => {
@@ -258,317 +302,78 @@ describe("URI resolution", () => {
       history: UriResolutionHistoryType.Full,
     });
 
-    await expectPackageWithHistory(
+    await expectWrapperWithHistory(
       response,
       redirectedUri,
       "can resolve a URI resolver extension wrapper"
     );
   });
 
-  // it("can resolve cache", async () => {
-  //   const client = await getClient();
+  it("can resolve cache", async () => {
+    const client = await getClient();
 
-  //   const response1 = await client.tryResolveToWrapper({
-  //     uri: wrapperUri,
-  //     history: UriResolutionHistoryType.Full,
-  //   });
+    const response1 = await client.tryResolveToWrapper({
+      uri: wrapperUri,
+      history: UriResolutionHistoryType.Full,
+    });
 
-  //   await expectWrapperWithHistory(
-  //     response1,
-  //     wrapperUri,
-  //     "can resolve cache - 1"
-  //   );
+    await expectWrapperWithHistory(
+      response1,
+      wrapperUri,
+      "can resolve cache - 1"
+    );
 
-  //   const response2 = await client.tryResolveToWrapper({
-  //     uri: wrapperUri,
-  //     history: UriResolutionHistoryType.Full,
-  //   });
+    const response2 = await client.tryResolveToWrapper({
+      uri: wrapperUri,
+      history: UriResolutionHistoryType.Full,
+    });
 
-  //   await expectWrapperWithHistory(
-  //     response2,
-  //     wrapperUri,
-  //     "can resolve cache - 2"
-  //   );
-  // });
+    await expectWrapperWithHistory(
+      response2,
+      wrapperUri,
+      "can resolve cache - 2"
+    );
+  });
 
-  // it("can resolve cache - noCacheRead", async () => {
-  //   const client = await getClient();
+  it("can resolve previously cached URI after redirecting by a URI resolver extension", async () => {
+    const client = await getClient({
+      interfaces: [
+        {
+          interface: coreInterfaceUris.uriResolver.uri,
+          implementations: [
+            simpleFsResolverWrapperUri.uri,
+            simpleRedirectResolverWrapperUri.uri,
+          ],
+        },
+      ],
+    });
 
-  //   const response1 = await client.tryResolveToWrapper({
-  //     uri: wrapperUri,
-  //     history: UriResolutionHistoryType.Full,
-  //   });
+    const sourceUri = new Uri(`simple-redirect/${wrapperPath}/build`);
+    const redirectedUri = new Uri(`simple/${wrapperPath}/build`);
+    const finalUri = wrapperUri;
 
-  //   await expectWrapperWithHistory(
-  //     response1,
-  //     wrapperUri,
-  //     "can resolve cache - noCacheRead - 1"
-  //   );
+    const response1 = await client.tryResolveToWrapper({
+      uri: redirectedUri,
+      history: UriResolutionHistoryType.Full,
+    });
 
-  //   const response2 = await client.tryResolveToWrapper({
-  //     uri: wrapperUri,
-  //     history: UriResolutionHistoryType.Full,
-  //     noCacheRead: true,
-  //   });
+    await expectWrapperWithHistory(
+      response1,
+      finalUri,
+      "can resolve previously cached URI after redirecting by a URI resolver extension - 1"
+    );
 
-  //   await expectWrapperWithHistory(
-  //     response2,
-  //     wrapperUri,
-  //     "can resolve cache - noCacheRead - 2"
-  //   );
-  // });
+    const response2 = await client.tryResolveToWrapper({
+      uri: sourceUri,
+      history: UriResolutionHistoryType.Full,
+    });
 
-  // it("can resolve cache - noCacheWrite", async () => {
-  //   const client = await getClient();
-
-  //   const result = await client.tryResolveToWrapper({
-  //     uri: wrapperUri,
-  //     history: UriResolutionHistoryType.Full,
-  //     noCacheWrite: true,
-  //   });
-
-  //   expect(result.wrapper).toBeTruthy();
-  //   expect(result.uri).toEqual(wrapperUri);
-  //   expect(result.error).toBeFalsy();
-
-  //   expect(result.history).toEqual([
-  //     {
-  //       uriResolver: "RedirectsResolver",
-  //       sourceUri: wrapperUri,
-  //       result: {
-  //         uri: wrapperUri,
-  //         wrapper: false,
-  //       },
-  //     },
-  //     {
-  //       uriResolver: "CacheResolver",
-  //       sourceUri: wrapperUri,
-  //       result: {
-  //         uri: wrapperUri,
-  //         wrapper: false,
-  //       },
-  //     },
-  //     {
-  //       uriResolver: "PluginResolver",
-  //       sourceUri: wrapperUri,
-  //       result: {
-  //         uri: wrapperUri,
-  //         wrapper: false,
-  //       },
-  //     },
-  //     {
-  //       uriResolver: "ExtendableUriResolver",
-  //       sourceUri: wrapperUri,
-  //       result: {
-  //         uri: wrapperUri,
-  //         wrapper: result.wrapper,
-  //         implementationUri: new Uri("wrap://ens/fs-resolver.polywrap.eth"),
-  //       },
-  //     },
-  //   ]);
-
-  //   const result2 = await client.tryResolveToWrapper({
-  //     uri: wrapperUri,
-  //     history: UriResolutionHistoryType.Full,
-  //   });
-
-  //   expect(result2.wrapper).toBeTruthy();
-  //   expect(result2.uri).toEqual(wrapperUri);
-  //   expect(result2.error).toBeFalsy();
-
-  //   expect(result2.history).toEqual([
-  //     {
-  //       uriResolver: "RedirectsResolver",
-  //       sourceUri: wrapperUri,
-  //       result: {
-  //         uri: wrapperUri,
-  //         wrapper: false,
-  //       },
-  //     },
-  //     {
-  //       uriResolver: "CacheResolver",
-  //       sourceUri: wrapperUri,
-  //       result: {
-  //         uri: wrapperUri,
-  //         wrapper: false,
-  //       },
-  //     },
-  //     {
-  //       uriResolver: "PluginResolver",
-  //       sourceUri: wrapperUri,
-  //       result: {
-  //         uri: wrapperUri,
-  //         wrapper: false,
-  //       },
-  //     },
-  //     {
-  //       uriResolver: "ExtendableUriResolver",
-  //       sourceUri: wrapperUri,
-  //       result: {
-  //         uri: wrapperUri,
-  //         wrapper: result.wrapper,
-  //         implementationUri: new Uri("wrap://ens/fs-resolver.polywrap.eth"),
-  //       },
-  //     },
-  //   ]);
-  // });
-
-  // it("can resolve previously cached URI after redirecting by a URI resolver extension", async () => {
-  //   const client = await getClient({
-  //     interfaces: [
-  //       {
-  //         interface: coreInterfaceUris.uriResolver.uri,
-  //         implementations: [
-  //           simpleFsResolverWrapperUri.uri,
-  //           simpleRedirectResolverWrapperUri.uri,
-  //         ],
-  //       },
-  //     ],
-  //   });
-
-  //   const sourceUri = new Uri(`simple-redirect/${wrapperPath}/build`);
-  //   const redirectedUri = new Uri(`simple/${wrapperPath}/build`);
-  //   const finalUri = wrapperUri;
-
-  //   const result = await client.tryResolveToWrapper({
-  //     uri: redirectedUri,
-  //     history: UriResolutionHistoryType.Full,
-  //   });
-
-  //   expect(result.wrapper).toBeTruthy();
-  //   expect(result.uri).toEqual(finalUri);
-  //   expect(result.error).toBeFalsy();
-
-  //   expect(result.history).toEqual([
-  //     {
-  //       uriResolver: "RedirectsResolver",
-  //       sourceUri: redirectedUri,
-  //       result: {
-  //         uri: redirectedUri,
-  //         wrapper: false,
-  //       },
-  //     },
-  //     {
-  //       sourceUri: redirectedUri,
-  //       uriResolver: "CacheResolver",
-  //       result: {
-  //         uri: redirectedUri,
-  //         wrapper: false,
-  //       },
-  //     },
-  //     {
-  //       uriResolver: "PluginResolver",
-  //       sourceUri: redirectedUri,
-  //       result: {
-  //         uri: redirectedUri,
-  //         wrapper: false,
-  //       },
-  //     },
-  //     {
-  //       uriResolver: "ExtendableUriResolver",
-  //       sourceUri: redirectedUri,
-  //       result: {
-  //         uri: finalUri,
-  //         wrapper: false,
-  //         implementationUri: simpleFsResolverWrapperUri,
-  //       },
-  //     },
-  //     {
-  //       uriResolver: "RedirectsResolver",
-  //       sourceUri: finalUri,
-  //       result: {
-  //         uri: finalUri,
-  //         wrapper: false,
-  //       },
-  //     },
-  //     {
-  //       sourceUri: finalUri,
-  //       uriResolver: "CacheResolver",
-  //       result: {
-  //         uri: finalUri,
-  //         wrapper: false,
-  //       },
-  //     },
-  //     {
-  //       uriResolver: "PluginResolver",
-  //       sourceUri: finalUri,
-  //       result: {
-  //         uri: finalUri,
-  //         wrapper: false,
-  //       },
-  //     },
-  //     {
-  //       uriResolver: "ExtendableUriResolver",
-  //       sourceUri: finalUri,
-  //       result: {
-  //         uri: finalUri,
-  //         wrapper: result.wrapper,
-  //         implementationUri: new Uri("wrap://ens/fs-resolver.polywrap.eth"),
-  //       },
-  //     },
-  //   ]);
-
-  //   const result2 = await client.tryResolveToWrapper({
-  //     uri: sourceUri,
-  //     history: UriResolutionHistoryType.Full,
-  //   });
-
-  //   expect(result2.wrapper).toBeTruthy();
-  //   expect(result2.uri).toEqual(redirectedUri);
-  //   expect(result2.error).toBeFalsy();
-
-  //   expect(result2.history).toEqual([
-  //     {
-  //       uriResolver: "RedirectsResolver",
-  //       sourceUri: sourceUri,
-  //       result: {
-  //         uri: sourceUri,
-  //         wrapper: false,
-  //       },
-  //     },
-  //     {
-  //       sourceUri: sourceUri,
-  //       uriResolver: "CacheResolver",
-  //       result: {
-  //         uri: sourceUri,
-  //         wrapper: false,
-  //       },
-  //     },
-  //     {
-  //       uriResolver: "PluginResolver",
-  //       sourceUri: sourceUri,
-  //       result: {
-  //         uri: sourceUri,
-  //         wrapper: false,
-  //       },
-  //     },
-  //     {
-  //       uriResolver: "ExtendableUriResolver",
-  //       sourceUri: sourceUri,
-  //       result: {
-  //         uri: redirectedUri,
-  //         wrapper: false,
-  //         implementationUri: simpleRedirectResolverWrapperUri,
-  //       },
-  //     },
-  //     {
-  //       uriResolver: "RedirectsResolver",
-  //       sourceUri: redirectedUri,
-  //       result: {
-  //         uri: redirectedUri,
-  //         wrapper: false,
-  //       },
-  //     },
-  //     {
-  //       sourceUri: redirectedUri,
-  //       uriResolver: "CacheResolver",
-  //       result: {
-  //         uri: redirectedUri,
-  //         wrapper: result.wrapper,
-  //       },
-  //     },
-  //   ]);
-  // });
+    await expectWrapperWithHistory(
+      response2,
+      finalUri,
+      "can resolve previously cached URI after redirecting by a URI resolver extension - 2"
+    );
+  });
 
   it("restarts URI resolution after URI resolver extension redirect", async () => {
     // Testing that the URI resolution process restarts after a URI resolver extension redirect
@@ -683,54 +488,4 @@ describe("URI resolution", () => {
       "custom wrapper resolver does not cause infinite recursion when resolved at runtime"
     );
   });
-
-  // it("unresolvable custom wrapper resolver is found when preloaded", async () => {
-  //   const client = await getClient({
-  //     interfaces: [
-  //       {
-  //         interface: "ens/uri-resolver.core.polywrap.eth",
-  //         implementations: ["ens/test-resolver.eth"],
-  //       },
-  //     ],
-  //   });
-
-  //   const { success, failedUriResolvers } = await client.loadUriResolvers();
-  //   expect(success).toBeFalsy();
-  //   expect(failedUriResolvers).toEqual(["wrap://ens/test-resolver.eth"]);
-
-  //   const { error } = await client.tryResolveToWrapper({
-  //     uri: "ens/test.eth",
-  //     history: UriResolutionHistoryType.Full,
-  //   });
-  //   expect(error).toBeTruthy();
-
-  //   if (!error) {
-  //     throw Error();
-  //   }
-
-  //   expect(error.type).toEqual(UriResolutionErrorType.UriResolver);
-  //   expect(
-  //     (error as UriResolverError<LoadResolverExtensionsError>).error.message
-  //   ).toEqual(
-  //     "Could not load the following URI Resolver implementations: wrap://ens/test-resolver.eth"
-  //   );
-  // });
-
-  // it("can preload wrapper resolvers", async () => {
-  //   const client = await getClient();
-
-  //   const { success, failedUriResolvers } = await client.loadUriResolvers();
-
-  //   expect(success).toBeTruthy();
-  //   expect(failedUriResolvers.length).toEqual(0);
-
-  //   const { wrapper, uri, error } = await client.tryResolveToWrapper({
-  //     uri: "ens/test.eth",
-  //     history: UriResolutionHistoryType.Full,
-  //   });
-
-  //   expect(error).toBeFalsy();
-  //   expect(wrapper).toBeFalsy();
-  //   expect(uri?.uri).toEqual("wrap://ens/test.eth");
-  // });
 });
