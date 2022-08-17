@@ -12,7 +12,7 @@ import { PluginManifest } from "@polywrap/polywrap-manifest-types-js";
 import { bindSchema, BindOutput, BindOptions } from "@polywrap/schema-bind";
 import { ComposerOutput } from "@polywrap/schema-compose";
 import path from "path";
-import { WrapAbi } from "@polywrap/wrap-manifest-types-js";
+import { Abi } from "@polywrap/wrap-manifest-types-js";
 
 export interface PluginProjectConfig extends ProjectConfig {
   pluginManifestPath: string;

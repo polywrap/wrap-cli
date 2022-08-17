@@ -33,7 +33,7 @@ import path from "path";
 import { Schema as JsonSchema } from "jsonschema";
 import fs from "fs";
 import fsExtra from "fs-extra";
-import { WrapAbi } from "@polywrap/wrap-manifest-types-js";
+import { Abi } from "@polywrap/wrap-manifest-types-js";
 
 export interface PolywrapProjectConfig extends ProjectConfig {
   polywrapManifestPath: string;
