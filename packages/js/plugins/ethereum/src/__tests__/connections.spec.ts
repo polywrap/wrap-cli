@@ -32,18 +32,18 @@ describe("Connections Store", () => {
   });
 
   describe("set", () => {
-    it("sets a new network", async () => {
+    it("adds a new network", async () => {
       const kovan = new Connection({ provider: getRpcUri("kovan") });
       expect(connections.get("kovan")).toBeUndefined();
       connections.set("kovan", kovan);
       expect(connections.get("kovan")).toBe(kovan);
     });
 
-    it("sets new network by passing provider directly", async () => {
+    it("adds new network by passing provider directly", async () => {
       const rinkebyUri = getRpcUri("rinkeby");
-      const rinkeby = new Connection({ provider: rinkebyUri});
       connections.set("rinkeby", rinkebyUri);
-      expect(connections.get("rinkeby")).toStrictEqual(rinkeby);
+      const providerUri = connections.get("rinkeby")?.getProvider().connection.url;
+      expect(providerUri).toEqual(rinkebyUri);
     });
 
     it("replaces existing network", async () => {
