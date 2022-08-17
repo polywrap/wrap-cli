@@ -12,6 +12,8 @@ import {
 } from "./{{version}}";
 {{/formats}}
 
+{{#latest}}export * from "./{{version}}";{{/latest}}
+
 {{#formats}}
 import WrapManifestSchema_{{tsVersion}} from "./{{version}}.schema.json";
 {{/formats}}

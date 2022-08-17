@@ -5,6 +5,7 @@ import {
   copyArtifactsFromBuildImage,
   createBuildImage,
   displayPath,
+  ensureDockerDaemonRunning,
   generateDockerfile,
   generateDockerImageName,
   intlMsg,
@@ -25,7 +26,6 @@ import {
 import { msgpackEncode } from "@polywrap/msgpack-js";
 import { WasmWrapper, WrapImports } from "@polywrap/core-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
-import { Abi } from "@polywrap/schema-parse";
 import { ComposerOutput } from "@polywrap/schema-compose";
 import {
   normalizePath,
@@ -248,6 +248,7 @@ export class Compiler {
 
   private async _buildSourcesInDocker(): Promise<string> {
     const { project, outputDir } = this._config;
+    await ensureDockerDaemonRunning();
     const buildManifestDir = await project.getBuildManifestDir();
     const buildManifest = await project.getBuildManifest();
     const imageName =
@@ -357,7 +358,7 @@ export class Compiler {
 
       const manifest = await project.getManifest();
 
-      const abi: Abi = {
+      const abi: WrapAbi = {
         ...state.composerOutput.abi,
       };
 

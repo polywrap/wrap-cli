@@ -144,7 +144,7 @@ export class WasmWrapper extends Wrapper {
     if (!data) {
       throw Error(`Package manifest does not contain information`);
     }
-    return deserializeWrapManifest(data);
+    return deserializeWrapManifest(data, options);
   }
 
   @Tracer.traceMethod("WasmWrapper: invoke")

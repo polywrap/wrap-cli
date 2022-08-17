@@ -37,7 +37,12 @@ pub fn serialize_{{#toLower}}{{type}}{{/toLower}}(args: &{{#toUpper}}{{type}}{{/
 }
 
 pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(args: &{{#toUpper}}{{type}}{{/toUpper}}, writer: &mut W) -> Result<(), EncodeError> {
+    {{#properties.length}}
     writer.write_map_length(&{{properties.length}})?;
+    {{/properties.length}}
+    {{^properties}}
+    writer.write_map_length(&0)?;
+    {{/properties}}
     {{#properties}}
     writer.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
     writer.write_string("{{name}}")?;

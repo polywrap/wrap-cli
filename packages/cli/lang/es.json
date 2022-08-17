@@ -252,6 +252,7 @@
   "lib_helpers_manifest_outputWarning": "Warnings writing manifest to {path}",
   "lib_helpers_manifest_unableToDump": "Unable to dump manifest: {manifest}",
   "lib_helpers_manifest_unableToLoad": "Unable to load manifest: {path}",
+  "lib_helpers_docker_couldNotConnect": "Could not connect to the Docker daemon. Is the docker daemon running?",
   "lib_helpers_docker_copyText": "Artifacts written to {path} from the image `{image}`",
   "lib_helpers_docker_copyError": "Failed to write build artifacts to {path} from the image `{image}`",
   "lib_helpers_docker_copyWarning": "Warnings write build artifacts to {path} from the image `{image}`",

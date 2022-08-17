@@ -1,9 +1,10 @@
 import { AbiTransforms } from ".";
+
 import {
-  ModuleDefinition,
   ImportedModuleDefinition,
   MethodDefinition,
-} from "../abi";
+  ModuleDefinition,
+} from "@polywrap/wrap-manifest-types-js";
 
 export function methodParentPointers(): AbiTransforms {
   const visitorStack: (ModuleDefinition | ImportedModuleDefinition)[] = [];
