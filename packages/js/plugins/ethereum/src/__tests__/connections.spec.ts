@@ -1,8 +1,4 @@
-import { Connections } from "../Connections";
-import { Connection } from "../Connection";
-import {
-  providers,
-} from "@polywrap/test-env-js";
+import { Connections, Connection } from "..";
 
 jest.setTimeout(10000);
 
@@ -19,8 +15,7 @@ describe("Connections Store", () => {
 
 
   beforeAll(async () => {
-    // connections
-    testnet = new Connection({ provider: providers.ethereum });
+    testnet = new Connection({ provider: getRpcUri("kovan") });
     goerli = new Connection({ provider: getRpcUri("goerli") });
     connections = new Connections({
       networks: { testnet, goerli },

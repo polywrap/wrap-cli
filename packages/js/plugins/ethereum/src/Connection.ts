@@ -28,7 +28,7 @@ export class Connection {
     const { provider, signer } = _config;
 
     // Sanitize Provider & Signer
-    this.setProvider(provider, signer !== undefined ? signer : 0);
+    this.setProvider(provider, signer);
   }
 
   static fromNetwork(networkish: Networkish): Connection {
@@ -72,9 +72,7 @@ export class Connection {
       }
     }
 
-    if (signer !== undefined) {
-      this.setSigner(signer);
-    }
+    this.setSigner(signer ?? 0);
   }
 
   public getProvider(): EthereumClient {
@@ -87,6 +85,7 @@ export class Connection {
     } else if (Signer.isSigner(signer)) {
       this._config.signer = signer;
 
+      // This should never happen
       if (!this._client) {
         throw Error(
           `Please call "setProvider(...)" before calling setSigner(...)`

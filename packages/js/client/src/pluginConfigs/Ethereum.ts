@@ -23,11 +23,13 @@ export type AccountIndex = number;
 export type Address = string;
 
 export interface ConnectionsConfig {
-  networks: {
-    [network: string]: Connection;
-  };
+  networks: Networks;
   defaultNetwork?: string;
 }
+
+type Networks = {
+  [network: string]: Connection;
+};
 
 // import { Connection } from "@polywrap/ethereum-plugin-js"
 export type Connection = any;

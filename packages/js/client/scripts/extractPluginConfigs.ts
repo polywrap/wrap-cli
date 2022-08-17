@@ -54,6 +54,7 @@ const plugins: PluginConfigSource[] = [
       {
         name: "build/Connections.d.ts",
         interfaces: ["ConnectionsConfig"],
+        types: ["Networks"],
       },
     ],
     externals: [
