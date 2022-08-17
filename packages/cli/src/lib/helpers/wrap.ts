@@ -20,7 +20,7 @@ const run = async (
     version: latestWrapManifestVersion,
     name,
     type,
-    abi
+    abi,
   };
 
   const bytes = await serializeWrapManifest(manifest);

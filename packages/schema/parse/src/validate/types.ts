@@ -208,7 +208,10 @@ export function getCircularDefinitionsValidator(): SchemaValidator {
     visitor: {
       enter: {
         ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
-          if (node.name.value === "Module" || node.name.value.endsWith("_Module")) {
+          if (
+            node.name.value === "Module" ||
+            node.name.value.endsWith("_Module")
+          ) {
             ignoreTypeNames.push(node.name.value);
           }
         },

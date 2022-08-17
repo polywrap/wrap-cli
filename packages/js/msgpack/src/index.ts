@@ -40,9 +40,7 @@ function sanitizeObj(obj: Record<string, unknown>): Record<string, unknown> {
     } else if (obj[key] === null || obj[key] === undefined) {
       delete obj[key];
     } else if (typeof obj[key] === "object") {
-      const sanitized = sanitizeObj(
-        obj[key] as Record<string, unknown>
-      );
+      const sanitized = sanitizeObj(obj[key] as Record<string, unknown>);
 
       if (Array.isArray(obj[key])) {
         obj[key] = Object.values(sanitized);
