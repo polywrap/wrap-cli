@@ -1,18 +1,15 @@
 import { ClientConfig, WasmWrapper } from ".";
 import { PluginWrapper } from "./plugin/PluginWrapper";
 
+import { Uri, coreInterfaceUris, PluginPackage, Env } from "@polywrap/core-js";
 import {
-  Uri,
-  coreInterfaceUris,
-  PluginPackage,
-  Env,
   ExtendableUriResolver,
   CacheableResolver,
   LegacyPluginsResolver,
   LegacyRedirectsResolver,
   LegacyCacheResolver,
   buildUriResolver,
-} from "@polywrap/core-js";
+} from "@polywrap/uri-resolvers-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";

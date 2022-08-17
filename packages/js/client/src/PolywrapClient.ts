@@ -30,7 +30,6 @@ import {
   getImplementations,
   parseQuery,
   TryResolveToWrapperOptions,
-  getUriResolutionPath,
   IUriResolver,
   GetUriResolverOptions,
   sanitizeEnvs,
@@ -49,6 +48,7 @@ import {
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Tracer } from "@polywrap/tracing-js";
+import { getUriResolutionPath } from "@polywrap/uri-resolvers-js";
 
 export interface PolywrapClientConfig<TUri extends Uri | string = string>
   extends ClientConfig<TUri> {

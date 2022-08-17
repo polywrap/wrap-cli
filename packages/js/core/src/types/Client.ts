@@ -9,7 +9,7 @@ import {
   Env,
   WorkflowHandler,
 } from "./";
-import { IUriResolver } from "../uri-resolution/core";
+import { IUriResolver } from "../uri-resolution";
 import { UriResolverHandler } from "./UriResolver";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";

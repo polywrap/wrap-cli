@@ -1,5 +1,5 @@
 import { ClientConfig, Uri } from ".";
-import { IUriResolutionResponse } from "../uri-resolution/core";
+import { IUriResolutionResponse } from "../uri-resolution";
 
 /** Options required for an URI resolution. */
 export interface TryResolveToWrapperOptions<

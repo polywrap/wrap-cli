@@ -9,6 +9,7 @@ import {
   UriResolutionHistoryType,
   UriResolutionResponse,
 } from "@polywrap/core-js";
+import { buildCleanUriHistory } from "@polywrap/uri-resolvers-js";
 import { getClient } from "../../utils/getClient";
 import fs from "fs";
 
@@ -26,69 +27,6 @@ const simpleRedirectResolverWrapperPath = `${GetPathToTestWrappers()}/wasm-as/si
 const simpleRedirectResolverWrapperUri = new Uri(
   `wrap://file/${simpleRedirectResolverWrapperPath}/build`
 );
-
-export type CleanResolutionStep = (string | CleanResolutionStep)[];
-
-const buildCleanUriHistory = (
-  history: IUriResolutionStep<unknown>[],
-  depth?: number
-): CleanResolutionStep => {
-  let cleanHistory: CleanResolutionStep = [];
-
-  if (depth != null) {
-    depth--;
-  }
-
-  if (!history) {
-    return cleanHistory;
-  }
-  for (let step of history) {
-    if (step.response.result.ok) {
-      const uriPackageOrWrapper = step.response.result.value;
-
-      switch (uriPackageOrWrapper.type) {
-        case "uri":
-          if (step.sourceUri.uri === uriPackageOrWrapper.uri.uri) {
-            cleanHistory.push(`${step.sourceUri.uri} => ${step.resolverName}`);
-          } else {
-            cleanHistory.push(
-              `${step.sourceUri.uri} => ${step.resolverName} => uri (${uriPackageOrWrapper.uri.uri})`
-            );
-          }
-          break;
-        case "package":
-          cleanHistory.push(
-            `${step.sourceUri.uri} => ${step.resolverName} => package (${uriPackageOrWrapper.package.uri.uri})`
-          );
-          break;
-        case "wrapper":
-          cleanHistory.push(
-            `${step.sourceUri.uri} => ${step.resolverName} => wrapper (${uriPackageOrWrapper.wrapper.uri.uri})`
-          );
-          break;
-      }
-    } else {
-      cleanHistory.push(
-        `${step.sourceUri.uri} => ${step.resolverName} => error`
-      );
-    }
-
-    if (
-      !step.response.history ||
-      step.response.history.length === 0 ||
-      (depth != null && depth < 0)
-    ) {
-      continue;
-    }
-
-    const subHistory = buildCleanUriHistory(step.response.history, depth);
-    if (subHistory.length > 0) {
-      cleanHistory.push(subHistory);
-    }
-  }
-
-  return cleanHistory;
-};
 
 const expectResultWithHistory = async (
   receivedResponse: IUriResolutionResponse<unknown>,
