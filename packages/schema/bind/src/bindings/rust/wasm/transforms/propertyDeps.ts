@@ -61,14 +61,6 @@ export function propertyDeps(): AbiTransforms {
             typeName = typeName.replace(/\[|\]|\!|\?/g, "");
           }
 
-          if (
-            isBaseType(typeName) ||
-            isBuiltInType(typeName) ||
-            typeName === rootType
-          ) {
-            return array;
-          }
-
           const appendUnique = (item: PropertyDep) => {
             if (
               array.findIndex(
@@ -78,6 +70,30 @@ export function propertyDeps(): AbiTransforms {
               array.push(item);
             }
           };
+
+          const isKnownType = (name: string) =>
+            isBaseType(name) || isBuiltInType(name) || name === rootType;
+
+          // if type is map and the value is custom,
+          // we need to add it into property dependency
+          if (typeName.startsWith("Map<")) {
+            const valueName = def.map?.object?.type;
+            if (valueName && !isKnownType(valueName)) {
+              appendUnique({
+                crate: "crate",
+                type: valueName,
+                isEnum: false,
+              });
+
+              return array;
+            }
+
+            return array;
+          }
+
+          if (isKnownType(typeName)) {
+            return array;
+          }
 
           appendUnique({
             crate: "crate",
