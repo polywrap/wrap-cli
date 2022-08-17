@@ -28,12 +28,12 @@ import {
 import { normalizePath } from "@polywrap/os-js";
 import { BindOptions, BindOutput, bindSchema } from "@polywrap/schema-bind";
 import { ComposerOutput } from "@polywrap/schema-compose";
-import { Abi } from "@polywrap/schema-parse";
 import regexParser from "regex-parser";
 import path from "path";
 import { Schema as JsonSchema } from "jsonschema";
 import fs from "fs";
 import fsExtra from "fs-extra";
+import { WrapAbi } from "@polywrap/wrap-manifest-types-js";
 
 export interface PolywrapProjectConfig extends ProjectConfig {
   polywrapManifestPath: string;

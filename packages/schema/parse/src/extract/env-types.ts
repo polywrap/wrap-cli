@@ -1,4 +1,4 @@
-import { Abi, isEnvType, createEnvDefinition } from "../abi";
+import { isEnvType, createEnvDefinition } from "..";
 import {
   extractFieldDefinition,
   extractListType,
@@ -14,8 +14,9 @@ import {
   FieldDefinitionNode,
   ASTVisitor,
 } from "graphql";
+import { WrapAbi } from "@polywrap/wrap-manifest-types-js";
 
-const visitorEnter = (abi: Abi, state: State) => ({
+const visitorEnter = (abi: WrapAbi, state: State) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     const typeName = node.name.value;
 
@@ -46,11 +47,11 @@ const visitorLeave = (state: State) => ({
     state.currentProperty = undefined;
   },
   NonNullType: (_node: NonNullTypeNode) => {
-    state.nonNullType = false;
+    state.nonNullType = undefined;
   },
 });
 
-export function getEnvVisitor(abi: Abi): ASTVisitor {
+export function getEnvVisitor(abi: WrapAbi): ASTVisitor {
   const state: State = {};
 
   return {

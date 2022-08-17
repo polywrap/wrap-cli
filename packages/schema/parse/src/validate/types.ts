@@ -1,4 +1,4 @@
-import { isScalarType, scalarTypeNames, isModuleType } from "../abi";
+import { isScalarType, isModuleType, scalarTypeNames } from "..";
 import { SchemaValidator } from "./";
 
 import {

@@ -11,8 +11,8 @@ import { AppManifest } from "@polywrap/polywrap-manifest-types-js";
 import { Client } from "@polywrap/core-js";
 import { ComposerOutput } from "@polywrap/schema-compose";
 import { bindSchema, BindOutput } from "@polywrap/schema-bind";
-import { Abi } from "@polywrap/schema-parse";
 import path from "path";
+import { WrapAbi } from "@polywrap/wrap-manifest-types-js";
 
 export interface AppProjectConfig extends ProjectConfig {
   appManifestPath: string;
@@ -111,7 +111,7 @@ export class AppProject extends Project<AppManifest> {
   ): Promise<BindOutput> {
     return bindSchema({
       projectName: await this.getName(),
-      abi: composerOutput.abi as Abi,
+      abi: composerOutput.abi as WrapAbi,
       schema: composerOutput.schema as string,
       outputDirAbs: this._getGenerationDirectory(generationSubPath),
       bindLanguage: appManifestLanguageToBindLanguage(
