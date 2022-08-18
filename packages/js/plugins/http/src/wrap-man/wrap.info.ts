@@ -8,46 +8,6 @@ export const manifest: WrapManifest = {
     version: "0.1",
     objectTypes: [
       {
-        type: "Header",
-        kind: 1,
-        properties: [
-          {
-            type: "String",
-            name: "key",
-            required: true,
-            kind: 34,
-            scalar: { type: "String", name: "key", required: true, kind: 4 },
-          },
-          {
-            type: "String",
-            name: "value",
-            required: true,
-            kind: 34,
-            scalar: { type: "String", name: "value", required: true, kind: 4 },
-          },
-        ],
-      },
-      {
-        type: "UrlParam",
-        kind: 1,
-        properties: [
-          {
-            type: "String",
-            name: "key",
-            required: true,
-            kind: 34,
-            scalar: { type: "String", name: "key", required: true, kind: 4 },
-          },
-          {
-            type: "String",
-            name: "value",
-            required: true,
-            kind: 34,
-            scalar: { type: "String", name: "value", required: true, kind: 4 },
-          },
-        ],
-      },
-      {
         type: "Response",
         kind: 1,
         properties: [
@@ -71,26 +31,34 @@ export const manifest: WrapManifest = {
             },
           },
           {
-            type: "[Header]",
+            type: "Map<String, String>",
             name: "headers",
-            kind: 34,
-            array: {
-              type: "[Header]",
+            map: {
+              type: "Map<String, String>",
+              scalar: {
+                name: "headers",
+                type: "String",
+                required: true,
+                kind: 4
+              },
+              kind: 262146,
               name: "headers",
-              kind: 18,
-              object: {
-                type: "Header",
+              key: {
                 name: "headers",
+                type: "String",
                 required: true,
-                kind: 8192,
+                kind: 4
               },
-              item: {
-                type: "Header",
+              value: {
                 name: "headers",
+                type: "String",
                 required: true,
-                kind: 8192,
+                kind: 4
               },
+              required: true
             },
+            required: false,
+            kind: 34
           },
           {
             type: "String",
@@ -105,48 +73,64 @@ export const manifest: WrapManifest = {
         kind: 1,
         properties: [
           {
-            type: "[Header]",
+            type: "Map<String, String>",
             name: "headers",
-            kind: 34,
-            array: {
-              type: "[Header]",
+            map: {
+              type: "Map<String, String>",
+              scalar: {
+                name: "headers",
+                type: "String",
+                required: true,
+                kind: 4
+              },
+              kind: 262146,
               name: "headers",
-              kind: 18,
-              object: {
-                type: "Header",
+              key: {
                 name: "headers",
+                type: "String",
                 required: true,
-                kind: 8192,
+                kind: 4
               },
-              item: {
-                type: "Header",
+              value: {
                 name: "headers",
+                type: "String",
                 required: true,
-                kind: 8192,
+                kind: 4
               },
+              required: true
             },
+            required: false,
+            kind: 34
           },
           {
-            type: "[UrlParam]",
+            type: "Map<String, String>",
             name: "urlParams",
-            kind: 34,
-            array: {
-              type: "[UrlParam]",
+            map: {
+              type: "Map<String, String>",
+              scalar: {
+                name: "urlParams",
+                type: "String",
+                required: true,
+                kind: 4
+              },
+              kind: 262146,
               name: "urlParams",
-              kind: 18,
-              object: {
-                type: "UrlParam",
+              key: {
                 name: "urlParams",
+                type: "String",
                 required: true,
-                kind: 8192,
+                kind: 4
               },
-              item: {
-                type: "UrlParam",
+              value: {
                 name: "urlParams",
+                type: "String",
                 required: true,
-                kind: 8192,
+                kind: 4
               },
+              required: true
             },
+            required: false,
+            kind: 34
           },
           {
             type: "ResponseType",

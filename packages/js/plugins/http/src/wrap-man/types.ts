@@ -29,26 +29,17 @@ export type Boolean = boolean;
 /// Env END ///
 
 /// Objects START ///
-export interface Header {
-  key: Types.String;
-  value: Types.String;
-}
-
-export interface UrlParam {
-  key: Types.String;
-  value: Types.String;
-}
 
 export interface Response {
   status: Types.Int;
   statusText: Types.String;
-  headers?: Array<Types.Header> | null;
+  headers?: Map<Types.String, Types.String> | null;
   body?: Types.String | null;
 }
 
 export interface Request {
-  headers?: Array<Types.Header> | null;
-  urlParams?: Array<Types.UrlParam> | null;
+  headers?: Map<Types.String, Types.String> | null;
+  urlParams?: Map<Types.String, Types.String> | null;
   responseType: Types.ResponseType;
   body?: Types.String | null;
 }
