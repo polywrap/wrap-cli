@@ -40,7 +40,6 @@ import {
   JobRunner,
   PluginPackage,
   RunOptions,
-  IUriResolutionStep,
   UriResolutionResponse,
   initWrapper,
   IWrapPackage,
@@ -48,7 +47,6 @@ import {
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Tracer } from "@polywrap/tracing-js";
-import { getUriResolutionPath } from "@polywrap/uri-resolvers-js";
 
 export interface PolywrapClientConfig<TUri extends Uri | string = string>
   extends ClientConfig<TUri> {
@@ -511,17 +509,9 @@ export class PolywrapClient implements Client {
       options.config
     );
 
-    const ignoreCache = this._isContextualized(contextId);
-    const cacheWrite = !ignoreCache && !options?.noCacheWrite;
-    // const cacheRead = !ignoreCache && !options?.noCacheRead;
-
     const client = contextualizeClient(this, contextId);
 
     const uriResolver = this.getUriResolver({ contextId: contextId });
-
-    // if (!cacheRead) {
-    //   uriResolver = uriResolvers.filter((x) => x.name !== CacheResolver.name);
-    // }
 
     const response = await uriResolver.tryResolveToWrapper(
       this._toUri(options.uri),
@@ -530,40 +520,8 @@ export class PolywrapClient implements Client {
       []
     );
 
-    const { result, history } = response;
-
     if (shouldClearContext) {
       this._clearContext(contextId);
-    }
-
-    if (!result.ok) {
-      return response;
-    }
-
-    const uriPackageOrWrapper = result.value;
-
-    if (uriPackageOrWrapper.type === "uri") {
-      return response;
-    }
-
-    let packageOrWrapper: IWrapPackage | Wrapper;
-
-    if (uriPackageOrWrapper.type === "package") {
-      packageOrWrapper = uriPackageOrWrapper.package;
-    } else {
-      packageOrWrapper = uriPackageOrWrapper.wrapper;
-    }
-
-    const wrapper = await initWrapper(packageOrWrapper, this);
-
-    const resolutionPath = getUriResolutionPath(
-      history as IUriResolutionStep[]
-    );
-    // Update cache for all URIs in the chain
-    if (cacheWrite && wrapper) {
-      for (const item of resolutionPath) {
-        this._wrapperCache.set(item.sourceUri.uri, wrapper);
-      }
     }
 
     return response;
@@ -587,11 +545,6 @@ export class PolywrapClient implements Client {
     if (!this._config.resolver && defaultClientConfig.resolver) {
       this._config.resolver = defaultClientConfig.resolver;
     }
-  }
-
-  @Tracer.traceMethod("PolywrapClient: isContextualized")
-  private _isContextualized(contextId: string | undefined): boolean {
-    return !!contextId && this._contexts.has(contextId);
   }
 
   @Tracer.traceMethod("PolywrapClient: getConfig")
