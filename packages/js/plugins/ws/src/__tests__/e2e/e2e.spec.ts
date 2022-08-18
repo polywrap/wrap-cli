@@ -4,6 +4,7 @@ import { Message } from "../../wrap";
 import WS from "jest-websocket-mock";
 import { PolywrapClient } from "@polywrap/client-js"
 import { Client, PluginModule } from "@polywrap/core-js";
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
 describe("WebSocket plugin", () => {
 
@@ -151,7 +152,7 @@ describe("WebSocket plugin", () => {
         factory: () => {
           return new CallbackPlugin({})
         },
-        manifest: { schema: "", implements: [] },
+        manifest: {  } as WrapManifest,
       }
       polywrapClient = new PolywrapClient({
         plugins: [
