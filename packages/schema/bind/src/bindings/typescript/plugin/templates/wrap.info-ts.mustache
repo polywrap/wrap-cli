@@ -2,11 +2,11 @@
 ///       All modifications will be overwritten.
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js"
 
-{{#wrapManifest}}
-export const wrapManifest: WrapManifest = {
+{{#manifest}}
+export const manifest: WrapManifest = {
   name: "{{name}}",
   type: "{{type}}",
   version: "{{version}}",
   abi: {{abi}}
 }
-{{/wrapManifest}}
+{{/manifest}}

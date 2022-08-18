@@ -50,7 +50,7 @@ export const generateBinding: GenerateBindingFn = (
     outputDirAbs: options.outputDirAbs,
   };
   const output = result.output;
-  const wrapManifest = {
+  const manifest = {
     name: options.projectName,
     type: "plugin",
     version: latestWrapManifestVersion,
@@ -63,7 +63,7 @@ export const generateBinding: GenerateBindingFn = (
 
   output.entries = renderTemplates(
     templatePath(""),
-    { ...abi, wrapManifest },
+    { ...abi, manifest },
     {}
   );
 

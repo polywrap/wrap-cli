@@ -2,7 +2,7 @@
 ///       All modifications will be overwritten.
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js"
 
-export const wrapManifest: WrapManifest = {
+export const manifest: WrapManifest = {
   name: "Test",
   type: "plugin",
   version: "0.1",

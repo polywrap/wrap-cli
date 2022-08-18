@@ -2,2635 +2,2520 @@
 ///       All modifications will be overwritten.
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js"
 
-export const wrapManifest: WrapManifest = {
+export const manifest: WrapManifest = {
   name: "Test",
   type: "plugin",
   version: "0.1",
   abi: {
-  "version": "0.1",
-  "objectTypes": [
+  "envType": {
+    "kind": 65536,
+    "properties": [
+      {
+        "kind": 34,
+        "name": "arg1",
+        "required": true,
+        "scalar": {
+          "kind": 4,
+          "name": "arg1",
+          "required": true,
+          "type": "String"
+        },
+        "type": "String"
+      }
+    ],
+    "type": "Env"
+  },
+  "importedModuleTypes": [
     {
-      "type": "Object",
-      "kind": 1,
-      "properties": [
+      "isInterface": false,
+      "kind": 256,
+      "methods": [
         {
-          "type": "UInt",
-          "name": "u",
-          "required": true,
-          "kind": 34,
-          "scalar": {
-            "type": "UInt",
-            "name": "u",
-            "required": true,
-            "kind": 4
-          }
-        },
-        {
-          "type": "[Boolean]",
-          "name": "array",
-          "required": true,
-          "kind": 34,
-          "array": {
-            "type": "[Boolean]",
-            "name": "array",
-            "required": true,
-            "kind": 18,
-            "scalar": {
-              "type": "Boolean",
-              "name": "array",
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "address",
               "required": true,
-              "kind": 4
+              "scalar": {
+                "kind": 4,
+                "name": "address",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
             },
-            "item": {
-              "type": "Boolean",
-              "name": "array",
+            {
+              "kind": 34,
+              "name": "method",
               "required": true,
-              "kind": 4
+              "scalar": {
+                "kind": 4,
+                "name": "method",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            },
+            {
+              "array": {
+                "item": {
+                  "kind": 4,
+                  "name": "args",
+                  "required": true,
+                  "type": "String"
+                },
+                "kind": 18,
+                "name": "args",
+                "scalar": {
+                  "kind": 4,
+                  "name": "args",
+                  "required": true,
+                  "type": "String"
+                },
+                "type": "[String]"
+              },
+              "kind": 34,
+              "name": "args",
+              "type": "[String]"
+            },
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
             }
-          }
+          ],
+          "kind": 64,
+          "name": "callContractView",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "callContractView",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "callContractView",
+              "required": true,
+              "type": "String"
+            },
+            "type": "String"
+          },
+          "type": "Method"
         },
         {
-          "type": "Bytes",
-          "name": "bytes",
-          "kind": 34,
-          "scalar": {
-            "type": "Bytes",
-            "name": "bytes",
-            "kind": 4
-          }
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "address",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "address",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            },
+            {
+              "kind": 34,
+              "name": "method",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "method",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            },
+            {
+              "array": {
+                "item": {
+                  "kind": 4,
+                  "name": "args",
+                  "required": true,
+                  "type": "String"
+                },
+                "kind": 18,
+                "name": "args",
+                "scalar": {
+                  "kind": 4,
+                  "name": "args",
+                  "required": true,
+                  "type": "String"
+                },
+                "type": "[String]"
+              },
+              "kind": 34,
+              "name": "args",
+              "type": "[String]"
+            },
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
+            },
+            {
+              "kind": 34,
+              "name": "txOverrides",
+              "object": {
+                "kind": 8192,
+                "name": "txOverrides",
+                "type": "Ethereum_TxOverrides"
+              },
+              "type": "Ethereum_TxOverrides"
+            }
+          ],
+          "kind": 64,
+          "name": "callContractStatic",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "callContractStatic",
+            "object": {
+              "kind": 8192,
+              "name": "callContractStatic",
+              "required": true,
+              "type": "Ethereum_StaticTxResult"
+            },
+            "required": true,
+            "type": "Ethereum_StaticTxResult"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "address",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "address",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            },
+            {
+              "kind": 34,
+              "name": "blockTag",
+              "scalar": {
+                "kind": 4,
+                "name": "blockTag",
+                "type": "BigInt"
+              },
+              "type": "BigInt"
+            },
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
+            }
+          ],
+          "kind": 64,
+          "name": "getBalance",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "getBalance",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "getBalance",
+              "required": true,
+              "type": "BigInt"
+            },
+            "type": "BigInt"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "array": {
+                "item": {
+                  "kind": 4,
+                  "name": "types",
+                  "required": true,
+                  "type": "String"
+                },
+                "kind": 18,
+                "name": "types",
+                "required": true,
+                "scalar": {
+                  "kind": 4,
+                  "name": "types",
+                  "required": true,
+                  "type": "String"
+                },
+                "type": "[String]"
+              },
+              "kind": 34,
+              "name": "types",
+              "required": true,
+              "type": "[String]"
+            },
+            {
+              "array": {
+                "item": {
+                  "kind": 4,
+                  "name": "values",
+                  "required": true,
+                  "type": "String"
+                },
+                "kind": 18,
+                "name": "values",
+                "required": true,
+                "scalar": {
+                  "kind": 4,
+                  "name": "values",
+                  "required": true,
+                  "type": "String"
+                },
+                "type": "[String]"
+              },
+              "kind": 34,
+              "name": "values",
+              "required": true,
+              "type": "[String]"
+            }
+          ],
+          "kind": 64,
+          "name": "encodeParams",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "encodeParams",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "encodeParams",
+              "required": true,
+              "type": "String"
+            },
+            "type": "String"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "method",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "method",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            },
+            {
+              "array": {
+                "item": {
+                  "kind": 4,
+                  "name": "args",
+                  "required": true,
+                  "type": "String"
+                },
+                "kind": 18,
+                "name": "args",
+                "scalar": {
+                  "kind": 4,
+                  "name": "args",
+                  "required": true,
+                  "type": "String"
+                },
+                "type": "[String]"
+              },
+              "kind": 34,
+              "name": "args",
+              "type": "[String]"
+            }
+          ],
+          "kind": 64,
+          "name": "encodeFunction",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "encodeFunction",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "encodeFunction",
+              "required": true,
+              "type": "String"
+            },
+            "type": "String"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "array": {
+                "item": {
+                  "kind": 4,
+                  "name": "types",
+                  "required": true,
+                  "type": "String"
+                },
+                "kind": 18,
+                "name": "types",
+                "required": true,
+                "scalar": {
+                  "kind": 4,
+                  "name": "types",
+                  "required": true,
+                  "type": "String"
+                },
+                "type": "[String]"
+              },
+              "kind": 34,
+              "name": "types",
+              "required": true,
+              "type": "[String]"
+            },
+            {
+              "array": {
+                "item": {
+                  "kind": 4,
+                  "name": "values",
+                  "required": true,
+                  "type": "String"
+                },
+                "kind": 18,
+                "name": "values",
+                "required": true,
+                "scalar": {
+                  "kind": 4,
+                  "name": "values",
+                  "required": true,
+                  "type": "String"
+                },
+                "type": "[String]"
+              },
+              "kind": 34,
+              "name": "values",
+              "required": true,
+              "type": "[String]"
+            }
+          ],
+          "kind": 64,
+          "name": "solidityPack",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "solidityPack",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "solidityPack",
+              "required": true,
+              "type": "String"
+            },
+            "type": "String"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "array": {
+                "item": {
+                  "kind": 4,
+                  "name": "types",
+                  "required": true,
+                  "type": "String"
+                },
+                "kind": 18,
+                "name": "types",
+                "required": true,
+                "scalar": {
+                  "kind": 4,
+                  "name": "types",
+                  "required": true,
+                  "type": "String"
+                },
+                "type": "[String]"
+              },
+              "kind": 34,
+              "name": "types",
+              "required": true,
+              "type": "[String]"
+            },
+            {
+              "array": {
+                "item": {
+                  "kind": 4,
+                  "name": "values",
+                  "required": true,
+                  "type": "String"
+                },
+                "kind": 18,
+                "name": "values",
+                "required": true,
+                "scalar": {
+                  "kind": 4,
+                  "name": "values",
+                  "required": true,
+                  "type": "String"
+                },
+                "type": "[String]"
+              },
+              "kind": 34,
+              "name": "values",
+              "required": true,
+              "type": "[String]"
+            }
+          ],
+          "kind": 64,
+          "name": "solidityKeccak256",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "solidityKeccak256",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "solidityKeccak256",
+              "required": true,
+              "type": "String"
+            },
+            "type": "String"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "array": {
+                "item": {
+                  "kind": 4,
+                  "name": "types",
+                  "required": true,
+                  "type": "String"
+                },
+                "kind": 18,
+                "name": "types",
+                "required": true,
+                "scalar": {
+                  "kind": 4,
+                  "name": "types",
+                  "required": true,
+                  "type": "String"
+                },
+                "type": "[String]"
+              },
+              "kind": 34,
+              "name": "types",
+              "required": true,
+              "type": "[String]"
+            },
+            {
+              "array": {
+                "item": {
+                  "kind": 4,
+                  "name": "values",
+                  "required": true,
+                  "type": "String"
+                },
+                "kind": 18,
+                "name": "values",
+                "required": true,
+                "scalar": {
+                  "kind": 4,
+                  "name": "values",
+                  "required": true,
+                  "type": "String"
+                },
+                "type": "[String]"
+              },
+              "kind": 34,
+              "name": "values",
+              "required": true,
+              "type": "[String]"
+            }
+          ],
+          "kind": 64,
+          "name": "soliditySha256",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "soliditySha256",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "soliditySha256",
+              "required": true,
+              "type": "String"
+            },
+            "type": "String"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
+            }
+          ],
+          "kind": 64,
+          "name": "getSignerAddress",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "getSignerAddress",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "getSignerAddress",
+              "required": true,
+              "type": "String"
+            },
+            "type": "String"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "blockTag",
+              "scalar": {
+                "kind": 4,
+                "name": "blockTag",
+                "type": "BigInt"
+              },
+              "type": "BigInt"
+            },
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
+            }
+          ],
+          "kind": 64,
+          "name": "getSignerBalance",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "getSignerBalance",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "getSignerBalance",
+              "required": true,
+              "type": "BigInt"
+            },
+            "type": "BigInt"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "blockTag",
+              "scalar": {
+                "kind": 4,
+                "name": "blockTag",
+                "type": "BigInt"
+              },
+              "type": "BigInt"
+            },
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
+            }
+          ],
+          "kind": 64,
+          "name": "getSignerTransactionCount",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "getSignerTransactionCount",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "getSignerTransactionCount",
+              "required": true,
+              "type": "BigInt"
+            },
+            "type": "BigInt"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
+            }
+          ],
+          "kind": 64,
+          "name": "getGasPrice",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "getGasPrice",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "getGasPrice",
+              "required": true,
+              "type": "BigInt"
+            },
+            "type": "BigInt"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "tx",
+              "object": {
+                "kind": 8192,
+                "name": "tx",
+                "required": true,
+                "type": "Ethereum_TxRequest"
+              },
+              "required": true,
+              "type": "Ethereum_TxRequest"
+            },
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
+            }
+          ],
+          "kind": 64,
+          "name": "estimateTransactionGas",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "estimateTransactionGas",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "estimateTransactionGas",
+              "required": true,
+              "type": "BigInt"
+            },
+            "type": "BigInt"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "address",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "address",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            },
+            {
+              "kind": 34,
+              "name": "method",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "method",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            },
+            {
+              "array": {
+                "item": {
+                  "kind": 4,
+                  "name": "args",
+                  "required": true,
+                  "type": "String"
+                },
+                "kind": 18,
+                "name": "args",
+                "scalar": {
+                  "kind": 4,
+                  "name": "args",
+                  "required": true,
+                  "type": "String"
+                },
+                "type": "[String]"
+              },
+              "kind": 34,
+              "name": "args",
+              "type": "[String]"
+            },
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
+            },
+            {
+              "kind": 34,
+              "name": "txOverrides",
+              "object": {
+                "kind": 8192,
+                "name": "txOverrides",
+                "type": "Ethereum_TxOverrides"
+              },
+              "type": "Ethereum_TxOverrides"
+            }
+          ],
+          "kind": 64,
+          "name": "estimateContractCallGas",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "estimateContractCallGas",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "estimateContractCallGas",
+              "required": true,
+              "type": "BigInt"
+            },
+            "type": "BigInt"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "address",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "address",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            }
+          ],
+          "kind": 64,
+          "name": "checkAddress",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "checkAddress",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "checkAddress",
+              "required": true,
+              "type": "Boolean"
+            },
+            "type": "Boolean"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "eth",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "eth",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            }
+          ],
+          "kind": 64,
+          "name": "toWei",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "toWei",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "toWei",
+              "required": true,
+              "type": "BigInt"
+            },
+            "type": "BigInt"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "wei",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "wei",
+                "required": true,
+                "type": "BigInt"
+              },
+              "type": "BigInt"
+            }
+          ],
+          "kind": 64,
+          "name": "toEth",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "toEth",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "toEth",
+              "required": true,
+              "type": "String"
+            },
+            "type": "String"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "txHash",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "txHash",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            },
+            {
+              "kind": 34,
+              "name": "confirmations",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "confirmations",
+                "required": true,
+                "type": "UInt32"
+              },
+              "type": "UInt32"
+            },
+            {
+              "kind": 34,
+              "name": "timeout",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "timeout",
+                "required": true,
+                "type": "UInt32"
+              },
+              "type": "UInt32"
+            },
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
+            }
+          ],
+          "kind": 64,
+          "name": "awaitTransaction",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "awaitTransaction",
+            "object": {
+              "kind": 8192,
+              "name": "awaitTransaction",
+              "required": true,
+              "type": "Ethereum_TxReceipt"
+            },
+            "required": true,
+            "type": "Ethereum_TxReceipt"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "address",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "address",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            },
+            {
+              "kind": 34,
+              "name": "event",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "event",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            },
+            {
+              "array": {
+                "item": {
+                  "kind": 4,
+                  "name": "args",
+                  "required": true,
+                  "type": "String"
+                },
+                "kind": 18,
+                "name": "args",
+                "scalar": {
+                  "kind": 4,
+                  "name": "args",
+                  "required": true,
+                  "type": "String"
+                },
+                "type": "[String]"
+              },
+              "kind": 34,
+              "name": "args",
+              "type": "[String]"
+            },
+            {
+              "kind": 34,
+              "name": "timeout",
+              "scalar": {
+                "kind": 4,
+                "name": "timeout",
+                "type": "UInt32"
+              },
+              "type": "UInt32"
+            },
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
+            }
+          ],
+          "kind": 64,
+          "name": "waitForEvent",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "waitForEvent",
+            "object": {
+              "kind": 8192,
+              "name": "waitForEvent",
+              "required": true,
+              "type": "Ethereum_EventNotification"
+            },
+            "required": true,
+            "type": "Ethereum_EventNotification"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
+            }
+          ],
+          "kind": 64,
+          "name": "getNetwork",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "getNetwork",
+            "object": {
+              "kind": 8192,
+              "name": "getNetwork",
+              "required": true,
+              "type": "Ethereum_Network"
+            },
+            "required": true,
+            "type": "Ethereum_Network"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
+            }
+          ],
+          "kind": 64,
+          "name": "requestAccounts",
+          "required": true,
+          "return": {
+            "array": {
+              "item": {
+                "kind": 4,
+                "name": "requestAccounts",
+                "required": true,
+                "type": "String"
+              },
+              "kind": 18,
+              "name": "requestAccounts",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "requestAccounts",
+                "required": true,
+                "type": "String"
+              },
+              "type": "[String]"
+            },
+            "kind": 34,
+            "name": "requestAccounts",
+            "required": true,
+            "type": "[String]"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "address",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "address",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            },
+            {
+              "kind": 34,
+              "name": "method",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "method",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            },
+            {
+              "array": {
+                "item": {
+                  "kind": 4,
+                  "name": "args",
+                  "required": true,
+                  "type": "String"
+                },
+                "kind": 18,
+                "name": "args",
+                "scalar": {
+                  "kind": 4,
+                  "name": "args",
+                  "required": true,
+                  "type": "String"
+                },
+                "type": "[String]"
+              },
+              "kind": 34,
+              "name": "args",
+              "type": "[String]"
+            },
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
+            },
+            {
+              "kind": 34,
+              "name": "txOverrides",
+              "object": {
+                "kind": 8192,
+                "name": "txOverrides",
+                "type": "Ethereum_TxOverrides"
+              },
+              "type": "Ethereum_TxOverrides"
+            }
+          ],
+          "kind": 64,
+          "name": "callContractMethod",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "callContractMethod",
+            "object": {
+              "kind": 8192,
+              "name": "callContractMethod",
+              "required": true,
+              "type": "Ethereum_TxResponse"
+            },
+            "required": true,
+            "type": "Ethereum_TxResponse"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "address",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "address",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            },
+            {
+              "kind": 34,
+              "name": "method",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "method",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            },
+            {
+              "array": {
+                "item": {
+                  "kind": 4,
+                  "name": "args",
+                  "required": true,
+                  "type": "String"
+                },
+                "kind": 18,
+                "name": "args",
+                "scalar": {
+                  "kind": 4,
+                  "name": "args",
+                  "required": true,
+                  "type": "String"
+                },
+                "type": "[String]"
+              },
+              "kind": 34,
+              "name": "args",
+              "type": "[String]"
+            },
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
+            },
+            {
+              "kind": 34,
+              "name": "txOverrides",
+              "object": {
+                "kind": 8192,
+                "name": "txOverrides",
+                "type": "Ethereum_TxOverrides"
+              },
+              "type": "Ethereum_TxOverrides"
+            }
+          ],
+          "kind": 64,
+          "name": "callContractMethodAndWait",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "callContractMethodAndWait",
+            "object": {
+              "kind": 8192,
+              "name": "callContractMethodAndWait",
+              "required": true,
+              "type": "Ethereum_TxReceipt"
+            },
+            "required": true,
+            "type": "Ethereum_TxReceipt"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "tx",
+              "object": {
+                "kind": 8192,
+                "name": "tx",
+                "required": true,
+                "type": "Ethereum_TxRequest"
+              },
+              "required": true,
+              "type": "Ethereum_TxRequest"
+            },
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
+            }
+          ],
+          "kind": 64,
+          "name": "sendTransaction",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "sendTransaction",
+            "object": {
+              "kind": 8192,
+              "name": "sendTransaction",
+              "required": true,
+              "type": "Ethereum_TxResponse"
+            },
+            "required": true,
+            "type": "Ethereum_TxResponse"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "tx",
+              "object": {
+                "kind": 8192,
+                "name": "tx",
+                "required": true,
+                "type": "Ethereum_TxRequest"
+              },
+              "required": true,
+              "type": "Ethereum_TxRequest"
+            },
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
+            }
+          ],
+          "kind": 64,
+          "name": "sendTransactionAndWait",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "sendTransactionAndWait",
+            "object": {
+              "kind": 8192,
+              "name": "sendTransactionAndWait",
+              "required": true,
+              "type": "Ethereum_TxReceipt"
+            },
+            "required": true,
+            "type": "Ethereum_TxReceipt"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "abi",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "abi",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            },
+            {
+              "kind": 34,
+              "name": "bytecode",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "bytecode",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            },
+            {
+              "array": {
+                "item": {
+                  "kind": 4,
+                  "name": "args",
+                  "required": true,
+                  "type": "String"
+                },
+                "kind": 18,
+                "name": "args",
+                "scalar": {
+                  "kind": 4,
+                  "name": "args",
+                  "required": true,
+                  "type": "String"
+                },
+                "type": "[String]"
+              },
+              "kind": 34,
+              "name": "args",
+              "type": "[String]"
+            },
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
+            }
+          ],
+          "kind": 64,
+          "name": "deployContract",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "deployContract",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "deployContract",
+              "required": true,
+              "type": "String"
+            },
+            "type": "String"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "message",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "message",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            },
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
+            }
+          ],
+          "kind": 64,
+          "name": "signMessage",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "signMessage",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "signMessage",
+              "required": true,
+              "type": "String"
+            },
+            "type": "String"
+          },
+          "type": "Method"
+        },
+        {
+          "arguments": [
+            {
+              "kind": 34,
+              "name": "method",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "method",
+                "required": true,
+                "type": "String"
+              },
+              "type": "String"
+            },
+            {
+              "array": {
+                "item": {
+                  "kind": 4,
+                  "name": "params",
+                  "required": true,
+                  "type": "String"
+                },
+                "kind": 18,
+                "name": "params",
+                "required": true,
+                "scalar": {
+                  "kind": 4,
+                  "name": "params",
+                  "required": true,
+                  "type": "String"
+                },
+                "type": "[String]"
+              },
+              "kind": 34,
+              "name": "params",
+              "required": true,
+              "type": "[String]"
+            },
+            {
+              "kind": 34,
+              "name": "connection",
+              "object": {
+                "kind": 8192,
+                "name": "connection",
+                "type": "Ethereum_Connection"
+              },
+              "type": "Ethereum_Connection"
+            }
+          ],
+          "kind": 64,
+          "name": "sendRPC",
+          "required": true,
+          "return": {
+            "kind": 34,
+            "name": "sendRPC",
+            "scalar": {
+              "kind": 4,
+              "name": "sendRPC",
+              "type": "String"
+            },
+            "type": "String"
+          },
+          "type": "Method"
         }
-      ]
+      ],
+      "namespace": "Ethereum",
+      "nativeType": "Module",
+      "type": "Ethereum_Module",
+      "uri": "ens/ethereum.polywrap.eth"
     }
   ],
   "importedObjectTypes": [
     {
-      "type": "Ethereum_Connection",
       "kind": 1025,
+      "namespace": "Ethereum",
+      "nativeType": "Connection",
       "properties": [
         {
-          "type": "String",
+          "kind": 34,
           "name": "node",
-          "kind": 34,
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "node",
-            "kind": 4
-          }
+            "type": "String"
+          },
+          "type": "String"
         },
         {
-          "type": "String",
+          "kind": 34,
           "name": "networkNameOrChainId",
-          "kind": 34,
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "networkNameOrChainId",
-            "kind": 4
-          }
+            "type": "String"
+          },
+          "type": "String"
         }
       ],
-      "uri": "ens/ethereum.polywrap.eth",
-      "namespace": "Ethereum",
-      "nativeType": "Connection"
+      "type": "Ethereum_Connection",
+      "uri": "ens/ethereum.polywrap.eth"
     },
     {
-      "type": "Ethereum_TxOverrides",
       "kind": 1025,
+      "namespace": "Ethereum",
+      "nativeType": "TxOverrides",
       "properties": [
         {
-          "type": "BigInt",
+          "kind": 34,
           "name": "gasLimit",
-          "kind": 34,
           "scalar": {
-            "type": "BigInt",
+            "kind": 4,
             "name": "gasLimit",
-            "kind": 4
-          }
+            "type": "BigInt"
+          },
+          "type": "BigInt"
         },
         {
-          "type": "BigInt",
+          "kind": 34,
           "name": "gasPrice",
-          "kind": 34,
           "scalar": {
-            "type": "BigInt",
+            "kind": 4,
             "name": "gasPrice",
-            "kind": 4
-          }
+            "type": "BigInt"
+          },
+          "type": "BigInt"
         },
         {
-          "type": "BigInt",
-          "name": "value",
           "kind": 34,
+          "name": "value",
           "scalar": {
-            "type": "BigInt",
+            "kind": 4,
             "name": "value",
-            "kind": 4
-          }
+            "type": "BigInt"
+          },
+          "type": "BigInt"
         }
       ],
-      "uri": "ens/ethereum.polywrap.eth",
-      "namespace": "Ethereum",
-      "nativeType": "TxOverrides"
+      "type": "Ethereum_TxOverrides",
+      "uri": "ens/ethereum.polywrap.eth"
     },
     {
-      "type": "Ethereum_StaticTxResult",
       "kind": 1025,
+      "namespace": "Ethereum",
+      "nativeType": "StaticTxResult",
       "properties": [
         {
-          "type": "String",
+          "kind": 34,
           "name": "result",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "result",
             "required": true,
-            "kind": 4
-          }
+            "type": "String"
+          },
+          "type": "String"
         },
         {
-          "type": "Boolean",
+          "kind": 34,
           "name": "error",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "Boolean",
+            "kind": 4,
             "name": "error",
             "required": true,
-            "kind": 4
-          }
+            "type": "Boolean"
+          },
+          "type": "Boolean"
         }
       ],
-      "uri": "ens/ethereum.polywrap.eth",
-      "namespace": "Ethereum",
-      "nativeType": "StaticTxResult"
+      "type": "Ethereum_StaticTxResult",
+      "uri": "ens/ethereum.polywrap.eth"
     },
     {
-      "type": "Ethereum_TxRequest",
       "kind": 1025,
+      "namespace": "Ethereum",
+      "nativeType": "TxRequest",
       "properties": [
         {
-          "type": "String",
+          "kind": 34,
           "name": "to",
-          "kind": 34,
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "to",
-            "kind": 4
-          }
+            "type": "String"
+          },
+          "type": "String"
         },
         {
-          "type": "String",
-          "name": "from",
           "kind": 34,
+          "name": "from",
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "from",
-            "kind": 4
-          }
+            "type": "String"
+          },
+          "type": "String"
         },
         {
-          "type": "UInt32",
+          "kind": 34,
           "name": "nonce",
-          "kind": 34,
           "scalar": {
-            "type": "UInt32",
+            "kind": 4,
             "name": "nonce",
-            "kind": 4
-          }
+            "type": "UInt32"
+          },
+          "type": "UInt32"
         },
         {
-          "type": "BigInt",
+          "kind": 34,
           "name": "gasLimit",
-          "kind": 34,
           "scalar": {
-            "type": "BigInt",
+            "kind": 4,
             "name": "gasLimit",
-            "kind": 4
-          }
+            "type": "BigInt"
+          },
+          "type": "BigInt"
         },
         {
-          "type": "BigInt",
+          "kind": 34,
           "name": "gasPrice",
-          "kind": 34,
           "scalar": {
-            "type": "BigInt",
+            "kind": 4,
             "name": "gasPrice",
-            "kind": 4
-          }
+            "type": "BigInt"
+          },
+          "type": "BigInt"
         },
         {
-          "type": "String",
+          "kind": 34,
           "name": "data",
-          "kind": 34,
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "data",
-            "kind": 4
-          }
+            "type": "String"
+          },
+          "type": "String"
         },
         {
-          "type": "BigInt",
+          "kind": 34,
           "name": "value",
-          "kind": 34,
           "scalar": {
-            "type": "BigInt",
+            "kind": 4,
             "name": "value",
-            "kind": 4
-          }
+            "type": "BigInt"
+          },
+          "type": "BigInt"
         },
         {
-          "type": "BigInt",
+          "kind": 34,
           "name": "chainId",
-          "kind": 34,
           "scalar": {
-            "type": "BigInt",
+            "kind": 4,
             "name": "chainId",
-            "kind": 4
-          }
+            "type": "BigInt"
+          },
+          "type": "BigInt"
         },
         {
-          "type": "UInt32",
-          "name": "type",
           "kind": 34,
+          "name": "type",
           "scalar": {
-            "type": "UInt32",
+            "kind": 4,
             "name": "type",
-            "kind": 4
-          }
+            "type": "UInt32"
+          },
+          "type": "UInt32"
         }
       ],
-      "uri": "ens/ethereum.polywrap.eth",
-      "namespace": "Ethereum",
-      "nativeType": "TxRequest"
+      "type": "Ethereum_TxRequest",
+      "uri": "ens/ethereum.polywrap.eth"
     },
     {
-      "type": "Ethereum_TxReceipt",
       "kind": 1025,
+      "namespace": "Ethereum",
+      "nativeType": "TxReceipt",
       "properties": [
         {
-          "type": "String",
+          "kind": 34,
           "name": "to",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "to",
             "required": true,
-            "kind": 4
-          }
+            "type": "String"
+          },
+          "type": "String"
         },
         {
-          "type": "String",
+          "kind": 34,
           "name": "from",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "from",
             "required": true,
-            "kind": 4
-          }
+            "type": "String"
+          },
+          "type": "String"
         },
         {
-          "type": "String",
+          "kind": 34,
           "name": "contractAddress",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "contractAddress",
             "required": true,
-            "kind": 4
-          }
+            "type": "String"
+          },
+          "type": "String"
         },
         {
-          "type": "UInt32",
+          "kind": 34,
           "name": "transactionIndex",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "UInt32",
+            "kind": 4,
             "name": "transactionIndex",
             "required": true,
-            "kind": 4
-          }
+            "type": "UInt32"
+          },
+          "type": "UInt32"
         },
         {
-          "type": "String",
-          "name": "root",
           "kind": 34,
+          "name": "root",
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "root",
-            "kind": 4
-          }
+            "type": "String"
+          },
+          "type": "String"
         },
         {
-          "type": "BigInt",
+          "kind": 34,
           "name": "gasUsed",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "BigInt",
+            "kind": 4,
             "name": "gasUsed",
             "required": true,
-            "kind": 4
-          }
+            "type": "BigInt"
+          },
+          "type": "BigInt"
         },
         {
-          "type": "String",
+          "kind": 34,
           "name": "logsBloom",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "logsBloom",
             "required": true,
-            "kind": 4
-          }
+            "type": "String"
+          },
+          "type": "String"
         },
         {
-          "type": "String",
+          "kind": 34,
           "name": "transactionHash",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "transactionHash",
             "required": true,
-            "kind": 4
-          }
+            "type": "String"
+          },
+          "type": "String"
         },
         {
-          "type": "[Ethereum_Log]",
+          "array": {
+            "item": {
+              "kind": 8192,
+              "name": "logs",
+              "required": true,
+              "type": "Ethereum_Log"
+            },
+            "kind": 18,
+            "name": "logs",
+            "object": {
+              "kind": 8192,
+              "name": "logs",
+              "required": true,
+              "type": "Ethereum_Log"
+            },
+            "required": true,
+            "type": "[Ethereum_Log]"
+          },
+          "kind": 34,
           "name": "logs",
           "required": true,
-          "kind": 34,
-          "array": {
-            "type": "[Ethereum_Log]",
-            "name": "logs",
-            "required": true,
-            "kind": 18,
-            "object": {
-              "type": "Ethereum_Log",
-              "name": "logs",
-              "required": true,
-              "kind": 8192
-            },
-            "item": {
-              "type": "Ethereum_Log",
-              "name": "logs",
-              "required": true,
-              "kind": 8192
-            }
-          }
+          "type": "[Ethereum_Log]"
         },
         {
-          "type": "BigInt",
+          "kind": 34,
           "name": "blockNumber",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "BigInt",
+            "kind": 4,
             "name": "blockNumber",
             "required": true,
-            "kind": 4
-          }
+            "type": "BigInt"
+          },
+          "type": "BigInt"
         },
         {
-          "type": "String",
+          "kind": 34,
           "name": "blockHash",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "blockHash",
             "required": true,
-            "kind": 4
-          }
+            "type": "String"
+          },
+          "type": "String"
         },
         {
-          "type": "UInt32",
+          "kind": 34,
           "name": "confirmations",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "UInt32",
+            "kind": 4,
             "name": "confirmations",
             "required": true,
-            "kind": 4
-          }
+            "type": "UInt32"
+          },
+          "type": "UInt32"
         },
         {
-          "type": "BigInt",
+          "kind": 34,
           "name": "cumulativeGasUsed",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "BigInt",
+            "kind": 4,
             "name": "cumulativeGasUsed",
             "required": true,
-            "kind": 4
-          }
+            "type": "BigInt"
+          },
+          "type": "BigInt"
         },
         {
-          "type": "BigInt",
+          "kind": 34,
           "name": "effectiveGasPrice",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "BigInt",
+            "kind": 4,
             "name": "effectiveGasPrice",
             "required": true,
-            "kind": 4
-          }
+            "type": "BigInt"
+          },
+          "type": "BigInt"
         },
         {
-          "type": "Boolean",
+          "kind": 34,
           "name": "byzantium",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "Boolean",
+            "kind": 4,
             "name": "byzantium",
             "required": true,
-            "kind": 4
-          }
+            "type": "Boolean"
+          },
+          "type": "Boolean"
         },
         {
-          "type": "UInt32",
+          "kind": 34,
           "name": "type",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "UInt32",
+            "kind": 4,
             "name": "type",
             "required": true,
-            "kind": 4
-          }
+            "type": "UInt32"
+          },
+          "type": "UInt32"
         },
         {
-          "type": "UInt32",
-          "name": "status",
           "kind": 34,
+          "name": "status",
           "scalar": {
-            "type": "UInt32",
+            "kind": 4,
             "name": "status",
-            "kind": 4
-          }
+            "type": "UInt32"
+          },
+          "type": "UInt32"
         }
       ],
-      "uri": "ens/ethereum.polywrap.eth",
-      "namespace": "Ethereum",
-      "nativeType": "TxReceipt"
+      "type": "Ethereum_TxReceipt",
+      "uri": "ens/ethereum.polywrap.eth"
     },
     {
-      "type": "Ethereum_Log",
       "kind": 1025,
+      "namespace": "Ethereum",
+      "nativeType": "Log",
       "properties": [
         {
-          "type": "BigInt",
+          "kind": 34,
           "name": "blockNumber",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "BigInt",
+            "kind": 4,
             "name": "blockNumber",
             "required": true,
-            "kind": 4
-          }
+            "type": "BigInt"
+          },
+          "type": "BigInt"
         },
         {
-          "type": "String",
+          "kind": 34,
           "name": "blockHash",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "blockHash",
             "required": true,
-            "kind": 4
-          }
+            "type": "String"
+          },
+          "type": "String"
         },
         {
-          "type": "UInt32",
+          "kind": 34,
           "name": "transactionIndex",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "UInt32",
+            "kind": 4,
             "name": "transactionIndex",
             "required": true,
-            "kind": 4
-          }
+            "type": "UInt32"
+          },
+          "type": "UInt32"
         },
         {
-          "type": "Boolean",
+          "kind": 34,
           "name": "removed",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "Boolean",
+            "kind": 4,
             "name": "removed",
             "required": true,
-            "kind": 4
-          }
+            "type": "Boolean"
+          },
+          "type": "Boolean"
         },
         {
-          "type": "String",
+          "kind": 34,
           "name": "address",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "address",
             "required": true,
-            "kind": 4
-          }
+            "type": "String"
+          },
+          "type": "String"
         },
         {
-          "type": "String",
+          "kind": 34,
           "name": "data",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "data",
             "required": true,
-            "kind": 4
-          }
+            "type": "String"
+          },
+          "type": "String"
         },
         {
-          "type": "[String]",
-          "name": "topics",
-          "required": true,
-          "kind": 34,
           "array": {
-            "type": "[String]",
+            "item": {
+              "kind": 4,
+              "name": "topics",
+              "required": true,
+              "type": "String"
+            },
+            "kind": 18,
             "name": "topics",
             "required": true,
-            "kind": 18,
             "scalar": {
-              "type": "String",
+              "kind": 4,
               "name": "topics",
               "required": true,
-              "kind": 4
+              "type": "String"
             },
-            "item": {
-              "type": "String",
-              "name": "topics",
-              "required": true,
-              "kind": 4
-            }
-          }
+            "type": "[String]"
+          },
+          "kind": 34,
+          "name": "topics",
+          "required": true,
+          "type": "[String]"
         },
         {
-          "type": "String",
+          "kind": 34,
           "name": "transactionHash",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "transactionHash",
             "required": true,
-            "kind": 4
-          }
+            "type": "String"
+          },
+          "type": "String"
         },
         {
-          "type": "UInt32",
+          "kind": 34,
           "name": "logIndex",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "UInt32",
+            "kind": 4,
             "name": "logIndex",
             "required": true,
-            "kind": 4
-          }
+            "type": "UInt32"
+          },
+          "type": "UInt32"
         }
       ],
-      "uri": "ens/ethereum.polywrap.eth",
-      "namespace": "Ethereum",
-      "nativeType": "Log"
+      "type": "Ethereum_Log",
+      "uri": "ens/ethereum.polywrap.eth"
     },
     {
-      "type": "Ethereum_EventNotification",
       "kind": 1025,
+      "namespace": "Ethereum",
+      "nativeType": "EventNotification",
       "properties": [
         {
-          "type": "String",
+          "kind": 34,
           "name": "data",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "data",
             "required": true,
-            "kind": 4
-          }
+            "type": "String"
+          },
+          "type": "String"
         },
         {
-          "type": "String",
+          "kind": 34,
           "name": "address",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "address",
             "required": true,
-            "kind": 4
-          }
+            "type": "String"
+          },
+          "type": "String"
         },
         {
-          "type": "Ethereum_Log",
-          "name": "log",
-          "required": true,
           "kind": 34,
+          "name": "log",
           "object": {
-            "type": "Ethereum_Log",
+            "kind": 8192,
             "name": "log",
             "required": true,
-            "kind": 8192
-          }
+            "type": "Ethereum_Log"
+          },
+          "required": true,
+          "type": "Ethereum_Log"
         }
       ],
-      "uri": "ens/ethereum.polywrap.eth",
-      "namespace": "Ethereum",
-      "nativeType": "EventNotification"
+      "type": "Ethereum_EventNotification",
+      "uri": "ens/ethereum.polywrap.eth"
     },
     {
-      "type": "Ethereum_Network",
       "kind": 1025,
+      "namespace": "Ethereum",
+      "nativeType": "Network",
       "properties": [
         {
-          "type": "String",
+          "kind": 34,
           "name": "name",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "name",
             "required": true,
-            "kind": 4
-          }
+            "type": "String"
+          },
+          "type": "String"
         },
         {
-          "type": "BigInt",
+          "kind": 34,
           "name": "chainId",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "BigInt",
+            "kind": 4,
             "name": "chainId",
             "required": true,
-            "kind": 4
-          }
+            "type": "BigInt"
+          },
+          "type": "BigInt"
         },
         {
-          "type": "String",
-          "name": "ensAddress",
           "kind": 34,
+          "name": "ensAddress",
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "ensAddress",
-            "kind": 4
-          }
+            "type": "String"
+          },
+          "type": "String"
         }
       ],
-      "uri": "ens/ethereum.polywrap.eth",
-      "namespace": "Ethereum",
-      "nativeType": "Network"
+      "type": "Ethereum_Network",
+      "uri": "ens/ethereum.polywrap.eth"
     },
     {
-      "type": "Ethereum_TxResponse",
       "kind": 1025,
+      "namespace": "Ethereum",
+      "nativeType": "TxResponse",
       "properties": [
         {
-          "type": "String",
+          "kind": 34,
           "name": "hash",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "hash",
             "required": true,
-            "kind": 4
-          }
+            "type": "String"
+          },
+          "type": "String"
         },
         {
-          "type": "String",
-          "name": "to",
           "kind": 34,
+          "name": "to",
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "to",
-            "kind": 4
-          }
+            "type": "String"
+          },
+          "type": "String"
         },
         {
-          "type": "String",
+          "kind": 34,
           "name": "from",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "from",
             "required": true,
-            "kind": 4
-          }
+            "type": "String"
+          },
+          "type": "String"
         },
         {
-          "type": "UInt32",
+          "kind": 34,
           "name": "nonce",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "UInt32",
+            "kind": 4,
             "name": "nonce",
             "required": true,
-            "kind": 4
-          }
+            "type": "UInt32"
+          },
+          "type": "UInt32"
         },
         {
-          "type": "BigInt",
+          "kind": 34,
           "name": "gasLimit",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "BigInt",
+            "kind": 4,
             "name": "gasLimit",
             "required": true,
-            "kind": 4
-          }
+            "type": "BigInt"
+          },
+          "type": "BigInt"
         },
         {
-          "type": "BigInt",
-          "name": "gasPrice",
           "kind": 34,
+          "name": "gasPrice",
           "scalar": {
-            "type": "BigInt",
+            "kind": 4,
             "name": "gasPrice",
-            "kind": 4
-          }
+            "type": "BigInt"
+          },
+          "type": "BigInt"
         },
         {
-          "type": "String",
+          "kind": 34,
           "name": "data",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "data",
             "required": true,
-            "kind": 4
-          }
+            "type": "String"
+          },
+          "type": "String"
         },
         {
-          "type": "BigInt",
+          "kind": 34,
           "name": "value",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "BigInt",
+            "kind": 4,
             "name": "value",
             "required": true,
-            "kind": 4
-          }
+            "type": "BigInt"
+          },
+          "type": "BigInt"
         },
         {
-          "type": "BigInt",
+          "kind": 34,
           "name": "chainId",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "BigInt",
+            "kind": 4,
             "name": "chainId",
             "required": true,
-            "kind": 4
-          }
+            "type": "BigInt"
+          },
+          "type": "BigInt"
         },
         {
-          "type": "BigInt",
+          "kind": 34,
           "name": "blockNumber",
-          "kind": 34,
           "scalar": {
-            "type": "BigInt",
+            "kind": 4,
             "name": "blockNumber",
-            "kind": 4
-          }
+            "type": "BigInt"
+          },
+          "type": "BigInt"
         },
         {
-          "type": "String",
+          "kind": 34,
           "name": "blockHash",
-          "kind": 34,
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "blockHash",
-            "kind": 4
-          }
+            "type": "String"
+          },
+          "type": "String"
         },
         {
-          "type": "UInt32",
-          "name": "timestamp",
           "kind": 34,
+          "name": "timestamp",
           "scalar": {
-            "type": "UInt32",
+            "kind": 4,
             "name": "timestamp",
-            "kind": 4
-          }
+            "type": "UInt32"
+          },
+          "type": "UInt32"
         },
         {
-          "type": "UInt32",
+          "kind": 34,
           "name": "confirmations",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "UInt32",
+            "kind": 4,
             "name": "confirmations",
             "required": true,
-            "kind": 4
-          }
+            "type": "UInt32"
+          },
+          "type": "UInt32"
         },
         {
-          "type": "String",
+          "kind": 34,
           "name": "raw",
-          "kind": 34,
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "raw",
-            "kind": 4
-          }
+            "type": "String"
+          },
+          "type": "String"
         },
         {
-          "type": "String",
+          "kind": 34,
           "name": "r",
-          "kind": 34,
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "r",
-            "kind": 4
-          }
+            "type": "String"
+          },
+          "type": "String"
         },
         {
-          "type": "String",
+          "kind": 34,
           "name": "s",
-          "kind": 34,
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "s",
-            "kind": 4
-          }
+            "type": "String"
+          },
+          "type": "String"
         },
         {
-          "type": "UInt32",
+          "kind": 34,
           "name": "v",
-          "kind": 34,
           "scalar": {
-            "type": "UInt32",
+            "kind": 4,
             "name": "v",
-            "kind": 4
-          }
+            "type": "UInt32"
+          },
+          "type": "UInt32"
         },
         {
-          "type": "UInt32",
+          "kind": 34,
           "name": "type",
-          "kind": 34,
           "scalar": {
-            "type": "UInt32",
+            "kind": 4,
             "name": "type",
-            "kind": 4
-          }
+            "type": "UInt32"
+          },
+          "type": "UInt32"
         },
         {
-          "type": "[Ethereum_Access]",
-          "name": "accessList",
-          "kind": 34,
           "array": {
-            "type": "[Ethereum_Access]",
-            "name": "accessList",
-            "kind": 18,
-            "object": {
-              "type": "Ethereum_Access",
-              "name": "accessList",
-              "required": true,
-              "kind": 8192
-            },
             "item": {
-              "type": "Ethereum_Access",
+              "kind": 8192,
               "name": "accessList",
               "required": true,
-              "kind": 8192
-            }
-          }
+              "type": "Ethereum_Access"
+            },
+            "kind": 18,
+            "name": "accessList",
+            "object": {
+              "kind": 8192,
+              "name": "accessList",
+              "required": true,
+              "type": "Ethereum_Access"
+            },
+            "type": "[Ethereum_Access]"
+          },
+          "kind": 34,
+          "name": "accessList",
+          "type": "[Ethereum_Access]"
         }
       ],
-      "uri": "ens/ethereum.polywrap.eth",
-      "namespace": "Ethereum",
-      "nativeType": "TxResponse"
+      "type": "Ethereum_TxResponse",
+      "uri": "ens/ethereum.polywrap.eth"
     },
     {
-      "type": "Ethereum_Access",
       "kind": 1025,
+      "namespace": "Ethereum",
+      "nativeType": "Access",
       "properties": [
         {
-          "type": "String",
+          "kind": 34,
           "name": "address",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "address",
             "required": true,
-            "kind": 4
-          }
+            "type": "String"
+          },
+          "type": "String"
         },
         {
-          "type": "[String]",
-          "name": "storageKeys",
-          "required": true,
-          "kind": 34,
           "array": {
-            "type": "[String]",
+            "item": {
+              "kind": 4,
+              "name": "storageKeys",
+              "required": true,
+              "type": "String"
+            },
+            "kind": 18,
             "name": "storageKeys",
             "required": true,
-            "kind": 18,
             "scalar": {
-              "type": "String",
+              "kind": 4,
               "name": "storageKeys",
               "required": true,
-              "kind": 4
+              "type": "String"
             },
-            "item": {
-              "type": "String",
-              "name": "storageKeys",
-              "required": true,
-              "kind": 4
-            }
-          }
+            "type": "[String]"
+          },
+          "kind": 34,
+          "name": "storageKeys",
+          "required": true,
+          "type": "[String]"
         }
       ],
-      "uri": "ens/ethereum.polywrap.eth",
-      "namespace": "Ethereum",
-      "nativeType": "Access"
-    }
-  ],
-  "importedModuleTypes": [
-    {
-      "type": "Ethereum_Module",
-      "kind": 256,
-      "methods": [
-        {
-          "type": "Method",
-          "name": "callContractView",
-          "required": true,
-          "kind": 64,
-          "arguments": [
-            {
-              "type": "String",
-              "name": "address",
-              "required": true,
-              "kind": 34,
-              "scalar": {
-                "type": "String",
-                "name": "address",
-                "required": true,
-                "kind": 4
-              }
-            },
-            {
-              "type": "String",
-              "name": "method",
-              "required": true,
-              "kind": 34,
-              "scalar": {
-                "type": "String",
-                "name": "method",
-                "required": true,
-                "kind": 4
-              }
-            },
-            {
-              "type": "[String]",
-              "name": "args",
-              "kind": 34,
-              "array": {
-                "type": "[String]",
-                "name": "args",
-                "kind": 18,
-                "scalar": {
-                  "type": "String",
-                  "name": "args",
-                  "required": true,
-                  "kind": 4
-                },
-                "item": {
-                  "type": "String",
-                  "name": "args",
-                  "required": true,
-                  "kind": 4
-                }
-              }
-            },
-            {
-              "type": "Ethereum_Connection",
-              "name": "connection",
-              "kind": 34,
-              "object": {
-                "type": "Ethereum_Connection",
-                "name": "connection",
-                "kind": 8192
-              }
-            }
-          ],
-          "return": {
-            "type": "String",
-            "name": "callContractView",
-            "required": true,
-            "kind": 34,
-            "scalar": {
-              "type": "String",
-              "name": "callContractView",
-              "required": true,
-              "kind": 4
-            }
-          }
-        },
-        {
-          "type": "Method",
-          "name": "callContractStatic",
-          "required": true,
-          "kind": 64,
-          "arguments": [
-            {
-              "type": "String",
-              "name": "address",
-              "required": true,
-              "kind": 34,
-              "scalar": {
-                "type": "String",
-                "name": "address",
-                "required": true,
-                "kind": 4
-              }
-            },
-            {
-              "type": "String",
-              "name": "method",
-              "required": true,
-              "kind": 34,
-              "scalar": {
-                "type": "String",
-                "name": "method",
-                "required": true,
-                "kind": 4
-              }
-            },
-            {
-              "type": "[String]",
-              "name": "args",
-              "kind": 34,
-              "array": {
-                "type": "[String]",
-                "name": "args",
-                "kind": 18,
-                "scalar": {
-                  "type": "String",
-                  "name": "args",
-                  "required": true,
-                  "kind": 4
-                },
-                "item": {
-                  "type": "String",
-                  "name": "args",
-                  "required": true,
-                  "kind": 4
-                }
-              }
-            },
-            {
-              "type": "Ethereum_Connection",
-              "name": "connection",
-              "kind": 34,
-              "object": {
-                "type": "Ethereum_Connection",
-                "name": "connection",
-                "kind": 8192
-              }
-            },
-            {
-              "type": "Ethereum_TxOverrides",
-              "name": "txOverrides",
-              "kind": 34,
-              "object": {
-                "type": "Ethereum_TxOverrides",
-                "name": "txOverrides",
-                "kind": 8192
-              }
-            }
-          ],
-          "return": {
-            "type": "Ethereum_StaticTxResult",
-            "name": "callContractStatic",
-            "required": true,
-            "kind": 34,
-            "object": {
-              "type": "Ethereum_StaticTxResult",
-              "name": "callContractStatic",
-              "required": true,
-              "kind": 8192
-            }
-          }
-        },
-        {
-          "type": "Method",
-          "name": "getBalance",
-          "required": true,
-          "kind": 64,
-          "arguments": [
-            {
-              "type": "String",
-              "name": "address",
-              "required": true,
-              "kind": 34,
-              "scalar": {
-                "type": "String",
-                "name": "address",
-                "required": true,
-                "kind": 4
-              }
-            },
-            {
-              "type": "BigInt",
-              "name": "blockTag",
-              "kind": 34,
-              "scalar": {
-                "type": "BigInt",
-                "name": "blockTag",
-                "kind": 4
-              }
-            },
-            {
-              "type": "Ethereum_Connection",
-              "name": "connection",
-              "kind": 34,
-              "object": {
-                "type": "Ethereum_Connection",
-                "name": "connection",
-                "kind": 8192
-              }
-            }
-          ],
-          "return": {
-            "type": "BigInt",
-            "name": "getBalance",
-            "required": true,
-            "kind": 34,
-            "scalar": {
-              "type": "BigInt",
-              "name": "getBalance",
-              "required": true,
-              "kind": 4
-            }
-          }
-        },
-        {
-          "type": "Method",
-          "name": "encodeParams",
-          "required": true,
-          "kind": 64,
-          "arguments": [
-            {
-              "type": "[String]",
-              "name": "types",
-              "required": true,
-              "kind": 34,
-              "array": {
-                "type": "[String]",
-                "name": "types",
-                "required": true,
-                "kind": 18,
-                "scalar": {
-                  "type": "String",
-                  "name": "types",
-                  "required": true,
-                  "kind": 4
-                },
-                "item": {
-                  "type": "String",
-                  "name": "types",
-                  "required": true,
-                  "kind": 4
-                }
-              }
-            },
-            {
-              "type": "[String]",
-              "name": "values",
-              "required": true,
-              "kind": 34,
-              "array": {
-                "type": "[String]",
-                "name": "values",
-                "required": true,
-                "kind": 18,
-                "scalar": {
-                  "type": "String",
-                  "name": "values",
-                  "required": true,
-                  "kind": 4
-                },
-                "item": {
-                  "type": "String",
-                  "name": "values",
-                  "required": true,
-                  "kind": 4
-                }
-              }
-            }
-          ],
-          "return": {
-            "type": "String",
-            "name": "encodeParams",
-            "required": true,
-            "kind": 34,
-            "scalar": {
-              "type": "String",
-              "name": "encodeParams",
-              "required": true,
-              "kind": 4
-            }
-          }
-        },
-        {
-          "type": "Method",
-          "name": "encodeFunction",
-          "required": true,
-          "kind": 64,
-          "arguments": [
-            {
-              "type": "String",
-              "name": "method",
-              "required": true,
-              "kind": 34,
-              "scalar": {
-                "type": "String",
-                "name": "method",
-                "required": true,
-                "kind": 4
-              }
-            },
-            {
-              "type": "[String]",
-              "name": "args",
-              "kind": 34,
-              "array": {
-                "type": "[String]",
-                "name": "args",
-                "kind": 18,
-                "scalar": {
-                  "type": "String",
-                  "name": "args",
-                  "required": true,
-                  "kind": 4
-                },
-                "item": {
-                  "type": "String",
-                  "name": "args",
-                  "required": true,
-                  "kind": 4
-                }
-              }
-            }
-          ],
-          "return": {
-            "type": "String",
-            "name": "encodeFunction",
-            "required": true,
-            "kind": 34,
-            "scalar": {
-              "type": "String",
-              "name": "encodeFunction",
-              "required": true,
-              "kind": 4
-            }
-          }
-        },
-        {
-          "type": "Method",
-          "name": "solidityPack",
-          "required": true,
-          "kind": 64,
-          "arguments": [
-            {
-              "type": "[String]",
-              "name": "types",
-              "required": true,
-              "kind": 34,
-              "array": {
-                "type": "[String]",
-                "name": "types",
-                "required": true,
-                "kind": 18,
-                "scalar": {
-                  "type": "String",
-                  "name": "types",
-                  "required": true,
-                  "kind": 4
-                },
-                "item": {
-                  "type": "String",
-                  "name": "types",
-                  "required": true,
-                  "kind": 4
-                }
-              }
-            },
-            {
-              "type": "[String]",
-              "name": "values",
-              "required": true,
-              "kind": 34,
-              "array": {
-                "type": "[String]",
-                "name": "values",
-                "required": true,
-                "kind": 18,
-                "scalar": {
-                  "type": "String",
-                  "name": "values",
-                  "required": true,
-                  "kind": 4
-                },
-                "item": {
-                  "type": "String",
-                  "name": "values",
-                  "required": true,
-                  "kind": 4
-                }
-              }
-            }
-          ],
-          "return": {
-            "type": "String",
-            "name": "solidityPack",
-            "required": true,
-            "kind": 34,
-            "scalar": {
-              "type": "String",
-              "name": "solidityPack",
-              "required": true,
-              "kind": 4
-            }
-          }
-        },
-        {
-          "type": "Method",
-          "name": "solidityKeccak256",
-          "required": true,
-          "kind": 64,
-          "arguments": [
-            {
-              "type": "[String]",
-              "name": "types",
-              "required": true,
-              "kind": 34,
-              "array": {
-                "type": "[String]",
-                "name": "types",
-                "required": true,
-                "kind": 18,
-                "scalar": {
-                  "type": "String",
-                  "name": "types",
-                  "required": true,
-                  "kind": 4
-                },
-                "item": {
-                  "type": "String",
-                  "name": "types",
-                  "required": true,
-                  "kind": 4
-                }
-              }
-            },
-            {
-              "type": "[String]",
-              "name": "values",
-              "required": true,
-              "kind": 34,
-              "array": {
-                "type": "[String]",
-                "name": "values",
-                "required": true,
-                "kind": 18,
-                "scalar": {
-                  "type": "String",
-                  "name": "values",
-                  "required": true,
-                  "kind": 4
-                },
-                "item": {
-                  "type": "String",
-                  "name": "values",
-                  "required": true,
-                  "kind": 4
-                }
-              }
-            }
-          ],
-          "return": {
-            "type": "String",
-            "name": "solidityKeccak256",
-            "required": true,
-            "kind": 34,
-            "scalar": {
-              "type": "String",
-              "name": "solidityKeccak256",
-              "required": true,
-              "kind": 4
-            }
-          }
-        },
-        {
-          "type": "Method",
-          "name": "soliditySha256",
-          "required": true,
-          "kind": 64,
-          "arguments": [
-            {
-              "type": "[String]",
-              "name": "types",
-              "required": true,
-              "kind": 34,
-              "array": {
-                "type": "[String]",
-                "name": "types",
-                "required": true,
-                "kind": 18,
-                "scalar": {
-                  "type": "String",
-                  "name": "types",
-                  "required": true,
-                  "kind": 4
-                },
-                "item": {
-                  "type": "String",
-                  "name": "types",
-                  "required": true,
-                  "kind": 4
-                }
-              }
-            },
-            {
-              "type": "[String]",
-              "name": "values",
-              "required": true,
-              "kind": 34,
-              "array": {
-                "type": "[String]",
-                "name": "values",
-                "required": true,
-                "kind": 18,
-                "scalar": {
-                  "type": "String",
-                  "name": "values",
-                  "required": true,
-                  "kind": 4
-                },
-                "item": {
-                  "type": "String",
-                  "name": "values",
-                  "required": true,
-                  "kind": 4
-                }
-              }
-            }
-          ],
-          "return": {
-            "type": "String",
-            "name": "soliditySha256",
-            "required": true,
-            "kind": 34,
-            "scalar": {
-              "type": "String",
-              "name": "soliditySha256",
-              "required": true,
-              "kind": 4
-            }
-          }
-        },
-        {
-          "type": "Method",
-          "name": "getSignerAddress",
-          "required": true,
-          "kind": 64,
-          "arguments": [
-            {
-              "type": "Ethereum_Connection",
-              "name": "connection",
-              "kind": 34,
-              "object": {
-                "type": "Ethereum_Connection",
-                "name": "connection",
-                "kind": 8192
-              }
-            }
-          ],
-          "return": {
-            "type": "String",
-            "name": "getSignerAddress",
-            "required": true,
-            "kind": 34,
-            "scalar": {
-              "type": "String",
-              "name": "getSignerAddress",
-              "required": true,
-              "kind": 4
-            }
-          }
-        },
-        {
-          "type": "Method",
-          "name": "getSignerBalance",
-          "required": true,
-          "kind": 64,
-          "arguments": [
-            {
-              "type": "BigInt",
-              "name": "blockTag",
-              "kind": 34,
-              "scalar": {
-                "type": "BigInt",
-                "name": "blockTag",
-                "kind": 4
-              }
-            },
-            {
-              "type": "Ethereum_Connection",
-              "name": "connection",
-              "kind": 34,
-              "object": {
-                "type": "Ethereum_Connection",
-                "name": "connection",
-                "kind": 8192
-              }
-            }
-          ],
-          "return": {
-            "type": "BigInt",
-            "name": "getSignerBalance",
-            "required": true,
-            "kind": 34,
-            "scalar": {
-              "type": "BigInt",
-              "name": "getSignerBalance",
-              "required": true,
-              "kind": 4
-            }
-          }
-        },
-        {
-          "type": "Method",
-          "name": "getSignerTransactionCount",
-          "required": true,
-          "kind": 64,
-          "arguments": [
-            {
-              "type": "BigInt",
-              "name": "blockTag",
-              "kind": 34,
-              "scalar": {
-                "type": "BigInt",
-                "name": "blockTag",
-                "kind": 4
-              }
-            },
-            {
-              "type": "Ethereum_Connection",
-              "name": "connection",
-              "kind": 34,
-              "object": {
-                "type": "Ethereum_Connection",
-                "name": "connection",
-                "kind": 8192
-              }
-            }
-          ],
-          "return": {
-            "type": "BigInt",
-            "name": "getSignerTransactionCount",
-            "required": true,
-            "kind": 34,
-            "scalar": {
-              "type": "BigInt",
-              "name": "getSignerTransactionCount",
-              "required": true,
-              "kind": 4
-            }
-          }
-        },
-        {
-          "type": "Method",
-          "name": "getGasPrice",
-          "required": true,
-          "kind": 64,
-          "arguments": [
-            {
-              "type": "Ethereum_Connection",
-              "name": "connection",
-              "kind": 34,
-              "object": {
-                "type": "Ethereum_Connection",
-                "name": "connection",
-                "kind": 8192
-              }
-            }
-          ],
-          "return": {
-            "type": "BigInt",
-            "name": "getGasPrice",
-            "required": true,
-            "kind": 34,
-            "scalar": {
-              "type": "BigInt",
-              "name": "getGasPrice",
-              "required": true,
-              "kind": 4
-            }
-          }
-        },
-        {
-          "type": "Method",
-          "name": "estimateTransactionGas",
-          "required": true,
-          "kind": 64,
-          "arguments": [
-            {
-              "type": "Ethereum_TxRequest",
-              "name": "tx",
-              "required": true,
-              "kind": 34,
-              "object": {
-                "type": "Ethereum_TxRequest",
-                "name": "tx",
-                "required": true,
-                "kind": 8192
-              }
-            },
-            {
-              "type": "Ethereum_Connection",
-              "name": "connection",
-              "kind": 34,
-              "object": {
-                "type": "Ethereum_Connection",
-                "name": "connection",
-                "kind": 8192
-              }
-            }
-          ],
-          "return": {
-            "type": "BigInt",
-            "name": "estimateTransactionGas",
-            "required": true,
-            "kind": 34,
-            "scalar": {
-              "type": "BigInt",
-              "name": "estimateTransactionGas",
-              "required": true,
-              "kind": 4
-            }
-          }
-        },
-        {
-          "type": "Method",
-          "name": "estimateContractCallGas",
-          "required": true,
-          "kind": 64,
-          "arguments": [
-            {
-              "type": "String",
-              "name": "address",
-              "required": true,
-              "kind": 34,
-              "scalar": {
-                "type": "String",
-                "name": "address",
-                "required": true,
-                "kind": 4
-              }
-            },
-            {
-              "type": "String",
-              "name": "method",
-              "required": true,
-              "kind": 34,
-              "scalar": {
-                "type": "String",
-                "name": "method",
-                "required": true,
-                "kind": 4
-              }
-            },
-            {
-              "type": "[String]",
-              "name": "args",
-              "kind": 34,
-              "array": {
-                "type": "[String]",
-                "name": "args",
-                "kind": 18,
-                "scalar": {
-                  "type": "String",
-                  "name": "args",
-                  "required": true,
-                  "kind": 4
-                },
-                "item": {
-                  "type": "String",
-                  "name": "args",
-                  "required": true,
-                  "kind": 4
-                }
-              }
-            },
-            {
-              "type": "Ethereum_Connection",
-              "name": "connection",
-              "kind": 34,
-              "object": {
-                "type": "Ethereum_Connection",
-                "name": "connection",
-                "kind": 8192
-              }
-            },
-            {
-              "type": "Ethereum_TxOverrides",
-              "name": "txOverrides",
-              "kind": 34,
-              "object": {
-                "type": "Ethereum_TxOverrides",
-                "name": "txOverrides",
-                "kind": 8192
-              }
-            }
-          ],
-          "return": {
-            "type": "BigInt",
-            "name": "estimateContractCallGas",
-            "required": true,
-            "kind": 34,
-            "scalar": {
-              "type": "BigInt",
-              "name": "estimateContractCallGas",
-              "required": true,
-              "kind": 4
-            }
-          }
-        },
-        {
-          "type": "Method",
-          "name": "checkAddress",
-          "required": true,
-          "kind": 64,
-          "arguments": [
-            {
-              "type": "String",
-              "name": "address",
-              "required": true,
-              "kind": 34,
-              "scalar": {
-                "type": "String",
-                "name": "address",
-                "required": true,
-                "kind": 4
-              }
-            }
-          ],
-          "return": {
-            "type": "Boolean",
-            "name": "checkAddress",
-            "required": true,
-            "kind": 34,
-            "scalar": {
-              "type": "Boolean",
-              "name": "checkAddress",
-              "required": true,
-              "kind": 4
-            }
-          }
-        },
-        {
-          "type": "Method",
-          "name": "toWei",
-          "required": true,
-          "kind": 64,
-          "arguments": [
-            {
-              "type": "String",
-              "name": "eth",
-              "required": true,
-              "kind": 34,
-              "scalar": {
-                "type": "String",
-                "name": "eth",
-                "required": true,
-                "kind": 4
-              }
-            }
-          ],
-          "return": {
-            "type": "BigInt",
-            "name": "toWei",
-            "required": true,
-            "kind": 34,
-            "scalar": {
-              "type": "BigInt",
-              "name": "toWei",
-              "required": true,
-              "kind": 4
-            }
-          }
-        },
-        {
-          "type": "Method",
-          "name": "toEth",
-          "required": true,
-          "kind": 64,
-          "arguments": [
-            {
-              "type": "BigInt",
-              "name": "wei",
-              "required": true,
-              "kind": 34,
-              "scalar": {
-                "type": "BigInt",
-                "name": "wei",
-                "required": true,
-                "kind": 4
-              }
-            }
-          ],
-          "return": {
-            "type": "String",
-            "name": "toEth",
-            "required": true,
-            "kind": 34,
-            "scalar": {
-              "type": "String",
-              "name": "toEth",
-              "required": true,
-              "kind": 4
-            }
-          }
-        },
-        {
-          "type": "Method",
-          "name": "awaitTransaction",
-          "required": true,
-          "kind": 64,
-          "arguments": [
-            {
-              "type": "String",
-              "name": "txHash",
-              "required": true,
-              "kind": 34,
-              "scalar": {
-                "type": "String",
-                "name": "txHash",
-                "required": true,
-                "kind": 4
-              }
-            },
-            {
-              "type": "UInt32",
-              "name": "confirmations",
-              "required": true,
-              "kind": 34,
-              "scalar": {
-                "type": "UInt32",
-                "name": "confirmations",
-                "required": true,
-                "kind": 4
-              }
-            },
-            {
-              "type": "UInt32",
-              "name": "timeout",
-              "required": true,
-              "kind": 34,
-              "scalar": {
-                "type": "UInt32",
-                "name": "timeout",
-                "required": true,
-                "kind": 4
-              }
-            },
-            {
-              "type": "Ethereum_Connection",
-              "name": "connection",
-              "kind": 34,
-              "object": {
-                "type": "Ethereum_Connection",
-                "name": "connection",
-                "kind": 8192
-              }
-            }
-          ],
-          "return": {
-            "type": "Ethereum_TxReceipt",
-            "name": "awaitTransaction",
-            "required": true,
-            "kind": 34,
-            "object": {
-              "type": "Ethereum_TxReceipt",
-              "name": "awaitTransaction",
-              "required": true,
-              "kind": 8192
-            }
-          }
-        },
-        {
-          "type": "Method",
-          "name": "waitForEvent",
-          "required": true,
-          "kind": 64,
-          "arguments": [
-            {
-              "type": "String",
-              "name": "address",
-              "required": true,
-              "kind": 34,
-              "scalar": {
-                "type": "String",
-                "name": "address",
-                "required": true,
-                "kind": 4
-              }
-            },
-            {
-              "type": "String",
-              "name": "event",
-              "required": true,
-              "kind": 34,
-              "scalar": {
-                "type": "String",
-                "name": "event",
-                "required": true,
-                "kind": 4
-              }
-            },
-            {
-              "type": "[String]",
-              "name": "args",
-              "kind": 34,
-              "array": {
-                "type": "[String]",
-                "name": "args",
-                "kind": 18,
-                "scalar": {
-                  "type": "String",
-                  "name": "args",
-                  "required": true,
-                  "kind": 4
-                },
-                "item": {
-                  "type": "String",
-                  "name": "args",
-                  "required": true,
-                  "kind": 4
-                }
-              }
-            },
-            {
-              "type": "UInt32",
-              "name": "timeout",
-              "kind": 34,
-              "scalar": {
-                "type": "UInt32",
-                "name": "timeout",
-                "kind": 4
-              }
-            },
-            {
-              "type": "Ethereum_Connection",
-              "name": "connection",
-              "kind": 34,
-              "object": {
-                "type": "Ethereum_Connection",
-                "name": "connection",
-                "kind": 8192
-              }
-            }
-          ],
-          "return": {
-            "type": "Ethereum_EventNotification",
-            "name": "waitForEvent",
-            "required": true,
-            "kind": 34,
-            "object": {
-              "type": "Ethereum_EventNotification",
-              "name": "waitForEvent",
-              "required": true,
-              "kind": 8192
-            }
-          }
-        },
-        {
-          "type": "Method",
-          "name": "getNetwork",
-          "required": true,
-          "kind": 64,
-          "arguments": [
-            {
-              "type": "Ethereum_Connection",
-              "name": "connection",
-              "kind": 34,
-              "object": {
-                "type": "Ethereum_Connection",
-                "name": "connection",
-                "kind": 8192
-              }
-            }
-          ],
-          "return": {
-            "type": "Ethereum_Network",
-            "name": "getNetwork",
-            "required": true,
-            "kind": 34,
-            "object": {
-              "type": "Ethereum_Network",
-              "name": "getNetwork",
-              "required": true,
-              "kind": 8192
-            }
-          }
-        },
-        {
-          "type": "Method",
-          "name": "requestAccounts",
-          "required": true,
-          "kind": 64,
-          "arguments": [
-            {
-              "type": "Ethereum_Connection",
-              "name": "connection",
-              "kind": 34,
-              "object": {
-                "type": "Ethereum_Connection",
-                "name": "connection",
-                "kind": 8192
-              }
-            }
-          ],
-          "return": {
-            "type": "[String]",
-            "name": "requestAccounts",
-            "required": true,
-            "kind": 34,
-            "array": {
-              "type": "[String]",
-              "name": "requestAccounts",
-              "required": true,
-              "kind": 18,
-              "scalar": {
-                "type": "String",
-                "name": "requestAccounts",
-                "required": true,
-                "kind": 4
-              },
-              "item": {
-                "type": "String",
-                "name": "requestAccounts",
-                "required": true,
-                "kind": 4
-              }
-            }
-          }
-        },
-        {
-          "type": "Method",
-          "name": "callContractMethod",
-          "required": true,
-          "kind": 64,
-          "arguments": [
-            {
-              "type": "String",
-              "name": "address",
-              "required": true,
-              "kind": 34,
-              "scalar": {
-                "type": "String",
-                "name": "address",
-                "required": true,
-                "kind": 4
-              }
-            },
-            {
-              "type": "String",
-              "name": "method",
-              "required": true,
-              "kind": 34,
-              "scalar": {
-                "type": "String",
-                "name": "method",
-                "required": true,
-                "kind": 4
-              }
-            },
-            {
-              "type": "[String]",
-              "name": "args",
-              "kind": 34,
-              "array": {
-                "type": "[String]",
-                "name": "args",
-                "kind": 18,
-                "scalar": {
-                  "type": "String",
-                  "name": "args",
-                  "required": true,
-                  "kind": 4
-                },
-                "item": {
-                  "type": "String",
-                  "name": "args",
-                  "required": true,
-                  "kind": 4
-                }
-              }
-            },
-            {
-              "type": "Ethereum_Connection",
-              "name": "connection",
-              "kind": 34,
-              "object": {
-                "type": "Ethereum_Connection",
-                "name": "connection",
-                "kind": 8192
-              }
-            },
-            {
-              "type": "Ethereum_TxOverrides",
-              "name": "txOverrides",
-              "kind": 34,
-              "object": {
-                "type": "Ethereum_TxOverrides",
-                "name": "txOverrides",
-                "kind": 8192
-              }
-            }
-          ],
-          "return": {
-            "type": "Ethereum_TxResponse",
-            "name": "callContractMethod",
-            "required": true,
-            "kind": 34,
-            "object": {
-              "type": "Ethereum_TxResponse",
-              "name": "callContractMethod",
-              "required": true,
-              "kind": 8192
-            }
-          }
-        },
-        {
-          "type": "Method",
-          "name": "callContractMethodAndWait",
-          "required": true,
-          "kind": 64,
-          "arguments": [
-            {
-              "type": "String",
-              "name": "address",
-              "required": true,
-              "kind": 34,
-              "scalar": {
-                "type": "String",
-                "name": "address",
-                "required": true,
-                "kind": 4
-              }
-            },
-            {
-              "type": "String",
-              "name": "method",
-              "required": true,
-              "kind": 34,
-              "scalar": {
-                "type": "String",
-                "name": "method",
-                "required": true,
-                "kind": 4
-              }
-            },
-            {
-              "type": "[String]",
-              "name": "args",
-              "kind": 34,
-              "array": {
-                "type": "[String]",
-                "name": "args",
-                "kind": 18,
-                "scalar": {
-                  "type": "String",
-                  "name": "args",
-                  "required": true,
-                  "kind": 4
-                },
-                "item": {
-                  "type": "String",
-                  "name": "args",
-                  "required": true,
-                  "kind": 4
-                }
-              }
-            },
-            {
-              "type": "Ethereum_Connection",
-              "name": "connection",
-              "kind": 34,
-              "object": {
-                "type": "Ethereum_Connection",
-                "name": "connection",
-                "kind": 8192
-              }
-            },
-            {
-              "type": "Ethereum_TxOverrides",
-              "name": "txOverrides",
-              "kind": 34,
-              "object": {
-                "type": "Ethereum_TxOverrides",
-                "name": "txOverrides",
-                "kind": 8192
-              }
-            }
-          ],
-          "return": {
-            "type": "Ethereum_TxReceipt",
-            "name": "callContractMethodAndWait",
-            "required": true,
-            "kind": 34,
-            "object": {
-              "type": "Ethereum_TxReceipt",
-              "name": "callContractMethodAndWait",
-              "required": true,
-              "kind": 8192
-            }
-          }
-        },
-        {
-          "type": "Method",
-          "name": "sendTransaction",
-          "required": true,
-          "kind": 64,
-          "arguments": [
-            {
-              "type": "Ethereum_TxRequest",
-              "name": "tx",
-              "required": true,
-              "kind": 34,
-              "object": {
-                "type": "Ethereum_TxRequest",
-                "name": "tx",
-                "required": true,
-                "kind": 8192
-              }
-            },
-            {
-              "type": "Ethereum_Connection",
-              "name": "connection",
-              "kind": 34,
-              "object": {
-                "type": "Ethereum_Connection",
-                "name": "connection",
-                "kind": 8192
-              }
-            }
-          ],
-          "return": {
-            "type": "Ethereum_TxResponse",
-            "name": "sendTransaction",
-            "required": true,
-            "kind": 34,
-            "object": {
-              "type": "Ethereum_TxResponse",
-              "name": "sendTransaction",
-              "required": true,
-              "kind": 8192
-            }
-          }
-        },
-        {
-          "type": "Method",
-          "name": "sendTransactionAndWait",
-          "required": true,
-          "kind": 64,
-          "arguments": [
-            {
-              "type": "Ethereum_TxRequest",
-              "name": "tx",
-              "required": true,
-              "kind": 34,
-              "object": {
-                "type": "Ethereum_TxRequest",
-                "name": "tx",
-                "required": true,
-                "kind": 8192
-              }
-            },
-            {
-              "type": "Ethereum_Connection",
-              "name": "connection",
-              "kind": 34,
-              "object": {
-                "type": "Ethereum_Connection",
-                "name": "connection",
-                "kind": 8192
-              }
-            }
-          ],
-          "return": {
-            "type": "Ethereum_TxReceipt",
-            "name": "sendTransactionAndWait",
-            "required": true,
-            "kind": 34,
-            "object": {
-              "type": "Ethereum_TxReceipt",
-              "name": "sendTransactionAndWait",
-              "required": true,
-              "kind": 8192
-            }
-          }
-        },
-        {
-          "type": "Method",
-          "name": "deployContract",
-          "required": true,
-          "kind": 64,
-          "arguments": [
-            {
-              "type": "String",
-              "name": "abi",
-              "required": true,
-              "kind": 34,
-              "scalar": {
-                "type": "String",
-                "name": "abi",
-                "required": true,
-                "kind": 4
-              }
-            },
-            {
-              "type": "String",
-              "name": "bytecode",
-              "required": true,
-              "kind": 34,
-              "scalar": {
-                "type": "String",
-                "name": "bytecode",
-                "required": true,
-                "kind": 4
-              }
-            },
-            {
-              "type": "[String]",
-              "name": "args",
-              "kind": 34,
-              "array": {
-                "type": "[String]",
-                "name": "args",
-                "kind": 18,
-                "scalar": {
-                  "type": "String",
-                  "name": "args",
-                  "required": true,
-                  "kind": 4
-                },
-                "item": {
-                  "type": "String",
-                  "name": "args",
-                  "required": true,
-                  "kind": 4
-                }
-              }
-            },
-            {
-              "type": "Ethereum_Connection",
-              "name": "connection",
-              "kind": 34,
-              "object": {
-                "type": "Ethereum_Connection",
-                "name": "connection",
-                "kind": 8192
-              }
-            }
-          ],
-          "return": {
-            "type": "String",
-            "name": "deployContract",
-            "required": true,
-            "kind": 34,
-            "scalar": {
-              "type": "String",
-              "name": "deployContract",
-              "required": true,
-              "kind": 4
-            }
-          }
-        },
-        {
-          "type": "Method",
-          "name": "signMessage",
-          "required": true,
-          "kind": 64,
-          "arguments": [
-            {
-              "type": "String",
-              "name": "message",
-              "required": true,
-              "kind": 34,
-              "scalar": {
-                "type": "String",
-                "name": "message",
-                "required": true,
-                "kind": 4
-              }
-            },
-            {
-              "type": "Ethereum_Connection",
-              "name": "connection",
-              "kind": 34,
-              "object": {
-                "type": "Ethereum_Connection",
-                "name": "connection",
-                "kind": 8192
-              }
-            }
-          ],
-          "return": {
-            "type": "String",
-            "name": "signMessage",
-            "required": true,
-            "kind": 34,
-            "scalar": {
-              "type": "String",
-              "name": "signMessage",
-              "required": true,
-              "kind": 4
-            }
-          }
-        },
-        {
-          "type": "Method",
-          "name": "sendRPC",
-          "required": true,
-          "kind": 64,
-          "arguments": [
-            {
-              "type": "String",
-              "name": "method",
-              "required": true,
-              "kind": 34,
-              "scalar": {
-                "type": "String",
-                "name": "method",
-                "required": true,
-                "kind": 4
-              }
-            },
-            {
-              "type": "[String]",
-              "name": "params",
-              "required": true,
-              "kind": 34,
-              "array": {
-                "type": "[String]",
-                "name": "params",
-                "required": true,
-                "kind": 18,
-                "scalar": {
-                  "type": "String",
-                  "name": "params",
-                  "required": true,
-                  "kind": 4
-                },
-                "item": {
-                  "type": "String",
-                  "name": "params",
-                  "required": true,
-                  "kind": 4
-                }
-              }
-            },
-            {
-              "type": "Ethereum_Connection",
-              "name": "connection",
-              "kind": 34,
-              "object": {
-                "type": "Ethereum_Connection",
-                "name": "connection",
-                "kind": 8192
-              }
-            }
-          ],
-          "return": {
-            "type": "String",
-            "name": "sendRPC",
-            "kind": 34,
-            "scalar": {
-              "type": "String",
-              "name": "sendRPC",
-              "kind": 4
-            }
-          }
-        }
-      ],
-      "uri": "ens/ethereum.polywrap.eth",
-      "namespace": "Ethereum",
-      "nativeType": "Module",
-      "isInterface": false
+      "type": "Ethereum_Access",
+      "uri": "ens/ethereum.polywrap.eth"
     }
   ],
   "moduleType": {
-    "type": "Module",
-    "kind": 128,
-    "methods": [
-      {
-        "type": "Method",
-        "name": "methodOne",
-        "required": true,
-        "kind": 64,
-        "arguments": [
-          {
-            "type": "String",
-            "name": "str",
-            "required": true,
-            "kind": 34,
-            "scalar": {
-              "type": "String",
-              "name": "str",
-              "required": true,
-              "kind": 4
-            }
-          },
-          {
-            "type": "String",
-            "name": "optStr",
-            "kind": 34,
-            "scalar": {
-              "type": "String",
-              "name": "optStr",
-              "kind": 4
-            }
-          }
-        ],
-        "return": {
-          "type": "Object",
-          "name": "methodOne",
-          "required": true,
-          "kind": 34,
-          "object": {
-            "type": "Object",
-            "name": "methodOne",
-            "required": true,
-            "kind": 8192
-          }
-        }
-      },
-      {
-        "type": "Method",
-        "name": "methodTwo",
-        "required": true,
-        "kind": 64,
-        "arguments": [
-          {
-            "type": "UInt32",
-            "name": "arg",
-            "required": true,
-            "kind": 34,
-            "scalar": {
-              "type": "UInt32",
-              "name": "arg",
-              "required": true,
-              "kind": 4
-            }
-          }
-        ],
-        "return": {
-          "type": "String",
-          "name": "methodTwo",
-          "required": true,
-          "kind": 34,
-          "scalar": {
-            "type": "String",
-            "name": "methodTwo",
-            "required": true,
-            "kind": 4
-          }
-        }
-      }
-    ],
     "imports": [
       {
         "type": "Ethereum_Module"
@@ -2665,25 +2550,140 @@ export const wrapManifest: WrapManifest = {
       {
         "type": "Ethereum_Access"
       }
-    ]
-  },
-  "envType": {
-    "type": "Env",
-    "kind": 65536,
-    "properties": [
+    ],
+    "kind": 128,
+    "methods": [
       {
-        "type": "String",
-        "name": "arg1",
+        "arguments": [
+          {
+            "kind": 34,
+            "name": "str",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "str",
+              "required": true,
+              "type": "String"
+            },
+            "type": "String"
+          },
+          {
+            "kind": 34,
+            "name": "optStr",
+            "scalar": {
+              "kind": 4,
+              "name": "optStr",
+              "type": "String"
+            },
+            "type": "String"
+          }
+        ],
+        "kind": 64,
+        "name": "methodOne",
         "required": true,
-        "kind": 34,
-        "scalar": {
-          "type": "String",
-          "name": "arg1",
+        "return": {
+          "kind": 34,
+          "name": "methodOne",
+          "object": {
+            "kind": 8192,
+            "name": "methodOne",
+            "required": true,
+            "type": "Object"
+          },
           "required": true,
-          "kind": 4
-        }
+          "type": "Object"
+        },
+        "type": "Method"
+      },
+      {
+        "arguments": [
+          {
+            "kind": 34,
+            "name": "arg",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "arg",
+              "required": true,
+              "type": "UInt32"
+            },
+            "type": "UInt32"
+          }
+        ],
+        "kind": 64,
+        "name": "methodTwo",
+        "required": true,
+        "return": {
+          "kind": 34,
+          "name": "methodTwo",
+          "required": true,
+          "scalar": {
+            "kind": 4,
+            "name": "methodTwo",
+            "required": true,
+            "type": "String"
+          },
+          "type": "String"
+        },
+        "type": "Method"
       }
-    ]
-  }
+    ],
+    "type": "Module"
+  },
+  "objectTypes": [
+    {
+      "kind": 1,
+      "properties": [
+        {
+          "kind": 34,
+          "name": "u",
+          "required": true,
+          "scalar": {
+            "kind": 4,
+            "name": "u",
+            "required": true,
+            "type": "UInt"
+          },
+          "type": "UInt"
+        },
+        {
+          "array": {
+            "item": {
+              "kind": 4,
+              "name": "array",
+              "required": true,
+              "type": "Boolean"
+            },
+            "kind": 18,
+            "name": "array",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "array",
+              "required": true,
+              "type": "Boolean"
+            },
+            "type": "[Boolean]"
+          },
+          "kind": 34,
+          "name": "array",
+          "required": true,
+          "type": "[Boolean]"
+        },
+        {
+          "kind": 34,
+          "name": "bytes",
+          "scalar": {
+            "kind": 4,
+            "name": "bytes",
+            "type": "Bytes"
+          },
+          "type": "Bytes"
+        }
+      ],
+      "type": "Object"
+    }
+  ],
+  "version": "0.1"
 }
 }

@@ -2,67 +2,67 @@
 ///       All modifications will be overwritten.
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js"
 
-export const wrapManifest: WrapManifest = {
+export const manifest: WrapManifest = {
   name: "Test",
   type: "plugin",
   version: "0.1",
   abi: {
-  "version": "0.1",
   "envType": {
-    "type": "Env",
     "kind": 65536,
     "properties": [
       {
-        "type": "String",
+        "kind": 34,
         "name": "arg1",
         "required": true,
-        "kind": 34,
         "scalar": {
-          "type": "String",
+          "kind": 4,
           "name": "arg1",
           "required": true,
-          "kind": 4
-        }
+          "type": "String"
+        },
+        "type": "String"
       }
-    ]
+    ],
+    "type": "Env"
   },
   "moduleType": {
-    "type": "Module",
     "kind": 128,
     "methods": [
       {
-        "type": "Method",
-        "name": "method",
-        "required": true,
-        "kind": 64,
         "arguments": [
           {
-            "type": "String",
+            "kind": 34,
             "name": "str",
             "required": true,
-            "kind": 34,
             "scalar": {
-              "type": "String",
+              "kind": 4,
               "name": "str",
               "required": true,
-              "kind": 4
-            }
+              "type": "String"
+            },
+            "type": "String"
           }
         ],
+        "kind": 64,
+        "name": "method",
+        "required": true,
         "return": {
-          "type": "String",
+          "kind": 34,
           "name": "method",
           "required": true,
-          "kind": 34,
           "scalar": {
-            "type": "String",
+            "kind": 4,
             "name": "method",
             "required": true,
-            "kind": 4
-          }
-        }
+            "type": "String"
+          },
+          "type": "String"
+        },
+        "type": "Method"
       }
-    ]
-  }
+    ],
+    "type": "Module"
+  },
+  "version": "0.1"
 }
 }
