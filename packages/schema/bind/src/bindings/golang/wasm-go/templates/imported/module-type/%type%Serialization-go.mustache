@@ -1,0 +1,84 @@
+package {{#toSnakeCase}}{{namespace}}{{/toSnakeCase}}
+
+import (
+  "github.com/consideritdone/polywrap-go/polywrap/msgpack"
+	"github.com/consideritdone/polywrap-go/polywrap/msgpack/big"
+	"github.com/consideritdone/polywrap-go/polywrap/msgpack/container"
+	"github.com/valyala/fastjson"
+)
+
+{{#methods}}
+type Args{{#toUpper}}{{name}}{{/toUpper}} struct {
+  {{#arguments}}
+  {{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}} {{#toWasm}}{{toGraphQLType}}{{/toWasm}}
+  {{/arguments}}
+}
+
+func Serialize{{#toUpper}}{{name}}{{/toUpper}}Args(value *Args{{#toUpper}}{{name}}{{/toUpper}}) []byte {
+  ctx := msgpack.NewContext("Serializing module-type: {{#toUpper}}{{name}}{{/toUpper}}")
+  encoder := msgpack.NewWriteEncoder(ctx)
+  Write{{#toUpper}}{{name}}{{/toUpper}}Args(encoder, value);
+  return encoder.Buffer()
+}
+
+func Write{{#toUpper}}{{name}}{{/toUpper}}Args(writer msgpack.Write, value *Args{{#toUpper}}{{name}}{{/toUpper}}) {
+  writer.WriteMapLength({{arguments.length}})
+  {{#arguments}}
+  writer.Context().Push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property")
+  writer.WriteString("{{name}}")
+  {{#scalar}}
+  {{> value_serialize_scalar}}
+  {{/scalar}}
+  {{#array}}
+  {{#startIter}}{{/startIter}}
+  {{> value_serialize_array}}
+  {{#stopIter}}{{/stopIter}}
+  {{/array}}
+  {{#map}}
+  {{#startIter}}{{/startIter}}
+  {{> value_serialize_map}}
+  {{#stopIter}}{{/stopIter}}
+  {{/map}}
+  {{#object}}
+  {{> value_serialize_object}}
+  {{/object}}
+  {{#enum}}
+  {{> value_serialize_enum}}
+  {{/enum}}
+  writer.Context().Pop()
+  {{/arguments}}
+}
+
+export function Deserialize{{#toUpper}}{{name}}{{/toUpper}}Result(argsBuf []byte): {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {
+  ctx := msgpack.NewContext("Deserializing module-type: {{#toUpper}}{{name}}{{/toUpper}}")
+  reader := msgpack.NewReadDecoder(ctx, argsBuf)
+
+  {{#return}}
+  reader.Context().Push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "reading function output");
+  var value {{#toWasm}}{{toGraphQLType}}{{/toWasm}}
+  {{#scalar}}
+  {{> value_deserialize_scalar}}
+  {{/scalar}}
+  {{#array}}
+  {{#startIter}}{{/startIter}}
+  {{> value_deserialize_array}}
+  {{#stopIter}}{{/stopIter}}
+  {{/array}}
+  {{#map}}
+  {{#startIter}}{{/startIter}}
+  {{> value_deserialize_map}}
+  {{#stopIter}}{{/stopIter}}
+  {{/map}}
+  {{#object}}
+  {{> value_deserialize_object}}
+  {{/object}}
+  {{#enum}}
+  {{> value_deserialize_enum}}
+  {{/enum}}
+  writer.Context().Pop()
+  return value
+  {{/return}}
+}
+
+{{/methods}}
+

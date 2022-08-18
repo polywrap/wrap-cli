@@ -1,6 +1,19 @@
 import { OutputEntry, readDirectorySync } from "@polywrap/os-js";
+import { GenericDefinition } from "@polywrap/schema-parse";
 import Mustache from "mustache";
 import path from "path";
+
+function transformName(str: string, view: unknown): string {
+  str = str.replace("-", ".");
+  if (!str.endsWith(".go")) {
+    return str;
+  }
+  const def = view as GenericDefinition;
+  str = str.replace("%type%", def.type)
+    .replace( /([A-Z])/g, "_$1")
+    .toLowerCase();
+  return str.startsWith("_") ? str.slice(1) : str;
+}
 
 export function renderTemplates(
   templateDirAbs: string,
@@ -27,7 +40,7 @@ export function renderTemplates(
           if (data) {
             output.push({
               type: "File",
-              name: name.replace("-", ".").replace("%type%", (view as {type: string}).type.toLowerCase()),
+              name: transformName(name, view),
               data,
             });
           }

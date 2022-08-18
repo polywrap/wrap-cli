@@ -18,6 +18,12 @@ const subTemplates = loadSubTemplates(templatesDir.entries);
 const templatePath = (subpath: string) =>
   path.join(__dirname, "./templates", subpath);
 
+function camel2snake(str: string): string {
+  str = str.replace( /([A-Z])/g, "_$1");
+  str = str.startsWith("_") ? str.slice(1) : str;
+  return str.toLowerCase();
+}
+
 export const generateBinding: GenerateBindingFn = (
   options: BindOptions
 ): BindOutput => {
@@ -34,7 +40,7 @@ export const generateBinding: GenerateBindingFn = (
   for (const objectType of abi.objectTypes) {
     output.entries.push({
       type: "Directory",
-      name: "abc",
+      name: "types",
       data: renderTemplates(
         templatePath("object-type"),
         objectType,
@@ -59,114 +65,114 @@ export const generateBinding: GenerateBindingFn = (
   const importEntries: OutputEntry[] = [];
 
   // Generate imported module type folders
-  // for (const importedModuleType of abi.importedModuleTypes) {
-  //   importEntries.push({
-  //     type: "Directory",
-  //     name: importedModuleType.type,
-  //     data: renderTemplates(
-  //       templatePath("imported/module-type"),
-  //       importedModuleType,
-  //       subTemplates
-  //     ),
-  //   });
-  // }
-  //
+  for (const importedModuleType of abi.importedModuleTypes) {
+    importEntries.push({
+      type: "Directory",
+      name: `${camel2snake(importedModuleType.namespace)}`,
+      data: renderTemplates(
+        templatePath("imported/module-type"),
+        importedModuleType,
+        subTemplates
+      ),
+    });
+  }
+
   // // Generate imported env type folders
-  // for (const importedEnvType of abi.importedEnvTypes) {
-  //   importEntries.push({
-  //     type: "Directory",
-  //     name: importedEnvType.type,
-  //     data: renderTemplates(
-  //       templatePath("imported/env-type"),
-  //       importedEnvType,
-  //       subTemplates
-  //     ),
-  //   });
-  // }
-  //
-  // // Generate imported enum type folders
-  // for (const importedEnumType of abi.importedEnumTypes) {
-  //   importEntries.push({
-  //     type: "Directory",
-  //     name: importedEnumType.type,
-  //     data: renderTemplates(
-  //       templatePath("imported/enum-type"),
-  //       importedEnumType,
-  //       subTemplates
-  //     ),
-  //   });
-  // }
-  //
-  // // Generate imported object type folders
-  // for (const importedObectType of abi.importedObjectTypes) {
-  //   importEntries.push({
-  //     type: "Directory",
-  //     name: importedObectType.type,
-  //     data: renderTemplates(
-  //       templatePath("imported/object-type"),
-  //       importedObectType,
-  //       subTemplates
-  //     ),
-  //   });
-  // }
-  //
-  // if (importEntries.length) {
-  //   output.entries.push({
-  //     type: "Directory",
-  //     name: "imported",
-  //     data: [
-  //       ...importEntries,
-  //       ...renderTemplates(templatePath("imported"), abi, subTemplates),
-  //     ],
-  //   });
-  // }
-  //
-  // // Generate interface type folders
-  // for (const interfaceType of abi.interfaceTypes) {
-  //   output.entries.push({
-  //     type: "Directory",
-  //     name: interfaceType.type,
-  //     data: renderTemplates(
-  //       templatePath("interface-type"),
-  //       interfaceType,
-  //       subTemplates
-  //     ),
-  //   });
-  // }
-  //
+  for (const importedEnvType of abi.importedEnvTypes) {
+    importEntries.push({
+      type: "Directory",
+      name: `${camel2snake(importedEnvType.namespace)}`,
+      data: renderTemplates(
+        templatePath("imported/env-type"),
+        importedEnvType,
+        subTemplates
+      ),
+    });
+  }
+
+  // Generate imported enum type folders
+  for (const importedEnumType of abi.importedEnumTypes) {
+    importEntries.push({
+      type: "Directory",
+      name: `${camel2snake(importedEnumType.namespace)}`,
+      data: renderTemplates(
+        templatePath("imported/enum-type"),
+        importedEnumType,
+        subTemplates
+      ),
+    });
+  }
+
+  // Generate imported object type folders
+  for (const importedObectType of abi.importedObjectTypes) {
+    importEntries.push({
+      type: "Directory",
+      name: `${camel2snake(importedObectType.namespace)}`,
+      data: renderTemplates(
+        templatePath("imported/object-type"),
+        importedObectType,
+        subTemplates
+      ),
+    });
+  }
+
+  if (importEntries.length) {
+    output.entries.push({
+      type: "Directory",
+      name: "imported",
+      data: [
+        ...importEntries,
+        ...renderTemplates(templatePath("imported"), abi, subTemplates),
+      ],
+    });
+  }
+
+  // Generate interface type folders
+  for (const interfaceType of abi.interfaceTypes) {
+    output.entries.push({
+      type: "Directory",
+      name: "interfaces",
+      data: renderTemplates(
+        templatePath("interface-type"),
+        interfaceType,
+        subTemplates
+      ),
+    });
+  }
+
   // Generate module type folders
-  // if (abi.moduleType) {
-  //   output.entries.push({
-  //     type: "Directory",
-  //     name: abi.moduleType.type,
-  //     data: renderTemplates(
-  //       templatePath("module-type"),
-  //       abi.moduleType,
-  //       subTemplates
-  //     ),
-  //   });
-  // }
-  //
-  // // Generate enum type folders
-  // for (const enumType of abi.enumTypes) {
-  //   output.entries.push({
-  //     type: "Directory",
-  //     name: enumType.type,
-  //     data: renderTemplates(templatePath("enum-type"), enumType, subTemplates),
-  //   });
-  // }
-  //
-  // // Generate env type folders
-  // if (abi.envType) {
-  //   output.entries.push({
-  //     type: "Directory",
-  //     name: abi.envType.type,
-  //     data: renderTemplates(templatePath("object-type"), abi.envType, subTemplates),
-  //   });
-  // }
+  if (abi.moduleType) {
+    output.entries.push({
+      type: "Directory",
+      name: "types",
+      data: renderTemplates(
+        templatePath("module-type"),
+        abi.moduleType,
+        subTemplates
+      ),
+    });
+  }
+
+  // Generate enum type folders
+  for (const enumType of abi.enumTypes) {
+    output.entries.push({
+      type: "Directory",
+      name: "types",
+      data: renderTemplates(templatePath("enum-type"), enumType, subTemplates),
+    });
+  }
+
+  // Generate env type folders
+  if (abi.envType) {
+    output.entries.push({
+      type: "Directory",
+      name: "types",
+      data: renderTemplates(templatePath("object-type"), abi.envType, subTemplates),
+    });
+  }
 
   // Generate root entry file
-  // output.entries.push(...renderTemplates(templatePath(""), abi, subTemplates));
+  output.entries.push(...renderTemplates(templatePath(""), abi, subTemplates));
 
   return result;
 };

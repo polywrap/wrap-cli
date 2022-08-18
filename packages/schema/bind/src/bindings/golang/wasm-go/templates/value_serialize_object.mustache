@@ -1,0 +1,9 @@
+{
+  v := value{{#lastFullIter}}i{{/lastFullIter}}
+  {{#required}}
+  {{#toUpper}}{{type}}{{/toUpper}}Write(writer, &v)
+  {{/required}}
+  {{^required}}
+  {{#toUpper}}{{type}}{{/toUpper}}Write(writer, v)
+  {{/required}}
+}
