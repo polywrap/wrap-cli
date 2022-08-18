@@ -1,8 +1,5 @@
-import {
-  buildUriResolver,
-  coreInterfaceUris,
-  PluginModule,
-} from "@polywrap/core-js";
+import { coreInterfaceUris, PluginModule } from "@polywrap/core-js";
+import { buildUriResolver } from "@polywrap/uri-resolvers-js";
 import { Uri, PolywrapClient } from "../..";
 
 jest.setTimeout(200000);

@@ -1,8 +1,9 @@
 import { Uri } from ".";
 
 import { Tracer } from "@polywrap/tracing-js";
+import { toUri } from "../utils";
 
-export interface Env<TUri = string> {
+export interface Env<TUri extends Uri | string = string> {
   /** Uri of wrapper */
   uri: TUri;
 
@@ -12,13 +13,13 @@ export interface Env<TUri = string> {
 
 export const sanitizeEnvs = Tracer.traceFunc(
   "core: sanitizeEnvs",
-  (environments: Env[]): Env<Uri>[] => {
+  (environments: Env<Uri | string>[]): Env<Uri>[] => {
     const output: Env<Uri>[] = [];
 
     for (const env of environments) {
       output.push({
         ...env,
-        uri: new Uri(env.uri),
+        uri: toUri(env.uri),
       });
     }
 

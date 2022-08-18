@@ -1,6 +1,7 @@
 import { Uri } from ".";
 
 import { Tracer } from "@polywrap/tracing-js";
+import { toUri } from "../utils";
 
 export interface UriRedirect<TUri = string> {
   from: TUri;
@@ -9,18 +10,12 @@ export interface UriRedirect<TUri = string> {
 
 export const sanitizeUriRedirects = Tracer.traceFunc(
   "core: sanitizeUriRedirects",
-  (input: UriRedirect<string>[]): UriRedirect<Uri>[] => {
+  (input: UriRedirect<Uri | string>[]): UriRedirect<Uri>[] => {
     const output: UriRedirect<Uri>[] = [];
     for (const definition of input) {
-      const from = new Uri(definition.from);
-      const to =
-        typeof definition.to === "string"
-          ? new Uri(definition.to)
-          : definition.to;
-
       output.push({
-        from: from,
-        to: to,
+        from: toUri(definition.from),
+        to: toUri(definition.to),
       });
     }
 
