@@ -1,4 +1,4 @@
-import { ProjectConfig, Project, ImportRedirects } from ".";
+import { ProjectConfig, Project } from ".";
 import {
   loadPluginManifest,
   PluginManifestLanguage,
@@ -94,9 +94,9 @@ export class PluginProject extends Project<PluginManifest> {
     return path.join(dir, manifest.schema);
   }
 
-  public async getImportRedirects(): Promise<ImportRedirects> {
+  public async getImportAbis(): Promise<PluginManifest["import_abis"]> {
     const manifest = await this.getManifest();
-    return manifest.import_redirects || [];
+    return manifest.import_abis || [];
   }
 
   public async generateSchemaBindings(

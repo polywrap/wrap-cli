@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-empty-function */
 
-import { Project, AnyProjectManifest, ImportRedirects } from "./";
+import { Project, AnyProjectManifest } from "./";
 
 import { Uri, PolywrapClient } from "@polywrap/client-js";
 import {
@@ -12,7 +12,9 @@ import {
 import fs from "fs";
 import path from "path";
 import * as gluegun from "gluegun";
+import YAML from "js-yaml";
 import { deserializeWrapManifest } from "@polywrap/wrap-manifest-types-js";
+import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 import { WrapAbi } from "@polywrap/schema-parse";
 
 export interface SchemaComposerConfig {
@@ -36,7 +38,7 @@ export class SchemaComposer {
     const { project } = this._config;
 
     const schemaNamedPath = await project.getSchemaNamedPath();
-    const import_redirects = await project.getImportRedirects();
+    const import_abis = await project.getImportAbis();
 
     const getSchemaFile = (schemaPath?: string): SchemaFile | undefined =>
       schemaPath
@@ -54,8 +56,7 @@ export class SchemaComposer {
     const options: ComposerOptions = {
       schema: schemaFile,
       resolvers: {
-        external: (uri: string) =>
-          this._fetchExternalAbi(uri, import_redirects),
+        external: (uri: string) => this._fetchExternalAbi(uri, import_abis),
         local: (path: string) => Promise.resolve(this._fetchLocalSchema(path)),
       },
     };
@@ -70,19 +71,60 @@ export class SchemaComposer {
 
   private async _fetchExternalAbi(
     uri: string,
-    import_redirects?: ImportRedirects
+    import_abis?: PolywrapManifest["import_abis"]
   ): Promise<WrapAbi> {
     // Check to see if we have any import redirects that match
-    if (import_redirects) {
-      for (const redirect of import_redirects) {
-        const redirectUri = new Uri(redirect.uri);
+    if (import_abis) {
+      for (const import_abi of import_abis) {
+        const redirectUri = new Uri(import_abi.uri);
         const uriParsed = new Uri(uri);
 
-        if (Uri.equals(redirectUri, uriParsed)) {
-          const manifest = fs.readFileSync(
-            path.join(this._config.project.getManifestDir(), redirect.info)
-          );
+        if (!Uri.equals(redirectUri, uriParsed)) {
+          continue;
+        }
+
+        const abiPath = path.join(
+          this._config.project.getManifestDir(),
+          import_abi.abi
+        );
+
+        if (!fs.existsSync(abiPath)) {
+          throw Error("TODO file not found");
+        }
+
+        if (abiPath.endsWith(".info")) {
+          const manifest = fs.readFileSync(abiPath);
           return (await deserializeWrapManifest(manifest)).abi;
+        } else if (abiPath.endsWith(".graphql")) {
+          const schema = fs.readFileSync(abiPath, "utf-8");
+          const options: ComposerOptions = {
+            schema: {
+              schema: schema,
+              absolutePath: abiPath,
+            },
+            resolvers: {
+              external: (uri: string) =>
+                this._fetchExternalAbi(uri, import_abis),
+              local: (path: string) =>
+                Promise.resolve(this._fetchLocalSchema(path)),
+            },
+          };
+
+          return await composeSchema(options);
+        } else if (abiPath.endsWith(".json")) {
+          const json = fs.readFileSync(abiPath, "utf-8");
+          // TODO: need to validate structure of ABI object
+          return JSON.parse(json);
+        } else if (abiPath.endsWith(".yaml")) {
+          const yaml = fs.readFileSync(abiPath, "utf-8");
+          const result = YAML.safeLoad(yaml);
+          if (!result) {
+            throw Error("TODO invalid");
+          }
+          // TODO: need to validate structure of ABI object
+          return result as WrapAbi;
+        } else {
+          throw Error("TODO intl type here");
         }
       }
     }

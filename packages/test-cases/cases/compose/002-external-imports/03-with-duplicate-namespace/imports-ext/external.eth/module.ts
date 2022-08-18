@@ -1,6 +1,7 @@
 import { WrapAbi } from "@polywrap/wrap-manifest-types-js";
 
 export const abi: WrapAbi = {
+  version: "0.1",
   objectTypes: [],
   enumTypes: [],
   interfaceTypes: [],

@@ -51,6 +51,7 @@ export function parseSchema(
   }
 
   return {
+    version: "0.1",
     objectTypes: info.objectTypes?.length ? info.objectTypes : undefined,
     moduleType: info.moduleType ? info.moduleType : undefined,
     enumTypes: info.enumTypes?.length ? info.enumTypes : undefined,

@@ -7,17 +7,9 @@ export const wrapManifest: WrapManifest = {
   type: "plugin",
   version: "0.1",
   abi: {
-  "objectTypes": [],
-  "enumTypes": [],
-  "interfaceTypes": [],
-  "importedObjectTypes": [],
-  "importedModuleTypes": [],
-  "importedEnumTypes": [],
-  "importedEnvTypes": [],
+  "version": "0.1",
   "envType": {
     "type": "Env",
-    "name": null,
-    "required": null,
     "kind": 65536,
     "properties": [
       {
@@ -25,25 +17,17 @@ export const wrapManifest: WrapManifest = {
         "name": "arg1",
         "required": true,
         "kind": 34,
-        "array": null,
-        "map": null,
         "scalar": {
           "type": "String",
           "name": "arg1",
           "required": true,
           "kind": 4
-        },
-        "object": null,
-        "enum": null,
-        "unresolvedObjectOrEnum": null
+        }
       }
-    ],
-    "interfaces": []
+    ]
   },
   "moduleType": {
     "type": "Module",
-    "name": null,
-    "required": null,
     "kind": 128,
     "methods": [
       {
@@ -57,17 +41,12 @@ export const wrapManifest: WrapManifest = {
             "name": "str",
             "required": true,
             "kind": 34,
-            "array": null,
-            "map": null,
             "scalar": {
               "type": "String",
               "name": "str",
               "required": true,
               "kind": 4
-            },
-            "object": null,
-            "enum": null,
-            "unresolvedObjectOrEnum": null
+            }
           }
         ],
         "return": {
@@ -75,22 +54,15 @@ export const wrapManifest: WrapManifest = {
           "name": "method",
           "required": true,
           "kind": 34,
-          "array": null,
-          "map": null,
           "scalar": {
             "type": "String",
             "name": "method",
             "required": true,
             "kind": 4
-          },
-          "object": null,
-          "enum": null,
-          "unresolvedObjectOrEnum": null
+          }
         }
       }
-    ],
-    "imports": [],
-    "interfaces": []
+    ]
   }
 }
 }

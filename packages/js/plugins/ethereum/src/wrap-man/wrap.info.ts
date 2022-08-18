@@ -1,6 +1,7 @@
 import { WrapManifest, WrapAbi } from "@polywrap/wrap-manifest-types-js";
 
 const abi: WrapAbi = {
+  version: "0.1",
   objectTypes: [
     {
       type: "TxReceipt",
@@ -219,7 +220,6 @@ const abi: WrapAbi = {
           },
         },
       ],
-      interfaces: [],
     },
     {
       type: "TxResponse",
@@ -444,7 +444,6 @@ const abi: WrapAbi = {
           },
         },
       ],
-      interfaces: [],
     },
     {
       type: "TxRequest",
@@ -541,7 +540,6 @@ const abi: WrapAbi = {
           },
         },
       ],
-      interfaces: [],
     },
     {
       type: "TxOverrides",
@@ -578,7 +576,6 @@ const abi: WrapAbi = {
           },
         },
       ],
-      interfaces: [],
     },
     {
       type: "StaticTxResult",
@@ -609,7 +606,6 @@ const abi: WrapAbi = {
           },
         },
       ],
-      interfaces: [],
     },
     {
       type: "Log",
@@ -736,7 +732,6 @@ const abi: WrapAbi = {
           },
         },
       ],
-      interfaces: [],
     },
     {
       type: "EventNotification",
@@ -779,7 +774,6 @@ const abi: WrapAbi = {
           },
         },
       ],
-      interfaces: [],
     },
     {
       type: "Access",
@@ -822,7 +816,6 @@ const abi: WrapAbi = {
           },
         },
       ],
-      interfaces: [],
     },
     {
       type: "Connection",
@@ -849,7 +842,6 @@ const abi: WrapAbi = {
           },
         },
       ],
-      interfaces: [],
     },
     {
       type: "Network",
@@ -890,15 +882,8 @@ const abi: WrapAbi = {
           },
         },
       ],
-      interfaces: [],
     },
   ],
-  enumTypes: [],
-  interfaceTypes: [],
-  importedObjectTypes: [],
-  importedModuleTypes: [],
-  importedEnumTypes: [],
-  importedEnvTypes: [],
   moduleType: {
     type: "Module",
     kind: 128,
@@ -2470,8 +2455,6 @@ const abi: WrapAbi = {
         },
       },
     ],
-    imports: [],
-    interfaces: [],
   },
   envType: {
     type: "Env",
@@ -2488,7 +2471,6 @@ const abi: WrapAbi = {
         },
       },
     ],
-    interfaces: [],
   },
 };
 

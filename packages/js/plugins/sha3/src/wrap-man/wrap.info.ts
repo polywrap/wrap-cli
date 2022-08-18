@@ -5,13 +5,7 @@ export const manifest: WrapManifest = {
   type: "plugin",
   version: "0.1",
   abi: {
-    objectTypes: [],
-    enumTypes: [],
-    interfaceTypes: [],
-    importedObjectTypes: [],
-    importedModuleTypes: [],
-    importedEnumTypes: [],
-    importedEnvTypes: [],
+    version: "0.1",
     moduleType: {
       type: "Module",
       kind: 128,
@@ -425,8 +419,6 @@ export const manifest: WrapManifest = {
           },
         },
       ],
-      imports: [],
-      interfaces: [],
     }
   }
 };

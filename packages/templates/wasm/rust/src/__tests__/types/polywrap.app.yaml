@@ -2,6 +2,6 @@ format: "0.2"
 name: sample-typescript-type-generation
 language: app/typescript
 schema: ./schema.graphql
-import_redirects:
+import_abis:
   - uri: "wrap://ens/sample.eth"
-    info: "../../../build/wrap.info"
+    abi: "../../../build/wrap.info"

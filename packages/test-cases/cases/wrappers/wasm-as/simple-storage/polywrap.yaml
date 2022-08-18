@@ -5,6 +5,6 @@ build: ./polywrap.build.yaml
 meta: ./polywrap.meta.yaml
 schema: ./schema.graphql
 module: ./src/index.ts
-import_redirects:
+import_abis:
   - uri: "wrap://ens/ethereum.polywrap.eth"
-    info: ../../../../../js/plugins/ethereum/build/wrap.info
+    abi: ../../../../../js/plugins/ethereum/build/wrap.info

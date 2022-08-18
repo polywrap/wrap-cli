@@ -5,6 +5,7 @@ export const manifest: WrapManifest = {
   type: "plugin",
   version: "0.1",
   abi: {
+    version: "0.1",
     objectTypes: [
       {
         type: "Header",
@@ -25,7 +26,6 @@ export const manifest: WrapManifest = {
             scalar: { type: "String", name: "value", required: true, kind: 4 },
           },
         ],
-        interfaces: [],
       },
       {
         type: "UrlParam",
@@ -46,7 +46,6 @@ export const manifest: WrapManifest = {
             scalar: { type: "String", name: "value", required: true, kind: 4 },
           },
         ],
-        interfaces: [],
       },
       {
         type: "Response",
@@ -100,7 +99,6 @@ export const manifest: WrapManifest = {
             scalar: { type: "String", name: "body", kind: 4 },
           },
         ],
-        interfaces: [],
       },
       {
         type: "Request",
@@ -169,7 +167,6 @@ export const manifest: WrapManifest = {
             scalar: { type: "String", name: "body", kind: 4 },
           },
         ],
-        interfaces: [],
       },
     ],
     enumTypes: [
@@ -179,11 +176,6 @@ export const manifest: WrapManifest = {
         constants: ["TEXT", "BINARY"],
       },
     ],
-    interfaceTypes: [],
-    importedObjectTypes: [],
-    importedModuleTypes: [],
-    importedEnumTypes: [],
-    importedEnvTypes: [],
     moduleType: {
       type: "Module",
       kind: 128,
@@ -259,8 +251,6 @@ export const manifest: WrapManifest = {
           },
         },
       ],
-      imports: [],
-      interfaces: [],
     },
   },
 };

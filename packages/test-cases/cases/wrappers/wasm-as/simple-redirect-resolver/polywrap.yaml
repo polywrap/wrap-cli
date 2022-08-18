@@ -4,6 +4,6 @@ language: wasm/assemblyscript
 build: ./polywrap.build.yaml
 schema: ./schema.graphql
 module: ./src/index.ts
-import_redirects:
+import_abis:
   - uri: "ens/uri-resolver.core.polywrap.eth"
-    info: ../../../../../interfaces/uri-resolver/build-man/wrap.info
+    abi: ../../../../../interfaces/uri-resolver/build-man/wrap.info

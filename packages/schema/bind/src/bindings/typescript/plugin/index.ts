@@ -54,7 +54,11 @@ export const generateBinding: GenerateBindingFn = (
     name: options.projectName,
     type: "plugin",
     version: latestWrapManifestVersion,
-    abi: JSON.stringify(sort(options.abi as Record<string, unknown>), null, 2),
+    abi: JSON.stringify(
+      sort((options.abi as unknown) as Record<string, unknown>),
+      null,
+      2
+    ),
   };
 
   output.entries = renderTemplates(

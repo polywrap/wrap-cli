@@ -5,9 +5,7 @@ export const manifest: WrapManifest = {
   type: "plugin",
   version: "0.1",
   abi: {
-    "objectTypes": [],
-    "enumTypes": [],
-    "interfaceTypes": [],
+    "version": "0.1",
     "importedObjectTypes": [
       {
         "type": "UriResolver_MaybeUriOrManifest",
@@ -34,7 +32,6 @@ export const manifest: WrapManifest = {
             },
           }
         ],
-        "interfaces": [],
         "uri": "ens/uri-resolver.core.polywrap.eth",
         "namespace": "UriResolver",
         "nativeType": "MaybeUriOrManifest"
@@ -64,7 +61,6 @@ export const manifest: WrapManifest = {
             },
           }
         ],
-        "interfaces": [],
         "uri": "ens/ethereum.polywrap.eth",
         "namespace": "Ethereum",
         "nativeType": "Connection"
@@ -104,7 +100,6 @@ export const manifest: WrapManifest = {
             },
           }
         ],
-        "interfaces": [],
         "uri": "ens/ethereum.polywrap.eth",
         "namespace": "Ethereum",
         "nativeType": "TxOverrides"
@@ -138,7 +133,6 @@ export const manifest: WrapManifest = {
             },
           }
         ],
-        "interfaces": [],
         "uri": "ens/ethereum.polywrap.eth",
         "namespace": "Ethereum",
         "nativeType": "StaticTxResult"
@@ -238,7 +232,6 @@ export const manifest: WrapManifest = {
             },
           }
         ],
-        "interfaces": [],
         "uri": "ens/ethereum.polywrap.eth",
         "namespace": "Ethereum",
         "nativeType": "TxRequest"
@@ -460,7 +453,6 @@ export const manifest: WrapManifest = {
             },
           }
         ],
-        "interfaces": [],
         "uri": "ens/ethereum.polywrap.eth",
         "namespace": "Ethereum",
         "nativeType": "TxReceipt"
@@ -590,7 +582,6 @@ export const manifest: WrapManifest = {
             },
           }
         ],
-        "interfaces": [],
         "uri": "ens/ethereum.polywrap.eth",
         "namespace": "Ethereum",
         "nativeType": "Log"
@@ -636,7 +627,6 @@ export const manifest: WrapManifest = {
             },
           }
         ],
-        "interfaces": [],
         "uri": "ens/ethereum.polywrap.eth",
         "namespace": "Ethereum",
         "nativeType": "EventNotification"
@@ -680,7 +670,6 @@ export const manifest: WrapManifest = {
             },
           }
         ],
-        "interfaces": [],
         "uri": "ens/ethereum.polywrap.eth",
         "namespace": "Ethereum",
         "nativeType": "Network"
@@ -908,7 +897,6 @@ export const manifest: WrapManifest = {
             },
           }
         ],
-        "interfaces": [],
         "uri": "ens/ethereum.polywrap.eth",
         "namespace": "Ethereum",
         "nativeType": "TxResponse"
@@ -954,7 +942,6 @@ export const manifest: WrapManifest = {
             },
           }
         ],
-        "interfaces": [],
         "uri": "ens/ethereum.polywrap.eth",
         "namespace": "Ethereum",
         "nativeType": "Access"
@@ -2578,8 +2565,6 @@ export const manifest: WrapManifest = {
         "isInterface": false
       }
     ],
-    "importedEnumTypes": [],
-    "importedEnvTypes": [],
     "moduleType": {
       "type": "Module",
       "kind": 128,

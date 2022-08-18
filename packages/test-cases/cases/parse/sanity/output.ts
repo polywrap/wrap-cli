@@ -25,6 +25,7 @@ import {
 } from "../../../../schema/parse/src/abi";
 
 export const abi: WrapAbi = {
+  version: "0.1",
   interfaceTypes: [
     createInterfaceDefinition({
       type: "TestImport",

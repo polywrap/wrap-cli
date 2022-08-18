@@ -7,6 +7,7 @@ export const wrapManifest: WrapManifest = {
   type: "plugin",
   version: "0.1",
   abi: {
+  "version": "0.1",
   "enumTypes": [
     {
       "constants": [

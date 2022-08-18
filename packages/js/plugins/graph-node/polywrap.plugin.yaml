@@ -3,6 +3,6 @@ language: plugin/typescript
 name: GraphNode
 module: ./src/index.ts
 schema: ./src/schema.graphql
-import_redirects:
+import_abis:
   - uri: "ens/http.polywrap.eth"
-    info: ../http/build/wrap.info
+    abi: ../http/build/wrap.info

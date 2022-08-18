@@ -40,18 +40,18 @@ export interface PolywrapManifest {
    */
   schema: string;
   /**
-   * Redirects source URI to local wrapper or plugin.
+   * Specify ABIs to be used for the import URIs within your schema.
    */
-  import_redirects?: ImportRedirect[];
+  import_abis?: ImportAbis[];
   __type: "PolywrapManifest";
 }
-export interface ImportRedirect {
+export interface ImportAbis {
   /**
-   * Source URI that needs to be redirected.
+   * One of the schema's import URI.
    */
   uri: string;
   /**
-   * Path to Wrap Manifest of the module to which URI will be redirected.
+   * Path to a local ABI (or schema). Supported file formats: [*.graphql, *.info, *.json, *.yaml]
    */
-  info: string;
+  abi: string;
 }

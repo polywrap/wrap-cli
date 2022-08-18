@@ -5,9 +5,7 @@ export const manifest: WrapManifest = {
   type: "plugin",
   version: "0.1",
   abi: {
-    objectTypes: [],
-    enumTypes: [],
-    interfaceTypes: [],
+    version: "0.1",
     importedObjectTypes: [
       {
         type: "UriResolver_MaybeUriOrManifest",
@@ -26,7 +24,6 @@ export const manifest: WrapManifest = {
             scalar: { type: "Bytes", name: "manifest", kind: 4 },
           },
         ],
-        interfaces: [],
         uri: "ens/uri-resolver.core.polywrap.eth",
         namespace: "UriResolver",
         nativeType: "MaybeUriOrManifest",
@@ -348,7 +345,6 @@ export const manifest: WrapManifest = {
         nativeType: "Encoding",
       },
     ],
-    importedEnvTypes: [],
     moduleType: {
       type: "Module",
       kind: 128,

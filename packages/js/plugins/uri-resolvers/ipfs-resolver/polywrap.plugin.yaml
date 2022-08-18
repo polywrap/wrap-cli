@@ -3,8 +3,8 @@ name: IpfsResolver
 language: plugin/typescript
 module: ./src/index.ts
 schema: ./src/schema.graphql
-import_redirects:
+import_abis:
   - uri: "ens/uri-resolver.core.polywrap.eth"
-    info: ../../../../interfaces/uri-resolver/build-man/wrap.info
+    abi: ../../../../interfaces/uri-resolver/build-man/wrap.info
   - uri: "ens/ipfs.polywrap.eth"
-    info: ../../ipfs/build/wrap.info
+    abi: ../../ipfs/build/wrap.info

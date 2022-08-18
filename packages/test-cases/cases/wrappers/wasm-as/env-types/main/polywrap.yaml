@@ -4,6 +4,6 @@ language: wasm/assemblyscript
 build: ./polywrap.build.yaml
 schema: ./src/schema.graphql
 module: ./src/index.ts
-import_redirects:
+import_abis:
   - uri: "ens/externalenv.polywrap.eth"
-    info: ../external/build/wrap.info
+    abi: ../external/build/wrap.info

@@ -5,6 +5,7 @@ export const manifest: WrapManifest = {
   type: "plugin",
   version: "0.1",
   abi: {
+    version: "0.1",
     objectTypes: [
       {
         type: "ConvertResult",
@@ -25,15 +26,8 @@ export const manifest: WrapManifest = {
             scalar: { type: "String", name: "PC", required: true, kind: 4 },
           },
         ],
-        interfaces: [],
       },
     ],
-    enumTypes: [],
-    interfaceTypes: [],
-    importedObjectTypes: [],
-    importedModuleTypes: [],
-    importedEnumTypes: [],
-    importedEnvTypes: [],
     moduleType: {
       type: "Module",
       kind: 128,
@@ -115,8 +109,6 @@ export const manifest: WrapManifest = {
           },
         },
       ],
-      imports: [],
-      interfaces: [],
     }
   }
 };

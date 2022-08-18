@@ -330,22 +330,8 @@ export class Compiler {
 
       const manifest = await project.getManifest();
 
-      const abi: WrapAbi = {
-        ...state.abi,
-      };
-
-      const filteredAbi: Record<string, unknown> = { ...abi };
-
-      Object.keys(filteredAbi).forEach((key) => {
-        const value = filteredAbi[key];
-
-        if (value === null || value === undefined) {
-          delete filteredAbi[key];
-        }
-      });
-
       const type = (await this._isInterface()) ? "interface" : "wasm";
-      await generateWrapFile(filteredAbi, manifest.name, type, manifestPath);
+      await generateWrapFile(state.abi, manifest.name, type, manifestPath);
     };
 
     if (quiet) {

@@ -14,5 +14,5 @@ export async function serializeWrapManifest(
     await validateWrapManifest(manifest);
   }
 
-  return msgpackEncode(manifest);
+  return msgpackEncode(manifest, true);
 }

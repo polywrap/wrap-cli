@@ -5,9 +5,7 @@ export const manifest: WrapManifest = {
   type: "plugin",
   version: "0.1",
   abi: {
-    objectTypes: [],
-    enumTypes: [],
-    interfaceTypes: [],
+    version: "0.1",
     importedObjectTypes: [
       {
         type: "Ipfs_Options",
@@ -49,7 +47,6 @@ export const manifest: WrapManifest = {
               "Disable querying providers in parallel when resolving URIs",
           },
         ],
-        interfaces: [],
         uri: "ens/ipfs.polywrap.eth",
         namespace: "Ipfs",
         nativeType: "Options",
@@ -78,7 +75,6 @@ export const manifest: WrapManifest = {
             },
           },
         ],
-        interfaces: [],
         uri: "ens/ipfs.polywrap.eth",
         namespace: "Ipfs",
         nativeType: "ResolveResult",
@@ -205,8 +201,6 @@ export const manifest: WrapManifest = {
         isInterface: false,
       },
     ],
-    importedEnumTypes: [],
-    importedEnvTypes: [],
     envType: {
       type: "Env",
       kind: 65536,
@@ -223,7 +217,6 @@ export const manifest: WrapManifest = {
           comment: "Disable querying providers in parallel when resolving URIs",
         },
       ],
-      interfaces: [],
     },
     moduleType: {
       type: "Module",

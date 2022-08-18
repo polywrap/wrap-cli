@@ -169,6 +169,7 @@ export async function resolveImportsAndParseSchemas(
   );
 
   const subAbi: WrapAbi = {
+    version: "0.1",
     objectTypes: [],
     enumTypes: [],
     interfaceTypes: [],

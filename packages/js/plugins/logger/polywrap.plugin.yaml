@@ -3,6 +3,6 @@ name: Logger
 language: plugin/typescript
 module: ./src/index.ts
 schema: ./src/schema.graphql
-import_redirects:
+import_abis:
   - uri: "ens/logger.core.polywrap.eth"
-    info: ../../../interfaces/logger/build-man/wrap.info
+    abi: ../../../interfaces/logger/build-man/wrap.info

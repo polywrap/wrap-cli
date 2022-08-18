@@ -15,6 +15,7 @@ import {
 } from "@polywrap/schema-parse";
 
 export const abi: WrapAbi = {
+  version: "0.1",
   objectTypes: [
     {
       ...createObjectDefinition({ type: "CustomModuleType" }),

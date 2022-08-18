@@ -3,8 +3,19 @@
 import { PluginManifest as OldManifest } from "../0.1";
 import { PluginManifest as NewManifest } from "../0.2";
 
-export function migrate(_: OldManifest): NewManifest {
-  throw new Error(
-    "Plugin Polywrap manifest file is deprecated. Please update to 0.2"
-  );
+export function migrate(oldFormat: OldManifest): NewManifest {
+  return {
+    __type: "PluginManifest",
+    format: "0.2",
+    name: oldFormat.name,
+    language: oldFormat.language,
+    module: oldFormat.module,
+    schema: oldFormat.schema,
+    import_abis: oldFormat.import_redirects?.map(
+      (redirect) => ({
+        uri: redirect.uri,
+        abi: redirect.schema
+      })
+    )
+  };
 }

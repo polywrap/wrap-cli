@@ -5,10 +5,7 @@ export const manifest: WrapManifest = {
   type: "plugin",
   version: "0.1",
   abi: {
-    objectTypes: [],
-    enumTypes: [],
-    interfaceTypes: [],
-    importedObjectTypes: [],
+    version: "0.1",
     importedModuleTypes: [
       {
         type: "Logger_Module",
@@ -70,7 +67,6 @@ export const manifest: WrapManifest = {
         nativeType: "LogLevel",
       },
     ],
-    importedEnvTypes: [],
     moduleType: {
       type: "Module",
       kind: 128,

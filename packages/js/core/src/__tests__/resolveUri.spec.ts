@@ -156,7 +156,7 @@ describe("resolveUri", () => {
         return {
           manifest:
             args.authority === "ipfs" ?
-            msgpackEncode(testManifest) :
+            msgpackEncode(testManifest, true) :
             undefined,
         };
       }
@@ -170,7 +170,7 @@ describe("resolveUri", () => {
       return {
         manifest:
           args.authority === "my" ?
-          msgpackEncode(testManifest) :
+          msgpackEncode(testManifest, true) :
           undefined,
       };
     },

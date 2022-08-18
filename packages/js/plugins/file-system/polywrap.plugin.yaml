@@ -3,6 +3,6 @@ language: plugin/typescript
 name: FileSystem
 module: ./src/index.ts
 schema: ./src/schema.graphql
-import_redirects:
+import_abis:
   - uri: "ens/fs.polywrap.eth"
-    info: ../../../interfaces/file-system/build-man/wrap.info
+    abi: ../../../interfaces/file-system/build-man/wrap.info

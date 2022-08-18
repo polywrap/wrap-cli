@@ -10,8 +10,6 @@ import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 import { BindOutput } from "@polywrap/schema-bind";
 import { Abi } from "@polywrap/schema-parse";
 
-export type ImportRedirects = PolywrapManifest["import_redirects"];
-
 export interface ProjectConfig {
   rootDir: string;
   quiet?: boolean;
@@ -63,9 +61,7 @@ export abstract class Project<TManifest extends AnyProjectManifest> {
 
   public abstract getSchemaNamedPath(): Promise<string>;
 
-  public abstract getImportRedirects(): Promise<
-    PolywrapManifest["import_redirects"]
-  >;
+  public abstract getImportAbis(): Promise<PolywrapManifest["import_abis"]>;
 
   public abstract generateSchemaBindings(
     abi: Abi,

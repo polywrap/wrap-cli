@@ -5,9 +5,7 @@ export const manifest: WrapManifest = {
   type: "plugin",
   version: "0.1",
   abi: {
-    objectTypes: [],
-    enumTypes: [],
-    interfaceTypes: [],
+    version: "0.1",
     importedObjectTypes: [
       {
         type: "HTTP_Request",
@@ -76,7 +74,6 @@ export const manifest: WrapManifest = {
             scalar: { type: "String", name: "body", kind: 4 },
           },
         ],
-        interfaces: [],
         uri: "ens/http.polywrap.eth",
         namespace: "HTTP",
         nativeType: "Request",
@@ -100,7 +97,6 @@ export const manifest: WrapManifest = {
             scalar: { type: "String", name: "value", required: true, kind: 4 },
           },
         ],
-        interfaces: [],
         uri: "ens/http.polywrap.eth",
         namespace: "HTTP",
         nativeType: "Header",
@@ -124,7 +120,6 @@ export const manifest: WrapManifest = {
             scalar: { type: "String", name: "value", required: true, kind: 4 },
           },
         ],
-        interfaces: [],
         uri: "ens/http.polywrap.eth",
         namespace: "HTTP",
         nativeType: "UrlParam",
@@ -181,7 +176,6 @@ export const manifest: WrapManifest = {
             scalar: { type: "String", name: "body", kind: 4 },
           },
         ],
-        interfaces: [],
         uri: "ens/http.polywrap.eth",
         namespace: "HTTP",
         nativeType: "Response",
@@ -289,7 +283,6 @@ export const manifest: WrapManifest = {
         nativeType: "ResponseType",
       },
     ],
-    importedEnvTypes: [],
     moduleType: {
       type: "Module",
       kind: 128,
@@ -359,7 +352,6 @@ export const manifest: WrapManifest = {
         { type: "HTTP_ResponseType" },
         { type: "HTTP_Response" },
       ],
-      interfaces: [],
     },
   },
 };

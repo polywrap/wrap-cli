@@ -47,13 +47,7 @@ export const mockPluginManifest: WrapManifest = {
   type: "plugin",
   version: latestWrapManifestVersion,
   abi: {
-    "objectTypes": [],
-    "enumTypes": [],
-    "interfaceTypes": [],
-    "importedObjectTypes": [],
-    "importedModuleTypes": [],
-    "importedEnumTypes": [],
-    "importedEnvTypes": [],
+    "version": "0.1",
     "moduleType": {
       "type": "Module",
       "kind": 128,
@@ -63,7 +57,6 @@ export const mockPluginManifest: WrapManifest = {
           "name": "getData",
           "required": true,
           "kind": 64,
-          "arguments": [],
           "return": {
             "type": "Int",
             "name": "getData",
@@ -114,7 +107,6 @@ export const mockPluginManifest: WrapManifest = {
           "name": "deployContract",
           "required": true,
           "kind": 64,
-          "arguments": [],
           "return": {
             "type": "String",
             "name": "deployContract",
@@ -128,9 +120,7 @@ export const mockPluginManifest: WrapManifest = {
             }
           }
         }
-      ],
-      "imports": [],
-      "interfaces": []
+      ]
     }
   }
 }

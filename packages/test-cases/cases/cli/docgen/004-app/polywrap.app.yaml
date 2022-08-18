@@ -2,8 +2,8 @@ format: "0.2"
 name: test-app
 language: app/typescript
 schema: ./schema.graphql
-import_redirects:
+import_abis:
     - uri: "wrap://ens/ethereum.polywrap.eth"
-      info: "./../../../../../js/plugins/ethereum/build/wrap.info"
+      abi: "./../../../../../js/plugins/ethereum/build/wrap.info"
     - uri: "wrap://ipfs/QmVGwj3FtvhiErJ1wWbmRuHpvEQ3t1BPNESvEiMJM57p2y"
-      info: "./../../../../../js/plugins/logger/build/wrap.info"
+      abi: "./../../../../../js/plugins/logger/build/wrap.info"
