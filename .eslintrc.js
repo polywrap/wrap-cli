@@ -2,8 +2,10 @@ module.exports = {
   root: true,
   ignorePatterns: [
     "**/wrap/**/*.*",
+    "**/wrap-man/**/*.*",
     "**/infra-modules/**/*.*",
     "**/build/**/*.*",
+    "**/build-man/**/*.*",
     "**/__tests__/**/*.*",
     "**/node_modules/**/*.*",
     "**/coverage/**/*.*"

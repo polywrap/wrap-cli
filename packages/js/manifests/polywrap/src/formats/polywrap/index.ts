@@ -9,28 +9,28 @@ import {
   PolywrapManifest as PolywrapManifest_0_1
 } from "./0.1";
 import {
-  PolywrapManifest as PolywrapManifest_0_3_0
-} from "./0.3.0";
+  PolywrapManifest as PolywrapManifest_0_2
+} from "./0.2";
 
 export {
   PolywrapManifest_0_1,
-  PolywrapManifest_0_3_0,
+  PolywrapManifest_0_2,
 };
 
 export enum PolywrapManifestFormats {
   // NOTE: Patch fix for backwards compatability
   "v0.1.0" = "0.1.0",
   "v0.1" = "0.1",
-  "v0.3.0" = "0.3.0",
+  "v0.2" = "0.2",
 }
 
 export type AnyPolywrapManifest =
   | PolywrapManifest_0_1
-  | PolywrapManifest_0_3_0
+  | PolywrapManifest_0_2
 
-export type PolywrapManifest = PolywrapManifest_0_3_0;
+export type PolywrapManifest = PolywrapManifest_0_2;
 
-export const latestPolywrapManifestFormat = PolywrapManifestFormats["v0.3.0"]
+export const latestPolywrapManifestFormat = PolywrapManifestFormats["v0.2"]
 
 export { migratePolywrapManifest } from "./migrate";
 

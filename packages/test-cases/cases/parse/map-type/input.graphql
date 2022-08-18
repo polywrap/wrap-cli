@@ -1,0 +1,18 @@
+scalar Map
+
+type CustomType {
+  map: Map! @annotate(type: "Map<String!, Int>!")
+  mapOfArr: Map! @annotate(type: "Map<String!, [Int!]!>!")
+  mapOfObj: Map! @annotate(type: "Map<String!, AnotherType!>!")
+  mapOfArrOfObj: Map! @annotate(type: "Map<String!, [AnotherType!]!>!")
+}
+
+type AnotherType {
+  prop: String
+}
+
+type Module {
+  transformMap(
+    map: Map @annotate(type: "Map<String!, Int!>")
+  ): Map @annotate(type: "Map<String!, Int!>")
+}

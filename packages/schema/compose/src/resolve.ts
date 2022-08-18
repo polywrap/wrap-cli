@@ -5,14 +5,15 @@
 import {
   ExternalImport,
   LocalImport,
-  SchemaResolver,
-  SchemaResolvers,
+  AbiResolvers,
   SYNTAX_REFERENCE,
+  AbiResolver,
+  SchemaResolver,
 } from "./types";
 import { parseExternalImports, parseLocalImports, parseUse } from "./parse";
 import { renderSchema } from "./render";
-import { addHeader } from "./templates/header.mustache";
 import { checkDuplicateEnvProperties } from "./env";
+import { addHeader } from "./templates/header.mustache";
 
 import {
   WrapAbi,
@@ -129,7 +130,7 @@ export async function resolveUseStatements(
 export async function resolveImportsAndParseSchemas(
   schema: string,
   schemaPath: string,
-  resolvers: SchemaResolvers,
+  resolvers: AbiResolvers,
   noValidate = false
 ): Promise<WrapAbi> {
   const importKeywordCapture = /^#+["{3}]*import\s/gm;
@@ -138,9 +139,9 @@ export async function resolveImportsAndParseSchemas(
 
   const keywords = [...schema.matchAll(importKeywordCapture)];
   const externalImportStatements = [...schema.matchAll(externalImportCapture)];
-  const localImportStatments = [...schema.matchAll(localImportCapture)];
+  const localImportStatements = [...schema.matchAll(localImportCapture)];
   const totalStatements =
-    externalImportStatements.length + localImportStatments.length;
+    externalImportStatements.length + localImportStatements.length;
 
   if (keywords.length !== totalStatements) {
     throw Error(
@@ -163,11 +164,12 @@ export async function resolveImportsAndParseSchemas(
   );
 
   const localImportsToResolve: LocalImport[] = parseLocalImports(
-    localImportStatments,
+    localImportStatements,
     schemaPath
   );
 
   const subAbi: WrapAbi = {
+    version: "0.1",
     objectTypes: [],
     enumTypes: [],
     interfaceTypes: [],
@@ -189,7 +191,6 @@ export async function resolveImportsAndParseSchemas(
     subAbi,
     resolvers
   );
-
   const capabilitiesByModule = await resolveUseStatements(
     schema,
     schemaPath,
@@ -222,10 +223,8 @@ export async function resolveImportsAndParseSchemas(
     "$1"
   );
 
-  // Parse the newly formed schema
-  const abi = parseSchema(newSchema, { noValidate });
-
-  return abi;
+  // Parse and return the newly formed schema
+  return parseSchema(newSchema, { noValidate });
 }
 
 interface Namespaced {
@@ -646,7 +645,7 @@ function resolveInterfaces(
 
 async function resolveExternalImports(
   importsToResolve: ExternalImport[],
-  resolveSchema: SchemaResolver,
+  resolveAbi: AbiResolver,
   abi: WrapAbi
 ): Promise<string[]> {
   // Keep track of all imported object type names
@@ -656,14 +655,11 @@ async function resolveExternalImports(
     const { uri, namespace, importedTypes } = importToResolve;
 
     // Resolve the schema
-    const schema = await resolveSchema(uri);
+    const extAbi = await resolveAbi(uri);
 
-    if (!schema) {
-      throw Error(`Unable to resolve schema at "${uri}"`);
+    if (!extAbi) {
+      throw Error(`Unable to resolve abi at "${uri}"`);
     }
-
-    // Parse the schema into Abi
-    const extAbi = parseSchema(schema);
 
     const extTypesToImport = importedTypes;
     const starIdx = extTypesToImport.indexOf("*");
@@ -968,7 +964,7 @@ async function resolveLocalImports(
   importsToResolve: LocalImport[],
   resolveSchema: SchemaResolver,
   abi: WrapAbi,
-  resolvers: SchemaResolvers
+  resolvers: AbiResolvers
 ): Promise<void> {
   for (const importToResolve of importsToResolve) {
     const { importedTypes, path } = importToResolve;

@@ -9,7 +9,6 @@ import {
 
 import { AppManifest } from "@polywrap/polywrap-manifest-types-js";
 import { Client } from "@polywrap/core-js";
-import { ComposerOutput } from "@polywrap/schema-compose";
 import { bindSchema, BindOutput } from "@polywrap/schema-bind";
 import path from "path";
 import { WrapAbi } from "@polywrap/wrap-manifest-types-js";
@@ -95,24 +94,18 @@ export class AppProject extends Project<AppManifest> {
     return path.join(dir, manifest.source.schema);
   }
 
-  public async getImportRedirects(): Promise<
-    {
-      uri: string;
-      schema: string;
-    }[]
-  > {
+  public async getImportAbis(): Promise<AppManifest["import_abis"]> {
     const manifest = await this.getManifest();
-    return manifest.source.import_redirects || [];
+    return manifest.import_abis || [];
   }
 
   public async generateSchemaBindings(
-    composerOutput: ComposerOutput,
+    abi: WrapAbi,
     generationSubPath?: string
   ): Promise<BindOutput> {
     return bindSchema({
       projectName: await this.getName(),
-      abi: composerOutput.abi as WrapAbi,
-      schema: composerOutput.schema as string,
+      abi,
       outputDirAbs: this._getGenerationDirectory(generationSubPath),
       bindLanguage: appManifestLanguageToBindLanguage(
         await this.getManifestLanguage()

@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import { Client, MaybeAsync, executeMaybeAsyncFunction, Uri } from ".";
+import { Client, MaybeAsync, executeMaybeAsyncFunction } from ".";
+
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
 /**
  * Invocable plugin method.
@@ -71,18 +73,9 @@ export abstract class PluginModule<
   }
 }
 
-/** The plugin package's manifest */
-export interface PluginPackageManifest {
-  /** The Wrapper's schema */
-  schema: string;
-
-  /** All interface schemas implemented by this plugin. */
-  implements: Uri[];
-}
-
 export type PluginPackage<TConfig> = {
   factory: () => PluginModule<TConfig>;
-  manifest: PluginPackageManifest;
+  manifest: WrapManifest;
 };
 
 export type PluginFactory<TConfig> = (

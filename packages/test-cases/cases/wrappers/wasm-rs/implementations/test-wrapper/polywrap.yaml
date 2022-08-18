@@ -1,9 +1,9 @@
-format: 0.1.0
+format: "0.2"
 name: TestWrapper
 language: wasm/rust
 build: ./polywrap.build.yaml
 schema: ./schema.graphql
 module: ./Cargo.toml
-import_redirects:
+import_abis:
   - uri: wrap://ens/interface.eth
-    schema: ../test-interface/build/schema.graphql
+    abi: ../test-interface/build/wrap.info

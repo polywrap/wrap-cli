@@ -27,13 +27,12 @@ import {
 } from "@polywrap/polywrap-manifest-types-js";
 import { normalizePath } from "@polywrap/os-js";
 import { BindOptions, BindOutput, bindSchema } from "@polywrap/schema-bind";
-import { ComposerOutput } from "@polywrap/schema-compose";
+import { WrapAbi } from "@polywrap/schema-parse";
 import regexParser from "regex-parser";
 import path from "path";
 import { Schema as JsonSchema } from "jsonschema";
 import fs from "fs";
 import fsExtra from "fs-extra";
-import { Abi } from "@polywrap/wrap-manifest-types-js";
 
 export interface PolywrapProjectConfig extends ProjectConfig {
   polywrapManifestPath: string;
@@ -136,18 +135,13 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     return path.join(dir, manifest.source.schema);
   }
 
-  public async getImportRedirects(): Promise<
-    {
-      uri: string;
-      schema: string;
-    }[]
-  > {
+  public async getImportAbis(): Promise<PolywrapManifest["import_abis"]> {
     const manifest = await this.getManifest();
-    return manifest.source.import_redirects || [];
+    return manifest.import_abis || [];
   }
 
   public async generateSchemaBindings(
-    composerOutput: ComposerOutput,
+    abi: WrapAbi,
     generationSubPath?: string
   ): Promise<BindOutput> {
     const manifest = await this.getManifest();
@@ -166,8 +160,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
 
     const options: BindOptions = {
       projectName: manifest.project.name,
-      abi: composerOutput.abi as Abi,
-      schema: composerOutput.schema as string,
+      abi,
       outputDirAbs: moduleDirectory,
       bindLanguage,
     };

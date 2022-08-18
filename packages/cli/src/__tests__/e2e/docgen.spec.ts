@@ -14,7 +14,7 @@ Generate wrapper documentation
 
 Arguments:
   action                             
-    schema        Generate GraphQL schema
+    schema      Generate GraphQL schema
     docusaurus    Generate Docusaurus markdown
     jsdoc         Generate JSDoc markdown
    (choices: "schema", "docusaurus", "jsdoc")

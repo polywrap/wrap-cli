@@ -32,4 +32,11 @@ describe("Polywrap Manifest Validation", () => {
 
     expect(() => deserializePolywrapManifest(manifest)).toThrowError(/instance.source.module is not of a type\(s\) string/);
   });
+  it("Should deserialize manifest as expected", async () => {
+    const manifestPath = __dirname + "/manifest/polywrap/sanity/polywrap.yaml";
+    const manifest = fs.readFileSync(manifestPath, "utf-8");
+
+    const info = deserializePolywrapManifest(manifest)
+    expect(info.name).toEqual("package-name")
+  });
 });
