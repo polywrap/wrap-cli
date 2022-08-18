@@ -1,0 +1,11 @@
+format: "0.2"
+name: "Migration_sample"
+language: wasm/assemblyscript
+schema: ../schema.graphql
+module: ../index.ts
+build: ./polywrap.build.yaml
+meta: ./polywrap.meta.yaml
+deploy: ./polywrap.deploy.yaml
+import_abis:
+  - uri: "ens/ipfs.polywrap.eth"
+    abi: ../../../../../../../../interfaces/ipfs/build/schema.graphql

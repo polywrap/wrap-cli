@@ -1,6 +1,6 @@
-import { AppManifest, AppManifest_0_1 } from "..";
+import { PluginManifest, PluginManifest_0_2 } from "..";
 
-export const migrate = (manifest: AppManifest_0_1): AppManifest => {
+export const migrate = (manifest: PluginManifest_0_2): PluginManifest => {
   return {
     format: "0.3.0",
     project: {
@@ -9,13 +9,11 @@ export const migrate = (manifest: AppManifest_0_1): AppManifest => {
     },
     source: {
       schema: manifest.schema,
+      module: manifest.module ?? "",
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      import_abis: manifest.import_redirects?.map((x) => ({
-        uri: x.uri,
-        abi: x.schema,
-      })),
+      import_abis: manifest.import_abis,
     },
     // eslint-disable-next-line @typescript-eslint/naming-convention
-    __type: "AppManifest",
+    __type: "PluginManifest",
   };
 };

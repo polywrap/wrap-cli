@@ -38,25 +38,11 @@
           "type": "string",
           "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.graphql$"
         },
-        "import_redirects": {
-          "description": "Redirects for the schema's imports.",
+        "import_abis": {
+          "description": "Specify ABIs to be used for the import URIs within your schema.",
           "type": "array",
           "items": {
-            "type": "object",
-            "additionalProperties": false,
-            "properties": {
-              "uri": {
-                "description": "Import URI to be redirected.",
-                "type": "string",
-                "pattern": "^[wrap://]*[a-z\\-\\_0-9]+\\/.+$"
-              },
-              "schema": {
-                "description": "Path to a graphql schema to be used for the import.",
-                "type": "string",
-                "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.graphql$"
-              }
-            },
-            "required": ["uri", "schema"]
+            "$ref": "#/definitions/import_abis"
           }
         }
       }
@@ -87,6 +73,25 @@
           "pattern": "^\\.?\\.?(\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)*\\/[\\w\\-\\.]+\\.(yaml|json)$"
         }
       }
+    }
+  },
+  "definitions": {
+    "import_abis": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "uri": {
+          "description": "One of the schema's import URI.",
+          "type": "string",
+          "pattern": "^[wrap://]*[a-z\\-\\_0-9]+\\/.+$"
+        },
+        "abi": {
+          "description": "Path to a local ABI (or schema). Supported file formats: [*.graphql, *.info, *.json, *.yaml]",
+          "type": "string",
+          "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.(info|graphql|json|yaml)$"
+        }
+      },
+      "required": ["uri", "abi"]
     }
   }
 }

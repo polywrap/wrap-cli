@@ -11,7 +11,10 @@ export const migrate = (manifest: PluginManifest_0_1): PluginManifest => {
       schema: manifest.schema,
       module: manifest.module ?? "",
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      import_redirects: manifest.import_redirects,
+      import_abis: manifest.import_redirects?.map((x) => ({
+        uri: x.uri,
+        abi: x.schema,
+      })),
     },
     // eslint-disable-next-line @typescript-eslint/naming-convention
     __type: "PluginManifest",

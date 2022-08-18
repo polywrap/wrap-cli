@@ -11,6 +11,7 @@ import {
 
 import AppManifestSchema_0_1 from "@polywrap/polywrap-manifest-schemas/formats/polywrap.app/0.1.json";
 import AppManifestSchema_0_2 from "@polywrap/polywrap-manifest-schemas/formats/polywrap.app/0.2.json";
+import AppManifestSchema_0_3_0 from "@polywrap/polywrap-manifest-schemas/formats/polywrap.app/0.3.0.json";
 
 import {
   Schema,
@@ -28,6 +29,7 @@ const schemas: AppManifestSchemas = {
   "0.1.0": AppManifestSchema_0_1,
   "0.1": AppManifestSchema_0_1,
   "0.2": AppManifestSchema_0_2,
+  "0.3.0": AppManifestSchema_0_3_0,
 };
 
 const validator = new Validator();

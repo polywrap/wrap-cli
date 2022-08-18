@@ -12,15 +12,19 @@ import {
 } from ".";
 
 import {
-  migrate as migrate_0_1_to_0_2
-} from "./migrators/0.1_to_0.2";
+  migrate as migrate_0_1_to_0_3_0
+} from "./migrators/0.1_to_0.3.0";
+import {
+  migrate as migrate_0_2_to_0_3_0
+} from "./migrators/0.2_to_0.3.0";
 
 type Migrator = {
   [key in AppManifestFormats]?: (m: AnyAppManifest) => AppManifest;
 };
 
 export const migrators: Migrator = {
-  "0.1": migrate_0_1_to_0_2,
+  "0.1": migrate_0_1_to_0_3_0,
+  "0.2": migrate_0_2_to_0_3_0,
 };
 
 export function migrateAppManifest(

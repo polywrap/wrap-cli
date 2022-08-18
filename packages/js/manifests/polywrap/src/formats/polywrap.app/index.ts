@@ -11,10 +11,14 @@ import {
 import {
   AppManifest as AppManifest_0_2
 } from "./0.2";
+import {
+  AppManifest as AppManifest_0_3_0
+} from "./0.3.0";
 
 export {
   AppManifest_0_1,
   AppManifest_0_2,
+  AppManifest_0_3_0,
 };
 
 export enum AppManifestFormats {
@@ -22,15 +26,17 @@ export enum AppManifestFormats {
   "v0.1.0" = "0.1.0",
   "v0.1" = "0.1",
   "v0.2" = "0.2",
+  "v0.3.0" = "0.3.0",
 }
 
 export type AnyAppManifest =
   | AppManifest_0_1
   | AppManifest_0_2
+  | AppManifest_0_3_0
 
-export type AppManifest = AppManifest_0_2;
+export type AppManifest = AppManifest_0_3_0;
 
-export const latestAppManifestFormat = AppManifestFormats["v0.2"]
+export const latestAppManifestFormat = AppManifestFormats["v0.3.0"]
 
 export { migrateAppManifest } from "./migrate";
 

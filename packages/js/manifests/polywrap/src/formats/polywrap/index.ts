@@ -11,10 +11,14 @@ import {
 import {
   PolywrapManifest as PolywrapManifest_0_2
 } from "./0.2";
+import {
+  PolywrapManifest as PolywrapManifest_0_3_0
+} from "./0.3.0";
 
 export {
   PolywrapManifest_0_1,
   PolywrapManifest_0_2,
+  PolywrapManifest_0_3_0,
 };
 
 export enum PolywrapManifestFormats {
@@ -22,15 +26,17 @@ export enum PolywrapManifestFormats {
   "v0.1.0" = "0.1.0",
   "v0.1" = "0.1",
   "v0.2" = "0.2",
+  "v0.3.0" = "0.3.0",
 }
 
 export type AnyPolywrapManifest =
   | PolywrapManifest_0_1
   | PolywrapManifest_0_2
+  | PolywrapManifest_0_3_0
 
-export type PolywrapManifest = PolywrapManifest_0_2;
+export type PolywrapManifest = PolywrapManifest_0_3_0;
 
-export const latestPolywrapManifestFormat = PolywrapManifestFormats["v0.2"]
+export const latestPolywrapManifestFormat = PolywrapManifestFormats["v0.3.0"]
 
 export { migratePolywrapManifest } from "./migrate";
 

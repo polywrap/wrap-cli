@@ -37,6 +37,6 @@ describe("Polywrap Manifest Validation", () => {
     const manifest = fs.readFileSync(manifestPath, "utf-8");
 
     const info = deserializePolywrapManifest(manifest)
-    expect(info.name).toEqual("package-name")
+    expect(info.project.name).toEqual("package-name")
   });
 });

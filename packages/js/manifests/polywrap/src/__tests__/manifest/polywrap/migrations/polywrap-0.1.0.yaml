@@ -1,5 +1,5 @@
 format: 0.1.0
-name: "Migrate_0-1-0_to_0-3-0"
+name: "Migration_sample"
 language: wasm/assemblyscript
 schema: ../schema.graphql
 module: ../index.ts

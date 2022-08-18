@@ -1,6 +1,6 @@
-import { PolywrapManifest, PolywrapManifest_0_1 } from "..";
+import { PolywrapManifest, PolywrapManifest_0_2 } from "..";
 
-export const migrate = (manifest: PolywrapManifest_0_1): PolywrapManifest => {
+export const migrate = (manifest: PolywrapManifest_0_2): PolywrapManifest => {
   const shouldHaveExtensions =
     manifest.build || manifest.deploy || manifest.meta;
 
@@ -20,10 +20,7 @@ export const migrate = (manifest: PolywrapManifest_0_1): PolywrapManifest => {
       schema: manifest.schema,
       module: manifest.module,
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      import_abis: manifest.import_redirects?.map((x) => ({
-        uri: x.uri,
-        abi: x.schema,
-      })),
+      import_abis: manifest.import_abis,
     },
     extensions: shouldHaveExtensions ? maybeExtensions : undefined,
     // eslint-disable-next-line @typescript-eslint/naming-convention

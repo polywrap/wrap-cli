@@ -33,18 +33,9 @@ export interface AppManifest {
      */
     schema: string;
     /**
-     * Redirects for the schema's imports.
+     * Specify ABIs to be used for the import URIs within your schema.
      */
-    import_redirects?: {
-      /**
-       * Import URI to be redirected.
-       */
-      uri: string;
-      /**
-       * Path to a graphql schema to be used for the import.
-       */
-      schema: string;
-    }[];
+    import_abis?: ImportAbis[];
   };
   /**
    * Project extension files (build, meta, deploy, infra).
@@ -68,4 +59,14 @@ export interface AppManifest {
     infra?: string;
   };
   __type: "AppManifest";
+}
+export interface ImportAbis {
+  /**
+   * One of the schema's import URI.
+   */
+  uri: string;
+  /**
+   * Path to a local ABI (or schema). Supported file formats: [*.graphql, *.info, *.json, *.yaml]
+   */
+  abi: string;
 }

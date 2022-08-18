@@ -1,13 +1,13 @@
 format: 0.3.0
 project:
-  name: "Migrate_0-1-0_to_0-3-0"
+  name: "Migration_sample"
   type: wasm/assemblyscript
 source:
   schema: ../schema.graphql
   module: ../index.ts
-  import_redirects:
+  import_abis:
   - uri: "ens/ipfs.polywrap.eth"
-    schema: ../../../../../../../../interfaces/ipfs/build/schema.graphql
+    abi: ../../../../../../../../interfaces/ipfs/build/schema.graphql
 extensions:
   build: ./polywrap.build.yaml
   meta: ./polywrap.meta.yaml
