@@ -13,7 +13,10 @@ import fs from "fs";
 import path from "path";
 import * as gluegun from "gluegun";
 import YAML from "js-yaml";
-import { deserializeWrapManifest, validateWrapManifest } from "@polywrap/wrap-manifest-types-js";
+import {
+  deserializeWrapManifest,
+  validateWrapManifest,
+} from "@polywrap/wrap-manifest-types-js";
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 import { WrapAbi } from "@polywrap/schema-parse";
 
@@ -98,9 +101,11 @@ export class SchemaComposer {
         );
 
         if (!fs.existsSync(abiPath)) {
-          throw Error(intlMsg.lib_schemaComposer_abi_not_found({
-            path: abiPath
-          }));
+          throw Error(
+            intlMsg.lib_schemaComposer_abi_not_found({
+              path: abiPath,
+            })
+          );
         }
 
         if (abiPath.endsWith(".info")) {
@@ -108,14 +113,16 @@ export class SchemaComposer {
         } else if (abiPath.endsWith(".graphql")) {
           return await this._loadGraphqlAbi(abiPath, import_abis);
         } else if (abiPath.endsWith(".json")) {
-          return await this._loadJsonAbi(abiPath)
+          return await this._loadJsonAbi(abiPath);
         } else if (abiPath.endsWith(".yaml")) {
           return await this._loadYamlAbi(abiPath);
         } else {
-          throw Error(intlMsg.lib_schemaComposer_unknown_abi({
-            path: abiPath,
-            types: ["*.info", "*.graphql", "*.json", "*.yaml"].toString()
-          }));
+          throw Error(
+            intlMsg.lib_schemaComposer_unknown_abi({
+              path: abiPath,
+              types: ["*.info", "*.graphql", "*.json", "*.yaml"].toString(),
+            })
+          );
         }
       }
     }
@@ -141,10 +148,8 @@ export class SchemaComposer {
         absolutePath: path,
       },
       resolvers: {
-        external: (uri: string) =>
-          this._fetchExternalAbi(uri, import_abis),
-        local: (path: string) =>
-          Promise.resolve(this._fetchLocalSchema(path)),
+        external: (uri: string) => this._fetchExternalAbi(uri, import_abis),
+        local: (path: string) => Promise.resolve(this._fetchLocalSchema(path)),
       },
     });
   }
@@ -164,7 +169,7 @@ export class SchemaComposer {
       version: "0.1",
       type: "interface",
       name: "temp",
-      abi: result
+      abi: result,
     });
 
     // Return ABI
@@ -177,9 +182,11 @@ export class SchemaComposer {
     const result = YAML.safeLoad(yaml);
 
     if (!result) {
-      throw Error(intlMsg.lib_schemaComposer_invalid_yaml({
-        path: path
-      }));
+      throw Error(
+        intlMsg.lib_schemaComposer_invalid_yaml({
+          path: path,
+        })
+      );
     }
 
     // Validate the ABI's structure
@@ -187,7 +194,7 @@ export class SchemaComposer {
       version: "0.1",
       type: "interface",
       name: "temp",
-      abi: result as WrapAbi
+      abi: result as WrapAbi,
     });
 
     // Return ABI
