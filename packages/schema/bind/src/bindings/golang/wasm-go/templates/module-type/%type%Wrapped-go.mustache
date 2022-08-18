@@ -1,0 +1,35 @@
+package types
+
+{{#methods.length}}
+import (
+  "github.com/consideritdone/polywrap-go/polywrap"
+  "some/library/to/methods"
+)
+{{/methods.length}}
+
+{{#methods}}
+func {{#toUpper}}{{name}}{{/toUpper}}Wrapped(argsBuf []byte, envSize uint32) []byte {
+  var env *Env
+  {{#env}}
+  {{#required}}
+  if (envSize == 0) {
+    panic("Environment is not set, and it is required by method 'objectMethod'")
+  }
+  {{/required}}
+  if (envSize > 0) {
+    envBuf := polywrap.WrapLoadEnv(envSize);
+    env = EnvFromBuffer(envBuf);
+  }
+  {{/env}}
+
+  {{#arguments.length}}
+  args: = Deserialize{{#toUpper}}{{name}}{{/toUpper}}Args(argsBuf)
+  {{/arguments.length}}
+
+  result := methods.{{#toUpper}}{{name}}{{/toUpper}}({{#arguments.length}}args{{/arguments.length}}{{^arguments.length}}nil{{/arguments.length}}{{#env}}, env{{/env}})
+  return Serialize{{#toUpper}}{{name}}{{/toUpper}}Result(result);
+}
+{{^last}}
+
+{{/last}}
+{{/methods}}

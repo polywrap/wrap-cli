@@ -1,0 +1,24 @@
+if value == nil {
+  writer.WriteNil()
+} else if len(value) == 0 {
+  writer.WriteNil()
+} else {
+  for {{#nextIter}}i{{/nextIter}} := range value{{#getPrevIter}}i{{/getPrevIter}} {
+    writer.Write{{#key}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/key}}({{#currIter}}i{{/currIter}})
+    {{#scalar}}
+    {{> value_serialize_scalar}}
+    {{/scalar}}
+    {{#enum}}
+    {{> value_serialize_enum}}
+    {{/enum}}
+    {{#array}}
+    {{> value_serialize_array}}
+    {{/array}}
+    {{#map}}
+    {{> value_serialize_map}}
+    {{/map}}
+    {{#object}}
+    {{> value_serialize_object}}
+    {{/object}}
+  }
+}

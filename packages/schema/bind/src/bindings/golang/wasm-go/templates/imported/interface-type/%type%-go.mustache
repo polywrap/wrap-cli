@@ -1,0 +1,19 @@
+package {{#toSnakeCase}}{{namespace}}{{/toSnakeCase}}
+
+{{#capabilities}}
+{{#getImplementations}}
+{{#enabled}}
+import "github.com/consideritdone/polywrap-go/polywrap"
+{{/enabled}}
+{{/getImplementations}}
+{{/capabilities}}
+
+{{#capabilities}}
+{{#getImplementations}}
+{{#enabled}}
+func {{#toUpper}}{{namespace}}{{/toUpper}}Implementations() []string {
+  return polywrap.WrapGetImplementations("{{uri}}")
+}
+{{/enabled}}
+{{/getImplementations}}
+{{/capabilities}}

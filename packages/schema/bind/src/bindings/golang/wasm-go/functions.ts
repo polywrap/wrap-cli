@@ -82,6 +82,14 @@ export const readPointer: MustacheFn = () => {
   }
 }
 
+export const toSnakeCase: MustacheFn = () => {
+  return (text: string, render: (template: string) => string): string => {
+    text = render(text).replace( /([A-Z])/g, "_$1");
+    text = text.startsWith("_") ? text.slice(1) : text;
+    return text.toLowerCase();
+  }
+}
+
 export const handleKeywords: MustacheFn = () => {
   return (text: string, render: (template: string) => string): string => {
     const rendered: string = render(text);
