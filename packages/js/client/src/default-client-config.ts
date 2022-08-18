@@ -26,8 +26,28 @@ export const getDefaultClientConfig = Tracer.traceFunc(
   "client-js: getDefaultClientConfig",
   (): ClientConfig<Uri> => {
     return {
-      envs: [],
-      redirects: [],
+      envs: [
+        {
+          uri: new Uri("wrap://ens/graph-node.polywrap.eth"),
+          env: {
+            provider: "https://api.thegraph.com",
+          },
+        },
+      ],
+      redirects: [
+        {
+          from: new Uri("wrap://ens/sha3.polywrap.eth"),
+          to: new Uri("wrap://ens/goerli/sha3.wrappers.eth"),
+        },
+        {
+          from: new Uri("wrap://ens/uts46.polywrap.eth"),
+          to: new Uri("wrap://ens/goerli/uts46.wrappers.eth"),
+        },
+        {
+          from: new Uri("wrap://ens/graph-node.polywrap.eth"),
+          to: new Uri("wrap://ens/goerli/graph-node.wrappers.eth"),
+        },
+      ],
       plugins: [
         // IPFS is required for downloading Polywrap packages
         {
