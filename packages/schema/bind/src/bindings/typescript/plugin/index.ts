@@ -61,11 +61,7 @@ export const generateBinding: GenerateBindingFn = (
     ),
   };
 
-  output.entries = renderTemplates(
-    templatePath(""),
-    { ...abi, manifest },
-    {}
-  );
+  output.entries = renderTemplates(templatePath(""), { ...abi, manifest }, {});
 
   return result;
 };
