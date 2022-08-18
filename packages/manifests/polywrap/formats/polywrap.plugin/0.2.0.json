@@ -31,7 +31,7 @@
       "description": "Project source files.",
       "type": "object",
       "additionalProperties": false,
-      "required": ["schema"],
+      "required": ["schema", "module"],
       "properties": {
         "module": {
           "description": "Path to the project's entry point.",
@@ -42,6 +42,27 @@
           "description": "Path to the project's graphql schema.",
           "type": "string",
           "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.graphql$"
+        },
+        "import_redirects": {
+          "description": "Redirects for the schema's imports.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "uri": {
+                "description": "Import URI to be redirected.",
+                "type": "string",
+                "pattern": "^[wrap://]*[a-z\\-\\_0-9]+\\/.+$"
+              },
+              "schema": {
+                "description": "Path to a graphql schema to be used for the import.",
+                "type": "string",
+                "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.graphql$"
+              }
+            },
+            "required": ["uri", "schema"]
+          }
         }
       }
     },
@@ -70,27 +91,6 @@
           "type": "string",
           "pattern": "^\\.?\\.?(\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)*\\/[\\w\\-\\.]+\\.(yaml|json)$"
         }
-      }
-    },
-    "import_redirects": {
-      "description": "Redirects for the schema's imports.",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "uri": {
-            "description": "Import URI to be redirected.",
-            "type": "string",
-            "pattern": "^[wrap://]*[a-z\\-\\_0-9]+\\/.+$"
-          },
-          "schema": {
-            "description": "Path to a graphql schema to be used for the import.",
-            "type": "string",
-            "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.graphql$"
-          }
-        },
-        "required": ["uri", "schema"]
       }
     }
   }

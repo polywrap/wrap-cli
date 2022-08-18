@@ -9,10 +9,10 @@ export const migrate = (manifest: PluginManifest_0_1): PluginManifest => {
     },
     source: {
       schema: manifest.schema,
-      module: manifest.module,
+      module: manifest.module ?? "",
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      import_redirects: manifest.import_redirects,
     },
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    import_redirects: manifest.import_redirects,
     // eslint-disable-next-line @typescript-eslint/naming-convention
     __type: "PluginManifest",
   };

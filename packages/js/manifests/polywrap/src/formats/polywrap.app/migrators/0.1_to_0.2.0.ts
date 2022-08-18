@@ -9,9 +9,9 @@ export const migrate = (manifest: AppManifest_0_1): AppManifest => {
     },
     source: {
       schema: manifest.schema,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      import_redirects: manifest.import_redirects,
     },
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    import_redirects: manifest.import_redirects,
     // eslint-disable-next-line @typescript-eslint/naming-convention
     __type: "AppManifest",
   };

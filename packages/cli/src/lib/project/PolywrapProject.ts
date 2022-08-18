@@ -143,7 +143,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     }[]
   > {
     const manifest = await this.getManifest();
-    return manifest.import_redirects || [];
+    return manifest.source.import_redirects || [];
   }
 
   public async generateSchemaBindings(

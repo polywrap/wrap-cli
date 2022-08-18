@@ -19,9 +19,9 @@ export const migrate = (manifest: PolywrapManifest_0_1): PolywrapManifest => {
     source: {
       schema: manifest.schema,
       module: manifest.module,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      import_redirects: manifest.import_redirects,
     },
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    import_redirects: manifest.import_redirects,
     extensions: shouldHaveExtensions ? maybeExtensions : undefined,
     // eslint-disable-next-line @typescript-eslint/naming-convention
     __type: "PolywrapManifest",

@@ -32,6 +32,19 @@ export interface AppManifest {
      * Path to the project's graphql schema.
      */
     schema: string;
+    /**
+     * Redirects for the schema's imports.
+     */
+    import_redirects?: {
+      /**
+       * Import URI to be redirected.
+       */
+      uri: string;
+      /**
+       * Path to a graphql schema to be used for the import.
+       */
+      schema: string;
+    }[];
   };
   /**
    * Project extension files (build, meta, deploy, infra).
@@ -54,18 +67,5 @@ export interface AppManifest {
      */
     infra?: string;
   };
-  /**
-   * Redirects for the schema's imports.
-   */
-  import_redirects?: {
-    /**
-     * Import URI to be redirected.
-     */
-    uri: string;
-    /**
-     * Path to a graphql schema to be used for the import.
-     */
-    schema: string;
-  }[];
   __type: "AppManifest";
 }

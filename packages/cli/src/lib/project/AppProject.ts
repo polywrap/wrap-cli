@@ -102,7 +102,7 @@ export class AppProject extends Project<AppManifest> {
     }[]
   > {
     const manifest = await this.getManifest();
-    return manifest.import_redirects || [];
+    return manifest.source.import_redirects || [];
   }
 
   public async generateSchemaBindings(
