@@ -10,7 +10,7 @@ import {
 } from ".";
 
 import PluginManifestSchema_0_1 from "@polywrap/polywrap-manifest-schemas/formats/polywrap.plugin/0.1.json";
-import PluginManifestSchema_0_2_0 from "@polywrap/polywrap-manifest-schemas/formats/polywrap.plugin/0.2.0.json";
+import PluginManifestSchema_0_3_0 from "@polywrap/polywrap-manifest-schemas/formats/polywrap.plugin/0.3.0.json";
 
 import {
   Schema,
@@ -27,7 +27,7 @@ const schemas: PluginManifestSchemas = {
   // NOTE: Patch fix for backwards compatability
   "0.1.0": PluginManifestSchema_0_1,
   "0.1": PluginManifestSchema_0_1,
-  "0.2.0": PluginManifestSchema_0_2_0,
+  "0.3.0": PluginManifestSchema_0_3_0,
 };
 
 const validator = new Validator();

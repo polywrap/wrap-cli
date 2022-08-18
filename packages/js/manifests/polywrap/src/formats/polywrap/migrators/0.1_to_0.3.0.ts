@@ -11,7 +11,7 @@ export const migrate = (manifest: PolywrapManifest_0_1): PolywrapManifest => {
   };
 
   return {
-    format: "0.2.0",
+    format: "0.3.0",
     project: {
       name: manifest.name,
       type: manifest.language,
