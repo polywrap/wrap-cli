@@ -16,7 +16,7 @@ import {
   Args_shake_128,
   Args_shake_256,
   manifest,
-} from "./wrap";
+} from "./wrap-man";
 
 import {
   sha3_512,

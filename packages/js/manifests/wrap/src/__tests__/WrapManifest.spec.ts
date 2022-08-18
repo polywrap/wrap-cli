@@ -78,7 +78,7 @@ const testManifest: WrapManifest = {
 
 describe("Polywrap Manifest Validation", () => {
   it("Should succeed", async () => {
-    const manifest = msgpackEncode(testManifest);
+    const manifest = msgpackEncode(testManifest, true);
     expect(await deserializeWrapManifest(manifest)).toMatchObject(testManifest);
   });
 
@@ -86,7 +86,7 @@ describe("Polywrap Manifest Validation", () => {
     const manifest = msgpackEncode({
       ...testManifest,
       version: "bad-str",
-    });
+    }, true);
 
     await expect(() => deserializeWrapManifest(manifest)).rejects.toThrow(
       /Unrecognized WrapManifest schema version/
@@ -97,7 +97,7 @@ describe("Polywrap Manifest Validation", () => {
     const manifest = msgpackEncode({
       ...testManifest,
       not_accepted_field: "not_accepted_field",
-    });
+    }, true);
 
     await expect(() => deserializeWrapManifest(manifest)).rejects.toThrow(
       /not allowed to have the additional property "not_accepted_field"/
@@ -108,7 +108,7 @@ describe("Polywrap Manifest Validation", () => {
     const manifest = msgpackEncode({
       ...testManifest,
       name: undefined,
-    });
+    }, true);
 
     await expect(() => deserializeWrapManifest(manifest)).rejects.toThrow(
       /instance requires property "name"/
@@ -119,7 +119,7 @@ describe("Polywrap Manifest Validation", () => {
     const manifest = msgpackEncode({
       ...testManifest,
       name: "foo bar baz $%##$@#$@#$@#$#$",
-    });
+    }, true);
 
     await expect(() => deserializeWrapManifest(manifest)).rejects.toThrow(
       /instance.name does not match pattern/
@@ -130,7 +130,7 @@ describe("Polywrap Manifest Validation", () => {
     const manifest = msgpackEncode({
       ...testManifest,
       abi: true,
-    });
+    }, true);
 
     await expect(() => deserializeWrapManifest(manifest)).rejects.toThrow(
       /instance.abi is not of a type\(s\) object/

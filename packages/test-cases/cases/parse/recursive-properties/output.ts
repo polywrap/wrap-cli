@@ -7,6 +7,7 @@ import {
 } from "../../../../schema/parse/src/abi";
 
 export const abi: WrapAbi = {
+  version: "0.1",
   objectTypes: [
     {
       ...createObjectDefinition({ type: "Object" }),

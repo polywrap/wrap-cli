@@ -13,11 +13,28 @@ import {
 } from "@polywrap/schema-parse";
 import { WrapAbi } from "@polywrap/wrap-manifest-types-js";
 import path from "path";
+import { latestWrapManifestVersion } from "@polywrap/wrap-manifest-types-js";
 
 export { Functions };
 
 const templatePath = (subpath: string) =>
   path.join(__dirname, "./templates", subpath);
+
+const sort = (obj: Record<string, unknown>) =>
+  Object.keys(obj)
+    .sort()
+    .reduce((map: Record<string, unknown>, key: string) => {
+      if (typeof obj[key] === "object") {
+        map[key] = sort(obj[key] as Record<string, unknown>);
+
+        if (Array.isArray(obj[key])) {
+          map[key] = Object.values(map[key] as Record<string, unknown>);
+        }
+      } else {
+        map[key] = obj[key];
+      }
+      return map;
+    }, {});
 
 export const generateBinding: GenerateBindingFn = (
   options: BindOptions
@@ -33,12 +50,18 @@ export const generateBinding: GenerateBindingFn = (
     outputDirAbs: options.outputDirAbs,
   };
   const output = result.output;
+  const manifest = {
+    name: options.projectName,
+    type: "plugin",
+    version: latestWrapManifestVersion,
+    abi: JSON.stringify(
+      sort((options.abi as unknown) as Record<string, unknown>),
+      null,
+      2
+    ),
+  };
 
-  output.entries = renderTemplates(
-    templatePath(""),
-    { ...abi, schema: options.schema },
-    {}
-  );
+  output.entries = renderTemplates(templatePath(""), { ...abi, manifest }, {});
 
   return result;
 };

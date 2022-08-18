@@ -1,9 +1,9 @@
-format: 0.1.0
+format: "0.2"
 name: Asyncify
 language: wasm/rust
 build: ./polywrap.build.yaml
 schema: ./schema.graphql
 module: ./Cargo.toml
-import_redirects:
+import_abis:
   - uri: "ens/memory-storage.polywrap.eth"
-    schema: ./plugin.graphql
+    abi: ./plugin.wrap.info

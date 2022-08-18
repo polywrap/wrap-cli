@@ -1,0 +1,262 @@
+{
+  "moduleType": {
+    "kind": 128,
+    "methods": [
+      {
+        "arguments": [
+          {
+            "kind": 34,
+            "map": {
+              "key": {
+                "kind": 4,
+                "name": "map",
+                "required": true,
+                "type": "String"
+              },
+              "kind": 262146,
+              "name": "map",
+              "scalar": {
+                "kind": 4,
+                "name": "map",
+                "required": true,
+                "type": "Int"
+              },
+              "type": "Map<String, Int>",
+              "value": {
+                "kind": 4,
+                "name": "map",
+                "required": true,
+                "type": "Int"
+              }
+            },
+            "name": "map",
+            "type": "Map<String, Int>"
+          }
+        ],
+        "kind": 64,
+        "name": "transformMap",
+        "required": true,
+        "return": {
+          "kind": 34,
+          "map": {
+            "key": {
+              "kind": 4,
+              "name": "transformMap",
+              "required": true,
+              "type": "String"
+            },
+            "kind": 262146,
+            "name": "transformMap",
+            "scalar": {
+              "kind": 4,
+              "name": "transformMap",
+              "required": true,
+              "type": "Int"
+            },
+            "type": "Map<String, Int>",
+            "value": {
+              "kind": 4,
+              "name": "transformMap",
+              "required": true,
+              "type": "Int"
+            }
+          },
+          "name": "transformMap",
+          "type": "Map<String, Int>"
+        },
+        "type": "Method"
+      }
+    ],
+    "type": "Module"
+  },
+  "objectTypes": [
+    {
+      "kind": 1,
+      "properties": [
+        {
+          "kind": 34,
+          "map": {
+            "key": {
+              "kind": 4,
+              "name": "map",
+              "required": true,
+              "type": "String"
+            },
+            "kind": 262146,
+            "name": "map",
+            "required": true,
+            "scalar": {
+              "kind": 4,
+              "name": "map",
+              "type": "Int"
+            },
+            "type": "Map<String, Int>",
+            "value": {
+              "kind": 4,
+              "name": "map",
+              "type": "Int"
+            }
+          },
+          "name": "map",
+          "required": true,
+          "type": "Map<String, Int>"
+        },
+        {
+          "kind": 34,
+          "map": {
+            "array": {
+              "item": {
+                "kind": 4,
+                "name": "mapOfArr",
+                "required": true,
+                "type": "Int"
+              },
+              "kind": 18,
+              "name": "mapOfArr",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "mapOfArr",
+                "required": true,
+                "type": "Int"
+              },
+              "type": "[Int]"
+            },
+            "key": {
+              "kind": 4,
+              "name": "mapOfArr",
+              "required": true,
+              "type": "String"
+            },
+            "kind": 262146,
+            "name": "mapOfArr",
+            "required": true,
+            "type": "Map<String, [Int]>",
+            "value": {
+              "item": {
+                "kind": 4,
+                "name": "mapOfArr",
+                "required": true,
+                "type": "Int"
+              },
+              "kind": 18,
+              "name": "mapOfArr",
+              "required": true,
+              "scalar": {
+                "kind": 4,
+                "name": "mapOfArr",
+                "required": true,
+                "type": "Int"
+              },
+              "type": "[Int]"
+            }
+          },
+          "name": "mapOfArr",
+          "required": true,
+          "type": "Map<String, [Int]>"
+        },
+        {
+          "kind": 34,
+          "map": {
+            "key": {
+              "kind": 4,
+              "name": "mapOfObj",
+              "required": true,
+              "type": "String"
+            },
+            "kind": 262146,
+            "name": "mapOfObj",
+            "object": {
+              "kind": 8192,
+              "name": "mapOfObj",
+              "required": true,
+              "type": "AnotherType"
+            },
+            "required": true,
+            "type": "Map<String, AnotherType>",
+            "value": {
+              "kind": 8192,
+              "name": "mapOfObj",
+              "required": true,
+              "type": "AnotherType"
+            }
+          },
+          "name": "mapOfObj",
+          "required": true,
+          "type": "Map<String, AnotherType>"
+        },
+        {
+          "kind": 34,
+          "map": {
+            "array": {
+              "item": {
+                "kind": 8192,
+                "name": "mapOfArrOfObj",
+                "required": true,
+                "type": "AnotherType"
+              },
+              "kind": 18,
+              "name": "mapOfArrOfObj",
+              "object": {
+                "kind": 8192,
+                "name": "mapOfArrOfObj",
+                "required": true,
+                "type": "AnotherType"
+              },
+              "required": true,
+              "type": "[AnotherType]"
+            },
+            "key": {
+              "kind": 4,
+              "name": "mapOfArrOfObj",
+              "required": true,
+              "type": "String"
+            },
+            "kind": 262146,
+            "name": "mapOfArrOfObj",
+            "required": true,
+            "type": "Map<String, [AnotherType]>",
+            "value": {
+              "item": {
+                "kind": 8192,
+                "name": "mapOfArrOfObj",
+                "required": true,
+                "type": "AnotherType"
+              },
+              "kind": 18,
+              "name": "mapOfArrOfObj",
+              "object": {
+                "kind": 8192,
+                "name": "mapOfArrOfObj",
+                "required": true,
+                "type": "AnotherType"
+              },
+              "required": true,
+              "type": "[AnotherType]"
+            }
+          },
+          "name": "mapOfArrOfObj",
+          "required": true,
+          "type": "Map<String, [AnotherType]>"
+        }
+      ],
+      "type": "CustomType"
+    },
+    {
+      "kind": 1,
+      "properties": [
+        {
+          "kind": 34,
+          "name": "prop",
+          "scalar": {
+            "kind": 4,
+            "name": "prop",
+            "type": "String"
+          },
+          "type": "String"
+        }
+      ],
+      "type": "AnotherType"
+    }
+  ]
+}

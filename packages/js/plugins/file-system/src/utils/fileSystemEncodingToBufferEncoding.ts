@@ -1,4 +1,4 @@
-import { FileSystem_Encoding, FileSystem_EncodingEnum } from "../wrap";
+import { FileSystem_Encoding, FileSystem_EncodingEnum } from "../wrap-man";
 
 const fileSystemEncodingToBufferEncoding = (
   encoding: FileSystem_Encoding | null | undefined

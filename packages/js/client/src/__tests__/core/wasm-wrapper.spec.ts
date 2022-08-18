@@ -1,8 +1,9 @@
 import { buildWrapper } from "@polywrap/test-env-js";
 import { msgpackDecode } from "@polywrap/msgpack-js";
-import { Uri, PluginModule, Subscription } from "../..";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import fs from "fs";
+import { Uri, PluginModule, Subscription } from "../..";
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { getClient } from "../utils/getClient";
 import { makeMemoryStoragePlugin } from "../e2e/memory-storage";
 
@@ -31,10 +32,7 @@ describe("wasm-wrapper", () => {
 
     return {
       factory: () => new MockPlugin({}),
-      manifest: {
-        schema: ``,
-        implements: [],
-      },
+      manifest: {} as WrapManifest,
     };
   };
 
@@ -198,10 +196,7 @@ describe("wasm-wrapper", () => {
           uri: "ens/mock-plugin.eth",
           plugin: {
             factory: () => ({} as PluginModule<{}>),
-            manifest: {
-              schema: "",
-              implements: [],
-            },
+            manifest: {} as WrapManifest
           },
         },
       ],

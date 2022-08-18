@@ -37,7 +37,7 @@ import {
   Network,
   Connection as SchemaConnection,
   manifest,
-} from "./wrap";
+} from "./wrap-man";
 import { Connection } from "./Connection";
 import * as Mapping from "./utils/mapping";
 import { parseArgs } from "./utils/parsing";
