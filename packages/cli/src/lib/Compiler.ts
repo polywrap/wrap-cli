@@ -5,6 +5,7 @@ import {
   copyArtifactsFromBuildImage,
   createBuildImage,
   displayPath,
+  ensureDockerDaemonRunning,
   generateDockerfile,
   generateDockerImageName,
   generateWrapFile,
@@ -236,6 +237,7 @@ export class Compiler {
 
   private async _buildSourcesInDocker(): Promise<string> {
     const { project, outputDir } = this._config;
+    await ensureDockerDaemonRunning();
     const buildManifestDir = await project.getBuildManifestDir();
     const buildManifest = await project.getBuildManifest();
     const imageName =
