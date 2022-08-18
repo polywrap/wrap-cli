@@ -11,6 +11,7 @@ import {
   IUriResolutionResponse,
   toUri,
 } from "@polywrap/core-js";
+import { getEnvFromUriHistory } from "../getEnvFromUriHistory";
 
 export class PluginResolver implements IUriResolver {
   pluginUri: Uri;
@@ -57,8 +58,8 @@ export class PluginWrapperPackage implements IWrapPackage {
     ) => Wrapper
   ) {}
 
-  async createWrapper(client: Client): Promise<Wrapper> {
-    const env = client.getEnvByUri(this.uri, {});
+  async createWrapper(client: Client, uriHistory: Uri[]): Promise<Wrapper> {
+    const env = getEnvFromUriHistory(uriHistory, client);
 
     return this.createPluginWrapper(this.uri, this.pluginPackage, env);
   }

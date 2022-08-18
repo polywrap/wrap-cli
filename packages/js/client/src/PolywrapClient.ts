@@ -44,6 +44,7 @@ import {
   initWrapper,
   IWrapPackage,
 } from "@polywrap/core-js";
+import { getUriHistory } from "@polywrap/uri-resolvers-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Tracer } from "@polywrap/tracing-js";
@@ -71,7 +72,7 @@ export class PolywrapClient implements Client {
   private _contexts: Map<string, PolywrapClientConfig<Uri>> = new Map();
 
   constructor(
-    config?: Partial<PolywrapClientConfig>,
+    config?: Partial<PolywrapClientConfig<Uri | string>>,
     options?: { noDefaults?: boolean }
   ) {
     try {
@@ -380,7 +381,7 @@ export class PolywrapClient implements Client {
 
       const wrapper = await this._loadWrapper(typedOptions.uri, { contextId });
 
-      return await this.invokeWrapper({ ...typedOptions, wrapper });
+      return await this.invokeWrapper({ ...typedOptions, wrapper, contextId });
     } catch (e) {
       error = e;
     }
@@ -502,7 +503,7 @@ export class PolywrapClient implements Client {
 
   @Tracer.traceMethod("PolywrapClient: tryResolveToWrapper")
   public async tryResolveToWrapper<TUri extends Uri | string>(
-    options: TryResolveToWrapperOptions<TUri, ClientConfig>
+    options: TryResolveToWrapperOptions<TUri>
   ): Promise<UriResolutionResponse<unknown>> {
     const { contextId, shouldClearContext } = this._setContext(
       options.contextId,
@@ -740,10 +741,10 @@ export class PolywrapClient implements Client {
     uri: Uri,
     options?: Contextualized
   ): Promise<Wrapper> {
-    const { result } = await this.tryResolveToWrapper({
+    const { result, history } = await this.tryResolveToWrapper({
       uri,
-      contextId: options?.contextId,
       history: "none",
+      contextId: options?.contextId,
     });
 
     if (!result.ok) {
@@ -778,7 +779,13 @@ export class PolywrapClient implements Client {
       packageOrWrapper = uriPackageOrWrapper.wrapper;
     }
 
-    const wrapper = await initWrapper(packageOrWrapper, this);
+    const client = contextualizeClient(this, options?.contextId);
+
+    const uriHistory: Uri[] = !history
+      ? [uri]
+      : [uri, ...getUriHistory(history)];
+
+    const wrapper = await initWrapper(packageOrWrapper, client, uriHistory);
 
     return wrapper;
   }

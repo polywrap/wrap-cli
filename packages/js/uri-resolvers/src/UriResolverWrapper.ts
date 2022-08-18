@@ -18,7 +18,9 @@ import {
   deserializeWrapManifest,
   WrapManifest,
 } from "@polywrap/wrap-manifest-types-js";
+import { getEnvFromUriHistory } from "./getEnvFromUriHistory";
 import { CreateWrapperFunc } from "./extendable";
+import { getUriHistory } from "./getUriHistory";
 
 export class UriResolverWrapper implements IUriResolver<unknown> {
   constructor(
@@ -79,7 +81,10 @@ const tryResolveUriWithImplementation = async (
   result: Result<UriResolverInterface.MaybeUriOrManifest | undefined, unknown>;
   history?: IUriResolutionStep<unknown>[];
 }> => {
-  const response = await client.tryResolveToWrapper(implementationUri);
+  const response = await client.tryResolveToWrapper({
+    uri: implementationUri,
+    history: "none",
+  });
 
   if (!response.result.ok) {
     return {
@@ -109,7 +114,11 @@ const tryResolveUriWithImplementation = async (
     wrapperOrPackage = uriPackageOrWrapper.wrapper;
   }
 
-  const wrapper = await initWrapper(wrapperOrPackage, client);
+  const uriHistory: Uri[] = !response.history
+    ? [uri]
+    : [uri, ...getUriHistory(response.history)];
+
+  const wrapper = await initWrapper(wrapperOrPackage, client, uriHistory);
 
   const invokeResult = await client.invokeWrapper<UriResolverInterface.MaybeUriOrManifest>(
     {
@@ -149,8 +158,13 @@ export class WasmPackage implements IWrapPackage {
     private readonly createWrapperFunc: CreateWrapperFunc
   ) {}
 
-  async createWrapper(client: Client): Promise<Wrapper> {
-    const env = client.getEnvByUri(this.uri, {});
+  async createWrapper(client: Client, uriHistory: Uri[]): Promise<Wrapper> {
+    const env = getEnvFromUriHistory(uriHistory, client);
+    if (uriHistory[0].uri.endsWith("simple-env-types/build")) {
+      console.log("ENV", env);
+      console.log("1", uriHistory);
+      console.log("END ENV");
+    }
 
     return this.createWrapperFunc(this.uri, this.manifest, this.resolver, env);
   }

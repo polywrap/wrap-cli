@@ -6,6 +6,7 @@ import {
   UriResolutionResponse,
 } from "@polywrap/core-js";
 import { ICacheResolver } from "../cache";
+import { getUriHistory } from "../getUriHistory";
 
 // This resolver uses the internal client cache
 // It only caches wrappers
@@ -40,8 +41,13 @@ export class LegacyCacheResolver implements ICacheResolver<unknown> {
       if (response.result.value.type === "wrapper") {
         cache.set(uri.uri, response.result.value.wrapper);
       } else if (response.result.value.type === "package") {
+        const uriHistory: Uri[] = !response.history
+          ? [uri]
+          : [uri, ...getUriHistory(response.history)];
+
         const wrapper = await response.result.value.package.createWrapper(
-          client
+          client,
+          uriHistory
         );
         cache.set(uri.uri, wrapper);
 

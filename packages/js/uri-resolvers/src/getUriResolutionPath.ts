@@ -4,12 +4,12 @@ export const getUriResolutionPath = (
   history: IUriResolutionStep<unknown>[]
 ): IUriResolutionStep<unknown>[] => {
   return history.filter((x) => {
-    let resultUri: Uri | undefined;
     if (!x.response.result.ok) {
       return true;
     }
 
     const uriPackageOrWrapper = x.response.result.value;
+    let resultUri: Uri | undefined;
 
     if (uriPackageOrWrapper.type === "uri") {
       resultUri = uriPackageOrWrapper.uri;
