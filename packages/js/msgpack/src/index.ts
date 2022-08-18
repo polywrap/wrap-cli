@@ -82,8 +82,15 @@ export function msgpackEncode(
 }
 
 export function msgpackDecode(
-  buffer: ArrayLike<number> | BufferSource
+  buffer: ArrayLike<number> | BufferSource,
+  sanitizeResult = false
 ): unknown {
   const decoder = new Decoder(extensionCodec);
-  return decoder.decode(buffer);
+  const result = decoder.decode(buffer);
+
+  if (sanitizeResult && typeof result === "object" && !shouldIgnore(result)) {
+    return sanitize(result as Record<string, unknown>);
+  } else {
+    return result;
+  }
 }
