@@ -1,9 +1,9 @@
-format: 0.1.0
+format: "0.2"
 name: EnvType
 language: wasm/assemblyscript
 build: ./polywrap.build.yaml
 schema: ./src/schema.graphql
 module: ./src/index.ts
-import_redirects:
+import_abis:
   - uri: "ens/externalenv.polywrap.eth"
-    schema: ../external/build/schema.graphql
+    abi: ../external/build/wrap.info

@@ -5,7 +5,10 @@ import {
   isScalarType,
 } from "../..";
 
-import { PropertyDefinition } from "@polywrap/wrap-manifest-types-js";
+import {
+  PropertyDefinition,
+  ScalarDefinition,
+} from "@polywrap/wrap-manifest-types-js";
 
 const toBoolean = (val: unknown) => !!val;
 
@@ -20,7 +23,7 @@ export function setPropertyType(
   if (isScalarType(type.type)) {
     property.scalar = createScalarDefinition({
       name: name,
-      type: type.type,
+      type: type.type as ScalarDefinition["type"],
       required: type.required,
     });
     return;

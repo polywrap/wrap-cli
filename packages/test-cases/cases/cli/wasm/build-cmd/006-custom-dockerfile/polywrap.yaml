@@ -1,4 +1,4 @@
-format: 0.1.0
+format: "0.2"
 name: custom-dockerfile
 language: wasm/assemblyscript
 build: ./polywrap.build.yaml

@@ -1,5 +1,5 @@
 import { httpPlugin } from "../..";
-import { Response } from "../../wrap";
+import { Response } from "../../wrap-man";
 
 import { PolywrapClient } from "@polywrap/client-js";
 import nock from "nock";

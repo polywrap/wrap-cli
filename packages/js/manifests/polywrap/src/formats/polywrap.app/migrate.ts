@@ -11,12 +11,16 @@ import {
   latestAppManifestFormat
 } from ".";
 
+import {
+  migrate as migrate_0_1_to_0_2
+} from "./migrators/0.1_to_0.2";
 
 type Migrator = {
   [key in AppManifestFormats]?: (m: AnyAppManifest) => AppManifest;
 };
 
 export const migrators: Migrator = {
+  "0.1": migrate_0_1_to_0_2,
 };
 
 export function migrateAppManifest(
@@ -33,5 +37,12 @@ export function migrateAppManifest(
     throw new Error(`Unrecognized AppManifestFormat "${manifest.format}"`);
   }
 
-  throw new Error(`This should never happen, AppManifest migrators is empty. from: ${from}, to: ${to}`);
+  const migrator = migrators[from];
+  if (!migrator) {
+    throw new Error(
+      `Migrator from AppManifestFormat "${from}" to "${to}" is not available`
+    );
+  }
+
+  return migrator(manifest);
 }
