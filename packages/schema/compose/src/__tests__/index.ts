@@ -16,6 +16,7 @@ export interface TestCase {
   name: string;
   input: ComposerOptions;
   abi: Abi;
+  schema: string | undefined;
 }
 
 type TestCases = {
@@ -75,6 +76,9 @@ async function importCase(
   // Fetch the output abi
   const moduleAbi = await readNamedExportIfExists<Abi>("abi", "output/module.ts", directory);
 
+  // Fetch the output schema
+  const moduleSchema = readFileIfExists("output/module.graphql", directory);
+
   const resolveExternal = async (uri: string): Promise<Abi> => {
     let abi = createAbi()
     const generatedAbi = await readNamedExportIfExists<Abi>("abi", `imports-ext/${uri}/module.ts`, directory)
@@ -120,5 +124,6 @@ async function importCase(
     name,
     input,
     abi: moduleAbi as Abi,
+    schema: moduleSchema
   };
 }

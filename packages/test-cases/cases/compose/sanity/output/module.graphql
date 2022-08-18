@@ -1,0 +1,461 @@
+### Polywrap Header START ###
+scalar UInt
+scalar UInt8
+scalar UInt16
+scalar UInt32
+scalar Int
+scalar Int8
+scalar Int16
+scalar Int32
+scalar Bytes
+scalar BigInt
+scalar BigNumber
+scalar JSON
+scalar Map
+
+directive @imported(
+  uri: String!
+  namespace: String!
+  nativeType: String!
+) on OBJECT | ENUM
+
+directive @imports(
+  types: [String!]!
+) on OBJECT
+
+directive @capability(
+  type: String!
+  uri: String!
+  namespace: String!
+) repeatable on OBJECT
+
+directive @enabled_interface on OBJECT
+
+directive @annotate(type: String!) on FIELD
+
+directive @env(required: Boolean!) on FIELD_DEFINITION
+
+### Polywrap Header END ###
+
+"""
+Module comment
+"""
+type Module implements Interface_Module @imports(
+  types: [
+    "Namespace_Module",
+    "Namespace_NestedObjectType",
+    "Namespace_ObjectType",
+    "Namespace_Imported_NestedObjectType",
+    "Namespace_Imported_ObjectType",
+    "Namespace_CustomType",
+    "Namespace_CustomEnum",
+    "Namespace_Imported_Enum",
+    "JustModule_Module",
+    "Interface_InterfaceObject1",
+    "Interface_InterfaceObject2",
+    "Interface_Object",
+    "Interface_NestedInterfaceObject",
+    "Interface_Module",
+    "Interface_ModuleInterfaceArgument",
+    "Interface_NestedModuleInterfaceArgument"
+  ]
+) @capability(
+  type: "getImplementations",
+  uri: "test.eth",
+  namespace: "Namespace"
+) {
+  """
+  method1 comment
+  """
+  method1(
+    """
+    str comment
+    """
+    str: String!
+    """
+    optStr comment
+    """
+    optStr: String
+    u: UInt!
+    """
+    uArrayArray comment
+    """
+    uArrayArray: [[UInt]]!
+    """
+    implObject comment
+    """
+    implObject: LocalImplementationObject!
+    """
+    Map<String!, Int!> comment
+    """
+    map: Map! @annotate(type: "Map<String!, Int!>!")
+  ): String!
+
+  """
+  method2 comment
+  """
+  method2(
+    arg: [String!]!
+  ): [Int32!]!
+
+  abstractModuleMethod(
+    arg: Interface_ModuleInterfaceArgument!
+  ): Interface_InterfaceObject2!
+}
+
+type Env {
+  foo: String!
+}
+
+"""
+CustomModuleType multi-line comment
+line 2
+"""
+type CustomModuleType {
+  """
+  str comment
+  """
+  str: String!
+  """
+  optStr comment
+  """
+  optStr: String
+  u: UInt!
+  optU: UInt
+  u8: UInt8!
+  i: Int!
+  i8: Int8!
+  bytes: Bytes!
+  uArray: [UInt!]!
+  uOptArray: [UInt!]
+  optStrOptArray: [String]
+  """
+  crazyArray comment
+  """
+  crazyArray: [[[[UInt32!]]!]]
+  commonType: CommonType!
+  optMap: Map @annotate(type: "Map<String!, Int>")
+  """
+  customType comment
+  """
+  customType: Namespace_CustomType!
+}
+
+type AnotherModuleType {
+  prop: String
+}
+
+type TypeFromInterface implements AnotherModuleType {
+  prop2: UInt32!
+  prop: String
+}
+
+"""
+ImplementationObject comment
+"""
+type ImplementationObject implements Interface_InterfaceObject1 & Interface_InterfaceObject2 {
+  """
+  anotherProp comment
+  """
+  anotherProp: String
+  str: String!
+  uint8: UInt8!
+  str2: String!
+  object: Interface_Object
+}
+
+type LocalImplementationObject implements LocalInterfaceObject {
+  uint8: UInt8!
+  str: String!
+}
+
+type LocalInterfaceObject {
+  str: String!
+}
+
+"""
+CommonType comment
+"""
+type CommonType {
+  prop: UInt8!
+  nestedObject: NestedType!
+  """
+  objectArray comment
+  """
+  objectArray: [[ArrayObject]]!
+  anotherLocal: AnotherLocal!
+}
+
+"""
+NestedType comment
+"""
+type NestedType {
+  prop: String!
+}
+
+"""
+ArrayObject comment
+"""
+type ArrayObject {
+  prop: String!
+}
+
+type AnotherLocal {
+  prop: String!
+}
+
+### Imported Modules START ###
+
+"""
+Module comment
+"""
+type Namespace_Module @imported(
+  uri: "test.eth",
+  namespace: "Namespace",
+  nativeType: "Module"
+) @enabled_interface {
+  method1(
+    str: String!
+    optStr: String
+    u: UInt!
+    optU: UInt
+    uArrayArray: [[UInt]]!
+  ): String!
+
+  """
+  method2 comment
+  """
+  method2(
+    """
+    arg comment
+    """
+    arg: [String!]!
+  ): [Int32!]!
+
+  localObjects(
+    nestedLocalObject: Namespace_NestedObjectType
+    localObjectArray: [Namespace_NestedObjectType!]
+  ): Namespace_NestedObjectType
+
+  importedObjects(
+    nestedLocalObject: Namespace_Imported_NestedObjectType
+    localObjectArray: [Namespace_Imported_NestedObjectType!]
+  ): Namespace_Imported_NestedObjectType
+}
+
+type JustModule_Module @imported(
+  uri: "just.module.eth",
+  namespace: "JustModule",
+  nativeType: "Module"
+) {
+  method(
+    arg: [String!]!
+  ): [Int32!]!
+}
+
+"""
+Module comment
+"""
+type Interface_Module @imported(
+  uri: "test-interface.eth",
+  namespace: "Interface",
+  nativeType: "Module"
+) {
+  """
+  abstractModuleMethod comment
+  """
+  abstractModuleMethod(
+    """
+    arg comment
+    """
+    arg: Interface_ModuleInterfaceArgument!
+  ): Interface_InterfaceObject2!
+}
+
+### Imported Modules END ###
+
+### Imported Objects START ###
+
+type Namespace_NestedObjectType @imported(
+  uri: "test.eth",
+  namespace: "Namespace",
+  nativeType: "NestedObjectType"
+) {
+  nestedObject: Namespace_ObjectType!
+}
+
+type Namespace_ObjectType @imported(
+  uri: "test.eth",
+  namespace: "Namespace",
+  nativeType: "ObjectType"
+) {
+  prop: String!
+}
+
+"""
+Imported_NestedObjectType comment
+"""
+type Namespace_Imported_NestedObjectType @imported(
+  uri: "test.eth",
+  namespace: "Namespace",
+  nativeType: "Imported_NestedObjectType"
+) {
+  nestedObject: Namespace_Imported_ObjectType!
+}
+
+type Namespace_Imported_ObjectType @imported(
+  uri: "test.eth",
+  namespace: "Namespace",
+  nativeType: "Imported_ObjectType"
+) {
+  prop: String!
+}
+
+"""
+CustomType comment
+"""
+type Namespace_CustomType @imported(
+  uri: "test.eth",
+  namespace: "Namespace",
+  nativeType: "CustomType"
+) {
+  str: String!
+  optStr: String
+  u: UInt!
+  optU: UInt
+  u8: UInt8!
+  u16: UInt16!
+  u32: UInt32!
+  i: Int!
+  i8: Int8!
+  i16: Int16!
+  i32: Int32!
+  bytes: Bytes!
+  uArray: [UInt!]!
+  uOptArray: [UInt!]
+  optUOptArray: [UInt]
+  optStrOptArray: [String]
+  uArrayArray: [[UInt!]!]!
+  uOptArrayOptArray: [[UInt32]]!
+  uArrayOptArrayArray: [[[UInt32!]!]]!
+  crazyArray: [[[[UInt32!]]!]]
+  object: Namespace_ObjectType!
+  optObject: Namespace_ObjectType
+  nestedObject: Namespace_NestedObjectType!
+  optNestedObject: Namespace_NestedObjectType
+  optNestedObjectArray: [Namespace_NestedObjectType]!
+  importedNestedObject: Namespace_Imported_NestedObjectType!
+  optImportedNestedObjectArray: [Namespace_Imported_NestedObjectType]!
+  enum: Namespace_CustomEnum!
+  optEnum: Namespace_CustomEnum
+  importedEnum: Namespace_Imported_Enum!
+  """
+  optImportedEnum comment
+  """
+  optImportedEnum: Namespace_Imported_Enum
+}
+
+"""
+InterfaceObject1 comment
+"""
+type Interface_InterfaceObject1 @imported(
+  uri: "test-interface.eth",
+  namespace: "Interface",
+  nativeType: "InterfaceObject1"
+) {
+  str: String!
+  """
+  InterfaceObject1_uint8 comment
+  """
+  uint8: UInt8!
+}
+
+"""
+InterfaceObject2 comment
+"""
+type Interface_InterfaceObject2 implements Interface_NestedInterfaceObject @imported(
+  uri: "test-interface.eth",
+  namespace: "Interface",
+  nativeType: "InterfaceObject2"
+) {
+  str2: String!
+  object: Interface_Object
+}
+
+"""
+Object comment
+"""
+type Interface_Object @imported(
+  uri: "test-interface.eth",
+  namespace: "Interface",
+  nativeType: "Object"
+) {
+  uint8: UInt8!
+}
+
+"""
+NestedInterfaceObject comment
+"""
+type Interface_NestedInterfaceObject @imported(
+  uri: "test-interface.eth",
+  namespace: "Interface",
+  nativeType: "NestedInterfaceObject"
+) {
+  """
+  object comment
+  """
+  object: Interface_Object
+}
+
+"""
+ModuleInterfaceArgument comment
+"""
+type Interface_ModuleInterfaceArgument implements Interface_NestedModuleInterfaceArgument @imported(
+  uri: "test-interface.eth",
+  namespace: "Interface",
+  nativeType: "ModuleInterfaceArgument"
+) {
+  str: String!
+  """
+  uint8 comment
+  """
+  uint8: UInt8!
+}
+
+"""
+NestedModuleInterfaceArgument comment
+"""
+type Interface_NestedModuleInterfaceArgument @imported(
+  uri: "test-interface.eth",
+  namespace: "Interface",
+  nativeType: "NestedModuleInterfaceArgument"
+) {
+  uint8: UInt8!
+}
+
+enum Namespace_CustomEnum @imported(
+  uri: "test.eth",
+  namespace: "Namespace",
+  nativeType: "CustomEnum"
+) {
+  STRING
+  BYTES
+}
+
+"""
+Imported_Enum comment
+"""
+enum Namespace_Imported_Enum @imported(
+  uri: "test.eth",
+  namespace: "Namespace",
+  nativeType: "Imported_Enum"
+) {
+  STRING
+  BYTES
+}
+
+### Imported Objects END ###
+
+### Imported Envs START ###
+
+### Imported Envs END ###

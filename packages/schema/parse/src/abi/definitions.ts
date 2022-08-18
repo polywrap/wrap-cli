@@ -240,6 +240,7 @@ export function createArrayPropertyDefinition(
   const result = createPropertyDefinition({
     name: args.name,
     type: args.type,
+    required: args.required,
     array: createArrayDefinition(args),
   });
   return comment ? { ...result, comment } : result;
@@ -253,6 +254,7 @@ export function createMapPropertyDefinition(
   const result = createPropertyDefinition({
     name: args.name,
     type: args.type,
+    required: args.required,
     map: createMapDefinition(args),
   });
   return comment ? { ...result, comment } : result;
@@ -266,6 +268,7 @@ export function createScalarPropertyDefinition(
   const result = createPropertyDefinition({
     name: args.name,
     type: args.type,
+    required: args.required,
     scalar: createScalarDefinition(args),
   });
   return comment ? { ...result, comment } : result;
@@ -279,6 +282,7 @@ export function createEnumPropertyDefinition(
   const result = createPropertyDefinition({
     name: args.name,
     type: args.type,
+    required: args.required,
     enum: createEnumRef(args),
   });
   return comment ? { ...result, comment } : result;
@@ -292,6 +296,7 @@ export function createObjectPropertyDefinition(
   const result = createPropertyDefinition({
     name: args.name,
     type: args.type,
+    required: args.required,
     object: createObjectRef(args),
   });
   return comment ? { ...result, comment } : result;

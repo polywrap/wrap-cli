@@ -9,7 +9,11 @@ import {
   moduleCapabilities,
   addAnnotations,
 } from "@polywrap/schema-parse";
-import { WrapAbi } from "@polywrap/wrap-manifest-types-js";
+import {
+  GenericDefinition,
+  WrapAbi
+} from "@polywrap/wrap-manifest-types-js";
+
 // Remove mustache's built-in HTML escaping
 Mustache.escape = (value) => value;
 
@@ -19,6 +23,14 @@ export function renderSchema(abi: WrapAbi, header: boolean): string {
   abi = transformAbi(abi, toGraphQLType);
   abi = transformAbi(abi, moduleCapabilities());
   abi = transformAbi(abi, addAnnotations);
+  abi = transformAbi(abi, {
+    enter: {
+      GenericDefinition: (def: GenericDefinition) => {
+        const comment = (def as any).comment || null;
+        return { ...def, comment };
+      }
+    }
+  });
 
   let schema = Mustache.render(schemaTemplate, {
     abi,

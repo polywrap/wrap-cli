@@ -42,8 +42,8 @@ export const abi: WrapAbi = {
       },
     }),
   ],
-  moduleType: {
-    ...createModuleDefinition({ comment: "Module comment" }),
+  moduleType: createModuleDefinition({
+    comment: "Module comment",
     imports: [
       { type: "Namespace_Module" },
       { type: "Namespace_NestedObjectType" },
@@ -66,16 +66,14 @@ export const abi: WrapAbi = {
       createInterfaceImplementedDefinition({ type: "Interface_Module" }),
     ],
     methods: [
-      {
-        ...createMethodDefinition({
+      createMethodDefinition({
+        name: "method1",
+        return: createScalarPropertyDefinition({
           name: "method1",
-          return: createScalarPropertyDefinition({
-            name: "method1",
-            type: "String",
-            required: true,
-          }),
-          comment: "method1 comment",
+          type: "String",
+          required: true,
         }),
+        comment: "method1 comment",
         arguments: [
           createScalarPropertyDefinition({
             name: "str",
@@ -130,20 +128,18 @@ export const abi: WrapAbi = {
             required: true,
           }),
         ],
-      },
-      {
-        ...createMethodDefinition({
+      }),
+      createMethodDefinition({
+        name: "method2",
+        comment: "method2 comment",
+        return: createArrayPropertyDefinition({
           name: "method2",
-          comment: "method2 comment",
-          return: createArrayPropertyDefinition({
+          type: "[Int32]",
+          required: true,
+          item: createScalarDefinition({
             name: "method2",
-            type: "[Int32]",
             required: true,
-            item: createScalarDefinition({
-              name: "method2",
-              required: true,
-              type: "Int32",
-            }),
+            type: "Int32",
           }),
         }),
         arguments: [
@@ -158,15 +154,13 @@ export const abi: WrapAbi = {
             }),
           }),
         ],
-      },
-      {
-        ...createMethodDefinition({
+      }),
+      createMethodDefinition({
+        name: "abstractModuleMethod",
+        return: createObjectPropertyDefinition({
           name: "abstractModuleMethod",
-          return: createObjectPropertyDefinition({
-            name: "abstractModuleMethod",
-            type: "Interface_InterfaceObject2",
-            required: true,
-          }),
+          type: "Interface_InterfaceObject2",
+          required: true,
         }),
         arguments: [
           createObjectPropertyDefinition({
@@ -175,15 +169,13 @@ export const abi: WrapAbi = {
             type: "Interface_ModuleInterfaceArgument",
           }),
         ],
-      },
-    ],
-  },
-  objectTypes: [
-    {
-      ...createObjectDefinition({
-        type: "CustomModuleType",
-        comment: "CustomModuleType multi-line comment\nline 2",
       }),
+    ],
+  }),
+  objectTypes: [
+    createObjectDefinition({
+      type: "CustomModuleType",
+      comment: "CustomModuleType multi-line comment\nline 2",
       properties: [
         createScalarPropertyDefinition({
           name: "str",
@@ -300,15 +292,15 @@ export const abi: WrapAbi = {
           comment: "customType comment",
         }),
       ],
-    },
-    {
-      ...createObjectDefinition({ type: "AnotherModuleType" }),
+    }),
+    createObjectDefinition({
+      type: "AnotherModuleType",
       properties: [
         createScalarPropertyDefinition({ name: "prop", type: "String" }),
       ],
-    },
-    {
-      ...createObjectDefinition({ type: "TypeFromInterface" }),
+    }),
+    createObjectDefinition({
+      type: "TypeFromInterface",
       interfaces: [
         createInterfaceImplementedDefinition({ type: "AnotherModuleType" }),
       ],
@@ -320,20 +312,18 @@ export const abi: WrapAbi = {
         }),
         createScalarPropertyDefinition({ name: "prop", type: "String" }),
       ],
-    },
-    {
-      ...createObjectDefinition({
-        type: "ImplementationObject",
-        interfaces: [
-          createInterfaceImplementedDefinition({
-            type: "Interface_InterfaceObject1",
-          }),
-          createInterfaceImplementedDefinition({
-            type: "Interface_InterfaceObject2",
-          }),
-        ],
-        comment: "ImplementationObject comment",
-      }),
+    }),
+    createObjectDefinition({
+      type: "ImplementationObject",
+      interfaces: [
+        createInterfaceImplementedDefinition({
+          type: "Interface_InterfaceObject1",
+        }),
+        createInterfaceImplementedDefinition({
+          type: "Interface_InterfaceObject2",
+        }),
+      ],
+      comment: "ImplementationObject comment",
       properties: [
         createScalarPropertyDefinition({
           name: "anotherProp",
@@ -360,16 +350,14 @@ export const abi: WrapAbi = {
           type: "Interface_Object",
         }),
       ],
-    },
-    {
-      ...createObjectDefinition({
-        type: "LocalImplementationObject",
-        interfaces: [
-          createInterfaceImplementedDefinition({
-            type: "LocalInterfaceObject",
-          }),
-        ],
-      }),
+    }),
+    createObjectDefinition({
+      type: "LocalImplementationObject",
+      interfaces: [
+        createInterfaceImplementedDefinition({
+          type: "LocalInterfaceObject",
+        }),
+      ],
       properties: [
         createScalarPropertyDefinition({
           name: "uint8",
@@ -382,11 +370,9 @@ export const abi: WrapAbi = {
           required: true,
         }),
       ],
-    },
-    {
-      ...createObjectDefinition({
-        type: "LocalInterfaceObject",
-      }),
+    }),
+    createObjectDefinition({
+      type: "LocalInterfaceObject",
       properties: [
         createScalarPropertyDefinition({
           name: "str",
@@ -394,12 +380,10 @@ export const abi: WrapAbi = {
           required: true,
         }),
       ],
-    },
-    {
-      ...createObjectDefinition({
-        type: "CommonType",
-        comment: "CommonType comment",
-      }),
+    }),
+    createObjectDefinition({
+      type: "CommonType",
+      comment: "CommonType comment",
       properties: [
         createScalarPropertyDefinition({
           name: "prop",
@@ -431,12 +415,10 @@ export const abi: WrapAbi = {
           required: true,
         }),
       ],
-    },
-    {
-      ...createObjectDefinition({
-        type: "NestedType",
-        comment: "NestedType comment",
-      }),
+    }),
+    createObjectDefinition({
+      type: "NestedType",
+      comment: "NestedType comment",
       properties: [
         createScalarPropertyDefinition({
           name: "prop",
@@ -444,12 +426,10 @@ export const abi: WrapAbi = {
           required: true,
         }),
       ],
-    },
-    {
-      ...createObjectDefinition({
-        type: "ArrayObject",
-        comment: "ArrayObject comment",
-      }),
+    }),
+    createObjectDefinition({
+      type: "ArrayObject",
+      comment: "ArrayObject comment",
       properties: [
         createScalarPropertyDefinition({
           name: "prop",
@@ -457,11 +437,9 @@ export const abi: WrapAbi = {
           required: true,
         }),
       ],
-    },
-    {
-      ...createObjectDefinition({
-        type: "AnotherLocal",
-      }),
+    }),
+    createObjectDefinition({
+      type: "AnotherLocal",
       properties: [
         createScalarPropertyDefinition({
           name: "prop",
@@ -469,26 +447,22 @@ export const abi: WrapAbi = {
           required: true,
         }),
       ],
-    },
+    }),
   ],
   importedModuleTypes: [
-    {
-      ...createImportedModuleDefinition({
-        uri: "test.eth",
-        namespace: "Namespace",
-        nativeType: "Module",
-        isInterface: true,
-        comment: "Module comment",
-      }),
+    createImportedModuleDefinition({
+      uri: "test.eth",
+      namespace: "Namespace",
+      nativeType: "Module",
+      isInterface: true,
+      comment: "Module comment",
       methods: [
-        {
-          ...createMethodDefinition({
+        createMethodDefinition({
+          name: "method1",
+          return: createScalarPropertyDefinition({
             name: "method1",
-            return: createScalarPropertyDefinition({
-              name: "method1",
-              type: "String",
-              required: true,
-            }),
+            type: "String",
+            required: true,
           }),
           arguments: [
             createScalarPropertyDefinition({
@@ -523,20 +497,18 @@ export const abi: WrapAbi = {
               }),
             }),
           ],
-        },
-        {
-          ...createMethodDefinition({
+        }),
+        createMethodDefinition({
+          name: "method2",
+          comment: "method2 comment",
+          return: createArrayPropertyDefinition({
             name: "method2",
-            comment: "method2 comment",
-            return: createArrayPropertyDefinition({
+            type: "[Int32]",
+            required: true,
+            item: createScalarDefinition({
               name: "method2",
-              type: "[Int32]",
               required: true,
-              item: createScalarDefinition({
-                name: "method2",
-                required: true,
-                type: "Int32",
-              }),
+              type: "Int32",
             }),
           }),
           arguments: [
@@ -552,14 +524,12 @@ export const abi: WrapAbi = {
               }),
             }),
           ],
-        },
-        {
-          ...createMethodDefinition({
+        }),
+        createMethodDefinition({
+          name: "localObjects",
+          return: createObjectPropertyDefinition({
             name: "localObjects",
-            return: createObjectPropertyDefinition({
-              name: "localObjects",
-              type: "Namespace_NestedObjectType",
-            }),
+            type: "Namespace_NestedObjectType",
           }),
           arguments: [
             createObjectPropertyDefinition({
@@ -576,14 +546,12 @@ export const abi: WrapAbi = {
               }),
             }),
           ],
-        },
-        {
-          ...createMethodDefinition({
+        }),
+        createMethodDefinition({
+          name: "importedObjects",
+          return: createObjectPropertyDefinition({
             name: "importedObjects",
-            return: createObjectPropertyDefinition({
-              name: "importedObjects",
-              type: "Namespace_Imported_NestedObjectType",
-            }),
+            type: "Namespace_Imported_NestedObjectType",
           }),
           arguments: [
             createObjectPropertyDefinition({
@@ -600,29 +568,25 @@ export const abi: WrapAbi = {
               }),
             }),
           ],
-        },
+        }),
       ],
-    },
-    {
-      ...createImportedModuleDefinition({
-        uri: "just.module.eth",
-        namespace: "JustModule",
-        isInterface: false,
-        nativeType: "Module",
-      }),
+    }),
+    createImportedModuleDefinition({
+      uri: "just.module.eth",
+      namespace: "JustModule",
+      isInterface: false,
+      nativeType: "Module",
       methods: [
-        {
-          ...createMethodDefinition({
+        createMethodDefinition({
+          name: "method",
+          return: createArrayPropertyDefinition({
             name: "method",
-            return: createArrayPropertyDefinition({
+            type: "[Int32]",
+            required: true,
+            item: createScalarDefinition({
               name: "method",
-              type: "[Int32]",
+              type: "Int32",
               required: true,
-              item: createScalarDefinition({
-                name: "method",
-                type: "Int32",
-                required: true,
-              }),
             }),
           }),
           arguments: [
@@ -637,27 +601,23 @@ export const abi: WrapAbi = {
               }),
             }),
           ],
-        },
+        }),
       ],
-    },
-    {
-      ...createImportedModuleDefinition({
-        uri: "test-interface.eth",
-        namespace: "Interface",
-        nativeType: "Module",
-        isInterface: false,
-        comment: "Module comment",
-      }),
+    }),
+    createImportedModuleDefinition({
+      uri: "test-interface.eth",
+      namespace: "Interface",
+      nativeType: "Module",
+      isInterface: false,
+      comment: "Module comment",
       methods: [
-        {
-          ...createMethodDefinition({
+        createMethodDefinition({
+          name: "abstractModuleMethod",
+          comment: "abstractModuleMethod comment",
+          return: createObjectPropertyDefinition({
             name: "abstractModuleMethod",
-            comment: "abstractModuleMethod comment",
-            return: createObjectPropertyDefinition({
-              name: "abstractModuleMethod",
-              type: "Interface_InterfaceObject2",
-              required: true,
-            }),
+            type: "Interface_InterfaceObject2",
+            required: true,
           }),
           arguments: [
             createObjectPropertyDefinition({
@@ -667,18 +627,16 @@ export const abi: WrapAbi = {
               type: "Interface_ModuleInterfaceArgument",
             }),
           ],
-        },
+        }),
       ],
-    },
+    }),
   ],
   importedObjectTypes: [
-    {
-      ...createImportedObjectDefinition({
-        uri: "test.eth",
-        namespace: "Namespace",
-        nativeType: "NestedObjectType",
-        type: "Namespace_NestedObjectType",
-      }),
+    createImportedObjectDefinition({
+      uri: "test.eth",
+      namespace: "Namespace",
+      nativeType: "NestedObjectType",
+      type: "Namespace_NestedObjectType",
       properties: [
         createObjectPropertyDefinition({
           name: "nestedObject",
@@ -686,14 +644,12 @@ export const abi: WrapAbi = {
           required: true,
         }),
       ],
-    },
-    {
-      ...createImportedObjectDefinition({
-        uri: "test.eth",
-        namespace: "Namespace",
-        nativeType: "ObjectType",
-        type: "Namespace_ObjectType",
-      }),
+    }),
+    createImportedObjectDefinition({
+      uri: "test.eth",
+      namespace: "Namespace",
+      nativeType: "ObjectType",
+      type: "Namespace_ObjectType",
       properties: [
         createScalarPropertyDefinition({
           name: "prop",
@@ -701,15 +657,13 @@ export const abi: WrapAbi = {
           required: true,
         }),
       ],
-    },
-    {
-      ...createImportedObjectDefinition({
-        uri: "test.eth",
-        namespace: "Namespace",
-        nativeType: "Imported_NestedObjectType",
-        type: "Namespace_Imported_NestedObjectType",
-        comment: "Imported_NestedObjectType comment",
-      }),
+    }),
+    createImportedObjectDefinition({
+      uri: "test.eth",
+      namespace: "Namespace",
+      nativeType: "Imported_NestedObjectType",
+      type: "Namespace_Imported_NestedObjectType",
+      comment: "Imported_NestedObjectType comment",
       properties: [
         createObjectPropertyDefinition({
           name: "nestedObject",
@@ -717,14 +671,12 @@ export const abi: WrapAbi = {
           required: true,
         }),
       ],
-    },
-    {
-      ...createImportedObjectDefinition({
-        uri: "test.eth",
-        namespace: "Namespace",
-        nativeType: "Imported_ObjectType",
-        type: "Namespace_Imported_ObjectType",
-      }),
+    }),
+    createImportedObjectDefinition({
+      uri: "test.eth",
+      namespace: "Namespace",
+      nativeType: "Imported_ObjectType",
+      type: "Namespace_Imported_ObjectType",
       properties: [
         createScalarPropertyDefinition({
           name: "prop",
@@ -732,15 +684,13 @@ export const abi: WrapAbi = {
           required: true,
         }),
       ],
-    },
-    {
-      ...createImportedObjectDefinition({
-        uri: "test.eth",
-        namespace: "Namespace",
-        nativeType: "CustomType",
-        type: "Namespace_CustomType",
-        comment: "CustomType comment",
-      }),
+    }),
+    createImportedObjectDefinition({
+      uri: "test.eth",
+      namespace: "Namespace",
+      nativeType: "CustomType",
+      type: "Namespace_CustomType",
+      comment: "CustomType comment",
       properties: [
         createScalarPropertyDefinition({
           name: "str",
@@ -965,15 +915,13 @@ export const abi: WrapAbi = {
           comment: "optImportedEnum comment",
         }),
       ],
-    },
-    {
-      ...createImportedObjectDefinition({
-        uri: "test-interface.eth",
-        namespace: "Interface",
-        nativeType: "InterfaceObject1",
-        type: "Interface_InterfaceObject1",
-        comment: "InterfaceObject1 comment",
-      }),
+    }),
+    createImportedObjectDefinition({
+      uri: "test-interface.eth",
+      namespace: "Interface",
+      nativeType: "InterfaceObject1",
+      type: "Interface_InterfaceObject1",
+      comment: "InterfaceObject1 comment",
       properties: [
         createScalarPropertyDefinition({
           name: "str",
@@ -987,15 +935,13 @@ export const abi: WrapAbi = {
           comment: "InterfaceObject1_uint8 comment",
         }),
       ],
-    },
-    {
-      ...createImportedObjectDefinition({
-        uri: "test-interface.eth",
-        namespace: "Interface",
-        nativeType: "InterfaceObject2",
-        type: "Interface_InterfaceObject2",
-        comment: "InterfaceObject2 comment",
-      }),
+    }),
+    createImportedObjectDefinition({
+      uri: "test-interface.eth",
+      namespace: "Interface",
+      nativeType: "InterfaceObject2",
+      type: "Interface_InterfaceObject2",
+      comment: "InterfaceObject2 comment",
       interfaces: [
         createInterfaceImplementedDefinition({
           type: "Interface_NestedInterfaceObject",
@@ -1012,15 +958,13 @@ export const abi: WrapAbi = {
           type: "Interface_Object",
         }),
       ],
-    },
-    {
-      ...createImportedObjectDefinition({
-        uri: "test-interface.eth",
-        namespace: "Interface",
-        nativeType: "Object",
-        type: "Interface_Object",
-        comment: "Object comment",
-      }),
+    }),
+    createImportedObjectDefinition({
+      uri: "test-interface.eth",
+      namespace: "Interface",
+      nativeType: "Object",
+      type: "Interface_Object",
+      comment: "Object comment",
       properties: [
         createScalarPropertyDefinition({
           name: "uint8",
@@ -1028,15 +972,13 @@ export const abi: WrapAbi = {
           required: true,
         }),
       ],
-    },
-    {
-      ...createImportedObjectDefinition({
-        uri: "test-interface.eth",
-        namespace: "Interface",
-        nativeType: "NestedInterfaceObject",
-        type: "Interface_NestedInterfaceObject",
-        comment: "NestedInterfaceObject comment",
-      }),
+    }),
+    createImportedObjectDefinition({
+      uri: "test-interface.eth",
+      namespace: "Interface",
+      nativeType: "NestedInterfaceObject",
+      type: "Interface_NestedInterfaceObject",
+      comment: "NestedInterfaceObject comment",
       properties: [
         createObjectPropertyDefinition({
           name: "object",
@@ -1044,15 +986,13 @@ export const abi: WrapAbi = {
           comment: "object comment",
         }),
       ],
-    },
-    {
-      ...createImportedObjectDefinition({
-        uri: "test-interface.eth",
-        namespace: "Interface",
-        nativeType: "ModuleInterfaceArgument",
-        type: "Interface_ModuleInterfaceArgument",
-        comment: "ModuleInterfaceArgument comment",
-      }),
+    }),
+    createImportedObjectDefinition({
+      uri: "test-interface.eth",
+      namespace: "Interface",
+      nativeType: "ModuleInterfaceArgument",
+      type: "Interface_ModuleInterfaceArgument",
+      comment: "ModuleInterfaceArgument comment",
       interfaces: [
         createInterfaceImplementedDefinition({
           type: "Interface_NestedModuleInterfaceArgument",
@@ -1071,15 +1011,13 @@ export const abi: WrapAbi = {
           comment: "uint8 comment",
         }),
       ],
-    },
-    {
-      ...createImportedObjectDefinition({
-        uri: "test-interface.eth",
-        namespace: "Interface",
-        nativeType: "NestedModuleInterfaceArgument",
-        type: "Interface_NestedModuleInterfaceArgument",
-        comment: "NestedModuleInterfaceArgument comment",
-      }),
+    }),
+    createImportedObjectDefinition({
+      uri: "test-interface.eth",
+      namespace: "Interface",
+      nativeType: "NestedModuleInterfaceArgument",
+      type: "Interface_NestedModuleInterfaceArgument",
+      comment: "NestedModuleInterfaceArgument comment",
       properties: [
         createScalarPropertyDefinition({
           name: "uint8",
@@ -1087,27 +1025,23 @@ export const abi: WrapAbi = {
           required: true,
         }),
       ],
-    },
+    }),
   ],
   importedEnumTypes: [
-    {
-      ...createImportedEnumDefinition({
-        uri: "test.eth",
-        namespace: "Namespace",
-        nativeType: "CustomEnum",
-        type: "Namespace_CustomEnum",
-        constants: ["STRING", "BYTES"],
-      }),
-    },
-    {
-      ...createImportedEnumDefinition({
-        uri: "test.eth",
-        namespace: "Namespace",
-        nativeType: "Imported_Enum",
-        type: "Namespace_Imported_Enum",
-        constants: ["STRING", "BYTES"],
-        comment: "Imported_Enum comment",
-      }),
-    },
+    createImportedEnumDefinition({
+      uri: "test.eth",
+      namespace: "Namespace",
+      nativeType: "CustomEnum",
+      type: "Namespace_CustomEnum",
+      constants: ["STRING", "BYTES"],
+    }),
+    createImportedEnumDefinition({
+      uri: "test.eth",
+      namespace: "Namespace",
+      nativeType: "Imported_Enum",
+      type: "Namespace_Imported_Enum",
+      constants: ["STRING", "BYTES"],
+      comment: "Imported_Enum comment",
+    }),
   ],
 };
