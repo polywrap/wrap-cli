@@ -1,6 +1,7 @@
 ---
-id: module
-title: Module
+id: Console_module
+title: Console Module
+sidebar_position: 1
 ---
 
 ### log 

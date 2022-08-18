@@ -1,6 +1,7 @@
 ---
-id: module
-title: Module
+id: Ethereum_module
+title: Ethereum Module
+sidebar_position: 1
 ---
 
 ### awaitTransaction 

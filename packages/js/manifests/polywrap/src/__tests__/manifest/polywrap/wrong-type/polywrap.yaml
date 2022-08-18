@@ -1,4 +1,4 @@
-format: 0.1.0
+format: "0.2"
 name: "Wrong Type"
 language: wasm/assemblyscript
 module: 2345235235235

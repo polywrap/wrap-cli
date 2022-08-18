@@ -1,0 +1,67 @@
+{
+  "id": "PluginManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "name",
+    "language",
+    "schema"
+  ],
+  "properties": {
+    "format": {
+      "description": "Polywrap plugin manifest format version.",
+      "type": "string",
+      "const": "0.2"
+    },
+    "name": {
+      "description": "Plugin name.",
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9\\-\\_]+$"
+    },
+    "language": {
+      "description" : "Plugin language.",
+      "type": "string",
+      "pattern": "^plugin\\/[a-z0-9]+$"
+    },
+    "module": {
+      "description": "Path to Polywrap implementation.",
+      "type": "string",
+      "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.?[\\w\\-\\.]*$"
+    },
+    "schema": {
+      "description": "Path to graphql schema.",
+      "type": "string",
+      "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.graphql$"
+    },
+    "import_abis": {
+      "description": "Specify ABIs to be used for the import URIs within your schema.",
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/import_abis"
+      }
+    }
+  },
+  "definitions": {
+    "import_abis": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "uri": {
+          "description": "One of the schema's import URI.",
+          "type": "string",
+          "pattern": "^[wrap://]*[a-z\\-\\_0-9]+\\/.+$"
+        },
+        "abi": {
+          "description": "Path to a local ABI (or schema). Supported file formats: [*.graphql, *.info, *.json, *.yaml]",
+          "type": "string",
+          "pattern": "^\\.?\\.?\\/?((\\/[\\w\\-\\.]+|\\/\\.\\.|\\/\\.)+\\/)?[\\w\\-\\.]+\\.(info|graphql|json|yaml)$"
+        }
+      },
+      "required": [
+        "uri",
+        "abi"
+      ]
+    }
+  }
+}

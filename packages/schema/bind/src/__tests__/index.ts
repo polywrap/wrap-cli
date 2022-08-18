@@ -78,7 +78,6 @@ export function fetchTestCases(): TestCases {
       projectName: "Test",
       bindLanguage: "TBD" as BindLanguage,
       abi,
-      schema,
       outputDirAbs: path.join(root, "combined")
     };
 

@@ -1,10 +1,7 @@
-import {
-  ImportedDefinition,
-  isImportedEnvType,
-  isImportedModuleType,
-} from "../../abi";
+import { isImportedEnvType, isImportedModuleType } from "../..";
 
 import { DirectiveNode, TypeDefinitionNode } from "graphql";
+import { ImportedDefinition } from "@polywrap/wrap-manifest-types-js";
 
 export function extractImportedDefinition(
   node: TypeDefinitionNode,

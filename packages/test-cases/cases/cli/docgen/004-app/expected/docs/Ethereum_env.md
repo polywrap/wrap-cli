@@ -1,6 +1,7 @@
 ---
-id: env
-title: Env Type
+id: Ethereum_env
+title: Ethereum Env Type
+sidebar_position: 4
 ---
 
 

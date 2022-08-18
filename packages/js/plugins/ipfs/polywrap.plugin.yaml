@@ -1,8 +1,8 @@
-format: 0.1.0
+format: "0.2"
 name: Ipfs
 language: plugin/typescript
 module: ./src/index.ts
 schema: ./src/schema.graphql
-import_redirects:
+import_abis:
   - uri: "ens/ipfs.polywrap.eth"
-    schema: ../../../interfaces/ipfs/build/schema.graphql
+    abi: ../../../interfaces/ipfs/build-man/wrap.info

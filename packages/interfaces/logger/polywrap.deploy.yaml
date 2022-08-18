@@ -1,4 +1,4 @@
-format: "0.1"
+format: "0.2"
 stages:
   ipfs_deploy:
     package: ipfs
