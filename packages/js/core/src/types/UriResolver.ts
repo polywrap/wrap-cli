@@ -10,16 +10,6 @@ export interface TryResolveToWrapperOptions<
   uri: TUri;
 
   /**
-   * If set to true, the resolveUri function will not use the cache to resolve the uri.
-   */
-  noCacheRead?: boolean;
-
-  /**
-   * If set to true, the resolveUri function will not cache the results
-   */
-  noCacheWrite?: boolean;
-
-  /**
    * If set to true, the resolveUri function will not cache the results
    */
   history: "none" | "path" | "full";
