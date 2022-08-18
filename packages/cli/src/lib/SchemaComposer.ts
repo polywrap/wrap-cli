@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 /* eslint-disable @typescript-eslint/no-empty-function */
 
-import { Project, AnyProjectManifest } from "./";
+import { Project, AnyProjectManifest, intlMsg } from "./";
 
 import { Uri, PolywrapClient } from "@polywrap/client-js";
 import {
@@ -13,7 +13,7 @@ import fs from "fs";
 import path from "path";
 import * as gluegun from "gluegun";
 import YAML from "js-yaml";
-import { deserializeWrapManifest } from "@polywrap/wrap-manifest-types-js";
+import { deserializeWrapManifest, validateWrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 import { WrapAbi } from "@polywrap/schema-parse";
 
@@ -69,6 +69,15 @@ export class SchemaComposer {
     this._abi = undefined;
   }
 
+  private _fetchLocalSchema(schemaPath: string) {
+    return fs.readFileSync(
+      path.isAbsolute(schemaPath)
+        ? schemaPath
+        : path.join(this._config.project.getManifestDir(), schemaPath),
+      "utf-8"
+    );
+  }
+
   private async _fetchExternalAbi(
     uri: string,
     import_abis?: PolywrapManifest["import_abis"]
@@ -89,42 +98,24 @@ export class SchemaComposer {
         );
 
         if (!fs.existsSync(abiPath)) {
-          throw Error("TODO file not found");
+          throw Error(intlMsg.lib_schemaComposer_abi_not_found({
+            path: abiPath
+          }));
         }
 
         if (abiPath.endsWith(".info")) {
-          const manifest = fs.readFileSync(abiPath);
-          return (await deserializeWrapManifest(manifest)).abi;
+          return await this._loadWrapAbi(abiPath);
         } else if (abiPath.endsWith(".graphql")) {
-          const schema = fs.readFileSync(abiPath, "utf-8");
-          const options: ComposerOptions = {
-            schema: {
-              schema: schema,
-              absolutePath: abiPath,
-            },
-            resolvers: {
-              external: (uri: string) =>
-                this._fetchExternalAbi(uri, import_abis),
-              local: (path: string) =>
-                Promise.resolve(this._fetchLocalSchema(path)),
-            },
-          };
-
-          return await composeSchema(options);
+          return await this._loadGraphqlAbi(abiPath, import_abis);
         } else if (abiPath.endsWith(".json")) {
-          const json = fs.readFileSync(abiPath, "utf-8");
-          // TODO: need to validate structure of ABI object
-          return JSON.parse(json);
+          return await this._loadJsonAbi(abiPath)
         } else if (abiPath.endsWith(".yaml")) {
-          const yaml = fs.readFileSync(abiPath, "utf-8");
-          const result = YAML.safeLoad(yaml);
-          if (!result) {
-            throw Error("TODO invalid");
-          }
-          // TODO: need to validate structure of ABI object
-          return result as WrapAbi;
+          return await this._loadYamlAbi(abiPath);
         } else {
-          throw Error("TODO intl type here");
+          throw Error(intlMsg.lib_schemaComposer_unknown_abi({
+            path: abiPath,
+            types: ["*.info", "*.graphql", "*.json", "*.yaml"].toString()
+          }));
         }
       }
     }
@@ -138,12 +129,68 @@ export class SchemaComposer {
     }
   }
 
-  private _fetchLocalSchema(schemaPath: string) {
-    return fs.readFileSync(
-      path.isAbsolute(schemaPath)
-        ? schemaPath
-        : path.join(this._config.project.getManifestDir(), schemaPath),
-      "utf-8"
-    );
+  private async _loadGraphqlAbi(
+    path: string,
+    import_abis: PolywrapManifest["import_abis"]
+  ): Promise<WrapAbi> {
+    const schema = fs.readFileSync(path, "utf-8");
+
+    return await composeSchema({
+      schema: {
+        schema: schema,
+        absolutePath: path,
+      },
+      resolvers: {
+        external: (uri: string) =>
+          this._fetchExternalAbi(uri, import_abis),
+        local: (path: string) =>
+          Promise.resolve(this._fetchLocalSchema(path)),
+      },
+    });
+  }
+
+  private async _loadWrapAbi(path: string): Promise<WrapAbi> {
+    const manifest = fs.readFileSync(path);
+    return (await deserializeWrapManifest(manifest)).abi;
+  }
+
+  private async _loadJsonAbi(path: string): Promise<WrapAbi> {
+    // Load the JSON ABI
+    const json = fs.readFileSync(path, "utf-8");
+    const result = JSON.parse(json);
+
+    // Validate the ABI's structure
+    await validateWrapManifest({
+      version: "0.1",
+      type: "interface",
+      name: "temp",
+      abi: result
+    });
+
+    // Return ABI
+    return result as WrapAbi;
+  }
+
+  private async _loadYamlAbi(path: string): Promise<WrapAbi> {
+    // Load the YAML ABI
+    const yaml = fs.readFileSync(path, "utf-8");
+    const result = YAML.safeLoad(yaml);
+
+    if (!result) {
+      throw Error(intlMsg.lib_schemaComposer_invalid_yaml({
+        path: path
+      }));
+    }
+
+    // Validate the ABI's structure
+    await validateWrapManifest({
+      version: "0.1",
+      type: "interface",
+      name: "temp",
+      abi: result as WrapAbi
+    });
+
+    // Return ABI
+    return result as WrapAbi;
   }
 }
