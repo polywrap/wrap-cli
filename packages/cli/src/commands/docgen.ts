@@ -12,12 +12,10 @@ import {
   PluginProject,
   parseClientConfigOption,
   defaultPluginManifest,
-} from "../lib";
-import { Command, Program } from "./types";
-import {
   parseDirOption,
   parseDocgenManifestFileOption,
-} from "../lib/option-parsers";
+} from "../lib";
+import { Command, Program } from "./types";
 import { scriptPath as docusaurusScriptPath } from "../lib/docgen/docusaurus";
 import { scriptPath as jsdocScriptPath } from "../lib/docgen/jsdoc";
 import { scriptPath as schemaScriptPath } from "../lib/docgen/schema";
@@ -55,9 +53,7 @@ enum Actions {
 }
 
 const argumentsDescription = `
-  ${chalk.bold(
-    Actions.SCHEMA
-  )}        ${intlMsg.commands_docgen_options_schema()}
+  ${chalk.bold(Actions.SCHEMA)}      ${intlMsg.commands_docgen_options_schema()}
   ${chalk.bold(
     Actions.DOCUSAURUS
   )}    ${intlMsg.commands_docgen_options_markdown({

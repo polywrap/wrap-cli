@@ -34,7 +34,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
 
   {{/last}}
   {{/methods}}
-}{{/methods.length}}
+}{{/methods.length}}{{^methods.length}} { }{{/methods.length}}
 
 {{/moduleType}}
 {{#envType}}{{#comment}}
@@ -66,7 +66,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
   {{/comment}}
   {{name}}: {{toGraphQLType}}
   {{/properties}}
-}{{/properties.length}}
+}{{/properties.length}}{{^properties.length}} { }{{/properties.length}}
 
 {{/objectTypes}}
 {{#enumTypes}}{{#comment}}
@@ -111,7 +111,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
 
   {{/last}}
   {{/methods}}
-}{{/methods.length}}
+}{{/methods.length}}{{^methods.length}} { }{{/methods.length}}
 
 {{/importedModuleTypes}}
 ### Imported Modules END ###
@@ -135,7 +135,7 @@ type {{type}}{{#interfaces.length}} implements{{#interfaces}} {{type}}{{^last}} 
   {{/comment}}
   {{name}}: {{toGraphQLType}}
   {{/properties}}
-}{{/properties.length}}
+}{{/properties.length}}{{^properties.length}} { }{{/properties.length}}
 
 {{/importedObjectTypes}}
 

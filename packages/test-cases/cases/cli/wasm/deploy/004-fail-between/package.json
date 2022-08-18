@@ -10,7 +10,7 @@
     "test:env:down": "polywrap infra down --modules=eth-ens-ipfs"
   },
   "dependencies": {
-    "@polywrap/wasm-as": "0.1.0"
+    "@polywrap/wasm-as": "0.3.0"
   },
   "devDependencies": {
     "assemblyscript": "0.19.5"

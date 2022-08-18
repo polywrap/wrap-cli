@@ -1,9 +1,9 @@
-format: 0.1.0
+format: "0.2"
 name: SimpleFsResolver
 language: wasm/assemblyscript
 build: ./polywrap.build.yaml
 schema: ./schema.graphql
 module: ./src/index.ts
-import_redirects:
+import_abis:
   - uri: "ens/uri-resolver.core.polywrap.eth"
-    schema: ../../../../../interfaces/uri-resolver/src/schema.graphql
+    abi: ../../../../../interfaces/uri-resolver/build-man/wrap.info

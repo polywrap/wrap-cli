@@ -9,7 +9,7 @@ import {
   Args_mkdir,
   Args_rm,
   Args_rmdir,
-} from "./wrap";
+} from "./wrap-man";
 import fileSystemEncodingToBufferEncoding from "./utils/fileSystemEncodingToBufferEncoding";
 
 import fs from "fs";

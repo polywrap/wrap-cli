@@ -7,7 +7,7 @@ import {
   Bytes,
   Ethereum_Module,
   manifest,
-} from "./wrap";
+} from "./wrap-man";
 
 import { ethers } from "ethers";
 import { Base58 } from "@ethersproject/basex";
