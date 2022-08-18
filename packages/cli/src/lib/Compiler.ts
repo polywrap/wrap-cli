@@ -333,7 +333,12 @@ export class Compiler {
       const manifest = await project.getManifest();
 
       const type = (await this._isInterface()) ? "interface" : "wasm";
-      await generateWrapFile(state.abi, manifest.name, type, manifestPath);
+      await generateWrapFile(
+        state.abi,
+        manifest.project.name,
+        type,
+        manifestPath
+      );
     };
 
     if (quiet) {
@@ -390,7 +395,7 @@ export class Compiler {
 
     const manifest = await project.getManifest();
 
-    if (manifest.language !== "interface" && !manifest.module) {
+    if (manifest.project.type !== "interface" && !manifest.source.module) {
       const missingModuleMessage = intlMsg.lib_compiler_missingModule();
       throw Error(missingModuleMessage);
     }

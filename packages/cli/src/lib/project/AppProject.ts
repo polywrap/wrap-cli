@@ -94,9 +94,9 @@ export class AppProject extends Project<AppManifest> {
     return path.join(dir, manifest.source.schema);
   }
 
-  public async getImportAbis(): Promise<AppManifest["import_abis"]> {
+  public async getImportAbis(): Promise<AppManifest["source"]["import_abis"]> {
     const manifest = await this.getManifest();
-    return manifest.import_abis || [];
+    return manifest.source.import_abis || [];
   }
 
   public async generateSchemaBindings(

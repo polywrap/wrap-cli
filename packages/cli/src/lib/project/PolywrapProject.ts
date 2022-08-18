@@ -135,9 +135,11 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     return path.join(dir, manifest.source.schema);
   }
 
-  public async getImportAbis(): Promise<PolywrapManifest["import_abis"]> {
+  public async getImportAbis(): Promise<
+    PolywrapManifest["source"]["import_abis"]
+  > {
     const manifest = await this.getManifest();
-    return manifest.import_abis || [];
+    return manifest.source.import_abis || [];
   }
 
   public async generateSchemaBindings(
