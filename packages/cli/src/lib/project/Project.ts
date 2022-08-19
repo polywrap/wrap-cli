@@ -6,8 +6,9 @@ import {
   CacheDirectoryConfig,
 } from "../";
 
+import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 import { BindOutput } from "@polywrap/schema-bind";
-import { ComposerOutput } from "@polywrap/schema-compose";
+import { Abi } from "@polywrap/schema-parse";
 
 export interface ProjectConfig {
   rootDir: string;
@@ -60,15 +61,10 @@ export abstract class Project<TManifest extends AnyProjectManifest> {
 
   public abstract getSchemaNamedPath(): Promise<string>;
 
-  public abstract getImportRedirects(): Promise<
-    {
-      uri: string;
-      schema: string;
-    }[]
-  >;
+  public abstract getImportAbis(): Promise<PolywrapManifest["import_abis"]>;
 
   public abstract generateSchemaBindings(
-    composerOutput: ComposerOutput,
+    abi: Abi,
     generationSubPath?: string
   ): Promise<BindOutput>;
 

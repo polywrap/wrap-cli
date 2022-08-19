@@ -1,4 +1,4 @@
-import { Request, Response, ResponseTypeEnum, Header } from "./wrap";
+import { Request, Response, ResponseTypeEnum } from "./wrap-man";
 
 import { AxiosResponse, AxiosRequestConfig } from "axios";
 
@@ -10,14 +10,14 @@ import { AxiosResponse, AxiosRequestConfig } from "axios";
 export function fromAxiosResponse(
   axiosResponse: AxiosResponse<unknown>
 ): Response {
-  const responseHeaders: Header[] = [];
+  const responseHeaders = new Map<string, string>();
   for (const key of Object.keys(axiosResponse.headers)) {
-    responseHeaders.push({
-      key: key,
-      value: Array.isArray(axiosResponse.headers[key])
+    responseHeaders.set(
+      key,
+      Array.isArray(axiosResponse.headers[key])
         ? axiosResponse.headers[key].join(" ")
-        : axiosResponse.headers[key],
-    });
+        : axiosResponse.headers[key]
+    );
   }
 
   const response = {
@@ -62,14 +62,6 @@ export function fromAxiosResponse(
  * @param request
  */
 export function toAxiosRequestConfig(request: Request): AxiosRequestConfig {
-  const urlParams = request.urlParams?.reduce((params, p) => {
-    return { ...params, [p.key]: p.value };
-  }, {});
-
-  const requestHeaders = request.headers?.reduce((headers, h) => {
-    return { ...headers, [h.key]: h.value };
-  }, {});
-
   let responseType: "text" | "arraybuffer" = "text";
 
   switch (request.responseType) {
@@ -82,12 +74,12 @@ export function toAxiosRequestConfig(request: Request): AxiosRequestConfig {
     responseType,
   };
 
-  if (urlParams) {
-    config = { ...config, params: urlParams };
+  if (request.urlParams) {
+    config = { ...config, params: Object.fromEntries(request.urlParams) };
   }
 
-  if (requestHeaders) {
-    config = { ...config, headers: requestHeaders };
+  if (request.headers) {
+    config = { ...config, headers: Object.fromEntries(request.headers) };
   }
 
   return config;

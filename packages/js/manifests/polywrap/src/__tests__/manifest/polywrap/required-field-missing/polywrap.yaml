@@ -1,4 +1,4 @@
-format: 0.1.0
+format: "0.2"
 name: "Required missing field"
 language: wasm/assemblyscript
 module: ../index.ts

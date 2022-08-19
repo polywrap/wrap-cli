@@ -1,5 +1,4 @@
 import {
-  Abi,
   createModuleDefinition,
   createMethodDefinition,
   createPropertyDefinition,
@@ -7,10 +6,8 @@ import {
   CapabilityType,
   createCapability,
   createInterfaceDefinition,
-  InterfaceDefinition,
   capabilityTypes,
-  MapDefinition,
-} from "../abi";
+} from "..";
 import {
   extractEnvDirective,
   extractInputValueDefinition,
@@ -32,8 +29,13 @@ import {
   ValueNode,
   ASTVisitor,
 } from "graphql";
+import {
+  InterfaceDefinition,
+  MapDefinition,
+  WrapAbi,
+} from "@polywrap/wrap-manifest-types-js";
 
-const visitorEnter = (abi: Abi, state: State) => ({
+const visitorEnter = (abi: WrapAbi, state: State) => ({
   ObjectTypeDefinition: (node: ObjectTypeDefinitionNode) => {
     const nodeName = node.name.value;
 
@@ -43,14 +45,16 @@ const visitorEnter = (abi: Abi, state: State) => ({
 
     const imports = parseImportsDirective(nodeName, node);
 
-    const interfaces = parseCapabilitiesDirective(nodeName, node);
-    state.currentInterfaces = interfaces;
+    const enabledInterfaces = parseCapabilitiesDirective(nodeName, node);
+    state.currentInterfaces = enabledInterfaces;
+
+    const interfaces = node.interfaces?.map((x) =>
+      createInterfaceImplementedDefinition({ type: x.name.value })
+    );
 
     const module = createModuleDefinition({
-      imports,
-      interfaces: node.interfaces?.map((x) =>
-        createInterfaceImplementedDefinition({ type: x.name.value })
-      ),
+      imports: imports.length ? imports : undefined,
+      interfaces: interfaces?.length ? interfaces : undefined,
       comment: node.description?.value,
     });
 
@@ -74,7 +78,7 @@ const visitorEnter = (abi: Abi, state: State) => ({
       map: def
         ? ({ ...def, name: node.name.value } as MapDefinition)
         : undefined,
-      required: def && def.required ? true : false,
+      required: def && def.required,
     });
 
     const method = createMethodDefinition({
@@ -87,6 +91,10 @@ const visitorEnter = (abi: Abi, state: State) => ({
 
     if (envDirDefinition) {
       method.env = envDirDefinition;
+    }
+
+    if (!module.methods) {
+      module.methods = [];
     }
 
     module.methods.push(method);
@@ -271,8 +279,11 @@ const parseImportsDirective = (
   return imports;
 };
 
-const visitorLeave = (abi: Abi, state: State) => ({
+const visitorLeave = (abi: WrapAbi, state: State) => ({
   ObjectTypeDefinition: (_node: ObjectTypeDefinitionNode) => {
+    if (!abi.interfaceTypes) {
+      abi.interfaceTypes = [];
+    }
     if (state.currentInterfaces) {
       abi.interfaceTypes = [...abi.interfaceTypes, ...state.currentInterfaces];
     }
@@ -288,11 +299,11 @@ const visitorLeave = (abi: Abi, state: State) => ({
     state.currentArgument = undefined;
   },
   NonNullType: (_node: NonNullTypeNode) => {
-    state.nonNullType = false;
+    state.nonNullType = undefined;
   },
 });
 
-export const getModuleTypesVisitor = (abi: Abi): ASTVisitor => {
+export const getModuleTypesVisitor = (abi: WrapAbi): ASTVisitor => {
   const state: State = {};
 
   return {

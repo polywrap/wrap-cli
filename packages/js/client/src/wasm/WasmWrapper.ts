@@ -3,18 +3,18 @@ import { WrapExports } from "./types";
 import { createImports } from "./imports";
 
 import {
-  InvokeOptions,
-  InvokeResult,
-  InvocableResult,
-  Wrapper,
-  Uri,
   Client,
   combinePaths,
   Env,
-  UriResolverInterface,
   GetFileOptions,
   GetManifestOptions,
+  InvocableResult,
+  InvokeOptions,
+  InvokeResult,
   isBuffer,
+  Uri,
+  UriResolverInterface,
+  Wrapper,
 } from "@polywrap/core-js";
 import {
   deserializeWrapManifest,
@@ -54,7 +54,6 @@ export class WasmWrapper implements Wrapper {
   public static requiredExports: readonly string[] = ["_wrap_invoke"];
 
   private _info: WrapManifest | undefined = undefined;
-  private _schema?: string;
   private _wasm: Uint8Array | undefined = undefined;
 
   constructor(
@@ -128,14 +127,6 @@ export class WasmWrapper implements Wrapper {
       return this._info;
     }
 
-    this._schema = (await this.getFile(
-      {
-        path: "schema.graphql",
-        encoding: "utf-8",
-      },
-      client
-    )) as string;
-
     const moduleManifest = "wrap.info";
 
     const data = (await this.getFile(
@@ -146,7 +137,7 @@ export class WasmWrapper implements Wrapper {
     if (!data) {
       throw Error(`Package manifest does not contain information`);
     }
-    return deserializeWrapManifest(data);
+    return deserializeWrapManifest(data, options);
   }
 
   @Tracer.traceMethod("WasmWrapper: invoke")
@@ -228,21 +219,6 @@ export class WasmWrapper implements Wrapper {
         error,
       };
     }
-  }
-
-  @Tracer.traceMethod("WasmWrapper: getSchema")
-  public async getSchema(client: Client): Promise<string> {
-    if (this._schema) {
-      return this._schema;
-    }
-
-    const schema = "schema.graphql";
-    this._schema = (await this.getFile(
-      { path: schema, encoding: "utf8" },
-      client
-    )) as string;
-
-    return this._schema;
   }
 
   @Tracer.traceMethod("WasmWrapper: _processInvokeResult")

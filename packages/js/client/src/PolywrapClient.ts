@@ -9,12 +9,10 @@ import {
   Env,
   GetEnvsOptions,
   GetFileOptions,
-  GetManifestOptions,
   GetImplementationsOptions,
   GetInterfacesOptions,
   GetPluginsOptions,
   GetRedirectsOptions,
-  GetSchemaOptions,
   InterfaceImplementations,
   InvokeOptions,
   InvokeResult,
@@ -41,6 +39,7 @@ import {
   PluginPackage,
   RunOptions,
   UriResolutionResponse,
+  GetManifestOptions,
   initWrapper,
   IWrapPackage,
 } from "@polywrap/core-js";
@@ -172,20 +171,10 @@ export class PolywrapClient implements Client {
     );
   }
 
-  @Tracer.traceMethod("PolywrapClient: getSchema")
-  public async getSchema<TUri extends Uri | string>(
-    uri: TUri,
-    options: GetSchemaOptions = {}
-  ): Promise<string> {
-    const wrapper = await this._loadWrapper(this._toUri(uri), options);
-    const client = contextualizeClient(this, options.contextId);
-    return await wrapper.getSchema(client);
-  }
-
   @Tracer.traceMethod("PolywrapClient: getManifest")
   public async getManifest<TUri extends Uri | string>(
     uri: TUri,
-    options: GetManifestOptions
+    options: GetManifestOptions = {}
   ): Promise<WrapManifest> {
     const wrapper = await this._loadWrapper(this._toUri(uri), options);
     const client = contextualizeClient(this, options.contextId);
@@ -846,19 +835,13 @@ const contextualizeClient = (
           uri: TUri,
           options: GetFileOptions
         ) => {
-          return client.getFile(uri, options);
-        },
-        getSchema: <TUri extends Uri | string>(
-          uri: TUri,
-          options: GetSchemaOptions = {}
-        ) => {
-          return client.getSchema(uri, { ...options, contextId });
+          return client.getFile(uri, { ...options, contextId });
         },
         getManifest: <TUri extends Uri | string>(
           uri: TUri,
-          options: GetManifestOptions
+          options: GetManifestOptions = {}
         ) => {
-          return client.getManifest(uri, options);
+          return client.getManifest(uri, { ...options, contextId });
         },
         getImplementations: <TUri extends Uri | string>(
           uri: TUri,

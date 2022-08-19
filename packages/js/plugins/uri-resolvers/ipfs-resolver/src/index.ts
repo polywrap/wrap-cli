@@ -7,7 +7,7 @@ import {
   manifest,
   Module,
   UriResolver_MaybeUriOrManifest,
-} from "./wrap";
+} from "./wrap-man";
 
 import { PluginFactory } from "@polywrap/core-js";
 

@@ -23,7 +23,7 @@ export interface Wrapper extends Invocable {
    * Invoke the Wrapper based on the provided [[InvokeOptions]]
    *
    * @param options Options for this invocation.
-   * @param client The client instance requesting this invocation.
+   * @param invoker The client instance requesting this invocation.
    * This client will be used for any sub-invokes that occur.
    */
   invoke(
@@ -47,19 +47,12 @@ export interface Wrapper extends Invocable {
    * Get a manifest from the Wrapper package.
    * Not implemented for plugin wrappers.
    *
-   * @param options Configuration options for manifest retrieval
    * @param client The client instance requesting the manifest.
    */
   getManifest(
     options: GetManifestOptions,
     client: Client
   ): Promise<WrapManifest>;
-
-  /**
-   * Get the Wrapper's schema
-   *
-   * @param client The client instance the schema.
-   */
   getSchema(client: Client): Promise<string>;
 }
 

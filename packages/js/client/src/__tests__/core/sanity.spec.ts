@@ -1,4 +1,4 @@
-import { coreInterfaceUris, PluginModule } from "@polywrap/core-js";
+import { coreInterfaceUris } from "@polywrap/core-js";
 import { buildUriResolver } from "@polywrap/uri-resolvers-js";
 import { Uri, PolywrapClient } from "../..";
 
@@ -87,31 +87,5 @@ describe("sanity", () => {
         to: new Uri(implementation2Uri),
       },
     ]);
-  });
-
-  test("loadPolywrap - pass string or Uri", async () => {
-    const implementationUri = "wrap://ens/some-implementation.eth";
-    const schemaStr = "test-schema";
-
-    const client = new PolywrapClient({
-      plugins: [
-        {
-          uri: implementationUri,
-          plugin: {
-            factory: () => ({} as PluginModule<{}>),
-            manifest: {
-              schema: schemaStr,
-              implements: [],
-            },
-          },
-        },
-      ],
-    });
-
-    const schemaWhenString = await client.getSchema(implementationUri);
-    const schemaWhenUri = await client.getSchema(new Uri(implementationUri));
-
-    expect(schemaWhenString).toEqual(schemaStr);
-    expect(schemaWhenUri).toEqual(schemaStr);
   });
 });

@@ -271,7 +271,7 @@ describe("wasm-as test cases", () => {
     await buildWrapper(wrapperPath);
 
     await TestCases.runSimpleEnvTest(
-      await await getClient({
+      await getClient({
         envs: [
           {
             uri: wrapperUri,
