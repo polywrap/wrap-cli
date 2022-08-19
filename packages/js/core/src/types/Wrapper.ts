@@ -53,7 +53,6 @@ export interface Wrapper extends Invocable {
     options: GetManifestOptions,
     client: Client
   ): Promise<WrapManifest>;
-  getSchema(client: Client): Promise<string>;
 }
 
 export type WrapperCache = Map<string, Wrapper>;

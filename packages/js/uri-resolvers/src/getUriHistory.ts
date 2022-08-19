@@ -15,7 +15,7 @@ export const getUriHistory = (
       if (uriPackageOrWrapper.type === "uri") {
         resultUri = uriPackageOrWrapper.uri;
       } else if (uriPackageOrWrapper.type === "package") {
-        resultUri = uriPackageOrWrapper.package?.uri;
+        resultUri = uriPackageOrWrapper.package.uri;
       } else {
         resultUri = uriPackageOrWrapper.wrapper.uri;
       }
