@@ -7,7 +7,7 @@ import {
 
 import { ipfsPlugin } from "..";
 import { IpfsClient, IpfsFileInfo } from "../utils/IpfsClient";
-import { Ipfs_Module } from "../wrap";
+import { Ipfs_Module } from "../wrap-man";
 
 const createIpfsClient = require("@dorgjelli-test/ipfs-http-client-lite");
 

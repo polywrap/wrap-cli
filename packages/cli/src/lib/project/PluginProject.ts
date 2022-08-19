@@ -10,9 +10,8 @@ import { resetDir } from "../system";
 
 import { PluginManifest } from "@polywrap/polywrap-manifest-types-js";
 import { bindSchema, BindOutput, BindOptions } from "@polywrap/schema-bind";
-import { ComposerOutput } from "@polywrap/schema-compose";
+import { WrapAbi } from "@polywrap/schema-parse";
 import path from "path";
-import { WrapAbi } from "@polywrap/wrap-manifest-types-js";
 
 export interface PluginProjectConfig extends ProjectConfig {
   pluginManifestPath: string;
@@ -95,18 +94,13 @@ export class PluginProject extends Project<PluginManifest> {
     return path.join(dir, manifest.schema);
   }
 
-  public async getImportRedirects(): Promise<
-    {
-      uri: string;
-      schema: string;
-    }[]
-  > {
+  public async getImportAbis(): Promise<PluginManifest["import_abis"]> {
     const manifest = await this.getManifest();
-    return manifest.import_redirects || [];
+    return manifest.import_abis || [];
   }
 
   public async generateSchemaBindings(
-    composerOutput: ComposerOutput,
+    abi: WrapAbi,
     generationSubPath?: string
   ): Promise<BindOutput> {
     const manifest = await this.getManifest();
@@ -124,8 +118,7 @@ export class PluginProject extends Project<PluginManifest> {
 
     const options: BindOptions = {
       projectName: manifest.name,
-      abi: composerOutput.abi as WrapAbi,
-      schema: composerOutput.schema as string,
+      abi,
       outputDirAbs: moduleDirectory,
       bindLanguage,
     };

@@ -1,6 +1,5 @@
 import {
   createImportedModuleDefinition,
-  createInterfaceImplementedDefinition,
   createMethodDefinition,
   createPropertyDefinition,
 } from "..";
@@ -45,16 +44,11 @@ const visitorEnter = (
       node.directives.find((dir) => dir.name.value === "enabled_interface");
     const isInterface = dir ? true : false;
 
-    const interfaces = node.interfaces?.map((x) =>
-      createInterfaceImplementedDefinition({ type: x.name.value })
-    );
-
     const importedType = createImportedModuleDefinition({
       uri: imported.uri,
       namespace: imported.namespace,
       nativeType: imported.nativeType,
       isInterface: isInterface,
-      interfaces: interfaces?.length ? interfaces : undefined,
       comment: node.description?.value,
     });
     importedModuleTypes.push(importedType);

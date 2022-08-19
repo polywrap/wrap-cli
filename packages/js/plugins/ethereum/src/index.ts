@@ -37,7 +37,7 @@ import {
   Network,
   Connection as SchemaConnection,
   manifest,
-} from "./wrap";
+} from "./wrap-man";
 import {
   Connections,
   Connection,

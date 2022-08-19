@@ -33,7 +33,35 @@ extensionCodec.register({
   },
 });
 
-export function msgpackEncode(object: unknown): Uint8Array {
+const shouldIgnore = (obj: unknown) =>
+  obj instanceof ArrayBuffer || ArrayBuffer.isView(obj) || obj instanceof Map;
+
+function sanitize(obj: Record<string, unknown>): Record<string, unknown> {
+  if (shouldIgnore(obj)) {
+    return obj;
+  }
+
+  for (const key of Object.keys(obj)) {
+    if (typeof obj[key] === "function") {
+      delete obj[key];
+    } else if (obj[key] === null || obj[key] === undefined) {
+      delete obj[key];
+    } else if (typeof obj[key] === "object") {
+      const sanitized = sanitize(obj[key] as Record<string, unknown>);
+      if (Array.isArray(obj[key])) {
+        obj[key] = Object.values(sanitized);
+      } else {
+        obj[key] = sanitized;
+      }
+    }
+  }
+  return obj;
+}
+
+export function msgpackEncode(
+  object: unknown,
+  sanitizeObj = false
+): Uint8Array {
   const encoder = new Encoder(
     extensionCodec,
     undefined, // context
@@ -45,12 +73,24 @@ export function msgpackEncode(object: unknown): Uint8Array {
     undefined // forceIntegerToFloat
   );
 
+  if (sanitizeObj && typeof object === "object" && !shouldIgnore(object)) {
+    const deepClone = JSON.parse(JSON.stringify(object));
+    object = sanitize(deepClone);
+  }
+
   return encoder.encode(object);
 }
 
 export function msgpackDecode(
-  buffer: ArrayLike<number> | BufferSource
+  buffer: ArrayLike<number> | BufferSource,
+  sanitizeResult = false
 ): unknown {
   const decoder = new Decoder(extensionCodec);
-  return decoder.decode(buffer);
+  const result = decoder.decode(buffer);
+
+  if (sanitizeResult && typeof result === "object" && !shouldIgnore(result)) {
+    return sanitize(result as Record<string, unknown>);
+  } else {
+    return result;
+  }
 }

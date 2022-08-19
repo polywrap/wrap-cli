@@ -1,0 +1,42 @@
+{
+  "name": "@polywrap/ws-plugin-js",
+  "description": "Polywrap WS javascript Plugin",
+  "version": "0.3.0",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/polywrap/monorepo.git"
+  },
+  "main": "build/index.js",
+  "files": [
+    "build"
+  ],
+  "scripts": {
+    "build": "rimraf ./build && tsc --project tsconfig.build.json",
+    "codegen": "node ../../../../dependencies/node_modules/polywrap/bin/polywrap plugin codegen",
+    "codegen:patch": "node ../../../cli/bin/polywrap plugin codegen",
+    "lint": "eslint --color -c ../../../../.eslintrc.js src/",
+    "test": "jest --passWithNoTests --runInBand --verbose",
+    "test:ci": "jest --passWithNoTests --runInBand --verbose",
+    "test:watch": "jest --watch --passWithNoTests --verbose"
+  },
+  "dependencies": {
+    "@polywrap/core-js": "0.3.0"
+  },
+  "devDependencies": {
+    "@polywrap/client-js": "0.3.0",
+    "@polywrap/test-env-js": "0.3.0",
+    "@types/jest": "26.0.8",
+    "@types/prettier": "2.6.0",
+    "jest": "26.6.3",
+    "jest-websocket-mock": "^2.3.0",
+    "rimraf": "3.0.2",
+    "ts-jest": "26.5.4",
+    "ts-node": "8.10.2",
+    "typescript": "4.0.7"
+  },
+  "gitHead": "7346adaf5adb7e6bbb70d9247583e995650d390a",
+  "publishConfig": {
+    "access": "public"
+  }
+}

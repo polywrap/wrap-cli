@@ -1,4 +1,4 @@
-format: 0.1.0
+format: "0.2"
 name: deploy-fail-between
 build: ./polywrap.build.yaml
 deploy: ./polywrap.deploy.yaml

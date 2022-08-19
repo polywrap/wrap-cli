@@ -1,5 +1,8 @@
-format: 0.1.0
+format: "0.2"
 language: plugin/typescript
 name: GraphNode
 module: ./src/index.ts
 schema: ./src/schema.graphql
+import_abis:
+  - uri: "ens/http.polywrap.eth"
+    abi: ../http/build/wrap.info
