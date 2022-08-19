@@ -68,18 +68,6 @@ describe("sanity", () => {
     const client = new PolywrapClient({
       redirects: [
         {
-          from: "wrap://ens/sha3.polywrap.eth",
-          to: defaultWrappers.sha3,
-        },
-        {
-          from: "wrap://ens/uts46.polywrap.eth",
-          to: defaultWrappers.uts46,
-        },
-        {
-          from: "wrap://ens/graph-node.polywrap.eth",
-          to: defaultWrappers.graphNode,
-        },
-        {
           from: implementation1Uri,
           to: implementation2Uri,
         },
@@ -89,6 +77,10 @@ describe("sanity", () => {
     const redirects = client.getRedirects();
 
     expect(redirects).toEqual([
+      {
+        from: new Uri(implementation1Uri),
+        to: new Uri(implementation2Uri),
+      },
       {
         from: new Uri("wrap://ens/sha3.polywrap.eth"),
         to: new Uri(defaultWrappers.sha3),
@@ -100,10 +92,6 @@ describe("sanity", () => {
       {
         from: new Uri("wrap://ens/graph-node.polywrap.eth"),
         to: new Uri(defaultWrappers.graphNode),
-      },
-      {
-        from: new Uri(implementation1Uri),
-        to: new Uri(implementation2Uri),
       },
     ]);
   });
