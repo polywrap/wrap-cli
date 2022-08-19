@@ -1,5 +1,5 @@
 import { coreInterfaceUris } from "@polywrap/core-js";
-import { Uri, PolywrapClient } from "../..";
+import { Uri, PolywrapClient, defaultWrappers } from "../..";
 
 jest.setTimeout(200000);
 
@@ -7,7 +7,20 @@ describe("sanity", () => {
   test("default client config", () => {
     const client = new PolywrapClient();
 
-    expect(client.getRedirects()).toStrictEqual([]);
+    expect(client.getRedirects()).toStrictEqual([
+      {
+        from: new Uri("wrap://ens/sha3.polywrap.eth"),
+        to: new Uri(defaultWrappers.sha3),
+      },
+      {
+        from: new Uri("wrap://ens/uts46.polywrap.eth"),
+        to: new Uri(defaultWrappers.uts46),
+      },
+      {
+        from: new Uri("wrap://ens/graph-node.polywrap.eth"),
+        to: new Uri(defaultWrappers.graphNode),
+      },
+    ]);
     expect(client.getPlugins().map((x) => x.uri)).toStrictEqual([
       new Uri("wrap://ens/ipfs.polywrap.eth"),
       new Uri("wrap://ens/ens-resolver.polywrap.eth"),
@@ -55,6 +68,18 @@ describe("sanity", () => {
     const client = new PolywrapClient({
       redirects: [
         {
+          from: "wrap://ens/sha3.polywrap.eth",
+          to: defaultWrappers.sha3,
+        },
+        {
+          from: "wrap://ens/uts46.polywrap.eth",
+          to: defaultWrappers.uts46,
+        },
+        {
+          from: "wrap://ens/graph-node.polywrap.eth",
+          to: defaultWrappers.graphNode,
+        },
+        {
           from: implementation1Uri,
           to: implementation2Uri,
         },
@@ -64,6 +89,18 @@ describe("sanity", () => {
     const redirects = client.getRedirects();
 
     expect(redirects).toEqual([
+      {
+        from: new Uri("wrap://ens/sha3.polywrap.eth"),
+        to: new Uri(defaultWrappers.sha3),
+      },
+      {
+        from: new Uri("wrap://ens/uts46.polywrap.eth"),
+        to: new Uri(defaultWrappers.uts46),
+      },
+      {
+        from: new Uri("wrap://ens/graph-node.polywrap.eth"),
+        to: new Uri(defaultWrappers.graphNode),
+      },
       {
         from: new Uri(implementation1Uri),
         to: new Uri(implementation2Uri),
