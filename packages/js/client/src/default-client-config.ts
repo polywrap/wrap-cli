@@ -28,7 +28,7 @@ export const getDefaultClientConfig = Tracer.traceFunc(
     return {
       envs: [
         {
-          uri: new Uri("wrap://ens/graph-node.polywrap.eth"),
+          uri: new Uri(wrapperUris.graphNode),
           env: {
             provider: "https://api.thegraph.com",
           },
@@ -37,15 +37,15 @@ export const getDefaultClientConfig = Tracer.traceFunc(
       redirects: [
         {
           from: new Uri("wrap://ens/sha3.polywrap.eth"),
-          to: new Uri("wrap://ens/goerli/sha3.wrappers.eth"),
+          to: new Uri(wrapperUris.sha3),
         },
         {
           from: new Uri("wrap://ens/uts46.polywrap.eth"),
-          to: new Uri("wrap://ens/goerli/uts46.wrappers.eth"),
+          to: new Uri(wrapperUris.uts46),
         },
         {
           from: new Uri("wrap://ens/graph-node.polywrap.eth"),
-          to: new Uri("wrap://ens/goerli/graph-node.wrappers.eth"),
+          to: new Uri(wrapperUris.graphNode),
         },
       ],
       plugins: [
@@ -137,3 +137,9 @@ export const defaultIpfsProviders = [
   "https://ipfs.wrappers.io",
   "https://ipfs.io",
 ];
+
+const wrapperUris = {
+  sha3: "wrap://ipfs/QmYFWh4D91sAiYKf8o37EravLwFKAtUAmut4Xnevnt4QZR",
+  uts46: "wrap://ipfs/QmZFz2KxpugGU7Lgo8mkEiAZVBGHqgMt7FLP42LRGRqsHT",
+  graphNode: "wrap://ipfs/Qmd2KmB1sGqqVZ7qqSCfiPBJ3jRw4oMzCW2Ey6qG4oGZDL",
+};
