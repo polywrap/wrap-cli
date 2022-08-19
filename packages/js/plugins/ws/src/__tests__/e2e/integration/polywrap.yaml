@@ -1,11 +1,11 @@
-format: 0.1.0
+format: "0.2"
 name: WS-Integration
 build: ./polywrap.build.yaml
 language: wasm/assemblyscript
 schema: ./schema.graphql
 module: ./src/index.ts
-import_redirects:
+import_abis:
   - uri: "wrap://ens/memory.polywrap.eth"
-    schema: "../memory.schema.graphql"
+    abi: "../memory.schema.graphql"
   - uri: "wrap://ens/ws.polywrap.eth"
-    schema: "../../../schema.graphql"
+    abi: "../../../../build/wrap.info"
