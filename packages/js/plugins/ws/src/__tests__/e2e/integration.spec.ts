@@ -2,9 +2,8 @@ import { wsPlugin } from "../..";
 
 import { Client, PluginModule } from "@polywrap/core-js";
 import { PolywrapClient } from "@polywrap/client-js"
-import {
-  buildWrapper
-} from "@polywrap/test-env-js";
+import { buildWrapper } from "@polywrap/test-env-js";
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import WS from "jest-websocket-mock";
 
 jest.setTimeout(360000)
@@ -66,7 +65,7 @@ describe("e2e tests for WsPlugin", () => {
         factory: () => {
           return new MemoryPlugin({})
         },
-        manifest: { schema: "", implements: [] },
+        manifest: { } as WrapManifest,
       }
       client = new PolywrapClient({
         plugins: [
@@ -117,7 +116,7 @@ describe("e2e tests for WsPlugin", () => {
         factory: () => {
           return new MemoryPlugin({})
         },
-        manifest: { schema: "", implements: [] },
+        manifest: { } as WrapManifest,
       }
       client = new PolywrapClient({
         plugins: [
