@@ -1,12 +1,7 @@
 from __future__ import annotations
-from dataclasses import dataclass
-from typing import Union
 
-from .....types import Uri, Env
+from typing import Callable, Union
 
-@dataclass
-class CreateWrapperFunc:
-    uri: Uri
-    manifest: WrapManifest
-    uri_resolver: str  # name or URI
-    environment: Union[Env, None]
+from .....types import Env, Uri, WrapManifest, Wrapper
+
+CreateWrapperFunc = Callable[[Uri, WrapManifest, str, Union[Env, None]], Wrapper]

@@ -2,16 +2,20 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Awaitable, Callable, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Union
 
-from . import Client, Uri, execute_maybe_async_function
+from .maybe_async import execute_maybe_async_function
+from .uri import Uri
 
-PluginMethod = Callable[[Dict[str, Any], Client], Awaitable[Any]]
+if TYPE_CHECKING:
+    from .client import Client
+
+PluginMethod = Callable[[Union[Dict[str, Any], bytes], "Client"], Any]
 
 
 class PluginModule(ABC):
-    _env: Optional[Dict[str, Any]] = None
     _config: Dict[str, Any]
+    _env: Dict[str, Any] = {}
 
     def __init__(self, config: Dict[str, Any]):
         self._config = config
@@ -27,7 +31,7 @@ class PluginModule(ABC):
     def set_env(self, env: Dict[str, Any]) -> None:
         self._env = env
 
-    async def wrap_invoke(self, method: str, args: Dict[str, Any], client: Client) -> Awaitable[Any]:
+    async def wrap_invoke(self, method: str, args: Dict[str, Any], client: "Client") -> Any:
         fn = self.get_method(method)
 
         if not fn:
@@ -38,7 +42,7 @@ class PluginModule(ABC):
 
         return await execute_maybe_async_function(fn, input, client)
 
-    def get_method(self, method: str):
+    def get_method(self, method: str) -> PluginMethod:
         return getattr(self, method)
 
 
@@ -59,7 +63,7 @@ class PluginPackageManifest:
 class PluginPackage(ABC):
     manifest: PluginPackageManifest
 
-    def __init__(self, manifest: List[Uri]):
+    def __init__(self, manifest: PluginPackageManifest):
         self.manifest = manifest
 
     @abstractmethod

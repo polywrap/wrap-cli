@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any, Dict
 
-from . import Uri
+from .uri import Uri
 
 
 @dataclass(slots=True, kw_only=True)

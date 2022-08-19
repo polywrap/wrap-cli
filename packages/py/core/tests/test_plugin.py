@@ -1,31 +1,23 @@
-from typing import Any, Awaitable
+from typing import Any
 
-from .. import (
+from core import (
     Client,
-    Plugin,
     PluginModule,
     PluginPackageManifest,
     Uri,
 )
 
 
-class PluginTest(Plugin):
-    @classmethod
-    def get_module(cls) -> PluginModule:
-        return PluginTestModule({})
-
-
 class PluginTestModule(PluginModule):
     def test_query(_input: Any, _client: Client) -> int:
         return 5
 
-    async def test_mutation(_input: Any, _client: Client) -> Awaitable[bool]:
+    async def test_mutation(_input: Any, _client: Client) -> bool:
         return True
 
 
 def test_sanity_plugin():
-    plugin = PluginTest()
-    module = plugin.get_module()
+    plugin = PluginTestModule({})
 
     test_plugin_manifest = PluginPackageManifest(
         schema="""
@@ -38,5 +30,5 @@ def test_sanity_plugin():
     )
 
     assert len(test_plugin_manifest.implements) == 1
-    assert module
-    assert hasattr(module, 'test_mutation')
+    assert plugin
+    assert hasattr(plugin, 'test_mutation')

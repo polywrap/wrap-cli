@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from typing import List
 
 from ....types import Uri
-from . import UriResolutionStack
+from .uri_resolution_stack import UriResolutionStack
 
 
 @dataclass(slots=True, kw_only=True)
@@ -18,5 +18,5 @@ class UriResolutionHistory:
         self.uri_resolvers = [x.uri_resolver for x in self.stack]
         self.uris = list(set(x.result.uri for x in self.stack))
         self.resolution_path = UriResolutionHistory(
-            [x for x in self.stack if x.source_uri.uri != x.result.uri.uri or x.result.api]
+            stack=[x for x in self.stack if x.source_uri.uri != x.result.uri.uri or x.result.api]
         )

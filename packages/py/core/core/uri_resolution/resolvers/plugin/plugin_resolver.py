@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Awaitable, Callable
+from typing import Callable, Optional
 
 from ....algorithms import find_plugin_package
 from ....types import Client, Env, PluginPackage, Uri, Wrapper, WrapperCache
@@ -9,10 +9,10 @@ from ..get_env_from_uri_or_resolution import get_env_from_uri_or_resolution_stac
 
 
 class PluginResolver(UriResolver):
-    create_plugin_wrapper: Callable[[Uri, PluginPackage, Env], Wrapper]
+    create_plugin_wrapper: Callable[[Uri, PluginPackage, Optional[Env]], Wrapper]
 
     def __init__(
-        self, create_plugin_wrapper: Callable[[Uri, PluginPackage, Env], Wrapper]
+        self, create_plugin_wrapper: Callable[[Uri, PluginPackage, Optional[Env]], Wrapper]
     ):
         self.create_plugin_wrapper = create_plugin_wrapper
 
@@ -26,8 +26,8 @@ class PluginResolver(UriResolver):
         client: Client,
         cache: WrapperCache,
         resolution_path: UriResolutionStack,
-    ) -> Awaitable(UriResolutionResult):
-        plugin = find_plugin_package(uri, client.get_plugins({}))
+    ) -> UriResolutionResult:
+        plugin = find_plugin_package(uri, client.get_plugins())
 
         if plugin:
             environment = get_env_from_uri_or_resolution_stack(

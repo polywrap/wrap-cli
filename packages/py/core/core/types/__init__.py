@@ -12,3 +12,4 @@ from .uri_redirect import *
 from .uri_resolver import *
 from .workflow import *
 from .wrapper import *
+from .manifest import *

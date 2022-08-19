@@ -2,12 +2,16 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Any, Awaitable, Dict, List, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 from gql import gql
 from graphql import DocumentNode
 
-from . import ClientConfig, InvokeOptions, Uri
+from .invoke import InvokeOptions
+from .uri import Uri
+
+if TYPE_CHECKING:
+    from .client import ClientConfig
 
 
 def create_query_document(query: str) -> DocumentNode:
@@ -31,7 +35,7 @@ class QueryOptions:
     uri: Uri
     query: Union[str, DocumentNode]
     variables: Optional[Dict[str, Any]] = field(default_factory=dict)
-    config: Optional[ClientConfig] = None
+    config: Optional["ClientConfig"] = None
     context_id: Optional[str] = None
 
 
@@ -49,12 +53,11 @@ class QueryResult:
     errors: List[Exception] = field(default_factory=list)
 
 
-QueryInvocations = Dict[str, InvokeOptions]
-
-
 class QueryHandler(ABC):
     @abstractmethod
-    async def query(self, options: QueryOptions) -> Awaitable[QueryResult]:
+    async def query(self, options: QueryOptions) -> QueryResult:
         """A type that can parse & execute a given query."""
 
+
+QueryInvocations = Dict[str, InvokeOptions]
 QueryDocument = DocumentNode

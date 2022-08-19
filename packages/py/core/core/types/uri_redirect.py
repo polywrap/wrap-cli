@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from . import Uri
+from .uri import Uri
 
 
 @dataclass(slots=True, kw_only=True)

@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Optional
 
-from . import QueryOptions
+from .query import QueryOptions
 
 
 @dataclass(slots=True, kw_only=True)

@@ -1,22 +1,28 @@
 from __future__ import annotations
 
-from typing import Awaitable, Union
+from typing import Optional, TypedDict, Union
 
-from ....interfaces import UriResolverInterface
-from ....types import Client, Invoker, Uri
+from .types import CreateWrapperFunc
+
+from ....interfaces import UriResolverInterface, MaybeUriOrManifest
+from ....types import Client, Invoker, Uri, WrapperCache, DeserializeManifestOptions, deserialize_wrap_manifest
 from ...core import UriResolutionResult, UriResolutionStack, UriResolver
 from ..get_env_from_uri_or_resolution import get_env_from_uri_or_resolution_stack
 
+
+class MaybeUriOrManifestDict(TypedDict):
+    uri: Optional[str]
+    manifest: Optional[str]
 
 class UriResolverWrapper(UriResolver):
     def __init__(
         self,
         implementation_uri: Uri,
-        create_api: CreateApiFunc,
-        deserialize_options: DeserializeManifestOptions = None,
+        create_wrapper: CreateWrapperFunc,
+        deserialize_options: Optional[DeserializeManifestOptions] = None,
     ):
         self.implementation_uri = implementation_uri
-        self.create_api = create_api
+        self.create_wrapper = create_wrapper
         self.deserialize_options = deserialize_options
 
     @property
@@ -29,44 +35,44 @@ class UriResolverWrapper(UriResolver):
         client: Client,
         cache: WrapperCache,
         resolution_path: UriResolutionStack,
-    ) -> Awaitable(UriResolutionResult):
+    ) -> UriResolutionResult:
         result = await try_resolve_uri_with_implementation(
-            uri, self.implementation_uri, client.invoke
+            uri, self.implementation_uri, client
         )
 
         if not result:
             return UriResolutionResult(uri)
 
-        if result.get("uri"):
-            return UriResolutionResult(uri=Uri(result.get("uri")))
-        elif result.get("manifest"):
+        if result.uri:
+            return UriResolutionResult(uri=Uri(result.uri))
+        elif result.manifest:
             # We've found our manifest at the current implementation,
             # meaning the URI resolver can also be used as an API resolver
-            manifest = deserialize_web3_api_manifest(
-                result.get("manifest"), self.deserialize_options
+            manifest = deserialize_wrap_manifest(
+                result.manifest, self.deserialize_options
             )
 
             environment = get_env_from_uri_or_resolution_stack(
                 uri, resolution_path, client
             )
 
-            api = self.create_api(
+            wrapper = self.create_wrapper(
                 uri, manifest, self.implementation_uri.uri, environment
             )
 
-            return UriResolutionResult(uri, api)
+            return UriResolutionResult(uri, wrapper)
 
         return UriResolutionResult(uri)
 
 
 async def try_resolve_uri_with_implementation(
     uri: Uri, implementation_uri: Uri, invoker: Invoker
-) -> Awaitable(Union[UriResolverInterface.MaybeUriOrManifest, None]):
+) -> Union[MaybeUriOrManifest, None]:
     result = await UriResolverInterface.try_resolve_uri(invoker, implementation_uri, uri)
-    data = result.data
+    data: Union[MaybeUriOrManifestDict, None] = result.data
 
     # If nothing was returned, the URI is not supported
     if not data or (not data.get("uri") and not data.get("manifest")):
         return None
 
-    return data
+    return MaybeUriOrManifest(**data)

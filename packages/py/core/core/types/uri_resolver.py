@@ -2,10 +2,13 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 
-from .. import ResolveUriResult
-from . import ClientConfig, Uri
+from .uri import Uri
+
+if TYPE_CHECKING:
+    from .client import ClientConfig
+    from ..uri_resolution import ResolveUriResult
 
 
 @dataclass(slots=True, kw_only=True)
@@ -20,7 +23,7 @@ class ResolveUriOptions:
 
     no_cache_read: Optional[bool] = False
     no_cache_write: Optional[bool] = False
-    config: Optional[ClientConfig] = None
+    config: Optional["ClientConfig"] = None
     context_id: Optional[str] = None
 
 
@@ -32,7 +35,7 @@ class LoadUriResolversResult:
 
 class UriResolverHandler(ABC):
     @abstractmethod
-    def resolve_uri(self, uri: Uri, options: ResolveUriOptions) -> ResolveUriResult:
+    async def resolve_uri(self, uri: Uri, options: Optional[ResolveUriOptions] = None) -> "ResolveUriResult":
         pass
 
     @abstractmethod

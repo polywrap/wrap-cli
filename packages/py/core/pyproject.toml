@@ -1,3 +1,7 @@
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
 [tool.poetry]
 name = "core"
 version = "0.1.0"
@@ -16,7 +20,40 @@ flake8 = "5.0.4"
 mypy = "0.971"
 pydocstringformatter = "0.6.2"
 pyment = "0.3.3"
+pytest = "^7.1.2"
+pytest-asyncio = "^0.19.0"
 
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+[tool.bandit]
+# nothing
+
+[tool.black]
+line-length = 120
+skip-string-normalization = true
+target-version = ["py310"]
+
+[tool.mypy]
+python_version = "3.10"
+allow_redefinition = true
+disallow_any_decorated = true
+disallow_any_explicit = true
+disallow_any_expr = true
+disallow_any_generics = true
+disallow_any_unimported = true
+disallow_incomplete_defs = true
+disallow_subclassing_any = true
+disallow_untyped_calls = true
+disallow_untyped_decorators = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+strict = true
+strict_equality = true
+strict_optional = true
+warn_redundant_casts = true
+warn_return_any = true
+warn_unreachable = true
+warn_unused_configs = true
+warn_unused_ignores = true
+
+[tool.pydocstringformatter]
+max-line-length = 120
+write = true

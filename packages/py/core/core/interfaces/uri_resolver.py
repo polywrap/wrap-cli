@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Awaitable, Optional
+from typing import Optional
 
 from ..types import InvokeOptions, Invoker, InvokeResult, Uri
 
@@ -14,12 +14,12 @@ class MaybeUriOrManifest:
 
 class UriResolverInterface:
     @staticmethod
-    async def try_resolve_uri(invoker: Invoker, api: Uri, uri: Uri) -> Awaitable[MaybeUriOrManifest]:
+    async def try_resolve_uri(invoker: Invoker, wrapper_uri: Uri, uri: Uri) -> InvokeResult:
         return await invoker.invoke(
             InvokeOptions(
-                uri=api.uri,
+                uri=wrapper_uri,
                 method="try_resolve_uri",
-                input={
+                args={
                     "authority": uri.authority,
                     "path": uri.path,
                 },
@@ -27,12 +27,12 @@ class UriResolverInterface:
         )
 
     @staticmethod
-    async def get_file(invoker: Invoker, api: Uri, path: str) -> Awaitable[InvokeResult]:
+    async def get_file(invoker: Invoker, wrapper_uri: Uri, path: str) -> InvokeResult:
         return await invoker.invoke(
             InvokeOptions(
-                uri=api.uri,
+                uri=wrapper_uri,
                 method="get_file",
-                input={
+                args={
                     "path": path,
                 },
             )

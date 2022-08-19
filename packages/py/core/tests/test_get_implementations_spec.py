@@ -1,14 +1,14 @@
-from .. import get_implementations, Uri, UriRedirect, InterfaceImplementations
+from core import get_implementations, Uri, UriRedirect, InterfaceImplementations
 
 
 def test_works_complex_redirects():
-    interface1_uri = "w3://ens/some-interface1.eth"
-    interface2_uri = "w3://ens/some-interface2.eth"
-    interface3_uri = "w3://ens/some-interface3.eth"
+    interface1_uri = "wrap://ens/some-interface1.eth"
+    interface2_uri = "wrap://ens/some-interface2.eth"
+    interface3_uri = "wrap://ens/some-interface3.eth"
 
-    implementation1_uri = "w3://ens/some-implementation.eth"
-    implementation2_uri = "w3://ens/some-implementation2.eth"
-    implementation3_uri = "w3://ens/some-implementation3.eth"
+    implementation1_uri = "wrap://ens/some-implementation.eth"
+    implementation2_uri = "wrap://ens/some-implementation2.eth"
+    implementation3_uri = "wrap://ens/some-implementation3.eth"
 
     redirects = [
         UriRedirect(from_uri=Uri(interface1_uri), to_uri=Uri(interface2_uri)),
@@ -46,10 +46,10 @@ def test_works_complex_redirects():
 
 
 def test_interface_implementations_not_redirected():
-    interface1_uri = "w3://ens/some-interface1.eth"
+    interface1_uri = "wrap://ens/some-interface1.eth"
 
-    implementation1_uri = "w3://ens/some-implementation.eth"
-    implementation2_uri = "w3://ens/some-implementation2.eth"
+    implementation1_uri = "wrap://ens/some-implementation.eth"
+    implementation2_uri = "wrap://ens/some-implementation2.eth"
 
     redirects = [UriRedirect(from_uri=Uri(implementation1_uri), to_uri=Uri(implementation2_uri))]
 

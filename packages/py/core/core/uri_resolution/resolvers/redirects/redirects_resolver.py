@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-from typing import Awaitable
-
 from ....algorithms import apply_redirects
-from ....types import Client, GetRedirectsOptions, Uri, WrapperCache
+from ....types import Client, Uri, WrapperCache
 from ...core import UriResolutionResult, UriResolutionStack, UriResolver
 
 
@@ -18,9 +16,9 @@ class RedirectsResolver(UriResolver):
         client: Client,
         cache: WrapperCache,
         resolution_path: UriResolutionStack,
-    ) -> Awaitable(UriResolutionResult):
+    ) -> UriResolutionResult:
         redirect_uri = apply_redirects(
-            uri, client.get_redirects(GetRedirectsOptions(""))
+            uri, client.get_redirects()
         )
 
         return UriResolutionResult(uri=redirect_uri)

@@ -1,93 +1,96 @@
 from __future__ import annotations
-import pytest
-from typing import Awaitable, Union
 
-from .. import (
-    Api,
-    InvokeApiResult,
-    AnyManifestArtifact,
-    Subscription,
+from typing import Dict, List, Optional, Union
+
+import pytest
+from core import (
+    AnyWrapManifest,
     Client,
-    ManifestArtifactType,
-    QueryApiResult,
-    Uri,
-    CoreInterfaceUris,
+    Env,
+    GetFileOptions,
+    GetManifestOptions,
+    InterfaceImplementations,
+    InvocableResult,
+    InvokeOptions,
+    Invoker,
+    PluginModule,
     PluginPackage,
     PluginRegistration,
-    InterfaceImplementations,
-    PluginResolver,
+    Subscription,
+    Uri,
+    UriRedirect,
+    WrapManifest,
+    WrapManifestType,
+    Wrapper,
+    GetRedirectsOptions,
+    GetPluginsOptions,
+    GetInterfacesOptions,
+    GetEnvsOptions,
+    GetUriResolversOptions,
+    UriResolver,
+    GetSchemaOptions,
+    GetImplementationsOptions,
+    ResolveUriOptions,
+    ResolveUriResult,
+    LoadUriResolversResult,
+    QueryResult,
+    SubscribeOptions,
+    PluginPackageManifest,
+    CoreInterfaceUris,
     RedirectsResolver,
+    PluginResolver,
     ExtendableUriResolver,
     DeserializeManifestOptions,
-    UriResolverInterface,
-    resolve_uri,
-    InvokeApiOptions,
-    Web3ApiManifest,
-    UriRedirect,
+    QueryOptions,
+    UriResolverInterface
 )
 
 
-class ApiTest(Api):
+class WasmWrapperTest(Wrapper):
     def __init__(
         self,
         uri: Uri,
-        manifest: Web3ApiManifest,
+        manifest: WrapManifest,
         uri_resolver: str,
     ):
         self.uri = uri
         self.manifest = manifest
         self.uri_resolver = uri_resolver
 
-    async def invoke(self, options: InvokeApiOptions, client: Client) -> Awaitable[InvokeApiResult]:
-        return InvokeApiResult(data={"uri": self.uri, "manifest": self.manifest, "uri_resolver": self.uri_resolver})
+    async def invoke(self, options: InvokeOptions, invoker: Invoker) -> InvocableResult:
+        return InvocableResult(data={"uri": self.uri, "manifest": self.manifest, "uri_resolver": self.uri_resolver})
 
-    @classmethod
-    async def get_schema(cls, client: Client) -> Awaitable[str]:
+    async def get_schema(self, client: Client) -> str:
         return ""
 
-    @classmethod
-    async def get_manifest(cls, options: GetManifestOptions, client: Client) -> Awaitable[AnyManifestArtifact]:
-        return AnyManifestArtifact(
-            format="0.0.1-prealpha.9",
-            language="",
-            main="",
-            schema="",
-            __type="Web3ApiManifest",
-        )
+    async def get_manifest(self, options: GetManifestOptions, client: Client) -> AnyWrapManifest:
+        return AnyWrapManifest(version="0.1.0", type=WrapManifestType.WASM, name="test", abi=None)
 
-    @classmethod
-    async def get_file(cls, options: GetFileOptions, client: Client) -> Awaitable[Union[bytearray, str]]:
+    async def get_file(self, options: GetFileOptions, client: Client) -> Union[bytearray, str]:
         return ""
 
 
-class PluginApiTest(Api):
-    def __init__(self, uri: Uri, plugin: PluginPackage, environment: Env = None):
+class PluginWrapperTest(Wrapper):
+    def __init__(self, uri: Uri, plugin: PluginPackage, environment: Optional[Env] = None):
         self.uri = uri
         self.plugin = plugin
         self.environment = environment
 
-    async def invoke(self, options: InvokeApiOptions, client: Client) -> Awaitable[InvokeApiResult]:
-        return InvokeApiResult(
+    async def invoke(self, options: InvokeOptions, invoker: Invoker) -> InvocableResult:
+        return InvocableResult(
             data={
                 "uri": self.uri,
                 "plugin": self.plugin,
             }
         )
 
-    @classmethod
-    async def get_schema(cls, client: Client) -> Awaitable[str]:
+    async def get_schema(self, client: Client) -> str:
         return ""
 
-    @classmethod
-    async def get_manifest(cls, options: GetManifestOptions, client: Client) -> Awaitable[AnyManifestArtifact]:
-        return AnyManifestArtifact(
-            format="0.0.1-prealpha.9",
-            language="",
-            __type="PluginManifest",
-        )
+    async def get_manifest(self, options: GetManifestOptions, client: Client) -> AnyWrapManifest:
+        return AnyWrapManifest(version="0.1.0", type=WrapManifestType.WASM, name="test", abi=None)
 
-    @classmethod
-    async def get_file(cls, options: GetFileOptions, client: Client) -> Awaitable[Union[bytearray, str]]:
+    async def get_file(self, options: GetFileOptions, client: Client) -> Union[bytearray, str]:
         return ""
 
 
@@ -95,122 +98,110 @@ class SubscriptionTest(Subscription):
     frequency: int
     is_active: bool
 
-    @classmethod
-    def stop(cls):
-        return None
-
-    @classmethod
-    async def async_iterator(cls) -> QueryApiResult:
+    def stop(self):
         return None
 
 
 class ClientTest(Client):
     def __init__(
         self,
-        apis: Dict[str, PluginModule],
+        wrappers: Dict[str, PluginModule],
         plugins: List[PluginRegistration] = [],
         interfaces: List[InterfaceImplementations] = [],
         redirects: List[UriRedirect] = [],
     ):
-        self.apis = apis
+        self.wrappers = wrappers
         self.plugins = plugins
         self.interfaces = interfaces
         self.redirects = redirects
 
-    async def invoke(self, options: InvokeApiOptions) -> Awaitable[InvokeApiResult]:
+    async def invoke(self, options: InvokeOptions) -> InvocableResult:
         uri = options.uri
-        if Uri.is_uri(uri):
-            uri = uri.uri
-        return InvokeApiResult(data=apis[uri](options.input, None) if apis.get(uri) else None)
+        if not self.wrappers.get(uri.uri) or not options.args:
+            return InvocableResult()
+        return InvocableResult(data=self.wrappers[uri.uri].get_method(options.method)(options.args, self))
 
-    def get_redirects(self, options: GetRedirectsOptions) -> List[UriRedirect]:
+    def get_redirects(self, options: Optional[GetRedirectsOptions] = None) -> List[UriRedirect]:
         return self.redirects
 
-    def get_plugins(self, options: GetPluginsOptions) -> List[PluginRegistration]:
+    def get_plugins(self, options: Optional[GetPluginsOptions] = None) -> List[PluginRegistration]:
         return self.plugins
 
-    def get_interfaces(self, options: GetInterfacesOptions) -> List[InterfaceImplementations]:
+    def get_interfaces(self, options: Optional[GetInterfacesOptions] = None) -> List[InterfaceImplementations]:
         return self.interfaces
 
-    def get_env_by_uri(self, uri: Union[Uri, str], options: GetEnvsOptions) -> Union[Env, None]:
+    def get_env_by_uri(self, uri: Union[Uri, str], options: Optional[GetEnvsOptions] = None) -> Union[Env, None]:
         return None
 
-    def get_uri_resolvers(self, options: GetUriResolversOptions) -> List[UriResolver]:
-        return
+    def get_uri_resolvers(self, options: Optional[GetUriResolversOptions] = None) -> List[UriResolver]:
+        return []
 
-    async def get_schema(self, uri: Union[Uri, str], options: GetSchemaOptions) -> Awaitable[str]:
+    async def get_schema(self, uri: Union[Uri, str], options: Optional[GetSchemaOptions] = None) -> str:
         return ""
 
-    async def get_manifest(self, uri: Union[Uri, str], options: GetManifestOptions) -> Awaitable[ManifestArtifactType]:
-        return ManifestArtifactType(
-            format="0.0.1-prealpha.8",
-            language="",
-            __type="Web3ApiManifest",
-        )
+    async def get_manifest(self, uri: Uri, options: Optional[GetManifestOptions] = None) -> AnyWrapManifest:
+        return AnyWrapManifest(version="0.1.0", type=WrapManifestType.WASM, name="test", abi=None)
 
-    async def get_file(self, uri: Union[Uri, str], options: GetFileOptions) -> Awaitable[Union[Uri, str]]:
+    async def get_file(self, uri: Uri, options: Optional[GetFileOptions] = None) -> Union[bytes, str]:
         return ""
 
-    def get_implementations(self, uri: Union[Uri, str], options: GetImplementationsOptions) -> List[Union[Uri, str]]:
+    def get_implementations(self, uri: Uri, options: Optional[GetImplementationsOptions] = None) -> List[Uri]:
         return [uri]
 
-    def resolve_uri(
-        self, uri: Union[Uri, str], options: Optional[ResolveUriOptions] = None
-    ) -> Awaitable[ResolveUriResult]:
-        return None
+    async def resolve_uri(
+        self, uri: Uri, options: Optional[ResolveUriOptions] = None
+    ) -> ResolveUriResult:
+        raise NotImplementedError
 
-    async def load_uri_resolvers(self) -> Awaitable[Dict[bool, List[str]]]:
-        return
+    def load_uri_resolvers(self) -> LoadUriResolversResult:
+        raise NotImplementedError
 
-    async def query(self, _options: InvokeApiOptions) -> QueryApiResult:
-        return QueryApiResult(
+    async def query(self, options: QueryOptions) -> QueryResult:
+        return QueryResult(
             data={
                 "foo": "foo",
             }
         )
 
-    def subscribe(self, _options: SubscribeOptions) -> Subscription:
+    def subscribe(self, options: SubscribeOptions) -> Subscription:
         return SubscriptionTest(
             frequency=0,
             is_active=False,
         )
 
 
-def ens_api(input: Dict[str, str], _client: Client):
+def ens_wrapper(input: Dict[str, str], _client: Client):
     return {"uri": "ipfs/QmHash" if input["authority"] == "ens" else None}
 
 
-def ipfs_api(input: Dict[str, str], _client: Client):
+def ipfs_wrapper(input: Dict[str, str], _client: Client):
     return {"manifest": "format: 0.0.1-prealpha.9\ndog: cat" if input["authority"] == "ipfs" else None}
 
 
-def plugin_api(input: Dict[str, str], _client: Client):
+def plugin_wrapper(input: Dict[str, str], _client: Client):
     return {"manifest": "format: 0.0.1-prealpha.9" if input["authority"] == "my" else None}
 
 
 class PluginPackageTest(PluginPackage):
-    def __init__(self, manifest: List[Uri]):
+    def __init__(self, manifest: PluginPackageManifest):
         self.manifest = manifest
 
-    def factory(self) -> Plugin:
-        return PluginPackageTest(self.manifest)
+    def factory(self) -> PluginModule:
+        return PluginModule({})
 
 
 plugins = [
     PluginRegistration(
         uri=Uri("ens/my-plugin"),
         plugin=PluginPackageTest(
-            manifest={
-                "schema": "",
-                "implements": [CoreInterfaceUris.uri_resolver],
-            },
+            manifest=PluginPackageManifest(schema="", implements=[CoreInterfaceUris.uri_resolver.value])
         ),
     ),
 ]
 
 interfaces = [
     InterfaceImplementations(
-        interface=CoreInterfaceUris.uri_resolver,
+        interface=CoreInterfaceUris.uri_resolver.value,
         implementations=[
             Uri("ens/ens"),
             Uri("ens/ipfs"),
@@ -219,38 +210,40 @@ interfaces = [
     )
 ]
 
-apis = {
-    "w3://ens/ens": ens_api,
-    "w3://ens/ipfs": ipfs_api,
-    "w3://ens/my-plugin": plugin_api,
+wrappers: Dict[str, PluginModule] = {
+    "w3://ens/ens": ens_wrapper,
+    "w3://ens/ipfs": ipfs_wrapper,
+    "w3://ens/my-plugin": plugin_wrapper,
 }
 
 
-def create_plugin_api(uri: Uri, plugin: PluginPackage, environment: Env = None):
-    return PluginApiTest(uri, plugin, environment)
+def create_plugin_wrapper(uri: Uri, plugin: PluginPackage, environment: Optional[Env] = None) -> PluginWrapperTest:
+    return PluginWrapperTest(uri, plugin, environment)
 
 
 def create_extendable_uri_resolver(
-    uri: Uri, manifest: Web3ApiManifest, uri_resolver: str, environment: Union[Env, None]
-):
-    return ApiTest(uri, manifest, uri_resolver)
+    uri: Uri, manifest: WrapManifest, uri_resolver: str, environment: Optional[Env] = None
+) -> WasmWrapperTest:
+    return WasmWrapperTest(uri, manifest, uri_resolver)
 
 
 uri_resolvers = [
     RedirectsResolver(),
-    PluginResolver(create_plugin_api),
+    PluginResolver(create_plugin_wrapper),
     ExtendableUriResolver(create_extendable_uri_resolver, DeserializeManifestOptions(no_validate=True), True),
 ]
 
+ens_api
+
 
 async def test_sanity_resolve_uri():
-    api = Uri("w3://ens/ens")
-    file = Uri("w3/some-file")
-    path = "w3/some-path"
-    query = UriResolverInterface
-    uri = Uri("w3/some-uri")
+    wrapper = Uri("wrap://ens/ens")
+    file = Uri("wrap/some-file")
+    path = "wrap/some-path"
+    module = UriResolverInterface
+    uri = Uri("wrap/some-uri")
 
-    assert await query.try_resolve_uri(ClientTest(apis).invoke, api, uri)
+    assert await module.try_resolve_uri(ClientTest(wrappers).invoke, api, uri)
     assert await query.get_file(ClientTest(apis).invoke, file, path)
 
 

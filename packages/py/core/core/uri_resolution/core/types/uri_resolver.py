@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import Awaitable
 
-from ....types import Client, Uri
-from . import UriResolutionResult, UriResolutionStack
+from ....types import Client, Uri, WrapperCache
+from .uri_resolution_result import UriResolutionResult
+from .uri_resolution_stack import UriResolutionStack
 
 
 class UriResolver(ABC):
@@ -15,6 +15,6 @@ class UriResolver(ABC):
 
     @abstractmethod
     async def resolve_uri(
-        self, uri: Uri, client: Client, resolution_path: UriResolutionStack
-    ) -> Awaitable[UriResolutionResult]:
+        self, uri: Uri, client: Client, cache: WrapperCache, resolution_path: UriResolutionStack
+    ) -> UriResolutionResult:
         pass

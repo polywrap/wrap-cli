@@ -2,7 +2,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from . import PluginPackage, Uri
+from .plugin import PluginPackage
+from .uri import Uri
 
 
 @dataclass(slots=True, kw_only=True)

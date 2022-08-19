@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
-from typing import Any, List, Union
+from typing import Any, List, Optional, Tuple, Union
 
 
 @dataclass(slots=True, kw_only=True)
@@ -60,7 +60,7 @@ class Uri:
         return hasattr(value, 'uri')
 
     @staticmethod
-    def is_valid_uri(uri: str, parsed: UriConfig = None) -> Union[UriConfig, bool]:
+    def is_valid_uri(uri: str, parsed: Optional[UriConfig] = None) -> Tuple[Union[UriConfig, None], bool]:
         try:
             result = Uri.parse_uri(uri)
             return result, True

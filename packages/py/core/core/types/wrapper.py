@@ -1,6 +1,9 @@
-from typing import Awaitable, Dict, Union
+from abc import abstractmethod
+from typing import Dict, Union
 
-from . import Client, GetFileOptions, GetManifestOptions, Invocable, InvocableResult, InvokeOptions, Invoker
+from .client import Client, GetFileOptions, GetManifestOptions
+from .invoke import Invocable, InvocableResult, InvokeOptions, Invoker
+from .manifest import WrapManifest
 
 
 class Wrapper(Invocable):
@@ -12,16 +15,20 @@ class Wrapper(Invocable):
         client: The client instance requesting this invocation. This client will be used for any sub-invokes that occur.
     """
 
-    async def invoke(options: InvokeOptions, invoker: Invoker) -> Awaitable[InvocableResult]:
+    @abstractmethod
+    async def invoke(self, options: InvokeOptions, invoker: Invoker) -> InvocableResult:
         pass
 
-    async def get_file(options: GetFileOptions, client: Client) -> Awaitable[Union[str, bytes]]:
+    @abstractmethod
+    async def get_file(self, options: GetFileOptions, client: Client) -> Union[str, bytes]:
         pass
 
-    async def get_manifest(options: GetManifestOptions, client: Client) -> Awaitable[WrapManifest]:
+    @abstractmethod
+    async def get_manifest(self, options: GetManifestOptions, client: Client) -> WrapManifest:
         pass
 
-    async def get_schema(client: Client) -> Awaitable[str]:
+    @abstractmethod
+    async def get_schema(self, client: Client) -> str:
         pass
 
 

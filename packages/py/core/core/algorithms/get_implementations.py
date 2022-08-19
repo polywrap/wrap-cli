@@ -5,9 +5,9 @@ from . import apply_redirects
 
 
 def get_implementations(
-    api_interface_uri: Uri,
+    wrapper_interface_uri: Uri,
     interfaces: List[InterfaceImplementations],
-    redirects: Optional[UriRedirect] = None,
+    redirects: Optional[List[UriRedirect]] = None,
 ) -> List[Uri]:
     if redirects is None:
         redirects = []
@@ -20,7 +20,7 @@ def get_implementations(
         implementations_array: List[InterfaceImplementations],
         api_interface_uri: Uri,
     ) -> List[Uri]:
-        result = []
+        result: List[Uri] = []
         for interface_implementations in implementations_array:
             fully_resolved_uri = (
                 apply_redirects(interface_implementations.interface, redirects)
@@ -33,9 +33,9 @@ def get_implementations(
                     add_unique_result(implementation, result)
         return result
 
-    final_uri = api_interface_uri
+    final_uri = wrapper_interface_uri
     if redirects:
-        final_uri = apply_redirects(api_interface_uri, redirects)
+        final_uri = apply_redirects(wrapper_interface_uri, redirects)
 
     result = add_all_implementations_from_implementations_array(interfaces, final_uri)
 

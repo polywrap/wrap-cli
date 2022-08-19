@@ -1,8 +1,10 @@
 from __future__ import annotations
 
-from typing import Awaitable, Dict, List, Union
+from typing import Dict, List, Union
 
-from ..core import (
+from .types.resolve_uri_error import ResolveUriError
+
+from .types import (
     InternalResolverError,
     ResolveUriErrorType,
     ResolveUriResult,
@@ -19,7 +21,7 @@ from ...types import Uri, Client, WrapperCache, Wrapper
 
 async def resolve_uri(
     uri: Uri, uri_resolvers: List[UriResolver], client: Client, cache: WrapperCache
-) -> Awaitable(ResolveUriResult):
+) -> ResolveUriResult:
     # Keep track of past URIs to avoid infinite loops
     visited_uri_map: Dict[str, bool] = {}
     uri_resolution_stack: UriResolutionStack = []
@@ -36,13 +38,15 @@ async def resolve_uri(
             if infinite_loop_detected:
                 return ResolveUriResult(
                     uri=uri,
-                    api=wrapper,
-                    uri_history=UriResolutionHistory(uri_resolution_stack),
-                    error={"type": ResolveUriErrorType.InfiniteLoop},
+                    wrapper=wrapper,
+                    uri_history=UriResolutionHistory(stack=uri_resolution_stack),
+                    error=ResolveUriError(type=ResolveUriErrorType.InfiniteLoop)
                 )
 
+            kk = UriResolutionHistory(stack=uri_resolution_stack).resolution_path.stack
+
             result: UriResolutionResult = await resolver.resolve_uri(
-                current_uri, client, cache, UriResolutionHistory(uri_resolution_stack).get_resolution_path().stack
+                current_uri, client, cache, resolution_path=kk
             )
 
             track_uri_history(current_uri, resolver, result, uri_resolution_stack)
@@ -57,11 +61,11 @@ async def resolve_uri(
             elif result.error:
                 return ResolveUriResult(
                     uri=current_uri,
-                    uri_history=UriResolutionHistory(uri_resolution_stack),
-                    error=InternalResolverError(resolver.name, result.error),
+                    uri_history=UriResolutionHistory(stack=uri_resolution_stack),
+                    error=InternalResolverError(resolver_name=resolver.name, error=result.error),
                 )
 
-    return ResolveUriResult(uri=current_uri, wrapper=wrapper, uri_history=UriResolutionHistory(uri_resolution_stack))
+    return ResolveUriResult(uri=current_uri, wrapper=wrapper, uri_history=UriResolutionHistory(stack=uri_resolution_stack))
 
 
 def track_visited_uri(uri: str, visited_uri_map: Dict[str, bool]) -> bool:
@@ -78,6 +82,6 @@ def track_uri_history(
 ) -> None:
     uri_resolution_stack.append(
         UriResolutionInfo(
-            uri_resolver=resolver.name, source_uri=source_uri, result=UriResult(uri=result.uri, api=result.api)
+            uri_resolver=resolver.name, source_uri=source_uri, result=UriResult(uri=result.uri, is_wrapper=isinstance(result.wrapper, Wrapper))
         )
     )

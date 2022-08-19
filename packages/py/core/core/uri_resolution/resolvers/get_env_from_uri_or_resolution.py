@@ -7,7 +7,7 @@ from ..core import UriResolutionStack
 def get_env_from_uri_or_resolution_stack(
     uri: Uri, resolution_path: UriResolutionStack, client: Client
 ) -> Union[Env, None]:
-    env = client.get_env_by_uri(uri, {})
+    env = client.get_env_by_uri(uri)
 
     if env:
         return env

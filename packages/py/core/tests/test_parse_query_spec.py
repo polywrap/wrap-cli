@@ -1,10 +1,11 @@
 import pytest
 
-from .. import create_query_document, parse_query, InvokeApiOptions, Uri
+from graphql import DefinitionNode, SelectionSetNode
+from core import create_query_document, parse_query, InvokeOptions, Uri
 
 
 def test_typical_case_works():
-    dummy = Uri("w3://dumb/dummy")
+    dummy = Uri("wrap://dumb/dummy")
     doc = create_query_document(
         """
       mutation {
@@ -36,10 +37,10 @@ def test_typical_case_works():
     result = parse_query(dummy, doc, {"varOne": "var 1", "varTwo": 55})
 
     expected = {
-        'someMethod': InvokeApiOptions(
+        'someMethod': InvokeOptions(
             uri=dummy,
             method='someMethod',
-            input={
+            args={
                 'arg1': 'hey',
                 'arg2': 4,
                 'arg3': True,
@@ -49,7 +50,6 @@ def test_typical_case_works():
                 'var1': 'var 1',
                 'var2': 55,
             },
-            result_filter={'someResult': {'prop1': True, 'prop2': True}},
         )
     }
 
@@ -57,7 +57,7 @@ def test_typical_case_works():
 
 
 def test_multiple_queries():
-    dummy = Uri("w3://dumb/dummy")
+    dummy = Uri("wrap://dumb/dummy")
     queryMethods = """
         someMethod(
             arg1: 4
@@ -138,10 +138,10 @@ def test_multiple_queries():
     )
 
     method1 = {
-        "someMethod": InvokeApiOptions(
+        "someMethod": InvokeOptions(
             uri=dummy,
             method="someMethod",
-            input={
+            args={
                 "arg1": 4,
                 "arg2": ["hey", "there", [5.5]],
                 "arg3": {
@@ -153,28 +153,16 @@ def test_multiple_queries():
                 "var1": "var 1",
                 "var2": 55,
             },
-            result_filter={
-                "someResult": {
-                    "prop1": True,
-                    "prop2": True,
-                },
-            },
         )
     }
 
     method2 = {
-        "anotherMethod": InvokeApiOptions(
+        "anotherMethod": InvokeOptions(
             uri=dummy,
             method="anotherMethod",
-            input={
+            args={
                 "arg": "hey",
                 "var": "var 1",
-            },
-            result_filter={
-                "resultOne": True,
-                "resultTwo": {
-                    "prop": True,
-                },
             },
         )
     }
@@ -190,16 +178,16 @@ def test_multiple_queries():
 
 
 def test_fail_empty_doc():
-    dummy = Uri("w3://dumb/dummy")
+    dummy = Uri("wrap://dumb/dummy")
     expected = "Empty query document found."
     with pytest.raises(ValueError, match=expected):
         doc = create_query_document("{ prop }")
-        doc.definitions = []
+        doc.definitions = tuple()
         parse_query(dummy, doc)
 
 
 def test_fail_no_query_operations():
-    dummy = Uri("w3://dumb/dummy")
+    dummy = Uri("wrap://dumb/dummy")
     expected = "Unrecognized root level definition type: fragment_definition\n\n\
                 Please use a 'query' or 'mutation' operations."
     with pytest.raises(ValueError, match=expected):
@@ -208,42 +196,42 @@ def test_fail_no_query_operations():
 
 
 def test_fail_missing_method():
-    dummy = Uri("w3://dumb/dummy")
-    expected = "Empty selection set found. Please include the name of a method you'd like to query."
+    dummy = Uri("wrap://dumb/dummy")
+    expected = "Unrecognized root level definition type: "
     with pytest.raises(ValueError, match=expected):
         doc = create_query_document("query { something }")
-        doc.definitions[0].selection_set.selections = []
+        doc.definitions = (DefinitionNode(selection_set=SelectionSetNode(selections=tuple())), )
         parse_query(dummy, doc)
 
 
 def test_fail_fragment_spread_within_operations():
-    dummy = Uri("w3://dumb/dummy")
+    dummy = Uri("wrap://dumb/dummy")
     expected = "Unsupported selection type found: fragment_spread"
     with pytest.raises(ValueError, match=expected):
         doc = create_query_document("query { ...NamedFragment }")
         parse_query(dummy, doc)
 
 
-def test_fail_fragment_spread_on_result_values():
-    dummy = Uri("w3://dumb/dummy")
-    expected = "Unsupported result selection type found: fragment_spread"
-    with pytest.raises(ValueError, match=expected):
-        doc = create_query_document(
-            """
-            query {
-            something(
-                arg: 5
-            ) {
-                ...NamedFragment
-            }
-            }
-        """
-        )
-        parse_query(dummy, doc)
+# def test_fail_fragment_spread_on_result_values():
+#     dummy = Uri("wrap://dumb/dummy")
+#     expected = "Unsupported result selection type found: fragment_spread"
+#     with pytest.raises(ValueError, match=expected):
+#         doc = create_query_document(
+#             """
+#             query {
+#             something(
+#                 arg: 5
+#             ) {
+#                 ...NamedFragment
+#             }
+#             }
+#         """
+#         )
+#         parse_query(dummy, doc)
 
 
 def test_fail_no_variables_specified():
-    dummy = Uri("w3://dumb/dummy")
+    dummy = Uri("wrap://dumb/dummy")
     expected = "Variables were not specified, tried to resolve variable from query. Name: arg_1"
     with pytest.raises(ValueError, match=expected):
         doc = create_query_document(
@@ -259,7 +247,7 @@ def test_fail_no_variables_specified():
 
 
 def test_fail_variables_missing():
-    dummy = Uri("w3://dumb/dummy")
+    dummy = Uri("wrap://dumb/dummy")
     expected = "Missing variable: arg_1"
     with pytest.raises(ValueError, match=expected):
         doc = create_query_document(
@@ -281,7 +269,7 @@ def test_fail_variables_missing():
 
 
 def test_succeeds_when_variables_defined_falsy():
-    dummy = Uri("w3://dumb/dummy")
+    dummy = Uri("wrap://dumb/dummy")
     doc = create_query_document(
         """
         mutation {
@@ -300,9 +288,9 @@ def test_succeeds_when_variables_defined_falsy():
     )
 
 
-def test_fail_duplicate_input_args():
-    dummy = Uri("w3://dumb/dummy")
-    expected = "Duplicate input argument found: arg1"
+def test_fail_duplicate_args():
+    dummy = Uri("wrap://dumb/dummy")
+    expected = "Duplicate argument found: arg1"
     with pytest.raises(ValueError, match=expected):
         doc = create_query_document(
             """
@@ -317,27 +305,27 @@ def test_fail_duplicate_input_args():
         parse_query(dummy, doc)
 
 
-def test_fail_duplicate_result_sections():
-    dummy = Uri("w3://dumb/dummy")
-    expected = "Duplicate result selections found: prop1"
-    with pytest.raises(ValueError, match=expected):
-        doc = create_query_document(
-            """
-            mutation {
-                someMethod(
-                arg1: 5
-                ) {
-                prop1
-                prop1
-                }
-            }
-        """
-        )
-        parse_query(dummy, doc)
+# def test_fail_duplicate_result_sections():
+#     dummy = Uri("wrap://dumb/dummy")
+#     expected = "Duplicate result selections found: prop1"
+#     with pytest.raises(ValueError, match=expected):
+#         doc = create_query_document(
+#             """
+#             mutation {
+#                 someMethod(
+#                 arg1: 5
+#                 ) {
+#                 prop1
+#                 prop1
+#                 }
+#             }
+#         """
+#         )
+#         parse_query(dummy, doc)
 
 
 def test_fail_duplicate_aliases():
-    dummy = Uri("w3://dumb/dummy")
+    dummy = Uri("wrap://dumb/dummy")
     expected = """Duplicate query name found "alias".
                     Please use GraphQL aliases that each have unique names."""
     with pytest.raises(ValueError, match=expected):
@@ -362,7 +350,7 @@ def test_fail_duplicate_aliases():
 
 
 def test_fail_duplicate_methods_without_alias():
-    dummy = Uri("w3://dumb/dummy")
+    dummy = Uri("wrap://dumb/dummy")
     expected = """Duplicate query name found "method".
                     Please use GraphQL aliases that each have unique names."""
     with pytest.raises(ValueError, match=expected):

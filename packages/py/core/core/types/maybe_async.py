@@ -4,11 +4,11 @@ import inspect
 from typing import Any, Awaitable, Callable, Optional, Union
 
 
-def is_coroutine(test: Optional[Union[Awaitable, Any]] = None) -> bool:
+def is_coroutine(test: Optional[Union[Awaitable[Any], Any]] = None) -> bool:
     return test is not None and inspect.iscoroutine(test)
 
 
-async def execute_maybe_async_function(func: Callable, *args: Any) -> Awaitable[Any]:
+async def execute_maybe_async_function(func: Callable[..., Any], *args: Any) -> Any:
     if args:
         result = func(args)
     else:

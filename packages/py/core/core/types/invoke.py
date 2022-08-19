@@ -2,9 +2,12 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-from typing import Any, Awaitable, Dict, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, Optional, Union
 
-from . import ClientConfig, Uri
+from .uri import Uri
+
+if TYPE_CHECKING:
+    from .client import ClientConfig
 
 
 @dataclass(slots=True, kw_only=True)
@@ -23,11 +26,11 @@ class InvokeOptions:
     uri: Uri
     method: str
     args: Optional[Union[Dict[str, Any], bytes]] = field(default_factory=dict)
-    config: Optional[ClientConfig] = None
+    config: Optional["ClientConfig"] = None
     context_id: Optional[str] = None
 
 
-@dataclass(slots=True, kw_only=True)(kw_only=True)
+@dataclass(slots=True, kw_only=True)
 class InvokeResult:
     """
     Result of a wrapper invocation
@@ -48,7 +51,7 @@ class InvokerOptions(InvokeOptions):
 
 class Invoker(ABC):
     @abstractmethod
-    async def invoke(self, options: InvokeOptions) -> Awaitable[InvokeResult]:
+    async def invoke(self, options: InvokeOptions) -> InvokeResult:
         pass
 
 
@@ -59,5 +62,5 @@ class InvocableResult(InvokeResult):
 
 class Invocable(ABC):
     @abstractmethod
-    async def invoke(self, options: InvokeOptions, invoker: Invoker) -> Awaitable[InvocableResult]:
+    async def invoke(self, options: InvokeOptions, invoker: Invoker) -> InvocableResult:
         pass

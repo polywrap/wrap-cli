@@ -8,7 +8,7 @@ from ....types import Uri
 @dataclass(slots=True, kw_only=True)
 class UriResult:
     uri: Uri
-    api: bool
+    is_wrapper: bool
 
 
 @dataclass(slots=True, kw_only=True)
