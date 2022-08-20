@@ -144,6 +144,6 @@ export const defaultIpfsProviders = [
 
 export const defaultWrappers = {
   sha3: "wrap://ens/goerli/sha3.wrappers.eth",
-  uts46: "wrap://ens/goerli/uts46.wrappers.eth",
+  uts46: "wrap://ens/goerli/uts46-lite.wrappers.eth",
   graphNode: "wrap://ens/goerli/graph-node.wrappers.eth",
 };
