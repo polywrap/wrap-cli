@@ -47,7 +47,11 @@ describe("ENS Resolver Plugin", () => {
             networks: {
               testnet: {
                 provider: providers.ethereum
-              }
+              },
+              goerli: {
+                provider:
+                  "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+              },
             },
             defaultNetwork: "testnet"
           })
