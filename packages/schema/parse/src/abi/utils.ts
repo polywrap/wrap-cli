@@ -22,7 +22,7 @@ export const ScalarTypes = {
 export type ScalarType = keyof typeof ScalarTypes;
 export type MapKeyType = keyof typeof MapKeyTypes;
 
-export function isMapKeyType(type: string): boolean {
+export function isMapKeyType(type: string): type is MapKeyType {
   return type in MapKeyTypes;
 }
 
@@ -36,7 +36,7 @@ export function isImportedModuleType(type: string): boolean {
   return type.endsWith(`_${MODULE_NAME}`);
 }
 
-export function isScalarType(type: string): boolean {
+export function isScalarType(type: string): type is ScalarType {
   return type in ScalarTypes;
 }
 
