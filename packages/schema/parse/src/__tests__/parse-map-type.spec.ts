@@ -16,7 +16,7 @@ describe("parseMapType", () => {
     expect(result).toMatchObject(
       createMapDefinition({
         type: "Map<String, Int>",
-        key: createMapKeyDefinition({ type: "String", required: true }),
+        key: createMapKeyDefinition({ type: "String" }),
         value: createScalarDefinition({ type: "Int" }),
       })
     );
@@ -29,7 +29,6 @@ describe("parseMapType", () => {
         type: "Map<String, CustomType>",
         key: createMapKeyDefinition({
           type: "String",
-          required: true,
         }),
         value: createUnresolvedObjectOrEnumRef({
           type: "CustomType",
@@ -82,11 +81,13 @@ describe("parseMapType", () => {
       type: "Map<String, Map<String, Int>>",
       key: {
         type: "String",
+        required: true
       },
       value: {
         type: "Map<String, Int>",
         key: {
           type: "String",
+          required: true
         },
         value: {
           type: "Int",
