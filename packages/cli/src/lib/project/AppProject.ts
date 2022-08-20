@@ -44,7 +44,7 @@ export class AppProject extends Project<AppManifest> {
 
     // Validate language
     Project.validateManifestLanguage(
-      manifest.language,
+      manifest.project.type,
       appManifestLanguages,
       isAppManifestLanguage
     );
@@ -53,7 +53,7 @@ export class AppProject extends Project<AppManifest> {
   /// Manifest (polywrap.app.yaml)
 
   public async getName(): Promise<string> {
-    return (await this.getManifest()).name;
+    return (await this.getManifest()).project.name;
   }
 
   public async getManifest(): Promise<AppManifest> {
@@ -76,7 +76,7 @@ export class AppProject extends Project<AppManifest> {
   }
 
   public async getManifestLanguage(): Promise<AppManifestLanguage> {
-    const language = (await this.getManifest()).language;
+    const language = (await this.getManifest()).project.type;
 
     Project.validateManifestLanguage(
       language,
@@ -91,12 +91,12 @@ export class AppProject extends Project<AppManifest> {
   public async getSchemaNamedPath(): Promise<string> {
     const manifest = await this.getManifest();
     const dir = this.getManifestDir();
-    return path.join(dir, manifest.schema);
+    return path.join(dir, manifest.source.schema);
   }
 
-  public async getImportAbis(): Promise<AppManifest["import_abis"]> {
+  public async getImportAbis(): Promise<AppManifest["source"]["import_abis"]> {
     const manifest = await this.getManifest();
-    return manifest.import_abis || [];
+    return manifest.source.import_abis || [];
   }
 
   public async generateSchemaBindings(

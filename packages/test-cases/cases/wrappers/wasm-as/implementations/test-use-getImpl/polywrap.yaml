@@ -1,9 +1,12 @@
-format: "0.2"
-name: TestUseGetImpl
-build: ./polywrap.build.yaml
-language: wasm/assemblyscript
-schema: ./schema.graphql
-module: ./src/index.ts
-import_abis:
-  - uri: wrap://ens/interface.eth
-    abi: ../test-interface/build/wrap.info
+format: 0.2.0
+project:
+  name: TestUseGetImpl
+  type: wasm/assemblyscript
+source:
+  schema: ./schema.graphql
+  module: ./src/index.ts
+  import_abis:
+    - uri: wrap://ens/interface.eth
+      abi: ../test-interface/build/wrap.info
+extensions:
+  build: ./polywrap.build.yaml

@@ -108,7 +108,7 @@ async function run(options: PluginCommandOptions) {
 
   await generateWrapFile(
     await schemaComposer.getComposedAbis(),
-    manifest.name,
+    manifest.project.name,
     "plugin",
     manifestPath
   );

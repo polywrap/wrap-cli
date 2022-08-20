@@ -12,28 +12,33 @@ import {
 } from ".";
 
 import {
-  migrate as migrate_0_1_to_0_2
-} from "./migrators/0.1_to_0.2";
+  migrate as migrate_0_1_0_to_0_2_0
+} from "./migrators/0.1.0_to_0.2.0";
 
 type Migrator = {
   [key in AppManifestFormats]?: (m: AnyAppManifest) => AppManifest;
 };
 
 export const migrators: Migrator = {
-  "0.1": migrate_0_1_to_0_2,
+  "0.1.0": migrate_0_1_0_to_0_2_0,
 };
 
 export function migrateAppManifest(
   manifest: AnyAppManifest,
   to: AppManifestFormats
 ): AppManifest {
-  const from = manifest.format as AppManifestFormats;
+  let from = manifest.format as AppManifestFormats;
+
+  // HACK: Patch fix for backwards compatability
+  if(from === "0.1" && ("0.1.0" in migrators)) {
+    from = "0.1.0" as AppManifestFormats;
+  }
 
   if (from === latestAppManifestFormat) {
     return manifest as AppManifest;
   }
 
-  if (!(from in AppManifestFormats)) {
+  if (!(Object.values(AppManifestFormats).some(x => x === from))) {
     throw new Error(`Unrecognized AppManifestFormat "${manifest.format}"`);
   }
 

@@ -1,10 +1,13 @@
-format: "0.2"
-name: SimpleStorage
-language: wasm/assemblyscript
-build: ./polywrap.build.yaml
-meta: ./polywrap.meta.yaml
-schema: ./schema.graphql
-module: ./src/index.ts
-import_abis:
-  - uri: "wrap://ens/ethereum.polywrap.eth"
-    abi: ../../../../../js/plugins/ethereum/build/wrap.info
+format: 0.2.0
+project:
+  name: SimpleStorage
+  type: wasm/assemblyscript
+source:
+  schema: ./schema.graphql
+  module: ./src/index.ts
+  import_abis:
+    - uri: "wrap://ens/ethereum.polywrap.eth"
+      abi: ../../../../../js/plugins/ethereum/build/wrap.info
+extensions:
+  build: ./polywrap.build.yaml
+  meta: ./polywrap.meta.yaml
