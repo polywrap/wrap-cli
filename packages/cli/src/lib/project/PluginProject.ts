@@ -43,7 +43,7 @@ export class PluginProject extends Project<PluginManifest> {
 
     // Validate language
     Project.validateManifestLanguage(
-      manifest.language,
+      manifest.project.type,
       pluginManifestLanguages,
       isPluginManifestLanguage
     );
@@ -52,7 +52,7 @@ export class PluginProject extends Project<PluginManifest> {
   /// Manifest (polywrap.plugin.yaml)
 
   public async getName(): Promise<string> {
-    return (await this.getManifest()).name;
+    return (await this.getManifest()).project.name;
   }
 
   public async getManifest(): Promise<PluginManifest> {
@@ -75,7 +75,7 @@ export class PluginProject extends Project<PluginManifest> {
   }
 
   public async getManifestLanguage(): Promise<PluginManifestLanguage> {
-    const language = (await this.getManifest()).language;
+    const language = (await this.getManifest()).project.type;
 
     Project.validateManifestLanguage(
       language,
@@ -91,12 +91,14 @@ export class PluginProject extends Project<PluginManifest> {
   public async getSchemaNamedPath(): Promise<string> {
     const manifest = await this.getManifest();
     const dir = this.getManifestDir();
-    return path.join(dir, manifest.schema);
+    return path.join(dir, manifest.source.schema);
   }
 
-  public async getImportAbis(): Promise<PluginManifest["import_abis"]> {
+  public async getImportAbis(): Promise<
+    PluginManifest["source"]["import_abis"]
+  > {
     const manifest = await this.getManifest();
-    return manifest.import_abis || [];
+    return manifest.source.import_abis || [];
   }
 
   public async generateSchemaBindings(
@@ -104,7 +106,7 @@ export class PluginProject extends Project<PluginManifest> {
     generationSubPath?: string
   ): Promise<BindOutput> {
     const manifest = await this.getManifest();
-    const module = manifest.module as string;
+    const module = manifest.source.module as string;
     const moduleDirectory = this._getGenerationDirectory(
       module,
       generationSubPath
@@ -117,7 +119,7 @@ export class PluginProject extends Project<PluginManifest> {
     );
 
     const options: BindOptions = {
-      projectName: manifest.name,
+      projectName: manifest.project.name,
       abi,
       outputDirAbs: moduleDirectory,
       bindLanguage,

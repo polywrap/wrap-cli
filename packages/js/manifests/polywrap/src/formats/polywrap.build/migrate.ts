@@ -23,13 +23,18 @@ export function migrateBuildManifest(
   manifest: AnyBuildManifest,
   to: BuildManifestFormats
 ): BuildManifest {
-  const from = manifest.format as BuildManifestFormats;
+  let from = manifest.format as BuildManifestFormats;
+
+  // HACK: Patch fix for backwards compatability
+  if(from === "0.1" && ("0.1.0" in migrators)) {
+    from = "0.1.0" as BuildManifestFormats;
+  }
 
   if (from === latestBuildManifestFormat) {
     return manifest as BuildManifest;
   }
 
-  if (!(from in BuildManifestFormats)) {
+  if (!(Object.values(BuildManifestFormats).some(x => x === from))) {
     throw new Error(`Unrecognized BuildManifestFormat "${manifest.format}"`);
   }
 

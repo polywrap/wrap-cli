@@ -1,5 +1,8 @@
-format: "0.2"
-name: FileSystem
-language: interface
-deploy: ./polywrap.deploy.yaml
-schema: ./src/schema.graphql
+format: 0.2.0
+project:
+  name: FileSystem
+  type: interface
+source:
+  schema: ./src/schema.graphql
+extensions:
+  deploy: ./polywrap.deploy.yaml

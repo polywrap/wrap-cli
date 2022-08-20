@@ -1,4 +1,6 @@
-format: "0.2"
-name: TestInterface
-language: interface
-schema: ./schema.graphql
+format: 0.2.0
+project:
+  name: TestInterface
+  type: interface
+source:
+  schema: ./schema.graphql

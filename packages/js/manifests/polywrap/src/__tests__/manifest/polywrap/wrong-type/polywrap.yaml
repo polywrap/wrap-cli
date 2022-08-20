@@ -1,5 +1,7 @@
-format: "0.2"
-name: "Wrong Type"
-language: wasm/assemblyscript
-module: 2345235235235
-schema: ../schema.graphql
+format: 0.2.0
+project:
+  name: "Wrong Type"
+  type: wasm/assemblyscript
+source:
+  module: 2345235235235
+  schema: ../schema.graphql

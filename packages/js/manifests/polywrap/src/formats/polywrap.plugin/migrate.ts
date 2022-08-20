@@ -12,28 +12,33 @@ import {
 } from ".";
 
 import {
-  migrate as migrate_0_1_to_0_2
-} from "./migrators/0.1_to_0.2";
+  migrate as migrate_0_1_0_to_0_2_0
+} from "./migrators/0.1.0_to_0.2.0";
 
 type Migrator = {
   [key in PluginManifestFormats]?: (m: AnyPluginManifest) => PluginManifest;
 };
 
 export const migrators: Migrator = {
-  "0.1": migrate_0_1_to_0_2,
+  "0.1.0": migrate_0_1_0_to_0_2_0,
 };
 
 export function migratePluginManifest(
   manifest: AnyPluginManifest,
   to: PluginManifestFormats
 ): PluginManifest {
-  const from = manifest.format as PluginManifestFormats;
+  let from = manifest.format as PluginManifestFormats;
+
+  // HACK: Patch fix for backwards compatability
+  if(from === "0.1" && ("0.1.0" in migrators)) {
+    from = "0.1.0" as PluginManifestFormats;
+  }
 
   if (from === latestPluginManifestFormat) {
     return manifest as PluginManifest;
   }
 
-  if (!(from in PluginManifestFormats)) {
+  if (!(Object.values(PluginManifestFormats).some(x => x === from))) {
     throw new Error(`Unrecognized PluginManifestFormat "${manifest.format}"`);
   }
 
