@@ -70,6 +70,10 @@ export const getDefaultClientConfig = Tracer.traceFunc(
                 provider:
                   "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
               },
+              goerli: {
+                provider:
+                  "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+              },
             },
           }),
         },
@@ -139,7 +143,7 @@ export const defaultIpfsProviders = [
 ];
 
 export const defaultWrappers = {
-  sha3: "wrap://ipfs/QmYFWh4D91sAiYKf8o37EravLwFKAtUAmut4Xnevnt4QZR",
-  uts46: "wrap://ipfs/QmZFz2KxpugGU7Lgo8mkEiAZVBGHqgMt7FLP42LRGRqsHT",
-  graphNode: "wrap://ipfs/Qmd2KmB1sGqqVZ7qqSCfiPBJ3jRw4oMzCW2Ey6qG4oGZDL",
+  sha3: "wrap://ens/goerli/sha3.wrappers.eth",
+  uts46: "wrap://ens/goerli/uts46.wrappers.eth",
+  graphNode: "wrap://ens/goerli/graph-node.wrappers.eth",
 };
