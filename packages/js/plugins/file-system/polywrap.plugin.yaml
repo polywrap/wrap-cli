@@ -7,4 +7,4 @@ source:
   schema: ./src/schema.graphql
   import_abis:
     - uri: "ens/fs.polywrap.eth"
-      abi: ../../../interfaces/file-system/build-man/wrap.info
+      abi: ../../../interfaces/file-system/build/wrap.info

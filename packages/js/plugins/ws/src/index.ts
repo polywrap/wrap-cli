@@ -12,7 +12,7 @@ import {
   Args_removeCache,
   Args_receive,
   manifest,
-} from "./wrap-man";
+} from "./wrap";
 
 import { PluginFactory } from "@polywrap/core-js";
 
