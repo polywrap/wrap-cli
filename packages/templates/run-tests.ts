@@ -10,8 +10,9 @@ const projectLanguages: Record<string, string[]> = {};
 // Define the commands to run for each language
 const languageTestCommands: Record<string, string[]> = {
   "typescript": [
-    "yarn build",
-    "yarn test"
+    // Uncomment once wrap-man files has been removed
+    // "yarn build",
+    // "yarn test"
   ],
   "typescript-node": [
     // Uncomment when the helloworld wrapper has been deployed to polywrap.eth
@@ -37,6 +38,10 @@ const languageTestCommands: Record<string, string[]> = {
   "interface": [
     "yarn build"
   ],
+  "docusaurus": [
+    "yarn install --no-lockfile",
+    "yarn build"
+  ]
 };
 
 // Filter unnecessary directories

@@ -6,3 +6,4 @@ export * from "./deploy";
 export * from "./plugin";
 export * from "./infra";
 export * from "./run";
+export * from "./docgen";

@@ -21,6 +21,7 @@ import {
   Args_waitForEvent,
   Args_awaitTransaction,
   Args_getNetwork,
+  Args_requestAccounts,
   Args_callContractMethod,
   Args_callContractMethodAndWait,
   Args_deployContract,
@@ -36,7 +37,7 @@ import {
   Network,
   Connection as SchemaConnection,
   manifest,
-} from "./wrap";
+} from "./wrap-man";
 import {
   Connections,
   Connection,
@@ -323,6 +324,15 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
       chainId: network.chainId.toString(),
       ensAddress: network.ensAddress,
     };
+  }
+
+  async requestAccounts(
+    args: Args_requestAccounts,
+    _client: Client
+  ): Promise<string[]> {
+    const connection = await this._getConnection(args.connection);
+    const provider = connection.getProvider();
+    return provider.send("eth_requestAccounts", []);
   }
 
   public async callContractMethod(

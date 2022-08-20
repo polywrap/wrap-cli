@@ -1,8 +1,10 @@
-format: 0.1.0
-name: Logger
-language: plugin/typescript
-module: ./src/index.ts
-schema: ./src/schema.graphql
-import_redirects:
-  - uri: "ens/logger.core.polywrap.eth"
-    schema: ../../../interfaces/logger/src/schema.graphql
+format: 0.2.0
+project:
+  name: Logger
+  type: plugin/typescript
+source:
+  module: ./src/index.ts
+  schema: ./src/schema.graphql
+  import_abis:
+    - uri: "ens/logger.core.polywrap.eth"
+      abi: ../../../interfaces/logger/build-man/wrap.info

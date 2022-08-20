@@ -1,16 +1,9 @@
-import {
-  coreInterfaceUris,
-  PluginModule
-} from "@polywrap/core-js";
-import {
-  Uri,
-  PolywrapClient,
-} from "../..";
+import { coreInterfaceUris } from "@polywrap/core-js";
+import { Uri, PolywrapClient } from "../..";
 
 jest.setTimeout(200000);
 
 describe("sanity", () => {
-
   test("default client config", () => {
     const client = new PolywrapClient();
 
@@ -79,31 +72,5 @@ describe("sanity", () => {
         to: new Uri(implementation2Uri),
       },
     ]);
-  });
-
-  test("loadPolywrap - pass string or Uri", async () => {
-    const implementationUri = "wrap://ens/some-implementation.eth";
-    const schemaStr = "test-schema";
-
-    const client = new PolywrapClient({
-      plugins: [
-        {
-          uri: implementationUri,
-          plugin: {
-            factory: () => ({} as PluginModule<{}>),
-            manifest: {
-              schema: schemaStr,
-              implements: [],
-            },
-          },
-        },
-      ],
-    });
-
-    const schemaWhenString = await client.getSchema(implementationUri);
-    const schemaWhenUri = await client.getSchema(new Uri(implementationUri));
-
-    expect(schemaWhenString).toEqual(schemaStr);
-    expect(schemaWhenUri).toEqual(schemaStr);
   });
 });

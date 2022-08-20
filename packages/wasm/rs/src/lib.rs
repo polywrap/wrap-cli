@@ -1,20 +1,3 @@
-//! # The Polywrap Rust/WASM Runtime Library
-//!
-//! Polywrap is a WASM-standard developer tool for integrating Web3 protocols into applications.
-//! It makes it possible for applications on any platform, written in any language,
-//! to read and write data to Web3 protocols.
-//! This eliminates the need for client-side SDKs, making dapps lightweight and multi-platform.
-//!
-//! This library is the Rust implementation of the Polywrap WASM runtime.
-//! (There's another implementation in AssemblyScript)
-//!
-//! **Warning** The library is still in rapid development and everything may change until 1.0 is
-//! shipped.
-//!
-//! ## Usage
-//!
-//! <https://docs.polywrap.io/>
-
 #![deny(dead_code)]
 #![deny(unreachable_code)]
 #![deny(rustdoc::broken_intra_doc_links)]

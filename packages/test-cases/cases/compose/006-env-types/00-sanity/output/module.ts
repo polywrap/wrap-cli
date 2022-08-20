@@ -2,13 +2,12 @@ import {
   createMethodDefinition,
   createModuleDefinition,
   createScalarPropertyDefinition,
-  createAbi,
   createEnvDefinition,
-  Abi,
+  WrapAbi,
 } from "@polywrap/schema-parse";
 
-export const abi: Abi = {
-  ...createAbi(),
+export const abi: WrapAbi = {
+  version: "0.1",
   envType: createEnvDefinition({
     properties: [
       createScalarPropertyDefinition({ name: "prop", type: "String", required: true }),

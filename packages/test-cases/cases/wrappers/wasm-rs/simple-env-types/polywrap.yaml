@@ -1,6 +1,9 @@
-format: 0.1.0
-name: EnvTypeExternal
-language: wasm/rust
-build: ./polywrap.build.yaml
-schema: ./schema.graphql
-module: ./Cargo.toml
+format: 0.2.0
+project:
+  name: EnvTypeExternal
+  type: wasm/rust
+source:
+  schema: ./schema.graphql
+  module: ./Cargo.toml
+extensions:
+  build: ./polywrap.build.yaml

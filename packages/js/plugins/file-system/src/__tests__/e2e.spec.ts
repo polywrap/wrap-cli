@@ -1,6 +1,6 @@
 import { fileSystemPlugin } from "../index";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
-import { FileSystem_Module, FileSystem_EncodingEnum } from "../wrap";
+import { FileSystem_Module, FileSystem_EncodingEnum } from "../wrap-man";
 import fs from "fs";
 import path from "path";
 import fileSystemEncodingToBufferEncoding from "../utils/fileSystemEncodingToBufferEncoding";
@@ -84,14 +84,14 @@ describe("FileSystem plugin", () => {
   it("should read a file using supported encodings as a string", async () => {
     let supportedEncodings = [
       FileSystem_EncodingEnum.ASCII,
+      FileSystem_EncodingEnum.UTF8,
+      FileSystem_EncodingEnum.UTF16LE,
+      FileSystem_EncodingEnum.UCS2,
       FileSystem_EncodingEnum.BASE64,
       FileSystem_EncodingEnum.BASE64URL,
+      FileSystem_EncodingEnum.LATIN1,
       FileSystem_EncodingEnum.BINARY,
       FileSystem_EncodingEnum.HEX,
-      FileSystem_EncodingEnum.LATIN1,
-      FileSystem_EncodingEnum.UCS2,
-      FileSystem_EncodingEnum.UTF16LE,
-      FileSystem_EncodingEnum.UTF8,
     ];
 
     for (const encoding of supportedEncodings) {

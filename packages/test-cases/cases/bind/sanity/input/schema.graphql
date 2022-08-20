@@ -123,6 +123,7 @@ type CustomType {
   mapOfArr: Map! @annotate(type: "Map<String!, [Int!]!>!")
   mapOfObj: Map! @annotate(type: "Map<String!, AnotherType!>!")
   mapOfArrOfObj: Map! @annotate(type: "Map<String!, [AnotherType!]!>!")
+  mapCustomValue: Map! @annotate(type: "Map<String!, CustomMapValue>!")
 }
 
 type AnotherType {
@@ -134,6 +135,10 @@ type AnotherType {
 enum CustomEnum {
   STRING
   BYTES
+}
+
+type CustomMapValue {
+  foo: String!
 }
 
 ### Imported Modules START ###

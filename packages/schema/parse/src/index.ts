@@ -1,24 +1,32 @@
-import { Abi, createAbi } from "./abi";
+import { createAbi } from "./abi";
 import { extractors, SchemaExtractorBuilder } from "./extract";
-import { AbiTransforms, transformAbi } from "./transform";
-import { finalizePropertyDef } from "./transform/finalizePropertyDef";
-import { validators } from "./validate";
-import { SchemaValidatorBuilder } from "./validate";
+import { AbiTransforms, transformAbi, finalizePropertyDef } from "./transform";
+import { validators, SchemaValidatorBuilder } from "./validate";
 
 import { DocumentNode, parse, visit, visitInParallel } from "graphql";
+import { WrapAbi } from "@polywrap/wrap-manifest-types-js";
 
 export * from "./abi";
+export * from "./extract";
 export * from "./transform";
+export * from "./validate";
 export * from "./header";
 
 interface ParserOptions {
-  extractors?: SchemaExtractorBuilder[];
-  transforms?: AbiTransforms[];
-  validators?: SchemaValidatorBuilder[];
+  // Disable schema validation
   noValidate?: boolean;
+  // Use custom validators
+  validators?: SchemaValidatorBuilder[];
+  // Use custom extractors
+  extractors?: SchemaExtractorBuilder[];
+  // Use custom transformations
+  transforms?: AbiTransforms[];
 }
 
-export function parseSchema(schema: string, options: ParserOptions = {}): Abi {
+export function parseSchema(
+  schema: string,
+  options: ParserOptions = {}
+): WrapAbi {
   const astNode = parse(schema);
 
   // Validate GraphQL Schema
@@ -42,7 +50,28 @@ export function parseSchema(schema: string, options: ParserOptions = {}): Abi {
     }
   }
 
-  return info;
+  return {
+    version: "0.1",
+    objectTypes: info.objectTypes?.length ? info.objectTypes : undefined,
+    moduleType: info.moduleType ? info.moduleType : undefined,
+    enumTypes: info.enumTypes?.length ? info.enumTypes : undefined,
+    interfaceTypes: info.interfaceTypes?.length
+      ? info.interfaceTypes
+      : undefined,
+    importedObjectTypes: info.importedObjectTypes?.length
+      ? info.importedObjectTypes
+      : undefined,
+    importedModuleTypes: info.importedModuleTypes?.length
+      ? info.importedModuleTypes
+      : undefined,
+    importedEnumTypes: info.importedEnumTypes?.length
+      ? info.importedEnumTypes
+      : undefined,
+    importedEnvTypes: info.importedEnvTypes?.length
+      ? info.importedEnvTypes
+      : undefined,
+    envType: info.envType ? info.envType : undefined,
+  };
 }
 
 const validate = (
@@ -64,7 +93,7 @@ const validate = (
 
 const extract = (
   astNode: DocumentNode,
-  abi: Abi,
+  abi: WrapAbi,
   extractors: SchemaExtractorBuilder[]
 ) => {
   const allVisitors = extractors.map((getVisitor) => getVisitor(abi));
