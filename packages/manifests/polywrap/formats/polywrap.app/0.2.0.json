@@ -7,7 +7,7 @@
     "format": {
       "description": "Polywrap manifest format version.",
       "type": "string",
-      "enum": ["0.3.0"]
+      "enum": ["0.2.0"]
     },
     "project": {
       "description": "Basic project properties.",

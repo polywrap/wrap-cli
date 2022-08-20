@@ -6,11 +6,11 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export interface AppManifest {
+export interface PolywrapManifest {
   /**
    * Polywrap manifest format version.
    */
-  format: "0.3.0";
+  format: "0.2.0";
   /**
    * Basic project properties.
    */
@@ -28,6 +28,10 @@ export interface AppManifest {
    * Project source files.
    */
   source: {
+    /**
+     * Path to the project's entry point.
+     */
+    module?: string;
     /**
      * Path to the project's graphql schema.
      */
@@ -58,7 +62,7 @@ export interface AppManifest {
      */
     infra?: string;
   };
-  __type: "AppManifest";
+  __type: "PolywrapManifest";
 }
 export interface ImportAbis {
   /**

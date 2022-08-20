@@ -1,10 +1,12 @@
-format: "0.2"
-language: plugin/typescript
-name: EnsUriResolver
-module: ./src/index.ts
-schema: ./src/schema.graphql
-import_abis:
-  - uri: "ens/uri-resolver.core.polywrap.eth"
-    abi: ../../../../interfaces/uri-resolver/build-man/wrap.info
-  - uri: "ens/ethereum.polywrap.eth"
-    abi: ../../ethereum/build/wrap.info
+format: 0.2.0
+project:
+  type: plugin/typescript
+  name: EnsUriResolver
+source:
+  module: ./src/index.ts
+  schema: ./src/schema.graphql
+  import_abis:
+    - uri: "ens/uri-resolver.core.polywrap.eth"
+      abi: ../../../../interfaces/uri-resolver/build-man/wrap.info
+    - uri: "ens/ethereum.polywrap.eth"
+      abi: ../../ethereum/build/wrap.info

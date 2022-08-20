@@ -6,37 +6,31 @@
  */
 
 import {
-  AppManifest as AppManifest_0_1
-} from "./0.1";
+  AppManifest as AppManifest_0_1_0
+} from "./0.1.0";
 import {
-  AppManifest as AppManifest_0_2
-} from "./0.2";
-import {
-  AppManifest as AppManifest_0_3_0
-} from "./0.3.0";
+  AppManifest as AppManifest_0_2_0
+} from "./0.2.0";
 
 export {
-  AppManifest_0_1,
-  AppManifest_0_2,
-  AppManifest_0_3_0,
+  AppManifest_0_1_0,
+  AppManifest_0_2_0,
 };
 
 export enum AppManifestFormats {
   // NOTE: Patch fix for backwards compatability
-  "v0.1.0" = "0.1.0",
   "v0.1" = "0.1",
-  "v0.2" = "0.2",
-  "v0.3.0" = "0.3.0",
+  "v0.1.0" = "0.1.0",
+  "v0.2.0" = "0.2.0",
 }
 
 export type AnyAppManifest =
-  | AppManifest_0_1
-  | AppManifest_0_2
-  | AppManifest_0_3_0
+  | AppManifest_0_1_0
+  | AppManifest_0_2_0
 
-export type AppManifest = AppManifest_0_3_0;
+export type AppManifest = AppManifest_0_2_0;
 
-export const latestAppManifestFormat = AppManifestFormats["v0.3.0"]
+export const latestAppManifestFormat = AppManifestFormats["v0.2.0"]
 
 export { migrateAppManifest } from "./migrate";
 

@@ -1,9 +1,12 @@
-format: "0.2"
-name: HTTP-Integration
-build: ./polywrap.build.yaml
-language: wasm/assemblyscript
-schema: ./schema.graphql
-module: ./src/index.ts
-import_abis:
-  - uri: "wrap://ens/http.polywrap.eth"
-    abi: ../../../../build/wrap.info
+format: 0.2.0
+project:
+  name: HTTP-Integration
+  type: wasm/assemblyscript
+source:
+  schema: ./schema.graphql
+  module: ./src/index.ts
+  import_abis:
+    - uri: "wrap://ens/http.polywrap.eth"
+      abi: ../../../../build/wrap.info
+extensions:
+  build: ./polywrap.build.yaml

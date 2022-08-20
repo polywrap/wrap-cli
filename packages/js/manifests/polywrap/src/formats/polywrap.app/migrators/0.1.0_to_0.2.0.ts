@@ -1,8 +1,9 @@
-import { AppManifest, AppManifest_0_2 } from "..";
+import { AppManifest as OldManifest } from "../0.1.0";
+import { AppManifest as NewManifest } from "../0.2.0";
 
-export const migrate = (manifest: AppManifest_0_2): AppManifest => {
+export function migrate(manifest: OldManifest): NewManifest {
   return {
-    format: "0.3.0",
+    format: "0.2.0",
     project: {
       name: manifest.name,
       type: manifest.language,
@@ -10,7 +11,10 @@ export const migrate = (manifest: AppManifest_0_2): AppManifest => {
     source: {
       schema: manifest.schema,
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      import_abis: manifest.import_abis,
+      import_abis: manifest.import_redirects?.map((x) => ({
+        uri: x.uri,
+        abi: x.schema,
+      })),
     },
     // eslint-disable-next-line @typescript-eslint/naming-convention
     __type: "AppManifest",

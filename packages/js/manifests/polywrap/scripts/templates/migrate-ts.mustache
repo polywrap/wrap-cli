@@ -34,8 +34,8 @@ export function migrate{{#latest}}{{type}}{{/latest}}(
   let from = manifest.format as {{#latest}}{{type}}{{/latest}}Formats;
 
   // HACK: Patch fix for backwards compatability
-  if(from === "0.1.0" && ("0.1" in migrators)) {
-    from = "0.1" as {{#latest}}{{type}}{{/latest}}Formats;
+  if(from === "0.1" && ("0.1.0" in migrators)) {
+    from = "0.1.0" as {{#latest}}{{type}}{{/latest}}Formats;
   }
 
   if (from === latest{{#latest}}{{type}}{{/latest}}Format) {

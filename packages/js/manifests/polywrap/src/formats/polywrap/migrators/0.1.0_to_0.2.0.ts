@@ -1,6 +1,7 @@
-import { PolywrapManifest, PolywrapManifest_0_1 } from "..";
+import { PolywrapManifest as OldManifest } from "../0.1.0";
+import { PolywrapManifest as NewManifest } from "../0.2.0";
 
-export const migrate = (manifest: PolywrapManifest_0_1): PolywrapManifest => {
+export function migrate(manifest: OldManifest): NewManifest {
   const shouldHaveExtensions =
     manifest.build || manifest.deploy || manifest.meta;
 
@@ -11,7 +12,7 @@ export const migrate = (manifest: PolywrapManifest_0_1): PolywrapManifest => {
   };
 
   return {
-    format: "0.3.0",
+    format: "0.2.0",
     project: {
       name: manifest.name,
       type: manifest.language,

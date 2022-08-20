@@ -26,8 +26,8 @@ export function migrateBuildManifest(
   let from = manifest.format as BuildManifestFormats;
 
   // HACK: Patch fix for backwards compatability
-  if(from === "0.1.0" && ("0.1" in migrators)) {
-    from = "0.1" as BuildManifestFormats;
+  if(from === "0.1" && ("0.1.0" in migrators)) {
+    from = "0.1.0" as BuildManifestFormats;
   }
 
   if (from === latestBuildManifestFormat) {

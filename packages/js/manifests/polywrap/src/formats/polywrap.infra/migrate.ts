@@ -26,8 +26,8 @@ export function migrateInfraManifest(
   let from = manifest.format as InfraManifestFormats;
 
   // HACK: Patch fix for backwards compatability
-  if(from === "0.1.0" && ("0.1" in migrators)) {
-    from = "0.1" as InfraManifestFormats;
+  if(from === "0.1" && ("0.1.0" in migrators)) {
+    from = "0.1.0" as InfraManifestFormats;
   }
 
   if (from === latestInfraManifestFormat) {

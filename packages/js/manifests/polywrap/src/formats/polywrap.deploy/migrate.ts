@@ -26,8 +26,8 @@ export function migrateDeployManifest(
   let from = manifest.format as DeployManifestFormats;
 
   // HACK: Patch fix for backwards compatability
-  if(from === "0.1.0" && ("0.1" in migrators)) {
-    from = "0.1" as DeployManifestFormats;
+  if(from === "0.1" && ("0.1.0" in migrators)) {
+    from = "0.1.0" as DeployManifestFormats;
   }
 
   if (from === latestDeployManifestFormat) {

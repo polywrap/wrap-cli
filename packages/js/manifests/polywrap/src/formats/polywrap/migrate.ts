@@ -12,19 +12,15 @@ import {
 } from ".";
 
 import {
-  migrate as migrate_0_1_to_0_3_0
-} from "./migrators/0.1_to_0.3.0";
-import {
-  migrate as migrate_0_2_to_0_3_0
-} from "./migrators/0.2_to_0.3.0";
+  migrate as migrate_0_1_0_to_0_2_0
+} from "./migrators/0.1.0_to_0.2.0";
 
 type Migrator = {
   [key in PolywrapManifestFormats]?: (m: AnyPolywrapManifest) => PolywrapManifest;
 };
 
 export const migrators: Migrator = {
-  "0.1": migrate_0_1_to_0_3_0,
-  "0.2": migrate_0_2_to_0_3_0,
+  "0.1.0": migrate_0_1_0_to_0_2_0,
 };
 
 export function migratePolywrapManifest(
@@ -34,8 +30,8 @@ export function migratePolywrapManifest(
   let from = manifest.format as PolywrapManifestFormats;
 
   // HACK: Patch fix for backwards compatability
-  if(from === "0.1.0" && ("0.1" in migrators)) {
-    from = "0.1" as PolywrapManifestFormats;
+  if(from === "0.1" && ("0.1.0" in migrators)) {
+    from = "0.1.0" as PolywrapManifestFormats;
   }
 
   if (from === latestPolywrapManifestFormat) {
