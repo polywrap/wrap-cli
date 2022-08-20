@@ -1,6 +1,6 @@
 format: 0.1.0
 name: "Migration_sample"
-langauge: wasm/assemblyscript
+language: wasm/assemblyscript
 schema: ../schema.graphql
 module: ../index.ts
 build: ./polywrap.build.yaml
