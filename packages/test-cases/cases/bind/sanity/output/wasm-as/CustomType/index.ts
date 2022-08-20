@@ -56,6 +56,7 @@ export class CustomType {
   mapOfArr: Map<string, Array<i32>>;
   mapOfObj: Map<string, Types.AnotherType>;
   mapOfArrOfObj: Map<string, Array<Types.AnotherType>>;
+  mapCustomValue: Map<string, Types.CustomMapValue | null>;
 
   static toBuffer(type: CustomType): ArrayBuffer {
     return serializeCustomType(type);

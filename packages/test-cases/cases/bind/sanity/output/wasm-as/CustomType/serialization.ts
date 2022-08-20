@@ -25,7 +25,7 @@ export function serializeCustomType(type: CustomType): ArrayBuffer {
 }
 
 export function writeCustomType(writer: Write, type: CustomType): void {
-  writer.writeMapLength(41);
+  writer.writeMapLength(42);
   writer.context().push("str", "string", "writing property");
   writer.writeString("str");
   writer.writeString(type.str);
@@ -256,6 +256,18 @@ export function writeCustomType(writer: Write, type: CustomType): void {
     });
   });
   writer.context().pop();
+  writer.context().push("mapCustomValue", "Map<string, Types.CustomMapValue | null>", "writing property");
+  writer.writeString("mapCustomValue");
+  writer.writeExtGenericMap(type.mapCustomValue, (writer: Write, key: string) => {
+    writer.writeString(key);
+  }, (writer: Write, value: Types.CustomMapValue | null): void => {
+    if (value) {
+      Types.CustomMapValue.write(writer, value as Types.CustomMapValue);
+    } else {
+      writer.writeNil();
+    }
+  });
+  writer.context().pop();
 }
 
 export function deserializeCustomType(buffer: ArrayBuffer): CustomType {
@@ -334,6 +346,8 @@ export function readCustomType(reader: Read): CustomType {
   let _mapOfObjSet: bool = false;
   let _mapOfArrOfObj: Map<string, Array<Types.AnotherType>> = new Map<string, Array<Types.AnotherType>>();
   let _mapOfArrOfObjSet: bool = false;
+  let _mapCustomValue: Map<string, Types.CustomMapValue | null> = new Map<string, Types.CustomMapValue | null>();
+  let _mapCustomValueSet: bool = false;
 
   while (numFields > 0) {
     numFields--;
@@ -685,6 +699,20 @@ export function readCustomType(reader: Read): CustomType {
       _mapOfArrOfObjSet = true;
       reader.context().pop();
     }
+    else if (field == "mapCustomValue") {
+      reader.context().push(field, "Map<string, Types.CustomMapValue | null>", "type found, reading property");
+      _mapCustomValue = reader.readExtGenericMap((reader: Read): string => {
+        return reader.readString();
+      }, (reader: Read): Types.CustomMapValue | null => {
+        let object: Types.CustomMapValue | null = null;
+        if (!reader.isNextNil()) {
+          object = Types.CustomMapValue.read(reader);
+        }
+        return object;
+      });
+      _mapCustomValueSet = true;
+      reader.context().pop();
+    }
     reader.context().pop();
   }
 
@@ -766,6 +794,9 @@ export function readCustomType(reader: Read): CustomType {
   if (!_mapOfArrOfObjSet) {
     throw new Error(reader.context().printWithContext("Missing required property: 'mapOfArrOfObj: Map<String, [AnotherType]>'"));
   }
+  if (!_mapCustomValueSet) {
+    throw new Error(reader.context().printWithContext("Missing required property: 'mapCustomValue: Map<String, CustomMapValue>'"));
+  }
 
   return {
     str: _str,
@@ -808,6 +839,7 @@ export function readCustomType(reader: Read): CustomType {
     map: _map,
     mapOfArr: _mapOfArr,
     mapOfObj: _mapOfObj,
-    mapOfArrOfObj: _mapOfArrOfObj
+    mapOfArrOfObj: _mapOfArrOfObj,
+    mapCustomValue: _mapCustomValue
   };
 }
