@@ -1,8 +1,8 @@
 {{> serialization_imports}}
-import { {{type}} } from "./";
+import { {{#detectKeyword}}{{type}}{{/detectKeyword}} } from "./";
 import * as Types from "..";
 
-export function serialize{{type}}(type: {{type}}): ArrayBuffer {
+export function serialize{{type}}(type: {{#detectKeyword}}{{type}}{{/detectKeyword}}): ArrayBuffer {
   const sizerContext: Context = new Context("Serializing (sizing) object-type: {{type}}");
   const sizer = new WriteSizer(sizerContext);
   write{{type}}(sizer, type);
@@ -13,7 +13,7 @@ export function serialize{{type}}(type: {{type}}): ArrayBuffer {
   return buffer;
 }
 
-export function write{{type}}(writer: Write, type: {{type}}): void {
+export function write{{type}}(writer: Write, type: {{#detectKeyword}}{{type}}{{/detectKeyword}}): void {
   {{#properties.length}}
   writer.writeMapLength({{properties.length}});
   {{/properties.length}}
@@ -40,11 +40,11 @@ export function write{{type}}(writer: Write, type: {{type}}): void {
   {{/map}}
   {{#object}}
   {{#required}}
-  Types.{{type}}.write(writer, type.{{#detectKeyword}}{{name}}{{/detectKeyword}});
+  Types.{{#detectKeyword}}{{type}}{{/detectKeyword}}.write(writer, type.{{#detectKeyword}}{{name}}{{/detectKeyword}});
   {{/required}}
   {{^required}}
   if (type.{{#detectKeyword}}{{name}}{{/detectKeyword}}) {
-    Types.{{type}}.write(writer, type.{{#detectKeyword}}{{name}}{{/detectKeyword}} as Types.{{type}});
+    Types.{{#detectKeyword}}{{type}}{{/detectKeyword}}.write(writer, type.{{#detectKeyword}}{{name}}{{/detectKeyword}} as Types.{{#detectKeyword}}{{type}}{{/detectKeyword}});
   } else {
     writer.writeNil();
   }
@@ -62,13 +62,13 @@ export function write{{type}}(writer: Write, type: {{type}}): void {
   {{/properties}}
 }
 
-export function deserialize{{type}}(buffer: ArrayBuffer): {{type}} {
+export function deserialize{{type}}(buffer: ArrayBuffer): {{#detectKeyword}}{{type}}{{/detectKeyword}} {
   const context: Context = new Context("Deserializing object-type {{type}}");
   const reader = new ReadDecoder(buffer, context);
   return read{{type}}(reader);
 }
 
-export function read{{type}}(reader: Read): {{type}} {
+export function read{{type}}(reader: Read): {{#detectKeyword}}{{type}}{{/detectKeyword}} {
   let numFields = reader.readMapLength();
 
   {{#properties}}

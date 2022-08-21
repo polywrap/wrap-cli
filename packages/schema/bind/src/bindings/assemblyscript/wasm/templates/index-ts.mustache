@@ -2,7 +2,7 @@
 {{#methods.length}}
 import {
   {{#methods}}
-  Args_{{name}}{{^last}},{{/last}}
+  Args_{{#detectKeyword}}{{name}}{{/detectKeyword}}{{^last}},{{/last}}
   {{/methods}}
 } from "./{{type}}";
 {{/methods.length}}
@@ -11,34 +11,34 @@ import {
 {{#methods.length}}
 export {
   {{#methods}}
-  Args_{{name}}{{^last}},{{/last}}
+  Args_{{#detectKeyword}}{{name}}{{/detectKeyword}}{{^last}},{{/last}}
   {{/methods}}
 };
 {{/methods.length}}
 {{/moduleType}}
 {{#objectTypes}}
-export { {{type}} } from "./{{type}}";
+export { {{#detectKeyword}}{{type}}{{/detectKeyword}} } from "./{{type}}";
 {{/objectTypes}}
 {{#enumTypes}}
 export {
-  {{type}},
+  {{#detectKeyword}}{{type}}{{/detectKeyword}},
   get{{type}}Key,
   get{{type}}Value,
   sanitize{{type}}Value
 } from "./{{type}}";
 {{/enumTypes}}
 {{#importedModuleTypes}}
-export { {{type}} } from "./imported/{{type}}";
+export { {{#detectKeyword}}{{type}}{{/detectKeyword}} } from "./imported/{{type}}";
 {{/importedModuleTypes}}
 {{#importedObjectTypes}}
-export { {{type}} } from "./imported/{{type}}";
+export { {{#detectKeyword}}{{type}}{{/detectKeyword}} } from "./imported/{{type}}";
 {{/importedObjectTypes}}
 {{#importedEnvTypes}}
-export { {{type}} } from "./imported/{{type}}";
+export { {{#detectKeyword}}{{type}}{{/detectKeyword}} } from "./imported/{{type}}";
 {{/importedEnvTypes}}
 {{#importedEnumTypes}}
 export {
-  {{type}},
+  {{#detectKeyword}}{{type}}{{/detectKeyword}},
   get{{type}}Key,
   get{{type}}Value,
   sanitize{{type}}Value

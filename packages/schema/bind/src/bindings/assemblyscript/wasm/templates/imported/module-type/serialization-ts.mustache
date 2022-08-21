@@ -3,13 +3,13 @@
 import * as Types from "../..";
 
 {{#methods}}
-export class Args_{{name}} {
+export class Args_{{#detectKeyword}}{{name}}{{/detectKeyword}} {
   {{#arguments}}
   {{#detectKeyword}}{{name}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
   {{/arguments}}
 }
 
-export function serialize{{name}}Args(args: Args_{{name}}): ArrayBuffer {
+export function serialize{{name}}Args(args: Args_{{#detectKeyword}}{{name}}{{/detectKeyword}}): ArrayBuffer {
   const sizerContext: Context = new Context("Serializing (sizing) imported module-type: {{name}}");
   const sizer = new WriteSizer(sizerContext);
   write{{name}}Args(sizer, args);
@@ -22,7 +22,7 @@ export function serialize{{name}}Args(args: Args_{{name}}): ArrayBuffer {
 
 export function write{{name}}Args(
   writer: Write,
-  args: Args_{{name}}
+  args: Args_{{#detectKeyword}}{{name}}{{/detectKeyword}}
 ): void {
   {{#arguments.length}}
   writer.writeMapLength({{arguments.length}});
@@ -60,11 +60,11 @@ export function write{{name}}Args(
   {{/enum}}
   {{#object}}
   {{#required}}
-  Types.{{type}}.write(writer, args.{{#detectKeyword}}{{name}}{{/detectKeyword}});
+  Types.{{#detectKeyword}}{{type}}{{/detectKeyword}}.write(writer, args.{{#detectKeyword}}{{name}}{{/detectKeyword}});
   {{/required}}
   {{^required}}
   if (args.{{#detectKeyword}}{{name}}{{/detectKeyword}}) {
-    Types.{{type}}.write(writer, args.{{#detectKeyword}}{{name}}{{/detectKeyword}} as Types.{{type}});
+    Types.{{#detectKeyword}}{{type}}{{/detectKeyword}}.write(writer, args.{{#detectKeyword}}{{name}}{{/detectKeyword}} as Types.{{#detectKeyword}}{{type}}{{/detectKeyword}});
   } else {
     writer.writeNil();
   }

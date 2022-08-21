@@ -2,7 +2,7 @@
 import { wrap_load_env } from "@polywrap/wasm-as";
 import {
   {{#methods}}
-  {{name}}{{^last}},{{/last}}
+  {{#detectKeyword}}{{name}}{{/detectKeyword}}{{^last}},{{/last}}
   {{/methods}}
 } from "../../index";
 import {
@@ -37,7 +37,7 @@ export function {{name}}Wrapped(argsBuf: ArrayBuffer, env_size: u32): ArrayBuffe
   const args = deserialize{{name}}Args(argsBuf);
   {{/arguments.length}}
 
-  const result = {{name}}({{#arguments.length}}
+  const result = {{#detectKeyword}}{{name}}{{/detectKeyword}}({{#arguments.length}}
     {
       {{#arguments}}
       {{#detectKeyword}}{{name}}{{/detectKeyword}}: args.{{#detectKeyword}}{{name}}{{/detectKeyword}}{{^last}},{{/last}}

@@ -1,4 +1,4 @@
-export enum {{type}} {
+export enum {{#detectKeyword}}{{type}}{{/detectKeyword}} {
   {{#constants}}
   {{.}},
   {{/constants}}
@@ -6,30 +6,30 @@ export enum {{type}} {
 }
 
 export function sanitize{{type}}Value(value: i32): void {
-  const valid = value >= 0 && value < {{type}}._MAX_;
+  const valid = value >= 0 && value < {{#detectKeyword}}{{type}}{{/detectKeyword}}._MAX_;
   if (!valid) {
-    throw new Error("Invalid value for enum '{{type}}': " + value.toString());
+    throw new Error("Invalid value for enum '{{#detectKeyword}}{{type}}{{/detectKeyword}}': " + value.toString());
   }
 }
 
-export function get{{type}}Value(key: string): {{type}} {
+export function get{{type}}Value(key: string): {{#detectKeyword}}{{type}}{{/detectKeyword}} {
   {{#constants}}
   if (key == "{{.}}") {
-    return {{type}}.{{.}};
+    return {{#detectKeyword}}{{type}}{{/detectKeyword}}.{{.}};
   }
   {{/constants}}
 
-  throw new Error("Invalid key for enum '{{type}}': " + key);
+  throw new Error("Invalid key for enum '{{#detectKeyword}}{{type}}{{/detectKeyword}}': " + key);
 }
 
-export function get{{type}}Key(value: {{type}}): string {
+export function get{{type}}Key(value: {{#detectKeyword}}{{type}}{{/detectKeyword}}): string {
   sanitize{{type}}Value(value);
 
   switch (value) {
     {{#constants}}
-    case {{type}}.{{.}}: return "{{.}}";
+    case {{#detectKeyword}}{{type}}{{/detectKeyword}}.{{.}}: return "{{.}}";
     {{/constants}}
     default:
-      throw new Error("Invalid value for enum '{{type}}': " + value.toString());
+      throw new Error("Invalid value for enum '{{#detectKeyword}}{{type}}{{/detectKeyword}}': " + value.toString());
   }
 }
