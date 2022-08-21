@@ -6,12 +6,11 @@ import { MustacheFn } from "../types";
 export const detectKeyword: MustacheFn = () => {
   return (value: string, render: (template: string) => string): string => {
     const type = render(value);
-    return handleKeyword(type);
+    if (isKeyword(type)) {
+      return "_" + type;
+    }
+    return type;
   };
-};
-
-const handleKeyword = (value: string): string => {
-  return isKeyword(value) ? "_" + value : value;
 };
 
 export const toMsgPack: MustacheFn = () => {
@@ -103,7 +102,8 @@ export const toWasmInit: MustacheFn = () => {
         if (type.includes("Enum_")) {
           return "0";
         } else {
-          return `new Types.${handleKeyword(type)}()`;
+          type = detectKeyword()(type, (str) => str);
+          return `new Types.${type}()`;
         }
     }
   };
@@ -175,7 +175,8 @@ export const toWasm: MustacheFn = () => {
           type = type.replace("Enum_", "");
           isEnum = true;
         }
-        type = `Types.${handleKeyword(type)}`;
+        type = detectKeyword()(type, (str) => str);
+        type = `Types.${type}`;
     }
 
     return applyOptional(type, optional, isEnum);

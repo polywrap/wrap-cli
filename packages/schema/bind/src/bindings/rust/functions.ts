@@ -188,10 +188,13 @@ export const toWasmInit: MustacheFn = () => {
       case "JSON":
         return optionalModifier("JSON::Value::Null");
       default:
+        // eslint-disable-next-line no-case-declarations
+        let wasmType = toWasm()(value, render);
+        wasmType = detectKeyword()(wasmType, (str) => str);
         if (type.includes("Enum_")) {
-          return optionalModifier(`${toWasm()(value, render)}::_MAX_`);
+          return optionalModifier(`${wasmType}::_MAX_`);
         } else {
-          return optionalModifier(`${toWasm()(value, render)}::new()`);
+          return optionalModifier(`${wasmType}::new()`);
         }
     }
   };
@@ -200,7 +203,6 @@ export const toWasmInit: MustacheFn = () => {
 export const toWasm: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
-    let objectType = false;
 
     let optional = false;
     if (type[type.length - 1] === "!") {
@@ -266,26 +268,23 @@ export const toWasm: MustacheFn = () => {
         break;
       default:
         if (type.includes("Enum_")) {
-          type = toUpper()(type.replace("Enum_", ""), (str) => str);
-        } else {
-          objectType = true;
-          type = toUpper()(type, (str) => str);
+          type = type.replace("Enum_", "");
         }
+        type = toUpper()(type, (str) => str);
+        type = detectKeyword()(type, (str) => str);
     }
 
-    return objectType
-      ? applyOptional(type, optional)
-      : applyOptional(type, optional);
+    return applyOptional(type, optional);
   };
 };
 
+// check if any of the keywords match the property name;
+// if there's a match, insert `_` at the beginning of the property name.
 export const detectKeyword: MustacheFn = () => {
-  return (value: string, render: (template: string) => string) => {
-    let type = render(value);
-    // check if any of the keywords match the property name;
-    // if there's a match, insert `m_` at the beginning of the property name.
+  return (value: string, render: (template: string) => string): string => {
+    const type = render(value);
     if (isKeyword(type)) {
-      type = "_" + type;
+      return "_" + type;
     }
     return type;
   };
