@@ -12,9 +12,8 @@
     "build"
   ],
   "scripts": {
-    "build": "rimraf ./build && tsc --project tsconfig.build.json",
+    "build": "rimraf ./build && yarn codegen && tsc --project tsconfig.build.json",
     "codegen": "node ../../../../../dependencies/node_modules/polywrap/bin/polywrap plugin codegen",
-    "codegen:patch": "node ../../../../cli/bin/polywrap plugin codegen && rimraf ./src/wrap",
     "lint": "eslint --color -c ../../../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
     "test:ci": "yarn test",
