@@ -164,7 +164,7 @@ export const toWasmInit: MustacheFunction = () => {
         .substring(openBracketIdx + 1, closeBracketIdx)
         .split(",")
         .map((x) => toWasm()(x.trim(), render));
-      return `Map::<${key}, ${value}>::new()`;
+      return optionalModifier(`Map::<${key}, ${value}>::new()`);
     }
 
     switch (type) {
