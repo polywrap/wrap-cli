@@ -12,23 +12,23 @@ use polywrap_wasm_rs::{
     WriteEncoder,
     JSON,
 };
-use crate::{{#toUpper}}{{type}}{{/toUpper}};
+use crate::{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}};
 {{#propertyDeps.length}}
 
 {{/propertyDeps.length}}{{#propertyDeps}}
 {{^isEnum}}
-use {{crate}}::{{#toUpper}}{{type}}{{/toUpper}};
+use {{crate}}::{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}};
 {{/isEnum}}
 {{#isEnum}}
 use crate::{
-    {{#toUpper}}{{type}}{{/toUpper}},
+    {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}},
     get_{{#toLower}}{{type}}{{/toLower}}_value,
     sanitize_{{#toLower}}{{type}}{{/toLower}}_value
 };
 {{/isEnum}}
 {{/propertyDeps}}
 
-pub fn serialize_{{#toLower}}{{type}}{{/toLower}}(args: &{{#toUpper}}{{type}}{{/toUpper}}) -> Result<Vec<u8>, EncodeError> {
+pub fn serialize_{{#toLower}}{{type}}{{/toLower}}(args: &{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}) -> Result<Vec<u8>, EncodeError> {
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) imported object-type: {{#toUpper}}{{type}}{{/toUpper}}".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
@@ -36,7 +36,7 @@ pub fn serialize_{{#toLower}}{{type}}{{/toLower}}(args: &{{#toUpper}}{{type}}{{/
     Ok(encoder.get_buffer())
 }
 
-pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(args: &{{#toUpper}}{{type}}{{/toUpper}}, writer: &mut W) -> Result<(), EncodeError> {
+pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(args: &{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}, writer: &mut W) -> Result<(), EncodeError> {
     {{#properties.length}}
     writer.write_map_length(&{{properties.length}})?;
     {{/properties.length}}
@@ -65,11 +65,11 @@ pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(args: &{{#toUpper}}{{typ
     {{/map}}
     {{#object}}
     {{#required}}
-    {{#toUpper}}{{type}}{{/toUpper}}::write(&args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}, writer)?;
+    {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::write(&args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}, writer)?;
     {{/required}}
     {{^required}}
     if args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.is_some() {
-        {{#toUpper}}{{type}}{{/toUpper}}::write(args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.as_ref().as_ref().unwrap(), writer)?;
+        {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::write(args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.as_ref().as_ref().unwrap(), writer)?;
     } else {
         writer.write_nil()?;
     }
@@ -88,14 +88,14 @@ pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(args: &{{#toUpper}}{{typ
     Ok(())
 }
 
-pub fn deserialize_{{#toLower}}{{type}}{{/toLower}}(args: &[u8]) -> Result<{{#toUpper}}{{type}}{{/toUpper}}, DecodeError> {
+pub fn deserialize_{{#toLower}}{{type}}{{/toLower}}(args: &[u8]) -> Result<{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}, DecodeError> {
     let mut context = Context::new();
     context.description = "Deserializing imported object-type: {{#toUpper}}{{type}}{{/toUpper}}".to_string();
     let mut reader = ReadDecoder::new(args, context);
     read_{{#toLower}}{{type}}{{/toLower}}(&mut reader)
 }
 
-pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<{{#toUpper}}{{type}}{{/toUpper}}, DecodeError> {
+pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}, DecodeError> {
     let mut num_of_fields = reader.read_map_length()?;
 
     {{#properties}}
@@ -165,7 +165,7 @@ pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<
     {{/required}}
     {{/properties}}
 
-    Ok({{#toUpper}}{{type}}{{/toUpper}} {
+    Ok({{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
         {{#properties}}
         {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: _{{#toLower}}{{name}}{{/toLower}},
         {{/properties}}

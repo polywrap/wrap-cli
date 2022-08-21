@@ -17,11 +17,11 @@ use polywrap_wasm_rs::{
 
 {{#propertyDeps}}
 {{^isEnum}}
-use {{crate}}::{{#toUpper}}{{type}}{{/toUpper}};
+use {{crate}}::{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}};
 {{/isEnum}}
 {{#isEnum}}
 use crate::{
-    {{#toUpper}}{{type}}{{/toUpper}},
+    {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}},
     get_{{#toLower}}{{type}}{{/toLower}}_value,
     sanitize_{{#toLower}}{{type}}{{/toLower}}_value
 };
@@ -31,13 +31,13 @@ use crate::{
 
 {{#methods}}
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct Args{{#toUpper}}{{name}}{{/toUpper}} {
+pub struct Args{{#detectKeyword}}{{#toUpper}}{{name}}{{/toUpper}}{{/detectKeyword}} {
     {{#arguments}}
     pub {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
     {{/arguments}}
 }
 
-pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_args(args: &Args{{#toUpper}}{{name}}{{/toUpper}}) -> Result<Vec<u8>, EncodeError> {
+pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_args(args: &Args{{#detectKeyword}}{{#toUpper}}{{name}}{{/toUpper}}{{/detectKeyword}}) -> Result<Vec<u8>, EncodeError> {
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) imported module-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
@@ -45,7 +45,7 @@ pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_args(args: &Args{{#toUpper}}{{
     Ok(encoder.get_buffer())
 }
 
-pub fn write_{{#toLower}}{{name}}{{/toLower}}_args<W: Write>(args: &Args{{#toUpper}}{{name}}{{/toUpper}}, writer: &mut W) -> Result<(), EncodeError> {
+pub fn write_{{#toLower}}{{name}}{{/toLower}}_args<W: Write>(args: &Args{{#detectKeyword}}{{#toUpper}}{{name}}{{/toUpper}}{{/detectKeyword}}, writer: &mut W) -> Result<(), EncodeError> {
     {{#arguments.length}}
     writer.write_map_length(&{{arguments.length}})?;
     {{/arguments.length}}
@@ -82,11 +82,11 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_args<W: Write>(args: &Args{{#toUpp
     {{/enum}}
     {{#object}}
     {{#required}}
-    {{#toUpper}}{{type}}{{/toUpper}}::write(&args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}, writer)?;
+    {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::write(&args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}, writer)?;
     {{/required}}
     {{^required}}
     if args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.is_some() {
-        {{#toUpper}}{{type}}{{/toUpper}}::write(args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.as_ref().as_ref().unwrap(), writer)?;
+        {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::write(args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.as_ref().as_ref().unwrap(), writer)?;
     } else {
         writer.write_nil()?;
     }

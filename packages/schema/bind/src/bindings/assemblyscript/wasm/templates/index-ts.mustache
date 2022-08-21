@@ -45,7 +45,7 @@ export {
 } from "./imported/{{type}}";
 {{/importedEnumTypes}}
 {{#interfaceTypes}}
-export { {{namespace}} } from "./{{namespace}}";
+export { {{#detectKeyword}}{{namespace}}{{/detectKeyword}} } from "./{{namespace}}";
 {{/interfaceTypes}}
 {{#envType}}
 export { Env } from "./Env";

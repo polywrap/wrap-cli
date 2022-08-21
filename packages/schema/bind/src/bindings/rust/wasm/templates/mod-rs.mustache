@@ -1,7 +1,7 @@
 pub mod entry;
 {{#objectTypes}}
 pub mod {{#toLower}}{{type}}{{/toLower}};
-pub use {{#toLower}}{{type}}{{/toLower}}::{{type}};
+pub use {{#toLower}}{{type}}{{/toLower}}::{{#detectKeyword}}{{type}}{{/detectKeyword}};
 {{/objectTypes}}
 {{#enumTypes}}
 pub mod {{#toLower}}{{type}}{{/toLower}};
@@ -9,32 +9,32 @@ pub use {{#toLower}}{{type}}{{/toLower}}::{
     get_{{#toLower}}{{type}}{{/toLower}}_key,
     get_{{#toLower}}{{type}}{{/toLower}}_value,
     sanitize_{{#toLower}}{{type}}{{/toLower}}_value,
-    {{type}}
+    {{#detectKeyword}}{{type}}{{/detectKeyword}}
 };
 {{/enumTypes}}
 {{#envType}}
 pub mod {{#toLower}}{{type}}{{/toLower}};
-pub use {{#toLower}}{{type}}{{/toLower}}::{{type}};
+pub use {{#toLower}}{{type}}{{/toLower}}::{{#detectKeyword}}{{type}}{{/detectKeyword}};
 {{/envType}}
 {{#hasImports}}
 pub mod imported;
 {{/hasImports}}
 {{#importedObjectTypes}}
-pub use imported::{{#toLower}}{{type}}{{/toLower}}::{{#toUpper}}{{type}}{{/toUpper}};
+pub use imported::{{#toLower}}{{type}}{{/toLower}}::{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}};
 {{/importedObjectTypes}}
 {{#importedEnumTypes}}
 pub use imported::{{#toLower}}{{type}}{{/toLower}}::{
     get_{{#toLower}}{{type}}{{/toLower}}_key,
     get_{{#toLower}}{{type}}{{/toLower}}_value,
     sanitize_{{#toLower}}{{type}}{{/toLower}}_value,
-    {{#toUpper}}{{type}}{{/toUpper}}
+    {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}
 };
 {{/importedEnumTypes}}
 {{#importedEnvTypes}}
-pub use imported::{{#toLower}}{{type}}{{/toLower}}::{{#toUpper}}{{type}}{{/toUpper}};
+pub use imported::{{#toLower}}{{type}}{{/toLower}}::{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}};
 {{/importedEnvTypes}}
 {{#importedModuleTypes}}
-pub use imported::{{#toLower}}{{type}}{{/toLower}}::{{#toUpper}}{{type}}{{/toUpper}};
+pub use imported::{{#toLower}}{{type}}{{/toLower}}::{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}};
 {{/importedModuleTypes}}
 {{#interfaceTypes}}
 pub mod {{#toLower}}{{namespace}}{{/toLower}};
@@ -47,7 +47,7 @@ pub use {{#toLower}}{{type}}{{/toLower}}::{
     deserialize_{{#toLower}}{{name}}{{/toLower}}_args,
     serialize_{{#toLower}}{{name}}{{/toLower}}_result,
     {{#toLower}}{{name}}{{/toLower}}_wrapped,
-    Args{{#toUpper}}{{name}}{{/toUpper}}{{^last}},{{/last}}
+    Args{{#detectKeyword}}{{#toUpper}}{{name}}{{/toUpper}}{{/detectKeyword}}{{^last}},{{/last}}
     {{/methods}}
 };
 {{/moduleType}}
