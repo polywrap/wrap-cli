@@ -188,13 +188,10 @@ export const toWasmInit: MustacheFn = () => {
       case "JSON":
         return optionalModifier("JSON::Value::Null");
       default:
-        // eslint-disable-next-line no-case-declarations
-        let wasmType = toWasm()(value, render);
-        wasmType = detectKeyword()(wasmType, (str) => str);
         if (type.includes("Enum_")) {
-          return optionalModifier(`${wasmType}::_MAX_`);
+          return optionalModifier(`${toWasm()(value, render)}::_MAX_`);
         } else {
-          return optionalModifier(`${wasmType}::new()`);
+          return optionalModifier(`${toWasm()(value, render)}::new()`);
         }
     }
   };
