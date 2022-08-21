@@ -1,9 +1,5 @@
 import { isKeyword } from "./types";
-
-type MustacheFunction = () => (
-  value: string,
-  render: (template: string) => string
-) => string;
+import { MustacheFn } from "../types";
 
 function replaceAt(str: string, index: number, replacement: string): string {
   return (
@@ -19,7 +15,7 @@ function removeAt(str: string, index: number): string {
   return str.substr(0, index) + str.substr(index + 1);
 }
 
-export const toLower: MustacheFunction = () => {
+export const toLower: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
 
@@ -42,7 +38,7 @@ export const toLower: MustacheFunction = () => {
   };
 };
 
-export const toUpper: MustacheFunction = () => {
+export const toUpper: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
 
@@ -67,7 +63,7 @@ export const toUpper: MustacheFunction = () => {
   };
 };
 
-export const noBox: MustacheFunction = () => {
+export const noBox: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     const type = render(value);
     const extract = /(.*)Box<([a-zA-Z0-9]*)>(.*)/gm;
@@ -82,7 +78,7 @@ export const noBox: MustacheFunction = () => {
   };
 };
 
-export const toMsgPack: MustacheFunction = () => {
+export const toMsgPack: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
 
@@ -138,7 +134,7 @@ export const toMsgPack: MustacheFunction = () => {
   };
 };
 
-export const toWasmInit: MustacheFunction = () => {
+export const toWasmInit: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
     let optional = false;
@@ -201,7 +197,7 @@ export const toWasmInit: MustacheFunction = () => {
   };
 };
 
-export const toWasm: MustacheFunction = () => {
+export const toWasm: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
     let objectType = false;
@@ -283,13 +279,13 @@ export const toWasm: MustacheFunction = () => {
   };
 };
 
-export const detectKeyword: MustacheFunction = () => {
+export const detectKeyword: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
     // check if any of the keywords match the property name;
     // if there's a match, insert `m_` at the beginning of the property name.
     if (isKeyword(type)) {
-      type = "m_" + type;
+      type = "_" + type;
     }
     return type;
   };

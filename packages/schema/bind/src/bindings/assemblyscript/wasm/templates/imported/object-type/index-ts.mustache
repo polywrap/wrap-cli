@@ -19,7 +19,7 @@ export class {{type}} {
   public static uri: string = "{{uri}}";
 
   {{#properties}}
-  {{#handleKeywords}}{{name}}{{/handleKeywords}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
+  {{#detectKeyword}}{{name}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
   {{/properties}}
 
   static toBuffer(type: {{type}}): ArrayBuffer {

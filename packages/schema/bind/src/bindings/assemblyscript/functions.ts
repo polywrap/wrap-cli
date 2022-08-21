@@ -1,13 +1,15 @@
-import { isBaseType, reservedWordsAS } from "./types";
+import { isBaseType, isKeyword } from "./types";
 import { MustacheFn } from "../types";
 
-export const handleKeywords: MustacheFn = () => {
-  return (text: string, render: (template: string) => string): string => {
-    const rendered: string = render(text);
-    if (reservedWordsAS.has(rendered)) {
-      return "m_" + rendered;
+export const detectKeyword: MustacheFn = () => {
+  return (value: string, render: (template: string) => string): string => {
+    let type = render(value);
+    // check if any of the keywords match the property name;
+    // if there's a match, insert `m_` at the beginning of the property name.
+    if (isKeyword(type)) {
+      type = "_" + type;
     }
-    return rendered;
+    return type;
   };
 };
 

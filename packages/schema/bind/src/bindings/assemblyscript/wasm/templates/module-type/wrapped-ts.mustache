@@ -40,7 +40,7 @@ export function {{name}}Wrapped(argsBuf: ArrayBuffer, env_size: u32): ArrayBuffe
   const result = {{name}}({{#arguments.length}}
     {
       {{#arguments}}
-      {{#handleKeywords}}{{name}}{{/handleKeywords}}: args.{{#handleKeywords}}{{name}}{{/handleKeywords}}{{^last}},{{/last}}
+      {{#detectKeyword}}{{name}}{{/detectKeyword}}: args.{{#detectKeyword}}{{name}}{{/detectKeyword}}{{^last}},{{/last}}
       {{/arguments}}
     }{{/arguments.length}}{{^arguments.length}}{}{{/arguments.length}}{{#env}},
     env{{/env}}

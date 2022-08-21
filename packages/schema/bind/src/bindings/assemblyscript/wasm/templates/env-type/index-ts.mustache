@@ -16,7 +16,7 @@ import * as Types from "..";
 
 export class {{type}} {
   {{#properties}}
-  {{#handleKeywords}}{{name}}{{/handleKeywords}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
+  {{#detectKeyword}}{{name}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
   {{/properties}}
 
   static toBuffer(type: {{type}}): ArrayBuffer {
