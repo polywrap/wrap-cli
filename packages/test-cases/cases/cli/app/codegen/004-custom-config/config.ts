@@ -1,5 +1,6 @@
 import { PolywrapClientConfig } from "@polywrap/client-js";
 import { PluginModule } from "@polywrap/core-js";
+import { latestWrapManifestVersion, WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
 interface Config extends Record<string, unknown> {
   val: number;
@@ -20,16 +21,7 @@ class MockPlugin extends PluginModule<Config> {
 const mockPlugin = () => {
   return {
     factory: () => new MockPlugin({ val: 0 }),
-    manifest: {
-      schema: `
-        type Module {
-          getData: Int!
-          setData(value: Int!): Boolean!
-          deployContract: String!
-        }
-      `,
-      implements: [],
-    },
+    manifest: mockPluginManifest
   };
 };
 
@@ -48,4 +40,87 @@ export function getClientConfig(defaultConfigs: Partial<PolywrapClientConfig>) {
     ];
   }
   return defaultConfigs;
+}
+
+export const mockPluginManifest: WrapManifest = {
+  name: "mock",
+  type: "plugin",
+  version: latestWrapManifestVersion,
+  abi: {
+    "version": "0.1",
+    "moduleType": {
+      "type": "Module",
+      "kind": 128,
+      "methods": [
+        {
+          "type": "Method",
+          "name": "getData",
+          "required": true,
+          "kind": 64,
+          "return": {
+            "type": "Int",
+            "name": "getData",
+            "required": true,
+            "kind": 34,
+            "scalar": {
+              "type": "Int",
+              "name": "getData",
+              "required": true,
+              "kind": 4
+            }
+          }
+        },
+        {
+          "type": "Method",
+          "name": "setData",
+          "required": true,
+          "kind": 64,
+          "arguments": [
+            {
+              "type": "Int",
+              "name": "value",
+              "required": true,
+              "kind": 34,
+              "scalar": {
+                "type": "Int",
+                "name": "value",
+                "required": true,
+                "kind": 4
+              }
+            }
+          ],
+          "return": {
+            "type": "Boolean",
+            "name": "setData",
+            "required": true,
+            "kind": 34,
+            "scalar": {
+              "type": "Boolean",
+              "name": "setData",
+              "required": true,
+              "kind": 4
+            }
+          }
+        },
+        {
+          "type": "Method",
+          "name": "deployContract",
+          "required": true,
+          "kind": 64,
+          "return": {
+            "type": "String",
+            "name": "deployContract",
+            "required": true,
+            "kind": 34,
+            "scalar": {
+              "type": "String",
+              "name": "deployContract",
+              "required": true,
+              "kind": 4
+            }
+          }
+        }
+      ]
+    }
+  }
 }

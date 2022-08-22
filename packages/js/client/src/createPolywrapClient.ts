@@ -53,7 +53,6 @@ export const createPolywrapClient = Tracer.traceFunc(
       const pluginPackage = pluginFactory(
         (pluginConfigs as Record<string, unknown>)[plugin]
       );
-
       if (
         !pluginPackage ||
         typeof pluginPackage !== "object" ||

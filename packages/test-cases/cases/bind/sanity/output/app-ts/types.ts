@@ -64,12 +64,21 @@ export interface CustomType {
   mapOfArr: Map<Types.String, Array<Types.Int>>;
   mapOfObj: Map<Types.String, Types.AnotherType>;
   mapOfArrOfObj: Map<Types.String, Array<Types.AnotherType>>;
+  mapCustomValue: Map<Types.String, Types.CustomMapValue | undefined>;
 }
 
 export interface AnotherType {
   prop?: Types.String | null;
   circular?: Types.CustomType | null;
   const?: Types.String | null;
+}
+
+export interface CustomMapValue {
+  foo: Types.String;
+}
+
+export interface _else {
+  else: Types.String;
 }
 
 export enum CustomEnumEnum {
@@ -82,6 +91,17 @@ export type CustomEnumString =
   | "BYTES"
 
 export type CustomEnum = CustomEnumEnum | CustomEnumString;
+
+export enum whileEnum {
+  for,
+  in,
+}
+
+export type whileString =
+  | "for"
+  | "in"
+
+export type _while = whileEnum | whileString;
 
 /// Imported Objects START ///
 

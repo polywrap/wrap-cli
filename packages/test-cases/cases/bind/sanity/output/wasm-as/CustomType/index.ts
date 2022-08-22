@@ -19,13 +19,13 @@ export class CustomType {
   optStr: string | null;
   u: u32;
   optU: Option<u32>;
-  m_u8: u8;
-  m_u16: u16;
-  m_u32: u32;
+  _u8: u8;
+  _u16: u16;
+  _u32: u32;
   i: i32;
-  m_i8: i8;
-  m_i16: i16;
-  m_i32: i32;
+  _i8: i8;
+  _i16: i16;
+  _i32: i32;
   bigint: BigInt;
   optBigint: BigInt | null;
   bignumber: BigNumber;
@@ -34,7 +34,7 @@ export class CustomType {
   optJson: JSON.Value | null;
   bytes: ArrayBuffer;
   optBytes: ArrayBuffer | null;
-  m_boolean: bool;
+  _boolean: bool;
   optBoolean: Option<bool>;
   uArray: Array<u32>;
   uOptArray: Array<u32> | null;
@@ -56,6 +56,7 @@ export class CustomType {
   mapOfArr: Map<string, Array<i32>>;
   mapOfObj: Map<string, Types.AnotherType>;
   mapOfArrOfObj: Map<string, Array<Types.AnotherType>>;
+  mapCustomValue: Map<string, Types.CustomMapValue | null>;
 
   static toBuffer(type: CustomType): ArrayBuffer {
     return serializeCustomType(type);

@@ -63,7 +63,7 @@ export abstract class Write {
     value_fn: (writer: Write, value: V) => void
   ): void;
   abstract writeOptionalExtGenericMap<K, V>(
-    m: Map<K, V>,
+    m: Map<K, V> | null,
     key_fn: (writer: Write, key: K) => void,
     value_fn: (writer: Write, value: V) => void
   ): void;

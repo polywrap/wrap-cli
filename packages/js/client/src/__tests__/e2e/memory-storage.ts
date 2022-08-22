@@ -1,4 +1,5 @@
 import { Client, PluginFactory, PluginModule } from "@polywrap/core-js";
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
 type NoConfig = Record<string, never>;
 
@@ -24,10 +25,7 @@ export const makeMemoryStoragePlugin: PluginFactory<NoConfig> = () => {
 
   return {
     factory: () => new MemoryStoragePlugin({}),
-    manifest: {
-      schema: ``,
-      implements: [],
-    },
+    manifest: {} as WrapManifest,
   };
 };
 

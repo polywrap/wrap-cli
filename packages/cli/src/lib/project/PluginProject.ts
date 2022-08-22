@@ -10,9 +10,8 @@ import { resetDir } from "../system";
 
 import { PluginManifest } from "@polywrap/polywrap-manifest-types-js";
 import { bindSchema, BindOutput, BindOptions } from "@polywrap/schema-bind";
-import { ComposerOutput } from "@polywrap/schema-compose";
+import { WrapAbi } from "@polywrap/schema-parse";
 import path from "path";
-import { WrapAbi } from "@polywrap/wrap-manifest-types-js";
 
 export interface PluginProjectConfig extends ProjectConfig {
   pluginManifestPath: string;
@@ -44,7 +43,7 @@ export class PluginProject extends Project<PluginManifest> {
 
     // Validate language
     Project.validateManifestLanguage(
-      manifest.language,
+      manifest.project.type,
       pluginManifestLanguages,
       isPluginManifestLanguage
     );
@@ -53,7 +52,7 @@ export class PluginProject extends Project<PluginManifest> {
   /// Manifest (polywrap.plugin.yaml)
 
   public async getName(): Promise<string> {
-    return (await this.getManifest()).name;
+    return (await this.getManifest()).project.name;
   }
 
   public async getManifest(): Promise<PluginManifest> {
@@ -76,7 +75,7 @@ export class PluginProject extends Project<PluginManifest> {
   }
 
   public async getManifestLanguage(): Promise<PluginManifestLanguage> {
-    const language = (await this.getManifest()).language;
+    const language = (await this.getManifest()).project.type;
 
     Project.validateManifestLanguage(
       language,
@@ -92,25 +91,22 @@ export class PluginProject extends Project<PluginManifest> {
   public async getSchemaNamedPath(): Promise<string> {
     const manifest = await this.getManifest();
     const dir = this.getManifestDir();
-    return path.join(dir, manifest.schema);
+    return path.join(dir, manifest.source.schema);
   }
 
-  public async getImportRedirects(): Promise<
-    {
-      uri: string;
-      schema: string;
-    }[]
+  public async getImportAbis(): Promise<
+    PluginManifest["source"]["import_abis"]
   > {
     const manifest = await this.getManifest();
-    return manifest.import_redirects || [];
+    return manifest.source.import_abis || [];
   }
 
   public async generateSchemaBindings(
-    composerOutput: ComposerOutput,
+    abi: WrapAbi,
     generationSubPath?: string
   ): Promise<BindOutput> {
     const manifest = await this.getManifest();
-    const module = manifest.module as string;
+    const module = manifest.source.module as string;
     const moduleDirectory = this._getGenerationDirectory(
       module,
       generationSubPath
@@ -123,9 +119,8 @@ export class PluginProject extends Project<PluginManifest> {
     );
 
     const options: BindOptions = {
-      projectName: manifest.name,
-      abi: composerOutput.abi as WrapAbi,
-      schema: composerOutput.schema as string,
+      projectName: manifest.project.name,
+      abi,
       outputDirAbs: moduleDirectory,
       bindLanguage,
     };

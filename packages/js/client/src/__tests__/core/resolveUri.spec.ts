@@ -7,6 +7,7 @@ import {
   ResolveUriErrorType,
 } from "@polywrap/core-js";
 import { getClient } from "../utils/getClient";
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { ClientConfigBuilder } from "@polywrap/client-config-js";
 import { PolywrapClient } from "../..";
 
@@ -171,10 +172,7 @@ describe("resolveUri", () => {
             factory: () => {
               return ({} as unknown) as PluginModule<{}>;
             },
-            manifest: {
-              schema: "",
-              implements: [],
-            },
+            manifest: {} as WrapManifest,
           },
         },
       ],

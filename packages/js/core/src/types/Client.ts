@@ -36,8 +36,6 @@ export type GetEnvsOptions = Contextualized;
 
 export type GetUriResolversOptions = Contextualized;
 
-export type GetSchemaOptions = Contextualized;
-
 export interface GetManifestOptions extends Contextualized {
   noValidate?: boolean;
 }
@@ -57,27 +55,22 @@ export interface Client
     SubscriptionHandler,
     WorkflowHandler,
     UriResolverHandler {
-  getRedirects(options: GetRedirectsOptions): readonly UriRedirect<Uri>[];
+  getRedirects(options?: GetRedirectsOptions): readonly UriRedirect<Uri>[];
 
-  getPlugins(options: GetPluginsOptions): readonly PluginRegistration<Uri>[];
+  getPlugins(options?: GetPluginsOptions): readonly PluginRegistration<Uri>[];
 
   getInterfaces(
-    options: GetInterfacesOptions
+    options?: GetInterfacesOptions
   ): readonly InterfaceImplementations<Uri>[];
 
-  getEnvs(options: GetEnvsOptions): readonly Env<Uri>[];
+  getEnvs(options?: GetEnvsOptions): readonly Env<Uri>[];
 
   getEnvByUri<TUri extends Uri | string>(
     uri: TUri,
-    options: GetEnvsOptions
+    options?: GetEnvsOptions
   ): Env<Uri> | undefined;
 
   getUriResolvers(options: GetUriResolversOptions): readonly UriResolver[];
-
-  getSchema<TUri extends Uri | string>(
-    uri: TUri,
-    options: GetSchemaOptions
-  ): Promise<string>;
 
   getManifest<TUri extends Uri | string>(
     uri: TUri,

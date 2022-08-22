@@ -8,7 +8,8 @@ import {
 import {
   moduleMethodWrapped,
   objectMethodWrapped,
-  optionalEnvMethodWrapped
+  optionalEnvMethodWrapped,
+  ifWrapped
 } from "./Module/wrapped";
 
 export function _wrap_invoke(method_size: u32, args_size: u32, env_size: u32): bool {
@@ -25,6 +26,9 @@ export function _wrap_invoke(method_size: u32, args_size: u32, env_size: u32): b
   }
   else if (args.method == "optionalEnvMethod") {
     return wrap_invoke(args, env_size, optionalEnvMethodWrapped);
+  }
+  else if (args.method == "if") {
+    return wrap_invoke(args, env_size, ifWrapped);
   }
   else {
     return wrap_invoke(args, env_size, null);

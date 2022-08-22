@@ -39,7 +39,6 @@ const visitorEnter = (
     );
 
     const importedType = createImportedEnvDefinition({
-      type: node.name.value,
       uri: imported.uri,
       namespace: imported.namespace,
       nativeType: imported.nativeType,

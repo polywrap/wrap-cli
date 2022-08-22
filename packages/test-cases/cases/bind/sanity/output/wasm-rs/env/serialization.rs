@@ -56,7 +56,7 @@ pub fn read_env<R: Read>(reader: &mut R) -> Result<Env, DecodeError> {
     let mut _prop: String = String::new();
     let mut _prop_set = false;
     let mut _opt_prop: Option<String> = None;
-    let mut _opt_map: Option<Map<String, Option<i32>>> = Map::<String, Option<i32>>::new();
+    let mut _opt_map: Option<Map<String, Option<i32>>> = None;
 
     while num_of_fields > 0 {
         num_of_fields -= 1;
