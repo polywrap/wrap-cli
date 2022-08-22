@@ -8,7 +8,7 @@ import {
 {{/getImplementations}}
 {{/capabilities}}
 
-export class {{namespace}} {
+export class {{#detectKeyword}}{{namespace}}{{/detectKeyword}} {
   static uri: string = "{{uri}}"
 
   {{#capabilities}}

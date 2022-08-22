@@ -73,6 +73,10 @@ type Module @imports(
     objectArray: [AnotherType!]!
     optObjectArray: [AnotherType]
   ): AnotherType @env(required: false)
+
+  if(
+    if: else!
+  ): else!
 }
 
 type Env {
@@ -139,6 +143,15 @@ enum CustomEnum {
 
 type CustomMapValue {
   foo: String!
+}
+
+type else {
+  else: String!
+}
+
+enum while {
+  for,
+  in,
 }
 
 ### Imported Modules START ###

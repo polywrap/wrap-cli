@@ -1,5 +1,5 @@
 {{#required}}
-let value: Types.{{type}};
+let value: Types.{{#detectKeyword}}{{type}}{{/detectKeyword}};
 if (reader.isNextString()) {
   value = Types.get{{type}}Value(reader.readString());
 } else {
@@ -8,7 +8,7 @@ if (reader.isNextString()) {
 }
 {{/required}}
 {{^required}}
-let value: Option<Types.{{type}}>;
+let value: Option<Types.{{#detectKeyword}}{{type}}{{/detectKeyword}}>;
 if (!reader.isNextNil()) {
   if (reader.isNextString()) {
     value = Option.Some(
@@ -21,6 +21,6 @@ if (!reader.isNextNil()) {
     Types.sanitize{{type}}Value(value.unwrap());
   }
 } else {
-  value = Option.None<Types.{{type}}>();
+  value = Option.None<Types.{{#detectKeyword}}{{type}}{{/detectKeyword}}>();
 }
 {{/required}}
