@@ -1,23 +1,23 @@
 if reader.IsNil() {
-  _{{name}}{{#lastFullIter}}i{{/lastFullIter}} = nil
+	_{{name}}{{#lastFullIter}}i{{/lastFullIter}} = nil
 } else {
-  {{#nextIter}}ln{{/nextIter}} := reader.ReadArrayLength()
-  _{{name}}{{#prevFullIter}}i{{/prevFullIter}} = make({{#toWasm}}{{toGraphQLType}}{{/toWasm}}, {{#currIter}}ln{{/currIter}})
-  for {{#currIter}}i{{/currIter}} := uint32(0); {{#currIter}}i{{/currIter}} < {{#currIter}}ln{{/currIter}}; {{#currIter}}i{{/currIter}}++ {
-    {{#scalar}}
-    {{> deserialize_scalar}}
-    {{/scalar}}
-    {{#enum}}
-    {{> deserialize_enum}}
-    {{/enum}}
-    {{#array}}
-    {{> deserialize_array}}
-    {{/array}}
-    {{#map}}
-    {{> deserialize_map}}
-    {{/map}}
-    {{#object}}
-    {{> deserialize_object}}
-    {{/object}}
-  }
+	{{#nextIter}}ln{{/nextIter}} := reader.ReadArrayLength()
+	_{{name}}{{#prevFullIter}}i{{/prevFullIter}} = make({{#toWasm}}{{toGraphQLType}}{{/toWasm}}, {{#currIter}}ln{{/currIter}})
+	for {{#currIter}}i{{/currIter}} := uint32(0); {{#currIter}}i{{/currIter}} < {{#currIter}}ln{{/currIter}}; {{#currIter}}i{{/currIter}}++ {
+		{{#scalar}}
+		{{> deserialize_scalar}}
+		{{/scalar}}
+		{{#enum}}
+		{{> deserialize_enum}}
+		{{/enum}}
+		{{#array}}
+		{{> deserialize_array}}
+		{{/array}}
+		{{#map}}
+		{{> deserialize_map}}
+		{{/map}}
+		{{#object}}
+		{{> deserialize_object}}
+		{{/object}}
+	}
 }

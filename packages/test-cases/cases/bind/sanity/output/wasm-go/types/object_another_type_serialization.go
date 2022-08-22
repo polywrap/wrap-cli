@@ -26,7 +26,6 @@ func writeAnotherType(writer msgpack.Write, value *AnotherType) {
 	writer.Context().Pop()
 	writer.Context().Push("Circular", "*CustomType", "writing property")
 	writer.WriteString("Circular")
-
 	{
 		v := value.Circular
 		CustomTypeWrite(writer, v)

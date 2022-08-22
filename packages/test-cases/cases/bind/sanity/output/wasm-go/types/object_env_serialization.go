@@ -106,7 +106,6 @@ func readEnv(reader msgpack.Read) *Env {
 	if !_propSet {
 		panic(reader.Context().PrintWithContext("Missing required property: 'prop: String'"))
 	}
-
 	return &Env{
 		Prop:    _prop,
 		OptProp: _optProp,

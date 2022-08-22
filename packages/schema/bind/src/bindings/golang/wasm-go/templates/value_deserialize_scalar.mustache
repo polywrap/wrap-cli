@@ -3,7 +3,7 @@ value{{#lastFullIter}}i{{/lastFullIter}} = reader.Read{{#toMsgPack}}{{toGraphQLT
 {{/required}}
 {{^required}}
 if !reader.IsNil() {
-  v := reader.Read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}();
-  value{{#lastFullIter}}i{{/lastFullIter}} = {{#readPointer}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}} - v{{/readPointer}}
+	v := reader.Read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}()
+	value{{#lastFullIter}}i{{/lastFullIter}} = {{#readPointer}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}} - v{{/readPointer}}
 }
 {{/required}}

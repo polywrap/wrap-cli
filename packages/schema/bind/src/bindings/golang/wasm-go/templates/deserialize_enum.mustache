@@ -4,8 +4,8 @@ Sanitize{{#toUpper}}{{type}}{{/toUpper}}Value(int32(_{{name}}{{#lastFullIter}}i{
 {{/required}}
 {{^required}}
 if !reader.IsNil() {
-  v := {{#toUpper}}{{type}}{{/toUpper}}(reader.ReadI32())
-  Sanitize{{#toUpper}}{{type}}{{/toUpper}}Value(int32(v))
-  _{{name}}{{#lastFullIter}}i{{/lastFullIter}} = &v
+	v := {{#toUpper}}{{type}}{{/toUpper}}(reader.ReadI32())
+	Sanitize{{#toUpper}}{{type}}{{/toUpper}}Value(int32(v))
+	_{{name}}{{#lastFullIter}}i{{/lastFullIter}} = &v
 }
 {{/required}}

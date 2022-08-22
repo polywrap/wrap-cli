@@ -84,9 +84,52 @@ export const readPointer: MustacheFn = () => {
 
 export const toSnakeCase: MustacheFn = () => {
   return (text: string, render: (template: string) => string): string => {
-    text = render(text).replace( /([A-Z])/g, "_$1");
+    text = render(text).replace(/([A-Z])/g, "_$1");
     text = text.startsWith("_") ? text.slice(1) : text;
     return text.toLowerCase();
+  }
+}
+
+export const makeImports: MustacheFn = () => {
+  return (text: string, render: (template: string) => string): string => {
+    const types = render(text).split(",")
+    const exist: {[key:string]: boolean} = {};
+    for (const t of types){
+      switch (t) {
+        case "*big.Int":
+          exist["github.com/consideritdone/polywrap-go/polywrap/msgpack/big"] = true;
+          break
+        case "*fastjson.Value":
+          exist["github.com/valyala/fastjson"] = true;
+          break;
+      }
+    }
+    let imports: Array<string> = ["github.com/consideritdone/polywrap-go/polywrap/msgpack"];
+    imports.push(...Object.keys(exist));
+    const txt = imports.sort().map(imp => `\t"${imp}"`).join("\n");
+    return `import (\n${txt}\n)`
+  }
+}
+
+export const stuctProps: MustacheFn = () => {
+  return (text: string, render: (template: string) => string): string => {
+    let props: [string, string][] = render(text).split("\n")
+      .map(line => line.trimEnd())
+      .filter(line => line !== "")
+      .map(line => line.split(" ") as [string, string])
+    let maxPropNameLn = 0;
+    for (const [propName] of props) {
+      if (propName.length > maxPropNameLn) {
+        maxPropNameLn = propName.length
+      }
+    }
+    for (let i = 0; i < props.length; i++) {
+      if (props[i][0].length < maxPropNameLn) {
+        props[i][0] += Array(maxPropNameLn - props[i][0].length).fill(" ").join("");
+      }
+      props[i][0] = "\t" + props[i][0];
+    }
+    return props.map(v => v.join(" ")).join("\n") + "\n";
   }
 }
 
