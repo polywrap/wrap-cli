@@ -12,7 +12,7 @@ import "github.com/consideritdone/polywrap-go/polywrap"
 {{#getImplementations}}
 {{#enabled}}
 func {{#toUpper}}{{namespace}}{{/toUpper}}Implementations() []string {
-  return polywrap.WrapGetImplementations("{{uri}}")
+	return polywrap.WrapGetImplementations("{{uri}}")
 }
 {{/enabled}}
 {{/getImplementations}}

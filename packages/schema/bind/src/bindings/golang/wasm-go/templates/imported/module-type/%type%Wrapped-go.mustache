@@ -2,20 +2,20 @@ package {{#toSnakeCase}}{{namespace}}{{/toSnakeCase}}
 
 {{#methods.length}}
 import (
-  "github.com/consideritdone/polywrap-go/polywrap"
-  "some/library/to/methods"
+	"github.com/consideritdone/polywrap-go/polywrap"
+	"some/library/to/methods"
 )
 {{/methods.length}}
 
 {{^isInterface}}
 {{#methods}}
 func {{#toUpper}}{{type}}{{/toUpper}}{{#toUpper}}{{name}}{{/toUpper}}(args *Args{{#toUpper}}{{name}}{{/toUpper}}) ({{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, error) {
-  argsBuf := Serialize{{#toUpper}}{{name}}{{/toUpper}}Args(args)
-  data, err := polywrap.WrapSubinvoke("{{uri}}", "{{name}}", argsBuf)
-  if err != nil {
-    return nil, result.Error()
-  }
-  return Deserialize{{#toUpper}}{{name}}{{/toUpper}}Result(result.unwrap()), nil
+	argsBuf := Serialize{{#toUpper}}{{name}}{{/toUpper}}Args(args)
+	data, err := polywrap.WrapSubinvoke("{{uri}}", "{{name}}", argsBuf)
+	if err != nil {
+		return nil, result.Error()
+	}
+	return Deserialize{{#toUpper}}{{name}}{{/toUpper}}Result(result.unwrap()), nil
 }
 {{^last}}
 
@@ -25,12 +25,12 @@ func {{#toUpper}}{{type}}{{/toUpper}}{{#toUpper}}{{name}}{{/toUpper}}(args *Args
 {{#isInterface}}
 {{#methods}}
 func {{#toUpper}}{{type}}{{/toUpper}}{{#toUpper}}{{name}}{{/toUpper}}(uri string, args *Args{{#toUpper}}{{name}}{{/toUpper}}) ({{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, error) {
-  argsBuf := Serialize{{#toUpper}}{{name}}{{/toUpper}}Args(args)
-  data, err := polywrap.WrapSubinvokeImplementation("{{uri}}", uri, "{{name}}", argsBuf)
-  if err != nil {
-    return nil, err
-  }
-  return Deserialize{{#toUpper}}{{name}}{{/toUpper}}Result(data), nil
+	argsBuf := Serialize{{#toUpper}}{{name}}{{/toUpper}}Args(args)
+	data, err := polywrap.WrapSubinvokeImplementation("{{uri}}", uri, "{{name}}", argsBuf)
+	if err != nil {
+		return nil, err
+	}
+	return Deserialize{{#toUpper}}{{name}}{{/toUpper}}Result(data), nil
 }
 {{^last}}
 

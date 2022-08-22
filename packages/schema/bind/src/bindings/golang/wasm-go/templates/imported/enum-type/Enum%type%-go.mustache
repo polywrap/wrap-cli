@@ -3,10 +3,12 @@ package {{#toSnakeCase}}{{namespace}}{{/toSnakeCase}}
 type {{#toUpper}}{{type}}{{/toUpper}} int32
 
 const (
-  {{#constants}}
-  {{#toUpper}}{{type}}{{/toUpper}}{{.}} = iota
-  {{/constants}}
-  {{#toFirstLower}}{{type}}{{/toFirstLower}}Max = iota
+{{#stuctProps}}
+{{#constants}}
+{{#toUpper}}{{type}}{{/toUpper}}{{.}} = iota
+{{/constants}}
+{{#toFirstLower}}{{type}}{{/toFirstLower}}Max = iota
+{{/stuctProps}}
 )
 
 func Sanitize{{#toUpper}}{{type}}{{/toUpper}}Value(value int32) {
@@ -17,10 +19,10 @@ func Sanitize{{#toUpper}}{{type}}{{/toUpper}}Value(value int32) {
 
 func Get{{#toUpper}}{{type}}{{/toUpper}}Value(key string) {{#toUpper}}{{type}}{{/toUpper}} {
 	switch key {
-  {{#constants}}
-  case "{{.}}":
-    return {{#toUpper}}{{type}}{{/toUpper}}{{.}}
-  {{/constants}}
+	{{#constants}}
+	case "{{.}}":
+		return {{#toUpper}}{{type}}{{/toUpper}}{{.}}
+	{{/constants}}
 	default:
 		panic("Invalid key for enum '{{#toUpper}}{{type}}{{/toUpper}}'")
 	}
@@ -29,10 +31,10 @@ func Get{{#toUpper}}{{type}}{{/toUpper}}Value(key string) {{#toUpper}}{{type}}{{
 func Get{{#toUpper}}{{type}}{{/toUpper}}Key(value {{#toUpper}}{{type}}{{/toUpper}}) string {
 	Sanitize{{#toUpper}}{{type}}{{/toUpper}}Value(int32(value))
 	switch value {
-  {{#constants}}
-  case {{#toUpper}}{{type}}{{/toUpper}}{{.}}:
-    return "{{.}}"
-  {{/constants}}
+	{{#constants}}
+	case {{#toUpper}}{{type}}{{/toUpper}}{{.}}:
+		return "{{.}}"
+	{{/constants}}
 	default:
 		panic("Invalid value for enum '{{#toUpper}}{{type}}{{/toUpper}}'")
 	}

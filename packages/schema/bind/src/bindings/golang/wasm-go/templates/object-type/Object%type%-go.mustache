@@ -1,16 +1,13 @@
 package types
 
-import (
-	"github.com/consideritdone/polywrap-go/polywrap/msgpack"
-	"github.com/consideritdone/polywrap-go/polywrap/msgpack/big"
-	"github.com/consideritdone/polywrap-go/polywrap/msgpack/container"
-	"github.com/valyala/fastjson"
-)
+{{#makeImports}}{{#properties}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{^last}},{{/last}}{{/properties}}{{/makeImports}}
 
 type {{#toUpper}}{{type}}{{/toUpper}} struct {
-  {{#properties}}
-  {{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}} {{#toWasm}}{{toGraphQLType}}{{/toWasm}}
-  {{/properties}}
+{{#stuctProps}}
+{{#properties}}
+{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}} {{#toWasm}}{{toGraphQLType}}{{/toWasm}}
+{{/properties}}
+{{/stuctProps}}
 }
 
 func {{#toUpper}}{{type}}{{/toUpper}}ToBuffer(value *{{#toUpper}}{{type}}{{/toUpper}}) []byte {
@@ -28,4 +25,3 @@ func {{#toUpper}}{{type}}{{/toUpper}}Write(writer msgpack.Write, value *{{#toUpp
 func {{#toUpper}}{{type}}{{/toUpper}}Read(reader msgpack.Read) *{{#toUpper}}{{type}}{{/toUpper}} {
 	return read{{#toUpper}}{{type}}{{/toUpper}}(reader)
 }
-

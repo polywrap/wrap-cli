@@ -7,15 +7,15 @@ import (
 
 //export _wrap_invoke
 func _wrap_invoke(methodSize, argsSize, envSize uint32) bool {
-    args := polywrap.WrapInvokeArgs(methodSize, argsSize)
-
-	if args.Method == "moduleMethod" {
+	args := polywrap.WrapInvokeArgs(methodSize, argsSize)
+	switch args.method {
+	case "moduleMethod":
 		return polywrap.WrapInvoke(args, envSize, module.ModuleMethodWrapped)
-	} else if args.Method == "objectMethod" {
-        return polywrap.WrapInvoke(args, envSize, module.ObjectMethodWrapped)
-	} else if args.Method == "optionalEnvMethod" {
-        return polywrap.WrapInvoke(args, envSize, module.OptionalEnvMethodWrapped)
-	} else {
+	case "objectMethod":
+		return polywrap.WrapInvoke(args, envSize, module.ObjectMethodWrapped)
+	case "optionalEnvMethod":
+		return polywrap.WrapInvoke(args, envSize, module.OptionalEnvMethodWrapped)
+	default:
 		return polywrap.WrapInvoke(args, envSize, nil)
 	}
 }

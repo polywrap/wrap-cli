@@ -1,21 +1,23 @@
 package main
 
 import (
-    "github.com/consideritdone/polywrap-go/examples/demo1/wrap/module"
-    "github.com/consideritdone/polywrap-go/polywrap"
+	"github.com/consideritdone/polywrap-go/examples/demo1/wrap/module"
+	"github.com/consideritdone/polywrap-go/polywrap"
 )
 
 //export _wrap_invoke
 func _wrap_invoke(methodSize, argsSize, envSize uint32) bool {
-    args := polywrap.WrapInvokeArgs(methodSize, argsSize)
-
-    {{#moduleType}}
-    {{#methods}}
-    {{^first}}else {{/first}}if args.method == "{{name}}" {
-        return polywrap.WrapInvoke(args, envSize, module.{{#toUpper}}{{name}}{{/toUpper}}Wrapped)
-    } {{/methods}}{{/moduleType}}else {
-        return polywrap.WrapInvoke(args, envSize, nil)
-    }
+	args := polywrap.WrapInvokeArgs(methodSize, argsSize)
+	switch args.method {
+	{{#moduleType}}
+	{{#methods}}
+	case "{{name}}":
+		return polywrap.WrapInvoke(args, envSize, module.{{#toUpper}}{{name}}{{/toUpper}}Wrapped)
+	{{/methods}}
+	{{/moduleType}}
+	default:
+		return polywrap.WrapInvoke(args, envSize, nil)
+	}
 }
 
 func main() {

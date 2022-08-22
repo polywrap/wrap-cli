@@ -1,115 +1,118 @@
 package types
 
-import (
-  "github.com/consideritdone/polywrap-go/polywrap/msgpack"
-	"github.com/consideritdone/polywrap-go/polywrap/msgpack/big"
-	"github.com/consideritdone/polywrap-go/polywrap/msgpack/container"
-	"github.com/valyala/fastjson"
-)
+{{#makeImports}}{{#arguments}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{^last}},{{/last}}{{/arguments}}{{/makeImports}}
 
 {{#methods}}
 type Args{{#toUpper}}{{name}}{{/toUpper}} struct {
-  {{#arguments}}
-  {{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}} {{#toWasm}}{{toGraphQLType}}{{/toWasm}}
-  {{/arguments}}
+{{#stuctProps}}
+{{#arguments}}
+{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}} {{#toWasm}}{{toGraphQLType}}{{/toWasm}}
+{{/arguments}}
+{{/stuctProps}}
 }
 
 func Deserialize{{#toUpper}}{{name}}{{/toUpper}}Args(argsBuf []byte) *Args{{#toUpper}}{{name}}{{/toUpper}} {
-  ctx := msgpack.NewContext("Deserializing module-type: {{#toUpper}}{{name}}{{/toUpper}}")
+	ctx := msgpack.NewContext("Deserializing module-type: {{#toUpper}}{{name}}{{/toUpper}}")
 	{{#arguments.length}}
-  reader := msgpack.NewReadDecoder(ctx, argsBuf)
+	reader := msgpack.NewReadDecoder(ctx, argsBuf)
 
-  var (
-    {{#arguments}}
-    _{{name}} {{#toWasm}}{{toGraphQLType}}{{/toWasm}}
-    {{#required}}
-    _{{name}}Set bool
-    {{/required}}
-    {{/arguments}}
-  )
+	var (
+	{{#stuctProps}}
+	{{#arguments}}
+	_{{name}} {{#toWasm}}{{toGraphQLType}}{{/toWasm}}
+	{{#required}}
+	_{{name}}Set bool
+	{{/required}}
+	{{/arguments}}
+	{{/stuctProps}}
+	)
 
-  for i := int32(reader.ReadMapLength()); i > 0; i-- {
-    field := reader.ReadString()
-    reader.Context().Push(field, "unknown", "searching for property type");
-    reader.Context().Pop()
-    switch field {
-    {{#arguments}}
-    case "{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}}":
-      reader.Context().Push(field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading property")
-      {{#scalar}}
-      {{> deserialize_scalar}}
-      {{/scalar}}
-      {{#enum}}
-      {{> deserialize_enum}}
-      {{/enum}}
-      {{#array}}
-      {{#startIter}}{{/startIter}}
-      {{> deserialize_array}}
-      {{#stopIter}}{{/stopIter}}
-      {{/array}}
-      {{#map}}
-      {{#startIter}}{{/startIter}}
-      {{> deserialize_map}}
-      {{#stopIter}}{{/stopIter}}
-      {{/map}}
-      {{#object}}
-      {{> deserialize_object}}
-      {{/object}}
-      {{#required}}
-      _{{name}}Set = true;
-      {{/required}}
-      reader.Context().Pop()
-    {{/arguments}}
-    }
-  }
+	for i := int32(reader.ReadMapLength()); i > 0; i-- {
+		field := reader.ReadString()
+		reader.Context().Push(field, "unknown", "searching for property type")
+		reader.Context().Pop()
+		switch field {
+		{{#arguments}}
+		case "{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}}":
+			reader.Context().Push(field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading property")
+			{{#scalar}}
+			{{> deserialize_scalar}}
+			{{/scalar}}
+			{{#enum}}
+			{{> deserialize_enum}}
+			{{/enum}}
+			{{#array}}
+			{{#startIter}}{{/startIter}}
+			{{> deserialize_array}}
+			{{#stopIter}}{{/stopIter}}
+			{{/array}}
+			{{#map}}
+			{{#startIter}}{{/startIter}}
+			{{> deserialize_map}}
+			{{#stopIter}}{{/stopIter}}
+			{{/map}}
+			{{#object}}
+			{{> deserialize_object}}
+			{{/object}}
+			{{#required}}
+			_{{name}}Set = true
+			{{/required}}
+			reader.Context().Pop()
+		{{/arguments}}
+		}
+	}
 
-  {{#arguments}}
-  {{#required}}
-  if (!_{{name}}Set) {
-    panic(reader.Context().PrintWithContext("Missing required property: '{{name}}: {{type}}'"))
-  }
-  {{/required}}
-  {{/arguments}}
-  {{/arguments.length}}
+	{{#arguments}}
+	{{#required}}
+	if !_{{name}}Set {
+		panic(reader.Context().PrintWithContext("Missing required property: '{{name}}: {{type}}'"))
+	}
+	{{/required}}
+	{{/arguments}}
+	{{/arguments.length}}
 
-  return &Args{{#toUpper}}{{name}}{{/toUpper}}{
-    {{#arguments}}
-    {{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}}: _{{name}},
-    {{/arguments}}
-  }
+	return &Args{{#toUpper}}{{name}}{{/toUpper}}{
+	{{#stuctProps}}
+	{{#arguments}}
+	{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}}: _{{name}},
+	{{/arguments}}
+	{{/stuctProps}}
+	}
 }
 
 func Serialize{{#toUpper}}{{name}}{{/toUpper}}Result(value {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}) []byte {
-  ctx := msgpack.NewContext("Serializing module-type: {{#toUpper}}{{name}}{{/toUpper}}")
-  encoder := msgpack.NewWriteEncoder(ctx)
-  Write{{#toUpper}}{{name}}{{/toUpper}}Result(encoder, value);
-  return encoder.Buffer()
+	ctx := msgpack.NewContext("Serializing module-type: {{#toUpper}}{{name}}{{/toUpper}}")
+	encoder := msgpack.NewWriteEncoder(ctx)
+	Write{{#toUpper}}{{name}}{{/toUpper}}Result(encoder, value);
+	return encoder.Buffer()
 }
 
 func Write{{#toUpper}}{{name}}{{/toUpper}}Result(writer msgpack.Write, value {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}) {
-  {{#return}}
-  writer.Context().Push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
-  {{#scalar}}
-  {{> value_serialize_scalar}}
-  {{/scalar}}
-  {{#array}}
-  {{#startIter}}{{/startIter}}
-  {{> value_serialize_array}}
-  {{#stopIter}}{{/stopIter}}
-  {{/array}}
-  {{#map}}
-  {{#startIter}}{{/startIter}}
-  {{> value_serialize_map}}
-  {{#stopIter}}{{/stopIter}}
-  {{/map}}
-  {{#object}}
-  {{> value_serialize_object}}
-  {{/object}}
-  {{#enum}}
-  {{> value_serialize_enum}}
-  {{/enum}}
-  writer.Context().Pop()
-  {{/return}}
+	{{#return}}
+	writer.Context().Push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property")
+	{{#scalar}}
+	{{> value_serialize_scalar}}
+	{{/scalar}}
+	{{#array}}
+	{{#startIter}}{{/startIter}}
+	{{> value_serialize_array}}
+	{{#stopIter}}{{/stopIter}}
+	{{/array}}
+	{{#map}}
+	{{#startIter}}{{/startIter}}
+	{{> value_serialize_map}}
+	{{#stopIter}}{{/stopIter}}
+	{{/map}}
+	{{#object}}
+	{{> value_serialize_object}}
+	{{/object}}
+	{{#enum}}
+	{{> value_serialize_enum}}
+	{{/enum}}
+	writer.Context().Pop()
+	{{/return}}
 }
+{{^last}}
 
+{{/last}}
 {{/methods}}
