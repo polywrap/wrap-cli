@@ -12,7 +12,7 @@ import {
   {{#methods}}
   serialize{{name}}Args,
   deserialize{{name}}Result,
-  Args_{{#detectKeyword}}{{name}}{{/detectKeyword}}{{^last}},{{/last}}
+  Args_{{name}}{{^last}},{{/last}}
   {{/methods}}
 } from "./serialization";
 {{/methods.length}}
@@ -24,8 +24,8 @@ export class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
   public static uri: string = "{{uri}}";
 
   {{#methods}}
-  public static {{#detectKeyword}}{{name}}{{/detectKeyword}}(
-    args: Args_{{#detectKeyword}}{{name}}{{/detectKeyword}}
+  public static {{name}}(
+    args: Args_{{name}}
   ): Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string> {
     const argsBuf = serialize{{name}}Args(args);
     const result = wrap_subinvoke(
@@ -62,8 +62,8 @@ export class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
   }
 
   {{#methods}}
-  public {{#detectKeyword}}{{name}}{{/detectKeyword}}(
-    args: Args_{{#detectKeyword}}{{name}}{{/detectKeyword}}
+  public {{name}}(
+    args: Args_{{name}}
   ): Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string> {
     const argsBuf = serialize{{name}}Args(args);
     const result = wrap_subinvokeImplementation(

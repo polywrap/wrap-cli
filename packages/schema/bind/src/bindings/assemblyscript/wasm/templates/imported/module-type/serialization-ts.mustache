@@ -3,13 +3,13 @@
 import * as Types from "../..";
 
 {{#methods}}
-export class Args_{{#detectKeyword}}{{name}}{{/detectKeyword}} {
+export class Args_{{name}} {
   {{#arguments}}
   {{#detectKeyword}}{{name}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
   {{/arguments}}
 }
 
-export function serialize{{name}}Args(args: Args_{{#detectKeyword}}{{name}}{{/detectKeyword}}): ArrayBuffer {
+export function serialize{{name}}Args(args: Args_{{name}}): ArrayBuffer {
   const sizerContext: Context = new Context("Serializing (sizing) imported module-type: {{name}}");
   const sizer = new WriteSizer(sizerContext);
   write{{name}}Args(sizer, args);
@@ -22,7 +22,7 @@ export function serialize{{name}}Args(args: Args_{{#detectKeyword}}{{name}}{{/de
 
 export function write{{name}}Args(
   writer: Write,
-  args: Args_{{#detectKeyword}}{{name}}{{/detectKeyword}}
+  args: Args_{{name}}
 ): void {
   {{#arguments.length}}
   writer.writeMapLength({{arguments.length}});
