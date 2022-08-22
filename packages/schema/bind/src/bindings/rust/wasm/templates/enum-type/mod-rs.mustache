@@ -5,7 +5,7 @@ use std::convert::TryFrom;
 #[derive(Clone, Copy, Debug, Deserialize, Serialize)]
 pub enum {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
     {{#constants}}
-    {{.}},
+      {{#detectKeyword}}{{.}}{{/detectKeyword}},
     {{/constants}}
     _MAX_
 }
@@ -20,7 +20,7 @@ pub fn sanitize_{{#toLower}}{{type}}{{/toLower}}_value(value: i32) -> Result<(),
 pub fn get_{{#toLower}}{{type}}{{/toLower}}_value(key: &str) -> Result<{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}, EnumTypeError> {
     match key {
         {{#constants}}
-        "{{.}}" => Ok({{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::{{.}}),
+        "{{#detectKeyword}}{{.}}{{/detectKeyword}}" => Ok({{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::{{#detectKeyword}}{{.}}{{/detectKeyword}}),
         {{/constants}}
         "_MAX_" => Ok({{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::_MAX_),
         err => Err(EnumTypeError::EnumProcessingError(format!("Invalid key for enum '{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}': {}", err)))
@@ -31,7 +31,7 @@ pub fn get_{{#toLower}}{{type}}{{/toLower}}_key(value: {{#detectKeyword}}{{#toUp
     if sanitize_{{#toLower}}{{type}}{{/toLower}}_value(value as i32).is_ok() {
         match value {
             {{#constants}}
-            {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::{{.}} => Ok("{{.}}".to_string()),
+            {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::{{#detectKeyword}}{{.}}{{/detectKeyword}} => Ok("{{#detectKeyword}}{{.}}{{/detectKeyword}}".to_string()),
             {{/constants}}
             {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::_MAX_ => Ok("_MAX_".to_string()),
         }
@@ -46,7 +46,7 @@ impl TryFrom<i32> for {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detec
     fn try_from(v: i32) -> Result<{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}, Self::Error> {
         match v {
             {{#constants}}
-            x if x == {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::{{.}} as i32 => Ok({{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::{{.}}),
+            x if x == {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::{{#detectKeyword}}{{.}}{{/detectKeyword}} as i32 => Ok({{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::{{#detectKeyword}}{{.}}{{/detectKeyword}}),
             {{/constants}}
             x if x == {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::_MAX_ as i32 => Ok({{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::_MAX_),
             _ => Err(EnumTypeError::ParseEnumError(format!("Invalid value for enum '{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}': {}", (v  as i32).to_string()))),
