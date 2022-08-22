@@ -25,7 +25,7 @@ export function serializeCustomType(type: CustomType): ArrayBuffer {
 }
 
 export function writeCustomType(writer: Write, type: CustomType): void {
-  writer.writeMapLength(41);
+  writer.writeMapLength(42);
   writer.context().push("str", "string", "writing property");
   writer.writeString("str");
   writer.writeString(type.str);
@@ -44,15 +44,15 @@ export function writeCustomType(writer: Write, type: CustomType): void {
   writer.context().pop();
   writer.context().push("u8", "u8", "writing property");
   writer.writeString("u8");
-  writer.writeUInt8(type.m_u8);
+  writer.writeUInt8(type._u8);
   writer.context().pop();
   writer.context().push("u16", "u16", "writing property");
   writer.writeString("u16");
-  writer.writeUInt16(type.m_u16);
+  writer.writeUInt16(type._u16);
   writer.context().pop();
   writer.context().push("u32", "u32", "writing property");
   writer.writeString("u32");
-  writer.writeUInt32(type.m_u32);
+  writer.writeUInt32(type._u32);
   writer.context().pop();
   writer.context().push("i", "i32", "writing property");
   writer.writeString("i");
@@ -60,15 +60,15 @@ export function writeCustomType(writer: Write, type: CustomType): void {
   writer.context().pop();
   writer.context().push("i8", "i8", "writing property");
   writer.writeString("i8");
-  writer.writeInt8(type.m_i8);
+  writer.writeInt8(type._i8);
   writer.context().pop();
   writer.context().push("i16", "i16", "writing property");
   writer.writeString("i16");
-  writer.writeInt16(type.m_i16);
+  writer.writeInt16(type._i16);
   writer.context().pop();
   writer.context().push("i32", "i32", "writing property");
   writer.writeString("i32");
-  writer.writeInt32(type.m_i32);
+  writer.writeInt32(type._i32);
   writer.context().pop();
   writer.context().push("bigint", "BigInt", "writing property");
   writer.writeString("bigint");
@@ -104,7 +104,7 @@ export function writeCustomType(writer: Write, type: CustomType): void {
   writer.context().pop();
   writer.context().push("boolean", "bool", "writing property");
   writer.writeString("boolean");
-  writer.writeBool(type.m_boolean);
+  writer.writeBool(type._boolean);
   writer.context().pop();
   writer.context().push("optBoolean", "Option<bool>", "writing property");
   writer.writeString("optBoolean");
@@ -256,6 +256,18 @@ export function writeCustomType(writer: Write, type: CustomType): void {
     });
   });
   writer.context().pop();
+  writer.context().push("mapCustomValue", "Map<string, Types.CustomMapValue | null>", "writing property");
+  writer.writeString("mapCustomValue");
+  writer.writeExtGenericMap(type.mapCustomValue, (writer: Write, key: string) => {
+    writer.writeString(key);
+  }, (writer: Write, value: Types.CustomMapValue | null): void => {
+    if (value) {
+      Types.CustomMapValue.write(writer, value as Types.CustomMapValue);
+    } else {
+      writer.writeNil();
+    }
+  });
+  writer.context().pop();
 }
 
 export function deserializeCustomType(buffer: ArrayBuffer): CustomType {
@@ -334,6 +346,8 @@ export function readCustomType(reader: Read): CustomType {
   let _mapOfObjSet: bool = false;
   let _mapOfArrOfObj: Map<string, Array<Types.AnotherType>> = new Map<string, Array<Types.AnotherType>>();
   let _mapOfArrOfObjSet: bool = false;
+  let _mapCustomValue: Map<string, Types.CustomMapValue | null> = new Map<string, Types.CustomMapValue | null>();
+  let _mapCustomValueSet: bool = false;
 
   while (numFields > 0) {
     numFields--;
@@ -685,6 +699,20 @@ export function readCustomType(reader: Read): CustomType {
       _mapOfArrOfObjSet = true;
       reader.context().pop();
     }
+    else if (field == "mapCustomValue") {
+      reader.context().push(field, "Map<string, Types.CustomMapValue | null>", "type found, reading property");
+      _mapCustomValue = reader.readExtGenericMap((reader: Read): string => {
+        return reader.readString();
+      }, (reader: Read): Types.CustomMapValue | null => {
+        let object: Types.CustomMapValue | null = null;
+        if (!reader.isNextNil()) {
+          object = Types.CustomMapValue.read(reader);
+        }
+        return object;
+      });
+      _mapCustomValueSet = true;
+      reader.context().pop();
+    }
     reader.context().pop();
   }
 
@@ -766,19 +794,22 @@ export function readCustomType(reader: Read): CustomType {
   if (!_mapOfArrOfObjSet) {
     throw new Error(reader.context().printWithContext("Missing required property: 'mapOfArrOfObj: Map<String, [AnotherType]>'"));
   }
+  if (!_mapCustomValueSet) {
+    throw new Error(reader.context().printWithContext("Missing required property: 'mapCustomValue: Map<String, CustomMapValue>'"));
+  }
 
   return {
     str: _str,
     optStr: _optStr,
     u: _u,
     optU: _optU,
-    m_u8: _u8,
-    m_u16: _u16,
-    m_u32: _u32,
+    _u8: _u8,
+    _u16: _u16,
+    _u32: _u32,
     i: _i,
-    m_i8: _i8,
-    m_i16: _i16,
-    m_i32: _i32,
+    _i8: _i8,
+    _i16: _i16,
+    _i32: _i32,
     bigint: _bigint,
     optBigint: _optBigint,
     bignumber: _bignumber,
@@ -787,7 +818,7 @@ export function readCustomType(reader: Read): CustomType {
     optJson: _optJson,
     bytes: _bytes,
     optBytes: _optBytes,
-    m_boolean: _boolean,
+    _boolean: _boolean,
     optBoolean: _optBoolean,
     uArray: _uArray,
     uOptArray: _uOptArray,
@@ -808,6 +839,7 @@ export function readCustomType(reader: Read): CustomType {
     map: _map,
     mapOfArr: _mapOfArr,
     mapOfObj: _mapOfObj,
-    mapOfArrOfObj: _mapOfArrOfObj
+    mapOfArrOfObj: _mapOfArrOfObj,
+    mapCustomValue: _mapCustomValue
   };
 }

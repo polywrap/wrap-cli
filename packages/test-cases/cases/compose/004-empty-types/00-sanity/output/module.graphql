@@ -37,9 +37,9 @@ directive @env(required: Boolean!) on FIELD_DEFINITION
 
 ### Polywrap Header END ###
 
-type Module
+type Module { }
 
-type CustomType
+type CustomType { }
 
 ### Imported Modules START ###
 

@@ -95,10 +95,10 @@ describe("wasm-as test cases", () => {
 
     const query = await client.invoke({
       uri: ensUri,
-      method: "method1",
+      method: "if",
       args: {
-        const: {
-          const: "successfully used reserved keyword",
+        if: {
+          else: "successfully used reserved keyword",
         },
       },
     });
@@ -106,7 +106,7 @@ describe("wasm-as test cases", () => {
     expect(query.error).toBeFalsy();
     expect(query.data).toBeTruthy();
     expect(query.data).toMatchObject({
-      const: "result: successfully used reserved keyword",
+      else: "successfully used reserved keyword",
     });
   });
 
@@ -271,7 +271,7 @@ describe("wasm-as test cases", () => {
     await buildWrapper(wrapperPath);
 
     await TestCases.runSimpleEnvTest(
-      await await getClient({
+      await getClient({
         envs: [
           {
             uri: wrapperUri,

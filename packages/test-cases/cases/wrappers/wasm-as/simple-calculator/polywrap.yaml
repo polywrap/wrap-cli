@@ -1,7 +1,10 @@
-format: 0.1.0
-name: simple-calculator
-language: wasm/assemblyscript
-build: ./polywrap.build.yaml
-schema: ./schema.graphql
-module: ./src/index.ts
-meta: ./polywrap.meta.yaml
+format: 0.2.0
+project:
+  name: simple-calculator
+  type: wasm/assemblyscript
+source:
+  schema: ./schema.graphql
+  module: ./src/index.ts
+extensions:
+  build: ./polywrap.build.yaml 
+  meta: ./polywrap.meta.yaml

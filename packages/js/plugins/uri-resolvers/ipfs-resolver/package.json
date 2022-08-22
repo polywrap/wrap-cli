@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/ipfs-resolver-plugin-js",
   "description": "Polywrap IPFS Javascript Plugin",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -14,15 +14,14 @@
   "scripts": {
     "build": "rimraf ./build && yarn codegen && tsc --project tsconfig.build.json",
     "codegen": "node ../../../../../dependencies/node_modules/polywrap/bin/polywrap plugin codegen",
-    "codegen:patch": "node ../../../../cli/bin/polywrap plugin codegen && rimraf ./src/wrap",
     "lint": "eslint --color -c ../../../../../.eslintrc.js src/",
     "test": "jest --passWithNoTests --runInBand --verbose",
-    "test:ci": "yarn codegen && yarn test",
+    "test:ci": "yarn test",
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
     "@dorgjelli-test/ipfs-http-client-lite": "0.3.1",
-    "@polywrap/core-js": "0.3.0",
+    "@polywrap/core-js": "0.4.0",
     "abort-controller": "3.0.0",
     "is-ipfs": "1.0.3"
   },

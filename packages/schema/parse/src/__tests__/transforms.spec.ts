@@ -74,6 +74,7 @@ describe("Polywrap Schema Abi Transformations", () => {
       transforms: [addFirstLast],
     });
     const expected: WrapAbi = {
+      version: "0.1",
       objectTypes: [
         {
           ...createObjectDefinition({ type: "MyType" }),
@@ -279,6 +280,7 @@ describe("Polywrap Schema Abi Transformations", () => {
       ],
     });
     const expected: WrapAbi = {
+      version: "0.1",
       objectTypes: [
         {
           ...createObjectDefinition({ type: "MyType" }),

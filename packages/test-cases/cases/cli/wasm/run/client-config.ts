@@ -1,5 +1,6 @@
 import { PolywrapClientConfig } from "@polywrap/client-js";
 import { PluginModule } from "@polywrap/core-js";
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
 interface Config extends Record<string, unknown> {
   val: number;
@@ -20,10 +21,7 @@ class MockPlugin extends PluginModule<Config> {
 const mockPlugin = () => {
   return {
     factory: () => new MockPlugin({ val: 0 }),
-    manifest: {
-      schema: ``,
-      implements: [],
-    },
+    manifest: {} as WrapManifest,
   };
 };
 

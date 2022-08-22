@@ -1,7 +1,10 @@
-format: 0.1.0
-name: deploy-fail-between
-build: ./polywrap.build.yaml
-deploy: ./polywrap.deploy.yaml
-language: wasm/assemblyscript
-schema: ./schema.graphql
-module: ./src/index.ts
+format: 0.2.0
+project:
+  name: deploy-fail-between
+  type: wasm/assemblyscript
+source:
+  schema: ./schema.graphql
+  module: ./src/index.ts
+extensions:
+  build: ./polywrap.build.yaml
+  deploy: ./polywrap.deploy.yaml
