@@ -4,7 +4,7 @@ import {
   Args_querySubgraph,
   HTTP_Module,
   manifest,
-} from "./wrap-man";
+} from "./wrap";
 
 import { PluginFactory } from "@polywrap/core-js";
 
