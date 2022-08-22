@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/ipfs-plugin-js",
   "description": "Polywrap IPFS Javascript Plugin",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -21,13 +21,13 @@
   },
   "dependencies": {
     "@dorgjelli-test/ipfs-http-client-lite": "0.3.1",
-    "@polywrap/core-js": "0.4.0",
+    "@polywrap/core-js": "0.4.1",
     "abort-controller": "3.0.0",
     "is-ipfs": "1.0.3",
     "multiformats": "9.7.0"
   },
   "devDependencies": {
-    "@polywrap/test-env-js": "0.4.0",
+    "@polywrap/test-env-js": "0.4.1",
     "@types/jest": "26.0.8",
     "@types/prettier": "2.6.0",
     "abort-controller": "3.0.0",
