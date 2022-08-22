@@ -89,6 +89,10 @@ export interface CustomMapValue {
   foo: Types.String;
 }
 
+export interface _else {
+  else: Types.String;
+}
+
 /// Objects END ///
 
 /// Enums START ///
@@ -102,6 +106,17 @@ export type CustomEnumString =
   | "BYTES"
 
 export type CustomEnum = CustomEnumEnum | CustomEnumString;
+
+export enum whileEnum {
+  for,
+  in,
+}
+
+export type whileString =
+  | "for"
+  | "in"
+
+export type _while = whileEnum | whileString;
 
 /// Enums END ///
 
