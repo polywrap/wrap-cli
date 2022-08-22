@@ -8,7 +8,7 @@ import (
 //export _wrap_invoke
 func _wrap_invoke(methodSize, argsSize, envSize uint32) bool {
 	args := polywrap.WrapInvokeArgs(methodSize, argsSize)
-	switch args.method {
+	switch args.Method {
 	{{#moduleType}}
 	{{#methods}}
 	case "{{name}}":
