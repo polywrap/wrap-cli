@@ -2,12 +2,11 @@ import {
   createModuleDefinition,
   createInterfaceImplementedDefinition,
   createImportedModuleDefinition,
-  createAbi,
-  Abi,
+  WrapAbi,
 } from "@polywrap/schema-parse";
 
-export const abi: Abi = {
-  ...createAbi(),
+export const abi: WrapAbi = {
+  version: "0.1",
   moduleType:
     {
       ...createModuleDefinition({}),
@@ -16,8 +15,6 @@ export const abi: Abi = {
       ],
       interfaces: [
         createInterfaceImplementedDefinition({ type: "Namespace_Module" })
-      ],
-      methods: [
       ],
     },
   importedModuleTypes: [
@@ -28,8 +25,6 @@ export const abi: Abi = {
         nativeType: "Module",
         isInterface: false,
       }),
-      methods: [
-      ]
     },
   ],
 };

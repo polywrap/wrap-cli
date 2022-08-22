@@ -23,7 +23,7 @@ export async function deserializeWrapManifest(
 ): Promise<WrapManifest> {
   let anyWrapManifest: AnyWrapManifest | undefined;
   try {
-    anyWrapManifest = msgpackDecode(manifest) as AnyWrapManifest;
+    anyWrapManifest = msgpackDecode(manifest, true) as AnyWrapManifest;
   } catch (e) {
     throw Error(`Unable to parse WrapManifest: ${`[${new Uint8Array(manifest).toString()}]`}`);
   }

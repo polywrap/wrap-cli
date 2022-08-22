@@ -14,6 +14,14 @@ export function isDockerInstalled(): boolean {
   return !!system.which("docker");
 }
 
+export async function ensureDockerDaemonRunning(): Promise<void> {
+  try {
+    await system.run("docker stats --no-stream");
+  } catch (e) {
+    throw new Error(intlMsg.lib_helpers_docker_couldNotConnect());
+  }
+}
+
 export function getDockerFileLock(): FileLock {
   return new FileLock(__dirname + "/DOCKER_LOCK", print.error);
 }

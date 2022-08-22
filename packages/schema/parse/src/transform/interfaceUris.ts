@@ -1,5 +1,10 @@
 import { AbiTransforms } from ".";
-import { Abi, ModuleDefinition, ObjectDefinition } from "../abi";
+
+import {
+  ModuleDefinition,
+  ObjectDefinition,
+  WrapAbi,
+} from "@polywrap/wrap-manifest-types-js";
 
 export function interfaceUris(): AbiTransforms {
   const uniqueInterfaceUris: Record<string, boolean> = {};
@@ -9,24 +14,30 @@ export function interfaceUris(): AbiTransforms {
   return {
     enter: {
       ModuleDefinition: (def: ModuleDefinition) => {
-        for (const interfaceDef of def.interfaces) {
-          uniqueModuleInterfaceTypes[interfaceDef.type] = true;
+        if (def.interfaces) {
+          for (const interfaceDef of def.interfaces) {
+            uniqueModuleInterfaceTypes[interfaceDef.type] = true;
+          }
         }
         return def;
       },
       ObjectDefinition: (def: ObjectDefinition) => {
-        for (const interfaceDef of def.interfaces) {
-          uniqueObjectInterfaceTypes[interfaceDef.type] = true;
+        if (def.interfaces) {
+          for (const interfaceDef of def.interfaces) {
+            uniqueObjectInterfaceTypes[interfaceDef.type] = true;
+          }
         }
         return def;
       },
     },
     leave: {
-      Abi: (abi: Abi) => {
+      Abi: (abi: WrapAbi) => {
         for (const interfaceType of Object.keys(uniqueModuleInterfaceTypes)) {
-          const importedInterface = abi.importedModuleTypes.find(
-            (importedModule) => importedModule.type === interfaceType
-          );
+          const importedInterface =
+            abi.importedModuleTypes &&
+            abi.importedModuleTypes.find(
+              (importedModule) => importedModule.type === interfaceType
+            );
 
           if (importedInterface) {
             uniqueInterfaceUris[importedInterface.uri] = true;
@@ -34,9 +45,11 @@ export function interfaceUris(): AbiTransforms {
         }
 
         for (const interfaceType of Object.keys(uniqueObjectInterfaceTypes)) {
-          const importedInterface = abi.importedObjectTypes.find(
-            (importedObject) => importedObject.type === interfaceType
-          );
+          const importedInterface =
+            abi.importedObjectTypes &&
+            abi.importedObjectTypes.find(
+              (importedObject) => importedObject.type === interfaceType
+            );
 
           if (importedInterface) {
             uniqueInterfaceUris[importedInterface.uri] = true;

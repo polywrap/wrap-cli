@@ -6,7 +6,6 @@ import {
 } from "../utils";
 
 import {
-  Abi,
   transformAbi,
   addFirstLast,
   toPrefixedGraphQLType,
@@ -14,6 +13,7 @@ import {
   methodParentPointers,
   ImportedDefinition,
   ModuleDefinition,
+  WrapAbi,
 } from "@polywrap/schema-parse";
 import {
   BindOptions,
@@ -67,12 +67,12 @@ export const generateBinding: GenerateBindingFn = (
   }
 
   // generate object types
-  if (abi.objectTypes.length > 0) {
+  if (abi.objectTypes && abi.objectTypes.length > 0) {
     renderTemplate("./templates/jsdoc-objects.mustache", abi, "objects.js");
   }
 
   // generate enum types
-  if (abi.enumTypes.length > 0) {
+  if (abi.enumTypes && abi.enumTypes.length > 0) {
     renderTemplate("./templates/jsdoc-enums.mustache", abi, "enums.js");
   }
 
@@ -84,68 +84,82 @@ export const generateBinding: GenerateBindingFn = (
     renderTemplate("./templates/jsdoc-env.mustache", envContext, "env.js");
   }
 
-  // TODO: for imported modules, module.type contains the namespace. Should it?
-  // generate imported modules
-  for (const module of abi.importedModuleTypes) {
-    renderTemplate(
-      "./templates/jsdoc-module.mustache",
-      module,
-      `${module.type}.js`
-    );
-  }
-
-  // generated imported object types
-  const importedObjects = sortByNamespace(abi.importedObjectTypes);
-  for (const [namespace, objectTypes] of Object.entries(importedObjects)) {
-    if (objectTypes.length > 0) {
-      const objectContext = {
-        objectTypes,
-        imported: { namespace },
-      };
-      renderTemplate(
-        "./templates/jsdoc-objects.mustache",
-        objectContext,
-        `${namespace}_objects.js`
-      );
+  if (options.config?.["imports"]) {
+    // TODO: for imported modules, module.type contains the namespace. Should it?
+    // generate imported modules
+    if (abi.importedModuleTypes) {
+      for (const module of abi.importedModuleTypes) {
+        const moduleContext = {
+          ...module,
+          imported: { namespace: module.namespace },
+        };
+        renderTemplate(
+          "./templates/jsdoc-module.mustache",
+          moduleContext,
+          `${module.type}.js`
+        );
+      }
     }
-  }
 
-  // generate imported enum types
-  const importedEnums = sortByNamespace(abi.importedEnumTypes);
-  for (const [namespace, enumTypes] of Object.entries(importedEnums)) {
-    if (enumTypes.length > 0) {
-      const enumContext = {
-        enumTypes,
-        imported: { namespace },
-      };
-      renderTemplate(
-        "./templates/jsdoc-enums.mustache",
-        enumContext,
-        `${namespace}_enums.js`
-      );
+    // generated imported object types
+    if (abi.importedObjectTypes) {
+      const importedObjects = sortByNamespace(abi.importedObjectTypes);
+      for (const [namespace, objectTypes] of Object.entries(importedObjects)) {
+        if (objectTypes.length > 0) {
+          const objectContext = {
+            objectTypes,
+            imported: { namespace },
+          };
+          renderTemplate(
+            "./templates/jsdoc-objects.mustache",
+            objectContext,
+            `${namespace}_objects.js`
+          );
+        }
+      }
     }
-  }
 
-  // generate imported env types
-  const importedEnvs = arrangeByNamespace(abi.importedEnvTypes);
-  for (const [namespace, envType] of Object.entries(importedEnvs)) {
-    if (envType) {
-      const envContext = {
-        envType,
-        namespace,
-      };
-      renderTemplate(
-        "./templates/jsdoc-env.mustache",
-        envContext,
-        `${namespace}_env.js`
-      );
+    // generate imported enum types
+    if (abi.importedEnumTypes) {
+      const importedEnums = sortByNamespace(abi.importedEnumTypes);
+      for (const [namespace, enumTypes] of Object.entries(importedEnums)) {
+        if (enumTypes.length > 0) {
+          const enumContext = {
+            enumTypes,
+            imported: { namespace },
+          };
+          renderTemplate(
+            "./templates/jsdoc-enums.mustache",
+            enumContext,
+            `${namespace}_enums.js`
+          );
+        }
+      }
+    }
+
+    // generate imported env types
+    if (abi.importedEnvTypes) {
+      const importedEnvs = arrangeByNamespace(abi.importedEnvTypes);
+      for (const [namespace, envType] of Object.entries(importedEnvs)) {
+        if (envType) {
+          const envContext = {
+            envType,
+            imported: { namespace },
+          };
+          renderTemplate(
+            "./templates/jsdoc-env.mustache",
+            envContext,
+            `${namespace}_env.js`
+          );
+        }
+      }
     }
   }
 
   return result;
 };
 
-function applyTransforms(abi: Abi): Abi {
+function applyTransforms(abi: WrapAbi): WrapAbi {
   const transforms = [
     extendType(Functions),
     extendType(TypeScript.Functions),

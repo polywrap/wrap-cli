@@ -17,7 +17,7 @@
     "type": {
       "description" : "Wrapper Package Type",
       "type": "string",
-      "enum": ["wasm", "interface"]
+      "enum": ["wasm", "interface", "plugin"]
     },
     "name": {
       "description": "Wrapper Name",
@@ -25,6 +25,7 @@
       "pattern": "^[a-zA-Z0-9\\-\\_]+$"
     },
     "abi": {
+      "description": "Information of modules",
       "$ref": "../abi/0.1.json"
     }
   }

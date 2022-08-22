@@ -1,5 +1,7 @@
-format: 0.1.0
-language: plugin/typescript
-name: Http
-module: ./src/index.ts
-schema: ./src/schema.graphql
+format: 0.2.0
+project:
+  type: plugin/typescript
+  name: Http
+source:
+  module: ./src/index.ts
+  schema: ./src/schema.graphql

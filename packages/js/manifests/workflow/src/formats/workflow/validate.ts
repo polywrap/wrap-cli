@@ -9,7 +9,7 @@ import {
   PolywrapWorkflowFormats
 } from ".";
 
-import PolywrapWorkflowSchema_0_1 from "@polywrap/workflow-manifest-schemas/formats/workflow/0.1.json";
+import PolywrapWorkflowSchema_0_1_0 from "@polywrap/workflow-manifest-schemas/formats/workflow/0.1.0.json";
 
 import {
   Schema,
@@ -24,8 +24,8 @@ type PolywrapWorkflowSchemas = {
 
 const schemas: PolywrapWorkflowSchemas = {
   // NOTE: Patch fix for backwards compatability
-  "0.1.0": PolywrapWorkflowSchema_0_1,
-  "0.1": PolywrapWorkflowSchema_0_1,
+  "0.1": PolywrapWorkflowSchema_0_1_0,
+  "0.1.0": PolywrapWorkflowSchema_0_1_0,
 };
 
 const validator = new Validator();

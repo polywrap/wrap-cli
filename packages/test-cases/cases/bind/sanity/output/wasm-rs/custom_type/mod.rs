@@ -19,6 +19,7 @@ pub use serialization::{
 
 use crate::AnotherType;
 use crate::CustomEnum;
+use crate::CustomMapValue;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct CustomType {
@@ -63,6 +64,7 @@ pub struct CustomType {
     pub map_of_arr: Map<String, Vec<i32>>,
     pub map_of_obj: Map<String, AnotherType>,
     pub map_of_arr_of_obj: Map<String, Vec<AnotherType>>,
+    pub map_custom_value: Map<String, Option<CustomMapValue>>,
 }
 
 impl CustomType {
@@ -109,6 +111,7 @@ impl CustomType {
             map_of_arr: Map::<String, Vec<i32>>::new(),
             map_of_obj: Map::<String, AnotherType>::new(),
             map_of_arr_of_obj: Map::<String, Vec<AnotherType>>::new(),
+            map_custom_value: Map::<String, Option<CustomMapValue>>::new(),
         }
     }
 

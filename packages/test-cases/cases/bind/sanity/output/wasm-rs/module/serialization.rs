@@ -20,6 +20,7 @@ use crate::{
     sanitize_custom_enum_value
 };
 use crate::AnotherType;
+use crate::Else;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct ArgsModuleMethod {
@@ -442,6 +443,60 @@ pub fn write_optional_env_method_result<W: Write>(result: &Option<AnotherType>, 
     } else {
         writer.write_nil()?;
     }
+    writer.context().pop();
+    Ok(())
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct ArgsIf {
+    pub _if: Else,
+}
+
+pub fn deserialize_if_args(args: &[u8]) -> Result<ArgsIf, DecodeError> {
+    let mut context = Context::new();
+    context.description = "Deserializing module-type: if".to_string();
+
+    let mut reader = ReadDecoder::new(args, context);
+    let mut num_of_fields = reader.read_map_length()?;
+
+    let mut _if: Else = Else::new();
+    let mut _if_set = false;
+
+    while num_of_fields > 0 {
+        num_of_fields -= 1;
+        let field = reader.read_string()?;
+
+        match field.as_str() {
+            "if" => {
+                reader.context().push(&field, "Else", "type found, reading argument");
+                let object = Else::read(&mut reader)?;
+                _if = object;
+                _if_set = true;
+                reader.context().pop();
+            }
+            err => return Err(DecodeError::UnknownFieldName(err.to_string())),
+        }
+    }
+    if !_if_set {
+        return Err(DecodeError::MissingField("if: else.".to_string()));
+    }
+
+    Ok(ArgsIf {
+        _if: _if,
+    })
+}
+
+pub fn serialize_if_result(result: &Else) -> Result<Vec<u8>, EncodeError> {
+    let mut encoder_context = Context::new();
+    encoder_context.description = "Serializing (encoding) module-type: if".to_string();
+    let mut encoder = WriteEncoder::new(&[], encoder_context);
+    write_if_result(result, &mut encoder)?;
+    Ok(encoder.get_buffer())
+}
+
+pub fn write_if_result<W: Write>(result: &Else, writer: &mut W) -> Result<(), EncodeError> {
+    writer.context().push("if", "Else", "writing result");
+    Else::write(&result, writer)?;
     writer.context().pop();
     Ok(())
 }

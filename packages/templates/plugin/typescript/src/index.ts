@@ -20,7 +20,7 @@ export const samplePlugin: PluginFactory<SamplePluginConfig> = (
 ) => {
   return {
     factory: () => new SamplePlugin(config),
-    manifest,
+    manifest: manifest
   };
 };
 

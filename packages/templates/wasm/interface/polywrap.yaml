@@ -1,6 +1,9 @@
-format: 0.1.0
-name: TODO
-language: interface
-meta: ./polywrap.meta.yaml
-deploy: ./polywrap.deploy.yaml
-schema: ./schema.graphql
+format: 0.2.0
+project:
+  name: TODO
+  type: interface
+source:
+  schema: ./schema.graphql
+extensions:
+  meta: ./polywrap.meta.yaml
+  deploy: ./polywrap.deploy.yaml
