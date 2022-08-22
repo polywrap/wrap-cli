@@ -5,6 +5,7 @@ from typing import Optional
 from ....types import Client, Uri, WrapperCache
 from ...core import UriResolutionResult, UriResolutionStack, UriResolver
 
+
 class CacheResolver(UriResolver):
     @property
     def name(self) -> str:

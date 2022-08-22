@@ -18,3 +18,6 @@ class InterfaceImplementations:
 
     interface: Uri
     implementations: List[Uri] = field(default_factory=list)
+
+    def __eq__(self, other: InterfaceImplementations) -> bool:
+        return self.interface == other.interface and all(x in other.implementations for x in self.implementations)

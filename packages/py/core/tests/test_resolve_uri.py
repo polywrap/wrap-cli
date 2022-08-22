@@ -351,7 +351,7 @@ interfaces = [
 #             plugin=PluginPackageTest(
 #                 manifest={
 #                     "schema": "",
-#                     "implements": [CoreInterfaceUris.uri_resolver],
+#                     "implements": [CoreInterfaceUris.uri_resolver.value],
 #                 },
 #             ),
 #         )

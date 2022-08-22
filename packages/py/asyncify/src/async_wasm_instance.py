@@ -1,0 +1,2 @@
+class AsyncWasmInstance:
+    pass

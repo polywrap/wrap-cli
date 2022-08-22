@@ -33,8 +33,7 @@ class ExtendableUriResolver(UriResolver):
     ):
         self._create_api = _create_wrapper
         self._deserialize_options = _deserialize_options
-        if disable_preload:
-            self._has_loaded_uri_resolvers = True
+        self._has_loaded_uri_resolvers = disable_preload
 
     @property
     def name(self) -> str:

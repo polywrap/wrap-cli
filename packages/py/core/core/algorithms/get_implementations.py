@@ -38,5 +38,4 @@ def get_implementations(
         final_uri = apply_redirects(wrapper_interface_uri, redirects)
 
     result = add_all_implementations_from_implementations_array(interfaces, final_uri)
-
     return result

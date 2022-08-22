@@ -14,6 +14,7 @@ class MaybeUriOrManifestDict(TypedDict):
     uri: Optional[str]
     manifest: Optional[str]
 
+
 class UriResolverWrapper(UriResolver):
     def __init__(
         self,

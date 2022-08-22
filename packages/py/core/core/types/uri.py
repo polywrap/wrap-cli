@@ -39,6 +39,9 @@ class Uri:
     def __eq__(self, b: Uri) -> bool:
         return self.uri == b.uri
 
+    def __lt__(self, b: Uri) -> bool:
+        return self.uri < b.uri
+
     @property
     def authority(self) -> str:
         return self._config.authority
