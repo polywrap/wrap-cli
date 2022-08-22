@@ -14,7 +14,8 @@ import {
   Uri,
   UriResolverInterface,
   Wrapper,
-} from "@polywrap/core-js";
+} from "../";
+
 import {
   deserializeWrapManifest,
   WrapManifest,

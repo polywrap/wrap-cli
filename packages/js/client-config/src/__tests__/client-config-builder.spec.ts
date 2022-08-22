@@ -39,8 +39,10 @@ describe("Client config builder", () => {
       plugin: {
         factory: () => ({} as PluginModule<{}>),
         manifest: {
-          schema: "",
-          implements: [],
+          name: "test",
+          abi: {},
+          type: "plugin",
+          version: "0.1"
         },
       },
     },
@@ -49,8 +51,10 @@ describe("Client config builder", () => {
       plugin: {
         factory: () => ({} as PluginModule<{}>),
         manifest: {
-          schema: "",
-          implements: [],
+          name: "test",
+          abi: {},
+          type: "plugin",
+          version: "0.1"
         },
       },
     },
