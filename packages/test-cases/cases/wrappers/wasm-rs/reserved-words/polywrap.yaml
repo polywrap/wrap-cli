@@ -1,10 +1,10 @@
 format: 0.2.0
 project:
-  name: ReservedWords
-  type: wasm/assemblyscript
+  name: ObjectTypes
+  type: wasm/rust
 source:
   schema: ./schema.graphql
-  module: ./src/index.ts
+  module: ./Cargo.toml
   import_abis:
     - uri: wrap://ens/reserved-words.polytest.eth
       abi: ./schema.import.graphql

@@ -1,5 +1,3 @@
-#import { Module, else, Box, while } into TestImport from "wrap://ens/reserved-words.polytest.eth"
-
 type Module {
   if(
     if: else!

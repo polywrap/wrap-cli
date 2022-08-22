@@ -1,19 +1,21 @@
 import {
-  Args_method1,
-  Args__const,
-  _const,
-  Result,
+  Args__if,
+  Args__for,
+  _else,
+  _while,
+  Box,
+  getwhileKey
 } from "./wrap";
 
-export function method1(args: Args_method1): Result {
+export function _if(args: Args__if): _else {
   return {
-    _const: "result: " + args._const._const,
+    _else: args._if._else
   };
 }
 
-export function _const(args: Args__const): Result {
-  const arg: _const = args._const;
+export function _for(args: Args__for): Box {
+  const value: _while = args._in;
   return {
-    _const: "result: " + arg._const,
+    box: getwhileKey(value)
   };
 }
