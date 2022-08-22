@@ -1,11 +1,11 @@
 import { intlMsg } from "../../";
 
 import { execSync, spawn } from "child_process";
-import { GluegunFilesystem } from "gluegun";
 import dns from "dns";
 import url from "url";
 import chalk from "chalk";
 import path from "path";
+import fse from "fs-extra";
 
 function shouldUseYarn(): boolean {
   try {
@@ -83,12 +83,10 @@ const executeCommand = (
 export const generateProjectTemplate = (
   type: string,
   lang: string,
-  projectName: string,
-  fs: GluegunFilesystem
+  projectName: string
 ): Promise<boolean | { command: string }> => {
   return new Promise((resolve, reject) => {
-    const { dir, copyAsync } = fs;
-    dir(projectName);
+    fse.mkdirSync(projectName);
 
     let command = "";
     let args: string[] = [];
@@ -99,15 +97,11 @@ export const generateProjectTemplate = (
     const root = path.resolve(projectName);
     const dependencies: string[] = ["@polywrap/templates"];
 
-    fs.write(
-      `${root}/package.json`,
-      `
-{
-  "name": "template"
-}
-    `
-    );
-
+    const fileName = `${root}/package.json`;
+    fse.createFileSync(fileName);
+    fse.writeFileSync(fileName, {
+      name: "template",
+    });
     if (useYarn) {
       command = "yarnpkg";
       args = ["add", "--exact"];
@@ -146,13 +140,14 @@ export const generateProjectTemplate = (
 
     executeCommand(command, args, root)
       .then(() => {
-        copyAsync(
-          `${root}/node_modules/@polywrap/templates/${type}/${lang}`,
-          `${root}`,
-          {
-            overwrite: true,
-          }
-        )
+        fse
+          .copy(
+            `${root}/node_modules/@polywrap/templates/${type}/${lang}`,
+            `${root}`,
+            {
+              overwrite: true,
+            }
+          )
           .then(() => {
             resolve(true);
           })

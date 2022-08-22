@@ -2,7 +2,6 @@
 import { AsciiTree } from "./asciiTree";
 
 import { Uri } from "@polywrap/core-js";
-import { GluegunPrint } from "gluegun";
 
 export interface Deployer {
   execute(uri: Uri, config?: unknown): Promise<Uri>;
@@ -81,14 +80,13 @@ export class DeployerHandler extends AbstractHandler {
   constructor(
     name: string,
     private deployer: Deployer,
-    private config: unknown,
-    private printer: GluegunPrint
+    private config: unknown
   ) {
     super(name);
   }
 
   public async handle(uri: Uri): Promise<Uri[]> {
-    this.printer.info(
+    console.info(
       `Executing stage: '${this.name}', with URI: '${uri.toString()}'`
     );
 
@@ -99,9 +97,9 @@ export class DeployerHandler extends AbstractHandler {
       };
       const nextUri = await this.deployer.execute(uri, this.config);
       this.result = nextUri.toString();
-
-      this.printer.success(
-        `Successfully executed stage '${this.name}'. Result: '${this.result}'`
+      console.log(
+        `%cSuccessfully executed stage '${this.name}'. Result: '${this.result}'`,
+        "color: green"
       );
       return [nextUri, ...(await super.handle(nextUri))];
     } catch (e) {

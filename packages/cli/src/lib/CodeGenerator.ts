@@ -23,7 +23,6 @@ import { BindLanguage, GenerateBindingFn } from "@polywrap/schema-bind";
 import { writeDirectorySync } from "@polywrap/os-js";
 import path from "path";
 import { readFileSync } from "fs";
-import * as gluegun from "gluegun";
 import { Ora } from "ora";
 import Mustache from "mustache";
 
@@ -48,7 +47,7 @@ export class CodeGenerator {
 
       return true;
     } catch (e) {
-      gluegun.print.error(e);
+      console.warn(e);
       return false;
     }
   }

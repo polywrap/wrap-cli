@@ -72,6 +72,7 @@
     "regex-parser": "2.2.11",
     "rimraf": "3.0.2",
     "typescript": "4.0.7",
+    "which": "2.0.2",
     "ws": "7.3.1"
   },
   "devDependencies": {
@@ -83,6 +84,7 @@
     "@types/node": "12.12.26",
     "@types/prettier": "2.6.0",
     "@types/rimraf": "3.0.0",
+    "@types/which": "2.0.1",
     "cross-env": "7.0.3",
     "dir-compare": "3.3.0",
     "eslint-plugin-formatjs": "2.12.7",

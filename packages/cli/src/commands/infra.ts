@@ -2,7 +2,6 @@ import { intlMsg, Infra, loadInfraManifest } from "../lib";
 import { Command, Program } from "./types";
 
 import { InfraManifest } from "@polywrap/polywrap-manifest-types-js";
-import { print } from "gluegun";
 import path from "path";
 import { Argument } from "commander";
 import chalk from "chalk";
@@ -123,16 +122,16 @@ Example: 'polywrap infra up --modules=eth-ens-ipfs'.`
       const errorMsg = intlMsg.commands_infra_error_noModulesMatch({
         modules,
       });
-      print.error(errorMsg);
+      console.error(errorMsg);
       return;
     }
 
     const errorMsg = intlMsg.commands_infra_error_noModulesDeclared();
-    print.error(errorMsg);
+    console.error(errorMsg);
     return;
   }
 
-  print.info(
+  console.info(
     `${intlMsg.commands_infra_modulesUsed_text()}: ${filteredModules
       .map((f) => `\n- ${f.name}`)
       .join("")}\n`
@@ -146,10 +145,10 @@ Example: 'polywrap infra up --modules=eth-ens-ipfs'.`
       await infra.down();
       break;
     case InfraActions.VARS:
-      print.info(await infra.getVars());
+      console.info(await infra.getVars());
       break;
     case InfraActions.CONFIG:
-      print.info(
+      console.info(
         yaml.safeDump((await infra.config()).data.config, { indent: 2 })
       );
       break;

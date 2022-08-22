@@ -23,7 +23,6 @@ import { WasmWrapper } from "@polywrap/client-js";
 import { WrapImports } from "@polywrap/client-js/build/wasm/types";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 import { normalizePath, writeDirectorySync } from "@polywrap/os-js";
-import * as gluegun from "gluegun";
 import fs from "fs";
 import path from "path";
 import { WrapAbi } from "@polywrap/schema-parse";
@@ -66,7 +65,7 @@ export class Compiler {
         await run();
         return true;
       } catch (e) {
-        gluegun.print.error(e);
+        console.error(e);
         return false;
       }
     } else {
@@ -81,7 +80,7 @@ export class Compiler {
         );
         return true;
       } catch (e) {
-        gluegun.print.error(e);
+        console.error(e);
         return false;
       }
     }
@@ -116,7 +115,7 @@ export class Compiler {
         await run();
         return true;
       } catch (e) {
-        gluegun.print.error(e);
+        console.error(e);
         return false;
       }
     } else {
@@ -131,7 +130,7 @@ export class Compiler {
         );
         return true;
       } catch (e) {
-        gluegun.print.error(e);
+        console.error(e);
         return false;
       }
     }

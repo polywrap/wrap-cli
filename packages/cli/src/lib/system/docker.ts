@@ -3,27 +3,28 @@
 import { displayPath, runCommand, FileLock } from "./";
 import { withSpinner, intlMsg } from "../";
 
+import which from "which";
 import { isWin, writeFileSync } from "@polywrap/os-js";
-import { system, print } from "gluegun";
 import Mustache from "mustache";
 import YAML from "js-yaml";
 import path from "path";
 import fs from "fs";
+import { exec } from "child_process";
 
 export function isDockerInstalled(): boolean {
-  return !!system.which("docker");
+  return !!which("docker");
 }
 
 export async function ensureDockerDaemonRunning(): Promise<void> {
   try {
-    await system.run("docker stats --no-stream");
+    exec("docker stats --no-stream");
   } catch (e) {
     throw new Error(intlMsg.lib_helpers_docker_couldNotConnect());
   }
 }
 
 export function getDockerFileLock(): FileLock {
-  return new FileLock(__dirname + "/DOCKER_LOCK", print.error);
+  return new FileLock(__dirname + "/DOCKER_LOCK", console.error);
 }
 
 export async function isDockerBuildxInstalled(): Promise<boolean> {

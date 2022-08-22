@@ -1,9 +1,14 @@
 import { Command, Program } from "./types";
 import { generateProjectTemplate, intlMsg } from "../lib";
 
-import { prompt, filesystem } from "gluegun";
 import { Argument } from "commander";
+import fse from "fs-extra";
+import { createInterface } from "readline";
 
+const prompt = createInterface({
+  input: process.stdin,
+  output: process.stdout,
+});
 const nameStr = intlMsg.commands_create_options_projectName();
 const langStr = intlMsg.commands_create_options_lang();
 const langsStr = intlMsg.commands_create_options_langs();
@@ -101,7 +106,7 @@ async function run(
   const projectDir = outputDir ? `${outputDir}/${name}` : name;
 
   // check if project already exists
-  if (!filesystem.exists(projectDir)) {
+  if (!(await fse.readdir(projectDir))) {
     console.log();
     console.info(intlMsg.commands_create_settingUp());
   } else {
@@ -109,21 +114,23 @@ async function run(
       dir: projectDir,
     });
     console.info(directoryExistsMessage);
-    const overwrite = await prompt.confirm(
-      intlMsg.commands_create_overwritePrompt()
+    prompt.question(
+      intlMsg.commands_create_overwritePrompt(),
+      async (answer) => {
+        if (answer.toLowerCase() === "y") {
+          const overwritingMessage = intlMsg.commands_create_overwriting({
+            dir: projectDir,
+          });
+          console.info(overwritingMessage);
+          await fse.remove(projectDir);
+        } else {
+          process.exit(8);
+        }
+      }
     );
-    if (overwrite) {
-      const overwritingMessage = intlMsg.commands_create_overwriting({
-        dir: projectDir,
-      });
-      console.info(overwritingMessage);
-      filesystem.remove(projectDir);
-    } else {
-      process.exit(8);
-    }
   }
 
-  generateProjectTemplate(command, lang, projectDir, filesystem)
+  generateProjectTemplate(command, lang, projectDir)
     .then(() => {
       console.log();
       let readyMessage;

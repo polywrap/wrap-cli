@@ -15,7 +15,6 @@ import {
   parseClientConfigOption,
 } from "../lib";
 
-import { print } from "gluegun";
 import path from "path";
 import readline from "readline";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
@@ -88,7 +87,7 @@ async function run(options: BuildCommandOptions) {
 
   const dockerLock = new FileLock(
     project.getCachePath("build/DOCKER_LOCK"),
-    print.error
+    console.error
   );
 
   const schemaComposer = new SchemaComposer({

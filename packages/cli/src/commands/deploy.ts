@@ -13,7 +13,6 @@ import {
 import { DeployManifest } from "@polywrap/polywrap-manifest-types-js";
 import fs from "fs";
 import nodePath from "path";
-import { print } from "gluegun";
 import yaml from "js-yaml";
 import { Uri } from "@polywrap/core-js";
 import { validate } from "jsonschema";
@@ -99,8 +98,7 @@ async function run(options: DeployCommandOptions): Promise<void> {
     handlers[stageName] = new DeployerHandler(
       stageName,
       publisher,
-      stageValue.config,
-      print
+      stageValue.config
     );
   });
 
@@ -126,9 +124,9 @@ async function run(options: DeployCommandOptions): Promise<void> {
   const resultLists: ResultList[] = [];
 
   for await (const root of roots) {
-    print.info(`\nExecuting deployment chain: \n`);
+    console.info(`\nExecuting deployment chain: \n`);
     root.handler.getDependencyTree().printTree();
-    print.info("");
+    console.info("");
     await root.handler.handle(root.uri);
     resultLists.push(root.handler.getResultsList());
   }

@@ -13,7 +13,6 @@ import {
 } from "../lib";
 
 import path from "path";
-import { filesystem } from "gluegun";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 
 const defaultCodegenDir = "./wrap";
@@ -95,7 +94,7 @@ async function run(options: CodegenCommandOptions) {
   } else {
     const compiler = new Compiler({
       project,
-      outputDir: filesystem.path("build"),
+      outputDir: __dirname + "/build",
       schemaComposer,
     });
 

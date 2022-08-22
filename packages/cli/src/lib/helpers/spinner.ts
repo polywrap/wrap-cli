@@ -1,5 +1,4 @@
-import * as gluegun from "gluegun";
-import { Ora } from "ora";
+import ora, { Ora } from "ora";
 
 // Executes the function `f` in a command-line spinner, using the
 // provided captions for in-progress, error and failed messages.
@@ -16,10 +15,10 @@ export const withSpinner = async <TReturn>(
   warningText: string,
   execute: (spinner: Ora) => Promise<TReturn>
 ): Promise<TReturn> => {
-  const spinner = gluegun.print.spin({
+  const spinner = ora({
     text,
     stream: process.stdout,
-  });
+  }).start();
   try {
     const result = await execute(spinner);
     if (result && typeof result === "object") {
@@ -49,10 +48,10 @@ export const withSpinner = async <TReturn>(
 export const step = (spinner: Ora, subject: string, text?: string): unknown => {
   if (text) {
     spinner.stopAndPersist({
-      text: gluegun.print.colors.muted(`${subject} ${text}`),
+      text: `${subject} ${text}`,
     });
   } else {
-    spinner.stopAndPersist({ text: gluegun.print.colors.muted(subject) });
+    spinner.stopAndPersist({ text: subject });
   }
   spinner.start();
   return spinner;
@@ -64,10 +63,10 @@ export const searchOptional = async <T>(
   warningText: string,
   execute: (spinner: Ora) => Promise<T>
 ): Promise<T> => {
-  const spinner = gluegun.print.spin({
+  const spinner = ora({
     text: loadText,
     stream: process.stdout,
-  });
+  }).start();
 
   try {
     const result = await execute(spinner);
