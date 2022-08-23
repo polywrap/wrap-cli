@@ -1,6 +1,9 @@
-format: "0.2"
-name: linked-packages
-language: wasm/assemblyscript
-build: ./polywrap.build.yaml
-schema: ./src/schema.graphql
-module: ./src/index.ts
+format: 0.2.0
+project:
+  name: linked-packages
+  type: wasm/assemblyscript
+source:
+  schema: ./src/schema.graphql
+  module: ./src/index.ts
+extensions:
+  build: ./polywrap.build.yaml

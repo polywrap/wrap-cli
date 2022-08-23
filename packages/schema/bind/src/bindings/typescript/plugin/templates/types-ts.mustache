@@ -27,7 +27,7 @@ export type Boolean = boolean;
 
 /// Env START ///
 {{#envType}}
-export interface {{type}} extends Record<string, unknown> {
+export interface {{#detectKeyword}}{{type}}{{/detectKeyword}} extends Record<string, unknown> {
   {{#properties}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/properties}}
@@ -37,7 +37,7 @@ export interface {{type}} extends Record<string, unknown> {
 
 /// Objects START ///
 {{#objectTypes}}
-export interface {{type}} {
+export interface {{#detectKeyword}}{{type}}{{/detectKeyword}} {
   {{#properties}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/properties}}
@@ -59,7 +59,7 @@ export type {{type}}String =
   | "{{.}}"
   {{/constants}}
 
-export type {{type}} = {{type}}Enum | {{type}}String;
+export type {{#detectKeyword}}{{type}}{{/detectKeyword}} = {{type}}Enum | {{type}}String;
 
 {{/enumTypes}}
 /// Enums END ///
@@ -68,7 +68,7 @@ export type {{type}} = {{type}}Enum | {{type}}String;
 
 {{#importedObjectTypes}}
 /* URI: "{{uri}}" */
-export interface {{type}} {
+export interface {{#detectKeyword}}{{type}}{{/detectKeyword}} {
   {{#properties}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/properties}}
@@ -88,7 +88,7 @@ export type {{type}}String =
   | "{{.}}"
   {{/constants}}
 
-export type {{type}} = {{type}}Enum | {{type}}String;
+export type {{#detectKeyword}}{{type}}{{/detectKeyword}} = {{type}}Enum | {{type}}String;
 
 {{/importedEnumTypes}}
 /// Imported Objects END ///
@@ -127,7 +127,7 @@ export const {{type}} = {
 
 {{/isInterface}}
 {{#isInterface}}
-export class {{type}} {
+export class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
   public static interfaceUri: string = "{{uri}}";
 
   constructor(public uri: string) {
@@ -156,7 +156,7 @@ export class {{type}} {
 {{#interfaceTypes.length}}
 {{#interfaceTypes}}
 
-export class {{namespace}} {
+export class {{#detectKeyword}}{{namespace}}{{/detectKeyword}} {
   static uri: string = "{{uri}}";
 
   {{#capabilities}}

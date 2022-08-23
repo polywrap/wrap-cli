@@ -1,5 +1,8 @@
-format: "0.2"
-name: UriResolver
-deploy: ./polywrap.deploy.yaml
-language: interface
-schema: ./src/schema.graphql
+format: 0.2.0
+project:
+  name: UriResolver
+  type: interface
+source:
+  schema: ./src/schema.graphql
+extensions:
+  deploy: ./polywrap.deploy.yaml

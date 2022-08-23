@@ -11,7 +11,7 @@ export class CacheResolver implements UriResolver {
     client: Client,
     cache: WrapperCache
   ): Promise<UriResolutionResult> {
-    const wrapper = cache.get(uri.uri);
+    const wrapper = cache.get(uri);
 
     return Promise.resolve({
       uri: uri,

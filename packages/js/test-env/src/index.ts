@@ -337,7 +337,10 @@ export async function buildAndDeployWrapper({
     tempManifestPath,
     yaml.dump({
       ...polywrapManifest,
-      deploy: `./${tempDeployManifestFilename}`,
+      extensions: {
+        ...polywrapManifest.extensions,
+        deploy: `./${tempDeployManifestFilename}`,
+      },
     })
   );
 

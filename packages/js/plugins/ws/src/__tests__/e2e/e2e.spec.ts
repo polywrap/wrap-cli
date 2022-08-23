@@ -1,5 +1,5 @@
 import { wsPlugin } from "../..";
-import { Message } from "../../wrap-man";
+import { Message } from "../../wrap";
 
 import WS from "jest-websocket-mock";
 import { PolywrapClient } from "@polywrap/client-js"
