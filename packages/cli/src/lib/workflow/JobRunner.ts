@@ -5,7 +5,7 @@ import {
   Uri,
   InvokeResult,
 } from "@polywrap/core-js";
-import { WorkflowJobs } from "@polywrap/workflow-manifest-types-js";
+import { WorkflowJobs } from "@polywrap/polywrap-manifest-types-js";
 
 export enum JobStatus {
   SUCCEED = "SUCCEED",

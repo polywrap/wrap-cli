@@ -47,7 +47,6 @@
     "@polywrap/msgpack-js": "0.4.1",
     "@polywrap/os-js": "0.4.1",
     "@polywrap/polywrap-manifest-types-js": "0.4.1",
-    "@polywrap/workflow-manifest-types-js": "0.4.1",
     "@polywrap/schema-bind": "0.4.1",
     "@polywrap/schema-compose": "0.4.1",
     "@polywrap/schema-parse": "0.4.1",

@@ -5,3 +5,4 @@ export * from "./polywrap.deploy";
 export * from "./polywrap.meta";
 export * from "./polywrap.plugin";
 export * from "./polywrap.app";
+export * from "./polywrap.test";

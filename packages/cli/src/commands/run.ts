@@ -11,7 +11,7 @@ import {
 } from "../lib";
 
 import { Uri } from "@polywrap/core-js";
-import { PolywrapWorkflow } from "@polywrap/workflow-manifest-types-js";
+import { PolywrapWorkflow } from "@polywrap/polywrap-manifest-types-js";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import path from "path";
 import yaml from "js-yaml";

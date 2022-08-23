@@ -23,13 +23,18 @@ export function migratePolywrapWorkflow(
   manifest: AnyPolywrapWorkflow,
   to: PolywrapWorkflowFormats
 ): PolywrapWorkflow {
-  const from = manifest.format as PolywrapWorkflowFormats;
+  let from = manifest.format as PolywrapWorkflowFormats;
+
+  // HACK: Patch fix for backwards compatability
+  if(from === "0.1" && ("0.1.0" in migrators)) {
+    from = "0.1.0" as PolywrapWorkflowFormats;
+  }
 
   if (from === latestPolywrapWorkflowFormat) {
     return manifest as PolywrapWorkflow;
   }
 
-  if (!(from in PolywrapWorkflowFormats)) {
+  if (!(Object.values(PolywrapWorkflowFormats).some(x => x === from))) {
     throw new Error(`Unrecognized PolywrapWorkflowFormat "${manifest.format}"`);
   }
 

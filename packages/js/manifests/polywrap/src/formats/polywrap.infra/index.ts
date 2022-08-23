@@ -6,7 +6,7 @@
  */
 
 import {
-  InfraManifest as InfraManifest_0_1_0
+  InfraManifest as InfraManifest_0_1_0,
 } from "./0.1.0";
 
 export {
@@ -21,6 +21,8 @@ export enum InfraManifestFormats {
 
 export type AnyInfraManifest =
   | InfraManifest_0_1_0
+
+
 
 export type InfraManifest = InfraManifest_0_1_0;
 

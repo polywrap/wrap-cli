@@ -9,7 +9,7 @@ import {
   PolywrapWorkflowFormats
 } from ".";
 
-import PolywrapWorkflowSchema_0_1_0 from "@polywrap/workflow-manifest-schemas/formats/workflow/0.1.0.json";
+import PolywrapWorkflowSchema_0_1_0 from "@polywrap/polywrap-manifest-schemas/formats/polywrap.test/0.1.0.json";
 
 import {
   Schema,
