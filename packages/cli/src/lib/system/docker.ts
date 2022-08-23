@@ -15,12 +15,12 @@ export function isDockerInstalled(): boolean {
   return !!which("docker");
 }
 
-export async function ensureDockerDaemonRunning(): Promise<void> {
-  try {
-    exec("docker stats --no-stream");
-  } catch (e) {
-    throw new Error(intlMsg.lib_helpers_docker_couldNotConnect());
-  }
+export function ensureDockerDaemonRunning(): void {
+  exec("docker stats --no-stream", (err) => {
+    if (err) {
+      throw new Error(intlMsg.lib_helpers_docker_couldNotConnect());
+    }
+  });
 }
 
 export function getDockerFileLock(): FileLock {

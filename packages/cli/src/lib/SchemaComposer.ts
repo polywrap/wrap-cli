@@ -18,6 +18,7 @@ import {
 } from "@polywrap/wrap-manifest-types-js";
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 import { WrapAbi } from "@polywrap/schema-parse";
+import chalk from "chalk";
 
 export interface SchemaComposerConfig {
   project: Project<AnyProjectManifest>;
@@ -130,7 +131,7 @@ export class SchemaComposer {
       const manifest = await this._client.getManifest(new Uri(uri));
       return manifest.abi;
     } catch (e) {
-      console.error(e);
+      console.log(chalk.red(e));
       throw e;
     }
   }

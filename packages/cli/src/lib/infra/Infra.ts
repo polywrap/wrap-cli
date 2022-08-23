@@ -77,7 +77,7 @@ export class Infra {
   }
 
   public async up(): Promise<void> {
-    await ensureDockerDaemonRunning();
+    ensureDockerDaemonRunning();
 
     const modulesWithPaths = await this._fetchModules();
 
@@ -89,7 +89,7 @@ export class Infra {
   }
 
   public async down(): Promise<void> {
-    await ensureDockerDaemonRunning();
+    ensureDockerDaemonRunning();
 
     const modulesWithPaths = await this._fetchModules();
 

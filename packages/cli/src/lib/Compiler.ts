@@ -26,6 +26,7 @@ import { normalizePath, writeDirectorySync } from "@polywrap/os-js";
 import fs from "fs";
 import path from "path";
 import { WrapAbi } from "@polywrap/schema-parse";
+import chalk from "chalk";
 
 interface CompilerState {
   abi: WrapAbi;
@@ -65,7 +66,7 @@ export class Compiler {
         await run();
         return true;
       } catch (e) {
-        console.error(e);
+        console.log(chalk.red(e));
         return false;
       }
     } else {
@@ -80,7 +81,7 @@ export class Compiler {
         );
         return true;
       } catch (e) {
-        console.error(e);
+        console.log(chalk.red(e));
         return false;
       }
     }
@@ -115,7 +116,7 @@ export class Compiler {
         await run();
         return true;
       } catch (e) {
-        console.error(e);
+        console.log(chalk.red(e));
         return false;
       }
     } else {
@@ -130,7 +131,7 @@ export class Compiler {
         );
         return true;
       } catch (e) {
-        console.error(e);
+        console.log(chalk.red(e));
         return false;
       }
     }
@@ -236,7 +237,7 @@ export class Compiler {
 
   private async _buildSourcesInDocker(): Promise<string> {
     const { project, outputDir } = this._config;
-    await ensureDockerDaemonRunning();
+    ensureDockerDaemonRunning();
     const buildManifestDir = await project.getBuildManifestDir();
     const buildManifest = await project.getBuildManifest();
     const imageName =

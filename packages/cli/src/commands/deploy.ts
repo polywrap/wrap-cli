@@ -48,6 +48,7 @@ export const deploy: Command = {
           ...options,
           manifestFile: parseWasmManifestFileOption(options.manifestFile),
         });
+        process.exit();
       });
   },
 };

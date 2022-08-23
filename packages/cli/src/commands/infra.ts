@@ -70,6 +70,7 @@ export const infra: Command = {
       .option("-v, --verbose", intlMsg.commands_infra_options_v())
       .action(async (action, options) => {
         await run(action, options);
+        process.exit();
       });
   },
 };
@@ -122,12 +123,12 @@ Example: 'polywrap infra up --modules=eth-ens-ipfs'.`
       const errorMsg = intlMsg.commands_infra_error_noModulesMatch({
         modules,
       });
-      console.error(errorMsg);
+      console.log(chalk.red(errorMsg));
       return;
     }
 
     const errorMsg = intlMsg.commands_infra_error_noModulesDeclared();
-    console.error(errorMsg);
+    console.log(chalk.red(errorMsg));
     return;
   }
 

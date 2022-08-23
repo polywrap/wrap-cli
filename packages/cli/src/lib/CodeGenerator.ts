@@ -25,6 +25,7 @@ import path from "path";
 import { readFileSync } from "fs";
 import { Ora } from "ora";
 import Mustache from "mustache";
+import chalk from "chalk";
 
 export interface CodeGeneratorConfig {
   codegenDirAbs: string;
@@ -47,7 +48,7 @@ export class CodeGenerator {
 
       return true;
     } catch (e) {
-      console.warn(e);
+      console.log(chalk.red(e));
       return false;
     }
   }

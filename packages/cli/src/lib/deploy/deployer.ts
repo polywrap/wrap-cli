@@ -2,6 +2,7 @@
 import { AsciiTree } from "./asciiTree";
 
 import { Uri } from "@polywrap/core-js";
+import chalk from "chalk";
 
 export interface Deployer {
   execute(uri: Uri, config?: unknown): Promise<Uri>;
@@ -98,8 +99,12 @@ export class DeployerHandler extends AbstractHandler {
       const nextUri = await this.deployer.execute(uri, this.config);
       this.result = nextUri.toString();
       console.log(
-        `%cSuccessfully executed stage '${this.name}'. Result: '${this.result}'`,
-        "color: green"
+        `${chalk.green(
+          "Successfully executed stage " +
+            this.name +
+            ". Result: " +
+            this.result
+        )}`
       );
       return [nextUri, ...(await super.handle(nextUri))];
     } catch (e) {

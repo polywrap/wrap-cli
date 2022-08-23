@@ -91,6 +91,7 @@ export const create: Command = {
       )
       .action(async (langStr, nameStr, options) => {
         await run("plugin", langStr, nameStr, options);
+        process.exit();
       });
   },
 };

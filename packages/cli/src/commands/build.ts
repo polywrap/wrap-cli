@@ -62,6 +62,7 @@ export const build: Command = {
           clientConfig: await parseClientConfigOption(options.clientConfig),
           outputDir: parseDirOption(options.outputDir, defaultOutputDir),
         });
+        process.exit();
       });
   },
 };

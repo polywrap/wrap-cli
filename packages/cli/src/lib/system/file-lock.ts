@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import path from "path";
+import chalk from "chalk";
 
 export class FileLock {
   constructor(
@@ -48,7 +49,9 @@ export class FileLock {
     try {
       await fs.promises.unlink(this._lockFilePath);
     } catch {
-      this._onError("Tried to release a file lock that doesn't exist");
+      this._onError(
+        chalk.red("Tried to release a file lock that doesn't exist")
+      );
     }
   }
 

@@ -60,6 +60,7 @@ export const codegen: Command = {
           script: parseCodegenScriptOption(options.script),
           manifestFile: parseWasmManifestFileOption(options.manifestFile),
         });
+        process.exit();
       });
   },
 };
