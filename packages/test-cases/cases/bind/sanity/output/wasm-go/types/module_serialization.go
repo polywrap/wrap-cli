@@ -434,3 +434,56 @@ func WriteOptionalEnvMethodResult(writer msgpack.Write, value *AnotherType) {
 	}
 	writer.Context().Pop()
 }
+
+type ArgsIf struct {
+	M_if else
+}
+
+func DeserializeIfArgs(argsBuf []byte) *ArgsIf {
+	ctx := msgpack.NewContext("Deserializing module-type: If")
+	reader := msgpack.NewReadDecoder(ctx, argsBuf)
+
+	var (
+		_if    else
+		_ifSet bool
+	)
+
+	for i := int32(reader.ReadMapLength()); i > 0; i-- {
+		field := reader.ReadString()
+		reader.Context().Push(field, "unknown", "searching for property type")
+		reader.Context().Pop()
+		switch field {
+		case "M_if":
+			reader.Context().Push(field, "else", "type found, reading property")
+			if v := ElseRead(reader); v != nil {
+				_if = *v
+			}
+			_ifSet = true
+			reader.Context().Pop()
+		}
+	}
+
+	if !_ifSet {
+		panic(reader.Context().PrintWithContext("Missing required property: 'if: else'"))
+	}
+
+	return &ArgsIf{
+		M_if: _if,
+	}
+}
+
+func SerializeIfResult(value else) []byte {
+	ctx := msgpack.NewContext("Serializing module-type: If")
+	encoder := msgpack.NewWriteEncoder(ctx)
+	WriteIfResult(encoder, value);
+	return encoder.Buffer()
+}
+
+func WriteIfResult(writer msgpack.Write, value else) {
+	writer.Context().Push("if", "else", "writing property")
+	{
+		v := value
+		ElseWrite(writer, &v)
+	}
+	writer.Context().Pop()
+}

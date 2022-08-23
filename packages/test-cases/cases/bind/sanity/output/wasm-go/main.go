@@ -15,6 +15,8 @@ func _wrap_invoke(methodSize, argsSize, envSize uint32) bool {
 		return polywrap.WrapInvoke(args, envSize, module.ObjectMethodWrapped)
 	case "optionalEnvMethod":
 		return polywrap.WrapInvoke(args, envSize, module.OptionalEnvMethodWrapped)
+	case "if":
+		return polywrap.WrapInvoke(args, envSize, module.IfWrapped)
 	default:
 		return polywrap.WrapInvoke(args, envSize, nil)
 	}

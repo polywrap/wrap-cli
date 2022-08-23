@@ -1,5 +1,5 @@
 import { reservedWordsAS } from "./reservedWords";
-import { MustacheFn } from "../../types";
+import { MustacheFn } from "../types";
 
 let num = -1;
 

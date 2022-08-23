@@ -43,3 +43,12 @@ func OptionalEnvMethodWrapped(argsBuf []byte, envSize uint32) []byte {
 	return SerializeOptionalEnvMethodResult(result)
 }
 
+func IfWrapped(argsBuf []byte, envSize uint32) []byte {
+	var env *Env
+
+	args := DeserializeIfArgs(argsBuf)
+
+	result := methods.If(args)
+	return SerializeIfResult(result)
+}
+

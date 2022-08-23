@@ -48,6 +48,7 @@ type CustomType struct {
 	MapOfArr            map[string][]int32
 	MapOfObj            map[string]AnotherType
 	MapOfArrOfObj       map[string][]AnotherType
+	MapCustomValue      map[string]*CustomMapValue
 }
 
 func CustomTypeToBuffer(value *CustomType) []byte {

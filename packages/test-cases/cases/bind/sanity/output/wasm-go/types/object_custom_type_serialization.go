@@ -14,7 +14,7 @@ func serializeCustomType(value *CustomType) []byte {
 }
 
 func writeCustomType(writer msgpack.Write, value *CustomType) {
-	writer.WriteMapLength(41)
+	writer.WriteMapLength(42)
 	writer.Context().Push("Str", "string", "writing property")
 	writer.WriteString("Str")
 	{
@@ -554,6 +554,22 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 		}
 	}
 	writer.Context().Pop()
+	writer.Context().Push("MapCustomValue", "map[string]*CustomMapValue", "writing property")
+	writer.WriteString("MapCustomValue")
+	if value.MapCustomValue == nil {
+		writer.WriteNil()
+	} else if len(value.MapCustomValue) == 0 {
+		writer.WriteNil()
+	} else {
+		for i0 := range value.MapCustomValue {
+			writer.WriteString(i0)
+			{
+				v := value.MapCustomValue[i0]
+				CustomMapValueWrite(writer, v)
+			}
+		}
+	}
+	writer.Context().Pop()
 }
 
 func deserializeCustomType(data []byte) *CustomType {
@@ -631,6 +647,8 @@ func readCustomType(reader msgpack.Read) *CustomType {
 		_mapOfObjSet            bool
 		_mapOfArrOfObj          map[string][]AnotherType
 		_mapOfArrOfObjSet       bool
+		_mapCustomValue         map[string]*CustomMapValue
+		_mapCustomValueSet      bool
 	)
 
 	for i := int32(reader.ReadMapLength()); i > 0; i-- {
@@ -1083,6 +1101,22 @@ func readCustomType(reader msgpack.Read) *CustomType {
 			}
 			_mapOfArrOfObjSet = true
 			reader.Context().Pop()
+		case "MapCustomValue":
+			reader.Context().Push(field, "map[string]*CustomMapValue", "type found, reading property")
+			if reader.IsNil() {
+				_mapCustomValue = nil
+			} else {
+				ln0 := reader.ReadMapLength()
+				_mapCustomValue = make(map[string]*CustomMapValue)
+				for j0 := uint32(0); j0 < ln0; j0++ {
+					i0 := reader.ReadString()
+					if v := CustomMapValueRead(reader); v != nil {
+						_mapCustomValue[i0] = v
+					}
+				}
+			}
+			_mapCustomValueSet = true
+			reader.Context().Pop()
 		}
 		reader.Context().Pop()
 	}
@@ -1165,6 +1199,9 @@ func readCustomType(reader msgpack.Read) *CustomType {
 	if !_mapOfArrOfObjSet {
 		panic(reader.Context().PrintWithContext("Missing required property: 'mapOfArrOfObj: Map<String, [AnotherType]>'"))
 	}
+	if !_mapCustomValueSet {
+		panic(reader.Context().PrintWithContext("Missing required property: 'mapCustomValue: Map<String, CustomMapValue>'"))
+	}
 	return &CustomType{
 		Str:                 _str,
 		OptStr:              _optStr,
@@ -1207,5 +1244,6 @@ func readCustomType(reader msgpack.Read) *CustomType {
 		MapOfArr:            _mapOfArr,
 		MapOfObj:            _mapOfObj,
 		MapOfArrOfObj:       _mapOfArrOfObj,
+		MapCustomValue:      _mapCustomValue,
 	}
 }
