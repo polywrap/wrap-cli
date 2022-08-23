@@ -65,6 +65,7 @@ export class PolywrapClient implements Client {
     interfaces: [],
     envs: [],
     tracingEnabled: false,
+    wrapperCache: new WrapperCache(),
   } as unknown) as PolywrapClientConfig<Uri>;
 
   // Invoke specific contexts
@@ -93,7 +94,7 @@ export class PolywrapClient implements Client {
             : [],
           resolver: config.resolver as IUriResolver<unknown>,
           tracingEnabled: !!config.tracingEnabled,
-          wrapperCache: config.wrapperCache ?? new WrapperCache(),
+          wrapperCache: config.wrapperCache ?? this._config.wrapperCache,
         };
       }
 
@@ -718,7 +719,7 @@ export class PolywrapClient implements Client {
       envs: context?.envs ? sanitizeEnvs(context.envs) : config.envs,
       resolver: context?.resolver ?? config.resolver,
       tracingEnabled: context?.tracingEnabled || config.tracingEnabled,
-      wrapperCache: context?.wrapperCache ?? new WrapperCache(),
+      wrapperCache: context?.wrapperCache ?? config.wrapperCache,
     });
 
     return {
