@@ -3,7 +3,6 @@ import { getDefaultClientConfig } from "./default-client-config";
 import { v4 as uuid } from "uuid";
 import {
   Wrapper,
-  WrapperCache,
   Client,
   ClientConfig,
   Env,
@@ -43,7 +42,7 @@ import {
   initWrapper,
   IWrapPackage,
 } from "@polywrap/core-js";
-import { getUriHistory } from "@polywrap/uri-resolvers-js";
+import { CacheableResolver, getUriHistory } from "@polywrap/uri-resolvers-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Tracer } from "@polywrap/tracing-js";
@@ -58,7 +57,6 @@ export class PolywrapClient implements Client {
   // It should help us keep track of what URI's map to what Wrappers,
   // and handle cases where the are multiple jumps. For example, if
   // A => B => C, then the cache should have A => C, and B => C.
-  private _wrapperCache: WrapperCache = new Map<string, Wrapper>();
   private _config: PolywrapClientConfig<Uri> = ({
     redirects: [],
     plugins: [],
@@ -499,16 +497,23 @@ export class PolywrapClient implements Client {
       options.config
     );
 
+    const ignoreCache = this._isContextualized(contextId);
+
     const client = contextualizeClient(this, contextId);
 
     const uriResolver = this.getUriResolver({ contextId: contextId });
 
-    const response = await uriResolver.tryResolveToWrapper(
-      this._toUri(options.uri),
-      client,
-      this._wrapperCache,
-      []
-    );
+    // This is a hack because we expect config overrides to ignore cache
+    const response =
+      ignoreCache && uriResolver.name === "CacheableResolver"
+        ? await(
+            (uriResolver as unknown) as CacheableResolver
+          ).resolver.tryResolveToWrapper(this._toUri(options.uri), client, [])
+        : await uriResolver.tryResolveToWrapper(
+            this._toUri(options.uri),
+            client,
+            []
+          );
 
     if (shouldClearContext) {
       this._clearContext(contextId);
@@ -535,6 +540,11 @@ export class PolywrapClient implements Client {
     if (!this._config.resolver && defaultClientConfig.resolver) {
       this._config.resolver = defaultClientConfig.resolver;
     }
+  }
+
+  @Tracer.traceMethod("PolywrapClient: isContextualized")
+  private _isContextualized(contextId: string | undefined): boolean {
+    return !!contextId && this._contexts.has(contextId);
   }
 
   @Tracer.traceMethod("PolywrapClient: getConfig")

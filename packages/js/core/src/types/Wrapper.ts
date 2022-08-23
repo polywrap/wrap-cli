@@ -54,5 +54,3 @@ export interface Wrapper extends Invocable {
     client: Client
   ): Promise<WrapManifest>;
 }
-
-export type WrapperCache = Map<string, Wrapper>;

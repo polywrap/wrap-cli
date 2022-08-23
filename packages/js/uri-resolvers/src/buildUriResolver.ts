@@ -1,10 +1,4 @@
-import {
-  IUriResolver,
-  Uri,
-  Client,
-  WrapperCache,
-  Result,
-} from "@polywrap/core-js";
+import { IUriResolver, Uri, Client, Result } from "@polywrap/core-js";
 import {
   UriResolvable,
   UriResolverAggregatorOptions,
@@ -26,8 +20,7 @@ export const buildUriResolver = <TError = undefined>(
     return new UriResolverAggregator(
       resolvable as (
         uri: Uri,
-        client: Client,
-        cache: WrapperCache
+        client: Client
       ) => Promise<Result<IUriResolver[], unknown>>,
       options
     ) as IUriResolver<TError>;

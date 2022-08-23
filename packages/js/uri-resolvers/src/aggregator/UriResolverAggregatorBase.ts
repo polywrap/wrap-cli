@@ -2,7 +2,6 @@ import {
   IUriResolver,
   Uri,
   Client,
-  WrapperCache,
   Result,
   IUriResolutionResponse,
   UriResolutionResponse,
@@ -23,16 +22,14 @@ export abstract class UriResolverAggregatorBase<TError = undefined>
 
   abstract getUriResolvers(
     uri: Uri,
-    client: Client,
-    cache: WrapperCache
+    client: Client
   ): Promise<Result<IUriResolver<unknown>[], TError | InfiniteLoopError>>;
 
   async tryResolveToWrapper(
     uri: Uri,
-    client: Client,
-    cache: WrapperCache
+    client: Client
   ): Promise<IUriResolutionResponse<TError | InfiniteLoopError>> {
-    const result = await this.getUriResolvers(uri, client, cache);
+    const result = await this.getUriResolvers(uri, client);
 
     if (!result.ok) {
       return UriResolutionResponse.err(result.error);
@@ -40,18 +37,12 @@ export abstract class UriResolverAggregatorBase<TError = undefined>
 
     const resolvers = result.value as IUriResolver[];
 
-    return await this.tryResolveToWrapperWithResolvers(
-      uri,
-      client,
-      cache,
-      resolvers
-    );
+    return await this.tryResolveToWrapperWithResolvers(uri, client, resolvers);
   }
 
   protected async tryResolveToWrapperWithResolvers(
     uri: Uri,
     client: Client,
-    cache: WrapperCache,
     resolvers: IUriResolver<unknown>[]
   ): Promise<IUriResolutionResponse<TError | InfiniteLoopError>> {
     // Keep track of past URIs to avoid infinite loops
@@ -81,7 +72,6 @@ export abstract class UriResolverAggregatorBase<TError = undefined>
         const response = await resolver.tryResolveToWrapper(
           currentUri,
           client,
-          cache,
           getUriResolutionPath(history)
         );
 

@@ -4,14 +4,14 @@ import {
   IUriResolutionStep,
   UriResolutionResponse,
   Client,
-  WrapperCache,
 } from "@polywrap/core-js";
 import { ICacheResolver } from "./ICacheResolver";
 
-export class CacheResolver<TError = undefined>
+// This cache resolver caches all responses (URIs, packages, wrappers and errors)
+export class ResponseCacheResolver<TError = undefined>
   implements ICacheResolver<TError> {
   public get name(): string {
-    return CacheResolver.name;
+    return ResponseCacheResolver.name;
   }
 
   constructor(private cache: Map<string, IUriResolutionResponse<TError>>) {}
@@ -40,7 +40,6 @@ export class CacheResolver<TError = undefined>
   async onResolutionEnd(
     uri: Uri,
     client: Client,
-    wrapperCache: WrapperCache,
     response: IUriResolutionResponse<TError>
   ): Promise<IUriResolutionResponse<TError>> {
     this.cache.set(uri.uri, response);

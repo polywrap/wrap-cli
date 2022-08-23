@@ -1,7 +1,6 @@
 import {
   Uri,
   Client,
-  WrapperCache,
   IUriResolutionStep,
   IUriResolutionResponse,
 } from "@polywrap/core-js";
@@ -11,14 +10,12 @@ export interface ICacheResolver<TError = undefined> {
   tryResolveToWrapper(
     uri: Uri,
     client: Client,
-    cache: WrapperCache,
     resolutionPath: IUriResolutionStep<unknown>[]
   ): Promise<IUriResolutionResponse<TError>>;
 
   onResolutionEnd(
     uri: Uri,
     client: Client,
-    cache: WrapperCache,
     response: IUriResolutionResponse<TError>
   ): Promise<IUriResolutionResponse<TError>>;
 }

@@ -7,7 +7,6 @@ import {
   getImplementations,
   coreInterfaceUris,
   Ok,
-  WrapperCache,
   UriResolutionResponse,
 } from "@polywrap/core-js";
 import { DeserializeManifestOptions } from "@polywrap/wrap-manifest-types-js";
@@ -64,8 +63,7 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<LoadResolve
 
   async tryResolveToWrapper(
     uri: Uri,
-    client: Client,
-    cache: WrapperCache
+    client: Client
   ): Promise<ExtendableUriResolverResponse> {
     const result = await this.getUriResolvers(uri, client);
 
@@ -86,7 +84,6 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<LoadResolve
       const result = await super.tryResolveToWrapperWithResolvers(
         uri,
         client,
-        cache,
         resolvers
           .slice(this.resolverIndex, resolvers.length)
           .filter((x) => x.implementationUri.uri !== uri.uri)

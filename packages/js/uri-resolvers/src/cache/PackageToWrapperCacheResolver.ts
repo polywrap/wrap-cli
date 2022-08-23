@@ -1,28 +1,27 @@
 import {
   Uri,
   Client,
-  WrapperCache,
   IUriResolutionResponse,
   UriResolutionResponse,
+  Wrapper,
 } from "@polywrap/core-js";
-import { ICacheResolver } from "../cache";
+import { ICacheResolver } from ".";
 import { getUriHistory } from "../getUriHistory";
 
-// This resolver uses the internal client cache
-// It only caches wrappers
-// It ignores URIs
+// This cache resolver caches wrappers
 // Packages are turned into wrappers before caching
-export class LegacyCacheResolver implements ICacheResolver<unknown> {
+export class PackageToWrapperCacheResolver implements ICacheResolver<unknown> {
+  constructor(private cache: Map<string, Wrapper>) {}
+
   public get name(): string {
-    return LegacyCacheResolver.name;
+    return PackageToWrapperCacheResolver.name;
   }
 
   public async tryResolveToWrapper(
     uri: Uri,
-    _: Client,
-    cache: WrapperCache
+    _: Client
   ): Promise<IUriResolutionResponse> {
-    const wrapper = cache.get(uri.uri);
+    const wrapper = this.cache.get(uri.uri);
 
     if (wrapper) {
       return UriResolutionResponse.ok(wrapper);
@@ -34,12 +33,11 @@ export class LegacyCacheResolver implements ICacheResolver<unknown> {
   async onResolutionEnd(
     uri: Uri,
     client: Client,
-    cache: WrapperCache,
     response: IUriResolutionResponse<unknown>
   ): Promise<IUriResolutionResponse<unknown>> {
     if (response.result.ok) {
       if (response.result.value.type === "wrapper") {
-        cache.set(uri.uri, response.result.value.wrapper);
+        this.cache.set(uri.uri, response.result.value.wrapper);
       } else if (response.result.value.type === "package") {
         const uriHistory: Uri[] = !response.history
           ? [uri]
@@ -49,7 +47,7 @@ export class LegacyCacheResolver implements ICacheResolver<unknown> {
           client,
           uriHistory
         );
-        cache.set(uri.uri, wrapper);
+        this.cache.set(uri.uri, wrapper);
 
         return UriResolutionResponse.ok(wrapper);
       }

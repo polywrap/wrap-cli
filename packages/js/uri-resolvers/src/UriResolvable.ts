@@ -4,7 +4,6 @@ import {
   Uri,
   PluginRegistration,
   Client,
-  WrapperCache,
   IUriResolutionStep,
   Result,
 } from "@polywrap/core-js";
@@ -17,6 +16,5 @@ export type UriResolvable =
   | ((
       uri: Uri,
       client: Client,
-      cache: WrapperCache,
       uriResolutionPath: IUriResolutionStep<unknown>[]
     ) => Promise<Result<IUriResolver<unknown>[], unknown>>);

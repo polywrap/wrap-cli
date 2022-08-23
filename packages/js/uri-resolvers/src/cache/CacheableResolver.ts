@@ -2,36 +2,34 @@ import {
   IUriResolver,
   Uri,
   Client,
-  WrapperCache,
   IUriResolutionStep,
   IUriResolutionResponse,
 } from "@polywrap/core-js";
 import { ICacheResolver } from ".";
 
-export class CacheableResolver<TError = undefined>
-  implements IUriResolver<TError> {
+export class CacheableResolver<TError = undefined> implements IUriResolver<TError> {
   name: string;
 
   constructor(
-    private cacheResolver: ICacheResolver<TError>,
-    private resolver: IUriResolver<TError>,
+    public cacheResolver: ICacheResolver<TError>,
+    public resolver: IUriResolver<TError>,
     name?: string
   ) {
     if (name) {
       this.name = name;
+    } else {
+      this.name = CacheableResolver.name;
     }
   }
 
   async tryResolveToWrapper(
     uri: Uri,
     client: Client,
-    cache: WrapperCache,
     resolutionPath: IUriResolutionStep<unknown>[]
   ): Promise<IUriResolutionResponse<TError>> {
     const cachedResponse = await this.cacheResolver.tryResolveToWrapper(
       uri,
       client,
-      cache,
       resolutionPath
     );
 
@@ -56,14 +54,12 @@ export class CacheableResolver<TError = undefined>
     const response = await this.resolver.tryResolveToWrapper(
       uri,
       client,
-      cache,
       resolutionPath
     );
 
     const endResponse = await this.cacheResolver.onResolutionEnd(
       uri,
       client,
-      cache,
       response
     );
 
