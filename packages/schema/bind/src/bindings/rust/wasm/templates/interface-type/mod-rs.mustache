@@ -6,9 +6,9 @@ use polywrap_wasm_rs::wrap_get_implementations;
 {{/getImplementations}}
 {{/capabilities}}
 
-pub struct {{#toUpper}}{{namespace}}{{/toUpper}} {}
+pub struct {{#detectKeyword}}{{#toUpper}}{{namespace}}{{/toUpper}}{{/detectKeyword}} {}
 
-impl {{#toUpper}}{{namespace}}{{/toUpper}} {
+impl {{#detectKeyword}}{{#toUpper}}{{namespace}}{{/toUpper}}{{/detectKeyword}} {
   const uri: &'static str = "{{uri}}";
 
   {{#capabilities}}

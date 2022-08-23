@@ -7,6 +7,6 @@ source:
   schema: ./src/schema.graphql
   import_abis:
     - uri: "ens/uri-resolver.core.polywrap.eth"
-      abi: ../../../../interfaces/uri-resolver/build-man/wrap.info
+      abi: ../../../../interfaces/uri-resolver/build/wrap.info
     - uri: "ens/fs.polywrap.eth"
-      abi: ../../../../interfaces/file-system/build-man/wrap.info
+      abi: ../../../../interfaces/file-system/build/wrap.info

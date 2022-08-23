@@ -7,7 +7,7 @@ import {
   Ipfs_ResolveResult,
   Env,
   manifest,
-} from "./wrap-man";
+} from "./wrap";
 import { IpfsClient } from "./utils/IpfsClient";
 import { execSimple, execFallbacks } from "./utils/exec";
 

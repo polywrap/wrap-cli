@@ -5,5 +5,8 @@ project:
 source:
   schema: ./schema.graphql
   module: ./src/index.ts
+  import_abis:
+    - uri: wrap://ens/reserved-words.polytest.eth
+      abi: ./schema.import.graphql
 extensions:
   build: ./polywrap.build.yaml

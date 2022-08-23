@@ -1,4 +1,4 @@
-import { Connection as SchemaConnection } from "./wrap-man";
+import { Connection as SchemaConnection } from "./wrap";
 
 import { Signer, ethers } from "ethers";
 import {
