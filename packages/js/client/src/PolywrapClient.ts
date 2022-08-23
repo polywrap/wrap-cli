@@ -1,5 +1,4 @@
 import { getDefaultClientConfig } from "./default-client-config";
-import { SimpleCache } from "./cache/SimpleWrapperCache";
 
 import { v4 as uuid } from "uuid";
 import {
@@ -46,6 +45,7 @@ import {
   PluginPackage,
   RunOptions,
   GetManifestOptions,
+  SimpleCache,
 } from "@polywrap/core-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
@@ -97,9 +97,11 @@ export class PolywrapClient implements Client {
 
         if (config.wrapperCache) {
           this._wrapperCache = config.wrapperCache;
-        } else {
-          this._wrapperCache = new SimpleCache();
         }
+      }
+
+      if (!this._wrapperCache) {
+        this._wrapperCache = new SimpleCache();
       }
 
       if (!options?.noDefaults) {

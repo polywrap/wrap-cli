@@ -1,4 +1,4 @@
-import { Uri, Wrapper, WrapperCache } from "@polywrap/core-js";
+import { Uri, Wrapper, WrapperCache } from "../types";
 
 export class SimpleCache implements WrapperCache {
   private _map: Map<string, Wrapper> = new Map();
