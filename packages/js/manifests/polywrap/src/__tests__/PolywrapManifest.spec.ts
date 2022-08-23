@@ -7,7 +7,7 @@ describe("Polywrap Manifest Validation", () => {
     const manifestPath = __dirname + "/manifest/polywrap/file-string-malformed/polywrap.yaml";
     const manifest = fs.readFileSync(manifestPath, "utf-8");
 
-    expect(() => deserializePolywrapManifest(manifest)).toThrowError(/instance.schema does not match pattern/);
+    expect(() => deserializePolywrapManifest(manifest)).toThrowError(/instance.source.schema does not match pattern/);
   });
   it("Should throw incorrect version format error", async () => {
     const manifestPath = __dirname + "/manifest/polywrap/incorrect-version-format/polywrap.yaml";
@@ -24,12 +24,19 @@ describe("Polywrap Manifest Validation", () => {
   it("Should throw required field missing error", async () => {
     const manifestPath = __dirname + "/manifest/polywrap/required-field-missing/polywrap.yaml";
     const manifest = fs.readFileSync(manifestPath, "utf-8");
-    expect(() => deserializePolywrapManifest(manifest)).toThrowError(/instance requires property "schema"/);
+    expect(() => deserializePolywrapManifest(manifest)).toThrowError(/instance.source requires property "schema"/);
   });
   it("Should throw wrong type error", async () => {
     const manifestPath = __dirname + "/manifest/polywrap/wrong-type/polywrap.yaml";
     const manifest = fs.readFileSync(manifestPath, "utf-8");
 
-    expect(() => deserializePolywrapManifest(manifest)).toThrowError(/instance.module is not of a type\(s\) string/);
+    expect(() => deserializePolywrapManifest(manifest)).toThrowError(/instance.source.module is not of a type\(s\) string/);
+  });
+  it("Should deserialize manifest as expected", async () => {
+    const manifestPath = __dirname + "/manifest/polywrap/sanity/polywrap.yaml";
+    const manifest = fs.readFileSync(manifestPath, "utf-8");
+
+    const info = deserializePolywrapManifest(manifest)
+    expect(info.project.name).toEqual("package-name")
   });
 });

@@ -10,7 +10,7 @@ export interface DeployManifest {
   /**
    * Polywrap deployment manifest format version.
    */
-  format: "0.1.0";
+  format: "0.1.0" | "0.1";
   stages: {
     /**
      * Deployment stage.

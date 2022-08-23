@@ -9,7 +9,7 @@ import {
   BuildManifestFormats
 } from ".";
 
-import schema_0_1_0 from "@polywrap/polywrap-manifest-schemas/formats/polywrap.build/0.1.0.json";
+import BuildManifestSchema_0_1_0 from "@polywrap/polywrap-manifest-schemas/formats/polywrap.build/0.1.0.json";
 
 import {
   Schema,
@@ -23,7 +23,9 @@ type BuildManifestSchemas = {
 };
 
 const schemas: BuildManifestSchemas = {
-  "0.1.0": schema_0_1_0,
+  // NOTE: Patch fix for backwards compatability
+  "0.1": BuildManifestSchema_0_1_0,
+  "0.1.0": BuildManifestSchema_0_1_0,
 };
 
 const validator = new Validator();

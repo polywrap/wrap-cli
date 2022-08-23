@@ -7,7 +7,7 @@
     "format": {
       "description": "Polywrap infra manifest format version.",
       "type": "string",
-      "const": "0.1.0"
+      "enum": ["0.1.0", "0.1"]
     },
     "dockerCompose": {
       "description": "Path to docker compose manifest.",

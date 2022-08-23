@@ -1,6 +1,31 @@
-import { ScalarType, isScalarType } from "./scalar";
-import { isModuleType } from "./module";
-import { isMapKeyType, MapKeyType } from "./map";
+import { isMapKeyType, isModuleType, isScalarType } from "./utils";
+
+import {
+  AnyDefinition,
+  ArrayDefinition,
+  CapabilityDefinition,
+  EnumDefinition,
+  EnumRef,
+  EnvDefinition,
+  GenericDefinition,
+  ImportedEnumDefinition,
+  ImportedEnvDefinition,
+  ImportedModuleDefinition,
+  ImportedObjectDefinition,
+  InterfaceDefinition,
+  InterfaceImplementedDefinition,
+  MapDefinition,
+  MapKeyDefinition,
+  MethodDefinition,
+  ModuleDefinition,
+  ObjectDefinition,
+  ObjectRef,
+  PropertyDefinition,
+  ScalarDefinition,
+  UnresolvedObjectOrEnumRef,
+  WithKind,
+  WithComment,
+} from "@polywrap/wrap-manifest-types-js";
 
 export enum DefinitionKind {
   Generic = 0,
@@ -30,194 +55,98 @@ export function isKind(type: WithKind, kind: DefinitionKind): boolean {
   return (type.kind & kind) === kind;
 }
 
-export interface WithComment {
-  comment?: string;
-}
-
-export interface WithKind {
-  kind: DefinitionKind;
-}
-
-export interface GenericDefinition extends WithKind {
-  type: string;
-  name: string | null;
-  required: boolean | null;
-}
-export function createGenericDefinition(args: {
-  type: string;
-  name?: string | null;
-  required?: boolean;
-}): GenericDefinition {
+export function createGenericDefinition(
+  args: Omit<GenericDefinition, "kind">
+): GenericDefinition {
   return {
-    type: args.type,
-    name: args.name ? args.name : null,
-    required: args.required ? args.required : null,
+    ...args,
     kind: DefinitionKind.Generic,
   };
 }
 
-export interface ObjectDefinition extends GenericDefinition, WithComment {
-  properties: PropertyDefinition[];
-  interfaces: InterfaceImplementedDefinition[];
-}
-export function createObjectDefinition(args: {
-  type: string;
-  name?: string | null;
-  required?: boolean;
-  properties?: PropertyDefinition[];
-  interfaces?: InterfaceImplementedDefinition[];
-  comment?: string;
-}): ObjectDefinition {
+export function createObjectDefinition(
+  args: Omit<ObjectDefinition, "kind">
+): ObjectDefinition {
   return {
-    ...createGenericDefinition(args),
-    properties: args.properties ? args.properties : [],
-    interfaces: args.interfaces ? args.interfaces : [],
-    comment: args.comment,
+    ...args,
     kind: DefinitionKind.Object,
   };
 }
 
-export type ObjectRef = GenericDefinition;
-export function createObjectRef(args: {
-  type: string;
-  name?: string | null;
-  required?: boolean;
-}): ObjectRef {
+export function createObjectRef(args: Omit<ObjectRef, "kind">): ObjectRef {
   return {
-    ...createGenericDefinition(args),
+    ...args,
     kind: DefinitionKind.ObjectRef,
   };
 }
 
-export interface AnyDefinition extends GenericDefinition {
-  array: ArrayDefinition | null;
-  scalar: ScalarDefinition | null;
-  map: MapDefinition | null;
-  object: ObjectRef | null;
-  enum: EnumRef | null;
-  unresolvedObjectOrEnum: UnresolvedObjectOrEnumRef | null;
-}
-export function createAnyDefinition(args: {
-  type: string;
-  name?: string | null;
-  required?: boolean;
-  array?: ArrayDefinition;
-  map?: MapDefinition;
-  scalar?: ScalarDefinition;
-  object?: ObjectRef;
-  enum?: EnumRef;
-  unresolvedObjectOrEnum?: UnresolvedObjectOrEnumRef;
-}): AnyDefinition {
+export function createAnyDefinition(
+  args: Omit<AnyDefinition, "kind">
+): AnyDefinition {
   return {
-    ...createGenericDefinition(args),
-    array: args.array ? args.array : null,
-    map: args.map ? args.map : null,
-    scalar: args.scalar ? args.scalar : null,
-    object: args.object ? args.object : null,
-    enum: args.enum ? args.enum : null,
-    unresolvedObjectOrEnum: args.unresolvedObjectOrEnum
-      ? args.unresolvedObjectOrEnum
-      : null,
+    ...args,
     kind: DefinitionKind.Any,
   };
 }
 
-export interface MapKeyDefinition extends GenericDefinition {
-  type: MapKeyType;
-}
-export function createMapKeyDefinition(args: {
-  type: string;
-  name?: string | null;
-  required?: boolean;
-}): MapKeyDefinition {
+export function createMapKeyDefinition(
+  args: Omit<MapKeyDefinition, "kind">
+): MapKeyDefinition {
   if (!isMapKeyType(args.type)) {
     throw Error(
       `createMapKeyDefinition: Unrecognized Map key type provided "${args.type}"`
     );
   }
   return {
-    ...createGenericDefinition(args),
-    type: args.type,
+    ...args,
     kind: DefinitionKind.Scalar,
   };
 }
 
-export interface ScalarDefinition extends GenericDefinition {
-  type: ScalarType;
-}
-export function createScalarDefinition(args: {
-  type: string;
-  name?: string | null;
-  required?: boolean;
-}): ScalarDefinition {
+export function createScalarDefinition(
+  args: Omit<ScalarDefinition, "kind">
+): ScalarDefinition {
   if (!isScalarType(args.type)) {
     throw Error(
       `createScalarDefinition: Unrecognized scalar type provided "${args.type}"`
     );
   }
   return {
-    ...createGenericDefinition(args),
-    type: args.type,
+    ...args,
     kind: DefinitionKind.Scalar,
   };
 }
 
-export interface EnumDefinition extends GenericDefinition, WithComment {
-  constants: string[];
-}
-export function createEnumDefinition(args: {
-  type: string;
-  name?: string | null;
-  required?: boolean;
-  constants?: string[];
-  comment?: string;
-}): EnumDefinition {
+export function createEnumDefinition(
+  args: Omit<EnumDefinition, "kind">
+): EnumDefinition {
   return {
-    ...createGenericDefinition(args),
-    type: args.type,
+    ...args,
     kind: DefinitionKind.Enum,
-    constants: args.constants ? args.constants : [],
-    comment: args.comment,
   };
 }
 
-export type EnumRef = GenericDefinition;
-export function createEnumRef(args: {
-  type: string;
-  name?: string | null;
-  required?: boolean;
-}): EnumRef {
+export function createEnumRef(args: Omit<EnumRef, "kind">): EnumRef {
   return {
-    ...createGenericDefinition(args),
+    ...args,
     kind: DefinitionKind.EnumRef,
   };
 }
 
-export type UnresolvedObjectOrEnumRef = GenericDefinition;
-export function createUnresolvedObjectOrEnumRef(args: {
-  type: string;
-  name?: string | null;
-  required?: boolean;
-}): UnresolvedObjectOrEnumRef {
+export function createUnresolvedObjectOrEnumRef(
+  args: Omit<UnresolvedObjectOrEnumRef, "kind">
+): UnresolvedObjectOrEnumRef {
   return {
-    ...createGenericDefinition(args),
-    type: args.type,
+    ...args,
     kind: DefinitionKind.UnresolvedObjectOrEnum,
   };
 }
 
-export interface MapDefinition extends AnyDefinition, WithComment {
-  key: MapKeyDefinition | null;
-  value: GenericDefinition | null;
-}
-export function createMapDefinition(args: {
-  type: string;
-  name?: string | null;
-  required?: boolean;
-  key?: MapKeyDefinition;
-  value?: GenericDefinition | null;
-}): MapDefinition {
+export function createMapDefinition(
+  args: Omit<MapDefinition, "kind">
+): MapDefinition {
   return {
+    ...args,
     ...createAnyDefinition({
       ...args,
       array:
@@ -245,22 +174,15 @@ export function createMapDefinition(args: {
           ? (args.value as UnresolvedObjectOrEnumRef)
           : undefined,
     }),
-    key: args.key ? args.key : null,
-    value: args.value ? args.value : null,
     kind: DefinitionKind.Map,
   };
 }
 
-export interface ArrayDefinition extends AnyDefinition {
-  item: GenericDefinition | null;
-}
-export function createArrayDefinition(args: {
-  type: string;
-  name?: string | null;
-  required?: boolean;
-  item?: GenericDefinition;
-}): ArrayDefinition {
+export function createArrayDefinition(
+  args: Omit<ArrayDefinition, "kind">
+): ArrayDefinition {
   return {
+    ...args,
     ...createAnyDefinition({
       ...args,
       array:
@@ -288,200 +210,138 @@ export function createArrayDefinition(args: {
           ? (args.item as UnresolvedObjectOrEnumRef)
           : undefined,
     }),
-    item: args.item ? args.item : null,
     kind: DefinitionKind.Array,
   };
 }
 
-export type PropertyDefinition = AnyDefinition & WithComment;
-export function createPropertyDefinition(args: {
-  type: string;
-  name?: string | null;
-  required?: boolean;
-  array?: ArrayDefinition;
-  map?: MapDefinition;
-  scalar?: ScalarDefinition;
-  object?: ObjectRef;
-  enum?: EnumRef;
-  comment?: string;
-}): PropertyDefinition {
+export function createPropertyDefinition(
+  args: Omit<PropertyDefinition, "kind">
+): PropertyDefinition {
   return {
-    ...createAnyDefinition(args),
-    comment: args.comment,
+    ...args,
     kind: DefinitionKind.Property,
   };
 }
 
-export type InterfaceImplementedDefinition = GenericDefinition;
-export function createInterfaceImplementedDefinition(args: {
-  type: string;
-  name?: string | null;
-  required?: boolean;
-  array?: ArrayDefinition;
-  map?: MapDefinition;
-  scalar?: ScalarDefinition;
-  object?: ObjectDefinition;
-  enum?: EnumDefinition;
-}): InterfaceImplementedDefinition {
+export function createInterfaceImplementedDefinition(
+  args: Omit<InterfaceImplementedDefinition, "kind">
+): InterfaceImplementedDefinition {
   return {
-    ...createAnyDefinition(args),
+    ...args,
     kind: DefinitionKind.InterfaceImplemented,
   };
 }
 
-export function createArrayPropertyDefinition(args: {
-  type: string;
-  name?: string | null;
-  required?: boolean;
-  item?: GenericDefinition;
-  comment?: string;
-}): PropertyDefinition {
-  return createPropertyDefinition({
-    ...args,
+export function createArrayPropertyDefinition(
+  args: Omit<ArrayDefinition, "kind"> & WithComment
+): PropertyDefinition {
+  const comment = args.comment;
+  delete args.comment;
+  const result = createPropertyDefinition({
+    name: args.name,
+    type: args.type,
+    required: args.required,
     array: createArrayDefinition(args),
   });
+  return comment ? { ...result, comment } : result;
 }
 
-export function createMapPropertyDefinition(args: {
-  type: string;
-  name?: string | null;
-  required?: boolean;
-  key: MapKeyDefinition;
-  value?: GenericDefinition;
-  comment?: string;
-}): PropertyDefinition {
-  return createPropertyDefinition({
-    ...args,
+export function createMapPropertyDefinition(
+  args: Omit<MapDefinition, "kind"> & WithComment
+): PropertyDefinition {
+  const comment = args.comment;
+  delete args.comment;
+  const result = createPropertyDefinition({
+    name: args.name,
+    type: args.type,
+    required: args.required,
     map: createMapDefinition(args),
   });
+  return comment ? { ...result, comment } : result;
 }
 
-export function createScalarPropertyDefinition(args: {
-  type: string;
-  name?: string | null;
-  required?: boolean;
-  comment?: string;
-}): PropertyDefinition {
-  return createPropertyDefinition({
-    ...args,
+export function createScalarPropertyDefinition(
+  args: Omit<ScalarDefinition, "kind"> & WithComment
+): PropertyDefinition {
+  const comment = args.comment;
+  delete args.comment;
+  const result = createPropertyDefinition({
+    name: args.name,
+    type: args.type,
+    required: args.required,
     scalar: createScalarDefinition(args),
   });
+  return comment ? { ...result, comment } : result;
 }
 
-export function createEnumPropertyDefinition(args: {
-  type: string;
-  name?: string | null;
-  required?: boolean;
-  constants?: string[];
-  comment?: string;
-}): PropertyDefinition {
-  return createPropertyDefinition({
-    ...args,
+export function createEnumPropertyDefinition(
+  args: Omit<EnumRef, "kind"> & WithComment
+): PropertyDefinition {
+  const comment = args.comment;
+  delete args.comment;
+  const result = createPropertyDefinition({
+    name: args.name,
+    type: args.type,
+    required: args.required,
     enum: createEnumRef(args),
   });
+  return comment ? { ...result, comment } : result;
 }
 
-export function createObjectPropertyDefinition(args: {
-  type: string;
-  name?: string | null;
-  required?: boolean;
-  properties?: PropertyDefinition[];
-  comment?: string;
-}): PropertyDefinition {
-  return createPropertyDefinition({
-    ...args,
+export function createObjectPropertyDefinition(
+  args: Omit<ObjectRef, "kind"> & WithComment
+): PropertyDefinition {
+  const comment = args.comment;
+  delete args.comment;
+  const result = createPropertyDefinition({
+    name: args.name,
+    type: args.type,
+    required: args.required,
     object: createObjectRef(args),
   });
+  return comment ? { ...result, comment } : result;
 }
 
-export interface MethodDefinition extends GenericDefinition, WithComment {
-  arguments: PropertyDefinition[];
-  env?: {
-    required: boolean;
-  };
-  return: PropertyDefinition;
-}
-export function createMethodDefinition(args: {
-  name: string;
-  arguments?: PropertyDefinition[];
-  env?: {
-    required: boolean;
-  };
-  return: PropertyDefinition;
-  comment?: string;
-}): MethodDefinition {
+export function createMethodDefinition(
+  args: Omit<Omit<MethodDefinition, "kind">, "type">
+): MethodDefinition {
   return {
+    ...args,
     ...createGenericDefinition({
       ...args,
       type: "Method",
     }),
     required: true,
-    arguments: args.arguments ? args.arguments : [],
-    return: args.return,
-    comment: args.comment,
     kind: DefinitionKind.Method,
   };
 }
 
-export interface ModuleDefinition extends GenericDefinition, WithComment {
-  methods: MethodDefinition[];
-  imports: { type: string }[];
-  interfaces: InterfaceImplementedDefinition[];
-}
-export function createModuleDefinition(args: {
-  imports?: { type: string }[];
-  interfaces?: InterfaceImplementedDefinition[];
-  required?: boolean;
-  comment?: string;
-}): ModuleDefinition {
+export function createModuleDefinition(
+  args: Omit<Omit<ModuleDefinition, "kind">, "type">
+): ModuleDefinition {
   return {
+    ...args,
     ...createGenericDefinition({
       ...args,
       type: "Module",
     }),
-    methods: [],
-    imports: args.imports ? args.imports : [],
-    interfaces: args.interfaces ? args.interfaces : [],
-    comment: args.comment,
     kind: DefinitionKind.Module,
   };
 }
 
-export interface ImportedDefinition {
-  uri: string;
-  namespace: string;
-  nativeType: string;
-}
-
-export interface ImportedEnumDefinition
-  extends EnumDefinition,
-    ImportedDefinition,
-    WithComment {}
-export function createImportedEnumDefinition(args: {
-  type: string;
-  constants: string[];
-  name?: string;
-  required?: boolean;
-  uri: string;
-  namespace: string;
-  nativeType: string;
-  comment?: string;
-}): ImportedEnumDefinition {
+export function createImportedEnumDefinition(
+  args: Omit<ImportedEnumDefinition, "kind">
+): ImportedEnumDefinition {
   return {
+    ...args,
     ...createEnumDefinition(args),
-    uri: args.uri,
-    namespace: args.namespace,
-    nativeType: args.nativeType,
-    comment: args.comment,
     kind: DefinitionKind.ImportedEnum,
   };
 }
 
+// TODO: We don't want this hard coded
 export const capabilityTypes = ["getImplementations"] as const;
 export type CapabilityType = typeof capabilityTypes[number];
-export interface Capability {
-  enabled: boolean;
-}
 export function createCapability(args: {
   type: CapabilityType;
   enabled: boolean;
@@ -493,46 +353,20 @@ export function createCapability(args: {
   };
 }
 
-export type CapabilityDefinition = Record<CapabilityType, Capability>;
-
-export interface InterfaceDefinition
-  extends GenericDefinition,
-    ImportedDefinition {
-  capabilities: CapabilityDefinition;
-}
-export function createInterfaceDefinition(args: {
-  type: string;
-  required?: boolean;
-  namespace: string;
-  uri: string;
-  capabilities: CapabilityDefinition;
-}): InterfaceDefinition {
+export function createInterfaceDefinition(
+  args: Omit<Omit<InterfaceDefinition, "kind">, "nativeType">
+): InterfaceDefinition {
   return {
+    ...args,
     ...createGenericDefinition(args),
-    namespace: args.namespace,
-    uri: args.uri,
     nativeType: "Interface",
-    capabilities: args.capabilities,
     kind: DefinitionKind.Interface,
   };
 }
 
-export interface ImportedModuleDefinition
-  extends GenericDefinition,
-    ImportedDefinition,
-    WithComment {
-  methods: MethodDefinition[];
-  isInterface?: boolean;
-}
-export function createImportedModuleDefinition(args: {
-  required?: boolean;
-  uri: string;
-  namespace: string;
-  nativeType: string;
-  isInterface?: boolean;
-  interfaces?: InterfaceImplementedDefinition[];
-  comment?: string;
-}): ImportedModuleDefinition {
+export function createImportedModuleDefinition(
+  args: Omit<Omit<ImportedModuleDefinition, "kind">, "type">
+): ImportedModuleDefinition {
   if (!isModuleType(args.nativeType)) {
     throw Error(
       `createImportedModuleDefinition: Unrecognized module type provided "${args.nativeType}"`
@@ -540,80 +374,44 @@ export function createImportedModuleDefinition(args: {
   }
 
   return {
+    ...args,
     ...createGenericDefinition({
       ...args,
       type: `${args.namespace}_${args.nativeType}`,
     }),
-    methods: [],
-    uri: args.uri,
-    namespace: args.namespace,
-    nativeType: args.nativeType,
-    comment: args.comment,
-    isInterface: args.isInterface,
     kind: DefinitionKind.ImportedModule,
   };
 }
 
-export interface ImportedObjectDefinition
-  extends ObjectDefinition,
-    ImportedDefinition,
-    WithComment {}
-export function createImportedObjectDefinition(args: {
-  type: string;
-  name?: string;
-  required?: boolean;
-  uri: string;
-  namespace: string;
-  nativeType: string;
-  interfaces?: InterfaceImplementedDefinition[];
-  comment?: string;
-}): ImportedObjectDefinition {
+export function createImportedObjectDefinition(
+  args: Omit<ImportedObjectDefinition, "kind">
+): ImportedObjectDefinition {
   return {
+    ...args,
     ...createObjectDefinition(args),
-    uri: args.uri,
-    namespace: args.namespace,
-    nativeType: args.nativeType,
-    comment: args.comment,
     kind: DefinitionKind.ImportedObject,
   };
 }
 
-export type EnvDefinition = ObjectDefinition;
-
-export function createEnvDefinition(args: {
-  name?: string | null;
-  required?: boolean;
-  properties?: PropertyDefinition[];
-  interfaces?: InterfaceImplementedDefinition[];
-  comment?: string;
-}): EnvDefinition {
+export function createEnvDefinition(
+  args: Omit<Omit<EnvDefinition, "kind">, "type">
+): EnvDefinition {
   return {
+    ...args,
     ...createObjectDefinition({ ...args, type: "Env" }),
     kind: DefinitionKind.Env,
   };
 }
 
-export type ImportedEnvDefinition = ImportedObjectDefinition;
-
-export function createImportedEnvDefinition(args: {
-  type: string;
-  name?: string;
-  required?: boolean;
-  uri: string;
-  namespace: string;
-  nativeType: string;
-  interfaces?: InterfaceImplementedDefinition[];
-  comment?: string;
-}): ImportedEnvDefinition {
+export function createImportedEnvDefinition(
+  args: Omit<Omit<ImportedEnvDefinition, "kind">, "type">
+): ImportedEnvDefinition {
   return {
+    ...args,
     ...createObjectDefinition({
       ...args,
       type: `${args.namespace}_Env`,
     }),
-    uri: args.uri,
-    namespace: args.namespace,
-    nativeType: args.nativeType,
-    comment: args.comment,
     kind: DefinitionKind.ImportedEnv,
   };
 }

@@ -9,7 +9,7 @@
     "format": {
       "description": "Polywrap wrapper metadata manifest format version.",
       "type": "string",
-      "const": "0.1.0"
+      "enum": ["0.1.0", "0.1"]
     },
     "displayName": {
       "description": "Name of the wrapper.",

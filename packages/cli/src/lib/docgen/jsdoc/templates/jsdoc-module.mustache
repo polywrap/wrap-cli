@@ -1,0 +1,22 @@
+/**
+* {{#toTitle}}{{type}}{{/toTitle}}
+* @module {{#toLowerCase}}{{type}}{{/toLowerCase}}
+* {{#addImplements}}{{#interfaces}} {{name}}{{/interfaces}}{{/addImplements}}
+*/
+
+{{#methods}}
+/**
+* {{comment}}
+* @function module:{{#toLowerCase}}{{type}}{{/toLowerCase}}.{{name}}
+{{#arguments}}
+  {{#required}}
+* @param { {{#typeFormatFilter}}{{type}}{{/typeFormatFilter}} } {{name}} {{comment}}
+  {{/required}}
+  {{^required}}
+* @param { {{#typeFormatFilter}}{{type}}{{/typeFormatFilter}} | null } {{name}} {{comment}}
+  {{/required}}
+{{/arguments}}
+* @returns { {{#return}}{{#typeFormatFilter}}{{type}}{{/typeFormatFilter}}{{/return}} }
+*/
+
+{{/methods}}

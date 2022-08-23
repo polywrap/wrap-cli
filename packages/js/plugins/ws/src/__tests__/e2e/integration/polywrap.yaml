@@ -1,0 +1,14 @@
+format: 0.2.0
+project:
+  name: WS-Integration
+  type: wasm/assemblyscript
+source:
+  schema: ./schema.graphql
+  module: ./src/index.ts
+  import_abis:
+    - uri: "wrap://ens/memory.polywrap.eth"
+      abi: "../memory.schema.graphql"
+    - uri: "wrap://ens/ws.polywrap.eth"
+      abi: "../../../../build/wrap.info"
+extensions:
+  build: ./polywrap.build.yaml

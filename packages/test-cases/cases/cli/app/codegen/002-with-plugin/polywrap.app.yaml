@@ -1,7 +1,9 @@
-format: 0.1.0
-name: test-app
-language: app/typescript
-schema: ./schema.graphql
-import_redirects:
-    - uri: "wrap://ens/plugin.eth"
-      schema: "./../../../../../../js/plugins/http/build/schema.graphql"
+format: 0.2.0
+project:
+  name: test-app
+  type: app/typescript
+source:
+  schema: ./schema.graphql
+  import_abis:
+      - uri: "wrap://ens/plugin.eth"
+        abi: "./../../../../../../js/plugins/http/build/wrap.info"

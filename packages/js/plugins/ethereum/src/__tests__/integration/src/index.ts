@@ -31,7 +31,8 @@ import {
   Args_sendRPC,
   Args_sendTransaction,
   Args_sendTransactionAndWait,
-  Args_signMessage
+  Args_signMessage,
+  Args_requestAccounts,
 } from "./wrap";
 import { BigInt } from "@polywrap/wasm-as";
 
@@ -219,6 +220,14 @@ export function getNetwork(
   args: Args_getNetwork
 ): Ethereum_Network {
   return Ethereum_Module.getNetwork({
+    connection: args.connection
+  }).unwrap();
+}
+
+export function requestAccounts(
+  args: Args_requestAccounts
+): string[] {
+  return Ethereum_Module.requestAccounts({
     connection: args.connection
   }).unwrap();
 }

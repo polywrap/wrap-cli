@@ -1,9 +1,12 @@
-format: 0.1.0
-name: TestWrapper
-build: ./polywrap.build.yaml
-language: wasm/assemblyscript
-schema: ./schema.graphql
-module: ./src/index.ts
-import_redirects:
-  - uri: wrap://ens/interface.eth
-    schema: ../test-interface/build/schema.graphql
+format: 0.2.0
+project:
+  name: TestWrapper
+  type: wasm/assemblyscript
+source:
+  schema: ./schema.graphql
+  module: ./src/index.ts
+  import_abis:
+    - uri: wrap://ens/interface.eth
+      abi: ../test-interface/build/wrap.info
+extensions:
+  build: ./polywrap.build.yaml

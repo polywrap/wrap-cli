@@ -1,57 +1,35 @@
-import {
-  createPolywrapClient,
-  Uri,
-  PolywrapClientConfig,
-  PolywrapClient,
-  PluginModule,
-} from "../..";
-import {
-  buildAndDeployWrapper,
-  initTestEnvironment,
-  runCLI,
-  stopTestEnvironment,
-  ensAddresses,
-  providers
-} from "@polywrap/test-env-js";
+import { Uri } from "../..";
+import { buildWrapper } from "@polywrap/test-env-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
-import { ResolveUriErrorType } from "@polywrap/core-js";
+import {
+  coreInterfaceUris,
+  PluginModule,
+  ResolveUriErrorType,
+} from "@polywrap/core-js";
+import { getClient } from "../utils/getClient";
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
 jest.setTimeout(200000);
 
+const wrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple`;
+const wrapperUri = new Uri(`wrap://file/${wrapperPath}/build`);
+
+const simpleFsResolverWrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-fs-resolver`;
+const simpleFsResolverWrapperUri = new Uri(
+  `wrap://file/${simpleFsResolverWrapperPath}/build`
+);
+
+const simpleRedirectResolverWrapperPath = `${GetPathToTestWrappers()}/wasm-as/simple-redirect-resolver`;
+const simpleRedirectResolverWrapperUri = new Uri(
+  `wrap://file/${simpleRedirectResolverWrapperPath}/build`
+);
+
 describe("resolveUri", () => {
-  let ipfsProvider: string;
-  let ethProvider: string;
-
   beforeAll(async () => {
-    await initTestEnvironment();
-    ipfsProvider = providers.ipfs;
-    ethProvider = providers.ethereum;
+    await buildWrapper(wrapperPath);
+    await buildWrapper(simpleFsResolverWrapperPath);
+    await buildWrapper(simpleRedirectResolverWrapperPath);
   });
-
-  afterAll(async () => {
-    await stopTestEnvironment();
-  });
-
-  const getClient = async (config?: Partial<PolywrapClientConfig>) => {
-    return createPolywrapClient(
-      {
-        ethereum: {
-          networks: {
-            testnet: {
-              provider: ethProvider,
-            },
-          },
-        },
-        ipfs: { provider: ipfsProvider },
-        ens: {
-          addresses: {
-            testnet: ensAddresses.ensAddress,
-          },
-        },
-      },
-      config
-    );
-  };
 
   it("sanity", async () => {
     const uri = new Uri("ens/uri.eth");
@@ -192,10 +170,7 @@ describe("resolveUri", () => {
             factory: () => {
               return ({} as unknown) as PluginModule<{}>;
             },
-            manifest: {
-              schema: "",
-              implements: [],
-            },
+            manifest: {} as WrapManifest,
           },
         },
       ],
@@ -239,124 +214,185 @@ describe("resolveUri", () => {
     expect(result.error).toBeFalsy();
   });
 
-  it("can resolve wrapper", async () => {
-    await runCLI({
-      args: ["build"],
-      cwd: `${GetPathToTestWrappers()}/wasm-as/interface-invoke/test-interface`,
+  it("can resolve an URI resolver extension wrapper", async () => {
+    const client = await getClient({
+      interfaces: [
+        {
+          interface: coreInterfaceUris.uriResolver.uri,
+          implementations: [simpleFsResolverWrapperUri.uri],
+        },
+      ],
     });
 
-    const client = await getClient();
+    const sourceUri = new Uri(`simple/${wrapperPath}/build`);
+    const redirectedUri = wrapperUri;
 
-    const deployResult = await buildAndDeployWrapper({
-      wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/interface-invoke/test-wrapper`,
-      ipfsProvider,
-      ethereumProvider: ethProvider,
-    });
-
-    const ensUri = new Uri(`ens/testnet/${deployResult.ensDomain}`);
-    const ipfsUri = new Uri(`ipfs/${deployResult.ipfsCid}`);
-
-    const result = await client.resolveUri(ensUri);
-    expect(result.wrapper).toBeTruthy();
-    expect(result.uri).toEqual(ipfsUri);
-    expect(result.error).toBeFalsy();
+    const result = await client.resolveUri(sourceUri);
+    expect(result.uriHistory.stack).toEqual([
+      {
+        uriResolver: "RedirectsResolver",
+        sourceUri: sourceUri,
+        result: {
+          uri: sourceUri,
+          wrapper: false,
+        },
+      },
+      {
+        uriResolver: "CacheResolver",
+        sourceUri: sourceUri,
+        result: {
+          uri: sourceUri,
+          wrapper: false,
+        },
+      },
+      {
+        uriResolver: "PluginResolver",
+        sourceUri: sourceUri,
+        result: {
+          uri: sourceUri,
+          wrapper: false,
+        },
+      },
+      {
+        uriResolver: "ExtendableUriResolver",
+        sourceUri: sourceUri,
+        result: {
+          uri: redirectedUri,
+          wrapper: false,
+          implementationUri: simpleFsResolverWrapperUri,
+        },
+      },
+      {
+        uriResolver: "RedirectsResolver",
+        sourceUri: redirectedUri,
+        result: {
+          uri: redirectedUri,
+          wrapper: false,
+        },
+      },
+      {
+        uriResolver: "CacheResolver",
+        sourceUri: redirectedUri,
+        result: {
+          uri: redirectedUri,
+          wrapper: false,
+        },
+      },
+      {
+        uriResolver: "PluginResolver",
+        sourceUri: redirectedUri,
+        result: {
+          uri: redirectedUri,
+          wrapper: false,
+        },
+      },
+      {
+        uriResolver: "ExtendableUriResolver",
+        sourceUri: redirectedUri,
+        result: {
+          uri: redirectedUri,
+          wrapper: true,
+          implementationUri: new Uri("wrap://ens/fs-resolver.polywrap.eth"),
+        },
+      },
+    ]);
 
     expect(result.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
       "ExtendableUriResolver",
       "ExtendableUriResolver",
     ]);
 
+    expect(result.wrapper).toBeTruthy();
+    expect(result.uri).toEqual(redirectedUri);
+    expect(result.error).toBeFalsy();
+  });
+
+  it("can resolve cache", async () => {
+    const client = await getClient();
+
+    const result = await client.resolveUri(wrapperUri);
+
+    expect(result.wrapper).toBeTruthy();
+    expect(result.uri).toEqual(wrapperUri);
+    expect(result.error).toBeFalsy();
+
+    expect(result.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
+      "ExtendableUriResolver",
+    ]);
+
     expect(result.uriHistory.stack).toEqual([
       {
         uriResolver: "RedirectsResolver",
-        sourceUri: ensUri,
+        sourceUri: wrapperUri,
         result: {
-          uri: ensUri,
+          uri: wrapperUri,
           wrapper: false,
         },
       },
       {
+        sourceUri: wrapperUri,
         uriResolver: "CacheResolver",
-        sourceUri: ensUri,
         result: {
-          uri: ensUri,
+          uri: wrapperUri,
           wrapper: false,
         },
       },
       {
         uriResolver: "PluginResolver",
-        sourceUri: ensUri,
+        sourceUri: wrapperUri,
         result: {
-          uri: ensUri,
+          uri: wrapperUri,
           wrapper: false,
         },
       },
       {
         uriResolver: "ExtendableUriResolver",
-        sourceUri: ensUri,
+        sourceUri: wrapperUri,
         result: {
-          uri: ipfsUri,
-          wrapper: false,
-          implementationUri: new Uri("wrap://ens/ens-resolver.polywrap.eth"),
+          uri: wrapperUri,
+          wrapper: true,
+          implementationUri: new Uri("wrap://ens/fs-resolver.polywrap.eth"),
         },
       },
+    ]);
+
+    const result2 = await client.resolveUri(wrapperUri);
+
+    expect(result2.wrapper).toBeTruthy();
+    expect(result2.uri).toEqual(wrapperUri);
+    expect(result2.error).toBeFalsy();
+
+    expect(result2.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
+      "CacheResolver",
+    ]);
+
+    expect(result2.uriHistory.stack).toEqual([
       {
         uriResolver: "RedirectsResolver",
-        sourceUri: ipfsUri,
+        sourceUri: wrapperUri,
         result: {
-          uri: ipfsUri,
+          uri: wrapperUri,
           wrapper: false,
         },
       },
       {
+        sourceUri: wrapperUri,
         uriResolver: "CacheResolver",
-        sourceUri: ipfsUri,
         result: {
-          uri: ipfsUri,
-          wrapper: false,
-        },
-      },
-      {
-        uriResolver: "PluginResolver",
-        sourceUri: ipfsUri,
-        result: {
-          uri: ipfsUri,
-          wrapper: false,
-        },
-      },
-      {
-        uriResolver: "ExtendableUriResolver",
-        sourceUri: ipfsUri,
-        result: {
-          uri: ipfsUri,
+          uri: wrapperUri,
           wrapper: true,
-          implementationUri: new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
         },
       },
     ]);
   });
 
-  it("can resolve cache", async () => {
-    await runCLI({
-      args: ["build"],
-      cwd: `${GetPathToTestWrappers()}/wasm-as/interface-invoke/test-interface`,
-    });
-
+  it("can resolve cache - noCacheRead", async () => {
     const client = await getClient();
 
-    const deployResult = await buildAndDeployWrapper({
-      wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/interface-invoke/test-wrapper`,
-      ipfsProvider,
-      ethereumProvider: ethProvider,
-    });
-
-    const ensUri = new Uri(`ens/testnet/${deployResult.ensDomain}`);
-    const ipfsUri = new Uri(`ipfs/${deployResult.ipfsCid}`);
-
-    const result = await client.resolveUri(ipfsUri);
+    const result = await client.resolveUri(wrapperUri);
 
     expect(result.wrapper).toBeTruthy();
-    expect(result.uri).toEqual(ipfsUri);
+    expect(result.uri).toEqual(wrapperUri);
     expect(result.error).toBeFalsy();
 
     expect(result.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
@@ -366,43 +402,275 @@ describe("resolveUri", () => {
     expect(result.uriHistory.stack).toEqual([
       {
         uriResolver: "RedirectsResolver",
-        sourceUri: ipfsUri,
+        sourceUri: wrapperUri,
         result: {
-          uri: ipfsUri,
+          uri: wrapperUri,
           wrapper: false,
         },
       },
       {
-        sourceUri: ipfsUri,
+        sourceUri: wrapperUri,
         uriResolver: "CacheResolver",
         result: {
-          uri: ipfsUri,
+          uri: wrapperUri,
           wrapper: false,
         },
       },
       {
         uriResolver: "PluginResolver",
-        sourceUri: ipfsUri,
+        sourceUri: wrapperUri,
         result: {
-          uri: ipfsUri,
+          uri: wrapperUri,
           wrapper: false,
         },
       },
       {
         uriResolver: "ExtendableUriResolver",
-        sourceUri: ipfsUri,
+        sourceUri: wrapperUri,
         result: {
-          uri: ipfsUri,
+          uri: wrapperUri,
           wrapper: true,
-          implementationUri: new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
+          implementationUri: new Uri("wrap://ens/fs-resolver.polywrap.eth"),
         },
       },
     ]);
 
-    const result2 = await client.resolveUri(ensUri);
+    const result2 = await client.resolveUri(wrapperUri, { noCacheRead: true });
 
     expect(result2.wrapper).toBeTruthy();
-    expect(result2.uri).toEqual(ipfsUri);
+    expect(result2.uri).toEqual(wrapperUri);
+    expect(result2.error).toBeFalsy();
+
+    expect(result2.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
+      "ExtendableUriResolver",
+    ]);
+
+    expect(result2.uriHistory.stack).toEqual([
+      {
+        uriResolver: "RedirectsResolver",
+        sourceUri: wrapperUri,
+        result: {
+          uri: wrapperUri,
+          wrapper: false,
+        },
+      },
+      {
+        uriResolver: "PluginResolver",
+        sourceUri: wrapperUri,
+        result: {
+          uri: wrapperUri,
+          wrapper: false,
+        },
+      },
+      {
+        uriResolver: "ExtendableUriResolver",
+        sourceUri: wrapperUri,
+        result: {
+          uri: wrapperUri,
+          wrapper: true,
+          implementationUri: new Uri("wrap://ens/fs-resolver.polywrap.eth"),
+        },
+      },
+    ]);
+  });
+
+  it("can resolve cache - noCacheWrite", async () => {
+    const client = await getClient();
+
+    const result = await client.resolveUri(wrapperUri, { noCacheWrite: true });
+
+    expect(result.wrapper).toBeTruthy();
+    expect(result.uri).toEqual(wrapperUri);
+    expect(result.error).toBeFalsy();
+
+    expect(result.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
+      "ExtendableUriResolver",
+    ]);
+
+    expect(result.uriHistory.stack).toEqual([
+      {
+        uriResolver: "RedirectsResolver",
+        sourceUri: wrapperUri,
+        result: {
+          uri: wrapperUri,
+          wrapper: false,
+        },
+      },
+      {
+        uriResolver: "CacheResolver",
+        sourceUri: wrapperUri,
+        result: {
+          uri: wrapperUri,
+          wrapper: false,
+        },
+      },
+      {
+        uriResolver: "PluginResolver",
+        sourceUri: wrapperUri,
+        result: {
+          uri: wrapperUri,
+          wrapper: false,
+        },
+      },
+      {
+        uriResolver: "ExtendableUriResolver",
+        sourceUri: wrapperUri,
+        result: {
+          uri: wrapperUri,
+          wrapper: true,
+          implementationUri: new Uri("wrap://ens/fs-resolver.polywrap.eth"),
+        },
+      },
+    ]);
+
+    const result2 = await client.resolveUri(wrapperUri);
+
+    expect(result2.wrapper).toBeTruthy();
+    expect(result2.uri).toEqual(wrapperUri);
+    expect(result2.error).toBeFalsy();
+
+    expect(result2.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
+      "ExtendableUriResolver",
+    ]);
+
+    expect(result2.uriHistory.stack).toEqual([
+      {
+        uriResolver: "RedirectsResolver",
+        sourceUri: wrapperUri,
+        result: {
+          uri: wrapperUri,
+          wrapper: false,
+        },
+      },
+      {
+        uriResolver: "CacheResolver",
+        sourceUri: wrapperUri,
+        result: {
+          uri: wrapperUri,
+          wrapper: false,
+        },
+      },
+      {
+        uriResolver: "PluginResolver",
+        sourceUri: wrapperUri,
+        result: {
+          uri: wrapperUri,
+          wrapper: false,
+        },
+      },
+      {
+        uriResolver: "ExtendableUriResolver",
+        sourceUri: wrapperUri,
+        result: {
+          uri: wrapperUri,
+          wrapper: true,
+          implementationUri: new Uri("wrap://ens/fs-resolver.polywrap.eth"),
+        },
+      },
+    ]);
+  });
+
+  it("can resolve previously cached URI after redirecting by a URI resolver extension", async () => {
+    const client = await getClient({
+      interfaces: [
+        {
+          interface: coreInterfaceUris.uriResolver.uri,
+          implementations: [
+            simpleFsResolverWrapperUri.uri,
+            simpleRedirectResolverWrapperUri.uri,
+          ],
+        },
+      ],
+    });
+
+    const sourceUri = new Uri(`simple-redirect/${wrapperPath}/build`);
+    const redirectedUri = new Uri(`simple/${wrapperPath}/build`);
+    const finalUri = wrapperUri;
+
+    const result = await client.resolveUri(redirectedUri);
+
+    expect(result.wrapper).toBeTruthy();
+    expect(result.uri).toEqual(finalUri);
+    expect(result.error).toBeFalsy();
+
+    expect(result.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
+      "ExtendableUriResolver",
+      "ExtendableUriResolver",
+    ]);
+
+    expect(result.uriHistory.stack).toEqual([
+      {
+        uriResolver: "RedirectsResolver",
+        sourceUri: redirectedUri,
+        result: {
+          uri: redirectedUri,
+          wrapper: false,
+        },
+      },
+      {
+        sourceUri: redirectedUri,
+        uriResolver: "CacheResolver",
+        result: {
+          uri: redirectedUri,
+          wrapper: false,
+        },
+      },
+      {
+        uriResolver: "PluginResolver",
+        sourceUri: redirectedUri,
+        result: {
+          uri: redirectedUri,
+          wrapper: false,
+        },
+      },
+      {
+        uriResolver: "ExtendableUriResolver",
+        sourceUri: redirectedUri,
+        result: {
+          uri: finalUri,
+          wrapper: false,
+          implementationUri: simpleFsResolverWrapperUri,
+        },
+      },
+      {
+        uriResolver: "RedirectsResolver",
+        sourceUri: finalUri,
+        result: {
+          uri: finalUri,
+          wrapper: false,
+        },
+      },
+      {
+        sourceUri: finalUri,
+        uriResolver: "CacheResolver",
+        result: {
+          uri: finalUri,
+          wrapper: false,
+        },
+      },
+      {
+        uriResolver: "PluginResolver",
+        sourceUri: finalUri,
+        result: {
+          uri: finalUri,
+          wrapper: false,
+        },
+      },
+      {
+        uriResolver: "ExtendableUriResolver",
+        sourceUri: finalUri,
+        result: {
+          uri: finalUri,
+          wrapper: true,
+          implementationUri: new Uri("wrap://ens/fs-resolver.polywrap.eth"),
+        },
+      },
+    ]);
+
+    const result2 = await client.resolveUri(sourceUri);
+
+    expect(result2.wrapper).toBeTruthy();
+    expect(result2.uri).toEqual(redirectedUri);
     expect(result2.error).toBeFalsy();
 
     expect(result2.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
@@ -413,357 +681,85 @@ describe("resolveUri", () => {
     expect(result2.uriHistory.stack).toEqual([
       {
         uriResolver: "RedirectsResolver",
-        sourceUri: ensUri,
+        sourceUri: sourceUri,
         result: {
-          uri: ensUri,
+          uri: sourceUri,
           wrapper: false,
         },
       },
       {
-        sourceUri: ensUri,
+        sourceUri: sourceUri,
         uriResolver: "CacheResolver",
         result: {
-          uri: ensUri,
+          uri: sourceUri,
           wrapper: false,
         },
       },
       {
         uriResolver: "PluginResolver",
-        sourceUri: ensUri,
+        sourceUri: sourceUri,
         result: {
-          uri: ensUri,
+          uri: sourceUri,
           wrapper: false,
         },
       },
       {
         uriResolver: "ExtendableUriResolver",
-        sourceUri: ensUri,
+        sourceUri: sourceUri,
         result: {
-          uri: ipfsUri,
+          uri: redirectedUri,
           wrapper: false,
-          implementationUri: new Uri("wrap://ens/ens-resolver.polywrap.eth"),
+          implementationUri: simpleRedirectResolverWrapperUri,
         },
       },
       {
         uriResolver: "RedirectsResolver",
-        sourceUri: ipfsUri,
+        sourceUri: redirectedUri,
         result: {
-          uri: ipfsUri,
+          uri: redirectedUri,
           wrapper: false,
         },
       },
       {
-        sourceUri: ipfsUri,
+        sourceUri: redirectedUri,
         uriResolver: "CacheResolver",
         result: {
-          uri: ipfsUri,
+          uri: redirectedUri,
           wrapper: true,
         },
       },
     ]);
   });
 
-  it("can resolve cache - noCacheRead", async () => {
-    await runCLI({
-      args: ["build"],
-      cwd: `${GetPathToTestWrappers()}/wasm-as/interface-invoke/test-interface`,
-    });
+  it("restarts URI resolution after URI resolver extension redirect", async () => {
+    //Testing that the redirects (RedirectResolver) are respected after a URI resolver extension redirect
 
-    const client = await getClient();
-
-    const deployResult = await buildAndDeployWrapper({
-      wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/interface-invoke/test-wrapper`,
-      ipfsProvider,
-      ethereumProvider: ethProvider,
-    });
-
-    const ensUri = new Uri(`ens/testnet/${deployResult.ensDomain}`);
-    const ipfsUri = new Uri(`ipfs/${deployResult.ipfsCid}`);
-
-    const result = await client.resolveUri(ipfsUri);
-
-    expect(result.wrapper).toBeTruthy();
-    expect(result.uri).toEqual(ipfsUri);
-    expect(result.error).toBeFalsy();
-
-    expect(result.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
-      "ExtendableUriResolver",
-    ]);
-
-    expect(result.uriHistory.stack).toEqual([
-      {
-        uriResolver: "RedirectsResolver",
-        sourceUri: ipfsUri,
-        result: {
-          uri: ipfsUri,
-          wrapper: false,
-        },
-      },
-      {
-        sourceUri: ipfsUri,
-        uriResolver: "CacheResolver",
-        result: {
-          uri: ipfsUri,
-          wrapper: false,
-        },
-      },
-      {
-        uriResolver: "PluginResolver",
-        sourceUri: ipfsUri,
-        result: {
-          uri: ipfsUri,
-          wrapper: false,
-        },
-      },
-      {
-        uriResolver: "ExtendableUriResolver",
-        sourceUri: ipfsUri,
-        result: {
-          uri: ipfsUri,
-          wrapper: true,
-          implementationUri: new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
-        },
-      },
-    ]);
-
-    const result2 = await client.resolveUri(ensUri, { noCacheRead: true });
-
-    expect(result2.wrapper).toBeTruthy();
-    expect(result2.uri).toEqual(ipfsUri);
-    expect(result2.error).toBeFalsy();
-
-    expect(result2.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
-      "ExtendableUriResolver",
-      "ExtendableUriResolver",
-    ]);
-
-    expect(result2.uriHistory.stack).toEqual([
-      {
-        uriResolver: "RedirectsResolver",
-        sourceUri: ensUri,
-        result: {
-          uri: ensUri,
-          wrapper: false,
-        },
-      },
-      {
-        uriResolver: "PluginResolver",
-        sourceUri: ensUri,
-        result: {
-          uri: ensUri,
-          wrapper: false,
-        },
-      },
-      {
-        uriResolver: "ExtendableUriResolver",
-        sourceUri: ensUri,
-        result: {
-          uri: ipfsUri,
-          wrapper: false,
-          implementationUri: new Uri("wrap://ens/ens-resolver.polywrap.eth"),
-        },
-      },
-      {
-        uriResolver: "RedirectsResolver",
-        sourceUri: ipfsUri,
-        result: {
-          uri: ipfsUri,
-          wrapper: false,
-        },
-      },
-      {
-        uriResolver: "PluginResolver",
-        sourceUri: ipfsUri,
-        result: {
-          uri: ipfsUri,
-          wrapper: false,
-        },
-      },
-      {
-        uriResolver: "ExtendableUriResolver",
-        sourceUri: ipfsUri,
-        result: {
-          uri: ipfsUri,
-          wrapper: true,
-          implementationUri: new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
-        },
-      },
-    ]);
-  });
-
-  it("can resolve cache - noCacheWrite", async () => {
-    await runCLI({
-      args: ["build"],
-      cwd: `${GetPathToTestWrappers()}/wasm-as/interface-invoke/test-interface`,
-    });
-
-    const client = await getClient();
-
-    const deployResult = await buildAndDeployWrapper({
-      wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/interface-invoke/test-wrapper`,
-      ipfsProvider,
-      ethereumProvider: ethProvider,
-    });
-
-    const ensUri = new Uri(`ens/testnet/${deployResult.ensDomain}`);
-    const ipfsUri = new Uri(`ipfs/${deployResult.ipfsCid}`);
-
-    const result = await client.resolveUri(ipfsUri, { noCacheWrite: true });
-
-    expect(result.wrapper).toBeTruthy();
-    expect(result.uri).toEqual(ipfsUri);
-    expect(result.error).toBeFalsy();
-
-    expect(result.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
-      "ExtendableUriResolver",
-    ]);
-
-    expect(result.uriHistory.stack).toEqual([
-      {
-        uriResolver: "RedirectsResolver",
-        sourceUri: ipfsUri,
-        result: {
-          uri: ipfsUri,
-          wrapper: false,
-        },
-      },
-      {
-        uriResolver: "CacheResolver",
-        sourceUri: ipfsUri,
-        result: {
-          uri: ipfsUri,
-          wrapper: false,
-        },
-      },
-      {
-        uriResolver: "PluginResolver",
-        sourceUri: ipfsUri,
-        result: {
-          uri: ipfsUri,
-          wrapper: false,
-        },
-      },
-      {
-        uriResolver: "ExtendableUriResolver",
-        sourceUri: ipfsUri,
-        result: {
-          uri: ipfsUri,
-          wrapper: true,
-          implementationUri: new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
-        },
-      },
-    ]);
-
-    const result2 = await client.resolveUri(ensUri);
-
-    expect(result2.wrapper).toBeTruthy();
-    expect(result2.uri).toEqual(ipfsUri);
-    expect(result2.error).toBeFalsy();
-
-    expect(result2.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
-      "ExtendableUriResolver",
-      "ExtendableUriResolver",
-    ]);
-
-    expect(result2.uriHistory.stack).toEqual([
-      {
-        uriResolver: "RedirectsResolver",
-        sourceUri: ensUri,
-        result: {
-          uri: ensUri,
-          wrapper: false,
-        },
-      },
-      {
-        uriResolver: "CacheResolver",
-        sourceUri: ensUri,
-        result: {
-          uri: ensUri,
-          wrapper: false,
-        },
-      },
-      {
-        uriResolver: "PluginResolver",
-        sourceUri: ensUri,
-        result: {
-          uri: ensUri,
-          wrapper: false,
-        },
-      },
-      {
-        uriResolver: "ExtendableUriResolver",
-        sourceUri: ensUri,
-        result: {
-          uri: ipfsUri,
-          wrapper: false,
-          implementationUri: new Uri("wrap://ens/ens-resolver.polywrap.eth"),
-        },
-      },
-      {
-        uriResolver: "RedirectsResolver",
-        sourceUri: ipfsUri,
-        result: {
-          uri: ipfsUri,
-          wrapper: false,
-        },
-      },
-      {
-        uriResolver: "CacheResolver",
-        sourceUri: ipfsUri,
-        result: {
-          uri: ipfsUri,
-          wrapper: false,
-        },
-      },
-      {
-        uriResolver: "PluginResolver",
-        sourceUri: ipfsUri,
-        result: {
-          uri: ipfsUri,
-          wrapper: false,
-        },
-      },
-      {
-        uriResolver: "ExtendableUriResolver",
-        sourceUri: ipfsUri,
-        result: {
-          uri: ipfsUri,
-          wrapper: true,
-          implementationUri: new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
-        },
-      },
-    ]);
-  });
-
-  it("can resolve wrapper with redirects", async () => {
-    await runCLI({
-      args: ["build"],
-      cwd: `${GetPathToTestWrappers()}/wasm-as/interface-invoke/test-interface`,
-    });
-
-    const deployResult = await buildAndDeployWrapper({
-      wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/interface-invoke/test-wrapper`,
-      ipfsProvider,
-      ethereumProvider: ethProvider,
-    });
-
-    const ensUri = new Uri(`ens/testnet/${deployResult.ensDomain}`);
-    const ipfsUri = new Uri(`ipfs/${deployResult.ipfsCid}`);
-    const redirectUri = new Uri(`ens/redirect.eth`);
+    const sourceUri = new Uri(`simple-redirect/${wrapperPath}/build`);
+    const resolverRedirectUri = new Uri(`simple/${wrapperPath}/build`);
+    const finalRedirectedUri = new Uri(`ens/redirect.eth`);
 
     const client = await getClient({
       redirects: [
         {
-          from: ipfsUri.uri,
-          to: redirectUri.uri,
+          from: resolverRedirectUri.uri,
+          to: finalRedirectedUri.uri,
+        },
+      ],
+      interfaces: [
+        {
+          interface: coreInterfaceUris.uriResolver.uri,
+          implementations: [
+            simpleFsResolverWrapperUri.uri,
+            simpleRedirectResolverWrapperUri.uri,
+          ],
         },
       ],
     });
 
-    const result = await client.resolveUri(ensUri);
+    const result = await client.resolveUri(sourceUri);
 
     expect(result.wrapper).toBeFalsy();
-    expect(result.uri).toEqual(redirectUri);
+    expect(result.uri).toEqual(finalRedirectedUri);
     expect(result.error).toBeFalsy();
 
     expect(result.uriHistory.getResolutionPath().getUriResolvers()).toEqual([
@@ -774,74 +770,74 @@ describe("resolveUri", () => {
     expect(result.uriHistory.stack).toEqual([
       {
         uriResolver: "RedirectsResolver",
-        sourceUri: ensUri,
+        sourceUri: sourceUri,
         result: {
-          uri: ensUri,
+          uri: sourceUri,
           wrapper: false,
         },
       },
       {
         uriResolver: "CacheResolver",
-        sourceUri: ensUri,
+        sourceUri: sourceUri,
         result: {
-          uri: ensUri,
+          uri: sourceUri,
           wrapper: false,
         },
       },
       {
         uriResolver: "PluginResolver",
-        sourceUri: ensUri,
+        sourceUri: sourceUri,
         result: {
-          uri: ensUri,
+          uri: sourceUri,
           wrapper: false,
         },
       },
       {
         uriResolver: "ExtendableUriResolver",
-        sourceUri: ensUri,
+        sourceUri: sourceUri,
         result: {
-          uri: ipfsUri,
+          uri: resolverRedirectUri,
           wrapper: false,
-          implementationUri: new Uri("wrap://ens/ens-resolver.polywrap.eth"),
+          implementationUri: simpleRedirectResolverWrapperUri,
         },
       },
       {
         uriResolver: "RedirectsResolver",
-        sourceUri: ipfsUri,
+        sourceUri: resolverRedirectUri,
         result: {
-          uri: redirectUri,
+          uri: finalRedirectedUri,
           wrapper: false,
         },
       },
       {
         uriResolver: "RedirectsResolver",
-        sourceUri: redirectUri,
+        sourceUri: finalRedirectedUri,
         result: {
-          uri: redirectUri,
+          uri: finalRedirectedUri,
           wrapper: false,
         },
       },
       {
         uriResolver: "CacheResolver",
-        sourceUri: redirectUri,
+        sourceUri: finalRedirectedUri,
         result: {
-          uri: redirectUri,
+          uri: finalRedirectedUri,
           wrapper: false,
         },
       },
       {
         uriResolver: "PluginResolver",
-        sourceUri: redirectUri,
+        sourceUri: finalRedirectedUri,
         result: {
-          uri: redirectUri,
+          uri: finalRedirectedUri,
           wrapper: false,
         },
       },
       {
         uriResolver: "ExtendableUriResolver",
-        sourceUri: redirectUri,
+        sourceUri: finalRedirectedUri,
         result: {
-          uri: redirectUri,
+          uri: finalRedirectedUri,
           wrapper: false,
         },
       },
@@ -852,7 +848,7 @@ describe("resolveUri", () => {
     const ensUri = new Uri(`ens/test`);
     const redirectUri = new Uri(`ens/redirect.eth`);
 
-    const client = await new PolywrapClient({
+    const client = await getClient({
       uriResolvers: [
         {
           name: "CustomResolver",
@@ -933,11 +929,11 @@ describe("resolveUri", () => {
     ]);
   });
 
-  it("can resolve uri with custom resolver at query-time", async () => {
+  it("can resolve uri with custom resolver at invoke-time", async () => {
     const ensUri = new Uri(`ens/test`);
     const redirectUri = new Uri(`ens/redirect.eth`);
 
-    const client = await new PolywrapClient();
+    const client = await getClient();
 
     const result = await client.resolveUri(ensUri, {
       config: {
@@ -989,7 +985,7 @@ describe("resolveUri", () => {
   });
 
   it("custom wrapper resolver does not cause infinite recursion when resolved at runtime", async () => {
-    const client = await new PolywrapClient({
+    const client = await getClient({
       interfaces: [
         {
           interface: "ens/uri-resolver.core.polywrap.eth",
@@ -1012,7 +1008,7 @@ describe("resolveUri", () => {
   });
 
   it("unresolvable custom wrapper resolver is found when preloaded", async () => {
-    const client = await new PolywrapClient({
+    const client = await getClient({
       interfaces: [
         {
           interface: "ens/uri-resolver.core.polywrap.eth",
@@ -1039,7 +1035,7 @@ describe("resolveUri", () => {
   });
 
   it("can preload wrapper resolvers", async () => {
-    const client = await new PolywrapClient();
+    const client = await getClient();
 
     const { success, failedUriResolvers } = await client.loadUriResolvers();
 

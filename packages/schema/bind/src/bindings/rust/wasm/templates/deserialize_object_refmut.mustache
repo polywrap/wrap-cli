@@ -1,0 +1,11 @@
+{{#required}}
+let object = {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::read(&mut reader)?;
+{{/required}}
+{{^required}}
+let mut object: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = None;
+if !reader.is_next_nil()? {
+    object = Some({{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::read(&mut reader)?);
+} else {
+    object = None;
+}
+{{/required}}

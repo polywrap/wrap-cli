@@ -1,9 +1,0 @@
-{{#required}}
-const object = Types.{{type}}.read(reader);
-{{/required}}
-{{^required}}
-let object: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = null;
-if (!reader.isNextNil()) {
-  object = Types.{{type}}.read(reader);
-}
-{{/required}}

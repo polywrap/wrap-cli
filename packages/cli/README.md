@@ -1,9 +1,13 @@
-# Polywrap CLI
-TODO:
-  - introduce high level usages (create, build, test, publish)
-  - type --help for full usage
-  - [Getting Started Video](link)
-  - [generated documentation](link)
+# The Polywrap CLI (polywrap)
 
-^^^
-Make sure this is a "self documenting" process. This way we don't have to update as the tool's features changes over time.
+A command-line interface for building and deploying Polywrap projects.
+
+## Documentation
+https://docs.polywrap.io/reference/cli/polywrap-cli
+
+## Examples
+Demos:  
+https://github.com/polywrap/demos
+
+Integrations:  
+https://github.com/polywrap/integrations

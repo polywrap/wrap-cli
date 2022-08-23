@@ -91,82 +91,67 @@ describe("Ethereum Plugin", () => {
   describe("Query", () => {
     it("callContractView", async () => {
       const node = namehash("whatever.eth");
-      const response = await client.query<{ callContractView: string }>({
+      const response = await client.invoke<string>({
         uri,
-        query: `
-          query {
-            callContractView(
-              address: "${ensAddress}",
-              method: "function resolver(bytes32 node) external view returns (address)",
-              args: ["${node}"]
-            )
-          }
-        `,
+        method: "callContractView",
+        args: {
+          address: ensAddress,
+          method:
+            "function resolver(bytes32 node) external view returns (address)",
+          args: [node],
+        },
       });
 
-      expect(response.errors).toBeUndefined();
-      expect(response.data?.callContractView).toBeDefined();
-      expect(response.data?.callContractView).toBe(
-        "0x0000000000000000000000000000000000000000"
-      );
+      expect(response.error).toBeUndefined();
+      expect(response.data).toBeDefined();
+      expect(response.data).toBe("0x0000000000000000000000000000000000000000");
     });
 
     it("callContractStatic (no error)", async () => {
       const label = "0x" + keccak256("testwhatever");
-      const response = await client.query<{
-        callContractStatic: Schema.StaticTxResult;
-      }>({
+      const response = await client.invoke<Schema.StaticTxResult>({
         uri,
-        query: `
-          query {
-            callContractStatic(
-              address: "${registrarAddress}",
-              method: "function register(bytes32 label, address owner)",
-              args: ["${label}", "${signer}"],
-              txOverrides: {
-                value: null,
-                nonce: null,
-                gasPrice: "50",
-                gasLimit: "200000"
-              }
-            )
-          }
-        `,
+        method: "callContractStatic",
+        args: {
+          address: registrarAddress,
+          method: "function register(bytes32 label, address owner)",
+          args: [label, signer],
+          txOverrides: {
+            value: null,
+            nonce: null,
+            gasPrice: "50",
+            gasLimit: "200000",
+          },
+        },
       });
 
-      expect(response.errors).toBeUndefined();
-      expect(response.data?.callContractStatic).toBeDefined();
-      expect(response.data?.callContractStatic.error).toBeFalsy();
-      expect(response.data?.callContractStatic.result).toBe("");
+      expect(response.error).toBeUndefined();
+      expect(response.data?.error).toBeFalsy();
+      expect(response.data?.result).toBe("");
     });
 
     it("callContractStatic (expecting error)", async () => {
       const label = "0x" + keccak256("testwhatever");
-      const response = await client.query<{
-        callContractStatic: Schema.StaticTxResult;
-      }>({
+      const response = await client.invoke<Schema.StaticTxResult>({
         uri,
-        query: `
-          query {
-            callContractStatic(
-              address: "${registrarAddress}",
-              method: "function registerr(bytes32 label, address owner)",
-              args: ["${label}", "${signer}"],
-              txOverrides: {
-                value: null,
-                nonce: null,
-                gasPrice: "50",
-                gasLimit: "1"
-              }
-            )
-          }
-        `,
+        method: "callContractStatic",
+        args: {
+          address: registrarAddress,
+          method: "function registerr(bytes32 label, address owner)",
+          args: [label, signer],
+          txOverrides: {
+            value: null,
+            nonce: null,
+            gasPrice: "50",
+            gasLimit: "1",
+          },
+        },
       });
 
-      expect(response.errors).toBeUndefined();
-      expect(response.data?.callContractStatic).toBeDefined();
-      expect(response.data?.callContractStatic.error).toBeTruthy();
-      expect(response.data?.callContractStatic.result).toContain(
+      expect(response.error).toBeUndefined();
+      expect(response.data).toBeDefined();
+      expect(response.data?.error).toBeTruthy();
+      expect(response.data?.result).toContain(
         "missing revert data in call exception"
       );
     });
@@ -190,33 +175,23 @@ describe("Ethereum Plugin", () => {
     });
 
     it("encodeParams", async () => {
-      const response = await client.query<{ encodeParams: string }>({
+      const response = await client.invoke<string>({
         uri,
-        query: `
-          query {
-            encodeParams(
-              types: ["uint256", "uint256", "address"],
-              values: ["8", "16", "0x0000000000000000000000000000000000000000"]
-            )
-          }
-        `,
+        method: "encodeParams",
+        args: {
+          types: ["uint256", "uint256", "address"],
+          values: ["8", "16", "0x0000000000000000000000000000000000000000"],
+        },
       });
 
-      expect(response.data?.encodeParams).toBe(
+      expect(response.data).toBe(
         "0x000000000000000000000000000000000000000000000000000000000000000800000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000000"
       );
 
-      const acceptsTupleArg = await client.query<{ encodeFunction: string }>({
+      const acceptsTupleArg = await client.invoke<string>({
         uri,
-        query: `
-          query {
-            encodeParams(
-              types: $types
-              values: $values
-            )
-          }
-        `,
-        variables: {
+        method: "encodeParams",
+        args: {
           types: ["tuple(uint256 startTime, uint256 endTime, address token)"],
           values: [
             JSON.stringify({
@@ -228,44 +203,34 @@ describe("Ethereum Plugin", () => {
         },
       });
 
-      expect(acceptsTupleArg.errors).toBeUndefined();
+      expect(acceptsTupleArg.error).toBeUndefined();
     });
 
     it("encodeFunction", async () => {
-      const response = await client.query<{ encodeFunction: string }>({
+      const response = await client.invoke<string>({
         uri,
-        query: `
-          query {
-            encodeFunction(
-              method: "function increaseCount(uint256)",
-              args: ["100"]
-            )
-          }
-        `,
+        method: "encodeFunction",
+        args: {
+          method: "function increaseCount(uint256)",
+          args: ["100"],
+        },
       });
 
-      expect(response.errors).toBeUndefined();
-      expect(response.data?.encodeFunction).toBe(
+      expect(response.error).toBeUndefined();
+      expect(response.data).toBe(
         "0x46d4adf20000000000000000000000000000000000000000000000000000000000000064"
       );
 
-      const acceptsArrayArg = await client.query<{ encodeFunction: string }>({
+      const acceptsArrayArg = await client.invoke<string>({
         uri,
-        query: `
-          query {
-            encodeFunction(
-              method: $method
-              args: $args
-            )
-          }
-        `,
-        variables: {
+        method: "encodeFunction",
+        args: {
           method: "function createArr(uint256[] memory)",
           args: [JSON.stringify([1, 2])],
         },
       });
 
-      expect(acceptsArrayArg.errors).toBeUndefined();
+      expect(acceptsArrayArg.error).toBeUndefined();
     });
 
     it("solidityPack", async () => {
@@ -362,196 +327,157 @@ describe("Ethereum Plugin", () => {
     });
 
     it("getSignerAddress", async () => {
-      const response = await client.query<{ getSignerAddress: string }>({
+      const response = await client.invoke<string>({
         uri,
-        query: `
-          query {
-            getSignerAddress
-          }
-        `,
+        method: "getSignerAddress",
       });
 
-      expect(response.errors).toBeUndefined();
-      expect(response.data?.getSignerAddress).toBeDefined();
-      expect(response.data?.getSignerAddress.startsWith("0x")).toBe(true);
+      expect(response.error).toBeUndefined();
+      expect(response.data).toBeDefined();
+      expect(response.data?.startsWith("0x")).toBe(true);
     });
 
     it("getSignerBalance", async () => {
-      const response = await client.query<{ getSignerBalance: string }>({
+      const response = await client.invoke<string>({
         uri,
-        query: `
-          query {
-            getSignerBalance
-          }
-        `,
+        method: "getSignerBalance",
       });
 
-      expect(response.errors).toBeUndefined();
-      expect(response.data?.getSignerBalance).toBeDefined();
+      expect(response.error).toBeUndefined();
+      expect(response.data).toBeDefined();
     });
 
     it("getSignerTransactionCount", async () => {
-      const response = await client.query<{
-        getSignerTransactionCount: string;
-      }>({
+      const response = await client.invoke<string>({
         uri,
-        query: `
-          query {
-            getSignerTransactionCount
-          }
-        `,
+        method: "getSignerTransactionCount",
       });
 
-      expect(response.errors).toBeUndefined();
-      expect(response.data?.getSignerTransactionCount).toBeDefined();
-      expect(Number(response.data?.getSignerTransactionCount)).toBeTruthy();
+      expect(response.error).toBeUndefined();
+      expect(response.data).toBeDefined();
+      expect(Number(response.data)).toBeTruthy();
     });
 
     it("getGasPrice", async () => {
-      const response = await client.query<{ getGasPrice: string }>({
+      const response = await client.invoke<string>({
         uri,
-        query: `
-          query {
-            getGasPrice
-          }
-        `,
+        method: "getGasPrice",
       });
 
-      expect(response.errors).toBeUndefined();
-      expect(response.data?.getGasPrice).toBeDefined();
-      expect(Number(response.data?.getGasPrice)).toBeTruthy();
+      expect(response.error).toBeUndefined();
+      expect(response.data).toBeDefined();
+      expect(Number(response.data)).toBeTruthy();
     });
 
     it("estimateTransactionGas", async () => {
       const data = contracts.SimpleStorage.bytecode;
 
-      const response = await client.query<{ estimateTransactionGas: string }>({
+      const response = await client.invoke<string>({
         uri,
-        query: `
-          query {
-            estimateTransactionGas(
-              tx: {
-                data: "${data}"
-              }
-            )
-          }
-        `,
+        method: "estimateTransactionGas",
+        args: {
+          tx: {
+            data: data,
+          },
+        },
       });
 
-      expect(response.errors).toBeUndefined();
-      expect(response.data?.estimateTransactionGas).toBeDefined();
-      const num = ethers.BigNumber.from(response.data?.estimateTransactionGas);
+      expect(response.error).toBeUndefined();
+      expect(response.data).toBeDefined();
+      const num = ethers.BigNumber.from(response.data);
       expect(num.gt(0)).toBeTruthy();
     });
 
     it("estimateContractCallGas", async () => {
       const label = "0x" + keccak256("testwhatever2");
-      const response = await client.query<{ estimateContractCallGas: string }>({
+      const response = await client.invoke<string>({
         uri,
-        query: `
-          query {
-            estimateContractCallGas(
-              address: "${registrarAddress}",
-              method: "function register(bytes32 label, address owner)",
-              args: ["${label}", "${signer}"]
-            )
-          }
-        `,
+        method: "estimateContractCallGas",
+        args: {
+          address: registrarAddress,
+          method: "function register(bytes32 label, address owner)",
+          args: [label, signer],
+        },
       });
 
-      expect(response.data?.estimateContractCallGas).toBeDefined();
-      expect(response.errors).toBeUndefined();
-      const num = ethers.BigNumber.from(response.data?.estimateContractCallGas);
+      expect(response.data).toBeDefined();
+      expect(response.error).toBeUndefined();
+      const num = ethers.BigNumber.from(response.data);
       expect(num.gt(0)).toBeTruthy();
     });
 
     it("checkAddress", async () => {
-      const response = await client.query<{ checkAddress: string }>({
+      const response = await client.invoke<string>({
         uri,
-        query: `
-          query {
-            checkAddress(address: "${signer}")
-          }
-        `,
+        method: "checkAddress",
+        args: {
+          address: signer,
+        },
       });
 
-      expect(response.errors).toBeUndefined();
-      expect(response.data?.checkAddress).toBeDefined();
-      expect(response.data?.checkAddress).toEqual(true);
+      expect(response.error).toBeUndefined();
+      expect(response.data).toBeDefined();
+      expect(response.data).toEqual(true);
     });
 
     it("toWei", async () => {
-      const response = await client.query<{ toWei: string }>({
+      const response = await client.invoke<string>({
         uri,
-        query: `
-          query {
-            toWei(eth: "20")
-          }
-        `,
+        method: "toWei",
+        args: {
+          eth: "20",
+        },
       });
 
-      expect(response.errors).toBeUndefined();
-      expect(response.data?.toWei).toBeDefined();
-      expect(response.data?.toWei).toEqual("20000000000000000000");
+      expect(response.error).toBeUndefined();
+      expect(response.data).toBeDefined();
+      expect(response.data).toEqual("20000000000000000000");
     });
 
     it("toEth", async () => {
-      const response = await client.query<{ toEth: string }>({
+      const response = await client.invoke<string>({
         uri,
-        query: `
-          query {
-            toEth(wei: "20000000000000000000")
-          }
-        `,
+        method: "toEth",
+        args: {
+          wei: "20000000000000000000",
+        },
       });
 
-      expect(response.errors).toBeUndefined();
-      expect(response.data?.toEth).toBeDefined();
-      expect(response.data?.toEth).toEqual("20.0");
+      expect(response.error).toBeUndefined();
+      expect(response.data).toBeDefined();
+      expect(response.data).toEqual("20.0");
     });
 
     it("awaitTransaction", async () => {
       const data = contracts.SimpleStorage.bytecode;
 
-      const response = await client.query<{
-        sendTransaction: Schema.TxResponse;
-      }>({
+      const response = await client.invoke<Schema.TxResponse>({
         uri,
-        query: `
-          mutation {
-            sendTransaction(
-              tx: {
-                data: "${data}"
-              }
-            )
-          }
-        `,
+        method: "sendTransaction",
+        args: {
+          tx: {
+            data: data,
+          },
+        },
       });
 
-      expect(response.errors).toBeUndefined();
-      expect(response.data?.sendTransaction.hash).toBeTruthy();
-      const txHash = response.data?.sendTransaction.hash as string;
+      expect(response.error).toBeUndefined();
+      expect(response.data?.hash).toBeTruthy();
+      const txHash = response.data?.hash as string;
 
-      const awaitResponse = await client.query<{
-        awaitTransaction: Schema.TxReceipt;
-      }>({
+      const awaitResponse = await client.invoke<Schema.TxReceipt>({
         uri,
-        query: `
-          query {
-            awaitTransaction(
-              txHash: "${txHash}",
-              confirmations: 1,
-              timeout: 60000
-            )
-          }
-        `,
+        method: "awaitTransaction",
+        args: {
+          txHash: txHash,
+          confirmations: 1,
+          timeout: 60000,
+        },
       });
 
-      expect(awaitResponse.errors).toBeUndefined();
-      expect(awaitResponse.data?.awaitTransaction).toBeDefined();
-      expect(
-        awaitResponse.data?.awaitTransaction.transactionHash
-      ).toBeDefined();
+      expect(awaitResponse.error).toBeUndefined();
+      expect(awaitResponse.data).toBeDefined();
+      expect(awaitResponse.data?.transactionHash).toBeDefined();
     });
 
     it("waitForEvent (NameTransfer)", async () => {
@@ -561,58 +487,43 @@ describe("Ethereum Plugin", () => {
       const newOwner = "0xFFcf8FDEE72ac11b5c542428B35EEF5769C409f0";
 
       const listenerPromise = client
-        .query<{ waitForEvent: Schema.EventNotification }>({
+        .invoke<Schema.EventNotification>({
           uri,
-          query: `
-          query {
-            waitForEvent(
-              address: "${ensAddress}",
-              event: "${event}",
-              args: ["${namehash(domain)}"],
-              timeout: 20000
-            )
-          }
-        `,
+          method: "waitForEvent",
+          args: {
+            address: ensAddress,
+            event: event,
+            args: [namehash(domain)],
+            timeout: 20000,
+          },
         })
-        .then(
-          (result: { data: { waitForEvent: Schema.EventNotification } }) => {
-            expect(typeof result.data?.waitForEvent.data === "string").toBe(
-              true
-            );
-            expect(typeof result.data?.waitForEvent.address === "string").toBe(
-              true
-            );
-            expect(result.data?.waitForEvent.log).toBeDefined();
-            expect(
-              typeof result.data?.waitForEvent.log.transactionHash === "string"
-            ).toBe(true);
-          }
-        );
+        .then((result: { data: Schema.EventNotification }) => {
+          expect(typeof result.data?.data === "string").toBe(true);
+          expect(typeof result.data?.address === "string").toBe(true);
+          expect(result.data?.log).toBeDefined();
+          expect(typeof result.data?.log.transactionHash === "string").toBe(
+            true
+          );
+        });
 
-      await client.query<{ callContractMethod: Schema.TxResponse }>({
+      await client.invoke<Schema.TxResponse>({
         uri,
-        query: `
-          mutation {
-            callContractMethod(
-              address: "${registrarAddress}",
-              method: "function register(bytes32 label, address owner)",
-              args: ["${label}", "${signer}"]
-            )
-          }
-        `,
+        method: "callContractMethod",
+        args: {
+          address: registrarAddress,
+          method: "function register(bytes32 label, address owner)",
+          args: [label, signer],
+        },
       });
 
-      await client.query<{ callContractMethod: Schema.TxResponse }>({
+      await client.invoke<Schema.TxResponse>({
         uri,
-        query: `
-          mutation {
-            callContractMethod(
-              address: "${ensAddress}",
-              method: "function setOwner(bytes32 node, address owner) external",
-              args: ["${namehash(domain)}", "${newOwner}"]
-            )
-          }
-        `,
+        method: "callContractMethod",
+        args: {
+          address: ensAddress,
+          method: "function setOwner(bytes32 node, address owner) external",
+          args: [namehash(domain), newOwner],
+        },
       });
 
       await listenerPromise;
@@ -624,128 +535,91 @@ describe("Ethereum Plugin", () => {
       const domain = "testwhatever12.eth";
 
       const listenerPromise = client
-        .query<{ waitForEvent: Schema.EventNotification }>({
+        .invoke<Schema.EventNotification>({
           uri,
-          query: `
-          query {
-            waitForEvent(
-              address: "${ensAddress}",
-              event: "${event}",
-              args: [],
-              timeout: 20000
-            )
-          }
-        `,
+          method: "waitForEvent",
+          args: {
+            address: ensAddress,
+            event: event,
+            args: [],
+            timeout: 20000,
+          },
         })
-        .then(
-          (result: { data: { waitForEvent: Schema.EventNotification } }) => {
-            expect(typeof result.data?.waitForEvent.data === "string").toBe(
-              true
-            );
-            expect(typeof result.data?.waitForEvent.address === "string").toBe(
-              true
-            );
-            expect(result.data?.waitForEvent.log).toBeDefined();
-            expect(
-              typeof result.data?.waitForEvent.log.transactionHash === "string"
-            ).toBe(true);
+        .then((result: { data: Schema.EventNotification }) => {
+          expect(typeof result.data?.data === "string").toBe(true);
+          expect(typeof result.data?.address === "string").toBe(true);
+          expect(result.data?.log).toBeDefined();
+          expect(typeof result.data?.log.transactionHash === "string").toBe(
+            true
+          );
 
-            return;
-          }
-        );
+          return;
+        });
 
-      await client.query({
+      await client.invoke({
         uri,
-        query: `
-          mutation {
-            callContractMethod(
-              address: "${registrarAddress}", 
-              method: "function register(bytes32 label, address owner)", 
-              args: ["${label}", "${signer}"]
-            )
-          }
-        `,
+        method: "callContractMethod",
+        args: {
+          address: registrarAddress,
+          method: "function register(bytes32 label, address owner)",
+          args: [label, signer],
+        },
       });
 
-      await client.query({
+      await client.invoke({
         uri,
-        query: `
-          mutation {
-            callContractMethod(
-              address: "${ensAddress}",
-              method: "function setResolver(bytes32 node, address owner)",
-              args: ["${namehash(domain)}", "${resolverAddress}"]
-            )
-          }
-        `,
+        method: "callContractMethod",
+        args: {
+          address: ensAddress,
+          method: "function setResolver(bytes32 node, address owner)",
+          args: [namehash(domain), resolverAddress],
+        },
       });
 
       await listenerPromise;
     });
 
     it("getNetwork - mainnet", async () => {
-      const mainnetNetwork = await client.query<{
-        getNetwork: Schema.Network;
-      }>({
+      const mainnetNetwork = await client.invoke<Schema.Network>({
         uri,
-        query: `
-          query($networkNameOrChainId: String!) {
-            getNetwork(
-              connection: {
-                networkNameOrChainId: $networkNameOrChainId
-              }
-            )
+        method: "getNetwork",
+        args: {
+          connection: {
+            networkNameOrChainId: "mainnet"
           }
-        `,
-        variables: {
-          networkNameOrChainId: "mainnet",
-        },
+        }
       });
 
       expect(mainnetNetwork.data).toBeTruthy();
-      expect(mainnetNetwork.errors).toBeFalsy();
-      expect(mainnetNetwork.data?.getNetwork.chainId).toBe("1");
-      expect(mainnetNetwork.data?.getNetwork.name).toBe("homestead");
-      expect(mainnetNetwork.data?.getNetwork.ensAddress).toBe(
+      expect(mainnetNetwork.error).toBeFalsy();
+      expect(mainnetNetwork.data?.chainId).toBe("1");
+      expect(mainnetNetwork.data?.name).toBe("homestead");
+      expect(mainnetNetwork.data?.ensAddress).toBe(
         "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"
       );
     });
     it("getNetwork - polygon", async () => {
-      const polygonNetwork = await client.query<{
-        getNetwork: Schema.Network;
-      }>({
+      const polygonNetwork = await client.invoke<Schema.Network>({
         uri,
-        query: `
-          query($node: String!) {
-            getNetwork(
-              connection: {
-                node: $node
-              }
-            )
+        method: "getNetwork",
+        args: {
+          connection: {
+            node: "https://polygon-rpc.com"
           }
-        `,
-        variables: {
-          node: "https://polygon-rpc.com",
-        },
+        }
       });
 
       expect(polygonNetwork.data).toBeTruthy();
-      expect(polygonNetwork.errors).toBeFalsy();
-      expect(polygonNetwork.data?.getNetwork.chainId).toBe("137");
-      expect(polygonNetwork.data?.getNetwork.name).toBe("matic");
-      expect(polygonNetwork.data?.getNetwork.ensAddress).toBeFalsy();
+      expect(polygonNetwork.error).toBeFalsy();
+      expect(polygonNetwork.data?.chainId).toBe("137");
+      expect(polygonNetwork.data?.name).toBe("matic");
+      expect(polygonNetwork.data?.ensAddress).toBeFalsy();
     });
 
     it("getNetwork - mainnet with env", async () => {
-      const mainnetNetwork = await client.query<{
-        getNetwork: Schema.Network;
-      }>({
+      const mainnetNetwork = await client.invoke<Schema.Network>({
         uri,
-        query: `
-          query {
-            getNetwork
-          }
-        `,
+        method: "getNetwork",
         config: {
           envs: [
             {
@@ -761,24 +635,18 @@ describe("Ethereum Plugin", () => {
       });
 
       expect(mainnetNetwork.data).toBeTruthy();
-      expect(mainnetNetwork.errors).toBeFalsy();
-      expect(mainnetNetwork.data?.getNetwork.chainId).toBe("1");
-      expect(mainnetNetwork.data?.getNetwork.name).toBe("homestead");
-      expect(mainnetNetwork.data?.getNetwork.ensAddress).toBe(
+      expect(mainnetNetwork.error).toBeFalsy();
+      expect(mainnetNetwork.data?.chainId).toBe("1");
+      expect(mainnetNetwork.data?.name).toBe("homestead");
+      expect(mainnetNetwork.data?.ensAddress).toBe(
         "0x00000000000C2E074eC69A0dFb2997BA6C7d2e1e"
       );
     });
 
     it("getNetwork - polygon with env", async () => {
-      const polygonNetwork = await client.query<{
-        getNetwork: Schema.Network;
-      }>({
+      const polygonNetwork = await client.invoke<Schema.Network>({
         uri,
-        query: `
-          query {
-            getNetwork
-          }
-        `,
+        method: "getNetwork",
         config: {
           envs: [
             {
@@ -794,204 +662,182 @@ describe("Ethereum Plugin", () => {
       });
 
       expect(polygonNetwork.data).toBeTruthy();
-      expect(polygonNetwork.errors).toBeFalsy();
-      expect(polygonNetwork.data?.getNetwork.chainId).toBe("137");
-      expect(polygonNetwork.data?.getNetwork.name).toBe("matic");
+      expect(polygonNetwork.error).toBeFalsy();
+      expect(polygonNetwork.data?.chainId).toBe("137");
+      expect(polygonNetwork.data?.name).toBe("matic");
+    });
+
+    it("requestAccounts", async () => {
+      const { error } = await client.invoke<string[]>({
+        uri,
+        method: "requestAccounts",
+      })
+
+      // eth_requestAccounts is not supported by Ganache
+      // this RPC error indicates that the method call was attempted
+      expect(error?.message.indexOf("Method eth_requestAccounts not supported")).toBeGreaterThanOrEqual(0);
+
+      // expect(error).toBeFalsy();
+      // expect(data).toBeTruthy();
+      // expect(data?.length).toBeGreaterThan(0);
     });
   });
 
   describe("Mutation", () => {
     it("callContractMethod", async () => {
       const label = "0x" + keccak256("testwhatever");
-      const response = await client.query<{
-        callContractMethod: Schema.TxResponse;
-      }>({
+      const response = await client.invoke<Schema.TxResponse>({
         uri,
-        query: `
-          mutation {
-            callContractMethod(
-              address: "${registrarAddress}", 
-              method: "function register(bytes32 label, address owner)", 
-              args: ["${label}", "${signer}"],               
-              txOverrides: {
-                value: null,
-                nonce: null,
-                gasPrice: "50",
-                gasLimit: "200000"
-              }
-            )
+        method: "callContractMethod",
+        args: {
+          address: registrarAddress, 
+          method: "function register(bytes32 label, address owner)", 
+          args: [label, signer],               
+          txOverrides: {
+            value: null,
+            nonce: null,
+            gasPrice: "50",
+            gasLimit: "200000"
           }
-        `,
+        }
       });
 
-      expect(response.errors).toBeUndefined();
-      expect(response.data?.callContractMethod).toBeDefined();
+      expect(response.error).toBeUndefined();
+      expect(response.data).toBeDefined();
     });
 
     it("callContractMethodAndWait", async () => {
       const label = "0x" + keccak256("testwhatever");
-      const response = await client.query<{
-        callContractMethodAndWait: Schema.TxReceipt;
-      }>({
+      const response = await client.invoke<Schema.TxReceipt>({
         uri,
-        query: `
-          mutation {
-            callContractMethodAndWait(
-              address: "${registrarAddress}", 
-              method: "function register(bytes32 label, address owner)", 
-              args: ["${label}", "${signer}"],
-              txOverrides: {
-                value: null,
-                nonce: null,
-                gasPrice: "50",
-                gasLimit: "200000"
-              }
-            )
+        method: "callContractMethodAndWait",
+        args: {
+          address: registrarAddress, 
+          method: "function register(bytes32 label, address owner)", 
+          args: [label, signer],
+          txOverrides: {
+            value: null,
+            nonce: null,
+            gasPrice: "50",
+            gasLimit: "200000"
           }
-        `,
+        }
       });
 
-      expect(response.errors).toBeUndefined();
-      expect(response.data?.callContractMethodAndWait).toBeDefined();
+      expect(response.error).toBeUndefined();
+      expect(response.data).toBeDefined();
     });
 
     it("sendTransaction", async () => {
-      const response = await client.query<{
-        sendTransaction: Schema.TxResponse;
-      }>({
+      const response = await client.invoke<Schema.TxResponse>({
         uri,
-        query: `
-          mutation {
-            sendTransaction(tx: { data: "${contracts.SimpleStorage.bytecode}" })
-          }
-        `,
+        method: "sendTransaction",
+        args: {
+          tx: { data: contracts.SimpleStorage.bytecode }
+        }
       });
 
-      expect(response.errors).toBeUndefined();
-      expect(response.data?.sendTransaction).toBeDefined();
-      expect(response.data?.sendTransaction.hash).toBeDefined();
+      expect(response.error).toBeUndefined();
+      expect(response.data).toBeDefined();
+      expect(response.data?.hash).toBeDefined();
     });
 
     it("sendTransactionAndWait", async () => {
-      const response = await client.query<{
-        sendTransactionAndWait: Schema.TxReceipt;
-      }>({
+      const response = await client.invoke<Schema.TxReceipt>({
         uri,
-        query: `
-          mutation {
-            sendTransactionAndWait(tx: { data: "${contracts.SimpleStorage.bytecode}" })
-          }
-        `,
+        method: "sendTransactionAndWait",
+        args: {
+          tx: { data: contracts.SimpleStorage.bytecode }
+        }
       });
 
-      expect(response.errors).toBeUndefined();
-      expect(response.data?.sendTransactionAndWait).toBeDefined();
+      expect(response.error).toBeUndefined();
+      expect(response.data).toBeDefined();
       expect(
-        response.data?.sendTransactionAndWait.transactionHash
+        response.data?.transactionHash
       ).toBeDefined();
     });
 
     it("deployContract", async () => {
-      const response = await client.query<{ deployContract: string }>({
+      const response = await client.invoke<string>({
         uri,
-        query: `mutation {
-          deployContract(
-            abi: $abi,
-            bytecode: $bytecode
-          )
-        }`,
-        variables: {
+        method: "deployContract",
+        args: {
           abi: JSON.stringify(contracts.SimpleStorage.abi),
-          bytecode: contracts.SimpleStorage.bytecode,
-        },
+          bytecode: contracts.SimpleStorage.bytecode
+        }
       });
 
-      expect(response.errors).toBeUndefined();
-      expect(response.data?.deployContract).toBeDefined();
-      expect(response.data?.deployContract).toContain("0x");
+      expect(response.error).toBeUndefined();
+      expect(response.data).toBeDefined();
+      expect(response.data).toContain("0x");
     });
 
     it("signMessage", async () => {
-      const response = await client.query<{ signMessage: string }>({
+      const response = await client.invoke<string>({
         uri,
-        query: `
-          mutation {
-            signMessage(message: "Hello World")
-          }
-        `,
+        method: "signMessage",
+        args: {
+          message: "Hello World"
+        }
       });
 
-      expect(response.errors).toBeUndefined();
-      expect(response.data?.signMessage).toBe(
+      expect(response.error).toBeUndefined();
+      expect(response.data).toBe(
         "0xa4708243bf782c6769ed04d83e7192dbcf4fc131aa54fde9d889d8633ae39dab03d7babd2392982dff6bc20177f7d887e27e50848c851320ee89c6c63d18ca761c"
       );
     });
 
     it("sendRPC", async () => {
-      const res = await client.query<{ sendRPC?: string }>({
+      const res = await client.invoke<string | undefined>({
         uri,
-        query: `
-          mutation {
-            sendRPC(method: "eth_blockNumber", params: [])
-          }
-        `,
+        method: "sendRPC",
+        args: {
+          method: "eth_blockNumber", params: []
+        }
       });
 
-      expect(res.errors).toBeUndefined();
+      expect(res.error).toBeUndefined();
       expect(res.data).toBeDefined();
-      expect(res.data?.sendRPC).toBeTruthy();
     });
   });
 
   describe("Misc", () => {
     it("Struct Argument", async () => {
-      const response1 = await client.query<{ deployContract: string }>({
+      const response1 = await client.invoke<string>({
         uri,
-        query: `mutation {
-          deployContract(
-            abi: $abi,
-            bytecode: $bytecode
-          )
-        }`,
-        variables: {
+        method: "deployContract",
+        args: {
           abi: JSON.stringify(contracts.StructArg.abi),
-          bytecode: contracts.StructArg.bytecode,
-        },
+          bytecode: contracts.StructArg.bytecode
+        }
       });
 
-      expect(response1.errors).toBeUndefined();
-      expect(response1.data?.deployContract).toBeDefined();
-      expect(response1.data?.deployContract).toContain("0x");
+      expect(response1.error).toBeUndefined();
+      expect(response1.data).toBeDefined();
+      expect(response1.data).toContain("0x");
 
-      const address = response1.data?.deployContract as string;
+      const address = response1.data as string;
       const structArg = JSON.stringify({
         str: "foo bar",
         unsigned256: 123456,
         unsigned256Array: [2345, 6789],
       });
 
-      const response2 = await client.query<{
-        callContractMethodAndWait: Schema.TxReceipt;
-      }>({
+      const response2 = await client.invoke<Schema.TxReceipt>({
         uri,
-        query: `
-          mutation {
-            callContractMethodAndWait(
-              address: "${address}",
-              method: "function method(tuple(string str, uint256 unsigned256, uint256[] unsigned256Array) _arg) returns (string, uint256)",
-              args: [$structArg]
-            )
-          }
-        `,
-        variables: {
-          structArg,
-        },
+        method: "callContractMethodAndWait",
+        args: {
+          address: address,
+          method: "function method(tuple(string str, uint256 unsigned256, uint256[] unsigned256Array) _arg) returns (string, uint256)",
+          args: [structArg]
+        }
       });
 
-      expect(response2.errors).toBeUndefined();
-      expect(response2.data?.callContractMethodAndWait).toBeDefined();
+      expect(response2.error).toBeUndefined();
+      expect(response2.data).toBeDefined();
       expect(
-        response2.data?.callContractMethodAndWait.transactionHash
+        response2.data?.transactionHash
       ).toBeDefined();
     });
   });

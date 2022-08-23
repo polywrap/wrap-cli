@@ -1,0 +1,11 @@
+{{#required}}
+let object = Box::new({{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::read(reader)?);
+{{/required}}
+{{^required}}
+let mut object: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = None;
+if !reader.is_next_nil()? {
+    object = Some(Box::new({{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::read(reader)?));
+} else {
+    object = None;
+}
+{{/required}}

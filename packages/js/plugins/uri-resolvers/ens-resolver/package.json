@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/ens-resolver-plugin-js",
   "description": "Polywrap ENS Javascript Plugin",
-  "version": "0.1.1",
+  "version": "0.4.1",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
   "dependencies": {
     "@ethersproject/address": "5.0.7",
     "@ethersproject/basex": "5.0.7",
-    "@polywrap/core-js": "0.1.1",
+    "@polywrap/core-js": "0.4.1",
     "ethers": "5.0.7"
   },
   "devDependencies": {

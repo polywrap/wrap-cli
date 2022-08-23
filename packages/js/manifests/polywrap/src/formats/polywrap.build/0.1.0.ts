@@ -10,7 +10,7 @@ export interface BuildManifest {
   /**
    * Polywrap build manifest format version.
    */
-  format: "0.1.0";
+  format: "0.1.0" | "0.1";
   docker?: {
     /**
      * Docker image name.

@@ -1,9 +1,7 @@
 import {
-  Abi,
-  ImportedObjectDefinition,
   createImportedObjectDefinition,
   createInterfaceImplementedDefinition,
-} from "../abi";
+} from "..";
 import {
   extractFieldDefinition,
   extractListType,
@@ -20,6 +18,10 @@ import {
   FieldDefinitionNode,
   ASTVisitor,
 } from "graphql";
+import {
+  ImportedObjectDefinition,
+  WrapAbi,
+} from "@polywrap/wrap-manifest-types-js";
 
 const visitorEnter = (
   importedObjectTypes: ImportedObjectDefinition[],
@@ -32,14 +34,16 @@ const visitorEnter = (
       return;
     }
 
+    const interfaces = node.interfaces?.map((x) =>
+      createInterfaceImplementedDefinition({ type: x.name.value })
+    );
+
     const importedType = createImportedObjectDefinition({
       type: node.name.value,
       uri: imported.uri,
       namespace: imported.namespace,
       nativeType: imported.nativeType,
-      interfaces: node.interfaces?.map((x) =>
-        createInterfaceImplementedDefinition({ type: x.name.value })
-      ),
+      interfaces: interfaces?.length ? interfaces : undefined,
       comment: node.description?.value,
     });
     importedObjectTypes.push(importedType);
@@ -67,15 +71,15 @@ const visitorLeave = (state: State) => ({
     state.currentProperty = undefined;
   },
   NonNullType: (_node: NonNullTypeNode) => {
-    state.nonNullType = false;
+    state.nonNullType = undefined;
   },
 });
 
-export const getImportedObjectTypesVisitor = (abi: Abi): ASTVisitor => {
+export const getImportedObjectTypesVisitor = (abi: WrapAbi): ASTVisitor => {
   const state: State = {};
 
   return {
-    enter: visitorEnter(abi.importedObjectTypes, state),
+    enter: visitorEnter(abi.importedObjectTypes || [], state),
     leave: visitorLeave(state),
   };
 };

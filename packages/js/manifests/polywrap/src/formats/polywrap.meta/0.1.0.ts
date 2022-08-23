@@ -10,7 +10,7 @@ export interface MetaManifest {
   /**
    * Polywrap wrapper metadata manifest format version.
    */
-  format: "0.1.0";
+  format: "0.1.0" | "0.1";
   /**
    * Name of the wrapper.
    */

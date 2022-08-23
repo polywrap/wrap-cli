@@ -1,0 +1,22 @@
+{{#required}}
+let mut value: {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} = {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::_MAX_;
+if reader.is_next_string()? {
+    value = get_{{#toLower}}{{type}}{{/toLower}}_value(&reader.read_string()?)?;
+} else {
+    value = {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::try_from(reader.read_i32()?)?;
+    sanitize_{{#toLower}}{{type}}{{/toLower}}_value(value as i32)?;
+}
+{{/required}}
+{{^required}}
+let mut value: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = None;
+if !reader.is_next_nil()? {
+    if reader.is_next_string()? {
+        value = Some(get_{{#toLower}}{{type}}{{/toLower}}_value(&reader.read_string()?)?);
+    } else {
+        value = Some({{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::try_from(reader.read_i32()?)?);
+        sanitize_{{#toLower}}{{type}}{{/toLower}}_value(value.unwrap() as i32)?;
+    }
+} else {
+    value = None;
+}
+{{/required}}

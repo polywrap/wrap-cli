@@ -37,6 +37,12 @@ In Polywrap monorepo currently unit tests can be found in almost all packages an
 
 End to end (e2e) tests are recommended when complete integration is being tested like for CLI commands or a certain code is working with an external interface like an HTTP plugin. An example of such tests are [HTTP plugin e2e tests](https://github.com/polywrap/monorepo/blob/origin/packages/js/plugins/http/src/__tests__/e2e/e2e.spec.ts) and [CLI e2e tests](https://github.com/polywrap/monorepo/tree/origin/packages/cli/src/__tests__/e2e).
 
+### Additional dependencies for testing
+
+Some tests rely on validating `stdout` for which Cue is used. If you need to run a full test suite, you will have to install Cue.
+
+You can install Cue by following the instructions found [here](https://cuelang.org/docs/install/).
+
 ## Branches
 
 Currently, there are 2 active branches with configured branch policies:
