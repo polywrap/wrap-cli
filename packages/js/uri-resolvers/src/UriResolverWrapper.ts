@@ -82,10 +82,7 @@ const tryResolveUriWithImplementation = async (
   result: Result<UriResolverInterface.MaybeUriOrManifest | undefined, unknown>;
   history?: IUriResolutionStep<unknown>[];
 }> => {
-  const response = await client.tryResolveUri({
-    uri: implementationUri,
-    history: "none",
-  });
+  const response = await client.tryResolveUri({ uri: implementationUri });
 
   if (!response.result.ok) {
     return {
