@@ -11,6 +11,7 @@ import {
 import { buildCleanUriHistory } from "@polywrap/uri-resolvers-js";
 import { getClient } from "../../utils/getClient";
 import fs from "fs";
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
 jest.setTimeout(200000);
 
@@ -151,10 +152,7 @@ describe("URI resolution", () => {
 
     const client = await getClient();
 
-    const response = await client.tryResolveUri({
-      uri,
-      history: "full",
-    });
+    const response = await client.tryResolveUri({ uri });
 
     await expectResultWithHistory(
       response,
@@ -181,10 +179,7 @@ describe("URI resolution", () => {
       ],
     });
 
-    const response = await client.tryResolveUri({
-      uri: fromUri,
-      history: "full",
-    });
+    const response = await client.tryResolveUri({ uri: fromUri });
 
     await expectResultWithHistory(
       response,
@@ -204,19 +199,13 @@ describe("URI resolution", () => {
             factory: () => {
               return ({} as unknown) as PluginModule<{}>;
             },
-            manifest: {
-              schema: "",
-              implements: [],
-            },
+            manifest: { } as WrapManifest,
           },
         },
       ],
     });
 
-    const response = await client.tryResolveUri({
-      uri: pluginUri,
-      history: "full",
-    });
+    const response = await client.tryResolveUri({ uri: pluginUri });
 
     await expectWrapperWithHistory(response, pluginUri, "can resolve plugin");
   });
@@ -234,10 +223,7 @@ describe("URI resolution", () => {
     const sourceUri = new Uri(`simple/${wrapperPath}/build`);
     const redirectedUri = wrapperUri;
 
-    const response = await client.tryResolveUri({
-      uri: sourceUri,
-      history: "full",
-    });
+    const response = await client.tryResolveUri({ uri: sourceUri });
 
     await expectWrapperWithHistory(
       response,
@@ -249,10 +235,7 @@ describe("URI resolution", () => {
   it("can resolve cache", async () => {
     const client = await getClient();
 
-    const response1 = await client.tryResolveUri({
-      uri: wrapperUri,
-      history: "full",
-    });
+    const response1 = await client.tryResolveUri({ uri: wrapperUri });
 
     await expectWrapperWithHistory(
       response1,
@@ -260,10 +243,7 @@ describe("URI resolution", () => {
       "can resolve cache - 1"
     );
 
-    const response2 = await client.tryResolveUri({
-      uri: wrapperUri,
-      history: "full",
-    });
+    const response2 = await client.tryResolveUri({ uri: wrapperUri });
 
     await expectWrapperWithHistory(
       response2,
@@ -289,10 +269,7 @@ describe("URI resolution", () => {
     const redirectedUri = new Uri(`simple/${wrapperPath}/build`);
     const finalUri = wrapperUri;
 
-    const response1 = await client.tryResolveUri({
-      uri: redirectedUri,
-      history: "full",
-    });
+    const response1 = await client.tryResolveUri({ uri: redirectedUri });
 
     await expectWrapperWithHistory(
       response1,
@@ -300,10 +277,7 @@ describe("URI resolution", () => {
       "can resolve previously cached URI after redirecting by a URI resolver extension - 1"
     );
 
-    const response2 = await client.tryResolveUri({
-      uri: sourceUri,
-      history: "full",
-    });
+    const response2 = await client.tryResolveUri({ uri: sourceUri });
 
     await expectWrapperWithHistory(
       response2,
@@ -334,10 +308,7 @@ describe("URI resolution", () => {
         },
       ],
     });
-    const response = await client.tryResolveUri({
-      uri: sourceUri,
-      history: "full",
-    });
+    const response = await client.tryResolveUri({ uri: sourceUri });
     await expectResultWithHistory(
       response,
       UriResolutionResponse.ok(finalRedirectedUri),
@@ -362,10 +333,7 @@ describe("URI resolution", () => {
       },
     });
 
-    const response = await client.tryResolveUri({
-      uri: ensUri,
-      history: "full",
-    });
+    const response = await client.tryResolveUri({ uri: ensUri });
 
     await expectResultWithHistory(
       response,
@@ -381,7 +349,6 @@ describe("URI resolution", () => {
 
     const response = await client.tryResolveUri({
       uri: fromUri,
-      history: "full",
       config: {
         resolver: {
           name: "CustomResolver",
@@ -412,10 +379,7 @@ describe("URI resolution", () => {
       ],
     });
 
-    const response = await client.tryResolveUri({
-      uri: "ens/test.eth",
-      history: "full",
-    });
+    const response = await client.tryResolveUri({ uri: "ens/test.eth" });
 
     await expectResultWithHistory(
       response,

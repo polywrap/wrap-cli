@@ -47,11 +47,21 @@ describe("IPFS Plugin", () => {
   it("Should successfully resolve a deployed wrapper - e2e", async () => {
     const wrapperUri = `ipfs/${wrapperIpfsCid}`;
 
-    const resolution = await client.tryResolveUri(wrapperUri);
+    const response = await client.tryResolveUri({ uri: wrapperUri });
 
-    expect(resolution.wrapper).toBeTruthy();
+    if (!response.result.ok) {
+      fail("Expected response to not be an error");
+    }
 
-    const info = await resolution.wrapper?.getManifest({}, client);
-    expect(info?.name).toBe("SimpleStorage");
+    if (response.result.value.type !== "wrapper") {
+      fail("Expected response to be a wrapper");
+    }
+
+    const manifest = await response.result.value.wrapper.getManifest(
+      {},
+      client
+    );
+
+    expect(manifest?.name).toBe("SimpleStorage");
   });
 });

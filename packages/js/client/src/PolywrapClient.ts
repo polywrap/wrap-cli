@@ -742,7 +742,6 @@ export class PolywrapClient implements Client {
   ): Promise<Wrapper> {
     const { result, history } = await this.tryResolveUri({
       uri,
-      history: "none",
       contextId: options?.contextId,
     });
 
