@@ -1,4 +1,17 @@
 import { MustacheFn } from "../types";
+import { isKeyword } from "./types";
+
+// check if any of the keywords match the property name;
+// if there's a match, insert `_` at the beginning of the property name.
+export const detectKeyword: MustacheFn = () => {
+  return (value: string, render: (template: string) => string): string => {
+    const type = render(value);
+    if (isKeyword(type)) {
+      return "_" + type;
+    }
+    return type;
+  };
+};
 
 const firstUpper = (str: string) =>
   str ? str[0].toUpperCase() + str.slice(1) : "";
@@ -70,10 +83,10 @@ const _toTypescript = (
       break;
     default:
       if (type.includes("Enum_")) {
-        type = `Types.${type.replace("Enum_", "")}`;
-      } else {
-        type = `Types.${type}`;
+        type = type.replace("Enum_", "");
       }
+      type = detectKeyword()(type, (str) => str);
+      type = `Types.${type}`;
   }
 
   return undefinable

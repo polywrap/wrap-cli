@@ -1,3 +1,11 @@
+# Polywrap Origin (0.4.1)
+## Features
+* [PR-1171](https://github.com/polywrap/monorepo/pull/1171) `@polywrap/schema-bind`: Handle reserve words (keywords) for object, enum, and method names.
+
+## Bugs
+* [PR-1168](https://github.com/polywrap/monorepo/pull/1168) `@polywrap/schema-bind`: Fix imported optional map issue in Rust bindings.
+* [PR-1167](https://github.com/polywrap/monorepo/pull/1167) Remove all `wrap-man` folders, that were published to solve the plugin's circular dependency issue.
+
 # Polywrap Origin (0.4.0)
 ## Features
 * [PR-1091](https://github.com/polywrap/monorepo/pull/1091) `@polywrap/polywrap-manifest-schemas`: Polywrap project manifests (`polywrap.yaml`, `polywrap.app.yaml`, `polywrap.plugin.yaml`) have a new format `0.2.0`, which restructures the manifest into 3 top level properties: `project`, `source`, and `extensions`. Additionally all project manifests can be given the `polywrap.yaml` file name.

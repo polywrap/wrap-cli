@@ -5,7 +5,7 @@ import * as Types from "../..";
 {{#methods}}
 export class Args_{{name}} {
   {{#arguments}}
-  {{#handleKeywords}}{{name}}{{/handleKeywords}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
+  {{#detectKeyword}}{{name}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}};
   {{/arguments}}
 }
 
@@ -34,15 +34,15 @@ export function write{{name}}Args(
   writer.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
   writer.writeString("{{name}}");
   {{#scalar}}
-  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(args.{{#handleKeywords}}{{name}}{{/handleKeywords}});
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(args.{{#detectKeyword}}{{name}}{{/detectKeyword}});
   {{/scalar}}
   {{#array}}
-  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(args.{{#handleKeywords}}{{name}}{{/handleKeywords}}, (writer: Write, item: {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}}): void => {
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(args.{{#detectKeyword}}{{name}}{{/detectKeyword}}, (writer: Write, item: {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}}): void => {
     {{> serialize_array}}
   });
   {{/array}}
   {{#map}}
-  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(args.{{#handleKeywords}}{{name}}{{/handleKeywords}}, (writer: Write, key: {{#key}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/key}}) => {
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(args.{{#detectKeyword}}{{name}}{{/detectKeyword}}, (writer: Write, key: {{#key}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/key}}) => {
     writer.write{{#key}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/key}}(key);
   }, (writer: Write, value: {{#value}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/value}}): void => {
     {{#value}}
@@ -52,19 +52,19 @@ export function write{{name}}Args(
   {{/map}}
   {{#enum}}
   {{#required}}
-  writer.writeInt32(args.{{#handleKeywords}}{{name}}{{/handleKeywords}});
+  writer.writeInt32(args.{{#detectKeyword}}{{name}}{{/detectKeyword}});
   {{/required}}
   {{^required}}
-  writer.writeOptionalInt32(args.{{#handleKeywords}}{{name}}{{/handleKeywords}});
+  writer.writeOptionalInt32(args.{{#detectKeyword}}{{name}}{{/detectKeyword}});
   {{/required}}
   {{/enum}}
   {{#object}}
   {{#required}}
-  Types.{{type}}.write(writer, args.{{#handleKeywords}}{{name}}{{/handleKeywords}});
+  Types.{{#detectKeyword}}{{type}}{{/detectKeyword}}.write(writer, args.{{#detectKeyword}}{{name}}{{/detectKeyword}});
   {{/required}}
   {{^required}}
-  if (args.{{#handleKeywords}}{{name}}{{/handleKeywords}}) {
-    Types.{{type}}.write(writer, args.{{#handleKeywords}}{{name}}{{/handleKeywords}} as Types.{{type}});
+  if (args.{{#detectKeyword}}{{name}}{{/detectKeyword}}) {
+    Types.{{#detectKeyword}}{{type}}{{/detectKeyword}}.write(writer, args.{{#detectKeyword}}{{name}}{{/detectKeyword}} as Types.{{#detectKeyword}}{{type}}{{/detectKeyword}});
   } else {
     writer.writeNil();
   }

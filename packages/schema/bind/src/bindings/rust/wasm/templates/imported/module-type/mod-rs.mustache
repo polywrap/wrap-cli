@@ -21,18 +21,18 @@ pub use serialization::{
 {{#propertyDeps.length}}
 
 {{#propertyDeps}}
-use {{crate}}::{{#toUpper}}{{type}}{{/toUpper}};
+use {{crate}}::{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}};
 {{/propertyDeps}}
 {{/propertyDeps.length}}
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct {{#toUpper}}{{type}}{{/toUpper}} {}
+pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {}
 
-impl {{#toUpper}}{{type}}{{/toUpper}} {
+impl {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
     pub const URI: &'static str = "{{uri}}";
 
-    pub fn new() -> {{#toUpper}}{{type}}{{/toUpper}} {
-        {{#toUpper}}{{type}}{{/toUpper}} {}
+    pub fn new() -> {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
+        {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {}
     }
 
     {{#methods}}

@@ -15,6 +15,14 @@ export const manifest: WrapManifest = {
       ],
       "kind": 8,
       "type": "CustomEnum"
+    },
+    {
+      "constants": [
+        "for",
+        "in"
+      ],
+      "kind": 8,
+      "type": "while"
     }
   ],
   "envType": {
@@ -1044,6 +1052,38 @@ export const manifest: WrapManifest = {
             "type": "AnotherType"
           },
           "type": "AnotherType"
+        },
+        "type": "Method"
+      },
+      {
+        "arguments": [
+          {
+            "kind": 34,
+            "name": "if",
+            "object": {
+              "kind": 8192,
+              "name": "if",
+              "required": true,
+              "type": "else"
+            },
+            "required": true,
+            "type": "else"
+          }
+        ],
+        "kind": 64,
+        "name": "if",
+        "required": true,
+        "return": {
+          "kind": 34,
+          "name": "if",
+          "object": {
+            "kind": 8192,
+            "name": "if",
+            "required": true,
+            "type": "else"
+          },
+          "required": true,
+          "type": "else"
         },
         "type": "Method"
       }
@@ -2126,6 +2166,24 @@ export const manifest: WrapManifest = {
         }
       ],
       "type": "CustomMapValue"
+    },
+    {
+      "kind": 1,
+      "properties": [
+        {
+          "kind": 34,
+          "name": "else",
+          "required": true,
+          "scalar": {
+            "kind": 4,
+            "name": "else",
+            "required": true,
+            "type": "String"
+          },
+          "type": "String"
+        }
+      ],
+      "type": "else"
     }
   ],
   "version": "0.1"

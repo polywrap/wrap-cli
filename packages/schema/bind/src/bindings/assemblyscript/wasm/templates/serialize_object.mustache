@@ -1,9 +1,9 @@
 {{#required}}
-Types.{{type}}.write(writer, item);
+Types.{{#detectKeyword}}{{type}}{{/detectKeyword}}.write(writer, item);
 {{/required}}
 {{^required}}
 if (item) {
-  Types.{{type}}.write(writer, item as Types.{{type}});
+  Types.{{#detectKeyword}}{{type}}{{/detectKeyword}}.write(writer, item as Types.{{#detectKeyword}}{{type}}{{/detectKeyword}});
 } else {
   writer.writeNil();
 }
