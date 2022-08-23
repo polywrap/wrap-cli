@@ -1,11 +1,8 @@
-import { Wrapper } from "./Wrapper";
+import { Uri, Wrapper } from ".";
 
 export interface WrapperCache {
-  readonly size: number;
-
-  clear(): void;
-  delete(key: string): boolean;
-  get(key: string): Wrapper | undefined;
-  has(key: string): boolean;
-  set(key: string, value: Wrapper): void;
+  get(uri: Uri): Wrapper | undefined;
+  has(uri: Uri): boolean;
+  set(uris: Uri[], wrapper: Wrapper): void;
+  set(uri: Uri, wrapper: Wrapper): void;
 }
