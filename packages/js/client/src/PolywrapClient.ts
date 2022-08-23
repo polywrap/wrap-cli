@@ -80,7 +80,7 @@ export class PolywrapClient implements Client {
       if (!options?.noDefaults) {
         builder.addDefaults();
       }
-      
+
       if (config) {
         builder.add(config);
 
