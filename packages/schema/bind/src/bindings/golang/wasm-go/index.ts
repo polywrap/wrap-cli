@@ -155,7 +155,11 @@ export const generateBinding: GenerateBindingFn = (
     output.entries.push({
       type: "Directory",
       name: "types",
-      data: renderTemplates(templatePath("object-type"), abi.envType, subTemplates),
+      data: renderTemplates(
+        templatePath("object-type"),
+        abi.envType,
+        subTemplates
+      ),
     });
   }
 
@@ -171,13 +175,15 @@ function mergePaths(array: OutputEntry[]): OutputEntry[] {
   for (let i = 0; i < array.length; i++) {
     switch (array[i].type) {
       case "File":
-        tmp[array[i].name] = array[i]
+        tmp[array[i].name] = array[i];
         break;
       case "Directory":
         if (!tmp[array[i].name]) {
-          tmp[array[i].name] = array[i]
+          tmp[array[i].name] = array[i];
         } else {
-          (tmp[array[i].name].data as OutputEntry[]).push(...(array[i].data as OutputEntry[]))
+          (tmp[array[i].name].data as OutputEntry[]).push(
+            ...(array[i].data as OutputEntry[])
+          );
         }
         break;
     }
