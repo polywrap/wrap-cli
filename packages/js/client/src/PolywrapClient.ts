@@ -38,6 +38,7 @@ import {
   JobRunner,
   RunOptions,
   GetManifestOptions,
+  SimpleCache,
 } from "@polywrap/core-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
@@ -50,11 +51,7 @@ export interface PolywrapClientConfig<TUri extends Uri | string = string>
 }
 
 export class PolywrapClient implements Client {
-  // TODO: the Wrapper cache needs to be more like a routing table.
-  // It should help us keep track of what URI's map to what Wrappers,
-  // and handle cases where the are multiple jumps. For example, if
-  // A => B => C, then the cache should have A => C, and B => C.
-  private _wrapperCache: WrapperCache = new Map<string, Wrapper>();
+  private _wrapperCache: WrapperCache;
   private _config: PolywrapClientConfig<Uri> = {
     redirects: [],
     plugins: [],
@@ -80,12 +77,20 @@ export class PolywrapClient implements Client {
 
       const builder = new ClientConfigBuilder();
 
-      if (!options?.noDefaults) {
-        builder.addDefaults();
-      }
-
       if (config) {
         builder.add(config);
+
+        if (config.wrapperCache) {
+          this._wrapperCache = config.wrapperCache;
+        }
+      }
+
+      if (!this._wrapperCache) {
+        this._wrapperCache = new SimpleCache();
+      }
+
+      if (!options?.noDefaults) {
+        builder.addDefaults();
       }
 
       const sanitizedConfig = builder.build();
@@ -475,9 +480,8 @@ export class PolywrapClient implements Client {
 
     // Update cache for all URIs in the chain
     if (cacheWrite && wrapper) {
-      for (const item of uriHistory.getResolutionPath().stack) {
-        this._wrapperCache.set(item.sourceUri.uri, wrapper);
-      }
+      const uris = uriHistory.getResolutionPath().stack.map((x) => x.sourceUri);
+      this._wrapperCache.set(uris, wrapper);
     }
 
     if (shouldClearContext) {
