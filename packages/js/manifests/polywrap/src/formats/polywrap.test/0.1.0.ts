@@ -15,6 +15,10 @@ export interface PolywrapWorkflow {
    * Workflow name
    */
   name: string;
+  /**
+   * Path to validation script
+   */
+  validation?: string;
   jobs: Jobs;
   __type: "PolywrapWorkflow";
 }

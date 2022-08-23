@@ -1,5 +1,6 @@
 name: template-wasm-rs
 format: 0.1
+validation: "./workflows/validation.cue"
 jobs:
   sampleMethod:
     steps:

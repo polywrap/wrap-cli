@@ -184,6 +184,8 @@ export class JobRunner<
       } else return value;
     }
 
-    return args ? resolveValue(args) as Record<string, unknown> : {} as Record<string, unknown>;
+    return args
+      ? (resolveValue(args) as Record<string, unknown>)
+      : ({} as Record<string, unknown>);
   }
 }
