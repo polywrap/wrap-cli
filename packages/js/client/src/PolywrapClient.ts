@@ -26,7 +26,7 @@ import {
   createQueryDocument,
   getImplementations,
   parseQuery,
-  TryResolveToWrapperOptions,
+  TryResolveUriOptions,
   IUriResolver,
   GetUriResolverOptions,
   sanitizeEnvs,
@@ -488,9 +488,9 @@ export class PolywrapClient implements Client {
     return subscription;
   }
 
-  @Tracer.traceMethod("PolywrapClient: tryResolveToWrapper")
-  public async tryResolveToWrapper<TUri extends Uri | string>(
-    options: TryResolveToWrapperOptions<TUri>
+  @Tracer.traceMethod("PolywrapClient: tryResolveUri")
+  public async tryResolveUri<TUri extends Uri | string>(
+    options: TryResolveUriOptions<TUri>
   ): Promise<UriResolutionResponse<unknown>> {
     const { contextId, shouldClearContext } = this._setContext(
       options.contextId,
@@ -508,12 +508,8 @@ export class PolywrapClient implements Client {
       ignoreCache && uriResolver.name === "CacheableResolver"
         ? await(
             (uriResolver as unknown) as CacheableResolver
-          ).resolver.tryResolveToWrapper(this._toUri(options.uri), client, [])
-        : await uriResolver.tryResolveToWrapper(
-            this._toUri(options.uri),
-            client,
-            []
-          );
+          ).resolver.tryResolveUri(this._toUri(options.uri), client, [])
+        : await uriResolver.tryResolveUri(this._toUri(options.uri), client, []);
 
     if (shouldClearContext) {
       this._clearContext(contextId);
@@ -740,7 +736,7 @@ export class PolywrapClient implements Client {
     uri: Uri,
     options?: Contextualized
   ): Promise<Wrapper> {
-    const { result, history } = await this.tryResolveToWrapper({
+    const { result, history } = await this.tryResolveUri({
       uri,
       history: "none",
       contextId: options?.contextId,
@@ -859,10 +855,10 @@ const contextualizeClient = (
         ) => {
           return client.getImplementations(uri, { ...options, contextId });
         },
-        tryResolveToWrapper: <TUri extends Uri | string>(
-          options: TryResolveToWrapperOptions<TUri, ClientConfig>
+        tryResolveUri: <TUri extends Uri | string>(
+          options: TryResolveUriOptions<TUri, ClientConfig>
         ): Promise<UriResolutionResponse<unknown>> => {
-          return client.tryResolveToWrapper({ ...options, contextId });
+          return client.tryResolveUri({ ...options, contextId });
         },
         run: <TData extends Record<string, unknown> = Record<string, unknown>>(
           options: RunOptions<TData>

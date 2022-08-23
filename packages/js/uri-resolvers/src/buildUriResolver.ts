@@ -24,7 +24,7 @@ export const buildUriResolver = <TError = undefined>(
       ) => Promise<Result<IUriResolver[], unknown>>,
       options
     ) as IUriResolver<TError>;
-  } else if ((resolvable as IUriResolver).tryResolveToWrapper !== undefined) {
+  } else if ((resolvable as IUriResolver).tryResolveUri !== undefined) {
     return resolvable as IUriResolver<TError>;
   } else {
     throw new Error("Unknown resolvable type");

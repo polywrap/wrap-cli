@@ -90,7 +90,7 @@
 //     fullResolution: true,
 //   });
 
-//   const { result, history } = await resolver.tryResolveToWrapper(
+//   const { result, history } = await resolver.tryResolveUri(
 //     unknownUri,
 //     client({}, [], []),
 //     new Map<string, Wrapper>()
@@ -111,7 +111,7 @@
 //   const {
 //     result: redirectResult,
 //     history: redirectHistory,
-//   } = await resolver.tryResolveToWrapper(
+//   } = await resolver.tryResolveUri(
 //     fromUri,
 //     client({}, [], []),
 //     new Map<string, Wrapper>()

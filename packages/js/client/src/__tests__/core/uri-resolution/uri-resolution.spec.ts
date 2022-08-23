@@ -151,7 +151,7 @@ describe("URI resolution", () => {
 
     const client = await getClient();
 
-    const response = await client.tryResolveToWrapper({
+    const response = await client.tryResolveUri({
       uri,
       history: "full",
     });
@@ -181,7 +181,7 @@ describe("URI resolution", () => {
       ],
     });
 
-    const response = await client.tryResolveToWrapper({
+    const response = await client.tryResolveUri({
       uri: fromUri,
       history: "full",
     });
@@ -213,7 +213,7 @@ describe("URI resolution", () => {
       ],
     });
 
-    const response = await client.tryResolveToWrapper({
+    const response = await client.tryResolveUri({
       uri: pluginUri,
       history: "full",
     });
@@ -234,7 +234,7 @@ describe("URI resolution", () => {
     const sourceUri = new Uri(`simple/${wrapperPath}/build`);
     const redirectedUri = wrapperUri;
 
-    const response = await client.tryResolveToWrapper({
+    const response = await client.tryResolveUri({
       uri: sourceUri,
       history: "full",
     });
@@ -249,7 +249,7 @@ describe("URI resolution", () => {
   it("can resolve cache", async () => {
     const client = await getClient();
 
-    const response1 = await client.tryResolveToWrapper({
+    const response1 = await client.tryResolveUri({
       uri: wrapperUri,
       history: "full",
     });
@@ -260,7 +260,7 @@ describe("URI resolution", () => {
       "can resolve cache - 1"
     );
 
-    const response2 = await client.tryResolveToWrapper({
+    const response2 = await client.tryResolveUri({
       uri: wrapperUri,
       history: "full",
     });
@@ -289,7 +289,7 @@ describe("URI resolution", () => {
     const redirectedUri = new Uri(`simple/${wrapperPath}/build`);
     const finalUri = wrapperUri;
 
-    const response1 = await client.tryResolveToWrapper({
+    const response1 = await client.tryResolveUri({
       uri: redirectedUri,
       history: "full",
     });
@@ -300,7 +300,7 @@ describe("URI resolution", () => {
       "can resolve previously cached URI after redirecting by a URI resolver extension - 1"
     );
 
-    const response2 = await client.tryResolveToWrapper({
+    const response2 = await client.tryResolveUri({
       uri: sourceUri,
       history: "full",
     });
@@ -334,7 +334,7 @@ describe("URI resolution", () => {
         },
       ],
     });
-    const response = await client.tryResolveToWrapper({
+    const response = await client.tryResolveUri({
       uri: sourceUri,
       history: "full",
     });
@@ -352,7 +352,7 @@ describe("URI resolution", () => {
     const client = await getClient({
       resolver: {
         name: "CustomResolver",
-        tryResolveToWrapper: async (uri: Uri) => {
+        tryResolveUri: async (uri: Uri) => {
           if (uri.uri === ensUri.uri) {
             return UriResolutionResponse.ok(redirectUri);
           }
@@ -362,7 +362,7 @@ describe("URI resolution", () => {
       },
     });
 
-    const response = await client.tryResolveToWrapper({
+    const response = await client.tryResolveUri({
       uri: ensUri,
       history: "full",
     });
@@ -379,13 +379,13 @@ describe("URI resolution", () => {
 
     const client = await getClient();
 
-    const response = await client.tryResolveToWrapper({
+    const response = await client.tryResolveUri({
       uri: fromUri,
       history: "full",
       config: {
         resolver: {
           name: "CustomResolver",
-          tryResolveToWrapper: async (uri: Uri) => {
+          tryResolveUri: async (uri: Uri) => {
             if (uri.uri === fromUri.uri) {
               return UriResolutionResponse.ok(redirectUri);
             }
@@ -412,7 +412,7 @@ describe("URI resolution", () => {
       ],
     });
 
-    const response = await client.tryResolveToWrapper({
+    const response = await client.tryResolveUri({
       uri: "ens/test.eth",
       history: "full",
     });

@@ -25,7 +25,7 @@ export abstract class UriResolverAggregatorBase<TError = undefined>
     client: Client
   ): Promise<Result<IUriResolver<unknown>[], TError | InfiniteLoopError>>;
 
-  async tryResolveToWrapper(
+  async tryResolveUri(
     uri: Uri,
     client: Client
   ): Promise<IUriResolutionResponse<TError | InfiniteLoopError>> {
@@ -37,10 +37,10 @@ export abstract class UriResolverAggregatorBase<TError = undefined>
 
     const resolvers = result.value as IUriResolver[];
 
-    return await this.tryResolveToWrapperWithResolvers(uri, client, resolvers);
+    return await this.tryResolveUriWithResolvers(uri, client, resolvers);
   }
 
-  protected async tryResolveToWrapperWithResolvers(
+  protected async tryResolveUriWithResolvers(
     uri: Uri,
     client: Client,
     resolvers: IUriResolver<unknown>[]
@@ -69,7 +69,7 @@ export abstract class UriResolverAggregatorBase<TError = undefined>
           );
         }
 
-        const response = await resolver.tryResolveToWrapper(
+        const response = await resolver.tryResolveUri(
           currentUri,
           client,
           getUriResolutionPath(history)

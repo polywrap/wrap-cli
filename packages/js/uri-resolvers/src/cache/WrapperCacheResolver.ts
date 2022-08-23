@@ -18,7 +18,7 @@ export class WrapperCacheResolver<TError> implements ICacheResolver<TError> {
 
   constructor(private cache: Map<string, Wrapper>) {}
 
-  public async tryResolveToWrapper(
+  public async tryResolveUri(
     uri: Uri
   ): Promise<IUriResolutionResponse<TError>> {
     const wrapper = this.cache.get(uri.uri);

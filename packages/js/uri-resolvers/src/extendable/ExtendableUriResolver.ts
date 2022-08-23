@@ -61,7 +61,7 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<LoadResolve
 
   private resolverIndex = -1;
 
-  async tryResolveToWrapper(
+  async tryResolveUri(
     uri: Uri,
     client: Client
   ): Promise<ExtendableUriResolverResponse> {
@@ -81,7 +81,7 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<LoadResolve
     }
 
     try {
-      const result = await super.tryResolveToWrapperWithResolvers(
+      const result = await super.tryResolveUriWithResolvers(
         uri,
         client,
         resolvers

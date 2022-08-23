@@ -20,7 +20,7 @@ export class RedirectResolver<TUri extends string | Uri = string>
     return `${RedirectResolver.name}(${this.from.uri} - ${this.to.uri})`;
   }
 
-  async tryResolveToWrapper(uri: Uri): Promise<IUriResolutionResponse> {
+  async tryResolveUri(uri: Uri): Promise<IUriResolutionResponse> {
     if (uri.uri !== this.from.uri) {
       return UriResolutionResponse.ok(uri);
     }

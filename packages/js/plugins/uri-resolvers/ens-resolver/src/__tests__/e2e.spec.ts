@@ -70,7 +70,7 @@ describe("ENS Resolver Plugin", () => {
 
   it("Should successfully resolve a deployed wrapper - e2e", async () => {
     const wrapperUri = `ens/testnet/${wrapperEnsDomain}`;
-    const resolution = await client.tryResolveToWrapper(wrapperUri);
+    const resolution = await client.tryResolveUri(wrapperUri);
 
     expect(resolution.error).toBeFalsy();
     expect(resolution.wrapper).toBeTruthy();

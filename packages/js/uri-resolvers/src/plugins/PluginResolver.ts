@@ -31,7 +31,7 @@ export class PluginResolver implements IUriResolver {
     return `${PluginResolver.name} (${this.pluginUri.uri})`;
   }
 
-  async tryResolveToWrapper(uri: Uri): Promise<IUriResolutionResponse> {
+  async tryResolveUri(uri: Uri): Promise<IUriResolutionResponse> {
     if (uri.uri !== this.pluginUri.uri) {
       return UriResolutionResponse.ok(uri);
     }

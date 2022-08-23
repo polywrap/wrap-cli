@@ -7,7 +7,7 @@ import {
 
 export interface ICacheResolver<TError = undefined> {
   name: string;
-  tryResolveToWrapper(
+  tryResolveUri(
     uri: Uri,
     client: Client,
     resolutionPath: IUriResolutionStep<unknown>[]

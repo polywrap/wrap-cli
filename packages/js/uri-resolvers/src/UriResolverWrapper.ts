@@ -33,7 +33,7 @@ export class UriResolverWrapper implements IUriResolver<unknown> {
     return `${UriResolverWrapper.name}: (${this.implementationUri.uri})`;
   }
 
-  async tryResolveToWrapper(
+  async tryResolveUri(
     uri: Uri,
     client: Client
   ): Promise<IUriResolutionResponse<unknown>> {
@@ -81,7 +81,7 @@ const tryResolveUriWithImplementation = async (
   result: Result<UriResolverInterface.MaybeUriOrManifest | undefined, unknown>;
   history?: IUriResolutionStep<unknown>[];
 }> => {
-  const response = await client.tryResolveToWrapper({
+  const response = await client.tryResolveUri({
     uri: implementationUri,
     history: "none",
   });

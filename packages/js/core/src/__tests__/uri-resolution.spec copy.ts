@@ -281,7 +281,7 @@
 //       fullResolution: true,
 //     });
 
-//     const result = await resolver.tryResolveToWrapper(
+//     const result = await resolver.tryResolveUri(
 //       unknownUri,
 //       client({}, plugins, interfaces),
 //       new Map<string, Wrapper>()
@@ -290,7 +290,7 @@
 //     expect(result.wrapper).toBeFalsy();
 //     expect(result.uri.uri).toEqual(unknownUri);
 
-//     const redirectResult = await resolver.tryResolveToWrapper(
+//     const redirectResult = await resolver.tryResolveUri(
 //       fromUri,
 //       client({}, plugins, interfaces),
 //       new Map<string, Wrapper>()
@@ -301,7 +301,7 @@
 //   });
 
 //   it("uses a plugin that implements uri-resolver", async () => {
-//     const result = await resolver.tryResolveToWrapper(
+//     const result = await resolver.tryResolveUri(
 //       new Uri("my/something-different"),
 //       client(wrappers, plugins, interfaces),
 //       new Map<string, Wrapper>()
@@ -322,7 +322,7 @@
 //   });
 
 //   it("works when direct query a Polywrap that implements the uri-resolver", async () => {
-//     const result = await resolver.tryResolveToWrapper(
+//     const result = await resolver.tryResolveUri(
 //       new Uri("ens/ens"),
 //       client(wrappers, plugins, interfaces),
 //       new Map<string, Wrapper>()
@@ -347,7 +347,7 @@
 //   });
 
 //   it("works when direct query a plugin Polywrap that implements the uri-resolver", async () => {
-//     const result = await resolver.tryResolveToWrapper(
+//     const result = await resolver.tryResolveUri(
 //       new Uri("my/something-different"),
 //       client(wrappers, plugins, interfaces),
 //       new Map<string, Wrapper>()
@@ -382,7 +382,7 @@
 //     expect.assertions(1);
 
 //     return resolver
-//       .tryResolveToWrapper(
+//       .tryResolveUri(
 //         new Uri("some/wrapper"),
 //         client(wrappers, plugins, interfaces, circular),
 //         new Map<string, Wrapper>()
@@ -407,7 +407,7 @@
 //     expect.assertions(1);
 
 //     return resolver
-//       .tryResolveToWrapper(
+//       .tryResolveUri(
 //         new Uri("some/wrapper"),
 //         client(wrappers, plugins, interfaces, missingFromProperty),
 //         new Map<string, Wrapper>()
@@ -434,7 +434,7 @@
 //       },
 //     ];
 
-//     const result = await resolver.tryResolveToWrapper(
+//     const result = await resolver.tryResolveUri(
 //       new Uri("some/wrapper"),
 //       client(wrappers, pluginRegistrations, interfaces),
 //       new Map<string, Wrapper>()
@@ -468,7 +468,7 @@
 //       uri: resolvedUri,
 //       wrapper,
 //       error,
-//     } = await resolver.tryResolveToWrapper(
+//     } = await resolver.tryResolveUri(
 //       uri,
 //       client(
 //         {

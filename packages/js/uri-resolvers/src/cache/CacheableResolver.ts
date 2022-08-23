@@ -22,12 +22,12 @@ export class CacheableResolver<TError = undefined> implements IUriResolver<TErro
     }
   }
 
-  async tryResolveToWrapper(
+  async tryResolveUri(
     uri: Uri,
     client: Client,
     resolutionPath: IUriResolutionStep<unknown>[]
   ): Promise<IUriResolutionResponse<TError>> {
-    const cachedResponse = await this.cacheResolver.tryResolveToWrapper(
+    const cachedResponse = await this.cacheResolver.tryResolveUri(
       uri,
       client,
       resolutionPath
@@ -51,7 +51,7 @@ export class CacheableResolver<TError = undefined> implements IUriResolver<TErro
       };
     }
 
-    const response = await this.resolver.tryResolveToWrapper(
+    const response = await this.resolver.tryResolveUri(
       uri,
       client,
       resolutionPath

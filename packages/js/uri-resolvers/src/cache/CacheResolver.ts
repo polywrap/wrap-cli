@@ -16,7 +16,7 @@ export class ResponseCacheResolver<TError = undefined>
 
   constructor(private cache: Map<string, IUriResolutionResponse<TError>>) {}
 
-  public async tryResolveToWrapper(
+  public async tryResolveUri(
     uri: Uri
   ): Promise<IUriResolutionResponse<TError>> {
     const cachedResponse = this.cache.get(uri.uri);

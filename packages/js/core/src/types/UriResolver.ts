@@ -2,7 +2,7 @@ import { ClientConfig, Uri } from ".";
 import { IUriResolutionResponse } from "../uri-resolution";
 
 /** Options required for an URI resolution. */
-export interface TryResolveToWrapperOptions<
+export interface TryResolveUriOptions<
   TUri extends Uri | string,
   TClientConfig extends ClientConfig = ClientConfig
 > {
@@ -26,7 +26,7 @@ export interface TryResolveToWrapperOptions<
 }
 
 export interface UriResolverHandler {
-  tryResolveToWrapper<TUri extends Uri | string>(
-    options?: TryResolveToWrapperOptions<TUri, ClientConfig>
+  tryResolveUri<TUri extends Uri | string>(
+    options?: TryResolveUriOptions<TUri, ClientConfig>
   ): Promise<IUriResolutionResponse<unknown>>;
 }
