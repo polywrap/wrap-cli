@@ -1,16 +1,10 @@
-import {
-  Uri,
-  Client,
-  IUriResolutionStep,
-  IUriResolutionResponse,
-} from "@polywrap/core-js";
+import { Uri, Client, IUriResolutionResponse } from "@polywrap/core-js";
 
 export interface ICacheResolver<TError = undefined> {
   name: string;
   tryResolveUri(
     uri: Uri,
-    client: Client,
-    resolutionPath: IUriResolutionStep<unknown>[]
+    client: Client
   ): Promise<IUriResolutionResponse<TError>>;
 
   onResolutionEnd(

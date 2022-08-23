@@ -507,8 +507,8 @@ export class PolywrapClient implements Client {
       ignoreCache && uriResolver.name === "CacheableResolver"
         ? await(
             (uriResolver as unknown) as CacheableResolver
-          ).resolver.tryResolveUri(this._toUri(options.uri), client, [])
-        : await uriResolver.tryResolveUri(this._toUri(options.uri), client, []);
+          ).resolver.tryResolveUri(this._toUri(options.uri), client)
+        : await uriResolver.tryResolveUri(this._toUri(options.uri), client);
 
     if (shouldClearContext) {
       this._clearContext(contextId);

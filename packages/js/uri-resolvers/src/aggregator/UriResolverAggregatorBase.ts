@@ -1,5 +1,4 @@
 import { UriResolverAggregatorOptions } from ".";
-import { getUriResolutionPath } from "../getUriResolutionPath";
 import { InfiniteLoopError } from "../InfiniteLoopError";
 
 import {
@@ -70,11 +69,7 @@ export abstract class UriResolverAggregatorBase<TError = undefined>
           );
         }
 
-        const response = await resolver.tryResolveUri(
-          currentUri,
-          client,
-          getUriResolutionPath(history)
-        );
+        const response = await resolver.tryResolveUri(currentUri, client);
 
         history.push({
           resolverName: resolver.name,

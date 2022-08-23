@@ -4,7 +4,7 @@
     "outDir": "build"
   },
   "include": [
-    "./src/**/*.ts", "../uri-resolvers/src/getUriResolutionPath.ts"
+    "./src/**/*.ts"
   ],
   "exclude": []
 }

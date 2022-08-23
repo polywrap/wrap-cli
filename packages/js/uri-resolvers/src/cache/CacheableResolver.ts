@@ -8,8 +8,7 @@ import {
   IUriResolutionResponse,
 } from "@polywrap/core-js";
 
-export class CacheableResolver<TError = undefined>
-  implements IUriResolver<TError> {
+export class CacheableResolver<TError = undefined> implements IUriResolver<TError> {
   name: string;
 
   constructor(
@@ -26,14 +25,9 @@ export class CacheableResolver<TError = undefined>
 
   async tryResolveUri(
     uri: Uri,
-    client: Client,
-    resolutionPath: IUriResolutionStep<unknown>[]
+    client: Client
   ): Promise<IUriResolutionResponse<TError>> {
-    const cachedResponse = await this.cacheResolver.tryResolveUri(
-      uri,
-      client,
-      resolutionPath
-    );
+    const cachedResponse = await this.cacheResolver.tryResolveUri(uri, client);
 
     const isCacheMiss =
       cachedResponse.result.ok &&
@@ -53,11 +47,7 @@ export class CacheableResolver<TError = undefined>
       };
     }
 
-    const response = await this.resolver.tryResolveUri(
-      uri,
-      client,
-      resolutionPath
-    );
+    const response = await this.resolver.tryResolveUri(uri, client);
 
     const endResponse = await this.cacheResolver.onResolutionEnd(
       uri,
