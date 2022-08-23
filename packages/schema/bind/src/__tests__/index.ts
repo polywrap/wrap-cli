@@ -64,7 +64,6 @@ export function fetchTestCases(): TestCases {
     const outputLanguages = fs
       .readdirSync(outputDir, { withFileTypes: true })
       .filter((item: fs.Dirent) => item.isDirectory())
-      .filter((item: fs.Dirent) => item.name == "wasm-go")
       .map((item: fs.Dirent) => {
         return {
           language: item.name,
