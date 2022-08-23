@@ -19,7 +19,7 @@ const templatePath = (subpath: string) =>
   path.join(__dirname, "./templates", subpath);
 
 function camel2snake(str: string): string {
-  str = str.replace( /([A-Z])/g, "_$1");
+  str = str.replace(/([A-Z])/g, "_$1");
   str = str.startsWith("_") ? str.slice(1) : str;
   return str.toLowerCase();
 }
@@ -48,18 +48,6 @@ export const generateBinding: GenerateBindingFn = (
       ),
     });
   }
-
-  // if (abi.moduleType) {
-  //   output.entries.push({
-  //     type: "Directory",
-  //     name: "types",
-  //     data: renderTemplates(
-  //         templatePath("types"),
-  //         abi.moduleType,
-  //         subTemplates
-  //     ),
-  //   });
-  // }
 
   // Generate imported folder
   const importEntries: OutputEntry[] = [];
@@ -173,9 +161,35 @@ export const generateBinding: GenerateBindingFn = (
 
   // Generate root entry file
   output.entries.push(...renderTemplates(templatePath(""), abi, subTemplates));
+  output.entries = mergePaths(output.entries);
 
   return result;
 };
+
+function mergePaths(array: OutputEntry[]): OutputEntry[] {
+  const tmp: { [key: string]: OutputEntry } = {};
+  for (let i = 0; i < array.length; i++) {
+    switch (array[i].type) {
+      case "File":
+        tmp[array[i].name] = array[i]
+        break;
+      case "Directory":
+        if (!tmp[array[i].name]) {
+          tmp[array[i].name] = array[i]
+        } else {
+          (tmp[array[i].name].data as OutputEntry[]).push(...(array[i].data as OutputEntry[]))
+        }
+        break;
+    }
+  }
+  array = Object.values(tmp);
+  for (let i = 0; i < array.length; i++) {
+    if (array[i].type === "Directory") {
+      array[i].data = mergePaths(array[i].data as OutputEntry[]);
+    }
+  }
+  return array;
+}
 
 function applyTransforms(abi: Abi): Abi {
   const transforms = [
