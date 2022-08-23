@@ -1,5 +1,7 @@
-format: "0.2"
-language: plugin/typescript
-name: Ws
-module: ./src/index.ts
-schema: ./src/schema.graphql
+format: 0.2.0
+project:
+  type: plugin/typescript
+  name: Ws
+source:
+  module: ./src/index.ts
+  schema: ./src/schema.graphql

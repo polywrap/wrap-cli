@@ -12,28 +12,33 @@ import {
 } from ".";
 
 import {
-  migrate as migrate_0_1_to_0_2
-} from "./migrators/0.1_to_0.2";
+  migrate as migrate_0_1_0_to_0_2_0
+} from "./migrators/0.1.0_to_0.2.0";
 
 type Migrator = {
   [key in PolywrapManifestFormats]?: (m: AnyPolywrapManifest) => PolywrapManifest;
 };
 
 export const migrators: Migrator = {
-  "0.1": migrate_0_1_to_0_2,
+  "0.1.0": migrate_0_1_0_to_0_2_0,
 };
 
 export function migratePolywrapManifest(
   manifest: AnyPolywrapManifest,
   to: PolywrapManifestFormats
 ): PolywrapManifest {
-  const from = manifest.format as PolywrapManifestFormats;
+  let from = manifest.format as PolywrapManifestFormats;
+
+  // HACK: Patch fix for backwards compatability
+  if(from === "0.1" && ("0.1.0" in migrators)) {
+    from = "0.1.0" as PolywrapManifestFormats;
+  }
 
   if (from === latestPolywrapManifestFormat) {
     return manifest as PolywrapManifest;
   }
 
-  if (!(from in PolywrapManifestFormats)) {
+  if (!(Object.values(PolywrapManifestFormats).some(x => x === from))) {
     throw new Error(`Unrecognized PolywrapManifestFormat "${manifest.format}"`);
   }
 

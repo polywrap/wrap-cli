@@ -40,6 +40,7 @@ import {
   UriResolutionResponse,
   GetManifestOptions,
   initWrapper,
+  SimpleCache,
   IWrapPackage,
 } from "@polywrap/core-js";
 import { CacheableResolver, getUriHistory } from "@polywrap/uri-resolvers-js";
@@ -53,10 +54,7 @@ export interface PolywrapClientConfig<TUri extends Uri | string = string>
 }
 
 export class PolywrapClient implements Client {
-  // TODO: the Wrapper cache needs to be more like a routing table.
-  // It should help us keep track of what URI's map to what Wrappers,
-  // and handle cases where the are multiple jumps. For example, if
-  // A => B => C, then the cache should have A => C, and B => C.
+  private _wrapperCache: WrapperCache;
   private _config: PolywrapClientConfig<Uri> = ({
     redirects: [],
     plugins: [],
@@ -92,6 +90,14 @@ export class PolywrapClient implements Client {
           resolver: config.resolver as IUriResolver<unknown>,
           tracingEnabled: !!config.tracingEnabled,
         };
+
+        if (config.wrapperCache) {
+          this._wrapperCache = config.wrapperCache;
+        }
+      }
+
+      if (!this._wrapperCache) {
+        this._wrapperCache = new SimpleCache();
       }
 
       if (!options?.noDefaults) {

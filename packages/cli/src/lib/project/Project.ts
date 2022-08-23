@@ -61,7 +61,9 @@ export abstract class Project<TManifest extends AnyProjectManifest> {
 
   public abstract getSchemaNamedPath(): Promise<string>;
 
-  public abstract getImportAbis(): Promise<PolywrapManifest["import_abis"]>;
+  public abstract getImportAbis(): Promise<
+    PolywrapManifest["source"]["import_abis"]
+  >;
 
   public abstract generateSchemaBindings(
     abi: Abi,

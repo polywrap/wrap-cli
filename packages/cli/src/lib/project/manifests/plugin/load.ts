@@ -7,6 +7,7 @@ import {
 import fs from "fs";
 
 export const defaultPluginManifest = [
+  "polywrap.yaml",
   "polywrap.plugin.yaml",
   "polywrap.plugin.yml",
 ];

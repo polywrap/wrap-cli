@@ -433,3 +433,56 @@ export function writeoptionalEnvMethodResult(writer: Write, result: Types.Anothe
   }
   writer.context().pop();
 }
+
+export class Args__if {
+  _if: Types._else;
+}
+
+export function deserializeifArgs(argsBuf: ArrayBuffer): Args__if {
+  const context: Context = new Context("Deserializing module-type: if");
+  const reader = new ReadDecoder(argsBuf, context);
+  let numFields = reader.readMapLength();
+
+  let _if: Types._else | null = null;
+  let _ifSet: bool = false;
+
+  while (numFields > 0) {
+    numFields--;
+    const field = reader.readString();
+
+    reader.context().push(field, "unknown", "searching for property type");
+    if (field == "if") {
+      reader.context().push(field, "Types._else", "type found, reading property");
+      const object = Types._else.read(reader);
+      _if = object;
+      _ifSet = true;
+      reader.context().pop();
+    }
+    reader.context().pop();
+  }
+
+  if (!_if || !_ifSet) {
+    throw new Error(reader.context().printWithContext("Missing required argument: 'if: else'"));
+  }
+
+  return {
+    _if: _if
+  };
+}
+
+export function serializeifResult(result: Types._else): ArrayBuffer {
+  const sizerContext: Context = new Context("Serializing (sizing) module-type: if");
+  const sizer = new WriteSizer(sizerContext);
+  writeifResult(sizer, result);
+  const buffer = new ArrayBuffer(sizer.length);
+  const encoderContext: Context = new Context("Serializing (encoding) module-type: if");
+  const encoder = new WriteEncoder(buffer, sizer, encoderContext);
+  writeifResult(encoder, result);
+  return buffer;
+}
+
+export function writeifResult(writer: Write, result: Types._else): void {
+  writer.context().push("if", "Types._else", "writing property");
+  Types._else.write(writer, result);
+  writer.context().pop();
+}
