@@ -23,7 +23,8 @@ import {
   SubscribeOptions,
   Subscription,
   PluginPackage,
-  GetManifestOptions
+  SimpleCache,
+  GetManifestOptions,
 } from "..";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
@@ -239,7 +240,7 @@ describe("resolveUri", () => {
       new Uri("ens/test.eth"),
       uriResolvers,
       client(wrappers, plugins, interfaces),
-      new Map<string, Wrapper>(),
+      new SimpleCache(),
     );
 
     expect(result.wrapper).toBeTruthy();
@@ -261,7 +262,7 @@ describe("resolveUri", () => {
       new Uri("my/something-different"),
       uriResolvers,
       client(wrappers, plugins, interfaces),
-      new Map<string, Wrapper>(),
+      new SimpleCache(),
     );
 
     expect(result.wrapper).toBeTruthy();
@@ -283,7 +284,7 @@ describe("resolveUri", () => {
       new Uri("ens/ens"),
       uriResolvers,
       client(wrappers, plugins, interfaces),
-      new Map<string, Wrapper>(),
+      new SimpleCache(),
     );
 
     expect(result.wrapper).toBeTruthy();
@@ -305,7 +306,7 @@ describe("resolveUri", () => {
       new Uri("my/something-different"),
       uriResolvers,
       client(wrappers, plugins, interfaces),
-      new Map<string, Wrapper>(),
+      new SimpleCache(),
     );
 
     expect(result.wrapper).toBeTruthy();
@@ -340,7 +341,7 @@ describe("resolveUri", () => {
       new Uri("some/wrapper"),
       uriResolvers,
       client(wrappers, plugins, interfaces, circular),
-      new Map<string, Wrapper>(),
+      new SimpleCache(),
     ).catch((e: Error) =>
       expect(e.message).toMatch(/Infinite loop while resolving URI/)
     );
@@ -364,7 +365,7 @@ describe("resolveUri", () => {
       new Uri("some/wrapper"),
       uriResolvers,
       client(wrappers, plugins, interfaces, missingFromProperty),
-      new Map<string, Wrapper>(),
+      new SimpleCache(),
     ).catch((e: Error) =>
       expect(e.message).toMatch(
         "Redirect missing the from property.\nEncountered while resolving wrap://some/wrapper"
@@ -388,7 +389,7 @@ describe("resolveUri", () => {
       new Uri("some/wrapper"),
       uriResolvers,
       client(wrappers, pluginRegistrations, interfaces),
-      new Map<string, Wrapper>(),
+      new SimpleCache(),
     );
 
     expect(result.wrapper).toBeTruthy();
@@ -426,7 +427,7 @@ describe("resolveUri", () => {
         plugins, 
         interfaces
       ),
-      new Map<string, Wrapper>(),
+      new SimpleCache(),
     );
 
     expect(resolvedUri).toEqual(uri);
