@@ -107,32 +107,27 @@ export const getDefaultClientConfig = Tracer.traceFunc(
       ],
       resolver: new CacheableResolver(
         new PackageToWrapperCacheResolver(wrapperCache),
-        buildUriResolver(
-          [
-            new LegacyRedirectsResolver(),
-            new LegacyPluginsResolver(
-              (
-                uri: Uri,
-                plugin: PluginPackage<unknown>,
-                environment: Env<Uri> | undefined
-              ) => new PluginWrapper(uri, plugin, environment)
-            ),
-            new ExtendableUriResolver(
-              { fullResolution: false },
-              (
-                uri: Uri,
-                manifest: WrapManifest,
-                uriResolver: string,
-                environment: Env<Uri> | undefined
-              ) => {
-                return new WasmWrapper(uri, manifest, uriResolver, environment);
-              }
-            ),
-          ],
-          {
-            fullResolution: true,
-          }
-        )
+        buildUriResolver([
+          new LegacyRedirectsResolver(),
+          new LegacyPluginsResolver(
+            (
+              uri: Uri,
+              plugin: PluginPackage<unknown>,
+              environment: Env<Uri> | undefined
+            ) => new PluginWrapper(uri, plugin, environment)
+          ),
+          new ExtendableUriResolver(
+            { endOnRedirect: true },
+            (
+              uri: Uri,
+              manifest: WrapManifest,
+              uriResolver: string,
+              environment: Env<Uri> | undefined
+            ) => {
+              return new WasmWrapper(uri, manifest, uriResolver, environment);
+            }
+          ),
+        ])
       ),
     };
   }

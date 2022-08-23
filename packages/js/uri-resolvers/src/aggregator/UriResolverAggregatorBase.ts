@@ -95,7 +95,7 @@ export abstract class UriResolverAggregatorBase<TError = undefined>
 
             currentUri = resultUri;
 
-            if (this.options.fullResolution) {
+            if (!this.options.endOnRedirect) {
               runAgain = true;
             }
             break;

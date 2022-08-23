@@ -9,7 +9,7 @@ import { IUriResolver, Uri, Client, Result } from "@polywrap/core-js";
 export const buildUriResolver = <TError = undefined>(
   resolvable: UriResolvable,
   options: UriResolverAggregatorOptions = {
-    fullResolution: false,
+    endOnRedirect: false,
   }
 ): IUriResolver<TError> => {
   if (Array.isArray(resolvable)) {

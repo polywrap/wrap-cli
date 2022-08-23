@@ -9,18 +9,18 @@ export class UriResolverAggregator<
 > extends UriResolverAggregatorBase<TError> {
   constructor(
     resolvers: IUriResolver<unknown>[],
-    options: UriResolverAggregatorOptions
+    options?: UriResolverAggregatorOptions
   );
   constructor(
     resolvers: (
       uri: Uri,
       client: Client
     ) => Promise<Result<IUriResolver<unknown>[], TError | InfiniteLoopError>>,
-    options: UriResolverAggregatorOptions
+    options?: UriResolverAggregatorOptions
   );
   constructor(
     resolvers: (uri: Uri, client: Client) => Promise<IUriResolver<unknown>[]>,
-    options: UriResolverAggregatorOptions
+    options?: UriResolverAggregatorOptions
   );
   constructor(
     private resolvers:
@@ -32,7 +32,7 @@ export class UriResolverAggregator<
         ) => Promise<
           Result<IUriResolver<unknown>[], TError | InfiniteLoopError>
         >),
-    options: UriResolverAggregatorOptions
+    options: UriResolverAggregatorOptions = { endOnRedirect: false }
   ) {
     super(options);
   }

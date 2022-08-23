@@ -21,10 +21,7 @@ export class PluginsResolver extends UriResolverAggregator {
     super(
       pluginRegistrations.map(
         (x) => new PluginResolver(x, this.createPluginWrapper)
-      ),
-      {
-        fullResolution: false,
-      }
+      )
     );
   }
 

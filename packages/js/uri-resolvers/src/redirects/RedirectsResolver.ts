@@ -1,4 +1,7 @@
-import { UriResolverAggregator } from "../aggregator";
+import {
+  UriResolverAggregator,
+  UriResolverAggregatorOptions,
+} from "../aggregator";
 import { RedirectResolver } from "./RedirectResolver";
 
 import { Uri, UriRedirect } from "@polywrap/core-js";
@@ -8,9 +11,7 @@ export class RedirectsResolver<
 > extends UriResolverAggregator {
   constructor(
     redirects: readonly UriRedirect<TUri>[],
-    options: {
-      fullResolution: boolean;
-    }
+    options: UriResolverAggregatorOptions
   ) {
     super(
       async () =>

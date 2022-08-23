@@ -32,7 +32,7 @@ export class LoadResolverExtensionsError {
 
 export class ExtendableUriResolver extends UriResolverAggregatorBase<LoadResolverExtensionsError> {
   constructor(
-    options: { fullResolution: boolean },
+    options: { endOnRedirect: boolean },
     private readonly _createWrapper: CreateWrapperFunc,
     private _deserializeOptions?: DeserializeManifestOptions
   ) {
