@@ -9,8 +9,9 @@ function transformName(str: string, view: unknown): string {
     return str;
   }
   const def = view as GenericDefinition;
-  str = str.replace("%type%", def.type)
-    .replace( /([A-Z])/g, "_$1")
+  str = str
+    .replace("%type%", def.type)
+    .replace(/([A-Z])/g, "_$1")
     .toLowerCase();
   return str.startsWith("_") ? str.slice(1) : str;
 }

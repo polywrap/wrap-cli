@@ -1,4 +1,3 @@
-import { isBaseType } from "./baseTypes";
 import { reservedWordsAS } from "./reservedWords";
 import { MustacheFn } from "../../types";
 
@@ -7,30 +6,30 @@ let num = -1;
 export const startIter: MustacheFn = () => {
   return (): string => {
     num = -1;
-    return ""
-  }
-}
+    return "";
+  };
+};
 
 export const stopIter: MustacheFn = () => {
   return (): string => {
     num = -1;
-    return ""
-  }
-}
+    return "";
+  };
+};
 
 export const currIter: MustacheFn = () => {
   return (text: string, render: (template: string) => string): string => {
     const rendered: string = render(text);
     return `${rendered}${num}`;
-  }
-}
+  };
+};
 
 export const nextIter: MustacheFn = () => {
   return (text: string, render: (template: string) => string): string => {
     const rendered: string = render(text);
     return `${rendered}${++num}`;
-  }
-}
+  };
+};
 
 export const prevFullIter: MustacheFn = () => {
   return (text: string, render: (template: string) => string): string => {
@@ -38,9 +37,12 @@ export const prevFullIter: MustacheFn = () => {
     if (rendered == "stop") {
       return "";
     }
-    return Array(num).fill(0).map((_, i) => `[${rendered}${i}]`).join("");
-  }
-}
+    return Array(num)
+      .fill(0)
+      .map((_, i) => `[${rendered}${i}]`)
+      .join("");
+  };
+};
 
 export const lastFullIter: MustacheFn = () => {
   return (text: string, render: (template: string) => string): string => {
@@ -48,90 +50,103 @@ export const lastFullIter: MustacheFn = () => {
     if (rendered == "stop") {
       return "";
     }
-    return Array(num + 1).fill(0).map((_, i) => `[${rendered}${i}]`).join("");
-  }
-}
+    return Array(num + 1)
+      .fill(0)
+      .map((_, i) => `[${rendered}${i}]`)
+      .join("");
+  };
+};
 
 export const writePointer: MustacheFn = () => {
   return (text: string, render: (template: string) => string): string => {
     const [type, value] = render(text).split(" - ");
     let pointer = "*";
-    if ({
-      "BigInt": true,
-      "Json": true,
-      "Bytes": true,
-    }[type] ?? false) {
-      pointer = "";
+    switch (type) {
+      case "BigInt":
+      case "Json":
+      case "Bytes":
+        pointer = "";
+        break;
     }
-    return `writer.Write${type}(${pointer}${value})`
-  }
-}
+    return `writer.Write${type}(${pointer}${value})`;
+  };
+};
 
 export const readPointer: MustacheFn = () => {
   return (text: string, render: (template: string) => string): string => {
     const [type, value] = render(text).split(" - ");
     let pointer = "&";
-    if ({
-      "BigInt": true,
-      "Json": true,
-      "Bytes": true,
-    }[type] ?? false) {
-      pointer = "";
+    switch (type) {
+      case "BigInt":
+      case "Json":
+      case "Bytes":
+        pointer = "";
+        break;
     }
-    return `${pointer}${value}`
-  }
-}
+    return `${pointer}${value}`;
+  };
+};
 
 export const toSnakeCase: MustacheFn = () => {
   return (text: string, render: (template: string) => string): string => {
     text = render(text).replace(/([A-Z])/g, "_$1");
     text = text.startsWith("_") ? text.slice(1) : text;
     return text.toLowerCase();
-  }
-}
+  };
+};
 
 export const makeImports: MustacheFn = () => {
   return (text: string, render: (template: string) => string): string => {
-    const types = render(text).split(",")
-    const exist: {[key:string]: boolean} = {};
-    for (const t of types){
+    const types = render(text).split(",");
+    const exist: { [key: string]: boolean } = {};
+    for (const t of types) {
       switch (t) {
         case "*big.Int":
-          exist["github.com/consideritdone/polywrap-go/polywrap/msgpack/big"] = true;
-          break
+          exist[
+            "github.com/consideritdone/polywrap-go/polywrap/msgpack/big"
+          ] = true;
+          break;
         case "*fastjson.Value":
           exist["github.com/valyala/fastjson"] = true;
           break;
       }
     }
-    let imports: Array<string> = ["github.com/consideritdone/polywrap-go/polywrap/msgpack"];
+    const imports: Array<string> = [
+      "github.com/consideritdone/polywrap-go/polywrap/msgpack",
+    ];
     imports.push(...Object.keys(exist));
-    const txt = imports.sort().map(imp => `\t"${imp}"`).join("\n");
-    return `import (\n${txt}\n)`
-  }
-}
+    const txt = imports
+      .sort()
+      .map((imp) => `\t"${imp}"`)
+      .join("\n");
+    return `import (\n${txt}\n)`;
+  };
+};
 
 export const stuctProps: MustacheFn = () => {
   return (text: string, render: (template: string) => string): string => {
-    let props: [string, string][] = render(text).split("\n")
-      .map(line => line.trimEnd())
-      .filter(line => line !== "")
-      .map(line => line.split(" ") as [string, string])
+    const props: [string, string][] = render(text)
+      .split("\n")
+      .map((line) => line.trimEnd())
+      .filter((line) => line !== "")
+      .map((line) => line.split(" ") as [string, string]);
     let maxPropNameLn = 0;
     for (const [propName] of props) {
       if (propName.length > maxPropNameLn) {
-        maxPropNameLn = propName.length
+        maxPropNameLn = propName.length;
       }
     }
     for (let i = 0; i < props.length; i++) {
       if (props[i][0].length < maxPropNameLn) {
-        props[i][0] += Array(maxPropNameLn - props[i][0].length).fill(" ").join("");
+        props[i][0] += Array(maxPropNameLn - props[i][0].length)
+          .fill(" ")
+          .join("");
       }
       props[i][0] = "\t" + props[i][0];
     }
-    return props.map(v => v.join(" ")).join("\n") + "\n";
-  }
-}
+    return props.map((v) => v.join(" ")).join("\n") + "\n";
+  };
+};
 
 export const handleKeywords: MustacheFn = () => {
   return (text: string, render: (template: string) => string): string => {
@@ -146,50 +161,46 @@ export const handleKeywords: MustacheFn = () => {
 export const toMsgPack: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
-    let modifier = "";
     if (type[type.length - 1] === "!") {
       type = type.substring(0, type.length - 1);
-    } else {
-      modifier = "Optional";
     }
-
     let t = type;
     if (type.startsWith("[")) {
       t = "Array";
     } else if (type.startsWith("Map")) {
       t = "Map";
     } else if (type.startsWith("Int8")) {
-      t = "I8"
+      t = "I8";
     } else if (type.startsWith("Int16")) {
-      t = "I16"
+      t = "I16";
     } else if (type.startsWith("Int32")) {
-      t = "I32"
+      t = "I32";
     } else if (type.startsWith("Int64")) {
-      t = "I64"
+      t = "I64";
     } else if (type.startsWith("Int")) {
-      t = "I32"
+      t = "I32";
     } else if (type.startsWith("UInt8")) {
-      t = "U8"
+      t = "U8";
     } else if (type.startsWith("UInt16")) {
-      t = "U16"
+      t = "U16";
     } else if (type.startsWith("UInt32")) {
-      t = "U32"
+      t = "U32";
     } else if (type.startsWith("UInt64")) {
-      t = "U64"
+      t = "U64";
     } else if (type.startsWith("UInt")) {
-      t = "U32"
+      t = "U32";
     } else if (type.startsWith("String")) {
-      t = "String"
+      t = "String";
     } else if (type.startsWith("Boolean")) {
-      t = "Bool"
+      t = "Bool";
     } else if (type.startsWith("Bytes")) {
-      t = "Bytes"
+      t = "Bytes";
     } else if (type.startsWith("BigInt")) {
-      t = "BigInt"
+      t = "BigInt";
     } else if (type.startsWith("BigNumber")) {
-      t = "BigInt"
+      t = "BigInt";
     } else if (type.startsWith("JSON")) {
-      t = "Json"
+      t = "Json";
     }
     return t;
   };
@@ -311,13 +322,14 @@ const toWasmMap = (type: string, optional: boolean): string => {
   return applyOptional(`map[${keyType}]${valType}`, optional, false);
 };
 
-const applyOptional = (
-  type: string,
-  optional: boolean,
-  isEnum: boolean
-): string => {
-  if (optional && !type.startsWith("*") && !type.startsWith("[]") && !type.startsWith("map")) {
-    return `*${type}`
+const applyOptional = (type: string, optional: boolean, _: boolean): string => {
+  if (
+    optional &&
+    !type.startsWith("*") &&
+    !type.startsWith("[]") &&
+    !type.startsWith("map")
+  ) {
+    return `*${type}`;
   } else {
     return type;
   }
@@ -327,14 +339,6 @@ function replaceAt(str: string, index: number, replacement: string): string {
   return (
     str.substr(0, index) + replacement + str.substr(index + replacement.length)
   );
-}
-
-function insertAt(str: string, index: number, insert: string): string {
-  return str.substr(0, index) + insert + str.substr(index);
-}
-
-function removeAt(str: string, index: number): string {
-  return str.substr(0, index) + str.substr(index + 1);
 }
 
 export const toLower: MustacheFn = () => {
