@@ -8,7 +8,8 @@ import {
   IUriResolutionResponse,
 } from "@polywrap/core-js";
 
-export class CacheableResolver<TError = undefined> implements IUriResolver<TError> {
+export class CacheableResolver<TError = undefined>
+  implements IUriResolver<TError> {
   name: string;
 
   constructor(

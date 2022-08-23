@@ -1,5 +1,6 @@
 import { ICacheResolver } from "./ICacheResolver";
 import { getUriHistory } from "../getUriHistory";
+import { IWrapperCache } from "./IWrapperCache";
 
 import {
   Uri,
@@ -7,7 +8,6 @@ import {
   IUriResolutionResponse,
   UriResolutionResponse,
 } from "@polywrap/core-js";
-import { IWrapperCache } from "./IWrapperCache";
 
 // This cache resolver caches wrappers
 // Packages are turned into wrappers before caching
