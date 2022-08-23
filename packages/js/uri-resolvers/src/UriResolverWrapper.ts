@@ -1,3 +1,12 @@
+import { getEnvFromUriHistory } from "./getEnvFromUriHistory";
+import { CreateWrapperFunc } from "./extendable";
+import { getUriHistory } from "./getUriHistory";
+
+import {
+  DeserializeManifestOptions,
+  deserializeWrapManifest,
+  WrapManifest,
+} from "@polywrap/wrap-manifest-types-js";
 import {
   IUriResolver,
   Uri,
@@ -13,14 +22,6 @@ import {
   initWrapper,
   Ok,
 } from "@polywrap/core-js";
-import {
-  DeserializeManifestOptions,
-  deserializeWrapManifest,
-  WrapManifest,
-} from "@polywrap/wrap-manifest-types-js";
-import { getEnvFromUriHistory } from "./getEnvFromUriHistory";
-import { CreateWrapperFunc } from "./extendable";
-import { getUriHistory } from "./getUriHistory";
 
 export class UriResolverWrapper implements IUriResolver<unknown> {
   constructor(
@@ -160,11 +161,6 @@ export class WasmPackage implements IWrapPackage {
 
   async createWrapper(client: Client, uriHistory: Uri[]): Promise<Wrapper> {
     const env = getEnvFromUriHistory(uriHistory, client);
-    if (uriHistory[0].uri.endsWith("simple-env-types/build")) {
-      console.log("ENV", env);
-      console.log("1", uriHistory);
-      console.log("END ENV");
-    }
 
     return this.createWrapperFunc(this.uri, this.manifest, this.resolver, env);
   }

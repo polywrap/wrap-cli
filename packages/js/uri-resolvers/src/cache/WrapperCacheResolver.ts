@@ -5,7 +5,7 @@ import {
   UriResolutionResponse,
   Wrapper,
 } from "@polywrap/core-js";
-import { ICacheResolver } from "../cache";
+import { ICacheResolver } from "./ICacheResolver";
 import { getUriHistory } from "../getUriHistory";
 
 // This resolver only caches wrappers

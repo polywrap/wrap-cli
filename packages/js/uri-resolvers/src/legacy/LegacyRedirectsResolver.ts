@@ -1,6 +1,7 @@
-import { Uri, Client } from "@polywrap/core-js";
 import { RedirectResolver } from "..";
 import { UriResolverAggregator } from "..";
+
+import { Uri, Client } from "@polywrap/core-js";
 
 export class LegacyRedirectsResolver extends UriResolverAggregator {
   constructor() {

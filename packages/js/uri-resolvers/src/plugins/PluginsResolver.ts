@@ -1,4 +1,5 @@
 import { PluginResolver } from "./PluginResolver";
+import { UriResolverAggregator } from "../aggregator";
 
 import {
   PluginRegistration,
@@ -7,7 +8,6 @@ import {
   Env,
   Wrapper,
 } from "@polywrap/core-js";
-import { UriResolverAggregator } from "../aggregator";
 
 export class PluginsResolver extends UriResolverAggregator {
   constructor(

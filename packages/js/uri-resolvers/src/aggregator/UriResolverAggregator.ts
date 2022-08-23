@@ -1,7 +1,8 @@
-import { IUriResolver, Uri, Client, Result, Ok } from "@polywrap/core-js";
 import { UriResolverAggregatorBase } from "./UriResolverAggregatorBase";
 import { UriResolverAggregatorOptions } from "./UriResolverAggregatorOptions";
 import { InfiniteLoopError } from "..";
+
+import { IUriResolver, Uri, Client, Result, Ok } from "@polywrap/core-js";
 
 export class UriResolverAggregator<
   TError = undefined

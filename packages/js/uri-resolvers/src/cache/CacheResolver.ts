@@ -1,3 +1,5 @@
+import { ICacheResolver } from "./ICacheResolver";
+
 import {
   IUriResolutionResponse,
   Uri,
@@ -5,7 +7,6 @@ import {
   UriResolutionResponse,
   Client,
 } from "@polywrap/core-js";
-import { ICacheResolver } from "./ICacheResolver";
 
 // This cache resolver caches all responses (URIs, packages, wrappers and errors)
 export class ResponseCacheResolver<TError = undefined>

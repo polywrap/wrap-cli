@@ -1,7 +1,7 @@
 import { PluginPackage, Uri } from ".";
+import { toUri } from "../utils";
 
 import { Tracer } from "@polywrap/tracing-js";
-import { toUri } from "../utils";
 
 export interface PluginRegistration<TUri extends Uri | string = string> {
   uri: TUri;

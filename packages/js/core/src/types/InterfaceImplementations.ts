@@ -1,7 +1,7 @@
 import { Uri } from ".";
+import { toUri } from "../utils";
 
 import { Tracer } from "@polywrap/tracing-js";
-import { toUri } from "../utils";
 
 export interface InterfaceImplementations<TUri extends Uri | string = string> {
   interface: TUri;

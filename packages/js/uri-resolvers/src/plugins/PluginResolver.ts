@@ -1,3 +1,5 @@
+import { getEnvFromUriHistory } from "../getEnvFromUriHistory";
+
 import {
   Wrapper,
   Client,
@@ -11,7 +13,6 @@ import {
   IUriResolutionResponse,
   toUri,
 } from "@polywrap/core-js";
-import { getEnvFromUriHistory } from "../getEnvFromUriHistory";
 
 export class PluginResolver implements IUriResolver {
   pluginUri: Uri;

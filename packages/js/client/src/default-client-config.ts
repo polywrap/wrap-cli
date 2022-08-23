@@ -1,13 +1,7 @@
 import { ClientConfig, WasmWrapper } from ".";
 import { PluginWrapper } from "./plugin/PluginWrapper";
 
-import {
-  Uri,
-  coreInterfaceUris,
-  PluginPackage,
-  Env,
-  Wrapper,
-} from "@polywrap/core-js";
+import { Uri, coreInterfaceUris, PluginPackage, Env } from "@polywrap/core-js";
 import {
   ExtendableUriResolver,
   LegacyPluginsResolver,
@@ -15,6 +9,7 @@ import {
   buildUriResolver,
   CacheableResolver,
   PackageToWrapperCacheResolver,
+  IWrapperCache,
 } from "@polywrap/uri-resolvers-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
@@ -32,7 +27,7 @@ import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 
 export const getDefaultClientConfig = Tracer.traceFunc(
   "client-js: getDefaultClientConfig",
-  (): ClientConfig<Uri> => {
+  (wrapperCache: IWrapperCache): ClientConfig<Uri> => {
     return {
       envs: [],
       redirects: [],
@@ -111,7 +106,7 @@ export const getDefaultClientConfig = Tracer.traceFunc(
         },
       ],
       resolver: new CacheableResolver(
-        new PackageToWrapperCacheResolver(new Map<string, Wrapper>()),
+        new PackageToWrapperCacheResolver(wrapperCache),
         buildUriResolver(
           [
             new LegacyRedirectsResolver(),

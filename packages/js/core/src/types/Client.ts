@@ -11,7 +11,6 @@ import {
 } from "./";
 import { IUriResolver } from "../uri-resolution";
 import { UriResolverHandler } from "./UriResolver";
-import { WrapperCache } from "./WrapperCache";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
@@ -21,7 +20,6 @@ export interface ClientConfig<TUri extends Uri | string = string> {
   interfaces: InterfaceImplementations<TUri>[];
   envs: Env<TUri>[];
   resolver: IUriResolver<unknown>;
-  wrapperCache?: WrapperCache;
 }
 
 export interface Contextualized {

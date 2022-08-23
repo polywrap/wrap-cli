@@ -1,3 +1,7 @@
+import { UriResolverAggregatorOptions } from ".";
+import { getUriResolutionPath } from "../getUriResolutionPath";
+import { InfiniteLoopError } from "../InfiniteLoopError";
+
 import {
   IUriResolver,
   Uri,
@@ -8,9 +12,6 @@ import {
   IUriResolutionStep,
   UriPackageOrWrapper,
 } from "@polywrap/core-js";
-import { UriResolverAggregatorOptions } from ".";
-import { getUriResolutionPath } from "../getUriResolutionPath";
-import { InfiniteLoopError } from "../InfiniteLoopError";
 
 export abstract class UriResolverAggregatorBase<TError = undefined>
   implements IUriResolver<TError | InfiniteLoopError> {

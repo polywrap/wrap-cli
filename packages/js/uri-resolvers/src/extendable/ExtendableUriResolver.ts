@@ -1,3 +1,10 @@
+import { CreateWrapperFunc } from "./types/CreateWrapperFunc";
+import {
+  InfiniteLoopError,
+  UriResolverAggregatorBase,
+  UriResolverWrapper,
+} from "..";
+
 import {
   IUriResolutionResponse,
   Uri,
@@ -10,12 +17,6 @@ import {
   UriResolutionResponse,
 } from "@polywrap/core-js";
 import { DeserializeManifestOptions } from "@polywrap/wrap-manifest-types-js";
-import { CreateWrapperFunc } from "./types/CreateWrapperFunc";
-import {
-  InfiniteLoopError,
-  UriResolverAggregatorBase,
-  UriResolverWrapper,
-} from "..";
 
 export type ExtendableUriResolverResponse = IUriResolutionResponse<
   LoadResolverExtensionsError | InfiniteLoopError

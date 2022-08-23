@@ -1,17 +1,18 @@
+import { ICacheResolver } from "./ICacheResolver";
+import { getUriHistory } from "../getUriHistory";
+
 import {
   Uri,
   Client,
   IUriResolutionResponse,
   UriResolutionResponse,
-  Wrapper,
 } from "@polywrap/core-js";
-import { ICacheResolver } from ".";
-import { getUriHistory } from "../getUriHistory";
+import { IWrapperCache } from "./IWrapperCache";
 
 // This cache resolver caches wrappers
 // Packages are turned into wrappers before caching
 export class PackageToWrapperCacheResolver implements ICacheResolver<unknown> {
-  constructor(private cache: Map<string, Wrapper>) {}
+  constructor(private cache: IWrapperCache) {}
 
   public get name(): string {
     return PackageToWrapperCacheResolver.name;
@@ -21,7 +22,7 @@ export class PackageToWrapperCacheResolver implements ICacheResolver<unknown> {
     uri: Uri,
     _: Client
   ): Promise<IUriResolutionResponse> {
-    const wrapper = this.cache.get(uri.uri);
+    const wrapper = this.cache.get(uri);
 
     if (wrapper) {
       return UriResolutionResponse.ok(wrapper);
@@ -37,7 +38,7 @@ export class PackageToWrapperCacheResolver implements ICacheResolver<unknown> {
   ): Promise<IUriResolutionResponse<unknown>> {
     if (response.result.ok) {
       if (response.result.value.type === "wrapper") {
-        this.cache.set(uri.uri, response.result.value.wrapper);
+        this.cache.set(uri, response.result.value.wrapper);
       } else if (response.result.value.type === "package") {
         const uriHistory: Uri[] = !response.history
           ? [uri]
@@ -47,7 +48,7 @@ export class PackageToWrapperCacheResolver implements ICacheResolver<unknown> {
           client,
           uriHistory
         );
-        this.cache.set(uri.uri, wrapper);
+        this.cache.set(uri, wrapper);
 
         return UriResolutionResponse.ok(wrapper);
       }

@@ -40,10 +40,14 @@ import {
   UriResolutionResponse,
   GetManifestOptions,
   initWrapper,
-  SimpleCache,
   IWrapPackage,
 } from "@polywrap/core-js";
-import { CacheableResolver, getUriHistory } from "@polywrap/uri-resolvers-js";
+import {
+  CacheableResolver,
+  getUriHistory,
+  IWrapperCache,
+  WrapperCache,
+} from "@polywrap/uri-resolvers-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Tracer } from "@polywrap/tracing-js";
@@ -51,10 +55,10 @@ import { Tracer } from "@polywrap/tracing-js";
 export interface PolywrapClientConfig<TUri extends Uri | string = string>
   extends ClientConfig<TUri> {
   tracingEnabled: boolean;
+  wrapperCache: IWrapperCache;
 }
 
 export class PolywrapClient implements Client {
-  private _wrapperCache: WrapperCache;
   private _config: PolywrapClientConfig<Uri> = ({
     redirects: [],
     plugins: [],
@@ -89,23 +93,12 @@ export class PolywrapClient implements Client {
             : [],
           resolver: config.resolver as IUriResolver<unknown>,
           tracingEnabled: !!config.tracingEnabled,
+          wrapperCache: config.wrapperCache ?? new WrapperCache(),
         };
-
-        if (config.wrapperCache) {
-          this._wrapperCache = config.wrapperCache;
-        }
-      }
-
-      if (!this._wrapperCache) {
-        this._wrapperCache = new SimpleCache();
       }
 
       if (!options?.noDefaults) {
         this._addDefaultConfig();
-      }
-
-      if (!this._config.resolver) {
-        throw new Error("No URI resolver provided");
       }
 
       this._validateConfig();
@@ -525,7 +518,9 @@ export class PolywrapClient implements Client {
   }
 
   private _addDefaultConfig() {
-    const defaultClientConfig = getDefaultClientConfig();
+    const defaultClientConfig = getDefaultClientConfig(
+      this._config.wrapperCache
+    );
 
     if (defaultClientConfig.redirects) {
       this._config.redirects.push(...defaultClientConfig.redirects);
@@ -722,6 +717,7 @@ export class PolywrapClient implements Client {
       envs: context?.envs ? sanitizeEnvs(context.envs) : config.envs,
       resolver: context?.resolver ?? config.resolver,
       tracingEnabled: context?.tracingEnabled || config.tracingEnabled,
+      wrapperCache: context?.wrapperCache ?? new WrapperCache(),
     });
 
     return {

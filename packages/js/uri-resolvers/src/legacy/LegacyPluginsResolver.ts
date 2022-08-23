@@ -1,5 +1,6 @@
-import { Uri, PluginPackage, Env, Wrapper, Client } from "@polywrap/core-js";
 import { UriResolverAggregator, PluginResolver } from "..";
+
+import { Uri, PluginPackage, Env, Wrapper, Client } from "@polywrap/core-js";
 
 export class LegacyPluginsResolver extends UriResolverAggregator {
   constructor(

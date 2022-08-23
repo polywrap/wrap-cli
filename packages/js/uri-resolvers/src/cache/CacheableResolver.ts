@@ -1,3 +1,5 @@
+import { ICacheResolver } from "./ICacheResolver";
+
 import {
   IUriResolver,
   Uri,
@@ -5,9 +7,9 @@ import {
   IUriResolutionStep,
   IUriResolutionResponse,
 } from "@polywrap/core-js";
-import { ICacheResolver } from ".";
 
-export class CacheableResolver<TError = undefined> implements IUriResolver<TError> {
+export class CacheableResolver<TError = undefined>
+  implements IUriResolver<TError> {
   name: string;
 
   constructor(
