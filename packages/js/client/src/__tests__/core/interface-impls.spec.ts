@@ -7,6 +7,7 @@ import {
 } from "../..";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { getClient } from "../utils/getClient";
+import { WrapperCache } from "@polywrap/uri-resolvers-js";
 
 jest.setTimeout(200000);
 
@@ -27,7 +28,7 @@ describe("interface-impls", () => {
 
     const interfaces = client.getInterfaces();
 
-    const defaultClientConfig = getDefaultClientConfig();
+    const defaultClientConfig = getDefaultClientConfig(new WrapperCache());
 
     expect(interfaces).toEqual(
       [
@@ -76,7 +77,7 @@ describe("interface-impls", () => {
           uri: implementation4Uri,
           plugin: {
             factory: () => ({} as PluginModule<{}>),
-            manifest: {} as WrapManifest
+            manifest: {} as WrapManifest,
           },
         },
       ],
@@ -135,7 +136,7 @@ describe("interface-impls", () => {
             uri: interface1Uri,
             plugin: {
               factory: () => ({} as PluginModule<{}>),
-              manifest: {} as WrapManifest
+              manifest: {} as WrapManifest,
             },
           },
           {
@@ -258,7 +259,7 @@ describe("interface-impls", () => {
     expect(implementationUris).toEqual([
       new Uri(implementationUri1),
       new Uri(implementationUri2),
-      ...getDefaultClientConfig().interfaces.find(
+      ...getDefaultClientConfig(new WrapperCache()).interfaces.find(
         (x) => x.interface.uri === interfaceUri
       )!.implementations,
     ]);
