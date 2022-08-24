@@ -8,10 +8,10 @@ import {
   Result,
 } from "@polywrap/core-js";
 
-export type UriResolvable =
+export type UriResolverLike =
   | IUriResolver<unknown>
   | UriRedirect<string | Uri>
-  | UriResolvable[]
+  | UriResolverLike[]
   | PluginRegistration<string | Uri>
   | ((
       uri: Uri,

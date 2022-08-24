@@ -1,5 +1,5 @@
 import {
-  UriResolvable,
+  UriResolverLike,
   UriResolverAggregatorOptions,
   UriResolverAggregator,
 } from ".";
@@ -7,14 +7,16 @@ import {
 import { IUriResolver, Uri, Client, Result } from "@polywrap/core-js";
 
 export const buildUriResolver = <TError = undefined>(
-  resolvable: UriResolvable,
+  resolvable: UriResolverLike,
   options: UriResolverAggregatorOptions = {
     endOnRedirect: false,
   }
 ): IUriResolver<TError> => {
   if (Array.isArray(resolvable)) {
     return new UriResolverAggregator(
-      (resolvable as UriResolvable[]).map((x) => buildUriResolver(x, options)),
+      (resolvable as UriResolverLike[]).map((x) =>
+        buildUriResolver(x, options)
+      ),
       options
     ) as IUriResolver<TError>;
   } else if (typeof resolvable === "function") {
