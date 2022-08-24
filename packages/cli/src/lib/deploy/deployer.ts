@@ -13,8 +13,12 @@ interface List {
   children: List[];
 }
 
-interface ResultList {
+export interface ResultList {
   name: string;
+  input: {
+    uri: string;
+    config?: unknown;
+  };
   result: string;
   children: ResultList[];
 }
@@ -27,6 +31,10 @@ interface Handler {
 abstract class AbstractHandler implements Handler {
   private dependencyTree: AsciiTree;
   private nextHandlers: AbstractHandler[] = [];
+  protected input: {
+    uri: string;
+    config?: unknown;
+  };
   protected result: string;
 
   constructor(public name: string) {
@@ -40,6 +48,7 @@ abstract class AbstractHandler implements Handler {
 
   public async handle(uri: Uri): Promise<Uri[]> {
     const uris: Uri[][] = [];
+
     for await (const handler of this.nextHandlers) {
       uris.push(await handler.handle(uri));
     }
@@ -61,6 +70,7 @@ abstract class AbstractHandler implements Handler {
   public getResultsList(): ResultList {
     return {
       name: this.name,
+      input: this.input,
       result: this.result,
       children: this.nextHandlers.map((n) => n.getResultsList()),
     };
@@ -83,6 +93,10 @@ export class DeployerHandler extends AbstractHandler {
     );
 
     try {
+      this.input = {
+        uri: uri.toString(),
+        config: this.config,
+      };
       const nextUri = await this.deployer.execute(uri, this.config);
       this.result = nextUri.toString();
 

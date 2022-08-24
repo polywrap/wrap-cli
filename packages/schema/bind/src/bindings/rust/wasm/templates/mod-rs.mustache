@@ -1,0 +1,53 @@
+pub mod entry;
+{{#objectTypes}}
+pub mod {{#detectKeyword}}{{#toLower}}{{type}}{{/toLower}}{{/detectKeyword}};
+pub use {{#detectKeyword}}{{#toLower}}{{type}}{{/toLower}}{{/detectKeyword}}::{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}};
+{{/objectTypes}}
+{{#enumTypes}}
+pub mod {{#detectKeyword}}{{#toLower}}{{type}}{{/toLower}}{{/detectKeyword}};
+pub use {{#detectKeyword}}{{#toLower}}{{type}}{{/toLower}}{{/detectKeyword}}::{
+    get_{{#toLower}}{{type}}{{/toLower}}_key,
+    get_{{#toLower}}{{type}}{{/toLower}}_value,
+    sanitize_{{#toLower}}{{type}}{{/toLower}}_value,
+    {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}
+};
+{{/enumTypes}}
+{{#envType}}
+pub mod {{#detectKeyword}}{{#toLower}}{{type}}{{/toLower}}{{/detectKeyword}};
+pub use {{#detectKeyword}}{{#toLower}}{{type}}{{/toLower}}{{/detectKeyword}}::{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}};
+{{/envType}}
+{{#hasImports}}
+pub mod imported;
+{{/hasImports}}
+{{#importedObjectTypes}}
+pub use imported::{{#detectKeyword}}{{#toLower}}{{type}}{{/toLower}}{{/detectKeyword}}::{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}};
+{{/importedObjectTypes}}
+{{#importedEnumTypes}}
+pub use imported::{{#detectKeyword}}{{#toLower}}{{type}}{{/toLower}}{{/detectKeyword}}::{
+    get_{{#toLower}}{{type}}{{/toLower}}_key,
+    get_{{#toLower}}{{type}}{{/toLower}}_value,
+    sanitize_{{#toLower}}{{type}}{{/toLower}}_value,
+    {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}
+};
+{{/importedEnumTypes}}
+{{#importedEnvTypes}}
+pub use imported::{{#detectKeyword}}{{#toLower}}{{type}}{{/toLower}}{{/detectKeyword}}::{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}};
+{{/importedEnvTypes}}
+{{#importedModuleTypes}}
+pub use imported::{{#detectKeyword}}{{#toLower}}{{type}}{{/toLower}}{{/detectKeyword}}::{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}};
+{{/importedModuleTypes}}
+{{#interfaceTypes}}
+pub mod {{#detectKeyword}}{{#toLower}}{{namespace}}{{/toLower}}{{/detectKeyword}};
+pub use {{#detectKeyword}}{{#toLower}}{{namespace}}{{/toLower}}{{/detectKeyword}}::{{#detectKeyword}}{{#toUpper}}{{namespace}}{{/toUpper}}{{/detectKeyword}};
+{{/interfaceTypes}}
+{{#moduleType}}
+pub mod {{#detectKeyword}}{{#toLower}}{{type}}{{/toLower}}{{/detectKeyword}};
+pub use {{#detectKeyword}}{{#toLower}}{{type}}{{/toLower}}{{/detectKeyword}}::{
+    {{#methods}}
+    deserialize_{{#toLower}}{{name}}{{/toLower}}_args,
+    serialize_{{#toLower}}{{name}}{{/toLower}}_result,
+    {{#toLower}}{{name}}{{/toLower}}_wrapped,
+    Args{{#detectKeyword}}{{#toUpper}}{{name}}{{/toUpper}}{{/detectKeyword}}{{^last}},{{/last}}
+    {{/methods}}
+};
+{{/moduleType}}

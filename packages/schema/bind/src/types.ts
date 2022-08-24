@@ -1,5 +1,5 @@
-import { Abi } from "@polywrap/schema-parse";
 import { OutputDirectory } from "@polywrap/os-js";
+import { WrapAbi } from "@polywrap/schema-parse";
 
 export type BindLanguage = "wasm-as" | "wasm-rs" | "plugin-ts" | "app-ts";
 
@@ -11,8 +11,7 @@ export interface BindOutput {
 export interface BindOptions {
   projectName: string;
   bindLanguage: BindLanguage;
-  abi: Abi;
-  schema: string;
+  abi: WrapAbi;
   config?: Record<string, unknown>;
   outputDirAbs: string;
 }

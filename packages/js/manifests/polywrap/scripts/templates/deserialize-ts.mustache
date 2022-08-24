@@ -14,7 +14,7 @@ import {
 } from ".";
 import { DeserializeManifestOptions } from "../../";
 
-import { compare } from "semver";
+import * as Semver from "semver";
 import YAML from "js-yaml";
 
 export function deserialize{{type}}(
@@ -40,9 +40,9 @@ export function deserialize{{type}}(
 
   any{{type}}.__type = "{{type}}";
 
-  const versionCompare = compare(
-    any{{type}}.format,
-    latest{{type}}Format
+  const versionCompare = Semver.compare(
+    Semver.coerce(any{{type}}.format) || any{{type}}.format,
+    Semver.coerce(latest{{type}}Format) || latest{{type}}Format
   );
 
   if (versionCompare === -1) {

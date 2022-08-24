@@ -1,0 +1,18 @@
+{
+  "name": "ws-js-plugin-integration-test",
+  "description": "WS JS Plugin Integration Test",
+  "private": true,
+  "version": "0.4.1",
+  "scripts": {
+    "build": "yarn build:polywrap",
+    "build:polywrap": "npx polywrap build",
+    "test:env:up": "npx polywrap infra up --modules=eth-ens-ipfs",
+    "test:env:down": "npx polywrap infra down --modules=eth-ens-ipfs",
+    "deploy": "yarn deploy:polywrap",
+    "deploy:polywrap": "npx polywrap build --ipfs http://localhost:5001 --test-ens simplestorage.eth"
+  },
+  "dependencies": {
+    "@polywrap/wasm-as": "0.4.1",
+    "assemblyscript": "0.19.5"
+  }
+}

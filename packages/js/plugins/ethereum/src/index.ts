@@ -21,6 +21,7 @@ import {
   Args_waitForEvent,
   Args_awaitTransaction,
   Args_getNetwork,
+  Args_requestAccounts,
   Args_callContractMethod,
   Args_callContractMethodAndWait,
   Args_deployContract,
@@ -37,45 +38,28 @@ import {
   Connection as SchemaConnection,
   manifest,
 } from "./wrap";
-import {
-  Connections,
-  Connection,
-  getConnection,
-  ConnectionConfigs,
-} from "./Connection";
+import { Connection } from "./Connection";
 import * as Mapping from "./utils/mapping";
 import { parseArgs } from "./utils/parsing";
+import { Connections } from "./Connections";
 
 import { ethers } from "ethers";
 import { defaultAbiCoder } from "ethers/lib/utils";
 import { PluginFactory } from "@polywrap/core-js";
 
+export * from "./Connection";
+export * from "./Connections";
+
 export interface EthereumPluginConfig {
-  networks: ConnectionConfigs;
-  defaultNetwork?: string;
+  connections: Connections;
 }
 
 export class EthereumPlugin extends Module<EthereumPluginConfig> {
   private _connections: Connections;
-  private _defaultNetwork: string;
 
   constructor(config: EthereumPluginConfig) {
     super(config);
-    this._connections = Connection.fromConfigs(config.networks);
-
-    // Assign the default network (mainnet if not provided)
-    if (config.defaultNetwork) {
-      this._defaultNetwork = config.defaultNetwork;
-    } else {
-      this._defaultNetwork = "mainnet";
-    }
-
-    // Create a connection for the default network if none exists
-    if (!this._connections[this._defaultNetwork]) {
-      this._connections[this._defaultNetwork] = Connection.fromNetwork(
-        this._defaultNetwork
-      );
-    }
+    this._connections = config.connections;
   }
 
   async callContractView(
@@ -325,6 +309,15 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
     };
   }
 
+  async requestAccounts(
+    args: Args_requestAccounts,
+    _client: Client
+  ): Promise<string[]> {
+    const connection = await this._getConnection(args.connection);
+    const provider = connection.getProvider();
+    return provider.send("eth_requestAccounts", []);
+  }
+
   public async callContractMethod(
     args: Args_callContractMethod,
     _client: Client
@@ -414,11 +407,7 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
   private async _getConnection(
     connection?: SchemaConnection | null
   ): Promise<Connection> {
-    return getConnection(
-      this._connections,
-      this._defaultNetwork,
-      connection || this.env.connection
-    );
+    return this._connections.getConnection(connection || this.env.connection);
   }
 }
 

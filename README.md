@@ -2,6 +2,8 @@
 
 [**Polywrap**](https://polywrap.io/) is a developer tool that enables easy integration of Web3 protocols into any application. It makes it possible for applications on any platform, written in any language, to read and write data to Web3 protocols.
 
+[![Language grade: JavaScript](https://img.shields.io/lgtm/grade/javascript/g/polywrap/monorepo.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/polywrap/monorepo/context:javascript)
+
 # Getting Started
 
 Have questions or want to get involved? Join our community [Discord](https://discord.polywrap.io) or [open an issue](https://github.com/polywrap/monorepo/issues) on Github.

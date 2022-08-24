@@ -1,0 +1,54 @@
+use serde::{Serialize, Deserialize};
+pub mod serialization;
+use polywrap_wasm_rs::{
+    BigInt,
+    BigNumber,
+    Map,
+    DecodeError,
+    EncodeError,
+    Read,
+    Write,
+    JSON,
+};
+pub use serialization::{
+    deserialize_{{#toLower}}{{type}}{{/toLower}},
+    read_{{#toLower}}{{type}}{{/toLower}},
+    serialize_{{#toLower}}{{type}}{{/toLower}},
+    write_{{#toLower}}{{type}}{{/toLower}}
+};
+{{#propertyDeps}}
+use {{crate}}::{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}};
+{{/propertyDeps}}
+
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
+    {{#properties}}
+    pub {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
+    {{/properties}}
+}
+
+impl {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
+    pub fn new() -> {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
+        {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
+            {{#properties}}
+            {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}},
+            {{/properties}}
+        }
+    }
+
+    pub fn to_buffer(args: &{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}) -> Result<Vec<u8>, EncodeError> {
+        serialize_{{#toLower}}{{type}}{{/toLower}}(args).map_err(|e| EncodeError::TypeWriteError(e.to_string()))
+    }
+
+    pub fn from_buffer(args: &[u8]) -> Result<{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}, DecodeError> {
+        deserialize_{{#toLower}}{{type}}{{/toLower}}(args).map_err(|e| DecodeError::TypeReadError(e.to_string()))
+    }
+
+    pub fn write<W: Write>(args: &{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}, writer: &mut W) -> Result<(), EncodeError> {
+        write_{{#toLower}}{{type}}{{/toLower}}(args, writer).map_err(|e| EncodeError::TypeWriteError(e.to_string()))
+    }
+
+    pub fn read<R: Read>(reader: &mut R) -> Result<{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}, DecodeError> {
+        read_{{#toLower}}{{type}}{{/toLower}}(reader).map_err(|e| DecodeError::TypeReadError(e.to_string()))
+    }
+}

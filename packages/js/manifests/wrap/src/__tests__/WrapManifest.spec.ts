@@ -1,66 +1,139 @@
-import {
-  WrapManifest,
-  deserializeWrapManifest
-} from "..";
-import {
-  msgpackEncode
-} from "@polywrap/msgpack-js";
+import { WrapManifest, deserializeWrapManifest } from "..";
+import { msgpackEncode } from "@polywrap/msgpack-js";
 
 const testManifest: WrapManifest = {
-  version: "0.1.0",
+  abi: {
+    objectTypes: [
+      {
+        type: "SampleResult",
+        kind: 1,
+        properties: [
+          {
+            type: "String",
+            name: "value",
+            required: true,
+            kind: 34,
+            scalar: {
+              type: "String",
+              name: "value",
+              required: true,
+              kind: 4,
+            },
+          },
+        ],
+        interfaces: [],
+      },
+    ],
+    enumTypes: [],
+    interfaceTypes: [],
+    importedObjectTypes: [],
+    importedModuleTypes: [],
+    importedEnumTypes: [],
+    importedEnvTypes: [],
+    moduleType: {
+      type: "Module",
+      kind: 128,
+      methods: [
+        {
+          type: "Method",
+          name: "sampleMethod",
+          required: true,
+          kind: 64,
+          arguments: [
+            {
+              type: "String",
+              name: "arg",
+              required: true,
+              kind: 34,
+              scalar: {
+                type: "String",
+                name: "arg",
+                required: true,
+                kind: 4,
+              },
+            },
+          ],
+          return: {
+            type: "SampleResult",
+            name: "sampleMethod",
+            required: true,
+            kind: 34,
+            object: {
+              type: "SampleResult",
+              name: "sampleMethod",
+              required: true,
+              kind: 8192,
+            },
+          },
+        },
+      ],
+      imports: [],
+      interfaces: [],
+    },
+  },
+  name: "template-wasm-as",
   type: "wasm",
-  name: "dog-cat",
-  abi: {}
+  version: "0.1.0",
 };
 
 describe("Polywrap Manifest Validation", () => {
-  it("Should succeed", () => {
-    const manifest = msgpackEncode(testManifest);
-    expect(deserializeWrapManifest(manifest)).toMatchObject(testManifest);
+  it("Should succeed", async () => {
+    const manifest = msgpackEncode(testManifest, true);
+    expect(await deserializeWrapManifest(manifest)).toMatchObject(testManifest);
   });
 
-  it("Should throw incorrect version format error", () => {
+  it("Should throw incorrect version format error", async () => {
     const manifest = msgpackEncode({
       ...testManifest,
-      version: "bad-str"
-    });
+      version: "bad-str",
+    }, true);
 
-    expect(() => deserializeWrapManifest(manifest)).toThrowError(/Unrecognized WrapManifest schema version/);
+    await expect(() => deserializeWrapManifest(manifest)).rejects.toThrow(
+      /Unrecognized WrapManifest schema version/
+    );
   });
 
-  it("Should throw not accepted field error", () => {
+  it("Should throw not accepted field error", async () => {
     const manifest = msgpackEncode({
       ...testManifest,
-      not_accepted_field: "not_accepted_field"
-    });
+      not_accepted_field: "not_accepted_field",
+    }, true);
 
-    expect(() => deserializeWrapManifest(manifest)).toThrowError(/not allowed to have the additional property "not_accepted_field"/);
+    await expect(() => deserializeWrapManifest(manifest)).rejects.toThrow(
+      /not allowed to have the additional property "not_accepted_field"/
+    );
   });
 
-  it("Should throw required field missing error", () => {
+  it("Should throw required field missing error", async () => {
     const manifest = msgpackEncode({
       ...testManifest,
-      name: undefined
-    });
+      name: undefined,
+    }, true);
 
-    expect(() => deserializeWrapManifest(manifest)).toThrowError(/instance requires property "name"/);
+    await expect(() => deserializeWrapManifest(manifest)).rejects.toThrow(
+      /instance requires property "name"/
+    );
   });
 
-  it("Should throw if name field incorrect patterh", () => {
+  it("Should throw if name field incorrect patterh", async () => {
     const manifest = msgpackEncode({
       ...testManifest,
-      name: "foo bar baz $%##$@#$@#$@#$#$"
-    });
+      name: "foo bar baz $%##$@#$@#$@#$#$",
+    }, true);
 
-    expect(() => deserializeWrapManifest(manifest)).toThrowError(/instance.name does not match pattern/);
+    await expect(() => deserializeWrapManifest(manifest)).rejects.toThrow(
+      /instance.name does not match pattern/
+    );
   });
 
-  it("Should throw wrong type error", () => {
+  it("Should throw wrong type error", async () => {
     const manifest = msgpackEncode({
       ...testManifest,
-      abi: true
-    });
+      abi: true,
+    }, true);
 
-    expect(() => deserializeWrapManifest(manifest)).toThrowError(/instance.abi is not of a type\(s\) object/);
+    await expect(() => deserializeWrapManifest(manifest)).rejects.toThrow(
+      /instance.abi is not of a type\(s\) object/
+    );
   });
 });

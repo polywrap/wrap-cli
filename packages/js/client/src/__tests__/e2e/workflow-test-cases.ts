@@ -1,81 +1,189 @@
-import { Workflow } from "@polywrap/core-js";
+import { JobResult, JobStatus, MaybeAsync, Workflow } from "@polywrap/core-js";
+import { GetPathToTestWrappers } from "@polywrap/test-cases";
+import path from "path";
 
-export const sanityWorkflow: Workflow = {
-  name: "simple-storage",
-  jobs: {
-    cases: {
-      steps: [
-        {
-          uri: "ens/testnet/simple-storage.eth",
-          method: "deployContract",
-          args: {
-            connection: null,
-          },
-        },
-      ],
+export interface WorkflowTestCase {
+  name: string;
+  workflow: Workflow;
+  onExecution(id: string, jobResult: JobResult): MaybeAsync<void>;
+}
+
+export const testCases: WorkflowTestCase[] = [
+  {
+    name: "simple workflow",
+    workflow: {
+      name: "simpleCalculator",
       jobs: {
-        case1: {
+        ops: {
           steps: [
             {
-              uri: "ens/testnet/simple-storage.eth",
-              method: "setData",
+              uri: `fs/${path.join(
+                GetPathToTestWrappers(),
+                "wasm-as",
+                "simple-calculator",
+                "build"
+              )}`,
+              method: "add",
               args: {
-                address: "0xA57B8a5584442B467b4689F1144D269d096A3daF",
-                value: 100,
-                connection: null,
-              },
-            },
-            {
-              uri: "ens/testnet/simple-storage.eth",
-              method: "getData",
-              args: {
-                address: "0xA57B8a5584442B467b4689F1144D269d096A3daF",
-                connection: null,
+                a: 12,
+                b: 8,
               },
             },
           ],
         },
       },
     },
+    onExecution: (id: string, jobResult: JobResult) => {
+      switch (id) {
+        case "ops.0": {
+          expect(jobResult.status).toBe(JobStatus.SUCCEED);
+          expect(jobResult.error).toBeFalsy();
+          expect(jobResult.data).toBe(20);
+          break;
+        }
+        default: {
+          throw new Error("stepId isn't supported!");
+        }
+      }
+    },
   },
-};
-
-export const outPropWorkflow: Workflow = {
-  name: "simple-storage",
-  jobs: {
-    cases: {
-      steps: [
-        {
-          uri: "ens/testnet/simple-storage.eth",
-          method: "deployContract",
-          args: {
-            connection: null,
-          },
-        },
-      ],
+  {
+    name: "simple workflow with output propagation",
+    workflow: {
+      name: "simpleCalculator",
       jobs: {
-        case1: {
+        ops: {
           steps: [
             {
-              uri: "ens/testnet/simple-storage.eth",
-              method: "setData",
+              uri: `fs/${path.join(
+                GetPathToTestWrappers(),
+                "wasm-as",
+                "simple-calculator",
+                "build"
+              )}`,
+              method: "add",
               args: {
-                address: "$cases.0.data",
-                value: 100,
-                connection: null,
+                a: 12,
+                b: 8,
               },
             },
             {
-              uri: "ens/testnet/simple-storage.eth",
-              method: "getData",
+              uri: `fs/${path.join(
+                GetPathToTestWrappers(),
+                "wasm-as",
+                "simple-calculator",
+                "build"
+              )}`,
+              method: "sub",
               args: {
-                address: "$cases.0.data",
-                connection: null,
+                a: "$ops.0.data",
+                b: 5,
               },
             },
           ],
         },
       },
     },
+    onExecution: (id: string, jobResult: JobResult) => {
+      switch (id) {
+        case "ops.0": {
+          expect(jobResult.status).toBe(JobStatus.SUCCEED);
+          expect(jobResult.error).toBeFalsy();
+          expect(jobResult.data).toBe(20);
+          break;
+        }
+        case "ops.1": {
+          expect(jobResult.status).toBe(JobStatus.SUCCEED);
+          expect(jobResult.error).toBeFalsy();
+          expect(jobResult.data).toBe(15);
+          break;
+        }
+        default: {
+          throw new Error("stepId isn't supported!");
+        }
+      }
+    },
   },
-};
+  {
+    name: "workflow with subJobs and output propagation",
+    workflow: {
+      name: "simpleCalculator",
+      jobs: {
+        ops: {
+          steps: [
+            {
+              uri: `fs/${path.join(
+                GetPathToTestWrappers(),
+                "wasm-as",
+                "simple-calculator",
+                "build"
+              )}`,
+              method: "add", // 20
+              args: {
+                a: 12,
+                b: 8,
+              },
+            },
+            {
+              uri: `fs/${path.join(
+                GetPathToTestWrappers(),
+                "wasm-as",
+                "simple-calculator",
+                "build"
+              )}`,
+              method: "sub", // 15
+              args: {
+                a: "$ops.0.data", // 20
+                b: 5,
+              },
+            },
+          ],
+          jobs: {
+            subOps: {
+              steps: [
+                {
+                  uri: `fs/${path.join(
+                    GetPathToTestWrappers(),
+                    "wasm-as",
+                    "simple-calculator",
+                    "build"
+                  )}`,
+                  method: "sub", // 5
+                  args: {
+                    a: "$ops.0.data", // 20
+                    b: "$ops.1.data", // 15
+                  },
+                },
+              ],
+            },
+          },
+        },
+      },
+    },
+    onExecution: (id: string, jobResult: JobResult) => {
+      switch (id) {
+        case "ops.0": {
+          expect(jobResult.status).toBe(JobStatus.SUCCEED);
+          expect(jobResult.error).toBeFalsy();
+          expect(jobResult.data).toBe(20);
+          break;
+        }
+        case "ops.1": {
+          expect(jobResult.status).toBe(JobStatus.SUCCEED);
+          expect(jobResult.error).toBeFalsy();
+          expect(jobResult.data).toBe(15);
+          break;
+        }
+        case "ops.subOps.0": {
+          expect(jobResult.status).toBe(JobStatus.SUCCEED);
+          expect(jobResult.error).toBeFalsy();
+          expect(jobResult.data).toBe(5);
+          break;
+        }
+        default: {
+          throw new Error("stepId isn't supported!");
+        }
+      }
+    },
+  },
+];

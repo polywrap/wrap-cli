@@ -1,3 +1,48 @@
+# Polywrap Origin (0.4.1)
+## Features
+* [PR-1171](https://github.com/polywrap/monorepo/pull/1171) `@polywrap/schema-bind`: Handle reserve words (keywords) for object, enum, and method names.
+
+## Bugs
+* [PR-1168](https://github.com/polywrap/monorepo/pull/1168) `@polywrap/schema-bind`: Fix imported optional map issue in Rust bindings.
+* [PR-1167](https://github.com/polywrap/monorepo/pull/1167) Remove all `wrap-man` folders, that were published to solve the plugin's circular dependency issue.
+
+# Polywrap Origin (0.4.0)
+## Features
+* [PR-1091](https://github.com/polywrap/monorepo/pull/1091) `@polywrap/polywrap-manifest-schemas`: Polywrap project manifests (`polywrap.yaml`, `polywrap.app.yaml`, `polywrap.plugin.yaml`) have a new format `0.2.0`, which restructures the manifest into 3 top level properties: `project`, `source`, and `extensions`. Additionally all project manifests can be given the `polywrap.yaml` file name.
+* [PR-1092](https://github.com/polywrap/monorepo/pull/1092) `@polywrap/ws-plugin-js`: Added a WebSocket plugin.
+* [PR-1096](https://github.com/polywrap/monorepo/pull/1096) `@polywrap/client-js`: Expose the `noValidate` option for the `client.getManifest(...)` method.
+* [PR-820](https://github.com/polywrap/monorepo/pull/820) `polywrap` CLI: `docgen` command added, allowing wrapper developers to easily generate documentation. Supported formats: schema, docusaurus, jsdoc.
+* [PR-1068](https://github.com/polywrap/monorepo/pull/1068) `@polywrap/ethereum-plugin-js`: `requestAccounts` method added, which utilizes the `eth_requestAccounts` RPC method on the configured provider.
+
+## Bugs
+* [PR-1142](https://github.com/polywrap/monorepo/pull/1142) `wasm/rust`: `Map<K, V>` bugs have been fixed.
+* [PR-1140](https://github.com/polywrap/monorepo/pull/1140) `polywrap` CLI: Added a check to make sure the Docker daemon is running, and provides an informative error if it is not.
+* [PR-1090](https://github.com/polywrap/monorepo/pull/1090) `polywrap/wrap-manifest-types-js`: Remove runtime schema bundling, which required file system access.
+* [PR-1050](https://github.com/polywrap/monorepo/pull/1050) `polywrap` CLI: Errors encounted in child processes now output both `stdtypesout` and `stderr`, allowing easier end-user debugging.
+
+## Breaking Changes
+* [PR-1046](https://github.com/polywrap/monorepo/pull/1046) `polywrap` CLI: `schema.graphql` has been removed from wrapper build artifacts. `polywrap.plugin.yaml` has been removed from plugin build artifacts.
+* [PR-1046](https://github.com/polywrap/monorepo/pull/1046) `@polywrap/schema-bind`: `schema.ts` has been removed from typescript bindings.
+* [PR-1046](https://github.com/polywrap/monorepo/pull/1046) `@polywrap/schema-bind` `@polywrap/schema-compose`: `WrapAbi` is now used in all places, instead of schema documents.
+* [PR-1095](https://github.com/polywrap/monorepo/pull/1095) `@polywrap/http-plugin-js`: Use `Map<String, String>` for `headers` & `urlParams`.
+* [PR-1073](https://github.com/polywrap/monorepo/pull/1073) `@polywrap/schema-compose`: The `ComposerOptions` property `schemas: SchemaFile[]` has been replaced with `schema: SchemaFile`. Additionally the function argument `schemas: SchemaFile[]` on the `resolveImports` function has bee replaced with `schema: SchemaFile`.
+* [PR-1073](https://github.com/polywrap/monorepo/pull/1073) `@polywrap/wrap-manifest-types-js`: In `WrapAbi` format `0.1`, properties no longer accept `null` and instead use `undefined`. 
+* [PR-1073](https://github.com/polywrap/monorepo/pull/1073) `@polywrap/schema-parse`: `Abi` export renamed to `WrapAbi`.
+
+# Polywrap Origin (0.3.0)
+## Features
+* [PR-1034](https://github.com/polywrap/monorepo/pull/1034) `@polywrap/wrap-manifest-schemas`, `@polywrap/wrap-manifest-types-js`: Added a JSON-schema for the `wrap.info`'s `abi` field.
+* [PR-1058](https://github.com/polywrap/monorepo/pull/1058) `polywrap` CLI: Deploy results can now be output to a file using the `-o, --output-file <path>` option of the `deploy` command.
+
+## Bugs
+* [PR-1034](https://github.com/polywrap/monorepo/pull/1034) `@polywrap/wrap-manifest-schemas`, `@polywrap/polywrap-manifest-schemas`: Version numbers for the manifest's `format: ...` field have been changed to only include `<major>.<minor>` (ex: `0.1.0` is now `0.1`). This is because there cannot be a change to a pure interface that is a `<patch>`.
+* [PR-1034](https://github.com/polywrap/monorepo/pull/1034) `@polywrap/package-validation`: The `wrap.info.abi` field is no longer being validated via schema rendering, and is instead utilizing the newly added JSON-schema.
+* [PR-1054](https://github.com/polywrap/monorepo/pull/1054) `polywrap` CLI: Improved `wasm/rust` build times by refactoring the build image's Dockerfile, helping reduce cache invalidations.
+* [PR-1053](https://github.com/polywrap/monorepo/pull/1053) `@polywrap/wasm-as`: Increased minor version of as-bignumber. The new version has a bug fix for the toFixed method, which was incorrectly printing numbers when a decimal number was rounded to an integer.
+
+## Breaking Changes
+* [PR-1034](https://github.com/polywrap/monorepo/pull/1034) `@polywrap/wrap-manifest-types-js`: `deserializeWrapManifest` is now `async`.
+
 # Polywrap Origin (0.2.0)
 ## Bugs
 * [PR-1040](https://github.com/polywrap/monorepo/pull/1040) `polywrap` CLI: Added proper CORS handling for the IPFS node located within the `eth-ens-ipfs` default infra module.

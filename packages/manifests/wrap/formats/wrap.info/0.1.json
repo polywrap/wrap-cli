@@ -1,0 +1,32 @@
+{
+  "id": "WrapManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "name",
+    "type",
+    "abi"
+  ],
+  "properties": {
+    "version": {
+      "description": "WRAP Standard Version",
+      "type": "string",
+      "enum": ["0.1.0", "0.1"]
+    },
+    "type": {
+      "description" : "Wrapper Package Type",
+      "type": "string",
+      "enum": ["wasm", "interface", "plugin"]
+    },
+    "name": {
+      "description": "Wrapper Name",
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9\\-\\_]+$"
+    },
+    "abi": {
+      "description": "Information of modules",
+      "$ref": "../abi/0.1.json"
+    }
+  }
+}

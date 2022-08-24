@@ -1,0 +1,4 @@
+#import { Module } into Ipfs from "external.eth"
+
+type Module implements Ipfs_Module {
+}

@@ -6,6 +6,7 @@ import { PluginConfigs, modules, uris } from "./pluginConfigs";
 
 import { PluginRegistration } from "@polywrap/core-js";
 import { Tracer } from "@polywrap/tracing-js";
+import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
 export { PluginConfigs };
 
@@ -52,7 +53,6 @@ export const createPolywrapClient = Tracer.traceFunc(
       const pluginPackage = pluginFactory(
         (pluginConfigs as Record<string, unknown>)[plugin]
       );
-
       if (
         !pluginPackage ||
         typeof pluginPackage !== "object" ||
@@ -71,10 +71,15 @@ export const createPolywrapClient = Tracer.traceFunc(
     }
 
     if (config) {
-      return new PolywrapClient({
-        ...config,
-        plugins: [...plugins, ...(config.plugins ? config.plugins : [])],
-      });
+      const builder = new ClientConfigBuilder().add(config);
+
+      for (const plugin of plugins) {
+        builder.addPlugin(plugin.uri, plugin.plugin);
+      }
+
+      const sanitizedConfig = builder.build();
+
+      return new PolywrapClient(sanitizedConfig);
     } else {
       return new PolywrapClient({ plugins });
     }

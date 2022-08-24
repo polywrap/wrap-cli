@@ -14,7 +14,11 @@ use crate::{
     optional_env_method,
     ArgsOptionalEnvMethod,
     deserialize_optional_env_method_args,
-    serialize_optional_env_method_result
+    serialize_optional_env_method_result,
+    _if,
+    ArgsIf,
+    deserialize_if_args,
+    serialize_if_result
 };
 
 use crate::Env;
@@ -83,6 +87,20 @@ pub fn optional_env_method_wrapped(args: &[u8], env_size: u32) -> Vec<u8> {
                 opt_object_array: args.opt_object_array,
             }, env);
             serialize_optional_env_method_result(&result).unwrap()
+        }
+        Err(e) => {
+            panic!("{}", e.to_string())
+        }
+    }
+}
+
+pub fn if_wrapped(args: &[u8], env_size: u32) -> Vec<u8> {
+    match deserialize_if_args(args) {
+        Ok(args) => {
+            let result = _if(ArgsIf {
+                _if: args._if,
+            });
+            serialize_if_result(&result).unwrap()
         }
         Err(e) => {
             panic!("{}", e.to_string())

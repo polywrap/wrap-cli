@@ -36,6 +36,10 @@ export interface Args_optionalEnvMethod extends Record<string, unknown> {
   optObjectArray?: Array<Types.AnotherType | null> | null;
 }
 
+export interface Args_if extends Record<string, unknown> {
+  if: Types._else;
+}
+
 export abstract class Module<
   TConfig
 > extends PluginModule<
@@ -57,4 +61,9 @@ export abstract class Module<
     args: Args_optionalEnvMethod,
     client: Client
   ): MaybeAsync<Types.AnotherType | null>;
+
+  abstract if(
+    args: Args_if,
+    client: Client
+  ): MaybeAsync<Types._else>;
 }

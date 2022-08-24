@@ -8,7 +8,11 @@ import fs from "fs";
 import yaml from "js-yaml";
 import { Uri } from "@polywrap/core-js";
 import { PolywrapClient } from "@polywrap/client-js";
-import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
+import {
+  ethereumPlugin,
+  Connections,
+  Connection,
+} from "@polywrap/ethereum-plugin-js";
 import { deserializePolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 
 export const ensAddresses = {
@@ -193,8 +197,13 @@ export const runCLI = async (options: {
   };
 };
 
-export async function buildWrapper(wrapperAbsPath: string): Promise<void> {
-  const manifestPath = `${wrapperAbsPath}/polywrap.yaml`;
+export async function buildWrapper(
+  wrapperAbsPath: string,
+  manifestPathOverride?: string
+): Promise<void> {
+  const manifestPath = manifestPathOverride
+    ? path.join(wrapperAbsPath, manifestPathOverride)
+    : `${wrapperAbsPath}/polywrap.yaml`;
   const {
     exitCode: buildExitCode,
     stdout: buildStdout,
@@ -255,12 +264,14 @@ export async function buildAndDeployWrapper({
       {
         uri: ethereumPluginUri,
         plugin: ethereumPlugin({
-          networks: {
-            testnet: {
-              provider: ethereumProvider,
+          connections: new Connections({
+            networks: {
+              testnet: new Connection({
+                provider: ethereumProvider,
+              }),
             },
-          },
-          defaultNetwork: "testnet",
+            defaultNetwork: "testnet",
+          }),
         }),
       },
     ],
@@ -326,7 +337,10 @@ export async function buildAndDeployWrapper({
     tempManifestPath,
     yaml.dump({
       ...polywrapManifest,
-      deploy: `./${tempDeployManifestFilename}`,
+      extensions: {
+        ...polywrapManifest.extensions,
+        deploy: `./${tempDeployManifestFilename}`,
+      },
     })
   );
 

@@ -6,26 +6,49 @@
  */
 
 import {
-  WrapManifest as WrapManifest0_1_0
-} from "./0.1.0";
+  WrapManifest as WrapManifest_0_1,
+  Abi as WrapAbi_0_1_0_1
+} from "./0.1";
+
+export * from "./0.1";
+
+import WrapManifestSchema_0_1 from "./0.1.schema.json";
 
 export {
-  WrapManifest0_1_0,
+  WrapManifest_0_1,
+  WrapAbi_0_1_0_1,
+  WrapManifestSchema_0_1
 };
 
 export enum WrapManifestVersions {
-  "0.1.0" = "0.1.0",
-}
+  // NOTE: Patch fix for backwards compatability
+  "v0.1.0" = "0.1.0",
+  "v0.1" = "0.1",
+};
+
+export enum WrapManifestAbiVersions {
+  "v0.1" = "0.1",
+};
+
+export enum WrapAbiVersions {
+  "v0.1" = "0.1",
+};
 
 export type AnyWrapManifest =
-  | WrapManifest0_1_0
+  | WrapManifest_0_1
+;
 
-export type WrapManifest = WrapManifest0_1_0;
+export type AnyWrapAbi =
+  | WrapAbi_0_1_0_1
+;
 
-export const latestWrapManifestVersion = WrapManifestVersions["0.1.0"]
+export type WrapManifest = WrapManifest_0_1;
+export type WrapAbi = WrapAbi_0_1_0_1;
+
+export const latestWrapManifestVersion = WrapManifestVersions["v0.1"];
+export const latestWrapAbiVersion = "0.1";
 
 export { migrateWrapManifest } from "./migrate";
-
 export { deserializeWrapManifest } from "./deserialize";
-
+export { serializeWrapManifest } from "./serialize";
 export { validateWrapManifest } from "./validate";

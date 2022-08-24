@@ -41,9 +41,9 @@ type Module {
   method: DerivedType
 }
 
-type BaseType
+type BaseType { }
 
-type DerivedType implements BaseType
+type DerivedType implements BaseType { }
 
 ### Imported Modules START ###
 

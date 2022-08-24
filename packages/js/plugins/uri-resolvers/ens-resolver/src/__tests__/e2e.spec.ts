@@ -1,4 +1,5 @@
-import { defaultIpfsProviders, PolywrapClient } from "@polywrap/client-js";
+import { PolywrapClient } from "@polywrap/client-js";
+import { defaultIpfsProviders } from "@polywrap/client-config-builder-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import {
   buildAndDeployWrapper,
@@ -10,10 +11,7 @@ import {
 
 import { ensResolverPlugin } from "..";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
-import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
-
-import fs from "fs";
-import path from "path";
+import { ethereumPlugin, Connections, Connection } from "@polywrap/ethereum-plugin-js";
 
 jest.setTimeout(300000);
 
@@ -47,12 +45,14 @@ describe("ENS Resolver Plugin", () => {
         {
           uri: "wrap://ens/ethereum.polywrap.eth",
           plugin: ethereumPlugin({
-            networks: {
-              testnet: {
-                provider: providers.ethereum
-              }
-            },
-            defaultNetwork: "testnet"
+            connections: new Connections({
+              networks: {
+                testnet: new Connection({
+                  provider: providers.ethereum
+                })
+              },
+              defaultNetwork: "testnet"
+            })
           })
         },
         {
@@ -77,15 +77,6 @@ describe("ENS Resolver Plugin", () => {
 
     expect(resolution.error).toBeFalsy();
     expect(resolution.wrapper).toBeTruthy();
-
-    const expectedSchema = await fs.promises.readFile(
-      path.resolve(wrapperAbsPath, "build/schema.graphql"),
-      { encoding: "utf-8" }
-    );
-
-    const schema = await resolution.wrapper?.getSchema(client);
-
-    expect(schema).toEqual(expectedSchema);
 
     const manifest = await resolution.wrapper?.getManifest(
       {},

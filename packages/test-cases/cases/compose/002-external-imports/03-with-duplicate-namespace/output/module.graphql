@@ -1,0 +1,93 @@
+### Polywrap Header START ###
+scalar UInt
+scalar UInt8
+scalar UInt16
+scalar UInt32
+scalar Int
+scalar Int8
+scalar Int16
+scalar Int32
+scalar Bytes
+scalar BigInt
+scalar BigNumber
+scalar JSON
+scalar Map
+
+directive @imported(
+  uri: String!
+  namespace: String!
+  nativeType: String!
+) on OBJECT | ENUM
+
+directive @imports(
+  types: [String!]!
+) on OBJECT
+
+directive @capability(
+  type: String!
+  uri: String!
+  namespace: String!
+) repeatable on OBJECT
+
+directive @enabled_interface on OBJECT
+
+directive @annotate(type: String!) on FIELD
+
+directive @env(required: Boolean!) on FIELD_DEFINITION
+
+### Polywrap Header END ###
+
+type Module implements Ipfs_Module @imports(
+  types: [
+    "Ipfs_Module",
+    "Ipfs_Ipfs_Options"
+  ]
+) {
+  cat(
+    cid: String!
+    options: Ipfs_Ipfs_Options
+  ): Bytes!
+}
+
+### Imported Modules START ###
+
+type Ipfs_Module @imported(
+  uri: "external.eth",
+  namespace: "Ipfs",
+  nativeType: "Module"
+) {
+  cat(
+    cid: String!
+    options: Ipfs_Ipfs_Options
+  ): Bytes!
+}
+
+### Imported Modules END ###
+
+### Imported Objects START ###
+
+type Ipfs_Ipfs_Options @imported(
+  uri: "external.eth",
+  namespace: "Ipfs",
+  nativeType: "Ipfs_Options"
+) {
+  """
+        Timeout (in ms) for the operation.
+Fallback providers are used if timeout is reached.
+  """
+  timeout: UInt32
+  """
+  The IPFS provider to be used
+  """
+  provider: String
+  """
+  Disable querying providers in parallel when resolving URIs
+  """
+  disableParallelRequests: Boolean
+}
+
+### Imported Objects END ###
+
+### Imported Envs START ###
+
+### Imported Envs END ###
