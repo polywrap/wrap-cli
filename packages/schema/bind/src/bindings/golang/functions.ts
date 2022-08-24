@@ -291,7 +291,7 @@ export const toWasm: MustacheFn = () => {
           type = `${type.replace("Enum_", "")}`;
           isEnum = true;
         } else {
-          type = `${type}`;
+          type = type.charAt(0).toUpperCase() + type.slice(1);
         }
     }
 
