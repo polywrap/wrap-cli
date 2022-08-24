@@ -101,7 +101,7 @@ export class PolywrapClient implements Client {
           httpEnabled: !!config?.tracerConfig?.httpEnabled,
           httpUrl: config?.tracerConfig?.httpUrl,
           tracingLevel: config?.tracerConfig?.tracingLevel,
-        }
+        },
       };
 
       this._validateConfig();
@@ -627,7 +627,7 @@ export class PolywrapClient implements Client {
 
     const newContext = {
       ...config,
-      tracerConfig: context.tracerConfig ?? parentConfig.tracerConfig
+      tracerConfig: context.tracerConfig ?? parentConfig.tracerConfig,
     };
 
     this._contexts.set(id, newContext);
