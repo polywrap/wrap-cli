@@ -34,7 +34,7 @@ export type BuiltInTypes = typeof builtInTypes;
 export type BuiltInType = keyof BuiltInTypes;
 
 export function isBuiltInType(type: string): type is BuiltInType {
-  return type in builtInTypes || type.startsWith("Map<");
+  return type in builtInTypes;
 }
 
 const keywords = {

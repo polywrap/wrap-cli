@@ -6,7 +6,7 @@ import {
 } from "../utils";
 
 import {
-  Abi,
+  WrapAbi,
   transformAbi,
   addFirstLast,
   toPrefixedGraphQLType,
@@ -64,7 +64,7 @@ export const generateBinding: GenerateBindingFn = (
   }
 
   // generate object types
-  if (abi.objectTypes.length > 0) {
+  if (abi.objectTypes && abi.objectTypes.length > 0) {
     const objectContext = {
       objectTypes: abi.objectTypes,
     };
@@ -76,7 +76,7 @@ export const generateBinding: GenerateBindingFn = (
   }
 
   // generate enum types
-  if (abi.enumTypes.length > 0) {
+  if (abi.enumTypes && abi.enumTypes.length > 0) {
     const enumContext = {
       enumTypes: abi.enumTypes,
     };
@@ -95,74 +95,84 @@ export const generateBinding: GenerateBindingFn = (
     renderTemplate("./templates/docusaurus-env.mustache", envContext, "env.md");
   }
 
-  // TODO: for imported modules, module.type contains the namespace. Should it?
-  // generate imported modules
-  for (const module of abi.importedModuleTypes) {
-    const moduleType = module.type.split("_")[1];
-    const moduleContext = {
-      ...module,
-      namespace: module.namespace,
-      type: moduleType,
-    };
-    renderTemplate(
-      "./templates/docusaurus-module.mustache",
-      moduleContext,
-      `${module.namespace}_${moduleType.toLowerCase()}.md`
-    );
-  }
-
-  // generated imported object types
-  const importedObjects = arrangeByNamespace(abi.importedObjectTypes);
-  for (const [namespace, objectTypes] of Object.entries(importedObjects)) {
-    if (objectTypes.length > 0) {
-      const objectContext = {
-        objectTypes,
-        namespace,
-      };
-      renderTemplate(
-        "./templates/docusaurus-objects.mustache",
-        objectContext,
-        `${namespace}_objects.md`
-      );
+  if (options.config?.["imports"]) {
+    // TODO: for imported modules, module.type contains the namespace. Should it?
+    // generate imported modules
+    if (abi.importedModuleTypes) {
+      for (const module of abi.importedModuleTypes) {
+        const moduleType = module.type.split("_")[1];
+        const moduleContext = {
+          ...module,
+          type: moduleType,
+          imported: { namespace: module.namespace },
+        };
+        renderTemplate(
+          "./templates/docusaurus-module.mustache",
+          moduleContext,
+          `${module.namespace}_${moduleType.toLowerCase()}.md`
+        );
+      }
     }
-  }
 
-  // generate imported enum types
-  const importedEnums = arrangeByNamespace(abi.importedEnumTypes);
-  for (const [namespace, enumTypes] of Object.entries(importedEnums)) {
-    if (enumTypes.length > 0) {
-      const enumContext = {
-        enumTypes,
-        namespace,
-      };
-      renderTemplate(
-        "./templates/docusaurus-enums.mustache",
-        enumContext,
-        `${namespace}_enums.md`
-      );
+    // generated imported object types
+    if (abi.importedObjectTypes) {
+      const importedObjects = arrangeByNamespace(abi.importedObjectTypes);
+      for (const [namespace, objectTypes] of Object.entries(importedObjects)) {
+        if (objectTypes.length > 0) {
+          const objectContext = {
+            objectTypes,
+            imported: { namespace },
+          };
+          renderTemplate(
+            "./templates/docusaurus-objects.mustache",
+            objectContext,
+            `${namespace}_objects.md`
+          );
+        }
+      }
     }
-  }
 
-  // generate imported env types
-  const importedEnvs = arrangeByNamespace(abi.importedEnvTypes);
-  for (const [namespace, envType] of Object.entries(importedEnvs)) {
-    if (envType) {
-      const envContext = {
-        envType,
-        namespace,
-      };
-      renderTemplate(
-        "./templates/docusaurus-env.mustache",
-        envContext,
-        `${namespace}_env.md`
-      );
+    // generate imported enum types
+    if (abi.importedEnumTypes) {
+      const importedEnums = arrangeByNamespace(abi.importedEnumTypes);
+      for (const [namespace, enumTypes] of Object.entries(importedEnums)) {
+        if (enumTypes.length > 0) {
+          const enumContext = {
+            enumTypes,
+            imported: { namespace },
+          };
+          renderTemplate(
+            "./templates/docusaurus-enums.mustache",
+            enumContext,
+            `${namespace}_enums.md`
+          );
+        }
+      }
+    }
+
+    // generate imported env types
+    if (abi.importedEnvTypes) {
+      const importedEnvs = arrangeByNamespace(abi.importedEnvTypes);
+      for (const [namespace, envType] of Object.entries(importedEnvs)) {
+        if (envType) {
+          const envContext = {
+            envType,
+            imported: { namespace },
+          };
+          renderTemplate(
+            "./templates/docusaurus-env.mustache",
+            envContext,
+            `${namespace}_env.md`
+          );
+        }
+      }
     }
   }
 
   return result;
 };
 
-function applyTransforms(abi: Abi): Abi {
+function applyTransforms(abi: WrapAbi): WrapAbi {
   const transforms = [
     extendType(Functions),
     extendType(TypeScript.Functions),

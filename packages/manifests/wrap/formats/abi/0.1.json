@@ -2,15 +2,6 @@
   "id": "Abi",
   "type": "object",
   "unevaluatedProperties": false,
-  "required": [
-    "objectTypes",
-    "enumTypes",
-    "interfaceTypes",
-    "importedObjectTypes",
-    "importedModuleTypes",
-    "importedEnumTypes",
-    "importedEnvTypes"
-  ],
   "properties": {
     "version": {
       "description": "ABI Version",
@@ -69,68 +60,66 @@
   "definitions": {
     "objectDefinition": {
       "type": "object",
-      "required": ["properties", "interfaces"],
       "allOf": [
         {
           "$ref": "#/definitions/genericDefinition"
         },
         {
           "$ref": "#/definitions/withComment"
+        },
+        {
+          "properties": {
+            "properties": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/propertyDefinition"
+              }
+            },
+            "interfaces": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/interfaceImplementedDefinition"
+              }
+            }
+          },
+          "unevaluatedProperties": false
         }
       ],
-      "properties": {
-        "properties": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/propertyDefinition"
-          }
-        },
-        "interfaces": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/interfaceImplementedDefinition"
-          }
-        }
-      },
       "unevaluatedProperties": false
     },
     "moduleDefinition": {
       "type": "object",
-      "required": ["methods", "imports", "interfaces"],
       "allOf": [
         {
           "$ref": "#/definitions/genericDefinition"
         },
         {
           "$ref": "#/definitions/withComment"
+        },
+        {
+          "properties": {
+            "methods": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/methodDefinition"
+              }
+            },
+            "imports": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/importedModuleRef"
+              }
+            },
+            "interfaces": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/interfaceImplementedDefinition"
+              }
+            }
+          },
+          "unevaluatedProperties": false
         }
       ],
-      "properties": {
-        "methods": {
-          "type": "array",
-          "items": [
-            {
-              "$ref": "#/definitions/methodDefinition"
-            }
-          ]
-        },
-        "imports": {
-          "type": "array",
-          "items": [
-            {
-              "$ref": "#/definitions/importedModuleRef"
-            }
-          ]
-        },
-        "interfaces": {
-          "type": "array",
-          "items": [
-            {
-              "$ref": "#/definitions/interfaceImplementedDefinition"
-            }
-          ]
-        }
-      },
       "unevaluatedProperties": false
     },
     "interfaceImplementedDefinition": {
@@ -144,37 +133,38 @@
     },
     "methodDefinition": {
       "type": "object",
-      "required": ["arguments", "return"],
+      "required": ["return"],
       "allOf": [
         {
           "$ref": "#/definitions/genericDefinition"
         },
         {
           "$ref": "#/definitions/withComment"
-        }
-      ],
-      "properties": {
-        "arguments": {
-          "type": "array",
-          "items": [
-            {
-              "$ref": "#/definitions/propertyDefinition"
-            }
-          ]
         },
-        "env": {
-          "type": "object",
+        {
           "properties": {
-            "required": {
-              "type": "boolean"
+            "arguments": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/propertyDefinition"
+              }
+            },
+            "env": {
+              "type": "object",
+              "properties": {
+                "required": {
+                  "type": "boolean"
+                }
+              },
+              "unevaluatedProperties": false
+            },
+            "return": {
+              "$ref": "#/definitions/propertyDefinition"
             }
           },
           "unevaluatedProperties": false
-        },
-        "return": {
-          "$ref": "#/definitions/propertyDefinition"
         }
-      },
+      ],
       "unevaluatedProperties": false
     },
     "envDefinition": {
@@ -194,16 +184,19 @@
         },
         {
           "$ref": "#/definitions/withComment"
+        },
+        {
+          "properties": {
+            "constants": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "unevaluatedProperties": false
         }
       ],
-      "properties": {
-        "constants": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      },
       "unevaluatedProperties": false
     },
     "interfaceDefinition": {
@@ -215,13 +208,16 @@
         },
         {
           "$ref": "#/definitions/importedDefinition"
+        },
+        {
+          "properties": {
+            "capabilities": {
+              "$ref": "#/definitions/capabilityDefinition"
+            }
+          },
+          "unevaluatedProperties": false
         }
       ],
-      "properties": {
-        "capabilities": {
-          "$ref": "#/definitions/capabilityDefinition"
-        }
-      },
       "unevaluatedProperties": false
     },
     "capabilityDefinition": {
@@ -273,7 +269,6 @@
     },
     "importedModuleDefinition": {
       "type": "object",
-      "required": ["methods"],
       "allOf": [
         {
           "$ref": "#/definitions/genericDefinition"
@@ -283,21 +278,22 @@
         },
         {
           "$ref": "#/definitions/withComment"
+        },
+        {
+          "properties": {
+            "methods": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/methodDefinition"
+              }
+            },
+            "isInterface": {
+              "type": ["boolean"]
+            }
+          },
+          "unevaluatedProperties": false
         }
       ],
-      "properties": {
-        "methods": {
-          "type": "array",
-          "items": [
-            {
-              "$ref": "#/definitions/methodDefinition"
-            }
-          ]
-        },
-        "isInterface": {
-          "type": ["boolean", "null"]
-        }
-      },
       "unevaluatedProperties": false
     },
     "importedEnumDefinition": {
@@ -308,9 +304,6 @@
         },
         {
           "$ref": "#/definitions/importedDefinition"
-        },
-        {
-          "$ref": "#/definitions/withComment"
         }
       ],
       "unevaluatedProperties": false
@@ -368,10 +361,10 @@
               "type": "string"
             },
             "name": {
-              "type": ["string", "null"]
+              "type": ["string"]
             },
             "required": {
-              "type": ["boolean", "null"]
+              "type": ["boolean"]
             }
           },
           "unevaluatedProperties": false
@@ -388,64 +381,27 @@
         {
           "properties": {
             "array": {
-              "anyOf": [
-                {
-                  "$ref": "#/definitions/arrayDefinition"
-                },
-                {
-                  "type": "null"
-                }
-              ]
+              "$ref": "#/definitions/arrayDefinition"
             },
             "scalar": {
-              "anyOf": [
-                {
-                  "$ref": "#/definitions/scalarDefinition"
-                },
-                {
-                  "type": "null"
-                }
-              ]
+              "$ref": "#/definitions/scalarDefinition"
             },
             "map": {
-              "anyOf": [
-                {
-                  "$ref": "#/definitions/mapDefinition"
-                },
-                {
-                  "type": "null"
-                }
-              ]
+              "$ref": "#/definitions/mapDefinition"
             },
             "object": {
-              "anyOf": [
-                {
-                  "$ref": "#/definitions/objectRef"
-                },
-                {
-                  "type": "null"
-                }
-              ]
+              "$ref": "#/definitions/objectRef"
             },
             "enum": {
-              "anyOf": [
+              "allOf": [
                 {
                   "$ref": "#/definitions/enumRef"
-                },
-                {
-                  "type": "null"
                 }
-              ]
+              ],
+              "required": ["type"]
             },
             "unresolvedObjectOrEnum": {
-              "anyOf": [
-                {
-                  "$ref": "#/definitions/unresolvedObjectOrEnumRef"
-                },
-                {
-                  "type": "null"
-                }
-              ]
+              "$ref": "#/definitions/unresolvedObjectOrEnumRef"
             }
           },
           "unevaluatedProperties": false

@@ -4,21 +4,16 @@ import { buildAndDeployWrapper, initTestEnvironment, providers, stopTestEnvironm
 
 import { ipfsResolverPlugin } from "..";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
-import { IpfsClient } from "./helpers/IpfsClient";
-import { createIpfsClient } from "./helpers/createIpfsClient";
 
 jest.setTimeout(300000);
 
 describe("IPFS Plugin", () => {
   let client: PolywrapClient;
-  let ipfs: IpfsClient;
 
   let wrapperIpfsCid: string;
 
   beforeAll(async () => {
     await initTestEnvironment();
-
-    ipfs = createIpfsClient(providers.ipfs);
 
     let { ipfsCid } = await buildAndDeployWrapper({
       wrapperAbsPath: `${GetPathToTestWrappers()}/wasm-as/simple-storage`,
@@ -55,14 +50,6 @@ describe("IPFS Plugin", () => {
     const resolution = await client.resolveUri(wrapperUri);
 
     expect(resolution.wrapper).toBeTruthy();
-
-    const expectedSchema = (
-      await ipfs.cat(`${wrapperIpfsCid}/schema.graphql`)
-    ).toString("utf-8");
-
-    const schema = await resolution.wrapper?.getSchema(client);
-
-    expect(schema).toEqual(expectedSchema);
 
     const info = await resolution.wrapper?.getManifest({}, client);
     expect(info?.name).toBe("SimpleStorage");

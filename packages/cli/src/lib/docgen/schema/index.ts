@@ -6,6 +6,7 @@ import {
 import Mustache from "mustache";
 import path from "path";
 import { readFileSync } from "fs";
+import { renderSchema } from "@polywrap/schema-compose";
 
 export const scriptPath = path.join(__dirname, "index.js");
 
@@ -37,7 +38,7 @@ export const generateBinding: GenerateBindingFn = (
 
   // generate schema
   const schemaContext = {
-    schema: options.schema,
+    schema: renderSchema(options.abi, true),
   };
   renderTemplate(
     "./templates/schema.mustache",

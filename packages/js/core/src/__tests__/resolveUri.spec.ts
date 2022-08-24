@@ -23,6 +23,7 @@ import {
   SubscribeOptions,
   Subscription,
   PluginPackage,
+  SimpleCache,
   GetManifestOptions,
 } from "..";
 
@@ -71,7 +72,7 @@ describe("resolveUri", () => {
       subscribe: <
         TData extends Record<string, unknown> = Record<string, unknown>
       >(
-        _options: SubscribeOptions<Record<string, unknown>, string | Uri>
+        _options: SubscribeOptions<string | Uri>
       ): Subscription<TData> => {
         return {
           frequency: 0,
@@ -106,7 +107,6 @@ describe("resolveUri", () => {
           },
           encoded: false
         }),
-      getSchema: (_client: Client): Promise<string> => Promise.resolve(""),
       getFile: (options: GetFileOptions, client: Client) => Promise.resolve(""),
       getManifest: (options: GetManifestOptions, client: Client) => Promise.resolve({} as WrapManifest)
     };
@@ -127,17 +127,16 @@ describe("resolveUri", () => {
           },
           encoded: false
         }),
-      getSchema: (_client: Client): Promise<string> => Promise.resolve(""),
       getFile: (options: GetFileOptions, client: Client) => Promise.resolve(""),
-      getManifest: (options: GetManifestOptions, client) => Promise.reject("")
+      getManifest: (client) => Promise.reject("")
     };
   };
 
   const testManifest: WrapManifest = {
-    version: "0.1.0",
+    version: "0.1",
     type: "wasm",
     name: "dog-cat",
-    abi: {}
+    abi: {} as never
   };
 
   const ensWrapper = {
@@ -159,7 +158,7 @@ describe("resolveUri", () => {
         return {
           manifest:
             args.authority === "ipfs" ?
-            msgpackEncode(testManifest) :
+            msgpackEncode(testManifest, true) :
             undefined,
         };
       }
@@ -173,7 +172,7 @@ describe("resolveUri", () => {
       return {
         manifest:
           args.authority === "my" ?
-          msgpackEncode(testManifest) :
+          msgpackEncode(testManifest, true) :
           undefined,
       };
     },
@@ -184,10 +183,7 @@ describe("resolveUri", () => {
       uri: new Uri("ens/my-plugin"),
       plugin: {
         factory: () => ({} as PluginModule<{}>),
-        manifest: {
-          schema: "",
-          implements: [coreInterfaceUris.uriResolver],
-        },
+        manifest: {} as WrapManifest,
       },
     },
   ];
@@ -244,7 +240,7 @@ describe("resolveUri", () => {
       new Uri("ens/test.eth"),
       uriResolvers,
       client(wrappers, plugins, interfaces),
-      new Map<string, Wrapper>(),
+      new SimpleCache(),
     );
 
     expect(result.wrapper).toBeTruthy();
@@ -266,7 +262,7 @@ describe("resolveUri", () => {
       new Uri("my/something-different"),
       uriResolvers,
       client(wrappers, plugins, interfaces),
-      new Map<string, Wrapper>(),
+      new SimpleCache(),
     );
 
     expect(result.wrapper).toBeTruthy();
@@ -288,7 +284,7 @@ describe("resolveUri", () => {
       new Uri("ens/ens"),
       uriResolvers,
       client(wrappers, plugins, interfaces),
-      new Map<string, Wrapper>(),
+      new SimpleCache(),
     );
 
     expect(result.wrapper).toBeTruthy();
@@ -310,7 +306,7 @@ describe("resolveUri", () => {
       new Uri("my/something-different"),
       uriResolvers,
       client(wrappers, plugins, interfaces),
-      new Map<string, Wrapper>(),
+      new SimpleCache(),
     );
 
     expect(result.wrapper).toBeTruthy();
@@ -345,7 +341,7 @@ describe("resolveUri", () => {
       new Uri("some/wrapper"),
       uriResolvers,
       client(wrappers, plugins, interfaces, circular),
-      new Map<string, Wrapper>(),
+      new SimpleCache(),
     ).catch((e: Error) =>
       expect(e.message).toMatch(/Infinite loop while resolving URI/)
     );
@@ -369,7 +365,7 @@ describe("resolveUri", () => {
       new Uri("some/wrapper"),
       uriResolvers,
       client(wrappers, plugins, interfaces, missingFromProperty),
-      new Map<string, Wrapper>(),
+      new SimpleCache(),
     ).catch((e: Error) =>
       expect(e.message).toMatch(
         "Redirect missing the from property.\nEncountered while resolving wrap://some/wrapper"
@@ -384,10 +380,7 @@ describe("resolveUri", () => {
         uri: new Uri("some/wrapper"),
         plugin: {
           factory: () => ({} as PluginModule<{}>),
-          manifest: {
-            schema: "",
-            implements: [coreInterfaceUris.uriResolver],
-          },
+          manifest: {} as WrapManifest,
         },
       },
     ];
@@ -396,7 +389,7 @@ describe("resolveUri", () => {
       new Uri("some/wrapper"),
       uriResolvers,
       client(wrappers, pluginRegistrations, interfaces),
-      new Map<string, Wrapper>(),
+      new SimpleCache(),
     );
 
     expect(result.wrapper).toBeTruthy();
@@ -434,7 +427,7 @@ describe("resolveUri", () => {
         plugins, 
         interfaces
       ),
-      new Map<string, Wrapper>(),
+      new SimpleCache(),
     );
 
     expect(resolvedUri).toEqual(uri);

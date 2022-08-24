@@ -784,7 +784,9 @@ export const runMapTypeTest = async (client: PolywrapClient, uri: string) => {
     uri,
     method: "getKey",
     args: {
-      map: mapClass,
+      foo: {
+        map: mapClass
+      },
       key: "Hello",
     },
   });
@@ -795,12 +797,26 @@ export const runMapTypeTest = async (client: PolywrapClient, uri: string) => {
     uri,
     method: "getKey",
     args: {
-      map: mapRecord,
+      foo: {
+        map: mapRecord
+      },
       key: "Heyo",
     },
   });
   expect(getKeyResponse2.error).toBeUndefined();
   expect(getKeyResponse2.data).toEqual(mapRecord.Heyo);
+
+  const returnCustomMap = await client.invoke<number>({
+    uri,
+    method: "returnCustomMap",
+    args: {
+      foo: {
+        map: mapRecord
+      }
+    },
+  });
+  expect(returnCustomMap.error).toBeUndefined();
+  expect(returnCustomMap.data).toEqual({ map: mapClass });
 };
 
 export const runSimpleStorageTest = async (
@@ -881,7 +897,12 @@ export const runSimpleEnvTest = async (
       arg: "not set",
     },
     config: {
-      envs: [],
+      envs: [
+        {
+          uri: wrapperUri,
+          env: {},
+        },
+      ],
     },
   });
   expect(getEnvNotSetResult.data).toBeUndefined();

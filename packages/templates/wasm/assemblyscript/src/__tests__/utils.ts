@@ -1,6 +1,6 @@
 import { ClientConfig } from "@polywrap/client-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
-import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
+import { Connection, Connections, ethereumPlugin } from "@polywrap/ethereum-plugin-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 
 export function getPlugins(
@@ -22,15 +22,13 @@ export function getPlugins(
       {
         uri: "wrap://ens/ethereum.polywrap.eth",
         plugin: ethereumPlugin({
-          networks: {
-            testnet: {
-              provider: ethereum,
+          connections: new Connections({
+            networks: {
+              testnet: new Connection({ provider: ethereum }),
+              mainnet: new Connection({ provider: "http://localhost:8546", }),
             },
-            MAINNET: {
-              provider: "http://localhost:8546",
-            },
-          },
-          defaultNetwork: "testnet",
+            defaultNetwork: "testnet",
+          }),
         }),
       },
     ],

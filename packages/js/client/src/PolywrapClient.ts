@@ -1,5 +1,3 @@
-import { getDefaultClientConfig } from "./default-client-config";
-
 import { v4 as uuid } from "uuid";
 import {
   Wrapper,
@@ -9,12 +7,10 @@ import {
   Env,
   GetEnvsOptions,
   GetFileOptions,
-  GetManifestOptions,
   GetImplementationsOptions,
   GetInterfacesOptions,
   GetPluginsOptions,
   GetRedirectsOptions,
-  GetSchemaOptions,
   InterfaceImplementations,
   InvokeOptions,
   InvokeResult,
@@ -34,22 +30,20 @@ import {
   UriResolver,
   GetUriResolversOptions,
   resolveUri,
-  sanitizeEnvs,
-  sanitizeInterfaceImplementations,
-  sanitizePluginRegistrations,
-  sanitizeUriRedirects,
   CacheResolver,
   ExtendableUriResolver,
   coreInterfaceUris,
   Contextualized,
   ResolveUriErrorType,
   JobRunner,
-  PluginPackage,
   RunOptions,
+  GetManifestOptions,
+  SimpleCache,
 } from "@polywrap/core-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Tracer, TracerConfig, TracingLevel } from "@polywrap/tracing-js";
+import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
 export interface PolywrapClientConfig<TUri extends Uri | string = string>
   extends ClientConfig<TUri> {
@@ -57,11 +51,7 @@ export interface PolywrapClientConfig<TUri extends Uri | string = string>
 }
 
 export class PolywrapClient implements Client {
-  // TODO: the Wrapper cache needs to be more like a routing table.
-  // It should help us keep track of what URI's map to what Wrappers,
-  // and handle cases where the are multiple jumps. For example, if
-  // A => B => C, then the cache should have A => C, and B => C.
-  private _wrapperCache: WrapperCache = new Map<string, Wrapper>();
+  private _wrapperCache: WrapperCache;
   private _config: PolywrapClientConfig<Uri> = {
     redirects: [],
     plugins: [],
@@ -75,7 +65,7 @@ export class PolywrapClient implements Client {
   private _contexts: Map<string, PolywrapClientConfig<Uri>> = new Map();
 
   constructor(
-    config?: Partial<PolywrapClientConfig>,
+    config?: Partial<PolywrapClientConfig<string | Uri>>,
     options?: { noDefaults?: boolean }
   ) {
     try {
@@ -83,36 +73,32 @@ export class PolywrapClient implements Client {
 
       Tracer.startSpan("PolywrapClient: constructor");
 
-      if (config) {
-        this._config = {
-          redirects: config.redirects
-            ? sanitizeUriRedirects(config.redirects)
-            : [],
-          envs: config.envs ? sanitizeEnvs(config.envs) : [],
-          plugins: config.plugins
-            ? sanitizePluginRegistrations(config.plugins)
-            : [],
-          interfaces: config.interfaces
-            ? sanitizeInterfaceImplementations(config.interfaces)
-            : [],
-          uriResolvers: config.uriResolvers ?? [],
-          tracerConfig: {
-            consoleEnabled: !!config.tracerConfig?.consoleEnabled,
-            consoleDetailed: config.tracerConfig?.consoleDetailed,
-            httpEnabled: !!config.tracerConfig?.httpEnabled,
-            httpUrl: config.tracerConfig?.httpUrl,
-            tracingLevel: config.tracerConfig?.tracingLevel,
-          },
-        };
-      }
+      const builder = new ClientConfigBuilder();
 
       if (!options?.noDefaults) {
-        this._addDefaultConfig();
+        builder.addDefaults();
       }
 
-      this._validateConfig();
+      if (config) {
+        builder.add(config);
 
-      this._sanitizeConfig();
+        if (config.wrapperCache) {
+          this._wrapperCache = config.wrapperCache;
+        }
+      }
+
+      if (!this._wrapperCache) {
+        this._wrapperCache = new SimpleCache();
+      }
+
+      const sanitizedConfig = builder.build();
+
+      this._config = {
+        ...sanitizedConfig,
+        tracerConfig: config?.tracerConfig,
+      };
+
+      this._validateConfig();
 
       Tracer.setAttribute("config", this._config);
     } catch (error) {
@@ -177,20 +163,10 @@ export class PolywrapClient implements Client {
     );
   }
 
-  @Tracer.traceMethod("PolywrapClient: getSchema")
-  public async getSchema<TUri extends Uri | string>(
-    uri: TUri,
-    options: GetSchemaOptions = {}
-  ): Promise<string> {
-    const wrapper = await this._loadWrapper(this._toUri(uri), options);
-    const client = contextualizeClient(this, options.contextId);
-    return await wrapper.getSchema(client);
-  }
-
   @Tracer.traceMethod("PolywrapClient: getManifest")
   public async getManifest<TUri extends Uri | string>(
     uri: TUri,
-    options: GetManifestOptions
+    options: GetManifestOptions = {}
   ): Promise<WrapManifest> {
     const wrapper = await this._loadWrapper(this._toUri(uri), options);
     const client = contextualizeClient(this, options.contextId);
@@ -503,9 +479,8 @@ export class PolywrapClient implements Client {
 
     // Update cache for all URIs in the chain
     if (cacheWrite && wrapper) {
-      for (const item of uriHistory.getResolutionPath().stack) {
-        this._wrapperCache.set(item.sourceUri.uri, wrapper);
-      }
+      const uris = uriHistory.getResolutionPath().stack.map((x) => x.sourceUri);
+      this._wrapperCache.set(uris, wrapper);
     }
 
     if (shouldClearContext) {
@@ -561,26 +536,6 @@ export class PolywrapClient implements Client {
     );
   }
 
-  private _addDefaultConfig() {
-    const defaultClientConfig = getDefaultClientConfig();
-
-    if (defaultClientConfig.redirects) {
-      this._config.redirects.push(...defaultClientConfig.redirects);
-    }
-
-    if (defaultClientConfig.plugins) {
-      this._config.plugins.push(...defaultClientConfig.plugins);
-    }
-
-    if (defaultClientConfig.interfaces) {
-      this._config.interfaces.push(...defaultClientConfig.interfaces);
-    }
-
-    if (defaultClientConfig.uriResolvers) {
-      this._config.uriResolvers.push(...defaultClientConfig.uriResolvers);
-    }
-  }
-
   @Tracer.traceMethod("PolywrapClient: isContextualized")
   private _isContextualized(contextId: string | undefined): boolean {
     return !!contextId && this._contexts.has(contextId);
@@ -598,99 +553,6 @@ export class PolywrapClient implements Client {
     } else {
       return this._config;
     }
-  }
-
-  @Tracer.traceMethod("PolywrapClient: sanitizeConfig")
-  private _sanitizeConfig(): void {
-    this._sanitizePlugins();
-    this._sanitizeInterfacesAndImplementations();
-  }
-
-  // Make sure plugin URIs are unique
-  // If not, use the first occurrence of the plugin
-  @Tracer.traceMethod("PolywrapClient: sanitizePlugins")
-  private _sanitizePlugins(): void {
-    const plugins = this._config.plugins;
-    // Plugin map used to keep track of plugins with same URI
-    const addedPluginsMap = new Map<string, PluginPackage<unknown>>();
-
-    for (const plugin of plugins) {
-      const pluginUri = plugin.uri.uri;
-
-      if (!addedPluginsMap.has(pluginUri)) {
-        // If the plugin is not added yet then add it
-        addedPluginsMap.set(pluginUri, plugin.plugin);
-      }
-      // If the plugin with the same URI is already added, then ignore it
-      // This means that if the developer defines a plugin with the same URI as a default plugin
-      // we will ignore the default one and use the developer's plugin
-    }
-
-    // Collection of unique plugins
-    const sanitizedPlugins: PluginRegistration<Uri>[] = [];
-
-    // Go through the unique map of plugins and add them to the sanitized plugins
-    for (const [uri, plugin] of addedPluginsMap) {
-      sanitizedPlugins.push({
-        uri: new Uri(uri),
-        plugin: plugin,
-      });
-    }
-
-    this._config.plugins = sanitizedPlugins;
-  }
-
-  // Make sure interface URIs are unique and that all of their implementation URIs are unique
-  // If not, then merge them
-  @Tracer.traceMethod("PolywrapClient: sanitizeInterfacesAndImplementations")
-  private _sanitizeInterfacesAndImplementations(): void {
-    const interfaces = this._config.interfaces;
-    // Interface hash map used to keep track of interfaces with same URI
-    // A set is used to keep track of unique implementation URIs
-    const addedInterfacesHashMap = new Map<string, Set<string>>();
-
-    for (const interfaceImplementations of interfaces) {
-      const interfaceUri = interfaceImplementations.interface.uri;
-
-      if (!addedInterfacesHashMap.has(interfaceUri)) {
-        // If the interface is not added yet then just add it along with its implementations
-        addedInterfacesHashMap.set(
-          interfaceUri,
-          new Set(interfaceImplementations.implementations.map((x) => x.uri))
-        );
-      } else {
-        const existingInterfaceImplementations = addedInterfacesHashMap.get(
-          interfaceUri
-        ) as Set<string>;
-
-        // Get implementations to add to existing set of implementations
-        const newImplementationUris = interfaceImplementations.implementations.map(
-          (x) => x.uri
-        );
-
-        // Add new implementations to existing set
-        newImplementationUris.forEach(
-          existingInterfaceImplementations.add,
-          existingInterfaceImplementations
-        );
-      }
-    }
-
-    // Collection of unique interfaces with implementations merged
-    const sanitizedInterfaces: InterfaceImplementations<Uri>[] = [];
-
-    // Go through the unique hash map of interfaces and implementations and add them to the sanitized interfaces
-    for (const [
-      interfaceUri,
-      implementationSet,
-    ] of addedInterfacesHashMap.entries()) {
-      sanitizedInterfaces.push({
-        interface: new Uri(interfaceUri),
-        implementations: [...implementationSet].map((x) => new Uri(x)),
-      });
-    }
-
-    this._config.interfaces = sanitizedInterfaces;
   }
 
   @Tracer.traceMethod("PolywrapClient: validateConfig")
@@ -743,38 +605,26 @@ export class PolywrapClient implements Client {
       };
     }
 
-    const config = this._getConfig(parentId);
+    const parentConfig = this._getConfig(parentId);
+
     const id = uuid();
 
-    this._contexts.set(id, {
-      redirects: context?.redirects
-        ? sanitizeUriRedirects(context.redirects)
-        : config.redirects,
-      plugins: context?.plugins
-        ? sanitizePluginRegistrations(context.plugins)
-        : config.plugins,
-      interfaces: context?.interfaces
-        ? sanitizeInterfaceImplementations(context.interfaces)
-        : config.interfaces,
-      envs: context?.envs ? sanitizeEnvs(context.envs) : config.envs,
-      uriResolvers: context?.uriResolvers ?? config.uriResolvers,
-      tracerConfig: {
-        consoleEnabled:
-          context?.tracerConfig?.consoleEnabled ||
-          config.tracerConfig.consoleEnabled,
-        consoleDetailed:
-          context?.tracerConfig?.consoleDetailed ||
-          config.tracerConfig.consoleDetailed,
-        httpEnabled:
-          context?.tracerConfig?.httpEnabled || config.tracerConfig.httpEnabled,
-        httpUrl: context?.tracerConfig?.httpUrl
-          ? context.tracerConfig.httpUrl
-          : config.tracerConfig.httpUrl,
-        tracingLevel: context?.tracerConfig?.tracingLevel
-          ? context.tracerConfig.tracingLevel
-          : config.tracerConfig.tracingLevel,
-      },
-    });
+    const config = new ClientConfigBuilder()
+      .add({
+        envs: context.envs ?? parentConfig.envs,
+        interfaces: context.interfaces ?? parentConfig.interfaces,
+        plugins: context.plugins ?? parentConfig.plugins,
+        redirects: context.redirects ?? parentConfig.redirects,
+        uriResolvers: context.uriResolvers ?? parentConfig.uriResolvers,
+      })
+      .build();
+
+    const newContext = {
+      ...config,
+      tracerConfig: context.tracerConfig ?? parentConfig.tracerConfig
+    };
+
+    this._contexts.set(id, newContext);
 
     return {
       contextId: id,
@@ -892,19 +742,13 @@ const contextualizeClient = (
           uri: TUri,
           options: GetFileOptions
         ) => {
-          return client.getFile(uri, options);
-        },
-        getSchema: <TUri extends Uri | string>(
-          uri: TUri,
-          options: GetSchemaOptions = {}
-        ) => {
-          return client.getSchema(uri, { ...options, contextId });
+          return client.getFile(uri, { ...options, contextId });
         },
         getManifest: <TUri extends Uri | string>(
           uri: TUri,
-          options: GetManifestOptions
+          options: GetManifestOptions = {}
         ) => {
-          return client.getManifest(uri, options);
+          return client.getManifest(uri, { ...options, contextId });
         },
         getImplementations: <TUri extends Uri | string>(
           uri: TUri,

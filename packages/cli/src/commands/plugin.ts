@@ -4,18 +4,16 @@ import {
   PluginProject,
   SchemaComposer,
   defaultPluginManifest,
-  outputManifest,
   intlMsg,
   parseDirOption,
   parsePluginManifestFileOption,
   parseClientConfigOption,
+  generateWrapFile,
 } from "../lib";
 
-import { ComposerFilter } from "@polywrap/schema-compose";
-import { writeFileSync } from "@polywrap/os-js";
 import path from "path";
-import fs from "fs";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
+import fs from "fs";
 
 const defaultPublishDir = "./build";
 const defaultCodegenDir = "./wrap";
@@ -87,13 +85,10 @@ async function run(options: PluginCommandOptions) {
   });
   await project.validate();
   const manifest = await project.getManifest();
-
   const schemaComposer = new SchemaComposer({
     project,
     client,
   });
-
-  let result = false;
 
   const codeGenerator = new CodeGenerator({
     project,
@@ -101,25 +96,20 @@ async function run(options: PluginCommandOptions) {
     codegenDirAbs: codegenDir,
   });
 
-  result = await codeGenerator.generate();
+  const result = await codeGenerator.generate();
+  process.exitCode = result ? 0 : 1;
 
-  if (result) {
-    process.exitCode = 0;
-  } else {
-    process.exitCode = 1;
-  }
-
-  // Output the built schema & manifest
-  const schemas = await schemaComposer.getComposedSchemas(
-    ComposerFilter.Schema
-  );
-  const publishSchemaPath = path.join(publishDir, "schema.graphql");
-  const publishManifestPath = path.join(publishDir, "polywrap.plugin.json");
+  // Output the built manifest
+  const manifestPath = path.join(publishDir, "wrap.info");
 
   if (!fs.existsSync(publishDir)) {
     fs.mkdirSync(publishDir);
   }
 
-  writeFileSync(publishSchemaPath, schemas.schema);
-  await outputManifest(manifest, publishManifestPath);
+  await generateWrapFile(
+    await schemaComposer.getComposedAbis(),
+    manifest.project.name,
+    "plugin",
+    manifestPath
+  );
 }

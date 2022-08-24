@@ -1,4 +1,4 @@
-import { coreInterfaceUris, PluginModule } from "@polywrap/core-js";
+import { coreInterfaceUris } from "@polywrap/core-js";
 import { Uri, PolywrapClient } from "../..";
 
 jest.setTimeout(200000);
@@ -6,9 +6,7 @@ jest.setTimeout(200000);
 describe("sanity", () => {
   test("default client config", () => {
     const client = new PolywrapClient();
-
-    expect(client.getRedirects()).toStrictEqual([]);
-    expect(client.getPlugins().map((x) => x.uri)).toStrictEqual([
+    const expectedPlugins = [
       new Uri("wrap://ens/ipfs.polywrap.eth"),
       new Uri("wrap://ens/ens-resolver.polywrap.eth"),
       new Uri("wrap://ens/ethereum.polywrap.eth"),
@@ -20,7 +18,11 @@ describe("sanity", () => {
       new Uri("wrap://ens/fs.polywrap.eth"),
       new Uri("wrap://ens/fs-resolver.polywrap.eth"),
       new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
-    ]);
+    ];
+    const actualPlugins = client.getPlugins().map(x => x.uri);
+
+    expect(client.getRedirects()).toStrictEqual([]);
+    expect(expectedPlugins).toStrictEqual(actualPlugins);
     expect(client.getInterfaces()).toStrictEqual([
       {
         interface: coreInterfaceUris.uriResolver,
@@ -72,31 +74,5 @@ describe("sanity", () => {
         to: new Uri(implementation2Uri),
       },
     ]);
-  });
-
-  test("loadPolywrap - pass string or Uri", async () => {
-    const implementationUri = "wrap://ens/some-implementation.eth";
-    const schemaStr = "test-schema";
-
-    const client = new PolywrapClient({
-      plugins: [
-        {
-          uri: implementationUri,
-          plugin: {
-            factory: () => ({} as PluginModule<{}>),
-            manifest: {
-              schema: schemaStr,
-              implements: [],
-            },
-          },
-        },
-      ],
-    });
-
-    const schemaWhenString = await client.getSchema(implementationUri);
-    const schemaWhenUri = await client.getSchema(new Uri(implementationUri));
-
-    expect(schemaWhenString).toEqual(schemaStr);
-    expect(schemaWhenUri).toEqual(schemaStr);
   });
 });

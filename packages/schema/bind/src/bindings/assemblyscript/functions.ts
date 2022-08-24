@@ -1,13 +1,15 @@
-import { isBaseType, reservedWordsAS } from "./types";
+import { isBaseType, isKeyword } from "./types";
 import { MustacheFn } from "../types";
 
-export const handleKeywords: MustacheFn = () => {
-  return (text: string, render: (template: string) => string): string => {
-    const rendered: string = render(text);
-    if (reservedWordsAS.has(rendered)) {
-      return "m_" + rendered;
+// check if any of the keywords match the property name;
+// if there's a match, insert `_` at the beginning of the property name.
+export const detectKeyword: MustacheFn = () => {
+  return (value: string, render: (template: string) => string): string => {
+    const type = render(value);
+    if (isKeyword(type)) {
+      return "_" + type;
     }
-    return rendered;
+    return type;
   };
 };
 
@@ -100,6 +102,7 @@ export const toWasmInit: MustacheFn = () => {
         if (type.includes("Enum_")) {
           return "0";
         } else {
+          type = detectKeyword()(type, (str) => str);
           return `new Types.${type}()`;
         }
     }
@@ -169,11 +172,11 @@ export const toWasm: MustacheFn = () => {
         break;
       default:
         if (type.includes("Enum_")) {
-          type = `Types.${type.replace("Enum_", "")}`;
+          type = type.replace("Enum_", "");
           isEnum = true;
-        } else {
-          type = `Types.${type}`;
         }
+        type = detectKeyword()(type, (str) => str);
+        type = `Types.${type}`;
     }
 
     return applyOptional(type, optional, isEnum);

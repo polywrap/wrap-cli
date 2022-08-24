@@ -1,7 +1,9 @@
-import { composeSchema } from "../";
+import { composeSchema, renderSchema } from "../";
 import { fetchTestCases } from "./index";
 
-function removeFunctionProps(obj: unknown) {
+import { diff } from "jest-diff";
+
+function sanitizeObj(obj: unknown) {
   if (typeof obj !== "object") {
     return;
   }
@@ -9,11 +11,14 @@ function removeFunctionProps(obj: unknown) {
   for (var i in obj) {
     if (!obj.hasOwnProperty(i)) continue;
 
-    const typeOf = typeof (obj as any)[i];
+    const prop = (obj as any)[i];
+    const typeOf = typeof prop;
 
     if (typeOf === "object") {
-      removeFunctionProps((obj as any)[i]);
-    } else if (typeOf == "function") {
+      sanitizeObj(prop);
+    } else if (typeOf === "function") {
+      delete (obj as any)[i];
+    } else if (typeOf === "undefined") {
       delete (obj as any)[i];
     }
   }
@@ -23,7 +28,6 @@ function removeFunctionProps(obj: unknown) {
 
 describe("Polywrap Schema Composer Test Cases", () => {
   let cases = fetchTestCases();
-
   for (const test of cases) {
     it(`Case: ${test.name}`, async () => {
       const testCase = await test.promise;
@@ -33,11 +37,24 @@ describe("Polywrap Schema Composer Test Cases", () => {
       }
 
       const result = await composeSchema(testCase.input);
-      removeFunctionProps(result);
 
-      if (testCase.output) {
-        expect(result).toMatchObject(testCase.output);
+      // Check result with output ABI
+      sanitizeObj(result);
+      sanitizeObj(testCase.abi);
+      expect(result).toMatchObject(testCase.abi);
+
+      // Check rendered result schema with output schema
+      const resultSchema = renderSchema(result, true);
+
+      if (testCase.schema) {
+        expect(diff(testCase.schema, resultSchema))
+          .toContain("Compared values have no visual difference");
       }
+
+      // Check rendering between result ABI and output ABI
+      const testCaseSchema = renderSchema(testCase.abi, true);
+      expect(diff(testCaseSchema, resultSchema))
+        .toContain("Compared values have no visual difference");
     });
   }
 });
