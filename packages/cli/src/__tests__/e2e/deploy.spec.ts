@@ -9,7 +9,7 @@ import {
 } from "@polywrap/test-env-js";
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import { PolywrapClient } from "@polywrap/client-js";
-import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
+import { ethereumPlugin, Connections, Connection } from "@polywrap/ethereum-plugin-js";
 import { Wallet } from "@ethersproject/wallet";
 import path from "path";
 import fs from "fs";
@@ -60,13 +60,15 @@ const setup = async (domainNames: string[]) => {
       {
         uri: ethereumPluginUri,
         plugin: ethereumPlugin({
-          networks: {
-            testnet: {
-              provider: providers.ethereum,
-              signer
-            }
-          },
-          defaultNetwork: "testnet"
+          connections: new Connections({
+            networks: {
+              testnet: new Connection({
+                provider: providers.ethereum,
+                signer,
+              }),
+            },
+            defaultNetwork: "testnet",
+          }),
         }),
       }
     ],

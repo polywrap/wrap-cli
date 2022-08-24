@@ -1,6 +1,10 @@
 import { PluginRegistration } from "@polywrap/core-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
-import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
+import {
+  ethereumPlugin,
+  Connection,
+  Connections,
+} from "@polywrap/ethereum-plugin-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { PolywrapClient } from "@polywrap/client-js";
 import { defaultIpfsProviders } from "@polywrap/client-config-builder-js";
@@ -28,11 +32,13 @@ export function getSimpleClient(config: SimpleClientConfig): PolywrapClient {
     plugins.push({
       uri: "wrap://ens/ethereum.polywrap.eth",
       plugin: ethereumPlugin({
-        networks: {
-          testnet: {
-            provider: ethProvider,
+        connections: new Connections({
+          networks: {
+            testnet: new Connection({
+              provider: ethProvider,
+            }),
           },
-        },
+        }),
       }),
     });
   }
