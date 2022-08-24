@@ -2,7 +2,6 @@ package test_import
 
 import (
 	"github.com/consideritdone/polywrap-go/polywrap"
-	"some/library/to/methods"
 )
 
 func MethodImportedMethod(uri string, args *ArgsImportedMethod) (*TestImport_Object, error) {
