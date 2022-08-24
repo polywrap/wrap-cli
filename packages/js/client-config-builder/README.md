@@ -5,7 +5,7 @@ A DSL for building the PolywrapClient config object.
 Supports building configs using method chaining or imperatively.
 
 ```typescript=
-import { ClientConfigBuilder } from "@polywrap/client-config-js";
+import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 import { PolywrapClient } from "@polywrap/client-js";
 
 const config = new ClientConfigBuilder()

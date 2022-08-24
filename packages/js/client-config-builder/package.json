@@ -1,5 +1,5 @@
 {
-  "name": "@polywrap/client-config-js",
+  "name": "@polywrap/client-config-builder-js",
   "description": "Polywrap Javascript Client configuration",
   "version": "0.4.1",
   "license": "MIT",

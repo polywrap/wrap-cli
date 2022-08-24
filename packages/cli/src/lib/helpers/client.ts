@@ -3,7 +3,7 @@ import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { PolywrapClient } from "@polywrap/client-js";
-import { defaultIpfsProviders } from "@polywrap/client-config-js";
+import { defaultIpfsProviders } from "@polywrap/client-config-builder-js";
 
 interface SimpleClientConfig {
   ensAddress?: string;

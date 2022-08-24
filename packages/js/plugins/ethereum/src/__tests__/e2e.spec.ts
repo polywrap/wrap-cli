@@ -2,7 +2,7 @@ import { ethereumPlugin } from "..";
 import * as Schema from "../wrap";
 
 import { PolywrapClient } from "@polywrap/client-js";
-import { defaultIpfsProviders } from "@polywrap/client-config-js";
+import { defaultIpfsProviders } from "@polywrap/client-config-builder-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import {

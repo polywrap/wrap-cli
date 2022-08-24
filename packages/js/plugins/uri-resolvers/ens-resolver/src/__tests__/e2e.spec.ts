@@ -1,5 +1,5 @@
 import { PolywrapClient } from "@polywrap/client-js";
-import { defaultIpfsProviders } from "@polywrap/client-config-js";
+import { defaultIpfsProviders } from "@polywrap/client-config-builder-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import {
   buildAndDeployWrapper,

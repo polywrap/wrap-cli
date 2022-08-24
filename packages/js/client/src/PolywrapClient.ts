@@ -43,7 +43,7 @@ import {
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Tracer } from "@polywrap/tracing-js";
-import { ClientConfigBuilder } from "@polywrap/client-config-js";
+import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
 export interface PolywrapClientConfig<TUri extends Uri | string = string>
   extends ClientConfig<TUri> {

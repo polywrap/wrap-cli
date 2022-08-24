@@ -8,7 +8,7 @@ import {
 } from "@polywrap/core-js";
 import { getClient } from "../utils/getClient";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
-import { ClientConfigBuilder } from "@polywrap/client-config-js";
+import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 import { PolywrapClient } from "../..";
 
 jest.setTimeout(200000);

@@ -6,7 +6,7 @@ import { PluginConfigs, modules, uris } from "./pluginConfigs";
 
 import { PluginRegistration } from "@polywrap/core-js";
 import { Tracer } from "@polywrap/tracing-js";
-import { ClientConfigBuilder } from "@polywrap/client-config-js";
+import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 
 export { PluginConfigs };
 

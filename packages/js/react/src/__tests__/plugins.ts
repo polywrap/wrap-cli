@@ -1,5 +1,5 @@
 import { PluginRegistration } from "@polywrap/core-js";
-import { defaultIpfsProviders } from "@polywrap/client-config-js";
+import { defaultIpfsProviders } from "@polywrap/client-config-builder-js";
 import { plugin as ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import { plugin as ethereumPlugin } from "@polywrap/ethereum-plugin-js";
 import { plugin as ipfsPlugin } from "@polywrap/ipfs-plugin-js";
