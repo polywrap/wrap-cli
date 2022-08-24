@@ -99,12 +99,15 @@ export const makeImports: MustacheFn = () => {
   return (text: string, render: (template: string) => string): string => {
     const types = render(text).split(",");
     const exist: { [key: string]: boolean } = {};
-    const pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
-    '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
-    '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
-    '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
-    '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
-    '(\\#[-a-z\\d_]*)?$','i'); 
+    const pattern = new RegExp(
+      "^(https?:\\/\\/)?" + // protocol
+        "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
+        "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
+        "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
+        "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
+        "(\\#[-a-z\\d_]*)?$",
+      "i"
+    );
     for (const t of types) {
       switch (t) {
         case "*big.Int":
@@ -219,13 +222,12 @@ export const toMsgPack: MustacheFn = () => {
 
 export const typeable: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
-    let type = render(value);
+    const type = render(value);
     switch (type) {
       case "int8":
       case "int16":
       case "int32":
       case "int64":
-      case "uint32":
       case "uint8":
       case "uint16":
       case "uint32":
@@ -233,7 +235,6 @@ export const typeable: MustacheFn = () => {
       case "string":
       case "bool":
       case "[]byte":
-      case "*big.Int":
       case "*big.Int":
       case "*fastjson.Value":
         return type;
@@ -243,8 +244,8 @@ export const typeable: MustacheFn = () => {
         }
         return `types.${type}`;
     }
-  }
-}
+  };
+};
 
 export const toWasm: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
