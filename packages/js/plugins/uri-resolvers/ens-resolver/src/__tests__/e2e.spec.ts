@@ -1,4 +1,5 @@
-import { defaultIpfsProviders, PolywrapClient } from "@polywrap/client-js";
+import { PolywrapClient } from "@polywrap/client-js";
+import { defaultIpfsProviders } from "@polywrap/client-config-builder-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import {
   buildAndDeployWrapper,
@@ -10,7 +11,7 @@ import {
 
 import { ensResolverPlugin } from "..";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
-import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
+import { ethereumPlugin, Connections, Connection } from "@polywrap/ethereum-plugin-js";
 
 jest.setTimeout(300000);
 
@@ -44,16 +45,14 @@ describe("ENS Resolver Plugin", () => {
         {
           uri: "wrap://ens/ethereum.polywrap.eth",
           plugin: ethereumPlugin({
-            networks: {
-              testnet: {
-                provider: providers.ethereum
+            connections: new Connections({
+              networks: {
+                testnet: new Connection({
+                  provider: providers.ethereum
+                })
               },
-              goerli: {
-                provider:
-                  "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
-              },
-            },
-            defaultNetwork: "testnet"
+              defaultNetwork: "testnet"
+            })
           })
         },
         {

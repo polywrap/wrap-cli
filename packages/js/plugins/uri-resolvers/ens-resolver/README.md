@@ -12,7 +12,7 @@ import {
   stopTestEnvironment,
   buildAndDeployWrapper,
 } from "@polywrap/test-env-js";
-import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
+import { ethereumPlugin, Connections, Connection } from "@polywrap/ethereum-plugin-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ensPlugin } from "@polywrap/ens-plugin-js";
 
@@ -22,19 +22,22 @@ export async function foo({
   // spin up docker containers with Ganache and IPFS.
   await initTestEnvironment();
 
+  // initialize Ethereum Connections store
+  const connections: Connections = new Connections({
+    networks: {
+      testnet: new Connection({
+        provider: providers.ethereum,
+      }),
+    },
+    defaultNetwork: "testnet",
+  });
+
   // initialize the client with eth, ipfs, ens plugins
   client = new PolywrapClient({
     plugins: [
       {
         uri: "wrap://ens/ethereum.polywrap.eth",
-        plugin: ethereumPlugin({
-          networks: {
-            testnet: {
-              provider: providers.ethereum,
-            },
-          },
-          defaultNetwork: "testnet",
-        }),
+        plugin: ethereumPlugin({ connections }),
       },
       {
         uri: "wrap://ens/ipfs.polywrap.eth",
