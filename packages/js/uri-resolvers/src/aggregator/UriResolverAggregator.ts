@@ -2,13 +2,30 @@ import { UriResolverAggregatorBase } from "./UriResolverAggregatorBase";
 import { UriResolverAggregatorOptions } from "./UriResolverAggregatorOptions";
 import { InfiniteLoopError } from "..";
 
-import { IUriResolver, Uri, Client, Result, Ok } from "@polywrap/core-js";
+import { IUriResolver, Uri, Client, Result, ResultOk } from "@polywrap/core-js";
+import { UriResolverLike } from "../UriResolverLike";
+import { buildUriResolver } from "../buildUriResolver";
+
+export type GetResolversFunc = (
+  uri: Uri,
+  client: Client
+) => Promise<IUriResolver<unknown>[]>;
+
+export type GetResolversWithErrorFunc<TError> = (
+  uri: Uri,
+  client: Client
+) => Promise<Result<IUriResolver<unknown>[], TError | InfiniteLoopError>>;
 
 export class UriResolverAggregator<
   TError = undefined
 > extends UriResolverAggregatorBase<TError> {
+  private resolvers:
+    | IUriResolver<unknown>[]
+    | GetResolversFunc
+    | GetResolversWithErrorFunc<TError>;
+
   constructor(
-    resolvers: IUriResolver<unknown>[],
+    resolvers: UriResolverLike[],
     options?: UriResolverAggregatorOptions
   );
   constructor(
@@ -19,22 +36,22 @@ export class UriResolverAggregator<
     options?: UriResolverAggregatorOptions
   );
   constructor(
-    resolvers: (uri: Uri, client: Client) => Promise<IUriResolver<unknown>[]>,
+    resolvers: GetResolversFunc,
     options?: UriResolverAggregatorOptions
   );
   constructor(
-    private resolvers:
-      | IUriResolver<unknown>[]
-      | ((uri: Uri, client: Client) => Promise<IUriResolver<unknown>[]>)
-      | ((
-          uri: Uri,
-          client: Client
-        ) => Promise<
-          Result<IUriResolver<unknown>[], TError | InfiniteLoopError>
-        >),
+    resolvers:
+      | UriResolverLike[]
+      | GetResolversFunc
+      | GetResolversWithErrorFunc<TError>,
     options: UriResolverAggregatorOptions = { endOnRedirect: false }
   ) {
     super(options);
+    if (Array.isArray(resolvers)) {
+      this.resolvers = resolvers.map((x) => buildUriResolver(x));
+    } else {
+      this.resolvers = resolvers;
+    }
   }
 
   async getUriResolvers(
@@ -42,12 +59,12 @@ export class UriResolverAggregator<
     client: Client
   ): Promise<Result<IUriResolver<unknown>[], TError | InfiniteLoopError>> {
     if (Array.isArray(this.resolvers)) {
-      return Ok(this.resolvers);
+      return ResultOk(this.resolvers);
     } else {
       const result = await this.resolvers(uri, client);
 
       if (Array.isArray(result)) {
-        return Ok(result);
+        return ResultOk(result);
       } else {
         return result;
       }

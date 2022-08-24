@@ -16,11 +16,11 @@ import {
   Result,
   UriResolverInterface,
   IUriResolutionStep,
-  Err,
   IWrapPackage,
   Wrapper,
   initWrapper,
-  Ok,
+  ResultOk,
+  ResultErr,
 } from "@polywrap/core-js";
 
 export class UriResolverWrapper implements IUriResolver<unknown> {
@@ -86,7 +86,7 @@ const tryResolveUriWithImplementation = async (
 
   if (!response.result.ok) {
     return {
-      result: Err(response.result.error),
+      result: ResultErr(response.result.error),
       history: response.history,
     };
   }
@@ -97,7 +97,7 @@ const tryResolveUriWithImplementation = async (
     const lastFoundUri = uriPackageOrWrapper.uri as Uri;
 
     return {
-      result: Err(
+      result: ResultErr(
         `While resolving ${uri.uri} with URI resolver extension ${implementationUri.uri}, the extension could not be fully resolved. Last found URI is ${lastFoundUri.uri}`
       ),
       history: response.history,
@@ -136,13 +136,13 @@ const tryResolveUriWithImplementation = async (
 
   if (error) {
     return {
-      result: Err(error),
+      result: ResultErr(error),
       history: [],
     };
   }
 
   return {
-    result: Ok(uriOrManifest ?? undefined),
+    result: ResultOk(uriOrManifest ?? undefined),
     history: [],
   };
 };

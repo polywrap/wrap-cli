@@ -13,7 +13,7 @@ import {
   IUriResolver,
   getImplementations,
   coreInterfaceUris,
-  Ok,
+  ResultOk,
   UriResolutionResponse,
 } from "@polywrap/core-js";
 import { DeserializeManifestOptions } from "@polywrap/wrap-manifest-types-js";
@@ -57,7 +57,7 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<LoadResolve
       uriResolverImpls
     );
 
-    return Ok(resolvers);
+    return ResultOk(resolvers);
   }
 
   private resolverIndex = -1;

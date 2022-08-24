@@ -11,7 +11,7 @@ import {
 
 export class PluginsResolver extends UriResolverAggregator {
   constructor(
-    pluginRegistrations: readonly PluginRegistration<string | Uri>[],
+    pluginRegistrations: PluginRegistration<string | Uri>[],
     private readonly createPluginWrapper: (
       uri: Uri,
       plugin: PluginPackage<unknown>,

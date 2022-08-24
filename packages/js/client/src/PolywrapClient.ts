@@ -492,6 +492,8 @@ export class PolywrapClient implements Client {
   public async tryResolveUri<TUri extends Uri | string>(
     options: TryResolveUriOptions<TUri>
   ): Promise<UriResolutionResponse<unknown>> {
+    const uri = this._toUri(options.uri);
+
     const { contextId, shouldClearContext } = this._setContext(
       options.contextId,
       options.config
@@ -506,11 +508,10 @@ export class PolywrapClient implements Client {
     // This is a hack because we expect config overrides to ignore cache
     const response =
       ignoreCache && uriResolver.name === "CacheableResolver"
-        ? await ((uriResolver as unknown) as CacheableResolver).resolver.tryResolveUri(
-            this._toUri(options.uri),
-            client
-          )
-        : await uriResolver.tryResolveUri(this._toUri(options.uri), client);
+        ? await(
+            (uriResolver as unknown) as CacheableResolver
+          ).resolverToCache.tryResolveUri(uri, client)
+        : await uriResolver.tryResolveUri(uri, client);
 
     if (shouldClearContext) {
       this._clearContext(contextId);
