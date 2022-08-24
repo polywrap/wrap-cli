@@ -19,8 +19,7 @@ import {
 } from "./";
 
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
-import { WasmWrapper } from "@polywrap/client-js";
-import { WrapImports } from "@polywrap/client-js/build/wasm/types";
+import { WasmWrapper, WrapImports } from "@polywrap/client-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 import { normalizePath, writeDirectorySync } from "@polywrap/os-js";
 import fs from "fs";

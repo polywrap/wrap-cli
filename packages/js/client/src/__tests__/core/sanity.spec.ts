@@ -6,9 +6,7 @@ jest.setTimeout(200000);
 describe("sanity", () => {
   test("default client config", () => {
     const client = new PolywrapClient();
-
-    expect(client.getRedirects()).toStrictEqual([]);
-    expect(client.getPlugins().map((x) => x.uri)).toStrictEqual([
+    const expectedPlugins = [
       new Uri("wrap://ens/ipfs.polywrap.eth"),
       new Uri("wrap://ens/ens-resolver.polywrap.eth"),
       new Uri("wrap://ens/ethereum.polywrap.eth"),
@@ -20,7 +18,11 @@ describe("sanity", () => {
       new Uri("wrap://ens/fs.polywrap.eth"),
       new Uri("wrap://ens/fs-resolver.polywrap.eth"),
       new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
-    ]);
+    ];
+    const actualPlugins = client.getPlugins().map(x => x.uri);
+
+    expect(client.getRedirects()).toStrictEqual([]);
+    expect(expectedPlugins).toStrictEqual(actualPlugins);
     expect(client.getInterfaces()).toStrictEqual([
       {
         interface: coreInterfaceUris.uriResolver,
