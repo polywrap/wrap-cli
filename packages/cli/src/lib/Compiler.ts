@@ -36,6 +36,7 @@ interface CompilerState {
 export interface CompilerOverrides {
   validateManifest: (manifest: PolywrapManifest) => void;
   generationSubPath: string;
+  getCompilerOptions: () => Record<string, unknown>;
 }
 
 export interface CompilerConfig {
@@ -214,7 +215,8 @@ export class Compiler {
     // Generate the bindings
     const binding = await project.generateSchemaBindings(
       abi,
-      compilerOverrides?.generationSubPath
+      compilerOverrides?.generationSubPath,
+      compilerOverrides?.getCompilerOptions()
     );
 
     // Output the bindings
