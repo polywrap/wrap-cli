@@ -148,7 +148,16 @@ export const generateBinding: GenerateBindingFn = (
       type: "Directory",
       name: "types",
       data: renderTemplates(
-        templatePath("module-type"),
+        templatePath("module-type/types"),
+        { goImport, ...abi.moduleType },
+        subTemplates
+      ),
+    });
+    output.entries.push({
+      type: "Directory",
+      name: "module",
+      data: renderTemplates(
+        templatePath("module-type/module"),
         { goImport, ...abi.moduleType },
         subTemplates
       ),

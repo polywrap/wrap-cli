@@ -1,23 +1,11 @@
-package types
+package module
 
 import (
 	"github.com/consideritdone/polywrap-go/polywrap/msgpack"
+	"github.com/testorg/testrepo/wrap/types"
 )
 
-type ArgsModuleMethod struct {
-	Str           string
-	OptStr        *string
-	En            CustomEnum
-	OptEnum       *CustomEnum
-	EnumArray     []CustomEnum
-	OptEnumArray  []*CustomEnum
-	Map           map[string]int32
-	MapOfArr      map[string][]int32
-	MapOfObj      map[string]AnotherType
-	MapOfArrOfObj map[string][]AnotherType
-}
-
-func DeserializeModuleMethodArgs(argsBuf []byte) *ArgsModuleMethod {
+func DeserializeModuleMethodArgs(argsBuf []byte) *types.ArgsModuleMethod {
 	ctx := msgpack.NewContext("Deserializing module-type: ModuleMethod")
 	reader := msgpack.NewReadDecoder(ctx, argsBuf)
 
@@ -203,7 +191,7 @@ func DeserializeModuleMethodArgs(argsBuf []byte) *ArgsModuleMethod {
 		panic(reader.Context().PrintWithContext("Missing required property: 'mapOfArrOfObj: Map<String, [AnotherType]>'"))
 	}
 
-	return &ArgsModuleMethod{
+	return &types.ArgsModuleMethod{
 		Str:           _str,
 		OptStr:        _optStr,
 		En:            _en,
@@ -233,14 +221,7 @@ func WriteModuleMethodResult(writer msgpack.Write, value int32) {
 	writer.Context().Pop()
 }
 
-type ArgsObjectMethod struct {
-	Object         AnotherType
-	OptObject      *AnotherType
-	ObjectArray    []AnotherType
-	OptObjectArray []*AnotherType
-}
-
-func DeserializeObjectMethodArgs(argsBuf []byte) *ArgsObjectMethod {
+func DeserializeObjectMethodArgs(argsBuf []byte) *types.ArgsObjectMethod {
 	ctx := msgpack.NewContext("Deserializing module-type: ObjectMethod")
 	reader := msgpack.NewReadDecoder(ctx, argsBuf)
 
@@ -310,7 +291,7 @@ func DeserializeObjectMethodArgs(argsBuf []byte) *ArgsObjectMethod {
 		panic(reader.Context().PrintWithContext("Missing required property: 'objectArray: [AnotherType]'"))
 	}
 
-	return &ArgsObjectMethod{
+	return &types.ArgsObjectMethod{
 		Object:         _object,
 		OptObject:      _optObject,
 		ObjectArray:    _objectArray,
@@ -318,30 +299,23 @@ func DeserializeObjectMethodArgs(argsBuf []byte) *ArgsObjectMethod {
 	}
 }
 
-func SerializeObjectMethodResult(value *AnotherType) []byte {
+func SerializeObjectMethodResult(value *types.AnotherType) []byte {
 	ctx := msgpack.NewContext("Serializing module-type: ObjectMethod")
 	encoder := msgpack.NewWriteEncoder(ctx)
 	WriteObjectMethodResult(encoder, value);
 	return encoder.Buffer()
 }
 
-func WriteObjectMethodResult(writer msgpack.Write, value *AnotherType) {
+func WriteObjectMethodResult(writer msgpack.Write, value *types.AnotherType) {
 	writer.Context().Push("objectMethod", "*AnotherType", "writing property")
 	{
 		v := value
-		AnotherTypeWrite(writer, v)
+		types.AnotherTypeWrite(writer, v)
 	}
 	writer.Context().Pop()
 }
 
-type ArgsOptionalEnvMethod struct {
-	Object         AnotherType
-	OptObject      *AnotherType
-	ObjectArray    []AnotherType
-	OptObjectArray []*AnotherType
-}
-
-func DeserializeOptionalEnvMethodArgs(argsBuf []byte) *ArgsOptionalEnvMethod {
+func DeserializeOptionalEnvMethodArgs(argsBuf []byte) *types.ArgsOptionalEnvMethod {
 	ctx := msgpack.NewContext("Deserializing module-type: OptionalEnvMethod")
 	reader := msgpack.NewReadDecoder(ctx, argsBuf)
 
@@ -411,7 +385,7 @@ func DeserializeOptionalEnvMethodArgs(argsBuf []byte) *ArgsOptionalEnvMethod {
 		panic(reader.Context().PrintWithContext("Missing required property: 'objectArray: [AnotherType]'"))
 	}
 
-	return &ArgsOptionalEnvMethod{
+	return &types.ArgsOptionalEnvMethod{
 		Object:         _object,
 		OptObject:      _optObject,
 		ObjectArray:    _objectArray,
@@ -419,32 +393,28 @@ func DeserializeOptionalEnvMethodArgs(argsBuf []byte) *ArgsOptionalEnvMethod {
 	}
 }
 
-func SerializeOptionalEnvMethodResult(value *AnotherType) []byte {
+func SerializeOptionalEnvMethodResult(value *types.AnotherType) []byte {
 	ctx := msgpack.NewContext("Serializing module-type: OptionalEnvMethod")
 	encoder := msgpack.NewWriteEncoder(ctx)
 	WriteOptionalEnvMethodResult(encoder, value);
 	return encoder.Buffer()
 }
 
-func WriteOptionalEnvMethodResult(writer msgpack.Write, value *AnotherType) {
+func WriteOptionalEnvMethodResult(writer msgpack.Write, value *types.AnotherType) {
 	writer.Context().Push("optionalEnvMethod", "*AnotherType", "writing property")
 	{
 		v := value
-		AnotherTypeWrite(writer, v)
+		types.AnotherTypeWrite(writer, v)
 	}
 	writer.Context().Pop()
 }
 
-type ArgsIf struct {
-	M_if else
-}
-
-func DeserializeIfArgs(argsBuf []byte) *ArgsIf {
+func DeserializeIfArgs(argsBuf []byte) *types.ArgsIf {
 	ctx := msgpack.NewContext("Deserializing module-type: If")
 	reader := msgpack.NewReadDecoder(ctx, argsBuf)
 
 	var (
-		_if    else
+		_if    Else
 		_ifSet bool
 	)
 
@@ -454,7 +424,7 @@ func DeserializeIfArgs(argsBuf []byte) *ArgsIf {
 		reader.Context().Pop()
 		switch field {
 		case "M_if":
-			reader.Context().Push(field, "else", "type found, reading property")
+			reader.Context().Push(field, "Else", "type found, reading property")
 			if v := ElseRead(reader); v != nil {
 				_if = *v
 			}
@@ -467,23 +437,23 @@ func DeserializeIfArgs(argsBuf []byte) *ArgsIf {
 		panic(reader.Context().PrintWithContext("Missing required property: 'if: else'"))
 	}
 
-	return &ArgsIf{
+	return &types.ArgsIf{
 		M_if: _if,
 	}
 }
 
-func SerializeIfResult(value else) []byte {
+func SerializeIfResult(value types.Else) []byte {
 	ctx := msgpack.NewContext("Serializing module-type: If")
 	encoder := msgpack.NewWriteEncoder(ctx)
 	WriteIfResult(encoder, value);
 	return encoder.Buffer()
 }
 
-func WriteIfResult(writer msgpack.Write, value else) {
-	writer.Context().Push("if", "else", "writing property")
+func WriteIfResult(writer msgpack.Write, value types.Else) {
+	writer.Context().Push("if", "Else", "writing property")
 	{
 		v := value
-		ElseWrite(writer, &v)
+		types.ElseWrite(writer, &v)
 	}
 	writer.Context().Pop()
 }

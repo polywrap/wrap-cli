@@ -1,4 +1,4 @@
-package types
+package module
 
 {{#methods.length}}
 import (
@@ -9,8 +9,8 @@ import (
 
 {{#methods}}
 func {{#toUpper}}{{name}}{{/toUpper}}Wrapped(argsBuf []byte, envSize uint32) []byte {
-	var env *Env
 	{{#env}}
+	var env *Env
 	{{#required}}
 	if envSize == 0 {
 		panic("Environment is not set, and it is required by method 'objectMethod'")

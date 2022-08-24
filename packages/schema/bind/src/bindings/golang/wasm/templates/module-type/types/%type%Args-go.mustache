@@ -1,0 +1,16 @@
+package types
+
+{{#makeImports}}{{#arguments}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{^last}},{{/last}}{{/arguments}}{{/makeImports}}
+
+{{#methods}}
+type Args{{#toUpper}}{{name}}{{/toUpper}} struct {
+{{#stuctProps}}
+{{#arguments}}
+{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}} {{#toWasm}}{{toGraphQLType}}{{/toWasm}}
+{{/arguments}}
+{{/stuctProps}}
+}
+{{^last}}
+
+{{/last}}
+{{/methods}}
