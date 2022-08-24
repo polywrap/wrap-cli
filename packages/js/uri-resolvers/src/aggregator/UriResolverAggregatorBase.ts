@@ -5,12 +5,12 @@ import {
   IUriResolver,
   Uri,
   Client,
-  Result,
   IUriResolutionResponse,
   UriResolutionResponse,
   IUriResolutionStep,
   UriPackageOrWrapper,
 } from "@polywrap/core-js";
+import { Result } from "@polywrap/result";
 
 export abstract class UriResolverAggregatorBase<TError = undefined>
   implements IUriResolver<TError | InfiniteLoopError> {

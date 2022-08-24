@@ -1,10 +1,11 @@
 import { UriResolverAggregatorBase } from "./UriResolverAggregatorBase";
 import { UriResolverAggregatorOptions } from "./UriResolverAggregatorOptions";
-import { InfiniteLoopError } from "..";
-
-import { IUriResolver, Uri, Client, Result, ResultOk } from "@polywrap/core-js";
+import { InfiniteLoopError } from "../InfiniteLoopError";
 import { UriResolverLike } from "../UriResolverLike";
 import { buildUriResolver } from "../buildUriResolver";
+
+import { Result, ResultOk } from "@polywrap/result";
+import { IUriResolver, Uri, Client } from "@polywrap/core-js";
 
 export type GetResolversFunc = (
   uri: Uri,

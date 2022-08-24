@@ -9,14 +9,13 @@ import {
   IUriResolutionResponse,
   Uri,
   Client,
-  Result,
   IUriResolver,
   getImplementations,
   coreInterfaceUris,
-  ResultOk,
   UriResolutionResponse,
 } from "@polywrap/core-js";
 import { DeserializeManifestOptions } from "@polywrap/wrap-manifest-types-js";
+import { Result, ResultOk } from "@polywrap/result";
 
 export type ExtendableUriResolverResponse = IUriResolutionResponse<
   LoadResolverExtensionsError | InfiniteLoopError

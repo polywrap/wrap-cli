@@ -5,8 +5,8 @@ import {
   PluginRegistration,
   Client,
   IUriResolutionStep,
-  Result,
 } from "@polywrap/core-js";
+import { Result } from "@polywrap/result";
 
 export type UriResolverLike =
   | IUriResolver<unknown>

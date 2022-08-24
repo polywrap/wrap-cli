@@ -3,7 +3,9 @@ import {
   UriPackageOrWrapper,
   IUriResolutionStep,
 } from ".";
-import { Result, Uri, IWrapPackage, Wrapper, ResultOk, ResultErr } from "..";
+import { Uri, IWrapPackage, Wrapper } from "..";
+
+import { Result, ResultOk, ResultErr } from "@polywrap/result";
 
 export class UriResolutionResponse<TError = undefined>
   implements IUriResolutionResponse<TError> {

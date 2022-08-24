@@ -13,4 +13,3 @@ export * from "./PluginRegistration";
 export * from "./UriResolver";
 export * from "./Workflow";
 export * from "./IWrapPackage";
-export * from "./Result";

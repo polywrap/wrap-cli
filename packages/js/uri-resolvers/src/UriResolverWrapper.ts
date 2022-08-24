@@ -13,15 +13,13 @@ import {
   Client,
   IUriResolutionResponse,
   UriResolutionResponse,
-  Result,
   UriResolverInterface,
   IUriResolutionStep,
   IWrapPackage,
   Wrapper,
   initWrapper,
-  ResultOk,
-  ResultErr,
 } from "@polywrap/core-js";
+import { Result, ResultOk, ResultErr } from "@polywrap/result";
 
 export class UriResolverWrapper implements IUriResolver<unknown> {
   constructor(

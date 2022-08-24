@@ -4,7 +4,8 @@ import {
   UriResolverAggregator,
 } from ".";
 
-import { IUriResolver, Uri, Client, Result } from "@polywrap/core-js";
+import { IUriResolver, Uri, Client } from "@polywrap/core-js";
+import { Result } from "@polywrap/result";
 
 export const buildUriResolver = <TError = undefined>(
   resolvable: UriResolverLike,
