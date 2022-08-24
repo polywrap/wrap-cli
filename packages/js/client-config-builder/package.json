@@ -1,6 +1,6 @@
 {
-  "name": "@polywrap/core-js",
-  "description": "Polywrap Javascript Core",
+  "name": "@polywrap/client-config-builder-js",
+  "description": "Polywrap Javascript Client configuration",
   "version": "0.4.1",
   "license": "MIT",
   "repository": {
@@ -19,24 +19,25 @@
     "test:watch": "jest --watch --passWithNoTests --verbose"
   },
   "dependencies": {
-    "@polywrap/tracing-js": "0.4.1",
+    "@polywrap/core-js": "0.4.1",
     "@polywrap/wrap-manifest-types-js": "0.4.1",
-    "@polywrap/msgpack-js": "0.4.1",
-    "@polywrap/asyncify-js": "0.4.1",
-    "graphql": "15.5.0",
-    "graphql-tag": "2.10.4",
-    "js-yaml": "3.14.0",
-    "jsonschema": "1.4.0",
-    "semver": "7.3.5"
+    "@polywrap/ipfs-plugin-js": "0.4.1",
+    "@polywrap/ipfs-resolver-plugin-js": "0.4.1",
+    "@polywrap/ethereum-plugin-js": "0.4.1",
+    "@polywrap/ens-resolver-plugin-js": "0.4.1",
+    "@polywrap/graph-node-plugin-js": "0.4.1",
+    "@polywrap/http-plugin-js": "0.4.1",
+    "@polywrap/fs-plugin-js": "0.4.1",
+    "@polywrap/uts46-plugin-js": "0.4.1",
+    "@polywrap/sha3-plugin-js": "0.4.1",
+    "@polywrap/logger-plugin-js": "0.4.1",
+    "@polywrap/tracing-js": "0.4.1",
+    "@polywrap/fs-resolver-plugin-js": "0.4.1"
   },
   "devDependencies": {
-    "@polywrap/os-js": "0.4.1",
     "@types/jest": "26.0.8",
-    "@types/mustache": "4.0.1",
     "@types/prettier": "2.6.0",
-    "@types/semver": "7.3.8",
     "jest": "26.6.3",
-    "mustache": "4.0.1",
     "rimraf": "3.0.2",
     "ts-jest": "26.5.4",
     "ts-node": "8.10.2",
