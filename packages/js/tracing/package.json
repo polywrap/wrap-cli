@@ -25,9 +25,7 @@
     "@opentelemetry/sdk-trace-node": "1.4.0",
     "@opentelemetry/propagator-b3": "1.4.0",
     "@opentelemetry/sdk-trace-base": "1.4.0",
-    "@opentelemetry/sdk-trace-node": "1.4.0",
     "@opentelemetry/sdk-trace-web": "1.4.0",
-    "@fetsorn/opentelemetry-console-exporter": "0.0.1",
     "browser-util-inspect": "0.2.0"
   },
   "devDependencies": {
