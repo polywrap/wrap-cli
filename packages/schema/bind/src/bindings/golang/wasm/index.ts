@@ -36,6 +36,7 @@ export const generateBinding: GenerateBindingFn = (
   };
   const output = result.output;
   const abi = applyTransforms(options.abi);
+  const goImport = "github.com/testorg/testrepo";
 
   // Generate object type folders
   if (abi.objectTypes) {
@@ -148,7 +149,7 @@ export const generateBinding: GenerateBindingFn = (
       name: "types",
       data: renderTemplates(
         templatePath("module-type"),
-        abi.moduleType,
+        { goImport, ...abi.moduleType },
         subTemplates
       ),
     });

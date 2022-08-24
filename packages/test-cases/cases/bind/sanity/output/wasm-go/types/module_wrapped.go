@@ -2,7 +2,7 @@ package types
 
 import (
 	"github.com/consideritdone/polywrap-go/polywrap"
-	"some/library/to/methods"
+	methods "github.com/testorg/testrepo"
 )
 
 func ModuleMethodWrapped(argsBuf []byte, envSize uint32) []byte {
