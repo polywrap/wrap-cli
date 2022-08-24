@@ -95,7 +95,13 @@ export class PolywrapClient implements Client {
 
       this._config = {
         ...sanitizedConfig,
-        tracerConfig: config?.tracerConfig,
+        tracerConfig: {
+          consoleEnabled: !!config?.tracerConfig?.consoleEnabled,
+          consoleDetailed: config?.tracerConfig?.consoleDetailed,
+          httpEnabled: !!config?.tracerConfig?.httpEnabled,
+          httpUrl: config?.tracerConfig?.httpUrl,
+          tracingLevel: config?.tracerConfig?.tracingLevel,
+        }
       };
 
       this._validateConfig();
