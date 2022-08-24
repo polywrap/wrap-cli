@@ -1,5 +1,5 @@
 export * from "./InfiniteLoopError";
-export * from "./UriResolvable";
+export * from "./UriResolverLike";
 export * from "./UriResolverWrapper";
 export * from "./aggregator";
 export * from "./buildUriResolver";

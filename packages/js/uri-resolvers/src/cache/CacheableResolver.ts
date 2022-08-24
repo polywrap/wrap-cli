@@ -1,4 +1,5 @@
 import { ICacheResolver } from "./ICacheResolver";
+import { UriResolverLike } from "../UriResolverLike";
 
 import {
   IUriResolver,
@@ -7,14 +8,16 @@ import {
   IUriResolutionStep,
   IUriResolutionResponse,
 } from "@polywrap/core-js";
+import { buildUriResolver } from "../buildUriResolver";
 
 export class CacheableResolver<TError = undefined>
   implements IUriResolver<TError> {
   name: string;
+  resolverToCache: IUriResolver<TError>;
 
   constructor(
     public cacheResolver: ICacheResolver<TError>,
-    public resolver: IUriResolver<TError>,
+    resolverToCache: UriResolverLike,
     name?: string
   ) {
     if (name) {
@@ -22,6 +25,8 @@ export class CacheableResolver<TError = undefined>
     } else {
       this.name = CacheableResolver.name;
     }
+
+    this.resolverToCache = buildUriResolver(resolverToCache);
   }
 
   async tryResolveUri(
@@ -48,7 +53,7 @@ export class CacheableResolver<TError = undefined>
       };
     }
 
-    const response = await this.resolver.tryResolveUri(uri, client);
+    const response = await this.resolverToCache.tryResolveUri(uri, client);
 
     const endResponse = await this.cacheResolver.onResolutionEnd(
       uri,
@@ -60,7 +65,7 @@ export class CacheableResolver<TError = undefined>
       result: endResponse.result,
       history: [
         {
-          resolverName: this.resolver.name,
+          resolverName: this.resolverToCache.name,
           sourceUri: uri,
           response,
         } as IUriResolutionStep<TError>,

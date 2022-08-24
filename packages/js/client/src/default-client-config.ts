@@ -6,7 +6,6 @@ import {
   ExtendableUriResolver,
   LegacyPluginsResolver,
   LegacyRedirectsResolver,
-  buildUriResolver,
   CacheableResolver,
   PackageToWrapperCacheResolver,
   IWrapperCache,
@@ -107,7 +106,7 @@ export const getDefaultClientConfig = Tracer.traceFunc(
       ],
       resolver: new CacheableResolver(
         new PackageToWrapperCacheResolver(wrapperCache),
-        buildUriResolver([
+        [
           new LegacyRedirectsResolver(),
           new LegacyPluginsResolver(
             (
@@ -127,7 +126,7 @@ export const getDefaultClientConfig = Tracer.traceFunc(
               return new WasmWrapper(uri, manifest, uriResolver, environment);
             }
           ),
-        ])
+        ]
       ),
     };
   }
