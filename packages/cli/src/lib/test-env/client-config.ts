@@ -1,10 +1,7 @@
 import { getTestEnvProviders } from "./providers";
 
-import {
-  PluginRegistration,
-  PolywrapClientConfig,
-  defaultIpfsProviders,
-} from "@polywrap/client-js";
+import { PluginRegistration, PolywrapClientConfig } from "@polywrap/client-js";
+import { defaultIpfsProviders } from "@polywrap/client-config-builder-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";

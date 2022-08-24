@@ -9,8 +9,8 @@ import {
 import {
   PolywrapClient,
   PolywrapClientConfig,
-  defaultIpfsProviders,
 } from "@polywrap/client-js";
+import { defaultIpfsProviders } from "@polywrap/client-config-builder-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";

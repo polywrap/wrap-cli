@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { WrapExports } from "./types";
 import { createImports } from "./imports";
-
 import {
   Client,
   combinePaths,
@@ -15,7 +14,8 @@ import {
   Uri,
   UriResolverInterface,
   Wrapper,
-} from "@polywrap/core-js";
+} from "../";
+
 import {
   deserializeWrapManifest,
   WrapManifest,
