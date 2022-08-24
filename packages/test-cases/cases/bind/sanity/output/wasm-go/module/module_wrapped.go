@@ -1,4 +1,4 @@
-package types
+package module
 
 import (
 	"github.com/consideritdone/polywrap-go/polywrap"
@@ -6,7 +6,6 @@ import (
 )
 
 func ModuleMethodWrapped(argsBuf []byte, envSize uint32) []byte {
-	var env *Env
 
 	args := DeserializeModuleMethodArgs(argsBuf)
 
@@ -44,7 +43,6 @@ func OptionalEnvMethodWrapped(argsBuf []byte, envSize uint32) []byte {
 }
 
 func IfWrapped(argsBuf []byte, envSize uint32) []byte {
-	var env *Env
 
 	args := DeserializeIfArgs(argsBuf)
 
