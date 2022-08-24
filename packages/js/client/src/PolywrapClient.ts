@@ -65,7 +65,7 @@ export class PolywrapClient implements Client {
   private _contexts: Map<string, PolywrapClientConfig<Uri>> = new Map();
 
   constructor(
-    config?: Partial<PolywrapClientConfig>,
+    config?: Partial<PolywrapClientConfig<string | Uri>>,
     options?: { noDefaults?: boolean }
   ) {
     try {
@@ -77,6 +77,10 @@ export class PolywrapClient implements Client {
 
       const builder = new ClientConfigBuilder();
 
+      if (!options?.noDefaults) {
+        builder.addDefaults();
+      }
+
       if (config) {
         builder.add(config);
 
@@ -87,10 +91,6 @@ export class PolywrapClient implements Client {
 
       if (!this._wrapperCache) {
         this._wrapperCache = new SimpleCache();
-      }
-
-      if (!options?.noDefaults) {
-        builder.addDefaults();
       }
 
       const sanitizedConfig = builder.build();

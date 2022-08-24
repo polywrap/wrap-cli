@@ -1,9 +1,4 @@
-import {
-  coreInterfaceUris,
-  Uri,
-  PluginModule,
-  PolywrapClient,
-} from "../..";
+import { coreInterfaceUris, Uri, PluginModule, PolywrapClient } from "../..";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { getClient, getDefaultClientConfig } from "../utils/getClient";
 
@@ -28,17 +23,16 @@ describe("interface-impls", () => {
 
     const defaultClientConfig = getDefaultClientConfig();
 
-    expect(interfaces).toEqual(
-      [
-        {
-          interface: new Uri(interfaceUri),
-          implementations: [
-            new Uri(implementation1Uri),
-            new Uri(implementation2Uri),
-          ],
-        },
-      ].concat(defaultClientConfig.interfaces ?? [])
-    );
+    expect(interfaces).toEqual([
+      ...(defaultClientConfig.interfaces ?? []),
+      {
+        interface: new Uri(interfaceUri),
+        implementations: [
+          new Uri(implementation1Uri),
+          new Uri(implementation2Uri),
+        ],
+      },
+    ]);
 
     const implementations = client.getImplementations(interfaceUri);
 
@@ -255,11 +249,11 @@ describe("interface-impls", () => {
     const implementationUris = interfaces[0].implementations;
 
     expect(implementationUris).toEqual([
-      new Uri(implementationUri1),
-      new Uri(implementationUri2),
       ...getDefaultClientConfig().interfaces.find(
         (x) => x.interface.uri === interfaceUri
       )!.implementations,
+      new Uri(implementationUri1),
+      new Uri(implementationUri2),
     ]);
   });
 
