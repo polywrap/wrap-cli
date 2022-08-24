@@ -2,7 +2,7 @@ import { fetchTestCases } from "./index";
 import {
   bindSchema,
   BindLanguage,
-  BindOutput
+  BindOutput, BindOptions
 } from "../";
 
 import {
@@ -37,10 +37,19 @@ describe("Polywrap Binding Test Suite", () => {
           outputDirAbs: testCase.input.outputDirAbs,
         };
 
-        const output = bindSchema({
+        const bindOptions: BindOptions = {
           ...testCase.input,
           bindLanguage: language as BindLanguage,
-        });
+        };
+        
+        if (language == "wasm-go") {
+          if (!bindOptions.config) {
+            bindOptions.config = {};
+          }
+          bindOptions.config.golangModuleName = "github.com/testorg/testrepo";
+        }
+
+        const output = bindSchema(bindOptions);
 
         const sort = (array: OutputEntry[]): OutputEntry[] => {
           array.forEach((entry) => {

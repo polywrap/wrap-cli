@@ -36,7 +36,7 @@ export const generateBinding: GenerateBindingFn = (
   };
   const output = result.output;
   const abi = applyTransforms(options.abi);
-  const goImport = "github.com/testorg/testrepo";
+  const goImport = options.config?.golangModuleName;
 
   // Generate object type folders
   if (abi.objectTypes) {
@@ -184,7 +184,9 @@ export const generateBinding: GenerateBindingFn = (
   }
 
   // Generate root entry file
-  output.entries.push(...renderTemplates(templatePath(""), abi, subTemplates));
+  output.entries.push(
+    ...renderTemplates(templatePath(""), { goImport, ...abi }, subTemplates)
+  );
   output.entries = mergePaths(output.entries);
 
   return result;

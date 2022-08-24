@@ -12,6 +12,9 @@ export function getCompilerOverrides(): CompilerOverrides {
         throw Error(intlMsg.lib_wasm_rust_invalidModule({ path: module }));
       }
     },
+    getCompilerOptions(): Record<string, unknown> {
+      return {};
+    },
     generationSubPath: "src/wrap",
   };
 }
