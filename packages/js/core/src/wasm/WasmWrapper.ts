@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { WrapExports } from "./types";
 import { createImports } from "./imports";
-
 import {
   Client,
   combinePaths,
@@ -15,13 +14,14 @@ import {
   Uri,
   UriResolverInterface,
   Wrapper,
-} from "@polywrap/core-js";
+} from "../";
+
 import {
   deserializeWrapManifest,
   WrapManifest,
 } from "@polywrap/wrap-manifest-types-js";
 import { msgpackEncode } from "@polywrap/msgpack-js";
-import { Tracer } from "@polywrap/tracing-js";
+import { Tracer, TracingLevel } from "@polywrap/tracing-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 
 type InvokeResultOrError =
@@ -140,11 +140,16 @@ export class WasmWrapper implements Wrapper {
     return deserializeWrapManifest(data, options);
   }
 
-  @Tracer.traceMethod("WasmWrapper: invoke")
+  @Tracer.traceMethod("WasmWrapper: invoke", TracingLevel.High)
   public async invoke(
     options: InvokeOptions<Uri>,
     client: Client
   ): Promise<InvocableResult<Uint8Array>> {
+    Tracer.setAttribute(
+      "label",
+      `WASM Wrapper invoked: ${options.uri.uri}, with method ${options.method}`,
+      TracingLevel.High
+    );
     try {
       const { method } = options;
       const args = options.args || {};

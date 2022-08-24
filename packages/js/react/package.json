@@ -20,7 +20,8 @@
   },
   "dependencies": {
     "@polywrap/client-js": "0.4.1",
-    "@polywrap/core-js": "0.4.1"
+    "@polywrap/core-js": "0.4.1",
+    "@polywrap/tracing-js": "0.4.1"
   },
   "devDependencies": {
     "@polywrap/ens-resolver-plugin-js": "0.4.1",

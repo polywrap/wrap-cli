@@ -1,12 +1,6 @@
-import {
-  coreInterfaceUris,
-  getDefaultClientConfig,
-  Uri,
-  PluginModule,
-  PolywrapClient,
-} from "../..";
+import { coreInterfaceUris, Uri, PluginModule, PolywrapClient } from "../..";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
-import { getClient } from "../utils/getClient";
+import { getClient, getDefaultClientConfig } from "../utils/getClient";
 import { WrapperCache } from "@polywrap/uri-resolvers-js";
 
 jest.setTimeout(200000);
@@ -30,17 +24,16 @@ describe("interface-impls", () => {
 
     const defaultClientConfig = getDefaultClientConfig(new WrapperCache());
 
-    expect(interfaces).toEqual(
-      [
-        {
-          interface: new Uri(interfaceUri),
-          implementations: [
-            new Uri(implementation1Uri),
-            new Uri(implementation2Uri),
-          ],
-        },
-      ].concat(defaultClientConfig.interfaces ?? [])
-    );
+    expect(interfaces).toEqual([
+      ...(defaultClientConfig.interfaces ?? []),
+      {
+        interface: new Uri(interfaceUri),
+        implementations: [
+          new Uri(implementation1Uri),
+          new Uri(implementation2Uri),
+        ],
+      },
+    ]);
 
     const implementations = client.getImplementations(interfaceUri);
 
@@ -257,11 +250,11 @@ describe("interface-impls", () => {
     const implementationUris = interfaces[0].implementations;
 
     expect(implementationUris).toEqual([
-      new Uri(implementationUri1),
-      new Uri(implementationUri2),
       ...getDefaultClientConfig(new WrapperCache()).interfaces.find(
         (x) => x.interface.uri === interfaceUri
       )!.implementations,
+      new Uri(implementationUri1),
+      new Uri(implementationUri2),
     ]);
   });
 
