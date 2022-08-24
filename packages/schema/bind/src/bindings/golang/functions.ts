@@ -217,6 +217,35 @@ export const toMsgPack: MustacheFn = () => {
   };
 };
 
+export const typeable: MustacheFn = () => {
+  return (value: string, render: (template: string) => string) => {
+    let type = render(value);
+    switch (type) {
+      case "int8":
+      case "int16":
+      case "int32":
+      case "int64":
+      case "uint32":
+      case "uint8":
+      case "uint16":
+      case "uint32":
+      case "uint64":
+      case "string":
+      case "bool":
+      case "[]byte":
+      case "*big.Int":
+      case "*big.Int":
+      case "*fastjson.Value":
+        return type;
+      default:
+        if (type.startsWith("*")) {
+          return `*types.${type.slice(1)}`;
+        }
+        return `types.${type}`;
+    }
+  }
+}
+
 export const toWasm: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
