@@ -3,6 +3,7 @@ import { intlMsg } from "../../../../intl";
 import { resolvePathIfExists } from "../../../../system";
 
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
+import fs from "fs";
 
 /** go.mod
  * module bla-bla
@@ -28,10 +29,7 @@ export function getCompilerOverrides(): CompilerOverrides {
         );
       }
 
-      // file open
-      // file parse
-      const value = "github.com/consideritdone/testproject";
-      golangModuleName = value;
+      golangModuleName = loadGoModeFile(module);
     },
     getCompilerOptions: (): Record<string, unknown> => {
       return {
@@ -40,4 +38,23 @@ export function getCompilerOverrides(): CompilerOverrides {
     },
     generationSubPath: "wrap",
   };
+}
+
+function loadGoModeFile(filePath: string): string {
+  const goMod = fs.readFileSync(filePath, "utf-8");
+
+  if (!goMod) {
+    const noLoadMessage = intlMsg.lib_helpers_gomod_unableToLoad({
+      path: filePath,
+    });
+    throw Error(noLoadMessage);
+  }
+
+  const regex = /module (.+)/m;
+  const module = goMod.match(regex);
+  if (!module || module.length != 2) {
+    throw Error(intlMsg.lib_helpers_gomod_invalid({ path: filePath }));
+  }
+
+  return module[1];
 }

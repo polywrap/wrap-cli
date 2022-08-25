@@ -251,6 +251,8 @@
   "lib_helpers_deployManifestExt_loadError": "Failed to load deploy manifest extension from {path}",
   "lib_helpers_deployManifestExt_loadText": "Load manifest extension from {path}",
   "lib_helpers_deployManifestExt_loadWarning": "No manifest extension found in {path}",
+  "lib_helpers_gomod_unableToLoad": "Unable to load go.mod: {path}",
+  "lib_helpers_gomod_invalid": "Invalid format of go.mod: {path}",
   "lib_helpers_manifest_outputError": "Failed to output manifest to {path}",
   "lib_helpers_manifest_outputText": "Manifest written to {path}",
   "lib_helpers_manifest_outputWarning": "Warnings writing manifest to {path}",
