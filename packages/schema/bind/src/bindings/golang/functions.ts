@@ -99,15 +99,6 @@ export const makeImports: MustacheFn = () => {
   return (text: string, render: (template: string) => string): string => {
     const types = render(text).split(",");
     const exist: { [key: string]: boolean } = {};
-    const pattern = new RegExp(
-      "^(https?:\\/\\/)?" + // protocol
-        "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
-        "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
-        "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
-        "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
-        "(\\#[-a-z\\d_]*)?$",
-      "i"
-    );
     for (const t of types) {
       switch (t) {
         case "*big.Int":
@@ -119,7 +110,7 @@ export const makeImports: MustacheFn = () => {
           exist["github.com/valyala/fastjson"] = true;
           break;
         default:
-          if (pattern.test(t)) {
+          if (/([^/\s]+\/)(.*)/.test(t)) {
             exist[t] = true;
           }
           break;
