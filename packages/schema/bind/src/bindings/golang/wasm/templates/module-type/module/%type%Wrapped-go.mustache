@@ -2,7 +2,9 @@ package module
 
 {{#methods.length}}
 import (
+    {{#env}}
 	"github.com/consideritdone/polywrap-go/polywrap"
+    {{/env}}
 	methods "{{goImport}}/module"
 )
 {{/methods.length}}
