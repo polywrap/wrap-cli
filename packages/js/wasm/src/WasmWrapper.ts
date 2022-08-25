@@ -2,27 +2,26 @@
 import { WrapExports } from "./types";
 import { createImports } from "./imports";
 import {
-  Client,
-  combinePaths,
-  Env,
-  GetFileOptions,
-  GetManifestOptions,
-  InvocableResult,
-  InvokeOptions,
-  InvokeResult,
-  isBuffer,
-  Uri,
-  UriResolverInterface,
-  Wrapper,
-} from "../";
-
-import {
   deserializeWrapManifest,
   WrapManifest,
 } from "@polywrap/wrap-manifest-types-js";
 import { msgpackEncode } from "@polywrap/msgpack-js";
 import { Tracer, TracingLevel } from "@polywrap/tracing-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
+import {
+  InvokeResult,
+  Wrapper,
+  Uri,
+  InvokeOptions,
+  GetFileOptions,
+  Env,
+  UriResolverInterface,
+  Client,
+  combinePaths,
+  GetManifestOptions,
+  InvocableResult,
+  isBuffer,
+} from "@polywrap/core-js";
 
 type InvokeResultOrError =
   | { type: "InvokeResult"; invokeResult: Uint8Array }

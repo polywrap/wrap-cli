@@ -5,21 +5,27 @@ import {
   ClientConfig,
   Uri,
   PluginPackage,
-  UriResolver,
+  IUriResolver,
+  Env,
+  InterfaceImplementations,
+  PluginRegistration,
+  UriRedirect,
 } from "@polywrap/core-js";
+import { IWrapperCache } from "@polywrap/uri-resolvers-js";
 
 export class ClientConfigBuilder {
-  private _config: ClientConfig<Uri>;
-
-  constructor() {
-    this._config = {
-      envs: [],
-      interfaces: [],
-      plugins: [],
-      redirects: [],
-      uriResolvers: [],
-    };
-  }
+  private _config: {
+    redirects: UriRedirect<Uri>[];
+    plugins: PluginRegistration<Uri>[];
+    interfaces: InterfaceImplementations<Uri>[];
+    envs: Env<Uri>[];
+    resolver?: IUriResolver<unknown>;
+  } = {
+    redirects: [],
+    plugins: [],
+    interfaces: [],
+    envs: [],
+  };
 
   add(config: Partial<ClientConfig<Uri | string>>): ClientConfigBuilder {
     if (config.envs) {
@@ -49,17 +55,15 @@ export class ClientConfigBuilder {
       }
     }
 
-    if (config.uriResolvers) {
-      for (const resolver of config.uriResolvers) {
-        this.addUriResolver(resolver);
-      }
+    if (config.resolver) {
+      this.setResolver(config.resolver);
     }
 
     return this;
   }
 
-  addDefaults(): ClientConfigBuilder {
-    return this.add(getDefaultClientConfig());
+  addDefaults(wrapperCache?: IWrapperCache): ClientConfigBuilder {
+    return this.add(getDefaultClientConfig(wrapperCache));
   }
 
   addPlugin<TPluginConfig>(
@@ -270,19 +274,17 @@ export class ClientConfigBuilder {
     return this;
   }
 
-  addUriResolver(resolver: UriResolver): ClientConfigBuilder {
-    this._config.uriResolvers.push(resolver);
-
-    return this;
-  }
-
-  setUriResolvers(resolvers: UriResolver[]): ClientConfigBuilder {
-    this._config.uriResolvers = resolvers;
+  setResolver(resolver: IUriResolver<unknown>): ClientConfigBuilder {
+    this._config.resolver = resolver;
 
     return this;
   }
 
   build(): ClientConfig<Uri> {
-    return this._config;
+    if (!this._config.resolver) {
+      throw new Error("No URI resolver provided");
+    }
+
+    return this._config as ClientConfig<Uri>;
   }
 }

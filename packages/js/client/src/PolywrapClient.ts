@@ -36,10 +36,10 @@ import {
   IWrapPackage,
 } from "@polywrap/core-js";
 import {
+  buildCleanUriHistory,
   CacheableResolver,
   getUriHistory,
   IWrapperCache,
-  WrapperCache,
 } from "@polywrap/uri-resolvers-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
@@ -49,7 +49,7 @@ import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
 export interface PolywrapClientConfig<TUri extends Uri | string = string>
   extends ClientConfig<TUri> {
   tracerConfig: Partial<TracerConfig>;
-  wrapperCache: IWrapperCache;
+  wrapperCache?: IWrapperCache;
 }
 
 export class PolywrapClient implements Client {
@@ -59,7 +59,6 @@ export class PolywrapClient implements Client {
     interfaces: [],
     envs: [],
     tracerConfig: {},
-    wrapperCache: new WrapperCache(),
   } as unknown) as PolywrapClientConfig<Uri>;
 
   // Invoke specific contexts
@@ -77,12 +76,11 @@ export class PolywrapClient implements Client {
       const builder = new ClientConfigBuilder();
 
       if (!options?.noDefaults) {
-        builder.addDefaults();
+        builder.addDefaults(config?.wrapperCache);
       }
 
       if (config) {
         builder.add(config);
-          wrapperCache: config.wrapperCache ?? this._config.wrapperCache,
       }
 
       const sanitizedConfig = builder.build();
@@ -512,25 +510,17 @@ export class PolywrapClient implements Client {
       this._clearContext(contextId);
     }
 
-    let uriHistoryTrace = `Resolve uri: "${this._toUri(uri)}"`;
-    for (const item of uriHistory.stack) {
-      const itemTrace =
-        item.uriResolver.padEnd(25) +
-        `resolved uri to ${item.result.uri}${
-          item.result.wrapper ? ", found wrapper" : ""
-        }`;
-      uriHistoryTrace = uriHistoryTrace + "\n" + "\t".repeat(8) + itemTrace;
+    if (response.history) {
+      Tracer.setAttribute(
+        "label",
+        buildCleanUriHistory(response.history),
+        TracingLevel.High
+      );
     }
 
-    Tracer.setAttribute("label", uriHistoryTrace, TracingLevel.High);
-
+    return response;
   }
 
-    const defaultClientConfig = getDefaultClientConfig(
-      this._config.wrapperCache
-    );
-    if (!this._config.resolver && defaultClientConfig.resolver) {
-      this._config.resolver = defaultClientConfig.resolver;
   @Tracer.traceMethod("PolywrapClient: isContextualized")
   private _isContextualized(contextId: string | undefined): boolean {
     return !!contextId && this._contexts.has(contextId);
@@ -610,7 +600,7 @@ export class PolywrapClient implements Client {
         interfaces: context.interfaces ?? parentConfig.interfaces,
         plugins: context.plugins ?? parentConfig.plugins,
         redirects: context.redirects ?? parentConfig.redirects,
-        uriResolvers: context.uriResolvers ?? parentConfig.uriResolvers,
+        resolver: context.resolver ?? parentConfig.resolver,
       })
       .build();
 

@@ -1,15 +1,12 @@
 import {
   ClientConfig,
-  WasmWrapper,
   PluginWrapper,
   Uri,
   PluginPackage,
   Env,
-  ExtendableUriResolver,
-  CacheResolver,
-  PluginResolver,
-  RedirectsResolver,
 } from "@polywrap/core-js";
+import { WasmWrapper } from "@polywrap/wasm-js";
+
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
@@ -18,6 +15,15 @@ import {
   Connection,
   Connections,
 } from "@polywrap/ethereum-plugin-js";
+import {
+  ExtendableUriResolver,
+  LegacyPluginsResolver,
+  LegacyRedirectsResolver,
+  CacheableResolver,
+  PackageToWrapperCacheResolver,
+  IWrapperCache,
+  WrapperCache,
+} from "@polywrap/uri-resolvers-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import { graphNodePlugin } from "@polywrap/graph-node-plugin-js";
 import { httpPlugin } from "@polywrap/http-plugin-js";
@@ -27,7 +33,9 @@ import { sha3Plugin } from "@polywrap/sha3-plugin-js";
 import { loggerPlugin } from "@polywrap/logger-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 
-export const getDefaultClientConfig = (): ClientConfig<Uri> => {
+export const getDefaultClientConfig = (
+  wrapperCache?: IWrapperCache
+): ClientConfig<Uri> => {
   return {
     envs: [],
     redirects: [],
@@ -107,25 +115,30 @@ export const getDefaultClientConfig = (): ClientConfig<Uri> => {
         implementations: [new Uri("wrap://ens/js-logger.polywrap.eth")],
       },
     ],
-    uriResolvers: [
-      new RedirectsResolver(),
-      new CacheResolver(),
-      new PluginResolver(
-        (
-          uri: Uri,
-          plugin: PluginPackage<unknown>,
-          environment: Env<Uri> | undefined
-        ) => new PluginWrapper(uri, plugin, environment)
-      ),
-      new ExtendableUriResolver(
-        (
-          uri: Uri,
-          manifest: WrapManifest,
-          uriResolver: string,
-          environment: Env<Uri> | undefined
-        ) => new WasmWrapper(uri, manifest, uriResolver, environment)
-      ),
-    ],
+    resolver: new CacheableResolver(
+      new PackageToWrapperCacheResolver(wrapperCache ?? new WrapperCache()),
+      [
+        new LegacyRedirectsResolver(),
+        new LegacyPluginsResolver(
+          (
+            uri: Uri,
+            plugin: PluginPackage<unknown>,
+            environment: Env<Uri> | undefined
+          ) => new PluginWrapper(uri, plugin, environment)
+        ),
+        new ExtendableUriResolver(
+          { endOnRedirect: true },
+          (
+            uri: Uri,
+            manifest: WrapManifest,
+            uriResolver: string,
+            environment: Env<Uri> | undefined
+          ) => {
+            return new WasmWrapper(uri, manifest, uriResolver, environment);
+          }
+        ),
+      ]
+    ),
   };
 };
 

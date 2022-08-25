@@ -2,10 +2,10 @@
 
 import { u32, WrapImports } from "./types";
 import { readBytes, readString, writeBytes, writeString } from "./buffer";
-import { Client } from "../.";
 import { State } from "./WasmWrapper";
 
 import { msgpackEncode } from "@polywrap/msgpack-js";
+import { Client } from "@polywrap/core-js";
 
 export const createImports = (config: {
   client: Client;
