@@ -21,6 +21,7 @@ export class Args_moduleMethod {
   optEnumArray: Array<Option<Types.CustomEnum>> | null;
   map: Map<string, i32>;
   mapOfArr: Map<string, Array<i32>>;
+  mapOfMap: Map<string, Map<string, i32>>;
   mapOfObj: Map<string, Types.AnotherType>;
   mapOfArrOfObj: Map<string, Array<Types.AnotherType>>;
 }
@@ -43,6 +44,8 @@ export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Args_moduleMe
   let _mapSet: bool = false;
   let _mapOfArr: Map<string, Array<i32>> = new Map<string, Array<i32>>();
   let _mapOfArrSet: bool = false;
+  let _mapOfMap: Map<string, Map<string, i32>> = new Map<string, Map<string, i32>>();
+  let _mapOfMapSet: bool = false;
   let _mapOfObj: Map<string, Types.AnotherType> = new Map<string, Types.AnotherType>();
   let _mapOfObjSet: bool = false;
   let _mapOfArrOfObj: Map<string, Array<Types.AnotherType>> = new Map<string, Array<Types.AnotherType>>();
@@ -156,6 +159,20 @@ export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Args_moduleMe
       _mapOfArrSet = true;
       reader.context().pop();
     }
+    else if (field == "mapOfMap") {
+      reader.context().push(field, "Map<string, Map<string, i32>>", "type found, reading property");
+      _mapOfMap = reader.readExtGenericMap((reader: Read): string => {
+        return reader.readString();
+      }, (reader: Read): Map<string, i32> => {
+        return reader.readExtGenericMap((reader: Read): string => {
+          return reader.readString();
+        }, (reader: Read): i32 => {
+          return reader.readInt32();
+        });
+      });
+      _mapOfMapSet = true;
+      reader.context().pop();
+    }
     else if (field == "mapOfObj") {
       reader.context().push(field, "Map<string, Types.AnotherType>", "type found, reading property");
       _mapOfObj = reader.readExtGenericMap((reader: Read): string => {
@@ -198,6 +215,9 @@ export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Args_moduleMe
   if (!_mapOfArrSet) {
     throw new Error(reader.context().printWithContext("Missing required argument: 'mapOfArr: Map<String, [Int]>'"));
   }
+  if (!_mapOfMapSet) {
+    throw new Error(reader.context().printWithContext("Missing required argument: 'mapOfMap: Map<String, Map<String, Int>>'"));
+  }
   if (!_mapOfObjSet) {
     throw new Error(reader.context().printWithContext("Missing required argument: 'mapOfObj: Map<String, AnotherType>'"));
   }
@@ -214,6 +234,7 @@ export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Args_moduleMe
     optEnumArray: _optEnumArray,
     map: _map,
     mapOfArr: _mapOfArr,
+    mapOfMap: _mapOfMap,
     mapOfObj: _mapOfObj,
     mapOfArrOfObj: _mapOfArrOfObj
   };
