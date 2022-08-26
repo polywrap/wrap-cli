@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@polywrap/asyncify-js": "0.4.1",
+    "@polywrap/client-config-builder-js": "0.4.1",
     "@polywrap/core-js": "0.4.1",
     "@polywrap/ens-resolver-plugin-js": "0.4.1",
     "@polywrap/ethereum-plugin-js": "0.4.1",

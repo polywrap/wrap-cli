@@ -38,6 +38,7 @@
     "@ethersproject/providers": "5.6.8",
     "@ethersproject/wallet": "5.6.2",
     "@formatjs/intl": "1.8.2",
+    "@polywrap/client-config-builder-js": "0.4.1",
     "@polywrap/asyncify-js": "0.4.1",
     "@polywrap/client-js": "0.4.1",
     "@polywrap/core-js": "0.4.1",
