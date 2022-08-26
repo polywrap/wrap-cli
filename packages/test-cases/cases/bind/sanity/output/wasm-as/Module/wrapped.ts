@@ -30,6 +30,7 @@ export function moduleMethodWrapped(argsBuf: ArrayBuffer, env_size: u32): ArrayB
       optEnumArray: args.optEnumArray,
       map: args.map,
       mapOfArr: args.mapOfArr,
+      mapOfMap: args.mapOfMap,
       mapOfObj: args.mapOfObj,
       mapOfArrOfObj: args.mapOfArrOfObj
     }
