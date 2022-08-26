@@ -6,10 +6,10 @@
  */
 
 import {
-  PluginManifest as PluginManifest_0_1_0
+  PluginManifest as PluginManifest_0_1_0,
 } from "./0.1.0";
 import {
-  PluginManifest as PluginManifest_0_2_0
+  PluginManifest as PluginManifest_0_2_0,
 } from "./0.2.0";
 
 export {
@@ -27,6 +27,8 @@ export enum PluginManifestFormats {
 export type AnyPluginManifest =
   | PluginManifest_0_1_0
   | PluginManifest_0_2_0
+
+
 
 export type PluginManifest = PluginManifest_0_2_0;
 

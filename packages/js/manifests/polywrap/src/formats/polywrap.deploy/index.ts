@@ -6,7 +6,7 @@
  */
 
 import {
-  DeployManifest as DeployManifest_0_1_0
+  DeployManifest as DeployManifest_0_1_0,
 } from "./0.1.0";
 
 export {
@@ -21,6 +21,8 @@ export enum DeployManifestFormats {
 
 export type AnyDeployManifest =
   | DeployManifest_0_1_0
+
+
 
 export type DeployManifest = DeployManifest_0_1_0;
 

@@ -6,7 +6,7 @@
  */
 
 import {
-  BuildManifest as BuildManifest_0_1_0
+  BuildManifest as BuildManifest_0_1_0,
 } from "./0.1.0";
 
 export {
@@ -21,6 +21,8 @@ export enum BuildManifestFormats {
 
 export type AnyBuildManifest =
   | BuildManifest_0_1_0
+
+
 
 export type BuildManifest = BuildManifest_0_1_0;
 
