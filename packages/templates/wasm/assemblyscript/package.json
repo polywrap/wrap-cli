@@ -2,7 +2,7 @@
   "name": "template-wasm-as",
   "description": "Polywrap AssemblyScript Wrapper Template",
   "private": true,
-  "version": "0.4.1",
+  "version": "0.5.0",
   "scripts": {
     "build": "npx polywrap build",
     "test:env:up": "npx polywrap infra up --modules=eth-ens-ipfs",
@@ -17,11 +17,11 @@
     "@types/jest": "27.0.3",
     "assemblyscript": "0.19.1",
     "jest": "26.6.3",
-    "polywrap": "0.4.1",
+    "polywrap": "0.5.0",
     "ts-jest": "26.5.4",
     "typescript": "4.0.7"
   },
   "dependencies": {
-    "@polywrap/wasm-as": "0.4.1"
+    "@polywrap/wasm-as": "0.5.0"
   }
 }
