@@ -1,9 +1,5 @@
 package types
 
-import (
-	"github.com/consideritdone/polywrap-go/polywrap/msgpack"
-)
-
 type ArgsModuleMethod struct {
 	Str           string
 	OptStr        *string

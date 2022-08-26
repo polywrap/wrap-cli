@@ -116,15 +116,13 @@ export const makeImports: MustacheFn = () => {
           break;
       }
     }
-    const imports: Array<string> = [
-      "github.com/consideritdone/polywrap-go/polywrap/msgpack",
-    ];
+    const imports: Array<string> = [];
     imports.push(...Object.keys(exist));
     const txt = imports
       .sort()
       .map((imp) => `\t"${imp}"`)
       .join("\n");
-    return `import (\n${txt}\n)`;
+    return txt !== "" ? `import (\n${txt}\n)` : "";
   };
 };
 

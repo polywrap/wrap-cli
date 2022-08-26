@@ -1,6 +1,6 @@
 package {{#toSnakeCase}}{{namespace}}{{/toSnakeCase}}
 
-{{#makeImports}}{{#arguments}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{^last}},{{/last}}{{/arguments}}{{/makeImports}}
+{{#makeImports}}github.com/consideritdone/polywrap-go/polywrap/msgpack,{{#arguments}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{^last}},{{/last}}{{/arguments}}{{/makeImports}}
 
 {{#methods}}
 type Args{{#toUpper}}{{name}}{{/toUpper}} struct {
