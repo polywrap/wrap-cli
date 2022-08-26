@@ -784,6 +784,72 @@ export const manifest: WrapManifest = {
             "map": {
               "key": {
                 "kind": 4,
+                "name": "mapOfMap",
+                "required": true,
+                "type": "String"
+              },
+              "kind": 262146,
+              "map": {
+                "key": {
+                  "kind": 4,
+                  "name": "mapOfMap",
+                  "required": true,
+                  "type": "String"
+                },
+                "kind": 262146,
+                "name": "mapOfMap",
+                "required": true,
+                "scalar": {
+                  "kind": 4,
+                  "name": "mapOfMap",
+                  "required": true,
+                  "type": "Int"
+                },
+                "type": "Map<String, Int>",
+                "value": {
+                  "kind": 4,
+                  "name": "mapOfMap",
+                  "required": true,
+                  "type": "Int"
+                }
+              },
+              "name": "mapOfMap",
+              "required": true,
+              "type": "Map<String, Map<String, Int>>",
+              "value": {
+                "key": {
+                  "kind": 4,
+                  "name": "mapOfMap",
+                  "required": true,
+                  "type": "String"
+                },
+                "kind": 262146,
+                "name": "mapOfMap",
+                "required": true,
+                "scalar": {
+                  "kind": 4,
+                  "name": "mapOfMap",
+                  "required": true,
+                  "type": "Int"
+                },
+                "type": "Map<String, Int>",
+                "value": {
+                  "kind": 4,
+                  "name": "mapOfMap",
+                  "required": true,
+                  "type": "Int"
+                }
+              }
+            },
+            "name": "mapOfMap",
+            "required": true,
+            "type": "Map<String, Map<String, Int>>"
+          },
+          {
+            "kind": 34,
+            "map": {
+              "key": {
+                "kind": 4,
                 "name": "mapOfObj",
                 "required": true,
                 "type": "String"
