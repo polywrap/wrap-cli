@@ -214,7 +214,6 @@ const toWasmMap = (type: string, optional: boolean): string => {
   const firstOpenBracketIdx = type.indexOf("<");
   const lastCloseBracketIdx = type.lastIndexOf(">");
 
-
   if (firstOpenBracketIdx === -1 || lastCloseBracketIdx === -1) {
     throw new Error(`Invalid Map: ${type}`);
   }
