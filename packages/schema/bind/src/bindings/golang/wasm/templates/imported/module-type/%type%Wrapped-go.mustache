@@ -12,9 +12,9 @@ func {{#toUpper}}{{type}}{{/toUpper}}{{#toUpper}}{{name}}{{/toUpper}}(args *Args
 	argsBuf := Serialize{{#toUpper}}{{name}}{{/toUpper}}Args(args)
 	data, err := polywrap.WrapSubinvoke("{{uri}}", "{{name}}", argsBuf)
 	if err != nil {
-		return nil, result.Error()
+		return nil, err
 	}
-	return Deserialize{{#toUpper}}{{name}}{{/toUpper}}Result(result.unwrap()), nil
+	return Deserialize{{#toUpper}}{{name}}{{/toUpper}}Result(data), nil
 }
 {{^last}}
 
