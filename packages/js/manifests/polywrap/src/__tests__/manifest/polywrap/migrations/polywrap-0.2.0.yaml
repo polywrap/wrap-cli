@@ -7,7 +7,7 @@ source:
   module: ../index.ts
   import_abis:
     - uri: "ens/ipfs.polywrap.eth"
-      abi: ../../../../../../../../interfaces/ipfs/build/schema.graphql
+      abi: ../../wrap.info
 extensions:
   build: ./polywrap.build.yaml
   meta: ./polywrap.meta.yaml
