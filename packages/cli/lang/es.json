@@ -1,4 +1,6 @@
 {
+  "commands_plugin_description": "Build/generate types for the plugin",
+  "commands_app_description": "Build/generate types for your app",
   "commands_common_options_configPath": "config-path",
   "commands_common_options_config": "Add custom configuration to the PolywrapClient",
   "commands_build_description": "Build Polywrap Projects (type: interface, wasm)",
