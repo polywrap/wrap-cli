@@ -25,7 +25,7 @@ func {{#toUpper}}{{name}}{{/toUpper}}Wrapped(argsBuf []byte, envSize uint32) []b
 	{{/env}}
 
 	{{#arguments.length}}
-	args := Deserialize{{#toUpper}}{{name}}{{/toUpper}}Args(argsBuf)
+	args := deserialize{{#toUpper}}{{name}}{{/toUpper}}Args(argsBuf)
 	{{/arguments.length}}
 
 	result := methods.{{#toUpper}}{{name}}{{/toUpper}}({{#arguments.length}}args{{/arguments.length}}{{^arguments.length}}nil{{/arguments.length}}{{#env}}, env{{/env}})

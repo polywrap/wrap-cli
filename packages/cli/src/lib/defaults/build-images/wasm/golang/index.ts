@@ -19,7 +19,7 @@ export function getCompilerOverrides(): CompilerOverrides {
           intlMsg.lib_wasm_golang_invalidModule({ path: module as string })
         );
       }
-      const goModPaths = [module as string];
+      const goModPaths = [`../${module}`, module as string];
       const goModFile = resolvePathIfExists(goModPaths);
       if (!goModFile) {
         throw Error(
@@ -29,7 +29,7 @@ export function getCompilerOverrides(): CompilerOverrides {
         );
       }
 
-      golangModuleName = loadGoModeFile(module);
+      golangModuleName = loadGoModeFile(goModFile);
     },
     getCompilerOptions: (): Record<string, unknown> => {
       return {

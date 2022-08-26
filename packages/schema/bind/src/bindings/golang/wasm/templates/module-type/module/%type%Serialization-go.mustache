@@ -3,7 +3,7 @@ package module
 {{#makeImports}}{{goImport}}/wrap/types,{{#arguments}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{^last}},{{/last}}{{/arguments}}{{/makeImports}}
 
 {{#methods}}
-func Deserialize{{#toUpper}}{{name}}{{/toUpper}}Args(argsBuf []byte) *types.Args{{#toUpper}}{{name}}{{/toUpper}} {
+func deserialize{{#toUpper}}{{name}}{{/toUpper}}Args(argsBuf []byte) *types.Args{{#toUpper}}{{name}}{{/toUpper}} {
 	ctx := msgpack.NewContext("Deserializing module-type: {{#toUpper}}{{name}}{{/toUpper}}")
 	{{#arguments.length}}
 	reader := msgpack.NewReadDecoder(ctx, argsBuf)
@@ -22,10 +22,9 @@ func Deserialize{{#toUpper}}{{name}}{{/toUpper}}Args(argsBuf []byte) *types.Args
 	for i := int32(reader.ReadMapLength()); i > 0; i-- {
 		field := reader.ReadString()
 		reader.Context().Push(field, "unknown", "searching for property type")
-		reader.Context().Pop()
 		switch field {
 		{{#arguments}}
-		case "{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}}":
+		case "{{#handleKeywords}}{{name}}{{/handleKeywords}}":
 			reader.Context().Push(field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading property")
 			{{#scalar}}
 			{{> deserialize_scalar}}
@@ -52,7 +51,8 @@ func Deserialize{{#toUpper}}{{name}}{{/toUpper}}Args(argsBuf []byte) *types.Args
 			reader.Context().Pop()
 		{{/arguments}}
 		}
-	}
+        reader.Context().Pop()
+    }
 
 	{{#arguments}}
 	{{#required}}
