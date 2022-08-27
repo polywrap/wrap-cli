@@ -1,4 +1,4 @@
-name: template-wasm-rs
+format: "0.1"
 jobs:
   sampleMethod:
     steps:

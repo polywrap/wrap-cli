@@ -6,7 +6,7 @@
  */
 
 import {
-  MetaManifest as MetaManifest_0_1_0
+  MetaManifest as MetaManifest_0_1_0,
 } from "./0.1.0";
 
 export {
@@ -21,6 +21,8 @@ export enum MetaManifestFormats {
 
 export type AnyMetaManifest =
   | MetaManifest_0_1_0
+
+
 
 export type MetaManifest = MetaManifest_0_1_0;
 
