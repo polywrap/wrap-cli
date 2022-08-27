@@ -113,7 +113,9 @@ export class PolywrapClient implements Client {
   }
 
   @Tracer.traceMethod("PolywrapClient: reconfigure")
-  public reconfigure(config: Partial<PolywrapClientConfig<string | Uri>>): PolywrapClient {
+  public reconfigure(
+    config: Partial<PolywrapClientConfig<string | Uri>>
+  ): PolywrapClient {
     const builder = new ClientConfigBuilder();
     builder.add(this._config);
     builder.add(config);
@@ -147,7 +149,7 @@ export class PolywrapClient implements Client {
 
   @Tracer.traceMethod("PolywrapClient: getEnvByUri")
   public getEnvByUri<TUri extends Uri | string>(
-    uri: TUri,
+    uri: TUri
   ): Env<Uri> | undefined {
     const uriUri = this._toUri(uri);
 
@@ -200,9 +202,7 @@ export class PolywrapClient implements Client {
     TData extends Record<string, unknown> = Record<string, unknown>,
     TVariables extends Record<string, unknown> = Record<string, unknown>,
     TUri extends Uri | string = string
-  >(
-    options: QueryOptions<TVariables, TUri, PolywrapClientConfig>
-  ): Promise<QueryResult<TData>> {
+  >(options: QueryOptions<TVariables, TUri>): Promise<QueryResult<TData>> {
     let result: QueryResult<TData>;
 
     try {
@@ -271,7 +271,7 @@ export class PolywrapClient implements Client {
 
   @Tracer.traceMethod("PolywrapClient: invoke")
   public async invoke<TData = unknown, TUri extends Uri | string = string>(
-    options: InvokerOptions<TUri, PolywrapClientConfig>
+    options: InvokerOptions<TUri>
   ): Promise<InvokeResult<TData>> {
     let error: Error | undefined;
 
@@ -282,10 +282,7 @@ export class PolywrapClient implements Client {
       };
 
       const wrapper = await this._loadWrapper(typedOptions.uri);
-      const invocableResult = await wrapper.invoke(
-        typedOptions,
-        this
-      );
+      const invocableResult = await wrapper.invoke(typedOptions, this);
 
       if (invocableResult.data !== undefined) {
         if (options.encodeResult && !invocableResult.encoded) {
@@ -313,7 +310,7 @@ export class PolywrapClient implements Client {
 
   @Tracer.traceMethod("PolywrapClient: subscribe")
   public subscribe<TData = unknown, TUri extends Uri | string = string>(
-    options: SubscribeOptions<TUri, PolywrapClientConfig>
+    options: SubscribeOptions<TUri>
   ): Subscription<TData> {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const thisClient: PolywrapClient = this;
@@ -393,7 +390,7 @@ export class PolywrapClient implements Client {
   @Tracer.traceMethod("PolywrapClient: resolveUri", TracingLevel.High)
   public async resolveUri<TUri extends Uri | string>(
     uri: TUri,
-    options?: ResolveUriOptions<ClientConfig>
+    options?: ResolveUriOptions
   ): Promise<ResolveUriResult> {
     options = options || {};
 
@@ -496,9 +493,7 @@ export class PolywrapClient implements Client {
   }
 
   @Tracer.traceMethod("PolywrapClient: _loadWrapper", TracingLevel.High)
-  private async _loadWrapper(
-    uri: Uri
-  ): Promise<Wrapper> {
+  private async _loadWrapper(uri: Uri): Promise<Wrapper> {
     Tracer.setAttribute("label", `Wrapper loaded: ${uri}`, TracingLevel.High);
 
     const { wrapper, uriHistory, error } = await this.resolveUri(uri);

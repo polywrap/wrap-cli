@@ -1,10 +1,8 @@
-import { ClientConfig, Uri } from ".";
+import { Uri } from ".";
 import { ResolveUriResult } from "..";
 
 /** Options required for an URI resolution. */
-export interface ResolveUriOptions<
-  TClientConfig extends ClientConfig = ClientConfig
-> {
+export interface ResolveUriOptions {
   /**
    * If set to true, the resolveUri function will not use the cache to resolve the uri.
    */
@@ -19,7 +17,7 @@ export interface ResolveUriOptions<
 export interface UriResolverHandler {
   resolveUri<TUri extends Uri | string>(
     uri: TUri,
-    options?: ResolveUriOptions<ClientConfig>
+    options?: ResolveUriOptions
   ): Promise<ResolveUriResult>;
 
   loadUriResolvers(): Promise<{

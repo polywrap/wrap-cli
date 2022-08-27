@@ -41,7 +41,6 @@ export interface Client
     QueryHandler,
     SubscriptionHandler,
     UriResolverHandler {
-
   reconfigure(config: Partial<ClientConfig<string | Uri>>): Client;
 
   getRedirects(): readonly UriRedirect<Uri>[];
@@ -52,9 +51,7 @@ export interface Client
 
   getEnvs(): readonly Env<Uri>[];
 
-  getEnvByUri<TUri extends Uri | string>(
-    uri: TUri,
-  ): Env<Uri> | undefined;
+  getEnvByUri<TUri extends Uri | string>(uri: TUri): Env<Uri> | undefined;
 
   getUriResolvers(): readonly UriResolver[];
 

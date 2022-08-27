@@ -128,7 +128,7 @@ export class ExtendableUriResolver implements UriResolver {
                 this._deserializeOptions
               )
           ),
-        ]
+        ],
       });
       const { wrapper } = await newClient.resolveUri(implementationUri);
 

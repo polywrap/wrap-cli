@@ -1,10 +1,7 @@
-import { ClientConfig, Uri } from ".";
+import { Uri } from ".";
 
 /** Options required for an Wrapper invocation. */
-export interface InvokeOptions<
-  TUri extends Uri | string = string,
-  TClientConfig extends ClientConfig = ClientConfig
-> {
+export interface InvokeOptions<TUri extends Uri | string = string> {
   /** The Wrapper's URI */
   uri: TUri;
 
@@ -36,10 +33,8 @@ export interface InvokeResult<TData = unknown> {
   error?: Error;
 }
 
-export interface InvokerOptions<
-  TUri extends Uri | string = string,
-  TClientConfig extends ClientConfig = ClientConfig
-> extends InvokeOptions<TUri, TClientConfig> {
+export interface InvokerOptions<TUri extends Uri | string = string>
+  extends InvokeOptions<TUri> {
   encodeResult?: boolean;
 }
 
