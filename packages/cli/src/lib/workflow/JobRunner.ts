@@ -72,10 +72,14 @@ export class JobRunner<
           }
 
           if (args) {
-            const invokeResult = await this.client.invoke<TData, TUri>({
+            const client =
+              step.config ?
+              this.client.reconfigure(step.config) :
+              this.client;
+
+            const invokeResult = await client.invoke<TData, TUri>({
               uri: step.uri,
               method: step.method,
-              config: step.config,
               args: args,
             });
 
