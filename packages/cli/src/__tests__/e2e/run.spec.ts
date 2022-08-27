@@ -93,12 +93,11 @@ describe("e2e tests for run command", () => {
 
   it("Should successfully return response: using json workflow", async () => {
     const { exitCode: code, stdout, stderr } = await runCLI({
-      args: ["run", "-c", "./client-config.ts"],
+      args: ["run", "-c", "./client-config.ts", "-m", "./polywrap.test.json"],
       cwd: testCaseRoot,
       cli: polywrapCli,
     });
 
-    expect(code).toEqual(0);
     expect(stderr).toBe("");
 
     const output = parseOutput(stdout);
@@ -107,6 +106,7 @@ describe("e2e tests for run command", () => {
       expect(item.data).toBeDefined();
     });
     expect(output).toHaveLength(3);
+    expect(code).toEqual(0);
   }, 480000);
 
   it("Should successfully return response: using yaml workflow", async () => {
