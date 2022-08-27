@@ -8,7 +8,7 @@ export class RedirectsResolver implements UriResolver {
   }
 
   async resolveUri(uri: Uri, client: Client): Promise<UriResolutionResult> {
-    const redirectedUri = applyRedirects(uri, client.getRedirects({}));
+    const redirectedUri = applyRedirects(uri, client.getRedirects());
 
     return Promise.resolve({
       uri: redirectedUri,

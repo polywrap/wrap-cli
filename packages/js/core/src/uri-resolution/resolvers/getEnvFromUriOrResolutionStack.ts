@@ -6,14 +6,14 @@ export const getEnvFromUriOrResolutionStack = (
   resolutionPath: UriResolutionStack,
   client: Client
 ): Env<Uri> | undefined => {
-  const env = client.getEnvByUri(uri, {});
+  const env = client.getEnvByUri(uri);
 
   if (env) {
     return env;
   }
 
   for (const { sourceUri } of resolutionPath) {
-    const env = client.getEnvByUri(sourceUri, {});
+    const env = client.getEnvByUri(sourceUri);
 
     if (env) {
       return env;

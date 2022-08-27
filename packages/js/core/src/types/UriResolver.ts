@@ -16,11 +16,6 @@ export interface ResolveUriOptions<
   noCacheWrite?: boolean;
 
   /**
-   * Override the client's config for all resolutions.
-   */
-  config?: Partial<TClientConfig>;
-
-  /**
    * Id used to track context data set internally.
    */
   contextId?: string;

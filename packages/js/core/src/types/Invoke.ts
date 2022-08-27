@@ -18,11 +18,6 @@ export interface InvokeOptions<
   args?: Record<string, unknown> | Uint8Array;
 
   /**
-   * Override the client's config for all invokes within this invoke.
-   */
-  config?: Partial<TClientConfig>;
-
-  /**
    * Invoke id used to track query context data set internally.
    */
   contextId?: string;

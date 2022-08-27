@@ -23,30 +23,16 @@ export interface ClientConfig<TUri extends Uri | string = string> {
   wrapperCache?: WrapperCache;
 }
 
-export interface Contextualized {
-  contextId?: string;
-}
-
-export type GetRedirectsOptions = Contextualized;
-
-export type GetPluginsOptions = Contextualized;
-
-export type GetInterfacesOptions = Contextualized;
-
-export type GetEnvsOptions = Contextualized;
-
-export type GetUriResolversOptions = Contextualized;
-
-export interface GetManifestOptions extends Contextualized {
+export interface GetManifestOptions {
   noValidate?: boolean;
 }
 
-export interface GetFileOptions extends Contextualized {
+export interface GetFileOptions {
   path: string;
   encoding?: "utf-8" | string;
 }
 
-export interface GetImplementationsOptions extends Contextualized {
+export interface GetImplementationsOptions {
   applyRedirects?: boolean;
 }
 
@@ -55,22 +41,22 @@ export interface Client
     QueryHandler,
     SubscriptionHandler,
     UriResolverHandler {
-  getRedirects(options?: GetRedirectsOptions): readonly UriRedirect<Uri>[];
 
-  getPlugins(options?: GetPluginsOptions): readonly PluginRegistration<Uri>[];
+  configure(config: Partial<ClientConfig<string | Uri>>): Client;
 
-  getInterfaces(
-    options?: GetInterfacesOptions
-  ): readonly InterfaceImplementations<Uri>[];
+  getRedirects(): readonly UriRedirect<Uri>[];
 
-  getEnvs(options?: GetEnvsOptions): readonly Env<Uri>[];
+  getPlugins(): readonly PluginRegistration<Uri>[];
+
+  getInterfaces(): readonly InterfaceImplementations<Uri>[];
+
+  getEnvs(): readonly Env<Uri>[];
 
   getEnvByUri<TUri extends Uri | string>(
     uri: TUri,
-    options?: GetEnvsOptions
   ): Env<Uri> | undefined;
 
-  getUriResolvers(options: GetUriResolversOptions): readonly UriResolver[];
+  getUriResolvers(): readonly UriResolver[];
 
   getManifest<TUri extends Uri | string>(
     uri: TUri,

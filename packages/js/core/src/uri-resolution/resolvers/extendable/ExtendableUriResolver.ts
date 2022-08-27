@@ -42,8 +42,8 @@ export class ExtendableUriResolver implements UriResolver {
   ): Promise<ExtendableUriResolverResult> {
     const uriResolverImpls = getImplementations(
       coreInterfaceUris.uriResolver,
-      client.getInterfaces({}),
-      client.getRedirects({})
+      client.getInterfaces(),
+      client.getRedirects()
     );
 
     if (!this._hasLoadedUriResolvers) {
@@ -99,7 +99,7 @@ export class ExtendableUriResolver implements UriResolver {
     failedUriResolvers: string[];
   }> {
     const bootstrapUriResolvers = client
-      .getUriResolvers({})
+      .getUriResolvers()
       .filter((x) => x.name !== ExtendableUriResolver.name);
 
     const implementationsToLoad = new Queue<Uri>();
@@ -117,22 +117,20 @@ export class ExtendableUriResolver implements UriResolver {
     while ((implementationUri = implementationsToLoad.dequeue())) {
       // Use only loadeded URI resolver extensions to resolve the implementation URI
       // If successful, it is added to the list of loaded implementations
-
-      const { wrapper } = await client.resolveUri(implementationUri, {
-        config: {
-          uriResolvers: [
-            ...bootstrapUriResolvers,
-            ...loadedImplementations.map(
-              (x) =>
-                new UriResolverWrapper(
-                  new Uri(x),
-                  this._createWrapper,
-                  this._deserializeOptions
-                )
-            ),
-          ],
-        },
+      const newClient = client.configure({
+        uriResolvers: [
+          ...bootstrapUriResolvers,
+          ...loadedImplementations.map(
+            (x) =>
+              new UriResolverWrapper(
+                new Uri(x),
+                this._createWrapper,
+                this._deserializeOptions
+              )
+          ),
+        ]
       });
+      const { wrapper } = await newClient.resolveUri(implementationUri);
 
       if (!wrapper) {
         // If not successful, add the resolver to the end of the queue

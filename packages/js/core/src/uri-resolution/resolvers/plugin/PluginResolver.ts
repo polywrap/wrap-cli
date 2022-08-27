@@ -33,7 +33,7 @@ export class PluginResolver implements UriResolver {
     cache: WrapperCache,
     resolutionPath: UriResolutionStack
   ): Promise<UriResolutionResult> {
-    const plugin = findPluginPackage(uri, client.getPlugins({}));
+    const plugin = findPluginPackage(uri, client.getPlugins());
 
     if (plugin) {
       const environment = getEnvFromUriOrResolutionStack(
