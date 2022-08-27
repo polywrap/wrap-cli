@@ -55,6 +55,13 @@ describe("usePolywrapQuery hook", () => {
       wrapper: PolywrapProvider,
       initialProps: {
         plugins,
+        envs: [{
+          uri: envUri,
+          env: {
+            str: "Hello World!",
+            requiredInt: 2,
+          }
+        }]
       },
     };
   });
@@ -100,16 +107,7 @@ describe("usePolywrapQuery hook", () => {
       uri: envUri,
       query: `query {
         getEnv(arg: "Alice")
-      }`,
-      config: {
-        envs: [{
-          uri: envUri,
-          env: {
-            str: "Hello World!",
-            requiredInt: 2,
-          }
-        }]
-      }
+      }`
     };
 
     const { data, errors } = await sendQuery<{

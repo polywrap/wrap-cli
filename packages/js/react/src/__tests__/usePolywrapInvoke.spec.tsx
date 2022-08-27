@@ -53,6 +53,13 @@ describe("usePolywrapInvoke hook", () => {
       wrapper: PolywrapProvider,
       initialProps: {
         plugins,
+        envs: [{
+          uri: envUri,
+          env: {
+            str: "Hello World!",
+            requiredInt: 2,
+          }
+        }]
       },
     };
   });
@@ -103,15 +110,6 @@ describe("usePolywrapInvoke hook", () => {
       method: "getEnv",
       args: {
         arg: "Alice"
-      },
-      config: {
-        envs: [{
-          uri: envUri,
-          env: {
-            str: "Hello World!",
-            requiredInt: 2,
-          }
-        }]
       }
     };
 

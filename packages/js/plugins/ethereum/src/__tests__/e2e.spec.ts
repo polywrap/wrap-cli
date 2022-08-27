@@ -622,21 +622,21 @@ describe("Ethereum Plugin", () => {
     });
 
     it("getNetwork - mainnet with env", async () => {
-      const mainnetNetwork = await client.invoke<Schema.Network>({
-        uri,
-        method: "getNetwork",
-        config: {
-          envs: [
-            {
-              uri: "wrap://ens/ethereum.polywrap.eth",
-              env: {
-                connection: {
-                  networkNameOrChainId: "mainnet",
-                },
+      const mainnetClient = client.reconfigure({
+        envs: [
+          {
+            uri: "wrap://ens/ethereum.polywrap.eth",
+            env: {
+              connection: {
+                networkNameOrChainId: "mainnet",
               },
             },
-          ],
-        },
+          },
+        ],
+      });
+      const mainnetNetwork = await mainnetClient.invoke<Schema.Network>({
+        uri,
+        method: "getNetwork"
       });
 
       expect(mainnetNetwork.data).toBeTruthy();
@@ -649,21 +649,21 @@ describe("Ethereum Plugin", () => {
     });
 
     it("getNetwork - polygon with env", async () => {
-      const polygonNetwork = await client.invoke<Schema.Network>({
-        uri,
-        method: "getNetwork",
-        config: {
-          envs: [
-            {
-              uri: "wrap://ens/ethereum.polywrap.eth",
-              env: {
-                connection: {
-                  node: "https://polygon-rpc.com",
-                },
+      const polygonClient = client.reconfigure({
+        envs: [
+          {
+            uri: "wrap://ens/ethereum.polywrap.eth",
+            env: {
+              connection: {
+                node: "https://polygon-rpc.com",
               },
             },
-          ],
-        },
+          },
+        ],
+      });
+      const polygonNetwork = await polygonClient.invoke<Schema.Network>({
+        uri,
+        method: "getNetwork"
       });
 
       expect(polygonNetwork.data).toBeTruthy();
