@@ -16,11 +16,6 @@ export interface InvokeOptions<
    * removing the chance of incorrectly ordering arguments.
    */
   args?: Record<string, unknown> | Uint8Array;
-
-  /**
-   * Invoke id used to track query context data set internally.
-   */
-  contextId?: string;
 }
 
 /**

@@ -14,11 +14,6 @@ export interface ResolveUriOptions<
    * If set to true, the resolveUri function will not cache the results
    */
   noCacheWrite?: boolean;
-
-  /**
-   * Id used to track context data set internally.
-   */
-  contextId?: string;
 }
 
 export interface UriResolverHandler {

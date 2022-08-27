@@ -42,7 +42,7 @@ export interface Client
     SubscriptionHandler,
     UriResolverHandler {
 
-  configure(config: Partial<ClientConfig<string | Uri>>): Client;
+  reconfigure(config: Partial<ClientConfig<string | Uri>>): Client;
 
   getRedirects(): readonly UriRedirect<Uri>[];
 

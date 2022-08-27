@@ -34,16 +34,6 @@ export interface QueryOptions<
    * Variables referenced within the query string via GraphQL's '$variable' syntax.
    */
   variables?: TVariables;
-
-  /**
-   * Override the client's config for all invokes within this query.
-   */
-  config?: Partial<TClientConfig>;
-
-  /**
-   * Query id used to track query context data set internally.
-   */
-  contextId?: string;
 }
 
 /**

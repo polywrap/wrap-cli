@@ -937,28 +937,26 @@ describe("resolveUri", () => {
     const ensUri = new Uri(`ens/test`);
     const redirectUri = new Uri(`ens/redirect.eth`);
 
-    const client = await getClient();
-
-    const result = await client.resolveUri(ensUri, {
-      config: {
-        uriResolvers: [
-          {
-            name: "CustomResolver",
-            resolveUri: async (uri: Uri) => {
-              if (uri.uri === ensUri.uri) {
-                return {
-                  uri: redirectUri,
-                };
-              }
-
+    const client = (await getClient()).reconfigure({
+      uriResolvers: [
+        {
+          name: "CustomResolver",
+          resolveUri: async (uri: Uri) => {
+            if (uri.uri === ensUri.uri) {
               return {
-                uri: uri,
+                uri: redirectUri,
               };
-            },
+            }
+
+            return {
+              uri: uri,
+            };
           },
-        ],
-      },
+        },
+      ],
     });
+
+    const result = await client.resolveUri(ensUri);
 
     expect(result.wrapper).toBeFalsy();
     expect(result.uri).toEqual(redirectUri);

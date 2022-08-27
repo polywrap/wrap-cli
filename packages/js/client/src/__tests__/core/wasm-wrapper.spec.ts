@@ -130,7 +130,7 @@ describe("wasm-wrapper", () => {
   });
 
   it("should allow query time redirects", async () => {
-    const client = await getClient({
+    let client = await getClient({
       plugins: [
         {
           uri: "wrap://ens/mock.polywrap.eth",
@@ -146,15 +146,14 @@ describe("wasm-wrapper", () => {
       },
     ];
 
+    client = client.reconfigure({ redirects });
+
     const result = await client.invoke({
       uri: simpleWrapperUri.uri,
       method: "simpleMethod",
       args: {
         arg: "test",
-      },
-      config: {
-        redirects,
-      },
+      }
     });
 
     expect(result.data).toBeTruthy();

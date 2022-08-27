@@ -890,42 +890,40 @@ export const runSimpleEnvTest = async (
     requiredInt: 1,
   });
 
-  const getEnvNotSetResult = await client.invoke({
+  const getEnvNotSetResult = await client.reconfigure({
+    envs: [
+      {
+        uri: wrapperUri,
+        env: {},
+      },
+    ],
+  }).invoke({
     uri: wrapperUri,
     method: "getEnv",
     args: {
       arg: "not set",
-    },
-    config: {
-      envs: [
-        {
-          uri: wrapperUri,
-          env: {},
-        },
-      ],
-    },
+    }
   });
   expect(getEnvNotSetResult.data).toBeUndefined();
   expect(getEnvNotSetResult.error).toBeTruthy();
   expect(getEnvNotSetResult.error?.message).toContain("requiredInt: Int");
 
-  const envIncorrectResult = await client.invoke({
+  const envIncorrectResult = await client.reconfigure({
+    envs: [
+      {
+        uri: wrapperUri,
+        env: {
+          str: "string",
+          requiredInt: "99",
+        },
+      },
+    ],
+  }).invoke({
     uri: wrapperUri,
     method: "getEnv",
     args: {
       arg: "not set",
-    },
-    config: {
-      envs: [
-        {
-          uri: wrapperUri,
-          env: {
-            str: "string",
-            requiredInt: "99",
-          },
-        },
-      ],
-    },
+    }
   });
 
   expect(envIncorrectResult.data).toBeUndefined();
@@ -1020,30 +1018,29 @@ export const runComplexEnvs = async (
     array: [32, 23],
   });
 
-  const mockUpdatedEnvResult = await client.invoke({
+  const mockUpdatedEnvResult = await client.reconfigure({
+    envs: [
+      {
+        uri: wrapperUri,
+        env: {
+          object: {
+            prop: "object another string",
+          },
+          str: "another string",
+          optFilledStr: "optional string",
+          number: 10,
+          bool: true,
+          en: "FIRST",
+          array: [32, 23],
+        },
+      },
+    ],
+  }).invoke({
     uri: wrapperUri,
     method: "methodRequireEnv",
     args: {
       arg: "string",
-    },
-    config: {
-      envs: [
-        {
-          uri: wrapperUri,
-          env: {
-            object: {
-              prop: "object another string",
-            },
-            str: "another string",
-            optFilledStr: "optional string",
-            number: 10,
-            bool: true,
-            en: "FIRST",
-            array: [32, 23],
-          },
-        },
-      ],
-    },
+    }
   });
   expect(mockUpdatedEnvResult.error).toBeFalsy();
   expect(mockUpdatedEnvResult.data).toEqual({
