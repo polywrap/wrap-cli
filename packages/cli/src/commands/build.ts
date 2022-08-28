@@ -14,6 +14,7 @@ import {
   parseDirOption,
   parseClientConfigOption,
 } from "../lib";
+import { DockerBuildStrategy } from "../lib/source-builders/SourceBuilder";
 
 import { print } from "gluegun";
 import path from "path";
@@ -91,6 +92,8 @@ async function run(options: BuildCommandOptions) {
     print.error
   );
 
+  const dockerBuildStrategy = new DockerBuildStrategy();
+
   const schemaComposer = new SchemaComposer({
     project,
     client,
@@ -100,6 +103,7 @@ async function run(options: BuildCommandOptions) {
     project,
     outputDir,
     schemaComposer,
+    sourceBuildStrategy: dockerBuildStrategy,
   });
 
   const execute = async (): Promise<boolean> => {

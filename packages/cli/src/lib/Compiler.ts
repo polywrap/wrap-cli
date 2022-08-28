@@ -2,12 +2,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import {
-  copyArtifactsFromBuildImage,
-  createBuildImage,
   displayPath,
-  ensureDockerDaemonRunning,
-  generateDockerfile,
-  generateDockerImageName,
   generateWrapFile,
   intlMsg,
   outputManifest,
@@ -17,6 +12,10 @@ import {
   SchemaComposer,
   withSpinner,
 } from "./";
+import {
+  DockerBuildStrategy,
+  SourceBuildStrategy,
+} from "./source-builders/SourceBuilder";
 
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 import { WasmWrapper, WrapImports } from "@polywrap/client-js";
@@ -40,6 +39,7 @@ export interface CompilerOverrides {
 export interface CompilerConfig {
   outputDir: string;
   project: PolywrapProject;
+  sourceBuildStrategy: SourceBuildStrategy;
   schemaComposer: SchemaComposer;
 }
 
@@ -155,23 +155,26 @@ export class Compiler {
     // Compose the ABI
     const abi = await this._composeAbi();
 
-    // Allow the build-image to validate the manifest & override functionality
-    const buildImageDir = `${__dirname}/defaults/build-images/${polywrapManifest.project.type}`;
-    const buildImageEntryFile = path.join(buildImageDir, "index.ts");
     let compilerOverrides: CompilerOverrides | undefined;
 
-    if (fs.existsSync(buildImageEntryFile)) {
-      const module = await import(buildImageDir);
+    // Allow the build-image to validate the manifest & override functionality
+    if (this._config.sourceBuildStrategy instanceof DockerBuildStrategy) {
+      const buildImageDir = `${__dirname}/defaults/build-images/${polywrapManifest.project.type}`;
+      const buildImageEntryFile = path.join(buildImageDir, "index.ts");
 
-      // Get any compiler overrides for the given build-image
-      if (module.getCompilerOverrides) {
-        compilerOverrides = module.getCompilerOverrides() as CompilerOverrides;
-      }
+      if (fs.existsSync(buildImageEntryFile)) {
+        const module = await import(buildImageDir);
 
-      if (compilerOverrides) {
-        // Validate the manifest for the given build-image
-        if (compilerOverrides.validateManifest) {
-          compilerOverrides.validateManifest(polywrapManifest);
+        // Get any compiler overrides for the given build-image
+        if (module.getCompilerOverrides) {
+          compilerOverrides = module.getCompilerOverrides() as CompilerOverrides;
+        }
+
+        if (compilerOverrides) {
+          // Validate the manifest for the given build-image
+          if (compilerOverrides.validateManifest) {
+            compilerOverrides.validateManifest(polywrapManifest);
+          }
         }
       }
     }
@@ -221,101 +224,17 @@ export class Compiler {
   }
 
   private async _buildModules(): Promise<void> {
-    const { outputDir } = this._config;
+    const { outputDir, project } = this._config;
 
     if (await this._isInterface()) {
       throw Error(intlMsg.lib_compiler_cannotBuildInterfaceModules());
     }
 
     // Build the sources
-    await this._buildSourcesInDocker();
+    await this._config.sourceBuildStrategy.build({ outputDir, project });
 
     // Validate the Wasm module
     await this._validateWasmModule(outputDir);
-  }
-
-  private async _buildSourcesInDocker(): Promise<string> {
-    const { project, outputDir } = this._config;
-    await ensureDockerDaemonRunning();
-    const buildManifestDir = await project.getBuildManifestDir();
-    const buildManifest = await project.getBuildManifest();
-    const imageName =
-      buildManifest?.docker?.name ||
-      generateDockerImageName(await project.getBuildUuid());
-    let dockerfile = buildManifest?.docker?.dockerfile
-      ? path.join(buildManifestDir, buildManifest?.docker?.dockerfile)
-      : path.join(buildManifestDir, "Dockerfile");
-
-    await project.cacheBuildManifestLinkedPackages();
-
-    // If the dockerfile path isn't provided, generate it
-    if (!buildManifest?.docker?.dockerfile) {
-      // Make sure the default template is in the cached .polywrap/wasm/build/image folder
-      await project.cacheDefaultBuildImage();
-
-      dockerfile = generateDockerfile(
-        project.getCachePath(
-          path.join(
-            PolywrapProject.cacheLayout.buildImageDir,
-            "Dockerfile.mustache"
-          )
-        ),
-        buildManifest.config || {}
-      );
-    }
-
-    const dockerBuildxConfig = buildManifest?.docker?.buildx;
-    const useBuildx = !!dockerBuildxConfig;
-
-    let cacheDir: string | undefined;
-    let removeBuilder = false;
-
-    if (dockerBuildxConfig && typeof dockerBuildxConfig !== "boolean") {
-      const cache = dockerBuildxConfig.cache;
-
-      if (cache == true) {
-        cacheDir = project.getCachePath(
-          PolywrapProject.cacheLayout.buildImageCacheDir
-        );
-      } else if (cache) {
-        if (!path.isAbsolute(cache)) {
-          cacheDir = path.join(project.getManifestDir(), cache);
-        } else {
-          cacheDir = cache;
-        }
-      }
-
-      removeBuilder = !!dockerBuildxConfig.removeBuilder;
-    }
-
-    const removeImage = !!buildManifest?.docker?.removeImage;
-
-    // If the dockerfile path contains ".mustache", generate
-    if (dockerfile.indexOf(".mustache") > -1) {
-      dockerfile = generateDockerfile(dockerfile, buildManifest.config || {});
-    }
-
-    // Construct the build image
-    const dockerImageId = await createBuildImage(
-      project.getManifestDir(),
-      imageName,
-      dockerfile,
-      cacheDir,
-      useBuildx,
-      project.quiet
-    );
-
-    await copyArtifactsFromBuildImage(
-      outputDir,
-      "wrap.wasm",
-      imageName,
-      removeBuilder,
-      removeImage,
-      useBuildx,
-      project.quiet
-    );
-
-    return dockerImageId;
   }
 
   private async _outputWrapManifest(
