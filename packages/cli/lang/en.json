@@ -229,7 +229,6 @@
   "lib_compiler_compileWasmModulesWarning": "Warnings while compiling Wasm modules",
   "lib_compiler_failedAbiReturn": "Abi composer failed to return a combined abi.",
   "lib_compiler_noModulesToBuild": "No modules to build declared.",
-  "lib_compiler_missingAbi": "Missing ABI definition",
   "lib_compiler_missingModule": "Missing module definition",
   "lib_compiler_noInterfaceModule": "Interfaces cannot have implementation file",
   "lib_compiler_step": "Compiling WASM module",

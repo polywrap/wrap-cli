@@ -13,9 +13,11 @@ import {
   parseWasmManifestFileOption,
   parseDirOption,
   parseClientConfigOption,
+  CompilerOverrides,
 } from "../lib";
 import { DockerBuildStrategy } from "../lib/source-builders/SourceBuilder";
 
+import fs from "fs";
 import { print } from "gluegun";
 import path from "path";
 import readline from "readline";
@@ -68,6 +70,63 @@ export const build: Command = {
   },
 };
 
+async function composeAbi(schemaComposer: SchemaComposer) {
+  const abi = await schemaComposer.getComposedAbis();
+
+  if (!abi) {
+    throw Error(intlMsg.lib_compiler_failedAbiReturn());
+  }
+
+  return abi;
+}
+
+async function getCompilerOverrides(project: PolywrapProject) {
+  // Get the PolywrapManifest
+  const polywrapManifest = await project.getManifest();
+
+  let compilerOverrides: CompilerOverrides | undefined;
+
+  // Allow the build-image to validate the manifest & override functionality
+  if (this._config.sourceBuildStrategy instanceof DockerBuildStrategy) {
+    const buildImageDir = `${__dirname}/defaults/build-images/${polywrapManifest.project.type}`;
+    const buildImageEntryFile = path.join(buildImageDir, "index.ts");
+
+    if (fs.existsSync(buildImageEntryFile)) {
+      const module = await import(buildImageDir);
+
+      // Get any compiler overrides for the given build-image
+      if (module.getCompilerOverrides) {
+        compilerOverrides = module.getCompilerOverrides() as CompilerOverrides;
+      }
+
+      if (compilerOverrides) {
+        // Validate the manifest for the given build-image
+        if (compilerOverrides.validateManifest) {
+          compilerOverrides.validateManifest(polywrapManifest);
+        }
+      }
+    }
+  }
+
+  if (
+    polywrapManifest.project.type !== "interface" &&
+    !polywrapManifest.source.module
+  ) {
+    const missingModuleMessage = intlMsg.lib_compiler_missingModule();
+    throw Error(missingModuleMessage);
+  }
+
+  if (
+    polywrapManifest.project.type === "interface" &&
+    polywrapManifest.source.module
+  ) {
+    const noInterfaceModule = intlMsg.lib_compiler_noInterfaceModule();
+    throw Error(noInterfaceModule);
+  }
+
+  return compilerOverrides;
+}
+
 async function run(options: BuildCommandOptions) {
   const { watch, verbose, manifestFile, outputDir, clientConfig } = options;
 
@@ -99,15 +158,22 @@ async function run(options: BuildCommandOptions) {
     client,
   });
 
-  const compiler = new Compiler({
-    project,
-    outputDir,
-    schemaComposer,
-    sourceBuildStrategy: dockerBuildStrategy,
-  });
-
   const execute = async (): Promise<boolean> => {
-    compiler.reset();
+    project.reset();
+    schemaComposer.reset();
+
+    // Compose the ABI
+    const abi = await composeAbi(schemaComposer);
+    const compilerOverrides = await getCompilerOverrides(project);
+
+    const compiler = new Compiler({
+      project,
+      outputDir,
+      compilerOverrides,
+      abi,
+      sourceBuildStrategy: dockerBuildStrategy,
+    });
+
     const result = await compiler.compile();
 
     if (!result) {
