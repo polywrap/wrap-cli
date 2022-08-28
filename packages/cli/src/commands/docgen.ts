@@ -155,9 +155,11 @@ async function run(command: DocType, options: DocgenCommandOptions) {
     client,
   });
 
+  const abi = await schemaComposer.getComposedAbis();
+
   const codeGenerator = new CodeGenerator({
     project,
-    schemaComposer,
+    abi,
     customScript,
     codegenDirAbs: docgenDir,
     omitHeader: true,

@@ -11,6 +11,7 @@ import {
   parseWasmManifestFileOption,
   parseClientConfigOption,
 } from "../lib";
+import { DockerBuildStrategy } from "../lib/source-builders/SourceBuilder";
 
 import path from "path";
 import { filesystem } from "gluegun";
@@ -82,11 +83,15 @@ async function run(options: CodegenCommandOptions) {
     client,
   });
 
+  const dockerBuildStrategy = new DockerBuildStrategy();
+
+  const abi = await schemaComposer.getComposedAbis();
+
   let result = false;
   if (script) {
     const codeGenerator = new CodeGenerator({
       project,
-      schemaComposer,
+      abi,
       customScript: script,
       codegenDirAbs: codegenDir,
     });
@@ -96,7 +101,8 @@ async function run(options: CodegenCommandOptions) {
     const compiler = new Compiler({
       project,
       outputDir: filesystem.path("build"),
-      schemaComposer,
+      abi,
+      sourceBuildStrategy: dockerBuildStrategy,
     });
 
     result = await compiler.codegen();

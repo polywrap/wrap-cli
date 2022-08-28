@@ -14,7 +14,6 @@ import {
   appManifestLanguageToBindLanguage,
   Project,
   AnyProjectManifest,
-  SchemaComposer,
   intlMsg,
   resetDir,
 } from "./";
@@ -26,11 +25,12 @@ import { readFileSync } from "fs";
 import * as gluegun from "gluegun";
 import { Ora } from "ora";
 import Mustache from "mustache";
+import { Abi } from "@polywrap/wrap-manifest-types-js";
 
 export interface CodeGeneratorConfig {
   codegenDirAbs: string;
   project: Project<AnyProjectManifest>;
-  schemaComposer: SchemaComposer;
+  abi: Abi;
   customScript?: string;
   mustacheView?: Record<string, unknown>;
   omitHeader?: boolean;
@@ -54,7 +54,7 @@ export class CodeGenerator {
   }
 
   private async _generateCode() {
-    const { schemaComposer, project, codegenDirAbs } = this._config;
+    const { project, codegenDirAbs, abi } = this._config;
 
     const run = async (spinner?: Ora) => {
       const language = await project.getManifestLanguage();
@@ -79,13 +79,6 @@ export class CodeGenerator {
             ].join(", "),
           })
         );
-      }
-
-      // Get the fully composed abi
-      const abi = await schemaComposer.getComposedAbis();
-
-      if (!abi) {
-        throw Error(intlMsg.lib_codeGenerator_abiMissing());
       }
 
       if (this._config.customScript) {

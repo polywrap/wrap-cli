@@ -22,6 +22,7 @@ import { print } from "gluegun";
 import path from "path";
 import readline from "readline";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
+import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 
 const defaultOutputDir = "./build";
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");
@@ -70,20 +71,7 @@ export const build: Command = {
   },
 };
 
-async function composeAbi(schemaComposer: SchemaComposer) {
-  const abi = await schemaComposer.getComposedAbis();
-
-  if (!abi) {
-    throw Error(intlMsg.lib_compiler_failedAbiReturn());
-  }
-
-  return abi;
-}
-
-async function getCompilerOverrides(project: PolywrapProject) {
-  // Get the PolywrapManifest
-  const polywrapManifest = await project.getManifest();
-
+async function getCompilerOverrides(polywrapManifest: PolywrapManifest) {
   let compilerOverrides: CompilerOverrides | undefined;
 
   // Allow the build-image to validate the manifest & override functionality
@@ -146,6 +134,8 @@ async function run(options: BuildCommandOptions) {
   });
   await project.validate();
 
+  const polywrapManifest = await project.getManifest();
+
   const dockerLock = new FileLock(
     project.getCachePath("build/DOCKER_LOCK"),
     print.error
@@ -162,9 +152,8 @@ async function run(options: BuildCommandOptions) {
     project.reset();
     schemaComposer.reset();
 
-    // Compose the ABI
-    const abi = await composeAbi(schemaComposer);
-    const compilerOverrides = await getCompilerOverrides(project);
+    const abi = await schemaComposer.getComposedAbis();
+    const compilerOverrides = await getCompilerOverrides(polywrapManifest);
 
     const compiler = new Compiler({
       project,
