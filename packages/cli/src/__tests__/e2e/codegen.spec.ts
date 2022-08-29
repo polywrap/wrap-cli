@@ -10,7 +10,7 @@ import { compareSync } from "dir-compare";
 
 const HELP = `Usage: polywrap codegen|g [options]
 
-Auto-generate Wrapper Types
+Generate Code For Polywrap Projects
 
 Options:
   -m, --manifest-file <path>         Path to the Polywrap manifest file
@@ -222,7 +222,7 @@ describe("e2e tests for codegen command", () => {
           cmdArgs.push(...cmdConfig.args);
         }
 
-        if(cmdConfig.codegenDir) {
+        if (cmdConfig.codegenDir) {
           codegenDir = path.join(testCaseDir, cmdConfig.codegenDir);
         }
       }

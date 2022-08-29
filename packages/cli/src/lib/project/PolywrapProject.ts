@@ -542,6 +542,15 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     const absolute = path.isAbsolute(entryPoint)
       ? entryPoint
       : path.join(this.getManifestDir(), entryPoint);
-    return path.join(path.dirname(absolute), generationSubPath);
+
+    const entryPointDirRelativeToManifestDir = path.relative(
+      path.dirname(absolute),
+      this.getManifestDir()
+    );
+
+    return path.join(
+      path.dirname(absolute),
+      path.join(entryPointDirRelativeToManifestDir, generationSubPath)
+    );
   }
 }

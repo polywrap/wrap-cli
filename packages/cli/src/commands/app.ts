@@ -67,7 +67,6 @@ async function run(options: AppCommandOptions) {
   const project = new AppProject({
     rootDir: path.dirname(manifestFile),
     appManifestPath: manifestFile,
-    client,
   });
   await project.validate();
 

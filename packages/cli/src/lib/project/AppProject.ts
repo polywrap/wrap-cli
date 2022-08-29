@@ -8,14 +8,12 @@ import {
 } from "./manifests";
 
 import { AppManifest } from "@polywrap/polywrap-manifest-types-js";
-import { Client } from "@polywrap/core-js";
 import { bindSchema, BindOutput } from "@polywrap/schema-bind";
 import path from "path";
 import { WrapAbi } from "@polywrap/wrap-manifest-types-js";
 
 export interface AppProjectConfig extends ProjectConfig {
   appManifestPath: string;
-  client: Client;
 }
 
 export class AppProject extends Project<AppManifest> {
