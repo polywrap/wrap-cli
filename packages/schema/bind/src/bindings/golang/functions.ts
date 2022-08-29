@@ -99,7 +99,8 @@ export const makeImports: MustacheFn = () => {
   return (text: string, render: (template: string) => string): string => {
     const types = render(text).split(",");
     const exist: { [key: string]: boolean } = {};
-    for (const t of types) {
+    for (let t of types) {
+      t = t.trim();
       switch (t) {
         case "*big.Int":
           exist[
@@ -120,7 +121,13 @@ export const makeImports: MustacheFn = () => {
     imports.push(...Object.keys(exist));
     const txt = imports
       .sort()
-      .map((imp) => `\t"${imp}"`)
+      .map((imp) => {
+        const parts = imp.split(" as ");
+        if (parts.length > 1) {
+          return `\t${parts[1]} "${parts[0]}"`;
+        }
+        return `\t"${imp}"`;
+      })
       .join("\n");
     return txt !== "" ? `import (\n${txt}\n)` : "";
   };
