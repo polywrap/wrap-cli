@@ -42,6 +42,7 @@
     "@polywrap/asyncify-js": "0.4.1",
     "@polywrap/client-js": "0.4.1",
     "@polywrap/core-js": "0.4.1",
+    "@polywrap/wasm-js": "0.4.1",
     "@polywrap/ens-resolver-plugin-js": "0.4.1",
     "@polywrap/ethereum-plugin-js": "0.4.1",
     "@polywrap/ipfs-plugin-js": "0.4.1",

@@ -19,7 +19,7 @@ import {
 } from "./";
 
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
-import { WasmWrapper, WrapImports } from "@polywrap/client-js";
+import { WasmWrapper, WrapImports } from "@polywrap/wasm-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 import { normalizePath, writeDirectorySync } from "@polywrap/os-js";
 import * as gluegun from "gluegun";
