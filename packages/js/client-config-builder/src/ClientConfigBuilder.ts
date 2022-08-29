@@ -287,4 +287,8 @@ export class ClientConfigBuilder {
 
     return this._config as ClientConfig<Uri>;
   }
+
+  buildPartial(): Partial<ClientConfig<Uri>> {
+    return this._config;
+  }
 }
