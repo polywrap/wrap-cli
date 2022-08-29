@@ -105,7 +105,7 @@ export class ExtendableUriResolver implements UriResolver {
     const implementationsToLoad = new Queue<Uri>();
 
     for (const implementationUri of implementationUris) {
-      if (!cache.has(implementationUri)) {
+      if (!await cache.has(implementationUri)) {
         implementationsToLoad.enqueue(implementationUri);
       }
     }
@@ -148,7 +148,7 @@ export class ExtendableUriResolver implements UriResolver {
           };
         }
       } else {
-        cache.set(implementationUri, wrapper);
+        await cache.set(implementationUri, wrapper);
         loadedImplementations.push(implementationUri.uri);
         failedAttempts = 0;
       }

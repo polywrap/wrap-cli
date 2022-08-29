@@ -481,7 +481,7 @@ export class PolywrapClient implements Client {
     // Update cache for all URIs in the chain
     if (cacheWrite && wrapper) {
       const uris = uriHistory.getResolutionPath().stack.map((x) => x.sourceUri);
-      this._wrapperCache.set(uris, wrapper);
+      await this._wrapperCache.set(uris, wrapper);
     }
 
     if (shouldClearContext) {
