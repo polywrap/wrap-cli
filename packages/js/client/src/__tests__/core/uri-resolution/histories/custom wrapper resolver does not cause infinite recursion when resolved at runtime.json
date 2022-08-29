@@ -18,6 +18,9 @@
     ],
     "wrap://ens/test.eth => ExtendableUriResolver => error",
     [
+      "wrap://ens/test.eth => UriResolverWrapper: (wrap://ens/ipfs-resolver.polywrap.eth)",
+      "wrap://ens/test.eth => UriResolverWrapper: (wrap://ens/ens-resolver.polywrap.eth)",
+      "wrap://ens/test.eth => UriResolverWrapper: (wrap://ens/fs-resolver.polywrap.eth)",
       "wrap://ens/test.eth => UriResolverWrapper: (wrap://ens/undefined-resolver.eth) => error",
       [
         "wrap://ens/undefined-resolver.eth => UriResolverAggregator",
@@ -39,7 +42,6 @@
           ],
           "wrap://ens/undefined-resolver.eth => ExtendableUriResolver",
           [
-            "wrap://ens/undefined-resolver.eth => UriResolverWrapper: (wrap://ens/ipfs-resolver.polywrap.eth)",
             "wrap://ens/undefined-resolver.eth => UriResolverWrapper: (wrap://ens/ens-resolver.polywrap.eth)",
             "wrap://ens/undefined-resolver.eth => UriResolverWrapper: (wrap://ens/fs-resolver.polywrap.eth)"
           ]

@@ -18,6 +18,9 @@
     ],
     "wrap://simple-redirect/$root-wrapper-dir/simple/build => ExtendableUriResolver => uri (wrap://simple/$root-wrapper-dir/simple/build)",
     [
+      "wrap://simple-redirect/$root-wrapper-dir/simple/build => UriResolverWrapper: (wrap://ens/ipfs-resolver.polywrap.eth)",
+      "wrap://simple-redirect/$root-wrapper-dir/simple/build => UriResolverWrapper: (wrap://ens/ens-resolver.polywrap.eth)",
+      "wrap://simple-redirect/$root-wrapper-dir/simple/build => UriResolverWrapper: (wrap://ens/fs-resolver.polywrap.eth)",
       "wrap://simple-redirect/$root-wrapper-dir/simple/build => UriResolverWrapper: (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)",
       "wrap://simple-redirect/$root-wrapper-dir/simple/build => UriResolverWrapper: (wrap://file/$root-wrapper-dir/simple-redirect-resolver/build) => uri (wrap://simple/$root-wrapper-dir/simple/build)"
     ],
@@ -38,6 +41,9 @@
     ],
     "wrap://simple/$root-wrapper-dir/simple/build => ExtendableUriResolver => uri (wrap://file/$root-wrapper-dir/simple/build)",
     [
+      "wrap://simple/$root-wrapper-dir/simple/build => UriResolverWrapper: (wrap://ens/ipfs-resolver.polywrap.eth)",
+      "wrap://simple/$root-wrapper-dir/simple/build => UriResolverWrapper: (wrap://ens/ens-resolver.polywrap.eth)",
+      "wrap://simple/$root-wrapper-dir/simple/build => UriResolverWrapper: (wrap://ens/fs-resolver.polywrap.eth)",
       "wrap://simple/$root-wrapper-dir/simple/build => UriResolverWrapper: (wrap://file/$root-wrapper-dir/simple-fs-resolver/build) => uri (wrap://file/$root-wrapper-dir/simple/build)"
     ],
     "wrap://file/$root-wrapper-dir/simple/build => LegacyRedirectsResolver",
@@ -57,8 +63,6 @@
     ],
     "wrap://file/$root-wrapper-dir/simple/build => ExtendableUriResolver => package (wrap://file/$root-wrapper-dir/simple/build)",
     [
-      "wrap://file/$root-wrapper-dir/simple/build => UriResolverWrapper: (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)",
-      "wrap://file/$root-wrapper-dir/simple/build => UriResolverWrapper: (wrap://file/$root-wrapper-dir/simple-redirect-resolver/build)",
       "wrap://file/$root-wrapper-dir/simple/build => UriResolverWrapper: (wrap://ens/ipfs-resolver.polywrap.eth)",
       "wrap://file/$root-wrapper-dir/simple/build => UriResolverWrapper: (wrap://ens/ens-resolver.polywrap.eth)",
       "wrap://file/$root-wrapper-dir/simple/build => UriResolverWrapper: (wrap://ens/fs-resolver.polywrap.eth) => package (wrap://file/$root-wrapper-dir/simple/build)"
