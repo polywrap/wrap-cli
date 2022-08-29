@@ -26,8 +26,6 @@ describe("msgpack", () => {
     customMap.set("secondKey", "secondValue")
 
     const encoded = msgpackEncode(customMap)
-    // [199, 43, 1] are being added because of the map structure
-    expect(encoded).toEqual(Uint8Array.from([ 199, 43, 1, ...expectedArrayLike]))
     const decoded = msgpackDecode(encoded)
     expect(decoded).toEqual(customMap);
   });
@@ -39,8 +37,6 @@ describe("msgpack", () => {
     customMap.set("secondKey", new Map([["second", "2"]]));
 
     const encoded = msgpackEncode(customMap)
-    // [199, 43, 1] are being added because of the map structure
-    expect(encoded).toEqual(Uint8Array.from([ ...expectedArrayLike]))
     const decoded = msgpackDecode(encoded)
     expect(decoded).toEqual(customMap);
   });
