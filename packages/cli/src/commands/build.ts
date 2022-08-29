@@ -71,11 +71,32 @@ export const build: Command = {
   },
 };
 
-async function getCompilerOverrides(polywrapManifest: PolywrapManifest) {
+async function validateManifestModules(polywrapManifest: PolywrapManifest) {
+  if (
+    polywrapManifest.project.type !== "interface" &&
+    !polywrapManifest.source.module
+  ) {
+    const missingModuleMessage = intlMsg.lib_compiler_missingModule();
+    throw Error(missingModuleMessage);
+  }
+
+  if (
+    polywrapManifest.project.type === "interface" &&
+    polywrapManifest.source.module
+  ) {
+    const noInterfaceModule = intlMsg.lib_compiler_noInterfaceModule();
+    throw Error(noInterfaceModule);
+  }
+}
+
+async function getDockerImageCompilerOverrides(
+  polywrapManifest: PolywrapManifest,
+  sourceBuildStrategy: DockerBuildStrategy
+) {
   let compilerOverrides: CompilerOverrides | undefined;
 
   // Allow the build-image to validate the manifest & override functionality
-  if (this._config.sourceBuildStrategy instanceof DockerBuildStrategy) {
+  if (sourceBuildStrategy instanceof DockerBuildStrategy) {
     const buildImageDir = `${__dirname}/defaults/build-images/${polywrapManifest.project.type}`;
     const buildImageEntryFile = path.join(buildImageDir, "index.ts");
 
@@ -94,22 +115,6 @@ async function getCompilerOverrides(polywrapManifest: PolywrapManifest) {
         }
       }
     }
-  }
-
-  if (
-    polywrapManifest.project.type !== "interface" &&
-    !polywrapManifest.source.module
-  ) {
-    const missingModuleMessage = intlMsg.lib_compiler_missingModule();
-    throw Error(missingModuleMessage);
-  }
-
-  if (
-    polywrapManifest.project.type === "interface" &&
-    polywrapManifest.source.module
-  ) {
-    const noInterfaceModule = intlMsg.lib_compiler_noInterfaceModule();
-    throw Error(noInterfaceModule);
   }
 
   return compilerOverrides;
@@ -135,6 +140,7 @@ async function run(options: BuildCommandOptions) {
   await project.validate();
 
   const polywrapManifest = await project.getManifest();
+  await validateManifestModules(polywrapManifest);
 
   const dockerLock = new FileLock(
     project.getCachePath("build/DOCKER_LOCK"),
@@ -153,7 +159,14 @@ async function run(options: BuildCommandOptions) {
     schemaComposer.reset();
 
     const abi = await schemaComposer.getComposedAbis();
-    const compilerOverrides = await getCompilerOverrides(polywrapManifest);
+    let compilerOverrides: CompilerOverrides | undefined = undefined;
+
+    if (dockerBuildStrategy instanceof DockerBuildStrategy) {
+      compilerOverrides = await getDockerImageCompilerOverrides(
+        polywrapManifest,
+        dockerBuildStrategy
+      );
+    }
 
     const compiler = new Compiler({
       project,
