@@ -2,7 +2,7 @@ package module
 
 import (
 	"github.com/consideritdone/polywrap-go/polywrap"
-	methods "github.com/testorg/testrepo"
+	methods "github.com/testorg/testrepo/module"
 )
 
 func ModuleMethodWrapped(argsBuf []byte, envSize uint32) []byte {
@@ -49,4 +49,3 @@ func IfWrapped(argsBuf []byte, envSize uint32) []byte {
 	result := methods.If(args)
 	return SerializeIfResult(result)
 }
-

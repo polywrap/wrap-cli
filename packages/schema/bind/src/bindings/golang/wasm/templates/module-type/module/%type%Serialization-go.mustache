@@ -3,7 +3,7 @@ package module
 {{#makeImports}}github.com/consideritdone/polywrap-go/polywrap/msgpack,{{goImport}}/wrap/types,{{#arguments}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{^last}},{{/last}}{{/arguments}}{{/makeImports}}
 
 {{#methods}}
-func deserialize{{#toUpper}}{{name}}{{/toUpper}}Args(argsBuf []byte) *types.Args{{#toUpper}}{{name}}{{/toUpper}} {
+func Deserialize{{#toUpper}}{{name}}{{/toUpper}}Args(argsBuf []byte) *types.Args{{#toUpper}}{{name}}{{/toUpper}} {
 	ctx := msgpack.NewContext("Deserializing module-type: {{#toUpper}}{{name}}{{/toUpper}}")
 	{{#arguments.length}}
 	reader := msgpack.NewReadDecoder(ctx, argsBuf)
@@ -51,8 +51,8 @@ func deserialize{{#toUpper}}{{name}}{{/toUpper}}Args(argsBuf []byte) *types.Args
 			reader.Context().Pop()
 		{{/arguments}}
 		}
-        reader.Context().Pop()
-    }
+		reader.Context().Pop()
+	}
 
 	{{#arguments}}
 	{{#required}}

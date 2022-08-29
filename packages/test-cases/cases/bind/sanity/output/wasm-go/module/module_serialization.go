@@ -32,27 +32,26 @@ func DeserializeModuleMethodArgs(argsBuf []byte) *types.ArgsModuleMethod {
 	for i := int32(reader.ReadMapLength()); i > 0; i-- {
 		field := reader.ReadString()
 		reader.Context().Push(field, "unknown", "searching for property type")
-		reader.Context().Pop()
 		switch field {
-		case "Str":
+		case "str":
 			reader.Context().Push(field, "string", "type found, reading property")
 			_str = reader.ReadString()
 			_strSet = true
 			reader.Context().Pop()
-		case "OptStr":
+		case "optStr":
 			reader.Context().Push(field, "*string", "type found, reading property")
 			if !reader.IsNil() {
 				v := reader.ReadString()
 				_optStr = &v
 			}
 			reader.Context().Pop()
-		case "En":
+		case "en":
 			reader.Context().Push(field, "CustomEnum", "type found, reading property")
 			_en = CustomEnum(reader.ReadI32())
 			SanitizeCustomEnumValue(int32(_en))
 			_enSet = true
 			reader.Context().Pop()
-		case "OptEnum":
+		case "optEnum":
 			reader.Context().Push(field, "*CustomEnum", "type found, reading property")
 			if !reader.IsNil() {
 				v := CustomEnum(reader.ReadI32())
@@ -60,7 +59,7 @@ func DeserializeModuleMethodArgs(argsBuf []byte) *types.ArgsModuleMethod {
 				_optEnum = &v
 			}
 			reader.Context().Pop()
-		case "EnumArray":
+		case "enumArray":
 			reader.Context().Push(field, "[]CustomEnum", "type found, reading property")
 			if reader.IsNil() {
 				_enumArray = nil
@@ -74,7 +73,7 @@ func DeserializeModuleMethodArgs(argsBuf []byte) *types.ArgsModuleMethod {
 			}
 			_enumArraySet = true
 			reader.Context().Pop()
-		case "OptEnumArray":
+		case "optEnumArray":
 			reader.Context().Push(field, "[]*CustomEnum", "type found, reading property")
 			if reader.IsNil() {
 				_optEnumArray = nil
@@ -90,7 +89,7 @@ func DeserializeModuleMethodArgs(argsBuf []byte) *types.ArgsModuleMethod {
 				}
 			}
 			reader.Context().Pop()
-		case "Map":
+		case "map":
 			reader.Context().Push(field, "map[string]int32", "type found, reading property")
 			if reader.IsNil() {
 				_map = nil
@@ -104,7 +103,7 @@ func DeserializeModuleMethodArgs(argsBuf []byte) *types.ArgsModuleMethod {
 			}
 			_mapSet = true
 			reader.Context().Pop()
-		case "MapOfArr":
+		case "mapOfArr":
 			reader.Context().Push(field, "map[string][]int32", "type found, reading property")
 			if reader.IsNil() {
 				_mapOfArr = nil
@@ -126,7 +125,7 @@ func DeserializeModuleMethodArgs(argsBuf []byte) *types.ArgsModuleMethod {
 			}
 			_mapOfArrSet = true
 			reader.Context().Pop()
-		case "MapOfObj":
+		case "mapOfObj":
 			reader.Context().Push(field, "map[string]AnotherType", "type found, reading property")
 			if reader.IsNil() {
 				_mapOfObj = nil
@@ -142,7 +141,7 @@ func DeserializeModuleMethodArgs(argsBuf []byte) *types.ArgsModuleMethod {
 			}
 			_mapOfObjSet = true
 			reader.Context().Pop()
-		case "MapOfArrOfObj":
+		case "mapOfArrOfObj":
 			reader.Context().Push(field, "map[string][]AnotherType", "type found, reading property")
 			if reader.IsNil() {
 				_mapOfArrOfObj = nil
@@ -167,6 +166,7 @@ func DeserializeModuleMethodArgs(argsBuf []byte) *types.ArgsModuleMethod {
 			_mapOfArrOfObjSet = true
 			reader.Context().Pop()
 		}
+		reader.Context().Pop()
 	}
 
 	if !_strSet {
@@ -237,22 +237,21 @@ func DeserializeObjectMethodArgs(argsBuf []byte) *types.ArgsObjectMethod {
 	for i := int32(reader.ReadMapLength()); i > 0; i-- {
 		field := reader.ReadString()
 		reader.Context().Push(field, "unknown", "searching for property type")
-		reader.Context().Pop()
 		switch field {
-		case "Object":
+		case "object":
 			reader.Context().Push(field, "AnotherType", "type found, reading property")
 			if v := AnotherTypeRead(reader); v != nil {
 				_object = *v
 			}
 			_objectSet = true
 			reader.Context().Pop()
-		case "OptObject":
+		case "optObject":
 			reader.Context().Push(field, "*AnotherType", "type found, reading property")
 			if v := AnotherTypeRead(reader); v != nil {
 				_optObject = v
 			}
 			reader.Context().Pop()
-		case "ObjectArray":
+		case "objectArray":
 			reader.Context().Push(field, "[]AnotherType", "type found, reading property")
 			if reader.IsNil() {
 				_objectArray = nil
@@ -267,7 +266,7 @@ func DeserializeObjectMethodArgs(argsBuf []byte) *types.ArgsObjectMethod {
 			}
 			_objectArraySet = true
 			reader.Context().Pop()
-		case "OptObjectArray":
+		case "optObjectArray":
 			reader.Context().Push(field, "[]*AnotherType", "type found, reading property")
 			if reader.IsNil() {
 				_optObjectArray = nil
@@ -282,6 +281,7 @@ func DeserializeObjectMethodArgs(argsBuf []byte) *types.ArgsObjectMethod {
 			}
 			reader.Context().Pop()
 		}
+		reader.Context().Pop()
 	}
 
 	if !_objectSet {
@@ -331,22 +331,21 @@ func DeserializeOptionalEnvMethodArgs(argsBuf []byte) *types.ArgsOptionalEnvMeth
 	for i := int32(reader.ReadMapLength()); i > 0; i-- {
 		field := reader.ReadString()
 		reader.Context().Push(field, "unknown", "searching for property type")
-		reader.Context().Pop()
 		switch field {
-		case "Object":
+		case "object":
 			reader.Context().Push(field, "AnotherType", "type found, reading property")
 			if v := AnotherTypeRead(reader); v != nil {
 				_object = *v
 			}
 			_objectSet = true
 			reader.Context().Pop()
-		case "OptObject":
+		case "optObject":
 			reader.Context().Push(field, "*AnotherType", "type found, reading property")
 			if v := AnotherTypeRead(reader); v != nil {
 				_optObject = v
 			}
 			reader.Context().Pop()
-		case "ObjectArray":
+		case "objectArray":
 			reader.Context().Push(field, "[]AnotherType", "type found, reading property")
 			if reader.IsNil() {
 				_objectArray = nil
@@ -361,7 +360,7 @@ func DeserializeOptionalEnvMethodArgs(argsBuf []byte) *types.ArgsOptionalEnvMeth
 			}
 			_objectArraySet = true
 			reader.Context().Pop()
-		case "OptObjectArray":
+		case "optObjectArray":
 			reader.Context().Push(field, "[]*AnotherType", "type found, reading property")
 			if reader.IsNil() {
 				_optObjectArray = nil
@@ -376,6 +375,7 @@ func DeserializeOptionalEnvMethodArgs(argsBuf []byte) *types.ArgsOptionalEnvMeth
 			}
 			reader.Context().Pop()
 		}
+		reader.Context().Pop()
 	}
 
 	if !_objectSet {
@@ -421,9 +421,8 @@ func DeserializeIfArgs(argsBuf []byte) *types.ArgsIf {
 	for i := int32(reader.ReadMapLength()); i > 0; i-- {
 		field := reader.ReadString()
 		reader.Context().Push(field, "unknown", "searching for property type")
-		reader.Context().Pop()
 		switch field {
-		case "M_if":
+		case "m_if":
 			reader.Context().Push(field, "Else", "type found, reading property")
 			if v := ElseRead(reader); v != nil {
 				_if = *v
@@ -431,6 +430,7 @@ func DeserializeIfArgs(argsBuf []byte) *types.ArgsIf {
 			_ifSet = true
 			reader.Context().Pop()
 		}
+		reader.Context().Pop()
 	}
 
 	if !_ifSet {

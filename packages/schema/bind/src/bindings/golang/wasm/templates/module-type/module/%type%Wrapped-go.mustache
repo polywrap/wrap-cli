@@ -1,13 +1,10 @@
 package module
 
-{{#methods.length}}
-import (
-    {{#env}}
-	"github.com/consideritdone/polywrap-go/polywrap"
-    {{/env}}
-	methods "{{goImport}}/module"
-)
-{{/methods.length}}
+{{#makeImports}}
+	{{#methods}}{{#env}}github.com/consideritdone/polywrap-go/polywrap,{{/env}}{{/methods}}
+	{{goImport}}/module as methods
+{{/makeImports}}
+
 
 {{#methods}}
 func {{#toUpper}}{{name}}{{/toUpper}}Wrapped(argsBuf []byte, envSize uint32) []byte {
@@ -25,11 +22,13 @@ func {{#toUpper}}{{name}}{{/toUpper}}Wrapped(argsBuf []byte, envSize uint32) []b
 	{{/env}}
 
 	{{#arguments.length}}
-	args := deserialize{{#toUpper}}{{name}}{{/toUpper}}Args(argsBuf)
+	args := Deserialize{{#toUpper}}{{name}}{{/toUpper}}Args(argsBuf)
 	{{/arguments.length}}
 
 	result := methods.{{#toUpper}}{{name}}{{/toUpper}}({{#arguments.length}}args{{/arguments.length}}{{^arguments.length}}nil{{/arguments.length}}{{#env}}, env{{/env}})
 	return Serialize{{#toUpper}}{{name}}{{/toUpper}}Result(result)
 }
+{{^last}}
 
+{{/last}}
 {{/methods}}
