@@ -16,7 +16,7 @@ Commands:
   deploy|d [options]           Deploys/Publishes a Polywrap
   plugin|p                     Build/generate types for the plugin
   infra|i [options] <action>   Manage infrastructure for your wrapper
-  run|r [options] <workflow>   Runs workflow script
+  run|r [options]              Runs workflow script
   docgen|o [options] <action>  Generate wrapper documentation
   help [command]               display help for command
 `;

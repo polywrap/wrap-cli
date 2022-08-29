@@ -3367,32 +3367,32 @@
   resolved "https://registry.yarnpkg.com/@opentelemetry/semantic-conventions/-/semantic-conventions-1.4.0.tgz#facf2c67d6063b9918d5a5e3fdf25f3a30d547b6"
   integrity sha512-Hzl8soGpmyzja9w3kiFFcYJ7n5HNETpplY6cb67KR4QPlxp4FTTresO06qXHgHDhyIInmbLJXuwARjjpsKYGuQ==
 
-"@polywrap/graph-node-plugin-js@0.4.1":
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/@polywrap/graph-node-plugin-js/-/graph-node-plugin-js-0.4.1.tgz#bbdc416a54125d77f41341104a9562fa69a918dd"
-  integrity sha512-Bhf7YblXuqtx1alR0lQCrFRt1Nw14QgHKt4sKgtYyZam9cSzPmB8IfEYgMbZihAP4ujnOgCj+m/umcezjIJKJw==
+"@polywrap/graph-node-plugin-js@0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@polywrap/graph-node-plugin-js/-/graph-node-plugin-js-0.5.0.tgz#e9acf6df2ebe74375c4e9fc067bac192cc31e458"
+  integrity sha512-EU9tnKBCsG03eFD/T0Zyfv/RjG76a07YiF8eyTjJYfYAZXRpYQAg6Py116hY3YAhQG7jHuxvqdWmXjxBVpAG2Q==
   dependencies:
-    "@polywrap/core-js" "0.4.1"
-    "@polywrap/http-plugin-js" "0.4.1"
+    "@polywrap/core-js" "0.5.0"
+    "@polywrap/http-plugin-js" "0.5.0"
     apollo-link "1.2.14"
     apollo-link-http "1.5.17"
     cross-fetch "3.0.5"
     graphql-tag "2.10.4"
 
-"@polywrap/sha3-plugin-js@0.4.1":
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/@polywrap/sha3-plugin-js/-/sha3-plugin-js-0.4.1.tgz#8e928c13da02f1e1282b03d601d2a4eea10df897"
-  integrity sha512-sPR7JH/n/4Phl377U3viR0ygEiXFrhsSyoH/XXl43oEOdEixZEzapvxskpDpAy6vapvcfkIDajqQXcyiM3CvqA==
+"@polywrap/sha3-plugin-js@0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@polywrap/sha3-plugin-js/-/sha3-plugin-js-0.5.0.tgz#843e2d256f28b6cd63366be1abdfdf877390c6f2"
+  integrity sha512-AD6cmt+nc1Y4PO2wDPBOqwlOigMs1IdwJUUBVfSrpQ5MCKEFvnRYpCUZ170lTrS3kTjBliQvqpnPhmQyRAyQzw==
   dependencies:
-    "@polywrap/core-js" "0.4.1"
+    "@polywrap/core-js" "0.5.0"
     js-sha3 "0.8.0"
 
-"@polywrap/uts46-plugin-js@0.4.1":
-  version "0.4.1"
-  resolved "https://registry.yarnpkg.com/@polywrap/uts46-plugin-js/-/uts46-plugin-js-0.4.1.tgz#e148996ebdff7a90c844e1be70665dd9465c212e"
-  integrity sha512-e2xOpXSR8zbkAyaeocMzbeMEWkVyxoYrgdRDylZmTIuiCQhyy4MLvXdoo/Vrv22cAnzlxrhKy+WuUTMpvTgMdA==
+"@polywrap/uts46-plugin-js@0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@polywrap/uts46-plugin-js/-/uts46-plugin-js-0.5.0.tgz#50042705fcbb9a1dfd8422e7458f8e0bfb81bd22"
+  integrity sha512-52Gxsjy5ng8DtiljRX6gFWNW1OVlLisd4lRQifJSdRMeP7HqrJ6x2dDUuIv44IU7NxcOUqMLmJxghk2BcoDC0A==
   dependencies:
-    "@polywrap/core-js" "0.4.1"
+    "@polywrap/core-js" "0.5.0"
     idna-uts46-hx "3.4.0"
 
 "@sinclair/typebox@^0.24.1":

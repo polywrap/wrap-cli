@@ -109,13 +109,17 @@ const toTypescriptMap = (type: string, optional: boolean): string => {
   const openAngleBracketIdx = type.indexOf("<");
   const closeAngleBracketIdx = type.lastIndexOf(">");
 
-  const [keyType, valtype] = type
-    .substring(openAngleBracketIdx + 1, closeAngleBracketIdx)
-    .split(",")
-    .map((x) => x.trim());
+  const keyValTypes = type.substring(
+    openAngleBracketIdx + 1,
+    closeAngleBracketIdx
+  );
+
+  const firstCommaIdx = keyValTypes.indexOf(",");
+  const keyType = keyValTypes.substring(0, firstCommaIdx).trim();
+  const valType = keyValTypes.substring(firstCommaIdx + 1).trim();
 
   const tsKeyType = _toTypescript(keyType, (str) => str);
-  const tsValType = _toTypescript(valtype, (str) => str, true);
+  const tsValType = _toTypescript(valType, (str) => str, true);
 
   return applyOptional(`Map<${tsKeyType}, ${tsValType}>`, optional);
 };

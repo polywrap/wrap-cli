@@ -2,12 +2,15 @@ import { Command, Program } from "./types";
 import {
   intlMsg,
   parseClientConfigOption,
-  parseValidateScriptOption,
   parseWorkflowOutputFilePathOption,
   validateOutput,
+  JobRunner,
+  JobStatus,
+  JobResult,
+  loadWorkflowManifest,
 } from "../lib";
 
-import { Workflow, JobResult, JobStatus } from "@polywrap/core-js";
+import { Uri } from "@polywrap/core-js";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import path from "path";
 import yaml from "js-yaml";
@@ -15,8 +18,9 @@ import fs from "fs";
 
 type WorkflowCommandOptions = {
   clientConfig: Partial<PolywrapClientConfig>;
+  manifest: string;
   jobs?: string[];
-  validateScript?: string;
+  validationScript?: string;
   outputFile?: string;
   quiet?: boolean;
 };
@@ -27,17 +31,14 @@ export const run: Command = {
       .command("run")
       .alias("r")
       .description(intlMsg.commands_run_description())
-      .argument(
-        `<${intlMsg.commands_run_options_workflow()}>`,
-        intlMsg.commands_run_options_workflowScript()
+      .option(
+        `-m, --manifest  <${intlMsg.commands_run_options_manifest()}>`,
+        intlMsg.commands_run_manifestPathDescription(),
+        "polywrap.test.yaml"
       )
       .option(
         `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
         `${intlMsg.commands_common_options_config()}`
-      )
-      .option(
-        `-v, --validate-script <${intlMsg.commands_run_options_validate()}>`,
-        `${intlMsg.commands_run_options_validateScript()}`
       )
       .option(
         `-o, --output-file <${intlMsg.commands_run_options_outputFilePath()}>`,
@@ -48,69 +49,86 @@ export const run: Command = {
         intlMsg.commands_run_options_jobs()
       )
       .option(`-q, --quiet`, `${intlMsg.commands_run_options_quiet()}`)
-      .action(async (workflow: string, options) => {
-        await _run(workflow, {
+      .action(async (options) => {
+        await _run({
           ...options,
           clientConfig: await parseClientConfigOption(options.clientConfig),
           outputFile: options.outputFile
             ? parseWorkflowOutputFilePathOption(options.outputFile)
-            : undefined,
-          validateScript: options.validateScript
-            ? parseValidateScriptOption(options.validateScript)
             : undefined,
         });
       });
   },
 };
 
-const _run = async (workflowPath: string, options: WorkflowCommandOptions) => {
-  const { clientConfig, outputFile, validateScript, quiet, jobs } = options;
-  const client = new PolywrapClient(clientConfig);
+function loadValidationScript(cueFilepath: string): string {
+  cueFilepath = path.resolve(cueFilepath);
 
-  function getParser(path: string) {
-    return path.endsWith(".yaml") || path.endsWith(".yml")
-      ? yaml.load
-      : JSON.parse;
+  if (!fs.existsSync(cueFilepath)) {
+    console.error(
+      intlMsg.commands_run_error_validatorNotFound({
+        path: cueFilepath,
+      })
+    );
+    process.exit(1);
   }
 
-  const workflow: Workflow = getParser(workflowPath)(
-    fs.readFileSync(workflowPath).toString()
-  );
+  return cueFilepath;
+}
+
+const _run = async (options: WorkflowCommandOptions) => {
+  const { manifest, clientConfig, outputFile, quiet, jobs } = options;
+  const client = new PolywrapClient(clientConfig);
+
+  const manifestPath = path.resolve(manifest);
+  const workflow = loadWorkflowManifest(manifestPath);
+  const validationScript = workflow.validation
+    ? loadValidationScript(workflow.validation)
+    : undefined;
+
   const workflowOutput: (JobResult & { id: string })[] = [];
 
-  await client.run({
-    workflow,
-    config: clientConfig,
-    ids: jobs,
-    onExecution: async (id: string, jobResult: JobResult) => {
-      const { data, error, status } = jobResult;
+  const onExecution = async (id: string, jobResult: JobResult) => {
+    const { data, error, status } = jobResult;
 
-      if (!quiet) {
-        console.log("-----------------------------------");
-        console.log(`ID: ${id}`);
-        console.log(`Status: ${status}`);
-      }
+    if (!quiet) {
+      console.log("-----------------------------------");
+      console.log(`ID: ${id}`);
+      console.log(`Status: ${status}`);
+    }
 
-      if (!quiet && data !== undefined) {
-        console.log(`Data: ${JSON.stringify(data, null, 2)}`);
-      }
+    if (!quiet && data !== undefined) {
+      console.log(`Data: ${JSON.stringify(data, null, 2)}`);
+    }
 
-      if (!quiet && error !== undefined) {
-        console.log(`Error: ${error.message}`);
-        process.exitCode = 1;
-      }
+    if (!quiet && error !== undefined) {
+      console.log(`Error: ${error.message}`);
+      process.exitCode = 1;
+    }
 
-      if (status !== JobStatus.SKIPPED && validateScript) {
-        await validateOutput(id, { data, error }, validateScript, quiet);
-      }
+    if (status !== JobStatus.SKIPPED && validationScript) {
+      await validateOutput(id, { data, error }, validationScript, quiet);
+    }
 
-      if (!quiet) {
-        console.log("-----------------------------------");
-      }
+    if (!quiet) {
+      console.log("-----------------------------------");
+    }
 
-      workflowOutput.push({ id, status, data, error });
-    },
-  });
+    workflowOutput.push({ id, status, data, error });
+  };
+
+  const jobRunner = new JobRunner<Record<string, unknown>, Uri | string>(
+    client,
+    onExecution
+  );
+
+  const ids = jobs ? jobs : Object.keys(workflow.jobs);
+
+  await Promise.all(
+    ids.map((id) =>
+      jobRunner.run({ relativeId: id, parentId: "", jobs: workflow.jobs })
+    )
+  );
 
   if (outputFile) {
     const outputFileExt = path.extname(outputFile).substring(1);

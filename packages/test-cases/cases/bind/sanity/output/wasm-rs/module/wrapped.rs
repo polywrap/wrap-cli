@@ -35,6 +35,7 @@ pub fn module_method_wrapped(args: &[u8], env_size: u32) -> Vec<u8> {
                 opt_enum_array: args.opt_enum_array,
                 map: args.map,
                 map_of_arr: args.map_of_arr,
+                map_of_map: args.map_of_map,
                 map_of_obj: args.map_of_obj,
                 map_of_arr_of_obj: args.map_of_arr_of_obj,
             });

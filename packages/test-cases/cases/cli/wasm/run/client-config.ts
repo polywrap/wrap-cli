@@ -1,49 +1,89 @@
 import { PolywrapClientConfig } from "@polywrap/client-js";
-import { PluginModule } from "@polywrap/core-js";
-import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
+import { ClientConfig, coreInterfaceUris } from "@polywrap/client-js";
+import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
+import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
+import { ethereumPlugin, Connections, Connection } from "@polywrap/ethereum-plugin-js";
+import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 
-interface Config extends Record<string, unknown> {
-  val: number;
+interface TestEnvironment {
+  ipfs: string;
+  ethereum: string;
+  ensAddress: string;
+  registrarAddress?: string;
+  reverseAddress?: string;
+  resolverAddress?: string;
+  clientConfig: Partial<ClientConfig>;
 }
 
-class MockPlugin extends PluginModule<Config> {
+async function getProviders(): Promise<TestEnvironment> {
+  const ipfs = "http://localhost:5001";
+  const ethereum = "http://localhost:8545";
+  const ensAddress = "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab";
 
-  getData(_: unknown): number { return this.config.val; }
-
-  setData(args: { options: { value: number } }) {
-    this.config.val = +args.options.value;
-    return { txReceipt: "0xdone", value: this.config.val };
-  }
-
-  deployContract(): string { return "0x100"; }
+  const clientConfig: Partial<ClientConfig> = getPlugins(
+    ethereum,
+    ipfs,
+    "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab"
+  );
+  return { ipfs, ethereum, ensAddress, clientConfig };
 }
 
-const mockPlugin = () => {
+function getPlugins(
+  ethereum: string,
+  ipfs: string,
+  ensAddress: string
+): Partial<ClientConfig> {
   return {
-    factory: () => new MockPlugin({ val: 0 }),
-    manifest: {} as WrapManifest,
-  };
-};
-
-export function getClientConfig(defaultConfigs: Partial<PolywrapClientConfig>) {
-  if (defaultConfigs.plugins) {
-    defaultConfigs.plugins.push({
-      uri: "wrap://ens/mock.eth",
-      plugin: mockPlugin(),
-    });
-  } else {
-    defaultConfigs.plugins = [
+    redirects: [],
+    plugins: [
       {
-        uri: "wrap://ens/mock.eth",
-        plugin: mockPlugin(),
+        uri: "wrap://ens/ipfs.polywrap.eth",
+        plugin: ipfsPlugin({ provider: ipfs }),
       },
-    ];
-  }
-  defaultConfigs.redirects = [
-    {
-      from: "wrap://ens/testnet/simplestorage.eth",
-      to: "wrap://ens/mock.eth",
-    },
-  ];
-  return defaultConfigs;
+      {
+        uri: "wrap://ens/ipfs-resolver.polywrap.eth",
+        plugin: ipfsResolverPlugin({}),
+      },
+      {
+        uri: "wrap://ens/ens-resolver.polywrap.eth",
+        plugin: ensResolverPlugin({ addresses: { testnet: ensAddress } }),
+      },
+      {
+        uri: "wrap://ens/ethereum.polywrap.eth",
+        plugin: ethereumPlugin({
+          connections: new Connections({
+            networks: {
+              testnet: new Connection({
+                provider: ethereum,
+              }),
+              MAINNET: new Connection({
+                provider: "http://localhost:8546",
+              }),
+            },
+            defaultNetwork: "testnet",
+          }),
+        }),
+      },
+    ],
+    interfaces: [
+      {
+        interface: coreInterfaceUris.uriResolver.uri,
+        implementations: [
+          "wrap://ens/ipfs-resolver.polywrap.eth",
+          "wrap://ens/ens-resolver.polywrap.eth",
+        ],
+      },
+      {
+        interface: coreInterfaceUris.logger.uri,
+        implementations: ["wrap://ens/js-logger.polywrap.eth"],
+      },
+    ],
+  };
+}
+
+export async function getClientConfig(
+  defaultConfigs: Partial<PolywrapClientConfig>
+): Promise<Partial<PolywrapClientConfig>> {
+  const { ipfs, ethereum, ensAddress } = await getProviders();
+  return getPlugins(ethereum, ipfs, ensAddress);
 }
