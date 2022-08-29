@@ -22,6 +22,7 @@ import {
   parseQuery,
   ResolveUriOptions,
   ResolveUriResult,
+  ReconfigureOptions,
   UriResolver,
   resolveUri,
   CacheResolver,
@@ -114,11 +115,18 @@ export class PolywrapClient implements Client {
 
   @Tracer.traceMethod("PolywrapClient: reconfigure")
   public reconfigure(
-    config: Partial<PolywrapClientConfig<string | Uri>>
+    config: Partial<PolywrapClientConfig<string | Uri>>,
+    options: ReconfigureOptions = {}
   ): PolywrapClient {
     const builder = new ClientConfigBuilder();
     builder.add(this._config);
-    builder.add(config);
+
+    if (options.override) {
+      builder.set(config);
+    } else {
+      builder.add(config);
+    }
+
     return new PolywrapClient(builder.build(), { noDefaults: true });
   }
 

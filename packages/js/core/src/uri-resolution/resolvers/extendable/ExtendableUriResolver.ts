@@ -117,19 +117,22 @@ export class ExtendableUriResolver implements UriResolver {
     while ((implementationUri = implementationsToLoad.dequeue())) {
       // Use only loadeded URI resolver extensions to resolve the implementation URI
       // If successful, it is added to the list of loaded implementations
-      const newClient = client.reconfigure({
-        uriResolvers: [
-          ...bootstrapUriResolvers,
-          ...loadedImplementations.map(
-            (x) =>
-              new UriResolverWrapper(
-                new Uri(x),
-                this._createWrapper,
-                this._deserializeOptions
-              )
-          ),
-        ],
-      });
+      const uriResolvers = [
+        ...bootstrapUriResolvers,
+        ...loadedImplementations.map(
+          (x) =>
+            new UriResolverWrapper(
+              new Uri(x),
+              this._createWrapper,
+              this._deserializeOptions
+            )
+        ),
+      ];
+      const newClient = client.reconfigure(
+        { uriResolvers },
+        { override: true }
+      );
+
       const { wrapper } = await newClient.resolveUri(implementationUri);
 
       if (!wrapper) {

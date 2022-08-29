@@ -23,6 +23,12 @@ export interface ClientConfig<TUri extends Uri | string = string> {
   wrapperCache?: WrapperCache;
 }
 
+export interface ReconfigureOptions {
+  // Override existing configuration properties
+  // with config properties passed in by caller
+  override?: boolean;
+}
+
 export interface GetManifestOptions {
   noValidate?: boolean;
 }
@@ -41,7 +47,10 @@ export interface Client
     QueryHandler,
     SubscriptionHandler,
     UriResolverHandler {
-  reconfigure(config: Partial<ClientConfig<string | Uri>>): Client;
+  reconfigure(
+    config: Partial<ClientConfig<string | Uri>>,
+    options: ReconfigureOptions
+  ): Client;
 
   getRedirects(): readonly UriRedirect<Uri>[];
 

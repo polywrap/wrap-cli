@@ -216,7 +216,7 @@ describe("resolveUri", () => {
     expect(result.error).toBeFalsy();
   });
 
-  it("can resolve an URI resolver extension wrapper", async () => {
+  it.only("can resolve an URI resolver extension wrapper", async () => {
     const config = new ClientConfigBuilder()
       .addInterfaceImplementation(
         coreInterfaceUris.uriResolver,
@@ -225,12 +225,16 @@ describe("resolveUri", () => {
       .addDefaults()
       .build();
 
+    console.log("HERERE");
+
     const client = new PolywrapClient(config, { noDefaults: true });
 
     const sourceUri = new Uri(`simple/${wrapperPath}/build`);
     const redirectedUri = wrapperUri;
 
+    console.log("NOW HERE");
     const result = await client.resolveUri(sourceUri);
+    console.log("AFTER");
     expect(result.uriHistory.stack).toEqual([
       {
         uriResolver: "RedirectsResolver",
