@@ -15,7 +15,7 @@ jest.setTimeout(200000);
 
 const HELP = `Usage: polywrap run|r [options] <workflow>
 
-Runs workflow script
+Runs Workflows
 
 Arguments:
   workflow                              Path to workflow script
