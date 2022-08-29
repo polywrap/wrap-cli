@@ -23,7 +23,8 @@
     "@polywrap/core-js": "0.4.1",
     "@polywrap/msgpack-js": "0.4.1",
     "@polywrap/wrap-manifest-types-js": "0.4.1",
-    "@polywrap/asyncify-js": "0.4.1"
+    "@polywrap/asyncify-js": "0.4.1",
+    "@polywrap/tracing-js": "0.4.1"
   },
   "devDependencies": {
     "@polywrap/os-js": "0.4.1",

@@ -6,7 +6,6 @@ import {
   Env,
 } from "@polywrap/core-js";
 import { WasmWrapper } from "@polywrap/wasm-js";
-
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
