@@ -1,4 +1,9 @@
-import { Uri, Client, WrapperCache, executeMaybeAsyncFunction } from "../../../types";
+import {
+  Uri,
+  Client,
+  WrapperCache,
+  executeMaybeAsyncFunction,
+} from "../../../types";
 import { UriResolver, UriResolutionResult } from "../../core";
 
 export class CacheResolver implements UriResolver {
@@ -11,10 +16,7 @@ export class CacheResolver implements UriResolver {
     client: Client,
     cache: WrapperCache
   ): Promise<UriResolutionResult> {
-    const wrapper = await executeMaybeAsyncFunction(
-      cache.get,
-      uri
-    );
+    const wrapper = await executeMaybeAsyncFunction(cache.get, uri);
 
     return Promise.resolve({
       uri: uri,
