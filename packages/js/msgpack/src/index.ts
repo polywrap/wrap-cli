@@ -1,10 +1,12 @@
-import {
-  Encoder,
-  Decoder,
-  ExtensionCodec,
-  encode,
-  decode,
-} from "@msgpack/msgpack";
+import { Encoder, Decoder, ExtensionCodec } from "@msgpack/msgpack";
+
+export function isBuffer(maybeBuf: unknown): maybeBuf is BufferSource {
+  if (maybeBuf instanceof ArrayBuffer || ArrayBuffer.isView(maybeBuf)) {
+    return true;
+  } else {
+    return false;
+  }
+}
 
 enum ExtensionTypes {
   // must be in range 0-127
@@ -20,16 +22,23 @@ extensionCodec.register({
     if (object instanceof Map) {
       const optimized: Record<string | number, unknown> = {};
       for (const [key, value] of object) {
-        optimized[key] = value;
+        optimized[key] = msgpackEncode(value);
       }
-      return encode(optimized);
+      return msgpackEncode(optimized);
     } else {
       return null;
     }
   },
   decode: (data: Uint8Array) => {
-    const map = decode(data) as Record<string | number, unknown>;
-    return new Map(Object.entries(map));
+    const obj = msgpackDecode(data) as Record<string | number, unknown>;
+    const map = new Map();
+
+    for (const [key, value] of Object.entries(obj)) {
+      if (isBuffer(value)) {
+        map.set(key, msgpackDecode(value));
+      }
+    }
+    return map;
   },
 });
 

@@ -32,4 +32,17 @@ describe("msgpack", () => {
     expect(decoded).toEqual(customMap);
   });
 
+  it("Should encode and decode nested map, returning the same map", () => {
+    const customMap: Map<string, Map<string, string>> = new Map()
+    // @ts-ignore
+    customMap.set("firstKey", new Map([["one", "1"]]));
+    customMap.set("secondKey", new Map([["second", "2"]]));
+
+    const encoded = msgpackEncode(customMap)
+    // [199, 43, 1] are being added because of the map structure
+    expect(encoded).toEqual(Uint8Array.from([ ...expectedArrayLike]))
+    const decoded = msgpackDecode(encoded)
+    expect(decoded).toEqual(customMap);
+  });
+
 });
