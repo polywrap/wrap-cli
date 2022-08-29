@@ -142,14 +142,14 @@ export class Compiler {
   }
 
   private async _buildModules(): Promise<void> {
-    const { outputDir, project } = this._config;
+    const { outputDir } = this._config;
 
     if (await this._isInterface()) {
       throw Error(intlMsg.lib_compiler_cannotBuildInterfaceModules());
     }
 
     // Build the sources
-    await this._config.sourceBuildStrategy.build({ outputDir, project });
+    await this._config.sourceBuildStrategy.build();
 
     // Validate the Wasm module
     await this._validateWasmModule(outputDir);

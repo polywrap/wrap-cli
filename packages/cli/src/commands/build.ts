@@ -8,17 +8,12 @@ import {
   watchEventName,
   intlMsg,
   defaultPolywrapManifest,
-  isDockerInstalled,
-  FileLock,
   parseWasmManifestFileOption,
   parseDirOption,
   parseClientConfigOption,
-  CompilerOverrides,
 } from "../lib";
-import { DockerBuildStrategy } from "../lib/source-builders/SourceBuilder";
+import { createSourceBuildStrategy } from "../lib/source-builders/SourceBuilder";
 
-import fs from "fs";
-import { print } from "gluegun";
 import path from "path";
 import readline from "readline";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
@@ -34,6 +29,7 @@ type BuildCommandOptions = {
   clientConfig: Partial<PolywrapClientConfig>;
   watch?: boolean;
   verbose?: boolean;
+  noDocker?: boolean;
 };
 
 export const build: Command = {
@@ -58,6 +54,7 @@ export const build: Command = {
         `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
         `${intlMsg.commands_common_options_config()}`
       )
+      .option(`-n, --no-docker`, `${intlMsg.commands_build_options_n()}`)
       .option(`-w, --watch`, `${intlMsg.commands_build_options_w()}`)
       .option(`-v, --verbose`, `${intlMsg.commands_build_options_v()}`)
       .action(async (options) => {
@@ -89,48 +86,18 @@ async function validateManifestModules(polywrapManifest: PolywrapManifest) {
   }
 }
 
-async function getDockerImageCompilerOverrides(
-  polywrapManifest: PolywrapManifest,
-  sourceBuildStrategy: DockerBuildStrategy
-) {
-  let compilerOverrides: CompilerOverrides | undefined;
-
-  // Allow the build-image to validate the manifest & override functionality
-  if (sourceBuildStrategy instanceof DockerBuildStrategy) {
-    const buildImageDir = `${__dirname}/defaults/build-images/${polywrapManifest.project.type}`;
-    const buildImageEntryFile = path.join(buildImageDir, "index.ts");
-
-    if (fs.existsSync(buildImageEntryFile)) {
-      const module = await import(buildImageDir);
-
-      // Get any compiler overrides for the given build-image
-      if (module.getCompilerOverrides) {
-        compilerOverrides = module.getCompilerOverrides() as CompilerOverrides;
-      }
-
-      if (compilerOverrides) {
-        // Validate the manifest for the given build-image
-        if (compilerOverrides.validateManifest) {
-          compilerOverrides.validateManifest(polywrapManifest);
-        }
-      }
-    }
-  }
-
-  return compilerOverrides;
-}
-
 async function run(options: BuildCommandOptions) {
-  const { watch, verbose, manifestFile, outputDir, clientConfig } = options;
+  const {
+    watch,
+    verbose,
+    manifestFile,
+    outputDir,
+    clientConfig,
+    noDocker,
+  } = options;
 
   // Get Client
   const client = new PolywrapClient(clientConfig);
-
-  // Ensure docker is installed
-  if (!isDockerInstalled()) {
-    console.log(intlMsg.lib_docker_noInstall());
-    return;
-  }
 
   const project = new PolywrapProject({
     rootDir: path.dirname(manifestFile),
@@ -142,12 +109,13 @@ async function run(options: BuildCommandOptions) {
   const polywrapManifest = await project.getManifest();
   await validateManifestModules(polywrapManifest);
 
-  const dockerLock = new FileLock(
-    project.getCachePath("build/DOCKER_LOCK"),
-    print.error
+  const buildStrategy = createSourceBuildStrategy(
+    noDocker ? "local" : "docker",
+    {
+      project,
+      outputDir,
+    }
   );
-
-  const dockerBuildStrategy = new DockerBuildStrategy();
 
   const schemaComposer = new SchemaComposer({
     project,
@@ -159,21 +127,14 @@ async function run(options: BuildCommandOptions) {
     schemaComposer.reset();
 
     const abi = await schemaComposer.getComposedAbis();
-    let compilerOverrides: CompilerOverrides | undefined = undefined;
-
-    if (dockerBuildStrategy instanceof DockerBuildStrategy) {
-      compilerOverrides = await getDockerImageCompilerOverrides(
-        polywrapManifest,
-        dockerBuildStrategy
-      );
-    }
+    const compilerOverrides = await buildStrategy.getCompilerOverrides();
 
     const compiler = new Compiler({
       project,
       outputDir,
       compilerOverrides,
       abi,
-      sourceBuildStrategy: dockerBuildStrategy,
+      sourceBuildStrategy: buildStrategy,
     });
 
     const result = await compiler.compile();
@@ -186,9 +147,7 @@ async function run(options: BuildCommandOptions) {
   };
 
   if (!watch) {
-    await dockerLock.request();
     const result = await execute();
-    await dockerLock.release();
 
     if (!result) {
       process.exitCode = 1;
@@ -196,9 +155,7 @@ async function run(options: BuildCommandOptions) {
     }
   } else {
     // Execute
-    await dockerLock.request();
     await execute();
-    await dockerLock.release();
 
     const keyPressListener = () => {
       // Watch for escape key presses
@@ -214,7 +171,6 @@ async function run(options: BuildCommandOptions) {
           (key.name == "c" && key.ctrl)
         ) {
           await watcher.stop();
-          await dockerLock.release();
           process.kill(process.pid, "SIGINT");
         }
       });
@@ -241,9 +197,7 @@ async function run(options: BuildCommandOptions) {
         }
 
         // Execute the build
-        await dockerLock.request();
         await execute();
-        await dockerLock.release();
 
         // Process key presses
         keyPressListener();
