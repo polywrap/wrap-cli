@@ -28,8 +28,6 @@ import {
   IUriResolver,
   GetUriResolverOptions,
   Contextualized,
-  JobRunner,
-  RunOptions,
   UriResolutionResponse,
   GetManifestOptions,
   initWrapper,
@@ -370,22 +368,6 @@ export class PolywrapClient implements Client {
     }
 
     return { error };
-  }
-
-  @Tracer.traceMethod("PolywrapClient: run", TracingLevel.High)
-  public async run<
-    TData extends Record<string, unknown> = Record<string, unknown>,
-    TUri extends Uri | string = string
-  >(options: RunOptions<TData, TUri>): Promise<void> {
-    const { workflow, onExecution } = options;
-    const ids = options.ids ? options.ids : Object.keys(workflow.jobs);
-    const jobRunner = new JobRunner<TData, TUri>(this, onExecution);
-
-    await Promise.all(
-      ids.map((id) =>
-        jobRunner.run({ relativeId: id, parentId: "", jobs: workflow.jobs })
-      )
-    );
   }
 
   @Tracer.traceMethod("PolywrapClient: subscribe")
@@ -753,11 +735,6 @@ const contextualizeClient = (
           options: TryResolveUriOptions<TUri, ClientConfig>
         ): Promise<UriResolutionResponse<unknown>> => {
           return client.tryResolveUri({ ...options, contextId });
-        },
-        run: <TData extends Record<string, unknown> = Record<string, unknown>>(
-          options: RunOptions<TData>
-        ): Promise<void> => {
-          return client.run({ ...options, contextId });
         },
       }
     : client;

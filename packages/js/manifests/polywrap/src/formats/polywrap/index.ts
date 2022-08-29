@@ -6,10 +6,10 @@
  */
 
 import {
-  PolywrapManifest as PolywrapManifest_0_1_0
+  PolywrapManifest as PolywrapManifest_0_1_0,
 } from "./0.1.0";
 import {
-  PolywrapManifest as PolywrapManifest_0_2_0
+  PolywrapManifest as PolywrapManifest_0_2_0,
 } from "./0.2.0";
 
 export {
@@ -27,6 +27,8 @@ export enum PolywrapManifestFormats {
 export type AnyPolywrapManifest =
   | PolywrapManifest_0_1_0
   | PolywrapManifest_0_2_0
+
+
 
 export type PolywrapManifest = PolywrapManifest_0_2_0;
 

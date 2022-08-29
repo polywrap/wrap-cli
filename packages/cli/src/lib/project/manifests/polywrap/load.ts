@@ -17,9 +17,11 @@ import {
   deserializeDeployManifest,
   InfraManifest,
   deserializeInfraManifest,
+  PolywrapWorkflow,
 } from "@polywrap/polywrap-manifest-types-js";
 import { Schema as JsonSchema } from "jsonschema";
 import path from "path";
+import yaml from "js-yaml";
 import fs from "fs";
 
 export const defaultPolywrapManifest = ["polywrap.yaml", "polywrap.yml"];
@@ -283,4 +285,27 @@ export async function loadInfraManifest(
       }
     )) as InfraManifest;
   }
+}
+
+export function loadWorkflowManifest(manifestPath: string): PolywrapWorkflow {
+  function getParser(path: string) {
+    return path.endsWith(".yaml") || path.endsWith(".yml")
+      ? yaml.load
+      : JSON.parse;
+  }
+
+  const manifest = fs.readFileSync(manifestPath, "utf-8");
+
+  if (!manifest) {
+    const noLoadMessage = intlMsg.lib_helpers_manifest_unableToLoad({
+      path: `${manifestPath}`,
+    });
+    throw Error(noLoadMessage);
+  }
+
+  const workflow: PolywrapWorkflow = getParser(manifestPath)(
+    fs.readFileSync(manifestPath).toString()
+  );
+
+  return workflow;
 }
