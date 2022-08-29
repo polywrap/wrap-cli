@@ -4,6 +4,7 @@ import {
   WrapperCache,
   getImplementations,
   coreInterfaceUris,
+  executeMaybeAsyncFunction
 } from "../../..";
 import { CreateWrapperFunc } from "./types/CreateWrapperFunc";
 import { UriResolutionResult } from "../../core/types/UriResolutionResult";
@@ -105,7 +106,7 @@ export class ExtendableUriResolver implements UriResolver {
     const implementationsToLoad = new Queue<Uri>();
 
     for (const implementationUri of implementationUris) {
-      if (!await cache.has(implementationUri)) {
+      if (!await executeMaybeAsyncFunction(cache.has, implementationUri)) {
         implementationsToLoad.enqueue(implementationUri);
       }
     }

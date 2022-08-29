@@ -1,8 +1,8 @@
-import { Uri, Wrapper } from ".";
+import { Uri, Wrapper, MaybeAsync } from ".";
 
 export interface WrapperCache {
-  get(uri: Uri): Promise<Wrapper | undefined>;
-  has(uri: Uri): Promise<boolean>;
-  set(uris: Uri[], wrapper: Wrapper): Promise<void>;
-  set(uri: Uri, wrapper: Wrapper): Promise<void>;
+  get(uri: Uri): MaybeAsync<Wrapper | undefined>;
+  has(uri: Uri): MaybeAsync<boolean>;
+  set(uris: Uri[], wrapper: Wrapper): MaybeAsync<void>;
+  set(uri: Uri, wrapper: Wrapper): MaybeAsync<void>;
 }
