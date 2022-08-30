@@ -7,6 +7,7 @@ import {
   getImplementations,
   coreInterfaceUris,
   UriResolutionResponse,
+  IUriResolutionResponse,
 } from "@polywrap/core-js";
 import { DeserializeManifestOptions } from "@polywrap/wrap-manifest-types-js";
 import { Result, ResultOk } from "@polywrap/result";
@@ -15,7 +16,7 @@ import {
   UriResolverAggregatorBase,
 } from "@polywrap/uri-resolvers-js";
 
-export class ExtendableUriResolver extends UriResolverAggregatorBase {
+export class ExtendableUriResolver extends UriResolverAggregatorBase<unknown> {
   constructor(
     options: { endOnRedirect: boolean },
     private _deserializeOptions?: DeserializeManifestOptions
@@ -50,7 +51,7 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase {
   async tryResolveUri(
     uri: Uri,
     client: Client
-  ): Promise<UriResolutionResponse<InfiniteLoopError>> {
+  ): Promise<IUriResolutionResponse<InfiniteLoopError | unknown>> {
     const result = await this.getUriResolvers(uri, client);
     const resolvers = (result as {
       ok: true;
