@@ -1,7 +1,6 @@
 import { UriResolverWrapper } from "./UriResolverWrapper";
 
 import {
-  IUriResolutionResponse,
   Uri,
   Client,
   IUriResolver,
@@ -16,19 +15,7 @@ import {
   UriResolverAggregatorBase,
 } from "@polywrap/uri-resolvers-js";
 
-export type ExtendableUriResolverResponse = IUriResolutionResponse<
-  LoadResolverExtensionsError | InfiniteLoopError
->;
-
-export class LoadResolverExtensionsError {
-  readonly message: string;
-
-  constructor(public readonly failedUriResolvers: string[]) {
-    this.message = `Could not load the following URI Resolver implementations: ${failedUriResolvers}`;
-  }
-}
-
-export class ExtendableUriResolver extends UriResolverAggregatorBase<LoadResolverExtensionsError> {
+export class ExtendableUriResolver extends UriResolverAggregatorBase {
   constructor(
     options: { endOnRedirect: boolean },
     private _deserializeOptions?: DeserializeManifestOptions
@@ -43,15 +30,16 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<LoadResolve
   async getUriResolvers(
     uri: Uri,
     client: Client
-  ): Promise<Result<IUriResolver<unknown>[], LoadResolverExtensionsError>> {
+  ): Promise<Result<IUriResolver<unknown>[]>> {
     const uriResolverImpls = getImplementations(
       coreInterfaceUris.uriResolver,
       client.getInterfaces({}),
       client.getRedirects({})
     );
 
-    const resolvers: UriResolverWrapper[] = await this._createUriResolverWrappers(
-      uriResolverImpls
+    const resolvers: UriResolverWrapper[] = uriResolverImpls.map(
+      (implementationUri) =>
+        new UriResolverWrapper(implementationUri, this._deserializeOptions)
     );
 
     return ResultOk(resolvers);
@@ -62,14 +50,12 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<LoadResolve
   async tryResolveUri(
     uri: Uri,
     client: Client
-  ): Promise<ExtendableUriResolverResponse> {
+  ): Promise<UriResolutionResponse<InfiniteLoopError>> {
     const result = await this.getUriResolvers(uri, client);
-
-    if (!result.ok) {
-      return UriResolutionResponse.err(result.error);
-    }
-
-    const resolvers = result.value as UriResolverWrapper[];
+    const resolvers = (result as {
+      ok: true;
+      value: UriResolverWrapper[];
+    }).value;
 
     this.resolverIndex++;
 
@@ -93,22 +79,5 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<LoadResolve
       this.resolverIndex = -1;
       throw ex;
     }
-  }
-
-  private async _createUriResolverWrappers(
-    implementationUris: Uri[]
-  ): Promise<UriResolverWrapper[]> {
-    const uriResolverImpls: UriResolverWrapper[] = [];
-
-    for (const implementationUri of implementationUris) {
-      const uriResolverImpl = new UriResolverWrapper(
-        implementationUri,
-        this._deserializeOptions
-      );
-
-      uriResolverImpls.push(uriResolverImpl);
-    }
-
-    return uriResolverImpls;
   }
 }
