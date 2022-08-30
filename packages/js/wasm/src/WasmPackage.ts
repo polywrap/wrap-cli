@@ -24,7 +24,7 @@ export class WasmPackage implements IWasmPackage {
   async getManifest(options?: GetManifestOptions): Promise<WrapManifest> {
     const wrapManifestPath = "wrap.wasm";
 
-    const wrapManifest = await this.fileReader.getFile(wrapManifestPath);
+    const wrapManifest = await this.fileReader.readFile(wrapManifestPath);
 
     if (!wrapManifest) {
       throw Error(`Package manifest not found`);
@@ -36,7 +36,7 @@ export class WasmPackage implements IWasmPackage {
   async getWasmModule(): Promise<Uint8Array> {
     const wrapModulePath = "wrap.wasm";
 
-    const wasmModule = await this.fileReader.getFile(wrapModulePath);
+    const wasmModule = await this.fileReader.readFile(wrapModulePath);
 
     if (!wasmModule) {
       throw Error(`Wrapper does not contain a wasm module`);

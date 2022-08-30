@@ -16,7 +16,7 @@ export class UriResolverExtensionFileReader implements IFileReader {
     private readonly client: Client
   ) {}
 
-  async getFile(filePath: string): Promise<Uint8Array | undefined> {
+  async readFile(filePath: string): Promise<Uint8Array | undefined> {
     const { data, error } = await UriResolverInterface.module.getFile(
       {
         invoke: <TData = unknown, TUri extends Uri | string = string>(

@@ -1,3 +1,3 @@
 export interface IFileReader {
-  getFile(filePath: string): Promise<Uint8Array | undefined>;
+  readFile(filePath: string): Promise<Uint8Array | undefined>;
 }

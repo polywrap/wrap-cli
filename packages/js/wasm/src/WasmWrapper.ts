@@ -74,7 +74,7 @@ export class WasmWrapper implements Wrapper {
   @Tracer.traceMethod("WasmWrapper: getFile")
   public async getFile(options: GetFileOptions): Promise<Uint8Array | string> {
     const { path, encoding } = options;
-    const data = await this._fileReader.getFile(path);
+    const data = await this._fileReader.readFile(path);
 
     // If nothing is returned, the file was not found
     if (!data) {
@@ -105,7 +105,9 @@ export class WasmWrapper implements Wrapper {
 
     const moduleManifest = "wrap.info";
 
-    const data = (await this._fileReader.getFile(moduleManifest)) as Uint8Array;
+    const data = (await this._fileReader.readFile(
+      moduleManifest
+    )) as Uint8Array;
 
     if (!data) {
       throw Error(`Package manifest does not contain information`);
@@ -246,7 +248,7 @@ export class WasmWrapper implements Wrapper {
       throw Error(`Package manifest does not contain a definition for module`);
     }
 
-    const data = (await this._fileReader.getFile(wrapModule)) as Uint8Array;
+    const data = (await this._fileReader.readFile(wrapModule)) as Uint8Array;
 
     this._wasm = data;
     return data;
