@@ -106,7 +106,11 @@ export class ExtendableUriResolver implements UriResolver {
     const implementationsToLoad = new Queue<Uri>();
 
     for (const implementationUri of implementationUris) {
-      if (!(await executeMaybeAsyncFunction(cache.has, implementationUri))) {
+      if (
+        !(await executeMaybeAsyncFunction<boolean>(
+          cache.has.bind(cache, implementationUri)
+        ))
+      ) {
         implementationsToLoad.enqueue(implementationUri);
       }
     }

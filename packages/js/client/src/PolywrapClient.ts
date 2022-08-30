@@ -482,7 +482,9 @@ export class PolywrapClient implements Client {
     // Update cache for all URIs in the chain
     if (cacheWrite && wrapper) {
       const uris = uriHistory.getResolutionPath().stack.map((x) => x.sourceUri);
-      await executeMaybeAsyncFunction(this._wrapperCache.set, uris, wrapper);
+      await executeMaybeAsyncFunction(
+        this._wrapperCache.set.bind(this._wrapperCache, uris, wrapper)
+      );
     }
 
     if (shouldClearContext) {
