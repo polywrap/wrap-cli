@@ -5,8 +5,6 @@ import {
   PluginPackage,
   Env,
 } from "@polywrap/core-js";
-import { WasmWrapper } from "@polywrap/wasm-js";
-import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
 import {
@@ -15,7 +13,6 @@ import {
   Connections,
 } from "@polywrap/ethereum-plugin-js";
 import {
-  ExtendableUriResolver,
   LegacyPluginsResolver,
   LegacyRedirectsResolver,
   CacheableResolver,
@@ -23,6 +20,7 @@ import {
   IWrapperCache,
   WrapperCache,
 } from "@polywrap/uri-resolvers-js";
+import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
 import { graphNodePlugin } from "@polywrap/graph-node-plugin-js";
 import { httpPlugin } from "@polywrap/http-plugin-js";
@@ -125,17 +123,7 @@ export const getDefaultClientConfig = (
             environment: Env<Uri> | undefined
           ) => new PluginWrapper(uri, plugin, environment)
         ),
-        new ExtendableUriResolver(
-          { endOnRedirect: true },
-          (
-            uri: Uri,
-            manifest: WrapManifest,
-            uriResolver: string,
-            environment: Env<Uri> | undefined
-          ) => {
-            return new WasmWrapper(uri, manifest, uriResolver, environment);
-          }
-        ),
+        new ExtendableUriResolver({ endOnRedirect: true }),
       ]
     ),
   };
