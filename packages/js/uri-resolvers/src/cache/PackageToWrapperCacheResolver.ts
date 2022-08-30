@@ -25,7 +25,7 @@ export class PackageToWrapperCacheResolver implements ICacheResolver<unknown> {
     _: Client
   ): Promise<IUriResolutionResponse> {
     const wrapper = await executeMaybeAsyncFunction<Wrapper | undefined>(
-      this.cache.get.bind(this.cache, [uri])
+      this.cache.get.bind(this.cache, uri)
     );
 
     if (wrapper) {
@@ -43,7 +43,7 @@ export class PackageToWrapperCacheResolver implements ICacheResolver<unknown> {
     if (response.result.ok) {
       if (response.result.value.type === "wrapper") {
         await executeMaybeAsyncFunction<Wrapper | undefined>(
-          this.cache.set.bind(this.cache, [uri, response.result.value.wrapper])
+          this.cache.set.bind(this.cache, uri, response.result.value.wrapper)
         );
       } else if (response.result.value.type === "package") {
         const uriHistory: Uri[] = !response.history
@@ -55,7 +55,7 @@ export class PackageToWrapperCacheResolver implements ICacheResolver<unknown> {
           uriHistory
         );
         await executeMaybeAsyncFunction<Wrapper | undefined>(
-          this.cache.set.bind(this.cache, [uri, wrapper])
+          this.cache.set.bind(this.cache, uri, wrapper)
         );
 
         return UriResolutionResponse.ok(wrapper);
