@@ -1,5 +1,3 @@
-import { getEnvFromUriHistory } from "../getEnvFromUriHistory";
-
 import {
   Wrapper,
   Client,
@@ -12,7 +10,9 @@ import {
   UriResolutionResponse,
   IUriResolutionResponse,
   toUri,
+  getEnvFromUriHistory,
 } from "@polywrap/core-js";
+import { WrapManifest } from "@polywrap/wrap-manifest-types-js/build/formats/wrap.info/0.1";
 
 export class PluginResolver implements IUriResolver {
   pluginUri: Uri;
@@ -58,6 +58,10 @@ export class PluginWrapperPackage implements IWrapPackage {
       environment: Env<Uri> | undefined
     ) => Wrapper
   ) {}
+
+  async getManifest(): Promise<WrapManifest> {
+    return this.pluginPackage.manifest;
+  }
 
   async createWrapper(client: Client, uriHistory: Uri[]): Promise<Wrapper> {
     const env = getEnvFromUriHistory(uriHistory, client);

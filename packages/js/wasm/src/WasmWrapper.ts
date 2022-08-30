@@ -14,15 +14,14 @@ import {
   Wrapper,
   Uri,
   InvokeOptions,
-  GetFileOptions,
   Env,
-  UriResolverInterface,
   Client,
-  combinePaths,
   GetManifestOptions,
   InvocableResult,
   isBuffer,
+  GetFileOptions,
 } from "@polywrap/core-js";
+import { IFileReader } from "./IFileReader";
 
 type InvokeResultOrError =
   | { type: "InvokeResult"; invokeResult: Uint8Array }
@@ -59,7 +58,7 @@ export class WasmWrapper implements Wrapper {
   constructor(
     public readonly uri: Uri,
     private _manifest: WrapManifest,
-    private _uriResolver: string,
+    private readonly _fileReader: IFileReader,
     private _clientEnv?: Env<Uri>
   ) {
     Tracer.startSpan("WasmWrapper: constructor");
@@ -67,35 +66,15 @@ export class WasmWrapper implements Wrapper {
       uri: this.uri,
       manifest: this._manifest,
       clientEnv: this._clientEnv,
-      uriResolver: this._uriResolver,
+      fileReader: this._fileReader,
     });
     Tracer.endSpan();
   }
 
   @Tracer.traceMethod("WasmWrapper: getFile")
-  public async getFile(
-    options: GetFileOptions,
-    client: Client
-  ): Promise<Uint8Array | string> {
+  public async getFile(options: GetFileOptions): Promise<Uint8Array | string> {
     const { path, encoding } = options;
-    const { data, error } = await UriResolverInterface.module.getFile(
-      {
-        invoke: <TData = unknown, TUri extends Uri | string = string>(
-          options: InvokeOptions<TUri>
-        ): Promise<InvokeResult<TData>> => client.invoke<TData, TUri>(options),
-        invokeWrapper: <TData = unknown, TUri extends Uri | string = string>(
-          options: InvokeOptions<TUri> & { wrapper: Wrapper }
-        ): Promise<InvokeResult<TData>> =>
-          client.invokeWrapper<TData, TUri>(options),
-      },
-      // TODO: support all types of URI resolvers (cache, etc)
-      new Uri(this._uriResolver),
-      combinePaths(this.uri.path, path)
-    );
-
-    if (error) {
-      throw error;
-    }
+    const data = await this._fileReader.getFile(path);
 
     // If nothing is returned, the file was not found
     if (!data) {
@@ -119,20 +98,14 @@ export class WasmWrapper implements Wrapper {
   }
 
   @Tracer.traceMethod("WasmWrapper: getManifest")
-  public async getManifest(
-    options: GetManifestOptions,
-    client: Client
-  ): Promise<WrapManifest> {
+  public async getManifest(options: GetManifestOptions): Promise<WrapManifest> {
     if (this._info !== undefined) {
       return this._info;
     }
 
     const moduleManifest = "wrap.info";
 
-    const data = (await this.getFile(
-      { path: moduleManifest },
-      client
-    )) as Uint8Array;
+    const data = (await this._fileReader.getFile(moduleManifest)) as Uint8Array;
 
     if (!data) {
       throw Error(`Package manifest does not contain information`);
@@ -153,7 +126,7 @@ export class WasmWrapper implements Wrapper {
     try {
       const { method } = options;
       const args = options.args || {};
-      const wasm = await this._getWasmModule(client);
+      const wasm = await this._getWasmModule();
 
       const state: State = {
         invoke: {},
@@ -262,21 +235,18 @@ export class WasmWrapper implements Wrapper {
   }
 
   @Tracer.traceMethod("WasmWrapper: getWasmModule")
-  private async _getWasmModule(client: Client): Promise<Uint8Array> {
+  private async _getWasmModule(): Promise<Uint8Array> {
     if (this._wasm !== undefined) {
       return this._wasm;
     }
 
-    const moduleManifest = "wrap.wasm";
+    const wrapModule = "wrap.wasm";
 
-    if (!moduleManifest) {
+    if (!wrapModule) {
       throw Error(`Package manifest does not contain a definition for module`);
     }
 
-    const data = (await this.getFile(
-      { path: moduleManifest },
-      client
-    )) as Uint8Array;
+    const data = (await this._fileReader.getFile(wrapModule)) as Uint8Array;
 
     this._wasm = data;
     return data;
