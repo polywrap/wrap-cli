@@ -161,12 +161,11 @@ async function run(command: DocType, options: DocgenCommandOptions) {
     project,
     abi,
     customScript,
-    codegenDirAbs: docgenDir,
     omitHeader: true,
     mustacheView: { imports },
   });
 
-  if (await codeGenerator.generate()) {
+  if (await codeGenerator.generate(docgenDir)) {
     console.log(`🔥 ${intlMsg.commands_docgen_success()} 🔥`);
     process.exitCode = 0;
   } else {

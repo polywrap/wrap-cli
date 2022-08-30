@@ -28,7 +28,6 @@ import Mustache from "mustache";
 import { Abi } from "@polywrap/wrap-manifest-types-js";
 
 export interface CodeGeneratorConfig {
-  codegenDirAbs: string;
   project: Project<AnyProjectManifest>;
   abi: Abi;
   customScript?: string;
@@ -41,10 +40,10 @@ export class CodeGenerator {
 
   constructor(private _config: CodeGeneratorConfig) {}
 
-  public async generate(): Promise<boolean> {
+  public async generate(codegenDirAbs: string): Promise<boolean> {
     try {
       // Compile the Wrapper
-      await this._generateCode();
+      await this._generateCode(codegenDirAbs);
 
       return true;
     } catch (e) {
@@ -53,8 +52,43 @@ export class CodeGenerator {
     }
   }
 
-  private async _generateCode() {
-    const { project, codegenDirAbs, abi } = this._config;
+  public async generateCodeCompiler(): Promise<boolean> {
+    const { project, abi } = this._config;
+    const generationSubPath = await this._getGenerationSubpath();
+
+    // Generate the bindings
+    const binding = await project.generateSchemaBindings(
+      abi,
+      generationSubPath
+    );
+
+    // Output the bindings
+    writeDirectorySync(binding.outputDirAbs, binding.output);
+
+    return true;
+  }
+
+  private async _getGenerationSubpath(): Promise<string | undefined> {
+    const { project } = this._config;
+    const manifest = await project.getManifest();
+    const manifestLanguage = await project.getManifestLanguage();
+
+    const module =
+      "module" in manifest.source ? manifest.source.module : undefined;
+
+    switch (manifestLanguage) {
+      case "wasm/rust":
+        if (module && module.indexOf("Cargo.toml") === -1) {
+          throw Error(intlMsg.lib_wasm_rust_invalidModule({ path: module }));
+        }
+        return "src/wrap";
+      default:
+        return undefined;
+    }
+  }
+
+  private async _generateCode(codegenDirAbs: string) {
+    const { project, abi } = this._config;
 
     const run = async (spinner?: Ora) => {
       const language = await project.getManifestLanguage();

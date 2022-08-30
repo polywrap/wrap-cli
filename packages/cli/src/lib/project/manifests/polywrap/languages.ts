@@ -1,4 +1,5 @@
 import { intlMsg } from "../../../intl";
+import { PolywrapProject } from "../../PolywrapProject";
 
 import { BindLanguage } from "@polywrap/schema-bind";
 
@@ -35,5 +36,23 @@ export function polywrapManifestLanguageToBindLanguage(
           supported: Object.keys(polywrapManifestLanguages).join(", "),
         })
       );
+  }
+}
+
+export async function getGenerationSubpath(
+  project: PolywrapProject
+): Promise<string | undefined> {
+  const manifest = await project.getManifest();
+  const manifestLanguage = await project.getManifestLanguage();
+  const module = manifest.source.module;
+
+  switch (manifestLanguage) {
+    case "wasm/rust":
+      if (module && module.indexOf("Cargo.toml") === -1) {
+        throw Error(intlMsg.lib_wasm_rust_invalidModule({ path: module }));
+      }
+      return "src/wrap";
+    default:
+      return undefined;
   }
 }

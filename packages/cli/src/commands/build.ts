@@ -11,8 +11,9 @@ import {
   parseWasmManifestFileOption,
   parseDirOption,
   parseClientConfigOption,
+  CodeGenerator,
 } from "../lib";
-import { createSourceBuildStrategy } from "../lib/source-builders/SourceBuilder";
+import { createSourceBuildStrategy } from "../lib/source-builders";
 
 import path from "path";
 import readline from "readline";
@@ -127,14 +128,17 @@ async function run(options: BuildCommandOptions) {
     schemaComposer.reset();
 
     const abi = await schemaComposer.getComposedAbis();
-    const compilerOverrides = await buildStrategy.getCompilerOverrides();
+    const codeGenerator = new CodeGenerator({
+      project,
+      abi,
+    });
 
     const compiler = new Compiler({
       project,
       outputDir,
-      compilerOverrides,
       abi,
       sourceBuildStrategy: buildStrategy,
+      codeGenerator,
     });
 
     const result = await compiler.compile();

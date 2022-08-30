@@ -80,10 +80,9 @@ async function run(options: AppCommandOptions) {
   const codeGenerator = new CodeGenerator({
     project,
     abi,
-    codegenDirAbs: codegenDir,
   });
 
-  if (await codeGenerator.generate()) {
+  if (await codeGenerator.generate(codegenDir)) {
     console.log(`🔥 ${intlMsg.commands_app_success()} 🔥`);
     process.exitCode = 0;
   } else {

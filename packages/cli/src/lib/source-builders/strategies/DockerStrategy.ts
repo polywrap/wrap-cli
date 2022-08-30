@@ -8,12 +8,10 @@ import {
   isDockerInstalled,
 } from "../../system";
 import { PolywrapProject } from "../../project";
-import { CompilerOverrides } from "../../Compiler";
 import { SourceBuildArgs, SourceBuildStrategy } from "../SourceBuilder";
 import { intlMsg } from "../../intl";
 
 import path from "path";
-import fs from "fs";
 
 type BuildImageId = string;
 
@@ -33,31 +31,6 @@ export class DockerBuildStrategy extends SourceBuildStrategy<BuildImageId> {
         throw new Error(msg);
       }
     );
-  }
-
-  public async getCompilerOverrides(): Promise<CompilerOverrides | undefined> {
-    let compilerOverrides: CompilerOverrides | undefined;
-    const manifest = await this.project.getManifest();
-    const buildImageDir = `${__dirname}/defaults/build-images/${manifest.project.type}`;
-    const buildImageEntryFile = path.join(buildImageDir, "index.ts");
-
-    if (fs.existsSync(buildImageEntryFile)) {
-      const module = await import(buildImageDir);
-
-      // Get any compiler overrides for the given build-image
-      if (module.getCompilerOverrides) {
-        compilerOverrides = module.getCompilerOverrides() as CompilerOverrides;
-      }
-
-      if (compilerOverrides) {
-        // Validate the manifest for the given build-image
-        if (compilerOverrides.validateManifest) {
-          compilerOverrides.validateManifest(manifest);
-        }
-      }
-    }
-
-    return compilerOverrides;
   }
 
   public async build(): Promise<BuildImageId> {

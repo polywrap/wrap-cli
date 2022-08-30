@@ -95,10 +95,9 @@ async function run(options: PluginCommandOptions) {
   const codeGenerator = new CodeGenerator({
     project,
     abi,
-    codegenDirAbs: codegenDir,
   });
 
-  const result = await codeGenerator.generate();
+  const result = await codeGenerator.generate(codegenDir);
   process.exitCode = result ? 0 : 1;
 
   // Output the built manifest

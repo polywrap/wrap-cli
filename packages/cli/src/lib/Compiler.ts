@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import {
+  CodeGenerator,
   displayPath,
   generateWrapFile,
   intlMsg,
@@ -13,38 +14,32 @@ import {
 } from "./";
 import { SourceBuildStrategy } from "./source-builders/SourceBuilder";
 
-import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 import { WasmWrapper, WrapImports } from "@polywrap/client-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
-import { normalizePath, writeDirectorySync } from "@polywrap/os-js";
+import { normalizePath } from "@polywrap/os-js";
 import * as gluegun from "gluegun";
 import fs from "fs";
 import path from "path";
 import { Abi } from "@polywrap/schema-parse";
 
-export interface CompilerOverrides {
-  validateManifest: (manifest: PolywrapManifest) => void;
-  generationSubPath: string;
-}
-
 export interface CompilerConfig {
   outputDir: string;
   project: PolywrapProject;
+  codeGenerator: CodeGenerator;
   sourceBuildStrategy: SourceBuildStrategy;
   abi: Abi;
-  compilerOverrides?: CompilerOverrides;
 }
 
 export class Compiler {
   constructor(private _config: CompilerConfig) {}
 
   public async codegen(): Promise<boolean> {
-    const { project } = this._config;
+    const { project, codeGenerator } = this._config;
 
     const run = async (): Promise<void> => {
       if (!(await this._isInterface())) {
         // Generate the bindings
-        await this._generateCode();
+        await codeGenerator.generateCodeCompiler();
       }
     };
 
@@ -75,7 +70,7 @@ export class Compiler {
   }
 
   public async compile(): Promise<boolean> {
-    const { project } = this._config;
+    const { project, codeGenerator } = this._config;
 
     const run = async (): Promise<void> => {
       // Init & clean output directory
@@ -86,7 +81,7 @@ export class Compiler {
 
       if (!(await this._isInterface())) {
         // Generate the bindings
-        await this._generateCode();
+        await codeGenerator.generateCodeCompiler();
 
         // Compile the Wrapper
         await this._buildModules();
@@ -126,19 +121,6 @@ export class Compiler {
     const { project } = this._config;
     const manifest = await project.getManifest();
     return manifest.project.type === "interface";
-  }
-
-  private async _generateCode(): Promise<string[]> {
-    const { project, abi, compilerOverrides } = this._config;
-
-    // Generate the bindings
-    const binding = await project.generateSchemaBindings(
-      abi,
-      compilerOverrides?.generationSubPath
-    );
-
-    // Output the bindings
-    return writeDirectorySync(binding.outputDirAbs, binding.output);
   }
 
   private async _buildModules(): Promise<void> {

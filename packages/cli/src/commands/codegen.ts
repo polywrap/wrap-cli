@@ -1,7 +1,6 @@
 import { Command, Program } from "./types";
 import {
   CodeGenerator,
-  Compiler,
   PolywrapProject,
   SchemaComposer,
   intlMsg,
@@ -11,10 +10,8 @@ import {
   parseWasmManifestFileOption,
   parseClientConfigOption,
 } from "../lib";
-import { DockerBuildStrategy } from "../lib/source-builders/SourceBuilder";
 
 import path from "path";
-import { filesystem } from "gluegun";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 
 const defaultCodegenDir = "./wrap";
@@ -83,30 +80,17 @@ async function run(options: CodegenCommandOptions) {
     client,
   });
 
-  const dockerBuildStrategy = new DockerBuildStrategy();
-
   const abi = await schemaComposer.getComposedAbis();
 
-  let result = false;
-  if (script) {
-    const codeGenerator = new CodeGenerator({
-      project,
-      abi,
-      customScript: script,
-      codegenDirAbs: codegenDir,
-    });
+  const codeGenerator = new CodeGenerator({
+    project,
+    abi,
+    customScript: script,
+  });
 
-    result = await codeGenerator.generate();
-  } else {
-    const compiler = new Compiler({
-      project,
-      outputDir: filesystem.path("build"),
-      abi,
-      sourceBuildStrategy: dockerBuildStrategy,
-    });
-
-    result = await compiler.codegen();
-  }
+  const result = script
+    ? await codeGenerator.generate(codegenDir)
+    : await codeGenerator.generateCodeCompiler();
 
   if (result) {
     console.log(`🔥 ${intlMsg.commands_codegen_success()} 🔥`);
