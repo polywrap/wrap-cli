@@ -1,4 +1,4 @@
-import { Uri, Client, Env } from "@polywrap/core-js";
+import { Uri, Client, Env } from "../types";
 
 export const getEnvFromUriHistory = (
   uriHistory: Uri[],
