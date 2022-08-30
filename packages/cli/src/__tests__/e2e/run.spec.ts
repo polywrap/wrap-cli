@@ -13,18 +13,15 @@ import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 
 jest.setTimeout(200000);
 
-const HELP = `Usage: polywrap run|r [options] <workflow>
+const HELP = `Usage: polywrap run|r [options]
 
 Runs workflow script
 
-Arguments:
-  workflow                              Path to workflow script
-
 Options:
+  -m, --manifest  <manifest>            Workflow Manifest path (default:
+                                        "polywrap.test.yaml")
   -c, --client-config <config-path>     Add custom configuration to the
                                         PolywrapClient
-  -v, --validate-script <cue-file>      Validate the output of the workflow
-                                        jobs
   -o, --output-file <output-file-path>  Output file path for the workflow
                                         result
   -j, --jobs <jobs...>                  Specify ids of jobs that you want to
@@ -47,21 +44,8 @@ describe("sanity tests for workflow command", () => {
     expect(clearStyle(output)).toEqual(HELP);
   });
 
-  it("Should throw error for missing workflow-string", async () => {
-    const { exitCode, stdout, stderr } = await runCLI({
-      args: ["run"],
-      cwd: testCaseRoot,
-      cli: polywrapCli,
-    });
-
-    expect(exitCode).toEqual(1);
-    expect(stderr).toContain("error: missing required argument 'workflow'");
-    expect(stdout).toEqual(``);
-  });
-
   describe("missing option arguments", () => {
     const missingOptionArgs = {
-      "--validate-script": "-v, --validate-script <cue-file>",
       "--client-config": "-c, --client-config <config-path>",
       "--output-file": "-o, --output-file <output-file-path>",
       "--jobs": "-j, --jobs <jobs...>",
@@ -109,12 +93,11 @@ describe("e2e tests for run command", () => {
 
   it("Should successfully return response: using json workflow", async () => {
     const { exitCode: code, stdout, stderr } = await runCLI({
-      args: ["run", "./workflows/e2e.json", "-c", "./workflows/config.ts"],
+      args: ["run", "-c", "./client-config.ts", "-m", "./polywrap.test.json"],
       cwd: testCaseRoot,
       cli: polywrapCli,
     });
 
-    expect(code).toEqual(0);
     expect(stderr).toBe("");
 
     const output = parseOutput(stdout);
@@ -123,11 +106,12 @@ describe("e2e tests for run command", () => {
       expect(item.data).toBeDefined();
     });
     expect(output).toHaveLength(3);
+    expect(code).toEqual(0);
   }, 480000);
 
   it("Should successfully return response: using yaml workflow", async () => {
     const { exitCode: code, stdout, stderr } = await runCLI({
-      args: ["run", "./workflows/e2e.yaml", "-c", "./workflows/config.ts"],
+      args: ["run", "-c", "./client-config.ts"],
       cwd: testCaseRoot,
       cli: polywrapCli,
     });
@@ -147,11 +131,10 @@ describe("e2e tests for run command", () => {
     const { exitCode: code, stdout, stderr } = await runCLI({
       args: [
         "run",
-        "./workflows/e2e.json",
         "-c",
-        "./workflows/config.ts",
+        "./client-config.ts",
         "--output-file",
-        "./workflows/output.json",
+        "./output.json",
       ],
       cwd: testCaseRoot,
       cli: polywrapCli,
@@ -162,24 +145,23 @@ describe("e2e tests for run command", () => {
     expect(parseOutput(stdout)).toMatchObject(
       JSON.parse(
         fs.readFileSync(
-          path.join(testCaseRoot, "workflows/output.json"),
+          path.join(testCaseRoot, "output.json"),
           "utf8"
         )
       )
     );
 
-    fs.unlinkSync(`${testCaseRoot}/workflows/output.json`);
+    fs.unlinkSync(`${testCaseRoot}/output.json`);
   }, 48000);
 
   it("Should successfully create yaml output file if specified", async () => {
     const { exitCode: code, stdout, stderr } = await runCLI({
       args: [
         "run",
-        "./workflows/e2e.json",
         "-c",
-        "./workflows/config.ts",
+        "./client-config.ts",
         "--output-file",
-        "./workflows/output.yaml",
+        "./output.yaml",
       ],
       cwd: testCaseRoot,
       cli: polywrapCli,
@@ -192,7 +174,7 @@ describe("e2e tests for run command", () => {
         JSON.stringify(
           (yaml.load(
             fs.readFileSync(
-              path.join(testCaseRoot, "workflows/output.yaml"),
+              path.join(testCaseRoot, "output.yaml"),
               "utf8"
             )
           ) as unknown) as Array<unknown>
@@ -200,16 +182,15 @@ describe("e2e tests for run command", () => {
       )
     );
 
-    fs.unlinkSync(`${testCaseRoot}/workflows/output.yaml`);
+    fs.unlinkSync(`${testCaseRoot}/output.yaml`);
   }, 48000);
 
   it("Should suppress the ouput if --quiet option is specified", async () => {
     const { exitCode: code, stdout, stderr } = await runCLI({
       args: [
         "run",
-        "./workflows/e2e.json",
         "-c",
-        "./workflows/config.ts",
+        "./client-config.ts",
         "--quiet",
       ],
       cwd: testCaseRoot,
@@ -221,15 +202,14 @@ describe("e2e tests for run command", () => {
     expect(stdout).toBeFalsy();
   }, 48000);
 
-  it("Should validate output if validate script given", async () => {
+  it("Should validate output", async () => {
     const { exitCode: code, stdout, stderr } = await runCLI({
       args: [
         "run",
-        "./workflows/e2e.json",
+        "-m",
+        "./polywrap.test.validate.yaml",
         "-c",
-        "./workflows/config.ts",
-        "-v",
-        "./workflows/validator.cue",
+        "./client-config.ts",
       ],
       cwd: testCaseRoot,
       cli: polywrapCli,
@@ -248,9 +228,8 @@ describe("e2e tests for run command", () => {
     const { exitCode: code, stdout } = await runCLI({
       args: [
         "run",
-        "./workflows/e2e.json",
-        "-v",
-        "./workflows/validator.cue",
+        "-m",
+        "polywrap.test.invalid.json",
       ],
       cwd: testCaseRoot,
       cli: polywrapCli,

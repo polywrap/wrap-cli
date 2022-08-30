@@ -6,10 +6,10 @@
  */
 
 import {
-  AppManifest as AppManifest_0_1_0
+  AppManifest as AppManifest_0_1_0,
 } from "./0.1.0";
 import {
-  AppManifest as AppManifest_0_2_0
+  AppManifest as AppManifest_0_2_0,
 } from "./0.2.0";
 
 export {
@@ -27,6 +27,8 @@ export enum AppManifestFormats {
 export type AnyAppManifest =
   | AppManifest_0_1_0
   | AppManifest_0_2_0
+
+
 
 export type AppManifest = AppManifest_0_2_0;
 

@@ -35,10 +35,9 @@ import {
   coreInterfaceUris,
   Contextualized,
   ResolveUriErrorType,
-  JobRunner,
-  RunOptions,
   GetManifestOptions,
   SimpleCache,
+  executeMaybeAsyncFunction,
 } from "@polywrap/core-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
@@ -345,22 +344,6 @@ export class PolywrapClient implements Client {
     return { error };
   }
 
-  @Tracer.traceMethod("PolywrapClient: run", TracingLevel.High)
-  public async run<
-    TData extends Record<string, unknown> = Record<string, unknown>,
-    TUri extends Uri | string = string
-  >(options: RunOptions<TData, TUri>): Promise<void> {
-    const { workflow, onExecution } = options;
-    const ids = options.ids ? options.ids : Object.keys(workflow.jobs);
-    const jobRunner = new JobRunner<TData, TUri>(this, onExecution);
-
-    await Promise.all(
-      ids.map((id) =>
-        jobRunner.run({ relativeId: id, parentId: "", jobs: workflow.jobs })
-      )
-    );
-  }
-
   @Tracer.traceMethod("PolywrapClient: subscribe")
   public subscribe<TData = unknown, TUri extends Uri | string = string>(
     options: SubscribeOptions<TUri, PolywrapClientConfig>
@@ -486,7 +469,9 @@ export class PolywrapClient implements Client {
     // Update cache for all URIs in the chain
     if (cacheWrite && wrapper) {
       const uris = uriHistory.getResolutionPath().stack.map((x) => x.sourceUri);
-      this._wrapperCache.set(uris, wrapper);
+      await executeMaybeAsyncFunction(
+        this._wrapperCache.set.bind(this._wrapperCache, uris, wrapper)
+      );
     }
 
     if (shouldClearContext) {
@@ -773,11 +758,6 @@ const contextualizeClient = (
           failedUriResolvers: string[];
         }> => {
           return client.loadUriResolvers();
-        },
-        run: <TData extends Record<string, unknown> = Record<string, unknown>>(
-          options: RunOptions<TData>
-        ): Promise<void> => {
-          return client.run({ ...options, contextId });
         },
       }
     : client;

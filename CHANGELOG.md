@@ -1,3 +1,22 @@
+# Polywrap Origin (0.5.0)
+## Features
+* [PR-1042](https://github.com/polywrap/toolchain/pull/1042) `@polywrap/client-js`: The `PolywrapClientConfig` now has a `tracerConfig: Partial<TracerConfig>` property, allowing users to easily configure the tracing level, and various toggles related to tracing.
+* [PR-1042](https://github.com/polywrap/toolchain/pull/1042) `polywrap` CLI: Added the `tracer` infra module, allowing developers to easily spin up an OpenTelemetry compatible tracing server. This can be used to gather runtime tracelog events from the `PolywrapClient`.
+* [PR-1042](https://github.com/polywrap/toolchain/pull/1042) `@polywrap/tracing-js`: The `@Tracer.traceMethod()` function decorator now has an optional `TracingLevel` argument.
+* [PR-1143](https://github.com/polywrap/toolchain/pull/1143) `@polywrap/ethereum-plugin-js`: The `EthereumPluginConfig` now has a `connections` property, which takes an instance of the `Connections` class. This new implementation makes configuring new network connections at runtime easier and more application developer friendly.
+* [PR-1045](https://github.com/polywrap/toolchain/pull/1045) `@polywrap/client-config-builder-js`: The `ClientConfigBuilder` has been added to make building & customizing `PolywrapClientConfigs` easier than before with a simple user friendly interface.
+* [PR-1036](https://github.com/polywrap/toolchain/pull/1036) `@polywrap/client-js`: Added the `wrapperCache: WrapperCache` property to the `PolywrapClientConfig` interface.
+* [PR-1036](https://github.com/polywrap/toolchain/pull/1036) `@polywrap/core-js`: Added the `WrapperCache` core type, along with a `SimpleCache` implementation that persists wrappers within a map.
+
+## Bugs
+* [PR-1186](https://github.com/polywrap/toolchain/pull/1186) `@polywrap/schema-bind`: Using a `Map<K, V>` type within the `Map`'s value (`V`) template argument has been fixed.
+* [PR-1179](https://github.com/polywrap/toolchain/pull/1179) `polywrap` CLI: Improved the readability of the `polywrap build -v` command's output from the Docker child process.
+
+## Breaking Changes
+* [PR-1042](https://github.com/polywrap/toolchain/pull/1042) `@polywrap/client-js`: The `PolywrapClientConfig`'s `tracingEnabled` property has been removed, and replaced by `tracerConfig`.
+* [PR-1143](https://github.com/polywrap/toolchain/pull/1143) `@polywrap/ethereum-plugin-js`: The `EthereumPluginConfig`'s `networks` property has been removed, and replaced by `connections`.
+* [PR-1045](https://github.com/polywrap/toolchain/pull/1045) `@polywrap/client-js`: The `getDefaultClientConfig()` & `defaultIpfsProviders` exports have been moved to the `@polywrap/client-config-builder-js` package.
+
 # Polywrap Origin (0.4.1)
 ## Features
 * [PR-1171](https://github.com/polywrap/monorepo/pull/1171) `@polywrap/schema-bind`: Handle reserve words (keywords) for object, enum, and method names.
