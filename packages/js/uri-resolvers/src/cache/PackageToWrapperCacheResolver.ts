@@ -7,6 +7,8 @@ import {
   Client,
   IUriResolutionResponse,
   UriResolutionResponse,
+  executeMaybeAsyncFunction,
+  Wrapper,
 } from "@polywrap/core-js";
 
 // This cache resolver caches wrappers
@@ -22,7 +24,9 @@ export class PackageToWrapperCacheResolver implements ICacheResolver<unknown> {
     uri: Uri,
     _: Client
   ): Promise<IUriResolutionResponse> {
-    const wrapper = this.cache.get(uri);
+    const wrapper = await executeMaybeAsyncFunction<Wrapper | undefined>(
+      this.cache.get.bind(this.cache, [uri])
+    );
 
     if (wrapper) {
       return UriResolutionResponse.ok(wrapper);
@@ -38,7 +42,9 @@ export class PackageToWrapperCacheResolver implements ICacheResolver<unknown> {
   ): Promise<IUriResolutionResponse<unknown>> {
     if (response.result.ok) {
       if (response.result.value.type === "wrapper") {
-        this.cache.set(uri, response.result.value.wrapper);
+        await executeMaybeAsyncFunction<Wrapper | undefined>(
+          this.cache.set.bind(this.cache, [uri, response.result.value.wrapper])
+        );
       } else if (response.result.value.type === "package") {
         const uriHistory: Uri[] = !response.history
           ? [uri]
@@ -48,7 +54,9 @@ export class PackageToWrapperCacheResolver implements ICacheResolver<unknown> {
           client,
           uriHistory
         );
-        this.cache.set(uri, wrapper);
+        await executeMaybeAsyncFunction<Wrapper | undefined>(
+          this.cache.set.bind(this.cache, [uri, wrapper])
+        );
 
         return UriResolutionResponse.ok(wrapper);
       }
