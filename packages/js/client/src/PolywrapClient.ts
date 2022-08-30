@@ -37,6 +37,7 @@ import {
   ResolveUriErrorType,
   GetManifestOptions,
   SimpleCache,
+  executeMaybeAsyncFunction,
 } from "@polywrap/core-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
@@ -468,7 +469,9 @@ export class PolywrapClient implements Client {
     // Update cache for all URIs in the chain
     if (cacheWrite && wrapper) {
       const uris = uriHistory.getResolutionPath().stack.map((x) => x.sourceUri);
-      this._wrapperCache.set(uris, wrapper);
+      await executeMaybeAsyncFunction(
+        this._wrapperCache.set.bind(this._wrapperCache, uris, wrapper)
+      );
     }
 
     if (shouldClearContext) {
