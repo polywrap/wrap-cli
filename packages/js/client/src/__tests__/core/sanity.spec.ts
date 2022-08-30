@@ -83,10 +83,6 @@ describe("sanity", () => {
 
     expect(redirects).toEqual([
       {
-        from: new Uri(implementation1Uri),
-        to: new Uri(implementation2Uri),
-      },
-      {
         from: new Uri("wrap://ens/sha3.polywrap.eth"),
         to: new Uri(defaultWrappers.sha3),
       },
@@ -97,6 +93,10 @@ describe("sanity", () => {
       {
         from: new Uri("wrap://ens/graph-node.polywrap.eth"),
         to: new Uri(defaultWrappers.graphNode),
+      },
+      {
+        from: new Uri(implementation1Uri),
+        to: new Uri(implementation2Uri),
       },
     ]);
   });

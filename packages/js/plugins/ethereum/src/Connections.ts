@@ -28,6 +28,12 @@ export class Connections {
     } else {
       this.setDefaultNetwork("mainnet", Connection.fromNetwork("mainnet"));
     }
+
+    // @TODO(cbrzn): Remove this once the Sha3 & Uts46 wrappers ENS has been moved to mainnet
+    this.set(
+      "goerli",
+      "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6"
+    );
   }
 
   /** Returns Connection indexed by network name, or by default network if key is undefined */
