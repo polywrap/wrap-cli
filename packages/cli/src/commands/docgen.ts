@@ -106,6 +106,7 @@ export const docgen: Command = {
           docgenDir: parseDirOption(options.docgenDir, defaultDocgenDir),
           clientConfig: await parseClientConfigOption(options.clientConfig),
         });
+        process.exit();
       });
   },
 };

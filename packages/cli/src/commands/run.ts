@@ -57,6 +57,7 @@ export const run: Command = {
             ? parseWorkflowOutputFilePathOption(options.outputFile)
             : undefined,
         });
+        process.exit();
       });
   },
 };

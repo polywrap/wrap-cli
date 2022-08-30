@@ -69,6 +69,7 @@ export const plugin: Command = {
           publishDir: parseDirOption(options.publishDir, defaultPublishDir),
           codegenDir: parseDirOption(options.codegenDir, defaultCodegenDir),
         });
+        process.exit();
       });
   },
 };

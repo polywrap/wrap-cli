@@ -53,6 +53,7 @@ export const app: Command = {
           clientConfig: await parseClientConfigOption(options.clientConfig),
           codegenDir: parseDirOption(options.codegenDir, defaultOutputTypesDir),
         });
+        process.exit();
       });
   },
 };

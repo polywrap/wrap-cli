@@ -91,7 +91,6 @@ export const create: Command = {
       )
       .action(async (langStr, nameStr, options) => {
         await run("plugin", langStr, nameStr, options);
-        process.exit();
       });
   },
 };
@@ -131,23 +130,24 @@ async function run(
     );
   }
 
-  generateProjectTemplate(command, lang, projectDir)
-    .then(() => {
-      console.log();
-      let readyMessage;
-      if (command === "wasm") {
-        readyMessage = intlMsg.commands_create_readyProtocol();
-      } else if (command === "app") {
-        readyMessage = intlMsg.commands_create_readyApp();
-      } else if (command === "plugin") {
-        readyMessage = intlMsg.commands_create_readyPlugin();
-      }
-      console.info(`🔥 ${readyMessage} 🔥`);
-    })
-    .catch((err) => {
-      const commandFailError = intlMsg.commands_create_error_commandFail({
-        error: err.command,
-      });
-      console.error(commandFailError);
+  try {
+    await generateProjectTemplate(command, lang, projectDir);
+    console.log();
+    let readyMessage;
+    if (command === "wasm") {
+      readyMessage = intlMsg.commands_create_readyProtocol();
+    } else if (command === "app") {
+      readyMessage = intlMsg.commands_create_readyApp();
+    } else if (command === "plugin") {
+      readyMessage = intlMsg.commands_create_readyPlugin();
+    }
+    console.info(`🔥 ${readyMessage} 🔥`);
+  } catch (err) {
+    const commandFailError = intlMsg.commands_create_error_commandFail({
+      error: err.command,
     });
+    console.error(commandFailError);
+  } finally {
+    process.exit();
+  }
 }

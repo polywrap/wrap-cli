@@ -9,7 +9,7 @@ describe("Templates", () => {
 
   // Mapping of all project types (app, plugin, etc) to all supported languages
   const projectLanguages: Record<string, string[]> = {};
-
+  console.log("a");
   // Define the commands to run for each language
   const languageTestCommands: Record<string, Record<string, string>> = {
     typescript: { build: "yarn build", test: "yarn test" },
@@ -52,6 +52,8 @@ describe("Templates", () => {
           .map((dirent) => dirent.name))
     );
 
+  console.log("b");
+
   // for each project + language
   for (const projectType of Object.keys(projectLanguages)) {
     describe(`${projectType}`, () => {
@@ -80,6 +82,9 @@ describe("Templates", () => {
           // run all commands
           for (const command of Object.keys(commands)) {
             test(`${command}`, async () => {
+              console.log("c");
+              console.log(command);
+              console.log(projectType);
               const execPromise = new Promise<{
                 error: Error | null;
                 stdout: string;
