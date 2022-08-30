@@ -259,19 +259,26 @@ export async function buildAndDeployWrapper({
 
   const ethereumPluginUri = "wrap://ens/ethereum.polywrap.eth";
 
+  const testnetConnection = {
+    networks: {
+      testnet: new Connection({
+        provider: ethereumProvider,
+      }),
+    },
+    defaultNetwork: "testnet",
+  };
+
+  const connections = new Connections(testnetConnection);
+  connections.set(
+    "goerli",
+    "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6"
+  );
   const client = new PolywrapClient({
     plugins: [
       {
         uri: ethereumPluginUri,
         plugin: ethereumPlugin({
-          connections: new Connections({
-            networks: {
-              testnet: new Connection({
-                provider: ethereumProvider,
-              }),
-            },
-            defaultNetwork: "testnet",
-          }),
+          connections,
         }),
       },
     ],
@@ -328,7 +335,6 @@ export async function buildAndDeployWrapper({
   });
 
   // manually configure manifests
-
   const { __type, ...polywrapManifest } = deserializePolywrapManifest(
     fs.readFileSync(manifestPath, "utf-8")
   );

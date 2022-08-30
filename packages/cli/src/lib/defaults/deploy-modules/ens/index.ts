@@ -52,20 +52,25 @@ class ENSPublisher implements Deployer {
       "ens"
     )}`;
 
+    const connections = new Connections({
+      networks: {
+        [network]: new Connection({
+          provider: config.provider,
+          signer,
+        }),
+      },
+      defaultNetwork: network,
+    });
+    connections.set(
+      "goerli",
+      "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6"
+    );
     const client = new PolywrapClient({
       plugins: [
         {
           uri: ethereumPluginUri,
           plugin: ethereumPlugin({
-            connections: new Connections({
-              networks: {
-                [network]: new Connection({
-                  provider: config.provider,
-                  signer,
-                }),
-              },
-              defaultNetwork: network,
-            }),
+            connections,
           }),
         },
       ],
