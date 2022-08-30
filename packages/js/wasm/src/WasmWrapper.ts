@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import { WrapExports } from "./types";
 import { createImports } from "./imports";
+import { IFileReader } from "./IFileReader";
 
 import {
   deserializeWrapManifest,
@@ -21,7 +22,6 @@ import {
   isBuffer,
   GetFileOptions,
 } from "@polywrap/core-js";
-import { IFileReader } from "./IFileReader";
 
 type InvokeResultOrError =
   | { type: "InvokeResult"; invokeResult: Uint8Array }

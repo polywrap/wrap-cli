@@ -1,3 +1,5 @@
+import { UriResolverExtensionFileReader } from "./UriResolverExtensionFileReader";
+
 import {
   DeserializeManifestOptions,
   deserializeWrapManifest,
@@ -17,7 +19,6 @@ import {
 import { Result, ResultOk, ResultErr } from "@polywrap/result";
 import { WasmPackage } from "@polywrap/wasm-js";
 import { getUriHistory } from "@polywrap/uri-resolvers-js";
-import { UriResolverExtensionFileReader } from "./UriResolverExtensionFileReader";
 
 export class UriResolverWrapper implements IUriResolver<unknown> {
   constructor(
