@@ -33,7 +33,6 @@ import {
   CacheResolver,
   ExtendableUriResolver,
   coreInterfaceUris,
-  Contextualized,
   ResolveUriErrorType,
   GetManifestOptions,
   SimpleCache,
@@ -174,8 +173,7 @@ export class PolywrapClient implements Client {
     options: GetManifestOptions = {}
   ): Promise<WrapManifest> {
     const wrapper = await this._loadWrapper(this._toUri(uri), options);
-    const client = contextualizeClient(this, options.contextId);
-    return await wrapper.getManifest(options, client);
+    return wrapper.getManifest();
   }
 
   @Tracer.traceMethod("PolywrapClient: getFile")
@@ -463,7 +461,8 @@ export class PolywrapClient implements Client {
       this._toUri(uri),
       uriResolvers,
       client,
-      this._wrapperCache
+      this._wrapperCache,
+      options
     );
 
     // Update cache for all URIs in the chain
@@ -633,13 +632,11 @@ export class PolywrapClient implements Client {
   @Tracer.traceMethod("PolywrapClient: _loadWrapper", TracingLevel.High)
   private async _loadWrapper(
     uri: Uri,
-    options?: Contextualized
+    options?: ResolveUriOptions
   ): Promise<Wrapper> {
     Tracer.setAttribute("label", `Wrapper loaded: ${uri}`, TracingLevel.High);
 
-    const { wrapper, uriHistory, error } = await this.resolveUri(uri, {
-      contextId: options?.contextId,
-    });
+    const { wrapper, uriHistory, error } = await this.resolveUri(uri, options);
 
     if (!wrapper) {
       if (error) {

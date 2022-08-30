@@ -1,8 +1,8 @@
 import {
+  Env,
   Uri,
   Client,
   GetFileOptions,
-  GetManifestOptions,
   InvokeOptions,
   Invocable,
   Invoker,
@@ -18,6 +18,22 @@ import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
  * worker threads, or indexing into resolvers to find the requested method.
  */
 export abstract class Wrapper implements Invocable {
+
+  /**
+   * The wrapper's URI
+   */
+  public abstract getUri(): Uri;
+
+  /**
+   * The wrapper's wrap.info manifest
+   */
+  public abstract getManifest(): WrapManifest;
+
+  /**
+   * The wrapper's env
+   */
+  public abstract getClientEnv(): Env<Uri> | undefined;
+
   /**
    * Invoke the Wrapper based on the provided [[InvokeOptions]]
    *
@@ -41,15 +57,4 @@ export abstract class Wrapper implements Invocable {
     options: GetFileOptions,
     client: Client
   ): Promise<Uint8Array | string>;
-
-  /**
-   * Get a manifest from the Wrapper package.
-   * Not implemented for plugin wrappers.
-   *
-   * @param client The client instance requesting the manifest.
-   */
-  public abstract getManifest(
-    options: GetManifestOptions,
-    client: Client
-  ): Promise<WrapManifest>;
 }

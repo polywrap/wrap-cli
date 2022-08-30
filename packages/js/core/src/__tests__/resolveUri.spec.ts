@@ -24,10 +24,9 @@ import {
   Subscription,
   PluginPackage,
   SimpleCache,
-  GetManifestOptions,
+  WrapManifest,
 } from "..";
 
-import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackEncode } from "@polywrap/msgpack-js";
 
 describe("resolveUri", () => {
@@ -108,7 +107,9 @@ describe("resolveUri", () => {
           encoded: false
         }),
       getFile: (options: GetFileOptions, client: Client) => Promise.resolve(""),
-      getManifest: (options: GetManifestOptions, client: Client) => Promise.resolve({} as WrapManifest)
+      getManifest: () => ({} as WrapManifest),
+      getUri: () => (new Uri("wrap://plugin/test")),
+      getClientEnv: () => ({} as Env<Uri>)
     };
   };
 
@@ -128,7 +129,9 @@ describe("resolveUri", () => {
           encoded: false
         }),
       getFile: (options: GetFileOptions, client: Client) => Promise.resolve(""),
-      getManifest: (client) => Promise.reject("")
+      getManifest: () => ({} as WrapManifest),
+      getUri: () => (new Uri("wrap://wrapper/test")),
+      getClientEnv: () => ({} as Env<Uri>)
     };
   };
 

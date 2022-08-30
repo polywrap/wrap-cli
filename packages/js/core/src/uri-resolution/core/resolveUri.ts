@@ -1,10 +1,13 @@
-import { Wrapper, WrapperCache, Client, Uri } from "../../types";
-import { UriResolutionHistory } from "./types/UriResolutionHistory";
-import { UriResolutionStack } from "./types/UriResolutionStack";
-import { UriResolutionResult } from "./types/UriResolutionResult";
-import { UriResolver } from "./types/UriResolver";
-import { ResolveUriErrorType, ResolveUriResult } from "./types";
-import { InternalResolverError } from "./types/InternalResolverError";
+import { Wrapper, WrapperCache, Client, Uri, DeserializeManifestOptions } from "../..";
+import {
+  UriResolutionHistory,
+  UriResolutionStack,
+  UriResolutionResult,
+  UriResolver,
+  ResolveUriErrorType,
+  ResolveUriResult,
+  InternalResolverError
+} from "./types"
 
 import { Tracer } from "@polywrap/tracing-js";
 
@@ -12,7 +15,8 @@ export const resolveUri = async (
   uri: Uri,
   uriResolvers: readonly UriResolver[],
   client: Client,
-  cache: WrapperCache
+  cache: WrapperCache,
+  deserializeOptions?: DeserializeManifestOptions
 ): Promise<ResolveUriResult> => {
   // Keep track of past URIs to avoid infinite loops
   const visitedUriMap: Map<string, boolean> = new Map<string, boolean>();
@@ -47,7 +51,8 @@ export const resolveUri = async (
         currentUri,
         client,
         cache,
-        new UriResolutionHistory(uriResolutionStack).getResolutionPath().stack
+        new UriResolutionHistory(uriResolutionStack).getResolutionPath().stack,
+        deserializeOptions
       );
 
       trackUriHistory(currentUri, resolver, result, uriResolutionStack);

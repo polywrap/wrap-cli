@@ -22,7 +22,7 @@ export class ExtendableUriResolver implements UriResolver {
   private _hasLoadedUriResolvers: boolean;
 
   constructor(
-    private readonly _createWrapper: CreateWrapperFunc,
+    private _createWrapper: CreateWrapperFunc,
     private _deserializeOptions?: DeserializeManifestOptions,
     disablePreload?: boolean
   ) {
@@ -39,7 +39,8 @@ export class ExtendableUriResolver implements UriResolver {
     uri: Uri,
     client: Client,
     cache: WrapperCache,
-    resolutionPath: UriResolutionStack
+    resolutionPath: UriResolutionStack,
+    deserializeOptions?: DeserializeManifestOptions
   ): Promise<ExtendableUriResolverResult> {
     const uriResolverImpls = getImplementations(
       coreInterfaceUris.uriResolver,
@@ -74,7 +75,8 @@ export class ExtendableUriResolver implements UriResolver {
         uri,
         client,
         cache,
-        resolutionPath
+        resolutionPath,
+        deserializeOptions || this._deserializeOptions
       );
 
       if (result.wrapper || (result.uri && uri.uri !== result.uri.uri)) {

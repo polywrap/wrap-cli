@@ -123,7 +123,7 @@ export const getDefaultClientConfig = (): ClientConfig<Uri> => {
           manifest: WrapManifest,
           uriResolver: string,
           environment: Env<Uri> | undefined
-        ) => new WasmWrapper(uri, manifest, uriResolver, environment)
+        ) => new WasmWrapper(uri, manifest, new Uri(uriResolver), environment)
       ),
     ],
   };

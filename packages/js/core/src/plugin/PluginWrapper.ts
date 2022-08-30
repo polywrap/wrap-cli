@@ -7,12 +7,11 @@ import {
   PluginPackage,
   Uri,
   GetFileOptions,
-  GetManifestOptions,
   Env,
   isBuffer,
+  WrapManifest,
 } from "../.";
 
-import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackDecode } from "@polywrap/msgpack-js";
 import { Tracer, TracingLevel } from "@polywrap/tracing-js";
 
@@ -35,19 +34,16 @@ export class PluginWrapper extends Wrapper {
     Tracer.endSpan();
   }
 
-  public async getFile(
-    _: GetFileOptions,
-    _client: Client
-  ): Promise<Uint8Array | string> {
-    throw Error("client.getFile(...) is not implemented for Plugins.");
+  public getUri(): Uri {
+    return this._uri;
   }
 
-  @Tracer.traceMethod("PluginWrapper: getManifest")
-  public async getManifest(
-    _: GetManifestOptions,
-    _client: Client
-  ): Promise<WrapManifest> {
+  public getManifest(): WrapManifest {
     return this._plugin.manifest;
+  }
+
+  public getClientEnv(): Env<Uri> | undefined {
+    return this._clientEnv;
   }
 
   @Tracer.traceMethod("PluginWrapper: invoke", TracingLevel.High)
@@ -125,6 +121,13 @@ export class PluginWrapper extends Wrapper {
         error,
       };
     }
+  }
+
+  public async getFile(
+    _: GetFileOptions,
+    _client: Client
+  ): Promise<Uint8Array | string> {
+    throw Error("client.getFile(...) is not implemented for Plugins.");
   }
 
   private _getInstance(): PluginModule<unknown> {

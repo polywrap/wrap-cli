@@ -17,8 +17,8 @@ import { Tracer } from "@polywrap/tracing-js";
 export class UriResolverWrapper implements UriResolver {
   constructor(
     public readonly implementationUri: Uri,
-    private readonly createWrapper: CreateWrapperFunc,
-    private readonly deserializeOptions?: DeserializeManifestOptions
+    private _createWrapper: CreateWrapperFunc,
+    private _deserializeOptions?: DeserializeManifestOptions
   ) {}
 
   public get name(): string {
@@ -29,7 +29,8 @@ export class UriResolverWrapper implements UriResolver {
     uri: Uri,
     client: Client,
     cache: WrapperCache,
-    resolutionPath: UriResolutionStack
+    resolutionPath: UriResolutionStack,
+    deserializeOptions?: DeserializeManifestOptions
   ): Promise<UriResolutionResult> {
     const result = await tryResolveUriWithImplementation(
       uri,
@@ -52,7 +53,7 @@ export class UriResolverWrapper implements UriResolver {
       // meaning the URI resolver can also be used as an Wrapper resolver
       const manifest = await deserializeWrapManifest(
         result.manifest,
-        this.deserializeOptions
+        deserializeOptions || this._deserializeOptions
       );
 
       const environment = getEnvFromUriOrResolutionStack(
@@ -60,7 +61,7 @@ export class UriResolverWrapper implements UriResolver {
         resolutionPath,
         client
       );
-      const wrapper = this.createWrapper(
+      const wrapper = this._createWrapper(
         uri,
         manifest,
         this.implementationUri.uri,

@@ -7,3 +7,8 @@ export * from "./uri-resolution/resolvers";
 export * from "./utils";
 export * from "./plugin/PluginWrapper";
 export * from "./wasm";
+export {
+  WrapManifest,
+  DeserializeManifestOptions,
+  deserializeWrapManifest
+} from "@polywrap/wrap-manifest-types-js";

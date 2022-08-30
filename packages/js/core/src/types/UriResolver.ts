@@ -1,10 +1,10 @@
 import { ClientConfig, Uri } from ".";
-import { ResolveUriResult } from "..";
+import { ResolveUriResult, DeserializeManifestOptions } from "..";
 
 /** Options required for an URI resolution. */
 export interface ResolveUriOptions<
   TClientConfig extends ClientConfig = ClientConfig
-> {
+> extends DeserializeManifestOptions {
   /**
    * If set to true, the resolveUri function will not use the cache to resolve the uri.
    */

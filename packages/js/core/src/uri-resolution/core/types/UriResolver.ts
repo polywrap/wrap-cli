@@ -1,6 +1,8 @@
 import { WrapperCache, Client, Uri } from "../../../types";
 import { UriResolutionResult, UriResolutionStack } from ".";
 
+import { DeserializeManifestOptions } from "@polywrap/wrap-manifest-types-js";
+
 export abstract class UriResolver {
   public abstract get name(): string;
 
@@ -8,6 +10,7 @@ export abstract class UriResolver {
     uri: Uri,
     client: Client,
     cache: WrapperCache,
-    resolutionPath: UriResolutionStack
+    resolutionPath: UriResolutionStack,
+    deserializeOptions?: DeserializeManifestOptions
   ): Promise<UriResolutionResult>;
 }
