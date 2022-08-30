@@ -32,7 +32,7 @@ export class Connections {
     // @TODO(cbrzn): Remove this once the Sha3 & Uts46 wrappers ENS has been moved to mainnet
     this.set(
       "goerli",
-      "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6"
+      "https://goerli.infura.io/v3/d119148113c047ca90f0311ed729c466"
     );
   }
 
