@@ -14,7 +14,7 @@ use polywrap_wasm_rs::{
 };
 use crate::CustomMapValue;
 
-pub fn serialize_custom_map_value(args: &CustomMapValue) -> Result<Vec<u8>, EncodeError> {
+pub fn serialize_custom_map_value(args: CustomMapValue) -> Result<Vec<u8>, EncodeError> {
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) object-type: CustomMapValue".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
@@ -22,7 +22,7 @@ pub fn serialize_custom_map_value(args: &CustomMapValue) -> Result<Vec<u8>, Enco
     Ok(encoder.get_buffer())
 }
 
-pub fn write_custom_map_value<W: Write>(args: &CustomMapValue, writer: &mut W) -> Result<(), EncodeError> {
+pub fn write_custom_map_value<W: Write>(args: CustomMapValue, writer: &mut W) -> Result<(), EncodeError> {
     writer.write_map_length(&1)?;
     writer.context().push("foo", "String", "writing property");
     writer.write_string("foo")?;

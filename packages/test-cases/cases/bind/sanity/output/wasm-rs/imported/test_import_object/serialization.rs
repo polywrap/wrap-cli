@@ -21,7 +21,7 @@ use crate::{
     sanitize_test_import_enum_value
 };
 
-pub fn serialize_test_import_object(args: &TestImportObject) -> Result<Vec<u8>, EncodeError> {
+pub fn serialize_test_import_object(args: TestImportObject) -> Result<Vec<u8>, EncodeError> {
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) imported object-type: TestImportObject".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
@@ -29,11 +29,11 @@ pub fn serialize_test_import_object(args: &TestImportObject) -> Result<Vec<u8>, 
     Ok(encoder.get_buffer())
 }
 
-pub fn write_test_import_object<W: Write>(args: &TestImportObject, writer: &mut W) -> Result<(), EncodeError> {
+pub fn write_test_import_object<W: Write>(args: TestImportObject, writer: &mut W) -> Result<(), EncodeError> {
     writer.write_map_length(&8)?;
     writer.context().push("object", "TestImportAnotherObject", "writing property");
     writer.write_string("object")?;
-    TestImportAnotherObject::write(&args.object, writer)?;
+    TestImportAnotherObject::write(args.object, writer)?;
     writer.context().pop();
     writer.context().push("optObject", "Option<TestImportAnotherObject>", "writing property");
     writer.write_string("optObject")?;

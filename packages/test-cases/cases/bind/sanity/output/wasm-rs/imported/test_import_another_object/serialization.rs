@@ -14,7 +14,7 @@ use polywrap_wasm_rs::{
 };
 use crate::TestImportAnotherObject;
 
-pub fn serialize_test_import_another_object(args: &TestImportAnotherObject) -> Result<Vec<u8>, EncodeError> {
+pub fn serialize_test_import_another_object(args: TestImportAnotherObject) -> Result<Vec<u8>, EncodeError> {
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) imported object-type: TestImportAnotherObject".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
@@ -22,7 +22,7 @@ pub fn serialize_test_import_another_object(args: &TestImportAnotherObject) -> R
     Ok(encoder.get_buffer())
 }
 
-pub fn write_test_import_another_object<W: Write>(args: &TestImportAnotherObject, writer: &mut W) -> Result<(), EncodeError> {
+pub fn write_test_import_another_object<W: Write>(args: TestImportAnotherObject, writer: &mut W) -> Result<(), EncodeError> {
     writer.write_map_length(&1)?;
     writer.context().push("prop", "String", "writing property");
     writer.write_string("prop")?;

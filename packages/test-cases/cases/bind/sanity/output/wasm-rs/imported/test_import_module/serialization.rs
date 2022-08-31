@@ -37,7 +37,7 @@ pub struct ArgsImportedMethod {
     pub opt_enum_array: Option<Vec<Option<TestImportEnum>>>,
 }
 
-pub fn serialize_imported_method_args(args: &ArgsImportedMethod) -> Result<Vec<u8>, EncodeError> {
+pub fn serialize_imported_method_args(args: ArgsImportedMethod) -> Result<Vec<u8>, EncodeError> {
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) imported module-type: imported_method".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
@@ -45,7 +45,7 @@ pub fn serialize_imported_method_args(args: &ArgsImportedMethod) -> Result<Vec<u
     Ok(encoder.get_buffer())
 }
 
-pub fn write_imported_method_args<W: Write>(args: &ArgsImportedMethod, writer: &mut W) -> Result<(), EncodeError> {
+pub fn write_imported_method_args<W: Write>(args: ArgsImportedMethod, writer: &mut W) -> Result<(), EncodeError> {
     writer.write_map_length(&13)?;
     writer.context().push("str", "String", "writing property");
     writer.write_string("str")?;
@@ -73,7 +73,7 @@ pub fn write_imported_method_args<W: Write>(args: &ArgsImportedMethod, writer: &
     writer.context().pop();
     writer.context().push("object", "TestImportObject", "writing property");
     writer.write_string("object")?;
-    TestImportObject::write(&args.object, writer)?;
+    TestImportObject::write(args.object, writer)?;
     writer.context().pop();
     writer.context().push("optObject", "Option<TestImportObject>", "writing property");
     writer.write_string("optObject")?;
@@ -144,7 +144,7 @@ pub struct ArgsAnotherMethod {
     pub arg: Vec<String>,
 }
 
-pub fn serialize_another_method_args(args: &ArgsAnotherMethod) -> Result<Vec<u8>, EncodeError> {
+pub fn serialize_another_method_args(args: ArgsAnotherMethod) -> Result<Vec<u8>, EncodeError> {
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) imported module-type: another_method".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
@@ -152,7 +152,7 @@ pub fn serialize_another_method_args(args: &ArgsAnotherMethod) -> Result<Vec<u8>
     Ok(encoder.get_buffer())
 }
 
-pub fn write_another_method_args<W: Write>(args: &ArgsAnotherMethod, writer: &mut W) -> Result<(), EncodeError> {
+pub fn write_another_method_args<W: Write>(args: ArgsAnotherMethod, writer: &mut W) -> Result<(), EncodeError> {
     writer.write_map_length(&1)?;
     writer.context().push("arg", "Vec<String>", "writing property");
     writer.write_string("arg")?;

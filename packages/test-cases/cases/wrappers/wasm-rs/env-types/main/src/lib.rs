@@ -34,8 +34,8 @@ pub fn method_optional_env(args: ArgsMethodOptionalEnv, env: Option<Env>) -> Opt
 }
 
 pub fn subinvoke_env_method(args: ArgsSubinvokeEnvMethod, env: Env) -> CompoundEnv {
-  let external_env: ExternalEnvApiEnv = ExternalEnvApiModule::external_env_method(&(imported::ArgsExternalEnvMethod {})).unwrap();
-  
+  let external_env: ExternalEnvApiEnv = ExternalEnvApiModule::external_env_method(imported::ArgsExternalEnvMethod {}).unwrap();
+
   return CompoundEnv {
     local: env,
     external: external_env

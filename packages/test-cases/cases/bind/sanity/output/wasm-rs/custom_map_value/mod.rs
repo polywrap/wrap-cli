@@ -30,7 +30,7 @@ impl CustomMapValue {
         }
     }
 
-    pub fn to_buffer(args: &CustomMapValue) -> Result<Vec<u8>, EncodeError> {
+    pub fn to_buffer(args: CustomMapValue) -> Result<Vec<u8>, EncodeError> {
         serialize_custom_map_value(args).map_err(|e| EncodeError::TypeWriteError(e.to_string()))
     }
 
@@ -38,7 +38,7 @@ impl CustomMapValue {
         deserialize_custom_map_value(args).map_err(|e| DecodeError::TypeReadError(e.to_string()))
     }
 
-    pub fn write<W: Write>(args: &CustomMapValue, writer: &mut W) -> Result<(), EncodeError> {
+    pub fn write<W: Write>(args: CustomMapValue, writer: &mut W) -> Result<(), EncodeError> {
         write_custom_map_value(args, writer).map_err(|e| EncodeError::TypeWriteError(e.to_string()))
     }
 

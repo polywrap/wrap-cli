@@ -31,7 +31,7 @@ impl TestImportAnotherObject {
         }
     }
 
-    pub fn to_buffer(args: &TestImportAnotherObject) -> Result<Vec<u8>, EncodeError> {
+    pub fn to_buffer(args: TestImportAnotherObject) -> Result<Vec<u8>, EncodeError> {
         serialize_test_import_another_object(args).map_err(|e| EncodeError::TypeWriteError(e.to_string()))
     }
 
@@ -39,7 +39,7 @@ impl TestImportAnotherObject {
         deserialize_test_import_another_object(args).map_err(|e| DecodeError::TypeReadError(e.to_string()))
     }
 
-    pub fn write<W: Write>(args: &TestImportAnotherObject, writer: &mut W) -> Result<(), EncodeError> {
+    pub fn write<W: Write>(args: TestImportAnotherObject, writer: &mut W) -> Result<(), EncodeError> {
         write_test_import_another_object(args, writer).map_err(|e| EncodeError::TypeWriteError(e.to_string()))
     }
 

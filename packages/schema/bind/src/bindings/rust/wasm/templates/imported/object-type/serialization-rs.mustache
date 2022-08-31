@@ -28,7 +28,7 @@ use crate::{
 {{/isEnum}}
 {{/propertyDeps}}
 
-pub fn serialize_{{#toLower}}{{type}}{{/toLower}}(args: &{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}) -> Result<Vec<u8>, EncodeError> {
+pub fn serialize_{{#toLower}}{{type}}{{/toLower}}(args: {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}) -> Result<Vec<u8>, EncodeError> {
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) imported object-type: {{#toUpper}}{{type}}{{/toUpper}}".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
@@ -36,7 +36,7 @@ pub fn serialize_{{#toLower}}{{type}}{{/toLower}}(args: &{{#detectKeyword}}{{#to
     Ok(encoder.get_buffer())
 }
 
-pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(args: &{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}, writer: &mut W) -> Result<(), EncodeError> {
+pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(args: {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}, writer: &mut W) -> Result<(), EncodeError> {
     {{#properties.length}}
     writer.write_map_length(&{{properties.length}})?;
     {{/properties.length}}
@@ -65,7 +65,7 @@ pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(args: &{{#detectKeyword}
     {{/map}}
     {{#object}}
     {{#required}}
-    {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::write(&args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}, writer)?;
+    {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::write(args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}, writer)?;
     {{/required}}
     {{^required}}
     if args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.is_some() {

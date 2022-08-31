@@ -31,7 +31,7 @@ impl TestImportModule {
         TestImportModule {}
     }
 
-    pub fn imported_method(args: &ArgsImportedMethod) -> Result<Option<TestImportObject>, String> {
+    pub fn imported_method(args: ArgsImportedMethod) -> Result<Option<TestImportObject>, String> {
         let uri = TestImportModule::URI;
         let args = serialize_imported_method_args(args).map_err(|e| e.to_string())?;
         let result = subinvoke::wrap_subinvoke(
@@ -42,7 +42,7 @@ impl TestImportModule {
         deserialize_imported_method_result(result.as_slice()).map_err(|e| e.to_string())
     }
 
-    pub fn another_method(args: &ArgsAnotherMethod) -> Result<i32, String> {
+    pub fn another_method(args: ArgsAnotherMethod) -> Result<i32, String> {
         let uri = TestImportModule::URI;
         let args = serialize_another_method_args(args).map_err(|e| e.to_string())?;
         let result = subinvoke::wrap_subinvoke(

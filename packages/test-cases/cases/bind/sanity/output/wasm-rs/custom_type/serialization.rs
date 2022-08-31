@@ -22,7 +22,7 @@ use crate::{
 };
 use crate::CustomMapValue;
 
-pub fn serialize_custom_type(args: &CustomType) -> Result<Vec<u8>, EncodeError> {
+pub fn serialize_custom_type(args: CustomType) -> Result<Vec<u8>, EncodeError> {
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) object-type: CustomType".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
@@ -30,7 +30,7 @@ pub fn serialize_custom_type(args: &CustomType) -> Result<Vec<u8>, EncodeError> 
     Ok(encoder.get_buffer())
 }
 
-pub fn write_custom_type<W: Write>(args: &CustomType, writer: &mut W) -> Result<(), EncodeError> {
+pub fn write_custom_type<W: Write>(args: CustomType, writer: &mut W) -> Result<(), EncodeError> {
     writer.write_map_length(&42)?;
     writer.context().push("str", "String", "writing property");
     writer.write_string("str")?;
@@ -180,12 +180,12 @@ pub fn write_custom_type<W: Write>(args: &CustomType, writer: &mut W) -> Result<
     writer.context().pop();
     writer.context().push("object", "AnotherType", "writing property");
     writer.write_string("object")?;
-    AnotherType::write(&args.object, writer)?;
+    AnotherType::write(args.object, writer)?;
     writer.context().pop();
     writer.context().push("optObject", "Option<AnotherType>", "writing property");
     writer.write_string("optObject")?;
     if args.opt_object.is_some() {
-        AnotherType::write(args.opt_object.as_ref().as_ref().unwrap(), writer)?;
+        AnotherType::write(args.opt_object.unwrap(), writer)?;
     } else {
         writer.write_nil()?;
     }

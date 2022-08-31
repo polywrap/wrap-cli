@@ -119,7 +119,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(args: &[u8]) -> Result<
     })
 }
 
-pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_result(result: {{#return}}&{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}) -> Result<Vec<u8>, EncodeError> {
+pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_result(result: {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}) -> Result<Vec<u8>, EncodeError> {
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) module-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
@@ -127,11 +127,11 @@ pub fn serialize_{{#toLower}}{{name}}{{/toLower}}_result(result: {{#return}}&{{#
     Ok(encoder.get_buffer())
 }
 
-pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#return}}&{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, writer: &mut W) -> Result<(), EncodeError> {
+pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, writer: &mut W) -> Result<(), EncodeError> {
     {{#return}}
     writer.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing result");
     {{#scalar}}
-    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(result)?;
+    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&result)?;
     {{/scalar}}
     {{#array}}
     writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&result, |writer, item| {
@@ -147,7 +147,7 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#return
     {{/map}}
     {{#enum}}
     {{#required}}
-    writer.write_i32(&(*result as i32))?;
+    writer.write_i32(&(result as i32))?;
     {{/required}}
     {{^required}}
     writer.write_optional_i32(&result.map(|f| f as i32))?;
@@ -155,11 +155,11 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#return
     {{/enum}}
     {{#object}}
     {{#required}}
-    {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::write(&result, writer)?;
+    {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::write(result, writer)?;
     {{/required}}
     {{^required}}
     if result.is_some() {
-        {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::write(result.as_ref().unwrap(), writer)?;
+        {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::write(result.unwrap(), writer)?;
     } else {
         writer.write_nil()?;
     }

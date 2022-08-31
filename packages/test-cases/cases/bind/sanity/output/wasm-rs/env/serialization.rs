@@ -14,7 +14,7 @@ use polywrap_wasm_rs::{
 };
 use crate::Env;
 
-pub fn serialize_env(args: &Env) -> Result<Vec<u8>, EncodeError> {
+pub fn serialize_env(args: Env) -> Result<Vec<u8>, EncodeError> {
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) env-type: Env".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
@@ -22,7 +22,7 @@ pub fn serialize_env(args: &Env) -> Result<Vec<u8>, EncodeError> {
     Ok(encoder.get_buffer())
 }
 
-pub fn write_env<W: Write>(args: &Env, writer: &mut W) -> Result<(), EncodeError> {
+pub fn write_env<W: Write>(args: Env, writer: &mut W) -> Result<(), EncodeError> {
     writer.write_map_length(&3)?;
     writer.context().push("prop", "String", "writing property");
     writer.write_string("prop")?;

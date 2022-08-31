@@ -51,7 +51,7 @@ pub fn {{#toLower}}{{name}}{{/toLower}}_wrapped(args: &[u8], env_size: u32) -> V
                 {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}},
                 {{/arguments}}
             }{{#env}}, env{{/env}});
-            serialize_{{#toLower}}{{name}}{{/toLower}}_result({{#return}}&{{/return}}result).unwrap()
+            serialize_{{#toLower}}{{name}}{{/toLower}}_result(result).unwrap()
     {{#arguments.length}}
         }
         Err(e) => {

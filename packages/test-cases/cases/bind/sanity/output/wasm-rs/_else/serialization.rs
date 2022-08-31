@@ -14,7 +14,7 @@ use polywrap_wasm_rs::{
 };
 use crate::Else;
 
-pub fn serialize_else(args: &Else) -> Result<Vec<u8>, EncodeError> {
+pub fn serialize_else(args: Else) -> Result<Vec<u8>, EncodeError> {
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) object-type: Else".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
@@ -22,7 +22,7 @@ pub fn serialize_else(args: &Else) -> Result<Vec<u8>, EncodeError> {
     Ok(encoder.get_buffer())
 }
 
-pub fn write_else<W: Write>(args: &Else, writer: &mut W) -> Result<(), EncodeError> {
+pub fn write_else<W: Write>(args: Else, writer: &mut W) -> Result<(), EncodeError> {
     writer.write_map_length(&1)?;
     writer.context().push("else", "String", "writing property");
     writer.write_string("else")?;

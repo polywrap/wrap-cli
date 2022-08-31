@@ -14,7 +14,7 @@ use polywrap_wasm_rs::{
 };
 use crate::TestImportEnv;
 
-pub fn serialize_test_import_env(args: &TestImportEnv) -> Result<Vec<u8>, EncodeError> {
+pub fn serialize_test_import_env(args: TestImportEnv) -> Result<Vec<u8>, EncodeError> {
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) imported env-type: TestImportEnv".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
@@ -22,7 +22,7 @@ pub fn serialize_test_import_env(args: &TestImportEnv) -> Result<Vec<u8>, Encode
     Ok(encoder.get_buffer())
 }
 
-pub fn write_test_import_env<W: Write>(args: &TestImportEnv, writer: &mut W) -> Result<(), EncodeError> {
+pub fn write_test_import_env<W: Write>(args: TestImportEnv, writer: &mut W) -> Result<(), EncodeError> {
     writer.write_map_length(&1)?;
     writer.context().push("enviroProp", "String", "writing property");
     writer.write_string("enviroProp")?;

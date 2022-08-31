@@ -245,7 +245,7 @@ pub fn deserialize_module_method_args(args: &[u8]) -> Result<ArgsModuleMethod, D
     })
 }
 
-pub fn serialize_module_method_result(result: &i32) -> Result<Vec<u8>, EncodeError> {
+pub fn serialize_module_method_result(result: i32) -> Result<Vec<u8>, EncodeError> {
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) module-type: module_method".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
@@ -253,9 +253,9 @@ pub fn serialize_module_method_result(result: &i32) -> Result<Vec<u8>, EncodeErr
     Ok(encoder.get_buffer())
 }
 
-pub fn write_module_method_result<W: Write>(result: &i32, writer: &mut W) -> Result<(), EncodeError> {
+pub fn write_module_method_result<W: Write>(result: i32, writer: &mut W) -> Result<(), EncodeError> {
     writer.context().push("moduleMethod", "i32", "writing result");
-    writer.write_i32(result)?;
+    writer.write_i32(&result)?;
     writer.context().pop();
     Ok(())
 }
@@ -345,7 +345,7 @@ pub fn deserialize_object_method_args(args: &[u8]) -> Result<ArgsObjectMethod, D
     })
 }
 
-pub fn serialize_object_method_result(result: &Option<AnotherType>) -> Result<Vec<u8>, EncodeError> {
+pub fn serialize_object_method_result(result: Option<AnotherType>) -> Result<Vec<u8>, EncodeError> {
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) module-type: object_method".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
@@ -353,10 +353,10 @@ pub fn serialize_object_method_result(result: &Option<AnotherType>) -> Result<Ve
     Ok(encoder.get_buffer())
 }
 
-pub fn write_object_method_result<W: Write>(result: &Option<AnotherType>, writer: &mut W) -> Result<(), EncodeError> {
+pub fn write_object_method_result<W: Write>(result: Option<AnotherType>, writer: &mut W) -> Result<(), EncodeError> {
     writer.context().push("objectMethod", "Option<AnotherType>", "writing result");
     if result.is_some() {
-        AnotherType::write(result.as_ref().unwrap(), writer)?;
+        AnotherType::write(result.unwrap(), writer)?;
     } else {
         writer.write_nil()?;
     }
@@ -449,7 +449,7 @@ pub fn deserialize_optional_env_method_args(args: &[u8]) -> Result<ArgsOptionalE
     })
 }
 
-pub fn serialize_optional_env_method_result(result: &Option<AnotherType>) -> Result<Vec<u8>, EncodeError> {
+pub fn serialize_optional_env_method_result(result: Option<AnotherType>) -> Result<Vec<u8>, EncodeError> {
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) module-type: optional_env_method".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
@@ -457,10 +457,10 @@ pub fn serialize_optional_env_method_result(result: &Option<AnotherType>) -> Res
     Ok(encoder.get_buffer())
 }
 
-pub fn write_optional_env_method_result<W: Write>(result: &Option<AnotherType>, writer: &mut W) -> Result<(), EncodeError> {
+pub fn write_optional_env_method_result<W: Write>(result: Option<AnotherType>, writer: &mut W) -> Result<(), EncodeError> {
     writer.context().push("optionalEnvMethod", "Option<AnotherType>", "writing result");
     if result.is_some() {
-        AnotherType::write(result.as_ref().unwrap(), writer)?;
+        AnotherType::write(result.unwrap(), writer)?;
     } else {
         writer.write_nil()?;
     }
@@ -507,7 +507,7 @@ pub fn deserialize_if_args(args: &[u8]) -> Result<ArgsIf, DecodeError> {
     })
 }
 
-pub fn serialize_if_result(result: &Else) -> Result<Vec<u8>, EncodeError> {
+pub fn serialize_if_result(result: Else) -> Result<Vec<u8>, EncodeError> {
     let mut encoder_context = Context::new();
     encoder_context.description = "Serializing (encoding) module-type: if".to_string();
     let mut encoder = WriteEncoder::new(&[], encoder_context);
@@ -515,9 +515,9 @@ pub fn serialize_if_result(result: &Else) -> Result<Vec<u8>, EncodeError> {
     Ok(encoder.get_buffer())
 }
 
-pub fn write_if_result<W: Write>(result: &Else, writer: &mut W) -> Result<(), EncodeError> {
+pub fn write_if_result<W: Write>(result: Else, writer: &mut W) -> Result<(), EncodeError> {
     writer.context().push("if", "Else", "writing result");
-    Else::write(&result, writer)?;
+    Else::write(result, writer)?;
     writer.context().pop();
     Ok(())
 }

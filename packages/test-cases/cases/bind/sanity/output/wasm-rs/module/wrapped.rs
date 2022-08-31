@@ -39,7 +39,7 @@ pub fn module_method_wrapped(args: &[u8], env_size: u32) -> Vec<u8> {
                 map_of_obj: args.map_of_obj,
                 map_of_arr_of_obj: args.map_of_arr_of_obj,
             });
-            serialize_module_method_result(&result).unwrap()
+            serialize_module_method_result(result).unwrap()
         }
         Err(e) => {
             panic!("{}", e.to_string())
@@ -63,7 +63,7 @@ pub fn object_method_wrapped(args: &[u8], env_size: u32) -> Vec<u8> {
                 object_array: args.object_array,
                 opt_object_array: args.opt_object_array,
             }, env);
-            serialize_object_method_result(&result).unwrap()
+            serialize_object_method_result(result).unwrap()
         }
         Err(e) => {
             panic!("{}", e.to_string())
@@ -87,7 +87,7 @@ pub fn optional_env_method_wrapped(args: &[u8], env_size: u32) -> Vec<u8> {
                 object_array: args.object_array,
                 opt_object_array: args.opt_object_array,
             }, env);
-            serialize_optional_env_method_result(&result).unwrap()
+            serialize_optional_env_method_result(result).unwrap()
         }
         Err(e) => {
             panic!("{}", e.to_string())
@@ -101,7 +101,7 @@ pub fn if_wrapped(args: &[u8], env_size: u32) -> Vec<u8> {
             let result = _if(ArgsIf {
                 _if: args._if,
             });
-            serialize_if_result(&result).unwrap()
+            serialize_if_result(result).unwrap()
         }
         Err(e) => {
             panic!("{}", e.to_string())
