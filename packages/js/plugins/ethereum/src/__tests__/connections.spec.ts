@@ -26,7 +26,7 @@ describe("Connections Store", () => {
 
   test("get", async () => {
     expect(connections.get("testnet")).toBe(testnet);
-    expect(connections.get("goerli")).toEqual(goerli);
+    expect(connections.get("goerli")).toBe(goerli);
     expect(connections.get()).toBe(testnet);
     expect(connections.get("rinkeby")).toBeUndefined();
   });
