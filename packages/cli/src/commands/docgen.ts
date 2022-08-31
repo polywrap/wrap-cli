@@ -160,12 +160,16 @@ async function run(command: DocType, options: DocgenCommandOptions) {
   const codeGenerator = new CodeGenerator({
     project,
     abi,
-    customScript,
-    omitHeader: true,
-    mustacheView: { imports },
   });
 
-  if (await codeGenerator.generate(docgenDir)) {
+  if (
+    await codeGenerator.generateFromScript({
+      codegenDirAbs: docgenDir,
+      script: customScript,
+      omitHeader: true,
+      mustacheView: { imports },
+    })
+  ) {
     console.log(`🔥 ${intlMsg.commands_docgen_success()} 🔥`);
     process.exitCode = 0;
   } else {

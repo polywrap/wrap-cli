@@ -39,7 +39,7 @@ export class Compiler {
     const run = async (): Promise<void> => {
       if (!(await this._isInterface())) {
         // Generate the bindings
-        await codeGenerator.generateCodeCompiler();
+        await codeGenerator.generate();
       }
     };
 
@@ -81,7 +81,7 @@ export class Compiler {
 
       if (!(await this._isInterface())) {
         // Generate the bindings
-        await codeGenerator.generateCodeCompiler();
+        await codeGenerator.generate();
 
         // Compile the Wrapper
         await this._buildModules();

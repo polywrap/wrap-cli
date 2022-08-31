@@ -85,12 +85,19 @@ async function run(options: CodegenCommandOptions) {
   const codeGenerator = new CodeGenerator({
     project,
     abi,
-    customScript: script,
   });
 
+  const generationSubPath = await CodeGenerator.getGenerationSubpath(project);
+  const generationAbsPath = generationSubPath
+    ? path.join(project.getManifestDir(), generationSubPath)
+    : undefined;
+
   const result = script
-    ? await codeGenerator.generate(codegenDir)
-    : await codeGenerator.generateCodeCompiler();
+    ? await codeGenerator.generateFromScript({
+        script,
+        codegenDirAbs: codegenDir,
+      })
+    : await codeGenerator.generate(generationAbsPath);
 
   if (result) {
     console.log(`🔥 ${intlMsg.commands_codegen_success()} 🔥`);

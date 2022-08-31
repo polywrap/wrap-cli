@@ -30,7 +30,11 @@ import { Abi } from "@polywrap/wrap-manifest-types-js";
 export interface CodeGeneratorConfig {
   project: Project<AnyProjectManifest>;
   abi: Abi;
-  customScript?: string;
+}
+
+interface GenerationWithScriptArgs {
+  codegenDirAbs: string;
+  script: string;
   mustacheView?: Record<string, unknown>;
   omitHeader?: boolean;
 }
@@ -40,36 +44,9 @@ export class CodeGenerator {
 
   constructor(private _config: CodeGeneratorConfig) {}
 
-  public async generate(codegenDirAbs: string): Promise<boolean> {
-    try {
-      // Compile the Wrapper
-      await this._generateCode(codegenDirAbs);
-
-      return true;
-    } catch (e) {
-      gluegun.print.error(e);
-      return false;
-    }
-  }
-
-  public async generateCodeCompiler(): Promise<boolean> {
-    const { project, abi } = this._config;
-    const generationSubPath = await this._getGenerationSubpath();
-
-    // Generate the bindings
-    const binding = await project.generateSchemaBindings(
-      abi,
-      generationSubPath
-    );
-
-    // Output the bindings
-    writeDirectorySync(binding.outputDirAbs, binding.output);
-
-    return true;
-  }
-
-  private async _getGenerationSubpath(): Promise<string | undefined> {
-    const { project } = this._config;
+  static async getGenerationSubpath(
+    project: Project<AnyProjectManifest>
+  ): Promise<string | undefined> {
     const manifest = await project.getManifest();
     const manifestLanguage = await project.getManifestLanguage();
 
@@ -87,37 +64,15 @@ export class CodeGenerator {
     }
   }
 
-  private async _generateCode(codegenDirAbs: string) {
+  public async generateFromScript({
+    script: customScript,
+    codegenDirAbs,
+    mustacheView,
+  }: GenerationWithScriptArgs): Promise<boolean> {
     const { project, abi } = this._config;
 
-    const run = async (spinner?: Ora) => {
-      const language = await project.getManifestLanguage();
-      let bindLanguage: BindLanguage | undefined;
-
-      if (isPolywrapManifestLanguage(language)) {
-        bindLanguage = polywrapManifestLanguageToBindLanguage(language);
-      } else if (isPluginManifestLanguage(language)) {
-        bindLanguage = pluginManifestLanguageToBindLanguage(language);
-      } else if (isAppManifestLanguage(language)) {
-        bindLanguage = appManifestLanguageToBindLanguage(language);
-      }
-
-      if (!bindLanguage) {
-        throw Error(
-          intlMsg.lib_language_unsupportedManifestLanguage({
-            language: language,
-            supported: [
-              ...Object.keys(polywrapManifestLanguages),
-              ...Object.keys(pluginManifestLanguages),
-              ...Object.keys(appManifestLanguages),
-            ].join(", "),
-          })
-        );
-      }
-
-      if (this._config.customScript) {
-        const customScript = this._config.customScript;
-
+    return this._wrapInRun(
+      async (bindLanguage: BindLanguage, spinner?: Ora) => {
         // Check the generation file if it has the proper run() method
         // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports
         const generator = isTypescriptFile(customScript)
@@ -141,7 +96,7 @@ export class CodeGenerator {
           abi,
           outputDirAbs: codegenDirAbs,
           bindLanguage,
-          config: this._config.mustacheView,
+          config: mustacheView,
         });
 
         resetDir(codegenDirAbs);
@@ -149,37 +104,105 @@ export class CodeGenerator {
           codegenDirAbs,
           binding.output,
           (templatePath: string) =>
-            this._generateTemplate(templatePath, abi, spinner)
+            this._generateTemplate(
+              templatePath,
+              abi,
+              {
+                script: customScript,
+                codegenDirAbs,
+                mustacheView,
+              },
+              spinner
+            )
         );
-      } else {
+      }
+    );
+  }
+
+  public async generate(codegenDirAbs?: string): Promise<boolean> {
+    const { project, abi } = this._config;
+
+    try {
+      return this._wrapInRun(async () => {
         const binding = await project.generateSchemaBindings(
           abi,
-          path.relative(project.getManifestDir(), codegenDirAbs)
+          codegenDirAbs
+            ? path.relative(project.getManifestDir(), codegenDirAbs)
+            : undefined
         );
 
         // Output the bindings
         resetDir(binding.outputDirAbs);
         writeDirectorySync(binding.outputDirAbs, binding.output);
-      }
-    };
+      });
+    } catch (e) {
+      gluegun.print.error(e);
+      return false;
+    }
+  }
 
-    if (project.quiet) {
-      await run();
-    } else {
-      await withSpinner(
-        intlMsg.lib_codeGenerator_genCodeText(),
-        intlMsg.lib_codeGenerator_genCodeError(),
-        intlMsg.lib_codeGenerator_genCodeWarning(),
-        async (spinner) => {
-          return run(spinner);
+  private async _wrapInRun(
+    codegenFunc: (bindLanguage: BindLanguage, spinner?: Ora) => Promise<void>
+  ) {
+    try {
+      const { project } = this._config;
+
+      const run = async (spinner?: Ora) => {
+        const language = await project.getManifestLanguage();
+        let bindLanguage: BindLanguage | undefined;
+
+        if (isPolywrapManifestLanguage(language)) {
+          bindLanguage = polywrapManifestLanguageToBindLanguage(language);
+        } else if (isPluginManifestLanguage(language)) {
+          bindLanguage = pluginManifestLanguageToBindLanguage(language);
+        } else if (isAppManifestLanguage(language)) {
+          bindLanguage = appManifestLanguageToBindLanguage(language);
         }
-      );
+
+        if (!bindLanguage) {
+          throw Error(
+            intlMsg.lib_language_unsupportedManifestLanguage({
+              language: language,
+              supported: [
+                ...Object.keys(polywrapManifestLanguages),
+                ...Object.keys(pluginManifestLanguages),
+                ...Object.keys(appManifestLanguages),
+              ].join(", "),
+            })
+          );
+        }
+
+        await codegenFunc(bindLanguage, spinner);
+      };
+
+      if (project.quiet) {
+        await run();
+      } else {
+        await withSpinner(
+          intlMsg.lib_codeGenerator_genCodeText(),
+          intlMsg.lib_codeGenerator_genCodeError(),
+          intlMsg.lib_codeGenerator_genCodeWarning(),
+          async (spinner) => {
+            return run(spinner);
+          }
+        );
+      }
+
+      return true;
+    } catch (e) {
+      gluegun.print.error(e);
+      return false;
     }
   }
 
   private _generateTemplate(
     templatePath: string,
     config: unknown,
+    {
+      script: customScript,
+      mustacheView,
+      omitHeader,
+    }: GenerationWithScriptArgs,
     spinner?: Ora
   ): string {
     const { project } = this._config;
@@ -191,12 +214,9 @@ export class CodeGenerator {
       step(spinner, stepMessage);
     }
 
-    if (this._config.customScript) {
+    if (customScript) {
       // Update template path when the generation file is given
-      templatePath = path.join(
-        path.dirname(this._config.customScript),
-        templatePath
-      );
+      templatePath = path.join(path.dirname(customScript), templatePath);
     }
 
     const template = readFileSync(templatePath);
@@ -205,10 +225,10 @@ export class CodeGenerator {
     let content = Mustache.render(template.toString(), {
       ...types,
       schema: this._schema,
-      ...this._config.mustacheView,
+      ...mustacheView,
     });
 
-    if (this._config.omitHeader) {
+    if (omitHeader) {
       return content;
     }
 
