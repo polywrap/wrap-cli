@@ -9,7 +9,7 @@ import { UriResolver, UriResolutionResult } from "../../core";
 
 export class CacheResolver implements UriResolver {
   public get name(): string {
-    return CacheResolver.name;
+    return "CacheResolver";
   }
 
   public async resolveUri(
