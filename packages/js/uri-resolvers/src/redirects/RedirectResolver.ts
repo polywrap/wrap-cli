@@ -17,7 +17,7 @@ export class RedirectResolver<TUri extends string | Uri = string>
   }
 
   public get name(): string {
-    return `RedirectResolver (${this.from.uri} - ${this.to.uri})`;
+    return `RedirectResolver(${this.from.uri} - ${this.to.uri})`;
   }
 
   async tryResolveUri(uri: Uri): Promise<IUriResolutionResponse> {
