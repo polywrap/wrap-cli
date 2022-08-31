@@ -21,7 +21,7 @@ export class PackageToWrapperCacheResolver implements ICacheResolver<unknown> {
   ) {}
 
   public get name(): string {
-    return PackageToWrapperCacheResolver.name;
+    return "PackageToWrapperCacheResolver";
   }
 
   public async tryResolveUri(

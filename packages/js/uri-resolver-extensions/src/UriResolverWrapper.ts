@@ -20,7 +20,7 @@ export class UriResolverWrapper implements IUriResolver<unknown> {
   constructor(public readonly implementationUri: Uri) {}
 
   public get name(): string {
-    return `${UriResolverWrapper.name}: (${this.implementationUri.uri})`;
+    return `UriResolverWrapper: (${this.implementationUri.uri})`;
   }
 
   async tryResolveUri(

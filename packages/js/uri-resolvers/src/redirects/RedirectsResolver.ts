@@ -16,6 +16,6 @@ export class RedirectsResolver<
   }
 
   get name(): string {
-    return RedirectsResolver.name;
+    return "RedirectsResolver";
   }
 }

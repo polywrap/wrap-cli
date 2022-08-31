@@ -14,7 +14,7 @@ import {
 // Packages are turned into wrappers before caching
 export class WrapperCacheResolver<TError> implements ICacheResolver<TError> {
   public get name(): string {
-    return WrapperCacheResolver.name;
+    return "WrapperCacheResolver";
   }
 
   constructor(private cache: Map<string, Wrapper>) {}

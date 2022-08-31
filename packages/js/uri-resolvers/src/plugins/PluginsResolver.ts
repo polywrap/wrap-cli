@@ -26,6 +26,6 @@ export class PluginsResolver extends UriResolverAggregator {
   }
 
   get name(): string {
-    return PluginsResolver.name;
+    return "PluginsResolver";
   }
 }

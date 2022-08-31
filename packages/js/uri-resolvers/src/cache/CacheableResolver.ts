@@ -23,7 +23,7 @@ export class CacheableResolver<TError = undefined>
     if (name) {
       this.name = name;
     } else {
-      this.name = CacheableResolver.name;
+      this.name = "CacheableResolver";
     }
 
     this.resolverToCache = buildUriResolver(resolverToCache);

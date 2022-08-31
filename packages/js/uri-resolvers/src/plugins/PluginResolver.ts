@@ -29,7 +29,7 @@ export class PluginResolver implements IUriResolver {
   }
 
   public get name(): string {
-    return `${PluginResolver.name} (${this.pluginUri.uri})`;
+    return `PluginResolver (${this.pluginUri.uri})`;
   }
 
   async tryResolveUri(uri: Uri): Promise<IUriResolutionResponse> {

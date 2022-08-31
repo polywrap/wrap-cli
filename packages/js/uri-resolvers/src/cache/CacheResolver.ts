@@ -12,7 +12,7 @@ import {
 export class ResponseCacheResolver<TError = undefined>
   implements ICacheResolver<TError> {
   public get name(): string {
-    return ResponseCacheResolver.name;
+    return "ResponseCacheResolver";
   }
 
   constructor(private cache: Map<string, IUriResolutionResponse<TError>>) {}

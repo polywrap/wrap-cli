@@ -18,6 +18,6 @@ export class LegacyPluginsResolver extends UriResolverAggregator {
   }
 
   get name(): string {
-    return LegacyPluginsResolver.name;
+    return "LegacyPluginsResolver";
   }
 }

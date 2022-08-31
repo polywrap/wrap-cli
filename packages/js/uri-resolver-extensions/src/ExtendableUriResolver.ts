@@ -21,7 +21,7 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<unknown> {
   }
 
   get name(): string {
-    return ExtendableUriResolver.name;
+    return "ExtendableUriResolver";
   }
 
   async getUriResolvers(

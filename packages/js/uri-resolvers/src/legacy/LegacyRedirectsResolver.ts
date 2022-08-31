@@ -13,6 +13,6 @@ export class LegacyRedirectsResolver extends UriResolverAggregator {
   }
 
   get name(): string {
-    return LegacyRedirectsResolver.name;
+    return "LegacyRedirectsResolver";
   }
 }
