@@ -2,6 +2,7 @@
 import { WrapExports } from "./types";
 import { createImports } from "./imports";
 import { IFileReader } from "./IFileReader";
+import { WRAP_MODULE_PATH } from "./constants";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { msgpackEncode } from "@polywrap/msgpack-js";
@@ -18,7 +19,6 @@ import {
   isBuffer,
   GetFileOptions,
 } from "@polywrap/core-js";
-import { WRAP_MODULE_PATH } from "./constants";
 
 type InvokeResultOrError =
   | { type: "InvokeResult"; invokeResult: Uint8Array }

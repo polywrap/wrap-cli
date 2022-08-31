@@ -1,6 +1,8 @@
 import { IFileReader } from "./IFileReader";
 import { IWasmPackage } from "./IWasmPackage";
 import { WasmWrapper } from "./WasmWrapper";
+import { WRAP_MODULE_PATH, WRAP_MANIFEST_PATH } from "./constants";
+import { InMemoryFileReader } from "./InMemoryFileReader";
 
 import {
   deserializeWrapManifest,
@@ -13,8 +15,6 @@ import {
   Wrapper,
   getEnvFromUriHistory,
 } from "@polywrap/core-js";
-import { WRAP_MODULE_PATH, WRAP_MANIFEST_PATH } from "./constants";
-import { InMemoryFileReader } from "./InMemoryFileReader";
 
 export class WasmPackage implements IWasmPackage {
   protected constructor(
