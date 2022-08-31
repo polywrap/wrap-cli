@@ -32,7 +32,7 @@ export class ExtendableUriResolver implements UriResolver {
   }
 
   public get name(): string {
-    return ExtendableUriResolver.name;
+    return "ExtendableUriResolver";
   }
 
   async resolveUri(
@@ -101,7 +101,7 @@ export class ExtendableUriResolver implements UriResolver {
   }> {
     const bootstrapUriResolvers = client
       .getUriResolvers({})
-      .filter((x) => x.name !== ExtendableUriResolver.name);
+      .filter((x) => x.name !== this.name);
 
     const implementationsToLoad = new Queue<Uri>();
 

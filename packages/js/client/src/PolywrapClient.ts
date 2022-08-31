@@ -457,7 +457,7 @@ export class PolywrapClient implements Client {
     let uriResolvers = this.getUriResolvers({ contextId: contextId });
 
     if (!cacheRead) {
-      uriResolvers = uriResolvers.filter((x) => x.name !== CacheResolver.name);
+      uriResolvers = uriResolvers.filter((x) => !(x instanceof CacheResolver));
     }
     const { wrapper, uri: resolvedUri, uriHistory, error } = await resolveUri(
       this._toUri(uri),
@@ -504,7 +504,7 @@ export class PolywrapClient implements Client {
     failedUriResolvers: string[];
   }> {
     const extendableUriResolver = this.getUriResolvers().find(
-      (x) => x.name === ExtendableUriResolver.name
+      (x) => x instanceof ExtendableUriResolver
     ) as ExtendableUriResolver;
 
     if (!extendableUriResolver) {
