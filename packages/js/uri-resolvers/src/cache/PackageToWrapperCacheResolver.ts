@@ -10,11 +10,15 @@ import {
   executeMaybeAsyncFunction,
   Wrapper,
 } from "@polywrap/core-js";
+import { DeserializeManifestOptions } from "@polywrap/wrap-manifest-types-js";
 
 // This cache resolver caches wrappers
 // Packages are turned into wrappers before caching
 export class PackageToWrapperCacheResolver implements ICacheResolver<unknown> {
-  constructor(private cache: IWrapperCache) {}
+  constructor(
+    private cache: IWrapperCache,
+    private options?: DeserializeManifestOptions
+  ) {}
 
   public get name(): string {
     return PackageToWrapperCacheResolver.name;
@@ -52,7 +56,8 @@ export class PackageToWrapperCacheResolver implements ICacheResolver<unknown> {
 
         const wrapper = await response.result.value.package.createWrapper(
           client,
-          uriHistory
+          uriHistory,
+          this.options
         );
         await executeMaybeAsyncFunction<Wrapper | undefined>(
           this.cache.set.bind(this.cache, uri, wrapper)

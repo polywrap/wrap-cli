@@ -1,5 +1,7 @@
-import { GetManifestOptions, IWrapPackage } from "@polywrap/core-js";
+import { IWrapPackage } from "@polywrap/core-js";
+import { IFileReader } from "./IFileReader";
 
 export interface IWasmPackage extends IWrapPackage {
-  getWasmModule(options: GetManifestOptions): Promise<ArrayBuffer>;
+  fileReader: IFileReader;
+  getWasmModule(): Promise<Uint8Array>;
 }

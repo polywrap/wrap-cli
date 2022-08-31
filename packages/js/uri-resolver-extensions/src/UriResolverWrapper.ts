@@ -1,10 +1,6 @@
 import { UriResolverExtensionFileReader } from "./UriResolverExtensionFileReader";
 
 import {
-  DeserializeManifestOptions,
-  deserializeWrapManifest,
-} from "@polywrap/wrap-manifest-types-js";
-import {
   IUriResolver,
   Uri,
   Client,
@@ -21,10 +17,7 @@ import { WasmPackage } from "@polywrap/wasm-js";
 import { getUriHistory } from "@polywrap/uri-resolvers-js";
 
 export class UriResolverWrapper implements IUriResolver<unknown> {
-  constructor(
-    public readonly implementationUri: Uri,
-    private readonly deserializeOptions?: DeserializeManifestOptions
-  ) {}
+  constructor(public readonly implementationUri: Uri) {}
 
   public get name(): string {
     return `${UriResolverWrapper.name}: (${this.implementationUri.uri})`;
@@ -49,17 +42,10 @@ export class UriResolverWrapper implements IUriResolver<unknown> {
     if (uriOrManifest?.uri) {
       return UriResolutionResponse.ok(new Uri(uriOrManifest.uri), history);
     } else if (uriOrManifest?.manifest) {
-      // We've found our manifest at the current implementation,
-      // meaning the URI resolver can also be used as a Wrapper resolver
-      const manifest = await deserializeWrapManifest(
-        uriOrManifest.manifest,
-        this.deserializeOptions
-      );
-
-      const wrapPackage = new WasmPackage(
+      const wrapPackage = WasmPackage.from(
         uri,
-        new UriResolverExtensionFileReader(this.implementationUri, uri, client),
-        manifest
+        uriOrManifest.manifest,
+        new UriResolverExtensionFileReader(this.implementationUri, uri, client)
       );
 
       return UriResolutionResponse.ok(wrapPackage, history);

@@ -9,7 +9,6 @@ import {
   UriResolutionResponse,
   IUriResolutionResponse,
 } from "@polywrap/core-js";
-import { DeserializeManifestOptions } from "@polywrap/wrap-manifest-types-js";
 import { Result, ResultOk } from "@polywrap/result";
 import {
   InfiniteLoopError,
@@ -17,10 +16,7 @@ import {
 } from "@polywrap/uri-resolvers-js";
 
 export class ExtendableUriResolver extends UriResolverAggregatorBase<unknown> {
-  constructor(
-    options: { endOnRedirect: boolean },
-    private _deserializeOptions?: DeserializeManifestOptions
-  ) {
+  constructor(options: { endOnRedirect: boolean }) {
     super(options);
   }
 
@@ -39,8 +35,7 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<unknown> {
     );
 
     const resolvers: UriResolverWrapper[] = uriResolverImpls.map(
-      (implementationUri) =>
-        new UriResolverWrapper(implementationUri, this._deserializeOptions)
+      (implementationUri) => new UriResolverWrapper(implementationUri)
     );
 
     return ResultOk(resolvers);
