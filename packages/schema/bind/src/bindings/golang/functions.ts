@@ -122,11 +122,18 @@ export const makeImports: MustacheFn = () => {
     const txt = imports
       .sort()
       .map((imp) => {
-        const parts = imp.split(" as ");
-        if (parts.length > 1) {
-          return `\t${parts[1]} "${parts[0]}"`;
+        let res = "";
+        if (imp.startsWith(". ")) {
+          res = `. "${imp.slice(2)}"`;
+        } else {
+          const parts = imp.split(" as ");
+          if (parts.length > 1) {
+            res = `${parts[1]} "${parts[0]}"`;
+          } else {
+            res = `"${imp}"`;
+          }
         }
-        return `\t"${imp}"`;
+        return `\t${res}`;
       })
       .join("\n");
     return txt !== "" ? `import (\n${txt}\n)` : "";

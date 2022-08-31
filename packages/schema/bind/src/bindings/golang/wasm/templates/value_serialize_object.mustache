@@ -1,9 +1,9 @@
 {
 	v := value{{#lastFullIter}}i{{/lastFullIter}}
 	{{#required}}
-	types.{{#toUpper}}{{type}}{{/toUpper}}Write(writer, &v)
+	{{#toUpper}}{{type}}{{/toUpper}}Write(writer, &v)
 	{{/required}}
 	{{^required}}
-	types.{{#toUpper}}{{type}}{{/toUpper}}Write(writer, v)
+	{{#toUpper}}{{type}}{{/toUpper}}Write(writer, v)
 	{{/required}}
 }
