@@ -13,7 +13,7 @@ func Method1(args *types.ArgsMethod1) []types.Output {
 	if args.Arg2 != nil {
 		out2 = types.Output{
 			Prop: args.Arg2.Prop,
-			Nested: Nested{
+			Nested: types.Nested{
 				Prop: args.Arg2.Circular.Prop,
 			},
 		}

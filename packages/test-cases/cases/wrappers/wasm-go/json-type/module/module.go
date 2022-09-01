@@ -25,7 +25,14 @@ func StringifyObject(args *types.ArgsStringifyObject) string {
 }
 
 func MethodJSON(args *types.ArgsMethodJSON) *fastjson.Value {
-	result := new(fastjson.Arena).NewObject()
-	result.Set("valueB", fastjson.MustParse("\""+args.ValueB+"\""))
+	arena := new(fastjson.Arena)
+	result := arena.NewObject()
+	result.Set("valueA", arena.NewNumberInt(int(args.ValueA)))
+	result.Set("valueB", arena.NewString(args.ValueB))
+	if args.ValueC {
+		result.Set("valueC", arena.NewTrue())
+	} else {
+		result.Set("valueC", arena.NewFalse())
+	}
 	return result
 }
