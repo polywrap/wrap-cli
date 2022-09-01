@@ -19,7 +19,7 @@ import {
 export class WasmPackage implements IWasmPackage {
   protected constructor(
     public readonly uri: Uri,
-    public readonly fileReader: IFileReader
+    private readonly fileReader: IFileReader
   ) {}
 
   static from(
