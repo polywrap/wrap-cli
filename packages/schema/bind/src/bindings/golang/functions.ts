@@ -101,20 +101,14 @@ export const makeImports: MustacheFn = () => {
     const exist: { [key: string]: boolean } = {};
     for (let t of types) {
       t = t.trim();
-      switch (t) {
-        case "*big.Int":
-          exist[
-            "github.com/consideritdone/polywrap-go/polywrap/msgpack/big"
-          ] = true;
-          break;
-        case "*fastjson.Value":
-          exist["github.com/valyala/fastjson"] = true;
-          break;
-        default:
-          if (/([^/\s]+\/)(.*)/.test(t)) {
-            exist[t] = true;
-          }
-          break;
+      if (t.endsWith("big.Int")) {
+        exist[
+          "github.com/consideritdone/polywrap-go/polywrap/msgpack/big"
+        ] = true;
+      } else if (t.endsWith("fastjson.Value")) {
+        exist["github.com/valyala/fastjson"] = true;
+      } else if (/([^/\s]+\/)(.*)/.test(t)) {
+        exist[t] = true;
       }
     }
     const imports: Array<string> = [];
@@ -136,7 +130,7 @@ export const makeImports: MustacheFn = () => {
         return `\t${res}`;
       })
       .join("\n");
-    return txt !== "" ? `import (\n${txt}\n)` : "";
+    return txt !== "" ? `\nimport (\n${txt}\n)\n\n` : "\n";
   };
 };
 

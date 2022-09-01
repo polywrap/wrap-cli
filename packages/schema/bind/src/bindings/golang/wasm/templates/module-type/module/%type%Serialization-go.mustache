@@ -1,7 +1,11 @@
 package module
-
-{{#makeImports}}github.com/consideritdone/polywrap-go/polywrap/msgpack,. {{goImport}}/wrap/types,{{#arguments}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{^last}},{{/last}}{{/arguments}}{{/makeImports}}
-
+{{#makeImports}}
+	github.com/consideritdone/polywrap-go/polywrap/msgpack,
+	. {{goImport}}/wrap/types,
+	{{#methods}}
+		{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}},
+	{{/methods}}
+{{/makeImports}}
 {{#methods}}
 func Deserialize{{#toUpper}}{{name}}{{/toUpper}}Args(argsBuf []byte) *Args{{#toUpper}}{{name}}{{/toUpper}} {
 	ctx := msgpack.NewContext("Deserializing module-type: {{#toUpper}}{{name}}{{/toUpper}}")

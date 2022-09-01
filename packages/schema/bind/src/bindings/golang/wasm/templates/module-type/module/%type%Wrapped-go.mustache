@@ -1,11 +1,8 @@
 package module
-
 {{#makeImports}}
 	{{#methods}}{{#env}}github.com/consideritdone/polywrap-go/polywrap,{{/env}}{{/methods}}
 	{{goImport}}/module as methods
 {{/makeImports}}
-
-
 {{#methods}}
 func {{#toUpper}}{{name}}{{/toUpper}}Wrapped(argsBuf []byte, envSize uint32) []byte {
 	{{#env}}

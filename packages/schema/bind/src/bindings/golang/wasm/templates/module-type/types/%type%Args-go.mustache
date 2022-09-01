@@ -1,5 +1,11 @@
 package types
-{{#makeImports}}{{#arguments}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{^last}},{{/last}}{{/arguments}}{{/makeImports}}
+{{#makeImports}}
+  {{#methods}}
+    {{#arguments}}
+      {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
+    {{/arguments}}
+  {{/methods}}
+{{/makeImports}}
 {{#methods}}
 type Args{{#toUpper}}{{name}}{{/toUpper}} struct {
 {{#stuctProps}}
