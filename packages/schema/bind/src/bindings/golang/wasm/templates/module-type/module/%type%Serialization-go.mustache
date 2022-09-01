@@ -8,8 +8,8 @@ package module
 {{/makeImports}}
 {{#methods}}
 func Deserialize{{#toUpper}}{{name}}{{/toUpper}}Args(argsBuf []byte) *Args{{#toUpper}}{{name}}{{/toUpper}} {
-	ctx := msgpack.NewContext("Deserializing module-type: {{#toUpper}}{{name}}{{/toUpper}}")
 	{{#arguments.length}}
+	ctx := msgpack.NewContext("Deserializing module-type: {{#toUpper}}{{name}}{{/toUpper}}")
 	reader := msgpack.NewReadDecoder(ctx, argsBuf)
 
 	var (
