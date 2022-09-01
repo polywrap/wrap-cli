@@ -1,6 +1,5 @@
 import { Command, Program } from "./types";
 import {
-  CodeGenerator,
   PluginProject,
   SchemaComposer,
   defaultPluginManifest,
@@ -10,6 +9,8 @@ import {
   parseClientConfigOption,
   generateWrapFile,
 } from "../lib";
+import { DefaultCodegenStrategy } from "../lib/codegen/strategies/DefaultCodegenStrategy";
+import { CodeGenerator } from "../lib/codegen/CodeGenerator";
 
 import path from "path";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
@@ -92,12 +93,15 @@ async function run(options: PluginCommandOptions) {
 
   const abi = await schemaComposer.getComposedAbis();
 
-  const codeGenerator = new CodeGenerator({
+  const codegenStrategy = new DefaultCodegenStrategy({
     project,
     abi,
+    codegenDirAbs: codegenDir,
   });
 
-  const result = await codeGenerator.generate(codegenDir);
+  const codeGenerator = new CodeGenerator({ strategy: codegenStrategy });
+
+  const result = await codeGenerator.generate();
   process.exitCode = result ? 0 : 1;
 
   // Output the built manifest

@@ -1,13 +1,14 @@
 import { Command, Program } from "./types";
 import {
   AppProject,
-  CodeGenerator,
   SchemaComposer,
   intlMsg,
   parseAppManifestFileOption,
   parseClientConfigOption,
   parseDirOption,
 } from "../lib";
+import { CodeGenerator } from "../lib/codegen/CodeGenerator";
+import { DefaultCodegenStrategy } from "../lib/codegen/strategies/DefaultCodegenStrategy";
 
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import * as path from "path";
@@ -77,12 +78,14 @@ async function run(options: AppCommandOptions) {
   });
 
   const abi = await schemaComposer.getComposedAbis();
-  const codeGenerator = new CodeGenerator({
+  const codegenStrategy = new DefaultCodegenStrategy({
     project,
     abi,
+    codegenDirAbs: codegenDir,
   });
+  const codeGenerator = new CodeGenerator({ strategy: codegenStrategy });
 
-  if (await codeGenerator.generate(codegenDir)) {
+  if (await codeGenerator.generate()) {
     console.log(`🔥 ${intlMsg.commands_app_success()} 🔥`);
     process.exitCode = 0;
   } else {

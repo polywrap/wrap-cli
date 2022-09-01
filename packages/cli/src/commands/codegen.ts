@@ -1,6 +1,5 @@
 import { Command, Program } from "./types";
 import {
-  CodeGenerator,
   PolywrapProject,
   SchemaComposer,
   intlMsg,
@@ -9,7 +8,10 @@ import {
   parseCodegenScriptOption,
   parseWasmManifestFileOption,
   parseClientConfigOption,
+  CompilerCodegenStrategy,
 } from "../lib";
+import { ScriptCodegenStrategy } from "../lib/codegen/strategies/ScriptCodegenStrategy";
+import { CodeGenerator } from "../lib/codegen/CodeGenerator";
 
 import path from "path";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
@@ -81,23 +83,23 @@ async function run(options: CodegenCommandOptions) {
   });
 
   const abi = await schemaComposer.getComposedAbis();
-
-  const codeGenerator = new CodeGenerator({
-    project,
-    abi,
-  });
-
-  const generationSubPath = await CodeGenerator.getGenerationSubpath(project);
-  const generationAbsPath = generationSubPath
-    ? path.join(project.getManifestDir(), generationSubPath)
-    : undefined;
-
-  const result = script
-    ? await codeGenerator.generateFromScript({
-        script,
+  const strategy = script
+    ? new ScriptCodegenStrategy({
         codegenDirAbs: codegenDir,
+        script,
+        abi,
+        project,
+        omitHeader: false,
+        mustacheView: undefined,
       })
-    : await codeGenerator.generate(generationAbsPath);
+    : new CompilerCodegenStrategy({
+        abi,
+        project,
+      });
+
+  const codeGenerator = new CodeGenerator({ strategy });
+
+  const result = await codeGenerator.generate();
 
   if (result) {
     console.log(`🔥 ${intlMsg.commands_codegen_success()} 🔥`);

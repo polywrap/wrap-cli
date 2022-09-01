@@ -2,7 +2,6 @@
 import {
   AnyProjectManifest,
   AppProject,
-  CodeGenerator,
   defaultAppManifest,
   defaultPolywrapManifest,
   Project,
@@ -19,6 +18,8 @@ import { Command, Program } from "./types";
 import { scriptPath as docusaurusScriptPath } from "../lib/docgen/docusaurus";
 import { scriptPath as jsdocScriptPath } from "../lib/docgen/jsdoc";
 import { scriptPath as schemaScriptPath } from "../lib/docgen/schema";
+import { CodeGenerator } from "../lib/codegen/CodeGenerator";
+import { ScriptCodegenStrategy } from "../lib/codegen/strategies/ScriptCodegenStrategy";
 
 import path from "path";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
@@ -157,19 +158,17 @@ async function run(command: DocType, options: DocgenCommandOptions) {
 
   const abi = await schemaComposer.getComposedAbis();
 
-  const codeGenerator = new CodeGenerator({
+  const codegenStrategy = new ScriptCodegenStrategy({
     project,
     abi,
+    script: customScript,
+    codegenDirAbs: docgenDir,
+    omitHeader: true,
+    mustacheView: { imports },
   });
+  const codeGenerator = new CodeGenerator({ strategy: codegenStrategy });
 
-  if (
-    await codeGenerator.generateFromScript({
-      codegenDirAbs: docgenDir,
-      script: customScript,
-      omitHeader: true,
-      mustacheView: { imports },
-    })
-  ) {
+  if (await codeGenerator.generate()) {
     console.log(`🔥 ${intlMsg.commands_docgen_success()} 🔥`);
     process.exitCode = 0;
   } else {

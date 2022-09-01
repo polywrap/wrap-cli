@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 
 import {
-  CodeGenerator,
   displayPath,
   generateWrapFile,
   intlMsg,
@@ -13,6 +12,7 @@ import {
   withSpinner,
 } from "./";
 import { SourceBuildStrategy } from "./source-builders/SourceBuilder";
+import { CodeGenerator } from "./codegen/CodeGenerator";
 
 import { WasmWrapper, WrapImports } from "@polywrap/client-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
