@@ -7,7 +7,7 @@ import {
   defaultPolywrapManifest,
   parseDirOption,
   parseCodegenScriptOption,
-  parseWasmManifestFileOption,
+  parseManifestFileOption,
   parseClientConfigOption,
   getProjectFromManifest,
   isPluginManifestLanguage,
@@ -17,7 +17,7 @@ import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import path from "path";
 import fs from "fs";
 
-const defaultCodegenDir = "./src/wrap";
+const defaultCodegenDir = "./wrap";
 const defaultPublishDir = "./build";
 
 const pathStr = intlMsg.commands_codegen_options_o_path();
@@ -51,7 +51,7 @@ export const codegen: Command = {
       )
       .option(
         `-p, --publish-dir <${pathStr}>`,
-        `${intlMsg.commands_plugin_options_publish({
+        `${intlMsg.commands_codegen_options_publish({
           default: defaultPublishDir,
         })}`
       )
@@ -69,7 +69,7 @@ export const codegen: Command = {
           clientConfig: await parseClientConfigOption(options.clientConfig),
           codegenDir: parseDirOption(options.codegenDir, defaultCodegenDir),
           script: parseCodegenScriptOption(options.script),
-          manifestFile: parseWasmManifestFileOption(options.manifestFile),
+          manifestFile: parseManifestFileOption(options.manifestFile),
           publishDir: parseDirOption(options.publishDir, defaultPublishDir),
         });
       });

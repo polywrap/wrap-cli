@@ -14,14 +14,14 @@ import {
   isAppManifestLanguage,
   isPluginManifestLanguage,
   isPolywrapManifestLanguage,
-} from "./manifests";
-import { Project } from "./Project";
+} from "../manifests";
+import { Project } from "../Project";
 import { filesystem } from "gluegun";
 import YAML from "js-yaml";
-import { PolywrapProject } from "./PolywrapProject";
+import { PolywrapProject } from "../PolywrapProject";
 import path from "path";
-import { AppProject } from "./AppProject";
-import { PluginProject } from "./PluginProject";
+import { AppProject } from "../AppProject";
+import { PluginProject } from "../PluginProject";
 
 type AnyManifest = AnyPolywrapManifest | AnyPluginManifest | AnyAppManifest;
 

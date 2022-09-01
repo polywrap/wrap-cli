@@ -4,4 +4,4 @@ export * from "./PluginProject";
 export * from "./AppProject";
 export * from "./templates";
 export * from "./manifests";
-export * from "./utils"
+export * from "./helpers/getProjectFromManifest"

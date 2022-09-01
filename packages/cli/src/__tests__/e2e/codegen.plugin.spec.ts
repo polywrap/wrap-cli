@@ -1,86 +1,18 @@
-import { clearStyle } from "./utils";
-
 import { runCLI } from "@polywrap/test-env-js";
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
-import { compareSync } from "dir-compare";
 import path from "path";
 import fs from "fs";
+import { testCliOutput } from "./helpers/testCliOutput";
+import { testCodegenOutput } from "./helpers/testCodegenOutput";
 
-describe("e2e tests for codegen command - plugins", () => {
+describe("e2e tests for codegen command - plugin project", () => {
   const testCaseRoot = path.join(GetPathToCliTestFiles(), "plugin/codegen");
-  const testCases =
-    fs.readdirSync(testCaseRoot, { withFileTypes: true })
-      .filter((dirent) => dirent.isDirectory())
-      .map((dirent) => dirent.name);
+  const testCases = fs
+    .readdirSync(testCaseRoot, { withFileTypes: true })
+    .filter((dirent) => dirent.isDirectory())
+    .map((dirent) => dirent.name);
   const getTestCaseDir = (index: number) =>
     path.join(testCaseRoot, testCases[index]);
-
-  const testCliOutput = (
-    testCaseDir: string,
-    exitCode: number,
-    stdout: string,
-    stder: string
-  ) => {
-    const output = clearStyle(stdout);
-    const error = clearStyle(stder);
-
-    const expected = JSON.parse(
-      fs.readFileSync(
-        path.join(testCaseDir, "expected", "stdout.json"),
-        "utf-8"
-      )
-    );
-
-    if (expected.stdout) {
-      if (Array.isArray(expected.stdout)) {
-        for (const line of expected.stdout) {
-          expect(output).toContain(line);
-        }
-      } else {
-        expect(output).toContain(expected.stdout);
-      }
-    }
-
-    if (expected.stderr) {
-      if (Array.isArray(expected.stderr)) {
-        for (const line of expected.stderr) {
-          expect(error).toContain(line);
-        }
-      } else {
-        expect(error).toContain(expected.stderr);
-      }
-    }
-
-    if (expected.exitCode) {
-      expect(exitCode).toEqual(expected.exitCode);
-    }
-
-    if (expected.files) {
-      for (const file of expected.files) {
-        expect(fs.existsSync(path.join(testCaseDir, file))).toBeTruthy();
-      }
-    }
-  };
-
-  const testCodegenOutput = (testCaseDir: string, codegenDir: string, buildDir: string) => {
-    if (fs.existsSync(path.join(testCaseDir, "expected", "wrap"))) {
-      const expectedCodegenResult = compareSync(
-        codegenDir,
-        path.join(testCaseDir, "expected", "wrap"),
-        { compareContent: true }
-      );
-      expect(expectedCodegenResult.differences).toBe(0);
-    }
-
-    if (fs.existsSync(path.join(testCaseDir, "expected", "build-artifacts"))) {
-      const expectedBuildResult = compareSync(
-        buildDir,
-        path.join(testCaseDir, "expected", "build-artifacts"),
-        { compareContent: true }
-      );
-      expect(expectedBuildResult.differences).toBe(0);
-    }
-  };
 
   describe("test-cases", () => {
     for (let i = 0; i < testCases.length; ++i) {
@@ -97,22 +29,20 @@ describe("e2e tests for codegen command - plugins", () => {
           cmdArgs.push(...cmdConfig.args);
         }
 
-        if(cmdConfig.codegenDir) {
+        if (cmdConfig.codegenDir) {
           codegenDir = path.join(testCaseDir, cmdConfig.codegenDir);
         }
 
-        if(cmdConfig.buildDir) {
+        if (cmdConfig.buildDir) {
           buildDir = path.join(testCaseDir, cmdConfig.buildDir);
         }
       }
 
       test(testCaseName, async () => {
-        const { exitCode: code, stdout: output, stderr: error } = await runCLI(
-          {
-            args: ["codegen", ...cmdArgs],
-            cwd: testCaseDir,
-          }
-        );
+        const { exitCode: code, stdout: output, stderr: error } = await runCLI({
+          args: ["codegen", ...cmdArgs],
+          cwd: testCaseDir,
+        });
         testCliOutput(testCaseDir, code, output, error);
         testCodegenOutput(testCaseDir, codegenDir, buildDir);
       });
