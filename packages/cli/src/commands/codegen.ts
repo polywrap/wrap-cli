@@ -17,7 +17,7 @@ import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import path from "path";
 import fs from "fs";
 
-const defaultCodegenDir = "./wrap";
+const defaultCodegenDir = "./src/wrap";
 const defaultPublishDir = "./build";
 
 const pathStr = intlMsg.commands_codegen_options_o_path();

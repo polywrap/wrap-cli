@@ -111,7 +111,7 @@ export class AppProject extends Project<AppManifest> {
     });
   }
 
-  private _getGenerationDirectory(generationSubPath = "wrap"): string {
+  private _getGenerationDirectory(generationSubPath = "src/wrap"): string {
     return path.join(this.getManifestDir(), generationSubPath);
   }
 }

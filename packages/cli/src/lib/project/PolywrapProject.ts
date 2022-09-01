@@ -531,7 +531,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     return undefined;
   }
 
-  private _getGenerationDirectory(generationSubPath = "wrap"): string {
+  private _getGenerationDirectory(generationSubPath = "src/wrap"): string {
     return path.join(this.getManifestDir(), generationSubPath);
   }
 }
