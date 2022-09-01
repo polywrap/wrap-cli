@@ -9,6 +9,7 @@ import {
   outputMetadata,
   PolywrapProject,
   resetDir,
+  SchemaComposer,
   withSpinner,
 } from "./";
 import { SourceBuildStrategy } from "./source-builders/SourceBuilder";
@@ -20,14 +21,13 @@ import { normalizePath } from "@polywrap/os-js";
 import * as gluegun from "gluegun";
 import fs from "fs";
 import path from "path";
-import { Abi } from "@polywrap/schema-parse";
 
 export interface CompilerConfig {
   outputDir: string;
   project: PolywrapProject;
   codeGenerator: CodeGenerator;
   sourceBuildStrategy: SourceBuildStrategy;
-  abi: Abi;
+  schemaComposer: SchemaComposer;
 }
 
 export class Compiler {
@@ -138,12 +138,13 @@ export class Compiler {
   }
 
   private async _outputWrapManifest(quiet = false): Promise<unknown> {
-    const { outputDir, project, abi } = this._config;
+    const { outputDir, project, schemaComposer } = this._config;
     let manifestPath = `${outputDir}/wrap.info`;
     const run = async () => {
       const manifest = await project.getManifest();
 
       const type = (await this._isInterface()) ? "interface" : "wasm";
+      const abi = await schemaComposer.getComposedAbis();
       await generateWrapFile(abi, manifest.project.name, type, manifestPath);
     };
 

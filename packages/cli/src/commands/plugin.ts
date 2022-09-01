@@ -91,11 +91,9 @@ async function run(options: PluginCommandOptions) {
     client,
   });
 
-  const abi = await schemaComposer.getComposedAbis();
-
   const codegenStrategy = new DefaultCodegenStrategy({
     project,
-    abi,
+    schemaComposer,
     codegenDirAbs: codegenDir,
   });
 

@@ -1,25 +1,23 @@
 import { AnyProjectManifest, Project } from "../../project";
 import { CodegenStrategy } from "../CodegenStrategy";
 import { resetDir } from "../../system";
+import { SchemaComposer } from "../../SchemaComposer";
 
 import { writeDirectorySync } from "@polywrap/os-js";
 import { BindLanguage } from "@polywrap/schema-bind";
-import { Abi } from "@polywrap/wrap-manifest-types-js";
 import { Ora } from "ora";
 import path from "path";
 
 export class DefaultCodegenStrategy extends CodegenStrategy {
   private _codegenDirAbs?: string;
-  private _abi: Abi;
 
   constructor(config: {
     project: Project<AnyProjectManifest>;
-    abi: Abi;
+    schemaComposer: SchemaComposer;
     codegenDirAbs?: string;
   }) {
     super(config);
 
-    this._abi = config.abi;
     this._codegenDirAbs = config.codegenDirAbs;
   }
 
@@ -28,10 +26,8 @@ export class DefaultCodegenStrategy extends CodegenStrategy {
       ? path.relative(this.project.getManifestDir(), this._codegenDirAbs)
       : undefined;
 
-    const binding = await this.project.generateSchemaBindings(
-      this._abi,
-      codegenDir
-    );
+    const abi = await this.schemaComposer.getComposedAbis();
+    const binding = await this.project.generateSchemaBindings(abi, codegenDir);
 
     resetDir(binding.outputDirAbs);
     return writeDirectorySync(binding.outputDirAbs, binding.output);

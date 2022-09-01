@@ -128,10 +128,9 @@ async function run(options: BuildCommandOptions) {
     project.reset();
     schemaComposer.reset();
 
-    const abi = await schemaComposer.getComposedAbis();
     const codegenStrategy = new CompilerCodegenStrategy({
       project,
-      abi,
+      schemaComposer,
     });
 
     const codeGenerator = new CodeGenerator({ strategy: codegenStrategy });
@@ -139,7 +138,7 @@ async function run(options: BuildCommandOptions) {
     const compiler = new Compiler({
       project,
       outputDir,
-      abi,
+      schemaComposer,
       sourceBuildStrategy: buildStrategy,
       codeGenerator,
     });

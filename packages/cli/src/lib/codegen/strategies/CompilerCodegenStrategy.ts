@@ -1,25 +1,16 @@
-import { AnyProjectManifest, Project } from "../../project";
 import { CodegenStrategy } from "../CodegenStrategy";
 import { intlMsg } from "../../intl";
 
 import { writeDirectorySync } from "@polywrap/os-js";
 import { BindLanguage } from "@polywrap/schema-bind";
-import { Abi } from "@polywrap/wrap-manifest-types-js";
 import { Ora } from "ora";
 
 export class CompilerCodegenStrategy extends CodegenStrategy {
-  private _abi: Abi;
-
-  constructor(config: { project: Project<AnyProjectManifest>; abi: Abi }) {
-    super(config);
-
-    this._abi = config.abi;
-  }
-
   public async generate(_: BindLanguage, _a?: Ora): Promise<string[]> {
     const generationSubPath = await this._getGenerationSubpath();
+    const abi = await this.schemaComposer.getComposedAbis();
     const binding = await this.project.generateSchemaBindings(
-      this._abi,
+      abi,
       generationSubPath
     );
 

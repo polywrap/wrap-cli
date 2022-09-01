@@ -7,6 +7,7 @@ import {
   resetDir,
 } from "../../system";
 import { CodegenStrategy } from "../CodegenStrategy";
+import { SchemaComposer } from "../../SchemaComposer";
 
 import { writeDirectorySync } from "@polywrap/os-js";
 import { BindLanguage, GenerateBindingFn } from "@polywrap/schema-bind";
@@ -26,7 +27,7 @@ export class ScriptCodegenStrategy extends CodegenStrategy {
 
   constructor(config: {
     project: Project<AnyProjectManifest>;
-    abi: Abi;
+    schemaComposer: SchemaComposer;
     codegenDirAbs: string;
     script: string;
     mustacheView: Record<string, unknown> | undefined;
@@ -35,7 +36,6 @@ export class ScriptCodegenStrategy extends CodegenStrategy {
   }) {
     super(config);
 
-    this._abi = config.abi;
     this._script = config.script;
     this._mustacheView = config.mustacheView;
     this._codegenDirAbs = config.codegenDirAbs;

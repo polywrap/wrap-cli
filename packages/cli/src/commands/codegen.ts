@@ -8,10 +8,10 @@ import {
   parseCodegenScriptOption,
   parseWasmManifestFileOption,
   parseClientConfigOption,
-  CompilerCodegenStrategy,
 } from "../lib";
 import { ScriptCodegenStrategy } from "../lib/codegen/strategies/ScriptCodegenStrategy";
 import { CodeGenerator } from "../lib/codegen/CodeGenerator";
+import { CompilerCodegenStrategy } from "../lib/codegen";
 
 import path from "path";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
@@ -82,18 +82,17 @@ async function run(options: CodegenCommandOptions) {
     client,
   });
 
-  const abi = await schemaComposer.getComposedAbis();
   const strategy = script
     ? new ScriptCodegenStrategy({
         codegenDirAbs: codegenDir,
         script,
-        abi,
+        schemaComposer,
         project,
         omitHeader: false,
         mustacheView: undefined,
       })
     : new CompilerCodegenStrategy({
-        abi,
+        schemaComposer,
         project,
       });
 

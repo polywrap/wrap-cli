@@ -77,10 +77,9 @@ async function run(options: AppCommandOptions) {
     client,
   });
 
-  const abi = await schemaComposer.getComposedAbis();
   const codegenStrategy = new DefaultCodegenStrategy({
     project,
-    abi,
+    schemaComposer,
     codegenDirAbs: codegenDir,
   });
   const codeGenerator = new CodeGenerator({ strategy: codegenStrategy });

@@ -1,16 +1,19 @@
 import { AnyProjectManifest, Project } from "../project";
+import { SchemaComposer } from "../SchemaComposer";
 
 import { BindLanguage } from "@polywrap/schema-bind";
-import { Abi } from "@polywrap/wrap-manifest-types-js";
 import { Ora } from "ora";
 
 export abstract class CodegenStrategy {
   public readonly project: Project<AnyProjectManifest>;
-  protected abi: Abi;
+  protected schemaComposer: SchemaComposer;
 
-  constructor(config: { project: Project<AnyProjectManifest>; abi: Abi }) {
+  constructor(config: {
+    project: Project<AnyProjectManifest>;
+    schemaComposer: SchemaComposer;
+  }) {
     this.project = config.project;
-    this.abi = config.abi;
+    this.schemaComposer = config.schemaComposer;
   }
 
   public abstract generate(
