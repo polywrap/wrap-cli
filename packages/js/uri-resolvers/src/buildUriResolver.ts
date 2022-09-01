@@ -2,9 +2,15 @@ import {
   UriResolverLike,
   UriResolverAggregatorOptions,
   UriResolverAggregator,
+  PackageResolver,
 } from ".";
 
-import { IUriResolver, Uri, Client } from "@polywrap/core-js";
+import {
+  IUriResolver,
+  Uri,
+  Client,
+  IPackageRegistration,
+} from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
 
 export const buildUriResolver = <TError = undefined>(
@@ -28,6 +34,13 @@ export const buildUriResolver = <TError = undefined>(
       ) => Promise<Result<IUriResolver[], unknown>>,
       options
     ) as IUriResolver<TError>;
+  } else if (
+    (resolvable as Partial<IPackageRegistration<string | Uri>>).uri &&
+    (resolvable as Partial<IPackageRegistration<string | Uri>>).package
+  ) {
+    return (new PackageResolver(
+      resolvable as IPackageRegistration<string | Uri>
+    ) as unknown) as IUriResolver<TError>;
   } else if ((resolvable as IUriResolver).tryResolveUri !== undefined) {
     return resolvable as IUriResolver<TError>;
   } else {
