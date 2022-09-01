@@ -12,4 +12,3 @@ export * from "./InterfaceImplementations";
 export * from "./PluginRegistration";
 export * from "./UriResolver";
 export * from "./IWrapPackage";
-export * from "./IPackageRegistration";

@@ -9,4 +9,3 @@ export * from "./getUriResolutionPath";
 export * from "./legacy";
 export * from "./plugins";
 export * from "./redirects";
-export * from "./packages";
