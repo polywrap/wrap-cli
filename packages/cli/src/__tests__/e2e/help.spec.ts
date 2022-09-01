@@ -9,12 +9,10 @@ Options:
   -h, --help                   display help for command
 
 Commands:
-  app|a                        Build/generate types for your app
   build|b [options]            Build Polywrap Projects (type: interface, wasm)
   codegen|g [options]          Generate Code For Polywrap Projects
   create|c                     Create New Projects
   deploy|d [options]           Deploys Polywrap Projects
-  plugin|p                     Build/generate types for the plugin
   infra|i [options] <action>   Modular Infrastructure-As-Code Orchestrator
   run|r [options] <workflow>   Runs Workflows
   docgen|o [options] <action>  Generate wrapper documentation

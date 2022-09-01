@@ -1,13 +1,19 @@
 import { intlMsg } from "../intl";
-import { defaultPolywrapManifest } from "../";
+import {
+  defaultPolywrapManifest,
+  defaultAppManifest,
+  defaultPluginManifest,
+} from "../";
 import { resolvePathIfExists } from "../system";
 
 export function parseWasmManifestFileOption(
   manifestFile: string | undefined
 ): string {
+  const defaultManifests = defaultPolywrapManifest.concat(defaultAppManifest).concat(defaultPluginManifest);
+  
   const manifestPaths = manifestFile
     ? [manifestFile as string]
-    : defaultPolywrapManifest;
+    : defaultManifests;
 
   manifestFile = resolvePathIfExists(manifestPaths);
 

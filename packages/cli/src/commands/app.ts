@@ -1,89 +1,89 @@
-import { Command, Program } from "./types";
-import {
-  AppProject,
-  CodeGenerator,
-  SchemaComposer,
-  intlMsg,
-  parseAppManifestFileOption,
-  parseClientConfigOption,
-  parseDirOption,
-} from "../lib";
+// import { Command, Program } from "./types";
+// import {
+//   AppProject,
+//   CodeGenerator,
+//   SchemaComposer,
+//   intlMsg,
+//   parseAppManifestFileOption,
+//   parseClientConfigOption,
+//   parseDirOption,
+// } from "../lib";
 
-import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
-import * as path from "path";
+// import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
+// import * as path from "path";
 
-const defaultOutputTypesDir = "./src/wrap";
+// const defaultOutputTypesDir = "./src/wrap";
 
-type AppCommandOptions = {
-  manifestFile: string;
-  codegenDir: string;
-  clientConfig: Partial<PolywrapClientConfig>;
-};
+// type AppCommandOptions = {
+//   manifestFile: string;
+//   codegenDir: string;
+//   clientConfig: Partial<PolywrapClientConfig>;
+// };
 
-export const app: Command = {
-  setup: (program: Program) => {
-    const appCommand = program
-      .command("app")
-      .alias("a")
-      .description(intlMsg.commands_app_description());
+// export const app: Command = {
+//   setup: (program: Program) => {
+//     const appCommand = program
+//       .command("app")
+//       .alias("a")
+//       .description(intlMsg.commands_app_description());
 
-    appCommand
-      .command("codegen")
-      .description(intlMsg.commands_app_codegen())
-      .option(
-        `-m, --manifest-file <${intlMsg.commands_codegen_options_o_path()}>`,
-        intlMsg.commands_app_options_codegen({
-          default: defaultOutputTypesDir,
-        })
-      )
-      .option(
-        `-g, --codegen-dir <${intlMsg.commands_codegen_options_o_path()}>`,
-        `${intlMsg.commands_app_options_codegen({
-          default: defaultOutputTypesDir,
-        })}`
-      )
-      .option(
-        `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
-        `${intlMsg.commands_common_options_config()}`
-      )
-      .action(async (options) => {
-        await run({
-          ...options,
-          manifestFile: parseAppManifestFileOption(options.manifestFile),
-          clientConfig: await parseClientConfigOption(options.clientConfig),
-          codegenDir: parseDirOption(options.codegenDir, defaultOutputTypesDir),
-        });
-      });
-  },
-};
+//     appCommand
+//       .command("codegen")
+//       .description(intlMsg.commands_app_codegen())
+//       .option(
+//         `-m, --manifest-file <${intlMsg.commands_codegen_options_o_path()}>`,
+//         intlMsg.commands_app_options_codegen({
+//           default: defaultOutputTypesDir,
+//         })
+//       )
+//       .option(
+//         `-g, --codegen-dir <${intlMsg.commands_codegen_options_o_path()}>`,
+//         `${intlMsg.commands_app_options_codegen({
+//           default: defaultOutputTypesDir,
+//         })}`
+//       )
+//       .option(
+//         `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
+//         `${intlMsg.commands_common_options_config()}`
+//       )
+//       .action(async (options) => {
+//         await run({
+//           ...options,
+//           manifestFile: parseAppManifestFileOption(options.manifestFile),
+//           clientConfig: await parseClientConfigOption(options.clientConfig),
+//           codegenDir: parseDirOption(options.codegenDir, defaultOutputTypesDir),
+//         });
+//       });
+//   },
+// };
 
-async function run(options: AppCommandOptions) {
-  const { manifestFile, codegenDir, clientConfig } = options;
+// async function run(options: AppCommandOptions) {
+//   const { manifestFile, codegenDir, clientConfig } = options;
 
-  // Get client
-  const client = new PolywrapClient(clientConfig);
+//   // Get client
+//   const client = new PolywrapClient(clientConfig);
 
-  // App project
-  const project = new AppProject({
-    rootDir: path.dirname(manifestFile),
-    appManifestPath: manifestFile,
-  });
-  await project.validate();
+//   // App project
+//   const project = new AppProject({
+//     rootDir: path.dirname(manifestFile),
+//     appManifestPath: manifestFile,
+//   });
+//   await project.validate();
 
-  const schemaComposer = new SchemaComposer({
-    project,
-    client,
-  });
-  const codeGenerator = new CodeGenerator({
-    project,
-    schemaComposer,
-    codegenDirAbs: codegenDir,
-  });
+//   const schemaComposer = new SchemaComposer({
+//     project,
+//     client,
+//   });
+//   const codeGenerator = new CodeGenerator({
+//     project,
+//     schemaComposer,
+//     codegenDirAbs: codegenDir,
+//   });
 
-  if (await codeGenerator.generate()) {
-    console.log(`🔥 ${intlMsg.commands_app_success()} 🔥`);
-    process.exitCode = 0;
-  } else {
-    process.exitCode = 1;
-  }
-}
+//   if (await codeGenerator.generate()) {
+//     console.log(`🔥 ${intlMsg.commands_app_success()} 🔥`);
+//     process.exitCode = 0;
+//   } else {
+//     process.exitCode = 1;
+//   }
+// }
