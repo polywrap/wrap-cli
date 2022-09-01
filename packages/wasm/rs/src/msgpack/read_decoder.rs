@@ -5,7 +5,7 @@ use super::{
 use crate::{BigInt, BigNumber, JSON, Context};
 use byteorder::{BigEndian, ReadBytesExt};
 use core::hash::Hash;
-use std::{collections::BTreeMap, io::Read as StdioRead, str::FromStr};
+use std::{collections::HashMap, io::Read as StdioRead, str::FromStr};
 
 #[derive(Debug)]
 pub struct ReadDecoder {
@@ -422,12 +422,12 @@ impl Read for ReadDecoder {
         &mut self,
         mut key_reader: impl FnMut(&mut Self) -> Result<K, DecodeError>,
         mut val_reader: impl FnMut(&mut Self) -> Result<V, DecodeError>,
-    ) -> Result<BTreeMap<K, V>, DecodeError>
+    ) -> Result<HashMap<K, V>, DecodeError>
     where
         K: Eq + Hash + Ord,
     {
         let map_len = self.read_map_length()?;
-        let mut map: BTreeMap<K, V> = BTreeMap::new();
+        let mut map: HashMap<K, V> = HashMap::new();
         for i in 0..map_len {
             self.context.push("map[", &i.to_string(), "]");
             let key = key_reader(self)?;
@@ -442,7 +442,7 @@ impl Read for ReadDecoder {
         &mut self,
         mut key_reader: impl FnMut(&mut Self) -> Result<K, DecodeError>,
         mut val_reader: impl FnMut(&mut Self) -> Result<V, DecodeError>,
-    ) -> Result<BTreeMap<K, V>, DecodeError>
+    ) -> Result<HashMap<K, V>, DecodeError>
     where
         K: Eq + Hash + Ord,
     {
@@ -669,7 +669,7 @@ impl Read for ReadDecoder {
         &mut self,
         key_reader: impl FnMut(&mut Self) -> Result<K, DecodeError>,
         val_reader: impl FnMut(&mut Self) -> Result<V, DecodeError>,
-    ) -> Result<Option<BTreeMap<K, V>>, DecodeError>
+    ) -> Result<Option<HashMap<K, V>>, DecodeError>
     where
         K: Eq + Hash + Ord,
     {
@@ -687,7 +687,7 @@ impl Read for ReadDecoder {
         &mut self,
         key_reader: impl FnMut(&mut Self) -> Result<K, DecodeError>,
         val_reader: impl FnMut(&mut Self) -> Result<V, DecodeError>,
-    ) -> Result<Option<BTreeMap<K, V>>, DecodeError>
+    ) -> Result<Option<HashMap<K, V>>, DecodeError>
     where
         K: Eq + Hash + Ord,
     {

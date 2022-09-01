@@ -1,7 +1,7 @@
 use super::error::DecodeError;
 use crate::{BigInt, BigNumber, Context, JSON};
 use core::hash::Hash;
-use std::collections::BTreeMap;
+use std::collections::HashMap;
 
 pub trait Read {
     fn read_bool(&mut self) -> Result<bool, DecodeError>;
@@ -30,14 +30,14 @@ pub trait Read {
         &mut self,
         key_reader: impl FnMut(&mut Self) -> Result<K, DecodeError>,
         val_reader: impl FnMut(&mut Self) -> Result<V, DecodeError>,
-    ) -> Result<BTreeMap<K, V>, DecodeError>
+    ) -> Result<HashMap<K, V>, DecodeError>
     where
         K: Eq + Hash + Ord;
     fn read_ext_generic_map<K, V>(
         &mut self,
         key_reader: impl FnMut(&mut Self) -> Result<K, DecodeError>,
         val_reader: impl FnMut(&mut Self) -> Result<V, DecodeError>,
-    ) -> Result<BTreeMap<K, V>, DecodeError>
+    ) -> Result<HashMap<K, V>, DecodeError>
     where
         K: Eq + Hash + Ord;
 
@@ -63,14 +63,14 @@ pub trait Read {
         &mut self,
         key_reader: impl FnMut(&mut Self) -> Result<K, DecodeError>,
         val_reader: impl FnMut(&mut Self) -> Result<V, DecodeError>,
-    ) -> Result<Option<BTreeMap<K, V>>, DecodeError>
+    ) -> Result<Option<HashMap<K, V>>, DecodeError>
     where
         K: Eq + Hash + Ord;
     fn read_optional_ext_generic_map<K, V>(
         &mut self,
         key_reader: impl FnMut(&mut Self) -> Result<K, DecodeError>,
         val_reader: impl FnMut(&mut Self) -> Result<V, DecodeError>,
-    ) -> Result<Option<BTreeMap<K, V>>, DecodeError>
+    ) -> Result<Option<HashMap<K, V>>, DecodeError>
     where
         K: Eq + Hash + Ord;
 

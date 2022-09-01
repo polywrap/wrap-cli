@@ -2,7 +2,7 @@ use super::{error::EncodeError, DataView, Format, Write, ExtensionType};
 use crate::{BigInt, BigNumber, JSON, Context};
 use byteorder::{BigEndian, WriteBytesExt};
 use core::hash::Hash;
-use std::{collections::BTreeMap, io::Write as StdioWrite};
+use std::{collections::HashMap, io::Write as StdioWrite};
 
 #[derive(Debug)]
 pub struct WriteEncoder {
@@ -255,7 +255,7 @@ impl Write for WriteEncoder {
 
     fn write_map<K, V: Clone>(
         &mut self,
-        map: &BTreeMap<K, V>,
+        map: &HashMap<K, V>,
         mut key_writer: impl FnMut(&mut Self, &K) -> Result<(), EncodeError>,
         mut val_writer: impl FnMut(&mut Self, &V) -> Result<(), EncodeError>,
     ) -> Result<(), EncodeError>
@@ -274,7 +274,7 @@ impl Write for WriteEncoder {
 
     fn write_ext_generic_map<K, V: Clone>(
         &mut self,
-        map: &BTreeMap<K, V>,
+        map: &HashMap<K, V>,
         mut key_writer: impl FnMut(&mut Self, &K) -> Result<(), EncodeError>,
         mut val_writer: impl FnMut(&mut Self, &V) -> Result<(), EncodeError>,
     ) -> Result<(), EncodeError>
@@ -419,7 +419,7 @@ impl Write for WriteEncoder {
 
     fn write_optional_map<K, V: Clone>(
         &mut self,
-        opt_map: &Option<BTreeMap<K, V>>,
+        opt_map: &Option<HashMap<K, V>>,
         key_writer: impl FnMut(&mut Self, &K) -> Result<(), EncodeError>,
         val_writer: impl FnMut(&mut Self, &V) -> Result<(), EncodeError>,
     ) -> Result<(), EncodeError>
@@ -434,7 +434,7 @@ impl Write for WriteEncoder {
 
     fn write_optional_ext_generic_map<K, V: Clone>(
         &mut self,
-        opt_map: &Option<BTreeMap<K, V>>,
+        opt_map: &Option<HashMap<K, V>>,
         key_writer: impl FnMut(&mut Self, &K) -> Result<(), EncodeError>,
         val_writer: impl FnMut(&mut Self, &V) -> Result<(), EncodeError>,
     ) -> Result<(), EncodeError>

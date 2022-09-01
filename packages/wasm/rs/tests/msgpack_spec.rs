@@ -1,5 +1,5 @@
 use polywrap_wasm_rs::{Context, DecodeError, EncodeError, Read, ReadDecoder, Write, WriteEncoder};
-// use std::collections::BTreeMap;
+// use std::collections::HashMap;
 
 #[derive(Debug, Clone, Default)]
 struct Sanity {
@@ -23,7 +23,7 @@ struct Sanity {
     // array: Vec<u8>,
     // large_string_array: Vec<String>,
     // large_bytes_array: Vec<Vec<u8>>,
-    // map: BTreeMap<String, Vec<i32>>,
+    // map: HashMap<String, Vec<i32>>,
 }
 
 impl Sanity {
@@ -39,7 +39,7 @@ impl Sanity {
         // 	large_bytes_array.push(large_bytes.clone());
         // }
 
-        // let mut map: BTreeMap<String, Vec<i32>> = BTreeMap::new();
+        // let mut map: HashMap<String, Vec<i32>> = HashMap::new();
         // map.insert("foo".to_string(), vec![1, -1, 42]);
         // map.insert("baz".to_string(), vec![12412, -98987]);
 

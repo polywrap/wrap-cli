@@ -1,7 +1,7 @@
 use super::error::EncodeError;
 use crate::{BigInt, BigNumber, Context, JSON};
 use core::hash::Hash;
-use std::collections::BTreeMap;
+use std::collections::HashMap;
 
 pub trait Write {
     fn write_nil(&mut self) -> Result<(), EncodeError>;
@@ -30,7 +30,7 @@ pub trait Write {
     fn write_map_length(&mut self, length: &u32) -> Result<(), EncodeError>;
     fn write_map<K, V: Clone>(
         &mut self,
-        map: &BTreeMap<K, V>,
+        map: &HashMap<K, V>,
         key_writer: impl FnMut(&mut Self, &K) -> Result<(), EncodeError>,
         val_writer: impl FnMut(&mut Self, &V) -> Result<(), EncodeError>,
     ) -> Result<(), EncodeError>
@@ -38,7 +38,7 @@ pub trait Write {
         K: Clone + Eq + Hash + Ord;
     fn write_ext_generic_map<K, V: Clone>(
         &mut self,
-        map: &BTreeMap<K, V>,
+        map: &HashMap<K, V>,
         key_writer: impl FnMut(&mut Self, &K) -> Result<(), EncodeError>,
         val_writer: impl FnMut(&mut Self, &V) -> Result<(), EncodeError>,
     ) -> Result<(), EncodeError>
@@ -66,7 +66,7 @@ pub trait Write {
     ) -> Result<(), EncodeError>;
     fn write_optional_map<K, V: Clone>(
         &mut self,
-        opt_map: &Option<BTreeMap<K, V>>,
+        opt_map: &Option<HashMap<K, V>>,
         key_writer: impl FnMut(&mut Self, &K) -> Result<(), EncodeError>,
         val_writer: impl FnMut(&mut Self, &V) -> Result<(), EncodeError>,
     ) -> Result<(), EncodeError>
@@ -74,7 +74,7 @@ pub trait Write {
         K: Clone + Eq + Hash + Ord;
     fn write_optional_ext_generic_map<K, V: Clone>(
         &mut self,
-        opt_map: &Option<BTreeMap<K, V>>,
+        opt_map: &Option<HashMap<K, V>>,
         key_writer: impl FnMut(&mut Self, &K) -> Result<(), EncodeError>,
         val_writer: impl FnMut(&mut Self, &V) -> Result<(), EncodeError>,
     ) -> Result<(), EncodeError>

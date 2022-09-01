@@ -1,5 +1,5 @@
 use polywrap_wasm_rs::{BigInt, BigNumber, Context, Write, WriteEncoder, JSON};
-use std::collections::BTreeMap;
+use std::collections::HashMap;
 use std::str::FromStr;
 
 #[derive(Default, Debug)]
@@ -385,10 +385,10 @@ fn test_write_array() {
 
 #[test]
 fn test_write_map() {
-    let mut map1: BTreeMap<String, Vec<i32>> = BTreeMap::new();
+    let mut map1: HashMap<String, Vec<i32>> = HashMap::new();
     let _ = map1.insert("Polywrap".to_string(), vec![3, 5, 9]);
     let _ = map1.insert("Rust".to_string(), vec![1, 4, 7]);
-    let mut map2: BTreeMap<String, Vec<i32>> = BTreeMap::new();
+    let mut map2: HashMap<String, Vec<i32>> = HashMap::new();
     for i in 0..16 {
         map2.insert(i.to_string(), vec![i, i + 1, i + 2]);
     }
@@ -430,10 +430,10 @@ fn test_write_map() {
 
 #[test]
 fn test_write_ext_generic_map() {
-    let mut map1: BTreeMap<i32, Vec<i32>> = BTreeMap::new();
+    let mut map1: HashMap<i32, Vec<i32>> = HashMap::new();
     let _ = map1.insert(1, vec![3, 5, 9]);
     let _ = map1.insert(2, vec![1, 4, 7]);
-    let mut map2: BTreeMap<i32, Vec<i32>> = BTreeMap::new();
+    let mut map2: HashMap<i32, Vec<i32>> = HashMap::new();
     for i in 0..16 {
         map2.insert(i, vec![i, i + 1, i + 2]);
     }
