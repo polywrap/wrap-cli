@@ -1,5 +1,5 @@
 [
-  "wrap://file/$root-wrapper-dir/simple/build => UriResolverAggregator => package (wrap://file/$root-wrapper-dir/simple/build)",
+  "wrap://file/$root-wrapper-dir/simple/build => MainResolver => wrapper (wrap://file/$root-wrapper-dir/simple/build)",
   [
     "wrap://file/$root-wrapper-dir/simple/build => LegacyRedirectsResolver",
     "wrap://file/$root-wrapper-dir/simple/build => LegacyPluginsResolver",
