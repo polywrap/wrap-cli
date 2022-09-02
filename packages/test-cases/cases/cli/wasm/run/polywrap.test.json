@@ -1,5 +1,7 @@
 {
   "name": "simple-storage",
+  "format": "0.1",
+  "validation": "./validator.cue",
   "jobs": {
     "cases": {
       "steps": [

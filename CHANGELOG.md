@@ -1,3 +1,20 @@
+# Polywrap Origin (0.6.0)
+## Features
+* [PR-1100](https://github.com/polywrap/toolchain/pull/1100) `polywrap` CLI: A new manifest named `polywrap.test.yaml` has been added, which encapsulates workflows and validation scripts.
+* [PR-1100](https://github.com/polywrap/toolchain/pull/1100) `@polywrap/polywrap-manifest-types-js`: `polywrap.test` manifest types have been added.
+* [PR-1100](https://github.com/polywrap/toolchain/pull/1100) `@polywrap/polywrap-manifest-schemas`: `polywrap.test` manifest schema has been added.
+
+## Bugs
+* [PR-1205](https://github.com/polywrap/toolchain/pull/1205) `polywrap` CLI: The `run` command's output now has deterministic ordering for text emitted from both workflow & validation steps.
+* [PR-1194](https://github.com/polywrap/toolchain/pull/1194) `@polywrap/msgpack-js`: Nested `Map<K, V>` serialization is now supported.
+* [PR-1199](https://github.com/polywrap/toolchain/pull/1199) `@polywrap/core-js` `@polywrap/client-js`: Runtime type inference has been improved to be compatible with JavaScript minimization optimizations where the `Class.name` static property is removed.
+* [PR-1196](https://github.com/polywrap/toolchain/pull/1196) `@polywrap/core-js`: All `WrapperCache` interface methods have been updated to return `MaybeAsync` promises, allowing developers to implement async logic.
+
+## Breaking Changes
+* [PR-1100](https://github.com/polywrap/toolchain/pull/1100) `polywrap` CLI: `run` command no longer accepts the `<workflow>` argument, and instead uses the new `polywrap.test.yaml` manifest.
+* [PR-1100](https://github.com/polywrap/toolchain/pull/1100) `@polywrap/client-js`: The `run` method has been removed.
+* [PR-1100](https://github.com/polywrap/toolchain/pull/1100) `@polywrap/core-js`: All `Workflow` related types have been removed, and migrated into the manifest packages and the CLI.
+
 # Polywrap Origin (0.5.0)
 ## Features
 * [PR-1042](https://github.com/polywrap/toolchain/pull/1042) `@polywrap/client-js`: The `PolywrapClientConfig` now has a `tracerConfig: Partial<TracerConfig>` property, allowing users to easily configure the tracing level, and various toggles related to tracing.

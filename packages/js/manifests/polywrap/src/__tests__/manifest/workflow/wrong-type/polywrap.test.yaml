@@ -1,4 +1,5 @@
-name: template-wasm-rs
+name: test-workflow
+format: 0.1
 jobs:
   sampleMethod:
     steps:
