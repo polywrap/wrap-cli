@@ -17,8 +17,9 @@
   },
   "scripts": {
     "build": "yarn build:intl && yarn build:fast",
-    "build:fast": "rimraf ./build && tsc --project tsconfig.build.json && yarn build:build-images && yarn build:deploy-modules && yarn build:infra-modules && yarn build:docgen-templates",
+    "build:fast": "rimraf ./build && tsc --project tsconfig.build.json && yarn build:build-images && yarn build:build-scripts && yarn build:deploy-modules && yarn build:infra-modules && yarn build:docgen-templates",
     "build:build-images": "copyfiles ./src/lib/defaults/build-images/**/**/* ./build/lib/defaults/build-images/ -u 4",
+    "build:build-scripts": "copyfiles ./src/lib/defaults/build-scripts/**/**/* ./build/lib/defaults/build-scripts/ -u 4",
     "build:deploy-modules": "copyfiles ./src/lib/defaults/deploy-modules/**/polywrap.deploy.ext.json ./build/lib/defaults/deploy-modules -u 4",
     "build:infra-modules": "ts-node ./scripts/copyfiles ./src/lib/defaults/infra-modules ./build/lib/defaults/infra-modules",
     "build:docgen-templates": "yarn build:docgen-templates:docusaurus && yarn build:docgen-templates:jsdoc && yarn build:docgen-templates:schema",
