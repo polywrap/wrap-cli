@@ -31,7 +31,7 @@ type BuildCommandOptions = {
   clientConfig: Partial<PolywrapClientConfig>;
   watch?: boolean;
   verbose?: boolean;
-  noDocker?: boolean;
+  docker?: boolean;
 };
 
 export const build: Command = {
@@ -95,7 +95,7 @@ async function run(options: BuildCommandOptions) {
     manifestFile,
     outputDir,
     clientConfig,
-    noDocker,
+    docker,
   } = options;
 
   // Get Client
@@ -111,13 +111,10 @@ async function run(options: BuildCommandOptions) {
   const polywrapManifest = await project.getManifest();
   await validateManifestModules(polywrapManifest);
 
-  const buildStrategy = createSourceBuildStrategy(
-    noDocker ? "local" : "docker",
-    {
-      project,
-      outputDir,
-    }
-  );
+  const buildStrategy = createSourceBuildStrategy(docker ? "docker" : "local", {
+    project,
+    outputDir,
+  });
 
   const schemaComposer = new SchemaComposer({
     project,
