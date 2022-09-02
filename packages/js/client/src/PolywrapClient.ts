@@ -35,9 +35,9 @@ import {
 } from "@polywrap/core-js";
 import {
   buildCleanUriHistory,
-  CacheableResolver,
   getUriHistory,
   IWrapperCache,
+  PackageToWrapperCacheResolver,
 } from "@polywrap/uri-resolvers-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
@@ -481,8 +481,8 @@ export class PolywrapClient implements Client {
 
     // This is a hack because we expect config overrides to ignore cache
     const response =
-      ignoreCache && uriResolver instanceof CacheableResolver
-        ? await ((uriResolver as unknown) as CacheableResolver).resolverToCache.tryResolveUri(
+      ignoreCache && uriResolver instanceof PackageToWrapperCacheResolver
+        ? await ((uriResolver as unknown) as PackageToWrapperCacheResolver).resolverToCache.tryResolveUri(
             uri,
             client
           )
