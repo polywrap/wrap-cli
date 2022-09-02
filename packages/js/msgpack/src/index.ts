@@ -22,7 +22,7 @@ extensionCodec.register({
     if (object instanceof Map) {
       const optimized: Record<string | number, unknown> = {};
       for (const [key, value] of object) {
-        optimized[key] = msgpackEncode(value);
+        optimized[key] = value;
       }
       return msgpackEncode(optimized);
     } else {
@@ -34,10 +34,7 @@ extensionCodec.register({
     const map = new Map();
 
     for (const [key, value] of Object.entries(obj)) {
-      if (!isBuffer(value)) {
-        throw new Error("Map value must be encoded")
-      }
-      map.set(key, msgpackDecode(value));
+      map.set(key, value);
     }
     return map;
   },
