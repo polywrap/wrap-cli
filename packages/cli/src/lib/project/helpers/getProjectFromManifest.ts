@@ -1,4 +1,18 @@
 import {
+  AnyProjectManifest,
+  isAppManifestLanguage,
+  isPluginManifestLanguage,
+  isPolywrapManifestLanguage,
+} from "../manifests";
+import { Project } from "../Project";
+import { PolywrapProject } from "../PolywrapProject";
+import { AppProject } from "../AppProject";
+import { PluginProject } from "../PluginProject";
+
+import { filesystem } from "gluegun";
+import YAML from "js-yaml";
+import path from "path";
+import {
   AnyAppManifest,
   AnyPluginManifest,
   AnyPolywrapManifest,
@@ -9,19 +23,6 @@ import {
   PolywrapManifest_0_1_0,
   PolywrapManifest_0_2_0,
 } from "@polywrap/polywrap-manifest-types-js";
-import {
-  AnyProjectManifest,
-  isAppManifestLanguage,
-  isPluginManifestLanguage,
-  isPolywrapManifestLanguage,
-} from "../manifests";
-import { Project } from "../Project";
-import { filesystem } from "gluegun";
-import YAML from "js-yaml";
-import { PolywrapProject } from "../PolywrapProject";
-import path from "path";
-import { AppProject } from "../AppProject";
-import { PluginProject } from "../PluginProject";
 
 type AnyManifest = AnyPolywrapManifest | AnyPluginManifest | AnyAppManifest;
 
@@ -59,6 +60,7 @@ function getManifestFormat(manifest: string): AvailableManifestFormats {
   return anyManifest?.format;
 }
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 async function getProjectFromManifest_0_1_0(
   manifest: string,
   manifestFile: string
@@ -92,6 +94,7 @@ async function getProjectFromManifest_0_1_0(
   return project;
 }
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 async function getProjectFromManifest_latest(
   manifest: string,
   manifestFile: string
@@ -128,18 +131,19 @@ async function getProjectFromManifest_latest(
   return project;
 }
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 function getManifestProjectType_0_1_0(manifest: string): PolywrapProjectType {
-  type Manifests_0_1 =
+  type ManifestsV01 =
     | PolywrapManifest_0_1_0
     | AppManifest_0_1_0
     | PluginManifest_0_1_0;
 
-  let manifestObject: Manifests_0_1 | undefined;
+  let manifestObject: ManifestsV01 | undefined;
 
   try {
-    manifestObject = JSON.parse(manifest) as Manifests_0_1;
+    manifestObject = JSON.parse(manifest) as ManifestsV01;
   } catch (e) {
-    manifestObject = YAML.safeLoad(manifest) as Manifests_0_1 | undefined;
+    manifestObject = YAML.safeLoad(manifest) as ManifestsV01 | undefined;
   }
 
   const type = manifestObject?.language;
@@ -159,18 +163,20 @@ function getManifestProjectType_0_1_0(manifest: string): PolywrapProjectType {
   }
 }
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 function getManifestProjectType_latest(manifest: string): PolywrapProjectType {
-  type Manifests_latest =
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  type LatestManifests =
     | PolywrapManifest_0_2_0
     | AppManifest_0_2_0
     | PluginManifest_0_2_0;
 
-  let manifestObject: Manifests_latest | undefined;
+  let manifestObject: LatestManifests | undefined;
 
   try {
-    manifestObject = JSON.parse(manifest) as Manifests_latest;
+    manifestObject = JSON.parse(manifest) as LatestManifests;
   } catch (e) {
-    manifestObject = YAML.safeLoad(manifest) as Manifests_latest | undefined;
+    manifestObject = YAML.safeLoad(manifest) as LatestManifests | undefined;
   }
 
   const type = manifestObject?.project.type;

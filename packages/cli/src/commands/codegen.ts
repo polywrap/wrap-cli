@@ -13,6 +13,7 @@ import {
   isPluginManifestLanguage,
   generateWrapFile,
 } from "../lib";
+
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import path from "path";
 import fs from "fs";
@@ -94,7 +95,7 @@ async function run(options: CodegenCommandOptions) {
     return;
   }
 
-  project.validate();
+  await project.validate();
 
   const projectType = await project.getManifestLanguage();
 
