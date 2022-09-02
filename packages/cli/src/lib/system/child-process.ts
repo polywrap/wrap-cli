@@ -16,7 +16,6 @@ export function runCommandSync(
         ...process.env,
         ...env,
       },
-      stdio: quiet ? "ignore" : "inherit",
       encoding: "utf-8",
     });
     return { stdout: stdout };
