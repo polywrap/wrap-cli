@@ -1,7 +1,0 @@
-format: 0.1.0
-name: test-project
-build: ./polywrap.build.yaml
-deploy: ./polywrap.deploy.no-ext.yaml
-language: wasm/assemblyscript
-schema: ./schema.graphql
-module: ./src/index.ts

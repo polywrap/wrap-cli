@@ -1,3 +1,39 @@
+# Polywrap Origin (0.6.0)
+## Features
+* [PR-1100](https://github.com/polywrap/toolchain/pull/1100) `polywrap` CLI: A new manifest named `polywrap.test.yaml` has been added, which encapsulates workflows and validation scripts.
+* [PR-1100](https://github.com/polywrap/toolchain/pull/1100) `@polywrap/polywrap-manifest-types-js`: `polywrap.test` manifest types have been added.
+* [PR-1100](https://github.com/polywrap/toolchain/pull/1100) `@polywrap/polywrap-manifest-schemas`: `polywrap.test` manifest schema has been added.
+
+## Bugs
+* [PR-1205](https://github.com/polywrap/toolchain/pull/1205) `polywrap` CLI: The `run` command's output now has deterministic ordering for text emitted from both workflow & validation steps.
+* [PR-1194](https://github.com/polywrap/toolchain/pull/1194) `@polywrap/msgpack-js`: Nested `Map<K, V>` serialization is now supported.
+* [PR-1199](https://github.com/polywrap/toolchain/pull/1199) `@polywrap/core-js` `@polywrap/client-js`: Runtime type inference has been improved to be compatible with JavaScript minimization optimizations where the `Class.name` static property is removed.
+* [PR-1196](https://github.com/polywrap/toolchain/pull/1196) `@polywrap/core-js`: All `WrapperCache` interface methods have been updated to return `MaybeAsync` promises, allowing developers to implement async logic.
+
+## Breaking Changes
+* [PR-1100](https://github.com/polywrap/toolchain/pull/1100) `polywrap` CLI: `run` command no longer accepts the `<workflow>` argument, and instead uses the new `polywrap.test.yaml` manifest.
+* [PR-1100](https://github.com/polywrap/toolchain/pull/1100) `@polywrap/client-js`: The `run` method has been removed.
+* [PR-1100](https://github.com/polywrap/toolchain/pull/1100) `@polywrap/core-js`: All `Workflow` related types have been removed, and migrated into the manifest packages and the CLI.
+
+# Polywrap Origin (0.5.0)
+## Features
+* [PR-1042](https://github.com/polywrap/toolchain/pull/1042) `@polywrap/client-js`: The `PolywrapClientConfig` now has a `tracerConfig: Partial<TracerConfig>` property, allowing users to easily configure the tracing level, and various toggles related to tracing.
+* [PR-1042](https://github.com/polywrap/toolchain/pull/1042) `polywrap` CLI: Added the `tracer` infra module, allowing developers to easily spin up an OpenTelemetry compatible tracing server. This can be used to gather runtime tracelog events from the `PolywrapClient`.
+* [PR-1042](https://github.com/polywrap/toolchain/pull/1042) `@polywrap/tracing-js`: The `@Tracer.traceMethod()` function decorator now has an optional `TracingLevel` argument.
+* [PR-1143](https://github.com/polywrap/toolchain/pull/1143) `@polywrap/ethereum-plugin-js`: The `EthereumPluginConfig` now has a `connections` property, which takes an instance of the `Connections` class. This new implementation makes configuring new network connections at runtime easier and more application developer friendly.
+* [PR-1045](https://github.com/polywrap/toolchain/pull/1045) `@polywrap/client-config-builder-js`: The `ClientConfigBuilder` has been added to make building & customizing `PolywrapClientConfigs` easier than before with a simple user friendly interface.
+* [PR-1036](https://github.com/polywrap/toolchain/pull/1036) `@polywrap/client-js`: Added the `wrapperCache: WrapperCache` property to the `PolywrapClientConfig` interface.
+* [PR-1036](https://github.com/polywrap/toolchain/pull/1036) `@polywrap/core-js`: Added the `WrapperCache` core type, along with a `SimpleCache` implementation that persists wrappers within a map.
+
+## Bugs
+* [PR-1186](https://github.com/polywrap/toolchain/pull/1186) `@polywrap/schema-bind`: Using a `Map<K, V>` type within the `Map`'s value (`V`) template argument has been fixed.
+* [PR-1179](https://github.com/polywrap/toolchain/pull/1179) `polywrap` CLI: Improved the readability of the `polywrap build -v` command's output from the Docker child process.
+
+## Breaking Changes
+* [PR-1042](https://github.com/polywrap/toolchain/pull/1042) `@polywrap/client-js`: The `PolywrapClientConfig`'s `tracingEnabled` property has been removed, and replaced by `tracerConfig`.
+* [PR-1143](https://github.com/polywrap/toolchain/pull/1143) `@polywrap/ethereum-plugin-js`: The `EthereumPluginConfig`'s `networks` property has been removed, and replaced by `connections`.
+* [PR-1045](https://github.com/polywrap/toolchain/pull/1045) `@polywrap/client-js`: The `getDefaultClientConfig()` & `defaultIpfsProviders` exports have been moved to the `@polywrap/client-config-builder-js` package.
+
 # Polywrap Origin (0.4.1)
 ## Features
 * [PR-1171](https://github.com/polywrap/monorepo/pull/1171) `@polywrap/schema-bind`: Handle reserve words (keywords) for object, enum, and method names.

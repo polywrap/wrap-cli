@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/tracing-js",
   "description": "Polywrap Core Tracing",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -22,9 +22,9 @@
     "@opentelemetry/core": "1.4.0",
     "@opentelemetry/exporter-trace-otlp-http": "^0.28.0",
     "@opentelemetry/exporter-zipkin": "1.4.0",
-    "@opentelemetry/sdk-trace-node": "1.4.0",
     "@opentelemetry/propagator-b3": "1.4.0",
     "@opentelemetry/sdk-trace-base": "1.4.0",
+    "@opentelemetry/sdk-trace-node": "1.4.0",
     "@opentelemetry/sdk-trace-web": "1.4.0",
     "browser-util-inspect": "0.2.0"
   },

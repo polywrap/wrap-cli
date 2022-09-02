@@ -1,10 +1,12 @@
-import { JobResult, JobStatus, MaybeAsync, Workflow } from "@polywrap/core-js";
+import { MaybeAsync } from "@polywrap/core-js";
+import { JobResult, JobStatus } from "../../lib";
+import { PolywrapWorkflow } from "@polywrap/polywrap-manifest-types-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import path from "path";
 
 export interface WorkflowTestCase {
   name: string;
-  workflow: Workflow;
+  workflow: PolywrapWorkflow;
   onExecution(id: string, jobResult: JobResult): MaybeAsync<void>;
 }
 
@@ -13,6 +15,8 @@ export const testCases: WorkflowTestCase[] = [
     name: "simple workflow",
     workflow: {
       name: "simpleCalculator",
+      format: "0.1",
+      __type: "PolywrapWorkflow",
       jobs: {
         ops: {
           steps: [
@@ -51,6 +55,8 @@ export const testCases: WorkflowTestCase[] = [
     name: "simple workflow with output propagation",
     workflow: {
       name: "simpleCalculator",
+      format: "0.1",
+      __type: "PolywrapWorkflow",
       jobs: {
         ops: {
           steps: [
@@ -108,6 +114,8 @@ export const testCases: WorkflowTestCase[] = [
     name: "workflow with subJobs and output propagation",
     workflow: {
       name: "simpleCalculator",
+      format: "0.1",
+      __type: "PolywrapWorkflow",
       jobs: {
         ops: {
           steps: [

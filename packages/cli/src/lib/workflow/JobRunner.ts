@@ -1,17 +1,27 @@
 import {
   Client,
   executeMaybeAsyncFunction,
-  Job,
-  JobResult,
-  JobStatus,
   MaybeAsync,
   Uri,
-} from "../types";
+  InvokeResult,
+} from "@polywrap/core-js";
+import { WorkflowJobs } from "@polywrap/polywrap-manifest-types-js";
 
-export interface JobRunOptions<TUri extends Uri | string = string> {
+export enum JobStatus {
+  SUCCEED = "SUCCEED",
+  FAILED = "FAILED",
+  SKIPPED = "SKIPPED",
+}
+
+export interface JobResult<TData extends unknown = unknown>
+  extends InvokeResult<TData> {
+  status: JobStatus;
+}
+
+export interface JobRunOptions {
   relativeId: string;
   parentId: string;
-  jobs: Job<TUri>;
+  jobs: WorkflowJobs;
 }
 
 type DataOrError = "data" | "error";
@@ -32,7 +42,7 @@ export class JobRunner<
     this.jobOutput = new Map();
   }
 
-  async run(opts: JobRunOptions<TUri>): Promise<void> {
+  async run(opts: JobRunOptions): Promise<void> {
     const { relativeId, parentId, jobs } = opts;
 
     if (relativeId) {
@@ -114,7 +124,7 @@ export class JobRunner<
 
   resolveArgs(
     absCurStepId: string,
-    args: Record<string, unknown>
+    args: Record<string, unknown> | undefined
   ): Record<string, unknown> {
     const index = absCurStepId.lastIndexOf(".");
     const curStepId = +absCurStepId.substring(index + 1);
@@ -174,6 +184,8 @@ export class JobRunner<
       } else return value;
     }
 
-    return resolveValue(args) as Record<string, unknown>;
+    return args
+      ? (resolveValue(args) as Record<string, unknown>)
+      : ({} as Record<string, unknown>);
   }
 }
