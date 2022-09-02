@@ -9,7 +9,7 @@ describe("msgpack", () => {
     115, 101,  99, 111, 110, 100,  86,  97,
     108, 117, 101
   ]
-  it("Should encode and decode, returning the same object", () => {
+  it("Should encode and decode object", () => {
     const customObject = {
       "firstKey": "firstValue",
       "secondKey": "secondValue",
@@ -20,7 +20,7 @@ describe("msgpack", () => {
     expect(decoded).toEqual(customObject);
   });
 
-  it("Should encode and decode, returning the same map", () => {
+  it("Should encode and decode map", () => {
     const customMap = new Map()
     customMap.set("firstKey", "firstValue")
     customMap.set("secondKey", "secondValue")
@@ -30,7 +30,7 @@ describe("msgpack", () => {
     expect(decoded).toEqual(customMap);
   });
 
-  it("Should encode and decode nested map, returning the same map", () => {
+  it("Should encode and decode nested map", () => {
     const customMap: Map<string, Map<string, string>> = new Map()
     // @ts-ignore
     customMap.set("firstKey", new Map([["one", "1"]]));
@@ -40,5 +40,15 @@ describe("msgpack", () => {
     const decoded = msgpackDecode(encoded)
     expect(decoded).toEqual(customMap);
   });
+
+  it("Should encode and decode map of bytes", () => {
+    const customMap: Map<string, Uint8Array> = new Map()
+    customMap.set("firstKey", new Uint8Array([1, 2, 3]));
+    customMap.set("secondKey", new Uint8Array([3, 2, 1]));
+
+    const encoded = msgpackEncode(customMap)
+    const decoded = msgpackDecode(encoded)
+    expect(decoded).toEqual(customMap);
+  })
 
 });

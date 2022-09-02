@@ -34,9 +34,10 @@ extensionCodec.register({
     const map = new Map();
 
     for (const [key, value] of Object.entries(obj)) {
-      if (isBuffer(value)) {
-        map.set(key, msgpackDecode(value));
+      if (!isBuffer(value)) {
+        throw new Error("Map value must be encoded")
       }
+      map.set(key, msgpackDecode(value));
     }
     return map;
   },
