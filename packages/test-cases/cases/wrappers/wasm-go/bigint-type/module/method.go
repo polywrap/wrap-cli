@@ -5,6 +5,7 @@ import (
 	"github.com/testorg/testrepo/wrap/types"
 )
 
+//go:generate polywrap build -v -m ../polywrap.yaml -o ../build
 func Method(args *types.ArgsMethod) *big.Int {
 	result := new(big.Int).Mul(args.Arg1, args.Obj.Prop1)
 

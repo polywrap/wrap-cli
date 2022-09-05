@@ -6,6 +6,7 @@ import (
 	"github.com/testorg/testrepo/wrap/types"
 )
 
+//go:generate polywrap build -v -m ../polywrap.yaml -o ../build
 func BytesMethod(args *types.ArgsBytesMethod) []byte {
 	return bytes.Join(
 		[][]byte{

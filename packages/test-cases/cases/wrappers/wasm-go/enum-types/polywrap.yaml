@@ -4,6 +4,6 @@ project:
   type: wasm/golang
 source:
   schema: ./schema.graphql
-  module: ./src/index.ts
+  module: ./go.mod
 extensions:
   build: ./polywrap.build.yaml

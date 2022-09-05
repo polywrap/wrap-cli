@@ -2,6 +2,8 @@ package module
 
 import "github.com/testorg/testrepo/wrap/types"
 
+//go:generate polywrap build -v -m ../polywrap.yaml -o ../build
+
 func I8Method(args *types.ArgsI8Method) int8 {
 	return args.First + args.Second
 }

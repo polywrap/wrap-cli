@@ -2,6 +2,8 @@ package module
 
 import "github.com/testorg/testrepo/wrap/types"
 
+//go:generate polywrap build -v -m ../polywrap.yaml -o ../build
+
 func GetKey(args *types.ArgsGetKey) int32 {
 	return args.Foo.Map[args.Key]
 }

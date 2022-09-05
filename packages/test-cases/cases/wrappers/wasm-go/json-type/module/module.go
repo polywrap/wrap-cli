@@ -5,6 +5,7 @@ import (
 	"github.com/valyala/fastjson"
 )
 
+//go:generate polywrap build -v -m ../polywrap.yaml -o ../build
 func Parse(args *types.ArgsParse) *fastjson.Value {
 	return fastjson.MustParse(args.Value)
 }
