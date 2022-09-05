@@ -10,11 +10,16 @@ import (
 {{#methods}}
 func {{#toUpper}}{{type}}{{/toUpper}}{{#toUpper}}{{name}}{{/toUpper}}(args *Args{{#toUpper}}{{name}}{{/toUpper}}) ({{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, error) {
 	argsBuf := Serialize{{#toUpper}}{{name}}{{/toUpper}}Args(args)
-	data, err := polywrap.WrapSubinvoke("{{uri}}", "{{name}}", argsBuf)
-	if err != nil {
-		return nil, err
+	var (
+		err error
+		raw []byte
+		data {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}
+	)
+	raw, err = polywrap.WrapSubinvoke("{{uri}}", "{{name}}", argsBuf)
+	if err == nil {
+		data = Deserialize{{#toUpper}}{{name}}{{/toUpper}}Result(raw)
 	}
-	return Deserialize{{#toUpper}}{{name}}{{/toUpper}}Result(data), nil
+	return data, err
 }
 {{^last}}
 
@@ -25,11 +30,16 @@ func {{#toUpper}}{{type}}{{/toUpper}}{{#toUpper}}{{name}}{{/toUpper}}(args *Args
 {{#methods}}
 func {{#toUpper}}{{type}}{{/toUpper}}{{#toUpper}}{{name}}{{/toUpper}}(uri string, args *Args{{#toUpper}}{{name}}{{/toUpper}}) ({{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, error) {
 	argsBuf := Serialize{{#toUpper}}{{name}}{{/toUpper}}Args(args)
-	data, err := polywrap.WrapSubinvokeImplementation("{{uri}}", uri, "{{name}}", argsBuf)
-	if err != nil {
-		return nil, err
+	var (
+		err error
+		raw []byte
+		data {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}
+	)
+	raw, err := polywrap.WrapSubinvokeImplementation("{{uri}}", uri, "{{name}}", argsBuf)
+	if err == nil {
+		data = Deserialize{{#toUpper}}{{name}}{{/toUpper}}Result(raw)
 	}
-	return Deserialize{{#toUpper}}{{name}}{{/toUpper}}Result(data), nil
+	return data, err
 }
 {{^last}}
 
