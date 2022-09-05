@@ -95,8 +95,6 @@ async function run(options: CodegenCommandOptions) {
     return;
   }
 
-  await project.validate();
-
   const projectType = await project.getManifestLanguage();
 
   let result = false;
