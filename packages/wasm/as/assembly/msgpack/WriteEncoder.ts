@@ -3,11 +3,9 @@ import { WriteSizer } from "./WriteSizer";
 import { Format } from "./Format";
 import { ExtensionType } from "./ExtensionType";
 import { Write } from "./Write";
-import { throwArrayIndexOutOfRange } from "./utils";
 import { BigInt, BigNumber } from "../math";
 import { Context } from "../debug";
 import { JSON } from "../json";
-import { wrap_debug_log } from "../debug-log";
 
 import { Option } from "as-container";
 
@@ -24,7 +22,7 @@ export class WriteEncoder extends Write {
   ) {
     super();
     this._context = context;
-    this._view = new DataView(ua, 0, ua.byteLength, context);
+    this._view = new DataView(ua, ua.byteLength, context);
     this._sizer = sizer;
     this._extCtr = 0;
   }
@@ -208,18 +206,22 @@ export class WriteEncoder extends Write {
     key_fn: (encoder: Write, key: K) => void,
     value_fn: (encoder: Write, value: V) => void
   ): void {
+    const index = this._extCtr;
     this._extCtr += 1;
+
     if (this._extCtr > <u32>this._sizer.extByteLengths.length) {
-      throwArrayIndexOutOfRange(
-        this._context,
-        "writeExtGenericMap",
-        this._sizer.extByteLengths.length,
-        this._extCtr
+      throw new RangeError(
+        this._context.printWithContext(
+          "writeExtGenericMap" +
+            ": Invalid ext index " +
+            index.toString() +
+            ", ext cache length" +
+            this._sizer.extByteLengths.length.toString()
+        )
       );
     }
-    wrap_debug_log("extByteLengths: " + this._sizer.extByteLengths.toString())
-    const extCtrIdx = this._sizer.extByteLengths.length - this._extCtr;
-    const byteLength = this._sizer.extByteLengths[extCtrIdx];
+
+    const byteLength = this._sizer.extByteLengths[index];
 
     // Encode the extension format + bytelength
     if (byteLength <= <u32>u8.MAX_VALUE) {
