@@ -2,7 +2,6 @@ import { Write } from "./Write";
 import { BigInt, BigNumber } from "../math";
 import { Context } from "../debug";
 import { JSON } from "../json";
-import { wrap_debug_log } from "../debug-log";
 
 import { Option } from "as-container";
 
