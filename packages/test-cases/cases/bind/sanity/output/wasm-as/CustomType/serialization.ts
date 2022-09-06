@@ -4,7 +4,7 @@ import {
   Write,
   WriteSizer,
   WriteEncoder,
-  Box,
+  Nullable,
   BigInt,
   BigNumber,
   JSON,
@@ -38,7 +38,7 @@ export function writeCustomType(writer: Write, type: CustomType): void {
   writer.writeString("u");
   writer.writeUInt32(type.u);
   writer.context().pop();
-  writer.context().push("optU", "Box<u32> | null", "writing property");
+  writer.context().push("optU", "Nullable<u32> | null", "writing property");
   writer.writeString("optU");
   writer.writeOptionalUInt32(type.optU);
   writer.context().pop();
@@ -106,7 +106,7 @@ export function writeCustomType(writer: Write, type: CustomType): void {
   writer.writeString("boolean");
   writer.writeBool(type._boolean);
   writer.context().pop();
-  writer.context().push("optBoolean", "Box<bool> | null", "writing property");
+  writer.context().push("optBoolean", "Nullable<bool> | null", "writing property");
   writer.writeString("optBoolean");
   writer.writeOptionalBool(type.optBoolean);
   writer.context().pop();
@@ -122,9 +122,9 @@ export function writeCustomType(writer: Write, type: CustomType): void {
     writer.writeUInt32(item);
   });
   writer.context().pop();
-  writer.context().push("optUOptArray", "Array<Box<u32> | null> | null", "writing property");
+  writer.context().push("optUOptArray", "Array<Nullable<u32> | null> | null", "writing property");
   writer.writeString("optUOptArray");
-  writer.writeOptionalArray(type.optUOptArray, (writer: Write, item: Box<u32> | null): void => {
+  writer.writeOptionalArray(type.optUOptArray, (writer: Write, item: Nullable<u32> | null): void => {
     writer.writeOptionalUInt32(item);
   });
   writer.context().pop();
@@ -142,10 +142,10 @@ export function writeCustomType(writer: Write, type: CustomType): void {
     });
   });
   writer.context().pop();
-  writer.context().push("uOptArrayOptArray", "Array<Array<Box<u32> | null> | null>", "writing property");
+  writer.context().push("uOptArrayOptArray", "Array<Array<Nullable<u32> | null> | null>", "writing property");
   writer.writeString("uOptArrayOptArray");
-  writer.writeArray(type.uOptArrayOptArray, (writer: Write, item: Array<Box<u32> | null> | null): void => {
-    writer.writeOptionalArray(item, (writer: Write, item: Box<u32> | null): void => {
+  writer.writeArray(type.uOptArrayOptArray, (writer: Write, item: Array<Nullable<u32> | null> | null): void => {
+    writer.writeOptionalArray(item, (writer: Write, item: Nullable<u32> | null): void => {
       writer.writeOptionalUInt32(item);
     });
   });
@@ -204,7 +204,7 @@ export function writeCustomType(writer: Write, type: CustomType): void {
   writer.writeString("en");
   writer.writeInt32(type.en);
   writer.context().pop();
-  writer.context().push("optEnum", "Box<Types.CustomEnum> | null", "writing property");
+  writer.context().push("optEnum", "Nullable<Types.CustomEnum> | null", "writing property");
   writer.writeString("optEnum");
   writer.writeOptionalInt32(type.optEnum);
   writer.context().pop();
@@ -214,9 +214,9 @@ export function writeCustomType(writer: Write, type: CustomType): void {
     writer.writeInt32(item);
   });
   writer.context().pop();
-  writer.context().push("optEnumArray", "Array<Box<Types.CustomEnum> | null> | null", "writing property");
+  writer.context().push("optEnumArray", "Array<Nullable<Types.CustomEnum> | null> | null", "writing property");
   writer.writeString("optEnumArray");
-  writer.writeOptionalArray(type.optEnumArray, (writer: Write, item: Box<Types.CustomEnum> | null): void => {
+  writer.writeOptionalArray(type.optEnumArray, (writer: Write, item: Nullable<Types.CustomEnum> | null): void => {
     writer.writeOptionalInt32(item);
   });
   writer.context().pop();
@@ -284,7 +284,7 @@ export function readCustomType(reader: Read): CustomType {
   let _optStr: string | null = null;
   let _u: u32 = 0;
   let _uSet: bool = false;
-  let _optU: Box<u32> | null = null;
+  let _optU: Nullable<u32> | null = null;
   let _u8: u8 = 0;
   let _u8Set: bool = false;
   let _u16: u16 = 0;
@@ -313,15 +313,15 @@ export function readCustomType(reader: Read): CustomType {
   let _optBytes: ArrayBuffer | null = null;
   let _boolean: bool = false;
   let _booleanSet: bool = false;
-  let _optBoolean: Box<bool> | null = null;
+  let _optBoolean: Nullable<bool> | null = null;
   let _uArray: Array<u32> = [];
   let _uArraySet: bool = false;
   let _uOptArray: Array<u32> | null = null;
-  let _optUOptArray: Array<Box<u32> | null> | null = null;
+  let _optUOptArray: Array<Nullable<u32> | null> | null = null;
   let _optStrOptArray: Array<string | null> | null = null;
   let _uArrayArray: Array<Array<u32>> = [];
   let _uArrayArraySet: bool = false;
-  let _uOptArrayOptArray: Array<Array<Box<u32> | null> | null> = [];
+  let _uOptArrayOptArray: Array<Array<Nullable<u32> | null> | null> = [];
   let _uOptArrayOptArraySet: bool = false;
   let _uArrayOptArrayArray: Array<Array<Array<u32>> | null> = [];
   let _uArrayOptArrayArraySet: bool = false;
@@ -334,10 +334,10 @@ export function readCustomType(reader: Read): CustomType {
   let _optObjectArray: Array<Types.AnotherType | null> | null = null;
   let _en: Types.CustomEnum = 0;
   let _enSet: bool = false;
-  let _optEnum: Box<Types.CustomEnum> | null = null;
+  let _optEnum: Nullable<Types.CustomEnum> | null = null;
   let _enumArray: Array<Types.CustomEnum> = [];
   let _enumArraySet: bool = false;
-  let _optEnumArray: Array<Box<Types.CustomEnum> | null> | null = null;
+  let _optEnumArray: Array<Nullable<Types.CustomEnum> | null> | null = null;
   let _map: Map<string, i32> = new Map<string, i32>();
   let _mapSet: bool = false;
   let _mapOfArr: Map<string, Array<i32>> = new Map<string, Array<i32>>();
@@ -372,7 +372,7 @@ export function readCustomType(reader: Read): CustomType {
       reader.context().pop();
     }
     else if (field == "optU") {
-      reader.context().push(field, "Box<u32> | null", "type found, reading property");
+      reader.context().push(field, "Nullable<u32> | null", "type found, reading property");
       _optU = reader.readOptionalUInt32();
       reader.context().pop();
     }
@@ -469,7 +469,7 @@ export function readCustomType(reader: Read): CustomType {
       reader.context().pop();
     }
     else if (field == "optBoolean") {
-      reader.context().push(field, "Box<bool> | null", "type found, reading property");
+      reader.context().push(field, "Nullable<bool> | null", "type found, reading property");
       _optBoolean = reader.readOptionalBool();
       reader.context().pop();
     }
@@ -489,8 +489,8 @@ export function readCustomType(reader: Read): CustomType {
       reader.context().pop();
     }
     else if (field == "optUOptArray") {
-      reader.context().push(field, "Array<Box<u32> | null> | null", "type found, reading property");
-      _optUOptArray = reader.readOptionalArray((reader: Read): Box<u32> | null => {
+      reader.context().push(field, "Array<Nullable<u32> | null> | null", "type found, reading property");
+      _optUOptArray = reader.readOptionalArray((reader: Read): Nullable<u32> | null => {
         return reader.readOptionalUInt32();
       });
       reader.context().pop();
@@ -513,9 +513,9 @@ export function readCustomType(reader: Read): CustomType {
       reader.context().pop();
     }
     else if (field == "uOptArrayOptArray") {
-      reader.context().push(field, "Array<Array<Box<u32> | null> | null>", "type found, reading property");
-      _uOptArrayOptArray = reader.readArray((reader: Read): Array<Box<u32> | null> | null => {
-        return reader.readOptionalArray((reader: Read): Box<u32> | null => {
+      reader.context().push(field, "Array<Array<Nullable<u32> | null> | null>", "type found, reading property");
+      _uOptArrayOptArray = reader.readArray((reader: Read): Array<Nullable<u32> | null> | null => {
+        return reader.readOptionalArray((reader: Read): Nullable<u32> | null => {
           return reader.readOptionalUInt32();
         });
       });
@@ -597,15 +597,15 @@ export function readCustomType(reader: Read): CustomType {
       reader.context().pop();
     }
     else if (field == "optEnum") {
-      reader.context().push(field, "Box<Types.CustomEnum> | null", "type found, reading property");
-      let value: Box<Types.CustomEnum> | null;
+      reader.context().push(field, "Nullable<Types.CustomEnum> | null", "type found, reading property");
+      let value: Nullable<Types.CustomEnum> | null;
       if (!reader.isNextNil()) {
         if (reader.isNextString()) {
-          value = Box.from(
+          value = Nullable.from(
             Types.getCustomEnumValue(reader.readString())
           );
         } else {
-          value = Box.from(
+          value = Nullable.from(
             reader.readInt32()
           );
           Types.sanitizeCustomEnumValue(value.unwrap());
@@ -632,16 +632,16 @@ export function readCustomType(reader: Read): CustomType {
       reader.context().pop();
     }
     else if (field == "optEnumArray") {
-      reader.context().push(field, "Array<Box<Types.CustomEnum> | null> | null", "type found, reading property");
-      _optEnumArray = reader.readOptionalArray((reader: Read): Box<Types.CustomEnum> | null => {
-        let value: Box<Types.CustomEnum> | null;
+      reader.context().push(field, "Array<Nullable<Types.CustomEnum> | null> | null", "type found, reading property");
+      _optEnumArray = reader.readOptionalArray((reader: Read): Nullable<Types.CustomEnum> | null => {
+        let value: Nullable<Types.CustomEnum> | null;
         if (!reader.isNextNil()) {
           if (reader.isNextString()) {
-            value = Box.from(
+            value = Nullable.from(
               Types.getCustomEnumValue(reader.readString())
             );
           } else {
-            value = Box.from(
+            value = Nullable.from(
               reader.readInt32()
             );
             Types.sanitizeCustomEnumValue(value.unwrap());

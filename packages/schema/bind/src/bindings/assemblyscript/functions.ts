@@ -246,7 +246,7 @@ const applyOptional = (
     ) {
       return `${type} | null`;
     } else {
-      return `Box<${type}> | null`;
+      return `Nullable<${type}> | null`;
     }
   } else {
     return type;

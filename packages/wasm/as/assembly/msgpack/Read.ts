@@ -1,7 +1,7 @@
 import { BigInt, BigNumber } from "../math";
 import { Context } from "../debug";
 import { JSON } from "../json";
-import { Box } from "../containers";
+import { Nullable } from "../containers";
 
 export abstract class Read {
   abstract readBool(): bool;
@@ -32,15 +32,15 @@ export abstract class Read {
     value_fn: (reader: Read) => V
   ): Map<K, V>;
 
-  abstract readOptionalBool(): Box<bool> | null;
-  abstract readOptionalInt8(): Box<i8> | null;
-  abstract readOptionalInt16(): Box<i16> | null;
-  abstract readOptionalInt32(): Box<i32> | null;
-  abstract readOptionalUInt8(): Box<u8> | null;
-  abstract readOptionalUInt16(): Box<u16> | null;
-  abstract readOptionalUInt32(): Box<u32> | null;
-  abstract readOptionalFloat32(): Box<f32> | null;
-  abstract readOptionalFloat64(): Box<f64> | null;
+  abstract readOptionalBool(): Nullable<bool> | null;
+  abstract readOptionalInt8(): Nullable<i8> | null;
+  abstract readOptionalInt16(): Nullable<i16> | null;
+  abstract readOptionalInt32(): Nullable<i32> | null;
+  abstract readOptionalUInt8(): Nullable<u8> | null;
+  abstract readOptionalUInt16(): Nullable<u16> | null;
+  abstract readOptionalUInt32(): Nullable<u32> | null;
+  abstract readOptionalFloat32(): Nullable<f32> | null;
+  abstract readOptionalFloat64(): Nullable<f64> | null;
   abstract readOptionalString(): string | null;
   abstract readOptionalBytes(): ArrayBuffer | null;
   abstract readOptionalBigInt(): BigInt | null;

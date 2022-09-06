@@ -1,7 +1,7 @@
 import {
   Read,
   Write,
-  Box,
+  Nullable,
   BigInt,
   BigNumber,
   JSON
@@ -23,9 +23,9 @@ export class TestImport_Object {
   objectArray: Array<Types.TestImport_AnotherObject>;
   optObjectArray: Array<Types.TestImport_AnotherObject | null> | null;
   en: Types.TestImport_Enum;
-  optEnum: Box<Types.TestImport_Enum> | null;
+  optEnum: Nullable<Types.TestImport_Enum> | null;
   enumArray: Array<Types.TestImport_Enum>;
-  optEnumArray: Array<Box<Types.TestImport_Enum> | null> | null;
+  optEnumArray: Array<Nullable<Types.TestImport_Enum> | null> | null;
 
   static toBuffer(type: TestImport_Object): ArrayBuffer {
     return serializeTestImport_Object(type);

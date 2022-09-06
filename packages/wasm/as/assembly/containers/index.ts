@@ -1,2 +1,2 @@
 export * from "./Result";
-export { Box } from "as-container";
+export { Box as Nullable } from "as-container";

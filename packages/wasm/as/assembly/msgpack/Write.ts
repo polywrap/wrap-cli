@@ -1,7 +1,7 @@
 import { BigInt, BigNumber } from "../math";
 import { Context } from "../debug";
 import { JSON } from "../json";
-import { Box } from "../containers";
+import { Nullable } from "../containers";
 
 export abstract class Write {
   abstract writeNil(): void;
@@ -38,15 +38,15 @@ export abstract class Write {
     value_fn: (writer: Write, value: V) => void
   ): void;
 
-  abstract writeOptionalBool(value: Box<bool> | null): void;
-  abstract writeOptionalInt8(value: Box<i8> | null): void;
-  abstract writeOptionalInt16(value: Box<i16> | null): void;
-  abstract writeOptionalInt32(value: Box<i32> | null): void;
-  abstract writeOptionalUInt8(value: Box<u8> | null): void;
-  abstract writeOptionalUInt16(value: Box<u16> | null): void;
-  abstract writeOptionalUInt32(value: Box<u32> | null): void;
-  abstract writeOptionalFloat32(value: Box<f32> | null): void;
-  abstract writeOptionalFloat64(value: Box<f64> | null): void;
+  abstract writeOptionalBool(value: Nullable<bool> | null): void;
+  abstract writeOptionalInt8(value: Nullable<i8> | null): void;
+  abstract writeOptionalInt16(value: Nullable<i16> | null): void;
+  abstract writeOptionalInt32(value: Nullable<i32> | null): void;
+  abstract writeOptionalUInt8(value: Nullable<u8> | null): void;
+  abstract writeOptionalUInt16(value: Nullable<u16> | null): void;
+  abstract writeOptionalUInt32(value: Nullable<u32> | null): void;
+  abstract writeOptionalFloat32(value: Nullable<f32> | null): void;
+  abstract writeOptionalFloat64(value: Nullable<f64> | null): void;
   abstract writeOptionalString(value: string | null): void;
   abstract writeOptionalBytes(value: ArrayBuffer | null): void;
   abstract writeOptionalBigInt(value: BigInt | null): void;

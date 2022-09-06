@@ -2,7 +2,7 @@ import { Write } from "./Write";
 import { BigInt, BigNumber } from "../math";
 import { Context } from "../debug";
 import { JSON } from "../json";
-import { Box } from "../containers";
+import { Nullable } from "../containers";
 
 export class WriteSizer extends Write {
   length: i32;
@@ -194,7 +194,7 @@ export class WriteSizer extends Write {
     this.extByteLengths.push(byteLength);
   }
 
-  writeOptionalBool(value: Box<bool> | null): void {
+  writeOptionalBool(value: Nullable<bool> | null): void {
     if (value === null) {
       this.writeNil();
       return;
@@ -203,7 +203,7 @@ export class WriteSizer extends Write {
     this.writeBool(value.unwrap());
   }
 
-  writeOptionalInt8(value: Box<i8> | null): void {
+  writeOptionalInt8(value: Nullable<i8> | null): void {
     if (value === null) {
       this.writeNil();
       return;
@@ -212,7 +212,7 @@ export class WriteSizer extends Write {
     this.writeInt8(value.unwrap());
   }
 
-  writeOptionalInt16(value: Box<i16> | null): void {
+  writeOptionalInt16(value: Nullable<i16> | null): void {
     if (value === null) {
       this.writeNil();
       return;
@@ -221,7 +221,7 @@ export class WriteSizer extends Write {
     this.writeInt16(value.unwrap());
   }
 
-  writeOptionalInt32(value: Box<i32> | null): void {
+  writeOptionalInt32(value: Nullable<i32> | null): void {
     if (value === null) {
       this.writeNil();
       return;
@@ -230,7 +230,7 @@ export class WriteSizer extends Write {
     this.writeInt32(value.unwrap());
   }
 
-  writeOptionalUInt8(value: Box<u8> | null): void {
+  writeOptionalUInt8(value: Nullable<u8> | null): void {
     if (value === null) {
       this.writeNil();
       return;
@@ -239,7 +239,7 @@ export class WriteSizer extends Write {
     this.writeUInt8(value.unwrap());
   }
 
-  writeOptionalUInt16(value: Box<u16> | null): void {
+  writeOptionalUInt16(value: Nullable<u16> | null): void {
     if (value === null) {
       this.writeNil();
       return;
@@ -248,7 +248,7 @@ export class WriteSizer extends Write {
     this.writeUInt16(value.unwrap());
   }
 
-  writeOptionalUInt32(value: Box<u32> | null): void {
+  writeOptionalUInt32(value: Nullable<u32> | null): void {
     if (value === null) {
       this.writeNil();
       return;
@@ -257,7 +257,7 @@ export class WriteSizer extends Write {
     this.writeUInt32(value.unwrap());
   }
 
-  writeOptionalFloat32(value: Box<f32> | null): void {
+  writeOptionalFloat32(value: Nullable<f32> | null): void {
     if (value === null) {
       this.writeNil();
       return;
@@ -266,7 +266,7 @@ export class WriteSizer extends Write {
     this.writeFloat32(value.unwrap());
   }
 
-  writeOptionalFloat64(value: Box<f64> | null): void {
+  writeOptionalFloat64(value: Nullable<f64> | null): void {
     if (value === null) {
       this.writeNil();
       return;

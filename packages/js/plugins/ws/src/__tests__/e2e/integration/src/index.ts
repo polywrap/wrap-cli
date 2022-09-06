@@ -68,7 +68,7 @@ export function get(args: Args_get): string[] {
 
   WS_Module.addCache({
     id
-  }).unwrap().unwrap()
+  }).unwrap()
 
   const messages = WS_Module.receive({ id, timeout: { value: args.timeout } }).unwrap();
 
