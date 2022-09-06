@@ -8,7 +8,7 @@ writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(value, (writer: Write,
 {{/array}}
 {{#map}}
 writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(value, (writer: Write, key: {{#key}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/key}}) => {
-  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(key);
+  writer.write{{#key}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/key}}(key);
 }, (writer: Write, value: {{#value}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/value}}): void => {
   {{> serialize_map_value}}
 });

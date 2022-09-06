@@ -5,5 +5,8 @@ project:
 source:
   schema: ./schema.graphql
   module: ./Cargo.toml
+  import_abis:
+    - uri: "wrap://ens/imported-map.eth"
+      abi: ./schema.import.graphql
 extensions:
   build: ./polywrap.build.yaml
