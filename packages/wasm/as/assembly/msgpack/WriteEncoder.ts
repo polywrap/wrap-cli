@@ -7,6 +7,7 @@ import { throwArrayIndexOutOfRange } from "./utils";
 import { BigInt, BigNumber } from "../math";
 import { Context } from "../debug";
 import { JSON } from "../json";
+import { wrap_debug_log } from "../debug-log";
 
 import { Option } from "as-container";
 
@@ -207,7 +208,8 @@ export class WriteEncoder extends Write {
     key_fn: (encoder: Write, key: K) => void,
     value_fn: (encoder: Write, value: V) => void
   ): void {
-    if (this._extCtr >= <u32>this._sizer.extByteLengths.length) {
+    this._extCtr += 1;
+    if (this._extCtr > <u32>this._sizer.extByteLengths.length) {
       throwArrayIndexOutOfRange(
         this._context,
         "writeExtGenericMap",
@@ -215,8 +217,9 @@ export class WriteEncoder extends Write {
         this._extCtr
       );
     }
-    const byteLength = this._sizer.extByteLengths[this._extCtr];
-    this._extCtr += 1;
+    wrap_debug_log("extByteLengths: " + this._sizer.extByteLengths.toString())
+    const extCtrIdx = this._sizer.extByteLengths.length - this._extCtr;
+    const byteLength = this._sizer.extByteLengths[extCtrIdx];
 
     // Encode the extension format + bytelength
     if (byteLength <= <u32>u8.MAX_VALUE) {

@@ -179,6 +179,7 @@ export class WriteSizer extends Write {
     this.length++;
 
     const startingLength = this.length;
+    const insertIdx = this.extByteLengths.length;
 
     this.writeMap(m, key_fn, value_fn);
 
@@ -193,6 +194,12 @@ export class WriteSizer extends Write {
     }
 
     this.extByteLengths.push(byteLength);
+
+    // If more than one element has been added, reverse the sub-array
+    if (this.extByteLengths.length > insertIdx + 1) {
+      const added = this.extByteLengths.slice(insertIdx);
+      this.extByteLengths = this.extByteLengths.concat(added.reverse());
+    }
   }
 
   writeOptionalBool(value: Option<bool>): void {

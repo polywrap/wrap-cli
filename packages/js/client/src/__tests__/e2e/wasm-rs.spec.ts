@@ -78,7 +78,7 @@ describe("wasm-rs test cases", () => {
     await TestCases.runEnumTypesTest(await getClient(), wrapperUri);
   });
 
-  it("map-type", async () => {
+  it.only("map-type", async () => {
     const wrapperPath = `${GetPathToTestWrappers()}/wasm-rs/map-type`;
     const wrapperUri = `fs/${wrapperPath}/build`;
 

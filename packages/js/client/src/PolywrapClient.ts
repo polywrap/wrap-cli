@@ -322,6 +322,7 @@ export class PolywrapClient implements Client {
             data: (msgpackEncode(invocableResult.data) as unknown) as TData,
           };
         } else if (invocableResult.encoded && !options.encodeResult) {
+          console.log("HERERE", invocableResult.data);
           return {
             data: msgpackDecode(invocableResult.data as Uint8Array) as TData,
           };
