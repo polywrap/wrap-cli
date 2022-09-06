@@ -755,11 +755,14 @@ export const runObjectTypesTest = async (
 
 export const runMapTypeTest = async (client: PolywrapClient, uri: string) => {
   const mapClass = new Map<string, number>().set("Hello", 1).set("Heyo", 50);
+  const nestedMapClass = new Map<string, Map<string, number>>().set("Nested", mapClass);
   const mapRecord: Record<string, number> = {
     Hello: 1,
     Heyo: 50,
   };
-  const nestedMapClass = new Map<string, Map<string, number>>().set("Hello", mapClass);
+  const nestedMapRecord: Record<string, Record<string, number>> = {
+    Nested: mapRecord
+  };
 
   const returnMapResponse1 = await client.invoke<Map<string, number>>({
     uri,
@@ -801,7 +804,7 @@ export const runMapTypeTest = async (client: PolywrapClient, uri: string) => {
     args: {
       foo: {
         map: mapRecord,
-        nestedMap: nestedMapClass
+        nestedMap: nestedMapRecord
       },
       key: "Heyo",
     },
