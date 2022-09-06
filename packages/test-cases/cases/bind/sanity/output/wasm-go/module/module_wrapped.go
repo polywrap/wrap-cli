@@ -26,7 +26,7 @@ func ObjectMethodWrapped(argsBuf []byte, envSize uint32) []byte {
 
 	args := DeserializeObjectMethodArgs(argsBuf)
 
-	result := methods.ObjectMethod(args, env)
+	result := methods.ObjectMethod(args,env)
 	return SerializeObjectMethodResult(result)
 }
 
@@ -39,7 +39,7 @@ func OptionalEnvMethodWrapped(argsBuf []byte, envSize uint32) []byte {
 
 	args := DeserializeOptionalEnvMethodArgs(argsBuf)
 
-	result := methods.OptionalEnvMethod(args, env)
+	result := methods.OptionalEnvMethod(args,env)
 	return SerializeOptionalEnvMethodResult(result)
 }
 

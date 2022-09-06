@@ -474,17 +474,17 @@ func writeCustomType(writer msgpack.Write, value *CustomType) {
 		}
 	}
 	writer.Context().Pop()
-	writer.Context().Push("Map", "map[string]int32", "writing property")
-	writer.WriteString("Map")
-	if value.Map == nil {
+	writer.Context().Push("M_map", "map[string]int32", "writing property")
+	writer.WriteString("M_map")
+	if value.M_map == nil {
 		writer.WriteNil()
-	} else if len(value.Map) == 0 {
+	} else if len(value.M_map) == 0 {
 		writer.WriteNil()
 	} else {
-		for i0 := range value.Map {
+		for i0 := range value.M_map {
 			writer.WriteString(i0)
 			{
-				v := value.Map[i0]
+				v := value.M_map[i0]
 				writer.WriteI32(v)
 			}
 		}
@@ -1025,7 +1025,7 @@ func readCustomType(reader msgpack.Read) *CustomType {
 				}
 			}
 			reader.Context().Pop()
-		case "Map":
+		case "M_map":
 			reader.Context().Push(field, "map[string]int32", "type found, reading property")
 			if reader.IsNil() {
 				_map = nil
@@ -1240,7 +1240,7 @@ func readCustomType(reader msgpack.Read) *CustomType {
 		OptEnum:             _optEnum,
 		EnumArray:           _enumArray,
 		OptEnumArray:        _optEnumArray,
-		Map:                 _map,
+		M_map:               _map,
 		MapOfArr:            _mapOfArr,
 		MapOfObj:            _mapOfObj,
 		MapOfArrOfObj:       _mapOfArrOfObj,

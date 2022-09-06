@@ -11,7 +11,7 @@ func MethodImportedMethod(uri string, args *ArgsImportedMethod) (*TestImport_Obj
 		raw []byte
 		data *TestImport_Object
 	)
-	raw, err := polywrap.WrapSubinvokeImplementation("testimport.uri.eth", uri, "importedMethod", argsBuf)
+	raw, err = polywrap.WrapSubinvokeImplementation("testimport.uri.eth", uri, "importedMethod", argsBuf)
 	if err == nil {
 		data = DeserializeImportedMethodResult(raw)
 	}
@@ -25,7 +25,7 @@ func MethodAnotherMethod(uri string, args *ArgsAnotherMethod) (int32, error) {
 		raw []byte
 		data int32
 	)
-	raw, err := polywrap.WrapSubinvokeImplementation("testimport.uri.eth", uri, "anotherMethod", argsBuf)
+	raw, err = polywrap.WrapSubinvokeImplementation("testimport.uri.eth", uri, "anotherMethod", argsBuf)
 	if err == nil {
 		data = DeserializeAnotherMethodResult(raw)
 	}
