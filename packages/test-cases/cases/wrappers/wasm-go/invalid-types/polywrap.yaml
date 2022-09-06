@@ -1,0 +1,9 @@
+format: 0.2.0
+project:
+  name: InvalidTypes
+  type: wasm/golang
+source:
+  schema: ./schema.graphql
+  module: ./go.mod
+extensions:
+  build: ./polywrap.build.yaml

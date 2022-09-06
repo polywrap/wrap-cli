@@ -1,0 +1,12 @@
+format: 0.2.0
+project:
+  name: TestUseGetImpl
+  type: wasm/golang
+source:
+  schema: ./schema.graphql
+  module: ./go.mod
+  import_abis:
+    - uri: wrap://ens/interface.eth
+      abi: ../test-interface/build/wrap.info
+extensions:
+  build: ./polywrap.build.yaml

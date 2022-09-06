@@ -1,0 +1,6 @@
+format: 0.2.0
+project:
+  name: TestInterface
+  type: interface
+source:
+  schema: ./schema.graphql

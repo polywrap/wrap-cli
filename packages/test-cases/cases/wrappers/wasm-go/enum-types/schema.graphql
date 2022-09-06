@@ -1,0 +1,17 @@
+type Module {
+  method1(
+    en: SanityEnum!
+    optEnum: SanityEnum
+  ): SanityEnum!
+
+  method2(
+    enumArray: [SanityEnum!]!
+    optEnumArray: [SanityEnum]
+  ): [SanityEnum!]!
+}
+
+enum SanityEnum {
+  OPTION1
+  OPTION2
+  OPTION3
+}
