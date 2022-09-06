@@ -18,10 +18,7 @@ export class DataView {
     byte_length: u32 = <u32>buffer.byteLength,
     context: Context = new Context()
   ) {
-    if (
-      byte_length > BLOCK_MAXSIZE ||
-      byte_length > <u32>buffer.byteLength
-    ) {
+    if (byte_length > BLOCK_MAXSIZE || byte_length > <u32>buffer.byteLength) {
       throw new RangeError(
         context.printWithContext(
           "DataView.constructor" +
@@ -48,21 +45,14 @@ export class DataView {
 
   getBytes(length: u32): ArrayBuffer {
     this._checkIndexInRange("getBytes", length);
-    const result = this.buffer.slice(
-      this._index,
-      this._index + length
-    );
+    const result = this.buffer.slice(this._index, this._index + length);
     this._index += length;
     return result;
   }
 
   setBytes(buf: ArrayBuffer): void {
     this._checkIndexInRange("setBytes", buf.byteLength);
-    memory.copy(
-      this.getMemCursor(),
-      changetype<u32>(buf),
-      buf.byteLength
-    );
+    memory.copy(this.getMemCursor(), changetype<u32>(buf), buf.byteLength);
     this._index += buf.byteLength;
   }
 
@@ -78,18 +68,14 @@ export class DataView {
 
   getFloat32(): f32 {
     this._checkIndexInRange("getFloat32", 4);
-    const result = reinterpret<f32>(
-      bswap(load<u32>(this.getMemCursor()))
-    );
+    const result = reinterpret<f32>(bswap(load<u32>(this.getMemCursor())));
     this._index += 4;
     return result;
   }
 
   getFloat64(): f64 {
     this._checkIndexInRange("getFloat64", 8);
-    const result = reinterpret<f64>(
-      bswap(load<u64>(this.getMemCursor()))
-    );
+    const result = reinterpret<f64>(bswap(load<u64>(this.getMemCursor())));
     this._index += 8;
     return result;
   }
@@ -138,19 +124,13 @@ export class DataView {
 
   setFloat32(value: f32): void {
     this._checkIndexInRange("setFloat32", 4);
-    store<u32>(
-      this.getMemCursor(),
-      bswap(reinterpret<u32>(value))
-    );
+    store<u32>(this.getMemCursor(), bswap(reinterpret<u32>(value)));
     this._index += 4;
   }
 
   setFloat64(value: f64): void {
     this._checkIndexInRange("setFloat64", 8);
-    store<u64>(
-      this.getMemCursor(),
-      bswap(reinterpret<u64>(value))
-    );
+    store<u64>(this.getMemCursor(), bswap(reinterpret<u64>(value)));
     this._index += 8;
   }
 
