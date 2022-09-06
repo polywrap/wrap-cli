@@ -217,33 +217,6 @@ export const toMsgPack: MustacheFn = () => {
   };
 };
 
-export const typeable: MustacheFn = () => {
-  return (value: string, render: (template: string) => string) => {
-    const type = render(value);
-    switch (type) {
-      case "int8":
-      case "int16":
-      case "int32":
-      case "int64":
-      case "uint8":
-      case "uint16":
-      case "uint32":
-      case "uint64":
-      case "string":
-      case "bool":
-      case "[]byte":
-      case "*big.Int":
-      case "*fastjson.Value":
-        return type;
-      default:
-        if (type.startsWith("*")) {
-          return `*types.${type.slice(1)}`;
-        }
-        return `types.${type}`;
-    }
-  };
-};
-
 export const toWasm: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
     let type = render(value);
@@ -373,69 +346,32 @@ const applyOptional = (type: string, optional: boolean, _: boolean): string => {
   }
 };
 
-function replaceAt(str: string, index: number, replacement: string): string {
-  return (
-    str.substr(0, index) + replacement + str.substr(index + replacement.length)
-  );
-}
-
 export const toLower: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
-    let type = render(value);
-
-    for (let i = 0; i < type.length; ++i) {
-      const char = type.charAt(i);
-      const lower = char.toLowerCase();
-
-      if (char !== lower) {
-        // Replace the uppercase char w/ the lowercase version
-        type = replaceAt(type, i, lower);
-
-        // if (i !== 0 && type[i - 1] !== "_") {
-        //   // Make sure all lowercase conversions have an underscore before them
-        //   type = insertAt(type, i, "_");
-        // }
-      }
-    }
-
-    return type;
+    return render(value)
+      .split("")
+      .map((v) => v.toLowerCase())
+      .join("");
   };
 };
 
 export const toFirstLower: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
-    let type = render(value);
-
-    // First character must always be upper case
-    const firstChar = type.charAt(0);
-    const firstLower = firstChar.toLowerCase();
-    type = replaceAt(type, 0, firstLower);
-
-    return type;
+    const type = render(value);
+    return type.charAt(0).toLowerCase() + type.slice(1);
   };
 };
 
 export const toUpper: MustacheFn = () => {
   return (value: string, render: (template: string) => string) => {
-    let type = render(value);
+    const type = render(value);
+    return type.charAt(0).toUpperCase() + type.slice(1);
+  };
+};
 
-    // First character must always be upper case
-    const firstChar = type.charAt(0);
-    const firstUpper = firstChar.toUpperCase();
-    type = replaceAt(type, 0, firstUpper);
-
-    // Look for any underscores, remove them if they exist, and make next letter uppercase
-    // for (let i = 0; i < type.length; ++i) {
-    //   const char = type.charAt(i);
-    //
-    //   if (char === "_") {
-    //     const nextChar = type.charAt(i + 1);
-    //     const nextCharUpper = nextChar.toUpperCase();
-    //     type = replaceAt(type, i + 1, nextCharUpper);
-    //     type = removeAt(type, i);
-    //   }
-    // }
-
-    return type;
+export const pkgName: MustacheFn = () => {
+  return (text: string, render: (template: string) => string): string => {
+    const name = render(text);
+    return reservedWordsAS.has(name) ? `pkg${name}` : name;
   };
 };

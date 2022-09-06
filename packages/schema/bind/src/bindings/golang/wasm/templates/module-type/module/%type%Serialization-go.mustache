@@ -2,13 +2,16 @@ package module
 {{#makeImports}}
 	github.com/consideritdone/polywrap-go/polywrap/msgpack,
 	. {{goImport}}/wrap/types,
+	{{#importedTypes}}
+  . {{goImport}}/wrap/imported/{{#pkgName}}{{#toSnakeCase}}{{namespace}}{{/toSnakeCase}}{{/pkgName}},
+  {{/importedTypes}}
 	{{#methods}}
 		{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}},
 	{{/methods}}
 {{/makeImports}}
 {{#methods}}
-func Deserialize{{#toUpper}}{{name}}{{/toUpper}}Args(argsBuf []byte) *Args{{#toUpper}}{{name}}{{/toUpper}} {
-	{{#arguments.length}}
+{{#arguments.length}}
+func Deserialize{{#toUpper}}{{name}}{{/toUpper}}Args(argsBuf []byte) *MethodArgs{{#toUpper}}{{name}}{{/toUpper}} {
 	ctx := msgpack.NewContext("Deserializing module-type: {{#toUpper}}{{name}}{{/toUpper}}")
 	reader := msgpack.NewReadDecoder(ctx, argsBuf)
 
@@ -65,9 +68,8 @@ func Deserialize{{#toUpper}}{{name}}{{/toUpper}}Args(argsBuf []byte) *Args{{#toU
 	}
 	{{/required}}
 	{{/arguments}}
-	{{/arguments.length}}
 
-	return &Args{{#toUpper}}{{name}}{{/toUpper}}{
+	return &MethodArgs{{#toUpper}}{{name}}{{/toUpper}}{
 	{{#stuctProps}}
 	{{#arguments}}
 	{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}}: _{{name}},
@@ -75,6 +77,7 @@ func Deserialize{{#toUpper}}{{name}}{{/toUpper}}Args(argsBuf []byte) *Args{{#toU
 	{{/stuctProps}}
 	}
 }
+{{/arguments.length}}
 
 func Serialize{{#toUpper}}{{name}}{{/toUpper}}Result(value {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}) []byte {
 	ctx := msgpack.NewContext("Serializing module-type: {{#toUpper}}{{name}}{{/toUpper}}")

@@ -1,4 +1,4 @@
-package {{#toSnakeCase}}{{namespace}}{{/toSnakeCase}}
+package {{#pkgName}}{{#toSnakeCase}}{{namespace}}{{/toSnakeCase}}{{/pkgName}}
 
 {{#methods.length}}
 import (
@@ -35,7 +35,7 @@ func {{#toUpper}}{{type}}{{/toUpper}}{{#toUpper}}{{name}}{{/toUpper}}(uri string
 		raw []byte
 		data {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}
 	)
-	raw, err := polywrap.WrapSubinvokeImplementation("{{uri}}", uri, "{{name}}", argsBuf)
+	raw, err = polywrap.WrapSubinvokeImplementation("{{uri}}", uri, "{{name}}", argsBuf)
 	if err == nil {
 		data = Deserialize{{#toUpper}}{{name}}{{/toUpper}}Result(raw)
 	}

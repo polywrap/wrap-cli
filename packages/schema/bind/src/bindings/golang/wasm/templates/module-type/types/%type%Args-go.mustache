@@ -1,5 +1,8 @@
 package types
 {{#makeImports}}
+  {{#importedTypes}}
+  . {{goImport}}/wrap/imported/{{#pkgName}}{{#toSnakeCase}}{{namespace}}{{/toSnakeCase}}{{/pkgName}},
+  {{/importedTypes}}
   {{#methods}}
     {{#arguments}}
       {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
@@ -7,13 +10,15 @@ package types
   {{/methods}}
 {{/makeImports}}
 {{#methods}}
-type Args{{#toUpper}}{{name}}{{/toUpper}} struct {
+{{#arguments.length}}
+type MethodArgs{{#toUpper}}{{name}}{{/toUpper}} struct {
 {{#stuctProps}}
 {{#arguments}}
 {{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}} {{#toWasm}}{{toGraphQLType}}{{/toWasm}}
 {{/arguments}}
 {{/stuctProps}}
 }
+{{/arguments.length}}
 {{^last}}
 
 {{/last}}

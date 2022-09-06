@@ -1,4 +1,4 @@
-package {{#toSnakeCase}}{{namespace}}{{/toSnakeCase}}
+package {{#pkgName}}{{#toSnakeCase}}{{namespace}}{{/toSnakeCase}}{{/pkgName}}
 {{#makeImports}}
 	github.com/consideritdone/polywrap-go/polywrap/msgpack,
 	{{#arguments}}

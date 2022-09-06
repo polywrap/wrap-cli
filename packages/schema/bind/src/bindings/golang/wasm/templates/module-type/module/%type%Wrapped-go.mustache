@@ -22,7 +22,7 @@ func {{#toUpper}}{{name}}{{/toUpper}}Wrapped(argsBuf []byte, envSize uint32) []b
 	args := Deserialize{{#toUpper}}{{name}}{{/toUpper}}Args(argsBuf)
 	{{/arguments.length}}
 
-	result := methods.{{#toUpper}}{{name}}{{/toUpper}}({{#arguments.length}}args{{/arguments.length}}{{^arguments.length}}nil{{/arguments.length}}{{#env}}, env{{/env}})
+	result := methods.{{#toUpper}}{{name}}{{/toUpper}}({{#arguments.length}}args{{#env}},{{/env}}{{/arguments.length}}{{#env}}env{{/env}})
 	return Serialize{{#toUpper}}{{name}}{{/toUpper}}Result(result)
 }
 {{^last}}
