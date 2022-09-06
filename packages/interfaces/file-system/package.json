@@ -1,7 +1,7 @@
 {
   "name": "@polywrap/file-system-interface",
   "description": "Polywrap Filesystem Interface",
-  "version": "0.4.1",
+  "version": "0.6.0",
   "scripts": {
     "build": "node ../../../dependencies/node_modules/polywrap/bin/polywrap build",
     "build:patch": "node ../../cli/bin/polywrap build",
