@@ -18,12 +18,13 @@ export type GetResolversWithErrorFunc<TError> = (
 ) => Promise<Result<IUriResolver<unknown>[], TError | InfiniteLoopError>>;
 
 export class UriResolverAggregator<
-  TError = undefined
-> extends UriResolverAggregatorBase<TError> {
+  TResolutionError = undefined,
+  TGetResolversError = undefined
+> extends UriResolverAggregatorBase<TResolutionError, TGetResolversError> {
   private resolvers:
     | IUriResolver<unknown>[]
     | GetResolversFunc
-    | GetResolversWithErrorFunc<TError>;
+    | GetResolversWithErrorFunc<TGetResolversError>;
 
   constructor(
     resolvers: UriResolverLike[],
@@ -33,7 +34,9 @@ export class UriResolverAggregator<
     resolvers: (
       uri: Uri,
       client: Client
-    ) => Promise<Result<IUriResolver<unknown>[], TError | InfiniteLoopError>>,
+    ) => Promise<
+      Result<IUriResolver<unknown>[], TGetResolversError | InfiniteLoopError>
+    >,
     options?: UriResolverAggregatorOptions
   );
   constructor(
@@ -44,10 +47,10 @@ export class UriResolverAggregator<
     resolvers:
       | UriResolverLike[]
       | GetResolversFunc
-      | GetResolversWithErrorFunc<TError>,
-    options: UriResolverAggregatorOptions = { endOnRedirect: false }
+      | GetResolversWithErrorFunc<TGetResolversError>,
+    options: UriResolverAggregatorOptions = { fullResolution: false }
   ) {
-    super(options);
+    super(options.resolverName, options.fullResolution);
     if (Array.isArray(resolvers)) {
       this.resolvers = resolvers.map((x) => buildUriResolver(x));
     } else {
@@ -58,7 +61,9 @@ export class UriResolverAggregator<
   async getUriResolvers(
     uri: Uri,
     client: Client
-  ): Promise<Result<IUriResolver<unknown>[], TError | InfiniteLoopError>> {
+  ): Promise<
+    Result<IUriResolver<unknown>[], TGetResolversError | InfiniteLoopError>
+  > {
     if (Array.isArray(this.resolvers)) {
       return ResultOk(this.resolvers);
     } else {

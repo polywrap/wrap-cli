@@ -6,8 +6,10 @@ import {
   IUriResolver,
   getImplementations,
   coreInterfaceUris,
-  UriResolutionResponse,
-  IUriResolutionResponse,
+  IUriResolutionContext,
+  UriResolutionContext,
+  UriPackageOrWrapper,
+  UriResolutionResult,
 } from "@polywrap/core-js";
 import { Result, ResultOk } from "@polywrap/result";
 import {
@@ -16,17 +18,19 @@ import {
 } from "@polywrap/uri-resolvers-js";
 
 export class ExtendableUriResolver extends UriResolverAggregatorBase<unknown> {
-  constructor(options: { endOnRedirect: boolean }) {
-    super(options);
-  }
+  loadingExtensionsMap: Map<number, Map<string, boolean>> = new Map();
 
-  get name(): string {
-    return "ExtendableUriResolver";
+  constructor(options?: { resolverName?: string; fullResolution?: boolean }) {
+    super(
+      options?.resolverName ?? "ExtendableUriResolver",
+      options?.fullResolution
+    );
   }
 
   async getUriResolvers(
     uri: Uri,
-    client: Client
+    client: Client,
+    resolutionContext: IUriResolutionContext
   ): Promise<Result<IUriResolver<unknown>[]>> {
     const uriResolverImpls = getImplementations(
       coreInterfaceUris.uriResolver,
@@ -34,45 +38,48 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<unknown> {
       client.getRedirects({})
     );
 
-    const resolvers: UriResolverWrapper[] = uriResolverImpls.map(
-      (implementationUri) => new UriResolverWrapper(implementationUri)
-    );
+    const definedResolutionContext = resolutionContext as UriResolutionContext;
+
+    const resolvers: UriResolverWrapper[] = uriResolverImpls
+      .filter((x) => !definedResolutionContext.hasVisited(x))
+      .map((implementationUri) => new UriResolverWrapper(implementationUri));
 
     return ResultOk(resolvers);
   }
 
-  private resolverIndex = -1;
-
   async tryResolveUri(
     uri: Uri,
-    client: Client
-  ): Promise<IUriResolutionResponse<InfiniteLoopError | unknown>> {
-    const result = await this.getUriResolvers(uri, client);
+    client: Client,
+    resolutionContext?: IUriResolutionContext
+  ): Promise<Result<UriPackageOrWrapper, InfiniteLoopError | unknown>> {
+    if (!resolutionContext) {
+      resolutionContext = new UriResolutionContext();
+    }
+    resolutionContext.visit(uri);
+
+    const result = await this.getUriResolvers(uri, client, resolutionContext);
     const resolvers = (result as {
       ok: true;
       value: UriResolverWrapper[];
     }).value;
 
-    this.resolverIndex++;
-
-    if (this.resolverIndex >= resolvers.length) {
-      this.resolverIndex = -1;
-      return UriResolutionResponse.ok(uri);
+    if (resolvers.length === 0) {
+      resolutionContext.unvisit(uri);
+      return UriResolutionResult.ok(uri);
     }
 
     try {
       const result = await super.tryResolveUriWithResolvers(
         uri,
         client,
-        resolvers
-          .slice(this.resolverIndex, resolvers.length)
-          .filter((x) => x.implementationUri.uri !== uri.uri)
+        resolvers,
+        resolutionContext
       );
 
-      this.resolverIndex = -1;
+      resolutionContext.unvisit(uri);
       return result;
     } catch (ex) {
-      this.resolverIndex = -1;
+      resolutionContext.unvisit(uri);
       throw ex;
     }
   }

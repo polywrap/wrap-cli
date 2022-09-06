@@ -17,7 +17,6 @@ import {
   LegacyRedirectsResolver,
   IWrapperCache,
   WrapperCache,
-  buildUriResolver,
   PackageToWrapperCacheResolver,
 } from "@polywrap/uri-resolvers-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
@@ -114,20 +113,17 @@ export const getDefaultClientConfig = (
     ],
     resolver: new PackageToWrapperCacheResolver(
       wrapperCache ?? new WrapperCache(),
-      buildUriResolver(
-        [
-          new LegacyRedirectsResolver(),
-          new LegacyPluginsResolver(
-            (
-              uri: Uri,
-              plugin: PluginPackage<unknown>,
-              environment: Env<Uri> | undefined
-            ) => new PluginWrapper(uri, plugin, environment)
-          ),
-          new ExtendableUriResolver({ endOnRedirect: true }),
-        ],
-        { endOnRedirect: true }
-      ),
+      [
+        new LegacyRedirectsResolver(),
+        new LegacyPluginsResolver(
+          (
+            uri: Uri,
+            plugin: PluginPackage<unknown>,
+            environment: Env<Uri> | undefined
+          ) => new PluginWrapper(uri, plugin, environment)
+        ),
+        new ExtendableUriResolver({}),
+      ],
       { resolverName: "MainResolver" }
     ),
   };

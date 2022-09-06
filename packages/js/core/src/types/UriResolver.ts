@@ -1,5 +1,6 @@
+import { Result } from "@polywrap/result";
 import { ClientConfig, Uri } from ".";
-import { IUriResolutionResponse } from "../uri-resolution";
+import { IUriResolutionContext, UriPackageOrWrapper } from "../uri-resolution";
 
 /** Options required for an URI resolution. */
 export interface TryResolveUriOptions<
@@ -8,6 +9,8 @@ export interface TryResolveUriOptions<
 > {
   /** The Wrapper's URI */
   uri: TUri;
+
+  resolutionContext?: IUriResolutionContext;
 
   /**
    * Override the client's config for all resolutions.
@@ -20,8 +23,8 @@ export interface TryResolveUriOptions<
   contextId?: string;
 }
 
-export interface UriResolverHandler {
+export interface UriResolverHandler<TError = undefined> {
   tryResolveUri<TUri extends Uri | string>(
     options?: TryResolveUriOptions<TUri, ClientConfig>
-  ): Promise<IUriResolutionResponse<unknown>>;
+  ): Promise<Result<UriPackageOrWrapper, TError>>;
 }

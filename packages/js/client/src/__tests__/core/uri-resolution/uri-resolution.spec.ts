@@ -3,15 +3,17 @@ import { buildWrapper } from "@polywrap/test-env-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import {
   coreInterfaceUris,
-  IUriResolutionResponse,
   IUriResolutionStep,
   PluginModule,
-  UriResolutionResponse,
+  UriPackageOrWrapper,
+  UriResolutionContext,
+  UriResolutionResult,
 } from "@polywrap/core-js";
 import { buildCleanUriHistory } from "@polywrap/uri-resolvers-js";
 import { getClient } from "../../utils/getClient";
 import fs from "fs";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
+import { Result } from "@polywrap/result";
 
 jest.setTimeout(200000);
 
@@ -29,17 +31,16 @@ const simpleRedirectResolverWrapperUri = new Uri(
 );
 
 const expectResultWithHistory = async (
-  receivedResponse: IUriResolutionResponse<unknown>,
-  expectedResponse: IUriResolutionResponse<unknown>,
-  historyFileName?: string
+  receivedResult: Result<UriPackageOrWrapper, unknown>,
+  expectedResult: Result<UriPackageOrWrapper, unknown>,
+  uriHistory: IUriResolutionStep<unknown>[],
+  historyFileName: string
 ): Promise<void> => {
-  if (!historyFileName) {
-    expect(receivedResponse.history).toBeUndefined();
-  } else {
-    await expectHistory(receivedResponse.history, historyFileName);
+  expect(receivedResult).toEqual(expectedResult);
+  if (historyFileName && uriHistory) {
+    await expectHistory(uriHistory, historyFileName);
   }
-
-  expect(receivedResponse.result).toEqual(expectedResponse.result);
+  
 };
 
 const expectHistory = async (
@@ -67,24 +68,20 @@ const expectHistory = async (
 };
 
 const expectPackageWithHistory = async (
-  receivedResult: IUriResolutionResponse<unknown>,
+  receivedResult: Result<UriPackageOrWrapper, unknown>,
   expectedUri: Uri,
-  historyFileName?: string
+  uriHistory: IUriResolutionStep<unknown>[],
+  historyFileName: string
 ): Promise<void> => {
-  const { result, history } = receivedResult;
-
-  if (!historyFileName) {
-    expect(history).toBeUndefined();
-    return;
-  } else {
-    await expectHistory(history, historyFileName);
+  if (historyFileName && uriHistory) {
+    await expectHistory(uriHistory, historyFileName);
   }
 
-  if (!result.ok) {
-    fail("Uri resolution failed " + result.error);
+  if (!receivedResult.ok) {
+    fail("Uri resolution failed " + receivedResult.error);
   }
 
-  const uriPackageOrWrapper = result.value;
+  const uriPackageOrWrapper = receivedResult.value;
 
   if (uriPackageOrWrapper.type !== "package") {
     if (uriPackageOrWrapper.type === "wrapper") {
@@ -102,24 +99,20 @@ const expectPackageWithHistory = async (
 };
 
 const expectWrapperWithHistory = async (
-  receivedResult: IUriResolutionResponse<unknown>,
+  receivedResult: Result<UriPackageOrWrapper, unknown>,
   expectedUri: Uri,
-  historyFileName?: string
+  uriHistory: IUriResolutionStep<unknown>[],
+  historyFileName: string
 ): Promise<void> => {
-  const { result, history } = receivedResult;
-
-  if (!historyFileName) {
-    expect(history).toBeUndefined();
-    return;
-  } else {
-    await expectHistory(history, historyFileName);
+  if (historyFileName && uriHistory) {
+    await expectHistory(uriHistory, historyFileName);
   }
 
-  if (!result.ok) {
-    fail("Uri resolution failed " + result.error);
+  if (!receivedResult.ok) {
+    fail("Uri resolution failed " + receivedResult.error);
   }
 
-  const uriPackageOrWrapper = result.value;
+  const uriPackageOrWrapper = receivedResult.value;
 
   if (uriPackageOrWrapper.type !== "wrapper") {
     if (uriPackageOrWrapper.type === "package") {
@@ -152,11 +145,13 @@ describe("URI resolution", () => {
 
     const client = await getClient();
 
-    const response = await client.tryResolveUri({ uri });
+    const resolutionContext = new UriResolutionContext();
+    const result = await client.tryResolveUri({ uri, resolutionContext });
 
     await expectResultWithHistory(
-      response,
-      UriResolutionResponse.ok(uri),
+      result,
+      UriResolutionResult.ok(uri),
+      resolutionContext.getHistory(),
       "sanity"
     );
   });
@@ -179,11 +174,13 @@ describe("URI resolution", () => {
       ],
     });
 
-    const response = await client.tryResolveUri({ uri: fromUri });
+    const resolutionContext = new UriResolutionContext();
+    const response = await client.tryResolveUri({ uri: fromUri, resolutionContext });
 
     await expectResultWithHistory(
       response,
-      UriResolutionResponse.ok(toUri2),
+      UriResolutionResult.ok(toUri2),
+      resolutionContext.getHistory(),
       "can resolve redirects"
     );
   });
@@ -205,9 +202,10 @@ describe("URI resolution", () => {
       ],
     });
 
-    const response = await client.tryResolveUri({ uri: pluginUri });
+    const resolutionContext = new UriResolutionContext();
+    const response = await client.tryResolveUri({ uri: pluginUri, resolutionContext });
 
-    await expectWrapperWithHistory(response, pluginUri, "can resolve plugin");
+    await expectWrapperWithHistory(response, pluginUri, resolutionContext, "can resolve plugin");
   });
 
   it("can resolve a URI resolver extension wrapper", async () => {
@@ -223,11 +221,13 @@ describe("URI resolution", () => {
     const sourceUri = new Uri(`simple/${wrapperPath}/build`);
     const redirectedUri = wrapperUri;
 
-    const response = await client.tryResolveUri({ uri: sourceUri });
+    const resolutionContext = new UriResolutionContext();
+    const response = await client.tryResolveUri({ uri: sourceUri, resolutionContext });
 
     await expectWrapperWithHistory(
       response,
       redirectedUri,
+      resolutionContext.getHistory(),
       "can resolve a URI resolver extension wrapper"
     );
   });
@@ -237,6 +237,7 @@ describe("URI resolution", () => {
 
     const response1 = await client.tryResolveUri({ uri: wrapperUri });
 
+    console.log(response1.result);
     await expectWrapperWithHistory(
       response1,
       wrapperUri,

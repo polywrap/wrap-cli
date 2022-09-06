@@ -1,4 +1,5 @@
 import { ClientConfig, Uri, Wrapper } from ".";
+import { IUriResolutionContext } from "../uri-resolution";
 
 /** Options required for an Wrapper invocation. */
 export interface InvokeOptions<
@@ -21,6 +22,8 @@ export interface InvokeOptions<
    * Override the client's config for all invokes within this invoke.
    */
   config?: Partial<TClientConfig>;
+
+  resolutionContext?: IUriResolutionContext;
 
   /**
    * Invoke id used to track query context data set internally.

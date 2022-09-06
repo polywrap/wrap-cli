@@ -2,9 +2,10 @@ import {
   Uri,
   IUriResolver,
   toUri,
-  IUriResolutionResponse,
-  UriResolutionResponse,
+  UriResolutionResult,
+  UriPackageOrWrapper,
 } from "@polywrap/core-js";
+import { Result } from "@polywrap/result";
 
 export class RedirectResolver<TUri extends string | Uri = string>
   implements IUriResolver {
@@ -20,11 +21,11 @@ export class RedirectResolver<TUri extends string | Uri = string>
     return `RedirectResolver(${this.from.uri} - ${this.to.uri})`;
   }
 
-  async tryResolveUri(uri: Uri): Promise<IUriResolutionResponse> {
+  async tryResolveUri(uri: Uri): Promise<Result<UriPackageOrWrapper>> {
     if (uri.uri !== this.from.uri) {
-      return UriResolutionResponse.ok(uri);
+      return UriResolutionResult.ok(uri);
     }
 
-    return UriResolutionResponse.ok(this.to);
+    return UriResolutionResult.ok(this.to);
   }
 }

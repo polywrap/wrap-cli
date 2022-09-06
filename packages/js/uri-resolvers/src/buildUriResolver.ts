@@ -11,7 +11,7 @@ import { Result } from "@polywrap/result";
 export const buildUriResolver = <TError = undefined>(
   resolvable: UriResolverLike,
   options: UriResolverAggregatorOptions = {
-    endOnRedirect: false,
+    fullResolution: false,
   }
 ): IUriResolver<TError> => {
   if (Array.isArray(resolvable)) {

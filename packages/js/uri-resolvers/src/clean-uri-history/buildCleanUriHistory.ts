@@ -16,45 +16,53 @@ export const buildCleanUriHistory = (
     return cleanHistory;
   }
   for (const step of history) {
-    if (step.response.result.ok) {
-      const uriPackageOrWrapper = step.response.result.value;
+    if (step.result.ok) {
+      const uriPackageOrWrapper = step.result.value;
 
       switch (uriPackageOrWrapper.type) {
         case "uri":
           if (step.sourceUri.uri === uriPackageOrWrapper.uri.uri) {
-            cleanHistory.push(`${step.sourceUri.uri} => ${step.resolverName}`);
+            cleanHistory.push(
+              `${step.sourceUri.uri} => ${step.description ?? ""}`
+            );
           } else {
             cleanHistory.push(
-              `${step.sourceUri.uri} => ${step.resolverName} => uri (${uriPackageOrWrapper.uri.uri})`
+              `${step.sourceUri.uri} => ${step.description ?? ""} => uri (${
+                uriPackageOrWrapper.uri.uri
+              })`
             );
           }
           break;
         case "package":
           cleanHistory.push(
-            `${step.sourceUri.uri} => ${step.resolverName} => package (${uriPackageOrWrapper.package.uri.uri})`
+            `${step.sourceUri.uri} => ${step.description ?? ""} => package (${
+              uriPackageOrWrapper.package.uri.uri
+            })`
           );
           break;
         case "wrapper":
           cleanHistory.push(
-            `${step.sourceUri.uri} => ${step.resolverName} => wrapper (${uriPackageOrWrapper.wrapper.uri.uri})`
+            `${step.sourceUri.uri} => ${
+              step.description ? "" : ""
+            } => wrapper (${uriPackageOrWrapper.wrapper.uri.uri})`
           );
           break;
       }
     } else {
       cleanHistory.push(
-        `${step.sourceUri.uri} => ${step.resolverName} => error`
+        `${step.sourceUri.uri} => ${step.description ?? ""} => error`
       );
     }
 
     if (
-      !step.response.history ||
-      step.response.history.length === 0 ||
+      !step.subHistory ||
+      step.subHistory.length === 0 ||
       (depth != null && depth < 0)
     ) {
       continue;
     }
 
-    const subHistory = buildCleanUriHistory(step.response.history, depth);
+    const subHistory = buildCleanUriHistory(step.subHistory, depth);
     if (subHistory.length > 0) {
       cleanHistory.push(subHistory);
     }
