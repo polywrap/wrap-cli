@@ -759,6 +759,7 @@ export const runMapTypeTest = async (client: PolywrapClient, uri: string) => {
     Hello: 1,
     Heyo: 50,
   };
+  const nestedMapClass = new Map<string, Map<string, number>>().set("Hello", mapClass);
 
   const returnMapResponse1 = await client.invoke<Map<string, number>>({
     uri,
@@ -785,7 +786,8 @@ export const runMapTypeTest = async (client: PolywrapClient, uri: string) => {
     method: "getKey",
     args: {
       foo: {
-        map: mapClass
+        map: mapClass,
+        nestedMap: nestedMapClass
       },
       key: "Hello",
     },
@@ -798,7 +800,8 @@ export const runMapTypeTest = async (client: PolywrapClient, uri: string) => {
     method: "getKey",
     args: {
       foo: {
-        map: mapRecord
+        map: mapRecord,
+        nestedMap: nestedMapClass
       },
       key: "Heyo",
     },
@@ -811,12 +814,23 @@ export const runMapTypeTest = async (client: PolywrapClient, uri: string) => {
     method: "returnCustomMap",
     args: {
       foo: {
-        map: mapRecord
+        map: mapRecord,
+        nestedMap: nestedMapClass
       }
     },
   });
   expect(returnCustomMap.error).toBeUndefined();
   expect(returnCustomMap.data).toEqual({ map: mapClass });
+
+  const returnNestedMap = await client.invoke<number>({
+    uri,
+    method: "returnNestedMap",
+    args: {
+      foo: nestedMapClass
+    },
+  });
+  expect(returnNestedMap.error).toBeUndefined();
+  expect(returnNestedMap.data).toEqual(nestedMapClass);
 };
 
 export const runSimpleStorageTest = async (
