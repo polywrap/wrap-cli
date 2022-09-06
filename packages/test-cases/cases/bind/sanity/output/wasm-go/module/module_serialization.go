@@ -1,11 +1,11 @@
 package module
 
 import (
+	. "github.com/testorg/testrepo/wrap/types"
 	"github.com/consideritdone/polywrap-go/polywrap/msgpack"
-	"github.com/testorg/testrepo/wrap/types"
 )
 
-func DeserializeModuleMethodArgs(argsBuf []byte) *types.ArgsModuleMethod {
+func DeserializeModuleMethodArgs(argsBuf []byte) *MethodArgsModuleMethod {
 	ctx := msgpack.NewContext("Deserializing module-type: ModuleMethod")
 	reader := msgpack.NewReadDecoder(ctx, argsBuf)
 
@@ -32,27 +32,26 @@ func DeserializeModuleMethodArgs(argsBuf []byte) *types.ArgsModuleMethod {
 	for i := int32(reader.ReadMapLength()); i > 0; i-- {
 		field := reader.ReadString()
 		reader.Context().Push(field, "unknown", "searching for property type")
-		reader.Context().Pop()
 		switch field {
-		case "Str":
+		case "str":
 			reader.Context().Push(field, "string", "type found, reading property")
 			_str = reader.ReadString()
 			_strSet = true
 			reader.Context().Pop()
-		case "OptStr":
+		case "optStr":
 			reader.Context().Push(field, "*string", "type found, reading property")
 			if !reader.IsNil() {
 				v := reader.ReadString()
 				_optStr = &v
 			}
 			reader.Context().Pop()
-		case "En":
+		case "en":
 			reader.Context().Push(field, "CustomEnum", "type found, reading property")
 			_en = CustomEnum(reader.ReadI32())
 			SanitizeCustomEnumValue(int32(_en))
 			_enSet = true
 			reader.Context().Pop()
-		case "OptEnum":
+		case "optEnum":
 			reader.Context().Push(field, "*CustomEnum", "type found, reading property")
 			if !reader.IsNil() {
 				v := CustomEnum(reader.ReadI32())
@@ -60,7 +59,7 @@ func DeserializeModuleMethodArgs(argsBuf []byte) *types.ArgsModuleMethod {
 				_optEnum = &v
 			}
 			reader.Context().Pop()
-		case "EnumArray":
+		case "enumArray":
 			reader.Context().Push(field, "[]CustomEnum", "type found, reading property")
 			if reader.IsNil() {
 				_enumArray = nil
@@ -74,7 +73,7 @@ func DeserializeModuleMethodArgs(argsBuf []byte) *types.ArgsModuleMethod {
 			}
 			_enumArraySet = true
 			reader.Context().Pop()
-		case "OptEnumArray":
+		case "optEnumArray":
 			reader.Context().Push(field, "[]*CustomEnum", "type found, reading property")
 			if reader.IsNil() {
 				_optEnumArray = nil
@@ -90,7 +89,7 @@ func DeserializeModuleMethodArgs(argsBuf []byte) *types.ArgsModuleMethod {
 				}
 			}
 			reader.Context().Pop()
-		case "Map":
+		case "m_map":
 			reader.Context().Push(field, "map[string]int32", "type found, reading property")
 			if reader.IsNil() {
 				_map = nil
@@ -104,7 +103,7 @@ func DeserializeModuleMethodArgs(argsBuf []byte) *types.ArgsModuleMethod {
 			}
 			_mapSet = true
 			reader.Context().Pop()
-		case "MapOfArr":
+		case "mapOfArr":
 			reader.Context().Push(field, "map[string][]int32", "type found, reading property")
 			if reader.IsNil() {
 				_mapOfArr = nil
@@ -126,7 +125,7 @@ func DeserializeModuleMethodArgs(argsBuf []byte) *types.ArgsModuleMethod {
 			}
 			_mapOfArrSet = true
 			reader.Context().Pop()
-		case "MapOfObj":
+		case "mapOfObj":
 			reader.Context().Push(field, "map[string]AnotherType", "type found, reading property")
 			if reader.IsNil() {
 				_mapOfObj = nil
@@ -142,7 +141,7 @@ func DeserializeModuleMethodArgs(argsBuf []byte) *types.ArgsModuleMethod {
 			}
 			_mapOfObjSet = true
 			reader.Context().Pop()
-		case "MapOfArrOfObj":
+		case "mapOfArrOfObj":
 			reader.Context().Push(field, "map[string][]AnotherType", "type found, reading property")
 			if reader.IsNil() {
 				_mapOfArrOfObj = nil
@@ -167,6 +166,7 @@ func DeserializeModuleMethodArgs(argsBuf []byte) *types.ArgsModuleMethod {
 			_mapOfArrOfObjSet = true
 			reader.Context().Pop()
 		}
+		reader.Context().Pop()
 	}
 
 	if !_strSet {
@@ -191,14 +191,14 @@ func DeserializeModuleMethodArgs(argsBuf []byte) *types.ArgsModuleMethod {
 		panic(reader.Context().PrintWithContext("Missing required property: 'mapOfArrOfObj: Map<String, [AnotherType]>'"))
 	}
 
-	return &types.ArgsModuleMethod{
+	return &MethodArgsModuleMethod{
 		Str:           _str,
 		OptStr:        _optStr,
 		En:            _en,
 		OptEnum:       _optEnum,
 		EnumArray:     _enumArray,
 		OptEnumArray:  _optEnumArray,
-		Map:           _map,
+		M_map:         _map,
 		MapOfArr:      _mapOfArr,
 		MapOfObj:      _mapOfObj,
 		MapOfArrOfObj: _mapOfArrOfObj,
@@ -221,7 +221,7 @@ func WriteModuleMethodResult(writer msgpack.Write, value int32) {
 	writer.Context().Pop()
 }
 
-func DeserializeObjectMethodArgs(argsBuf []byte) *types.ArgsObjectMethod {
+func DeserializeObjectMethodArgs(argsBuf []byte) *MethodArgsObjectMethod {
 	ctx := msgpack.NewContext("Deserializing module-type: ObjectMethod")
 	reader := msgpack.NewReadDecoder(ctx, argsBuf)
 
@@ -237,22 +237,21 @@ func DeserializeObjectMethodArgs(argsBuf []byte) *types.ArgsObjectMethod {
 	for i := int32(reader.ReadMapLength()); i > 0; i-- {
 		field := reader.ReadString()
 		reader.Context().Push(field, "unknown", "searching for property type")
-		reader.Context().Pop()
 		switch field {
-		case "Object":
+		case "object":
 			reader.Context().Push(field, "AnotherType", "type found, reading property")
 			if v := AnotherTypeRead(reader); v != nil {
 				_object = *v
 			}
 			_objectSet = true
 			reader.Context().Pop()
-		case "OptObject":
+		case "optObject":
 			reader.Context().Push(field, "*AnotherType", "type found, reading property")
 			if v := AnotherTypeRead(reader); v != nil {
 				_optObject = v
 			}
 			reader.Context().Pop()
-		case "ObjectArray":
+		case "objectArray":
 			reader.Context().Push(field, "[]AnotherType", "type found, reading property")
 			if reader.IsNil() {
 				_objectArray = nil
@@ -267,7 +266,7 @@ func DeserializeObjectMethodArgs(argsBuf []byte) *types.ArgsObjectMethod {
 			}
 			_objectArraySet = true
 			reader.Context().Pop()
-		case "OptObjectArray":
+		case "optObjectArray":
 			reader.Context().Push(field, "[]*AnotherType", "type found, reading property")
 			if reader.IsNil() {
 				_optObjectArray = nil
@@ -282,6 +281,7 @@ func DeserializeObjectMethodArgs(argsBuf []byte) *types.ArgsObjectMethod {
 			}
 			reader.Context().Pop()
 		}
+		reader.Context().Pop()
 	}
 
 	if !_objectSet {
@@ -291,7 +291,7 @@ func DeserializeObjectMethodArgs(argsBuf []byte) *types.ArgsObjectMethod {
 		panic(reader.Context().PrintWithContext("Missing required property: 'objectArray: [AnotherType]'"))
 	}
 
-	return &types.ArgsObjectMethod{
+	return &MethodArgsObjectMethod{
 		Object:         _object,
 		OptObject:      _optObject,
 		ObjectArray:    _objectArray,
@@ -299,23 +299,23 @@ func DeserializeObjectMethodArgs(argsBuf []byte) *types.ArgsObjectMethod {
 	}
 }
 
-func SerializeObjectMethodResult(value *types.AnotherType) []byte {
+func SerializeObjectMethodResult(value *AnotherType) []byte {
 	ctx := msgpack.NewContext("Serializing module-type: ObjectMethod")
 	encoder := msgpack.NewWriteEncoder(ctx)
 	WriteObjectMethodResult(encoder, value);
 	return encoder.Buffer()
 }
 
-func WriteObjectMethodResult(writer msgpack.Write, value *types.AnotherType) {
+func WriteObjectMethodResult(writer msgpack.Write, value *AnotherType) {
 	writer.Context().Push("objectMethod", "*AnotherType", "writing property")
 	{
 		v := value
-		types.AnotherTypeWrite(writer, v)
+		AnotherTypeWrite(writer, v)
 	}
 	writer.Context().Pop()
 }
 
-func DeserializeOptionalEnvMethodArgs(argsBuf []byte) *types.ArgsOptionalEnvMethod {
+func DeserializeOptionalEnvMethodArgs(argsBuf []byte) *MethodArgsOptionalEnvMethod {
 	ctx := msgpack.NewContext("Deserializing module-type: OptionalEnvMethod")
 	reader := msgpack.NewReadDecoder(ctx, argsBuf)
 
@@ -331,22 +331,21 @@ func DeserializeOptionalEnvMethodArgs(argsBuf []byte) *types.ArgsOptionalEnvMeth
 	for i := int32(reader.ReadMapLength()); i > 0; i-- {
 		field := reader.ReadString()
 		reader.Context().Push(field, "unknown", "searching for property type")
-		reader.Context().Pop()
 		switch field {
-		case "Object":
+		case "object":
 			reader.Context().Push(field, "AnotherType", "type found, reading property")
 			if v := AnotherTypeRead(reader); v != nil {
 				_object = *v
 			}
 			_objectSet = true
 			reader.Context().Pop()
-		case "OptObject":
+		case "optObject":
 			reader.Context().Push(field, "*AnotherType", "type found, reading property")
 			if v := AnotherTypeRead(reader); v != nil {
 				_optObject = v
 			}
 			reader.Context().Pop()
-		case "ObjectArray":
+		case "objectArray":
 			reader.Context().Push(field, "[]AnotherType", "type found, reading property")
 			if reader.IsNil() {
 				_objectArray = nil
@@ -361,7 +360,7 @@ func DeserializeOptionalEnvMethodArgs(argsBuf []byte) *types.ArgsOptionalEnvMeth
 			}
 			_objectArraySet = true
 			reader.Context().Pop()
-		case "OptObjectArray":
+		case "optObjectArray":
 			reader.Context().Push(field, "[]*AnotherType", "type found, reading property")
 			if reader.IsNil() {
 				_optObjectArray = nil
@@ -376,6 +375,7 @@ func DeserializeOptionalEnvMethodArgs(argsBuf []byte) *types.ArgsOptionalEnvMeth
 			}
 			reader.Context().Pop()
 		}
+		reader.Context().Pop()
 	}
 
 	if !_objectSet {
@@ -385,7 +385,7 @@ func DeserializeOptionalEnvMethodArgs(argsBuf []byte) *types.ArgsOptionalEnvMeth
 		panic(reader.Context().PrintWithContext("Missing required property: 'objectArray: [AnotherType]'"))
 	}
 
-	return &types.ArgsOptionalEnvMethod{
+	return &MethodArgsOptionalEnvMethod{
 		Object:         _object,
 		OptObject:      _optObject,
 		ObjectArray:    _objectArray,
@@ -393,23 +393,23 @@ func DeserializeOptionalEnvMethodArgs(argsBuf []byte) *types.ArgsOptionalEnvMeth
 	}
 }
 
-func SerializeOptionalEnvMethodResult(value *types.AnotherType) []byte {
+func SerializeOptionalEnvMethodResult(value *AnotherType) []byte {
 	ctx := msgpack.NewContext("Serializing module-type: OptionalEnvMethod")
 	encoder := msgpack.NewWriteEncoder(ctx)
 	WriteOptionalEnvMethodResult(encoder, value);
 	return encoder.Buffer()
 }
 
-func WriteOptionalEnvMethodResult(writer msgpack.Write, value *types.AnotherType) {
+func WriteOptionalEnvMethodResult(writer msgpack.Write, value *AnotherType) {
 	writer.Context().Push("optionalEnvMethod", "*AnotherType", "writing property")
 	{
 		v := value
-		types.AnotherTypeWrite(writer, v)
+		AnotherTypeWrite(writer, v)
 	}
 	writer.Context().Pop()
 }
 
-func DeserializeIfArgs(argsBuf []byte) *types.ArgsIf {
+func DeserializeIfArgs(argsBuf []byte) *MethodArgsIf {
 	ctx := msgpack.NewContext("Deserializing module-type: If")
 	reader := msgpack.NewReadDecoder(ctx, argsBuf)
 
@@ -421,9 +421,8 @@ func DeserializeIfArgs(argsBuf []byte) *types.ArgsIf {
 	for i := int32(reader.ReadMapLength()); i > 0; i-- {
 		field := reader.ReadString()
 		reader.Context().Push(field, "unknown", "searching for property type")
-		reader.Context().Pop()
 		switch field {
-		case "M_if":
+		case "m_if":
 			reader.Context().Push(field, "Else", "type found, reading property")
 			if v := ElseRead(reader); v != nil {
 				_if = *v
@@ -431,29 +430,30 @@ func DeserializeIfArgs(argsBuf []byte) *types.ArgsIf {
 			_ifSet = true
 			reader.Context().Pop()
 		}
+		reader.Context().Pop()
 	}
 
 	if !_ifSet {
 		panic(reader.Context().PrintWithContext("Missing required property: 'if: else'"))
 	}
 
-	return &types.ArgsIf{
+	return &MethodArgsIf{
 		M_if: _if,
 	}
 }
 
-func SerializeIfResult(value types.Else) []byte {
+func SerializeIfResult(value Else) []byte {
 	ctx := msgpack.NewContext("Serializing module-type: If")
 	encoder := msgpack.NewWriteEncoder(ctx)
 	WriteIfResult(encoder, value);
 	return encoder.Buffer()
 }
 
-func WriteIfResult(writer msgpack.Write, value types.Else) {
+func WriteIfResult(writer msgpack.Write, value Else) {
 	writer.Context().Push("if", "Else", "writing property")
 	{
 		v := value
-		types.ElseWrite(writer, &v)
+		ElseWrite(writer, &v)
 	}
 	writer.Context().Pop()
 }

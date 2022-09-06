@@ -1,4 +1,4 @@
-package {{#toSnakeCase}}{{namespace}}{{/toSnakeCase}}
+package {{#pkgName}}{{#toSnakeCase}}{{namespace}}{{/toSnakeCase}}{{/pkgName}}
 
 type {{#toUpper}}{{type}}{{/toUpper}} int32
 

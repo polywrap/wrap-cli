@@ -1,11 +1,18 @@
 package module
-
-{{#makeImports}}{{goImport}}/wrap/types,{{#arguments}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{^last}},{{/last}}{{/arguments}}{{/makeImports}}
-
+{{#makeImports}}
+	github.com/consideritdone/polywrap-go/polywrap/msgpack,
+	. {{goImport}}/wrap/types,
+	{{#importedTypes}}
+  . {{goImport}}/wrap/imported/{{#pkgName}}{{#toSnakeCase}}{{namespace}}{{/toSnakeCase}}{{/pkgName}},
+  {{/importedTypes}}
+	{{#methods}}
+		{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}},
+	{{/methods}}
+{{/makeImports}}
 {{#methods}}
-func deserialize{{#toUpper}}{{name}}{{/toUpper}}Args(argsBuf []byte) *types.Args{{#toUpper}}{{name}}{{/toUpper}} {
+{{#arguments.length}}
+func Deserialize{{#toUpper}}{{name}}{{/toUpper}}Args(argsBuf []byte) *MethodArgs{{#toUpper}}{{name}}{{/toUpper}} {
 	ctx := msgpack.NewContext("Deserializing module-type: {{#toUpper}}{{name}}{{/toUpper}}")
-	{{#arguments.length}}
 	reader := msgpack.NewReadDecoder(ctx, argsBuf)
 
 	var (
@@ -51,8 +58,8 @@ func deserialize{{#toUpper}}{{name}}{{/toUpper}}Args(argsBuf []byte) *types.Args
 			reader.Context().Pop()
 		{{/arguments}}
 		}
-        reader.Context().Pop()
-    }
+		reader.Context().Pop()
+	}
 
 	{{#arguments}}
 	{{#required}}
@@ -61,9 +68,8 @@ func deserialize{{#toUpper}}{{name}}{{/toUpper}}Args(argsBuf []byte) *types.Args
 	}
 	{{/required}}
 	{{/arguments}}
-	{{/arguments.length}}
 
-	return &types.Args{{#toUpper}}{{name}}{{/toUpper}}{
+	return &MethodArgs{{#toUpper}}{{name}}{{/toUpper}}{
 	{{#stuctProps}}
 	{{#arguments}}
 	{{#toUpper}}{{#handleKeywords}}{{name}}{{/handleKeywords}}{{/toUpper}}: _{{name}},
@@ -71,15 +77,16 @@ func deserialize{{#toUpper}}{{name}}{{/toUpper}}Args(argsBuf []byte) *types.Args
 	{{/stuctProps}}
 	}
 }
+{{/arguments.length}}
 
-func Serialize{{#toUpper}}{{name}}{{/toUpper}}Result(value {{#return}}{{#typeable}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/typeable}}{{/return}}) []byte {
+func Serialize{{#toUpper}}{{name}}{{/toUpper}}Result(value {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}) []byte {
 	ctx := msgpack.NewContext("Serializing module-type: {{#toUpper}}{{name}}{{/toUpper}}")
 	encoder := msgpack.NewWriteEncoder(ctx)
 	Write{{#toUpper}}{{name}}{{/toUpper}}Result(encoder, value);
 	return encoder.Buffer()
 }
 
-func Write{{#toUpper}}{{name}}{{/toUpper}}Result(writer msgpack.Write, value {{#return}}{{#typeable}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/typeable}}{{/return}}) {
+func Write{{#toUpper}}{{name}}{{/toUpper}}Result(writer msgpack.Write, value {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}) {
 	{{#return}}
 	writer.Context().Push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property")
 	{{#scalar}}

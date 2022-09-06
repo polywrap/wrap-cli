@@ -1,7 +1,10 @@
-package {{#toSnakeCase}}{{namespace}}{{/toSnakeCase}}
-
-{{#makeImports}}{{#arguments}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{^last}},{{/last}}{{/arguments}}{{/makeImports}}
-
+package {{#pkgName}}{{#toSnakeCase}}{{namespace}}{{/toSnakeCase}}{{/pkgName}}
+{{#makeImports}}
+	github.com/consideritdone/polywrap-go/polywrap/msgpack,
+	{{#arguments}}
+		{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{^last}},{{/last}}
+	{{/arguments}}
+{{/makeImports}}
 {{#methods}}
 type Args{{#toUpper}}{{name}}{{/toUpper}} struct {
 {{#stuctProps}}
@@ -19,6 +22,7 @@ func Serialize{{#toUpper}}{{name}}{{/toUpper}}Args(value *Args{{#toUpper}}{{name
 }
 
 func Write{{#toUpper}}{{name}}{{/toUpper}}Args(writer msgpack.Write, value *Args{{#toUpper}}{{name}}{{/toUpper}}) {
+	{{#arguments.length}}
 	writer.WriteMapLength({{arguments.length}})
 	{{#arguments}}
 	writer.Context().Push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property")
@@ -44,6 +48,7 @@ func Write{{#toUpper}}{{name}}{{/toUpper}}Args(writer msgpack.Write, value *Args
 	{{/enum}}
 	writer.Context().Pop()
 	{{/arguments}}
+	{{/arguments.length}}
 }
 
 func Deserialize{{#toUpper}}{{name}}{{/toUpper}}Result(argsBuf []byte) {{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}} {

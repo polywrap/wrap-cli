@@ -3,6 +3,7 @@ import { GenerateBindingFn } from "../..";
 import { renderTemplates } from "../..";
 import { loadSubTemplates } from "../../utils";
 import { BindOptions, BindOutput } from "../../..";
+import { reservedWordsAS } from "../reservedWords";
 
 import {
   Abi,
@@ -18,6 +19,10 @@ const templatesDir = readDirectorySync(path.join(__dirname, "./templates"));
 const subTemplates = loadSubTemplates(templatesDir.entries);
 const templatePath = (subpath: string) =>
   path.join(__dirname, "./templates", subpath);
+
+function pkgName(str: string): string {
+  return reservedWordsAS.has(str) ? `pkg${str}` : str;
+}
 
 function camel2snake(str: string): string {
   str = str.replace(/([A-Z])/g, "_$1");
@@ -61,7 +66,7 @@ export const generateBinding: GenerateBindingFn = (
     for (const importedModuleType of abi.importedModuleTypes) {
       importEntries.push({
         type: "Directory",
-        name: `${camel2snake(importedModuleType.namespace)}`,
+        name: `${pkgName(camel2snake(importedModuleType.namespace))}`,
         data: renderTemplates(
           templatePath("imported/module-type"),
           importedModuleType,
@@ -76,7 +81,7 @@ export const generateBinding: GenerateBindingFn = (
     for (const importedEnvType of abi.importedEnvTypes) {
       importEntries.push({
         type: "Directory",
-        name: `${camel2snake(importedEnvType.namespace)}`,
+        name: `${pkgName(camel2snake(importedEnvType.namespace))}`,
         data: renderTemplates(
           templatePath("imported/env-type"),
           importedEnvType,
@@ -91,7 +96,7 @@ export const generateBinding: GenerateBindingFn = (
     for (const importedEnumType of abi.importedEnumTypes) {
       importEntries.push({
         type: "Directory",
-        name: `${camel2snake(importedEnumType.namespace)}`,
+        name: `${pkgName(camel2snake(importedEnumType.namespace))}`,
         data: renderTemplates(
           templatePath("imported/enum-type"),
           importedEnumType,
@@ -106,7 +111,7 @@ export const generateBinding: GenerateBindingFn = (
     for (const importedObectType of abi.importedObjectTypes) {
       importEntries.push({
         type: "Directory",
-        name: `${camel2snake(importedObectType.namespace)}`,
+        name: `${pkgName(camel2snake(importedObectType.namespace))}`,
         data: renderTemplates(
           templatePath("imported/object-type"),
           importedObectType,
@@ -144,12 +149,26 @@ export const generateBinding: GenerateBindingFn = (
 
   // Generate module type folders
   if (abi.moduleType) {
+    const imports: { [key: string]: boolean } = {};
+    abi.moduleType.methods?.forEach(function (method) {
+      method.arguments?.forEach(function (arg) {
+        const tp = abi.importedObjectTypes?.find(function (mt) {
+          return mt.type === arg.type;
+        });
+        if (tp) {
+          imports[tp.namespace] = true;
+        }
+      });
+    });
+    const importedTypes = Object.keys(imports).map((namespace) => ({
+      namespace,
+    }));
     output.entries.push({
       type: "Directory",
       name: "types",
       data: renderTemplates(
         templatePath("module-type/types"),
-        { goImport, ...abi.moduleType },
+        { importedTypes, goImport, ...abi.moduleType },
         subTemplates
       ),
     });
@@ -158,7 +177,7 @@ export const generateBinding: GenerateBindingFn = (
       name: "module",
       data: renderTemplates(
         templatePath("module-type/module"),
-        { goImport, ...abi.moduleType },
+        { importedTypes, goImport, ...abi.moduleType },
         subTemplates
       ),
     });

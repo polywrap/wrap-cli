@@ -1,8 +1,9 @@
 package module
 
 import (
+	. "github.com/testorg/testrepo/wrap/types"
 	"github.com/consideritdone/polywrap-go/polywrap"
-	methods "github.com/testorg/testrepo"
+	methods "github.com/testorg/testrepo/module"
 )
 
 func ModuleMethodWrapped(argsBuf []byte, envSize uint32) []byte {
@@ -25,7 +26,7 @@ func ObjectMethodWrapped(argsBuf []byte, envSize uint32) []byte {
 
 	args := DeserializeObjectMethodArgs(argsBuf)
 
-	result := methods.ObjectMethod(args, env)
+	result := methods.ObjectMethod(args,env)
 	return SerializeObjectMethodResult(result)
 }
 
@@ -38,7 +39,7 @@ func OptionalEnvMethodWrapped(argsBuf []byte, envSize uint32) []byte {
 
 	args := DeserializeOptionalEnvMethodArgs(argsBuf)
 
-	result := methods.OptionalEnvMethod(args, env)
+	result := methods.OptionalEnvMethod(args,env)
 	return SerializeOptionalEnvMethodResult(result)
 }
 
@@ -49,4 +50,3 @@ func IfWrapped(argsBuf []byte, envSize uint32) []byte {
 	result := methods.If(args)
 	return SerializeIfResult(result)
 }
-
