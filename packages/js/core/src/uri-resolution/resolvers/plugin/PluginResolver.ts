@@ -24,7 +24,7 @@ export class PluginResolver implements UriResolver {
   ) {}
 
   public get name(): string {
-    return PluginResolver.name;
+    return "PluginResolver";
   }
 
   async resolveUri(
