@@ -18,15 +18,10 @@ type Callback {
     method: String!
 }
 
-# optional fields are `Number | null` instead of `Option<i32>`
-type Number {
-    value: Int!
-}
-
 type Module {
   # create a socket with id
   ## can return after `timeout` if the server is not responding
-  open(url: String!, timeout: Number): Int!
+  open(url: String!, timeout: i32): Int!
     
   # close socket `id`
   close(id: Int!): Boolean
@@ -48,7 +43,7 @@ type Module {
     
   # get [messages], flush cache
   ## can wait until receives `min` events or reaches `timeout`
-  receive(id: Int!, min: Number, timeout: Number): [Message!]!
+  receive(id: Int!, min: i32, timeout: i32): [Message!]!
 }
 ```
 

@@ -9,17 +9,13 @@ type Callback {
     method: String!
 }
 
-type Number {
-    value: Int!
-}
-
 type Module {
-  open(url: String!, timeout: Number): Int!
+  open(url: String!, timeout: Int): Int!
   close(id: Int!): Boolean
   send(id: Int!, message: String!): Boolean
   addCallback(id: Int!, callback: Callback!): Boolean
   removeCallback(id: Int!, callback: Callback!): Boolean
   addCache(id: Int!): Boolean
   removeCache(id: Int!): Boolean
-  receive(id: Int!, min: Number, timeout: Number): [Message!]!
+  receive(id: Int!, min: Int, timeout: Int): [Message!]!
 }

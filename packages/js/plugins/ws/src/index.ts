@@ -32,7 +32,7 @@ export class WsPlugin extends Module<NoConfig> {
       if (args.timeout) {
         setTimeout(() => {
           reject(new Error("timeout reached"));
-        }, args.timeout.value);
+        }, args.timeout);
       }
       this._sockets[id].onopen = () => {
         resolve(id);
@@ -135,7 +135,7 @@ export class WsPlugin extends Module<NoConfig> {
       if (args.min) {
         interval = setInterval(() => {
           if (args.min) {
-            if (this._caches[args.id].length >= args.min.value) {
+            if (this._caches[args.id].length >= args.min) {
               clearInterval(interval);
               clear();
             }
@@ -146,7 +146,7 @@ export class WsPlugin extends Module<NoConfig> {
         setTimeout(() => {
           clearInterval(interval);
           clear();
-        }, args.timeout.value);
+        }, args.timeout);
       }
       if (!args.timeout && !args.min) {
         clear();
