@@ -320,15 +320,14 @@ const toWasmMap = (type: string, optional: boolean): string => {
 
   const keyValTypes = type
     .substring(firstOpenBracketIdx + 1, lastCloseBracketIdx)
-    .split(",")
-    .map((x) => x.trim());
+    .split(",");
 
-  if (keyValTypes.length !== 2 || !keyValTypes[0] || !keyValTypes[1]) {
+  if (keyValTypes.length < 2) {
     throw new Error(`Invalid Map: ${type}`);
   }
 
-  const keyType = toWasm()(keyValTypes[0], (str) => str);
-  const valType = toWasm()(keyValTypes[1], (str) => str);
+  const keyType = toWasm()(keyValTypes[0].trim(), (str) => str);
+  const valType = toWasm()(keyValTypes.slice(1).join(",").trim(), (str) => str);
 
   return applyOptional(`map[${keyType}]${valType}`, optional, false);
 };
