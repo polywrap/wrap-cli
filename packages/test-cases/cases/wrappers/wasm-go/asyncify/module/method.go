@@ -9,8 +9,8 @@ import (
 
 //go:generate polywrap build -v -m ../polywrap.yaml -o ../build
 
-func GetData(args *storage.ArgsGetData) uint32 {
-	res, err := storage.MethodGetData(args)
+func GetData() uint32 {
+	res, err := storage.MethodGetData(nil)
 	if err != nil {
 		panic(err)
 	}
@@ -21,7 +21,7 @@ func ReturnTrue() bool {
 	return true
 }
 
-func SetDataWithLargeArgs(args *types.ArgsSetDataWithLargeArgs) string {
+func SetDataWithLargeArgs(args *types.MethodArgsSetDataWithLargeArgs) string {
 	largeString := args.Value
 	num, err := strconv.ParseInt(largeString, 10, 32)
 	if err != nil {
@@ -34,7 +34,7 @@ func SetDataWithLargeArgs(args *types.ArgsSetDataWithLargeArgs) string {
 	return largeString
 }
 
-func SetDataWithManyArgs(args *types.ArgsSetDataWithManyArgs) string {
+func SetDataWithManyArgs(args *types.MethodArgsSetDataWithManyArgs) string {
 	argsA := args.ValueA
 	argsB := args.ValueB
 	argsC := args.ValueC
@@ -56,7 +56,7 @@ func SetDataWithManyArgs(args *types.ArgsSetDataWithManyArgs) string {
 	return argsA + argsB + argsC + argsD + argsE + argsF + argsG + argsH + argsI + argsJ + argsK + argsL
 }
 
-func SetDataWithManyStructuredArgs(args *types.ArgsSetDataWithManyStructuredArgs) bool {
+func SetDataWithManyStructuredArgs(args *types.MethodArgsSetDataWithManyStructuredArgs) bool {
 	_, err := storage.MethodSetData(&storage.ArgsSetData{Value: 44})
 	if err != nil {
 		panic(err)
@@ -64,7 +64,7 @@ func SetDataWithManyStructuredArgs(args *types.ArgsSetDataWithManyStructuredArgs
 	return true
 }
 
-func LocalVarMethod(args *types.ArgsLocalVarMethod) bool {
+func LocalVarMethod() bool {
 	functionArg := false
 	functionArg = ReturnTrue()
 
@@ -78,7 +78,7 @@ func LocalVarMethod(args *types.ArgsLocalVarMethod) bool {
 
 var globalValue bool = false
 
-func GlobalVarMethod(args *types.ArgsGlobalVarMethod) bool {
+func GlobalVarMethod() bool {
 	globalValue = true
 
 	_, err := storage.MethodSetData(&storage.ArgsSetData{Value: 77})
@@ -89,7 +89,7 @@ func GlobalVarMethod(args *types.ArgsGlobalVarMethod) bool {
 	return globalValue
 }
 
-func SubsequentInvokes(args *types.ArgsSubsequentInvokes) []string {
+func SubsequentInvokes(args *types.MethodArgsSubsequentInvokes) []string {
 	result := make([]string, args.NumberOfTimes)
 	for i := int32(0); i < args.NumberOfTimes; i++ {
 		_, err := storage.MethodSetData(&storage.ArgsSetData{Value: i})

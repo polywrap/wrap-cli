@@ -5,22 +5,22 @@ import (
 )
 
 //go:generate polywrap build -v -m ../polywrap.yaml -o ../build
-func BoolMethod(args *types.ArgsBoolMethod) bool {
+func BoolMethod(args *types.MethodArgsBoolMethod) bool {
 	return args.Arg
 }
 
-func IntMethod(args *types.ArgsIntMethod) int32 {
+func IntMethod(args *types.MethodArgsIntMethod) int32 {
 	return args.Arg
 }
 
-func UIntMethod(args *types.ArgsUIntMethod) uint32 {
+func UIntMethod(args *types.MethodArgsUIntMethod) uint32 {
 	return args.Arg
 }
 
-func BytesMethod(args *types.ArgsBytesMethod) []byte {
+func BytesMethod(args *types.MethodArgsBytesMethod) []byte {
 	return args.Arg
 }
 
-func ArrayMethod(args *types.ArgsArrayMethod) []string {
+func ArrayMethod(args *types.MethodArgsArrayMethod) []string {
 	return args.Arg
 }

@@ -6,7 +6,7 @@ import (
 )
 
 //go:generate polywrap build -v -m ../polywrap.yaml -o ../build
-func Method(args *types.ArgsMethod) *big.Int {
+func Method(args *types.MethodArgsMethod) *big.Int {
 	result := new(big.Int).Mul(args.Arg1, args.Obj.Prop1)
 
 	if args.Arg2 != nil {

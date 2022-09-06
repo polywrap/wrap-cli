@@ -5,14 +5,16 @@ import (
 	"github.com/testorg/testrepo/wrap/types"
 )
 
-func ModuleImplementations(*types.ArgsModuleImplementations) []string {
+//go:generate polywrap build -v -m ../polywrap.yaml -o ../build
+
+func ModuleImplementations() []string {
 	return interfaces.InterfaceImplementations()
 }
 
-func ModuleMethod(args *types.ArgsModuleMethod) types.ImplementationType {
+func ModuleMethod(args *types.MethodArgsModuleMethod) types.ImplementationType {
 	return args.Arg
 }
 
-func AbstractModuleMethod(args *types.ImplementationType) string {
-	return args.Str
+func AbstractModuleMethod(args *types.MethodArgsAbstractModuleMethod) string {
+	return args.Arg.Str
 }

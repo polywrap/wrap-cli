@@ -4,7 +4,7 @@ project:
   type: wasm/golang
 source:
   schema: ./schema.graphql
-  module: ./src/index.ts
+  module: ./go.mod
   import_abis:
     - uri: wrap://ens/interface.eth
       abi: ../test-interface/build/wrap.info

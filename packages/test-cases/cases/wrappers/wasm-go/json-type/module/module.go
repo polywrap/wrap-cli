@@ -6,11 +6,12 @@ import (
 )
 
 //go:generate polywrap build -v -m ../polywrap.yaml -o ../build
-func Parse(args *types.ArgsParse) *fastjson.Value {
+
+func Parse(args *types.MethodArgsParse) *fastjson.Value {
 	return fastjson.MustParse(args.Value)
 }
 
-func Stringify(args *types.ArgsStringify) string {
+func Stringify(args *types.MethodArgsStringify) string {
 	str := ""
 	for i := range args.Values {
 		str += args.Values[i].String()
@@ -18,14 +19,14 @@ func Stringify(args *types.ArgsStringify) string {
 	return str
 }
 
-func StringifyObject(args *types.ArgsStringifyObject) string {
+func StringifyObject(args *types.MethodArgsStringifyObject) string {
 	str := ""
 	str += args.Object.JsonA.String()
 	str += args.Object.JsonB.String()
 	return str
 }
 
-func MethodJSON(args *types.ArgsMethodJSON) *fastjson.Value {
+func MethodJSON(args *types.MethodArgsMethodJSON) *fastjson.Value {
 	arena := new(fastjson.Arena)
 	result := arena.NewObject()
 	result.Set("valueA", arena.NewNumberInt(int(args.ValueA)))
