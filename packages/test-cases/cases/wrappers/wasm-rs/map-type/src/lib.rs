@@ -13,3 +13,7 @@ pub fn return_map(args: ArgsReturnMap) -> Map<String, i32> {
 pub fn return_custom_map(args: ArgsReturnCustomMap) -> CustomMap {
     args.foo
 }
+
+pub fn return_nested_map(args: ArgsReturnNestedMap) -> Map<String, Map<String, i32>> {
+    args.foo
+}
