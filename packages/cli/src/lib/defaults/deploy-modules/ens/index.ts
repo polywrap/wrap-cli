@@ -52,20 +52,21 @@ class ENSPublisher implements Deployer {
       "ens"
     )}`;
 
+    const connections = new Connections({
+      networks: {
+        [network]: new Connection({
+          provider: config.provider,
+          signer,
+        }),
+      },
+      defaultNetwork: network,
+    });
     const client = new PolywrapClient({
       plugins: [
         {
           uri: ethereumPluginUri,
           plugin: ethereumPlugin({
-            connections: new Connections({
-              networks: {
-                [network]: new Connection({
-                  provider: config.provider,
-                  signer,
-                }),
-              },
-              defaultNetwork: network,
-            }),
+            connections,
           }),
         },
       ],
