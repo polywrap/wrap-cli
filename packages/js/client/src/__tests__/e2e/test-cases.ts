@@ -809,7 +809,10 @@ export const runMapTypeTest = async (client: PolywrapClient, uri: string) => {
   expect(getKeyResponse2.error).toBeUndefined();
   expect(getKeyResponse2.data).toEqual(mapRecord.Heyo);
 
-  const returnCustomMap = await client.invoke<{ map: Map<string, number>, nestedMap: Map<string, Map<string, number>>}>({
+  const returnCustomMap = await client.invoke<{
+    map: Map<string, number>,
+    nestedMap: Map<string, Map<string, number>>
+  }>({
     uri,
     method: "returnCustomMap",
     args: {
@@ -819,7 +822,6 @@ export const runMapTypeTest = async (client: PolywrapClient, uri: string) => {
       }
     },
   });
-  console.log(returnCustomMap);
   expect(returnCustomMap.error).toBeUndefined();
   expect(returnCustomMap.data).toEqual({ map: mapClass, nestedMap: nestedMapClass });
 
