@@ -40,10 +40,7 @@ export class WsPlugin extends Module<NoConfig> {
     });
   }
 
-  public async close(
-    args: Args_close,
-    _client: Client
-  ): Promise<boolean> {
+  public async close(args: Args_close, _client: Client): Promise<boolean> {
     this._sockets[args.id].close();
     return await new Promise((resolve) => {
       this._sockets[args.id].onclose = () => {
@@ -73,10 +70,7 @@ export class WsPlugin extends Module<NoConfig> {
     return true;
   }
 
-  public removeCallback(
-    args: Args_removeCallback,
-    _client: Client
-  ): boolean {
+  public removeCallback(args: Args_removeCallback, _client: Client): boolean {
     const callbackId = this._callbackId(args.callback);
     this._sockets[args.id].removeEventListener(
       "message",
