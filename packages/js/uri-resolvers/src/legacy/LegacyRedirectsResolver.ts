@@ -5,14 +5,12 @@ import { Uri, Client } from "@polywrap/core-js";
 
 export class LegacyRedirectsResolver extends UriResolverAggregator {
   constructor() {
-    super(async (uri: Uri, client: Client) =>
-      client
-        .getRedirects({})
-        .map((redirect) => new RedirectResolver(redirect.from, redirect.to))
+    super(
+      async (uri: Uri, client: Client) =>
+        client
+          .getRedirects({})
+          .map((redirect) => new RedirectResolver(redirect.from, redirect.to)),
+      "LegacyRedirectsResolver"
     );
-  }
-
-  get name(): string {
-    return "LegacyRedirectsResolver";
   }
 }

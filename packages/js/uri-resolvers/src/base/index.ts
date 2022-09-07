@@ -1,1 +1,2 @@
-export * from "./ContextfulResolver";
+export * from "./RecursiveResolverWithLoopGuard";
+export * from "./ResolverWithHistory";

@@ -122,7 +122,7 @@ export const getDefaultClientConfig = (
             environment: Env<Uri> | undefined
           ) => new PluginWrapper(uri, plugin, environment)
         ),
-        new ExtendableUriResolver({}),
+        new ExtendableUriResolver(),
       ],
       { resolverName: "MainResolver" }
     ),

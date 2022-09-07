@@ -7,6 +7,6 @@ export interface IUriResolver<TError = undefined> {
   tryResolveUri(
     uri: Uri,
     client: Client,
-    resolutionContext?: IUriResolutionContext
+    resolutionContext: IUriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, TError>>;
 }

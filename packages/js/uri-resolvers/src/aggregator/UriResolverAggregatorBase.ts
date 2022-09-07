@@ -1,5 +1,3 @@
-import { InfiniteLoopError } from "../InfiniteLoopError";
-
 import {
   IUriResolver,
   Uri,
@@ -10,41 +8,35 @@ import {
   UriPackageOrWrapper,
 } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
-import { ContextfulResolver } from "../base";
 
 export abstract class UriResolverAggregatorBase<
   TResolutionError = undefined,
   TGetResolversError = undefined
-> extends ContextfulResolver<TResolutionError | TGetResolversError> {
-  constructor(resolverName?: string, fullResolution?: boolean) {
-    super(resolverName ?? "UriResolverAggregator", fullResolution);
-  }
-
+> implements IUriResolver<TResolutionError | TGetResolversError> {
   abstract getUriResolvers(
     uri: Uri,
     client: Client,
     resolutionContext?: IUriResolutionContext
-  ): Promise<
-    Result<IUriResolver<unknown>[], TGetResolversError | InfiniteLoopError>
-  >;
+  ): Promise<Result<IUriResolver<unknown>[], TGetResolversError>>;
 
-  async tryResolveUriWithContext(
+  async tryResolveUri(
     uri: Uri,
     client: Client,
     resolutionContext: IUriResolutionContext
   ): Promise<
-    Result<
-      UriPackageOrWrapper,
-      TResolutionError | TGetResolversError | InfiniteLoopError
-    >
+    Result<UriPackageOrWrapper, TResolutionError | TGetResolversError>
   > {
-    const result = await this.getUriResolvers(uri, client, resolutionContext);
+    const resolverResult = await this.getUriResolvers(
+      uri,
+      client,
+      resolutionContext
+    );
 
-    if (!result.ok) {
-      return result;
+    if (!resolverResult.ok) {
+      return resolverResult;
     }
 
-    const resolvers = result.value as IUriResolver[];
+    const resolvers = resolverResult.value as IUriResolver[];
 
     return await this.tryResolveUriWithResolvers(
       uri,
@@ -54,44 +46,51 @@ export abstract class UriResolverAggregatorBase<
     );
   }
 
+  protected abstract getStepDescription(
+    uri: Uri,
+    result: Result<UriPackageOrWrapper, TResolutionError>
+  ): string;
+
   protected async tryResolveUriWithResolvers(
-    currentUri: Uri,
+    uri: Uri,
     client: Client,
     resolvers: IUriResolver<unknown>[],
     resolutionContext: IUriResolutionContext
-  ): Promise<
-    Result<UriPackageOrWrapper, TResolutionError | InfiniteLoopError>
-  > {
+  ): Promise<Result<UriPackageOrWrapper, TResolutionError>> {
+    const subContext = UriResolutionContext.createNested(resolutionContext);
+
     for (const resolver of resolvers) {
-      const subContext = UriResolutionContext.createNested(resolutionContext);
+      const typeResolver = resolver as IUriResolver<TResolutionError>;
 
-      const typeResolver = resolver as IUriResolver<
-        TResolutionError | InfiniteLoopError
-      >;
-
-      const result = await typeResolver.tryResolveUri(
-        currentUri,
-        client,
-        subContext
-      );
-
-      resolutionContext.trackStep({
-        sourceUri: currentUri,
-        result,
-        subHistory: subContext.getHistory(),
-      });
+      const result = await typeResolver.tryResolveUri(uri, client, subContext);
 
       if (
         result.ok &&
         result.value.type === "uri" &&
-        result.value.uri === currentUri
+        result.value.uri === uri
       ) {
         continue;
       } else {
+        resolutionContext.trackStep({
+          sourceUri: uri,
+          result,
+          subHistory: subContext.getHistory(),
+          description: this.getStepDescription(uri, result),
+        });
+
         return result;
       }
     }
 
-    return UriResolutionResult.ok(currentUri);
+    const result = UriResolutionResult.ok(uri);
+
+    resolutionContext.trackStep({
+      sourceUri: uri,
+      result,
+      subHistory: subContext.getHistory(),
+      description: this.getStepDescription(uri, result),
+    });
+
+    return result;
   }
 }

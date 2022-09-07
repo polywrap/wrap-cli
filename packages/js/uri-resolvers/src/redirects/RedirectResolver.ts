@@ -1,27 +1,30 @@
 import {
   Uri,
-  IUriResolver,
   toUri,
   UriResolutionResult,
   UriPackageOrWrapper,
 } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
+import { ResolverWithHistory } from "../base";
 
-export class RedirectResolver<TUri extends string | Uri = string>
-  implements IUriResolver {
+export class RedirectResolver<
+  TUri extends string | Uri = string
+> extends ResolverWithHistory {
   from: Uri;
   to: Uri;
 
   constructor(from: TUri, to: TUri) {
+    super();
     this.from = toUri(from);
     this.to = toUri(to);
   }
 
-  public get name(): string {
-    return `RedirectResolver(${this.from.uri} - ${this.to.uri})`;
-  }
+  protected getStepDescription = (): string =>
+    `Redirect (${this.from.uri} - ${this.to.uri})`;
 
-  async tryResolveUri(uri: Uri): Promise<Result<UriPackageOrWrapper>> {
+  protected async _tryResolveUri(
+    uri: Uri
+  ): Promise<Result<UriPackageOrWrapper>> {
     if (uri.uri !== this.from.uri) {
       return UriResolutionResult.ok(uri);
     }

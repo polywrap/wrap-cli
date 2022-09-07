@@ -12,19 +12,16 @@ import {
   UriResolutionResult,
 } from "@polywrap/core-js";
 import { Result, ResultOk } from "@polywrap/result";
-import {
-  InfiniteLoopError,
-  UriResolverAggregatorBase,
-} from "@polywrap/uri-resolvers-js";
+import { UriResolverAggregatorBase } from "@polywrap/uri-resolvers-js";
 
 export class ExtendableUriResolver extends UriResolverAggregatorBase<unknown> {
   loadingExtensionsMap: Map<number, Map<string, boolean>> = new Map();
 
-  constructor(options?: { resolverName?: string; fullResolution?: boolean }) {
-    super(
-      options?.resolverName ?? "ExtendableUriResolver",
-      options?.fullResolution
-    );
+  private resolverName: string;
+
+  constructor(resolverName?: string) {
+    super();
+    this.resolverName = resolverName ?? "ExtendableUriResolver";
   }
 
   async getUriResolvers(
@@ -51,7 +48,7 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<unknown> {
     uri: Uri,
     client: Client,
     resolutionContext?: IUriResolutionContext
-  ): Promise<Result<UriPackageOrWrapper, InfiniteLoopError | unknown>> {
+  ): Promise<Result<UriPackageOrWrapper, unknown>> {
     if (!resolutionContext) {
       resolutionContext = new UriResolutionContext();
     }
@@ -83,4 +80,6 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<unknown> {
       throw ex;
     }
   }
+
+  protected getStepDescription = (): string => `${this.resolverName}`;
 }

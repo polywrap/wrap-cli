@@ -1,7 +1,6 @@
 import { UriResolverExtensionFileReader } from "./UriResolverExtensionFileReader";
 
 import {
-  IUriResolver,
   Uri,
   Client,
   UriResolverInterface,
@@ -12,15 +11,21 @@ import {
 import { Result, ResultOk, ResultErr } from "@polywrap/result";
 import { WasmPackage } from "@polywrap/wasm-js";
 import { loadResolverExtension } from "./ResolverExtensionLoader";
+import { ResolverWithHistory } from "@polywrap/uri-resolvers-js/build/base";
 
-export class UriResolverWrapper implements IUriResolver<unknown> {
-  constructor(public readonly implementationUri: Uri) {}
+export class UriResolverWrapper extends ResolverWithHistory<unknown> {
+  constructor(public readonly implementationUri: Uri) {
+    super();
+  }
 
   public get name(): string {
     return `UriResolverWrapper: (${this.implementationUri.uri})`;
   }
 
-  async tryResolveUri(
+  protected getStepDescription = (): string =>
+    `ResovlerExtension (${this.implementationUri.uri})`;
+
+  protected async _tryResolveUri(
     uri: Uri,
     client: Client,
     resolutionContext: IUriResolutionContext

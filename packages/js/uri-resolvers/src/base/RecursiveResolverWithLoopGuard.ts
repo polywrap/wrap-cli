@@ -3,14 +3,13 @@ import {
   Uri,
   Client,
   IUriResolutionContext,
-  UriResolutionContext,
   UriPackageOrWrapper,
   UriResolutionResult,
 } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
 import { InfiniteLoopError } from "../InfiniteLoopError";
 
-export abstract class ContextfulResolver<TError = undefined>
+export abstract class RecursiveResolverWithLoopGuard<TError = undefined>
   implements IUriResolver<TError | InfiniteLoopError> {
   constructor(
     protected resolverName: string,
@@ -20,16 +19,12 @@ export abstract class ContextfulResolver<TError = undefined>
   async tryResolveUri(
     uri: Uri,
     client: Client,
-    resolutionContext?: IUriResolutionContext
+    resolutionContext: IUriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, TError | InfiniteLoopError>> {
-    if (!resolutionContext) {
-      resolutionContext = new UriResolutionContext();
-    } else {
-      if (resolutionContext.hasVisited(uri)) {
-        return UriResolutionResult.err(
-          new InfiniteLoopError(uri, resolutionContext.getHistory())
-        );
-      }
+    if (resolutionContext.hasVisited(uri)) {
+      return UriResolutionResult.err(
+        new InfiniteLoopError(uri, resolutionContext.getHistory())
+      );
     }
 
     resolutionContext.visit(uri);
@@ -70,7 +65,7 @@ export abstract class ContextfulResolver<TError = undefined>
     result: Result<UriPackageOrWrapper, TError | InfiniteLoopError>,
     uri: Uri,
     client: Client,
-    resolutionContext?: IUriResolutionContext
+    resolutionContext: IUriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, TError | InfiniteLoopError>> {
     if (result.ok && result.value.type === "uri") {
       const resultUri = result.value.uri;

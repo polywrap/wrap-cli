@@ -13,17 +13,14 @@ import {
 } from "@polywrap/core-js";
 import { IWrapperCache } from "./IWrapperCache";
 import { DeserializeManifestOptions } from "@polywrap/wrap-manifest-types-js";
-import { InfiniteLoopError } from "../InfiniteLoopError";
-import { ContextfulResolver } from "../base/ContextfulResolver";
 import { Result } from "@polywrap/result";
 
 export type ResolutionCallback<TError> = (
   response: Result<UriPackageOrWrapper, TError>
 ) => void;
 
-export class PackageToWrapperCacheResolver<
-  TError = undefined
-> extends ContextfulResolver<TError> {
+export class PackageToWrapperCacheResolver<TError = undefined>
+  implements IUriResolver<TError> {
   name: string;
   resolverToCache: IUriResolver<TError>;
 
@@ -36,22 +33,30 @@ export class PackageToWrapperCacheResolver<
       endOnRedirect?: boolean;
     }
   ) {
-    super(options?.resolverName ?? "PackageToWrapperCacheResolver", true);
-
-    this.resolverToCache = buildUriResolver(resolverToCache);
+    this.resolverToCache = buildUriResolver(
+      resolverToCache,
+      options?.resolverName
+    );
   }
 
-  protected async tryResolveUriWithContext(
+  async tryResolveUri(
     uri: Uri,
     client: Client,
     resolutionContext: IUriResolutionContext
-  ): Promise<Result<UriPackageOrWrapper, TError | InfiniteLoopError>> {
+  ): Promise<Result<UriPackageOrWrapper, TError>> {
     const wrapper = await executeMaybeAsyncFunction<Wrapper | undefined>(
       this.cache.get.bind(this.cache, uri)
     );
 
     if (wrapper) {
-      return UriResolutionResult.ok(wrapper);
+      const result = UriResolutionResult.ok(wrapper);
+
+      resolutionContext.trackStep({
+        sourceUri: uri,
+        result,
+        description: "Cache",
+      });
+      return result;
     }
 
     let result = await this.resolverToCache.tryResolveUri(

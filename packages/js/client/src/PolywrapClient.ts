@@ -493,19 +493,16 @@ export class PolywrapClient implements Client {
 
     const uriResolver = this.getUriResolver({ contextId: contextId });
 
+    const resolutionContext =
+      options.resolutionContext ?? new UriResolutionContext();
+
     // This is a hack because we expect config overrides to ignore cache
     const response =
       ignoreCache && uriResolver instanceof PackageToWrapperCacheResolver
-        ? await ((uriResolver as unknown) as PackageToWrapperCacheResolver).resolverToCache.tryResolveUri(
-            uri,
-            client,
-            options.resolutionContext
-          )
-        : await uriResolver.tryResolveUri(
-            uri,
-            client,
-            options.resolutionContext
-          );
+        ? await(
+            (uriResolver as unknown) as PackageToWrapperCacheResolver
+          ).resolverToCache.tryResolveUri(uri, client, resolutionContext)
+        : await uriResolver.tryResolveUri(uri, client, resolutionContext);
 
     if (shouldClearContext) {
       this._clearContext(contextId);
