@@ -47,13 +47,8 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<unknown> {
   async tryResolveUri(
     uri: Uri,
     client: Client,
-    resolutionContext?: IUriResolutionContext
+    resolutionContext: IUriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, unknown>> {
-    if (!resolutionContext) {
-      resolutionContext = new UriResolutionContext();
-    }
-    resolutionContext.visit(uri);
-
     const result = await this.getUriResolvers(uri, client, resolutionContext);
     const resolvers = (result as {
       ok: true;
@@ -61,24 +56,15 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<unknown> {
     }).value;
 
     if (resolvers.length === 0) {
-      resolutionContext.unvisit(uri);
       return UriResolutionResult.ok(uri);
     }
 
-    try {
-      const result = await super.tryResolveUriWithResolvers(
-        uri,
-        client,
-        resolvers,
-        resolutionContext
-      );
-
-      resolutionContext.unvisit(uri);
-      return result;
-    } catch (ex) {
-      resolutionContext.unvisit(uri);
-      throw ex;
-    }
+    return await super.tryResolveUriWithResolvers(
+      uri,
+      client,
+      resolvers,
+      resolutionContext
+    );
   }
 
   protected getStepDescription = (): string => `${this.resolverName}`;
