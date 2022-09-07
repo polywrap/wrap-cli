@@ -11,7 +11,7 @@ type Env {
     """
     Determines whether the plugin should try to resolve a file (check for its existence) or immediately get the file
     """
-    skipCheckIfExistsBeforeGetFile: Boolean,
+    skipCheckIfExists: Boolean,
     """
     Timeouts for methods
     """

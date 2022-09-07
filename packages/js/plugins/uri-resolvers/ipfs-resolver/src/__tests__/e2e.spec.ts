@@ -145,7 +145,7 @@ describe("IPFS Plugin", () => {
           checkIfExists: timeout,
           tryResolveUri: timeout,
         },
-        skipCheckIfExistsBeforeGetFile: true
+        skipCheckIfExists: true
       },
       timeout
     );

@@ -67,7 +67,7 @@ export class IpfsResolverPlugin extends Module<NoConfig> {
     try {
       let provider: string | undefined = undefined;
 
-      if (!this.env.skipCheckIfExistsBeforeGetFile) {
+      if (!this.env.skipCheckIfExists) {
         const resolveResult = await Ipfs_Module.resolve(
           {
             cid: args.path,
