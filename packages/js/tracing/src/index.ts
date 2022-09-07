@@ -6,10 +6,9 @@ import {
 } from "@opentelemetry/sdk-trace-base";
 import { WebTracerProvider } from "@opentelemetry/sdk-trace-web";
 import * as api from "@opentelemetry/api";
-import { ConsoleExporter } from "@fetsorn/opentelemetry-console-exporter";
-// workaround until we can upgrade to 0.30.0
-// https://github.com/open-telemetry/opentelemetry-js/issues/2943#issuecomment-1114265125
-import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http/build/src/platform/browser/OTLPTraceExporter";
+import { Resource } from "@opentelemetry/resources";
+import { ConsoleExporterIcon } from "@fetsorn/opentelemetry-console-exporter";
+import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 type MaybeAsync<T> = Promise<T> | T;
 
 export enum TracingLevel {
@@ -59,7 +58,7 @@ export class Tracer {
       config.consoleDetailed ?? this._config.consoleDetailed;
     this._config.httpEnabled = config.httpEnabled ?? this._config.httpEnabled;
     this._config.httpUrl = config.httpUrl ?? this._config.httpUrl;
-    this._initProvider();
+    this._initProvider(tracerName);
 
     if (this._provider) {
       this._tracer = this._provider.getTracer(tracerName) as otTracer;
@@ -236,11 +235,19 @@ export class Tracer {
     };
   }
 
-  static _initProvider(): void {
+  static _initProvider(name: string): void {
+    const providerResources = new Resource({
+      "service.name": name
+    });
+
     if (typeof window === "undefined") {
-      this._provider = new BasicTracerProvider();
+      this._provider = new BasicTracerProvider({
+        resource: providerResources
+      });
     } else {
-      this._provider = new WebTracerProvider();
+      this._provider = new WebTracerProvider({
+        resource: providerResources
+      });
     }
 
     // Configure span processor to send spans to the exporter
@@ -254,7 +261,7 @@ export class Tracer {
     if (this._config.consoleEnabled) {
       this._provider.addSpanProcessor(
         new BatchSpanProcessor(
-          new ConsoleExporter({ isDetailed: this._config.consoleDetailed })
+          new ConsoleExporterIcon({ isDetailed: this._config.consoleDetailed })
         )
       );
     }
