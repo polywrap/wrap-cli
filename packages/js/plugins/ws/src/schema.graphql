@@ -1,21 +1,57 @@
+"""Subset of JS MessageEvent interface"""
 type Message {
-    data: String!
-    origin: String!
-    lastEventId: String!
+  data: String!
+  origin: String!
+  lastEventId: String!
 }
 
 type Callback {
-    uri: String!,
-    method: String!
+  """WRAP Module URI"""
+  uri: String!
+  """WRAP Module Method"""
+  method: String!
 }
 
 type Module {
-  open(url: String!, timeout: Int): Int!
-  close(id: Int!): Boolean
-  send(id: Int!, message: String!): Boolean
-  addCallback(id: Int!, callback: Callback!): Boolean
-  removeCallback(id: Int!, callback: Callback!): Boolean
-  addCache(id: Int!): Boolean
-  removeCache(id: Int!): Boolean
-  receive(id: Int!, min: Int, timeout: Int): [Message!]!
+  """
+  create a socket with id, can return after `timeout`
+  if the server is not responding. Returns the socket `id`
+  """
+  open(url: String!, timeout: UInt32): UInt32!
+
+  """
+  close socket `id`
+  """
+  close(id: UInt32!): Boolean!
+
+  """
+  send message via socket `id`
+  """
+  send(id: UInt32!, message: String!): Boolean!
+
+  """
+  send all messages to callback for socket `id`
+  """
+  addCallback(id: UInt32!, callback: Callback!): Boolean!
+
+  """
+  stop sending messages to callback for socket `id`
+  """
+  removeCallback(id: UInt32!, callback: Callback!): Boolean!
+
+  """
+  save messages to ws plugin cache for socket `id`
+  """
+  addCache(id: UInt32!): Boolean!
+
+  """
+  stop caching messages for socket `id`
+  """
+  removeCache(id: UInt32!): Boolean!
+
+  """
+  get messages and flush cache,
+  can wait until receives `min` events or reaches `timeout`
+  """
+  receive(id: UInt32!, min: UInt32, timeout: UInt32): [Message!]!
 }
