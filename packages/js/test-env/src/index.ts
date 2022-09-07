@@ -267,7 +267,7 @@ export async function buildAndDeployWrapper({
   fs.writeFileSync(
     tempDeployManifestPath,
     yaml.dump({
-      format: "0.2",
+      format: "0.2.0",
       sequences: [
         {
           name: "buildAndDeployWrapper",

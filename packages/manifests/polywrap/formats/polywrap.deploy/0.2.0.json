@@ -7,7 +7,7 @@
     "format": {
       "description": "Polywrap deployment manifest format version.",
       "type": "string",
-      "const":  "0.2"
+      "const":  "0.2.0"
     },
     "sequences": {
       "description": "Sequences of deployment steps",

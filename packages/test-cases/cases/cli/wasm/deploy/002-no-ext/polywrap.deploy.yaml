@@ -1,4 +1,4 @@
-format: "0.2"
+format: "0.2.0"
 sequences:
   - name: test
     steps:

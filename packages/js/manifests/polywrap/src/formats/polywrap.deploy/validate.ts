@@ -27,7 +27,7 @@ const schemas: DeployManifestSchemas = {
   // NOTE: Patch fix for backwards compatability
   "0.1": DeployManifestSchema_0_1_0,
   "0.1.0": DeployManifestSchema_0_1_0,
-  "0.2.0": DeployManifestSchema_0_2,
+  "0.2.0": DeployManifestSchema_0_2_0,
 };
 
 const validator = new Validator();

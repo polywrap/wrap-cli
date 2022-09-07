@@ -7,7 +7,11 @@ import { JsonRpcProvider } from "@ethersproject/providers";
 import { Uri } from "@polywrap/core-js";
 import { PolywrapClient } from "@polywrap/client-js";
 import path from "path";
-import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
+import {
+  ethereumPlugin,
+  Connections,
+  Connection,
+} from "@polywrap/ethereum-plugin-js";
 
 class ENSRecursiveNameRegisterPublisher implements Deployer {
   async execute(

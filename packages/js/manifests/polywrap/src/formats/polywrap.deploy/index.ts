@@ -6,11 +6,11 @@
  */
 
 import {
-  DeployManifest as DeployManifest_0_1_0
-} from "./0.1";
+  DeployManifest as DeployManifest_0_1_0,
+} from "./0.1.0";
 import {
-  DeployManifest as DeployManifest_0_2
-} from "./0.2";
+  DeployManifest as DeployManifest_0_2_0,
+} from "./0.2.0";
 
 export {
   DeployManifest_0_1_0,
@@ -27,6 +27,8 @@ export enum DeployManifestFormats {
 export type AnyDeployManifest =
   | DeployManifest_0_1_0
   | DeployManifest_0_2_0
+
+
 
 export type DeployManifest = DeployManifest_0_2_0;
 

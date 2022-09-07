@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 
-import { DeployManifest as OldManifest } from "../0.1";
-import { DeployManifest as NewManifest } from "../0.2";
+import { DeployManifest as OldManifest } from "../0.1.0";
+import { DeployManifest as NewManifest } from "../0.2.0";
 
 class SequenceTree {
   private nextTrees: SequenceTree[] = [];
@@ -70,7 +70,7 @@ export function migrate(old: OldManifest): NewManifest {
   return {
     ...manifest,
     __type: "DeployManifest",
-    format: "0.2",
+    format: "0.2.0",
     sequences,
   };
 }
