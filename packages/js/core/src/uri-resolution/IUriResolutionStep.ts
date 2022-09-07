@@ -1,6 +1,7 @@
-import { Result } from "@polywrap/result";
 import { Uri } from "..";
 import { UriPackageOrWrapper } from "./UriPackageOrWrapper";
+
+import { Result } from "@polywrap/result";
 
 export interface IUriResolutionStep<TError = undefined> {
   sourceUri: Uri;

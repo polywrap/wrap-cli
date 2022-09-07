@@ -1,6 +1,7 @@
-import { Result } from "@polywrap/result";
 import { ClientConfig, Uri } from ".";
 import { IUriResolutionContext, UriPackageOrWrapper } from "../uri-resolution";
+
+import { Result } from "@polywrap/result";
 
 /** Options required for an URI resolution. */
 export interface TryResolveUriOptions<

@@ -1,6 +1,5 @@
 import { IUriResolutionContext } from "./IUriResolutionContext";
 import { IUriResolutionStep } from "./IUriResolutionStep";
-
 import { Uri } from "..";
 
 export class NestedUriResolutionContext implements IUriResolutionContext {
