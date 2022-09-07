@@ -18,6 +18,7 @@ import {
   IWrapperCache,
   WrapperCache,
   PackageToWrapperCacheResolver,
+  RecursiveResolver,
 } from "@polywrap/uri-resolvers-js";
 import { ExtendableUriResolver } from "@polywrap/uri-resolver-extensions-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
@@ -111,20 +112,22 @@ export const getDefaultClientConfig = (
         implementations: [new Uri("wrap://ens/js-logger.polywrap.eth")],
       },
     ],
-    resolver: new PackageToWrapperCacheResolver(
-      wrapperCache ?? new WrapperCache(),
-      [
-        new LegacyRedirectsResolver(),
-        new LegacyPluginsResolver(
-          (
-            uri: Uri,
-            plugin: PluginPackage<unknown>,
-            environment: Env<Uri> | undefined
-          ) => new PluginWrapper(uri, plugin, environment)
-        ),
-        new ExtendableUriResolver(),
-      ],
-      { resolverName: "MainResolver" }
+    resolver: new RecursiveResolver(
+      new PackageToWrapperCacheResolver(
+        wrapperCache ?? new WrapperCache(),
+        [
+          new LegacyRedirectsResolver(),
+          new LegacyPluginsResolver(
+            (
+              uri: Uri,
+              plugin: PluginPackage<unknown>,
+              environment: Env<Uri> | undefined
+            ) => new PluginWrapper(uri, plugin, environment)
+          ),
+          new ExtendableUriResolver(),
+        ],
+        { resolverName: "MainResolver" }
+      )
     ),
   };
 };
