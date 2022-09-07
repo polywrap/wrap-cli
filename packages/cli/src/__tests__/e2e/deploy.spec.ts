@@ -212,9 +212,9 @@ describe("e2e tests for deploy command", () => {
             },
             "result": {
               "_config": {
-                "uri": "wrap://ipfs/QmTVbK7oZr4km4AnRuzJpm1r68G7nGzaXFvQHWdwnu8hmv",
+                "uri": "wrap://ipfs/QmT5nBb8xwrfZnmFNRZexmrebzaaxW7CPfh1ZznQ6zsVaG",
                 "authority": "ipfs",
-                "path": "QmTVbK7oZr4km4AnRuzJpm1r68G7nGzaXFvQHWdwnu8hmv"
+                "path": "QmT5nBb8xwrfZnmFNRZexmrebzaaxW7CPfh1ZznQ6zsVaG"
               }
             }
           },
@@ -223,9 +223,9 @@ describe("e2e tests for deploy command", () => {
             "id": "fs_to_ens.from_deploy",
             "input": {
               "_config": {
-                "uri": "wrap://ipfs/QmTVbK7oZr4km4AnRuzJpm1r68G7nGzaXFvQHWdwnu8hmv",
+                "uri": "wrap://ipfs/QmT5nBb8xwrfZnmFNRZexmrebzaaxW7CPfh1ZznQ6zsVaG",
                 "authority": "ipfs",
-                "path": "QmTVbK7oZr4km4AnRuzJpm1r68G7nGzaXFvQHWdwnu8hmv"
+                "path": "QmT5nBb8xwrfZnmFNRZexmrebzaaxW7CPfh1ZznQ6zsVaG"
               }
             },
             "result": {
@@ -241,9 +241,9 @@ describe("e2e tests for deploy command", () => {
             "id": "fs_to_ens.from_deploy2",
             "input": {
               "_config": {
-                "uri": "wrap://ipfs/QmTVbK7oZr4km4AnRuzJpm1r68G7nGzaXFvQHWdwnu8hmv",
+                "uri": "wrap://ipfs/QmT5nBb8xwrfZnmFNRZexmrebzaaxW7CPfh1ZznQ6zsVaG",
                 "authority": "ipfs",
-                "path": "QmTVbK7oZr4km4AnRuzJpm1r68G7nGzaXFvQHWdwnu8hmv"
+                "path": "QmT5nBb8xwrfZnmFNRZexmrebzaaxW7CPfh1ZznQ6zsVaG"
               }
             },
             "result": {
