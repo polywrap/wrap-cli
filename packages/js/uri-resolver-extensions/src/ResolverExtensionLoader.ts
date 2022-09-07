@@ -22,10 +22,10 @@ export const loadResolverExtension = async (
   const uriPackageOrWrapper = result.value;
 
   if (uriPackageOrWrapper.type === "uri") {
-    const lastFoundUri = uriPackageOrWrapper.uri as Uri;
+    const lastTriedUri = uriPackageOrWrapper.uri as Uri;
 
     return ResultErr(
-      `While resolving ${uri.uri} with URI resolver extension ${uri.uri}, the extension could not be fully resolved. Last found URI is ${lastFoundUri.uri}`
+      `While resolving ${uri.uri} with URI resolver extension ${uri.uri}, the extension could not be fully resolved. Last tried URI is ${lastTriedUri.uri}`
     );
   }
 
