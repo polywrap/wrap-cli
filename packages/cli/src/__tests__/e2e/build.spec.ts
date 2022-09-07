@@ -34,6 +34,7 @@ describe("e2e tests for build command", () => {
     .readdirSync(testCaseRoot, { withFileTypes: true })
     .filter((dirent) => dirent.isDirectory())
     .map((dirent) => dirent.name);
+
   const getTestCaseDir = (index: number) =>
     path.join(testCaseRoot, testCases[index]);
 
@@ -166,49 +167,93 @@ describe("e2e tests for build command", () => {
     expect(output).toBe("");
   });
 
-  it("Should store build files in specified output dir", async () => {
-    const outputDir = fs.mkdtempSync(
-      path.join(os.tmpdir(), `polywrap-cli-tests`)
-    );
-    const testCaseDir = getTestCaseDir(0);
-    const { exitCode: code, stdout: output } = await runCLI({
-      args: ["build", "-v", "--output-dir", outputDir],
-      cwd: testCaseDir,
-      cli: polywrapCli,
+  describe("Docker build", () => {
+    it("Should store build files in specified output dir", async () => {
+      const outputDir = fs.mkdtempSync(
+        path.join(os.tmpdir(), `polywrap-cli-tests`)
+      );
+      const testCaseDir = getTestCaseDir(0);
+      const { exitCode: code, stdout: output } = await runCLI({
+        args: ["build", "-v", "--output-dir", outputDir],
+        cwd: testCaseDir,
+        cli: polywrapCli,
+      });
+  
+      const buildDir = `./${path.relative(testCaseDir, outputDir)}`;
+  
+      expect(code).toEqual(0);
+      expect(output).toContain(`Artifacts written to ${buildDir}`);
+      expect(output).toContain(`WRAP manifest written in ${buildDir}/wrap.info`);
+  
+      testBuildOutput(testCaseDir, outputDir);
     });
-
-    const buildDir = `./${path.relative(testCaseDir, outputDir)}`;
-
-    expect(code).toEqual(0);
-    expect(output).toContain(`Artifacts written to ${buildDir}`);
-    expect(output).toContain(`WRAP manifest written in ${buildDir}/wrap.info`);
-
-    testBuildOutput(testCaseDir, outputDir);
-  });
-
-  it("Should add uuid-v4 suffix to build image if no build manifest specified", async () => {
-    const projectRoot = getTestCaseDir(0);
-    const project = new PolywrapProject({
-      rootDir: projectRoot,
-      polywrapManifestPath: path.join(projectRoot, "polywrap.yaml"),
+  
+    it("Should add uuid-v4 suffix to build image if no build manifest specified", async () => {
+      const projectRoot = getTestCaseDir(0);
+      const project = new PolywrapProject({
+        rootDir: projectRoot,
+        polywrapManifestPath: path.join(projectRoot, "polywrap.yaml"),
+      });
+  
+      await project.cacheDefaultBuildImage();
+  
+      const cacheBuildEnvPath = path.join(
+        projectRoot,
+        ".polywrap/wasm/build/image"
+      );
+      const cachedBuildManifest = await loadBuildManifest(
+        path.join(cacheBuildEnvPath, "polywrap.build.yaml")
+      );
+  
+      const buildImageName = cachedBuildManifest.docker?.name;
+  
+      expect(buildImageName?.length).toBeGreaterThan(36);
+      expect((buildImageName?.match(/-/g) || []).length).toBeGreaterThanOrEqual(
+        4
+      );
     });
-
-    await project.cacheDefaultBuildImage();
-
-    const cacheBuildEnvPath = path.join(
-      projectRoot,
-      ".polywrap/wasm/build/image"
-    );
-    const cachedBuildManifest = await loadBuildManifest(
-      path.join(cacheBuildEnvPath, "polywrap.build.yaml")
-    );
-
-    const buildImageName = cachedBuildManifest.docker?.name;
-
-    expect(buildImageName?.length).toBeGreaterThan(36);
-    expect((buildImageName?.match(/-/g) || []).length).toBeGreaterThanOrEqual(
-      4
-    );
+  })
+  
+  describe("Local build", () => {  
+    it("Should store build files in specified output dir - Assemblyscript", async () => {
+      const outputDir = fs.mkdtempSync(
+        path.join(os.tmpdir(), `polywrap-cli-tests`)
+      );
+      const testCaseDir = getTestCaseDir(11);
+      const { exitCode: code, stdout: output } = await runCLI({
+        args: ["build", "-v", "-n", "--output-dir", outputDir],
+        cwd: testCaseDir,
+        cli: polywrapCli,
+      });
+  
+      const buildDir = `./${path.relative(testCaseDir, outputDir)}`;
+  
+      expect(code).toEqual(0);
+      expect(output).toContain(`Artifacts written to ${buildDir}`);
+      expect(output).toContain(`WRAP manifest written in ${buildDir}/wrap.info`);
+  
+      testBuildOutput(testCaseDir, outputDir);
+    });
+  
+    it("Should store build files in specified output dir - Rust", async () => {
+      const outputDir = fs.mkdtempSync(
+        path.join(os.tmpdir(), `polywrap-cli-tests`)
+      );
+      const testCaseDir = getTestCaseDir(12);
+      const { exitCode: code, stdout: output } = await runCLI({
+        args: ["build", "-v", "-n", "--output-dir", outputDir],
+        cwd: testCaseDir,
+        cli: polywrapCli,
+      });
+  
+      const buildDir = `./${path.relative(testCaseDir, outputDir)}`;
+  
+      expect(code).toEqual(0);
+      expect(output).toContain(`Artifacts written to ${buildDir}`);
+      expect(output).toContain(`WRAP manifest written in ${buildDir}/wrap.info`);
+  
+      testBuildOutput(testCaseDir, outputDir);
+    });
   });
 
   describe("test-cases", () => {
