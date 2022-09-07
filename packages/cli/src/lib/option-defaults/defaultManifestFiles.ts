@@ -7,7 +7,7 @@ import {
 const filterUniqueFn = (value: string, index: number, self: Array<string>) =>
   self.indexOf(value) === index;
 
-export const defaultManifestFiles = [
+export const defaultProjectManifestFiles = [
   ...defaultPolywrapManifest,
   ...defaultAppManifest,
   ...defaultPluginManifest,

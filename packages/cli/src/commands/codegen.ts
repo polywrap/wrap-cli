@@ -70,7 +70,7 @@ export const codegen: Command = {
           clientConfig: await parseClientConfigOption(options.clientConfig),
           codegenDir: parseDirOption(options.codegenDir, defaultCodegenDir),
           script: parseCodegenScriptOption(options.script),
-          manifestFile: parseManifestFileOption(options.manifestFile),
+          manifestFile: parseManifestFileOption(options.manifestFile, defaultPolywrapManifest),
           publishDir: parseDirOption(options.publishDir, defaultPublishDir),
         });
       });

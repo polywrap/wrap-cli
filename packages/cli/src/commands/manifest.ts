@@ -3,16 +3,28 @@ import YAML from "js-yaml";
 import fs from "fs";
 import {
   deserializeAppManifest,
+  deserializeBuildManifest,
+  deserializeDeployManifest,
+  deserializeMetaManifest,
   deserializePluginManifest,
   deserializePolywrapManifest,
   latestAppManifestFormat,
+  latestBuildManifestFormat,
+  latestDeployManifestFormat,
+  latestMetaManifestFormat,
   latestPluginManifestFormat,
   latestPolywrapManifestFormat,
   migrateAppManifest,
+  migrateBuildManifest,
+  migrateDeployManifest,
+  migrateMetaManifest,
   migratePluginManifest,
   migratePolywrapManifest,
 } from "@polywrap/polywrap-manifest-types-js";
 import {
+  defaultBuildManifest,
+  defaultDeployManifest,
+  defaultMetaManifest,
   getProjectManifestLanguage,
   intlMsg,
   isAppManifestLanguage,
@@ -20,10 +32,19 @@ import {
   isPolywrapManifestLanguage,
   parseManifestFileOption,
 } from "../lib";
-import { defaultManifestFiles } from "../lib/option-defaults";
+import { defaultProjectManifestFiles } from "../lib/option-defaults";
 
-const pathStr = intlMsg.commands_codegen_options_o_path();
-const defaultManifestStr = defaultManifestFiles.join(" | ");
+const pathStr = intlMsg.commands_manifest_options_m_path();
+
+const defaultProjectManifestStr = defaultProjectManifestFiles.join(" | ");
+const defaultBuildManifestStr = defaultBuildManifest.join(" | ");
+const defaultDeployManifestStr = defaultDeployManifest.join(" | ");
+const defaultMetaManifestStr = defaultMetaManifest.join(" | ");
+
+type ManifestSchemaCommandOptions = {};
+type ManifestMigrateCommandOptions = {
+  manifestFile: string;
+};
 
 export const manifest: Command = {
   setup: (program: Program) => {
@@ -40,29 +61,92 @@ export const manifest: Command = {
         await runSchemaCommand(options);
       });
 
-    manifestCommand
-      .command("migrate")
-      .alias("m")
+    const migrateCommand = manifestCommand.command("migrate").alias("m");
+
+    migrateCommand
+      .description(
+        "Migrates the polywrap project manifest to the latest version."
+      )
       .option(
         `-m, --manifest-file <${pathStr}>`,
         `${intlMsg.commands_manifest_options_m({
-          default: defaultManifestStr,
+          default: defaultProjectManifestStr,
         })}`
       )
-      .description("Migrates the polywrap manifest to the latest version.")
       .action(async (options) => {
-        console.log("options", options)
         await runMigrateCommand({
           ...options,
-          manifestFile: parseManifestFileOption(options.manifestFile),
+          manifestFile: parseManifestFileOption(
+            options.manifestFile,
+            defaultProjectManifestFiles
+          ),
+        });
+      });
+
+    migrateCommand
+      .command("build")
+      .alias("b")
+      .description(
+        "Migrates the polywrap build manifest to the latest version."
+      )
+      .option(
+        `-m, --manifest-file <${pathStr}>`,
+        `${intlMsg.commands_manifest_options_m({
+          default: defaultBuildManifestStr,
+        })}`
+      )
+      .action(async (options) => {
+        await runMigrateBuildCommand({
+          ...options,
+          manifestFile: parseManifestFileOption(
+            options.manifestFile,
+            defaultBuildManifest
+          ),
+        });
+      });
+
+    migrateCommand
+      .command("deploy")
+      .alias("d")
+      .description(
+        "Migrates the polywrap deploy manifest to the latest version."
+      )
+      .option(
+        `-m, --manifest-file <${pathStr}>`,
+        `${intlMsg.commands_manifest_options_m({
+          default: defaultDeployManifestStr,
+        })}`
+      )
+      .action(async (options) => {
+        await runMigrateDeployCommand({
+          ...options,
+          manifestFile: parseManifestFileOption(
+            options.manifestFile,
+            defaultDeployManifest
+          ),
+        });
+      });
+
+    migrateCommand
+      .command("meta")
+      .alias("m")
+      .description("Migrates the polywrap meta manifest to the latest version.")
+      .option(
+        `-m, --manifest-file <${pathStr}>`,
+        `${intlMsg.commands_manifest_options_m({
+          default: defaultMetaManifestStr,
+        })}`
+      )
+      .action(async (options) => {
+        await runMigrateMetaCommand({
+          ...options,
+          manifestFile: parseManifestFileOption(
+            options.manifestFile,
+            defaultMetaManifest
+          ),
         });
       });
   },
-};
-
-type ManifestSchemaCommandOptions = {};
-type ManifestMigrateCommandOptions = {
-  manifestFile: string
 };
 
 const runSchemaCommand = async (_options: ManifestSchemaCommandOptions) => {
@@ -70,6 +154,7 @@ const runSchemaCommand = async (_options: ManifestSchemaCommandOptions) => {
 };
 
 const runMigrateCommand = async (options: ManifestMigrateCommandOptions) => {
+  console.log("PROJECT");
   const manifestString = fs.readFileSync(options.manifestFile, {
     encoding: "utf-8",
   });
@@ -86,15 +171,19 @@ const runMigrateCommand = async (options: ManifestMigrateCommandOptions) => {
 
   if (isPolywrapManifestLanguage(language)) {
     console.log("detected wasm/interface");
-    outputManifestString = performPolywrapProjectManifestMigration(manifestString);
+    outputManifestString = performPolywrapProjectManifestMigration(
+      manifestString
+    );
   } else if (isAppManifestLanguage(language)) {
     console.log("detected app");
     outputManifestString = performAppProjectManifestMigration(manifestString);
   } else if (isPluginManifestLanguage(language)) {
     console.log("detected plugin");
-    outputManifestString = performPluginProjectManifestMigration(manifestString);
+    outputManifestString = performPluginProjectManifestMigration(
+      manifestString
+    );
   }
-  
+
   fs.writeFileSync("polywrap-new.yaml", outputManifestString, {
     encoding: "utf-8",
   });
@@ -148,13 +237,77 @@ function performPluginProjectManifestMigration(manifest: string): string {
   return YAML.dump(newManifestCleaned);
 }
 
-/* DEV TODO
-- define migration options
-  - manifest type
-    - project (auto-detect language)
-    - build
-    - deploy
-    - meta
-    - run?
-  - save old manifest to ./polywrap/manifest/*.yaml
-*/
+const runMigrateBuildCommand = async (
+  options: ManifestMigrateCommandOptions
+) => {
+  console.log("BUILD");
+  const manifestString = fs.readFileSync(options.manifestFile, {
+    encoding: "utf-8",
+  });
+
+  const manifestObject = deserializeBuildManifest(manifestString);
+
+  const newManifest = migrateBuildManifest(
+    manifestObject,
+    latestBuildManifestFormat
+  );
+
+  const newManifestCleaned = JSON.parse(JSON.stringify(newManifest));
+  delete newManifestCleaned.__type;
+
+  const outputManifestString = YAML.dump(newManifestCleaned);
+
+  fs.writeFileSync("polywrap.build-new.yaml", outputManifestString, {
+    encoding: "utf-8",
+  });
+};
+
+const runMigrateDeployCommand = async (
+  options: ManifestMigrateCommandOptions
+) => {
+  console.log("DEPLOY");
+  const manifestString = fs.readFileSync(options.manifestFile, {
+    encoding: "utf-8",
+  });
+
+  const manifestObject = deserializeDeployManifest(manifestString);
+
+  const newManifest = migrateDeployManifest(
+    manifestObject,
+    latestDeployManifestFormat
+  );
+
+  const newManifestCleaned = JSON.parse(JSON.stringify(newManifest));
+  delete newManifestCleaned.__type;
+
+  const outputManifestString = YAML.dump(newManifestCleaned);
+
+  fs.writeFileSync("polywrap.deploy-new.yaml", outputManifestString, {
+    encoding: "utf-8",
+  });
+};
+
+const runMigrateMetaCommand = async (
+  options: ManifestMigrateCommandOptions
+) => {
+  console.log("META");
+  const manifestString = fs.readFileSync(options.manifestFile, {
+    encoding: "utf-8",
+  });
+
+  const manifestObject = deserializeMetaManifest(manifestString);
+
+  const newManifest = migrateMetaManifest(
+    manifestObject,
+    latestMetaManifestFormat
+  );
+
+  const newManifestCleaned = JSON.parse(JSON.stringify(newManifest));
+  delete newManifestCleaned.__type;
+
+  const outputManifestString = YAML.dump(newManifestCleaned);
+
+  fs.writeFileSync("polywrap.meta-new.yaml", outputManifestString, {
+    encoding: "utf-8",
+  });
+};

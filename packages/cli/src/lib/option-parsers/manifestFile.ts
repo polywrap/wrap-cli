@@ -1,13 +1,13 @@
 import { intlMsg } from "../intl";
 import { resolvePathIfExists } from "../system";
-import { defaultManifestFiles } from "../option-defaults";
 
 export function parseManifestFileOption(
-  manifestFile: string | undefined
+  manifestFile: string | undefined,
+  defaults: string[]
 ): string {
   const manifestPaths = manifestFile
     ? [manifestFile as string]
-    : defaultManifestFiles;
+    : defaults;
 
   manifestFile = resolvePathIfExists(manifestPaths);
 
