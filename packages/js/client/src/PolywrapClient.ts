@@ -499,9 +499,11 @@ export class PolywrapClient implements Client {
     // This is a hack because we expect config overrides to ignore cache
     const response =
       ignoreCache && uriResolver instanceof PackageToWrapperCacheResolver
-        ? await(
-            (uriResolver as unknown) as PackageToWrapperCacheResolver
-          ).resolverToCache.tryResolveUri(uri, client, resolutionContext)
+        ? await ((uriResolver as unknown) as PackageToWrapperCacheResolver).resolverToCache.tryResolveUri(
+            uri,
+            client,
+            resolutionContext
+          )
         : await uriResolver.tryResolveUri(uri, client, resolutionContext);
 
     if (shouldClearContext) {
