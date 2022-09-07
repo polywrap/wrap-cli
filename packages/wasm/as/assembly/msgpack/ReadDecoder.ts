@@ -14,7 +14,7 @@ import { BigInt, BigNumber } from "../math";
 import { Context } from "../debug";
 import { JSON } from "../json";
 import { ExtensionType } from "./ExtensionType";
-import { Nullable } from "../containers";
+import { Box } from "../containers";
 
 export class ReadDecoder extends Read {
   private readonly _context: Context;
@@ -363,67 +363,67 @@ export class ReadDecoder extends Read {
     return this.readMap(key_fn, value_fn);
   }
 
-  readOptionalBool(): Nullable<bool> | null {
+  readOptionalBool(): Box<bool> | null {
     if (this.isNextNil()) {
       return null;
     }
-    return Nullable.from(this.readBool());
+    return Box.from(this.readBool());
   }
 
-  readOptionalInt8(): Nullable<i8> | null {
+  readOptionalInt8(): Box<i8> | null {
     if (this.isNextNil()) {
       return null;
     }
-    return Nullable.from(this.readInt8());
+    return Box.from(this.readInt8());
   }
 
-  readOptionalInt16(): Nullable<i16> | null {
+  readOptionalInt16(): Box<i16> | null {
     if (this.isNextNil()) {
       return null;
     }
-    return Nullable.from(this.readInt16());
+    return Box.from(this.readInt16());
   }
 
-  readOptionalInt32(): Nullable<i32> | null {
+  readOptionalInt32(): Box<i32> | null {
     if (this.isNextNil()) {
       return null;
     }
-    return Nullable.from(this.readInt32());
+    return Box.from(this.readInt32());
   }
 
-  readOptionalUInt8(): Nullable<u8> | null {
+  readOptionalUInt8(): Box<u8> | null {
     if (this.isNextNil()) {
       return null;
     }
-    return Nullable.from(this.readUInt8());
+    return Box.from(this.readUInt8());
   }
 
-  readOptionalUInt16(): Nullable<u16> | null {
+  readOptionalUInt16(): Box<u16> | null {
     if (this.isNextNil()) {
       return null;
     }
-    return Nullable.from(this.readUInt16());
+    return Box.from(this.readUInt16());
   }
 
-  readOptionalUInt32(): Nullable<u32> | null {
+  readOptionalUInt32(): Box<u32> | null {
     if (this.isNextNil()) {
       return null;
     }
-    return Nullable.from(this.readUInt32());
+    return Box.from(this.readUInt32());
   }
 
-  readOptionalFloat32(): Nullable<f32> | null {
+  readOptionalFloat32(): Box<f32> | null {
     if (this.isNextNil()) {
       return null;
     }
-    return Nullable.from(this.readFloat32());
+    return Box.from(this.readFloat32());
   }
 
-  readOptionalFloat64(): Nullable<f64> | null {
+  readOptionalFloat64(): Box<f64> | null {
     if (this.isNextNil()) {
       return null;
     }
-    return Nullable.from(this.readFloat64());
+    return Box.from(this.readFloat64());
   }
 
   readOptionalString(): string | null {

@@ -8,14 +8,14 @@ if (reader.isNextString()) {
 }
 {{/required}}
 {{^required}}
-let value: Nullable<Types.{{#detectKeyword}}{{type}}{{/detectKeyword}}> | null;
+let value: Box<Types.{{#detectKeyword}}{{type}}{{/detectKeyword}}> | null;
 if (!reader.isNextNil()) {
   if (reader.isNextString()) {
-    value = Nullable.from(
+    value = Box.from(
       Types.get{{type}}Value(reader.readString())
     );
   } else {
-    value = Nullable.from(
+    value = Box.from(
       reader.readInt32()
     );
     Types.sanitize{{type}}Value(value.unwrap());

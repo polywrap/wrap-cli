@@ -1,7 +1,7 @@
 import {
   Read,
   Write,
-  Nullable,
+  Box,
   BigInt,
   BigNumber,
   JSON

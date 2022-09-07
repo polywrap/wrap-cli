@@ -6,7 +6,7 @@ import {
   Write,
   WriteEncoder,
   WriteSizer,
-  Nullable,
+  Box,
   JSON,
   BigInt,
   BigNumber,
@@ -21,8 +21,8 @@ class Sanity {
   uint16: u16;
   uint32: u32;
   boolean: bool;
-  optUint32: Nullable<u32> | null = null;
-  optBool: Nullable<bool> | null = null;
+  optUint32: Box<u32> | null = null;
+  optBool: Box<bool> | null = null;
   float32: f32;
   float64: f64;
   str: string = "";
@@ -49,8 +49,8 @@ class Sanity {
     this.uint16 = 65535;
     this.uint32 = 4294967295;
     this.boolean = true;
-    this.optUint32 = Nullable.from(<u32>234234234);
-    this.optBool = Nullable.from(true);
+    this.optUint32 = Box.from(<u32>234234234);
+    this.optBool = Box.from(true);
     this.float32 = 3.40282344818115234375;
     this.float64 = 3124124512.598273468017578125;
     this.str = "Hello, world!";

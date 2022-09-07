@@ -43,7 +43,7 @@ export class WsPlugin extends Module<NoConfig> {
   public async close(
     args: Args_close,
     _client: Client
-  ): Promise<boolean | null> {
+  ): Promise<boolean> {
     this._sockets[args.id].close();
     return await new Promise((resolve) => {
       this._sockets[args.id].onclose = () => {
@@ -52,12 +52,12 @@ export class WsPlugin extends Module<NoConfig> {
     });
   }
 
-  public send(args: Args_send, _client: Client): boolean | null {
+  public send(args: Args_send, _client: Client): boolean {
     this._sockets[args.id].send(args.message);
     return true;
   }
 
-  public addCallback(args: Args_addCallback, _client: Client): boolean | null {
+  public addCallback(args: Args_addCallback, _client: Client): boolean {
     const callbackId = this._callbackId(args.callback);
     this._callbacks[callbackId] = async (msg) => {
       await _client.invoke<{ callback: boolean }>({
@@ -76,7 +76,7 @@ export class WsPlugin extends Module<NoConfig> {
   public removeCallback(
     args: Args_removeCallback,
     _client: Client
-  ): boolean | null {
+  ): boolean {
     const callbackId = this._callbackId(args.callback);
     this._sockets[args.id].removeEventListener(
       "message",
@@ -85,7 +85,7 @@ export class WsPlugin extends Module<NoConfig> {
     return true;
   }
 
-  public addCache(args: Args_addCache, _client: Client): boolean | null {
+  public addCache(args: Args_addCache, _client: Client): boolean {
     const callback = { uri: args.id.toString(), method: "cache" };
     const callbackId = this._callbackId(callback);
     this._caches[args.id] = [];
@@ -109,7 +109,7 @@ export class WsPlugin extends Module<NoConfig> {
     return true;
   }
 
-  public removeCache(args: Args_removeCache, _client: Client): boolean | null {
+  public removeCache(args: Args_removeCache, _client: Client): boolean {
     const callback = { uri: args.id.toString(), method: "cache" };
     const callbackId = this._callbackId(callback);
     this._sockets[args.id].removeEventListener(

@@ -4,7 +4,7 @@ import {
   Write,
   WriteSizer,
   WriteEncoder,
-  Nullable,
+  Box,
   BigInt,
   BigNumber,
   JSON,
@@ -58,7 +58,7 @@ export function writeTestImport_Object(writer: Write, type: TestImport_Object): 
   writer.writeString("en");
   writer.writeInt32(type.en);
   writer.context().pop();
-  writer.context().push("optEnum", "Nullable<Types.TestImport_Enum> | null", "writing property");
+  writer.context().push("optEnum", "Box<Types.TestImport_Enum> | null", "writing property");
   writer.writeString("optEnum");
   writer.writeOptionalInt32(type.optEnum);
   writer.context().pop();
@@ -68,9 +68,9 @@ export function writeTestImport_Object(writer: Write, type: TestImport_Object): 
     writer.writeInt32(item);
   });
   writer.context().pop();
-  writer.context().push("optEnumArray", "Array<Nullable<Types.TestImport_Enum> | null> | null", "writing property");
+  writer.context().push("optEnumArray", "Array<Box<Types.TestImport_Enum> | null> | null", "writing property");
   writer.writeString("optEnumArray");
-  writer.writeOptionalArray(type.optEnumArray, (writer: Write, item: Nullable<Types.TestImport_Enum> | null): void => {
+  writer.writeOptionalArray(type.optEnumArray, (writer: Write, item: Box<Types.TestImport_Enum> | null): void => {
     writer.writeOptionalInt32(item);
   });
   writer.context().pop();
@@ -93,10 +93,10 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
   let _optObjectArray: Array<Types.TestImport_AnotherObject | null> | null = null;
   let _en: Types.TestImport_Enum = 0;
   let _enSet: bool = false;
-  let _optEnum: Nullable<Types.TestImport_Enum> | null = null;
+  let _optEnum: Box<Types.TestImport_Enum> | null = null;
   let _enumArray: Array<Types.TestImport_Enum> = [];
   let _enumArraySet: bool = false;
-  let _optEnumArray: Array<Nullable<Types.TestImport_Enum> | null> | null = null;
+  let _optEnumArray: Array<Box<Types.TestImport_Enum> | null> | null = null;
 
   while (numFields > 0) {
     numFields--;
@@ -153,15 +153,15 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
       reader.context().pop();
     }
     else if (field == "optEnum") {
-      reader.context().push(field, "Nullable<Types.TestImport_Enum> | null", "type found, reading property");
-      let value: Nullable<Types.TestImport_Enum> | null;
+      reader.context().push(field, "Box<Types.TestImport_Enum> | null", "type found, reading property");
+      let value: Box<Types.TestImport_Enum> | null;
       if (!reader.isNextNil()) {
         if (reader.isNextString()) {
-          value = Nullable.from(
+          value = Box.from(
             Types.getTestImport_EnumValue(reader.readString())
           );
         } else {
-          value = Nullable.from(
+          value = Box.from(
             reader.readInt32()
           );
           Types.sanitizeTestImport_EnumValue(value.unwrap());
@@ -188,16 +188,16 @@ export function readTestImport_Object(reader: Read): TestImport_Object {
       reader.context().pop();
     }
     else if (field == "optEnumArray") {
-      reader.context().push(field, "Array<Nullable<Types.TestImport_Enum> | null> | null", "type found, reading property");
-      _optEnumArray = reader.readOptionalArray((reader: Read): Nullable<Types.TestImport_Enum> | null => {
-        let value: Nullable<Types.TestImport_Enum> | null;
+      reader.context().push(field, "Array<Box<Types.TestImport_Enum> | null> | null", "type found, reading property");
+      _optEnumArray = reader.readOptionalArray((reader: Read): Box<Types.TestImport_Enum> | null => {
+        let value: Box<Types.TestImport_Enum> | null;
         if (!reader.isNextNil()) {
           if (reader.isNextString()) {
-            value = Nullable.from(
+            value = Box.from(
               Types.getTestImport_EnumValue(reader.readString())
             );
           } else {
-            value = Nullable.from(
+            value = Box.from(
               reader.readInt32()
             );
             Types.sanitizeTestImport_EnumValue(value.unwrap());
