@@ -9,12 +9,12 @@ import {
 import {
   PolywrapClient,
   PolywrapClientConfig,
-  defaultIpfsProviders,
 } from "@polywrap/client-js";
+import { defaultIpfsProviders } from "@polywrap/client-config-builder-js";
 import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
-import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
+import { ethereumPlugin, Connections, Connection } from "@polywrap/ethereum-plugin-js";
 import fs from "fs";
 import path from "path";
 
@@ -56,12 +56,14 @@ describe("Filesystem plugin", () => {
         {
           uri: "wrap://ens/ethereum.polywrap.eth",
           plugin: ethereumPlugin({
-            networks: {
-              testnet: {
-                provider: providers.ethereum,
+            connections: new Connections({
+              networks: {
+                testnet: new Connection({
+                  provider: providers.ethereum
+                })
               },
-            },
-            defaultNetwork: "testnet",
+              defaultNetwork: "testnet"
+            })
           }),
         },
       ],
@@ -97,17 +99,8 @@ describe("Filesystem plugin", () => {
     expect(deploy.data).toBeTruthy();
     expect(deploy.data?.indexOf("0x")).toBeGreaterThan(-1);
 
-    // get the schema
-    const schema = await client.getSchema(fsUri);
-    const expectedSchema = await fs.promises.readFile(
-      `${fsPath}/schema.graphql`,
-      "utf-8"
-    );
-
-    expect(schema).toBe(expectedSchema);
-
     // get the manifest
-    const manifest = await client.getManifest(fsUri, {});
+    const manifest = await client.getManifest(fsUri);
 
     expect(manifest).toBeTruthy();
     expect(manifest.version).toBe("0.1");

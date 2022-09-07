@@ -1,8 +1,7 @@
 import { BigInt, BigNumber } from "../math";
 import { Context } from "../debug";
 import { JSON } from "../json";
-
-import { Option } from "as-container";
+import { Box } from "../containers";
 
 export abstract class Write {
   abstract writeNil(): void;
@@ -39,15 +38,15 @@ export abstract class Write {
     value_fn: (writer: Write, value: V) => void
   ): void;
 
-  abstract writeOptionalBool(value: Option<bool>): void;
-  abstract writeOptionalInt8(value: Option<i8>): void;
-  abstract writeOptionalInt16(value: Option<i16>): void;
-  abstract writeOptionalInt32(value: Option<i32>): void;
-  abstract writeOptionalUInt8(value: Option<u8>): void;
-  abstract writeOptionalUInt16(value: Option<u16>): void;
-  abstract writeOptionalUInt32(value: Option<u32>): void;
-  abstract writeOptionalFloat32(value: Option<f32>): void;
-  abstract writeOptionalFloat64(value: Option<f64>): void;
+  abstract writeOptionalBool(value: Box<bool> | null): void;
+  abstract writeOptionalInt8(value: Box<i8> | null): void;
+  abstract writeOptionalInt16(value: Box<i16> | null): void;
+  abstract writeOptionalInt32(value: Box<i32> | null): void;
+  abstract writeOptionalUInt8(value: Box<u8> | null): void;
+  abstract writeOptionalUInt16(value: Box<u16> | null): void;
+  abstract writeOptionalUInt32(value: Box<u32> | null): void;
+  abstract writeOptionalFloat32(value: Box<f32> | null): void;
+  abstract writeOptionalFloat64(value: Box<f64> | null): void;
   abstract writeOptionalString(value: string | null): void;
   abstract writeOptionalBytes(value: ArrayBuffer | null): void;
   abstract writeOptionalBigInt(value: BigInt | null): void;
@@ -63,7 +62,7 @@ export abstract class Write {
     value_fn: (writer: Write, value: V) => void
   ): void;
   abstract writeOptionalExtGenericMap<K, V>(
-    m: Map<K, V>,
+    m: Map<K, V> | null,
     key_fn: (writer: Write, key: K) => void,
     value_fn: (writer: Write, value: V) => void
   ): void;

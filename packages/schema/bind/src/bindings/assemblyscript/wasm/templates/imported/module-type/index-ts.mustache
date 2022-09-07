@@ -1,7 +1,7 @@
 import {
   wrap_subinvoke,
   wrap_subinvokeImplementation,
-  Option,
+  Box,
   BigInt,
   BigNumber,
   JSON,
@@ -19,7 +19,7 @@ import {
 import * as Types from "../..";
 
 {{^isInterface}}
-export class {{type}} {
+export class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
 
   public static uri: string = "{{uri}}";
 
@@ -51,7 +51,7 @@ export class {{type}} {
 }
 {{/isInterface}}
 {{#isInterface}}
-export class {{type}} {
+export class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
 
   public static interfaceUri: string = "{{uri}}";
 

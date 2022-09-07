@@ -1,5 +1,6 @@
-import { coreInterfaceUris, PluginModule } from "@polywrap/core-js";
+import { coreInterfaceUris } from "@polywrap/core-js";
 import { Uri, PolywrapClient } from "../..";
+import { defaultWrappers } from "@polywrap/client-config-builder-js";
 
 jest.setTimeout(200000);
 
@@ -7,20 +8,34 @@ describe("sanity", () => {
   test("default client config", () => {
     const client = new PolywrapClient();
 
-    expect(client.getRedirects()).toStrictEqual([]);
-    expect(client.getPlugins().map((x) => x.uri)).toStrictEqual([
+    expect(client.getRedirects()).toStrictEqual([
+      {
+        from: new Uri("wrap://ens/sha3.polywrap.eth"),
+        to: new Uri(defaultWrappers.sha3),
+      },
+      {
+        from: new Uri("wrap://ens/uts46.polywrap.eth"),
+        to: new Uri(defaultWrappers.uts46),
+      },
+      {
+        from: new Uri("wrap://ens/graph-node.polywrap.eth"),
+        to: new Uri(defaultWrappers.graphNode),
+      },
+    ]);
+
+    const expectedPlugins = [
       new Uri("wrap://ens/ipfs.polywrap.eth"),
       new Uri("wrap://ens/ens-resolver.polywrap.eth"),
       new Uri("wrap://ens/ethereum.polywrap.eth"),
       new Uri("wrap://ens/http.polywrap.eth"),
       new Uri("wrap://ens/js-logger.polywrap.eth"),
-      new Uri("wrap://ens/uts46.polywrap.eth"),
-      new Uri("wrap://ens/sha3.polywrap.eth"),
-      new Uri("wrap://ens/graph-node.polywrap.eth"),
       new Uri("wrap://ens/fs.polywrap.eth"),
       new Uri("wrap://ens/fs-resolver.polywrap.eth"),
       new Uri("wrap://ens/ipfs-resolver.polywrap.eth"),
-    ]);
+    ];
+    const actualPlugins = client.getPlugins().map(x => x.uri);
+    expect(expectedPlugins).toStrictEqual(actualPlugins);
+
     expect(client.getInterfaces()).toStrictEqual([
       {
         interface: coreInterfaceUris.uriResolver,
@@ -68,35 +83,21 @@ describe("sanity", () => {
 
     expect(redirects).toEqual([
       {
+        from: new Uri("wrap://ens/sha3.polywrap.eth"),
+        to: new Uri(defaultWrappers.sha3),
+      },
+      {
+        from: new Uri("wrap://ens/uts46.polywrap.eth"),
+        to: new Uri(defaultWrappers.uts46),
+      },
+      {
+        from: new Uri("wrap://ens/graph-node.polywrap.eth"),
+        to: new Uri(defaultWrappers.graphNode),
+      },
+      {
         from: new Uri(implementation1Uri),
         to: new Uri(implementation2Uri),
       },
     ]);
-  });
-
-  test("loadPolywrap - pass string or Uri", async () => {
-    const implementationUri = "wrap://ens/some-implementation.eth";
-    const schemaStr = "test-schema";
-
-    const client = new PolywrapClient({
-      plugins: [
-        {
-          uri: implementationUri,
-          plugin: {
-            factory: () => ({} as PluginModule<{}>),
-            manifest: {
-              schema: schemaStr,
-              implements: [],
-            },
-          },
-        },
-      ],
-    });
-
-    const schemaWhenString = await client.getSchema(implementationUri);
-    const schemaWhenUri = await client.getSchema(new Uri(implementationUri));
-
-    expect(schemaWhenString).toEqual(schemaStr);
-    expect(schemaWhenUri).toEqual(schemaStr);
   });
 });

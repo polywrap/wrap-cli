@@ -7,6 +7,7 @@ export * from "./utils";
 
 export function createAbi(): Abi {
   return {
+    version: "0.1",
     objectTypes: [],
     enumTypes: [],
     interfaceTypes: [],

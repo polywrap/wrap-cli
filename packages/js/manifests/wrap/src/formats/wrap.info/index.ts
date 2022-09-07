@@ -50,4 +50,5 @@ export const latestWrapAbiVersion = "0.1";
 
 export { migrateWrapManifest } from "./migrate";
 export { deserializeWrapManifest } from "./deserialize";
+export { serializeWrapManifest } from "./serialize";
 export { validateWrapManifest } from "./validate";

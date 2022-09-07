@@ -15,7 +15,7 @@ import { InvokeResult } from "@polywrap/core-js";
 
 jest.setTimeout(300000);
 
-describe("IPFS Resolver Plugin", () => {
+describe("IPFS Plugin", () => {
   let ipfsResolverUri = "wrap://ens/ipfs-resolver.polywrap.eth";
   let ipfs: IpfsClient;
 
@@ -76,14 +76,6 @@ describe("IPFS Resolver Plugin", () => {
 
     expect(resolution.wrapper).toBeTruthy();
 
-    const expectedSchema = (
-      await ipfs.cat(`${wrapperIpfsCid}/schema.graphql`)
-    ).toString("utf-8");
-
-    const schema = await resolution.wrapper?.getSchema(client);
-
-    expect(schema).toEqual(expectedSchema);
-
     const info = await resolution.wrapper?.getManifest({}, client);
     expect(info?.name).toBe("SimpleStorage");
   });
@@ -108,7 +100,7 @@ describe("IPFS Resolver Plugin", () => {
     ) => {
       const nonExistentFileCid = "Qmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
       const client = new PolywrapClient(getClientConfigWithIpfsResolverEnv(env));
-  
+
       const getFilePromise = client.invoke<Uint8Array>({
         uri: ipfsResolverUri,
         method: "getFile",
@@ -116,10 +108,10 @@ describe("IPFS Resolver Plugin", () => {
           path: nonExistentFileCid,
         },
       });
-  
+
       const fasterRacePromise = createRacePromise(timeout - 100);
       const slowerRacePromise = createRacePromise(timeout + 100);
-  
+
       const fasterRaceResult = await Promise.race([
         fasterRacePromise,
         getFilePromise,
@@ -128,7 +120,7 @@ describe("IPFS Resolver Plugin", () => {
         getFilePromise,
         slowerRacePromise,
       ]);
-  
+
       expect(fasterRaceResult.data).toStrictEqual((await fasterRacePromise).data);
       expect(slowerRaceResult.data).toStrictEqual((await getFilePromise).data);
     };
@@ -166,7 +158,7 @@ describe("IPFS Resolver Plugin", () => {
     ) => {
       const nonExistentFileCid = "Qmaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
       const client = new PolywrapClient(getClientConfigWithIpfsResolverEnv(env));
-  
+
       const getFilePromise = client.invoke<Uint8Array>({
         uri: ipfsResolverUri,
         method: "tryResolveUri",
@@ -175,10 +167,10 @@ describe("IPFS Resolver Plugin", () => {
           path: nonExistentFileCid,
         },
       });
-  
+
       const fasterRacePromise = createRacePromise(timeout - 100);
       const slowerRacePromise = createRacePromise(timeout + 100);
-  
+
       const fasterRaceResult = await Promise.race([
         fasterRacePromise,
         getFilePromise,
@@ -187,7 +179,7 @@ describe("IPFS Resolver Plugin", () => {
         getFilePromise,
         slowerRacePromise,
       ]);
-  
+
       expect(fasterRaceResult.data).toStrictEqual((await fasterRacePromise).data);
       expect(slowerRaceResult.data).toStrictEqual((await getFilePromise).data);
     };

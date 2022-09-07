@@ -1,13 +1,15 @@
-import { isBaseType, reservedWordsAS } from "./types";
 import { MustacheFn } from "../types";
+import { isBaseType, isKeyword } from "./types";
 
-export const handleKeywords: MustacheFn = () => {
-  return (text: string, render: (template: string) => string): string => {
-    const rendered: string = render(text);
-    if (reservedWordsAS.has(rendered)) {
-      return "m_" + rendered;
+// check if any of the keywords match the property name;
+// if there's a match, insert `_` at the beginning of the property name.
+export const detectKeyword: MustacheFn = () => {
+  return (value: string, render: (template: string) => string): string => {
+    const type = render(value);
+    if (isKeyword(type)) {
+      return "_" + type;
     }
-    return rendered;
+    return type;
   };
 };
 
@@ -49,14 +51,10 @@ export const toWasmInit: MustacheFn = () => {
       type = type.substring(0, type.length - 1);
     } else {
       const nullType = toWasm()(value, render);
-      const optional = "Option";
       const nullOptional = "| null";
 
       if (nullType.endsWith(nullOptional)) {
         return "null";
-      } else if (nullType.startsWith(optional)) {
-        type = nullType.substring(6);
-        return `Option.None${type}()`;
       }
     }
 
@@ -65,13 +63,29 @@ export const toWasmInit: MustacheFn = () => {
     }
 
     if (type.startsWith("Map<")) {
-      const openBracketIdx = type.indexOf("<");
-      const closeBracketIdx = type.lastIndexOf(">");
-      const [key, value] = type
-        .substring(openBracketIdx + 1, closeBracketIdx)
-        .split(",")
-        .map((x) => toWasm()(x.trim(), render));
-      return `new Map<${key}, ${value}>()`;
+      const firstOpenBracketIdx = type.indexOf("<");
+      const lastCloseBracketIdx = type.lastIndexOf(">");
+      if (firstOpenBracketIdx === -1 || lastCloseBracketIdx === -1) {
+        throw new Error(`Invalid Map: ${type}`);
+      }
+
+      const keyValTypes = type.substring(
+        firstOpenBracketIdx + 1,
+        lastCloseBracketIdx
+      );
+
+      const firstCommaIdx = keyValTypes.indexOf(",");
+      if (firstCommaIdx === -1) {
+        throw new Error(`Invalid Map: ${type}`);
+      }
+
+      const keyType = keyValTypes.substring(0, firstCommaIdx).trim();
+      const valType = keyValTypes.substring(firstCommaIdx + 1).trim();
+
+      const wasmKeyType = toWasm()(keyType, (str) => str);
+      const wasmValType = toWasm()(valType, (str) => str);
+
+      return `new Map<${wasmKeyType}, ${wasmValType}>()`;
     }
 
     switch (type) {
@@ -100,6 +114,7 @@ export const toWasmInit: MustacheFn = () => {
         if (type.includes("Enum_")) {
           return "0";
         } else {
+          type = detectKeyword()(type, (str) => str);
           return `new Types.${type}()`;
         }
     }
@@ -169,11 +184,11 @@ export const toWasm: MustacheFn = () => {
         break;
       default:
         if (type.includes("Enum_")) {
-          type = `Types.${type.replace("Enum_", "")}`;
+          type = type.replace("Enum_", "");
           isEnum = true;
-        } else {
-          type = `Types.${type}`;
         }
+        type = detectKeyword()(type, (str) => str);
+        type = `Types.${type}`;
     }
 
     return applyOptional(type, optional, isEnum);
@@ -195,23 +210,27 @@ const toWasmMap = (type: string, optional: boolean): string => {
   const firstOpenBracketIdx = type.indexOf("<");
   const lastCloseBracketIdx = type.lastIndexOf(">");
 
-  if (!(firstOpenBracketIdx !== -1 && lastCloseBracketIdx !== -1)) {
+  if (firstOpenBracketIdx === -1 || lastCloseBracketIdx === -1) {
     throw new Error(`Invalid Map: ${type}`);
   }
 
-  const keyValTypes = type
-    .substring(firstOpenBracketIdx + 1, lastCloseBracketIdx)
-    .split(",")
-    .map((x) => x.trim());
+  const keyValTypes = type.substring(
+    firstOpenBracketIdx + 1,
+    lastCloseBracketIdx
+  );
 
-  if (keyValTypes.length !== 2 || !keyValTypes[0] || !keyValTypes[1]) {
+  const firstCommaIdx = keyValTypes.indexOf(",");
+  if (firstCommaIdx === -1) {
     throw new Error(`Invalid Map: ${type}`);
   }
 
-  const keyType = toWasm()(keyValTypes[0], (str) => str);
-  const valType = toWasm()(keyValTypes[1], (str) => str);
+  const keyType = keyValTypes.substring(0, firstCommaIdx).trim();
+  const valType = keyValTypes.substring(firstCommaIdx + 1).trim();
 
-  return applyOptional(`Map<${keyType}, ${valType}>`, optional, false);
+  const wasmKeyType = toWasm()(keyType, (str) => str);
+  const wasmValType = toWasm()(valType, (str) => str);
+
+  return applyOptional(`Map<${wasmKeyType}, ${wasmValType}>`, optional, false);
 };
 
 const applyOptional = (
@@ -227,7 +246,7 @@ const applyOptional = (
     ) {
       return `${type} | null`;
     } else {
-      return `Option<${type}>`;
+      return `Box<${type}> | null`;
     }
   } else {
     return type;

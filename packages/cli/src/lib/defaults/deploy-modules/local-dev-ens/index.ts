@@ -6,7 +6,11 @@ import { Uri } from "@polywrap/core-js";
 import { ensAddresses } from "@polywrap/test-env-js";
 import path from "path";
 import { PolywrapClient } from "@polywrap/client-js";
-import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
+import {
+  ethereumPlugin,
+  Connections,
+  Connection,
+} from "@polywrap/ethereum-plugin-js";
 
 const contentHash = require("content-hash");
 
@@ -35,12 +39,14 @@ class LocalDevENSPublisher implements Deployer {
         {
           uri: ethereumPluginUri,
           plugin: ethereumPlugin({
-            networks: {
-              testnet: {
-                provider: `http://localhost:${config.ports.ethereum}`,
+            connections: new Connections({
+              networks: {
+                testnet: new Connection({
+                  provider: `http://localhost:${config.ports.ethereum}`,
+                }),
               },
-            },
-            defaultNetwork: "testnet",
+              defaultNetwork: "testnet",
+            }),
           }),
         },
       ],

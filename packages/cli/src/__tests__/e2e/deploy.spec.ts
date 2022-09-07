@@ -9,7 +9,7 @@ import {
 } from "@polywrap/test-env-js";
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import { PolywrapClient } from "@polywrap/client-js";
-import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
+import { ethereumPlugin, Connections, Connection } from "@polywrap/ethereum-plugin-js";
 import { Wallet } from "@ethersproject/wallet";
 import path from "path";
 import fs from "fs";
@@ -17,7 +17,7 @@ import yaml from "js-yaml";
 
 const HELP = `Usage: polywrap deploy|d [options]
 
-Deploys/Publishes a Polywrap
+Deploys Polywrap Projects
 
 Options:
   -m, --manifest-file <path>  Path to the Polywrap Deploy manifest file
@@ -60,13 +60,15 @@ const setup = async (domainNames: string[]) => {
       {
         uri: ethereumPluginUri,
         plugin: ethereumPlugin({
-          networks: {
-            testnet: {
-              provider: providers.ethereum,
-              signer
-            }
-          },
-          defaultNetwork: "testnet"
+          connections: new Connections({
+            networks: {
+              testnet: new Connection({
+                provider: providers.ethereum,
+                signer,
+              }),
+            },
+            defaultNetwork: "testnet",
+          }),
         }),
       }
     ],
@@ -207,13 +209,13 @@ describe("e2e tests for deploy command", () => {
         input: {
           uri: "wrap://fs/./build"
         },
-        result: "wrap://ipfs/QmPDJ9GMgqx1iScNpZh2MerK27YFNKayY5fBoGXfPWWEqm"
+        result: "wrap://ipfs/QmT5nBb8xwrfZnmFNRZexmrebzaaxW7CPfh1ZznQ6zsVaG"
       },
       {
         id: "ipfs_deploy.from_deploy",
         name: "from_deploy",
         input: {
-          uri: "wrap://ipfs/QmPDJ9GMgqx1iScNpZh2MerK27YFNKayY5fBoGXfPWWEqm",
+          uri: "wrap://ipfs/QmT5nBb8xwrfZnmFNRZexmrebzaaxW7CPfh1ZznQ6zsVaG",
           config: {
             domainName: "test1.eth",
             provider: "http://localhost:8545",
@@ -226,7 +228,7 @@ describe("e2e tests for deploy command", () => {
         id: "ipfs_deploy.from_deploy2",
         name: "from_deploy2",
         input: {
-          uri: "wrap://ipfs/QmPDJ9GMgqx1iScNpZh2MerK27YFNKayY5fBoGXfPWWEqm",
+          uri: "wrap://ipfs/QmT5nBb8xwrfZnmFNRZexmrebzaaxW7CPfh1ZznQ6zsVaG",
           config: {
             domainName: "test2.eth",
             provider: "http://localhost:8545",

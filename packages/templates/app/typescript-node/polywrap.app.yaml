@@ -1,3 +1,6 @@
-format: 0.1.0
-language: app/typescript
-schema: ./schema.graphql
+format: 0.2.0
+project:
+  name: Sample
+  type: app/typescript
+source:
+  schema: ./schema.graphql
