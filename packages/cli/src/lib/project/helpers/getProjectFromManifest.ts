@@ -58,7 +58,7 @@ export async function getProjectFromManifest(
   return project;
 }
 
-function getProjectManifestLanguage(
+export function getProjectManifestLanguage(
   manifestStr: string
 ): AnyProjectManifestLanguage | undefined {
   let manifest: ManifestProjectTypeProps | undefined;

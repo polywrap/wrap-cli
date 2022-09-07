@@ -13,16 +13,17 @@ import {
   migratePolywrapManifest,
 } from "@polywrap/polywrap-manifest-types-js";
 import {
-  AnyProjectManifestLanguage,
-  defaultPolywrapManifest,
+  getProjectManifestLanguage,
   intlMsg,
   isAppManifestLanguage,
   isPluginManifestLanguage,
   isPolywrapManifestLanguage,
+  parseManifestFileOption,
 } from "../lib";
+import { defaultManifestFiles } from "../lib/option-defaults";
 
 const pathStr = intlMsg.commands_codegen_options_o_path();
-const defaultManifestStr = defaultPolywrapManifest.join(" | ");
+const defaultManifestStr = defaultManifestFiles.join(" | ");
 
 export const manifest: Command = {
   setup: (program: Program) => {
@@ -44,7 +45,7 @@ export const manifest: Command = {
       .alias("m")
       .option(
         `-m, --manifest-file <${pathStr}>`,
-        `${intlMsg.commands_codegen_options_m({
+        `${intlMsg.commands_manifest_options_m({
           default: defaultManifestStr,
         })}`
       )
@@ -53,6 +54,7 @@ export const manifest: Command = {
         console.log("options", options)
         await runMigrateCommand({
           ...options,
+          manifestFile: parseManifestFileOption(options.manifestFile),
         });
       });
   },
@@ -67,35 +69,33 @@ const runSchemaCommand = async (_options: ManifestSchemaCommandOptions) => {
   console.log("foobar");
 };
 
-const runMigrateCommand = async (_options: ManifestMigrateCommandOptions) => {
-  const manifestFilePath = "polywrap.yaml";
-
-  const manifestString = fs.readFileSync(manifestFilePath, {
+const runMigrateCommand = async (options: ManifestMigrateCommandOptions) => {
+  const manifestString = fs.readFileSync(options.manifestFile, {
     encoding: "utf-8",
   });
 
-  // Detect polywrap manifest language type
+  // Detect project manifest language
   const language = getProjectManifestLanguage(manifestString);
 
   if (!language) {
-    console.log("Unsupported manifest language!");
+    console.log("Unsupported project language!");
     return;
   }
 
-  let outputString: string = "";
+  let outputManifestString: string = "";
 
   if (isPolywrapManifestLanguage(language)) {
     console.log("detected wasm/interface");
-    outputString = performPolywrapProjectManifestMigration(manifestString);
+    outputManifestString = performPolywrapProjectManifestMigration(manifestString);
   } else if (isAppManifestLanguage(language)) {
     console.log("detected app");
-    outputString = performAppProjectManifestMigration(manifestString);
+    outputManifestString = performAppProjectManifestMigration(manifestString);
   } else if (isPluginManifestLanguage(language)) {
     console.log("detected plugin");
-    outputString = performPluginProjectManifestMigration(manifestString);
+    outputManifestString = performPluginProjectManifestMigration(manifestString);
   }
-
-  fs.writeFileSync("polywrap-new.yaml", outputString, {
+  
+  fs.writeFileSync("polywrap-new.yaml", outputManifestString, {
     encoding: "utf-8",
   });
 };
@@ -150,39 +150,11 @@ function performPluginProjectManifestMigration(manifest: string): string {
 
 /* DEV TODO
 - define migration options
-  - manifest path
   - manifest type
     - project (auto-detect language)
     - build
     - deploy
     - meta
     - run?
+  - save old manifest to ./polywrap/manifest/*.yaml
 */
-
-// TODO: Remove most/all of this once https://github.com/polywrap/toolchain/pull/1051 is merged, as it's copied from there.
-
-type ManifestProjectTypeProps = {
-  // >= 0.2
-  project?: {
-    type: AnyProjectManifestLanguage;
-  };
-  // legacy
-  language?: AnyProjectManifestLanguage;
-};
-
-function getProjectManifestLanguage(
-  manifestStr: string
-): AnyProjectManifestLanguage | undefined {
-  let manifest: ManifestProjectTypeProps | undefined;
-
-  try {
-    manifest = JSON.parse(manifestStr) as ManifestProjectTypeProps;
-  } catch (e) {
-    manifest = YAML.safeLoad(manifestStr) as
-      | ManifestProjectTypeProps
-      | undefined;
-  }
-  console.log("project.type:", manifest?.project?.type);
-  console.log("language:", manifest?.language);
-  return manifest?.project?.type ?? manifest?.language;
-}

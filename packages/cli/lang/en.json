@@ -167,6 +167,7 @@
   "commands_run_error_noTestEnvFound": "polywrap test-env not found, please run 'polywrap infra up --modules=eth-ens-ipfs'",
   "commands_polywrap_error_notACommand": "is not a command",
   "commands_polywrap_helpPrompt": "Type {command} to view common commands",
+  "commands_manifest_options_m": "Path to the manifest file (default: {default})",
   "lib_codeGenerator_genCodeError": "Failed to generate types",
   "lib_codeGenerator_genCodeText": "Generate types",
   "lib_codeGenerator_genCodeWarning": "Warnings while generating types",
