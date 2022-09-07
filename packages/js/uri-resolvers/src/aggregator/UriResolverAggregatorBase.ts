@@ -67,7 +67,7 @@ export abstract class UriResolverAggregatorBase<
       if (
         result.ok &&
         result.value.type === "uri" &&
-        result.value.uri === uri
+        result.value.uri.uri === uri.uri
       ) {
         continue;
       } else {
