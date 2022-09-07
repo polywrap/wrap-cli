@@ -1,5 +1,3 @@
-#import { Module, CustomMap } into Imported from "wrap://ens/imported-map.eth"
-
 type Module {
   getKey(
     key: String!

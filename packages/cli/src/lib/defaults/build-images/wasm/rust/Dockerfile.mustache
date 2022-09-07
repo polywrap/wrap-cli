@@ -24,6 +24,9 @@ RUN cargo install -f wasm-snip
 # Install wasm-bindgen
 RUN cargo install -f wasm-bindgen-cli
 
+# Install cargo-build-deps
+RUN cargo install -f cargo-build-deps
+
 {{#polywrap_linked_packages.length}}
 WORKDIR /linked-packages
 {{/polywrap_linked_packages.length}}
@@ -75,7 +78,8 @@ RUN toml set ./{{dir}}/Cargo.toml package.name "module" > ./{{dir}}/Cargo-local.
     mv ./{{dir}}/Cargo-local.toml ./{{dir}}/Cargo.toml && \
     true
 
-RUN cargo build --manifest-path ./{{dir}}/Cargo.toml --release
+# Prebuild all project dependencies, adding them to the cache
+RUN cd ./{{dir}} && cargo build-deps --release && cd /project
 
 # Copy all source files
 {{#include}}
@@ -83,7 +87,7 @@ COPY {{.}} {{.}}
 {{/include}}
 RUN mv ./{{dir}}/Cargo.toml ./{{dir}}/Cargo-deps.toml
 COPY {{dir}} {{dir}}
-RUN mv ./{{dir}}/Cargo-deps.toml ./{{dir}}/Cargo.toml && rm ./target/release/deps/module*
+RUN mv ./{{dir}}/Cargo-deps.toml ./{{dir}}/Cargo.toml
 
 # Actual build:
 

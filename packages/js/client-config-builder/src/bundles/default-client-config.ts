@@ -19,18 +19,35 @@ import {
   Connections,
 } from "@polywrap/ethereum-plugin-js";
 import { ensResolverPlugin } from "@polywrap/ens-resolver-plugin-js";
-import { graphNodePlugin } from "@polywrap/graph-node-plugin-js";
 import { httpPlugin } from "@polywrap/http-plugin-js";
 import { fileSystemPlugin } from "@polywrap/fs-plugin-js";
-import { uts46Plugin } from "@polywrap/uts46-plugin-js";
-import { sha3Plugin } from "@polywrap/sha3-plugin-js";
 import { loggerPlugin } from "@polywrap/logger-plugin-js";
 import { fileSystemResolverPlugin } from "@polywrap/fs-resolver-plugin-js";
 
 export const getDefaultClientConfig = (): ClientConfig<Uri> => {
   return {
-    envs: [],
-    redirects: [],
+    envs: [
+      {
+        uri: new Uri(defaultWrappers.graphNode),
+        env: {
+          provider: "https://api.thegraph.com",
+        },
+      },
+    ],
+    redirects: [
+      {
+        from: new Uri("wrap://ens/sha3.polywrap.eth"),
+        to: new Uri(defaultWrappers.sha3),
+      },
+      {
+        from: new Uri("wrap://ens/uts46.polywrap.eth"),
+        to: new Uri(defaultWrappers.uts46),
+      },
+      {
+        from: new Uri("wrap://ens/graph-node.polywrap.eth"),
+        to: new Uri(defaultWrappers.graphNode),
+      },
+    ],
     plugins: [
       // IPFS is required for downloading Polywrap packages
       {
@@ -54,6 +71,10 @@ export const getDefaultClientConfig = (): ClientConfig<Uri> => {
                 provider:
                   "https://mainnet.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
               }),
+              goerli: new Connection({
+                provider:
+                  "https://goerli.infura.io/v3/b00b2c2cc09c487685e9fb061256d6a6",
+              }),
             },
           }),
         }),
@@ -65,20 +86,6 @@ export const getDefaultClientConfig = (): ClientConfig<Uri> => {
       {
         uri: new Uri("wrap://ens/js-logger.polywrap.eth"),
         plugin: loggerPlugin({}),
-      },
-      {
-        uri: new Uri("wrap://ens/uts46.polywrap.eth"),
-        plugin: uts46Plugin({}),
-      },
-      {
-        uri: new Uri("wrap://ens/sha3.polywrap.eth"),
-        plugin: sha3Plugin({}),
-      },
-      {
-        uri: new Uri("wrap://ens/graph-node.polywrap.eth"),
-        plugin: graphNodePlugin({
-          provider: "https://api.thegraph.com",
-        }),
       },
       {
         uri: new Uri("wrap://ens/fs.polywrap.eth"),
@@ -133,3 +140,9 @@ export const defaultIpfsProviders = [
   "https://ipfs.wrappers.io",
   "https://ipfs.io",
 ];
+
+export const defaultWrappers = {
+  sha3: "wrap://ens/goerli/sha3.wrappers.eth",
+  uts46: "wrap://ens/goerli/uts46-lite.wrappers.eth",
+  graphNode: "wrap://ens/goerli/graph-node.wrappers.eth",
+};

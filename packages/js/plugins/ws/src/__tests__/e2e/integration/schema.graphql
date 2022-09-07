@@ -24,6 +24,6 @@ type Module {
 
   get(
     url: String!,
-    timeout: Int!
+    timeout: UInt32!
   ): [String!]!
 }
