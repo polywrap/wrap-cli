@@ -7,3 +7,4 @@ export * from "./plugin";
 export * from "./infra";
 export * from "./run";
 export * from "./docgen";
+export * from "./manifest";
