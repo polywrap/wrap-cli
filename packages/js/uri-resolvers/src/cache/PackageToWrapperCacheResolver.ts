@@ -1,5 +1,4 @@
-import { UriResolverLike } from "../UriResolverLike";
-import { buildUriResolver } from "../buildUriResolver";
+import { IWrapperCache } from "./IWrapperCache";
 
 import {
   IUriResolver,
@@ -10,10 +9,12 @@ import {
   IUriResolutionContext,
   UriPackageOrWrapper,
   UriResolutionResult,
+  UriResolutionContext,
 } from "@polywrap/core-js";
-import { IWrapperCache } from "./IWrapperCache";
 import { DeserializeManifestOptions } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";
+import { UriResolverLike } from "../helpers";
+import { buildUriResolver } from "../utils";
 
 export type ResolutionCallback<TError> = (
   response: Result<UriPackageOrWrapper, TError>
@@ -54,21 +55,23 @@ export class PackageToWrapperCacheResolver<TError = undefined>
       resolutionContext.trackStep({
         sourceUri: uri,
         result,
-        description: "Cache",
+        description: "PackageToWrapperCacheResolver (Cache)",
       });
       return result;
     }
 
+    const subContext = UriResolutionContext.createNested(resolutionContext);
+
     let result = await this.resolverToCache.tryResolveUri(
       uri,
       client,
-      resolutionContext
+      subContext
     );
 
     if (result.ok) {
       if (result.value.type === "package") {
         const wrapPackage = result.value.package;
-        const visitedUris: Uri[] = resolutionContext.getVisitedUris();
+        const visitedUris: Uri[] = subContext.getVisitedUris();
 
         const wrapper = await wrapPackage.createWrapper(client, visitedUris, {
           noValidate: this.options?.deserializeManifestOptions?.noValidate,
@@ -83,7 +86,7 @@ export class PackageToWrapperCacheResolver<TError = undefined>
         result = UriResolutionResult.ok(wrapper);
       } else if (result.value.type === "wrapper") {
         const wrapper = result.value.wrapper;
-        const visitedUris: Uri[] = resolutionContext.getVisitedUris();
+        const visitedUris: Uri[] = subContext.getVisitedUris();
 
         for (const uri of visitedUris) {
           await executeMaybeAsyncFunction<Wrapper | undefined>(
@@ -93,6 +96,12 @@ export class PackageToWrapperCacheResolver<TError = undefined>
       }
     }
 
+    resolutionContext.trackStep({
+      sourceUri: uri,
+      result,
+      subHistory: subContext.getHistory(),
+      description: "PackageToWrapperCacheResolver",
+    });
     return result;
   }
 }
