@@ -174,6 +174,10 @@ export class WriteSizer extends Write {
     key_fn: (encoder: Write, key: K) => void,
     value_fn: (encoder: Write, value: V) => void
   ): void {
+    // create a new slot in the extByteLength cache
+    const extIdx = this.extByteLengths.length;
+    this.extByteLengths.push(0);
+
     // type = GENERIC_MAP
     this.length++;
 
@@ -191,7 +195,7 @@ export class WriteSizer extends Write {
       this.length += 5;
     }
 
-    this.extByteLengths.push(byteLength);
+    this.extByteLengths[extIdx] = byteLength;
   }
 
   writeOptionalBool(value: Nullable<bool> | null): void {

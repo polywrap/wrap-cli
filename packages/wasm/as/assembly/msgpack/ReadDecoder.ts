@@ -23,7 +23,7 @@ export class ReadDecoder extends Read {
   constructor(ua: ArrayBuffer, context: Context = new Context()) {
     super();
     this._context = context;
-    this._view = new DataView(ua, 0, ua.byteLength, context);
+    this._view = new DataView(ua, ua.byteLength, context);
   }
 
   context(): Context {
