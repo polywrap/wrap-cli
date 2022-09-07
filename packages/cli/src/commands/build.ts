@@ -12,9 +12,10 @@ import {
   parseDirOption,
   parseClientConfigOption,
 } from "../lib";
-import { createSourceBuildStrategy } from "../lib/source-builders";
 import { CodeGenerator } from "../lib/codegen/CodeGenerator";
 import { CompilerCodegenStrategy } from "../lib/codegen/strategies/CompilerCodegenStrategy";
+import { LocalBuildStrategy } from "../lib/source-builders/strategies/LocalStrategy";
+import { DockerBuildStrategy } from "../lib/source-builders/strategies/DockerStrategy";
 
 import path from "path";
 import readline from "readline";
@@ -111,10 +112,15 @@ async function run(options: BuildCommandOptions) {
   const polywrapManifest = await project.getManifest();
   await validateManifestModules(polywrapManifest);
 
-  const buildStrategy = createSourceBuildStrategy(docker ? "docker" : "local", {
-    project,
-    outputDir,
-  });
+  const buildStrategy = docker
+    ? new DockerBuildStrategy({
+        project,
+        outputDir,
+      })
+    : new LocalBuildStrategy({
+        project,
+        outputDir,
+      });
 
   const schemaComposer = new SchemaComposer({
     project,
