@@ -199,6 +199,9 @@ const keywords = {
   Float64Array: "Float64Array",
   TemplateStringsArray: "TemplateStringsArray",
   Error: "Error",
+  Result: "Result",
+  Box: "Box",
+  JSON: "JSON",
   // runtime
   abort: "abort",
   trace: "trace",

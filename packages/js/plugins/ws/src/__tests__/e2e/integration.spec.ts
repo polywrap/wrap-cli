@@ -106,7 +106,7 @@ describe("e2e tests for WsPlugin", () => {
       class MemoryPlugin extends PluginModule<{}> {
         set(args: { key: string, value: string }, _client: Client): boolean {
           value[args.key] = args.value
-	  return true
+          return true
         }
         get(args: { key: string }, _client: Client): string | null {
           return value[args.key] ?? null
@@ -140,7 +140,7 @@ describe("e2e tests for WsPlugin", () => {
             uri,
             method: "callback"
           },
-	  message: "test"
+          message: "test"
         }
       });
 

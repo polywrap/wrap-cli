@@ -6,11 +6,11 @@ import {
   Write,
   WriteEncoder,
   WriteSizer,
+  Box,
   JSON,
   BigInt,
   BigNumber,
 } from "../";
-import { Option } from "as-container";
 
 class Sanity {
   nil: string | null = "null";
@@ -21,8 +21,8 @@ class Sanity {
   uint16: u16;
   uint32: u32;
   boolean: bool;
-  optUint32: Option<u32> = Option.None<u32>();
-  optBool: Option<bool> = Option.None<bool>();
+  optUint32: Box<u32> | null = null;
+  optBool: Box<bool> | null = null;
   float32: f32;
   float64: f64;
   str: string = "";
@@ -49,8 +49,8 @@ class Sanity {
     this.uint16 = 65535;
     this.uint32 = 4294967295;
     this.boolean = true;
-    this.optUint32 = Option.Some<u32>(234234234);
-    this.optBool = Option.Some<bool>(true);
+    this.optUint32 = Box.from(<u32>234234234);
+    this.optBool = Box.from(true);
     this.float32 = 3.40282344818115234375;
     this.float64 = 3124124512.598273468017578125;
     this.str = "Hello, world!";

@@ -14,8 +14,7 @@ import { BigInt, BigNumber } from "../math";
 import { Context } from "../debug";
 import { JSON } from "../json";
 import { ExtensionType } from "./ExtensionType";
-
-import { Option } from "as-container";
+import { Box } from "../containers";
 
 export class ReadDecoder extends Read {
   private readonly _context: Context;
@@ -364,67 +363,67 @@ export class ReadDecoder extends Read {
     return this.readMap(key_fn, value_fn);
   }
 
-  readOptionalBool(): Option<bool> {
+  readOptionalBool(): Box<bool> | null {
     if (this.isNextNil()) {
-      return Option.None<bool>();
+      return null;
     }
-    return Option.Some<bool>(this.readBool());
+    return Box.from(this.readBool());
   }
 
-  readOptionalInt8(): Option<i8> {
+  readOptionalInt8(): Box<i8> | null {
     if (this.isNextNil()) {
-      return Option.None<i8>();
+      return null;
     }
-    return Option.Some<i8>(this.readInt8());
+    return Box.from(this.readInt8());
   }
 
-  readOptionalInt16(): Option<i16> {
+  readOptionalInt16(): Box<i16> | null {
     if (this.isNextNil()) {
-      return Option.None<i16>();
+      return null;
     }
-    return Option.Some<i16>(this.readInt16());
+    return Box.from(this.readInt16());
   }
 
-  readOptionalInt32(): Option<i32> {
+  readOptionalInt32(): Box<i32> | null {
     if (this.isNextNil()) {
-      return Option.None<i32>();
+      return null;
     }
-    return Option.Some<i32>(this.readInt32());
+    return Box.from(this.readInt32());
   }
 
-  readOptionalUInt8(): Option<u8> {
+  readOptionalUInt8(): Box<u8> | null {
     if (this.isNextNil()) {
-      return Option.None<u8>();
+      return null;
     }
-    return Option.Some<u8>(this.readUInt8());
+    return Box.from(this.readUInt8());
   }
 
-  readOptionalUInt16(): Option<u16> {
+  readOptionalUInt16(): Box<u16> | null {
     if (this.isNextNil()) {
-      return Option.None<u16>();
+      return null;
     }
-    return Option.Some<u16>(this.readUInt16());
+    return Box.from(this.readUInt16());
   }
 
-  readOptionalUInt32(): Option<u32> {
+  readOptionalUInt32(): Box<u32> | null {
     if (this.isNextNil()) {
-      return Option.None<u32>();
+      return null;
     }
-    return Option.Some<u32>(this.readUInt32());
+    return Box.from(this.readUInt32());
   }
 
-  readOptionalFloat32(): Option<f32> {
+  readOptionalFloat32(): Box<f32> | null {
     if (this.isNextNil()) {
-      return Option.None<f32>();
+      return null;
     }
-    return Option.Some<f32>(this.readFloat32());
+    return Box.from(this.readFloat32());
   }
 
-  readOptionalFloat64(): Option<f64> {
+  readOptionalFloat64(): Box<f64> | null {
     if (this.isNextNil()) {
-      return Option.None<f64>();
+      return null;
     }
-    return Option.Some<f64>(this.readFloat64());
+    return Box.from(this.readFloat64());
   }
 
   readOptionalString(): string | null {

@@ -3,57 +3,9 @@
 WebSocket plugin allows Polywrap Client to interact with WebSocket servers.
 
 ## interface
-
-``` typescript
-# subset of JS MessageEvent interface
-type Message {
-    data: String!
-    origin: String!
-    lastEventId: String!
-}
-
-# path to WRAP method
-type Callback {
-    uri: String!,
-    method: String!
-}
-
-# optional fields are `Number | null` instead of `Option<i32>`
-type Number {
-    value: Int!
-}
-
-type Module {
-  # create a socket with id
-  ## can return after `timeout` if the server is not responding
-  open(url: String!, timeout: Number): Int!
-    
-  # close socket `id`
-  close(id: Int!): Boolean
-    
-  # send message via socket `id`
-  send(id: Int!, message: String!): Boolean
-    
-  # pass all messages to callback
-  addCallback(id: Int!, callback: Callback!): Boolean
-    
-  # stop passing messages to callback
-  removeCallback(id: Int!, callback: Callback!): Boolean
-    
-  # save messages to ws plugin cache
-  addCache(id: Int!): Boolean
-    
-  # stop caching messages
-  removeCache(id: Int!): Boolean
-    
-  # get [messages], flush cache
-  ## can wait until receives `min` events or reaches `timeout`
-  receive(id: Int!, min: Number, timeout: Number): [Message!]!
-}
-```
+See [schema.graphql](./src/schema.graphql).
 
 ## callback
-
 Every incoming WebSocket message can be passed to a callback function in another wrapper. Use `addCallback` to start passing messages and `removeCallback` to stop. The callback function is expected to have a parameter `data`, i.e. `foo(data: string)`.
 
 ``` typescript
