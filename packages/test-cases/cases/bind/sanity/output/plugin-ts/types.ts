@@ -156,7 +156,7 @@ export type TestImport_Enum = TestImport_EnumEnum | TestImport_EnumString;
 /// Imported Modules START ///
 
 /* URI: "testimport.uri.eth" */
-interface TestImport_Module_Args_importedMethod extends Record<string, unknown> {
+interface TestImport_Module_Args_importedMethod {
   str: Types.String;
   optStr?: Types.String | null;
   u: Types.UInt;
@@ -173,7 +173,7 @@ interface TestImport_Module_Args_importedMethod extends Record<string, unknown> 
 }
 
 /* URI: "testimport.uri.eth" */
-interface TestImport_Module_Args_anotherMethod extends Record<string, unknown> {
+interface TestImport_Module_Args_anotherMethod {
   arg: Array<Types.String>;
 }
 
@@ -191,7 +191,7 @@ export class TestImport_Module {
     return client.invoke<Types.TestImport_Object | null>({
       uri: this.uri,
       method: "importedMethod",
-      args
+      args: args as unknown as Record<string, unknown>
     });
   }
 
@@ -202,7 +202,7 @@ export class TestImport_Module {
     return client.invoke<Types.Int32>({
       uri: this.uri,
       method: "anotherMethod",
-      args
+      args: args as unknown as Record<string, unknown>
     });
   }
 }
