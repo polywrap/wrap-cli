@@ -7,6 +7,7 @@ import {
   Args_subscribeAndSend,
   Args_get
 } from "./wrap";
+import { Box } from "@polywrap/wasm-as";
 
 export function send(args: Args_send): boolean {
   const id = WS_Module.open({
@@ -68,9 +69,9 @@ export function get(args: Args_get): string[] {
 
   WS_Module.addCache({
     id
-  }).unwrap().unwrap()
+  }).unwrap()
 
-  const messages = WS_Module.receive({ id, timeout: { value: args.timeout } }).unwrap();
+  const messages = WS_Module.receive({ id, timeout: Box.from(args.timeout) }).unwrap();
 
   const data: string[] = messages.map<string>((msg) => msg.data);
 

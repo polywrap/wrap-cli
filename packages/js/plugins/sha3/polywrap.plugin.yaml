@@ -1,7 +1,0 @@
-format: 0.2.0
-project:
-  name: Sha3
-  type: plugin/typescript
-source:
-  module: ./src/index.ts
-  schema: ./src/schema.graphql

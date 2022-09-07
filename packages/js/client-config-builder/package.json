@@ -24,14 +24,11 @@
     "@polywrap/ethereum-plugin-js": "0.6.0",
     "@polywrap/fs-plugin-js": "0.6.0",
     "@polywrap/fs-resolver-plugin-js": "0.6.0",
-    "@polywrap/graph-node-plugin-js": "0.6.0",
     "@polywrap/http-plugin-js": "0.6.0",
     "@polywrap/ipfs-plugin-js": "0.6.0",
     "@polywrap/ipfs-resolver-plugin-js": "0.6.0",
     "@polywrap/logger-plugin-js": "0.6.0",
-    "@polywrap/sha3-plugin-js": "0.6.0",
     "@polywrap/tracing-js": "0.6.0",
-    "@polywrap/uts46-plugin-js": "0.6.0",
     "@polywrap/wrap-manifest-types-js": "0.6.0"
   },
   "devDependencies": {

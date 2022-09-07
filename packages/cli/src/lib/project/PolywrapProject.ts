@@ -147,14 +147,10 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     generationSubPath?: string
   ): Promise<BindOutput> {
     const manifest = await this.getManifest();
-    const module = manifest.source.module as string;
-    const moduleDirectory = this._getGenerationDirectory(
-      module,
-      generationSubPath
-    );
+    const codegenDirectory = this._getGenerationDirectory(generationSubPath);
 
     // Clean the code generation
-    resetDir(moduleDirectory);
+    resetDir(codegenDirectory);
 
     const bindLanguage = polywrapManifestLanguageToBindLanguage(
       await this.getManifestLanguage()
@@ -163,7 +159,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     const options: BindOptions = {
       projectName: manifest.project.name,
       abi,
-      outputDirAbs: moduleDirectory,
+      outputDirAbs: codegenDirectory,
       bindLanguage,
     };
 
@@ -535,13 +531,7 @@ export class PolywrapProject extends Project<PolywrapManifest> {
     return undefined;
   }
 
-  private _getGenerationDirectory(
-    entryPoint: string,
-    generationSubPath = "wrap"
-  ): string {
-    const absolute = path.isAbsolute(entryPoint)
-      ? entryPoint
-      : path.join(this.getManifestDir(), entryPoint);
-    return path.join(path.dirname(absolute), generationSubPath);
+  private _getGenerationDirectory(generationSubPath = "src/wrap"): string {
+    return path.join(this.getManifestDir(), generationSubPath);
   }
 }
