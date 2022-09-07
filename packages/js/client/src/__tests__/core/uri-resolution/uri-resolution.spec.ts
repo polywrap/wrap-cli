@@ -9,7 +9,7 @@ import {
   UriResolutionContext,
   UriResolutionResult,
 } from "@polywrap/core-js";
-import { buildCleanUriHistory } from "@polywrap/uri-resolvers-js";
+import { buildCleanUriHistory, getUriResolutionPath } from "@polywrap/uri-resolvers-js";
 import { getClient } from "../../utils/getClient";
 import fs from "fs";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
@@ -36,11 +36,11 @@ const expectResultWithHistory = async (
   uriHistory: IUriResolutionStep<unknown>[],
   historyFileName: string
 ): Promise<void> => {
-  expect(receivedResult).toEqual(expectedResult);
   if (historyFileName && uriHistory) {
     await expectHistory(uriHistory, historyFileName);
   }
   
+  expect(receivedResult).toEqual(expectedResult);
 };
 
 const expectHistory = async (
@@ -180,7 +180,7 @@ describe("URI resolution", () => {
     await expectResultWithHistory(
       response,
       UriResolutionResult.ok(toUri2),
-      resolutionContext.getHistory(),
+      getUriResolutionPath(resolutionContext.getHistory()),
       "can resolve redirects"
     );
   });
@@ -203,9 +203,14 @@ describe("URI resolution", () => {
     });
 
     const resolutionContext = new UriResolutionContext();
-    const response = await client.tryResolveUri({ uri: pluginUri, resolutionContext });
+    const result = await client.tryResolveUri({ uri: pluginUri, resolutionContext });
 
-    await expectWrapperWithHistory(response, pluginUri, resolutionContext, "can resolve plugin");
+    await expectWrapperWithHistory(
+      result, 
+      pluginUri, 
+      getUriResolutionPath(resolutionContext.getHistory()), 
+      "can resolve plugin"
+    );
   });
 
   it("can resolve a URI resolver extension wrapper", async () => {
@@ -227,7 +232,7 @@ describe("URI resolution", () => {
     await expectWrapperWithHistory(
       response,
       redirectedUri,
-      resolutionContext.getHistory(),
+      getUriResolutionPath(resolutionContext.getHistory()),
       "can resolve a URI resolver extension wrapper"
     );
   });
@@ -235,20 +240,24 @@ describe("URI resolution", () => {
   it("can resolve cache", async () => {
     const client = await getClient();
 
-    const response1 = await client.tryResolveUri({ uri: wrapperUri });
+    const resolutionContext1 = new UriResolutionContext();
+    const result1 = await client.tryResolveUri({ uri: wrapperUri, resolutionContext: resolutionContext1 });
 
-    console.log(response1.result);
+    console.log(result1);
     await expectWrapperWithHistory(
-      response1,
+      result1,
       wrapperUri,
+      getUriResolutionPath(resolutionContext1.getHistory()),
       "can resolve cache - 1"
     );
 
-    const response2 = await client.tryResolveUri({ uri: wrapperUri });
+    const resolutionContext2 = new UriResolutionContext();
+    const result2 = await client.tryResolveUri({ uri: wrapperUri, resolutionContext: resolutionContext2 });
 
     await expectWrapperWithHistory(
-      response2,
+      result2,
       wrapperUri,
+      getUriResolutionPath(resolutionContext2.getHistory()),
       "can resolve cache - 2"
     );
   });
@@ -270,19 +279,23 @@ describe("URI resolution", () => {
     const redirectedUri = new Uri(`simple/${wrapperPath}/build`);
     const finalUri = wrapperUri;
 
-    const response1 = await client.tryResolveUri({ uri: redirectedUri });
+    const resolutionContext1 = new UriResolutionContext();
+    const result1 = await client.tryResolveUri({ uri: redirectedUri, resolutionContext: resolutionContext1 });
 
     await expectWrapperWithHistory(
-      response1,
+      result1,
       finalUri,
+      getUriResolutionPath(resolutionContext1.getHistory()),
       "can resolve previously cached URI after redirecting by a URI resolver extension - 1"
     );
 
-    const response2 = await client.tryResolveUri({ uri: sourceUri });
+    const resolutionContext2 = new UriResolutionContext();
+    const result2 = await client.tryResolveUri({ uri: sourceUri, resolutionContext: resolutionContext2 });
 
     await expectWrapperWithHistory(
-      response2,
+      result2,
       finalUri,
+      getUriResolutionPath(resolutionContext2.getHistory()),
       "can resolve previously cached URI after redirecting by a URI resolver extension - 2"
     );
   });
@@ -309,10 +322,13 @@ describe("URI resolution", () => {
         },
       ],
     });
-    const response = await client.tryResolveUri({ uri: sourceUri });
+  
+    const resolutionContext1 = new UriResolutionContext();
+    const result = await client.tryResolveUri({ uri: sourceUri, resolutionContext: resolutionContext1 });
     await expectResultWithHistory(
-      response,
-      UriResolutionResponse.ok(finalRedirectedUri),
+      result,
+      UriResolutionResult.ok(finalRedirectedUri),
+      getUriResolutionPath(resolutionContext1.getHistory()),
       "restarts URI resolution after URI resolver extension redirect"
     );
   });
@@ -323,23 +339,19 @@ describe("URI resolution", () => {
 
     const client = await getClient({
       resolver: {
-        name: "CustomResolver",
         tryResolveUri: async (uri: Uri) => {
           if (uri.uri === ensUri.uri) {
-            return UriResolutionResponse.ok(redirectUri);
+            return UriResolutionResult.ok(redirectUri);
           }
 
-          return UriResolutionResponse.ok(uri);
+          return UriResolutionResult.ok(uri);
         },
       },
     });
 
-    const response = await client.tryResolveUri({ uri: ensUri });
+    const result = await client.tryResolveUri({ uri: ensUri });
 
-    await expectResultWithHistory(
-      response,
-      UriResolutionResponse.ok(redirectUri)
-    );
+    expect(result).toEqual(UriResolutionResult.ok(redirectUri));
   });
 
   it("can resolve uri with custom resolver at invoke-time", async () => {
@@ -348,45 +360,43 @@ describe("URI resolution", () => {
 
     const client = await getClient();
 
-    const response = await client.tryResolveUri({
+    const result = await client.tryResolveUri({
       uri: fromUri,
       config: {
         resolver: {
-          name: "CustomResolver",
           tryResolveUri: async (uri: Uri) => {
             if (uri.uri === fromUri.uri) {
-              return UriResolutionResponse.ok(redirectUri);
+              return UriResolutionResult.ok(redirectUri);
             }
 
-            return UriResolutionResponse.ok(uri);
+            return UriResolutionResult.ok(uri);
           },
         },
       },
     });
 
-    await expectResultWithHistory(
-      response,
-      UriResolutionResponse.ok(redirectUri)
-    );
+    expect(result).toEqual(UriResolutionResult.ok(redirectUri));
   });
 
   it("custom wrapper resolver does not cause infinite recursion when resolved at runtime", async () => {
     const client = await getClient({
       interfaces: [
         {
-          interface: "ens/uri-resolver.core.polywrap.eth",
+          interface: coreInterfaceUris.uriResolver.uri,
           implementations: ["ens/undefined-resolver.eth"],
         },
       ],
     });
 
-    const response = await client.tryResolveUri({ uri: "ens/test.eth" });
+    const resolutionContext = new UriResolutionContext();
+    const result = await client.tryResolveUri({ uri: "ens/test.eth", resolutionContext });
 
     await expectResultWithHistory(
-      response,
-      UriResolutionResponse.err(
+      result,
+      UriResolutionResult.err(
         "While resolving wrap://ens/test.eth with URI resolver extension wrap://ens/undefined-resolver.eth, the extension could not be fully resolved. Last found URI is wrap://ens/undefined-resolver.eth"
       ),
+      getUriResolutionPath(resolutionContext.getHistory()),
       "custom wrapper resolver does not cause infinite recursion when resolved at runtime"
     );
   });
