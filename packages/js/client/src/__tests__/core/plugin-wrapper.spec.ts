@@ -11,9 +11,6 @@ const defaultPlugins = [
   "wrap://ens/ethereum.polywrap.eth",
   "wrap://ens/http.polywrap.eth",
   "wrap://ens/js-logger.polywrap.eth",
-  "wrap://ens/uts46.polywrap.eth",
-  "wrap://ens/sha3.polywrap.eth",
-  "wrap://ens/graph-node.polywrap.eth",
   "wrap://ens/fs.polywrap.eth",
   "wrap://ens/fs-resolver.polywrap.eth",
   "wrap://ens/ipfs-resolver.polywrap.eth",
@@ -66,7 +63,7 @@ describe("plugin-wrapper", () => {
 
     const pluginUris = client.getPlugins().map((x) => x.uri.uri);
 
-    expect(pluginUris).toEqual([implementationUri].concat(defaultPlugins));
+    expect(pluginUris).toEqual(defaultPlugins.concat([implementationUri]));
   });
 
   it("plugin map types", async () => {
@@ -169,7 +166,7 @@ describe("plugin-wrapper", () => {
       .getPlugins()
       .find((x) => x.uri.uri === pluginUriToOverride);
 
-    expect(registeredPlugin?.plugin).toEqual(pluginPackage1);
+    expect(registeredPlugin?.plugin).toEqual(pluginPackage2);
   });
 
   test("get manifest should fetch wrap manifest from plugin", async () => {

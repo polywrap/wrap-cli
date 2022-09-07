@@ -18,7 +18,7 @@ export function parseDocgenManifestFileOption(
 
   if (!manifestFile) {
     console.error(
-      intlMsg.commands_app_error_manifestNotFound({
+      intlMsg.commands_docgen_error_manifestNotFound({
         paths: manifestPaths.join(", "),
       })
     );

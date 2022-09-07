@@ -96,6 +96,7 @@ async function generateFormatTypes() {
     const formats = formatModules.map((module) => {
       return {
         type: module.interface,
+        isWorkflow: module.interface == "PolywrapWorkflow",
         version: module.version,
         tsVersion: versionToTs(module.version),
       };

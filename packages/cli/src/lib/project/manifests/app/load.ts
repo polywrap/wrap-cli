@@ -6,7 +6,11 @@ import {
 } from "@polywrap/polywrap-manifest-types-js";
 import fs from "fs";
 
-export const defaultAppManifest = ["polywrap.app.yaml", "polywrap.app.yml"];
+export const defaultAppManifest = [
+  "polywrap.yaml",
+  "polywrap.app.yaml",
+  "polywrap.app.yml",
+];
 
 export async function loadAppManifest(
   manifestPath: string,

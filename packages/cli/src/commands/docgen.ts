@@ -33,9 +33,11 @@ const commandToPathMap: Record<string, string> = {
 
 export type DocType = keyof typeof commandToPathMap;
 
+// A list of UNIQUE possible default filenames for the polywrap manifest
 const defaultManifest = defaultPolywrapManifest
   .concat(defaultAppManifest)
-  .concat(defaultPluginManifest);
+  .concat(defaultPluginManifest)
+  .filter((value, index, self) => self.indexOf(value) === index);
 const defaultDocgenDir = "./docs";
 const pathStr = intlMsg.commands_codegen_options_o_path();
 
@@ -130,7 +132,6 @@ async function run(command: DocType, options: DocgenCommandOptions) {
     project = new AppProject({
       rootDir: path.dirname(manifestFile),
       appManifestPath: manifestFile,
-      client,
       quiet: true,
     });
   } else if (isPluginManifest) {

@@ -12,7 +12,7 @@ import {
   ensAddresses,
   providers
 } from "@polywrap/test-env-js";
-import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
+import { ethereumPlugin, Connections, Connection } from "@polywrap/ethereum-plugin-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ensPlugin } from "@polywrap/ens-plugin-js";
 
@@ -24,19 +24,22 @@ export async function foo({
 
   const ethereumPluginURI = "wrap://ens/ipfs.polywrap.eth"
 
+  // initialize Ethereum Connections store
+  const connections: Connections = new Connections({
+    networks: {
+      testnet: new Connection({
+        provider: providers.ethereum,
+      }),
+    },
+    defaultNetwork: "testnet",
+  });
+
   // initialize the client with eth, ipfs, ens plugins
   client = new PolywrapClient({
     plugins: [
       {
         uri: ethereumPluginURI,
-        plugin: ethereumPlugin({
-          networks: {
-            testnet: {
-              provider: providers.ethereum,
-            },
-          },
-          defaultNetwork: "testnet",
-        }),
+        plugin: ethereumPlugin({ connections }),
       },
       {
         uri: "wrap://ens/ipfs.polywrap.eth",
@@ -72,14 +75,7 @@ export async function foo({
   });
 
   // or instantiate the plugin
-  const plugin = ethereumPlugin({
-    networks: {
-      testnet: {
-        provider: providers.ethereum,
-      },
-    },
-    defaultNetwork: "testnet",
-  });
+  const plugin = ethereumPlugin({ connections });
 
   // and send invocations to ethereum
   const signerAddressQuery' = plugin.getSignerAddress(client)

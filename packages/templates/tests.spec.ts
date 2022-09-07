@@ -2,7 +2,7 @@ import fs from "fs";
 import path from "path";
 import { exec } from "child_process";
 
-jest.setTimeout(600000);
+jest.setTimeout(800000);
 
 describe("Templates", () => {
   const rootDir = __dirname;
@@ -21,7 +21,7 @@ describe("Templates", () => {
       build: "CI=false yarn build",
     },
     assemblyscript: {
-      build: "yarn build",
+      build: "npx polywrap build -m ./polywrap.wasm-linked.yaml",
       test: "yarn test:e2e",
     },
     rust: {

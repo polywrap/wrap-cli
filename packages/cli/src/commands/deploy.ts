@@ -4,7 +4,7 @@ import {
   defaultPolywrapManifest,
   DeployPackage,
   intlMsg,
-  parseWasmManifestFileOption,
+  parseManifestFileOption,
   PolywrapProject,
   Sequence,
   Step,
@@ -49,7 +49,7 @@ export const deploy: Command = {
       .action(async (options) => {
         await run({
           ...options,
-          manifestFile: parseWasmManifestFileOption(options.manifestFile),
+          manifestFile: parseManifestFileOption(options.manifestFile),
         });
       });
   },

@@ -19,8 +19,7 @@ import {
 } from "./";
 
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
-import { WasmWrapper } from "@polywrap/client-js";
-import { WrapImports } from "@polywrap/client-js/build/wasm/types";
+import { WasmWrapper, WrapImports } from "@polywrap/client-js";
 import { AsyncWasmInstance } from "@polywrap/asyncify-js";
 import { normalizePath, writeDirectorySync } from "@polywrap/os-js";
 import * as gluegun from "gluegun";
@@ -157,7 +156,7 @@ export class Compiler {
     const abi = await this._composeAbi();
 
     // Allow the build-image to validate the manifest & override functionality
-    const buildImageDir = `${__dirname}/defaults/build-images/${polywrapManifest.language}`;
+    const buildImageDir = `${__dirname}/defaults/build-images/${polywrapManifest.project.type}`;
     const buildImageEntryFile = path.join(buildImageDir, "index.ts");
     let compilerOverrides: CompilerOverrides | undefined;
 
@@ -191,7 +190,7 @@ export class Compiler {
   private async _isInterface(): Promise<boolean> {
     const { project } = this._config;
     const manifest = await project.getManifest();
-    return manifest.language === "interface";
+    return manifest.project.type === "interface";
   }
 
   private async _composeAbi(): Promise<WrapAbi> {
@@ -333,7 +332,12 @@ export class Compiler {
       const manifest = await project.getManifest();
 
       const type = (await this._isInterface()) ? "interface" : "wasm";
-      await generateWrapFile(state.abi, manifest.name, type, manifestPath);
+      await generateWrapFile(
+        state.abi,
+        manifest.project.name,
+        type,
+        manifestPath
+      );
     };
 
     if (quiet) {
@@ -390,12 +394,12 @@ export class Compiler {
 
     const manifest = await project.getManifest();
 
-    if (manifest.language !== "interface" && !manifest.module) {
+    if (manifest.project.type !== "interface" && !manifest.source.module) {
       const missingModuleMessage = intlMsg.lib_compiler_missingModule();
       throw Error(missingModuleMessage);
     }
 
-    if (manifest.language === "interface" && manifest.module) {
+    if (manifest.project.type === "interface" && manifest.source.module) {
       const noInterfaceModule = intlMsg.lib_compiler_noInterfaceModule();
       throw Error(noInterfaceModule);
     }

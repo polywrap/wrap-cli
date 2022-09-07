@@ -755,9 +755,13 @@ export const runObjectTypesTest = async (
 
 export const runMapTypeTest = async (client: PolywrapClient, uri: string) => {
   const mapClass = new Map<string, number>().set("Hello", 1).set("Heyo", 50);
+  const nestedMapClass = new Map<string, Map<string, number>>().set("Nested", mapClass);
   const mapRecord: Record<string, number> = {
     Hello: 1,
     Heyo: 50,
+  };
+  const nestedMapRecord: Record<string, Record<string, number>> = {
+    Nested: mapRecord
   };
 
   const returnMapResponse1 = await client.invoke<Map<string, number>>({
@@ -784,7 +788,10 @@ export const runMapTypeTest = async (client: PolywrapClient, uri: string) => {
     uri,
     method: "getKey",
     args: {
-      map: mapClass,
+      foo: {
+        map: mapClass,
+        nestedMap: nestedMapClass
+      },
       key: "Hello",
     },
   });
@@ -795,12 +802,41 @@ export const runMapTypeTest = async (client: PolywrapClient, uri: string) => {
     uri,
     method: "getKey",
     args: {
-      map: mapRecord,
+      foo: {
+        map: mapRecord,
+        nestedMap: nestedMapRecord
+      },
       key: "Heyo",
     },
   });
   expect(getKeyResponse2.error).toBeUndefined();
   expect(getKeyResponse2.data).toEqual(mapRecord.Heyo);
+
+  const returnCustomMap = await client.invoke<{
+    map: Map<string, number>,
+    nestedMap: Map<string, Map<string, number>>
+  }>({
+    uri,
+    method: "returnCustomMap",
+    args: {
+      foo: {
+        map: mapRecord,
+        nestedMap: nestedMapClass
+      }
+    },
+  });
+  expect(returnCustomMap.error).toBeUndefined();
+  expect(returnCustomMap.data).toEqual({ map: mapClass, nestedMap: nestedMapClass });
+
+  const returnNestedMap = await client.invoke<Map<string, Map<string, number>>>({
+    uri,
+    method: "returnNestedMap",
+    args: {
+      foo: nestedMapClass
+    },
+  });
+  expect(returnNestedMap.error).toBeUndefined();
+  expect(returnNestedMap.data).toEqual(nestedMapClass);
 };
 
 export const runSimpleStorageTest = async (
@@ -881,7 +917,12 @@ export const runSimpleEnvTest = async (
       arg: "not set",
     },
     config: {
-      envs: [],
+      envs: [
+        {
+          uri: wrapperUri,
+          env: {},
+        },
+      ],
     },
   });
   expect(getEnvNotSetResult.data).toBeUndefined();

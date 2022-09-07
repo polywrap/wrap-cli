@@ -1,5 +1,0 @@
-format: "0.2"
-name: Sha3
-language: plugin/typescript
-module: ./src/index.ts
-schema: ./src/schema.graphql

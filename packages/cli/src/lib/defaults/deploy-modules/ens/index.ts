@@ -7,7 +7,11 @@ import { JsonRpcProvider } from "@ethersproject/providers";
 import { Uri } from "@polywrap/core-js";
 import { PolywrapClient } from "@polywrap/client-js";
 import path from "path";
-import { ethereumPlugin } from "@polywrap/ethereum-plugin-js";
+import {
+  ethereumPlugin,
+  Connections,
+  Connection,
+} from "@polywrap/ethereum-plugin-js";
 
 const contentHash = require("content-hash");
 
@@ -48,18 +52,21 @@ class ENSPublisher implements Deployer {
       "ens"
     )}`;
 
+    const connections = new Connections({
+      networks: {
+        [network]: new Connection({
+          provider: config.provider,
+          signer,
+        }),
+      },
+      defaultNetwork: network,
+    });
     const client = new PolywrapClient({
       plugins: [
         {
           uri: ethereumPluginUri,
           plugin: ethereumPlugin({
-            networks: {
-              [network]: {
-                provider: config.provider,
-                signer,
-              },
-            },
-            defaultNetwork: network,
+            connections,
           }),
         },
       ],

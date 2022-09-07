@@ -14,7 +14,7 @@ import yaml from "js-yaml";
 
 const HELP = `Usage: polywrap deploy|d [options]
 
-Deploys/Publishes a Polywrap
+Deploys Polywrap Projects
 
 Options:
   -m, --manifest-file <path>  Path to the Polywrap Deploy manifest file

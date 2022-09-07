@@ -83,7 +83,7 @@ export class SchemaComposer {
 
   private async _fetchExternalAbi(
     uri: string,
-    import_abis?: PolywrapManifest["import_abis"]
+    import_abis?: PolywrapManifest["source"]["import_abis"]
   ): Promise<WrapAbi> {
     // Check to see if we have any import redirects that match
     if (import_abis) {
@@ -138,7 +138,7 @@ export class SchemaComposer {
 
   private async _loadGraphqlAbi(
     path: string,
-    import_abis: PolywrapManifest["import_abis"]
+    import_abis: PolywrapManifest["source"]["import_abis"]
   ): Promise<WrapAbi> {
     const schema = fs.readFileSync(path, "utf-8");
 

@@ -17,11 +17,11 @@ use polywrap_wasm_rs::{
 
 {{#propertyDeps}}
 {{^isEnum}}
-use {{crate}}::{{#toUpper}}{{type}}{{/toUpper}};
+use {{crate}}::{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}};
 {{/isEnum}}
 {{#isEnum}}
 use crate::{
-    {{#toUpper}}{{type}}{{/toUpper}},
+    {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}},
     get_{{#toLower}}{{type}}{{/toLower}}_value,
     sanitize_{{#toLower}}{{type}}{{/toLower}}_value
 };
@@ -67,9 +67,7 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_args<W: Write>(args: &Args{{#toUpp
     writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}, |writer, key| {
         writer.write_{{#key}}{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}{{/key}}(key)
     }, |writer, value| {
-        {{#value}}
         {{> serialize_map_value}}
-        {{/value}}
     })?;
     {{/map}}
     {{#enum}}
@@ -82,11 +80,11 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_args<W: Write>(args: &Args{{#toUpp
     {{/enum}}
     {{#object}}
     {{#required}}
-    {{#toUpper}}{{type}}{{/toUpper}}::write(&args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}, writer)?;
+    {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::write(&args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}, writer)?;
     {{/required}}
     {{^required}}
     if args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.is_some() {
-        {{#toUpper}}{{type}}{{/toUpper}}::write(args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.as_ref().as_ref().unwrap(), writer)?;
+        {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::write(args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.as_ref().as_ref().unwrap(), writer)?;
     } else {
         writer.write_nil()?;
     }
@@ -116,9 +114,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_result(result: &[u8]) -> Res
     let res = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {
         reader.read_{{#key}}{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}{{/key}}()
     }, |reader| {
-        {{#value}}
         {{> deserialize_map_value_nobox}}
-        {{/value}}
     })?;
     {{/map}}
     {{#enum}}

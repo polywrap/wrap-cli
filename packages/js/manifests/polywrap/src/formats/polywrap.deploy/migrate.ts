@@ -27,13 +27,18 @@ export function migrateDeployManifest(
   manifest: AnyDeployManifest,
   to: DeployManifestFormats
 ): DeployManifest {
-  const from = manifest.format as DeployManifestFormats;
+  let from = manifest.format as DeployManifestFormats;
+
+  // HACK: Patch fix for backwards compatability
+  if(from === "0.1" && ("0.1.0" in migrators)) {
+    from = "0.1.0" as DeployManifestFormats;
+  }
 
   if (from === latestDeployManifestFormat) {
     return manifest as DeployManifest;
   }
 
-  if (!(from in DeployManifestFormats)) {
+  if (!(Object.values(DeployManifestFormats).some(x => x === from))) {
     throw new Error(`Unrecognized DeployManifestFormat "${manifest.format}"`);
   }
 

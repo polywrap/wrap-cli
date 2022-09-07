@@ -22,7 +22,7 @@ export class UriResolverWrapper implements UriResolver {
   ) {}
 
   public get name(): string {
-    return UriResolverWrapper.name;
+    return "UriResolverWrapper";
   }
 
   async resolveUri(

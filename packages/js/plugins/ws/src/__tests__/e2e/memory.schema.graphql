@@ -1,0 +1,5 @@
+
+type Module {
+    set(key: String!, value: String!): Boolean
+    get(key: String!): String
+}

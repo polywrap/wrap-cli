@@ -18,6 +18,7 @@ export interface Args_moduleMethod extends Record<string, unknown> {
   optEnumArray?: Array<Types.CustomEnum | null> | null;
   map: Map<Types.String, Types.Int>;
   mapOfArr: Map<Types.String, Array<Types.Int>>;
+  mapOfMap: Map<Types.String, Map<Types.String, Types.Int>>;
   mapOfObj: Map<Types.String, Types.AnotherType>;
   mapOfArrOfObj: Map<Types.String, Array<Types.AnotherType>>;
 }
@@ -34,6 +35,10 @@ export interface Args_optionalEnvMethod extends Record<string, unknown> {
   optObject?: Types.AnotherType | null;
   objectArray: Array<Types.AnotherType>;
   optObjectArray?: Array<Types.AnotherType | null> | null;
+}
+
+export interface Args_if extends Record<string, unknown> {
+  if: Types._else;
 }
 
 export abstract class Module<
@@ -57,4 +62,9 @@ export abstract class Module<
     args: Args_optionalEnvMethod,
     client: Client
   ): MaybeAsync<Types.AnotherType | null>;
+
+  abstract if(
+    args: Args_if,
+    client: Client
+  ): MaybeAsync<Types._else>;
 }

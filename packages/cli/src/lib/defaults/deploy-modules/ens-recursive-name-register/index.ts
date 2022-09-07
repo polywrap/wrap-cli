@@ -52,13 +52,15 @@ class ENSRecursiveNameRegisterPublisher implements Deployer {
         {
           uri: ethereumPluginUri,
           plugin: ethereumPlugin({
-            networks: {
-              [network]: {
-                provider: config.provider,
-                signer,
+            connections: new Connections({
+              networks: {
+                [network]: new Connection({
+                  provider: config.provider,
+                  signer,
+                }),
               },
-            },
-            defaultNetwork: network,
+              defaultNetwork: network,
+            }),
           }),
         },
       ],

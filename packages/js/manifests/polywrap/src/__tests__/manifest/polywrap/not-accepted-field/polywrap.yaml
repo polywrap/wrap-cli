@@ -1,7 +1,10 @@
-format: "0.2"
-language: wasm/assemblyscript
-schema: ../schema.graphql
-file: ../query.ts
+format: 0.2.0
+project:
+  name: "Sample"
+  type: wasm/assemblyscript
+source:
+  schema: ../schema.graphql
+  module: ../main.ts
 not_accepted_field: not_accepted_field
 
 

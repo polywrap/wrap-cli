@@ -7,10 +7,10 @@ import {
   PluginRegistration,
   InterfaceImplementations,
   Env,
-  WorkflowHandler,
 } from "./";
 import { UriResolver } from "../uri-resolution/core";
 import { UriResolverHandler } from "./UriResolver";
+import { WrapperCache } from "./WrapperCache";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 
@@ -20,6 +20,7 @@ export interface ClientConfig<TUri extends Uri | string = string> {
   interfaces: InterfaceImplementations<TUri>[];
   envs: Env<TUri>[];
   uriResolvers: UriResolver[];
+  wrapperCache?: WrapperCache;
 }
 
 export interface Contextualized {
@@ -53,7 +54,6 @@ export interface Client
   extends Invoker,
     QueryHandler,
     SubscriptionHandler,
-    WorkflowHandler,
     UriResolverHandler {
   getRedirects(options?: GetRedirectsOptions): readonly UriRedirect<Uri>[];
 

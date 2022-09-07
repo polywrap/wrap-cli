@@ -23,7 +23,7 @@ export type String = string;
 export type Boolean = boolean;
 {{#objectTypes}}
 
-export interface {{type}} {
+export interface {{#detectKeyword}}{{type}}{{/detectKeyword}} {
   {{#properties}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/properties}}
@@ -42,7 +42,7 @@ export type {{type}}String =
   | "{{.}}"
   {{/constants}}
 
-export type {{type}} = {{type}}Enum | {{type}}String;
+export type {{#detectKeyword}}{{type}}{{/detectKeyword}} = {{type}}Enum | {{type}}String;
 {{/enumTypes}}
 {{#importedObjectTypes.length}}
 
@@ -50,7 +50,7 @@ export type {{type}} = {{type}}Enum | {{type}}String;
 {{#importedObjectTypes}}
 
 /* URI: "{{uri}}" */
-export interface {{type}} {
+export interface {{#detectKeyword}}{{type}}{{/detectKeyword}} {
   {{#properties}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/properties}}
@@ -76,7 +76,7 @@ export type {{type}}String =
   | "{{.}}"
   {{/constants}}
 
-export type {{type}} = {{type}}Enum | {{type}}String;
+export type {{#detectKeyword}}{{type}}{{/detectKeyword}} = {{type}}Enum | {{type}}String;
 {{/importedEnumTypes}}
 
 /// Imported Enums END ///

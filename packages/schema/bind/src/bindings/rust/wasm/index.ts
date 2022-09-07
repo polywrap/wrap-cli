@@ -40,7 +40,7 @@ export const generateBinding: GenerateBindingFn = (
     for (const objectType of abi.objectTypes) {
       output.entries.push({
         type: "Directory",
-        name: toLower(objectType.type),
+        name: Functions.detectKeyword()(toLower(objectType.type), (str) => str),
         data: renderTemplates(
           templatePath("object-type"),
           objectType,
@@ -54,7 +54,7 @@ export const generateBinding: GenerateBindingFn = (
   if (abi.envType) {
     output.entries.push({
       type: "Directory",
-      name: toLower(abi.envType.type),
+      name: Functions.detectKeyword()(toLower(abi.envType.type), (str) => str),
       data: renderTemplates(
         templatePath("env-type"),
         abi.envType,
@@ -86,7 +86,10 @@ export const generateBinding: GenerateBindingFn = (
     for (const importedEnumType of abi.importedEnumTypes) {
       importEntries.push({
         type: "Directory",
-        name: toLower(importedEnumType.type),
+        name: Functions.detectKeyword()(
+          toLower(importedEnumType.type),
+          (str) => str
+        ),
         data: renderTemplates(
           templatePath("imported/enum-type"),
           importedEnumType,
@@ -101,7 +104,10 @@ export const generateBinding: GenerateBindingFn = (
     for (const importedObectType of abi.importedObjectTypes) {
       importEntries.push({
         type: "Directory",
-        name: toLower(importedObectType.type),
+        name: Functions.detectKeyword()(
+          toLower(importedObectType.type),
+          (str) => str
+        ),
         data: renderTemplates(
           templatePath("imported/object-type"),
           importedObectType,
@@ -116,7 +122,10 @@ export const generateBinding: GenerateBindingFn = (
     for (const importedEnvType of abi.importedEnvTypes) {
       importEntries.push({
         type: "Directory",
-        name: toLower(importedEnvType.type),
+        name: Functions.detectKeyword()(
+          toLower(importedEnvType.type),
+          (str) => str
+        ),
         data: renderTemplates(
           templatePath("imported/env-type"),
           importedEnvType,
@@ -166,7 +175,7 @@ export const generateBinding: GenerateBindingFn = (
     for (const enumType of abi.enumTypes) {
       output.entries.push({
         type: "Directory",
-        name: toLower(enumType.type),
+        name: Functions.detectKeyword()(toLower(enumType.type), (str) => str),
         data: renderTemplates(
           templatePath("enum-type"),
           enumType,
