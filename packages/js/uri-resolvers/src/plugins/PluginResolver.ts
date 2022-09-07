@@ -1,3 +1,5 @@
+import { ResolverWithHistory } from "../helpers";
+
 import {
   Wrapper,
   Client,
@@ -13,7 +15,6 @@ import {
 } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js/build/formats/wrap.info/0.1";
-import { ResolverWithHistory } from "../base";
 
 export class PluginResolver extends ResolverWithHistory {
   pluginUri: Uri;

@@ -1,7 +1,8 @@
-import { UriResolverLike, UriResolverAggregator, PackageResolver } from ".";
-
 import { IUriResolver, Uri, Client, IWrapPackage } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
+import { UriResolverAggregator } from "../aggregator";
+import { UriResolverLike } from "../helpers";
+import { PackageResolver } from "../packages";
 
 export const buildUriResolver = <TError = undefined>(
   resolvable: UriResolverLike,

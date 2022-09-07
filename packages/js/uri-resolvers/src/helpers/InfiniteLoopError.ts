@@ -1,4 +1,4 @@
-import { getUriResolutionPath } from "./getUriResolutionPath";
+import { getUriResolutionPath } from "../utils";
 
 import { Uri, IUriResolutionStep } from "@polywrap/core-js";
 

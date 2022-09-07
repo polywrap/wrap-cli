@@ -1,3 +1,5 @@
+import { ResolverWithHistory } from "../helpers";
+
 import {
   Uri,
   toUri,
@@ -5,7 +7,6 @@ import {
   UriPackageOrWrapper,
 } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
-import { ResolverWithHistory } from "../base";
 
 export class RedirectResolver<
   TUri extends string | Uri = string
