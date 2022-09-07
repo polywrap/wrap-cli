@@ -31,7 +31,8 @@ const getOptions = (
   }
 
   if (isNullOrUndefined(options.timeout)) {
-    options.timeout = env.timeout;
+    // Default to a 5000ms timeout when none is provided
+    options.timeout = env.timeout ?? 5000;
   }
 
   if (isNullOrUndefined(options.provider)) {
