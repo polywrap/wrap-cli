@@ -237,16 +237,16 @@ export class Tracer {
 
   static _initProvider(name: string): void {
     const providerResources = new Resource({
-      "service.name": name
+      "service.name": name,
     });
 
     if (typeof window === "undefined") {
       this._provider = new BasicTracerProvider({
-        resource: providerResources
+        resource: providerResources,
       });
     } else {
       this._provider = new WebTracerProvider({
-        resource: providerResources
+        resource: providerResources,
       });
     }
 
