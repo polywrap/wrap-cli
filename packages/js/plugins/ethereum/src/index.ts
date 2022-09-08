@@ -83,13 +83,15 @@ export class EthereumPlugin extends Module<EthereumPluginConfig> {
 
     try {
       const res = await contract.callStatic[funcs[0]](...parseArgs(args.args), {
-        gasPrice: args.gasPrice
-          ? ethers.BigNumber.from(args.gasPrice)
+        gasPrice: args.txOverrides?.gasPrice
+          ? ethers.BigNumber.from(args.txOverrides.gasPrice)
           : undefined,
-        gasLimit: args.gasLimit
-          ? ethers.BigNumber.from(args.gasLimit)
+        gasLimit: args.txOverrides?.gasLimit
+          ? ethers.BigNumber.from(args.txOverrides.gasLimit)
           : undefined,
-        value: args.value ? ethers.BigNumber.from(args.value) : undefined,
+        value: args.txOverrides?.value
+          ? ethers.BigNumber.from(args.txOverrides.value)
+          : undefined,
       });
       return {
         result: res.toString(),
