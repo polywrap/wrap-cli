@@ -138,9 +138,6 @@ async function run(options: BuildCommandOptions) {
   });
 
   const execute = async (): Promise<boolean> => {
-    project.reset();
-    schemaComposer.reset();
-
     const codegenStrategy = new CompilerCodegenStrategy({
       project,
       schemaComposer,

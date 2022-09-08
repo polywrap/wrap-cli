@@ -17,7 +17,7 @@ export class CompilerCodegenStrategy extends CodegenStrategy {
     return writeDirectorySync(binding.outputDirAbs, binding.output);
   }
 
-  private async _getGenerationSubpath() {
+  private async _getGenerationSubpath(): Promise<string | undefined> {
     const manifest = await this.project.getManifest();
     const manifestLanguage = await this.project.getManifestLanguage();
 
