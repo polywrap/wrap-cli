@@ -1,7 +1,7 @@
 [
   "wrap://simple-redirect/$root-wrapper-dir/simple/build => PackageToWrapperCacheResolver => uri (wrap://simple/$root-wrapper-dir/simple/build)",
   [
-    "wrap://simple-redirect/$root-wrapper-dir/simple/build => MainResolver => uri (wrap://simple/$root-wrapper-dir/simple/build)",
+    "wrap://simple-redirect/$root-wrapper-dir/simple/build => UriResolverAggregator => uri (wrap://simple/$root-wrapper-dir/simple/build)",
     [
       "wrap://simple-redirect/$root-wrapper-dir/simple/build => ExtendableUriResolver => uri (wrap://simple/$root-wrapper-dir/simple/build)",
       [
@@ -11,7 +11,7 @@
         "wrap://file/$root-wrapper-dir/simple-fs-resolver/build => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)",
         "wrap://file/$root-wrapper-dir/simple-redirect-resolver/build => PackageToWrapperCacheResolver => wrapper (wrap://file/$root-wrapper-dir/simple-redirect-resolver/build)",
         [
-          "wrap://file/$root-wrapper-dir/simple-redirect-resolver/build => MainResolver => package (wrap://file/$root-wrapper-dir/simple-redirect-resolver/build)",
+          "wrap://file/$root-wrapper-dir/simple-redirect-resolver/build => UriResolverAggregator => package (wrap://file/$root-wrapper-dir/simple-redirect-resolver/build)",
           [
             "wrap://file/$root-wrapper-dir/simple-redirect-resolver/build => ExtendableUriResolver => package (wrap://file/$root-wrapper-dir/simple-redirect-resolver/build)",
             [

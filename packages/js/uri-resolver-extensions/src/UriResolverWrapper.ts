@@ -59,14 +59,16 @@ const tryResolveUriWithImplementation = async (
   uri: Uri,
   implementationUri: Uri,
   client: Client,
-  resolutionContext?: IUriResolutionContext
+  resolutionContext: IUriResolutionContext
 ): Promise<
   Result<UriResolverInterface.MaybeUriOrManifest | undefined, unknown>
 > => {
+  const subContext = resolutionContext.createSubContext();
   const result = await loadResolverExtension(
+    uri,
     implementationUri,
     client,
-    resolutionContext
+    subContext
   );
 
   if (!result.ok) {

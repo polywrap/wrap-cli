@@ -19,13 +19,13 @@ export class RecursiveResolver<TError = undefined>
     client: Client,
     resolutionContext: IUriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, TError | InfiniteLoopError>> {
-    if (resolutionContext.hasVisited(uri)) {
+    if (resolutionContext.isResolving(uri)) {
       return UriResolutionResult.err(
         new InfiniteLoopError(uri, resolutionContext.getHistory())
       );
     }
 
-    resolutionContext.visit(uri);
+    resolutionContext.startResolving(uri);
 
     const resolverResult = await this.resolver.tryResolveUri(
       uri,
@@ -40,7 +40,7 @@ export class RecursiveResolver<TError = undefined>
       resolutionContext
     );
 
-    resolutionContext.unvisit(uri);
+    resolutionContext.stopResolving(uri);
 
     return result;
   }

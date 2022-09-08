@@ -676,9 +676,9 @@ export class PolywrapClient implements Client {
 
     const client = contextualizeClient(this, options?.contextId);
 
-    const visitedUris: Uri[] = resolutionContext.getVisitedUris();
+    const resolutionPath: Uri[] = resolutionContext.getResolutionPath();
 
-    const wrapper = await initWrapper(packageOrWrapper, client, visitedUris);
+    const wrapper = await initWrapper(packageOrWrapper, client, resolutionPath);
 
     return wrapper;
   }

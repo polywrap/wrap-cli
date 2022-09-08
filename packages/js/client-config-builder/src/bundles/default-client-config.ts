@@ -113,21 +113,17 @@ export const getDefaultClientConfig = (
       },
     ],
     resolver: new RecursiveResolver(
-      new PackageToWrapperCacheResolver(
-        wrapperCache ?? new WrapperCache(),
-        [
-          new LegacyRedirectsResolver(),
-          new LegacyPluginsResolver(
-            (
-              uri: Uri,
-              plugin: PluginPackage<unknown>,
-              environment: Env<Uri> | undefined
-            ) => new PluginWrapper(uri, plugin, environment)
-          ),
-          new ExtendableUriResolver(),
-        ],
-        { resolverName: "MainResolver" }
-      )
+      new PackageToWrapperCacheResolver(wrapperCache ?? new WrapperCache(), [
+        new LegacyRedirectsResolver(),
+        new LegacyPluginsResolver(
+          (
+            uri: Uri,
+            plugin: PluginPackage<unknown>,
+            environment: Env<Uri> | undefined
+          ) => new PluginWrapper(uri, plugin, environment)
+        ),
+        new ExtendableUriResolver(),
+      ])
     ),
   };
 };

@@ -7,7 +7,6 @@ import {
   getImplementations,
   coreInterfaceUris,
   IUriResolutionContext,
-  UriResolutionContext,
   UriPackageOrWrapper,
   UriResolutionResult,
 } from "@polywrap/core-js";
@@ -35,10 +34,8 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<unknown> {
       client.getRedirects({})
     );
 
-    const definedResolutionContext = resolutionContext as UriResolutionContext;
-
     const resolvers: UriResolverWrapper[] = uriResolverImpls
-      .filter((x) => !definedResolutionContext.hasVisited(x))
+      .filter((x) => !resolutionContext.isResolving(x))
       .map((implementationUri) => new UriResolverWrapper(implementationUri));
 
     return ResultOk(resolvers);

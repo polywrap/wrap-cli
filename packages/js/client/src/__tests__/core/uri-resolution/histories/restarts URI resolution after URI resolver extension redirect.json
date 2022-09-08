@@ -1,13 +1,13 @@
 [
   "wrap://simple-redirect/$root-wrapper-dir/simple/build => PackageToWrapperCacheResolver => uri (wrap://simple/$root-wrapper-dir/simple/build)",
   [
-    "wrap://simple-redirect/$root-wrapper-dir/simple/build => MainResolver => uri (wrap://simple/$root-wrapper-dir/simple/build)",
+    "wrap://simple-redirect/$root-wrapper-dir/simple/build => UriResolverAggregator => uri (wrap://simple/$root-wrapper-dir/simple/build)",
     [
       "wrap://simple-redirect/$root-wrapper-dir/simple/build => ExtendableUriResolver => uri (wrap://simple/$root-wrapper-dir/simple/build)",
       [
         "wrap://ens/ipfs-resolver.polywrap.eth => PackageToWrapperCacheResolver => wrapper (wrap://ens/ipfs-resolver.polywrap.eth)",
         [
-          "wrap://ens/ipfs-resolver.polywrap.eth => MainResolver => package (wrap://ens/ipfs-resolver.polywrap.eth)",
+          "wrap://ens/ipfs-resolver.polywrap.eth => UriResolverAggregator => package (wrap://ens/ipfs-resolver.polywrap.eth)",
           [
             "wrap://ens/ipfs-resolver.polywrap.eth => LegacyPluginsResolver => package (wrap://ens/ipfs-resolver.polywrap.eth)",
             [
@@ -17,7 +17,7 @@
         ],
         "wrap://ens/ens-resolver.polywrap.eth => PackageToWrapperCacheResolver => wrapper (wrap://ens/ens-resolver.polywrap.eth)",
         [
-          "wrap://ens/ens-resolver.polywrap.eth => MainResolver => package (wrap://ens/ens-resolver.polywrap.eth)",
+          "wrap://ens/ens-resolver.polywrap.eth => UriResolverAggregator => package (wrap://ens/ens-resolver.polywrap.eth)",
           [
             "wrap://ens/ens-resolver.polywrap.eth => LegacyPluginsResolver => package (wrap://ens/ens-resolver.polywrap.eth)",
             [
@@ -27,7 +27,7 @@
         ],
         "wrap://ens/fs-resolver.polywrap.eth => PackageToWrapperCacheResolver => wrapper (wrap://ens/fs-resolver.polywrap.eth)",
         [
-          "wrap://ens/fs-resolver.polywrap.eth => MainResolver => package (wrap://ens/fs-resolver.polywrap.eth)",
+          "wrap://ens/fs-resolver.polywrap.eth => UriResolverAggregator => package (wrap://ens/fs-resolver.polywrap.eth)",
           [
             "wrap://ens/fs-resolver.polywrap.eth => LegacyPluginsResolver => package (wrap://ens/fs-resolver.polywrap.eth)",
             [
@@ -37,7 +37,7 @@
         ],
         "wrap://file/$root-wrapper-dir/simple-fs-resolver/build => PackageToWrapperCacheResolver => wrapper (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)",
         [
-          "wrap://file/$root-wrapper-dir/simple-fs-resolver/build => MainResolver => package (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)",
+          "wrap://file/$root-wrapper-dir/simple-fs-resolver/build => UriResolverAggregator => package (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)",
           [
             "wrap://file/$root-wrapper-dir/simple-fs-resolver/build => ExtendableUriResolver => package (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)",
             [
@@ -50,7 +50,7 @@
         ],
         "wrap://file/$root-wrapper-dir/simple-redirect-resolver/build => PackageToWrapperCacheResolver => wrapper (wrap://file/$root-wrapper-dir/simple-redirect-resolver/build)",
         [
-          "wrap://file/$root-wrapper-dir/simple-redirect-resolver/build => MainResolver => package (wrap://file/$root-wrapper-dir/simple-redirect-resolver/build)",
+          "wrap://file/$root-wrapper-dir/simple-redirect-resolver/build => UriResolverAggregator => package (wrap://file/$root-wrapper-dir/simple-redirect-resolver/build)",
           [
             "wrap://file/$root-wrapper-dir/simple-redirect-resolver/build => ExtendableUriResolver => package (wrap://file/$root-wrapper-dir/simple-redirect-resolver/build)",
             [
@@ -67,7 +67,7 @@
   ],
   "wrap://simple/$root-wrapper-dir/simple/build => PackageToWrapperCacheResolver => uri (wrap://ens/redirect.eth)",
   [
-    "wrap://simple/$root-wrapper-dir/simple/build => MainResolver => uri (wrap://ens/redirect.eth)",
+    "wrap://simple/$root-wrapper-dir/simple/build => UriResolverAggregator => uri (wrap://ens/redirect.eth)",
     [
       "wrap://simple/$root-wrapper-dir/simple/build => LegacyRedirectsResolver => uri (wrap://ens/redirect.eth)",
       [

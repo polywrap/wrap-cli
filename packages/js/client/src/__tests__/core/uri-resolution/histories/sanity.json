@@ -1,7 +1,7 @@
 [
   "wrap://ens/uri.eth => PackageToWrapperCacheResolver",
   [
-    "wrap://ens/uri.eth => MainResolver",
+    "wrap://ens/uri.eth => UriResolverAggregator",
     [
       "wrap://ens/uri.eth => LegacyRedirectsResolver",
       "wrap://ens/uri.eth => LegacyPluginsResolver",
@@ -22,7 +22,7 @@
       [
         "wrap://ens/ipfs-resolver.polywrap.eth => PackageToWrapperCacheResolver => wrapper (wrap://ens/ipfs-resolver.polywrap.eth)",
         [
-          "wrap://ens/ipfs-resolver.polywrap.eth => MainResolver => package (wrap://ens/ipfs-resolver.polywrap.eth)",
+          "wrap://ens/ipfs-resolver.polywrap.eth => UriResolverAggregator => package (wrap://ens/ipfs-resolver.polywrap.eth)",
           [
             "wrap://ens/ipfs-resolver.polywrap.eth => LegacyRedirectsResolver",
             "wrap://ens/ipfs-resolver.polywrap.eth => LegacyPluginsResolver => package (wrap://ens/ipfs-resolver.polywrap.eth)",
@@ -44,7 +44,7 @@
         "wrap://ens/uri.eth => ResovlerExtension (wrap://ens/ipfs-resolver.polywrap.eth)",
         "wrap://ens/ens-resolver.polywrap.eth => PackageToWrapperCacheResolver => wrapper (wrap://ens/ens-resolver.polywrap.eth)",
         [
-          "wrap://ens/ens-resolver.polywrap.eth => MainResolver => package (wrap://ens/ens-resolver.polywrap.eth)",
+          "wrap://ens/ens-resolver.polywrap.eth => UriResolverAggregator => package (wrap://ens/ens-resolver.polywrap.eth)",
           [
             "wrap://ens/ens-resolver.polywrap.eth => LegacyRedirectsResolver",
             "wrap://ens/ens-resolver.polywrap.eth => LegacyPluginsResolver => package (wrap://ens/ens-resolver.polywrap.eth)",
@@ -57,7 +57,7 @@
         "wrap://ens/uri.eth => ResovlerExtension (wrap://ens/ens-resolver.polywrap.eth)",
         "wrap://ens/fs-resolver.polywrap.eth => PackageToWrapperCacheResolver => wrapper (wrap://ens/fs-resolver.polywrap.eth)",
         [
-          "wrap://ens/fs-resolver.polywrap.eth => MainResolver => package (wrap://ens/fs-resolver.polywrap.eth)",
+          "wrap://ens/fs-resolver.polywrap.eth => UriResolverAggregator => package (wrap://ens/fs-resolver.polywrap.eth)",
           [
             "wrap://ens/fs-resolver.polywrap.eth => LegacyRedirectsResolver",
             "wrap://ens/fs-resolver.polywrap.eth => LegacyPluginsResolver => package (wrap://ens/fs-resolver.polywrap.eth)",

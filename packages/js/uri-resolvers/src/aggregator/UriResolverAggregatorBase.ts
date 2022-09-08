@@ -3,7 +3,6 @@ import {
   Uri,
   Client,
   IUriResolutionContext,
-  UriResolutionContext,
   UriResolutionResult,
   UriPackageOrWrapper,
 } from "@polywrap/core-js";
@@ -16,7 +15,7 @@ export abstract class UriResolverAggregatorBase<
   abstract getUriResolvers(
     uri: Uri,
     client: Client,
-    resolutionContext?: IUriResolutionContext
+    resolutionContext: IUriResolutionContext
   ): Promise<Result<IUriResolver<unknown>[], TGetResolversError>>;
 
   async tryResolveUri(
@@ -57,7 +56,7 @@ export abstract class UriResolverAggregatorBase<
     resolvers: IUriResolver<unknown>[],
     resolutionContext: IUriResolutionContext
   ): Promise<Result<UriPackageOrWrapper, TResolutionError>> {
-    const subContext = UriResolutionContext.createNested(resolutionContext);
+    const subContext = resolutionContext.createSubHistoryContext();
 
     for (const resolver of resolvers) {
       const typeResolver = resolver as IUriResolver<TResolutionError>;

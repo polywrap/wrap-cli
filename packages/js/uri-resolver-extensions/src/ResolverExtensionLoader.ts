@@ -9,11 +9,15 @@ import {
 import { Result, ResultErr, ResultOk } from "@polywrap/result";
 
 export const loadResolverExtension = async (
-  uri: Uri,
+  currentUri: Uri,
+  resolverExtensionUri: Uri,
   client: Client,
-  resolutionContext?: IUriResolutionContext
+  resolutionContext: IUriResolutionContext
 ): Promise<Result<Wrapper, unknown>> => {
-  const result = await client.tryResolveUri({ uri, resolutionContext });
+  const result = await client.tryResolveUri({
+    uri: resolverExtensionUri,
+    resolutionContext,
+  });
 
   if (!result.ok) {
     return result;
@@ -25,7 +29,7 @@ export const loadResolverExtension = async (
     const lastTriedUri = uriPackageOrWrapper.uri as Uri;
 
     return ResultErr(
-      `While resolving ${uri.uri} with URI resolver extension ${uri.uri}, the extension could not be fully resolved. Last tried URI is ${lastTriedUri.uri}`
+      `While resolving ${currentUri.uri} with URI resolver extension ${resolverExtensionUri.uri}, the extension could not be fully resolved. Last tried URI is ${lastTriedUri.uri}`
     );
   }
 
@@ -37,11 +41,11 @@ export const loadResolverExtension = async (
     wrapperOrPackage = uriPackageOrWrapper.wrapper;
   }
 
-  const visitedUris: Uri[] = !resolutionContext
-    ? [uri]
-    : resolutionContext.getVisitedUris();
+  const resolutionPath: Uri[] = !resolutionContext
+    ? [resolverExtensionUri]
+    : resolutionContext.getResolutionPath();
 
-  const wrapper = await initWrapper(wrapperOrPackage, client, visitedUris);
+  const wrapper = await initWrapper(wrapperOrPackage, client, resolutionPath);
 
   return ResultOk(wrapper);
 };

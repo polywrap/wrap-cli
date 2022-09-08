@@ -9,7 +9,6 @@ import {
   IUriResolutionContext,
   UriPackageOrWrapper,
   UriResolutionResult,
-  UriResolutionContext,
 } from "@polywrap/core-js";
 import { DeserializeManifestOptions } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";
@@ -30,7 +29,7 @@ export class PackageToWrapperCacheResolver<TError = undefined>
     resolverToCache: UriResolverLike,
     private options?: {
       deserializeManifestOptions?: DeserializeManifestOptions;
-      resolverName: string;
+      resolverName?: string;
       endOnRedirect?: boolean;
     }
   ) {
@@ -60,7 +59,7 @@ export class PackageToWrapperCacheResolver<TError = undefined>
       return result;
     }
 
-    const subContext = UriResolutionContext.createNested(resolutionContext);
+    const subContext = resolutionContext.createSubHistoryContext();
 
     let result = await this.resolverToCache.tryResolveUri(
       uri,
@@ -71,13 +70,17 @@ export class PackageToWrapperCacheResolver<TError = undefined>
     if (result.ok) {
       if (result.value.type === "package") {
         const wrapPackage = result.value.package;
-        const visitedUris: Uri[] = subContext.getVisitedUris();
+        const resolutionPath: Uri[] = subContext.getResolutionPath();
 
-        const wrapper = await wrapPackage.createWrapper(client, visitedUris, {
-          noValidate: this.options?.deserializeManifestOptions?.noValidate,
-        });
+        const wrapper = await wrapPackage.createWrapper(
+          client,
+          resolutionPath,
+          {
+            noValidate: this.options?.deserializeManifestOptions?.noValidate,
+          }
+        );
 
-        for (const uri of visitedUris) {
+        for (const uri of resolutionPath) {
           await executeMaybeAsyncFunction<Wrapper | undefined>(
             this.cache.set.bind(this.cache, uri, wrapper)
           );
@@ -86,9 +89,9 @@ export class PackageToWrapperCacheResolver<TError = undefined>
         result = UriResolutionResult.ok(wrapper);
       } else if (result.value.type === "wrapper") {
         const wrapper = result.value.wrapper;
-        const visitedUris: Uri[] = subContext.getVisitedUris();
+        const resolutionPath: Uri[] = subContext.getResolutionPath();
 
-        for (const uri of visitedUris) {
+        for (const uri of resolutionPath) {
           await executeMaybeAsyncFunction<Wrapper | undefined>(
             this.cache.set.bind(this.cache, uri, wrapper)
           );

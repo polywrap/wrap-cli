@@ -183,6 +183,12 @@ describe("URI resolution", () => {
       getUriResolutionPath(resolutionContext.getHistory()),
       "can resolve redirects"
     );
+
+    expect([
+      "wrap://ens/from.eth",
+      "wrap://ens/to1.eth",
+      "wrap://ens/to2.eth"
+    ]).toEqual(resolutionContext.getResolutionPath().map(x => x.uri));
   });
 
   it("can resolve plugin", async () => {
@@ -211,6 +217,10 @@ describe("URI resolution", () => {
       getUriResolutionPath(resolutionContext.getHistory()), 
       "can resolve plugin"
     );
+
+    expect([
+      "wrap://ens/plugin.eth"
+    ]).toEqual(resolutionContext.getResolutionPath().map(x => x.uri));
   });
 
   it("can resolve a URI resolver extension wrapper", async () => {
@@ -235,6 +245,11 @@ describe("URI resolution", () => {
       getUriResolutionPath(resolutionContext.getHistory()),
       "can resolve a URI resolver extension wrapper"
     );
+
+    expect([
+      sourceUri.uri,
+      redirectedUri.uri,
+    ]).toEqual(resolutionContext.getResolutionPath().map(x => x.uri));
   });
 
   it("can resolve cache", async () => {
@@ -243,13 +258,15 @@ describe("URI resolution", () => {
     const resolutionContext1 = new UriResolutionContext();
     const result1 = await client.tryResolveUri({ uri: wrapperUri, resolutionContext: resolutionContext1 });
 
-    console.log(result1);
     await expectWrapperWithHistory(
       result1,
       wrapperUri,
       getUriResolutionPath(resolutionContext1.getHistory()),
       "can resolve cache - 1"
     );
+    expect([
+      wrapperUri.uri,
+    ]).toEqual(resolutionContext1.getResolutionPath().map(x => x.uri));
 
     const resolutionContext2 = new UriResolutionContext();
     const result2 = await client.tryResolveUri({ uri: wrapperUri, resolutionContext: resolutionContext2 });
@@ -260,6 +277,9 @@ describe("URI resolution", () => {
       getUriResolutionPath(resolutionContext2.getHistory()),
       "can resolve cache - 2"
     );
+    expect([
+      wrapperUri.uri,
+    ]).toEqual(resolutionContext2.getResolutionPath().map(x => x.uri));
   });
 
   it("can resolve previously cached URI after redirecting by a URI resolver extension", async () => {
@@ -288,6 +308,10 @@ describe("URI resolution", () => {
       getUriResolutionPath(resolutionContext1.getHistory()),
       "can resolve previously cached URI after redirecting by a URI resolver extension - 1"
     );
+    expect([
+      redirectedUri.uri,
+      finalUri.uri
+    ]).toEqual(resolutionContext1.getResolutionPath().map(x => x.uri));
 
     const resolutionContext2 = new UriResolutionContext();
     const result2 = await client.tryResolveUri({ uri: sourceUri, resolutionContext: resolutionContext2 });
@@ -298,6 +322,10 @@ describe("URI resolution", () => {
       getUriResolutionPath(resolutionContext2.getHistory()),
       "can resolve previously cached URI after redirecting by a URI resolver extension - 2"
     );
+    expect([
+      sourceUri.uri,
+      redirectedUri.uri,
+    ]).toEqual(resolutionContext2.getResolutionPath().map(x => x.uri));
   });
 
   it("restarts URI resolution after URI resolver extension redirect", async () => {
@@ -323,14 +351,19 @@ describe("URI resolution", () => {
       ],
     });
   
-    const resolutionContext1 = new UriResolutionContext();
-    const result = await client.tryResolveUri({ uri: sourceUri, resolutionContext: resolutionContext1 });
+    const resolutionContext = new UriResolutionContext();
+    const result = await client.tryResolveUri({ uri: sourceUri, resolutionContext });
     await expectResultWithHistory(
       result,
       UriResolutionResult.ok(finalRedirectedUri),
-      getUriResolutionPath(resolutionContext1.getHistory()),
+      getUriResolutionPath(resolutionContext.getHistory()),
       "restarts URI resolution after URI resolver extension redirect"
     );
+    expect([
+      sourceUri.uri,
+      resolverRedirectUri.uri,
+      finalRedirectedUri.uri,
+    ]).toEqual(resolutionContext.getResolutionPath().map(x => x.uri));
   });
 
   it("can resolve uri with custom resolver", async () => {
@@ -394,10 +427,14 @@ describe("URI resolution", () => {
     await expectResultWithHistory(
       result,
       UriResolutionResult.err(
-        "While resolving wrap://ens/test.eth with URI resolver extension wrap://ens/undefined-resolver.eth, the extension could not be fully resolved. Last found URI is wrap://ens/undefined-resolver.eth"
+        "While resolving wrap://ens/test.eth with URI resolver extension wrap://ens/undefined-resolver.eth, the extension could not be fully resolved. Last tried URI is wrap://ens/undefined-resolver.eth"
       ),
       getUriResolutionPath(resolutionContext.getHistory()),
       "custom wrapper resolver does not cause infinite recursion when resolved at runtime"
     );
+
+    expect([
+      "wrap://ens/test.eth"
+    ]).toEqual(resolutionContext.getResolutionPath().map(x => x.uri));
   });
 });
