@@ -1,6 +1,7 @@
 import { Command, Program } from "./types";
 import YAML from "js-yaml";
 import fs from "fs";
+import path from "path";
 import {
   deserializeAppManifest,
   deserializeBuildManifest,
@@ -33,6 +34,7 @@ import {
   parseManifestFileOption,
 } from "../lib";
 import { defaultProjectManifestFiles } from "../lib/option-defaults";
+import { dereference } from "json-schema-ref-parser";
 
 const pathStr = intlMsg.commands_manifest_options_m_path();
 
@@ -41,7 +43,9 @@ const defaultBuildManifestStr = defaultBuildManifest.join(" | ");
 const defaultDeployManifestStr = defaultDeployManifest.join(" | ");
 const defaultMetaManifestStr = defaultMetaManifest.join(" | ");
 
-type ManifestSchemaCommandOptions = {};
+type ManifestSchemaCommandOptions = {
+  raw: boolean;
+};
 type ManifestMigrateCommandOptions = {
   manifestFile: string;
 };
@@ -57,6 +61,7 @@ export const manifest: Command = {
       .command("schema")
       .alias("s")
       .description("Prints out the schema for the current manifest format.")
+      .option(`-r, --raw`, `Output raw JSON Schema`, false)
       .action(async (options) => {
         await runSchemaCommand(options);
       });
@@ -149,9 +154,79 @@ export const manifest: Command = {
   },
 };
 
-const runSchemaCommand = async (_options: ManifestSchemaCommandOptions) => {
-  console.log("foobar");
+export const runSchemaCommand = async (
+  options: ManifestSchemaCommandOptions
+) => {
+  const schemasPackageDir = path.dirname(
+    require.resolve("@polywrap/polywrap-manifest-schemas")
+  );
+  const formatsDir = path.join(schemasPackageDir, "formats");
+  const polywrapSchemaFile = path.join(formatsDir, "polywrap", "0.2.0.json");
+
+  const schemaString = fs.readFileSync(polywrapSchemaFile, {
+    encoding: "utf-8",
+  });
+
+  if (options.raw) {
+    console.log(schemaString);
+  } else {
+    const schema = await dereference(JSON.parse(schemaString));
+
+    console.log("# Polywrap project manifest schema 0.2.0");
+    console.log();
+
+    printJsonSchemaYamlish(schema.properties);
+  }
 };
+
+function printJsonSchemaYamlish(
+  schema: any,
+  name: string = "",
+  description: string = "",
+  indent: number = 0
+) {
+  if (name.length) {
+    console.log(`${name}:  # ${description}`);
+  }
+
+  for (const prop in schema) {
+    if (schema[prop].type === "object") {
+      printJsonSchemaYamlish(
+        schema[prop].properties,
+        prop,
+        schema[prop].description,
+        indent + 1
+      );
+    } else {
+      printSchemaPropertyYamlish(schema[prop], prop, indent);
+    }
+  }
+}
+
+function printSchemaPropertyYamlish(
+  property: any,
+  propName: string,
+  indent: number = 0
+) {
+  let outputString = "";
+
+  for (let i = 0; i < indent; i++) {
+    outputString += "  ";
+  }
+
+  outputString += `${propName}:  # ${property.description}`;
+
+  if (property.enum) {
+    outputString += " Values: ";
+    for (let j = 0; j < property.enum.length; j++) {
+      outputString += `${property.enum[j]}`;
+      if (j !== property.enum.length - 1) {
+        outputString += ", ";
+      }
+    }
+  }
+  console.log(outputString);
+}
 
 const runMigrateCommand = async (options: ManifestMigrateCommandOptions) => {
   console.log("PROJECT");
@@ -311,3 +386,15 @@ const runMigrateMetaCommand = async (
     encoding: "utf-8",
   });
 };
+
+/* DEV TODO:
+  - Determine project manifest type (wasm/interface, app, plugin) based on input file (with default input file)
+  - Add support for extension manifests
+    - build
+    - deploy
+    - meta
+  - pretty-print everything
+  - add intlmsgs
+  - remove `temp` test file
+  - create tests
+*/
