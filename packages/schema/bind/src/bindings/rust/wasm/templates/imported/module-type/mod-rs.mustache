@@ -28,6 +28,7 @@ use {{crate}}::{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeywor
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {}
 
+{{^isInterface}}
 impl {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
     pub const URI: &'static str = "{{uri}}";
 
@@ -51,3 +52,30 @@ impl {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
     {{/last}}
     {{/methods}}
 }
+{{/isInterface}}
+{{#isInterface}}
+impl {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
+    pub const INTERFACE_URI: &'static str = "{{uri}}";
+    pub uri: String;
+
+    pub fn new(uri: String) -> {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
+        {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {uri: uri}
+    }
+
+    {{#methods}}
+    pub fn {{#toLower}}{{name}}{{/toLower}}(&self, args: &Args{{#toUpper}}{{name}}{{/toUpper}}) -> Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, String> {
+        let uri = self.uri;
+        let args = serialize_{{#toLower}}{{name}}{{/toLower}}_args(args).map_err(|e| e.to_string())?;
+        let result = subinvoke::wrap_subinvoke(
+            uri,
+            "{{name}}",
+            args,
+        )?;
+        deserialize_{{#toLower}}{{name}}{{/toLower}}_result(result.as_slice()).map_err(|e| e.to_string())
+    }
+    {{^last}}
+
+    {{/last}}
+    {{/methods}}
+}
+{{/isInterface}}
