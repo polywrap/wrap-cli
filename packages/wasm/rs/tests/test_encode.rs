@@ -467,3 +467,36 @@ fn test_write_ext_generic_map() {
         assert_eq!(case.want, writer.get_buffer().as_slice());
     }
 }
+
+#[test]
+fn test_write_ext_generic_map_nested() {
+    let mut root_map: BTreeMap<String, BTreeMap<String, u8>> = BTreeMap::new();
+    let mut sub_map: BTreeMap<String, u8> = BTreeMap::new();
+    sub_map.insert("Hello".to_string(), 1);
+    sub_map.insert("Heyo".to_string(), 50);
+    root_map.insert("Nested".to_string(), sub_map);
+    let cases = [
+        Case::new(
+            "nested maps",
+            root_map,
+            &[199, 25, 1, 129, 166, 78, 101, 115, 116, 101, 100, 199, 14, 1, 130,
+            165, 72, 101, 108, 108, 111, 1, 164, 72, 101, 121, 111, 50],
+        ),
+    ];
+
+    for case in cases {
+        let mut writer = WriteEncoder::new(&[], Context::new());
+        writer
+            .write_ext_generic_map(
+                &case.input,
+                |writer, key| writer.write_string(key),
+                |writer, value| writer.write_ext_generic_map(
+                    value,
+                    |writer, key| writer.write_string(key),
+                    |writer, value| writer.write_u8(value),
+                ),
+            )
+            .unwrap();
+        assert_eq!(case.want, writer.get_buffer().as_slice());
+    }
+}

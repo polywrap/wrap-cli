@@ -4,7 +4,7 @@ import {
   Write,
   WriteSizer,
   WriteEncoder,
-  Option,
+  Box,
   BigInt,
   BigNumber,
   JSON,
@@ -34,11 +34,11 @@ export function writeEnv(writer: Write, type: Env): void {
   writer.writeString("optProp");
   writer.writeOptionalString(type.optProp);
   writer.context().pop();
-  writer.context().push("optMap", "Map<string, Option<i32>> | null", "writing property");
+  writer.context().push("optMap", "Map<string, Box<i32> | null> | null", "writing property");
   writer.writeString("optMap");
   writer.writeOptionalExtGenericMap(type.optMap, (writer: Write, key: string) => {
     writer.writeString(key);
-  }, (writer: Write, value: Option<i32>): void => {
+  }, (writer: Write, value: Box<i32> | null): void => {
     writer.writeOptionalInt32(value);
   });
   writer.context().pop();
@@ -56,7 +56,7 @@ export function readEnv(reader: Read): Env {
   let _prop: string = "";
   let _propSet: bool = false;
   let _optProp: string | null = null;
-  let _optMap: Map<string, Option<i32>> | null = null;
+  let _optMap: Map<string, Box<i32> | null> | null = null;
 
   while (numFields > 0) {
     numFields--;
@@ -75,10 +75,10 @@ export function readEnv(reader: Read): Env {
       reader.context().pop();
     }
     else if (field == "optMap") {
-      reader.context().push(field, "Map<string, Option<i32>> | null", "type found, reading property");
+      reader.context().push(field, "Map<string, Box<i32> | null> | null", "type found, reading property");
       _optMap = reader.readOptionalExtGenericMap((reader: Read): string => {
         return reader.readString();
-      }, (reader: Read): Option<i32> => {
+      }, (reader: Read): Box<i32> | null => {
         return reader.readOptionalInt32();
       });
       reader.context().pop();

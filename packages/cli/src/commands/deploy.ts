@@ -5,7 +5,7 @@ import {
   DeployerHandler,
   DeployPackage,
   intlMsg,
-  parseWasmManifestFileOption,
+  parseManifestFileOption,
   PolywrapProject,
   ResultList,
 } from "../lib";
@@ -47,7 +47,7 @@ export const deploy: Command = {
       .action(async (options) => {
         await run({
           ...options,
-          manifestFile: parseWasmManifestFileOption(options.manifestFile),
+          manifestFile: parseManifestFileOption(options.manifestFile),
         });
       });
   },

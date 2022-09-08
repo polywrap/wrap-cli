@@ -4,7 +4,7 @@ import {
   Write,
   WriteSizer,
   WriteEncoder,
-  Option,
+  Box,
   BigInt,
   BigNumber,
   JSON,
@@ -16,9 +16,9 @@ export class Args_moduleMethod {
   str: string;
   optStr: string | null;
   en: Types.CustomEnum;
-  optEnum: Option<Types.CustomEnum>;
+  optEnum: Box<Types.CustomEnum> | null;
   enumArray: Array<Types.CustomEnum>;
-  optEnumArray: Array<Option<Types.CustomEnum>> | null;
+  optEnumArray: Array<Box<Types.CustomEnum> | null> | null;
   map: Map<string, i32>;
   mapOfArr: Map<string, Array<i32>>;
   mapOfMap: Map<string, Map<string, i32>>;
@@ -36,10 +36,10 @@ export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Args_moduleMe
   let _optStr: string | null = null;
   let _en: Types.CustomEnum = 0;
   let _enSet: bool = false;
-  let _optEnum: Option<Types.CustomEnum> = Option.None<Types.CustomEnum>();
+  let _optEnum: Box<Types.CustomEnum> | null = null;
   let _enumArray: Array<Types.CustomEnum> = [];
   let _enumArraySet: bool = false;
-  let _optEnumArray: Array<Option<Types.CustomEnum>> | null = null;
+  let _optEnumArray: Array<Box<Types.CustomEnum> | null> | null = null;
   let _map: Map<string, i32> = new Map<string, i32>();
   let _mapSet: bool = false;
   let _mapOfArr: Map<string, Array<i32>> = new Map<string, Array<i32>>();
@@ -81,21 +81,21 @@ export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Args_moduleMe
       reader.context().pop();
     }
     else if (field == "optEnum") {
-      reader.context().push(field, "Option<Types.CustomEnum>", "type found, reading property");
-      let value: Option<Types.CustomEnum>;
+      reader.context().push(field, "Box<Types.CustomEnum> | null", "type found, reading property");
+      let value: Box<Types.CustomEnum> | null;
       if (!reader.isNextNil()) {
         if (reader.isNextString()) {
-          value = Option.Some(
+          value = Box.from(
             Types.getCustomEnumValue(reader.readString())
           );
         } else {
-          value = Option.Some(
+          value = Box.from(
             reader.readInt32()
           );
           Types.sanitizeCustomEnumValue(value.unwrap());
         }
       } else {
-        value = Option.None<Types.CustomEnum>();
+        value = null;
       }
       _optEnum = value;
       reader.context().pop();
@@ -116,22 +116,22 @@ export function deserializemoduleMethodArgs(argsBuf: ArrayBuffer): Args_moduleMe
       reader.context().pop();
     }
     else if (field == "optEnumArray") {
-      reader.context().push(field, "Array<Option<Types.CustomEnum>> | null", "type found, reading property");
-      _optEnumArray = reader.readOptionalArray((reader: Read): Option<Types.CustomEnum> => {
-        let value: Option<Types.CustomEnum>;
+      reader.context().push(field, "Array<Box<Types.CustomEnum> | null> | null", "type found, reading property");
+      _optEnumArray = reader.readOptionalArray((reader: Read): Box<Types.CustomEnum> | null => {
+        let value: Box<Types.CustomEnum> | null;
         if (!reader.isNextNil()) {
           if (reader.isNextString()) {
-            value = Option.Some(
+            value = Box.from(
               Types.getCustomEnumValue(reader.readString())
             );
           } else {
-            value = Option.Some(
+            value = Box.from(
               reader.readInt32()
             );
             Types.sanitizeCustomEnumValue(value.unwrap());
           }
         } else {
-          value = Option.None<Types.CustomEnum>();
+          value = null;
         }
         return value;
       });
