@@ -58,11 +58,7 @@ export class FileSystemResolverPlugin extends Module<NoConfig> {
         _client
       );
 
-      if (fileResult.data) {
-        return new Uint8Array(fileResult.data);
-      }
-
-      return null;
+      return fileResult.data ?? null;
     } catch (e) {
       return null;
     }
