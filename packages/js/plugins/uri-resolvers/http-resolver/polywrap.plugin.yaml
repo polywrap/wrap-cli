@@ -7,4 +7,4 @@ import_redirects:
   - uri: "ens/uri-resolver.core.polywrap.eth"
     schema: ../../../../interfaces/uri-resolver/src/schema.graphql
   - uri: "ens/http.polywrap.eth"
-    schema: ../../../../interfaces/http/build/schema.graphql
+    schema: ../../../../interfaces/http/build/wrap.info

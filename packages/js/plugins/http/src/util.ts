@@ -1,8 +1,4 @@
-import {
-  Http_Request,
-  Http_Response,
-  Http_ResponseTypeEnum,
-} from "./wrap";
+import { Http_Request, Http_Response, Http_ResponseTypeEnum } from "./wrap";
 
 import { AxiosResponse, AxiosRequestConfig } from "axios";
 
@@ -65,7 +61,9 @@ export function fromAxiosResponse(
  *
  * @param request
  */
-export function toAxiosRequestConfig(request: Http_Request): AxiosRequestConfig {
+export function toAxiosRequestConfig(
+  request: Http_Request
+): AxiosRequestConfig {
   let responseType: "text" | "arraybuffer" = "text";
 
   switch (request.responseType) {

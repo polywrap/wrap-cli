@@ -1,23 +1,13 @@
-type Header {
-  key: String!
-  value: String!
-}
-
-type UrlParam {
-  key: String!
-  value: String!
-}
-
 type Response {
   status: Int!
   statusText: String!
-  headers: [Header!]
+  headers: Map @annotate(type: "Map<String!, String!>")
   body: String
 }
 
 type Request {
-  headers: [Header!]
-  urlParams: [UrlParam!]
+  headers: Map @annotate(type: "Map<String!, String!>")
+  urlParams: Map @annotate(type: "Map<String!, String!>")
   responseType: ResponseType!
   body: String
 }

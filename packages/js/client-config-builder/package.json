@@ -25,6 +25,7 @@
     "@polywrap/fs-plugin-js": "0.6.0",
     "@polywrap/fs-resolver-plugin-js": "0.6.0",
     "@polywrap/http-plugin-js": "0.6.0",
+    "@polywrap/http-resolver-plugin-js": "0.6.0",
     "@polywrap/ipfs-plugin-js": "0.6.0",
     "@polywrap/ipfs-resolver-plugin-js": "0.6.0",
     "@polywrap/logger-plugin-js": "0.6.0",
