@@ -1,27 +1,12 @@
 import { PluginResolver } from "./PluginResolver";
 import { UriResolverAggregator } from "../aggregator";
 
-import {
-  PluginRegistration,
-  Uri,
-  PluginPackage,
-  Env,
-  Wrapper,
-} from "@polywrap/core-js";
+import { PluginRegistration, Uri } from "@polywrap/core-js";
 
 export class PluginsResolver extends UriResolverAggregator {
-  constructor(
-    pluginRegistrations: PluginRegistration<string | Uri>[],
-    private readonly createPluginWrapper: (
-      uri: Uri,
-      plugin: PluginPackage<unknown>,
-      environment: Env<Uri> | undefined
-    ) => Wrapper
-  ) {
+  constructor(pluginRegistrations: PluginRegistration<string | Uri>[]) {
     super(
-      pluginRegistrations.map(
-        (x) => new PluginResolver(x, this.createPluginWrapper)
-      ),
+      pluginRegistrations.map((x) => new PluginResolver(x)),
       "PluginsResolver"
     );
   }
