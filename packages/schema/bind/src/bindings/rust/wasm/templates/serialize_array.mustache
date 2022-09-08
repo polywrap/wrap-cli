@@ -10,9 +10,7 @@ writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower
 writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(item, |writer, key| {
     writer.write_{{#key}}{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}{{/key}}(key)
 }, |writer, value| {
-    {{#value}}
     {{> serialize_map_value}}
-    {{/value}}
 })
 {{/map}}
 {{#enum}}

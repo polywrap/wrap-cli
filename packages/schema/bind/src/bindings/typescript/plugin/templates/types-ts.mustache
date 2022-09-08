@@ -98,7 +98,7 @@ export type {{#detectKeyword}}{{type}}{{/detectKeyword}} = {{type}}Enum | {{type
 {{#importedModuleTypes}}
 {{#methods}}
 /* URI: "{{parent.uri}}" */
-interface {{parent.type}}_Args_{{name}} extends Record<string, unknown> {
+interface {{parent.type}}_Args_{{name}} {
   {{#arguments}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/arguments}}
@@ -116,7 +116,7 @@ export const {{type}} = {
     return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>({
       uri: "{{parent.uri}}",
       method: "{{name}}",
-      args
+      args: args as unknown as Record<string, unknown>
     });
   }{{^last}},{{/last}}
   {{^last}}
@@ -141,7 +141,7 @@ export class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
     return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>({
       uri: this.uri,
       method: "{{name}}",
-      args
+      args: args as unknown as Record<string, unknown>
     });
   }
   {{^last}}

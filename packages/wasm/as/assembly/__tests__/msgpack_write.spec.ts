@@ -407,24 +407,39 @@ describe("WriteEncoder", () => {
   });
 
   it("TestWriteExtGenericMap", () => {
-    const map1 = new Map<string, Array<i32>>();
-    map1.set("foo", [1, -1, 42]);
-    map1.set("baz", [12412, -98987]);
+    const map1 = new Map<i32, Array<i32>>();
+    map1.set(1, [3, 5, 9]);
+    map1.set(2, [1, 4, 7]);
+    const map2 = new Map<i32, Array<i32>>();
+    for (let i = 0; i < 16; ++i) {
+      map2.set(i, [i, i + 1, i + 2]);
+    }
 
     const cases = [
-        new Case<Map<string, Array<i32>>>(
-            "Map", map1,
-            [199, 22, 1, 130, 163, 102, 111, 111, 147, 1, 255, 42, 163, 98,
-             97, 122, 146, 209, 48, 124, 210, 255, 254, 125, 85]),
+        new Case<Map<i32, Array<i32>>>(
+          "map 8",
+          map1,
+          [199, 11, 1, 130, 1, 147, 3, 5, 9, 2, 147, 1, 4, 7]
+        ),
+        new Case<Map<i32, Array<i32>>>(
+          "map 16",
+          map2,
+          [
+            199, 83, 1, 222, 0, 16, 0, 147, 0, 1, 2, 1, 147, 1, 2, 3, 2, 147, 2, 3, 4, 3, 147,
+            3, 4, 5, 4, 147, 4, 5, 6, 5, 147, 5, 6, 7, 6, 147, 6, 7, 8, 7, 147, 7, 8, 9, 8,
+            147, 8, 9, 10, 9, 147, 9, 10, 11, 10, 147, 10, 11, 12, 11, 147, 11, 12, 13, 12,
+            147, 12, 13, 14, 13, 147, 13, 14, 15, 14, 147, 14, 15, 16, 15, 147, 15, 16, 17,
+          ]
+        )
     ];
 
     for (let i: i32 = 0; i < cases.length; ++i) {
       const testcase = cases[i];
       const sizer = new WriteSizer();
-      sizer.writeExtGenericMap<string, Array<i32>>(
+      sizer.writeExtGenericMap(
         testcase.input,
-        (writer: Write, key: string): void => {
-          writer.writeString(key);
+        (writer: Write, key: i32): void => {
+          writer.writeInt32(key);
         },
         (writer: Write, value: Array<i32>) => {
           writer.writeArray(value, (writer: Write, item: i32) => {
@@ -434,15 +449,77 @@ describe("WriteEncoder", () => {
       );
       const buffer = new ArrayBuffer(sizer.length);
       const encoder = new WriteEncoder(buffer, sizer);
-      encoder.writeExtGenericMap<string, Array<i32>>(
+      encoder.writeExtGenericMap(
         testcase.input,
-        (writer: Write, key: string): void => {
-          writer.writeString(key);
+        (writer: Write, key: i32): void => {
+          writer.writeInt32(key);
         },
         (writer: Write, value: Array<i32>) => {
           writer.writeArray(value, (writer: Write, item: i32) => {
             writer.writeInt32(item);
           });
+        }
+      );
+
+      const actual = encoder._view.buffer;
+      const expected = fill(testcase.want);
+      expect(actual).toStrictEqual(expected);
+    }
+  });
+
+  it("TestWriteExtGenericMap Nested Maps", () => {
+    const rootMap = new Map<string, Map<string, u8>>();
+    const subMap = new Map<string, u8>();
+    subMap.set("Hello", 1);
+    subMap.set("Heyo", 50);
+    rootMap.set("Nested", subMap);
+
+    const cases = [
+        new Case<Map<string, Map<string, u8>>>(
+          "nested maps",
+          rootMap,
+          [199, 25, 1, 129, 166, 78, 101, 115, 116, 101, 100, 199, 14, 1, 130,
+          165, 72, 101, 108, 108, 111, 1, 164, 72, 101, 121, 111, 50]
+        ),
+    ];
+
+    for (let i: i32 = 0; i < cases.length; ++i) {
+      const testcase = cases[i];
+      const sizer = new WriteSizer();
+      sizer.writeExtGenericMap(
+        testcase.input,
+        (writer: Write, key: string): void => {
+          writer.writeString(key);
+        },
+        (writer: Write, value: Map<string, u8>) => {
+          writer.writeExtGenericMap(
+            value,
+            (writer: Write, key: string) => {
+              writer.writeString(key);
+            },
+            (writer: Write, value: u8) => {
+              writer.writeUInt8(value);
+            }
+          );
+        }
+      );
+      const buffer = new ArrayBuffer(sizer.length);
+      const encoder = new WriteEncoder(buffer, sizer);
+      encoder.writeExtGenericMap(
+        testcase.input,
+        (writer: Write, key: string): void => {
+          writer.writeString(key);
+        },
+        (writer: Write, value: Map<string, u8>) => {
+          writer.writeExtGenericMap(
+            value,
+            (writer: Write, key: string) => {
+              writer.writeString(key);
+            },
+            (writer: Write, value: u8) => {
+              writer.writeUInt8(value);
+            }
+          );
         }
       );
 

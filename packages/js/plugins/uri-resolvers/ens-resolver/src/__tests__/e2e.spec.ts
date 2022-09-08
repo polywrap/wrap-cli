@@ -49,7 +49,7 @@ describe("ENS Resolver Plugin", () => {
               networks: {
                 testnet: new Connection({
                   provider: providers.ethereum
-                })
+                }),
               },
               defaultNetwork: "testnet"
             })

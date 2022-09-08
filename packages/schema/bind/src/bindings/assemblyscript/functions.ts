@@ -51,14 +51,10 @@ export const toWasmInit: MustacheFn = () => {
       type = type.substring(0, type.length - 1);
     } else {
       const nullType = toWasm()(value, render);
-      const optional = "Option";
       const nullOptional = "| null";
 
       if (nullType.endsWith(nullOptional)) {
         return "null";
-      } else if (nullType.startsWith(optional)) {
-        type = nullType.substring(6);
-        return `Option.None${type}()`;
       }
     }
 
@@ -250,7 +246,7 @@ const applyOptional = (
     ) {
       return `${type} | null`;
     } else {
-      return `Option<${type}>`;
+      return `Box<${type}> | null`;
     }
   } else {
     return type;

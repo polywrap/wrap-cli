@@ -69,7 +69,7 @@ describe("WebSocket plugin", () => {
         method: "open",
         args: {
           url: "ws://localhost:1235",
-          timeout: { value: 50 }
+          timeout: 50
         }
       })
     });
@@ -347,7 +347,7 @@ describe("WebSocket plugin", () => {
         method: "receive",
         args: {
           id,
-          timeout: { value: 250 }
+          timeout: 250
         }
       })
 
@@ -378,7 +378,7 @@ describe("WebSocket plugin", () => {
         method: "receive",
         args: {
           id,
-          min: { value: 2 }
+          min: 2
         }
       })
 
@@ -408,8 +408,8 @@ describe("WebSocket plugin", () => {
         method: "receive",
         args: {
           id,
-          timeout: { value: 110 },
-          min: { value: 2 }
+          timeout: 110,
+          min: 2
         }
       })
 
@@ -439,8 +439,8 @@ describe("WebSocket plugin", () => {
         method: "receive",
         args: {
           id,
-          timeout: { value: 300 },
-          min: { value: 1 }
+          timeout: 300,
+          min: 1
         }
       })
 

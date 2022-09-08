@@ -106,11 +106,7 @@ export class PluginProject extends Project<PluginManifest> {
     generationSubPath?: string
   ): Promise<BindOutput> {
     const manifest = await this.getManifest();
-    const module = manifest.source.module as string;
-    const moduleDirectory = this._getGenerationDirectory(
-      module,
-      generationSubPath
-    );
+    const moduleDirectory = this._getGenerationDirectory(generationSubPath);
 
     // Clean the code generation
     resetDir(moduleDirectory);
@@ -128,13 +124,7 @@ export class PluginProject extends Project<PluginManifest> {
     return bindSchema(options);
   }
 
-  private _getGenerationDirectory(
-    entryPoint: string,
-    generationSubPath = "wrap"
-  ): string {
-    const absolute = path.isAbsolute(entryPoint)
-      ? entryPoint
-      : path.join(this.getManifestDir(), entryPoint);
-    return path.join(path.dirname(absolute), generationSubPath);
+  private _getGenerationDirectory(generationSubPath = "src/wrap"): string {
+    return path.join(this.getManifestDir(), generationSubPath);
   }
 }
