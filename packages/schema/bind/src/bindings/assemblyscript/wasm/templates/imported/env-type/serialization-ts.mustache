@@ -1,8 +1,8 @@
 {{> serialization_imports}}
-import { {{type}} } from "./";
+import { {{#detectKeyword}}{{type}}{{/detectKeyword}} } from "./";
 import * as Types from "../..";
 
-export function serialize{{type}}(type: {{type}}): ArrayBuffer {
+export function serialize{{type}}(type: {{#detectKeyword}}{{type}}{{/detectKeyword}}): ArrayBuffer {
   const sizerContext: Context = new Context("Serializing (sizing) imported env-type: {{type}}");
   const sizer = new WriteSizer(sizerContext);
   write{{type}}(sizer, type);
@@ -13,35 +13,38 @@ export function serialize{{type}}(type: {{type}}): ArrayBuffer {
   return buffer;
 }
 
-export function write{{type}}(writer: Write, type: {{type}}): void {
+export function write{{type}}(writer: Write, type: {{#detectKeyword}}{{type}}{{/detectKeyword}}): void {
+  {{#properties.length}}
   writer.writeMapLength({{properties.length}});
+  {{/properties.length}}
+  {{^properties}}
+  writer.writeMapLength(0);
+  {{/properties}}
   {{#properties}}
   writer.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
   writer.writeString("{{name}}");
   {{#scalar}}
-  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{#handleKeywords}}{{name}}{{/handleKeywords}});
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{#detectKeyword}}{{name}}{{/detectKeyword}});
   {{/scalar}}
   {{#array}}
-  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{#handleKeywords}}{{name}}{{/handleKeywords}}, (writer: Write, item: {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}}): void => {
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{#detectKeyword}}{{name}}{{/detectKeyword}}, (writer: Write, item: {{#item}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/item}}): void => {
     {{> serialize_array}}
   });
   {{/array}}
   {{#map}}
-  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{#handleKeywords}}{{name}}{{/handleKeywords}}, (writer: Write, key: {{#key}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/key}}) => {
+  writer.write{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}(type.{{#detectKeyword}}{{name}}{{/detectKeyword}}, (writer: Write, key: {{#key}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/key}}) => {
     writer.write{{#key}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/key}}(key);
   }, (writer: Write, value: {{#value}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/value}}): void => {
-    {{#value}}
     {{> serialize_map_value}}
-    {{/value}}
   });
   {{/map}}
   {{#object}}
   {{#required}}
-  Types.{{type}}.write(writer, type.{{#handleKeywords}}{{name}}{{/handleKeywords}});
+  Types.{{#detectKeyword}}{{type}}{{/detectKeyword}}.write(writer, type.{{#detectKeyword}}{{name}}{{/detectKeyword}});
   {{/required}}
   {{^required}}
-  if (type.{{#handleKeywords}}{{name}}{{/handleKeywords}}) {
-    Types.{{type}}.write(writer, type.{{#handleKeywords}}{{name}}{{/handleKeywords}} as Types.{{type}});
+  if (type.{{#detectKeyword}}{{name}}{{/detectKeyword}}) {
+    Types.{{#detectKeyword}}{{type}}{{/detectKeyword}}.write(writer, type.{{#detectKeyword}}{{name}}{{/detectKeyword}} as Types.{{#detectKeyword}}{{type}}{{/detectKeyword}});
   } else {
     writer.writeNil();
   }
@@ -49,23 +52,23 @@ export function write{{type}}(writer: Write, type: {{type}}): void {
   {{/object}}
   {{#enum}}
   {{#required}}
-  writer.writeInt32(type.{{#handleKeywords}}{{name}}{{/handleKeywords}});
+  writer.writeInt32(type.{{#detectKeyword}}{{name}}{{/detectKeyword}});
   {{/required}}
   {{^required}}
-  writer.writeOptionalInt32(type.{{#handleKeywords}}{{name}}{{/handleKeywords}});
+  writer.writeOptionalInt32(type.{{#detectKeyword}}{{name}}{{/detectKeyword}});
   {{/required}}
   {{/enum}}
   writer.context().pop();
   {{/properties}}
 }
 
-export function deserialize{{type}}(buffer: ArrayBuffer): {{type}} {
+export function deserialize{{type}}(buffer: ArrayBuffer): {{#detectKeyword}}{{type}}{{/detectKeyword}} {
   const context: Context = new Context("Deserializing imported env-type {{type}}");
   const reader = new ReadDecoder(buffer, context);
   return read{{type}}(reader);
 }
 
-export function read{{type}}(reader: Read): {{type}} {
+export function read{{type}}(reader: Read): {{#detectKeyword}}{{type}}{{/detectKeyword}} {
   let numFields = reader.readMapLength();
 
   {{#properties}}
@@ -105,9 +108,7 @@ export function read{{type}}(reader: Read): {{type}} {
       _{{name}} = reader.read{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}((reader: Read): {{#key}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/key}} => {
         return reader.read{{#key}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/key}}();
       }, (reader: Read): {{#value}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/value}} => {
-        {{#value}}
         {{> deserialize_map_value}}
-        {{/value}}
       });
       {{/map}}
       {{#enum}}
@@ -142,7 +143,7 @@ export function read{{type}}(reader: Read): {{type}} {
 
   return {
     {{#properties}}
-    {{#handleKeywords}}{{name}}{{/handleKeywords}}: _{{name}}{{^last}},{{/last}}
+    {{#detectKeyword}}{{name}}{{/detectKeyword}}: _{{name}}{{^last}},{{/last}}
     {{/properties}}
   };
 }

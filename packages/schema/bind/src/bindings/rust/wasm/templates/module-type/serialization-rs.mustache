@@ -18,11 +18,11 @@ use polywrap_wasm_rs::{
 
 {{#propertyDeps}}
 {{^isEnum}}
-use {{crate}}::{{#toUpper}}{{type}}{{/toUpper}};
+use {{crate}}::{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}};
 {{/isEnum}}
 {{#isEnum}}
 use crate::{
-    {{#toUpper}}{{type}}{{/toUpper}},
+    {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}},
     get_{{#toLower}}{{type}}{{/toLower}}_value,
     sanitize_{{#toLower}}{{type}}{{/toLower}}_value
 };
@@ -32,13 +32,13 @@ use crate::{
 {{#methods}}
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct Args{{#toUpper}}{{name}}{{/toUpper}} {
+pub struct Args{{#detectKeyword}}{{#toUpper}}{{name}}{{/toUpper}}{{/detectKeyword}} {
     {{#arguments}}
     pub {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
     {{/arguments}}
 }
 
-pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(args: &[u8]) -> Result<Args{{#toUpper}}{{name}}{{/toUpper}}, DecodeError> {
+pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(args: &[u8]) -> Result<Args{{#detectKeyword}}{{#toUpper}}{{name}}{{/toUpper}}{{/detectKeyword}}, DecodeError> {
     let mut context = Context::new();
     context.description = "Deserializing module-type: {{#toLower}}{{name}}{{/toLower}}".to_string();
 
@@ -112,7 +112,7 @@ pub fn deserialize_{{#toLower}}{{name}}{{/toLower}}_args(args: &[u8]) -> Result<
     {{/arguments}}
     {{/arguments.length}}
 
-    Ok(Args{{#toUpper}}{{name}}{{/toUpper}} {
+    Ok(Args{{#detectKeyword}}{{#toUpper}}{{name}}{{/toUpper}}{{/detectKeyword}} {
         {{#arguments}}
         {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: _{{#toLower}}{{name}}{{/toLower}},
         {{/arguments}}
@@ -155,11 +155,11 @@ pub fn write_{{#toLower}}{{name}}{{/toLower}}_result<W: Write>(result: {{#return
     {{/enum}}
     {{#object}}
     {{#required}}
-    {{#toUpper}}{{type}}{{/toUpper}}::write(&result, writer)?;
+    {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::write(&result, writer)?;
     {{/required}}
     {{^required}}
     if result.is_some() {
-        {{#toUpper}}{{type}}{{/toUpper}}::write(result.as_ref().unwrap(), writer)?;
+        {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::write(result.as_ref().unwrap(), writer)?;
     } else {
         writer.write_nil()?;
     }

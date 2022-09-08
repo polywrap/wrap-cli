@@ -12,6 +12,8 @@ import {
 } from "./{{version}}";
 {{/formats}}
 
+{{#latest}}export * from "./{{version}}";{{/latest}}
+
 {{#formats}}
 import WrapManifestSchema_{{tsVersion}} from "./{{version}}.schema.json";
 {{/formats}}
@@ -62,4 +64,5 @@ export type AnyWrapAbi =
 
 export { migrateWrapManifest } from "./migrate";
 export { deserializeWrapManifest } from "./deserialize";
+export { serializeWrapManifest } from "./serialize";
 export { validateWrapManifest } from "./validate";

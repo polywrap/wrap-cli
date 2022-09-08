@@ -4,7 +4,7 @@ import { UriResolver, UriResolutionResult } from "../../core";
 
 export class RedirectsResolver implements UriResolver {
   public get name(): string {
-    return RedirectsResolver.name;
+    return "RedirectsResolver";
   }
 
   async resolveUri(uri: Uri, client: Client): Promise<UriResolutionResult> {

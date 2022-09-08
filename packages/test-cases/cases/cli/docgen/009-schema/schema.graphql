@@ -1,35 +1,35 @@
 #import { Module } into Ethereum from "ens/ethereum.polywrap.eth"
 
 type Module {
-  method(
-    str: String!
-    optStr: String
-  ): Object!
+    method(
+        str: String!
+        optStr: String
+    ): Object!
 }
 
 type Object {
-  u: UInt!
-  array: [Boolean!]!
-  bytes: Bytes
+    u: UInt!
+    array: [Boolean!]!
+    bytes: Bytes
 }
 
 """Test Comment"""
 type Object2 {
-  """Test Comment"""
-  u: UInt!
-  """Test Comment"""
-  array: [Boolean!]!
-  """Test Comment"""
-  bytes: Bytes
+    """Test Comment"""
+    u: UInt!
+    """Test Comment"""
+    array: [Boolean!]!
+    """Test Comment"""
+    bytes: Bytes
 }
 
 type Object3 {
-  u: UInt!
-  array: [Boolean!]!
-  bytes: Bytes
+    u: UInt!
+    array: [Boolean!]!
+    bytes: Bytes
 }
 
 enum test {
-  ARG1,
-  ARG2
+    ARG1,
+    ARG2
 }

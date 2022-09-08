@@ -5,12 +5,12 @@
   "private": true,
   "scripts": {
     "build": "polywrap build",
-    "test": "polywrap run ./workflows/e2e.yaml -v ./workflows/validator.cue -c ./workflows/config.ts",
-    "test:env:up": "polywrap infra up --modules=eth-ens-ipfs && yarn contracts:deploy",
+    "test": "polywrap run -c ./client-config.ts",
+    "test:env:up": "polywrap infra up --modules=eth-ens-ipfs",
     "test:env:down": "polywrap infra down --modules=eth-ens-ipfs"
   },
   "dependencies": {
-    "@polywrap/wasm-as": "0.1.0"
+    "@polywrap/wasm-as": "0.3.0"
   },
   "devDependencies": {
     "assemblyscript": "0.19.5",

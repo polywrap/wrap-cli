@@ -27,7 +27,7 @@ export type Boolean = boolean;
 
 /// Env START ///
 {{#envType}}
-export interface {{type}} extends Record<string, unknown> {
+export interface {{#detectKeyword}}{{type}}{{/detectKeyword}} extends Record<string, unknown> {
   {{#properties}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/properties}}
@@ -37,7 +37,7 @@ export interface {{type}} extends Record<string, unknown> {
 
 /// Objects START ///
 {{#objectTypes}}
-export interface {{type}} {
+export interface {{#detectKeyword}}{{type}}{{/detectKeyword}} {
   {{#properties}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/properties}}
@@ -59,7 +59,7 @@ export type {{type}}String =
   | "{{.}}"
   {{/constants}}
 
-export type {{type}} = {{type}}Enum | {{type}}String;
+export type {{#detectKeyword}}{{type}}{{/detectKeyword}} = {{type}}Enum | {{type}}String;
 
 {{/enumTypes}}
 /// Enums END ///
@@ -68,7 +68,7 @@ export type {{type}} = {{type}}Enum | {{type}}String;
 
 {{#importedObjectTypes}}
 /* URI: "{{uri}}" */
-export interface {{type}} {
+export interface {{#detectKeyword}}{{type}}{{/detectKeyword}} {
   {{#properties}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/properties}}
@@ -88,7 +88,7 @@ export type {{type}}String =
   | "{{.}}"
   {{/constants}}
 
-export type {{type}} = {{type}}Enum | {{type}}String;
+export type {{#detectKeyword}}{{type}}{{/detectKeyword}} = {{type}}Enum | {{type}}String;
 
 {{/importedEnumTypes}}
 /// Imported Objects END ///
@@ -98,7 +98,7 @@ export type {{type}} = {{type}}Enum | {{type}}String;
 {{#importedModuleTypes}}
 {{#methods}}
 /* URI: "{{parent.uri}}" */
-interface {{parent.type}}_Args_{{name}} extends Record<string, unknown> {
+interface {{parent.type}}_Args_{{name}} {
   {{#arguments}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/arguments}}
@@ -116,7 +116,7 @@ export const {{type}} = {
     return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>({
       uri: "{{parent.uri}}",
       method: "{{name}}",
-      args
+      args: args as unknown as Record<string, unknown>
     });
   }{{^last}},{{/last}}
   {{^last}}
@@ -127,7 +127,7 @@ export const {{type}} = {
 
 {{/isInterface}}
 {{#isInterface}}
-export class {{type}} {
+export class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
   public static interfaceUri: string = "{{uri}}";
 
   constructor(public uri: string) {
@@ -141,7 +141,7 @@ export class {{type}} {
     return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>({
       uri: this.uri,
       method: "{{name}}",
-      args
+      args: args as unknown as Record<string, unknown>
     });
   }
   {{^last}}
@@ -156,7 +156,7 @@ export class {{type}} {
 {{#interfaceTypes.length}}
 {{#interfaceTypes}}
 
-export class {{namespace}} {
+export class {{#detectKeyword}}{{namespace}}{{/detectKeyword}} {
   static uri: string = "{{uri}}";
 
   {{#capabilities}}

@@ -1,26 +1,19 @@
 import {
   createModuleDefinition,
   createObjectDefinition,
-  createAbi,
-  Abi,
+  WrapAbi,
 } from "@polywrap/schema-parse";
 
-export const abi: Abi = {
-  ...createAbi(),
+export const abi: WrapAbi = {
+  version: "0.1",
   objectTypes: [
     {
       ...createObjectDefinition({
         type: "CustomType",
       }),
-      properties: [
-      ],
     },
   ],
   moduleType: {
       ...createModuleDefinition({}),
-      imports: [],
-      interfaces: [],
-      methods: [
-      ],
     },
 };

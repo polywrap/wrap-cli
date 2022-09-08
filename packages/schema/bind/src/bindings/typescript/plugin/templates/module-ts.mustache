@@ -11,7 +11,7 @@ import {
 {{#moduleType}}
 {{#methods}}
 
-export interface Args_{{name}} extends Record<string, unknown> {
+export interface Args_{{name}} {
   {{#arguments}}
   {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
   {{/arguments}}
