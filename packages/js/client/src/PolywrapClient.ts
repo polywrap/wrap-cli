@@ -38,7 +38,6 @@ import {
 import {
   buildCleanUriHistory,
   IWrapperCache,
-  PackageToWrapperCacheResolver,
 } from "@polywrap/uri-resolvers-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";

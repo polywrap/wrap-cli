@@ -73,20 +73,17 @@ describe("ENS Resolver Plugin", () => {
 
   it("Should successfully resolve a deployed wrapper - e2e", async () => {
     const wrapperUri = `ens/testnet/${wrapperEnsDomain}`;
-    const response = await client.tryResolveUri({ uri: wrapperUri });
+    const result = await client.tryResolveUri({ uri: wrapperUri });
 
-    if (!response.result.ok) {
+    if (!result.ok) {
       fail("Expected response to not be an error");
     }
 
-    if (response.result.value.type !== "wrapper") {
+    if (result.value.type !== "wrapper") {
       fail("Expected response to be a wrapper");
     }
 
-    const manifest = await response.result.value.wrapper.getManifest(
-      {},
-      client
-    );
+    const manifest = await result.value.wrapper.getManifest({}, client);
 
     expect(manifest?.name).toBe("SimpleStorage");
   });
