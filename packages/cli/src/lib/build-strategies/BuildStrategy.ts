@@ -1,15 +1,15 @@
 import { PolywrapProject } from "../project";
 
-export interface SourceBuildArgs {
+export interface BuildStrategyArgs {
   project: PolywrapProject;
   outputDir: string;
 }
 
-export abstract class SourceBuildStrategy<TBuildReturn = unknown> {
+export abstract class BuildStrategy<TBuildReturn = unknown> {
   protected project: PolywrapProject;
   protected outputDir: string;
 
-  constructor({ project, outputDir }: SourceBuildArgs) {
+  constructor({ project, outputDir }: BuildStrategyArgs) {
     this.project = project;
     this.outputDir = outputDir;
   }

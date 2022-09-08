@@ -1,11 +1,11 @@
-import { SourceBuildStrategy } from "../SourceBuilder";
+import { BuildStrategy } from "../BuildStrategy";
 import { displayPath, runCommand } from "../../system";
 import { withSpinner } from "../../helpers";
 import { intlMsg } from "../../intl";
 
 import path from "path";
 
-export class LocalBuildStrategy extends SourceBuildStrategy<void> {
+export class LocalBuildStrategy extends BuildStrategy<void> {
   public async build(): Promise<void> {
     const run = async () => {
       const manifestDir = await this.project.getManifestDir();

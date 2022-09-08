@@ -7,7 +7,7 @@ import {
   runCommand,
 } from "../../system";
 import { PolywrapProject } from "../../project";
-import { SourceBuildArgs, SourceBuildStrategy } from "../SourceBuilder";
+import { BuildStrategyArgs, BuildStrategy } from "../BuildStrategy";
 import { intlMsg } from "../../intl";
 import { withSpinner } from "../../helpers";
 
@@ -18,10 +18,10 @@ import Mustache from "mustache";
 
 type BuildImageId = string;
 
-export class DockerBuildStrategy extends SourceBuildStrategy<BuildImageId> {
+export class DockerBuildStrategy extends BuildStrategy<BuildImageId> {
   private _dockerLock: FileLock;
 
-  constructor(args: SourceBuildArgs) {
+  constructor(args: BuildStrategyArgs) {
     super(args);
 
     if (!isDockerInstalled()) {

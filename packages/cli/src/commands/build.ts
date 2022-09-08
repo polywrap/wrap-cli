@@ -14,8 +14,9 @@ import {
 } from "../lib";
 import { CodeGenerator } from "../lib/codegen/CodeGenerator";
 import { CompilerCodegenStrategy } from "../lib/codegen/strategies/CompilerCodegenStrategy";
-import { LocalBuildStrategy } from "../lib/source-builders/strategies/LocalStrategy";
-import { DockerBuildStrategy } from "../lib/source-builders/strategies/DockerStrategy";
+import { LocalBuildStrategy } from "../lib/build-strategies/strategies/LocalStrategy";
+import { DockerBuildStrategy } from "../lib/build-strategies/strategies/DockerStrategy";
+import { SUPPORTED_STRATEGIES } from "../lib/build-strategies";
 
 import path from "path";
 import readline from "readline";
@@ -23,6 +24,8 @@ import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
 import { PolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
 
 const defaultOutputDir = "./build";
+const defaultStrategy = "docker";
+const strategyStr = intlMsg.commands_build_options_s_strategy();
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 const pathStr = intlMsg.commands_build_options_o_path();
 
@@ -32,7 +35,7 @@ type BuildCommandOptions = {
   clientConfig: Partial<PolywrapClientConfig>;
   watch?: boolean;
   verbose?: boolean;
-  docker?: boolean;
+  strategy: typeof SUPPORTED_STRATEGIES[number];
 };
 
 export const build: Command = {
@@ -57,7 +60,12 @@ export const build: Command = {
         `-c, --client-config <${intlMsg.commands_common_options_configPath()}>`,
         `${intlMsg.commands_common_options_config()}`
       )
-      .option(`-n, --no-docker`, `${intlMsg.commands_build_options_n()}`)
+      .option(
+        `-s, --strategy <${strategyStr}>`,
+        `${intlMsg.commands_build_options_s({
+          default: defaultStrategy,
+        })}`
+      )
       .option(`-w, --watch`, `${intlMsg.commands_build_options_w()}`)
       .option(`-v, --verbose`, `${intlMsg.commands_build_options_v()}`)
       .action(async (options) => {
@@ -66,6 +74,7 @@ export const build: Command = {
           manifestFile: parseWasmManifestFileOption(options.manifestFile),
           clientConfig: await parseClientConfigOption(options.clientConfig),
           outputDir: parseDirOption(options.outputDir, defaultOutputDir),
+          strategy: options.strategy ?? defaultStrategy,
         });
       });
   },
@@ -96,7 +105,7 @@ async function run(options: BuildCommandOptions) {
     manifestFile,
     outputDir,
     clientConfig,
-    docker,
+    strategy,
   } = options;
 
   // Get Client
@@ -112,15 +121,16 @@ async function run(options: BuildCommandOptions) {
   const polywrapManifest = await project.getManifest();
   await validateManifestModules(polywrapManifest);
 
-  const buildStrategy = docker
-    ? new DockerBuildStrategy({
-        project,
-        outputDir,
-      })
-    : new LocalBuildStrategy({
-        project,
-        outputDir,
-      });
+  const buildStrategy =
+    strategy === "docker"
+      ? new DockerBuildStrategy({
+          project,
+          outputDir,
+        })
+      : new LocalBuildStrategy({
+          project,
+          outputDir,
+        });
 
   const schemaComposer = new SchemaComposer({
     project,
@@ -142,7 +152,7 @@ async function run(options: BuildCommandOptions) {
       project,
       outputDir,
       schemaComposer,
-      sourceBuildStrategy: buildStrategy,
+      buildStrategy,
       codeGenerator,
     });
 

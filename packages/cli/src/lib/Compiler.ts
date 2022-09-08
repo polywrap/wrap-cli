@@ -12,7 +12,7 @@ import {
   SchemaComposer,
   withSpinner,
 } from "./";
-import { SourceBuildStrategy } from "./source-builders/SourceBuilder";
+import { BuildStrategy } from "./build-strategies/BuildStrategy";
 import { CodeGenerator } from "./codegen/CodeGenerator";
 
 import { WasmWrapper, WrapImports } from "@polywrap/client-js";
@@ -26,7 +26,7 @@ export interface CompilerConfig {
   outputDir: string;
   project: PolywrapProject;
   codeGenerator: CodeGenerator;
-  sourceBuildStrategy: SourceBuildStrategy;
+  buildStrategy: BuildStrategy;
   schemaComposer: SchemaComposer;
 }
 
@@ -131,7 +131,7 @@ export class Compiler {
     }
 
     // Build the sources
-    await this._config.sourceBuildStrategy.build();
+    await this._config.buildStrategy.build();
 
     // Validate the Wasm module
     await this._validateWasmModule(outputDir);
