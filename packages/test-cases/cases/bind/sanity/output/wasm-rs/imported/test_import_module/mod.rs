@@ -22,17 +22,19 @@ use crate::TestImportObject;
 use crate::TestImportEnum;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct TestImportModule {}
+pub struct TestImportModule {
+    uri: &'static str
+}
 
 impl TestImportModule {
-    pub const URI: &'static str = "testimport.uri.eth";
+    pub const INTERFACE_URI: &'static str = "testimport.uri.eth";
 
-    pub fn new() -> TestImportModule {
-        TestImportModule {}
+    pub fn new(uri: &'static str) -> TestImportModule {
+        TestImportModule { uri: uri }
     }
 
-    pub fn imported_method(args: &ArgsImportedMethod) -> Result<Option<TestImportObject>, String> {
-        let uri = TestImportModule::URI;
+    pub fn imported_method(&self, args: &ArgsImportedMethod) -> Result<Option<TestImportObject>, String> {
+        let uri = self.uri;
         let args = serialize_imported_method_args(args).map_err(|e| e.to_string())?;
         let result = subinvoke::wrap_subinvoke(
             uri,
@@ -42,8 +44,8 @@ impl TestImportModule {
         deserialize_imported_method_result(result.as_slice()).map_err(|e| e.to_string())
     }
 
-    pub fn another_method(args: &ArgsAnotherMethod) -> Result<i32, String> {
-        let uri = TestImportModule::URI;
+    pub fn another_method(&self, args: &ArgsAnotherMethod) -> Result<i32, String> {
+        let uri = self.uri;
         let args = serialize_another_method_args(args).map_err(|e| e.to_string())?;
         let result = subinvoke::wrap_subinvoke(
             uri,
