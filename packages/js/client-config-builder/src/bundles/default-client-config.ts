@@ -1,10 +1,4 @@
-import {
-  ClientConfig,
-  PluginWrapper,
-  Uri,
-  PluginPackage,
-  Env,
-} from "@polywrap/core-js";
+import { ClientConfig, Uri } from "@polywrap/core-js";
 import { ipfsPlugin } from "@polywrap/ipfs-plugin-js";
 import { ipfsResolverPlugin } from "@polywrap/ipfs-resolver-plugin-js";
 import {
@@ -115,13 +109,7 @@ export const getDefaultClientConfig = (
     resolver: new RecursiveResolver(
       new PackageToWrapperCacheResolver(wrapperCache ?? new WrapperCache(), [
         new LegacyRedirectsResolver(),
-        new LegacyPluginsResolver(
-          (
-            uri: Uri,
-            plugin: PluginPackage<unknown>,
-            environment: Env<Uri> | undefined
-          ) => new PluginWrapper(uri, plugin, environment)
-        ),
+        new LegacyPluginsResolver(),
         new ExtendableUriResolver(),
       ])
     ),

@@ -487,8 +487,6 @@ export class PolywrapClient implements Client {
       options.config
     );
 
-    const ignoreCache = this._isContextualized(contextId);
-
     const client = contextualizeClient(this, contextId);
 
     const uriResolver = this.getUriResolver({ contextId: contextId });
@@ -496,15 +494,11 @@ export class PolywrapClient implements Client {
     const resolutionContext =
       options.resolutionContext ?? new UriResolutionContext();
 
-    // This is a hack because we expect config overrides to ignore cache
-    const response =
-      ignoreCache && uriResolver instanceof PackageToWrapperCacheResolver
-        ? await ((uriResolver as unknown) as PackageToWrapperCacheResolver).resolverToCache.tryResolveUri(
-            uri,
-            client,
-            resolutionContext
-          )
-        : await uriResolver.tryResolveUri(uri, client, resolutionContext);
+    const response = await uriResolver.tryResolveUri(
+      uri,
+      client,
+      resolutionContext
+    );
 
     if (shouldClearContext) {
       this._clearContext(contextId);
@@ -519,11 +513,6 @@ export class PolywrapClient implements Client {
     }
 
     return response;
-  }
-
-  @Tracer.traceMethod("PolywrapClient: isContextualized")
-  private _isContextualized(contextId: string | undefined): boolean {
-    return !!contextId && this._contexts.has(contextId);
   }
 
   @Tracer.traceMethod("PolywrapClient: getConfig")
