@@ -10,7 +10,7 @@ import {
 } from ".";
 {{#validators.length}}import * as Validators from "../../validators";{{/validators.length}}
 {{#formats}}
-import schema_{{tsVersion}} from "@polywrap/polywrap-manifest-schemas/formats/{{dir}}/{{version}}.json";
+import {{type}}Schema_{{tsVersion}} from "@polywrap/polywrap-manifest-schemas/formats/{{dir}}/{{version}}.json";
 {{/formats}}
 
 import {
@@ -26,9 +26,9 @@ type {{#latest}}{{type}}{{/latest}}Schemas = {
 
 const schemas: {{#latest}}{{type}}{{/latest}}Schemas = {
   // NOTE: Patch fix for backwards compatability
-  "0.1.0": schema_0_1,
+  "0.1": {{#first}}{{type}}{{/first}}Schema_0_1_0,
   {{#formats}}
-  "{{version}}": schema_{{tsVersion}},
+  "{{version}}": {{type}}Schema_{{tsVersion}},
   {{/formats}}
 };
 

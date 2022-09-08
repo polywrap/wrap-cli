@@ -1,0 +1,626 @@
+{
+  "id": "WrapManifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "name",
+    "type",
+    "abi"
+  ],
+  "properties": {
+    "version": {
+      "description": "WRAP Standard Version",
+      "type": "string",
+      "enum": [
+        "0.1.0",
+        "0.1"
+      ]
+    },
+    "type": {
+      "description": "Wrapper Package Type",
+      "type": "string",
+      "enum": [
+        "wasm",
+        "interface",
+        "plugin"
+      ]
+    },
+    "name": {
+      "description": "Wrapper Name",
+      "type": "string",
+      "pattern": "^[a-zA-Z0-9\\-\\_]+$"
+    },
+    "abi": {
+      "description": "Information of modules",
+      "id": "Abi",
+      "type": "object",
+      "unevaluatedProperties": false,
+      "properties": {
+        "version": {
+          "description": "ABI Version",
+          "type": "string",
+          "const": "0.1"
+        },
+        "objectTypes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/properties/abi/definitions/objectDefinition"
+          }
+        },
+        "moduleType": {
+          "$ref": "#/properties/abi/definitions/moduleDefinition"
+        },
+        "enumTypes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/properties/abi/definitions/enumDefinition"
+          }
+        },
+        "interfaceTypes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/properties/abi/definitions/interfaceDefinition"
+          }
+        },
+        "importedObjectTypes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/properties/abi/definitions/importedObjectDefinition"
+          }
+        },
+        "importedModuleTypes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/properties/abi/definitions/importedModuleDefinition"
+          }
+        },
+        "importedEnumTypes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/properties/abi/definitions/importedEnumDefinition"
+          }
+        },
+        "importedEnvTypes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/properties/abi/definitions/importedEnvDefinition"
+          }
+        },
+        "envType": {
+          "$ref": "#/properties/abi/definitions/envDefinition"
+        }
+      },
+      "definitions": {
+        "objectDefinition": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/properties/abi/definitions/genericDefinition"
+            },
+            {
+              "$ref": "#/properties/abi/definitions/withComment"
+            },
+            {
+              "properties": {
+                "properties": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/properties/abi/definitions/propertyDefinition"
+                  }
+                },
+                "interfaces": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/properties/abi/definitions/interfaceImplementedDefinition"
+                  }
+                }
+              },
+              "unevaluatedProperties": false
+            }
+          ],
+          "unevaluatedProperties": false
+        },
+        "moduleDefinition": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/properties/abi/definitions/genericDefinition"
+            },
+            {
+              "$ref": "#/properties/abi/definitions/withComment"
+            },
+            {
+              "properties": {
+                "methods": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/properties/abi/definitions/methodDefinition"
+                  }
+                },
+                "imports": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/properties/abi/definitions/importedModuleRef"
+                  }
+                },
+                "interfaces": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/properties/abi/definitions/interfaceImplementedDefinition"
+                  }
+                }
+              },
+              "unevaluatedProperties": false
+            }
+          ],
+          "unevaluatedProperties": false
+        },
+        "interfaceImplementedDefinition": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/properties/abi/definitions/genericDefinition"
+            }
+          ],
+          "unevaluatedProperties": false
+        },
+        "methodDefinition": {
+          "type": "object",
+          "required": [
+            "return"
+          ],
+          "allOf": [
+            {
+              "$ref": "#/properties/abi/definitions/genericDefinition"
+            },
+            {
+              "$ref": "#/properties/abi/definitions/withComment"
+            },
+            {
+              "properties": {
+                "arguments": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/properties/abi/definitions/propertyDefinition"
+                  }
+                },
+                "env": {
+                  "type": "object",
+                  "properties": {
+                    "required": {
+                      "type": "boolean"
+                    }
+                  },
+                  "unevaluatedProperties": false
+                },
+                "return": {
+                  "$ref": "#/properties/abi/definitions/propertyDefinition"
+                }
+              },
+              "unevaluatedProperties": false
+            }
+          ],
+          "unevaluatedProperties": false
+        },
+        "envDefinition": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/properties/abi/definitions/objectDefinition"
+            }
+          ]
+        },
+        "enumDefinition": {
+          "type": "object",
+          "required": [
+            "constants"
+          ],
+          "allOf": [
+            {
+              "$ref": "#/properties/abi/definitions/genericDefinition"
+            },
+            {
+              "$ref": "#/properties/abi/definitions/withComment"
+            },
+            {
+              "properties": {
+                "constants": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "unevaluatedProperties": false
+            }
+          ],
+          "unevaluatedProperties": false
+        },
+        "interfaceDefinition": {
+          "type": "object",
+          "required": [
+            "capabilities"
+          ],
+          "allOf": [
+            {
+              "$ref": "#/properties/abi/definitions/genericDefinition"
+            },
+            {
+              "$ref": "#/properties/abi/definitions/importedDefinition"
+            },
+            {
+              "properties": {
+                "capabilities": {
+                  "$ref": "#/properties/abi/definitions/capabilityDefinition"
+                }
+              },
+              "unevaluatedProperties": false
+            }
+          ],
+          "unevaluatedProperties": false
+        },
+        "capabilityDefinition": {
+          "type": "object",
+          "properties": {
+            "getImplementations": {
+              "type": "object",
+              "required": [
+                "enabled"
+              ],
+              "properties": {
+                "enabled": {
+                  "type": "boolean"
+                }
+              },
+              "unevaluatedProperties": false
+            }
+          },
+          "unevaluatedProperties": false
+        },
+        "importedDefinition": {
+          "type": "object",
+          "required": [
+            "uri",
+            "namespace",
+            "nativeType"
+          ],
+          "properties": {
+            "uri": {
+              "type": "string"
+            },
+            "namespace": {
+              "type": "string"
+            },
+            "nativeType": {
+              "type": "string"
+            }
+          },
+          "unevaluatedProperties": false
+        },
+        "importedObjectDefinition": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/properties/abi/definitions/objectDefinition"
+            },
+            {
+              "$ref": "#/properties/abi/definitions/importedDefinition"
+            },
+            {
+              "$ref": "#/properties/abi/definitions/withComment"
+            }
+          ],
+          "unevaluatedProperties": false
+        },
+        "importedModuleDefinition": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/properties/abi/definitions/genericDefinition"
+            },
+            {
+              "$ref": "#/properties/abi/definitions/importedDefinition"
+            },
+            {
+              "$ref": "#/properties/abi/definitions/withComment"
+            },
+            {
+              "properties": {
+                "methods": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/properties/abi/definitions/methodDefinition"
+                  }
+                },
+                "isInterface": {
+                  "type": [
+                    "boolean"
+                  ]
+                }
+              },
+              "unevaluatedProperties": false
+            }
+          ],
+          "unevaluatedProperties": false
+        },
+        "importedEnumDefinition": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/properties/abi/definitions/enumDefinition"
+            },
+            {
+              "$ref": "#/properties/abi/definitions/importedDefinition"
+            }
+          ],
+          "unevaluatedProperties": false
+        },
+        "importedEnvDefinition": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/properties/abi/definitions/importedObjectDefinition"
+            }
+          ],
+          "unevaluatedProperties": false
+        },
+        "withKind": {
+          "type": "object",
+          "properties": {
+            "kind": {
+              "type": "number"
+            }
+          },
+          "unevaluatedProperties": false,
+          "required": [
+            "kind"
+          ]
+        },
+        "withComment": {
+          "type": "object",
+          "properties": {
+            "comment": {
+              "type": "string"
+            }
+          },
+          "unevaluatedProperties": false
+        },
+        "propertyDefinition": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/properties/abi/definitions/withComment"
+            },
+            {
+              "$ref": "#/properties/abi/definitions/anyDefinition"
+            }
+          ],
+          "unevaluatedProperties": false
+        },
+        "genericDefinition": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/properties/abi/definitions/withKind"
+            },
+            {
+              "required": [
+                "type"
+              ],
+              "properties": {
+                "type": {
+                  "type": "string"
+                },
+                "name": {
+                  "type": [
+                    "string"
+                  ]
+                },
+                "required": {
+                  "type": [
+                    "boolean"
+                  ]
+                }
+              },
+              "unevaluatedProperties": false
+            }
+          ],
+          "unevaluatedProperties": false
+        },
+        "anyDefinition": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/properties/abi/definitions/genericDefinition"
+            },
+            {
+              "properties": {
+                "array": {
+                  "$ref": "#/properties/abi/definitions/arrayDefinition"
+                },
+                "scalar": {
+                  "$ref": "#/properties/abi/definitions/scalarDefinition"
+                },
+                "map": {
+                  "$ref": "#/properties/abi/definitions/mapDefinition"
+                },
+                "object": {
+                  "$ref": "#/properties/abi/definitions/objectRef"
+                },
+                "enum": {
+                  "allOf": [
+                    {
+                      "$ref": "#/properties/abi/definitions/enumRef"
+                    }
+                  ],
+                  "required": [
+                    "type"
+                  ]
+                },
+                "unresolvedObjectOrEnum": {
+                  "$ref": "#/properties/abi/definitions/unresolvedObjectOrEnumRef"
+                }
+              },
+              "unevaluatedProperties": false
+            }
+          ],
+          "unevaluatedProperties": false
+        },
+        "arrayDefinition": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/properties/abi/definitions/anyDefinition"
+            },
+            {
+              "properties": {
+                "item": {
+                  "$ref": "#/properties/abi/definitions/genericDefinition"
+                }
+              },
+              "unevaluatedProperties": false
+            }
+          ],
+          "unevaluatedProperties": false,
+          "required": [
+            "item"
+          ]
+        },
+        "scalarType": {
+          "type": "string",
+          "enum": [
+            "UInt",
+            "UInt8",
+            "UInt16",
+            "UInt32",
+            "Int",
+            "Int8",
+            "Int16",
+            "Int32",
+            "String",
+            "Boolean",
+            "Bytes",
+            "BigInt",
+            "BigNumber",
+            "JSON"
+          ]
+        },
+        "scalarDefinition": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/properties/abi/definitions/genericDefinition"
+            }
+          ],
+          "properties": {
+            "type": {
+              "$ref": "#/properties/abi/definitions/scalarType"
+            }
+          },
+          "unevaluatedProperties": false,
+          "required": [
+            "type"
+          ]
+        },
+        "mapKeyType": {
+          "type": "string",
+          "enum": [
+            "UInt",
+            "UInt8",
+            "UInt16",
+            "UInt32",
+            "Int",
+            "Int8",
+            "Int16",
+            "Int32",
+            "String"
+          ]
+        },
+        "mapKeyDefinition": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/properties/abi/definitions/anyDefinition"
+            },
+            {
+              "properties": {
+                "type": {
+                  "$ref": "#/properties/abi/definitions/mapKeyType"
+                }
+              },
+              "unevaluatedProperties": false
+            }
+          ],
+          "unevaluatedProperties": false,
+          "required": [
+            "type"
+          ]
+        },
+        "mapDefinition": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/properties/abi/definitions/anyDefinition"
+            },
+            {
+              "$ref": "#/properties/abi/definitions/withComment"
+            },
+            {
+              "properties": {
+                "key": {
+                  "$ref": "#/properties/abi/definitions/mapKeyDefinition"
+                },
+                "value": {
+                  "$ref": "#/properties/abi/definitions/genericDefinition"
+                }
+              },
+              "unevaluatedProperties": false
+            }
+          ],
+          "unevaluatedProperties": false,
+          "required": [
+            "key",
+            "value"
+          ]
+        },
+        "objectRef": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/properties/abi/definitions/genericDefinition"
+            }
+          ],
+          "unevaluatedProperties": false
+        },
+        "enumRef": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/properties/abi/definitions/genericDefinition"
+            }
+          ],
+          "unevaluatedProperties": false
+        },
+        "unresolvedObjectOrEnumRef": {
+          "type": "object",
+          "allOf": [
+            {
+              "$ref": "#/properties/abi/definitions/genericDefinition"
+            }
+          ],
+          "unevaluatedProperties": false
+        },
+        "importedModuleRef": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string"
+            }
+          },
+          "unevaluatedProperties": false
+        }
+      }
+    }
+  }
+}

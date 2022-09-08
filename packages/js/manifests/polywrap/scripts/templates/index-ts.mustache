@@ -7,19 +7,25 @@
 
 {{#formats}}
 import {
-  {{type}} as {{type}}_{{tsVersion}}
+  {{type}} as {{type}}_{{tsVersion}},
+  {{#isWorkflow}}
+  Jobs as WorkflowJobs_{{tsVersion}},
+  {{/isWorkflow}}
 } from "./{{version}}";
 {{/formats}}
 
 export {
   {{#formats}}
   {{type}}_{{tsVersion}},
+  {{#isWorkflow}}
+  WorkflowJobs_{{tsVersion}},
+  {{/isWorkflow}}
   {{/formats}}
 };
 
 export enum {{#latest}}{{type}}{{/latest}}Formats {
   // NOTE: Patch fix for backwards compatability
-  "v0.1.0" = "0.1.0",
+  "v0.1" = "0.1",
   {{#formats}}
   "v{{version}}" = "{{version}}",
   {{/formats}}
@@ -28,6 +34,14 @@ export enum {{#latest}}{{type}}{{/latest}}Formats {
 export type Any{{#latest}}{{type}}{{/latest}} =
 {{#formats}}
   | {{type}}_{{tsVersion}}
+{{/formats}}
+
+
+{{#formats}}
+{{#isWorkflow}}
+export type WorkflowJobs =
+   | WorkflowJobs_{{tsVersion}}
+{{/isWorkflow}}
 {{/formats}}
 
 export type {{#latest}}{{type}}{{/latest}} = {{#latest}}{{type}}_{{tsVersion}}{{/latest}};

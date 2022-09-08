@@ -1,0 +1,91 @@
+import {
+  wrap_subinvoke,
+  wrap_subinvokeImplementation,
+  Box,
+  BigInt,
+  BigNumber,
+  JSON,
+  Result
+} from "@polywrap/wasm-as";
+{{#methods.length}}
+import {
+  {{#methods}}
+  serialize{{name}}Args,
+  deserialize{{name}}Result,
+  Args_{{name}}{{^last}},{{/last}}
+  {{/methods}}
+} from "./serialization";
+{{/methods.length}}
+import * as Types from "../..";
+
+{{^isInterface}}
+export class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
+
+  public static uri: string = "{{uri}}";
+
+  {{#methods}}
+  public static {{name}}(
+    args: Args_{{name}}
+  ): Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string> {
+    const argsBuf = serialize{{name}}Args(args);
+    const result = wrap_subinvoke(
+      "{{uri}}",
+      "{{name}}",
+      argsBuf
+    );
+
+    if (result.isErr) {
+      return Result.Err<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string>(
+        result.unwrapErr()
+      );
+    }
+
+    return Result.Ok<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string>(
+      deserialize{{name}}Result(result.unwrap())
+    );
+  }
+  {{^last}}
+
+  {{/last}}
+  {{/methods}}
+}
+{{/isInterface}}
+{{#isInterface}}
+export class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
+
+  public static interfaceUri: string = "{{uri}}";
+
+  public uri: string;
+
+  constructor(uri: string) {
+    this.uri = uri;
+  }
+
+  {{#methods}}
+  public {{name}}(
+    args: Args_{{name}}
+  ): Result<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string> {
+    const argsBuf = serialize{{name}}Args(args);
+    const result = wrap_subinvokeImplementation(
+      "{{uri}}",
+      this.uri,
+      "{{name}}",
+      argsBuf
+    );
+
+    if (result.isErr) {
+      return Result.Err<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string>(
+        result.unwrapErr()
+      );
+    }
+
+    return Result.Ok<{{#return}}{{#toWasm}}{{toGraphQLType}}{{/toWasm}}{{/return}}, string>(
+      deserialize{{name}}Result(result.unwrap())
+    );
+  }
+  {{^last}}
+
+  {{/last}}
+  {{/methods}}
+}
+{{/isInterface}}

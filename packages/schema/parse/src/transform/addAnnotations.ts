@@ -1,5 +1,7 @@
 import { toGraphQL } from ".";
-import { PropertyDefinition, AbiTransforms } from "..";
+import { AbiTransforms } from "..";
+
+import { PropertyDefinition } from "@polywrap/wrap-manifest-types-js";
 
 export const addAnnotations: AbiTransforms = {
   enter: {

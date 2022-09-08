@@ -2,7 +2,8 @@ import { wrap_load_env } from "@polywrap/wasm-as";
 import {
   moduleMethod,
   objectMethod,
-  optionalEnvMethod
+  optionalEnvMethod,
+  _if
 } from "../../index";
 import {
   deserializemoduleMethodArgs,
@@ -10,7 +11,9 @@ import {
   deserializeobjectMethodArgs,
   serializeobjectMethodResult,
   deserializeoptionalEnvMethodArgs,
-  serializeoptionalEnvMethodResult
+  serializeoptionalEnvMethodResult,
+  deserializeifArgs,
+  serializeifResult
 } from "./serialization";
 import * as Types from "..";
 
@@ -27,6 +30,7 @@ export function moduleMethodWrapped(argsBuf: ArrayBuffer, env_size: u32): ArrayB
       optEnumArray: args.optEnumArray,
       map: args.map,
       mapOfArr: args.mapOfArr,
+      mapOfMap: args.mapOfMap,
       mapOfObj: args.mapOfObj,
       mapOfArrOfObj: args.mapOfArrOfObj
     }
@@ -73,4 +77,15 @@ export function optionalEnvMethodWrapped(argsBuf: ArrayBuffer, env_size: u32): A
     env
   );
   return serializeoptionalEnvMethodResult(result);
+}
+
+export function ifWrapped(argsBuf: ArrayBuffer, env_size: u32): ArrayBuffer {
+  const args = deserializeifArgs(argsBuf);
+
+  const result = _if(
+    {
+      _if: args._if
+    }
+  );
+  return serializeifResult(result);
 }

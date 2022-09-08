@@ -1,9 +1,12 @@
-format: 0.1.0
-name: TestUseGetImpl
-build: ./polywrap.build.yaml
-language: wasm/rust
-schema: ./schema.graphql
-module: ./Cargo.toml
-import_redirects:
-  - uri: wrap://ens/interface.eth
-    schema: ../test-interface/build/schema.graphql
+format: 0.2.0
+project:
+  name: TestUseGetImpl
+  type: wasm/rust
+source:
+  schema: ./schema.graphql
+  module: ./Cargo.toml
+  import_abis:
+    - uri: wrap://ens/interface.eth
+      abi: ../test-interface/build/wrap.info
+extensions:
+  build: ./polywrap.build.yaml

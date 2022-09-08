@@ -1,8 +1,32 @@
-import { exec, ExecException } from "child_process";
+import { exec, ExecException, execSync } from "child_process";
+
+export function runCommandSync(
+  command: string,
+  quiet = false,
+  env: Record<string, string> | undefined = undefined
+): { stdout?: string; stderr?: Error } {
+  if (!quiet) {
+    console.log(`> ${command}`);
+  }
+
+  try {
+    const stdout = execSync(command, {
+      cwd: __dirname,
+      env: {
+        ...process.env,
+        ...env,
+      },
+      encoding: "utf-8",
+    });
+    return { stdout: stdout };
+  } catch (e) {
+    return { stderr: e };
+  }
+}
 
 export async function runCommand(
   command: string,
-  quiet = true,
+  quiet = false,
   env: Record<string, string> | undefined = undefined
 ): Promise<{ stdout: string; stderr: string }> {
   if (!quiet) {
@@ -16,7 +40,7 @@ export async function runCommand(
       stderr: string
     ) => {
       if (err) {
-        reject(stderr);
+        reject({ stdout, stderr });
       } else {
         resolve({ stdout, stderr });
       }
@@ -40,7 +64,7 @@ export async function runCommand(
       });
 
       childObj.stderr?.on("data", (data) => {
-        console.log(data.toString());
+        console.error(data.toString());
       });
     }
   });

@@ -40,7 +40,7 @@ pub fn write_another_type<W: Write>(args: &AnotherType, writer: &mut W) -> Resul
     writer.context().pop();
     writer.context().push("const", "Option<String>", "writing property");
     writer.write_string("const")?;
-    writer.write_optional_string(&args.m_const)?;
+    writer.write_optional_string(&args._const)?;
     writer.context().pop();
     Ok(())
 }
@@ -92,6 +92,6 @@ pub fn read_another_type<R: Read>(reader: &mut R) -> Result<AnotherType, DecodeE
     Ok(AnotherType {
         prop: _prop,
         circular: _circular,
-        m_const: _const,
+        _const: _const,
     })
 }

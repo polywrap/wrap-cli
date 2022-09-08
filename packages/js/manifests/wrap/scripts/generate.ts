@@ -63,16 +63,13 @@ async function generateFormatTypes() {
         },
       });
 
-      const finalWrapSchema = JSON.parse(
-        JSON.stringify(bundledSchema).replace(
-          /unevaluatedProperties/g,
-          "additionalProperties"
-        )
-      );
-      wrapSchemas.push(finalWrapSchema);
+      wrapSchemas.push(bundledSchema);
 
       // Convert it to a TypeScript interface
-      const tsFile = await compile(finalWrapSchema, wrapSchema.id);
+      let tsFile = await compile(bundledSchema as any, wrapSchema.id, {additionalProperties: false});
+
+      // Hack: replace all instances of `abi: unknown;` with `abi: Abi;`
+      tsFile = tsFile.replace("abi: unknown;", "abi: Abi;");
 
       // Emit the result
       const tsOutputPath = path.join(wrapOutputDir, `${wrapVersion}.ts`);
@@ -81,6 +78,9 @@ async function generateFormatTypes() {
         tsOutputPath,
         `/* eslint-disable @typescript-eslint/naming-convention */\n${tsFile}`
       );
+
+      const schemaOutputPath = path.join(wrapOutputDir, `${wrapVersion}.schema.json`);
+      os.writeFileSync(schemaOutputPath, JSON.stringify(bundledSchema, null ,2));
 
       // Add metadata for the root index.ts file to use
       wrapModules.push({
@@ -145,11 +145,12 @@ async function generateFormatTypes() {
   renderTemplate("migrate", migrateContext);
 
   // Generate a deserialize.ts file that exports a deserialization function for the latest format version
-  const deserializeContext = {
+  const serializeContext = {
     type: migrateContext.latest.type,
   };
 
-  renderTemplate("deserialize", deserializeContext);
+  renderTemplate("deserialize", serializeContext);
+  renderTemplate("serialize", serializeContext);
 
   // Generate a validate.ts file that validates the manifest against the JSON schema
   const validateFormats = wrapModules.map((module) => {

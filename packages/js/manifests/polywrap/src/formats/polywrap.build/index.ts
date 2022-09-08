@@ -6,25 +6,27 @@
  */
 
 import {
-  BuildManifest as BuildManifest_0_1
-} from "./0.1";
+  BuildManifest as BuildManifest_0_1_0,
+} from "./0.1.0";
 
 export {
-  BuildManifest_0_1,
+  BuildManifest_0_1_0,
 };
 
 export enum BuildManifestFormats {
   // NOTE: Patch fix for backwards compatability
-  "v0.1.0" = "0.1.0",
   "v0.1" = "0.1",
+  "v0.1.0" = "0.1.0",
 }
 
 export type AnyBuildManifest =
-  | BuildManifest_0_1
+  | BuildManifest_0_1_0
 
-export type BuildManifest = BuildManifest_0_1;
 
-export const latestBuildManifestFormat = BuildManifestFormats["v0.1"]
+
+export type BuildManifest = BuildManifest_0_1_0;
+
+export const latestBuildManifestFormat = BuildManifestFormats["v0.1.0"]
 
 export { migrateBuildManifest } from "./migrate";
 

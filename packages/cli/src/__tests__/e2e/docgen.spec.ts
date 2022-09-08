@@ -4,6 +4,7 @@ import { runCLI } from "@polywrap/test-env-js";
 import { GetPathToCliTestFiles } from "@polywrap/test-cases";
 import path from "path";
 import fs from "fs";
+import os from "os";
 import rimraf from "rimraf";
 import { compareSync } from "dir-compare";
 
@@ -13,7 +14,7 @@ Generate wrapper documentation
 
 Arguments:
   action                             
-    schema        Generate GraphQL schema
+    schema      Generate GraphQL schema
     docusaurus    Generate Docusaurus markdown
     jsdoc         Generate JSDoc markdown
    (choices: "schema", "docusaurus", "jsdoc")
@@ -25,9 +26,10 @@ Options:
                                      polywrap.plugin.yaml |
                                      polywrap.plugin.yml)
   -g, --docgen-dir <path>            Output directory for generated docs
-                                     (default: ./wrap)
+                                     (default: ./docs)
   -c, --client-config <config-path>  Add custom configuration to the
                                      PolywrapClient
+  -i, --imports                      Also generate docs for dependencies
   -h, --help                         display help for command
 `;
 
@@ -88,10 +90,10 @@ describe("e2e tests for docgen command", () => {
   };
 
   const testDocgenOutput = (testCaseDir: string, docgenDir: string) => {
-    if (fs.existsSync(path.join(testCaseDir, "expected", "wrap"))) {
+    if (fs.existsSync(path.join(testCaseDir, "expected", "docs"))) {
       const expectedTypesResult = compareSync(
         docgenDir,
-        path.join(testCaseDir, "expected", "wrap"),
+        path.join(testCaseDir, "expected", "docs"),
         { compareContent: true }
       );
       expect(expectedTypesResult.differences).toBe(0);
@@ -105,8 +107,8 @@ describe("e2e tests for docgen command", () => {
       cli: polywrapCli,
     });
 
-    expect(code).toEqual(0);
     expect(error).toBe("");
+    expect(code).toEqual(0);
     expect(clearStyle(output)).toEqual(HELP);
   });
 
@@ -147,9 +149,8 @@ describe("e2e tests for docgen command", () => {
   });
 
   it("Should store build files in specified docgen dir", async () => {
-    const docgenDir = path.resolve(
-      process.env.TMPDIR || "/tmp",
-      `docgen-${Date.now()}`
+    const docgenDir = fs.mkdtempSync(
+      path.join(os.tmpdir(), `polywrap-cli-tests`)
     );
     const testCaseDir = getTestCaseDir(0);
     const { exitCode: code, stdout: output, stderr: error } = await runCLI({
@@ -188,7 +189,7 @@ describe("e2e tests for docgen command", () => {
       const testCaseName = testCases[i];
       const testCaseDir = getTestCaseDir(i);
 
-      let docgenDir = path.join(testCaseDir, "wrap");
+      let docgenDir = path.join(testCaseDir, "docs");
       let cmdArgs: string[] = [];
       let cmdFile = path.join(testCaseDir, "cmd.json");
       if (fs.existsSync(cmdFile)) {

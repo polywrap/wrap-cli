@@ -1,0 +1,169 @@
+use std::convert::TryFrom;
+use polywrap_wasm_rs::{
+    BigInt,
+    BigNumber,
+    Map,
+    Context,
+    DecodeError,
+    EncodeError,
+    Read,
+    ReadDecoder,
+    Write,
+    WriteEncoder,
+    JSON,
+};
+use crate::{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}};
+{{#propertyDeps.length}}
+
+{{/propertyDeps.length}}{{#propertyDeps}}
+{{^isEnum}}
+use {{crate}}::{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}};
+{{/isEnum}}
+{{#isEnum}}
+use crate::{
+    {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}},
+    get_{{#toLower}}{{type}}{{/toLower}}_value,
+    sanitize_{{#toLower}}{{type}}{{/toLower}}_value
+};
+{{/isEnum}}
+{{/propertyDeps}}
+
+pub fn serialize_{{#toLower}}{{type}}{{/toLower}}(args: &{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}) -> Result<Vec<u8>, EncodeError> {
+    let mut encoder_context = Context::new();
+    encoder_context.description = "Serializing (encoding) env-type: {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}".to_string();
+    let mut encoder = WriteEncoder::new(&[], encoder_context);
+    write_{{#toLower}}{{type}}{{/toLower}}(args, &mut encoder)?;
+    Ok(encoder.get_buffer())
+}
+
+pub fn write_{{#toLower}}{{type}}{{/toLower}}<W: Write>(args: &{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}, writer: &mut W) -> Result<(), EncodeError> {
+    {{#properties.length}}
+    writer.write_map_length(&{{properties.length}})?;
+    {{/properties.length}}
+    {{^properties}}
+    writer.write_map_length(&0)?;
+    {{/properties}}
+    {{#properties}}
+    writer.context().push("{{name}}", "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "writing property");
+    writer.write_string("{{name}}")?;
+    {{#scalar}}
+    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}})?;
+    {{/scalar}}
+    {{#array}}
+    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}, |writer, item| {
+        {{> serialize_array}}
+    })?;
+    {{/array}}
+    {{#map}}
+    writer.write_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(&args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}, |writer, key| {
+        writer.write_{{#key}}{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}{{/key}}(key)
+    }, |writer, value| {
+        {{> serialize_map_value}}
+    })?;
+    {{/map}}
+    {{#object}}
+    {{#required}}
+    {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::write(&args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}, writer)?;
+    {{/required}}
+    {{^required}}
+    if args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.is_some() {
+        {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}::write(args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.as_ref().as_ref().unwrap(), writer)?;
+    } else {
+        writer.write_nil()?;
+    }
+    {{/required}}
+    {{/object}}
+    {{#enum}}
+    {{#required}}
+    writer.write_i32(&(args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}} as i32))?;
+    {{/required}}
+    {{^required}}
+    writer.write_optional_i32(&args.{{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}.map(|f| f as i32))?;
+    {{/required}}
+    {{/enum}}
+    writer.context().pop();
+    {{/properties}}
+    Ok(())
+}
+
+pub fn deserialize_{{#toLower}}{{type}}{{/toLower}}(args: &[u8]) -> Result<{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}, DecodeError> {
+    let mut context = Context::new();
+    context.description = "Deserializing env-type: {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}".to_string();
+    let mut reader = ReadDecoder::new(args, context);
+    read_{{#toLower}}{{type}}{{/toLower}}(&mut reader)
+}
+
+pub fn read_{{#toLower}}{{type}}{{/toLower}}<R: Read>(reader: &mut R) -> Result<{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}, DecodeError> {
+    let mut num_of_fields = reader.read_map_length()?;
+
+    {{#properties}}
+    {{^object}}
+    let mut _{{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
+    {{/object}}
+    {{#object}}
+    {{#required}}
+    let mut _{{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = {{#toWasmInit}}{{toGraphQLType}}{{/toWasmInit}};
+    {{/required}}
+    {{^required}}
+    let mut _{{#toLower}}{{name}}{{/toLower}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}} = None;
+    {{/required}}
+    {{/object}}
+    {{#required}}
+    let mut _{{#toLower}}{{name}}{{/toLower}}_set = false;
+    {{/required}}
+    {{/properties}}
+
+    while num_of_fields > 0 {
+        num_of_fields -= 1;
+        let field = reader.read_string()?;
+
+        match field.as_str() {
+            {{#properties}}
+            "{{name}}" => {
+                reader.context().push(&field, "{{#toWasm}}{{toGraphQLType}}{{/toWasm}}", "type found, reading property");
+                {{#scalar}}
+                _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}()?;
+                {{/scalar}}
+                {{#array}}
+                _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {
+                    {{> deserialize_array_nobox}}
+                })?;
+                {{/array}}
+                {{#map}}
+                _{{#toLower}}{{name}}{{/toLower}} = reader.read_{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}(|reader| {
+                    reader.read_{{#key}}{{#toLower}}{{#toMsgPack}}{{toGraphQLType}}{{/toMsgPack}}{{/toLower}}{{/key}}()?
+                }, |reader| {
+                    {{> deserialize_map_value_nobox}}
+                })?;
+                {{/map}}
+                {{#enum}}
+                {{> deserialize_enum}}
+                _{{#toLower}}{{name}}{{/toLower}} = value;
+                {{/enum}}
+                {{#object}}
+                {{> deserialize_object_nobox}}
+                _{{#toLower}}{{name}}{{/toLower}} = object;
+                {{/object}}
+                {{#required}}
+                _{{#toLower}}{{name}}{{/toLower}}_set = true;
+                {{/required}}
+                reader.context().pop();
+            }
+            {{/properties}}
+            err => return Err(DecodeError::UnknownFieldName(err.to_string())),
+        }
+    }
+    {{#properties}}
+    {{#required}}
+    if !_{{#toLower}}{{name}}{{/toLower}}_set {
+        return Err(DecodeError::MissingField("{{name}}: {{type}}.".to_string()));
+    }
+    {{/required}}
+    {{/properties}}
+
+    Ok({{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
+        {{#properties}}
+        {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: _{{#toLower}}{{name}}{{/toLower}},
+        {{/properties}}
+    })
+}

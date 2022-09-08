@@ -31,7 +31,8 @@ import {
   Args_sendRPC,
   Args_sendTransaction,
   Args_sendTransactionAndWait,
-  Args_signMessage, Args_requestAccounts,
+  Args_signMessage,
+  Args_requestAccounts,
 } from "./wrap";
 import { BigInt } from "@polywrap/wasm-as";
 

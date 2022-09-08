@@ -6,23 +6,24 @@
  * and run json-schema-to-typescript to regenerate this file.
  */
 
-export type ObjectDefinition = (GenericDefinition & WithComment) & {
-  properties: PropertyDefinition[];
-  interfaces: InterfaceImplementedDefinition[];
-};
+export type ObjectDefinition = GenericDefinition &
+  WithComment & {
+    properties?: PropertyDefinition[];
+    interfaces?: InterfaceImplementedDefinition[];
+  };
 export type GenericDefinition = WithKind & {
   type: string;
-  name?: string | null;
-  required?: boolean | null;
+  name?: string;
+  required?: boolean;
 };
 export type PropertyDefinition = WithComment & AnyDefinition;
 export type AnyDefinition = GenericDefinition & {
-  array?: ArrayDefinition | null;
-  scalar?: ScalarDefinition | null;
-  map?: MapDefinition | null;
-  object?: ObjectRef | null;
-  enum?: EnumRef | null;
-  unresolvedObjectOrEnum?: UnresolvedObjectOrEnumRef | null;
+  array?: ArrayDefinition;
+  scalar?: ScalarDefinition;
+  map?: MapDefinition;
+  object?: ObjectRef;
+  enum?: EnumRef;
+  unresolvedObjectOrEnum?: UnresolvedObjectOrEnumRef;
 };
 export type ArrayDefinition = AnyDefinition & {
   item?: GenericDefinition;
@@ -56,32 +57,38 @@ export type ObjectRef = GenericDefinition;
 export type EnumRef = GenericDefinition;
 export type UnresolvedObjectOrEnumRef = GenericDefinition;
 export type InterfaceImplementedDefinition = GenericDefinition;
-export type ModuleDefinition = (GenericDefinition & WithComment) & {
-  methods: [] | [MethodDefinition];
-  imports: [] | [ImportedModuleRef];
-  interfaces: [] | [InterfaceImplementedDefinition];
-};
-export type MethodDefinition = (GenericDefinition & WithComment) & {
-  arguments: [] | [PropertyDefinition];
-  env?: {
-    required?: boolean;
+export type ModuleDefinition = GenericDefinition &
+  WithComment & {
+    methods?: MethodDefinition[];
+    imports?: ImportedModuleRef[];
+    interfaces?: InterfaceImplementedDefinition[];
   };
-  return: PropertyDefinition;
-};
-export type EnumDefinition = (GenericDefinition & WithComment) & {
-  constants: string[];
-};
-export type InterfaceDefinition = (GenericDefinition & ImportedDefinition) & {
-  capabilities: CapabilityDefinition;
-};
-export type ImportedObjectDefinition = (GenericDefinition & WithComment) & ImportedDefinition & WithComment;
-export type ImportedModuleDefinition = (GenericDefinition & ImportedDefinition & WithComment) & {
-  methods: [] | [GenericDefinition & WithComment];
-  isInterface?: boolean | null;
-};
-export type ImportedEnumDefinition = (GenericDefinition & WithComment) & ImportedDefinition & WithComment;
+export type MethodDefinition = GenericDefinition &
+  WithComment & {
+    arguments?: PropertyDefinition[];
+    env?: {
+      required?: boolean;
+    };
+    return?: PropertyDefinition;
+  };
+export type EnumDefinition = GenericDefinition &
+  WithComment & {
+    constants?: string[];
+  };
+export type InterfaceDefinition = GenericDefinition &
+  ImportedDefinition & {
+    capabilities?: CapabilityDefinition;
+  };
+export type ImportedObjectDefinition = ObjectDefinition & ImportedDefinition & WithComment;
+export type ImportedModuleDefinition = GenericDefinition &
+  ImportedDefinition &
+  WithComment & {
+    methods?: MethodDefinition[];
+    isInterface?: boolean;
+  };
+export type ImportedEnumDefinition = EnumDefinition & ImportedDefinition;
 export type ImportedEnvDefinition = ImportedObjectDefinition;
-export type EnvDefinition = GenericDefinition & WithComment;
+export type EnvDefinition = ObjectDefinition;
 
 export interface WrapManifest {
   /**
@@ -91,26 +98,29 @@ export interface WrapManifest {
   /**
    * Wrapper Package Type
    */
-  type: "wasm" | "interface";
+  type: "wasm" | "interface" | "plugin";
   /**
    * Wrapper Name
    */
   name: string;
   abi: Abi;
 }
+/**
+ * Information of modules
+ */
 export interface Abi {
   /**
    * ABI Version
    */
   version?: "0.1";
-  objectTypes: ObjectDefinition[];
+  objectTypes?: ObjectDefinition[];
   moduleType?: ModuleDefinition;
-  enumTypes: EnumDefinition[];
-  interfaceTypes: InterfaceDefinition[];
-  importedObjectTypes: ImportedObjectDefinition[];
-  importedModuleTypes: ImportedModuleDefinition[];
-  importedEnumTypes: ImportedEnumDefinition[];
-  importedEnvTypes: ImportedEnvDefinition[];
+  enumTypes?: EnumDefinition[];
+  interfaceTypes?: InterfaceDefinition[];
+  importedObjectTypes?: ImportedObjectDefinition[];
+  importedModuleTypes?: ImportedModuleDefinition[];
+  importedEnumTypes?: ImportedEnumDefinition[];
+  importedEnvTypes?: ImportedEnvDefinition[];
   envType?: EnvDefinition;
 }
 export interface WithKind {

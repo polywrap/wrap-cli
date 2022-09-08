@@ -4,6 +4,7 @@ import {
   WrapperCache,
   getImplementations,
   coreInterfaceUris,
+  executeMaybeAsyncFunction,
 } from "../../..";
 import { CreateWrapperFunc } from "./types/CreateWrapperFunc";
 import { UriResolutionResult } from "../../core/types/UriResolutionResult";
@@ -31,7 +32,7 @@ export class ExtendableUriResolver implements UriResolver {
   }
 
   public get name(): string {
-    return ExtendableUriResolver.name;
+    return "ExtendableUriResolver";
   }
 
   async resolveUri(
@@ -100,12 +101,16 @@ export class ExtendableUriResolver implements UriResolver {
   }> {
     const bootstrapUriResolvers = client
       .getUriResolvers({})
-      .filter((x) => x.name !== ExtendableUriResolver.name);
+      .filter((x) => x.name !== this.name);
 
     const implementationsToLoad = new Queue<Uri>();
 
     for (const implementationUri of implementationUris) {
-      if (!cache.has(implementationUri.uri)) {
+      if (
+        !(await executeMaybeAsyncFunction<boolean>(
+          cache.has.bind(cache, implementationUri)
+        ))
+      ) {
         implementationsToLoad.enqueue(implementationUri);
       }
     }
@@ -113,12 +118,24 @@ export class ExtendableUriResolver implements UriResolver {
     let implementationUri: Uri | undefined;
     let failedAttempts = 0;
 
+    const loadedImplementations: string[] = [];
     while ((implementationUri = implementationsToLoad.dequeue())) {
-      // Use only the bootstrap resolvers to resolve the resolverUri
-      // If successful, it is automatically cached
+      // Use only loadeded URI resolver extensions to resolve the implementation URI
+      // If successful, it is added to the list of loaded implementations
+
       const { wrapper } = await client.resolveUri(implementationUri, {
         config: {
-          uriResolvers: bootstrapUriResolvers,
+          uriResolvers: [
+            ...bootstrapUriResolvers,
+            ...loadedImplementations.map(
+              (x) =>
+                new UriResolverWrapper(
+                  new Uri(x),
+                  this._createWrapper,
+                  this._deserializeOptions
+                )
+            ),
+          ],
         },
       });
 
@@ -136,7 +153,8 @@ export class ExtendableUriResolver implements UriResolver {
           };
         }
       } else {
-        // If successful, it is automatically cached during the resolveUri method
+        await cache.set(implementationUri, wrapper);
+        loadedImplementations.push(implementationUri.uri);
         failedAttempts = 0;
       }
     }

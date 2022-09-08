@@ -1,28 +1,33 @@
+/* eslint-disable  @typescript-eslint/no-unused-vars */
 import { Command, Program } from "./types";
 import {
   CodeGenerator,
-  Compiler,
-  PolywrapProject,
   SchemaComposer,
   intlMsg,
   defaultPolywrapManifest,
-  parseCodegenDirOption,
+  parseDirOption,
   parseCodegenScriptOption,
-  parseWasmManifestFileOption,
+  parseManifestFileOption,
   parseClientConfigOption,
+  getProjectFromManifest,
+  isPluginManifestLanguage,
+  generateWrapFile,
 } from "../lib";
 
-import path from "path";
-import { filesystem } from "gluegun";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
+import path from "path";
+import fs from "fs";
 
-const defaultCodegenDir = "./wrap";
+const defaultCodegenDir = "./src/wrap";
+const defaultPublishDir = "./build";
+
 const pathStr = intlMsg.commands_codegen_options_o_path();
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 
 type CodegenCommandOptions = {
   manifestFile: string;
   codegenDir: string;
+  publishDir: string;
   script?: string;
   clientConfig: Partial<PolywrapClientConfig>;
 };
@@ -46,6 +51,12 @@ export const codegen: Command = {
         })}`
       )
       .option(
+        `-p, --publish-dir <${pathStr}>`,
+        `${intlMsg.commands_codegen_options_publish({
+          default: defaultPublishDir,
+        })}`
+      )
+      .option(
         `-s, --script <${pathStr}>`,
         `${intlMsg.commands_codegen_options_s()}`
       )
@@ -56,56 +67,66 @@ export const codegen: Command = {
       .action(async (options) => {
         await run({
           ...options,
-          clientConfig: await parseClientConfigOption(
-            options.clientConfig,
-            undefined
-          ),
-          codegenDir: parseCodegenDirOption(options.codegenDir, undefined),
-          script: parseCodegenScriptOption(options.script, undefined),
-          manifestFile: parseWasmManifestFileOption(
-            options.manifestFile,
-            undefined
-          ),
+          clientConfig: await parseClientConfigOption(options.clientConfig),
+          codegenDir: parseDirOption(options.codegenDir, defaultCodegenDir),
+          script: parseCodegenScriptOption(options.script),
+          manifestFile: parseManifestFileOption(options.manifestFile),
+          publishDir: parseDirOption(options.publishDir, defaultPublishDir),
         });
       });
   },
 };
 
 async function run(options: CodegenCommandOptions) {
-  const { manifestFile, codegenDir, script, clientConfig } = options;
+  const {
+    manifestFile,
+    codegenDir,
+    script,
+    clientConfig,
+    publishDir,
+  } = options;
 
   // Get Client
   const client = new PolywrapClient(clientConfig);
 
-  // Polywrap Project
-  const project = new PolywrapProject({
-    rootDir: path.dirname(manifestFile),
-    polywrapManifestPath: manifestFile,
-  });
-  await project.validate();
+  const project = await getProjectFromManifest(manifestFile);
+
+  if (!project) {
+    return;
+  }
+
+  const projectType = await project.getManifestLanguage();
+
+  let result = false;
+
   const schemaComposer = new SchemaComposer({
     project,
     client,
   });
+  const codeGenerator = new CodeGenerator({
+    project,
+    schemaComposer,
+    codegenDirAbs: codegenDir,
+    customScript: script,
+  });
 
-  let result = false;
-  if (script) {
-    const codeGenerator = new CodeGenerator({
-      project,
-      schemaComposer,
-      customScript: script,
-      codegenDirAbs: codegenDir,
-    });
+  result = await codeGenerator.generate();
 
-    result = await codeGenerator.generate();
-  } else {
-    const compiler = new Compiler({
-      project,
-      outputDir: filesystem.path("build"),
-      schemaComposer,
-    });
+  // HACK: Codegen outputs wrap.info into a build directory for plugins, needs to be moved into a build command?
+  if (isPluginManifestLanguage(projectType)) {
+    // Output the built manifest
+    const manifestPath = path.join(publishDir, "wrap.info");
 
-    result = await compiler.codegen();
+    if (!fs.existsSync(publishDir)) {
+      fs.mkdirSync(publishDir);
+    }
+
+    await generateWrapFile(
+      await schemaComposer.getComposedAbis(),
+      await project.getName(),
+      "plugin",
+      manifestPath
+    );
   }
 
   if (result) {

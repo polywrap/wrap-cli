@@ -1,27 +1,25 @@
-import { runCommand } from "../system";
+import { runCommandSync } from "../system";
 import { intlMsg } from "../intl";
 
+import path from "path";
 import fs from "fs";
+import os from "os";
 import { InvokeResult } from "@polywrap/core-js";
 
-const TMPDIR = process.env.TMPDIR || "/tmp";
+const TMPDIR = fs.mkdtempSync(path.join(os.tmpdir(), `polywrap-cli`));
 
-export async function cueExists(): Promise<boolean> {
-  try {
-    const { stdout } = await runCommand("cue version");
-    return stdout.startsWith("cue version ");
-  } catch (e) {
-    return false;
-  }
+export function cueExists(): boolean {
+  const { stdout } = runCommandSync("cue version", true);
+  return stdout ? stdout.startsWith("cue version ") : false;
 }
 
-export async function validateOutput(
+export function validateOutput(
   id: string,
   result: InvokeResult,
   validateScriptPath: string,
   quiet?: boolean
-): Promise<void> {
-  if (!(await cueExists())) {
+): void {
+  if (!cueExists()) {
     console.warn(intlMsg.commands_run_error_cueDoesNotExist());
   }
 
@@ -32,10 +30,10 @@ export async function validateOutput(
   const selector = `${jobId}.\\$${stepId}`;
   const jsonOutput = `${TMPDIR}/${id}.json`;
 
-  await fs.promises.writeFile(jsonOutput, JSON.stringify(result, null, 2));
+  fs.writeFileSync(jsonOutput, JSON.stringify(result, null, 2));
 
   try {
-    await runCommand(
+    runCommandSync(
       `cue vet -d ${selector} ${validateScriptPath} ${jsonOutput}`,
       true
     );
@@ -43,7 +41,7 @@ export async function validateOutput(
       console.log("Validation: SUCCEED");
     }
   } catch (e) {
-    const msgLines = e.split(/\r?\n/);
+    const msgLines = e.stderr.split(/\r?\n/);
     msgLines[1] = `${validateScriptPath}:${msgLines[1]
       .split(":")
       .slice(1)
@@ -58,6 +56,6 @@ export async function validateOutput(
   }
 
   if (fs.existsSync(jsonOutput)) {
-    await fs.promises.unlink(jsonOutput);
+    fs.unlinkSync(jsonOutput);
   }
 }

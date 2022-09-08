@@ -1,0 +1,173 @@
+/// NOTE: This is an auto-generated file.
+///       All modifications will be overwritten.
+
+// @ts-ignore
+import * as Types from "./";
+
+// @ts-ignore
+import {
+  Client,
+  InvokeResult
+} from "@polywrap/core-js";
+
+export type UInt = number;
+export type UInt8 = number;
+export type UInt16 = number;
+export type UInt32 = number;
+export type Int = number;
+export type Int8 = number;
+export type Int16 = number;
+export type Int32 = number;
+export type Bytes = Uint8Array;
+export type BigInt = string;
+export type BigNumber = string;
+export type Json = string;
+export type String = string;
+export type Boolean = boolean;
+
+/// Env START ///
+{{#envType}}
+export interface {{#detectKeyword}}{{type}}{{/detectKeyword}} extends Record<string, unknown> {
+  {{#properties}}
+  {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
+  {{/properties}}
+}
+{{/envType}}
+/// Env END ///
+
+/// Objects START ///
+{{#objectTypes}}
+export interface {{#detectKeyword}}{{type}}{{/detectKeyword}} {
+  {{#properties}}
+  {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
+  {{/properties}}
+}
+
+{{/objectTypes}}
+/// Objects END ///
+
+/// Enums START ///
+{{#enumTypes}}
+export enum {{type}}Enum {
+  {{#constants}}
+  {{.}},
+  {{/constants}}
+}
+
+export type {{type}}String =
+  {{#constants}}
+  | "{{.}}"
+  {{/constants}}
+
+export type {{#detectKeyword}}{{type}}{{/detectKeyword}} = {{type}}Enum | {{type}}String;
+
+{{/enumTypes}}
+/// Enums END ///
+
+/// Imported Objects START ///
+
+{{#importedObjectTypes}}
+/* URI: "{{uri}}" */
+export interface {{#detectKeyword}}{{type}}{{/detectKeyword}} {
+  {{#properties}}
+  {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
+  {{/properties}}
+}
+
+{{/importedObjectTypes}}
+{{#importedEnumTypes}}
+/* URI: "{{uri}}" */
+export enum {{type}}Enum {
+  {{#constants}}
+  {{.}},
+  {{/constants}}
+}
+
+export type {{type}}String =
+  {{#constants}}
+  | "{{.}}"
+  {{/constants}}
+
+export type {{#detectKeyword}}{{type}}{{/detectKeyword}} = {{type}}Enum | {{type}}String;
+
+{{/importedEnumTypes}}
+/// Imported Objects END ///
+
+/// Imported Modules START ///
+
+{{#importedModuleTypes}}
+{{#methods}}
+/* URI: "{{parent.uri}}" */
+interface {{parent.type}}_Args_{{name}} {
+  {{#arguments}}
+  {{name}}{{^required}}?{{/required}}: {{#toTypescript}}{{toGraphQLType}}{{/toTypescript}};
+  {{/arguments}}
+}
+
+{{/methods}}
+/* URI: "{{uri}}" */
+{{^isInterface}}
+export const {{type}} = {
+  {{#methods}}
+  {{name}}: async (
+    args: {{parent.type}}_Args_{{name}},
+    client: Client
+  ): Promise<InvokeResult<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>> => {
+    return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>({
+      uri: "{{parent.uri}}",
+      method: "{{name}}",
+      args: args as unknown as Record<string, unknown>
+    });
+  }{{^last}},{{/last}}
+  {{^last}}
+
+  {{/last}}
+  {{/methods}}
+}
+
+{{/isInterface}}
+{{#isInterface}}
+export class {{#detectKeyword}}{{type}}{{/detectKeyword}} {
+  public static interfaceUri: string = "{{uri}}";
+
+  constructor(public uri: string) {
+  }
+
+  {{#methods}}
+  public async {{name}} (
+    args: {{parent.type}}_Args_{{name}},
+    client: Client
+  ): Promise<InvokeResult<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>> {
+    return client.invoke<{{#return}}{{#toTypescript}}{{toGraphQLType}}{{/toTypescript}}{{/return}}>({
+      uri: this.uri,
+      method: "{{name}}",
+      args: args as unknown as Record<string, unknown>
+    });
+  }
+  {{^last}}
+
+  {{/last}}
+  {{/methods}}
+}
+
+{{/isInterface}}
+{{/importedModuleTypes}}
+/// Imported Modules END ///
+{{#interfaceTypes.length}}
+{{#interfaceTypes}}
+
+export class {{#detectKeyword}}{{namespace}}{{/detectKeyword}} {
+  static uri: string = "{{uri}}";
+
+  {{#capabilities}}
+  {{#getImplementations}}
+  {{#enabled}}
+  public static getImplementations(client: Client): string[] {
+    return client.getImplementations(this.uri, {});
+  }
+  {{/enabled}}
+  {{/getImplementations}}
+  {{/capabilities}}
+}
+{{/interfaceTypes}}
+{{/interfaceTypes.length}}

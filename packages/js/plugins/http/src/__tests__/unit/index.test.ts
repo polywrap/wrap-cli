@@ -30,17 +30,20 @@ describe("test http plugin", () => {
         },
       } as AxiosResponse);
 
-      const response = await plugin.get({
-        url: "/api/test",
-        request: {
-          headers: [
-            { key: "Accept", value: "application/json" },
-            { key: "X-Test-Header", value: "test-header-value" },
-          ],
-          urlParams: [{ key: "q", value: "test-param" }],
-          responseType: Http_ResponseTypeEnum.TEXT,
+      const response = await plugin.get(
+        {
+          url: "/api/test",
+          request: {
+            headers: new Map([
+              ["Accept", "application/json"],
+              ["X-Test-Header", "test-header-value"],
+            ]),
+            urlParams: new Map([["q", "test-param"]]),
+            responseType: Http_ResponseTypeEnum.TEXT,
+          },
         },
-      }, {} as Client);
+        {} as Client
+      );
 
       expect(mockedAxios.get).lastCalledWith("/api/test", {
         headers: {
@@ -53,9 +56,9 @@ describe("test http plugin", () => {
 
       expect(response?.status).toBe(200);
       expect(response?.statusText).toBe("Ok");
-      expect(response?.headers).toStrictEqual([
-        { key: "Content-Type", value: "application/json; charset=utf-8" },
-      ]);
+      expect(response?.headers).toStrictEqual(
+        new Map([["Content-Type", "application/json; charset=utf-8"]])
+      );
       expect(response?.body).toBe("{result: 1001}");
     });
 
@@ -70,17 +73,20 @@ describe("test http plugin", () => {
         },
       } as AxiosResponse);
 
-      const response = await plugin.get({
-        url: "/api/test",
-        request: {
-          headers: [
-            { key: "Accept", value: "application/json" },
-            { key: "X-Test-Header", value: "test-header-value" },
-          ],
-          urlParams: [{ key: "q", value: "test-param" }],
-          responseType: "BINARY",
-        }
-      }, {} as Client);
+      const response = await plugin.get(
+        {
+          url: "/api/test",
+          request: {
+            headers: new Map([
+              ["Accept", "application/json"],
+              ["X-Test-Header", "test-header-value"],
+            ]),
+            urlParams: new Map([["q", "test-param"]]),
+            responseType: "BINARY",
+          },
+        },
+        {} as Client
+      );
 
       expect(mockedAxios.get).lastCalledWith("/api/test", {
         headers: {
@@ -93,12 +99,14 @@ describe("test http plugin", () => {
 
       expect(response?.status).toBe(200);
       expect(response?.statusText).toBe("Ok");
-      expect(response?.headers).toStrictEqual([
-        { key: "Content-Type", value: "application/json; charset=utf-8" },
-      ]);
+      expect(response?.headers).toStrictEqual(
+        new Map([["Content-Type", "application/json; charset=utf-8"]])
+      );
       expect(response?.body).toBeTruthy();
       if (response?.body) {
-        expect(Buffer.from(response.body, 'base64').toString()).toBe("{result: 1001}");
+        expect(Buffer.from(response.body, "base64").toString()).toBe(
+          "{result: 1001}"
+        );
       }
     });
   });
@@ -117,18 +125,21 @@ describe("test http plugin", () => {
         },
       } as AxiosResponse);
 
-      const response = await plugin.post({
-        url: "/api/test",
-        request: {
-          headers: [
-            { key: "Accept", value: "application/json" },
-            { key: "X-Test-Header", value: "test-header-value" },
-          ],
-          urlParams: [{ key: "q", value: "test-param" }],
-          body: "{request: 1001}",
-          responseType: "TEXT",
-        }
-      }, {} as Client);
+      const response = await plugin.post(
+        {
+          url: "/api/test",
+          request: {
+            headers: new Map([
+              ["Accept", "application/json"],
+              ["X-Test-Header", "test-header-value"],
+            ]),
+            urlParams: new Map([["q", "test-param"]]),
+            body: "{request: 1001}",
+            responseType: "TEXT",
+          },
+        },
+        {} as Client
+      );
 
       expect(mockedAxios.post).lastCalledWith("/api/test", "{request: 1001}", {
         headers: {
@@ -141,9 +152,9 @@ describe("test http plugin", () => {
 
       expect(response?.status).toBe(200);
       expect(response?.statusText).toBe("Ok");
-      expect(response?.headers).toStrictEqual([
-        { key: "Content-Type", value: "application/json; charset=utf-8" },
-      ]);
+      expect(response?.headers).toStrictEqual(
+        new Map([["Content-Type", "application/json; charset=utf-8"]])
+      );
       expect(response?.body).toBe("{response: 1001}");
     });
 
@@ -158,18 +169,21 @@ describe("test http plugin", () => {
         },
       } as AxiosResponse);
 
-      const response = await plugin.post({
-        url: "/api/test",
-        request: {
-          headers: [
-            { key: "Accept", value: "application/json" },
-            { key: "X-Test-Header", value: "test-header-value" },
-          ],
-          urlParams: [{ key: "q", value: "test-param" }],
-          body: "{request: 1001}",
-          responseType: "BINARY",
-        }
-      }, {} as Client);
+      const response = await plugin.post(
+        {
+          url: "/api/test",
+          request: {
+            headers: new Map([
+              ["Accept", "application/json"],
+              ["X-Test-Header", "test-header-value"],
+            ]),
+            urlParams: new Map([["q", "test-param"]]),
+            body: "{request: 1001}",
+            responseType: "BINARY",
+          },
+        },
+        {} as Client
+      );
 
       expect(mockedAxios.post).lastCalledWith("/api/test", "{request: 1001}", {
         headers: {
@@ -182,12 +196,14 @@ describe("test http plugin", () => {
 
       expect(response?.status).toBe(200);
       expect(response?.statusText).toBe("Ok");
-      expect(response?.headers).toStrictEqual([
-        { key: "Content-Type", value: "application/json; charset=utf-8" },
-      ]);
+      expect(response?.headers).toStrictEqual(
+        new Map([["Content-Type", "application/json; charset=utf-8"]])
+      );
       expect(response?.body).toBeTruthy();
       if (response?.body) {
-        expect(Buffer.from(response.body, 'base64').toString()).toBe("{response: 1001}");
+        expect(Buffer.from(response.body, "base64").toString()).toBe(
+          "{response: 1001}"
+        );
       }
     });
   });

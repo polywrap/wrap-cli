@@ -1,0 +1,6 @@
+{
+  "extends": "../../tsconfig",
+  "include": [
+    "tests.spec.ts"
+  ]
+}

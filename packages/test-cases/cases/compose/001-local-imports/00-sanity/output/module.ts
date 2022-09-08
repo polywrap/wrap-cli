@@ -8,14 +8,13 @@ import {
   createObjectPropertyDefinition,
   createObjectDefinition,
   createEnumDefinition,
-  Abi,
   createEnumPropertyDefinition,
   createObjectRef,
-  createAbi
+  WrapAbi
 } from "@polywrap/schema-parse";
 
-export const abi: Abi = {
-  ...createAbi(),
+export const abi: WrapAbi = {
+  version: "0.1",
   moduleType:
     {
       ...createModuleDefinition({}),
@@ -37,7 +36,7 @@ export const abi: Abi = {
             }),
             createScalarPropertyDefinition({
               name: "optStr",
-              required: false,
+              required: undefined,
               type: "String"
             }),
             createScalarPropertyDefinition({
@@ -51,11 +50,11 @@ export const abi: Abi = {
               type: "[[UInt]]",
               item: createArrayDefinition({
                 name: "uArrayArray",
-                required: false,
+                required: undefined,
                 type: "[UInt]",
                 item: createScalarDefinition({
                   name: "uArrayArray",
-                  required: false,
+                  required: undefined,
                   type: "UInt"
                 })
               })
@@ -96,9 +95,9 @@ export const abi: Abi = {
       ...createObjectDefinition({ type: "CustomModuleType" }),
       properties: [
         createScalarPropertyDefinition({ name: "str", type: "String", required: true }),
-        createScalarPropertyDefinition({ name: "optStr", type: "String", required: false }),
+        createScalarPropertyDefinition({ name: "optStr", type: "String", required: undefined }),
         createScalarPropertyDefinition({ name: "u", type: "UInt", required: true }),
-        createScalarPropertyDefinition({ name: "optU", type: "UInt", required: false }),
+        createScalarPropertyDefinition({ name: "optU", type: "UInt", required: undefined }),
         createScalarPropertyDefinition({ name: "u8", type: "UInt8", required: true }),
         createScalarPropertyDefinition({ name: "i", type: "Int", required: true }),
         createScalarPropertyDefinition({ name: "i8", type: "Int8", required: true }),
@@ -112,23 +111,23 @@ export const abi: Abi = {
         createArrayPropertyDefinition({
           name: "uOptArray",
           type: "[UInt]",
-          required: false,
+          required: undefined,
           item: createScalarDefinition({ name: "uOptArray", type: "UInt", required: true })
         }),
         createArrayPropertyDefinition({
           name: "optStrOptArray",
           type: "[String]",
-          required: false,
-          item: createScalarDefinition({ name: "optStrOptArray", type: "String", required: false })
+          required: undefined,
+          item: createScalarDefinition({ name: "optStrOptArray", type: "String", required: undefined })
         }),
         createArrayPropertyDefinition({
           name: "crazyArray",
           type: "[[[[UInt32]]]]",
-          required: false,
+          required: undefined,
           item: createArrayDefinition({
             name: "crazyArray",
             type: "[[[UInt32]]]",
-            required: false,
+            required: undefined,
             item: createArrayDefinition({
               name: "crazyArray",
               type: "[[UInt32]]",
@@ -136,7 +135,7 @@ export const abi: Abi = {
               item: createArrayDefinition({
                 name: "crazyArray",
                 type: "[UInt32]",
-                required: false,
+                required: undefined,
                 item: createScalarDefinition({ name: "crazyArray", type: "UInt32", required: true })
               })
             })
@@ -165,11 +164,11 @@ export const abi: Abi = {
           item: createArrayDefinition({
             name: "objectArray",
             type: "[ArrayObject]",
-            required: false,
+            required: undefined,
             item: createObjectRef({
               name: "objectArray",
               type: "ArrayObject",
-              required: false
+              required: undefined
             })
           })
         }),

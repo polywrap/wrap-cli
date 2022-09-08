@@ -14,12 +14,20 @@ export function isDockerInstalled(): boolean {
   return !!system.which("docker");
 }
 
+export async function ensureDockerDaemonRunning(): Promise<void> {
+  try {
+    await system.run("docker stats --no-stream");
+  } catch (e) {
+    throw new Error(intlMsg.lib_helpers_docker_couldNotConnect());
+  }
+}
+
 export function getDockerFileLock(): FileLock {
   return new FileLock(__dirname + "/DOCKER_LOCK", print.error);
 }
 
 export async function isDockerBuildxInstalled(): Promise<boolean> {
-  const { stdout: version } = await runCommand("docker buildx version");
+  const { stdout: version } = await runCommand("docker buildx version", true);
   return version.startsWith("github.com/docker/buildx");
 }
 
@@ -134,7 +142,10 @@ export async function createBuildImage(
       // Build the docker image
       let buildxUseFailed: boolean;
       try {
-        const { stderr } = await runCommand(`docker buildx use ${imageName}`);
+        const { stderr } = await runCommand(
+          `docker buildx use ${imageName}`,
+          quiet
+        );
         buildxUseFailed = !!stderr;
       } catch (e) {
         buildxUseFailed = true;
@@ -176,8 +187,7 @@ export async function createBuildImage(
   };
 
   if (quiet) {
-    return await run();
-  } else {
+    // Show spinner with helpful messages
     const args = {
       image: imageName,
       dockerfile: displayPath(dockerfile),
@@ -191,6 +201,9 @@ export async function createBuildImage(
         return await run();
       }
     )) as string;
+  } else {
+    // Verbose output will be emitted within run()
+    return await run();
   }
 }
 
