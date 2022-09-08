@@ -22,7 +22,7 @@
     "@polywrap/asyncify-js": "0.7.0",
     "@polywrap/msgpack-js": "0.7.0",
     "@polywrap/tracing-js": "0.7.0",
-    "@polywrap/result": "0.5.0",
+    "@polywrap/result": "0.7.0",
     "@polywrap/wrap-manifest-types-js": "0.7.0",
     "graphql": "15.5.0",
     "graphql-tag": "2.10.4",
