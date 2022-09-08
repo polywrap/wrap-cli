@@ -1,24 +1,26 @@
-import { UriResolverLike } from "../UriResolverLike";
-import { buildUriResolver } from "../buildUriResolver";
+import { IWrapperCache } from "./IWrapperCache";
 
 import {
   IUriResolver,
   Uri,
   Client,
-  IUriResolutionStep,
-  IUriResolutionResponse,
   executeMaybeAsyncFunction,
   Wrapper,
-  UriResolutionResponse,
+  IUriResolutionContext,
+  UriPackageOrWrapper,
+  UriResolutionResult,
 } from "@polywrap/core-js";
-import { IWrapperCache } from "./IWrapperCache";
 import { DeserializeManifestOptions } from "@polywrap/wrap-manifest-types-js";
-import { getUriHistory } from "../getUriHistory";
-import { InfiniteLoopError } from "../InfiniteLoopError";
-import { fullyResolveUri } from "../aggregator";
+import { Result } from "@polywrap/result";
+import { UriResolverLike } from "../helpers";
+import { buildUriResolver } from "../utils";
+
+export type ResolutionCallback<TError> = (
+  response: Result<UriPackageOrWrapper, TError>
+) => void;
 
 export class PackageToWrapperCacheResolver<TError = undefined>
-  implements IUriResolver<TError | InfiniteLoopError> {
+  implements IUriResolver<TError> {
   name: string;
   resolverToCache: IUriResolver<TError>;
 
@@ -31,113 +33,78 @@ export class PackageToWrapperCacheResolver<TError = undefined>
       endOnRedirect?: boolean;
     }
   ) {
-    if (options?.resolverName) {
-      this.name = options.resolverName;
-    } else {
-      this.name = "PackageToWrapperCacheResolver";
-    }
-
-    this.resolverToCache = buildUriResolver(resolverToCache);
+    this.resolverToCache = buildUriResolver(
+      resolverToCache,
+      options?.resolverName
+    );
   }
 
   async tryResolveUri(
     uri: Uri,
-    client: Client
-  ): Promise<IUriResolutionResponse<TError | InfiniteLoopError>> {
-    return this.options?.endOnRedirect
-      ? this.resolveUriOnce(client, uri, uri, [])
-      : await fullyResolveUri(uri, (currentUri, history) => {
-          return this.resolveUriOnce(client, uri, currentUri, history);
-        });
-  }
-
-  protected async resolveUriOnce(
     client: Client,
-    uri: Uri,
-    currentUri: Uri,
-    history: IUriResolutionStep<unknown>[]
-  ): Promise<IUriResolutionResponse<TError>> {
+    resolutionContext: IUriResolutionContext
+  ): Promise<Result<UriPackageOrWrapper, TError>> {
     const wrapper = await executeMaybeAsyncFunction<Wrapper | undefined>(
-      this.cache.get.bind(this.cache, currentUri)
+      this.cache.get.bind(this.cache, uri)
     );
 
     if (wrapper) {
-      const response = UriResolutionResponse.ok(wrapper);
+      const result = UriResolutionResult.ok(wrapper);
 
-      history.push({
-        resolverName: `${this.name} (cache)`,
-        sourceUri: currentUri,
-        response,
+      resolutionContext.trackStep({
+        sourceUri: uri,
+        result,
+        description: "PackageToWrapperCacheResolver (Cache)",
       });
-
-      return UriResolutionResponse.ok(wrapper, history);
+      return result;
     }
 
-    const response = await this.resolverToCache.tryResolveUri(
-      currentUri,
-      client
+    const subContext = resolutionContext.createSubHistoryContext();
+
+    let result = await this.resolverToCache.tryResolveUri(
+      uri,
+      client,
+      subContext
     );
 
-    if (response.result.ok) {
-      const uriPackageOrWrapper = response.result.value;
+    if (result.ok) {
+      if (result.value.type === "package") {
+        const wrapPackage = result.value.package;
+        const resolutionPath: Uri[] = subContext.getResolutionPath();
 
-      if (uriPackageOrWrapper.type === "wrapper") {
-        history.push({
-          resolverName: this.name,
-          sourceUri: currentUri,
-          response,
-        });
-
-        const uriHistory: Uri[] = [uri, ...getUriHistory(history)];
-
-        for (const uri of uriHistory) {
-          await executeMaybeAsyncFunction<Wrapper | undefined>(
-            this.cache.set.bind(this.cache, uri, uriPackageOrWrapper.wrapper)
-          );
-        }
-
-        return UriResolutionResponse.ok(uriPackageOrWrapper.wrapper, history);
-      } else if (uriPackageOrWrapper.type === "package") {
-        const uriHistory: Uri[] = [uri, ...getUriHistory(history)];
-
-        const wrapper = await uriPackageOrWrapper.package.createWrapper(
+        const wrapper = await wrapPackage.createWrapper(
           client,
-          uriHistory,
-          { noValidate: this.options?.deserializeManifestOptions?.noValidate }
+          resolutionPath,
+          {
+            noValidate: this.options?.deserializeManifestOptions?.noValidate,
+          }
         );
 
-        for (const uri of uriHistory) {
+        for (const uri of resolutionPath) {
           await executeMaybeAsyncFunction<Wrapper | undefined>(
             this.cache.set.bind(this.cache, uri, wrapper)
           );
         }
 
-        history.push({
-          resolverName: this.name,
-          sourceUri: currentUri,
-          response: UriResolutionResponse.ok(wrapper, response.history),
-        });
+        result = UriResolutionResult.ok(wrapper);
+      } else if (result.value.type === "wrapper") {
+        const wrapper = result.value.wrapper;
+        const resolutionPath: Uri[] = subContext.getResolutionPath();
 
-        return UriResolutionResponse.ok(wrapper, history);
-      } else {
-        const resultUri = uriPackageOrWrapper.uri;
-
-        history.push({
-          resolverName: this.name,
-          sourceUri: currentUri,
-          response,
-        });
-
-        return UriResolutionResponse.ok(resultUri, history);
+        for (const uri of resolutionPath) {
+          await executeMaybeAsyncFunction<Wrapper | undefined>(
+            this.cache.set.bind(this.cache, uri, wrapper)
+          );
+        }
       }
-    } else {
-      history.push({
-        resolverName: this.name,
-        sourceUri: currentUri,
-        response,
-      });
-
-      return UriResolutionResponse.err(response.result.error, history);
     }
+
+    resolutionContext.trackStep({
+      sourceUri: uri,
+      result,
+      subHistory: subContext.getHistory(),
+      description: "PackageToWrapperCacheResolver",
+    });
+    return result;
   }
 }

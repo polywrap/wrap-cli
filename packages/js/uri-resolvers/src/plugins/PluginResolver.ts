@@ -1,3 +1,5 @@
+import { ResolverWithHistory } from "../helpers";
+
 import {
   Wrapper,
   Client,
@@ -6,15 +8,15 @@ import {
   Uri,
   PluginRegistration,
   IWrapPackage,
-  IUriResolver,
-  UriResolutionResponse,
-  IUriResolutionResponse,
   toUri,
   getEnvFromUriHistory,
+  UriResolutionResult,
+  UriPackageOrWrapper,
 } from "@polywrap/core-js";
+import { Result } from "@polywrap/result";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js/build/formats/wrap.info/0.1";
 
-export class PluginResolver implements IUriResolver {
+export class PluginResolver extends ResolverWithHistory {
   pluginUri: Uri;
 
   constructor(
@@ -25,16 +27,17 @@ export class PluginResolver implements IUriResolver {
       environment: Env<Uri> | undefined
     ) => Wrapper
   ) {
+    super();
     this.pluginUri = toUri(pluginRegistration.uri);
   }
 
-  public get name(): string {
-    return `PluginResolver (${this.pluginUri.uri})`;
-  }
+  protected getStepDescription = (): string => `Plugin (${this.pluginUri.uri})`;
 
-  async tryResolveUri(uri: Uri): Promise<IUriResolutionResponse> {
+  protected async _tryResolveUri(
+    uri: Uri
+  ): Promise<Result<UriPackageOrWrapper>> {
     if (uri.uri !== this.pluginUri.uri) {
-      return UriResolutionResponse.ok(uri);
+      return UriResolutionResult.ok(uri);
     }
 
     const wrapPackage = new PluginWrapperPackage(
@@ -43,7 +46,7 @@ export class PluginResolver implements IUriResolver {
       this.createPluginWrapper
     );
 
-    return UriResolutionResponse.ok(wrapPackage);
+    return UriResolutionResult.ok(wrapPackage);
   }
 }
 

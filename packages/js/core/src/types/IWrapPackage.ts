@@ -10,7 +10,7 @@ export interface IWrapPackage {
   getManifest(options?: GetManifestOptions): Promise<WrapManifest>;
   createWrapper(
     client: Client,
-    uriHistory: Uri[],
+    resolutionPath: Uri[],
     options?: DeserializeManifestOptions
   ): Promise<Wrapper>;
 }

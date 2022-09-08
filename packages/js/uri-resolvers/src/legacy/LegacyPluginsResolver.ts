@@ -10,14 +10,12 @@ export class LegacyPluginsResolver extends UriResolverAggregator {
       environment: Env<Uri> | undefined
     ) => Wrapper
   ) {
-    super(async (uri: Uri, client: Client) =>
-      client
-        .getPlugins({})
-        .map((x) => new PluginResolver(x, createPluginWrapper))
+    super(
+      async (uri: Uri, client: Client) =>
+        client
+          .getPlugins({})
+          .map((x) => new PluginResolver(x, createPluginWrapper)),
+      "LegacyPluginsResolver"
     );
-  }
-
-  get name(): string {
-    return "LegacyPluginsResolver";
   }
 }

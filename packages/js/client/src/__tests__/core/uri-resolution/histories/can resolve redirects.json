@@ -1,41 +1,22 @@
 [
-  "wrap://ens/from.eth => MainResolver => uri (wrap://ens/to2.eth)",
+  "wrap://ens/from.eth => PackageToWrapperCacheResolver => uri (wrap://ens/to1.eth)",
   [
-    "wrap://ens/from.eth => LegacyRedirectsResolver => uri (wrap://ens/to2.eth)",
+    "wrap://ens/from.eth => UriResolverAggregator => uri (wrap://ens/to1.eth)",
     [
-      "wrap://ens/from.eth => RedirectResolver(wrap://ens/from.eth - wrap://ens/to1.eth) => uri (wrap://ens/to1.eth)",
-      "wrap://ens/to1.eth => RedirectResolver(wrap://ens/from.eth - wrap://ens/to1.eth)",
-      "wrap://ens/to1.eth => RedirectResolver(wrap://ens/to1.eth - wrap://ens/to2.eth) => uri (wrap://ens/to2.eth)",
-      "wrap://ens/to2.eth => RedirectResolver(wrap://ens/from.eth - wrap://ens/to1.eth)",
-      "wrap://ens/to2.eth => RedirectResolver(wrap://ens/to1.eth - wrap://ens/to2.eth)"
+      "wrap://ens/from.eth => LegacyRedirectsResolver => uri (wrap://ens/to1.eth)",
+      [
+        "wrap://ens/from.eth => Redirect (wrap://ens/from.eth - wrap://ens/to1.eth) => uri (wrap://ens/to1.eth)"
+      ]
     ]
   ],
-  "wrap://ens/to2.eth => MainResolver",
+  "wrap://ens/to1.eth => PackageToWrapperCacheResolver => uri (wrap://ens/to2.eth)",
   [
-    "wrap://ens/to2.eth => LegacyRedirectsResolver",
+    "wrap://ens/to1.eth => UriResolverAggregator => uri (wrap://ens/to2.eth)",
     [
-      "wrap://ens/to2.eth => RedirectResolver(wrap://ens/from.eth - wrap://ens/to1.eth)",
-      "wrap://ens/to2.eth => RedirectResolver(wrap://ens/to1.eth - wrap://ens/to2.eth)"
-    ],
-    "wrap://ens/to2.eth => LegacyPluginsResolver",
-    [
-      "wrap://ens/to2.eth => PluginResolver (wrap://ens/ipfs.polywrap.eth)",
-      "wrap://ens/to2.eth => PluginResolver (wrap://ens/ens-resolver.polywrap.eth)",
-      "wrap://ens/to2.eth => PluginResolver (wrap://ens/ethereum.polywrap.eth)",
-      "wrap://ens/to2.eth => PluginResolver (wrap://ens/http.polywrap.eth)",
-      "wrap://ens/to2.eth => PluginResolver (wrap://ens/js-logger.polywrap.eth)",
-      "wrap://ens/to2.eth => PluginResolver (wrap://ens/uts46.polywrap.eth)",
-      "wrap://ens/to2.eth => PluginResolver (wrap://ens/sha3.polywrap.eth)",
-      "wrap://ens/to2.eth => PluginResolver (wrap://ens/graph-node.polywrap.eth)",
-      "wrap://ens/to2.eth => PluginResolver (wrap://ens/fs.polywrap.eth)",
-      "wrap://ens/to2.eth => PluginResolver (wrap://ens/fs-resolver.polywrap.eth)",
-      "wrap://ens/to2.eth => PluginResolver (wrap://ens/ipfs-resolver.polywrap.eth)"
-    ],
-    "wrap://ens/to2.eth => ExtendableUriResolver",
-    [
-      "wrap://ens/to2.eth => UriResolverWrapper: (wrap://ens/ipfs-resolver.polywrap.eth)",
-      "wrap://ens/to2.eth => UriResolverWrapper: (wrap://ens/ens-resolver.polywrap.eth)",
-      "wrap://ens/to2.eth => UriResolverWrapper: (wrap://ens/fs-resolver.polywrap.eth)"
+      "wrap://ens/to1.eth => LegacyRedirectsResolver => uri (wrap://ens/to2.eth)",
+      [
+        "wrap://ens/to1.eth => Redirect (wrap://ens/to1.eth - wrap://ens/to2.eth) => uri (wrap://ens/to2.eth)"
+      ]
     ]
   ]
 ]

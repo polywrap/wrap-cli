@@ -1,51 +1,41 @@
 [
-  "wrap://ens/test.eth => MainResolver => error",
+  "wrap://ens/test.eth => PackageToWrapperCacheResolver => error While resolving wrap://ens/test.eth with URI resolver extension wrap://ens/undefined-resolver.eth, the extension could not be fully resolved. Last tried URI is wrap://ens/undefined-resolver.eth",
   [
-    "wrap://ens/test.eth => LegacyRedirectsResolver",
-    "wrap://ens/test.eth => LegacyPluginsResolver",
+    "wrap://ens/test.eth => UriResolverAggregator => error While resolving wrap://ens/test.eth with URI resolver extension wrap://ens/undefined-resolver.eth, the extension could not be fully resolved. Last tried URI is wrap://ens/undefined-resolver.eth",
     [
-      "wrap://ens/test.eth => PluginResolver (wrap://ens/ipfs.polywrap.eth)",
-      "wrap://ens/test.eth => PluginResolver (wrap://ens/ens-resolver.polywrap.eth)",
-      "wrap://ens/test.eth => PluginResolver (wrap://ens/ethereum.polywrap.eth)",
-      "wrap://ens/test.eth => PluginResolver (wrap://ens/http.polywrap.eth)",
-      "wrap://ens/test.eth => PluginResolver (wrap://ens/js-logger.polywrap.eth)",
-      "wrap://ens/test.eth => PluginResolver (wrap://ens/uts46.polywrap.eth)",
-      "wrap://ens/test.eth => PluginResolver (wrap://ens/sha3.polywrap.eth)",
-      "wrap://ens/test.eth => PluginResolver (wrap://ens/graph-node.polywrap.eth)",
-      "wrap://ens/test.eth => PluginResolver (wrap://ens/fs.polywrap.eth)",
-      "wrap://ens/test.eth => PluginResolver (wrap://ens/fs-resolver.polywrap.eth)",
-      "wrap://ens/test.eth => PluginResolver (wrap://ens/ipfs-resolver.polywrap.eth)"
-    ],
-    "wrap://ens/test.eth => ExtendableUriResolver => error",
-    [
-      "wrap://ens/test.eth => UriResolverWrapper: (wrap://ens/ipfs-resolver.polywrap.eth)",
-      "wrap://ens/test.eth => UriResolverWrapper: (wrap://ens/ens-resolver.polywrap.eth)",
-      "wrap://ens/test.eth => UriResolverWrapper: (wrap://ens/fs-resolver.polywrap.eth)",
-      "wrap://ens/test.eth => UriResolverWrapper: (wrap://ens/undefined-resolver.eth) => error",
+      "wrap://ens/test.eth => ExtendableUriResolver => error While resolving wrap://ens/test.eth with URI resolver extension wrap://ens/undefined-resolver.eth, the extension could not be fully resolved. Last tried URI is wrap://ens/undefined-resolver.eth",
       [
-        "wrap://ens/undefined-resolver.eth => MainResolver",
+        "wrap://ens/ipfs-resolver.polywrap.eth => PackageToWrapperCacheResolver => wrapper (wrap://ens/ipfs-resolver.polywrap.eth)",
         [
-          "wrap://ens/undefined-resolver.eth => LegacyRedirectsResolver",
-          "wrap://ens/undefined-resolver.eth => LegacyPluginsResolver",
+          "wrap://ens/ipfs-resolver.polywrap.eth => UriResolverAggregator => package (wrap://ens/ipfs-resolver.polywrap.eth)",
           [
-            "wrap://ens/undefined-resolver.eth => PluginResolver (wrap://ens/ipfs.polywrap.eth)",
-            "wrap://ens/undefined-resolver.eth => PluginResolver (wrap://ens/ens-resolver.polywrap.eth)",
-            "wrap://ens/undefined-resolver.eth => PluginResolver (wrap://ens/ethereum.polywrap.eth)",
-            "wrap://ens/undefined-resolver.eth => PluginResolver (wrap://ens/http.polywrap.eth)",
-            "wrap://ens/undefined-resolver.eth => PluginResolver (wrap://ens/js-logger.polywrap.eth)",
-            "wrap://ens/undefined-resolver.eth => PluginResolver (wrap://ens/uts46.polywrap.eth)",
-            "wrap://ens/undefined-resolver.eth => PluginResolver (wrap://ens/sha3.polywrap.eth)",
-            "wrap://ens/undefined-resolver.eth => PluginResolver (wrap://ens/graph-node.polywrap.eth)",
-            "wrap://ens/undefined-resolver.eth => PluginResolver (wrap://ens/fs.polywrap.eth)",
-            "wrap://ens/undefined-resolver.eth => PluginResolver (wrap://ens/fs-resolver.polywrap.eth)",
-            "wrap://ens/undefined-resolver.eth => PluginResolver (wrap://ens/ipfs-resolver.polywrap.eth)"
-          ],
-          "wrap://ens/undefined-resolver.eth => ExtendableUriResolver",
-          [
-            "wrap://ens/undefined-resolver.eth => UriResolverWrapper: (wrap://ens/ens-resolver.polywrap.eth)",
-            "wrap://ens/undefined-resolver.eth => UriResolverWrapper: (wrap://ens/fs-resolver.polywrap.eth)"
+            "wrap://ens/ipfs-resolver.polywrap.eth => LegacyPluginsResolver => package (wrap://ens/ipfs-resolver.polywrap.eth)",
+            [
+              "wrap://ens/ipfs-resolver.polywrap.eth => Plugin (wrap://ens/ipfs-resolver.polywrap.eth) => package (wrap://ens/ipfs-resolver.polywrap.eth)"
+            ]
           ]
-        ]
+        ],
+        "wrap://ens/ens-resolver.polywrap.eth => PackageToWrapperCacheResolver => wrapper (wrap://ens/ens-resolver.polywrap.eth)",
+        [
+          "wrap://ens/ens-resolver.polywrap.eth => UriResolverAggregator => package (wrap://ens/ens-resolver.polywrap.eth)",
+          [
+            "wrap://ens/ens-resolver.polywrap.eth => LegacyPluginsResolver => package (wrap://ens/ens-resolver.polywrap.eth)",
+            [
+              "wrap://ens/ens-resolver.polywrap.eth => Plugin (wrap://ens/ens-resolver.polywrap.eth) => package (wrap://ens/ens-resolver.polywrap.eth)"
+            ]
+          ]
+        ],
+        "wrap://ens/fs-resolver.polywrap.eth => PackageToWrapperCacheResolver => wrapper (wrap://ens/fs-resolver.polywrap.eth)",
+        [
+          "wrap://ens/fs-resolver.polywrap.eth => UriResolverAggregator => package (wrap://ens/fs-resolver.polywrap.eth)",
+          [
+            "wrap://ens/fs-resolver.polywrap.eth => LegacyPluginsResolver => package (wrap://ens/fs-resolver.polywrap.eth)",
+            [
+              "wrap://ens/fs-resolver.polywrap.eth => Plugin (wrap://ens/fs-resolver.polywrap.eth) => package (wrap://ens/fs-resolver.polywrap.eth)"
+            ]
+          ]
+        ],
+        "wrap://ens/test.eth => ResovlerExtension (wrap://ens/undefined-resolver.eth) => error While resolving wrap://ens/test.eth with URI resolver extension wrap://ens/undefined-resolver.eth, the extension could not be fully resolved. Last tried URI is wrap://ens/undefined-resolver.eth"
       ]
     ]
   ]

@@ -1,8 +1,11 @@
-import { IUriResolutionResponse } from ".";
 import { Uri } from "..";
+import { UriPackageOrWrapper } from "./UriPackageOrWrapper";
+
+import { Result } from "@polywrap/result";
 
 export interface IUriResolutionStep<TError = undefined> {
-  resolverName: string;
   sourceUri: Uri;
-  response: IUriResolutionResponse<TError>;
+  result: Result<UriPackageOrWrapper, TError>;
+  description?: string;
+  subHistory?: IUriResolutionStep<TError>[];
 }

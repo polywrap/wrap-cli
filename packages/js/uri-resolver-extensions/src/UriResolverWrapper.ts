@@ -1,46 +1,46 @@
 import { UriResolverExtensionFileReader } from "./UriResolverExtensionFileReader";
+import { loadResolverExtension } from "./ResolverExtensionLoader";
 
 import {
-  IUriResolver,
   Uri,
   Client,
-  IUriResolutionResponse,
-  UriResolutionResponse,
   UriResolverInterface,
-  IUriResolutionStep,
-  IWrapPackage,
-  Wrapper,
-  initWrapper,
+  IUriResolutionContext,
+  UriResolutionResult,
+  UriPackageOrWrapper,
 } from "@polywrap/core-js";
 import { Result, ResultOk, ResultErr } from "@polywrap/result";
 import { WasmPackage } from "@polywrap/wasm-js";
-import { getUriHistory } from "@polywrap/uri-resolvers-js";
+import { ResolverWithHistory } from "@polywrap/uri-resolvers-js";
 
-export class UriResolverWrapper implements IUriResolver<unknown> {
-  constructor(public readonly implementationUri: Uri) {}
-
-  public get name(): string {
-    return `UriResolverWrapper: (${this.implementationUri.uri})`;
+export class UriResolverWrapper extends ResolverWithHistory<unknown> {
+  constructor(public readonly implementationUri: Uri) {
+    super();
   }
 
-  async tryResolveUri(
+  protected getStepDescription = (): string =>
+    `ResovlerExtension (${this.implementationUri.uri})`;
+
+  protected async _tryResolveUri(
     uri: Uri,
-    client: Client
-  ): Promise<IUriResolutionResponse<unknown>> {
-    const { result, history } = await tryResolveUriWithImplementation(
+    client: Client,
+    resolutionContext: IUriResolutionContext
+  ): Promise<Result<UriPackageOrWrapper, unknown>> {
+    const result = await tryResolveUriWithImplementation(
       uri,
       this.implementationUri,
-      client
+      client,
+      resolutionContext
     );
 
     if (!result.ok) {
-      return UriResolutionResponse.err(result.error, history);
+      return UriResolutionResult.err(result.error);
     }
 
     const uriOrManifest = result.value;
 
     if (uriOrManifest?.uri) {
-      return UriResolutionResponse.ok(new Uri(uriOrManifest.uri), history);
+      return UriResolutionResult.ok(new Uri(uriOrManifest.uri));
     } else if (uriOrManifest?.manifest) {
       const wrapPackage = WasmPackage.from(
         uri,
@@ -48,60 +48,38 @@ export class UriResolverWrapper implements IUriResolver<unknown> {
         new UriResolverExtensionFileReader(this.implementationUri, uri, client)
       );
 
-      return UriResolutionResponse.ok(wrapPackage, history);
+      return UriResolutionResult.ok(wrapPackage);
     }
 
-    return UriResolutionResponse.ok(uri, history);
+    return UriResolutionResult.ok(uri);
   }
 }
 
 const tryResolveUriWithImplementation = async (
   uri: Uri,
   implementationUri: Uri,
-  client: Client
-): Promise<{
-  result: Result<UriResolverInterface.MaybeUriOrManifest | undefined, unknown>;
-  history?: IUriResolutionStep<unknown>[];
-}> => {
-  const response = await client.tryResolveUri({ uri: implementationUri });
+  client: Client,
+  resolutionContext: IUriResolutionContext
+): Promise<
+  Result<UriResolverInterface.MaybeUriOrManifest | undefined, unknown>
+> => {
+  const subContext = resolutionContext.createSubContext();
+  const result = await loadResolverExtension(
+    uri,
+    implementationUri,
+    client,
+    subContext
+  );
 
-  if (!response.result.ok) {
-    return {
-      result: ResultErr(response.result.error),
-      history: response.history,
-    };
+  if (!result.ok) {
+    return result;
   }
 
-  const uriPackageOrWrapper = response.result.value;
-
-  if (uriPackageOrWrapper.type === "uri") {
-    const lastFoundUri = uriPackageOrWrapper.uri as Uri;
-
-    return {
-      result: ResultErr(
-        `While resolving ${uri.uri} with URI resolver extension ${implementationUri.uri}, the extension could not be fully resolved. Last found URI is ${lastFoundUri.uri}`
-      ),
-      history: response.history,
-    };
-  }
-
-  let wrapperOrPackage: IWrapPackage | Wrapper;
-
-  if (uriPackageOrWrapper.type === "package") {
-    wrapperOrPackage = uriPackageOrWrapper.package;
-  } else {
-    wrapperOrPackage = uriPackageOrWrapper.wrapper;
-  }
-
-  const uriHistory: Uri[] = !response.history
-    ? [uri]
-    : [uri, ...getUriHistory(response.history)];
-
-  const wrapper = await initWrapper(wrapperOrPackage, client, uriHistory);
+  const extensionWrapper = result.value;
 
   const invokeResult = await client.invokeWrapper<UriResolverInterface.MaybeUriOrManifest>(
     {
-      wrapper,
+      wrapper: extensionWrapper,
       uri: implementationUri.uri,
       method: "tryResolveUri",
       args: {
@@ -116,14 +94,8 @@ const tryResolveUriWithImplementation = async (
   const uriOrManifest = data as UriResolverInterface.MaybeUriOrManifest;
 
   if (error) {
-    return {
-      result: ResultErr(error),
-      history: [],
-    };
+    return ResultErr(error);
   }
 
-  return {
-    result: ResultOk(uriOrManifest ?? undefined),
-    history: [],
-  };
+  return ResultOk(uriOrManifest ?? undefined);
 };

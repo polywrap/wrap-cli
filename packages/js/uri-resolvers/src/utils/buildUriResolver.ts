@@ -1,25 +1,19 @@
-import {
-  UriResolverLike,
-  UriResolverAggregatorOptions,
-  UriResolverAggregator,
-  PackageResolver,
-} from ".";
-
 import { IUriResolver, Uri, Client, IWrapPackage } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
+import { UriResolverAggregator } from "../aggregator";
+import { UriResolverLike } from "../helpers";
+import { PackageResolver } from "../packages";
 
 export const buildUriResolver = <TError = undefined>(
   resolvable: UriResolverLike,
-  options: UriResolverAggregatorOptions = {
-    endOnRedirect: false,
-  }
+  resolverName?: string
 ): IUriResolver<TError> => {
   if (Array.isArray(resolvable)) {
     return new UriResolverAggregator(
       (resolvable as UriResolverLike[]).map((x) =>
-        buildUriResolver(x, options)
+        buildUriResolver(x, resolverName)
       ),
-      options
+      resolverName
     ) as IUriResolver<TError>;
   } else if (typeof resolvable === "function") {
     return new UriResolverAggregator(
@@ -27,7 +21,7 @@ export const buildUriResolver = <TError = undefined>(
         uri: Uri,
         client: Client
       ) => Promise<Result<IUriResolver[], unknown>>,
-      options
+      resolverName
     ) as IUriResolver<TError>;
   } else if ((resolvable as Partial<IWrapPackage>).createWrapper) {
     return (new PackageResolver(

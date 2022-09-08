@@ -5,11 +5,11 @@ export const getUriHistory = (
 ): Uri[] => {
   return history
     .map((x) => {
-      if (!x.response.result.ok) {
+      if (!x.result.ok) {
         return undefined;
       }
 
-      const uriPackageOrWrapper = x.response.result.value;
+      const uriPackageOrWrapper = x.result.value;
       let resultUri: Uri;
 
       if (uriPackageOrWrapper.type === "uri") {

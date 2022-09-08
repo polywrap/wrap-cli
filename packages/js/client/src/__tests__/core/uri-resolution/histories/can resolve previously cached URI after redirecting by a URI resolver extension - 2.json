@@ -1,29 +1,30 @@
- [
-  "wrap://simple-redirect/$root-wrapper-dir/simple/build => MainResolver => uri (wrap://simple/$root-wrapper-dir/simple/build)",
+[
+  "wrap://simple-redirect/$root-wrapper-dir/simple/build => PackageToWrapperCacheResolver => uri (wrap://simple/$root-wrapper-dir/simple/build)",
   [
-    "wrap://simple-redirect/$root-wrapper-dir/simple/build => LegacyRedirectsResolver",
-    "wrap://simple-redirect/$root-wrapper-dir/simple/build => LegacyPluginsResolver",
+    "wrap://simple-redirect/$root-wrapper-dir/simple/build => UriResolverAggregator => uri (wrap://simple/$root-wrapper-dir/simple/build)",
     [
-      "wrap://simple-redirect/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/ipfs.polywrap.eth)",
-      "wrap://simple-redirect/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/ens-resolver.polywrap.eth)",
-      "wrap://simple-redirect/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/ethereum.polywrap.eth)",
-      "wrap://simple-redirect/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/http.polywrap.eth)",
-      "wrap://simple-redirect/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/js-logger.polywrap.eth)",
-      "wrap://simple-redirect/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/uts46.polywrap.eth)",
-      "wrap://simple-redirect/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/sha3.polywrap.eth)",
-      "wrap://simple-redirect/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/graph-node.polywrap.eth)",
-      "wrap://simple-redirect/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/fs.polywrap.eth)",
-      "wrap://simple-redirect/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/fs-resolver.polywrap.eth)",
-      "wrap://simple-redirect/$root-wrapper-dir/simple/build => PluginResolver (wrap://ens/ipfs-resolver.polywrap.eth)"
-    ],
-    "wrap://simple-redirect/$root-wrapper-dir/simple/build => ExtendableUriResolver => uri (wrap://simple/$root-wrapper-dir/simple/build)",
-    [
-      "wrap://simple-redirect/$root-wrapper-dir/simple/build => UriResolverWrapper: (wrap://ens/ipfs-resolver.polywrap.eth)",
-      "wrap://simple-redirect/$root-wrapper-dir/simple/build => UriResolverWrapper: (wrap://ens/ens-resolver.polywrap.eth)",
-      "wrap://simple-redirect/$root-wrapper-dir/simple/build => UriResolverWrapper: (wrap://ens/fs-resolver.polywrap.eth)",
-      "wrap://simple-redirect/$root-wrapper-dir/simple/build => UriResolverWrapper: (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)",
-      "wrap://simple-redirect/$root-wrapper-dir/simple/build => UriResolverWrapper: (wrap://file/$root-wrapper-dir/simple-redirect-resolver/build) => uri (wrap://simple/$root-wrapper-dir/simple/build)"
+      "wrap://simple-redirect/$root-wrapper-dir/simple/build => ExtendableUriResolver => uri (wrap://simple/$root-wrapper-dir/simple/build)",
+      [
+        "wrap://ens/ipfs-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/ipfs-resolver.polywrap.eth)",
+        "wrap://ens/ens-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/ens-resolver.polywrap.eth)",
+        "wrap://ens/fs-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/fs-resolver.polywrap.eth)",
+        "wrap://file/$root-wrapper-dir/simple-fs-resolver/build => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)",
+        "wrap://file/$root-wrapper-dir/simple-redirect-resolver/build => PackageToWrapperCacheResolver => wrapper (wrap://file/$root-wrapper-dir/simple-redirect-resolver/build)",
+        [
+          "wrap://file/$root-wrapper-dir/simple-redirect-resolver/build => UriResolverAggregator => package (wrap://file/$root-wrapper-dir/simple-redirect-resolver/build)",
+          [
+            "wrap://file/$root-wrapper-dir/simple-redirect-resolver/build => ExtendableUriResolver => package (wrap://file/$root-wrapper-dir/simple-redirect-resolver/build)",
+            [
+              "wrap://ens/ipfs-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/ipfs-resolver.polywrap.eth)",
+              "wrap://ens/ens-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/ens-resolver.polywrap.eth)",
+              "wrap://ens/fs-resolver.polywrap.eth => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://ens/fs-resolver.polywrap.eth)",
+              "wrap://file/$root-wrapper-dir/simple-redirect-resolver/build => ResovlerExtension (wrap://ens/fs-resolver.polywrap.eth) => package (wrap://file/$root-wrapper-dir/simple-redirect-resolver/build)"
+            ]
+          ]
+        ],
+        "wrap://simple-redirect/$root-wrapper-dir/simple/build => ResovlerExtension (wrap://file/$root-wrapper-dir/simple-redirect-resolver/build) => uri (wrap://simple/$root-wrapper-dir/simple/build)"
+      ]
     ]
   ],
-  "wrap://simple/$root-wrapper-dir/simple/build => MainResolver (cache) => wrapper (wrap://file/$root-wrapper-dir/simple/build)"
+  "wrap://simple/$root-wrapper-dir/simple/build => PackageToWrapperCacheResolver (Cache) => wrapper (wrap://file/$root-wrapper-dir/simple/build)"
 ]

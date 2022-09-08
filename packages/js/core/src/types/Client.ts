@@ -52,7 +52,7 @@ export interface Client
   extends Invoker,
     QueryHandler,
     SubscriptionHandler,
-    UriResolverHandler {
+    UriResolverHandler<unknown> {
   getRedirects(options?: GetRedirectsOptions): readonly UriRedirect<Uri>[];
 
   getPlugins(options?: GetPluginsOptions): readonly PluginRegistration<Uri>[];

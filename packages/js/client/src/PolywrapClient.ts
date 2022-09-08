@@ -28,14 +28,15 @@ import {
   IUriResolver,
   GetUriResolverOptions,
   Contextualized,
-  UriResolutionResponse,
   GetManifestOptions,
   initWrapper,
   IWrapPackage,
+  IUriResolutionContext,
+  UriPackageOrWrapper,
+  UriResolutionContext,
 } from "@polywrap/core-js";
 import {
   buildCleanUriHistory,
-  getUriHistory,
   IWrapperCache,
   PackageToWrapperCacheResolver,
 } from "@polywrap/uri-resolvers-js";
@@ -43,6 +44,7 @@ import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
 import { Tracer, TracerConfig, TracingLevel } from "@polywrap/tracing-js";
 import { ClientConfigBuilder } from "@polywrap/client-config-builder-js";
+import { Result } from "@polywrap/result";
 
 export interface PolywrapClientConfig<TUri extends Uri | string = string>
   extends ClientConfig<TUri> {
@@ -164,7 +166,11 @@ export class PolywrapClient implements Client {
     uri: TUri,
     options: GetManifestOptions = {}
   ): Promise<WrapManifest> {
-    const wrapper = await this._loadWrapper(this._toUri(uri), options);
+    const wrapper = await this._loadWrapper(
+      this._toUri(uri),
+      undefined,
+      options
+    );
     const client = contextualizeClient(this, options.contextId);
     return await wrapper.getManifest(options, client);
   }
@@ -174,7 +180,11 @@ export class PolywrapClient implements Client {
     uri: TUri,
     options: GetFileOptions
   ): Promise<string | Uint8Array> {
-    const wrapper = await this._loadWrapper(this._toUri(uri), options);
+    const wrapper = await this._loadWrapper(
+      this._toUri(uri),
+      undefined,
+      options
+    );
     const client = contextualizeClient(this, options.contextId);
     return await wrapper.getFile(options, client);
   }
@@ -356,7 +366,11 @@ export class PolywrapClient implements Client {
         uri: this._toUri(options.uri),
       };
 
-      const wrapper = await this._loadWrapper(typedOptions.uri, { contextId });
+      const wrapper = await this._loadWrapper(
+        typedOptions.uri,
+        options.resolutionContext,
+        { contextId }
+      );
 
       return await this.invokeWrapper({ ...typedOptions, wrapper, contextId });
     } catch (e) {
@@ -465,7 +479,7 @@ export class PolywrapClient implements Client {
   @Tracer.traceMethod("PolywrapClient: tryResolveUri", TracingLevel.High)
   public async tryResolveUri<TUri extends Uri | string>(
     options: TryResolveUriOptions<TUri>
-  ): Promise<UriResolutionResponse<unknown>> {
+  ): Promise<Result<UriPackageOrWrapper, unknown>> {
     const uri = this._toUri(options.uri);
 
     const { contextId, shouldClearContext } = this._setContext(
@@ -479,23 +493,27 @@ export class PolywrapClient implements Client {
 
     const uriResolver = this.getUriResolver({ contextId: contextId });
 
+    const resolutionContext =
+      options.resolutionContext ?? new UriResolutionContext();
+
     // This is a hack because we expect config overrides to ignore cache
     const response =
       ignoreCache && uriResolver instanceof PackageToWrapperCacheResolver
         ? await ((uriResolver as unknown) as PackageToWrapperCacheResolver).resolverToCache.tryResolveUri(
             uri,
-            client
+            client,
+            resolutionContext
           )
-        : await uriResolver.tryResolveUri(uri, client);
+        : await uriResolver.tryResolveUri(uri, client, resolutionContext);
 
     if (shouldClearContext) {
       this._clearContext(contextId);
     }
 
-    if (response.history) {
+    if (options.resolutionContext) {
       Tracer.setAttribute(
         "label",
-        buildCleanUriHistory(response.history),
+        buildCleanUriHistory(options.resolutionContext.getHistory()),
         TracingLevel.High
       );
     }
@@ -609,12 +627,18 @@ export class PolywrapClient implements Client {
   @Tracer.traceMethod("PolywrapClient: _loadWrapper", TracingLevel.High)
   private async _loadWrapper(
     uri: Uri,
+    resolutionContext?: IUriResolutionContext,
     options?: Contextualized
   ): Promise<Wrapper> {
     Tracer.setAttribute("label", `Wrapper loaded: ${uri}`, TracingLevel.High);
 
-    const { result, history } = await this.tryResolveUri({
+    if (!resolutionContext) {
+      resolutionContext = new UriResolutionContext();
+    }
+
+    const result = await this.tryResolveUri({
       uri,
+      resolutionContext,
       contextId: options?.contextId,
     });
 
@@ -652,11 +676,9 @@ export class PolywrapClient implements Client {
 
     const client = contextualizeClient(this, options?.contextId);
 
-    const uriHistory: Uri[] = !history
-      ? [uri]
-      : [uri, ...getUriHistory(history)];
+    const resolutionPath: Uri[] = resolutionContext.getResolutionPath();
 
-    const wrapper = await initWrapper(packageOrWrapper, client, uriHistory);
+    const wrapper = await initWrapper(packageOrWrapper, client, resolutionPath);
 
     return wrapper;
   }
@@ -733,7 +755,7 @@ const contextualizeClient = (
         },
         tryResolveUri: <TUri extends Uri | string>(
           options: TryResolveUriOptions<TUri, ClientConfig>
-        ): Promise<UriResolutionResponse<unknown>> => {
+        ): Promise<Result<UriPackageOrWrapper, unknown>> => {
           return client.tryResolveUri({ ...options, contextId });
         },
       }

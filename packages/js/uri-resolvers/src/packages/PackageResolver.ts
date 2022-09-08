@@ -1,10 +1,11 @@
 import {
   Uri,
   IUriResolver,
-  UriResolutionResponse,
-  IUriResolutionResponse,
   IWrapPackage,
+  UriPackageOrWrapper,
+  UriResolutionResult,
 } from "@polywrap/core-js";
+import { Result } from "@polywrap/result";
 
 export class PackageResolver implements IUriResolver {
   packageUri: Uri;
@@ -17,11 +18,11 @@ export class PackageResolver implements IUriResolver {
     return `PackageResolver (${this.packageUri.uri})`;
   }
 
-  async tryResolveUri(uri: Uri): Promise<IUriResolutionResponse> {
+  async tryResolveUri(uri: Uri): Promise<Result<UriPackageOrWrapper>> {
     if (uri.uri !== this.packageUri.uri) {
-      return UriResolutionResponse.ok(uri);
+      return UriResolutionResult.ok(uri);
     }
 
-    return UriResolutionResponse.ok(this.wrapPackage);
+    return UriResolutionResult.ok(this.wrapPackage);
   }
 }

@@ -6,27 +6,27 @@ import {
   IUriResolver,
   getImplementations,
   coreInterfaceUris,
-  UriResolutionResponse,
-  IUriResolutionResponse,
+  IUriResolutionContext,
+  UriPackageOrWrapper,
+  UriResolutionResult,
 } from "@polywrap/core-js";
 import { Result, ResultOk } from "@polywrap/result";
-import {
-  InfiniteLoopError,
-  UriResolverAggregatorBase,
-} from "@polywrap/uri-resolvers-js";
+import { UriResolverAggregatorBase } from "@polywrap/uri-resolvers-js";
 
 export class ExtendableUriResolver extends UriResolverAggregatorBase<unknown> {
-  constructor(options: { endOnRedirect: boolean }) {
-    super(options);
-  }
+  loadingExtensionsMap: Map<number, Map<string, boolean>> = new Map();
 
-  get name(): string {
-    return "ExtendableUriResolver";
+  private resolverName: string;
+
+  constructor(resolverName?: string) {
+    super();
+    this.resolverName = resolverName ?? "ExtendableUriResolver";
   }
 
   async getUriResolvers(
     uri: Uri,
-    client: Client
+    client: Client,
+    resolutionContext: IUriResolutionContext
   ): Promise<Result<IUriResolver<unknown>[]>> {
     const uriResolverImpls = getImplementations(
       coreInterfaceUris.uriResolver,
@@ -34,46 +34,35 @@ export class ExtendableUriResolver extends UriResolverAggregatorBase<unknown> {
       client.getRedirects({})
     );
 
-    const resolvers: UriResolverWrapper[] = uriResolverImpls.map(
-      (implementationUri) => new UriResolverWrapper(implementationUri)
-    );
+    const resolvers: UriResolverWrapper[] = uriResolverImpls
+      .filter((x) => !resolutionContext.isResolving(x))
+      .map((implementationUri) => new UriResolverWrapper(implementationUri));
 
     return ResultOk(resolvers);
   }
 
-  private resolverIndex = -1;
-
   async tryResolveUri(
     uri: Uri,
-    client: Client
-  ): Promise<IUriResolutionResponse<InfiniteLoopError | unknown>> {
-    const result = await this.getUriResolvers(uri, client);
+    client: Client,
+    resolutionContext: IUriResolutionContext
+  ): Promise<Result<UriPackageOrWrapper, unknown>> {
+    const result = await this.getUriResolvers(uri, client, resolutionContext);
     const resolvers = (result as {
       ok: true;
       value: UriResolverWrapper[];
     }).value;
 
-    this.resolverIndex++;
-
-    if (this.resolverIndex >= resolvers.length) {
-      this.resolverIndex = -1;
-      return UriResolutionResponse.ok(uri);
+    if (resolvers.length === 0) {
+      return UriResolutionResult.ok(uri);
     }
 
-    try {
-      const result = await super.tryResolveUriWithResolvers(
-        uri,
-        client,
-        resolvers
-          .slice(this.resolverIndex, resolvers.length)
-          .filter((x) => x.implementationUri.uri !== uri.uri)
-      );
-
-      this.resolverIndex = -1;
-      return result;
-    } catch (ex) {
-      this.resolverIndex = -1;
-      throw ex;
-    }
+    return await super.tryResolveUriWithResolvers(
+      uri,
+      client,
+      resolvers,
+      resolutionContext
+    );
   }
+
+  protected getStepDescription = (): string => `${this.resolverName}`;
 }
