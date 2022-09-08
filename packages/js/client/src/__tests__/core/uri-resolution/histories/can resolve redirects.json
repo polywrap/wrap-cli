@@ -1,5 +1,5 @@
 [
-  "wrap://ens/from.eth => UriResolverAggregator => uri (wrap://ens/to2.eth)",
+  "wrap://ens/from.eth => MainResolver => uri (wrap://ens/to2.eth)",
   [
     "wrap://ens/from.eth => LegacyRedirectsResolver => uri (wrap://ens/to2.eth)",
     [
@@ -8,7 +8,10 @@
       "wrap://ens/to1.eth => RedirectResolver(wrap://ens/to1.eth - wrap://ens/to2.eth) => uri (wrap://ens/to2.eth)",
       "wrap://ens/to2.eth => RedirectResolver(wrap://ens/from.eth - wrap://ens/to1.eth)",
       "wrap://ens/to2.eth => RedirectResolver(wrap://ens/to1.eth - wrap://ens/to2.eth)"
-    ],
+    ]
+  ],
+  "wrap://ens/to2.eth => MainResolver",
+  [
     "wrap://ens/to2.eth => LegacyRedirectsResolver",
     [
       "wrap://ens/to2.eth => RedirectResolver(wrap://ens/from.eth - wrap://ens/to1.eth)",

@@ -1,5 +1,5 @@
 [
-  "wrap://ens/uri.eth => UriResolverAggregator",
+  "wrap://ens/uri.eth => MainResolver",
   [
     "wrap://ens/uri.eth => LegacyRedirectsResolver",
     "wrap://ens/uri.eth => LegacyPluginsResolver",

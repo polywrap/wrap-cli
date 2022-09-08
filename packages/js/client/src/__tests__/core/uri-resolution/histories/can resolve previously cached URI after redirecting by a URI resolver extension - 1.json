@@ -1,5 +1,5 @@
 [
-  "wrap://simple/$root-wrapper-dir/simple/build => UriResolverAggregator => package (wrap://file/$root-wrapper-dir/simple/build)",
+  "wrap://simple/$root-wrapper-dir/simple/build => MainResolver => uri (wrap://file/$root-wrapper-dir/simple/build)",
   [
     "wrap://simple/$root-wrapper-dir/simple/build => LegacyRedirectsResolver",
     "wrap://simple/$root-wrapper-dir/simple/build => LegacyPluginsResolver",
@@ -22,7 +22,10 @@
       "wrap://simple/$root-wrapper-dir/simple/build => UriResolverWrapper: (wrap://ens/ens-resolver.polywrap.eth)",
       "wrap://simple/$root-wrapper-dir/simple/build => UriResolverWrapper: (wrap://ens/fs-resolver.polywrap.eth)",
       "wrap://simple/$root-wrapper-dir/simple/build => UriResolverWrapper: (wrap://file/$root-wrapper-dir/simple-fs-resolver/build) => uri (wrap://file/$root-wrapper-dir/simple/build)"
-    ],
+    ]
+  ],
+  "wrap://file/$root-wrapper-dir/simple/build => MainResolver => wrapper (wrap://file/$root-wrapper-dir/simple/build)",
+  [
     "wrap://file/$root-wrapper-dir/simple/build => LegacyRedirectsResolver",
     "wrap://file/$root-wrapper-dir/simple/build => LegacyPluginsResolver",
     [

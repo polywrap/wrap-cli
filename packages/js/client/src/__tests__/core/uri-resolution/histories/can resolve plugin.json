@@ -1,5 +1,5 @@
 [
-  "wrap://ens/plugin.eth => UriResolverAggregator => package (wrap://ens/plugin.eth)",
+  "wrap://ens/plugin.eth => MainResolver => wrapper (wrap://ens/plugin.eth)",
   [
     "wrap://ens/plugin.eth => LegacyRedirectsResolver",
     "wrap://ens/plugin.eth => LegacyPluginsResolver => package (wrap://ens/plugin.eth)",

@@ -1,5 +1,5 @@
 [
-  "wrap://simple-redirect/$root-wrapper-dir/simple/build => UriResolverAggregator => uri (wrap://ens/redirect.eth)",
+  "wrap://simple-redirect/$root-wrapper-dir/simple/build => MainResolver => uri (wrap://simple/$root-wrapper-dir/simple/build)",
   [
     "wrap://simple-redirect/$root-wrapper-dir/simple/build => LegacyRedirectsResolver",
     [
@@ -26,12 +26,18 @@
       "wrap://simple-redirect/$root-wrapper-dir/simple/build => UriResolverWrapper: (wrap://ens/fs-resolver.polywrap.eth)",
       "wrap://simple-redirect/$root-wrapper-dir/simple/build => UriResolverWrapper: (wrap://file/$root-wrapper-dir/simple-fs-resolver/build)",
       "wrap://simple-redirect/$root-wrapper-dir/simple/build => UriResolverWrapper: (wrap://file/$root-wrapper-dir/simple-redirect-resolver/build) => uri (wrap://simple/$root-wrapper-dir/simple/build)"
-    ],
+    ]
+  ],
+  "wrap://simple/$root-wrapper-dir/simple/build => MainResolver => uri (wrap://ens/redirect.eth)",
+  [
     "wrap://simple/$root-wrapper-dir/simple/build => LegacyRedirectsResolver => uri (wrap://ens/redirect.eth)",
     [
       "wrap://simple/$root-wrapper-dir/simple/build => RedirectResolver(wrap://simple/$root-wrapper-dir/simple/build - wrap://ens/redirect.eth) => uri (wrap://ens/redirect.eth)",
       "wrap://ens/redirect.eth => RedirectResolver(wrap://simple/$root-wrapper-dir/simple/build - wrap://ens/redirect.eth)"
-    ],
+    ]
+  ],
+  "wrap://ens/redirect.eth => MainResolver",
+  [
     "wrap://ens/redirect.eth => LegacyRedirectsResolver",
     [
       "wrap://ens/redirect.eth => RedirectResolver(wrap://simple/$root-wrapper-dir/simple/build - wrap://ens/redirect.eth)"

@@ -1,72 +1,143 @@
-import { ICacheResolver } from "./ICacheResolver";
-import { getUriHistory } from "../getUriHistory";
-import { IWrapperCache } from "./IWrapperCache";
+import { UriResolverLike } from "../UriResolverLike";
+import { buildUriResolver } from "../buildUriResolver";
 
 import {
+  IUriResolver,
   Uri,
   Client,
+  IUriResolutionStep,
   IUriResolutionResponse,
-  UriResolutionResponse,
   executeMaybeAsyncFunction,
   Wrapper,
+  UriResolutionResponse,
 } from "@polywrap/core-js";
+import { IWrapperCache } from "./IWrapperCache";
 import { DeserializeManifestOptions } from "@polywrap/wrap-manifest-types-js";
+import { getUriHistory } from "../getUriHistory";
+import { InfiniteLoopError } from "../InfiniteLoopError";
+import { fullyResolveUri } from "../aggregator";
 
-// This cache resolver caches wrappers
-// Packages are turned into wrappers before caching
-export class PackageToWrapperCacheResolver implements ICacheResolver<unknown> {
+export class PackageToWrapperCacheResolver<TError = undefined>
+  implements IUriResolver<TError | InfiniteLoopError> {
+  name: string;
+  resolverToCache: IUriResolver<TError>;
+
   constructor(
     private cache: IWrapperCache,
-    private options?: DeserializeManifestOptions
-  ) {}
+    resolverToCache: UriResolverLike,
+    private options?: {
+      deserializeManifestOptions?: DeserializeManifestOptions;
+      resolverName?: string;
+      endOnRedirect?: boolean;
+    }
+  ) {
+    if (options?.resolverName) {
+      this.name = options.resolverName;
+    } else {
+      this.name = "PackageToWrapperCacheResolver";
+    }
 
-  public get name(): string {
-    return "PackageToWrapperCacheResolver";
+    this.resolverToCache = buildUriResolver(resolverToCache);
   }
 
-  public async tryResolveUri(
+  async tryResolveUri(
     uri: Uri,
-    _: Client
-  ): Promise<IUriResolutionResponse> {
+    client: Client
+  ): Promise<IUriResolutionResponse<TError | InfiniteLoopError>> {
+    return this.options?.endOnRedirect
+      ? this.resolveUriOnce(client, uri, uri, [])
+      : await fullyResolveUri(uri, (currentUri, history) => {
+          return this.resolveUriOnce(client, uri, currentUri, history);
+        });
+  }
+
+  protected async resolveUriOnce(
+    client: Client,
+    uri: Uri,
+    currentUri: Uri,
+    history: IUriResolutionStep<unknown>[]
+  ): Promise<IUriResolutionResponse<TError>> {
     const wrapper = await executeMaybeAsyncFunction<Wrapper | undefined>(
-      this.cache.get.bind(this.cache, uri)
+      this.cache.get.bind(this.cache, currentUri)
     );
 
     if (wrapper) {
-      return UriResolutionResponse.ok(wrapper);
+      const response = UriResolutionResponse.ok(wrapper);
+
+      history.push({
+        resolverName: `${this.name} (cache)`,
+        sourceUri: currentUri,
+        response,
+      });
+
+      return UriResolutionResponse.ok(wrapper, history);
     }
 
-    return UriResolutionResponse.ok(uri);
-  }
+    const response = await this.resolverToCache.tryResolveUri(
+      currentUri,
+      client
+    );
 
-  async onResolutionEnd(
-    uri: Uri,
-    client: Client,
-    response: IUriResolutionResponse<unknown>
-  ): Promise<IUriResolutionResponse<unknown>> {
     if (response.result.ok) {
-      if (response.result.value.type === "wrapper") {
-        await executeMaybeAsyncFunction<Wrapper | undefined>(
-          this.cache.set.bind(this.cache, uri, response.result.value.wrapper)
-        );
-      } else if (response.result.value.type === "package") {
-        const uriHistory: Uri[] = !response.history
-          ? [uri]
-          : [uri, ...getUriHistory(response.history)];
+      const uriPackageOrWrapper = response.result.value;
 
-        const wrapper = await response.result.value.package.createWrapper(
+      if (uriPackageOrWrapper.type === "wrapper") {
+        history.push({
+          resolverName: this.name,
+          sourceUri: currentUri,
+          response,
+        });
+
+        const uriHistory: Uri[] = [uri, ...getUriHistory(history)];
+
+        for (const uri of uriHistory) {
+          await executeMaybeAsyncFunction<Wrapper | undefined>(
+            this.cache.set.bind(this.cache, uri, uriPackageOrWrapper.wrapper)
+          );
+        }
+
+        return UriResolutionResponse.ok(uriPackageOrWrapper.wrapper, history);
+      } else if (uriPackageOrWrapper.type === "package") {
+        const uriHistory: Uri[] = [uri, ...getUriHistory(history)];
+
+        const wrapper = await uriPackageOrWrapper.package.createWrapper(
           client,
           uriHistory,
-          this.options
-        );
-        await executeMaybeAsyncFunction<Wrapper | undefined>(
-          this.cache.set.bind(this.cache, uri, wrapper)
+          { noValidate: this.options?.deserializeManifestOptions?.noValidate }
         );
 
-        return UriResolutionResponse.ok(wrapper);
+        for (const uri of uriHistory) {
+          await executeMaybeAsyncFunction<Wrapper | undefined>(
+            this.cache.set.bind(this.cache, uri, wrapper)
+          );
+        }
+
+        history.push({
+          resolverName: this.name,
+          sourceUri: currentUri,
+          response: UriResolutionResponse.ok(wrapper, response.history),
+        });
+
+        return UriResolutionResponse.ok(wrapper, history);
+      } else {
+        const resultUri = uriPackageOrWrapper.uri;
+
+        history.push({
+          resolverName: this.name,
+          sourceUri: currentUri,
+          response,
+        });
+
+        return UriResolutionResponse.ok(resultUri, history);
       }
-    }
+    } else {
+      history.push({
+        resolverName: this.name,
+        sourceUri: currentUri,
+        response,
+      });
 
-    return response;
+      return UriResolutionResponse.err(response.result.error, history);
+    }
   }
 }

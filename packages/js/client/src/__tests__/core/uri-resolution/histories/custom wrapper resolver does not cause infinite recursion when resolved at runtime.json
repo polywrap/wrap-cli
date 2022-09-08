@@ -1,5 +1,5 @@
 [
-  "wrap://ens/test.eth => UriResolverAggregator => error",
+  "wrap://ens/test.eth => MainResolver => error",
   [
     "wrap://ens/test.eth => LegacyRedirectsResolver",
     "wrap://ens/test.eth => LegacyPluginsResolver",
@@ -23,7 +23,7 @@
       "wrap://ens/test.eth => UriResolverWrapper: (wrap://ens/fs-resolver.polywrap.eth)",
       "wrap://ens/test.eth => UriResolverWrapper: (wrap://ens/undefined-resolver.eth) => error",
       [
-        "wrap://ens/undefined-resolver.eth => UriResolverAggregator",
+        "wrap://ens/undefined-resolver.eth => MainResolver",
         [
           "wrap://ens/undefined-resolver.eth => LegacyRedirectsResolver",
           "wrap://ens/undefined-resolver.eth => LegacyPluginsResolver",

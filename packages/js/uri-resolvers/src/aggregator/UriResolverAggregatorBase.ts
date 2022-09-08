@@ -1,5 +1,6 @@
 import { UriResolverAggregatorOptions } from ".";
 import { InfiniteLoopError } from "../InfiniteLoopError";
+import { fullyResolveUri } from "./fullyResolveUri";
 
 import {
   IUriResolver,
@@ -45,63 +46,46 @@ export abstract class UriResolverAggregatorBase<TError = undefined>
     client: Client,
     resolvers: IUriResolver<unknown>[]
   ): Promise<IUriResolutionResponse<TError | InfiniteLoopError>> {
-    // Keep track of past URIs to avoid infinite loops
-    const visitedUriMap: Map<string, boolean> = new Map<string, boolean>();
-    const history: IUriResolutionStep<unknown>[] = [];
+    return this.options.endOnRedirect
+      ? this.resolveUriOnce(client, resolvers, uri, [])
+      : await fullyResolveUri(uri, (currentUri, history) =>
+          this.resolveUriOnce(client, resolvers, currentUri, history)
+        );
+  }
 
-    let currentUri: Uri = uri;
+  protected async resolveUriOnce(
+    client: Client,
+    resolvers: IUriResolver<unknown>[],
+    currentUri: Uri,
+    history: IUriResolutionStep<unknown>[]
+  ): Promise<IUriResolutionResponse<TError>> {
+    for (const resolver of resolvers) {
+      const response = await resolver.tryResolveUri(currentUri, client);
 
-    let runAgain = true;
+      history.push({
+        resolverName: resolver.name,
+        sourceUri: currentUri,
+        response,
+      });
 
-    while (runAgain) {
-      runAgain = false;
+      if (!response.result.ok) {
+        return UriResolutionResponse.err(
+          response.result.error as TError,
+          history
+        );
+      } else if (response.result.ok) {
+        const uriPackageOrWrapper: UriPackageOrWrapper = response.result.value;
 
-      const { infiniteLoopDetected } = trackVisitedUri(
-        currentUri.uri,
-        visitedUriMap
-      );
+        if (uriPackageOrWrapper.type === "uri") {
+          const resultUri = uriPackageOrWrapper.uri;
 
-      for (const resolver of resolvers) {
-        if (infiniteLoopDetected) {
-          return UriResolutionResponse.err(
-            new InfiniteLoopError(currentUri, history),
-            history
-          );
-        }
-
-        const response = await resolver.tryResolveUri(currentUri, client);
-
-        history.push({
-          resolverName: resolver.name,
-          sourceUri: currentUri,
-          response,
-        });
-
-        if (!response.result.ok) {
-          return UriResolutionResponse.err(
-            response.result.error as TError,
-            history
-          );
-        } else if (response.result.ok) {
-          const uriPackageOrWrapper: UriPackageOrWrapper =
-            response.result.value;
-
-          if (uriPackageOrWrapper.type === "uri") {
-            const resultUri = uriPackageOrWrapper.uri;
-
-            if (resultUri.uri === currentUri.uri) {
-              continue;
-            }
-
-            currentUri = resultUri;
-
-            if (!this.options.endOnRedirect) {
-              runAgain = true;
-            }
-            break;
-          } else {
-            return UriResolutionResponse.ok(uriPackageOrWrapper, history);
+          if (resultUri.uri === currentUri.uri) {
+            continue;
           }
+
+          return UriResolutionResponse.ok(resultUri, history);
+        } else {
+          return UriResolutionResponse.ok(uriPackageOrWrapper, history);
         }
       }
     }
@@ -109,17 +93,3 @@ export abstract class UriResolverAggregatorBase<TError = undefined>
     return UriResolutionResponse.ok(currentUri, history);
   }
 }
-
-const trackVisitedUri = (uri: string, visitedUriMap: Map<string, boolean>) => {
-  if (visitedUriMap.has(uri)) {
-    return {
-      infiniteLoopDetected: true,
-    };
-  }
-
-  visitedUriMap.set(uri, true);
-
-  return {
-    infiniteLoopDetected: false,
-  };
-};

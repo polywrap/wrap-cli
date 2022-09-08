@@ -1,4 +1,3 @@
-import { ICacheResolver } from "./ICacheResolver";
 import { getUriHistory } from "../getUriHistory";
 
 import {
@@ -12,7 +11,7 @@ import {
 // This resolver only caches wrappers
 // It ignores URIs
 // Packages are turned into wrappers before caching
-export class WrapperCacheResolver<TError> implements ICacheResolver<TError> {
+export class WrapperCacheResolver<TError> {
   public get name(): string {
     return "WrapperCacheResolver";
   }
