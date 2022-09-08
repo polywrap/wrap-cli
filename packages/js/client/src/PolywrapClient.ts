@@ -38,7 +38,8 @@ import {
   GetManifestOptions,
   SimpleCache,
   executeMaybeAsyncFunction,
-  GetPluginConfigOptions,
+  GetPluginOptions,
+  PluginPackage,
 } from "@polywrap/core-js";
 import { msgpackEncode, msgpackDecode } from "@polywrap/msgpack-js";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
@@ -169,14 +170,14 @@ export class PolywrapClient implements Client {
     );
   }
 
-  @Tracer.traceMethod("PolywrapClient: getPluginConfig")
-  public async getPluginConfig<TUri extends Uri | string>(
+  @Tracer.traceMethod("PolywrapClient: getPlugin")
+  public async getPlugin<TUri extends Uri | string>(
     uri: TUri,
-    options: GetPluginConfigOptions = {}
-  ): Promise<unknown> {
-    return this.getPlugins(options)
-      .find((x) => Uri.equals(x.uri, this._toUri(uri)))
-      ?.plugin.factory().config;
+    options: GetPluginOptions = {}
+  ): Promise<PluginPackage<unknown> | undefined> {
+    return this.getPlugins(options).find((x) =>
+      Uri.equals(x.uri, this._toUri(uri))
+    )?.plugin;
   }
 
   @Tracer.traceMethod("PolywrapClient: getManifest")

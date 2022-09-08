@@ -41,7 +41,7 @@ export interface GetManifestOptions extends Contextualized {
   noValidate?: boolean;
 }
 
-export type GetPluginConfigOptions = Contextualized;
+export type GetPluginOptions = Contextualized;
 
 export interface GetFileOptions extends Contextualized {
   path: string;

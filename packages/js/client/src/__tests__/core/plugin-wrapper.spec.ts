@@ -1,7 +1,6 @@
-import { PolywrapClient, PluginModule } from "../..";
+import { PolywrapClient, PluginModule, PluginPackage } from "../..";
 import { getClient } from "../utils/getClient";
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
-
 
 jest.setTimeout(200000);
 
@@ -39,9 +38,10 @@ describe("plugin-wrapper", () => {
     }
 
     return {
-      factory: () => new MockMapPlugin({
-        map: new Map().set("a", 1).set("b", 2)
-      }),
+      factory: () =>
+        new MockMapPlugin({
+          map: new Map().set("a", 1).set("b", 2),
+        }),
       manifest: {} as WrapManifest,
     };
   };
@@ -176,12 +176,9 @@ describe("plugin-wrapper", () => {
     class SamplePluginModule extends PluginModule<SamplePluginConfig> {}
     const config: SamplePluginConfig = { bar: "test" };
 
-    const pluginPackage = {
+    const pluginPackage = <PluginPackage<SamplePluginConfig>>{
       factory: () => new SamplePluginModule(config),
-      manifest: {
-        schema: "",
-        implements: [],
-      },
+      manifest: {},
     };
 
     const client = new PolywrapClient(
@@ -196,17 +193,17 @@ describe("plugin-wrapper", () => {
       { noDefaults: true }
     );
 
-    const pluginConfig = await client.getPluginConfig(
+    const plugin = await client.getPlugin(
       "wrap://ens/some.plugin.eth"
     );
 
-    expect(pluginConfig).toStrictEqual(config);
+    expect(plugin).toStrictEqual(pluginPackage);
   });
 
   test("get manifest should fetch wrap manifest from plugin", async () => {
-    const client = await getClient()
-    const manifest = await client.getManifest("ens/ipfs.polywrap.eth")
-    expect(manifest.type).toEqual("plugin")
-    expect(manifest.name).toEqual("Ipfs")
-  })
+    const client = await getClient();
+    const manifest = await client.getManifest("ens/ipfs.polywrap.eth");
+    expect(manifest.type).toEqual("plugin");
+    expect(manifest.name).toEqual("Ipfs");
+  });
 });
