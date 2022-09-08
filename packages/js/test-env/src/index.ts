@@ -442,13 +442,11 @@ export async function buildAndDeployWrapperToHttp({
     fs.readFileSync(manifestPath, "utf-8")
   );
 
-  fs.writeFileSync(
-    tempManifestPath,
-    yaml.dump({
-      ...polywrapManifest,
-      deploy: `./${tempDeployManifestFilename}`,
-    })
-  );
+  polywrapManifest.extensions = {
+    ...polywrapManifest.extensions,
+    deploy: `./${tempDeployManifestFilename}`,
+  };
+  fs.writeFileSync(tempManifestPath, yaml.dump({ ...polywrapManifest }));
 
   fs.writeFileSync(
     tempDeployManifestPath,

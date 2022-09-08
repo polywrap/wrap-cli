@@ -5,6 +5,7 @@ import { buildAndDeployWrapperToHttp, runCLI, providers } from "@polywrap/test-e
 import { httpPlugin } from "@polywrap/http-plugin-js";
 import axios from "axios";
 import { httpResolverPlugin } from "..";
+import { deserializeWrapManifest } from "@polywrap/wrap-manifest-types-js";
 
 jest.setTimeout(300000);
 
@@ -55,24 +56,39 @@ describe("HTTP Plugin", () => {
     }
   });
 
-  it("Should successfully resolve a deployed wrapper - e2e", async () => {
+  it("Should successfully resolve a deployed wrapper with http authority - e2e", async () => {
     const wrapperUri = `http/${wrapperHttpUri}`;
 
     const resolution = await client.resolveUri(wrapperUri);
 
     expect(resolution.wrapper).toBeTruthy();
     
-    const { data } = await axios.get(`${providers.http}/wrappers/local/${wrapperName}/schema.graphql`, {
+    const { data } = await axios.get(`${providers.http}/wrappers/local/${wrapperName}/wrap.info`, {
       responseType: "arraybuffer"
-    })
+    });
+    const expectedManifest = await deserializeWrapManifest(data);
 
-    const expectedSchema = Buffer.from(data, "binary").toString("utf8");
+    const manifest = await resolution.wrapper?.getManifest({}, client);
 
-    const schema = await resolution.wrapper?.getSchema(client);
+    expect(manifest?.name).toBe("SimpleStorage");
+    expect(manifest).toEqual(expectedManifest);
+  });
 
-    expect(schema).toEqual(expectedSchema);
+  it("Should successfully resolve a deployed wrapper with https authority - e2e", async () => {
+    const wrapperUri = `https/${wrapperHttpUri}`;
 
-    const info = await resolution.wrapper?.getManifest({}, client);
-    expect(info?.name).toBe("SimpleStorage");
+    const resolution = await client.resolveUri(wrapperUri);
+
+    expect(resolution.wrapper).toBeTruthy();
+
+    const { data } = await axios.get(`${providers.http}/wrappers/local/${wrapperName}/wrap.info`, {
+      responseType: "arraybuffer"
+    });
+    const expectedManifest = await deserializeWrapManifest(data);
+
+    const manifest = await resolution.wrapper?.getManifest({}, client);
+
+    expect(manifest?.name).toBe("SimpleStorage");
+    expect(manifest).toEqual(expectedManifest);
   });
 });

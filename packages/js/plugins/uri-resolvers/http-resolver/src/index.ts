@@ -19,14 +19,13 @@ export class HttpResolverPlugin extends Module<NoConfig> {
     args: Args_tryResolveUri,
     _client: Client
   ): Promise<UriResolver_MaybeUriOrManifest | null> {
-    if (args.authority !== "http") {
+    if (args.authority !== "http" && args.authority !== "https") {
       return null;
     }
 
     const manifestSearchPattern = "wrap.info";
 
     let manifest: Bytes | undefined;
-
     try {
       const manifestResult = await Http_Module.get(
         {
