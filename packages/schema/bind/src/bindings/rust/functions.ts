@@ -304,6 +304,16 @@ export const detectKeyword: MustacheFn = () => {
   };
 };
 
+export const serdeKeyword: MustacheFn = () => {
+  return (value: string, render: (template: string) => string): string => {
+    const type = render(value);
+    if (isKeyword(type)) {
+      return `#[serde(rename = "${type}")]`;
+    }
+    return "";
+  };
+};
+
 const toWasmArray = (type: string, optional: boolean): string => {
   const result = type.match(/(\[)([[\]A-Za-z1-9_.!]+)(\])/);
 
