@@ -308,7 +308,7 @@ export const serdeKeyword: MustacheFn = () => {
   return (value: string, render: (template: string) => string): string => {
     const type = render(value);
     if (isKeyword(type)) {
-      return `#[serde(rename = "${type}")]`;
+      return `#[serde(rename = "${type}")]\n    `;
     }
     return "";
   };

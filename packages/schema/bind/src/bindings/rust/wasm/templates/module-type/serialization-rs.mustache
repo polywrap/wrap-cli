@@ -34,8 +34,7 @@ use crate::{
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Args{{#detectKeyword}}{{#toUpper}}{{name}}{{/toUpper}}{{/detectKeyword}} {
     {{#arguments}}
-    {{#serdeKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/serdeKeyword}}
-    pub {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
+    {{#serdeKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/serdeKeyword}}pub {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
     {{/arguments}}
 }
 

@@ -26,8 +26,7 @@ use {{crate}}::{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeywor
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
     {{#properties}}
-    {{#serdeKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/serdeKeyword}}
-    pub {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
+    {{#serdeKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/serdeKeyword}}pub {{#detectKeyword}}{{#toLower}}{{name}}{{/toLower}}{{/detectKeyword}}: {{#toWasm}}{{toGraphQLType}}{{/toWasm}},
     {{/properties}}
 }
 
