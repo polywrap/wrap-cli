@@ -26,7 +26,9 @@ use {{crate}}::{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeywor
 {{/propertyDeps.length}}
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {}
+pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
+    {{#isInterface}}uri: &'static str{{/isInterface}}
+}
 
 {{^isInterface}}
 impl {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
@@ -56,9 +58,8 @@ impl {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
 {{#isInterface}}
 impl {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
     pub const INTERFACE_URI: &'static str = "{{uri}}";
-    pub uri: String;
 
-    pub fn new(uri: String) -> {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
+    pub fn new(uri: &'static str) -> {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
         {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {uri: uri}
     }
 
