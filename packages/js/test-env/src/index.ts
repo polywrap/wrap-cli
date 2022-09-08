@@ -13,7 +13,10 @@ import {
   Connections,
   Connection,
 } from "@polywrap/ethereum-plugin-js";
-import { deserializePolywrapManifest } from "@polywrap/polywrap-manifest-types-js";
+import {
+  DeployManifest,
+  deserializePolywrapManifest,
+} from "@polywrap/polywrap-manifest-types-js";
 
 export const ensAddresses = {
   ensAddress: "0xe78A0F7E598Cc8b0Bb87894B0F60dD2a88d6a8Ab",
@@ -347,31 +350,30 @@ export async function buildAndDeployWrapper({
     })
   );
 
-  fs.writeFileSync(
-    tempDeployManifestPath,
-    yaml.dump({
-      format: "0.1.0",
-      stages: {
-        ipfsDeploy: {
-          package: "ipfs",
-          uri: `fs/${wrapperAbsPath}/build`,
-          config: {
-            gatewayUri: ipfsProvider,
-          },
-        },
-        ensPublish: {
-          package: "ens",
-          // eslint-disable-next-line @typescript-eslint/naming-convention
-          depends_on: "ipfsDeploy",
-          config: {
-            domainName: wrapperEns,
-            provider: ethereumProvider,
-            ensRegistryAddress: ensAddresses.ensAddress,
-          },
+  const deployManifest: DeployManifest = {
+    format: "0.1.0",
+    stages: {
+      ipfsDeploy: {
+        package: "ipfs",
+        uri: `fs/${wrapperAbsPath}/build`,
+        config: {
+          gatewayUri: ipfsProvider,
         },
       },
-    })
-  );
+      ensPublish: {
+        package: "ens",
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        depends_on: "ipfsDeploy",
+        config: {
+          domainName: wrapperEns,
+          provider: ethereumProvider,
+          ensRegistryAddress: ensAddresses.ensAddress,
+        },
+      },
+    },
+    __type: "DeployManifest",
+  };
+  fs.writeFileSync(tempDeployManifestPath, yaml.dump(deployManifest));
 
   // deploy Wrapper
 
@@ -448,21 +450,20 @@ export async function buildAndDeployWrapperToHttp({
   };
   fs.writeFileSync(tempManifestPath, yaml.dump({ ...polywrapManifest }));
 
-  fs.writeFileSync(
-    tempDeployManifestPath,
-    yaml.dump({
-      format: "0.1.0",
-      stages: {
-        httpDeploy: {
-          package: "http",
-          uri: `fs/${wrapperAbsPath}/build`,
-          config: {
-            postUrl,
-          },
+  const deployManifest: DeployManifest = {
+    format: "0.1.0",
+    stages: {
+      httpDeploy: {
+        package: "http",
+        uri: `fs/${wrapperAbsPath}/build`,
+        config: {
+          postUrl,
         },
       },
-    })
-  );
+    },
+    __type: "DeployManifest",
+  };
+  fs.writeFileSync(tempDeployManifestPath, yaml.dump(deployManifest));
 
   // deploy Wrapper
 
