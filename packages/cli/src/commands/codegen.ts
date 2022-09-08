@@ -1,28 +1,36 @@
+/* eslint-disable  @typescript-eslint/no-unused-vars */
 import { Command, Program } from "./types";
 import {
-  PolywrapProject,
+  CodeGenerator,
   SchemaComposer,
   intlMsg,
   defaultPolywrapManifest,
   parseDirOption,
   parseCodegenScriptOption,
-  parseWasmManifestFileOption,
+  parseManifestFileOption,
   parseClientConfigOption,
+  getProjectFromManifest,
+  isPluginManifestLanguage,
+  generateWrapFile,
 } from "../lib";
 import { ScriptCodegenStrategy } from "../lib/codegen/strategies/ScriptCodegenStrategy";
 import { CodeGenerator } from "../lib/codegen/CodeGenerator";
 import { CompilerCodegenStrategy } from "../lib/codegen";
 
-import path from "path";
 import { PolywrapClient, PolywrapClientConfig } from "@polywrap/client-js";
+import path from "path";
+import fs from "fs";
 
-const defaultCodegenDir = "./wrap";
+const defaultCodegenDir = "./src/wrap";
+const defaultPublishDir = "./build";
+
 const pathStr = intlMsg.commands_codegen_options_o_path();
 const defaultManifestStr = defaultPolywrapManifest.join(" | ");
 
 type CodegenCommandOptions = {
   manifestFile: string;
   codegenDir: string;
+  publishDir: string;
   script?: string;
   clientConfig: Partial<PolywrapClientConfig>;
 };
@@ -46,6 +54,12 @@ export const codegen: Command = {
         })}`
       )
       .option(
+        `-p, --publish-dir <${pathStr}>`,
+        `${intlMsg.commands_codegen_options_publish({
+          default: defaultPublishDir,
+        })}`
+      )
+      .option(
         `-s, --script <${pathStr}>`,
         `${intlMsg.commands_codegen_options_s()}`
       )
@@ -59,46 +73,64 @@ export const codegen: Command = {
           clientConfig: await parseClientConfigOption(options.clientConfig),
           codegenDir: parseDirOption(options.codegenDir, defaultCodegenDir),
           script: parseCodegenScriptOption(options.script),
-          manifestFile: parseWasmManifestFileOption(options.manifestFile),
+          manifestFile: parseManifestFileOption(options.manifestFile),
+          publishDir: parseDirOption(options.publishDir, defaultPublishDir),
         });
       });
   },
 };
 
 async function run(options: CodegenCommandOptions) {
-  const { manifestFile, codegenDir, script, clientConfig } = options;
+  const {
+    manifestFile,
+    codegenDir,
+    script,
+    clientConfig,
+    publishDir,
+  } = options;
 
   // Get Client
   const client = new PolywrapClient(clientConfig);
 
-  // Polywrap Project
-  const project = new PolywrapProject({
-    rootDir: path.dirname(manifestFile),
-    polywrapManifestPath: manifestFile,
-  });
-  await project.validate();
+  const project = await getProjectFromManifest(manifestFile);
+
+  if (!project) {
+    return;
+  }
+
+  const projectType = await project.getManifestLanguage();
+
+  let result = false;
+
   const schemaComposer = new SchemaComposer({
     project,
     client,
   });
+  const codeGenerator = new CodeGenerator({
+    project,
+    schemaComposer,
+    codegenDirAbs: codegenDir,
+    customScript: script,
+  });
 
-  const strategy = script
-    ? new ScriptCodegenStrategy({
-        codegenDirAbs: codegenDir,
-        script,
-        schemaComposer,
-        project,
-        omitHeader: false,
-        mustacheView: undefined,
-      })
-    : new CompilerCodegenStrategy({
-        schemaComposer,
-        project,
-      });
+  result = await codeGenerator.generate();
 
-  const codeGenerator = new CodeGenerator({ strategy });
+  // HACK: Codegen outputs wrap.info into a build directory for plugins, needs to be moved into a build command?
+  if (isPluginManifestLanguage(projectType)) {
+    // Output the built manifest
+    const manifestPath = path.join(publishDir, "wrap.info");
 
-  const result = await codeGenerator.generate();
+    if (!fs.existsSync(publishDir)) {
+      fs.mkdirSync(publishDir);
+    }
+
+    await generateWrapFile(
+      await schemaComposer.getComposedAbis(),
+      await project.getName(),
+      "plugin",
+      manifestPath
+    );
+  }
 
   if (result) {
     console.log(`🔥 ${intlMsg.commands_codegen_success()} 🔥`);

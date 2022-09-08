@@ -8,19 +8,19 @@ if (reader.isNextString()) {
 }
 {{/required}}
 {{^required}}
-let value: Option<Types.{{#detectKeyword}}{{type}}{{/detectKeyword}}>;
+let value: Box<Types.{{#detectKeyword}}{{type}}{{/detectKeyword}}> | null;
 if (!reader.isNextNil()) {
   if (reader.isNextString()) {
-    value = Option.Some(
+    value = Box.from(
       Types.get{{type}}Value(reader.readString())
     );
   } else {
-    value = Option.Some(
+    value = Box.from(
       reader.readInt32()
     );
     Types.sanitize{{type}}Value(value.unwrap());
   }
 } else {
-  value = Option.None<Types.{{#detectKeyword}}{{type}}{{/detectKeyword}}>();
+  value = null;
 }
 {{/required}}

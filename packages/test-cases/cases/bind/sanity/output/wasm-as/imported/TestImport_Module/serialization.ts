@@ -4,7 +4,7 @@ import {
   Write,
   WriteSizer,
   WriteEncoder,
-  Option,
+  Box,
   BigInt,
   BigNumber,
   JSON,
@@ -16,16 +16,16 @@ export class Args_importedMethod {
   str: string;
   optStr: string | null;
   u: u32;
-  optU: Option<u32>;
-  uArrayArray: Array<Array<Option<u32>> | null>;
+  optU: Box<u32> | null;
+  uArrayArray: Array<Array<Box<u32> | null> | null>;
   object: Types.TestImport_Object;
   optObject: Types.TestImport_Object | null;
   objectArray: Array<Types.TestImport_Object>;
   optObjectArray: Array<Types.TestImport_Object | null> | null;
   en: Types.TestImport_Enum;
-  optEnum: Option<Types.TestImport_Enum>;
+  optEnum: Box<Types.TestImport_Enum> | null;
   enumArray: Array<Types.TestImport_Enum>;
-  optEnumArray: Array<Option<Types.TestImport_Enum>> | null;
+  optEnumArray: Array<Box<Types.TestImport_Enum> | null> | null;
 }
 
 export function serializeimportedMethodArgs(args: Args_importedMethod): ArrayBuffer {
@@ -56,14 +56,14 @@ export function writeimportedMethodArgs(
   writer.writeString("u");
   writer.writeUInt32(args.u);
   writer.context().pop();
-  writer.context().push("optU", "Option<u32>", "writing property");
+  writer.context().push("optU", "Box<u32> | null", "writing property");
   writer.writeString("optU");
   writer.writeOptionalUInt32(args.optU);
   writer.context().pop();
-  writer.context().push("uArrayArray", "Array<Array<Option<u32>> | null>", "writing property");
+  writer.context().push("uArrayArray", "Array<Array<Box<u32> | null> | null>", "writing property");
   writer.writeString("uArrayArray");
-  writer.writeArray(args.uArrayArray, (writer: Write, item: Array<Option<u32>> | null): void => {
-    writer.writeOptionalArray(item, (writer: Write, item: Option<u32>): void => {
+  writer.writeArray(args.uArrayArray, (writer: Write, item: Array<Box<u32> | null> | null): void => {
+    writer.writeOptionalArray(item, (writer: Write, item: Box<u32> | null): void => {
       writer.writeOptionalUInt32(item);
     });
   });
@@ -100,7 +100,7 @@ export function writeimportedMethodArgs(
   writer.writeString("en");
   writer.writeInt32(args.en);
   writer.context().pop();
-  writer.context().push("optEnum", "Option<Types.TestImport_Enum>", "writing property");
+  writer.context().push("optEnum", "Box<Types.TestImport_Enum> | null", "writing property");
   writer.writeString("optEnum");
   writer.writeOptionalInt32(args.optEnum);
   writer.context().pop();
@@ -110,9 +110,9 @@ export function writeimportedMethodArgs(
     writer.writeInt32(item);
   });
   writer.context().pop();
-  writer.context().push("optEnumArray", "Array<Option<Types.TestImport_Enum>> | null", "writing property");
+  writer.context().push("optEnumArray", "Array<Box<Types.TestImport_Enum> | null> | null", "writing property");
   writer.writeString("optEnumArray");
-  writer.writeOptionalArray(args.optEnumArray, (writer: Write, item: Option<Types.TestImport_Enum>): void => {
+  writer.writeOptionalArray(args.optEnumArray, (writer: Write, item: Box<Types.TestImport_Enum> | null): void => {
     writer.writeOptionalInt32(item);
   });
   writer.context().pop();

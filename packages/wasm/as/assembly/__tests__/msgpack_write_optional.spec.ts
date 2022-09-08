@@ -3,7 +3,7 @@ import { WriteSizer } from "../msgpack/WriteSizer";
 import { WriteEncoder } from "../msgpack/WriteEncoder";
 import { BigInt, BigNumber } from "../math";
 import { JSON } from "../json";
-import { Option } from "../";
+import { Box } from "../containers";
 
 function fill(arr: Array<u8>): ArrayBuffer {
   const buffer = new ArrayBuffer(arr.length);
@@ -26,12 +26,12 @@ class Case<T> {
   }
 }
 
-describe("WriteEncoder Option types", () => {
+describe("WriteEncoder optional types", () => {
   it("TestWriteOptionalBool", () => {
     const cases = [
-      new Case<Option<bool>>("nil", Option.None<bool>(), [192]),
-      new Case<Option<bool>>("nil", Option.Some(false), [194]),
-      new Case<Option<bool>>("nil", Option.Some(true), [195]),
+      new Case<Box<bool> | null>("nil", null, [192]),
+      new Case<Box<bool> | null>("nil", Box.from(false), [194]),
+      new Case<Box<bool> | null>("nil", Box.from(true), [195]),
     ];
 
     for (let i: i32 = 0; i < cases.length; ++i) {
@@ -50,10 +50,10 @@ describe("WriteEncoder Option types", () => {
 
   it("TestWriteOptionalInt8", () => {
     const cases = [
-      new Case<Option<i8>>("none", Option.None<i8>(), [192]),
-      new Case<Option<i8>>(
+      new Case<Box<i8> | null>("none", null, [192]),
+      new Case<Box<i8> | null>(
         "positive fixed int",
-        Option.Some(<i8>-128),
+        Box.from(<i8>-128),
         [208,128]
       ),
     ];
@@ -74,10 +74,10 @@ describe("WriteEncoder Option types", () => {
 
   it("TestWriteOptionalInt16", () => {
     const cases = [
-      new Case<Option<i16>>("none", Option.None<i16>(), [192]),
-      new Case<Option<i16>>(
+      new Case<Box<i16> | null>("none", null, [192]),
+      new Case<Box<i16> | null>(
         "16-bit signed int (negative)",
-        Option.Some(<i16>-32768),
+        Box.from(<i16>-32768),
         [209, 128, 0]
       ),
     ];
@@ -98,10 +98,10 @@ describe("WriteEncoder Option types", () => {
 
   it("TestWriteOptionalInt32", () => {
     const cases = [
-      new Case<Option<i32>>("none", Option.None<i32>(), [192]),
-      new Case<Option<i32>>(
+      new Case<Box<i32> | null>("none", null, [192]),
+      new Case<Box<i32> | null>(
         "32-bit signed int (negative)",
-        Option.Some(-32769),
+        Box.from(-32769),
         [210, 255, 255, 127, 255]
       ),
     ];
@@ -122,10 +122,10 @@ describe("WriteEncoder Option types", () => {
 
   it("TestWriteOptionalUint8", () => {
     const cases = [
-      new Case<Option<u8>>("none", Option.None<u8>(), [192]),
-      new Case<Option<u8>>(
+      new Case<Box<u8> | null>("none", null, [192]),
+      new Case<Box<u8> | null>(
         "8-bit unsigned int",
-        Option.Some(<u8>200),
+        Box.from(<u8>200),
         [204,200]
       ),
     ];
@@ -146,10 +146,10 @@ describe("WriteEncoder Option types", () => {
 
   it("TestWriteOptionalUint16", () => {
     const cases = [
-      new Case<Option<u16>>("none", Option.None<u16>(), [192]),
-      new Case<Option<u16>>(
+      new Case<Box<u16> | null>("none", null, [192]),
+      new Case<Box<u16> | null>(
         "16-bit unsigned int",
-        Option.Some(<u16>256),
+        Box.from(<u16>256),
         [205,1,0]
       ),
     ];
@@ -170,10 +170,10 @@ describe("WriteEncoder Option types", () => {
 
   it("TestWriteOptionalUint32", () => {
     const cases = [
-      new Case<Option<u32>>("none", Option.None<u32>(), [192]),
-      new Case<Option<u32>>(
+      new Case<Box<u32> | null>("none", null, [192]),
+      new Case<Box<u32> | null>(
         "32-bit unsigned int",
-        Option.Some(<u32>65536),
+        Box.from(<u32>65536),
         [206,0,1,0,0]
       ),
     ];
@@ -194,10 +194,10 @@ describe("WriteEncoder Option types", () => {
 
   it("TestWriteOptionalFloat32", () => {
     const cases = [
-      new Case<Option<f32>>("none", Option.None<f32>(), [192]),
-      new Case<Option<f32>>(
+      new Case<Box<f32> | null>("none", null, [192]),
+      new Case<Box<f32> | null>(
         "32-bit float",
-        Option.Some(<f32>0.5),
+        Box.from(<f32>0.5),
         [202,63,0,0,0]
       ),
     ];
@@ -218,10 +218,10 @@ describe("WriteEncoder Option types", () => {
 
   it("TestWriteOptionalFloat64", () => {
     const cases = [
-      new Case<Option<f64>>("none", Option.None<f64>(), [192]),
-      new Case<Option<f64>>(
+      new Case<Box<f64> | null>("none", null, [192]),
+      new Case<Box<f64> | null>(
         "64-bit float",
-        Option.Some(<f64>3.141592653589793),
+        Box.from(<f64>3.141592653589793),
         [203, 64, 9, 33, 251, 84, 68, 45, 24]
       ),
     ];
