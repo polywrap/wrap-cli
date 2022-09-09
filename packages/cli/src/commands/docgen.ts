@@ -132,7 +132,6 @@ async function run(command: DocType, options: DocgenCommandOptions) {
     project = new AppProject({
       rootDir: path.dirname(manifestFile),
       appManifestPath: manifestFile,
-      client,
       quiet: true,
     });
   } else if (isPluginManifest) {

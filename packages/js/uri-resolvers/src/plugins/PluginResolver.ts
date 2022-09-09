@@ -1,31 +1,20 @@
 import { ResolverWithHistory } from "../helpers";
 
 import {
-  Wrapper,
-  Client,
-  Env,
-  PluginPackage,
   Uri,
   PluginRegistration,
-  IWrapPackage,
   toUri,
-  getEnvFromUriHistory,
+  PluginWrapPackage,
   UriResolutionResult,
   UriPackageOrWrapper,
 } from "@polywrap/core-js";
 import { Result } from "@polywrap/result";
-import { WrapManifest } from "@polywrap/wrap-manifest-types-js/build/formats/wrap.info/0.1";
 
 export class PluginResolver extends ResolverWithHistory {
   pluginUri: Uri;
 
   constructor(
-    private readonly pluginRegistration: PluginRegistration<string | Uri>,
-    private readonly createPluginWrapper: (
-      uri: Uri,
-      plugin: PluginPackage<unknown>,
-      environment: Env<Uri> | undefined
-    ) => Wrapper
+    private readonly pluginRegistration: PluginRegistration<string | Uri>
   ) {
     super();
     this.pluginUri = toUri(pluginRegistration.uri);
@@ -40,35 +29,11 @@ export class PluginResolver extends ResolverWithHistory {
       return UriResolutionResult.ok(uri);
     }
 
-    const wrapPackage = new PluginWrapperPackage(
+    const wrapPackage = new PluginWrapPackage(
       uri,
-      this.pluginRegistration.plugin,
-      this.createPluginWrapper
+      this.pluginRegistration.plugin
     );
 
     return UriResolutionResult.ok(wrapPackage);
-  }
-}
-
-// TODO: this is a temporary solution until we refactor the plugin package to be an IWrapPackage
-export class PluginWrapperPackage implements IWrapPackage {
-  constructor(
-    public readonly uri: Uri,
-    private readonly pluginPackage: PluginPackage<unknown>,
-    private readonly createPluginWrapper: (
-      uri: Uri,
-      plugin: PluginPackage<unknown>,
-      environment: Env<Uri> | undefined
-    ) => Wrapper
-  ) {}
-
-  async getManifest(): Promise<WrapManifest> {
-    return this.pluginPackage.manifest;
-  }
-
-  async createWrapper(client: Client, uriHistory: Uri[]): Promise<Wrapper> {
-    const env = getEnvFromUriHistory(uriHistory, client);
-
-    return this.createPluginWrapper(this.uri, this.pluginPackage, env);
   }
 }

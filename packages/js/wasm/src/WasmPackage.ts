@@ -8,13 +8,7 @@ import {
   deserializeWrapManifest,
   WrapManifest,
 } from "@polywrap/wrap-manifest-types-js";
-import {
-  Client,
-  GetManifestOptions,
-  Uri,
-  Wrapper,
-  getEnvFromUriHistory,
-} from "@polywrap/core-js";
+import { Client, GetManifestOptions, Uri, Wrapper } from "@polywrap/core-js";
 
 export class WasmPackage implements IWasmPackage {
   protected constructor(
@@ -105,13 +99,12 @@ export class WasmPackage implements IWasmPackage {
   }
 
   async createWrapper(
-    client: Client,
-    uriHistory: Uri[],
+    _: Client,
+    resolutionPath: Uri[],
     options?: GetManifestOptions
   ): Promise<Wrapper> {
-    const env = getEnvFromUriHistory(uriHistory, client);
     const manifest = await this.getManifest(options);
 
-    return new WasmWrapper(this.uri, manifest, this.fileReader, env);
+    return new WasmWrapper(this.uri, resolutionPath, manifest, this.fileReader);
   }
 }

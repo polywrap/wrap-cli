@@ -4,8 +4,8 @@ export class BLOCK {
   /** Memory manager info. */
   mmInfo: u32;
 }
-export const BLOCK_OVERHEAD: usize = offsetof<BLOCK>();
-export const BLOCK_MAXSIZE: usize = (1 << 30) - BLOCK_OVERHEAD;
+export const BLOCK_OVERHEAD: u32 = <u32>offsetof<BLOCK>();
+export const BLOCK_MAXSIZE: u32 = (1 << 30) - BLOCK_OVERHEAD;
 export const E_INDEXOUTOFRANGE = "Index out of range";
 export const E_INVALIDLENGTH = "Invalid length";
 

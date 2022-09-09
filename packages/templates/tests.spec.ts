@@ -21,7 +21,7 @@ describe("Templates", () => {
       build: "CI=false yarn build",
     },
     assemblyscript: {
-      build: "yarn build",
+      build: "npx polywrap build -m ./polywrap.wasm-linked.yaml",
       test: "yarn test:e2e",
     },
     rust: {

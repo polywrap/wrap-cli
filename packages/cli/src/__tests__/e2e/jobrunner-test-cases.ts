@@ -16,6 +16,7 @@ export const testCases: WorkflowTestCase[] = [
     workflow: {
       name: "simpleCalculator",
       format: "0.1",
+      __type: "PolywrapWorkflow",
       jobs: {
         ops: {
           steps: [
@@ -55,6 +56,7 @@ export const testCases: WorkflowTestCase[] = [
     workflow: {
       name: "simpleCalculator",
       format: "0.1",
+      __type: "PolywrapWorkflow",
       jobs: {
         ops: {
           steps: [
@@ -113,6 +115,7 @@ export const testCases: WorkflowTestCase[] = [
     workflow: {
       name: "simpleCalculator",
       format: "0.1",
+      __type: "PolywrapWorkflow",
       jobs: {
         ops: {
           steps: [

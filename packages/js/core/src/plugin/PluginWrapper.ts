@@ -8,8 +8,8 @@ import {
   Uri,
   GetFileOptions,
   GetManifestOptions,
-  Env,
   isBuffer,
+  getEnvFromUriHistory,
 } from "../.";
 
 import { WrapManifest } from "@polywrap/wrap-manifest-types-js";
@@ -21,14 +21,13 @@ export class PluginWrapper implements Wrapper {
 
   constructor(
     public readonly uri: Uri,
-    private _plugin: PluginPackage<unknown>,
-    private _clientEnv?: Env<Uri>
+    private resolutionPath: Uri[],
+    private _plugin: PluginPackage<unknown>
   ) {
     Tracer.startSpan("PluginWrapper: constructor");
     Tracer.setAttribute("args", {
       uri: this.uri,
       plugin: this._plugin,
-      clientEnv: this._clientEnv,
     });
     Tracer.endSpan();
   }
@@ -72,7 +71,7 @@ export class PluginWrapper implements Wrapper {
       }
 
       // Set the module's environment
-      await module.setEnv(this._getClientEnv() || {});
+      await module.setEnv(this._getClientEnv(client) || {});
 
       let jsArgs: Record<string, unknown>;
 
@@ -131,10 +130,13 @@ export class PluginWrapper implements Wrapper {
   }
 
   @Tracer.traceMethod("PluginWrapper: _getClientEnv")
-  private _getClientEnv(): Record<string, unknown> {
-    if (!this._clientEnv?.env) {
+  private _getClientEnv(client: Client): Record<string, unknown> {
+    const env = getEnvFromUriHistory(this.resolutionPath, client);
+
+    if (!env) {
       return {};
     }
-    return this._clientEnv.env;
+
+    return env.env;
   }
 }

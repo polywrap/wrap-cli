@@ -13,11 +13,11 @@ import {
   Wrapper,
   Uri,
   InvokeOptions,
-  Env,
   Client,
   InvocableResult,
   isBuffer,
   GetFileOptions,
+  getEnvFromUriHistory,
 } from "@polywrap/core-js";
 
 type InvokeResultOrError =
@@ -53,15 +53,15 @@ export class WasmWrapper implements Wrapper {
 
   constructor(
     public uri: Uri,
+    private resolutionPath: Uri[],
     private _manifest: WrapManifest,
-    private _fileReader: IFileReader,
-    private _clientEnv?: Env<Uri>
+    private _fileReader: IFileReader
   ) {
     Tracer.startSpan("WasmWrapper: constructor");
     Tracer.setAttribute("args", {
       uri: this.uri,
+      resolutionPath: this.resolutionPath,
       manifest: this._manifest,
-      clientEnv: this._clientEnv,
       fileReader: this._fileReader,
     });
     Tracer.endSpan();
@@ -125,7 +125,7 @@ export class WasmWrapper implements Wrapper {
         invokeResult: {} as InvokeResult,
         method,
         args: isBuffer(args) ? args : msgpackEncode(args),
-        env: msgpackEncode(this._getClientEnv()),
+        env: msgpackEncode(this._getClientEnv(client)),
       };
 
       const abort = (message: string) => {
@@ -213,11 +213,14 @@ export class WasmWrapper implements Wrapper {
   }
 
   @Tracer.traceMethod("WasmWrapper: _getClientEnv")
-  private _getClientEnv(): Record<string, unknown> {
-    if (!this._clientEnv?.env) {
+  private _getClientEnv(client: Client): Record<string, unknown> {
+    const env = getEnvFromUriHistory(this.resolutionPath, client);
+
+    if (!env) {
       return {};
     }
-    return this._clientEnv.env;
+
+    return env.env;
   }
 
   @Tracer.traceMethod("WasmWrapper: getWasmModule")

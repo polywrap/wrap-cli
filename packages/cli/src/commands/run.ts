@@ -88,7 +88,7 @@ const _run = async (options: WorkflowCommandOptions) => {
 
   const workflowOutput: (JobResult & { id: string })[] = [];
 
-  const onExecution = async (id: string, jobResult: JobResult) => {
+  const onExecution = (id: string, jobResult: JobResult) => {
     const { data, error, status } = jobResult;
 
     if (!quiet) {
@@ -107,7 +107,7 @@ const _run = async (options: WorkflowCommandOptions) => {
     }
 
     if (status !== JobStatus.SKIPPED && validationScript) {
-      await validateOutput(id, { data, error }, validationScript, quiet);
+      validateOutput(id, { data, error }, validationScript, quiet);
     }
 
     if (!quiet) {
