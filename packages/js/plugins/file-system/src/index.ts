@@ -21,9 +21,7 @@ export class FileSystemPlugin extends Module<NoConfig> {
   async readFile(args: Args_readFile, _client: Client): Promise<Uint8Array> {
     return fs.promises
       .readFile(args.path)
-      .then((buffer) =>
-        ArrayBuffer.isView(buffer) ? buffer : new Uint8Array(buffer)
-      );
+      .then((buffer) => new Uint8Array(buffer));
   }
 
   async readFileAsString(
