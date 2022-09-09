@@ -1,3 +1,19 @@
+# Polywrap Origin (0.7.0)
+## Bugs
+* [PR-1158](https://github.com/polywrap/toolchain/pull/1158) `@polywrap/client-config-builder-js`: The following plugins have been removed from the default config, and replaced with their WebAssembly wrapper equivalents available at the same URIs:
+  * `wrap://ens/uts46.polywrap.eth`
+  * `wrap://ens/sha3.polywrap.eth`
+  * `wrap://ens/graph-node.polywrap.eth`
+* [PR-1213](https://github.com/polywrap/toolchain/pull/1213) `@polywrap/schema-bind`: Nested map types (i.e. `Map<K, Map<K, V>>`) are now properly supported for `wasm/rust` and `wasm/assemblyscript`.
+* [PR-1213](https://github.com/polywrap/toolchain/pull/1213) `@polywrap/wasm-as`: Nested map types (i.e. `Map<K, Map<K, V>>`) are now properly msgpack encoded.
+* [PR-1212](https://github.com/polywrap/toolchain/pull/1212) `polywrap` CLI: `wasm/rust` build image now uses the `build-deps` cargo extension to properly build dependencies in a seperate Dockerfile layer, enabling the caching of compiled artifacts.
+
+## Breaking Changes
+* [PR-1217](https://github.com/polywrap/toolchain/pull/1217) `@polywrap/schema-bind`: `plugin/typescript` and `app/typescript` bindings have been updated to improve type safety, and no longer accept generic properties for all method argument types.
+* [PR-1051](https://github.com/polywrap/toolchain/pull/1051) `polywrap` CLI: `polywrap plugin codegen` and `polywrap app codegen` commands have been moved into the `polywrap codegen`, which can now generate types for any Polywrap project (wasm, plugin, app).
+* [PR-1154](https://github.com/polywrap/toolchain/pull/1154) `@polywrap/schema-bind`: The `wasm/assemblyscript` bindings have been updated to use `Box<T> | null` for all optional scalar types, instead of the `Option<T>` class used before.
+* [PR-1154](https://github.com/polywrap/toolchain/pull/1154) `@polywrap/ws-plugin-js`: The WebSocket plugin's schema has been updated to use `UInt32` for socket IDs, instead of `Int32`.
+
 # Polywrap Origin (0.6.0)
 ## Features
 * [PR-1100](https://github.com/polywrap/toolchain/pull/1100) `polywrap` CLI: A new manifest named `polywrap.test.yaml` has been added, which encapsulates workflows and validation scripts.
