@@ -1,4 +1,6 @@
 import { IWrapperCache } from "./IWrapperCache";
+import { UriResolverLike } from "../helpers";
+import { buildUriResolver } from "../utils";
 
 import {
   IUriResolver,
@@ -12,8 +14,6 @@ import {
 } from "@polywrap/core-js";
 import { DeserializeManifestOptions } from "@polywrap/wrap-manifest-types-js";
 import { Result } from "@polywrap/result";
-import { UriResolverLike } from "../helpers";
-import { buildUriResolver } from "../utils";
 
 export type ResolutionCallback<TError> = (
   response: Result<UriPackageOrWrapper, TError>
