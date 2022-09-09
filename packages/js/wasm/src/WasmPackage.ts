@@ -8,33 +8,20 @@ import {
   deserializeWrapManifest,
   WrapManifest,
 } from "@polywrap/wrap-manifest-types-js";
-import { Client, GetManifestOptions, Uri, Wrapper } from "@polywrap/core-js";
+import { GetManifestOptions, Wrapper } from "@polywrap/core-js";
 
 export class WasmPackage implements IWasmPackage {
-  protected constructor(
-    public readonly uri: Uri,
-    private readonly fileReader: IFileReader
-  ) {}
+  protected constructor(private readonly fileReader: IFileReader) {}
 
+  static from(manifestBuffer: Uint8Array, wasmModule: Uint8Array): WasmPackage;
   static from(
-    uri: Uri,
-    manifestBuffer: Uint8Array,
-    wasmModule: Uint8Array
-  ): WasmPackage;
-  static from(
-    uri: Uri,
     manifestBuffer: Uint8Array,
     wasmModule: Uint8Array,
     fileReader: IFileReader
   ): WasmPackage;
+  static from(manifestBuffer: Uint8Array, fileReader: IFileReader): WasmPackage;
+  static from(fileReader: IFileReader): WasmPackage;
   static from(
-    uri: Uri,
-    manifestBuffer: Uint8Array,
-    fileReader: IFileReader
-  ): WasmPackage;
-  static from(uri: Uri, fileReader: IFileReader): WasmPackage;
-  static from(
-    uri: Uri,
     manifestBufferOrFileReader: Uint8Array | IFileReader,
     wasmModuleOrFileReader?: Uint8Array | IFileReader
   ): WasmPackage {
@@ -57,7 +44,6 @@ export class WasmPackage implements IWasmPackage {
     if (manifestBuffer) {
       if (wasmModule) {
         return new WasmPackage(
-          uri,
           InMemoryFileReader.from(
             manifestBuffer,
             wasmModule,
@@ -66,7 +52,6 @@ export class WasmPackage implements IWasmPackage {
         );
       } else {
         return new WasmPackage(
-          uri,
           InMemoryFileReader.fromManifest(
             manifestBuffer,
             fileReader as IFileReader
@@ -74,7 +59,7 @@ export class WasmPackage implements IWasmPackage {
         );
       }
     } else {
-      return new WasmPackage(uri, fileReader as IFileReader);
+      return new WasmPackage(fileReader as IFileReader);
     }
   }
 
@@ -98,13 +83,9 @@ export class WasmPackage implements IWasmPackage {
     return wasmModule;
   }
 
-  async createWrapper(
-    _: Client,
-    resolutionPath: Uri[],
-    options?: GetManifestOptions
-  ): Promise<Wrapper> {
+  async createWrapper(options?: GetManifestOptions): Promise<Wrapper> {
     const manifest = await this.getManifest(options);
 
-    return new WasmWrapper(this.uri, resolutionPath, manifest, this.fileReader);
+    return new WasmWrapper(manifest, this.fileReader);
   }
 }

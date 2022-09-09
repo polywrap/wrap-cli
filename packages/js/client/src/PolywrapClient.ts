@@ -34,6 +34,7 @@ import {
   IUriResolutionContext,
   UriPackageOrWrapper,
   UriResolutionContext,
+  getEnvFromUriHistory,
 } from "@polywrap/core-js";
 import {
   buildCleanUriHistory,
@@ -365,13 +366,27 @@ export class PolywrapClient implements Client {
         uri: this._toUri(options.uri),
       };
 
+      const resolutionContext =
+        options.resolutionContext ?? new UriResolutionContext();
+
       const wrapper = await this._loadWrapper(
         typedOptions.uri,
-        options.resolutionContext,
+        resolutionContext,
         { contextId }
       );
 
-      return await this.invokeWrapper({ ...typedOptions, wrapper, contextId });
+      const client = contextualizeClient(this, contextId);
+
+      const env = getEnvFromUriHistory(
+        resolutionContext.getResolutionPath(),
+        client
+      );
+
+      return await client.invokeWrapper({
+        env: env?.env,
+        ...typedOptions,
+        wrapper,
+      });
     } catch (e) {
       error = e;
     }
@@ -636,7 +651,7 @@ export class PolywrapClient implements Client {
       } else {
         throw Error(
           `Error resolving URI "${uri.uri}"\nResolution Stack: ${JSON.stringify(
-            history,
+            resolutionContext.getHistory(),
             null,
             2
           )}`
@@ -662,11 +677,7 @@ export class PolywrapClient implements Client {
       packageOrWrapper = uriPackageOrWrapper.wrapper;
     }
 
-    const client = contextualizeClient(this, options?.contextId);
-
-    const resolutionPath: Uri[] = resolutionContext.getResolutionPath();
-
-    const wrapper = await initWrapper(packageOrWrapper, client, resolutionPath);
+    const wrapper = await initWrapper(packageOrWrapper);
 
     return wrapper;
   }

@@ -38,15 +38,15 @@ export const buildCleanUriHistory = (
         case "package":
           cleanHistory.push(
             step.description
-              ? `${step.sourceUri.uri} => ${step.description} => package (${uriPackageOrWrapper.package.uri.uri})`
-              : `${step.sourceUri.uri} => package (${uriPackageOrWrapper.package.uri.uri})`
+              ? `${step.sourceUri.uri} => ${step.description} => package (${uriPackageOrWrapper.uri.uri})`
+              : `${step.sourceUri.uri} => package (${uriPackageOrWrapper.uri.uri})`
           );
           break;
         case "wrapper":
           cleanHistory.push(
             step.description
-              ? `${step.sourceUri.uri} => ${step.description} => wrapper (${uriPackageOrWrapper.wrapper.uri.uri})`
-              : `${step.sourceUri.uri} => wrapper (${uriPackageOrWrapper.wrapper.uri.uri})`
+              ? `${step.sourceUri.uri} => ${step.description} => wrapper (${uriPackageOrWrapper.uri.uri})`
+              : `${step.sourceUri.uri} => wrapper (${uriPackageOrWrapper.uri.uri})`
           );
           break;
       }

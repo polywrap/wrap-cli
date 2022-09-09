@@ -17,7 +17,6 @@ import {
   InvocableResult,
   isBuffer,
   GetFileOptions,
-  getEnvFromUriHistory,
 } from "@polywrap/core-js";
 
 type InvokeResultOrError =
@@ -52,15 +51,11 @@ export class WasmWrapper implements Wrapper {
   private _wasmModule?: Uint8Array;
 
   constructor(
-    public uri: Uri,
-    private resolutionPath: Uri[],
     private _manifest: WrapManifest,
     private _fileReader: IFileReader
   ) {
     Tracer.startSpan("WasmWrapper: constructor");
     Tracer.setAttribute("args", {
-      uri: this.uri,
-      resolutionPath: this.resolutionPath,
       manifest: this._manifest,
       fileReader: this._fileReader,
     });
@@ -75,9 +70,7 @@ export class WasmWrapper implements Wrapper {
 
     // If nothing is returned, the file was not found
     if (!data) {
-      throw Error(
-        `WasmWrapper: File was not found.\nURI: ${this.uri}\nSubpath: ${path}`
-      );
+      throw Error(`WasmWrapper: File was not found.\nSubpath: ${path}`);
     }
 
     if (encoding) {
@@ -125,12 +118,12 @@ export class WasmWrapper implements Wrapper {
         invokeResult: {} as InvokeResult,
         method,
         args: isBuffer(args) ? args : msgpackEncode(args),
-        env: msgpackEncode(this._getClientEnv(client)),
+        env: msgpackEncode(options.env || {}),
       };
 
       const abort = (message: string) => {
         throw new Error(
-          `WasmWrapper: Wasm module aborted execution.\nURI: ${this.uri.uri}\n` +
+          `WasmWrapper: Wasm module aborted execution.\nURI: ${options.uri.uri}\n` +
             `Method: ${method}\n` +
             `Args: ${JSON.stringify(args, null, 2)}\nMessage: ${message}.\n`
         );
@@ -162,7 +155,7 @@ export class WasmWrapper implements Wrapper {
         case "InvokeError": {
           throw Error(
             `WasmWrapper: invocation exception encountered.\n` +
-              `uri: ${this.uri.uri}\n` +
+              `uri: ${options.uri.uri}\n` +
               `method: ${method}\n` +
               `args: ${JSON.stringify(args, null, 2)}\n` +
               `exception: ${invokeResult.invokeError}`
@@ -210,17 +203,6 @@ export class WasmWrapper implements Wrapper {
         invokeError: state.invoke.error,
       };
     }
-  }
-
-  @Tracer.traceMethod("WasmWrapper: _getClientEnv")
-  private _getClientEnv(client: Client): Record<string, unknown> {
-    const env = getEnvFromUriHistory(this.resolutionPath, client);
-
-    if (!env) {
-      return {};
-    }
-
-    return env.env;
   }
 
   @Tracer.traceMethod("WasmWrapper: getWasmModule")

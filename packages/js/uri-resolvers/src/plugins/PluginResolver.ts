@@ -34,6 +34,6 @@ export class PluginResolver extends ResolverWithHistory {
       this.pluginRegistration.plugin
     );
 
-    return UriResolutionResult.ok(wrapPackage);
+    return UriResolutionResult.ok(uri, wrapPackage);
   }
 }

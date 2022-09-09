@@ -3,12 +3,12 @@ import {
   UriRedirect,
   Uri,
   PluginRegistration,
-  IWrapPackage,
+  IUriPackage,
 } from "@polywrap/core-js";
 
 export type UriResolverLike =
   | IUriResolver<unknown>
   | UriRedirect<string | Uri>
   | UriResolverLike[]
-  | IWrapPackage
+  | IUriPackage
   | PluginRegistration<string | Uri>;

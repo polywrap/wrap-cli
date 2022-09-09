@@ -3,7 +3,13 @@ import { UriResolverLike } from "../helpers";
 import { PackageResolver } from "../packages";
 
 import { Result } from "@polywrap/result";
-import { IUriResolver, Uri, Client, IWrapPackage } from "@polywrap/core-js";
+import {
+  IUriResolver,
+  Uri,
+  Client,
+  IWrapPackage,
+  IUriPackage,
+} from "@polywrap/core-js";
 
 export const buildUriResolver = <TError = undefined>(
   resolvable: UriResolverLike,
@@ -25,8 +31,10 @@ export const buildUriResolver = <TError = undefined>(
       resolverName
     ) as IUriResolver<TError>;
   } else if ((resolvable as Partial<IWrapPackage>).createWrapper) {
+    const uriPackage = resolvable as IUriPackage;
     return (new PackageResolver(
-      resolvable as IWrapPackage
+      uriPackage.uri,
+      uriPackage.package
     ) as unknown) as IUriResolver<TError>;
   } else if ((resolvable as IUriResolver).tryResolveUri !== undefined) {
     return resolvable as IUriResolver<TError>;

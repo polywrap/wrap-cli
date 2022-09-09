@@ -86,7 +86,7 @@ const expectPackageWithHistory = async (
   if (uriPackageOrWrapper.type !== "package") {
     if (uriPackageOrWrapper.type === "wrapper") {
       fail(
-        `Uri resolution did not return a package, it returned a wrapper (${uriPackageOrWrapper.wrapper.uri.uri})`
+        `Uri resolution did not return a package, it returned a wrapper (${uriPackageOrWrapper.uri.uri})`
       );
     } else {
       fail(
@@ -95,7 +95,7 @@ const expectPackageWithHistory = async (
     }
   }
 
-  expect(uriPackageOrWrapper.package.uri).toEqual(expectedUri);
+  expect(uriPackageOrWrapper.uri.uri).toEqual(expectedUri.uri);
 };
 
 const expectWrapperWithHistory = async (
@@ -117,7 +117,7 @@ const expectWrapperWithHistory = async (
   if (uriPackageOrWrapper.type !== "wrapper") {
     if (uriPackageOrWrapper.type === "package") {
       fail(
-        `Uri resolution did not return a wrapper, it returned a package (${uriPackageOrWrapper.package.uri.uri})`
+        `Uri resolution did not return a wrapper, it returned a package (${uriPackageOrWrapper.uri.uri})`
       );
     } else {
       fail(
@@ -126,7 +126,7 @@ const expectWrapperWithHistory = async (
     }
   }
 
-  expect(uriPackageOrWrapper.wrapper.uri).toEqual(expectedUri);
+  expect(uriPackageOrWrapper.uri.uri).toEqual(expectedUri.uri);
 };
 
 function replaceAll(str: string, strToReplace: string, replaceStr: string) {
@@ -318,7 +318,7 @@ describe("URI resolution", () => {
 
     await expectWrapperWithHistory(
       result2,
-      finalUri,
+      redirectedUri,
       getUriResolutionPath(resolutionContext2.getHistory()),
       "can resolve previously cached URI after redirecting by a URI resolver extension - 2"
     );

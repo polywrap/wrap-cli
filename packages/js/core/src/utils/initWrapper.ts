@@ -1,14 +1,12 @@
-import { IWrapPackage, Wrapper, Client, Uri } from "..";
+import { IWrapPackage, Wrapper } from "..";
 
 export const initWrapper = async (
-  packageOrWrapper: IWrapPackage | Wrapper,
-  client: Client,
-  uriHistory: Uri[]
+  packageOrWrapper: IWrapPackage | Wrapper
 ): Promise<Wrapper> => {
   const wrapPackage = packageOrWrapper as Partial<IWrapPackage>;
 
   if (wrapPackage.createWrapper) {
-    return await wrapPackage.createWrapper(client, uriHistory);
+    return await wrapPackage.createWrapper();
   } else {
     return packageOrWrapper as Wrapper;
   }

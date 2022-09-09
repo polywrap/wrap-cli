@@ -49,7 +49,7 @@ export class PackageToWrapperCacheResolver<TError = undefined>
     );
 
     if (wrapper) {
-      const result = UriResolutionResult.ok(wrapper);
+      const result = UriResolutionResult.ok(uri, wrapper);
 
       resolutionContext.trackStep({
         sourceUri: uri,
@@ -72,13 +72,9 @@ export class PackageToWrapperCacheResolver<TError = undefined>
         const wrapPackage = result.value.package;
         const resolutionPath: Uri[] = subContext.getResolutionPath();
 
-        const wrapper = await wrapPackage.createWrapper(
-          client,
-          resolutionPath,
-          {
-            noValidate: this.options?.deserializeManifestOptions?.noValidate,
-          }
-        );
+        const wrapper = await wrapPackage.createWrapper({
+          noValidate: this.options?.deserializeManifestOptions?.noValidate,
+        });
 
         for (const uri of resolutionPath) {
           await executeMaybeAsyncFunction<Wrapper | undefined>(
@@ -86,7 +82,7 @@ export class PackageToWrapperCacheResolver<TError = undefined>
           );
         }
 
-        result = UriResolutionResult.ok(wrapper);
+        result = UriResolutionResult.ok(result.value.uri, wrapper);
       } else if (result.value.type === "wrapper") {
         const wrapper = result.value.wrapper;
         const resolutionPath: Uri[] = subContext.getResolutionPath();
