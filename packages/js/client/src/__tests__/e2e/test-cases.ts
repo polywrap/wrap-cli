@@ -329,6 +329,7 @@ export const runImplementationsTest = async (
 
 export const runGetImplementationsTest = async (
   client: PolywrapClient,
+  aggregatorUri: string,
   interfaceUri: string,
   implementationUri: string
 ) => {
@@ -336,13 +337,30 @@ export const runGetImplementationsTest = async (
   expect(client.getImplementations(interfaceUri)).toEqual([implUri.uri]);
 
   const result = await client.invoke({
-    uri: implUri.uri,
+    uri: aggregatorUri,
     method: "moduleImplementations",
   });
 
   expect(result.error).toBeFalsy();
   expect(result.data).toBeTruthy();
   expect(result.data).toEqual([implUri.uri]);
+
+  const moduleMethodResult = await client.invoke({
+    uri: aggregatorUri,
+    method: "moduleMethod",
+    args: {
+      arg: {
+        uint8: 1,
+        str: "Test String 1",
+      },
+    },
+  });
+  expect(moduleMethodResult.error).toBeFalsy();
+  expect(moduleMethodResult.data).toEqual({
+    uint8: 1,
+    str: "Test String 1",
+  });
+
 };
 
 export const runInvalidTypesTest = async (
