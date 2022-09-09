@@ -10,7 +10,7 @@ import { GetPathToTestWrappers } from "@polywrap/test-cases";
 import { getClientWithEnsAndIpfs } from "../utils/getClientWithEnsAndIpfs";
 import { getClient } from "../utils/getClient";
 
-jest.setTimeout(200000);
+jest.setTimeout(300000);
 
 describe("wasm-as test cases", () => {
   beforeAll(async () => {
