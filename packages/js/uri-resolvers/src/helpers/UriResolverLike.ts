@@ -12,8 +12,4 @@ export type UriResolverLike =
   | UriResolverLike[]
   | IWrapPackage
   | PluginRegistration<string | Uri>;
-// | ((
-//     uri: Uri,
-//     client: Client,
-//     resolutionContext: IUriResolutionContext
-//   ) => Promise<Result<IUriResolver<unknown>[], unknown>>);
+
