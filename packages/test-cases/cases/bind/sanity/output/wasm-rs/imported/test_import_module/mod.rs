@@ -22,14 +22,14 @@ use crate::TestImportObject;
 use crate::TestImportEnum;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct TestImportModule {
-    uri: &'static str
+pub struct TestImportModule<'a> {
+    uri: &'a str
 }
 
-impl TestImportModule {
+impl<'a> TestImportModule<'a> {
     pub const INTERFACE_URI: &'static str = "testimport.uri.eth";
 
-    pub fn new(uri: &'static str) -> TestImportModule {
+    pub fn new(uri: &'a str) -> TestImportModule<'a> {
         TestImportModule { uri: uri }
     }
 

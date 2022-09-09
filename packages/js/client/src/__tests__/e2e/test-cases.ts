@@ -347,20 +347,15 @@ export const runGetImplementationsTest = async (
 
   const moduleMethodResult = await client.invoke({
     uri: aggregatorUri,
-    method: "moduleMethod",
+    method: "abstractModuleMethod",
     args: {
       arg: {
-        uint8: 1,
-        str: "Test String 1",
+        str: "Test String 2",
       },
     },
   });
   expect(moduleMethodResult.error).toBeFalsy();
-  expect(moduleMethodResult.data).toEqual({
-    uint8: 1,
-    str: "Test String 1",
-  });
-
+  expect(moduleMethodResult.data).toEqual("Test String 2");
 };
 
 export const runInvalidTypesTest = async (
@@ -773,13 +768,16 @@ export const runObjectTypesTest = async (
 
 export const runMapTypeTest = async (client: PolywrapClient, uri: string) => {
   const mapClass = new Map<string, number>().set("Hello", 1).set("Heyo", 50);
-  const nestedMapClass = new Map<string, Map<string, number>>().set("Nested", mapClass);
+  const nestedMapClass = new Map<string, Map<string, number>>().set(
+    "Nested",
+    mapClass
+  );
   const mapRecord: Record<string, number> = {
     Hello: 1,
     Heyo: 50,
   };
   const nestedMapRecord: Record<string, Record<string, number>> = {
-    Nested: mapRecord
+    Nested: mapRecord,
   };
 
   const returnMapResponse1 = await client.invoke<Map<string, number>>({
@@ -808,7 +806,7 @@ export const runMapTypeTest = async (client: PolywrapClient, uri: string) => {
     args: {
       foo: {
         map: mapClass,
-        nestedMap: nestedMapClass
+        nestedMap: nestedMapClass,
       },
       key: "Hello",
     },
@@ -822,7 +820,7 @@ export const runMapTypeTest = async (client: PolywrapClient, uri: string) => {
     args: {
       foo: {
         map: mapRecord,
-        nestedMap: nestedMapRecord
+        nestedMap: nestedMapRecord,
       },
       key: "Heyo",
     },
@@ -831,28 +829,33 @@ export const runMapTypeTest = async (client: PolywrapClient, uri: string) => {
   expect(getKeyResponse2.data).toEqual(mapRecord.Heyo);
 
   const returnCustomMap = await client.invoke<{
-    map: Map<string, number>,
-    nestedMap: Map<string, Map<string, number>>
+    map: Map<string, number>;
+    nestedMap: Map<string, Map<string, number>>;
   }>({
     uri,
     method: "returnCustomMap",
     args: {
       foo: {
         map: mapRecord,
-        nestedMap: nestedMapClass
-      }
+        nestedMap: nestedMapClass,
+      },
     },
   });
   expect(returnCustomMap.error).toBeUndefined();
-  expect(returnCustomMap.data).toEqual({ map: mapClass, nestedMap: nestedMapClass });
-
-  const returnNestedMap = await client.invoke<Map<string, Map<string, number>>>({
-    uri,
-    method: "returnNestedMap",
-    args: {
-      foo: nestedMapClass
-    },
+  expect(returnCustomMap.data).toEqual({
+    map: mapClass,
+    nestedMap: nestedMapClass,
   });
+
+  const returnNestedMap = await client.invoke<Map<string, Map<string, number>>>(
+    {
+      uri,
+      method: "returnNestedMap",
+      args: {
+        foo: nestedMapClass,
+      },
+    }
+  );
   expect(returnNestedMap.error).toBeUndefined();
   expect(returnNestedMap.data).toEqual(nestedMapClass);
 };

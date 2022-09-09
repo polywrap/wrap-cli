@@ -25,12 +25,10 @@ use {{crate}}::{{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeywor
 {{/propertyDeps}}
 {{/propertyDeps.length}}
 
-#[derive(Clone, Debug, Deserialize, Serialize)]
-pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
-    {{#isInterface}}uri: &'static str{{/isInterface}}
-}
-
 {{^isInterface}}
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {}
+
 impl {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
     pub const URI: &'static str = "{{uri}}";
 
@@ -56,10 +54,15 @@ impl {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
 }
 {{/isInterface}}
 {{#isInterface}}
-impl {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
+#[derive(Clone, Debug, Deserialize, Serialize)]
+pub struct {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}<'a> {
+    {{#isInterface}}uri: &'a str{{/isInterface}}
+}
+
+impl<'a> {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}<'a> {
     pub const INTERFACE_URI: &'static str = "{{uri}}";
 
-    pub fn new(uri: &'static str) -> {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} {
+    pub fn new(uri: &'a str) -> {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}}<'a> {
         {{#detectKeyword}}{{#toUpper}}{{type}}{{/toUpper}}{{/detectKeyword}} { uri: uri }
     }
 

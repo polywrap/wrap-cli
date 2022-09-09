@@ -137,12 +137,18 @@ describe("wasm-as test cases", () => {
   });
 
   it("implementations - getImplementations", async () => {
+    const interfacePath = `${GetPathToTestWrappers()}/wasm-rs/implementations/test-interface`;
     const interfaceUri = "wrap://ens/interface.eth";
 
-    const implementationPath = `${GetPathToTestWrappers()}/wasm-as/implementations/test-use-getImpl`;
-    const implementationUri = `wrap://fs/${implementationPath}/build`;
+    const implementationPath = `${GetPathToTestWrappers()}/wasm-rs/implementations/test-wrapper`;
+    const implementationUri = `fs/${implementationPath}/build`;
 
+    const aggregatorPath = `${GetPathToTestWrappers()}/wasm-rs/implementations/test-use-getImpl`;
+    const aggregatorUri = `fs/${aggregatorPath}/build`;
+
+    await buildWrapper(interfacePath);
     await buildWrapper(implementationPath);
+    await buildWrapper(aggregatorPath);
 
     const client = await getClient({
       interfaces: [
@@ -155,6 +161,7 @@ describe("wasm-as test cases", () => {
 
     await TestCases.runGetImplementationsTest(
       client,
+      aggregatorUri,
       interfaceUri,
       implementationUri
     );

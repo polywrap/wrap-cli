@@ -116,7 +116,7 @@ describe("wasm-rs test cases", () => {
 
   it("implementations - getImplementations", async () => {
     const interfacePath = `${GetPathToTestWrappers()}/wasm-rs/implementations/test-interface`;
-    const interfaceUri = `fs/${interfacePath}/build`;
+    const interfaceUri = "wrap://ens/interface.eth";
 
     const implementationPath = `${GetPathToTestWrappers()}/wasm-rs/implementations/test-wrapper`;
     const implementationUri = `fs/${implementationPath}/build`;
