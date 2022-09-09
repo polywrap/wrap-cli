@@ -412,7 +412,7 @@ export const runInvalidTypesTest = async (
   );
 };
 
-export const runJsonTypeTest = async (client: PolywrapClient, uri: string) => {
+export const runJsonTypeTest = async (client: PolywrapClient, uri: string, testReserved: boolean = false) => {
   type Json = string;
   const value = JSON.stringify({ foo: "bar", bar: "bar" });
   const parseResponse = await client.invoke<{ parse: Json }>({
@@ -474,26 +474,27 @@ export const runJsonTypeTest = async (client: PolywrapClient, uri: string) => {
   const methodJSONResult = JSON.stringify(json);
   expect(methodJSONResponse.data).toEqual(methodJSONResult);
 
-  const reserved = { const: "hello", if: true };
-  const parseReservedResponse = await client.invoke<{ const: string; if: boolean }>({
-    uri,
-    method: "parseReserved",
-    args: {
-      json: JSON.stringify(reserved)
-    },
-  });
-
-  expect(parseReservedResponse.data).toEqual(reserved);
-
-  const stringifyReservedResponse = await client.invoke<string>({
-    uri,
-    method: "stringifyReserved",
-    args: {
-      reserved
-    },
-  });
-
-  expect(stringifyReservedResponse.data).toEqual(JSON.stringify(reserved));
+  if (testReserved) {
+    const reserved = { const: "hello", if: true };
+    const parseReservedResponse = await client.invoke<{ const: string; if: boolean }>({
+      uri,
+      method: "parseReserved",
+      args: {
+        json: JSON.stringify(reserved)
+      },
+    });
+  
+    expect(parseReservedResponse.data).toEqual(reserved);
+  
+    const stringifyReservedResponse = await client.invoke<string>({
+      uri,
+      method: "stringifyReserved",
+      args: {
+        reserved
+      },
+    });
+    expect(stringifyReservedResponse.data).toEqual(JSON.stringify(reserved));
+  }
 };
 
 export const runLargeTypesTest = async (
