@@ -22,7 +22,7 @@ export class FileSystemPlugin extends Module<NoConfig> {
     return fs.promises
       .readFile(args.path)
       .then((buffer) =>
-        ArrayBuffer.isView(buffer) ? buffer : new Uint8Array(buffer)
+        new Uint8Array(buffer)
       );
   }
 
