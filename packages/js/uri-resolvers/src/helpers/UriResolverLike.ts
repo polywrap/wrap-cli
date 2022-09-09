@@ -12,4 +12,3 @@ export type UriResolverLike =
   | UriResolverLike[]
   | IWrapPackage
   | PluginRegistration<string | Uri>;
-
