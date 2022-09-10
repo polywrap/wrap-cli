@@ -239,7 +239,7 @@ describe("wasm-wrapper", () => {
     const getSubscription: Subscription<number> = client.subscribe<number>({
       uri: simpleMemoryWrapperUri.uri,
       method: "getData",
-      frequency: { ms: 550 },
+      frequency: { ms: 650 },
     });
 
     for await (let result of getSubscription) {
