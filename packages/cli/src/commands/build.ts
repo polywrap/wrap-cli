@@ -8,12 +8,12 @@ import {
   watchEventName,
   intlMsg,
   defaultPolywrapManifest,
-  parseWasmManifestFileOption,
   parseDirOption,
   parseClientConfigOption,
+  parseManifestFileOption,
+  DefaultCodegenStrategy,
 } from "../lib";
 import { CodeGenerator } from "../lib/codegen/CodeGenerator";
-import { CompilerCodegenStrategy } from "../lib/codegen/strategies/CompilerCodegenStrategy";
 import { LocalBuildStrategy } from "../lib/build-strategies/strategies/LocalStrategy";
 import { DockerBuildStrategy } from "../lib/build-strategies/strategies/DockerStrategy";
 import { SUPPORTED_STRATEGIES } from "../lib/build-strategies";
@@ -138,7 +138,7 @@ async function run(options: BuildCommandOptions) {
   });
 
   const execute = async (): Promise<boolean> => {
-    const codegenStrategy = new CompilerCodegenStrategy({
+    const codegenStrategy = new DefaultCodegenStrategy({
       project,
       schemaComposer,
     });
