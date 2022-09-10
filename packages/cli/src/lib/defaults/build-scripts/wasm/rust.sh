@@ -2,7 +2,7 @@
 rustup target add wasm32-unknown-unknown
 export RUSTFLAGS="-C link-arg=-z -C link-arg=stack-size=65536 -C link-arg=--import-memory"
 cargo install toml-cli
-# cargo install wasm-snip
+cargo install wasm-snip
 cargo install wasm-bindgen-cli
 
 toml set "$1"/Cargo.toml lib.crate-type ["cdylib"] > "$1"/Cargo-local.toml && \
