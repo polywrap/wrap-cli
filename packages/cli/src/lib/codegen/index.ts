@@ -1,3 +1,2 @@
 export * from "./CodeGenerator";
-export * from "./CodegenStrategy";
-export * from "./strategies";
+export * from "./ScriptCodeGenerator";
