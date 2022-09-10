@@ -350,7 +350,7 @@ export async function buildAndDeployWrapper({
     })
   );
 
-  const deployManifest: DeployManifest = {
+  const deployManifest: Omit<DeployManifest, "__type"> = {
     format: "0.1.0",
     stages: {
       ipfsDeploy: {
@@ -371,7 +371,6 @@ export async function buildAndDeployWrapper({
         },
       },
     },
-    __type: "DeployManifest",
   };
   fs.writeFileSync(tempDeployManifestPath, yaml.dump(deployManifest));
 
@@ -450,7 +449,7 @@ export async function buildAndDeployWrapperToHttp({
   };
   fs.writeFileSync(tempManifestPath, yaml.dump({ ...polywrapManifest }));
 
-  const deployManifest: DeployManifest = {
+  const deployManifest: Omit<DeployManifest, "__type"> = {
     format: "0.1.0",
     stages: {
       httpDeploy: {
@@ -461,7 +460,6 @@ export async function buildAndDeployWrapperToHttp({
         },
       },
     },
-    __type: "DeployManifest",
   };
   fs.writeFileSync(tempDeployManifestPath, yaml.dump(deployManifest));
 
